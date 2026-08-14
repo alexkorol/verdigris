@@ -7,7 +7,13 @@ const browserChannel = process.env.PLAYWRIGHT_CHANNEL
 
 export default defineConfig({
   testDir: './tests/e2e',
-  timeout: 60_000,
+  // CI runners render the perspective canvas through software WebGL. Running
+  // two complete game clients concurrently starves both event loops badly
+  // enough that successful movement arrives after the old 60s test ceiling.
+  // Keep local feedback fast while giving the shared CI runner one game at a
+  // time and enough room to finish the same browser contract.
+  timeout: process.env.CI ? 120_000 : 60_000,
+  workers: process.env.CI ? 1 : undefined,
   retries: process.env.CI ? 1 : 0,
   reporter: [['list']],
   use: {
