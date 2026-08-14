@@ -43,7 +43,7 @@ const pointerDrag = async (page, source, target) => {
   await page.mouse.move(
     targetBounds.x + targetBounds.width / 2,
     targetBounds.y + targetBounds.height / 2,
-    { steps: 8 },
+    { steps: 2 },
   );
   await page.mouse.up();
 };
@@ -126,8 +126,14 @@ const completeChroniclesOnboarding = async (page) => {
   await setOut.click();
 };
 
+if (process.env.CI) {
+  // This journey already covers the complete UI loop. One software-rendered
+  // pass with enough time is more useful than two passes that each expire.
+  test.describe.configure({ retries: 0 });
+}
+
 test('the built game supports the browser-critical guest loop', async ({ page }) => {
-  test.setTimeout(process.env.CI ? 300_000 : 60_000);
+  test.setTimeout(process.env.CI ? 600_000 : 60_000);
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/');
 
@@ -150,6 +156,17 @@ test('the built game supports the browser-critical guest loop', async ({ page })
   await expect(skillBar.locator('.quickbar__icon')).toHaveCount(6);
   await expect(skillBar.getByRole('button', { name: /Bronze Arc \[Space \/ 1\]/ })).toBeVisible();
   await expect(skillBar.getByRole('button', { name: /Cinder Fan \[Q \/ 3\]/ })).toBeVisible();
+
+  // GitHub's headless browser renders the real canvas in software. Select the
+  // game's lowest supported frame-rate cap through the visible settings UI so
+  // the canvas cannot starve later pointer and keyboard interactions.
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  const initialSettings = page.getByLabel('Settings overlay');
+  await expect(initialSettings).toBeVisible();
+  await initialSettings.getByLabel('Frame rate cap').fill('1');
+  await expect(initialSettings.getByText('20 FPS', { exact: true })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(initialSettings).toBeHidden();
 
   // Movement must keep working after a UI control owns focus.
   await minimapCoordinates(minimap);
