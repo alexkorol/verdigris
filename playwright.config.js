@@ -7,11 +7,10 @@ const browserChannel = process.env.PLAYWRIGHT_CHANNEL
 
 export default defineConfig({
   testDir: './tests/e2e',
-  // CI runners render the perspective canvas through software WebGL. Running
-  // two complete game clients concurrently starves both event loops badly
-  // enough that successful movement arrives after the old 60s test ceiling.
-  // Keep local feedback fast while giving the shared CI runner one game at a
-  // time and enough room to finish the same browser contract.
+  // CI runners render the perspective canvas through software WebGL. Traced
+  // DOM reads and WebGL readbacks can each take several seconds there, so give
+  // the shared runner one complete game client at a time and enough room to
+  // finish the same browser contract. Local feedback remains fast.
   timeout: process.env.CI ? 120_000 : 60_000,
   workers: process.env.CI ? 1 : undefined,
   retries: process.env.CI ? 1 : 0,
@@ -23,6 +22,13 @@ export default defineConfig({
     // navigate by absolute URL, so this default does not affect them.
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:6500',
     ...(browserChannel ? { channel: browserChannel } : {}),
+    ...(process.env.CI ? {
+      launchOptions: {
+        // Chromium requires an explicit opt-in for its trusted, software-only
+        // WebGL backend on GPU-less runners.
+        args: ['--enable-unsafe-swiftshader'],
+      },
+    } : {}),
     headless: true,
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',

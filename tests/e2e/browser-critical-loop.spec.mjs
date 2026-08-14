@@ -137,14 +137,16 @@ test('the built game supports the browser-critical guest loop', async ({ page })
 
   // Movement must keep working after a UI control owns focus.
   const initialCoordinates = await minimapCoordinates(minimap);
+  let movedCoordinates = initialCoordinates;
   await page.getByRole('button', { name: 'Adventure', exact: true }).click();
   for (const key of ['KeyD', 'KeyS', 'KeyA', 'KeyW']) {
     await page.keyboard.down(key);
     await page.waitForTimeout(350);
     await page.keyboard.up(key);
-    if (await minimapCoordinates(minimap) !== initialCoordinates) break;
+    movedCoordinates = await minimapCoordinates(minimap);
+    if (movedCoordinates !== initialCoordinates) break;
   }
-  await expect.poll(() => minimapCoordinates(minimap)).not.toBe(initialCoordinates);
+  expect(movedCoordinates).not.toBe(initialCoordinates);
 
   // The canvas binding must request and render the server-authored menu.
   const canvasBounds = await canvas.boundingBox();

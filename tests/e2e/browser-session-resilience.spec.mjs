@@ -46,7 +46,6 @@ const startGameServer = async () => {
       GUEST_SAVE_DIR: guestSaveDir,
       CHRONICLES_DB_FILE: chronicleDb,
       IDENTITY_DB_FILE: chronicleDb,
-      WS_HEARTBEAT_INTERVAL_MS: '1000',
     },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -114,13 +113,16 @@ test.describe('browser session resilience', () => {
     await expect(page.locator('button.login')).toBeHidden();
 
     const coordinatesBefore = await minimapCoordinates.textContent();
+    let coordinatesAfter = coordinatesBefore;
     for (const key of ['KeyD', 'KeyS', 'KeyA', 'KeyW']) {
       await page.keyboard.down(key);
       await page.waitForTimeout(350);
       await page.keyboard.up(key);
-      if (await minimapCoordinates.textContent() !== coordinatesBefore) break;
+      coordinatesAfter = await minimapCoordinates.textContent();
+      if (coordinatesAfter !== coordinatesBefore) break;
     }
-    await expect.poll(() => minimapCoordinates.textContent()).not.toBe(coordinatesBefore);
+    expect(coordinatesAfter).not.toBe(coordinatesBefore);
+    await expect(page.getByText('Connection lost â€” reconnectingâ€¦')).toBeHidden();
     expect(pageErrors).toEqual([]);
   });
 
