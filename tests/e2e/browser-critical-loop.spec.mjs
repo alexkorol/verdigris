@@ -126,8 +126,14 @@ const completeChroniclesOnboarding = async (page) => {
   await setOut.click();
 };
 
+if (process.env.CI) {
+  // This journey already covers the complete UI loop. One software-rendered
+  // pass with enough time is more useful than two passes that each expire.
+  test.describe.configure({ retries: 0 });
+}
+
 test('the built game supports the browser-critical guest loop', async ({ page }) => {
-  test.setTimeout(process.env.CI ? 300_000 : 60_000);
+  test.setTimeout(process.env.CI ? 600_000 : 60_000);
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/');
 
