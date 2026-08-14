@@ -7,8 +7,7 @@ const browserChannel = process.env.PLAYWRIGHT_CHANNEL
 
 export default defineConfig({
   testDir: './tests/e2e',
-  // CI runners render the perspective canvas through software WebGL. Traced
-  // DOM reads and WebGL readbacks can each take several seconds there, so give
+  // CI runners render the perspective canvas through software WebGL, so give
   // the shared runner one complete game client at a time and enough room to
   // finish the same browser contract. Local feedback remains fast.
   timeout: process.env.CI ? 120_000 : 60_000,
@@ -22,15 +21,11 @@ export default defineConfig({
     // navigate by absolute URL, so this default does not affect them.
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:6500',
     ...(browserChannel ? { channel: browserChannel } : {}),
-    ...(process.env.CI ? {
-      launchOptions: {
-        // Chromium requires an explicit opt-in for its trusted, software-only
-        // WebGL backend on GPU-less runners.
-        args: ['--enable-unsafe-swiftshader'],
-      },
-    } : {}),
     headless: true,
     screenshot: 'only-on-failure',
-    trace: 'retain-on-failure',
+    // Action-by-action trace snapshots force a software-WebGL readback and can
+    // consume the entire CI timeout. Keep the first attempt representative;
+    // if it fails, Playwright records the retry for diagnosis.
+    trace: process.env.CI ? 'on-first-retry' : 'retain-on-failure',
   },
 });
