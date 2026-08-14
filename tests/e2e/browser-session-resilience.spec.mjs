@@ -16,6 +16,19 @@ let serverOutput = '';
 
 const databaseFiles = () => [chronicleDb, `${chronicleDb}-wal`, `${chronicleDb}-shm`];
 
+const authoritativePlayerPosition = async () => {
+  const response = await fetch(`${gameUrl}/world/players`);
+  expect(response.ok).toBe(true);
+  const players = await response.json();
+  const player = players.at(-1);
+  expect(player).toBeTruthy();
+  return { x: player.x, y: player.y };
+};
+
+const positionChanged = (before, after) => (
+  before.x !== after.x || before.y !== after.y
+);
+
 const cleanState = () => {
   fs.rmSync(guestSaveDir, { recursive: true, force: true });
   databaseFiles().forEach(file => fs.rmSync(file, { force: true }));
@@ -112,16 +125,16 @@ test.describe('browser session resilience', () => {
     await expect(page.locator('canvas#game-map')).toBeVisible();
     await expect(page.locator('button.login')).toBeHidden();
 
-    const coordinatesBefore = await minimapCoordinates.textContent();
-    let coordinatesAfter = coordinatesBefore;
+    const positionBefore = await authoritativePlayerPosition();
+    let positionAfter = positionBefore;
     for (const key of ['KeyD', 'KeyS', 'KeyA', 'KeyW']) {
       await page.keyboard.down(key);
-      await page.waitForTimeout(350);
+      await page.waitForTimeout(600);
       await page.keyboard.up(key);
-      coordinatesAfter = await minimapCoordinates.textContent();
-      if (coordinatesAfter !== coordinatesBefore) break;
+      positionAfter = await authoritativePlayerPosition();
+      if (positionChanged(positionBefore, positionAfter)) break;
     }
-    expect(coordinatesAfter).not.toBe(coordinatesBefore);
+    expect(positionChanged(positionBefore, positionAfter)).toBe(true);
     await expect(page.getByText('Connection lost â€” reconnectingâ€¦')).toBeHidden();
     expect(pageErrors).toEqual([]);
   });

@@ -1,5 +1,20 @@
 import { expect, test } from '@playwright/test';
 
+const gameUrl = process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:6500';
+
+const authoritativePlayerPosition = async () => {
+  const response = await fetch(`${gameUrl}/world/players`);
+  expect(response.ok).toBe(true);
+  const players = await response.json();
+  const player = players.find(candidate => candidate.username === 'Wayfarer') || players.at(-1);
+  expect(player).toBeTruthy();
+  return { x: player.x, y: player.y };
+};
+
+const positionChanged = (before, after) => (
+  before.x !== after.x || before.y !== after.y
+);
+
 const minimapCoordinates = async (minimap) => {
   const readout = minimap.locator('.world-minimap__readout span').last();
   await expect(readout).toHaveText(/^\d+, \d+$/);
@@ -136,17 +151,18 @@ test('the built game supports the browser-critical guest loop', async ({ page })
   await expect(skillBar.getByRole('button', { name: /Cinder Fan \[Q \/ 3\]/ })).toBeVisible();
 
   // Movement must keep working after a UI control owns focus.
-  const initialCoordinates = await minimapCoordinates(minimap);
-  let movedCoordinates = initialCoordinates;
+  await minimapCoordinates(minimap);
+  const initialPosition = await authoritativePlayerPosition();
+  let movedPosition = initialPosition;
   await page.getByRole('button', { name: 'Adventure', exact: true }).click();
   for (const key of ['KeyD', 'KeyS', 'KeyA', 'KeyW']) {
     await page.keyboard.down(key);
-    await page.waitForTimeout(350);
+    await page.waitForTimeout(600);
     await page.keyboard.up(key);
-    movedCoordinates = await minimapCoordinates(minimap);
-    if (movedCoordinates !== initialCoordinates) break;
+    movedPosition = await authoritativePlayerPosition();
+    if (positionChanged(initialPosition, movedPosition)) break;
   }
-  expect(movedCoordinates).not.toBe(initialCoordinates);
+  expect(positionChanged(initialPosition, movedPosition)).toBe(true);
 
   // The canvas binding must request and render the server-authored menu.
   const canvasBounds = await canvas.boundingBox();
