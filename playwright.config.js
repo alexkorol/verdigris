@@ -7,7 +7,11 @@ const browserChannel = process.env.PLAYWRIGHT_CHANNEL
 
 export default defineConfig({
   testDir: './tests/e2e',
-  timeout: 60_000,
+  // CI runners render the perspective canvas through software WebGL, so give
+  // the shared runner one complete game client at a time and enough room to
+  // finish the same browser contract. Local feedback remains fast.
+  timeout: process.env.CI ? 120_000 : 60_000,
+  workers: process.env.CI ? 1 : undefined,
   retries: process.env.CI ? 1 : 0,
   reporter: [['list']],
   use: {
@@ -19,6 +23,9 @@ export default defineConfig({
     ...(browserChannel ? { channel: browserChannel } : {}),
     headless: true,
     screenshot: 'only-on-failure',
-    trace: 'retain-on-failure',
+    // Action-by-action trace snapshots force a software-WebGL readback and can
+    // consume the entire CI timeout. Keep the first attempt representative;
+    // if it fails, Playwright records the retry for diagnosis.
+    trace: process.env.CI ? 'on-first-retry' : 'retain-on-failure',
   },
 });
