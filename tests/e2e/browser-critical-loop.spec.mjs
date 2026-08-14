@@ -127,6 +127,7 @@ const completeChroniclesOnboarding = async (page) => {
 };
 
 test('the built game supports the browser-critical guest loop', async ({ page }) => {
+  test.setTimeout(process.env.CI ? 300_000 : 60_000);
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/');
 

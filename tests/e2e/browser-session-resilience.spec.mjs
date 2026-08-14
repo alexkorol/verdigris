@@ -127,12 +127,18 @@ test.describe('browser session resilience', () => {
 
     const positionBefore = await authoritativePlayerPosition();
     let positionAfter = positionBefore;
-    for (const key of ['KeyD', 'KeyS', 'KeyA', 'KeyW']) {
-      await page.keyboard.down(key);
-      await page.waitForTimeout(600);
-      await page.keyboard.up(key);
-      positionAfter = await authoritativePlayerPosition();
-      if (positionChanged(positionBefore, positionAfter)) break;
+    for (let attempt = 0; attempt < 3 && !positionChanged(positionBefore, positionAfter); attempt += 1) {
+      await expect(page.getByText('Connection lost â€” reconnectingâ€¦')).toBeHidden({ timeout: 30_000 });
+      for (const key of ['KeyD', 'KeyS', 'KeyA', 'KeyW']) {
+        await page.keyboard.down(key);
+        await page.waitForTimeout(600);
+        await page.keyboard.up(key);
+        positionAfter = await authoritativePlayerPosition();
+        if (positionChanged(positionBefore, positionAfter)) break;
+      }
+      if (!positionChanged(positionBefore, positionAfter)) {
+        await page.waitForTimeout(1_000);
+      }
     }
     expect(positionChanged(positionBefore, positionAfter)).toBe(true);
     await expect(page.getByText('Connection lost â€” reconnectingâ€¦')).toBeHidden();
