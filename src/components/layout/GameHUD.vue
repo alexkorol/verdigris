@@ -7,6 +7,7 @@
         label="HP"
         :current="playerVitals.hp.current"
         :max="playerVitals.hp.max"
+        @activate="$emit('request-pane', 'stats')"
       />
       <Quickbar
         class="hud-shell__quickbar"
@@ -21,6 +22,7 @@
         label="MP"
         :current="playerVitals.mp.current"
         :max="playerVitals.mp.max"
+        @activate="$emit('request-pane', 'inventory')"
       />
     </div>
     <div
@@ -72,6 +74,7 @@ export default {
   },
   emits: [
     'quick-slot',
+    'request-pane',
   ],
   methods: {
     handleSlotActivate(slot, index) {
@@ -116,7 +119,7 @@ export default {
   z-index: 2;
   flex: 0 0 auto;
   margin-bottom: 0;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .hud-shell__orb--left {

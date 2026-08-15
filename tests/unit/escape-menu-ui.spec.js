@@ -27,6 +27,7 @@ describe('Escape game menu', () => {
 
   it('opens on Escape only after higher-priority panels have closed', () => {
     const delaford = readSource('src/Delaford.vue');
+    const container = readSource('src/components/layout/GameContainer.vue');
 
     expect(delaford).toContain("escapeMenu: { component: EscapeMenu, title: 'Verdigris' }");
     expect(delaford).toContain("if (this.layout.activePane === 'escapeMenu')");
@@ -38,5 +39,7 @@ describe('Escape game menu', () => {
     expect(delaford).not.toContain("q: 'quests'");
     expect(delaford.indexOf("if (this.layout.activePane)"))
       .toBeLessThan(delaford.indexOf("this.openPane('escapeMenu');"));
+    expect(container).toContain('const closeWorldMenus = () => {');
+    expect(container).toContain('if (paneId) closeWorldMenus();');
   });
 });

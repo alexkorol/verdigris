@@ -5,6 +5,7 @@ import { fileURLToPath, URL } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 import {
+  earnedVerdigrisPoints,
   VERDIGRIS_SKILL_TREE_POINTS,
   VERDIGRIS_SKILL_TREE_TOTALS,
 } from '@/core/passives/verdigris-skill-tree.js';
@@ -20,6 +21,8 @@ describe('Verdigris skill tree UI copy', () => {
     expect(VERDIGRIS_SKILL_TREE_TOTALS.layers).toBe(10);
     expect(VERDIGRIS_SKILL_TREE_TOTALS.nodes).toBe(331);
     expect(VERDIGRIS_SKILL_TREE_TOTALS.subtreeNodes).toBe(34);
+    expect(earnedVerdigrisPoints(1)).toBe(2);
+    expect(earnedVerdigrisPoints(117, 23)).toBe(140);
   });
 
   it('does not expose how-to text in the skill tree overlay', () => {
@@ -37,6 +40,7 @@ describe('Verdigris skill tree UI copy', () => {
 
     expect(source).not.toContain('petals spent');
     expect(source).not.toContain('flowerSummary');
+    expect(source).toContain('earnedVerdigrisPoints(level, questPoints)');
   });
 
   it('adds authoritative quest rewards to the passive-point pool', () => {

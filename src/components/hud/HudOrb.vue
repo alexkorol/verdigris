@@ -1,9 +1,11 @@
 <template>
-  <div
+  <button
+    type="button"
     class="hud-orb"
     :class="variant"
     :aria-label="`${label}: ${displayValue}`"
     :title="displayValue"
+    @click="$emit('activate')"
   >
     <canvas
       ref="canvas"
@@ -15,7 +17,7 @@
       <span class="hud-orb__label">{{ label }}</span>
       <strong class="hud-orb__value">{{ displayValue }}</strong>
     </div>
-  </div>
+  </button>
 </template>
 
 <script>
@@ -23,6 +25,7 @@ import WizardOrbRenderer from '@/core/hud/wizard-orb-renderer.js';
 
 export default {
   name: 'HudOrb',
+  emits: ['activate'],
   props: {
     variant: {
       type: String,
@@ -107,6 +110,17 @@ export default {
   /* Soft, centred contact shadow — the previous heavy offset shadow read as
    * an unsightly dark edge hugging the orb. */
   filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.hud-orb:focus-visible {
+  outline: 2px solid rgba(238, 205, 129, 0.9);
+  outline-offset: -12px;
 }
 
 .hud-orb.mp {

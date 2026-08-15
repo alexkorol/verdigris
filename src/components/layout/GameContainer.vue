@@ -251,6 +251,7 @@
             :quickbar-active-index="quickbarActiveIndex"
             :quickbar-cooldowns="quickbarCooldowns"
             @quick-slot="handleQuickSlot"
+            @request-pane="$emit('request-pane', $event)"
           />
         </div>
       </div>
@@ -530,6 +531,19 @@ export default {
       roadsOpen.value = !roadsOpen.value;
       if (roadsOpen.value) adventureOpen.value = false;
     };
+
+    const closeWorldMenus = () => {
+      partyOpen.value = false;
+      adventureOpen.value = false;
+      roadsOpen.value = false;
+    };
+
+    watch(
+      () => props.activeOverlayDescriptor?.id,
+      (paneId) => {
+        if (paneId) closeWorldMenus();
+      },
+    );
 
     const activeChatDock = () => (props.chatExpanded ? chatOverlayRef.value : chatPeekRef.value);
 

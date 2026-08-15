@@ -20,11 +20,13 @@ export class PlayerPersistenceService {
   constructor({
     saveGuestPlayer = saveGuest,
     saveLocalProfile = saveLocalAccountProfile,
+    saveChroniclePlayer = null,
     cooldownMs = DEFAULT_COOLDOWN_MS,
     logger = console,
   } = {}) {
     this.saveGuestPlayer = saveGuestPlayer;
     this.saveLocalProfile = saveLocalProfile;
+    this.saveChroniclePlayer = saveChroniclePlayer;
     this.cooldownMs = cooldownMs;
     this.logger = logger;
     this.lastSuccessfulSave = new Map();
@@ -50,13 +52,32 @@ export class PlayerPersistenceService {
       return null;
     }
 
-    // Chronicle scions are authoritative server-side characters. Keep their
-    // complete snapshot with the House instead of a fallback profile. Dynamic
-    // import avoids a Player/service
-    // initialization cycle.
+    // Interactive browser Chronicles still use the durable JSON identity
+    // record and guest/local character snapshot. Their House identity is also
+    // mirrored into SQLite so wagons and the world web can share the same
+    // lineage without making reconnects forget the selected Scion.
+    if (player.legacyChroniclesStore) {
+      try {
+        const legacySnapshot = localAccountId(player)
+          ? await this.saveLocalProfile(player)
+          : await this.saveGuestPlayer(player);
+        const ledgerSnapshot = await this.saveChronicleSnapshot(player);
+        const result = legacySnapshot || ledgerSnapshot;
+        if (result) this.lastSuccessfulSave.set(player.uuid, Date.now());
+        return result;
+      } catch (error) {
+        if (this.logger && typeof this.logger.error === 'function') {
+          this.logger.error(`[player-persistence] Failed to save ${player.username || player.uuid} locally`, error);
+        }
+        throw error;
+      }
+    }
+
+    // Chronicle-auth scions are authoritative server-side characters. Keep
+    // their complete snapshot with the House. Dynamic import avoids a
+    // Player/service initialization cycle.
     if (player.scionId && player.accountId) {
-      const { saveLivingScion } = await import('#server/core/services/chronicles.js');
-      const snapshot = saveLivingScion(player);
+      const snapshot = await this.saveChronicleSnapshot(player);
       if (snapshot) this.lastSuccessfulSave.set(player.uuid, Date.now());
       return snapshot;
     }
@@ -77,6 +98,14 @@ export class PlayerPersistenceService {
       }
       throw error;
     }
+  }
+
+  async saveChronicleSnapshot(player) {
+    if (typeof this.saveChroniclePlayer === 'function') {
+      return this.saveChroniclePlayer(player);
+    }
+    const { saveLivingScion } = await import('#server/core/services/chronicles.js');
+    return saveLivingScion(player);
   }
 
   async flushAllPlayers(options = {}) {

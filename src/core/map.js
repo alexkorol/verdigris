@@ -1754,6 +1754,7 @@ class Map {
     const nearbyNPCs = this.npcs.filter((npc) => this.isWithinViewport(npc, metrics));
 
     nearbyNPCs.forEach((npc) => {
+      const isHouseWagon = String(npc?.id || '').startsWith('wagon-');
       const centerPosition = npc.movement
         ? npc.movement.getPosition()
         : centerOfTile(npc.x, npc.y, tileSize);
@@ -1771,6 +1772,25 @@ class Map {
         sourceSize,
       );
 
+      if (isHouseWagon) {
+        ctx.save();
+        ctx.strokeStyle = '#d6ad57';
+        ctx.shadowColor = 'rgba(214, 173, 87, 0.35)';
+        ctx.shadowBlur = 7;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(
+          screenPosition.x + (renderSize / 2),
+          screenPosition.y + (renderSize * 0.86),
+          renderSize * 0.34,
+          renderSize * 0.11,
+          0,
+          0,
+          Math.PI * 2,
+        );
+        ctx.stroke();
+        ctx.restore();
+      }
       ctx.drawImage(
         this.images.npcsImage,
         sourceX,
@@ -1782,6 +1802,28 @@ class Map {
         renderSize,
         renderSize,
       );
+
+      if (isHouseWagon) {
+        const houseName = String(npc.name || 'House Wagon')
+          .replace(/^House\s+/i, '')
+          .replace(/\s+Wagon$/i, '')
+          .trim();
+        const label = `HOUSE ${houseName || 'WAYFARERS'}`.toUpperCase();
+        const x = screenPosition.x + (renderSize / 2);
+        const y = screenPosition.y - 8;
+        ctx.save();
+        ctx.font = '8px "GameFont", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const width = ctx.measureText(label).width + 8;
+        ctx.fillStyle = 'rgba(9, 8, 6, 0.88)';
+        ctx.strokeStyle = 'rgba(214, 173, 87, 0.82)';
+        ctx.fillRect(x - (width / 2), y - 7, width, 14);
+        ctx.strokeRect(x - (width / 2) + 0.5, y - 6.5, width - 1, 13);
+        ctx.fillStyle = '#f0d486';
+        ctx.fillText(label, x, y + 1);
+        ctx.restore();
+      }
     });
   }
 

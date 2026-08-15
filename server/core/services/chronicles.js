@@ -119,6 +119,48 @@ export const ensureQuickGuestScion = (accountId) => {
   return scion || null;
 };
 
+const legacyAccountIdFor = (player) => {
+  const uuid = String(player?.uuid || '');
+  const browserGuestPrefix = 'browser-guest-';
+  if (uuid.startsWith(browserGuestPrefix)) {
+    return `guest:${uuid.slice(browserGuestPrefix.length)}`;
+  }
+  const token = typeof player?.token === 'string' ? player.token : '';
+  if (token.startsWith('local:')) return token.slice('local:'.length);
+  return uuid ? `legacy:${uuid}` : null;
+};
+
+/**
+ * Join the interactive JSON Chronicle flow to the SQLite-backed world meta
+ * without retiring either persistence contract. This is intentionally
+ * synchronous: selection is not admitted to the world until the ledger owns
+ * the same House and living Scion identifiers.
+ */
+export const bindLegacyChronicleSession = (player, match) => {
+  if (!player || !match?.house || !match?.scion) {
+    return { ok: false, reason: 'The selected Chronicle identity could not be resolved.' };
+  }
+  const accountId = legacyAccountIdFor(player);
+  const adopted = chroniclesRepository.adoptLegacyScion(accountId, {
+    house: match.house,
+    scion: match.scion,
+    snapshot: buildScionSnapshot(player),
+  });
+  if (!adopted.ok) return adopted;
+
+  player.accountId = accountId;
+  player.houseId = match.house.id;
+  player.houseName = adopted.scion.houseName;
+  player.scionId = match.scion.id;
+  player.legacyChroniclesStore = true;
+  const wagonSpawn = wagonService.spawnPointFor(player.houseId, player.houseName);
+  player.sceneId = world.defaultTownId;
+  player.x = wagonSpawn.x;
+  player.y = wagonSpawn.y;
+  player.chronicleRun = chroniclesRepository.beginRun(accountId, player.houseId);
+  return { ok: true, player };
+};
+
 const replaceScionSession = async (scionId, socketId) => {
   const existing = world.players.find(player => player.scionId === scionId && player.socket_id !== socketId);
   if (!existing) return;
@@ -271,6 +313,7 @@ export const claimCirculatingRelic = (item, player) => {
 
 export default {
   beginScionSession,
+  bindLegacyChronicleSession,
   buildScionSnapshot,
   claimCirculatingRelic,
   collectNotableGear,

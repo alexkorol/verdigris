@@ -6,9 +6,17 @@
 - Watch NPC patrols for hitching after resizing the window; interpolation should remain smooth at 60 FPS.
 
 ## Pane Mechanics
-- Desktop >= 1200px: click the HP orb (or press `S` in debug) to open the Stats pane; confirm the pane docks left, the world view stays centered, and closing with `Esc` restores layout.
-- Desktop: click the MP orb to open Inventory; verify the pane docks right, retains scroll position on reopen, and outside clicks close it.
-- Tablet 768-1199px: resize the window, open Stats/Inventory, ensure the overlay slides in, ESC + backdrop click closes, and focus returns to game.
+- Desktop >= 1200px: click the HP orb to open Character and the MP orb to open Inventory. Both are fixed overlays: the world canvas must remain exactly the same size behind them.
+- Inventory must show the complete 12×7 backpack at the authored 54px cell scale, with item art filling its footprint rather than a tiny 32px sprite.
+- Close each pane with its `×`, `Esc`, and backdrop. Focus must return to the game; a second `Esc` opens the game menu.
+- Tablet and mobile: open Character/Inventory and confirm every panel edge remains inside the viewport without shrinking or horizontally scrolling the game canvas.
+
+## Chronicle / World Meta Seam
+- Enter through the normal `Play as Guest` → Chronicles → `Set Out` path, not only `?play`.
+- Confirm the morning wagon-purse message appears on the first set-out of the day and the Scion spawns beside its House wagon.
+- Open `Roads`, choose a road, and verify the House chart opens instead of “Only a sworn scion of a House can read its chart.”
+- The chart heading must contain exactly one `House` prefix. Enter a charted node and confirm the destination name replaces Delaford Village on the minimap.
+- Open Character and the Skill Tree; the earned-point total must agree in both places (a fresh level-1 Scion currently has 2 of the 140 lifetime points).
 
 ## Chat + Quickbar
 - With chat collapsed, send/receive a message; badge increments, preview updates, and `Show chat` opens the overlay without shifting the canvas.
@@ -21,7 +29,7 @@
   - Canvas scales smoothly while preserving a 16:10 aspect ratio; horizontal scroll never appears.
   - Pixel edges remain crisp at 2x scale; no browser smoothing or stretching artifacts when resizing.
   - Quickbar stays anchored between orbs; chat toggle relocates (fixed) on mobile.
-  - Pane overlay switches between push (desktop) and float (tablet/mobile) with safe tap targets.
+  - Panes remain fixed overlays at every breakpoint, with safe tap targets and no canvas resize.
 - Mobile (<768px) landscape: open chat; overlay behaves like a bottom sheet and world remains scrollable.
 
 ## Pane Scroll Checks

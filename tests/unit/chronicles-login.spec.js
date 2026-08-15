@@ -80,6 +80,16 @@ vi.mock('#server/player/handlers/party.js', () => ({
   },
 }));
 
+const wagonServiceMock = vi.hoisted(() => ({
+  spawnPointFor: vi.fn(() => ({ x: 44, y: 116 })),
+  claimDailyArrival: vi.fn(),
+}));
+
+vi.mock('#server/core/services/wagon-service.js', () => ({
+  default: wagonServiceMock,
+  wagonService: wagonServiceMock,
+}));
+
 vi.mock('#server/core/repositories/guest-save-store.js', () => ({
   loadGuest: vi.fn(() => null),
   saveGuest: vi.fn(),
@@ -128,6 +138,7 @@ describe('Chronicles login admission', () => {
       state: { version: 3, houses: [], activeHouseId: null, activeScionId: null },
     });
     chroniclesStoreMock.entomb.mockReturnValue({ ok: true });
+    wagonServiceMock.spawnPointFor.mockReturnValue({ x: 44, y: 116 });
   });
 
   it('holds a browser login outside the world until a Scion is selected', async () => {
@@ -182,6 +193,43 @@ describe('Chronicles login admission', () => {
       accountName: 'Guest-st1234',
     }));
     expect(Socket.emit).not.toHaveBeenCalledWith('chronicles:state', expect.anything());
+  });
+
+  it('binds the normal browser Chronicle to its wagon and world-web account', async () => {
+    const ws = { id: 'socket-browser-world', authenticated: false };
+    await socketEvents['player:login']({
+      data: {
+        useGuestAccount: true,
+        guestId: 'browser-guest-5678',
+        awaitChronicles: true,
+      },
+    }, ws);
+
+    chroniclesStoreMock.snapshot.mockReturnValue({
+      exists: true,
+      revision: 3,
+      state: { version: 3, houses: [], activeHouseId: 'house-browser', activeScionId: 'scion-browser' },
+    });
+    chroniclesStoreMock.findLivingScion.mockReturnValue({
+      house: { id: 'house-browser', name: 'House Verdigris' },
+      scion: { id: 'scion-browser', name: 'Audit', level: 1, mortal: false },
+    });
+
+    socketEvents['player:chronicles:select']({
+      data: { houseId: 'house-browser', scionId: 'scion-browser' },
+    }, ws);
+
+    const admitted = Authentication.addPlayer.mock.calls[0][0];
+    expect(admitted).toMatchObject({
+      accountId: 'guest:browser-guest-5678',
+      houseId: 'house-browser',
+      houseName: 'Verdigris',
+      scionId: 'scion-browser',
+      legacyChroniclesStore: true,
+      x: 44,
+      y: 116,
+    });
+    expect(wagonServiceMock.claimDailyArrival).toHaveBeenCalledWith(admitted);
   });
 
   it('persists a browser Chronicle and acknowledges the canonical revision', async () => {
@@ -251,8 +299,8 @@ describe('Chronicles login admission', () => {
       state: { version: 3, houses: [], activeHouseId: null, activeScionId: null },
     });
     chroniclesStoreMock.findLivingScion.mockReturnValue({
-      house: { id: 'house-real' },
-      scion: { id: 'scion-real', name: 'Vesper', mortal: true },
+      house: { id: 'house-real', name: 'House Verdigris' },
+      scion: { id: 'scion-real', name: 'Vesper', level: 1, mortal: true },
     });
 
     socketEvents['player:chronicles:select']({
@@ -272,6 +320,16 @@ describe('Chronicles login admission', () => {
       scionId: 'scion-real',
       mortal: true,
     });
+    expect(admitted).toMatchObject({
+      accountId: 'legacy:account-1',
+      houseId: 'house-real',
+      houseName: 'Verdigris',
+      scionId: 'scion-real',
+      legacyChroniclesStore: true,
+      x: 44,
+      y: 116,
+    });
+    expect(wagonServiceMock.claimDailyArrival).toHaveBeenCalledWith(admitted);
     expect(admitted.level).toBe(1);
     expect(admitted.inventory.map(item => item.id)).toEqual(['bronze-dagger', 'coins']);
     expect(admitted.bank).toEqual([]);
@@ -290,7 +348,7 @@ describe('Chronicles login admission', () => {
       bank: [{ id: 'gold-ring', uuid: 'earned-ring' }],
       passiveTree: { nodes: ['0,0'] },
       friend_list: [],
-      chronicles: { houseId: 'house-real', scionId: 'scion-real', mortal: true },
+      chronicles: { houseId: 'house-same', scionId: 'scion-same', mortal: true },
       stats: {
         resources: {
           health: { current: 7, max: 110 },
@@ -303,15 +361,15 @@ describe('Chronicles login admission', () => {
     chroniclesStoreMock.snapshot.mockReturnValue({
       exists: true,
       revision: 2,
-      state: { version: 3, houses: [], activeHouseId: null, activeScionId: 'scion-real' },
+      state: { version: 3, houses: [], activeHouseId: null, activeScionId: 'scion-same' },
     });
     chroniclesStoreMock.findLivingScion.mockReturnValue({
-      house: { id: 'house-real' },
-      scion: { id: 'scion-real', name: 'Vesper', mortal: true },
+      house: { id: 'house-same', name: 'Wayfarers' },
+      scion: { id: 'scion-same', name: 'Vesper', level: 11, mortal: true },
     });
 
     socketEvents['player:chronicles:select']({
-      data: { scionId: 'scion-real', scionName: 'forged-name' },
+      data: { scionId: 'scion-same', scionName: 'forged-name' },
     }, ws);
 
     const admitted = Authentication.addPlayer.mock.calls[0][0];

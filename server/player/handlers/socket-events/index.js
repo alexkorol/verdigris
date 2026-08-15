@@ -23,9 +23,11 @@ import { partyService } from '#server/player/handlers/party.js';
 import { validateScionName } from '#shared/chronicles.js';
 import {
   beginScionSession,
+  bindLegacyChronicleSession,
   ensureQuickGuestScion,
   sendChronicleState,
 } from '#server/core/services/chronicles.js';
+import wagonService from '#server/core/services/wagon-service.js';
 import { resolveVerdigrisTree } from '#server/core/passives/verdigris-authority.js';
 import { createFreshScionProfile } from '#server/core/entities/player/fresh-scion-profile.js';
 
@@ -144,8 +146,9 @@ const freshPlayerForScion = (player, identity) => {
 const resolveScionIdentity = (player, identity = {}) => {
   const snapshot = chroniclesStore.snapshot(player.uuid);
   let resolvedIdentity = identity;
+  let match = null;
   if (snapshot.exists) {
-    const match = chroniclesStore.findLivingScion(player.uuid, identity);
+    match = chroniclesStore.findLivingScion(player.uuid, identity);
     if (!match) {
       return {
         valid: false,
@@ -172,7 +175,12 @@ const resolveScionIdentity = (player, identity = {}) => {
   const sameScion = Boolean(previousScionId && scionId && previousScionId === scionId);
   const selectedPlayer = sameScion ? player : freshPlayerForScion(player, payload);
 
-  return applyScionIdentity(selectedPlayer, payload, sameScion);
+  return { ...applyScionIdentity(selectedPlayer, payload, sameScion), match };
+};
+
+const bindSelectedChronicle = (player, validation) => {
+  if (!validation?.match) return { ok: true, player };
+  return bindLegacyChronicleSession(player, validation.match);
 };
 
 const chroniclesPayload = (player, extra = {}) => {
@@ -317,6 +325,12 @@ export default {
       }
       if (scionValidation?.player) {
         player = scionValidation.player;
+        const binding = bindSelectedChronicle(player, scionValidation);
+        if (!binding.ok) {
+          emitChroniclesError(ws, binding.reason);
+          ws.pendingPlayer = player;
+          return;
+        }
       }
 
       if (payload.awaitChronicles && !payload.scionName) {
@@ -330,6 +344,7 @@ export default {
 
       ws.pendingPlayer = null;
       Authentication.addPlayer(player);
+      if (player.legacyChroniclesStore) wagonService.claimDailyArrival(player);
     } catch (error) {
       console.log(error);
       const username = typeof payload.username === 'string' ? payload.username : 'unknown user';
@@ -371,9 +386,16 @@ export default {
       pruneUnrecoveredRelics(player, record.state);
     }
 
+    const binding = bindSelectedChronicle(player, validation);
+    if (!binding.ok) {
+      emitChroniclesError(ws, binding.reason);
+      return;
+    }
+
     ws.pendingPlayer = null;
     ws.retiredScionId = null;
     Authentication.addPlayer(player);
+    if (player.legacyChroniclesStore) wagonService.claimDailyArrival(player);
     if (!player.token || player.token === 'none') {
       playerPersistence.savePlayer(player, { force: true }).catch(() => {});
     }

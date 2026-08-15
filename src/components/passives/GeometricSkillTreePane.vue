@@ -230,8 +230,7 @@ import {
   round,
 } from '@/core/passives/verdigris-geometric-tree.js';
 import {
-  VERDIGRIS_SKILL_TREE_POINTS,
-  VERDIGRIS_SKILL_TREE_SOURCES,
+  earnedVerdigrisPoints,
   VERDIGRIS_SKILL_TREE_TOTALS,
 } from '@/core/passives/verdigris-skill-tree.js';
 import Socket from '@/core/utilities/socket.js';
@@ -243,20 +242,8 @@ const SEARCH_DIM_OPACITY = '0.18';
 // at the lifetime maximum. Quest points arrive top-level on the player;
 // older snapshots carried them inside the quests object.
 const earnedPointsForPlayer = (player) => {
-  // An allocation costs 2 points (node + its path), so grant at least 2 — a
-  // fresh character must be able to make their first pick immediately, not
-  // stare at a dead pane. From level 2 on it's one point per level, meeting
-  // the authored level budget exactly at the cap.
-  const fromLevels = Math.min(
-    Math.max(2, Math.floor(Number(player?.level) || 1)),
-    VERDIGRIS_SKILL_TREE_SOURCES.levels,
-  );
   const questPoints = Number(player?.questPoints ?? player?.quests?.questPoints) || 0;
-  const fromQuests = Math.min(
-    Math.max(0, Math.floor(questPoints)),
-    VERDIGRIS_SKILL_TREE_SOURCES.quests,
-  );
-  return Math.min(VERDIGRIS_SKILL_TREE_POINTS.skill, fromLevels + fromQuests);
+  return earnedVerdigrisPoints(player?.level, questPoints);
 };
 
 const makeSvgEl = (tag, attrs = {}) => {

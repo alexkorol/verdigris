@@ -38,6 +38,17 @@ describe('WIZARD HUD orbs', () => {
     expect(source).not.toContain('hud-orb__overlay');
     expect(source).not.toContain('hud-orb__orb-label');
     expect(source).toContain('class="hud-orb__canvas"');
+    expect(source).toContain('<button');
+    expect(source).toContain("@click=\"$emit('activate')\"");
+  });
+
+  it('restores the documented HP and MP pane shortcuts', () => {
+    const hud = readSource('src/components/layout/GameHUD.vue');
+    const container = readSource('src/components/layout/GameContainer.vue');
+
+    expect(hud).toContain("@activate=\"$emit('request-pane', 'stats')\"");
+    expect(hud).toContain("@activate=\"$emit('request-pane', 'inventory')\"");
+    expect(container).toContain('@request-pane="$emit(\'request-pane\', $event)"');
   });
 
   it('uses a wide crop that includes the WIZARD statue composition', () => {

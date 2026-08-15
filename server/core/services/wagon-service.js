@@ -119,7 +119,10 @@ class WagonService {
       const fallback = town.metadata?.spawnPoints?.[0] || { x: 42, y: 115 };
       return { ...fallback };
     }
-    return { x: record.pitch.x, y: record.pitch.y + 1 };
+    // The 2.5D billboards are taller than one tile. A purely vertical offset
+    // makes the arriving scion visually merge with the quartermaster, so use
+    // the pitch's cleared diagonal tile and keep both figures legible.
+    return { x: record.pitch.x + 1, y: record.pitch.y + 1 };
   }
 
   /** The wagon leaves when the House's last scion does. */

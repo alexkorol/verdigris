@@ -24,7 +24,14 @@ export default async function crossroads({ connect, assert }) {
 
     const pitches = s.sceneMetadata.wagonPitches || [];
     assert(pitches.length >= 8, 'the plaza ring offers wagon pitches');
-    const homePitch = pitches.find(pitch => pitch.x === s.x && pitch.y === s.y - 1);
+    // Tall 2.5D billboards overlap when the scion is placed directly below the
+    // quartermaster. Accept any cleared neighbouring tile so the world contract
+    // stays "beside the wagon" without forcing a visually broken arrangement.
+    const homePitch = pitches.find((pitch) => {
+      const dx = Math.abs(pitch.x - s.x);
+      const dy = Math.abs(pitch.y - s.y);
+      return Math.max(dx, dy) === 1;
+    });
     assert(homePitch, `scion spawns beside their House wagon (at ${s.x},${s.y})`);
 
     // The morning market: first set-out of the day claims the road purse.

@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import Database from 'better-sqlite3';
 import { normaliseHouseName } from '#shared/house-name.js';
+import { sanitiseChronicleName } from '#shared/html.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_DB_FILE = path.resolve(here, '..', '..', 'data', 'verdigris.sqlite');
@@ -32,10 +33,16 @@ const parseJson = (value, fallback) => {
   }
 };
 
+const normaliseTimestamp = (value) => {
+  const parsed = typeof value === 'string' ? new Date(value) : null;
+  return parsed && Number.isFinite(parsed.getTime()) ? parsed.toISOString() : isoNow();
+};
+
 // Names flow into server-built HTML context-menu labels (relic titles and
 // the shared wagon NPC), so markup metacharacters stay out of the alphabet
 // as defence in depth behind the label-level HTML escaping.
 const NAME_PATTERN = /^[A-Za-z0-9 '\-]+$/;
+const IDENTIFIER_PATTERN = /^[a-zA-Z0-9_-]{1,80}$/;
 
 const validateName = (name, minimum, maximum, label) => {
   const value = String(name || '').trim();
@@ -245,6 +252,87 @@ export class ChroniclesRepository {
       runCount: account.run_count,
       leaderboard: this.getLeaderboard(),
       houseUpgrades: HOUSE_UPGRADES,
+    };
+  }
+
+  /**
+   * Mirror a server-owned JSON Chronicle selection into the SQLite House
+   * ledger. The browser Chronicle remains authoritative for identity and
+   * mortality; this record gives the world-web and wagon systems the same
+   * stable House/Scion ids instead of inventing a second lineage.
+   */
+  adoptLegacyScion(accountId, { house, scion, snapshot = null } = {}) {
+    const houseName = validateHouseName(sanitiseChronicleName(house?.name, 'Wayfarers'));
+    const scionName = validateScionName(sanitiseChronicleName(scion?.name, 'Wayfarer'));
+    const houseId = typeof house?.id === 'string' ? house.id.trim() : '';
+    const scionId = typeof scion?.id === 'string' ? scion.id.trim() : '';
+    if (!IDENTIFIER_PATTERN.test(houseId) || !IDENTIFIER_PATTERN.test(scionId)
+      || !houseName.valid || !scionName.valid) {
+      return { ok: false, reason: 'The selected legacy Chronicle identity is invalid.' };
+    }
+
+    const id = this.ensureAccount(accountId);
+    if (!id) return { ok: false, reason: 'No account owns this Chronicle.' };
+
+    try {
+      this.db.transaction(() => {
+        const existingHouse = this.db.prepare('SELECT account_id FROM chronicle_houses WHERE id = ?')
+          .get(houseId);
+        if (existingHouse && existingHouse.account_id !== id) {
+          throw new Error('That House identifier already belongs to another account.');
+        }
+        if (!existingHouse) {
+          this.db.prepare(`
+            INSERT INTO chronicle_houses (
+              id, account_id, name, renown, best_depth, founded_at
+            ) VALUES (?, ?, ?, ?, ?, ?)
+          `).run(
+            houseId,
+            id,
+            houseName.value,
+            Math.max(0, Math.floor(Number(house.renown) || 0)),
+            Math.max(0, Math.floor(Number(house.bestDepth) || 0)),
+            normaliseTimestamp(house.foundedAt),
+          );
+        }
+
+        const existingScion = this.db.prepare(`
+          SELECT house_id, status FROM chronicle_scions WHERE id = ?
+        `).get(scionId);
+        if (existingScion
+          && (existingScion.house_id !== houseId || existingScion.status !== 'living')) {
+          throw new Error('That Scion identifier is not a living member of the selected House.');
+        }
+        if (!existingScion) {
+          this.db.prepare(`
+            INSERT INTO chronicle_scions (
+              id, house_id, name, status, level, best_depth, born_at, snapshot_json
+            ) VALUES (?, ?, ?, 'living', ?, ?, ?, ?)
+          `).run(
+            scionId,
+            houseId,
+            scionName.value,
+            Math.max(1, Math.floor(Number(scion.level) || 1)),
+            Math.max(0, Math.floor(Number(scion.bestDepth) || 0)),
+            normaliseTimestamp(scion.bornAt),
+            snapshot && typeof snapshot === 'object' ? JSON.stringify(snapshot) : null,
+          );
+        }
+
+        this.db.prepare(`
+          UPDATE chronicle_accounts SET active_house_id = ? WHERE account_id = ?
+        `).run(houseId, id);
+      })();
+    } catch (error) {
+      return { ok: false, reason: error.message || 'The House ledger could not adopt this Scion.' };
+    }
+
+    return {
+      ok: true,
+      accountId: id,
+      houseId,
+      scionId,
+      scion: this.getLivingScion(id, scionId),
     };
   }
 

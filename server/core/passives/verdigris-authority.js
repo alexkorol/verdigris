@@ -3,20 +3,10 @@ import {
   VerdigrisGeometricTree,
 } from '../../../src/core/passives/verdigris-geometric-tree.js';
 import {
-  VERDIGRIS_SKILL_TREE_POINTS,
-  VERDIGRIS_SKILL_TREE_SOURCES,
+  earnedVerdigrisPoints,
 } from '../../../src/core/passives/verdigris-skill-tree.js';
 
-export const earnedVerdigrisPoints = (level, questPoints = 0) => Math.min(
-  VERDIGRIS_SKILL_TREE_POINTS.skill,
-  Math.min(
-    Math.max(2, Math.floor(Number(level) || 1)),
-    VERDIGRIS_SKILL_TREE_SOURCES.levels,
-  ) + Math.min(
-    Math.max(0, Math.floor(Number(questPoints) || 0)),
-    VERDIGRIS_SKILL_TREE_SOURCES.quests,
-  ),
-);
+export { earnedVerdigrisPoints };
 
 const reject = reason => ({ ok: false, reason });
 

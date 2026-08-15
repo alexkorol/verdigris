@@ -21,13 +21,16 @@ describe('PlayerPersistenceService', () => {
   let service;
   let saveGuestPlayer;
   let saveLocalProfile;
+  let saveChroniclePlayer;
 
   beforeEach(() => {
     saveGuestPlayer = vi.fn().mockResolvedValue({ saved: 'guest' });
     saveLocalProfile = vi.fn().mockResolvedValue({ saved: 'account' });
+    saveChroniclePlayer = vi.fn().mockResolvedValue({ saved: 'chronicle' });
     service = new PlayerPersistenceService({
       saveGuestPlayer,
       saveLocalProfile,
+      saveChroniclePlayer,
       cooldownMs: 1000,
       logger: { error: vi.fn() },
     });
@@ -64,6 +67,21 @@ describe('PlayerPersistenceService', () => {
       expect(await service.savePlayer(legacy)).toEqual({ saved: 'guest' });
       expect(saveGuestPlayer).toHaveBeenCalledWith(legacy);
       expect(saveLocalProfile).not.toHaveBeenCalled();
+    });
+
+    it('keeps the legacy character save while mirroring its House snapshot', async () => {
+      const player = {
+        ...createMockPlayer('browser-guest-one', 'Vesper'),
+        token: 'none',
+        accountId: 'guest:one',
+        houseId: 'house-one',
+        scionId: 'scion-one',
+        legacyChroniclesStore: true,
+      };
+
+      expect(await service.savePlayer(player)).toEqual({ saved: 'guest' });
+      expect(saveGuestPlayer).toHaveBeenCalledWith(player);
+      expect(saveChroniclePlayer).toHaveBeenCalledWith(player);
     });
 
     it('records the save timestamp on success', async () => {

@@ -633,12 +633,20 @@ class PerspectiveRenderer {
 
   drawNPC(npc, foot) {
     const sourceSize = NPC_SPRITE_CONFIG.tileSize;
+    const isHouseWagon = String(npc?.id || '').startsWith('wagon-');
     const { sourceX, sourceY } = this.map.clampSpriteSource(
       this.map.images.npcsImage,
       actorIdentityFrame(npc),
       sourceSize,
     );
 
+    if (isHouseWagon) {
+      this.drawActorAnchor(foot, sourceSize, {
+        colour: '#d6ad57',
+        glow: 'rgba(214, 173, 87, 0.32)',
+        radiusScale: 0.34,
+      });
+    }
     this.drawFrame({
       image: this.map.images.npcsImage,
       sourceX,
@@ -647,6 +655,35 @@ class PerspectiveRenderer {
       foot,
       scale: NPC_SPRITE_CONFIG.perspectiveScale,
     });
+    if (isHouseWagon) this.drawWagonNameplate(npc, foot, sourceSize);
+  }
+
+  drawWagonNameplate(npc, foot, frameSize) {
+    const projected = this.getProjectedFrame(foot, frameSize, NPC_SPRITE_CONFIG.perspectiveScale);
+    if (!projected) return;
+    const houseName = String(npc?.name || 'House Wagon')
+      .replace(/^House\s+/i, '')
+      .replace(/\s+Wagon$/i, '')
+      .trim();
+    const label = `HOUSE ${houseName || 'WAYFARERS'}`.toUpperCase();
+    const ctx = this.map.bufferContext;
+    const fontSize = Math.max(8, 9 * projected.scale);
+    ctx.save();
+    ctx.font = `${fontSize}px "GameFont", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const width = ctx.measureText(label).width + 10;
+    const height = fontSize + 7;
+    const x = projected.x - (width / 2);
+    const y = projected.y - (projected.size * 0.92) - height;
+    ctx.fillStyle = 'rgba(9, 8, 6, 0.88)';
+    ctx.strokeStyle = 'rgba(214, 173, 87, 0.82)';
+    ctx.lineWidth = 1;
+    ctx.fillRect(x, y, width, height);
+    ctx.strokeRect(x + 0.5, y + 0.5, width - 1, height - 1);
+    ctx.fillStyle = '#f0d486';
+    ctx.fillText(label, projected.x, y + (height / 2) + 1);
+    ctx.restore();
   }
 
   drawMonster(monster, foot, timestamp) {

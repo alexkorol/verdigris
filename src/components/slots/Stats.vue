@@ -194,8 +194,8 @@ import bus from '@/core/utilities/bus';
 import { useUiStore } from '@/stores/ui.js';
 import { buildCharacterSheet } from '@/core/character-sheet.js';
 import {
+  earnedVerdigrisPoints,
   VERDIGRIS_SKILL_TREE_POINTS,
-  VERDIGRIS_SKILL_TREE_SOURCES,
 } from '@/core/passives/verdigris-skill-tree.js';
 import objectsAtlasUrl from '@/assets/tiles/objects.png';
 import playerAtlasUrl from '@/assets/graphics/actors/players/human-v2.png';
@@ -238,12 +238,11 @@ export default {
     },
     skillTreeSummary() {
       const level = Number(this.player && this.player.level) || 1;
-      const earned = Math.min(
-        VERDIGRIS_SKILL_TREE_POINTS.skill,
-        Math.min(Math.max(0, level - 1), VERDIGRIS_SKILL_TREE_SOURCES.levels),
-      );
+      const questPoints = Number(
+        this.player?.questPoints ?? this.player?.quests?.questPoints,
+      ) || 0;
       return {
-        earned,
+        earned: earnedVerdigrisPoints(level, questPoints),
         cap: VERDIGRIS_SKILL_TREE_POINTS.skill,
       };
     },

@@ -15,3 +15,14 @@ export const VERDIGRIS_SKILL_TREE_TOTALS = Object.freeze({
   nodes: 331,
   subtreeNodes: 34,
 });
+
+export const earnedVerdigrisPoints = (level, questPoints = 0) => Math.min(
+  VERDIGRIS_SKILL_TREE_POINTS.skill,
+  Math.min(
+    Math.max(2, Math.floor(Number(level) || 1)),
+    VERDIGRIS_SKILL_TREE_SOURCES.levels,
+  ) + Math.min(
+    Math.max(0, Math.floor(Number(questPoints) || 0)),
+    VERDIGRIS_SKILL_TREE_SOURCES.quests,
+  ),
+);

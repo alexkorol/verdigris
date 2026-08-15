@@ -32,6 +32,42 @@ describe('server-side Chronicles repository', () => {
     expect(repository.getChronicle('account:someone-else').houses).toEqual([]);
   });
 
+  it('adopts a legacy Chronicle identity idempotently for world-meta access', () => {
+    const legacy = {
+      house: {
+        id: 'house-legacy',
+        name: 'Verdigris',
+        renown: 45,
+        foundedAt: '2026-07-04T00:00:00.000Z',
+      },
+      scion: {
+        id: 'scion-legacy',
+        name: 'Vesper',
+        level: 6,
+        bornAt: '2026-07-05T00:00:00.000Z',
+      },
+      snapshot: { level: 6, inventory: [{ id: 'bronze-dagger' }] },
+    };
+
+    expect(repository.adoptLegacyScion(accountId, legacy)).toMatchObject({
+      ok: true,
+      accountId,
+      houseId: 'house-legacy',
+      scionId: 'scion-legacy',
+    });
+    expect(repository.adoptLegacyScion(accountId, legacy).ok).toBe(true);
+
+    const chronicle = repository.getChronicle(accountId);
+    expect(chronicle.activeHouseId).toBe('house-legacy');
+    expect(chronicle.houses).toHaveLength(1);
+    expect(chronicle.houses[0]).toMatchObject({ name: 'Verdigris', renown: 45 });
+    expect(repository.getLivingScion(accountId, 'scion-legacy')).toMatchObject({
+      name: 'Vesper',
+      level: 6,
+      snapshot: legacy.snapshot,
+    });
+  });
+
   it('normalises a redundant House prefix before storing or presenting a lineage', () => {
     const founded = repository.foundHouse(accountId, 'House Emberveil');
 
