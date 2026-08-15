@@ -58,6 +58,7 @@ vi.mock('#server/core/entities/player/stats-manager.js', () => ({
 
 const {
   default: Combat,
+  RESPAWN_ENTRY_WARD_MS,
   RESPAWN_PROTECTION_MS,
 } = await import('#server/core/combat/index.js');
 const { default: Socket } = await import('#server/socket.js');
@@ -775,7 +776,14 @@ describe('player respawns', () => {
     expect(player.x).toBe(3);
     expect(player.y).toBe(4);
     expect(player.path.grid).toBeNull();
+    expect(player.registerMovementStep).toHaveBeenCalledWith(expect.objectContaining({
+      startedAt: now,
+      duration: 0,
+      interrupted: true,
+    }));
     expect(player.combat.respawnProtectionUntil).toBe(now + RESPAWN_PROTECTION_MS);
+    expect(player.combat.instanceEntryProtectionUntil).toBe(now + RESPAWN_ENTRY_WARD_MS);
+    expect(player.combat.instanceEntryProtectionOrigin).toEqual({ x: 3, y: 4 });
   });
 
   it('leaves players alone before their respawn timer', () => {

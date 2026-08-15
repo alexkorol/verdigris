@@ -16,7 +16,12 @@ import createWorldLayout from './world-layout.js';
 const DEFAULT_INSTANCE_ROOM_COUNT = 12;
 const DEFAULT_OUTDOOR_CLEARING_COUNT = 9;
 const DEFAULT_CORRIDOR_WIDTH = 3;
-export const INSTANCE_SPAWN_SAFE_RADIUS = 6;
+// Packs patrol up to two tiles from their authored spawn. A six-tile exclusion
+// still let them wander to within two or three tiles of the player while the
+// first room was rendering, visually turning the "safe" landing into an
+// immediate wall of enemies. Nine tiles leaves a real first-decision pocket
+// even after patrol drift.
+export const INSTANCE_SPAWN_SAFE_RADIUS = 9;
 
 // Layout recipes are the *shape* of a floor, kept independent of the theme
 // (which is only art). Any theme can pair with any recipe, PoE-style: a crypt

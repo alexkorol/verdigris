@@ -25,6 +25,7 @@ const AUTO_ATTACK_RANGE = 1.9;
 const DEFAULT_DASH_DISTANCE = 3;
 const CRITICAL_DAMAGE_MULTIPLIER = 1.5;
 export const RESPAWN_PROTECTION_MS = 5000;
+export const RESPAWN_ENTRY_WARD_MS = 30_000;
 
 // Continuous monster positions still fight over the tile grid: melee arcs and
 // tile lookups act on the tile a monster is standing on.
@@ -882,12 +883,37 @@ export const processPlayerRespawns = (now = Date.now()) => {
     if (spawnPoint && Number.isFinite(spawnPoint.x) && Number.isFinite(spawnPoint.y)) {
       player.x = spawnPoint.x;
       player.y = spawnPoint.y;
+      // A respawn is an authoritative teleport, not another sample in the
+      // movement that ended at the death tile. Give it a fresh sequence so
+      // the browser cannot reject the jump as stale and leave its camera and
+      // minimap centered on the corpse.
+      if (typeof player.registerMovementStep === 'function') {
+        player.registerMovementStep({
+          startedAt: now,
+          duration: 0,
+          direction: null,
+          blocked: false,
+          interrupted: true,
+        });
+      }
       if (player.path) {
         player.path.grid = null;
       }
     }
 
-    sendMessage(player, 'You awaken, battered but alive. A ward protects you for 5 seconds or until you act.');
+    // Instance entrances naturally collect the pack that killed the player.
+    // Reuse the same anchored ward as first entry so a respawn is recoverable:
+    // it protects the landing area, but stops helping once the player moves
+    // more than three tiles away. The short action protection above still
+    // drops as soon as the player uses a skill.
+    if (scene?.type === 'instance') {
+      combat.instanceEntryProtectionUntil = now + RESPAWN_ENTRY_WARD_MS;
+      combat.instanceEntryProtectionOrigin = { x: player.x, y: player.y };
+    }
+
+    sendMessage(player, scene?.type === 'instance'
+      ? 'You awaken, battered but alive. The entry ward shelters you while you remain near the stairs.'
+      : 'You awaken, battered but alive. A ward protects you for 5 seconds or until you act.');
     Player.broadcastMovement(player);
     broadcastStats(player);
   });
