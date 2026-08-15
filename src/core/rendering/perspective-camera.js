@@ -11,7 +11,7 @@ class PerspectiveCamera {
     this.heightAt = typeof options.heightAt === 'function'
       ? options.heightAt
       : defaultHeightAt;
-    this.userZoom = Number.isFinite(options.userZoom) ? options.userZoom : 1;
+    this.userZoom = Number.isFinite(options.userZoom) ? options.userZoom : 1.34;
     this.valid = false;
     this.width = 0;
     this.height = 0;
@@ -44,8 +44,13 @@ class PerspectiveCamera {
       return false;
     }
 
-    this.horizon = -0.45 * this.height;
-    this.focus = 0.65 * this.height;
+    // Keep the authored square tiles close to their original proportions.
+    // The old shallow camera put the horizon just above the canvas, turning
+    // every map into a stretched runway and exaggerating each repeated tile.
+    // A distant horizon produces a restrained oblique view: enough depth for
+    // raised actors/scenery, without pretending the source art is a 3D mesh.
+    this.horizon = -1.65 * this.height;
+    this.focus = 0.60 * this.height;
     this.zoom = Math.max(
       MIN_ZOOM,
       Math.max(this.width / 1150, this.height / 1500) * this.userZoom,
@@ -53,11 +58,11 @@ class PerspectiveCamera {
     this.depthToFocus = (this.focus - this.horizon) / this.zoom;
     this.projectionArea = (this.focus - this.horizon) * this.depthToFocus;
     this.cameraFootY = this.y + this.depthToFocus;
-    const zoomProgress = clamp((this.userZoom - 0.72) / 0.88, 0, 1);
-    // The old miniature-effect blur made distant monsters and scenery dissolve
-    // into the already dark ground. Retain just enough focus falloff to sell
-    // depth without sacrificing combat readability.
-    this.dofStrength = interpolate(0.32, 0.82, zoomProgress);
+    const zoomProgress = clamp((this.userZoom - 0.90) / 0.95, 0, 1);
+    // Source sprites are authored pixel art, not photographs. Heavy depth of
+    // field made the far half of every map look smeared and expensive; retain
+    // only a nearly imperceptible falloff so silhouettes stay crisp.
+    this.dofStrength = interpolate(0.04, 0.12, zoomProgress);
     this.valid = Number.isFinite(this.cameraFootY)
       && Number.isFinite(this.projectionArea)
       && this.depthToFocus > 0;

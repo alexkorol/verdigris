@@ -3,6 +3,7 @@ import {
   DAY_LENGTH_SECONDS,
   getNightFactor,
   sampleAmbient,
+  sampleSceneLighting,
 } from '../../src/core/rendering/lighting-renderer.js';
 
 describe('2.5D day/night lighting', () => {
@@ -33,5 +34,17 @@ describe('2.5D day/night lighting', () => {
     const night = sampleAmbient(DAY_LENGTH_SECONDS * 0.80);
 
     expect(Math.min(...night)).toBeGreaterThanOrEqual(140);
+  });
+
+  it('gives indoor maps a stable dark grade for the player light to reveal', () => {
+    const indoor = sampleSceneLighting({ metadata: { theme: 'stone' } }, 12);
+    const later = sampleSceneLighting({ metadata: { theme: 'stone' } }, 240);
+    const outdoors = sampleSceneLighting({ type: 'town', metadata: {} }, 12);
+
+    expect(indoor.indoor).toBe(true);
+    expect(indoor.ambient).toEqual(later.ambient);
+    expect(Math.max(...indoor.ambient)).toBeLessThan(100);
+    expect(outdoors.indoor).toBe(false);
+    expect(Math.min(...outdoors.ambient)).toBeGreaterThan(180);
   });
 });

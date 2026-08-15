@@ -29,16 +29,24 @@ describe('terrain texture sizing', () => {
       perspectiveRenderer.indexOf('drawVerticalTerrainShadow('),
     );
 
-    expect(perspectiveRenderer).toContain('skipBackgroundGids: WALL_GIDS');
+    expect(perspectiveRenderer).toContain("const OUTDOOR_GROUND_THEMES = new Set(['grove', 'wilds']);");
+    expect(perspectiveRenderer).toContain("grove: globalGidsForVariants('floor', ['lair', 'marsh'])");
+    expect(perspectiveRenderer).toContain('this.isOutdoorScene && WALL_GIDS.has(gid)');
+    expect(perspectiveRenderer).toContain('exposedWall || coordinateHash(worldX, worldY, 47) % 6 === 0');
     expect(terrainRenderer).toContain('skipBackgroundGids: this.skipBackgroundGids');
+    expect(terrainRenderer).toContain('backgroundGidAt: this.backgroundGidAt');
+    expect(map).toContain('backgroundGidAt(authoredBackground, worldX, worldY)');
     expect(map).toContain('if (!skipBackgroundGids?.has(background))');
     expect(perspectiveRenderer).toContain('projectVerticalTerrain(foot, tileSize, kind)');
     expect(perspectiveRenderer).toContain('drawVerticalTerrainShadow');
+    expect(perspectiveRenderer).toContain('this.isExposedWall(worldX, worldY, mapSize)');
+    expect(perspectiveRenderer).toContain('this.getVisibleTileBounds(tileSize, mapSize)');
     expect(perspectiveRenderer).toContain("ctx.globalCompositeOperation = 'multiply'");
     expect(shadowSource).not.toContain('createRadialGradient');
     expect(tileSource).not.toContain('ctx.shadowBlur');
     expect(terrainRenderer).toContain('colour = mix(vec3(luminance), colour, 0.88);');
     expect(terrainRenderer).toContain(') * 0.14;');
+    expect(terrainRenderer).toContain('const GRID_COLUMNS = 41;');
     expect(gameCanvas).toContain('filter: contrast(1.04) saturate(0.94);');
   });
 });

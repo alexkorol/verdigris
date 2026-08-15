@@ -1,5 +1,9 @@
-const GRID_COLUMNS = 161;
-const GRID_ROWS = 161;
+// The projective mesh needs intermediate vertices for frustum clipping, but
+// the flat terrain does not need the former one-vertex-per-tile density.
+// 41x41 retains stable clipping while cutting the mesh from 51,200 to 3,200
+// triangles per frame.
+const GRID_COLUMNS = 41;
+const GRID_ROWS = 41;
 const MAP_MARGIN_TILES = 8;
 const BAKE_TILE_SIZE = 16;
 
@@ -30,10 +34,16 @@ class TerrainRenderer {
     this.skipBackgroundGids = options.skipBackgroundGids instanceof Set
       ? options.skipBackgroundGids
       : new Set();
+    this.backgroundGidAt = typeof options.backgroundGidAt === 'function'
+      ? options.backgroundGidAt
+      : null;
     this.canvas = document.createElement('canvas');
     this.gl = this.canvas.getContext('webgl', {
       alpha: true,
-      antialias: true,
+      antialias: false,
+      // The WebGL terrain is copied into the 2D combat canvas immediately
+      // after drawElements; that cross-canvas composite requires the colour
+      // buffer to remain available until drawImage completes.
       preserveDrawingBuffer: true,
     });
     this.ready = false;
@@ -248,6 +258,7 @@ class TerrainRenderer {
       marginTiles: MAP_MARGIN_TILES,
       flattenForeground: false,
       skipBackgroundGids: this.skipBackgroundGids,
+      backgroundGidAt: this.backgroundGidAt,
     });
     const requestedSize = nextPowerOfTwo(Math.max(ground.width, ground.height));
     const maximumSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);

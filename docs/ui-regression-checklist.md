@@ -37,8 +37,14 @@
 ## World Presentation + Performance
 - In Delaford Village, foliage must read as deep/cool green and roads as warm earth; neither should clip into neon green or mustard yellow.
 - Trees and walls need crisp raised silhouettes, contact grounding, and directional shadows without per-tile blur halos.
-- The distance grade should retain terrain detail instead of covering the horizon in grey-green fog.
+- The camera should feel close to the player, keep square tile art recognisable, and never stretch the map into a miniature-effect runway.
+- The distance grade should retain terrain detail without grey-green fog or photographic depth blur.
+- Enter an indoor floor such as The Old Barrow. The player must cast a broad warm pool of readable light; distant rooms may fall dark, but nearby floor, enemies, stairs, and exposed wall edges must stay legible.
+- Solid dungeon wall regions must read as dark mass with raised boundary faces—not repeated brick billboards covering every blocked tile.
+- Enter Verdant Grove or another outdoor instance. Base floor variants, dirt, water, trees, and flowers should form coherent regions or clusters rather than a one-tile checkerboard.
+- At a Grove/Wilds collision boundary, blocked cells must continue as theme-matched ground under a dense tree-line. A repeated brown masonry field or a black void on the far side is a regression.
 - Hold a diagonal movement route through the dense village tree line. Input and animation should remain responsive with panes closed and with the Inventory pane open.
+- Repeat the movement check in a dense generated floor. Watch for long frames when scenery first enters the viewport; screen-bounds culling and the reduced flat-terrain mesh are protected performance behavior.
 
 ## Pane Scroll Checks
 - Populate Inventories (use bank debug) and confirm overflow areas support native scroll momentum on all breakpoints.

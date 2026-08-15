@@ -99,6 +99,7 @@ class Client {
     this.npcs = data.npcs;
     this.monsters = data.monsters || [];
     this.sceneId = (data.scene && data.scene.id) || data.sceneId || null;
+    this.sceneType = (data.scene && data.scene.type) || '';
     this.sceneName = (data.scene && data.scene.name) || '';
     this.sceneMetadata = data.scene && data.scene.metadata ? data.scene.metadata : {};
     this.cachedImages = null;
@@ -123,6 +124,12 @@ class Client {
       npcs: this.npcs,
       monsters: this.monsters,
       player: this.player,
+      scene: {
+        id: this.sceneId,
+        type: this.sceneType,
+        name: this.sceneName,
+        metadata: this.sceneMetadata,
+      },
     };
 
     this.map = new Map(data, images);
@@ -180,6 +187,8 @@ class Client {
     }
 
     this.sceneName = scenePayload.name || this.sceneName || '';
+    this.sceneId = scenePayload.id || this.sceneId;
+    this.sceneType = scenePayload.type || this.sceneType || '';
 
     if (scenePayload.metadata) {
       this.sceneMetadata = scenePayload.metadata;
@@ -214,6 +223,12 @@ class Client {
       npcs: this.npcs,
       monsters: this.monsters,
       player: this.player,
+      scene: {
+        id: this.sceneId,
+        type: this.sceneType,
+        name: this.sceneName,
+        metadata: this.sceneMetadata,
+      },
     };
 
     this.map = new Map(data, images);

@@ -10,12 +10,12 @@ import {
 import { centerOfTile } from '../utilities/movement-controller.js';
 import PerspectiveCamera from './perspective-camera.js';
 import TerrainRenderer from './terrain-renderer.js';
-import LightingRenderer, { getNightFactor, sampleAmbient } from './lighting-renderer.js';
+import LightingRenderer, { getNightFactor, sampleSceneLighting } from './lighting-renderer.js';
 import AtmosphereRenderer from './atmosphere-renderer.js';
 
 const ACTOR_SCALE = 1.45;
 const ITEM_SCALE = 0.92;
-const VERTICAL_TILE_RANGE = Object.freeze({ x: 32, north: 44, south: 20 });
+const VERTICAL_TILE_MARGIN = 3;
 
 const globalGidsForGroup = (category) => new Set(
   Object.values(DUNGEON_TILESET.groups?.[category] || {})
@@ -24,6 +24,29 @@ const globalGidsForGroup = (category) => new Set(
 );
 const WALL_GIDS = globalGidsForGroup('wall');
 const TREE_GIDS = globalGidsForGroup('tree');
+const OUTDOOR_GROUND_THEMES = new Set(['grove', 'wilds']);
+const globalGidsForVariants = (category, variants) => variants
+  .flatMap(variant => DUNGEON_TILESET.groups?.[category]?.[variant] || [])
+  .map(localId => DUNGEON_FIRST_GID + localId);
+const OUTDOOR_FLOOR_GIDS = {
+  grove: globalGidsForVariants('floor', ['lair', 'marsh']),
+  wilds: globalGidsForVariants('floor', ['dirt', 'lair']),
+};
+const OUTDOOR_TREE_GIDS = {
+  grove: globalGidsForVariants('tree', ['tree']),
+  wilds: globalGidsForVariants('tree', ['tree', 'tree_dead']),
+};
+
+const coordinateHash = (worldX, worldY, salt = 0) => {
+  let value = Math.imul(worldX + salt + 1, 374761393)
+    ^ Math.imul(worldY + salt + 1, 668265263);
+  value = Math.imul(value ^ (value >>> 13), 1274126177);
+  return (value ^ (value >>> 16)) >>> 0;
+};
+
+const coordinateGid = (gids, worldX, worldY, salt = 0) => (
+  gids.length ? gids[coordinateHash(worldX, worldY, salt) % gids.length] : 0
+);
 
 const clamp = (value, minimum, maximum) => Math.min(Math.max(value, minimum), maximum);
 const directionAngle = (direction = 'down') => ({
@@ -40,6 +63,9 @@ const directionAngle = (direction = 'down') => ({
 class PerspectiveRenderer {
   constructor(map) {
     this.map = map;
+    const sceneTheme = String(map.scene?.metadata?.theme || '').toLowerCase();
+    this.sceneTheme = sceneTheme;
+    this.isOutdoorScene = OUTDOOR_GROUND_THEMES.has(sceneTheme);
     this.camera = new PerspectiveCamera({
       heightAt: (worldX, worldY) => this.terrainHeight(worldX, worldY),
     });
@@ -50,11 +76,20 @@ class PerspectiveRenderer {
       // Wall tiles are drawn below as raised billboards. Keeping their dark
       // top-down copies in the ground bake was the source of the flat double
       // image running around every building and boundary.
+      // Indoor solid walls become dark mass with raised exposed faces. Outdoor
+      // wall ids are collision data for the forest edge, not literal masonry;
+      // replace their baked wall carpet with theme floor and grow a tree-line
+      // from those same blocked cells in collectVerticalTerrain.
       skipBackgroundGids: WALL_GIDS,
+      backgroundGidAt: (gid, worldX, worldY) => (
+        this.isOutdoorScene && WALL_GIDS.has(gid)
+          ? coordinateGid(OUTDOOR_FLOOR_GIDS[sceneTheme], worldX, worldY, 19)
+          : gid
+      ),
     });
     this.lightingRenderer = new LightingRenderer();
     this.atmosphereRenderer = new AtmosphereRenderer();
-    this.userZoom = 1;
+    this.userZoom = 1.34;
     this.pinchDistance = 0;
     this.pinchZoom = 1;
     this.handleWheel = this.handleWheel.bind(this);
@@ -108,11 +143,17 @@ class PerspectiveRenderer {
 
     const timestamp = now();
     const elapsedSeconds = timestamp / 1000;
-    const ambient = sampleAmbient(elapsedSeconds);
+    const lighting = sampleSceneLighting(this.map.scene, elapsedSeconds);
+    const { ambient, indoor } = lighting;
     const skyColour = ambient.map((channel, index) => (
       channel * [0.78, 0.80, 0.76][index]
     ));
-    this.drawSky(ctx, canvas, skyColour);
+    if (indoor) {
+      ctx.fillStyle = '#07080b';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    } else {
+      this.drawSky(ctx, canvas, skyColour);
+    }
     if (this.terrainRenderer.render(this.camera, skyColour)) {
       ctx.imageSmoothingEnabled = true;
       ctx.drawImage(this.terrainRenderer.canvas, 0, 0);
@@ -120,10 +161,6 @@ class PerspectiveRenderer {
       this.map.drawMap();
       this.alignLegacyGround(ctx, canvas);
     }
-
-    // Mist belongs to the landscape rather than over the actors. Keeping it
-    // below the combat layer preserves atmosphere without erasing silhouettes.
-    this.atmosphereRenderer.drawMist(ctx, this.camera, elapsedSeconds);
 
     this.drawGroundTelegraphs(ctx);
     const draws = this.collectBillboards();
@@ -140,15 +177,18 @@ class PerspectiveRenderer {
       height: canvas.height,
       elapsedSeconds,
       ambient,
-      lights: this.collectDynamicLights(timestamp),
+      lights: this.collectDynamicLights(timestamp, lighting),
+      clouds: !indoor,
     });
     const nightFactor = getNightFactor(ambient);
-    this.atmosphereRenderer.drawForeground(
-      ctx,
-      this.camera,
-      elapsedSeconds,
-      nightFactor,
-    );
+    if (!indoor) {
+      this.atmosphereRenderer.drawForeground(
+        ctx,
+        this.camera,
+        elapsedSeconds,
+        nightFactor,
+      );
+    }
     this.lightingRenderer.drawVignette(ctx, canvas.width, canvas.height);
     this.drawPlayerDamageVignette(ctx, canvas.width, canvas.height, timestamp);
     this.drawDeathState(ctx, canvas.width, canvas.height);
@@ -266,12 +306,12 @@ class PerspectiveRenderer {
 
   collectVerticalTerrain(draws, tileSize) {
     const mapSize = this.map.config.map.size;
-    const playerX = Math.round(this.map.player?.x || 0);
-    const playerY = Math.round(this.map.player?.y || 0);
-    const minimumX = Math.max(0, playerX - VERTICAL_TILE_RANGE.x);
-    const maximumX = Math.min(mapSize.x - 1, playerX + VERTICAL_TILE_RANGE.x);
-    const minimumY = Math.max(0, playerY - VERTICAL_TILE_RANGE.north);
-    const maximumY = Math.min(mapSize.y - 1, playerY + VERTICAL_TILE_RANGE.south);
+    const {
+      minimumX,
+      maximumX,
+      minimumY,
+      maximumY,
+    } = this.getVisibleTileBounds(tileSize, mapSize);
     const playerFoot = this.getPlayerFoot(tileSize);
 
     for (let worldY = minimumY; worldY <= maximumY; worldY += 1) {
@@ -281,12 +321,21 @@ class PerspectiveRenderer {
         const backgroundGid = this.map.background[index] || 0;
         const verticalForeground = foregroundGid
           && !UI.tileWalkable(foregroundGid - 1, 'foreground');
-        const wall = WALL_GIDS.has(backgroundGid);
-        if (!verticalForeground && !wall) {
+        const wallCell = WALL_GIDS.has(backgroundGid);
+        const exposedWall = wallCell && this.isExposedWall(worldX, worldY, mapSize);
+        const outdoorTree = this.isOutdoorScene
+          && wallCell
+          && (exposedWall || coordinateHash(worldX, worldY, 47) % 6 === 0);
+        const wall = !this.isOutdoorScene && exposedWall;
+        if (!verticalForeground && !wall && !outdoorTree) {
           continue;
         }
 
-        const gid = verticalForeground ? foregroundGid : backgroundGid;
+        const gid = verticalForeground
+          ? foregroundGid
+          : (outdoorTree
+            ? coordinateGid(OUTDOOR_TREE_GIDS[this.sceneTheme], worldX, worldY, 73)
+            : backgroundGid);
         const kind = TREE_GIDS.has(gid) ? 'tree' : (wall ? 'wall' : 'decor');
         const foot = centerOfTile(worldX, worldY + 0.42, tileSize);
         const projection = this.projectVerticalTerrain(foot, tileSize, kind);
@@ -308,6 +357,49 @@ class PerspectiveRenderer {
     }
   }
 
+  getVisibleTileBounds(tileSize, mapSize) {
+    const corners = [
+      this.camera.unproject(0, 0),
+      this.camera.unproject(this.camera.width, 0),
+      this.camera.unproject(0, this.camera.height),
+      this.camera.unproject(this.camera.width, this.camera.height),
+    ].filter(Boolean);
+    const playerX = Math.round(this.map.player?.x || 0);
+    const playerY = Math.round(this.map.player?.y || 0);
+    if (!corners.length) {
+      return {
+        minimumX: Math.max(0, playerX - 16),
+        maximumX: Math.min(mapSize.x - 1, playerX + 16),
+        minimumY: Math.max(0, playerY - 12),
+        maximumY: Math.min(mapSize.y - 1, playerY + 12),
+      };
+    }
+
+    const worldXs = corners.map(point => point.x / tileSize);
+    const worldYs = corners.map(point => point.y / tileSize);
+    return {
+      minimumX: Math.max(0, Math.floor(Math.min(...worldXs)) - VERTICAL_TILE_MARGIN),
+      maximumX: Math.min(mapSize.x - 1, Math.ceil(Math.max(...worldXs)) + VERTICAL_TILE_MARGIN),
+      minimumY: Math.max(0, Math.floor(Math.min(...worldYs)) - VERTICAL_TILE_MARGIN),
+      maximumY: Math.min(mapSize.y - 1, Math.ceil(Math.max(...worldYs)) + VERTICAL_TILE_MARGIN),
+    };
+  }
+
+  isExposedWall(worldX, worldY, mapSize) {
+    const neighbours = [
+      [worldX - 1, worldY],
+      [worldX + 1, worldY],
+      [worldX, worldY - 1],
+      [worldX, worldY + 1],
+    ];
+    return neighbours.some(([x, y]) => {
+      if (x < 0 || x >= mapSize.x || y < 0 || y >= mapSize.y) {
+        return true;
+      }
+      return !WALL_GIDS.has(this.map.background[(y * mapSize.x) + x] || 0);
+    });
+  }
+
   projectVerticalTerrain(foot, tileSize, kind) {
     const point = this.camera.projectTerrain(foot.x, foot.y);
     if (!point) {
@@ -315,9 +407,9 @@ class PerspectiveRenderer {
     }
 
     const dimensions = {
-      tree: { width: 1.24, height: 2.12 },
-      wall: { width: 1.08, height: 1.52 },
-      decor: { width: 1.08, height: 1.36 },
+      tree: { width: 1.22, height: 1.92 },
+      wall: { width: 1.04, height: 1.02 },
+      decor: { width: 1.08, height: 1.30 },
     }[kind];
     const width = tileSize * point.scale * dimensions.width;
     const height = tileSize * point.scale * dimensions.height;
@@ -1217,7 +1309,7 @@ class PerspectiveRenderer {
     ctx.restore();
   }
 
-  collectDynamicLights(timestamp) {
+  collectDynamicLights(timestamp, lighting = {}) {
     const tileSize = this.map.config.map.tileset.tile.width;
     const lights = [];
     const colours = {
@@ -1225,6 +1317,22 @@ class PerspectiveRenderer {
       monster: [255, 92, 66],
       support: [122, 255, 176],
     };
+
+    const playerFoot = this.getPlayerFoot(tileSize);
+    const playerPoint = this.camera.projectTerrain(playerFoot.x, playerFoot.y);
+    if (playerPoint) {
+      const indoor = lighting.indoor === true;
+      lights.push({
+        x: playerPoint.x,
+        y: playerPoint.y - (tileSize * 0.42 * playerPoint.scale),
+        radius: Math.max(
+          indoor ? 230 : 100,
+          tileSize * playerPoint.scale * (indoor ? 6.8 : 3.8),
+        ),
+        colour: indoor ? [255, 190, 102] : [255, 216, 148],
+        intensity: indoor ? 0.96 : 0.24,
+      });
+    }
 
     (this.map.projectiles || []).forEach((projectile) => {
       const progress = (timestamp - projectile.startedAt) / projectile.travelMs;
@@ -1299,7 +1407,7 @@ class PerspectiveRenderer {
   }
 
   setUserZoom(value) {
-    this.userZoom = clamp(value, 0.72, 1.6);
+    this.userZoom = clamp(value, 0.90, 1.85);
   }
 
   handleWheel(event) {

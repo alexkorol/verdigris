@@ -543,7 +543,7 @@ class Map {
     for (let row = y; row < y + height; row += 1) {
       let index = (row * mapWidth) + x;
       for (let col = x; col < x + width; col += 1) {
-        background[index] = pick();
+        background[index] = pick(col, row);
         foreground[index] = 0;
         index += 1;
       }
@@ -581,7 +581,7 @@ class Map {
           }
 
           const index = (row * mapWidth) + col;
-          background[index] = pick();
+          background[index] = pick(col, row);
           foreground[index] = 0;
         }
       }
@@ -609,6 +609,67 @@ class Map {
       recordCarveSpan(bounds, minX, from.y - halfWidth, maxX, from.y + halfWidth);
       recordCarveSpan(bounds, to.x - halfWidth, minY, to.x + halfWidth, maxY);
     }
+  }
+
+  static paintFloorAccentPatches({
+    background,
+    width,
+    height,
+    accentPool,
+    wallPool,
+    roomRects,
+    dense = false,
+    rng,
+  }) {
+    if (!accentPool.length || !roomRects.length) {
+      return;
+    }
+
+    const indexAt = (x, y) => (y * width) + x;
+    const wallSet = new Set(wallPool);
+    roomRects.forEach((room) => {
+      const area = room.width * room.height;
+      const patchCount = dense
+        ? Math.max(1, Math.round(area / 180))
+        : (rng() < 0.58 ? 1 : 0);
+      for (let patch = 0; patch < patchCount; patch += 1) {
+        const minimumRadiusX = dense ? 3 : 2;
+        const radiusX = Math.max(
+          1,
+          Math.min(minimumRadiusX + Math.floor(rng() * 2), Math.floor((room.width - 1) / 2)),
+        );
+        const radiusY = Math.max(
+          1,
+          Math.min(2 + Math.floor(rng() * 2), Math.floor((room.height - 1) / 2)),
+        );
+        const innerWidth = Math.max(1, room.width - (radiusX * 2));
+        const innerHeight = Math.max(1, room.height - (radiusY * 2));
+        const centerX = room.x + radiusX + Math.floor(rng() * innerWidth);
+        const centerY = room.y + radiusY + Math.floor(rng() * innerHeight);
+
+        for (let offsetY = -radiusY; offsetY <= radiusY; offsetY += 1) {
+          for (let offsetX = -radiusX; offsetX <= radiusX; offsetX += 1) {
+            const x = centerX + offsetX;
+            const y = centerY + offsetY;
+            if (x < room.x || y < room.y
+              || x >= room.x + room.width || y >= room.y + room.height
+              || x < 0 || y < 0 || x >= width || y >= height) {
+              continue;
+            }
+            const distance = ((offsetX / Math.max(1, radiusX)) ** 2)
+              + ((offsetY / Math.max(1, radiusY)) ** 2);
+            const roughEdge = distance > 0.62 && rng() < 0.24;
+            if (distance > 1.08 || roughEdge) {
+              continue;
+            }
+            const index = indexAt(x, y);
+            if (!wallSet.has(background[index])) {
+              background[index] = accentPool[Math.floor(rng() * accentPool.length)];
+            }
+          }
+        }
+      }
+    });
   }
 
   /**
@@ -770,16 +831,21 @@ class Map {
         const waterGid = dungeonGroupGids('liquid', 'water_shallow')[0];
         if (waterGid) {
           for (let attempt = 0; attempt < 6; attempt += 1) {
-            const px = room.x + 2 + Math.floor(rng() * (room.width - 5));
-            const py = room.y + 2 + Math.floor(rng() * (room.height - 5));
-            const poolClearOfCentre = Math.abs((px + 0.5) - centreX) > 3
-              || Math.abs((py + 0.5) - centreY) > 3;
+            const poolRadiusX = 2;
+            const poolRadiusY = 1;
+            const px = room.x + poolRadiusX + 1
+              + Math.floor(rng() * Math.max(1, room.width - ((poolRadiusX + 1) * 2)));
+            const py = room.y + poolRadiusY + 1
+              + Math.floor(rng() * Math.max(1, room.height - ((poolRadiusY + 1) * 2)));
+            const poolClearOfCentre = Math.abs(px - centreX) > 4
+              || Math.abs(py - centreY) > 3;
             if (!poolClearOfCentre) {
               continue;
             }
-            for (let dy = 0; dy < 2; dy += 1) {
-              for (let dx = 0; dx < 2; dx += 1) {
-                if (!foreground[idx(px + dx, py + dy)]) {
+            for (let dy = -poolRadiusY; dy <= poolRadiusY; dy += 1) {
+              for (let dx = -poolRadiusX; dx <= poolRadiusX; dx += 1) {
+                const distance = ((dx / poolRadiusX) ** 2) + ((dy / poolRadiusY) ** 2);
+                if (distance <= 1.08 && !foreground[idx(px + dx, py + dy)]) {
                   background[idx(px + dx, py + dy)] = waterGid;
                 }
               }
@@ -852,9 +918,19 @@ class Map {
     const background = new Array(width * height).fill(wallFill);
     const foreground = new Array(width * height).fill(0);
 
-    const floorPicker = () => {
-      const pool = accentPool.length && rng() < 0.12 ? accentPool : floorPool;
-      return pool[Math.floor(rng() * pool.length)] || floorPool[0];
+    const floorPicker = (x = 0, y = 0) => {
+      // Keep the established RNG cadence while removing the independent 12%
+      // accent roll that made every room and clearing a noisy checkerboard.
+      if (accentPool.length) {
+        rng();
+      }
+      rng();
+      const blockX = Math.floor(x / 4);
+      const blockY = Math.floor(y / 4);
+      let spatial = Math.imul(blockX ^ seed, 0x45d9f3b)
+        ^ Math.imul(blockY + seed, 0x27d4eb2d);
+      spatial ^= spatial >>> 16;
+      return floorPool[Math.abs(spatial) % floorPool.length] || floorPool[0];
     };
 
     // The floor's shape comes entirely from the recipe now (see LAYOUT_RECIPES).
@@ -965,6 +1041,17 @@ class Map {
       }
     }
 
+    Map.paintFloorAccentPatches({
+      background,
+      width,
+      height,
+      accentPool,
+      wallPool,
+      roomRects,
+      dense: recipe.open,
+      rng: Map.createSeededGenerator(seed ^ 0xa53c9e17),
+    });
+
     Map.decorateInstance({
       background,
       foreground,
@@ -993,7 +1080,7 @@ class Map {
           return;
         }
         const index = cIdx(x, y);
-        background[index] = floorPicker();
+        background[index] = floorPicker(x, y);
         const fgGid = foreground[index];
         if (fgGid && !UI.tileWalkable(fgGid - 1, 'foreground')) {
           foreground[index] = 0;

@@ -35,6 +35,44 @@ Verified after the final client change: `npm run lint` clean,
 the 48/48 diptych, 12×7 geometry, item art, and identical backpack/equipped
 tooltips at 1280×720.
 
+### Camera, lighting, and map-composition correction — 2026-08-14
+
+The next owner playtest found that the first palette pass still left the game
+laggy, too far away, and visibly distorted by the shallow 2D-to-2.5D camera.
+The follow-up recovery changes the rendering model rather than adding another
+colour filter:
+
+- The default camera is closer (`1.34`) with a much more distant horizon. Tile
+  proportions remain close to the authored square art instead of stretching
+  into a runway, while raised actors, trees, and wall edges retain depth.
+- Indoor themes now receive stable scene-specific darkness and the player is a
+  persistent warm light source. Outdoor maps keep their day cycle and a much
+  quieter player glow; indoor clouds, sun rays, and mist are skipped.
+- Only exposed wall-edge tiles become raised billboards. Solid wall interiors
+  remain dark mass, so dungeon layouts no longer fill the screen with hundreds
+  of repeated brick faces.
+- Vertical scenery is culled from projected screen bounds instead of scanning a
+  fixed 65×65 square every frame. The flat terrain mesh is 41×41 rather than
+  161×161 (3,200 rather than 51,200 triangles), lighting redraws at 30fps, and
+  photographic depth blur/antialiasing are effectively removed from pixel art.
+- Generated floors choose base-tile variants in coherent 4×4 regions; accent
+  floors and water form irregular patches instead of independent square noise.
+  Authored world trees and flowers now use clustered placement as well.
+- Grove/Wilds wall IDs remain authoritative collision, but their visual ground
+  is replaced with theme-matched floor plus deterministic tree-lines. Do not
+  render those blocked cells as masonry carpet, and do not skip them into a
+  black void; both failures were caught only by the final browser replay.
+
+Treat these as protected visual/performance seams. Do not restore the shallow
+horizon, 161×161 flat mesh, full-wall billboard pass, always-on mist, or the
+per-cell 12% floor-accent roll while trying to “simplify” the renderer.
+
+Verified on the final renderer in the required order: `npm run test:unit`
+747/747, `npm run playtest` 31/31, and `npm run test:e2e` 3/3. The same build
+was then played in-browser through Delaford Village, The Old Barrow, and
+Verdant Grove; camera scale, player lighting, movement response, dungeon wall
+edges, and the outdoor tree-line/ground seam were checked visually.
+
 ## Where the project stands
 
 `master` (pushed to origin) is the

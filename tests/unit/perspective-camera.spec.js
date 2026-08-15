@@ -33,15 +33,15 @@ describe('PerspectiveCamera', () => {
     expect(unprojected.y).toBeCloseTo(world.y, 8);
   });
 
-  it('scales nearer points continuously larger than farther points', () => {
+  it('keeps depth readable without turning the tile map into a runway', () => {
     const camera = makeCamera();
-    const far = camera.project(1200, 900);
+    const far = camera.project(1200, 1344);
     const focus = camera.project(1200, 1600);
-    const near = camera.project(1200, 2050);
+    const near = camera.project(1200, 1856);
 
     expect(far.scale).toBeLessThan(focus.scale);
     expect(focus.scale).toBeLessThan(near.scale);
-    expect(near.scale / far.scale).toBeGreaterThan(2);
+    expect(near.scale / far.scale).toBeLessThan(1.8);
   });
 
   it('uses the shared height sampler for terrain projection', () => {
@@ -69,18 +69,19 @@ describe('PerspectiveCamera', () => {
     });
   });
 
-  it('changes depth of field continuously and strengthens it while zoomed in', () => {
+  it('keeps authored pixel art crisp while retaining slight far-field falloff', () => {
     const wide = makeCamera({ userZoom: 0.72 });
     const close = makeCamera({ userZoom: 1.6 });
-    const wideDepth = wide.depthToFocus * 1.22;
-    const closeDepth = close.depthToFocus * 1.22;
+    const wideDepth = wide.depthToFocus * 1.8;
+    const closeDepth = close.depthToFocus * 1.8;
 
     expect(wide.circleOfConfusion(wide.depthToFocus)).toBe(0);
     expect(close.circleOfConfusion(close.depthToFocus)).toBe(0);
-    expect(wide.circleOfConfusion(wideDepth)).toBeGreaterThan(0);
+    expect(wide.circleOfConfusion(wideDepth)).toBeLessThan(0.01);
     expect(close.circleOfConfusion(closeDepth)).toBeGreaterThan(
       wide.circleOfConfusion(wideDepth),
     );
+    expect(close.circleOfConfusion(closeDepth)).toBeLessThan(0.1);
   });
 
   it('rejects zero-sized startup viewports without producing projection state', () => {

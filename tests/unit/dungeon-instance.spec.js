@@ -214,6 +214,27 @@ describe('generateInstance themes', () => {
     }
   });
 
+  it('groups outdoor floor accents into readable patches instead of single-tile noise', async () => {
+    const { map } = await GameMap.generateInstance({ seed: 4, template: 'grove', depth: 1 });
+    const accents = new Set(dungeonGroupGids('floor', 'dirt'));
+    const accentIndices = map.background
+      .map((gid, index) => (accents.has(gid) ? index : -1))
+      .filter(index => index >= 0);
+    const accentIndexSet = new Set(accentIndices);
+    const isolated = accentIndices.filter((index) => {
+      const x = index % 200;
+      return ![
+        x > 0 ? index - 1 : -1,
+        x < 199 ? index + 1 : -1,
+        index >= 200 ? index - 200 : -1,
+        index < map.background.length - 200 ? index + 200 : -1,
+      ].some(neighbour => accentIndexSet.has(neighbour));
+    });
+
+    expect(accentIndices.length).toBeGreaterThan(20);
+    expect(isolated.length / accentIndices.length).toBeLessThan(0.2);
+  });
+
   it('tags only declared creature identities as beasts', async () => {
     const grove = await GameMap.generateInstance({ seed: 4, template: 'grove', depth: 1 });
     const stone = await GameMap.generateInstance({ seed: 4, template: 'dungeon', depth: 1 });

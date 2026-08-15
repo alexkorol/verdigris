@@ -236,7 +236,9 @@ const addBuilding = (map, {
 const addGrove = (map, x, y, width, height, treePool = tile.trees, density = 3, salt = 0) => {
   for (let yy = y; yy < y + height; yy += 1) {
     for (let xx = x; xx < x + width; xx += 1) {
-      if (hash(xx, yy, salt) % 10 < density) {
+      const cluster = hash(Math.floor(xx / 4), Math.floor(yy / 4), salt) % 10;
+      const detail = hash(xx, yy, salt + 941) % 10;
+      if (cluster < Math.min(9, density + 3) && detail < Math.min(9, density + 2)) {
         setFg(map, xx, yy, treePool, salt);
       }
     }
@@ -246,7 +248,9 @@ const addGrove = (map, x, y, width, height, treePool = tile.trees, density = 3, 
 const addFlowers = (map, x, y, width, height, density = 2, salt = 0) => {
   for (let yy = y; yy < y + height; yy += 1) {
     for (let xx = x; xx < x + width; xx += 1) {
-      if (hash(xx, yy, salt) % 10 < density) {
+      const cluster = hash(Math.floor(xx / 3), Math.floor(yy / 3), salt) % 10;
+      const detail = hash(xx, yy, salt + 577) % 10;
+      if (cluster < Math.min(9, density + 2) && detail < 6) {
         setFg(map, xx, yy, tile.flowers, salt);
       }
     }

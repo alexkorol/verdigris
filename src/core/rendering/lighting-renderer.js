@@ -3,6 +3,15 @@
 // world appear to flicker between colour grades instead of inhabiting them.
 const DAY_LENGTH_SECONDS = 300;
 const LIGHTMAP_SCALE = 0.25;
+const LIGHTING_FRAME_MS = 1000 / 30;
+
+const INDOOR_AMBIENT = Object.freeze({
+  stone: [88, 82, 75],
+  crypt: [70, 74, 88],
+  sand: [98, 80, 62],
+  volcanic: [92, 57, 48],
+  marsh: [66, 80, 71],
+});
 
 const AMBIENT_KEYFRAMES = [
   [0, [255, 247, 231]],
@@ -48,27 +57,52 @@ const getNightFactor = (ambient) => {
   return Math.min(1, (1 - (brightest / 255)) + (((255 - darkest) / 255) * 0.5));
 };
 
+const sampleSceneLighting = (scene = {}, elapsedSeconds = 0) => {
+  const theme = String(scene?.metadata?.theme || '').toLowerCase();
+  const indoorAmbient = INDOOR_AMBIENT[theme];
+  if (indoorAmbient) {
+    return {
+      ambient: [...indoorAmbient],
+      indoor: true,
+      theme,
+    };
+  }
+
+  return {
+    ambient: sampleAmbient(elapsedSeconds).map((channel, index) => (
+      Math.round(channel * [0.94, 0.93, 0.91][index])
+    )),
+    indoor: false,
+    theme,
+  };
+};
+
 class LightingRenderer {
   constructor() {
     this.lightmap = document.createElement('canvas');
     this.lightContext = this.lightmap.getContext('2d');
     this.vignette = document.createElement('canvas');
     this.vignetteContext = this.vignette.getContext('2d');
+    this.lastLightingFrameAt = Number.NEGATIVE_INFINITY;
   }
 
   ensureSize(width, height) {
     const lightWidth = Math.max(2, Math.floor(width * LIGHTMAP_SCALE));
     const lightHeight = Math.max(2, Math.floor(height * LIGHTMAP_SCALE));
+    let resized = false;
     if (this.lightmap.width !== lightWidth || this.lightmap.height !== lightHeight) {
       this.lightmap.width = lightWidth;
       this.lightmap.height = lightHeight;
+      resized = true;
     }
 
     if (this.vignette.width !== lightWidth || this.vignette.height !== lightHeight) {
       this.vignette.width = lightWidth;
       this.vignette.height = lightHeight;
       this.buildVignette();
+      resized = true;
     }
+    return resized;
   }
 
   buildVignette() {
@@ -156,16 +190,23 @@ class LightingRenderer {
     elapsedSeconds,
     ambient,
     lights = [],
+    clouds = true,
   }) {
-    this.ensureSize(width, height);
+    const resized = this.ensureSize(width, height);
     this.sourceWidth = width;
-    const lightContext = this.lightContext;
-    lightContext.setTransform(1, 0, 0, 1, 0, 0);
-    lightContext.globalCompositeOperation = 'source-over';
-    lightContext.fillStyle = `rgb(${ambient.join(', ')})`;
-    lightContext.fillRect(0, 0, this.lightmap.width, this.lightmap.height);
-    this.drawClouds(elapsedSeconds);
-    this.drawLights(lights, getNightFactor(ambient));
+    const frameAt = elapsedSeconds * 1000;
+    if (resized || frameAt - this.lastLightingFrameAt >= LIGHTING_FRAME_MS) {
+      this.lastLightingFrameAt = frameAt;
+      const lightContext = this.lightContext;
+      lightContext.setTransform(1, 0, 0, 1, 0, 0);
+      lightContext.globalCompositeOperation = 'source-over';
+      lightContext.fillStyle = `rgb(${ambient.join(', ')})`;
+      lightContext.fillRect(0, 0, this.lightmap.width, this.lightmap.height);
+      if (clouds) {
+        this.drawClouds(elapsedSeconds);
+      }
+      this.drawLights(lights, getNightFactor(ambient));
+    }
 
     ctx.save();
     ctx.globalCompositeOperation = 'multiply';
@@ -190,8 +231,11 @@ class LightingRenderer {
 export {
   AMBIENT_KEYFRAMES,
   DAY_LENGTH_SECONDS,
+  INDOOR_AMBIENT,
+  LIGHTING_FRAME_MS,
   LIGHTMAP_SCALE,
   getNightFactor,
   sampleAmbient,
+  sampleSceneLighting,
 };
 export default LightingRenderer;

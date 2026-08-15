@@ -51,6 +51,7 @@ class Map {
     this.npcs = [];
     this.monsters = [];
     this.config = config;
+    this.scene = data.scene || {};
     this.defaultViewport = { ...INITIAL_VIEWPORT };
     this.defaultCenter = { ...INITIAL_CENTER };
     this.viewportOverride = null;
@@ -914,6 +915,7 @@ class Map {
     marginTiles = 0,
     flattenForeground = true,
     skipBackgroundGids = null,
+    backgroundGidAt = null,
   } = {}) {
     const { size } = this.config.map;
     const canvas = document.createElement('canvas');
@@ -930,7 +932,10 @@ class Map {
         const index = (worldY * size.x) + worldX;
         const drawX = (worldX + marginTiles) * tileSize;
         const drawY = (worldY + marginTiles) * tileSize;
-        const background = this.background[index] || 0;
+        const authoredBackground = this.background[index] || 0;
+        const background = typeof backgroundGidAt === 'function'
+          ? backgroundGidAt(authoredBackground, worldX, worldY)
+          : authoredBackground;
         if (!skipBackgroundGids?.has(background)) {
           this.drawTile(
             ctx,
