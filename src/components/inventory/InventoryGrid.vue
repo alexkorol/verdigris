@@ -89,7 +89,10 @@ import { coordsFromIndex } from '@/core/inventory/grid-math.js';
 import { getItemDimensions } from '@/core/inventory/footprint.js';
 import { resolveInventoryItemArt } from '@/core/inventory/item-art.js';
 import { getInventoryVesselPips } from '@/core/inventory/item-presentation.js';
-import { itemTooltipAriaLabel } from '@/core/inventory/item-tooltip.js';
+import {
+  getItemTooltipPosition,
+  itemTooltipAriaLabel,
+} from '@/core/inventory/item-tooltip.js';
 import bus from '@/core/utilities/bus.js';
 import { canEquipInventoryItemToSlot, useInventoryStore } from '@/stores/inventory.js';
 import ItemTooltip from './ItemTooltip.vue';
@@ -126,9 +129,9 @@ export default {
     } = storeToRefs(inventoryStore);
 
     const gridStyle = computed(() => ({
-      // The inventory overlay is deliberately wide enough to reach the
-      // authored WIZARD scale without pushing columns into implicit rows.
-      '--cell-size': `clamp(40px, 4.1vw, ${CELL_SIZE_PX}px)`,
+      // Each side pane occupies 48vw. Scale the complete 12-column backpack
+      // within that half while retaining the authored 54px ceiling.
+      '--cell-size': `clamp(40px, calc((48vw - 128px) / 12), ${CELL_SIZE_PX}px)`,
       '--cell-gap': `${CELL_GAP_PX}px`,
       gridTemplateColumns: `repeat(${props.columns}, var(--cell-size))`,
       gridTemplateRows: `repeat(${props.rows}, var(--cell-size))`,
@@ -193,34 +196,7 @@ export default {
     };
 
     const positionTooltip = (event) => {
-      if (typeof window === 'undefined') {
-        return;
-      }
-
-      const anchor = event.currentTarget && typeof event.currentTarget.getBoundingClientRect === 'function'
-        ? event.currentTarget.getBoundingClientRect()
-        : null;
-      const pointerX = Number.isFinite(event.clientX) && event.clientX > 0
-        ? event.clientX
-        : (anchor?.right || 12);
-      const pointerY = Number.isFinite(event.clientY) && event.clientY > 0
-        ? event.clientY
-        : (anchor ? anchor.top + anchor.height / 2 : 12);
-      const width = Math.min(326, Math.max(220, window.innerWidth - 24));
-      const gap = 16;
-      const left = pointerX + gap + width <= window.innerWidth - 12
-        ? pointerX + gap
-        : Math.max(12, pointerX - width - gap);
-      const above = pointerY > window.innerHeight / 2;
-
-      tooltipPosition.value = {
-        left,
-        top: above ? null : pointerY + gap,
-        bottom: above ? window.innerHeight - pointerY + gap : null,
-        maxHeight: Math.max(140, above
-          ? pointerY - gap - 12
-          : window.innerHeight - pointerY - gap - 12),
-      };
+      tooltipPosition.value = getItemTooltipPosition(event);
     };
 
     const showTooltip = (event, item) => {

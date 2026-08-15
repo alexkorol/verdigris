@@ -52,15 +52,18 @@ describe('inventory pane layout', () => {
     expect(worldViewport).not.toContain('defaultRightPane');
   });
 
-  it('uses the overlay width to keep the complete backpack above the fold', () => {
+  it('preserves the symmetric half-screen diptych and fits the complete backpack within it', () => {
+    const delaford = readSource('src/Delaford.vue');
+    const container = readSource('src/components/layout/GameContainer.vue');
     const paneHost = readSource('src/components/ui/panes/PaneHost.vue');
     const inventory = readSource('src/components/slots/Inventory.vue');
     const inventoryGrid = readSource('src/components/inventory/InventoryGrid.vue');
 
-    expect(paneHost).toContain('pane-host__side--inventory');
-    expect(paneHost).toContain('1240px');
-    expect(inventory).toContain('@media (width >= 1100px)');
-    expect(inventory).toContain('flex-direction: row');
-    expect(inventoryGrid).toContain('clamp(40px, 4.1vw, ${CELL_SIZE_PX}px)');
+    expect(container).toContain('--arpg-pane-width: clamp(560px, 48vw, 1100px);');
+    expect(delaford).toContain("options: { minimalHeader: true }");
+    expect(paneHost).not.toContain('pane-host__side--inventory');
+    expect(paneHost).not.toContain('1240px');
+    expect(inventory).not.toContain('@media (width >= 1100px)');
+    expect(inventoryGrid).toContain('clamp(40px, calc((48vw - 128px) / 12), ${CELL_SIZE_PX}px)');
   });
 });

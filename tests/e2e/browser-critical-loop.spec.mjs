@@ -221,7 +221,11 @@ test('the built game supports the browser-critical guest loop', async ({ page })
   const firstBackpackCell = await backpackCells.first().boundingBox();
   const lastBackpackCell = await backpackCells.last().boundingBox();
   const inventoryViewport = page.viewportSize();
-  expect(firstBackpackCell?.width).toBeGreaterThanOrEqual(50);
+  const inventoryBounds = await inventory.boundingBox();
+  expect(firstBackpackCell?.width).toBeGreaterThanOrEqual(40);
+  expect(firstBackpackCell?.width).toBeLessThanOrEqual(54);
+  expect(inventoryBounds?.width).toBeGreaterThanOrEqual((inventoryViewport?.width || 0) * 0.45);
+  expect(inventoryBounds?.width).toBeLessThanOrEqual((inventoryViewport?.width || 0) * 0.50);
   expect(lastBackpackCell && inventoryViewport
     ? lastBackpackCell.y + lastBackpackCell.height
     : Number.POSITIVE_INFINITY).toBeLessThanOrEqual(inventoryViewport?.height || 0);

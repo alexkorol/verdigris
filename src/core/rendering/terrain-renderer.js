@@ -127,10 +127,12 @@ class TerrainRenderer {
         vec3 sharp = texture2D(uTexture, vUv).rgb;
         vec3 soft = texture2D(uTexture, vUv, 1.8).rgb;
         vec3 colour = mix(sharp, soft, circleOfConfusion);
-        colour = pow(max(colour, vec3(0.0)), vec3(0.82));
+        colour = pow(max(colour, vec3(0.0)), vec3(0.93));
         float luminance = dot(colour, vec3(0.2126, 0.7152, 0.0722));
-        colour = mix(vec3(luminance), colour, 1.10);
-        float haze = clamp((vDepth / uDepthToFocus - 1.48) / 1.62, 0.0, 1.0) * 0.24;
+        colour = mix(vec3(luminance), colour, 0.88);
+        colour *= vec3(1.02, 0.97, 0.91);
+        colour = clamp((colour - vec3(0.5)) * 1.04 + vec3(0.5), 0.0, 1.0);
+        float haze = clamp((vDepth / uDepthToFocus - 1.52) / 1.72, 0.0, 1.0) * 0.14;
         gl_FragColor = vec4(mix(colour, uSky, haze), 1.0);
       }
     `;

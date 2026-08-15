@@ -52,6 +52,8 @@ const FLOAT_UNIFORMS = [
 const INT_UNIFORMS = ['uOct'];
 const ORB_SIDE = { hp: 0, mp: 1 };
 const CROP_OFFSET_X = { hp: -0.52, mp: 0.52 };
+const ORB_FRAME_INTERVAL_MS = 1000 / 30;
+const MAX_DEVICE_PIXEL_RATIO = 2;
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 const clamp01 = value => clamp(value, 0, 1);
@@ -260,9 +262,10 @@ class WizardOrbRenderer {
     const gl = this.gl;
     if (!gl) return;
     const rect = this.canvas.getBoundingClientRect();
-    // Render up to 3x the CSS size so high-DPI screens get a crisp edge
-    // instead of upscaled jaggies.
-    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    // Two complex orb shaders run beside the world renderer. At 3x DPR and
+    // 60fps they consumed more fill-rate than the playfield on some laptops;
+    // 2x remains crisp at the HUD's rendered size.
+    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DEVICE_PIXEL_RATIO);
     const width = Math.max(2, Math.round((rect.width || this.canvas.width || 128) * dpr));
     const height = Math.max(2, Math.round((rect.height || this.canvas.height || 128) * dpr));
     if (this.canvas.width !== width || this.canvas.height !== height) {
@@ -290,6 +293,7 @@ class WizardOrbRenderer {
     if (this.destroyed) return;
     this.raf = requestAnimationFrame(this.render);
     if (!this.ready || !this.gl) return;
+    if (timestamp - this.lastFrameAt < ORB_FRAME_INTERVAL_MS) return;
 
     const gl = this.gl;
     const dt = Math.min((timestamp - this.lastFrameAt) / 1000, 0.05);

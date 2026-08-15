@@ -6,8 +6,10 @@
 - Watch NPC patrols for hitching after resizing the window; interpolation should remain smooth at 60 FPS.
 
 ## Pane Mechanics
-- Desktop >= 1200px: click the HP orb to open Character and the MP orb to open Inventory. Both are fixed overlays: the world canvas must remain exactly the same size behind them.
-- Inventory must show the complete 12×7 backpack at the authored 54px cell scale, with item art filling its footprint rather than a tiny 32px sprite.
+- Desktop >= 1200px: click the HP orb to open Character and the MP orb to open Inventory. They must form a symmetric left/right diptych (48vw each), while the world canvas remains exactly the same size behind them.
+- Inventory must keep the equipment paper doll above the complete 12×7 backpack. Cells scale responsively from 40px up to the authored 54px maximum, and item art must fill its footprint rather than reverting to a tiny 32px sprite.
+- Hover the same item while equipped and in the backpack; both locations must use the same tooltip chrome, information hierarchy, and viewport-safe placement.
+- HP/MP values should read as a quiet inscription on the orb base, without an opaque rectangular plaque or redundant visible HP/MP label.
 - Close each pane with its `×`, `Esc`, and backdrop. Focus must return to the game; a second `Esc` opens the game menu.
 - Tablet and mobile: open Character/Inventory and confirm every panel edge remains inside the viewport without shrinking or horizontally scrolling the game canvas.
 
@@ -31,6 +33,12 @@
   - Quickbar stays anchored between orbs; chat toggle relocates (fixed) on mobile.
   - Panes remain fixed overlays at every breakpoint, with safe tap targets and no canvas resize.
 - Mobile (<768px) landscape: open chat; overlay behaves like a bottom sheet and world remains scrollable.
+
+## World Presentation + Performance
+- In Delaford Village, foliage must read as deep/cool green and roads as warm earth; neither should clip into neon green or mustard yellow.
+- Trees and walls need crisp raised silhouettes, contact grounding, and directional shadows without per-tile blur halos.
+- The distance grade should retain terrain detail instead of covering the horizon in grey-green fog.
+- Hold a diagonal movement route through the dense village tree line. Input and animation should remain responsive with panes closed and with the Inventory pane open.
 
 ## Pane Scroll Checks
 - Populate Inventories (use bank debug) and confirm overflow areas support native scroll momentum on all breakpoints.

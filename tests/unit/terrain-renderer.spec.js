@@ -20,12 +20,25 @@ describe('terrain texture sizing', () => {
     const perspectiveRenderer = readSource('src/core/rendering/perspective-renderer.js');
     const map = readSource('src/core/map.js');
     const gameCanvas = readSource('src/components/GameCanvas.vue');
+    const shadowSource = perspectiveRenderer.slice(
+      perspectiveRenderer.indexOf('drawVerticalTerrainShadow('),
+      perspectiveRenderer.indexOf('getActorFoot('),
+    );
+    const tileSource = perspectiveRenderer.slice(
+      perspectiveRenderer.indexOf('drawVerticalTerrainTile('),
+      perspectiveRenderer.indexOf('drawVerticalTerrainShadow('),
+    );
 
     expect(perspectiveRenderer).toContain('skipBackgroundGids: WALL_GIDS');
     expect(terrainRenderer).toContain('skipBackgroundGids: this.skipBackgroundGids');
     expect(map).toContain('if (!skipBackgroundGids?.has(background))');
+    expect(perspectiveRenderer).toContain('projectVerticalTerrain(foot, tileSize, kind)');
     expect(perspectiveRenderer).toContain('drawVerticalTerrainShadow');
     expect(perspectiveRenderer).toContain("ctx.globalCompositeOperation = 'multiply'");
-    expect(gameCanvas).toContain('brightness(1.12) contrast(1.08) saturate(0.9)');
+    expect(shadowSource).not.toContain('createRadialGradient');
+    expect(tileSource).not.toContain('ctx.shadowBlur');
+    expect(terrainRenderer).toContain('colour = mix(vec3(luminance), colour, 0.88);');
+    expect(terrainRenderer).toContain(') * 0.14;');
+    expect(gameCanvas).toContain('filter: contrast(1.04) saturate(0.94);');
   });
 });

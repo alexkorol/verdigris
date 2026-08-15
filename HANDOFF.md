@@ -4,6 +4,37 @@ Read `AGENTS.md` first (it is the canonical agent guide) and OBEY its
 **HARD STOP git preflight** — this very handoff exists because a month of
 work was once built on a stale checkout and had to be hand-merged back.
 
+## Recovery update — 2026-08-14
+
+Active recovery work lives on `codex/recover-merge-refinements` and draft PR
+[#3](https://github.com/alexkorol/verdigris/pull/3). The canonical remote is
+`https://github.com/alexkorol/verdigris`; do not publish to the obsolete
+`delaford/game` fork remote.
+
+The owner-tested presentation regressions are now restored and guarded:
+
+- Character and Inventory are symmetric fixed 48vw overlays again. Inventory
+  is the right half of the diptych, keeps the world full-size behind it, and
+  uses the stacked equipment/12×7 backpack layout. Cells scale 40–54px to fit
+  that half; the inventory-only 1240px override and desktop row layout were
+  removed.
+- Backpack and equipped items use one shared tooltip component and positioning
+  model. The obsolete second tooltip was deleted; the legacy world-action hint
+  is hidden/cleared while pane item hovers are active.
+- The HP/MP numbers are quiet orb-base inscriptions without the old opaque
+  label plaque. Clicking the orbs still opens Character/Inventory.
+- Terrain now has a restrained, warmer grade, much less mist/haze, crisp
+  directional terrain grounding, and no per-tree blur/radial-gradient work.
+  Vertical scenery is projected/cut before it reaches the depth-sort/draw pass.
+- Decorative orb shaders are capped at 30fps and 2× DPR; the world/input loop
+  remains at 60fps.
+
+Verified after the final client change: `npm run lint` clean,
+`npm run test:unit` 745/745, `npm run playtest` 31/31,
+`npm run test:e2e` 3/3, plus manual browser checks of WASD, both orb shortcuts,
+the 48/48 diptych, 12×7 geometry, item art, and identical backpack/equipped
+tooltips at 1280×720.
+
 ## Where the project stands
 
 `master` (pushed to origin) is the
@@ -34,11 +65,11 @@ awful."** All the plumbing above is necessary but not sufficient. The next
 agent's job is GAME FEEL and VISUAL QUALITY, played by hand in a real
 browser, not proven by harness. Concrete starting points observed:
 
-- The 2.5D perspective view renders but reads muddy: heavy fog/blur over the
-  village, low contrast, washed-out tiles (see any `?play` session).
-- The inventory was reverted to 32px cells so the pane fits and drags work;
-  the intended 54px "art fills the pane" scale needs the login-restyle pane
-  layout ported (below) — right now items look tiny.
+- The 2.5D perspective view has had its first human-driven palette/performance
+  pass. Keep tuning it by eye against the owner's Songs of Conquest reference;
+  do not restore the neon double-brightening or heavy fog/blur stack.
+- The inventory diptych and responsive 40–54px item scale are restored. Treat
+  the 48vw side-pane geometry and 12×7 grid as protected behavior.
 - Combat/feedback polish, HUD legibility, and first-minute impressions have
   had no human-driven iteration since the merge.
 
@@ -46,17 +77,11 @@ Iterate: play in the browser (`npm run dev`, or build + `npm start`), change,
 play again. Use the owner's feedback loop; do not declare feel-work done from
 green tests.
 
-## Pending ports (login-restyle features whose specs are parked)
+## Former pending ports
 
-`tests/pending-port/README.md` lists them; each spec should return to
-`tests/unit/` or `tests/e2e/` when its feature lands:
-
-1. Escape game menu (`src/components/ui/EscapeMenu.vue` exists, unmounted).
-2. Login-restyle pane layout + 54px inventory scale + HUD-orb pane host.
-3. Browser-local account sign-in screen ("Continue as browser guest").
-4. Client diagnostics API (`window.__verdigrisDiagnostics`, ClientDiagnostics
-   + ConnectionManager) — the reconnect e2e asserts on it.
-5. Narrow-viewport pane containment.
+The login-restyle ports listed by the original handoff have landed and their
+specs were promoted. `tests/pending-port/` is intentionally empty; do not use
+the old list as instructions to re-port or replace the current implementations.
 
 ## Known seams (do NOT "simplify" one side away)
 

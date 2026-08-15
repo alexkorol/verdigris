@@ -1,13 +1,9 @@
 const MIST_OFFSETS = [
   [-520, -360, 150, 0.2],
-  [-260, -470, 115, 1.3],
   [40, -390, 165, 2.4],
-  [360, -310, 130, 3.1],
   [520, -80, 170, 4.2],
   [-470, 40, 145, 5.4],
-  [-210, 180, 120, 0.8],
   [170, 150, 155, 2.9],
-  [430, 210, 110, 4.8],
 ];
 
 const FIREFLY_OFFSETS = [
@@ -42,7 +38,7 @@ class AtmosphereRenderer {
       if (radius < 2) {
         return;
       }
-      const alpha = 0.026 + (Math.sin((elapsedSeconds * 0.38) + phase) * 0.009);
+      const alpha = 0.014 + (Math.sin((elapsedSeconds * 0.38) + phase) * 0.005);
       const y = point.y - (18 * point.scale);
       const gradient = ctx.createRadialGradient(point.x, y, 2, point.x, y, radius);
       gradient.addColorStop(0, `rgba(184, 207, 190, ${alpha})`);
@@ -124,7 +120,7 @@ class AtmosphereRenderer {
     if (daylight > 0.05) {
       ctx.save();
       ctx.globalCompositeOperation = 'screen';
-      ctx.globalAlpha = daylight * (0.38 + (Math.sin(elapsedSeconds * 0.18) * 0.05));
+      ctx.globalAlpha = daylight * (0.24 + (Math.sin(elapsedSeconds * 0.18) * 0.035));
       ctx.drawImage(this.rays, Math.sin(elapsedSeconds * 0.035) * 3, 0);
       ctx.restore();
     }

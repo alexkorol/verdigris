@@ -7,6 +7,37 @@ const humanise = value => String(value || '')
 
 const finiteNumber = value => (Number.isFinite(Number(value)) ? Number(value) : null);
 
+export const getItemTooltipPosition = (event = {}, viewport = {}) => {
+  const viewportWidth = Number(viewport.width)
+    || (typeof window === 'undefined' ? 1280 : window.innerWidth);
+  const viewportHeight = Number(viewport.height)
+    || (typeof window === 'undefined' ? 720 : window.innerHeight);
+  const anchor = event.currentTarget && typeof event.currentTarget.getBoundingClientRect === 'function'
+    ? event.currentTarget.getBoundingClientRect()
+    : null;
+  const pointerX = Number.isFinite(event.clientX) && event.clientX > 0
+    ? event.clientX
+    : (anchor?.right || 12);
+  const pointerY = Number.isFinite(event.clientY) && event.clientY > 0
+    ? event.clientY
+    : (anchor ? anchor.top + anchor.height / 2 : 12);
+  const width = Math.min(326, Math.max(220, viewportWidth - 24));
+  const gap = 16;
+  const left = pointerX + gap + width <= viewportWidth - 12
+    ? pointerX + gap
+    : Math.max(12, pointerX - width - gap);
+  const above = pointerY > viewportHeight / 2;
+
+  return {
+    left,
+    top: above ? null : pointerY + gap,
+    bottom: above ? viewportHeight - pointerY + gap : null,
+    maxHeight: Math.max(140, above
+      ? pointerY - gap - 12
+      : viewportHeight - pointerY - gap - 12),
+  };
+};
+
 export const getItemRarity = (item = {}) => {
   const explicit = String(item.rarity || '').toLowerCase();
   if (RARITIES.has(explicit)) {

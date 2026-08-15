@@ -43,13 +43,12 @@
       >{{ pip.symbol }}</span>
     </div>
 
-    <Teleport to="body">
-      <InventoryItemTooltip
-        v-if="showTooltip && item"
-        :item="item"
-        :position="tooltipPosition"
-      />
-    </Teleport>
+    <ItemTooltip
+      v-if="showTooltip && item"
+      :item="item"
+      :dimensions="tooltipDimensions"
+      :position="tooltipPosition"
+    />
   </div>
 </template>
 
@@ -57,15 +56,17 @@
 import { mapStores } from 'pinia';
 import { unref } from 'vue';
 
+import { getItemDimensions } from '@/core/inventory/footprint.js';
 import { resolveInventoryItemArt } from '@/core/inventory/item-art.js';
 import {
   getInventoryItemRarity,
   getInventoryVesselPips,
 } from '@/core/inventory/item-presentation.js';
+import { getItemTooltipPosition } from '@/core/inventory/item-tooltip.js';
 import { canEquipInventoryItemToSlot } from '@/stores/inventory.js';
 import { useUiStore } from '@/stores/ui.js';
 import bus from '../../core/utilities/bus.js';
-import InventoryItemTooltip from '../inventory/InventoryItemTooltip.vue';
+import ItemTooltip from '../inventory/ItemTooltip.vue';
 
 const storeValue = value => unref(value);
 const isStoreDragging = store => Boolean(store && storeValue(store.isDragging));
@@ -73,7 +74,7 @@ const isStoreDragging = store => Boolean(store && storeValue(store.isDragging));
 export default {
   name: 'EquipmentSlot',
   components: {
-    InventoryItemTooltip,
+    ItemTooltip,
   },
   emits: ['open-context-menu', 'commit'],
   props: {
@@ -97,13 +98,14 @@ export default {
   data() {
     return {
       showTooltip: false,
-      tooltipPosition: { x: 0, y: 0 },
+      tooltipPosition: { left: 16, top: 16, bottom: null, maxHeight: 480 },
     };
   },
   beforeUnmount() {
     if (typeof window !== 'undefined') {
       window.removeEventListener('pointerup', this.handlePointerUp);
     }
+    this.clearContextHint();
   },
   inject: {
     inventoryDragStore: {
@@ -164,6 +166,7 @@ export default {
     },
     handlePointerLeave() {
       this.hideTooltip();
+      this.clearContextHint();
       if (!isStoreDragging(this.inventoryDragStore)) {
         return;
       }
@@ -184,18 +187,20 @@ export default {
       }
       const rect = event?.currentTarget?.getBoundingClientRect?.();
       this.showTooltip = true;
-      this.tooltipPosition = rect
-        ? { x: rect.right, y: rect.top }
-        : { x: 0, y: 0 };
+      this.tooltipPosition = getItemTooltipPosition({
+        currentTarget: event?.currentTarget,
+        clientX: rect?.right,
+        clientY: rect ? rect.top + (rect.height / 2) : 0,
+      });
     },
     updateTooltipPosition(event) {
-      this.tooltipPosition = {
-        x: Number.isFinite(event?.clientX) ? event.clientX : 0,
-        y: Number.isFinite(event?.clientY) ? event.clientY : 0,
-      };
+      this.tooltipPosition = getItemTooltipPosition(event);
     },
     hideTooltip() {
       this.showTooltip = false;
+    },
+    clearContextHint() {
+      this.uiStore.setAction({ object: '', label: '' });
     },
     emitContext(event, firstOnly) {
       if (!this.item) {
@@ -245,6 +250,9 @@ export default {
       return this.item
         ? getInventoryVesselPips(this.item).filter(pip => pip.kind !== 'empty')
         : [];
+    },
+    tooltipDimensions() {
+      return this.item ? getItemDimensions(this.item, this.item.orientation) : { width: 1, height: 1 };
     },
     rootClasses() {
       return [

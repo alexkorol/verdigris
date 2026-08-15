@@ -631,11 +631,9 @@ div.game {
     outline: none;
     cursor: pointer;
 
-    /* The source tiles were authored for a brighter top-down presentation.
-       Perspective resampling plus multiply lighting otherwise crushes their
-       midtones into the same green-brown band. Keep silhouettes crisp while
-       easing saturation and lifting the playable world, not the HUD chrome. */
-    filter: brightness(1.12) contrast(1.08) saturate(0.9);
+    /* The terrain shader owns the palette grade. A second brightness lift here
+       made grass and roads clip into neon green/yellow on real displays. */
+    filter: contrast(1.04) saturate(0.94);
     image-rendering: pixelated;
     display: block;
   }

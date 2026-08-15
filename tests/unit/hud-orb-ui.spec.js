@@ -60,6 +60,14 @@ describe('WIZARD HUD orbs', () => {
     expect(source).toContain('mp: 0.52');
   });
 
+  it('keeps decorative orb rendering from competing with the 60fps world loop', () => {
+    const source = readSource('src/core/hud/wizard-orb-renderer.js');
+
+    expect(source).toContain('const ORB_FRAME_INTERVAL_MS = 1000 / 30;');
+    expect(source).toContain('const MAX_DEVICE_PIXEL_RATIO = 2;');
+    expect(source).toContain('timestamp - this.lastFrameAt < ORB_FRAME_INTERVAL_MS');
+  });
+
   it('keeps the WIZARD orb canvas transparent outside the art cutout', () => {
     const renderer = readSource('src/core/hud/wizard-orb-renderer.js');
     const shader = readSource('src/assets/shaders/wizard-orb.frag');

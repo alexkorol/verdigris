@@ -290,13 +290,6 @@ export default {
   max-height: none;
 }
 
-/* Inventory needs room for both authored 54px item art and the complete
-   12x7 backpack. It remains an overlay, so this never narrows the world. */
-.pane-host__side--inventory {
-  width: min(calc(100vw - (var(--pane-host-panel-gutter) * 2)), 1240px);
-  max-width: min(calc(100vw - (var(--pane-host-panel-gutter) * 2)), 1240px);
-}
-
 .pane-host__center {
   position: relative;
   display: flex;

@@ -1422,6 +1422,13 @@ export default {
   pointer-events: none;
 }
 
+/* Pane item hovers have their own tooltip. Suppress the legacy world-action
+   hint behind a pane so equipped and backpack items present one hover UI. */
+.game-container--left-pane-open :deep(.first-action),
+.game-container--right-pane-open :deep(.first-action) {
+  display: none;
+}
+
 @media (width <= 639px) {
   .game-container {
     --arpg-pane-width: calc(100vw - 12px);

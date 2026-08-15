@@ -272,6 +272,7 @@ class PerspectiveRenderer {
     const maximumX = Math.min(mapSize.x - 1, playerX + VERTICAL_TILE_RANGE.x);
     const minimumY = Math.max(0, playerY - VERTICAL_TILE_RANGE.north);
     const maximumY = Math.min(mapSize.y - 1, playerY + VERTICAL_TILE_RANGE.south);
+    const playerFoot = this.getPlayerFoot(tileSize);
 
     for (let worldY = minimumY; worldY <= maximumY; worldY += 1) {
       for (let worldX = minimumX; worldX <= maximumX; worldX += 1) {
@@ -288,18 +289,29 @@ class PerspectiveRenderer {
         const gid = verticalForeground ? foregroundGid : backgroundGid;
         const kind = TREE_GIDS.has(gid) ? 'tree' : (wall ? 'wall' : 'decor');
         const foot = centerOfTile(worldX, worldY + 0.42, tileSize);
+        const projection = this.projectVerticalTerrain(foot, tileSize, kind);
+        if (!projection) {
+          continue;
+        }
         draws.push({
           depthY: foot.y,
-          draw: () => this.drawVerticalTerrainTile(gid, foot, tileSize, kind),
+          draw: () => this.drawVerticalTerrainTile(
+            gid,
+            foot,
+            tileSize,
+            kind,
+            projection,
+            playerFoot,
+          ),
         });
       }
     }
   }
 
-  drawVerticalTerrainTile(gid, foot, tileSize, kind) {
+  projectVerticalTerrain(foot, tileSize, kind) {
     const point = this.camera.projectTerrain(foot.x, foot.y);
     if (!point) {
-      return;
+      return null;
     }
 
     const dimensions = {
@@ -317,8 +329,24 @@ class PerspectiveRenderer {
       || point.y < -height
       || drawY > this.camera.height
     ) {
+      return null;
+    }
+
+    return { point, width, height, drawX, drawY };
+  }
+
+  drawVerticalTerrainTile(gid, foot, tileSize, kind, projection = null, playerFoot = null) {
+    const projected = projection || this.projectVerticalTerrain(foot, tileSize, kind);
+    if (!projected) {
       return;
     }
+    const {
+      point,
+      width,
+      height,
+      drawX,
+      drawY,
+    } = projected;
 
     const zeroId = gid - 1;
     const sheet = this.map.resolveTileSheet(zeroId);
@@ -332,9 +360,9 @@ class PerspectiveRenderer {
     const ctx = this.map.bufferContext;
 
     ctx.save();
-    const playerFoot = this.getPlayerFoot(tileSize);
-    const horizontalDistance = Math.abs(foot.x - playerFoot.x);
-    const depthDistance = foot.y - playerFoot.y;
+    const resolvedPlayerFoot = playerFoot || this.getPlayerFoot(tileSize);
+    const horizontalDistance = Math.abs(foot.x - resolvedPlayerFoot.x);
+    const depthDistance = foot.y - resolvedPlayerFoot.y;
     const obscuresPlayer = horizontalDistance < tileSize * 1.05
       && depthDistance > -tileSize * 0.12
       && depthDistance < tileSize * 1.7;
@@ -355,9 +383,6 @@ class PerspectiveRenderer {
     }
 
     ctx.imageSmoothingEnabled = false;
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.72)';
-    ctx.shadowBlur = Math.max(2, point.scale * 5);
-    ctx.shadowOffsetY = Math.max(1, point.scale * 2);
     ctx.drawImage(
       sheet.image,
       sourceX,
@@ -372,11 +397,8 @@ class PerspectiveRenderer {
 
     if (kind === 'wall') {
       const faceTop = drawY + (height * 0.42);
-      const faceGradient = ctx.createLinearGradient(0, faceTop, 0, point.y);
-      faceGradient.addColorStop(0, 'rgba(58, 48, 38, 0.08)');
-      faceGradient.addColorStop(1, 'rgba(2, 3, 4, 0.58)');
       ctx.globalCompositeOperation = 'multiply';
-      ctx.fillStyle = faceGradient;
+      ctx.fillStyle = 'rgba(25, 20, 16, 0.40)';
       ctx.fillRect(drawX, faceTop, width, point.y - faceTop);
 
       ctx.globalCompositeOperation = 'source-over';
@@ -401,17 +423,14 @@ class PerspectiveRenderer {
   drawVerticalTerrainShadow(ctx, point, width, height, kind) {
     const reach = kind === 'tree' ? height * 0.62 : height * 0.34;
     const spread = kind === 'tree' ? width * 0.42 : width * 0.50;
-    const alpha = kind === 'tree' ? 0.34 : 0.26;
+    const alpha = kind === 'tree' ? 0.25 : 0.19;
 
     ctx.save();
     ctx.translate(point.x + (reach * 0.34), point.y + (reach * 0.12));
     ctx.rotate(-0.18);
     ctx.scale(1, 0.34);
-    const gradient = ctx.createRadialGradient(0, 0, spread * 0.08, 0, 0, spread + reach);
-    gradient.addColorStop(0, `rgba(2, 5, 3, ${alpha})`);
-    gradient.addColorStop(0.58, `rgba(2, 5, 3, ${alpha * 0.62})`);
-    gradient.addColorStop(1, 'rgba(2, 5, 3, 0)');
-    ctx.fillStyle = gradient;
+    ctx.globalAlpha *= alpha;
+    ctx.fillStyle = '#071009';
     ctx.beginPath();
     ctx.ellipse(0, 0, spread + reach, spread, 0, 0, Math.PI * 2);
     ctx.fill();

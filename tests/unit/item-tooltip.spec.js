@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildItemTooltipModel,
   getItemRarity,
+  getItemTooltipPosition,
   itemTooltipAriaLabel,
 } from '@/core/inventory/item-tooltip.js';
 
@@ -58,9 +59,28 @@ describe('inventory item tooltip', () => {
       .toBe('Bronze Pickaxe (1 x 3)');
   });
 
-  it('replaces the browser title with the floating tooltip component', () => {
+  it('keeps the shared tooltip inside the viewport on either side of the pointer', () => {
+    expect(getItemTooltipPosition(
+      { clientX: 100, clientY: 100 },
+      { width: 1280, height: 720 },
+    )).toEqual({ left: 116, top: 116, bottom: null, maxHeight: 592 });
+    expect(getItemTooltipPosition(
+      { clientX: 1200, clientY: 680 },
+      { width: 1280, height: 720 },
+    )).toEqual({ left: 858, top: null, bottom: 56, maxHeight: 652 });
+  });
+
+  it('uses one floating tooltip for backpack and equipped items', () => {
     const gridSource = readFileSync(
       fileURLToPath(new URL('../../src/components/inventory/InventoryGrid.vue', import.meta.url)),
+      'utf8',
+    );
+    const equipmentSource = readFileSync(
+      fileURLToPath(new URL('../../src/components/sub/EquipmentSlot.vue', import.meta.url)),
+      'utf8',
+    );
+    const containerSource = readFileSync(
+      fileURLToPath(new URL('../../src/components/layout/GameContainer.vue', import.meta.url)),
       'utf8',
     );
     const tooltipSource = readFileSync(
@@ -72,6 +92,11 @@ describe('inventory item tooltip', () => {
     expect(gridSource).toContain(':aria-label="itemAriaLabel(item)"');
     expect(gridSource).toContain('@focus="showTooltip($event, item)"');
     expect(gridSource).not.toContain(':title="itemTooltip(item)"');
+    expect(equipmentSource).toContain('<ItemTooltip');
+    expect(equipmentSource).toContain(':dimensions="tooltipDimensions"');
+    expect(equipmentSource).not.toContain('InventoryItemTooltip');
+    expect(equipmentSource).toContain('this.clearContextHint();');
+    expect(containerSource).toContain('.game-container--right-pane-open :deep(.first-action)');
     expect(tooltipSource).toContain('role="tooltip"');
     expect(tooltipSource).toContain('item-tooltip__line--tone-');
   });
