@@ -79,5 +79,8 @@ None introduced by the audit. Existing owner-only decisions remain untouched.
 ## Integration notes
 
 The report is review-ready but must not be integrated as an accepted task until
-the architect writes `REVIEW.md`. If accepted, integrate worker commit
-`ff2ea30f0cb95003a61a0b3d1494abd7ec1a3fe6` as a report-only change.
+the architect writes `REVIEW.md`. A read-only merge-tree check found the
+expected same-path overlap with this coordinator summary; on acceptance,
+integrate the worker's fuller `REPORT.md` from
+`ff2ea30f0cb95003a61a0b3d1494abd7ec1a3fe6`, preserving its 382-line evidence
+packet rather than deleting either side silently.
