@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cctype>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -67,6 +68,18 @@ struct EffectFx {
   int ttl = 8;
 };
 
+// AttackTelegraphed is the simulation's warning contract.  The client keeps
+// only the event-time presentation snapshot; it never predicts range,
+// facing, damage, or whether the pending action will ultimately resolve.
+struct ActiveTelegraph {
+  std::string actor_id;
+  std::string action;
+  verdigris::Vec2 position;
+  verdigris::Vec2 facing{1, 0};
+  std::uint64_t start_tick = 0;
+  int windup_ticks = 1;
+};
+
 struct ClientState {
   std::unique_ptr<verdigris::Simulation> simulation;
   bool w = false;
@@ -79,6 +92,7 @@ struct ClientState {
   bool aim_direction_initialized = false;
   bool was_moving = false;
   std::vector<EffectFx> effects;
+  std::unordered_map<std::string, ActiveTelegraph> telegraphs;
   std::unordered_map<std::string, verdigris::Vec2> loot_positions;
   verdigris::Vec2 last_death_pos{0, 0};
   std::size_t processed_events = 0;
@@ -270,6 +284,102 @@ void draw_ground_grid(HDC dc, const Camera& camera, const RECT& bounds) {
   }
 }
 
+// These are deliberately presentation approximations of the core's private
+// kMeleeRange (1100) and kThrustRange (1650) values.  The constants are not a
+// second combat rule: they only keep the warning's projected footprint in the
+// same scale as the simulation's movement units without adding a core export.
+constexpr double kTelegraphMeleeRadius = 1100.0;
+constexpr double kTelegraphThrustLength = 1650.0;
+
+COLORREF telegraph_color(double visibility, COLORREF source) {
+  return fade_to_background(source, std::clamp(visibility, 0.0, 1.0));
+}
+
+void draw_thrust_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
+                           const ActiveTelegraph& telegraph, double visibility) {
+  const double facing_x = static_cast<double>(telegraph.facing.x);
+  const double facing_y = static_cast<double>(telegraph.facing.y);
+  const double angle = std::atan2(facing_y, facing_x);
+  const ScreenPoint base = project(camera, bounds, telegraph.position.x,
+                                   telegraph.position.y);
+  // The shared resolver accepts the full forward half-plane (strict dot > 0),
+  // so the warning uses a broad 180-degree fan instead of promising a
+  // narrower client-only hit cone.
+  constexpr int kSegments = 12;
+  POINT points[kSegments + 2]{};
+  points[0] = {base.x, base.y};
+  for (int i = 0; i <= kSegments; ++i) {
+    const double a = angle - kPi * 0.5 + kPi * static_cast<double>(i) / kSegments;
+    const double wx = telegraph.position.x + std::cos(a) * kTelegraphThrustLength;
+    const double wy = telegraph.position.y + std::sin(a) * kTelegraphThrustLength;
+    const ScreenPoint point = project(camera, bounds, wx, wy);
+    points[i + 1] = {point.x, point.y};
+  }
+  const COLORREF fill = telegraph_color(visibility * 0.38, RGB(214, 52, 52));
+  const COLORREF edge = telegraph_color(visibility, RGB(238, 72, 64));
+  HBRUSH brush = CreateSolidBrush(fill);
+  HPEN pen = CreatePen(PS_SOLID, 2, edge);
+  HGDIOBJ old_brush = SelectObject(dc, brush);
+  HGDIOBJ old_pen = SelectObject(dc, pen);
+  Polygon(dc, points, kSegments + 2);
+  SelectObject(dc, old_brush);
+  SelectObject(dc, old_pen);
+  DeleteObject(brush);
+  DeleteObject(pen);
+  // A centerline and a short origin ring make the warning readable when the
+  // wedge is projected nearly edge-on at the current camera pitch.
+  const ScreenPoint tip = project(
+      camera, bounds, telegraph.position.x + std::cos(angle) * kTelegraphThrustLength,
+      telegraph.position.y + std::sin(angle) * kTelegraphThrustLength);
+  draw_line(dc, base.x, base.y, tip.x, tip.y, edge, 2);
+  const int origin_r = std::max(4, static_cast<int>(kTileUnits * 0.18 * base.scale));
+  ring_ellipse(dc, base.x, base.y,
+               origin_r, std::max(2, static_cast<int>(origin_r * camera.ground_squash())),
+               edge, 2);
+}
+
+void draw_sweep_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
+                          const ActiveTelegraph& telegraph, double visibility) {
+  const ScreenPoint base = project(camera, bounds, telegraph.position.x,
+                                   telegraph.position.y);
+  const int radius = std::max(4, static_cast<int>(kTelegraphMeleeRadius * base.scale));
+  const int ry = std::max(3, static_cast<int>(radius * camera.ground_squash()));
+  const COLORREF fill = telegraph_color(visibility * 0.28, RGB(214, 52, 52));
+  const COLORREF edge = telegraph_color(visibility, RGB(238, 72, 64));
+  fill_ellipse(dc, base.x, base.y, radius, ry, fill);
+  ring_ellipse(dc, base.x, base.y, radius, ry, edge, 3);
+  if (radius > 12)
+    ring_ellipse(dc, base.x, base.y, radius - 10, std::max(2, ry - 5),
+                 telegraph_color(visibility * 0.82, RGB(255, 112, 82)), 1);
+}
+
+double telegraph_visibility(const ClientState& state,
+                            const ActiveTelegraph& telegraph) {
+  const std::uint64_t elapsed_ticks =
+      state.simulation->tick() >= telegraph.start_tick
+          ? state.simulation->tick() - telegraph.start_tick
+          : 0;
+  const double progress = std::clamp(
+      static_cast<double>(elapsed_ticks) /
+          std::max(1, telegraph.windup_ticks),
+      0.0, 1.0);
+  const double pulse = 0.72 + 0.28 *
+      std::sin((static_cast<double>(elapsed_ticks) + 0.25) * 2.35);
+  // Always readable on the first frame, then intensify toward the strike.
+  return std::clamp((0.38 + 0.62 * progress) * pulse, 0.18, 1.0);
+}
+
+void paint_telegraphs(const ClientState& state, HDC dc, const RECT& bounds) {
+  for (const auto& entry : state.telegraphs) {
+    const ActiveTelegraph& telegraph = entry.second;
+    const double visibility = telegraph_visibility(state, telegraph);
+    if (telegraph.action == "sweep")
+      draw_sweep_telegraph(dc, state.camera, bounds, telegraph, visibility);
+    else
+      draw_thrust_telegraph(dc, state.camera, bounds, telegraph, visibility);
+  }
+}
+
 void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectFx& fx) {
   const ScreenPoint base = project(camera, bounds, fx.wx, fx.wy);
   const double life = 1.0 - static_cast<double>(fx.age) / fx.ttl;
@@ -359,6 +469,7 @@ const char* event_label(verdigris::EventType type) {
   using verdigris::EventType;
   switch (type) {
     case EventType::AttackStarted: return "attack";
+    case EventType::AttackTelegraphed: return "telegraph";
     case EventType::DamageApplied: return "damage";
     case EventType::ActorDied: return "death";
     case EventType::ItemDropped: return "item drop";
@@ -425,7 +536,23 @@ void ingest_events(ClientState& state, const RECT& bounds) {
     const double ex = subject ? subject->position.x : state.last_death_pos.x;
     const double ey = subject ? subject->position.y : state.last_death_pos.y;
     switch (event.type) {
+      case verdigris::EventType::AttackTelegraphed:
+        if (subject && subject->alive && subject->kind == verdigris::ActorKind::Monster &&
+            subject->elite) {
+          ActiveTelegraph telegraph;
+          telegraph.actor_id = event.actor_id;
+          telegraph.action = event.text;
+          telegraph.position = subject->position;
+          telegraph.facing = subject->facing;
+          telegraph.start_tick = event.tick;
+          telegraph.windup_ticks = std::max(1, event.value);
+          state.telegraphs[event.actor_id] = std::move(telegraph);
+        }
+        break;
       case verdigris::EventType::AttackStarted:
+        // A strike (including one which is ultimately absorbed by a gate in
+        // the core) ends the presentation warning for this actor.
+        state.telegraphs.erase(event.actor_id);
         state.effects.push_back({event.text == "sweep" ? EffectFx::Kind::SweepArc
                                                          : EffectFx::Kind::Swing,
                                  ex, ey, aim_angle(state, bounds, ex, ey), 0,
@@ -439,9 +566,19 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         state.effects.push_back({EffectFx::Kind::Impact, ex, ey, 0.0, 0, 4});
         break;
       case verdigris::EventType::ActorDied:
+        state.telegraphs.erase(event.actor_id);
+        // The core cancels all elite windups when the Scion dies; clear any
+        // remaining client records at the same event boundary.
+        if (event.text == "scion" ||
+            (subject && subject->kind == verdigris::ActorKind::Player))
+          state.telegraphs.clear();
         if (subject) state.last_death_pos = subject->position;
         state.effects.push_back({EffectFx::Kind::DeathRing, ex, ey, 0.0, 0, 12});
         state.effects.push_back({EffectFx::Kind::Dust, ex, ey, 0.7, 0, 10});
+        break;
+      case verdigris::EventType::InstanceEntered:
+        // A route transition invalidates all event-time actor snapshots.
+        state.telegraphs.clear();
         break;
       case verdigris::EventType::ActorMoved:
         if (event.text == "dash")
@@ -476,7 +613,22 @@ void ingest_events(ClientState& state, const RECT& bounds) {
       state.event_log.push_back(line);
       if (state.event_log.size() > 6)
         state.event_log.erase(state.event_log.begin());
-    }
+      }
+  }
+
+  // There is intentionally no client cancellation prediction.  If a pending
+  // action fizzles or an event stream is truncated, the simulation-provided
+  // windup duration is the upper bound for the warning's lifetime.
+  const std::uint64_t now = sim.tick();
+  for (auto it = state.telegraphs.begin(); it != state.telegraphs.end();) {
+    const auto* actor = sim.actor(it->first);
+    const ActiveTelegraph& telegraph = it->second;
+    const bool elapsed = now >= telegraph.start_tick +
+                                   static_cast<std::uint64_t>(telegraph.windup_ticks);
+    if (!actor || !actor->alive || elapsed)
+      it = state.telegraphs.erase(it);
+    else
+      ++it;
   }
 }
 
@@ -641,6 +793,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   fill_ellipse(dc, pad.x, pad.y, pad_rx, pad_ry, RGB(41, 62, 88));
   ring_ellipse(dc, pad.x, pad.y, pad_rx, pad_ry, RGB(88, 132, 190), 2);
 
+  // Warnings live on the ground plane beneath billboards and loot so their
+  // footprint remains readable without obscuring the actor that owns them.
+  paint_telegraphs(state, dc, bounds);
+
   const verdigris::Actor* player = sim.actor(sim.scion().actor_id);
 
   // Collect every standing element, then draw back-to-front by world depth.
@@ -710,6 +866,20 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
           draw_line(dc, base.x - bar_w / 2, bar_y,
                     base.x - bar_w / 2 + static_cast<int>(bar_w * ratio), bar_y,
                     RGB(214, 118, 86), 3);
+        const auto telegraph = state.telegraphs.find(monster.id);
+        if (telegraph != state.telegraphs.end()) {
+          const ActiveTelegraph& warning = telegraph->second;
+          SetBkMode(dc, TRANSPARENT);
+          SetTextColor(dc, telegraph_color(telegraph_visibility(state, warning),
+                                           RGB(255, 104, 86)));
+          std::string pending = "! " + warning.action;
+          std::transform(pending.begin(), pending.end(), pending.begin(),
+                         [](unsigned char character) {
+                           return static_cast<char>(std::toupper(character));
+                         });
+          TextOutA(dc, base.x - bar_w / 2, bar_y - 15, pending.c_str(),
+                   static_cast<int>(pending.size()));
+        }
         break;
       }
       case DepthDraw::What::Loot: {
@@ -778,10 +948,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   SetTextColor(dc, RGB(150, 160, 150));
   char debug_line[256];
   std::snprintf(debug_line, sizeof(debug_line),
-                "tick %llu | zoom %.2f | pitch %.0f | persp %.5f | effects %zu",
+                "tick %llu | zoom %.2f | pitch %.0f | persp %.5f | effects %zu | telegraphs %zu",
                 static_cast<unsigned long long>(sim.tick()), state.camera.zoom,
                 state.camera.pitch_deg, state.camera.perspective,
-                state.effects.size());
+                state.effects.size(), state.telegraphs.size());
   TextOutA(dc, 18, 168, debug_line, static_cast<int>(strlen(debug_line)));
   if (state.hint_ticks > 0 && !state.hint.empty()) {
     SetTextColor(dc, RGB(239, 208, 116));
