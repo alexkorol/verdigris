@@ -154,6 +154,17 @@ ADR-002.
   **READY**, base = 0009 integration tip (Codex records SHA).
 - Architect debt remaining: ADR-002 persistence/serialization seam draft.
 
+## TASK-0010 accepted; wave 6 issued (2026-08-16, ~11:05)
+
+- TASK-0010 (`7e066aa`) ACCEPTED — 8-way integer facing, AimIntent
+  appended, strict half-plane Thrust cone, monster pursuit facing, replay
+  determinism; gates independently rerun green.
+- Wave 6: TASK-0011 monster skill AI with `AttackTelegraphed` windups
+  (core; READY) and TASK-0012 camera-preset evidence pack (task-folder
+  only; READY) — disjoint. DRAFT idea queued: skill-cost query seam
+  (0009 watch item) after 0011.
+- Architect debt: ADR-002 draft next quiet cycle.
+
 ## Watch items
 
 - Enemy melee cadence in the slice felt lethal for an idle level-1; base
