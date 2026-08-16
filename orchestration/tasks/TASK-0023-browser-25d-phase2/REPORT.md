@@ -1,9 +1,10 @@
 ---
 task: TASK-0023
-state: REVIEW_REQUESTED
+state: INTEGRATED
 branch: codex/TASK-0023-browser-25d-phase2
 commits:
   - 48725e3
+  - 864c497
 base_commit: 355aa168d78834c97cb48907cf6b05fec2402c11
 ---
 
@@ -63,7 +64,21 @@ atmosphere, or DoF coupling changes were made. The reference curve follows
 the documented `* 0.96` cap; its on-screen saturation is verified visually in
 the captured horizon comparison.
 
-## Review request
+## Architect review
 
-Submitted for architect review at the Phase-2 boundary. Phase 3 lighting and
-atmosphere retuning remains intentionally deferred.
+Architect review commit `c7293b9` (architect checkout) accepted TASK-0023 with
+no blocking corrections. It specifically records that the Phase-3 evidence
+must include an open-field shot toward the map edge where the horizon effect
+is visible; that is a requirement for TASK-0024, not a correction to this
+phase.
+
+## Integration
+
+Accepted source commit `48725e3` was cherry-picked in the isolated
+`codex/integration-task-0023` worktree as `864c497`. Post-integration unit and
+smoke gates passed, and the complete playtest passed 31/31 scenarios. A first
+full playtest had one timing-sensitive `gear-outcomes` miss; the targeted
+rerun and subsequent complete rerun both passed.
+
+Phase 3 lighting and atmosphere retuning remains intentionally deferred to
+TASK-0024.
