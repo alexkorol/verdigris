@@ -91,6 +91,16 @@ Revision commit: `907024e` (`fix(browser): enforce zero DoF below ARPG base`).
 The revised branch was re-run from a clean disposable worktree: all 31/31
 playtest scenarios passed after the correction.
 
+## Scope question
+
+The governing zero-DoF rule makes the inherited wide-zoom assertion stale, so
+the focused camera unit expectation was updated to keep the required unit gate
+green. That test file is outside this READY spec's immutable `owned_paths`.
+The independent validator flagged this as the sole remaining issue. The
+coordinator filed `orchestration/questions/QUESTION-0004-task-0022-camera-test-ownership.md`
+for architect authorization or a replacement task; no other out-of-scope paths
+were changed.
+
 ## Review request
 
 This task is submitted for architect review at the Phase-1 boundary. The
