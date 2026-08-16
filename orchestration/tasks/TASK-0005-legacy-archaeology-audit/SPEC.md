@@ -1,10 +1,10 @@
 ---
 id: TASK-0005
 title: Legacy browser-game archaeology audit (read-only)
-state: DRAFT
+state: READY
 track: research
 priority: medium
-base_commit: TBD (set on promotion)
+base_commit: 9eadfbd
 dependencies: []
 parallel_safe: true
 owned_paths:
@@ -15,9 +15,8 @@ forbidden_paths:
 acceptance_commands: []
 ---
 
-DRAFT — do not claim until state reads READY and base_commit is a SHA.
-(Promotable any time a reader worker is free; read-only, so parallel-safe
-with all implementation tasks.)
+READY (promoted 2026-08-16 after wave-1 review). Read-only; parallel-safe
+with all implementation tasks.
 
 ## Goal
 
