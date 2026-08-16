@@ -1,6 +1,6 @@
 ---
 task: TASK-0014
-state: CLAIMED
+state: REVIEW_REQUESTED
 worker: Codex coordinator
 worker_branch: codex/native-reconstitution
 worktree: .
@@ -11,4 +11,6 @@ expected_verification: npm run smoke:browser; npm run test:e2e; verify port 6500
 known_risks: keep the change to the package.json smoke:browser script only; preserve the existing build step and port 6500 lifecycle
 dependencies: none
 architect_review_required: true
+implementation_commit: b068964
+verification: npm run smoke:browser (1 passed, port 6500 released); npm run test:e2e (3 passed, port 6500 released); git diff --check PASS
 ---
