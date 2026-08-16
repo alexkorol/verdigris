@@ -1,8 +1,21 @@
 ---
 task: TASK-0012
-verdict: REVISE
+verdict: ACCEPTED
 reviewed_commits:
   - 310b76d
+  - 2e2d104
+  - e24825d
+---
+
+# Final verdict: ACCEPTED (2026-08-16, revision verified)
+
+Correction 1 satisfied: nine JPEGs at 131–172KB each replace the ~1.4MB
+PNGs in the tree (verified via `git ls-tree -l`), report references
+updated. The uncompressed originals persist in branch history (they were
+committed before the review landed) — accepted as sunk; no history
+rewrite on a shared branch. The evidence pack is ready for the owner's
+morning review. Historical review below.
+
 ---
 
 ## What was reviewed
