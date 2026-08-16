@@ -270,6 +270,180 @@ void test_sweep_hits_multiple_targets_and_gates_resource() {
         "Sweep uses its 1.5x attack cooldown");
 }
 
+Actor* setup_elite(Simulation& sim, Vec2 position) {
+  Actor* player = sim.actor(sim.scion().actor_id);
+  check(player != nullptr, "elite setup has a player");
+  player->position = {0, 0};
+  player->stats.life = 1000;
+  const std::string elite_id = sim.spawn_monster(position, 1, true);
+  Actor* elite = sim.actor(elite_id);
+  check(elite != nullptr && elite->elite, "elite setup creates an elite monster");
+  elite->stats.life = 1000;
+  elite->stats.resource = elite->stats.resource_max;
+  elite->cooldown_ticks = 0;
+  return elite;
+}
+
+void test_elite_thrust_telegraph_timing() {
+  Simulation sim(0xA011ULL);
+  Actor* elite = setup_elite(sim, {1400, 0});
+  const std::string elite_id = elite->id;
+  sim.dispatch(Command::action_use(ActionType::Wait));
+  const Event* telegraph = last_event(sim, EventType::AttackTelegraphed, "thrust");
+  check(telegraph && telegraph->actor_id == elite_id && telegraph->value == kTelegraphTicks,
+        "elite emits a Thrust telegraph with its actor and windup contract");
+  const std::uint64_t telegraph_tick = telegraph->tick;
+  elite = sim.actor(elite_id);
+  check(elite->pending_action == ActionType::Thrust &&
+            elite->pending_action_ticks == kTelegraphTicks,
+        "elite stores the pending action and exact remaining windup");
+  const int damage_before = sim.actor(sim.scion().actor_id)->stats.life;
+  for (int i = 0; i < kTelegraphTicks - 1; ++i) {
+    sim.dispatch(Command::action_use(ActionType::Wait));
+    check(sim.actor(sim.scion().actor_id)->stats.life == damage_before,
+          "telegraphed Thrust does not resolve before its final windup tick");
+  }
+  sim.dispatch(Command::action_use(ActionType::Wait));
+  const Event* damage = last_event(sim, EventType::DamageApplied, "thrust");
+  check(damage && damage->actor_id == sim.scion().actor_id,
+        "telegraphed Thrust resolves through the shared damage event");
+  check(damage->tick == telegraph_tick + kTelegraphTicks,
+        "telegraph precedes Thrust damage by exactly kTelegraphTicks");
+  elite = sim.actor(elite_id);
+  check(elite->pending_action == ActionType::Wait && elite->pending_action_ticks == 0,
+        "resolved Thrust clears the elite pending action");
+}
+
+void test_elite_skill_cone_gating() {
+  Simulation sim(0xA013ULL);
+  Actor* elite = setup_elite(sim, {800, 0});
+  const std::string elite_id = elite->id;
+  sim.dispatch(Command::action_use(ActionType::Wait));
+  const Event* telegraph = last_event(sim, EventType::AttackTelegraphed);
+  check(telegraph && telegraph->actor_id == elite_id && telegraph->text == "sweep",
+        "an elite in close melee range selects Sweep instead of long-range Thrust");
+  check(count_events(sim, EventType::AttackTelegraphed, "thrust") == 0,
+        "Thrust is gated out when the target is not in the thrust-only range band");
+}
+
+void test_elite_skill_fizzles_when_resolution_gates_fail() {
+  Simulation sim(0xA019ULL);
+  Actor* elite = setup_elite(sim, {1400, 0});
+  const std::string elite_id = elite->id;
+  elite->stats.resource = 0;
+  sim.dispatch(Command::action_use(ActionType::Wait));
+  check(count_events(sim, EventType::AttackTelegraphed, "thrust") == 1,
+        "elite can telegraph before the later resource gate is checked");
+  for (int i = 0; i < kTelegraphTicks; ++i) sim.dispatch(Command::action_use(ActionType::Wait));
+  elite = sim.actor(elite_id);
+  check(elite->pending_action == ActionType::Wait && elite->pending_action_ticks == 0,
+        "a gated elite action clears its pending state when it fizzles");
+  check(count_events(sim, EventType::AttackStarted, "thrust") == 0 &&
+            count_events(sim, EventType::DamageApplied, "thrust") == 0,
+        "a resource-gated elite Thrust fizzles without attack or damage events");
+}
+
+void test_elite_sweep_uses_shared_pipeline() {
+  Simulation sim(0xA014ULL);
+  Actor* elite = setup_elite(sim, {800, 0});
+  const std::string elite_id = elite->id;
+  Actor* player = sim.actor(sim.scion().actor_id);
+  const int expected_damage =
+      std::max(1, Simulation::resolve_damage(*elite, *player) * 3 / 4);
+  sim.dispatch(Command::action_use(ActionType::Wait));
+  for (int i = 0; i < kTelegraphTicks; ++i) sim.dispatch(Command::action_use(ActionType::Wait));
+  player = sim.actor(sim.scion().actor_id);
+  check(player->stats.life == 1000 - expected_damage,
+        "elite Sweep applies the shared damage calculation and multiplier");
+  check(count_events(sim, EventType::AttackStarted, "sweep") == 1 &&
+            count_events(sim, EventType::DamageApplied, "sweep") == 1,
+        "elite Sweep uses the shared attack and damage event pipeline");
+  elite = sim.actor(elite_id);
+  check(elite->stats.resource == elite->stats.resource_max - 15,
+        "elite Sweep consumes the same resource gate as player Sweep");
+  check(elite->cooldown_ticks == elite->stats.attack_speed_ticks * 3 / 2,
+        "elite Sweep applies the shared Sweep cooldown");
+}
+
+void test_elite_telegraph_cancels_on_death() {
+  Simulation monster_death(0xA015ULL);
+  Actor* elite = setup_elite(monster_death, {1400, 0});
+  const std::string elite_id = elite->id;
+  monster_death.dispatch(Command::action_use(ActionType::Wait));
+  elite = monster_death.actor(elite_id);
+  elite->stats.life = 1;
+  Actor* player = monster_death.actor(monster_death.scion().actor_id);
+  player->stats.resource = player->stats.resource_max;
+  player->cooldown_ticks = 0;
+  monster_death.dispatch(Command::action_use(ActionType::Thrust));
+  elite = monster_death.actor(elite_id);
+  check(!elite->alive && elite->pending_action == ActionType::Wait &&
+            elite->pending_action_ticks == 0,
+        "monster death cancels its pending telegraphed action");
+  bool monster_death_damaged_player = false;
+  for (const auto& event : monster_death.events()) {
+    if (event.type == EventType::DamageApplied && event.text == "thrust" &&
+        event.actor_id == monster_death.scion().actor_id) {
+      monster_death_damaged_player = true;
+    }
+  }
+  check(!monster_death_damaged_player,
+        "a dead elite cannot resolve its cancelled Thrust");
+
+  Simulation target_death(0xA016ULL);
+  elite = setup_elite(target_death, {1400, 0});
+  const std::string target_elite_id = elite->id;
+  target_death.dispatch(Command::action_use(ActionType::Wait));
+  target_death.dispatch(Command::interact("hazard:death"));
+  elite = target_death.actor(target_elite_id);
+  check(!target_death.scion().alive && elite->pending_action == ActionType::Wait &&
+            elite->pending_action_ticks == 0,
+        "target death cancels every pending elite action");
+  check(count_events(target_death, EventType::DamageApplied, "thrust") == 0,
+        "a telegraphed skill never damages a dead target");
+}
+
+void test_elite_skill_replay_is_deterministic() {
+  Simulation first(0xA017ULL);
+  Simulation second(0xA017ULL);
+  Actor* first_elite = setup_elite(first, {1400, 0});
+  Actor* second_elite = setup_elite(second, {1400, 0});
+  check(first_elite->id == second_elite->id, "elite replay setup retains stable actor identity");
+  const std::vector<Command> commands = {
+      Command::action_use(ActionType::Wait), Command::action_use(ActionType::Wait),
+      Command::action_use(ActionType::Wait), Command::action_use(ActionType::Wait)};
+  for (const auto& command : commands) {
+    first.dispatch(command);
+    second.dispatch(command);
+  }
+  check(relevant(first) == relevant(second),
+        "elite telegraph and skill resolution replay byte-identically");
+  const Actor* first_actor = first.actor(first_elite->id);
+  const Actor* second_actor = second.actor(second_elite->id);
+  check(first_actor && second_actor && first_actor->pending_action == second_actor->pending_action &&
+            first_actor->pending_action_ticks == second_actor->pending_action_ticks,
+        "elite pending state remains deterministic under replay");
+}
+
+void test_non_elite_melee_cadence_is_unchanged() {
+  Simulation sim(0xA018ULL);
+  Actor* player = sim.actor(sim.scion().actor_id);
+  player->position = {0, 0};
+  player->stats.life = 1000;
+  const std::string monster_id = sim.spawn_monster({800, 0}, 1, false);
+  Actor* monster = sim.actor(monster_id);
+  check(monster && !monster->elite, "non-elite cadence test creates a plain monster");
+  sim.dispatch(Command::action_use(ActionType::Wait));
+  player = sim.actor(sim.scion().actor_id);
+  monster = sim.actor(monster_id);
+  check(count_events(sim, EventType::AttackTelegraphed) == 0,
+        "non-elite melee emits no telegraph");
+  check(count_events(sim, EventType::DamageApplied, "enemy-melee") == 1,
+        "non-elite monster still performs its ordinary melee attack");
+  check(monster->cooldown_ticks == monster->stats.attack_speed_ticks,
+        "non-elite melee cooldown cadence remains unchanged");
+}
+
 void test_war_cry_buff_expiry_and_replay_determinism() {
   Simulation first(0xA003ULL);
   Simulation second(0xA003ULL);
@@ -635,6 +809,13 @@ int main() {
   test_facing_replay_is_deterministic();
   test_skill_resource_gating_and_thrust();
   test_sweep_hits_multiple_targets_and_gates_resource();
+  test_elite_thrust_telegraph_timing();
+  test_elite_skill_cone_gating();
+  test_elite_skill_fizzles_when_resolution_gates_fail();
+  test_elite_sweep_uses_shared_pipeline();
+  test_elite_telegraph_cancels_on_death();
+  test_elite_skill_replay_is_deterministic();
+  test_non_elite_melee_cadence_is_unchanged();
   test_war_cry_buff_expiry_and_replay_determinism();
   test_extraction();
   test_death_and_successor();
