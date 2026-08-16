@@ -609,6 +609,17 @@ void Simulation::drop_reward() {
                   instance_.route_id);
   }
 
+  // Trophies lost to a Scion death resurface alongside items through the same
+  // seeded roll, oldest first, landing on the ground so they still must be
+  // carried out — recovery never banks them directly (D-106).
+  if (!house_.lost_trophies.empty() && rng_.range(1, kRelicResurfaceOneIn) == 1) {
+    Trophy trophy = house_.lost_trophies.front();
+    house_.lost_trophies.erase(house_.lost_trophies.begin());
+    ground_trophies_.push_back(trophy);
+    instance_.ground_trophy_ids.push_back(trophy.id);
+    emit(EventType::TrophyResurfaced, {}, {}, trophy.id, instance_.route_id);
+  }
+
   Trophy trophy{rng_.token("trophy"), "Warden's ember"};
   ground_trophies_.push_back(trophy);
   instance_.ground_trophy_ids.push_back(trophy.id);
@@ -667,14 +678,26 @@ void Simulation::handle_death(Actor& actor_value, const std::string& killer_id) 
   }
   scion_.alive = false;
   scion_.level = actor_value.stats.level;
-  // One stable item becomes a future possibility; the rest of carried value is lost.
-  if (!scion_.carried_items.empty()) {
-    Item relic = scion_.carried_items.front();
+  // D-106: Scion death never destroys items.  Everything carried joins the
+  // recoverable relic pool — the equipped item keeps the existing death line,
+  // pack items record where they await recovery.  Re-entry stays gated by the
+  // seeded resurface roll, so recoverable is not immediately inherited.
+  for (const auto& carried : scion_.carried_items) {
+    Item relic = carried;
     relic.relic_candidate = true;
-    relic.history.push_back("registered after Scion death");
+    if (carried.equipped) {
+      relic.history.push_back("registered after Scion death");
+    } else {
+      relic.history.push_back("lost at " + instance_.route_id + ", awaiting recovery");
+    }
     house_.relic_candidates.push_back(relic);
     record_legend("relic_candidate", relic.id, "name=" + relic.name, killer_id,
                   instance_.route_id);
+  }
+  // Carried trophies are recoverable too, but they wait in their own pool
+  // rather than durable storage so extraction risk is preserved.
+  for (const auto& trophy : scion_.carried_trophies) {
+    house_.lost_trophies.push_back(trophy);
   }
   scion_.carried_items.clear();
   scion_.carried_trophies.clear();

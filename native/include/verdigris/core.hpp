@@ -133,6 +133,10 @@ struct House {
   std::vector<Trophy> stored_trophies;
   std::vector<Item> stored_items;
   std::vector<Item> relic_candidates;
+  // D-106: trophies carried by a fallen Scion are never destroyed.  They wait
+  // in this recoverable pool and resurface through the same seeded re-entry
+  // roll as relic items, so extraction risk stays real.
+  std::vector<Trophy> lost_trophies;
   std::vector<std::string> seasonal_rewards;
   std::vector<LegendEntry> legends;
   bool campaign_complete = false;
@@ -195,7 +199,8 @@ enum class EventType {
   RelicResurfaced,
   BuffApplied,
   BuffExpired,
-  AttackTelegraphed
+  AttackTelegraphed,
+  TrophyResurfaced
 };
 
 struct Event {
