@@ -16,3 +16,7 @@ date, task id, commits, verification run, notes.
 2026-08-16 — TASK-0006-native-relic-reentry — worker `f542a04f83d0e78896edd19635f8353c207b6fe3`; integrated as `269c174`. Independent validator `/root/validate_task_0006` ACCEPT; architect review ACCEPTED. Verification: full native gate and direct core test pass. Notes: deterministic relic resurfacing/re-entry loop integrated.
 
 2026-08-16 — TASK-0004-native-client-direct-control — worker `7ac51d4`; integrated as `6396a0e`. Independent validator `/root/validate_task_0004` ACCEPT; architect review ACCEPTED. Verification: full native gate and driven-input Win32 pass. Notes: D-007 direct-control contract integrated after build/core foundation.
+
+2026-08-16 — TASK-0007-native-skill-actions — worker `e7505ad`; integrated as `a832b2b`. Independent validator `/root/validate_task_0007` ACCEPT; architect review ACCEPTED. Verification: full native `-RunTests -RunClient` gate PASS. Notes: deterministic Thrust/Sweep/WarCry actions and resource economy integrated.
+
+2026-08-16 — TASK-0008-denylist-hardening — worker `56ac8f0`; integrated as `e7c6d28`. Independent validator `/root/validate_task_0008` ACCEPT; architect review ACCEPTED. Verification: baseline/production checker PASS, self-test PASS, negative fixture exit 1 as intended, full native gate PASS. Notes: native legacy firewall hardened with audit-backed normalization and extension coverage.

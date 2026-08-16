@@ -1,6 +1,6 @@
 ---
 task: TASK-0008
-state: ACCEPTED
+state: INTEGRATED
 worker: Luna native denylist-hardening implementer
 worker_branch: codex/TASK-0008-denylist-hardening
 worktree: .codex/worktrees/TASK-0008-denylist-hardening
@@ -16,6 +16,8 @@ validator_verdict: ACCEPT
 architect_review_required: true
 architect_verdict: ACCEPTED
 architect_reviewed_commits: 56ac8f0e8b3b12007231db3b51a7387c8f54b1c2
-integration_state: QUEUED
+integration_state: COMPLETE
+integration_commit: e7c6d28
+integrated_at: 2026-08-16
 architect_review_required: true
 ---
