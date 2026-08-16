@@ -10,6 +10,10 @@ controls what may cross into the new native production workspace.
 | Existing Chronicles House/Scion concept | REIMPLEMENT | Preserve the durable House/Scion loop in the native model. |
 | Existing shared Str/Dex/Int actor concepts | REIMPLEMENT | Use one native actor schema for players and enemies. |
 | Existing Vesselforge catalogue/formulas | OWNER_DECISION | Stable item identity/history is required; exact formula is open. |
+| WIZARD Vessels of Life & Mana orbs | REIMPLEMENT | Intended HUD/presentation integration; simulation remains authoritative. |
+| WIZARD Brands & Bonds inventory | REIMPLEMENT | Intended item/UI integration through the native identity/history model. |
+| WIZARD Verdigris Splash | KEEP | Intended menu/splash presentation foundation, not core simulation. |
+| WIZARD Cartographer map generator | REIMPLEMENT | Intended seeded content adapter after native collision/route validation. |
 | Existing passive lattice | REFERENCE_ONLY | Do not bulk-port; native specialization is House-aware and open. |
 | Existing world-web routes | REIMPLEMENT | Keep graph ownership and Warden-gated progression as a small native proof. |
 | Existing fishing/cooking/mining/smithing defaults | REMOVE | Explicitly denied for native starter scope. |

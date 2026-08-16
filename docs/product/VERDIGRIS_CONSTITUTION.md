@@ -100,6 +100,33 @@ state, alter risk, and generate distinct rewards without rewriting combat,
 items, extraction, or House systems. One tiny automated demonstration proves
 this extension boundary.
 
+## WIZARD components intended to mesh
+
+WIZARD is a toolbox, but several components are deliberate Verdigris
+integration candidates rather than reference-only curiosities:
+
+- **Vessels of Life & Mana (orbs):** the WebGL2 life/mana presentation and
+  status-effect feedback can become a native HUD/presentation adapter. The
+  authoritative actor resource/effect state stays in the simulation; the
+  shader does not become game logic.
+- **Brands & Bonds inventory:** the vessel-slot inventory, stable item identity,
+  Brands, Bonds, attunement, awakening, scars, and history align with
+  Verdigris's item constitution. Integrate the rules through the native item
+  model and provide a platform-appropriate inventory UI; do not blindly copy
+  the browser demo's React shell.
+- **Verdigris splash:** the floating pre-iron world and atmosphere are an
+  intended menu/splash presentation foundation. It may feed a native splash or
+  title scene while remaining outside the headless simulation.
+- **Cartographer map generation:** the dependency-free seeded generator is a
+  candidate native content adapter for deterministic instance layouts. Its
+  entrance/exit connectivity and spawn guarantees should be validated against
+  Verdigris collision, route, and expedition rules before adoption.
+
+These integrations share the invariant that presentation/content adapters
+consume commands, snapshots, seeds, and events; they do not reintroduce DOM,
+WebGL, or browser state into the core simulation. Exact porting language and
+asset licensing remain open decisions.
+
 ## Native architecture invariant
 
 The native runtime separates core simulation, platform/client, renderer,

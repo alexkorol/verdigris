@@ -18,6 +18,9 @@
 - The core test executable covers the eleven requested architectural behaviors.
 - Explicit `platform/`, `renderer/`, `networking/`, `persistence/`, and
   `content/` seams are documented without coupling them into the simulation.
+- WIZARD integration intent is now explicit: orbs and Splash feed the renderer
+  or menu presentation, Brands & Bonds/inventory feeds the item/UI path, and
+  Cartographer is a candidate deterministic map-content adapter.
 - The earlier 2.5D demo archive and eight billboard assets were not present in
   this checkout.
 
