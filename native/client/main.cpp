@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <cstdint>
 #include <unordered_map>
 #include <vector>
 
@@ -20,6 +21,24 @@
 #include <windowsx.h>
 
 namespace {
+
+using GpStatus = int;
+using GpBitmap = void;
+struct GdiplusStartupInput {
+  UINT GdiplusVersion;
+  void* DebugEventCallback;
+  BOOL SuppressBackgroundThread;
+  BOOL SuppressExternalCodecs;
+};
+using GdiplusStartupProc = GpStatus(WINAPI*)(ULONG_PTR*, const GdiplusStartupInput*, void*);
+using GdiplusShutdownProc = void(WINAPI*)(ULONG_PTR);
+using GdipCreateBitmapFromFileProc = GpStatus(WINAPI*)(const WCHAR*, GpBitmap**);
+using GdipGetImageWidthProc = GpStatus(WINAPI*)(GpBitmap*, UINT*);
+using GdipGetImageHeightProc = GpStatus(WINAPI*)(GpBitmap*, UINT*);
+using GdipCreateHBITMAPFromBitmapProc = GpStatus(WINAPI*)(GpBitmap*, HBITMAP*, std::uint32_t);
+using GdipDisposeImageProc = GpStatus(WINAPI*)(GpBitmap*);
+using AlphaBlendProc = BOOL(WINAPI*)(HDC, int, int, int, int, HDC, int, int, int, int,
+                                     BLENDFUNCTION);
 
 constexpr double kPi = 3.14159265358979323846;
 constexpr double kTileUnits = 100.0;  // one move command covers 100 world units
@@ -80,8 +99,82 @@ struct ActiveTelegraph {
   int windup_ticks = 1;
 };
 
+struct SpriteBitmap {
+  HDC dc = nullptr;
+  HDC mirror_dc = nullptr;
+  HBITMAP bitmap = nullptr;
+  HBITMAP mirror_bitmap = nullptr;
+  HGDIOBJ old_bitmap = nullptr;
+  HGDIOBJ old_mirror_bitmap = nullptr;
+  int width = 0;
+  int height = 0;
+  int base_y = 0;
+
+  bool ready() const {
+    return dc != nullptr && mirror_dc != nullptr && width > 0 && height > 0;
+  }
+
+  void reset() {
+    if (dc) {
+      SelectObject(dc, old_bitmap);
+      DeleteDC(dc);
+    }
+    if (mirror_dc) {
+      SelectObject(mirror_dc, old_mirror_bitmap);
+      DeleteDC(mirror_dc);
+    }
+    if (bitmap) DeleteObject(bitmap);
+    if (mirror_bitmap) DeleteObject(mirror_bitmap);
+    dc = nullptr;
+    mirror_dc = nullptr;
+    bitmap = nullptr;
+    mirror_bitmap = nullptr;
+    old_bitmap = nullptr;
+    old_mirror_bitmap = nullptr;
+    width = 0;
+    height = 0;
+    base_y = 0;
+  }
+
+  ~SpriteBitmap() { reset(); }
+  SpriteBitmap() = default;
+  SpriteBitmap(const SpriteBitmap&) = delete;
+  SpriteBitmap& operator=(const SpriteBitmap&) = delete;
+};
+
+struct BillboardAssets {
+  HMODULE gdiplus_module = nullptr;
+  ULONG_PTR gdiplus_token = 0;
+  GdiplusShutdownProc gdiplus_shutdown = nullptr;
+  GdipCreateBitmapFromFileProc create_bitmap = nullptr;
+  GdipGetImageWidthProc image_width = nullptr;
+  GdipGetImageHeightProc image_height = nullptr;
+  GdipCreateHBITMAPFromBitmapProc create_hbitmap = nullptr;
+  GdipDisposeImageProc dispose_image = nullptr;
+  HMODULE msimg32_module = nullptr;
+  AlphaBlendProc alpha_blend = nullptr;
+  SpriteBitmap player;
+  SpriteBitmap raider;
+  SpriteBitmap boss;
+  std::string root;
+  std::string status = "billboards: off (fallback capsules; assets not loaded)";
+
+  ~BillboardAssets() {
+    player.reset();
+    raider.reset();
+    boss.reset();
+    if (gdiplus_shutdown && gdiplus_token) gdiplus_shutdown(gdiplus_token);
+    if (gdiplus_module) FreeLibrary(gdiplus_module);
+    if (msimg32_module) FreeLibrary(msimg32_module);
+  }
+  BillboardAssets() = default;
+  BillboardAssets(const BillboardAssets&) = delete;
+  BillboardAssets& operator=(const BillboardAssets&) = delete;
+};
+
 struct ClientState {
   std::unique_ptr<verdigris::Simulation> simulation;
+  BillboardAssets billboards;
   bool w = false;
   bool a = false;
   bool s = false;
@@ -104,6 +197,223 @@ struct ClientState {
   std::string hint;
   int hint_ticks = 0;
 };
+
+std::string executable_directory() {
+  char path[MAX_PATH]{};
+  const DWORD length = GetModuleFileNameA(nullptr, path, MAX_PATH);
+  if (length == 0 || length >= MAX_PATH) return {};
+  std::string value(path, length);
+  const std::size_t slash = value.find_last_of("\\/");
+  return slash == std::string::npos ? std::string{} : value.substr(0, slash);
+}
+
+bool directory_exists(const std::string& path) {
+  const DWORD attributes = GetFileAttributesA(path.c_str());
+  return attributes != INVALID_FILE_ATTRIBUTES &&
+         (attributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+}
+
+std::wstring wide_path(const std::string& path) {
+  const int required = MultiByteToWideChar(CP_UTF8, 0, path.c_str(), -1, nullptr, 0);
+  if (required <= 0) return {};
+  std::wstring result(static_cast<std::size_t>(required), L'\0');
+  MultiByteToWideChar(CP_UTF8, 0, path.c_str(), -1, result.data(), required);
+  result.resize(result.size() - 1);
+  return result;
+}
+
+HBITMAP make_dib(const std::vector<std::uint8_t>& pixels, int width, int height,
+                 HDC* dc_out, HGDIOBJ* old_bitmap_out) {
+  BITMAPINFO info{};
+  info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  info.bmiHeader.biWidth = width;
+  info.bmiHeader.biHeight = -height;
+  info.bmiHeader.biPlanes = 1;
+  info.bmiHeader.biBitCount = 32;
+  info.bmiHeader.biCompression = BI_RGB;
+  void* destination = nullptr;
+  HBITMAP bitmap = CreateDIBSection(nullptr, &info, DIB_RGB_COLORS, &destination, nullptr, 0);
+  if (!bitmap || !destination) {
+    if (bitmap) DeleteObject(bitmap);
+    return nullptr;
+  }
+  std::memcpy(destination, pixels.data(), pixels.size());
+  HDC dc = CreateCompatibleDC(nullptr);
+  if (!dc) {
+    DeleteObject(bitmap);
+    return nullptr;
+  }
+  HGDIOBJ old_bitmap = SelectObject(dc, bitmap);
+  if (!old_bitmap || old_bitmap == HGDI_ERROR) {
+    DeleteDC(dc);
+    DeleteObject(bitmap);
+    return nullptr;
+  }
+  *dc_out = dc;
+  *old_bitmap_out = old_bitmap;
+  return bitmap;
+}
+
+bool load_sprite(BillboardAssets& assets, const std::string& path, SpriteBitmap& sprite) {
+  if (!assets.create_bitmap || !assets.image_width || !assets.image_height ||
+      !assets.create_hbitmap || !assets.dispose_image)
+    return false;
+  const std::wstring filename = wide_path(path);
+  if (filename.empty()) return false;
+  GpBitmap* image = nullptr;
+  if (assets.create_bitmap(filename.c_str(), &image) != 0 || !image) return false;
+  UINT width = 0;
+  UINT height = 0;
+  HBITMAP source = nullptr;
+  const bool dimensions_ok = assets.image_width(image, &width) == 0 &&
+                             assets.image_height(image, &height) == 0 && width > 0 &&
+                             height > 0;
+  const bool bitmap_ok = dimensions_ok && assets.create_hbitmap(image, &source, 0) == 0 &&
+                         source != nullptr;
+  assets.dispose_image(image);
+  if (!bitmap_ok) {
+    if (source) DeleteObject(source);
+    return false;
+  }
+
+  BITMAPINFO info{};
+  info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  info.bmiHeader.biWidth = static_cast<LONG>(width);
+  info.bmiHeader.biHeight = -static_cast<LONG>(height);
+  info.bmiHeader.biPlanes = 1;
+  info.bmiHeader.biBitCount = 32;
+  info.bmiHeader.biCompression = BI_RGB;
+  std::vector<std::uint8_t> pixels(static_cast<std::size_t>(width) * height * 4);
+  HDC screen = GetDC(nullptr);
+  const int copied = GetDIBits(screen, source, 0, height, pixels.data(), &info,
+                               DIB_RGB_COLORS);
+  ReleaseDC(nullptr, screen);
+  DeleteObject(source);
+  if (copied == 0) return false;
+
+  // Match the slice's keying and despill thresholds. Pixels are BGRA in the
+  // DIB; alpha is premultiplied for AlphaBlend after the key is applied.
+  for (std::size_t index = 0; index < pixels.size(); index += 4) {
+    const int blue = pixels[index];
+    const int green = pixels[index + 1];
+    const int red = pixels[index + 2];
+    const int magenta = std::min(red, blue) - green;
+    int alpha = pixels[index + 3];
+    if (magenta > 90) {
+      alpha = 0;
+    } else if (magenta > 28) {
+      const double t = static_cast<double>(magenta - 28) / 62.0;
+      alpha = static_cast<int>(alpha * (1.0 - t));
+      pixels[index] = static_cast<std::uint8_t>(blue + (green - blue) * 0.6);
+      pixels[index + 2] = static_cast<std::uint8_t>(red + (green - red) * 0.6);
+    }
+    pixels[index + 3] = static_cast<std::uint8_t>(alpha);
+    pixels[index] = static_cast<std::uint8_t>(pixels[index] * alpha / 255);
+    pixels[index + 1] = static_cast<std::uint8_t>(pixels[index + 1] * alpha / 255);
+    pixels[index + 2] = static_cast<std::uint8_t>(pixels[index + 2] * alpha / 255);
+  }
+
+  int base_y = static_cast<int>(height) - 1;
+  for (int y = static_cast<int>(height) - 1; y >= 0; --y) {
+    bool opaque = false;
+    for (UINT x = 0; x < width; x += 3) {
+      if (pixels[(static_cast<std::size_t>(y) * width + x) * 4 + 3] > 40) {
+        opaque = true;
+        break;
+      }
+    }
+    if (opaque) {
+      base_y = y + 1;
+      break;
+    }
+  }
+
+  std::vector<std::uint8_t> mirrored(pixels.size());
+  for (UINT y = 0; y < height; ++y) {
+    for (UINT x = 0; x < width; ++x) {
+      const std::size_t source_index = (static_cast<std::size_t>(y) * width + x) * 4;
+      const std::size_t target_index =
+          (static_cast<std::size_t>(y) * width + (width - x - 1)) * 4;
+      std::memcpy(mirrored.data() + target_index, pixels.data() + source_index, 4);
+    }
+  }
+
+  sprite.reset();
+  sprite.width = static_cast<int>(width);
+  sprite.height = static_cast<int>(height);
+  sprite.base_y = base_y;
+  sprite.bitmap = make_dib(pixels, sprite.width, sprite.height, &sprite.dc,
+                           &sprite.old_bitmap);
+  sprite.mirror_bitmap = make_dib(mirrored, sprite.width, sprite.height,
+                                  &sprite.mirror_dc, &sprite.old_mirror_bitmap);
+  if (!sprite.ready()) {
+    sprite.reset();
+    return false;
+  }
+  return true;
+}
+
+bool initialize_gdiplus(BillboardAssets& assets) {
+  assets.gdiplus_module = LoadLibraryA("gdiplus.dll");
+  if (!assets.gdiplus_module) return false;
+  assets.gdiplus_shutdown = reinterpret_cast<GdiplusShutdownProc>(
+      GetProcAddress(assets.gdiplus_module, "GdiplusShutdown"));
+  auto startup = reinterpret_cast<GdiplusStartupProc>(
+      GetProcAddress(assets.gdiplus_module, "GdiplusStartup"));
+  assets.create_bitmap = reinterpret_cast<GdipCreateBitmapFromFileProc>(
+      GetProcAddress(assets.gdiplus_module, "GdipCreateBitmapFromFile"));
+  assets.image_width = reinterpret_cast<GdipGetImageWidthProc>(
+      GetProcAddress(assets.gdiplus_module, "GdipGetImageWidth"));
+  assets.image_height = reinterpret_cast<GdipGetImageHeightProc>(
+      GetProcAddress(assets.gdiplus_module, "GdipGetImageHeight"));
+  assets.create_hbitmap = reinterpret_cast<GdipCreateHBITMAPFromBitmapProc>(
+      GetProcAddress(assets.gdiplus_module, "GdipCreateHBITMAPFromBitmap"));
+  assets.dispose_image = reinterpret_cast<GdipDisposeImageProc>(
+      GetProcAddress(assets.gdiplus_module, "GdipDisposeImage"));
+  if (!startup || !assets.gdiplus_shutdown || !assets.create_bitmap ||
+      !assets.image_width || !assets.image_height || !assets.create_hbitmap ||
+      !assets.dispose_image)
+    return false;
+  GdiplusStartupInput input{1, nullptr, FALSE, FALSE};
+  if (startup(&assets.gdiplus_token, &input, nullptr) != 0) return false;
+  return true;
+}
+
+std::vector<std::string> billboard_roots() {
+  std::vector<std::string> roots{"prototypes\\founding-slice\\assets"};
+  const std::string executable = executable_directory();
+  for (int depth = 1; depth <= 5; ++depth) {
+    std::string prefix = executable;
+    for (int part = 0; part < depth; ++part) prefix += "\\..";
+    roots.push_back(prefix + "\\prototypes\\founding-slice\\assets");
+  }
+  return roots;
+}
+
+void load_billboards(BillboardAssets& assets) {
+  assets.msimg32_module = LoadLibraryA("msimg32.dll");
+  assets.alpha_blend = reinterpret_cast<AlphaBlendProc>(
+      assets.msimg32_module ? GetProcAddress(assets.msimg32_module, "AlphaBlend") : nullptr);
+  if (!assets.alpha_blend || !initialize_gdiplus(assets)) {
+    assets.status = "billboards: off (fallback capsules; GDI image support unavailable)";
+    return;
+  }
+  for (const auto& root : billboard_roots()) {
+    if (!directory_exists(root)) continue;
+    const bool loaded = load_sprite(assets, root + "\\scion_str.png", assets.player) &&
+                        load_sprite(assets, root + "\\raider.png", assets.raider) &&
+                        load_sprite(assets, root + "\\boss.png", assets.boss);
+    if (loaded) {
+      assets.root = root;
+      assets.status = "billboards: on (scion_str / raider / boss; magenta keyed)";
+      return;
+    }
+    assets.player.reset();
+    assets.raider.reset();
+    assets.boss.reset();
+  }
+  assets.status = "billboards: off (fallback capsules; asset plates missing)";
+}
 
 ClientState* state_from(HWND window) {
   return reinterpret_cast<ClientState*>(GetWindowLongPtr(window, GWLP_USERDATA));
@@ -266,6 +576,27 @@ void draw_billboard(HDC dc, const ScreenPoint& base, double world_width,
   DeleteObject(brush);
   const int head_r = std::max(2, half_w - 2);
   fill_ellipse(dc, base.x, base.y - height, head_r, head_r, trim);
+}
+
+bool draw_billboard_sprite(const BillboardAssets& assets, HDC dc, const SpriteBitmap& sprite,
+                           const ScreenPoint& base, double world_height, int facing_x) {
+  if (!sprite.ready() || !assets.alpha_blend) return false;
+  const int destination_height =
+      std::max(6, static_cast<int>(world_height * base.scale));
+  const int destination_width = std::max(
+      4, static_cast<int>(static_cast<double>(sprite.width) / sprite.height *
+                          destination_height));
+  const int destination_foot = std::clamp(
+      static_cast<int>(static_cast<double>(sprite.base_y) / sprite.height *
+                       destination_height),
+      1, destination_height);
+  const int destination_x = base.x - destination_width / 2;
+  const int destination_y = base.y - destination_foot;
+  const HDC source = facing_x < 0 ? sprite.mirror_dc : sprite.dc;
+  BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+  return assets.alpha_blend(dc, destination_x, destination_y, destination_width,
+                            destination_height, source, 0, 0, sprite.width,
+                            sprite.height, blend) != FALSE;
 }
 
 void draw_ground_grid(HDC dc, const Camera& camera, const RECT& bounds) {
@@ -830,8 +1161,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         const ScreenPoint base =
             project(state.camera, bounds, player->position.x, player->position.y);
         draw_contact_shadow(dc, state.camera, base, kTileUnits * 0.42);
-        draw_billboard(dc, base, kTileUnits * 0.62, kTileUnits * 1.35,
-                       RGB(84, 158, 128), RGB(140, 208, 172));
+        if (!draw_billboard_sprite(state.billboards, dc, state.billboards.player, base,
+                                   kTileUnits * 1.35, player->facing.x))
+          draw_billboard(dc, base, kTileUnits * 0.62, kTileUnits * 1.35,
+                         RGB(84, 158, 128), RGB(140, 208, 172));
         // Draw the authoritative simulation facing, rather than a client-only
         // mouse hint. The core owns the integer heading used by Thrust.
         const double angle =
@@ -850,8 +1183,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         const ScreenPoint base =
             project(state.camera, bounds, monster.position.x, monster.position.y);
         draw_contact_shadow(dc, state.camera, base, kTileUnits * 0.42);
-        draw_billboard(dc, base, kTileUnits * 0.68, kTileUnits * 1.25,
-                       RGB(168, 84, 70), RGB(212, 122, 96));
+        const SpriteBitmap& monster_sprite = monster.elite ? state.billboards.boss
+                                                            : state.billboards.raider;
+        if (!draw_billboard_sprite(state.billboards, dc, monster_sprite, base,
+                                   monster.elite ? kTileUnits * 1.45 : kTileUnits * 1.25,
+                                   monster.facing.x))
+          draw_billboard(dc, base, kTileUnits * 0.68, kTileUnits * 1.25,
+                         RGB(168, 84, 70), RGB(212, 122, 96));
         // Compact life bar instead of a menu: readable elite math at a glance.
         const int bar_w = static_cast<int>(kTileUnits * 0.7 * base.scale);
         const int bar_y =
@@ -948,10 +1286,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   SetTextColor(dc, RGB(150, 160, 150));
   char debug_line[256];
   std::snprintf(debug_line, sizeof(debug_line),
-                "tick %llu | zoom %.2f | pitch %.0f | persp %.5f | effects %zu | telegraphs %zu",
+                "tick %llu | zoom %.2f | pitch %.0f | persp %.5f | effects %zu | telegraphs %zu | %s",
                 static_cast<unsigned long long>(sim.tick()), state.camera.zoom,
                 state.camera.pitch_deg, state.camera.perspective,
-                state.effects.size(), state.telegraphs.size());
+                state.effects.size(), state.telegraphs.size(), state.billboards.status.c_str());
   TextOutA(dc, 18, 168, debug_line, static_cast<int>(strlen(debug_line)));
   if (state.hint_ticks > 0 && !state.hint.empty()) {
     SetTextColor(dc, RGB(239, 208, 116));
@@ -1183,6 +1521,7 @@ int main(int argc, char** argv) {
   verdigris::EmberHunt seasonal;
   state->simulation->set_seasonal_mechanic(&seasonal);
   state->simulation->dispatch(verdigris::Command::enter("route:tin:1:0"));
+  load_billboards(state->billboards);
 
   WNDCLASSA window_class{};
   window_class.hInstance = instance;
