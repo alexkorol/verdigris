@@ -1,6 +1,6 @@
 ---
 task: TASK-0020
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Codex coordinator
 worker_branch: codex/TASK-0020-browser-disconnect-safety-rev1
@@ -17,6 +17,8 @@ revision: 1
 revision_base: 1290937
 revision_reason: architect review 42fd837 bisected a 31/31 to 27/31 playtest regression to the disconnect change, clustered around zone transitions and dev:state
 revision_commit: 174d769
-architect_review: REVISE (42fd837), correction implemented
+architect_review: ACCEPTED (0c69920; rev1 race fix independently verified)
 verification: targeted tests (PASS: 40); full unit (PASS: 115 files/744 tests); ESLint (PASS); git diff --check (PASS); npm run playtest on port 6520 (PASS: 31/31)
+integration_commit: b035b56
+integration_verification: architect gate PASS at program tip; full unit 744/744 and playtest 31/31
 ---

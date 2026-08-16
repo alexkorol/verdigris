@@ -1,6 +1,6 @@
 ---
 task: TASK-0020
-state: REVIEW_REQUESTED
+state: INTEGRATED
 branch: codex/native-reconstitution
 commits:
   - e5d87a5
@@ -126,3 +126,10 @@ preservation and ordinary current-player removal.
 
 The prior post-fix run reached 30/31 only because the known timing-sensitive
 gear comparison missed its 13% threshold; the clean rerun passed all 31.
+
+## Integration
+
+Architect review `0c69920` accepted revision 1 after independently verifying
+the replacement-session race fix, `npm run test:unit` (744/744), and
+`npm run playtest` (31/31). The implementation was already present on the
+program tip as `b035b56`; no additional source merge was required.

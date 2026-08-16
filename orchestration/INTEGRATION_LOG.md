@@ -42,3 +42,5 @@ date, task id, commits, verification run, notes.
 2026-08-16 — TASK-0019-browser-25d-survey — Kimi worker `832b7f3`; architect review `42fd837` ACCEPTED; integrated via merge `ee21032`. Verification: survey plan covers the reference architecture, conformance gaps, elevation decision, phase forecast, and renderer toggle. Notes: `docs/25d-overhaul-plan.md` now governs the browser renderer track.
 
 2026-08-16 — TASK-0021-slice-arpg-camera-default — worker `d079e70`; architect review `42fd837` ACCEPTED; integrated on the program tip. Verification: `node prototypes/founding-slice/run-checks.mjs` PASS (4/4 including drift guard). Notes: D-107 ARPG defaults and reversible Miniature wheel blend are realized in the slice.
+
+2026-08-16 — TASK-0020-browser-disconnect-safety — revision `174d769` (source implementation `e5d87a5`); architect review `0c69920` ACCEPTED; integrated on the program tip as `b035b56`. Verification: full unit 744/744 and playtest 31/31. Notes: disconnect teardown now removes by player identity after persistence, preventing an old socket from deleting a replacement session during zone transitions.
