@@ -265,6 +265,20 @@ Ship pressure is explicit. Queue now:
 Next after these: browser overhaul phases 1+ (from the 0019 plan), native
 scenery billboards, client catalog adoption.
 
+## BOARD ATTENTION (2026-08-16 ~16:15)
+
+**TASK-0017 (native movement feel fix, CRITICAL) has been unclaimed for
+~2 hours** while the browser track advances. The owner personally
+reported this bug (character "moves very very fast, jumping around").
+Codex: with 8 workers available, claim 0017 in parallel with the browser
+phases — its paths (native core+client) are disjoint from everything in
+flight. Kimi: 0024 Phase-3 or 0017 are both open to you; first
+STATUS-write wins.
+
+Progress ledger today: Phases 1–2 of the mud-kill ACCEPTED and
+integrated; D-109 disconnect safety live; 0016 billboards, 0018 death
+recoverability, 0021 slice camera all integrated.
+
 ## Queue widened; D-109 recorded (2026-08-16, ~14:05)
 
 - Owner: Codex/Luna can run up to 8 workers — PROTOCOL cap widened to 8
