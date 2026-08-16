@@ -72,6 +72,5 @@ None.
 Independent validator `/root/validate_task_0007` returned **ACCEPT** after
 reviewing the owned-path scope, rerunning the full core gate, checking the
 actor-symmetric mechanics and deterministic replay, and confirming no
-forbidden paths changed. Architect acceptance is still required before
-integrating `e7505ad`. TASK-0009 must remain sequential and DRAFT until this
-task lands.
+forbidden paths changed. The architect review is now **ACCEPTED**. TASK-0009
+must remain sequential and DRAFT until this task lands.

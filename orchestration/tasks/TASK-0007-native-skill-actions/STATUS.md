@@ -1,6 +1,6 @@
 ---
 task: TASK-0007
-state: CLAIMED
+state: ACCEPTED
 worker: Luna native-core skill-actions implementer
 worker_branch: codex/TASK-0007-native-skill-actions
 worktree: .codex/worktrees/TASK-0007-native-skill-actions
@@ -14,5 +14,8 @@ implementation_commit: e7505ad
 validator: /root/validate_task_0007
 validator_verdict: ACCEPT
 architect_review_required: true
+architect_verdict: ACCEPTED
+architect_reviewed_commits: e7505ad279d648116dcb7ce8a4da7b2f4bffb618
+integration_state: QUEUED
 architect_review_required: true
 ---
