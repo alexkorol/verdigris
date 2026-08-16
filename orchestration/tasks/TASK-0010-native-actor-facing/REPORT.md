@@ -46,6 +46,8 @@ heading changes and renders the authoritative simulation facing.
 - Driven Win32/PostMessage pass — PASS: moved past the seeded monster, aimed
   left, pressed Q, and captured `attack thrust` plus `damage thrust (19)` on a
   monster left of the player.
+- Independent validator `/root/validate_task_0010` — ACCEPT. Controlled
+  capture: `C:\Users\Alex\AppData\Local\Temp\verdigris-task0010-facing-controlled.png`.
 
 ## Manual checks
 

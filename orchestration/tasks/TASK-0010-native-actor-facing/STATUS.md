@@ -12,6 +12,7 @@ known_risks: integer heading representation and forward-cone boundary must remai
 dependencies: TASK-0009 integrated as 0434ebb
 architect_review_required: true
 implementation_commit: 7e066aa
-validator: pending
-validator_verdict: pending
+validator: /root/validate_task_0010
+validator_verdict: ACCEPT
+validator_evidence: exact four-file scope; native gate, denylist self-test, diff check, source review, named tests, and controlled left-aim/Q live pass all passed
 ---
