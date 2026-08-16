@@ -1,5 +1,19 @@
 # Native reconstitution handoff
 
+## 2026-08-15 (latest) — Orchestration program active
+
+- The program is now coordinated through `orchestration/` (protocol, state,
+  decisions, task specs). Claude/Fable is architect+reviewer; the Codex
+  coordinator with Luna workers implements. Read
+  `orchestration/PROTOCOL.md` first.
+- Wave 1 READY: TASK-0001 (native Legends records), TASK-0002 (build/CI
+  hardening), TASK-0003 (slice verification harness). DRAFT: TASK-0004
+  (client control pass per decision D-007), TASK-0005 (legacy audit).
+- `prototypes/founding-slice/` is a committed, verified browser feel-lab
+  ("Founding of a House"): serve the folder statically and open
+  `index.html`, or rebuild via `node build.mjs`. It answers camera/combat/
+  founding presentation questions and has no architectural authority.
+
 ## 2026-08-15 (later) — Milestone E first visual pass and a build fix
 
 - Fixed a real Milestone D defect: `build.ps1` never defined
