@@ -8,6 +8,13 @@ base_commit: 0e02aa7
 spec_base_commit: f5b4b72
 ---
 
+## Executive summary
+
+Revision 1 implements the architect's D-104 schema-v2 correction while
+preserving the requested Windows toolchain discovery, define guard, denylist,
+workflow, and native acceptance behavior. It is independently validated and
+awaits architect acceptance; it is not integrated yet.
+
 ## Revision 1 report
 
 Revision 1 implements D-104's CMake schema-v2 compatibility requirement and is
@@ -68,3 +75,17 @@ silently weakening the acceptance contract.
 
 After a compatible CMake is available, rerun the worker's acceptance commands,
 commit the preserved changes, and return the task to `REVIEW_REQUESTED`.
+
+## Risks and limitations
+
+The repository does not provide `cmake` on PATH, so local preset evidence uses
+the bundled Visual Studio 2019 CMake 3.20 binary by absolute path. No v3-only
+preset feature is required by this task. The implementation remains isolated
+until architect review.
+
+## Integration notes
+
+Architect review is still `REVISE` for the original v3 attempt; revision 1
+addresses D-104 and has independent `ACCEPT` validation. Integrate worker
+commit `659b8802f82dfb6839207c05700a5d1cf27380a0` only after a new
+architect `ACCEPTED` review is present.

@@ -1,6 +1,6 @@
 ---
 task: TASK-0003
-state: REVIEW_REQUESTED
+state: INTEGRATED
 branch: codex/TASK-0003-slice-verification-harness
 commits:
   - 278f7dd
@@ -92,3 +92,10 @@ Revision verification:
 Independent validator verdict: **ACCEPT**. The validator reran the harness and
 ESLint, confirmed the POSIX/Windows containment matrix, verified the negative
 drift probe preserves the committed artifact, and found no scope violations.
+
+## Integration notes
+
+Architect review was **ACCEPTED**. The final revision was integrated locally as
+`8517bf5` plus `403e3a3`; the missing parent test file was preserved during
+integration. The worker/validator harness gate remains the authoritative
+Playwright evidence.

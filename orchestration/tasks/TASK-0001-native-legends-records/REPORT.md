@@ -1,6 +1,6 @@
 ---
 task: TASK-0001
-state: REVIEW_REQUESTED
+state: INTEGRATED
 branch: codex/TASK-0001-native-legends-records
 commits:
   - 7ed844d8d5a9a6fb2f5a2d2ee9428c10b1cf7fad
@@ -82,3 +82,8 @@ Validator verdict: **ACCEPT**. The validator reran
 `powershell -File native/build.ps1 -RunTests`, confirmed denylist and core test
 success, inspected the full commit scope, and found no determinism, bound,
 event-ordering, succession, or forbidden-path findings.
+
+## Integration notes
+
+Architect review was **ACCEPTED**. The worker commit was integrated locally as
+`5487778`; the native acceptance gate was rerun with the client shell.
