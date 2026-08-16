@@ -13,6 +13,8 @@ namespace {
 constexpr int kEnemySpawnX = 2000;
 constexpr int kMeleeRange = 1100;
 constexpr int kExtractionRange = 250;
+// A relic is a possibility in the drop stream, not a guaranteed inheritance.
+constexpr int kRelicResurfaceOneIn = 4;
 
 std::string hex_id(std::uint64_t value) {
   std::ostringstream stream;
@@ -394,6 +396,21 @@ void Simulation::drop_reward() {
   ground_items_.push_back(item);
   instance_.ground_item_ids.push_back(item.id);
   emit(EventType::ItemDropped, {}, item.id, {}, item.name, item.attack_bonus);
+
+  // Relics re-enter only through the ordinary seeded reward stream.  The pool
+  // is the proof that a Scion has already died with a meaningful item, and
+  // moving the oldest entry before appending it to the ground preserves the
+  // single-owner invariant across pool, ground, carried, and stored state.
+  if (!house_.relic_candidates.empty() && rng_.range(1, kRelicResurfaceOneIn) == 1) {
+    Item relic = house_.relic_candidates.front();
+    house_.relic_candidates.erase(house_.relic_candidates.begin());
+    relic.history.push_back("resurfaced on route " + instance_.route_id);
+    ground_items_.push_back(relic);
+    instance_.ground_item_ids.push_back(relic.id);
+    emit(EventType::RelicResurfaced, {}, relic.id, {}, instance_.route_id);
+    record_legend("relic_resurfaced", relic.id, "route=" + instance_.route_id, {},
+                  instance_.route_id);
+  }
 
   Trophy trophy{rng_.token("trophy"), "Warden's ember"};
   ground_trophies_.push_back(trophy);
