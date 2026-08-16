@@ -189,12 +189,29 @@ const SFX={
 };
 
 /* ============================== camera ============================== */
-const cam={x:0,y:0,zoom:.95,pitch:54,persp:.00095,anchor:.56,fog:.55,tilt:1,shakeT:0,shakeA:0,tx:0,ty:0};
+const cam={x:0,y:0,zoom:.85,pitch:62,persp:.0006,anchor:.52,fog:.4,tilt:0,shakeT:0,shakeA:0,tx:0,ty:0};
 const CAM_PRESETS={
   'Miniature':{zoom:1.08,pitch:52,persp:.0013,anchor:.58,fog:.6,tilt:1},
   'ARPG':{zoom:.85,pitch:62,persp:.0006,anchor:.52,fog:.4,tilt:0},
   'High Table':{zoom:.75,pitch:74,persp:.00025,anchor:.5,fog:.25,tilt:0},
 };
+// Gameplay zoom eases from the owner-ruled ARPG treatment toward Miniature.
+// The blend is deliberately bounded so wheel input is reversible and the
+// laboratory presets remain explicit, inspectable camera states.
+const CAMERA_ZOOM_MIN=.4;
+const CAMERA_ZOOM_MAX=1.8;
+const CAMERA_ZOOM_WHEEL_STEP=.0015;
+const CAMERA_MINIATURE_BLEND_START=1.05;
+const CAMERA_MINIATURE_BLEND_END=1.35;
+const CAMERA_ARPG_PERSPECTIVE=.0006;
+const CAMERA_MINIATURE_PERSPECTIVE=.0013;
+const CAMERA_ARPG_TILT=0;
+const CAMERA_MINIATURE_TILT=1;
+function applyZoomTreatment(){
+  const t=clamp((cam.zoom-CAMERA_MINIATURE_BLEND_START)/(CAMERA_MINIATURE_BLEND_END-CAMERA_MINIATURE_BLEND_START),0,1);
+  cam.persp=lerp(CAMERA_ARPG_PERSPECTIVE,CAMERA_MINIATURE_PERSPECTIVE,t);
+  cam.tilt=lerp(CAMERA_ARPG_TILT,CAMERA_MINIATURE_TILT,t);
+}
 let W=innerWidth,H=innerHeight;
 function project(wx,wy,wz){
   const relX=wx-cam.x,relY=wy-cam.y;
@@ -1459,6 +1476,11 @@ addEventListener('keydown',e=>{
 });
 addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
 cv.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY});
+cv.addEventListener('wheel',e=>{
+  e.preventDefault();
+  cam.zoom=clamp(cam.zoom-e.deltaY*CAMERA_ZOOM_WHEEL_STEP,CAMERA_ZOOM_MIN,CAMERA_ZOOM_MAX);
+  applyZoomTreatment();
+},{passive:false});
 cv.addEventListener('mousedown',e=>{audio();if(e.button===0)mouse.down=true;if(e.button===2)mouse.rdown=true});
 addEventListener('mouseup',e=>{if(e.button===0)mouse.down=false;if(e.button===2)mouse.rdown=false});
 cv.addEventListener('contextmenu',e=>e.preventDefault());
