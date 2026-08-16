@@ -83,3 +83,8 @@ skill selection behavior; no implementation blocker remains.
 
 TASK-0010 is integrated at `afcd1d3`; this task touches only native core and
 tests and is parallel-safe with TASK-0012.
+
+Architect review `4ffbad0` accepted `8c68aed` with no corrections. The change
+was integrated in the dedicated wave-7 worktree as `b6d8796` (equivalent
+program-branch cherry-pick `c733945`); the post-integration native gate and
+`git diff --check` both passed.

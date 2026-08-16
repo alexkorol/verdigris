@@ -206,3 +206,12 @@ modified.
 ## Commit
 
 `310b76d` — `docs: capture camera preset evidence pack`
+
+## Revision 1 — architect review `4ffbad0`
+
+Architect review accepted the methodology and visual evidence but requested
+that the nine 1200×800 PNGs be re-encoded lossy (approximately quality 85 or
+equivalent) to target no more than 250KB per image before integration. The
+revision preserves the same controlled scenes, report links, and neutral
+observations; only the capture encoding and corresponding verification will
+change.
