@@ -158,14 +158,19 @@ class WorldManager {
       return;
     }
 
-    const index = this._players.findIndex(p => p.uuid === player.uuid);
-    if (index !== -1) {
-      this._players.splice(index, 1);
+    // A disconnect save is asynchronous. A replacement session with the
+    // same UUID may be admitted before the old socket finishes persisting;
+    // remove only the exact live object that requested teardown, never the
+    // replacement that now owns that UUID.
+    const index = this._players.findIndex(p => p === player);
+    if (index === -1) {
+      return;
     }
+    this._players.splice(index, 1);
 
     const scene = this.getScene(player.sceneId);
     if (scene && scene.players) {
-      scene.players = scene.players.filter(p => p.uuid !== player.uuid);
+      scene.players = scene.players.filter(p => p !== player);
     }
   }
 
