@@ -1,6 +1,6 @@
 ---
 task: TASK-0010
-state: REVIEW_REQUESTED
+state: INTEGRATED
 branch: codex/TASK-0010-native-actor-facing
 commits:
   - 7e066aa
@@ -71,5 +71,9 @@ None.
 
 ## Integration notes
 
-TASK-0009 is integrated at `0434ebb`; this task is sequential and should be
-integrated only after independent validation and architect review.
+TASK-0009 was integrated at `0434ebb`; this sequential task was held until
+independent validation and architect review completed.
+
+Architect review `deb8ced` accepted `7e066aa` with no corrections. The worker
+commit was cherry-picked into the dedicated wave-6 integration branch as
+`d6e48f4`; the post-integration native gate and `git diff --check` both passed.

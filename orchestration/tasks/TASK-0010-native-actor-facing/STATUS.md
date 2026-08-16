@@ -1,6 +1,6 @@
 ---
 task: TASK-0010
-state: REVIEW_REQUESTED
+state: INTEGRATED
 worker: Luna native actor-facing implementer
 worker_branch: codex/TASK-0010-native-actor-facing
 worktree: .codex/worktrees/TASK-0010-native-actor-facing
@@ -15,4 +15,8 @@ implementation_commit: 7e066aa
 validator: /root/validate_task_0010
 validator_verdict: ACCEPT
 validator_evidence: exact four-file scope; native gate, denylist self-test, diff check, source review, named tests, and controlled left-aim/Q live pass all passed
+architect_review: ACCEPTED
+architect_review_commit: deb8ced
+integration_commit: d6e48f4
+integration_verification: powershell -NoProfile -File native/build.ps1 -RunTests -RunClient; git diff --check
 ---
