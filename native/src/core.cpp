@@ -13,6 +13,19 @@ namespace {
 constexpr int kEnemySpawnX = 2000;
 constexpr int kMeleeRange = 1100;
 constexpr int kExtractionRange = 250;
+constexpr int kThrustRange = (kMeleeRange * 3) / 2;
+constexpr int kThrustDamageNumerator = 13;
+constexpr int kThrustDamageDenominator = 10;
+constexpr int kSweepDamageNumerator = 3;
+constexpr int kSweepDamageDenominator = 4;
+constexpr int kSweepCooldownNumerator = 3;
+constexpr int kSweepCooldownDenominator = 2;
+constexpr int kThrustResourceCost = 10;
+constexpr int kSweepResourceCost = 15;
+constexpr int kWarCryResourceCost = 20;
+constexpr int kResourceRegenPerTick = 2;
+constexpr int kWarCryAttackBonus = 4;
+constexpr int kWarCryDurationTicks = 20;
 // A relic is a possibility in the drop stream, not a guaranteed inheritance.
 constexpr int kRelicResurfaceOneIn = 4;
 
@@ -170,6 +183,14 @@ Actor* Simulation::actor(const std::string& id) {
   return nullptr;
 }
 
+std::string Simulation::spawn_monster(Vec2 position, int level, bool elite) {
+  const int bounded_level = std::max(1, level);
+  Actor enemy{rng_.token("actor"), ActorKind::Monster, enemy_stats(bounded_level), position,
+              true, 0, std::nullopt, elite};
+  actors_.push_back(enemy);
+  return enemy.id;
+}
+
 void Simulation::set_seasonal_mechanic(SeasonalMechanic* mechanic) {
   seasonal_mechanic_ = mechanic;
 }
@@ -232,45 +253,110 @@ void Simulation::resolve_move(int dx, int dy) {
 void Simulation::resolve_action(ActionType action) {
   Actor* player = actor(scion_.actor_id);
   if (!player || !player->alive || !scion_.alive) return;
+  resolve_actor_action(*player, action);
+}
+
+void Simulation::resolve_actor_action(Actor& attacker, ActionType action) {
+  if (!attacker.alive) return;
   if (action == ActionType::Dash) {
-    player->position.x += player->stats.move_speed * 2;
-    emit(EventType::ActorMoved, player->id, {}, {}, "dash", player->position.x);
+    attacker.position.x += attacker.stats.move_speed * 2;
+    emit(EventType::ActorMoved, attacker.id, {}, {}, "dash", attacker.position.x);
     return;
   }
-  if (action != ActionType::Melee || player->cooldown_ticks > 0) return;
-  Actor* target = nullptr;
+
+  if (action == ActionType::WarCry) {
+    if (attacker.stats.resource < kWarCryResourceCost) return;
+    attacker.stats.resource -= kWarCryResourceCost;
+    attacker.war_cry_attack_bonus = kWarCryAttackBonus;
+    attacker.war_cry_ticks_remaining = kWarCryDurationTicks;
+    emit(EventType::BuffApplied, attacker.id, {}, {}, "war-cry", kWarCryAttackBonus);
+    return;
+  }
+
+  if (action != ActionType::Melee && action != ActionType::Thrust &&
+      action != ActionType::Sweep) {
+    return;
+  }
+
+  const int resource_cost = action == ActionType::Thrust
+                                ? kThrustResourceCost
+                                : action == ActionType::Sweep ? kSweepResourceCost : 0;
+  if (attacker.cooldown_ticks > 0 || attacker.stats.resource < resource_cost) return;
+
+  const ActorKind target_kind = attacker.kind == ActorKind::Player ? ActorKind::Monster
+                                                                     : ActorKind::Player;
+  std::vector<Actor*> targets;
+  Actor* nearest = nullptr;
   int best_distance = std::numeric_limits<int>::max();
   for (auto& candidate : actors_) {
-    if (candidate.kind != ActorKind::Monster || !candidate.alive) continue;
-    const int distance = manhattan_distance(player->position, candidate.position);
-    if (distance <= kMeleeRange && distance < best_distance) {
-      target = &candidate;
+    if (candidate.kind != target_kind || !candidate.alive) continue;
+    const int distance = manhattan_distance(attacker.position, candidate.position);
+    const bool in_range = action == ActionType::Thrust ? distance <= kThrustRange
+                                                       : distance <= kMeleeRange;
+    if (!in_range) continue;
+    if (action == ActionType::Thrust) {
+      // There is no separate facing field in the deterministic core yet; the
+      // sign of the horizontal position delta is the stable facing proxy.
+      const int delta_x = candidate.position.x - attacker.position.x;
+      if (delta_x < 0) continue;
+    }
+    if (action == ActionType::Sweep) {
+      targets.push_back(&candidate);
+    } else if (distance < best_distance) {
+      nearest = &candidate;
       best_distance = distance;
     }
   }
-  if (!target) return;
-  player->cooldown_ticks = player->stats.attack_speed_ticks;
-  emit(EventType::AttackStarted, player->id, {}, {}, "melee");
-  const int damage = resolve_damage(*player, *target, equipped_attack_bonus());
-  target->stats.life = std::max(0, target->stats.life - damage);
-  emit(EventType::DamageApplied, target->id, {}, {}, "melee", damage);
-  if (!scion_.carried_items.empty()) {
-    for (auto& item : scion_.carried_items) {
-      if (item.equipped) {
-        item.use_count += 1;
-        item.history.push_back("used at tick " + std::to_string(tick_));
-        emit(EventType::ItemHistoryUpdated, player->id, item.id, {}, "use", item.use_count);
-        break;
-      }
-    }
+
+  if (action != ActionType::Sweep && !nearest) return;
+  if (action == ActionType::Sweep && targets.empty()) return;
+
+  attacker.stats.resource -= resource_cost;
+  if (action == ActionType::Sweep) {
+    attacker.cooldown_ticks =
+        std::max(1, attacker.stats.attack_speed_ticks * kSweepCooldownNumerator /
+                         kSweepCooldownDenominator);
+  } else {
+    // Melee and Thrust deliberately share the same attack cooldown.
+    attacker.cooldown_ticks = attacker.stats.attack_speed_ticks;
   }
-  if (target->stats.life == 0) handle_death(*target, player->id);
+  const char* action_name = action == ActionType::Melee
+                                ? "melee"
+                                : action == ActionType::Thrust ? "thrust" : "sweep";
+  emit(EventType::AttackStarted, attacker.id, {}, {}, action_name);
+
+  if (action != ActionType::Sweep) targets.push_back(nearest);
+  for (Actor* target : targets) {
+    int damage = resolve_damage(attacker, *target,
+                                attacker.kind == ActorKind::Player ? equipped_attack_bonus() : 0);
+    if (action == ActionType::Thrust) {
+      damage = std::max(1, damage * kThrustDamageNumerator / kThrustDamageDenominator);
+    } else if (action == ActionType::Sweep) {
+      damage = std::max(1, damage * kSweepDamageNumerator / kSweepDamageDenominator);
+    }
+    target->stats.life = std::max(0, target->stats.life - damage);
+    emit(EventType::DamageApplied, target->id, {}, {}, action_name, damage);
+    if (target->stats.life == 0) handle_death(*target, attacker.id);
+  }
+  record_equipped_item_use(attacker);
 }
 
 int Simulation::resolve_damage(const Actor& attacker, const Actor& defender, int item_bonus) {
-  const int raw = attacker.stats.attack + attacker.stats.strength / 2 + item_bonus;
+  const int raw = attacker.stats.attack + attacker.stats.strength / 2 + item_bonus +
+                  attacker.war_cry_attack_bonus;
   const int mitigated = raw - defender.stats.defense / 2;
   return std::max(1, mitigated);
+}
+
+void Simulation::record_equipped_item_use(Actor& attacker) {
+  if (attacker.kind != ActorKind::Player || !scion_.alive) return;
+  for (auto& item : scion_.carried_items) {
+    if (!item.equipped) continue;
+    item.use_count += 1;
+    item.history.push_back("used at tick " + std::to_string(tick_));
+    emit(EventType::ItemHistoryUpdated, attacker.id, item.id, {}, "use", item.use_count);
+    break;
+  }
 }
 
 void Simulation::resolve_interact(const std::string& target) {
@@ -352,13 +438,10 @@ void Simulation::resolve_enter(const std::string& route_id) {
 
 void Simulation::spawn_enemy() {
   const int level = instance_.route_id == "route:tin:2:0" ? 2 : 1;
-  Actor enemy{rng_.token("actor"), ActorKind::Monster, enemy_stats(level),
-              {kEnemySpawnX, 0}, true, 0, std::nullopt};
-  enemy.elite = instance_.route_id == "route:tin:2:0";
   actors_.erase(std::remove_if(actors_.begin(), actors_.end(),
                                [](const Actor& value) { return value.kind == ActorKind::Monster; }),
                 actors_.end());
-  actors_.push_back(enemy);
+  spawn_monster({kEnemySpawnX, 0}, level, instance_.route_id == "route:tin:2:0");
 }
 
 void Simulation::enemy_turn() {
@@ -382,7 +465,17 @@ void Simulation::enemy_turn() {
 void Simulation::advance_tick() {
   ++tick_;
   for (auto& actor_value : actors_) {
+    actor_value.stats.resource =
+        std::min(actor_value.stats.resource_max,
+                 actor_value.stats.resource + kResourceRegenPerTick);
     if (actor_value.cooldown_ticks > 0) --actor_value.cooldown_ticks;
+    if (actor_value.war_cry_ticks_remaining > 0) {
+      --actor_value.war_cry_ticks_remaining;
+      if (actor_value.war_cry_ticks_remaining == 0) {
+        actor_value.war_cry_attack_bonus = 0;
+        emit(EventType::BuffExpired, actor_value.id, {}, {}, "war-cry", kWarCryAttackBonus);
+      }
+    }
   }
   enemy_turn();
 }

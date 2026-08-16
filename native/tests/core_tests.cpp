@@ -79,6 +79,167 @@ const Item* find_ground_item(const Simulation& sim, const std::string& id) {
   return nullptr;
 }
 
+int count_events(const Simulation& sim, EventType type, const std::string& text = {}) {
+  int count = 0;
+  for (const auto& event : sim.events()) {
+    if (event.type == type && (text.empty() || event.text == text)) ++count;
+  }
+  return count;
+}
+
+const Event* last_event(const Simulation& sim, EventType type, const std::string& text = {}) {
+  for (auto it = sim.events().rbegin(); it != sim.events().rend(); ++it) {
+    if (it->type == type && (text.empty() || it->text == text)) return &*it;
+  }
+  return nullptr;
+}
+
+Actor* first_monster(Simulation& sim) {
+  for (const auto& actor : sim.actors()) {
+    if (actor.kind == ActorKind::Monster) return sim.actor(actor.id);
+  }
+  return nullptr;
+}
+
+void test_skill_resource_gating_and_thrust() {
+  Simulation sim(0xA001ULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  Actor* player = sim.actor(sim.scion().actor_id);
+  Actor* enemy = first_monster(sim);
+  check(player && enemy, "skill test has a player and monster");
+  player->position = {0, 0};
+  player->stats.resource = 5;
+  enemy->position = {1000, 0};
+  enemy->stats.life = 1000;
+  const int life_before = enemy->stats.life;
+  sim.dispatch(Command::action_use(ActionType::Thrust));
+  check(enemy->stats.life == life_before, "insufficient resource makes Thrust a no-op");
+  check(count_events(sim, EventType::AttackStarted, "thrust") == 0,
+        "gated Thrust emits no attack event");
+  check(player->cooldown_ticks == 0, "gated Thrust does not consume cooldown");
+
+  player = sim.actor(sim.scion().actor_id);
+  enemy = first_monster(sim);
+  player->stats.resource = player->stats.resource_max;
+  player->cooldown_ticks = 0;
+  enemy->position = {1000, 0};
+  enemy->stats.life = 1000;
+  sim.dispatch(Command::action_use(ActionType::Thrust));
+  check(enemy->stats.life < 1000, "funded Thrust damages one target in front");
+  check(count_events(sim, EventType::AttackStarted, "thrust") == 1,
+        "funded Thrust emits one attack event");
+  check(player->stats.resource == player->stats.resource_max - 8,
+        "Thrust pays its named cost after one tick of regeneration");
+  check(player->cooldown_ticks == player->stats.attack_speed_ticks - 1,
+        "Thrust shares the ordinary attack cooldown");
+
+  player->cooldown_ticks = 0;
+  player->stats.resource = player->stats.resource_max;
+  enemy->position = {-1000, 0};
+  const int behind_life = enemy->stats.life;
+  sim.dispatch(Command::action_use(ActionType::Thrust));
+  check(enemy->stats.life == behind_life, "Thrust rejects a target behind the facing proxy");
+
+  player->cooldown_ticks = 0;
+  player->stats.resource = player->stats.resource_max;
+  enemy->position = {2201, 0};
+  const int distant_life = enemy->stats.life;
+  sim.dispatch(Command::action_use(ActionType::Thrust));
+  check(enemy->stats.life == distant_life, "Thrust rejects a target beyond its 1.5x range");
+
+  player->cooldown_ticks = 2;
+  player->stats.resource = player->stats.resource_max;
+  enemy->position = {1000, 0};
+  const int cooldown_life = enemy->stats.life;
+  sim.dispatch(Command::action_use(ActionType::Thrust));
+  check(enemy->stats.life == cooldown_life, "Thrust respects an existing attack cooldown");
+}
+
+void test_sweep_hits_multiple_targets_and_gates_resource() {
+  Simulation sim(0xA002ULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  Actor* player = sim.actor(sim.scion().actor_id);
+  check(player != nullptr, "Sweep test has a player");
+  player->position = {0, 0};
+  player->stats.resource = 10;
+  player->cooldown_ticks = 0;
+  Actor* first = first_monster(sim);
+  check(first != nullptr, "Sweep test has an initial monster");
+  first->position = {800, 0};
+  first->stats.life = 1000;
+  const std::string second_id = sim.spawn_monster({900, 0});
+  Actor* second = sim.actor(second_id);
+  check(second != nullptr, "general monster spawn seam creates a second target");
+  second->stats.life = 1000;
+  sim.dispatch(Command::action_use(ActionType::Sweep));
+  check(sim.actor(second_id)->stats.life == 1000,
+        "insufficient resource makes Sweep a no-op");
+  check(count_events(sim, EventType::AttackStarted, "sweep") == 0,
+        "gated Sweep emits no attack event");
+
+  player = sim.actor(sim.scion().actor_id);
+  player->stats.resource = player->stats.resource_max;
+  player->cooldown_ticks = 0;
+  sim.dispatch(Command::action_use(ActionType::Sweep));
+  int damaged = 0;
+  for (const auto& actor : sim.actors()) {
+    if (actor.kind == ActorKind::Monster && actor.stats.life < 1000) ++damaged;
+  }
+  check(damaged == 2, "Sweep damages every living monster in melee range");
+  check(count_events(sim, EventType::DamageApplied, "sweep") == 2,
+        "Sweep emits one damage event per target");
+  check(player->stats.resource == player->stats.resource_max - 13,
+        "Sweep pays its named cost after one tick of regeneration");
+  check(player->cooldown_ticks ==
+            player->stats.attack_speed_ticks * 3 / 2 - 1,
+        "Sweep uses its 1.5x attack cooldown");
+}
+
+void test_war_cry_buff_expiry_and_replay_determinism() {
+  Simulation first(0xA003ULL);
+  Simulation second(0xA003ULL);
+  for (Simulation* sim : {&first, &second}) {
+    sim->dispatch(Command::enter("route:tin:1:0"));
+    Actor* player = sim->actor(sim->scion().actor_id);
+    check(player != nullptr, "War Cry test has a player");
+    player->position = {0, 0};
+    player->stats.life = player->stats.life_max;
+    Actor* first_actor = first_monster(*sim);
+    check(first_actor != nullptr, "War Cry test has an initial monster");
+    first_actor->position = {800, 0};
+    first_actor->stats.life = 1000;
+    player->stats.resource = player->stats.resource_max;
+    sim->dispatch(Command::action_use(ActionType::WarCry));
+    player = sim->actor(sim->scion().actor_id);
+    check(player->war_cry_attack_bonus == 4 && player->war_cry_ticks_remaining == 19,
+          "War Cry applies its named attack bonus and duration");
+    check(player->stats.resource == player->stats.resource_max - 18,
+          "War Cry pays its named cost after one tick of regeneration");
+    check(count_events(*sim, EventType::BuffApplied, "war-cry") == 1,
+          "War Cry emits BuffApplied");
+    player->cooldown_ticks = 0;
+    sim->dispatch(Command::action_use(ActionType::Melee));
+    for (int i = 0; i < 18; ++i) sim->dispatch(Command::action_use(ActionType::Wait));
+    player = sim->actor(sim->scion().actor_id);
+    check(player->war_cry_attack_bonus == 0 && player->war_cry_ticks_remaining == 0,
+          "War Cry expires at its deterministic tick boundary");
+    check(count_events(*sim, EventType::BuffExpired, "war-cry") == 1,
+          "War Cry emits one BuffExpired event");
+
+    player->stats.resource = 19;
+    const int applied_before = count_events(*sim, EventType::BuffApplied, "war-cry");
+    sim->dispatch(Command::action_use(ActionType::WarCry));
+    check(count_events(*sim, EventType::BuffApplied, "war-cry") == applied_before,
+          "insufficient resource makes War Cry a no-op");
+  }
+  check(relevant(first) == relevant(second),
+        "skill actions and buff expiry remain deterministic under replay");
+  const Event* applied = last_event(first, EventType::BuffApplied, "war-cry");
+  const Event* expired = last_event(first, EventType::BuffExpired, "war-cry");
+  check(applied && expired && applied->actor_id == expired->actor_id,
+        "War Cry buff events retain the actor identity");
+}
+
 void force_relic_resurface(Simulation& sim, const std::string& route) {
   for (int attempt = 0; attempt < 32 && sim.house().relic_candidates.size() == 1; ++attempt) {
     sim.dispatch(Command::enter(route));
@@ -394,6 +555,9 @@ void test_legend_stable_ids_and_deterministic_replay() {
 int main() {
   test_determinism();
   test_actor_symmetry();
+  test_skill_resource_gating_and_thrust();
+  test_sweep_hits_multiple_targets_and_gates_resource();
+  test_war_cry_buff_expiry_and_replay_determinism();
   test_extraction();
   test_death_and_successor();
   test_item_identity_and_branch();
