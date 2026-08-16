@@ -22,6 +22,11 @@ namespace {
 
 constexpr double kPi = 3.14159265358979323846;
 constexpr double kTileUnits = 100.0;  // one move command covers 100 world units
+// These costs are presentation metadata only.  The simulation remains the
+// authority for affordability and resource mutation.
+constexpr int kThrustResourceCost = 10;
+constexpr int kSweepResourceCost = 15;
+constexpr int kWarCryResourceCost = 20;
 
 // Adjustable 2.5D camera: pitch foreshortens the ground plane, zoom scales
 // world units to pixels, and perspective grows near rows / shrinks far rows.
@@ -45,7 +50,15 @@ struct ScreenPoint {
 };
 
 struct EffectFx {
-  enum class Kind { Swing, Impact, DeathRing, Dust, Sparkle };
+  enum class Kind {
+    Swing,
+    SweepArc,
+    WarCryAura,
+    Impact,
+    DeathRing,
+    Dust,
+    Sparkle
+  };
   Kind kind = Kind::Impact;
   double wx = 0.0;
   double wy = 0.0;
@@ -82,6 +95,32 @@ ClientState* state_from(HWND window) {
 void show_hint(ClientState& state, const std::string& message) {
   state.hint = message;
   state.hint_ticks = 80;
+}
+
+struct SkillInfo {
+  char key;
+  const char* name;
+  verdigris::ActionType action;
+  int resource_cost;
+};
+
+constexpr SkillInfo kSkills[] = {
+    {'Q', "Thrust", verdigris::ActionType::Thrust, kThrustResourceCost},
+    {'E', "Sweep", verdigris::ActionType::Sweep, kSweepResourceCost},
+    {'R', "WarCry", verdigris::ActionType::WarCry, kWarCryResourceCost},
+};
+
+const SkillInfo* skill_for_key(WPARAM key) {
+  for (const auto& skill : kSkills)
+    if (key == static_cast<WPARAM>(skill.key)) return &skill;
+  return nullptr;
+}
+
+void dispatch_skill(ClientState& state, const SkillInfo& skill) {
+  // Do not duplicate target/range/cooldown rules in the client.  A key press
+  // is a presentation request; the core decides whether it resolves.
+  state.simulation->dispatch(verdigris::Command::action_use(skill.action));
+  show_hint(state, std::string(skill.name) + " requested");
 }
 
 std::string nearest_pickup_id(const ClientState& state) {
@@ -250,6 +289,31 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       }
       break;
     }
+    case EffectFx::Kind::SweepArc: {
+      // Sweep is an area action in the core.  A complete ellipse keeps the
+      // presentation honest about that area instead of implying a single
+      // facing direction that the deterministic action does not own.
+      const int radius = static_cast<int>(kTileUnits * (0.72 + grow * 0.62) *
+                                          base.scale);
+      const int ry = std::max(3, static_cast<int>(radius * camera.ground_squash()));
+      const COLORREF color = fade_to_background(RGB(116, 204, 208), life);
+      ring_ellipse(dc, base.x, base.y, radius, ry, color, 3);
+      if (radius > 8)
+        ring_ellipse(dc, base.x, base.y, radius - 7, std::max(2, ry - 4), color, 1);
+      break;
+    }
+    case EffectFx::Kind::WarCryAura: {
+      // A short-lived, expanding aura communicates the buff event without
+      // turning the renderer into a second source of gameplay state.
+      const int radius = static_cast<int>(kTileUnits * (0.38 + grow * 0.72) *
+                                          base.scale);
+      const int ry = std::max(3, static_cast<int>(radius * camera.ground_squash()));
+      const COLORREF color = fade_to_background(RGB(239, 190, 78), life);
+      ring_ellipse(dc, base.x, base.y, radius, ry, color, 3);
+      ring_ellipse(dc, base.x, base.y, std::max(3, radius - 8),
+                   std::max(2, ry - 4), fade_to_background(RGB(255, 224, 128), life), 1);
+      break;
+    }
     case EffectFx::Kind::Impact: {
       const int r = std::max(4, static_cast<int>(kTileUnits * 0.35 * base.scale));
       fill_ellipse(dc, base.x,
@@ -304,6 +368,8 @@ const char* event_label(verdigris::EventType type) {
     case EventType::HouseStoreChanged: return "house store";
     case EventType::RouteUnlocked: return "route unlocked";
     case EventType::SeasonalRewardGranted: return "seasonal reward";
+    case EventType::BuffApplied: return "buff";
+    case EventType::BuffExpired: return "buff expired";
     default: return nullptr;
   }
 }
@@ -328,8 +394,14 @@ void ingest_events(ClientState& state, const RECT& bounds) {
     const double ey = subject ? subject->position.y : state.last_death_pos.y;
     switch (event.type) {
       case verdigris::EventType::AttackStarted:
-        state.effects.push_back({EffectFx::Kind::Swing, ex, ey,
-                                 aim_angle(state, bounds, ex, ey), 0, 6});
+        state.effects.push_back({event.text == "sweep" ? EffectFx::Kind::SweepArc
+                                                         : EffectFx::Kind::Swing,
+                                 ex, ey, aim_angle(state, bounds, ex, ey), 0,
+                                 event.text == "sweep" ? 8 : 6});
+        break;
+      case verdigris::EventType::BuffApplied:
+        if (event.text == "war-cry")
+          state.effects.push_back({EffectFx::Kind::WarCryAura, ex, ey, 0.0, 0, 14});
         break;
       case verdigris::EventType::DamageApplied:
         state.effects.push_back({EffectFx::Kind::Impact, ex, ey, 0.0, 0, 4});
@@ -434,15 +506,26 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds) {
   TextOutA(dc, left + 16, bottom - 28, controls, static_cast<int>(strlen(controls)));
 }
 
-void paint_skill_strip(HDC dc) {
-  const char keys[] = {'Q', 'E', 'R'};
+void paint_skill_strip(const ClientState& state, HDC dc) {
+  const auto* player =
+      state.simulation->actor(state.simulation->scion().actor_id);
   for (int i = 0; i < 3; ++i) {
-    const int left = 18 + i * 68;
-    RECT slot{left, 158, left + 58, 196};
-    HBRUSH fill = CreateSolidBrush(RGB(35, 42, 44));
+    const SkillInfo& skill = kSkills[i];
+    const bool cooldown =
+        player && skill.action != verdigris::ActionType::WarCry &&
+        player->cooldown_ticks > 0;
+    const bool affordable =
+        player && player->stats.resource >= skill.resource_cost;
+    const bool available = player && affordable && !cooldown;
+    const bool active = player && skill.action == verdigris::ActionType::WarCry &&
+                        player->war_cry_ticks_remaining > 0;
+    const int left = 18 + i * 116;
+    RECT slot{left, 202, left + 106, 256};
+    HBRUSH fill = CreateSolidBrush(available ? RGB(35, 42, 44) : RGB(29, 33, 34));
     FillRect(dc, &slot, fill);
     DeleteObject(fill);
-    HPEN border = CreatePen(PS_SOLID, 1, RGB(86, 96, 94));
+    HPEN border = CreatePen(PS_SOLID, 1,
+                            available ? RGB(86, 116, 104) : RGB(63, 70, 68));
     HGDIOBJ old_pen = SelectObject(dc, border);
     HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
     Rectangle(dc, slot.left, slot.top, slot.right, slot.bottom);
@@ -450,11 +533,63 @@ void paint_skill_strip(HDC dc) {
     SelectObject(dc, old_pen);
     DeleteObject(border);
     SetBkMode(dc, TRANSPARENT);
-    SetTextColor(dc, RGB(155, 163, 157));
-    TextOutA(dc, left + 8, slot.top + 6, &keys[i], 1);
-    const char* unbound = "--";
-    TextOutA(dc, left + 31, slot.top + 17, unbound, 2);
+    SetTextColor(dc, available ? RGB(239, 208, 116) : RGB(112, 119, 115));
+    TextOutA(dc, left + 8, slot.top + 7, &skill.key, 1);
+    SetTextColor(dc, available ? RGB(205, 221, 207) : RGB(112, 119, 115));
+    const std::string name_and_cost = std::string(skill.name) + "  " +
+                                      std::to_string(skill.resource_cost);
+    TextOutA(dc, left + 25, slot.top + 7, name_and_cost.c_str(),
+             static_cast<int>(name_and_cost.size()));
+    std::string state_text;
+    if (active) {
+      state_text = "active " + std::to_string(player->war_cry_ticks_remaining);
+    } else if (cooldown) {
+      state_text = "cooldown " + std::to_string(player->cooldown_ticks);
+    } else if (!affordable) {
+      state_text = "need " + std::to_string(skill.resource_cost);
+    } else {
+      state_text = "ready";
+    }
+    TextOutA(dc, left + 25, slot.top + 29, state_text.c_str(),
+             static_cast<int>(state_text.size()));
   }
+}
+
+void paint_resource_hud(const verdigris::Actor* player, HDC dc) {
+  if (!player) return;
+  constexpr int left = 18;
+  constexpr int width = 240;
+  constexpr int height = 8;
+  const auto draw_bar = [&](int y, const char* label, int value, int maximum,
+                            COLORREF color) {
+    const int bounded_maximum = std::max(1, maximum);
+    const double ratio = std::clamp(static_cast<double>(value) / bounded_maximum,
+                                    0.0, 1.0);
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, RGB(185, 198, 188));
+    const std::string caption = std::string(label) + " " + std::to_string(value) +
+                                "/" + std::to_string(maximum);
+    TextOutA(dc, left, y - 15, caption.c_str(), static_cast<int>(caption.size()));
+    RECT background{left, y, left + width, y + height};
+    HBRUSH back_brush = CreateSolidBrush(RGB(45, 51, 50));
+    FillRect(dc, &background, back_brush);
+    DeleteObject(back_brush);
+    RECT fill{left, y, left + static_cast<int>(width * ratio), y + height};
+    HBRUSH fill_brush = CreateSolidBrush(color);
+    FillRect(dc, &fill, fill_brush);
+    DeleteObject(fill_brush);
+    HPEN border = CreatePen(PS_SOLID, 1, RGB(92, 104, 99));
+    HGDIOBJ old_pen = SelectObject(dc, border);
+    HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+    Rectangle(dc, background.left, background.top, background.right, background.bottom);
+    SelectObject(dc, old_brush);
+    SelectObject(dc, old_pen);
+    DeleteObject(border);
+  };
+  draw_bar(122, "LIFE", player->stats.life, player->stats.life_max,
+           RGB(177, 82, 75));
+  draw_bar(146, "RESOURCE", player->stats.resource, player->stats.resource_max,
+           RGB(72, 168, 191));
 }
 
 void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
@@ -587,14 +722,15 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   const int life = player ? player->stats.life : 0;
   const std::string status =
       "House " + sim.house().name + " | Scion " + sim.scion().name + " | Life " +
-      std::to_string(life) + " | Stored trophies " +
+      std::to_string(life) + " | Resource " +
+      std::to_string(player ? player->stats.resource : 0) + " | Stored trophies " +
       std::to_string(sim.house().stored_trophies.size()) + " | Stored items " +
       std::to_string(sim.house().stored_items.size()) + " | Carried " +
       std::to_string(sim.scion().carried_items.size() +
                      sim.scion().carried_trophies.size());
   TextOutA(dc, 18, 16, status.c_str(), static_cast<int>(status.size()));
   const char* help =
-      "WASD move | Mouse aim | LMB melee | RMB/Space dash | Q/E/R skill slots (disabled)";
+      "WASD move | Mouse aim | LMB melee | RMB/Space dash | Q Thrust | E Sweep | R WarCry";
   TextOutA(dc, 18, 40, help, static_cast<int>(strlen(help)));
   const char* help2 =
       "X nearest pickup | Z loot labels | F contextual extract | I gear/House overlay";
@@ -603,6 +739,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       "Wheel zoom | PgUp/PgDn pitch | -/= perspective | Home reset camera";
   TextOutA(dc, 18, 88, camera_help, static_cast<int>(strlen(camera_help)));
 
+  paint_resource_hud(player, dc);
+
   SetTextColor(dc, RGB(150, 160, 150));
   char debug_line[256];
   std::snprintf(debug_line, sizeof(debug_line),
@@ -610,12 +748,12 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                 static_cast<unsigned long long>(sim.tick()), state.camera.zoom,
                 state.camera.pitch_deg, state.camera.perspective,
                 state.effects.size());
-  TextOutA(dc, 18, 112, debug_line, static_cast<int>(strlen(debug_line)));
+  TextOutA(dc, 18, 168, debug_line, static_cast<int>(strlen(debug_line)));
   if (state.hint_ticks > 0 && !state.hint.empty()) {
     SetTextColor(dc, RGB(239, 208, 116));
-    TextOutA(dc, 18, 136, state.hint.c_str(), static_cast<int>(state.hint.size()));
+    TextOutA(dc, 18, 184, state.hint.c_str(), static_cast<int>(state.hint.size()));
   }
-  paint_skill_strip(dc);
+  paint_skill_strip(state, dc);
   paint_gear_overlay(state, dc, bounds);
   int log_y = bounds.bottom - 24;
   for (auto it = state.event_log.rbegin(); it != state.event_log.rend(); ++it) {
@@ -683,8 +821,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (wparam == 'D') state->d = true;
       if (wparam == VK_SPACE)
         state->simulation->dispatch(verdigris::Command::action_use(verdigris::ActionType::Dash));
-      if (wparam == 'Q' || wparam == 'E' || wparam == 'R')
-        show_hint(*state, "Skill slot not yet bound (Q/E/R are disabled)");
+      if (const SkillInfo* skill = skill_for_key(wparam)) dispatch_skill(*state, *skill);
       if (wparam == 'X') {
         const std::string target = nearest_pickup_id(*state);
         if (target.empty()) {
