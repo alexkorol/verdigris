@@ -50,6 +50,12 @@ also: BLOCKED, SUPERSEDED
   (in `STATUS.md`).
 - Only `READY` specs are executable. After READY, the spec is immutable;
   corrections arrive as numbered items in `REVIEW.md` or a replacement task.
+- **Claim release**: if a claim goes stale (coordinator outage, no
+  implementation commits), the ARCHITECT may place a `RELEASE.md` in the
+  task folder naming the released claim. From that moment any coordinator
+  may re-claim by REPLACING the stale `STATUS.md` (the one exception to
+  the never-edit-others'-STATUS rule). The original coordinator, on
+  return, must check for RELEASE.md before resuming.
 
 ## Codex obligations per task
 
