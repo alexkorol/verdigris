@@ -13,5 +13,5 @@ known_risks: preserve the existing guest/Chronicles persistence seams while maki
 dependencies: none
 architect_review_required: true
 implementation_commit: e5d87a5
-verification: npm run test:unit (PASS: 114 files/741 tests); npm run playtest (30/31; isolated gear-outcomes PASS); targeted tests and ESLint PASS
+verification: npm run test:unit (PASS: 114 files/742 tests); npm run smoke:browser (PASS: 1/1); isolated playtest scenarios first-goal, gear-outcomes, house-treasury, mortality, quest, and zones all PASS; aggregate playtest remains timing-sensitive
 ---
