@@ -231,3 +231,8 @@ Original capture commit: `310b76d` — `docs: capture camera preset evidence pac
 Revision conversion commit: `f813a2e` — `docs: compress camera evidence captures`.
 
 Final report commit: `4b27757` — `docs: record camera evidence compression revision`.
+
+Architect review `78b46e8` accepted the compression revision. The final
+evidence pack is integrated on the program branch at `e24825d`; all nine
+JPEGs remain 1200×800 and below 250KB, with report links and scope proof
+verified.
