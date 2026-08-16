@@ -137,8 +137,22 @@ void test_skill_resource_gating_and_thrust() {
   player->stats.resource = player->stats.resource_max;
   enemy->position = {-1000, 0};
   const int behind_life = enemy->stats.life;
+  sim.dispatch(Command::aim(-1, 0));
+  player = sim.actor(sim.scion().actor_id);
+  check(player->facing.x == -1 && player->facing.y == 0,
+        "aim command turns the player toward a target behind them");
+  player->cooldown_ticks = 0;
+  player->stats.resource = player->stats.resource_max;
   sim.dispatch(Command::action_use(ActionType::Thrust));
-  check(enemy->stats.life == behind_life, "Thrust rejects a target behind the facing proxy");
+  check(enemy->stats.life < behind_life, "Thrust hits a target behind the player after aiming");
+
+  player->cooldown_ticks = 0;
+  player->stats.resource = player->stats.resource_max;
+  enemy->position = {1000, 0};
+  const int outside_cone_life = enemy->stats.life;
+  sim.dispatch(Command::action_use(ActionType::Thrust));
+  check(enemy->stats.life == outside_cone_life,
+        "Thrust rejects a target outside the facing half-plane");
 
   player->cooldown_ticks = 0;
   player->stats.resource = player->stats.resource_max;
@@ -153,6 +167,67 @@ void test_skill_resource_gating_and_thrust() {
   const int cooldown_life = enemy->stats.life;
   sim.dispatch(Command::action_use(ActionType::Thrust));
   check(enemy->stats.life == cooldown_life, "Thrust respects an existing attack cooldown");
+}
+
+void test_actor_facing_follows_movement_and_aim() {
+  Simulation sim(0xA010ULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  Actor* player = sim.actor(sim.scion().actor_id);
+  check(player != nullptr, "facing test has a player");
+  check(player->facing.x == 1 && player->facing.y == 0,
+        "actors default to deterministic +x facing");
+
+  sim.dispatch(Command::move(-2, 1));
+  player = sim.actor(sim.scion().actor_id);
+  check(player->facing.x == -1 && player->facing.y == 1,
+        "movement updates facing using integer quantization");
+  const Vec2 position_after_move = player->position;
+
+  sim.dispatch(Command::aim(0, -7));
+  player = sim.actor(sim.scion().actor_id);
+  check(player->facing.x == 0 && player->facing.y == -1,
+        "aim overrides the previous movement facing");
+  sim.dispatch(Command::action_use(ActionType::Wait));
+  player = sim.actor(sim.scion().actor_id);
+  check(player->position.x == position_after_move.x &&
+            player->position.y == position_after_move.y,
+        "aim does not move the actor");
+}
+
+void test_monster_facing_tracks_pursuit_target() {
+  Simulation sim(0xA011ULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  Actor* player = sim.actor(sim.scion().actor_id);
+  Actor* enemy = first_monster(sim);
+  check(player && enemy, "monster facing test has both actors");
+  check(enemy->facing.x == -1 && enemy->facing.y == 0,
+        "monster faces the player while pursuing from the right");
+
+  player->position = {2400, 300};
+  sim.dispatch(Command::action_use(ActionType::Wait));
+  enemy = sim.actor(enemy->id);
+  check(enemy->facing.x == 1 && enemy->facing.y == 1,
+        "monster facing tracks a player on its upper-right pursuit vector");
+}
+
+void test_facing_replay_is_deterministic() {
+  Simulation first(0xA012ULL);
+  Simulation second(0xA012ULL);
+  const std::vector<Command> commands = {
+      Command::enter("route:tin:1:0"), Command::move(-1, 1), Command::aim(-1, 0),
+      Command::action_use(ActionType::Thrust), Command::move(0, -1),
+      Command::aim(1, 1), Command::action_use(ActionType::Wait)};
+  for (const auto& command : commands) {
+    first.dispatch(command);
+    second.dispatch(command);
+  }
+  check(relevant(first) == relevant(second),
+        "facing command streams replay to byte-identical events");
+  const Actor* first_player = first.actor(first.scion().actor_id);
+  const Actor* second_player = second.actor(second.scion().actor_id);
+  check(first_player && second_player && first_player->facing.x == second_player->facing.x &&
+            first_player->facing.y == second_player->facing.y,
+        "facing state remains identical under deterministic replay");
 }
 
 void test_sweep_hits_multiple_targets_and_gates_resource() {
@@ -555,6 +630,9 @@ void test_legend_stable_ids_and_deterministic_replay() {
 int main() {
   test_determinism();
   test_actor_symmetry();
+  test_actor_facing_follows_movement_and_aim();
+  test_monster_facing_tracks_pursuit_target();
+  test_facing_replay_is_deterministic();
   test_skill_resource_gating_and_thrust();
   test_sweep_hits_multiple_targets_and_gates_resource();
   test_war_cry_buff_expiry_and_replay_determinism();

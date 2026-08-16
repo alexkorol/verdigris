@@ -35,6 +35,21 @@ std::string hex_id(std::uint64_t value) {
   return stream.str();
 }
 
+int direction_component(int value) {
+  return value < 0 ? -1 : value > 0 ? 1 : 0;
+}
+
+Vec2 quantize_direction(int dx, int dy) {
+  return {direction_component(dx), direction_component(dy)};
+}
+
+bool is_forward(const Vec2& facing, Vec2 delta) {
+  // A strict half-plane keeps the boundary (dot == 0) out of a thrust cone.
+  // All operands are bounded integer world-space values and the facing is
+  // limited to -1/0/+1 components.
+  return facing.x * delta.x + facing.y * delta.y > 0;
+}
+
 ActorStats player_stats() {
   ActorStats stats;
   stats.level = 1;
@@ -113,6 +128,10 @@ std::string Simulation::Rng::token(const std::string& prefix) {
 
 Command Command::move(int x, int y) {
   return {CommandType::MoveIntent, x, y, ActionType::Wait, {}};
+}
+
+Command Command::aim(int x, int y) {
+  return {CommandType::AimIntent, x, y, ActionType::Wait, {}};
 }
 
 Command Command::action_use(ActionType action) {
@@ -232,6 +251,7 @@ void Simulation::record_legend(const std::string& kind, const std::string& subje
 
 void Simulation::dispatch(const Command& command) {
   if (command.type == CommandType::MoveIntent) resolve_move(command.dx, command.dy);
+  if (command.type == CommandType::AimIntent) resolve_aim(command.dx, command.dy);
   if (command.type == CommandType::UseAction) resolve_action(command.action);
   if (command.type == CommandType::Interact) resolve_interact(command.target);
   if (command.type == CommandType::PickUp) resolve_pickup(command.target);
@@ -244,10 +264,19 @@ void Simulation::dispatch(const Command& command) {
 void Simulation::resolve_move(int dx, int dy) {
   Actor* player = actor(scion_.actor_id);
   if (!player || !player->alive || !scion_.alive) return;
+  const Vec2 direction = quantize_direction(dx, dy);
+  if (direction.x != 0 || direction.y != 0) player->facing = direction;
   const int length = std::max(1, std::abs(dx) + std::abs(dy));
   player->position.x += (dx * player->stats.move_speed) / length;
   player->position.y += (dy * player->stats.move_speed) / length;
   emit(EventType::ActorMoved, player->id, {}, {}, {}, player->position.x);
+}
+
+void Simulation::resolve_aim(int dx, int dy) {
+  Actor* player = actor(scion_.actor_id);
+  if (!player || !player->alive || !scion_.alive) return;
+  const Vec2 direction = quantize_direction(dx, dy);
+  if (direction.x != 0 || direction.y != 0) player->facing = direction;
 }
 
 void Simulation::resolve_action(ActionType action) {
@@ -295,10 +324,9 @@ void Simulation::resolve_actor_action(Actor& attacker, ActionType action) {
                                                        : distance <= kMeleeRange;
     if (!in_range) continue;
     if (action == ActionType::Thrust) {
-      // There is no separate facing field in the deterministic core yet; the
-      // sign of the horizontal position delta is the stable facing proxy.
-      const int delta_x = candidate.position.x - attacker.position.x;
-      if (delta_x < 0) continue;
+      const Vec2 delta{candidate.position.x - attacker.position.x,
+                       candidate.position.y - attacker.position.y};
+      if (!is_forward(attacker.facing, delta)) continue;
     }
     if (action == ActionType::Sweep) {
       targets.push_back(&candidate);
@@ -449,6 +477,10 @@ void Simulation::enemy_turn() {
   if (!player || !player->alive || !scion_.alive) return;
   for (auto& enemy : actors_) {
     if (enemy.kind != ActorKind::Monster || !enemy.alive) continue;
+    const Vec2 pursuit{player->position.x - enemy.position.x,
+                       player->position.y - enemy.position.y};
+    const Vec2 direction = quantize_direction(pursuit.x, pursuit.y);
+    if (direction.x != 0 || direction.y != 0) enemy.facing = direction;
     if (enemy.cooldown_ticks > 0) continue;
     if (manhattan_distance(enemy.position, player->position) > kMeleeRange) continue;
     enemy.cooldown_ticks = enemy.stats.attack_speed_ticks;
