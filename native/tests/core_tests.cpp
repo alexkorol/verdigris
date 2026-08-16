@@ -489,16 +489,64 @@ void test_war_cry_buff_expiry_and_replay_determinism() {
         "War Cry buff events retain the actor identity");
 }
 
-void force_relic_resurface(Simulation& sim, const std::string& route) {
-  for (int attempt = 0; attempt < 32 && sim.house().relic_candidates.size() == 1; ++attempt) {
+void force_relic_resurface(Simulation& sim, const std::string& route,
+                           const std::string& target_id = {}) {
+  for (int attempt = 0;
+       attempt < 64 &&
+       (target_id.empty() ? sim.house().relic_candidates.size() == 1
+                           : find_ground_item(sim, target_id) == nullptr);
+       ++attempt) {
+    Actor* player = sim.actor(sim.scion().actor_id);
+    if (player) {
+      player->position = {0, 0};
+      player->stats.life = player->stats.life_max;
+    }
     sim.dispatch(Command::enter(route));
     defeat_enemy(sim);
-    for (const auto& item : sim.ground_items()) {
-      if (item.relic_candidate) return;
+    if (target_id.empty()) {
+      for (const auto& item : sim.ground_items()) {
+        if (item.relic_candidate) return;
+      }
+      sim.dispatch(Command::interact("hazard:death"));
+      sim.create_successor("Resurfacing Successor " + std::to_string(attempt));
     }
-    sim.dispatch(Command::interact("hazard:death"));
-    sim.create_successor("Resurfacing Successor " + std::to_string(attempt));
   }
+  if (!target_id.empty())
+    check(find_ground_item(sim, target_id) != nullptr,
+          "target relic resurfaces from the reward stream");
+}
+
+bool ground_has_trophy(const Simulation& sim, const std::string& id) {
+  for (const auto& trophy : sim.ground_trophies()) {
+    if (trophy.id == id) return true;
+  }
+  return false;
+}
+
+void force_trophy_resurface(Simulation& sim, const std::string& route,
+                            const std::string& trophy_id) {
+  for (int attempt = 0; attempt < 64 && !ground_has_trophy(sim, trophy_id); ++attempt) {
+    Actor* player = sim.actor(sim.scion().actor_id);
+    if (player) {
+      player->position = {0, 0};
+      player->stats.life = player->stats.life_max;
+    }
+    sim.dispatch(Command::enter(route));
+    defeat_enemy(sim);
+  }
+  check(ground_has_trophy(sim, trophy_id), "recoverable trophy resurfaces from the reward stream");
+}
+
+std::vector<std::string> recoverable_signature(const Simulation& sim) {
+  std::vector<std::string> signature;
+  for (const auto& item : sim.house().relic_candidates) {
+    signature.push_back("item:" + item.id + ":" +
+                        (item.history.empty() ? std::string{} : item.history.back()));
+  }
+  for (const auto& trophy : sim.house().lost_trophies) {
+    signature.push_back("trophy:" + trophy.id);
+  }
+  return signature;
 }
 
 void test_relic_resurface_round_trip() {
@@ -564,8 +612,9 @@ void test_relic_loss_again_returns_once() {
         "loss-again round trip preserves relic identity");
   check(find_ground_item(sim, relic_id) == nullptr, "lost relic is not duplicated on the ground");
   check(sim.house().stored_items.empty(), "lost resurfaced relic was not stored");
-  check(sim.house().relic_candidates.front().history.back() == "registered after Scion death",
-        "loss-again death appends the death history line");
+  check(sim.house().relic_candidates.front().history.back() ==
+            "lost at route:tin:1:0, awaiting recovery",
+        "pack relic death records its route recovery history line");
 }
 
 void test_relic_resurface_replay_is_deterministic() {
@@ -697,7 +746,9 @@ void test_death_and_successor() {
   const std::string route = "route:tin:2:0";
   sim.dispatch(Command::interact("hazard:death"));
   check(!sim.scion().alive, "Scion dies in the expedition");
-  check(sim.house().stored_trophies.empty(), "unextracted trophy is not preserved");
+  check(sim.house().stored_trophies.empty(), "unextracted trophy is not durable House storage");
+  check(sim.house().lost_trophies.size() == 1,
+        "unextracted trophy enters the recoverable pool");
   check(sim.house().relic_candidates.size() == 1, "one meaningful item becomes a relic candidate");
   check(sim.house().relic_candidates.front().id == carried_item, "relic candidate retains stable item identity");
   check(sim.house().route_unlocked(route), "House route progress survives Scion death");
@@ -715,6 +766,101 @@ void test_death_and_successor() {
         "death legend records the relic candidate transition");
   check(find_legend(sim, "scion_created") != nullptr,
         "successor creation is retained in the shared House history");
+}
+
+void test_d106_all_carried_value_is_recoverable() {
+  Simulation sim(0xD106ULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(sim);
+  pick_all_rewards(sim);
+  const std::string equipped_id = sim.scion().carried_items.front().id;
+  const std::string first_trophy_id = sim.scion().carried_trophies.front().id;
+  sim.dispatch(Command::equip(equipped_id));
+
+  // A second cleared instance supplies a pack item and a second trophy while
+  // the first pair remains carried by the same Scion.
+  sim.actor(sim.scion().actor_id)->stats.life = sim.actor(sim.scion().actor_id)->stats.life_max;
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(sim);
+  pick_all_rewards(sim);
+  check(sim.scion().carried_items.size() == 2 && sim.scion().carried_trophies.size() == 2,
+        "D-106 setup carries multiple items and trophies");
+  const std::string pack_id = sim.scion().carried_items.back().id;
+  const std::string second_trophy_id = sim.scion().carried_trophies.back().id;
+
+  sim.dispatch(Command::interact("hazard:death"));
+  check(sim.scion().carried_items.empty() && sim.scion().carried_trophies.empty(),
+        "death clears the fallen Scion inventory without deleting its contents");
+  check(sim.house().stored_items.empty() && sim.house().stored_trophies.empty(),
+        "death does not bypass extraction into durable House storage");
+  check(sim.house().relic_candidates.size() == 2,
+        "every carried item enters the recoverable relic pool exactly once");
+  check(sim.house().relic_candidates[0].id == equipped_id &&
+            sim.house().relic_candidates[1].id == pack_id,
+        "recoverable items retain carried order and stable identity");
+  check(sim.house().relic_candidates[0].history.back() == "registered after Scion death",
+        "equipped item retains the established death registration history");
+  check(sim.house().relic_candidates[1].history.back() ==
+            "lost at route:tin:1:0, awaiting recovery",
+        "pack item receives an equivalent route recovery history");
+  check(sim.house().lost_trophies.size() == 2 &&
+            sim.house().lost_trophies[0].id == first_trophy_id &&
+            sim.house().lost_trophies[1].id == second_trophy_id,
+        "every carried trophy enters the ordered recoverable trophy pool");
+  check(count_events(sim, EventType::TrophyResurfaced) == 0,
+        "death itself does not prematurely resurface a trophy");
+  check(count_events(sim, EventType::LegendRecorded, "trophy_candidate") == 2,
+        "trophy recovery transitions are recorded in the House legend");
+
+  sim.create_successor("D-106 Successor");
+  check(sim.scion().carried_items.empty() && sim.scion().carried_trophies.empty(),
+        "successor starts empty while the recoverable pools persist");
+}
+
+void test_d106_recovery_is_ordered_and_deterministic() {
+  Simulation first(0xD106ULL);
+  Simulation second(0xD106ULL);
+  auto prepare = [](Simulation& sim) {
+    sim.dispatch(Command::enter("route:tin:1:0"));
+    defeat_enemy(sim);
+    pick_all_rewards(sim);
+    sim.actor(sim.scion().actor_id)->stats.life = sim.actor(sim.scion().actor_id)->stats.life_max;
+    sim.dispatch(Command::enter("route:tin:1:0"));
+    defeat_enemy(sim);
+    pick_all_rewards(sim);
+    sim.dispatch(Command::interact("hazard:death"));
+    sim.create_successor("Recovery Successor");
+  };
+  prepare(first);
+  prepare(second);
+  check(recoverable_signature(first) == recoverable_signature(second),
+        "D-106 recovery pools are deterministic under replay");
+  const std::string first_item = first.house().relic_candidates.front().id;
+  const std::string second_item = first.house().relic_candidates.back().id;
+  const std::string first_trophy = first.house().lost_trophies.front().id;
+  force_relic_resurface(first, "route:tin:1:0", first_item);
+  force_trophy_resurface(first, "route:tin:1:0", first_trophy);
+  check(first.house().relic_candidates.size() == 1 &&
+            first.house().relic_candidates.front().id == second_item,
+        "item recovery consumes only the oldest item candidate");
+  if (find_ground_item(first, second_item) == nullptr) {
+    force_relic_resurface(first, "route:tin:1:0", second_item);
+  }
+  const Item* recovered_pack = find_ground_item(first, second_item);
+  check(recovered_pack != nullptr && !recovered_pack->history.empty() &&
+            recovered_pack->history.back() == "resurfaced on route route:tin:1:0",
+        "pack item eventually resurfaces with ordered identity and history");
+  check(first.house().lost_trophies.empty() ||
+            first.house().lost_trophies.front().id != first_trophy,
+        "trophy recovery consumes the oldest trophy candidate");
+  const bool saw_trophy_event =
+      count_events(first, EventType::TrophyResurfaced) >= 1;
+  check(saw_trophy_event, "trophy resurfacing emits a dedicated recovery event");
+  if (!first.house().lost_trophies.empty()) {
+    force_trophy_resurface(first, "route:tin:1:0", first.house().lost_trophies.front().id);
+  }
+  check(first.house().lost_trophies.empty(),
+        "repeated reward streams eventually recover the complete trophy pool");
 }
 
 void test_item_identity_and_branch() {
@@ -867,6 +1013,8 @@ int main() {
   test_presentation_catalog_is_authoritative_and_stable();
   test_extraction();
   test_death_and_successor();
+  test_d106_all_carried_value_is_recoverable();
+  test_d106_recovery_is_ordered_and_deterministic();
   test_item_identity_and_branch();
   test_campaign_and_seasonal_extension();
   test_elite_uses_same_universe();

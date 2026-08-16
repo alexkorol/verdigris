@@ -133,6 +133,9 @@ struct House {
   std::vector<Trophy> stored_trophies;
   std::vector<Item> stored_items;
   std::vector<Item> relic_candidates;
+  // Trophies carried by a fallen Scion remain recoverable through the same
+  // seeded reward stream as relic items, without becoming durable storage.
+  std::vector<Trophy> lost_trophies;
   std::vector<std::string> seasonal_rewards;
   std::vector<LegendEntry> legends;
   bool campaign_complete = false;
@@ -195,7 +198,8 @@ enum class EventType {
   RelicResurfaced,
   BuffApplied,
   BuffExpired,
-  AttackTelegraphed
+  AttackTelegraphed,
+  TrophyResurfaced
 };
 
 struct Event {

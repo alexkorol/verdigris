@@ -609,6 +609,20 @@ void Simulation::drop_reward() {
                   instance_.route_id);
   }
 
+  // Trophies carried through a death use the same deterministic re-entry
+  // cadence, but remain a separate recoverable pool rather than durable
+  // House storage. This keeps extraction risk meaningful while preserving
+  // every trophy's identity and single ownership.
+  if (!house_.lost_trophies.empty() && rng_.range(1, kRelicResurfaceOneIn) == 1) {
+    Trophy trophy = house_.lost_trophies.front();
+    house_.lost_trophies.erase(house_.lost_trophies.begin());
+    ground_trophies_.push_back(trophy);
+    instance_.ground_trophy_ids.push_back(trophy.id);
+    emit(EventType::TrophyResurfaced, {}, {}, trophy.id, instance_.route_id);
+    record_legend("trophy_resurfaced", trophy.id, "route=" + instance_.route_id, {},
+                  instance_.route_id);
+  }
+
   Trophy trophy{rng_.token("trophy"), "Warden's ember"};
   ground_trophies_.push_back(trophy);
   instance_.ground_trophy_ids.push_back(trophy.id);
@@ -667,13 +681,25 @@ void Simulation::handle_death(Actor& actor_value, const std::string& killer_id) 
   }
   scion_.alive = false;
   scion_.level = actor_value.stats.level;
-  // One stable item becomes a future possibility; the rest of carried value is lost.
-  if (!scion_.carried_items.empty()) {
-    Item relic = scion_.carried_items.front();
+  // Every carried item remains a future possibility. Equipped gear keeps the
+  // historical registration wording; pack items receive an equivalent route
+  // marker so identity/history survive the enlarged recovery pool.
+  for (const auto& carried : scion_.carried_items) {
+    Item relic = carried;
     relic.relic_candidate = true;
-    relic.history.push_back("registered after Scion death");
+    const bool was_equipped = carried.equipped ||
+                              (actor_value.equipped_item_id &&
+                               *actor_value.equipped_item_id == carried.id);
+    relic.history.push_back(was_equipped
+                                ? "registered after Scion death"
+                                : "lost at " + instance_.route_id + ", awaiting recovery");
     house_.relic_candidates.push_back(relic);
     record_legend("relic_candidate", relic.id, "name=" + relic.name, killer_id,
+                  instance_.route_id);
+  }
+  for (const auto& trophy : scion_.carried_trophies) {
+    house_.lost_trophies.push_back(trophy);
+    record_legend("trophy_candidate", trophy.id, "name=" + trophy.name, killer_id,
                   instance_.route_id);
   }
   scion_.carried_items.clear();
