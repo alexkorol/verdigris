@@ -1,7 +1,7 @@
 ---
 question: QUESTION-0001
 related_task: TASK-0002
-state: OPEN
+state: ANSWERED
 ---
 
 # CMake preset schema support
@@ -30,8 +30,11 @@ successful local preset configure. The available bundled CMake is
    weakens the task's explicit v3 acceptance criterion and needs an architect
    decision.
 
-## Recommendation
+## Recorded answer
 
-Use option 1. Keep the worker's uncommitted build/CI changes preserved in its
-isolated worktree until a compatible CMake is available. Do not silently lower
-the preset schema from the implementation task.
+The architect recorded **D-104** in `orchestration/DECISIONS.md`: choose the
+bounded schema-v2 compatibility path (option 2), because the bundled CMake
+3.20 accepts it and no requested task capability is v3-only. TASK-0002
+revision 1 implements that decision and validates the presets with the
+bundled binary by absolute path. The question is closed; no toolchain install
+is required.
