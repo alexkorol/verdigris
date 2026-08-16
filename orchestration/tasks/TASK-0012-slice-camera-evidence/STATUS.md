@@ -1,6 +1,6 @@
 ---
 task: TASK-0012
-state: CLAIMED
+state: REVIEW_REQUESTED
 worker: Luna camera evidence harness implementer
 worker_branch: codex/TASK-0012-slice-camera-evidence
 worktree: .codex/worktrees/TASK-0012-slice-camera-evidence
@@ -11,12 +11,14 @@ expected_verification: nine preset/scene captures; report parameter table; git s
 known_risks: captures must hold scene state constant and remain neutral observations; no prototype files may change; revision must preserve legibility while reducing each image below 250KB
 dependencies: TASK-0003 integrated as 8517bf5/403e3a3
 architect_review_required: true
-implementation_commit: 310b76d
+implementation_commit: e24825d
+revision_commits: 2e2d104, e24825d
 validator: /root/validate_task_0012
 validator_verdict: ACCEPT
-validator_evidence: task-folder-only scope; nine valid 1200x800 PNGs; capture table/neutral observations/defect notes; slice harness 4/4; clean worktree
+validator_evidence: revised task-folder-only scope; nine progressive JPEGs at 1200x800 and 131912-172136 bytes; no PNGs; visual telegraph/loot checks; slice harness 4/4; clean worktree
 architect_review: REVISE
 architect_review_commit: 4ffbad0
 revision_required: re-encode all nine 1200x800 captures lossy at approximately quality 85 or equivalent, target <=250KB each, update report references, and verify telegraph/loot clarity
 revision_started_at: 2026-08-16T11:48:00-07:00
+revision_completed_at: 2026-08-16T11:54:00-07:00
 ---

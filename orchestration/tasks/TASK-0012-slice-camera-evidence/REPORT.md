@@ -151,9 +151,10 @@ miniature-village.jpg  1200x800  131912 bytes
 
 ## Verification
 
-Independent validator `/root/validate_task_0012` — ACCEPT. It confirmed the
-task-folder-only diff, nine valid 1200x800 captures, neutral observations,
-parameter/defect evidence, and a clean worktree.
+Independent validator `/root/validate_task_0012` — ACCEPT for revision. It
+confirmed the task-folder-only diff, nine progressive JPEGs at 1200x800 and
+below 250KB, visible telegraphs/loot beacons, neutral observations, and a
+clean worktree.
 
 Original scripted Playwright capture command:
 
