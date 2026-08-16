@@ -241,6 +241,30 @@ documented gate should not greet your morning.
 - Still with the owner: ADR-002, D-101..103, carried-relic question,
   D-O1..D-O5, and the camera evidence pack review.
 
+## Owner directives received (2026-08-16, ~13:40) — priority reset
+
+Owner rulings recorded: **D-106** (death never destroys items — all
+carried items recoverable), **D-107** (ARPG camera primary; Miniature
+treatment at close zoom; High Table rejected), **D-108** (the vendored
+webchat demo at `docs/reference/25d-overhaul/` is the look/feel
+acceptance target; its HANDOFF brief targets the browser game as the
+near-term shippable). Owner reports the native client movement is
+fast/jumpy — root cause confirmed (full-tile displacement per 50ms
+MoveIntent) — and **Kimi Code joins as a second implementation
+coordinator** (PROTOCOL amended: coordinator identity + first-claim-wins).
+
+Ship pressure is explicit. Queue now:
+
+- In flight: TASK-0015 (core catalog), TASK-0016 (billboards).
+- TASK-0017 movement feel + D-107 camera defaults — **READY** (critical;
+  after 0015+0016).
+- TASK-0018 death recoverability per D-106 — **READY** (after 0015).
+- TASK-0019 browser 2.5D Phase-0 survey per the reference brief —
+  **READY** (critical; suggested for Kimi; plan doc only).
+
+Next after these: browser overhaul phases 1+ (from the 0019 plan), native
+scenery billboards, client catalog adoption.
+
 ## Watch items
 
 - Enemy melee cadence in the slice felt lethal for an idle level-1; base

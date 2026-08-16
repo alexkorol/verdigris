@@ -39,6 +39,25 @@ may decide it.
   - I or Tab: gear/inventory; no context-menu dependency; no piano bar.
   Equip moves to the inventory UI, not a world key.
 
+- **D-106 Death recoverability (OWNER-RULED 2026-08-16)**: items are never
+  destroyed by Scion death. Everything carried (equipped, pack, trophies)
+  returns to a recoverable pool — significant items to the relic pool,
+  the rest to the wider loot pool at minimum. Supersedes the baseline
+  "unequipped carried items are lost forever" behavior (TASK-0018).
+- **D-107 Camera direction (OWNER-RULED 2026-08-16, resolves D-102)**:
+  ARPG preset is the primary camera (pitch ~62, moderate perspective,
+  no tilt-shift). Miniature-style treatment applies when the player zooms
+  in with the wheel (blend toward stronger perspective/tilt at close
+  zoom). High Table is rejected. Both clients default to the ARPG values.
+- **D-108 Look/feel acceptance target (OWNER-SUPPLIED 2026-08-16)**: the
+  webchat demo vendored at `docs/reference/25d-overhaul/` (playable
+  `dist/songs-of-the-mire.html`, math in `docs/ARCHITECTURE.md`) is the
+  acceptance target for rendering look and feel. Its gameplay is
+  throwaway; its projection/terrain/lighting design is authoritative
+  reference. The phased integration brief in its HANDOFF.md targets the
+  browser game as the near-term shippable product while the native
+  rebuild continues.
+
 ## Provisional (architect's call, owner may override)
 
 - **D-101 Player base-life offset**: the slice gives player-kind actors a
