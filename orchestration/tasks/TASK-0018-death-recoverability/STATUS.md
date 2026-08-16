@@ -1,6 +1,6 @@
 ---
 task: TASK-0018
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: kimi
 worker: kimi-code-cli
 worker_branch: codex/TASK-0018-death-recoverability
@@ -11,5 +11,7 @@ started_at: 2026-08-16T14:15:00-07:00
 expected_verification: powershell -NoProfile -File native/build.ps1 -RunTests
 known_risks: enlarging relic_candidates pool must preserve single-ownership and resurface ordering; old lost-forever assertions need deliberate updates
 dependencies: TASK-0015 integrated (32ce77e)
+implementation_commit: c9e86c8
+verification: powershell -NoProfile -File native/build.ps1 -RunTests (PASS, rerun by coordinator); git diff --check (PASS)
 architect_review_required: true
 ---
