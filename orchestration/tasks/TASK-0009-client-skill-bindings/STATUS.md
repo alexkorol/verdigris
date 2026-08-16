@@ -1,6 +1,6 @@
 ---
 task: TASK-0009
-state: CLAIMED
+state: REVIEW_REQUESTED
 worker: Luna native-client skill-bindings implementer
 worker_branch: codex/TASK-0009-client-skill-bindings
 worktree: .codex/worktrees/TASK-0009-client-skill-bindings
@@ -11,4 +11,6 @@ expected_verification: powershell -File native/build.ps1 -RunTests -RunClient; P
 known_risks: HUD state must remain presentation-only; preserve D-007 controls and do not edit core/build files; effect timing and resource regeneration may be off by one tick
 dependencies: TASK-0007 integrated at a832b2b; TASK-0004 integrated at 6396a0e
 architect_review_required: true
+implementation_commit: 629a1c0
+validator: /root/validate_task_0009
 ---
