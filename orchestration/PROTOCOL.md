@@ -1,9 +1,11 @@
 # Verdigris orchestration protocol
 
-Three systems work this repository concurrently (Kimi Code joined
-2026-08-16 as a second implementation coordinator with the same rules and
-file ownership as the Codex coordinator; coordinators MUST identify
-themselves in `STATUS.md` (`coordinator: codex|kimi`, plus worker id).
+Several systems work this repository concurrently. Implementation
+coordinators (all with identical rules and file ownership): the Codex
+coordinator (`codex`), Kimi Code K3 (`kimi`), and Kimi Work K3
+(`kimi-work`, joined 2026-08-16 evening). Coordinators MUST identify
+themselves in `STATUS.md` (`coordinator: codex|kimi|kimi-work`, plus
+worker id).
 Claims are first-STATUS-write-wins: before claiming, fetch/check whether a
 `STATUS.md` already exists for the task; if it does, move on. Coordinators
 never edit each other's STATUS/REPORT files.
