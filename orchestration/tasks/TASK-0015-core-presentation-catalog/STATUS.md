@@ -1,6 +1,6 @@
 ---
 task: TASK-0015
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Codex coordinator
 worker_branch: codex/native-reconstitution
@@ -14,4 +14,9 @@ dependencies: TASK-0011 integrated
 architect_review_required: true
 implementation_commit: 76ff52d
 verification: powershell -NoProfile -File native/build.ps1 -RunTests (PASS); git diff --check (PASS); single-definition audit (PASS)
+architect_review: ACCEPTED
+architect_review_commit: 2af6b2d
+integration_worktree: .
+integration_commit: 76ff52d
+integration_verification: powershell -NoProfile -File native/build.ps1 -RunTests; git diff --check; single-definition audit all PASS
 ---
