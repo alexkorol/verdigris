@@ -1,6 +1,6 @@
 ---
 task: TASK-0009
-state: REVIEW_REQUESTED
+state: INTEGRATED
 branch: codex/TASK-0009-client-skill-bindings
 commits:
   - 629a1c0
@@ -72,5 +72,11 @@ None.
 
 ## Integration notes
 
-Cherry-pick `629a1c0` after independent validation. Then rerun the native full
-gate and the driven client pass on the integration tip before architect review.
+Architect review `6ade261` accepted commit `629a1c0` with no required
+corrections. The worker commit was cherry-picked into the dedicated
+integration branch as `fe3173b`, then preserved on the program branch as
+`0434ebb`. The integrated native gate (`native/build.ps1 -RunTests
+-RunClient`) and `git diff --check` both passed.
+
+Integration is complete; the architect review and post-integration native gate
+are recorded above.

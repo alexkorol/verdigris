@@ -1,6 +1,6 @@
 ---
 task: TASK-0009
-state: REVIEW_REQUESTED
+state: INTEGRATED
 worker: Luna native-client skill-bindings implementer
 worker_branch: codex/TASK-0009-client-skill-bindings
 worktree: .codex/worktrees/TASK-0009-client-skill-bindings
@@ -15,4 +15,8 @@ implementation_commit: 629a1c0
 validator: /root/validate_task_0009
 validator_verdict: ACCEPT
 validator_evidence: exact one-file scope; native gate, diff check, denylist self-test, and source-level Q/E/R/HUD/event review passed
+architect_review: ACCEPTED
+architect_review_commit: 6ade261
+integration_commit: 0434ebb
+integration_verification: powershell -NoProfile -File native/build.ps1 -RunTests -RunClient; git diff --check
 ---
