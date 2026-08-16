@@ -11,8 +11,9 @@ base_commit: e6d3f48
 
 Captured the three founding-slice camera presets in the same Hearthstead
 village scene, with the same controlled chieftain melee telegraph and the same
-controlled q3 masterwork on the ground. The result is nine PNGs at 1200×800
-(therefore ≤1280px wide), plus the exact camera values read from the live page.
+controlled q3 masterwork on the ground. The result is nine lossy JPEGs at
+1200×800 (therefore ≤1280px wide and ≤250KB each), plus the exact camera
+values read from the live page.
 This report records observations only; it does not rank the presets or make a
 projection decision. D-102 remains provisional.
 
@@ -30,6 +31,9 @@ read-only through Playwright. Each preset ran in a fresh browser context:
    visible, then capture the mid-combat state.
 5. Remove the actor, restore player position/life/breath, use the existing
    `give masterwork` debug action, and capture one q3 item at player `x + 60`.
+6. Re-encode each PNG to progressive JPEG at quality 85, verify dimensions and
+   file sizes, and visually inspect the telegraph and loot beacon after
+   compression.
 
 The temporary Playwright driver was removed after capture; no prototype or
 shared configuration file was edited. The final driver run completed three
@@ -72,22 +76,23 @@ combat actor, and ground-loot state are held constant.
 
 | Preset | Village scene | Mid-combat arc telegraph | Loot on ground |
 |---|---|---|---|
-| Miniature | [miniature-village.png](captures/miniature-village.png) | [miniature-combat.png](captures/miniature-combat.png) | [miniature-loot.png](captures/miniature-loot.png) |
-| ARPG | [arpg-village.png](captures/arpg-village.png) | [arpg-combat.png](captures/arpg-combat.png) | [arpg-loot.png](captures/arpg-loot.png) |
-| High Table | [high-table-village.png](captures/high-table-village.png) | [high-table-combat.png](captures/high-table-combat.png) | [high-table-loot.png](captures/high-table-loot.png) |
+| Miniature | [miniature-village.jpg](captures/miniature-village.jpg) | [miniature-combat.jpg](captures/miniature-combat.jpg) | [miniature-loot.jpg](captures/miniature-loot.jpg) |
+| ARPG | [arpg-village.jpg](captures/arpg-village.jpg) | [arpg-combat.jpg](captures/arpg-combat.jpg) | [arpg-loot.jpg](captures/arpg-loot.jpg) |
+| High Table | [high-table-village.jpg](captures/high-table-village.jpg) | [high-table-combat.jpg](captures/high-table-combat.jpg) | [high-table-loot.jpg](captures/high-table-loot.jpg) |
 
-All nine files were checked by reading their PNG IHDR dimensions:
+All nine files were checked after re-encoding. Each is progressive JPEG,
+1200×800, quality 85, and below the 250KB target:
 
 ```text
-arpg-combat.png        1200x800
-arpg-loot.png          1200x800
-arpg-village.png       1200x800
-high-table-combat.png  1200x800
-high-table-loot.png    1200x800
-high-table-village.png 1200x800
-miniature-combat.png   1200x800
-miniature-loot.png     1200x800
-miniature-village.png  1200x800
+arpg-combat.jpg        1200x800  161964 bytes
+arpg-loot.jpg          1200x800  161574 bytes
+arpg-village.jpg       1200x800  159937 bytes
+high-table-combat.jpg  1200x800  172136 bytes
+high-table-loot.jpg    1200x800  172110 bytes
+high-table-village.jpg 1200x800  170694 bytes
+miniature-combat.jpg   1200x800  133997 bytes
+miniature-loot.jpg     1200x800  133553 bytes
+miniature-village.jpg  1200x800  131912 bytes
 ```
 
 ## Neutral observations
@@ -150,7 +155,7 @@ Independent validator `/root/validate_task_0012` — ACCEPT. It confirmed the
 task-folder-only diff, nine valid 1200x800 captures, neutral observations,
 parameter/defect evidence, and a clean worktree.
 
-Temporary scripted Playwright capture command:
+Original scripted Playwright capture command:
 
 ```text
 node captures/drive.mjs
@@ -158,10 +163,24 @@ node captures/drive.mjs
 
 Result: three fresh contexts completed; all nine screenshots written; all
 camera parameter reads returned; `errors: []` for every context. The temporary
-driver was removed after the run, leaving only the nine PNG artifacts and this
-report in the task folder.
+driver was removed after the run, leaving only the nine source captures and
+this report in the task folder.
 
-PNG dimension check: passed for all nine files (`1200x800`).
+JPEG conversion command (quality 85, optimized progressive output):
+
+```text
+python -  (Pillow Image.convert('RGB').save(..., format='JPEG', quality=85,
+         optimize=True, progressive=True))
+```
+
+JPEG dimension/size check: passed for all nine files (`1200x800`, each
+131,912–172,136 bytes, all below 250KB).
+
+Manual post-compression visual check: passed. The red chieftain arc remains
+clearly visible in all three `*-combat.jpg` captures, and the gold diamond
+loot beacon plus its item label remain clearly visible in all three
+`*-loot.jpg` captures. JPEG compression did not change the neutral
+observations above.
 
 Reference slice harness (run from the repository checkout with the existing
 Playwright installation):
@@ -193,11 +212,12 @@ modified.
 
 ## Deviations, risks, and follow-ups
 
-- Deviation: the Playwright driver was intentionally temporary and not
-  committed because the task deliverables are the report and capture pack;
-  the exact command and read-only sequence are documented above.
-- Risk: PNGs are point-in-time visual evidence, not a visual-regression gate;
-  animation and asset rendering can vary slightly across browser versions.
+- Deviation: the original PNG captures were re-encoded to lossy progressive
+  JPEG at quality 85 per review; the source PNGs are no longer retained in the
+  task folder.
+- Risk: JPEGs are point-in-time visual evidence, not a visual-regression gate;
+  animation and asset rendering can vary slightly across browser versions,
+  and lossy compression can soften very fine texture detail.
 - Follow-up: if the owner wants to resolve the range readback mismatch, the
   step/min/max contract should be revised in the camera lab as a separate task.
 - No owner decision or question is required by this evidence task. D-102 stays
@@ -205,13 +225,8 @@ modified.
 
 ## Commit
 
-`310b76d` — `docs: capture camera preset evidence pack`
+Original capture commit: `310b76d` — `docs: capture camera preset evidence pack`.
 
-## Revision 1 — architect review `4ffbad0`
+Revision conversion commit: `f813a2e` — `docs: compress camera evidence captures`.
 
-Architect review accepted the methodology and visual evidence but requested
-that the nine 1200×800 PNGs be re-encoded lossy (approximately quality 85 or
-equivalent) to target no more than 250KB per image before integration. The
-revision preserves the same controlled scenes, report links, and neutral
-observations; only the capture encoding and corresponding verification will
-change.
+Final report commit: `4b27757` — `docs: record camera evidence compression revision`.
