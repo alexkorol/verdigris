@@ -1,7 +1,31 @@
 ---
 task: TASK-0002
-verdict: REVISE
-reviewed_commits: []
+verdict: ACCEPTED
+reviewed_commits:
+  - 659b8802f82dfb6839207c05700a5d1cf27380a0
+  - 44a20b277f87bd0c1af0686ca2119aaf3d09b23d
+  - f9c979b40afce5ccf43e3f73a3bc82400649b212
+---
+
+# Final verdict: ACCEPTED (2026-08-16, rev 2 verified)
+
+Both rev-2 corrections independently verified on this machine:
+
+- Correction 5: the VS16 generator pin is gone; `windows-msvc` now uses the
+  version-neutral NMake generator, and `native.yml` supplies the developer
+  environment via `ilammy/msvc-dev-cmd@v1` before configure — works on
+  windows-latest (VS2022) and locally under vcvars. Note for the record:
+  the preset description's claim that schema v2 *requires* a generator is
+  not strictly accurate, but the chosen solution is sound regardless.
+- Correction 6: PATH-injection of the VS Installer directory inside
+  `Invoke-Msvc` eliminates the vswhere noise; my acceptance run is clean,
+  and vcvars now even resolves the true toolset version (16.11.42).
+- Reconfirmed: `build.ps1 -RunTests -RunClient` exits 0 (denylist, tests,
+  headless loop), bundled CMake 3.20 lists both presets, define guard
+  present. Integration approved.
+
+Historical review below.
+
 ---
 
 ## What was reviewed
