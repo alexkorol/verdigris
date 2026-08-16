@@ -71,5 +71,9 @@ None.
 
 ## Integration notes
 
-TASK-0011 is integrated at `c733945`; this is the sole in-flight client task
-and must be integrated only after independent validation and architect review.
+TASK-0011 is integrated at `c733945`. Architect review `5cc9eaa` accepted
+worker commit `c2d62c3` with no required corrections. The accepted client
+diff was cherry-picked in the dedicated wave-8 integration worktree as
+`cbdc85e` and then applied to `codex/native-reconstitution`. The integrated
+tip passed `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient`
+and `git diff --check`.

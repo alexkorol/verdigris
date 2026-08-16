@@ -1,6 +1,6 @@
 ---
 task: TASK-0013
-state: REVIEW_REQUESTED
+state: INTEGRATED
 worker: Luna native client telegraph-rendering implementer
 worker_branch: codex/TASK-0013-client-telegraph-rendering
 worktree: .codex/worktrees/TASK-0013-client-telegraph-rendering
@@ -15,4 +15,9 @@ implementation_commit: c2d62c3
 validator: /root/validate_task_0013
 validator_verdict: ACCEPT
 validator_evidence: exact client-only scope; native gate, denylist, headless byte match, event/expiry/geometry review, and supplied route:tin:2:0 before/after captures passed
+architect_review: ACCEPTED
+architect_review_commit: 5cc9eaa
+integration_worktree: .codex/worktrees/integration-native-wave8
+integration_commit: cbdc85e
+integration_verification: powershell -NoProfile -File native/build.ps1 -RunTests -RunClient; git diff --check
 ---
