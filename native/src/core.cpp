@@ -11,23 +11,24 @@ namespace verdigris {
 
 namespace {
 constexpr int kEnemySpawnX = 2000;
-constexpr int kMeleeRange = 1100;
 constexpr int kExtractionRange = 250;
-constexpr int kThrustRange = (kMeleeRange * 3) / 2;
 constexpr int kThrustDamageNumerator = 13;
 constexpr int kThrustDamageDenominator = 10;
 constexpr int kSweepDamageNumerator = 3;
 constexpr int kSweepDamageDenominator = 4;
 constexpr int kSweepCooldownNumerator = 3;
 constexpr int kSweepCooldownDenominator = 2;
-constexpr int kThrustResourceCost = 10;
-constexpr int kSweepResourceCost = 15;
-constexpr int kWarCryResourceCost = 20;
-constexpr int kResourceRegenPerTick = 2;
-constexpr int kWarCryAttackBonus = 4;
-constexpr int kWarCryDurationTicks = 20;
 // A relic is a possibility in the drop stream, not a guaranteed inheritance.
 constexpr int kRelicResurfaceOneIn = 4;
+
+using presentation_constants::kMeleeRange;
+using presentation_constants::kResourceRegenPerTick;
+using presentation_constants::kSweepResourceCost;
+using presentation_constants::kThrustRange;
+using presentation_constants::kThrustResourceCost;
+using presentation_constants::kWarCryAttackBonus;
+using presentation_constants::kWarCryDurationTicks;
+using presentation_constants::kWarCryResourceCost;
 
 std::string hex_id(std::uint64_t value) {
   std::ostringstream stream;
@@ -93,6 +94,17 @@ bool ActorStats::operator==(const ActorStats& other) const {
          resource_max == other.resource_max && resource == other.resource &&
          attack == other.attack && defense == other.defense && move_speed == other.move_speed &&
          attack_speed_ticks == other.attack_speed_ticks && resistances == other.resistances;
+}
+
+bool PresentationCatalog::operator==(const PresentationCatalog& other) const {
+  return thrust_resource_cost == other.thrust_resource_cost &&
+         sweep_resource_cost == other.sweep_resource_cost &&
+         war_cry_resource_cost == other.war_cry_resource_cost &&
+         melee_range == other.melee_range && thrust_range == other.thrust_range &&
+         telegraph_ticks == other.telegraph_ticks &&
+         war_cry_attack_bonus == other.war_cry_attack_bonus &&
+         war_cry_duration_ticks == other.war_cry_duration_ticks &&
+         resource_regen_per_tick == other.resource_regen_per_tick;
 }
 
 bool LegendEntry::operator==(const LegendEntry& other) const {
@@ -187,6 +199,18 @@ const std::vector<Trophy>& Simulation::ground_trophies() const { return ground_t
 const std::vector<Event>& Simulation::events() const { return events_; }
 const std::vector<LegendEntry>& Simulation::legends() const { return house_.legends; }
 std::uint64_t Simulation::tick() const { return tick_; }
+
+PresentationCatalog Simulation::presentation_catalog() {
+  return {presentation_constants::kThrustResourceCost,
+          presentation_constants::kSweepResourceCost,
+          presentation_constants::kWarCryResourceCost,
+          presentation_constants::kMeleeRange,
+          presentation_constants::kThrustRange,
+          kTelegraphTicks,
+          presentation_constants::kWarCryAttackBonus,
+          presentation_constants::kWarCryDurationTicks,
+          presentation_constants::kResourceRegenPerTick};
+}
 
 const Actor* Simulation::actor(const std::string& id) const {
   for (const auto& candidate : actors_) {

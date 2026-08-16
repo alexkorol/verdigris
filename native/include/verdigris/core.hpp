@@ -29,6 +29,34 @@ enum class ActionType { Melee, Dash, Wait, Thrust, Sweep, WarCry };
 // render the same warning window.
 inline constexpr int kTelegraphTicks = 3;
 
+// Curated gameplay constants needed by presentation.  Mechanics and the
+// read-only catalog use these same definitions; clients must not mirror the
+// values independently.
+namespace presentation_constants {
+inline constexpr int kMeleeRange = 1100;
+inline constexpr int kThrustRange = (kMeleeRange * 3) / 2;
+inline constexpr int kThrustResourceCost = 10;
+inline constexpr int kSweepResourceCost = 15;
+inline constexpr int kWarCryResourceCost = 20;
+inline constexpr int kResourceRegenPerTick = 2;
+inline constexpr int kWarCryAttackBonus = 4;
+inline constexpr int kWarCryDurationTicks = 20;
+}  // namespace presentation_constants
+
+struct PresentationCatalog {
+  int thrust_resource_cost = 0;
+  int sweep_resource_cost = 0;
+  int war_cry_resource_cost = 0;
+  int melee_range = 0;
+  int thrust_range = 0;
+  int telegraph_ticks = 0;
+  int war_cry_attack_bonus = 0;
+  int war_cry_duration_ticks = 0;
+  int resource_regen_per_tick = 0;
+
+  bool operator==(const PresentationCatalog& other) const;
+};
+
 struct ActorStats {
   int level = 1;
   int strength = 10;
@@ -236,6 +264,10 @@ class Simulation {
   const std::vector<Event>& events() const;
   const std::vector<LegendEntry>& legends() const;
   std::uint64_t tick() const;
+
+  // Curated, read-only gameplay constants for presentation clients. This is
+  // deliberately not a state snapshot or a general simulation export.
+  static PresentationCatalog presentation_catalog();
 
   const Actor* actor(const std::string& id) const;
   Actor* actor(const std::string& id);
