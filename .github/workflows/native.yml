@@ -1,0 +1,39 @@
+name: Native
+
+on:
+  push:
+    paths:
+      - "native/**"
+  pull_request:
+    paths:
+      - "native/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: native
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Configure native workspace
+        run: cmake --preset windows-msvc
+
+      - name: Build native workspace
+        run: cmake --build --preset windows-msvc
+
+      - name: Run native tests
+        run: ctest --preset windows-msvc
+
+      - name: Check legacy denylist
+        run: python tools/check_legacy_denylist.py
