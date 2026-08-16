@@ -171,7 +171,10 @@ the runner's MSVC environment; the local build.ps1 path remains independent.
 
 ## Questions for Fable or the owner
 
-None; the generator/environment tradeoff is explicitly evidenced for review.
+`orchestration/questions/QUESTION-0002-task-0002-generator-environment.md`
+records the CMake 3.20/schema-v2 generator tradeoff and asks whether the
+validated revision-3 environment setup is accepted. No implementation is
+blocked while that architectural choice is reviewed.
 
 ## Integration notes
 
