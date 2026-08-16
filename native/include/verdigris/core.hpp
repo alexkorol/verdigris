@@ -67,6 +67,9 @@ struct Actor {
   // pipeline can be used for players and monsters.
   int war_cry_attack_bonus = 0;
   int war_cry_ticks_remaining = 0;
+  // Deterministic 8-way facing. Each component is -1, 0, or +1; the
+  // direction is intentionally not normalized with floating-point math.
+  Vec2 facing{1, 0};
 };
 
 struct RouteNode {
@@ -169,7 +172,8 @@ enum class CommandType {
   PickUp,
   Equip,
   EnterInstance,
-  ExtractToHouse
+  ExtractToHouse,
+  AimIntent
 };
 
 // Keep the original values of Melee/Dash/Wait stable for recorded command
@@ -184,6 +188,7 @@ struct Command {
   std::string target;
 
   static Command move(int x, int y);
+  static Command aim(int x, int y);
   static Command action_use(ActionType action);
   static Command interact(const std::string& target);
   static Command pick_up(const std::string& item_id);
@@ -247,6 +252,7 @@ class Simulation {
   void emit(EventType type, const std::string& actor_id = {}, const std::string& item_id = {},
             const std::string& trophy_id = {}, const std::string& text = {}, int value = 0);
   void resolve_move(int dx, int dy);
+  void resolve_aim(int dx, int dy);
   void resolve_action(ActionType action);
   void resolve_actor_action(Actor& attacker, ActionType action);
   void resolve_interact(const std::string& target);
