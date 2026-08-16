@@ -1,6 +1,6 @@
 ---
 task: TASK-0018
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Codex coordinator
 worker_branch: codex/native-reconstitution
@@ -13,5 +13,7 @@ known_risks: enlarge the deterministic re-entry pools without duplicating owners
 dependencies: TASK-0015 integrated
 architect_review_required: true
 implementation_commit: 37ab720
+architect_review: ACCEPTED (origin/codex/native-reconstitution 42fd837)
+integrated_commit: 37ab720
 verification: powershell -NoProfile -File native/build.ps1 -RunTests (PASS); git diff --check (PASS); named D-106 recovery/replay tests (PASS)
 ---

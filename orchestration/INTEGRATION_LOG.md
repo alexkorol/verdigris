@@ -34,3 +34,11 @@ date, task id, commits, verification run, notes.
 2026-08-16 — TASK-0014-smoke-browser-repair — worker `b068964`; architect review `11a5325` ACCEPTED; integrated as `b068964`. Verification: `npm run smoke:browser` (1 passed, port 6500 released); `npm run test:e2e` (3 passed, port 6500 released); `git diff --check` PASS. Notes: D-105 lifecycle repair closes QUESTION-0003; the documented smoke gate now boots and tears down its server.
 
 2026-08-16 — TASK-0015-core-presentation-catalog — worker `76ff52d`; architect review `2af6b2d` ACCEPTED; integrated as `76ff52d`. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests` (denylist and core tests PASS); `git diff --check` PASS; single-definition audit PASS. Notes: read-only presentation costs, ranges, telegraph timing, War Cry metadata, and resource regeneration now come from one native catalog source.
+
+2026-08-16 — TASK-0016-native-billboard-experiment — worker `6d1b7d6`; architect review `42fd837` ACCEPTED; integrated on the program tip. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` PASS; driven billboard/fallback captures independently verified by the architect. Notes: runtime keyed plates and capsule fallback are now part of the native client lab.
+
+2026-08-16 — TASK-0018-death-recoverability — worker `37ab720`; architect review `42fd837` ACCEPTED; integrated on the program tip. Verification: native tests and D-106 deterministic recovery tests PASS. Notes: all carried items and trophies remain recoverable without durable House banking.
+
+2026-08-16 — TASK-0019-browser-25d-survey — Kimi worker `832b7f3`; architect review `42fd837` ACCEPTED; integrated via merge `ee21032`. Verification: survey plan covers the reference architecture, conformance gaps, elevation decision, phase forecast, and renderer toggle. Notes: `docs/25d-overhaul-plan.md` now governs the browser renderer track.
+
+2026-08-16 — TASK-0021-slice-arpg-camera-default — worker `d079e70`; architect review `42fd837` ACCEPTED; integrated on the program tip. Verification: `node prototypes/founding-slice/run-checks.mjs` PASS (4/4 including drift guard). Notes: D-107 ARPG defaults and reversible Miniature wheel blend are realized in the slice.

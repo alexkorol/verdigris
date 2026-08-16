@@ -1,6 +1,6 @@
 ---
 task: TASK-0021
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Codex coordinator
 worker_branch: codex/native-reconstitution
@@ -13,5 +13,7 @@ known_risks: preserve the lab presets and generated index drift guard while maki
 dependencies: none
 architect_review_required: true
 implementation_commit: d079e70
+architect_review: ACCEPTED (origin/codex/native-reconstitution 42fd837)
+integrated_commit: d079e70
 verification: node prototypes/founding-slice/build.mjs (PASS); node prototypes/founding-slice/run-checks.mjs (PASS: 4/4); git diff --check (PASS); headless parameter dump in REPORT.md (PASS)
 ---
