@@ -19,7 +19,7 @@ revision_base: 10d49dc
 revision_commit: 907024e
 revision_reason: independent validator found evidence artifacts outside the task folder and a wide-zoom DoF floor contradicting the governing zero-at/below-base rule; corrections implemented and architect accepted
 validator_verdict: REVISE (/root/validate_task_0022); production corrections accepted; architect acceptance 5efc48e authorizes the reviewed focused test correction
-integration_commit: 705b6c3
+integration_commit: 4533bc4
 integrated_at: 2026-08-16T15:40:00-07:00
 verification: npm run test:unit (PASS: 115 files/744 tests); npm run playtest (PASS: 31/31); npm run smoke:browser (PASS: 1/1); npm run lint:css -- --quiet (PASS); ESLint changed files (PASS); git diff --check (PASS)
 ---

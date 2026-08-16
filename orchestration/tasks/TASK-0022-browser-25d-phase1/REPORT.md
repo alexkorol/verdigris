@@ -108,7 +108,7 @@ were changed.
 
 Architect review `5efc48e` accepted the reviewed implementation commits and
 required the evidence relocation during integration. Integrated on program
-commit `705b6c3`; the repository root is free of the four capture artifacts,
+commits `705b6c3` and `4533bc4`; the repository root is free of the four capture artifacts,
 which now live under this task folder's `captures/` directory. The focused camera test correction is
 included in the architect-reviewed `907024e` commit.
 
