@@ -75,3 +75,10 @@ future relic re-entry mechanics exist.
 No owner decision is required for this bounded mechanical slice. Future relic
 re-entry should exercise the dormant extraction hook without changing the
 record cap or seasonal policy.
+
+## Independent validation
+
+Validator verdict: **ACCEPT**. The validator reran
+`powershell -File native/build.ps1 -RunTests`, confirmed denylist and core test
+success, inspected the full commit scope, and found no determinism, bound,
+event-ordering, succession, or forbidden-path findings.
