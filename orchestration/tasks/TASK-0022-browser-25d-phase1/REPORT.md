@@ -5,6 +5,9 @@ branch: codex/TASK-0022-browser-25d-phase1
 commits:
   - c17963b
   - 907024e
+  - 350b5db
+  - 0f24864
+  - cc565d1
 base_commit: b035b569ecc269f79c1113d7f8600db2198a273a
 ---
 
