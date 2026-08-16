@@ -104,6 +104,32 @@ Review pass 2 results:
 In flight: 0002-rev2 (build files), 0004 (client), 0006 (core) — three
 READY tasks with disjoint ownership.
 
+## Wave 2 review complete (2026-08-16, ~09:30)
+
+All three wave-2 tasks **ACCEPTED** after independent verification:
+
+- TASK-0002 (rev 2, `f9c979b`): generator pin replaced with NMake +
+  `msvc-dev-cmd` in CI; vswhere noise eliminated via PATH injection
+  (verified clean run); presets v2 validate on bundled CMake 3.20.
+- TASK-0004 (`7ac51d4`): D-007 contract verified end to end with a driven
+  PostMessage pass — X pickup, I-overlay equip, F extraction (stored 1/1,
+  carried 0), Z labels, Q/E/R disabled stubs.
+- TASK-0006 (`f542a04`): relic re-entry verified; death→loss→rediscovery
+  loop closed. Logged observation: unequipped carried relics are lost
+  forever at death (baseline rule) — future Brands & Bonds question.
+
+## Wave 3 (issued 2026-08-16)
+
+- TASK-0007 core skill actions (Thrust/Sweep/WarCry + resource economy) —
+  **READY**, base = wave-2 integration tip (Codex records SHA).
+- TASK-0008 denylist hardening from the 0005 audit's §4 gap evidence —
+  **READY**, same base convention. Disjoint paths from 0007.
+- TASK-0009 client Q/E/R bindings — DRAFT, promotes after 0007.
+
+Architect debt (mine, not delegable): revise `docs/rebuild/LEGACY_MATRIX.md`
+from the 0005 report; draft ADR-002 (serialization/persistence seam) when
+the loop stabilizes.
+
 ## Watch items
 
 - Enemy melee cadence in the slice felt lethal for an idle level-1; base
