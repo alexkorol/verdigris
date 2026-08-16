@@ -1,6 +1,6 @@
 ---
 task: TASK-0022
-state: REVIEW_REQUESTED
+state: CLAIMED
 coordinator: codex
 worker: Codex coordinator
 worker_branch: codex/TASK-0022-browser-25d-phase1

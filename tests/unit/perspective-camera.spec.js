@@ -77,7 +77,8 @@ describe('PerspectiveCamera', () => {
 
     expect(wide.circleOfConfusion(wide.depthToFocus)).toBe(0);
     expect(close.circleOfConfusion(close.depthToFocus)).toBe(0);
-    expect(wide.circleOfConfusion(wideDepth)).toBeGreaterThan(0);
+    expect(wide.dofStrength).toBe(0);
+    expect(wide.circleOfConfusion(wideDepth)).toBe(0);
     expect(close.circleOfConfusion(closeDepth)).toBeGreaterThan(
       wide.circleOfConfusion(wideDepth),
     );

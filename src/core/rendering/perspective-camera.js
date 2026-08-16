@@ -1,6 +1,13 @@
 const MIN_VIEWPORT_SIZE = 10;
 const MIN_ZOOM = 0.05;
 const MIN_DEPTH = 40;
+const ARPG_CAMERA_PRESET = Object.freeze({
+  horizonRatio: -0.6,
+  focusRatio: 0.52,
+  baseUserZoom: 0.85,
+  maxDofStrength: 0.82,
+});
+const MAX_USER_ZOOM = 1.6;
 
 const defaultHeightAt = () => 0;
 const clamp = (value, minimum, maximum) => Math.min(Math.max(value, minimum), maximum);
@@ -11,7 +18,9 @@ class PerspectiveCamera {
     this.heightAt = typeof options.heightAt === 'function'
       ? options.heightAt
       : defaultHeightAt;
-    this.userZoom = Number.isFinite(options.userZoom) ? options.userZoom : 1;
+    this.userZoom = Number.isFinite(options.userZoom)
+      ? options.userZoom
+      : ARPG_CAMERA_PRESET.baseUserZoom;
     this.valid = false;
     this.width = 0;
     this.height = 0;
@@ -23,7 +32,7 @@ class PerspectiveCamera {
     this.depthToFocus = 1;
     this.projectionArea = 1;
     this.cameraFootY = 0;
-    this.dofStrength = 1;
+    this.dofStrength = 0;
   }
 
   update({
@@ -37,15 +46,15 @@ class PerspectiveCamera {
     this.height = Number.isFinite(height) ? height : 0;
     this.x = Number.isFinite(x) ? x : 0;
     this.y = Number.isFinite(y) ? y : 0;
-    this.userZoom = Number.isFinite(userZoom) ? userZoom : 1;
+    this.userZoom = Number.isFinite(userZoom) ? userZoom : ARPG_CAMERA_PRESET.baseUserZoom;
 
     if (this.width < MIN_VIEWPORT_SIZE || this.height < MIN_VIEWPORT_SIZE) {
       this.valid = false;
       return false;
     }
 
-    this.horizon = -0.45 * this.height;
-    this.focus = 0.65 * this.height;
+    this.horizon = ARPG_CAMERA_PRESET.horizonRatio * this.height;
+    this.focus = ARPG_CAMERA_PRESET.focusRatio * this.height;
     this.zoom = Math.max(
       MIN_ZOOM,
       Math.max(this.width / 1150, this.height / 1500) * this.userZoom,
@@ -53,11 +62,15 @@ class PerspectiveCamera {
     this.depthToFocus = (this.focus - this.horizon) / this.zoom;
     this.projectionArea = (this.focus - this.horizon) * this.depthToFocus;
     this.cameraFootY = this.y + this.depthToFocus;
-    const zoomProgress = clamp((this.userZoom - 0.72) / 0.88, 0, 1);
-    // The old miniature-effect blur made distant monsters and scenery dissolve
-    // into the already dark ground. Retain just enough focus falloff to sell
-    // depth without sacrificing combat readability.
-    this.dofStrength = interpolate(0.32, 0.82, zoomProgress);
+    // ARPG is the crisp primary view. DoF is zero at and below the base and
+    // blends toward the miniature treatment only while zooming in.
+    const zoomProgress = clamp(
+      (this.userZoom - ARPG_CAMERA_PRESET.baseUserZoom)
+        / (MAX_USER_ZOOM - ARPG_CAMERA_PRESET.baseUserZoom),
+      0,
+      1,
+    );
+    this.dofStrength = interpolate(0, ARPG_CAMERA_PRESET.maxDofStrength, zoomProgress);
     this.valid = Number.isFinite(this.cameraFootY)
       && Number.isFinite(this.projectionArea)
       && this.depthToFocus > 0;
@@ -134,6 +147,8 @@ class PerspectiveCamera {
 }
 
 export {
+  ARPG_CAMERA_PRESET,
+  MAX_USER_ZOOM,
   MIN_DEPTH,
   MIN_VIEWPORT_SIZE,
   MIN_ZOOM,
