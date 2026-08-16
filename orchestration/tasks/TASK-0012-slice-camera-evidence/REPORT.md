@@ -146,6 +146,10 @@ miniature-village.png  1200x800
 
 ## Verification
 
+Independent validator `/root/validate_task_0012` — ACCEPT. It confirmed the
+task-folder-only diff, nine valid 1200x800 captures, neutral observations,
+parameter/defect evidence, and a clean worktree.
+
 Temporary scripted Playwright capture command:
 
 ```text
@@ -201,4 +205,4 @@ modified.
 
 ## Commit
 
-`b9f0d8a` — `docs: capture camera preset evidence pack`
+`310b76d` — `docs: capture camera preset evidence pack`
