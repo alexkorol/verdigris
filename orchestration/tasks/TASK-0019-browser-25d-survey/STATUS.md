@@ -1,6 +1,6 @@
 ---
 task: TASK-0019
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: kimi
 worker: kimi-code-cli
 worker_branch: codex/TASK-0019-browser-25d-survey
