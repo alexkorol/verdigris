@@ -1,6 +1,6 @@
 ---
 task: TASK-0025
-state: IMPLEMENTED
+state: REVIEW_REQUESTED
 coordinator: codex
 worker: Codex/Luna implementation worker
 worker_branch: codex/TASK-0025-instance-lifecycle-correctness
@@ -13,4 +13,6 @@ dependencies: TASK-0017 integrated at aa52054
 architect_review_required: true
 implementation_commit: 63df51f
 verification: powershell -NoProfile -File native/build.ps1 -RunTests PASS; git diff --check PASS
+validator: /root/validate_task_0025
+validator_verdict: ACCEPT
 ---

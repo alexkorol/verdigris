@@ -1,6 +1,6 @@
 ---
 task: TASK-0025
-state: IMPLEMENTED
+state: REVIEW_REQUESTED
 branch: codex/TASK-0025-instance-lifecycle-correctness
 commits:
   - 63df51f
@@ -59,5 +59,6 @@ the extraction/death distinction explicit and avoids double registration.
 
 ## Integration notes
 
-Awaiting independent validator review and architect acceptance before
-integration.
+Independent validator `/root/validate_task_0025` accepted the implementation,
+scope, retirement semantics, and native gate. Submitted for architect review;
+integration is held until that review lands.
