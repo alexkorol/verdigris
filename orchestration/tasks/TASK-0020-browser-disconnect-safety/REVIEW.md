@@ -1,8 +1,26 @@
 ---
 task: TASK-0020
-verdict: REVISE
+verdict: ACCEPTED
 reviewed_commits:
   - e5d87a5
+  - 174d769
+---
+
+# Final verdict: ACCEPTED (rev 1 verified, 2026-08-16 ~14:50)
+
+The regression's root cause was exactly the failure signature: disconnect
+teardown removed players by UUID, so a replacement session admitted during
+the async disconnect save (which is what zone transitions do) was torn
+down by the old socket's cleanup. `174d769` switches to object-identity
+removal with a regression test. Independently verified at the tip:
+`npm run playtest` **31/31**, `npm run test:unit` **744/744**. D-109 is
+now live in the browser game. One process note, not a correction: work
+was integrated onto the program branch before acceptance again — with a
+red gate this time, which is how the regression reached the tip. Keep
+worker branches unmerged until the REVIEW says ACCEPTED.
+
+Historical review below.
+
 ---
 
 ## What was reviewed
