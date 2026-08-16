@@ -227,6 +227,20 @@ boots its server — answered as D-105 (adopt the test:e2e lifecycle) and
 issued as tiny TASK-0014 (package.json script line only), since a broken
 documented gate should not greet your morning.
 
+## Owner active again; hold lifted (2026-08-16, ~13:35)
+
+- TASK-0014 **ACCEPTED** (`b068964`) — smoke:browser verified end to end
+  (1/1 browser spec green, port 6500 released). QUESTION-0003 closable.
+- Queue hold lifted at the owner's prompt. New wave:
+  - TASK-0015 core presentation catalog (single-source constants for
+    costs/ranges/telegraphs — kills the 0009/0013 drift watch items) —
+    **READY** (core).
+  - TASK-0016 native billboard experiment (client renders the vendored
+    keyed plates read-only, capsule fallback; slice→native visual
+    bridge, D-O2 untouched) — **READY** (client). Disjoint pair.
+- Still with the owner: ADR-002, D-101..103, carried-relic question,
+  D-O1..D-O5, and the camera evidence pack review.
+
 ## Watch items
 
 - Enemy melee cadence in the slice felt lethal for an idle level-1; base
