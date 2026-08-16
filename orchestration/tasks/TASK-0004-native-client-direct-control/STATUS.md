@@ -1,6 +1,6 @@
 ---
 task: TASK-0004
-state: REVIEW_REQUESTED
+state: ACCEPTED
 worker: Luna native-client implementer
 worker_branch: codex/TASK-0004-native-client-direct-control
 worktree: .codex/worktrees/TASK-0004-native-client-direct-control
@@ -14,4 +14,7 @@ implementation_commit: 7ac51d4
 validator: /root/validate_task_0004
 validator_verdict: ACCEPT
 architect_review_required: true
+architect_verdict: ACCEPTED
+architect_reviewed_commits: 7ac51d4
+integration_state: QUEUED
 ---

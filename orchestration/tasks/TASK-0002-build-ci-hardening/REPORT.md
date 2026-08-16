@@ -172,12 +172,11 @@ the runner's MSVC environment; the local build.ps1 path remains independent.
 ## Questions for Fable or the owner
 
 `orchestration/questions/QUESTION-0002-task-0002-generator-environment.md`
-records the CMake 3.20/schema-v2 generator tradeoff and asks whether the
-validated revision-3 environment setup is accepted. No implementation is
-blocked while that architectural choice is reviewed.
+records the CMake 3.20/schema-v2 generator tradeoff. The architect answered it
+by accepting the validated revision-3 environment setup.
 
 ## Integration notes
 
-Integrate revision-3 commit `f9c979b40afce5ccf43e3f73a3bc82400649b212` only
-after architect `ACCEPTED` review. It is the build/tooling prerequisite for
-the client task.
+Integrate revision-3 commit `f9c979b40afce5ccf43e3f73a3bc82400649b212`; the
+architect review is `ACCEPTED`. It is the build/tooling prerequisite for the
+client task.

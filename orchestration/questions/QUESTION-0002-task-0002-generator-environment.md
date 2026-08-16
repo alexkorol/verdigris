@@ -1,7 +1,7 @@
 ---
 question: QUESTION-0002
 related_task: TASK-0002
-state: OPEN
+state: ANSWERED
 ---
 
 # TASK-0002 generator portability versus CMake 3.20
@@ -45,3 +45,9 @@ should the implementation pursue another generator strategy?
 No implementation work is blocked: revision 3 is review-ready and the other
 wave-2 tasks are independently review-ready. The question only records the
 architectural tradeoff for TASK-0002 acceptance.
+
+## Recorded answer
+
+The architect accepted option 1 in the wave-2 review: keep the version-neutral
+NMake preset and initialize MSVC through `ilammy/msvc-dev-cmd@v1`. TASK-0002 is
+accepted as revision 3 (`f9c979b`).
