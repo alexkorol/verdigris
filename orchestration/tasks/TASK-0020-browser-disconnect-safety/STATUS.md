@@ -1,6 +1,6 @@
 ---
 task: TASK-0020
-state: REVIEW_REQUESTED
+state: CLAIMED
 coordinator: codex
 worker: Codex coordinator
 worker_branch: codex/native-reconstitution
@@ -13,5 +13,8 @@ known_risks: preserve the existing guest/Chronicles persistence seams while maki
 dependencies: none
 architect_review_required: true
 implementation_commit: e5d87a5
+revision: 1
+revision_base: 8470c84
+revision_reason: architect review 42fd837 bisected a 31/31 to 27/31 playtest regression to the disconnect change, clustered around zone transitions and dev:state
 verification: npm run test:unit (PASS: 114 files/742 tests); npm run smoke:browser (PASS: 1/1); isolated playtest scenarios first-goal, gear-outcomes, house-treasury, mortality, quest, and zones all PASS; aggregate playtest remains timing-sensitive
 ---
