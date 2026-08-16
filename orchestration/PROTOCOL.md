@@ -6,7 +6,17 @@ file ownership as the Codex coordinator; coordinators MUST identify
 themselves in `STATUS.md` (`coordinator: codex|kimi`, plus worker id).
 Claims are first-STATUS-write-wins: before claiming, fetch/check whether a
 `STATUS.md` already exists for the task; if it does, move on. Coordinators
-never edit each other's STATUS/REPORT files.)
+never edit each other's STATUS/REPORT files.
+
+**Workspace isolation (mandatory, added after a live collision):**
+`Z:\Code\Games\delaford\delaford_game` is the ARCHITECT's working
+checkout. Coordinators must NOT check out branches, create branches, or
+run commands that mutate git state there. Each coordinator uses its own
+clone (Codex: `C:\Users\Alex\Documents\ChatGPT\verdigris`; Kimi: create
+your own clone, e.g. `C:\Users\Alex\Documents\Kimi\verdigris`) and
+exchanges work via origin pushes to `codex/native-reconstitution` or
+worker branches. A branch switch in someone else's checkout can silently
+divert their in-progress commits — this happened with `review/TASK-0015`.)
 
 Two roles split the work:
 
