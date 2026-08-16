@@ -1,6 +1,6 @@
 ---
 task: TASK-0003
-state: REVIEW_REQUESTED
+state: INTEGRATED
 worker: Luna browser-harness implementer
 worker_branch: codex/TASK-0003-slice-verification-harness
 worktree: .codex/worktrees/TASK-0003-slice-verification-harness
@@ -12,4 +12,8 @@ known_risks: Playwright availability; timing stability; drift guard must not ove
 implementation_commit: e25336d
 revision: 1
 revision_findings: P1 cross-platform HTTP root containment; P2 stale embedded report commit SHA
+validator: /root/validate_task_0003
+validator_verdict: ACCEPT
+architect_verdict: ACCEPTED
+integration_commits: 8517bf5, 403e3a3
 ---
