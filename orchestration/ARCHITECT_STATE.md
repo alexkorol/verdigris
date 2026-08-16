@@ -130,6 +130,20 @@ Architect debt (mine, not delegable): revise `docs/rebuild/LEGACY_MATRIX.md`
 from the 0005 report; draft ADR-002 (serialization/persistence seam) when
 the loop stabilizes.
 
+## Wave 3 accepted + integrated; wave 4 (2026-08-16, ~10:15)
+
+- TASK-0007 (`e7505ad` → integrated `a832b2b`) and TASK-0008 (`56ac8f0` →
+  integrated `e7c6d28`) ACCEPTED after independent verification;
+  integration tip `0c51439` merged here and gates rerun green.
+- LEGACY_MATRIX revised with the audit's file-level provenance addendum
+  (architect debt cleared). Remaining debt: ADR-002 persistence seam.
+- TASK-0009 client Q/E/R bindings — promoted **READY**, base `0c51439`
+  (sole in-flight client task).
+- Noted for a future core task: a real facing field (Thrust is +x-only).
+
+In flight: TASK-0009 only. Next after it: facing-field core task, then
+ADR-002.
+
 ## Watch items
 
 - Enemy melee cadence in the slice felt lethal for an idle level-1; base
