@@ -12,6 +12,7 @@ known_risks: client must consume only authoritative events/snapshots; telegraph 
 dependencies: TASK-0011 integrated as c733945; TASK-0012 evidence integrated as e24825d
 architect_review_required: true
 implementation_commit: c2d62c3
-validator: pending
-validator_verdict: pending
+validator: /root/validate_task_0013
+validator_verdict: ACCEPT
+validator_evidence: exact client-only scope; native gate, denylist, headless byte match, event/expiry/geometry review, and supplied route:tin:2:0 before/after captures passed
 ---

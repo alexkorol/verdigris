@@ -40,6 +40,9 @@ snapshots.
   (denylist, core tests, headless output, and Win32 client build).
 - `git diff --check 6b309e7..c2d62c3` — PASS.
 - Worktree clean.
+- Independent validator `/root/validate_task_0013` — ACCEPT. It confirmed
+  exact client-only scope, unchanged headless output, event/expiry/geometry
+  behavior, and the supplied before/after captures.
 
 ## Manual checks
 
