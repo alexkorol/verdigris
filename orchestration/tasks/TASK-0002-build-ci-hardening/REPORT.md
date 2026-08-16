@@ -127,4 +127,12 @@ before the workflow's configure/build/test steps. This makes the preset
 self-consistent on a clean `windows-latest` runner without pinning VS2019 or
 VS2022. The worker reports clean temporary configure/build/CTest, full
 `build.ps1 -RunTests -RunClient`, YAML parse, diff-check, and no-vswhere-noise
-passes. Independent revision-3 validation is pending.
+passes.
+
+Independent validator `/root/validate_task_0002_rev3` returned **ACCEPT**.
+The validator confirmed the owned-path scope, schema-v2 preset listing, clean
+temporary NMake configure/build/CTest under initialized x64 MSVC, full native
+build gate, denylist, YAML parse, diff check, and quiet output. It also
+confirmed `ilammy/msvc-dev-cmd@v1` runs before workflow configure/build/test,
+closing the clean-runner defect from revision 2. Architect review and
+integration follow.
