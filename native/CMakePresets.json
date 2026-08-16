@@ -13,8 +13,7 @@
     {
       "name": "windows-msvc",
       "displayName": "Verdigris native (MSVC)",
-      "generator": "Visual Studio 16 2019",
-      "architecture": "x64",
+      "generator": "NMake Makefiles",
       "binaryDir": "${sourceDir}/build/cmake/${presetName}"
     }
   ],
