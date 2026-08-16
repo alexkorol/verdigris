@@ -16,6 +16,8 @@
   placeholder-shape window with WASD, mouse actions, Space dash, pickup/equip,
   and extraction controls; `--headless` provides a self-terminating smoke run.
 - The core test executable covers the eleven requested architectural behaviors.
+- Explicit `platform/`, `renderer/`, `networking/`, `persistence/`, and
+  `content/` seams are documented without coupling them into the simulation.
 - The earlier 2.5D demo archive and eight billboard assets were not present in
   this checkout.
 

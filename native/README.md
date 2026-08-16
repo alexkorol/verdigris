@@ -18,6 +18,9 @@ browser game remains separate in src/ and server/.
   branches, seasonal extension, and shared elite math.
 - tools/check_legacy_denylist.py rejects denied legacy identifiers in new native
   production sources.
+- platform/, renderer/, networking/, persistence/, and content/ document the
+  explicit seams reserved for later native subsystems. They are intentionally
+  not coupled into the first core slice.
 
 ## Build on Windows (the current checkout)
 
