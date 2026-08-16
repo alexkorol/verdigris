@@ -1,6 +1,7 @@
 ---
 task: TASK-0016
 state: REVIEW_REQUESTED
+coordinator: codex
 worker: Codex coordinator
 worker_branch: codex/native-reconstitution
 worktree: .
