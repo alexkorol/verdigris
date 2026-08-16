@@ -12,6 +12,7 @@ known_risks: windup ordering and cancellation must preserve non-elite melee cade
 dependencies: TASK-0010 integrated as afcd1d3
 architect_review_required: true
 implementation_commit: 8c68aed
-validator: pending
-validator_verdict: pending
+validator: /root/validate_task_0011
+validator_verdict: ACCEPT
+validator_evidence: exact three-file scope; native gate, denylist self-test, diff check, source review, telegraph timing, gate/fizzle, cancellation, non-elite cadence, and replay checks passed
 ---

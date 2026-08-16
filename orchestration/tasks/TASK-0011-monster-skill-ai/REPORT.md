@@ -44,6 +44,8 @@ melee cadence.
 - `powershell -File native/build.ps1 -RunTests` — PASS.
 - `git diff e6d3f48..8c68aed --check` — PASS.
 - Legacy denylist self-test passed as part of the native gate.
+- Independent validator `/root/validate_task_0011` — ACCEPT; exact timing,
+  gate/fizzle, cancellation, non-elite cadence, and replay checks passed.
 
 Named tests:
 
