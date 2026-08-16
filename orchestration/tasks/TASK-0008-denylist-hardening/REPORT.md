@@ -73,6 +73,9 @@ None.
 
 ## Integration notes
 
-Independent validation and architect acceptance are required before integrating
-`56ac8f0e8b3b12007231db3b51a7387c8f54b1c2`. It is disjoint from TASK-0007 but
+Independent validator `/root/validate_task_0008` returned **ACCEPT** after
+checking the two-file scope, diff, baseline/hardened checker, normalization and
+false-positive cases, allowlist behavior, self-test and negative fixture, and
+native gate. Architect acceptance is still required before integrating
+`56ac8f0e8b3b12007231db3b51a7387c8f54b1c2`; it is disjoint from TASK-0007 and
 the integrated build gate should be rerun after both tasks land.
