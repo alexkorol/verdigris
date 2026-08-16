@@ -1,6 +1,6 @@
 ---
 task: TASK-0015
-state: IMPLEMENTED
+state: REVIEW_REQUESTED
 worker: Codex coordinator
 worker_branch: codex/native-reconstitution
 worktree: .
@@ -11,6 +11,6 @@ expected_verification: powershell -NoProfile -File native/build.ps1 -RunTests
 known_risks: catalog must expose only the listed presentation constants and must not change gameplay values or duplicate definitions
 dependencies: TASK-0011 integrated
 architect_review_required: true
-implementation_commit: pending-local-commit
+implementation_commit: 76ff52d
 verification: powershell -NoProfile -File native/build.ps1 -RunTests (PASS); git diff --check (PASS); single-definition audit (PASS)
 ---
