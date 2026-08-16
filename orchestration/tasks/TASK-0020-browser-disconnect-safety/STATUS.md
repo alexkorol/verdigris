@@ -1,6 +1,6 @@
 ---
 task: TASK-0020
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: codex
 worker: Codex coordinator
 worker_branch: codex/native-reconstitution
@@ -12,4 +12,6 @@ expected_verification: npm run test:unit; npm run playtest
 known_risks: preserve the existing guest/Chronicles persistence seams while making persistence precede world removal and preventing all post-close combat/movement work
 dependencies: none
 architect_review_required: true
+implementation_commit: e5d87a5
+verification: npm run test:unit (PASS: 114 files/741 tests); npm run playtest (30/31; isolated gear-outcomes PASS); targeted tests and ESLint PASS
 ---
