@@ -25,6 +25,10 @@
   [`CLAUDE_DEMO_ASSET_INTAKE.md`](CLAUDE_DEMO_ASSET_INTAKE.md). The binaries
   remain outside the checkout pending asset provenance, size, and packaging
   approval.
+- The incomplete product checklist is recorded in
+  [`VERDIGRIS_FEATURE_CHECKLIST.md`](../product/VERDIGRIS_FEATURE_CHECKLIST.md),
+  with economy, Legends, branch-length, travel-risk, and UI-setting questions
+  promoted into `OPEN_DECISIONS.md`.
 
 ## Next exact steps
 

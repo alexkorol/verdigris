@@ -61,16 +61,26 @@ uncertainty. A successor does not receive a dead Scion's full inventory.
 
 House crafting is a social/material process belonging to the House, not a
 generic hideout bench. The House turns extracted value into durable advancement.
+The intended House layer also includes meta-progression, passive income,
+asynchronous trading, and currency exchange. Their rates, sinks, and authority
+boundaries remain open until the economy pass.
+
+Verdigris also has a persistent Legends direction: storied items and monsters
+should leave records and influence future loot/spawn pools, creating a House
+history that can outlive any one Scion. The first implementation may be a
+small deterministic record; it must not become an unbounded simulation hidden
+inside the combat loop.
 
 ## Campaign and endgame
 
-The campaign is approximately 6–12 hours for an average player and is completed
-once per House. Later Scions level without repeating the full mandatory campaign.
-Campaign content is a graph of connected instances, routes, and optional
-branches. Branches may grant specialization directions, item access, knowledge,
-mechanics, routes, or starting opportunities. The repeatable endgame lets the
-player choose areas, goals, mechanics, item targets, trophy targets, and build
-experiments.
+The route from campaign start to endgame targets roughly 6–30 hours depending
+on how many optional branches a player completes. It is completed once per
+House per season; later Scions level without repeating the mandatory route.
+Campaign content is a multizone graph spanning several acts, with optional
+branches that may grant specialization directions, item access, knowledge,
+league mechanics, routes, or starting opportunities. The repeatable endgame
+lets the player choose areas, goals, mechanics, item targets, trophy targets,
+and build experiments.
 
 ## Actors and combat
 
@@ -82,11 +92,28 @@ Elite difficulty comes from level, build, equipment, actions, and support rather
 than arbitrary billion-point Life.
 
 The control reference is systemic depth plus deliberate movement: WASD, mouse
-aiming, left/right mouse actions, a compact nearby skill set, and Space (or an
-equivalent) movement ability. Click-to-move is not primary and the hotbar is not
-piano-sized. Combat uses readable physical space (swings, thrusts, slams,
-leaps, guarded actions, buffs, war cries, combos, ranged attacks, and magic)
-with strong impact feedback.
+aiming, left/right mouse actions, Q/E/R skills, and Space (or an equivalent)
+movement ability. Z toggles loot filtering/highlights, X picks up the nearest
+item, and gold auto-picks up. A native client has no context-menu control
+scheme. Click-to-move is not primary and the hotbar is not piano-sized. Combat
+uses readable physical space (swings, thrusts, slams, leaps, guarded actions,
+buffs, war cries, combos, ranged attacks, and magic) with strong impact
+feedback.
+
+Player-facing progression includes inventory, stats, a passive skill tree,
+equipment that is reflected by the in-world character, and loose quest threads
+that guide campaign exploration without turning the durable loop into a rigid
+checklist.
+
+The presentation layer should support a pane system (including character +
+inventory and trade + inventory diptychs) and two minimap modes: a small side
+map and a large overlay. Transparency, zoom, and side placement are options.
+Orbs, skill bar, and surrounding UI share one visual language.
+
+Monsters use the same stat and element vocabulary as players. The world needs
+pack spawning, rarity, uniques, scarce equipment drops, more generous trophies
+and crafting materials, and a fast-travel or town-portal path with an explicit
+risk model.
 
 ## Magic and future mechanics
 
