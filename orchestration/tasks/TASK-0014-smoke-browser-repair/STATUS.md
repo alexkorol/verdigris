@@ -1,6 +1,6 @@
 ---
 task: TASK-0014
-state: REVIEW_REQUESTED
+state: INTEGRATED
 worker: Codex coordinator
 worker_branch: codex/native-reconstitution
 worktree: .
@@ -13,4 +13,9 @@ dependencies: none
 architect_review_required: true
 implementation_commit: b068964
 verification: npm run smoke:browser (1 passed, port 6500 released); npm run test:e2e (3 passed, port 6500 released); git diff --check PASS
+architect_review: ACCEPTED
+architect_review_commit: 11a5325
+integration_worktree: .
+integration_commit: b068964
+integration_verification: npm run smoke:browser; npm run test:e2e; port 6500 released after each; git diff --check PASS
 ---

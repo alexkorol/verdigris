@@ -629,6 +629,53 @@ void test_actor_symmetry() {
   check(Simulation::resolve_damage(*enemy, *player) > 0, "monster uses the shared damage pipeline");
 }
 
+void test_presentation_catalog_is_authoritative_and_stable() {
+  const PresentationCatalog catalog = Simulation::presentation_catalog();
+  check(catalog == Simulation::presentation_catalog(),
+        "presentation catalog is stable across repeated reads");
+
+  Simulation thrust_sim(0xA019ULL);
+  Actor* thrust_player = thrust_sim.actor(thrust_sim.scion().actor_id);
+  const std::string thrust_player_id = thrust_player->id;
+  thrust_player->position = {0, 0};
+  thrust_player->stats.resource = thrust_player->stats.resource_max;
+  const std::string thrust_enemy = thrust_sim.spawn_monster({1400, 0});
+  thrust_sim.dispatch(Command::action_use(ActionType::Thrust));
+  thrust_player = thrust_sim.actor(thrust_player_id);
+  check(thrust_player->stats.resource == thrust_player->stats.resource_max -
+                                           catalog.thrust_resource_cost +
+                                           catalog.resource_regen_per_tick,
+        "catalogued Thrust cost matches the resource deduction");
+  check(count_events(thrust_sim, EventType::AttackStarted, "thrust") == 1,
+        "catalogued Thrust still resolves through the normal attack path");
+  check(thrust_sim.actor(thrust_enemy) != nullptr, "catalog test retains the enemy actor");
+
+  Simulation elite_sim(0xA01AULL);
+  Actor* elite = setup_elite(elite_sim, {1400, 0});
+  const std::string elite_id = elite->id;
+  elite_sim.dispatch(Command::action_use(ActionType::Wait));
+  const Event* telegraph = last_event(elite_sim, EventType::AttackTelegraphed, "thrust");
+  check(telegraph && telegraph->value == catalog.telegraph_ticks,
+        "catalogued telegraph duration matches the emitted event");
+  elite = elite_sim.actor(elite_id);
+  check(elite->pending_action_ticks == catalog.telegraph_ticks,
+        "catalogued telegraph duration matches pending state");
+
+  Simulation buff_sim(0xA01BULL);
+  Actor* buff_player = buff_sim.actor(buff_sim.scion().actor_id);
+  const std::string buff_player_id = buff_player->id;
+  buff_player->stats.resource = buff_player->stats.resource_max;
+  buff_sim.dispatch(Command::action_use(ActionType::WarCry));
+  buff_player = buff_sim.actor(buff_player_id);
+  check(buff_player->stats.resource == buff_player->stats.resource_max -
+                                          catalog.war_cry_resource_cost +
+                                          catalog.resource_regen_per_tick,
+        "catalogued War Cry cost matches the resource deduction");
+  check(buff_player->war_cry_attack_bonus == catalog.war_cry_attack_bonus &&
+            buff_player->war_cry_ticks_remaining == catalog.war_cry_duration_ticks - 1,
+        "catalogued War Cry bonus and duration match applied state");
+}
+
 void test_extraction() {
   Simulation sim(11);
   sim.dispatch(Command::enter("route:tin:1:0"));
@@ -817,6 +864,7 @@ int main() {
   test_elite_skill_replay_is_deterministic();
   test_non_elite_melee_cadence_is_unchanged();
   test_war_cry_buff_expiry_and_replay_determinism();
+  test_presentation_catalog_is_authoritative_and_stable();
   test_extraction();
   test_death_and_successor();
   test_item_identity_and_branch();
