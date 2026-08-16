@@ -116,3 +116,15 @@ that environment. The required correction is to remove the `generator` field
 so CMake selects the installed Visual Studio generator on VS2019/VS2022
  runners, matching the architect's preferred resolution. No files were edited
 by the validator.
+
+## Revision 3 implementation
+
+Revision 3 is committed as `f9c979b40afce5ccf43e3f73a3bc82400649b212`.
+Because CMake 3.20 schema-v2 presets cannot omit the generator without
+becoming invalid (or inheriting Ninja), the worker retained the unpinned
+`NMake Makefiles` preset and added `ilammy/msvc-dev-cmd@v1` with `arch: x64`
+before the workflow's configure/build/test steps. This makes the preset
+self-consistent on a clean `windows-latest` runner without pinning VS2019 or
+VS2022. The worker reports clean temporary configure/build/CTest, full
+`build.ps1 -RunTests -RunClient`, YAML parse, diff-check, and no-vswhere-noise
+passes. Independent revision-3 validation is pending.
