@@ -83,6 +83,27 @@ vs report-only). Integration of accepted work is Codex-owned; after it
 lands, the next architect pass promotes TASK-0004 and specs a relic
 re-entry core task to exercise the dormant `relic_extracted` path.
 
+## Wave 2 (2026-08-16, after wave-1 integration merge at bc73ce0)
+
+Wave-1 integrations (Legends `5487778`, harness `8517bf5`+`403e3a3`) merged
+into the architect checkout and verified green (denylist + core tests).
+Review pass 2 results:
+
+- TASK-0005 archaeology audit — **ACCEPTED** (`ff2ea30`); its report is the
+  standing legacy evidence base. A LEGACY_MATRIX revision and a
+  denylist-hardening tooling task will be specced from it in a later wave.
+- TASK-0002 — **REVISE rev 2** (verified: presets v2 validate on bundled
+  CMake 3.20, define guard works). Two corrections: (5) drop the
+  `Visual Studio 16 2019` generator pin that would fail on windows-latest,
+  (6) actually suppress the vcvars-internal vswhere noise (item 5 of the
+  original scope).
+- TASK-0004 client direct-control — promoted **READY**, base `bc73ce0`.
+- TASK-0006 relic re-entry — new, **READY**, base `bc73ce0` (core sources;
+  closes death→loss→rediscovery per D-004, exercises `relic_extracted`).
+
+In flight: 0002-rev2 (build files), 0004 (client), 0006 (core) — three
+READY tasks with disjoint ownership.
+
 ## Watch items
 
 - Enemy melee cadence in the slice felt lethal for an idle level-1; base

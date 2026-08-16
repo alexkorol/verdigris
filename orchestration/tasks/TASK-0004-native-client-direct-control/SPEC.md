@@ -1,10 +1,10 @@
 ---
 id: TASK-0004
 title: Native client direct-control pass per D-007 contract
-state: DRAFT
+state: READY
 track: native
 priority: high
-base_commit: TBD (set on promotion; latest integrated tip at that time)
+base_commit: bc73ce0
 dependencies: [TASK-0002]
 parallel_safe: false
 owned_paths:
@@ -21,9 +21,10 @@ acceptance_commands:
   - powershell -File native/build.ps1 -RunTests -RunClient
 ---
 
-DRAFT — do not claim until state reads READY and base_commit is a SHA.
-(Will be promoted after wave-1 reviews; sequential with any other
-client-touching task.)
+READY (promoted 2026-08-16; base bc73ce0 contains the integrated Legends
+core). Sequential with any other client-touching task. TASK-0002's define
+guard is still in revision — do not touch build files; the acceptance run
+uses whatever build.ps1 exists on the worker's base.
 
 ## Goal
 

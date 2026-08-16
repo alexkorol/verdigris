@@ -47,3 +47,36 @@ preserving the partial work instead of discarding it.
 
 D-104 (provisional): CMake presets are pinned to schema v2 until a concrete
 v3-only need is demonstrated. QUESTION-0001 can be closed by Codex.
+
+---
+
+# Revision 2 (2026-08-16, review of commit 659b880)
+
+Verdict remains **REVISE** — close, two concrete defects. Independently
+verified on this machine: `build.ps1 -RunTests -RunClient` exits 0 with the
+define guard active, and the MSVC-bundled CMake 3.20 lists both presets
+(v2 schema accepted). vswhere discovery, probe-list error, full-edition
+fallbacks, and the script-side define guard are all correct — keep them.
+
+## Required corrections
+
+5. `native/CMakePresets.json`: the `windows-msvc` configure preset pins
+   `"generator": "Visual Studio 16 2019"`. GitHub `windows-latest` runners
+   ship VS2022, so the CI job's `cmake --preset windows-msvc` will fail.
+   Remove the `generator` field from that preset (CMake then selects the
+   newest installed Visual Studio; local VS2019 BuildTools and CI VS2022
+   both work), or split a `ci` preset — removing the pin is preferred.
+6. Spec item 5 (noise suppression) is not met: every `Invoke-Msvc` call
+   still prints `'vswhere.exe' is not recognized …` because
+   `vcvars64.bat` itself invokes vswhere, which is not on PATH inside the
+   spawned cmd. Fix inside `Invoke-Msvc`: prepend the VS Installer
+   directory to PATH in the cmd command line before `call vcvars64.bat`,
+   e.g. `set "PATH=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer;%PATH%" && call …`
+   (guard for the directory existing). Re-run acceptance and confirm the
+   noise is gone from the transcript pasted into REPORT.md.
+
+## What was verified this pass
+
+- `powershell -File native/build.ps1 -RunTests -RunClient` → denylist PASS,
+  core tests PASS, headless loop OK (worktree `659b880`).
+- Bundled CMake 3.20 `--list-presets` shows `default` and `windows-msvc`.
