@@ -13,6 +13,7 @@ New-Item -ItemType Directory -Force -Path $buildRoot | Out-Null
 # probe list so a missing toolchain produces an actionable error instead of a
 # cryptic failure from cmd.exe.
 $vswhere = Join-Path ${env:ProgramFiles(x86)} "Microsoft Visual Studio\Installer\vswhere.exe"
+$vsInstaller = Join-Path ${env:ProgramFiles(x86)} "Microsoft Visual Studio\Installer"
 $probed = [System.Collections.Generic.List[string]]::new()
 $vcvars = $null
 
@@ -66,7 +67,13 @@ function Invoke-Msvc([string]$arguments, [switch]$RequireNativeWindowsDefine) {
   if ($RequireNativeWindowsDefine -and $arguments -notmatch '(?i)(?:^|\s)/DVERDIGRIS_NATIVE_WINDOWS=1(?:\s|$)') {
     throw "Client compile command is missing /DVERDIGRIS_NATIVE_WINDOWS=1. Refusing to build the console fallback."
   }
-  $command = 'call "' + $vcvars + '" && cl /nologo /std:c++20 /EHsc /W4 /I"' + $include + '" ' + $arguments
+  $pathSetup = ''
+  if (Test-Path $vsInstaller) {
+    # vcvars64.bat invokes vswhere internally.  Put the installer directory
+    # first in the child cmd's PATH so that lookup is quiet and deterministic.
+    $pathSetup = 'set "PATH=' + $vsInstaller + ';%PATH%" && '
+  }
+  $command = $pathSetup + 'call "' + $vcvars + '" && cl /nologo /std:c++20 /EHsc /W4 /I"' + $include + '" ' + $arguments
   & cmd.exe /d /s /c $command
   if ($LASTEXITCODE -ne 0) { throw "MSVC command failed with exit code $LASTEXITCODE" }
 }
