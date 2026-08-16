@@ -1,6 +1,6 @@
 ---
 question: QUESTION-0004
-status: OPEN
+status: RESOLVED
 owner: architect
 task: TASK-0022
 ---
@@ -28,3 +28,9 @@ Please choose one architect-authorized resolution:
 Until then, the worker branch retains the focused test correction as a
 documented scope deviation so the acceptance gate is green; no other test or
 application paths were changed.
+
+## Resolution
+
+Architect review `5efc48e` accepted the reviewed `907024e` commit, including
+the focused camera expectation update, and integration commit `705b6c3` ships
+the correction. No replacement task is required.

@@ -104,6 +104,14 @@ coordinator filed `orchestration/questions/QUESTION-0004-task-0022-camera-test-o
 for architect authorization or a replacement task; no other out-of-scope paths
 were changed.
 
+## Integration
+
+Architect review `5efc48e` accepted the reviewed implementation commits and
+required the evidence relocation during integration. Integrated on program
+commit `705b6c3`; the repository root is free of the four capture artifacts,
+which now live under this task folder. The focused camera test correction is
+included in the architect-reviewed `907024e` commit.
+
 ## Review request
 
 This task is submitted for architect review at the Phase-1 boundary. The
