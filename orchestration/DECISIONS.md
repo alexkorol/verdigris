@@ -58,6 +58,14 @@ may decide it.
   browser game as the near-term shippable product while the native
   rebuild continues.
 
+- **D-109 Forgiving persistence (OWNER-RULED 2026-08-16)**: logout,
+  disconnect, or crash never loses items or progress — the Scion keeps
+  everything and returns to town (House) on next login; the instance is
+  simply left. Death is the only loss event, and networked play must
+  prevent disconnect-caused deaths (safe pull-out on connection loss).
+  ADR-002 is ACCEPTED as amended by this ruling. If logout-as-escape
+  proves abusable, the fix is an in-danger logout delay, never item loss.
+
 ## Provisional (architect's call, owner may override)
 
 - **D-101 Player base-life offset**: the slice gives player-kind actors a

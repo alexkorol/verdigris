@@ -265,6 +265,25 @@ Ship pressure is explicit. Queue now:
 Next after these: browser overhaul phases 1+ (from the 0019 plan), native
 scenery billboards, client catalog adoption.
 
+## Queue widened; D-109 recorded (2026-08-16, ~14:05)
+
+- Owner: Codex/Luna can run up to 8 workers — PROTOCOL cap widened to 8
+  for unquestionably disjoint tasks.
+- **D-109 (owner-ruled)**: forgiving persistence — logout/disconnect/crash
+  keeps everything, returns the character to town; death is the only loss
+  event; disconnect deaths must be prevented. ADR-002 ACCEPTED as
+  amended.
+- Kimi onboarding written to `orchestration/ONBOARDING-KIMI.md` (owner
+  communicates with Kimi via repo files); AGENTS.md points coordinators
+  at the protocol.
+- New READY (disjoint): TASK-0020 browser disconnect-safety per D-109
+  (server/** — critical, ship path) and TASK-0021 slice ARPG camera
+  default per D-107 (slice files only).
+- Claimable board now: 0016 (client, in flight), 0018 (core, after 0015),
+  0017 (core+client, after 0016+0018 chain), 0019 (survey, Kimi),
+  0020 (server), 0021 (slice). Core-file tasks remain strictly
+  sequential via dependencies.
+
 ## Watch items
 
 - Enemy melee cadence in the slice felt lethal for an idle level-1; base

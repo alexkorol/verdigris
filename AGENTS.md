@@ -3,6 +3,10 @@
 This is the canonical cross-platform agent guide. Read it before editing and
 follow the repository preflight before planning or implementation.
 
+**Implementation coordinators (Codex, Kimi Code):** your binding process
+doc is `orchestration/PROTOCOL.md`. Kimi Code: start at
+`orchestration/ONBOARDING-KIMI.md`.
+
 ## Required preflight
 
 From the repository root, run:

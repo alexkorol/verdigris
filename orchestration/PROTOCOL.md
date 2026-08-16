@@ -71,7 +71,9 @@ ACCEPTED / REVISE / BLOCKED / SUPERSEDED and numbered, testable corrections.
 
 - Program branch: `codex/native-reconstitution`.
 - Task IDs: `TASK-NNNN-short-slug`, monotonically increasing.
-- At most three parallel READY implementation tasks; overlapping foundational
-  files force sequential ordering.
+- Parallel READY implementation tasks: up to eight when file ownership is
+  unquestionably disjoint (the Codex fleet runs up to 8 Luna workers);
+  overlapping foundational files always force sequential ordering via
+  dependencies. When in doubt, fewer.
 - Browser-game changes still require the repo's `npm run playtest` gate;
   native changes require the commands in `native/README.md`.
