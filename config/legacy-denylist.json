@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "scope": "new native production code",
+  "identifiers": [
+    "bronze dagger",
+    "bronze_dagger",
+    "starting coins",
+    "starting_coins",
+    "fishing",
+    "cooking",
+    "mining",
+    "smithing",
+    "Delaford"
+  ],
+  "exemptions": [
+    "docs/",
+    "src/",
+    "tests/",
+    "native/tests/",
+    "native/tools/check_legacy_denylist.py"
+  ],
+  "note": "Historical browser material may mention denied identifiers. New native production code must use explicit product terminology instead."
+}

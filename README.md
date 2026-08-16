@@ -50,6 +50,15 @@ Troubleshooting tips and platform-specific notes live in [`docs/development-setu
 The focused path from the current playable build to 1.0 is maintained in
 [`docs/vision.md`](docs/vision.md#release-runway-toward-10).
 
+## Native reconstitution
+
+The historical browser game remains available under `src/` and `server/`.
+The new native proof lives in [`native/`](native/README.md): a dependency-free
+C++20 headless simulation, deterministic tests, and a small Win32/console client
+shell for the House → expedition → extraction loop. Read the product authority
+in [`docs/product/VERDIGRIS_CONSTITUTION.md`](docs/product/VERDIGRIS_CONSTITUTION.md)
+before extending it.
+
 ## Project layout
 
 - `server/` — authoritative world, combat, accounts, and Chronicle persistence
