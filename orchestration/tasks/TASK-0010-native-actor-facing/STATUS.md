@@ -1,6 +1,6 @@
 ---
 task: TASK-0010
-state: CLAIMED
+state: REVIEW_REQUESTED
 worker: Luna native actor-facing implementer
 worker_branch: codex/TASK-0010-native-actor-facing
 worktree: .codex/worktrees/TASK-0010-native-actor-facing
@@ -11,4 +11,7 @@ expected_verification: powershell -File native/build.ps1 -RunTests -RunClient; d
 known_risks: integer heading representation and forward-cone boundary must remain deterministic; aim throttle must not starve simulation updates
 dependencies: TASK-0009 integrated as 0434ebb
 architect_review_required: true
+implementation_commit: 7e066aa
+validator: pending
+validator_verdict: pending
 ---
