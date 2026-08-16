@@ -86,5 +86,5 @@ None.
 
 ## Integration notes
 
-Integrate `7ac51d4`; the architect review is `ACCEPTED`. It is client-only and
-should follow the accepted build/tooling foundation.
+Integrated `7ac51d4` as `6396a0e`; the architect review is `ACCEPTED`. It is
+client-only and follows the accepted build/tooling foundation.

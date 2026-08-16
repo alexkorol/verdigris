@@ -1,6 +1,6 @@
 ---
 task: TASK-0002
-state: ACCEPTED
+state: INTEGRATED
 worker: Luna build/CI implementer
 worker_branch: codex/TASK-0002-build-ci-hardening
 worktree: .codex/worktrees/TASK-0002-build-ci-hardening
@@ -28,5 +28,7 @@ validator: /root/validate_task_0002_rev3
 validator_verdict: ACCEPT
 architect_verdict: ACCEPTED
 architect_reviewed_commits: 659b8802f82dfb6839207c05700a5d1cf27380a0, 44a20b277f87bd0c1af0686ca2119aaf3d09b23d, f9c979b40afce5ccf43e3f73a3bc82400649b212
-integration_state: QUEUED
+integration_state: COMPLETE
+integration_commits: ddd7198, 8bf4ee5, 5ed0739
+integrated_at: 2026-08-16
 ---

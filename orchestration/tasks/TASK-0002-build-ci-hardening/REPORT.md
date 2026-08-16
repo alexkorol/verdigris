@@ -177,6 +177,6 @@ by accepting the validated revision-3 environment setup.
 
 ## Integration notes
 
-Integrate revision-3 commit `f9c979b40afce5ccf43e3f73a3bc82400649b212`; the
-architect review is `ACCEPTED`. It is the build/tooling prerequisite for the
-client task.
+Integrated revision-3 commit `f9c979b40afce5ccf43e3f73a3bc82400649b212`
+(plus its accepted revision ancestors) as `ddd7198`, `8bf4ee5`, and
+`5ed0739`; the architect review is `ACCEPTED`.

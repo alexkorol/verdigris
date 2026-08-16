@@ -73,5 +73,6 @@ None.
 
 ## Integration notes
 
-Integrate `f542a04f83d0e78896edd19635f8353c207b6fe3`; the architect review is
-`ACCEPTED`. It is core-only and depends on integrated TASK-0001.
+Integrated `f542a04f83d0e78896edd19635f8353c207b6fe3` as `269c174`; the
+architect review is `ACCEPTED`. It is core-only and depends on integrated
+TASK-0001.

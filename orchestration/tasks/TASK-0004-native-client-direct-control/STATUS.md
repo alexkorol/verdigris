@@ -1,6 +1,6 @@
 ---
 task: TASK-0004
-state: ACCEPTED
+state: INTEGRATED
 worker: Luna native-client implementer
 worker_branch: codex/TASK-0004-native-client-direct-control
 worktree: .codex/worktrees/TASK-0004-native-client-direct-control
@@ -16,5 +16,7 @@ validator_verdict: ACCEPT
 architect_review_required: true
 architect_verdict: ACCEPTED
 architect_reviewed_commits: 7ac51d4
-integration_state: QUEUED
+integration_state: COMPLETE
+integration_commit: 6396a0e
+integrated_at: 2026-08-16
 ---
