@@ -3,8 +3,7 @@ task: TASK-0022
 state: REVIEW_REQUESTED
 branch: codex/TASK-0022-browser-25d-phase1
 commits:
-  - 174d769
-  - b035b56
+  - c17963b
 base_commit: b035b569ecc269f79c1113d7f8600db2198a273a
 ---
 
@@ -69,11 +68,11 @@ fresh guest onboarding scene. Each is lossy JPEG under the 250KB limit:
 ## Acceptance
 
 - `npm run test:unit` — PASS (115 files, 744 tests)
-- `npm run playtest` — pending final clean run
-- `npm run smoke:browser` — pending final clean run
+- `npm run playtest` — PASS (31/31 scenarios)
+- `npm run smoke:browser` — PASS (1 browser-critical test; 19.6s)
 - `npm run lint:css -- --quiet` — PASS
 - `npx eslint src/core/rendering/perspective-camera.js src/core/rendering/perspective-renderer.js src/core/rendering/terrain-renderer.js src/components/GameCanvas.vue` — PASS
-- `git diff --check` — pending final clean run
+- `git diff --check` — PASS
 
 ## Review request
 
