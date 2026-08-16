@@ -1,7 +1,8 @@
 ---
 question: QUESTION-0003
 related_task: release-tooling
-state: OPEN
+state: ANSWERED
+decision: D-105; implemented by TASK-0014
 ---
 
 # Standalone browser smoke command does not boot its server
