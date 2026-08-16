@@ -1,6 +1,6 @@
 ---
 task: TASK-0023
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: codex
 worker: Codex/Luna implementation worker
 worker_branch: codex/TASK-0023-browser-25d-phase2
@@ -12,4 +12,6 @@ expected_verification: npm run test:unit; npm run smoke:browser; npm run playtes
 known_risks: preserve Phase-1 crispness, keep haze confined to the top horizon band, retain the renderer toggle and shared projection/height seam, and avoid Phase-3 lighting or atmosphere retuning
 dependencies: TASK-0022 integrated at 355aa16
 architect_review_required: true
+implementation_commit: 48725e3
+verification: npm run test:unit (PASS: 115 files/744 tests); npm run smoke:browser (PASS: 1/1); npm run playtest (PASS: 31/31); build, ESLint, and git diff --check PASS
 ---
