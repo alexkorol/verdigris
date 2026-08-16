@@ -146,6 +146,20 @@ describe('auto-retaliation', () => {
     expect(monster.state.pendingAttack).toBeNull();
   });
 
+  it('does not damage a player during the persist-before-remove disconnect window', () => {
+    const player = makeNakedPlayer({ x: 10, y: 10, disconnecting: true });
+    scenePlayers.length = 0;
+    scenePlayers.push(player);
+
+    const monster = makeMonster(player, { x: 10, y: 10 });
+    const result = monster.combatController.resolvePendingAttack(1_000);
+
+    expect(result).toBe(false);
+    expect(player.applyDamage).not.toHaveBeenCalled();
+    expect(player.stats.resources.health.current).toBe(50);
+    expect(monster.state.pendingAttack).toBeNull();
+  });
+
   it('deals no damage on sanctuary ground (the Crossroads truce)', () => {
     const player = makeNakedPlayer({ x: 10, y: 10 });
     scenePlayers.length = 0;

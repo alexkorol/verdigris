@@ -8,7 +8,10 @@ import {
   PLAYER_SPRITE_CONFIG,
 } from '../config/animation.js';
 import { centerOfTile } from '../utilities/movement-controller.js';
-import PerspectiveCamera from './perspective-camera.js';
+import PerspectiveCamera, {
+  ARPG_CAMERA_PRESET,
+  MAX_USER_ZOOM,
+} from './perspective-camera.js';
 import TerrainRenderer from './terrain-renderer.js';
 import LightingRenderer, { getNightFactor, sampleAmbient } from './lighting-renderer.js';
 import AtmosphereRenderer from './atmosphere-renderer.js';
@@ -54,7 +57,7 @@ class PerspectiveRenderer {
     });
     this.lightingRenderer = new LightingRenderer();
     this.atmosphereRenderer = new AtmosphereRenderer();
-    this.userZoom = 1;
+    this.userZoom = ARPG_CAMERA_PRESET.baseUserZoom;
     this.pinchDistance = 0;
     this.pinchZoom = 1;
     this.handleWheel = this.handleWheel.bind(this);
@@ -355,9 +358,12 @@ class PerspectiveRenderer {
     }
 
     ctx.imageSmoothingEnabled = false;
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.72)';
-    ctx.shadowBlur = Math.max(2, point.scale * 5);
-    ctx.shadowOffsetY = Math.max(1, point.scale * 2);
+    // Keep pixel-art billboards crisp. Grounded foot ellipses provide the
+    // contact shadow; a per-sprite shadowBlur softens every source frame.
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
     ctx.drawImage(
       sheet.image,
       sourceX,
@@ -493,9 +499,13 @@ class PerspectiveRenderer {
     } else {
       ctx.imageSmoothingEnabled = false;
     }
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.82)';
-    ctx.shadowBlur = Math.max(2, projected.scale * 4);
-    ctx.shadowOffsetY = Math.max(1, projected.scale * 2);
+    // The flat foot ellipse is the billboard's contact shadow. Avoid a
+    // shadow filter on the sprite itself so nearest-neighbour pixels stay
+    // readable at the ARPG default.
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
     ctx.drawImage(
       image,
       sourceX,
@@ -1243,7 +1253,7 @@ class PerspectiveRenderer {
   }
 
   setUserZoom(value) {
-    this.userZoom = clamp(value, 0.72, 1.6);
+    this.userZoom = clamp(value, 0.72, MAX_USER_ZOOM);
   }
 
   handleWheel(event) {

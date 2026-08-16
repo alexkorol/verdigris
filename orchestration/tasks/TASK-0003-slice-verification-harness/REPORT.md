@@ -1,0 +1,101 @@
+---
+task: TASK-0003
+state: INTEGRATED
+branch: codex/TASK-0003-slice-verification-harness
+commits:
+  - 278f7dd
+  - e25336d
+base_commit: 0e02aa7
+spec_base_commit: f5b4b72
+---
+
+## Executive summary
+
+The Founding of a House prototype now has a self-contained one-command
+Playwright gate. It rebuilds into a temporary copy, rejects committed-output
+drift without overwriting `index.html`, serves the slice from an ephemeral
+HTTP port, checks load cleanliness, drives all three founding directions, and
+proves the full death/relic/successor/founding arc.
+
+## Implementation
+
+- Added `run-checks.mjs` with temporary build freshness comparison, HTTP
+  serving, Playwright launch, and pass/fail summary.
+- Added `tests/slice-checks.mjs` covering load, direction stats, full loop, and
+  persistence/console behavior through the existing `window.__V` surface.
+- Kept all edits inside the task-owned prototype harness paths.
+
+## Changed files
+
+- `prototypes/founding-slice/run-checks.mjs`
+- `prototypes/founding-slice/tests/slice-checks.mjs`
+- `prototypes/founding-slice/tests/REPORT.md`
+
+## Interfaces
+
+- New command: `node prototypes/founding-slice/run-checks.mjs`.
+- No game or shared repository configuration changes.
+
+## Verification
+
+```text
+PASS  build freshness / drift guard
+PASS  load: boot with no console errors
+PASS  fresh-house arc: all three directions have distinct stats
+PASS  full loop: equip → crisis → LMB combat → clear → death/relic → successor → founding
+
+4/4 checks passed in 18.2s
+```
+
+ESLint also passed. A deliberate scratch-copy drift probe failed as expected
+with `NEGATIVE PASS: deliberate scratch index drift detected`; the committed
+`index.html` remained unchanged.
+
+## Manual checks
+
+- Worktree was clean after commit.
+- No dependencies were added.
+- No production slice HTML, assets, build script, native code, or shared test
+  configuration was changed.
+
+## Specification deviations
+
+None reported.
+
+## Risks and limitations
+
+The harness depends on the repository's installed Playwright/Chromium
+environment and the current `window.__V` debug surface. It intentionally does
+not add CI wiring or visual-regression assertions.
+
+## Questions and follow-up
+
+No owner decision is required. A future CI task may call this command without
+changing the harness contract.
+
+## Revision 1
+
+Validator findings required a portable root-containment guard and removal of
+the stale hardcoded worker SHA from the embedded prototype report. Commit
+`e25336d` replaces the Windows-only prefix check with `relative()` plus
+absolute/parent traversal rejection and removes the stale SHA.
+
+Revision verification:
+
+- `node prototypes/founding-slice/run-checks.mjs`: 4/4 checks passed in 18.1s.
+- ESLint passed for both harness files.
+- Root/index is allowed and `../escape` plus absolute paths are rejected under
+  POSIX and Windows path models.
+- Deliberate scratch index drift fails while committed `index.html` remains
+  untouched.
+
+Independent validator verdict: **ACCEPT**. The validator reran the harness and
+ESLint, confirmed the POSIX/Windows containment matrix, verified the negative
+drift probe preserves the committed artifact, and found no scope violations.
+
+## Integration notes
+
+Architect review was **ACCEPTED**. The final revision was integrated locally as
+`8517bf5` plus `403e3a3`; the missing parent test file was preserved during
+integration. The worker/validator harness gate remains the authoritative
+Playwright evidence.

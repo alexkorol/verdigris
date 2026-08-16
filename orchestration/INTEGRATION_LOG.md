@@ -1,0 +1,48 @@
+# Integration log
+
+Codex-coordinator-owned. Append one entry per integrated task:
+date, task id, commits, verification run, notes.
+
+(empty)
+
+2026-08-16 — TASK-0001-native-legends-records — worker `7ed844d8d5a9a6fb2f5a2d2ee9428c10b1cf7fad`; integrated as `5487778`. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` (native denylist, core tests, and client shell PASS). Independent validator `/root/validate_task_0001` ACCEPT; architect review ACCEPTED. Notes: bounded deterministic Legends records integrated in native core.
+
+2026-08-16 — TASK-0003-slice-verification-harness — worker `e25336d`; integrated as `8517bf5` plus `403e3a3` (the final revision files and missing parent test file were preserved). Verification: worker/validator harness 4/4, ESLint, portable containment matrix, and negative drift probe PASS; main native gate PASS. Independent validator `/root/validate_task_0003` ACCEPT; architect review ACCEPTED. Notes: one-command founding-slice verification harness integrated.
+
+2026-08-16 — TASK-0005-legacy-archaeology-audit — worker `ff2ea30f0cb95003a61a0b3d1494abd7ec1a3fe6`; integrated as `70c234f` after resolving the expected report-only add/add overlap by preserving the worker's full 382-line evidence report. Independent validator `/root/validate_task_0005` ACCEPT; architect review ACCEPTED. Notes: read-only legacy inventory/provenance/data/denylist audit is now the standing evidence base.
+
+2026-08-16 — TASK-0002-build-ci-hardening — worker revisions `659b880`, `44a20b2`, `f9c979b`; integrated as `ddd7198`, `8bf4ee5`, `5ed0739`. Independent validator `/root/validate_task_0002_rev3` ACCEPT; architect review ACCEPTED. Verification: full native gate plus bundled CMake preset configure/build/CTest under initialized x64 MSVC. Notes: version-neutral NMake preset and CI MSVC setup are now integrated.
+
+2026-08-16 — TASK-0006-native-relic-reentry — worker `f542a04f83d0e78896edd19635f8353c207b6fe3`; integrated as `269c174`. Independent validator `/root/validate_task_0006` ACCEPT; architect review ACCEPTED. Verification: full native gate and direct core test pass. Notes: deterministic relic resurfacing/re-entry loop integrated.
+
+2026-08-16 — TASK-0004-native-client-direct-control — worker `7ac51d4`; integrated as `6396a0e`. Independent validator `/root/validate_task_0004` ACCEPT; architect review ACCEPTED. Verification: full native gate and driven-input Win32 pass. Notes: D-007 direct-control contract integrated after build/core foundation.
+
+2026-08-16 — TASK-0007-native-skill-actions — worker `e7505ad`; integrated as `a832b2b`. Independent validator `/root/validate_task_0007` ACCEPT; architect review ACCEPTED. Verification: full native `-RunTests -RunClient` gate PASS. Notes: deterministic Thrust/Sweep/WarCry actions and resource economy integrated.
+
+2026-08-16 — TASK-0008-denylist-hardening — worker `56ac8f0`; integrated as `e7c6d28`. Independent validator `/root/validate_task_0008` ACCEPT; architect review ACCEPTED. Verification: baseline/production checker PASS, self-test PASS, negative fixture exit 1 as intended, full native gate PASS. Notes: native legacy firewall hardened with audit-backed normalization and extension coverage.
+
+2026-08-16 — TASK-0009-client-skill-bindings — worker `629a1c0`; integrated in the dedicated integration worktree as `fe3173b` and preserved on the program branch as `0434ebb`. Independent validator `/root/validate_task_0009` ACCEPT; architect review `6ade261` ACCEPTED. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` (denylist, core tests, and client shell PASS); `git diff --check` PASS. Notes: Q/E/R now dispatch the authoritative Thrust/Sweep/WarCry actions with HUD resource/cooldown/buff state and procedural skill effects.
+
+2026-08-16 — TASK-0010-native-actor-facing — worker `7e066aa`; integrated in the dedicated wave-6 integration worktree as `d6e48f4`. Independent validator `/root/validate_task_0010` ACCEPT; architect review `deb8ced` ACCEPTED. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` (denylist, core tests, and client shell PASS); `git diff --check` PASS. Notes: integer 8-way simulation-owned facing, appended AimIntent, forward-half-plane Thrust, monster pursuit facing, and quantized/throttled mouse aim are integrated.
+
+2026-08-16 — TASK-0011-monster-skill-ai — worker `8c68aed`; integrated in the dedicated wave-7 integration worktree as `b6d8796` and preserved on the program branch as `c733945`. Independent validator `/root/validate_task_0011` ACCEPT; architect review `4ffbad0` ACCEPTED. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` (denylist, core tests, and client shell PASS); `git diff --check` PASS. Notes: elite monsters now use deterministic telegraphed Thrust/Sweep actions through the shared resolver with cancellation and non-elite cadence preservation.
+
+2026-08-16 — TASK-0012-slice-camera-evidence — worker revision `e24825d` (source commits `2e2d104`/`e24825d`); integrated after architect review `78b46e8` ACCEPTED. Independent validator `/root/validate_task_0012` ACCEPT. Verification: nine progressive JPEGs at 1200×800, 131–172KB each; all links, visual telegraph/loot checks, and task-folder scope proof pass. Notes: D-102 remains provisional; evidence is ready for owner review.
+
+2026-08-16 — TASK-0013-client-telegraph-rendering — worker `c2d62c3`; architect review `5cc9eaa` ACCEPTED; integrated in dedicated wave-8 worktree as `9ccb494` and preserved on the program branch as `cbdc85e`. Independent validator `/root/validate_task_0013` ACCEPT. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` (denylist, core tests, headless output, and Win32 client build PASS); `git diff --check` PASS. Notes: simulation telegraphs now render end to end in the native client; approximate private ranges remain explicitly presentation-only and are a future snapshot/query seam watch item.
+
+2026-08-16 — TASK-0014-smoke-browser-repair — worker `b068964`; architect review `11a5325` ACCEPTED; integrated as `b068964`. Verification: `npm run smoke:browser` (1 passed, port 6500 released); `npm run test:e2e` (3 passed, port 6500 released); `git diff --check` PASS. Notes: D-105 lifecycle repair closes QUESTION-0003; the documented smoke gate now boots and tears down its server.
+
+2026-08-16 — TASK-0015-core-presentation-catalog — worker `76ff52d`; architect review `2af6b2d` ACCEPTED; integrated as `76ff52d`. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests` (denylist and core tests PASS); `git diff --check` PASS; single-definition audit PASS. Notes: read-only presentation costs, ranges, telegraph timing, War Cry metadata, and resource regeneration now come from one native catalog source.
+
+2026-08-16 — TASK-0016-native-billboard-experiment — worker `6d1b7d6`; architect review `42fd837` ACCEPTED; integrated on the program tip. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` PASS; driven billboard/fallback captures independently verified by the architect. Notes: runtime keyed plates and capsule fallback are now part of the native client lab.
+
+2026-08-16 — TASK-0018-death-recoverability — worker `37ab720`; architect review `42fd837` ACCEPTED; integrated on the program tip. Verification: native tests and D-106 deterministic recovery tests PASS. Notes: all carried items and trophies remain recoverable without durable House banking.
+
+2026-08-16 — TASK-0019-browser-25d-survey — Kimi worker `832b7f3`; architect review `42fd837` ACCEPTED; integrated via merge `ee21032`. Verification: survey plan covers the reference architecture, conformance gaps, elevation decision, phase forecast, and renderer toggle. Notes: `docs/25d-overhaul-plan.md` now governs the browser renderer track.
+
+2026-08-16 — TASK-0021-slice-arpg-camera-default — worker `d079e70`; architect review `42fd837` ACCEPTED; integrated on the program tip. Verification: `node prototypes/founding-slice/run-checks.mjs` PASS (4/4 including drift guard). Notes: D-107 ARPG defaults and reversible Miniature wheel blend are realized in the slice.
+
+2026-08-16 — TASK-0020-browser-disconnect-safety — revision `174d769` (source implementation `e5d87a5`); architect review `0c69920` ACCEPTED; integrated on the program tip as `b035b56`. Verification: full unit 744/744 and playtest 31/31. Notes: disconnect teardown now removes by player identity after persistence, preventing an old socket from deleting a replacement session during zone transitions.
+
+2026-08-16 — TASK-0022-browser-25d-phase1 — revision `907024e` (source implementation `c17963b`); architect review `5efc48e` ACCEPTED; integrated as `705b6c3`, with required capture relocation finalized in `4533bc4`. Verification: `npm run test:unit` (115 files/744 tests), clean disposable `npm run playtest` (31/31), `npm run smoke:browser` (1/1), CSS/ESLint/diff checks PASS. Notes: ARPG camera/focus conformance, zero DoF at/below base zoom, neutral terrain fetch with lighting-pass grading, scoped legacy CSS grade, and flat foot/contact shadows; evidence lives in `orchestration/tasks/TASK-0022-browser-25d-phase1/captures/`.

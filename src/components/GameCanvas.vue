@@ -27,7 +27,7 @@
       id="game-map"
       tabindex="0"
       aria-label="Game world"
-      class="main-canvas gameMap"
+      :class="['main-canvas', 'gameMap', { 'legacy-renderer': rendererMode === 'legacy' }]"
       :height="canvasDimensions.height"
       :width="canvasDimensions.width"
       @mouseenter="onGame = true"
@@ -74,7 +74,7 @@ export default {
       tileY: 0,
       event: false,
       inputController: null,
-      rendererMode: 'perspective',
+      rendererMode: (this.game && this.game.map && this.game.map.rendererMode) || 'perspective',
       aimDirection: null,
     };
   },
@@ -630,14 +630,14 @@ div.game {
       radial-gradient(circle at 50% 55%, #172018 0%, #080b09 68%, #030403 100%);
     outline: none;
     cursor: pointer;
-
-    /* The source tiles were authored for a brighter top-down presentation.
-       Perspective resampling plus multiply lighting otherwise crushes their
-       midtones into the same green-brown band. Keep silhouettes crisp while
-       easing saturation and lifting the playable world, not the HUD chrome. */
-    filter: brightness(1.12) contrast(1.08) saturate(0.9);
     image-rendering: pixelated;
     display: block;
+
+    // The perspective pipeline now grades terrain in its lighting pass. Keep
+    // the historical correction available only for the legacy fallback.
+    &.legacy-renderer {
+      filter: brightness(1.12) contrast(1.08) saturate(0.9);
+    }
   }
 
   .first-action {

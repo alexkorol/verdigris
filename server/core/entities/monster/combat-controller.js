@@ -34,6 +34,7 @@ const isTargetablePlayer = (player, now = Date.now()) => {
   return Boolean(
     health
     && health.current > 0
+    && !player.disconnecting
     && (lifecycleState === 'alive' || lifecycleState === 'cheat-death')
     && protectedUntil <= now
     && !insideEntryWard

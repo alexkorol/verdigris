@@ -1,0 +1,47 @@
+name: Native
+
+on:
+  push:
+    paths:
+      - "native/**"
+  pull_request:
+    paths:
+      - "native/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: native
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # CMake schema v2 requires an explicit generator.  The preset uses the
+      # VS-version-neutral NMake generator; this action supplies cl/nmake and
+      # the installed Visual Studio environment on windows-latest.
+      - name: Set up MSVC developer environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Configure native workspace
+        run: cmake --preset windows-msvc
+
+      - name: Build native workspace
+        run: cmake --build --preset windows-msvc
+
+      - name: Run native tests
+        run: ctest --preset windows-msvc
+
+      - name: Check legacy denylist
+        run: python tools/check_legacy_denylist.py

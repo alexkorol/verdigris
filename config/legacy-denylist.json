@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "scope": "new native production code",
+  "identifiers": [
+    "anvil",
+    "barrow depths",
+    "bronze bar",
+    "bronze dagger",
+    "bronze pickaxe",
+    "bronze_dagger",
+    "cooking",
+    "defence",
+    "Delaford",
+    "fenmire",
+    "fishing",
+    "hammer",
+    "legacy mode",
+    "legacy relic id",
+    "legacy tile",
+    "mining",
+    "old wood",
+    "ore",
+    "pickaxe",
+    "smith",
+    "smithing",
+    "starting coins",
+    "starting_coins",
+    "woodcutting"
+  ],
+  "category_notes": {
+    "legacy starter and retired equipment": "bronze dagger, bronze pickaxe, bronze bar, pickaxe, ore, and starting coins are legacy starter/resource vocabulary documented in TASK-0005 §4.",
+    "legacy professions and actions": "anvil, smith, hammer, woodcutting, fishing, cooking, mining, and smithing are retired legacy action/catalogue vocabulary; crafting is intentionally not denied because the audit marks the active House crafting seam as mixed.",
+    "legacy world identifiers": "old wood, fenmire, and barrow depths are Delaford-derived world identifiers documented in TASK-0005 §4.",
+    "legacy schema identifiers": "defence, legacy relic id, legacy tile, and legacy mode are legacy schema names documented in TASK-0005 §4."
+  },
+  "allowlist": [],
+  "exemptions": [
+    "docs/",
+    "src/",
+    "tests/",
+    "native/tests/",
+    "native/tools/check_legacy_denylist.py"
+  ],
+  "note": "Historical browser material may mention denied identifiers. New native production code must use explicit product terminology instead."
+}
