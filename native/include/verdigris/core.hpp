@@ -319,6 +319,7 @@ class Simulation {
   void resolve_equip(const std::string& item_id);
   void resolve_enter(const std::string& route_id);
   void resolve_extract();
+  void retire_instance();
   void advance_tick();
   void enemy_turn();
   void spawn_enemy();
@@ -340,6 +341,15 @@ class Simulation {
   InstanceState instance_;
   std::vector<Item> ground_items_;
   std::vector<Trophy> ground_trophies_;
+  // A surfaced recovery candidate remains recoverable across an instance
+  // retirement. It is reattached to the next active instance, while ordinary
+  // floor drops are discarded.
+  std::vector<Item> pending_relic_items_;
+  std::vector<Trophy> pending_relic_trophies_;
+  // Trophy IDs currently borrowed from House recovery. They return to that
+  // pool if the active instance retires before pickup; ordinary floor drops
+  // remain lost on retirement.
+  std::vector<std::string> resurfaced_trophy_ids_;
   std::vector<Event> events_;
   SeasonalMechanic* seasonal_mechanic_ = nullptr;
   std::uint64_t tick_ = 0;

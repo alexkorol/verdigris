@@ -788,6 +788,127 @@ void test_presentation_catalog_is_authoritative_and_stable() {
         "catalogued War Cry bonus and duration match applied state");
 }
 
+void test_instance_lifecycle_rejects_stale_pickups() {
+  Simulation extracted(0x2501ULL);
+  extracted.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(extracted);
+  const std::string extracted_item = extracted.ground_items().front().id;
+  const std::string extracted_trophy = extracted.ground_trophies().front().id;
+  extract_from_start(extracted);
+  check(!extracted.instance().active && extracted.ground_items().empty() &&
+            extracted.ground_trophies().empty(),
+        "extraction retires all uncollected floor value");
+  const int pickup_events_before = count_events(extracted, EventType::ItemPickedUp) +
+                                   count_events(extracted, EventType::TrophyPickedUp);
+  extracted.dispatch(Command::pick_up(extracted_item));
+  extracted.dispatch(Command::pick_up(extracted_trophy));
+  check(extracted.scion().carried_items.empty() && extracted.scion().carried_trophies.empty() &&
+            count_events(extracted, EventType::ItemPickedUp) +
+                    count_events(extracted, EventType::TrophyPickedUp) ==
+                pickup_events_before,
+        "post-extraction pickup is rejected at the inactive-instance boundary");
+
+  Simulation cross_route(0x2502ULL);
+  cross_route.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(cross_route);
+  const std::string stale_item = cross_route.ground_items().front().id;
+  cross_route.dispatch(Command::enter("route:tin:2:0"));
+  cross_route.dispatch(Command::pick_up(stale_item));
+  check(cross_route.instance().route_id == "route:tin:2:0" &&
+            cross_route.scion().carried_items.empty(),
+        "cross-route stale pickup is rejected after the previous instance retires");
+
+  Simulation reentry(0x2503ULL);
+  reentry.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(reentry);
+  const std::string leftover_item = reentry.ground_items().front().id;
+  const std::string leftover_trophy = reentry.ground_trophies().front().id;
+  reentry.dispatch(Command::enter("route:tin:1:0"));
+  check(reentry.ground_items().empty() && reentry.ground_trophies().empty() &&
+            std::find(reentry.instance().ground_item_ids.begin(),
+                      reentry.instance().ground_item_ids.end(), leftover_item) ==
+                reentry.instance().ground_item_ids.end() &&
+            std::find(reentry.instance().ground_trophy_ids.begin(),
+                      reentry.instance().ground_trophy_ids.end(), leftover_trophy) ==
+                reentry.instance().ground_trophy_ids.end(),
+        "leftover floor value does not survive same-route re-entry");
+  reentry.dispatch(Command::pick_up(leftover_item));
+  reentry.dispatch(Command::pick_up(leftover_trophy));
+  check(reentry.scion().carried_items.empty() && reentry.scion().carried_trophies.empty(),
+        "retired floor IDs cannot be picked up after re-entry");
+}
+
+void test_death_retires_floor_without_double_registering_relics() {
+  Simulation sim(0x2504ULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(sim);
+  const std::string item_id = sim.ground_items().front().id;
+  const std::string floor_trophy_id = sim.ground_trophies().front().id;
+  sim.dispatch(Command::pick_up(item_id));
+  sim.dispatch(Command::interact("hazard:death"));
+  check(!sim.instance().active && sim.ground_items().empty() && sim.ground_trophies().empty(),
+        "death retires uncollected floor value");
+  check(sim.house().relic_candidates.size() == 1 &&
+            sim.house().relic_candidates.front().id == item_id,
+        "carried death value registers in the relic pool exactly once");
+  bool floor_trophy_present = false;
+  for (const auto& trophy : sim.ground_trophies()) {
+    if (trophy.id == floor_trophy_id) floor_trophy_present = true;
+  }
+  check(sim.house().lost_trophies.empty() && !floor_trophy_present,
+        "floor trophies are lost without being mistaken for carried death value");
+}
+
+void test_pack_clear_waits_for_the_last_monster() {
+  auto prepare = [](Simulation& sim) {
+    sim.dispatch(Command::enter("route:tin:1:0"));
+    Actor* player = sim.actor(sim.scion().actor_id);
+    Actor* first = first_monster(sim);
+    check(player && first, "pack setup has a player and initial monster");
+    player->position = {0, 0};
+    player->stats.life = player->stats.life_max;
+    first->position = {500, 0};
+    first->stats.life = 1;
+    const std::string first_id = first->id;
+    const std::string second_id = sim.spawn_monster({700, 0});
+    Actor* second = sim.actor(second_id);
+    check(second != nullptr, "pack setup adds a second monster");
+    second->stats.life = 1;
+    return std::pair<std::string, std::string>{first_id, second_id};
+  };
+
+  Simulation first(0x2505ULL);
+  const auto ids = prepare(first);
+  first.dispatch(Command::action_use(ActionType::Melee));
+  check(!first.actor(ids.first)->alive && first.actor(ids.second)->alive,
+        "first pack kill leaves the second monster alive");
+  check(!first.house().route_cleared("route:tin:1:0") &&
+            !first.house().route_unlocked("route:tin:2:0") &&
+            !first.house().campaign_complete,
+        "first pack kill does not clear the route or campaign");
+  first.actor(first.scion().actor_id)->cooldown_ticks = 0;
+  first.dispatch(Command::action_use(ActionType::Melee));
+  check(!first.actor(ids.second)->alive && first.house().route_cleared("route:tin:1:0") &&
+            first.house().route_unlocked("route:tin:2:0") && first.house().campaign_complete,
+        "last pack kill clears the route and completes campaign progression");
+  check(count_events(first, EventType::ItemDropped) == 2 &&
+            count_events(first, EventType::TrophyDropped) == 2,
+        "pack rewards remain per-kill after delayed route clear");
+
+  Simulation second(0x2505ULL);
+  const auto replay_ids = prepare(second);
+  second.dispatch(Command::action_use(ActionType::Melee));
+  second.actor(second.scion().actor_id)->cooldown_ticks = 0;
+  second.dispatch(Command::action_use(ActionType::Melee));
+  check(replay_ids == ids && relevant(first) == relevant(second) &&
+            first.house().cleared_routes == second.house().cleared_routes &&
+            first.ground_items().size() == second.ground_items().size() &&
+            first.ground_trophies().size() == second.ground_trophies().size() &&
+            first.ground_items().front().id == second.ground_items().front().id &&
+            first.ground_trophies().front().id == second.ground_trophies().front().id,
+        "pack lifecycle and delayed clear remain deterministic under replay");
+}
+
 void test_extraction() {
   Simulation sim(11);
   sim.dispatch(Command::enter("route:tin:1:0"));
@@ -1077,6 +1198,9 @@ int main() {
   test_non_elite_melee_cadence_is_unchanged();
   test_war_cry_buff_expiry_and_replay_determinism();
   test_presentation_catalog_is_authoritative_and_stable();
+  test_instance_lifecycle_rejects_stale_pickups();
+  test_death_retires_floor_without_double_registering_relics();
+  test_pack_clear_waits_for_the_last_monster();
   test_extraction();
   test_death_and_successor();
   test_d106_all_carried_value_is_recoverable();
