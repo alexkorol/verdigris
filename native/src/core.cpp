@@ -477,12 +477,60 @@ void Simulation::enemy_turn() {
   if (!player || !player->alive || !scion_.alive) return;
   for (auto& enemy : actors_) {
     if (enemy.kind != ActorKind::Monster || !enemy.alive) continue;
+
+    // A scheduled elite skill owns the monster's turn until its windup
+    // expires.  The target is the current player actor; if either side died
+    // during the windup, discard the action rather than striking a corpse.
+    if (enemy.pending_action != ActionType::Wait) {
+      if (!player->alive || !scion_.alive) {
+        enemy.pending_action = ActionType::Wait;
+        enemy.pending_action_ticks = 0;
+        continue;
+      }
+      if (enemy.pending_action_ticks > 0) --enemy.pending_action_ticks;
+      if (enemy.pending_action_ticks == 0) {
+        const ActionType pending_action = enemy.pending_action;
+        enemy.pending_action = ActionType::Wait;
+        resolve_actor_action(enemy, pending_action);
+      }
+      if (!player->alive || !scion_.alive) return;
+      continue;
+    }
+
     const Vec2 pursuit{player->position.x - enemy.position.x,
                        player->position.y - enemy.position.y};
     const Vec2 direction = quantize_direction(pursuit.x, pursuit.y);
     if (direction.x != 0 || direction.y != 0) enemy.facing = direction;
     if (enemy.cooldown_ticks > 0) continue;
-    if (manhattan_distance(enemy.position, player->position) > kMeleeRange) continue;
+
+    const int distance = manhattan_distance(enemy.position, player->position);
+    if (enemy.elite) {
+      const Vec2 delta{player->position.x - enemy.position.x,
+                       player->position.y - enemy.position.y};
+      // Thrust is selected by the same deterministic cone predicate that the
+      // shared resolver uses.  Resource/cooldown gates are deliberately
+      // checked again by resolve_actor_action at the end of the windup.
+      // Keep the skill bands deterministic and reachable: at close melee
+      // distance Sweep is the elite's area response, while Thrust is chosen
+      // from the forward cone in the longer thrust-only band.
+      if (distance > kMeleeRange && distance <= kThrustRange &&
+          is_forward(enemy.facing, delta)) {
+        enemy.pending_action = ActionType::Thrust;
+        enemy.pending_action_ticks = kTelegraphTicks;
+        emit(EventType::AttackTelegraphed, enemy.id, {}, {}, "thrust", kTelegraphTicks);
+        continue;
+      }
+      if (distance <= kMeleeRange && enemy.stats.resource >= kSweepResourceCost) {
+        enemy.pending_action = ActionType::Sweep;
+        enemy.pending_action_ticks = kTelegraphTicks;
+        emit(EventType::AttackTelegraphed, enemy.id, {}, {}, "sweep", kTelegraphTicks);
+        continue;
+      }
+    }
+
+    // Plain melee remains the original non-elite cadence.  Elite monsters
+    // also use it when they are in melee range but cannot fund Sweep.
+    if (distance > kMeleeRange) continue;
     enemy.cooldown_ticks = enemy.stats.attack_speed_ticks;
     const int damage = resolve_damage(enemy, *player);
     player->stats.life = std::max(0, player->stats.life - damage);
@@ -567,6 +615,18 @@ void Simulation::clear_route_and_unlock_children() {
 
 void Simulation::handle_death(Actor& actor_value, const std::string& killer_id) {
   actor_value.alive = false;
+  actor_value.pending_action = ActionType::Wait;
+  actor_value.pending_action_ticks = 0;
+  if (actor_value.kind == ActorKind::Player) {
+    // All elite windups target the current player.  Death cancels every
+    // scheduled strike before the next enemy turn can resolve it.
+    for (auto& candidate : actors_) {
+      if (candidate.kind == ActorKind::Monster) {
+        candidate.pending_action = ActionType::Wait;
+        candidate.pending_action_ticks = 0;
+      }
+    }
+  }
   if (actor_value.kind == ActorKind::Monster) {
     emit(EventType::ActorDied, actor_value.id, {}, {}, "monster");
     const Actor* player = actor(scion_.actor_id);
