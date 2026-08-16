@@ -1,5 +1,25 @@
 # Native reconstitution handoff
 
+## 2026-08-15 (later) — Milestone E first visual pass and a build fix
+
+- Fixed a real Milestone D defect: `build.ps1` never defined
+  `VERDIGRIS_NATIVE_WINDOWS`, so the "windowed" client silently compiled the
+  console fallback and exited immediately. The define is now passed, the entry
+  point is a standard `main()` (console subsystem keeps `--headless` stdout
+  working), and `NOMINMAX` protects the std algorithms.
+- `native/client/main.cpp` now carries the Milestone E visual foundation:
+  an adjustable 2.5D camera (wheel zoom, PgUp/PgDn pitch, -/= perspective,
+  Home reset), back-to-front depth sorting, contact shadows, a projected
+  ground grid and extraction pad, billboard actors with enemy life bars,
+  client-side loot scatter around kill sites, and procedural event-driven
+  effects (swing arcs, impact flashes, death rings, dust, loot sparkles),
+  all double-buffered.
+- Verified end to end on Windows: MSVC build clean, the eleven core tests and
+  the legacy denylist gate pass, `--headless` completes the extraction loop,
+  and a driven input pass (PostMessage WASD/LMB/P/E/X against the live window,
+  PrintWindow captures) shows the fight, drops, route unlocks, and extraction
+  rendering correctly.
+
 ## 2026-08-15 — Milestones A–D first runnable slice
 
 - Repository was synchronized to `origin/master` (`882dd81`) and work moved to

@@ -34,7 +34,7 @@ function Invoke-Msvc([string]$arguments) {
 Invoke-Msvc ('/c "' + $coreSources[0] + '" /Fo"' + $coreObject + '"')
 Invoke-Msvc ('/c "' + $coreSources[1] + '" /Fo"' + $seasonalObject + '"')
 Invoke-Msvc ('/c "' + $nativeRoot + '\tests\core_tests.cpp" /Fo"' + $buildRoot + '\tests.obj"')
-Invoke-Msvc ('/c "' + $nativeRoot + '\client\main.cpp" /Fo"' + $buildRoot + '\client.obj"')
+Invoke-Msvc ('/c "' + $nativeRoot + '\client\main.cpp" /DVERDIGRIS_NATIVE_WINDOWS=1 /Fo"' + $buildRoot + '\client.obj"')
 Invoke-Msvc ('"' + $buildRoot + '\tests.obj" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $testExe + '"')
 Invoke-Msvc ('"' + $buildRoot + '\client.obj" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $clientExe + '" /link user32.lib gdi32.lib')
 

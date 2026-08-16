@@ -1,16 +1,58 @@
+#include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <cstring>
 #include <iostream>
 #include <memory>
 #include <string>
-#include <cstring>
+#include <unordered_map>
+#include <vector>
 
 #include "verdigris/core.hpp"
 #include "verdigris/seasonal.hpp"
 
 #ifdef VERDIGRIS_NATIVE_WINDOWS
 #define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 #include <windows.h>
+#include <windowsx.h>
 
 namespace {
+
+constexpr double kPi = 3.14159265358979323846;
+constexpr double kTileUnits = 100.0;  // one move command covers 100 world units
+
+// Adjustable 2.5D camera: pitch foreshortens the ground plane, zoom scales
+// world units to pixels, and perspective grows near rows / shrinks far rows.
+struct Camera {
+  double x = 0.0;
+  double y = 0.0;
+  double zoom = 0.5;          // pixels per world unit
+  double pitch_deg = 55.0;    // 90 = top-down, lower = flatter horizon
+  double perspective = 0.00035;  // depth scale per world unit toward the viewer
+
+  double ground_squash() const { return std::cos(pitch_deg * kPi / 180.0); }
+  double depth_scale(double rel_y) const {
+    return std::clamp(1.0 + rel_y * perspective, 0.65, 1.55);
+  }
+};
+
+struct ScreenPoint {
+  int x = 0;
+  int y = 0;
+  double scale = 1.0;
+};
+
+struct EffectFx {
+  enum class Kind { Swing, Impact, DeathRing, Dust, Sparkle };
+  Kind kind = Kind::Impact;
+  double wx = 0.0;
+  double wy = 0.0;
+  double angle = 0.0;
+  int age = 0;
+  int ttl = 8;
+};
+
 struct ClientState {
   std::unique_ptr<verdigris::Simulation> simulation;
   bool w = false;
@@ -18,22 +60,425 @@ struct ClientState {
   bool s = false;
   bool d = false;
   POINT mouse{0, 0};
+  Camera camera;
+  std::vector<EffectFx> effects;
+  std::unordered_map<std::string, verdigris::Vec2> loot_positions;
+  verdigris::Vec2 last_death_pos{0, 0};
+  std::size_t processed_events = 0;
+  std::vector<std::string> event_log;
+  int loot_scatter = 0;
 };
 
 ClientState* state_from(HWND window) {
   return reinterpret_cast<ClientState*>(GetWindowLongPtr(window, GWLP_USERDATA));
 }
 
-void status_text(const ClientState& state, char* buffer, std::size_t size) {
+COLORREF fade_to_background(COLORREF color, double remaining) {
+  const double t = std::clamp(remaining, 0.0, 1.0);
+  const int bg_r = 23;
+  const int bg_g = 29;
+  const int bg_b = 32;
+  return RGB(static_cast<int>(bg_r + (GetRValue(color) - bg_r) * t),
+             static_cast<int>(bg_g + (GetGValue(color) - bg_g) * t),
+             static_cast<int>(bg_b + (GetBValue(color) - bg_b) * t));
+}
+
+ScreenPoint project(const Camera& camera, const RECT& bounds, double wx, double wy) {
+  const double rel_x = wx - camera.x;
+  const double rel_y = wy - camera.y;
+  const double depth = camera.depth_scale(rel_y);
+  ScreenPoint out;
+  out.x = bounds.right / 2 + static_cast<int>(rel_x * camera.zoom * depth);
+  out.y = bounds.bottom / 2 +
+          static_cast<int>(rel_y * camera.zoom * camera.ground_squash() * depth);
+  out.scale = camera.zoom * depth;
+  return out;
+}
+
+// Inverse of project() on the ground plane, good enough for mouse aim.
+void unproject(const Camera& camera, const RECT& bounds, int sx, int sy, double& wx,
+               double& wy) {
+  const double squash = std::max(0.08, camera.ground_squash());
+  double rel_y = (sy - bounds.bottom / 2) / (camera.zoom * squash);
+  rel_y = (sy - bounds.bottom / 2) / (camera.zoom * squash * camera.depth_scale(rel_y));
+  const double rel_x =
+      (sx - bounds.right / 2) / (camera.zoom * camera.depth_scale(rel_y));
+  wx = camera.x + rel_x;
+  wy = camera.y + rel_y;
+}
+
+void fill_ellipse(HDC dc, int cx, int cy, int rx, int ry, COLORREF color) {
+  HBRUSH brush = CreateSolidBrush(color);
+  HPEN pen = CreatePen(PS_SOLID, 1, color);
+  HGDIOBJ old_brush = SelectObject(dc, brush);
+  HGDIOBJ old_pen = SelectObject(dc, pen);
+  Ellipse(dc, cx - rx, cy - ry, cx + rx, cy + ry);
+  SelectObject(dc, old_brush);
+  SelectObject(dc, old_pen);
+  DeleteObject(brush);
+  DeleteObject(pen);
+}
+
+void ring_ellipse(HDC dc, int cx, int cy, int rx, int ry, COLORREF color, int width) {
+  HPEN pen = CreatePen(PS_SOLID, width, color);
+  HGDIOBJ old_pen = SelectObject(dc, pen);
+  HGDIOBJ old_brush = SelectObject(dc, GetStockObject(NULL_BRUSH));
+  Ellipse(dc, cx - rx, cy - ry, cx + rx, cy + ry);
+  SelectObject(dc, old_brush);
+  SelectObject(dc, old_pen);
+  DeleteObject(pen);
+}
+
+void draw_line(HDC dc, int x0, int y0, int x1, int y1, COLORREF color, int width) {
+  HPEN pen = CreatePen(PS_SOLID, width, color);
+  HGDIOBJ old_pen = SelectObject(dc, pen);
+  MoveToEx(dc, x0, y0, nullptr);
+  LineTo(dc, x1, y1);
+  SelectObject(dc, old_pen);
+  DeleteObject(pen);
+}
+
+void draw_contact_shadow(HDC dc, const Camera& camera, const ScreenPoint& base,
+                         double world_radius) {
+  const int rx = std::max(3, static_cast<int>(world_radius * base.scale));
+  const int ry = std::max(
+      2, static_cast<int>(world_radius * base.scale * camera.ground_squash() * 0.8));
+  fill_ellipse(dc, base.x, base.y, rx, ry, RGB(14, 18, 20));
+}
+
+// A billboard stands vertically on its ground point regardless of camera pitch.
+void draw_billboard(HDC dc, const ScreenPoint& base, double world_width,
+                    double world_height, COLORREF body, COLORREF trim) {
+  const int half_w = std::max(3, static_cast<int>(world_width * base.scale * 0.5));
+  const int height = std::max(6, static_cast<int>(world_height * base.scale));
+  RECT body_rect{base.x - half_w, base.y - height, base.x + half_w, base.y};
+  HBRUSH brush = CreateSolidBrush(body);
+  FillRect(dc, &body_rect, brush);
+  DeleteObject(brush);
+  const int head_r = std::max(2, half_w - 2);
+  fill_ellipse(dc, base.x, base.y - height, head_r, head_r, trim);
+}
+
+void draw_ground_grid(HDC dc, const Camera& camera, const RECT& bounds) {
+  const double range = 8.0 * kTileUnits;
+  const double start_x = std::floor((camera.x - range) / kTileUnits) * kTileUnits;
+  const double start_y = std::floor((camera.y - range) / kTileUnits) * kTileUnits;
+  for (double gx = start_x; gx <= camera.x + range; gx += kTileUnits) {
+    const ScreenPoint a = project(camera, bounds, gx, camera.y - range);
+    const ScreenPoint b = project(camera, bounds, gx, camera.y + range);
+    draw_line(dc, a.x, a.y, b.x, b.y, RGB(33, 41, 44), 1);
+  }
+  for (double gy = start_y; gy <= camera.y + range; gy += kTileUnits) {
+    const ScreenPoint a = project(camera, bounds, camera.x - range, gy);
+    const ScreenPoint b = project(camera, bounds, camera.x + range, gy);
+    draw_line(dc, a.x, a.y, b.x, b.y, RGB(33, 41, 44), 1);
+  }
+}
+
+void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectFx& fx) {
+  const ScreenPoint base = project(camera, bounds, fx.wx, fx.wy);
+  const double life = 1.0 - static_cast<double>(fx.age) / fx.ttl;
+  const double grow = static_cast<double>(fx.age) / fx.ttl;
+  switch (fx.kind) {
+    case EffectFx::Kind::Swing: {
+      // A readable melee arc sweeping toward the aim angle.
+      const int radius = static_cast<int>(kTileUnits * 1.1 * base.scale);
+      const COLORREF color = fade_to_background(RGB(226, 220, 180), life);
+      const double spread = kPi * 0.45;
+      const double sweep = fx.angle - spread * 0.5 + spread * grow;
+      for (int i = 0; i < 3; ++i) {
+        const double a = sweep - i * 0.12;
+        const int x1 = base.x + static_cast<int>(std::cos(a) * radius);
+        const int y1 = base.y - static_cast<int>(kTileUnits * 0.7 * base.scale) +
+                       static_cast<int>(std::sin(a) * radius * camera.ground_squash());
+        draw_line(dc, base.x,
+                  base.y - static_cast<int>(kTileUnits * 0.7 * base.scale), x1, y1,
+                  color, i == 0 ? 3 : 1);
+      }
+      break;
+    }
+    case EffectFx::Kind::Impact: {
+      const int r = std::max(4, static_cast<int>(kTileUnits * 0.35 * base.scale));
+      fill_ellipse(dc, base.x,
+                   base.y - static_cast<int>(kTileUnits * 0.7 * base.scale), r, r,
+                   fade_to_background(RGB(255, 214, 120), life));
+      break;
+    }
+    case EffectFx::Kind::DeathRing: {
+      const int rx = static_cast<int>(kTileUnits * (0.3 + grow * 1.5) * base.scale);
+      const int ry = static_cast<int>(rx * camera.ground_squash());
+      ring_ellipse(dc, base.x, base.y, rx, std::max(2, ry),
+                   fade_to_background(RGB(214, 118, 86), life), 2);
+      break;
+    }
+    case EffectFx::Kind::Dust: {
+      const COLORREF color = fade_to_background(RGB(126, 118, 98), life * 0.8);
+      for (int i = 0; i < 5; ++i) {
+        const double a = fx.angle + i * (2.0 * kPi / 5.0);
+        const double d = kTileUnits * (0.2 + grow * 0.9);
+        const ScreenPoint p = project(camera, bounds, fx.wx + std::cos(a) * d,
+                                      fx.wy + std::sin(a) * d);
+        const int r = std::max(2, static_cast<int>(kTileUnits * 0.12 * p.scale));
+        fill_ellipse(dc, p.x, p.y, r, r, color);
+      }
+      break;
+    }
+    case EffectFx::Kind::Sparkle: {
+      const double pulse = 0.6 + 0.4 * std::sin(fx.age * 0.9);
+      const int r = std::max(2, static_cast<int>(kTileUnits * 0.18 * base.scale * pulse));
+      const int lift = static_cast<int>(kTileUnits * 0.5 * base.scale);
+      const COLORREF color = fade_to_background(RGB(240, 214, 120), life);
+      draw_line(dc, base.x - r, base.y - lift, base.x + r, base.y - lift, color, 1);
+      draw_line(dc, base.x, base.y - lift - r, base.x, base.y - lift + r, color, 1);
+      break;
+    }
+  }
+}
+
+const char* event_label(verdigris::EventType type) {
+  using verdigris::EventType;
+  switch (type) {
+    case EventType::AttackStarted: return "attack";
+    case EventType::DamageApplied: return "damage";
+    case EventType::ActorDied: return "death";
+    case EventType::ItemDropped: return "item drop";
+    case EventType::TrophyDropped: return "trophy drop";
+    case EventType::ItemPickedUp: return "pickup";
+    case EventType::TrophyPickedUp: return "pickup";
+    case EventType::ItemEquipped: return "equip";
+    case EventType::ItemExtracted: return "extracted item";
+    case EventType::TrophyExtracted: return "extracted trophy";
+    case EventType::HouseStoreChanged: return "house store";
+    case EventType::RouteUnlocked: return "route unlocked";
+    case EventType::SeasonalRewardGranted: return "seasonal reward";
+    default: return nullptr;
+  }
+}
+
+double aim_angle(const ClientState& state, const RECT& bounds, double from_x,
+                 double from_y) {
+  double wx = from_x + kTileUnits;
+  double wy = from_y;
+  unproject(state.camera, bounds, state.mouse.x, state.mouse.y, wx, wy);
+  return std::atan2(wy - from_y, wx - from_x);
+}
+
+// Turn new simulation events into procedural presentation effects.
+void ingest_events(ClientState& state, const RECT& bounds) {
   const auto& sim = *state.simulation;
-  const auto* player = sim.actor(sim.scion().actor_id);
+  const auto& events = sim.events();
+  for (; state.processed_events < events.size(); ++state.processed_events) {
+    const auto& event = events[state.processed_events];
+    const verdigris::Actor* subject =
+        event.actor_id.empty() ? nullptr : sim.actor(event.actor_id);
+    const double ex = subject ? subject->position.x : state.last_death_pos.x;
+    const double ey = subject ? subject->position.y : state.last_death_pos.y;
+    switch (event.type) {
+      case verdigris::EventType::AttackStarted:
+        state.effects.push_back({EffectFx::Kind::Swing, ex, ey,
+                                 aim_angle(state, bounds, ex, ey), 0, 6});
+        break;
+      case verdigris::EventType::DamageApplied:
+        state.effects.push_back({EffectFx::Kind::Impact, ex, ey, 0.0, 0, 4});
+        break;
+      case verdigris::EventType::ActorDied:
+        if (subject) state.last_death_pos = subject->position;
+        state.effects.push_back({EffectFx::Kind::DeathRing, ex, ey, 0.0, 0, 12});
+        state.effects.push_back({EffectFx::Kind::Dust, ex, ey, 0.7, 0, 10});
+        break;
+      case verdigris::EventType::ActorMoved:
+        if (event.text == "dash")
+          state.effects.push_back({EffectFx::Kind::Dust, ex, ey, 0.2, 0, 8});
+        break;
+      case verdigris::EventType::ItemDropped:
+      case verdigris::EventType::TrophyDropped: {
+        // The simulation keeps loot abstract; scatter it around the kill site.
+        verdigris::Vec2 at = state.last_death_pos;
+        at.x += (state.loot_scatter % 3 - 1) * 40;
+        at.y += ((state.loot_scatter / 3) % 3 - 1) * 40 + 30;
+        ++state.loot_scatter;
+        const std::string& id = event.item_id.empty() ? event.trophy_id : event.item_id;
+        state.loot_positions[id] = at;
+        state.effects.push_back({EffectFx::Kind::Sparkle, static_cast<double>(at.x),
+                                 static_cast<double>(at.y), 0.0, 0, 24});
+        break;
+      }
+      case verdigris::EventType::ItemPickedUp:
+      case verdigris::EventType::TrophyPickedUp: {
+        const std::string& id = event.item_id.empty() ? event.trophy_id : event.item_id;
+        state.loot_positions.erase(id);
+        break;
+      }
+      default:
+        break;
+    }
+    if (const char* label = event_label(event.type)) {
+      std::string line = label;
+      if (!event.text.empty()) line += " " + event.text;
+      if (event.value != 0) line += " (" + std::to_string(event.value) + ")";
+      state.event_log.push_back(line);
+      if (state.event_log.size() > 6)
+        state.event_log.erase(state.event_log.begin());
+    }
+  }
+}
+
+struct DepthDraw {
+  double depth = 0.0;
+  int order = 0;
+  enum class What { Player, Monster, Loot, Effect } what = What::Player;
+  std::size_t index = 0;
+};
+
+void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
+  const auto& sim = *state.simulation;
+  HBRUSH background = CreateSolidBrush(RGB(23, 29, 32));
+  FillRect(dc, &bounds, background);
+  DeleteObject(background);
+
+  draw_ground_grid(dc, state.camera, bounds);
+
+  // Ground decals render before anything that stands on the plane.
+  const auto& extraction = sim.instance().extraction_point;
+  const ScreenPoint pad = project(state.camera, bounds, extraction.x, extraction.y);
+  const int pad_rx = static_cast<int>(kTileUnits * 0.6 * pad.scale);
+  const int pad_ry =
+      std::max(3, static_cast<int>(pad_rx * state.camera.ground_squash()));
+  fill_ellipse(dc, pad.x, pad.y, pad_rx, pad_ry, RGB(41, 62, 88));
+  ring_ellipse(dc, pad.x, pad.y, pad_rx, pad_ry, RGB(88, 132, 190), 2);
+
+  const verdigris::Actor* player = sim.actor(sim.scion().actor_id);
+
+  // Collect every standing element, then draw back-to-front by world depth.
+  std::vector<DepthDraw> order;
+  if (player && player->alive)
+    order.push_back({static_cast<double>(player->position.y), 0,
+                     DepthDraw::What::Player, 0});
+  const auto& actors = sim.actors();
+  for (std::size_t i = 0; i < actors.size(); ++i) {
+    if (actors[i].kind == verdigris::ActorKind::Monster && actors[i].alive)
+      order.push_back({static_cast<double>(actors[i].position.y), 1,
+                       DepthDraw::What::Monster, i});
+  }
+  std::vector<std::pair<std::string, verdigris::Vec2>> loot(
+      state.loot_positions.begin(), state.loot_positions.end());
+  std::sort(loot.begin(), loot.end(),
+            [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; });
+  for (std::size_t i = 0; i < loot.size(); ++i)
+    order.push_back({static_cast<double>(loot[i].second.y), 2,
+                     DepthDraw::What::Loot, i});
+  for (std::size_t i = 0; i < state.effects.size(); ++i)
+    order.push_back({state.effects[i].wy + 1.0, 3, DepthDraw::What::Effect, i});
+  std::sort(order.begin(), order.end(), [](const DepthDraw& lhs, const DepthDraw& rhs) {
+    if (lhs.depth != rhs.depth) return lhs.depth < rhs.depth;
+    return lhs.order < rhs.order;
+  });
+
+  for (const auto& entry : order) {
+    switch (entry.what) {
+      case DepthDraw::What::Player: {
+        const ScreenPoint base =
+            project(state.camera, bounds, player->position.x, player->position.y);
+        draw_contact_shadow(dc, state.camera, base, kTileUnits * 0.42);
+        draw_billboard(dc, base, kTileUnits * 0.62, kTileUnits * 1.35,
+                       RGB(84, 158, 128), RGB(140, 208, 172));
+        // Facing indicator toward the mouse aim point on the ground plane.
+        const double angle =
+            aim_angle(state, bounds, player->position.x, player->position.y);
+        const int fx = base.x + static_cast<int>(std::cos(angle) * kTileUnits * 0.6 *
+                                                 base.scale);
+        const int fy = base.y + static_cast<int>(std::sin(angle) * kTileUnits * 0.6 *
+                                                 base.scale *
+                                                 state.camera.ground_squash());
+        draw_line(dc, base.x, base.y, fx, fy, RGB(140, 208, 172), 2);
+        break;
+      }
+      case DepthDraw::What::Monster: {
+        const auto& monster = actors[entry.index];
+        const ScreenPoint base =
+            project(state.camera, bounds, monster.position.x, monster.position.y);
+        draw_contact_shadow(dc, state.camera, base, kTileUnits * 0.42);
+        draw_billboard(dc, base, kTileUnits * 0.68, kTileUnits * 1.25,
+                       RGB(168, 84, 70), RGB(212, 122, 96));
+        // Compact life bar instead of a menu: readable elite math at a glance.
+        const int bar_w = static_cast<int>(kTileUnits * 0.7 * base.scale);
+        const int bar_y =
+            base.y - static_cast<int>(kTileUnits * 1.5 * base.scale);
+        const double ratio =
+            std::clamp(static_cast<double>(monster.stats.life) /
+                           std::max(1, monster.stats.life_max),
+                       0.0, 1.0);
+        draw_line(dc, base.x - bar_w / 2, bar_y, base.x + bar_w / 2, bar_y,
+                  RGB(52, 40, 38), 3);
+        if (ratio > 0.0)
+          draw_line(dc, base.x - bar_w / 2, bar_y,
+                    base.x - bar_w / 2 + static_cast<int>(bar_w * ratio), bar_y,
+                    RGB(214, 118, 86), 3);
+        break;
+      }
+      case DepthDraw::What::Loot: {
+        const auto& entry_loot = loot[entry.index];
+        const ScreenPoint base = project(state.camera, bounds, entry_loot.second.x,
+                                         entry_loot.second.y);
+        draw_contact_shadow(dc, state.camera, base, kTileUnits * 0.2);
+        const int r = std::max(3, static_cast<int>(kTileUnits * 0.16 * base.scale));
+        const int lift = static_cast<int>(kTileUnits * 0.28 * base.scale);
+        const bool is_trophy = entry_loot.first.rfind("trophy", 0) == 0;
+        const COLORREF color =
+            is_trophy ? RGB(196, 148, 220) : RGB(230, 181, 74);
+        POINT diamond[4] = {{base.x, base.y - lift - r},
+                            {base.x + r, base.y - lift},
+                            {base.x, base.y - lift + r},
+                            {base.x - r, base.y - lift}};
+        HBRUSH brush = CreateSolidBrush(color);
+        HPEN pen = CreatePen(PS_SOLID, 1, color);
+        HGDIOBJ old_brush = SelectObject(dc, brush);
+        HGDIOBJ old_pen = SelectObject(dc, pen);
+        Polygon(dc, diamond, 4);
+        SelectObject(dc, old_brush);
+        SelectObject(dc, old_pen);
+        DeleteObject(brush);
+        DeleteObject(pen);
+        break;
+      }
+      case DepthDraw::What::Effect:
+        draw_effect(dc, state.camera, bounds, state.effects[entry.index]);
+        break;
+    }
+  }
+
+  // HUD and debug overlay.
+  SetBkMode(dc, TRANSPARENT);
+  SetTextColor(dc, RGB(230, 235, 220));
   const int life = player ? player->stats.life : 0;
-  const std::string line =
-      "House " + sim.house().name + " | Scion " + sim.scion().name +
-      " | Life " + std::to_string(life) + " | Stored trophies " +
+  const std::string status =
+      "House " + sim.house().name + " | Scion " + sim.scion().name + " | Life " +
+      std::to_string(life) + " | Stored trophies " +
       std::to_string(sim.house().stored_trophies.size()) + " | Stored items " +
-      std::to_string(sim.house().stored_items.size());
-  strncpy_s(buffer, size, line.c_str(), _TRUNCATE);
+      std::to_string(sim.house().stored_items.size()) + " | Carried " +
+      std::to_string(sim.scion().carried_items.size() +
+                     sim.scion().carried_trophies.size());
+  TextOutA(dc, 18, 16, status.c_str(), static_cast<int>(status.size()));
+  const char* help =
+      "WASD move | LMB melee | RMB/Space dash | P pickup | E equip | X extract";
+  TextOutA(dc, 18, 40, help, static_cast<int>(strlen(help)));
+  const char* camera_help =
+      "Wheel zoom | PgUp/PgDn pitch | -/= perspective | Home reset camera";
+  TextOutA(dc, 18, 64, camera_help, static_cast<int>(strlen(camera_help)));
+
+  SetTextColor(dc, RGB(150, 160, 150));
+  char debug_line[256];
+  std::snprintf(debug_line, sizeof(debug_line),
+                "tick %llu | zoom %.2f | pitch %.0f | persp %.5f | effects %zu",
+                static_cast<unsigned long long>(sim.tick()), state.camera.zoom,
+                state.camera.pitch_deg, state.camera.perspective,
+                state.effects.size());
+  TextOutA(dc, 18, 88, debug_line, static_cast<int>(strlen(debug_line)));
+  int log_y = bounds.bottom - 24;
+  for (auto it = state.event_log.rbegin(); it != state.event_log.rend(); ++it) {
+    TextOutA(dc, 18, log_y, it->c_str(), static_cast<int>(it->size()));
+    log_y -= 20;
+  }
 }
 
 void paint(HWND window, HDC dc) {
@@ -41,56 +486,40 @@ void paint(HWND window, HDC dc) {
   if (!state) return;
   RECT bounds;
   GetClientRect(window, &bounds);
-  HBRUSH background = CreateSolidBrush(RGB(23, 29, 32));
-  FillRect(dc, &bounds, background);
-  DeleteObject(background);
+  if (bounds.right <= 0 || bounds.bottom <= 0) return;
 
-  const auto& sim = *state->simulation;
-  const auto* player = sim.actor(sim.scion().actor_id);
-  if (player) {
-    const int center_x = bounds.right / 2;
-    const int player_x = center_x + player->position.x / 10;
-    const int player_y = bounds.bottom / 2;
-    HBRUSH player_brush = CreateSolidBrush(RGB(104, 189, 154));
-    HBRUSH enemy_brush = CreateSolidBrush(RGB(191, 91, 76));
-    HBRUSH item_brush = CreateSolidBrush(RGB(230, 181, 74));
-    HBRUSH extraction_brush = CreateSolidBrush(RGB(88, 132, 190));
-    SelectObject(dc, player_brush);
-    Ellipse(dc, player_x - 14, player_y - 14, player_x + 14, player_y + 14);
-    SelectObject(dc, enemy_brush);
-    for (const auto& actor : sim.actors()) {
-      if (actor.kind == verdigris::ActorKind::Monster && actor.alive) {
-        const int x = center_x + actor.position.x / 10;
-        Ellipse(dc, x - 14, player_y - 14, x + 14, player_y + 14);
-      }
-    }
-    SelectObject(dc, item_brush);
-    for (std::size_t i = 0; i < sim.ground_items().size(); ++i) {
-      Rectangle(dc, center_x + 30 + static_cast<int>(i) * 24, player_y - 10,
-                center_x + 46 + static_cast<int>(i) * 24, player_y + 6);
-    }
-    SelectObject(dc, extraction_brush);
-    Rectangle(dc, center_x - 8, player_y + 50, center_x + 8, player_y + 66);
-    DeleteObject(player_brush);
-    DeleteObject(enemy_brush);
-    DeleteObject(item_brush);
-    DeleteObject(extraction_brush);
-  }
-
-  SetBkMode(dc, TRANSPARENT);
-  SetTextColor(dc, RGB(230, 235, 220));
-  char status[512]{};
-  status_text(*state, status, sizeof(status));
-  TextOutA(dc, 18, 16, status, static_cast<int>(strlen(status)));
-  const char* help = "WASD move | LMB melee | RMB/Space dash | P pickup | E equip | X extract";
-  TextOutA(dc, 18, 40, help, static_cast<int>(strlen(help)));
+  // Double buffer: draw into a memory bitmap, then blit once.
+  HDC memory_dc = CreateCompatibleDC(dc);
+  HBITMAP bitmap = CreateCompatibleBitmap(dc, bounds.right, bounds.bottom);
+  HGDIOBJ old_bitmap = SelectObject(memory_dc, bitmap);
+  paint_scene(*state, memory_dc, bounds);
+  BitBlt(dc, 0, 0, bounds.right, bounds.bottom, memory_dc, 0, 0, SRCCOPY);
+  SelectObject(memory_dc, old_bitmap);
+  DeleteObject(bitmap);
+  DeleteDC(memory_dc);
 }
 
-void timer_step(ClientState& state) {
+void timer_step(HWND window, ClientState& state) {
   int dx = (state.d ? 1 : 0) - (state.a ? 1 : 0);
   int dy = (state.s ? 1 : 0) - (state.w ? 1 : 0);
   if (dx != 0 || dy != 0) state.simulation->dispatch(verdigris::Command::move(dx, dy));
   else state.simulation->dispatch(verdigris::Command::action_use(verdigris::ActionType::Wait));
+
+  RECT bounds;
+  GetClientRect(window, &bounds);
+  ingest_events(state, bounds);
+
+  for (auto& fx : state.effects) ++fx.age;
+  state.effects.erase(std::remove_if(state.effects.begin(), state.effects.end(),
+                                     [](const EffectFx& fx) { return fx.age >= fx.ttl; }),
+                      state.effects.end());
+
+  // The camera eases toward the player so dashes read as motion, not teleports.
+  const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
+  if (player) {
+    state.camera.x += (player->position.x - state.camera.x) * 0.2;
+    state.camera.y += (player->position.y - state.camera.y) * 0.2;
+  }
 }
 
 LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam) {
@@ -122,6 +551,19 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         state->simulation->dispatch(verdigris::Command::equip(
             state->simulation->scion().carried_items.front().id));
       if (wparam == 'X') state->simulation->dispatch(verdigris::Command::extract());
+      if (wparam == VK_PRIOR)
+        state->camera.pitch_deg = std::min(85.0, state->camera.pitch_deg + 5.0);
+      if (wparam == VK_NEXT)
+        state->camera.pitch_deg = std::max(25.0, state->camera.pitch_deg - 5.0);
+      if (wparam == VK_OEM_MINUS)
+        state->camera.perspective = std::max(0.0, state->camera.perspective - 0.0001);
+      if (wparam == VK_OEM_PLUS)
+        state->camera.perspective = std::min(0.0012, state->camera.perspective + 0.0001);
+      if (wparam == VK_HOME) {
+        state->camera.zoom = 0.5;
+        state->camera.pitch_deg = 55.0;
+        state->camera.perspective = 0.00035;
+      }
       InvalidateRect(window, nullptr, FALSE);
       break;
     case WM_KEYUP:
@@ -130,6 +572,20 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (wparam == 'A') state->a = false;
       if (wparam == 'S') state->s = false;
       if (wparam == 'D') state->d = false;
+      break;
+    case WM_MOUSEMOVE:
+      if (state) {
+        state->mouse.x = GET_X_LPARAM(lparam);
+        state->mouse.y = GET_Y_LPARAM(lparam);
+      }
+      break;
+    case WM_MOUSEWHEEL:
+      if (state) {
+        const int delta = GET_WHEEL_DELTA_WPARAM(wparam);
+        const double factor = delta > 0 ? 1.1 : 1.0 / 1.1;
+        state->camera.zoom = std::clamp(state->camera.zoom * factor, 0.15, 2.0);
+        InvalidateRect(window, nullptr, FALSE);
+      }
       break;
     case WM_LBUTTONDOWN:
       if (state) state->simulation->dispatch(
@@ -143,10 +599,12 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       break;
     case WM_TIMER:
       if (state) {
-        timer_step(*state);
+        timer_step(window, *state);
         InvalidateRect(window, nullptr, FALSE);
       }
       break;
+    case WM_ERASEBKGND:
+      return 1;
     case WM_PAINT: {
       PAINTSTRUCT paint_struct;
       HDC dc = BeginPaint(window, &paint_struct);
@@ -184,8 +642,12 @@ int run_headless_demo() {
   return 0;
 }
 
-int WINAPI WinMain(HINSTANCE instance, HINSTANCE, LPSTR command_line, int show) {
-  if (command_line && std::strstr(command_line, "--headless")) return run_headless_demo();
+// A standard main() keeps the console subsystem so --headless output reaches
+// stdout; the interactive window is created explicitly from the module handle.
+int main(int argc, char** argv) {
+  for (int i = 1; i < argc; ++i)
+    if (std::strcmp(argv[i], "--headless") == 0) return run_headless_demo();
+  HINSTANCE instance = GetModuleHandle(nullptr);
   auto state = std::make_unique<ClientState>();
   state->simulation = std::make_unique<verdigris::Simulation>(0xC011AB1EULL, "House Verdigris");
   verdigris::EmberHunt seasonal;
@@ -202,7 +664,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE, LPSTR command_line, int show) 
   HWND window = CreateWindowExA(0, window_class.lpszClassName, "Verdigris - Native Expedition",
                                 WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 960, 600,
                                 nullptr, nullptr, instance, state.get());
-  ShowWindow(window, show);
+  ShowWindow(window, SW_SHOW);
   SetTimer(window, 1, 50, nullptr);
 
   MSG message{};
