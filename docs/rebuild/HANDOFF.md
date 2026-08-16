@@ -21,8 +21,10 @@
 - WIZARD integration intent is now explicit: orbs and Splash feed the renderer
   or menu presentation, Brands & Bonds/inventory feeds the item/UI path, and
   Cartographer is a candidate deterministic map-content adapter.
-- The earlier 2.5D demo archive and eight billboard assets were not present in
-  this checkout.
+- The Claude demo source and 22 external PNG plates are now inventoried in
+  [`CLAUDE_DEMO_ASSET_INTAKE.md`](CLAUDE_DEMO_ASSET_INTAKE.md). The binaries
+  remain outside the checkout pending asset provenance, size, and packaging
+  approval.
 
 ## Next exact steps
 
