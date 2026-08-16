@@ -62,26 +62,15 @@ class PerspectiveCamera {
     this.depthToFocus = (this.focus - this.horizon) / this.zoom;
     this.projectionArea = (this.focus - this.horizon) * this.depthToFocus;
     this.cameraFootY = this.y + this.depthToFocus;
-    // ARPG is the crisp primary view. DoF is zero at the 0.85 base and only
-    // blends toward the miniature treatment while zooming in. Preserve a
-    // small, legacy-compatible falloff below the base so the existing wide
-    // camera contract remains continuous.
-    if (this.userZoom < ARPG_CAMERA_PRESET.baseUserZoom) {
-      const wideProgress = clamp(
-        (this.userZoom - 0.72) / (ARPG_CAMERA_PRESET.baseUserZoom - 0.72),
-        0,
-        1,
-      );
-      this.dofStrength = interpolate(0.32, 0, wideProgress);
-    } else {
-      const zoomProgress = clamp(
-        (this.userZoom - ARPG_CAMERA_PRESET.baseUserZoom)
-          / (MAX_USER_ZOOM - ARPG_CAMERA_PRESET.baseUserZoom),
-        0,
-        1,
-      );
-      this.dofStrength = interpolate(0, ARPG_CAMERA_PRESET.maxDofStrength, zoomProgress);
-    }
+    // ARPG is the crisp primary view. DoF is zero at and below the base and
+    // blends toward the miniature treatment only while zooming in.
+    const zoomProgress = clamp(
+      (this.userZoom - ARPG_CAMERA_PRESET.baseUserZoom)
+        / (MAX_USER_ZOOM - ARPG_CAMERA_PRESET.baseUserZoom),
+      0,
+      1,
+    );
+    this.dofStrength = interpolate(0, ARPG_CAMERA_PRESET.maxDofStrength, zoomProgress);
     this.valid = Number.isFinite(this.cameraFootY)
       && Number.isFinite(this.projectionArea)
       && this.depthToFocus > 0;

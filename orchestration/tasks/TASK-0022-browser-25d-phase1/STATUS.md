@@ -1,6 +1,6 @@
 ---
 task: TASK-0022
-state: REVIEW_REQUESTED
+state: CLAIMED
 coordinator: codex
 worker: Codex coordinator
 worker_branch: codex/TASK-0022-browser-25d-phase1
@@ -13,5 +13,9 @@ known_risks: keep the legacy renderer switchable, preserve one projection/height
 dependencies: TASK-0019 accepted/integrated; TASK-0020 revision submitted for review
 architect_review_required: true
 implementation_commit: c17963b
+revision: 1
+revision_base: 10d49dc
+revision_reason: independent validator found evidence artifacts outside the task folder and a wide-zoom DoF floor contradicting the governing zero-at/below-base rule
+validator_verdict: REVISE (/root/validate_task_0022)
 verification: npm run test:unit (PASS: 115 files/744 tests); npm run playtest (PASS: 31/31); npm run smoke:browser (PASS: 1/1); npm run lint:css -- --quiet (PASS); ESLint changed files (PASS); git diff --check (PASS)
 ---

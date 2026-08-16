@@ -4,6 +4,7 @@ state: REVIEW_REQUESTED
 branch: codex/TASK-0022-browser-25d-phase1
 commits:
   - c17963b
+  - REVISION_PENDING
 base_commit: b035b569ecc269f79c1113d7f8600db2198a273a
 ---
 
@@ -71,8 +72,19 @@ fresh guest onboarding scene. Each is lossy JPEG under the 250KB limit:
 - `npm run playtest` — PASS (31/31 scenarios)
 - `npm run smoke:browser` — PASS (1 browser-critical test; 19.6s)
 - `npm run lint:css -- --quiet` — PASS
-- `npx eslint src/core/rendering/perspective-camera.js src/core/rendering/perspective-renderer.js src/core/rendering/terrain-renderer.js src/components/GameCanvas.vue` — PASS
+- `npx eslint src/core/rendering/perspective-camera.js src/core/rendering/perspective-renderer.js src/core/rendering/terrain-renderer.js src/components/GameCanvas.vue tests/unit/perspective-camera.spec.js` — PASS
 - `git diff --check` — PASS
+
+## Revision 1 — validator corrections
+
+The independent validator identified two concrete issues. The four evidence
+JPEGs were committed at the worktree root even though the report lives in the
+task folder, so they are now moved into this task folder and remain under the
+250KB limit. The camera's obsolete wide-zoom DoF floor was removed: `dofStrength`
+and `circleOfConfusion` are now exactly zero for every `userZoom <= 0.85`, with
+the miniature blend rising only above the ARPG base. The inherited camera unit
+assertion was updated to encode the governing §6 conformance rule rather than
+the superseded wide-view blur behavior.
 
 ## Review request
 
