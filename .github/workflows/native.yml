@@ -26,6 +26,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      # CMake schema v2 requires an explicit generator.  The preset uses the
+      # VS-version-neutral NMake generator; this action supplies cl/nmake and
+      # the installed Visual Studio environment on windows-latest.
+      - name: Set up MSVC developer environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
       - name: Configure native workspace
         run: cmake --preset windows-msvc
 

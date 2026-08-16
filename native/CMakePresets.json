@@ -13,6 +13,7 @@
     {
       "name": "windows-msvc",
       "displayName": "Verdigris native (MSVC)",
+      "description": "Version-neutral NMake preset; schema v2 requires an explicit generator, so the workflow supplies the MSVC developer environment instead of pinning a VS edition.",
       "generator": "NMake Makefiles",
       "binaryDir": "${sourceDir}/build/cmake/${presetName}"
     }
