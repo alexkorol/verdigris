@@ -29,9 +29,12 @@ describe('2.5D day/night lighting', () => {
     expect(Math.min(...firstMinute)).toBeGreaterThanOrEqual(210);
   });
 
-  it('keeps the cool night grade above the old crushed-black floor', () => {
+  it('matches the reference night grade without crushing to black', () => {
     const night = sampleAmbient(DAY_LENGTH_SECONDS * 0.80);
 
-    expect(Math.min(...night)).toBeGreaterThanOrEqual(140);
+    // D-108 reference night is [110, 120, 190]: a deep blue grade whose
+    // darkest channel stays well above a crushed-black floor.
+    expect(night).toEqual([110, 120, 190]);
+    expect(Math.min(...night)).toBeGreaterThanOrEqual(100);
   });
 });

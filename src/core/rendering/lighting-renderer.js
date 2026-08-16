@@ -1,24 +1,31 @@
 // Keep the opening minutes in readable daylight. The old 90 second cycle
 // raced from morning to night during a player's first encounter and made the
 // world appear to flicker between colour grades instead of inhabiting them.
+// The keyframe colours themselves track the D-108 reference demo exactly:
+// the grade is what sells the time-of-day mood.
 const DAY_LENGTH_SECONDS = 300;
 const LIGHTMAP_SCALE = 0.25;
+const VIGNETTE_EDGE_ALPHA = 0.45;
 
+// D-108 reference ambient keyframes (songs-of-the-mire `ambient()`).
 const AMBIENT_KEYFRAMES = [
-  [0, [255, 247, 231]],
-  [0.30, [255, 242, 218]],
-  [0.45, [255, 218, 176]],
-  [0.58, [184, 174, 219]],
-  [0.80, [148, 158, 211]],
-  [0.90, [220, 193, 190]],
-  [1, [255, 247, 231]],
+  [0, [255, 244, 224]],
+  [0.30, [255, 240, 214]],
+  [0.45, [255, 205, 150]],
+  [0.58, [150, 140, 205]],
+  [0.80, [110, 120, 190]],
+  [0.90, [210, 180, 175]],
+  [1, [255, 244, 224]],
 ];
 
+// Screen-space cloud shadows. Cores darkened back to the D-108 reference
+// value now that Phase 1-2 removed the washing they were compensating for;
+// drift speeds raised ~4x so a crossing takes minutes, not tens of minutes.
 const CLOUDS = [
-  { x: 0.08, y: 0.26, radius: 0.38, speed: 0.0017, phase: 0.4 },
-  { x: 0.37, y: 0.54, radius: 0.46, speed: 0.0011, phase: 2.1 },
-  { x: 0.69, y: 0.34, radius: 0.34, speed: 0.0015, phase: 4.3 },
-  { x: 0.91, y: 0.67, radius: 0.42, speed: 0.0009, phase: 5.6 },
+  { x: 0.08, y: 0.26, radius: 0.38, speed: 0.0068, phase: 0.4 },
+  { x: 0.37, y: 0.54, radius: 0.46, speed: 0.0044, phase: 2.1 },
+  { x: 0.69, y: 0.34, radius: 0.34, speed: 0.0060, phase: 4.3 },
+  { x: 0.91, y: 0.67, radius: 0.42, speed: 0.0036, phase: 5.6 },
 ];
 
 const interpolate = (start, end, amount) => start + ((end - start) * amount);
@@ -85,7 +92,10 @@ class LightingRenderer {
       Math.max(width, height) * 0.72,
     );
     gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
-    gradient.addColorStop(1, 'rgba(10, 4, 16, 0.18)');
+    // Edge alpha retuned toward the D-108 reference (0.55), settled just
+    // below it: this game's pixel-art frame starts darker than the demo's,
+    // so the same soft radial falloff is kept at a slightly lower alpha.
+    gradient.addColorStop(1, `rgba(10, 4, 16, ${VIGNETTE_EDGE_ALPHA})`);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
   }
@@ -111,7 +121,7 @@ class LightingRenderer {
         screenY,
         radius,
       );
-      gradient.addColorStop(0, 'rgba(236, 238, 242, 1)');
+      gradient.addColorStop(0, 'rgba(196, 198, 208, 1)');
       gradient.addColorStop(1, 'rgba(255, 255, 255, 1)');
       ctx.fillStyle = gradient;
       ctx.beginPath();

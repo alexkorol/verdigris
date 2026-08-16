@@ -32,7 +32,7 @@ class AtmosphereRenderer {
   drawMist(ctx, camera, elapsedSeconds) {
     ctx.save();
     MIST_OFFSETS.forEach(([offsetX, offsetY, worldRadius, phase]) => {
-      const worldX = camera.x + offsetX + (Math.sin((elapsedSeconds * 0.14) + phase) * 36);
+      const worldX = camera.x + offsetX + (Math.sin((elapsedSeconds * 0.2) + phase) * 40);
       const worldY = camera.y + offsetY;
       const point = camera.projectTerrain(worldX, worldY);
       if (!point || !Number.isFinite(point.x) || !Number.isFinite(point.scale)) {
@@ -42,11 +42,14 @@ class AtmosphereRenderer {
       if (radius < 2) {
         return;
       }
-      const alpha = 0.026 + (Math.sin((elapsedSeconds * 0.38) + phase) * 0.009);
-      const y = point.y - (18 * point.scale);
+      // D-108 reference mist: pulse amplitude and colour from the demo. The
+      // pre-Phase-1 build ran this at ~1/4 strength to fight the old muddiness;
+      // with the blur/wash gone the blobs return to reference density.
+      const alpha = (0.10 + (Math.sin((elapsedSeconds * 0.5) + phase) * 0.06)) * 0.9;
+      const y = point.y - (20 * point.scale);
       const gradient = ctx.createRadialGradient(point.x, y, 2, point.x, y, radius);
-      gradient.addColorStop(0, `rgba(184, 207, 190, ${alpha})`);
-      gradient.addColorStop(1, 'rgba(184, 207, 190, 0)');
+      gradient.addColorStop(0, `rgba(190, 215, 180, ${alpha})`);
+      gradient.addColorStop(1, 'rgba(190, 215, 180, 0)');
       ctx.fillStyle = gradient;
       ctx.beginPath();
       ctx.arc(point.x, y, radius, 0, Math.PI * 2);
@@ -120,12 +123,14 @@ class AtmosphereRenderer {
 
   drawForeground(ctx, camera, elapsedSeconds, nightFactor) {
     this.ensureRays(camera.width, camera.height);
-    const daylight = Math.max(0, 1 - (nightFactor * 1.25));
+    // D-108 reference god-ray behaviour: 'lighter' composite, stronger
+    // breathing alpha, and a slow lateral drift of the baked beams.
+    const daylight = Math.min(1, Math.max(0, 1 - (nightFactor * 1.6)));
     if (daylight > 0.05) {
       ctx.save();
-      ctx.globalCompositeOperation = 'screen';
-      ctx.globalAlpha = daylight * (0.38 + (Math.sin(elapsedSeconds * 0.18) * 0.05));
-      ctx.drawImage(this.rays, Math.sin(elapsedSeconds * 0.035) * 3, 0);
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = daylight * (0.55 + (Math.sin(elapsedSeconds * 0.5) * 0.20));
+      ctx.drawImage(this.rays, Math.sin(elapsedSeconds * 0.13) * 14, 0);
       ctx.restore();
     }
     this.drawFireflies(ctx, camera, elapsedSeconds, nightFactor);
