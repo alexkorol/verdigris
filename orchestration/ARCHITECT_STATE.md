@@ -144,6 +144,16 @@ the loop stabilizes.
 In flight: TASK-0009 only. Next after it: facing-field core task, then
 ADR-002.
 
+## TASK-0009 accepted; TASK-0010 issued (2026-08-16, ~10:40)
+
+- TASK-0009 (`629a1c0`) ACCEPTED — verified live: skill strip states,
+  WarCry aura + tick countdown, resource drain/regen on HUD. Watch item
+  logged: client display-costs mirror core constants by value; a future
+  snapshot/query seam should own them.
+- TASK-0010 actor facing (core+client, sequential, sole in-flight) —
+  **READY**, base = 0009 integration tip (Codex records SHA).
+- Architect debt remaining: ADR-002 persistence/serialization seam draft.
+
 ## Watch items
 
 - Enemy melee cadence in the slice felt lethal for an idle level-1; base
