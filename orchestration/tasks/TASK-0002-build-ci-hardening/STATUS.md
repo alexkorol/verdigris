@@ -1,6 +1,6 @@
 ---
 task: TASK-0002
-state: CLAIMED
+state: REVIEW_REQUESTED
 worker: Luna build/CI implementer
 worker_branch: codex/TASK-0002-build-ci-hardening
 worktree: .codex/worktrees/TASK-0002-build-ci-hardening
@@ -11,4 +11,8 @@ expected_verification: powershell -File native/build.ps1 -RunTests -RunClient; c
 known_risks: VS discovery portability; preserve Windows macro guard; no source edits
 revision: 1
 revision_basis: D-104 presets schema v2; validate with bundled CMake 3.20 binary by full path
+implementation_commit: 659b8802f82dfb6839207c05700a5d1cf27380a0
+validator: /root/validate_task_0002
+validator_verdict: ACCEPT
+architect_review_required: true
 ---

@@ -7,7 +7,31 @@ base_commit: 0e02aa7
 spec_base_commit: f5b4b72
 ---
 
-## Executive summary
+## Revision 1 report
+
+Revision 1 implements D-104's CMake schema-v2 compatibility requirement and is
+ready for architect review.
+
+Implementation commit: `659b8802f82dfb6839207c05700a5d1cf27380a0`.
+
+- `native/CMakePresets.json` uses schema version 2 and defines `default` and
+  `windows-msvc` configure/build/test presets.
+- `.github/workflows/native.yml` invokes the Windows preset workflow.
+- `native/build.ps1` preserves vswhere discovery/fallback, the Windows define
+  guard, quiet probe stderr, and the denylist.
+
+Independent validator `/root/validate_task_0002`: ACCEPT.
+
+Verification used the bundled CMake 3.20.21032501-MSVC_2 by absolute path:
+
+- preset listing showed `default` and `windows-msvc`;
+- configure/build succeeded;
+- bundled `ctest --preset windows-msvc`: 1/1 passed;
+- `powershell -File native/build.ps1 -RunTests -RunClient`: denylist, core
+  tests, and headless client passed;
+- YAML parsing passed and no vswhere error noise appeared.
+
+## Initial revision history
 
 The build/CI implementation is staged but cannot be committed or marked
 review-ready because the current environment cannot satisfy the task's
