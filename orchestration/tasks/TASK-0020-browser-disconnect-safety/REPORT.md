@@ -44,7 +44,8 @@ No wire envelope, native, prototype, or persistence repository schema changed.
 
 ## Verification
 
-- `npm run test:unit` — PASS: 114 files, 741 tests.
+- `npm run test:unit` — PASS: 114 files, 742 tests (current checkpoint; the
+  implementation run recorded 741 before the adjacent test-count change).
 - Targeted disconnect/monster tests — PASS: 38 tests.
 - ESLint over all changed JS files — PASS.
 - `npm run playtest -- gear-outcomes` — PASS on isolated rerun.
@@ -73,3 +74,20 @@ No product or wire-protocol deviations. The full playtest suite has a known
 timing-sensitive gear comparison that passed in isolation but failed during
 two full-suite runs; this is the only non-green acceptance observation and is
 not caused by the disconnect code path. Architect review is required.
+
+## Current checkpoint follow-up
+
+After submission, a clean aggregate run reached 25/31 but showed additional
+cross-scenario timing failures. Each affected scenario was then rerun against
+its own fresh server and port:
+
+- `first-goal` — PASS
+- `gear-outcomes` — PASS
+- `house-treasury` — PASS
+- `mortality` — PASS
+- `quest` — PASS
+- `zones` — PASS
+
+The failures are not reproducible in isolated runs, so the aggregate result
+remains recorded as harness timing noise rather than a product acceptance
+result.
