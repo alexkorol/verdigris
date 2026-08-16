@@ -1,7 +1,18 @@
 # ADR-002 — Persistence seam for the native core
 
-Status: **PROPOSED** (architect draft, 2026-08-16). The owner decides; no
-implementation task may claim this until it reads ACCEPTED.
+Status: **ACCEPTED AS AMENDED BY THE OWNER (2026-08-16)**. Owner ruling
+(recorded as D-109): disconnects, quits, and crashes are FORGIVING —
+because the game has permadeath, connection loss must never cost a life
+or items. On logout/disconnect/crash the Scion keeps everything carried
+and is simply returned to town (the House) on next login; the expedition
+instance is abandoned but nothing is lost. Death is the ONLY loss event.
+Networked play must actively prevent disconnect deaths (on connection
+loss: pull the character from combat safely — despawn/invulnerable grace,
+exact mechanism per implementation task). The earlier draft's
+"abandonment loses unbanked value" clause is REVERSED accordingly.
+Design consequence noted for balance work later: logging out is a free
+escape valve; if that proves abusable, the countermeasure is a short
+in-danger logout delay, never item loss.
 
 ## Context
 
