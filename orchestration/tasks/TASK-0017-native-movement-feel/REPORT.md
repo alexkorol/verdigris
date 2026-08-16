@@ -1,6 +1,6 @@
 ---
 task: TASK-0017
-state: IMPLEMENTED
+state: REVIEW_REQUESTED
 branch: codex/TASK-0017-native-movement-feel
 commits:
   - 5b73a24
@@ -79,6 +79,7 @@ None.
 
 ## Integration notes
 
-Awaiting independent validator review and architect acceptance before
-integration. The base includes accepted browser Phase-2 work but this diff is
-native-path-only.
+Independent validator `/root/validate_task_0017` accepted the implementation
+and coordinator evidence. Submitted for architect review; integration is
+held until that review lands. The base includes accepted browser Phase-2 work
+but this diff is native-path-only.
