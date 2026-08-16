@@ -1,9 +1,10 @@
 ---
 task: TASK-0017
-state: REVIEW_REQUESTED
+state: INTEGRATED
 branch: codex/TASK-0017-native-movement-feel
 commits:
   - 5b73a24
+  - ed1cd26
 base_commit: cb2718c
 ---
 
@@ -80,6 +81,14 @@ None.
 ## Integration notes
 
 Independent validator `/root/validate_task_0017` accepted the implementation
-and coordinator evidence. Submitted for architect review; integration is
-held until that review lands. The base includes accepted browser Phase-2 work
-but this diff is native-path-only.
+and coordinator evidence. Architect review `f4ea440` accepted the commit with
+no corrections after a live driven-input pass. The base includes accepted
+browser Phase-2 work but this diff is native-path-only.
+
+## Integration
+
+Accepted source commit `5b73a24` was cherry-picked in the dedicated
+`codex/integration-task-0017` worktree as `ed1cd26`. Post-integration
+`powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` passed the
+legacy denylist, core tests, headless client, and Win32 client build. The
+integration diff is limited to the four native paths listed above.

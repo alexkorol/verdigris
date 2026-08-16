@@ -1,6 +1,6 @@
 ---
 task: TASK-0017
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Codex/Luna implementation worker
 worker_branch: codex/TASK-0017-native-movement-feel
@@ -15,4 +15,7 @@ implementation_commit: 5b73a24
 verification: powershell -NoProfile -File native/build.ps1 -RunTests -RunClient PASS; denylist PASS; core tests PASS; headless client PASS; git diff --check PASS
 validator: /root/validate_task_0017
 validator_verdict: ACCEPT
+architect_review: ACCEPTED (f4ea440)
+integration_branch: codex/integration-task-0017
+integration_commit: ed1cd26
 ---
