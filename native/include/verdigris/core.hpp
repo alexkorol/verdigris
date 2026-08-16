@@ -20,6 +20,15 @@ class SeasonalMechanic;
 
 enum class ActorKind { Player, Monster };
 
+// Keep the original values stable for recorded command streams; new skills
+// are appended to the action vocabulary.
+enum class ActionType { Melee, Dash, Wait, Thrust, Sweep, WarCry };
+
+// A telegraph is emitted this many simulation ticks before an elite skill
+// resolves.  It is part of the simulation contract so every presentation can
+// render the same warning window.
+inline constexpr int kTelegraphTicks = 3;
+
 struct ActorStats {
   int level = 1;
   int strength = 10;
@@ -67,6 +76,11 @@ struct Actor {
   // pipeline can be used for players and monsters.
   int war_cry_attack_bonus = 0;
   int war_cry_ticks_remaining = 0;
+  // Elite monster skills are scheduled by the simulation and resolved through
+  // the same action pipeline as player skills.  Wait means no action is
+  // pending; the tick counter is the remaining windup.
+  ActionType pending_action = ActionType::Wait;
+  int pending_action_ticks = 0;
   // Deterministic 8-way facing. Each component is -1, 0, or +1; the
   // direction is intentionally not normalized with floating-point math.
   Vec2 facing{1, 0};
@@ -152,7 +166,8 @@ enum class EventType {
   LegendRecorded,
   RelicResurfaced,
   BuffApplied,
-  BuffExpired
+  BuffExpired,
+  AttackTelegraphed
 };
 
 struct Event {
@@ -175,10 +190,6 @@ enum class CommandType {
   ExtractToHouse,
   AimIntent
 };
-
-// Keep the original values of Melee/Dash/Wait stable for recorded command
-// streams; new skills are appended to the action vocabulary.
-enum class ActionType { Melee, Dash, Wait, Thrust, Sweep, WarCry };
 
 struct Command {
   CommandType type;
