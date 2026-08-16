@@ -65,6 +65,13 @@ bool ActorStats::operator==(const ActorStats& other) const {
          attack_speed_ticks == other.attack_speed_ticks && resistances == other.resistances;
 }
 
+bool LegendEntry::operator==(const LegendEntry& other) const {
+  return ordinal == other.ordinal && tick == other.tick && scion_id == other.scion_id &&
+         scion_name == other.scion_name && kind == other.kind && subject == other.subject &&
+         detail == other.detail && killer_id == other.killer_id && route_id == other.route_id &&
+         founding == other.founding;
+}
+
 bool House::route_unlocked(const std::string& route_id) const {
   return std::find(unlocked_routes.begin(), unlocked_routes.end(), route_id) != unlocked_routes.end();
 }
@@ -133,6 +140,7 @@ Simulation::Simulation(std::uint64_t seed, const std::string& house_name) : rng_
   actors_.push_back(player);
   emit(EventType::HouseCreated, {}, {}, {}, house_.name);
   emit(EventType::ScionCreated, player.id, {}, {}, scion_.name);
+  record_legend("scion_created", scion_.id, scion_.name);
 }
 
 const House& Simulation::house() const { return house_; }
@@ -143,6 +151,7 @@ const InstanceState& Simulation::instance() const { return instance_; }
 const std::vector<Item>& Simulation::ground_items() const { return ground_items_; }
 const std::vector<Trophy>& Simulation::ground_trophies() const { return ground_trophies_; }
 const std::vector<Event>& Simulation::events() const { return events_; }
+const std::vector<LegendEntry>& Simulation::legends() const { return house_.legends; }
 std::uint64_t Simulation::tick() const { return tick_; }
 
 const Actor* Simulation::actor(const std::string& id) const {
@@ -168,6 +177,34 @@ void Simulation::emit(EventType type, const std::string& actor_id, const std::st
   Event event{type, actor_id, item_id, trophy_id, text, value, tick_};
   events_.push_back(event);
   if (seasonal_mechanic_) seasonal_mechanic_->on_event(*this, event);
+}
+
+void Simulation::record_legend(const std::string& kind, const std::string& subject,
+                               const std::string& detail, const std::string& killer_id,
+                               const std::string& route_id, bool founding) {
+  LegendEntry entry;
+  entry.ordinal = next_legend_ordinal_++;
+  entry.tick = tick_;
+  entry.scion_id = scion_.id;
+  entry.scion_name = scion_.name;
+  entry.kind = kind;
+  entry.subject = subject;
+  entry.detail = detail;
+  entry.killer_id = killer_id;
+  entry.route_id = route_id;
+  entry.founding = founding;
+
+  if (house_.legends.size() >= kLegendCapacity) {
+    auto victim = std::find_if(
+        house_.legends.begin(), house_.legends.end(),
+        [](const LegendEntry& candidate) { return !candidate.founding; });
+    if (victim == house_.legends.end()) victim = house_.legends.begin();
+    house_.legends.erase(victim);
+  }
+  house_.legends.push_back(entry);
+  emit(EventType::LegendRecorded, scion_.actor_id,
+       kind == "relic_extracted" ? subject : std::string{}, {}, kind,
+       static_cast<int>(entry.ordinal));
 }
 
 void Simulation::dispatch(const Command& command) {
@@ -225,7 +262,7 @@ void Simulation::resolve_action(ActionType action) {
       }
     }
   }
-  if (target->stats.life == 0) handle_death(*target);
+  if (target->stats.life == 0) handle_death(*target, player->id);
 }
 
 int Simulation::resolve_damage(const Actor& attacker, const Actor& defender, int item_bonus) {
@@ -250,7 +287,7 @@ void Simulation::resolve_interact(const std::string& target) {
     Actor* player = actor(scion_.actor_id);
     if (player) {
       player->stats.life = 0;
-      handle_death(*player);
+      handle_death(*player, "hazard:death");
     }
     return;
   }
@@ -259,6 +296,7 @@ void Simulation::resolve_interact(const std::string& target) {
           house_.specializations.end()) {
     house_.specializations.push_back("ash");
     emit(EventType::BranchUnlocked, scion_.actor_id, {}, {}, "ash");
+    record_legend("branch_unlocked", target, "specialization=ash");
   }
 }
 
@@ -314,6 +352,7 @@ void Simulation::spawn_enemy() {
   const int level = instance_.route_id == "route:tin:2:0" ? 2 : 1;
   Actor enemy{rng_.token("actor"), ActorKind::Monster, enemy_stats(level),
               {kEnemySpawnX, 0}, true, 0, std::nullopt};
+  enemy.elite = instance_.route_id == "route:tin:2:0";
   actors_.erase(std::remove_if(actors_.begin(), actors_.end(),
                                [](const Actor& value) { return value.kind == ActorKind::Monster; }),
                 actors_.end());
@@ -332,7 +371,7 @@ void Simulation::enemy_turn() {
     player->stats.life = std::max(0, player->stats.life - damage);
     emit(EventType::DamageApplied, player->id, {}, {}, "enemy-melee", damage);
     if (player->stats.life == 0) {
-      handle_death(*player);
+      handle_death(*player, enemy.id);
       return;
     }
   }
@@ -363,23 +402,39 @@ void Simulation::drop_reward() {
 }
 
 void Simulation::clear_route_and_unlock_children() {
-  if (std::find(house_.cleared_routes.begin(), house_.cleared_routes.end(), instance_.route_id) ==
-      house_.cleared_routes.end()) {
+  const bool first_clear =
+      std::find(house_.cleared_routes.begin(), house_.cleared_routes.end(), instance_.route_id) ==
+      house_.cleared_routes.end();
+  if (first_clear) {
     house_.cleared_routes.push_back(instance_.route_id);
+    record_legend("route_cleared", instance_.route_id, "first_clear");
   }
   for (const auto& route : house_.routes) {
     if (route.parent_id == instance_.route_id && !house_.route_unlocked(route.id)) {
       house_.unlocked_routes.push_back(route.id);
       emit(EventType::RouteUnlocked, {}, {}, {}, route.id);
+      record_legend("route_unlocked", route.id, "parent=" + instance_.route_id);
     }
   }
-  house_.campaign_complete = true;
+  if (!house_.campaign_complete) {
+    house_.campaign_complete = true;
+    record_legend("campaign_complete", house_.id, "route=" + instance_.route_id, {},
+                  instance_.route_id, true);
+  }
 }
 
-void Simulation::handle_death(Actor& actor_value) {
+void Simulation::handle_death(Actor& actor_value, const std::string& killer_id) {
   actor_value.alive = false;
   if (actor_value.kind == ActorKind::Monster) {
     emit(EventType::ActorDied, actor_value.id, {}, {}, "monster");
+    const Actor* player = actor(scion_.actor_id);
+    const bool is_elite = actor_value.elite ||
+                          (player && actor_value.stats.level >= player->stats.level + 2);
+    if (is_elite) {
+      record_legend("elite_kill", actor_value.id,
+                    "killer=" + killer_id + ";route=" + instance_.route_id, killer_id,
+                    instance_.route_id);
+    }
     drop_reward();
     clear_route_and_unlock_children();
     return;
@@ -392,12 +447,18 @@ void Simulation::handle_death(Actor& actor_value) {
     relic.relic_candidate = true;
     relic.history.push_back("registered after Scion death");
     house_.relic_candidates.push_back(relic);
+    record_legend("relic_candidate", relic.id, "name=" + relic.name, killer_id,
+                  instance_.route_id);
   }
   scion_.carried_items.clear();
   scion_.carried_trophies.clear();
   actor_value.equipped_item_id.reset();
   emit(EventType::ActorDied, actor_value.id, {}, {}, "scion");
   emit(EventType::ScionLost, actor_value.id, {}, {}, scion_.name);
+  record_legend("scion_death", scion_.id,
+                "killer=" + (killer_id.empty() ? std::string("unknown") : killer_id) +
+                    ";route=" + instance_.route_id,
+                killer_id, instance_.route_id);
 }
 
 void Simulation::resolve_extract() {
@@ -406,6 +467,10 @@ void Simulation::resolve_extract() {
   for (const auto& item : scion_.carried_items) {
     house_.stored_items.push_back(item);
     emit(EventType::ItemExtracted, player->id, item.id);
+    if (item.relic_candidate) {
+      record_legend("relic_extracted", item.id, "name=" + item.name, player->id,
+                    instance_.route_id);
+    }
   }
   for (const auto& trophy : scion_.carried_trophies) {
     house_.stored_trophies.push_back(trophy);
@@ -445,6 +510,7 @@ void Simulation::create_successor(const std::string& name) {
   actors_.clear();
   actors_.push_back(player);
   emit(EventType::ScionCreated, player.id, {}, {}, scion_.name);
+  record_legend("scion_created", scion_.id, scion_.name);
 }
 
 void Simulation::add_seasonal_objective(const std::string& description) {
