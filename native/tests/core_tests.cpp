@@ -56,7 +56,20 @@ std::vector<std::string> relevant(const Simulation& sim) {
   result.push_back(sim.house().id);
   result.push_back(sim.scion().id);
   if (!sim.house().stored_items.empty()) result.push_back(sim.house().stored_items.front().id);
+  for (const auto& legend : sim.legends()) {
+    result.push_back(std::to_string(legend.ordinal) + ":" + std::to_string(legend.tick) + ":" +
+                     legend.scion_id + ":" + legend.scion_name + ":" + legend.kind + ":" +
+                     legend.subject + ":" + legend.detail + ":" + legend.killer_id + ":" +
+                     legend.route_id + ":" + (legend.founding ? "founding" : "ordinary"));
+  }
   return result;
+}
+
+const LegendEntry* find_legend(const Simulation& sim, const std::string& kind) {
+  for (const auto& legend : sim.legends()) {
+    if (legend.kind == kind) return &legend;
+  }
+  return nullptr;
 }
 
 void test_determinism() {
@@ -124,6 +137,14 @@ void test_death_and_successor() {
   check(sim.scion().level == 1 && sim.scion().carried_items.empty(),
         "successor does not inherit the dead Scion's full progression");
   check(sim.fallen_scions().size() == 1, "dead Scion remains in House history");
+  const LegendEntry* death = find_legend(sim, "scion_death");
+  check(death && death->scion_id == old_scion, "death legend retains the fallen Scion identity");
+  check(death->killer_id == "hazard:death" && death->route_id == "route:tin:1:0",
+        "death legend records a stable killer and route");
+  check(find_legend(sim, "relic_candidate") != nullptr,
+        "death legend records the relic candidate transition");
+  check(find_legend(sim, "scion_created") != nullptr,
+        "successor creation is retained in the shared House history");
 }
 
 void test_item_identity_and_branch() {
@@ -171,6 +192,90 @@ void test_elite_uses_same_universe() {
   check(Simulation::resolve_damage(*player, *elite) > 0, "elite still uses the shared damage pipeline");
 }
 
+void test_legends_cover_unlocks_and_campaign_milestone() {
+  Simulation sim(16);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(sim);
+  const LegendEntry* route = find_legend(sim, "route_cleared");
+  const LegendEntry* unlock = find_legend(sim, "route_unlocked");
+  const LegendEntry* campaign = find_legend(sim, "campaign_complete");
+  check(route && route->subject == "route:tin:1:0", "first route clear records its stable route id");
+  check(unlock && unlock->subject == "route:tin:2:0", "route unlock records its stable route id");
+  check(campaign && campaign->founding && campaign->subject == sim.house().id,
+        "campaign completion is a founding-equivalent legend");
+  sim.dispatch(Command::interact("branch:ash"));
+  const LegendEntry* branch = find_legend(sim, "branch_unlocked");
+  check(branch && branch->subject == "branch:ash", "branch unlock records its stable branch id");
+  check(find_legend(sim, "LegendRecorded") == nullptr, "legend kinds remain domain values");
+}
+
+void test_elite_kill_and_recorded_event() {
+  Simulation sim(17);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(sim);
+  sim.dispatch(Command::enter("route:tin:2:0"));
+  defeat_enemy(sim);
+  const LegendEntry* elite = find_legend(sim, "elite_kill");
+  check(elite && elite->route_id == "route:tin:2:0", "elite kill records the route");
+  check(!elite->killer_id.empty() && elite->subject.rfind("actor-", 0) == 0,
+        "elite legend references stable actor ids");
+  bool saw_recorded_event = false;
+  for (const auto& event : sim.events()) {
+    if (event.type == EventType::LegendRecorded) {
+      saw_recorded_event = true;
+      break;
+    }
+  }
+  check(saw_recorded_event, "recording a legend emits a LegendRecorded event");
+}
+
+void test_legends_are_bounded_and_evict_oldest_non_founding() {
+  Simulation sim(18);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(sim);
+  const LegendEntry* campaign = find_legend(sim, "campaign_complete");
+  check(campaign != nullptr, "cap test has a founding milestone to preserve");
+  const std::uint64_t campaign_ordinal = campaign->ordinal;
+  for (int i = 0; i < 40; ++i) {
+    sim.dispatch(Command::interact("hazard:death"));
+    sim.create_successor("Successor " + std::to_string(i));
+  }
+  check(sim.legends().size() == kLegendCapacity, "legend history enforces its cap");
+  check(sim.legends().front().founding, "founding milestone survives non-founding eviction");
+  check(sim.legends().front().ordinal == campaign_ordinal,
+        "oldest ordinary records are evicted before the founding record");
+  for (std::size_t index = 1; index < sim.legends().size(); ++index) {
+    check(sim.legends()[index - 1].ordinal < sim.legends()[index].ordinal,
+          "legend ordinals remain strictly increasing after eviction");
+  }
+}
+
+void test_legend_stable_ids_and_deterministic_replay() {
+  Simulation first(19);
+  Simulation second(19);
+  const std::vector<Command> commands = {
+      Command::enter("route:tin:1:0"), Command::move(1, 0), Command::move(1, 0),
+      Command::move(1, 0), Command::move(1, 0), Command::action_use(ActionType::Melee),
+      Command::action_use(ActionType::Melee), Command::action_use(ActionType::Melee),
+      Command::action_use(ActionType::Melee), Command::action_use(ActionType::Melee),
+      Command::action_use(ActionType::Melee), Command::action_use(ActionType::Melee),
+  };
+  for (const auto& command : commands) {
+    first.dispatch(command);
+    second.dispatch(command);
+  }
+  check(first.legends() == second.legends(),
+        "identical seed and commands produce byte-identical legend records");
+  check(!first.legends().empty(), "deterministic replay produces legend records");
+  for (const auto& legend : first.legends()) {
+    check(!legend.scion_id.empty() && !legend.scion_name.empty(),
+          "legend records retain the Scion identity");
+    if (legend.kind == "route_cleared") {
+      check(legend.subject.rfind("route:", 0) == 0, "route legend uses a stable route id");
+    }
+  }
+}
+
 }  // namespace
 
 int main() {
@@ -181,6 +286,10 @@ int main() {
   test_item_identity_and_branch();
   test_campaign_and_seasonal_extension();
   test_elite_uses_same_universe();
+  test_legends_cover_unlocks_and_campaign_milestone();
+  test_elite_kill_and_recorded_event();
+  test_legends_are_bounded_and_evict_oldest_non_founding();
+  test_legend_stable_ids_and_deterministic_replay();
   std::cout << "verdigris core tests: PASS\n";
   return 0;
 }

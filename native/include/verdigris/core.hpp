@@ -62,6 +62,7 @@ struct Actor {
   bool alive = true;
   int cooldown_ticks = 0;
   std::optional<std::string> equipped_item_id;
+  bool elite = false;
 };
 
 struct RouteNode {
@@ -70,6 +71,8 @@ struct RouteNode {
   std::vector<std::string> children;
   bool optional = false;
 };
+
+struct LegendEntry;
 
 struct House {
   std::string id;
@@ -82,10 +85,28 @@ struct House {
   std::vector<Item> stored_items;
   std::vector<Item> relic_candidates;
   std::vector<std::string> seasonal_rewards;
+  std::vector<LegendEntry> legends;
   bool campaign_complete = false;
 
   bool route_unlocked(const std::string& route_id) const;
   bool route_cleared(const std::string& route_id) const;
+};
+
+inline constexpr std::size_t kLegendCapacity = 64;
+
+struct LegendEntry {
+  std::uint64_t ordinal = 0;
+  std::uint64_t tick = 0;
+  std::string scion_id;
+  std::string scion_name;
+  std::string kind;
+  std::string subject;
+  std::string detail;
+  std::string killer_id;
+  std::string route_id;
+  bool founding = false;
+
+  bool operator==(const LegendEntry& other) const;
 };
 
 struct Scion {
@@ -120,7 +141,8 @@ enum class EventType {
   BranchUnlocked,
   SeasonalObjectiveAdded,
   SeasonalRewardGranted,
-  ScionLost
+  ScionLost,
+  LegendRecorded
 };
 
 struct Event {
@@ -187,6 +209,7 @@ class Simulation {
   const std::vector<Item>& ground_items() const;
   const std::vector<Trophy>& ground_trophies() const;
   const std::vector<Event>& events() const;
+  const std::vector<LegendEntry>& legends() const;
   std::uint64_t tick() const;
 
   const Actor* actor(const std::string& id) const;
@@ -222,7 +245,10 @@ class Simulation {
   void spawn_enemy();
   void drop_reward();
   void clear_route_and_unlock_children();
-  void handle_death(Actor& actor);
+  void handle_death(Actor& actor, const std::string& killer_id = {});
+  void record_legend(const std::string& kind, const std::string& subject,
+                     const std::string& detail = {}, const std::string& killer_id = {},
+                     const std::string& route_id = {}, bool founding = false);
   int equipped_attack_bonus() const;
   bool at_extraction() const;
 
@@ -237,6 +263,7 @@ class Simulation {
   std::vector<Event> events_;
   SeasonalMechanic* seasonal_mechanic_ = nullptr;
   std::uint64_t tick_ = 0;
+  std::uint64_t next_legend_ordinal_ = 1;
 };
 
 }  // namespace verdigris
