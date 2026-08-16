@@ -75,6 +75,9 @@ struct ClientState {
   bool d = false;
   POINT mouse{0, 0};
   Camera camera;
+  verdigris::Vec2 last_aim_direction{1, 0};
+  bool aim_direction_initialized = false;
+  bool was_moving = false;
   std::vector<EffectFx> effects;
   std::unordered_map<std::string, verdigris::Vec2> loot_positions;
   verdigris::Vec2 last_death_pos{0, 0};
@@ -382,6 +385,35 @@ double aim_angle(const ClientState& state, const RECT& bounds, double from_x,
   return std::atan2(wy - from_y, wx - from_x);
 }
 
+verdigris::Vec2 quantized_mouse_aim(const ClientState& state, const RECT& bounds,
+                                    const verdigris::Actor& player) {
+  double wx = static_cast<double>(player.position.x) + kTileUnits;
+  double wy = static_cast<double>(player.position.y);
+  unproject(state.camera, bounds, state.mouse.x, state.mouse.y, wx, wy);
+  const double dx = wx - static_cast<double>(player.position.x);
+  const double dy = wy - static_cast<double>(player.position.y);
+  const int qx = dx < 0.0 ? -1 : dx > 0.0 ? 1 : 0;
+  const int qy = dy < 0.0 ? -1 : dy > 0.0 ? 1 : 0;
+  return {qx, qy};
+}
+
+void dispatch_aim_if_changed(ClientState& state, const RECT& bounds, bool force = false) {
+  const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
+  if (!player || !player->alive) return;
+  const verdigris::Vec2 direction = quantized_mouse_aim(state, bounds, *player);
+  if (direction.x == 0 && direction.y == 0) return;
+  if (!force && state.aim_direction_initialized &&
+      state.last_aim_direction.x == direction.x &&
+      state.last_aim_direction.y == direction.y) {
+    return;
+  }
+  // The quantized heading is the only client-side state used for throttling;
+  // facing and all consequences remain authoritative in the core.
+  state.simulation->dispatch(verdigris::Command::aim(direction.x, direction.y));
+  state.last_aim_direction = direction;
+  state.aim_direction_initialized = true;
+}
+
 // Turn new simulation events into procedural presentation effects.
 void ingest_events(ClientState& state, const RECT& bounds) {
   const auto& sim = *state.simulation;
@@ -644,9 +676,11 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         draw_contact_shadow(dc, state.camera, base, kTileUnits * 0.42);
         draw_billboard(dc, base, kTileUnits * 0.62, kTileUnits * 1.35,
                        RGB(84, 158, 128), RGB(140, 208, 172));
-        // Facing indicator toward the mouse aim point on the ground plane.
+        // Draw the authoritative simulation facing, rather than a client-only
+        // mouse hint. The core owns the integer heading used by Thrust.
         const double angle =
-            aim_angle(state, bounds, player->position.x, player->position.y);
+            std::atan2(static_cast<double>(player->facing.y),
+                       static_cast<double>(player->facing.x));
         const int fx = base.x + static_cast<int>(std::cos(angle) * kTileUnits * 0.6 *
                                                  base.scale);
         const int fy = base.y + static_cast<int>(std::sin(angle) * kTileUnits * 0.6 *
@@ -781,13 +815,23 @@ void paint(HWND window, HDC dc) {
 }
 
 void timer_step(HWND window, ClientState& state) {
-  int dx = (state.d ? 1 : 0) - (state.a ? 1 : 0);
-  int dy = (state.s ? 1 : 0) - (state.w ? 1 : 0);
-  if (dx != 0 || dy != 0) state.simulation->dispatch(verdigris::Command::move(dx, dy));
-  else state.simulation->dispatch(verdigris::Command::action_use(verdigris::ActionType::Wait));
-
   RECT bounds;
   GetClientRect(window, &bounds);
+
+  int dx = (state.d ? 1 : 0) - (state.a ? 1 : 0);
+  int dy = (state.s ? 1 : 0) - (state.w ? 1 : 0);
+  const bool moving = dx != 0 || dy != 0;
+  if (moving)
+    state.simulation->dispatch(verdigris::Command::move(dx, dy));
+  else
+    state.simulation->dispatch(verdigris::Command::action_use(verdigris::ActionType::Wait));
+
+  // Movement owns facing while the actor is moving. Re-send the throttled
+  // mouse heading on the first idle tick so aiming immediately takes over
+  // again without sending a command every frame.
+  dispatch_aim_if_changed(state, bounds, !moving && state.was_moving);
+  state.was_moving = moving;
+
   ingest_events(state, bounds);
 
   for (auto& fx : state.effects) ++fx.age;
@@ -884,6 +928,10 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (state) {
         state->mouse.x = GET_X_LPARAM(lparam);
         state->mouse.y = GET_Y_LPARAM(lparam);
+        RECT bounds;
+        GetClientRect(window, &bounds);
+        dispatch_aim_if_changed(*state, bounds);
+        InvalidateRect(window, nullptr, FALSE);
       }
       break;
     case WM_MOUSEWHEEL:
