@@ -1,6 +1,6 @@
 ---
 task: TASK-0004
-state: CLAIMED
+state: REVIEW_REQUESTED
 worker: Luna native-client implementer
 worker_branch: codex/TASK-0004-native-client-direct-control
 worktree: .codex/worktrees/TASK-0004-native-client-direct-control
@@ -12,6 +12,6 @@ known_risks: preserve headless byte-compatible output; client-only ownership; TA
 dependencies: TASK-0002 review/revision in flight; no build-file edits permitted
 implementation_commit: 7ac51d4
 validator: /root/validate_task_0004
-validator_verdict: PENDING
+validator_verdict: ACCEPT
 architect_review_required: true
 ---

@@ -34,4 +34,8 @@ The historical `native/README.md` still documents the old controls; it is
 outside this task's owned paths and is noted for a later owner/coordinator doc
 update.
 
-Independent validation is pending; architect review and integration follow.
+Independent validator `/root/validate_task_0004` returned **ACCEPT** after
+reviewing commit `7ac51d4`, rerunning the full native gate, checking
+`git diff --check`, confirming the D-007 command semantics and unchanged
+headless path, and inspecting the driven-input captures. Architect review and
+integration follow.
