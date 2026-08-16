@@ -12,6 +12,6 @@ expected_verification: node prototypes/founding-slice/build.mjs; node prototypes
 known_risks: preserve the lab presets and generated index drift guard while making the ARPG default and zoom blend reversible
 dependencies: none
 architect_review_required: true
-implementation_commit: pending
+implementation_commit: d079e70
 verification: node prototypes/founding-slice/build.mjs (PASS); node prototypes/founding-slice/run-checks.mjs (PASS: 4/4); git diff --check (PASS); headless parameter dump in REPORT.md (PASS)
 ---
