@@ -41,7 +41,17 @@ using AlphaBlendProc = BOOL(WINAPI*)(HDC, int, int, int, int, HDC, int, int, int
                                      BLENDFUNCTION);
 
 constexpr double kPi = 3.14159265358979323846;
-constexpr double kTileUnits = 100.0;  // one move command covers 100 world units
+constexpr double kTileUnits = 100.0;  // one world tile is 100 simulation units
+// D-107 ARPG camera preset.  The close zoom blend borrows the Miniature
+// treatment's stronger perspective without changing the default presentation.
+constexpr double kCameraDefaultZoom = 0.85;
+constexpr double kCameraDefaultPitch = 62.0;
+constexpr double kCameraDefaultPerspective = 0.0006;
+constexpr double kCameraDefaultAnchor = 0.52;
+constexpr double kCameraDefaultFog = 0.4;
+constexpr double kCameraMiniaturePerspective = 0.0013;
+constexpr double kCameraMiniatureZoomThreshold = 1.05;
+constexpr double kCameraMiniatureBlendEndZoom = 1.35;
 // These costs are presentation metadata only.  The simulation remains the
 // authority for affordability and resource mutation.
 constexpr int kThrustResourceCost = 10;
@@ -53,15 +63,26 @@ constexpr int kWarCryResourceCost = 20;
 struct Camera {
   double x = 0.0;
   double y = 0.0;
-  double zoom = 0.5;          // pixels per world unit
-  double pitch_deg = 55.0;    // 90 = top-down, lower = flatter horizon
-  double perspective = 0.00035;  // depth scale per world unit toward the viewer
+  double zoom = kCameraDefaultZoom;  // pixels per world unit
+  double pitch_deg = kCameraDefaultPitch;  // 90 = top-down, lower = flatter horizon
+  double perspective = kCameraDefaultPerspective;
+  double anchor = kCameraDefaultAnchor;
+  double fog = kCameraDefaultFog;
 
   double ground_squash() const { return std::cos(pitch_deg * kPi / 180.0); }
   double depth_scale(double rel_y) const {
     return std::clamp(1.0 + rel_y * perspective, 0.65, 1.55);
   }
 };
+
+void update_camera_perspective(Camera& camera) {
+  const double blend = std::clamp(
+      (camera.zoom - kCameraMiniatureZoomThreshold) /
+          (kCameraMiniatureBlendEndZoom - kCameraMiniatureZoomThreshold),
+      0.0, 1.0);
+  camera.perspective = kCameraDefaultPerspective +
+                       (kCameraMiniaturePerspective - kCameraDefaultPerspective) * blend;
+}
 
 struct ScreenPoint {
   int x = 0;
@@ -506,9 +527,10 @@ ScreenPoint project(const Camera& camera, const RECT& bounds, double wx, double 
   const double rel_x = wx - camera.x;
   const double rel_y = wy - camera.y;
   const double depth = camera.depth_scale(rel_y);
+  const int anchor_y = static_cast<int>(bounds.bottom * camera.anchor);
   ScreenPoint out;
   out.x = bounds.right / 2 + static_cast<int>(rel_x * camera.zoom * depth);
-  out.y = bounds.bottom / 2 +
+  out.y = anchor_y +
           static_cast<int>(rel_y * camera.zoom * camera.ground_squash() * depth);
   out.scale = camera.zoom * depth;
   return out;
@@ -518,8 +540,9 @@ ScreenPoint project(const Camera& camera, const RECT& bounds, double wx, double 
 void unproject(const Camera& camera, const RECT& bounds, int sx, int sy, double& wx,
                double& wy) {
   const double squash = std::max(0.08, camera.ground_squash());
-  double rel_y = (sy - bounds.bottom / 2) / (camera.zoom * squash);
-  rel_y = (sy - bounds.bottom / 2) / (camera.zoom * squash * camera.depth_scale(rel_y));
+  const int anchor_y = static_cast<int>(bounds.bottom * camera.anchor);
+  double rel_y = (sy - anchor_y) / (camera.zoom * squash);
+  rel_y = (sy - anchor_y) / (camera.zoom * squash * camera.depth_scale(rel_y));
   const double rel_x =
       (sx - bounds.right / 2) / (camera.zoom * camera.depth_scale(rel_y));
   wx = camera.x + rel_x;
@@ -1278,7 +1301,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       "X nearest pickup | Z loot labels | F contextual extract | I gear/House overlay";
   TextOutA(dc, 18, 64, help2, static_cast<int>(strlen(help2)));
   const char* camera_help =
-      "Wheel zoom | PgUp/PgDn pitch | -/= perspective | Home reset camera";
+      "Wheel zoom | PgUp/PgDn pitch | -/= perspective | Home reset ARPG camera";
   TextOutA(dc, 18, 88, camera_help, static_cast<int>(strlen(camera_help)));
 
   paint_resource_hud(player, dc);
@@ -1286,9 +1309,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   SetTextColor(dc, RGB(150, 160, 150));
   char debug_line[256];
   std::snprintf(debug_line, sizeof(debug_line),
-                "tick %llu | zoom %.2f | pitch %.0f | persp %.5f | effects %zu | telegraphs %zu | %s",
+                "tick %llu | zoom %.2f | pitch %.0f | persp %.5f | anchor %.2f | fog %.1f | effects %zu | telegraphs %zu | %s",
                 static_cast<unsigned long long>(sim.tick()), state.camera.zoom,
-                state.camera.pitch_deg, state.camera.perspective,
+                state.camera.pitch_deg, state.camera.perspective, state.camera.anchor,
+                state.camera.fog,
                 state.effects.size(), state.telegraphs.size(), state.billboards.status.c_str());
   TextOutA(dc, 18, 168, debug_line, static_cast<int>(strlen(debug_line)));
   if (state.hint_ticks > 0 && !state.hint.empty()) {
@@ -1417,11 +1441,14 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (wparam == VK_OEM_MINUS)
         state->camera.perspective = std::max(0.0, state->camera.perspective - 0.0001);
       if (wparam == VK_OEM_PLUS)
-        state->camera.perspective = std::min(0.0012, state->camera.perspective + 0.0001);
+        state->camera.perspective = std::min(kCameraMiniaturePerspective,
+                                             state->camera.perspective + 0.0001);
       if (wparam == VK_HOME) {
-        state->camera.zoom = 0.5;
-        state->camera.pitch_deg = 55.0;
-        state->camera.perspective = 0.00035;
+        state->camera.zoom = kCameraDefaultZoom;
+        state->camera.pitch_deg = kCameraDefaultPitch;
+        state->camera.perspective = kCameraDefaultPerspective;
+        state->camera.anchor = kCameraDefaultAnchor;
+        state->camera.fog = kCameraDefaultFog;
       }
       InvalidateRect(window, nullptr, FALSE);
       break;
@@ -1447,6 +1474,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         const int delta = GET_WHEEL_DELTA_WPARAM(wparam);
         const double factor = delta > 0 ? 1.1 : 1.0 / 1.1;
         state->camera.zoom = std::clamp(state->camera.zoom * factor, 0.15, 2.0);
+        update_camera_perspective(state->camera);
         InvalidateRect(window, nullptr, FALSE);
       }
       break;
@@ -1494,14 +1522,14 @@ int run_headless_demo() {
   verdigris::EmberHunt seasonal;
   simulation.set_seasonal_mechanic(&seasonal);
   simulation.dispatch(verdigris::Command::enter("route:tin:1:0"));
-  for (int i = 0; i < 4; ++i) simulation.dispatch(verdigris::Command::move(1, 0));
+  for (int i = 0; i < 40; ++i) simulation.dispatch(verdigris::Command::move(1, 0));
   for (int i = 0; i < 8; ++i)
     simulation.dispatch(verdigris::Command::action_use(verdigris::ActionType::Melee));
   if (!simulation.ground_items().empty())
     simulation.dispatch(verdigris::Command::pick_up(simulation.ground_items().front().id));
   if (!simulation.ground_trophies().empty())
     simulation.dispatch(verdigris::Command::pick_up(simulation.ground_trophies().front().id));
-  for (int i = 0; i < 4; ++i) simulation.dispatch(verdigris::Command::move(-1, 0));
+  for (int i = 0; i < 40; ++i) simulation.dispatch(verdigris::Command::move(-1, 0));
   simulation.dispatch(verdigris::Command::extract());
   std::cout << "Verdigris native client shell\n"
             << "House: " << simulation.house().name
@@ -1549,14 +1577,14 @@ int run_headless_demo() {
   verdigris::EmberHunt seasonal;
   simulation.set_seasonal_mechanic(&seasonal);
   simulation.dispatch(verdigris::Command::enter("route:tin:1:0"));
-  for (int i = 0; i < 4; ++i) simulation.dispatch(verdigris::Command::move(1, 0));
+  for (int i = 0; i < 40; ++i) simulation.dispatch(verdigris::Command::move(1, 0));
   for (int i = 0; i < 8; ++i)
     simulation.dispatch(verdigris::Command::action_use(verdigris::ActionType::Melee));
   if (!simulation.ground_items().empty())
     simulation.dispatch(verdigris::Command::pick_up(simulation.ground_items().front().id));
   if (!simulation.ground_trophies().empty())
     simulation.dispatch(verdigris::Command::pick_up(simulation.ground_trophies().front().id));
-  for (int i = 0; i < 4; ++i) simulation.dispatch(verdigris::Command::move(-1, 0));
+  for (int i = 0; i < 40; ++i) simulation.dispatch(verdigris::Command::move(-1, 0));
   simulation.dispatch(verdigris::Command::extract());
   std::cout << "Verdigris native client shell\n"
             << "House: " << simulation.house().name

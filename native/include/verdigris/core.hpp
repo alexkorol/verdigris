@@ -29,6 +29,18 @@ enum class ActionType { Melee, Dash, Wait, Thrust, Sweep, WarCry };
 // render the same warning window.
 inline constexpr int kTelegraphTicks = 3;
 
+// Simulation commands resolve at a fixed 20 Hz cadence.  Actor move_speed is
+// expressed in world units per second; this named derivation keeps movement
+// deterministic while preserving the recorded MoveIntent shape.
+inline constexpr int kSimulationTickMs = 50;
+
+constexpr int movement_step_per_tick(int move_speed) {
+  return std::max(1, move_speed * kSimulationTickMs / 1000);
+}
+
+// A dash is a short, readable burst measured in ordinary movement ticks.
+inline constexpr int kDashMovementTicks = 10;
+
 // Curated gameplay constants needed by presentation.  Mechanics and the
 // read-only catalog use these same definitions; clients must not mirror the
 // values independently.
