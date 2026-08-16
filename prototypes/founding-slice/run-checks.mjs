@@ -1,7 +1,7 @@
 import {cp, mkdtemp, readFile, rm} from 'node:fs/promises';
 import {createServer} from 'node:http';
 import {tmpdir} from 'node:os';
-import {dirname, extname, join, normalize, resolve} from 'node:path';
+import {dirname, extname, isAbsolute, join, normalize, relative, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawn} from 'node:child_process';
 import {runSliceChecks} from './tests/slice-checks.mjs';
@@ -66,9 +66,10 @@ function startServer() {
     const server = createServer(async (request, response) => {
       try {
         const requestPath = decodeURIComponent((request.url || '/').split('?')[0]);
-        const relative = requestPath === '/' ? 'index.html' : requestPath.replace(/^\/+/, '');
-        const file = resolve(root, normalize(relative));
-        if (file !== resolve(root, relative) || !file.startsWith(resolve(root) + '\\')) {
+        const requestRelative = requestPath === '/' ? 'index.html' : requestPath.replace(/^\/+/, '');
+        const file = resolve(root, normalize(requestRelative));
+        const containment = relative(resolve(root), file);
+        if (isAbsolute(containment) || /^(?:\.\.[\\/]|\.\.$)/.test(containment)) {
           response.writeHead(403).end('forbidden');
           return;
         }

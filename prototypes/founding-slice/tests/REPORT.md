@@ -57,9 +57,9 @@ The scratch directory was removed after the probe.
 
 ## Commit
 
-Implementation milestone: `6370015 test: add founding slice verification harness`.
-The final worker commit also includes this report; its hash is supplied in the
-worker handoff because amending a commit necessarily changes its own hash.
+The final worker commit hash is supplied in the worker handoff. This report
+avoids embedding a self-referential hash so it cannot become stale when the
+revision is committed.
 
 ## Notes and follow-ups
 
@@ -67,3 +67,30 @@ The harness uses only the repository's Playwright package and no new
 dependencies. It drives the standard via the real `E` interaction, performs a
 real canvas `LMB` attack, and uses the debug panel only for deterministic wave
 clearing. No unresolved questions or stop conditions remain.
+
+## Revision 1
+
+Validator findings:
+
+- P1: the HTTP server containment check used a Windows-only backslash prefix,
+  so POSIX paths were rejected incorrectly. The guard now computes
+  `relative(resolve(root), file)` and rejects absolute results and parent
+  traversals using both slash forms while allowing files under the root.
+- P2: the report contained the historical implementation SHA. The commit
+  section now refers to the handoff instead of hardcoding a revision SHA.
+
+Verification commands and outcomes:
+
+```text
+node prototypes/founding-slice/run-checks.mjs
+4/4 checks passed in 18.2s
+
+npx eslint prototypes/founding-slice/run-checks.mjs prototypes/founding-slice/tests/slice-checks.mjs
+passed
+
+POSIX/Windows path-containment logic check
+PASS: root/index allowed; ../escape and absolute paths rejected on POSIX and Windows path models
+
+negative drift probe
+NEGATIVE PASS: deliberate scratch index drift detected; committed index untouched
+```
