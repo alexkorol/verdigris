@@ -4,6 +4,7 @@ state: REVIEW_REQUESTED
 branch: codex/TASK-0002-build-ci-hardening
 commits:
   - 659b8802f82dfb6839207c05700a5d1cf27380a0
+  - 44a20b277f87bd0c1af0686ca2119aaf3d09b23d
   - f9c979b40afce5ccf43e3f73a3bc82400649b212
 base_commit: 0e02aa7
 spec_base_commit: f5b4b72
