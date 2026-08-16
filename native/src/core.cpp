@@ -10,7 +10,9 @@
 namespace verdigris {
 
 namespace {
-constexpr int kEnemySpawnX = 2000;
+// With 50 ms movement steps, 1500 units keeps the existing melee/thrust
+// ranges reachable before a monster can exhaust the Scion during approach.
+constexpr int kEnemySpawnX = 1500;
 constexpr int kExtractionRange = 250;
 constexpr int kThrustDamageNumerator = 13;
 constexpr int kThrustDamageDenominator = 10;
@@ -44,6 +46,13 @@ Vec2 quantize_direction(int dx, int dy) {
   return {direction_component(dx), direction_component(dy)};
 }
 
+Vec2 movement_delta(int dx, int dy, int move_speed) {
+  if (dx == 0 && dy == 0) return {};
+  const int length = std::max(1, std::abs(dx) + std::abs(dy));
+  const int step = movement_step_per_tick(move_speed);
+  return {(dx * step) / length, (dy * step) / length};
+}
+
 bool is_forward(const Vec2& facing, Vec2 delta) {
   // A strict half-plane keeps the boundary (dot == 0) out of a thrust cone.
   // All operands are bounded integer world-space values and the facing is
@@ -63,7 +72,8 @@ ActorStats player_stats() {
   stats.resource = stats.resource_max;
   stats.attack = 12;
   stats.defense = 5;
-  stats.move_speed = 300;
+  // Per-second value; resolve_move derives the deterministic 50 ms step.
+  stats.move_speed = 220;
   stats.attack_speed_ticks = 3;
   return stats;
 }
@@ -290,9 +300,9 @@ void Simulation::resolve_move(int dx, int dy) {
   if (!player || !player->alive || !scion_.alive) return;
   const Vec2 direction = quantize_direction(dx, dy);
   if (direction.x != 0 || direction.y != 0) player->facing = direction;
-  const int length = std::max(1, std::abs(dx) + std::abs(dy));
-  player->position.x += (dx * player->stats.move_speed) / length;
-  player->position.y += (dy * player->stats.move_speed) / length;
+  const Vec2 delta = movement_delta(dx, dy, player->stats.move_speed);
+  player->position.x += delta.x;
+  player->position.y += delta.y;
   emit(EventType::ActorMoved, player->id, {}, {}, {}, player->position.x);
 }
 
@@ -312,7 +322,10 @@ void Simulation::resolve_action(ActionType action) {
 void Simulation::resolve_actor_action(Actor& attacker, ActionType action) {
   if (!attacker.alive) return;
   if (action == ActionType::Dash) {
-    attacker.position.x += attacker.stats.move_speed * 2;
+    const Vec2 delta = movement_delta(attacker.facing.x, attacker.facing.y,
+                                      attacker.stats.move_speed);
+    attacker.position.x += delta.x * kDashMovementTicks;
+    attacker.position.y += delta.y * kDashMovementTicks;
     emit(EventType::ActorMoved, attacker.id, {}, {}, "dash", attacker.position.x);
     return;
   }
@@ -552,8 +565,11 @@ void Simulation::enemy_turn() {
       }
     }
 
-    // Plain melee remains the original non-elite cadence.  Elite monsters
-    // also use it when they are in melee range but cannot fund Sweep.
+    // Plain melee remains the original non-elite cadence. Elite monsters also
+    // use it when they are in melee range but cannot fund Sweep. The shared
+    // movement_delta() derivation is used by any Actor action (player WASD
+    // and Dash alike); pursuit remains presentation-neutral until the native
+    // collision/navigation pass owns monster locomotion.
     if (distance > kMeleeRange) continue;
     enemy.cooldown_ticks = enemy.stats.attack_speed_ticks;
     const int damage = resolve_damage(enemy, *player);

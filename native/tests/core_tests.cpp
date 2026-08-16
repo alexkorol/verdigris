@@ -17,12 +17,14 @@ void check(bool condition, const std::string& message) {
   }
 }
 
-void reach_enemy(Simulation& sim) {
-  for (int i = 0; i < 4; ++i) sim.dispatch(Command::move(1, 0));
-}
-
 void defeat_enemy(Simulation& sim) {
-  reach_enemy(sim);
+  // Keep attacking while closing the slower fixed-step gap. This mirrors the
+  // continuous WASD + primary-action rhythm used by the client and prevents
+  // a nearby route transition from spending dozens of ticks under fire.
+  for (int i = 0; i < 40; ++i) {
+    sim.dispatch(Command::move(1, 0));
+    sim.dispatch(Command::action_use(ActionType::Melee));
+  }
   for (int i = 0; i < 12; ++i) sim.dispatch(Command::action_use(ActionType::Melee));
   const auto monsters = sim.actors();
   bool dead = true;
@@ -42,7 +44,7 @@ void pick_all_rewards(Simulation& sim) {
 }
 
 void extract_from_start(Simulation& sim) {
-  for (int i = 0; i < 4; ++i) sim.dispatch(Command::move(-1, 0));
+  for (int i = 0; i < 40; ++i) sim.dispatch(Command::move(-1, 0));
   sim.dispatch(Command::extract());
 }
 
@@ -192,6 +194,68 @@ void test_actor_facing_follows_movement_and_aim() {
   check(player->position.x == position_after_move.x &&
             player->position.y == position_after_move.y,
         "aim does not move the actor");
+}
+
+void test_movement_step_derivation_and_actor_symmetry() {
+  check(movement_step_per_tick(220) == 11,
+        "player movement derives 11 world units from 220 units/sec at 50 ms");
+  check(movement_step_per_tick(240) == 12,
+        "monster movement uses the same fixed-step derivation");
+
+  Simulation sim(0xA013ULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  Actor* player = sim.actor(sim.scion().actor_id);
+  Actor* enemy = first_monster(sim);
+  check(player && enemy, "movement test has both actors");
+  const Vec2 player_start = player->position;
+  sim.dispatch(Command::move(1, 0));
+  player = sim.actor(sim.scion().actor_id);
+  enemy = first_monster(sim);
+  check(player->position.x - player_start.x == movement_step_per_tick(player->stats.move_speed) &&
+            player->position.y == player_start.y,
+        "one cardinal MoveIntent applies exactly one named movement step");
+  check(movement_step_per_tick(enemy->stats.move_speed) == 12,
+        "monster movement uses the same named fixed-step derivation");
+
+  Simulation diagonal(0xA014ULL);
+  diagonal.dispatch(Command::move(1, 1));
+  const Actor* diagonal_player = diagonal.actor(diagonal.scion().actor_id);
+  check(diagonal_player->position.x == 5 && diagonal_player->position.y == 5,
+        "diagonal movement remains deterministic integer math");
+}
+
+void test_movement_replay_is_deterministic() {
+  Simulation first(0xA015ULL);
+  Simulation second(0xA015ULL);
+  first.dispatch(Command::enter("route:tin:1:0"));
+  second.dispatch(Command::enter("route:tin:1:0"));
+  for (int i = 0; i < 60; ++i) {
+    const Command command = i % 3 == 0 ? Command::move(1, 1) : Command::move(1, 0);
+    first.dispatch(command);
+    second.dispatch(command);
+  }
+  check(first.actor(first.scion().actor_id)->position.x ==
+                second.actor(second.scion().actor_id)->position.x &&
+            first.actor(first.scion().actor_id)->position.y ==
+                second.actor(second.scion().actor_id)->position.y,
+        "fixed-step movement produces identical replay positions");
+  check(first.events().size() == second.events().size(),
+        "fixed-step movement replay emits an identical event count");
+}
+
+void test_dash_is_a_named_readable_burst() {
+  Simulation sim(0xA016ULL);
+  Actor* player = sim.actor(sim.scion().actor_id);
+  check(player != nullptr, "dash test has a player");
+  sim.dispatch(Command::aim(-1, 0));
+  sim.dispatch(Command::action_use(ActionType::Dash));
+  player = sim.actor(sim.scion().actor_id);
+  check(player->position.x == -movement_step_per_tick(player->stats.move_speed) *
+                                      kDashMovementTicks &&
+            player->position.y == 0,
+        "dash uses the facing direction and named movement-tick burst");
+  check(last_event(sim, EventType::ActorMoved, "dash") != nullptr,
+        "dash remains observable as a dash movement event");
 }
 
 void test_monster_facing_tracks_pursuit_target() {
@@ -620,17 +684,16 @@ void test_relic_loss_again_returns_once() {
 void test_relic_resurface_replay_is_deterministic() {
   Simulation first(0xD00DFEEDULL);
   Simulation second(0xD00DFEEDULL);
-  const std::vector<Command> setup = {
-      Command::enter("route:tin:1:0"), Command::move(1, 0), Command::move(1, 0),
-      Command::move(1, 0), Command::move(1, 0), Command::action_use(ActionType::Melee),
-      Command::action_use(ActionType::Melee), Command::action_use(ActionType::Melee),
-      Command::action_use(ActionType::Melee), Command::action_use(ActionType::Melee),
-      Command::action_use(ActionType::Melee), Command::action_use(ActionType::Melee),
-      Command::pick_up(""), Command::interact("hazard:death")};
-  for (const auto& command : setup) {
-    first.dispatch(command);
-    second.dispatch(command);
-  }
+  first.dispatch(Command::enter("route:tin:1:0"));
+  second.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(first);
+  defeat_enemy(second);
+  check(!first.ground_items().empty() && !second.ground_items().empty(),
+        "movement replay setup drops an item before recovery");
+  first.dispatch(Command::pick_up(first.ground_items().front().id));
+  second.dispatch(Command::pick_up(second.ground_items().front().id));
+  first.dispatch(Command::interact("hazard:death"));
+  second.dispatch(Command::interact("hazard:death"));
   first.create_successor("Replay Successor");
   second.create_successor("Replay Successor");
   force_relic_resurface(first, "route:tin:1:0");
@@ -649,11 +712,11 @@ void test_determinism() {
   Simulation second(0xBADC0FFEEULL);
   first.dispatch(Command::enter("route:tin:1:0"));
   second.dispatch(Command::enter("route:tin:1:0"));
-  for (int i = 0; i < 4; ++i) {
+  for (int i = 0; i < 40; ++i) {
     first.dispatch(Command::move(1, 0));
     second.dispatch(Command::move(1, 0));
   }
-  for (int i = 0; i < 8; ++i) {
+  for (int i = 0; i < 12; ++i) {
     first.dispatch(Command::action_use(ActionType::Melee));
     second.dispatch(Command::action_use(ActionType::Melee));
   }
@@ -998,6 +1061,9 @@ int main() {
   test_determinism();
   test_actor_symmetry();
   test_actor_facing_follows_movement_and_aim();
+  test_movement_step_derivation_and_actor_symmetry();
+  test_movement_replay_is_deterministic();
+  test_dash_is_a_named_readable_burst();
   test_monster_facing_tracks_pursuit_target();
   test_facing_replay_is_deterministic();
   test_skill_resource_gating_and_thrust();
