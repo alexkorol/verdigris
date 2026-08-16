@@ -126,7 +126,7 @@ captured on the same machine for the side-by-side.
 
 ## Commits
 
-- (filled at commit time — see STATUS.md `implementation_commit`)
+- `889f46a` — the full retune + evidence + report (single coherent commit)
 
 ## Unresolved questions / risks / follow-ups
 
