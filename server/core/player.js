@@ -90,6 +90,9 @@ class Player {
 
     // Authentication
     this.moving = false;
+    // Set during the persist-before-remove disconnect boundary. Combat and
+    // delayed movement timers treat this player as no longer targetable.
+    this.disconnecting = false;
     this.token = token;
     this.uuid = data.uuid;
     this.socket_id = socketId;

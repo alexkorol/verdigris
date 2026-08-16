@@ -185,15 +185,18 @@ describe('Delaford.close – failure-tolerant disconnect cleanup', () => {
       uuid: 'guest-player',
       username: 'Guest',
       token: 'none',
+      socket_id: 'guest-socket',
       sceneId: 'town:delaford',
       update: vi.fn().mockResolvedValue(undefined),
     };
     world.clients = [ws, peer];
-    world.removePlayerBySocket.mockReturnValue(player);
+    world.players = [player];
 
     await Delaford.close(ws);
 
     expect(player.update).toHaveBeenCalledOnce();
+    expect(player.disconnecting).toBe(true);
+    expect(world.removePlayer).toHaveBeenCalledWith(player);
     expect(Authentication.logout).not.toHaveBeenCalled();
     expect(world.clients).toEqual([peer]);
     expect(partyService.removePlayer).toHaveBeenCalledWith(player.uuid);
@@ -206,12 +209,13 @@ describe('Delaford.close – failure-tolerant disconnect cleanup', () => {
       uuid: 'account-player',
       username: 'Account',
       token: 'jwt-token',
+      socket_id: 'account-socket',
       sceneId: 'town:delaford',
       update: vi.fn().mockRejectedValue(new Error('save unavailable')),
     };
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     world.clients = [ws];
-    world.removePlayerBySocket.mockReturnValue(player);
+    world.players = [player];
     Authentication.logout.mockRejectedValue(new Error('account API unavailable'));
 
     await Delaford.close(ws);
@@ -230,6 +234,7 @@ describe('Delaford.close – failure-tolerant disconnect cleanup', () => {
       uuid: 'departing-member',
       username: 'Departing',
       token: 'none',
+      socket_id: 'member-socket',
       sceneId: 'town:delaford',
       update: vi.fn().mockResolvedValue(undefined),
     };
@@ -239,7 +244,7 @@ describe('Delaford.close – failure-tolerant disconnect cleanup', () => {
       members: new Map([['remaining-member', { uuid: 'remaining-member' }]]),
     };
     world.clients = [ws];
-    world.removePlayerBySocket.mockReturnValue(player);
+    world.players = [player];
     partyService.removePlayer.mockReturnValue(updatedParty);
 
     await Delaford.close(ws);
@@ -262,6 +267,56 @@ describe('Delaford.close – failure-tolerant disconnect cleanup', () => {
     expect(world.clients).toEqual([peer]);
     expect(partyService.removePlayer).not.toHaveBeenCalled();
     expect(Socket.broadcast).not.toHaveBeenCalled();
+  });
+
+  it('persists before removing a live player from the world roster', async () => {
+    const ws = { id: 'ordered-socket' };
+    const peer = { id: 'peer-socket' };
+    let releaseSave;
+    const player = {
+      uuid: 'ordered-player',
+      username: 'Ordered',
+      token: 'none',
+      socket_id: ws.id,
+      sceneId: 'instance:party-1',
+      update: vi.fn(() => new Promise((resolve) => { releaseSave = resolve; })),
+    };
+    world.clients = [ws, peer];
+    world.players = [player];
+
+    const closePromise = Delaford.close(ws);
+    await Promise.resolve();
+
+    expect(player.disconnecting).toBe(true);
+    expect(player.update).toHaveBeenCalledOnce();
+    expect(world.removePlayer).not.toHaveBeenCalled();
+
+    releaseSave();
+    await closePromise;
+    expect(world.removePlayer).toHaveBeenCalledWith(player);
+    expect(world.clients).toEqual([peer]);
+  });
+
+  it('applies the same safe boundary to a Chronicles Scion session', async () => {
+    const ws = { id: 'chronicle-socket' };
+    const player = {
+      uuid: 'chronicle-player',
+      username: 'Chronicle Scion',
+      token: 'none',
+      socket_id: ws.id,
+      accountId: 'account-1',
+      scionId: 'scion-1',
+      sceneId: 'instance:chronicle-1',
+      update: vi.fn().mockResolvedValue({ saved: true }),
+    };
+    world.clients = [ws];
+    world.players = [player];
+
+    await Delaford.close(ws);
+
+    expect(player.update).toHaveBeenCalledOnce();
+    expect(player.disconnecting).toBe(true);
+    expect(world.removePlayer).toHaveBeenCalledWith(player);
   });
 });
 

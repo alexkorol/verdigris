@@ -314,6 +314,10 @@ export const queueEmpty = (playerReference) => {
 };
 
 const move = (player, direction, options = {}) => {
+  if (player.disconnecting) {
+    return false;
+  }
+
   const context = typeof options === 'boolean' ? { pathfind: options } : options;
   const {
     pathfind = false,

@@ -196,10 +196,14 @@ class Delaford {
    * Log the user out and save the player profile
    *
    * @param {WebSocket} ws The socket connection of the player
-   * @param {boolean} logout Whether the connection was via player or interruption
-   */
+  * @param {boolean} logout Whether the connection was via player or interruption
+  */
   static async close(ws, logout = false) {
-    const player = world.removePlayerBySocket(ws.id);
+    // Keep the live Player object until its snapshot is durably written. The
+    // disconnecting marker makes combat/path timers ignore it during this
+    // short await, so persistence happens before world removal without a
+    // posthumous hit window.
+    const player = world.players.find(candidate => candidate.socket_id === ws.id) || null;
 
     // A socket can disappear before login creates a Player. Always reap the
     // transport entry on an actual disconnect so unauthenticated connections
@@ -213,6 +217,16 @@ class Delaford {
       return;
     }
 
+    if (player.disconnecting) {
+      return;
+    }
+
+    player.disconnecting = true;
+    Combat.clearAutoAttack(player, 'disconnect');
+    if (typeof player.cancelPathfinding === 'function') {
+      player.cancelPathfinding();
+    }
+
     // Persistence and the account API are independent teardown steps. Neither
     // is allowed to suppress party cleanup or the player:left notification.
     try {
@@ -220,6 +234,10 @@ class Delaford {
     } catch (error) {
       console.error(`[disconnect] Failed to save ${player.username}: ${error instanceof Error ? error.message : error}`);
     }
+
+    // Persist first, then remove the player from both the world roster and its
+    // instance scene. This ordering is the D-109 safety boundary.
+    world.removePlayer(player);
 
     console.log(`${emoji.get('red_circle')}  Player ${player.username} left the game`);
 
