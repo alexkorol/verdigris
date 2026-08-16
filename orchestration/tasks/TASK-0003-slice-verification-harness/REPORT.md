@@ -4,6 +4,7 @@ state: REVIEW_REQUESTED
 branch: codex/TASK-0003-slice-verification-harness
 commits:
   - 278f7dd
+  - e25336d
 base_commit: 0e02aa7
 spec_base_commit: f5b4b72
 ---
@@ -71,3 +72,19 @@ not add CI wiring or visual-regression assertions.
 
 No owner decision is required. A future CI task may call this command without
 changing the harness contract.
+
+## Revision 1
+
+Validator findings required a portable root-containment guard and removal of
+the stale hardcoded worker SHA from the embedded prototype report. Commit
+`e25336d` replaces the Windows-only prefix check with `relative()` plus
+absolute/parent traversal rejection and removes the stale SHA.
+
+Revision verification:
+
+- `node prototypes/founding-slice/run-checks.mjs`: 4/4 checks passed in 18.1s.
+- ESLint passed for both harness files.
+- Root/index is allowed and `../escape` plus absolute paths are rejected under
+  POSIX and Windows path models.
+- Deliberate scratch index drift fails while committed `index.html` remains
+  untouched.
