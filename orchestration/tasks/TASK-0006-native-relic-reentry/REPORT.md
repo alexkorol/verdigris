@@ -1,3 +1,12 @@
+---
+task: TASK-0006
+state: REVIEW_REQUESTED
+branch: codex/TASK-0006-native-relic-reentry
+commits:
+  - f542a04f83d0e78896edd19635f8353c207b6fe3
+base_commit: bc73ce0
+---
+
 # TASK-0006 report — native relic re-entry
 
 ## Implementation
@@ -31,3 +40,38 @@ Only the task-owned native core paths changed:
 - `native/tests/core_tests.cpp`
 
 Architect review and integration remain pending.
+
+## Changed files
+
+- `native/include/verdigris/core.hpp`
+- `native/src/core.cpp`
+- `native/tests/core_tests.cpp`
+
+## Interfaces
+
+Adds `EventType::RelicResurfaced` and the named shared-RNG constant
+`kRelicResurfaceOneIn = 4`; no client or build interfaces changed.
+
+## Manual checks
+
+The validator reran the full core gate and direct core test executable, and
+reviewed stable identity, route history, event/legend records, and single
+ownership through pickup, extraction, and loss-again death.
+
+## Specification deviations
+
+None reported.
+
+## Risks and limitations
+
+The resurfacing probability is intentionally a named deterministic one-in-four
+roll from the task spec's suggested value; tuning remains product-owned.
+
+## Questions for Fable or the owner
+
+None.
+
+## Integration notes
+
+Integrate `f542a04f83d0e78896edd19635f8353c207b6fe3` only after architect
+`ACCEPTED` review. It is core-only and depends on integrated TASK-0001.

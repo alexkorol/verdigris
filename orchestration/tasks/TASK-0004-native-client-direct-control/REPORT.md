@@ -1,3 +1,12 @@
+---
+task: TASK-0004
+state: REVIEW_REQUESTED
+branch: codex/TASK-0004-native-client-direct-control
+commits:
+  - 7ac51d4
+base_commit: bc73ce0
+---
+
 # TASK-0004 report — native client direct control
 
 ## Implementation
@@ -39,3 +48,43 @@ reviewing commit `7ac51d4`, rerunning the full native gate, checking
 `git diff --check`, confirming the D-007 command semantics and unchanged
 headless path, and inspecting the driven-input captures. Architect review and
 integration follow.
+
+## Changed files
+
+- `native/client/main.cpp` only.
+- Driven-input captures remain untracked under
+  `native/client/direct-control-captures/` and are evidence artifacts, not
+  implementation changes.
+
+## Interfaces
+
+No simulation interfaces or commands were added. The client calls existing
+`pick_up`, `equip`, `extract`, `action_use(Melee)`, and
+`action_use(Dash)` commands.
+
+## Manual checks
+
+The Win32 harness exercised Q, Z, WASD/LMB combat, X pickup ordering, I/Enter
+equip, movement to the extraction pad, and F extraction, with PrintWindow
+captures and event/store assertions.
+
+## Specification deviations
+
+None. The legacy README still has stale controls, but it is outside the task's
+owned paths and is explicitly deferred to the owner/coordinator documentation
+pass.
+
+## Risks and limitations
+
+The captures are local untracked evidence and will not travel in the commit.
+The client remains dependent on the existing native build guard while
+TASK-0002 review is finalized.
+
+## Questions for Fable or the owner
+
+None.
+
+## Integration notes
+
+Integrate `7ac51d4` only after an architect `ACCEPTED` review. It is client-only
+and should follow the accepted build/tooling foundation.

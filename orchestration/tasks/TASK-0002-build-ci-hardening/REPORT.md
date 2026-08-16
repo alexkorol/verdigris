@@ -4,6 +4,7 @@ state: REVIEW_REQUESTED
 branch: codex/TASK-0002-build-ci-hardening
 commits:
   - 659b8802f82dfb6839207c05700a5d1cf27380a0
+  - f9c979b40afce5ccf43e3f73a3bc82400649b212
 base_commit: 0e02aa7
 spec_base_commit: f5b4b72
 ---
@@ -136,3 +137,43 @@ build gate, denylist, YAML parse, diff check, and quiet output. It also
 confirmed `ilammy/msvc-dev-cmd@v1` runs before workflow configure/build/test,
 closing the clean-runner defect from revision 2. Architect review and
 integration follow.
+
+## Changed files
+
+- `native/build.ps1`
+- `native/CMakePresets.json`
+- `.github/workflows/native.yml`
+
+## Interfaces
+
+The Windows entrypoint remains `native/build.ps1`; schema-v2 configure,
+build, and test presets remain `default` and `windows-msvc`. CI now initializes
+the x64 MSVC developer environment before invoking the unpinned NMake preset.
+
+## Manual checks
+
+The revision-3 validator used a clean temporary preset directory with
+initialized x64 MSVC and exercised configure, build, CTest, the full PowerShell
+gate, YAML parsing, diff check, and captured-output inspection.
+
+## Specification deviations
+
+The `windows-msvc` preset uses unpinned `NMake Makefiles` plus an explicit CI
+MSVC setup action because bundled CMake 3.20 schema v2 cannot express an
+omitted generator without invalidating the preset or inheriting Ninja. This is
+documented in the worker commit and avoids a VS2019/VS2022 pin.
+
+## Risks and limitations
+
+The workflow depends on the external `ilammy/msvc-dev-cmd@v1` action to provide
+the runner's MSVC environment; the local build.ps1 path remains independent.
+
+## Questions for Fable or the owner
+
+None; the generator/environment tradeoff is explicitly evidenced for review.
+
+## Integration notes
+
+Integrate revision-3 commit `f9c979b40afce5ccf43e3f73a3bc82400649b212` only
+after architect `ACCEPTED` review. It is the build/tooling prerequisite for
+the client task.
