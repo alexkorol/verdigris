@@ -47,6 +47,14 @@ All four captures are 1440×1000 lossy JPEGs under 250KB in
 - ESLint — PASS
 - `git diff --check` — PASS
 
+## Independent validation
+
+Validator `/root/validate_task_0023` independently accepted commit
+`48725e3`. It confirmed the rendering-only scope, governing haze curve,
+finite-edge horizon handling, preserved legacy/projection/height seams, four
+task-folder captures under the size limit, and the 744/744 unit, 1/1 smoke,
+31/31 playtest, ESLint, and diff checks.
+
 ## Scope and risks
 
 Changed paths are limited to `src/core/rendering/**` and the task evidence
