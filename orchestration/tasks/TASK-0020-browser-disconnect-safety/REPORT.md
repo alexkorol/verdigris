@@ -5,6 +5,7 @@ branch: codex/native-reconstitution
 commits:
   - e5d87a5
   - b73ca16
+  - 174d769
 base_commit: 42297ed
 ---
 
@@ -101,3 +102,27 @@ its own fresh server and port:
 The failures are not reproducible in isolated runs, so the aggregate result
 remains recorded as harness timing noise rather than a product acceptance
 result.
+
+## Revision 1 — replacement-session race
+
+The architect's 42fd837 review identified a real asynchronous lifecycle race:
+`world.addPlayer` replaces an existing same-UUID session, while the old
+disconnect's awaited save later called UUID-based `world.removePlayer`, which
+could remove the replacement object. That explains the clustered zone and
+`dev:state` failures after rapid reconnects.
+
+The fix makes `WorldManager.removePlayer` identity-safe: it removes only the
+exact player object that is still registered, and filters only that object's
+scene membership. A two-case unit regression test covers both replacement
+preservation and ordinary current-player removal.
+
+### Revision verification
+
+- `npm exec vitest run tests/unit/world-player-lifecycle.spec.js tests/unit/ws-message-handler.spec.js tests/unit/unarmed-combat.spec.js --reporter=dot` — PASS (40 tests).
+- `npm run test:unit` — PASS (115 files, 744 tests, including the two new lifecycle tests).
+- `npx eslint server/core/world.js tests/unit/world-player-lifecycle.spec.js server/Delaford.js server/core/entities/monster/combat-controller.js server/core/entities/player/movement-handler.js server/core/player.js tests/unit/ws-message-handler.spec.js tests/unit/unarmed-combat.spec.js` — PASS.
+- `git diff --check` — PASS.
+- `npm run playtest` on fresh port 6520 — PASS (31/31 scenarios).
+
+The prior post-fix run reached 30/31 only because the known timing-sensitive
+gear comparison missed its 13% threshold; the clean rerun passed all 31.
