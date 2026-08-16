@@ -163,8 +163,8 @@ node captures/drive.mjs
 
 Result: three fresh contexts completed; all nine screenshots written; all
 camera parameter reads returned; `errors: []` for every context. The temporary
-driver was removed after the run, leaving only the nine source captures and
-this report in the task folder.
+driver was removed after the run, leaving the nine JPEG artifacts and this
+report in the task folder.
 
 JPEG conversion command (quality 85, optimized progressive output):
 
