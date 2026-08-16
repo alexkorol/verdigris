@@ -1,6 +1,6 @@
 ---
 task: TASK-0002
-state: REVIEW_REQUESTED
+state: CLAIMED
 worker: Luna build/CI implementer
 worker_branch: codex/TASK-0002-build-ci-hardening
 worktree: .codex/worktrees/TASK-0002-build-ci-hardening
@@ -9,10 +9,13 @@ spec_base_commit: f5b4b72
 started_at: 2026-08-15T23:41:33-07:00
 expected_verification: powershell -File native/build.ps1 -RunTests -RunClient; cmake --list-presets --preset-dir native
 known_risks: VS discovery portability; preserve Windows macro guard; no source edits
-revision: 1
-revision_basis: D-104 presets schema v2; validate with bundled CMake 3.20 binary by full path
+prior_revision: 1
+prior_revision_basis: D-104 presets schema v2; validate with bundled CMake 3.20 binary by full path
 implementation_commit: 659b8802f82dfb6839207c05700a5d1cf27380a0
 validator: /root/validate_task_0002
 validator_verdict: ACCEPT
 architect_review_required: true
+revision: 2
+revision_basis: architect corrections 5-6: remove VS2019 generator pin and suppress vcvars-internal vswhere noise
+revision_findings: remove Visual Studio 16 2019 generator pin; prepend VS Installer to PATH before vcvars64.bat
 ---

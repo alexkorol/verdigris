@@ -89,3 +89,18 @@ Architect review is still `REVISE` for the original v3 attempt; revision 1
 addresses D-104 and has independent `ACCEPT` validation. Integrate worker
 commit `659b8802f82dfb6839207c05700a5d1cf27380a0` only after a new
 architect `ACCEPTED` review is present.
+
+## Revision 2 requested corrections
+
+Architect review `REVISE` requires two concrete fixes to commit `659b880`:
+
+1. Remove the `Visual Studio 16 2019` generator pin from the
+   `windows-msvc` preset so GitHub `windows-latest` can select VS2022 while
+   local VS2019 CMake 3.20 remains supported.
+2. In `native/build.ps1`, prepend the VS Installer directory to the spawned
+   `cmd.exe` PATH before calling `vcvars64.bat`, guarded by an existence check,
+   so vcvars-internal vswhere diagnostics are actually suppressed.
+
+The existing vswhere discovery, full-edition fallback, define guard, denylist,
+and schema-v2 behavior must remain unchanged. Return the revised commit to
+independent validation before requesting architect review again.
