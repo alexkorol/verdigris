@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -67,10 +68,62 @@ struct ClientState {
   std::size_t processed_events = 0;
   std::vector<std::string> event_log;
   int loot_scatter = 0;
+  bool loot_labels = false;
+  bool gear_overlay = false;
+  std::size_t selected_item = 0;
+  std::string hint;
+  int hint_ticks = 0;
 };
 
 ClientState* state_from(HWND window) {
   return reinterpret_cast<ClientState*>(GetWindowLongPtr(window, GWLP_USERDATA));
+}
+
+void show_hint(ClientState& state, const std::string& message) {
+  state.hint = message;
+  state.hint_ticks = 80;
+}
+
+std::string nearest_pickup_id(const ClientState& state) {
+  const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
+  if (!player) return {};
+
+  std::string best_id;
+  int best_distance = std::numeric_limits<int>::max();
+  int best_kind = std::numeric_limits<int>::max();
+  std::size_t best_order = std::numeric_limits<std::size_t>::max();
+  auto consider = [&](const std::string& id, int kind, std::size_t order) {
+    auto position = state.loot_positions.find(id);
+    if (position == state.loot_positions.end()) return;
+    const int distance = verdigris::manhattan_distance(player->position, position->second);
+    if (distance < best_distance ||
+        (distance == best_distance &&
+         (kind < best_kind || (kind == best_kind && order < best_order)))) {
+      best_id = id;
+      best_distance = distance;
+      best_kind = kind;
+      best_order = order;
+    }
+  };
+
+  // Items win equal-distance ties over trophies; vector order is stable for
+  // equal-kind candidates and therefore deterministic across a run.
+  for (std::size_t i = 0; i < state.simulation->ground_items().size(); ++i)
+    consider(state.simulation->ground_items()[i].id, 0, i);
+  for (std::size_t i = 0; i < state.simulation->ground_trophies().size(); ++i)
+    consider(state.simulation->ground_trophies()[i].id, 1, i);
+  return best_id;
+}
+
+void equip_selected(ClientState& state) {
+  const auto& items = state.simulation->scion().carried_items;
+  if (items.empty()) {
+    show_hint(state, "Gear empty: pick up an item first");
+    return;
+  }
+  state.selected_item = std::min(state.selected_item, items.size() - 1);
+  state.simulation->dispatch(verdigris::Command::equip(items[state.selected_item].id));
+  show_hint(state, "Equipped " + items[state.selected_item].name);
 }
 
 COLORREF fade_to_background(COLORREF color, double remaining) {
@@ -330,6 +383,80 @@ struct DepthDraw {
   std::size_t index = 0;
 };
 
+std::string loot_label(const verdigris::Simulation& simulation,
+                       const std::string& id) {
+  for (const auto& item : simulation.ground_items())
+    if (item.id == id) return item.name;
+  for (const auto& trophy : simulation.ground_trophies())
+    if (trophy.id == id) return trophy.name;
+  return id;
+}
+
+void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds) {
+  if (!state.gear_overlay) return;
+  const int left = std::max(24, static_cast<int>(bounds.right) - 360);
+  const int top = 118;
+  const int right = static_cast<int>(bounds.right) - 24;
+  const int bottom = std::min(static_cast<int>(bounds.bottom) - 36, top + 300);
+  HBRUSH panel = CreateSolidBrush(RGB(25, 33, 37));
+  RECT panel_rect{left, top, right, bottom};
+  FillRect(dc, &panel_rect, panel);
+  DeleteObject(panel);
+  HPEN border = CreatePen(PS_SOLID, 2, RGB(104, 160, 137));
+  HGDIOBJ old_pen = SelectObject(dc, border);
+  HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+  Rectangle(dc, left, top, right, bottom);
+  SelectObject(dc, old_brush);
+  SelectObject(dc, old_pen);
+  DeleteObject(border);
+
+  SetBkMode(dc, TRANSPARENT);
+  SetTextColor(dc, RGB(230, 235, 220));
+  const std::string title = "Gear / House  |  " + state.simulation->house().name;
+  TextOutA(dc, left + 16, top + 14, title.c_str(), static_cast<int>(title.size()));
+  const auto& items = state.simulation->scion().carried_items;
+  if (items.empty()) {
+    const char* empty = "No carried items. X picks up the nearest drop.";
+    TextOutA(dc, left + 16, top + 48, empty, static_cast<int>(strlen(empty)));
+  } else {
+    for (std::size_t i = 0; i < items.size(); ++i) {
+      const auto& item = items[i];
+      const bool selected = i == std::min(state.selected_item, items.size() - 1);
+      SetTextColor(dc, selected ? RGB(239, 208, 116) : RGB(205, 215, 204));
+      std::string line = (selected ? "> " : "  ") + item.name +
+                         (item.equipped ? "  [equipped]" : "");
+      TextOutA(dc, left + 16, top + 48 + static_cast<int>(i) * 22, line.c_str(),
+               static_cast<int>(line.size()));
+    }
+  }
+  SetTextColor(dc, RGB(150, 170, 158));
+  const char* controls = "Up/Down select | Enter or LMB equip | I close";
+  TextOutA(dc, left + 16, bottom - 28, controls, static_cast<int>(strlen(controls)));
+}
+
+void paint_skill_strip(HDC dc) {
+  const char keys[] = {'Q', 'E', 'R'};
+  for (int i = 0; i < 3; ++i) {
+    const int left = 18 + i * 68;
+    RECT slot{left, 158, left + 58, 196};
+    HBRUSH fill = CreateSolidBrush(RGB(35, 42, 44));
+    FillRect(dc, &slot, fill);
+    DeleteObject(fill);
+    HPEN border = CreatePen(PS_SOLID, 1, RGB(86, 96, 94));
+    HGDIOBJ old_pen = SelectObject(dc, border);
+    HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+    Rectangle(dc, slot.left, slot.top, slot.right, slot.bottom);
+    SelectObject(dc, old_brush);
+    SelectObject(dc, old_pen);
+    DeleteObject(border);
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, RGB(155, 163, 157));
+    TextOutA(dc, left + 8, slot.top + 6, &keys[i], 1);
+    const char* unbound = "--";
+    TextOutA(dc, left + 31, slot.top + 17, unbound, 2);
+  }
+}
+
 void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   const auto& sim = *state.simulation;
   HBRUSH background = CreateSolidBrush(RGB(23, 29, 32));
@@ -439,6 +566,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         SelectObject(dc, old_pen);
         DeleteObject(brush);
         DeleteObject(pen);
+        if (state.loot_labels) {
+          const std::string label = loot_label(sim, entry_loot.first);
+          SetBkMode(dc, TRANSPARENT);
+          SetTextColor(dc, color);
+          TextOutA(dc, base.x + r + 4, base.y - lift - r - 5, label.c_str(),
+                   static_cast<int>(label.size()));
+        }
         break;
       }
       case DepthDraw::What::Effect:
@@ -460,11 +594,14 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                      sim.scion().carried_trophies.size());
   TextOutA(dc, 18, 16, status.c_str(), static_cast<int>(status.size()));
   const char* help =
-      "WASD move | LMB melee | RMB/Space dash | P pickup | E equip | X extract";
+      "WASD move | Mouse aim | LMB melee | RMB/Space dash | Q/E/R skill slots (disabled)";
   TextOutA(dc, 18, 40, help, static_cast<int>(strlen(help)));
+  const char* help2 =
+      "X nearest pickup | Z loot labels | F contextual extract | I gear/House overlay";
+  TextOutA(dc, 18, 64, help2, static_cast<int>(strlen(help2)));
   const char* camera_help =
       "Wheel zoom | PgUp/PgDn pitch | -/= perspective | Home reset camera";
-  TextOutA(dc, 18, 64, camera_help, static_cast<int>(strlen(camera_help)));
+  TextOutA(dc, 18, 88, camera_help, static_cast<int>(strlen(camera_help)));
 
   SetTextColor(dc, RGB(150, 160, 150));
   char debug_line[256];
@@ -473,7 +610,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                 static_cast<unsigned long long>(sim.tick()), state.camera.zoom,
                 state.camera.pitch_deg, state.camera.perspective,
                 state.effects.size());
-  TextOutA(dc, 18, 88, debug_line, static_cast<int>(strlen(debug_line)));
+  TextOutA(dc, 18, 112, debug_line, static_cast<int>(strlen(debug_line)));
+  if (state.hint_ticks > 0 && !state.hint.empty()) {
+    SetTextColor(dc, RGB(239, 208, 116));
+    TextOutA(dc, 18, 136, state.hint.c_str(), static_cast<int>(state.hint.size()));
+  }
+  paint_skill_strip(dc);
+  paint_gear_overlay(state, dc, bounds);
   int log_y = bounds.bottom - 24;
   for (auto it = state.event_log.rbegin(); it != state.event_log.rend(); ++it) {
     TextOutA(dc, 18, log_y, it->c_str(), static_cast<int>(it->size()));
@@ -513,6 +656,7 @@ void timer_step(HWND window, ClientState& state) {
   state.effects.erase(std::remove_if(state.effects.begin(), state.effects.end(),
                                      [](const EffectFx& fx) { return fx.age >= fx.ttl; }),
                       state.effects.end());
+  if (state.hint_ticks > 0) --state.hint_ticks;
 
   // The camera eases toward the player so dashes read as motion, not teleports.
   const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
@@ -539,18 +683,44 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (wparam == 'D') state->d = true;
       if (wparam == VK_SPACE)
         state->simulation->dispatch(verdigris::Command::action_use(verdigris::ActionType::Dash));
-      if (wparam == 'P') {
-        if (!state->simulation->ground_items().empty())
-          state->simulation->dispatch(verdigris::Command::pick_up(
-              state->simulation->ground_items().front().id));
-        else if (!state->simulation->ground_trophies().empty())
-          state->simulation->dispatch(verdigris::Command::pick_up(
-              state->simulation->ground_trophies().front().id));
+      if (wparam == 'Q' || wparam == 'E' || wparam == 'R')
+        show_hint(*state, "Skill slot not yet bound (Q/E/R are disabled)");
+      if (wparam == 'X') {
+        const std::string target = nearest_pickup_id(*state);
+        if (target.empty()) {
+          show_hint(*state, "No ground item or trophy nearby");
+        } else {
+          state->simulation->dispatch(verdigris::Command::pick_up(target));
+          show_hint(*state, "Picked up nearest drop");
+        }
       }
-      if (wparam == 'E' && !state->simulation->scion().carried_items.empty())
-        state->simulation->dispatch(verdigris::Command::equip(
-            state->simulation->scion().carried_items.front().id));
-      if (wparam == 'X') state->simulation->dispatch(verdigris::Command::extract());
+      if (wparam == 'Z') {
+        state->loot_labels = !state->loot_labels;
+        show_hint(*state, state->loot_labels ? "Loot names shown" : "Loot names hidden");
+      }
+      if (wparam == 'F') {
+        // Ask the simulation to resolve the contextual interaction.  The
+        // core owns the extraction pad/range rule; the client does not mirror
+        // that gameplay decision.
+        state->simulation->dispatch(verdigris::Command::extract());
+        show_hint(*state, "Contextual interaction requested");
+      }
+      if (wparam == 'I') {
+        state->gear_overlay = !state->gear_overlay;
+        state->selected_item = 0;
+        if (state->gear_overlay) show_hint(*state, "Gear opened");
+      }
+      if (state->gear_overlay && wparam == VK_UP &&
+          !state->simulation->scion().carried_items.empty()) {
+        if (state->selected_item > 0) --state->selected_item;
+      }
+      if (state->gear_overlay && wparam == VK_DOWN &&
+          !state->simulation->scion().carried_items.empty()) {
+        state->selected_item = std::min(
+            state->selected_item + 1,
+            state->simulation->scion().carried_items.size() - 1);
+      }
+      if (state->gear_overlay && wparam == VK_RETURN) equip_selected(*state);
       if (wparam == VK_PRIOR)
         state->camera.pitch_deg = std::min(85.0, state->camera.pitch_deg + 5.0);
       if (wparam == VK_NEXT)
@@ -588,8 +758,13 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       }
       break;
     case WM_LBUTTONDOWN:
-      if (state) state->simulation->dispatch(
-          verdigris::Command::action_use(verdigris::ActionType::Melee));
+      if (state) {
+        if (state->gear_overlay)
+          equip_selected(*state);
+        else
+          state->simulation->dispatch(
+              verdigris::Command::action_use(verdigris::ActionType::Melee));
+      }
       InvalidateRect(window, nullptr, FALSE);
       break;
     case WM_RBUTTONDOWN:
