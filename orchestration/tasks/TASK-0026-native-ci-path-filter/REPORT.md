@@ -1,6 +1,6 @@
 ---
 task: TASK-0026
-state: IMPLEMENTED
+state: REVIEW_REQUESTED
 branch: codex/TASK-0026-native-ci-path-filter
 commits:
   - 146e3b7
@@ -45,5 +45,6 @@ workflow-only change or local validation.
 
 ## Integration notes
 
-Awaiting independent validator review and architect acceptance before
-integration.
+Independent validator `/root/validate_task_0026` accepted the exact workflow
+diff and confirmed YAML parsing plus unchanged non-path semantics. Submitted
+for architect review; integration is held until that review lands.

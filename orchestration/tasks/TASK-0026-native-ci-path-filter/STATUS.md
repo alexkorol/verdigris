@@ -1,6 +1,6 @@
 ---
 task: TASK-0026
-state: IMPLEMENTED
+state: REVIEW_REQUESTED
 coordinator: codex
 worker: Codex/Luna implementation worker
 worker_branch: codex/TASK-0026-native-ci-path-filter
@@ -13,4 +13,6 @@ dependencies: []
 architect_review_required: true
 implementation_commit: 146e3b7
 verification: YAML parse PASS; git diff --check PASS
+validator: /root/validate_task_0026
+validator_verdict: ACCEPT
 ---
