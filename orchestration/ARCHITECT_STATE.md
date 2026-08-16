@@ -165,6 +165,23 @@ ADR-002.
   (0009 watch item) after 0011.
 - Architect debt: ADR-002 draft next quiet cycle.
 
+## Wave 6 reviewed; ADR-002 drafted (2026-08-16, ~11:40)
+
+- TASK-0011 (`8c68aed`) **ACCEPTED** — elite Thrust/Sweep bands via the
+  shared resolver, honest `AttackTelegraphed`, thorough cancellation;
+  gates independently green. Natural follow-up: client telegraph
+  rendering.
+- TASK-0012 (`310b76d`) **REVISE** — methodology exemplary, but the nine
+  ~1.4MB PNGs (~12.5MB) must be re-encoded lossy (≤250KB each) before
+  integration; one numbered correction.
+- `docs/rebuild/ADR-002-persistence-seam.md` drafted, status PROPOSED —
+  snapshot-based persistence with RNG state, mid-instance non-durability
+  as the honest extraction-risk reading, flat-file v1, SQLite deferred.
+  Owner decisions flagged inside.
+- Owner morning-review queue: camera evidence pack (after 0012 rev),
+  ADR-002 proposal, D-101/D-102/D-103 provisional decisions, and the
+  0006 unequipped-relic observation.
+
 ## Watch items
 
 - Enemy melee cadence in the slice felt lethal for an idle level-1; base
