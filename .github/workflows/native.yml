@@ -4,9 +4,13 @@ on:
   push:
     paths:
       - "native/**"
+      - "config/legacy-denylist.json"
+      - ".github/workflows/native.yml"
   pull_request:
     paths:
       - "native/**"
+      - "config/legacy-denylist.json"
+      - ".github/workflows/native.yml"
 
 permissions:
   contents: read
