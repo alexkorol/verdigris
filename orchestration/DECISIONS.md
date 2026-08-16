@@ -57,6 +57,11 @@ may decide it.
   Revisit only when a demonstrated v3-only capability is needed
   (see TASK-0002 REVIEW, QUESTION-0001).
 
+- **D-105 smoke:browser lifecycle**: QUESTION-0003 resolved with its
+  option 1 — `smoke:browser` keeps its documented name and adopts the
+  same `start-server-and-test` lifecycle as `test:e2e` (TASK-0014).
+  Port 6500 stays pinned.
+
 ## Owner-only (do not decide by agent)
 
 - **D-O1 Seasonal inheritance rule** — what survives a season reset

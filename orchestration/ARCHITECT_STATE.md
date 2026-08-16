@@ -220,6 +220,13 @@ accepted), campaign-graph deepening (needs your lore input to avoid
 invented canon), and the slice→native billboard-renderer experiment
 (Milestone E follow-on).
 
+Post-summary addendum (~13:00): TASK-0013 integrated by Codex; merged and
+gates rerun green. One exception to the queue hold: Codex's
+QUESTION-0003 exposed that the documented `smoke:browser` gate never
+boots its server — answered as D-105 (adopt the test:e2e lifecycle) and
+issued as tiny TASK-0014 (package.json script line only), since a broken
+documented gate should not greet your morning.
+
 ## Watch items
 
 - Enemy melee cadence in the slice felt lethal for an idle level-1; base
