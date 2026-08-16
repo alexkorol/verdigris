@@ -1,6 +1,6 @@
 ---
 task: TASK-0005
-state: REVIEW_REQUESTED
+state: INTEGRATED
 worker: Luna legacy-archaeology reader
 worker_branch: codex/TASK-0005-legacy-archaeology-audit
 worktree: .codex/worktrees/TASK-0005-legacy-archaeology-audit
@@ -13,4 +13,6 @@ implementation_commit: ff2ea30f0cb95003a61a0b3d1494abd7ec1a3fe6
 validator: /root/validate_task_0005
 validator_verdict: ACCEPT
 architect_review_required: true
+architect_verdict: ACCEPTED
+integration_commit: 70c234f
 ---
