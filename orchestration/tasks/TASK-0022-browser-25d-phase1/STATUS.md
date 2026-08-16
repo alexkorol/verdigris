@@ -17,6 +17,6 @@ revision: 1
 revision_base: 10d49dc
 revision_commit: 907024e
 revision_reason: independent validator found evidence artifacts outside the task folder and a wide-zoom DoF floor contradicting the governing zero-at/below-base rule; corrections implemented and revalidation pending
-validator_verdict: REVISE (/root/validate_task_0022); corrections implemented, revalidation pending
+validator_verdict: REVISE (/root/validate_task_0022); production corrections accepted by validator, but focused camera test update is outside immutable owned_paths; QUESTION-0004 open for architect authorization
 verification: npm run test:unit (PASS: 115 files/744 tests); npm run playtest (PASS: 31/31); npm run smoke:browser (PASS: 1/1); npm run lint:css -- --quiet (PASS); ESLint changed files (PASS); git diff --check (PASS)
 ---
