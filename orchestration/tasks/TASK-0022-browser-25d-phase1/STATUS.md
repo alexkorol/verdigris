@@ -17,7 +17,7 @@ implementation_commit: 907024e
 revision: 1
 revision_base: 10d49dc
 revision_commit: 907024e
-revision_reason: independent validator found evidence artifacts outside the task folder and a wide-zoom DoF floor contradicting the governing zero-at/below-base rule; corrections implemented and revalidation pending
+revision_reason: independent validator found evidence artifacts outside the task folder and a wide-zoom DoF floor contradicting the governing zero-at/below-base rule; corrections implemented and architect accepted
 validator_verdict: REVISE (/root/validate_task_0022); production corrections accepted; architect acceptance 5efc48e authorizes the reviewed focused test correction
 integration_commit: 705b6c3
 integrated_at: 2026-08-16T15:40:00-07:00

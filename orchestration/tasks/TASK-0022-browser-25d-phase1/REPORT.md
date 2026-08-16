@@ -62,11 +62,11 @@ Headless module evaluation against the implementation:
 All captures use the same 1440×1000 headless browser viewport and the same
 fresh guest onboarding scene. Each is lossy JPEG under the 250KB limit:
 
-- [before-arpg.jpg](before-arpg.jpg) — baseline at `b035b56` (219,204 bytes)
-- [after-arpg.jpg](after-arpg.jpg) — Phase-1 implementation (232,978 bytes)
-- [reference-demo.jpg](reference-demo.jpg) — reference demo after its default
+- [before-arpg.jpg](captures/before-arpg.jpg) — baseline at `b035b56` (219,204 bytes)
+- [after-arpg.jpg](captures/after-arpg.jpg) — Phase-1 implementation (232,978 bytes)
+- [reference-demo.jpg](captures/reference-demo.jpg) — reference demo after its default
   intro is dismissed (138,638 bytes)
-- [after-vs-reference.jpg](after-vs-reference.jpg) — labeled side-by-side
+- [after-vs-reference.jpg](captures/after-vs-reference.jpg) — labeled side-by-side
   comparison (222,446 bytes)
 
 ## Acceptance
@@ -109,7 +109,7 @@ were changed.
 Architect review `5efc48e` accepted the reviewed implementation commits and
 required the evidence relocation during integration. Integrated on program
 commit `705b6c3`; the repository root is free of the four capture artifacts,
-which now live under this task folder. The focused camera test correction is
+which now live under this task folder's `captures/` directory. The focused camera test correction is
 included in the architect-reviewed `907024e` commit.
 
 ## Review request
