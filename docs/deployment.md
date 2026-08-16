@@ -110,7 +110,8 @@ Guest progress is stored locally under `server/data/guest-saves/` and survives
 logout and process restarts. Chronicles and the identity registry live in
 `server/data/verdigris.sqlite`. Back up the guest-saves directory plus the
 SQLite file and its `-wal` sidecar while running, or stop PM2 briefly and copy
-them. Legacy `identity-store.json` records are imported automatically; new
-writes use only SQLite. Non-guest accounts can still use the external
+them. SQLite is the only identity store — the legacy `identity-store.json`
+auto-import was removed in `107e1a4`, so archive or convert any such file
+manually before upgrading. Non-guest accounts can still use the external
 `SITE_URL` auth/persistence API; that account service is not yet bundled for
 self-hosting.
