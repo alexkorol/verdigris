@@ -1,6 +1,6 @@
 ---
 task: TASK-0016
-state: CLAIMED
+state: REVIEW_REQUESTED
 worker: Codex coordinator
 worker_branch: codex/native-reconstitution
 worktree: .
@@ -11,4 +11,6 @@ expected_verification: powershell -NoProfile -File native/build.ps1 -RunTests -R
 known_risks: runtime GDI+/AlphaBlend ABI and path resolution must degrade cleanly without build or simulation changes
 dependencies: TASK-0013 integrated
 architect_review_required: true
+implementation_commit: 6d1b7d6
+verification: powershell -NoProfile -File native/build.ps1 -RunTests -RunClient (PASS); git diff --check (PASS); driven asset/fallback PrintWindow captures (PASS)
 ---
