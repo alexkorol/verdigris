@@ -182,6 +182,44 @@ ADR-002.
   ADR-002 proposal, D-101/D-102/D-103 provisional decisions, and the
   0006 unequipped-relic observation.
 
+# OVERNIGHT SUMMARY FOR THE OWNER (2026-08-16, session end ~12:45)
+
+Thirteen tasks specced, twelve implemented and ACCEPTED after independent
+verification, all integrated (TASK-0013 integration pending Codex's next
+pass). The queue is deliberately EMPTY for your review. What the native
+lab can now do, none of which existed yesterday morning:
+
+- Bounded deterministic **Legends** history (0001); **relic re-entry**
+  closing death→loss→rediscovery (0006).
+- **Skill actions** Thrust/Sweep/WarCry with a live resource economy
+  (0007), bound to Q/E/R with HUD (0009); real **8-way facing** with mouse
+  aim as a simulation input (0010); **elite monsters using the same
+  skills** with telegraphed windups (0011) rendered as honest ground
+  warnings in the client (0013).
+- **Build/CI hardened** (0002: vswhere discovery, define guard, presets
+  v2, native.yml) and the **denylist firewall hardened** against the
+  evasion classes the archaeology audit proved (0005, 0008).
+- The **founding-slice** has its own one-command verification harness
+  (0003) and produced a **camera-preset evidence pack** for your D-102
+  judgment (0012, compressed, in the task folder).
+- Architect docs: LEGACY_MATRIX provenance addendum, **ADR-002
+  persistence seam (PROPOSED — your call)**, DECISIONS.md D-001..D-104.
+
+Decisions awaiting YOU (nothing blocked on them overnight):
+1. ADR-002 persistence proposal (accept/amend).
+2. D-101/D-102/D-103 provisional calls (player base-life, camera
+   envelope via the 0012 evidence pack, slice banking).
+3. The 0006 observation: should notable *carried* (unequipped) relics
+   also re-register on death, or stay lost?
+4. Owner-only items D-O1..D-O5 (seasons, assets, magic/WIZARD lattice,
+   naming/lore, economy) — untouched, as required.
+
+Suggested next waves when you resume: snapshot/query seam (fixes the
+0009/0013 display-constant drift watch items and starts ADR-002 if
+accepted), campaign-graph deepening (needs your lore input to avoid
+invented canon), and the slice→native billboard-renderer experiment
+(Milestone E follow-on).
+
 ## Watch items
 
 - Enemy melee cadence in the slice felt lethal for an idle level-1; base
