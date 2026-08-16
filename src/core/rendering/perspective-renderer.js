@@ -180,22 +180,35 @@ class PerspectiveRenderer {
   }
 
   drawSky(ctx, canvas, skyColour) {
-    const skyline = Math.max(
-      canvas.height * 0.16,
-      this.camera.horizon + ((this.camera.focus - this.camera.horizon) / 2.14),
+    const tileSize = this.map.config.map.tileset.tile.width;
+    const terrainOriginY = this.terrainRenderer.worldOrigin?.y
+      ?? -(tileSize * 8);
+    const syAt = (worldY) => this.camera.horizon + (
+      this.camera.projectionArea
+      / Math.max(60, this.camera.cameraFootY - worldY)
     );
-    const gradient = ctx.createLinearGradient(0, 0, 0, Math.max(2, skyline * 1.35));
+    const syHorizon = this.camera.horizon
+      + ((this.camera.focus - this.camera.horizon) / 2.14);
+    // Keep the authored world edge and the virtual fog horizon in agreement.
+    // The latter is the same screen row at which the reference haze is
+    // already swallowing terrain; the former prevents a finite map from
+    // exposing a hard seam when it is nearer than that row.
+    const skyline = Math.max(syHorizon, syAt(terrainOriginY + 60));
+    const gradient = ctx.createLinearGradient(0, 0, 0, Math.max(2, skyline * 1.18));
     gradient.addColorStop(
       0,
-      `rgb(${Math.round(skyColour[0] * 0.55)}, ${Math.round(skyColour[1] * 0.62)}, ${Math.round(skyColour[2] * 0.76)})`,
+      `rgb(${Math.round(skyColour[0] * 0.36)}, ${Math.round(skyColour[1] * 0.40)}, ${Math.round(skyColour[2] * 0.52)})`,
     );
-    gradient.addColorStop(1, `rgb(${skyColour.join(', ')})`);
+    gradient.addColorStop(
+      1,
+      `rgb(${Math.round(skyColour[0] * 0.62)}, ${Math.round(skyColour[1] * 0.60)}, ${Math.round(skyColour[2] * 0.58)})`,
+    );
     ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, canvas.width, Math.ceil(Math.max(skyline, canvas.height * 0.42)) + 2);
 
     ctx.save();
     ctx.filter = 'blur(2.5px)';
-    ctx.fillStyle = `rgba(${Math.round(skyColour[0] * 0.24)}, ${Math.round(skyColour[1] * 0.28)}, ${Math.round(skyColour[2] * 0.26)}, 0.92)`;
+    ctx.fillStyle = `rgba(${Math.round(skyColour[0] * 0.14)}, ${Math.round(skyColour[1] * 0.18)}, ${Math.round(skyColour[2] * 0.16)}, 0.9)`;
     ctx.beginPath();
     ctx.moveTo(-20, skyline + 8);
     for (let x = 0; x <= canvas.width; x += canvas.width / 26) {
