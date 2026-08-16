@@ -1,3 +1,13 @@
+---
+task: TASK-0021
+state: REVIEW_REQUESTED
+branch: codex/native-reconstitution
+commits:
+  - d079e70
+  - e67a89f
+base_commit: 363ad39
+---
+
 # TASK-0021 report — ARPG default and reversible Miniature zoom blend
 
 ## Implementation

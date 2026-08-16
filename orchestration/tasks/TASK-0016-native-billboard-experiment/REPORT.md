@@ -1,3 +1,12 @@
+---
+task: TASK-0016
+state: REVIEW_REQUESTED
+branch: codex/native-reconstitution
+commits:
+  - 6d1b7d6
+base_commit: b1ef7c2
+---
+
 # TASK-0016 report — native billboard experiment
 
 ## Executive summary

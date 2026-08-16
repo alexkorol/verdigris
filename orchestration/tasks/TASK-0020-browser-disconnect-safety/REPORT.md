@@ -1,3 +1,13 @@
+---
+task: TASK-0020
+state: REVIEW_REQUESTED
+branch: codex/native-reconstitution
+commits:
+  - e5d87a5
+  - b73ca16
+base_commit: 42297ed
+---
+
 # TASK-0020 report — browser disconnect safety (D-109)
 
 ## Executive summary

@@ -1,3 +1,12 @@
+---
+task: TASK-0018
+state: REVIEW_REQUESTED
+branch: codex/native-reconstitution
+commits:
+  - 37ab720
+base_commit: 32ce77e
+---
+
 # TASK-0018 report — D-106 death recoverability
 
 ## Executive summary
