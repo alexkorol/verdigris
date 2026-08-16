@@ -12,6 +12,7 @@ known_risks: resource gating and deterministic regeneration; cooldown/buff expir
 dependencies: TASK-0006 integrated at 269c174
 implementation_commit: e7505ad
 validator: /root/validate_task_0007
-validator_verdict: PENDING
+validator_verdict: ACCEPT
+architect_review_required: true
 architect_review_required: true
 ---
