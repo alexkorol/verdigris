@@ -1,6 +1,6 @@
 ---
 task: TASK-0002
-state: CLAIMED
+state: REVISE
 worker: Luna build/CI implementer
 worker_branch: codex/TASK-0002-build-ci-hardening
 worktree: .codex/worktrees/TASK-0002-build-ci-hardening
@@ -18,4 +18,7 @@ architect_review_required: true
 revision: 2
 revision_basis: architect corrections 5-6: remove VS2019 generator pin and suppress vcvars-internal vswhere noise
 revision_findings: remove Visual Studio 16 2019 generator pin; prepend VS Installer to PATH before vcvars64.bat
+revision_validator: /root/validate_task_0002_rev2
+revision_validator_verdict: REVISE
+revision_validator_finding: NMake preset fails in a clean workflow-equivalent shell because native.yml does not initialize vcvars64/cl; remove the generator field so CMake selects the installed Visual Studio generator, per architect preference.
 ---

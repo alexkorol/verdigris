@@ -104,3 +104,15 @@ Architect review `REVISE` requires two concrete fixes to commit `659b880`:
 The existing vswhere discovery, full-edition fallback, define guard, denylist,
 and schema-v2 behavior must remain unchanged. Return the revised commit to
 independent validation before requesting architect review again.
+
+## Revision 2 independent validation
+
+Validator `/root/validate_task_0002_rev2` returned **REVISE**. The native
+script gate, denylist, define guard, and manually initialized NMake
+configure/build/CTest all passed, but a clean workflow-equivalent shell failed
+at `cmake -S native --preset windows-msvc` because `NMake Makefiles` requires
+`cl` from `vcvars64.bat` and `.github/workflows/native.yml` does not initialize
+that environment. The required correction is to remove the `generator` field
+so CMake selects the installed Visual Studio generator on VS2019/VS2022
+ runners, matching the architect's preferred resolution. No files were edited
+by the validator.
