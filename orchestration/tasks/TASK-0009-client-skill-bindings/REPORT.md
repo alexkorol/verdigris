@@ -46,6 +46,13 @@ render procedural area/aura effects from authoritative core events.
 - `git diff --check` — PASS.
 - Worker worktree clean; temporary probes/captures were not committed.
 
+Independent validator `/root/validate_task_0009` returned **ACCEPT**. It
+confirmed the exact one-file scope, authoritative `Command::action_use` and
+event/HUD path, no client-side combat duplication, no disabled-slot hint, D-007
+preservation, and passing denylist self-test. Its shell could not expose a
+desktop window handle for a second live capture, so the PostMessage evidence in
+the worker packet is supplemented by source-level inspection.
+
 ## Specification deviations
 
 None reported. The core was not changed.
@@ -56,6 +63,8 @@ None reported. The core was not changed.
   future public cost schema would need a deliberate interface task.
 - The accepted core Thrust facing proxy remains +x-only by architectural
   decision; this task does not attempt to correct it.
+- Presentation costs duplicate the current core constants and could drift if a
+  future core interface changes them; this is a non-blocking validator risk.
 
 ## Questions for Fable or the owner
 

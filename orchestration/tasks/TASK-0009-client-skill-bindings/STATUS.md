@@ -13,4 +13,6 @@ dependencies: TASK-0007 integrated at a832b2b; TASK-0004 integrated at 6396a0e
 architect_review_required: true
 implementation_commit: 629a1c0
 validator: /root/validate_task_0009
+validator_verdict: ACCEPT
+validator_evidence: exact one-file scope; native gate, diff check, denylist self-test, and source-level Q/E/R/HUD/event review passed
 ---
