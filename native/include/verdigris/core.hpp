@@ -63,6 +63,10 @@ struct Actor {
   int cooldown_ticks = 0;
   std::optional<std::string> equipped_item_id;
   bool elite = false;
+  // Temporary combat effects are actor state so the same action/damage
+  // pipeline can be used for players and monsters.
+  int war_cry_attack_bonus = 0;
+  int war_cry_ticks_remaining = 0;
 };
 
 struct RouteNode {
@@ -143,7 +147,9 @@ enum class EventType {
   SeasonalRewardGranted,
   ScionLost,
   LegendRecorded,
-  RelicResurfaced
+  RelicResurfaced,
+  BuffApplied,
+  BuffExpired
 };
 
 struct Event {
@@ -166,7 +172,9 @@ enum class CommandType {
   ExtractToHouse
 };
 
-enum class ActionType { Melee, Dash, Wait };
+// Keep the original values of Melee/Dash/Wait stable for recorded command
+// streams; new skills are appended to the action vocabulary.
+enum class ActionType { Melee, Dash, Wait, Thrust, Sweep, WarCry };
 
 struct Command {
   CommandType type;
@@ -216,6 +224,10 @@ class Simulation {
   const Actor* actor(const std::string& id) const;
   Actor* actor(const std::string& id);
 
+  // General deterministic content seam. Callers may add an additional
+  // opponent without changing the combat implementation or test-only state.
+  std::string spawn_monster(Vec2 position, int level = 1, bool elite = false);
+
   // Stable hooks used by external seasonal mechanics and deterministic tests.
   void grant_seasonal_reward(const std::string& reward);
   void add_seasonal_objective(const std::string& description);
@@ -236,6 +248,7 @@ class Simulation {
             const std::string& trophy_id = {}, const std::string& text = {}, int value = 0);
   void resolve_move(int dx, int dy);
   void resolve_action(ActionType action);
+  void resolve_actor_action(Actor& attacker, ActionType action);
   void resolve_interact(const std::string& target);
   void resolve_pickup(const std::string& item_id);
   void resolve_equip(const std::string& item_id);
@@ -244,6 +257,7 @@ class Simulation {
   void advance_tick();
   void enemy_turn();
   void spawn_enemy();
+  void record_equipped_item_use(Actor& attacker);
   void drop_reward();
   void clear_route_and_unlock_children();
   void handle_death(Actor& actor, const std::string& killer_id = {});
