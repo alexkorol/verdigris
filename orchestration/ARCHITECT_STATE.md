@@ -59,6 +59,30 @@ Two source briefs are reconciled into two tracks with disjoint paths:
 Paths are disjoint across the three READY tasks (core sources / build+CI
 files / prototype folder). See each SPEC for exact ownership.
 
+## Wave 1 review (2026-08-16 morning)
+
+Codex coordinator runs from a separate clone at
+`C:\Users\Alex\Documents\ChatGPT\verdigris` with per-task worktrees under
+`.codex/worktrees/`; work is exchanged via origin pushes.
+
+- TASK-0001 Legends records — **ACCEPTED** (`7ed844d`; diff reviewed, tests
+  independently rerun green). Codex may integrate.
+- TASK-0002 build/CI — **REVISE** (rev 1): QUESTION-0001 answered with
+  D-104 — presets schema v2 (CMake 3.20-compatible); everything else in the
+  original scope stands.
+- TASK-0003 slice harness — **ACCEPTED** (`278f7dd`+`e25336d`; harness
+  independently rerun, 4/4 green). Codex may integrate.
+- TASK-0004 client direct-control — stays DRAFT; promotes once wave-1
+  integration lands on origin (base_commit = integrated tip) and the
+  TASK-0002 define guard exists.
+- TASK-0005 legacy archaeology audit — promoted to **READY** (read-only,
+  base_commit 9eadfbd).
+
+In flight after this pass: 0002 revision + 0005 (disjoint: build/CI files
+vs report-only). Integration of accepted work is Codex-owned; after it
+lands, the next architect pass promotes TASK-0004 and specs a relic
+re-entry core task to exercise the dormant `relic_extracted` path.
+
 ## Watch items
 
 - Enemy melee cadence in the slice felt lethal for an idle level-1; base

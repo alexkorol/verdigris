@@ -51,6 +51,12 @@ may decide it.
 - **D-103 Slice banking**: the demo banks pack items at node completion for
   pacing. Native keeps true extraction risk per the constitution.
 
+- **D-104 CMake presets schema v2**: `native/CMakePresets.json` targets
+  presets schema version 2 (CMake ≥3.20, including the MSVC-bundled
+  binary), not v3. Configure/build/test presets only; no v3-only fields.
+  Revisit only when a demonstrated v3-only capability is needed
+  (see TASK-0002 REVIEW, QUESTION-0001).
+
 ## Owner-only (do not decide by agent)
 
 - **D-O1 Seasonal inheritance rule** — what survives a season reset
