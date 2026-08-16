@@ -1,6 +1,6 @@
 ---
 task: TASK-0012
-state: CLAIMED
+state: REVIEW_REQUESTED
 worker: Luna camera evidence harness implementer
 worker_branch: codex/TASK-0012-slice-camera-evidence
 worktree: .codex/worktrees/TASK-0012-slice-camera-evidence
@@ -11,4 +11,7 @@ expected_verification: nine preset/scene captures; report parameter table; git s
 known_risks: captures must hold scene state constant and remain neutral observations; no prototype files may change
 dependencies: TASK-0003 integrated as 8517bf5/403e3a3
 architect_review_required: true
+implementation_commit: b9f0d8a
+validator: pending
+validator_verdict: pending
 ---
