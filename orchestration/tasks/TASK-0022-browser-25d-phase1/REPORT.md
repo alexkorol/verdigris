@@ -4,7 +4,7 @@ state: REVIEW_REQUESTED
 branch: codex/TASK-0022-browser-25d-phase1
 commits:
   - c17963b
-  - REVISION_PENDING
+  - 907024e
 base_commit: b035b569ecc269f79c1113d7f8600db2198a273a
 ---
 
@@ -49,6 +49,7 @@ Headless module evaluation against the implementation:
     "defaultCoc": 0
   },
   "scaleRatioNearToFar": 3.1366120218579243,
+  "wideZoomDofStrength": 0,
   "closeZoomDofStrength": 0.82,
   "shaderProjectionParityPx": 5.684341886080802e-14
 }
@@ -85,6 +86,10 @@ and `circleOfConfusion` are now exactly zero for every `userZoom <= 0.85`, with
 the miniature blend rising only above the ARPG base. The inherited camera unit
 assertion was updated to encode the governing §6 conformance rule rather than
 the superseded wide-view blur behavior.
+
+Revision commit: `907024e` (`fix(browser): enforce zero DoF below ARPG base`).
+The revised branch was re-run from a clean disposable worktree: all 31/31
+playtest scenarios passed after the correction.
 
 ## Review request
 
