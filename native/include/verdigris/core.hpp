@@ -142,7 +142,8 @@ enum class EventType {
   SeasonalObjectiveAdded,
   SeasonalRewardGranted,
   ScionLost,
-  LegendRecorded
+  LegendRecorded,
+  RelicResurfaced
 };
 
 struct Event {

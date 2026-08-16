@@ -72,6 +72,119 @@ const LegendEntry* find_legend(const Simulation& sim, const std::string& kind) {
   return nullptr;
 }
 
+const Item* find_ground_item(const Simulation& sim, const std::string& id) {
+  for (const auto& item : sim.ground_items()) {
+    if (item.id == id) return &item;
+  }
+  return nullptr;
+}
+
+void force_relic_resurface(Simulation& sim, const std::string& route) {
+  for (int attempt = 0; attempt < 32 && sim.house().relic_candidates.size() == 1; ++attempt) {
+    sim.dispatch(Command::enter(route));
+    defeat_enemy(sim);
+    for (const auto& item : sim.ground_items()) {
+      if (item.relic_candidate) return;
+    }
+    sim.dispatch(Command::interact("hazard:death"));
+    sim.create_successor("Resurfacing Successor " + std::to_string(attempt));
+  }
+}
+
+void test_relic_resurface_round_trip() {
+  Simulation sim(0xD00DFEEDULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(sim);
+  pick_all_rewards(sim);
+  const std::string relic_id = sim.scion().carried_items.front().id;
+  sim.dispatch(Command::interact("hazard:death"));
+  check(sim.house().relic_candidates.size() == 1, "death registers one relic candidate");
+  sim.create_successor("Relic Successor");
+
+  force_relic_resurface(sim, "route:tin:1:0");
+  const Item* surfaced = nullptr;
+  for (const auto& item : sim.ground_items()) {
+    if (item.relic_candidate) surfaced = &item;
+  }
+  check(surfaced != nullptr, "a later reward stream resurfaces a relic");
+  check(surfaced->id == relic_id, "resurfacing preserves stable item identity");
+  check(sim.house().relic_candidates.empty(), "resurfacing removes the oldest item from the pool");
+  check(surfaced->history.size() >= 3 &&
+            surfaced->history[surfaced->history.size() - 1] ==
+                "resurfaced on route route:tin:1:0",
+        "resurfacing appends a route history line");
+  bool saw_resurfaced_event = false;
+  for (const auto& event : sim.events()) {
+    if (event.type == EventType::RelicResurfaced && event.item_id == relic_id &&
+        event.text == "route:tin:1:0") {
+      saw_resurfaced_event = true;
+      break;
+    }
+  }
+  check(saw_resurfaced_event, "resurfacing emits the named event with item and route");
+  check(find_legend(sim, "relic_resurfaced") != nullptr,
+        "resurfacing records a relic legend");
+
+  sim.dispatch(Command::pick_up(relic_id));
+  check(sim.scion().carried_items.size() == 1 && sim.scion().carried_items.front().id == relic_id,
+        "resurfaced relic can be picked up");
+  extract_from_start(sim);
+  check(sim.house().stored_items.size() == 1 && sim.house().stored_items.front().id == relic_id,
+        "resurfaced relic extracts into House storage");
+  check(find_legend(sim, "relic_extracted") != nullptr,
+        "extraction records the existing relic legend");
+  check(sim.house().stored_items.front().history.back() == "picked up",
+        "pickup history is preserved through extraction");
+}
+
+void test_relic_loss_again_returns_once() {
+  Simulation sim(0xD00DFEEDULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(sim);
+  pick_all_rewards(sim);
+  const std::string relic_id = sim.scion().carried_items.front().id;
+  sim.dispatch(Command::interact("hazard:death"));
+  sim.create_successor("Loss Successor");
+  force_relic_resurface(sim, "route:tin:1:0");
+  sim.dispatch(Command::pick_up(relic_id));
+  check(sim.scion().carried_items.size() == 1, "successor carries the resurfaced relic");
+  sim.dispatch(Command::interact("hazard:death"));
+  check(sim.house().relic_candidates.size() == 1, "lost resurfaced relic returns to the pool once");
+  check(sim.house().relic_candidates.front().id == relic_id,
+        "loss-again round trip preserves relic identity");
+  check(find_ground_item(sim, relic_id) == nullptr, "lost relic is not duplicated on the ground");
+  check(sim.house().stored_items.empty(), "lost resurfaced relic was not stored");
+  check(sim.house().relic_candidates.front().history.back() == "registered after Scion death",
+        "loss-again death appends the death history line");
+}
+
+void test_relic_resurface_replay_is_deterministic() {
+  Simulation first(0xD00DFEEDULL);
+  Simulation second(0xD00DFEEDULL);
+  const std::vector<Command> setup = {
+      Command::enter("route:tin:1:0"), Command::move(1, 0), Command::move(1, 0),
+      Command::move(1, 0), Command::move(1, 0), Command::action_use(ActionType::Melee),
+      Command::action_use(ActionType::Melee), Command::action_use(ActionType::Melee),
+      Command::action_use(ActionType::Melee), Command::action_use(ActionType::Melee),
+      Command::action_use(ActionType::Melee), Command::action_use(ActionType::Melee),
+      Command::pick_up(""), Command::interact("hazard:death")};
+  for (const auto& command : setup) {
+    first.dispatch(command);
+    second.dispatch(command);
+  }
+  first.create_successor("Replay Successor");
+  second.create_successor("Replay Successor");
+  force_relic_resurface(first, "route:tin:1:0");
+  force_relic_resurface(second, "route:tin:1:0");
+  check(first.events().size() == second.events().size(), "replay emits the same event count");
+  check(first.legends() == second.legends(), "replay emits identical relic legends");
+  check(first.ground_items().size() == second.ground_items().size(),
+        "replay resurfaces the same number of items");
+  check(!first.ground_items().empty() && first.ground_items().back().id ==
+            second.ground_items().back().id,
+        "replay resurfaces the same stable item identity");
+}
+
 void test_determinism() {
   Simulation first(0xBADC0FFEEULL);
   Simulation second(0xBADC0FFEEULL);
@@ -290,6 +403,9 @@ int main() {
   test_elite_kill_and_recorded_event();
   test_legends_are_bounded_and_evict_oldest_non_founding();
   test_legend_stable_ids_and_deterministic_replay();
+  test_relic_resurface_round_trip();
+  test_relic_loss_again_returns_once();
+  test_relic_resurface_replay_is_deterministic();
   std::cout << "verdigris core tests: PASS\n";
   return 0;
 }
