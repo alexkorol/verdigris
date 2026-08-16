@@ -1,8 +1,9 @@
 ---
 task: TASK-0002
-state: BLOCKED
+state: REVIEW_REQUESTED
 branch: codex/TASK-0002-build-ci-hardening
-commits: []
+commits:
+  - 659b8802f82dfb6839207c05700a5d1cf27380a0
 base_commit: 0e02aa7
 spec_base_commit: f5b4b72
 ---
