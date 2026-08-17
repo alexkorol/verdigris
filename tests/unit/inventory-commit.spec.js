@@ -291,6 +291,42 @@ describe('inventory commit identity validation', () => {
     expect(Socket.broadcast).toHaveBeenCalledWith('item:change', scene.items, [player]);
   });
 
+  it('closes JSON Chronicle recovery for relics and trophies through underfoot pickup', async () => {
+    const scene = world.ensureScene('zone:chronicle-underfoot-test', {
+      map: { foreground: [], background: [] },
+      items: [],
+      respawns: { items: [], monsters: [], resources: [] },
+    });
+    const relic = {
+      id: 'bronze-sword',
+      uuid: 'underfoot-relic',
+      x: player.x,
+      y: player.y,
+      chroniclesRelic: { id: 'underfoot-relic', scionName: 'Morrow' },
+    };
+    const trophy = {
+      id: 'trophy-fragment',
+      uuid: 'underfoot-trophy',
+      x: player.x,
+      y: player.y,
+      chroniclesTrophy: { id: 'underfoot-trophy', trophyId: 'boar' },
+    };
+    scene.items = [relic, trophy];
+    player.inventory.slots = [];
+    player.inventory.add = vi.fn(() => ({ ok: true, added: 1, remainder: 0 }));
+    world.assignPlayerToScene(player, scene.id);
+    vi.spyOn(playerPersistence, 'savePlayer').mockResolvedValue({ saved: true });
+    const recoverRelic = vi.spyOn(chroniclesStore, 'recoverRelic').mockReturnValue({ ok: true });
+    const recoverTrophy = vi.spyOn(chroniclesStore, 'recoverTrophy').mockReturnValue({ ok: true });
+
+    actionEvents['player:take:underfoot']({}, { id: player.socket_id });
+    await vi.waitFor(() => expect(recoverRelic).toHaveBeenCalledWith(player.uuid, relic.chroniclesRelic.id));
+    actionEvents['player:take:underfoot']({}, { id: player.socket_id });
+    await vi.waitFor(() => expect(recoverTrophy).toHaveBeenCalledWith(player.uuid, trophy.chroniclesTrophy.id));
+    expect(playerPersistence.savePlayer).toHaveBeenCalledTimes(2);
+    expect(scene.items).toEqual([]);
+  });
+
   it('marks a circulating heirloom recovered after its exact pickup is persisted', async () => {
     const scene = world.ensureScene('zone:heirloom-take-test', {
       map: { foreground: [], background: [] },

@@ -551,18 +551,20 @@ class WorldManager {
     const activeMembers = (scene.players || []).map(player => player.uuid).filter(Boolean);
     const requeuedCandidates = [];
     (scene.items || []).forEach((item) => {
-      const candidateId = item?.chroniclesRelic?.id || item?.lostTrophy?.id;
+      const trophyCandidate = item?.chroniclesTrophy || item?.lostTrophy;
+      const candidateId = item?.chroniclesRelic?.id || trophyCandidate?.id;
       if (!candidateId || item.recoveryRetired) return;
+      const kind = trophyCandidate?.id && !item?.chroniclesRelic?.id ? 'trophy' : 'relic';
       item.recoveryRetired = true;
       item.requeueCount = Math.min(1, (item.requeueCount || 0) + 1);
       requeuedCandidates.push({
         id: candidateId,
-        kind: item.lostTrophy ? 'trophy' : 'relic',
+        kind,
         item,
       });
       if (typeof scene.metadata?.requeueCandidate === 'function') {
         try {
-          scene.metadata.requeueCandidate(candidateId, item.lostTrophy ? 'trophy' : 'relic');
+          scene.metadata.requeueCandidate(candidateId, kind);
         } catch {
           // Persistence adapters can retry from the returned handoff record.
         }

@@ -95,12 +95,19 @@ describe('TASK-0032 browser D-106/D-109 alignment', () => {
 
   it('retires an instance with active membership and one-time candidate requeue', () => {
     const scene = world.createInstance('task32-party', {
-      items: [{ uuid: 'ground-relic', chroniclesRelic: { id: 'relic-1' } }],
+      items: [
+        { uuid: 'ground-relic', chroniclesRelic: { id: 'relic-1' } },
+        { uuid: 'ground-trophy', chroniclesTrophy: { id: 'trophy-1', trophyId: 'boar' } },
+      ],
     });
     scene.players.push({ uuid: 'member-1' });
     const result = world.retireInstance('task32-party');
     expect(result.activeMembers).toEqual(['member-1']);
-    expect(result.requeuedCandidates).toHaveLength(1);
+    expect(result.requeuedCandidates).toEqual([
+      expect.objectContaining({ id: 'relic-1', kind: 'relic' }),
+      expect.objectContaining({ id: 'trophy-1', kind: 'trophy' }),
+    ]);
+    expect(scene.items.every(item => item.recoveryRetired === true)).toBe(true);
     expect(world.retireInstance('task32-party').retired).toBe(false);
   });
 });

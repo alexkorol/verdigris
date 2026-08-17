@@ -60,6 +60,36 @@ const sendInventoryError = (player, text) => {
   refreshInventory(player);
 };
 
+// JSON Chronicle candidates use the adapter's circulating/recovered state;
+// SQLite candidates are claimed by commitGroundItemPickup.  Keep this small
+// bridge shared by click-to-take and the underfoot grab-key path so both input
+// routes close the same recovery transition.
+const recoverJsonChronicleCandidate = (player, worldItem) => {
+  const relicId = worldItem?.chroniclesRelic?.id;
+  const trophyId = worldItem?.chroniclesTrophy?.id;
+  if (!relicId && !trophyId) return;
+
+  Promise.resolve()
+    .then(() => playerPersistence.savePlayer(player, { force: true }))
+    .catch((error) => {
+      console.warn(`[actions] Failed to persist recovered Chronicle item ${worldItem.uuid}: ${error.message}`);
+    })
+    .then(() => {
+      if (relicId) {
+        const recovered = chroniclesStore.recoverRelic(player.uuid, relicId);
+        if (recovered.ok) {
+          Socket.sendMessageToPlayer(
+            player,
+            `${worldItem.chroniclesRelic.scionName || 'A fallen scion'}'s heirloom is home once more.`,
+          );
+        }
+      }
+      if (trophyId) {
+        chroniclesStore.recoverTrophy(player.uuid, trophyId);
+      }
+    });
+};
+
 const getPlayerFromPayload = (incoming) => {
   const payload = incoming.data || {};
   const socketId = payload.player?.socket_id
@@ -1231,37 +1261,7 @@ const actionEvents = {
       return;
     }
 
-    if (worldItem.chroniclesRelic && worldItem.chroniclesRelic.id) {
-      // Persist the recovered identity before closing the Chronicle entry.
-      // A restart can safely requeue a still-circulating world drop.
-      Promise.resolve(playerPersistence.savePlayer(player, { force: true }))
-        .catch((error) => {
-          console.warn(`[actions] Failed to persist recovered heirloom ${worldItem.uuid}: ${error.message}`);
-        })
-        .then(() => {
-          const recovered = chroniclesStore.recoverRelic(
-            player.uuid,
-            worldItem.chroniclesRelic.id,
-          );
-          if (recovered.ok) {
-            Socket.sendMessageToPlayer(
-              player,
-              `${worldItem.chroniclesRelic.scionName}'s heirloom is home once more.`,
-            );
-          }
-        });
-    }
-    if (worldItem.chroniclesTrophy && worldItem.chroniclesTrophy.id) {
-      const recoveredTrophy = chroniclesStore.recoverTrophy(
-        player.uuid,
-        worldItem.chroniclesTrophy.id,
-      );
-      if (recoveredTrophy.ok) {
-        playerPersistence.savePlayer(player, { force: true }).catch((error) => {
-          console.warn(`[actions] Failed to persist recovered trophy ${worldItem.uuid}: ${error.message}`);
-        });
-      }
-    }
+    recoverJsonChronicleCandidate(player, worldItem);
 
     // Add respawn timer on item (if is a respawn)
     const sceneRespawns = getSceneRespawns(scene);
@@ -1325,6 +1325,8 @@ const actionEvents = {
       sendInventoryError(player, 'There is no room in your backpack.');
       return;
     }
+
+    recoverJsonChronicleCandidate(player, worldItem);
 
     const sceneRespawns = getSceneRespawns(scene);
     const respawnIndex = sceneRespawns.items.findIndex(
