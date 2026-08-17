@@ -1,9 +1,11 @@
 #include <cstdlib>
+#include <filesystem>
 #include <iostream>
 #include <string>
 #include <vector>
 
 #include "verdigris/core.hpp"
+#include "verdigris/persistence.hpp"
 #include "verdigris/seasonal.hpp"
 
 using namespace verdigris;
@@ -707,6 +709,85 @@ void test_relic_resurface_replay_is_deterministic() {
         "replay resurfaces the same stable item identity");
 }
 
+void test_persistence_round_trip_and_unknown_fields() {
+  Simulation original(0x0030ULL, "House of Round-Trip");
+  original.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(original);
+  pick_all_rewards(original);
+  original.dispatch(Command::equip(original.scion().carried_items.front().id));
+  const auto first = snapshot(original);
+  const std::string first_text(first.begin(), first.end());
+  check(first_text.find("schemaVersion=1\n") == 0, "snapshot has a mandatory schemaVersion field");
+
+  Simulation restored = restore(first);
+  check(snapshot(restored) == first, "snapshot restore is byte-stable");
+  check(!restored.instance().active && restored.ground_items().empty() &&
+            restored.ground_trophies().empty(),
+        "round-trip does not revive live instance state");
+
+  std::string with_unknown = first_text;
+  with_unknown += "future.unknownField=ignored\n";
+  const std::vector<std::uint8_t> augmented(with_unknown.begin(), with_unknown.end());
+  Simulation tolerant = restore(augmented);
+  check(snapshot(tolerant) == first, "restore tolerates unknown fields");
+}
+
+void test_persistence_d109_mid_instance_and_rng_continuation() {
+  Simulation mid_instance(0xD1090030ULL);
+  mid_instance.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(mid_instance);
+  const std::string carried_item = mid_instance.ground_items().front().id;
+  const std::string carried_trophy = mid_instance.ground_trophies().front().id;
+  mid_instance.dispatch(Command::pick_up(carried_item));
+  mid_instance.dispatch(Command::pick_up(carried_trophy));
+  const auto mid_snapshot = snapshot(mid_instance);
+  Simulation restored = restore(mid_snapshot);
+  check(!restored.instance().active && restored.ground_items().empty() &&
+            restored.ground_trophies().empty(),
+        "D-109 restore returns the Scion to the House and drops floor state");
+  check(restored.scion().carried_items.size() == 1 &&
+            restored.scion().carried_items.front().id == carried_item &&
+            restored.scion().carried_trophies.size() == 1 &&
+            restored.scion().carried_trophies.front().id == carried_trophy,
+        "D-109 restore preserves all carried items and trophies");
+  restored.dispatch(Command::enter("route:tin:1:0"));
+  check(restored.instance().active, "a restored Scion can enter a fresh instance");
+
+  // Start from an extracted (non-instance) boundary so both simulations have
+  // the same durable state, then compare seeded reward drops after restore.
+  Simulation baseline(0x0030C0DEULL);
+  baseline.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(baseline);
+  pick_all_rewards(baseline);
+  extract_from_start(baseline);
+  Simulation replay = restore(snapshot(baseline));
+  const std::vector<Command> commands = {
+      Command::enter("route:tin:1:0"), Command::action_use(ActionType::Melee),
+      Command::move(1, 0), Command::action_use(ActionType::Melee),
+      Command::action_use(ActionType::Melee), Command::action_use(ActionType::Melee),
+  };
+  for (const auto& command : commands) {
+    baseline.dispatch(command);
+    replay.dispatch(command);
+  }
+  check(snapshot(replay) == snapshot(baseline),
+        "restored RNG state produces deterministic continuation and drops");
+}
+
+void test_persistence_file_adapter() {
+  Simulation simulation(0xADA07EULL);
+  const auto bytes = snapshot(simulation);
+  const std::filesystem::path target =
+      std::filesystem::temp_directory_path() / "verdigris-task-0030.snapshot";
+  verdigris::persistence::write_atomic(target, bytes);
+  check(verdigris::persistence::read(target) == bytes,
+        "atomic persistence adapter writes and reads snapshot bytes");
+  verdigris::persistence::write_atomic(target, bytes);
+  check(verdigris::persistence::read(target) == bytes,
+        "atomic persistence adapter replaces an existing House snapshot");
+  std::filesystem::remove(target);
+}
+
 void test_determinism() {
   Simulation first(0xBADC0FFEEULL);
   Simulation second(0xBADC0FFEEULL);
@@ -1179,6 +1260,9 @@ void test_legend_stable_ids_and_deterministic_replay() {
 }  // namespace
 
 int main() {
+  test_persistence_round_trip_and_unknown_fields();
+  test_persistence_d109_mid_instance_and_rng_continuation();
+  test_persistence_file_adapter();
   test_determinism();
   test_actor_symmetry();
   test_actor_facing_follows_movement_and_aim();

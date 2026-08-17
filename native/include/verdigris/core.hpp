@@ -297,6 +297,11 @@ class Simulation {
   void add_seasonal_objective(const std::string& description);
   static int resolve_damage(const Actor& attacker, const Actor& defender, int item_bonus = 0);
 
+  // Durable persistence is deliberately a free-function boundary.  The
+  // serializer owns no I/O and does not expose live instance state.
+  friend std::vector<std::uint8_t> snapshot(const Simulation& simulation);
+  friend Simulation restore(const std::vector<std::uint8_t>& bytes);
+
  private:
   struct Rng {
     explicit Rng(std::uint64_t value) : state(value) {}
@@ -355,5 +360,11 @@ class Simulation {
   std::uint64_t tick_ = 0;
   std::uint64_t next_legend_ordinal_ = 1;
 };
+
+// Versioned, deterministic durable state.  Snapshot bytes are canonical for
+// identical House/Scion/RNG state; an active instance is retired at the
+// snapshot boundary under D-109 (carried value remains carried).
+std::vector<std::uint8_t> snapshot(const Simulation& simulation);
+Simulation restore(const std::vector<std::uint8_t>& bytes);
 
 }  // namespace verdigris
