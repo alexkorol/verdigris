@@ -99,6 +99,106 @@ const getPlayerBySocket = (ws) => {
   return world.players.find(player => player.socket_id === ws.id) || null;
 };
 
+const DEATH_LIFECYCLE_STATES = new Set(['awaiting-respawn', 'permadead']);
+
+const deathItemSummary = (item, kind = 'item') => ({
+  id: item?.uuid || item?.id || null,
+  name: item?.displayName || item?.name || item?.baseName || item?.id || 'Carried value',
+  kind,
+  quantity: Math.max(1, Number(item?.quantity || item?.qty) || 1),
+});
+
+/**
+ * Project the already-authoritative D-106 transfer into UI-safe data.  The
+ * transfer helper remains the sole source of the carried item/trophy set;
+ * this projection never mutates the player or persistence state.
+ */
+export const buildDeathSummary = (player) => {
+  const lifecycle = player?.stats?.lifecycle || {};
+  if (!DEATH_LIFECYCLE_STATES.has(lifecycle.state)) {
+    return null;
+  }
+
+  const carried = collectCarriedRecovery(player);
+  const carriedItems = carried.items.map(item => deathItemSummary(item));
+  const carriedTrophies = carried.trophies.map(trophy => deathItemSummary(trophy, 'trophy'));
+  const carriedValue = [...carriedItems, ...carriedTrophies];
+  const mortalOath = Boolean(player?.chronicles?.mortal || lifecycle.mode === 'hard');
+  const permanent = lifecycle.state === 'permadead';
+  const recoveredToPool = permanent ? carriedValue : [];
+  const protectedValue = permanent ? [] : carriedValue;
+  const respawn = lifecycle.respawn || {};
+  const destination = permanent
+    ? 'The Chronicles — choose a successor'
+    : (respawn.location || 'The expedition entrance');
+
+  return {
+    state: lifecycle.state,
+    mode: lifecycle.mode || (mortalOath ? 'hard' : 'soft'),
+    mortalOath,
+    permanent,
+    losses: permanent ? carriedValue : [],
+    recoveredToPool,
+    protected: protectedValue,
+    respawn: {
+      pending: Boolean(respawn.pending),
+      at: respawn.at || null,
+      destination,
+    },
+    respawnDestination: destination,
+    succession: permanent && mortalOath,
+    scion: {
+      id: player?.scionId || player?.chronicles?.scionId || null,
+      houseId: player?.houseId || player?.chronicles?.houseId || null,
+      name: player?.username || 'Fallen Scion',
+    },
+  };
+};
+
+// Stats broadcasts are the existing server-authoritative death seam used by
+// monster combat and the dev mortality probes. Add the summary to that same
+// envelope, so the client can render it before any automatic Chronicles
+// transition and without introducing a second ordering-sensitive frame.
+const originalSocketBroadcast = Socket.broadcast;
+// Test doubles intentionally own their call history; leave them untouched so
+// existing protocol/combat unit tests can continue to assert the envelope.
+if (!originalSocketBroadcast.__verdigrisDeathSummary && !originalSocketBroadcast._isMockFunction) {
+  const broadcastWithDeathSummary = function broadcastWithDeathSummary(event, data, players, options) {
+    let deathSummary = null;
+    let deathPlayer = null;
+    let deathOccurredAt = null;
+    if (event === 'player:stats:update' && data?.playerId) {
+      deathPlayer = world.players.find(entry => entry.uuid === data.playerId);
+      deathSummary = buildDeathSummary(deathPlayer);
+      deathOccurredAt = deathPlayer?.stats?.lifecycle?.lastEvent?.occurredAt || null;
+      if (deathSummary && deathOccurredAt) {
+        data = {
+          ...data,
+          // The detailed projection is private to the fallen player's
+          // socket; party members only learn that a death frame is pending.
+          deathSummaryPending: true,
+        };
+      }
+    }
+    const result = originalSocketBroadcast.call(Socket, event, data, players, options);
+    if (deathSummary && deathOccurredAt && deathPlayer?.socket_id
+      && deathPlayer.__deathSummaryOccurredAt !== deathOccurredAt) {
+      deathPlayer.__deathSummaryOccurredAt = deathOccurredAt;
+      Socket.emit('player:death-summary', {
+        player: { socket_id: deathPlayer.socket_id },
+        playerId: deathPlayer.uuid,
+        summary: {
+          ...deathSummary,
+          occurredAt: deathOccurredAt,
+        },
+      });
+    }
+    return result;
+  };
+  Object.defineProperty(broadcastWithDeathSummary, '__verdigrisDeathSummary', { value: true });
+  Socket.broadcast = broadcastWithDeathSummary;
+}
+
 const cleanChroniclesId = (value) => {
   if (typeof value !== 'string') {
     return null;
