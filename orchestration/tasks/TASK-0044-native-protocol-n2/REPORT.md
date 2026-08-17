@@ -98,6 +98,20 @@ As a regression check, the committed N2 server passed the prior N1
 the transcript is in
 [`captures/worker-branch-regression-2026-08-17.txt`](captures/worker-branch-regression-2026-08-17.txt).
 
+## Coordinator recheck — 2026-08-17
+
+From the clean external Kimi worktree at `d476788`, the coordinator reran:
+
+```
+powershell -NoProfile -File native/build.ps1 -RunTests -RunClient
+```
+
+The committed tip again passed the legacy denylist, core tests, networking
+tests, and native client shell. The shell ended with the expected
+`House: House Verdigris | trophies stored: 1 | items stored: 1` line. This was
+a source-preserving build recheck; no claim is made here beyond the previously
+captured unchanged movement/zones and N1 regression attach runs.
+
 ## Integration dry-run
 
 A disposable merge of `origin/codex/TASK-0044-native-protocol-n2` into the
