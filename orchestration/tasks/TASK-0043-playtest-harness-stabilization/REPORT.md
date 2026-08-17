@@ -18,9 +18,21 @@ base_commit: f0df8de6
 
 # TASK-0043 — Playtest harness stabilization
 
-## Outcome
+## Executive summary
 
 Implementation is ready for architect review. The final integrated tip is `7b81f874` (worker source commits through `78434f60` plus combat target stabilization `51c5253d`). Changes are confined to `playtest/**` and the task evidence; no `server/src`, native, protocol, package, or product files were changed.
+
+## Implementation
+
+Load-sensitive setup, state probes, zone admission, death observation, gear/loot controls, and combat retries now use finite load-mode-aware windows. The combat scenario keeps the healer in the pack while targeting one stable non-support UUID, preserving the actual healer-race assertion instead of retargeting under scheduler pressure.
+
+## Changed files
+
+`playtest/README.md`, `playtest/harness.mjs`, `playtest/run.mjs`, `playtest/timing.mjs`, and the scenario files `build-divergence.mjs`, `combat.mjs`, `gear-outcomes.mjs`, `loot.mjs`, and `session-arc.mjs`. Evidence is under this task’s `captures/` directory.
+
+## Interfaces
+
+No product or server protocol interface changed. The harness adds/uses the `PLAYTEST_LOAD_MODE=1` execution mode and bounded timing helpers; normal authored-mode behavior remains unchanged.
 
 ## Acceptance evidence
 
@@ -43,6 +55,26 @@ exit code: 1
 ```
 
 The scratch worktree and mutation were removed after capture. Evidence is also recorded in [`captures/negative-zone-entry-2026-08-17.txt`](captures/negative-zone-entry-2026-08-17.txt).
+
+## Manual checks
+
+The final integration worktree was exercised against the unchanged WebSocket server with the full scenario suite under the documented CPU spinner. A disposable final-tip scratch worktree suppressed the real `instance:enterSolo` frame and confirmed the transition failure boundary.
+
+## Specification deviations
+
+None. The load-mode timing floors are test-harness-only and bounded; they do not loosen product assertions or production behavior.
+
+## Risks and limitations
+
+The full load proof is intentionally expensive (roughly three minutes per run). The browser server’s pre-existing generated `docs/loop-journal.md` remains dirty outside this task and was not staged. Architect hands-on play confirmation remains a separate D-115 obligation.
+
+## Questions for Fable or the owner
+
+None for implementation. Architect acceptance of the evidence package is required.
+
+## Integration notes
+
+Source is ready on the dedicated integration worktree at `7b81f874`; integrate only after Fable writes an `ACCEPTED` review. The coordinator metadata/evidence commits are local (`a12d3895`, `a07e33b9`, `e1e2a758`) and were not pushed.
 
 ## Scope and review notes
 
