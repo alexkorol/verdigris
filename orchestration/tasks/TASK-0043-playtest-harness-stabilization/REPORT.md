@@ -122,6 +122,15 @@ idle, adapted to 8764ms after a ~195ms scheduler pause, and to 9979ms after a
 ~500ms pause; the 14000ms (1.75x) ceiling remained intact. The temporary
 worktree was removed and no product checkout was changed.
 
+### Exact staged-variant gate
+
+The staged timing snapshot was then overlaid on disposable candidate
+`3636b729` without changing either product checkout. `npm run test:unit`
+passed 122/779. `PLAYTEST_PORT=6528 npm run playtest` passed 31/31 with exit
+0 and diagnostics p99/max 32.178/110.952ms. Full command/result details are
+captured in
+[`coordinator-architect-staged-variant-2026-08-17.txt`](captures/coordinator-architect-staged-variant-2026-08-17.txt).
+
 ## Manual checks
 
 The final integration worktree was exercised against the unchanged WebSocket server with the full scenario suite under the documented CPU spinner. A disposable final-tip scratch worktree suppressed the real `instance:enterSolo` frame and confirmed the transition failure boundary.
