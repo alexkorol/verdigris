@@ -121,3 +121,27 @@ mutable speed, so the browser could not see the acceleration ramp. Revision
 `31413c99` includes speed, duration, skill, and hold state in the signature and
 adds a same-sequence speed-update assertion. The animation guard applies these
 mutable fields without resetting the frame clock.
+
+## Current-tip correction
+
+The worker branch was merged onto current program tip `6e277cf4`, which includes
+the accepted TASK-0033 ambient/daytime rendering. The required literal empty
+diff transcript follows:
+
+```text
+PS> git diff 6e277cf4 -- src/core/rendering/
+PS> $LASTEXITCODE
+0
+```
+
+Post-merge verification on the current tip:
+
+- `npm run test:unit` — 120 files / 768 tests passed.
+- `npm run playtest` — first post-merge run reached 19/31; clean retry reached
+  25/31. The movement scenario passed both times. The retry's remaining
+  failures were persistence/dev-state or fixture-transition timeouts in
+  `persistence`, `quest`, `respawn`, `single-session`, `vesselforge-brand`,
+  and `zones`; they are recorded as gate limitations rather than claimed as
+  green.
+- Alternate browser gate on port 6512 — 1/1 passed in 20.7s, including the
+  merged current-tip client build.
