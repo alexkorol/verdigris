@@ -617,31 +617,31 @@ export class HeadlessPlayer {
   }
 
   devGive(itemId, qty = 1, options = {}) {
-    this.emit('dev:give', { itemId, qty, ...options });
+    return this.emit('dev:give', { itemId, qty, ...options });
   }
 
   devDrop(itemId, options = {}) {
-    this.emit('dev:drop', { itemId, ...options });
+    return this.emit('dev:drop', { itemId, ...options });
   }
 
   devResetMonster(monsterUuid, options = {}) {
-    this.emit('dev:monster:reset', { monsterUuid, ...options });
+    return this.emit('dev:monster:reset', { monsterUuid, ...options });
   }
 
   devClearFloor() {
-    this.emit('dev:clear-floor', {});
+    return this.emit('dev:clear-floor', {});
   }
 
   devSetLevel(level) {
-    this.emit('dev:setlevel', { level });
+    return this.emit('dev:setlevel', { level });
   }
 
   devHeal() {
-    this.emit('dev:heal', {});
+    return this.emit('dev:heal', {});
   }
 
   devForceCritical() {
-    this.emit('dev:forcecritical', {});
+    return this.emit('dev:forcecritical', {});
   }
 
   devKill({ allowCheatDeath = false } = {}) {
@@ -649,7 +649,7 @@ export class HeadlessPlayer {
   }
 
   devHurt(amount = 5) {
-    this.emit('dev:hurt', { amount });
+    return this.emit('dev:hurt', { amount });
   }
 
   devPrepareFinalDeath() {
@@ -657,7 +657,7 @@ export class HeadlessPlayer {
   }
 
   devReleaseRelic() {
-    this.emit('dev:release-relic', {});
+    return this.emit('dev:release-relic', {});
   }
 
   close() {
