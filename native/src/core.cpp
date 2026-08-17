@@ -12,6 +12,10 @@ namespace verdigris {
 namespace {
 constexpr int kEnemySpawnX = 2000;
 constexpr int kExtractionRange = 250;
+// A dash is a single deterministic hop covering one second of the actor's own
+// movement (kDashBurstTicks ticks of the per-tick step).  Camera easing in the
+// client presents the hop as a fast burst rather than a teleport.
+constexpr int kDashBurstTicks = 1000 / kTickMs;
 constexpr int kThrustDamageNumerator = 13;
 constexpr int kThrustDamageDenominator = 10;
 constexpr int kSweepDamageNumerator = 3;
@@ -63,7 +67,10 @@ ActorStats player_stats() {
   stats.resource = stats.resource_max;
   stats.attack = 12;
   stats.defense = 5;
-  stats.move_speed = 300;
+  // Per-second world-unit rate matching the slice's tuned ARPG pace
+  // (~220 units/sec continuous); the per-tick step derives via
+  // movement_step_per_tick.
+  stats.move_speed = 220;
   stats.attack_speed_ticks = 3;
   return stats;
 }
@@ -78,6 +85,9 @@ ActorStats enemy_stats(int level) {
   stats.life = stats.life_max;
   stats.attack = 8 + (level - 1) * 3;
   stats.defense = 4 + (level - 1) * 2;
+  // Per-second rate under the same movement_step_per_tick derivation as the
+  // player; monsters have no locomotion in this slice, so the value stays at
+  // its established level.
   stats.move_speed = 240;
   stats.attack_speed_ticks = 5;
   return stats;
@@ -291,8 +301,9 @@ void Simulation::resolve_move(int dx, int dy) {
   const Vec2 direction = quantize_direction(dx, dy);
   if (direction.x != 0 || direction.y != 0) player->facing = direction;
   const int length = std::max(1, std::abs(dx) + std::abs(dy));
-  player->position.x += (dx * player->stats.move_speed) / length;
-  player->position.y += (dy * player->stats.move_speed) / length;
+  const int step = movement_step_per_tick(player->stats.move_speed);
+  player->position.x += (dx * step) / length;
+  player->position.y += (dy * step) / length;
   emit(EventType::ActorMoved, player->id, {}, {}, {}, player->position.x);
 }
 
@@ -312,7 +323,8 @@ void Simulation::resolve_action(ActionType action) {
 void Simulation::resolve_actor_action(Actor& attacker, ActionType action) {
   if (!attacker.alive) return;
   if (action == ActionType::Dash) {
-    attacker.position.x += attacker.stats.move_speed * 2;
+    attacker.position.x +=
+        movement_step_per_tick(attacker.stats.move_speed) * kDashBurstTicks;
     emit(EventType::ActorMoved, attacker.id, {}, {}, "dash", attacker.position.x);
     return;
   }

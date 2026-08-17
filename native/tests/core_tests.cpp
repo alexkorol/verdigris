@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -17,8 +18,28 @@ void check(bool condition, const std::string& message) {
   }
 }
 
+// Movement helpers derive their tick counts from the same named per-tick
+// step the core applies, so reachability stays proven if the movement
+// cadence constants change again.
+int steps_to_cover(int distance, int move_speed) {
+  const int step = movement_step_per_tick(move_speed);
+  return std::max(0, (distance + step - 1) / step);
+}
+
+void walk(Simulation& sim, int dx, int dy, int ticks) {
+  for (int i = 0; i < ticks; ++i) sim.dispatch(Command::move(dx, dy));
+}
+
 void reach_enemy(Simulation& sim) {
-  for (int i = 0; i < 4; ++i) sim.dispatch(Command::move(1, 0));
+  const Actor* player = sim.actor(sim.scion().actor_id);
+  const Actor* enemy = nullptr;
+  for (const auto& actor : sim.actors()) {
+    if (actor.kind == ActorKind::Monster) enemy = &actor;
+  }
+  check(player && enemy, "movement helpers see the player and the spawned enemy");
+  const int gap = manhattan_distance(player->position, enemy->position) -
+                  presentation_constants::kMeleeRange;
+  walk(sim, 1, 0, steps_to_cover(gap, player->stats.move_speed));
 }
 
 void defeat_enemy(Simulation& sim) {
@@ -42,7 +63,14 @@ void pick_all_rewards(Simulation& sim) {
 }
 
 void extract_from_start(Simulation& sim) {
-  for (int i = 0; i < 4; ++i) sim.dispatch(Command::move(-1, 0));
+  const Actor* player = sim.actor(sim.scion().actor_id);
+  check(player != nullptr, "extraction walk has a player");
+  // The extraction pad sits at the origin; the core admits extraction within
+  // its private 250-unit range, and the ceiling step count always lands just
+  // inside it.
+  const int return_ticks =
+      steps_to_cover(player->position.x - 250, player->stats.move_speed);
+  walk(sim, -1, 0, return_ticks);
   sim.dispatch(Command::extract());
 }
 
@@ -228,6 +256,53 @@ void test_facing_replay_is_deterministic() {
   check(first_player && second_player && first_player->facing.x == second_player->facing.x &&
             first_player->facing.y == second_player->facing.y,
         "facing state remains identical under deterministic replay");
+}
+
+void test_movement_step_matches_tick_rate_derivation() {
+  Simulation sim(0xA020ULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  const Actor* player = sim.actor(sim.scion().actor_id);
+  check(player != nullptr, "movement step test has a player");
+  const int step = movement_step_per_tick(player->stats.move_speed);
+  check(player->stats.move_speed == 220,
+        "player move speed stays the tuned per-second rate");
+  check(step == player->stats.move_speed * kTickMs / 1000,
+        "per-tick step is move_speed * kTickMs / 1000 in integer math");
+
+  const Vec2 start = player->position;
+  sim.dispatch(Command::move(1, 0));
+  player = sim.actor(sim.scion().actor_id);
+  check(player->position.x - start.x == step && player->position.y == start.y,
+        "one move command displaces exactly the named per-tick step");
+
+  sim.dispatch(Command::move(1, 1));
+  player = sim.actor(sim.scion().actor_id);
+  check(player->position.x == start.x + step + step / 2 &&
+            player->position.y == start.y + step / 2,
+        "diagonal movement splits the per-tick step with integer math");
+
+  const Vec2 before_second = player->position;
+  for (int i = 0; i < 1000 / kTickMs; ++i) sim.dispatch(Command::move(1, 0));
+  player = sim.actor(sim.scion().actor_id);
+  check(player->position.x - before_second.x == player->stats.move_speed,
+        "one real second of ticks covers exactly the per-second rate");
+}
+
+void test_dash_is_a_bounded_burst() {
+  Simulation sim(0xA021ULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  const Actor* player = sim.actor(sim.scion().actor_id);
+  check(player != nullptr, "dash test has a player");
+  const Vec2 start = player->position;
+  sim.dispatch(Command::action_use(ActionType::Dash));
+  player = sim.actor(sim.scion().actor_id);
+  check(player->position.x - start.x ==
+            movement_step_per_tick(player->stats.move_speed) * (1000 / kTickMs),
+        "dash hops one second of the actor's own per-tick movement");
+  check(player->position.x - start.x == player->stats.move_speed,
+        "the dash hop equals the per-second rate at the fixed tick cadence");
+  check(player->position.x - start.x < presentation_constants::kMeleeRange,
+        "dash stays well inside melee reach instead of teleporting past content");
 }
 
 void test_sweep_hits_multiple_targets_and_gates_resource() {
@@ -620,12 +695,17 @@ void test_relic_loss_again_returns_once() {
 void test_relic_resurface_replay_is_deterministic() {
   Simulation first(0xD00DFEEDULL);
   Simulation second(0xD00DFEEDULL);
+  first.dispatch(Command::enter("route:tin:1:0"));
+  second.dispatch(Command::enter("route:tin:1:0"));
+  // The approach walk derives from the named per-tick step so the stream
+  // still reaches and kills the enemy at the current movement cadence.
+  reach_enemy(first);
+  reach_enemy(second);
   const std::vector<Command> setup = {
-      Command::enter("route:tin:1:0"), Command::move(1, 0), Command::move(1, 0),
-      Command::move(1, 0), Command::move(1, 0), Command::action_use(ActionType::Melee),
       Command::action_use(ActionType::Melee), Command::action_use(ActionType::Melee),
       Command::action_use(ActionType::Melee), Command::action_use(ActionType::Melee),
       Command::action_use(ActionType::Melee), Command::action_use(ActionType::Melee),
+      Command::action_use(ActionType::Melee),
       Command::pick_up(""), Command::interact("hazard:death")};
   for (const auto& command : setup) {
     first.dispatch(command);
@@ -649,10 +729,8 @@ void test_determinism() {
   Simulation second(0xBADC0FFEEULL);
   first.dispatch(Command::enter("route:tin:1:0"));
   second.dispatch(Command::enter("route:tin:1:0"));
-  for (int i = 0; i < 4; ++i) {
-    first.dispatch(Command::move(1, 0));
-    second.dispatch(Command::move(1, 0));
-  }
+  reach_enemy(first);
+  reach_enemy(second);
   for (int i = 0; i < 8; ++i) {
     first.dispatch(Command::action_use(ActionType::Melee));
     second.dispatch(Command::action_use(ActionType::Melee));
@@ -1000,6 +1078,8 @@ int main() {
   test_actor_facing_follows_movement_and_aim();
   test_monster_facing_tracks_pursuit_target();
   test_facing_replay_is_deterministic();
+  test_movement_step_matches_tick_rate_derivation();
+  test_dash_is_a_bounded_burst();
   test_skill_resource_gating_and_thrust();
   test_sweep_hits_multiple_targets_and_gates_resource();
   test_elite_thrust_telegraph_timing();

@@ -29,6 +29,19 @@ enum class ActionType { Melee, Dash, Wait, Thrust, Sweep, WarCry };
 // render the same warning window.
 inline constexpr int kTelegraphTicks = 3;
 
+// The fixed simulation timestep (D-002).  Every dispatched command advances
+// exactly one tick, so a presentation client ticking on this cadence turns
+// per-second rates into per-tick motion.  It is part of the simulation
+// contract so every presentation derives the same per-tick step.
+inline constexpr int kTickMs = 50;
+
+// ActorStats::move_speed is a per-second world-unit rate.  The per-tick
+// displacement derives from the fixed tick with integer math only; every
+// actor kind uses this same derivation (actor symmetry).
+inline constexpr int movement_step_per_tick(int move_speed) {
+  return move_speed * kTickMs / 1000;
+}
+
 // Curated gameplay constants needed by presentation.  Mechanics and the
 // read-only catalog use these same definitions; clients must not mirror the
 // values independently.

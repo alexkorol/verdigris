@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <fstream>
 #include <iostream>
 #include <limits>
 #include <memory>
@@ -41,7 +42,7 @@ using AlphaBlendProc = BOOL(WINAPI*)(HDC, int, int, int, int, HDC, int, int, int
                                      BLENDFUNCTION);
 
 constexpr double kPi = 3.14159265358979323846;
-constexpr double kTileUnits = 100.0;  // one move command covers 100 world units
+constexpr double kTileUnits = 100.0;  // one ground grid tile is 100 world units
 // These costs are presentation metadata only.  The simulation remains the
 // authority for affordability and resource mutation.
 constexpr int kThrustResourceCost = 10;
@@ -49,17 +50,55 @@ constexpr int kSweepResourceCost = 15;
 constexpr int kWarCryResourceCost = 20;
 
 // Adjustable 2.5D camera: pitch foreshortens the ground plane, zoom scales
-// world units to pixels, and perspective grows near rows / shrinks far rows.
+// world units to pixels, perspective grows near rows / shrinks far rows,
+// anchor places the followed actor's screen height as a fraction of the
+// window, and fog darkens distant ground toward the backdrop.
+//
+// Defaults are owner ruling D-107: the slice's ARPG preset (evidence:
+// orchestration/tasks/TASK-0012-slice-camera-evidence/REPORT.md).
+constexpr double kCameraDefaultZoom = 0.85;
+constexpr double kCameraDefaultPitchDeg = 62.0;
+constexpr double kCameraDefaultPerspective = 0.0006;
+constexpr double kCameraDefaultAnchor = 0.52;
+constexpr double kCameraDefaultFog = 0.4;
+// Wheel zoom-in past ~1.05 blends the treatment linearly toward the slice's
+// Miniature preset; the blend completes at the Miniature zoom itself.
+constexpr double kCameraMiniatureZoom = 1.08;
+constexpr double kCameraMiniaturePerspective = 0.0013;
+constexpr double kCameraMiniatureAnchor = 0.58;
+constexpr double kCameraMiniatureFog = 0.6;
+constexpr double kCameraMiniatureBlendStartZoom = 1.05;
+
 struct Camera {
   double x = 0.0;
   double y = 0.0;
-  double zoom = 0.5;          // pixels per world unit
-  double pitch_deg = 55.0;    // 90 = top-down, lower = flatter horizon
-  double perspective = 0.00035;  // depth scale per world unit toward the viewer
+  double zoom = kCameraDefaultZoom;           // pixels per world unit
+  double pitch_deg = kCameraDefaultPitchDeg;  // 90 = top-down, lower = flatter horizon
+  double perspective = kCameraDefaultPerspective;  // depth scale per world unit toward the viewer
+  double anchor = kCameraDefaultAnchor;       // screen-height fraction of the followed actor
+  double fog = kCameraDefaultFog;             // distance shading strength
+
+  double miniature_blend() const {
+    return std::clamp((zoom - kCameraMiniatureBlendStartZoom) /
+                          (kCameraMiniatureZoom - kCameraMiniatureBlendStartZoom),
+                      0.0, 1.0);
+  }
+  double effective_perspective() const {
+    const double t = miniature_blend();
+    return perspective + (kCameraMiniaturePerspective - perspective) * t;
+  }
+  double effective_anchor() const {
+    const double t = miniature_blend();
+    return anchor + (kCameraMiniatureAnchor - anchor) * t;
+  }
+  double effective_fog() const {
+    const double t = miniature_blend();
+    return fog + (kCameraMiniatureFog - fog) * t;
+  }
 
   double ground_squash() const { return std::cos(pitch_deg * kPi / 180.0); }
   double depth_scale(double rel_y) const {
-    return std::clamp(1.0 + rel_y * perspective, 0.65, 1.55);
+    return std::clamp(1.0 + rel_y * effective_perspective(), 0.65, 1.55);
   }
 };
 
@@ -196,6 +235,9 @@ struct ClientState {
   std::size_t selected_item = 0;
   std::string hint;
   int hint_ticks = 0;
+  // Optional driven-pass diagnostics: when set, timer_step appends the
+  // authoritative player world position once per real second.
+  std::string position_log_path;
 };
 
 std::string executable_directory() {
@@ -508,7 +550,7 @@ ScreenPoint project(const Camera& camera, const RECT& bounds, double wx, double 
   const double depth = camera.depth_scale(rel_y);
   ScreenPoint out;
   out.x = bounds.right / 2 + static_cast<int>(rel_x * camera.zoom * depth);
-  out.y = bounds.bottom / 2 +
+  out.y = static_cast<int>(bounds.bottom * camera.effective_anchor()) +
           static_cast<int>(rel_y * camera.zoom * camera.ground_squash() * depth);
   out.scale = camera.zoom * depth;
   return out;
@@ -518,8 +560,9 @@ ScreenPoint project(const Camera& camera, const RECT& bounds, double wx, double 
 void unproject(const Camera& camera, const RECT& bounds, int sx, int sy, double& wx,
                double& wy) {
   const double squash = std::max(0.08, camera.ground_squash());
-  double rel_y = (sy - bounds.bottom / 2) / (camera.zoom * squash);
-  rel_y = (sy - bounds.bottom / 2) / (camera.zoom * squash * camera.depth_scale(rel_y));
+  const double anchor_y = bounds.bottom * camera.effective_anchor();
+  double rel_y = (sy - anchor_y) / (camera.zoom * squash);
+  rel_y = (sy - anchor_y) / (camera.zoom * squash * camera.depth_scale(rel_y));
   const double rel_x =
       (sx - bounds.right / 2) / (camera.zoom * camera.depth_scale(rel_y));
   wx = camera.x + rel_x;
@@ -613,6 +656,36 @@ void draw_ground_grid(HDC dc, const Camera& camera, const RECT& bounds) {
     const ScreenPoint b = project(camera, bounds, camera.x + range, gy);
     draw_line(dc, a.x, a.y, b.x, b.y, RGB(33, 41, 44), 1);
   }
+}
+
+// D-107 distance shading: the slice fogs ground bands toward the backdrop
+// with shade = (1 - y/H) * fog, capped at 0.85.  This renders the same
+// gradient as one stretched 1xN premultiplied DIB, so the ground grid beneath
+// stays visible.  Placed with the ground pass so actors and warnings keep
+// their unfogged colors, matching the slice's draw order.
+void draw_distance_fog(HDC dc, const RECT& bounds, double fog, AlphaBlendProc alpha_blend) {
+  if (!alpha_blend || fog <= 0.0 || bounds.bottom <= 0 || bounds.right <= 0) return;
+  const int height = static_cast<int>(bounds.bottom);
+  std::vector<std::uint8_t> pixels(static_cast<std::size_t>(height) * 4);
+  for (int y = 0; y < height; ++y) {
+    const double shade =
+        std::clamp((1.0 - static_cast<double>(y) / height) * fog, 0.0, 0.85);
+    const int alpha = static_cast<int>(shade * 255.0);
+    pixels[static_cast<std::size_t>(y) * 4 + 0] = static_cast<std::uint8_t>(18 * alpha / 255);
+    pixels[static_cast<std::size_t>(y) * 4 + 1] = static_cast<std::uint8_t>(15 * alpha / 255);
+    pixels[static_cast<std::size_t>(y) * 4 + 2] = static_cast<std::uint8_t>(13 * alpha / 255);
+    pixels[static_cast<std::size_t>(y) * 4 + 3] = static_cast<std::uint8_t>(alpha);
+  }
+  HDC source_dc = nullptr;
+  HGDIOBJ old_bitmap = nullptr;
+  HBITMAP bitmap = make_dib(pixels, 1, height, &source_dc, &old_bitmap);
+  if (!bitmap) return;
+  BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+  alpha_blend(dc, 0, 0, static_cast<int>(bounds.right), height, source_dc, 0, 0, 1,
+              height, blend);
+  SelectObject(source_dc, old_bitmap);
+  DeleteDC(source_dc);
+  DeleteObject(bitmap);
 }
 
 // These are deliberately presentation approximations of the core's private
@@ -1114,6 +1187,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   DeleteObject(background);
 
   draw_ground_grid(dc, state.camera, bounds);
+  draw_distance_fog(dc, bounds, state.camera.effective_fog(), state.billboards.alpha_blend);
 
   // Ground decals render before anything that stands on the plane.
   const auto& extraction = sim.instance().extraction_point;
@@ -1286,9 +1360,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   SetTextColor(dc, RGB(150, 160, 150));
   char debug_line[256];
   std::snprintf(debug_line, sizeof(debug_line),
-                "tick %llu | zoom %.2f | pitch %.0f | persp %.5f | effects %zu | telegraphs %zu | %s",
+                "tick %llu | zoom %.2f | pitch %.0f | persp %.5f | fog %.2f | effects %zu | telegraphs %zu | %s",
                 static_cast<unsigned long long>(sim.tick()), state.camera.zoom,
-                state.camera.pitch_deg, state.camera.perspective,
+                state.camera.pitch_deg, state.camera.effective_perspective(),
+                state.camera.effective_fog(),
                 state.effects.size(), state.telegraphs.size(), state.billboards.status.c_str());
   TextOutA(dc, 18, 168, debug_line, static_cast<int>(strlen(debug_line)));
   if (state.hint_ticks > 0 && !state.hint.empty()) {
@@ -1353,6 +1428,16 @@ void timer_step(HWND window, ClientState& state) {
   if (player) {
     state.camera.x += (player->position.x - state.camera.x) * 0.2;
     state.camera.y += (player->position.y - state.camera.y) * 0.2;
+  }
+
+  // Driven-pass diagnostics: one authoritative world position per real second
+  // of the fixed tick cadence.
+  constexpr std::uint64_t kTicksPerSecond = 1000 / verdigris::kTickMs;
+  if (!state.position_log_path.empty() && player &&
+      state.simulation->tick() % kTicksPerSecond == 0) {
+    std::ofstream log(state.position_log_path, std::ios::app);
+    log << state.simulation->tick() << "," << player->position.x << ","
+        << player->position.y << "\n";
   }
 }
 
@@ -1419,9 +1504,11 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (wparam == VK_OEM_PLUS)
         state->camera.perspective = std::min(0.0012, state->camera.perspective + 0.0001);
       if (wparam == VK_HOME) {
-        state->camera.zoom = 0.5;
-        state->camera.pitch_deg = 55.0;
-        state->camera.perspective = 0.00035;
+        state->camera.zoom = kCameraDefaultZoom;
+        state->camera.pitch_deg = kCameraDefaultPitchDeg;
+        state->camera.perspective = kCameraDefaultPerspective;
+        state->camera.anchor = kCameraDefaultAnchor;
+        state->camera.fog = kCameraDefaultFog;
       }
       InvalidateRect(window, nullptr, FALSE);
       break;
@@ -1494,14 +1581,26 @@ int run_headless_demo() {
   verdigris::EmberHunt seasonal;
   simulation.set_seasonal_mechanic(&seasonal);
   simulation.dispatch(verdigris::Command::enter("route:tin:1:0"));
-  for (int i = 0; i < 4; ++i) simulation.dispatch(verdigris::Command::move(1, 0));
+  // Walk into melee range of the spawned enemy, then back to the extraction
+  // pad at the origin.  The tick counts derive from the same named per-tick
+  // step the core applies, so the demo tracks the movement cadence instead of
+  // pinning a stale command count.
+  const auto* player = simulation.actor(simulation.scion().actor_id);
+  const int step = verdigris::movement_step_per_tick(player->stats.move_speed);
+  int gap = 0;
+  for (const auto& actor : simulation.actors())
+    if (actor.kind == verdigris::ActorKind::Monster)
+      gap = verdigris::manhattan_distance(player->position, actor.position) -
+            verdigris::presentation_constants::kMeleeRange;
+  const int approach_ticks = std::max(0, (gap + step - 1) / step);
+  for (int i = 0; i < approach_ticks; ++i) simulation.dispatch(verdigris::Command::move(1, 0));
   for (int i = 0; i < 8; ++i)
     simulation.dispatch(verdigris::Command::action_use(verdigris::ActionType::Melee));
   if (!simulation.ground_items().empty())
     simulation.dispatch(verdigris::Command::pick_up(simulation.ground_items().front().id));
   if (!simulation.ground_trophies().empty())
     simulation.dispatch(verdigris::Command::pick_up(simulation.ground_trophies().front().id));
-  for (int i = 0; i < 4; ++i) simulation.dispatch(verdigris::Command::move(-1, 0));
+  for (int i = 0; i < approach_ticks; ++i) simulation.dispatch(verdigris::Command::move(-1, 0));
   simulation.dispatch(verdigris::Command::extract());
   std::cout << "Verdigris native client shell\n"
             << "House: " << simulation.house().name
@@ -1517,6 +1616,8 @@ int main(int argc, char** argv) {
     if (std::strcmp(argv[i], "--headless") == 0) return run_headless_demo();
   HINSTANCE instance = GetModuleHandle(nullptr);
   auto state = std::make_unique<ClientState>();
+  for (int i = 1; i + 1 < argc; ++i)
+    if (std::strcmp(argv[i], "--log-positions") == 0) state->position_log_path = argv[i + 1];
   state->simulation = std::make_unique<verdigris::Simulation>(0xC011AB1EULL, "House Verdigris");
   verdigris::EmberHunt seasonal;
   state->simulation->set_seasonal_mechanic(&seasonal);
@@ -1549,14 +1650,26 @@ int run_headless_demo() {
   verdigris::EmberHunt seasonal;
   simulation.set_seasonal_mechanic(&seasonal);
   simulation.dispatch(verdigris::Command::enter("route:tin:1:0"));
-  for (int i = 0; i < 4; ++i) simulation.dispatch(verdigris::Command::move(1, 0));
+  // Walk into melee range of the spawned enemy, then back to the extraction
+  // pad at the origin.  The tick counts derive from the same named per-tick
+  // step the core applies, so the demo tracks the movement cadence instead of
+  // pinning a stale command count.
+  const auto* player = simulation.actor(simulation.scion().actor_id);
+  const int step = verdigris::movement_step_per_tick(player->stats.move_speed);
+  int gap = 0;
+  for (const auto& actor : simulation.actors())
+    if (actor.kind == verdigris::ActorKind::Monster)
+      gap = verdigris::manhattan_distance(player->position, actor.position) -
+            verdigris::presentation_constants::kMeleeRange;
+  const int approach_ticks = std::max(0, (gap + step - 1) / step);
+  for (int i = 0; i < approach_ticks; ++i) simulation.dispatch(verdigris::Command::move(1, 0));
   for (int i = 0; i < 8; ++i)
     simulation.dispatch(verdigris::Command::action_use(verdigris::ActionType::Melee));
   if (!simulation.ground_items().empty())
     simulation.dispatch(verdigris::Command::pick_up(simulation.ground_items().front().id));
   if (!simulation.ground_trophies().empty())
     simulation.dispatch(verdigris::Command::pick_up(simulation.ground_trophies().front().id));
-  for (int i = 0; i < 4; ++i) simulation.dispatch(verdigris::Command::move(-1, 0));
+  for (int i = 0; i < approach_ticks; ++i) simulation.dispatch(verdigris::Command::move(-1, 0));
   simulation.dispatch(verdigris::Command::extract());
   std::cout << "Verdigris native client shell\n"
             << "House: " << simulation.house().name
