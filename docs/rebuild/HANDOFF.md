@@ -6,6 +6,10 @@
   decisions, task specs). Claude/Fable is architect+reviewer; the Codex
   coordinator with Luna workers implements. Read
   `orchestration/PROTOCOL.md` first.
+- The current coordinator snapshot is indexed in
+  [`RECONSTITUTION_STATUS.md`](RECONSTITUTION_STATUS.md), including the
+  original checklist, WIZARD seams, review-ready tasks, blocked ownership
+  questions, and current gate evidence.
 - Wave 1 READY: TASK-0001 (native Legends records), TASK-0002 (build/CI
   hardening), TASK-0003 (slice verification harness). DRAFT: TASK-0004
   (client control pass per decision D-007), TASK-0005 (legacy audit).
