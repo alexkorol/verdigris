@@ -1,6 +1,6 @@
 ---
 task: TASK-0041
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: codex
 worker: Luna death-decision UI worker
 worker_branch: codex/TASK-0041-death-decision-moment
@@ -11,6 +11,8 @@ dependencies: TASK-0036 integrated at e3cd4b42
 expected_verification: npm run test:unit; npm run playtest; npm run smoke:browser; oathed/unoathed death captures
 known_risks: death overlay must reuse existing D-106/Chronicles data and remain within owned client/player-handler paths; no new lore or Chronicles fork
 architect_review_required: true
-implementation_commits: pending
+implementation_commits: 0e23e3bf; 212a1e1c
 report: orchestration/tasks/TASK-0041-death-decision-moment/REPORT.md
+verification: focused death suite 5/5 tests (14 assertions); clean integration full unit 122 files/779 tests; production build, ESLint, Stylelint, and diff-check passed; worker full playtest 31/31; alternate-port browser gate 1/1; default smoke could not claim a result because owner PID 10276 holds port 6500
+integration_commits: 5a493083; dfb41955
 ---
