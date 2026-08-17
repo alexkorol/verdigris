@@ -14,6 +14,7 @@ commits:
   - 78434f60
   - 51c5253d
   - bf598d82
+  - 9bbb3497
 base_commit: f0df8de6
 ---
 
@@ -66,15 +67,21 @@ Fable’s review found that the original ten-run proof covered only
 mode, while retaining authored deadlines as the floor and the existing
 1.75× cap. The explicit load-mode path and its evidence remain unchanged.
 
+The final correction in `9bbb3497` makes the cap selection explicit: when
+observed p99 or maximum delay reaches three times the 20ms baseline, default
+mode uses the same existing 1.75× cap; lighter contention remains proportional.
+
 With `PLAYTEST_LOAD_MODE` unset and two moderate CPU spinner workers:
 
 - focused `session-arc`: PASS, 11.5s (p99 32.13ms, max 35.13ms);
-- default full run 1: PASS 31/31 (max lag 110.36ms);
-- default full run 2: PASS 31/31 (max lag 94.37ms);
-- default full run 3: PASS 31/31 (max lag 96.80ms).
+- default full run 1: PASS 31/31 (max lag 113.18ms);
+- default full run 2: PASS 31/31 (max lag 110.30ms);
+- default full run 3: PASS 31/31 (max lag 112.00ms).
 
 This revision preserves the authentic negative regression and all previous
-loaded-mode evidence. The revised integration tip is `7990c5e2`.
+loaded-mode evidence. The raw command output is committed at
+[`playtest/TASK-0043-default-load-transcript.txt`](../../../../playtest/TASK-0043-default-load-transcript.txt).
+The revised integration tip is `f9527d9c`.
 
 ## Manual checks
 
@@ -94,7 +101,7 @@ None for implementation. Architect acceptance of the evidence package is require
 
 ## Integration notes
 
-Source is ready on the dedicated integration worktree at `7990c5e2`; integrate only after Fable writes an `ACCEPTED` review. The coordinator metadata/evidence commits are local (`a12d3895`, `a07e33b9`, `e1e2a758`, `2989c3a9`) and were not pushed.
+Source is ready on the dedicated integration worktree at `f9527d9c`; integrate only after Fable writes an `ACCEPTED` review. The coordinator metadata/evidence commits are local (`a12d3895`, `a07e33b9`, `e1e2a758`, `2989c3a9`, `e68f408f`) and were not pushed.
 
 ## Scope and review notes
 
@@ -109,6 +116,8 @@ Source is ready on the dedicated integration worktree at `7990c5e2`; integrate o
 - `git diff --check` clean for task changes.
 - Final full loaded gate: 10/10 runs, 31/31 each.
 - Negative regression: failed at the intended suppressed-transition boundary.
+- Revision raw transcript: three default-mode full runs under one moderate
+  spinner, all 31/31; `loadMode:false` in each run.
 - Independent validator verdict: **ACCEPT**. The validator confirmed the
   source diff is confined to `playtest/**`, ESLint passes on changed files,
   timing adaptation remains capped at 1.75×, authored assertions remain,

@@ -11,8 +11,8 @@ dependencies: none
 expected_verification: ten full playtest runs under CPU load; one authentic negative regression run; transcripts and load method captured
 known_risks: harness-only scope; do not loosen assertions or edit server/src/package; owner PID 10276 may occupy port 6500
 architect_review_required: true
-implementation_commits: 3b16d01c; 18dabc06; 48b471b6; 31a93698; f3dc7ce1; e9474a0c; 121001b3; 1e48d120; 78434f60; 51c5253d; bf598d82
+implementation_commits: 3b16d01c; 18dabc06; 48b471b6; 31a93698; f3dc7ce1; e9474a0c; 121001b3; 1e48d120; 78434f60; 51c5253d; bf598d82; 9bbb3497
 report: orchestration/tasks/TASK-0043-playtest-harness-stabilization/REPORT.md
 verification: ten consecutive loaded npm run playtest executions passed 31/31 (310/310); authentic negative zone-entry regression failed as expected; see captures/
-revision: Fable correction implemented; default observed-lag adaptation and three consecutive default-mode full runs now pass.
+revision: Fable corrections implemented; default observed-lag adaptation, raw transcript, and three consecutive default-mode full runs now pass.
 ---
