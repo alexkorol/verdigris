@@ -86,8 +86,9 @@ surface.
 The clean N2 `ProtocolSession` currently handles `player:login`,
 `world:zone:enter`, `instance:enterSolo`, `player:move`, `dev:teleport`,
 `dev:give`, and `dev:state`. It does not yet expose the browser combat
-commands (`player:attack` / skill-trigger flow), authoritative combat updates,
-monster deaths, or loot pickup over the native protocol. Those are the concrete
+combat/skill flow (movement-triggered melee and `player:skill:trigger`),
+authoritative combat updates, monster deaths, or loot pickup over the native
+protocol. Those are the concrete
 N3 surface gaps behind the `combat` and `encounter-variety` scenarios.
 
 The handoff rule is unchanged: map the existing wire events into the
