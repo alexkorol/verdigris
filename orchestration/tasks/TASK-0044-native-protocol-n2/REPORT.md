@@ -157,6 +157,21 @@ line-anchored audit is preserved in
 This is evidence for the next task, not an N3 implementation claim; native
 combat remains gated on a Fable-issued READY N3 spec.
 
+## Coordinator N3 core-gap audit — 2026-08-17
+
+A second read-only inspection of `d476788` confirms the principal seam: the
+protocol maps movement only into `WorldSimulation`, while deterministic combat
+already lives in a separate `Simulation`; no UUID/position bridge exists. The
+N2 roster is 18 shallow `<theme>-lurker` records, the snapshot has empty ground
+loot arrays, and `dev:give` does not reach simulation inventory. Core event
+metadata also needs source/skill/killer fields for lossless `combat:hit`
+projection, and the unchanged combat scenario's `dev:setlevel`/`dev:heal`
+commands are not handled. Full line-oriented findings and reusable hooks are
+preserved in
+[`coordinator-n3-core-gap-audit-2026-08-17.txt`](captures/coordinator-n3-core-gap-audit-2026-08-17.txt).
+These findings constrain the future N3 spec; they do not authorize source
+changes in TASK-0044.
+
 ## N3 negative baseline — 2026-08-17
 
 To make the next wave’s entry criteria executable, the coordinator ran the

@@ -17,6 +17,7 @@ coordinator_recheck: 2026-08-17 — clean Kimi worktree d476788 independently re
 coordinator_attach_recheck: 2026-08-17 — native server d476788 on port 6526 passed unchanged `quickstart single-session movement zones` 4/4, including six zone combinations and saved-position restoration; raw transcript in captures/coordinator-native-attach-2026-08-17.txt.
 coordinator_dual_run: 2026-08-17 — JS reference and native d476788 both pass the unchanged four-scenario contract matrix 4/4; native intentionally reports 18 monsters per zone versus JS authored counts 33/56/31/46/57/54, documented as the N2 minimum stub and N3+ follow-up.
 coordinator_n3_surface_audit: 2026-08-17 — verified all N3 brief browser event names and native ActionType/EventType/Command hooks; line-anchored capture is in captures/coordinator-n3-surface-audit-2026-08-17.txt; no source changed.
+coordinator_n3_core_gap_audit: 2026-08-17 — read-only d476788 inspection confirms separate WorldSimulation/Simulation authority, 18 shallow lurkers, empty ground-loot snapshot, missing combat-event metadata, and absent dev:setlevel/dev:heal; capture in captures/coordinator-n3-core-gap-audit-2026-08-17.txt.
 n3_baseline_probe: 2026-08-17 — native d476788 predictably fails `combat` at 18<20 monsters and `encounter-variety` at missing authored pack roles; negative boundary captured in captures/coordinator-n3-baseline-2026-08-17.txt.
 ---
 

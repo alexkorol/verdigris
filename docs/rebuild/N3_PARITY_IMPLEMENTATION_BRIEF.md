@@ -65,11 +65,26 @@ This is an implementation constraint, not a product decision:
   resolution, item/trophy drops, and event emission, while the N2 world adapter
   still exposes a minimum authored roster and empty ground-item arrays in its
   protocol snapshot.
+- The N2 protocol currently generates 18 shallow world monsters (all
+  `<theme>-lurker` records) and has no world-monster-to-`Actor` UUID/position
+  mapping. It also does not handle `player:skill:trigger`, pickup, or combat
+  event projection; `dev:give` writes a separate session inventory rather than
+  the simulation's carried-item state.
+- The reusable event stream is not yet rich enough for a lossless browser
+  projection: `DamageApplied` carries a target but no source/skill/style, and
+  `ActorDied` carries no killer. Ground `Item`/`Trophy` records also lack floor
+  coordinates, and the core has no public time-advance seam independent of
+  command dispatch for polling-driven aura/AI behavior. These are concrete
+  core/API requirements to resolve in the N3 spec, not reasons to infer
+  protocol-side gameplay.
 
 N3 should establish one authoritative bridge between these existing seams (or
-  deliberately move the world roster into the core) and project its events at
-  the protocol edge. A networking-only combat implementation would create two
-  authorities and is explicitly out of bounds under D-002.
+deliberately move the world roster into the core) and project its events at
+the protocol edge. A networking-only combat implementation would create two
+authorities and is explicitly out of bounds under D-002.
+
+The line-oriented reconnaissance is preserved in
+[`coordinator-n3-core-gap-audit-2026-08-17.txt`](../../orchestration/tasks/TASK-0044-native-protocol-n2/captures/coordinator-n3-core-gap-audit-2026-08-17.txt).
 
 ## Acceptance matrix for N3
 
