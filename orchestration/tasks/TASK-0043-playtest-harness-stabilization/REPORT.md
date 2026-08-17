@@ -122,4 +122,7 @@ Source is ready on the dedicated integration worktree at `f9527d9c`; integrate o
   source diff is confined to `playtest/**`, ESLint passes on changed files,
   timing adaptation remains capped at 1.75×, authored assertions remain,
   and the exact 1.15 gear threshold is preserved.
+- Final revision validator verdict: **ACCEPT**. The validator confirmed the
+  one-spinner label matches all three raw transcript headers and found no
+  remaining source, cap, scope, or evidence defects.
 - Task state: `REVIEW_REQUESTED`; architect acceptance is still required.
