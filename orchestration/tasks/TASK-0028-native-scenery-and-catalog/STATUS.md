@@ -1,6 +1,6 @@
 ---
 task: TASK-0028
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Luna native-client implementation worker
 worker_branch: codex/TASK-0028-native-scenery-and-catalog
@@ -19,4 +19,6 @@ validator: independent Luna validator
 validator_result: FUNCTIONAL ACCEPT — scope, swept collision, depth captures, and gates pass; coordinator artifacts now complete
 report: orchestration/tasks/TASK-0028-native-scenery-and-catalog/REPORT.md
 revision_required: none
+integrated_commit: 21495fd461cf941fa7d641e61368da89e5fa4436
+integrated_at: 2026-08-16T20:02:00-07:00
 ---
