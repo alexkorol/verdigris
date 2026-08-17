@@ -1,6 +1,6 @@
 ---
 task: TASK-0034
-state: ACCEPTED
+state: INTEGRATED
 branch: codex/TASK-0034-playability-evaluation
 commits:
   - a4976bbeade44d91cc0e5e10510e137c0dac4dfb
