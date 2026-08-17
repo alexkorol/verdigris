@@ -117,3 +117,6 @@
   source was changed.
 - This is a handoff and evidence checkpoint, not an N3 claim. Native combat
   implementation must wait for Fable to issue a READY N3 task/spec.
+- The requested authority choice and task issuance are tracked in
+  [`QUESTION-0009`](../../orchestration/questions/QUESTION-0009-native-n3-authority-bridge.md);
+  no source workaround is authorized while it remains open.
