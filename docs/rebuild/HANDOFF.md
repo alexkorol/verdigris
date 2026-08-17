@@ -86,5 +86,5 @@
   networking tests. A rebuilt server also passes unchanged `movement` and
   `zones` attach scenarios 2/2, including all six zones and saved-position
   restoration. Coordinator captures are preserved in the TASK-0044 folder;
-  the six native worker files remain uncommitted, so acceptance still requires
-  Kimi's commit/report packet and Fable's architect rerun.
+  Kimi committed the six native files as `d476788`, so the task is now
+  `REVIEW_REQUESTED` pending Fable's architect rerun and acceptance decision.
