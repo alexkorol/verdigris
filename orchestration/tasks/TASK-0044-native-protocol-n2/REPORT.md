@@ -77,6 +77,11 @@ fresh worker-built server on port 6520 then passed unchanged `movement` in
 The final checkpoint is preserved in
 [`captures/worker-branch-green-2026-08-17.txt`](captures/worker-branch-green-2026-08-17.txt).
 
+The broader committed-tip command `native/build.ps1 -RunTests -RunClient` also
+passes denylist, core tests, networking tests, and the native client shell
+(including the stored trophy/item smoke output). Evidence is in
+[`captures/worker-branch-client-gate-2026-08-17.txt`](captures/worker-branch-client-gate-2026-08-17.txt).
+
 ## Acceptance status
 
 The committed worker-branch implementation and unchanged attach gate are

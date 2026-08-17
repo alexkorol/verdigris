@@ -152,5 +152,10 @@ actual worker server on port 6520 also passes the unchanged `movement` and
 combinations and saved-position restoration. The exact output is preserved in
 `captures/worker-branch-green-2026-08-17.txt`.
 
-The implementation is still uncommitted in Kimi's worktree, so this is the
-final coordinator verification checkpoint, not architect acceptance.
+The implementation is committed in Kimi's worktree as `d476788`, so this is
+the final coordinator verification checkpoint, not architect acceptance.
+
+The committed tip was additionally exercised with
+`native/build.ps1 -RunTests -RunClient`: denylist, core/networking tests, and
+the native client shell all passed (exit 0). See
+`captures/worker-branch-client-gate-2026-08-17.txt`.
