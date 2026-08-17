@@ -101,6 +101,24 @@ export default {
   },
 
   /**
+   * D-106 death transfer projected by the server for the decision overlay.
+   * Keep the authoritative payload on the local actor as well as the bus so
+   * remounted HUD pieces can render the same moment without recomputing loss.
+   */
+  'player:death-summary': (message, context) => {
+    const payload = message.data || {};
+    const summary = payload.summary || payload;
+    const playerId = payload.playerId || summary.playerId || summary.scion?.id;
+    if (!context?.game?.player || (playerId && playerId !== context.game.player.uuid
+      && playerId !== context.game.player.scionId)) {
+      return;
+    }
+
+    context.game.player.deathSummary = summary;
+    bus.$emit('player:death-summary', summary);
+  },
+
+  /**
    * A player logins into the game
    */
   'player:login-error': (data) => {
@@ -367,15 +385,51 @@ export default {
 
     if (context.game.player.uuid === playerId) {
       applyToActor(context.game.player);
+      const deathSummary = payload.deathSummary || null;
+      const deathSummaryPending = payload.deathSummaryPending === true;
+      if (deathSummary) {
+        context.game.player.deathSummary = deathSummary;
+        bus.$emit('player:death-summary', deathSummary);
+      } else if (lifecycle && !['awaiting-respawn', 'permadead'].includes(lifecycle.state)) {
+        context.game.player.deathSummary = null;
+      }
       // Map keeps an actor reference of its own. Without this sync the HUD
       // reached 0 HP while the renderer still saw the pre-hit health object,
       // so death had no visible world state at all.
       if (context.game.map) {
         context.game.map.player = context.game.player;
       }
-      if (lifecycle && lifecycle.state === 'permadead'
+      if (lifecycle && lifecycle.state === 'permadead' && !deathSummary && !deathSummaryPending
         && typeof context.handlePermadeath === 'function') {
         context.handlePermadeath(payload);
+      }
+
+      // Older server paths may only carry lifecycle data. Give the overlay a
+      // mechanical fallback while allowing the dedicated summary frame to
+      // replace it immediately when the D-106 projection is available.
+      if (lifecycle && ['awaiting-respawn', 'permadead'].includes(lifecycle.state)
+        && !deathSummary && !context.game.player.deathSummary) {
+        const fallback = {
+          state: lifecycle.state,
+          mode: lifecycle.mode || 'soft',
+          mortalOath: lifecycle.mode === 'hard',
+          permanent: lifecycle.state === 'permadead',
+          losses: [],
+          recoveredToPool: [],
+          protected: [],
+          respawn: lifecycle.respawn || {},
+          respawnDestination: lifecycle.state === 'permadead'
+            ? 'The Chronicles — choose a successor'
+            : 'The expedition entrance',
+          succession: lifecycle.state === 'permadead' && lifecycle.mode === 'hard',
+          scion: { id: context.game.player.scionId || context.game.player.uuid },
+        };
+        context.game.player.deathSummary = fallback;
+        setTimeout(() => {
+          if (context.game.player.deathSummary === fallback) {
+            bus.$emit('player:death-summary', fallback);
+          }
+        }, 0);
       }
       return;
     }
