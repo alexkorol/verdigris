@@ -1,9 +1,12 @@
 #include "verdigris/core.hpp"
 
 #include <cmath>
+#include <charconv>
 #include <iomanip>
 #include <limits>
+#include <map>
 #include <sstream>
+#include <stdexcept>
 
 #include "verdigris/seasonal.hpp"
 
@@ -862,6 +865,424 @@ void Simulation::add_seasonal_objective(const std::string& description) {
   instance_.seasonal_objective = true;
   instance_.seasonal_objective_text = description;
   emit(EventType::SeasonalObjectiveAdded, {}, {}, {}, description);
+}
+
+namespace {
+
+// The v1 format is line-oriented rather than a dependency-heavy JSON parser.
+// Every string is hex encoded, making the grammar unambiguous and the output
+// byte-stable across platforms.  Unknown keys are intentionally ignored.
+constexpr std::uint64_t kSnapshotSchemaVersion = 1;
+
+using SnapshotFields = std::map<std::string, std::string>;
+
+std::string encode_text(const std::string& value) {
+  static constexpr char digits[] = "0123456789abcdef";
+  std::string encoded;
+  encoded.reserve(value.size() * 2);
+  for (const unsigned char byte : value) {
+    encoded.push_back(digits[byte >> 4U]);
+    encoded.push_back(digits[byte & 0x0fU]);
+  }
+  return encoded;
+}
+
+std::string decode_text(const std::string& value) {
+  if (value.size() % 2 != 0) throw std::runtime_error("invalid snapshot string");
+  std::string decoded;
+  decoded.reserve(value.size() / 2);
+  auto nibble = [](char digit) -> int {
+    if (digit >= '0' && digit <= '9') return digit - '0';
+    if (digit >= 'a' && digit <= 'f') return digit - 'a' + 10;
+    if (digit >= 'A' && digit <= 'F') return digit - 'A' + 10;
+    return -1;
+  };
+  for (std::size_t i = 0; i < value.size(); i += 2) {
+    const int high = nibble(value[i]);
+    const int low = nibble(value[i + 1]);
+    if (high < 0 || low < 0) throw std::runtime_error("invalid snapshot string");
+    decoded.push_back(static_cast<char>((high << 4) | low));
+  }
+  return decoded;
+}
+
+void put_field(std::ostringstream& output, const std::string& key, const std::string& value) {
+  output << key << '=' << value << '\n';
+}
+
+void put_text(std::ostringstream& output, const std::string& key, const std::string& value) {
+  put_field(output, key, encode_text(value));
+}
+
+template <typename Number>
+void put_number(std::ostringstream& output, const std::string& key, Number value) {
+  put_field(output, key, std::to_string(value));
+}
+
+void put_bool(std::ostringstream& output, const std::string& key, bool value) {
+  put_field(output, key, value ? "1" : "0");
+}
+
+void put_texts(std::ostringstream& output, const std::string& key,
+               const std::vector<std::string>& values) {
+  put_number(output, key + ".count", values.size());
+  for (std::size_t index = 0; index < values.size(); ++index) {
+    put_text(output, key + "." + std::to_string(index), values[index]);
+  }
+}
+
+void put_item(std::ostringstream& output, const std::string& key, const Item& item) {
+  put_text(output, key + ".id", item.id);
+  put_text(output, key + ".name", item.name);
+  put_number(output, key + ".attackBonus", item.attack_bonus);
+  put_text(output, key + ".ownerId", item.owner_id);
+  put_number(output, key + ".useCount", item.use_count);
+  put_bool(output, key + ".equipped", item.equipped);
+  put_bool(output, key + ".relicCandidate", item.relic_candidate);
+  put_texts(output, key + ".history", item.history);
+}
+
+void put_items(std::ostringstream& output, const std::string& key,
+               const std::vector<Item>& values) {
+  put_number(output, key + ".count", values.size());
+  for (std::size_t index = 0; index < values.size(); ++index) {
+    put_item(output, key + "." + std::to_string(index), values[index]);
+  }
+}
+
+void put_trophy(std::ostringstream& output, const std::string& key, const Trophy& trophy) {
+  put_text(output, key + ".id", trophy.id);
+  put_text(output, key + ".name", trophy.name);
+}
+
+void put_trophies(std::ostringstream& output, const std::string& key,
+                  const std::vector<Trophy>& values) {
+  put_number(output, key + ".count", values.size());
+  for (std::size_t index = 0; index < values.size(); ++index) {
+    put_trophy(output, key + "." + std::to_string(index), values[index]);
+  }
+}
+
+void put_scion(std::ostringstream& output, const std::string& key, const Scion& scion) {
+  put_text(output, key + ".id", scion.id);
+  put_text(output, key + ".name", scion.name);
+  put_number(output, key + ".level", scion.level);
+  put_bool(output, key + ".alive", scion.alive);
+  put_text(output, key + ".actorId", scion.actor_id);
+  put_trophies(output, key + ".carriedTrophies", scion.carried_trophies);
+  put_items(output, key + ".carriedItems", scion.carried_items);
+  put_texts(output, key + ".deeds", scion.deeds);
+}
+
+void put_legend(std::ostringstream& output, const std::string& key, const LegendEntry& legend) {
+  put_number(output, key + ".ordinal", legend.ordinal);
+  put_number(output, key + ".tick", legend.tick);
+  put_text(output, key + ".scionId", legend.scion_id);
+  put_text(output, key + ".scionName", legend.scion_name);
+  put_text(output, key + ".kind", legend.kind);
+  put_text(output, key + ".subject", legend.subject);
+  put_text(output, key + ".detail", legend.detail);
+  put_text(output, key + ".killerId", legend.killer_id);
+  put_text(output, key + ".routeId", legend.route_id);
+  put_bool(output, key + ".founding", legend.founding);
+}
+
+SnapshotFields parse_fields(const std::vector<std::uint8_t>& bytes) {
+  const std::string text(bytes.begin(), bytes.end());
+  std::istringstream input(text);
+  SnapshotFields fields;
+  std::string line;
+  while (std::getline(input, line)) {
+    if (!line.empty() && line.back() == '\r') line.pop_back();
+    const std::size_t separator = line.find('=');
+    if (separator == std::string::npos || separator == 0) continue;
+    // First occurrence wins, making an appended unknown/duplicate field
+    // harmless and preserving the canonical value emitted by snapshot().
+    fields.emplace(line.substr(0, separator), line.substr(separator + 1));
+  }
+  return fields;
+}
+
+std::string field(const SnapshotFields& fields, const std::string& key,
+                  const std::string& fallback = {}) {
+  const auto found = fields.find(key);
+  return found == fields.end() ? fallback : found->second;
+}
+
+std::string required_field(const SnapshotFields& fields, const std::string& key) {
+  const auto found = fields.find(key);
+  if (found == fields.end()) throw std::runtime_error("missing snapshot field: " + key);
+  return found->second;
+}
+
+template <typename Number>
+Number number_field(const SnapshotFields& fields, const std::string& key, Number fallback = {}) {
+  const auto found = fields.find(key);
+  if (found == fields.end()) return fallback;
+  Number value{};
+  const char* begin = found->second.data();
+  const char* end = begin + found->second.size();
+  const auto result = std::from_chars(begin, end, value);
+  if (result.ec != std::errc{} || result.ptr != end) {
+    throw std::runtime_error("invalid snapshot number: " + key);
+  }
+  return value;
+}
+
+template <typename Number>
+Number required_number(const SnapshotFields& fields, const std::string& key) {
+  required_field(fields, key);
+  return number_field<Number>(fields, key);
+}
+
+bool bool_field(const SnapshotFields& fields, const std::string& key, bool fallback = false) {
+  const std::string value = field(fields, key, fallback ? "1" : "0");
+  if (value == "1") return true;
+  if (value == "0") return false;
+  throw std::runtime_error("invalid snapshot boolean: " + key);
+}
+
+bool required_bool(const SnapshotFields& fields, const std::string& key) {
+  required_field(fields, key);
+  return bool_field(fields, key);
+}
+
+std::string required_text(const SnapshotFields& fields, const std::string& key) {
+  return decode_text(required_field(fields, key));
+}
+
+std::size_t required_count(const SnapshotFields& fields, const std::string& key) {
+  const auto count = required_number<std::uint64_t>(fields, key + ".count");
+  if (count > 1'000'000) throw std::runtime_error("snapshot collection is too large");
+  return static_cast<std::size_t>(count);
+}
+
+std::vector<std::string> read_texts(const SnapshotFields& fields, const std::string& key) {
+  std::vector<std::string> values;
+  const std::size_t count = required_count(fields, key);
+  values.reserve(count);
+  for (std::size_t index = 0; index < count; ++index) {
+    values.push_back(required_text(fields, key + "." + std::to_string(index)));
+  }
+  return values;
+}
+
+Item read_item(const SnapshotFields& fields, const std::string& key) {
+  Item item;
+  item.id = required_text(fields, key + ".id");
+  item.name = required_text(fields, key + ".name");
+  item.attack_bonus = required_number<int>(fields, key + ".attackBonus");
+  item.owner_id = required_text(fields, key + ".ownerId");
+  item.use_count = required_number<int>(fields, key + ".useCount");
+  item.equipped = required_bool(fields, key + ".equipped");
+  item.relic_candidate = required_bool(fields, key + ".relicCandidate");
+  item.history = read_texts(fields, key + ".history");
+  return item;
+}
+
+std::vector<Item> read_items(const SnapshotFields& fields, const std::string& key) {
+  std::vector<Item> values;
+  const std::size_t count = required_count(fields, key);
+  values.reserve(count);
+  for (std::size_t index = 0; index < count; ++index) {
+    values.push_back(read_item(fields, key + "." + std::to_string(index)));
+  }
+  return values;
+}
+
+Trophy read_trophy(const SnapshotFields& fields, const std::string& key) {
+  return {required_text(fields, key + ".id"), required_text(fields, key + ".name")};
+}
+
+std::vector<Trophy> read_trophies(const SnapshotFields& fields, const std::string& key) {
+  std::vector<Trophy> values;
+  const std::size_t count = required_count(fields, key);
+  values.reserve(count);
+  for (std::size_t index = 0; index < count; ++index) {
+    values.push_back(read_trophy(fields, key + "." + std::to_string(index)));
+  }
+  return values;
+}
+
+Scion read_scion(const SnapshotFields& fields, const std::string& key) {
+  Scion scion;
+  scion.id = required_text(fields, key + ".id");
+  scion.name = required_text(fields, key + ".name");
+  scion.level = required_number<int>(fields, key + ".level");
+  scion.alive = required_bool(fields, key + ".alive");
+  scion.actor_id = required_text(fields, key + ".actorId");
+  scion.carried_trophies = read_trophies(fields, key + ".carriedTrophies");
+  scion.carried_items = read_items(fields, key + ".carriedItems");
+  scion.deeds = read_texts(fields, key + ".deeds");
+  return scion;
+}
+
+LegendEntry read_legend(const SnapshotFields& fields, const std::string& key) {
+  LegendEntry legend;
+  legend.ordinal = required_number<std::uint64_t>(fields, key + ".ordinal");
+  legend.tick = required_number<std::uint64_t>(fields, key + ".tick");
+  legend.scion_id = required_text(fields, key + ".scionId");
+  legend.scion_name = required_text(fields, key + ".scionName");
+  legend.kind = required_text(fields, key + ".kind");
+  legend.subject = required_text(fields, key + ".subject");
+  legend.detail = required_text(fields, key + ".detail");
+  legend.killer_id = required_text(fields, key + ".killerId");
+  legend.route_id = required_text(fields, key + ".routeId");
+  legend.founding = required_bool(fields, key + ".founding");
+  return legend;
+}
+
+}  // namespace
+
+std::vector<std::uint8_t> snapshot(const Simulation& simulation) {
+  std::ostringstream output;
+  put_number(output, "schemaVersion", kSnapshotSchemaVersion);
+  put_number(output, "rng.state", simulation.rng_.state);
+  put_number(output, "rng.serial", simulation.rng_.serial);
+  put_number(output, "tick", simulation.tick_);
+  put_number(output, "nextLegendOrdinal", simulation.next_legend_ordinal_);
+
+  put_text(output, "house.id", simulation.house_.id);
+  put_text(output, "house.name", simulation.house_.name);
+  put_number(output, "house.routes.count", simulation.house_.routes.size());
+  for (std::size_t index = 0; index < simulation.house_.routes.size(); ++index) {
+    const auto& route = simulation.house_.routes[index];
+    const std::string key = "house.routes." + std::to_string(index);
+    put_text(output, key + ".id", route.id);
+    put_text(output, key + ".parentId", route.parent_id);
+    put_bool(output, key + ".optional", route.optional);
+    put_texts(output, key + ".children", route.children);
+  }
+  put_texts(output, "house.unlockedRoutes", simulation.house_.unlocked_routes);
+  put_texts(output, "house.clearedRoutes", simulation.house_.cleared_routes);
+  put_texts(output, "house.specializations", simulation.house_.specializations);
+  put_trophies(output, "house.storedTrophies", simulation.house_.stored_trophies);
+  put_items(output, "house.storedItems", simulation.house_.stored_items);
+  put_items(output, "house.relicCandidates", simulation.house_.relic_candidates);
+  put_trophies(output, "house.lostTrophies", simulation.house_.lost_trophies);
+  put_texts(output, "house.seasonalRewards", simulation.house_.seasonal_rewards);
+  put_number(output, "house.legends.count", simulation.house_.legends.size());
+  for (std::size_t index = 0; index < simulation.house_.legends.size(); ++index) {
+    put_legend(output, "house.legends." + std::to_string(index), simulation.house_.legends[index]);
+  }
+  put_bool(output, "house.campaignComplete", simulation.house_.campaign_complete);
+
+  put_scion(output, "scion", simulation.scion_);
+  put_number(output, "fallenScions.count", simulation.fallen_scions_.size());
+  for (std::size_t index = 0; index < simulation.fallen_scions_.size(); ++index) {
+    put_scion(output, "fallenScions." + std::to_string(index), simulation.fallen_scions_[index]);
+  }
+
+  // Active floor state is deliberately absent.  Relic/trophy recovery
+  // candidates that were already surfaced are returned to the pending pools,
+  // exactly as retire_instance() does at an abandonment boundary.
+  std::vector<Item> pending_items = simulation.pending_relic_items_;
+  for (const auto& item : simulation.ground_items_) {
+    if (!item.relic_candidate ||
+        std::find_if(pending_items.begin(), pending_items.end(), [&](const Item& candidate) {
+          return candidate.id == item.id;
+        }) != pending_items.end()) {
+      continue;
+    }
+    pending_items.push_back(item);
+  }
+  std::vector<Trophy> pending_trophies = simulation.pending_relic_trophies_;
+  for (const auto& trophy : simulation.ground_trophies_) {
+    if (std::find(simulation.resurfaced_trophy_ids_.begin(),
+                  simulation.resurfaced_trophy_ids_.end(), trophy.id) ==
+            simulation.resurfaced_trophy_ids_.end() ||
+        std::find_if(pending_trophies.begin(), pending_trophies.end(),
+                     [&](const Trophy& candidate) { return candidate.id == trophy.id; }) !=
+            pending_trophies.end()) {
+      continue;
+    }
+    pending_trophies.push_back(trophy);
+  }
+  put_items(output, "pendingRelicItems", pending_items);
+  put_trophies(output, "pendingRelicTrophies", pending_trophies);
+
+  const std::string text = output.str();
+  return {text.begin(), text.end()};
+}
+
+Simulation restore(const std::vector<std::uint8_t>& bytes) {
+  const SnapshotFields fields = parse_fields(bytes);
+  if (required_number<std::uint64_t>(fields, "schemaVersion") != kSnapshotSchemaVersion) {
+    throw std::runtime_error("unsupported or missing snapshot schemaVersion");
+  }
+
+  // Construct once to obtain the regular player actor shape, then replace all
+  // state with the explicitly serialized durable fields.  No constructor RNG
+  // output or event survives this reset.
+  Simulation simulation(0);
+  simulation.rng_.state = required_number<std::uint64_t>(fields, "rng.state");
+  simulation.rng_.serial = required_number<std::uint64_t>(fields, "rng.serial");
+  simulation.tick_ = required_number<std::uint64_t>(fields, "tick");
+  simulation.next_legend_ordinal_ = required_number<std::uint64_t>(fields, "nextLegendOrdinal");
+
+  simulation.house_ = {};
+  simulation.house_.id = required_text(fields, "house.id");
+  simulation.house_.name = required_text(fields, "house.name");
+  const std::size_t route_count = required_count(fields, "house.routes");
+  simulation.house_.routes.reserve(route_count);
+  for (std::size_t index = 0; index < route_count; ++index) {
+    const std::string key = "house.routes." + std::to_string(index);
+    RouteNode route;
+    route.id = required_text(fields, key + ".id");
+    route.parent_id = required_text(fields, key + ".parentId");
+    route.optional = required_bool(fields, key + ".optional");
+    route.children = read_texts(fields, key + ".children");
+    simulation.house_.routes.push_back(std::move(route));
+  }
+  simulation.house_.unlocked_routes = read_texts(fields, "house.unlockedRoutes");
+  simulation.house_.cleared_routes = read_texts(fields, "house.clearedRoutes");
+  simulation.house_.specializations = read_texts(fields, "house.specializations");
+  simulation.house_.stored_trophies = read_trophies(fields, "house.storedTrophies");
+  simulation.house_.stored_items = read_items(fields, "house.storedItems");
+  simulation.house_.relic_candidates = read_items(fields, "house.relicCandidates");
+  simulation.house_.lost_trophies = read_trophies(fields, "house.lostTrophies");
+  simulation.house_.seasonal_rewards = read_texts(fields, "house.seasonalRewards");
+  const std::size_t legend_count = required_count(fields, "house.legends");
+  simulation.house_.legends.reserve(legend_count);
+  for (std::size_t index = 0; index < legend_count; ++index) {
+    simulation.house_.legends.push_back(
+        read_legend(fields, "house.legends." + std::to_string(index)));
+  }
+  simulation.house_.campaign_complete = required_bool(fields, "house.campaignComplete");
+
+  simulation.scion_ = read_scion(fields, "scion");
+  const std::size_t fallen_count = required_count(fields, "fallenScions");
+  simulation.fallen_scions_.reserve(fallen_count);
+  for (std::size_t index = 0; index < fallen_count; ++index) {
+    simulation.fallen_scions_.push_back(
+        read_scion(fields, "fallenScions." + std::to_string(index)));
+  }
+  simulation.pending_relic_items_ = read_items(fields, "pendingRelicItems");
+  simulation.pending_relic_trophies_ = read_trophies(fields, "pendingRelicTrophies");
+
+  simulation.instance_ = {};
+  simulation.ground_items_.clear();
+  simulation.ground_trophies_.clear();
+  simulation.resurfaced_trophy_ids_.clear();
+  simulation.events_.clear();
+  simulation.seasonal_mechanic_ = nullptr;
+  simulation.actors_.clear();
+  Actor player{simulation.scion_.actor_id,
+               ActorKind::Player,
+               player_stats(),
+               {0, 0},
+               simulation.scion_.alive,
+               0,
+               std::nullopt};
+  player.stats.level = std::max(1, simulation.scion_.level);
+  for (const auto& item : simulation.scion_.carried_items) {
+    if (item.equipped) {
+      player.equipped_item_id = item.id;
+      break;
+    }
+  }
+  simulation.actors_.push_back(std::move(player));
+  return simulation;
 }
 
 }  // namespace verdigris
