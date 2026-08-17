@@ -32,7 +32,7 @@ class InputController {
     this.pressedKeys = new Set();
     this.activeDirection = null;
     this.repeatTimeout = null;
-    this.repeatInterval = null;
+    this.nextRepeatAt = null;
   }
 
   destroy() {
@@ -181,23 +181,37 @@ class InputController {
       return;
     }
 
+    // A self-scheduling timeout keeps the cadence anchored to a monotonic
+    // deadline.  setInterval accumulated timer drift and could bunch a
+    // movement sample against the next rAF after a busy frame, which exposed
+    // the server's otherwise smooth interpolation as a visible hitch.
+    this.nextRepeatAt = Date.now() + MOVEMENT_REPEAT.initialDelayMs;
+    this.scheduleRepeat();
+  }
+
+  scheduleRepeat() {
+    if (!this.activeDirection || !Number.isFinite(this.nextRepeatAt)) {
+      return;
+    }
+
+    const delay = Math.max(0, this.nextRepeatAt - Date.now());
     this.repeatTimeout = setTimeout(() => {
+      this.repeatTimeout = null;
       if (!this.activeDirection) {
         return;
       }
+
       if (typeof this.onMove === 'function') {
         this.onMove(this.activeDirection, { repeated: true });
       }
-      this.repeatInterval = setInterval(() => {
-        if (!this.activeDirection) {
-          this.clearRepeat();
-          return;
-        }
-        if (typeof this.onMove === 'function') {
-          this.onMove(this.activeDirection, { repeated: true });
-        }
-      }, this.getRepeatDelay());
-    }, MOVEMENT_REPEAT.initialDelayMs);
+
+      const cadence = this.getRepeatDelay();
+      const now = Date.now();
+      // If the tab was backgrounded or the main thread was blocked, resume
+      // from the current frame instead of firing a burst of stale samples.
+      this.nextRepeatAt = Math.max(this.nextRepeatAt + cadence, now + cadence);
+      this.scheduleRepeat();
+    }, delay);
   }
 
   ensureRepeat() {
@@ -212,10 +226,7 @@ class InputController {
       clearTimeout(this.repeatTimeout);
       this.repeatTimeout = null;
     }
-    if (this.repeatInterval !== null) {
-      clearInterval(this.repeatInterval);
-      this.repeatInterval = null;
-    }
+    this.nextRepeatAt = null;
   }
 
   triggerSkill(binding, phase, event) {
