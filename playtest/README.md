@@ -21,12 +21,13 @@ the following starts one CPU spinner per available worker (leaving one worker
 for Node), runs the full gate, and always cleans up the spinners:
 
 ```powershell
-$workers = @(); 1..([Math]::Max(1, [Environment]::ProcessorCount - 1)) | ForEach-Object { $workers += Start-Process -FilePath node -ArgumentList @('-e', 'for (;;) { Math.sqrt(Math.random()); }') -PassThru -WindowStyle Hidden }; try { npm run playtest } finally { $workers | Stop-Process -Force -ErrorAction SilentlyContinue }
+$workers = @(); 1..([Math]::Max(1, [Environment]::ProcessorCount - 1)) | ForEach-Object { $workers += Start-Process -FilePath node -ArgumentList @('-e', 'for (;;) { Math.sqrt(Math.random()); }') -PassThru -WindowStyle Hidden }; try { $env:PLAYTEST_LOAD_MODE = '1'; npm run playtest } finally { Remove-Item Env:PLAYTEST_LOAD_MODE -ErrorAction SilentlyContinue; $workers | Stop-Process -Force -ErrorAction SilentlyContinue }
 ```
 
 Repeat the command for the required consecutive-run evidence. The runner
 prints the load-adaptive timing guard and event-loop diagnostics; a missing
-server event still fails at the authored deadline (with a hard 1.75x cap).
+server event still fails within the explicit 1.75x cap. The load-mode floor
+is only active when the documented CPU-load command opts in.
 
 ## Why this exists
 

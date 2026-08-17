@@ -16,7 +16,7 @@ import fs from 'node:fs';
 
 import HeadlessPlayer from './harness.mjs';
 import { recordCriticMetrics } from './critic.mjs';
-import { resetTimingDiagnostics, timingDiagnostics } from './timing.mjs';
+import { loadMode, resetTimingDiagnostics, timingDiagnostics } from './timing.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(here, '..');
@@ -116,7 +116,7 @@ const main = async () => {
   try {
     await waitForSocket(url);
     resetTimingDiagnostics();
-    log(`Timing guard: load-adaptive deadlines enabled (max 1.75x; baseline 20ms event-loop lag)`);
+    log(`Timing guard: load-adaptive deadlines enabled (max 1.75x; explicit load mode: ${loadMode ? 'on' : 'off'}; baseline 20ms event-loop lag)`);
     log(`Playing against ${url}\n`);
 
     const connect = options => HeadlessPlayer.connect({ url, ...(options || {}) });
