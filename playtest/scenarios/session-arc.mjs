@@ -6,6 +6,8 @@
  * interaction after it goes through production handlers.
  */
 
+import { loadMode } from '../timing.mjs';
+
 const nearestTrash = state => state.monsters
   .filter(monster => monster.rarity !== 'elite' && !/chorister|keeper/i.test(monster.name))
   .sort((a, b) => (a.hp.max - b.hp.max)
@@ -272,6 +274,11 @@ export default async function sessionArc({ connect, assert, recordMetrics }) {
     await second.devPrepareFinalDeath();
     await second.devTeleport(Math.round(executioner.x) + 1, Math.round(executioner.y));
     let deathSetup = null;
+    // A saturated child server can delay the monster's next damaging tick
+    // independently of this client's control queue. Keep ordinary playtests
+    // at the authored 15s deadline; load mode gets one finite 20s authored
+    // floor (35s after the existing 1.75x cap), still fail-closed.
+    const finalDeathTimeoutMs = loadMode ? 20000 : 15000;
     const memorial = await second.waitFor(async () => {
       if (second.scionFalls[0]) return second.scionFalls[0];
       const current = await second.state();
@@ -293,7 +300,7 @@ export default async function sessionArc({ connect, assert, recordMetrics }) {
       }
       return false;
     }, {
-      timeoutMs: 15000,
+      timeoutMs: finalDeathTimeoutMs,
       intervalMs: 250,
       label: 'session-arc final death',
     });
