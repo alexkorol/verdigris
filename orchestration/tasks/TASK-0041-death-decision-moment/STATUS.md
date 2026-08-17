@@ -1,6 +1,6 @@
 ---
 task: TASK-0041
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Luna death-decision UI worker
 worker_branch: codex/TASK-0041-death-decision-moment
@@ -14,6 +14,6 @@ architect_review_required: true
 implementation_commits: 0e23e3bf; 212a1e1c; 14a6ceea
 report: orchestration/tasks/TASK-0041-death-decision-moment/REPORT.md
 verification: revision focused death suite 5/5; revision production build PASS; worker alternate-port browser gate 1/1; real oathed/unoathed 1920x1080 JPEGs 43,215/37,777 bytes; default smoke remains unclaimed because owner PID 10276 holds port 6500
-integration_commits: pending architect re-review (prior validation 5a493083; dfb41955)
-review_note: Fable revision request 697e03ff addressed by 14a6ceea; screenshots and private-player routing fix are isolated pending fast re-review
+integration_commits: 16293d7d; 037045fa; cbab2ce4
+review_note: Fable accepted in 40389099 after inspecting both rendered screenshots; source and captures are integrated on the current tip
 ---

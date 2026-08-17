@@ -6,8 +6,9 @@ worker_commits:
   - 212a1e1c
   - 14a6ceea
 integration_commits:
-  - 5a493083
-  - dfb41955
+  - 16293d7d
+  - 037045fa
+  - cbab2ce4
 base_commit: b5f7b163
 ---
 
@@ -58,7 +59,8 @@ seams and does not create a second succession or recovery implementation.
 
 Fable revision 697e03ff required real rendered screenshots; revision commit
 14a6ceea supplies both variants and adds private-player routing so the live
-overlay receives the authoritative death summary. Architect D-115 hands-on
-play remains required. The default smoke port conflict is environmental and
+overlay receives the authoritative death summary. Fable accepted the revision
+in 40389099 after inspecting both images. Source and captures are integrated
+on the current tip. The default smoke port conflict is environmental and was
 preserved rather than resolved by killing the owner listener. No new lore or
 Chronicles fork was introduced.
