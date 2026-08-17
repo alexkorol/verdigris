@@ -79,11 +79,17 @@ may decide it.
   game. Until ruled: the game DEFAULTS to full daytime (most readable),
   with the cycle kept behind a settings toggle (off by default). Cheap to
   flip either way when the owner decides (TASK-0033).
-- **D-112 One playable product (2026-08-16 late, from owner verdict on
-  the exe)**: the BROWSER game is THE playable product for shipping; the
-  native client is demoted to a core-testbed and must stop presenting as
-  a game (debug scaffolding hidden, honest title). Architect
-  recommendation standing unless the owner inverts it.
+- **D-112 Two horizons, one product at a time (amended 2026-08-16 late
+  after owner sustainability question)**: the BROWSER game is the
+  near-term playable and fun-finding vehicle ONLY — not the launch
+  platform (own measurement: ~43ms mean frame at 1440×1000; browsers
+  fight a mature ARPG's density). The NATIVE build is the launch
+  platform, per the constitution. Sequence: exe triage → browser reaches
+  "actually fun" via the 0034 friction list → the native client then
+  rebuilds the browser-VALIDATED design system by system under the
+  D-115 play gate until parity, and becomes the shipped product. No
+  parallel design invention across surfaces; browser perf work capped at
+  "smooth enough to judge fun."
 - **D-113 Art direction (from owner feedback)**: near-term aesthetic
   follows the webchat/slice approach — procedural/vector-first with
   minimal image inputs, consistent RELATIVE SCALE (a documented scale
