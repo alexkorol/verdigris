@@ -71,7 +71,7 @@ The final correction in `9bbb3497` makes the cap selection explicit: when
 observed p99 or maximum delay reaches three times the 20ms baseline, default
 mode uses the same existing 1.75× cap; lighter contention remains proportional.
 
-With `PLAYTEST_LOAD_MODE` unset and two moderate CPU spinner workers:
+With `PLAYTEST_LOAD_MODE` unset and one moderate CPU spinner worker:
 
 - focused `session-arc`: PASS, 11.5s (p99 32.13ms, max 35.13ms);
 - default full run 1: PASS 31/31 (max lag 113.18ms);
