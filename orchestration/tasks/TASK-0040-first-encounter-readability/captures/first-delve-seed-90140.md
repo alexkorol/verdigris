@@ -8,19 +8,23 @@ not claim client visual validation.
 
 | Beat | Authoritative observation |
 |---|---|
-| Entry | Stone warren depth 1; entry `(99, 100)`; 33 monsters total |
-| First contact | One `Dread Vanguard`, behavior `melee`, entry radius 7, attack range 1, windup 320 ms |
+| Entry | Stone warren depth 1; entry `(99, 100)`; 34 instantiated runtime monsters |
+| First contact | One common `Dread Vanguard`, behavior `melee`, entry radius 7, attack range 1, 900 ms step interval, 1500 ms attack interval, 320 ms windup |
 | Isolation | Nearest later actor is at entry radius 15; no second actor occupies the opening envelope |
-| Learn | Room cap 1; ranged pressure disabled |
-| Win | Room cap 2; all 10 generated Marksmen remain server-locked after scene kill 1 |
-| Pressure | Scene kill 2 changes `rangedUnlocked` from false to true and unlocks the 10 existing Ashen Marksmen |
-| Reward | Later packs remain capped at 4; treasure room is room index 5, after the three authored early rooms |
+| Learn | Runtime stage at 0 kills: 1 active actor; every later actor has its AI update paused and is filtered from player combat targeting |
+| Dormant Marksman probe | Runtime position remained `(84,107)` after an update attempt; update returned `false`; no patrol, targeting, melee, support, or aura action ran |
+| Win | Scene kill 1 activates exactly 2 more melee actors (3 active total); 0 active Marksmen |
+| Pressure | Scene kill 2 activates exactly 3 more actors (6 active total); the first Marksman restores ranged behavior at range 5, 1100 ms step interval, 1900 ms attack interval, and 480 ms windup |
+| Branch hold | Scene kill 3 leaves 6 active actors; reward-stage packs remain dormant even if their procedural rooms lie on another branch |
+| Reward | Scene kill 4 activates the remaining 28 actors and unlocks 8 later Marksmen; later packs remain capped at 4 and treasure room index 5 follows the three early rooms |
 | Separation fixture | One player plus three monsters started on `(2, 2)`; 3 corrections produced four unique tiles: `(2,2)`, `(1,1)`, `(2,1)`, `(3,1)` |
 
-The kill-threshold probe used two party members, one credited kill each. The
-scene reached kill count 2 and unlocked ranged behavior, demonstrating that
-pressure progression belongs to the delve rather than to one player's local
-counter.
+The runtime probe constructed the actual generated definitions as `Monster`
+instances. Its kill-threshold sequence alternated two party members. The scene
+reached kill count 2 and unlocked the pressure-stage Marksman, demonstrating
+that progression belongs to the delve rather than one player's local counter.
+At kill 4, reward-stage Marksmen unlocked even though the scene-wide ranged
+flag was already true; the gate is evaluated per actor as stages activate.
 
 ## D-114 first-delve pressure table
 
