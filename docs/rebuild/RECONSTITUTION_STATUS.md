@@ -47,6 +47,8 @@ Focused seam evidence is preserved in
   [`TASK‑0044 REPORT`](../../orchestration/tasks/TASK-0044-native-protocol-n2/REPORT.md).
   The latest coordinator attach transcript is
   [`coordinator-native-attach-2026-08-17.txt`](../../orchestration/tasks/TASK-0044-native-protocol-n2/captures/coordinator-native-attach-2026-08-17.txt).
+  The JS/native contract comparison and intentional N2 population stub are
+  recorded in [`coordinator-dual-run-matrix-2026-08-17.txt`](../../orchestration/tasks/TASK-0044-native-protocol-n2/captures/coordinator-dual-run-matrix-2026-08-17.txt).
 - TASK‑0038 controls/rebinding and TASK‑0042 first-loot moment: `BLOCKED` on
   documented ownership seams; no source workaround should be invented without
   the architect/owner decision.
