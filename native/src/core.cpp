@@ -13,10 +13,11 @@
 namespace verdigris {
 
 namespace {
-// With 50 ms movement steps, 1500 units keeps the existing melee/thrust
-// ranges reachable before a monster can exhaust the Scion during approach.
-constexpr int kEnemySpawnX = 1500;
-constexpr int kExtractionRange = 250;
+// D-114 derives the expedition envelope from the same player walking cadence
+// used by combat. Keep these aliases local so the simulation remains the sole
+// authority while the named table stays visible to tests and presentation.
+constexpr int kEnemySpawnX = world_scale::kEnemySpawnDistance;
+constexpr int kExtractionRange = world_scale::kExtractionRange;
 constexpr int kThrustDamageNumerator = 13;
 constexpr int kThrustDamageDenominator = 10;
 constexpr int kSweepDamageNumerator = 3;
@@ -76,7 +77,7 @@ ActorStats player_stats() {
   stats.attack = 12;
   stats.defense = 5;
   // Per-second value; resolve_move derives the deterministic 50 ms step.
-  stats.move_speed = 220;
+  stats.move_speed = world_scale::kPlayerMoveSpeed;
   stats.attack_speed_ticks = 3;
   return stats;
 }
