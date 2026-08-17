@@ -8,7 +8,7 @@ worktree: C:\Users\Alex\Documents\KimiWork\verdigris
 base_commit: 32d7b6e
 dependencies: TASK-0039 integrated
 expected_verification: powershell -File native/build.ps1 -RunTests; unchanged movement and zones attach
-known_risks: uncommitted worker source; final report/architect rerun still outstanding
+known_risks: architect rerun and acceptance decision still outstanding
 architect_review_required: true
 implementation_commits: d476788 (claim commit 6e6279c)
 report: orchestration/tasks/TASK-0044-native-protocol-n2/REPORT.md
