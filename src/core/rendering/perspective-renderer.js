@@ -57,6 +57,8 @@ class PerspectiveRenderer {
     });
     this.lightingRenderer = new LightingRenderer();
     this.atmosphereRenderer = new AtmosphereRenderer();
+    this.skyGradient = null;
+    this.skyGradientKey = '';
     this.userZoom = ARPG_CAMERA_PRESET.baseUserZoom;
     this.pinchDistance = 0;
     this.pinchZoom = 1;
@@ -129,6 +131,15 @@ class PerspectiveRenderer {
     this.atmosphereRenderer.drawMist(ctx, this.camera, elapsedSeconds);
 
     this.drawGroundTelegraphs(ctx);
+    // Billboard helpers save/restore around each draw. Establish the shared
+    // pixel-art baseline once so the hot per-sprite path does not repeatedly
+    // write identical filter and shadow state.
+    ctx.filter = 'none';
+    ctx.imageSmoothingEnabled = false;
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
     const draws = this.collectBillboards();
     draws.sort((left, right) => left.depthY - right.depthY);
     draws.forEach(entry => entry.draw());
@@ -194,16 +205,30 @@ class PerspectiveRenderer {
     // already swallowing terrain; the former prevents a finite map from
     // exposing a hard seam when it is nearer than that row.
     const skyline = Math.max(syHorizon, syAt(terrainOriginY + 60));
-    const gradient = ctx.createLinearGradient(0, 0, 0, Math.max(2, skyline * 1.18));
-    gradient.addColorStop(
-      0,
-      `rgb(${Math.round(skyColour[0] * 0.36)}, ${Math.round(skyColour[1] * 0.40)}, ${Math.round(skyColour[2] * 0.52)})`,
-    );
-    gradient.addColorStop(
-      1,
-      `rgb(${Math.round(skyColour[0] * 0.62)}, ${Math.round(skyColour[1] * 0.60)}, ${Math.round(skyColour[2] * 0.58)})`,
-    );
-    ctx.fillStyle = gradient;
+    // Ambient colours and camera position are stable for many frames. Reuse
+    // the gradient until one of the values that defines it changes; creating
+    // a CanvasGradient every frame was measurable in software-rendered WebGL
+    // browsers and does not improve the pixels between keyframe changes.
+    const gradientKey = [
+      canvas.width,
+      canvas.height,
+      Math.round(skyline * 100),
+      ...skyColour.map(channel => Math.round(channel)),
+    ].join(':');
+    if (gradientKey !== this.skyGradientKey) {
+      const gradient = ctx.createLinearGradient(0, 0, 0, Math.max(2, skyline * 1.18));
+      gradient.addColorStop(
+        0,
+        `rgb(${Math.round(skyColour[0] * 0.36)}, ${Math.round(skyColour[1] * 0.40)}, ${Math.round(skyColour[2] * 0.52)})`,
+      );
+      gradient.addColorStop(
+        1,
+        `rgb(${Math.round(skyColour[0] * 0.62)}, ${Math.round(skyColour[1] * 0.60)}, ${Math.round(skyColour[2] * 0.58)})`,
+      );
+      this.skyGradient = gradient;
+      this.skyGradientKey = gradientKey;
+    }
+    ctx.fillStyle = this.skyGradient;
     ctx.fillRect(0, 0, canvas.width, Math.ceil(Math.max(skyline, canvas.height * 0.42)) + 2);
 
     ctx.save();
@@ -370,13 +395,9 @@ class PerspectiveRenderer {
       ctx.fillRect(point.x - (trunkWidth / 2), point.y - (height * 0.55), trunkWidth, height * 0.52);
     }
 
-    ctx.imageSmoothingEnabled = false;
     // Keep pixel-art billboards crisp. Grounded foot ellipses provide the
-    // contact shadow; a per-sprite shadowBlur softens every source frame.
-    ctx.shadowColor = 'transparent';
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
+    // contact shadow; the render pass establishes the shared shadow/filter
+    // baseline once instead of doing it for every source frame.
     ctx.drawImage(
       sheet.image,
       sourceX,
@@ -510,16 +531,10 @@ class PerspectiveRenderer {
       // the miniature blend visibly step as the wheel or pinch moves.
       ctx.filter = `blur(${blur}px)`;
       ctx.imageSmoothingEnabled = true;
-    } else {
-      ctx.imageSmoothingEnabled = false;
     }
     // The flat foot ellipse is the billboard's contact shadow. Avoid a
     // shadow filter on the sprite itself so nearest-neighbour pixels stay
     // readable at the ARPG default.
-    ctx.shadowColor = 'transparent';
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
     ctx.drawImage(
       image,
       sourceX,
@@ -1309,6 +1324,8 @@ class PerspectiveRenderer {
     this.terrainRenderer.destroy();
     this.lightingRenderer.destroy();
     this.atmosphereRenderer.destroy();
+    this.skyGradient = null;
+    this.skyGradientKey = '';
     this.legacyGroundCanvas.width = 1;
     this.legacyGroundCanvas.height = 1;
   }
