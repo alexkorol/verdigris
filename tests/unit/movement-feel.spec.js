@@ -193,10 +193,15 @@ describe('browser movement feel contract', () => {
     expect(secondMeta.animation).toBeUndefined();
     expect(secondMeta.movementStep).toEqual(player.movementStep);
 
+    player.animation = { ...player.animation, speed: 0.5 };
+    broadcastMovement(player, recipients);
+    const speedMeta = Socket.broadcast.mock.calls[2][3].meta;
+    expect(speedMeta.animation).toEqual(expect.objectContaining({ sequence: 7, speed: 0.5 }));
+
     player.animation = { ...player.animation, sequence: 8 };
     broadcastMovement(player, recipients);
-    const thirdMeta = Socket.broadcast.mock.calls[2][3].meta;
-    expect(thirdMeta.animation).toEqual(expect.objectContaining({ sequence: 8 }));
+    const sequenceMeta = Socket.broadcast.mock.calls[3][3].meta;
+    expect(sequenceMeta.animation).toEqual(expect.objectContaining({ sequence: 8 }));
   });
 
   it('ensureRepeat schedules from the new deadline state', () => {
