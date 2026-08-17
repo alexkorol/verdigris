@@ -16,7 +16,12 @@ import { notifyTutorial } from '#server/core/tutorial.js';
 import { processResourceRegeneration, REGEN_INTERVAL_MS } from '#server/core/combat/regeneration.js';
 import { transitionPlayerIfOnPortal } from '#server/core/world-transitions.js';
 import { traceProjectilePath } from '#shared/projectile-collision.js';
-import { recordEncounterKill, separateSceneActors } from '#server/core/combat/encounter.js';
+import {
+  advanceEncounterStage,
+  isEncounterActorActive,
+  recordEncounterKill,
+  separateSceneActors,
+} from '#server/core/combat/encounter.js';
 
 const DEFAULT_PROJECTILE_RANGE = 5;
 const FALLBACK_EXPERIENCE_PER_LEVEL = 12;
@@ -102,7 +107,9 @@ const getAliveSceneMonsters = (sceneId) => {
     return [];
   }
 
-  return scene.monsters.filter(monster => monster && monster.isAlive);
+  return scene.monsters.filter(monster => (
+    monster && monster.isAlive && isEncounterActorActive(monster)
+  ));
 };
 
 const getSceneMonsterByUuid = (sceneId, monsterUuid) => (
@@ -791,7 +798,10 @@ export const processAutoAttacks = (now = Date.now()) => {
   if (world.scenes && typeof world.scenes.values === 'function') {
     Array.from(world.scenes.values()).forEach((scene) => {
       if (!scene || !Array.isArray(scene.players) || !scene.players.length) return;
-      if (separateSceneActors(scene) > 0 && Array.isArray(scene.monsters) && scene.monsters.length) {
+      const stage = advanceEncounterStage(scene);
+      const separated = separateSceneActors(scene);
+      if ((stage.activated > 0 || stage.rangedUnlocked > 0 || separated > 0)
+        && Array.isArray(scene.monsters) && scene.monsters.length) {
         Monster.broadcast(scene.monsters, { players: scene.players });
       }
     });
@@ -932,4 +942,6 @@ export default {
   setAutoAttackTarget,
   recordEncounterKill,
   separateSceneActors,
+  advanceEncounterStage,
+  isEncounterActorActive,
 };

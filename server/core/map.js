@@ -17,6 +17,7 @@ import {
   FIRST_DELVE_ENCOUNTER,
   FIRST_DELVE_PRESSURE_CURVE,
   firstDelvePackCap,
+  firstDelveStageForRoom,
   isFirstDelve,
 } from './combat/encounter.js';
 
@@ -1114,6 +1115,7 @@ class Map {
     const buildMonsterDefinition = ({
       center, index, role, rarity, name, levelBonus = 0, rewardMultiplier = 1,
       healthMultiplier = 0.13, damageMultiplier = 0.35, graphicRole = role,
+      encounterStage = null,
     }) => {
       const monsterLevel = Math.max(1, Math.floor(1 + (index * 0.14))) + depthLevelBonus + levelBonus;
       const rangedEncounter = firstDelve && role === 'ranged';
@@ -1146,6 +1148,12 @@ class Map {
           minimumRange: rangedEncounter ? 1 : (role === 'support' ? 2 : 1),
         },
       };
+
+      if (encounterStage) {
+        behaviour.encounterStage = encounterStage.id;
+        behaviour.encounterMinKills = encounterStage.minKills;
+        behaviour.encounterInactive = encounterStage.minKills > 0;
+      }
 
       if (rangedEncounter) {
         behaviour.encounterRole = 'ranged';
@@ -1224,6 +1232,8 @@ class Map {
         respawn: {
           delayMs: 600000,
         },
+        encounterStage: encounterStage?.id || null,
+        encounterMinKills: encounterStage?.minKills || 0,
       };
     };
 
@@ -1341,6 +1351,7 @@ class Map {
           // ~33% of a level-1 player's HP per swing (was ~40%): hits like a
           // boss without three-tapping fresh characters.
           damageMultiplier: 0.5,
+          encounterStage: firstDelve ? firstDelveStageForRoom(roomIndex) : null,
         }));
         const boss = instanceMonsters[instanceMonsters.length - 1];
         boss.behaviour.attack = {
@@ -1380,6 +1391,11 @@ class Map {
           ? 'melee'
           : roleCycle[monsterIndex % roleCycle.length];
         const isTreasureGuard = roomIndex === treasureRoomIndex && member === 0;
+        const openingActor = firstDelve
+          && roomIndex === FIRST_DELVE_ENCOUNTER.openingRoomIndex
+          && member === 0;
+        const lessonMelee = firstDelve
+          && roomIndex < FIRST_DELVE_ENCOUNTER.rangedEarliestRoomIndex;
         // Distribute members around the centre, then snap to an open tile.
         const angle = (member / packSize) * Math.PI * 2 + (rng() * 0.8);
         const ring = member === 0 ? 0 : (0.4 + (rng() * 0.6)) * spread;
@@ -1395,13 +1411,14 @@ class Map {
           center: spot,
           index: monsterIndex,
           role: isTreasureGuard ? 'melee' : role,
-          rarity: isTreasureGuard ? 'rare' : rollRarity(),
+          rarity: openingActor ? 'common' : (isTreasureGuard ? 'rare' : rollRarity()),
           name: themeMonsters[isTreasureGuard ? 'melee' : role] || themeMonsters.support,
           rewardMultiplier: isTreasureGuard ? 1.5 : 1,
           // Trash is squishy so a pack can be mown through before it focus-
           // fires the player down; treasure guards are a step tankier.
-          healthMultiplier: isTreasureGuard ? 0.3 : 0.13,
-          damageMultiplier: isTreasureGuard ? 0.45 : 0.35,
+          healthMultiplier: isTreasureGuard ? 0.3 : (lessonMelee ? 0.1 : 0.13),
+          damageMultiplier: isTreasureGuard ? 0.45 : (lessonMelee ? 0.25 : 0.35),
+          encounterStage: firstDelve ? firstDelveStageForRoom(roomIndex) : null,
         }));
         monsterIndex += 1;
       }
@@ -1478,6 +1495,7 @@ class Map {
             openingMeleeCount: FIRST_DELVE_ENCOUNTER.openingPackCap,
             rangedUnlockKills: FIRST_DELVE_ENCOUNTER.rangedUnlockKills,
             kills: 0,
+            activeStage: FIRST_DELVE_PRESSURE_CURVE[0].id,
             rangedUnlocked: false,
             pressureCurve: FIRST_DELVE_PRESSURE_CURVE.map(stage => ({ ...stage })),
             d114: {
