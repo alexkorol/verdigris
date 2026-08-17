@@ -24,3 +24,13 @@ single primary action, authoritative envelope reuse.
 
 Everything else stands accepted-in-principle; this is evidence
 completion, not rework. Fast re-review on the screenshots.
+
+---
+
+# Final verdict: ACCEPTED (2026-08-17 ~04:40)
+
+Real screenshots delivered and inspected: the oathed overlay renders the
+dimmed world, "THE SCION HAS FALLEN" with oath framing, the
+loss/recovered-to-pool panels, the NEXT line, and a single primary
+action with keyboard hint — precisely the 0034 blocker-2 fix. Semantics
+were already accepted-in-principle. Integration approved.
