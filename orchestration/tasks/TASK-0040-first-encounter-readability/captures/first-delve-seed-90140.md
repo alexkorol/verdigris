@@ -54,10 +54,44 @@ Distances are tiles. Timings are milliseconds unless stated otherwise.
 The protocol harness runs with `NODE_ENV=development` and inspects individual
 actors by teleporting one tile beside them. The encounter runtime recognizes
 only that handler's fresh zero-length marker (`interrupted: true`,
-`walkId: null`, at most one second old), consumes it once, and activates one
-staged actor within three tiles. Ordinary interrupted movement does not match,
-the transient marker flag is removed immediately, and production remains
-strictly kill-driven.
+`walkId: null`, `duration: 0`, null direction and path indices, unblocked, and
+at most one second old), consumes it once, and activates one staged actor
+within three tiles. Direct WASD always carries a direction and nonzero duration
+when successful (or `blocked: true` when rejected), so ordinary interrupted
+movement does not match. The transient marker flag is removed immediately, and
+production remains strictly kill-driven.
+
+## Driven WebSocket transcript
+
+`drive-first-delve.mjs` connected as a fresh guest through the real WebSocket
+envelope, entered Old Barrow through the party/zone handlers, and used real
+primary attacks and authoritative monster deaths. Development teleports only
+shortened traversal to the already active target. One captured run printed:
+
+```text
+initial-payload roster=33 marksmen=10
+scene-kills=0 opener=Dread Vanguard rarity=common {"living":33,"active":1,"dormant":32,"activeMarksmen":0,"rangedMarksmen":0}
+scene-kills=1 defeated=Dread Vanguard {"living":32,"active":2,"dormant":30,"activeMarksmen":0,"rangedMarksmen":0}
+scene-kills=2 defeated=Dread Vanguard {"living":31,"active":4,"dormant":27,"activeMarksmen":1,"rangedMarksmen":1}
+scene-kills=3 defeated=Dread Vanguard {"living":30,"active":3,"dormant":27,"activeMarksmen":1,"rangedMarksmen":1}
+scene-kills=5 defeated=Dread Vanguard {"living":28,"active":28,"dormant":0,"activeMarksmen":10,"rangedMarksmen":10}
+```
+
+The fourth attack cleaved two weakened win/pressure actors, so the observed
+scene counter crossed the reward threshold from 3 to 5 rather than stopping at
+4. The runtime still demonstrated each boundary: one common melee opener;
+two live melee actors after the first death; a live ranged Marksman only after
+the second; no reward actors at three deaths; and the complete remaining roster
+active after crossing four.
+
+This protocol run also exposes an architect-pending presentation limitation.
+The initial `buildScenePayload` serializes the full instantiated roster even
+though only one actor is server-active. The run above sent 33 actors including
+10 Marksmen; deterministic seed 90140 contains 34 including 9 Marksmen. They
+remain dormant and untargetable, but they are visible and collidable on the
+client until their kill threshold. Filtering that synchronous payload belongs
+in `server/core/world-transitions.js` or `Monster.toJSON`, outside TASK-0040's
+owned paths.
 
 ## Reproduction
 
@@ -65,6 +99,12 @@ The assertions are executable in:
 
 ```text
 npx vitest run tests/unit/encounter-readability.spec.js
+```
+
+The driven excerpt can be reproduced with a development server on port 6520:
+
+```text
+PLAYTEST_WS_URL=ws://localhost:6520 node orchestration/tasks/TASK-0040-first-encounter-readability/captures/drive-first-delve.mjs
 ```
 
 That suite repeats the physical-first-contact check over seeds

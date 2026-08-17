@@ -157,6 +157,11 @@ const markDevTeleportedEncounterActor = (scene, now = Date.now()) => {
     const step = player?.movementStep;
     const isFreshDevTeleport = step?.interrupted === true
       && step.walkId === null
+      && step.duration === 0
+      && step.direction === null
+      && step.stepIndex === null
+      && step.steps === null
+      && step.blocked === false
       && now - (Number(step.startedAt) || 0) >= 0
       && now - (Number(step.startedAt) || 0) <= 1000;
     if (!isFreshDevTeleport || consumedDevTeleportSteps.get(player) === step) {
