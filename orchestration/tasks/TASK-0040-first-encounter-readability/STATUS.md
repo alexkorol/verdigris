@@ -14,7 +14,7 @@ expected_verification: npm run test:unit; npm run playtest; first-delve transcri
 known_risks: server/core paths are disjoint from pending TASK-0035 native and TASK-0036/0037 browser handoffs; no client, loot, lore, or economy changes permitted
 verification: focused encounter/balance 16/16; integration full unit 121 files/774 tests; direct-WASD and exact-teleport regression passed; driven WebSocket transcript captured; full-playtest variance ratified by architect under QUESTION-0006; diff check passed
 validator: /root/validate_task_0040 — REVISE on harness reproducibility; architect ratified the evidence under QUESTION-0006 and assigned TASK-0043 to stabilize the shared harness
-integration_commit: pending coordinator merge
+integration_commit: e44502c7
 integration_worktree: C:\Users\Alex\Documents\ChatGPT\verdigris\.codex\worktrees\integrate-0040-final
 integration_source_tip: 6295298a
 architect_review_required: true
