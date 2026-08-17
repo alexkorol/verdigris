@@ -71,3 +71,21 @@
    reference ideas or a focused native billboard layer.
 3. Keep networking, persistence, complete magic, and production art out of the
    core until the first playable loop has been evaluated.
+
+## 2026-08-17 — Native parity wave N2 in progress
+
+- TASK-0044 is claimed by Kimi Code in the external worktree
+  `C:\Users\Alex\Documents\KimiWork\verdigris`; the WIP adds native world,
+  movement, solo-zone, metadata, monster, and stair-return seams without
+  changing the unchanged browser harness.
+- Coordinator evidence is kept in
+  [`TASK-0044 BASELINE.md`](../../orchestration/tasks/TASK-0044-native-protocol-n2/BASELINE.md)
+  and the provisional
+  [`REPORT.md`](../../orchestration/tasks/TASK-0044-native-protocol-n2/REPORT.md).
+- The first WIP attach probe passed movement and reached all six zones, but
+  failed saved pre-entry position restoration. The latest required native
+  build is currently stopped by a test-helper type mismatch at
+  `native/tests/networking_tests.cpp:74` (`JsonValue` passed where
+  `parse_envelope` requires `Envelope&`). No native worker source was edited
+  by the coordinator; acceptance still requires a clean native gate, unchanged
+  movement/zones attach success, transcript, and architect rerun.
