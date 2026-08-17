@@ -5,6 +5,7 @@ branch: codex/TASK-0037-movement-feel-rework
 commits:
   - 46c51412
   - 33798746
+  - 64d57bc7
 base_commit: b141cd9f
 ---
 
@@ -54,7 +55,7 @@ No wire protocol, server-authority, or public event shape changed.
 
 ## Verification
 
-- `npm run test:unit` — 119 files / 763 tests passed after the revision.
+- `npm run test:unit` — 119 files / 764 tests passed after the revisions.
 - `npm run playtest` — 31/31 scenarios passed.
 - ESLint on changed JavaScript — passed.
 - Vite build — passed.
@@ -86,8 +87,8 @@ owner listener, while the equivalent alternate-port gate passed.
 
 ## Integration notes
 
-Requires architect review before integration. Integrate `46c51412` and
-revision `33798746` from the worker branch after acceptance. TASK-0038 must
+Requires architect review before integration. Integrate `46c51412`, revisions
+`33798746` and `64d57bc7` from the worker branch after acceptance. TASK-0038 must
 remain sequenced after this task because it owns overlapping player/input
 paths.
 
@@ -99,3 +100,13 @@ unchanged animation metadata and payload animation so the client cannot reset
 the same sprite sequence, and `ensureRepeat()` now checks the timeout/deadline
 state instead of the removed interval field. Regression coverage for both
 behaviors lives in `tests/unit/movement-feel.spec.js`.
+
+## Revision 2
+
+The browser-event audit found that the existing movement fallback still
+re-applied the actor's last animation through `ensureAnimationController()`.
+Revision `64d57bc7` adds the allowed `src/core/player/animation-timeline-guard.js`
+seam and installs it around `player:movement`. Unchanged sequence/state/
+direction packets now preserve `frameIndex` and `elapsedMs` while accepting
+speed/duration updates; new sequences still use the original reset behavior.
+The event-path regression is covered in `tests/unit/movement-feel.spec.js`.
