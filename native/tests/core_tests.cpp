@@ -1,9 +1,11 @@
 #include <cstdlib>
+#include <filesystem>
 #include <iostream>
 #include <string>
 #include <vector>
 
 #include "verdigris/core.hpp"
+#include "verdigris/persistence.hpp"
 #include "verdigris/seasonal.hpp"
 
 using namespace verdigris;
@@ -707,6 +709,145 @@ void test_relic_resurface_replay_is_deterministic() {
         "replay resurfaces the same stable item identity");
 }
 
+void test_persistence_round_trip_and_unknown_fields() {
+  Simulation original(0x0030ULL, "House of Round-Trip");
+  original.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(original);
+  pick_all_rewards(original);
+  original.dispatch(Command::equip(original.scion().carried_items.front().id));
+  const auto first = snapshot(original);
+  const std::string first_text(first.begin(), first.end());
+  check(first_text.find("schemaVersion=1\n") == 0, "snapshot has a mandatory schemaVersion field");
+
+  Simulation restored = restore(first);
+  check(snapshot(restored) == first, "snapshot restore is byte-stable");
+  check(!restored.instance().active && restored.ground_items().empty() &&
+            restored.ground_trophies().empty(),
+        "round-trip does not revive live instance state");
+
+  std::string with_unknown = first_text;
+  with_unknown += "future.unknownField=ignored\n";
+  const std::vector<std::uint8_t> augmented(with_unknown.begin(), with_unknown.end());
+  Simulation tolerant = restore(augmented);
+  check(snapshot(tolerant) == first, "restore tolerates unknown fields");
+}
+
+void test_persistence_d109_mid_instance_and_rng_continuation() {
+  Simulation mid_instance(0xD1090030ULL);
+  mid_instance.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(mid_instance);
+  const std::string carried_item = mid_instance.ground_items().front().id;
+  const std::string carried_trophy = mid_instance.ground_trophies().front().id;
+  mid_instance.dispatch(Command::pick_up(carried_item));
+  mid_instance.dispatch(Command::pick_up(carried_trophy));
+  const auto mid_snapshot = snapshot(mid_instance);
+  Simulation restored = restore(mid_snapshot);
+  check(!restored.instance().active && restored.ground_items().empty() &&
+            restored.ground_trophies().empty(),
+        "D-109 restore returns the Scion to the House and drops floor state");
+  check(restored.scion().carried_items.size() == 1 &&
+            restored.scion().carried_items.front().id == carried_item &&
+            restored.scion().carried_trophies.size() == 1 &&
+            restored.scion().carried_trophies.front().id == carried_trophy,
+        "D-109 restore preserves all carried items and trophies");
+  restored.dispatch(Command::enter("route:tin:1:0"));
+  check(restored.instance().active, "a restored Scion can enter a fresh instance");
+
+  // Start from an extracted (non-instance) boundary so both simulations have
+  // the same durable state, then compare a complete seeded reward drop after
+  // restore.  This deliberately kills the enemy; a handful of movement/action
+  // commands that never resolve combat would not exercise RNG drop fidelity.
+  Simulation baseline(0x0030C0DEULL);
+  baseline.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(baseline);
+  pick_all_rewards(baseline);
+  extract_from_start(baseline);
+  Simulation replay = restore(snapshot(baseline));
+  baseline.dispatch(Command::enter("route:tin:1:0"));
+  replay.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(baseline);
+  defeat_enemy(replay);
+  check(!baseline.ground_items().empty() && !baseline.ground_trophies().empty() &&
+            baseline.ground_items().front().id == replay.ground_items().front().id &&
+            baseline.ground_trophies().front().id == replay.ground_trophies().front().id,
+        "restored RNG state reproduces generated item and trophy drop identities");
+  check(snapshot(replay) == snapshot(baseline),
+        "restored RNG state produces deterministic continuation and drops");
+}
+
+void test_persistence_recovery_pools() {
+  Simulation source(0x0030DEADULL);
+  source.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(source);
+  pick_all_rewards(source);
+  const std::string relic_id = source.scion().carried_items.front().id;
+  const std::string lost_trophy_id = source.scion().carried_trophies.front().id;
+  source.dispatch(Command::interact("hazard:death"));
+  check(source.house().relic_candidates.size() == 1 &&
+            source.house().relic_candidates.front().id == relic_id,
+        "recovery setup places the carried item in House relic_candidates");
+  check(source.house().lost_trophies.size() == 1 &&
+            source.house().lost_trophies.front().id == lost_trophy_id,
+        "recovery setup places the carried trophy in House lost_trophies");
+
+  const auto bytes = snapshot(source);
+  Simulation restored = restore(bytes);
+  check(restored.house().relic_candidates.size() == 1 &&
+            restored.house().relic_candidates.front().id == relic_id &&
+            restored.house().lost_trophies.size() == 1 &&
+            restored.house().lost_trophies.front().id == lost_trophy_id,
+        "snapshot restore preserves explicit relic and lost-trophy pools");
+  check(snapshot(restored) == bytes,
+        "relic and lost-trophy pools participate in byte-stable round-trip");
+}
+
+void test_persistence_surfaced_recovery_becomes_pending() {
+  Simulation source(0x0030BEEFULL);
+  source.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(source);
+  pick_all_rewards(source);
+  source.dispatch(Command::interact("hazard:death"));
+  const std::string relic_id = source.house().relic_candidates.front().id;
+  const std::string trophy_id = source.house().lost_trophies.front().id;
+  source.create_successor("Pending Recovery Successor");
+
+  // Keep searching the deterministic reward stream until both recovery
+  // candidates are simultaneously on the live floor.  They are then retired
+  // by snapshot and must re-enter through the pending queues exactly once.
+  force_relic_resurface(source, "route:tin:1:0");
+  force_trophy_resurface(source, "route:tin:1:0", trophy_id);
+  check(find_ground_item(source, relic_id) != nullptr &&
+            ground_has_trophy(source, trophy_id),
+        "setup surfaces both recoverable candidates in one live instance");
+  check(source.house().relic_candidates.empty() && source.house().lost_trophies.empty(),
+        "surfaced candidates leave House pools while borrowed by the instance");
+
+  Simulation restored = restore(snapshot(source));
+  check(!restored.instance().active && restored.ground_items().empty() &&
+            restored.ground_trophies().empty(),
+        "restore retires surfaced floor state without reviving an instance");
+  restored.dispatch(Command::enter("route:tin:1:0"));
+  check(find_ground_item(restored, relic_id) != nullptr &&
+            ground_has_trophy(restored, trophy_id),
+        "surfaced relic and trophy return through pending re-entry queues");
+  check(restored.house().relic_candidates.empty() && restored.house().lost_trophies.empty(),
+        "pending re-entry does not duplicate recovery pool ownership");
+}
+
+void test_persistence_file_adapter() {
+  Simulation simulation(0xADA07EULL);
+  const auto bytes = snapshot(simulation);
+  const std::filesystem::path target =
+      std::filesystem::temp_directory_path() / "verdigris-task-0030.snapshot";
+  verdigris::persistence::write_atomic(target, bytes);
+  check(verdigris::persistence::read(target) == bytes,
+        "atomic persistence adapter writes and reads snapshot bytes");
+  verdigris::persistence::write_atomic(target, bytes);
+  check(verdigris::persistence::read(target) == bytes,
+        "atomic persistence adapter replaces an existing House snapshot");
+  std::filesystem::remove(target);
+}
+
 void test_determinism() {
   Simulation first(0xBADC0FFEEULL);
   Simulation second(0xBADC0FFEEULL);
@@ -1179,6 +1320,11 @@ void test_legend_stable_ids_and_deterministic_replay() {
 }  // namespace
 
 int main() {
+  test_persistence_round_trip_and_unknown_fields();
+  test_persistence_d109_mid_instance_and_rng_continuation();
+  test_persistence_recovery_pools();
+  test_persistence_surfaced_recovery_becomes_pending();
+  test_persistence_file_adapter();
   test_determinism();
   test_actor_symmetry();
   test_actor_facing_follows_movement_and_aim();
