@@ -530,18 +530,58 @@ class WorldManager {
   }
 
   destroyInstance(partyId) {
+    return this.retireInstance(partyId);
+  }
+
+  /**
+   * Explicit instance lifecycle boundary.  Ordinary floor leftovers vanish;
+   * one surfaced recovery candidate is marked for requeue exactly once so a
+   * party/zone teardown cannot duplicate or silently consume a relic/trophy.
+   */
+  retireInstance(partyId) {
     if (!partyId) {
-      return;
+      return { retired: false, requeuedCandidates: [], activeMembers: [] };
     }
 
     const scene = this.instances.get(partyId);
     if (!scene) {
-      return;
+      return { retired: false, requeuedCandidates: [], activeMembers: [] };
     }
 
+    const activeMembers = (scene.players || []).map(player => player.uuid).filter(Boolean);
+    const requeuedCandidates = [];
+    (scene.items || []).forEach((item) => {
+      const candidateId = item?.chroniclesRelic?.id || item?.lostTrophy?.id;
+      if (!candidateId || item.recoveryRetired) return;
+      item.recoveryRetired = true;
+      item.requeueCount = Math.min(1, (item.requeueCount || 0) + 1);
+      requeuedCandidates.push({
+        id: candidateId,
+        kind: item.lostTrophy ? 'trophy' : 'relic',
+        item,
+      });
+      if (typeof scene.metadata?.requeueCandidate === 'function') {
+        try {
+          scene.metadata.requeueCandidate(candidateId, item.lostTrophy ? 'trophy' : 'relic');
+        } catch {
+          // Persistence adapters can retry from the returned handoff record.
+        }
+      }
+    });
+    scene.metadata = {
+      ...(scene.metadata || {}),
+      retired: true,
+      retiredAt: new Date().toISOString(),
+      activeMembers,
+      requeuedCandidates: requeuedCandidates.map(candidate => ({
+        id: candidate.id,
+        kind: candidate.kind,
+      })),
+    };
     scene.players = [];
     this.instances.delete(partyId);
     this.scenes.delete(scene.id);
+    return { retired: true, requeuedCandidates, activeMembers };
   }
 
   applyTownMutation(townId, updater) {

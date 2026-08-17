@@ -1,7 +1,7 @@
 import Query from '#server/core/data/query.js';
 import Socket from '#server/socket.js';
 import world from '#server/core/world.js';
-import { claimCirculatingRelic } from '#server/core/services/chronicles.js';
+import { claimCirculatingRelic, claimCirculatingTrophy } from '#server/core/services/chronicles.js';
 import { notifyTutorial } from '#server/core/tutorial.js';
 import { notifyProgression } from '#server/core/progression-events.js';
 
@@ -25,6 +25,7 @@ export const commitGroundItemPickup = (player, scene, itemIndex) => {
   const sceneItems = getSceneItems(scene);
   const worldItem = sceneItems[itemIndex];
   if (!player || !worldItem || worldItem.shopDisplay
+    || scene?.metadata?.retired
     || !player.inventory || typeof player.inventory.add !== 'function') {
     return { ok: false, added: 0, remainder: worldItem?.qty || 1 };
   }
@@ -50,6 +51,12 @@ export const commitGroundItemPickup = (player, scene, itemIndex) => {
     Socket.emit('game:send:message', {
       player: { socket_id: player.socket_id },
       text: `You found ${worldItem.displayName || worldItem.name} — once carried by ${origin}.`,
+    });
+  }
+  if (remainder === 0 && claimCirculatingTrophy(worldItem, player)) {
+    Socket.emit('game:send:message', {
+      player: { socket_id: player.socket_id },
+      text: `You recovered a trophy carried by a fallen scion.`,
     });
   }
   return { ok: remainder === 0, added, remainder };

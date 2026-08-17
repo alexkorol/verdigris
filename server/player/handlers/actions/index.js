@@ -1251,6 +1251,17 @@ const actionEvents = {
           }
         });
     }
+    if (worldItem.chroniclesTrophy && worldItem.chroniclesTrophy.id) {
+      const recoveredTrophy = chroniclesStore.recoverTrophy(
+        player.uuid,
+        worldItem.chroniclesTrophy.id,
+      );
+      if (recoveredTrophy.ok) {
+        playerPersistence.savePlayer(player, { force: true }).catch((error) => {
+          console.warn(`[actions] Failed to persist recovered trophy ${worldItem.uuid}: ${error.message}`);
+        });
+      }
+    }
 
     // Add respawn timer on item (if is a respawn)
     const sceneRespawns = getSceneRespawns(scene);

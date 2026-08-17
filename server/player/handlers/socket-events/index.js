@@ -13,8 +13,6 @@ import playerPersistence from '#server/core/services/player-persistence.js';
 import chroniclesStore from '#server/core/services/chronicles-store.js';
 import {
   pruneUnrecoveredRelics,
-  removeItemIdentity,
-  selectScionRelic,
 } from '#server/core/services/scion-relics.js';
 import { loadGuest, saveGuest } from '#server/core/repositories/guest-save-store.js';
 import { resolveGuestProfile } from '#server/player/playtest-guest.js';
@@ -23,6 +21,7 @@ import { partyService } from '#server/player/handlers/party.js';
 import { validateScionName } from '#shared/chronicles.js';
 import {
   beginScionSession,
+  collectCarriedRecovery,
   ensureQuickGuestScion,
   sendChronicleState,
 } from '#server/core/services/chronicles.js';
@@ -459,26 +458,19 @@ export default {
       diedAt: lifecycle.lastEvent && lifecycle.lastEvent.occurredAt,
     };
 
-    const selectedRelic = selectScionRelic(player);
+    const carried = collectCarriedRecovery(player);
     const record = chroniclesStore.snapshot(player.uuid);
     const entombed = record.exists
       ? chroniclesStore.entomb(player.uuid, chronicles, {
         level: player.level,
         diedAt: fallen.diedAt,
-        relic: selectedRelic && selectedRelic.item,
+        relicItems: carried.items,
+        trophies: carried.trophies,
       })
       : null;
     if (record.exists && !entombed.ok) {
       emitChroniclesError(ws, entombed.reason);
       return;
-    }
-
-    const relicItem = entombed && entombed.fallen && entombed.fallen.relic
-      ? entombed.fallen.relic.item
-      : null;
-    if (relicItem) {
-      removeItemIdentity(player, relicItem.uuid);
-      playerPersistence.savePlayer(player, { force: true }).catch(() => {});
     }
 
     partyService.removePlayer(player.uuid);
