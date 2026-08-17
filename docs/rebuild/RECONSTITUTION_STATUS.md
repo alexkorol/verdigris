@@ -25,6 +25,9 @@ replacement for the task reports, constitution, or Fable's review decisions.
 
 See [WIZARD Arcane Lattice reference](../product/WIZARD_ARCANE_LATTICE_REFERENCE.md)
 and the [legacy matrix](LEGACY_MATRIX.md) for boundaries.
+Focused seam evidence is preserved in
+[`WIZARD_INTEGRATION_VERIFICATION.md`](WIZARD_INTEGRATION_VERIFICATION.md):
+10 files / 73 tests passed for orbs, inventory, and map generation.
 
 ## Orchestration state
 

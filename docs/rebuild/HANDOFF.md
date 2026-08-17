@@ -10,6 +10,9 @@
   [`RECONSTITUTION_STATUS.md`](RECONSTITUTION_STATUS.md), including the
   original checklist, WIZARD seams, review-ready tasks, blocked ownership
   questions, and current gate evidence.
+- Focused WIZARD seam verification is recorded in
+  [`WIZARD_INTEGRATION_VERIFICATION.md`](WIZARD_INTEGRATION_VERIFICATION.md):
+  Orbs, inventory/Brands & Bonds, and Cartographer/map tests pass 73/73.
 - Wave 1 READY: TASK-0001 (native Legends records), TASK-0002 (build/CI
   hardening), TASK-0003 (slice verification harness). DRAFT: TASK-0004
   (client control pass per decision D-007), TASK-0005 (legacy audit).
