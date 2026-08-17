@@ -1,6 +1,6 @@
 ---
 task: TASK-0040
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Luna first-encounter readability worker
 worker_branch: codex/TASK-0040-first-encounter-readability
@@ -12,7 +12,10 @@ implementation_commits: 8abad0bf; cf9282c1; 049be9b7; d30a1f1c; 69995508; e0dacf
 report: orchestration/tasks/TASK-0040-first-encounter-readability/REPORT.md
 expected_verification: npm run test:unit; npm run playtest; first-delve transcript; D-114 constants table; capture evidence
 known_risks: server/core paths are disjoint from pending TASK-0035 native and TASK-0036/0037 browser handoffs; no client, loot, lore, or economy changes permitted
-verification: focused encounter/balance 16/16; full unit 120 files/767 tests; direct-WASD and exact-teleport regression passed; driven WebSocket transcript captured; latest full playtest 25/31 with six isolated reruns passing; diff check passed
-validator: /root/validate_task_0040 — REVISE (6295298a closes marker, staging, transcript, and scope findings; mandatory full playtest remains non-reproducible: exact-tip runs 17/31, 30/31, 28/31, with isolated failures passing; dormant roster visibility remains architect-pending)
+verification: focused encounter/balance 16/16; integration full unit 121 files/774 tests; direct-WASD and exact-teleport regression passed; driven WebSocket transcript captured; full-playtest variance ratified by architect under QUESTION-0006; diff check passed
+validator: /root/validate_task_0040 — REVISE on harness reproducibility; architect ratified the evidence under QUESTION-0006 and assigned TASK-0043 to stabilize the shared harness
+integration_commit: e44502c7
+integration_worktree: C:\Users\Alex\Documents\ChatGPT\verdigris\.codex\worktrees\integrate-0040-final
+integration_source_tip: 6295298a
 architect_review_required: true
 ---
