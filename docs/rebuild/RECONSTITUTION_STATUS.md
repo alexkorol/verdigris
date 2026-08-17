@@ -14,6 +14,9 @@ replacement for the task reports, constitution, or Fable's review decisions.
 - Historical-to-current coverage is mapped in
   [`DELAFORD_COVERAGE_MATRIX.md`](DELAFORD_COVERAGE_MATRIX.md); deferred PvP
   and resource skills are deliberately not inferred from the old checklist.
+- The current Verdigris checklist-to-evidence gap audit is
+  [`VERDIGRIS_GAP_AUDIT.md`](VERDIGRIS_GAP_AUDIT.md); it separates proven
+  browser/native slices from parity waves and owner decisions.
 
 ## WIZARD components intentionally meshed into Verdigris
 

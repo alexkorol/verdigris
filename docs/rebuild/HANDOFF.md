@@ -16,6 +16,9 @@
 - Historical Delaford-to-Verdigris coverage is mapped in
   [`DELAFORD_COVERAGE_MATRIX.md`](DELAFORD_COVERAGE_MATRIX.md), with PvP and
   resource skills explicitly deferred pending product authority.
+- The checklist gap audit is maintained in
+  [`VERDIGRIS_GAP_AUDIT.md`](VERDIGRIS_GAP_AUDIT.md), including evidence,
+  parity boundaries, and unresolved owner decisions.
 - Wave 1 READY: TASK-0001 (native Legends records), TASK-0002 (build/CI
   hardening), TASK-0003 (slice verification harness). DRAFT: TASK-0004
   (client control pass per decision D-007), TASK-0005 (legacy audit).
