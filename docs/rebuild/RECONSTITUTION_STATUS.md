@@ -71,11 +71,14 @@ Focused seam evidence is preserved in
 
 1. Fable performs the required architect reruns and records ACCEPT/REVISE for
    TASK‑0043 and TASK‑0044.
-2. Integrate only accepted commits; preserve coordinator-owned metadata during
+2. Fable answers
+   [`QUESTION-0009`](../../orchestration/questions/QUESTION-0009-native-n3-authority-bridge.md)
+   and issues the READY N3 task/spec before native combat implementation.
+3. Integrate only accepted commits; preserve coordinator-owned metadata during
    the known TASK‑0044 `STATUS.md` add/add merge conflict.
-3. Resolve QUESTION‑0007 and QUESTION‑0008 with the owner before implementing
+4. Resolve QUESTION‑0007 and QUESTION‑0008 with the owner before implementing
    the blocked first-loot and control-rebinding seams.
-4. Keep complete magic, production asset provenance, seasonal inheritance, and
+5. Keep complete magic, production asset provenance, seasonal inheritance, and
    economy scope behind their documented owner decisions.
 
 The N3 handoff is now explicit in

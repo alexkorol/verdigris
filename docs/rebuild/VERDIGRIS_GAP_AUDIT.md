@@ -74,8 +74,10 @@ surface.
 
 1. Fable accepts or revises TASK-0043 and TASK-0044; only accepted commits may
    be integrated.
-2. Native parity proceeds through N3 combat, N4 items, N5 Chronicles, and N6
-   world-web/quests, each with the unchanged scenario matrix.
+2. QUESTION-0009 records the N3 authority-bridge choice and the request for a
+   READY N3 task/spec. Native parity then proceeds through N3 combat, N4
+   items, N5 Chronicles, and N6 world-web/quests, each with the unchanged
+   scenario matrix.
 3. QUESTION-0007 and QUESTION-0008 must be resolved before the first-loot and
    browser-controls presentation work can be implemented safely.
 4. OD-001, OD-007/009, OD-010, OD-011, OD-012, and OD-013 remain owner/product
