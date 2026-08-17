@@ -151,4 +151,8 @@ Source is ready on the dedicated integration worktree at `f9527d9c`; integrate o
   `PLAYWRIGHT_BASE_URL=http://127.0.0.1:6515`; the server was stopped cleanly
   afterward. The explicit environment is required because `/world/players` is
   intentionally development-only and production fails closed.
+- Fresh coordinator rerun at tip `9ee547a2` then completed unchanged
+  `npm run playtest` **31/31**, including `build-divergence`,
+  `gear-outcomes`, `quest`, `session-arc`, and `zones`; raw output summary is
+  preserved in [`captures/coordinator-fresh-full-playtest-2026-08-17.txt`](captures/coordinator-fresh-full-playtest-2026-08-17.txt).
 - Task state: `REVIEW_REQUESTED`; architect acceptance is still required.

@@ -16,4 +16,5 @@ report: orchestration/tasks/TASK-0043-playtest-harness-stabilization/REPORT.md
 verification: ten consecutive loaded npm run playtest executions passed 31/31 (310/310); authentic negative zone-entry regression failed as expected; see captures/
 revision: Fable corrections implemented; default observed-lag adaptation, raw transcript, and three consecutive default-mode full runs now pass.
 coordinator_current_tip_check: fresh isolated tip unit 122/122 files and 779/779 tests; build PASS; PLAYTEST_PORT=6523 playtest 31/31; architect review still required
+coordinator_fresh_rerun: 2026-08-17 — unchanged `npm run playtest` at coordinator tip 9ee547a2 passed 31/31, including build-divergence, gear-outcomes, quest, session-arc, and zones; capture in captures/coordinator-fresh-full-playtest-2026-08-17.txt.
 ---
