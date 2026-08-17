@@ -232,3 +232,16 @@ Source is ready on the dedicated integration worktree at `f9527d9c`; integrate o
   [`captures/coordinator-current-tip-native-browser-gates-2026-08-17.txt`](captures/coordinator-current-tip-native-browser-gates-2026-08-17.txt).
   This is a health refresh, not a lifecycle change; architect acceptance is
   still required.
+
+## Revision 2 — staged default timing correction
+
+Worker commit `1da567aa` removes the extra contention-cap heuristic from
+`playtest/timing.mjs`, aligning the worker branch exactly with Fable's staged
+architect variant: default mode adapts to the larger observed p99/max lag,
+while the existing authored factor cap remains intact. The focused proof
+passed with idle `8000ms`, induced-lag `8052ms`, and a bounded ceiling of
+`14000ms`; details are in
+[`captures/coordinator-revision-1da567aa-timing-2026-08-17.txt`](captures/coordinator-revision-1da567aa-timing-2026-08-17.txt).
+The broader three-run default-mode 31/31 proof and exact staged-variant
+unit/playtest gate remain in the prior captures. The task is returned to
+`REVIEW_REQUESTED`; no architect acceptance is inferred.

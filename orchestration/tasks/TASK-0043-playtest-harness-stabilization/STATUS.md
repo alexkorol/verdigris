@@ -14,6 +14,7 @@ architect_review_required: true
 revision_review: 7113b06 (REVISE; default-mode contention proof required)
 revision_worker: Luna default-mode revision validator (isolated candidate worktree)
 implementation_commits: 3b16d01c; 18dabc06; 48b471b6; 31a93698; f3dc7ce1; e9474a0c; 121001b3; 1e48d120; 78434f60; 51c5253d; bf598d82; 9bbb3497
+revision_commit: 1da567aa
 report: orchestration/tasks/TASK-0043-playtest-harness-stabilization/REPORT.md
 verification: ten consecutive loaded npm run playtest executions passed 31/31 (310/310); authentic negative zone-entry regression failed as expected; see captures/
 revision: Fable corrections implemented; default observed-lag adaptation, raw transcript, and three consecutive default-mode full runs now pass.
@@ -25,4 +26,5 @@ architect_staged_variant_gate: 2026-08-17 — exact staged timing snapshot overl
 coordinator_current_tip_candidate: 2026-08-17 — canonical v2 candidate ab73edbc cherry-picked the complete correction chain directly onto current tip 6e900687; unit 122/779, full suite 30/31 on gear-outcomes contention with immediate isolated 1/1, playtest-only scope; architect rerun required before merge.
 coordinator_current_tip_parity_v3: 2026-08-17 — refreshed disposable candidate 3636b729 applies the complete correction chain directly onto coordinator tip 9fea5668; unit 122/779 and unchanged browser playtest 31/31 pass. Native attach also passes 4/4 in the combined candidate; transcript is in captures/coordinator-current-tip-parity-v3-2026-08-17.txt. Architect acceptance remains required.
 coordinator_current_tip_gate_refresh: 2026-08-17 — coordinator HEAD 732f7fbf independently passed browser unit 122/779 and native `build.ps1 -RunTests -RunClient` (denylist/core/networking/client plus literal trophies/items 1/1). Capture: captures/coordinator-current-tip-native-browser-gates-2026-08-17.txt. This is health evidence only; lifecycle remains REVIEW_REQUESTED.
+revision_validation: 2026-08-17 — worker revision 1da567aa aligns default timing exactly with Fable's staged max-observed-lag correction; focused proof passed idle 8000ms, induced-lag 8052ms, and <=14000ms cap. Capture: captures/coordinator-revision-1da567aa-timing-2026-08-17.txt. Returned to REVIEW_REQUESTED; architect acceptance remains required.
 ---

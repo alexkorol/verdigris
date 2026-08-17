@@ -1,0 +1,24 @@
+TASK-0043 revision validation
+Date: 2026-08-17
+Worker branch: codex/TASK-0043-playtest-harness-stabilization
+Revision commit: 1da567aa
+
+Revision scope: playtest/timing.mjs only. Removed the extra contention-cap
+heuristic so default mode uses the larger observed p99/max event-loop lag,
+bounded by the existing authored max-factor cap. This matches the exact
+staged architect variant in playtest/timing.mjs; no Fable checkout was edited.
+
+Command (NODE_ENV/default mode, no load flag):
+  node --input-type=module -e "import('./playtest/timing.mjs').then(async ... )"
+
+Observed output:
+  {"idle":8000,"loaded":8052,"diagnostics":{"loadMode":false,"p99EventLoopLagMs":32.882687,"maxEventLoopLagMs":32.882687}}
+
+Assertions passed:
+  - idle authored deadline remains 8000ms;
+  - induced scheduler lag increases the default deadline;
+  - adapted deadline remains <= 14000ms (1.75x cap).
+
+The broader three-run default-mode 31/31 evidence and exact staged-variant
+unit/playtest gate remain recorded in the existing TASK-0043 captures. This
+packet returns the worker branch to review; it does not self-accept the task.
