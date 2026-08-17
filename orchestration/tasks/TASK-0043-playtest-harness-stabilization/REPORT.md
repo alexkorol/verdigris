@@ -176,4 +176,12 @@ Source is ready on the dedicated integration worktree at `f9527d9c`; integrate o
   scheduler-sensitive variance and is recorded in
   [`captures/coordinator-current-tip-playtest-2026-08-17-followup.txt`](captures/coordinator-current-tip-playtest-2026-08-17-followup.txt).
   The checkout does not contain the unaccepted `f9527d9c` harness source.
+
+- A disposable integration dry-run then applied the complete TASK-0043
+  correction chain to coordinator tip `ade29e6d` without conflicts. Candidate
+  `1a9f6b6b` passed unit (122/779), full playtest (31/31), and diff-check with
+  playtest-only scope. The exact cherry-pick list and diagnostics are in
+  [`captures/coordinator-current-tip-integration-candidate-2026-08-17.txt`](captures/coordinator-current-tip-integration-candidate-2026-08-17.txt).
+  This candidate is ready for Fable's architect rerun but remains unmerged
+  until the review verdict changes.
 - Task state: `REVIEW_REQUESTED`; architect acceptance is still required.
