@@ -60,3 +60,10 @@ Listed in plan §9. The biggest: D-107's slice camera scalars and the browser's
 HOR/FOCUS parameterization are different models of the same feel; the §6
 mapping needs visual validation in phase 1, and the plan proposes a
 non-persisted `?camera=` debug override for that A/B loop.
+
+## Integration notes
+
+Architect review `42fd837` accepted implementation `832b7f3` with no
+corrections. The governing plan was integrated via merge `ee21032`; this
+survey has no executable acceptance command beyond its document-evidence
+requirements, which remain recorded above.

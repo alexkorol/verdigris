@@ -1,6 +1,6 @@
 ---
 task: TASK-0019
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: kimi
 worker: kimi-code-cli
 worker_branch: codex/TASK-0019-browser-25d-survey
@@ -12,4 +12,9 @@ expected_verification: plan doc covers SPEC scope items with file/line evidence;
 known_risks: none (survey-only, single owned file)
 dependencies: none
 architect_review_required: true
+architect_review: ACCEPTED
+architect_review_commit: 42fd837
+implementation_commit: 832b7f3
+integration_commit: ee21032
+integration_verification: plan/report provenance verified; no executable acceptance command in spec
 ---
