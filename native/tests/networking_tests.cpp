@@ -22,7 +22,7 @@ void test_envelope_round_trip() {
   check(parse_envelope(wire, decoded, &error), error.c_str());
   check(decoded.event == source.event, "event survives envelope round-trip");
   check(decoded.data["useGuestAccount"].boolean().value_or(false), "boolean payload survives round-trip");
-  check(decoded.data["guestId"].string().value_or("") == "roundtrip-guest", "string payload survives round-trip");
+  check(decoded.data["guestId"].string() && *decoded.data["guestId"].string() == "roundtrip-guest", "string payload survives round-trip");
   check(!parse_envelope("{\"event\":\"dev:state\",\"data\":[]}", decoded, &error), "array payload is rejected");
 }
 
@@ -44,8 +44,8 @@ void test_session_lifecycle() {
     state_wire = emit_envelope(event);
   });
   check(parse_envelope(state_wire, response), "session emits state envelope");
-  check(response.data["requestId"].string().value_or("") == "state-1", "state request id is echoed");
-  check(response.data["state"]["sceneType"].string().value_or("") == "instance", "state reports active instance");
+  check(response.data["requestId"].string() && *response.data["requestId"].string() == "state-1", "state request id is echoed");
+  check(response.data["state"]["sceneType"].string() && *response.data["state"]["sceneType"].string() == "instance", "state reports active instance");
   check(response.data["state"]["monsters"].array() && !response.data["state"]["monsters"].array()->empty(), "instance state has a monster");
 
   session.handle(Envelope{"dev:give", JsonValue::Object{{"itemId", "garnet-amulet"}, {"qty", 1}}}, [](const Envelope&) {});
