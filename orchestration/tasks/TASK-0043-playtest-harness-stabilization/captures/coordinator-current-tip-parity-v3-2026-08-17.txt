@@ -1,0 +1,30 @@
+TASK-0043 current-tip parity refresh
+Date: 2026-08-17
+
+Disposable worktree: C:/Users/Alex/AppData/Local/Temp/verdigris-parity-v3
+Base: 9fea5668 (coordinator HEAD)
+Candidate: codex/integration-parity-candidate-v3 @ 3636b729
+Applied: TASK-0043 correction chain through f9527d9c
+
+Scope check:
+- playtest/**
+- native/include/verdigris/core.hpp
+- native/include/verdigris/networking.hpp
+- native/src/core.cpp
+- native/src/networking.cpp
+- native/tests/core_tests.cpp
+- native/tests/networking_tests.cpp
+- no other candidate paths
+
+Verification:
+- npm ci --ignore-scripts; npm rebuild better-sqlite3: PASS
+- npm run test:unit: 122 files / 779 tests PASS
+- powershell -NoProfile -File native/build.ps1 -RunTests -RunClient: PASS
+- npm run playtest: 31/31 scenarios PASS; runner exit 0
+  diagnostics: p99 32.161791 ms, max 112.459775 ms
+- native/build/verdigris_server.exe 6532 with unchanged attach:
+  quickstart, single-session, movement, zones: 4/4 PASS; runner exit 0
+  diagnostics: p99 32.096255 ms, max 32.391167 ms
+
+The candidate is disposable and remains outside codex/native-reconstitution
+until TASK-0043 and TASK-0044 receive independent architect acceptance.

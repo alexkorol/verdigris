@@ -83,6 +83,10 @@ outside production until the owner resolves asset provenance/packaging.
   conflict-free; browser unit 122/779, native gate PASS, and native attach
   4/4. Full details are in
   [`PARITY_INTEGRATION_CANDIDATE_2026-08-17.md`](PARITY_INTEGRATION_CANDIDATE_2026-08-17.md).
+- A refreshed combined candidate `3636b729` reapplies both chains directly
+  onto coordinator tip `9fea5668`; browser unit 122/779, unchanged browser
+  playtest 31/31, native gate PASS, and native attach 4/4 all pass. It remains
+  disposable pending independent Fable acceptance.
 
 ## Next authorized actions
 

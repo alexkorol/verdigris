@@ -35,3 +35,19 @@ were changed. `git diff --check` passed.
 
 The candidate remains outside `codex/native-reconstitution` until Fable
 accepts TASK-0043 and TASK-0044 independently.
+
+## Current-tip refresh
+
+Because the coordinator advanced with documentation commits after the first
+dry-run, a fresh disposable candidate was rebuilt directly from `9fea5668`:
+
+- branch `codex/integration-parity-candidate-v3`, tip `3636b729`;
+- the TASK-0043 correction chain and TASK-0044 `d476788` applied cleanly;
+- browser unit gate: 122 files / 779 tests;
+- unchanged browser playtest: 31/31, runner exit 0;
+- native denylist/core/networking/client gate: PASS;
+- unchanged native attach (`quickstart`, `single-session`, `movement`,
+  `zones`): 4/4, runner exit 0.
+
+Raw task-folder captures record the exact commands and diagnostics. This is
+still a review candidate, not an architect acceptance or production merge.

@@ -20,6 +20,7 @@ coordinator_n3_surface_audit: 2026-08-17 — verified all N3 brief browser event
 coordinator_n3_core_gap_audit: 2026-08-17 — read-only d476788 inspection confirms separate WorldSimulation/Simulation authority, 18 shallow lurkers, empty ground-loot snapshot, missing combat-event metadata, and absent dev:setlevel/dev:heal; capture in captures/coordinator-n3-core-gap-audit-2026-08-17.txt.
 n3_baseline_probe: 2026-08-17 — native d476788 predictably fails `combat` at 18<20 monsters and `encounter-variety` at missing authored pack roles; negative boundary captured in captures/coordinator-n3-baseline-2026-08-17.txt.
 coordinator_current_tip_candidate: 2026-08-17 — d476788 cherry-picked cleanly onto coordinator tip as disposable candidate 8be3dacd; native full gate PASS and unchanged quickstart/single-session/movement/zones attach PASS 4/4; architect review still required.
+coordinator_current_tip_parity_v3: 2026-08-17 — refreshed disposable combined candidate 3636b729 applies d476788 directly onto coordinator tip 9fea5668; native full gate PASS and unchanged quickstart/single-session/movement/zones attach PASS 4/4, with browser unit/playtest 122/779 and 31/31 also green. Transcript is in captures/coordinator-current-tip-parity-v3-2026-08-17.txt. Architect review still required.
 ---
 
 TASK-0044 is ready for architect review. Kimi's external worktree is clean at
