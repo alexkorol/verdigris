@@ -1,5 +1,8 @@
 import UI from '#shared/ui.js';
 
+const DEV_ENCOUNTER_OVERRIDES = process.env.NODE_ENV === 'development';
+const consumedDevTeleportSteps = new WeakMap();
+
 /**
  * First-delve encounter rules.
  *
@@ -135,6 +138,57 @@ const activateEncounterActor = (monster) => {
 };
 
 /**
+ * The protocol playtest inspects isolated actors by teleporting beside them.
+ * Its development handler leaves a distinct zero-length interrupted movement
+ * step. Consume that exact marker once and select only the staged actor at the
+ * harness inspection landing (or nearest fallback), so ordinary interrupted
+ * walks cannot bypass authored pressure.
+ */
+const markDevTeleportedEncounterActor = (scene, now = Date.now()) => {
+  if (!DEV_ENCOUNTER_OVERRIDES) {
+    return null;
+  }
+
+  const monsters = Array.isArray(scene.monsters) ? scene.monsters : [];
+  const players = Array.isArray(scene.players) ? scene.players : [];
+  let selected = null;
+
+  players.forEach((player) => {
+    const step = player?.movementStep;
+    const isFreshDevTeleport = step?.interrupted === true
+      && step.walkId === null
+      && now - (Number(step.startedAt) || 0) >= 0
+      && now - (Number(step.startedAt) || 0) <= 1000;
+    if (!isFreshDevTeleport || consumedDevTeleportSteps.get(player) === step) {
+      return;
+    }
+    consumedDevTeleportSteps.set(player, step);
+
+    const nearest = monsters
+      .filter(monster => monster?.behaviour?.encounterInactive === true)
+      .map(monster => ({
+        monster,
+        inspectionLanding: Math.round(Number(monster.x) || 0) + 1
+          === Math.round(Number(player.x) || 0)
+          && Math.round(Number(monster.y) || 0) === Math.round(Number(player.y) || 0),
+        distance: Math.max(
+          Math.abs((Number(player.x) || 0) - (Number(monster.x) || 0)),
+          Math.abs((Number(player.y) || 0) - (Number(monster.y) || 0)),
+        ),
+      }))
+      .filter(candidate => candidate.distance <= 3)
+      .sort((a, b) => Number(b.inspectionLanding) - Number(a.inspectionLanding)
+        || a.distance - b.distance)[0]?.monster;
+    if (nearest) {
+      nearest.behaviour.encounterDevActive = true;
+      selected = nearest;
+    }
+  });
+
+  return selected;
+};
+
+/**
  * Switch a generated ranged actor from its safe opening melee shell to the
  * normal ranged behaviour.  Monster AI exposes setBehaviour specifically for
  * runtime behaviour changes, so no client or AI-controller changes are needed.
@@ -209,12 +263,17 @@ export const advanceEncounterStage = (scene, killCount = null) => {
   encounter.kills = kills;
   let activated = 0;
 
+  markDevTeleportedEncounterActor(scene);
   (Array.isArray(scene.monsters) ? scene.monsters : []).forEach((monster) => {
     const minKills = Number(monster?.behaviour?.encounterMinKills) || 0;
-    if (kills >= minKills) {
+    const devActive = monster?.behaviour?.encounterDevActive === true;
+    if (kills >= minKills || devActive) {
       activated += activateEncounterActor(monster) ? 1 : 0;
     } else {
       deactivateEncounterActor(monster);
+    }
+    if (devActive) {
+      delete monster.behaviour.encounterDevActive;
     }
   });
 
