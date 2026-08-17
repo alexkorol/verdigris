@@ -14,6 +14,20 @@ npm run playtest -- --attach     # reuse the running dev server (ws://localhost:
 
 Exit code 0 = every scenario passed. Each scenario prints its assertions.
 
+## Load-stressed verification
+
+The parity gate is also exercised while the machine is busy. On PowerShell,
+the following starts one CPU spinner per available worker (leaving one worker
+for Node), runs the full gate, and always cleans up the spinners:
+
+```powershell
+$workers = @(); 1..([Math]::Max(1, [Environment]::ProcessorCount - 1)) | ForEach-Object { $workers += Start-Process -FilePath node -ArgumentList @('-e', 'for (;;) { Math.sqrt(Math.random()); }') -PassThru -WindowStyle Hidden }; try { npm run playtest } finally { $workers | Stop-Process -Force -ErrorAction SilentlyContinue }
+```
+
+Repeat the command for the required consecutive-run evidence. The runner
+prints the load-adaptive timing guard and event-loop diagnostics; a missing
+server event still fails at the authored deadline (with a hard 1.75x cap).
+
 ## Why this exists
 
 Five shipped bugs — a skill tree that forgot allocations, healers that made
