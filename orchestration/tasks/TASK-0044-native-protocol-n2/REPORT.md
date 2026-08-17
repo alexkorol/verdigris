@@ -92,6 +92,12 @@ passes denylist, core tests, networking tests, and the native client shell
 (including the stored trophy/item smoke output). Evidence is in
 [`captures/worker-branch-client-gate-2026-08-17.txt`](captures/worker-branch-client-gate-2026-08-17.txt).
 
+As a regression check, the committed N2 server passed the prior N1
+`quickstart` and `single-session` scenarios together with `movement` and
+`zones`: **4/4**. The session-replacement/loot handoff contract remains green;
+the transcript is in
+[`captures/worker-branch-regression-2026-08-17.txt`](captures/worker-branch-regression-2026-08-17.txt).
+
 ## Acceptance status
 
 The committed worker-branch implementation and unchanged attach gate are

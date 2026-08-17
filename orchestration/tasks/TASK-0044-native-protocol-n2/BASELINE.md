@@ -159,3 +159,8 @@ The committed tip was additionally exercised with
 `native/build.ps1 -RunTests -RunClient`: denylist, core/networking tests, and
 the native client shell all passed (exit 0). See
 `captures/worker-branch-client-gate-2026-08-17.txt`.
+
+The committed N2 server also passed the prior N1 `quickstart` and
+`single-session` scenarios alongside `movement` and `zones` (**4/4**),
+confirming the session-replacement regression path remains green. See
+`captures/worker-branch-regression-2026-08-17.txt`.
