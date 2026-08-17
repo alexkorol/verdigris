@@ -1,6 +1,6 @@
 ---
 task: TASK-0028
-state: REVISE
+state: REVIEW_REQUESTED
 coordinator: codex
 worker: Luna native-client implementation worker
 worker_branch: codex/TASK-0028-native-scenery-and-catalog
@@ -16,6 +16,7 @@ prior_commits:
   - 53d2b06c58f8eb44dedd935ff068a8878989764c
   - b6c13c1518a99731e0d3c3106356f8b1db41f6a3
 validator: independent Luna validator
-validator_result: REVISE — native gate and scope pass; dash sweep and driven evidence need correction
-revision_required: resolved_pending_revalidation
+validator_result: FUNCTIONAL ACCEPT — scope, swept collision, depth captures, and gates pass; coordinator artifacts now complete
+report: orchestration/tasks/TASK-0028-native-scenery-and-catalog/REPORT.md
+revision_required: none
 ---
