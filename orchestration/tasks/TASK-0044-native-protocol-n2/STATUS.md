@@ -23,6 +23,8 @@ coordinator_current_tip_candidate: 2026-08-17 — d476788 cherry-picked cleanly 
 coordinator_current_tip_parity_v3: 2026-08-17 — refreshed disposable combined candidate 3636b729 applies d476788 directly onto coordinator tip 9fea5668; native full gate PASS and unchanged quickstart/single-session/movement/zones attach PASS 4/4, with browser unit/playtest 122/779 and 31/31 also green. Transcript is in captures/coordinator-current-tip-parity-v3-2026-08-17.txt. Architect review still required.
 ---
 
+coordinator_current_tip_attach_baseline: 2026-08-17 — direct unchanged attach against coordinator HEAD 8385ef09 (before d476788 integration) passed quickstart/single-session but failed movement/zones (2/4), and `git merge-base --is-ancestor d476788 HEAD` returned false. Capture: captures/coordinator-current-tip-attach-baseline-2026-08-17.txt. This is the expected pre-integration baseline; no lifecycle change.
+
 TASK-0044 is ready for architect review. Kimi's external worktree is clean at
 `d476788`; the coordinator has not edited worker-owned native files. Fable's
 required rerun and acceptance decision remain outstanding.

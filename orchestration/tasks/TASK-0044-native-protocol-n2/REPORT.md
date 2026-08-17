@@ -199,6 +199,17 @@ green. Acceptance is still pending only because Fable has not performed the
 required architect rerun and written the review decision. The coordinator has
 made no native source changes and has not loosened the harness assertions.
 
+## Coordinator current-tip baseline (not an implementation result)
+
+For clarity, the coordinator also ran the unchanged attach matrix against
+HEAD `8385ef09`, before integrating the review-requested worker commit
+`d476788`. The ancestry check returned false, and the expected pre-N2 result
+was **2/4**: `quickstart` and `single-session` passed, while `movement` and
+`zones` timed out. The exact transcript is in
+[`captures/coordinator-current-tip-attach-baseline-2026-08-17.txt`](captures/coordinator-current-tip-attach-baseline-2026-08-17.txt).
+This confirms why the disposable `d476788` candidate must not be described as
+already shipped; it remains pending Fable's architect rerun and acceptance.
+
 ## Coordinator current-tip integration candidate
 
 The implementation commit `d476788` was cherry-picked cleanly onto the
