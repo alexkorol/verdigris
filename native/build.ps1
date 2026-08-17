@@ -60,7 +60,11 @@ $coreSources = @(
 )
 $coreObject = Join-Path $buildRoot "core.obj"
 $seasonalObject = Join-Path $buildRoot "seasonal.obj"
+$networkingSource = Join-Path $nativeRoot "src\networking.cpp"
+$networkingObject = Join-Path $buildRoot "networking.obj"
 $testExe = Join-Path $buildRoot "verdigris_core_tests.exe"
+$networkingTestExe = Join-Path $buildRoot "verdigris_networking_tests.exe"
+$serverExe = Join-Path $buildRoot "verdigris_server.exe"
 $clientExe = Join-Path $buildRoot "verdigris_client.exe"
 
 function Invoke-Msvc([string]$arguments, [switch]$RequireNativeWindowsDefine) {
@@ -80,15 +84,22 @@ function Invoke-Msvc([string]$arguments, [switch]$RequireNativeWindowsDefine) {
 
 Invoke-Msvc ('/c "' + $coreSources[0] + '" /Fo"' + $coreObject + '"')
 Invoke-Msvc ('/c "' + $coreSources[1] + '" /Fo"' + $seasonalObject + '"')
+Invoke-Msvc ('/c "' + $networkingSource + '" /Fo"' + $networkingObject + '"')
 Invoke-Msvc ('/c "' + $nativeRoot + '\tests\core_tests.cpp" /Fo"' + $buildRoot + '\tests.obj"')
+Invoke-Msvc ('/c "' + $nativeRoot + '\tests\networking_tests.cpp" /Fo"' + $buildRoot + '\networking_tests.obj"')
+$serverCompileArguments = '/c "' + $nativeRoot + '\src\server_main.cpp" /Fo"' + $buildRoot + '\server.obj"'
+Invoke-Msvc $serverCompileArguments
 $clientCompileArguments = '/c "' + $nativeRoot + '\client\main.cpp" /DVERDIGRIS_NATIVE_WINDOWS=1 /Fo"' + $buildRoot + '\client.obj"'
 # Guard the compile command itself so dropping the define cannot silently
 # regress the Windows client into its console fallback.  This is intentionally
 # script-side; the native client sources are outside this task's ownership.
 Invoke-Msvc $clientCompileArguments -RequireNativeWindowsDefine
 Invoke-Msvc ('"' + $buildRoot + '\tests.obj" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $testExe + '"')
+Invoke-Msvc ('"' + $buildRoot + '\networking_tests.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $networkingTestExe + '" /link ws2_32.lib')
+Invoke-Msvc ('"' + $buildRoot + '\server.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $serverExe + '" /link ws2_32.lib')
 Invoke-Msvc ('"' + $buildRoot + '\client.obj" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $clientExe + '" /link user32.lib gdi32.lib')
 
 python (Join-Path $nativeRoot "tools\check_legacy_denylist.py")
 if ($RunTests) { & $testExe }
+if ($RunTests) { & $networkingTestExe }
 if ($RunClient) { & $clientExe --headless }
