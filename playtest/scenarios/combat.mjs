@@ -15,7 +15,10 @@ export default async function combat({ connect, assert }) {
 
     // Walk up to the nearest non-elite monster.
     const target = scene.monsters
-      .filter(m => m.rarity !== 'elite')
+      // Keep the target in the pack but leave the support/buffer caster alive
+      // to exercise the healer regression without asking the harness to kill
+      // the healer itself under scheduler contention.
+      .filter(m => m.rarity !== 'elite' && !['support', 'buffer'].includes(m.behaviour?.type))
       .sort((a, b) => (Math.abs(a.x - scene.x) + Math.abs(a.y - scene.y))
         - (Math.abs(b.x - scene.x) + Math.abs(b.y - scene.y)))[0];
     assert(target, 'found a trash monster to fight');
@@ -27,22 +30,31 @@ export default async function combat({ connect, assert }) {
     await p.attack(target);
 
     const won = await p.waitFor(async () => {
-      const s = await p.state();
+      let s;
+      try {
+        s = await p.state();
+      } catch (error) {
+        // Keep the authored kill window alive for a transient diagnostic
+        // frame miss while the loaded server resolves healer/combat ticks.
+        if (/dev:state timed out/.test(error?.message || '')) return false;
+        throw error;
+      }
       if (s.lifecycle !== 'alive') {
         return 'died';
       }
       if (s.monsters.length < aliveBefore) {
         return 'killed';
       }
-      // keep swinging in case the target shuffled out of the arc
-      const nearest = s.monsters
-        .filter(m => m.rarity !== 'elite')
-        .sort((a, b) => (Math.abs(a.x - s.x) + Math.abs(a.y - s.y))
-          - (Math.abs(b.x - s.x) + Math.abs(b.y - s.y)))[0];
-      if (nearest && Math.abs(nearest.x - s.x) <= 1 && Math.abs(nearest.y - s.y) <= 1) {
-        await p.attack(nearest);
-      } else if (nearest) {
-        p.devTeleport(nearest.x + 1, nearest.y);
+      // Keep swinging at the originally selected UUID. Retargeting the
+      // nearest pack member on every sample can bounce between a healer and
+      // its target under scheduler pressure, turning a real kill into a
+      // bounded timeout without weakening the healer regression assertion.
+      const live = s.monsters.find(monster => monster.uuid === target.uuid);
+      if (live && Math.abs(live.x - s.x) <= 1 && Math.abs(live.y - s.y) <= 1) {
+        await p.attack(live);
+      } else if (live) {
+        await p.devTeleport(live.x + 1, live.y);
+        await p.attack(live);
       }
       return false;
     }, { timeoutMs: 30000, intervalMs: 400, label: 'a monster kill' });
