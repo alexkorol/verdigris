@@ -1827,20 +1827,22 @@ int run_headless_demo() {
   verdigris::EmberHunt seasonal;
   simulation.set_seasonal_mechanic(&seasonal);
   simulation.dispatch(verdigris::Command::enter("route:tin:1:0"));
-  for (int i = 0; i < 40; ++i) simulation.dispatch(verdigris::Command::move(1, 0));
+  for (int i = 0; i < 52; ++i) simulation.dispatch(verdigris::Command::move(1, 0));
   for (int i = 0; i < 8; ++i)
     simulation.dispatch(verdigris::Command::action_use(verdigris::ActionType::Melee));
   if (!simulation.ground_items().empty())
     simulation.dispatch(verdigris::Command::pick_up(simulation.ground_items().front().id));
   if (!simulation.ground_trophies().empty())
     simulation.dispatch(verdigris::Command::pick_up(simulation.ground_trophies().front().id));
-  for (int i = 0; i < 40; ++i) simulation.dispatch(verdigris::Command::move(-1, 0));
+  for (int i = 0; i < 52; ++i) simulation.dispatch(verdigris::Command::move(-1, 0));
   simulation.dispatch(verdigris::Command::extract());
+  const std::size_t trophies_stored = simulation.house().stored_trophies.size();
+  const std::size_t items_stored = simulation.house().stored_items.size();
   std::cout << "Verdigris native client shell\n"
             << "House: " << simulation.house().name
-            << " | trophies stored: " << simulation.house().stored_trophies.size()
-            << " | items stored: " << simulation.house().stored_items.size() << "\n";
-  return 0;
+            << " | trophies stored: " << trophies_stored
+            << " | items stored: " << items_stored << "\n";
+  return trophies_stored == 1 && items_stored == 1 ? 0 : 1;
 }
 
 // A standard main() keeps the console subsystem so --headless output reaches
@@ -1883,20 +1885,22 @@ int run_headless_demo() {
   verdigris::EmberHunt seasonal;
   simulation.set_seasonal_mechanic(&seasonal);
   simulation.dispatch(verdigris::Command::enter("route:tin:1:0"));
-  for (int i = 0; i < 40; ++i) simulation.dispatch(verdigris::Command::move(1, 0));
+  for (int i = 0; i < 52; ++i) simulation.dispatch(verdigris::Command::move(1, 0));
   for (int i = 0; i < 8; ++i)
     simulation.dispatch(verdigris::Command::action_use(verdigris::ActionType::Melee));
   if (!simulation.ground_items().empty())
     simulation.dispatch(verdigris::Command::pick_up(simulation.ground_items().front().id));
   if (!simulation.ground_trophies().empty())
     simulation.dispatch(verdigris::Command::pick_up(simulation.ground_trophies().front().id));
-  for (int i = 0; i < 40; ++i) simulation.dispatch(verdigris::Command::move(-1, 0));
+  for (int i = 0; i < 52; ++i) simulation.dispatch(verdigris::Command::move(-1, 0));
   simulation.dispatch(verdigris::Command::extract());
+  const std::size_t trophies_stored = simulation.house().stored_trophies.size();
+  const std::size_t items_stored = simulation.house().stored_items.size();
   std::cout << "Verdigris native client shell\n"
             << "House: " << simulation.house().name
-            << " | trophies stored: " << simulation.house().stored_trophies.size()
-            << " | items stored: " << simulation.house().stored_items.size() << "\n";
-  return 0;
+            << " | trophies stored: " << trophies_stored
+            << " | items stored: " << items_stored << "\n";
+  return trophies_stored == 1 && items_stored == 1 ? 0 : 1;
 }
 
 int main() {
