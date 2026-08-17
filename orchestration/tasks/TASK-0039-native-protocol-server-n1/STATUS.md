@@ -1,6 +1,6 @@
 ---
 task: TASK-0039
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Luna native protocol-server N1 worker
 worker_branch: codex/TASK-0039-native-protocol-server-n1
@@ -14,5 +14,6 @@ architect_review_required: true
 implementation_commits: 120abd19; 413b3aff
 report: orchestration/tasks/TASK-0039-native-protocol-server-n1/REPORT.md
 verification: native/build.ps1 -RunTests PASS (core, networking, denylist); unchanged harness quickstart + single-session against verdigris_server on port 6511 PASS 2/2; diff-check PASS; architect review required for ADR-003 and D-115 protocol play
-integration_commits: 37e1397a; 4c4c3aee
+integration_commits: 76ed1839; 6aec15bc
+integration_note: architect ACCEPTED in REVIEW.md; source merged after native gate and unchanged quickstart/single-session 2/2 against the C++ server
 ---
