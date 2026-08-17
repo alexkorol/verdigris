@@ -257,6 +257,7 @@
     </PaneHost>
 
     <ContextMenu :game="game" />
+    <DeathOverlay :game="game" />
   </div>
 </template>
 
@@ -276,6 +277,7 @@ import ContextMenu from '../sub/ContextMenu.vue';
 import PartyPanel from '../ui/world/PartyPanel.vue';
 import GameHUD from './GameHUD.vue';
 import WorldMinimap from '../hud/WorldMinimap.vue';
+import DeathOverlay from '../ui/world/DeathOverlay.vue';
 
 export default {
   name: 'GameContainer',
@@ -287,6 +289,7 @@ export default {
     PartyPanel,
     GameHUD,
     WorldMinimap,
+    DeathOverlay,
   },
   props: {
     game: {
