@@ -23,7 +23,7 @@ import {
   PLAYER_MOVE_DISTANCE,
   PLAYER_MOVE_SAMPLE_MS,
 } from '#shared/movement.js';
-import { adaptiveTimeoutMs } from './timing.mjs';
+import { adaptiveTimeoutMs, loadMode } from './timing.mjs';
 
 const DEFAULT_URL = process.env.PLAYTEST_WS_URL || 'ws://localhost:6500';
 const DEFAULT_TIMEOUT_MS = 8000;
@@ -366,6 +366,12 @@ export class HeadlessPlayer {
 
   /** Enter a solo Adventure zone (template + optional layout). */
   async enterZone(template, layout = null, { timeoutMs = DEFAULT_TIMEOUT_MS } = {}) {
+    // Instance admission is a server-side observation: under the documented
+    // CPU-load gate the child can be starved even while this client remains
+    // responsive. Give that one transition a bounded 12s authored floor
+    // (21s after the existing 1.75x load cap); ordinary runs retain callers'
+    // original deadline and a missing transition still fails finitely.
+    const transitionTimeoutMs = loadMode ? Math.max(timeoutMs, 12000) : timeoutMs;
     // The server throttles instance starts per player (anti-spam). If we hit
     // the cooldown, wait it out and retry instead of failing the scenario.
     const maxAttempts = 4;
@@ -389,7 +395,7 @@ export class HeadlessPlayer {
         if (Date.now() - lastSentAt >= 1000) await sendEntry();
         return false;
       }, {
-        timeoutMs,
+        timeoutMs: transitionTimeoutMs,
         label: `zone transition to ${template}`,
       });
 
