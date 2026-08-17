@@ -120,3 +120,17 @@
 - The requested authority choice and task issuance are tracked in
   [`QUESTION-0009`](../../orchestration/questions/QUESTION-0009-native-n3-authority-bridge.md);
   no source workaround is authorized while it remains open.
+
+## 2026-08-17 — Current coordinator evidence refresh
+
+- The disposable combined parity candidate `codex/integration-parity-candidate-v3`
+  (`3636b729`) applies the complete TASK-0043 correction chain and TASK-0044
+  `d476788` directly onto coordinator tip `9fea5668`.
+- That candidate passes browser unit `122/779`, browser playtest `31/31`, the
+  native denylist/core/networking/client gate, and the unchanged native attach
+  matrix `quickstart`, `single-session`, `movement`, `zones` at `4/4`.
+- The candidate remains disposable: TASK-0043 and TASK-0044 are still
+  `REVIEW_REQUESTED`, with no local architect `REVIEW.md` and no source merge.
+- The WIZARD seam rerun is recorded at coordinator commit `6cb7b366`:
+  Orbs, Brands & Bonds/inventory, and Cartographer/map tests remain `73/73`;
+  Verdigris Splash remains intentionally presentation/reference-only.
