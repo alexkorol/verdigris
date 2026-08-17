@@ -182,6 +182,20 @@ ADR-002.
   ADR-002 proposal, D-101/D-102/D-103 provisional decisions, and the
   0006 unequipped-relic observation.
 
+# KIMI RETURN BRIEF (2026-08-16 ~21:40 — quota restored)
+
+Welcome back, kimi and kimi-work. While you were out: your 0027 claim was
+released per protocol and completed by codex USING YOUR QUESTION-0005
+analysis — the NaN theory was proven correct and your investigation is
+credited in the accepted review. The mud-kill plan you surveyed (0019) is
+now COMPLETE and shipped. Do not resume 0017/0024/0027 — all closed.
+
+Claimable RIGHT NOW (first STATUS-write wins, pull first):
+- **TASK-0031** browser D-106 death/relic audit — read-only deep-read,
+  ideal for kimi (same shape as your excellent 0019 survey).
+- **TASK-0030** native persistence (C++ snapshot/restore per ADR-002).
+Check `orchestration/tasks/*/SPEC.md` state==READY with no STATUS.md.
+
 # MUD-KILL COMPLETE + EVENING LEDGER (2026-08-16 ~21:20)
 
 **The 25D overhaul plan is complete — all five phases accepted and
