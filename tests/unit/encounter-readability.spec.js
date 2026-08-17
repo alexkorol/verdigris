@@ -1,6 +1,6 @@
 /** @vitest-environment node */
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import GameMap from '#server/core/map.js';
 import Monster from '#server/core/monster.js';
@@ -175,6 +175,66 @@ describe('first-delve encounter readability', () => {
       && monster.behaviour.encounterLocked === false
     ))).toBe(true);
     expect(unlockRangedInScene(scene, 4)).toBe(0);
+  });
+
+  it('limits development inspection to one actor beside an explicit dev teleport', async () => {
+    const previousNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'development';
+    vi.resetModules();
+
+    try {
+      const { advanceEncounterStage: advanceDevelopmentStage } = await import(
+        '#server/core/combat/encounter.js'
+      );
+      const makeDormant = (uuid, x) => ({
+        uuid,
+        x,
+        y: 4,
+        behaviour: { encounterInactive: true, encounterMinKills: 4 },
+        state: {},
+        ai: { update: () => true },
+      });
+      const inspected = makeDormant('inspected', 5);
+      const other = makeDormant('other', 6);
+      const player = {
+        x: 6,
+        y: 4,
+        movementStep: {
+          startedAt: Date.now(),
+          walkId: 12,
+          interrupted: true,
+        },
+      };
+      const scene = {
+        metadata: { encounter: { kills: 0, rangedUnlockKills: 2 } },
+        players: [player],
+        monsters: [other, inspected],
+      };
+
+      advanceDevelopmentStage(scene, 0);
+      expect(inspected.behaviour.encounterInactive).toBe(true);
+      expect(other.behaviour.encounterInactive).toBe(true);
+
+      player.movementStep = {
+        startedAt: Date.now(),
+        walkId: null,
+        interrupted: true,
+      };
+      advanceDevelopmentStage(scene, 0);
+      expect(inspected.behaviour.encounterInactive).toBe(false);
+      expect(inspected.behaviour.encounterDevActive).toBeUndefined();
+      expect(other.behaviour.encounterInactive).toBe(true);
+
+      advanceDevelopmentStage(scene, 0);
+      expect(other.behaviour.encounterInactive).toBe(true);
+    } finally {
+      if (previousNodeEnv === undefined) {
+        delete process.env.NODE_ENV;
+      } else {
+        process.env.NODE_ENV = previousNodeEnv;
+      }
+      vi.resetModules();
+    }
   });
 
   it('repairs player/monster and monster/monster overlap without moving the player', () => {

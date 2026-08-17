@@ -49,6 +49,16 @@ Distances are tiles. Timings are milliseconds unless stated otherwise.
 | ranged seconds to firing range | 3.30 s | `(8 - 5) × 1.1` from aggression edge |
 | spawn / player tile separation | 1 / 1 | no shared rounded tile |
 
+## Development-only playtest inspection
+
+The protocol harness runs with `NODE_ENV=development` and inspects individual
+actors by teleporting one tile beside them. The encounter runtime recognizes
+only that handler's fresh zero-length marker (`interrupted: true`,
+`walkId: null`, at most one second old), consumes it once, and activates one
+staged actor within three tiles. Ordinary interrupted movement does not match,
+the transient marker flag is removed immediately, and production remains
+strictly kill-driven.
+
 ## Reproduction
 
 The assertions are executable in:
