@@ -135,6 +135,10 @@ D-115 hands-on play remains the acceptance gate.
 
 ## Integration notes
 
-Requires architect re-review before integration. Integrate the complete chain
-through `6295298a` from the worker branch. This is server/core-only and is
-disjoint from pending TASK-0035 native and TASK-0036/0037 browser handoffs.
+Architect review is `ACCEPTED` under QUESTION-0006. The complete chain through
+`6295298a` was cherry-picked into the isolated coordinator integration worktree
+`codex/integrate-0040`; the owner review and the new critical TASK-0043 harness
+stabilization spec are preserved alongside it. This is server/core-only and is
+disjoint from the previously integrated native and browser handoffs. The
+documented dormant-roster presentation limitation remains visible for D-115
+hands-on review; no out-of-scope payload filtering was added.
