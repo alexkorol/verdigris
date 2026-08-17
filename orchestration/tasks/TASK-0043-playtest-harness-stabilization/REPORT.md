@@ -83,6 +83,19 @@ loaded-mode evidence. The raw command output is committed at
 [`playtest/TASK-0043-default-load-transcript.txt`](../../../../playtest/TASK-0043-default-load-transcript.txt).
 The revised integration tip is `f9527d9c`.
 
+### Coordinator rerun of the revision proof
+
+After discovering the remote architect review was still `REVISE`, the
+coordinator repeated the exact requested default-mode proof from `f9527d9c` in
+a disposable worktree. With `PLAYTEST_LOAD_MODE` unset and one hidden Node CPU
+spinner, three consecutive full runs passed 31/31 with runner exit 0. The
+observed p99/max event-loop lag was 32.145/112.525ms, 32.162/110.166ms, and
+32.195/97.583ms respectively. Raw evidence is in
+[`captures/coordinator-default-moderate-reruns-2026-08-17.txt`](captures/coordinator-default-moderate-reruns-2026-08-17.txt).
+
+This closes the coordinator-side evidence request; Fable's architect review
+remains authoritative and still needs its own rerun/update.
+
 ## Manual checks
 
 The final integration worktree was exercised against the unchanged WebSocket server with the full scenario suite under the documented CPU spinner. A disposable final-tip scratch worktree suppressed the real `instance:enterSolo` frame and confirmed the transition failure boundary.
