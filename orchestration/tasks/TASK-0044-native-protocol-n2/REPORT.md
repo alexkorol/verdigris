@@ -1,9 +1,10 @@
 ---
 task: TASK-0044
-state: CLAIMED
+state: REVIEW_REQUESTED
 branch: codex/TASK-0044-native-protocol-n2
 worker_worktree: C:\Users\Alex\Documents\KimiWork\verdigris
 claim_commit: 6e6279c
+implementation_commit: d476788
 base_commit: 32d7b6e
 ---
 
@@ -11,12 +12,11 @@ base_commit: 32d7b6e
 
 ## Executive summary
 
-The task is actively in implementation by Kimi Code. The WIP ports the
-unchanged harness's world, continuous movement, solo-instance entry, scene
-metadata, monster population, and stair-return contracts into the native
-simulation/networking layer. It is not ready for architect review: the source
-is uncommitted and a newly added core test currently fails, although the
-actual worker-built server passes the unchanged movement/zones attach suite.
+The task is ready for architect review. Kimi Code committed the implementation
+as `d476788`; it ports the unchanged harness's world, continuous movement,
+solo-instance entry, scene metadata, monster population, and stair-return
+contracts into the native simulation/networking layer. The committed tip
+passes the native gates and unchanged movement/zones attach suite.
 
 ## Implementation observed
 
@@ -79,15 +79,13 @@ The final checkpoint is preserved in
 
 ## Acceptance status
 
-The worker-branch implementation and unchanged attach gate are now green.
-Acceptance is still pending because the six WIP native files are uncommitted,
-the worker has not supplied its final report/commit packet, and the architect
-has not performed the required rerun. The coordinator has made no native
-source changes and has not loosened the harness assertions.
+The committed worker-branch implementation and unchanged attach gate are
+green. Acceptance is still pending only because Fable has not performed the
+required architect rerun and written the review decision. The coordinator has
+made no native source changes and has not loosened the harness assertions.
 
 ## Next action
 
-Kimi should commit all six WIP files, attach the green worker-branch
-transcript, and move the task to `REVIEW_REQUESTED` for Fable's architect
-rerun. No additional native behavior change is indicated by the current
-evidence.
+Fable should rerun the committed tip `d476788` against the unchanged
+movement/zones scenarios and record the architect decision. No additional
+native behavior change is indicated by the current evidence.

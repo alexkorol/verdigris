@@ -1,6 +1,6 @@
 ---
 task: TASK-0044
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: codex
 worker: Kimi Code / external native implementation
 worker_branch: codex/TASK-0044-native-protocol-n2
@@ -10,12 +10,11 @@ dependencies: TASK-0039 integrated
 expected_verification: powershell -File native/build.ps1 -RunTests; unchanged movement and zones attach
 known_risks: uncommitted worker source; final report/architect rerun still outstanding
 architect_review_required: true
-implementation_commits: none yet (claim commit 6e6279c)
+implementation_commits: d476788 (claim commit 6e6279c)
 report: orchestration/tasks/TASK-0044-native-protocol-n2/REPORT.md
-verification: actual worker native gate passes denylist/core/networking; rebuilt server passes unchanged movement/zones 2/2; final commit/report/architect rerun outstanding
+verification: committed tip d476788 passes native denylist/core/networking and unchanged movement/zones 2/2; architect rerun outstanding
 ---
 
-TASK-0044 remains actively claimed and is not accepted or blocked. Kimi's
-external worktree contains the implementation WIP; the coordinator has not
-edited worker-owned native files. The latest build failure is recorded in
-`BASELINE.md` and in the report.
+TASK-0044 is ready for architect review. Kimi's external worktree is clean at
+`d476788`; the coordinator has not edited worker-owned native files. Fable's
+required rerun and acceptance decision remain outstanding.
