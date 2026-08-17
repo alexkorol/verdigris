@@ -126,10 +126,12 @@ the task scope.
 
 ## Questions for Fable or the owner
 
-Architect decision required: either extend ownership to the synchronous scene
-payload path to hide dormant actors until activation, or ratify the documented
-server-dormant/client-visible limitation. D-115 hands-on play remains the
-acceptance gate.
+Architect decisions required: either extend ownership to the synchronous
+scene-payload path to hide dormant actors until activation, or ratify the
+documented server-dormant/client-visible limitation; and ratify the shared
+full-playtest timing variance described in
+`orchestration/questions/QUESTION-0006-task-0040-playtest-timing-ratification.md`.
+D-115 hands-on play remains the acceptance gate.
 
 ## Integration notes
 
