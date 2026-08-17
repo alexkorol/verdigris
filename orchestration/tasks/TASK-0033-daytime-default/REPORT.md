@@ -1,6 +1,6 @@
 ---
 task: TASK-0033
-state: ACCEPTED
+state: INTEGRATED
 branch: codex/TASK-0033-daytime-default
 commits:
   - bf404b3d236fc4402adcdd1a0327a134de7fff9a
@@ -78,5 +78,10 @@ None beyond the mechanical settings-path discrepancy documented above.
 
 ## Integration notes
 
-Requires architect review before integration. Integrate from commit `f409b99a`
-after acceptance, then rerun the browser gates on a free pinned port.
+Architect accepted the task at Fable commit `0b12a0a`. Integrated in the
+dedicated branch `codex/integrate-TASK-0033` as `b494c1fe` and `91f61d92`.
+The full unit suite passed at 119 files / 761 tests and the production build
+passed. The pinned smoke wrapper reached the existing port-6500 owner
+listener but its API probe received the SPA HTML, so the listener was not
+terminated or mutated; rerun on a free pinned port before the next browser
+release gate.
