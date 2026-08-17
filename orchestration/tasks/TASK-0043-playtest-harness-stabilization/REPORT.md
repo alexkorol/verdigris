@@ -264,3 +264,7 @@ unit gate passed 122/779 and `PLAYTEST_PORT=6538 npm run playtest` passed
 in [`captures/coordinator-exact-staged-dependency-complete-gate-2026-08-17.txt`](captures/coordinator-exact-staged-dependency-complete-gate-2026-08-17.txt).
 This strengthens the review evidence but does not change the lifecycle:
 Fable acceptance remains required.
+
+An independent read-only audit confirmed that `9e5d9fd8` changes only the
+TASK-0043 report/status/capture metadata, that the recorded gate values are
+internally consistent, and that no newer architect review or acceptance exists.
