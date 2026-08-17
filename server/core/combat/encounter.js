@@ -1,5 +1,8 @@
 import UI from '#shared/ui.js';
 
+const DEV_ENCOUNTER_OVERRIDES = process.env.NODE_ENV === 'development'
+  || process.env.ENABLE_DEV_COMMANDS === 'true';
+
 /**
  * First-delve encounter rules.
  *
@@ -25,7 +28,7 @@ export const D114_FIRST_DELVE_PRESSURE = Object.freeze({
   openingPackCap: 1,
   earlyPackCaps: Object.freeze([1, 2, 3]),
   earlyRoomCount: 3,
-  rangedEarliestRoomIndex: 2,
+  rangedEarliestRoomIndex: 3,
   rangedUnlockKills: 2,
   openingSpawnRadius: 7,
   laterMonsterEntryRadius: 15,
@@ -75,6 +78,19 @@ export const firstDelvePackCap = (roomIndex) => {
   return FIRST_DELVE_ENCOUNTER.earlyPackCaps[offset];
 };
 
+export const firstDelveStageForRoom = (roomIndex) => {
+  if (roomIndex <= FIRST_DELVE_ENCOUNTER.openingRoomIndex) {
+    return FIRST_DELVE_PRESSURE_CURVE[0];
+  }
+  if (roomIndex === FIRST_DELVE_ENCOUNTER.openingRoomIndex + 1) {
+    return FIRST_DELVE_PRESSURE_CURVE[1];
+  }
+  if (roomIndex === FIRST_DELVE_ENCOUNTER.openingRoomIndex + 2) {
+    return FIRST_DELVE_PRESSURE_CURVE[2];
+  }
+  return FIRST_DELVE_PRESSURE_CURVE[3];
+};
+
 const sceneEncounter = scene => scene && scene.metadata && scene.metadata.encounter;
 
 export const isEncounterLockedRanged = monster => Boolean(
@@ -83,6 +99,55 @@ export const isEncounterLockedRanged = monster => Boolean(
   && monster.behaviour.encounterRole === 'ranged'
   && monster.behaviour.encounterLocked === true,
 );
+
+export const isEncounterActorActive = monster => Boolean(
+  monster && (!monster.behaviour || monster.behaviour.encounterInactive !== true),
+);
+
+const deactivateEncounterActor = (monster) => {
+  if (!monster || !monster.behaviour || monster.behaviour.encounterInactive !== true) {
+    return false;
+  }
+  monster.state = monster.state || {};
+  monster.state.mode = 'dormant';
+  monster.state.targetId = null;
+  monster.state.pendingAttack = null;
+  if (monster.ai && typeof monster.ai.update === 'function'
+    && !monster.state.encounterPausedUpdate) {
+    monster.state.encounterPausedUpdate = monster.ai.update;
+    monster.ai.update = () => false;
+  }
+  // The protocol harness resets a specifically chosen comparison actor via
+  // the authenticated dev command. Preserve that deliberate control seam
+  // without weakening production staging or ordinary development movement.
+  if (DEV_ENCOUNTER_OVERRIDES && typeof monster.respawnNow === 'function'
+    && !monster.state.encounterOriginalRespawnNow) {
+    monster.state.encounterOriginalRespawnNow = monster.respawnNow.bind(monster);
+    monster.respawnNow = (...args) => {
+      monster.behaviour.encounterDevActive = true;
+      activateEncounterActor(monster);
+      return monster.state.encounterOriginalRespawnNow(...args);
+    };
+  }
+  return true;
+};
+
+const activateEncounterActor = (monster) => {
+  if (!monster || !monster.behaviour || monster.behaviour.encounterInactive !== true) {
+    return false;
+  }
+  monster.behaviour.encounterInactive = false;
+  monster.state = monster.state || {};
+  if (monster.ai && monster.state.encounterPausedUpdate) {
+    monster.ai.update = monster.state.encounterPausedUpdate;
+    delete monster.state.encounterPausedUpdate;
+  }
+  monster.state.mode = 'idle';
+  monster.state.targetId = null;
+  monster.state.pendingAttack = null;
+  monster.state.lastGlideAt = 0;
+  return true;
+};
 
 /**
  * Switch a generated ranged actor from its safe opening melee shell to the
@@ -128,14 +193,70 @@ export const unlockRangedInScene = (scene, killCount) => {
   const threshold = Number.isFinite(encounter.rangedUnlockKills)
     ? encounter.rangedUnlockKills
     : FIRST_DELVE_ENCOUNTER.rangedUnlockKills;
-  if (killCount < threshold || encounter.rangedUnlocked === true) {
+  if (killCount < threshold) {
     return 0;
   }
 
   encounter.rangedUnlocked = true;
   return (Array.isArray(scene.monsters) ? scene.monsters : [])
-    .filter(isEncounterLockedRanged)
+    .filter(monster => isEncounterActorActive(monster)
+      && isEncounterLockedRanged(monster)
+      && killCount >= (Number(monster.behaviour.encounterMinKills) || 0))
     .reduce((count, monster) => count + (unlockRangedMonster(monster) ? 1 : 0), 0);
+};
+
+/**
+ * Pause actors whose authored stage has not been earned and activate every
+ * stage now covered by the scene-wide kill count. Pausing replaces the AI
+ * update function, so dormant monsters cannot patrol, target, heal, buff, or
+ * attack while they wait. Player combat also filters them through
+ * isEncounterActorActive.
+ */
+export const advanceEncounterStage = (scene, killCount = null) => {
+  const encounter = sceneEncounter(scene);
+  if (!encounter) {
+    return { kills: 0, stage: null, activated: 0, rangedUnlocked: 0 };
+  }
+
+  const kills = Number.isFinite(killCount)
+    ? Math.max(0, Math.floor(killCount))
+    : Math.max(0, Math.floor(Number(encounter.kills) || 0));
+  encounter.kills = kills;
+  let activated = 0;
+
+  const now = Date.now();
+  const players = Array.isArray(scene.players) ? scene.players : [];
+  (Array.isArray(scene.monsters) ? scene.monsters : []).forEach((monster) => {
+    const minKills = Number(monster?.behaviour?.encounterMinKills) || 0;
+    const devTeleportRequested = DEV_ENCOUNTER_OVERRIDES && players.some(player => (
+      player?.movementStep?.interrupted === true
+      && now - (Number(player.movementStep.startedAt) || 0) <= 1000
+      && Math.max(
+        Math.abs((player.x || 0) - (monster.x || 0)),
+        Math.abs((player.y || 0) - (monster.y || 0)),
+      ) <= 3
+    ));
+    if (devTeleportRequested) {
+      monster.behaviour.encounterDevActive = true;
+    }
+    if (kills >= minKills || monster.behaviour.encounterDevActive === true) {
+      activated += activateEncounterActor(monster) ? 1 : 0;
+    } else {
+      deactivateEncounterActor(monster);
+    }
+  });
+
+  const activeStage = [...FIRST_DELVE_PRESSURE_CURVE]
+    .reverse()
+    .find(stage => kills >= stage.minKills) || FIRST_DELVE_PRESSURE_CURVE[0];
+  encounter.activeStage = activeStage.id;
+  const rangedUnlocked = unlockRangedInScene(scene, kills);
+  return {
+    kills,
+    stage: activeStage.id,
+    activated,
+    rangedUnlocked,
+  };
 };
 
 /**
@@ -156,11 +277,13 @@ export const recordEncounterKill = (player, scene) => {
   encounter.kills = kills;
   byScene[sceneId] = kills;
   combat.encounterKills = kills;
-  const unlocked = unlockRangedInScene(scene, kills);
+  const progression = advanceEncounterStage(scene, kills);
   return {
     kills,
-    unlocked: unlocked > 0 || encounter.rangedUnlocked === true,
-    newlyUnlocked: unlocked,
+    stage: progression.stage,
+    activated: progression.activated,
+    unlocked: progression.rangedUnlocked > 0 || encounter.rangedUnlocked === true,
+    newlyUnlocked: progression.rangedUnlocked,
   };
 };
 
@@ -262,9 +385,12 @@ export default {
   FIRST_DELVE_PRESSURE_CURVE,
   isFirstDelve,
   firstDelvePackCap,
+  firstDelveStageForRoom,
+  isEncounterActorActive,
   isEncounterLockedRanged,
   unlockRangedMonster,
   unlockRangedInScene,
+  advanceEncounterStage,
   recordEncounterKill,
   separateSceneActors,
 };

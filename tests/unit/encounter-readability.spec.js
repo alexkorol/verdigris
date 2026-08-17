@@ -3,11 +3,14 @@
 import { describe, expect, it } from 'vitest';
 
 import GameMap from '#server/core/map.js';
+import Monster from '#server/core/monster.js';
 import {
   D114_FIRST_DELVE_PRESSURE,
   FIRST_DELVE_ENCOUNTER,
   FIRST_DELVE_PRESSURE_CURVE,
+  advanceEncounterStage,
   firstDelvePackCap,
+  isEncounterActorActive,
   isFirstDelve,
   recordEncounterKill,
   separateSceneActors,
@@ -47,6 +50,11 @@ describe('first-delve encounter readability', () => {
       expect(byEntryDistance[0]).toBe(generation.monsters[0]);
       expect(byEntryDistance[0].behaviour.type).toBe('melee');
       expect(byEntryDistance[0].name).toBe('Dread Vanguard');
+      expect(byEntryDistance[0].rarity).toBe('common');
+      expect(byEntryDistance[0]).toMatchObject({
+        encounterStage: 'learn',
+        encounterMinKills: 0,
+      });
       expect(entryDistance(byEntryDistance[0])).toBe(FIRST_DELVE_ENCOUNTER.openingSpawnRadius);
       expect(entryDistance(byEntryDistance[1]))
         .toBeGreaterThanOrEqual(FIRST_DELVE_ENCOUNTER.laterMonsterEntryRadius);
@@ -64,7 +72,11 @@ describe('first-delve encounter readability', () => {
           type: 'melee',
           encounterRole: 'ranged',
           encounterLocked: true,
+          encounterInactive: true,
         });
+        expect(monster.encounterMinKills).toBeGreaterThanOrEqual(
+          FIRST_DELVE_ENCOUNTER.rangedUnlockKills,
+        );
         expect(monster.behaviour.attack.range).toBe(1);
       });
     }
@@ -87,44 +99,82 @@ describe('first-delve encounter readability', () => {
     });
   });
 
-  it('unlocks ranged actors only after the named kill threshold', () => {
-    const ranged = {
-      behaviour: {
-        type: 'melee',
-        encounterRole: 'ranged',
-        encounterLocked: true,
-        attack: { range: 1, minimumRange: 1 },
-        encounterUnlock: { range: 5, minimumRange: 2, aggressionRange: 8, pursuitRange: 11 },
-      },
-      ai: { setBehaviour: () => { ranged.aiCalls += 1; } },
-      aiCalls: 0,
-    };
+  it('enforces runtime stages and keeps Marksmen dormant until two scene kills', async () => {
+    const generation = await GameMap.generateInstance({
+      seed: 90140,
+      template: 'dungeon',
+      depth: 1,
+    });
     const scene = {
       id: 'instance:first-delve',
-      metadata: {
-        encounter: {
-          rangedUnlockKills: FIRST_DELVE_ENCOUNTER.rangedUnlockKills,
-          rangedUnlocked: false,
-        },
-      },
-      monsters: [ranged],
+      metadata: generation.metadata,
+      monsters: generation.monsters.map((definition, index) => new Monster({
+        ...definition,
+        sceneId: 'instance:first-delve',
+        instanceId: `runtime:${index}`,
+      })),
     };
     const player = { sceneId: scene.id, combat: {} };
     const partyMember = { sceneId: scene.id, combat: {} };
+    const active = () => scene.monsters.filter(isEncounterActorActive);
+    const marksmen = () => scene.monsters.filter(monster => monster.name === 'Ashen Marksman');
 
-    expect(recordEncounterKill(player, scene).unlocked).toBe(false);
-    expect(ranged.behaviour.encounterLocked).toBe(true);
-    expect(recordEncounterKill(partyMember, scene).newlyUnlocked).toBe(1);
+    const initial = advanceEncounterStage(scene, 0);
+    const [opener] = active();
+    expect(initial).toMatchObject({ stage: 'learn', activated: 0, rangedUnlocked: 0 });
+    expect(active()).toHaveLength(1);
+    expect(opener).toMatchObject({ name: 'Dread Vanguard', rarityId: 'common' });
+    expect(opener.behaviour).toMatchObject({
+      type: 'melee',
+      stepIntervalMs: D114_FIRST_DELVE_PRESSURE.meleeStepIntervalMs,
+      attack: {
+        intervalMs: D114_FIRST_DELVE_PRESSURE.meleeAttackIntervalMs,
+        windupMs: D114_FIRST_DELVE_PRESSURE.meleeWindupMs,
+        range: 1,
+      },
+    });
+
+    const dormantMarksman = marksmen()[0];
+    const dormantPosition = { x: dormantMarksman.x, y: dormantMarksman.y };
+    expect(isEncounterActorActive(dormantMarksman)).toBe(false);
+    expect(dormantMarksman.state.mode).toBe('dormant');
+    expect(dormantMarksman.update(1000)).toBe(false);
+    expect({ x: dormantMarksman.x, y: dormantMarksman.y }).toEqual(dormantPosition);
+
+    expect(recordEncounterKill(player, scene)).toMatchObject({
+      stage: 'win',
+      activated: 2,
+      unlocked: false,
+    });
+    expect(active()).toHaveLength(3);
+    expect(active().some(monster => monster.name === 'Ashen Marksman')).toBe(false);
+
+    const pressure = recordEncounterKill(partyMember, scene);
+    expect(pressure).toMatchObject({ stage: 'pressure', activated: 3, unlocked: true });
     expect(scene.metadata.encounter.kills).toBe(2);
-    expect(ranged.behaviour).toMatchObject({
+    expect(active()).toHaveLength(6);
+    const activeMarksman = active().find(monster => monster.name === 'Ashen Marksman');
+    expect(activeMarksman.behaviour).toMatchObject({
       type: 'ranged',
       encounterLocked: false,
+      encounterInactive: false,
       aggressionRange: 8,
       pursuitRange: 11,
+      attack: { range: 5, minimumRange: 2 },
     });
-    expect(ranged.behaviour.attack).toMatchObject({ range: 5, minimumRange: 2 });
-    expect(ranged.aiCalls).toBe(1);
-    expect(unlockRangedInScene(scene, 3)).toBe(0);
+
+    recordEncounterKill(player, scene);
+    expect(active()).toHaveLength(6);
+    const reward = recordEncounterKill(partyMember, scene);
+    expect(reward).toMatchObject({ stage: 'reward' });
+    expect(reward.activated).toBe(generation.monsters.length - 6);
+    expect(active()).toHaveLength(generation.monsters.length);
+    expect(marksmen().every(monster => (
+      monster.behaviour.type === 'ranged'
+      && monster.behaviour.encounterInactive === false
+      && monster.behaviour.encounterLocked === false
+    ))).toBe(true);
+    expect(unlockRangedInScene(scene, 4)).toBe(0);
   });
 
   it('repairs player/monster and monster/monster overlap without moving the player', () => {
