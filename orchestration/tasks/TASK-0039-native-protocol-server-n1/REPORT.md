@@ -1,6 +1,6 @@
 ---
 task: TASK-0039
-state: REVIEW_REQUESTED
+state: INTEGRATED
 branch: codex/TASK-0039-native-protocol-server-n1
 commits:
   - 120abd19
@@ -64,20 +64,20 @@ explicitly outside N1 and documented in ADR-003.
 
 ## Risks and limitations
 
-Architect must rerun the native server and inspect the protocol boundary under
-D-115. The current build script compiles the native client as part of the
-existing native gate; no client source was changed. Full parity scenarios are
-deferred to later waves.
+Architect reran the native server and inspected the protocol boundary under
+D-115: the unchanged quickstart and single-session scenarios passed 2/2.
+The current build script compiles the native client as part of the existing
+native gate; no client source was changed. Full parity scenarios are deferred
+to later waves.
 
 ## Questions for Fable or the owner
 
-ADR-003 is a draft and needs architect ratification. Confirm that the in-tree
-RFC6455 subset is acceptable for N1 and that later HTTP/TLS requirements may
-replace it behind `ProtocolSession` without moving transport logic into the
-simulation.
+ADR-003 was ratified by Fable in REVIEW.md. The in-tree RFC6455 subset is
+accepted for N1; later HTTP/TLS requirements may replace it behind
+`ProtocolSession` without moving transport logic into the simulation.
 
 ## Integration notes
 
-Source is ready for review but remains isolated until architect acceptance.
-Integration cherry-picks are `37e1397a` and `4c4c3aee`; no JS server, client,
-or playtest harness files were changed.
+Architect accepted the task in `REVIEW.md`; source was integrated on the
+current tip as `76ed1839` and `6aec15bc`. No JS server, client, or playtest
+harness files were changed.
