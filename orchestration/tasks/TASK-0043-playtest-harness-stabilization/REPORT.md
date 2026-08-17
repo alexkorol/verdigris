@@ -141,6 +141,11 @@ Source is ready on the dedicated integration worktree at `f9527d9c`; integrate o
   files and 779/779 tests, `npm run build` passed, and the full playtest passed
   31/31. The raw summary is preserved in
   [`captures/coordinator-current-tip-2026-08-17.txt`](captures/coordinator-current-tip-2026-08-17.txt).
+
+- The freshly built coordinator tip also passed the browser-critical Playwright
+  loop 1/1 against an isolated `NODE_ENV=development PORT=6524` server. The
+  server was stopped cleanly; raw command evidence is in
+  [`captures/coordinator-browser-smoke-2026-08-17.txt`](captures/coordinator-browser-smoke-2026-08-17.txt).
 - Isolated browser-critical smoke at 2026-08-17 09:45 -07:00 also passed
   1/1 against an explicit `NODE_ENV=development PORT=6515` server with
   `PLAYWRIGHT_BASE_URL=http://127.0.0.1:6515`; the server was stopped cleanly
