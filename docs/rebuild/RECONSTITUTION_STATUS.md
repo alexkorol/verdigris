@@ -75,6 +75,9 @@ outside production until the owner resolves asset provenance/packaging.
   passed.
 - Committed N2 attach regression: quickstart, single-session, movement, and
   zones passed 4/4.
+- N2 also has a clean current-tip integration candidate at `8be3dacd`, with
+  the same native gate and 4/4 attach matrix; it remains unmerged pending
+  Fable's architect review.
 
 ## Next authorized actions
 

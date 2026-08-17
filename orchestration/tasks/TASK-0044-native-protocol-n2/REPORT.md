@@ -199,6 +199,15 @@ green. Acceptance is still pending only because Fable has not performed the
 required architect rerun and written the review decision. The coordinator has
 made no native source changes and has not loosened the harness assertions.
 
+## Coordinator current-tip integration candidate
+
+The implementation commit `d476788` was cherry-picked cleanly onto the
+coordinator tip in disposable candidate `8be3dacd`. The candidate passed the
+full native gate and the unchanged `quickstart`, `single-session`, `movement`,
+and `zones` attach matrix 4/4. The exact scope and transcript are preserved in
+[`captures/coordinator-current-tip-integration-candidate-2026-08-17.txt`](captures/coordinator-current-tip-integration-candidate-2026-08-17.txt).
+This is a review handoff, not an acceptance or merge.
+
 ## Next action
 
 Fable should rerun the committed tip `d476788` against the unchanged
