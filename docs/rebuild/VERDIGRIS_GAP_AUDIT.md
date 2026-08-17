@@ -81,3 +81,17 @@ surface.
 4. OD-001, OD-007/009, OD-010, OD-011, OD-012, and OD-013 remain owner/product
    decisions rather than implementation assumptions.
 
+## N3 parity handoff (read-only surface audit)
+
+The clean N2 `ProtocolSession` currently handles `player:login`,
+`world:zone:enter`, `instance:enterSolo`, `player:move`, `dev:teleport`,
+`dev:give`, and `dev:state`. It does not yet expose the browser combat
+commands (`player:attack` / skill-trigger flow), authoritative combat updates,
+monster deaths, or loot pickup over the native protocol. Those are the concrete
+N3 surface gaps behind the `combat` and `encounter-variety` scenarios.
+
+The handoff rule is unchanged: map the existing wire events into the
+deterministic core, keep gameplay rules out of `networking.cpp`, and close the
+N3 scenario matrix before moving to N4 item/inventory payloads. This is a gap
+inventory, not authorization to modify the native branch before Fable issues an
+N3 task/spec.
