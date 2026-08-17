@@ -60,7 +60,10 @@ outside production until the owner resolves asset provenance/packaging.
 
 - Browser unit suite: 122 files / 779 tests passed.
 - Browser production build: passed.
-- Isolated full browser playtest: 31/31 scenarios passed.
+- Isolated full browser playtest: prior clean checkpoints passed 31/31; the
+  latest coordinator-tip run was 30/31 on the known scheduler-sensitive
+  `build-divergence` hit timeout, with an immediate isolated 1/1 rerun. See
+  the TASK-0043 follow-up capture before claiming a blanket current-tip gate.
 - Fresh coordinator full playtest at the current source-equivalent tip also
   passed 31/31; raw checkpoint:
   [`coordinator-fresh-full-playtest-2026-08-17.txt`](../../orchestration/tasks/TASK-0043-playtest-harness-stabilization/captures/coordinator-fresh-full-playtest-2026-08-17.txt).

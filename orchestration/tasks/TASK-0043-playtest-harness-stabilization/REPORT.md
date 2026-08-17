@@ -168,4 +168,12 @@ Source is ready on the dedicated integration worktree at `f9527d9c`; integrate o
   `npm run playtest` **31/31**, including `build-divergence`,
   `gear-outcomes`, `quest`, `session-arc`, and `zones`; raw output summary is
   preserved in [`captures/coordinator-fresh-full-playtest-2026-08-17.txt`](captures/coordinator-fresh-full-playtest-2026-08-17.txt).
+
+- Current coordinator checkout follow-up at `cccca42c` passed unit (122/779),
+  build, and the native full gate. Its full browser run was 30/31 because
+  `build-divergence` missed one primary-attack hit at the 8s authored wait;
+  the immediate isolated rerun passed 1/1 in 3.27s. This confirms the known
+  scheduler-sensitive variance and is recorded in
+  [`captures/coordinator-current-tip-playtest-2026-08-17-followup.txt`](captures/coordinator-current-tip-playtest-2026-08-17-followup.txt).
+  The checkout does not contain the unaccepted `f9527d9c` harness source.
 - Task state: `REVIEW_REQUESTED`; architect acceptance is still required.
