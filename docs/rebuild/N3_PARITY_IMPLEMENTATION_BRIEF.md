@@ -49,6 +49,28 @@ The transport must translate and serialize these hooks; it must not reimplement
 combat, encounter, cooldown, loot, or progression rules in
 `native/src/networking.cpp`.
 
+## Current N2 boundary observed at `d476788`
+
+This is an implementation constraint, not a product decision:
+
+- `ProtocolSession` currently owns both a deterministic `Simulation` and a
+  separate `WorldSimulation`. The session snapshot reads player health and
+  inventory from the former, but live monster positions/roster and scene
+  metadata from the latter.
+- `ProtocolSession::handle()` currently maps movement to
+  `WorldSimulation::apply_movement_sample()` and has no
+  `player:skill:trigger` branch. Movement therefore does not yet dispatch the
+  deterministic combat simulation.
+- The native `Simulation` already has shared actor actions, damage/death
+  resolution, item/trophy drops, and event emission, while the N2 world adapter
+  still exposes a minimum authored roster and empty ground-item arrays in its
+  protocol snapshot.
+
+N3 should establish one authoritative bridge between these existing seams (or
+  deliberately move the world roster into the core) and project its events at
+  the protocol edge. A networking-only combat implementation would create two
+  authorities and is explicitly out of bounds under D-002.
+
 ## Acceptance matrix for N3
 
 1. Existing native denylist/core/networking/client gates remain green.
@@ -62,4 +84,3 @@ combat, encounter, cooldown, loot, or progression rules in
    green after N3 changes.
 5. A JS/native dual-run transcript records scenario results and any deliberate
    remaining N4+ stub; no assertion may be weakened to hide divergence.
-
