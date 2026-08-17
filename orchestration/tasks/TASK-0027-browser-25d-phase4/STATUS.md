@@ -12,7 +12,7 @@ known_risks: clock-domain mismatch can produce NaN orb uniforms; DoF coupling mu
 dependencies: TASK-0024 accepted and integrated; architect RELEASE.md preserves QUESTION-0005 answer and authorized deviations
 architect_review_required: true
 implementation_commit: c980cb1b
-validator: independent read-only TASK-0027 validator dispatched
-validator_result: pending
+validator: independent read-only TASK-0027 scope validator
+validator_result: ACCEPT — c980cb1b scope, clock clamp, continuous DoF, focused tests, and captures pass
 report: orchestration/tasks/TASK-0027-browser-25d-phase4/REPORT.md
 ---
