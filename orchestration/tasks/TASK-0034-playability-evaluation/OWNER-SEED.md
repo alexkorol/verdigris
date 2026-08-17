@@ -16,3 +16,16 @@ list (the browser-game evaluation must check for the same classes):
 
 Evaluators: treat every one of these as a hypothesis to test against the
 BROWSER game too, and rank accordingly.
+
+## Second owner session (browser game, ~22:55) — confirmed frictions
+
+- "Somewhat playable... you get bored in like 10 seconds" — the
+  engagement cliff is THE headline finding for 0034 to explain.
+- CONFIRMED REGRESSION (screenshot on file): inventory pane — backpack
+  grid beside the paperdoll, both tiny, huge dead space below
+  (→ TASK-0036, which also sweeps every other pane for this class).
+- Movement "janky/jagged"; webchat demos felt great immediately
+  (→ TASK-0037 with diagnosis-first directive).
+- Wants LMB/RMB attacks + full key/mouse rebinding (→ TASK-0038).
+- Possible: MP orb absent in the screenshot while inventory open —
+  evaluators verify.
