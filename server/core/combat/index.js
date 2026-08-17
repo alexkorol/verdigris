@@ -16,6 +16,7 @@ import { notifyTutorial } from '#server/core/tutorial.js';
 import { processResourceRegeneration, REGEN_INTERVAL_MS } from '#server/core/combat/regeneration.js';
 import { transitionPlayerIfOnPortal } from '#server/core/world-transitions.js';
 import { traceProjectilePath } from '#shared/projectile-collision.js';
+import { recordEncounterKill, separateSceneActors } from '#server/core/combat/encounter.js';
 
 const DEFAULT_PROJECTILE_RANGE = 5;
 const FALLBACK_EXPERIENCE_PER_LEVEL = 12;
@@ -390,12 +391,15 @@ const applyHitToMonster = (player, monster, skill, now) => {
     sendMessage(player, `You have slain ${monster.name}.`);
     dropMonsterLoot(monster, { player, killer: player });
     const scene = world.getScene(player.sceneId);
+    const encounter = recordEncounterKill(player, scene);
     const killContext = {
       monsterId: monster.templateId || monster.id || null,
       monsterName: monster.name || null,
       rarity: monster.rarityId || monster.rarity || null,
       theme: scene?.metadata?.theme || null,
       depth: scene?.metadata?.depth || null,
+      encounterKills: encounter.kills,
+      encounterRangedUnlocked: encounter.unlocked,
     };
     notifyProgression(player, 'slay', killContext);
     if ((monster.rarityId || monster.rarity) === 'elite') {
@@ -780,6 +784,19 @@ export const processAutoAttacks = (now = Date.now()) => {
     cleared: 0,
   };
 
+  // Continuous monster steering already avoids occupied tiles, but this
+  // server-side pass repairs a rounded spawn/reconnect overlap before combat
+  // decisions run.  It is deliberately scoped to scenes with live players so
+  // dormant procedural floors are not mutated by an unrelated tick.
+  if (world.scenes && typeof world.scenes.values === 'function') {
+    Array.from(world.scenes.values()).forEach((scene) => {
+      if (!scene || !Array.isArray(scene.players) || !scene.players.length) return;
+      if (separateSceneActors(scene) > 0 && Array.isArray(scene.monsters) && scene.monsters.length) {
+        Monster.broadcast(scene.monsters, { players: scene.players });
+      }
+    });
+  }
+
   players.forEach((player) => {
     const autoAttack = player && player.combat ? player.combat.autoAttack : null;
     if (!autoAttack) {
@@ -913,4 +930,6 @@ export default {
   tryPrimaryAttackIntoStep,
   clearAutoAttack,
   setAutoAttackTarget,
+  recordEncounterKill,
+  separateSceneActors,
 };
