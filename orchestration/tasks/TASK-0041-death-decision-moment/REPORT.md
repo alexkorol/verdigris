@@ -4,6 +4,7 @@ state: REVIEW_REQUESTED
 worker_commits:
   - 0e23e3bf
   - 212a1e1c
+  - 14a6ceea
 integration_commits:
   - 5a493083
   - dfb41955
@@ -43,6 +44,10 @@ seams and does not create a second succession or recovery implementation.
 
 ## Captures
 
+- `captures/death-oathed-1920x1080.jpg`: real rendered 1920×1080 oathed overlay,
+  43,215 bytes (lossy JPEG).
+- `captures/death-unoathed-1920x1080.jpg`: real rendered 1920×1080 unoathed
+  overlay, 37,777 bytes (lossy JPEG).
 - `captures/death-oathed.md`: mortal Scion loses carried values to the House
   pool, states the Chronicles successor destination, and offers one
   **Return to the Chronicles** action.
@@ -51,7 +56,9 @@ seams and does not create a second succession or recovery implementation.
 
 ## Review notes
 
-Architect D-115 hands-on play remains required. The worker reported both
-oathed and unoathed behavior and the full playtest gate; the default smoke
-port conflict is environmental and preserved rather than resolved by killing
-the owner listener. No new lore or Chronicles fork was introduced.
+Fable revision 697e03ff required real rendered screenshots; revision commit
+14a6ceea supplies both variants and adds private-player routing so the live
+overlay receives the authoritative death summary. Architect D-115 hands-on
+play remains required. The default smoke port conflict is environmental and
+preserved rather than resolved by killing the owner listener. No new lore or
+Chronicles fork was introduced.
