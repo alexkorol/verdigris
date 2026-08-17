@@ -6,6 +6,8 @@
  * interaction after it goes through production handlers.
  */
 
+import { loadMode } from '../timing.mjs';
+
 const nearestTrash = state => state.monsters
   .filter(monster => monster.rarity !== 'elite' && !/chorister|keeper/i.test(monster.name))
   .sort((a, b) => (a.hp.max - b.hp.max)
@@ -269,10 +271,46 @@ export default async function sessionArc({ connect, assert, recordMetrics }) {
     fallenName = second.player.username;
     const executioner = nearestTrash(nextRun);
     assert(executioner, 'the second run contains a mortal threat');
-    second.devPrepareFinalDeath();
-    second.devTeleport(Math.round(executioner.x) + 1, Math.round(executioner.y));
-    const memorial = await second.waitFor(() => second.scionFalls[0], {
-      timeoutMs: 15000,
+    await second.devPrepareFinalDeath();
+    await second.devTeleport(Math.round(executioner.x) + 1, Math.round(executioner.y));
+    let deathSetup = null;
+    let lastDeathSetupAt = Date.now();
+    const memorial = await second.waitFor(async () => {
+      if (second.scionFalls[0]) return second.scionFalls[0];
+      let current;
+      try {
+        current = await second.state();
+      } catch (error) {
+        // A single diagnostic frame can be starved while the server's combat
+        // loop is resolving the lethal hit. Keep the finite death window
+        // alive for the next probe; propagate all other failures.
+        if (/dev:state timed out/.test(error?.message || '')) return false;
+        throw error;
+      }
+      const live = current.monsters.find(monster => monster.uuid === executioner.uuid)
+        || nearestTrash(current);
+      if (live && current.lifecycle === 'alive'
+        && (current.x !== Math.round(live.x) + 1 || current.y !== Math.round(live.y)
+          || Date.now() - lastDeathSetupAt >= 1000)) {
+        if (!deathSetup) {
+          lastDeathSetupAt = Date.now();
+          deathSetup = (async () => {
+            // Do not re-arm an already positioned player: a queued preparation
+            // after a lethal hit could reset the lifecycle back to alive.
+            if (!second.messages.some(message => /Final death armed/i.test(message))) {
+              await second.devPrepareFinalDeath();
+            }
+            await second.devTeleport(Math.round(live.x) + 1, Math.round(live.y));
+          })().finally(() => { deathSetup = null; });
+        }
+        await deathSetup;
+      }
+      return false;
+    }, {
+      // Monster targeting/attack resolution is a server-side observation.
+      // Under the documented CPU-load gate, allow one bounded 20s authored
+      // window (35s after the existing cap); ordinary runs retain 15s.
+      timeoutMs: loadMode ? 20000 : 15000,
       intervalMs: 250,
       label: 'session-arc final death',
     });

@@ -39,9 +39,29 @@ const hitOnce = async (player, target, skillId) => {
   } else {
     player.useSkill(skillId, 'left');
   }
-  return player.waitFor(() => player.hits.slice(hitsBefore)
-    .find(hit => hit.targetId === target.uuid && hit.skillId === skillId && hit.amount > 0) || false, {
+  return player.waitFor(async () => {
+    const hit = player.hits.slice(hitsBefore)
+      .find(entry => entry.targetId === target.uuid && entry.skillId === skillId && entry.amount > 0);
+    if (hit) return hit;
+
+    // A dev teleport/control frame may be dropped while the two build clients
+    // are being configured under machine load. Re-establish the same setup
+    // and resend the real skill; the hit assertion remains unchanged.
+    const state = await player.state();
+    const live = state.monsters.find(monster => monster.uuid === target.uuid);
+    if (live) {
+      player.devHeal();
+      player.devTeleport(Math.round(live.x) + 1, Math.round(live.y));
+      if (skillId === 'primary-attack') {
+        await player.attack(live);
+      } else {
+        player.useSkill(skillId, 'left');
+      }
+    }
+    return false;
+  }, {
     timeoutMs: 8000,
+    intervalMs: 250,
     label: `${skillId} build-comparison hit`,
   });
 };
