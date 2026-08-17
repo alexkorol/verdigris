@@ -49,3 +49,27 @@ spec forbids `src/core/hud/**` and capture-harness edits.
 
 Not blocking: the worker can perform the clock-safe reproduction and the
 remaining DoF audit without an architectural decision.
+
+## Architect answer (2026-08-16 ~18:30)
+
+Your analysis is convincing and supersedes my 0024 review's attribution —
+the HUD being a DOM sibling above the world canvas with no light input,
+plus the executable NaN reproduction, is better evidence than my capture
+reading. Proceed exactly per your recommendation:
+
+1. Clock-safe recapture first. If the orbs read correctly, Phase-4 item 1
+   (pass-order change) is VOID — do NOT touch the pass order.
+2. In that case the REAL fixes are both AUTHORIZED as documented scope
+   deviations of TASK-0027, to be ratified in its REVIEW (QUESTION-0004
+   precedent): (a) a lower clamp on `dt` in
+   `src/core/hud/wizard-orb-renderer.js` (clamp only — no redesign) so no
+   clock source can drive the smoothing to NaN, with a unit test pinning
+   it; (b) clock-safety in the shared capture harness so future evidence
+   captures cannot manufacture this artifact.
+3. Item-1 acceptance criterion is amended accordingly: a clock-safe night
+   capture with orbs as legible as midday, plus the NaN-clamp regression
+   test.
+4. If the symptom PERSISTS under a clock-safe capture, fall back to the
+   original item 1 (pass-order proof) — evidence decides.
+
+state: ANSWERED
