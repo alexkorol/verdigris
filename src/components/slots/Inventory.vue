@@ -247,7 +247,7 @@ export default {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
-    gap: 8px;
+    gap: 4px;
     align-items: center;
     width: 100%;
     min-width: 0;
@@ -257,15 +257,19 @@ export default {
   }
 
   &__ragdoll {
+    --eq-cell: clamp(44px, 3.4vw, 50px);
+    --eq-gap: 4px;
+
     width: 100%;
     min-width: 0;
   }
 
   &__grid {
     display: flex;
+    flex: 0 0 auto;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
+    gap: 3px;
     min-width: 0;
     max-width: 100%;
     overflow-x: auto;
@@ -313,17 +317,18 @@ export default {
   }
 }
 
-/* On a desktop/landscape viewport, stacking two wide authored surfaces made
-   the backpack fall below the fold. Use the width of the overlay instead. */
+/* Keep the former desktop diptych as an explicit opt-in for archaeology and
+   future trade layouts. The normal inventory pane remains stacked so the
+   authored paperdoll and full backpack retain their intended scale. */
 @media (width >= 1100px) {
-  .inventory-pane__body {
+  .inventory-pane--legacy-diptych .inventory-pane__body {
     flex-direction: row;
     align-items: flex-start;
     justify-content: center;
     gap: 12px;
   }
 
-  .inventory-pane__ragdoll {
+  .inventory-pane--legacy-diptych .inventory-pane__ragdoll {
     --eq-cell: clamp(48px, 3.5vw, 56px);
     --eq-gap: 4px;
 
@@ -331,13 +336,14 @@ export default {
     width: max-content;
   }
 
-  .inventory-pane__grid {
+  .inventory-pane--legacy-diptych .inventory-pane__grid {
     flex: 0 0 auto;
     overflow: visible;
   }
 
-  .inventory-pane__utility-row {
+  .inventory-pane--legacy-diptych .inventory-pane__utility-row {
     grid-template-columns: 1fr;
   }
 }
+
 </style>
