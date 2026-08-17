@@ -104,7 +104,15 @@ export const broadcastMovement = (player, players = null) => {
   }
   const animation = player.animation;
   const animationSignature = animation
-    ? [animation.sequence, animation.state, animation.direction].join('|')
+    ? JSON.stringify([
+      animation.sequence,
+      animation.state,
+      animation.direction,
+      animation.speed,
+      animation.duration,
+      animation.skillId,
+      animation.holdState,
+    ])
     : null;
   const previousSignature = lastBroadcastAnimationSignature.get(player);
   if (animation && animationSignature !== previousSignature) {
