@@ -126,12 +126,11 @@ the task scope.
 
 ## Questions for Fable or the owner
 
-Architect decisions required: either extend ownership to the synchronous
-scene-payload path to hide dormant actors until activation, or ratify the
-documented server-dormant/client-visible limitation; and ratify the shared
-full-playtest timing variance described in
-`orchestration/questions/QUESTION-0006-task-0040-playtest-timing-ratification.md`.
-D-115 hands-on play remains the acceptance gate.
+QUESTION-0006 is answered and ratified: the shared full-playtest timing
+variance is accepted on the evidence package, and TASK-0043 owns harness
+stabilization. The dormant-roster presentation limitation remains explicitly
+documented because its payload filtering path was outside this task's scope;
+it is a D-115 hands-on review item, not an unrecorded source change.
 
 ## Integration notes
 
