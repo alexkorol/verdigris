@@ -231,6 +231,11 @@ and `zones` attach matrix 4/4. The exact scope and transcript are preserved in
 [`captures/coordinator-current-tip-integration-candidate-2026-08-17.txt`](captures/coordinator-current-tip-integration-candidate-2026-08-17.txt).
 This is a review handoff, not an acceptance or merge.
 
+An independent current-tip audit confirmed that `d476788` applies cleanly to
+coordinator tip `f514bc93`, preserves all six implementation blobs exactly,
+and has no scope or provenance drift. No architect acceptance transition is
+present; the task remains review-ready rather than integrated.
+
 ## Next action
 
 Fable should rerun the committed tip `d476788` against the unchanged
