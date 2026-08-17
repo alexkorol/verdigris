@@ -8,7 +8,6 @@ import { monitorEventLoopDelay } from 'node:perf_hooks';
 const DEFAULT_MAX_FACTOR = 1.75;
 const DEFAULT_LAG_BASELINE_MS = 20;
 const DEFAULT_LAG_MULTIPLIER = 4;
-const CONTENTION_CAP_BASELINE_MULTIPLIER = 3;
 const DEFAULT_RESOLUTION_MS = 20;
 const LOAD_MODE_MAX_FACTOR = 1.75;
 
@@ -39,17 +38,9 @@ export const adaptiveTimeoutMs = (baseMs, {
   const observedLagMs = Math.max(0, Math.max(percentileMs, maxMs) - lagBaselineMs);
   const measuredSlackMs = observedLagMs * lagMultiplier;
   const loadSlackMs = loadMode ? base * (LOAD_MODE_MAX_FACTOR - 1) : 0;
-  // A sustained/pre-empted turn at 3x the baseline is real machine
-  // contention, not a normal sample. Let default mode use the same existing
-  // 1.75x cap as explicit load mode, while lighter contention remains
-  // proportional to the measured lag.
-  const contentionCapMs = Math.max(percentileMs, maxMs)
-    >= lagBaselineMs * CONTENTION_CAP_BASELINE_MULTIPLIER
-    ? base * Math.max(0, maxFactor - 1)
-    : 0;
   const slackMs = Math.min(
     base * Math.max(0, maxFactor - 1),
-    Math.max(measuredSlackMs, loadSlackMs, contentionCapMs),
+    Math.max(measuredSlackMs, loadSlackMs),
   );
   return Math.ceil(base + slackMs);
 };
