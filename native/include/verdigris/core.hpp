@@ -38,6 +38,38 @@ constexpr int movement_step_per_tick(int move_speed) {
   return std::max(1, move_speed * kSimulationTickMs / 1000);
 }
 
+// D-114 world-scale table. Distances derive from the player's current
+// walking cadence (220 world units/second, 11 units/tick), rather than being
+// independent presentation guesses. Keep this table as the single source
+// for the combat, expedition, and client collision envelope:
+//
+//   measure                  derivation                         value / time
+//   player walk step         220 units/s * 50 ms                 11 u/tick
+//   melee contact            13 walk ticks                      143 u / .65 s
+//   thrust contact           melee * 1.5                        214 u / .97 s
+//   extraction interaction   8 walk ticks                       88 u / .40 s
+//   enemy spawn              melee * 5                         715 u / 3.25 s
+//   arena half-extent        melee * 6                         858 u / 3.90 s
+//   actor collider            melee / 5                          28 u
+//   scenery collider         melee / 2                          71 u
+//
+// The table intentionally keeps first contact inside the owner's 0.5–0.8
+// second readability target while leaving enough arena for approach,
+// extraction, and grounded scenery to share the same relative scale.
+namespace world_scale {
+inline constexpr int kPlayerMoveSpeed = 220;
+inline constexpr int kPlayerStepPerTick = movement_step_per_tick(kPlayerMoveSpeed);
+inline constexpr int kMeleeContactTicks = 13;
+inline constexpr int kMeleeRange = kPlayerStepPerTick * kMeleeContactTicks;
+inline constexpr int kThrustRange = (kMeleeRange * 3) / 2;
+inline constexpr int kExtractionContactTicks = 8;
+inline constexpr int kExtractionRange = kPlayerStepPerTick * kExtractionContactTicks;
+inline constexpr int kEnemySpawnDistance = kMeleeRange * 5;
+inline constexpr int kArenaHalfExtent = kMeleeRange * 6;
+inline constexpr int kActorColliderRadius = kMeleeRange / 5;
+inline constexpr int kSceneryColliderRadius = kMeleeRange / 2;
+}  // namespace world_scale
+
 // A dash is a short, readable burst measured in ordinary movement ticks.
 inline constexpr int kDashMovementTicks = 10;
 
@@ -45,8 +77,8 @@ inline constexpr int kDashMovementTicks = 10;
 // read-only catalog use these same definitions; clients must not mirror the
 // values independently.
 namespace presentation_constants {
-inline constexpr int kMeleeRange = 1100;
-inline constexpr int kThrustRange = (kMeleeRange * 3) / 2;
+inline constexpr int kMeleeRange = world_scale::kMeleeRange;
+inline constexpr int kThrustRange = world_scale::kThrustRange;
 inline constexpr int kThrustResourceCost = 10;
 inline constexpr int kSweepResourceCost = 15;
 inline constexpr int kWarCryResourceCost = 20;
