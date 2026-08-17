@@ -12,7 +12,7 @@ known_risks: architect rerun and acceptance decision still outstanding
 architect_review_required: true
 implementation_commits: d476788 (claim commit 6e6279c)
 report: orchestration/tasks/TASK-0044-native-protocol-n2/REPORT.md
-verification: committed tip d476788 passes native denylist/core/networking and unchanged movement/zones 2/2; architect rerun outstanding
+verification: committed tip d476788 passes native denylist/core/networking/client, unchanged movement/zones 2/2, and N1 quickstart/session regression 4/4; architect rerun outstanding
 ---
 
 TASK-0044 is ready for architect review. Kimi's external worktree is clean at
