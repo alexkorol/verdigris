@@ -61,6 +61,10 @@ try {
   Hold-Keys $hwnd @(0x44) 40 # D: clear the tree's circle from the east
   Hold-Keys $hwnd @(0x57) 15 # W: player behind tree
   [VerdigrisCapture]::Save($hwnd, (Join-Path $captureDir 'depth-behind-tree.jpg')) | Out-Null
+  Hold-Keys $hwnd @(0x41) 1  # A: face into the near-field tree
+  Send-Key $hwnd 0x20        # Space: dash is swept-blocked by the tree
+  Start-Sleep -Milliseconds 150
+  [VerdigrisCapture]::Save($hwnd, (Join-Path $captureDir 'dash-blocked.jpg')) | Out-Null
   Hold-Keys $hwnd @(0x53) 30 # S: player in front of tree
   [VerdigrisCapture]::Save($hwnd, (Join-Path $captureDir 'depth-front-tree.jpg')) | Out-Null
 
@@ -74,7 +78,8 @@ try {
     'window=VerdigrisNativeClient',
     'route=route:tin:1:0',
     'scenery=tree,ruin,dwelling,shrine keyed plates with fallback',
-    'depth=player captured behind and in front of near-field tree',
+    'depth=player traversed behind tree (W15) and in front (S30) at x~440, tree x=260',
+    'dash=Space from tree boundary; swept segment rejected and dash-blocked.jpg shows hint',
     'collision=A+W held at dwelling; actor remained outside circle and hint=Blocked by scenery',
     'catalog=skill strip expected Q Thrust 10, E Sweep 15, R WarCry 20'
   )

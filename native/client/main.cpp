@@ -1557,11 +1557,25 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
 
 constexpr double kActorColliderRadius = 26.0;
 
-bool scenery_blocks(const ClientState& state, verdigris::Vec2 position) {
+bool scenery_blocks_segment(const ClientState& state, verdigris::Vec2 from,
+                            verdigris::Vec2 to) {
   for (const SceneryItem& item : state.scenery) {
     if (!item.solid) continue;
-    const double dx = static_cast<double>(position.x - item.position.x);
-    const double dy = static_cast<double>(position.y - item.position.y);
+    const double segment_x = static_cast<double>(to.x - from.x);
+    const double segment_y = static_cast<double>(to.y - from.y);
+    const double length_squared = segment_x * segment_x + segment_y * segment_y;
+    const double to_center_x = static_cast<double>(item.position.x - from.x);
+    const double to_center_y = static_cast<double>(item.position.y - from.y);
+    const double projection = length_squared > 0.0
+                                  ? std::clamp((to_center_x * segment_x +
+                                                to_center_y * segment_y) /
+                                                   length_squared,
+                                               0.0, 1.0)
+                                  : 0.0;
+    const double closest_x = static_cast<double>(from.x) + segment_x * projection;
+    const double closest_y = static_cast<double>(from.y) + segment_y * projection;
+    const double dx = closest_x - static_cast<double>(item.position.x);
+    const double dy = closest_y - static_cast<double>(item.position.y);
     const double minimum = item.radius + kActorColliderRadius;
     if (dx * dx + dy * dy < minimum * minimum) return true;
   }
@@ -1578,7 +1592,7 @@ bool movement_hits_scenery(const ClientState& state, int dx, int dy,
   const verdigris::Vec2 destination{
       player->position.x + (dx * step) / length,
       player->position.y + (dy * step) / length};
-  return scenery_blocks(state, destination);
+  return scenery_blocks_segment(state, player->position, destination);
 }
 
 void paint(HWND window, HDC dc) {
