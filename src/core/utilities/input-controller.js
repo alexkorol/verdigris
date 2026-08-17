@@ -215,7 +215,7 @@ class InputController {
   }
 
   ensureRepeat() {
-    if (this.repeatTimeout !== null || this.repeatInterval !== null) {
+    if (this.repeatTimeout !== null || Number.isFinite(this.nextRepeatAt)) {
       return;
     }
     this.restartRepeat();

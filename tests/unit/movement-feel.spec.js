@@ -11,8 +11,11 @@ import {
 
 import Socket from '#server/socket.js';
 import world from '#server/core/world.js';
+import InputController from '../../src/core/utilities/input-controller.js';
+import { MOVEMENT_REPEAT } from '../../src/core/config/controls.js';
 import createPlayerMovementHandler, {
   MOVEMENT_FEEL,
+  broadcastMovement,
 } from '#server/core/entities/player/movement-handler.js';
 
 const sceneId = 'test:movement-feel';
@@ -169,5 +172,45 @@ describe('browser movement feel contract', () => {
     player.move('right', { startedAt: 2_000 });
 
     expect(player.animation.speed).toBe(MOVEMENT_FEEL.initialAnimationSpeed);
+  });
+
+  it('does not rebroadcast an unchanged animation sequence with movement samples', () => {
+    const player = makePlayer();
+    const recipients = [player];
+
+    broadcastMovement(player, recipients);
+    broadcastMovement(player, recipients);
+
+    expect(Socket.broadcast).toHaveBeenCalledTimes(2);
+    const firstPayload = Socket.broadcast.mock.calls[0][1];
+    const secondPayload = Socket.broadcast.mock.calls[1][1];
+    const firstMeta = Socket.broadcast.mock.calls[0][3].meta;
+    const secondMeta = Socket.broadcast.mock.calls[1][3].meta;
+    expect(firstPayload.animation).toEqual(expect.objectContaining({ sequence: 7 }));
+    expect(secondPayload.animation).toBeUndefined();
+    expect(firstMeta.animation).toEqual(expect.objectContaining({ sequence: 7 }));
+    expect(secondMeta.animation).toBeUndefined();
+    expect(secondMeta.movementStep).toEqual(player.movementStep);
+
+    player.animation = { ...player.animation, sequence: 8 };
+    broadcastMovement(player, recipients);
+    const thirdMeta = Socket.broadcast.mock.calls[2][3].meta;
+    expect(thirdMeta.animation).toEqual(expect.objectContaining({ sequence: 8 }));
+  });
+
+  it('ensureRepeat schedules from the new deadline state', () => {
+    vi.useFakeTimers();
+    const onMove = vi.fn();
+    const controller = new InputController({ onMove });
+    controller.activeDirection = 'right';
+
+    controller.ensureRepeat();
+    expect(controller.repeatTimeout).not.toBeNull();
+
+    vi.advanceTimersByTime(MOVEMENT_REPEAT.initialDelayMs);
+    expect(onMove).toHaveBeenCalledWith('right', { repeated: true });
+
+    controller.destroy();
+    vi.useRealTimers();
   });
 });
