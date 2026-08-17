@@ -1,3 +1,21 @@
+---
+task: TASK-0043
+state: REVIEW_REQUESTED
+branch: codex/TASK-0043-playtest-harness-stabilization
+commits:
+  - 3b16d01c
+  - 18dabc06
+  - 48b471b6
+  - 31a93698
+  - f3dc7ce1
+  - e9474a0c
+  - 121001b3
+  - 1e48d120
+  - 78434f60
+  - 51c5253d
+base_commit: f0df8de6
+---
+
 # TASK-0043 — Playtest harness stabilization
 
 ## Outcome
