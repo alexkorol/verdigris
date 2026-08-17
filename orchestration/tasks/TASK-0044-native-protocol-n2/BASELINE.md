@@ -141,3 +141,16 @@ restoration passed (**2/2**). The full command/output is preserved in
 This closes the earlier lifecycle uncertainty at the protocol level. The
 remaining worker action is a test correction plus commit/evidence hygiene, not
 a demonstrated native transport failure.
+
+## Final worker-branch green recheck
+
+Kimi corrected the core test in the actual WIP to capture the town position
+before `enter_solo_instance`. The authoritative native command now passes all
+three gates: legacy denylist, core tests, and networking tests. The rebuilt
+actual worker server on port 6520 also passes the unchanged `movement` and
+`zones` attach scenarios **2/2** (4593ms and 1110ms), including all six zone
+combinations and saved-position restoration. The exact output is preserved in
+`captures/worker-branch-green-2026-08-17.txt`.
+
+The implementation is still uncommitted in Kimi's worktree, so this is the
+final coordinator verification checkpoint, not architect acceptance.

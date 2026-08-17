@@ -70,19 +70,24 @@ zone combinations, names, layouts, stairs, 18-monster populations, and saved
 position restoration passed. The transcript is in
 [`captures/worker-branch-recheck-2026-08-17.txt`](captures/worker-branch-recheck-2026-08-17.txt).
 
+After the core-test correction, the authoritative worker-branch native gate
+was rerun and passed: legacy denylist, core tests, and networking tests. A
+fresh worker-built server on port 6520 then passed unchanged `movement` in
+4593ms and `zones` in 1110ms (**2/2**), including saved-position restoration.
+The final checkpoint is preserved in
+[`captures/worker-branch-green-2026-08-17.txt`](captures/worker-branch-green-2026-08-17.txt).
+
 ## Acceptance status
 
-Not ready. The actual worker-built server and unchanged attach gate are green,
-but the core test executable still exits 1 on an incorrectly authored
-pre-entry-position assertion, and the WIP source/tests remain uncommitted.
-Required evidence is still missing: a corrected worker-branch native gate with
-exit status preserved, committed implementation, driven transcript, and
-architect rerun. The coordinator has made no native source changes and has not
-loosened the harness assertions.
+The worker-branch implementation and unchanged attach gate are now green.
+Acceptance is still pending because the six WIP native files are uncommitted,
+the worker has not supplied its final report/commit packet, and the architect
+has not performed the required rerun. The coordinator has made no native
+source changes and has not loosened the harness assertions.
 
 ## Next action
 
-Kimi should capture the town position before `enter_solo_instance` in the core
-test, rerun both native executables while preserving each exit status, commit
-all WIP files, and attach the already-green worker-branch transcript. Only
-then should this report move to `REVIEW_REQUESTED`.
+Kimi should commit all six WIP files, attach the green worker-branch
+transcript, and move the task to `REVIEW_REQUESTED` for Fable's architect
+rerun. No additional native behavior change is indicated by the current
+evidence.
