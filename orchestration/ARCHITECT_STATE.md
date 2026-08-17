@@ -182,6 +182,25 @@ ADR-002.
   ADR-002 proposal, D-101/D-102/D-103 provisional decisions, and the
   0006 unequipped-relic observation.
 
+# MUD-KILL COMPLETE + EVENING LEDGER (2026-08-16 ~21:20)
+
+**The 25D overhaul plan is complete — all five phases accepted and
+shipped to master**, with real defects found and fixed along the way
+(capture-clock NaN killing night orbs, grade double-darkening, dash
+tunneling through scenery). Live on master tonight: 2.5D Phases 1–5,
+movement-feel fix, expedition-boundary enforcement, pack-clear rule,
+D-109 disconnect safety, D-106 death recoverability, native scenery
+billboards + catalog single-sourcing, hardened CI/build/denylist.
+
+Next frontier issued: TASK-0030 native persistence (ADR-002/D-109
+snapshot+restore with RNG state) and TASK-0031 browser death/relic audit
+vs D-106 (audit-first before touching server gameplay).
+
+**Flagged for the owner (not agent-decidable): campaign/instance-graph
+deepening needs your lore input** — the mechanical graph exists in both
+native and browser, but node names, places, and branch meanings are
+yours. A short voice-note's worth of direction unlocks a big wave.
+
 # OWNER PLAYTEST GUIDE (2026-08-16 evening)
 
 **Browser game** (the ship target):
