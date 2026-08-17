@@ -51,6 +51,14 @@ combat, encounter, cooldown, loot, or progression rules in
 
 ## Current N2 boundary observed at `d476788`
 
+The review-requested N2 implementation has also been replayed on the current
+coordinator tip as disposable candidate `f602dab4` (base `27db1611`). Its
+native denylist/core/networking/client gate and unchanged N2 attach matrix
+(`quickstart`, `single-session`, `movement`, `zones`) pass 4/4. This proves
+the N2 handoff applies cleanly to the current program tip without claiming
+architect acceptance or integration; the exact transcript is preserved in
+[`coordinator-current-tip-n2-candidate-2026-08-17.txt`](../../orchestration/tasks/TASK-0044-native-protocol-n2/captures/coordinator-current-tip-n2-candidate-2026-08-17.txt).
+
 This is an implementation constraint, not a product decision:
 
 - `ProtocolSession` currently owns both a deterministic `Simulation` and a
