@@ -66,7 +66,58 @@ may decide it.
   ADR-002 is ACCEPTED as amended by this ruling. If logout-as-escape
   proves abusable, the fix is an in-danger logout delay, never item loss.
 
+- **D-110 Playable-first (OWNER-DIRECTED 2026-08-16 evening)**: the
+  measure of progress is a real player having a good session — first
+  minutes clear, combat satisfying, loot exciting, death fair,
+  progression legible. All further feature/infra/renderer work queues
+  BEHIND fixing actual play friction. Evidence of friction comes from
+  played sessions (TASK-0034), not harness scenarios.
+
 ## Provisional (architect's call, owner may override)
+
+- **D-111 Day/night default**: owner is unsure the cycle belongs in the
+  game. Until ruled: the game DEFAULTS to full daytime (most readable),
+  with the cycle kept behind a settings toggle (off by default). Cheap to
+  flip either way when the owner decides (TASK-0033).
+- **D-116 THE MISSION (OWNER-RULED 2026-08-16 ~23:05)**: the point of
+  this orchestration is the C++ conversion — the native version must
+  reach the current web version's level OR BETTER, with multi-layer
+  regression sweeps throughout. Strategy (architect): the C++ server
+  speaks the EXISTING `{event,data}` WebSocket protocol so the current
+  Vue client connects to it unchanged — which makes the existing
+  31-scenario playtest harness the PARITY BAR and regression suite for
+  the native server (run the same scenarios against JS and C++;
+  divergence = regression). Parity lands endpoint-by-endpoint per
+  `docs/rebuild/PARITY_ROADMAP.md`. Sweep layers: (1) protocol/playtest
+  scenarios dual-run, (2) UI pane sweeps (0036 pattern), (3) core
+  determinism replays, (4) D-115 play gate. The browser game stays the
+  living reference and keeps improving (current playability wave
+  continues) — every improvement raises the parity bar deliberately.
+- **D-112 Two horizons, one product at a time (amended 2026-08-16 late
+  after owner sustainability question; SUPERSEDED IN PART by D-116 —
+  the native conversion is not deferred; it proceeds now via protocol
+  parity)**: the BROWSER game is the
+  near-term playable and fun-finding vehicle ONLY — not the launch
+  platform (own measurement: ~43ms mean frame at 1440×1000; browsers
+  fight a mature ARPG's density). The NATIVE build is the launch
+  platform, per the constitution. Sequence: exe triage → browser reaches
+  "actually fun" via the 0034 friction list → the native client then
+  rebuilds the browser-VALIDATED design system by system under the
+  D-115 play gate until parity, and becomes the shipped product. No
+  parallel design invention across surfaces; browser perf work capped at
+  "smooth enough to judge fun."
+- **D-113 Art direction (from owner feedback)**: near-term aesthetic
+  follows the webchat/slice approach — procedural/vector-first with
+  minimal image inputs, consistent RELATIVE SCALE (a documented scale
+  chart: player height as the unit; scenery sized against it). No return
+  to Delaford-era assets. Owner supplies/approves any new image assets.
+- **D-114 Feel-coherence rule (process)**: any change to movement,
+  range, or speed constants must re-derive ALL related distance/time
+  constants together against seconds-to-contact metrics, documented in
+  one table in the diff. Reviews reject isolated constant changes.
+- **D-115 Play gate (process)**: feel-affecting work is not ACCEPTED
+  until the architect has driven a full session of the actual build and
+  judged it as an experience, not per-feature evidence.
 
 - **D-101 Player base-life offset**: the slice gives player-kind actors a
   modestly higher base-life constant within the shared formula. If adopted
