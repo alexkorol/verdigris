@@ -51,15 +51,21 @@ show the pre-fix side-by-side regression; after images show the stacked layout.
 
 ## Ranked findings outside scope
 
-1. **Large minimap mode is absent** — only the small `WorldMinimap` side map
-   is exposed; no overlay mode was reachable. Follow-up required.
-2. **Death has no dedicated overlay** — the current lifecycle is visible in
-   Character/Stats as `Awaiting Respawn`; this supports TASK-0041 rather than
-   being fixed here.
-3. **No vendor pane is exposed** — no vendor entry was present in the pane
-   registry or reachable fresh-town flow.
-4. **Compact inventory scrolls by design** — retained 54px cells keep items
-   readable, but the full 12x7 grid requires scrolling at 1366x768.
+1. **Large minimap mode is absent** — `src/components/hud/WorldMinimap.vue:1-8`
+   renders only the fixed small side map and `src/components/layout/GameContainer.vue:45-51`
+   mounts it as a single world HUD; no overlay mode was reachable. Follow-up
+   required.
+2. **Death has no dedicated overlay** — `src/components/slots/Stats.vue:178-181`
+   exposes the lifecycle only as a Respawn row; the pane registry in
+   `src/Delaford.vue:120-128` has no death/respawn entry. This supports
+   TASK-0041 rather than being fixed here.
+3. **No vendor pane is exposed** — the authoritative pane registry at
+   `src/Delaford.vue:120-128` contains no vendor entry, so no vendor behavior
+   was reachable in the fresh-town flow.
+4. **Compact inventory scrolls by design** —
+   `src/components/slots/Inventory.vue:324-346` leaves the legacy diptych
+   inactive while retaining readable cells; the full 12x7 grid requires
+   scrolling at 1366x768.
 
 ## Specification deviations
 
