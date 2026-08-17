@@ -1,0 +1,9 @@
+{
+  "label": "before",
+  "viewport": "1440x1000",
+  "workloadSeconds": 12,
+  "sampleCount": 260,
+  "meanMs": 45.015,
+  "p95Ms": 129.5,
+  "maxMs": 137.8
+}

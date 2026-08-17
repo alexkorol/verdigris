@@ -2,6 +2,14 @@ const GRID_COLUMNS = 161;
 const GRID_ROWS = 161;
 const MAP_MARGIN_TILES = 8;
 const BAKE_TILE_SIZE = 16;
+const TERRAIN_CONTEXT_OPTIONS = Object.freeze({
+  alpha: true,
+  antialias: true,
+  // The frame is copied into the 2D buffer immediately after drawElements;
+  // retaining the default framebuffer until the browser compositor presents
+  // it adds readback pressure without changing that copy.
+  preserveDrawingBuffer: false,
+});
 
 const nextPowerOfTwo = (value) => {
   let result = 1;
@@ -31,11 +39,7 @@ class TerrainRenderer {
       ? options.skipBackgroundGids
       : new Set();
     this.canvas = document.createElement('canvas');
-    this.gl = this.canvas.getContext('webgl', {
-      alpha: true,
-      antialias: true,
-      preserveDrawingBuffer: true,
-    });
+    this.gl = this.canvas.getContext('webgl', TERRAIN_CONTEXT_OPTIONS);
     this.ready = false;
     this.failed = false;
     this.program = null;
@@ -387,6 +391,9 @@ class TerrainRenderer {
   }
 
   destroy() {
+    if (this.destroyed) {
+      return;
+    }
     this.destroyed = true;
     this.canvas.removeEventListener('webglcontextlost', this.handleContextLost, false);
     this.canvas.removeEventListener('webglcontextrestored', this.handleContextRestored, false);
@@ -405,6 +412,7 @@ export {
   GRID_COLUMNS,
   GRID_ROWS,
   MAP_MARGIN_TILES,
+  TERRAIN_CONTEXT_OPTIONS,
   nextPowerOfTwo,
 };
 export default TerrainRenderer;
