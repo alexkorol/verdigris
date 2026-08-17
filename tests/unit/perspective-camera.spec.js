@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import PerspectiveCamera from '../../src/core/rendering/perspective-camera.js';
+import PerspectiveCamera, {
+  ARPG_CAMERA_PRESET,
+  MAX_USER_ZOOM,
+} from '../../src/core/rendering/perspective-camera.js';
 
 const makeCamera = (overrides = {}) => {
   const camera = new PerspectiveCamera();
@@ -82,6 +85,42 @@ describe('PerspectiveCamera', () => {
     expect(close.circleOfConfusion(closeDepth)).toBeGreaterThan(
       wide.circleOfConfusion(wideDepth),
     );
+  });
+
+  // Phase 4 (plan §7): dofStrength<->zoom blend spans exactly the wheel/pinch
+  // range, with the zero floor defined against the ARPG base zoom (plan §9),
+  // and no step anywhere that could read as a discrete DoF band (§8.3).
+  it('blends depth of field smoothly across the wheel zoom range', () => {
+    const samples = [];
+    for (let zoom = 0.72; zoom <= MAX_USER_ZOOM + 0.0001; zoom += 0.02) {
+      samples.push(makeCamera({ userZoom: zoom }).dofStrength);
+    }
+
+    // Zero floor at and below the ARPG base; full strength at the ceiling.
+    expect(samples[0]).toBe(0);
+    expect(samples.at(-1)).toBeCloseTo(ARPG_CAMERA_PRESET.maxDofStrength, 10);
+
+    // Monotonic non-decreasing, bounded slope: continuous, never banded.
+    for (let index = 1; index < samples.length; index += 1) {
+      const delta = samples[index] - samples[index - 1];
+      expect(delta).toBeGreaterThanOrEqual(0);
+      expect(delta).toBeLessThan(0.05);
+    }
+  });
+
+  it('keeps the circle of confusion continuous across depth (no discrete bands)', () => {
+    const camera = makeCamera({ userZoom: MAX_USER_ZOOM });
+    const cocs = [];
+    for (let ratio = 0.4; ratio <= 2.2; ratio += 0.01) {
+      cocs.push(camera.circleOfConfusion(camera.depthToFocus * ratio));
+    }
+
+    for (let index = 1; index < cocs.length; index += 1) {
+      expect(Math.abs(cocs[index] - cocs[index - 1])).toBeLessThan(0.05);
+    }
+    // Sharp at the focus plane, saturating to full blur well past it.
+    expect(Math.min(...cocs)).toBe(0);
+    expect(Math.max(...cocs)).toBe(1);
   });
 
   it('rejects zero-sized startup viewports without producing projection state', () => {
