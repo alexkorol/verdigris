@@ -26,8 +26,11 @@ $workers = @(); 1..([Math]::Max(1, [Environment]::ProcessorCount - 1)) | ForEach
 
 Repeat the command for the required consecutive-run evidence. The runner
 prints the load-adaptive timing guard and event-loop diagnostics; a missing
-server event still fails within the explicit 1.75x cap. The load-mode floor
-is only active when the documented CPU-load command opts in.
+server event still fails within the explicit 1.75x cap. In load mode only,
+server-side instance admission uses a bounded 12s authored floor (21s after
+the cap) because the child server can be starved independently of this
+client. Ordinary runs keep each scenario's authored deadline. The load-mode
+floor is only active when the documented CPU-load command opts in.
 
 ## Why this exists
 
