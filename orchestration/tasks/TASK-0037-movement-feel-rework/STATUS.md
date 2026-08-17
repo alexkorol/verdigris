@@ -1,6 +1,6 @@
 ---
 task: TASK-0037
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Luna browser movement-feel worker
 worker_branch: codex/TASK-0037-movement-feel-rework
@@ -16,4 +16,5 @@ report: orchestration/tasks/TASK-0037-movement-feel-rework/REPORT.md
 verification: current-tip revision full unit 120 files/768 tests; empty rendering diff against 6e277cf4; alternate browser gate 1/1; playtest retry 25/31 with six isolated fixture reruns passing; dense movement captures committed
 validator: /root/validate_task_0037 — ACCEPT (coordinator validation was stale against the architect's current tip)
 architect_review: ACCEPTED — owner verified `15c1a531` rides the current base with an empty rendering diff and approved integration; see owner REVIEW.md
+integration: integrated in combined worktree `codex/integrate-0035-0037`; browser source chain preserved through `4a843ce3`
 ---

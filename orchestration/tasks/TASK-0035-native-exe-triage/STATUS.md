@@ -1,6 +1,6 @@
 ---
 task: TASK-0035
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Luna native exe triage worker
 worker_branch: codex/TASK-0035-native-exe-triage
@@ -16,4 +16,5 @@ report: orchestration/tasks/TASK-0035-native-exe-triage/REPORT.md
 verification: revision native build/test/client gate, denylist, core tests, literal 1/1 headless output, direct executable exit=0, and diff check passed; broken 0/0 transcript captured before the loop correction
 validator: /root/validate_task_0035 — ACCEPT (coordinator validation was stale against the architect's current tip)
 architect_review: ACCEPTED — owner verified revision `225078d1` literal 1/1 transcript, non-zero failure path, clean view, and driven play pass; integration approved in owner REVIEW.md
+integration: integrated in combined worktree `codex/integrate-0035-0037`; native source chain preserved through `092159d3`
 ---
