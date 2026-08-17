@@ -88,6 +88,13 @@ crossed 3→5 rather than stopping at 4; every stage boundary was still
 observed. Direct WASD fails the dev inspection predicate, while the exact
 fresh dev-handler marker activates only the inspected actor once.
 
+Independent validator re-ran the exact-tip full playtest three times: 17/31,
+30/31, and 28/31. The 30/31 run missed the `gear-outcomes` 1.15× threshold by
+0.03 seconds; that scenario passed immediately in isolation. The final run's
+additional build-divergence/session-arc failures also passed in isolated
+affected-scenario checks. This remains a real SPEC gate failure, not a claimed
+green result, and is returned to the worker/architect for disposition.
+
 ## Specification deviations
 
 Evidence includes a real WebSocket-driven runtime transcript rather than a

@@ -13,6 +13,6 @@ report: orchestration/tasks/TASK-0040-first-encounter-readability/REPORT.md
 expected_verification: npm run test:unit; npm run playtest; first-delve transcript; D-114 constants table; capture evidence
 known_risks: server/core paths are disjoint from pending TASK-0035 native and TASK-0036/0037 browser handoffs; no client, loot, lore, or economy changes permitted
 verification: focused encounter/balance 16/16; full unit 120 files/767 tests; direct-WASD and exact-teleport regression passed; driven WebSocket transcript captured; latest full playtest 25/31 with six isolated reruns passing; diff check passed
-validator: /root/validate_task_0040 — REVISE (final chain through e0dacfc8): dev marker collides with ordinary WASD; dormant actors remain in initial scene payload; required driven REPORT transcript is absent; full playtest zones scenario failed 0/1 on isolated rerun
+validator: /root/validate_task_0040 — REVISE (6295298a closes marker, staging, transcript, and scope findings; mandatory full playtest remains non-reproducible: exact-tip runs 17/31, 30/31, 28/31, with isolated failures passing; dormant roster visibility remains architect-pending)
 architect_review_required: true
 ---
