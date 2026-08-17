@@ -1,6 +1,6 @@
 ---
 task: TASK-0034
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Luna browser first-session evaluation worker
 worker_branch: codex/TASK-0034-playability-evaluation
@@ -14,4 +14,7 @@ architect_review_required: true
 implementation_commit: a4976bbeade44d91cc0e5e10510e137c0dac4dfb
 report: orchestration/tasks/TASK-0034-playability-evaluation/REPORT.md
 evidence_audit: coordinator read-only scope, capture-size, and report-completeness check passed; hands-on limitation (roughly 20 minutes, not uninterrupted 30–60 minutes) is explicitly documented
+architect_review: ACCEPTED (Fable review at architect commit 0b12a0a)
+integration_commit: b141cd9f (report/captures already on program branch)
+integration_verification: read-only evidence artifact preserved; 16 captures <=250KB; no implementation files changed
 ---

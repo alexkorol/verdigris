@@ -1,6 +1,7 @@
 import UI from '@shared/ui.js';
 import DUNGEON_TILESET, { DUNGEON_FIRST_GID } from '@shared/dungeon-tiles.js';
 import { now } from '../config/movement.js';
+import { isAmbientCycleEnabled } from '../config/ambient-clock.js';
 import {
   actorIdentityFrame,
   MONSTER_SPRITE_CONFIG,
@@ -13,7 +14,7 @@ import PerspectiveCamera, {
   MAX_USER_ZOOM,
 } from './perspective-camera.js';
 import TerrainRenderer from './terrain-renderer.js';
-import LightingRenderer, { getNightFactor, sampleAmbient } from './lighting-renderer.js';
+import LightingRenderer, { getNightFactor, sampleAmbientForClock } from './lighting-renderer.js';
 import AtmosphereRenderer from './atmosphere-renderer.js';
 
 const ACTOR_SCALE = 1.45;
@@ -113,7 +114,7 @@ class PerspectiveRenderer {
 
     const timestamp = now();
     const elapsedSeconds = timestamp / 1000;
-    const ambient = sampleAmbient(elapsedSeconds);
+    const ambient = sampleAmbientForClock(elapsedSeconds, isAmbientCycleEnabled());
     const skyColour = ambient.map((channel, index) => (
       channel * [0.78, 0.80, 0.76][index]
     ));

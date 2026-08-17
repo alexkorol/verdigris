@@ -1,3 +1,13 @@
+---
+task: TASK-0034
+state: INTEGRATED
+branch: codex/TASK-0034-playability-evaluation
+commits:
+  - a4976bbeade44d91cc0e5e10510e137c0dac4dfb
+base_commit: e5df8b78
+architect_review: ACCEPTED (Fable review at architect commit 0b12a0a)
+---
+
 # TASK-0034 — first-session playability evaluation
 
 ## Executive summary
