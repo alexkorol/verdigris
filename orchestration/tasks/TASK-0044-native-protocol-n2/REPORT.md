@@ -53,6 +53,8 @@ alternate port: `movement` PASS (4589ms), `zones` PASS (1122ms), **2/2**.
 The zones run covered all six authored zone combinations and restored the
 pre-entry position (`38,115` versus `38,115`). The probe was removed after the
 run, and Kimi's source remains untouched.
+The concise command transcript is preserved in
+[`captures/disposable-probe-2026-08-17.txt`](captures/disposable-probe-2026-08-17.txt).
 
 ## Acceptance status
 
