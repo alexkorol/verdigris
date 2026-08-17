@@ -129,4 +129,10 @@ Source is ready on the dedicated integration worktree at `f9527d9c`; integrate o
   files and 779/779 tests; `npm run build` passed; and a hermetic
   `PLAYTEST_PORT=6514 npm run playtest` passed all 31/31 scenarios, including
   the formerly flaky session-arc and zones scenarios.
+- Fresh coordinator rerun at 2026-08-17 09:39 -07:00 independently reproduced
+  the same result: `npm run test:unit` 122/122 files and 779/779 tests,
+  `npm run build` PASS, native `build.ps1 -RunTests -RunClient` PASS, and
+  `PLAYTEST_PORT=6514 npm run playtest` 31/31. The rerun included
+  `gear-outcomes` (11.93s -> 9.52s) and `session-arc` (critic 80), with no
+  scenario failures.
 - Task state: `REVIEW_REQUESTED`; architect acceptance is still required.
