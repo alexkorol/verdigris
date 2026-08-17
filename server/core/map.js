@@ -12,6 +12,13 @@ import ItemFactory from './items/factory.js';
 import { Shop } from './functions/index.js';
 import world from './world.js';
 import createWorldLayout from './world-layout.js';
+import {
+  D114_FIRST_DELVE_PRESSURE,
+  FIRST_DELVE_ENCOUNTER,
+  FIRST_DELVE_PRESSURE_CURVE,
+  firstDelvePackCap,
+  isFirstDelve,
+} from './combat/encounter.js';
 
 const DEFAULT_INSTANCE_ROOM_COUNT = 12;
 const DEFAULT_OUTDOOR_CLEARING_COUNT = 9;
@@ -392,6 +399,7 @@ const cloneMonsterBehaviour = (behaviour) => {
   };
   if (behaviour.support) clone.support = { ...behaviour.support };
   if (behaviour.aura) clone.aura = { ...behaviour.aura };
+  if (behaviour.encounterUnlock) clone.encounterUnlock = { ...behaviour.encounterUnlock };
   return clone;
 };
 
@@ -431,6 +439,17 @@ const cloneGeneration = (generation, refreshItemIdentity = true) => ({
     stairsUp: clonePoint(generation.metadata.stairsUp),
     stairsDown: clonePoint(generation.metadata.stairsDown),
     treasureRoom: clonePoint(generation.metadata.treasureRoom),
+    encounter: generation.metadata.encounter
+      ? {
+        ...generation.metadata.encounter,
+        pressureCurve: generation.metadata.encounter.pressureCurve
+          .map(stage => ({ ...stage })),
+        d114: {
+          ...generation.metadata.encounter.d114,
+          earlyPackCaps: [...(generation.metadata.encounter.d114.earlyPackCaps || [])],
+        },
+      }
+      : null,
     rewards: {
       ...generation.metadata.rewards,
       experience: { ...generation.metadata.rewards.experience },
@@ -811,6 +830,7 @@ class Map {
       ? options.layout
       : (baseIsOutdoor ? 'clearings' : 'warren');
     const recipe = LAYOUT_RECIPES[layoutId];
+    const firstDelve = isFirstDelve({ depth, theme: themeName, layout: layoutId });
 
     // Each floor gets its own deterministic seed derived from the base
     const baseSeed = Map.normaliseSeed(options.seed);
@@ -1082,8 +1102,12 @@ class Map {
     const themeMonsterColumns = THEME_MONSTER_COLUMNS[themeName] || THEME_MONSTER_COLUMNS.stone;
 
     // A mid room (never the entry or the exit) holds the floor's treasure
+    const treasureRoomStart = firstDelve
+      ? Math.min(carvedRooms.length - 2, FIRST_DELVE_ENCOUNTER.earlyRoomCount + 1)
+      : 1;
     const treasureRoomIndex = carvedRooms.length >= 4
-      ? 1 + Math.floor(rng() * (carvedRooms.length - 2))
+      ? treasureRoomStart
+        + Math.floor(rng() * (carvedRooms.length - 1 - treasureRoomStart))
       : -1;
 
     const roleCycle = THEME_ROLE_CYCLES[themeName] || THEME_ROLE_CYCLES.stone;
@@ -1092,19 +1116,47 @@ class Map {
       healthMultiplier = 0.13, damageMultiplier = 0.35, graphicRole = role,
     }) => {
       const monsterLevel = Math.max(1, Math.floor(1 + (index * 0.14))) + depthLevelBonus + levelBonus;
+      const rangedEncounter = firstDelve && role === 'ranged';
+      const initialRole = rangedEncounter ? 'melee' : role;
       const behaviour = {
-        type: role,
-        aggressionRange: ['support', 'buffer'].includes(role) ? 6 : 8,
-        pursuitRange: role === 'melee' ? 9 : 11,
+        type: initialRole,
+        aggressionRange: rangedEncounter
+          ? 1
+          : (['support', 'buffer'].includes(role)
+            ? 6
+            : FIRST_DELVE_ENCOUNTER.meleeAggressionRange),
+        pursuitRange: rangedEncounter
+          ? 1
+          : (role === 'melee'
+            ? FIRST_DELVE_ENCOUNTER.meleePursuitRange
+            : FIRST_DELVE_ENCOUNTER.rangedPursuitRange),
         patrolRadius: 4,
+        stepIntervalMs: role === 'melee'
+          ? FIRST_DELVE_ENCOUNTER.meleeStepIntervalMs
+          : FIRST_DELVE_ENCOUNTER.rangedStepIntervalMs,
         attack: {
-          intervalMs: role === 'melee' ? 1500 : 1900,
-          windupMs: role === 'melee' ? 320 : 480,
+          intervalMs: role === 'melee'
+            ? FIRST_DELVE_ENCOUNTER.meleeAttackIntervalMs
+            : FIRST_DELVE_ENCOUNTER.rangedAttackIntervalMs,
+          windupMs: role === 'melee'
+            ? FIRST_DELVE_ENCOUNTER.meleeWindupMs
+            : FIRST_DELVE_ENCOUNTER.rangedWindupMs,
           damageMultiplier: ['support', 'buffer'].includes(role) ? 0.85 : 1.1,
-          range: role === 'melee' ? 1 : 5,
-          minimumRange: role === 'support' ? 2 : 1,
+          range: rangedEncounter ? 1 : (role === 'melee' ? 1 : 5),
+          minimumRange: rangedEncounter ? 1 : (role === 'support' ? 2 : 1),
         },
       };
+
+      if (rangedEncounter) {
+        behaviour.encounterRole = 'ranged';
+        behaviour.encounterLocked = true;
+        behaviour.encounterUnlock = {
+          range: FIRST_DELVE_ENCOUNTER.rangedPreferredRange,
+          minimumRange: FIRST_DELVE_ENCOUNTER.rangedMinimumRange,
+          aggressionRange: FIRST_DELVE_ENCOUNTER.rangedAggressionRange,
+          pursuitRange: FIRST_DELVE_ENCOUNTER.rangedPursuitRange,
+        };
+      }
 
       if (role === 'support') {
         // Modest paced heal (support.js also enforces an interval and a
@@ -1191,31 +1243,43 @@ class Map {
     let monsterIndex = 0;
     const exitRoomIndex = carvedRooms.length - 1;
     const entry = carvedRooms[0];
+    const usedSpawnTiles = [];
 
     // A monster may only spawn on an open tile (not a wall, tree, or water),
     // so spread packs across a clearing safely: spiral out from the desired
     // spot to the nearest open tile, falling back to the (always-clear) centre.
     const monIdx = (x, y) => (y * width) + x;
-    const isSpawnable = (x, y) => {
+    const entryDistance = (x, y) => Math.max(Math.abs(x - entry.x), Math.abs(y - entry.y));
+    const isSpawnable = (x, y, options = {}) => {
       if (x < 1 || y < 1 || x >= width - 1 || y >= height - 1) {
         return false;
       }
       // Keep the landing room readable and fair even when procedural rooms
       // overlap. Skipping room zero alone was insufficient: packs belonging
       // to a neighbouring room could still be placed beside the stairs.
-      if (Math.max(Math.abs(x - entry.x), Math.abs(y - entry.y)) <= INSTANCE_SPAWN_SAFE_RADIUS) {
+      if (entryDistance(x, y) <= INSTANCE_SPAWN_SAFE_RADIUS) {
+        return false;
+      }
+      if (Number.isFinite(options.minimumEntryRadius)
+        && entryDistance(x, y) < options.minimumEntryRadius) {
+        return false;
+      }
+      if (usedSpawnTiles.some((spot) => (
+        Math.max(Math.abs(x - spot.x), Math.abs(y - spot.y))
+          < FIRST_DELVE_ENCOUNTER.spawnSeparation
+      ))) {
         return false;
       }
       return generatedTileWalkable(background, foreground, monIdx(x, y));
     };
-    const findSpawn = (cx, cy, wantX, wantY) => {
-      if (isSpawnable(wantX, wantY)) {
+    const findSpawn = (cx, cy, wantX, wantY, options = {}) => {
+      if (isSpawnable(wantX, wantY, options)) {
         return { x: wantX, y: wantY };
       }
       for (let radius = 1; radius <= 5; radius += 1) {
         for (let dy = -radius; dy <= radius; dy += 1) {
           for (let dx = -radius; dx <= radius; dx += 1) {
-            if (isSpawnable(wantX + dx, wantY + dy)) {
+            if (isSpawnable(wantX + dx, wantY + dy, options)) {
               return { x: wantX + dx, y: wantY + dy };
             }
           }
@@ -1224,14 +1288,32 @@ class Map {
       // A heavily overlapping layout may have no safe tile in the local
       // room. Fall back to the nearest room centre, then any safe floor tile,
       // instead of silently putting the monster back in the landing zone.
-      const roomFallback = carvedRooms.find(room => isSpawnable(room.x, room.y));
+      const roomFallback = carvedRooms.find(room => isSpawnable(room.x, room.y, options));
       if (roomFallback) return { x: roomFallback.x, y: roomFallback.y };
       for (let y = 1; y < height - 1; y += 1) {
         for (let x = 1; x < width - 1; x += 1) {
-          if (isSpawnable(x, y)) return { x, y };
+          if (isSpawnable(x, y, options)) return { x, y };
         }
       }
       return { x: cx, y: cy };
+    };
+    const findOpeningSpawn = (toward) => {
+      const radius = FIRST_DELVE_ENCOUNTER.openingSpawnRadius;
+      const candidates = [];
+      for (let dy = -radius; dy <= radius; dy += 1) {
+        for (let dx = -radius; dx <= radius; dx += 1) {
+          if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+          const x = entry.x + dx;
+          const y = entry.y + dy;
+          if (!isSpawnable(x, y)) continue;
+          candidates.push({ x, y });
+        }
+      }
+      candidates.sort((a, b) => (
+        (Math.abs(a.x - toward.x) + Math.abs(a.y - toward.y))
+        - (Math.abs(b.x - toward.x) + Math.abs(b.y - toward.y))
+      ));
+      return candidates[0] || findSpawn(entry.x, entry.y, toward.x, toward.y);
     };
 
     carvedRooms.forEach((center, roomIndex) => {
@@ -1242,8 +1324,12 @@ class Map {
       if (roomIndex === exitRoomIndex && carvedRooms.length > 1) {
         // The stairs down are guarded by the floor boss — a real damage sponge
         // that hits hard, unlike the trash (full health, near-full damage).
+        const bossSpot = findSpawn(center.x, center.y, center.x, center.y, firstDelve
+          ? { minimumEntryRadius: FIRST_DELVE_ENCOUNTER.laterMonsterEntryRadius }
+          : {});
+        usedSpawnTiles.push(bossSpot);
         instanceMonsters.push(buildMonsterDefinition({
-          center: findSpawn(center.x, center.y, center.x, center.y),
+          center: bossSpot,
           index: monsterIndex,
           role: 'melee',
           rarity: 'elite',
@@ -1278,6 +1364,10 @@ class Map {
       if (rng() < 0.3) {
         packSize += 1;
       }
+      const authoredCap = firstDelve ? firstDelvePackCap(roomIndex) : null;
+      if (authoredCap !== null) {
+        packSize = Math.min(packSize, authoredCap);
+      }
 
       // Spread radius: tight cluster by default, scattered across the room up to
       // recipe.spreadFrac of its extent for open layouts.
@@ -1286,14 +1376,21 @@ class Map {
         : 2;
 
       for (let member = 0; member < packSize; member += 1) {
-        const role = roleCycle[monsterIndex % roleCycle.length];
+        const role = firstDelve && roomIndex < FIRST_DELVE_ENCOUNTER.rangedEarliestRoomIndex
+          ? 'melee'
+          : roleCycle[monsterIndex % roleCycle.length];
         const isTreasureGuard = roomIndex === treasureRoomIndex && member === 0;
         // Distribute members around the centre, then snap to an open tile.
         const angle = (member / packSize) * Math.PI * 2 + (rng() * 0.8);
         const ring = member === 0 ? 0 : (0.4 + (rng() * 0.6)) * spread;
         const wantX = Math.round(center.x + Math.cos(angle) * ring);
         const wantY = Math.round(center.y + Math.sin(angle) * ring);
-        const spot = findSpawn(center.x, center.y, wantX, wantY);
+        const spot = firstDelve && roomIndex === FIRST_DELVE_ENCOUNTER.openingRoomIndex
+          ? findOpeningSpawn(center)
+          : findSpawn(center.x, center.y, wantX, wantY, firstDelve
+            ? { minimumEntryRadius: FIRST_DELVE_ENCOUNTER.laterMonsterEntryRadius }
+            : {});
+        usedSpawnTiles.push(spot);
         instanceMonsters.push(buildMonsterDefinition({
           center: spot,
           index: monsterIndex,
@@ -1375,6 +1472,20 @@ class Map {
         template,
         theme: themeName,
         layout: layoutId,
+        encounter: firstDelve
+          ? {
+            id: 'first-delve',
+            openingMeleeCount: FIRST_DELVE_ENCOUNTER.openingPackCap,
+            rangedUnlockKills: FIRST_DELVE_ENCOUNTER.rangedUnlockKills,
+            kills: 0,
+            rangedUnlocked: false,
+            pressureCurve: FIRST_DELVE_PRESSURE_CURVE.map(stage => ({ ...stage })),
+            d114: {
+              ...D114_FIRST_DELVE_PRESSURE,
+              earlyPackCaps: [...D114_FIRST_DELVE_PRESSURE.earlyPackCaps],
+            },
+          }
+          : null,
         spawnPoints,
         roomCentres: carvedRooms,
         stairsUp: { x: entry.x, y: entry.y },
