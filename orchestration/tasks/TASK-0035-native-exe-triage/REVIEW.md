@@ -38,3 +38,38 @@ the play-gate pass happens on revision 1 once the loop proves itself.
 ## Architectural effect
 
 None until green.
+
+---
+
+# Revision 2 (2026-08-17 ~01:35) — verdict remains REVISE
+
+The claimed revision commit `809de7bb` STILL banks
+`trophies stored: 0 | items stored: 0` with exit 0 — architect-verified
+by building THAT exact SHA in an isolated worktree. Correction 1 was not
+implemented; STATUS requested review anyway. This is the second
+false-green in this task.
+
+## Corrections restated — the acceptance is this literal transcript
+
+Run, from the worker worktree at the revision commit:
+
+```
+powershell -File native/build.ps1 -RunTests -RunClient
+```
+
+The final lines MUST read exactly:
+
+```
+native legacy denylist: PASS
+verdigris core tests: PASS
+Verdigris native client shell
+House: House Verdigris | trophies stored: 1 | items stored: 1
+```
+
+and `--headless` MUST exit NON-ZERO whenever the banked counts are not
+1/1 (prove by temporarily breaking a constant, showing the non-zero
+exit, then restoring). Paste both transcripts in REPORT.md. The
+coordinator's validator must run THIS command, not an approximation.
+Fix mechanically: walk the headless demo's command script to the new
+constants (spawn distance, per-tick step, pickup radius, extraction pad)
+until the loop genuinely completes.
