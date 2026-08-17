@@ -1,6 +1,6 @@
 ---
 task: TASK-0040
-state: REVIEW_REQUESTED
+state: CLAIMED
 coordinator: codex
 worker: Luna first-encounter readability worker
 worker_branch: codex/TASK-0040-first-encounter-readability
@@ -13,6 +13,6 @@ report: orchestration/tasks/TASK-0040-first-encounter-readability/REPORT.md
 expected_verification: npm run test:unit; npm run playtest; first-delve transcript; D-114 constants table; capture evidence
 known_risks: server/core paths are disjoint from pending TASK-0035 native and TASK-0036/0037 browser handoffs; no client, loot, lore, or economy changes permitted
 verification: focused encounter/balance 15/15; broader combat/encounter 85/85; full unit 120 files/766 tests; playtest 31/31; diff check passed
-validator: /root/validate_task_0040 — pending
+validator: /root/validate_task_0040 — REVISE (pressure order/runtime activation, locked Marksman behavior, authoritative opener cadence/transcript)
 architect_review_required: true
 ---
