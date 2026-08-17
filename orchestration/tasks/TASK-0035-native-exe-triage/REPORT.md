@@ -76,7 +76,10 @@ game UI; those belong to the browser product under D-112.
 
 The capture driver was temporary and removed; the evidence is retained as
 PNG files. TASK-0039 remains sequenced because it overlaps the native core
-paths until this task is accepted/integrated.
+paths until this task is accepted/integrated. The independent validator
+accepted the task and noted one review caveat: the stills prove adjacent
+contact/damage but do not show continuous enemy-closing motion; the architect
+may request that additional driven capture under the D-115 play gate.
 
 ## Integration notes
 

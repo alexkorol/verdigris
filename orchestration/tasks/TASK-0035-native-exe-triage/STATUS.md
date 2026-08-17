@@ -14,4 +14,5 @@ architect_review_required: true
 implementation_commits: 809de7bb; e562ad1e
 report: orchestration/tasks/TASK-0035-native-exe-triage/REPORT.md
 verification: native build/test/client gate, denylist, core tests, headless output, diff check, and clean/F3/adjacent-range captures passed
+validator: /root/validate_task_0035 — ACCEPT (caveat: stills prove adjacent contact/damage; architect may request a continuous enemy-closing capture)
 ---
