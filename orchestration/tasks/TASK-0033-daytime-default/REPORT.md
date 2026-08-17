@@ -37,9 +37,17 @@ spec-path correction; no architect-owned SPEC file was changed.
 - Full `npm run test:unit` on the implementation revision: 117 files / 752
   tests passed.
 - Build passed as part of the browser smoke attempt.
-- Direct Playwright probe on alternate port 6511 passed:
-  `defaultChecked=false`, `defaultStored=null`, `enabledStored=true`,
-  `reloadStored=true`.
+- Direct Playwright probe on alternate port 6511 passed. Raw structured
+  output:
+
+  ```json
+  {
+    "defaultChecked": false,
+    "defaultStored": null,
+    "enabledStored": "true",
+    "reloadStored": "true"
+  }
+  ```
 - Captures: `capture-default-settings.png` and `capture-cycle-enabled.png`.
 - `git diff --check`: passed.
 - Standard `npm run smoke:browser` could not complete because the pre-existing
