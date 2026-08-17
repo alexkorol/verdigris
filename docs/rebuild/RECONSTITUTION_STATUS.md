@@ -34,6 +34,9 @@ and the [legacy matrix](LEGACY_MATRIX.md) for boundaries.
 Focused seam evidence is preserved in
 [`WIZARD_INTEGRATION_VERIFICATION.md`](WIZARD_INTEGRATION_VERIFICATION.md):
 10 files / 73 tests passed for orbs, inventory, and map generation.
+The supplied Claude demo plates and their provenance boundary are catalogued
+in [`CLAUDE_DEMO_ASSET_INTAKE.md`](CLAUDE_DEMO_ASSET_INTAKE.md); binaries remain
+outside production until the owner resolves asset provenance/packaging.
 
 ## Orchestration state
 
