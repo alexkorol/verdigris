@@ -23,6 +23,14 @@ import {
 
 export const BASE_MOVE_DURATION = PLAYER_TILE_TRAVEL_MS;
 
+// Movement samples are frequent, but a client should only re-apply an
+// animation state when that state actually changes.  SpriteAnimator treats
+// every server-state application as a new timeline, so repeating the same
+// sequence in each movement packet would reset its frame and elapsed time.
+// This is presentation bookkeeping only; the movementStep and player payload
+// remain server-authoritative and unchanged.
+const lastBroadcastAnimationSignature = new WeakMap();
+
 /**
  * Movement feel is deliberately derived from the shared authoritative cadence.
  * Keep this table beside the resolver so a change to pace cannot silently
@@ -94,11 +102,27 @@ export const broadcastMovement = (player, players = null) => {
   if (player.movementStep) {
     meta.movementStep = player.movementStep;
   }
-  if (player.animation) {
+  const animation = player.animation;
+  const animationSignature = animation
+    ? [animation.sequence, animation.state, animation.direction].join('|')
+    : null;
+  const previousSignature = lastBroadcastAnimationSignature.get(player);
+  if (animation && animationSignature !== previousSignature) {
     meta.animation = player.animation;
+    lastBroadcastAnimationSignature.set(player, animationSignature);
   }
   const recipients = players || world.getScenePlayers(player.sceneId);
-  Socket.broadcast('player:movement', player, recipients, { meta });
+  // `playerMovement` falls back to the animation on the movement payload when
+  // meta.animation is absent.  Remove that redundant fallback too, otherwise
+  // the client would still re-apply the same sequence on every sample.
+  const movementPayload = meta.animation
+    ? player
+    : (() => {
+      const payload = { ...player };
+      delete payload.animation;
+      return payload;
+    })();
+  Socket.broadcast('player:movement', movementPayload, recipients, { meta });
 };
 
 export const broadcastAnimation = (player, players = null) => {
