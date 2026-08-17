@@ -18,6 +18,11 @@ The focused suite covers the WIZARD components named in the product brief:
 
 Result: **10 files passed, 73 tests passed**, exit code 0.
 
+Coordinator rerun: 2026-08-17 12:43 local time on coordinator tip
+`8db5bf78`. The same command completed with **10 files passed, 73 tests
+passed** in 3.78 seconds; raw command evidence is preserved in
+[`captures/coordinator-wizard-seams-2026-08-17.txt`](captures/coordinator-wizard-seams-2026-08-17.txt).
+
 Coverage mapping:
 
 - Orbs: `hud-orb-ui` (8) and `rendering-wizard-orb` (2).
@@ -28,6 +33,11 @@ Coverage mapping:
 - Verdigris Splash remains a presentation/reference seam; it has no focused
   automated test in this repository and remains an owner-facing presentation
   decision, not a native simulation dependency.
+
+This distinction is intentional: “meshed into Verdigris” means the WIZARD
+component has a named integration boundary. It does not claim that Splash is
+already a native simulation system or that the Arcane Lattice has been
+implemented.
 
 Authoritative design boundaries remain in
 [`WIZARD_ARCANE_LATTICE_REFERENCE.md`](../product/WIZARD_ARCANE_LATTICE_REFERENCE.md)
