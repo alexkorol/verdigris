@@ -15,6 +15,6 @@ implementation_commit: 7c648a55
 report: orchestration/tasks/TASK-0036-ui-regression-sweep/REPORT.md
 verification: unit 118 files/757 tests; build pass; smoke 1/1 on alternate port 6512; complete gallery committed
 validator: /root/validate_task_0036 — ACCEPT (revision 0770124e)
+architect_review: ACCEPTED — owner review verified the inventory fix and approved integration; see owner REVIEW.md
 ---
-
 

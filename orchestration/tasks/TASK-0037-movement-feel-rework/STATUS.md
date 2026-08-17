@@ -14,7 +14,7 @@ architect_review_required: true
 implementation_commits: 46c51412; 33798746; 64d57bc7; 31413c99
 report: orchestration/tasks/TASK-0037-movement-feel-rework/REPORT.md
 verification: revisions focused 3 files/16 tests and full unit 119 files/764 tests; playtest 31/31; build and alternate browser gate pass; dense movement captures committed
-validator: /root/validate_task_0037 — ACCEPT (final implementation revision 31413c99; pinned smoke caveat remains for architect play gate)
+validator: /root/validate_task_0037 — ACCEPT (coordinator validation was stale against the architect's current tip)
+architect_review: REVISE — owner review found the branch still reverts TASK-0033 ambient/daytime rendering; merge/rebase onto the current program tip, prove an empty rendering diff, and rerun gates; see owner REVIEW.md revisions 1–2
 ---
-
 
