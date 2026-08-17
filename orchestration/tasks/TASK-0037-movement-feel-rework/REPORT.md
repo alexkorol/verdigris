@@ -4,6 +4,7 @@ state: REVIEW_REQUESTED
 branch: codex/TASK-0037-movement-feel-rework
 commits:
   - 46c51412
+  - 33798746
 base_commit: b141cd9f
 ---
 
@@ -53,7 +54,7 @@ No wire protocol, server-authority, or public event shape changed.
 
 ## Verification
 
-- `npm run test:unit` — 119 files / 761 tests passed.
+- `npm run test:unit` — 119 files / 763 tests passed after the revision.
 - `npm run playtest` — 31/31 scenarios passed.
 - ESLint on changed JavaScript — passed.
 - Vite build — passed.
@@ -85,6 +86,16 @@ owner listener, while the equivalent alternate-port gate passed.
 
 ## Integration notes
 
-Requires architect review before integration. Integrate `46c51412` from the
-worker branch after acceptance. TASK-0038 must remain sequenced after this
-task because it owns overlapping player/input paths.
+Requires architect review before integration. Integrate `46c51412` and
+revision `33798746` from the worker branch after acceptance. TASK-0038 must
+remain sequenced after this task because it owns overlapping player/input
+paths.
+
+## Revision 1
+
+Independent validation found two correctness issues. Revision `33798746`
+closes both without leaving the owned paths: `broadcastMovement()` now omits
+unchanged animation metadata and payload animation so the client cannot reset
+the same sprite sequence, and `ensureRepeat()` now checks the timeout/deadline
+state instead of the removed interval field. Regression coverage for both
+behaviors lives in `tests/unit/movement-feel.spec.js`.
