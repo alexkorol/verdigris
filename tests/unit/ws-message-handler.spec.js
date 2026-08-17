@@ -7,6 +7,9 @@
  * messages without crashes.
  */
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 // Mock all server-side dependencies so Delaford can be imported in isolation
 vi.mock('#server/socket.js', () => {
@@ -170,12 +173,21 @@ const createMockWs = (id = 'test-socket-001') => {
 };
 
 describe('Delaford.close – failure-tolerant disconnect cleanup', () => {
+  let disconnectQueueDir;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    disconnectQueueDir = fs.mkdtempSync(path.join(os.tmpdir(), 'verdigris-disconnect-'));
+    process.env.DISCONNECT_SAVE_QUEUE_FILE = path.join(disconnectQueueDir, 'queue.json');
     world.clients = [];
     world.players = [];
     world.removePlayerBySocket.mockReset().mockReturnValue(null);
     world.getScenePlayers.mockReset().mockReturnValue([]);
+  });
+
+  afterEach(() => {
+    delete process.env.DISCONNECT_SAVE_QUEUE_FILE;
+    fs.rmSync(disconnectQueueDir, { recursive: true, force: true });
   });
 
   it('saves a guest without calling the account API and completes all cleanup', async () => {
@@ -224,8 +236,52 @@ describe('Delaford.close – failure-tolerant disconnect cleanup', () => {
     expect(world.clients).toEqual([]);
     expect(partyService.removePlayer).toHaveBeenCalledWith(player.uuid);
     expect(Socket.broadcast).toHaveBeenCalledWith('player:left', ws.id, []);
+    const queued = JSON.parse(fs.readFileSync(process.env.DISCONNECT_SAVE_QUEUE_FILE, 'utf8'));
+    expect(queued).toHaveLength(1);
+    expect(queued[0]).toMatchObject({
+      uuid: player.uuid,
+      snapshot: expect.objectContaining({ inventory: [], wear: {} }),
+    });
     expect(errorSpy).toHaveBeenCalledTimes(2);
     errorSpy.mockRestore();
+  });
+
+  it('queues the complete combat snapshot before removing on a failed teardown save', async () => {
+    const ws = { id: 'combat-disconnect-socket' };
+    const player = {
+      uuid: 'combat-disconnect-player',
+      username: 'Combatant',
+      token: 'none',
+      socket_id: ws.id,
+      sceneId: 'instance:party-1',
+      preInstancePosition: { x: 11, y: 12 },
+      level: 9,
+      combat: { autoAttack: { targetId: 'monster-1' } },
+      wear: { right_hand: { id: 'bronze-sword', uuid: 'equipped-1' } },
+      inventory: { slots: [{ id: 'coins', uuid: 'coins-1', qty: 17 }] },
+      stats: { resources: { health: { current: 4, max: 10 } } },
+      update: vi.fn().mockRejectedValue(new Error('database unavailable')),
+    };
+    world.clients = [ws];
+    world.players = [player];
+
+    await Delaford.close(ws);
+
+    expect(player.combat.autoAttack).toBeNull();
+    expect(world.removePlayer).toHaveBeenCalledWith(player);
+    const queued = JSON.parse(fs.readFileSync(process.env.DISCONNECT_SAVE_QUEUE_FILE, 'utf8'));
+    expect(queued).toHaveLength(1);
+    expect(queued[0]).toMatchObject({
+      uuid: player.uuid,
+      attempts: 1,
+      snapshot: expect.objectContaining({
+        x: 11,
+        y: 12,
+        level: 9,
+        wear: { right_hand: { id: 'bronze-sword', uuid: 'equipped-1' } },
+        inventory: [{ id: 'coins', uuid: 'coins-1', qty: 17 }],
+      }),
+    });
   });
 
   it('pushes the authoritative roster to party members who remain connected', async () => {

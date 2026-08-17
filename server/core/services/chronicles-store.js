@@ -34,6 +34,7 @@ const MAX_SERVER_RECORD_BYTES = 512 * 1024;
 const MAX_RELIC_BYTES = 24 * 1024;
 const ID_PATTERN = /^[a-zA-Z0-9_-]{1,80}$/;
 const RELIC_STATUSES = new Set(['queued', 'circulating', 'recovered']);
+const TROPHY_STATUSES = new Set(['queued', 'circulating', 'recovered']);
 
 const clone = value => JSON.parse(JSON.stringify(value));
 
@@ -94,6 +95,38 @@ const sanitiseRelic = (candidate, { resetCirculation = false } = {}) => {
       ? cleanTimestamp(candidate.recoveredAt, new Date().toISOString())
       : null,
   };
+};
+
+const sanitiseTrophy = (candidate, { resetCirculation = false } = {}) => {
+  if (!candidate || typeof candidate !== 'object') return null;
+  const trophyId = cleanId(candidate.trophyId || candidate.id || candidate.fragmentId);
+  if (!trophyId) return null;
+  const requestedStatus = TROPHY_STATUSES.has(candidate.status) ? candidate.status : 'queued';
+  const status = resetCirculation && requestedStatus === 'circulating' ? 'queued' : requestedStatus;
+  return {
+    id: cleanId(candidate.id) || trophyId,
+    trophyId,
+    quantity: Math.max(1, cleanInteger(candidate.quantity, 1, MAX_LEVEL)),
+    data: candidate.data && typeof candidate.data === 'object' ? clone(candidate.data) : undefined,
+    status,
+    droppedAt: status === 'circulating'
+      ? cleanTimestamp(candidate.droppedAt, new Date().toISOString()) : null,
+    recoveredAt: status === 'recovered'
+      ? cleanTimestamp(candidate.recoveredAt, new Date().toISOString()) : null,
+    requeueCount: Math.max(0, cleanInteger(candidate.requeueCount, 0, 1)),
+  };
+};
+
+const sanitisePool = (candidate, sanitiser, { resetCirculation = false } = {}) => {
+  if (!Array.isArray(candidate)) return [];
+  const seen = new Set();
+  return candidate.map(entry => sanitiser(entry, { resetCirculation })).filter((entry) => {
+    if (!entry) return false;
+    const key = entry.item?.uuid || entry.trophyId || entry.id;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 };
 
 const sanitiseScion = (candidate, {
@@ -158,6 +191,8 @@ const sanitiseHouse = (candidate, options = {}) => {
     preserveRelics: options.preserveRelics === true,
     resetCirculation: options.resetCirculation === true,
   });
+  const relicCandidates = sanitisePool(candidate.relicCandidates, sanitiseRelic, options);
+  const lostTrophies = sanitisePool(candidate.lostTrophies, sanitiseTrophy, options);
   if (!id || !validation.valid || !scions || !crypt) {
     return null;
   }
@@ -173,6 +208,8 @@ const sanitiseHouse = (candidate, options = {}) => {
     foundedAt: cleanTimestamp(candidate.foundedAt, new Date().toISOString()),
     scions,
     crypt,
+    relicCandidates,
+    lostTrophies,
   };
 };
 
@@ -444,27 +481,31 @@ export class ChroniclesStore {
     const diedAt = numericDeath && Number.isFinite(numericDeath.getTime())
       ? numericDeath.toISOString()
       : cleanTimestamp(details.diedAt, new Date().toISOString());
-    let relic = null;
-    const relicItem = buildDurableItemSnapshot(details.relic);
-    if (relicItem && cleanId(relicItem.uuid)
-      && JSON.stringify(relicItem).length <= MAX_RELIC_BYTES) {
-      const relicId = relicItem.uuid;
-      relicItem.boundTo = key;
-      relicItem.chroniclesRelic = {
-        id: relicId,
+    const candidates = Array.isArray(details.relicItems)
+      ? details.relicItems
+      : (details.relic ? [details.relic] : []);
+    const relicCandidates = sanitisePool(candidates.map(item => ({
+      id: item?.uuid || item?.id,
+      item: buildDurableItemSnapshot(item),
+    })), candidate => {
+      const cleanItem = buildDurableItemSnapshot(candidate?.item);
+      if (!cleanItem || !cleanId(cleanItem.uuid)) return null;
+      cleanItem.boundTo = key;
+      cleanItem.chroniclesRelic = {
+        id: cleanItem.uuid,
         houseId: house.id,
         houseName: house.name,
         scionId: scion.id,
         scionName: scion.name,
       };
-      relic = {
-        id: relicId,
-        status: 'queued',
-        item: relicItem,
-        droppedAt: null,
-        recoveredAt: null,
-      };
-    }
+      return sanitiseRelic({ id: cleanItem.uuid, item: cleanItem, status: 'queued' });
+    });
+    // Keep the first candidate on the crypt record for old clients while the
+    // House pool owns the complete transfer.  The adapter mirrors its status
+    // on both records, so this compatibility view cannot surface a duplicate.
+    const relic = relicCandidates[0] || null;
+    const poolCandidates = relicCandidates;
+    const lostTrophies = sanitisePool(details.trophies, sanitiseTrophy);
     const fallen = {
       ...scion,
       level: Math.max(1, cleanInteger(details.level, scion.level, MAX_LEVEL)),
@@ -475,6 +516,10 @@ export class ChroniclesStore {
       ...house,
       scions: house.scions.filter(entry => entry.id !== scion.id),
       crypt: [...house.crypt, fallen].slice(-MAX_SCIONS_PER_HOUSE),
+      relicCandidates: [...(house.relicCandidates || []), ...poolCandidates]
+        .filter((entry, index, all) => all.findIndex(item => item.id === entry.id) === index),
+      lostTrophies: [...(house.lostTrophies || []), ...lostTrophies]
+        .filter((entry, index, all) => all.findIndex(item => item.trophyId === entry.trophyId) === index),
     };
     const houses = current.state.houses.map(entry => (entry.id === house.id ? nextHouse : entry));
     const activeScion = nextHouse.scions[0] || null;
@@ -492,11 +537,36 @@ export class ChroniclesStore {
     const current = key && this.state.accounts[key];
     const houseId = cleanId(identity.houseId);
     const house = current && current.state.houses.find(entry => entry.id === houseId);
-    const fallen = house && house.crypt.find(entry => (
+    const candidate = house && (house.relicCandidates || []).find(entry => entry.status === 'queued');
+    const fallen = !candidate && house && house.crypt.find(entry => (
       entry.relic && entry.relic.status === 'queued'
     ));
-    if (!current || !house || !fallen) {
+    if (!current || !house || (!candidate && !fallen)) {
       return { ok: false, reason: 'No fallen heirloom is awaiting this House.' };
+    }
+
+    if (candidate) {
+      const relic = {
+        ...candidate,
+        status: 'circulating',
+        droppedAt: new Date().toISOString(),
+        recoveredAt: null,
+      };
+      const state = {
+        ...current.state,
+        houses: current.state.houses.map(entry => (entry.id === house.id
+          ? {
+            ...entry,
+            relicCandidates: entry.relicCandidates.map(item => item.id === candidate.id ? relic : item),
+            crypt: entry.crypt.map(fallen => (fallen.relic?.id === candidate.id
+              ? { ...fallen, relic }
+              : fallen)),
+          }
+          : entry)),
+      };
+      const committed = this.commit(key, state);
+      const fallen = house.crypt.find(entry => entry.relic?.id === candidate.id) || null;
+      return committed.ok ? { ...committed, relic: clone(relic), fallen: fallen ? clone(fallen) : { name: 'a fallen scion' } } : committed;
     }
 
     const relic = {
@@ -526,8 +596,17 @@ export class ChroniclesStore {
     const cleanRelicId = cleanId(relicId);
     let matchedHouse = null;
     let matchedScion = null;
+    let matchedCandidate = null;
     if (current && cleanRelicId) {
       current.state.houses.some((house) => {
+        const poolCandidate = (house.relicCandidates || []).find(entry => (
+          entry.id === cleanRelicId && entry.status === 'circulating'
+        ));
+        if (poolCandidate) {
+          matchedHouse = house;
+          matchedCandidate = poolCandidate;
+          return true;
+        }
         const fallen = house.crypt.find(entry => (
           entry.relic
           && entry.relic.id === cleanRelicId
@@ -541,8 +620,22 @@ export class ChroniclesStore {
         return true;
       });
     }
-    if (!current || !matchedHouse || !matchedScion) {
+    if (!current || !matchedHouse || (!matchedScion && !matchedCandidate)) {
       return { ok: false, reason: 'That heirloom is not circulating.' };
+    }
+
+    if (matchedCandidate) {
+      const relic = { ...matchedCandidate, status: 'recovered', droppedAt: null, recoveredAt: new Date().toISOString() };
+      const nextHouse = {
+        ...matchedHouse,
+        relicCandidates: matchedHouse.relicCandidates.map(entry => entry.id === matchedCandidate.id ? relic : entry),
+        crypt: matchedHouse.crypt.map(fallen => (fallen.relic?.id === matchedCandidate.id
+          ? { ...fallen, relic }
+          : fallen)),
+      };
+      const state = { ...current.state, houses: current.state.houses.map(entry => entry.id === matchedHouse.id ? nextHouse : entry) };
+      const committed = this.commit(key, state);
+      return committed.ok ? { ...committed, relic: clone(relic) } : committed;
     }
 
     const relic = {
@@ -562,6 +655,68 @@ export class ChroniclesStore {
     };
     const committed = this.commit(key, state);
     return committed.ok ? { ...committed, relic: clone(relic) } : committed;
+  }
+
+  beginTrophyDrop(accountId, identity = {}) {
+    const key = accountId ? String(accountId) : null;
+    const current = key && this.state.accounts[key];
+    const house = current && current.state.houses.find(entry => entry.id === cleanId(identity.houseId));
+    const candidate = house && (house.lostTrophies || []).find(entry => entry.status === 'queued');
+    if (!current || !house || !candidate) return { ok: false, reason: 'No fallen trophy is awaiting this House.' };
+    const trophy = { ...candidate, status: 'circulating', droppedAt: new Date().toISOString(), recoveredAt: null };
+    const state = {
+      ...current.state,
+      houses: current.state.houses.map(entry => (entry.id === house.id
+        ? { ...entry, lostTrophies: entry.lostTrophies.map(item => item.id === candidate.id ? trophy : item) }
+        : entry)),
+    };
+    const committed = this.commit(key, state);
+    return committed.ok ? { ...committed, trophy: clone(trophy) } : committed;
+  }
+
+  recoverTrophy(accountId, trophyId) {
+    const key = accountId ? String(accountId) : null;
+    const current = key && this.state.accounts[key];
+    const cleanTrophyId = cleanId(trophyId);
+    const house = current && current.state.houses.find(entry => (
+      (entry.lostTrophies || []).some(item => item.id === cleanTrophyId && item.status === 'circulating')
+    ));
+    if (!current || !house) return { ok: false, reason: 'That trophy is not circulating.' };
+    const candidate = house.lostTrophies.find(item => item.id === cleanTrophyId && item.status === 'circulating');
+    const trophy = { ...candidate, status: 'recovered', droppedAt: null, recoveredAt: new Date().toISOString() };
+    const nextHouse = {
+      ...house,
+      lostTrophies: house.lostTrophies.map(item => item.id === candidate.id ? trophy : item),
+    };
+    const state = { ...current.state, houses: current.state.houses.map(entry => entry.id === house.id ? nextHouse : entry) };
+    const committed = this.commit(key, state);
+    return committed.ok ? { ...committed, trophy: clone(trophy) } : committed;
+  }
+
+  requeueCandidate(accountId, candidateId, kind = 'relic') {
+    const key = accountId ? String(accountId) : null;
+    const current = key && this.state.accounts[key];
+    if (!current) return { ok: false, reason: 'Chronicle not found.' };
+    let found = null;
+    let foundHouse = null;
+    current.state.houses.some((house) => {
+      const field = kind === 'trophy' ? 'lostTrophies' : 'relicCandidates';
+      const candidate = (house[field] || []).find(item => item.id === cleanId(candidateId)
+        && ['circulating', 'dropped'].includes(item.status));
+      if (candidate) { found = candidate; foundHouse = house; return true; }
+      return false;
+    });
+    if (!found || found.requeueCount >= 1) return { ok: false, reason: 'Candidate was already requeued.' };
+    const field = kind === 'trophy' ? 'lostTrophies' : 'relicCandidates';
+    const nextHouse = {
+      ...foundHouse,
+      [field]: foundHouse[field].map(item => item.id === found.id
+        ? { ...item, status: 'queued', droppedAt: null, requeueCount: (item.requeueCount || 0) + 1 }
+        : item),
+    };
+    const state = { ...current.state, houses: current.state.houses.map(entry => entry.id === foundHouse.id ? nextHouse : entry) };
+    const committed = this.commit(key, state);
+    return committed.ok ? { ...committed, candidate: clone(nextHouse[field].find(item => item.id === found.id)) } : committed;
   }
 
   recordScionDeed(accountId, identity = {}, details = {}) {

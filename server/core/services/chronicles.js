@@ -80,6 +80,60 @@ const prepareRelic = (item, player) => {
   return relic;
 };
 
+const stableItemKey = (item, fallback) => String(item?.uuid || fallback || `${item?.id || 'item'}-${item?.slot || ''}`)
+  .replace(/[^a-zA-Z0-9_-]/g, '-');
+
+/**
+ * D-106 recovery transfer.  The old browser path selected only one notable
+ * heirloom, which made ordinary equipment, stackables, and carried trophies
+ * disappear with a dead mortal.  Keep the item object intact (including
+ * socketed trophies) and deduplicate by stable UUID before handing it to a
+ * persistence adapter.
+ */
+export const collectCarriedRecovery = (player) => {
+  const items = [];
+  const seen = new Set();
+  const addItem = (item, fallback) => {
+    if (!item || typeof item !== 'object' || !item.id) return;
+    const key = stableItemKey(item, fallback);
+    if (seen.has(key)) return;
+    seen.add(key);
+    const relic = prepareRelic(item, player);
+    if (!relic.uuid) relic.uuid = key;
+    items.push(relic);
+  };
+
+  Object.entries(player?.wear || {}).forEach(([slot, item]) => addItem(item, `wear:${slot}`));
+  const inventory = player?.inventory?.slots || player?.inventory || [];
+  // Preserve the browser's established heirloom surfacing order (notable
+  // gear first) while still transferring every ordinary carried item behind
+  // it.  D-106 changes completeness, not the existing resurface cadence.
+  [...inventory].sort((left, right) => Number(isNotableGear(right)) - Number(isNotableGear(left)))
+    .forEach((item, index) => {
+    addItem(item, `inventory:${index}`);
+    });
+
+  const trophies = [];
+  const trophyIds = new Set();
+  const addTrophy = (candidate, fallback) => {
+    if (candidate === null || candidate === undefined) return;
+    const raw = typeof candidate === 'string' ? { trophyId: candidate } : candidate;
+    if (!raw || typeof raw !== 'object') return;
+    const trophyId = String(raw.trophyId || raw.id || raw.fragmentId || fallback || '').trim();
+    if (!trophyId || trophyIds.has(trophyId)) return;
+    trophyIds.add(trophyId);
+    trophies.push({ ...clone(raw), trophyId });
+  };
+  (Array.isArray(player?.trophies) ? player.trophies : []).forEach((trophy, index) => addTrophy(trophy, `trophy:${index}`));
+  if (player?.fragments && typeof player.fragments === 'object') {
+    Object.entries(player.fragments).forEach(([id, quantity]) => {
+      const amount = Math.max(0, Math.floor(Number(quantity) || 0));
+      if (amount > 0) addTrophy({ trophyId: id, quantity: amount }, `fragment:${id}`);
+    });
+  }
+  return { items, trophies };
+};
+
 export const collectNotableGear = player => {
   const inventory = player.inventory?.slots || [];
   const worn = Object.values(player.wear || {}).filter(Boolean);
@@ -205,13 +259,15 @@ export const saveLivingScion = (player) => {
 
 export const entombFallenScion = (player, { cause = 'Fell in battle' } = {}) => {
   if (!player?.scionId || player.permadeathCommitted) return null;
+  const carried = collectCarriedRecovery(player);
   const result = chroniclesRepository.entombScion({
     accountId: player.accountId,
     houseId: player.houseId,
     scionId: player.scionId,
     level: player.level,
     cause,
-    relicItems: collectNotableGear(player),
+    relicItems: carried.items,
+    trophies: carried.trophies,
     deeds: [],
   });
   if (!result) return null;
@@ -220,6 +276,7 @@ export const entombFallenScion = (player, { cause = 'Fell in battle' } = {}) => 
   const payload = {
     fallen: result.fallen,
     relicCount: result.relicCount,
+    trophyCount: result.trophyCount || 0,
     eligibleRun: result.eligibleRun,
     chronicle: result.chronicle,
   };
@@ -264,17 +321,42 @@ export const drawCirculatingRelic = (players = []) => {
   return item;
 };
 
+export const drawCirculatingTrophy = (players = []) => {
+  const record = chroniclesRepository.drawEligibleTrophy(players.map(player => player?.accountId));
+  if (!record?.trophy) return null;
+  const trophy = clone(record.trophy);
+  return {
+    id: 'trophy-fragment',
+    uuid: record.id,
+    name: `Recovered Trophy — ${trophy.trophyId}`,
+    displayName: `Recovered Trophy — ${trophy.trophyId}`,
+    stackable: true,
+    qty: Math.max(1, Number(trophy.quantity) || 1),
+    chroniclesTrophy: { id: record.id, trophyId: trophy.trophyId },
+    legacy: { sourceScionId: record.sourceScionId },
+  };
+};
+
 export const claimCirculatingRelic = (item, player) => {
   if (!item?.legacyRelicId) return false;
   return chroniclesRepository.claimRelic(item.legacyRelicId, player);
+};
+
+export const claimCirculatingTrophy = (item, player) => {
+  const trophyId = item?.chroniclesTrophy?.id || item?.chroniclesTrophyId;
+  if (!trophyId || !player?.scionId) return false;
+  return chroniclesRepository.claimTrophy(trophyId, player);
 };
 
 export default {
   beginScionSession,
   buildScionSnapshot,
   claimCirculatingRelic,
+  claimCirculatingTrophy,
   collectNotableGear,
+  collectCarriedRecovery,
   drawCirculatingRelic,
+  drawCirculatingTrophy,
   entombFallenScion,
   ensureQuickGuestScion,
   saveLivingScion,

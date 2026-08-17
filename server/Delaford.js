@@ -16,6 +16,7 @@ import world from '#server/core/world.js';
 import { partyService } from '#server/player/handlers/party.js';
 import zoneService from '#server/core/services/zone-service.js';
 import wagonService from '#server/core/services/wagon-service.js';
+import { enqueueDisconnectSave } from '#server/core/services/disconnect-save-queue.js';
 import { recordRuntimeEvent } from '#server/core/services/runtime-diagnostics.js';
 
 class Delaford {
@@ -229,10 +230,28 @@ class Delaford {
 
     // Persistence and the account API are independent teardown steps. Neither
     // is allowed to suppress party cleanup or the player:left notification.
-    try {
-      await player.update();
-    } catch (error) {
-      console.error(`[disconnect] Failed to save ${player.username}: ${error instanceof Error ? error.message : error}`);
+    let persisted = false;
+    let saveError = null;
+    for (let attempt = 0; attempt < 1 && !persisted; attempt += 1) {
+      try {
+        const result = await player.update({ force: true });
+        // Existing Player.update implementations historically return
+        // undefined on a successful guest save.  Null is the explicit failure
+        // signal used by the persistence service.
+        persisted = result !== null;
+      } catch (error) {
+        saveError = error;
+      }
+    }
+    if (!persisted) {
+      const queued = enqueueDisconnectSave(player, saveError || new Error('profile save returned no durable snapshot'));
+      if (!queued.ok) {
+        player.disconnecting = false;
+        console.error(`[disconnect] Blocking removal after save failure for ${player.username}: ${queued.reason}`);
+        return;
+      }
+      player.disconnectSaveQueued = true;
+      console.error(`[disconnect] Queued failed save for ${player.username}: ${saveError instanceof Error ? saveError.message : 'profile save unavailable'}`);
     }
 
     // Persist first, then remove the player from both the world roster and its
