@@ -5,22 +5,29 @@
 // the grade is what sells the time-of-day mood.
 const DAY_LENGTH_SECONDS = 300;
 const LIGHTMAP_SCALE = 0.25;
-const VIGNETTE_EDGE_ALPHA = 0.45;
+// Review revision 1: capped so midday corners cannot crush (reference runs
+// 0.55 over pastel-bright art; Verdigris tile albedo is far darker).
+const VIGNETTE_EDGE_ALPHA = 0.22;
 
-// D-108 reference ambient keyframes (songs-of-the-mire `ambient()`).
+// D-108 reference day/night CURVE (songs-of-the-mire `ambient()`),
+// renormalized to Verdigris art: the reference's absolute grade values were
+// authored over pastel-bright albedo, so they are anchored here to the
+// pre-retune midday multiply [255,247,231] at t=0.30 — midday stays neutral
+// while dusk/night keep the reference's relative deepening (review rev 1).
 const AMBIENT_KEYFRAMES = [
-  [0, [255, 244, 224]],
-  [0.30, [255, 240, 214]],
-  [0.45, [255, 205, 150]],
-  [0.58, [150, 140, 205]],
-  [0.80, [110, 120, 190]],
-  [0.90, [210, 180, 175]],
-  [1, [255, 244, 224]],
+  [0, [255, 251, 242]],
+  [0.30, [255, 247, 231]],
+  [0.45, [255, 211, 162]],
+  [0.58, [150, 144, 221]],
+  [0.80, [110, 124, 205]],
+  [0.90, [210, 185, 189]],
+  [1, [255, 251, 242]],
 ];
 
-// Screen-space cloud shadows. Cores darkened back to the D-108 reference
-// value now that Phase 1-2 removed the washing they were compensating for;
-// drift speeds raised ~4x so a crossing takes minutes, not tens of minutes.
+// Screen-space cloud shadows. Cores moved toward the D-108 reference
+// (196,198,208) but renormalized to Verdigris albedo at (232,233,238):
+// the verbatim reference core cut the darker midfield past the review
+// luminance bar. Drift speeds raised ~4x so a crossing takes minutes.
 const CLOUDS = [
   { x: 0.08, y: 0.26, radius: 0.38, speed: 0.0068, phase: 0.4 },
   { x: 0.37, y: 0.54, radius: 0.46, speed: 0.0044, phase: 2.1 },
@@ -92,9 +99,9 @@ class LightingRenderer {
       Math.max(width, height) * 0.72,
     );
     gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
-    // Edge alpha retuned toward the D-108 reference (0.55), settled just
-    // below it: this game's pixel-art frame starts darker than the demo's,
-    // so the same soft radial falloff is kept at a slightly lower alpha.
+    // Edge alpha retuned toward the D-108 reference mood (0.55) but capped
+    // well below it: this game's pixel-art frame starts darker than the
+    // demo's, and review rev 1 set a 0.30 ceiling for midday readability.
     gradient.addColorStop(1, `rgba(10, 4, 16, ${VIGNETTE_EDGE_ALPHA})`);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
@@ -121,7 +128,7 @@ class LightingRenderer {
         screenY,
         radius,
       );
-      gradient.addColorStop(0, 'rgba(196, 198, 208, 1)');
+      gradient.addColorStop(0, 'rgba(232, 233, 238, 1)');
       gradient.addColorStop(1, 'rgba(255, 255, 255, 1)');
       ctx.fillStyle = gradient;
       ctx.beginPath();

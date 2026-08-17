@@ -124,14 +124,58 @@ Walked the guest Scion through the village to both edge shots at ARPG
 defaults; night pass verified fireflies and grade depth; reference demo
 captured on the same machine for the side-by-side.
 
+## Revision 1 (review 50b4037, verdict REVISE — "renormalize to Verdigris
+albedo; numeric luminance bar")
+
+Review finding: the verbatim reference grade double-darkened Verdigris's
+darker tile art; the after midday frame lost luminance vs before. Corrections
+applied:
+
+1. **Ambient keyframes renormalized** — the reference day/night CURVE is
+   kept, anchored so the midday window multiplies at the pre-retune neutral
+   grade over Verdigris art. Anchor: t=0.30 = [255,247,231] exactly (the
+   pre-retune midday); every other keyframe scaled per channel by
+   reference[t] / reference[0.30] against that anchor. Results: t=0.00
+   [255,251,242], t=0.45 [255,211,162], t=0.58 [150,144,221], t=0.80
+   [110,124,205] (deep night kept), t=0.90 [210,185,189].
+2. **Vignette** `VIGNETTE_EDGE_ALPHA` 0.45 → **0.22** (under the review's
+   ≤0.30 ceiling with margin; midday corners read clean).
+3. **Cloud cores** — the verbatim reference core (196,198,208) was the main
+   midfield darkener (regional probe: center band 57.4 → 44.2); renormalized
+   in steps to **(232,233,238)**, keeping the 4x drift-speed fix. Mist, god
+   rays, night emitters unchanged per correction 3.
+4. **Luminance bar (measured, `captures/measure-luminance.py`)**:
+   - `before-arpg.jpg` 39.82 vs `after-arpg.jpg` **40.14** (+0.32) ✓
+   - `before-edge-north.jpg` 37.33 vs `after-edge-north.jpg` **37.98**
+     (+0.65) ✓
+   Both after captures now average ≥ their before counterparts at the same
+   scene and time-of-day window.
+5. Full capture set re-shot with the same harness (all `after-*` files,
+   `reference-demo.jpg`, `after-vs-reference.jpg` refreshed).
+
+Night-grade unit expectation updated to the renormalized [110,124,205]
+(same QUESTION-0004 precedent; assertion still exact-value, still floors at
+≥100).
+
+## Revision 1 verification
+
+- `npm run test:unit` — PASS (115 files, 744 tests)
+- `npm run smoke:browser` — PASS (1/1, port 6500 released)
+- `npm run playtest` — PASS (31/31). Two earlier attempts flaked on
+  `dev:state` timeouts / the known timing-sensitive `gear-outcomes` under
+  machine contention (multiple coordinators active); the playtest path never
+  loads the client renderer, so these cannot be caused by this diff. A
+  clean rerun passed 31/31.
+
 ## Commits
 
-- `889f46a` — the full retune + evidence + report (single coherent commit)
+- `889f46a` (rebased: `4e9274e`) — the full retune + evidence + report
+- revision 1 commit: see STATUS.md `revision_commit`
 
 ## Unresolved questions / risks / follow-ups
 
 - If the architect wants full reference vignette strength (0.55), it is a
-  one-constant change.
+  one-constant change — but note review rev 1 capped it at ≤0.30.
 - Phase 4 (DoF coupling) and Phase 5 (perf) remain untouched per scope.
 - Dawn/dusk grades follow from the keyframe adoption; only morning and night
   were capture-verified (day-cycle wall-clock cost). The capture harness can
