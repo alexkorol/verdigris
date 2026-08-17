@@ -115,6 +115,13 @@ The wrapper had to invoke the installed npm CLI through Node on Windows
 (`npm.cmd` direct spawn returned `EINVAL`); the actual harness runs were
 unchanged. No orphaned spinner, server, or playtest processes remained.
 
+For source-level alignment, a read-only detached probe applied Fable's
+currently staged `playtest/timing.mjs` snapshot to a disposable candidate
+worktree. With `loadMode:false`, the authored 8000ms timeout stayed 8000ms
+idle, adapted to 8764ms after a ~195ms scheduler pause, and to 9979ms after a
+~500ms pause; the 14000ms (1.75x) ceiling remained intact. The temporary
+worktree was removed and no product checkout was changed.
+
 ## Manual checks
 
 The final integration worktree was exercised against the unchanged WebSocket server with the full scenario suite under the documented CPU spinner. A disposable final-tip scratch worktree suppressed the real `instance:enterSolo` frame and confirmed the transition failure boundary.
