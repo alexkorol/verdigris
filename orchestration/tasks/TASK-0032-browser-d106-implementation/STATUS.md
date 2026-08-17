@@ -1,6 +1,6 @@
 ---
 task: TASK-0032
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Luna browser D-106/D-109 implementation worker
 worker_branch: codex/TASK-0032-browser-d106-implementation
@@ -15,4 +15,10 @@ dependencies: TASK-0031 accepted and integrated at e818764b
 expected_verification: npm run test:unit; npm run playtest; npm run smoke:browser; one named test per audit delta row; old-format migration test
 known_risks: server-only scope; preserve browser cadence unless convergence requires it; no value-loss path; do not decide long-term store authority or alter Vesselforge formulas
 architect_review_required: true
+implementation_commits: 749cc4a6c93733abe7e0a24da6e3c3161215ea3; ac3a721699f624c9a3ff5fc7df58dd3785c356f8
+architect_review: ACCEPTED (Fable review of 749cc4a6/ac3a7216)
+validator: ACCEPT
+integration_branch: codex/integrate-TASK-0032-latest
+integration_commit: b952fdac
+integration_verification: unit 757/757; playtest 31/31; architect smoke 1/1; local smoke rerun blocked by owner PM2 PID 10276 on port 6500
 ---
