@@ -55,3 +55,25 @@ return to the saved surface position.
 
 No source, harness, product, or worker-owned files were changed for this
 baseline.
+
+## WIP implementation probe
+
+Against Kimi's uncommitted four-file WIP (built in the Kimi clone on port
+6517), the native build completed with the existing gates green:
+
+- `native legacy denylist: PASS`
+- `verdigris core tests: PASS`
+- `verdigris networking tests: PASS`
+- one non-fatal MSVC C4189 warning for an unused local in `networking.cpp`
+
+The unchanged attach run then reached **1/2**:
+
+- `movement`: PASS (4596ms), including an instance entry and movement inside
+  the instance;
+- `zones`: all six zone entries, layouts, stairs, names, and 18-monster
+  populations passed, but the final stair return failed the saved-position
+  assertion: `39.666666,116.333334` vs expected `6,22`.
+
+This is WIP evidence, not acceptance. It identifies a remaining lifecycle
+edge around the pre-instance position across sequential scenario connections;
+the worker-owned source remains untouched by the coordinator.
