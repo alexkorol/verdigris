@@ -2,7 +2,7 @@ import ItemFactory from '#server/core/items/factory.js';
 import Socket from '#server/socket.js';
 import world from '#server/core/world.js';
 import chroniclesStore from '#server/core/services/chronicles-store.js';
-import { drawCirculatingRelic } from '#server/core/services/chronicles.js';
+import { drawCirculatingRelic, drawCirculatingTrophy } from '#server/core/services/chronicles.js';
 import config from '#server/config.js';
 import UI from '#shared/ui.js';
 import {
@@ -180,6 +180,19 @@ export const dropMonsterLoot = (monster, options = {}) => {
         });
       }
     }
+    const releasedTrophy = chroniclesStore.beginTrophyDrop(player.uuid, player.chronicles);
+    if (releasedTrophy.ok && releasedTrophy.trophy) {
+      const trophy = ItemFactory.toWorldInstance({
+        id: 'trophy-fragment',
+        uuid: releasedTrophy.trophy.id,
+        name: `Recovered Trophy — ${releasedTrophy.trophy.trophyId}`,
+        displayName: `Recovered Trophy — ${releasedTrophy.trophy.trophyId}`,
+        stackable: true,
+        qty: releasedTrophy.trophy.quantity,
+        chroniclesTrophy: { id: releasedTrophy.trophy.id, trophyId: releasedTrophy.trophy.trophyId },
+      }, { x: dropX, y: dropY });
+      drops.push(trophy);
+    }
   }
 
   const baseGearChance = GEAR_DROP_CHANCES[rarityId] !== undefined
@@ -214,11 +227,24 @@ export const dropMonsterLoot = (monster, options = {}) => {
     : RELIC_DROP_CHANCE;
   if (rng() < relicChance) {
     const eligiblePlayers = [options.killer, ...world.getScenePlayers(scene.id)].filter(Boolean);
-    const relic = typeof options.relicProvider === 'function'
+    let relic = typeof options.relicProvider === 'function'
       ? options.relicProvider(eligiblePlayers)
       : drawCirculatingRelic(eligiblePlayers);
+    // Direct-admission/legacy Chronicle sessions have no SQLite account id.
+    // Bridge them through the JSON adapter so D-106 recovery remains live in
+    // the historical browser flow without creating a second SQLite record.
+    if (!relic && player?.uuid && player?.chronicles) {
+      const released = chroniclesStore.beginRelicDrop(player.uuid, player.chronicles);
+      if (released.ok && released.relic?.item) {
+        relic = ItemFactory.adoptExisting(released.relic.item);
+      }
+    }
     if (relic) {
       drops.push(ItemFactory.toWorldInstance(relic, { x: dropX, y: dropY }));
+    }
+    const trophy = drawCirculatingTrophy(eligiblePlayers);
+    if (trophy) {
+      drops.push(ItemFactory.toWorldInstance(trophy, { x: dropX, y: dropY }));
     }
   }
 

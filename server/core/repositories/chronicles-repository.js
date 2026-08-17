@@ -87,7 +87,8 @@ export class ChroniclesRepository {
     this.migrate();
     // A server restart discards its in-world drops. Put unclaimed relics back
     // into circulation instead of losing a dead scion's history to a crash.
-    this.db.prepare("UPDATE chronicle_relics SET status = 'circulating' WHERE status = 'dropped'").run();
+    this.db.prepare("UPDATE chronicle_relics SET status = 'circulating', dropped_at = NULL WHERE status = 'dropped'").run();
+    this.db.prepare("UPDATE chronicle_trophies SET status = 'circulating', dropped_at = NULL WHERE status = 'dropped'").run();
   }
 
   migrate() {
@@ -138,10 +139,29 @@ export class ChroniclesRepository {
         dropped_at TEXT,
         claimed_at TEXT,
         claimed_by_scion_id TEXT,
+        item_uuid TEXT,
+        recovery_key TEXT,
+        retirement_count INTEGER NOT NULL DEFAULT 0,
         FOREIGN KEY(house_id) REFERENCES chronicle_houses(id) ON DELETE CASCADE
       );
       CREATE INDEX IF NOT EXISTS chronicle_relic_circulation
         ON chronicle_relics(status, eligible_run, created_at);
+      CREATE TABLE IF NOT EXISTS chronicle_trophies (
+        id TEXT PRIMARY KEY,
+        house_id TEXT NOT NULL,
+        source_scion_id TEXT NOT NULL,
+        trophy_json TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'circulating',
+        eligible_run INTEGER NOT NULL,
+        created_at TEXT NOT NULL,
+        dropped_at TEXT,
+        claimed_at TEXT,
+        claimed_by_scion_id TEXT,
+        retirement_count INTEGER NOT NULL DEFAULT 0,
+        FOREIGN KEY(house_id) REFERENCES chronicle_houses(id) ON DELETE CASCADE
+      );
+      CREATE INDEX IF NOT EXISTS chronicle_trophy_circulation
+        ON chronicle_trophies(status, eligible_run, created_at);
       CREATE TABLE IF NOT EXISTS chronicle_house_links (
         account_id TEXT NOT NULL,
         house_id TEXT NOT NULL,
@@ -168,6 +188,31 @@ export class ChroniclesRepository {
     if (!houseColumns.has('last_daily_claim')) {
       this.db.exec('ALTER TABLE chronicle_houses ADD COLUMN last_daily_claim TEXT');
     }
+    const relicColumns = new Set(this.db.pragma('table_info(chronicle_relics)').map(column => column.name));
+    if (!relicColumns.has('item_uuid')) this.db.exec('ALTER TABLE chronicle_relics ADD COLUMN item_uuid TEXT');
+    if (!relicColumns.has('recovery_key')) this.db.exec('ALTER TABLE chronicle_relics ADD COLUMN recovery_key TEXT');
+    if (!relicColumns.has('retirement_count')) this.db.exec('ALTER TABLE chronicle_relics ADD COLUMN retirement_count INTEGER NOT NULL DEFAULT 0');
+    // Older databases had no stable item key.  Fill it from the durable item
+    // payload and collapse duplicate UUID rows deterministically, retaining
+    // the oldest record as the canonical recovery candidate.
+    const relicRows = this.db.prepare('SELECT id, item_json, item_uuid FROM chronicle_relics ORDER BY created_at ASC, id ASC').all();
+    const seenItemUuids = new Set();
+    const updateRelicKey = this.db.prepare('UPDATE chronicle_relics SET item_uuid = ? WHERE id = ?');
+    const removeDuplicate = this.db.prepare('DELETE FROM chronicle_relics WHERE id = ?');
+    const migrateRelics = this.db.transaction(() => {
+      relicRows.forEach((row) => {
+        const item = parseJson(row.item_json, {});
+        const key = row.item_uuid || item.uuid || `${item.id || 'item'}:${row.id}`;
+        if (seenItemUuids.has(key)) {
+          removeDuplicate.run(row.id);
+          return;
+        }
+        seenItemUuids.add(key);
+        updateRelicKey.run(key, row.id);
+      });
+    });
+    migrateRelics();
+    this.db.exec('CREATE UNIQUE INDEX IF NOT EXISTS chronicle_relic_item_uuid ON chronicle_relics(item_uuid) WHERE item_uuid IS NOT NULL');
   }
 
   close() {
@@ -201,6 +246,9 @@ export class ChroniclesRepository {
     const relicNames = this.db.prepare(`
       SELECT item_json FROM chronicle_relics WHERE source_scion_id = ? ORDER BY created_at ASC
     `);
+    const houseTrophies = this.db.prepare(`
+      SELECT id, trophy_json, status FROM chronicle_trophies WHERE house_id = ? ORDER BY created_at ASC
+    `);
     const heirloomCount = this.db.prepare(`
       SELECT COUNT(*) AS count FROM chronicle_relics WHERE house_id = ?
     `);
@@ -231,6 +279,9 @@ export class ChroniclesRepository {
           .filter(Boolean)
           .map(item => item.displayName || item.name || item.baseName || item.id),
       })),
+      lostTrophies: houseTrophies.all(row.id)
+        .map(entry => ({ id: entry.id, ...parseJson(entry.trophy_json, {}), status: entry.status }))
+        .filter(entry => entry.trophyId || entry.id),
       };
     });
 
@@ -464,15 +515,37 @@ export class ChroniclesRepository {
     return result.changes ? clone(snapshot) : null;
   }
 
-  entombScion({ accountId, houseId, scionId, level, cause, relicItems = [], deeds = [] }) {
+  entombScion({ accountId, houseId, scionId, level, cause, relicItems = [], trophies = [], deeds = [] }) {
     const account = this.db.prepare('SELECT run_count FROM chronicle_accounts WHERE account_id = ?').get(accountId);
     const scion = this.getLivingScion(accountId, scionId);
-    if (!account || !scion || scion.houseId !== houseId) return null;
+    if (!account) return null;
+    if (!scion) {
+      const dead = this.db.prepare(`
+        SELECT s.*, h.name AS house_name, h.account_id
+        FROM chronicle_scions s JOIN chronicle_houses h ON h.id = s.house_id
+        WHERE s.id = ? AND h.account_id = ? AND s.status = 'dead'
+      `).get(scionId, accountId);
+      if (!dead || dead.house_id !== houseId) return null;
+      const relicCount = this.db.prepare('SELECT COUNT(*) AS count FROM chronicle_relics WHERE source_scion_id = ?').get(scionId).count;
+      const trophyCount = this.db.prepare('SELECT COUNT(*) AS count FROM chronicle_trophies WHERE source_scion_id = ?').get(scionId).count;
+      return {
+        idempotent: true,
+        fallen: { ...rowToScion(dead), houseId, houseName: dead.house_name },
+        relicCount,
+        trophyCount,
+        eligibleRun: account.run_count + 3,
+        chronicle: this.getChronicle(accountId),
+      };
+    }
+    if (scion.houseId !== houseId) return null;
     const diedAt = isoNow();
     const eligibleRun = account.run_count + 3;
     const uniqueRelics = [...new Map(relicItems
       .filter(item => item && item.id)
       .map(item => [item.uuid || `${item.id}:${item.slot ?? ''}`, item])).values()];
+    const uniqueTrophies = [...new Map(trophies
+      .filter(trophy => trophy && (trophy.trophyId || trophy.id || trophy.fragmentId))
+      .map((trophy, index) => [String(trophy.trophyId || trophy.fragmentId || trophy.id || `trophy:${index}`), trophy])).values()];
     const commit = this.db.transaction(() => {
       const updated = this.db.prepare(`
         UPDATE chronicle_scions
@@ -485,14 +558,24 @@ export class ChroniclesRepository {
       const insertRelic = this.db.prepare(`
         INSERT INTO chronicle_relics (
           id, house_id, source_scion_id, origin_scion_name, item_json,
-          status, eligible_run, created_at
-        ) VALUES (?, ?, ?, ?, ?, 'circulating', ?, ?)
+          status, eligible_run, created_at, item_uuid, recovery_key
+        ) VALUES (?, ?, ?, ?, ?, 'circulating', ?, ?, ?, ?)
       `);
       uniqueRelics.forEach((item) => {
+        const itemUuid = item.uuid || `${item.id}:${item.slot ?? ''}`;
         insertRelic.run(
           randomUUID(), houseId, scionId, scion.name,
-          JSON.stringify(item), eligibleRun, diedAt,
+          JSON.stringify(item), eligibleRun, diedAt, itemUuid, `${scionId}:${itemUuid}`,
         );
+      });
+      const insertTrophy = this.db.prepare(`
+        INSERT INTO chronicle_trophies (
+          id, house_id, source_scion_id, trophy_json, status, eligible_run, created_at
+        ) VALUES (?, ?, ?, ?, 'circulating', ?, ?)
+      `);
+      uniqueTrophies.forEach((trophy) => {
+        const trophyId = String(trophy.trophyId || trophy.fragmentId || trophy.id);
+        insertTrophy.run(`${scionId}:${trophyId}`, houseId, scionId, JSON.stringify({ ...trophy, trophyId }), eligibleRun, diedAt);
       });
       return true;
     });
@@ -500,6 +583,7 @@ export class ChroniclesRepository {
     return {
       fallen: { ...scion, level, diedAt, cause: cause || 'Fell in battle' },
       relicCount: uniqueRelics.length,
+      trophyCount: uniqueTrophies.length,
       eligibleRun,
       chronicle: this.getChronicle(accountId),
     };
@@ -587,6 +671,50 @@ export class ChroniclesRepository {
       SET status = 'claimed', claimed_at = ?, claimed_by_scion_id = ?
       WHERE id = ? AND status = 'dropped'
     `).run(isoNow(), player.scionId, relicId);
+    return Boolean(result.changes);
+  }
+
+  drawEligibleTrophy(accountIds = []) {
+    const ids = [...new Set(accountIds.filter(Boolean).map(String))];
+    if (!ids.length) return null;
+    const placeholders = ids.map(() => '?').join(', ');
+    const row = this.db.prepare(`
+      SELECT t.*, a.run_count
+      FROM chronicle_trophies t
+      JOIN chronicle_houses h ON h.id = t.house_id
+      JOIN chronicle_accounts a ON a.account_id = h.account_id
+      WHERE t.status = 'circulating' AND h.account_id IN (${placeholders})
+        AND t.eligible_run <= a.run_count
+      ORDER BY t.created_at ASC
+      LIMIT 1
+    `).get(...ids);
+    if (!row) return null;
+    const changed = this.db.prepare(`
+      UPDATE chronicle_trophies SET status = 'dropped', dropped_at = ?
+      WHERE id = ? AND status = 'circulating'
+    `).run(isoNow(), row.id);
+    if (!changed.changes) return null;
+    return { id: row.id, trophy: parseJson(row.trophy_json, null), sourceScionId: row.source_scion_id };
+  }
+
+  claimTrophy(trophyId, player) {
+    if (!trophyId || !player?.scionId) return false;
+    const result = this.db.prepare(`
+      UPDATE chronicle_trophies
+      SET status = 'claimed', claimed_at = ?, claimed_by_scion_id = ?
+      WHERE id = ? AND status = 'dropped'
+    `).run(isoNow(), player.scionId, trophyId);
+    return Boolean(result.changes);
+  }
+
+  requeueDroppedCandidate(candidateId, kind = 'relic') {
+    const table = kind === 'trophy' ? 'chronicle_trophies' : 'chronicle_relics';
+    const result = this.db.prepare(`
+      UPDATE ${table}
+      SET status = 'circulating', dropped_at = NULL,
+          retirement_count = COALESCE(retirement_count, 0) + 1
+      WHERE id = ? AND status = 'dropped' AND COALESCE(retirement_count, 0) < 1
+    `).run(candidateId);
     return Boolean(result.changes);
   }
 }

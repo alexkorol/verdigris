@@ -182,6 +182,63 @@ ADR-002.
   ADR-002 proposal, D-101/D-102/D-103 provisional decisions, and the
   0006 unequipped-relic observation.
 
+# THE MISSION, OWNER-RULED (D-116, ~23:10): C++ PARITY OR BETTER
+
+The orchestration's purpose is the C++ conversion — native at the web
+version's level or better, with multi-layer regression sweeps. Strategy:
+the C++ server speaks the existing WS protocol so the unchanged client
+and the unchanged 31-scenario playtest harness become the parity bar.
+Roadmap: `docs/rebuild/PARITY_ROADMAP.md` (waves N1–N7).
+
+- **TASK-0039 (critical, READY): parity wave N1** — C++ protocol server
+  passing `quickstart` + `single-session` against the unchanged harness;
+  includes ADR-003 (networking lib) draft for architect ratification.
+- The browser playability wave (0032–0038) CONTINUES — it raises the
+  reference bar; both lanes run in parallel with disjoint paths.
+- Sweep layers standing: protocol dual-run matrix, UI pane sweeps, core
+  determinism replays, D-115 play gate.
+
+# OWNER VERDICT ON THE NATIVE EXE + PROCESS CORRECTIONS (~22:45)
+
+The owner played the exe: "a total mess." Root causes confirmed and
+owned by the architect: (1) per-task green reviews with NO whole-product
+play gate; (2) the movement rescale left all combat ranges incoherent
+(D-114 born from this); (3) debug scaffolding presented as game UI;
+(4) no art-direction ruling so scale/style drifted; (5) effort split
+across two "playable" surfaces so neither reached quality.
+
+New process rules now binding: **D-114 feel-coherence tables** and
+**D-115 architect play gate**. Product rulings: **D-112 the browser game
+is THE product; the exe is demoted to core testbed** (standing architect
+recommendation unless the owner inverts), **D-113 webchat/vector-first
+art with a scale chart**.
+
+Critical path unchanged in spirit, updated in content:
+1. TASK-0034 playability evaluation (browser) — now seeded with the
+   owner's exe findings (OWNER-SEED.md in the task folder).
+2. TASK-0032 death/disconnect rules (in flight).
+3. TASK-0035 native exe triage (range table + debug UI behind F3) —
+   replaces further native feature work entirely.
+4. TASK-0033 daytime default.
+Everything else remains HELD.
+
+# PRIORITY RESET — PLAYABLE-FIRST (owner-directed, 2026-08-16 ~22:15)
+
+The owner's directive: "I want to have a playable game." Recorded as
+**D-110**: play-session friction outranks all feature/infra/renderer
+work from here. New critical path:
+
+1. **TASK-0034 (critical)** — actually PLAY the game for a session and
+   produce the ranked friction inventory. This document sets the next
+   wave. Suggested: kimi.
+2. **TASK-0032 (critical, in flight)** — death/disconnect fairness IS
+   playability; continues.
+3. **TASK-0033 (high)** — boot in permanent daytime; cycle behind an
+   off-by-default toggle (D-111) until the owner rules on it.
+
+Everything else HOLDS until the 0034 friction list exists. Do not spec
+or claim new feature work past these three.
+
 # KIMI RETURN BRIEF (2026-08-16 ~21:40 — quota restored)
 
 Welcome back, kimi and kimi-work. While you were out: your 0027 claim was
