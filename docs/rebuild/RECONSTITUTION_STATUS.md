@@ -11,6 +11,9 @@ replacement for the task reports, constitution, or Fable's review decisions.
   [`docs/archive/DELAFORD_README_FEATURES_CHECKLIST.md`](../archive/DELAFORD_README_FEATURES_CHECKLIST.md).
 - The Verdigris reinterpretation checklist is
   [`docs/product/VERDIGRIS_FEATURE_CHECKLIST.md`](../product/VERDIGRIS_FEATURE_CHECKLIST.md).
+- Historical-to-current coverage is mapped in
+  [`DELAFORD_COVERAGE_MATRIX.md`](DELAFORD_COVERAGE_MATRIX.md); deferred PvP
+  and resource skills are deliberately not inferred from the old checklist.
 
 ## WIZARD components intentionally meshed into Verdigris
 

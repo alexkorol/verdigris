@@ -13,6 +13,9 @@
 - Focused WIZARD seam verification is recorded in
   [`WIZARD_INTEGRATION_VERIFICATION.md`](WIZARD_INTEGRATION_VERIFICATION.md):
   Orbs, inventory/Brands & Bonds, and Cartographer/map tests pass 73/73.
+- Historical Delaford-to-Verdigris coverage is mapped in
+  [`DELAFORD_COVERAGE_MATRIX.md`](DELAFORD_COVERAGE_MATRIX.md), with PvP and
+  resource skills explicitly deferred pending product authority.
 - Wave 1 READY: TASK-0001 (native Legends records), TASK-0002 (build/CI
   hardening), TASK-0003 (slice verification harness). DRAFT: TASK-0004
   (client control pass per decision D-007), TASK-0005 (legacy audit).
