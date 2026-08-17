@@ -16,6 +16,7 @@ verification: committed tip d476788 passes native denylist/core/networking/clien
 coordinator_recheck: 2026-08-17 — clean Kimi worktree d476788 independently reran `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient`: denylist, core, networking, and client shell all PASS; no source changes.
 coordinator_attach_recheck: 2026-08-17 — native server d476788 on port 6526 passed unchanged `quickstart single-session movement zones` 4/4, including six zone combinations and saved-position restoration; raw transcript in captures/coordinator-native-attach-2026-08-17.txt.
 coordinator_dual_run: 2026-08-17 — JS reference and native d476788 both pass the unchanged four-scenario contract matrix 4/4; native intentionally reports 18 monsters per zone versus JS authored counts 33/56/31/46/57/54, documented as the N2 minimum stub and N3+ follow-up.
+n3_baseline_probe: 2026-08-17 — native d476788 predictably fails `combat` at 18<20 monsters and `encounter-variety` at missing authored pack roles; negative boundary captured in captures/coordinator-n3-baseline-2026-08-17.txt.
 ---
 
 TASK-0044 is ready for architect review. Kimi's external worktree is clean at

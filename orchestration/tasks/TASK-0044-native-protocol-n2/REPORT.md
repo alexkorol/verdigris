@@ -143,6 +143,16 @@ The N2 specification explicitly permits a minimum scenario stub; this is not
 claimed as population parity. Exact authored composition and counts remain a
 later N3+ parity obligation.
 
+## N3 negative baseline — 2026-08-17
+
+To make the next wave’s entry criteria executable, the coordinator ran the
+unchanged `combat` and `encounter-variety` scenarios against native `d476788`.
+Both failed at the expected N2 boundary: `combat` observed 18 monsters where
+the reference scenario requires at least 20, and `encounter-variety` lacked the
+authored melee/ranged/buffer pack roles. The exact negative transcript is
+[`coordinator-n3-baseline-2026-08-17.txt`](captures/coordinator-n3-baseline-2026-08-17.txt).
+No N2 source was changed.
+
 ## Integration dry-run
 
 A disposable merge of `origin/codex/TASK-0044-native-protocol-n2` into the
