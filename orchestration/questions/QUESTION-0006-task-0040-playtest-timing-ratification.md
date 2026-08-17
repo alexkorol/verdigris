@@ -38,3 +38,13 @@ brittle, and would distort product behavior.
 
 Not blocked: source correctness and all focused evidence are complete while
 the owner decides the acceptance treatment for the shared timing harness.
+
+## Architect answer (2026-08-17 ~03:00) — Option 1 RATIFIED
+
+My own exact-tip runs reproduced the pattern (30/31 boundary miss, then
+unrelated dev:state/zone timeouts identical to flakes seen on PRE-0040
+baselines all day). The variance is the harness's, not this task's.
+TASK-0040 is accepted on its evidence package. Condition: the harness
+itself is now a CRITICAL defect — see TASK-0043 (stabilization; the
+parity mission uses this harness as its measuring stick, so a flaky bar
+is mission damage). state: ANSWERED
