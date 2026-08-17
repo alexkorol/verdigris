@@ -1,6 +1,6 @@
 ---
 task: TASK-0031
-state: CLAIMED
+state: IMPLEMENTED
 coordinator: codex
 worker: Luna read-only browser death/relic auditor
 worker_branch: codex/TASK-0031-browser-d106-audit
@@ -11,4 +11,6 @@ dependencies: none; current program tip includes accepted and integrated TASK-00
 expected_verification: path/line evidence for death/relic flows; complete D-106/D-109/native delta table; concrete follow-up change-set forecast; read-only git status proof
 known_risks: audit-only scope; do not modify browser/server/native code or invent owner decisions
 architect_review_required: true
+implementation_commit: cb8ad815
+report: orchestration/tasks/TASK-0031-browser-d106-audit/REPORT.md
 ---
