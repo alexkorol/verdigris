@@ -32,6 +32,10 @@ black-orb result.
   canvas; `src/core/rendering/perspective-renderer.js` grades only the world
   buffer.
 
+An executable Node calculation with a representative `dt = -239.9s` gives
+`1 - exp(-dt * 12) = -Infinity` and `0 * -Infinity = NaN`, matching the
+renderer path when the initial fill is already equal to the target fill.
+
 ## Recommendation
 
 Before changing compositing, recapture midday and night with a clock-safe
