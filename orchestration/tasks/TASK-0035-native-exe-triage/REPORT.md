@@ -5,6 +5,7 @@ branch: codex/TASK-0035-native-exe-triage
 commits:
   - 809de7bb
   - e562ad1e
+  - 225078d1
 base_commit: b141cd9f
 ---
 
@@ -52,7 +53,21 @@ native constants consumed by the deterministic core and client lab.
 - `powershell -File native/build.ps1 -RunTests -RunClient` — passed.
 - Native denylist — passed.
 - Core tests — passed.
-- Headless output — unchanged/passed.
+- Headless output — corrected in `225078d1d`: the approach/return loop now reaches
+  the D-114 melee band and extraction, and the command returns non-zero unless
+  both banked counts are exactly `1`.
+- Literal successful transcript:
+
+  ```text
+  native legacy denylist: PASS
+  verdigris core tests: PASS
+  Verdigris native client shell
+  House: House Verdigris | trophies stored: 1 | items stored: 1
+  ```
+
+- Direct executable check: the same `1 | 1` line was emitted with `exit=0`.
+- The pre-fix broken transcript was reproduced as `trophies stored: 0 | items
+  stored: 0`; after the correction, a non-1/1 result returns exit code 1.
 - `git diff --check b141cd9f..e562ad1e` — passed.
 - Scope is limited to the four permitted native paths.
 
@@ -83,7 +98,6 @@ may request that additional driven capture under the D-115 play gate.
 
 ## Integration notes
 
-Requires architect review before integration. Integrate `809de7bb` and
-`e562ad1e` together after acceptance.
-
+Requires architect re-review before integration. Integrate `809de7bb`,
+`e562ad1e`, and `225078d1` together after acceptance.
 

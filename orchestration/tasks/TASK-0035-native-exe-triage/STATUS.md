@@ -11,10 +11,9 @@ dependencies: none
 expected_verification: native build/test/client gate; constants table with seconds-to-contact derivations; default clean-view and adjacent-range fight evidence
 known_risks: native/src overlaps TASK-0039, so 0039 remains unclaimed until this task is accepted or otherwise released; do not turn the testbed into a game UI
 architect_review_required: true
-implementation_commits: 809de7bb; e562ad1e
+implementation_commits: 809de7bb; e562ad1e; 225078d1
 report: orchestration/tasks/TASK-0035-native-exe-triage/REPORT.md
-verification: native build/test/client gate, denylist, core tests, headless output, diff check, and clean/F3/adjacent-range captures passed
+verification: revision native build/test/client gate, denylist, core tests, literal 1/1 headless output, direct executable exit=0, and diff check passed; broken 0/0 transcript captured before the loop correction
 validator: /root/validate_task_0035 — ACCEPT (coordinator validation was stale against the architect's current tip)
 architect_review: REVISE — owner review requires the literal headless transcript to end with `trophies stored: 1 | items stored: 1`, a non-zero failure when counts are not 1/1, and both transcripts in REPORT.md; see owner REVIEW.md revisions 1–2
 ---
-
