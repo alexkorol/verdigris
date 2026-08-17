@@ -1,75 +1,40 @@
 ---
 task: TASK-0032
-state: REVIEW_REQUESTED
+state: INTEGRATED
 branch: codex/TASK-0032-browser-d106-implementation
 commits:
-  - 749cc4a6c93733abe7e0a24da6e3c3161215ea3e
+  - 749cc4a6c93733abe7e0a24da6e3c3161215ea3
   - ac3a721699f624c9a3ff5fc7df58dd3785c356f8
 base_commit: e818764b
 ---
 
 ## Executive summary
 
-The browser Chronicle path now implements D-106/D-109 recovery semantics. Hard
-death transfers every equipped and carried item plus standalone trophies into
-recoverable pools; socketed trophies remain embedded in their item. SQLite and
-JSON adapters preserve relic/trophy identity through migration and UUID
-deduplication. Instance retirement requeues surfaced relics and trophies once,
-including JSON candidates picked up underfoot. Failed disconnect saves queue the
-complete snapshot before player removal.
+The browser Chronicle path now obeys D-106/D-109: hard death transfers all
+carried value into recovery pools, SQLite/JSON recovery is migration-safe,
+retirement requeues surfaced relics and trophies once, underfoot JSON pickup
+completes recovery, and failed disconnect saves queue the complete snapshot
+before removal.
 
-## Implementation
+## Verification and review
 
-- Added all-carried death transfer and durable relic/trophy claim paths.
-- Added SQLite migration/deduplication and JSON old-save compatibility.
-- Added explicit instance retirement membership and one-time requeue markers.
-- Shared Chronicle recovery runs for click and underfoot pickup paths.
-- Added a durable atomic disconnect-save queue for failed combat/teardown saves.
-- Preserved both SQLite and JSON adapters; long-term authority remains an
-  owner-facing question per the spec. No Vesselforge formulas changed.
+- Independent validator: ACCEPT after the trophy-requeue, underfoot-recovery,
+  and D-109 test revisions.
+- Architect review: ACCEPTED, reviewed commits `749cc4a6` and `ac3a7216`.
+- Integration unit gate: 118 files / 757 tests passed.
+- Integration playtest: clean rerun 31/31 scenarios passed; isolated earlier
+  combat/gear timing misses were rerun successfully without code changes.
+- Architect independently reran `npm run smoke:browser`: 1/1 passed and port
+  6500 was released. A later local attempt encountered the owner’s persistent
+  PM2 listener on port 6500 (PID 10276), which was preserved.
 
-## Changed files
+## Integration
 
-Server changes are confined to `server/**`, including Chronicle repository/store
-adapters, death/recovery services, world retirement, pickup handling, socket
-cleanup, and the new disconnect queue. Tests are confined to `tests/unit/**`.
+Merged into Fable’s current program tip (`96601378`) as `b952fdac`, with
+metadata/provenance commit `03ac9dff`. The browser changes remain server/tests
+only and raise the D-116 parity bar without changing native or prototype paths.
 
-## Verification
+## Remaining limitation
 
-- Focused revision suites: 46 passed.
-- `npm run test:unit`: 118 files, 757 tests passed.
-- `npm run playtest`: 31/31 passed.
-- ESLint and `git diff --check`: passed.
-- Independent bounded validator: **ACCEPT** (scope, diff, retirement, underfoot
-  recovery, and D-109 queue coverage).
-- `npm run smoke:browser`: could not complete because port 6500 was already
-  occupied by an existing listener serving HTML for `/world/players`; no
-  external process was stopped.
-
-## Manual checks
-
-The revision test exercises relic+trophy retirement and second-retirement
-idempotence. Inventory and websocket tests directly exercise JSON underfoot
-recovery and complete failed-save snapshot queuing before removal.
-
-## Specification deviations
-
-None in the implementation. Smoke remains an environmental verification note;
-the existing listener was preserved.
-
-## Risks and limitations
-
-The product-authoritative long-term store (SQLite versus JSON) remains
-intentionally unresolved; adapters preserve both representations and stable
-UUIDs. Port 6500 must be released or isolated for a clean smoke wrapper run.
-
-## Questions for Fable or the owner
-
-None newly introduced. The store-authority choice remains the owner-facing
-question already called out by the task stop condition.
-
-## Integration notes
-
-Requires Fable architect review before integration. Integrate the worker revision
-after acceptance, then rerun the three acceptance gates in a dedicated
-integration worktree and append the provenance to `orchestration/INTEGRATION_LOG.md`.
+Long-term SQLite/JSON authority remains an owner-facing decision; both
+adapters and stable UUID migration behavior are preserved as specified.
