@@ -56,19 +56,22 @@ try {
   [VerdigrisCapture]::SetForegroundWindow($hwnd) | Out-Null
   [VerdigrisCapture]::Save($hwnd, (Join-Path $captureDir 'scenery-initial.jpg')) | Out-Null
 
-  # Move around the near-field tree so the player is captured on both sides of
-  # its y boundary, then route directly into the fixed dwelling collider.
-  Hold-Keys $hwnd @(0x44) 40 # D: clear the tree's circle from the east
-  Hold-Keys $hwnd @(0x57) 15 # W: player behind tree
+  # Stay just outside the tree's expanded 96-unit circle at x≈154
+  # (tree x=260). Crossing its y boundary there makes the billboard overlap
+  # the player while remaining a legal path on both depth sides.
+  Hold-Keys $hwnd @(0x44) 14 # D: x≈154, 106 units west of tree
+  Hold-Keys $hwnd @(0x57) 15 # W: y≈-165, player behind tree
   [VerdigrisCapture]::Save($hwnd, (Join-Path $captureDir 'depth-behind-tree.jpg')) | Out-Null
-  Hold-Keys $hwnd @(0x41) 1  # A: face into the near-field tree
-  Send-Key $hwnd 0x20        # Space: dash is swept-blocked by the tree
+  Hold-Keys $hwnd @(0x57) 6  # W: y≈-99, tree-depth dash boundary
+  Hold-Keys $hwnd @(0x44) 1  # D: x≈165, face into tree
+  Send-Key $hwnd 0x20        # Space: swept dash is rejected by tree
   Start-Sleep -Milliseconds 150
   [VerdigrisCapture]::Save($hwnd, (Join-Path $captureDir 'dash-blocked.jpg')) | Out-Null
-  Hold-Keys $hwnd @(0x53) 30 # S: player in front of tree
+  Hold-Keys $hwnd @(0x41) 1  # A: restore x≈154, safe vertical crossing
+  Hold-Keys $hwnd @(0x53) 20 # S: y≈121, player in front of tree
   [VerdigrisCapture]::Save($hwnd, (Join-Path $captureDir 'depth-front-tree.jpg')) | Out-Null
 
-  Hold-Keys $hwnd @(0x41) 70     # A: align with the fixed dwelling
+  Hold-Keys $hwnd @(0x41) 50     # A: x≈-396, align west of fixed dwelling
   Hold-Keys $hwnd @(0x57) 40     # W: approach dwelling and test blocking
   [VerdigrisCapture]::Save($hwnd, (Join-Path $captureDir 'dwelling-blocked.jpg')) | Out-Null
 
@@ -78,8 +81,8 @@ try {
     'window=VerdigrisNativeClient',
     'route=route:tin:1:0',
     'scenery=tree,ruin,dwelling,shrine keyed plates with fallback',
-    'depth=player traversed behind tree (W15) and in front (S30) at x~440, tree x=260',
-    'dash=Space from tree boundary; swept segment rejected and dash-blocked.jpg shows hint',
+    'depth=behind~(154,-165), front~(154,121), tree=(260,-100), both overlap tree billboard',
+    'dash=Space from ~(165,-99) toward tree; swept segment rejected and dash-blocked.jpg shows hint',
     'collision=A+W held at dwelling; actor remained outside circle and hint=Blocked by scenery',
     'catalog=skill strip expected Q Thrust 10, E Sweep 15, R WarCry 20'
   )
