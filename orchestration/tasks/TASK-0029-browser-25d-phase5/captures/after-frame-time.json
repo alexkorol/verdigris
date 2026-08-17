@@ -1,0 +1,9 @@
+{
+  "label": "after",
+  "viewport": "1440x1000",
+  "workloadSeconds": 12,
+  "sampleCount": 276,
+  "meanMs": 42.976,
+  "p95Ms": 122.5,
+  "maxMs": 127.1
+}
