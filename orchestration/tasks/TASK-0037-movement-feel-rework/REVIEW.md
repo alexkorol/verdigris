@@ -69,3 +69,15 @@ tip SHA used into REPORT.md. Then rerun unit + playtest on the merged
 result. The movement fix itself remains accepted-in-principle — this is
 purely the base repair. Validators: run the architect's literal check,
 never a local approximation.
+
+---
+
+# Final verdict: ACCEPTED (2026-08-17 ~02:30)
+
+Architect-verified at branch tip `15c1a531`: `git diff <tip> --
+src/core/rendering/` is EMPTY — the 0033 revert is gone; the movement
+fix (continuous run timeline + absolute-deadline repeats) rides on the
+current base with gates green (764 unit, playtest 31/31, alternate-port
+smoke). The dense movement captures support the smoothness claim; final
+feel confirmation folds into the next owner session. Integration
+approved.

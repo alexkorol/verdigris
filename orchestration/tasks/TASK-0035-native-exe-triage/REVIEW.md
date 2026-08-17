@@ -73,3 +73,14 @@ coordinator's validator must run THIS command, not an approximation.
 Fix mechanically: walk the headless demo's command script to the new
 constants (spawn distance, per-tick step, pickup radius, extraction pad)
 until the loop genuinely completes.
+
+---
+
+# Final verdict: ACCEPTED (revision 3 verified, 2026-08-17 ~02:30)
+
+Architect-verified at branch tip `225078d1` in an isolated worktree:
+literal transcript ends `trophies stored: 1 | items stored: 1`, the
+failure path exits non-zero, and the driven play pass shows the clean
+default view (bars + skill strip only, zero debug text, honest grove
+scale). Both prior false-greens are documented in the report. Integration
+approved.
