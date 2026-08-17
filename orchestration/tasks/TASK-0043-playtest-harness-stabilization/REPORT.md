@@ -13,6 +13,7 @@ commits:
   - 1e48d120
   - 78434f60
   - 51c5253d
+  - bf598d82
 base_commit: f0df8de6
 ---
 
@@ -56,6 +57,25 @@ exit code: 1
 
 The scratch worktree and mutation were removed after capture. Evidence is also recorded in [`captures/negative-zone-entry-2026-08-17.txt`](captures/negative-zone-entry-2026-08-17.txt).
 
+## Revision 1 — default-mode scheduler contention
+
+Fable’s review found that the original ten-run proof covered only
+`PLAYTEST_LOAD_MODE=1`; an architect-run default-mode suite still reached
+30/31 under ambient contention. Commit `bf598d82` closes that exact gap:
+`adaptiveTimeoutMs` now uses observed p99/max event-loop delay in default
+mode, while retaining authored deadlines as the floor and the existing
+1.75× cap. The explicit load-mode path and its evidence remain unchanged.
+
+With `PLAYTEST_LOAD_MODE` unset and two moderate CPU spinner workers:
+
+- focused `session-arc`: PASS, 11.5s (p99 32.13ms, max 35.13ms);
+- default full run 1: PASS 31/31 (max lag 110.36ms);
+- default full run 2: PASS 31/31 (max lag 94.37ms);
+- default full run 3: PASS 31/31 (max lag 96.80ms).
+
+This revision preserves the authentic negative regression and all previous
+loaded-mode evidence. The revised integration tip is `7990c5e2`.
+
 ## Manual checks
 
 The final integration worktree was exercised against the unchanged WebSocket server with the full scenario suite under the documented CPU spinner. A disposable final-tip scratch worktree suppressed the real `instance:enterSolo` frame and confirmed the transition failure boundary.
@@ -74,7 +94,7 @@ None for implementation. Architect acceptance of the evidence package is require
 
 ## Integration notes
 
-Source is ready on the dedicated integration worktree at `7b81f874`; integrate only after Fable writes an `ACCEPTED` review. The coordinator metadata/evidence commits are local (`a12d3895`, `a07e33b9`, `e1e2a758`) and were not pushed.
+Source is ready on the dedicated integration worktree at `7990c5e2`; integrate only after Fable writes an `ACCEPTED` review. The coordinator metadata/evidence commits are local (`a12d3895`, `a07e33b9`, `e1e2a758`, `2989c3a9`) and were not pushed.
 
 ## Scope and review notes
 
