@@ -13,6 +13,7 @@ import Socket from '#server/socket.js';
 import world from '#server/core/world.js';
 import InputController from '../../src/core/utilities/input-controller.js';
 import { MOVEMENT_REPEAT } from '../../src/core/config/controls.js';
+import playerEvents from '../../src/core/player/events/player.js';
 import createPlayerMovementHandler, {
   MOVEMENT_FEEL,
   broadcastMovement,
@@ -212,5 +213,89 @@ describe('browser movement feel contract', () => {
 
     controller.destroy();
     vi.useRealTimers();
+  });
+
+  it('guards the event path from resetting an omitted same-sequence animation', () => {
+    const actor = {
+      uuid: 'movement-event-player',
+      animation: null,
+      animationController: null,
+    };
+    const makeController = () => ({
+      state: 'idle',
+      direction: 'right',
+      sequence: 0,
+      speed: 1,
+      duration: 0,
+      frameIndex: 0,
+      elapsedMs: 0,
+      applyCalls: 0,
+      applyServerState(snapshot) {
+        this.applyCalls += 1;
+        this.state = snapshot.state || this.state;
+        this.direction = snapshot.direction || this.direction;
+        this.sequence = snapshot.sequence;
+        this.speed = snapshot.speed;
+        this.duration = snapshot.duration;
+        this.frameIndex = 0;
+        this.elapsedMs = 0;
+        return true;
+      },
+      toJSON() {
+        return {
+          state: this.state,
+          direction: this.direction,
+          sequence: this.sequence,
+          speed: this.speed,
+          duration: this.duration,
+        };
+      },
+    });
+    const context = {
+      game: {
+        player: actor,
+        map: { players: [] },
+      },
+      playerMovement: (payload, meta) => {
+        if (!actor.animationController) {
+          actor.animationController = makeController();
+        }
+        const snapshot = meta.animation || payload.animation || actor.animation;
+        actor.animationController.applyServerState(snapshot);
+        actor.animation = actor.animationController.toJSON();
+      },
+    };
+    const firstAnimation = {
+      state: 'run',
+      direction: 'right',
+      sequence: 11,
+      speed: 0.75,
+      duration: 50,
+    };
+
+    playerEvents['player:movement']({
+      data: { uuid: actor.uuid, animation: firstAnimation },
+      meta: { animation: firstAnimation },
+    }, context);
+    expect(actor.animationController.applyCalls).toBe(1);
+
+    actor.animationController.frameIndex = 2;
+    actor.animationController.elapsedMs = 23;
+    playerEvents['player:movement']({
+      data: { uuid: actor.uuid },
+      meta: {},
+    }, context);
+
+    expect(actor.animationController.applyCalls).toBe(1);
+    expect(actor.animationController.frameIndex).toBe(2);
+    expect(actor.animationController.elapsedMs).toBe(23);
+
+    const nextAnimation = { ...firstAnimation, sequence: 12, speed: 1 };
+    playerEvents['player:movement']({
+      data: { uuid: actor.uuid },
+      meta: { animation: nextAnimation },
+    }, context);
+    expect(actor.animationController.applyCalls).toBe(2);
+    expect(actor.animationController.frameIndex).toBe(0);
   });
 });

@@ -3,6 +3,7 @@
 import bus from '../../utilities/bus.js';
 import MovementController from '../../utilities/movement-controller.js';
 import { now } from '../../config/movement.js';
+import { installAnimationTimelineGuard } from '../animation-timeline-guard.js';
 
 const applyActorLevel = (actor, snapshot = {}) => {
   const statsLevel = snapshot.stats && Number.isFinite(snapshot.stats.level)
@@ -65,6 +66,20 @@ const applyPlayerSnapshot = (actor, snapshot = {}) => {
   }
 };
 
+const findMovementActor = (context, uuid) => {
+  const game = context && context.game;
+  if (!game) {
+    return null;
+  }
+
+  if (game.player && game.player.uuid === uuid) {
+    return game.player;
+  }
+
+  return (game.map && Array.isArray(game.map.players) ? game.map.players : [])
+    .find(actor => actor && actor.uuid === uuid) || null;
+};
+
 export default {
   /**
    * A player logins into the game
@@ -117,7 +132,11 @@ export default {
       eventData.movementStep = meta.movementStep;
     }
 
+    const actorBeforeMovement = findMovementActor(context, eventData.uuid);
+    installAnimationTimelineGuard(actorBeforeMovement);
     context.playerMovement(eventData, meta);
+    const actorAfterMovement = findMovementActor(context, eventData.uuid);
+    installAnimationTimelineGuard(actorAfterMovement);
   },
   /**
    * A player saying something
