@@ -1,0 +1,21 @@
+TASK-0043 coordinator validation — exact staged timing correction, dependency-complete
+Date: 2026-08-17
+Candidate: disposable worktree at 3636b729 with 1da567aa cherry-picked (temporary commit 7e483c24)
+Source scope: playtest/timing.mjs only from the revision; no server/native/package changes
+
+Setup:
+- `npm ci --no-audit --no-fund` completed successfully in the disposable worktree with install scripts enabled.
+- The earlier `--ignore-scripts` attempt was discarded because it left the native SQLite dependency unbuilt; it is not a product/test result.
+
+Commands:
+- `npm run test:unit`
+- `PLAYTEST_PORT=6538 npm run playtest`
+
+Results:
+- Unit: 122 test files passed, 779 tests passed; exit 0.
+- Playtest: 31/31 scenarios passed; exit 0.
+- Diagnostics: `loadMode:false`, `p99EventLoopLagMs:32.178175`, `maxEventLoopLagMs:109.641727`.
+- Notable scenario durations: `gear-outcomes` 35,742ms; `zones` 18,249ms; both passed without assertion changes.
+- Temporary worktree and installed dependencies were removed after the run.
+
+Conclusion: the exact staged default-timing correction passes a dependency-complete unit and full browser gate from the current parity candidate. This is coordinator evidence only; Fable acceptance is still required.

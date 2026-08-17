@@ -253,3 +253,14 @@ temporary dependency junction did not resolve `compression`; that is an
 environment failure before the scenario, not a product result. The exact
 staged source variant has a separate 31/31 gate capture. These results are
 reported separately rather than presented as a new blanket green.
+
+## Revision 3 — dependency-complete exact staged gate
+
+To remove the ambiguity from the junction-based retry, a fresh disposable
+worktree applied `1da567aa` to parity candidate `3636b729` and ran a normal
+`npm ci --no-audit --no-fund` with install scripts enabled. The resulting
+unit gate passed 122/779 and `PLAYTEST_PORT=6538 npm run playtest` passed
+31/31 with `loadMode:false` (p99 32.178ms, max 109.642ms). The raw result is
+in [`captures/coordinator-exact-staged-dependency-complete-gate-2026-08-17.txt`](captures/coordinator-exact-staged-dependency-complete-gate-2026-08-17.txt).
+This strengthens the review evidence but does not change the lifecycle:
+Fable acceptance remains required.
