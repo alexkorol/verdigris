@@ -29,6 +29,18 @@ enum class ActionType { Melee, Dash, Wait, Thrust, Sweep, WarCry };
 // render the same warning window.
 inline constexpr int kTelegraphTicks = 3;
 
+// Simulation commands resolve at a fixed 20 Hz cadence.  Actor move_speed is
+// expressed in world units per second; this named derivation keeps movement
+// deterministic while preserving the recorded MoveIntent shape.
+inline constexpr int kSimulationTickMs = 50;
+
+constexpr int movement_step_per_tick(int move_speed) {
+  return std::max(1, move_speed * kSimulationTickMs / 1000);
+}
+
+// A dash is a short, readable burst measured in ordinary movement ticks.
+inline constexpr int kDashMovementTicks = 10;
+
 // Curated gameplay constants needed by presentation.  Mechanics and the
 // read-only catalog use these same definitions; clients must not mirror the
 // values independently.
@@ -307,6 +319,7 @@ class Simulation {
   void resolve_equip(const std::string& item_id);
   void resolve_enter(const std::string& route_id);
   void resolve_extract();
+  void retire_instance();
   void advance_tick();
   void enemy_turn();
   void spawn_enemy();
@@ -328,6 +341,15 @@ class Simulation {
   InstanceState instance_;
   std::vector<Item> ground_items_;
   std::vector<Trophy> ground_trophies_;
+  // A surfaced recovery candidate remains recoverable across an instance
+  // retirement. It is reattached to the next active instance, while ordinary
+  // floor drops are discarded.
+  std::vector<Item> pending_relic_items_;
+  std::vector<Trophy> pending_relic_trophies_;
+  // Trophy IDs currently borrowed from House recovery. They return to that
+  // pool if the active instance retires before pickup; ordinary floor drops
+  // remain lost on retirement.
+  std::vector<std::string> resurfaced_trophy_ids_;
   std::vector<Event> events_;
   SeasonalMechanic* seasonal_mechanic_ = nullptr;
   std::uint64_t tick_ = 0;

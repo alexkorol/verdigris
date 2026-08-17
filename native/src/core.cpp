@@ -10,7 +10,9 @@
 namespace verdigris {
 
 namespace {
-constexpr int kEnemySpawnX = 2000;
+// With 50 ms movement steps, 1500 units keeps the existing melee/thrust
+// ranges reachable before a monster can exhaust the Scion during approach.
+constexpr int kEnemySpawnX = 1500;
 constexpr int kExtractionRange = 250;
 constexpr int kThrustDamageNumerator = 13;
 constexpr int kThrustDamageDenominator = 10;
@@ -44,6 +46,13 @@ Vec2 quantize_direction(int dx, int dy) {
   return {direction_component(dx), direction_component(dy)};
 }
 
+Vec2 movement_delta(int dx, int dy, int move_speed) {
+  if (dx == 0 && dy == 0) return {};
+  const int length = std::max(1, std::abs(dx) + std::abs(dy));
+  const int step = movement_step_per_tick(move_speed);
+  return {(dx * step) / length, (dy * step) / length};
+}
+
 bool is_forward(const Vec2& facing, Vec2 delta) {
   // A strict half-plane keeps the boundary (dot == 0) out of a thrust cone.
   // All operands are bounded integer world-space values and the facing is
@@ -63,7 +72,8 @@ ActorStats player_stats() {
   stats.resource = stats.resource_max;
   stats.attack = 12;
   stats.defense = 5;
-  stats.move_speed = 300;
+  // Per-second value; resolve_move derives the deterministic 50 ms step.
+  stats.move_speed = 220;
   stats.attack_speed_ticks = 3;
   return stats;
 }
@@ -290,9 +300,9 @@ void Simulation::resolve_move(int dx, int dy) {
   if (!player || !player->alive || !scion_.alive) return;
   const Vec2 direction = quantize_direction(dx, dy);
   if (direction.x != 0 || direction.y != 0) player->facing = direction;
-  const int length = std::max(1, std::abs(dx) + std::abs(dy));
-  player->position.x += (dx * player->stats.move_speed) / length;
-  player->position.y += (dy * player->stats.move_speed) / length;
+  const Vec2 delta = movement_delta(dx, dy, player->stats.move_speed);
+  player->position.x += delta.x;
+  player->position.y += delta.y;
   emit(EventType::ActorMoved, player->id, {}, {}, {}, player->position.x);
 }
 
@@ -312,7 +322,10 @@ void Simulation::resolve_action(ActionType action) {
 void Simulation::resolve_actor_action(Actor& attacker, ActionType action) {
   if (!attacker.alive) return;
   if (action == ActionType::Dash) {
-    attacker.position.x += attacker.stats.move_speed * 2;
+    const Vec2 delta = movement_delta(attacker.facing.x, attacker.facing.y,
+                                      attacker.stats.move_speed);
+    attacker.position.x += delta.x * kDashMovementTicks;
+    attacker.position.y += delta.y * kDashMovementTicks;
     emit(EventType::ActorMoved, attacker.id, {}, {}, "dash", attacker.position.x);
     return;
   }
@@ -441,18 +454,36 @@ void Simulation::resolve_interact(const std::string& target) {
 }
 
 void Simulation::resolve_pickup(const std::string& item_id) {
+  if (!instance_.active || !scion_.alive) return;
+
+  const bool item_registered =
+      std::find(instance_.ground_item_ids.begin(), instance_.ground_item_ids.end(), item_id) !=
+      instance_.ground_item_ids.end();
+  const bool trophy_registered =
+      std::find(instance_.ground_trophy_ids.begin(), instance_.ground_trophy_ids.end(), item_id) !=
+      instance_.ground_trophy_ids.end();
+
+  // The active instance's ID lists are the authority boundary. Even if a
+  // stale ground vector entry remains due to a caller retaining an old
+  // reference, it is not pickable once its instance has retired.
+  if (!item_registered && !trophy_registered) return;
+
   auto item = std::find_if(ground_items_.begin(), ground_items_.end(),
                            [&](const Item& value) { return value.id == item_id; });
-  if (item == ground_items_.end() || !scion_.alive) {
+  if (!item_registered || item == ground_items_.end()) {
+    if (!trophy_registered) return;
     auto trophy = std::find_if(ground_trophies_.begin(), ground_trophies_.end(),
                                [&](const Trophy& value) { return value.id == item_id; });
-    if (trophy == ground_trophies_.end() || !scion_.alive) return;
+    if (trophy == ground_trophies_.end()) return;
     scion_.carried_trophies.push_back(*trophy);
     emit(EventType::TrophyPickedUp, scion_.actor_id, {}, trophy->id);
     ground_trophies_.erase(trophy);
     instance_.ground_trophy_ids.erase(std::remove(instance_.ground_trophy_ids.begin(),
                                                   instance_.ground_trophy_ids.end(), item_id),
                                       instance_.ground_trophy_ids.end());
+    resurfaced_trophy_ids_.erase(
+        std::remove(resurfaced_trophy_ids_.begin(), resurfaced_trophy_ids_.end(), item_id),
+        resurfaced_trophy_ids_.end());
     return;
   }
   item->owner_id = scion_.id;
@@ -480,12 +511,63 @@ void Simulation::resolve_equip(const std::string& item_id) {
 
 void Simulation::resolve_enter(const std::string& route_id) {
   if (!house_.route_unlocked(route_id) || !scion_.alive) return;
+  retire_instance();
   instance_ = {};
   instance_.active = true;
   instance_.route_id = route_id;
   spawn_enemy();
+  for (const auto& relic : pending_relic_items_) {
+    ground_items_.push_back(relic);
+    instance_.ground_item_ids.push_back(relic.id);
+  }
+  pending_relic_items_.clear();
+  for (const auto& trophy : pending_relic_trophies_) {
+    ground_trophies_.push_back(trophy);
+    instance_.ground_trophy_ids.push_back(trophy.id);
+    resurfaced_trophy_ids_.push_back(trophy.id);
+  }
+  pending_relic_trophies_.clear();
   emit(EventType::InstanceEntered, scion_.actor_id, {}, {}, route_id);
   if (seasonal_mechanic_) seasonal_mechanic_->on_instance_enter(*this, instance_);
+}
+
+void Simulation::retire_instance() {
+  // Floor value belongs to the instance that produced it. Leaving by
+  // extraction, death, or a route transition abandons all uncollected floor
+  // items/trophies; carried value is handled separately by extraction or the
+  // death recovery path. Preserve route_id until the caller has recorded any
+  // terminal event that needs its provenance.
+  // A surfaced relic was removed from the recovery pool when it entered this
+  // instance. Keep it recoverable exactly once if it is abandoned here;
+  // ordinary drops have no relic marker and are simply lost. The same rule
+  // applies to trophies tracked as surfaced recovery candidates. Pending
+  // candidates are reattached to the next instance on entry, so this is not a
+  // second pool registration or an ordinary floor-leftover escape hatch.
+  for (const auto& item : ground_items_) {
+    if (item.relic_candidate &&
+        std::find_if(pending_relic_items_.begin(), pending_relic_items_.end(),
+                     [&](const Item& candidate) { return candidate.id == item.id; }) ==
+            pending_relic_items_.end()) {
+      pending_relic_items_.push_back(item);
+    }
+  }
+  for (const auto& trophy : ground_trophies_) {
+    if (std::find(resurfaced_trophy_ids_.begin(), resurfaced_trophy_ids_.end(), trophy.id) ==
+        resurfaced_trophy_ids_.end()) {
+      continue;
+    }
+    if (std::find_if(pending_relic_trophies_.begin(), pending_relic_trophies_.end(),
+                     [&](const Trophy& candidate) { return candidate.id == trophy.id; }) ==
+        pending_relic_trophies_.end()) {
+      pending_relic_trophies_.push_back(trophy);
+    }
+  }
+  ground_items_.clear();
+  ground_trophies_.clear();
+  resurfaced_trophy_ids_.clear();
+  instance_.ground_item_ids.clear();
+  instance_.ground_trophy_ids.clear();
+  instance_.active = false;
 }
 
 void Simulation::spawn_enemy() {
@@ -552,8 +634,11 @@ void Simulation::enemy_turn() {
       }
     }
 
-    // Plain melee remains the original non-elite cadence.  Elite monsters
-    // also use it when they are in melee range but cannot fund Sweep.
+    // Plain melee remains the original non-elite cadence. Elite monsters also
+    // use it when they are in melee range but cannot fund Sweep. The shared
+    // movement_delta() derivation is used by any Actor action (player WASD
+    // and Dash alike); pursuit remains presentation-neutral until the native
+    // collision/navigation pass owns monster locomotion.
     if (distance > kMeleeRange) continue;
     enemy.cooldown_ticks = enemy.stats.attack_speed_ticks;
     const int damage = resolve_damage(enemy, *player);
@@ -617,6 +702,7 @@ void Simulation::drop_reward() {
     Trophy trophy = house_.lost_trophies.front();
     house_.lost_trophies.erase(house_.lost_trophies.begin());
     ground_trophies_.push_back(trophy);
+    resurfaced_trophy_ids_.push_back(trophy.id);
     instance_.ground_trophy_ids.push_back(trophy.id);
     emit(EventType::TrophyResurfaced, {}, {}, trophy.id, instance_.route_id);
     record_legend("trophy_resurfaced", trophy.id, "route=" + instance_.route_id, {},
@@ -675,8 +761,14 @@ void Simulation::handle_death(Actor& actor_value, const std::string& killer_id) 
                     "killer=" + killer_id + ";route=" + instance_.route_id, killer_id,
                     instance_.route_id);
     }
-    drop_reward();
-    clear_route_and_unlock_children();
+    if (instance_.active) {
+      drop_reward();
+      const bool living_monster_remains = std::any_of(
+          actors_.begin(), actors_.end(), [](const Actor& candidate) {
+            return candidate.kind == ActorKind::Monster && candidate.alive;
+          });
+      if (!living_monster_remains) clear_route_and_unlock_children();
+    }
     return;
   }
   scion_.alive = false;
@@ -711,6 +803,7 @@ void Simulation::handle_death(Actor& actor_value, const std::string& killer_id) 
                 "killer=" + (killer_id.empty() ? std::string("unknown") : killer_id) +
                     ";route=" + instance_.route_id,
                 killer_id, instance_.route_id);
+  retire_instance();
 }
 
 void Simulation::resolve_extract() {
@@ -730,7 +823,7 @@ void Simulation::resolve_extract() {
   }
   scion_.carried_items.clear();
   scion_.carried_trophies.clear();
-  instance_.active = false;
+  retire_instance();
   emit(EventType::HouseStoreChanged, {}, {}, {}, "extraction");
 }
 

@@ -1,6 +1,6 @@
 ---
 task: TASK-0023
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Codex/Luna implementation worker
 worker_branch: codex/TASK-0023-browser-25d-phase2
@@ -13,6 +13,9 @@ known_risks: preserve Phase-1 crispness, keep haze confined to the top horizon b
 dependencies: TASK-0022 integrated at 355aa16
 architect_review_required: true
 implementation_commit: 48725e3
+architect_review: ACCEPTED (architect checkout commit c7293b9)
+integration_branch: codex/integration-task-0023
+integration_commit: 864c497
 verification: npm run test:unit (PASS: 115 files/744 tests); npm run smoke:browser (PASS: 1/1); npm run playtest (PASS: 31/31); build, ESLint, and git diff --check PASS
 validator: /root/validate_task_0023
 validator_verdict: ACCEPT

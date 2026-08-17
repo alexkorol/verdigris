@@ -182,6 +182,32 @@ ADR-002.
   ADR-002 proposal, D-101/D-102/D-103 provisional decisions, and the
   0006 unequipped-relic observation.
 
+# OWNER PLAYTEST GUIDE (2026-08-16 evening)
+
+**Browser game** (the ship target):
+```
+npm run build
+npm run smoke:browser     # proves the built game boots + plays the guest loop
+```
+or run it persistently: `pm2 start ecosystem.config.cjs` then open
+http://localhost:6500 (client + WS on one process).
+
+**Native lab client**: `powershell -File native/build.ps1 -RunClient`
+builds and smoke-runs; then launch `native/build/verdigris_client.exe`
+for the window — WASD/mouse, Q/E/R skills, X pickup, I gear, F extract,
+your ARPG camera, billboards from your plates, elite telegraphs, and the
+fixed movement pace.
+
+**Founding slice**: the claude.ai artifact link, or serve
+`prototypes/founding-slice/` statically and open index.html.
+
+**Shipped to your evening (since PR #4)**: movement fix (verified ~2.2
+tiles/s), 2.5D Phases 1–2 (blur/wash/haze fixed), D-109 disconnect
+safety (race-fixed, 31/31), D-106 death recoverability, expedition
+boundary enforcement + pack-clear fix (bot-review findings), CI path
+fix, ARPG camera in slice + native. In revision: Phase-3 atmosphere
+(sent back — it over-darkened midday; numeric luminance bar set).
+
 # OVERNIGHT SUMMARY FOR THE OWNER (2026-08-16, session end ~12:45)
 
 Thirteen tasks specced, twelve implemented and ACCEPTED after independent

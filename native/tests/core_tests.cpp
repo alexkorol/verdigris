@@ -17,12 +17,14 @@ void check(bool condition, const std::string& message) {
   }
 }
 
-void reach_enemy(Simulation& sim) {
-  for (int i = 0; i < 4; ++i) sim.dispatch(Command::move(1, 0));
-}
-
 void defeat_enemy(Simulation& sim) {
-  reach_enemy(sim);
+  // Keep attacking while closing the slower fixed-step gap. This mirrors the
+  // continuous WASD + primary-action rhythm used by the client and prevents
+  // a nearby route transition from spending dozens of ticks under fire.
+  for (int i = 0; i < 40; ++i) {
+    sim.dispatch(Command::move(1, 0));
+    sim.dispatch(Command::action_use(ActionType::Melee));
+  }
   for (int i = 0; i < 12; ++i) sim.dispatch(Command::action_use(ActionType::Melee));
   const auto monsters = sim.actors();
   bool dead = true;
@@ -42,7 +44,7 @@ void pick_all_rewards(Simulation& sim) {
 }
 
 void extract_from_start(Simulation& sim) {
-  for (int i = 0; i < 4; ++i) sim.dispatch(Command::move(-1, 0));
+  for (int i = 0; i < 40; ++i) sim.dispatch(Command::move(-1, 0));
   sim.dispatch(Command::extract());
 }
 
@@ -192,6 +194,68 @@ void test_actor_facing_follows_movement_and_aim() {
   check(player->position.x == position_after_move.x &&
             player->position.y == position_after_move.y,
         "aim does not move the actor");
+}
+
+void test_movement_step_derivation_and_actor_symmetry() {
+  check(movement_step_per_tick(220) == 11,
+        "player movement derives 11 world units from 220 units/sec at 50 ms");
+  check(movement_step_per_tick(240) == 12,
+        "monster movement uses the same fixed-step derivation");
+
+  Simulation sim(0xA013ULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  Actor* player = sim.actor(sim.scion().actor_id);
+  Actor* enemy = first_monster(sim);
+  check(player && enemy, "movement test has both actors");
+  const Vec2 player_start = player->position;
+  sim.dispatch(Command::move(1, 0));
+  player = sim.actor(sim.scion().actor_id);
+  enemy = first_monster(sim);
+  check(player->position.x - player_start.x == movement_step_per_tick(player->stats.move_speed) &&
+            player->position.y == player_start.y,
+        "one cardinal MoveIntent applies exactly one named movement step");
+  check(movement_step_per_tick(enemy->stats.move_speed) == 12,
+        "monster movement uses the same named fixed-step derivation");
+
+  Simulation diagonal(0xA014ULL);
+  diagonal.dispatch(Command::move(1, 1));
+  const Actor* diagonal_player = diagonal.actor(diagonal.scion().actor_id);
+  check(diagonal_player->position.x == 5 && diagonal_player->position.y == 5,
+        "diagonal movement remains deterministic integer math");
+}
+
+void test_movement_replay_is_deterministic() {
+  Simulation first(0xA015ULL);
+  Simulation second(0xA015ULL);
+  first.dispatch(Command::enter("route:tin:1:0"));
+  second.dispatch(Command::enter("route:tin:1:0"));
+  for (int i = 0; i < 60; ++i) {
+    const Command command = i % 3 == 0 ? Command::move(1, 1) : Command::move(1, 0);
+    first.dispatch(command);
+    second.dispatch(command);
+  }
+  check(first.actor(first.scion().actor_id)->position.x ==
+                second.actor(second.scion().actor_id)->position.x &&
+            first.actor(first.scion().actor_id)->position.y ==
+                second.actor(second.scion().actor_id)->position.y,
+        "fixed-step movement produces identical replay positions");
+  check(first.events().size() == second.events().size(),
+        "fixed-step movement replay emits an identical event count");
+}
+
+void test_dash_is_a_named_readable_burst() {
+  Simulation sim(0xA016ULL);
+  Actor* player = sim.actor(sim.scion().actor_id);
+  check(player != nullptr, "dash test has a player");
+  sim.dispatch(Command::aim(-1, 0));
+  sim.dispatch(Command::action_use(ActionType::Dash));
+  player = sim.actor(sim.scion().actor_id);
+  check(player->position.x == -movement_step_per_tick(player->stats.move_speed) *
+                                      kDashMovementTicks &&
+            player->position.y == 0,
+        "dash uses the facing direction and named movement-tick burst");
+  check(last_event(sim, EventType::ActorMoved, "dash") != nullptr,
+        "dash remains observable as a dash movement event");
 }
 
 void test_monster_facing_tracks_pursuit_target() {
@@ -620,17 +684,16 @@ void test_relic_loss_again_returns_once() {
 void test_relic_resurface_replay_is_deterministic() {
   Simulation first(0xD00DFEEDULL);
   Simulation second(0xD00DFEEDULL);
-  const std::vector<Command> setup = {
-      Command::enter("route:tin:1:0"), Command::move(1, 0), Command::move(1, 0),
-      Command::move(1, 0), Command::move(1, 0), Command::action_use(ActionType::Melee),
-      Command::action_use(ActionType::Melee), Command::action_use(ActionType::Melee),
-      Command::action_use(ActionType::Melee), Command::action_use(ActionType::Melee),
-      Command::action_use(ActionType::Melee), Command::action_use(ActionType::Melee),
-      Command::pick_up(""), Command::interact("hazard:death")};
-  for (const auto& command : setup) {
-    first.dispatch(command);
-    second.dispatch(command);
-  }
+  first.dispatch(Command::enter("route:tin:1:0"));
+  second.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(first);
+  defeat_enemy(second);
+  check(!first.ground_items().empty() && !second.ground_items().empty(),
+        "movement replay setup drops an item before recovery");
+  first.dispatch(Command::pick_up(first.ground_items().front().id));
+  second.dispatch(Command::pick_up(second.ground_items().front().id));
+  first.dispatch(Command::interact("hazard:death"));
+  second.dispatch(Command::interact("hazard:death"));
   first.create_successor("Replay Successor");
   second.create_successor("Replay Successor");
   force_relic_resurface(first, "route:tin:1:0");
@@ -649,11 +712,11 @@ void test_determinism() {
   Simulation second(0xBADC0FFEEULL);
   first.dispatch(Command::enter("route:tin:1:0"));
   second.dispatch(Command::enter("route:tin:1:0"));
-  for (int i = 0; i < 4; ++i) {
+  for (int i = 0; i < 40; ++i) {
     first.dispatch(Command::move(1, 0));
     second.dispatch(Command::move(1, 0));
   }
-  for (int i = 0; i < 8; ++i) {
+  for (int i = 0; i < 12; ++i) {
     first.dispatch(Command::action_use(ActionType::Melee));
     second.dispatch(Command::action_use(ActionType::Melee));
   }
@@ -723,6 +786,127 @@ void test_presentation_catalog_is_authoritative_and_stable() {
   check(buff_player->war_cry_attack_bonus == catalog.war_cry_attack_bonus &&
             buff_player->war_cry_ticks_remaining == catalog.war_cry_duration_ticks - 1,
         "catalogued War Cry bonus and duration match applied state");
+}
+
+void test_instance_lifecycle_rejects_stale_pickups() {
+  Simulation extracted(0x2501ULL);
+  extracted.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(extracted);
+  const std::string extracted_item = extracted.ground_items().front().id;
+  const std::string extracted_trophy = extracted.ground_trophies().front().id;
+  extract_from_start(extracted);
+  check(!extracted.instance().active && extracted.ground_items().empty() &&
+            extracted.ground_trophies().empty(),
+        "extraction retires all uncollected floor value");
+  const int pickup_events_before = count_events(extracted, EventType::ItemPickedUp) +
+                                   count_events(extracted, EventType::TrophyPickedUp);
+  extracted.dispatch(Command::pick_up(extracted_item));
+  extracted.dispatch(Command::pick_up(extracted_trophy));
+  check(extracted.scion().carried_items.empty() && extracted.scion().carried_trophies.empty() &&
+            count_events(extracted, EventType::ItemPickedUp) +
+                    count_events(extracted, EventType::TrophyPickedUp) ==
+                pickup_events_before,
+        "post-extraction pickup is rejected at the inactive-instance boundary");
+
+  Simulation cross_route(0x2502ULL);
+  cross_route.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(cross_route);
+  const std::string stale_item = cross_route.ground_items().front().id;
+  cross_route.dispatch(Command::enter("route:tin:2:0"));
+  cross_route.dispatch(Command::pick_up(stale_item));
+  check(cross_route.instance().route_id == "route:tin:2:0" &&
+            cross_route.scion().carried_items.empty(),
+        "cross-route stale pickup is rejected after the previous instance retires");
+
+  Simulation reentry(0x2503ULL);
+  reentry.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(reentry);
+  const std::string leftover_item = reentry.ground_items().front().id;
+  const std::string leftover_trophy = reentry.ground_trophies().front().id;
+  reentry.dispatch(Command::enter("route:tin:1:0"));
+  check(reentry.ground_items().empty() && reentry.ground_trophies().empty() &&
+            std::find(reentry.instance().ground_item_ids.begin(),
+                      reentry.instance().ground_item_ids.end(), leftover_item) ==
+                reentry.instance().ground_item_ids.end() &&
+            std::find(reentry.instance().ground_trophy_ids.begin(),
+                      reentry.instance().ground_trophy_ids.end(), leftover_trophy) ==
+                reentry.instance().ground_trophy_ids.end(),
+        "leftover floor value does not survive same-route re-entry");
+  reentry.dispatch(Command::pick_up(leftover_item));
+  reentry.dispatch(Command::pick_up(leftover_trophy));
+  check(reentry.scion().carried_items.empty() && reentry.scion().carried_trophies.empty(),
+        "retired floor IDs cannot be picked up after re-entry");
+}
+
+void test_death_retires_floor_without_double_registering_relics() {
+  Simulation sim(0x2504ULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(sim);
+  const std::string item_id = sim.ground_items().front().id;
+  const std::string floor_trophy_id = sim.ground_trophies().front().id;
+  sim.dispatch(Command::pick_up(item_id));
+  sim.dispatch(Command::interact("hazard:death"));
+  check(!sim.instance().active && sim.ground_items().empty() && sim.ground_trophies().empty(),
+        "death retires uncollected floor value");
+  check(sim.house().relic_candidates.size() == 1 &&
+            sim.house().relic_candidates.front().id == item_id,
+        "carried death value registers in the relic pool exactly once");
+  bool floor_trophy_present = false;
+  for (const auto& trophy : sim.ground_trophies()) {
+    if (trophy.id == floor_trophy_id) floor_trophy_present = true;
+  }
+  check(sim.house().lost_trophies.empty() && !floor_trophy_present,
+        "floor trophies are lost without being mistaken for carried death value");
+}
+
+void test_pack_clear_waits_for_the_last_monster() {
+  auto prepare = [](Simulation& sim) {
+    sim.dispatch(Command::enter("route:tin:1:0"));
+    Actor* player = sim.actor(sim.scion().actor_id);
+    Actor* first = first_monster(sim);
+    check(player && first, "pack setup has a player and initial monster");
+    player->position = {0, 0};
+    player->stats.life = player->stats.life_max;
+    first->position = {500, 0};
+    first->stats.life = 1;
+    const std::string first_id = first->id;
+    const std::string second_id = sim.spawn_monster({700, 0});
+    Actor* second = sim.actor(second_id);
+    check(second != nullptr, "pack setup adds a second monster");
+    second->stats.life = 1;
+    return std::pair<std::string, std::string>{first_id, second_id};
+  };
+
+  Simulation first(0x2505ULL);
+  const auto ids = prepare(first);
+  first.dispatch(Command::action_use(ActionType::Melee));
+  check(!first.actor(ids.first)->alive && first.actor(ids.second)->alive,
+        "first pack kill leaves the second monster alive");
+  check(!first.house().route_cleared("route:tin:1:0") &&
+            !first.house().route_unlocked("route:tin:2:0") &&
+            !first.house().campaign_complete,
+        "first pack kill does not clear the route or campaign");
+  first.actor(first.scion().actor_id)->cooldown_ticks = 0;
+  first.dispatch(Command::action_use(ActionType::Melee));
+  check(!first.actor(ids.second)->alive && first.house().route_cleared("route:tin:1:0") &&
+            first.house().route_unlocked("route:tin:2:0") && first.house().campaign_complete,
+        "last pack kill clears the route and completes campaign progression");
+  check(count_events(first, EventType::ItemDropped) == 2 &&
+            count_events(first, EventType::TrophyDropped) == 2,
+        "pack rewards remain per-kill after delayed route clear");
+
+  Simulation second(0x2505ULL);
+  const auto replay_ids = prepare(second);
+  second.dispatch(Command::action_use(ActionType::Melee));
+  second.actor(second.scion().actor_id)->cooldown_ticks = 0;
+  second.dispatch(Command::action_use(ActionType::Melee));
+  check(replay_ids == ids && relevant(first) == relevant(second) &&
+            first.house().cleared_routes == second.house().cleared_routes &&
+            first.ground_items().size() == second.ground_items().size() &&
+            first.ground_trophies().size() == second.ground_trophies().size() &&
+            first.ground_items().front().id == second.ground_items().front().id &&
+            first.ground_trophies().front().id == second.ground_trophies().front().id,
+        "pack lifecycle and delayed clear remain deterministic under replay");
 }
 
 void test_extraction() {
@@ -998,6 +1182,9 @@ int main() {
   test_determinism();
   test_actor_symmetry();
   test_actor_facing_follows_movement_and_aim();
+  test_movement_step_derivation_and_actor_symmetry();
+  test_movement_replay_is_deterministic();
+  test_dash_is_a_named_readable_burst();
   test_monster_facing_tracks_pursuit_target();
   test_facing_replay_is_deterministic();
   test_skill_resource_gating_and_thrust();
@@ -1011,6 +1198,9 @@ int main() {
   test_non_elite_melee_cadence_is_unchanged();
   test_war_cry_buff_expiry_and_replay_determinism();
   test_presentation_catalog_is_authoritative_and_stable();
+  test_instance_lifecycle_rejects_stale_pickups();
+  test_death_retires_floor_without_double_registering_relics();
+  test_pack_clear_waits_for_the_last_monster();
   test_extraction();
   test_death_and_successor();
   test_d106_all_carried_value_is_recoverable();

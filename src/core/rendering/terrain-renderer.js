@@ -130,7 +130,11 @@ class TerrainRenderer {
         // applied once by LightingRenderer after the world is composited;
         // gamma lift and desaturation here washed out the playfield twice.
         vec3 colour = mix(sharp, soft, circleOfConfusion);
-        float haze = clamp((vDepth / uDepthToFocus - 1.48) / 1.62, 0.0, 1.0) * 0.24;
+        // Keep the playfield clear, then saturate the far depth into the sky
+        // color. These ratios are the reference curve from ARCHITECTURE §3:
+        // it reaches its cap in the last few percent of the visible frame,
+        // giving a permanent horizon without washing the ground mid-field.
+        float haze = clamp((vDepth / uDepthToFocus - 1.12) / 1.02, 0.0, 1.0) * 0.96;
         gl_FragColor = vec4(mix(colour, uSky, haze), 1.0);
       }
     `;
