@@ -109,8 +109,10 @@ export default {
     const payload = message.data || {};
     const summary = payload.summary || payload;
     const playerId = payload.playerId || summary.playerId || summary.scion?.id;
+    const localPlayer = context?.game?.player;
+    const localScionId = localPlayer?.scionId || localPlayer?.chronicles?.scionId || null;
     if (!context?.game?.player || (playerId && playerId !== context.game.player.uuid
-      && playerId !== context.game.player.scionId)) {
+      && playerId !== localScionId)) {
       return;
     }
 

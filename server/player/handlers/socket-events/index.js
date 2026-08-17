@@ -186,6 +186,7 @@ if (!originalSocketBroadcast.__verdigrisDeathSummary && !originalSocketBroadcast
       deathPlayer.__deathSummaryOccurredAt = deathOccurredAt;
       Socket.emit('player:death-summary', {
         player: { socket_id: deathPlayer.socket_id },
+        playerId: deathPlayer.uuid,
         summary: {
           ...deathSummary,
           occurredAt: deathOccurredAt,
