@@ -65,6 +65,10 @@ outside production until the owner resolves asset provenance/packaging.
 ## Current coordinator gates
 
 - Browser unit suite: 122 files / 779 tests passed.
+- A dependency-complete current-tip browser health run at `a62951e4` repeated
+  that result from a fresh worktree with normal install scripts; the server
+  boot smoke also passed. Evidence:
+  [`coordinator-current-tip-browser-unit-health-2026-08-17.txt`](../../orchestration/tasks/TASK-0044-native-protocol-n2/captures/coordinator-current-tip-browser-unit-health-2026-08-17.txt).
 - Browser production build: passed.
 - Isolated full browser playtest: prior clean checkpoints passed 31/31; the
   latest coordinator-tip run was 30/31 on the known scheduler-sensitive
@@ -86,6 +90,10 @@ outside production until the owner resolves asset provenance/packaging.
   review.
 - Committed N2 native gate: denylist, core/networking tests, and client shell
   passed.
+- A current-tip native health rerun at `a62951e4` independently repeated the
+  denylist/core/networking/client gate and the literal House/trophies/items
+  transcript. Evidence:
+  [`coordinator-current-tip-native-health-2026-08-17.txt`](../../orchestration/tasks/TASK-0044-native-protocol-n2/captures/coordinator-current-tip-native-health-2026-08-17.txt).
 - Committed N2 attach regression: quickstart, single-session, movement, and
   zones passed 4/4.
 - N2 also has a clean current-tip integration candidate at `8be3dacd`, with
