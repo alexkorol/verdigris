@@ -27,6 +27,7 @@ coordinator_current_tip_attach_baseline: 2026-08-17 — direct unchanged attach 
 coordinator_current_tip_n2_candidate: 2026-08-17 — disposable candidate f602dab4 cherry-picked d476788 onto coordinator HEAD 27db1611; native full gate passed and unchanged quickstart/single-session/movement/zones attach passed 4/4. Capture: captures/coordinator-current-tip-n2-candidate-2026-08-17.txt. Candidate was removed after validation; architect acceptance remains required.
 coordinator_current_tip_provenance_audit: 2026-08-17 — independent read-only validation confirmed d476788 applies cleanly to coordinator tip f514bc93, all six implementation blobs remain unchanged, and no architect acceptance transition exists. Lifecycle remains REVIEW_REQUESTED.
 coordinator_current_tip_native_health: 2026-08-17 — current coordinator tip passed `native/build.ps1 -RunTests -RunClient`: denylist, core, networking, client shell, and literal House/trophies/items transcript. Capture: captures/coordinator-current-tip-native-health-2026-08-17.txt.
+coordinator_current_tip_browser_health: 2026-08-17 — disposable current-tip worktree with normal `npm ci` passed `npm run test:unit` at 122 files/779 tests, including server boot. Capture: captures/coordinator-current-tip-browser-unit-health-2026-08-17.txt.
 
 TASK-0044 is ready for architect review. Kimi's external worktree is clean at
 `d476788`; the coordinator has not edited worker-owned native files. Fable's

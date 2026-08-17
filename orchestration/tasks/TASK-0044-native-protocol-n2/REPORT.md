@@ -241,6 +241,11 @@ passed `native/build.ps1 -RunTests -RunClient` (denylist, core, networking,
 client shell, and the literal House/trophies/items transcript). The raw result
 is in [`captures/coordinator-current-tip-native-health-2026-08-17.txt`](captures/coordinator-current-tip-native-health-2026-08-17.txt).
 
+An independent disposable current-tip browser check also installed dependencies
+with normal install scripts and passed `npm run test:unit` at 122 files and 779
+tests, including the server-boot smoke. Evidence is in
+[`captures/coordinator-current-tip-browser-unit-health-2026-08-17.txt`](captures/coordinator-current-tip-browser-unit-health-2026-08-17.txt).
+
 ## Next action
 
 Fable should rerun the committed tip `d476788` against the unchanged
