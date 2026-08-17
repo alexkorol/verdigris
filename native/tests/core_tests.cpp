@@ -20,19 +20,28 @@ void check(bool condition, const std::string& message) {
 }
 
 void defeat_enemy(Simulation& sim) {
-  // Keep attacking while closing the slower fixed-step gap. This mirrors the
-  // continuous WASD + primary-action rhythm used by the client and prevents
-  // a nearby route transition from spending dozens of ticks under fire.
-  for (int i = 0; i < 40; ++i) {
-    sim.dispatch(Command::move(1, 0));
-    sim.dispatch(Command::action_use(ActionType::Melee));
+  // Approach until the D-114 contact band, then keep the primary rhythm. The
+  // helper deliberately follows the same shared range table as the client so
+  // changing arena scale cannot leave extraction tests stranded out of reach.
+  for (int i = 0; i < 256; ++i) {
+    const Actor* player = sim.actor(sim.scion().actor_id);
+    const Actor* enemy = nullptr;
+    for (const auto& actor : sim.actors()) {
+      if (actor.kind == ActorKind::Monster) {
+        enemy = &actor;
+        break;
+      }
+    }
+    if (!player || !enemy || !enemy->alive) break;
+    const int distance = manhattan_distance(player->position, enemy->position);
+    if (distance > world_scale::kMeleeRange)
+      sim.dispatch(Command::move(1, 0));
+    else
+      sim.dispatch(Command::action_use(ActionType::Melee));
   }
-  for (int i = 0; i < 12; ++i) sim.dispatch(Command::action_use(ActionType::Melee));
-  const auto monsters = sim.actors();
   bool dead = true;
-  for (const auto& actor : monsters) {
+  for (const auto& actor : sim.actors())
     if (actor.kind == ActorKind::Monster && actor.alive) dead = false;
-  }
   check(dead, "melee defeats the instance enemy");
 }
 
@@ -46,7 +55,13 @@ void pick_all_rewards(Simulation& sim) {
 }
 
 void extract_from_start(Simulation& sim) {
-  for (int i = 0; i < 40; ++i) sim.dispatch(Command::move(-1, 0));
+  for (int i = 0; i < 256; ++i) {
+    const Actor* player = sim.actor(sim.scion().actor_id);
+    if (!player || (player->position.x == sim.instance().extraction_point.x &&
+                    player->position.y == sim.instance().extraction_point.y))
+      break;
+    sim.dispatch(Command::move(-1, 0));
+  }
   sim.dispatch(Command::extract());
 }
 
@@ -113,7 +128,7 @@ void test_skill_resource_gating_and_thrust() {
   check(player && enemy, "skill test has a player and monster");
   player->position = {0, 0};
   player->stats.resource = 5;
-  enemy->position = {1000, 0};
+   enemy->position = {world_scale::kThrustRange, 0};
   enemy->stats.life = 1000;
   const int life_before = enemy->stats.life;
   sim.dispatch(Command::action_use(ActionType::Thrust));
@@ -126,7 +141,7 @@ void test_skill_resource_gating_and_thrust() {
   enemy = first_monster(sim);
   player->stats.resource = player->stats.resource_max;
   player->cooldown_ticks = 0;
-  enemy->position = {1000, 0};
+   enemy->position = {world_scale::kThrustRange, 0};
   enemy->stats.life = 1000;
   sim.dispatch(Command::action_use(ActionType::Thrust));
   check(enemy->stats.life < 1000, "funded Thrust damages one target in front");
@@ -139,7 +154,7 @@ void test_skill_resource_gating_and_thrust() {
 
   player->cooldown_ticks = 0;
   player->stats.resource = player->stats.resource_max;
-  enemy->position = {-1000, 0};
+   enemy->position = {-world_scale::kThrustRange, 0};
   const int behind_life = enemy->stats.life;
   sim.dispatch(Command::aim(-1, 0));
   player = sim.actor(sim.scion().actor_id);
@@ -152,7 +167,7 @@ void test_skill_resource_gating_and_thrust() {
 
   player->cooldown_ticks = 0;
   player->stats.resource = player->stats.resource_max;
-  enemy->position = {1000, 0};
+   enemy->position = {world_scale::kThrustRange, 0};
   const int outside_cone_life = enemy->stats.life;
   sim.dispatch(Command::action_use(ActionType::Thrust));
   check(enemy->stats.life == outside_cone_life,
@@ -160,14 +175,14 @@ void test_skill_resource_gating_and_thrust() {
 
   player->cooldown_ticks = 0;
   player->stats.resource = player->stats.resource_max;
-  enemy->position = {2201, 0};
+   enemy->position = {world_scale::kThrustRange + 1, 0};
   const int distant_life = enemy->stats.life;
   sim.dispatch(Command::action_use(ActionType::Thrust));
   check(enemy->stats.life == distant_life, "Thrust rejects a target beyond its 1.5x range");
 
   player->cooldown_ticks = 2;
   player->stats.resource = player->stats.resource_max;
-  enemy->position = {1000, 0};
+   enemy->position = {world_scale::kThrustRange, 0};
   const int cooldown_life = enemy->stats.life;
   sim.dispatch(Command::action_use(ActionType::Thrust));
   check(enemy->stats.life == cooldown_life, "Thrust respects an existing attack cooldown");
@@ -306,9 +321,9 @@ void test_sweep_hits_multiple_targets_and_gates_resource() {
   player->cooldown_ticks = 0;
   Actor* first = first_monster(sim);
   check(first != nullptr, "Sweep test has an initial monster");
-  first->position = {800, 0};
+   first->position = {world_scale::kMeleeRange - 1, 0};
   first->stats.life = 1000;
-  const std::string second_id = sim.spawn_monster({900, 0});
+   const std::string second_id = sim.spawn_monster({world_scale::kMeleeRange, 0});
   Actor* second = sim.actor(second_id);
   check(second != nullptr, "general monster spawn seam creates a second target");
   second->stats.life = 1000;
@@ -352,7 +367,7 @@ Actor* setup_elite(Simulation& sim, Vec2 position) {
 
 void test_elite_thrust_telegraph_timing() {
   Simulation sim(0xA011ULL);
-  Actor* elite = setup_elite(sim, {1400, 0});
+   Actor* elite = setup_elite(sim, {world_scale::kMeleeRange + 1, 0});
   const std::string elite_id = elite->id;
   sim.dispatch(Command::action_use(ActionType::Wait));
   const Event* telegraph = last_event(sim, EventType::AttackTelegraphed, "thrust");
@@ -382,7 +397,7 @@ void test_elite_thrust_telegraph_timing() {
 
 void test_elite_skill_cone_gating() {
   Simulation sim(0xA013ULL);
-  Actor* elite = setup_elite(sim, {800, 0});
+   Actor* elite = setup_elite(sim, {world_scale::kMeleeRange - 1, 0});
   const std::string elite_id = elite->id;
   sim.dispatch(Command::action_use(ActionType::Wait));
   const Event* telegraph = last_event(sim, EventType::AttackTelegraphed);
@@ -394,7 +409,7 @@ void test_elite_skill_cone_gating() {
 
 void test_elite_skill_fizzles_when_resolution_gates_fail() {
   Simulation sim(0xA019ULL);
-  Actor* elite = setup_elite(sim, {1400, 0});
+   Actor* elite = setup_elite(sim, {world_scale::kMeleeRange + 1, 0});
   const std::string elite_id = elite->id;
   elite->stats.resource = 0;
   sim.dispatch(Command::action_use(ActionType::Wait));
@@ -411,7 +426,7 @@ void test_elite_skill_fizzles_when_resolution_gates_fail() {
 
 void test_elite_sweep_uses_shared_pipeline() {
   Simulation sim(0xA014ULL);
-  Actor* elite = setup_elite(sim, {800, 0});
+   Actor* elite = setup_elite(sim, {world_scale::kMeleeRange - 1, 0});
   const std::string elite_id = elite->id;
   Actor* player = sim.actor(sim.scion().actor_id);
   const int expected_damage =
@@ -433,7 +448,7 @@ void test_elite_sweep_uses_shared_pipeline() {
 
 void test_elite_telegraph_cancels_on_death() {
   Simulation monster_death(0xA015ULL);
-  Actor* elite = setup_elite(monster_death, {1400, 0});
+   Actor* elite = setup_elite(monster_death, {world_scale::kMeleeRange + 1, 0});
   const std::string elite_id = elite->id;
   monster_death.dispatch(Command::action_use(ActionType::Wait));
   elite = monster_death.actor(elite_id);
@@ -457,7 +472,7 @@ void test_elite_telegraph_cancels_on_death() {
         "a dead elite cannot resolve its cancelled Thrust");
 
   Simulation target_death(0xA016ULL);
-  elite = setup_elite(target_death, {1400, 0});
+   elite = setup_elite(target_death, {world_scale::kMeleeRange + 1, 0});
   const std::string target_elite_id = elite->id;
   target_death.dispatch(Command::action_use(ActionType::Wait));
   target_death.dispatch(Command::interact("hazard:death"));
@@ -472,8 +487,8 @@ void test_elite_telegraph_cancels_on_death() {
 void test_elite_skill_replay_is_deterministic() {
   Simulation first(0xA017ULL);
   Simulation second(0xA017ULL);
-  Actor* first_elite = setup_elite(first, {1400, 0});
-  Actor* second_elite = setup_elite(second, {1400, 0});
+   Actor* first_elite = setup_elite(first, {world_scale::kMeleeRange + 1, 0});
+   Actor* second_elite = setup_elite(second, {world_scale::kMeleeRange + 1, 0});
   check(first_elite->id == second_elite->id, "elite replay setup retains stable actor identity");
   const std::vector<Command> commands = {
       Command::action_use(ActionType::Wait), Command::action_use(ActionType::Wait),
@@ -496,7 +511,8 @@ void test_non_elite_melee_cadence_is_unchanged() {
   Actor* player = sim.actor(sim.scion().actor_id);
   player->position = {0, 0};
   player->stats.life = 1000;
-  const std::string monster_id = sim.spawn_monster({800, 0}, 1, false);
+   const std::string monster_id =
+       sim.spawn_monster({world_scale::kMeleeRange - 1, 0}, 1, false);
   Actor* monster = sim.actor(monster_id);
   check(monster && !monster->elite, "non-elite cadence test creates a plain monster");
   sim.dispatch(Command::action_use(ActionType::Wait));
@@ -521,7 +537,7 @@ void test_war_cry_buff_expiry_and_replay_determinism() {
     player->stats.life = player->stats.life_max;
     Actor* first_actor = first_monster(*sim);
     check(first_actor != nullptr, "War Cry test has an initial monster");
-    first_actor->position = {800, 0};
+     first_actor->position = {world_scale::kMeleeRange - 1, 0};
     first_actor->stats.life = 1000;
     player->stats.resource = player->stats.resource_max;
     sim->dispatch(Command::action_use(ActionType::WarCry));
@@ -853,7 +869,10 @@ void test_determinism() {
   Simulation second(0xBADC0FFEEULL);
   first.dispatch(Command::enter("route:tin:1:0"));
   second.dispatch(Command::enter("route:tin:1:0"));
-  for (int i = 0; i < 40; ++i) {
+  const int step = movement_step_per_tick(world_scale::kPlayerMoveSpeed);
+  const int approach_ticks =
+      (world_scale::kEnemySpawnDistance - world_scale::kMeleeRange + step - 1) / step;
+  for (int i = 0; i < approach_ticks; ++i) {
     first.dispatch(Command::move(1, 0));
     second.dispatch(Command::move(1, 0));
   }
@@ -892,7 +911,8 @@ void test_presentation_catalog_is_authoritative_and_stable() {
   const std::string thrust_player_id = thrust_player->id;
   thrust_player->position = {0, 0};
   thrust_player->stats.resource = thrust_player->stats.resource_max;
-  const std::string thrust_enemy = thrust_sim.spawn_monster({1400, 0});
+   const std::string thrust_enemy =
+       thrust_sim.spawn_monster({world_scale::kThrustRange, 0});
   thrust_sim.dispatch(Command::action_use(ActionType::Thrust));
   thrust_player = thrust_sim.actor(thrust_player_id);
   check(thrust_player->stats.resource == thrust_player->stats.resource_max -
@@ -904,7 +924,7 @@ void test_presentation_catalog_is_authoritative_and_stable() {
   check(thrust_sim.actor(thrust_enemy) != nullptr, "catalog test retains the enemy actor");
 
   Simulation elite_sim(0xA01AULL);
-  Actor* elite = setup_elite(elite_sim, {1400, 0});
+   Actor* elite = setup_elite(elite_sim, {world_scale::kMeleeRange + 1, 0});
   const std::string elite_id = elite->id;
   elite_sim.dispatch(Command::action_use(ActionType::Wait));
   const Event* telegraph = last_event(elite_sim, EventType::AttackTelegraphed, "thrust");
@@ -1008,10 +1028,10 @@ void test_pack_clear_waits_for_the_last_monster() {
     check(player && first, "pack setup has a player and initial monster");
     player->position = {0, 0};
     player->stats.life = player->stats.life_max;
-    first->position = {500, 0};
+    first->position = {world_scale::kMeleeRange - 1, 0};
     first->stats.life = 1;
     const std::string first_id = first->id;
-    const std::string second_id = sim.spawn_monster({700, 0});
+    const std::string second_id = sim.spawn_monster({world_scale::kMeleeRange, 0});
     Actor* second = sim.actor(second_id);
     check(second != nullptr, "pack setup adds a second monster");
     second->stats.life = 1;
@@ -1317,6 +1337,28 @@ void test_legend_stable_ids_and_deterministic_replay() {
   }
 }
 
+void test_d114_world_scale_table() {
+  check(world_scale::kPlayerStepPerTick ==
+            movement_step_per_tick(world_scale::kPlayerMoveSpeed),
+        "D-114 table derives the player step from the fixed cadence");
+  check(world_scale::kMeleeRange ==
+            world_scale::kPlayerStepPerTick * world_scale::kMeleeContactTicks,
+        "D-114 melee reach derives from contact ticks");
+  check(world_scale::kMeleeRange >= 120 && world_scale::kMeleeRange <= 180,
+        "D-114 melee reach stays inside the readable contact envelope");
+  check(world_scale::kThrustRange == world_scale::kMeleeRange * 3 / 2,
+        "D-114 thrust reach remains 1.5x melee reach");
+  check(world_scale::kExtractionRange ==
+            world_scale::kPlayerStepPerTick * world_scale::kExtractionContactTicks,
+        "D-114 extraction interaction derives from walking ticks");
+  check(world_scale::kEnemySpawnDistance > world_scale::kThrustRange &&
+            world_scale::kArenaHalfExtent > world_scale::kEnemySpawnDistance,
+        "D-114 spawn and arena envelope leave a readable approach");
+  check(world_scale::kActorColliderRadius < world_scale::kSceneryColliderRadius &&
+            world_scale::kSceneryColliderRadius < world_scale::kMeleeRange,
+        "D-114 actor and scenery colliders remain below melee reach");
+}
+
 }  // namespace
 
 int main() {
@@ -1358,6 +1400,7 @@ int main() {
   test_elite_kill_and_recorded_event();
   test_legends_are_bounded_and_evict_oldest_non_founding();
   test_legend_stable_ids_and_deterministic_replay();
+  test_d114_world_scale_table();
   test_relic_resurface_round_trip();
   test_relic_loss_again_returns_once();
   test_relic_resurface_replay_is_deterministic();
