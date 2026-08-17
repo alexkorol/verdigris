@@ -38,6 +38,10 @@ export default async function loot({ connect, assert }) {
         await p.attack(nearest);
       } else if (nearest) {
         p.devTeleport(nearest.x + 1, nearest.y);
+        // Keep the real attack paired with the reposition. A dropped dev
+        // frame under CPU load should cost one poll, not an entire 30s kill
+        // deadline while the player keeps teleporting without swinging.
+        await p.attack(nearest);
       }
       return false;
     }, { timeoutMs: 30000, intervalMs: 400, label: 'a coin drop' });
@@ -84,6 +88,7 @@ export default async function loot({ connect, assert }) {
         await p.attack(nearest);
       } else if (nearest) {
         p.devTeleport(Math.round(nearest.x) + 1, Math.round(nearest.y));
+        await p.attack(nearest);
       }
       return false;
     }, { timeoutMs: 30000, intervalMs: 400, label: 'a second coin drop' });
