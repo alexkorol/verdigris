@@ -112,6 +112,23 @@ tests, and native client shell. The shell ended with the expected
 a source-preserving build recheck; no claim is made here beyond the previously
 captured unchanged movement/zones and N1 regression attach runs.
 
+## Coordinator attach recheck — 2026-08-17
+
+The coordinator launched the clean native server from `d476788` on port 6526
+and ran the unchanged harness against it:
+
+```
+$env:PLAYTEST_WS_URL='ws://127.0.0.1:6526'
+node playtest/run.mjs --attach quickstart single-session movement zones
+```
+
+All four scenarios passed: movement (4588ms), quickstart (162ms),
+single-session (315ms), and zones (1108ms). The zones scenario exercised all
+six authored zone/layout combinations and restored the pre-entry position
+(`38,115` vs `38,115`). The server was stopped cleanly after the run. Raw
+output is preserved in
+[`captures/coordinator-native-attach-2026-08-17.txt`](captures/coordinator-native-attach-2026-08-17.txt).
+
 ## Integration dry-run
 
 A disposable merge of `origin/codex/TASK-0044-native-protocol-n2` into the
