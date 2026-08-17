@@ -143,6 +143,20 @@ The N2 specification explicitly permits a minimum scenario stub; this is not
 claimed as population parity. Exact authored composition and counts remain a
 later N3+ parity obligation.
 
+## Coordinator N3 surface audit — 2026-08-17
+
+The coordinator verified the N3 handoff against the live browser reference and
+native headers without changing implementation. The cited inbound/outbound
+browser events are present at the named handler/combat seams, including
+`player:move`, `player:skill:trigger`, `combat:hit`, `world:skill:effect`,
+`world:projectile`, `player:stats:update`, `monster:telegraph`, and
+`game:send:message`. The native `ActionType`, `EventType`, and
+`Command::{action_use,pick_up,equip}` hooks are also present. The exact
+line-anchored audit is preserved in
+[`coordinator-n3-surface-audit-2026-08-17.txt`](captures/coordinator-n3-surface-audit-2026-08-17.txt).
+This is evidence for the next task, not an N3 implementation claim; native
+combat remains gated on a Fable-issued READY N3 spec.
+
 ## N3 negative baseline — 2026-08-17
 
 To make the next wave’s entry criteria executable, the coordinator ran the
