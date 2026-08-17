@@ -1,0 +1,16 @@
+Coordinator native health gate — current tip
+Date: 2026-08-17
+Coordinator HEAD: bc3d05b9 (documentation-only commits after native sources)
+
+Command:
+`powershell -NoProfile -File native/build.ps1 -RunTests -RunClient`
+
+Result: exit 0
+- native legacy denylist: PASS
+- verdigris core tests: PASS
+- verdigris networking tests: PASS
+- native client shell: PASS
+- client transcript: `House: House Verdigris | trophies stored: 1 | items stored: 1`
+
+The MSVC build emitted only the existing `getenv` deprecation warning in
+`native/src/server_main.cpp`; no failure or source change occurred.

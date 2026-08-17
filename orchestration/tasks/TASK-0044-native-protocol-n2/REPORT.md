@@ -236,6 +236,11 @@ coordinator tip `f514bc93`, preserves all six implementation blobs exactly,
 and has no scope or provenance drift. No architect acceptance transition is
 present; the task remains review-ready rather than integrated.
 
+As a health check after the coordinator evidence commits, the current tip also
+passed `native/build.ps1 -RunTests -RunClient` (denylist, core, networking,
+client shell, and the literal House/trophies/items transcript). The raw result
+is in [`captures/coordinator-current-tip-native-health-2026-08-17.txt`](captures/coordinator-current-tip-native-health-2026-08-17.txt).
+
 ## Next action
 
 Fable should rerun the committed tip `d476788` against the unchanged
