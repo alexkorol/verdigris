@@ -210,6 +210,18 @@ was **2/4**: `quickstart` and `single-session` passed, while `movement` and
 This confirms why the disposable `d476788` candidate must not be described as
 already shipped; it remains pending Fable's architect rerun and acceptance.
 
+## Fresh current-tip candidate
+
+A fresh disposable candidate `f602dab4` cherry-picked `d476788` onto current
+coordinator tip `27db1611`. The native denylist/core/networking/client gate
+passed, including the literal `trophies stored: 1 | items stored: 1`
+transcript. The unchanged attach matrix then passed **4/4**:
+`quickstart`, `single-session`, `movement`, and `zones`. The disposable
+worktree and server were removed after the run. Full output is in
+[`captures/coordinator-current-tip-n2-candidate-2026-08-17.txt`](captures/coordinator-current-tip-n2-candidate-2026-08-17.txt).
+This is integration-readiness evidence only; Fable's architect rerun and
+acceptance remain outstanding.
+
 ## Coordinator current-tip integration candidate
 
 The implementation commit `d476788` was cherry-picked cleanly onto the
