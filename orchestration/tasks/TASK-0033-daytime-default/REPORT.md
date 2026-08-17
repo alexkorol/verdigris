@@ -1,6 +1,6 @@
 ---
 task: TASK-0033
-state: REVIEW_REQUESTED
+state: ACCEPTED
 branch: codex/TASK-0033-daytime-default
 commits:
   - bf404b3d236fc4402adcdd1a0327a134de7fff9a
