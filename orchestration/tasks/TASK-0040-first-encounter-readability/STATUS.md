@@ -8,11 +8,11 @@ worktree: C:\Users\Alex\Documents\ChatGPT\verdigris\.codex\worktrees\TASK-0040-f
 base_commit: 25ecd77f
 started_at: 2026-08-17T00:00:00-07:00
 dependencies: none
-implementation_commits: 8abad0bf; cf9282c1
+implementation_commits: 8abad0bf; cf9282c1; 049be9b7; d30a1f1c; 69995508; e0dacfc8; 6295298a
 report: orchestration/tasks/TASK-0040-first-encounter-readability/REPORT.md
 expected_verification: npm run test:unit; npm run playtest; first-delve transcript; D-114 constants table; capture evidence
 known_risks: server/core paths are disjoint from pending TASK-0035 native and TASK-0036/0037 browser handoffs; no client, loot, lore, or economy changes permitted
-verification: focused encounter/balance 15/15; broader combat/encounter 85/85; full unit 120 files/766 tests; playtest 31/31; diff check passed
-validator: /root/validate_task_0040 — pending
+verification: focused encounter/balance 16/16; full unit 120 files/767 tests; direct-WASD and exact-teleport regression passed; driven WebSocket transcript captured; latest full playtest 25/31 with six isolated reruns passing; diff check passed
+validator: /root/validate_task_0040 — REVISE (6295298a closes marker, staging, transcript, and scope findings; mandatory full playtest remains non-reproducible: exact-tip runs 17/31, 30/31, 28/31, with isolated failures passing; dormant roster visibility remains architect-pending)
 architect_review_required: true
 ---

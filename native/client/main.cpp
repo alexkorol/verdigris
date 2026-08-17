@@ -41,7 +41,10 @@ using AlphaBlendProc = BOOL(WINAPI*)(HDC, int, int, int, int, HDC, int, int, int
                                      BLENDFUNCTION);
 
 constexpr double kPi = 3.14159265358979323846;
-constexpr double kTileUnits = 100.0;  // one world tile is 100 simulation units
+// D-114 derives the visible ground envelope from the core's shared scale;
+// eight grid tiles fill the arena half-extent at the default camera.
+constexpr double kTileUnits =
+    static_cast<double>(verdigris::world_scale::kArenaHalfExtent) / 8.0;
 // D-107 ARPG camera preset.  The close zoom blend borrows the Miniature
 // treatment's stronger perspective without changing the default presentation.
 constexpr double kCameraDefaultZoom = 0.85;
@@ -201,7 +204,7 @@ enum class SceneryKind { Tree, Ruin, Dwelling, Shrine };
 struct SceneryItem {
   SceneryKind kind = SceneryKind::Tree;
   verdigris::Vec2 position{};
-  double radius = 60.0;
+  double radius = static_cast<double>(verdigris::world_scale::kSceneryColliderRadius);
   double scale = 1.0;
   bool solid = true;
 };
@@ -228,6 +231,7 @@ struct ClientState {
   int loot_scatter = 0;
   bool loot_labels = false;
   bool gear_overlay = false;
+  bool debug_overlay = false;
   std::size_t selected_item = 0;
   std::string hint;
   int hint_ticks = 0;
@@ -523,44 +527,54 @@ void generate_scenery(ClientState& state) {
   SceneryRng rng(scenery_seed(route_id));
   const bool village = route_id.find(":1:") != std::string::npos;
   const bool fields = route_id.find(":2:") != std::string::npos;
+  const double tree_radius =
+      static_cast<double>(verdigris::world_scale::kSceneryColliderRadius);
+  const double structure_radius = tree_radius * 1.6;
+  const double monument_radius = tree_radius * 1.5;
   if (village) {
-    add_scenery(state.scenery, SceneryKind::Dwelling, -320, -260, 120, true, 1.0);
-    add_scenery(state.scenery, SceneryKind::Dwelling, 340, -300, 120, true, 1.0);
-    add_scenery(state.scenery, SceneryKind::Dwelling, -420, 180, 120, true, 1.0);
-    add_scenery(state.scenery, SceneryKind::Shrine, 60, -460, 110, true, 1.0);
+    add_scenery(state.scenery, SceneryKind::Dwelling, -320, -260, structure_radius, true, 1.0);
+    add_scenery(state.scenery, SceneryKind::Dwelling, 340, -300, structure_radius, true, 1.0);
+    add_scenery(state.scenery, SceneryKind::Dwelling, -420, 180, structure_radius, true, 1.0);
+    add_scenery(state.scenery, SceneryKind::Shrine, 60, -460, monument_radius, true, 1.0);
     // A near-field tree makes the grounded depth boundary easy to read in the
     // client lab while the remaining placements keep the route spacious.
-    add_scenery(state.scenery, SceneryKind::Tree, 260, -100, 70, true, 1.0);
-    add_scenery(state.scenery, SceneryKind::Tree, -700, -500, 70, true, 1.0);
-    add_scenery(state.scenery, SceneryKind::Tree, 720, -420, 70, true, 1.15);
-    add_scenery(state.scenery, SceneryKind::Tree, -780, 420, 70, true, 1.0);
+    add_scenery(state.scenery, SceneryKind::Tree, 260, -100, tree_radius, true, 1.0);
+    add_scenery(state.scenery, SceneryKind::Tree, -700, -500, tree_radius, true, 1.0);
+    add_scenery(state.scenery, SceneryKind::Tree, 720, -420, tree_radius, true, 1.15);
+    add_scenery(state.scenery, SceneryKind::Tree, -780, 420, tree_radius, true, 1.0);
     for (int i = 0; i < 5; ++i)
-      add_scenery(state.scenery, SceneryKind::Tree, rng.range(-900, 900),
-                  rng.range(-650, 650), 65, true, rng.range(.78, 1.15));
+      add_scenery(state.scenery, SceneryKind::Tree,
+                  rng.range(-verdigris::world_scale::kArenaHalfExtent,
+                             verdigris::world_scale::kArenaHalfExtent),
+                  rng.range(-650, 650), tree_radius, true, rng.range(.78, 1.15));
   } else if (fields) {
-    add_scenery(state.scenery, SceneryKind::Ruin, -200, -380, 110, true, 1.0);
-    add_scenery(state.scenery, SceneryKind::Tree, 420, -520, 70, true, 1.2);
-    add_scenery(state.scenery, SceneryKind::Tree, -640, 240, 70, true, 1.0);
-    add_scenery(state.scenery, SceneryKind::Tree, 680, 380, 70, true, .9);
+    add_scenery(state.scenery, SceneryKind::Ruin, -200, -380, monument_radius, true, 1.0);
+    add_scenery(state.scenery, SceneryKind::Tree, 420, -520, tree_radius, true, 1.2);
+    add_scenery(state.scenery, SceneryKind::Tree, -640, 240, tree_radius, true, 1.0);
+    add_scenery(state.scenery, SceneryKind::Tree, 680, 380, tree_radius, true, .9);
     for (int i = 0; i < 8; ++i)
-      add_scenery(state.scenery, SceneryKind::Tree, rng.range(-980, 980),
-                  rng.range(-700, 700), 65, true, rng.range(.75, 1.2));
+      add_scenery(state.scenery, SceneryKind::Tree,
+                  rng.range(-verdigris::world_scale::kArenaHalfExtent,
+                             verdigris::world_scale::kArenaHalfExtent),
+                  rng.range(-700, 700), tree_radius, true, rng.range(.75, 1.2));
   } else {
     const int variant = static_cast<int>(rng.next() % 3);
     if (variant == 0) {
-      add_scenery(state.scenery, SceneryKind::Ruin, -360, -320, 110, true, 1.0);
-      add_scenery(state.scenery, SceneryKind::Ruin, 360, -360, 110, true, 1.1);
-      add_scenery(state.scenery, SceneryKind::Shrine, 0, -600, 110, true, 1.1);
+      add_scenery(state.scenery, SceneryKind::Ruin, -360, -320, monument_radius, true, 1.0);
+      add_scenery(state.scenery, SceneryKind::Ruin, 360, -360, monument_radius, true, 1.1);
+      add_scenery(state.scenery, SceneryKind::Shrine, 0, -600, monument_radius, true, 1.1);
     } else if (variant == 1) {
-      add_scenery(state.scenery, SceneryKind::Shrine, 0, -420, 110, true, 1.1);
-      add_scenery(state.scenery, SceneryKind::Ruin, 360, -420, 110, true, 1.0);
+      add_scenery(state.scenery, SceneryKind::Shrine, 0, -420, monument_radius, true, 1.1);
+      add_scenery(state.scenery, SceneryKind::Ruin, 360, -420, monument_radius, true, 1.0);
     } else {
-      add_scenery(state.scenery, SceneryKind::Dwelling, -320, -300, 120, true, 1.0);
-      add_scenery(state.scenery, SceneryKind::Shrine, 300, -420, 110, true, 1.0);
+      add_scenery(state.scenery, SceneryKind::Dwelling, -320, -300, structure_radius, true, 1.0);
+      add_scenery(state.scenery, SceneryKind::Shrine, 300, -420, monument_radius, true, 1.0);
     }
     for (int i = 0; i < 8; ++i)
-      add_scenery(state.scenery, SceneryKind::Tree, rng.range(-950, 950),
-                  rng.range(-700, 700), 65, true, rng.range(.78, 1.18));
+      add_scenery(state.scenery, SceneryKind::Tree,
+                  rng.range(-verdigris::world_scale::kArenaHalfExtent,
+                             verdigris::world_scale::kArenaHalfExtent),
+                  rng.range(-700, 700), tree_radius, true, rng.range(.78, 1.18));
   }
 }
 
@@ -835,7 +849,7 @@ void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& came
 }
 
 void draw_ground_grid(HDC dc, const Camera& camera, const RECT& bounds) {
-  const double range = 8.0 * kTileUnits;
+  const double range = static_cast<double>(verdigris::world_scale::kArenaHalfExtent);
   const double start_x = std::floor((camera.x - range) / kTileUnits) * kTileUnits;
   const double start_y = std::floor((camera.y - range) / kTileUnits) * kTileUnits;
   for (double gx = start_x; gx <= camera.x + range; gx += kTileUnits) {
@@ -1256,7 +1270,7 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds) {
   TextOutA(dc, left + 16, bottom - 28, controls, static_cast<int>(strlen(controls)));
 }
 
-void paint_skill_strip(const ClientState& state, HDC dc) {
+void paint_skill_strip(const ClientState& state, HDC dc, const RECT& bounds) {
   const auto* player =
       state.simulation->actor(state.simulation->scion().actor_id);
   const verdigris::PresentationCatalog catalog =
@@ -1273,7 +1287,9 @@ void paint_skill_strip(const ClientState& state, HDC dc) {
     const bool active = player && skill.action == verdigris::ActionType::WarCry &&
                         player->war_cry_ticks_remaining > 0;
     const int left = 18 + i * 116;
-    RECT slot{left, 202, left + 106, 256};
+    const int bottom = std::max(54, static_cast<int>(bounds.bottom) - 18);
+    const int top = bottom - 54;
+    RECT slot{left, top, left + 106, bottom};
     HBRUSH fill = CreateSolidBrush(available ? RGB(35, 42, 44) : RGB(29, 33, 34));
     FillRect(dc, &slot, fill);
     DeleteObject(fill);
@@ -1311,7 +1327,7 @@ void paint_skill_strip(const ClientState& state, HDC dc) {
 void paint_resource_hud(const verdigris::Actor* player, HDC dc) {
   if (!player) return;
   constexpr int left = 18;
-  constexpr int width = 240;
+  constexpr int width = 200;
   constexpr int height = 8;
   const auto draw_bar = [&](int y, const char* label, int value, int maximum,
                             COLORREF color) {
@@ -1339,9 +1355,9 @@ void paint_resource_hud(const verdigris::Actor* player, HDC dc) {
     SelectObject(dc, old_pen);
     DeleteObject(border);
   };
-  draw_bar(122, "LIFE", player->stats.life, player->stats.life_max,
+  draw_bar(28, "LIFE", player->stats.life, player->stats.life_max,
            RGB(177, 82, 75));
-  draw_bar(146, "RESOURCE", player->stats.resource, player->stats.resource_max,
+  draw_bar(52, "RESOURCE", player->stats.resource, player->stats.resource_max,
            RGB(72, 168, 191));
 }
 
@@ -1503,59 +1519,65 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     }
   }
 
-  // HUD and debug overlay.
-  SetBkMode(dc, TRANSPARENT);
-  SetTextColor(dc, RGB(230, 235, 220));
-  const int life = player ? player->stats.life : 0;
-  const std::string status =
-      "House " + sim.house().name + " | Scion " + sim.scion().name + " | Life " +
-      std::to_string(life) + " | Resource " +
-      std::to_string(player ? player->stats.resource : 0) + " | Stored trophies " +
-      std::to_string(sim.house().stored_trophies.size()) + " | Stored items " +
-      std::to_string(sim.house().stored_items.size()) + " | Carried " +
-      std::to_string(sim.scion().carried_items.size() +
-                     sim.scion().carried_trophies.size());
-  TextOutA(dc, 18, 16, status.c_str(), static_cast<int>(status.size()));
-  const char* help =
-      "WASD move | Mouse aim | LMB melee | RMB/Space dash | Q Thrust | E Sweep | R WarCry";
-  TextOutA(dc, 18, 40, help, static_cast<int>(strlen(help)));
-  const char* help2 =
-      "X nearest pickup | Z loot labels | F contextual extract | I gear/House overlay";
-  TextOutA(dc, 18, 64, help2, static_cast<int>(strlen(help2)));
-  const char* camera_help =
-      "Wheel zoom | PgUp/PgDn pitch | -/= perspective | Home reset ARPG camera";
-  TextOutA(dc, 18, 88, camera_help, static_cast<int>(strlen(camera_help)));
-
+  // The default testbed view is intentionally sparse: only the compact
+  // resource bars and three-slot strip remain over the playfield. Diagnostics
+  // are still available for driven tests and the architect's F3 inspection.
   paint_resource_hud(player, dc);
-
-  SetTextColor(dc, RGB(150, 160, 150));
-  char debug_line[256];
-  std::snprintf(debug_line, sizeof(debug_line),
-                "tick %llu | zoom %.2f | pitch %.0f | persp %.5f | anchor %.2f | fog %.1f | effects %zu | telegraphs %zu",
-                static_cast<unsigned long long>(sim.tick()), state.camera.zoom,
-                state.camera.pitch_deg, state.camera.perspective, state.camera.anchor,
-                state.camera.fog,
-                state.effects.size(), state.telegraphs.size());
-  TextOutA(dc, 18, 168, debug_line, static_cast<int>(strlen(debug_line)));
-  char asset_line[256];
-  std::snprintf(asset_line, sizeof(asset_line), "%s | %zu scenery | %s",
-                state.billboards.status.c_str(), state.scenery.size(),
-                state.billboards.scenery_status.c_str());
-  TextOutA(dc, 18, 184, asset_line, static_cast<int>(strlen(asset_line)));
-  if (state.hint_ticks > 0 && !state.hint.empty()) {
-    SetTextColor(dc, RGB(239, 208, 116));
-    TextOutA(dc, 18, 286, state.hint.c_str(), static_cast<int>(state.hint.size()));
-  }
-  paint_skill_strip(state, dc);
+  paint_skill_strip(state, dc, bounds);
   paint_gear_overlay(state, dc, bounds);
-  int log_y = bounds.bottom - 24;
-  for (auto it = state.event_log.rbegin(); it != state.event_log.rend(); ++it) {
-    TextOutA(dc, 18, log_y, it->c_str(), static_cast<int>(it->size()));
-    log_y -= 20;
+  if (state.debug_overlay) {
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, RGB(230, 235, 220));
+    const int life = player ? player->stats.life : 0;
+    const std::string status =
+        "House " + sim.house().name + " | Scion " + sim.scion().name + " | Life " +
+        std::to_string(life) + " | Resource " +
+        std::to_string(player ? player->stats.resource : 0) + " | Stored trophies " +
+        std::to_string(sim.house().stored_trophies.size()) + " | Stored items " +
+        std::to_string(sim.house().stored_items.size()) + " | Carried " +
+        std::to_string(sim.scion().carried_items.size() +
+                       sim.scion().carried_trophies.size());
+    TextOutA(dc, 18, 16, status.c_str(), static_cast<int>(status.size()));
+    const char* help =
+        "WASD move | Mouse aim | LMB melee | RMB/Space dash | Q Thrust | E Sweep | R WarCry";
+    TextOutA(dc, 18, 72, help, static_cast<int>(strlen(help)));
+    const char* help2 =
+        "X nearest pickup | Z loot labels | F contextual extract | I gear/House overlay";
+    TextOutA(dc, 18, 96, help2, static_cast<int>(strlen(help2)));
+    const char* camera_help =
+        "Wheel zoom | PgUp/PgDn pitch | -/= perspective | Home reset ARPG camera";
+    TextOutA(dc, 18, 120, camera_help, static_cast<int>(strlen(camera_help)));
+
+    SetTextColor(dc, RGB(150, 160, 150));
+    char debug_line[256];
+    std::snprintf(debug_line, sizeof(debug_line),
+                  "tick %llu | player %d,%d | zoom %.2f | pitch %.0f | persp %.5f | anchor %.2f | fog %.1f | effects %zu | telegraphs %zu",
+                  static_cast<unsigned long long>(sim.tick()),
+                  player ? player->position.x : 0, player ? player->position.y : 0,
+                  state.camera.zoom,
+                  state.camera.pitch_deg, state.camera.perspective, state.camera.anchor,
+                  state.camera.fog,
+                  state.effects.size(), state.telegraphs.size());
+    TextOutA(dc, 18, 144, debug_line, static_cast<int>(strlen(debug_line)));
+    char asset_line[256];
+    std::snprintf(asset_line, sizeof(asset_line), "%s | %zu scenery | %s",
+                  state.billboards.status.c_str(), state.scenery.size(),
+                  state.billboards.scenery_status.c_str());
+    TextOutA(dc, 18, 168, asset_line, static_cast<int>(strlen(asset_line)));
+    if (state.hint_ticks > 0 && !state.hint.empty()) {
+      SetTextColor(dc, RGB(239, 208, 116));
+      TextOutA(dc, 18, 192, state.hint.c_str(), static_cast<int>(state.hint.size()));
+    }
+    int log_y = bounds.bottom - 24;
+    for (auto it = state.event_log.rbegin(); it != state.event_log.rend(); ++it) {
+      TextOutA(dc, 18, log_y, it->c_str(), static_cast<int>(it->size()));
+      log_y -= 20;
+    }
   }
 }
 
-constexpr double kActorColliderRadius = 26.0;
+constexpr double kActorColliderRadius =
+    static_cast<double>(verdigris::world_scale::kActorColliderRadius);
 
 bool scenery_blocks_segment(const ClientState& state, verdigris::Vec2 from,
                             verdigris::Vec2 to) {
@@ -1671,6 +1693,11 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
     }
     case WM_KEYDOWN:
       if (!state) break;
+      if (wparam == VK_F3) {
+        state->debug_overlay = !state->debug_overlay;
+        InvalidateRect(window, nullptr, FALSE);
+        break;
+      }
       if (wparam == 'W') state->w = true;
       if (wparam == 'A') state->a = true;
       if (wparam == 'S') state->s = true;
@@ -1800,20 +1827,22 @@ int run_headless_demo() {
   verdigris::EmberHunt seasonal;
   simulation.set_seasonal_mechanic(&seasonal);
   simulation.dispatch(verdigris::Command::enter("route:tin:1:0"));
-  for (int i = 0; i < 40; ++i) simulation.dispatch(verdigris::Command::move(1, 0));
+  for (int i = 0; i < 52; ++i) simulation.dispatch(verdigris::Command::move(1, 0));
   for (int i = 0; i < 8; ++i)
     simulation.dispatch(verdigris::Command::action_use(verdigris::ActionType::Melee));
   if (!simulation.ground_items().empty())
     simulation.dispatch(verdigris::Command::pick_up(simulation.ground_items().front().id));
   if (!simulation.ground_trophies().empty())
     simulation.dispatch(verdigris::Command::pick_up(simulation.ground_trophies().front().id));
-  for (int i = 0; i < 40; ++i) simulation.dispatch(verdigris::Command::move(-1, 0));
+  for (int i = 0; i < 52; ++i) simulation.dispatch(verdigris::Command::move(-1, 0));
   simulation.dispatch(verdigris::Command::extract());
+  const std::size_t trophies_stored = simulation.house().stored_trophies.size();
+  const std::size_t items_stored = simulation.house().stored_items.size();
   std::cout << "Verdigris native client shell\n"
             << "House: " << simulation.house().name
-            << " | trophies stored: " << simulation.house().stored_trophies.size()
-            << " | items stored: " << simulation.house().stored_items.size() << "\n";
-  return 0;
+            << " | trophies stored: " << trophies_stored
+            << " | items stored: " << items_stored << "\n";
+  return trophies_stored == 1 && items_stored == 1 ? 0 : 1;
 }
 
 // A standard main() keeps the console subsystem so --headless output reaches
@@ -1837,7 +1866,7 @@ int main(int argc, char** argv) {
   window_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
   RegisterClassA(&window_class);
 
-  HWND window = CreateWindowExA(0, window_class.lpszClassName, "Verdigris - Native Expedition",
+  HWND window = CreateWindowExA(0, window_class.lpszClassName, "Verdigris Core Testbed",
                                 WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 960, 600,
                                 nullptr, nullptr, instance, state.get());
   ShowWindow(window, SW_SHOW);
@@ -1856,20 +1885,22 @@ int run_headless_demo() {
   verdigris::EmberHunt seasonal;
   simulation.set_seasonal_mechanic(&seasonal);
   simulation.dispatch(verdigris::Command::enter("route:tin:1:0"));
-  for (int i = 0; i < 40; ++i) simulation.dispatch(verdigris::Command::move(1, 0));
+  for (int i = 0; i < 52; ++i) simulation.dispatch(verdigris::Command::move(1, 0));
   for (int i = 0; i < 8; ++i)
     simulation.dispatch(verdigris::Command::action_use(verdigris::ActionType::Melee));
   if (!simulation.ground_items().empty())
     simulation.dispatch(verdigris::Command::pick_up(simulation.ground_items().front().id));
   if (!simulation.ground_trophies().empty())
     simulation.dispatch(verdigris::Command::pick_up(simulation.ground_trophies().front().id));
-  for (int i = 0; i < 40; ++i) simulation.dispatch(verdigris::Command::move(-1, 0));
+  for (int i = 0; i < 52; ++i) simulation.dispatch(verdigris::Command::move(-1, 0));
   simulation.dispatch(verdigris::Command::extract());
+  const std::size_t trophies_stored = simulation.house().stored_trophies.size();
+  const std::size_t items_stored = simulation.house().stored_items.size();
   std::cout << "Verdigris native client shell\n"
             << "House: " << simulation.house().name
-            << " | trophies stored: " << simulation.house().stored_trophies.size()
-            << " | items stored: " << simulation.house().stored_items.size() << "\n";
-  return 0;
+            << " | trophies stored: " << trophies_stored
+            << " | items stored: " << items_stored << "\n";
+  return trophies_stored == 1 && items_stored == 1 ? 0 : 1;
 }
 
 int main() {

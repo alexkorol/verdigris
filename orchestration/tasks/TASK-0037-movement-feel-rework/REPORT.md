@@ -7,7 +7,8 @@ commits:
   - 33798746
   - 64d57bc7
   - 31413c99
-base_commit: b141cd9f
+  - 15c1a531
+base_commit: 6e277cf4
 ---
 
 ## Executive summary
@@ -122,4 +123,20 @@ mutable speed, so the browser could not see the acceleration ramp. Revision
 adds a same-sequence speed-update assertion. The animation guard applies these
 mutable fields without resetting the frame clock.
 
+## Revision 4 — current-tip correction
 
+The stale-base branch was merged onto current program tip `6e277cf4` in the
+`d70f167c`/`06394847` ancestry and finalized as `15c1a531`. The literal
+architect check is:
+
+```text
+PS> git diff 6e277cf4 -- src/core/rendering/
+PS> $LASTEXITCODE
+0
+```
+
+The rendering diff is empty, so TASK-0033's ambient/daytime implementation is
+preserved. The current-tip branch passed 120 files / 768 unit tests and the
+alternate browser gate 1/1 on port 6512. A full playtest retry reached 25/31;
+the six fixture/dev-state failures were each rerun successfully in isolation
+and are documented as harness variance, not movement regressions.

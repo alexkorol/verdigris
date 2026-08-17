@@ -23,6 +23,34 @@ import {
 
 export const BASE_MOVE_DURATION = PLAYER_TILE_TRAVEL_MS;
 
+// Movement samples are frequent, but a client should only re-apply an
+// animation state when that state actually changes.  SpriteAnimator treats
+// every server-state application as a new timeline, so repeating the same
+// sequence in each movement packet would reset its frame and elapsed time.
+// This is presentation bookkeeping only; the movementStep and player payload
+// remain server-authoritative and unchanged.
+const lastBroadcastAnimationSignature = new WeakMap();
+
+/**
+ * Movement feel is deliberately derived from the shared authoritative cadence.
+ * Keep this table beside the resolver so a change to pace cannot silently
+ * leave the animation/interpolation assumptions behind (D-114).
+ *
+ * The server still resolves each sample and the existing movementStep wire
+ * envelope is unchanged.  The acceleration value is presentation-facing: it
+ * controls the run animation ramp, while collision and position remain
+ * server-authoritative samples.
+ */
+export const MOVEMENT_FEEL = Object.freeze({
+  speedTilesPerSecond: 1000 / PLAYER_TILE_TRAVEL_MS,
+  accelerationSeconds: 0.2,
+  accelerationTilesPerSecondSquared: (1000 / PLAYER_TILE_TRAVEL_MS) / 0.2,
+  initialAnimationSpeed: 0.25,
+  interpolationWindowMs: PLAYER_MOVE_SAMPLE_MS * 2,
+  screenWidthTiles: 24,
+  secondsToCrossScreen: 24 / (1000 / PLAYER_TILE_TRAVEL_MS),
+});
+
 export const computeStepDuration = (deltaX, deltaY, baseDuration = BASE_MOVE_DURATION) => {
   const diagonal = Math.abs(deltaX) === 1 && Math.abs(deltaY) === 1;
   const multiplier = diagonal ? Math.SQRT2 : 1;
@@ -74,11 +102,35 @@ export const broadcastMovement = (player, players = null) => {
   if (player.movementStep) {
     meta.movementStep = player.movementStep;
   }
-  if (player.animation) {
+  const animation = player.animation;
+  const animationSignature = animation
+    ? JSON.stringify([
+      animation.sequence,
+      animation.state,
+      animation.direction,
+      animation.speed,
+      animation.duration,
+      animation.skillId,
+      animation.holdState,
+    ])
+    : null;
+  const previousSignature = lastBroadcastAnimationSignature.get(player);
+  if (animation && animationSignature !== previousSignature) {
     meta.animation = player.animation;
+    lastBroadcastAnimationSignature.set(player, animationSignature);
   }
   const recipients = players || world.getScenePlayers(player.sceneId);
-  Socket.broadcast('player:movement', player, recipients, { meta });
+  // `playerMovement` falls back to the animation on the movement payload when
+  // meta.animation is absent.  Remove that redundant fallback too, otherwise
+  // the client would still re-apply the same sequence on every sample.
+  const movementPayload = meta.animation
+    ? player
+    : (() => {
+      const payload = { ...player };
+      delete payload.animation;
+      return payload;
+    })();
+  Socket.broadcast('player:movement', movementPayload, recipients, { meta });
 };
 
 export const broadcastAnimation = (player, players = null) => {
@@ -180,29 +232,93 @@ const registerMovementStep = (player, step = {}) => {
   return player.movementStep;
 };
 
-const cancelPathfinding = (player) => {
+/**
+ * Invalidate a click-to-walk route without putting the actor through an idle
+ * animation state.  Continuous WASD samples arrive every 50ms; the old path
+ * cancellation helper reset idle → run on every sample, restarting the sprite
+ * and making an otherwise interpolated walk look like a repeated tile step.
+ */
+const interruptPathfinding = (player) => {
   const { path } = player;
-  if (!path || !path.current) {
-    return;
-  }
+  if (path && path.current) {
+    if (typeof path.current.walkId === 'number') {
+      path.current.walkId += 1;
+    } else {
+      path.current.walkId = 1;
+    }
 
-  if (typeof path.current.walkId === 'number') {
-    path.current.walkId += 1;
-  } else {
-    path.current.walkId = 1;
+    if (path.current.path) {
+      path.current.path.walking = [];
+      path.current.path.set = [];
+    }
+    path.current.length = 0;
+    path.current.step = 0;
+    path.current.walkable = false;
+    path.current.interrupted = true;
   }
-
-  path.current.path.walking = [];
-  path.current.path.set = [];
-  path.current.length = 0;
-  path.current.step = 0;
-  path.current.walkable = false;
-  path.current.interrupted = true;
 
   player.moving = false;
   player.queue = [];
   player.action = false;
+};
+
+const cancelPathfinding = (player) => {
+  interruptPathfinding(player);
+  if (player.movementFeel) {
+    player.movementFeel = { velocity: 0, timestamp: Date.now() };
+  }
   setAnimationState(player, 'idle', { direction: player.facing });
+};
+
+const getMovementAnimationSpeed = (player, timestamp) => {
+  const previous = player.movementFeel || { velocity: 0, timestamp: null };
+  const elapsedSeconds = Number.isFinite(previous.timestamp)
+    ? Math.max(0, Math.min(0.5, (timestamp - previous.timestamp) / 1000))
+    : 0;
+  const velocity = Math.min(
+    MOVEMENT_FEEL.speedTilesPerSecond,
+    previous.velocity + (MOVEMENT_FEEL.accelerationTilesPerSecondSquared * elapsedSeconds),
+  );
+
+  // Keep transient feel state off the serialized Player object.  It is not
+  // gameplay state and must never become part of the network contract.
+  if (!Object.prototype.hasOwnProperty.call(player, 'movementFeel')) {
+    Object.defineProperty(player, 'movementFeel', {
+      value: { velocity, timestamp },
+      configurable: true,
+      enumerable: false,
+      writable: true,
+    });
+  } else {
+    player.movementFeel = { velocity, timestamp };
+  }
+
+  return Math.max(
+    MOVEMENT_FEEL.initialAnimationSpeed,
+    velocity / MOVEMENT_FEEL.speedTilesPerSecond,
+  );
+};
+
+const setRunAnimation = (player, direction, duration, startedAt) => {
+  const facing = resolveFacing(direction, player.facing || DEFAULT_FACING_DIRECTION);
+  const speed = getMovementAnimationSpeed(player, startedAt);
+  const current = player.animation;
+
+  if (current && current.state === 'run' && current.direction === facing) {
+    // Preserve the current frame/timeline while held input continues.  Only
+    // refresh the existing timing fields; a new direction gets a normal state
+    // transition below.
+    current.duration = duration;
+    current.speed = speed;
+    return current;
+  }
+
+  return setAnimationState(player, 'run', {
+    direction: facing,
+    duration,
+    speed,
+    startedAt,
+  });
 };
 
 const hasBlockingHealth = (actor) => {
@@ -287,6 +403,9 @@ const foregroundBlocked = player => player.blocked.foreground === true;
 const stopMovement = (player, data) => {
   Socket.emit('player:stopped', { player: data.player });
   player.moving = false;
+  if (player.movementFeel) {
+    player.movementFeel = { velocity: 0, timestamp: Date.now() };
+  }
   setAnimationState(player, 'idle', { direction: player.facing });
   broadcastAnimation(player);
 };
@@ -329,7 +448,10 @@ const move = (player, direction, options = {}) => {
   } = context || {};
 
   if (!pathfind) {
-    cancelPathfinding(player);
+    // Do not reset the animation timeline for every held-key sample.  The
+    // route is still invalidated, so the legacy queued path cannot fight
+    // continuous movement, but the visual motion remains continuous.
+    interruptPathfinding(player);
   }
 
   if (pathfind) {
@@ -376,7 +498,7 @@ const move = (player, direction, options = {}) => {
     direction,
     blocked: false,
   });
-  setAnimationState(player, 'run', { direction: facing, duration });
+  setRunAnimation(player, direction, duration, startedAt);
   const currentTile = occupiedTile(player);
   if (currentTile.x !== previousTile.x || currentTile.y !== previousTile.y) {
     transitionPlayerIfOnPortal(player);
@@ -521,6 +643,7 @@ const createPlayerMovementHandler = (player) => ({
   setAnimationState: (state, options) => setAnimationState(player, state, options),
   registerMovementStep: step => registerMovementStep(player, step),
   cancelPathfinding: () => cancelPathfinding(player),
+  interruptPathfinding: () => interruptPathfinding(player),
   canMoveTo: (tileX, tileY) => canMoveTo(player, tileX, tileY),
   isBlocked: (direction, delta, origin) => isBlocked(player, direction, delta, origin),
   backgroundBlocked: () => backgroundBlocked(player),
