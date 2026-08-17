@@ -274,19 +274,26 @@ export default async function sessionArc({ connect, assert, recordMetrics }) {
     await second.devPrepareFinalDeath();
     await second.devTeleport(Math.round(executioner.x) + 1, Math.round(executioner.y));
     let deathSetup = null;
-    // A saturated child server can delay the monster's next damaging tick
-    // independently of this client's control queue. Keep ordinary playtests
-    // at the authored 15s deadline; load mode gets one finite 20s authored
-    // floor (35s after the existing 1.75x cap), still fail-closed.
-    const finalDeathTimeoutMs = loadMode ? 20000 : 15000;
+    let lastDeathSetupAt = Date.now();
     const memorial = await second.waitFor(async () => {
       if (second.scionFalls[0]) return second.scionFalls[0];
-      const current = await second.state();
+      let current;
+      try {
+        current = await second.state();
+      } catch (error) {
+        // A single diagnostic frame can be starved while the server's combat
+        // loop is resolving the lethal hit. Keep the finite death window
+        // alive for the next probe; propagate all other failures.
+        if (/dev:state timed out/.test(error?.message || '')) return false;
+        throw error;
+      }
       const live = current.monsters.find(monster => monster.uuid === executioner.uuid)
         || nearestTrash(current);
       if (live && current.lifecycle === 'alive'
-        && (current.x !== Math.round(live.x) + 1 || current.y !== Math.round(live.y))) {
+        && (current.x !== Math.round(live.x) + 1 || current.y !== Math.round(live.y)
+          || Date.now() - lastDeathSetupAt >= 1000)) {
         if (!deathSetup) {
+          lastDeathSetupAt = Date.now();
           deathSetup = (async () => {
             // Do not re-arm an already positioned player: a queued preparation
             // after a lethal hit could reset the lifecycle back to alive.
@@ -300,7 +307,10 @@ export default async function sessionArc({ connect, assert, recordMetrics }) {
       }
       return false;
     }, {
-      timeoutMs: finalDeathTimeoutMs,
+      // Monster targeting/attack resolution is a server-side observation.
+      // Under the documented CPU-load gate, allow one bounded 20s authored
+      // window (35s after the existing cap); ordinary runs retain 15s.
+      timeoutMs: loadMode ? 20000 : 15000,
       intervalMs: 250,
       label: 'session-arc final death',
     });
