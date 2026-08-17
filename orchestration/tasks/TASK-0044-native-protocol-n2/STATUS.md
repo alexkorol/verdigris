@@ -12,7 +12,7 @@ known_risks: uncommitted worker source; saved pre-instance position across seque
 architect_review_required: true
 implementation_commits: none yet (claim commit 6e6279c)
 report: orchestration/tasks/TASK-0044-native-protocol-n2/REPORT.md
-verification: WIP previously reached movement PASS and zones 5/6 assertions; latest recheck stops at native test compilation
+verification: disposable probe after test-helper correction passed native tests and unchanged movement/zones 2/2; actual worker worktree still stops at test compilation
 ---
 
 TASK-0044 remains actively claimed and is not accepted or blocked. Kimi's
