@@ -8,8 +8,8 @@ const timeKill = async (player, targetUuid) => {
   const state = await player.state();
   const target = state.monsters.find(monster => monster.uuid === targetUuid);
   if (!target) throw new Error('comparison monster is not alive');
-  player.devHeal();
-  player.devTeleport(Math.round(target.x) + 1, Math.round(target.y));
+  await player.devHeal();
+  await player.devTeleport(Math.round(target.x) + 1, Math.round(target.y));
   const startedAt = Date.now();
   const hitEventsBefore = player.hitEvents.length;
   await player.attack(target);
@@ -27,10 +27,10 @@ const timeKill = async (player, targetUuid) => {
     try {
       const current = await player.state();
       if (current.lifecycle !== 'alive') throw new Error('scion fell during gear comparison');
-      player.devHeal();
+      await player.devHeal();
       const live = current.monsters.find(monster => monster.uuid === targetUuid);
       if (live) {
-        player.devTeleport(Math.round(live.x) + 1, Math.round(live.y));
+        await player.devTeleport(Math.round(live.x) + 1, Math.round(live.y));
         await player.attack(live);
       }
     } catch (error) {
@@ -67,7 +67,7 @@ const COMPARISON_HEALTH = 100;
 const DEEP_COMPARISON_HEALTH = 720;
 
 const resetMonster = async (player, targetUuid, maxHealth = COMPARISON_HEALTH) => {
-  player.devResetMonster(targetUuid, { maxHealth, isolate: true });
+  await player.devResetMonster(targetUuid, { maxHealth, isolate: true });
   return player.waitFor(async () => {
     const state = await player.state();
     const target = state.monsters.find(monster => monster.uuid === targetUuid);
@@ -84,14 +84,14 @@ const lootAndEquip = async (player, itemLevel) => {
   const drop = await player.waitFor(async () => {
     if (Date.now() - lastRequestAt > 2000) {
       lastRequestAt = Date.now();
-      player.devDrop('vessel-handaxe', { itemLevel, seed: 3493 });
+      await player.devDrop('vessel-handaxe', { itemLevel, seed: 3493 });
     }
     const state = await player.state();
     return state.groundItems.find(item => item.id === 'vessel-handaxe'
       && item.itemLevel === itemLevel) || false;
   }, { timeoutMs: 12000, label: `item-level ${itemLevel} vessel drop` });
-  player.devTeleport(drop.x, drop.y);
-  player.pickupUnderfoot();
+  await player.devTeleport(drop.x, drop.y);
+  await player.pickupUnderfoot();
   let lastPickupAt = Date.now();
   const inventoryItem = await player.waitFor(async () => {
     const state = await player.state();
@@ -104,8 +104,8 @@ const lootAndEquip = async (player, itemLevel) => {
     // for a moment instead of turning scheduler jitter into a false failure.
     if (Date.now() - lastPickupAt >= 750) {
       lastPickupAt = Date.now();
-      player.devTeleport(drop.x, drop.y);
-      player.pickupUnderfoot();
+      await player.devTeleport(drop.x, drop.y);
+      await player.pickupUnderfoot();
     }
     return false;
   }, { timeoutMs: 12000, label: `item-level ${itemLevel} vessel pickup` });
@@ -120,8 +120,8 @@ export default async function gearOutcomes({ connect, assert }) {
   const player = await connect({ guestId: `gear-outcomes-${Date.now()}` });
   try {
     await player.enterZone('dungeon', 'warren');
-    player.devSetLevel(5);
-    player.devHeal();
+    await player.devSetLevel(5);
+    await player.devHeal();
     const initial = await player.state();
     const target = nearestStableTarget(initial);
     assert(target, 'found one stable monster for all three gear trials');
