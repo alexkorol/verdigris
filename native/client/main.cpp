@@ -52,12 +52,6 @@ constexpr double kCameraDefaultFog = 0.4;
 constexpr double kCameraMiniaturePerspective = 0.0013;
 constexpr double kCameraMiniatureZoomThreshold = 1.05;
 constexpr double kCameraMiniatureBlendEndZoom = 1.35;
-// These costs are presentation metadata only.  The simulation remains the
-// authority for affordability and resource mutation.
-constexpr int kThrustResourceCost = 10;
-constexpr int kSweepResourceCost = 15;
-constexpr int kWarCryResourceCost = 20;
-
 // Adjustable 2.5D camera: pitch foreshortens the ground plane, zoom scales
 // world units to pixels, and perspective grows near rows / shrinks far rows.
 struct Camera {
@@ -177,13 +171,22 @@ struct BillboardAssets {
   SpriteBitmap player;
   SpriteBitmap raider;
   SpriteBitmap boss;
+  SpriteBitmap tree;
+  SpriteBitmap ruin;
+  SpriteBitmap dwelling;
+  SpriteBitmap shrine;
   std::string root;
   std::string status = "billboards: off (fallback capsules; assets not loaded)";
+  std::string scenery_status = "scenery: off (fallback shapes; assets not loaded)";
 
   ~BillboardAssets() {
     player.reset();
     raider.reset();
     boss.reset();
+    tree.reset();
+    ruin.reset();
+    dwelling.reset();
+    shrine.reset();
     if (gdiplus_shutdown && gdiplus_token) gdiplus_shutdown(gdiplus_token);
     if (gdiplus_module) FreeLibrary(gdiplus_module);
     if (msimg32_module) FreeLibrary(msimg32_module);
@@ -193,9 +196,20 @@ struct BillboardAssets {
   BillboardAssets& operator=(const BillboardAssets&) = delete;
 };
 
+enum class SceneryKind { Tree, Ruin, Dwelling, Shrine };
+
+struct SceneryItem {
+  SceneryKind kind = SceneryKind::Tree;
+  verdigris::Vec2 position{};
+  double radius = 60.0;
+  double scale = 1.0;
+  bool solid = true;
+};
+
 struct ClientState {
   std::unique_ptr<verdigris::Simulation> simulation;
   BillboardAssets billboards;
+  std::vector<SceneryItem> scenery;
   bool w = false;
   bool a = false;
   bool s = false;
@@ -417,23 +431,137 @@ void load_billboards(BillboardAssets& assets) {
       assets.msimg32_module ? GetProcAddress(assets.msimg32_module, "AlphaBlend") : nullptr);
   if (!assets.alpha_blend || !initialize_gdiplus(assets)) {
     assets.status = "billboards: off (fallback capsules; GDI image support unavailable)";
+    assets.scenery_status =
+        "scenery: off (fallback shapes; GDI image support unavailable)";
     return;
   }
   for (const auto& root : billboard_roots()) {
     if (!directory_exists(root)) continue;
-    const bool loaded = load_sprite(assets, root + "\\scion_str.png", assets.player) &&
-                        load_sprite(assets, root + "\\raider.png", assets.raider) &&
-                        load_sprite(assets, root + "\\boss.png", assets.boss);
-    if (loaded) {
+    const bool actors_loaded =
+        load_sprite(assets, root + "\\scion_str.png", assets.player) &&
+        load_sprite(assets, root + "\\raider.png", assets.raider) &&
+        load_sprite(assets, root + "\\boss.png", assets.boss);
+    if (actors_loaded) {
       assets.root = root;
       assets.status = "billboards: on (scion_str / raider / boss; magenta keyed)";
-      return;
+    } else {
+      assets.player.reset();
+      assets.raider.reset();
+      assets.boss.reset();
     }
-    assets.player.reset();
-    assets.raider.reset();
-    assets.boss.reset();
+
+    const bool scenery_loaded =
+        load_sprite(assets, root + "\\tree.png", assets.tree) &&
+        load_sprite(assets, root + "\\ruin.png", assets.ruin) &&
+        load_sprite(assets, root + "\\dwelling.png", assets.dwelling) &&
+        load_sprite(assets, root + "\\shrine.png", assets.shrine);
+    if (scenery_loaded) {
+      if (assets.root.empty()) assets.root = root;
+      assets.scenery_status =
+          "scenery: on (tree / ruin / dwelling / shrine; magenta keyed)";
+    } else {
+      assets.tree.reset();
+      assets.ruin.reset();
+      assets.dwelling.reset();
+      assets.shrine.reset();
+    }
+    if (actors_loaded || scenery_loaded) return;
   }
-  assets.status = "billboards: off (fallback capsules; asset plates missing)";
+  if (assets.player.ready() == false)
+    assets.status = "billboards: off (fallback capsules; asset plates missing)";
+  assets.scenery_status =
+      "scenery: off (fallback shapes; asset plates missing)";
+}
+
+std::uint64_t scenery_seed(const std::string& route_id) {
+  // FNV-1a keeps the route-to-layout mapping stable across processes and
+  // platforms without coupling presentation randomness to Simulation::Rng.
+  std::uint64_t value = 1469598103934665603ULL;
+  for (unsigned char character : route_id) {
+    value ^= character;
+    value *= 1099511628211ULL;
+  }
+  return value;
+}
+
+class SceneryRng {
+ public:
+  explicit SceneryRng(std::uint64_t seed) : state_(seed) {}
+
+  std::uint64_t next() {
+    std::uint64_t value = (state_ += 0x9E3779B97F4A7C15ULL);
+    value = (value ^ (value >> 30U)) * 0xBF58476D1CE4E5B9ULL;
+    value = (value ^ (value >> 27U)) * 0x94D049BB133111EBULL;
+    return value ^ (value >> 31U);
+  }
+
+  double unit() {
+    return static_cast<double>(next() >> 11U) /
+           static_cast<double>(1ULL << 53U);
+  }
+
+  double range(double minimum, double maximum) {
+    return minimum + (maximum - minimum) * unit();
+  }
+
+ private:
+  std::uint64_t state_;
+};
+
+void add_scenery(std::vector<SceneryItem>& scenery, SceneryKind kind, double x,
+                 double y, double radius, bool solid, double scale) {
+  scenery.push_back({kind, {static_cast<int>(std::lround(x)),
+                            static_cast<int>(std::lround(y))},
+                     radius, scale, solid});
+}
+
+void generate_scenery(ClientState& state) {
+  state.scenery.clear();
+  const std::string& route_id = state.simulation->instance().route_id;
+  if (route_id.empty()) return;
+
+  SceneryRng rng(scenery_seed(route_id));
+  const bool village = route_id.find(":1:") != std::string::npos;
+  const bool fields = route_id.find(":2:") != std::string::npos;
+  if (village) {
+    add_scenery(state.scenery, SceneryKind::Dwelling, -320, -260, 120, true, 1.0);
+    add_scenery(state.scenery, SceneryKind::Dwelling, 340, -300, 120, true, 1.0);
+    add_scenery(state.scenery, SceneryKind::Dwelling, -420, 180, 120, true, 1.0);
+    add_scenery(state.scenery, SceneryKind::Shrine, 60, -460, 110, true, 1.0);
+    // A near-field tree makes the grounded depth boundary easy to read in the
+    // client lab while the remaining placements keep the route spacious.
+    add_scenery(state.scenery, SceneryKind::Tree, 260, -100, 70, true, 1.0);
+    add_scenery(state.scenery, SceneryKind::Tree, -700, -500, 70, true, 1.0);
+    add_scenery(state.scenery, SceneryKind::Tree, 720, -420, 70, true, 1.15);
+    add_scenery(state.scenery, SceneryKind::Tree, -780, 420, 70, true, 1.0);
+    for (int i = 0; i < 5; ++i)
+      add_scenery(state.scenery, SceneryKind::Tree, rng.range(-900, 900),
+                  rng.range(-650, 650), 65, true, rng.range(.78, 1.15));
+  } else if (fields) {
+    add_scenery(state.scenery, SceneryKind::Ruin, -200, -380, 110, true, 1.0);
+    add_scenery(state.scenery, SceneryKind::Tree, 420, -520, 70, true, 1.2);
+    add_scenery(state.scenery, SceneryKind::Tree, -640, 240, 70, true, 1.0);
+    add_scenery(state.scenery, SceneryKind::Tree, 680, 380, 70, true, .9);
+    for (int i = 0; i < 8; ++i)
+      add_scenery(state.scenery, SceneryKind::Tree, rng.range(-980, 980),
+                  rng.range(-700, 700), 65, true, rng.range(.75, 1.2));
+  } else {
+    const int variant = static_cast<int>(rng.next() % 3);
+    if (variant == 0) {
+      add_scenery(state.scenery, SceneryKind::Ruin, -360, -320, 110, true, 1.0);
+      add_scenery(state.scenery, SceneryKind::Ruin, 360, -360, 110, true, 1.1);
+      add_scenery(state.scenery, SceneryKind::Shrine, 0, -600, 110, true, 1.1);
+    } else if (variant == 1) {
+      add_scenery(state.scenery, SceneryKind::Shrine, 0, -420, 110, true, 1.1);
+      add_scenery(state.scenery, SceneryKind::Ruin, 360, -420, 110, true, 1.0);
+    } else {
+      add_scenery(state.scenery, SceneryKind::Dwelling, -320, -300, 120, true, 1.0);
+      add_scenery(state.scenery, SceneryKind::Shrine, 300, -420, 110, true, 1.0);
+    }
+    for (int i = 0; i < 8; ++i)
+      add_scenery(state.scenery, SceneryKind::Tree, rng.range(-950, 950),
+                  rng.range(-700, 700), 65, true, rng.range(.78, 1.18));
+  }
 }
 
 ClientState* state_from(HWND window) {
@@ -449,14 +577,23 @@ struct SkillInfo {
   char key;
   const char* name;
   verdigris::ActionType action;
-  int resource_cost;
 };
 
 constexpr SkillInfo kSkills[] = {
-    {'Q', "Thrust", verdigris::ActionType::Thrust, kThrustResourceCost},
-    {'E', "Sweep", verdigris::ActionType::Sweep, kSweepResourceCost},
-    {'R', "WarCry", verdigris::ActionType::WarCry, kWarCryResourceCost},
+    {'Q', "Thrust", verdigris::ActionType::Thrust},
+    {'E', "Sweep", verdigris::ActionType::Sweep},
+    {'R', "WarCry", verdigris::ActionType::WarCry},
 };
+
+int skill_resource_cost(const verdigris::PresentationCatalog& catalog,
+                        verdigris::ActionType action) {
+  switch (action) {
+    case verdigris::ActionType::Thrust: return catalog.thrust_resource_cost;
+    case verdigris::ActionType::Sweep: return catalog.sweep_resource_cost;
+    case verdigris::ActionType::WarCry: return catalog.war_cry_resource_cost;
+    default: return 0;
+  }
+}
 
 const SkillInfo* skill_for_key(WPARAM key) {
   for (const auto& skill : kSkills)
@@ -622,6 +759,81 @@ bool draw_billboard_sprite(const BillboardAssets& assets, HDC dc, const SpriteBi
                             sprite.height, blend) != FALSE;
 }
 
+const SpriteBitmap& scenery_sprite(const BillboardAssets& assets, SceneryKind kind) {
+  switch (kind) {
+    case SceneryKind::Tree: return assets.tree;
+    case SceneryKind::Ruin: return assets.ruin;
+    case SceneryKind::Dwelling: return assets.dwelling;
+    case SceneryKind::Shrine: return assets.shrine;
+  }
+  return assets.tree;
+}
+
+double scenery_height(SceneryKind kind) {
+  switch (kind) {
+    case SceneryKind::Tree: return kTileUnits * 3.0;
+    case SceneryKind::Ruin: return kTileUnits * 2.6;
+    case SceneryKind::Dwelling: return kTileUnits * 2.3;
+    case SceneryKind::Shrine: return kTileUnits * 2.0;
+  }
+  return kTileUnits * 2.0;
+}
+
+void draw_scenery_fallback(HDC dc, const ScreenPoint& base, const SceneryItem& item,
+                           const Camera& camera) {
+  const int radius = std::max(4, static_cast<int>(item.radius * base.scale));
+  const int height = std::max(8, static_cast<int>(scenery_height(item.kind) *
+                                                   item.scale * base.scale));
+  if (item.kind == SceneryKind::Tree) {
+    fill_ellipse(dc, base.x, base.y - height + radius, radius * 2, radius,
+                 RGB(48, 86, 61));
+    draw_line(dc, base.x, base.y - height / 2, base.x, base.y,
+              RGB(94, 66, 42), std::max(2, radius / 5));
+  } else if (item.kind == SceneryKind::Dwelling) {
+    RECT body{base.x - radius, base.y - height / 2, base.x + radius, base.y};
+    HBRUSH wall = CreateSolidBrush(RGB(113, 86, 63));
+    FillRect(dc, &body, wall);
+    DeleteObject(wall);
+    POINT roof[3] = {{base.x - radius - 4, body.top},
+                     {base.x, body.top - radius},
+                     {base.x + radius + 4, body.top}};
+    HBRUSH roof_brush = CreateSolidBrush(RGB(127, 61, 49));
+    HGDIOBJ old = SelectObject(dc, roof_brush);
+    Polygon(dc, roof, 3);
+    SelectObject(dc, old);
+    DeleteObject(roof_brush);
+  } else if (item.kind == SceneryKind::Ruin) {
+    RECT stone{base.x - radius, base.y - height, base.x + radius, base.y};
+    HBRUSH wall = CreateSolidBrush(RGB(84, 92, 91));
+    FillRect(dc, &stone, wall);
+    DeleteObject(wall);
+    draw_line(dc, stone.left, stone.top + height / 3, stone.right,
+              stone.top + height / 3, RGB(37, 44, 44), 2);
+    draw_line(dc, stone.left + radius / 2, stone.top, stone.left + radius / 2,
+              stone.bottom, RGB(37, 44, 44), 2);
+  } else {
+    fill_ellipse(dc, base.x, base.y - height + radius, radius, radius,
+                 RGB(157, 130, 78));
+    draw_line(dc, base.x, base.y - height + radius, base.x, base.y,
+              RGB(112, 88, 54), std::max(2, radius / 4));
+  }
+  // Keep fallback proportions visibly grounded at the same camera squash as a
+  // loaded plate; this also prevents a missing plate from floating above its
+  // contact shadow.
+  (void)camera;
+}
+
+void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& camera,
+                       const RECT& bounds, const SceneryItem& item) {
+  const ScreenPoint base =
+      project(camera, bounds, item.position.x, item.position.y);
+  draw_contact_shadow(dc, camera, base, item.radius * 0.9);
+  const SpriteBitmap& sprite = scenery_sprite(assets, item.kind);
+  if (!draw_billboard_sprite(assets, dc, sprite, base,
+                             scenery_height(item.kind) * item.scale, 1))
+    draw_scenery_fallback(dc, base, item, camera);
+}
+
 void draw_ground_grid(HDC dc, const Camera& camera, const RECT& bounds) {
   const double range = 8.0 * kTileUnits;
   const double start_x = std::floor((camera.x - range) / kTileUnits) * kTileUnits;
@@ -638,19 +850,13 @@ void draw_ground_grid(HDC dc, const Camera& camera, const RECT& bounds) {
   }
 }
 
-// These are deliberately presentation approximations of the core's private
-// kMeleeRange (1100) and kThrustRange (1650) values.  The constants are not a
-// second combat rule: they only keep the warning's projected footprint in the
-// same scale as the simulation's movement units without adding a core export.
-constexpr double kTelegraphMeleeRadius = 1100.0;
-constexpr double kTelegraphThrustLength = 1650.0;
-
 COLORREF telegraph_color(double visibility, COLORREF source) {
   return fade_to_background(source, std::clamp(visibility, 0.0, 1.0));
 }
 
 void draw_thrust_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
-                           const ActiveTelegraph& telegraph, double visibility) {
+                           const ActiveTelegraph& telegraph, double visibility,
+                           double length) {
   const double facing_x = static_cast<double>(telegraph.facing.x);
   const double facing_y = static_cast<double>(telegraph.facing.y);
   const double angle = std::atan2(facing_y, facing_x);
@@ -664,8 +870,8 @@ void draw_thrust_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
   points[0] = {base.x, base.y};
   for (int i = 0; i <= kSegments; ++i) {
     const double a = angle - kPi * 0.5 + kPi * static_cast<double>(i) / kSegments;
-    const double wx = telegraph.position.x + std::cos(a) * kTelegraphThrustLength;
-    const double wy = telegraph.position.y + std::sin(a) * kTelegraphThrustLength;
+    const double wx = telegraph.position.x + std::cos(a) * length;
+    const double wy = telegraph.position.y + std::sin(a) * length;
     const ScreenPoint point = project(camera, bounds, wx, wy);
     points[i + 1] = {point.x, point.y};
   }
@@ -683,8 +889,8 @@ void draw_thrust_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
   // A centerline and a short origin ring make the warning readable when the
   // wedge is projected nearly edge-on at the current camera pitch.
   const ScreenPoint tip = project(
-      camera, bounds, telegraph.position.x + std::cos(angle) * kTelegraphThrustLength,
-      telegraph.position.y + std::sin(angle) * kTelegraphThrustLength);
+      camera, bounds, telegraph.position.x + std::cos(angle) * length,
+      telegraph.position.y + std::sin(angle) * length);
   draw_line(dc, base.x, base.y, tip.x, tip.y, edge, 2);
   const int origin_r = std::max(4, static_cast<int>(kTileUnits * 0.18 * base.scale));
   ring_ellipse(dc, base.x, base.y,
@@ -693,10 +899,11 @@ void draw_thrust_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
 }
 
 void draw_sweep_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
-                          const ActiveTelegraph& telegraph, double visibility) {
+                          const ActiveTelegraph& telegraph, double visibility,
+                          double radius_world) {
   const ScreenPoint base = project(camera, bounds, telegraph.position.x,
                                    telegraph.position.y);
-  const int radius = std::max(4, static_cast<int>(kTelegraphMeleeRadius * base.scale));
+  const int radius = std::max(4, static_cast<int>(radius_world * base.scale));
   const int ry = std::max(3, static_cast<int>(radius * camera.ground_squash()));
   const COLORREF fill = telegraph_color(visibility * 0.28, RGB(214, 52, 52));
   const COLORREF edge = telegraph_color(visibility, RGB(238, 72, 64));
@@ -724,13 +931,17 @@ double telegraph_visibility(const ClientState& state,
 }
 
 void paint_telegraphs(const ClientState& state, HDC dc, const RECT& bounds) {
+  const verdigris::PresentationCatalog catalog =
+      verdigris::Simulation::presentation_catalog();
   for (const auto& entry : state.telegraphs) {
     const ActiveTelegraph& telegraph = entry.second;
     const double visibility = telegraph_visibility(state, telegraph);
     if (telegraph.action == "sweep")
-      draw_sweep_telegraph(dc, state.camera, bounds, telegraph, visibility);
+      draw_sweep_telegraph(dc, state.camera, bounds, telegraph, visibility,
+                           catalog.melee_range);
     else
-      draw_thrust_telegraph(dc, state.camera, bounds, telegraph, visibility);
+      draw_thrust_telegraph(dc, state.camera, bounds, telegraph, visibility,
+                            catalog.thrust_range);
   }
 }
 
@@ -933,6 +1144,7 @@ void ingest_events(ClientState& state, const RECT& bounds) {
       case verdigris::EventType::InstanceEntered:
         // A route transition invalidates all event-time actor snapshots.
         state.telegraphs.clear();
+        generate_scenery(state);
         break;
       case verdigris::EventType::ActorMoved:
         if (event.text == "dash")
@@ -989,7 +1201,7 @@ void ingest_events(ClientState& state, const RECT& bounds) {
 struct DepthDraw {
   double depth = 0.0;
   int order = 0;
-  enum class What { Player, Monster, Loot, Effect } what = What::Player;
+  enum class What { Scenery, Player, Monster, Loot, Effect } what = What::Player;
   std::size_t index = 0;
 };
 
@@ -1047,13 +1259,16 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds) {
 void paint_skill_strip(const ClientState& state, HDC dc) {
   const auto* player =
       state.simulation->actor(state.simulation->scion().actor_id);
+  const verdigris::PresentationCatalog catalog =
+      verdigris::Simulation::presentation_catalog();
   for (int i = 0; i < 3; ++i) {
     const SkillInfo& skill = kSkills[i];
+    const int resource_cost = skill_resource_cost(catalog, skill.action);
     const bool cooldown =
         player && skill.action != verdigris::ActionType::WarCry &&
         player->cooldown_ticks > 0;
     const bool affordable =
-        player && player->stats.resource >= skill.resource_cost;
+        player && player->stats.resource >= resource_cost;
     const bool available = player && affordable && !cooldown;
     const bool active = player && skill.action == verdigris::ActionType::WarCry &&
                         player->war_cry_ticks_remaining > 0;
@@ -1075,7 +1290,7 @@ void paint_skill_strip(const ClientState& state, HDC dc) {
     TextOutA(dc, left + 8, slot.top + 7, &skill.key, 1);
     SetTextColor(dc, available ? RGB(205, 221, 207) : RGB(112, 119, 115));
     const std::string name_and_cost = std::string(skill.name) + "  " +
-                                      std::to_string(skill.resource_cost);
+                                      std::to_string(resource_cost);
     TextOutA(dc, left + 25, slot.top + 7, name_and_cost.c_str(),
              static_cast<int>(name_and_cost.size()));
     std::string state_text;
@@ -1084,7 +1299,7 @@ void paint_skill_strip(const ClientState& state, HDC dc) {
     } else if (cooldown) {
       state_text = "cooldown " + std::to_string(player->cooldown_ticks);
     } else if (!affordable) {
-      state_text = "need " + std::to_string(skill.resource_cost);
+      state_text = "need " + std::to_string(resource_cost);
     } else {
       state_text = "ready";
     }
@@ -1155,13 +1370,16 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
 
   // Collect every standing element, then draw back-to-front by world depth.
   std::vector<DepthDraw> order;
+  for (std::size_t i = 0; i < state.scenery.size(); ++i)
+    order.push_back({static_cast<double>(state.scenery[i].position.y), 0,
+                     DepthDraw::What::Scenery, i});
   if (player && player->alive)
-    order.push_back({static_cast<double>(player->position.y), 0,
+    order.push_back({static_cast<double>(player->position.y), 1,
                      DepthDraw::What::Player, 0});
   const auto& actors = sim.actors();
   for (std::size_t i = 0; i < actors.size(); ++i) {
     if (actors[i].kind == verdigris::ActorKind::Monster && actors[i].alive)
-      order.push_back({static_cast<double>(actors[i].position.y), 1,
+      order.push_back({static_cast<double>(actors[i].position.y), 2,
                        DepthDraw::What::Monster, i});
   }
   std::vector<std::pair<std::string, verdigris::Vec2>> loot(
@@ -1169,10 +1387,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   std::sort(loot.begin(), loot.end(),
             [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; });
   for (std::size_t i = 0; i < loot.size(); ++i)
-    order.push_back({static_cast<double>(loot[i].second.y), 2,
+    order.push_back({static_cast<double>(loot[i].second.y), 3,
                      DepthDraw::What::Loot, i});
   for (std::size_t i = 0; i < state.effects.size(); ++i)
-    order.push_back({state.effects[i].wy + 1.0, 3, DepthDraw::What::Effect, i});
+    order.push_back({state.effects[i].wy + 1.0, 4, DepthDraw::What::Effect, i});
   std::sort(order.begin(), order.end(), [](const DepthDraw& lhs, const DepthDraw& rhs) {
     if (lhs.depth != rhs.depth) return lhs.depth < rhs.depth;
     return lhs.order < rhs.order;
@@ -1180,6 +1398,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
 
   for (const auto& entry : order) {
     switch (entry.what) {
+      case DepthDraw::What::Scenery:
+        draw_scenery_item(state.billboards, dc, state.camera, bounds,
+                          state.scenery[entry.index]);
+        break;
       case DepthDraw::What::Player: {
         const ScreenPoint base =
             project(state.camera, bounds, player->position.x, player->position.y);
@@ -1309,15 +1531,20 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   SetTextColor(dc, RGB(150, 160, 150));
   char debug_line[256];
   std::snprintf(debug_line, sizeof(debug_line),
-                "tick %llu | zoom %.2f | pitch %.0f | persp %.5f | anchor %.2f | fog %.1f | effects %zu | telegraphs %zu | %s",
+                "tick %llu | zoom %.2f | pitch %.0f | persp %.5f | anchor %.2f | fog %.1f | effects %zu | telegraphs %zu",
                 static_cast<unsigned long long>(sim.tick()), state.camera.zoom,
                 state.camera.pitch_deg, state.camera.perspective, state.camera.anchor,
                 state.camera.fog,
-                state.effects.size(), state.telegraphs.size(), state.billboards.status.c_str());
+                state.effects.size(), state.telegraphs.size());
   TextOutA(dc, 18, 168, debug_line, static_cast<int>(strlen(debug_line)));
+  char asset_line[256];
+  std::snprintf(asset_line, sizeof(asset_line), "%s | %zu scenery | %s",
+                state.billboards.status.c_str(), state.scenery.size(),
+                state.billboards.scenery_status.c_str());
+  TextOutA(dc, 18, 184, asset_line, static_cast<int>(strlen(asset_line)));
   if (state.hint_ticks > 0 && !state.hint.empty()) {
     SetTextColor(dc, RGB(239, 208, 116));
-    TextOutA(dc, 18, 184, state.hint.c_str(), static_cast<int>(state.hint.size()));
+    TextOutA(dc, 18, 286, state.hint.c_str(), static_cast<int>(state.hint.size()));
   }
   paint_skill_strip(state, dc);
   paint_gear_overlay(state, dc, bounds);
@@ -1326,6 +1553,32 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     TextOutA(dc, 18, log_y, it->c_str(), static_cast<int>(it->size()));
     log_y -= 20;
   }
+}
+
+constexpr double kActorColliderRadius = 26.0;
+
+bool scenery_blocks(const ClientState& state, verdigris::Vec2 position) {
+  for (const SceneryItem& item : state.scenery) {
+    if (!item.solid) continue;
+    const double dx = static_cast<double>(position.x - item.position.x);
+    const double dy = static_cast<double>(position.y - item.position.y);
+    const double minimum = item.radius + kActorColliderRadius;
+    if (dx * dx + dy * dy < minimum * minimum) return true;
+  }
+  return false;
+}
+
+bool movement_hits_scenery(const ClientState& state, int dx, int dy,
+                           int tick_multiplier = 1) {
+  const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
+  if (!player || !player->alive) return false;
+  const int step = verdigris::movement_step_per_tick(player->stats.move_speed) *
+                   tick_multiplier;
+  const int length = std::max(1, std::abs(dx) + std::abs(dy));
+  const verdigris::Vec2 destination{
+      player->position.x + (dx * step) / length,
+      player->position.y + (dy * step) / length};
+  return scenery_blocks(state, destination);
 }
 
 void paint(HWND window, HDC dc) {
@@ -1353,10 +1606,12 @@ void timer_step(HWND window, ClientState& state) {
   int dx = (state.d ? 1 : 0) - (state.a ? 1 : 0);
   int dy = (state.s ? 1 : 0) - (state.w ? 1 : 0);
   const bool moving = dx != 0 || dy != 0;
-  if (moving)
+  if (moving && !movement_hits_scenery(state, dx, dy)) {
     state.simulation->dispatch(verdigris::Command::move(dx, dy));
-  else
+  } else {
     state.simulation->dispatch(verdigris::Command::action_use(verdigris::ActionType::Wait));
+    if (moving && state.hint_ticks == 0) show_hint(state, "Blocked by scenery");
+  }
 
   // Movement owns facing while the actor is moving. Re-send the throttled
   // mouse heading on the first idle tick so aiming immediately takes over
@@ -1380,6 +1635,17 @@ void timer_step(HWND window, ClientState& state) {
   }
 }
 
+void dispatch_dash(ClientState& state) {
+  const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
+  if (!player || !player->alive) return;
+  if (movement_hits_scenery(state, player->facing.x, player->facing.y, 10)) {
+    show_hint(state, "Dash blocked by scenery");
+    return;
+  }
+  state.simulation->dispatch(
+      verdigris::Command::action_use(verdigris::ActionType::Dash));
+}
+
 LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam) {
   ClientState* state = state_from(window);
   switch (message) {
@@ -1395,8 +1661,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (wparam == 'A') state->a = true;
       if (wparam == 'S') state->s = true;
       if (wparam == 'D') state->d = true;
-      if (wparam == VK_SPACE)
-        state->simulation->dispatch(verdigris::Command::action_use(verdigris::ActionType::Dash));
+      if (wparam == VK_SPACE) dispatch_dash(*state);
       if (const SkillInfo* skill = skill_for_key(wparam)) dispatch_skill(*state, *skill);
       if (wparam == 'X') {
         const std::string target = nearest_pickup_id(*state);
@@ -1489,8 +1754,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       InvalidateRect(window, nullptr, FALSE);
       break;
     case WM_RBUTTONDOWN:
-      if (state) state->simulation->dispatch(
-          verdigris::Command::action_use(verdigris::ActionType::Dash));
+      if (state) dispatch_dash(*state);
       InvalidateRect(window, nullptr, FALSE);
       break;
     case WM_TIMER:
@@ -1549,6 +1813,7 @@ int main(int argc, char** argv) {
   verdigris::EmberHunt seasonal;
   state->simulation->set_seasonal_mechanic(&seasonal);
   state->simulation->dispatch(verdigris::Command::enter("route:tin:1:0"));
+  generate_scenery(*state);
   load_billboards(state->billboards);
 
   WNDCLASSA window_class{};

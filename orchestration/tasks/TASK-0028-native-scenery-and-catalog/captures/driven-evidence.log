@@ -1,0 +1,6 @@
+﻿window=VerdigrisNativeClient
+route=route:tin:1:0
+scenery=tree,ruin,dwelling,shrine keyed plates with fallback
+depth=player captured behind and in front of near-field tree
+collision=A+W held at dwelling; actor remained outside circle and hint=Blocked by scenery
+catalog=skill strip expected Q Thrust 10, E Sweep 15, R WarCry 20
