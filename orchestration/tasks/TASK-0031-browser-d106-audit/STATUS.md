@@ -1,6 +1,6 @@
 ---
 task: TASK-0031
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Luna read-only browser death/relic auditor
 worker_branch: codex/TASK-0031-browser-d106-audit
@@ -18,4 +18,8 @@ revision_commits:
 validator: independent read-only TASK-0031 audit validator
 validator_result: ACCEPT — 115 links and 73 line anchors resolve; scope, semantics, delta table, forecast, and dirty proof pass
 report: orchestration/tasks/TASK-0031-browser-d106-audit/REPORT.md
+architect_review: ACCEPTED — architect review in REVIEW.md
+integration_branch: codex/integrate-TASK-0030-0031
+integration_commit: 2b2140a2
+integrated_at: 2026-08-16T22:01:44-07:00
 ---
