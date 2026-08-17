@@ -42,17 +42,32 @@ a `JsonValue` to `parse_envelope`, whose current signature requires an
 `Envelope&`. The source also emits a non-fatal unused-local warning at
 `native/src/networking.cpp:306`.
 
+## Disposable probe result
+
+The coordinator verified that the compile failure is isolated from the native
+WIP by using a disposable worktree. It copied the six current uncommitted WIP
+files and made only the test-helper correction (`Envelope response; return
+response.data`). The disposable probe then passed the native denylist, core
+tests, and networking tests, followed by the unchanged attach suite at an
+alternate port: `movement` PASS (4589ms), `zones` PASS (1122ms), **2/2**.
+The zones run covered all six authored zone combinations and restored the
+pre-entry position (`38,115` versus `38,115`). The probe was removed after the
+run, and Kimi's source remains untouched.
+
 ## Acceptance status
 
-Not ready. Required evidence is still missing: a clean
-`powershell -File native/build.ps1 -RunTests`, unchanged `movement` and
-`zones` attach success including saved-position restoration, a driven
-transcript, and architect rerun. The coordinator has made no native source
-changes and has not loosened the harness assertions.
+Not ready. The disposable probe now demonstrates the native behavior and
+unchanged attach gate after a test-only correction, but that correction is not
+in Kimi's branch. Required evidence is still missing from the actual worker
+branch: a clean `powershell -File native/build.ps1 -RunTests`, unchanged
+`movement` and `zones` attach success including saved-position restoration, a
+driven transcript, and architect rerun. The coordinator has made no native
+source changes and has not loosened the harness assertions.
 
 ## Next action
 
-Kimi should correct the test helper to parse an `Envelope`, rerun the native
-gate, then resolve or explain the pre-instance-position lifecycle edge before
-the unchanged attach scenarios are rerun. Only then should this report move
-to `REVIEW_REQUESTED`.
+Kimi should apply the already-proven test-helper correction in the worker
+worktree, rerun the native gate and unchanged attach scenarios, then resolve
+or explain the differing pre-instance-position observations before producing
+the final transcript. Only then should this report move to
+`REVIEW_REQUESTED`.

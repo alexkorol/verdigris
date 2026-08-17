@@ -89,3 +89,28 @@ passes a `JsonValue` to `parse_envelope`, whose current API requires an
 `actor` warning at `networking.cpp(306)`. No coordinator or worker source was
 changed; this is a precise WIP compile blocker for Kimi to resolve before the
 attach probe can be rerun.
+
+## Disposable probe after test-helper correction
+
+To separate the test-helper compile defect from the native implementation, the
+coordinator created and then removed a disposable worktree from Kimi's WIP.
+It copied the six uncommitted WIP files and changed only the test helper at
+`native/tests/networking_tests.cpp:74` to parse an `Envelope` and return its
+`data`; the Kimi worktree itself was not edited.
+
+With that probe-only correction:
+
+- `powershell -NoProfile -File native/build.ps1 -RunTests` passed the legacy
+  denylist, core tests, and networking tests (the existing C4189/C4996 MSVC
+  warnings remained non-fatal).
+- An alternate server on port 6518 passed the unchanged attach command
+  `node playtest/run.mjs --attach movement zones`: **2/2**.
+- `movement` passed in 4589ms and `zones` passed in 1122ms, including all six
+  zone names/layouts/stairs/populations and saved-position restoration
+  (`38,115` versus `38,115`).
+
+This is strong implementation evidence but not acceptance: the correction is
+not yet in Kimi's branch, the prior direct WIP run had a different saved
+position failure (`39.666666,116.333334` versus `6,22`), and the worker still
+must rerun from its actual worktree, commit the source/tests, provide the
+transcript, and obtain the architect rerun.
