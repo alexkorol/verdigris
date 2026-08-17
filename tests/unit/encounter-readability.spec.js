@@ -201,7 +201,12 @@ describe('first-delve encounter readability', () => {
         y: 4,
         movementStep: {
           startedAt: Date.now(),
-          walkId: 12,
+          duration: 150,
+          walkId: null,
+          stepIndex: null,
+          steps: null,
+          direction: 'left',
+          blocked: false,
           interrupted: true,
         },
       };
@@ -217,7 +222,12 @@ describe('first-delve encounter readability', () => {
 
       player.movementStep = {
         startedAt: Date.now(),
+        duration: 0,
         walkId: null,
+        stepIndex: null,
+        steps: null,
+        direction: null,
+        blocked: false,
         interrupted: true,
       };
       advanceDevelopmentStage(scene, 0);
