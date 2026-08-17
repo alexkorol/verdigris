@@ -131,6 +131,12 @@
   matrix `quickstart`, `single-session`, `movement`, `zones` at `4/4`.
 - The candidate remains disposable: TASK-0043 and TASK-0044 are still
   `REVIEW_REQUESTED`, with no local architect `REVIEW.md` and no source merge.
+- Fable's architect checkout carries TASK-0043 review `7113b06` (`REVISE`),
+  with a staged max-lag correction. The coordinator independently revalidated
+  the correction at `c1dbb39f`: three no-flag CPU-loaded full runs passed
+  31/31, the measured pause expanded an 8000ms deadline only to the bounded
+  14000ms cap, and all temporary processes were cleaned up. No additional
+  source change was needed; acceptance remains architect-owned.
 - The WIZARD seam rerun is recorded at coordinator commit `6cb7b366`:
   Orbs, Brands & Bonds/inventory, and Cartographer/map tests remain `73/73`;
   Verdigris Splash remains intentionally presentation/reference-only.

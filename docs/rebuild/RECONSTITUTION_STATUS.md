@@ -44,6 +44,10 @@ outside production until the owner resolves asset provenance/packaging.
 - TASK‑0043 playtest harness stabilization: `REVIEW_REQUESTED`; current-tip
   unit/build/full-playtest/browser-smoke evidence is green. Report:
   [`TASK-0043 REPORT`](../../orchestration/tasks/TASK-0043-playtest-harness-stabilization/REPORT.md).
+  Fable's architect review `7113b06` requested default-mode contention proof;
+  coordinator validation at `c1dbb39f` independently passed three fresh
+  no-flag loaded runs at 31/31 with clean exit and teardown. Acceptance is
+  still Fable-owned.
 - TASK‑0044 native protocol N2: `REVIEW_REQUESTED`; committed implementation
   `d476788`, native/client gates green, unchanged N1+N2 attach regression 4/4.
   Report:
@@ -68,10 +72,16 @@ outside production until the owner resolves asset provenance/packaging.
   passed 31/31; raw checkpoint:
   [`coordinator-fresh-full-playtest-2026-08-17.txt`](../../orchestration/tasks/TASK-0043-playtest-harness-stabilization/captures/coordinator-fresh-full-playtest-2026-08-17.txt).
 - Browser-critical Playwright smoke: 1/1 passed on an isolated port.
-- TASK-0043's full correction chain has a clean current-tip integration
+- TASK‑0043's full correction chain has a clean current-tip integration
   candidate at `ab73edbc`; unit 122/779 passed, with a known full-suite
   gear-outcomes contention miss and immediate isolated 1/1 rerun. It remains
   outside the coordinator tip pending Fable's review.
+- The TASK‑0043 revision proof is now independently repeated on the combined
+  candidate: idle timing preserves the authored 8000ms floor, an induced
+  scheduler pause adapts to the bounded 14000ms cap, and three no-flag full
+  runs pass 31/31 under one CPU spinner. This validates the requested
+  harness behavior but does not substitute for the architect's ACCEPTED
+  review.
 - Committed N2 native gate: denylist, core/networking tests, and client shell
   passed.
 - Committed N2 attach regression: quickstart, single-session, movement, and
