@@ -43,3 +43,29 @@ not a rework.
 Adds a standing reviewer check: every branch diff is taken against the
 CURRENT tip and inspected for reverts of recently shipped work
 (stale-base clobber is now a known failure class).
+
+---
+
+# Revision 2 (2026-08-17 ~01:35) — verdict remains REVISE
+
+Revision commits through `31413c99` STILL delete `MIDDAY_AMBIENT`,
+`sampleAmbientForClock`, and the ambient-clock wiring — architect
+verified: `git diff cfe6185..31413c99 -- src/core/rendering` shows the
+0033 revert intact. The validator "ACCEPT" diffed against a stale base
+again.
+
+## Correction restated — acceptance is this literal check
+
+From a checkout containing the CURRENT program tip (fetch origin
+`codex/native-reconstitution` first; tip ≥ `cfe6185`):
+
+```
+git merge <current-tip>        # or rebase the branch onto it
+git diff <current-tip> -- src/core/rendering/
+```
+
+The diff output MUST BE EMPTY. Paste the empty-diff transcript plus the
+tip SHA used into REPORT.md. Then rerun unit + playtest on the merged
+result. The movement fix itself remains accepted-in-principle — this is
+purely the base repair. Validators: run the architect's literal check,
+never a local approximation.
