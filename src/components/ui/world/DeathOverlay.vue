@@ -125,12 +125,23 @@ export default {
       }
     };
 
+    const captureDeathInput = (event) => {
+      if (!visible.value) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      handleKeydown(event);
+    };
+
     onMounted(() => {
       bus.$on('player:death-summary', showDeath);
+      window.addEventListener('keydown', captureDeathInput, true);
     });
 
     onBeforeUnmount(() => {
       bus.$off('player:death-summary', showDeath);
+      window.removeEventListener('keydown', captureDeathInput, true);
     });
 
     return {
