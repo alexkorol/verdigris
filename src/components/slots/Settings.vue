@@ -18,6 +18,18 @@
         >
       </div>
 
+      <label class="sound-toggle" for="day-night-cycle">
+        <input
+          id="day-night-cycle"
+          v-model="selected.dayNightCycle"
+          type="checkbox"
+        >
+        <span>
+          <strong>Day/night cycle</strong>
+          <small>Opt in to changing ambient light</small>
+        </span>
+      </label>
+
       <div class="fps-range">
         <div>20</div>
         <div>30</div>
@@ -48,6 +60,10 @@
 import { mapStores } from 'pinia';
 
 import { useUiStore } from '@/stores/ui.js';
+import {
+  isAmbientCycleEnabled,
+  setAmbientCycleEnabled,
+} from '../../core/config/ambient-clock.js';
 import bus from '../../core/utilities/bus.js';
 
 export default {
@@ -56,6 +72,7 @@ export default {
       selected: {
         fps: 5,
         soundEffects: true,
+        dayNightCycle: false,
       },
       fps: [null, 20, 30, 40, 50, 60],
     };
@@ -70,6 +87,7 @@ export default {
     const storedFpsIndex = this.fps.indexOf(Number(this.uiStore.settings?.fps));
     this.selected.fps = storedFpsIndex > 0 ? storedFpsIndex : 5;
     this.selected.soundEffects = this.uiStore.settings?.soundEffects !== false;
+    this.selected.dayNightCycle = isAmbientCycleEnabled();
   },
   watch: {
     'selected.fps': {
@@ -83,6 +101,11 @@ export default {
       handler(enabled) {
         bus.$emit('SETTINGS:SOUND', enabled);
         this.persistSettings();
+      },
+    },
+    'selected.dayNightCycle': {
+      handler(enabled) {
+        setAmbientCycleEnabled(enabled);
       },
     },
   },
