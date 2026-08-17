@@ -101,3 +101,19 @@
   restoration. Coordinator captures are preserved in the TASK-0044 folder;
   Kimi committed the six native files as `d476788`, so the task is now
   `REVIEW_REQUESTED` pending Fable's architect rerun and acceptance decision.
+
+## 2026-08-17 — N3 combat parity boundary prepared
+
+- The coordinator completed a read-only audit of the native/browser combat
+  seams and recorded the executable handoff in
+  [`N3_PARITY_IMPLEMENTATION_BRIEF.md`](N3_PARITY_IMPLEMENTATION_BRIEF.md).
+  It maps the existing `player:move` and `player:skill:trigger` wire events
+  into the deterministic core and lists the unchanged `combat` and
+  `encounter-variety` acceptance matrix.
+- The committed N2 server intentionally fails those two scenarios at the
+  N2 boundary (18 monsters instead of the combat scenario's minimum 20, and
+  no authored melee/ranged/buffer roles). The raw negative transcript is
+  preserved in the TASK-0044 captures; no assertion was weakened and no N2
+  source was changed.
+- This is a handoff and evidence checkpoint, not an N3 claim. Native combat
+  implementation must wait for Fable to issue a READY N3 task/spec.
