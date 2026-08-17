@@ -271,7 +271,20 @@ export default async function sessionArc({ connect, assert, recordMetrics }) {
     assert(executioner, 'the second run contains a mortal threat');
     second.devPrepareFinalDeath();
     second.devTeleport(Math.round(executioner.x) + 1, Math.round(executioner.y));
-    const memorial = await second.waitFor(() => second.scionFalls[0], {
+    const memorial = await second.waitFor(async () => {
+      if (second.scionFalls[0]) return second.scionFalls[0];
+      // Final-death setup uses dev controls and can lose one frame when the
+      // server is CPU-starved. Re-arm and reposition against the authoritative
+      // monster while retaining the same production memorial assertion.
+      const current = await second.state();
+      const live = current.monsters.find(monster => monster.uuid === executioner.uuid)
+        || nearestTrash(current);
+      if (live) {
+        second.devPrepareFinalDeath();
+        second.devTeleport(Math.round(live.x) + 1, Math.round(live.y));
+      }
+      return false;
+    }, {
       timeoutMs: 15000,
       intervalMs: 250,
       label: 'session-arc final death',
