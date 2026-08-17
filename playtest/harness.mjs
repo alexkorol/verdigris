@@ -374,11 +374,21 @@ export class HeadlessPlayer {
       // the transition event, not on the id changing.
       const transitionsBefore = this.sceneTransitions || 0;
       const errorsBefore = (this.partyErrors || []).length;
-      this.emit('instance:enterSolo', { template, layout });
-      await this.waitFor(() => (
-        (this.sceneTransitions || 0) > transitionsBefore
-        || (this.partyErrors || []).length > errorsBefore
-      ), {
+      let lastSentAt = 0;
+      const sendEntry = async () => {
+        lastSentAt = Date.now();
+        await this.emit('instance:enterSolo', { template, layout });
+      };
+      await sendEntry();
+      await this.waitFor(async () => {
+        if ((this.sceneTransitions || 0) > transitionsBefore
+          || (this.partyErrors || []).length > errorsBefore) return true;
+        // A general-bucket frame can be lost while the server is starved. A
+        // bounded resend keeps one authored transition deadline and does not
+        // turn a missing transition into an unbounded retry loop.
+        if (Date.now() - lastSentAt >= 1000) await sendEntry();
+        return false;
+      }, {
         timeoutMs,
         label: `zone transition to ${template}`,
       });
@@ -603,7 +613,7 @@ export class HeadlessPlayer {
   // ── Wiz/dev commands ─────────────────────────────────────────────────
 
   devTeleport(x, y, sceneId = undefined) {
-    this.emit('dev:teleport', { x, y, sceneId });
+    return this.emit('dev:teleport', { x, y, sceneId });
   }
 
   devGive(itemId, qty = 1, options = {}) {
@@ -635,7 +645,7 @@ export class HeadlessPlayer {
   }
 
   devKill({ allowCheatDeath = false } = {}) {
-    this.emit('dev:kill', { allowCheatDeath });
+    return this.emit('dev:kill', { allowCheatDeath });
   }
 
   devHurt(amount = 5) {
@@ -643,7 +653,7 @@ export class HeadlessPlayer {
   }
 
   devPrepareFinalDeath() {
-    this.emit('dev:prepare-final-death', {});
+    return this.emit('dev:prepare-final-death', {});
   }
 
   devReleaseRelic() {

@@ -269,19 +269,27 @@ export default async function sessionArc({ connect, assert, recordMetrics }) {
     fallenName = second.player.username;
     const executioner = nearestTrash(nextRun);
     assert(executioner, 'the second run contains a mortal threat');
-    second.devPrepareFinalDeath();
-    second.devTeleport(Math.round(executioner.x) + 1, Math.round(executioner.y));
+    await second.devPrepareFinalDeath();
+    await second.devTeleport(Math.round(executioner.x) + 1, Math.round(executioner.y));
+    let deathSetup = null;
     const memorial = await second.waitFor(async () => {
       if (second.scionFalls[0]) return second.scionFalls[0];
-      // Final-death setup uses dev controls and can lose one frame when the
-      // server is CPU-starved. Re-arm and reposition against the authoritative
-      // monster while retaining the same production memorial assertion.
       const current = await second.state();
       const live = current.monsters.find(monster => monster.uuid === executioner.uuid)
         || nearestTrash(current);
-      if (live) {
-        second.devPrepareFinalDeath();
-        second.devTeleport(Math.round(live.x) + 1, Math.round(live.y));
+      if (live && current.lifecycle === 'alive'
+        && (current.x !== Math.round(live.x) + 1 || current.y !== Math.round(live.y))) {
+        if (!deathSetup) {
+          deathSetup = (async () => {
+            // Do not re-arm an already positioned player: a queued preparation
+            // after a lethal hit could reset the lifecycle back to alive.
+            if (!second.messages.some(message => /Final death armed/i.test(message))) {
+              await second.devPrepareFinalDeath();
+            }
+            await second.devTeleport(Math.round(live.x) + 1, Math.round(live.y));
+          })().finally(() => { deathSetup = null; });
+        }
+        await deathSetup;
       }
       return false;
     }, {
