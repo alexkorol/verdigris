@@ -58,6 +58,9 @@ Focused seam evidence is preserved in
 - Browser unit suite: 122 files / 779 tests passed.
 - Browser production build: passed.
 - Isolated full browser playtest: 31/31 scenarios passed.
+- Fresh coordinator full playtest at the current source-equivalent tip also
+  passed 31/31; raw checkpoint:
+  [`coordinator-fresh-full-playtest-2026-08-17.txt`](../../orchestration/tasks/TASK-0043-playtest-harness-stabilization/captures/coordinator-fresh-full-playtest-2026-08-17.txt).
 - Browser-critical Playwright smoke: 1/1 passed on an isolated port.
 - Committed N2 native gate: denylist, core/networking tests, and client shell
   passed.
@@ -74,3 +77,8 @@ Focused seam evidence is preserved in
    the blocked first-loot and control-rebinding seams.
 4. Keep complete magic, production asset provenance, seasonal inheritance, and
    economy scope behind their documented owner decisions.
+
+The N3 handoff is now explicit in
+[`N3_PARITY_IMPLEMENTATION_BRIEF.md`](N3_PARITY_IMPLEMENTATION_BRIEF.md), with
+the authority/metadata gap captured in
+[`coordinator-n3-core-gap-audit-2026-08-17.txt`](../../orchestration/tasks/TASK-0044-native-protocol-n2/captures/coordinator-n3-core-gap-audit-2026-08-17.txt).
