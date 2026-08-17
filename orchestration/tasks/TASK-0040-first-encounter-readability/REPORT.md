@@ -9,6 +9,7 @@ commits:
   - d30a1f1c
   - 69995508
   - e0dacfc8
+  - 6295298a
 base_commit: 25ecd77f
 ---
 
@@ -52,7 +53,10 @@ the existing slay progression context as `encounterKills` and
 - `npx vitest run tests/unit/encounter-readability.spec.js tests/unit/instance-balance.spec.js` — 2 files, 16/16 passed.
 - Broader affected playtest subset — 4/4 passed.
 - `npm run test:unit` — 120 files, 767/767 passed.
-- `npm run playtest` — 31/31 scenarios passed on the final full rerun.
+- `npm run playtest` — latest full run 25/31; the six failed scenarios
+  (`first-goal`, `house-treasury`, `mortality`, `party-stories`, `quest`, and
+  `zones`) each passed immediately when rerun in isolation. All
+  TASK-0040-sensitive scenarios passed in the latest run.
 - `git diff --check` — passed for task changes.
 
 ## Manual checks
@@ -68,12 +72,29 @@ pre-fix seeds where a Marksman, support, or boss could otherwise be the first
 reachable threat, plus the exact development-only teleport marker used by the
 existing playtest harness.
 
+The real WebSocket driver in the capture directory produced this excerpt:
+
+```text
+initial-payload roster=33 marksmen=10
+scene-kills=0 opener=Dread Vanguard rarity=common {"living":33,"active":1,"dormant":32,"activeMarksmen":0,"rangedMarksmen":0}
+scene-kills=1 defeated=Dread Vanguard {"living":32,"active":2,"dormant":30,"activeMarksmen":0,"rangedMarksmen":0}
+scene-kills=2 defeated=Dread Vanguard {"living":31,"active":4,"dormant":27,"activeMarksmen":1,"rangedMarksmen":1}
+scene-kills=3 defeated=Dread Vanguard {"living":30,"active":3,"dormant":27,"activeMarksmen":1,"rangedMarksmen":1}
+scene-kills=5 defeated=Dread Vanguard {"living":28,"active":28,"dormant":0,"activeMarksmen":10,"rangedMarksmen":10}
+```
+
+The fourth attack cleaved two already-weakened actors, so the observed counter
+crossed 3→5 rather than stopping at 4; every stage boundary was still
+observed. Direct WASD fails the dev inspection predicate, while the exact
+fresh dev-handler marker activates only the inspected actor once.
+
 ## Specification deviations
 
-Evidence is a deterministic headless runtime transcript rather than a browser
-screenshot. The server's normal path is strictly kill-driven. A narrowly
-gated `NODE_ENV=development` seam consumes the existing dev-teleport marker
-(`interrupted=true`, `walkId=null`, fresh and within three tiles) once so the
+Evidence includes a real WebSocket-driven runtime transcript rather than a
+browser screenshot. The server's normal path is strictly kill-driven. A
+narrowly gated `NODE_ENV=development` seam consumes only the exact
+dev-teleport marker (`interrupted=true`, `walkId=null`, `duration=0`, null
+direction/path indices, unblocked, fresh and within three tiles) once so the
 pre-existing playtest can inspect an isolated boss/loot comparison; ordinary
 movement and production cannot activate staged actors. D-115 still requires
 the architect to play the actual first delve.
@@ -82,8 +103,14 @@ the architect to play the actual first delve.
 
 The separation pass runs on the existing combat scheduler, so a rounded-tile
 overlap can persist until the next approximately 150 ms combat tick. Staged
-actors remain instantiated/rendered because client paths were forbidden, but
-they are filtered from combat and their AI is paused before the first 600 ms
+actors remain instantiated/rendered because client paths were forbidden: the
+synchronous initial `buildScenePayload` still serializes the full dormant
+roster (driven run 33 actors/10 Marksmen; deterministic seed `90140` 34/9),
+so dormant actors are visible and collidable on the client even though they are
+server-dormant and untargetable. Filtering that payload requires
+`server/core/world-transitions.js` or `server/core/monster.js`, outside this
+task's owned paths, and is explicitly pending architect scope direction. They
+are filtered from combat and their AI is paused before the first 600 ms
 monster tick by the existing 150 ms scheduler. Ranged unlock is scene-wide at
 two kills, while later actors remain physically isolated until reached.
 
@@ -92,10 +119,13 @@ the task scope.
 
 ## Questions for Fable or the owner
 
-None; architect D-115 hands-on play is the acceptance gate.
+Architect decision required: either extend ownership to the synchronous scene
+payload path to hide dormant actors until activation, or ratify the documented
+server-dormant/client-visible limitation. D-115 hands-on play remains the
+acceptance gate.
 
 ## Integration notes
 
-Requires architect review before integration. Integrate `8abad0bf` and
-`cf9282c1` together from the worker branch. This is server/core-only and is
+Requires architect re-review before integration. Integrate the complete chain
+through `6295298a` from the worker branch. This is server/core-only and is
 disjoint from pending TASK-0035 native and TASK-0036/0037 browser handoffs.
