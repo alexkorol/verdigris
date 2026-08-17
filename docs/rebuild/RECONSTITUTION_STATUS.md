@@ -47,7 +47,9 @@ outside production until the owner resolves asset provenance/packaging.
   Fable's architect review `7113b06` requested default-mode contention proof;
   coordinator validation at `c1dbb39f` independently passed three fresh
   no-flag loaded runs at 31/31 with clean exit and teardown. Acceptance is
-  still Fable-owned.
+  still Fable-owned. The exact staged timing snapshot was also overlaid on
+  disposable candidate `3636b729`: browser unit 122/779 and full playtest
+  31/31 passed; capture is in the TASK-0043 folder.
 - TASK‑0044 native protocol N2: `REVIEW_REQUESTED`; committed implementation
   `d476788`, native/client gates green, unchanged N1+N2 attach regression 4/4.
   Report:

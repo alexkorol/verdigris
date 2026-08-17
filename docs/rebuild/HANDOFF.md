@@ -136,7 +136,9 @@
   the correction at `c1dbb39f`: three no-flag CPU-loaded full runs passed
   31/31, the measured pause expanded an 8000ms deadline only to the bounded
   14000ms cap, and all temporary processes were cleaned up. No additional
-  source change was needed; acceptance remains architect-owned.
+  source change was needed; acceptance remains architect-owned. A follow-up
+  disposable overlay of the exact staged timing file passed browser unit
+  122/779 and the full playtest 31/31 at port 6528; see the task capture.
 - The WIZARD seam rerun is recorded at coordinator commit `6cb7b366`:
   Orbs, Brands & Bonds/inventory, and Cartographer/map tests remain `73/73`;
   Verdigris Splash remains intentionally presentation/reference-only.
