@@ -177,11 +177,14 @@ Source is ready on the dedicated integration worktree at `f9527d9c`; integrate o
   [`captures/coordinator-current-tip-playtest-2026-08-17-followup.txt`](captures/coordinator-current-tip-playtest-2026-08-17-followup.txt).
   The checkout does not contain the unaccepted `f9527d9c` harness source.
 
-- A disposable integration dry-run then applied the complete TASK-0043
-  correction chain to coordinator tip `ade29e6d` without conflicts. Candidate
-  `1a9f6b6b` passed unit (122/779), full playtest (31/31), and diff-check with
-  playtest-only scope. The exact cherry-pick list and diagnostics are in
-  [`captures/coordinator-current-tip-integration-candidate-2026-08-17.txt`](captures/coordinator-current-tip-integration-candidate-2026-08-17.txt).
-  This candidate is ready for Fable's architect rerun but remains unmerged
-  until the review verdict changes.
+- A disposable integration dry-run first applied the complete TASK-0043
+  correction chain to `ade29e6d` as candidate `1a9f6b6b`. Independent review
+  then found that later coordinator documentation commits made that base
+  stale. Canonical current-tip candidate `ab73edbc` reapplies the same chain
+  directly onto `6e900687` without conflicts and keeps playtest-only scope.
+  Its unit gate passed 122/779; the full suite was 30/31 on the known
+  gear-outcomes contention edge, and the immediate isolated rerun passed 1/1.
+  The exact current-tip evidence is in
+  [`captures/coordinator-current-tip-integration-candidate-v2-2026-08-17.txt`](captures/coordinator-current-tip-integration-candidate-v2-2026-08-17.txt).
+  The candidate remains unmerged until the architect review changes.
 - Task state: `REVIEW_REQUESTED`; architect acceptance is still required.

@@ -68,9 +68,10 @@ outside production until the owner resolves asset provenance/packaging.
   passed 31/31; raw checkpoint:
   [`coordinator-fresh-full-playtest-2026-08-17.txt`](../../orchestration/tasks/TASK-0043-playtest-harness-stabilization/captures/coordinator-fresh-full-playtest-2026-08-17.txt).
 - Browser-critical Playwright smoke: 1/1 passed on an isolated port.
-- TASK-0043's full correction chain also has a clean current-tip integration
-  candidate at `1a9f6b6b`: unit 122/779 and playtest 31/31, playtest-only
-  scope. It remains outside the coordinator tip pending Fable's review.
+- TASK-0043's full correction chain has a clean current-tip integration
+  candidate at `ab73edbc`; unit 122/779 passed, with a known full-suite
+  gear-outcomes contention miss and immediate isolated 1/1 rerun. It remains
+  outside the coordinator tip pending Fable's review.
 - Committed N2 native gate: denylist, core/networking tests, and client shell
   passed.
 - Committed N2 attach regression: quickstart, single-session, movement, and
