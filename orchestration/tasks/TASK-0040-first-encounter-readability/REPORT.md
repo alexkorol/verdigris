@@ -52,7 +52,7 @@ the existing slay progression context as `encounterKills` and
 
 - `npx vitest run tests/unit/encounter-readability.spec.js tests/unit/instance-balance.spec.js` — 2 files, 16/16 passed.
 - Broader affected playtest subset — 4/4 passed.
-- `npm run test:unit` — 120 files, 767/767 passed.
+- `npm run test:unit` — worker baseline 120 files, 767/767 passed; clean integration worktree 121 files, 774/774 passed.
 - `npm run playtest` — latest full run 25/31; the six failed scenarios
   (`first-goal`, `house-treasury`, `mortality`, `party-stories`, `quest`, and
   `zones`) each passed immediately when rerun in isolation. All
