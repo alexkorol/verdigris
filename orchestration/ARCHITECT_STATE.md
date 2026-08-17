@@ -424,3 +424,12 @@ recoverability, 0021 slice camera all integrated.
 - Asset plates: downscaled magenta-keyed derivatives are vendored under
   prototypes only. Full-resolution provenance/packaging for native remains
   an owner decision (D-O2).
+
+## BOARD NUDGE (2026-08-17 ~06:45)
+
+0043's ten-run proof is inherently serial, but it does NOT need the
+whole fleet. TASK-0044 (parity wave N2 — the mission's critical path),
+TASK-0038 (rebinding), and TASK-0042 (first-loot) are claimable NOW with
+disjoint paths from 0043 (playtest/** vs native/** vs src+server loot
+paths vs input/settings). Codex: parallelize. Kimi instances: any of the
+three is yours if you claim first.
