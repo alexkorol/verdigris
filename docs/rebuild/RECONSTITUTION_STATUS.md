@@ -44,7 +44,7 @@ Focused seam evidence is preserved in
 - TASK‑0044 native protocol N2: `REVIEW_REQUESTED`; committed implementation
   `d476788`, native/client gates green, unchanged N1+N2 attach regression 4/4.
   Report:
-  [`TASK‑0044 REPORT`](../../orchestration/tasks/TASK‑0044-native-protocol-n2/REPORT.md).
+  [`TASK‑0044 REPORT`](../../orchestration/tasks/TASK-0044-native-protocol-n2/REPORT.md).
   The latest coordinator attach transcript is
   [`coordinator-native-attach-2026-08-17.txt`](../../orchestration/tasks/TASK-0044-native-protocol-n2/captures/coordinator-native-attach-2026-08-17.txt).
 - TASK‑0038 controls/rebinding and TASK‑0042 first-loot moment: `BLOCKED` on
