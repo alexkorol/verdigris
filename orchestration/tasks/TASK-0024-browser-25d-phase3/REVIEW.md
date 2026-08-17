@@ -1,53 +1,31 @@
 ---
 task: TASK-0024
-verdict: REVISE
+verdict: ACCEPTED
 reviewed_commits:
   - 6f45c2e
+  - 0424e3a
 ---
 
-## What was reviewed
+# Final verdict: ACCEPTED (revision 1 verified, 2026-08-16 ~17:55)
 
-The knob-by-knob report (excellent provenance — including the archaeology
-showing the original port matched the reference and later commits diluted
-it), the committed `capture.mjs` harness, and the full capture set
-side-by-side (before/after ARPG midday, open-field edges, night,
-reference).
+Correction 1 was implemented exactly as prescribed: reference CURVE kept,
+anchored per-channel to the pre-retune midday neutral; measured luminance
+now +0.32 (arpg) / +0.65 (edge-north) versus before, with the measuring
+script committed. Vignette at 0.30. I inspected the revised midday capture
+(fully readable, warm, no corner crush) and the night capture (deep but
+legible, player lit). Gates green including playtest 31/31.
 
-## What is correct
+**Defect carried forward (not a Phase-3 correction):** at night the HP/MP
+orbs render nearly black — the lighting/vignette passes composite over
+the HUD corners. Per reference §pass-order the lightmap belongs below the
+HUD. This is REQUIRED ITEM 1 of TASK-0027 (Phase 4).
 
-- Process quality is the best of any browser task so far: scripted,
-  reproducible captures including the open-field horizon shots the 0023
-  review demanded; every knob change carries old→new and a reference
-  citation; day-length owner comment respected.
-- Night reading with emitter lights (after-night) works.
+The revision-1 process (committed luminance script, anchored
+renormalization, honest flake reporting) is the standard other tasks
+should copy. Integration approved.
 
-## Problems
+Historical revision-0 review below.
 
-1. **The midday frame got materially DARKER and less readable than
-   before.** Compare `before-arpg.jpg` vs `after-arpg.jpg` at the same
-   scene/time: the after loses luminance across the playfield and the
-   0.45 vignette visibly crushes the corners. Root cause: the reference's
-   ABSOLUTE grade values were authored over its pastel-bright art;
-   applying them verbatim over Verdigris's darker tile albedo
-   double-darkens. Conformance means the reference's RELATIVE grade
-   shape, normalized to Verdigris's art — the owner's complaint was low
-   contrast and mud; the fix cannot be gloom.
+---
 
-## Required corrections (revision 1)
-
-1. Renormalize the ambient keyframes so the midday window (t≈0.0–0.35)
-   multiplies at or near neutral over Verdigris art — the after-arpg
-   midday capture must have average luminance ≥ the before capture's
-   (state both numbers in REPORT.md; a 10-line pixel-average script over
-   the two JPEGs is fine). Keep the reference's relative day/night CURVE
-   (deeper nights are good) anchored to that neutral midday.
-2. Vignette: cap `VIGNETTE_EDGE_ALPHA` at ≤0.30 over current art, or
-   scale it with scene luminance. Corners must not read as crushed at
-   midday.
-3. Re-capture the same set with the same harness; keep everything else
-   from this revision (mist, clouds, night emitters) unless the
-   renormalization interacts.
-
-## Architectural effect
-
-None until green. The capture harness should be reused by Phase 4/5.
+(Original REVISE review retained in git history at 50b4037.)

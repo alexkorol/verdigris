@@ -1,24 +1,38 @@
 // Keep the opening minutes in readable daylight. The old 90 second cycle
 // raced from morning to night during a player's first encounter and made the
 // world appear to flicker between colour grades instead of inhabiting them.
+// The keyframe colours themselves track the D-108 reference demo exactly:
+// the grade is what sells the time-of-day mood.
 const DAY_LENGTH_SECONDS = 300;
 const LIGHTMAP_SCALE = 0.25;
+// Review revision 1: capped so midday corners cannot crush (reference runs
+// 0.55 over pastel-bright art; Verdigris tile albedo is far darker).
+const VIGNETTE_EDGE_ALPHA = 0.22;
 
+// D-108 reference day/night CURVE (songs-of-the-mire `ambient()`),
+// renormalized to Verdigris art: the reference's absolute grade values were
+// authored over pastel-bright albedo, so they are anchored here to the
+// pre-retune midday multiply [255,247,231] at t=0.30 — midday stays neutral
+// while dusk/night keep the reference's relative deepening (review rev 1).
 const AMBIENT_KEYFRAMES = [
-  [0, [255, 247, 231]],
-  [0.30, [255, 242, 218]],
-  [0.45, [255, 218, 176]],
-  [0.58, [184, 174, 219]],
-  [0.80, [148, 158, 211]],
-  [0.90, [220, 193, 190]],
-  [1, [255, 247, 231]],
+  [0, [255, 251, 242]],
+  [0.30, [255, 247, 231]],
+  [0.45, [255, 211, 162]],
+  [0.58, [150, 144, 221]],
+  [0.80, [110, 124, 205]],
+  [0.90, [210, 185, 189]],
+  [1, [255, 251, 242]],
 ];
 
+// Screen-space cloud shadows. Cores moved toward the D-108 reference
+// (196,198,208) but renormalized to Verdigris albedo at (232,233,238):
+// the verbatim reference core cut the darker midfield past the review
+// luminance bar. Drift speeds raised ~4x so a crossing takes minutes.
 const CLOUDS = [
-  { x: 0.08, y: 0.26, radius: 0.38, speed: 0.0017, phase: 0.4 },
-  { x: 0.37, y: 0.54, radius: 0.46, speed: 0.0011, phase: 2.1 },
-  { x: 0.69, y: 0.34, radius: 0.34, speed: 0.0015, phase: 4.3 },
-  { x: 0.91, y: 0.67, radius: 0.42, speed: 0.0009, phase: 5.6 },
+  { x: 0.08, y: 0.26, radius: 0.38, speed: 0.0068, phase: 0.4 },
+  { x: 0.37, y: 0.54, radius: 0.46, speed: 0.0044, phase: 2.1 },
+  { x: 0.69, y: 0.34, radius: 0.34, speed: 0.0060, phase: 4.3 },
+  { x: 0.91, y: 0.67, radius: 0.42, speed: 0.0036, phase: 5.6 },
 ];
 
 const interpolate = (start, end, amount) => start + ((end - start) * amount);
@@ -85,7 +99,10 @@ class LightingRenderer {
       Math.max(width, height) * 0.72,
     );
     gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
-    gradient.addColorStop(1, 'rgba(10, 4, 16, 0.18)');
+    // Edge alpha retuned toward the D-108 reference mood (0.55) but capped
+    // well below it: this game's pixel-art frame starts darker than the
+    // demo's, and review rev 1 set a 0.30 ceiling for midday readability.
+    gradient.addColorStop(1, `rgba(10, 4, 16, ${VIGNETTE_EDGE_ALPHA})`);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
   }
@@ -111,7 +128,7 @@ class LightingRenderer {
         screenY,
         radius,
       );
-      gradient.addColorStop(0, 'rgba(236, 238, 242, 1)');
+      gradient.addColorStop(0, 'rgba(232, 233, 238, 1)');
       gradient.addColorStop(1, 'rgba(255, 255, 255, 1)');
       ctx.fillStyle = gradient;
       ctx.beginPath();
