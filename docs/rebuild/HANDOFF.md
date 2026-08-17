@@ -82,10 +82,9 @@
   [`TASK-0044 BASELINE.md`](../../orchestration/tasks/TASK-0044-native-protocol-n2/BASELINE.md)
   and the provisional
   [`REPORT.md`](../../orchestration/tasks/TASK-0044-native-protocol-n2/REPORT.md).
-- The first WIP attach probe passed movement and reached all six zones, but
-  failed saved pre-entry position restoration. The latest required native
-  build is currently stopped by a test-helper type mismatch at
-  `native/tests/networking_tests.cpp:74` (`JsonValue` passed where
-  `parse_envelope` requires `Envelope&`). No native worker source was edited
-  by the coordinator; acceptance still requires a clean native gate, unchanged
-  movement/zones attach success, transcript, and architect rerun.
+- The current worker WIP now passes the native denylist, core tests, and
+  networking tests. A rebuilt server also passes unchanged `movement` and
+  `zones` attach scenarios 2/2, including all six zones and saved-position
+  restoration. Coordinator captures are preserved in the TASK-0044 folder;
+  the six native worker files remain uncommitted, so acceptance still requires
+  Kimi's commit/report packet and Fable's architect rerun.
