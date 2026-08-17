@@ -1,15 +1,14 @@
 ---
 task: TASK-0027
 state: CLAIMED
-coordinator: kimi-work
-worker: Kimi Work K3 implementation worker
-worker_branch: codex/TASK-0027-browser-25d-phase4
-worktree: C:\Users\Alex\Documents\KimiWork\verdigris (own clone, task branch)
-base_commit: 0424e3a
-spec_base_commit: program tip after 0024 integration — NOTE: 0024 was ACCEPTED (837aa32) but its integration had not landed on origin when claimed; branched from the accepted 0024 revision commit 0424e3a (identical content to the pending integration). Will rebase onto the integrated tip if it lands before review.
-started_at: 2026-08-16T17:45:00-07:00
+coordinator: codex
+worker: Luna browser rendering worker (retry handoff)
+worker_branch: codex/TASK-0027-browser-25d-phase4-codex
+worktree: C:\Users\Alex\Documents\ChatGPT\verdigris\.codex\worktrees\TASK-0027-browser-25d-phase4-codex
+base_commit: 21495fd461cf941fa7d641e61368da89e5fa4436
+started_at: 2026-08-16T19:57:29-07:00
 expected_verification: npm run test:unit; npm run smoke:browser; npm run playtest (browser-track gate)
-known_risks: HUD-safe compositing may require moving where lighting/vignette composite relative to orb rendering; DoF coupling touches perspective-camera defaults with existing unit expectations
-dependencies: TASK-0024 accepted at 837aa32 (integration pending on origin)
+known_risks: clock-domain mismatch can produce NaN orb uniforms; DoF coupling must remain continuous and within rendering-owned paths
+dependencies: TASK-0024 accepted and integrated; architect RELEASE.md preserves QUESTION-0005 answer and authorized deviations
 architect_review_required: true
 ---

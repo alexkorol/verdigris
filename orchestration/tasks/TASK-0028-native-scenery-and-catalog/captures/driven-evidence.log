@@ -1,0 +1,7 @@
+﻿window=VerdigrisNativeClient
+route=route:tin:1:0
+scenery=tree,ruin,dwelling,shrine keyed plates with fallback
+depth=behind~(154,-165), front~(154,121), tree=(260,-100), both overlap tree billboard
+dash=Space from ~(165,-99) toward tree; swept segment rejected and dash-blocked.jpg shows hint
+collision=A+W held at dwelling; actor remained outside circle and hint=Blocked by scenery
+catalog=skill strip expected Q Thrust 10, E Sweep 15, R WarCry 20
