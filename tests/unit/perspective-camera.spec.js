@@ -71,17 +71,33 @@ describe('PerspectiveCamera', () => {
 
   it('changes depth of field continuously and strengthens it while zoomed in', () => {
     const wide = makeCamera({ userZoom: 0.72 });
+    const middle = makeCamera({ userZoom: 1.12 });
     const close = makeCamera({ userZoom: 1.6 });
     const wideDepth = wide.depthToFocus * 1.22;
+    const middleDepth = middle.depthToFocus * 1.22;
     const closeDepth = close.depthToFocus * 1.22;
 
     expect(wide.circleOfConfusion(wide.depthToFocus)).toBe(0);
     expect(close.circleOfConfusion(close.depthToFocus)).toBe(0);
     expect(wide.dofStrength).toBe(0);
     expect(wide.circleOfConfusion(wideDepth)).toBe(0);
+    expect(middle.dofStrength).toBeGreaterThan(wide.dofStrength);
+    expect(middle.dofStrength).toBeLessThan(close.dofStrength);
+    expect(middle.circleOfConfusion(middleDepth)).toBeGreaterThan(0);
     expect(close.circleOfConfusion(closeDepth)).toBeGreaterThan(
-      wide.circleOfConfusion(wideDepth),
+      middle.circleOfConfusion(middleDepth),
     );
+  });
+
+  it('keeps DoF radii continuous between zoom samples', () => {
+    const samples = [0.86, 0.95, 1.04, 1.13, 1.22].map(userZoom => {
+      const camera = makeCamera({ userZoom });
+      return camera.circleOfConfusion(camera.depthToFocus * 1.42);
+    });
+
+    samples.forEach((sample, index) => {
+      if (index > 0) expect(sample).toBeGreaterThan(samples[index - 1]);
+    });
   });
 
   it('rejects zero-sized startup viewports without producing projection state', () => {

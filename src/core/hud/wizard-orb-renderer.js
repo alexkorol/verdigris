@@ -55,6 +55,16 @@ const CROP_OFFSET_X = { hp: -0.52, mp: 0.52 };
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 const clamp01 = value => clamp(value, 0, 1);
+const MAX_FRAME_DT_SECONDS = 0.05;
+
+// Orb instances can be created while a capture harness (or an embedding
+// surface) is replacing performance.now(). RAF supplies its own timestamp,
+// so the two clocks can briefly disagree. Keep that disagreement from
+// turning the exponential smoothing factors into NaN or a negative step.
+const frameDeltaSeconds = (timestamp, previousTimestamp) => {
+  const delta = (timestamp - previousTimestamp) / 1000;
+  return Number.isFinite(delta) ? clamp(delta, 0, MAX_FRAME_DT_SECONDS) : 0;
+};
 
 const levelFromFill = (fill) => {
   const f = clamp01(fill);
@@ -292,7 +302,7 @@ class WizardOrbRenderer {
     if (!this.ready || !this.gl) return;
 
     const gl = this.gl;
-    const dt = Math.min((timestamp - this.lastFrameAt) / 1000, 0.05);
+    const dt = frameDeltaSeconds(timestamp, this.lastFrameAt);
     this.lastFrameAt = timestamp;
 
     this.currentFill += (this.targetFill - this.currentFill) * (1 - Math.exp(-dt * 12));
@@ -388,3 +398,8 @@ class WizardOrbRenderer {
 }
 
 export default WizardOrbRenderer;
+
+export {
+  frameDeltaSeconds,
+  MAX_FRAME_DT_SECONDS,
+};
