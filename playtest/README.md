@@ -30,7 +30,7 @@ uses those observed p99/max scheduler delays to add bounded slack, while a
 missing server event still fails within the explicit 1.75x cap. In load mode only,
 server-side instance admission uses a bounded 12s authored floor (21s after
 the cap) because the child server can be starved independently of this
-client. Ordinary runs keep each scenario's authored deadline. The load-mode
+client. Authored deadlines remain the floor; the load-mode
 session-arc final-death observation similarly uses a bounded 20s authored
 floor (35s after the cap), with periodic adjacent-target retries. These
 load-mode floors are only active when the documented CPU-load command opts in.
