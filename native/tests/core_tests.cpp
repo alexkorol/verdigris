@@ -754,24 +754,84 @@ void test_persistence_d109_mid_instance_and_rng_continuation() {
   check(restored.instance().active, "a restored Scion can enter a fresh instance");
 
   // Start from an extracted (non-instance) boundary so both simulations have
-  // the same durable state, then compare seeded reward drops after restore.
+  // the same durable state, then compare a complete seeded reward drop after
+  // restore.  This deliberately kills the enemy; a handful of movement/action
+  // commands that never resolve combat would not exercise RNG drop fidelity.
   Simulation baseline(0x0030C0DEULL);
   baseline.dispatch(Command::enter("route:tin:1:0"));
   defeat_enemy(baseline);
   pick_all_rewards(baseline);
   extract_from_start(baseline);
   Simulation replay = restore(snapshot(baseline));
-  const std::vector<Command> commands = {
-      Command::enter("route:tin:1:0"), Command::action_use(ActionType::Melee),
-      Command::move(1, 0), Command::action_use(ActionType::Melee),
-      Command::action_use(ActionType::Melee), Command::action_use(ActionType::Melee),
-  };
-  for (const auto& command : commands) {
-    baseline.dispatch(command);
-    replay.dispatch(command);
-  }
+  baseline.dispatch(Command::enter("route:tin:1:0"));
+  replay.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(baseline);
+  defeat_enemy(replay);
+  check(!baseline.ground_items().empty() && !baseline.ground_trophies().empty() &&
+            baseline.ground_items().front().id == replay.ground_items().front().id &&
+            baseline.ground_trophies().front().id == replay.ground_trophies().front().id,
+        "restored RNG state reproduces generated item and trophy drop identities");
   check(snapshot(replay) == snapshot(baseline),
         "restored RNG state produces deterministic continuation and drops");
+}
+
+void test_persistence_recovery_pools() {
+  Simulation source(0x0030DEADULL);
+  source.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(source);
+  pick_all_rewards(source);
+  const std::string relic_id = source.scion().carried_items.front().id;
+  const std::string lost_trophy_id = source.scion().carried_trophies.front().id;
+  source.dispatch(Command::interact("hazard:death"));
+  check(source.house().relic_candidates.size() == 1 &&
+            source.house().relic_candidates.front().id == relic_id,
+        "recovery setup places the carried item in House relic_candidates");
+  check(source.house().lost_trophies.size() == 1 &&
+            source.house().lost_trophies.front().id == lost_trophy_id,
+        "recovery setup places the carried trophy in House lost_trophies");
+
+  const auto bytes = snapshot(source);
+  Simulation restored = restore(bytes);
+  check(restored.house().relic_candidates.size() == 1 &&
+            restored.house().relic_candidates.front().id == relic_id &&
+            restored.house().lost_trophies.size() == 1 &&
+            restored.house().lost_trophies.front().id == lost_trophy_id,
+        "snapshot restore preserves explicit relic and lost-trophy pools");
+  check(snapshot(restored) == bytes,
+        "relic and lost-trophy pools participate in byte-stable round-trip");
+}
+
+void test_persistence_surfaced_recovery_becomes_pending() {
+  Simulation source(0x0030BEEFULL);
+  source.dispatch(Command::enter("route:tin:1:0"));
+  defeat_enemy(source);
+  pick_all_rewards(source);
+  source.dispatch(Command::interact("hazard:death"));
+  const std::string relic_id = source.house().relic_candidates.front().id;
+  const std::string trophy_id = source.house().lost_trophies.front().id;
+  source.create_successor("Pending Recovery Successor");
+
+  // Keep searching the deterministic reward stream until both recovery
+  // candidates are simultaneously on the live floor.  They are then retired
+  // by snapshot and must re-enter through the pending queues exactly once.
+  force_relic_resurface(source, "route:tin:1:0");
+  force_trophy_resurface(source, "route:tin:1:0", trophy_id);
+  check(find_ground_item(source, relic_id) != nullptr &&
+            ground_has_trophy(source, trophy_id),
+        "setup surfaces both recoverable candidates in one live instance");
+  check(source.house().relic_candidates.empty() && source.house().lost_trophies.empty(),
+        "surfaced candidates leave House pools while borrowed by the instance");
+
+  Simulation restored = restore(snapshot(source));
+  check(!restored.instance().active && restored.ground_items().empty() &&
+            restored.ground_trophies().empty(),
+        "restore retires surfaced floor state without reviving an instance");
+  restored.dispatch(Command::enter("route:tin:1:0"));
+  check(find_ground_item(restored, relic_id) != nullptr &&
+            ground_has_trophy(restored, trophy_id),
+        "surfaced relic and trophy return through pending re-entry queues");
+  check(restored.house().relic_candidates.empty() && restored.house().lost_trophies.empty(),
+        "pending re-entry does not duplicate recovery pool ownership");
 }
 
 void test_persistence_file_adapter() {
@@ -1262,6 +1322,8 @@ void test_legend_stable_ids_and_deterministic_replay() {
 int main() {
   test_persistence_round_trip_and_unknown_fields();
   test_persistence_d109_mid_instance_and_rng_continuation();
+  test_persistence_recovery_pools();
+  test_persistence_surfaced_recovery_becomes_pending();
   test_persistence_file_adapter();
   test_determinism();
   test_actor_symmetry();
