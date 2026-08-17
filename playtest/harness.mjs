@@ -23,6 +23,7 @@ import {
   PLAYER_MOVE_DISTANCE,
   PLAYER_MOVE_SAMPLE_MS,
 } from '#shared/movement.js';
+import { adaptiveTimeoutMs } from './timing.mjs';
 
 const DEFAULT_URL = process.env.PLAYTEST_WS_URL || 'ws://localhost:6500';
 const DEFAULT_TIMEOUT_MS = 8000;
@@ -36,6 +37,7 @@ export class HeadlessPlayer {
     this.scene = null; // latest scene payload (login or transition)
     this.messages = []; // game:send:message texts
     this.hits = []; // combat:hit payloads
+    this.hitEvents = []; // combat:hit payloads with local receipt timestamps
     this.telegraphs = []; // monster:telegraph payloads
     this.inventory = [];
     this.stats = null; // latest player:stats:update for us
@@ -181,6 +183,7 @@ export class HeadlessPlayer {
         break;
       case 'combat:hit':
         this.hits.push(data);
+        this.hitEvents.push({ data, at: Date.now() });
         break;
       case 'monster:telegraph':
         this.telegraphs.push(data);
@@ -250,28 +253,41 @@ export class HeadlessPlayer {
     this.stateCounter += 1;
     const requestId = `state-${this.stateCounter}`;
     return new Promise((resolve, reject) => {
-      // This read still uses a bounded development-rate bucket. Retry the
-      // idempotent request below that bucket's refill rate instead of failing
-      // the whole playtest on one dropped diagnostic frame.
+      const effectiveTimeoutMs = adaptiveTimeoutMs(timeoutMs);
+      // Development reads have a per-connection token bucket. Retry the
+      // idempotent request with backoff so a dropped diagnostic frame does not
+      // turn scheduler pressure into a false scenario failure, while keeping
+      // one bounded deadline for the whole read.
       const request = () => this.emit('dev:state', { requestId });
-      const retry = setInterval(request, 1000);
+      let attempt = 0;
+      let retry = null;
+      const scheduleRetry = () => {
+        attempt += 1;
+        const delayMs = Math.min(2000, 250 * (2 ** Math.min(attempt - 1, 3)));
+        retry = setTimeout(() => {
+          request();
+          scheduleRetry();
+        }, delayMs);
+      };
       const timer = setTimeout(() => {
-        clearInterval(retry);
+        clearTimeout(retry);
         this.pendingState.delete(requestId);
         reject(new Error('dev:state timed out — is the server running with NODE_ENV!==production?'));
-      }, timeoutMs);
+      }, effectiveTimeoutMs);
       this.pendingState.set(requestId, (value) => {
-        clearInterval(retry);
+        clearTimeout(retry);
         clearTimeout(timer);
         resolve(value);
       });
       request();
+      scheduleRetry();
     });
   }
 
   /** Wait until predicate() (sync or async) is truthy. */
   async waitFor(predicate, { timeoutMs = DEFAULT_TIMEOUT_MS, intervalMs = 150, label = 'condition' } = {}) {
-    const deadline = Date.now() + timeoutMs;
+    const effectiveTimeoutMs = adaptiveTimeoutMs(timeoutMs);
+    const deadline = Date.now() + effectiveTimeoutMs;
      
     while (Date.now() < deadline) {
       const result = await predicate();
@@ -281,7 +297,7 @@ export class HeadlessPlayer {
       await sleep(intervalMs);
     }
      
-    throw new Error(`Timed out waiting for ${label} (${timeoutMs}ms)`);
+    throw new Error(`Timed out waiting for ${label} (${effectiveTimeoutMs}ms; authored ${timeoutMs}ms)`);
   }
 
   // ── Player verbs ──────────────────────────────────────────────────────
