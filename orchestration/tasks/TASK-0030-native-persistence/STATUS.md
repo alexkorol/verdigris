@@ -1,6 +1,6 @@
 ---
 task: TASK-0030
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Luna native persistence implementer
 worker_branch: codex/TASK-0030-native-persistence
@@ -16,4 +16,8 @@ revision_commit: 94719ae6
 validator: independent read-only TASK-0030 persistence validator
 validator_result: ACCEPT — scope, schema/RNG/D-109 semantics, expanded relic/trophy coverage, and native test gate pass
 report: orchestration/tasks/TASK-0030-native-persistence/REPORT.md
+architect_review: ACCEPTED — architect review in REVIEW.md
+integration_branch: codex/integrate-TASK-0030-0031
+integration_commit: 2b2140a2
+integrated_at: 2026-08-16T22:01:44-07:00
 ---
