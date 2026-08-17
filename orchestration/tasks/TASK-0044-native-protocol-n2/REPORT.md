@@ -98,6 +98,16 @@ As a regression check, the committed N2 server passed the prior N1
 the transcript is in
 [`captures/worker-branch-regression-2026-08-17.txt`](captures/worker-branch-regression-2026-08-17.txt).
 
+## Integration dry-run
+
+A disposable merge of `origin/codex/TASK-0044-native-protocol-n2` into the
+current coordinator tip produced one add/add conflict only:
+`orchestration/tasks/TASK-0044-native-protocol-n2/STATUS.md`. The six native
+implementation files applied cleanly; the conflict is expected coordinator
+metadata ownership and was aborted without changing either branch. On
+acceptance, preserve the coordinator's `STATUS.md`/`REPORT.md` and merge only
+the implementation commit `d476788` plus its accepted native files.
+
 ## Acceptance status
 
 The committed worker-branch implementation and unchanged attach gate are
