@@ -1,6 +1,6 @@
 ---
 task: TASK-0025
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Codex/Luna implementation worker
 worker_branch: codex/TASK-0025-instance-lifecycle-correctness
@@ -15,4 +15,10 @@ implementation_commit: 63df51f
 verification: powershell -NoProfile -File native/build.ps1 -RunTests PASS; git diff --check PASS
 validator: /root/validate_task_0025
 validator_verdict: ACCEPT
+architect_review: ACCEPTED
+architect_review_commit: 5204835
+integration_commits:
+  - 621fdf5
+  - 2f75dad
+integration_verification: powershell -NoProfile -File native/build.ps1 -RunTests -RunClient PASS; YAML parse PASS; git diff --check PASS
 ---

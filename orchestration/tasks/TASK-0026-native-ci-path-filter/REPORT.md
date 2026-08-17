@@ -46,5 +46,7 @@ workflow-only change or local validation.
 ## Integration notes
 
 Independent validator `/root/validate_task_0026` accepted the exact workflow
-diff and confirmed YAML parsing plus unchanged non-path semantics. Submitted
-for architect review; integration is held until that review lands.
+diff and confirmed YAML parsing plus unchanged non-path semantics. Architect
+review `5204835` accepted commit `146e3b7` with no corrections. The workflow
+was integrated in the dedicated worktree as `2f75dad` alongside TASK-0025;
+the combined native gate, YAML parse, and diff check all passed.

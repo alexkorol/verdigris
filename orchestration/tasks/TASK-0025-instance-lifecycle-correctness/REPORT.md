@@ -60,5 +60,8 @@ the extraction/death distinction explicit and avoids double registration.
 ## Integration notes
 
 Independent validator `/root/validate_task_0025` accepted the implementation,
-scope, retirement semantics, and native gate. Submitted for architect review;
-integration is held until that review lands.
+scope, retirement semantics, and native gate. Architect review `5204835`
+accepted commit `63df51f` with no corrections. The source was integrated in
+the dedicated worktree as `621fdf5`, followed by the accepted TASK-0026 source
+as `2f75dad`; the combined native gate (`-RunTests -RunClient`), YAML parse,
+and diff check all passed.
