@@ -245,3 +245,11 @@ passed with idle `8000ms`, induced-lag `8052ms`, and a bounded ceiling of
 The broader three-run default-mode 31/31 proof and exact staged-variant
 unit/playtest gate remain in the prior captures. The task is returned to
 `REVIEW_REQUESTED`; no architect acceptance is inferred.
+
+The fresh disposable full-gate rerun is recorded separately: unit remained
+green at 122/779, while playtest was 30/31 solely because `loot` timed out on
+its second coin drop. A fresh isolated retry could not boot because the
+temporary dependency junction did not resolve `compression`; that is an
+environment failure before the scenario, not a product result. The exact
+staged source variant has a separate 31/31 gate capture. These results are
+reported separately rather than presented as a new blanket green.
