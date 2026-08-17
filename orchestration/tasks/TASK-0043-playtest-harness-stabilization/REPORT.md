@@ -223,3 +223,12 @@ Source is ready on the dedicated integration worktree at `f9527d9c`; integrate o
   [`captures/coordinator-current-tip-integration-candidate-v2-2026-08-17.txt`](captures/coordinator-current-tip-integration-candidate-v2-2026-08-17.txt).
   The candidate remains unmerged until the architect review changes.
 - Task state: `REVIEW_REQUESTED`; architect acceptance is still required.
+
+- Current-tip gate refresh at `732f7fbf` (2026-08-17): `npm run test:unit`
+  passed 122/122 files and 779/779 tests; native
+  `build.ps1 -RunTests -RunClient` passed denylist, core, networking, and
+  client checks with the literal `trophies stored: 1 | items stored: 1`
+  transcript. Full output is captured in
+  [`captures/coordinator-current-tip-native-browser-gates-2026-08-17.txt`](captures/coordinator-current-tip-native-browser-gates-2026-08-17.txt).
+  This is a health refresh, not a lifecycle change; architect acceptance is
+  still required.
