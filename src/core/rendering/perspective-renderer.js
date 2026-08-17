@@ -506,8 +506,9 @@ class PerspectiveRenderer {
     ctx.save();
     const blur = this.camera.circleOfConfusion(projected.depth) * 2;
     if (blur > 0.3) {
-      const quantizedBlur = Math.round(blur * 4) / 4;
-      ctx.filter = `blur(${quantizedBlur}px)`;
+      // Keep the zoom-coupled DoF radius continuous. Quantising here makes
+      // the miniature blend visibly step as the wheel or pinch moves.
+      ctx.filter = `blur(${blur}px)`;
       ctx.imageSmoothingEnabled = true;
     } else {
       ctx.imageSmoothingEnabled = false;
