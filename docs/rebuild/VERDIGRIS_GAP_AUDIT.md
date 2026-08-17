@@ -96,3 +96,6 @@ deterministic core, keep gameplay rules out of `networking.cpp`, and close the
 N3 scenario matrix before moving to N4 item/inventory payloads. This is a gap
 inventory, not authorization to modify the native branch before Fable issues an
 N3 task/spec.
+
+The exact event/core mapping and acceptance matrix are preserved in
+[`N3_PARITY_IMPLEMENTATION_BRIEF.md`](N3_PARITY_IMPLEMENTATION_BRIEF.md).
