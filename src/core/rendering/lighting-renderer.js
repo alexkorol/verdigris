@@ -24,6 +24,10 @@ const AMBIENT_KEYFRAMES = [
   [1, [255, 251, 242]],
 ];
 
+// D-111's neutral, brightest opening grade. Keep this separate from the
+// cycle's keyframes so the cycle remains available without changing its art.
+const MIDDAY_AMBIENT = Object.freeze([...AMBIENT_KEYFRAMES[1][1]]);
+
 // Screen-space cloud shadows. Cores moved toward the D-108 reference
 // (196,198,208) but renormalized to Verdigris albedo at (232,233,238):
 // the verbatim reference core cut the darker midfield past the review
@@ -55,6 +59,10 @@ const sampleAmbient = (elapsedSeconds) => {
 
   return [...AMBIENT_KEYFRAMES[0][1]];
 };
+
+const sampleAmbientForClock = (elapsedSeconds, cycleEnabled = false) => (
+  cycleEnabled ? sampleAmbient(elapsedSeconds) : [...MIDDAY_AMBIENT]
+);
 
 const getNightFactor = (ambient) => {
   const brightest = Math.max(...ambient);
@@ -207,8 +215,10 @@ class LightingRenderer {
 export {
   AMBIENT_KEYFRAMES,
   DAY_LENGTH_SECONDS,
+  MIDDAY_AMBIENT,
   LIGHTMAP_SCALE,
   getNightFactor,
+  sampleAmbientForClock,
   sampleAmbient,
 };
 export default LightingRenderer;
