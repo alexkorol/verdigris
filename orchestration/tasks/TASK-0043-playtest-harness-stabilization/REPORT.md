@@ -96,6 +96,25 @@ observed p99/max event-loop lag was 32.145/112.525ms, 32.162/110.166ms, and
 This closes the coordinator-side evidence request; Fable's architect review
 remains authoritative and still needs its own rerun/update.
 
+### Independent validation of Fable's revision
+
+A detached validation worktree at `3636b729` rechecked the exact `REVISE`
+requirement. The source already adapts default mode from observed scheduler
+lag, so no additional implementation commit was required. A direct timing
+probe kept an idle authored `8000ms` deadline and expanded to `14000ms` after
+an induced ~195ms event-loop pause (`loadMode:false`, the explicit 1.75x cap).
+
+With one hidden Node CPU spinner and `PLAYTEST_LOAD_MODE` unset, three fresh
+full runs all exited 0 with 31/31 scenarios:
+
+- run 1: p99/max 32.178/127.992ms;
+- run 2: p99/max 32.145/94.896ms;
+- run 3: p99/max 32.145/96.666ms.
+
+The wrapper had to invoke the installed npm CLI through Node on Windows
+(`npm.cmd` direct spawn returned `EINVAL`); the actual harness runs were
+unchanged. No orphaned spinner, server, or playtest processes remained.
+
 ## Manual checks
 
 The final integration worktree was exercised against the unchanged WebSocket server with the full scenario suite under the documented CPU spinner. A disposable final-tip scratch worktree suppressed the real `instance:enterSolo` frame and confirmed the transition failure boundary.
