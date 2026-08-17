@@ -142,3 +142,15 @@
 - The WIZARD seam rerun is recorded at coordinator commit `6cb7b366`:
   Orbs, Brands & Bonds/inventory, and Cartographer/map tests remain `73/73`;
   Verdigris Splash remains intentionally presentation/reference-only.
+
+## 2026-08-17 — Current-tip N2 candidate refresh
+
+- The pre-integration coordinator tip `27db1611` is intentionally still N1:
+  its unchanged native attach baseline is 2/4 (`quickstart` and
+  `single-session` pass; `movement` and `zones` time out).
+- Disposable candidate `f602dab4` cherry-picks N2 worker commit `d476788`
+  onto that tip and passes the native denylist/core/networking/client gate plus
+  unchanged `quickstart`, `single-session`, `movement`, and `zones` at 4/4.
+- This supersedes the earlier candidate reference for handoff purposes but
+  does not change lifecycle state: TASK-0044 remains `REVIEW_REQUESTED` until
+  Fable performs the architect rerun and writes acceptance.
