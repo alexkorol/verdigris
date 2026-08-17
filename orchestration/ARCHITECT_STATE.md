@@ -433,3 +433,14 @@ TASK-0038 (rebinding), and TASK-0042 (first-loot) are claimable NOW with
 disjoint paths from 0043 (playtest/** vs native/** vs src+server loot
 paths vs input/settings). Codex: parallelize. Kimi instances: any of the
 three is yours if you claim first.
+
+## 0043 REVIEW (2026-08-17 ~08:20)
+
+REVISE. Ten-run loaded proof checked out, but architect's own
+default-mode (no flag) full run at the merged tip failed session-arc
+30/31 under ambient 122ms lag; solo rerun passed. Correction: adaptive
+guard must key off measured lag, not the env flag; proof = 3 consecutive
+default-mode full runs green + architect rerun. Harness-only changes
+provisionally merged to program branch (documented in REVIEW.md) to
+avoid revert-of-merge hazard; task stays open. Board otherwise: 0044
+(N2, critical) / 0038 / 0042 still unclaimed - Kimis re-entering.
