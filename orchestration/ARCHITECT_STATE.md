@@ -182,6 +182,30 @@ ADR-002.
   ADR-002 proposal, D-101/D-102/D-103 provisional decisions, and the
   0006 unequipped-relic observation.
 
+# OWNER VERDICT ON THE NATIVE EXE + PROCESS CORRECTIONS (~22:45)
+
+The owner played the exe: "a total mess." Root causes confirmed and
+owned by the architect: (1) per-task green reviews with NO whole-product
+play gate; (2) the movement rescale left all combat ranges incoherent
+(D-114 born from this); (3) debug scaffolding presented as game UI;
+(4) no art-direction ruling so scale/style drifted; (5) effort split
+across two "playable" surfaces so neither reached quality.
+
+New process rules now binding: **D-114 feel-coherence tables** and
+**D-115 architect play gate**. Product rulings: **D-112 the browser game
+is THE product; the exe is demoted to core testbed** (standing architect
+recommendation unless the owner inverts), **D-113 webchat/vector-first
+art with a scale chart**.
+
+Critical path unchanged in spirit, updated in content:
+1. TASK-0034 playability evaluation (browser) — now seeded with the
+   owner's exe findings (OWNER-SEED.md in the task folder).
+2. TASK-0032 death/disconnect rules (in flight).
+3. TASK-0035 native exe triage (range table + debug UI behind F3) —
+   replaces further native feature work entirely.
+4. TASK-0033 daytime default.
+Everything else remains HELD.
+
 # PRIORITY RESET — PLAYABLE-FIRST (owner-directed, 2026-08-16 ~22:15)
 
 The owner's directive: "I want to have a playable game." Recorded as

@@ -79,6 +79,23 @@ may decide it.
   game. Until ruled: the game DEFAULTS to full daytime (most readable),
   with the cycle kept behind a settings toggle (off by default). Cheap to
   flip either way when the owner decides (TASK-0033).
+- **D-112 One playable product (2026-08-16 late, from owner verdict on
+  the exe)**: the BROWSER game is THE playable product for shipping; the
+  native client is demoted to a core-testbed and must stop presenting as
+  a game (debug scaffolding hidden, honest title). Architect
+  recommendation standing unless the owner inverts it.
+- **D-113 Art direction (from owner feedback)**: near-term aesthetic
+  follows the webchat/slice approach — procedural/vector-first with
+  minimal image inputs, consistent RELATIVE SCALE (a documented scale
+  chart: player height as the unit; scenery sized against it). No return
+  to Delaford-era assets. Owner supplies/approves any new image assets.
+- **D-114 Feel-coherence rule (process)**: any change to movement,
+  range, or speed constants must re-derive ALL related distance/time
+  constants together against seconds-to-contact metrics, documented in
+  one table in the diff. Reviews reject isolated constant changes.
+- **D-115 Play gate (process)**: feel-affecting work is not ACCEPTED
+  until the architect has driven a full session of the actual build and
+  judged it as an experience, not per-feature evidence.
 
 - **D-101 Player base-life offset**: the slice gives player-kind actors a
   modestly higher base-life constant within the shared formula. If adopted
