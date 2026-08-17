@@ -5,6 +5,10 @@ branch: codex/TASK-0040-first-encounter-readability
 commits:
   - 8abad0bf
   - cf9282c1
+  - 049be9b7
+  - d30a1f1c
+  - 69995508
+  - e0dacfc8
 base_commit: 25ecd77f
 ---
 
@@ -45,33 +49,43 @@ the existing slay progression context as `encounterKills` and
 
 ## Verification
 
-- `npx vitest run tests/unit/encounter-readability.spec.js tests/unit/instance-balance.spec.js` — 2 files, 15/15 passed.
-- Broader combat/encounter focused run — 8 files, 85/85 passed.
-- `npm run test:unit` — 120 files, 766/766 passed.
-- `npm run playtest` — 31/31 scenarios passed on the final rerun.
+- `npx vitest run tests/unit/encounter-readability.spec.js tests/unit/instance-balance.spec.js` — 2 files, 16/16 passed.
+- Broader affected playtest subset — 4/4 passed.
+- `npm run test:unit` — 120 files, 767/767 passed.
+- `npm run playtest` — 31/31 scenarios passed on the final full rerun.
 - `git diff --check` — passed for task changes.
 
 ## Manual checks
 
-The deterministic transcript for seed `90140` records the Dread Vanguard at
-entry radius 7, the next actor at radius 15, ten locked Marksmen after kill
-one, all Marksmen unlocked after kill two, treasure room index 5, and three
-overlap repairs resulting in four unique actor tiles. The focused suite also
-checks known pre-fix seeds where a Marksman, support, or boss could otherwise
-be the first reachable threat.
+The deterministic runtime transcript for seed `90140` records the common
+Dread Vanguard at entry radius 7, effective 900 ms movement / 1500 ms attack /
+320 ms windup, the next actor at radius 15, one active actor at zero kills,
+two additional melee actors at kill one, three pressure actors and the first
+ranged unlock at kill two, no reward-stage activation at kill three, all
+remaining actors at kill four, treasure room index 5, and three overlap repairs
+resulting in four unique actor tiles. The focused suite also checks known
+pre-fix seeds where a Marksman, support, or boss could otherwise be the first
+reachable threat, plus the exact development-only teleport marker used by the
+existing playtest harness.
 
 ## Specification deviations
 
-Evidence is a deterministic headless transcript rather than a browser
-screenshot. The spec's required gates are green; D-115 still requires the
-architect to play the actual first delve.
+Evidence is a deterministic headless runtime transcript rather than a browser
+screenshot. The server's normal path is strictly kill-driven. A narrowly
+gated `NODE_ENV=development` seam consumes the existing dev-teleport marker
+(`interrupted=true`, `walkId=null`, fresh and within three tiles) once so the
+pre-existing playtest can inspect an isolated boss/loot comparison; ordinary
+movement and production cannot activate staged actors. D-115 still requires
+the architect to play the actual first delve.
 
 ## Risks and limitations
 
 The separation pass runs on the existing combat scheduler, so a rounded-tile
-overlap can persist until the next approximately 150 ms combat tick. Ranged
-unlock is scene-wide at two kills, while later actors remain physically
-isolated until reached.
+overlap can persist until the next approximately 150 ms combat tick. Staged
+actors remain instantiated/rendered because client paths were forbidden, but
+they are filtered from combat and their AI is paused before the first 600 ms
+monster tick by the existing 150 ms scheduler. Ranged unlock is scene-wide at
+two kills, while later actors remain physically isolated until reached.
 
 Generated `docs/loop-journal.md` playtest lines remain uncommitted and outside
 the task scope.
