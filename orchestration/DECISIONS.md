@@ -79,8 +79,24 @@ may decide it.
   game. Until ruled: the game DEFAULTS to full daytime (most readable),
   with the cycle kept behind a settings toggle (off by default). Cheap to
   flip either way when the owner decides (TASK-0033).
+- **D-116 THE MISSION (OWNER-RULED 2026-08-16 ~23:05)**: the point of
+  this orchestration is the C++ conversion — the native version must
+  reach the current web version's level OR BETTER, with multi-layer
+  regression sweeps throughout. Strategy (architect): the C++ server
+  speaks the EXISTING `{event,data}` WebSocket protocol so the current
+  Vue client connects to it unchanged — which makes the existing
+  31-scenario playtest harness the PARITY BAR and regression suite for
+  the native server (run the same scenarios against JS and C++;
+  divergence = regression). Parity lands endpoint-by-endpoint per
+  `docs/rebuild/PARITY_ROADMAP.md`. Sweep layers: (1) protocol/playtest
+  scenarios dual-run, (2) UI pane sweeps (0036 pattern), (3) core
+  determinism replays, (4) D-115 play gate. The browser game stays the
+  living reference and keeps improving (current playability wave
+  continues) — every improvement raises the parity bar deliberately.
 - **D-112 Two horizons, one product at a time (amended 2026-08-16 late
-  after owner sustainability question)**: the BROWSER game is the
+  after owner sustainability question; SUPERSEDED IN PART by D-116 —
+  the native conversion is not deferred; it proceeds now via protocol
+  parity)**: the BROWSER game is the
   near-term playable and fun-finding vehicle ONLY — not the launch
   platform (own measurement: ~43ms mean frame at 1440×1000; browsers
   fight a mature ARPG's density). The NATIVE build is the launch

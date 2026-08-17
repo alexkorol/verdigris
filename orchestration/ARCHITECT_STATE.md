@@ -182,6 +182,22 @@ ADR-002.
   ADR-002 proposal, D-101/D-102/D-103 provisional decisions, and the
   0006 unequipped-relic observation.
 
+# THE MISSION, OWNER-RULED (D-116, ~23:10): C++ PARITY OR BETTER
+
+The orchestration's purpose is the C++ conversion — native at the web
+version's level or better, with multi-layer regression sweeps. Strategy:
+the C++ server speaks the existing WS protocol so the unchanged client
+and the unchanged 31-scenario playtest harness become the parity bar.
+Roadmap: `docs/rebuild/PARITY_ROADMAP.md` (waves N1–N7).
+
+- **TASK-0039 (critical, READY): parity wave N1** — C++ protocol server
+  passing `quickstart` + `single-session` against the unchanged harness;
+  includes ADR-003 (networking lib) draft for architect ratification.
+- The browser playability wave (0032–0038) CONTINUES — it raises the
+  reference bar; both lanes run in parallel with disjoint paths.
+- Sweep layers standing: protocol dual-run matrix, UI pane sweeps, core
+  determinism replays, D-115 play gate.
+
 # OWNER VERDICT ON THE NATIVE EXE + PROCESS CORRECTIONS (~22:45)
 
 The owner played the exe: "a total mess." Root causes confirmed and
