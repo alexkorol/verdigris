@@ -30,10 +30,12 @@ export const adaptiveTimeoutMs = (baseMs, {
   const base = Math.max(1, Math.ceil(Number(baseMs) || 1));
   const percentileMs = finite(monitor.percentile(99) / 1e6, lagBaselineMs);
   const maxMs = finite(monitor.max / 1e6, lagBaselineMs);
-  // The maximum catches a single pre-empted scheduler turn; the percentile
-  // represents sustained pressure.  Down-weight the former so one incidental
-  // GC pause cannot turn an eight-second regression gate into a long sleep.
-  const observedLagMs = Math.max(0, Math.max(percentileMs, maxMs * 0.25) - lagBaselineMs);
+  // The maximum catches a pre-empted scheduler turn; the percentile
+  // represents sustained pressure. Use whichever observed signal is larger
+  // so default mode adapts to contention without an environment flag. The
+  // explicit factor cap below still bounds one incidental pause and keeps a
+  // genuinely missing event detectable.
+  const observedLagMs = Math.max(0, Math.max(percentileMs, maxMs) - lagBaselineMs);
   const measuredSlackMs = observedLagMs * lagMultiplier;
   const loadSlackMs = loadMode ? base * (LOAD_MODE_MAX_FACTOR - 1) : 0;
   const slackMs = Math.min(
