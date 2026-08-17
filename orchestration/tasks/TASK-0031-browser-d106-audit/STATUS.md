@@ -1,6 +1,6 @@
 ---
 task: TASK-0031
-state: IMPLEMENTED
+state: REVIEW_REQUESTED
 coordinator: codex
 worker: Luna read-only browser death/relic auditor
 worker_branch: codex/TASK-0031-browser-d106-audit
@@ -12,5 +12,10 @@ expected_verification: path/line evidence for death/relic flows; complete D-106/
 known_risks: audit-only scope; do not modify browser/server/native code or invent owner decisions
 architect_review_required: true
 implementation_commit: cb8ad815
+revision_commits:
+  - 5592a650
+  - e080b32a
+validator: independent read-only TASK-0031 audit validator
+validator_result: ACCEPT — 115 links and 73 line anchors resolve; scope, semantics, delta table, forecast, and dirty proof pass
 report: orchestration/tasks/TASK-0031-browser-d106-audit/REPORT.md
 ---
