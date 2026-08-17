@@ -77,3 +77,15 @@ The unchanged attach run then reached **1/2**:
 This is WIP evidence, not acceptance. It identifies a remaining lifecycle
 edge around the pre-instance position across sequential scenario connections;
 the worker-owned source remains untouched by the coordinator.
+
+## Latest WIP recheck
+
+On the next read-only recheck of Kimi's still-uncommitted worktree, the WIP
+also included new networking tests. `powershell -NoProfile -File
+native/build.ps1 -RunTests` no longer reached the test gate: MSVC stopped in
+`native/tests/networking_tests.cpp(74)` because the new `request_state` helper
+passes a `JsonValue` to `parse_envelope`, whose current API requires an
+`Envelope&`. The existing networking source still emitted the prior unused
+`actor` warning at `networking.cpp(306)`. No coordinator or worker source was
+changed; this is a precise WIP compile blocker for Kimi to resolve before the
+attach probe can be rerun.
