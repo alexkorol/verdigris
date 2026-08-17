@@ -15,5 +15,5 @@ implementation_commits: 46c51412; 33798746; 64d57bc7; 31413c99; 15c1a531
 report: orchestration/tasks/TASK-0037-movement-feel-rework/REPORT.md
 verification: current-tip revision full unit 120 files/768 tests; empty rendering diff against 6e277cf4; alternate browser gate 1/1; playtest retry 25/31 with six isolated fixture reruns passing; dense movement captures committed
 validator: /root/validate_task_0037 — ACCEPT (coordinator validation was stale against the architect's current tip)
-architect_review: REVISE → re-review requested — current-tip correction 15c1a531 proves empty rendering diff and preserves TASK-0033; see owner REVIEW.md revisions 1–2
+architect_review: ACCEPTED — owner verified `15c1a531` rides the current base with an empty rendering diff and approved integration; see owner REVIEW.md
 ---

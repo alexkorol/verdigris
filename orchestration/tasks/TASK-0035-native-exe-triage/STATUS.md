@@ -15,5 +15,5 @@ implementation_commits: 809de7bb; e562ad1e; 225078d1
 report: orchestration/tasks/TASK-0035-native-exe-triage/REPORT.md
 verification: revision native build/test/client gate, denylist, core tests, literal 1/1 headless output, direct executable exit=0, and diff check passed; broken 0/0 transcript captured before the loop correction
 validator: /root/validate_task_0035 — ACCEPT (coordinator validation was stale against the architect's current tip)
-architect_review: REVISE → re-review requested — revision `225078d1` now emits the literal 1/1 transcript, exits non-zero for non-1/1 counts, and records both transcripts in REPORT.md; see owner REVIEW.md revisions 1–2
+architect_review: ACCEPTED — owner verified revision `225078d1` literal 1/1 transcript, non-zero failure path, clean view, and driven play pass; integration approved in owner REVIEW.md
 ---
