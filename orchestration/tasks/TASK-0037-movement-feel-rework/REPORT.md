@@ -6,6 +6,7 @@ commits:
   - 46c51412
   - 33798746
   - 64d57bc7
+  - 31413c99
 base_commit: b141cd9f
 ---
 
@@ -45,6 +46,8 @@ continuous and scheduling repeats against absolute deadlines.
 ## Changed files
 
 - `server/core/entities/player/movement-handler.js`
+- `src/core/player/animation-timeline-guard.js`
+- `src/core/player/events/player.js`
 - `src/core/utilities/input-controller.js`
 - `tests/unit/movement-feel.spec.js`
 - `orchestration/tasks/TASK-0037-movement-feel-rework/captures/**`
@@ -110,3 +113,11 @@ seam and installs it around `player:movement`. Unchanged sequence/state/
 direction packets now preserve `frameIndex` and `elapsedMs` while accepting
 speed/duration updates; new sequences still use the original reset behavior.
 The event-path regression is covered in `tests/unit/movement-feel.spec.js`.
+
+## Revision 3
+
+The final validator pass found that the animation deduplication key omitted
+mutable speed, so the browser could not see the acceleration ramp. Revision
+`31413c99` includes speed, duration, skill, and hold state in the signature and
+adds a same-sequence speed-update assertion. The animation guard applies these
+mutable fields without resetting the frame clock.
