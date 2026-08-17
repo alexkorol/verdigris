@@ -8,8 +8,8 @@ export default async function loot({ connect, assert }) {
   const p = await connect();
   try {
     await p.enterZone('dungeon', 'warren');
-    p.devSetLevel(5);
-    p.devHeal();
+    await p.devSetLevel(5);
+    await p.devHeal();
 
     let scene = await p.state();
     const target = scene.monsters
@@ -17,14 +17,14 @@ export default async function loot({ connect, assert }) {
       .sort((a, b) => (Math.abs(a.x - scene.x) + Math.abs(a.y - scene.y))
         - (Math.abs(b.x - scene.x) + Math.abs(b.y - scene.y)))[0];
     assert(target, 'found a monster to loot');
-    p.devTeleport(target.x + 1, target.y);
+    await p.devTeleport(target.x + 1, target.y);
     await p.attack(target);
 
     // Wait for the kill and its coin drop.
     const drop = await p.waitFor(async () => {
       const s = await p.state();
       if (s.lifecycle !== 'alive') {
-        p.devHeal();
+        await p.devHeal();
       }
       const coins = s.groundItems.find(item => item.id === 'coins');
       if (coins) {
@@ -37,7 +37,7 @@ export default async function loot({ connect, assert }) {
       if (nearest && Math.abs(nearest.x - s.x) <= 1 && Math.abs(nearest.y - s.y) <= 1) {
         await p.attack(nearest);
       } else if (nearest) {
-        p.devTeleport(nearest.x + 1, nearest.y);
+        await p.devTeleport(nearest.x + 1, nearest.y);
         // Keep the real attack paired with the reposition. A dropped dev
         // frame under CPU load should cost one poll, not an entire 30s kill
         // deadline while the player keeps teleporting without swinging.
@@ -54,12 +54,12 @@ export default async function loot({ connect, assert }) {
     // The drop sits inside a live pack; a level-5 scion can be cut down in
     // the seconds the walk-and-take dance needs. Level and heal shields the
     // PICKUP contract under test from combat noise (TTK was proven above).
-    p.devSetLevel(20);
-    p.devHeal();
-    p.devTeleport(drop.x, drop.y);
+    await p.devSetLevel(20);
+    await p.devHeal();
+    await p.devTeleport(drop.x, drop.y);
     const before = await p.waitFor(async () => {
       const state = await p.state();
-      if (state.lifecycle !== 'alive') p.devHeal();
+      if (state.lifecycle !== 'alive') await p.devHeal();
       return state.x === drop.x && state.y === drop.y ? state : false;
     }, { timeoutMs: 6000, label: 'reach the first drop' });
     const coinsBefore = before.inventory
@@ -77,7 +77,7 @@ export default async function loot({ connect, assert }) {
     // Underfoot grab key: kill another mob, stand ON its drop, press grab.
     const drop2 = await p.waitFor(async () => {
       const s = await p.state();
-      if (s.lifecycle !== 'alive') p.devHeal();
+      if (s.lifecycle !== 'alive') await p.devHeal();
       const coins = s.groundItems.find(item => item.id === 'coins');
       if (coins) return coins;
       const nearest = s.monsters
@@ -87,13 +87,13 @@ export default async function loot({ connect, assert }) {
       if (nearest && Math.abs(nearest.x - s.x) <= 1.6 && Math.abs(nearest.y - s.y) <= 1.6) {
         await p.attack(nearest);
       } else if (nearest) {
-        p.devTeleport(Math.round(nearest.x) + 1, Math.round(nearest.y));
+        await p.devTeleport(Math.round(nearest.x) + 1, Math.round(nearest.y));
         await p.attack(nearest);
       }
       return false;
     }, { timeoutMs: 30000, intervalMs: 400, label: 'a second coin drop' });
 
-    p.devTeleport(drop2.x, drop2.y); // stand ON it
+    await p.devTeleport(drop2.x, drop2.y); // stand ON it
     const underfoot = await p.waitFor(async () => {
       const s = await p.state();
       if (s.x !== drop2.x || s.y !== drop2.y) return false;
@@ -106,7 +106,7 @@ export default async function loot({ connect, assert }) {
         : false;
     }, { timeoutMs: 6000, label: 'standing on the second drop' });
 
-    p.pickupUnderfoot();
+    await p.pickupUnderfoot();
     await p.waitFor(async () => {
       const s = await p.state();
       // The grab key intentionally takes one reachable item. A gear roll can
