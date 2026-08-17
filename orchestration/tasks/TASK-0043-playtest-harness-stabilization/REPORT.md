@@ -135,4 +135,9 @@ Source is ready on the dedicated integration worktree at `f9527d9c`; integrate o
   `PLAYTEST_PORT=6514 npm run playtest` 31/31. The rerun included
   `gear-outcomes` (11.93s -> 9.52s) and `session-arc` (critic 80), with no
   scenario failures.
+- Isolated browser-critical smoke at 2026-08-17 09:45 -07:00 also passed
+  1/1 against an explicit `NODE_ENV=development PORT=6515` server with
+  `PLAYWRIGHT_BASE_URL=http://127.0.0.1:6515`; the server was stopped cleanly
+  afterward. The explicit environment is required because `/world/players` is
+  intentionally development-only and production fails closed.
 - Task state: `REVIEW_REQUESTED`; architect acceptance is still required.
