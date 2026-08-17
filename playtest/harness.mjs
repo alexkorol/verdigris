@@ -62,6 +62,11 @@ export class HeadlessPlayer {
     this.currentScreen = null;
     this.currentScreenPayload = null;
     this.chronicle = null;
+    // Dev controls share a 10/s server bucket. Keep their wire order and
+    // leave enough refill time between controls so a busy setup cannot drop a
+    // teleport/heal/reset immediately before a real gameplay action.
+    this.outbound = Promise.resolve();
+    this.lastDevControlAt = 0;
     this.houseName = options.houseName || 'Playtest House';
     this.scionName = options.scionName || 'Harness';
 
@@ -245,7 +250,24 @@ export class HeadlessPlayer {
   }
 
   emit(event, data) {
-    this.ws.send(JSON.stringify({ event, data }));
+    const message = JSON.stringify({ event, data });
+    const send = async () => {
+      if (this.ws.readyState !== WebSocket.OPEN) return;
+      if (event.startsWith('dev:') && event !== 'dev:state') {
+        const waitMs = Math.max(0, this.lastDevControlAt + 120 - Date.now());
+        if (waitMs) await sleep(waitMs);
+        this.lastDevControlAt = Date.now();
+      }
+      try {
+        this.ws.send(message);
+      } catch (error) {
+        // A scenario may close a player while queued setup commands remain.
+        // The close is authoritative; do not turn a late diagnostic send into
+        // an unhandled rejection.
+      }
+    };
+    this.outbound = this.outbound.then(send, send);
+    return this.outbound;
   }
 
   /** Authoritative snapshot: position, hp, inventory/bank, NPCs, monsters, items, tree… */
