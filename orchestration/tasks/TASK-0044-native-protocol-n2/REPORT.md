@@ -28,6 +28,16 @@ native protocol session in `native/include/verdigris/networking.hpp` and
 `instance:enterSolo`, `dev:teleport`, and `dev:state` without changing
 `playtest/**`.
 
+## Scope audit
+
+The implementation commit `d476788` changes only the six allowed native paths:
+`native/include/verdigris/core.hpp`, `native/include/verdigris/networking.hpp`,
+`native/src/core.cpp`, `native/src/networking.cpp`,
+`native/tests/core_tests.cpp`, and `native/tests/networking_tests.cpp`.
+The separate claim commit contains the worker's task `STATUS.md` metadata;
+no client, browser, server, harness, package, or product paths are part of the
+implementation commit.
+
 ## Verification so far
 
 The first WIP build passed the native denylist, core tests, and networking
