@@ -129,6 +129,20 @@ six authored zone/layout combinations and restored the pre-entry position
 output is preserved in
 [`captures/coordinator-native-attach-2026-08-17.txt`](captures/coordinator-native-attach-2026-08-17.txt).
 
+## Coordinator dual-run matrix — 2026-08-17
+
+The same unchanged scenario set was run against the JavaScript reference on
+port 6527 and the native server at `d476788` on port 6528. Both passed the
+contract matrix **4/4** (`quickstart`, `single-session`, `movement`, `zones`).
+The full comparison is preserved in
+[`captures/coordinator-dual-run-matrix-2026-08-17.txt`](captures/coordinator-dual-run-matrix-2026-08-17.txt).
+
+The run also makes the documented N2 boundary concrete: JS authored zone
+populations were 33/56/31/46/57/54, while native returned 18 in each zone.
+The N2 specification explicitly permits a minimum scenario stub; this is not
+claimed as population parity. Exact authored composition and counts remain a
+later N3+ parity obligation.
+
 ## Integration dry-run
 
 A disposable merge of `origin/codex/TASK-0044-native-protocol-n2` into the
