@@ -1,8 +1,5 @@
 import UI from '#shared/ui.js';
 
-const DEV_ENCOUNTER_OVERRIDES = process.env.NODE_ENV === 'development'
-  || process.env.ENABLE_DEV_COMMANDS === 'true';
-
 /**
  * First-delve encounter rules.
  *
@@ -117,18 +114,6 @@ const deactivateEncounterActor = (monster) => {
     monster.state.encounterPausedUpdate = monster.ai.update;
     monster.ai.update = () => false;
   }
-  // The protocol harness resets a specifically chosen comparison actor via
-  // the authenticated dev command. Preserve that deliberate control seam
-  // without weakening production staging or ordinary development movement.
-  if (DEV_ENCOUNTER_OVERRIDES && typeof monster.respawnNow === 'function'
-    && !monster.state.encounterOriginalRespawnNow) {
-    monster.state.encounterOriginalRespawnNow = monster.respawnNow.bind(monster);
-    monster.respawnNow = (...args) => {
-      monster.behaviour.encounterDevActive = true;
-      activateEncounterActor(monster);
-      return monster.state.encounterOriginalRespawnNow(...args);
-    };
-  }
   return true;
 };
 
@@ -224,22 +209,9 @@ export const advanceEncounterStage = (scene, killCount = null) => {
   encounter.kills = kills;
   let activated = 0;
 
-  const now = Date.now();
-  const players = Array.isArray(scene.players) ? scene.players : [];
   (Array.isArray(scene.monsters) ? scene.monsters : []).forEach((monster) => {
     const minKills = Number(monster?.behaviour?.encounterMinKills) || 0;
-    const devTeleportRequested = DEV_ENCOUNTER_OVERRIDES && players.some(player => (
-      player?.movementStep?.interrupted === true
-      && now - (Number(player.movementStep.startedAt) || 0) <= 1000
-      && Math.max(
-        Math.abs((player.x || 0) - (monster.x || 0)),
-        Math.abs((player.y || 0) - (monster.y || 0)),
-      ) <= 3
-    ));
-    if (devTeleportRequested) {
-      monster.behaviour.encounterDevActive = true;
-    }
-    if (kills >= minKills || monster.behaviour.encounterDevActive === true) {
+    if (kills >= minKills) {
       activated += activateEncounterActor(monster) ? 1 : 0;
     } else {
       deactivateEncounterActor(monster);
