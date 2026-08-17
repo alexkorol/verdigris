@@ -66,7 +66,19 @@ may decide it.
   ADR-002 is ACCEPTED as amended by this ruling. If logout-as-escape
   proves abusable, the fix is an in-danger logout delay, never item loss.
 
+- **D-110 Playable-first (OWNER-DIRECTED 2026-08-16 evening)**: the
+  measure of progress is a real player having a good session — first
+  minutes clear, combat satisfying, loot exciting, death fair,
+  progression legible. All further feature/infra/renderer work queues
+  BEHIND fixing actual play friction. Evidence of friction comes from
+  played sessions (TASK-0034), not harness scenarios.
+
 ## Provisional (architect's call, owner may override)
+
+- **D-111 Day/night default**: owner is unsure the cycle belongs in the
+  game. Until ruled: the game DEFAULTS to full daytime (most readable),
+  with the cycle kept behind a settings toggle (off by default). Cheap to
+  flip either way when the owner decides (TASK-0033).
 
 - **D-101 Player base-life offset**: the slice gives player-kind actors a
   modestly higher base-life constant within the shared formula. If adopted

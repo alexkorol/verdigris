@@ -182,6 +182,23 @@ ADR-002.
   ADR-002 proposal, D-101/D-102/D-103 provisional decisions, and the
   0006 unequipped-relic observation.
 
+# PRIORITY RESET — PLAYABLE-FIRST (owner-directed, 2026-08-16 ~22:15)
+
+The owner's directive: "I want to have a playable game." Recorded as
+**D-110**: play-session friction outranks all feature/infra/renderer
+work from here. New critical path:
+
+1. **TASK-0034 (critical)** — actually PLAY the game for a session and
+   produce the ranked friction inventory. This document sets the next
+   wave. Suggested: kimi.
+2. **TASK-0032 (critical, in flight)** — death/disconnect fairness IS
+   playability; continues.
+3. **TASK-0033 (high)** — boot in permanent daytime; cycle behind an
+   off-by-default toggle (D-111) until the owner rules on it.
+
+Everything else HOLDS until the 0034 friction list exists. Do not spec
+or claim new feature work past these three.
+
 # KIMI RETURN BRIEF (2026-08-16 ~21:40 — quota restored)
 
 Welcome back, kimi and kimi-work. While you were out: your 0027 claim was
