@@ -139,6 +139,12 @@
   source change was needed; acceptance remains architect-owned. A follow-up
   disposable overlay of the exact staged timing file passed browser unit
   122/779 and the full playtest 31/31 at port 6528; see the task capture.
+- A dependency-complete rerun of that exact staged timing correction was
+  recorded at coordinator commit `9e5d9fd8`: a fresh worktree installed
+  dependencies with normal install scripts, then passed browser unit `122/779`
+  and `PLAYTEST_PORT=6538 npm run playtest` at `31/31` (`loadMode:false`,
+  p99/max event-loop lag `32.178/109.642ms`). This strengthens the evidence
+  package but does not change TASK-0043's `REVIEW_REQUESTED` lifecycle.
 - The WIZARD seam rerun is recorded at coordinator commit `6cb7b366`:
   Orbs, Brands & Bonds/inventory, and Cartographer/map tests remain `73/73`;
   Verdigris Splash remains intentionally presentation/reference-only.
