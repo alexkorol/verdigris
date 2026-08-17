@@ -1,6 +1,6 @@
 ---
 task: TASK-0030
-state: IMPLEMENTED
+state: REVIEW_REQUESTED
 coordinator: codex
 worker: Luna native persistence implementer
 worker_branch: codex/TASK-0030-native-persistence
@@ -12,5 +12,8 @@ expected_verification: powershell -File native/build.ps1 -RunTests; round-trip b
 known_risks: preserve fixed-step/headless core boundary; do not serialize live instance state; atomic adapter I/O must remain outside the core
 architect_review_required: true
 implementation_commit: 43b796e6
+revision_commit: 94719ae6
+validator: independent read-only TASK-0030 persistence validator
+validator_result: ACCEPT — scope, schema/RNG/D-109 semantics, expanded relic/trophy coverage, and native test gate pass
 report: orchestration/tasks/TASK-0030-native-persistence/REPORT.md
 ---

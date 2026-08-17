@@ -1,9 +1,10 @@
 ---
 task: TASK-0030
-state: IMPLEMENTED
+state: REVIEW_REQUESTED
 branch: codex/TASK-0030-native-persistence
 commits:
   - 43b796e6
+  - 94719ae6
 base_commit: 8e4a977c
 ---
 
@@ -49,10 +50,12 @@ the Scion to the House.
   tests).
 - Added tests cover byte-stable round trip, mandatory version field,
   unknown-field tolerance, D-109 mid-instance carried item/trophy retention
-  with floor retirement, deterministic RNG continuation, and atomic adapter
-  replacement/readback.
-- `git diff --check` and owned-path review are pending independent validator
-  confirmation.
+  with floor retirement, deterministic RNG continuation through an enemy kill
+  and generated item/trophy ID comparison, explicit relic/lost-trophy pools,
+  surfaced relic/trophy pending re-entry without duplicate ownership, and
+  atomic adapter replacement/readback.
+- Independent validator `/root/validate_task_0030_persistence`: ACCEPT.
+- `git diff --check` and owned-path review: pass.
 
 ## Manual checks
 
