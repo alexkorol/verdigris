@@ -79,6 +79,10 @@ outside production until the owner resolves asset provenance/packaging.
 - N2 also has a clean current-tip integration candidate at `8be3dacd`, with
   the same native gate and 4/4 attach matrix; it remains unmerged pending
   Fable's architect review.
+- A combined parity dry-run at `aa45c78f` applies both review-ready chains
+  conflict-free; browser unit 122/779, native gate PASS, and native attach
+  4/4. Full details are in
+  [`PARITY_INTEGRATION_CANDIDATE_2026-08-17.md`](PARITY_INTEGRATION_CANDIDATE_2026-08-17.md).
 
 ## Next authorized actions
 
