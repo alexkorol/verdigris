@@ -15,7 +15,7 @@ implementation_commits: 3b16d01c; 18dabc06; 48b471b6; 31a93698; f3dc7ce1; e9474a
 report: orchestration/tasks/TASK-0043-playtest-harness-stabilization/REPORT.md
 verification: ten consecutive loaded npm run playtest executions passed 31/31 (310/310); authentic negative zone-entry regression failed as expected; see captures/
 revision: Fable corrections implemented; default observed-lag adaptation, raw transcript, and three consecutive default-mode full runs now pass.
-coordinator_current_tip_check: fresh isolated tip unit 122/122 files and 779/779 tests; build PASS; PLAYTEST_PORT=6523 playtest 31/31; architect review still required
+coordinator_current_tip_check: prior isolated checkpoint was 122/122 files, build PASS, and PLAYTEST_PORT=6523 playtest 31/31; latest coordinator tip cccca42c again passed unit/build/native, but full browser playtest was 30/31 on build-divergence and its immediate isolated rerun passed 1/1; see captures/coordinator-current-tip-playtest-2026-08-17-followup.txt
 coordinator_fresh_rerun: 2026-08-17 — unchanged `npm run playtest` at coordinator tip 9ee547a2 passed 31/31, including build-divergence, gear-outcomes, quest, session-arc, and zones; capture in captures/coordinator-fresh-full-playtest-2026-08-17.txt.
 coordinator_revision_proof: 2026-08-17 — revision f9527d9c passed three consecutive no-flag default-mode full runs (31/31 each) under one hidden CPU spinner; diagnostics and load method in captures/coordinator-default-moderate-reruns-2026-08-17.txt; Fable architect rerun/update remains required.
 ---
