@@ -79,21 +79,31 @@ class ProtocolSession {
   std::string state_payload(const std::string& request_id) const;
   void handle(const Envelope& envelope, const std::function<void(const Envelope&)>& emit);
   void replace_socket(std::string socket_id);
+  // World events (movement, scene transitions) are broadcast to every live
+  // connection, mirroring the JS server's room broadcast.  Unit tests leave
+  // this unset and receive the same envelopes through the requester's emit.
+  void set_broadcast(std::function<void(const Envelope&)> broadcast);
 
  private:
   std::string player_payload() const;
   JsonValue snapshot() const;
+  JsonValue scene_payload() const;
+  JsonValue movement_step_payload() const;
   void emit_login(const std::function<void(const Envelope&)>& emit) const;
-  void emit_transition(const std::function<void(const Envelope&)>& emit) const;
+  void emit_transition(const std::function<void(const Envelope&)>& emit, const char* event) const;
+  void emit_movement(const std::function<void(const Envelope&)>& emit) const;
+  void emit_message(const std::function<void(const Envelope&)>& emit, const std::string& text) const;
+  void emit_world(const Envelope& envelope, const std::function<void(const Envelope&)>& emit) const;
   void grant_item(const std::string& item_id, int quantity);
+  static std::int64_t now_ms();
 
   std::string identity_;
   std::string socket_id_;
   bool quick_start_ = false;
-  std::string scene_type_ = "town";
-  std::string scene_id_ = "town:verdigris";
   std::vector<Item> inventory_;
   std::unique_ptr<Simulation> simulation_;
+  std::unique_ptr<WorldSimulation> world_;
+  std::function<void(const Envelope&)> broadcast_;
   mutable std::mutex mutex_;
 };
 
@@ -115,6 +125,7 @@ class WebSocketServer {
   void handle_connection(std::shared_ptr<Connection> connection);
   void handle_message(const std::shared_ptr<Connection>& connection, const std::string& text);
   void remove_connection(const std::shared_ptr<Connection>& connection);
+  void broadcast(const Envelope& envelope);
 
   std::uint16_t port_;
   std::intptr_t listen_socket_ = -1;
