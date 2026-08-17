@@ -114,3 +114,30 @@ not yet in Kimi's branch, the prior direct WIP run had a different saved
 position failure (`39.666666,116.333334` versus `6,22`), and the worker still
 must rerun from its actual worktree, commit the source/tests, provide the
 transcript, and obtain the architect rerun.
+
+## Actual worker-branch recheck
+
+Kimi subsequently applied the networking test-helper correction in the actual
+worktree (still uncommitted). The native build now compiles, but the new core
+test exposes a separate test defect:
+
+- `native/build.ps1 -RunTests` prints `FAIL: N2 stair return restores the
+  pre-entry position`, then runs networking tests and exits success because
+  the later networking process masks the core test's nonzero exit.
+- Direct executable checks show `verdigris_core_tests.exe` **EXIT=1** and
+  `verdigris_networking_tests.exe` **EXIT=0**.
+- The failing test captures `pre_entry` after `enter_solo_instance`, when the
+  player is already at the instance spawn (`6,20`). The implementation
+  restores the town position saved before entry (`38,115.333333`), so the
+  test's expected value is wrong. A disposable test-only correction that
+  captures the town position before entry makes both executables pass.
+
+The actual worker-built server was then exercised on port 6519 with the
+unchanged attach command. `movement` passed in 4599ms and `zones` passed in
+1108ms; all six zones, metadata, stairs, populations, and saved-position
+restoration passed (**2/2**). The full command/output is preserved in
+`captures/worker-branch-recheck-2026-08-17.txt`.
+
+This closes the earlier lifecycle uncertainty at the protocol level. The
+remaining worker action is a test correction plus commit/evidence hygiene, not
+a demonstrated native transport failure.
