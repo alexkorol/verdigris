@@ -54,3 +54,15 @@ program line), but `origin/codex/TASK-0047-native-n4-kimiwork` remains exactly
 `d1e30e2b6`. The Kimi clone still has only the uncommitted header, notes, and
 capture directory; no `RELEASE.md`, implementation commit, or report has
 appeared. This is a repeated ownership check, not a new product blocker.
+
+## Next-action handoff
+
+Do not poll or mutate the Kimi clone further until one of these happens:
+
+1. Kimi publishes an implementation commit and REPORT on the claimed branch;
+   then validate the native gate and unchanged 13-scenario attach matrix.
+2. Fable adds `RELEASE.md`; then claim TASK-0047 in a fresh isolated
+   worktree from the accepted N3 base, leaving the Kimi draft untouched.
+
+The coordinator has completed the safe read-only audit and is leaving the
+implementation lane ready for that transition.
