@@ -23,3 +23,6 @@ Implemented and pushed for architect review. D-119 scenario harness is live:
 
 Details in `REPORT.md`. The architect should rerun the scenario set
 personally (G5).
+
+Board re-check 2026-08-18 (post-0051): no further unclaimed READY tasks —
+0053 (kimi) and 0047 (kimi-work) are peer-claimed. Re-checking next cycle.
