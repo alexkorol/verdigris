@@ -83,6 +83,11 @@ outside production until the owner resolves asset provenance/packaging.
   the N3-integrated program line. The unchanged 13-scenario attach,
   item/inventory unit coverage, and authentic-negative transcript remain the
   required handoff gates; no implementation or acceptance is claimed yet.
+- TASK‑0048 Chronicles silent combat: `CLAIMED` by Codex/Luna on
+  `codex/TASK-0048-chronicles-silent-combat` at current program tip
+  `6710e3bb`. This critical browser repair will diagnose the mortal-oath
+  first-fight path, add an authentic regression scenario, and preserve the
+  owner-controlled mana decision boundary.
 
 ## Current coordinator gates
 
