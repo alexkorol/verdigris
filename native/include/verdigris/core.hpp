@@ -477,6 +477,15 @@ struct VesselCombat {
   int attributes = 0;
   int resource_health = 0;
   int resource_mana = 0;
+  // Weapon sheet (adapter.js combat.damage) and ward total.
+  bool has_damage = false;
+  int damage_min = 0;
+  int damage_max = 0;
+  double attacks_per_second = 0;
+  int dps = 0;
+  int rating = 0;
+  std::string channel;
+  int ward = 0;
 };
 
 struct VesselBlock {
@@ -658,6 +667,7 @@ struct GroundItem {
   GameItem item;
   int x = 0;
   int y = 0;
+  std::int64_t timestamp = 0;  // placement time; menus sort newest-first
 };
 
 // Player combat modifiers the equip pipeline feeds into tile-space combat.
@@ -849,6 +859,9 @@ class WorldSimulation {
   // instance hops; per-floor lists retire with the floor, exactly like JS
   // scene retirement (documented in the N4 report).
   const std::vector<GroundItem>& ground_items() const { return ground_items_; }
+  // The per-session forge (JS module singleton): generation reseeds it, the
+  // brand service advances its persistent stream.
+  VesselForge& forge() { return forge_; }
   // dev:drop / world-drop / overflow spill: place an item on the current
   // scene at (x, y).
   void add_ground_item(GameItem item, int x, int y);
