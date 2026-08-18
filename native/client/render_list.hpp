@@ -24,6 +24,8 @@ enum class Op {
   Impact,     // x/y = base (hit flash)
   Death,      // x/y = base (death ring)
   Damage,     // x/y = base; value = damage amount; label = "player"|"monster"
+  TargetFlash,// x/y = base of the hit target; label = "player"|"monster"
+  ScreenPulse,// label = "player-damage" (screen-edge red pulse)
   Drop,       // label = ground item/trophy id; x/y = base
   Extraction, // x/y = projected extraction pad base; radius = pixels
   Hud,        // label = hud text (life/resource/skill strip)
