@@ -171,3 +171,14 @@ Client: headless Chromium (Playwright 1.56.1), 1440x1000 viewport. Server: 127.0
 - Capture: 46-b-final-minutes.jpg
 
 # Arc B ended 2026-08-18 00:10:55
+
+### 2026-08-18 00:15 — Arc B reviewer notes (human judgment pass over captures 22-b … 46-b)
+- Onboarding clarity: the Chronicles screen is gorgeous and the guest account line ("Account: Guest-24f7fc") reassures, but the intro copy "Your House endures beyond any one adventurer. Name its first Scion, then set out" describes step 2 while the actual first control is "FOUND A HOUSE / House name / Inscribe" — a stranger meets the words House and Scion with no definition, and the instruction ordering is backwards. (23-b, 24-b)
+- Delight: "Swear the mortal oath" is a great permadeath opt-in, and its subcopy is honest ("Off by default while balance is still being tuned") — but that honesty also tells a new player the marquee feature is unfinished, and the small text is hard to read. (26-b)
+- Dead end (same as Arc A): Aldwyn cannot be talked to — right-click scan found only "Walk here | Cancel" on every tile; the quest-giver NPC is scenery. (31-b)
+- Combat still yields zero kills headless (fight #1: 80s, fight #2: 94s, chat full of "Not enough mana." spam with no cooldown/mana UI explanation). Consistent with Arc A lesson 1. (33-b, 34-b, 37-b, 38-b)
+- Natural death is unreachable at level 1: 20s standing in wolf territory left HP 110/110 (Arc A tried 3 minutes). Permadeath beat therefore used the playtest dev:kill websocket message. This is a balance finding, not a harness shortcut. (39-b)
+- Permadeath UX is abrupt to the point of confusion: dev:kill landed and the client cut straight to the Chronicles screen — no death screen, no "Mortalis has fallen" beat, no chat message. Capture 40-b caught the transition mid-fade with the Chronicles panel ghosting translucently over the world (possible compositing artifact). For the game's signature mechanic, the moment has zero ceremony. (40-b, 41-b)
+- Delight: the crypt entry is exactly right — "Mortalis, level 1 / Heirloom: Bronze Dagger · awaiting an heir". But nothing explains HOW an heir recovers the heirloom; "awaiting an heir" is a dead-end clue. (42-b)
+- Succession works and is instant: Add Scion → "SET OUT AS MORTALIS II" → spawn at the same tile (42,115) with a fresh Bronze Dagger. Carry-over observed: House name, renown (0), crypt record. Nothing in-world acknowledges the fallen Scion — Aldwyn repeats the identical welcome script verbatim, which undercuts the generational fantasy. (43-b, 44-b, 45-b)
+- Minor: menu music asset failed to load in both arcs (main_menu-*.mp3 ERR_ABORTED in console-arc-b.log) — likely autoplay policy, but a first-time player gets silence.
