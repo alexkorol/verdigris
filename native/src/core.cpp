@@ -1503,11 +1503,19 @@ void WorldSimulation::teleport(int x, int y, std::int64_t now_ms) {
 void WorldSimulation::check_stair_transition() {
   if (!in_instance()) return;
   const Vec2 tile = tile_movement::occupied_tile(position_);
-  if (metadata_.depth <= 1 && tile.x == metadata_.stairs_up.x && tile.y == metadata_.stairs_up.y) {
-    return_to_town();
+  // party.js checkStairTransitions: stairsDown descends a floor, stairsUp
+  // climbs — and only floor 1's climb returns to the surface.
+  if (tile.x == metadata_.stairs_down.x && tile.y == metadata_.stairs_down.y) {
+    transition_floor(metadata_.depth + 1);
+    return;
   }
-  // N2 stub: stairsDown (deeper floors) is generated in metadata but does not
-  // descend yet — no scenario exercises depth > 1 in this wave.
+  if (tile.x == metadata_.stairs_up.x && tile.y == metadata_.stairs_up.y) {
+    if (metadata_.depth <= 1) {
+      return_to_town();
+    } else {
+      transition_floor(metadata_.depth - 1);
+    }
+  }
 }
 
 void WorldSimulation::return_to_town() {
@@ -1516,6 +1524,12 @@ void WorldSimulation::return_to_town() {
   scene_name_ = "Verdigris";
   metadata_ = InstanceMetadata{};
   monsters_.clear();
+  // N4: floor ground lists retire with the floor (JS scene retirement); the
+  // town list was stashed on entry and comes back exactly as left.
+  ground_items_.clear();
+  ground_items_ = std::move(town_ground_items_);
+  town_ground_items_.clear();
+  active_target_.clear();
   grid_.width = kTownSize;
   grid_.height = kTownSize;
   grid_.walkable.assign(static_cast<std::size_t>(kTownSize) * kTownSize, 1);
@@ -1666,9 +1680,18 @@ void WorldSimulation::generate_instance() {
       monster.life_max = monster.life;
       monster.behaviour_type = "melee";
     }
+    // N4 loot facts (map.js monster rewards/tags): the grove fields beasts
+    // (the Beastbane scenario reads these tags); coin bounties are an
+    // authored stand-in until the JS reward tables are ported (N5 note).
+    if (metadata_.theme == "grove" && !monster.boss) {
+      monster.tags = {"beast"};
+    }
+    monster.coins = 10 + monster.level * 5;
+    if (monster.rarity == "elite") monster.coins *= 3;
     monsters_.push_back(std::move(monster));
     ++placed;
   }
+  scatter_floor_treasure();
 }
 
 void WorldSimulation::enter_solo_instance(const std::string& template_id, const std::string& layout) {
@@ -1689,6 +1712,16 @@ void WorldSimulation::enter_solo_instance(const std::string& template_id, const 
   metadata_.theme = theme;
   metadata_.layout = applied_layout;
   metadata_.depth = 1;
+  // N4: leaving town stashes its ground items; instance floors retire theirs.
+  if (scene_type_ == "town") {
+    town_ground_items_ = std::move(ground_items_);
+    ground_items_.clear();
+  } else {
+    ground_items_.clear();  // instance -> instance hop retires the old floor
+  }
+  active_target_.clear();
+  boss_warning_seen_ = false;
+  next_boss_telegraph_ms_ = 0;
   generate_instance();
 
   scene_type_ = "instance";
@@ -1763,18 +1796,42 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
   for (auto& monster : monsters_) if (monster.uuid == active_target_ && monster.alive) { target = &monster; break; }
   if (!target) { active_target_.clear(); return events; }
   if (now >= next_player_attack_ms_) {
-    const int damage = std::max(1, player_attack > 0 ? player_attack : kN3PlayerDamage);
+    // N4 hit pipeline (server/core/combat/index.js applyHitToMonster):
+    // base roll -> Beastbane vs 'beast'-tagged targets -> critical multiplier
+    // on the beastbane-adjusted figure (force-critical consumed first).
+    const int base = std::max(1, player_attack > 0 ? player_attack : kN3PlayerDamage);
+    const bool beast = std::find(target->tags.begin(), target->tags.end(), "beast") != target->tags.end();
+    const int beastbane_percent = beast
+        ? std::max(0, std::min(100, player_mods_.damage_against_beasts)) : 0;
+    const int beastbane_damage = static_cast<int>(std::lround(
+        base * (1.0 + beastbane_percent / 100.0)));
+    bool critical = false;
+    if (player_mods_.force_critical) {
+      player_mods_.force_critical = false;
+      critical = true;
+    } else if (player_mods_.critical_chance > 0) {
+      const int roll = 1 + static_cast<int>(next_world_random() % 100);
+      critical = roll <= std::max(0, std::min(75, player_mods_.critical_chance));
+    }
+    const int damage = critical
+        ? std::max(beastbane_damage + 1, static_cast<int>(std::lround(beastbane_damage * 1.5)))
+        : beastbane_damage;
     target->life = std::max(0, target->life - damage);
     WorldCombatEvent hit;
     hit.type = "hit"; hit.attacker_id = player_uuid_; hit.attacker_name = "Adventurer";
     hit.target_id = target->uuid; hit.target_name = target->name; hit.skill_id = "primary-attack";
     hit.amount = damage; hit.health = target->life; hit.health_max = target->life_max; hit.died = target->life == 0;
+    hit.base_amount = base; hit.beastbane_amount = beastbane_damage;
+    hit.beastbane_percent = beastbane_percent; hit.beastbane = beastbane_percent > 0;
+    hit.critical = critical; hit.attack_style = player_mods_.attack_style;
     events.push_back(hit);
     next_player_attack_ms_ = now + kN3PlayerAttackIntervalMs;
     if (target->life == 0) {
       target->alive = false;
       WorldCombatEvent death = hit; death.type = "death"; events.push_back(death);
-      WorldCombatEvent drop; drop.type = "drop"; drop.target_id = target->uuid; drop.item_id = target->boss ? "barrow-trophy" : "monster-trophy"; drop.x = target->x; drop.y = target->y; events.push_back(drop);
+      // N4: kill rewards land through the real loot rule (loot.js
+      // dropMonsterLoot) — coins always, rarity-gated gear roll.
+      drop_monster_loot(*target, player_mods_.goods_found);
       active_target_.clear();
       return events;
     }
@@ -1824,6 +1881,1191 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     events.push_back(impact); target->next_attack_ms = now + 1500;
   }
   return events;
+}
+
+}  // namespace verdigris
+
+namespace verdigris {
+
+// ────────────────────────────────────────────────────────────────────────────
+// Parity wave N4 implementation: items, inventory, Vesselforge.
+// Mirrors server/core/items/vesselforge/{engine,verdigris-pack,adapter}.js,
+// server/core/items/factory.js, server/shared/inventory-footprints.js,
+// server/shared/wear-slots.js, server/core/utilities/wear.js, and
+// server/core/combat/loot.js. See the task NOTES/REPORT for the survey.
+// ────────────────────────────────────────────────────────────────────────────
+
+double Mulberry32::next() {
+  // engine.js mulberry32: 32-bit state, Math.imul semantics.  All arithmetic
+  // is mod 2^32; the >>> shifts are logical on the unsigned view.
+  state_ = state_ + 0x6D2B79F5u;
+  std::uint32_t t = state_;
+  auto imul = [](std::uint32_t a, std::uint32_t b) { return a * b; };
+  t = imul(t ^ (t >> 15), t | 1u);
+  t = (t + imul(t ^ (t >> 7), t | 61u)) ^ t;
+  return static_cast<double>(t ^ (t >> 14)) / 4294967296.0;
+}
+
+namespace {
+
+// verdigris-pack.js data tables.  Iteration order is load-bearing for the
+// brand pool (JS object insertion order), so these live in ordered vectors.
+struct PackMaterial {
+  const char* id;
+  const char* name;
+  int tier;
+  double stat_mult;
+  int vessel_lo, vessel_hi;
+  int patience_lo, patience_hi;
+  double drop_weight;
+  std::vector<std::pair<const char*, double>> weights;
+};
+
+struct PackImplicit {
+  const char* label;
+  const char* stat_id;  // nullptr = flavour-only implicit
+  int stat_value = 0;
+};
+
+struct PackForm {
+  const char* id;
+  const char* name;
+  const char* kind;
+  const char* kind_label;
+  int w, h;
+  bool weapon = false;
+  int dmg_lo = 0, dmg_hi = 0;
+  double aps = 0;
+  int armor = 0;
+  bool has_armor = false;  // JS `if (f.armor)` — 0 armour prints no stat line
+  std::vector<const char*> tags;
+  std::vector<std::pair<const char*, double>> weights;
+  std::vector<const char*> materials;  // pack order
+  PackImplicit implicit{nullptr, nullptr, 0};
+  bool no_vessel = false;
+};
+
+struct BrandTier {
+  int roll_lo, roll_hi;
+  int min_ilvl = 0;
+};
+
+struct PackBrandMod {
+  const char* id;
+  const char* label;
+  const char* shape;  // flat | scalar
+  std::vector<const char*> tags;
+  std::vector<const char*> kinds;
+  double weight;
+  std::vector<BrandTier> tiers;
+};
+
+const std::vector<PackMaterial>& pack_materials() {
+  static const std::vector<PackMaterial> data = {
+      {"flint", "Flint", 1, 1.0, 2, 3, 2, 3, 30, {{"blade", 1.4}, {"blood", 1.2}, {"ward", 0.6}}},
+      {"bone", "Bone", 1, 0.9, 2, 4, 2, 4, 25, {{"beast", 1.6}, {"spirit", 1.3}, {"ember", 0.5}}},
+      {"hide", "Hide", 1, 0.9, 2, 3, 3, 4, 30, {{"beast", 1.3}, {"swift", 1.3}, {"ward", 0.8}}},
+      {"quilted", "Quilted", 2, 1.2, 2, 4, 3, 5, 16, {{"ward", 1.3}, {"life", 1.3}, {"blade", 0.6}}},
+      {"copper", "Copper", 2, 1.25, 2, 4, 3, 5, 18, {{"river", 1.3}, {"fortune", 1.3}}},
+      {"bronze", "Bronze", 3, 1.6, 3, 5, 4, 6, 9, {{"blade", 1.2}, {"ward", 1.2}, {"blunt", 1.2}}},
+      {"obsidian", "Obsidian", 3, 1.55, 3, 5, 2, 4, 8, {{"blade", 1.8}, {"blood", 1.8}, {"ward", 0.4}}},
+      {"jade", "Jade", 4, 1.7, 4, 5, 4, 6, 4, {{"spirit", 1.8}, {"ward", 1.5}, {"blood", 0.5}}},
+      {"amber", "Amber", 4, 1.65, 4, 5, 4, 6, 4, {{"ember", 1.7}, {"fortune", 1.5}, {"spirit", 1.3}}},
+      {"bronzescale", "Bronze-scale", 4, 1.9, 4, 5, 4, 6, 3, {{"ward", 1.6}, {"life", 1.3}}},
+      {"skymetal", "Skymetal", 5, 2.3, 4, 6, 5, 7, 1, {{"blade", 1.4}, {"spirit", 1.4}, {"ember", 1.3}}},
+      {"rivetmail", "Riveted Mail", 6, 2.6, 5, 6, 5, 8, 0.3, {{"ward", 2.0}, {"life", 1.5}}},
+  };
+  return data;
+}
+
+const std::vector<PackForm>& pack_forms() {
+  static const std::vector<PackForm> data = {
+      {"handaxe", "Handaxe", "weapon", "One-hand weapon", 1, 2, true, 7, 13, 1.3, 0, false,
+       {"blade"}, {{"blade", 1.3}}, {"flint", "copper", "bronze", "obsidian", "skymetal"},
+       {"15% increased Physical Damage", "phys_pct", 15}},
+      {"spear", "Spear", "weapon", "Reach weapon", 1, 4, true, 10, 22, 1.0, 0, false,
+       {"reach"}, {{"reach", 1.5}}, {"flint", "bone", "copper", "bronze", "obsidian", "skymetal"},
+       {"Strikes keep foes at reach", nullptr, 0}},
+      {"macuahuitl", "Macuahuitl", "weapon", "Edged club", 2, 3, true, 14, 30, 0.85, 0, false,
+       {"blade", "blunt", "blood"}, {{"blood", 1.6}}, {"obsidian", "flint", "bone"},
+       {"Hits cause Bleeding", nullptr, 0}},
+      {"atlatl", "Atlatl", "weapon", "Dart-thrower", 1, 3, true, 8, 18, 1.1, 0, false,
+       {"reach", "swift"}, {{"swift", 1.4}}, {"bone", "copper", "bronze"},
+       {"+20% Projectile Range", nullptr, 0}},
+      {"khopesh", "Khopesh", "weapon", "Sickle-sword", 1, 3, true, 11, 20, 1.2, 0, false,
+       {"blade"}, {{"blade", 1.2}, {"fortune", 1.2}}, {"flint", "copper", "bronze", "skymetal"},
+       {"+10% Attack Speed", "atk_speed", 10}},
+      {"sling", "Sling", "weapon", "Sling", 1, 2, true, 5, 16, 1.15, 0, false,
+       {"reach", "swift"}, {{"swift", 1.3}}, {"hide", "quilted"},
+       {"Ignores half of Armour", nullptr, 0}},
+      {"hideshield", "Shield", "shield", "Shield", 2, 3, false, 0, 0, 0, 45, true,
+       {"ward"}, {{"ward", 1.5}}, {"hide", "bronze", "bronzescale", "rivetmail"},
+       {"+4% Chance to Block", "block", 4}},
+      {"wrap", "Wrap", "body", "Body wrap", 2, 3, false, 0, 0, 0, 60, true,
+       {"ward", "life"}, {{"life", 1.2}}, {"hide", "quilted", "bronzescale", "rivetmail"},
+       {"+15 to Maximum Health", "life", 15}},
+      {"crest", "Crest", "helmet", "Headpiece", 2, 2, false, 0, 0, 0, 25, true,
+       {"ward", "spirit"}, {{"spirit", 1.2}}, {"bone", "hide", "copper", "bronze", "jade"},
+       {"+10 to Maximum Mana", "spirit", 10}},
+      {"grips", "Grips", "gloves", "Handwraps", 2, 2, false, 0, 0, 0, 18, true,
+       {"blade", "swift"}, {}, {"hide", "quilted", "bronzescale"},
+       {"+8% Attack Speed", "atk_speed", 8}},
+      {"sandals", "Sandals", "boots", "Footwear", 2, 2, false, 0, 0, 0, 14, true,
+       {"swift"}, {{"swift", 1.6}}, {"hide", "quilted"},
+       {"+10% Movement Speed", "move", 10}},
+      {"girdle", "Girdle", "belt", "Waistband", 2, 1, false, 0, 0, 0, 0, false,
+       {"life"}, {{"life", 1.3}}, {"hide", "quilted", "copper"},
+       {"+12 to Maximum Health", "life", 12}},
+      {"gorget", "Gorget", "amulet", "Neckpiece", 1, 1, false, 0, 0, 0, 0, false,
+       {"spirit", "ward"}, {{"spirit", 1.4}}, {"jade", "amber", "bone", "copper"},
+       {"+8 to All Attributes", "attrs", 8}},
+      {"ring", "Ring", "ring", "Ring", 1, 1, false, 0, 0, 0, 0, false,
+       {"fortune"}, {{"fortune", 1.2}}, {"bone", "copper", "jade", "amber"},
+       {"+12 to Maximum Health", "life", 12}},
+      {"curio", "Curio", "curio", "Curio", 1, 1, false, 0, 0, 0, 0, false,
+       {}, {}, {"bone", "jade", "amber"}, {nullptr, nullptr, 0}, true},
+  };
+  return data;
+}
+
+const std::vector<PackBrandMod>& pack_brand_mods() {
+  static const std::vector<PackBrandMod> data = {
+      {"keen", "+{v}% increased Physical Damage", "scalar", {"blade"}, {"weapon"}, 12,
+       {{8, 14}, {15, 22, 20}, {23, 32, 50}}},
+      {"heavy", "+{v} flat Damage", "flat", {"blunt", "blade"}, {"weapon"}, 12,
+       {{2, 4}, {5, 8, 25}, {9, 14, 55}}},
+      {"swift_haft", "+{v}% Attack Speed", "scalar", {"swift"}, {"weapon"}, 9,
+       {{5, 8}, {9, 13, 25}, {14, 18, 55}}},
+      {"bloodgroove", "+{v}% chance to Bleed on hit", "scalar", {"blood"}, {"weapon"}, 7,
+       {{10, 15}, {16, 25, 30}}},
+      {"long_reach", "+{v}% increased Reach", "scalar", {"reach"}, {"weapon"}, 7,
+       {{6, 10}, {11, 16, 30}}},
+      {"warded", "+{v}% increased Armour", "scalar", {"ward"},
+       {"shield", "body", "helmet", "gloves", "boots"}, 12,
+       {{10, 18}, {19, 28, 20}, {29, 40, 50}}},
+      {"hale", "+{v} to Maximum Health", "flat", {"life"},
+       {"weapon", "shield", "body", "helmet", "gloves", "boots", "belt", "amulet", "ring"}, 12,
+       {{10, 20}, {21, 35, 25}, {36, 55, 55}}},
+      {"spirited", "+{v} to Maximum Mana", "flat", {"spirit"},
+       {"helmet", "amulet", "ring", "weapon"}, 10,
+       {{8, 15}, {16, 26, 25}, {27, 40, 55}}},
+      {"emberkiss", "Adds {v} Fire Damage", "flat", {"ember"}, {"weapon", "amulet"}, 6,
+       {{3, 7}, {8, 14, 30}, {15, 22, 60}}},
+      {"riverblessed", "+{v}% to Cold Resistance", "scalar", {"river", "ward"},
+       {"shield", "body", "helmet", "belt", "amulet", "ring"}, 8,
+       {{8, 15}, {16, 25, 25}}},
+      {"emberward", "+{v}% to Fire Resistance", "scalar", {"ember", "ward"},
+       {"shield", "body", "helmet", "belt", "amulet", "ring"}, 8,
+       {{8, 15}, {16, 25, 25}}},
+      {"surefoot", "+{v}% Movement Speed", "scalar", {"swift"}, {"boots"}, 9,
+       {{5, 9}, {10, 15, 30}}},
+      {"keen_eye", "+{v}% Critical Chance", "scalar", {"blade", "swift"}, {"weapon", "ring"}, 7,
+       {{8, 14}, {15, 22, 35}}},
+      {"wealthy", "+{v}% Item Find", "scalar", {"fortune"},
+       {"weapon", "shield", "body", "helmet", "gloves", "boots", "belt", "amulet", "ring"}, 8,
+       {{6, 12}, {13, 20, 30}}},
+      {"beastbane", "+{v}% Damage against Beasts", "scalar", {"beast"}, {"weapon"}, 7,
+       {{10, 18}, {19, 30, 30}}},
+      {"strongback", "+{v} to All Attributes", "flat", {"life", "spirit"},
+       {"amulet", "ring", "belt"}, 6,
+       {{3, 6}, {7, 11, 35}}},
+  };
+  return data;
+}
+
+const std::vector<const char*>& pack_name_pre() {
+  static const std::vector<const char*> data = {
+      "Grim", "Sable", "Ashen", "Reed", "Ember", "Frost", "Dusk", "Copper", "Thorn", "Vesper"};
+  return data;
+}
+const std::vector<const char*>& pack_name_post() {
+  static const std::vector<const char*> data = {
+      "Whisper", "Ward", "Bite", "Song", "Pledge", "Shard", "Gloam", "Tithe"};
+  return data;
+}
+
+// engine.js settings not overridden by the pack.
+constexpr int kMaxVessel = 6;
+constexpr double kBrandTierWeights[] = {10, 5, 2};
+constexpr double kBrandCountWeights[] = {30, 25, 25, 15, 5};
+constexpr int kAttuneBase = 80;
+
+const PackMaterial* pack_material(const std::string& id) {
+  for (const auto& m : pack_materials()) if (id == m.id) return &m;
+  return nullptr;
+}
+const PackForm* pack_form(const std::string& id) {
+  for (const auto& f : pack_forms()) if (id == f.id) return &f;
+  return nullptr;
+}
+const PackBrandMod* pack_brand_mod(const std::string& id) {
+  for (const auto& b : pack_brand_mods()) if (id == b.id) return &b;
+  return nullptr;
+}
+
+double weight_for(const std::vector<std::pair<const char*, double>>& weights, const char* tag) {
+  for (const auto& [key, value] : weights) if (std::string(tag) == key) return value;
+  return 0.0;  // JS `if (mat.weights[tag])` — absent means unchanged
+}
+
+bool list_has(const std::vector<const char*>& list, const std::string& value) {
+  for (const auto* entry : list) if (value == entry) return true;
+  return false;
+}
+
+std::string to_base36(std::uint64_t value) {
+  static constexpr char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+  if (value == 0) return "0";
+  std::string out;
+  while (value) {
+    out.insert(out.begin(), digits[value % 36]);
+    value /= 36;
+  }
+  return out;
+}
+
+std::string format_label(const std::string& templ, int value) {
+  std::string out = templ;
+  const std::string replacement = std::to_string(value);
+  std::string::size_type at = 0;
+  while ((at = out.find("{v}", at)) != std::string::npos) {
+    out.replace(at, 3, replacement);
+    at += replacement.size();
+  }
+  return out;
+}
+
+// adapter.js ACTIVE_BRAND_MODS — brands presented as live, not dormant.
+bool is_active_brand_mod(const std::string& mod_id) {
+  static const char* kActive[] = {"keen", "heavy", "swift_haft", "warded", "hale",
+                                  "spirited", "emberkiss", "strongback", "keen_eye",
+                                  "wealthy", "beastbane"};
+  for (const auto* id : kActive) if (mod_id == id) return true;
+  return false;
+}
+
+}  // namespace
+
+VesselForge::VesselForge() : rand_(Mulberry32(0)) {}
+
+std::string VesselForge::gen_id() {
+  id_counter_ += 1;
+  return "vf" + to_base36(id_counter_) +
+         to_base36(static_cast<std::uint64_t>(std::floor(rand_.next() * 1e6)));
+}
+
+std::vector<VesselForge::WeightedEntry> VesselForge::brand_pool(const VesselItem& item) const {
+  const PackMaterial* mat = pack_material(item.material_id);
+  const PackForm* f = pack_form(item.form_id);
+  std::vector<WeightedEntry> pool;
+  if (!mat || !f) return pool;
+  for (const auto& mod : pack_brand_mods()) {
+    if (!list_has(mod.kinds, item.kind)) continue;
+    bool used = false;
+    for (const auto& brand : item.brands) if (brand.mod_id == mod.id) { used = true; break; }
+    if (used) continue;
+    double w = mod.weight;
+    for (const auto* tag : mod.tags) {
+      const double material_weight = weight_for(mat->weights, tag);
+      if (material_weight != 0.0) w *= material_weight;
+      const double form_weight = weight_for(f->weights, tag);
+      if (form_weight != 0.0) w *= form_weight;
+    }
+    if (w > 0) pool.push_back({mod.id, w});
+  }
+  return pool;
+}
+
+namespace {
+// engine.js pickWeighted: roll = rnd*total; subtract in order; first <=0 wins.
+std::string pick_weighted(Mulberry32& rand, const std::vector<VesselForge::WeightedEntry>& entries) {
+  double total = 0;
+  for (const auto& entry : entries) total += entry.weight;
+  if (total <= 0 || entries.empty()) return {};
+  double roll = rand.next() * total;
+  for (const auto& entry : entries) {
+    roll -= entry.weight;
+    if (roll <= 0) return entry.id;
+  }
+  return entries.back().id;
+}
+}  // namespace
+
+bool VesselForge::roll_brand(VesselItem& item, VesselBrand* out) {
+  const auto pool = brand_pool(item);
+  if (pool.empty()) return false;
+  const std::string mod_id = pick_weighted(rand_, pool);  // 1 rand even on failure paths
+  if (mod_id.empty()) return false;
+  const PackBrandMod* mod = pack_brand_mod(mod_id);
+  if (!mod) return false;
+  std::vector<WeightedEntry> gated;
+  for (std::size_t i = 0; i < mod->tiers.size(); ++i) {
+    if (mod->tiers[i].min_ilvl <= item.ilvl) {
+      gated.push_back({std::to_string(i), kBrandTierWeights[i]});
+    }
+  }
+  if (gated.empty()) return false;
+  const std::string tier_index = pick_weighted(rand_, gated);
+  const int tier = std::stoi(tier_index);  // zero-based index, tier = index + 1
+  const BrandTier& tier_def = mod->tiers[static_cast<std::size_t>(tier)];
+  VesselBrand brand;
+  brand.id = gen_id();
+  brand.mod_id = mod_id;
+  brand.tier = tier + 1;
+  brand.value = rand_.rint(tier_def.roll_lo, tier_def.roll_hi);
+  if (out) *out = brand;
+  return true;
+}
+
+VesselItem VesselForge::generate_item(int ilvl, const std::string& form_id,
+                                      const std::string& material_id) {
+  const PackForm* f = pack_form(form_id);
+  VesselItem item;
+  if (!f) return item;  // caller validates form ids against the catalogue
+  item.ilvl = ilvl;
+  item.form_id = form_id;
+  item.kind = f->kind;
+  item.w = f->w;
+  item.h = f->h;
+
+  std::string mat_id = material_id;
+  if (mat_id.empty()) {
+    // materialPoolFor: form materials in pack order, tier <= 1 + ilvl/15,
+    // weighted by dropWeight.
+    std::vector<WeightedEntry> pool;
+    const int max_tier = 1 + ilvl / 15;
+    for (const auto* candidate : f->materials) {
+      const PackMaterial* m = pack_material(candidate);
+      if (m && m->tier <= max_tier) pool.push_back({candidate, m->drop_weight});
+    }
+    mat_id = pick_weighted(rand_, pool);
+    if (mat_id.empty() && !f->materials.empty()) mat_id = f->materials.front();
+  }
+  item.material_id = mat_id;
+  const PackMaterial* mat = pack_material(mat_id);
+
+  item.id = gen_id();
+  item.vessel = mat ? std::min(kMaxVessel, rand_.rint(mat->vessel_lo, mat->vessel_hi)) : 0;
+  item.patience_max = mat ? rand_.rint(mat->patience_lo, mat->patience_hi) : 0;
+  item.patience = item.patience_max;
+
+  if (!f->no_vessel) {
+    std::vector<WeightedEntry> counts;
+    for (int i = 0; i < 5; ++i) counts.push_back({std::to_string(i), kBrandCountWeights[i]});
+    int n = std::stoi(pick_weighted(rand_, counts));
+    n = std::min(n, item.vessel);
+    for (int i = 0; i < n; ++i) {
+      VesselBrand brand;
+      if (roll_brand(item, &brand)) item.brands.push_back(brand);
+    }
+  } else {
+    item.vessel = 0;
+    item.patience = 0;
+    item.patience_max = 0;
+  }
+
+  // maybeName: three or more marks earn an epithet from the pack tables.
+  // NB: draw order matters — pre first, then post, in separate statements
+  // (operator+ operand order is unspecified in C++).
+  if (item.epithet_name.empty() && item.brands.size() >= 3) {
+    const auto& pre = pack_name_pre();
+    const auto& post = pack_name_post();
+    const double first = rand_.next();
+    const double second = rand_.next();
+    item.epithet_name = std::string(pre[static_cast<std::size_t>(std::floor(first * pre.size()))]) +
+        " " + post[static_cast<std::size_t>(std::floor(second * post.size()))];
+  }
+  return item;
+}
+
+bool VesselForge::sear(VesselItem& item) {
+  if (!item.vessel) return false;
+  const int used = static_cast<int>(item.brands.size()) + item.scars;
+  if (item.vessel - used <= 0) return false;
+  if (item.patience < 1) return false;
+  // engine.js sear rolls on a clone: a failed roll leaves the item untouched.
+  VesselItem copy = item;
+  VesselBrand brand;
+  if (!roll_brand(copy, &brand)) return false;
+  item.patience -= 1;
+  item.brands.push_back(brand);
+  if (item.epithet_name.empty() && item.brands.size() >= 3) {
+    const auto& pre = pack_name_pre();
+    const auto& post = pack_name_post();
+    const double first = rand_.next();
+    const double second = rand_.next();
+    item.epithet_name = std::string(pre[static_cast<std::size_t>(std::floor(first * pre.size()))]) +
+        " " + post[static_cast<std::size_t>(std::floor(second * post.size()))];
+  }
+  return true;
+}
+
+namespace {
+std::string vessel_display_name(const VesselItem& item) {
+  if (!item.epithet_name.empty()) return item.epithet_name;
+  const PackMaterial* mat = pack_material(item.material_id);
+  const PackForm* f = pack_form(item.form_id);
+  return std::string(mat ? mat->name : "?") + " " + (f ? f->name : "?");
+}
+
+std::string format_aps(double aps) {
+  std::ostringstream out;
+  out << aps;  // JS prints the literal (1, 1.3, 0.85)
+  return out.str();
+}
+}  // namespace
+
+std::vector<TooltipLine> VesselForge::tooltip(const VesselItem& item) const {
+  // engine.js tooltip — bonds/trophies/awakening are out of N4's scope (no
+  // flow produces them), so their sections never appear here.
+  std::vector<TooltipLine> lines;
+  const PackMaterial* mat = pack_material(item.material_id);
+  const PackForm* f = pack_form(item.form_id);
+  if (!mat || !f) return lines;
+
+  lines.push_back({"name", vessel_display_name(item),
+                   item.brands.empty() ? "plain" : "branded"});
+  if (!item.epithet_name.empty()) {
+    lines.push_back({"base", std::string(mat->name) + " " + f->name, "normal"});
+  }
+  lines.push_back({"kind", std::string(f->kind_label) + " · " + mat->name +
+                               " (tier " + std::to_string(mat->tier) + ") · Item Level " +
+                               std::to_string(item.ilvl),
+                   "normal"});
+  if (item.vessel) {
+    lines.push_back({"vessel", "Vessel " + std::to_string(item.vessel) + " · Patience " +
+                                   std::to_string(item.patience) + "/" +
+                                   std::to_string(item.patience_max),
+                     "normal"});
+  }
+  if (f->weapon) {
+    lines.push_back({"stat", "Damage " +
+                                 std::to_string(static_cast<int>(std::lround(f->dmg_lo * mat->stat_mult))) +
+                                 "–" +
+                                 std::to_string(static_cast<int>(std::lround(f->dmg_hi * mat->stat_mult))) +
+                                 " · Speed " + format_aps(f->aps),
+                     "normal"});
+  }
+  if (f->has_armor && f->armor > 0) {
+    lines.push_back({"stat", "Armour " +
+                                 std::to_string(static_cast<int>(std::lround(f->armor * mat->stat_mult))),
+                     "normal"});
+  }
+  if (f->implicit.label) {
+    lines.push_back({"implicit", f->implicit.label, "normal"});
+  }
+  for (const auto& brand : item.brands) {
+    const PackBrandMod* mod = pack_brand_mod(brand.mod_id);
+    if (!mod) continue;
+    lines.push_back({"brand", "✦ " + format_label(mod->label, brand.value) +
+                                  " (T" + std::to_string(brand.tier) + ")",
+                     "normal"});
+  }
+  if (item.scars) {
+    lines.push_back({"scar", "✕ " + std::to_string(item.scars) + " scarred slot" +
+                                 (item.scars > 1 ? "s" : ""),
+                     "normal"});
+  }
+  const int used = static_cast<int>(item.brands.size()) + item.scars;
+  if (item.vessel && item.vessel - used > 0) {
+    lines.push_back({"attune", "Attunement 0/" + std::to_string(kAttuneBase), "normal"});
+  }
+  return lines;
+}
+
+VesselCombat VesselForge::derive_combat(const VesselItem& item) const {
+  // adapter.js deriveVesselCombat over the engine aggregate of this one item.
+  VesselCombat combat;
+  const PackMaterial* mat = pack_material(item.material_id);
+  const PackForm* f = pack_form(item.form_id);
+  if (!mat || !f) return combat;
+
+  std::map<std::string, double> sums;
+  if (f->implicit.stat_id) sums[f->implicit.stat_id] += f->implicit.stat_value;
+  for (const auto& brand : item.brands) {
+    const PackBrandMod* mod = pack_brand_mod(brand.mod_id);
+    if (!mod) continue;
+    if (std::string(mod->shape) == "flat" || std::string(mod->shape) == "scalar") {
+      sums[brand.mod_id] += brand.value;
+    }
+  }
+  auto sum = [&](const char* id) { auto it = sums.find(id); return it == sums.end() ? 0.0 : it->second; };
+
+  if (f->has_armor && f->armor > 0) {
+    combat.ward = std::max(0, static_cast<int>(std::lround(f->armor * mat->stat_mult)));
+  }
+
+  if (f->weapon) {
+    const double flat = sum("heavy") + sum("emberkiss");
+    const double physical = 1 + (sum("phys_pct") + sum("keen")) / 100.0;
+    const double speed = f->aps * (1 + sum("atk_speed") / 100.0);
+    const int minimum = std::max(1, static_cast<int>(std::lround((f->dmg_lo * mat->stat_mult + flat) * physical)));
+    const int maximum = std::max(minimum, static_cast<int>(std::lround((f->dmg_hi * mat->stat_mult + flat) * physical)));
+    const int dps = std::max(1, static_cast<int>(std::lround(((minimum + maximum) / 2.0) * speed)));
+    const int rating = std::max(1, static_cast<int>(std::lround(dps / 2.0)));
+    const char* channel = "crush";
+    if (item.form_id == "handaxe" || item.form_id == "khopesh") channel = "slash";
+    else if (item.form_id == "spear") channel = "stab";
+    else if (item.form_id == "atlatl" || item.form_id == "sling") channel = "range";
+    combat.has_damage = true;
+    combat.damage_min = minimum;
+    combat.damage_max = maximum;
+    combat.attacks_per_second = std::lround(speed * 100) / 100.0;
+    combat.dps = dps;
+    combat.rating = rating;
+    combat.channel = channel;
+    if (combat.channel == "stab") combat.attack.stab = rating;
+    else if (combat.channel == "slash") combat.attack.slash = rating;
+    else if (combat.channel == "range") combat.attack.range = rating;
+    else combat.attack.crush = rating;
+  }
+
+  if (combat.ward > 0) {
+    const int rating = std::max(1, static_cast<int>(std::lround(combat.ward / 8.0)));
+    combat.defense.stab = rating;
+    combat.defense.slash = rating;
+    combat.defense.crush = rating;
+    combat.defense.range = rating;
+  }
+
+  const int all_attributes = std::max(0, static_cast<int>(std::lround(sum("attrs") + sum("strongback"))));
+  if (all_attributes > 0) {
+    combat.has_attributes = true;
+    combat.attributes = all_attributes;
+  }
+  combat.resource_health = std::max(0, static_cast<int>(std::lround(sum("life") + sum("hale"))));
+  combat.resource_mana = std::max(0, static_cast<int>(std::lround(sum("spirit") + sum("spirited"))));
+
+  combat.modifiers.block_chance = std::max(0, std::min(75, static_cast<int>(sum("block"))));
+  combat.modifiers.critical_chance = std::max(0, std::min(75, static_cast<int>(sum("keen_eye"))));
+  combat.modifiers.goods_found = std::max(0, std::min(100, static_cast<int>(sum("wealthy"))));
+  combat.modifiers.damage_against_beasts = std::max(0, std::min(100, static_cast<int>(sum("beastbane"))));
+  return combat;
+}
+
+VesselBlock VesselForge::make_block(const VesselItem& item) const {
+  // adapter.js refreshVesselBlock: derived layers + honest dormant marking.
+  VesselBlock block;
+  const PackMaterial* mat = pack_material(item.material_id);
+  const PackForm* f = pack_form(item.form_id);
+  block.item = item;
+  if (!mat || !f) return block;
+  block.material = mat->name;
+  block.material_tier = mat->tier;
+  block.form = f->name;
+
+  auto lines = tooltip(item);
+  std::size_t brand_index = 0;
+  for (auto& line : lines) {
+    if (line.section == "implicit") {
+      const char* stat_id = f->implicit.stat_id ? f->implicit.stat_id : "";
+      const bool active = stat_id == std::string("life") || stat_id == std::string("spirit") ||
+                          stat_id == std::string("attrs") || stat_id == std::string("block") ||
+                          (f->weapon && (stat_id == std::string("phys_pct") ||
+                                         stat_id == std::string("atk_speed")));
+      if (!active) {
+        line.section = "dormant";
+        line.text = "Dormant · " + line.text;
+        line.tone = "inactive";
+      }
+    } else if (line.section == "brand") {
+      const bool active = brand_index < item.brands.size() &&
+                          is_active_brand_mod(item.brands[brand_index].mod_id);
+      ++brand_index;
+      if (!active) {
+        line.section = "dormant";
+        line.text = "Dormant · " + line.text;
+        line.tone = "inactive";
+      }
+    }
+  }
+  block.lines = std::move(lines);
+  for (const auto& line : block.lines) {
+    if (line.section == "name") {
+      block.display_name = line.text;
+      break;
+    }
+  }
+  if (block.display_name.empty()) block.display_name = f->name;
+  block.combat = derive_combat(item);
+  return block;
+}
+
+// ── Item catalogue (server/core/data/items/{general,jewelry,belts,weapons,
+// verdigris,vessels}.js) ─────────────────────────────────────────────────
+namespace {
+
+const ItemDef kItemCatalogue[] = {
+    // general.js: carried balance. Stackable, never binds, no grid cells.
+    {"coins", "Coins", "currency", "", true, false, {}, {}, 0, 0, "", ""},
+    // jewelry.js rings + belts.js waist the N4 scenarios exercise.
+    {"ring", "Ring", "armor", "ring", false, false, {1, 1, 1, 1}, {1, 0, 1, 1}, 0, 0, "", ""},
+    {"gold-ring", "Gold Ring", "armor", "ring", false, false, {3, 3, 3, 3}, {3, 3, 3, 3}, 0, 0, "", ""},
+    {"hide-girdle", "Hide Girdle", "armor", "belt", false, false, {0, 0, 0, 0}, {1, 1, 1, 0}, 0, 0, "", ""},
+    // jewelry.js amulets: the single-session regression grants garnet-amulet.
+    {"garnet-amulet", "Garnet Amulet", "armor", "necklace", false, false, {23, 22, 13, 1}, {24, 25, 13, 4}, 0, 0, "", ""},
+    // weapons.js / verdigris.js curated bases.
+    {"bronze-sword", "Bronze Sword", "weapon", "right_hand", false, false, {4, 3, -2, 0}, {0, 2, 1, 0}, 0, 0, "", ""},
+    {"bronze-pike", "Bronze Pike", "weapon", "right_hand", false, true, {13, 5, 0, 0}, {1, 1, 0, 0}, 1, 4, "spear", "bronze"},
+    // vessels.js: the 13 Vesselforge-native rows. Material, footprint and
+    // combat profile are rolled by the forge (disableAffixes in JS).
+    {"vessel-handaxe", "Handaxe", "weapon", "right_hand", false, false, {}, {}, 0, 0, "handaxe", ""},
+    {"vessel-spear", "Spear", "weapon", "right_hand", false, true, {}, {}, 0, 0, "spear", ""},
+    {"vessel-macuahuitl", "Macuahuitl", "weapon", "right_hand", false, true, {}, {}, 0, 0, "macuahuitl", ""},
+    {"vessel-atlatl", "Atlatl", "weapon", "right_hand", false, true, {}, {}, 0, 0, "atlatl", ""},
+    {"vessel-khopesh", "Khopesh", "weapon", "right_hand", false, false, {}, {}, 0, 0, "khopesh", ""},
+    {"vessel-sling", "Sling", "weapon", "right_hand", false, false, {}, {}, 0, 0, "sling", ""},
+    {"vessel-shield", "Shield", "armor", "left_hand", false, false, {}, {}, 0, 0, "hideshield", ""},
+    {"vessel-wrap", "Wrap", "armor", "armor", false, false, {}, {}, 0, 0, "wrap", ""},
+    {"vessel-crest", "Crest", "armor", "head", false, false, {}, {}, 0, 0, "crest", ""},
+    {"vessel-grips", "Grips", "armor", "gloves", false, false, {}, {}, 0, 0, "grips", ""},
+    {"vessel-sandals", "Sandals", "armor", "feet", false, false, {}, {}, 0, 0, "sandals", ""},
+    {"vessel-gorget", "Gorget", "armor", "necklace", false, false, {}, {}, 0, 0, "gorget", ""},
+    {"vessel-ring", "Ring", "armor", "ring", false, false, {}, {}, 0, 0, "ring", ""},
+};
+
+// Process-wide instance identity source (factory.js uuid v4): uniqueness is
+// the only contract the wire and the take/equip verbs rely on.
+std::uint64_t g_item_uuid_serial = 0;
+
+std::string next_item_uuid() {
+  const std::uint64_t value = ++g_item_uuid_serial;
+  char buffer[40];
+  std::snprintf(buffer, sizeof(buffer), "00000000-0000-4000-8000-%012llx",
+                static_cast<unsigned long long>(value & 0xffffffffffffULL));
+  return buffer;
+}
+
+std::string lower_copy(const std::string& value) {
+  std::string out = value;
+  for (auto& ch : out) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+  return out;
+}
+
+// inventory-footprints.js idContains: substring match over id + name.
+bool id_contains(const ItemDef& def, const GameItem* instance,
+                 std::initializer_list<const char*> needles) {
+  const std::string id = lower_copy(def.id);
+  const std::string name = lower_copy(instance && !instance->display_name.empty()
+                                          ? instance->display_name
+                                          : def.name);
+  for (const char* needle : needles) {
+    const std::string n = lower_copy(needle);
+    if (id.find(n) != std::string::npos || name.find(n) != std::string::npos) return true;
+  }
+  return false;
+}
+
+ItemSize normalise_size(int width, int height) {
+  auto clamp_int = [](int value, int lo, int hi) { return std::max(lo, std::min(hi, value)); };
+  ItemSize size{clamp_int(width, 1, 4), clamp_int(height, 1, 8)};
+  while (size.width * size.height > 8 && size.height > 1) size.height -= 1;
+  while (size.width * size.height > 8 && size.width > 1) size.width -= 1;
+  return size;
+}
+
+ItemSize weapon_size(const ItemDef& def, const GameItem* instance, bool two_handed) {
+  if (two_handed || id_contains(def, instance, {"halberd", "spear"})) return {2, 4};
+  if (id_contains(def, instance, {"longbow", "shortbow", "battleaxe", "warhammer"})) return {2, 3};
+  if (id_contains(def, instance, {"dagger", "knife"})) return {1, 2};
+  if (id_contains(def, instance, {"axe", "mace", "sword"})) return {1, 3};
+  return {1, 2};
+}
+
+ItemSize armor_size(const ItemDef& def, const GameItem* instance) {
+  if (id_contains(def, instance, {"pavise"})) return {2, 3};
+  if (id_contains(def, instance, {"shield"})) return {2, 2};
+  if (id_contains(def, instance, {"chainmail", "armor", "body", "robe"})) return {2, 3};
+  if (id_contains(def, instance, {"cape"})) return {2, 3};
+  if (id_contains(def, instance, {"helm", "hat", "cowl"})) return {2, 2};
+  if (id_contains(def, instance, {"boots", "gloves"})) return {2, 2};
+  // SLOT_SIZE_BY_EQUIPMENT_SLOT.
+  const std::string& slot = def.slot;
+  if (slot == "ring" || slot == "necklace") return {1, 1};
+  if (slot == "head" || slot == "gloves" || slot == "feet" || slot == "left_hand") return {2, 2};
+  if (slot == "back" || slot == "armor") return {2, 3};
+  return {1, 1};
+}
+
+}  // namespace
+
+const ItemDef* item_def(const std::string& id) {
+  for (const auto& def : kItemCatalogue) {
+    if (def.id == id) return &def;
+  }
+  return nullptr;
+}
+
+const std::vector<std::string>& gear_drop_pool() {
+  // loot.js GEAR_DROP_POOL, in declaration order (pool index is rolled).
+  static const std::vector<std::string> pool = {
+      "vessel-handaxe", "vessel-spear", "vessel-macuahuitl", "vessel-atlatl",
+      "vessel-khopesh", "vessel-sling", "vessel-shield", "vessel-wrap",
+      "vessel-crest", "vessel-grips", "vessel-sandals", "vessel-gorget",
+      "vessel-ring",
+  };
+  return pool;
+}
+
+ItemSize resolve_item_size(const ItemDef& def, const VesselBlock* vessel) {
+  // inventory-footprints.js resolveItemSize. Two JS branches are omitted as
+  // unreachable for this catalogue (and retired-vocabulary): the loose
+  // resource id rule (currency is caught by the stackable branch first) and
+  // the retired tool id rule.
+  const std::string& slot = def.slot;
+  if (slot == "head" || slot == "gloves" || slot == "feet") return {2, 2};
+  if (vessel && vessel->item.w > 0 && vessel->item.h > 0) {
+    return normalise_size(vessel->item.w, vessel->item.h);
+  }
+  if (def.size_w > 0 || def.size_h > 0) return normalise_size(def.size_w, def.size_h);
+  if (def.stackable || def.type == "currency") return {1, 1};
+  if (def.type == "weapon" || slot == "right_hand" ||
+      id_contains(def, nullptr, {"sword", "axe", "mace", "dagger", "bow", "halberd", "spear", "warhammer"})) {
+    return weapon_size(def, nullptr, def.two_handed);
+  }
+  if (def.type == "armor" || slot == "ring" || slot == "necklace" || slot == "back" ||
+      slot == "armor" || slot == "left_hand") {
+    return armor_size(def, nullptr);
+  }
+  if (def.type == "jewelry" || id_contains(def, nullptr, {"ring", "amulet"})) return {1, 1};
+  return {1, 1};
+}
+
+std::optional<GameItem> create_game_item(const std::string& item_id,
+                                         const CreateItemOptions& options) {
+  // factory.js createById/createFromBase.
+  const ItemDef* def = item_def(item_id);
+  if (!def) return std::nullopt;
+
+  GameItem item;
+  item.id = def->id;
+  item.name = def->name;
+  item.display_name = def->name;
+  item.uuid = next_item_uuid();
+  item.stackable = def->stackable;
+  item.two_handed = def->two_handed;
+  item.equip_slot = def->slot;
+  item.attack = def->attack;
+  item.defense = def->defense;
+
+  if (!def->vessel_form.empty() && options.forge) {
+    // adapter.js createVesselBlock: one rng draw reseeds the forge, then the
+    // engine stream drives generation. The material hint is honoured only
+    // when the form's material list admits it (adapter.js vesselHints).
+    if (options.rng) {
+      const double draw = options.rng->next();
+      options.forge->reseed(static_cast<std::uint32_t>(std::floor(draw * 4294967296.0)));
+    }
+    const int ilvl = options.item_level > 0 ? std::min(80, options.item_level) : 10;
+    std::string material_hint;
+    if (!def->vessel_material.empty()) {
+      if (const PackForm* form = pack_form(def->vessel_form)) {
+        for (const auto* candidate : form->materials) {
+          if (def->vessel_material == candidate) {
+            material_hint = def->vessel_material;
+            break;
+          }
+        }
+      }
+    }
+    VesselItem vessel_item = options.forge->generate_item(ilvl, def->vessel_form, material_hint);
+    VesselBlock block = options.forge->make_block(vessel_item);
+    if (!block.display_name.empty()) {
+      item.name = block.display_name;
+      item.display_name = block.display_name;
+    }
+    // factory.js: vessel combat replaces the base stat sheet.
+    item.attack = block.combat.attack;
+    item.defense = block.combat.defense;
+    item.combat_bonuses = block.combat.modifiers;
+    if (block.combat.has_attributes) item.bonus_attributes = block.combat.attributes;
+    item.bonus_health = block.combat.resource_health;
+    item.bonus_mana = block.combat.resource_mana;
+    item.vessel = std::move(block);
+  }
+
+  item.size = resolve_item_size(*def, item.vessel ? &*item.vessel : nullptr);
+  item.qty = item.stackable ? std::max(1, options.quantity) : 1;
+
+  // factory.js shouldBindOnPickup: weapons, armour and jewelry bind on
+  // admission; currency never does. (The bindOnPickup catalogue flag is not
+  // modelled — no N4 row uses it; noted as a stub in the task report.)
+  if (!options.bind_to.empty() && !item.stackable &&
+      (def->type == "weapon" || def->type == "armor" || def->type == "jewelry")) {
+    item.bound_to = options.bind_to;
+  }
+  return item;
+}
+
+// ── PlayerInventory (inventory.js + inventory-footprints.js) ─────────────
+
+bool PlayerInventory::fits_at(const GameItem& item, int slot) const {
+  const int x0 = slot % kColumns;
+  const int y0 = slot / kColumns;
+  for (int dy = 0; dy < item.size.height; ++dy) {
+    for (int dx = 0; dx < item.size.width; ++dx) {
+      const int x = x0 + dx;
+      const int y = y0 + dy;
+      if (x >= kColumns || y >= kRows) return false;
+      for (const auto& other : items_) {
+        if (other.id == "coins" || other.slot < 0) continue;  // currency occupies no cells
+        const int ox = other.slot % kColumns;
+        const int oy = other.slot / kColumns;
+        if (x >= ox && x < ox + other.size.width && y >= oy && y < oy + other.size.height) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
+
+int PlayerInventory::first_fit(const GameItem& item) const {
+  // findOpenInventorySlot: row-major scan, no rotation for server grants.
+  for (int slot = 0; slot < kSlotCount; ++slot) {
+    if (fits_at(item, slot)) return slot;
+  }
+  return -1;
+}
+
+PlayerInventory::AddResult PlayerInventory::add(GameItem item) {
+  AddResult result;
+  if (item.stackable) {
+    // inventory.js: an existing stack of the same id absorbs the quantity;
+    // the balance never needs a free cell and never overflows.
+    for (auto& existing : items_) {
+      if (existing.id == item.id) {
+        existing.qty += item.qty;
+        result.added = item.qty;
+        return result;
+      }
+    }
+    item.slot = -1;
+    result.added = item.qty;
+    items_.push_back(std::move(item));
+    return result;
+  }
+  const int slot = first_fit(item);
+  if (slot < 0) {
+    result.overflow.push_back(std::move(item));
+    return result;
+  }
+  item.slot = slot;
+  result.added = 1;
+  items_.push_back(std::move(item));
+  return result;
+}
+
+bool PlayerInventory::remove_by_uuid(const std::string& uuid, GameItem* out) {
+  for (auto it = items_.begin(); it != items_.end(); ++it) {
+    if (it->uuid == uuid) {
+      if (out) *out = *it;
+      items_.erase(it);
+      return true;
+    }
+  }
+  return false;
+}
+
+GameItem* PlayerInventory::find_by_uuid(const std::string& uuid) {
+  for (auto& item : items_) {
+    if (item.uuid == uuid) return &item;
+  }
+  return nullptr;
+}
+
+const GameItem* PlayerInventory::find_by_uuid(const std::string& uuid) const {
+  for (const auto& item : items_) {
+    if (item.uuid == uuid) return &item;
+  }
+  return nullptr;
+}
+
+int PlayerInventory::coin_total() const {
+  int total = 0;
+  for (const auto& item : items_) {
+    if (item.id == "coins") total += item.qty;
+  }
+  return total;
+}
+
+bool PlayerInventory::spend_coins(int amount) {
+  if (amount < 0 || coin_total() < amount) return false;
+  int remaining = amount;
+  for (auto it = items_.begin(); it != items_.end() && remaining > 0;) {
+    if (it->id != "coins") {
+      ++it;
+      continue;
+    }
+    const int take = std::min(remaining, it->qty);
+    it->qty -= take;
+    remaining -= take;
+    if (it->qty <= 0) {
+      it = items_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+  return true;
+}
+
+// ── WearSet (wear-slots.js + wear.js) ────────────────────────────────────
+
+const std::vector<std::string>& WearSet::physical_slots() {
+  static const std::vector<std::string> slots = {
+      "right_hand", "left_hand", "armor", "head", "back", "belt",
+      "gloves", "feet", "ring", "ring2", "necklace",
+  };
+  return slots;
+}
+
+std::vector<std::string> WearSet::seats_for_base(const std::string& base_slot) {
+  if (base_slot.empty()) return {};
+  if (base_slot == "ring") return {"ring", "ring2"};
+  return {base_slot};
+}
+
+bool WearSet::can_use_seat(const std::string& base_slot, const std::string& seat) {
+  const auto seats = seats_for_base(base_slot);
+  return std::find(seats.begin(), seats.end(), seat) != seats.end();
+}
+
+std::string WearSet::resolve_seat(const std::string& base_slot,
+                                  const std::string& preferred) const {
+  // wear-slots.js resolveEquipSlot.
+  const auto seats = seats_for_base(base_slot);
+  if (seats.empty()) return base_slot;
+  if (!preferred.empty() &&
+      std::find(seats.begin(), seats.end(), preferred) != seats.end()) {
+    return preferred;
+  }
+  for (const auto& seat : seats) {
+    if (slots_.count(seat) == 0) return seat;
+  }
+  return seats.back();
+}
+
+const GameItem* WearSet::in_seat(const std::string& seat) const {
+  const auto it = slots_.find(seat);
+  return it == slots_.end() ? nullptr : &it->second;
+}
+
+std::optional<GameItem> WearSet::equip(GameItem item, const std::string& seat) {
+  std::optional<GameItem> displaced;
+  const auto it = slots_.find(seat);
+  if (it != slots_.end()) {
+    displaced = it->second;
+    slots_.erase(it);
+  }
+  item.slot = -1;  // worn items live outside the backpack grid
+  slots_.emplace(seat, std::move(item));
+  return displaced;
+}
+
+std::optional<GameItem> WearSet::unequip(const std::string& seat) {
+  const auto it = slots_.find(seat);
+  if (it == slots_.end()) return std::nullopt;
+  GameItem item = it->second;
+  slots_.erase(it);
+  return item;
+}
+
+WearSet::Totals WearSet::totals() const {
+  // wear.js calculateCombat: channel sums plus combatBonuses, capped.
+  Totals out;
+  auto clamp = [](int value, int hi) { return std::max(0, std::min(hi, value)); };
+  for (const auto& [seat, item] : slots_) {
+    out.attack.stab += item.attack.stab;
+    out.attack.slash += item.attack.slash;
+    out.attack.crush += item.attack.crush;
+    out.attack.range += item.attack.range;
+    out.defense.stab += item.defense.stab;
+    out.defense.slash += item.defense.slash;
+    out.defense.crush += item.defense.crush;
+    out.defense.range += item.defense.range;
+    out.modifiers.block_chance += item.combat_bonuses.block_chance;
+    out.modifiers.critical_chance += item.combat_bonuses.critical_chance;
+    out.modifiers.goods_found += item.combat_bonuses.goods_found;
+    out.modifiers.damage_against_beasts += item.combat_bonuses.damage_against_beasts;
+  }
+  out.modifiers.block_chance = clamp(out.modifiers.block_chance, 75);
+  out.modifiers.critical_chance = clamp(out.modifiers.critical_chance, 75);
+  out.modifiers.goods_found = clamp(out.modifiers.goods_found, 100);
+  out.modifiers.damage_against_beasts = clamp(out.modifiers.damage_against_beasts, 100);
+  return out;
+}
+
+// ── loot.js helpers ──────────────────────────────────────────────────────
+
+int apply_goods_found_to_coins(int coins, int goods_found_percent) {
+  const int percent = std::max(0, std::min(100, goods_found_percent));
+  return std::max(0, static_cast<int>(std::floor(std::max(0, coins) * (1.0 + percent / 100.0))));
+}
+
+double apply_goods_found_to_gear_chance(double chance, int goods_found_percent) {
+  const int percent = std::max(0, std::min(100, goods_found_percent));
+  return std::min(0.75, std::max(0.0, chance) * (1.0 + percent / 100.0));
+}
+
+int instance_item_level_for_depth(int depth) {
+  return std::min(80, 10 + (std::max(1, depth) - 1) * 10);
+}
+
+// ── WorldSimulation N4: ground items, loot, depth chaining ───────────────
+
+std::uint64_t WorldSimulation::next_world_random() {
+  // splitmix64: JS draws from Math.random here, so any independent stream is
+  // faithful; a seeded one keeps runs replayable for the architect.
+  world_random_state_ += 0x9e3779b97f4a7c15ULL;
+  std::uint64_t z = world_random_state_;
+  z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9ULL;
+  z = (z ^ (z >> 27)) * 0x94d049bb133111ebULL;
+  return z ^ (z >> 31);
+}
+
+namespace {
+
+double world_rand01(std::uint64_t draw) {
+  return static_cast<double>(draw >> 11) * (1.0 / 9007199254740992.0);
+}
+
+}  // namespace
+
+void WorldSimulation::add_ground_item(GameItem item, double x, double y) {
+  GroundItem ground;
+  ground.item = std::move(item);
+  ground.x = x;
+  ground.y = y;
+  ground.timestamp = static_cast<std::int64_t>(++serial_);
+  ground_items_.push_back(std::move(ground));
+}
+
+bool WorldSimulation::take_ground_item(const std::string& uuid, GameItem* out) {
+  for (auto it = ground_items_.begin(); it != ground_items_.end(); ++it) {
+    if (it->item.uuid == uuid) {
+      if (out) *out = it->item;
+      ground_items_.erase(it);
+      return true;
+    }
+  }
+  return false;
+}
+
+Vec2 WorldSimulation::resolve_loot_tile(int x, int y) const {
+  // loot.js resolveLootLocation: never on stairs/portals or blocked tiles;
+  // spiral outward (top row, bottom row, left column, right column per
+  // radius), falling back to the origin.
+  auto safe = [&](int tx, int ty) {
+    if (!grid_.walkable_at(tx, ty)) return false;
+    if (tx == metadata_.stairs_up.x && ty == metadata_.stairs_up.y) return false;
+    if (tx == metadata_.stairs_down.x && ty == metadata_.stairs_down.y) return false;
+    return true;
+  };
+  if (safe(x, y)) return {x, y};
+  for (int radius = 1; radius <= 6; ++radius) {
+    for (int offset = -radius; offset <= radius; ++offset) {
+      const Vec2 candidates[] = {
+          {x + offset, y - radius},
+          {x + offset, y + radius},
+          {x - radius, y + offset},
+          {x + radius, y + offset},
+      };
+      for (const auto& candidate : candidates) {
+        if (safe(candidate.x, candidate.y)) return candidate;
+      }
+    }
+  }
+  return {x, y};
+}
+
+void WorldSimulation::drop_monster_loot(const WorldMonster& monster, int goods_found_percent) {
+  // loot.js dropMonsterLoot: coin bounty always (Wealthy-boosted), then a
+  // rarity-gated gear roll. Relic/trophy circulation and the first-find
+  // grant are Chronicles/encounter features — N5 stubs (see the report).
+  const Vec2 tile = resolve_loot_tile(monster.x, monster.y);
+  const int coins = apply_goods_found_to_coins(monster.coins, goods_found_percent);
+  if (coins > 0) {
+    CreateItemOptions opts;
+    opts.quantity = coins;
+    auto coin_item = create_game_item("coins", opts);
+    if (coin_item) add_ground_item(std::move(*coin_item), tile.x, tile.y);
+  }
+
+  double base_chance = 0.05;
+  if (monster.rarity == "uncommon") base_chance = 0.1;
+  if (monster.rarity == "rare") base_chance = 0.2;
+  if (monster.rarity == "elite") base_chance = 0.5;
+  const double chance = apply_goods_found_to_gear_chance(base_chance, goods_found_percent);
+  if (world_rand01(next_world_random()) < chance) {
+    const auto& pool = gear_drop_pool();
+    const std::string& gear_id =
+        pool[static_cast<std::size_t>(std::floor(world_rand01(next_world_random()) * pool.size()))];
+    CreateItemOptions opts;
+    opts.item_level = std::min(80, monster.level * 2);
+    opts.forge = &forge_;
+    // factory.js createById with rng: one draw reseeds the forge.
+    const double reseed_draw = world_rand01(next_world_random());
+    forge_.reseed(static_cast<std::uint32_t>(std::floor(reseed_draw * 4294967296.0)));
+    opts.rng = nullptr;  // reseed already performed; generate from the stream
+    auto gear = create_game_item(gear_id, opts);
+    if (gear) add_ground_item(std::move(*gear), tile.x, tile.y);
+  }
+}
+
+void WorldSimulation::scatter_floor_treasure() {
+  // map.js guaranteed per-floor treasure hoard: a coin purse plus one gear
+  // piece whose item level scales with depth. The JS server scatters these
+  // at treasure-room centres from gearPoolForDepth; this port uses the map
+  // centre and the shared drop pool (documented stub in the task report).
+  if (grid_.width <= 0 || grid_.height <= 0) return;
+  const int cx = grid_.width / 2;
+  const int cy = grid_.height / 2;
+
+  const int coins = 80 + static_cast<int>(std::floor(world_rand01(next_world_random()) * 60.0));
+  const Vec2 coin_tile = resolve_loot_tile(cx, cy);
+  CreateItemOptions coin_opts;
+  coin_opts.quantity = coins;
+  auto coin_item = create_game_item("coins", coin_opts);
+  if (coin_item) add_ground_item(std::move(*coin_item), coin_tile.x, coin_tile.y);
+
+  const auto& pool = gear_drop_pool();
+  const std::string& gear_id =
+      pool[static_cast<std::size_t>(std::floor(world_rand01(next_world_random()) * pool.size()))];
+  const double reseed_draw = world_rand01(next_world_random());
+  forge_.reseed(static_cast<std::uint32_t>(std::floor(reseed_draw * 4294967296.0)));
+  CreateItemOptions gear_opts;
+  gear_opts.item_level = instance_item_level_for_depth(metadata_.depth);
+  gear_opts.forge = &forge_;
+  auto gear = create_game_item(gear_id, gear_opts);
+  if (gear) {
+    const Vec2 gear_tile = resolve_loot_tile(cx, cy + 1);
+    add_ground_item(std::move(*gear), gear_tile.x, gear_tile.y);
+  }
+}
+
+void WorldSimulation::transition_floor(int depth) {
+  // party.js transitionFloor: same template/layout, regenerated at the new
+  // depth; the player re-enters at the floor's spawn. Floor ground items
+  // retire with the old floor, exactly like JS scene retirement.
+  const std::string theme = metadata_.theme;
+  const std::string layout = metadata_.layout;
+  serial_ += 1;
+  const int clamped_depth = std::max(1, depth);
+  metadata_ = InstanceMetadata{};
+  metadata_.seed = fnv1a(theme + ":" + layout + ":floor-" + std::to_string(clamped_depth), seed_);
+  metadata_.theme = theme;
+  metadata_.layout = layout;
+  metadata_.depth = clamped_depth;
+  ground_items_.clear();
+  active_target_.clear();
+  boss_warning_seen_ = false;
+  next_boss_telegraph_ms_ = 0;
+  generate_instance();
+  scene_type_ = "instance";
+  scene_id_ = "instance:" + theme + ":" + (layout.empty() ? "default" : layout);
+  scene_name_ = zone_display_name(theme, layout, clamped_depth);
+  position_.x = static_cast<double>(metadata_.spawn_points.front().x);
+  position_.y = static_cast<double>(metadata_.spawn_points.front().y);
 }
 
 }  // namespace verdigris

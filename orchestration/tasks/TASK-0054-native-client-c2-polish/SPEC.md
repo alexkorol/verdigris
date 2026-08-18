@@ -12,6 +12,14 @@ base: current program tip (after 0051 integration)
 architect_review_required: true
 ---
 
+> **ARCHITECT NOTE (claim-blockage fix):** this task is READY and
+> UNCLAIMED. Any `STATUS.md` in this folder containing a board-empty
+> stop-note predates this spec and is NOT a claim — claiming means
+> REPLACING that file with a `state: CLAIMED` block. Loop rule
+> clarified: stop-notes go in your NEWEST OWN task folder or a
+> `NOTES-<coordinator>.md`, never a bare STATUS.md in an unclaimed
+> task folder.
+
 ## Deliverables (all small, all owner-visible)
 
 1. Inventory pane title: "House House Verdigris" → "House Verdigris"

@@ -97,14 +97,27 @@ class ProtocolSession {
   void process_combat(std::int64_t now_ms, const std::function<void(const Envelope&)>& emit);
   void emit_combat_event(const WorldCombatEvent& event,
                          const std::function<void(const Envelope&)>& emit);
-  void grant_item(const std::string& item_id, int quantity);
+  // N4 item pipeline (dev.js / inventory.js / wear-slots.js / registry.js).
+  void emit_inventory_refresh(const std::function<void(const Envelope&)>& emit) const;
+  void sync_combat_mods();
+  void handle_give(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
+  void handle_drop(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
+  void handle_equip(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
+  void handle_take_ground(const std::string& uuid, const std::function<void(const Envelope&)>& emit);
+  void handle_take_underfoot(const std::function<void(const Envelope&)>& emit);
+  void handle_menu_build(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) const;
+  void handle_menu_action(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
+  void handle_inventory_commit(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
   static std::int64_t now_ms();
 
   std::string identity_;
   std::string socket_id_;
   bool quick_start_ = false;
-  std::vector<Item> inventory_;
-  std::vector<JsonValue> ground_items_;
+  // N4: the real item pipeline state (12x7 backpack + wear seats); the forge
+  // itself lives on the world (JS module singleton).
+  PlayerInventory inventory_;
+  WearSet wear_;
+  Mulberry32 session_rng_;
   std::unique_ptr<Simulation> simulation_;
   std::unique_ptr<WorldSimulation> world_;
   std::function<void(const Envelope&)> broadcast_;

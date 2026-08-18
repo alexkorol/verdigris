@@ -55,7 +55,13 @@ void test_session_lifecycle() {
   session.handle(Envelope{"dev:give", JsonValue::Object{{"itemId", "garnet-amulet"}, {"qty", 1}}}, [](const Envelope&) {});
   session.handle(Envelope{"dev:state", JsonValue::Object{{"requestId", "state-2"}}}, [&](const Envelope& event) { state_wire = emit_envelope(event); });
   check(parse_envelope(state_wire, response), "state after grant parses");
-  check(response.data["state"]["inventory"].array()->size() == 1, "dev give appears in inventory");
+  bool granted = false;
+  if (const auto* inventory = response.data["state"]["inventory"].array()) {
+    for (const auto& entry : *inventory) {
+      if (entry["id"].string() && *entry["id"].string() == "garnet-amulet") granted = true;
+    }
+  }
+  check(granted, "dev give appears in inventory");
 
   session.replace_socket("socket-b");
   check(session.state_payload("state-3").find("socket-b") != std::string::npos, "replacement binds the new socket");

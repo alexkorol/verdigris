@@ -211,6 +211,202 @@ bool as_bool(const JsonValue* value, bool fallback = false) {
   return value && value->boolean() ? *value->boolean() : fallback;
 }
 
+// ── N4 item wire shapes (server/player/handlers/dev.js buildStateSnapshot) ──
+
+JsonValue ratings_json(const ChannelRatings& ratings) {
+  JsonValue::Object out;
+  put(out, "stab", ratings.stab);
+  put(out, "slash", ratings.slash);
+  put(out, "crush", ratings.crush);
+  put(out, "range", ratings.range);
+  return JsonValue(std::move(out));
+}
+
+JsonValue stats_json(const GameItem& item) {
+  JsonValue::Object out;
+  put(out, "attack", ratings_json(item.attack));
+  put(out, "defense", ratings_json(item.defense));
+  return JsonValue(std::move(out));
+}
+
+// adapter.js deriveVesselCombat modifiers: zero-valued keys are omitted and
+// an all-zero block is null.
+JsonValue modifiers_json(const CombatModifiers& mods) {
+  JsonValue::Object out;
+  if (mods.block_chance > 0) put(out, "blockChance", mods.block_chance);
+  if (mods.critical_chance > 0) put(out, "criticalChance", mods.critical_chance);
+  if (mods.goods_found > 0) put(out, "goodsFound", mods.goods_found);
+  if (mods.damage_against_beasts > 0) put(out, "damageAgainstBeasts", mods.damage_against_beasts);
+  if (out.empty()) return JsonValue(nullptr);
+  return JsonValue(std::move(out));
+}
+
+JsonValue vessel_json(const VesselBlock& block) {
+  JsonValue::Object item;
+  put(item, "v", 1);
+  put(item, "id", block.item.id);
+  put(item, "formId", block.item.form_id);
+  put(item, "materialId", block.item.material_id);
+  put(item, "kind", block.item.kind);
+  put(item, "w", block.item.w);
+  put(item, "h", block.item.h);
+  put(item, "ilvl", block.item.ilvl);
+  put(item, "vessel", block.item.vessel);
+  put(item, "scars", block.item.scars);
+  put(item, "patienceMax", block.item.patience_max);
+  put(item, "patience", block.item.patience);
+  JsonValue::Array brands;
+  for (const auto& brand : block.item.brands) {
+    JsonValue::Object entry;
+    put(entry, "id", brand.id);
+    put(entry, "modId", brand.mod_id);
+    put(entry, "tier", brand.tier);
+    put(entry, "value", brand.value);
+    brands.emplace_back(std::move(entry));
+  }
+  put(item, "brands", std::move(brands));
+  put(item, "bonds", JsonValue::Array{});
+  put(item, "trophies", JsonValue::Array{});
+  put(item, "att", JsonValue::Object{{"xp", 0}, {"next", 80}, {"tc", JsonValue::Object{}}});
+  put(item, "evolutions", 0);
+  put(item, "fired", 0);
+  if (block.item.epithet_name.empty()) put(item, "epithetName", nullptr);
+  else put(item, "epithetName", block.item.epithet_name);
+  put(item, "awakened", nullptr);
+
+  JsonValue::Array lines;
+  for (const auto& line : block.lines) {
+    JsonValue::Object entry;
+    put(entry, "section", line.section);
+    put(entry, "text", line.text);
+    put(entry, "tone", line.tone);
+    lines.emplace_back(std::move(entry));
+  }
+
+  JsonValue::Object combat;
+  if (block.combat.has_damage) {
+    JsonValue::Object damage;
+    put(damage, "minimum", block.combat.damage_min);
+    put(damage, "maximum", block.combat.damage_max);
+    put(damage, "attacksPerSecond", block.combat.attacks_per_second);
+    put(damage, "dps", block.combat.dps);
+    put(damage, "channel", block.combat.channel);
+    put(damage, "rating", block.combat.rating);
+    put(combat, "damage", std::move(damage));
+  } else {
+    put(combat, "damage", nullptr);
+  }
+  put(combat, "ward", block.combat.ward);
+  if (block.combat.has_attributes) {
+    put(combat, "attributes", JsonValue::Object{{"strength", block.combat.attributes},
+                                                {"dexterity", block.combat.attributes},
+                                                {"intelligence", block.combat.attributes}});
+  } else {
+    put(combat, "attributes", nullptr);
+  }
+  if (block.combat.resource_health > 0 || block.combat.resource_mana > 0) {
+    put(combat, "resources", JsonValue::Object{{"health", block.combat.resource_health},
+                                               {"mana", block.combat.resource_mana}});
+  } else {
+    put(combat, "resources", nullptr);
+  }
+  put(combat, "modifiers", modifiers_json(block.combat.modifiers));
+  put(combat, "ratings", JsonValue::Object{{"attack", ratings_json(block.combat.attack)},
+                                           {"defense", ratings_json(block.combat.defense)}});
+
+  JsonValue::Object out;
+  put(out, "packId", block.pack_id);
+  put(out, "item", std::move(item));
+  put(out, "material", block.material);
+  put(out, "materialTier", block.material_tier);
+  put(out, "form", block.form);
+  put(out, "displayName", block.display_name);
+  put(out, "lines", std::move(lines));
+  put(out, "combat", std::move(combat));
+  return JsonValue(std::move(out));
+}
+
+JsonValue vessel_or_null(const GameItem& item) {
+  if (!item.vessel) return JsonValue(nullptr);
+  return vessel_json(*item.vessel);
+}
+
+int item_level_of(const GameItem& item) { return item.item_level(); }
+
+// dev.js snapshotItem.
+JsonValue snapshot_item_json(const GameItem& item) {
+  JsonValue::Object out;
+  put(out, "id", item.id);
+  put(out, "uuid", item.uuid);
+  put(out, "name", item.name);
+  put(out, "qty", item.qty);
+  if (item.slot >= 0) put(out, "slot", item.slot);
+  else put(out, "slot", nullptr);
+  put(out, "size", JsonValue::Object{{"width", item.size.width}, {"height", item.size.height}});
+  if (item.vessel) put(out, "itemLevel", item_level_of(item));
+  else put(out, "itemLevel", nullptr);
+  put(out, "stats", stats_json(item));
+  put(out, "vessel", vessel_or_null(item));
+  return JsonValue(std::move(out));
+}
+
+// dev.js itemIdentity (server/shared item identity projection).
+JsonValue item_identity_json(const GameItem& item) {
+  JsonValue::Object out;
+  put(out, "id", item.id);
+  put(out, "uuid", item.uuid);
+  put(out, "name", item.name);
+  put(out, "displayName", item.display_name);
+  put(out, "qty", item.qty);
+  if (item.slot >= 0) {
+    put(out, "slot", item.slot);
+    put(out, "position", JsonValue::Object{{"x", item.slot % 12}, {"y", item.slot / 12}});
+  } else {
+    put(out, "slot", nullptr);
+    put(out, "position", nullptr);
+  }
+  if (item.bound_to.empty()) put(out, "boundTo", nullptr);
+  else put(out, "boundTo", item.bound_to);
+  put(out, "affixes", JsonValue::Object{{"brand", nullptr}, {"bond", nullptr}});
+  put(out, "vessel", vessel_or_null(item));
+  put(out, "stats", stats_json(item));
+  if (item.bonus_attributes > 0) {
+    put(out, "attributes", JsonValue::Object{{"strength", item.bonus_attributes},
+                                             {"dexterity", item.bonus_attributes},
+                                             {"intelligence", item.bonus_attributes}});
+  } else {
+    put(out, "attributes", nullptr);
+  }
+  if (item.bonus_health > 0 || item.bonus_mana > 0) {
+    put(out, "resourceBonuses", JsonValue::Object{{"health", item.bonus_health},
+                                                  {"mana", item.bonus_mana}});
+  } else {
+    put(out, "resourceBonuses", nullptr);
+  }
+  put(out, "combatBonuses", modifiers_json(item.combat_bonuses));
+  put(out, "size", JsonValue::Object{{"width", item.size.width}, {"height", item.size.height}});
+  return JsonValue(std::move(out));
+}
+
+// dev.js groundItems entry.
+JsonValue ground_item_json(const GroundItem& ground) {
+  JsonValue::Object out;
+  put(out, "id", ground.item.id);
+  put(out, "uuid", ground.item.uuid);
+  put(out, "name", ground.item.name);
+  put(out, "displayName", ground.item.display_name);
+  if (ground.item.bound_to.empty()) put(out, "boundTo", nullptr);
+  else put(out, "boundTo", ground.item.bound_to);
+  put(out, "x", ground.x);
+  put(out, "y", ground.y);
+  put(out, "qty", ground.item.qty);
+  if (ground.item.vessel) put(out, "itemLevel", ground.item.item_level());
+  else put(out, "itemLevel", nullptr);
+  put(out, "stats", stats_json(ground.item));
+  put(out, "vessel", vessel_or_null(ground.item));
+  return JsonValue(std::move(out));
+}
+
 // Tiny SHA-1 implementation solely for the RFC6455 challenge response.
 std::array<std::uint8_t, 20> sha1(const std::string& input) {
   std::vector<std::uint8_t> message(input.begin(), input.end());
@@ -298,14 +494,25 @@ std::string emit_envelope(const Envelope& envelope) {
 }
 
 ProtocolSession::ProtocolSession(std::string identity, std::string socket_id, std::uint64_t seed, bool quick_start)
-    : identity_(std::move(identity)), socket_id_(std::move(socket_id)), quick_start_(quick_start), simulation_(std::make_unique<Simulation>(seed, "House Verdigris")), world_(std::make_unique<WorldSimulation>(seed, identity_)) {}
+    : identity_(std::move(identity)), socket_id_(std::move(socket_id)), quick_start_(quick_start),
+      session_rng_(static_cast<std::uint32_t>(seed ^ (seed >> 32))),
+      simulation_(std::make_unique<Simulation>(seed, "House Verdigris")), world_(std::make_unique<WorldSimulation>(seed, identity_)) {
+  // Fresh-scion admission (server/core treasuries/fresh profile): the purse
+  // is the only starting inventory; the legacy starter blade is retired
+  // vocabulary and intentionally absent (see the N4 report).
+  CreateItemOptions purse;
+  purse.quantity = 100;
+  auto coins = create_game_item("coins", purse);
+  if (coins) inventory_.add(std::move(*coins));
+  sync_combat_mods();
+}
 void ProtocolSession::replace_socket(std::string socket_id) { std::lock_guard lock(mutex_); socket_id_=std::move(socket_id); }
 void ProtocolSession::set_broadcast(std::function<void(const Envelope&)> broadcast) { std::lock_guard lock(mutex_); broadcast_=std::move(broadcast); }
 std::int64_t ProtocolSession::now_ms() { return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count(); }
 std::string ProtocolSession::player_payload() const {
   JsonValue::Object player; const auto position=world_->position();
   put(player,"uuid",identity_); put(player,"socket_id",socket_id_); put(player,"sceneId",world_->scene_id()); put(player,"x",position.x); put(player,"y",position.y); put(player,"facing",world_->facing());
-  JsonValue::Array slots; for (const auto& item:inventory_) { JsonValue::Object value; put(value,"id",item.id); put(value,"uuid",item.id+"-"+identity_); put(value,"name",item.name); put(value,"slot",item.equipped?"weapon":"inventory"); slots.emplace_back(std::move(value)); }
+  JsonValue::Array slots; for (const auto& item:inventory_.items()) { JsonValue::Object value; put(value,"id",item.id); put(value,"uuid",item.uuid); put(value,"name",item.name); if(item.slot>=0) put(value,"slot",item.slot); else put(value,"slot",nullptr); slots.emplace_back(std::move(value)); }
   JsonValue::Object inventory; put(inventory,"slots",std::move(slots)); put(player,"inventory",std::move(inventory)); return JsonValue(std::move(player)).stringify();
 }
 std::string ProtocolSession::login_payload() const {
@@ -331,6 +538,8 @@ JsonValue ProtocolSession::snapshot() const {
   JsonValue::Array monsters; for (const auto& candidate:world_->monsters()) if (candidate.alive) {
     JsonValue::Object monster; put(monster,"uuid",candidate.uuid); put(monster,"id",candidate.id); put(monster,"name",candidate.name);
     put(monster,"x",candidate.x); put(monster,"y",candidate.y); put(monster,"level",candidate.level); put(monster,"rarity",candidate.rarity);
+    JsonValue::Array tags; for (const auto& tag:candidate.tags) tags.emplace_back(tag); put(monster,"tags",std::move(tags));
+    put(monster,"coins",candidate.coins);
     JsonValue::Object behaviour; put(behaviour,"type",candidate.behaviour_type); put(monster,"behaviour",std::move(behaviour));
     JsonValue::Object mhp; put(mhp,"current",candidate.life); put(mhp,"max",candidate.life_max); put(monster,"hp",std::move(mhp));
     JsonValue::Array modifiers; for (const auto& modifier:candidate.modifiers) { JsonValue::Object value; put(value,"id",modifier); put(value,"label",modifier=="empowered"?"Empowered":modifier); modifiers.emplace_back(std::move(value)); } put(monster,"modifiers",std::move(modifiers));
@@ -343,24 +552,276 @@ JsonValue ProtocolSession::snapshot() const {
     JsonValue::Array spawns; for (const auto& spawn:meta.spawn_points) { JsonValue::Object value; put(value,"x",spawn.x); put(value,"y",spawn.y); spawns.emplace_back(std::move(value)); } put(metadata,"spawnPoints",std::move(spawns));
     put(state,"sceneMetadata",std::move(metadata)); }
   else put(state,"sceneMetadata",JsonValue::Object{});
-  JsonValue::Array items; for (const auto& item:inventory_) { JsonValue::Object value; put(value,"id",item.id); put(value,"uuid",item.id+"-"+identity_); put(value,"name",item.name); put(value,"slot",item.equipped?"weapon":"inventory"); items.emplace_back(std::move(value)); } put(state,"inventory",std::move(items));
-  put(state,"groundItems",ground_items_); put(state,"groundTrophies",JsonValue::Array{}); return JsonValue(std::move(state));
+  // N4: the real item pipeline snapshot (dev.js buildStateSnapshot).
+  put(state,"level",actor?actor->stats.level:1);
+  JsonValue::Array items; for (const auto& item:inventory_.items()) items.emplace_back(snapshot_item_json(item)); put(state,"inventory",std::move(items));
+  JsonValue::Array details; for (const auto& item:inventory_.items()) details.emplace_back(item_identity_json(item)); put(state,"inventoryDetails",std::move(details));
+  JsonValue::Object wear; JsonValue::Object wear_details;
+  for (const auto& seat:WearSet::physical_slots()) {
+    const GameItem* worn=wear_.in_seat(seat);
+    if (worn) { put(wear,seat,worn->id); put(wear_details,seat,item_identity_json(*worn)); }
+    else { put(wear,seat,nullptr); put(wear_details,seat,nullptr); }
+  }
+  put(state,"wear",std::move(wear)); put(state,"wearDetails",std::move(wear_details));
+  {
+    const auto totals=wear_.totals();
+    JsonValue::Object combat;
+    put(combat,"attack",ratings_json(totals.attack)); put(combat,"defense",ratings_json(totals.defense));
+    put(combat,"blockChance",totals.modifiers.block_chance); put(combat,"criticalChance",totals.modifiers.critical_chance);
+    put(combat,"goodsFound",totals.modifiers.goods_found); put(combat,"damageAgainstBeasts",totals.modifiers.damage_against_beasts);
+    put(combat,"respawnProtectionUntil",0);
+    put(state,"combat",std::move(combat));
+  }
+  JsonValue::Array ground; for (const auto& entry:world_->ground_items()) ground.emplace_back(ground_item_json(entry)); put(state,"groundItems",std::move(ground));
+  put(state,"groundTrophies",JsonValue::Array{}); return JsonValue(std::move(state));
 }
 std::string ProtocolSession::state_payload(const std::string& request_id) const { std::lock_guard lock(mutex_); JsonValue::Object data; put(data,"player",JsonValue::Object{{"socket_id",socket_id_}}); put(data,"state",snapshot()); put(data,"requestId",request_id); return JsonValue(std::move(data)).stringify(); }
-void ProtocolSession::grant_item(const std::string& item_id, int quantity) { for (int i=0;i<(std::max)(1,quantity);++i) { Item item; item.id=item_id; item.name=item_id; item.owner_id=simulation_->scion().id; inventory_.push_back(std::move(item)); } }
+void ProtocolSession::emit_inventory_refresh(const std::function<void(const Envelope&)>& emit) const {
+  // dev.js: core:refresh:inventory carries the full slot list.
+  JsonValue::Array slots; for (const auto& item:inventory_.items()) slots.emplace_back(item_identity_json(item));
+  emit(Envelope{"core:refresh:inventory",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",socket_id_}}},{"data",std::move(slots)}}});
+}
+void ProtocolSession::sync_combat_mods() {
+  const auto totals=wear_.totals();
+  PlayerCombatMods mods=world_->player_combat_mods();  // preserves force_critical
+  mods.critical_chance=totals.modifiers.critical_chance;
+  mods.goods_found=totals.modifiers.goods_found;
+  mods.damage_against_beasts=totals.modifiers.damage_against_beasts;
+  // combat/index.js attackStyle: the dominant trained channel, stab first on ties.
+  const ChannelRatings& a=totals.attack;
+  int best=a.stab; std::string style="stab";
+  if (a.slash>best) { best=a.slash; style="slash"; }
+  if (a.crush>best) { best=a.crush; style="crush"; }
+  if (a.range>best) { best=a.range; style="range"; }
+  mods.attack_style=best>0?style:"slash";
+  world_->set_player_combat_mods(mods);
+}
+void ProtocolSession::handle_give(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) {
+  // dev.js dev:give: real inventory pipeline, overflow 'drop' at the feet.
+  const std::string item_id=as_string(payload.get("itemId"));
+  const int quantity=(std::max)(1,as_int(payload.get("qty"),1));
+  Mulberry32 seeded;
+  Mulberry32* rng=&session_rng_;  // unseeded grants draw from the session stream (JS: Math.random)
+  if (const auto* seed_value=payload.get("seed")) {
+    if (seed_value->number()) { seeded=Mulberry32(static_cast<std::uint32_t>(std::floor(*seed_value->number()))); rng=&seeded; }
+  }
+  const auto* level_value=payload.get("itemLevel");
+  const int item_level=level_value&&level_value->number()?static_cast<int>(*level_value->number()):0;
+  const ItemDef* def=item_def(item_id);
+  if (!def) { emit_message(emit,"Unknown item "+item_id+"."); return; }
+  int dropped=0;
+  if (def->stackable) {
+    CreateItemOptions opts; opts.quantity=quantity;
+    auto item=create_game_item(item_id,opts);
+    if (item) inventory_.add(std::move(*item));
+  } else {
+    for (int i=0;i<quantity;++i) {
+      CreateItemOptions opts; opts.rng=rng; opts.item_level=item_level; opts.bind_to=identity_; opts.forge=&world_->forge();
+      auto item=create_game_item(item_id,opts);
+      if (!item) break;
+      auto result=inventory_.add(std::move(*item));
+      const auto position=world_->position();
+      for (auto& spill:result.overflow) { world_->add_ground_item(std::move(spill),position.x,position.y); ++dropped; }
+    }
+  }
+  if (dropped>0) emit_message(emit,"Your backpack is full. "+std::to_string(dropped)+" item"+(dropped==1?"":"s")+" fell at your feet.");
+  emit_inventory_refresh(emit);
+  emit_message(emit,"Granted "+std::to_string(quantity)+"x "+item_id+".");
+}
+void ProtocolSession::handle_drop(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) {
+  // dev.js dev:drop: unbound deterministic gear on the active floor.
+  const std::string item_id=as_string(payload.get("itemId"));
+  Mulberry32 seeded;
+  Mulberry32* rng=&session_rng_;
+  if (const auto* seed_value=payload.get("seed")) {
+    if (seed_value->number()) { seeded=Mulberry32(static_cast<std::uint32_t>(std::floor(*seed_value->number()))); rng=&seeded; }
+  }
+  const auto* level_value=payload.get("itemLevel");
+  CreateItemOptions opts; opts.rng=rng; opts.forge=&world_->forge();
+  if (level_value&&level_value->number()) opts.item_level=static_cast<int>(*level_value->number());
+  auto item=create_game_item(item_id,opts);
+  if (!item) return;
+  const auto position=world_->position();
+  world_->add_ground_item(std::move(*item),position.x,position.y);
+  emit_message(emit,"Dropped "+item_id+" on the active floor.");
+}
+void ProtocolSession::handle_equip(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) {
+  // item:equip (wear-slots.js resolveEquipSlot + wear.js totals refresh).
+  const auto* item_data=payload.get("item");
+  const std::string uuid=as_string(item_data?item_data->get("uuid"):nullptr);
+  const std::string target=as_string(item_data?item_data->get("targetSlot"):nullptr);
+  GameItem item;
+  if (uuid.empty()||!inventory_.remove_by_uuid(uuid,&item)) return;
+  const ItemDef* def=item_def(item.id);
+  const std::string base=!item.equip_slot.empty()?item.equip_slot:(def?def->slot:"");
+  if (base.empty()) { inventory_.add(std::move(item)); emit_inventory_refresh(emit); return; }
+  const std::string seat=wear_.resolve_seat(base,target);
+  auto displaced=wear_.equip(std::move(item),seat);
+  if (displaced) {
+    displaced->slot=-1;
+    auto result=inventory_.add(std::move(*displaced));
+    // Full backpack mid-swap: the displaced piece spills bound at the feet
+    // (JS aborts the equip instead; documented N4 simplification — the
+    // scenario set never swaps onto a full grid).
+    const auto position=world_->position();
+    for (auto& spill:result.overflow) world_->add_ground_item(std::move(spill),position.x,position.y);
+  }
+  sync_combat_mods();
+  emit_inventory_refresh(emit);
+}
+void ProtocolSession::handle_take_ground(const std::string& uuid, const std::function<void(const Envelope&)>& emit) {
+  // registry.js Take: chebyshev reach, bind check, real inventory admission.
+  const GroundItem* found=nullptr;
+  for (const auto& ground:world_->ground_items()) { if (ground.item.uuid==uuid) { found=&ground; break; } }
+  if (!found) return;
+  if (!found->item.bound_to.empty()&&found->item.bound_to!=identity_) return;
+  const Vec2 player_tile=tile_movement::occupied_tile(world_->position());
+  const int ix=static_cast<int>(std::floor(found->x));
+  const int iy=static_cast<int>(std::floor(found->y));
+  if ((std::max)(std::abs(ix-player_tile.x),std::abs(iy-player_tile.y))>1) return;
+  const double gx=found->x; const double gy=found->y;
+  GameItem item;
+  if (!world_->take_ground_item(uuid,&item)) return;
+  item.slot=-1;
+  auto result=inventory_.add(std::move(item));
+  for (auto& spill:result.overflow) world_->add_ground_item(std::move(spill),gx,gy);  // no room: stays on the ground
+  emit_inventory_refresh(emit);
+}
+void ProtocolSession::handle_take_underfoot(const std::function<void(const Envelope&)>& emit) {
+  // player:take:underfoot: own tile, then +x/-x/+y/-y; takes ONE item.
+  const Vec2 tile=tile_movement::occupied_tile(world_->position());
+  const Vec2 candidates[]={{tile.x,tile.y},{tile.x+1,tile.y},{tile.x-1,tile.y},{tile.x,tile.y+1},{tile.x,tile.y-1}};
+  for (const auto& candidate:candidates) {
+    for (const auto& ground:world_->ground_items()) {
+      if (static_cast<int>(std::floor(ground.x))!=candidate.x||static_cast<int>(std::floor(ground.y))!=candidate.y) continue;
+      if (!ground.item.bound_to.empty()&&ground.item.bound_to!=identity_) continue;
+      handle_take_ground(ground.item.uuid,emit);
+      return;
+    }
+  }
+}
+void ProtocolSession::handle_menu_build(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) const {
+  // registry.js: the server builds the menu; the client only renders it.
+  const auto* misc=payload.get("miscData");
+  const auto* clicked=misc?misc->get("clickedOn"):nullptr;
+  auto clicked_has=[&](const char* marker) {
+    if (!clicked||!clicked->object()) return false;
+    for (const auto& [key,value]:*clicked->object()) { if (value.string()&&*value.string()==marker) return true; }
+    return false;
+  };
+  JsonValue::Array entries;
+  if (clicked_has("gameMap")) {
+    // World variant: Take per ground item on the clicked tile, newest first.
+    const auto* tile=payload.get("tile");
+    const auto* world_pos=tile?tile->get("world"):nullptr;
+    const int wx=as_int(world_pos?world_pos->get("x"):nullptr);
+    const int wy=as_int(world_pos?world_pos->get("y"):nullptr);
+    std::vector<const GroundItem*> matches;
+    for (const auto& ground:world_->ground_items()) {
+      if (static_cast<int>(std::floor(ground.x))==wx&&static_cast<int>(std::floor(ground.y))==wy) matches.push_back(&ground);
+    }
+    std::sort(matches.begin(),matches.end(),[](const GroundItem* a,const GroundItem* b){return a->timestamp>b->timestamp;});
+    for (const auto* ground:matches) {
+      JsonValue::Object entry;
+      put(entry,"label","Take <span style='color:#e8d8a0'>"+ground->item.display_name+"</span>");
+      put(entry,"action",JsonValue::Object{{"name","Take"},{"actionId","player:take"},{"context",JsonValue::Array{JsonValue("gameMap")}},{"allow",JsonValue::Array{JsonValue("item")}},{"nearby","edge"},{"weight",1},{"queueable",true}});
+      put(entry,"type","item");
+      put(entry,"at",JsonValue::Object{{"x",wx},{"y",wy}});
+      put(entry,"id",ground->item.id);
+      put(entry,"uuid",ground->item.uuid);
+      put(entry,"timestamp",static_cast<double>(ground->timestamp));
+      entries.emplace_back(std::move(entry));
+    }
+    JsonValue::Object walk;
+    put(walk,"label","Walk here");
+    put(walk,"action",JsonValue::Object{{"name","Walk here"},{"actionId","player:walk"},{"context",JsonValue::Array{JsonValue("gameMap")}},{"weight",2},{"queueable",true}});
+    put(walk,"type","tile");
+    put(walk,"at",JsonValue::Object{{"x",wx},{"y",wy}});
+    entries.emplace_back(std::move(walk));
+  } else if (clicked_has("inventorySlot")) {
+    // Inventory variant: the brand service entry for eligible vessel items.
+    const int slot=as_int(misc?misc->get("slot"):nullptr,-1);
+    const GameItem* item=nullptr;
+    for (const auto& candidate:inventory_.items()) { if (candidate.slot==slot) { item=&candidate; break; } }
+    if (item&&item->vessel&&world_->scene_id()=="town:verdigris") {
+      const VesselItem& vi=item->vessel->item;
+      const bool room=vi.vessel-static_cast<int>(vi.brands.size())-vi.scars>0;
+      if (room&&vi.patience>=1) {
+        JsonValue::Object entry;
+        put(entry,"label","Add a random brand (100 coins)");
+        put(entry,"action",JsonValue::Object{{"name","Add brand"},{"actionId","player:vesselforge:add-brand"},{"context",JsonValue::Array{JsonValue("inventorySlot")}},{"disallowWhile",JsonValue::Array{JsonValue("bank"),JsonValue("shop")}},{"allow",JsonValue::Array{JsonValue("item")}},{"nearby",false},{"weight",2}});
+        put(entry,"type","item");
+        put(entry,"miscData",misc?*misc:JsonValue(nullptr));
+        put(entry,"uuid",item->uuid);
+        put(entry,"id",item->id);
+        entries.emplace_back(std::move(entry));
+      }
+    }
+  }
+  JsonValue::Object cancel;
+  put(cancel,"label","Cancel");
+  put(cancel,"action",JsonValue::Object{{"name","Cancel"},{"actionId","cancel"},{"weight",99}});
+  put(cancel,"type","cancel");
+  entries.emplace_back(std::move(cancel));
+  emit(Envelope{"game:context-menu:items",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",socket_id_}}},{"data",std::move(entries)}}});
+}
+void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) {
+  // actions/index.js: dispatch on the echoed action's actionId.
+  const auto* queue_item=payload.get("queueItem");
+  const auto* action=queue_item?queue_item->get("action"):nullptr;
+  const std::string action_id=as_string(action?action->get("actionId"):nullptr);
+  const auto* item_ref=queue_item?queue_item->get("item"):nullptr;
+  const std::string uuid=as_string(item_ref?item_ref->get("uuid"):nullptr);
+  if (action_id=="player:take") { handle_take_ground(uuid,emit); return; }
+  if (action_id=="player:vesselforge:add-brand") {
+    // vesselforge-brand.js: town service, 100 coins, sear on the live item;
+    // a failed roll spends nothing (engine rolls on a clone internally).
+    if (world_->scene_id()!="town:verdigris"||uuid.empty()) return;
+    GameItem* item=inventory_.find_by_uuid(uuid);
+    if (!item||!item->vessel) return;
+    VesselItem rolled=item->vessel->item;
+    if (!world_->forge().sear(rolled)) return;
+    if (!inventory_.spend_coins(100)) { emit_message(emit,"You need 100 coins for the brand service."); return; }
+    // spend_coins may rebuild the items vector; re-resolve the pointer.
+    item=inventory_.find_by_uuid(uuid);
+    if (!item||!item->vessel) return;
+    item->vessel->item=rolled;
+    // The JS handler refreshes the raw tooltip lines only; combat stats and
+    // the display name stay stale until the next full refresh.
+    item->vessel->lines=world_->forge().tooltip(rolled);
+    emit_inventory_refresh(emit);
+    emit_message(emit,"The forge sears a new brand into "+item->display_name+".");
+    return;
+  }
+}
+void ProtocolSession::handle_inventory_commit(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) {
+  // player:inventory:commit world-drop: the production inventory drop verb.
+  const std::string action=as_string(payload.get("action"));
+  if (action!="world-drop") return;
+  const auto* item_ref=payload.get("item");
+  const std::string uuid=as_string(item_ref?item_ref->get("uuid"):nullptr);
+  GameItem item;
+  if (uuid.empty()||!inventory_.remove_by_uuid(uuid,&item)) return;
+  item.slot=-1;
+  const auto position=world_->position();
+  world_->add_ground_item(std::move(item),position.x,position.y);
+  emit_inventory_refresh(emit);
+}
 void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std::function<void(const Envelope&)>& emit) {
   if (event.type == "telegraph") {
     JsonValue::Object data; put(data,"attackerId",event.attacker_id); put(data,"attackerName",event.attacker_name); put(data,"skillId",event.skill_id);
     put(data,"x",event.x); put(data,"y",event.y); put(data,"radius",event.radius); put(data,"durationMs",event.duration_ms);
     emit_world(Envelope{"monster:telegraph",JsonValue(std::move(data))},emit); return;
   }
-  if (event.type == "drop") {
-    JsonValue::Object item; put(item,"id",event.item_id); put(item,"uuid",event.item_id+"-"+event.target_id); put(item,"name",event.item_id); put(item,"x",event.x); put(item,"y",event.y);
-    ground_items_.push_back(JsonValue(std::move(item))); return;
-  }
+  // N4: kill rewards go through world_->drop_monster_loot inside
+  // advance_combat; the legacy synthetic 'drop' trophy event is retired.
   JsonValue::Object data; put(data,"attackerId",event.attacker_id); put(data,"attackerName",event.attacker_name); put(data,"targetId",event.target_id);
   put(data,"targetName",event.target_name); put(data,"targetType",event.target_id==identity_?"player":"monster"); put(data,"skillId",event.skill_id);
   put(data,"amount",event.amount); put(data,"died",event.died); put(data,"health",JsonValue::Object{{"current",event.health},{"max",event.health_max}});
+  // combat/index.js hit parity fields.
+  put(data,"baseAmount",event.base_amount); put(data,"beastbaneAmount",event.beastbane_amount);
+  put(data,"beastbanePercent",event.beastbane_percent); put(data,"beastbane",event.beastbane);
+  put(data,"critical",event.critical); put(data,"attackStyle",event.attack_style);
   emit_world(Envelope{"combat:hit",JsonValue(std::move(data))},emit);
 }
 void ProtocolSession::process_combat(std::int64_t now, const std::function<void(const Envelope&)>& emit) {
@@ -377,12 +838,19 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   const auto* payload=envelope.data.object()?&envelope.data:nullptr;
   if (envelope.event=="world:zone:enter") { const auto node=as_string(payload?payload->get("nodeId"):nullptr,"tin:1:0"); simulation_->dispatch(Command::enter(node.rfind("route:",0)==0?node:"route:"+node)); world_->enter_solo_instance("dungeon",""); emit_transition(emit,"world:scene:transition"); return; }
   if (envelope.event=="instance:enterSolo") { world_->enter_solo_instance(as_string(payload?payload->get("template"):nullptr,"dungeon"),as_string(payload?payload->get("layout"):nullptr,"")); emit_transition(emit,"party:scene:transition"); return; }
-  if (envelope.event=="player:move") { const auto direction=as_string(payload?payload->get("direction"):nullptr); const bool was_instance=world_->in_instance(); if (world_->apply_movement_sample(direction,now_ms())) { emit_movement(emit); if (was_instance&&!world_->in_instance()) { emit_message(emit,"The party returns to the surface."); emit_transition(emit,"party:scene:transition"); } } return; }
-  if (envelope.event=="dev:teleport") { if (!payload) return; const auto* x=payload->get("x"); const auto* y=payload->get("y"); if (!x||!x->number()||!y||!y->number()) return; const int tx=static_cast<int>(*x->number()); const int ty=static_cast<int>(*y->number()); const bool was_instance=world_->in_instance(); world_->teleport(tx,ty,now_ms()); const bool returned=was_instance&&!world_->in_instance(); emit_movement(emit); emit_message(emit,"Teleported to "+std::to_string(tx)+", "+std::to_string(ty)+(returned?" (portal followed).":".")); if (returned) { emit_message(emit,"The party returns to the surface."); emit_transition(emit,"party:scene:transition"); } if (!returned) process_combat(now_ms(),emit); return; }
+  if (envelope.event=="player:move") { const auto direction=as_string(payload?payload->get("direction"):nullptr); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); if (world_->apply_movement_sample(direction,now_ms())) { emit_movement(emit); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool scene_changed=world_->scene_id()!=scene_before; if (depth_changed||scene_changed) { if (was_instance&&!world_->in_instance()) emit_message(emit,"The party returns to the surface."); emit_transition(emit,"party:scene:transition"); } } return; }
+  if (envelope.event=="dev:teleport") { if (!payload) return; const auto* x=payload->get("x"); const auto* y=payload->get("y"); if (!x||!x->number()||!y||!y->number()) return; const int tx=static_cast<int>(*x->number()); const int ty=static_cast<int>(*y->number()); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); world_->teleport(tx,ty,now_ms()); const bool returned=was_instance&&!world_->in_instance(); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool transitioned=returned||depth_changed||world_->scene_id()!=scene_before; emit_movement(emit); emit_message(emit,"Teleported to "+std::to_string(tx)+", "+std::to_string(ty)+(transitioned?" (portal followed).":".")); if (returned) emit_message(emit,"The party returns to the surface."); if (transitioned) emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) process_combat(now_ms(),emit); return; }
   if (envelope.event=="dev:setlevel") { auto* actor=simulation_->actor(simulation_->scion().actor_id); const int level=as_int(payload?payload->get("level"):nullptr,1); if(actor){ actor->stats.level=(std::max)(1,level); actor->stats.attack=12+actor->stats.level*3; actor->stats.life_max=100+actor->stats.level*10; actor->stats.life=actor->stats.life_max; world_->set_level(actor->stats.level); } return; }
   if (envelope.event=="dev:heal") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor) world_->heal_player(actor->stats.life,actor->stats.life_max); return; }
   if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); world_->start_player_attack(actor->stats.level,actor->stats.attack,now_ms(),direction); process_combat(now_ms(),emit); } return; }
-  if (envelope.event=="dev:give") { grant_item(as_string(payload?payload->get("itemId"):nullptr,"garnet-amulet"),as_int(payload?payload->get("qty"):nullptr,1)); return; }
+  if (envelope.event=="dev:give") { if (payload) handle_give(*payload,emit); return; }
+  if (envelope.event=="dev:drop") { if (payload) handle_drop(*payload,emit); return; }
+  if (envelope.event=="dev:forcecritical") { world_->player_combat_mods().force_critical=true; emit_message(emit,"Your next strike will be a critical hit."); return; }
+  if (envelope.event=="item:equip") { if (payload) handle_equip(*payload,emit); return; }
+  if (envelope.event=="player:take:underfoot") { handle_take_underfoot(emit); return; }
+  if (envelope.event=="player:context-menu:build") { if (payload) handle_menu_build(*payload,emit); return; }
+  if (envelope.event=="player:context-menu:action") { if (payload) handle_menu_action(*payload,emit); return; }
+  if (envelope.event=="player:inventory:commit") { if (payload) handle_inventory_commit(*payload,emit); return; }
   if (envelope.event=="dev:state") { process_combat(now_ms(),emit); const auto id=as_string(payload?payload->get("requestId"):nullptr); JsonValue data; parse_json(state_payload(id),data); emit(Envelope{"dev:state",std::move(data)}); return; }
   if (envelope.event=="player:login") emit_login(emit);
 }
