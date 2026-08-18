@@ -67,6 +67,9 @@ outside production until the owner resolves asset provenance/packaging.
   `ca0dd2df`, with Luna working in `.codex/worktrees/TASK-0045-native-protocol-n3`.
   The scope is native-only; the unchanged browser harness remains the parity
   bar and no N3 source is accepted until the literal 7-scenario attach gate.
+- TASK‑0046 playability re-evaluation: `CLAIMED` on current tip `45846af7`,
+  with Luna running the required two fresh free-port arcs and `window.ws.url`
+  proofs. The task is read-only and owns only its evidence folder.
 
 ## Current coordinator gates
 

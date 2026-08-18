@@ -165,3 +165,11 @@ remain read-only. Acceptance requires the unchanged seven-scenario native
 attach (`combat`, `encounter-variety`, `boss-mechanic`, `quickstart`,
 `single-session`, `movement`, `zones`), native unit coverage, and an authentic
 negative transcript. No N3 authority or combat source has been integrated yet.
+
+## 2026-08-18 — Current-master playability evaluation claimed
+
+TASK-0046 is READY and claimed by Codex for Luna's read-only evaluation on
+`codex/TASK-0046-playability-reevaluation`, based on current program tip
+`45846af7`. It owns only task-folder evidence. The evaluator must use a free
+loopback port, prove `window.ws.url` for both arcs, and leave product,
+server, native, and harness files untouched.
