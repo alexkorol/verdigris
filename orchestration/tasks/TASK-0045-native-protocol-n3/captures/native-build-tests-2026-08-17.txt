@@ -1,0 +1,11 @@
+TASK-0045 native build/test transcript
+
+Command:
+  powershell -NoProfile -File native/build.ps1 -RunTests
+
+Result:
+  PASS legacy denylist
+  PASS core tests
+  PASS networking tests
+
+Worker commit: d9c6fc6f

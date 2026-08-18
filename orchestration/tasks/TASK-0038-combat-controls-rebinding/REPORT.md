@@ -1,58 +1,50 @@
 ---
 task: TASK-0038
 state: BLOCKED
-branch: codex/TASK-0038-combat-controls-rebinding
+branch: codex/TASK-0038-rebinding-kimiwork
 commits:
-  - f4df0b99
+  - 01a12d72
+  - 4a8983cb
 base_commit: e462c26d
+architect_review_required: true
 ---
 
 ## Executive summary
 
-TASK-0038 was audited but not implemented. Its acceptance behavior is wired
-through browser components outside the task's owned paths.
+The worker produced a substantive controls/rebinding candidate, but it is not
+review-ready under the current task contract. The implementation reaches the
+mounted browser seams that QUESTION-0008 identified, while the declared task
+ownership does not include those seams. Unit, build, and lint gates pass; the
+unchanged smoke gate still encodes the pre-rebind UI and context-menu contract.
 
 ## Implementation
 
-No source changes. The actual mounted seams are GameCanvas (world clicks and
-InputController), slots/Settings (settings pane), and hud/Quickbar (skill
-labels). An unreferenced UI component under the declared glob would not work.
-
-## Changed files
-
-Coordinator metadata and QUESTION-0008 only; worker evidence commit f4df0b99
-contains the ownership-seam note.
-
-## Interfaces
-
-None added or changed.
+- `01a12d72` adds a live persisted action map and input-controller rebinding.
+- `4a8983cb` wires LMB/RMB world attacks, Shift+RMB context access, the mounted
+  settings bindings panel, and live Quickbar labels.
+- The implementation covers the actual seams in `GameCanvas.vue`,
+  `slots/Settings.vue`, `hud/Quickbar.vue`, and a new `SettingsBindings.vue`.
 
 ## Verification
 
-- Targeted baseline — 5/5 passed.
-- `npm run test:unit` — baseline passed, 122 files / 779 tests.
-- `npm run smoke:browser` — invalid baseline: port 6500 was occupied and the
-  endpoint returned HTML instead of JSON.
+- Focused controls tests: 24/24 passed.
+- `npm run test:unit`: 123 files / 791 tests passed.
+- `npm run build`: passed.
+- `npm run lint`: passed.
+- `npm run smoke:browser`: fails at the unchanged expectation for `Bronze Arc
+  [Space / 1]`; the candidate correctly renders `LMB / 1`. The later smoke
+  step also expects unmodified right-click context-menu behavior, while the
+  candidate intentionally reserves Shift+RMB for that access.
 
-## Manual checks
+## Review blockers
 
-Read-only source audit traced click handlers, settings registration, and
-skill-label rendering to the files listed in QUESTION-0008.
+1. Architect/owner must expand ownership to the mounted component seams or
+   provide the alternative event seam in QUESTION-0008.
+2. The browser smoke expectations must be revised as a deliberate contract
+   update, not hidden by weakening the implementation.
+3. Required captures for persisted rebind across reload and LMB/RMB attacks
+   landing are absent.
+4. D-115 hands-on play review remains outstanding.
 
-## Specification deviations
-
-The controls/rebinding implementation is deferred; a partial helper-only
-change would not satisfy the world-click, mounted UI, or live-label criteria.
-
-## Risks and limitations
-
-The task remains blocked until Fable expands ownership, splits the task, or
-provides an approved seam.
-
-## Questions for Fable or the owner
-
-See QUESTION-0008.
-
-## Integration notes
-
-No source commit is available for integration.
+This report deliberately keeps the task `BLOCKED`; the source candidate is
+preserved and reviewable after those scope and evidence decisions are resolved.

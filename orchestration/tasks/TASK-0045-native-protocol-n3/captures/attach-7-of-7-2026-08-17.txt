@@ -1,0 +1,15 @@
+TASK-0045 unchanged attach transcript
+
+Harness commit: babba96fcde5ca1d55610853ad59af4fd57e2374
+Command:
+  PLAYTEST_WS_URL=ws://127.0.0.1:6539 node playtest/run.mjs --attach combat encounter-variety boss-mechanic quickstart single-session movement zones
+
+Result:
+  PASS boss-mechanic
+  PASS combat
+  PASS encounter-variety
+  PASS movement
+  PASS quickstart
+  PASS single-session
+  PASS zones
+  7/7 scenarios passed

@@ -1,0 +1,8 @@
+TASK-0045 authentic negative
+
+Mutation:
+  Temporarily changed kN3BossTelegraphRadius from 2 to 1.
+
+Result:
+  The networking telegraph-radius assertion failed as expected.
+  Restored radius 2; native denylist/core/networking gates returned green.
