@@ -155,3 +155,13 @@
   unchanged `quickstart`, `single-session`, `movement`, and `zones` at 4/4.
 - This supersedes the earlier candidate reference for handoff purposes but
   accepted implementation and loopback-bind correction are integrated.
+
+## 2026-08-17 — N3 combat parity claimed
+
+TASK-0045 is READY and claimed by Codex for Luna implementation on
+`codex/TASK-0045-native-protocol-n3`, based on post-N2 program tip `ca0dd2df`.
+The worker owns only `native/**`; `playtest/**`, `server/**`, and `src/**`
+remain read-only. Acceptance requires the unchanged seven-scenario native
+attach (`combat`, `encounter-variety`, `boss-mechanic`, `quickstart`,
+`single-session`, `movement`, `zones`), native unit coverage, and an authentic
+negative transcript. No N3 authority or combat source has been integrated yet.

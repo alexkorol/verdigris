@@ -63,6 +63,10 @@ outside production until the owner resolves asset provenance/packaging.
 - TASK‑0038 controls/rebinding and TASK‑0042 first-loot moment: `BLOCKED` on
   documented ownership seams; no source workaround should be invented without
   the architect/owner decision.
+- TASK‑0045 native protocol N3 combat/skills: `CLAIMED` on post-N2 tip
+  `ca0dd2df`, with Luna working in `.codex/worktrees/TASK-0045-native-protocol-n3`.
+  The scope is native-only; the unchanged browser harness remains the parity
+  bar and no N3 source is accepted until the literal 7-scenario attach gate.
 
 ## Current coordinator gates
 
