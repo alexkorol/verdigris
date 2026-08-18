@@ -85,5 +85,18 @@ const result = await page.evaluate(async () => {
   };
 });
 
+const hits = result.wire.filter((frame) => frame.event === 'combat:hit');
+if (!hits.some((frame) => frame.data?.targetId === result.target.uuid
+  && Number(frame.data?.amount) > 0)) {
+  throw new Error('Rendered capture did not record positive damage to the opening actor');
+}
+if (!hits.some((frame) => frame.data?.targetId === result.target.uuid
+  && frame.data?.died === true)) {
+  throw new Error('Rendered capture did not record the opening actor death');
+}
+if (!/slain|died|defeated/i.test(result.body)) {
+  throw new Error('Rendered capture body has no readable first-kill confirmation');
+}
+
 process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 await browser.close();
