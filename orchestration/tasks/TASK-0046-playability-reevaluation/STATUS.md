@@ -1,6 +1,6 @@
 ---
 task: TASK-0046
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: codex
 worker: Luna read-only playability evaluator
 worker_branch: codex/TASK-0046-playability-reevaluation
@@ -13,4 +13,6 @@ expected_verification: fresh current-tip build; two ~10-minute arcs; window.ws.u
 known_risks: evaluation-only; never edit product code, playtest harness, package files, or owner port 6500; use a free loopback port and preserve captures
 architect_review_required: true
 report: orchestration/tasks/TASK-0046-playability-reevaluation/REPORT.md
+candidate_commit: 1de6e45b
+handoff: report records bounded guest checkpoint, authoritative page-context WS proof, and isolated-world limitation; required two full arcs remain unperformed
 ---

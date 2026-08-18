@@ -60,16 +60,19 @@ outside production until the owner resolves asset provenance/packaging.
   [`coordinator-native-attach-2026-08-17.txt`](../../orchestration/tasks/TASK-0044-native-protocol-n2/captures/coordinator-native-attach-2026-08-17.txt).
   The JS/native contract comparison and intentional N2 population stub are
   recorded in [`coordinator-dual-run-matrix-2026-08-17.txt`](../../orchestration/tasks/TASK-0044-native-protocol-n2/captures/coordinator-dual-run-matrix-2026-08-17.txt).
-- TASK‑0038 controls/rebinding and TASK‑0042 first-loot moment: `BLOCKED` on
-  documented ownership seams; no source workaround should be invented without
-  the architect/owner decision.
-- TASK‑0045 native protocol N3 combat/skills: `CLAIMED` on post-N2 tip
-  `ca0dd2df`, with Luna working in `.codex/worktrees/TASK-0045-native-protocol-n3`.
-  The scope is native-only; the unchanged browser harness remains the parity
-  bar and no N3 source is accepted until the literal 7-scenario attach gate.
-- TASK‑0046 playability re-evaluation: `CLAIMED` on current tip `45846af7`,
-  with Luna running the required two fresh free-port arcs and `window.ws.url`
-  proofs. The task is read-only and owns only its evidence folder.
+- TASK‑0038 controls/rebinding: implementation is available on
+  `4a8983cb`; unit (123/791), build, and lint gates pass, but smoke still
+  expects the pre-rebind `Space / 1` and unmodified right-click contract.
+  Ownership expansion, updated browser expectations, and pointer/reload
+  captures are still required before review handoff. TASK‑0042 first-loot
+  remains `BLOCKED` on its documented ownership seam.
+- TASK‑0045 native protocol N3 combat/skills: `REVIEW_REQUESTED` at
+  `6d39565c` on post-N2 tip `ca0dd2df`. Native gates, unchanged 7-scenario
+  attach, unit coverage, and authentic negative are captured; architect
+  rebuild/acceptance is pending.
+- TASK‑0046 playability re-evaluation: `REVIEW_REQUESTED` at `1de6e45b` on
+  current tip `45846af7`. The report records the bounded guest checkpoint and
+  page-context socket proof, but explicitly does not claim the two full arcs.
 
 ## Current coordinator gates
 

@@ -12,6 +12,8 @@ expected_verification: npm run test:unit; npm run smoke:browser; controls/rebind
 known_risks: declared owned paths do not contain the mounted click handlers, settings pane, or skill-bar labels
 architect_review_required: true
 question: orchestration/questions/QUESTION-0008-task-0038-control-ownership-seam.md
+candidate_commit: 4a8983cbe7ef8892d5d703af11736186fa0e479f
+latest_audit: unit 123/791, build/lint pass; smoke fails on stale pre-rebind expectations; review handoff still blocked on ownership expansion, updated E2E expectations, and required captures
 ---
 
 The worker completed a read-only baseline audit and found no safe complete

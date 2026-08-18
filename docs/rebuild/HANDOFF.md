@@ -156,20 +156,21 @@
 - This supersedes the earlier candidate reference for handoff purposes but
   accepted implementation and loopback-bind correction are integrated.
 
-## 2026-08-17 — N3 combat parity claimed
+## 2026-08-18 — N3 combat parity review handoff
 
-TASK-0045 is READY and claimed by Codex for Luna implementation on
-`codex/TASK-0045-native-protocol-n3`, based on post-N2 program tip `ca0dd2df`.
-The worker owns only `native/**`; `playtest/**`, `server/**`, and `src/**`
-remain read-only. Acceptance requires the unchanged seven-scenario native
-attach (`combat`, `encounter-variety`, `boss-mechanic`, `quickstart`,
-`single-session`, `movement`, `zones`), native unit coverage, and an authentic
-negative transcript. No N3 authority or combat source has been integrated yet.
+TASK-0045 is `REVIEW_REQUESTED` on
+`codex/TASK-0045-native-protocol-n3` at `6d39565c`. The worker owns only
+`native/**`; `playtest/**`, `server/**`, and `src/**` remain read-only. Native
+denylist/core/networking gates, unchanged seven-scenario attach, combat unit
+coverage, and the authentic telegraph-radius negative are captured. The
+architect must rebuild and rerun the attach before acceptance; no N3 source is
+integrated into the program branch yet.
 
-## 2026-08-18 — Current-master playability evaluation claimed
+## 2026-08-18 — Current-master playability evaluation review handoff
 
-TASK-0046 is READY and claimed by Codex for Luna's read-only evaluation on
-`codex/TASK-0046-playability-reevaluation`, based on current program tip
-`45846af7`. It owns only task-folder evidence. The evaluator must use a free
-loopback port, prove `window.ws.url` for both arcs, and leave product,
-server, native, and harness files untouched.
+TASK-0046 is `REVIEW_REQUESTED` on
+`codex/TASK-0046-playability-reevaluation` at `1de6e45b`, based on current
+program tip `45846af7`. It owns only task-folder evidence. The report records
+the bounded guest/Old Barrow checkpoint, authoritative page-context
+`window.ws.url` proof, and the in-app-browser isolated-world discrepancy; the
+two full arcs and friction disposition remain explicitly unperformed.
