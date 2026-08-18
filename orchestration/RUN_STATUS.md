@@ -1,25 +1,26 @@
-# Run status (snapshot — rewritten each architect sweep, never a diary)
+﻿# Run status (snapshot â€” rewritten each architect sweep, never a diary)
 
-- Current integration tip: origin/codex/native-reconstitution @ 44d0b926
-- Master: 44d0b926 (PRs #20/#21/#22 shipped 2026-08-18)
+- Current integration tip: origin/codex/native-reconstitution @ 80b6c890
+- Master: 80b6c890 (PR #24 N4 parity; PRs 20-23 earlier today)
 - Owner-visible target: native client C1 SHIPPED (2D top-down, visible
   combat, inventory). Next: 0051 client harness + 0047 N4 parity.
 - Last architect playthrough: 0050 exe, 2026-08-18 ~13:55 (11 driven
-  captures — rigid world, live combat exchange, inventory verified)
+  captures â€” rigid world, live combat exchange, inventory verified)
 - Immutable objective: D-116 parity, D-110 playable-first
 
 ## RUNNING
 
-| Task | Owner | Topology | Notes |
-|---|---|---|---|
-| 0047 N4 items parity | kimi-work | PIPELINED | 13/13 attach bar; implementing core defs |
-| 0053 world composition polish | kimi | INDEPENDENT | continuous-mode claim; verify-first rule |
+| Task | Owner | Notes |
+|---|---|---|
+| 0053 composition polish | kimi | verify-first |
+| 0054 client C2 polish | deepseek | claimed post-INC-011 fix |
+| 0055 browser follow-ups | kimi-work | claimed after 0047 |
 
 ## READY (unclaimed)
 
 | Task | Packet | Notes |
 |---|---|---|
-| 0051 native client harness | BOUNDED-DESIGN | deepseek expected next (continuous mode); add damage-number scenario per 0050 review nit 2 |
+| 0056 N5 Chronicles parity (CRITICAL) | BOUNDED-DESIGN | UNBLOCKED by 0047 integration; kimi-work lane after 0055 |
 
 ## SHIPPED TODAY (2026-08-18)
 
@@ -40,9 +41,9 @@
 
 ## Fleet + budget
 
-- deepseek: ~$8 credits; continuous mode; expect 0051 claim. 6540–6559.
-- kimi K3: continuous mode, on 0053. Monthly pool tight (resets 08-23). 9880–9899.
-- kimi-work K3: on 0047. 6510–6529.
+- deepseek: ~$8 credits; continuous mode; expect 0051 claim. 6540â€“6559.
+- kimi K3: continuous mode, on 0053. Monthly pool tight (resets 08-23). 9880â€“9899.
+- kimi-work K3: on 0047. 6510â€“6529.
 - codex: out of tokens.
 
 ## EXP-1 CLOSED (packet-type A/B)
@@ -57,3 +58,4 @@ exists; interface-only acceptable for pure presentation.
 1. Review 0047 on flip (rebuild + 13-attach MYSELF).
 2. Review 0053 on flip (captures + gates + verify-first dispositions).
 3. Watch 0051 claim; review = run scenario set MYSELF + negative.
+
