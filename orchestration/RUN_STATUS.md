@@ -22,6 +22,8 @@
 |---|---|---|
 | 0050 native client C1 (CRITICAL) | MECHANICAL | camera2d.hpp scaffold + 6-step plan supplied; highest owner value |
 | 0051 native client harness | BOUNDED-DESIGN | sequence after/with 0050; move-and-camera scenario first |
+| 0052 suite flake hardening | MECHANICAL | first-goal + house-treasury bounded waits |
+| 0053 world composition polish | BOUNDED-DESIGN | salvaged from closed PR #3; verify-first |
 
 ## VERIFY / MERGE QUEUE
 
@@ -30,8 +32,7 @@
 ## BLOCKED / WATCH
 
 - WATCH RESOLVED into TASK-0052 (3rd sighting via deepseek run): first-goal + house-treasury flake hardening, READY, MECHANICAL packet.
-- Owner decision pending: GitHub branch protection on master;
-  does KimiWork K3 share the Allegretto quota?
+- Master branch protection: DONE (require PR, enforce admins, no force-push). KimiWork quota sharing: EXPERIMENT running (watch Allegretto 5h bar while kimi-work works). PR #3 closed as superseded -> TASK-0053.
 
 ## Fleet + budget
 
@@ -54,4 +55,5 @@
 1. Review 0049 on REVIEW_REQUESTED (screenshots + scope diff + gates).
 2. Route first free coordinator to 0050.
 3. Ask owner for branch protection on master.
+
 
