@@ -524,3 +524,17 @@ coordinator. Do not copy another task's files onto the program branch;
 the architect merges worker branches at acceptance. Board-level notes
 go in your own STATUS files or new files, never edits to files another
 writer owns (PROTOCOL single-writer rule).
+
+## 0048 ACCEPTED (2026-08-17 ~19:55) + WATCH ITEM
+
+Chronicles "silent combat" DISPROVEN with wire evidence: the 0046
+driver attacked from ~10 tiles out of contact. New standing scenario
+chronicles-first-combat (suite now 32); architect verified 1/1, 3/3
+sequenced, 32/32 full. Rulings: future arc drivers must verify target
+contact before claiming combat silence; mana rejection copy to become
+directive (amount+cadence, no balance change) - queued for UI wave.
+
+WATCH: at >=150ms ambient lag, first-goal (8s authored deadline) and
+house-treasury (carried-gold assert) can still flake in full runs;
+both pass in sequence at low lag. If seen twice more, spawn a
+follow-up harness task targeting those two specifically.
