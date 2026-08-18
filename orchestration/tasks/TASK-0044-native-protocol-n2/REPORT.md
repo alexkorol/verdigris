@@ -171,6 +171,13 @@ rounding; stair tiles/spawn walkable invariants.
 ## Commits
 
 - `d476788` feat(native): N2 world, movement, and zones over the C++ server (TASK-0044)
+- `293419b` fix(native): bind server to 127.0.0.1 — folds in the board's
+  loopback-bind standing guidance (wildcard binds stall on Windows Firewall
+  consent prompts per fresh binary). Gates + a full 4-scenario attach run
+  against the newest merged harness (program tip `50ca60a`) re-verified
+  green after this change:
+  `PASS movement (4615ms) / quickstart (162ms) / single-session (315ms) /
+  zones (1153ms) — 4/4 scenarios passed`.
 - (report/STATUS commit follows on the same branch)
 
 ## Deviations and stub inventory (for N3+)
