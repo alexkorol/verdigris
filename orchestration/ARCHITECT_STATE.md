@@ -566,3 +566,13 @@ Board: 0050 native client C1 (CRITICAL - top owner value), 0051 client
 harness (high), 0049 UI wave (high), 0042 first-loot (released,
 claimable). 0047 N4 in flight. Review bar unchanged; for 0050/0051 the
 architect additionally plays the build.
+
+## FLEET BUDGET (owner data, 2026-08-18 ~12:10)
+
+Kimi Allegretto plan: monthly total 77.38% consumed (resets 08-23);
+Code share of today: 15.2% of the 5h window, 3.04% of 7-day - rolling
+windows are healthy, the MONTHLY pool is the constraint (~1/5 left for
+Code, 5 days to reset). Routing rule: Kimi K3 gets tightly-scoped
+scaffolded execution only (D-120 minimizes its burn); DeepSeek ($10
+credits) takes design-heavy work; architect scaffolds harder if either
+pool nears empty. Open question: does KimiWork K3 share this quota?
