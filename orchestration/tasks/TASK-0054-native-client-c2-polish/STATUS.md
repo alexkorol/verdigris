@@ -23,5 +23,7 @@ Implemented and pushed for architect review. All four deliverables done:
 Authentic negative: suppressing the target-flash draw makes `combat-juice`
 fail; restored green. Details in `REPORT.md`.
 
-Board re-check 2026-08-18 (post-0054): no further unclaimed READY tasks —
-0053 (kimi) and 0047 (kimi-work) are peer-claimed. Re-checking next cycle.
+Commits:
+- `424de9f9` — claim
+- `73bd91c0` — implementation (title fix + combat juice + zoom + scenarios)
+- `f831be70` — REPORT implementation SHA
