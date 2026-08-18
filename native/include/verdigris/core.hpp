@@ -455,6 +455,31 @@ struct WorldMonster {
   int life = 30;
   int life_max = 30;
   bool alive = true;
+  std::string behaviour_type = "melee";
+  std::string rarity = "common";
+  std::vector<std::string> modifiers;
+  bool empowered = false;
+  bool boss = false;
+  std::uint64_t telegraph_until_ms = 0;
+  std::uint64_t next_attack_ms = 0;
+};
+
+struct WorldCombatEvent {
+  std::string type; // hit, death, telegraph, drop
+  std::string attacker_id;
+  std::string attacker_name;
+  std::string target_id;
+  std::string target_name;
+  std::string skill_id;
+  int amount = 0;
+  int health = 0;
+  int health_max = 0;
+  bool died = false;
+  int radius = 0;
+  int duration_ms = 0;
+  int x = 0;
+  int y = 0;
+  std::string item_id;
 };
 
 struct InstanceMetadata {
@@ -516,6 +541,17 @@ class WorldSimulation {
   // (unknown template -> dungeon, unknown layout -> theme default), saves the
   // pre-instance position on first entry, and places the player at a spawn.
   void enter_solo_instance(const std::string& template_id, const std::string& layout);
+  // N3 deterministic combat seam. The transport supplies the authoritative
+  // player actor's level/life; this world owns tile-space targets and emits
+  // protocol-ready facts without putting networking into the core.
+  std::vector<WorldCombatEvent> start_player_attack(int player_level, int player_attack,
+                                                     std::int64_t now_ms,
+                                                     const std::string& direction);
+  std::vector<WorldCombatEvent> advance_combat(int player_level, int player_attack,
+                                               int& player_life, int player_life_max,
+                                               std::int64_t now_ms);
+  void set_level(int level);
+  void heal_player(int& player_life, int player_life_max);
   // Display name for a template/layout pair (falls back to template-only,
   // then a capitalised template), matching the JS zone naming.
   static std::string zone_display_name(const std::string& template_id, const std::string& layout,
@@ -543,6 +579,11 @@ class WorldSimulation {
   TileGrid grid_;
   InstanceMetadata metadata_;
   std::vector<WorldMonster> monsters_;
+  std::string active_target_;
+  std::uint64_t next_player_attack_ms_ = 0;
+  std::uint64_t next_boss_telegraph_ms_ = 0;
+  bool boss_warning_seen_ = false;
+  int player_level_ = 1;
   MovementStepInfo last_step_;
   // Where the player entered the current instance chain from (first entry
   // only, not instance->instance hops), restored on stair return.

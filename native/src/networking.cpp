@@ -326,18 +326,48 @@ JsonValue ProtocolSession::movement_step_payload() const {
 JsonValue ProtocolSession::snapshot() const {
   JsonValue::Object state; const auto& scion=simulation_->scion(); const auto* actor=simulation_->actor(scion.actor_id); const auto position=world_->position();
   put(state,"uuid",identity_); put(state,"x",position.x); put(state,"y",position.y); put(state,"sceneId",world_->scene_id()); put(state,"sceneType",world_->scene_type()); put(state,"sceneName",world_->scene_name());
+  put(state,"lifecycle",actor && actor->alive && actor->stats.life > 0 ? "alive" : "dead");
   JsonValue::Object hp; put(hp,"current",actor?actor->stats.life:0); put(hp,"max",actor?actor->stats.life_max:0); put(state,"hp",std::move(hp));
-  JsonValue::Array monsters; for (const auto& candidate:world_->monsters()) if (candidate.alive) { JsonValue::Object monster; put(monster,"uuid",candidate.uuid); put(monster,"id",candidate.id); put(monster,"name",candidate.name); put(monster,"x",candidate.x); put(monster,"y",candidate.y); put(monster,"level",candidate.level); JsonValue::Object mhp; put(mhp,"current",candidate.life); put(mhp,"max",candidate.life_max); put(monster,"hp",std::move(mhp)); monsters.emplace_back(std::move(monster)); } put(state,"monsters",std::move(monsters));
+  JsonValue::Array monsters; for (const auto& candidate:world_->monsters()) if (candidate.alive) {
+    JsonValue::Object monster; put(monster,"uuid",candidate.uuid); put(monster,"id",candidate.id); put(monster,"name",candidate.name);
+    put(monster,"x",candidate.x); put(monster,"y",candidate.y); put(monster,"level",candidate.level); put(monster,"rarity",candidate.rarity);
+    JsonValue::Object behaviour; put(behaviour,"type",candidate.behaviour_type); put(monster,"behaviour",std::move(behaviour));
+    JsonValue::Object mhp; put(mhp,"current",candidate.life); put(mhp,"max",candidate.life_max); put(monster,"hp",std::move(mhp));
+    JsonValue::Array modifiers; for (const auto& modifier:candidate.modifiers) { JsonValue::Object value; put(value,"id",modifier); put(value,"label",modifier=="empowered"?"Empowered":modifier); modifiers.emplace_back(std::move(value)); } put(monster,"modifiers",std::move(modifiers));
+    JsonValue::Object effects; if (candidate.empowered) { JsonValue::Object effect; put(effect,"label","Empowered"); put(effect,"id","aura:damage"); put(effects,"aura",std::move(effect)); } put(monster,"state",JsonValue::Object{{"effects",std::move(effects)}});
+    monsters.emplace_back(std::move(monster));
+  } put(state,"monsters",std::move(monsters));
   if (world_->in_instance()) { const auto& meta=world_->metadata(); JsonValue::Object metadata; put(metadata,"seed",static_cast<double>(meta.seed)); put(metadata,"theme",meta.theme); if(meta.layout.empty()) put(metadata,"layout",nullptr); else put(metadata,"layout",meta.layout); put(metadata,"depth",meta.depth);
     JsonValue::Object up; put(up,"x",meta.stairs_up.x); put(up,"y",meta.stairs_up.y); put(metadata,"stairsUp",std::move(up));
     JsonValue::Object down; put(down,"x",meta.stairs_down.x); put(down,"y",meta.stairs_down.y); put(metadata,"stairsDown",std::move(down));
     JsonValue::Array spawns; for (const auto& spawn:meta.spawn_points) { JsonValue::Object value; put(value,"x",spawn.x); put(value,"y",spawn.y); spawns.emplace_back(std::move(value)); } put(metadata,"spawnPoints",std::move(spawns));
     put(state,"sceneMetadata",std::move(metadata)); }
   else put(state,"sceneMetadata",JsonValue::Object{});
-  JsonValue::Array items; for (const auto& item:inventory_) { JsonValue::Object value; put(value,"id",item.id); put(value,"uuid",item.id+"-"+identity_); put(value,"name",item.name); put(value,"slot",item.equipped?"weapon":"inventory"); items.emplace_back(std::move(value)); } put(state,"inventory",std::move(items)); put(state,"groundItems",JsonValue::Array{}); put(state,"groundTrophies",JsonValue::Array{}); return JsonValue(std::move(state));
+  JsonValue::Array items; for (const auto& item:inventory_) { JsonValue::Object value; put(value,"id",item.id); put(value,"uuid",item.id+"-"+identity_); put(value,"name",item.name); put(value,"slot",item.equipped?"weapon":"inventory"); items.emplace_back(std::move(value)); } put(state,"inventory",std::move(items));
+  put(state,"groundItems",ground_items_); put(state,"groundTrophies",JsonValue::Array{}); return JsonValue(std::move(state));
 }
 std::string ProtocolSession::state_payload(const std::string& request_id) const { std::lock_guard lock(mutex_); JsonValue::Object data; put(data,"player",JsonValue::Object{{"socket_id",socket_id_}}); put(data,"state",snapshot()); put(data,"requestId",request_id); return JsonValue(std::move(data)).stringify(); }
 void ProtocolSession::grant_item(const std::string& item_id, int quantity) { for (int i=0;i<(std::max)(1,quantity);++i) { Item item; item.id=item_id; item.name=item_id; item.owner_id=simulation_->scion().id; inventory_.push_back(std::move(item)); } }
+void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std::function<void(const Envelope&)>& emit) {
+  if (event.type == "telegraph") {
+    JsonValue::Object data; put(data,"attackerId",event.attacker_id); put(data,"attackerName",event.attacker_name); put(data,"skillId",event.skill_id);
+    put(data,"x",event.x); put(data,"y",event.y); put(data,"radius",event.radius); put(data,"durationMs",event.duration_ms);
+    emit_world(Envelope{"monster:telegraph",JsonValue(std::move(data))},emit); return;
+  }
+  if (event.type == "drop") {
+    JsonValue::Object item; put(item,"id",event.item_id); put(item,"uuid",event.item_id+"-"+event.target_id); put(item,"name",event.item_id); put(item,"x",event.x); put(item,"y",event.y);
+    ground_items_.push_back(JsonValue(std::move(item))); return;
+  }
+  JsonValue::Object data; put(data,"attackerId",event.attacker_id); put(data,"attackerName",event.attacker_name); put(data,"targetId",event.target_id);
+  put(data,"targetName",event.target_name); put(data,"targetType",event.target_id==identity_?"player":"monster"); put(data,"skillId",event.skill_id);
+  put(data,"amount",event.amount); put(data,"died",event.died); put(data,"health",JsonValue::Object{{"current",event.health},{"max",event.health_max}});
+  emit_world(Envelope{"combat:hit",JsonValue(std::move(data))},emit);
+}
+void ProtocolSession::process_combat(std::int64_t now, const std::function<void(const Envelope&)>& emit) {
+  auto* actor = simulation_->actor(simulation_->scion().actor_id); if (!actor) return;
+  const auto events = world_->advance_combat(actor->stats.level, actor->stats.attack, actor->stats.life, actor->stats.life_max, now);
+  for (const auto& event : events) emit_combat_event(event, emit);
+}
 void ProtocolSession::emit_login(const std::function<void(const Envelope&)>& emit) const { Envelope response{"player:login",JsonValue::Object{}}; parse_json(login_payload(),response.data); emit(response); }
 void ProtocolSession::emit_world(const Envelope& envelope, const std::function<void(const Envelope&)>& emit) const { if (broadcast_) broadcast_(envelope); else emit(envelope); }
 void ProtocolSession::emit_transition(const std::function<void(const Envelope&)>& emit, const char* event) const { JsonValue::Object data; put(data,"player",JsonValue::Object{{"socket_id",socket_id_}}); put(data,"scene",scene_payload()); JsonValue player_state; parse_json(player_payload(),player_state); JsonValue::Object state_fields; if (const auto* fields=player_state.object()) { for (const auto& key:{"uuid","x","y","sceneId"}) if (const auto* field=player_state.get(key)) put(state_fields,key,*field); } put(data,"playerState",std::move(state_fields)); emit_world(Envelope{event,JsonValue(std::move(data))},emit); }
@@ -348,9 +378,12 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   if (envelope.event=="world:zone:enter") { const auto node=as_string(payload?payload->get("nodeId"):nullptr,"tin:1:0"); simulation_->dispatch(Command::enter(node.rfind("route:",0)==0?node:"route:"+node)); world_->enter_solo_instance("dungeon",""); emit_transition(emit,"world:scene:transition"); return; }
   if (envelope.event=="instance:enterSolo") { world_->enter_solo_instance(as_string(payload?payload->get("template"):nullptr,"dungeon"),as_string(payload?payload->get("layout"):nullptr,"")); emit_transition(emit,"party:scene:transition"); return; }
   if (envelope.event=="player:move") { const auto direction=as_string(payload?payload->get("direction"):nullptr); const bool was_instance=world_->in_instance(); if (world_->apply_movement_sample(direction,now_ms())) { emit_movement(emit); if (was_instance&&!world_->in_instance()) { emit_message(emit,"The party returns to the surface."); emit_transition(emit,"party:scene:transition"); } } return; }
-  if (envelope.event=="dev:teleport") { if (!payload) return; const auto* x=payload->get("x"); const auto* y=payload->get("y"); if (!x||!x->number()||!y||!y->number()) return; const int tx=static_cast<int>(*x->number()); const int ty=static_cast<int>(*y->number()); const bool was_instance=world_->in_instance(); world_->teleport(tx,ty,now_ms()); const bool returned=was_instance&&!world_->in_instance(); emit_movement(emit); emit_message(emit,"Teleported to "+std::to_string(tx)+", "+std::to_string(ty)+(returned?" (portal followed).":".")); if (returned) { emit_message(emit,"The party returns to the surface."); emit_transition(emit,"party:scene:transition"); } return; }
+  if (envelope.event=="dev:teleport") { if (!payload) return; const auto* x=payload->get("x"); const auto* y=payload->get("y"); if (!x||!x->number()||!y||!y->number()) return; const int tx=static_cast<int>(*x->number()); const int ty=static_cast<int>(*y->number()); const bool was_instance=world_->in_instance(); world_->teleport(tx,ty,now_ms()); const bool returned=was_instance&&!world_->in_instance(); emit_movement(emit); emit_message(emit,"Teleported to "+std::to_string(tx)+", "+std::to_string(ty)+(returned?" (portal followed).":".")); if (returned) { emit_message(emit,"The party returns to the surface."); emit_transition(emit,"party:scene:transition"); } if (!returned) process_combat(now_ms(),emit); return; }
+  if (envelope.event=="dev:setlevel") { auto* actor=simulation_->actor(simulation_->scion().actor_id); const int level=as_int(payload?payload->get("level"):nullptr,1); if(actor){ actor->stats.level=(std::max)(1,level); actor->stats.attack=12+actor->stats.level*3; actor->stats.life_max=100+actor->stats.level*10; actor->stats.life=actor->stats.life_max; world_->set_level(actor->stats.level); } return; }
+  if (envelope.event=="dev:heal") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor) world_->heal_player(actor->stats.life,actor->stats.life_max); return; }
+  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); world_->start_player_attack(actor->stats.level,actor->stats.attack,now_ms(),direction); process_combat(now_ms(),emit); } return; }
   if (envelope.event=="dev:give") { grant_item(as_string(payload?payload->get("itemId"):nullptr,"garnet-amulet"),as_int(payload?payload->get("qty"):nullptr,1)); return; }
-  if (envelope.event=="dev:state") { const auto id=as_string(payload?payload->get("requestId"):nullptr); JsonValue data; parse_json(state_payload(id),data); emit(Envelope{"dev:state",std::move(data)}); return; }
+  if (envelope.event=="dev:state") { process_combat(now_ms(),emit); const auto id=as_string(payload?payload->get("requestId"):nullptr); JsonValue data; parse_json(state_payload(id),data); emit(Envelope{"dev:state",std::move(data)}); return; }
   if (envelope.event=="player:login") emit_login(emit);
 }
 
@@ -372,7 +405,7 @@ bool WebSocketServer::start(std::string* error) {
 #ifdef _WIN32
   WSADATA data{}; if (WSAStartup(MAKEWORD(2,2),&data)!=0) { if(error)*error="WSAStartup failed"; return false; }
 #endif
-  const auto listener=::socket(AF_INET,SOCK_STREAM,IPPROTO_TCP); if(listener==invalid_socket){if(error)*error="socket failed";return false;} int yes=1; setsockopt(listener,SOL_SOCKET,SO_REUSEADDR,reinterpret_cast<const char*>(&yes),sizeof(yes)); sockaddr_in address{}; address.sin_family=AF_INET; address.sin_addr.s_addr=htonl(INADDR_ANY); address.sin_port=htons(port_); if(bind(listener,reinterpret_cast<sockaddr*>(&address),sizeof(address))<0 || listen(listener,16)<0){close_socket(listener);if(error)*error="bind/listen failed";return false;} listen_socket_=static_cast<std::intptr_t>(listener); running_=true; accept_thread_=std::make_unique<std::thread>(&WebSocketServer::accept_loop,this); return true;
+  const auto listener=::socket(AF_INET,SOCK_STREAM,IPPROTO_TCP); if(listener==invalid_socket){if(error)*error="socket failed";return false;} int yes=1; setsockopt(listener,SOL_SOCKET,SO_REUSEADDR,reinterpret_cast<const char*>(&yes),sizeof(yes)); sockaddr_in address{}; address.sin_family=AF_INET; address.sin_addr.s_addr=inet_addr("127.0.0.1"); address.sin_port=htons(port_); if(bind(listener,reinterpret_cast<sockaddr*>(&address),sizeof(address))<0 || listen(listener,16)<0){close_socket(listener);if(error)*error="bind/listen failed";return false;} listen_socket_=static_cast<std::intptr_t>(listener); running_=true; accept_thread_=std::make_unique<std::thread>(&WebSocketServer::accept_loop,this); return true;
 }
 void WebSocketServer::stop(){ if(!running_)return; running_=false; close_socket(static_cast<socket_t>(listen_socket_)); listen_socket_=-1; if(accept_thread_&&accept_thread_->joinable())accept_thread_->join(); std::lock_guard lock(mutex_); for(auto& c:connections_)c->close(); connections_.clear(); sessions_.clear();
 #ifdef _WIN32
