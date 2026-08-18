@@ -469,3 +469,18 @@ harness touch. LAN play later can make the bind address a config knob.
 0044 parity N2: CLAIMED by kimi-work (branch codex/TASK-0044-native-protocol-n2,
 base 32d7b6e, own clone KimiWork). 0038 rebinding + 0042 first-loot:
 still open - kimi (console) or codex/Luna may claim. 0043: done.
+
+## 0044 ACCEPTED + INTEGRATED (2026-08-17 ~09:30)
+
+Parity wave N2 landed: world/movement/zones over the C++ server.
+Architect rebuilt the branch, ran native gates green, and attached the
+UNCHANGED post-0043 harness to my own server build: movement + zones +
+quickstart + single-session 4/4. Movement constants literally mirror
+server/shared/movement.js. Honest 8-item stub inventory carried into
+the N3 spec notes (real generator, town tiles, depth>1, monsters as
+Simulation actors, stdin idle fix). kimi-work delivered the mission
+critical path within ~90 min of re-entry. Shipping 0043+0044 to master.
+
+Board: 0038 (LMB/RMB + rebinding) and 0042 (first-loot moment) remain
+open for kimi (console) or codex/Luna. N3 spec is the architect's next
+authoring task.
