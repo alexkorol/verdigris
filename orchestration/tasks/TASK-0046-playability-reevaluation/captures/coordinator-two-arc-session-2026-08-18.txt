@@ -1,0 +1,30 @@
+TASK-0046 coordinator two-arc transcript
+
+Build/current tip: c3988b29, production server on disposable 127.0.0.1:6547.
+Owner port 6500 was untouched. Temporary server and browser tabs were stopped.
+
+ARC A — guest quickstart
+  ~00:00 Delaford tutorial and Adventure panel
+  ~00:08 Old Barrow entered
+  ~00:18 first Dread Vanguard kill; Aldwyn XP/loot guidance; 60 gold pickup
+  ~04:05 second pack contact; incoming 6–8 damage, Bronze Arc hits, kill/XP
+  ~04:10–05:15 additional melee kill/XP
+  ~05:30–10:14 repeated movement; many `Not enough mana.` messages; HP stayed 110/110
+  ~10:14 Old Barrow position ~111,83; no death/recovery decision
+
+ARC B — Chronicles House/Scion mortal oath
+  ~00:00 landing and Play as Guest
+  ~00:05 House Ember inscribed
+  ~00:10 Asha created with mortal oath checked; card reads “Level 1 · Mortal oath”
+  ~00:20 Set Out to Delaford; Adventure → Old Barrow
+  ~00:30–10:15 movement, canvas targeting, Bronze Arc/1/skills, inventory,
+           quest, roads, and skill-tree inspections
+  Result: visible opener overlapped the player, but no combat log, damage,
+          kill, loot, or death appeared; HP stayed 110/110; position ~109,107
+
+Observed panel evidence:
+  Quest: Aldwyn's Charge with move/strike/slay/claim/enter steps and reward.
+  Roads: Tin/Salt/Chalk/Copper names and directions only.
+  Inventory: Bronze Dagger, 100 gold, 2/84 capacity.
+  Skill tree: 2 points, 1 node, no recommended first allocation.
+

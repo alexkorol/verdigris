@@ -171,6 +171,8 @@ integrated into the program branch yet.
 TASK-0046 is `REVIEW_REQUESTED` on
 `codex/TASK-0046-playability-reevaluation` at `1de6e45b`, based on current
 program tip `45846af7`. It owns only task-folder evidence. The report records
-the bounded guest/Old Barrow checkpoint, authoritative page-context
-`window.ws.url` proof, and the in-app-browser isolated-world discrepancy; the
-two full arcs and friction disposition remain explicitly unperformed.
+two approximately ten-minute arcs, first-minute page-context `window.ws.url`
+proofs on disposable ports, and a new disposition/ranking. Guest produces
+readable melee kills/XP/gold; the mortal-oath Chronicles arc remains blocked
+at a visually present but mechanically silent opener. Architect review is
+pending.

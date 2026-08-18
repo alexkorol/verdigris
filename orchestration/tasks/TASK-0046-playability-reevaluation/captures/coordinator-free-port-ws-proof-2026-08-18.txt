@@ -1,4 +1,4 @@
-TASK-0046 coordinator connection proof
+﻿TASK-0046 coordinator connection proof
 Date: 2026-08-18
 Base: 45846af7
 Worktree: .codex/worktrees/TASK-0046-playability-reevaluation
@@ -18,3 +18,4 @@ The temporary port-6542 server and child process were stopped after the probe.
 This proves current-tip browser-to-free-port WebSocket connectivity, but does
 not replace TASK-0046's required two approximately ten-minute arcs and full
 friction disposition.
+
