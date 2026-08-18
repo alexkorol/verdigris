@@ -14,5 +14,5 @@ known_risks: evaluation-only; never edit product code, playtest harness, package
 architect_review_required: true
 report: orchestration/tasks/TASK-0046-playability-reevaluation/REPORT.md
 candidate_commit: 1de6e45b
-handoff: report records bounded guest checkpoint, authoritative page-context WS proof, and isolated-world limitation; required two full arcs remain unperformed
+handoff: coordinator completed both approximately ten-minute arcs and added first-minute page-context socket proofs; report ranks the Chronicles silent opener and mana/loot friction; architect review remains pending
 ---

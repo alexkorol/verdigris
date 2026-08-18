@@ -1,0 +1,11 @@
+TASK-0046 guest first-minute socket proof
+
+Current candidate: c3988b29 descendant of 45846af7
+Fresh production server: 127.0.0.1:6548 (owner port 6500 untouched)
+Page: http://127.0.0.1:6548/?play
+Page-context CDP evaluation at age 3.81s:
+  window.ws.url       = ws://127.0.0.1:6548/
+  window.ws.readyState = 1 (OPEN)
+
+This was a fresh guest-start proof on the same current tip. The long guest
+arc transcript is recorded separately in coordinator-two-arc-session-2026-08-18.txt.

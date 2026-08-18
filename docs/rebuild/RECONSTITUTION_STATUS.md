@@ -71,8 +71,10 @@ outside production until the owner resolves asset provenance/packaging.
   attach, unit coverage, and authentic negative are captured; architect
   rebuild/acceptance is pending.
 - TASK‑0046 playability re-evaluation: `REVIEW_REQUESTED` at `1de6e45b` on
-  current tip `45846af7`. The report records the bounded guest checkpoint and
-  page-context socket proof, but explicitly does not claim the two full arcs.
+  current tip `45846af7`. Coordinator completed both approximately ten-minute
+  arcs with first-minute page-context socket proofs; guest combat is improved,
+  while the mortal-oath opener remains mechanically silent. Architect review
+  is pending.
 
 ## Current coordinator gates
 
