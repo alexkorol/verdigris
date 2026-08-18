@@ -99,4 +99,4 @@ that could drift.
 ## Commits
 
 - `6bd12f47` — claim (STATUS.md)
-- implementation + report commit (SHA recorded at push)
+- `ea5d9343` — scenario harness + scenarios + gate + README + REPORT/STATUS
