@@ -40,7 +40,8 @@ outside production until the owner resolves asset provenance/packaging.
 
 ## Orchestration state
 
-- Tasks 0001–0037, 0039–0041: integrated on the coordinator program branch.
+- Tasks 0001–0037, 0039–0041, 0043–0044: integrated on the coordinator
+  program branch.
 - TASK‑0043 playtest harness stabilization: `ACCEPTED` and integrated at
   `1f470e3` (program tip `50ca60ad`); current-tip unit/build/full-playtest/
   browser-smoke evidence is green. Report:
