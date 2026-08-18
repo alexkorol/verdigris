@@ -251,3 +251,16 @@ tests, including the server-boot smoke. Evidence is in
 Fable should rerun the committed tip `d476788` against the unchanged
 movement/zones scenarios and record the architect decision. No additional
 native behavior change is indicated by the current evidence.
+
+## Post-0043 current-tip validation
+
+After TASK-0043 was accepted and integrated at program tip `50ca60ad`, an
+independent disposable worktree applied implementation commit `d476788` as
+candidate `9c26d162`. The native denylist/core/networking/client gate passed,
+including the literal `House: House Verdigris | trophies stored: 1 | items
+stored: 1` transcript. Against the rebuilt server on port 6531, the
+unchanged attach matrix passed `quickstart`, `single-session`, `movement`,
+and `zones` 4/4, including all six zone/layout combinations, stairs, names,
+18-monster populations, and saved-position restoration. The disposable
+server and worktree were removed afterward. This updates integration
+readiness but does not substitute for Fable's architect acceptance.

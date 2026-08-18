@@ -1,6 +1,6 @@
 ---
 task: TASK-0043
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Luna playtest-harness stabilization worker
 worker_branch: codex/TASK-0043-playtest-harness-stabilization
@@ -29,5 +29,8 @@ coordinator_current_tip_gate_refresh: 2026-08-17 — coordinator HEAD 732f7fbf i
 revision_validation: 2026-08-17 — worker revision 1da567aa aligns default timing exactly with Fable's staged max-observed-lag correction; focused proof passed idle 8000ms, induced-lag 8052ms, and <=14000ms cap. Capture: captures/coordinator-revision-1da567aa-timing-2026-08-17.txt. Returned to REVIEW_REQUESTED; architect acceptance remains required.
 revision_full_gate: 2026-08-17 — candidate a040da60 unit 122/779 passed; full playtest 30/31 with only the known loot second-drop timeout. Exact staged source variant remains independently recorded at 31/31; environment-only isolated loot retry could not resolve compression in a temporary junction. Capture: captures/coordinator-revision-1da567aa-full-gate-2026-08-17.txt.
 revision_dependency_complete_gate: 2026-08-17 — disposable candidate 3636b729 plus 1da567aa installed dependencies with scripts enabled, then passed `npm run test:unit` 122/779 and `PLAYTEST_PORT=6538 npm run playtest` 31/31. Diagnostics p99/max 32.178/109.642ms. Capture: captures/coordinator-exact-staged-dependency-complete-gate-2026-08-17.txt.
-revision_independent_audit: 2026-08-17 — independent validator confirmed 9e5d9fd8 is scope-clean, the dependency-complete evidence is internally consistent, and no newer architect review/acceptance exists. Lifecycle remains REVIEW_REQUESTED.
+revision_independent_audit: 2026-08-17 — independent validator confirmed 9e5d9fd8 is scope-clean and the dependency-complete evidence is internally consistent.
+architect_review: 1f833081 / REVIEW.md — ACCEPTED (revision 1)
+integration_commit: 1f470e3 (present on program tip 50ca60ad)
+integration_note: Fable verified three default-mode runs plus an architect 31/31 gate under measured lag; loopback-bind standing guidance was recorded after the Windows Firewall incident.
 ---

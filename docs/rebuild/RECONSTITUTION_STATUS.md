@@ -41,15 +41,14 @@ outside production until the owner resolves asset provenance/packaging.
 ## Orchestration state
 
 - Tasks 0001–0037, 0039–0041: integrated on the coordinator program branch.
-- TASK‑0043 playtest harness stabilization: `REVIEW_REQUESTED`; current-tip
-  unit/build/full-playtest/browser-smoke evidence is green. Report:
+- TASK‑0043 playtest harness stabilization: `ACCEPTED` and integrated at
+  `1f470e3` (program tip `50ca60ad`); current-tip unit/build/full-playtest/
+  browser-smoke evidence is green. Report:
   [`TASK-0043 REPORT`](../../orchestration/tasks/TASK-0043-playtest-harness-stabilization/REPORT.md).
-  Fable's architect review `7113b06` requested default-mode contention proof;
-  coordinator validation at `c1dbb39f` independently passed three fresh
-  no-flag loaded runs at 31/31 with clean exit and teardown. Acceptance is
-  still Fable-owned. The exact staged timing snapshot was also overlaid on
-  disposable candidate `3636b729`: browser unit 122/779 and full playtest
-  31/31 passed; capture is in the TASK-0043 folder.
+  Fable's architect review `1f833081` verified the default-mode contention
+  proof: three coordinator runs and one architect run passed 31/31 with the
+  observed-lag guard active. Loopback-bind standing guidance is recorded in
+  the review for future test/dev servers.
 - TASK‑0044 native protocol N2: `REVIEW_REQUESTED`; committed implementation
   `d476788`, native/client gates green, unchanged N1+N2 attach regression 4/4.
   Report:
@@ -78,16 +77,12 @@ outside production until the owner resolves asset provenance/packaging.
   passed 31/31; raw checkpoint:
   [`coordinator-fresh-full-playtest-2026-08-17.txt`](../../orchestration/tasks/TASK-0043-playtest-harness-stabilization/captures/coordinator-fresh-full-playtest-2026-08-17.txt).
 - Browser-critical Playwright smoke: 1/1 passed on an isolated port.
-- TASK‑0043's full correction chain has a clean current-tip integration
-  candidate at `ab73edbc`; unit 122/779 passed, with a known full-suite
-  gear-outcomes contention miss and immediate isolated 1/1 rerun. It remains
-  outside the coordinator tip pending Fable's review.
-- The TASK‑0043 revision proof is now independently repeated on the combined
-  candidate: idle timing preserves the authored 8000ms floor, an induced
-  scheduler pause adapts to the bounded 14000ms cap, and three no-flag full
-  runs pass 31/31 under one CPU spinner. This validates the requested
-  harness behavior but does not substitute for the architect's ACCEPTED
-  review.
+- TASK‑0043's full correction chain is now on the accepted program tip;
+  earlier disposable candidates and their timing variance remain preserved
+  in the task captures for provenance.
+- The TASK‑0043 revision proof is now architect-accepted: idle timing
+  preserves the authored 8000ms floor, induced scheduler lag adapts within
+  the bounded 14000ms cap, and default-mode full runs pass 31/31.
 - Committed N2 native gate: denylist, core/networking tests, and client shell
   passed.
 - A current-tip native health rerun at `a62951e4` independently repeated the
@@ -103,15 +98,16 @@ outside production until the owner resolves asset provenance/packaging.
   conflict-free; browser unit 122/779, native gate PASS, and native attach
   4/4. Full details are in
   [`PARITY_INTEGRATION_CANDIDATE_2026-08-17.md`](PARITY_INTEGRATION_CANDIDATE_2026-08-17.md).
-- A refreshed combined candidate `3636b729` reapplies both chains directly
-  onto coordinator tip `9fea5668`; browser unit 122/779, unchanged browser
-  playtest 31/31, native gate PASS, and native attach 4/4 all pass. It remains
-  disposable pending independent Fable acceptance.
+- A refreshed combined candidate `3636b729` reapplies the accepted TASK‑0043
+  chain plus review-ready TASK‑0044 directly onto coordinator tip `9fea5668`;
+  browser unit 122/779, unchanged browser playtest 31/31, native gate PASS,
+  and native attach 4/4 all pass. It remains disposable only for TASK‑0044
+  integration pending its architect decision.
 
 ## Next authorized actions
 
-1. Fable performs the required architect reruns and records ACCEPT/REVISE for
-   TASK‑0043 and TASK‑0044.
+1. Fable performs the required architect rerun and records ACCEPT/REVISE for
+   TASK‑0044; TASK‑0043 is already accepted and integrated.
 2. Fable answers
    [`QUESTION-0009`](../../orchestration/questions/QUESTION-0009-native-n3-authority-bridge.md)
    and issues the READY N3 task/spec before native combat implementation.

@@ -129,22 +129,17 @@
 - That candidate passes browser unit `122/779`, browser playtest `31/31`, the
   native denylist/core/networking/client gate, and the unchanged native attach
   matrix `quickstart`, `single-session`, `movement`, `zones` at `4/4`.
-- The candidate remains disposable: TASK-0043 and TASK-0044 are still
-  `REVIEW_REQUESTED`, with no local architect `REVIEW.md` and no source merge.
-- Fable's architect checkout carries TASK-0043 review `7113b06` (`REVISE`),
-  with a staged max-lag correction. The coordinator independently revalidated
-  the correction at `c1dbb39f`: three no-flag CPU-loaded full runs passed
-  31/31, the measured pause expanded an 8000ms deadline only to the bounded
-  14000ms cap, and all temporary processes were cleaned up. No additional
-  source change was needed; acceptance remains architect-owned. A follow-up
-  disposable overlay of the exact staged timing file passed browser unit
-  122/779 and the full playtest 31/31 at port 6528; see the task capture.
+- TASK-0043 is now accepted and integrated at `1f470e3` on program tip
+  `50ca60ad`; Fable's architect review `1f833081` records the default-mode
+  31/31 gate and loopback-bind guidance. TASK-0044 remains review-requested
+  and disposable pending its architect rerun/acceptance.
 - A dependency-complete rerun of that exact staged timing correction was
   recorded at coordinator commit `9e5d9fd8`: a fresh worktree installed
   dependencies with normal install scripts, then passed browser unit `122/779`
   and `PLAYTEST_PORT=6538 npm run playtest` at `31/31` (`loadMode:false`,
   p99/max event-loop lag `32.178/109.642ms`). This strengthens the evidence
-  package but does not change TASK-0043's `REVIEW_REQUESTED` lifecycle.
+  package and is retained as coordinator provenance for the accepted
+  correction.
 - The WIZARD seam rerun is recorded at coordinator commit `6cb7b366`:
   Orbs, Brands & Bonds/inventory, and Cartographer/map tests remain `73/73`;
   Verdigris Splash remains intentionally presentation/reference-only.

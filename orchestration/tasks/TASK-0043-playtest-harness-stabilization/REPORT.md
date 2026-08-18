@@ -268,3 +268,13 @@ Fable acceptance remains required.
 An independent read-only audit confirmed that `9e5d9fd8` changes only the
 TASK-0043 report/status/capture metadata, that the recorded gate values are
 internally consistent, and that no newer architect review or acceptance exists.
+
+## Architect acceptance and integration
+
+Fable accepted revision 1 in `REVIEW.md` at architect commit `1f833081`.
+The accepted evidence includes three default-mode 31/31 runs under CPU load
+and an architect-run default-mode 31/31 gate with `maxEventLoopLagMs` 130.48.
+The correction chain was integrated at `1f470e3` and is present on program
+tip `50ca60ad`. The review also records loopback-bind standing guidance after
+a Windows Firewall consent incident; this is operational guidance and does
+not weaken harness assertions.
