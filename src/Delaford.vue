@@ -42,6 +42,7 @@
       :world-viewport="worldViewport"
       :player-vitals="playerVitals"
       :player-progress="playerProgress"
+      :house-identity="houseIdentity"
       :quick-slots="quickSlots"
       :quickbar-active-index="quickbarActiveIndex"
       :quickbar-cooldowns="quickbarCooldowns"
@@ -114,6 +115,7 @@ import {
   loadHouses,
   saveHouses,
 } from './core/chronicles/houses.js';
+import { recordSkillAttempt } from './core/mana-directive.js';
 
 const createDefaultQuickSlots = () => createQuickbarSlots();
 
@@ -330,6 +332,36 @@ export default {
         : 0;
 
       return { level, fraction };
+    },
+    houseIdentity() {
+      const player = this.game && this.game.player;
+      if (!player) {
+        return null;
+      }
+      let houseName = player.houseName || null;
+      const scionName = player.username || player.name || null;
+      if (!houseName && !scionName) {
+        return null;
+      }
+      // The direct-admission Chronicles flow carries the scion name on
+      // `player.username` but not the house name; the House's name lives in
+      // the account-scoped Chronicles cache until the wagon screen reads it.
+      if (!houseName) {
+        try {
+          const cached = loadHouses(Socket.chroniclesAccountId);
+          const house = getActiveHouse(cached);
+          if (house && house.name) {
+            houseName = house.name;
+          }
+        } catch (error) {
+          houseName = null;
+        }
+      }
+      const chronicles = player.chronicles || {};
+      const mortal = typeof chronicles.mortal === 'boolean'
+        ? chronicles.mortal
+        : Boolean(player.stats && player.stats.lifecycle && player.stats.lifecycle.mode === 'hard');
+      return { houseName, scionName, mortal: Boolean(mortal) };
     },
     chatExpanded() {
       return this.layout.chat.isOpen || this.layout.chat.isPinned;
@@ -880,6 +912,7 @@ export default {
             duration: dispatchOptions.duration,
             holdState: dispatchOptions.holdState,
           });
+          recordSkillAttempt(slot.skillId);
         }
       }
 

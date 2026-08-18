@@ -46,6 +46,11 @@
               v-if="!uiHidden && !legacyPaneOpen && !hasDockedPane"
               :game="game"
             />
+            <GuideBanner
+              v-if="!uiHidden"
+              class="game-container__guide-banner"
+              :text="guideBeat"
+            />
             <div
               v-if="!uiHidden"
               class="game-container__party-overlay"
@@ -133,6 +138,7 @@
                   <span class="game-container__zone-copy">
                     <span class="game-container__zone-name">{{ zone.name }}</span>
                     <span class="game-container__zone-note">{{ zone.note }}</span>
+                    <span class="game-container__zone-objective">{{ zone.objective }}</span>
                   </span>
                   <span class="game-container__zone-meta">
                     <span class="game-container__zone-status">{{ zoneStatus(zone) }}</span>
@@ -247,6 +253,7 @@
             class="game-container__hud"
             :player-vitals="playerVitals"
             :player-progress="playerProgress"
+            :house-identity="houseIdentity"
             :quick-slots="quickSlots"
             :quickbar-active-index="quickbarActiveIndex"
             :quickbar-cooldowns="quickbarCooldowns"
@@ -278,6 +285,10 @@ import PartyPanel from '../ui/world/PartyPanel.vue';
 import GameHUD from './GameHUD.vue';
 import WorldMinimap from '../hud/WorldMinimap.vue';
 import DeathOverlay from '../ui/world/DeathOverlay.vue';
+import GuideBanner from '../ui/world/GuideBanner.vue';
+import bus from '../../core/utilities/bus.js';
+import { zoneObjective } from '../../core/adventure-objectives.js';
+import { shouldSurfaceGuideBeat, stripGuidePrefix } from '../../core/tutorial-beats.js';
 
 export default {
   name: 'GameContainer',
@@ -290,6 +301,7 @@ export default {
     GameHUD,
     WorldMinimap,
     DeathOverlay,
+    GuideBanner,
   },
   props: {
     game: {
@@ -331,6 +343,10 @@ export default {
     playerProgress: {
       type: Object,
       default: () => ({ level: 1, fraction: 0 }),
+    },
+    houseIdentity: {
+      type: Object,
+      default: null,
     },
     quickSlots: {
       type: Array,
@@ -426,6 +442,8 @@ export default {
     const isChatDragging = ref(false);
     const chatDragMoved = ref(false);
     const suppressChatCycleClick = ref(false);
+    const guideBeat = ref('');
+    const guideBeatCount = ref(0);
     let stopChatDrag = null;
     let chatPeekClickTimer = null;
     const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
@@ -503,7 +521,7 @@ export default {
       { id: 'weir-crypt', name: 'Weir Crypt', note: 'Dense rooms · little retreat', template: 'crypt', layout: 'warren', minLevel: 4, maxLevel: 9, levelHint: '4–9' },
       { id: 'the-wilds', name: 'The Wilds', note: 'Broad hunting grounds', template: 'wilds', layout: 'clearings', minLevel: 6, maxLevel: 12, levelHint: '6–12' },
       { id: 'marsh-of-reeds', name: 'Marsh of Reeds', note: 'Hostile wetlands · elite packs', template: 'marsh', layout: 'clearings', minLevel: 8, maxLevel: 14, levelHint: '8–14' },
-    ];
+    ].map((zone) => ({ ...zone, objective: zoneObjective(zone).line }));
 
     const zoneStatus = (zone) => {
       const level = Number(props.playerProgress?.level) || 1;
@@ -740,8 +758,18 @@ export default {
       };
     });
 
+    const handleTutorialBeat = (payload = {}) => {
+      const text = payload && payload.text ? payload.text : '';
+      if (!shouldSurfaceGuideBeat(text, guideBeatCount.value)) {
+        return;
+      }
+      guideBeatCount.value += 1;
+      guideBeat.value = stripGuidePrefix(text);
+    };
+
     onMounted(() => {
       nextTick(() => setDefaultChatDock());
+      bus.$on('tutorial:beat', handleTutorialBeat);
     });
 
     watch(
@@ -770,6 +798,7 @@ export default {
 
     onBeforeUnmount(() => {
       cleanupChatDrag();
+      bus.$off('tutorial:beat', handleTutorialBeat);
       if (chatPeekClickTimer) {
         window.clearTimeout(chatPeekClickTimer);
         chatPeekClickTimer = null;
@@ -819,6 +848,7 @@ export default {
       isChatDragging,
       chatDockStyle,
       refocusGame,
+      guideBeat,
       gameContainerClasses: computed(() => ({
         'game-container--ui-hidden': uiHidden.value,
         'game-container--left-pane-open': Boolean(props.defaultLeftPane),
@@ -1003,6 +1033,15 @@ export default {
   pointer-events: none;
 }
 
+.game-container__guide-banner {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 64;
+  pointer-events: none;
+}
+
 .game-container__party-overlay {
   position: absolute;
   top: 8px;
@@ -1178,6 +1217,14 @@ export default {
   color: rgba(178, 170, 153, 0.72);
   font-family: Georgia, serif;
   font-size: 0.64rem;
+  white-space: nowrap;
+}
+
+.game-container__zone-objective {
+  color: #e7c570;
+  font-family: 'GameFont', sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.03em;
   white-space: nowrap;
 }
 

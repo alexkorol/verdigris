@@ -1,5 +1,12 @@
 <template>
   <div class="hud-shell">
+    <div
+      v-if="identityLabel"
+      class="hud-shell__identity"
+      aria-label="House and scion"
+    >
+      {{ identityLabel }}
+    </div>
     <div class="hud-shell__row">
       <HudOrb
         class="hud-shell__orb hud-shell__orb--left"
@@ -57,6 +64,10 @@ export default {
       type: Object,
       default: () => ({ level: 1, fraction: 0 }),
     },
+    houseIdentity: {
+      type: Object,
+      default: null,
+    },
     quickSlots: {
       type: Array,
       default: () => [],
@@ -73,6 +84,23 @@ export default {
   emits: [
     'quick-slot',
   ],
+  computed: {
+    identityLabel() {
+      const identity = this.houseIdentity;
+      if (!identity) {
+        return '';
+      }
+      const { houseName = null, scionName = null, mortal = false } = identity;
+      const oath = mortal ? 'Mortal oath' : 'Soft return';
+      if (houseName && scionName) {
+        return `House ${houseName} — ${scionName} (${oath})`;
+      }
+      if (houseName) {
+        return `House ${houseName}`;
+      }
+      return scionName || '';
+    },
+  },
   methods: {
     handleSlotActivate(slot, index) {
       this.$emit('quick-slot', slot, index);
@@ -85,10 +113,30 @@ export default {
 @use '@/assets/scss/abstracts/tokens' as *;
 
 .hud-shell {
+  position: relative;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  pointer-events: none;
+}
+
+.hud-shell__identity {
+  position: absolute;
+  left: clamp(12px, 1.6vw, 26px);
+  bottom: calc(var(--hud-orb-size, 152px) * 0.6);
+  max-width: min(46vw, 380px);
+  padding: 5px 9px;
+  border: 1px solid rgba(183, 146, 79, 0.4);
+  border-left: 3px solid var(--color-accent-strong, #e0b45c);
+  background: rgba(4, 5, 7, 0.82);
+  color: #efe6cf;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  text-shadow: 1px 1px 0 #000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   pointer-events: none;
 }
 
