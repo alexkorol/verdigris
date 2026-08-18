@@ -19,6 +19,16 @@
           </div>
         </div>
 
+        <div
+          v-if="firstAllocationHint"
+          class="first-allocation-hint"
+          aria-label="Recommended first allocation"
+        >
+          <span class="first-allocation-hint__eyebrow">Start here</span>
+          <strong class="first-allocation-hint__name">{{ firstAllocationHint.name }}</strong>
+          <span class="first-allocation-hint__meta">{{ firstAllocationHint.axisLabel }} · {{ firstAllocationHint.effects.join(' · ') }}</span>
+        </div>
+
         <label class="sr-only" for="verdigris-search">Search</label>
         <input
           id="verdigris-search"
@@ -310,6 +320,7 @@ class SVGRenderer {
     this.tooltipEl = options.tooltipEl;
     this.onChange = options.onChange || (() => {});
     this.cache = { nodes: new Map(), conduits: new Map() };
+    this.recommendedNodeId = null;
   }
 
   draw() {
@@ -453,7 +464,7 @@ class SVGRenderer {
       const cache = this.cache.nodes.get(node.id);
       if (!cache) return;
       const { group, shell, core, ring } = cache;
-      group.classList.remove('active', 'available', 'pending', 'selected', 'empowered');
+      group.classList.remove('active', 'available', 'pending', 'selected', 'empowered', 'recommended');
       group.style.display = this.tree.isNodeVisible(node) ? '' : 'none';
       group.style.opacity = this.matchesSearch(node, searchTerm) ? '1' : SEARCH_DIM_OPACITY;
 
@@ -467,6 +478,7 @@ class SVGRenderer {
       if (this.tree.pending?.mode === 'node' && this.tree.pending.nodeId === node.id) group.classList.add('pending');
       if (this.tree.selectedNodeId === node.id) group.classList.add('selected');
       if (empowered) group.classList.add('empowered');
+      if (this.recommendedNodeId === node.id) group.classList.add('recommended');
     });
   }
 
@@ -668,6 +680,9 @@ export default {
     visibleLog() {
       return this.treeState.log.length ? this.treeState.log : ['Build log empty.'];
     },
+    firstAllocationHint() {
+      return this.treeState.firstAllocationHint || null;
+    },
   },
   mounted() {
     this.skillTree = new VerdigrisGeometricTree({
@@ -745,7 +760,10 @@ export default {
     syncTreeState() {
       if (!this.skillTree) return;
       this.treeState = this.skillTree.toState();
-      if (this.renderer) this.renderer.update();
+      if (this.renderer) {
+        this.renderer.recommendedNodeId = this.treeState.firstAllocationHint?.nodeId || null;
+        this.renderer.update();
+      }
       this.persistTree();
     },
     persistTree() {
@@ -942,6 +960,32 @@ export default {
     background: rgba(0, 0, 0, 0.32);
     color: #f8efd0;
     outline: none;
+  }
+
+  .first-allocation-hint {
+    display: grid;
+    gap: 2px;
+    padding: 8px 9px;
+    border: 1px solid rgba(226, 199, 101, 0.5);
+    border-left: 3px solid #e2c765;
+    background: rgba(226, 199, 101, 0.07);
+  }
+
+  .first-allocation-hint__eyebrow {
+    color: #e2c765;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .first-allocation-hint__name {
+    color: #f8efd0;
+    font-size: 13px;
+  }
+
+  .first-allocation-hint__meta {
+    color: #a89d80;
+    font-size: 10px;
   }
 
   .search-input:focus {
@@ -1313,6 +1357,18 @@ export default {
   .node-group.pending .node-shell {
     stroke: var(--node-pending);
     stroke-dasharray: 4 2;
+  }
+
+  .node-group.recommended .node-shell {
+    stroke: #e2c765;
+    filter: drop-shadow(0 0 6px rgba(226, 199, 101, 0.6));
+  }
+
+  .node-group.recommended .node-ring {
+    stroke: #e2c765;
+    opacity: 0.9;
+    stroke-dasharray: 3 3;
+    animation: verdigris-ring-spin 3.2s linear infinite;
   }
 
   .node-group.selected .node-ring,
