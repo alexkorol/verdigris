@@ -92,6 +92,11 @@ outside production until the owner resolves asset provenance/packaging.
 
 ## Current coordinator gates
 
+- Fresh architect-tip health check at `1244b5bf` (Fable's accepted TASK-0048
+  merge): native `build.ps1 -RunTests` passed denylist/core/networking tests;
+  browser `npm run test:unit` passed 123 files / 788 tests. Warnings were the
+  existing MSVC deprecations and test-only logging; no gate failed.
+
 - Fresh detached audit of architect tip `915f226a7` with normal dependencies:
   native `build.ps1 -RunTests` PASS; browser unit `npm run test:unit` PASS
   (123 files / 788 tests); focused recovery rerun (`first-goal`,
