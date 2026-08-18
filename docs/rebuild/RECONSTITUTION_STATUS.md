@@ -82,11 +82,13 @@ outside production until the owner resolves asset provenance/packaging.
   the N3-integrated program line. The unchanged 13-scenario attach,
   item/inventory unit coverage, and authentic-negative transcript remain the
   required handoff gates; no implementation or acceptance is claimed yet.
-- TASK‑0048 Chronicles silent combat: `CLAIMED` by Codex/Luna on
-  `codex/TASK-0048-chronicles-silent-combat` at current program tip
-  `6710e3bb`. This critical browser repair will diagnose the mortal-oath
-  first-fight path, add an authentic regression scenario, and preserve the
-  owner-controlled mana decision boundary.
+- TASK‑0048 Chronicles silent combat: `REVIEW_REQUESTED` at coordinator
+  candidate `5dde30f2` (worker `810ddd924`). Real WebSocket and rendered
+  browser evidence disproved the accepted silent-combat diagnosis: the
+  baseline driver never reached the active opener, while the mortal-oath
+  regression scenario and rendered first-kill capture both pass. No
+  speculative gameplay patch or mana retune was made; architect disposition
+  is pending.
 
 ## Current coordinator gates
 
@@ -136,11 +138,12 @@ outside production until the owner resolves asset provenance/packaging.
 1. Monitor TASK‑0047's N4 implementation and independently validate its
    13-scenario attach and D-106 item recoverability evidence.
 2. Obtain Fable's re-review of the newly published TASK‑0046 two-arc evidence.
-3. Integrate only accepted commits; preserve coordinator-owned metadata during
+3. Obtain Fable's disposition of TASK‑0048's disproven Chronicles diagnosis.
+4. Integrate only accepted commits; preserve coordinator-owned metadata during
    the known TASK‑0044 `STATUS.md` add/add merge conflict.
-4. Resolve QUESTION‑0007 and QUESTION‑0008 with the owner before implementing
+5. Resolve QUESTION‑0007 and QUESTION‑0008 with the owner before implementing
    the blocked first-loot and control-rebinding seams.
-5. Keep complete magic, production asset provenance, seasonal inheritance, and
+6. Keep complete magic, production asset provenance, seasonal inheritance, and
    economy scope behind their documented owner decisions.
 
 The N3 handoff is now explicit in
