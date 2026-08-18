@@ -58,3 +58,16 @@ wasting tokens/time, and tune task design to each model's capability.
 - The architect pre-writes: headers/interfaces, the risky math, and a
   failing test that the implementation must turn green.
 - Every acceptance updates this document if it taught anything.
+
+## 9. Windows Firewall prompts stall unattended agents (2026-08-18)
+
+Every NEW exe binding a non-loopback socket pops a consent dialog that
+sits unanswered while the owner is away, silently blocking sockets
+(collapsed a full playtest run once; stalled the fleet again today).
+FIX enforced in repo: server/index.js now binds 127.0.0.1 by default
+(loopback never prompts); VERDIGRIS_BIND_HOST=0.0.0.0 opt-in for LAN.
+Native verdigris_server already loopback. Rule for all future servers/
+harnesses: explicit 127.0.0.1 bind, no exceptions without an owner
+ruling. External tools we cannot patch (node.exe running dsh web UIs)
+need one-time owner-run firewall allow rules - the architect must not
+change firewall settings itself.
