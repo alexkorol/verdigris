@@ -548,3 +548,21 @@ will be reviewed or integrated until resume. Board at pause: 0047 N4
 in flight (kimi-work), 0042 RELEASED/claimable, 0049 UI wave READY.
 Master 1244b5bf: N1-N3 C++ parity, 32-scenario suite, LMB/RMB +
 rebinding all shipped today.
+
+## ORCHESTRATION RESUMED (2026-08-18, owner directive) + COURSE CORRECTION
+
+Owner verdict on 36h of work: server parity solid but the VISIBLE
+surface lagged badly. Rulings now in canon: D-117 (client-visible
+increment every wave; architect PLAYS the exe at native acceptances),
+D-118 (native client goes 2D top-down NOW; correct 2.5D returns later
+modeled on the webchat-Fable demo), D-119 (native client harness -
+scripted pipeline scenarios gate every client change).
+
+Fleet: deepseek ACTIVE ($10 credits - use them well; brief at
+REENTRY-DEEPSEEK.md), kimi K3 restarting (REENTRY-KIMI-CODE.md
+refreshed), kimi-work mid-0047 (N4 items). Codex out of tokens.
+
+Board: 0050 native client C1 (CRITICAL - top owner value), 0051 client
+harness (high), 0049 UI wave (high), 0042 first-loot (released,
+claimable). 0047 N4 in flight. Review bar unchanged; for 0050/0051 the
+architect additionally plays the build.

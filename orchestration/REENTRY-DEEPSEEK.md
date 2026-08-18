@@ -54,3 +54,11 @@ WS envelope `{event, data}`; server handlers read the client payload
 at `data.data`. Movement constants live in `server/shared/movement.js`.
 The playtest harness (`playtest/run.mjs`) is the measuring stick for
 everything gameplay.
+
+## Board refresh (2026-08-18)
+
+Claimable now: TASK-0042 first-loot (RELEASED), TASK-0049 first-session
+UI wave, TASK-0050 native client C1 (CRITICAL - owner-visible, D-118 2D
+top-down + visible combat + real inventory), TASK-0051 native client
+harness (D-119). If you are confident in C++, take 0050 first; it is
+the highest owner-value item on the board.
