@@ -70,9 +70,24 @@ outside production until the owner resolves asset provenance/packaging.
   `6d39565c` on post-N2 tip `ca0dd2df`. Native gates, unchanged 7-scenario
   attach, unit coverage, and authentic negative are captured; architect
   rebuild/acceptance is pending.
-- TASK‑0046 playability re-evaluation: `REVIEW_REQUESTED` at `1de6e45b` on
-  current tip `45846af7`. The report records the bounded guest checkpoint and
-  page-context socket proof, but explicitly does not claim the two full arcs.
+- TASK‑0046 playability re-evaluation: `REVIEW_REQUESTED` at worker evidence
+  commit `ec42e843` (worker candidate `1de6e45b`) on current tip `45846af7`.
+  Coordinator completed both approximately ten-minute arcs with headless
+  Playwright and same-owned-server correlation; guest combat is improved,
+  while the mortal-oath opener remains mechanically silent. The corrected
+  evidence is published. Fable's latest architect state records rev2
+  acceptance, but the separate REVIEW.md still contains the older REVISE text;
+  protocol reconciliation is pending before the coordinator changes lifecycle.
+- TASK‑0047 native protocol N4 items/inventory/Vesselforge: `CLAIMED` by
+  Kimi Work on `codex/TASK-0047-native-n4-kimiwork` at `d1e30e2b`, based on
+  the N3-integrated program line. The unchanged 13-scenario attach,
+  item/inventory unit coverage, and authentic-negative transcript remain the
+  required handoff gates; no implementation or acceptance is claimed yet.
+- TASK‑0048 Chronicles silent combat: `CLAIMED` by Codex/Luna on
+  `codex/TASK-0048-chronicles-silent-combat` at current program tip
+  `6710e3bb`. This critical browser repair will diagnose the mortal-oath
+  first-fight path, add an authentic regression scenario, and preserve the
+  owner-controlled mana decision boundary.
 
 ## Current coordinator gates
 
@@ -119,11 +134,9 @@ outside production until the owner resolves asset provenance/packaging.
 
 ## Next authorized actions
 
-1. Fable issues the next READY N3 native spec, carrying the accepted N2 stub
-   inventory and the authority bridge decision.
-2. Fable answers
-   [`QUESTION-0009`](../../orchestration/questions/QUESTION-0009-native-n3-authority-bridge.md)
-   and issues the READY N3 task/spec before native combat implementation.
+1. Monitor TASK‑0047's N4 implementation and independently validate its
+   13-scenario attach and D-106 item recoverability evidence.
+2. Obtain Fable's re-review of the newly published TASK‑0046 two-arc evidence.
 3. Integrate only accepted commits; preserve coordinator-owned metadata during
    the known TASK‑0044 `STATUS.md` add/add merge conflict.
 4. Resolve QUESTION‑0007 and QUESTION‑0008 with the owner before implementing
