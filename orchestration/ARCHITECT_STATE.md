@@ -576,3 +576,13 @@ Code, 5 days to reset). Routing rule: Kimi K3 gets tightly-scoped
 scaffolded execution only (D-120 minimizes its burn); DeepSeek ($10
 credits) takes design-heavy work; architect scaffolds harder if either
 pool nears empty. Open question: does KimiWork K3 share this quota?
+
+## FLEET BUDGET addendum - DeepSeek economics (owner data, 2026-08-18)
+
+DeepSeek burn: ~$1.05 / 29.2M tokens / 293 requests for the 0049
+session so far; balance $9.49 => ~9 more task-sessions. V4-Pro
+off-peak (Beijing) pricing is half of peak and overlaps US daytime.
+Routing updated: DeepSeek = primary implementation workhorse
+(including 0050 native client when free); Kimi K3 = scoped scaffolded
+execution (protect the ~1/5 remaining monthly pool); kimi-work =
+finish 0047.
