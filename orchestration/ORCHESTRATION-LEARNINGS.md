@@ -1,4 +1,14 @@
-# Orchestration learnings (living document)
+﻿# Orchestration learnings (living document)
+
+> **2026-08-18 migration note:** this file is now FROZEN SOURCE
+> HISTORY plus a staging area for new OBSERVATIONS. The operating
+> system it seeded lives in: ORCHESTRATION.md (constitution + rules),
+> RUN_STATUS.md (current truth, rewritten), INCIDENTS.md (append-only
+> ledger, items 1-9 migrated as INC-001..009), ACCEPTANCE.md (gate
+> registry), MODEL_SCORECARD.md (calibration). New failures append to
+> INCIDENTS.md; promotions to RULE happen in ORCHESTRATION.md with an
+> enforcement mechanism. Owner's research synthesis:
+> C:\Users\Alex\Downloads\multi_harness_orchestration_field_guide.md.
 
 Maintained by the architect automatically after every notable review,
 failure, or process change. Purpose: stop repeating mistakes, stop
@@ -7,7 +17,7 @@ wasting tokens/time, and tune task design to each model's capability.
 
 ## Capability tiers and what each needs
 
-- **Weak (Luna workers):** broad goals FAIL here — the 2.5D parallax
+- **Weak (Luna workers):** broad goals FAIL here â€” the 2.5D parallax
   bug shipped because "billboard projection" was left as an exercise.
   Weak models need: exact file paths, function signatures, the hard
   math/algorithms already written by the architect, a numbered
@@ -30,9 +40,9 @@ wasting tokens/time, and tune task design to each model's capability.
 2. **Stale-base clobbers** (0037 reverting 0033): merges resolved
    against old tips. FIX: standing diff-vs-current-tip check.
 3. **Broad specs to weak models** (2.5D projection): geometry/math
-   left implicit. FIX: D-120 scaffolding — architect ships the math.
+   left implicit. FIX: D-120 scaffolding â€” architect ships the math.
 4. **Invisible progress** (N1-N3): all verification lived in the
-   harness, none in the owner's hands. FIX: D-117 — every wave ships
+   harness, none in the owner's hands. FIX: D-117 â€” every wave ships
    an owner-visible increment; architect plays the exe.
 5. **Evidence mirroring conflicts** (3 merge rounds, one marker bake):
    coordinators copying each other's task files. FIX: single-writer
@@ -71,3 +81,4 @@ harnesses: explicit 127.0.0.1 bind, no exceptions without an owner
 ruling. External tools we cannot patch (node.exe running dsh web UIs)
 need one-time owner-run firewall allow rules - the architect must not
 change firewall settings itself.
+

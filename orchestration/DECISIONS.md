@@ -191,3 +191,22 @@ automatically after every notable review or failure - no owner prompt
 needed. This amends the architect-does-not-implement rule: scaffolding
 and reference math are architect work; feature implementation remains
 coordinator work.
+
+## D-121 - Orchestration operating system v2 (owner research, 2026-08-18)
+
+Adopted from the owner-compiled Multi-Harness Orchestration Field
+Guide (Downloads/multi_harness_orchestration_field_guide.md), scaled
+to current fleet size. New canonical docs: ORCHESTRATION.md (short
+constitution: prime directive, topology-first dispatch + spawn gate,
+authority-narrower-than-capability, delegation contract, resource
+capsules, G0-G6 validation ladder, rule lifecycle), RUN_STATUS.md
+(rewritten snapshot of current truth - replaces ARCHITECT_STATE's
+diary role), INCIDENTS.md (append-only, INC-001..010 migrated),
+ACCEPTANCE.md (gate registry), MODEL_SCORECARD.md (empirical
+per-model calibration; tiers describe the JOB PACKET, not the model).
+ARCHITECT_STATE.md and ORCHESTRATION-LEARNINGS.md are frozen history.
+Key doctrine shifts: topology before model; team must beat strongest
+solo on accepted-outcome-per-dollar; greens are revision+environment
+bound; consensus is not truth (preserve dissent, select don't blend);
+every adopted lesson becomes a regression or experiment. Enforcement
+backlog and EXP-1 (packet-type A/B) recorded in the new docs.
