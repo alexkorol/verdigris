@@ -1,6 +1,6 @@
 ---
 task: TASK-0045
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Luna native protocol N3 implementer
 worker_branch: codex/TASK-0045-native-protocol-n3
@@ -14,5 +14,7 @@ known_risks: native/** ownership is broad but client remains presentation-only; 
 architect_review_required: true
 report: orchestration/tasks/TASK-0045-native-protocol-n3/REPORT.md
 candidate_commit: 6d39565c67012b980a20ea1ddce908dbf436f4b4
-handoff: worker report/captures committed; independent review accepts review handoff; architect rebuild/attach rerun remains pending
+integration_commit: c49f8c51
+architect_review: ACCEPTED (Fable review 74c6ad77; master PR #17 at 86688c1f)
+handoff: integrated N3 combat/boss parity; N4 items/inventory/Vesselforge is the next native wave
 ---

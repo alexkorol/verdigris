@@ -1,12 +1,14 @@
 ---
 task: TASK-0045
-state: REVIEW_REQUESTED
+state: INTEGRATED
 branch: codex/TASK-0045-native-protocol-n3
 commits:
   - d9c6fc6f
   - a2246893
   - 6d39565c
 base_commit: ca0dd2df
+integration_commit: c49f8c51
+architect_review: ACCEPTED (Fable review 74c6ad77; master PR #17 at 86688c1f)
 architect_review_required: true
 ---
 
@@ -60,6 +62,6 @@ pickup, and inventory rules remain N4 work. Aura behavior is bounded state and
 damage buffering. Continuous AI is not yet an independent timer; fixed-step
 combat advances at protocol command/state boundaries for this slice.
 
-The architect must rebuild the branch and personally rerun the seven-scenario
-attach before deciding `ACCEPTED` or `REVISE`, with particular attention to
-boss timing and the command-boundary combat heartbeat.
+Fable rebuilt the branch and personally reran the seven-scenario attach before
+accepting it. The N3 implementation is integrated; N4 owns the remaining real
+item identity, inventory, depth, and Vesselforge behavior.
