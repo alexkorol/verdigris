@@ -1,4 +1,6 @@
 /** A scion can turn carried dungeon gold into persistent House development funds. */
+import { loadMode } from '../timing.mjs';
+
 export default async function houseTreasury({ connect, assert }) {
   const guestId = 'playtest-house-treasury';
   const p = await connect({
@@ -8,7 +10,21 @@ export default async function houseTreasury({ connect, assert }) {
   });
   let p2;
   try {
-    const initial = await p.state();
+    // TASK-0052: the starting road purse can land a frame after the first
+    // authoritative snapshot under ambient load. Wait for it (bounded and
+    // load-adaptive via waitFor; 12s authored floor under the documented
+    // load gate) before reading the balance the deposit math checks
+    // against. The assert itself is unchanged.
+    const initial = await p.waitFor(async () => {
+      const snapshot = await p.state();
+      const carried = snapshot.inventory
+        .filter(item => item.id === 'coins')
+        .reduce((sum, item) => sum + item.qty, 0);
+      return carried >= 100 ? snapshot : false;
+    }, {
+      timeoutMs: loadMode ? 12000 : 8000,
+      label: 'starting road purse to land',
+    });
     const coinsBefore = initial.inventory
       .filter(item => item.id === 'coins')
       .reduce((sum, item) => sum + item.qty, 0);

@@ -1,0 +1,38 @@
+
+> verdigris@0.2.0 playtest
+> node playtest/run.mjs first-goal house-treasury
+
+Booting playtest server on :6510…
+Timing guard: load-adaptive deadlines enabled (max 1.75x; explicit load mode: off; baseline 20ms event-loop lag)
+Playing against ws://localhost:6510
+
+  ▶ first-goal
+      ✓ Aldwyn is present in the authoritative town scene
+      ✓ Aldwyn exposes a Talk interaction in town
+      ✓ the accepted goal explicitly asks for a first Warden
+      ✓ server records the active floor-clear objective
+      ✓ clearing floor 1 pushes an explicit return-to-Aldwyn objective
+      ✓ the first goal awards exactly one quest point
+      ✓ the reward increases authoritative tree capacity by one
+      ✓ Aldwyn explains the permanent reward
+  PASS first-goal (1460ms)
+
+  ▶ house-treasury
+      ✓ the scion has carried gold available for a House deposit
+      ✓ the Crossroads exposes a clearly named countinghouse keeper
+      ✓ the House banker exposes the Bank action
+      ✓ bank identifies the active House (Ledger)
+      ✓ bank shows the scion carried-gold balance
+      ✓ bank refreshes the reduced carried balance
+      ✓ deposit removes exactly 100 gold from the scion
+      ✓ deposit reports the exact House transfer
+      ✓ House treasury survives a new session
+      ✓ the scion cannot recover deposited gold by relogging
+  PASS house-treasury (636ms)
+
+────────────────────────────────
+ PASS  first-goal (1460ms)
+ PASS  house-treasury (636ms)
+
+2/2 scenarios passed
+Timing diagnostics: {"loadMode":false,"p99EventLoopLagMs":32.899071,"maxEventLoopLagMs":34.865151}

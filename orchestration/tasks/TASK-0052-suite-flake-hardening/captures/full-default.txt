@@ -1,0 +1,495 @@
+
+> verdigris@0.2.0 playtest
+> node playtest/run.mjs
+
+Booting playtest server on :6510…
+Timing guard: load-adaptive deadlines enabled (max 1.75x; explicit load mode: off; baseline 20ms event-loop lag)
+Playing against ws://localhost:6510
+
+  ▶ boss-mechanic
+      ✓ Old Barrow ends in its named boss
+      ✓ the warning declares a meaningful danger radius
+      ✓ the warning leaves a readable dodge window
+      ✓ leaving the marked circle avoids the ground slam
+      ✓ remaining in the circle takes the named boss hit
+      ✓ the opening boss mechanic is survivable at its level band
+  PASS boss-mechanic (4142ms)
+
+  ▶ build-divergence
+      ✓ STR path leads strength (83 vs 20)
+      ✓ INT path leads intelligence (83 vs 10)
+      ✓ both builds face one shared monster
+      ✓ STR build wins melee profile (33 vs 14)
+      ✓ INT build wins skill profile (42 vs 7)
+  PASS build-divergence (4884ms)
+
+  ▶ chronicles
+      ✓ found a monster to deliver final death
+      ✓ Chron the First was named in the fall
+      ✓ notable gear was committed to circulation
+      ✓ fallen scion is present in the server crypt
+      ✓ the ring remembers Chron the First
+      ✓ a later scion recovered the ancestral ring through real pickup
+      ✓ stairs generated floor 2 of the endless descent
+      ✓ server recorded the scion depth record (2)
+  PASS chronicles (3669ms)
+
+  ▶ chronicles-first-combat
+      ✓ mortal oath is carried into world admission
+      ✓ Old Barrow exposes a live opening encounter actor
+      ✓ mortal-oath first attack deals authoritative damage
+      ✓ mortal-oath first kill resolves within 1135ms
+      ✓ first kill emits a readable server message
+  PASS chronicles-first-combat (1921ms)
+
+  ▶ combat
+      ✓ instance is populated (54 monsters)
+      ✓ found a trash monster to fight
+      ✓ killed a pack member within 30s (healer race is winnable)
+      ✓ survived the pack (hp 101/142)
+      ✓ combat log recorded the kill
+  PASS combat (2612ms)
+
+  ▶ crossroads
+      ✓ a scion begins at the Crossroads
+      ✓ the town carries the wagon pitches of the world web
+      ✓ no monsters walk the Crossroads (0)
+      ✓ the plaza ring offers wagon pitches
+      ✓ scion spawns beside their House wagon (at 29,113)
+      ✓ the House wagon exposes a Wagon interaction
+      ✓ wagon pane names the House
+      ✓ road purse landed in the ledger (100)
+      ✓ road kit stock is always open
+      ✓ iron stock is gated behind prestige or the forge
+      ✓ road kit includes a bronze sword
+      ✓ outfitting debits exactly the stock price
+  PASS crossroads (473ms)
+
+  ▶ depth-loot
+      ✓ floor 1 contains a guaranteed item-level treasure
+      ✓ floor 5 contains a guaranteed item-level treasure
+      ✓ floor 5 treasure visibly raises item level (10 -> 50)
+      ✓ displayed item level comes from the live vessel
+  PASS depth-loot (1404ms)
+
+  ▶ economy
+      ✓ the player has enough coins for a general-store purchase
+      ✓ town exposes a live Trade NPC
+      ✓ Trade is reachable through the real NPC context menu
+      ✓ the General Store stocks knives
+      ✓ shop inventory exposes Buy-1 through the real pane menu
+      ✓ General Store purchase is authoritative
+      ✓ backpack item exposes Sell-1 while the shop is open
+      ✓ General Store sale is authoritative
+      ✓ town exposes a live Bank NPC
+      ✓ Bank is reachable through the real NPC context menu
+      ✓ coins remain in the backpack for banking
+      ✓ backpack coins expose Deposit-5 through the real bank menu
+      ✓ bank deposit is authoritative
+      ✓ bank coins expose Withdraw-5 through the real bank menu
+      ✓ bank withdrawal is authoritative and the scenario leaves balances unchanged
+  PASS economy (493ms)
+
+  ▶ encounter-variety
+      ✓ crypt packs lean toward close melee pressure
+      ✓ crypt packs include aura buffers
+      ✓ marsh packs add more ranged pressure than crypts
+      ✓ marsh packs include aura buffers
+      ✓ rare enemies expose one named combat modifier
+      ✓ a nearby ally receives the buffer damage aura
+      ✓ an aura-empowered pack member dies within the 15s TTK bound
+  PASS encounter-variety (5521ms)
+
+  ▶ equipment-slots
+      ✓ the first ring stays in the primary seat
+      ✓ a second ring fills the second seat
+      ✓ a belt equips into the waist slot
+      ✓ both ring seats survive equipping the belt
+  PASS equipment-slots (407ms)
+
+  ▶ first-goal
+      ✓ Aldwyn is present in the authoritative town scene
+      ✓ Aldwyn exposes a Talk interaction in town
+      ✓ the accepted goal explicitly asks for a first Warden
+      ✓ server records the active floor-clear objective
+      ✓ clearing floor 1 pushes an explicit return-to-Aldwyn objective
+      ✓ the first goal awards exactly one quest point
+      ✓ the reward increases authoritative tree capacity by one
+      ✓ Aldwyn explains the permanent reward
+  PASS first-goal (1900ms)
+
+  ▶ gates
+      ✓ tin: gate opens its own chart
+      ✓ tin: the chart has a first stage
+      ✓ tin: tier 1 is charted from the start
+      ✓ tin: reading the chart does not move you
+      ✓ salt: gate opens its own chart
+      ✓ salt: the chart has a first stage
+      ✓ salt: tier 1 is charted from the start
+      ✓ salt: reading the chart does not move you
+      ✓ chalk: gate opens its own chart
+      ✓ chalk: the chart has a first stage
+      ✓ chalk: tier 1 is charted from the start
+      ✓ chalk: reading the chart does not move you
+      ✓ copper: gate opens its own chart
+      ✓ copper: the chart has a first stage
+      ✓ copper: tier 1 is charted from the start
+      ✓ copper: reading the chart does not move you
+  PASS gates (1063ms)
+
+  ▶ gear-outcomes
+      ✓ found one stable monster for all three gear trials
+      ✓ higher-ilvl vessel visibly raises attack (13 -> 17)
+      ✓ looted weapon cuts same-monster TTK by at least 20% (7.29s -> 2.20s)
+      ✓ higher-ilvl vessel cuts same-monster TTK by at least 13% (12.26s/28 hits -> 10.17s/23 hits)
+  PASS gear-outcomes (35328ms)
+
+  ▶ house-treasury
+      ✓ the scion has carried gold available for a House deposit
+      ✓ the Crossroads exposes a clearly named countinghouse keeper
+      ✓ the House banker exposes the Bank action
+      ✓ bank identifies the active House (Ledger)
+      ✓ bank shows the scion carried-gold balance
+      ✓ bank refreshes the reduced carried balance
+      ✓ deposit removes exactly 100 gold from the scion
+      ✓ deposit reports the exact House transfer
+      ✓ House treasury survives a new session
+      ✓ the scion cannot recover deposited gold by relogging
+  PASS house-treasury (630ms)
+
+  ▶ loot
+      ✓ found a monster to loot
+      ✓ coins entered the inventory (100 -> 217)
+  PASS loot (1773ms)
+
+  ▶ mortality
+      ✓ Chronicles admission holds the account outside the world
+      ✓ server owns the seeded Chronicle revision
+      ✓ mortal oath selects hard lifecycle mode
+      ✓ server binds the selected Scion identity
+      ✓ fallen heirloom starts with generated vessel identity
+      ✓ reconnect does not resurrect a fallen mortal Scion
+      ✓ fallen Scion still owns the exact heirloom before entombment
+      ✓ fallen Scion returns to the authenticated Chronicles
+      ✓ server Chronicle entombs the fallen Scion
+      ✓ server Chronicle cannot reselect the fallen Scion
+      ✓ equipped heirloom enters the crypt recovery queue
+      ✓ crypt preserves the heirloom UUID, rolls, and vessel exactly
+      ✓ crypt binds the heirloom to its authenticated House account
+      ✓ successor enters alive
+      ✓ successor keeps the default soft lifecycle
+      ✓ successor starts in town (Delaford Village)
+      ✓ successor cannot inherit a duplicate of the queued heirloom
+      ✓ successor finds an elite guarding the heirloom path
+      ✓ world drop retains its fallen Scion provenance
+      ✓ recovered heirloom is the exact item the fallen Scion carried
+      ✓ recovered heirloom remains bound to its House account
+      ✓ Chronicle records when the successor recovered the heirloom
+  PASS mortality (8525ms)
+
+  ▶ movement
+      ✓ stopped between tiles (115.333333)
+      ✓ moved down (115 -> 118.333333)
+      ✓ moved right (42 -> 45)
+      ✓ moved back up-left
+      ✓ still in the instance after 2s (scene: The Old Barrow)
+      ✓ no bounce back to town
+      ✓ moved inside the instance
+  PASS movement (4577ms)
+
+  ▶ overflow
+      ✓ backpack accepts every sword that fits
+      ✓ overflow swords fall to the ground
+      ✓ no generated sword is lost
+      ✓ inventory rewards bind to the real player after world admission
+      ✓ overflow rewards stay bound at the player feet
+      ✓ fungible currency does not create an avoidable overflow drop
+  PASS overflow (330ms)
+
+  ▶ party
+      ✓ playtest guests have distinct server identities
+      ✓ party creator is the leader
+      ✓ invitation names its real sender
+      ✓ both clients share one authoritative party
+      ✓ readiness synchronises to the whole party
+      ✓ both members enter the same instance scene
+      ✓ the shared party scene is an instance
+      ✓ instance state reaches both clients
+      ✓ instance admission clears readiness on both clients
+      ✓ leaving an instance returns the member to town
+      ✓ the remaining leader keeps the live instance
+      ✓ party return restores the leader to town
+  PASS party (1406ms)
+
+  ▶ party-stories
+      ✓ friend joined the shared party
+      ✓ both friends entered the same crypt instance
+      ✓ leader witnessed Orun's final fall
+      ✓ the witnessed fall returned a relic to the world
+      ✓ the survivor found the dead friend ring three runs later
+  PASS party-stories (7389ms)
+
+  ▶ persistence
+      ✓ generated inventory gear carries vessel and affix identity
+      ✓ equipped Vesselforge weapon contributes its derived combat rating
+      ✓ equipped Keen Eye Brand contributes its live 22% critical chance
+      ✓ equipped Beastbane Brand contributes its live 13% beast damage
+      ✓ Keen Eye tooltip presents critical chance as a live Brand
+      ✓ equipped Vessel shield contributes its live 4% block chance
+      ✓ shield tooltip presents block as a live implicit
+      ✓ level survived the relogin (4)
+      ✓ granted item survived the relogin
+      ✓ inventory affixes and vessel survived the relogin exactly
+      ✓ equipped item identity survived the relogin exactly
+      ✓ equipped shield identity survived the relogin exactly
+      ✓ derived Vesselforge combat stats were restored on login
+      ✓ Vesselforge block chance was restored on login
+      ✓ Keen Eye critical chance was restored on login
+      ✓ Beastbane damage was restored on login
+      ✓ disconnect removed the previous party membership before relogin
+  PASS persistence (2083ms)
+
+  ▶ quest
+      ✓ a living Scion is available for the commission
+      ✓ Aldwyn's Charge starts authoritatively on world admission
+      ✓ walking completes the first quest objective
+      ✓ the commission finds a hostile creature
+      ✓ a real fight completes strike and slay objectives
+      ✓ real context-menu pickup completes the loot objective
+      ✓ quest grants one persistent passive point
+      ✓ quest grants five authoritative House renown
+      ✓ the living Scion records Aldwyn's deed
+      ✓ Proof of Temper finds an elite Adventure guardian
+      ✓ slaying an elite advances Proof of Temper
+      ✓ the quest guardian guarantees a native Vessel drop
+      ✓ the exact native Vessel enters the inventory
+      ✓ two commissions grant two passive points
+      ✓ the two commissions grant fifteen House renown
+      ✓ the Scion records the elite Vessel deed
+      ✓ Sunken Colonnade cannot stand in for Weir Crypt
+      ✓ the named campaign delve enters Weir Crypt
+      ✓ Weir Crypt is sealed by the named Pale Sovereign boss
+      ✓ only the named crypt sovereign breaks the campaign seal
+      ✓ the broken seal exposes stairs to the deeper realm
+      ✓ three commissions grant three passive points
+      ✓ the campaign chain grants thirty House renown
+      ✓ the Scion records the named boss and descent deed
+      ✓ the fourth commission enters its named marsh
+      ✓ Marsh of Reeds is guarded by The Rotfather
+      ✓ the measured Rotfather setup carries live Beastbane damage
+      ✓ only the named marsh sovereign advances the fourth commission
+      ✓ the cleared marsh retains its route to the surface
+      ✓ four commissions grant four passive points
+      ✓ the four commissions grant fifty House renown
+      ✓ the Scion records the return from the blighted marsh
+      ✓ all four quest points survive relogging
+      ✓ Aldwyn's Charge survives relogging
+      ✓ Proof of Temper survives relogging
+      ✓ The Pale Crown survives relogging
+      ✓ Rot in the Reeds survives relogging
+  PASS quest (24296ms)
+
+  ▶ quickstart
+      ✓ fresh guest reached combat in 0.16s
+  PASS quickstart (158ms)
+
+  ▶ respawn
+      ✓ soft death records one lifecycle transition
+      ✓ further lethal hits do not count duplicate deaths
+      ✓ further lethal hits do not delay the pending respawn
+      ✓ soft respawn returns to the instance entry
+      ✓ a monster is available to test the respawn ward
+      ✓ the respawn ward prevents immediate pack damage (296 -> 296)
+      ✓ using a skill ends the ward without changing lifecycle
+  PASS respawn (12494ms)
+
+  ▶ session-arc
+      ✓ the session begins with Aldwyn present in town
+      ✓ the first goal begins through an in-world Talk action
+      ✓ Aldwyn frames the first goal around a Warden
+      ✓ first run begins with a real fight
+      ✓ the first goal culminates in the named Warden
+      ✓ the cleared floor persists the return-to-Aldwyn objective
+      ✓ returning from the first goal awards a Verdigris point
+      ✓ loot visibly raises authoritative attack power (0 -> 22)
+      ✓ the looted weapon changes the next fight (9 -> 31 damage)
+      ✓ real combat advanced the scion to level 2
+      ✓ level-up becomes a persisted build choice
+      ✓ the server applies the tree path to combat attributes (+5)
+      ✓ floor 4 presents a visible level wall (5 vs 15)
+      ✓ the next run keeps level 5
+      ✓ the next run keeps the looted weapon equipped
+      ✓ relogin rebuilds the weapon combat bonus
+      ✓ the next run keeps the tree decision
+      ✓ the scion voluntarily starts another populated run
+      ✓ the second run contains a mortal threat
+      ✓ the developed scion enters the crypt by name
+      ✓ the developed vessel becomes an heirloom candidate
+      ✓ a later scion recovers the developed battleaxe heirloom
+      METRICS
+      {
+        "secondsToFirstCombat": 0.98,
+        "secondsToFirstDrop": 6.17,
+        "ttkSeconds": {
+          "level1": 0.13,
+          "level5": 0.25
+        },
+        "meaningfulChoices": {
+          "total": 6,
+          "treePoints": 2,
+          "equipSwaps": 1,
+          "zonePicks": 3
+        },
+        "deaths": 1,
+        "depthReached": 4,
+        "criticScore": 80
+      }
+  PASS session-arc (15507ms)
+
+  ▶ single-session
+      ✓ loot from the replaced session survived the handoff
+      ✓ new session stays connected
+  PASS single-session (489ms)
+
+  ▶ skilltree
+      ✓ login block carries the saved tree
+      ✓ allocated node survived the relog
+      ✓ allocated conduit survived the relog
+      ✓ earned points were reconciled to authoritative level 50
+      ✓ spent and unspent points reconcile after relog
+  PASS skilltree (1035ms)
+
+  ▶ town-amenities
+      ✓ new scion begins in Delaford town
+      ✓ starter backpack omits the smithing hammer
+      ✓ starter backpack omits bronze ingots
+      ✓ starter backpack omits retired mining pickaxes
+      ✓ new scion receives a proper starter dagger
+      ✓ starter dagger occupies its authored 1x2 footprint
+      ✓ starter gold remains available
+      ✓ bronze-med-helm occupies a 2x2 inventory footprint
+      ✓ bronze-gloves occupies a 2x2 inventory footprint
+      ✓ bronze-boots occupies a 2x2 inventory footprint
+      ✓ Crossroads fountain exposes a Drink interaction
+      ✓ drinking restores the scion to full health
+      ✓ nearby gold enters the carried-gold balance without a Take action
+      ✓ floor stock exposes a direct Buy action
+      ✓ floor stock exposes an Appraise action
+      ✓ shop display stock cannot be taken for free
+      ✓ Appraise reports the authoritative coin price
+      ✓ Buy purchases directly without opening the shop pane
+      ✓ floor stock still offers the full General Store
+      ✓ floor stock opens the live buy/sell pane
+  PASS town-amenities (1293ms)
+
+  ▶ vesselforge
+      ✓ Keen Eye reaches combat state (22%)
+      ✓ Keen Eye is presented as a live Brand
+      ✓ the deterministic Wealthy ring contributes its 10% Brand
+      ✓ Wealthy reaches combat state (10%)
+      ✓ Wealthy is presented as a live Brand
+      ✓ Beastbane reaches combat state (13%)
+      ✓ Beastbane is presented as a live Brand
+      ✓ found a target for the critical strike
+      ✓ target carries a measurable coin bounty
+      ✓ critical hit deals the measured 1.5x result (27 -> 41)
+      ✓ Wealthy boosts the real coin bounty by 10% (60 -> 66)
+      ✓ the generated grove exposes an explicitly tagged beast
+      ✓ Beastbane applies the measured 13% bonus (29 -> 33)
+  PASS vesselforge (4660ms)
+
+  ▶ vesselforge-brand
+      ✓ a vessel item exposes the Delaford brand service
+      ✓ the menu states the exact crafting cost
+      ✓ adding a brand spends exactly 100 coins
+      ✓ the refreshed tooltip contains the new brand
+  PASS vesselforge-brand (164ms)
+
+  ▶ world-web
+      ✓ the north gate reads the Tin Road
+      ✓ tier 1 is charted from the start (The Broken Stair)
+      ✓ deeper stages stay off the chart until the Warden falls
+      ✓ zone carries its charted name (The Broken Stair)
+      ✓ the zone is populated (53)
+      ✓ the Warden of The Broken Stair keeps the ground
+      ✓ the entry waymark is recorded
+      ✓ an onward gate leads toward the next stage
+      ✓ the gate held the player in place
+      ✓ pressed on into Aditshelf (tin:2:0)
+      ✓ the child zone is one stage deeper
+      ✓ the next stage is open past the dead Warden
+      ✓ back on truce-ground
+      ✓ the cleared ground lies still — dead stays dead (0 alive)
+      ✓ the Warden stays down inside the linger window
+  PASS world-web (2798ms)
+
+  ▶ zones
+      ✓ dungeon/warren: entered an instance
+      ✓ dungeon/warren: layout applied (warren)
+      ✓ dungeon/warren: both stairs exist
+      ✓ dungeon/warren: scene has a display name (The Old Barrow)
+      ✓ dungeon/warren: populated (33 monsters)
+      ✓ grove/clearings: entered an instance
+      ✓ grove/clearings: layout applied (clearings)
+      ✓ grove/clearings: both stairs exist
+      ✓ grove/clearings: scene has a display name (Verdant Grove)
+      ✓ grove/clearings: populated (61 monsters)
+      ✓ crypt/gauntlet: entered an instance
+      ✓ crypt/gauntlet: layout applied (gauntlet)
+      ✓ crypt/gauntlet: both stairs exist
+      ✓ crypt/gauntlet: scene has a display name (Sunken Colonnade)
+      ✓ crypt/gauntlet: populated (31 monsters)
+      ✓ crypt/warren: entered an instance
+      ✓ crypt/warren: layout applied (warren)
+      ✓ crypt/warren: both stairs exist
+      ✓ crypt/warren: scene has a display name (Weir Crypt)
+      ✓ crypt/warren: populated (43 monsters)
+      ✓ wilds/clearings: entered an instance
+      ✓ wilds/clearings: layout applied (clearings)
+      ✓ wilds/clearings: both stairs exist
+      ✓ wilds/clearings: scene has a display name (The Wilds)
+      ✓ wilds/clearings: populated (59 monsters)
+      ✓ marsh/clearings: entered an instance
+      ✓ marsh/clearings: layout applied (clearings)
+      ✓ marsh/clearings: both stairs exist
+      ✓ marsh/clearings: scene has a display name (Marsh of Reeds)
+      ✓ marsh/clearings: populated (59 monsters)
+      ✓ returned to the pre-entry position (43.666666,116.333334 vs 43.666666,116.333334)
+  PASS zones (18124ms)
+
+────────────────────────────────
+ PASS  boss-mechanic (4142ms)
+ PASS  build-divergence (4884ms)
+ PASS  chronicles (3669ms)
+ PASS  chronicles-first-combat (1921ms)
+ PASS  combat (2612ms)
+ PASS  crossroads (473ms)
+ PASS  depth-loot (1404ms)
+ PASS  economy (493ms)
+ PASS  encounter-variety (5521ms)
+ PASS  equipment-slots (407ms)
+ PASS  first-goal (1900ms)
+ PASS  gates (1063ms)
+ PASS  gear-outcomes (35328ms)
+ PASS  house-treasury (630ms)
+ PASS  loot (1773ms)
+ PASS  mortality (8525ms)
+ PASS  movement (4577ms)
+ PASS  overflow (330ms)
+ PASS  party (1406ms)
+ PASS  party-stories (7389ms)
+ PASS  persistence (2083ms)
+ PASS  quest (24296ms)
+ PASS  quickstart (158ms)
+ PASS  respawn (12494ms)
+ PASS  session-arc (15507ms)
+ PASS  single-session (489ms)
+ PASS  skilltree (1035ms)
+ PASS  town-amenities (1293ms)
+ PASS  vesselforge (4660ms)
+ PASS  vesselforge-brand (164ms)
+ PASS  world-web (2798ms)
+ PASS  zones (18124ms)
+
+32/32 scenarios passed
+Timing diagnostics: {"loadMode":false,"p99EventLoopLagMs":32.260095,"maxEventLoopLagMs":143.523839}
