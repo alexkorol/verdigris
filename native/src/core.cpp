@@ -2265,11 +2265,15 @@ VesselItem VesselForge::generate_item(int ilvl, const std::string& form_id,
   }
 
   // maybeName: three or more marks earn an epithet from the pack tables.
+  // NB: draw order matters — pre first, then post, in separate statements
+  // (operator+ operand order is unspecified in C++).
   if (item.epithet_name.empty() && item.brands.size() >= 3) {
     const auto& pre = pack_name_pre();
     const auto& post = pack_name_post();
-    item.epithet_name = std::string(pre[static_cast<std::size_t>(std::floor(rand_.next() * pre.size()))]) +
-        " " + post[static_cast<std::size_t>(std::floor(rand_.next() * post.size()))];
+    const double first = rand_.next();
+    const double second = rand_.next();
+    item.epithet_name = std::string(pre[static_cast<std::size_t>(std::floor(first * pre.size()))]) +
+        " " + post[static_cast<std::size_t>(std::floor(second * post.size()))];
   }
   return item;
 }
@@ -2288,8 +2292,10 @@ bool VesselForge::sear(VesselItem& item) {
   if (item.epithet_name.empty() && item.brands.size() >= 3) {
     const auto& pre = pack_name_pre();
     const auto& post = pack_name_post();
-    item.epithet_name = std::string(pre[static_cast<std::size_t>(std::floor(rand_.next() * pre.size()))]) +
-        " " + post[static_cast<std::size_t>(std::floor(rand_.next() * post.size()))];
+    const double first = rand_.next();
+    const double second = rand_.next();
+    item.epithet_name = std::string(pre[static_cast<std::size_t>(std::floor(first * pre.size()))]) +
+        " " + post[static_cast<std::size_t>(std::floor(second * post.size()))];
   }
   return true;
 }
@@ -2484,3 +2490,582 @@ VesselBlock VesselForge::make_block(const VesselItem& item) const {
   block.combat = derive_combat(item);
   return block;
 }
+
+// ── Item catalogue (server/core/data/items/{general,jewelry,belts,weapons,
+// verdigris,vessels}.js) ─────────────────────────────────────────────────
+namespace {
+
+const ItemDef kItemCatalogue[] = {
+    // general.js: carried balance. Stackable, never binds, no grid cells.
+    {"coins", "Coins", "currency", "", true, false, {}, {}, 0, 0, "", ""},
+    // jewelry.js rings + belts.js waist the N4 scenarios exercise.
+    {"ring", "Ring", "armor", "ring", false, false, {1, 1, 1, 1}, {1, 0, 1, 1}, 0, 0, "", ""},
+    {"gold-ring", "Gold Ring", "armor", "ring", false, false, {3, 3, 3, 3}, {3, 3, 3, 3}, 0, 0, "", ""},
+    {"hide-girdle", "Hide Girdle", "armor", "belt", false, false, {0, 0, 0, 0}, {1, 1, 1, 0}, 0, 0, "", ""},
+    // jewelry.js amulets: the single-session regression grants garnet-amulet.
+    {"garnet-amulet", "Garnet Amulet", "armor", "necklace", false, false, {23, 22, 13, 1}, {24, 25, 13, 4}, 0, 0, "", ""},
+    // weapons.js / verdigris.js curated bases.
+    {"bronze-sword", "Bronze Sword", "weapon", "right_hand", false, false, {4, 3, -2, 0}, {0, 2, 1, 0}, 0, 0, "", ""},
+    {"bronze-pike", "Bronze Pike", "weapon", "right_hand", false, true, {13, 5, 0, 0}, {1, 1, 0, 0}, 1, 4, "spear", "bronze"},
+    // vessels.js: the 13 Vesselforge-native rows. Material, footprint and
+    // combat profile are rolled by the forge (disableAffixes in JS).
+    {"vessel-handaxe", "Handaxe", "weapon", "right_hand", false, false, {}, {}, 0, 0, "handaxe", ""},
+    {"vessel-spear", "Spear", "weapon", "right_hand", false, true, {}, {}, 0, 0, "spear", ""},
+    {"vessel-macuahuitl", "Macuahuitl", "weapon", "right_hand", false, true, {}, {}, 0, 0, "macuahuitl", ""},
+    {"vessel-atlatl", "Atlatl", "weapon", "right_hand", false, true, {}, {}, 0, 0, "atlatl", ""},
+    {"vessel-khopesh", "Khopesh", "weapon", "right_hand", false, false, {}, {}, 0, 0, "khopesh", ""},
+    {"vessel-sling", "Sling", "weapon", "right_hand", false, false, {}, {}, 0, 0, "sling", ""},
+    {"vessel-shield", "Shield", "armor", "left_hand", false, false, {}, {}, 0, 0, "hideshield", ""},
+    {"vessel-wrap", "Wrap", "armor", "armor", false, false, {}, {}, 0, 0, "wrap", ""},
+    {"vessel-crest", "Crest", "armor", "head", false, false, {}, {}, 0, 0, "crest", ""},
+    {"vessel-grips", "Grips", "armor", "gloves", false, false, {}, {}, 0, 0, "grips", ""},
+    {"vessel-sandals", "Sandals", "armor", "feet", false, false, {}, {}, 0, 0, "sandals", ""},
+    {"vessel-gorget", "Gorget", "armor", "necklace", false, false, {}, {}, 0, 0, "gorget", ""},
+    {"vessel-ring", "Ring", "armor", "ring", false, false, {}, {}, 0, 0, "ring", ""},
+};
+
+// Process-wide instance identity source (factory.js uuid v4): uniqueness is
+// the only contract the wire and the take/equip verbs rely on.
+std::uint64_t g_item_uuid_serial = 0;
+
+std::string next_item_uuid() {
+  const std::uint64_t value = ++g_item_uuid_serial;
+  char buffer[40];
+  std::snprintf(buffer, sizeof(buffer), "00000000-0000-4000-8000-%012llx",
+                static_cast<unsigned long long>(value & 0xffffffffffffULL));
+  return buffer;
+}
+
+std::string lower_copy(const std::string& value) {
+  std::string out = value;
+  for (auto& ch : out) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+  return out;
+}
+
+// inventory-footprints.js idContains: substring match over id + name.
+bool id_contains(const ItemDef& def, const GameItem* instance,
+                 std::initializer_list<const char*> needles) {
+  const std::string id = lower_copy(def.id);
+  const std::string name = lower_copy(instance && !instance->display_name.empty()
+                                          ? instance->display_name
+                                          : def.name);
+  for (const char* needle : needles) {
+    const std::string n = lower_copy(needle);
+    if (id.find(n) != std::string::npos || name.find(n) != std::string::npos) return true;
+  }
+  return false;
+}
+
+ItemSize normalise_size(int width, int height) {
+  auto clamp_int = [](int value, int lo, int hi) { return std::max(lo, std::min(hi, value)); };
+  ItemSize size{clamp_int(width, 1, 4), clamp_int(height, 1, 8)};
+  while (size.width * size.height > 8 && size.height > 1) size.height -= 1;
+  while (size.width * size.height > 8 && size.width > 1) size.width -= 1;
+  return size;
+}
+
+ItemSize weapon_size(const ItemDef& def, const GameItem* instance, bool two_handed) {
+  if (two_handed || id_contains(def, instance, {"halberd", "spear"})) return {2, 4};
+  if (id_contains(def, instance, {"longbow", "shortbow", "battleaxe", "warhammer"})) return {2, 3};
+  if (id_contains(def, instance, {"dagger", "knife"})) return {1, 2};
+  if (id_contains(def, instance, {"axe", "mace", "sword"})) return {1, 3};
+  return {1, 2};
+}
+
+ItemSize armor_size(const ItemDef& def, const GameItem* instance) {
+  if (id_contains(def, instance, {"pavise"})) return {2, 3};
+  if (id_contains(def, instance, {"shield"})) return {2, 2};
+  if (id_contains(def, instance, {"chainmail", "armor", "body", "robe"})) return {2, 3};
+  if (id_contains(def, instance, {"cape"})) return {2, 3};
+  if (id_contains(def, instance, {"helm", "hat", "cowl"})) return {2, 2};
+  if (id_contains(def, instance, {"boots", "gloves"})) return {2, 2};
+  // SLOT_SIZE_BY_EQUIPMENT_SLOT.
+  const std::string& slot = def.slot;
+  if (slot == "ring" || slot == "necklace") return {1, 1};
+  if (slot == "head" || slot == "gloves" || slot == "feet" || slot == "left_hand") return {2, 2};
+  if (slot == "back" || slot == "armor") return {2, 3};
+  return {1, 1};
+}
+
+}  // namespace
+
+const ItemDef* item_def(const std::string& id) {
+  for (const auto& def : kItemCatalogue) {
+    if (def.id == id) return &def;
+  }
+  return nullptr;
+}
+
+const std::vector<std::string>& gear_drop_pool() {
+  // loot.js GEAR_DROP_POOL, in declaration order (pool index is rolled).
+  static const std::vector<std::string> pool = {
+      "vessel-handaxe", "vessel-spear", "vessel-macuahuitl", "vessel-atlatl",
+      "vessel-khopesh", "vessel-sling", "vessel-shield", "vessel-wrap",
+      "vessel-crest", "vessel-grips", "vessel-sandals", "vessel-gorget",
+      "vessel-ring",
+  };
+  return pool;
+}
+
+ItemSize resolve_item_size(const ItemDef& def, const VesselBlock* vessel) {
+  // inventory-footprints.js resolveItemSize. Two JS branches are omitted as
+  // unreachable for this catalogue (and retired-vocabulary): the loose
+  // resource id rule (currency is caught by the stackable branch first) and
+  // the retired tool id rule.
+  const std::string& slot = def.slot;
+  if (slot == "head" || slot == "gloves" || slot == "feet") return {2, 2};
+  if (vessel && vessel->item.w > 0 && vessel->item.h > 0) {
+    return normalise_size(vessel->item.w, vessel->item.h);
+  }
+  if (def.size_w > 0 || def.size_h > 0) return normalise_size(def.size_w, def.size_h);
+  if (def.stackable || def.type == "currency") return {1, 1};
+  if (def.type == "weapon" || slot == "right_hand" ||
+      id_contains(def, nullptr, {"sword", "axe", "mace", "dagger", "bow", "halberd", "spear", "warhammer"})) {
+    return weapon_size(def, nullptr, def.two_handed);
+  }
+  if (def.type == "armor" || slot == "ring" || slot == "necklace" || slot == "back" ||
+      slot == "armor" || slot == "left_hand") {
+    return armor_size(def, nullptr);
+  }
+  if (def.type == "jewelry" || id_contains(def, nullptr, {"ring", "amulet"})) return {1, 1};
+  return {1, 1};
+}
+
+std::optional<GameItem> create_game_item(const std::string& item_id,
+                                         const CreateItemOptions& options) {
+  // factory.js createById/createFromBase.
+  const ItemDef* def = item_def(item_id);
+  if (!def) return std::nullopt;
+
+  GameItem item;
+  item.id = def->id;
+  item.name = def->name;
+  item.display_name = def->name;
+  item.uuid = next_item_uuid();
+  item.stackable = def->stackable;
+  item.two_handed = def->two_handed;
+  item.equip_slot = def->slot;
+  item.attack = def->attack;
+  item.defense = def->defense;
+
+  if (!def->vessel_form.empty() && options.forge) {
+    // adapter.js createVesselBlock: one rng draw reseeds the forge, then the
+    // engine stream drives generation. The material hint is honoured only
+    // when the form's material list admits it (adapter.js vesselHints).
+    if (options.rng) {
+      const double draw = options.rng->next();
+      options.forge->reseed(static_cast<std::uint32_t>(std::floor(draw * 4294967296.0)));
+    }
+    const int ilvl = options.item_level > 0 ? std::min(80, options.item_level) : 10;
+    std::string material_hint;
+    if (!def->vessel_material.empty()) {
+      if (const PackForm* form = pack_form(def->vessel_form)) {
+        for (const auto* candidate : form->materials) {
+          if (def->vessel_material == candidate) {
+            material_hint = def->vessel_material;
+            break;
+          }
+        }
+      }
+    }
+    VesselItem vessel_item = options.forge->generate_item(ilvl, def->vessel_form, material_hint);
+    VesselBlock block = options.forge->make_block(vessel_item);
+    if (!block.display_name.empty()) {
+      item.name = block.display_name;
+      item.display_name = block.display_name;
+    }
+    // factory.js: vessel combat replaces the base stat sheet.
+    item.attack = block.combat.attack;
+    item.defense = block.combat.defense;
+    item.combat_bonuses = block.combat.modifiers;
+    if (block.combat.has_attributes) item.bonus_attributes = block.combat.attributes;
+    item.bonus_health = block.combat.resource_health;
+    item.bonus_mana = block.combat.resource_mana;
+    item.vessel = std::move(block);
+  }
+
+  item.size = resolve_item_size(*def, item.vessel ? &*item.vessel : nullptr);
+  item.qty = item.stackable ? std::max(1, options.quantity) : 1;
+
+  // factory.js shouldBindOnPickup: weapons, armour and jewelry bind on
+  // admission; currency never does. (The bindOnPickup catalogue flag is not
+  // modelled — no N4 row uses it; noted as a stub in the task report.)
+  if (!options.bind_to.empty() && !item.stackable &&
+      (def->type == "weapon" || def->type == "armor" || def->type == "jewelry")) {
+    item.bound_to = options.bind_to;
+  }
+  return item;
+}
+
+// ── PlayerInventory (inventory.js + inventory-footprints.js) ─────────────
+
+bool PlayerInventory::fits_at(const GameItem& item, int slot) const {
+  const int x0 = slot % kColumns;
+  const int y0 = slot / kColumns;
+  for (int dy = 0; dy < item.size.height; ++dy) {
+    for (int dx = 0; dx < item.size.width; ++dx) {
+      const int x = x0 + dx;
+      const int y = y0 + dy;
+      if (x >= kColumns || y >= kRows) return false;
+      for (const auto& other : items_) {
+        if (other.id == "coins" || other.slot < 0) continue;  // currency occupies no cells
+        const int ox = other.slot % kColumns;
+        const int oy = other.slot / kColumns;
+        if (x >= ox && x < ox + other.size.width && y >= oy && y < oy + other.size.height) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
+
+int PlayerInventory::first_fit(const GameItem& item) const {
+  // findOpenInventorySlot: row-major scan, no rotation for server grants.
+  for (int slot = 0; slot < kSlotCount; ++slot) {
+    if (fits_at(item, slot)) return slot;
+  }
+  return -1;
+}
+
+PlayerInventory::AddResult PlayerInventory::add(GameItem item) {
+  AddResult result;
+  if (item.stackable) {
+    // inventory.js: an existing stack of the same id absorbs the quantity;
+    // the balance never needs a free cell and never overflows.
+    for (auto& existing : items_) {
+      if (existing.id == item.id) {
+        existing.qty += item.qty;
+        result.added = item.qty;
+        return result;
+      }
+    }
+    item.slot = -1;
+    result.added = item.qty;
+    items_.push_back(std::move(item));
+    return result;
+  }
+  const int slot = first_fit(item);
+  if (slot < 0) {
+    result.overflow.push_back(std::move(item));
+    return result;
+  }
+  item.slot = slot;
+  result.added = 1;
+  items_.push_back(std::move(item));
+  return result;
+}
+
+bool PlayerInventory::remove_by_uuid(const std::string& uuid, GameItem* out) {
+  for (auto it = items_.begin(); it != items_.end(); ++it) {
+    if (it->uuid == uuid) {
+      if (out) *out = *it;
+      items_.erase(it);
+      return true;
+    }
+  }
+  return false;
+}
+
+GameItem* PlayerInventory::find_by_uuid(const std::string& uuid) {
+  for (auto& item : items_) {
+    if (item.uuid == uuid) return &item;
+  }
+  return nullptr;
+}
+
+const GameItem* PlayerInventory::find_by_uuid(const std::string& uuid) const {
+  for (const auto& item : items_) {
+    if (item.uuid == uuid) return &item;
+  }
+  return nullptr;
+}
+
+int PlayerInventory::coin_total() const {
+  int total = 0;
+  for (const auto& item : items_) {
+    if (item.id == "coins") total += item.qty;
+  }
+  return total;
+}
+
+bool PlayerInventory::spend_coins(int amount) {
+  if (amount < 0 || coin_total() < amount) return false;
+  int remaining = amount;
+  for (auto it = items_.begin(); it != items_.end() && remaining > 0;) {
+    if (it->id != "coins") {
+      ++it;
+      continue;
+    }
+    const int take = std::min(remaining, it->qty);
+    it->qty -= take;
+    remaining -= take;
+    if (it->qty <= 0) {
+      it = items_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+  return true;
+}
+
+// ── WearSet (wear-slots.js + wear.js) ────────────────────────────────────
+
+const std::vector<std::string>& WearSet::physical_slots() {
+  static const std::vector<std::string> slots = {
+      "right_hand", "left_hand", "armor", "head", "back", "belt",
+      "gloves", "feet", "ring", "ring2", "necklace",
+  };
+  return slots;
+}
+
+std::vector<std::string> WearSet::seats_for_base(const std::string& base_slot) {
+  if (base_slot.empty()) return {};
+  if (base_slot == "ring") return {"ring", "ring2"};
+  return {base_slot};
+}
+
+bool WearSet::can_use_seat(const std::string& base_slot, const std::string& seat) {
+  const auto seats = seats_for_base(base_slot);
+  return std::find(seats.begin(), seats.end(), seat) != seats.end();
+}
+
+std::string WearSet::resolve_seat(const std::string& base_slot,
+                                  const std::string& preferred) const {
+  // wear-slots.js resolveEquipSlot.
+  const auto seats = seats_for_base(base_slot);
+  if (seats.empty()) return base_slot;
+  if (!preferred.empty() &&
+      std::find(seats.begin(), seats.end(), preferred) != seats.end()) {
+    return preferred;
+  }
+  for (const auto& seat : seats) {
+    if (slots_.count(seat) == 0) return seat;
+  }
+  return seats.back();
+}
+
+const GameItem* WearSet::in_seat(const std::string& seat) const {
+  const auto it = slots_.find(seat);
+  return it == slots_.end() ? nullptr : &it->second;
+}
+
+std::optional<GameItem> WearSet::equip(GameItem item, const std::string& seat) {
+  std::optional<GameItem> displaced;
+  const auto it = slots_.find(seat);
+  if (it != slots_.end()) {
+    displaced = it->second;
+    slots_.erase(it);
+  }
+  item.slot = -1;  // worn items live outside the backpack grid
+  slots_.emplace(seat, std::move(item));
+  return displaced;
+}
+
+std::optional<GameItem> WearSet::unequip(const std::string& seat) {
+  const auto it = slots_.find(seat);
+  if (it == slots_.end()) return std::nullopt;
+  GameItem item = it->second;
+  slots_.erase(it);
+  return item;
+}
+
+WearSet::Totals WearSet::totals() const {
+  // wear.js calculateCombat: channel sums plus combatBonuses, capped.
+  Totals out;
+  auto clamp = [](int value, int hi) { return std::max(0, std::min(hi, value)); };
+  for (const auto& [seat, item] : slots_) {
+    out.attack.stab += item.attack.stab;
+    out.attack.slash += item.attack.slash;
+    out.attack.crush += item.attack.crush;
+    out.attack.range += item.attack.range;
+    out.defense.stab += item.defense.stab;
+    out.defense.slash += item.defense.slash;
+    out.defense.crush += item.defense.crush;
+    out.defense.range += item.defense.range;
+    out.modifiers.block_chance += item.combat_bonuses.block_chance;
+    out.modifiers.critical_chance += item.combat_bonuses.critical_chance;
+    out.modifiers.goods_found += item.combat_bonuses.goods_found;
+    out.modifiers.damage_against_beasts += item.combat_bonuses.damage_against_beasts;
+  }
+  out.modifiers.block_chance = clamp(out.modifiers.block_chance, 75);
+  out.modifiers.critical_chance = clamp(out.modifiers.critical_chance, 75);
+  out.modifiers.goods_found = clamp(out.modifiers.goods_found, 100);
+  out.modifiers.damage_against_beasts = clamp(out.modifiers.damage_against_beasts, 100);
+  return out;
+}
+
+// ── loot.js helpers ──────────────────────────────────────────────────────
+
+int apply_goods_found_to_coins(int coins, int goods_found_percent) {
+  const int percent = std::max(0, std::min(100, goods_found_percent));
+  return std::max(0, static_cast<int>(std::floor(std::max(0, coins) * (1.0 + percent / 100.0))));
+}
+
+double apply_goods_found_to_gear_chance(double chance, int goods_found_percent) {
+  const int percent = std::max(0, std::min(100, goods_found_percent));
+  return std::min(0.75, std::max(0.0, chance) * (1.0 + percent / 100.0));
+}
+
+int instance_item_level_for_depth(int depth) {
+  return std::min(80, 10 + (std::max(1, depth) - 1) * 10);
+}
+
+// ── WorldSimulation N4: ground items, loot, depth chaining ───────────────
+
+std::uint64_t WorldSimulation::next_world_random() {
+  // splitmix64: JS draws from Math.random here, so any independent stream is
+  // faithful; a seeded one keeps runs replayable for the architect.
+  world_random_state_ += 0x9e3779b97f4a7c15ULL;
+  std::uint64_t z = world_random_state_;
+  z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9ULL;
+  z = (z ^ (z >> 27)) * 0x94d049bb133111ebULL;
+  return z ^ (z >> 31);
+}
+
+namespace {
+
+double world_rand01(std::uint64_t draw) {
+  return static_cast<double>(draw >> 11) * (1.0 / 9007199254740992.0);
+}
+
+}  // namespace
+
+void WorldSimulation::add_ground_item(GameItem item, double x, double y) {
+  GroundItem ground;
+  ground.item = std::move(item);
+  ground.x = x;
+  ground.y = y;
+  ground.timestamp = static_cast<std::int64_t>(++serial_);
+  ground_items_.push_back(std::move(ground));
+}
+
+bool WorldSimulation::take_ground_item(const std::string& uuid, GameItem* out) {
+  for (auto it = ground_items_.begin(); it != ground_items_.end(); ++it) {
+    if (it->item.uuid == uuid) {
+      if (out) *out = it->item;
+      ground_items_.erase(it);
+      return true;
+    }
+  }
+  return false;
+}
+
+Vec2 WorldSimulation::resolve_loot_tile(int x, int y) const {
+  // loot.js resolveLootLocation: never on stairs/portals or blocked tiles;
+  // spiral outward (top row, bottom row, left column, right column per
+  // radius), falling back to the origin.
+  auto safe = [&](int tx, int ty) {
+    if (!grid_.walkable_at(tx, ty)) return false;
+    if (tx == metadata_.stairs_up.x && ty == metadata_.stairs_up.y) return false;
+    if (tx == metadata_.stairs_down.x && ty == metadata_.stairs_down.y) return false;
+    return true;
+  };
+  if (safe(x, y)) return {x, y};
+  for (int radius = 1; radius <= 6; ++radius) {
+    for (int offset = -radius; offset <= radius; ++offset) {
+      const Vec2 candidates[] = {
+          {x + offset, y - radius},
+          {x + offset, y + radius},
+          {x - radius, y + offset},
+          {x + radius, y + offset},
+      };
+      for (const auto& candidate : candidates) {
+        if (safe(candidate.x, candidate.y)) return candidate;
+      }
+    }
+  }
+  return {x, y};
+}
+
+void WorldSimulation::drop_monster_loot(const WorldMonster& monster, int goods_found_percent) {
+  // loot.js dropMonsterLoot: coin bounty always (Wealthy-boosted), then a
+  // rarity-gated gear roll. Relic/trophy circulation and the first-find
+  // grant are Chronicles/encounter features — N5 stubs (see the report).
+  const Vec2 tile = resolve_loot_tile(monster.x, monster.y);
+  const int coins = apply_goods_found_to_coins(monster.coins, goods_found_percent);
+  if (coins > 0) {
+    CreateItemOptions opts;
+    opts.quantity = coins;
+    auto coin_item = create_game_item("coins", opts);
+    if (coin_item) add_ground_item(std::move(*coin_item), tile.x, tile.y);
+  }
+
+  double base_chance = 0.05;
+  if (monster.rarity == "uncommon") base_chance = 0.1;
+  if (monster.rarity == "rare") base_chance = 0.2;
+  if (monster.rarity == "elite") base_chance = 0.5;
+  const double chance = apply_goods_found_to_gear_chance(base_chance, goods_found_percent);
+  if (world_rand01(next_world_random()) < chance) {
+    const auto& pool = gear_drop_pool();
+    const std::string& gear_id =
+        pool[static_cast<std::size_t>(std::floor(world_rand01(next_world_random()) * pool.size()))];
+    CreateItemOptions opts;
+    opts.item_level = std::min(80, monster.level * 2);
+    opts.forge = &forge_;
+    // factory.js createById with rng: one draw reseeds the forge.
+    const double reseed_draw = world_rand01(next_world_random());
+    forge_.reseed(static_cast<std::uint32_t>(std::floor(reseed_draw * 4294967296.0)));
+    opts.rng = nullptr;  // reseed already performed; generate from the stream
+    auto gear = create_game_item(gear_id, opts);
+    if (gear) add_ground_item(std::move(*gear), tile.x, tile.y);
+  }
+}
+
+void WorldSimulation::scatter_floor_treasure() {
+  // map.js guaranteed per-floor treasure hoard: a coin purse plus one gear
+  // piece whose item level scales with depth. The JS server scatters these
+  // at treasure-room centres from gearPoolForDepth; this port uses the map
+  // centre and the shared drop pool (documented stub in the task report).
+  if (grid_.width <= 0 || grid_.height <= 0) return;
+  const int cx = grid_.width / 2;
+  const int cy = grid_.height / 2;
+
+  const int coins = 80 + static_cast<int>(std::floor(world_rand01(next_world_random()) * 60.0));
+  const Vec2 coin_tile = resolve_loot_tile(cx, cy);
+  CreateItemOptions coin_opts;
+  coin_opts.quantity = coins;
+  auto coin_item = create_game_item("coins", coin_opts);
+  if (coin_item) add_ground_item(std::move(*coin_item), coin_tile.x, coin_tile.y);
+
+  const auto& pool = gear_drop_pool();
+  const std::string& gear_id =
+      pool[static_cast<std::size_t>(std::floor(world_rand01(next_world_random()) * pool.size()))];
+  const double reseed_draw = world_rand01(next_world_random());
+  forge_.reseed(static_cast<std::uint32_t>(std::floor(reseed_draw * 4294967296.0)));
+  CreateItemOptions gear_opts;
+  gear_opts.item_level = instance_item_level_for_depth(metadata_.depth);
+  gear_opts.forge = &forge_;
+  auto gear = create_game_item(gear_id, gear_opts);
+  if (gear) {
+    const Vec2 gear_tile = resolve_loot_tile(cx, cy + 1);
+    add_ground_item(std::move(*gear), gear_tile.x, gear_tile.y);
+  }
+}
+
+void WorldSimulation::transition_floor(int depth) {
+  // party.js transitionFloor: same template/layout, regenerated at the new
+  // depth; the player re-enters at the floor's spawn. Floor ground items
+  // retire with the old floor, exactly like JS scene retirement.
+  const std::string theme = metadata_.theme;
+  const std::string layout = metadata_.layout;
+  serial_ += 1;
+  const int clamped_depth = std::max(1, depth);
+  metadata_ = InstanceMetadata{};
+  metadata_.seed = fnv1a(theme + ":" + layout + ":floor-" + std::to_string(clamped_depth), seed_);
+  metadata_.theme = theme;
+  metadata_.layout = layout;
+  metadata_.depth = clamped_depth;
+  ground_items_.clear();
+  active_target_.clear();
+  boss_warning_seen_ = false;
+  next_boss_telegraph_ms_ = 0;
+  generate_instance();
+  scene_type_ = "instance";
+  scene_id_ = "instance:" + theme + ":" + (layout.empty() ? "default" : layout);
+  scene_name_ = zone_display_name(theme, layout, clamped_depth);
+  position_.x = static_cast<double>(metadata_.spawn_points.front().x);
+  position_.y = static_cast<double>(metadata_.spawn_points.front().y);
+}
+
+}  // namespace verdigris

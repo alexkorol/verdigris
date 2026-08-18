@@ -1444,6 +1444,287 @@ void test_n2_diagonal_blocking_rule() {
 
 }  // namespace
 
+// ── N4: items, inventory, Vesselforge ────────────────────────────────────
+namespace {
+
+void test_n4_mulberry32_matches_js() {
+  // Reference sequence captured from the browser engine's mulberry32
+  // (seed 42, orchestration/tasks/TASK-0047-native-protocol-n4 captures).
+  Mulberry32 rand(42);
+  const double expected[] = {0.6011037519201636, 0.44829055899754167, 0.8524657934904099,
+                             0.6697340414393693, 0.17481389874592423, 0.5265925421845168};
+  for (double value : expected) {
+    const double actual = rand.next();
+    check(std::fabs(actual - value) < 1e-15, "N4 mulberry32 matches the JS engine bit-for-bit");
+  }
+  Mulberry32 ranged(7);
+  for (int i = 0; i < 200; ++i) {
+    const int roll = ranged.rint(2, 4);
+    check(roll >= 2 && roll <= 4, "N4 rint stays inside its inclusive range");
+  }
+}
+
+void test_n4_ground_truth_rolls() {
+  // The three acceptance captures from the JS engine (captures/forge-truth.mjs).
+  {
+    Mulberry32 rng(4);
+    VesselForge forge;
+    forge.reseed(static_cast<std::uint32_t>(std::floor(rng.next() * 4294967296.0)));
+    const VesselBlock block = forge.make_block(forge.generate_item(40, "ring"));
+    check(block.material == "Bone" && block.form == "Ring", "N4 ring roll: Bone Ring");
+    check(block.display_name == "Bone Ring", "N4 ring roll: two brands earn no epithet");
+    check(block.item.vessel == 4 && block.item.patience_max == 2, "N4 ring roll: vessel 4 patience 2");
+    check(block.item.brands.size() == 2, "N4 ring roll: two brands");
+    check(block.item.brands[0].mod_id == "wealthy" && block.item.brands[0].tier == 1 &&
+              block.item.brands[0].value == 10,
+          "N4 ring roll: wealthy T1 v10");
+    check(block.item.brands[1].mod_id == "strongback" && block.item.brands[1].tier == 2 &&
+              block.item.brands[1].value == 10,
+          "N4 ring roll: strongback T2 v10");
+    check(block.combat.modifiers.goods_found == 10 && block.combat.modifiers.critical_chance == 0 &&
+              block.combat.modifiers.block_chance == 0 && block.combat.modifiers.damage_against_beasts == 0,
+          "N4 ring roll: goodsFound 10 is the only combat modifier");
+  }
+  {
+    Mulberry32 rng(1670);
+    VesselForge forge;
+    forge.reseed(static_cast<std::uint32_t>(std::floor(rng.next() * 4294967296.0)));
+    const VesselBlock block = forge.make_block(forge.generate_item(40, "khopesh"));
+    check(block.material == "Flint" && block.form == "Khopesh", "N4 khopesh roll: Flint Khopesh");
+    check(block.item.vessel == 2 && block.item.patience_max == 3, "N4 khopesh roll: vessel 2 patience 3");
+    check(block.item.brands.size() == 2 &&
+              block.item.brands[0].mod_id == "beastbane" && block.item.brands[0].value == 13 &&
+              block.item.brands[1].mod_id == "keen_eye" && block.item.brands[1].tier == 2 &&
+              block.item.brands[1].value == 22,
+          "N4 khopesh roll: beastbane T1 v13 + keen_eye T2 v22");
+    check(block.combat.modifiers.critical_chance == 22 && block.combat.modifiers.damage_against_beasts == 13,
+          "N4 khopesh roll: crit 22 / beasts 13");
+    check(block.combat.attack.slash == 10 && block.combat.has_damage && block.combat.channel == "slash",
+          "N4 khopesh roll: slash rating 10");
+  }
+  {
+    // bronze-pike: the material hint is honoured (spear admits the alloy).
+    Mulberry32 rng(1);
+    VesselForge forge;
+    CreateItemOptions opts;
+    opts.rng = &rng;
+    opts.item_level = 20;
+    opts.forge = &forge;
+    auto pike = create_game_item("bronze-pike", opts);
+    check(pike && pike->vessel, "N4 pike: vessel attaches through the factory");
+    const VesselBlock& block = *pike->vessel;
+    check(block.item.material_id == "bronze", "N4 pike: material hint honoured");
+    check(block.material == "Bronze" && block.form == "Spear", "N4 pike roll: Bronze Spear");
+    check(block.item.epithet_name == "Copper Whisper", "N4 pike roll: three brands earn the epithet");
+    check(block.display_name == "Copper Whisper", "N4 pike roll: epithet becomes the display name");
+    check(block.item.brands.size() == 3 &&
+              block.item.brands[0].mod_id == "heavy" && block.item.brands[0].value == 3 &&
+              block.item.brands[1].mod_id == "keen" && block.item.brands[1].tier == 2 &&
+              block.item.brands[1].value == 16 &&
+              block.item.brands[2].mod_id == "keen_eye" && block.item.brands[2].value == 8,
+          "N4 pike roll: heavy T1 v3, keen T2 v16, keen_eye T1 v8");
+    check(block.combat.attack.stab == 17, "N4 pike roll: stab rating 17");
+    check(block.combat.modifiers.critical_chance == 8, "N4 pike roll: crit 8");
+    check(block.item.vessel == 4 && block.item.patience_max == 4, "N4 pike roll: vessel 4 patience 4");
+    check(pike->size.width == 1 && pike->size.height == 4, "N4 pike keeps its catalogue footprint");
+  }
+}
+
+void test_n4_sear_rules_and_brand_pool_exclusion() {
+  Mulberry32 rng(1);
+  VesselForge forge;
+  CreateItemOptions opts;
+  opts.rng = &rng;
+  opts.item_level = 20;
+  opts.forge = &forge;
+  auto pike = create_game_item("bronze-pike", opts);
+  check(pike && pike->vessel, "N4 sear: pike created");
+  VesselItem item = pike->vessel->item;
+  // vessel 4, three brands: exactly one brand slot remains.
+  check(forge.sear(item), "N4 sear: one free brand slot accepts");
+  check(item.brands.size() == 4 && item.patience == 3, "N4 sear: brand appended, patience spent");
+  std::vector<std::string> seen;
+  for (const auto& brand : item.brands) {
+    check(std::find(seen.begin(), seen.end(), brand.mod_id) == seen.end(),
+          "N4 brand pool never repeats a mod id");
+    seen.push_back(brand.mod_id);
+  }
+  check(!forge.sear(item), "N4 sear: a full vessel refuses");
+  check(item.brands.size() == 4 && item.patience == 3, "N4 sear: a failed roll leaves the item untouched");
+}
+
+void test_n4_inventory_first_fit_overflow_and_currency() {
+  PlayerInventory inventory;
+  CreateItemOptions coin_opts;
+  coin_opts.quantity = 100;
+  auto coins = create_game_item("coins", coin_opts);
+  check(coins.has_value(), "N4 coins create");
+  auto coin_result = inventory.add(std::move(*coins));
+  check(coin_result.added == 100 && coin_result.overflow.empty(), "N4 coins admitted as a balance");
+  check(inventory.items().front().slot == -1, "N4 currency occupies no grid slot");
+
+  // Bronze swords are 1x3: the 12x7 grid fits exactly two 3-row bands.
+  int stored = 0;
+  int spilled = 0;
+  for (int i = 0; i < 50; ++i) {
+    auto sword = create_game_item("bronze-sword", CreateItemOptions{});
+    check(sword.has_value(), "N4 sword creates");
+    check(sword->size.width == 1 && sword->size.height == 3, "N4 sword footprint 1x3");
+    auto result = inventory.add(std::move(*sword));
+    stored += result.added;
+    spilled += static_cast<int>(result.overflow.size());
+  }
+  check(stored == 24 && spilled == 26, "N4 first-fit packs 24 swords, spills 26");
+  check(stored + spilled == 50, "N4 overflow loses nothing");
+
+  // Currency merges into the existing stack even with a full backpack.
+  CreateItemOptions top_up;
+  top_up.quantity = 10;
+  auto more = create_game_item("coins", top_up);
+  auto merge = inventory.add(std::move(*more));
+  check(merge.added == 10 && merge.overflow.empty(), "N4 currency never overflows");
+  check(inventory.coin_total() == 110, "N4 coins merge into the existing stack");
+  check(inventory.spend_coins(100) && inventory.coin_total() == 10, "N4 spend_coins debits the stack");
+  check(!inventory.spend_coins(11), "N4 spend_coins refuses when short");
+
+  // uuid round-trips.
+  const std::string front_uuid = inventory.items().front().uuid;
+  const GameItem* found = inventory.find_by_uuid(front_uuid);
+  check(found && found->uuid == front_uuid, "N4 find_by_uuid round-trips");
+  GameItem removed;
+  check(inventory.remove_by_uuid(front_uuid, &removed) && removed.uuid == front_uuid,
+        "N4 remove_by_uuid returns the instance");
+  check(inventory.find_by_uuid(front_uuid) == nullptr, "N4 removed uuid is gone");
+}
+
+void test_n4_ring_seats_and_wear_caps() {
+  WearSet wear;
+  check(WearSet::physical_slots().size() == 11, "N4 eleven physical wear seats");
+  check(wear.resolve_seat("ring") == "ring", "N4 first ring takes the primary seat");
+  auto first = create_game_item("ring", CreateItemOptions{});
+  auto second = create_game_item("gold-ring", CreateItemOptions{});
+  auto third = create_game_item("ring", CreateItemOptions{});
+  check(!wear.equip(*first, wear.resolve_seat("ring")).has_value(), "N4 empty seat equips without swap");
+  check(wear.resolve_seat("ring") == "ring2", "N4 second ring fills the second seat");
+  wear.equip(*second, wear.resolve_seat("ring"));
+  check(wear.in_seat("ring") && wear.in_seat("ring")->id == "ring" &&
+            wear.in_seat("ring2") && wear.in_seat("ring2")->id == "gold-ring",
+        "N4 both ring seats hold their rings");
+  auto displaced = wear.equip(*third, wear.resolve_seat("ring"));
+  check(displaced && displaced->id == "gold-ring", "N4 a third ring swaps the last seat");
+  check(!WearSet::can_use_seat("ring", "belt") && WearSet::can_use_seat("ring", "ring2"),
+        "N4 seat admission follows the slot group");
+  auto removed = wear.unequip("ring");
+  check(removed && removed->id == "ring" && wear.in_seat("ring") == nullptr, "N4 unequip frees the seat");
+
+  // wear.js calculateCombat caps: 75/75/100/100.
+  WearSet loaded;
+  auto make_mod_item = [](CombatModifiers mods, const std::string& seat) {
+    GameItem item;
+    item.id = "test-mod";
+    item.uuid = "test-" + seat;
+    item.equip_slot = seat;
+    item.combat_bonuses = mods;
+    return item;
+  };
+  CombatModifiers big;
+  big.block_chance = 40;
+  big.critical_chance = 40;
+  big.goods_found = 60;
+  big.damage_against_beasts = 60;
+  loaded.equip(make_mod_item(big, "head"), "head");
+  loaded.equip(make_mod_item(big, "feet"), "feet");
+  const auto totals = loaded.totals();
+  check(totals.modifiers.block_chance == 75 && totals.modifiers.critical_chance == 75,
+        "N4 wear caps block/crit at 75");
+  check(totals.modifiers.goods_found == 100 && totals.modifiers.damage_against_beasts == 100,
+        "N4 wear caps find/beasts at 100");
+}
+
+void test_n4_loot_math_and_depth_scaling() {
+  check(apply_goods_found_to_coins(20, 10) == 22, "N4 wealthy coin boost floors");
+  check(apply_goods_found_to_coins(20, 0) == 20, "N4 zero find leaves coins untouched");
+  check(apply_goods_found_to_coins(0, 50) == 0, "N4 empty bounty stays empty");
+  check(apply_goods_found_to_gear_chance(0.5, 100) == 0.75, "N4 gear chance caps at 0.75");
+  check(std::fabs(apply_goods_found_to_gear_chance(0.05, 10) - 0.055) < 1e-12,
+        "N4 gear chance scales with find");
+  check(instance_item_level_for_depth(1) == 10 && instance_item_level_for_depth(5) == 50 &&
+            instance_item_level_for_depth(9) == 80,
+        "N4 depth item levels: 10 + (depth-1)*10 capped at 80");
+
+  WorldSimulation world(11, "guest-loot");
+  world.enter_solo_instance("dungeon", "warren");
+  check(world.in_instance() && world.metadata().depth == 1, "N4 floor 1 entry");
+  check(!world.monsters().empty(), "N4 floor has monsters");
+  const WorldMonster& target = world.monsters().front();
+  const int expected_coins = apply_goods_found_to_coins(target.coins, 10);
+  const std::size_t ground_before = world.ground_items().size();
+  world.drop_monster_loot(target, 10);
+  check(world.ground_items().size() > ground_before, "N4 kill drops land on the floor");
+  const GroundItem& pile = world.ground_items().back();
+  // Coins always drop; a gear roll may follow on the same tile.
+  bool found_coins = false;
+  for (auto it = world.ground_items().begin() + static_cast<std::ptrdiff_t>(ground_before);
+       it != world.ground_items().end(); ++it) {
+    if (it->item.id == "coins") {
+      check(it->item.qty == expected_coins, "N4 drop coins carry the wealthy boost");
+      const int tx = static_cast<int>(std::floor(it->x));
+      const int ty = static_cast<int>(std::floor(it->y));
+      check(world.grid().walkable_at(tx, ty), "N4 loot lands on a walkable tile");
+      check(!(tx == world.metadata().stairs_up.x && ty == world.metadata().stairs_up.y) &&
+                !(tx == world.metadata().stairs_down.x && ty == world.metadata().stairs_down.y),
+            "N4 loot never lands on stairs");
+      found_coins = true;
+    }
+  }
+  check(found_coins, "N4 a coin bounty always drops");
+  (void)pile;
+}
+
+void test_n4_depth_chaining_and_treasure() {
+  WorldSimulation world(13, "guest-depth");
+  // Town ground items stash across the delve.
+  auto town_drop = create_game_item("ring", CreateItemOptions{});
+  world.add_ground_item(std::move(*town_drop), 38.0, 115.0);
+  world.enter_solo_instance("dungeon", "warren");
+  check(world.ground_items().size() == 2, "N4 floor 1 scatters a coin purse plus one gear");
+  const GroundItem* treasure = nullptr;
+  for (const auto& ground : world.ground_items()) {
+    if (ground.item.id != "coins") treasure = &ground;
+  }
+  check(treasure && treasure->item.item_level() == 10, "N4 floor 1 treasure is ilvl 10");
+  check(treasure->item.vessel && treasure->item.vessel->item.ilvl == 10,
+        "N4 displayed item level comes from the live vessel");
+
+  for (int depth = 2; depth <= 5; ++depth) {
+    const Vec2 down = world.metadata().stairs_down;
+    world.teleport(down.x, down.y, 1000 * depth);
+    check(world.in_instance() && world.metadata().depth == depth, "N4 stairs descend one floor");
+  }
+  check(world.scene_name().find("Floor 5") != std::string::npos, "N4 floor names carry the depth");
+  const GroundItem* deep = nullptr;
+  for (const auto& ground : world.ground_items()) {
+    if (ground.item.id != "coins") deep = &ground;
+  }
+  check(deep && deep->item.item_level() == 50, "N4 floor 5 treasure is ilvl 50 (>= floor 1 + 30)");
+
+  // Climbing from floor 2 is a floor hop, not a town return.
+  const Vec2 up = world.metadata().stairs_up;
+  world.teleport(up.x, up.y, 9000);
+  check(world.in_instance() && world.metadata().depth == 4, "N4 stairs climb one floor");
+  while (world.metadata().depth > 1) {
+    const Vec2 again = world.metadata().stairs_up;
+    world.teleport(again.x, again.y, 10000 + world.metadata().depth);
+  }
+  const Vec2 surface = world.metadata().stairs_up;
+  world.teleport(surface.x, surface.y, 20000);
+  check(!world.in_instance() && world.scene_id() == "town:verdigris", "N4 floor 1 climb returns to town");
+  check(world.ground_items().size() == 1 && world.ground_items().front().item.id == "ring",
+        "N4 the town ground list returns exactly as left");
+}
+
+}  // namespace
+
 int main() {
   test_persistence_round_trip_and_unknown_fields();
   test_persistence_d109_mid_instance_and_rng_continuation();
@@ -1490,6 +1771,13 @@ int main() {
   test_relic_resurface_round_trip();
   test_relic_loss_again_returns_once();
   test_relic_resurface_replay_is_deterministic();
+  test_n4_mulberry32_matches_js();
+  test_n4_ground_truth_rolls();
+  test_n4_sear_rules_and_brand_pool_exclusion();
+  test_n4_inventory_first_fit_overflow_and_currency();
+  test_n4_ring_seats_and_wear_caps();
+  test_n4_loot_math_and_depth_scaling();
+  test_n4_depth_chaining_and_treasure();
   std::cout << "verdigris core tests: PASS\n";
   return 0;
 }

@@ -525,11 +525,14 @@ class VesselForge {
   // adapter.js refreshVesselBlock: packId/material/form/displayName/lines/combat.
   VesselBlock make_block(const VesselItem& item) const;
 
- private:
+  // engine.js pickWeighted entry shape; public so the free helper can
+  // operate on pools built by the forge.
   struct WeightedEntry {
     std::string id;
     double weight = 0;
   };
+
+ private:
   std::string gen_id();
   std::vector<WeightedEntry> brand_pool(const VesselItem& item) const;
   bool roll_brand(VesselItem& item, VesselBrand* out);
@@ -598,7 +601,6 @@ struct CreateItemOptions {
   int quantity = 1;
   std::string bind_to;         // factory shouldBindOnPickup rules apply
   VesselForge* forge = nullptr;
-  std::uint64_t* uuid_serial = nullptr;
 };
 
 // factory.js createById/createFromBase. Returns nullopt for unknown ids.
@@ -621,8 +623,9 @@ class PlayerInventory {
   std::vector<GameItem>& items() { return items_; }
 
   // inventory.js add(): currency merges into the existing stack and never
-  // overflows; other items place first-fit one instance per qty.
-  AddResult add(GameItem item, int quantity = 1);
+  // overflows; other items place first-fit. One instance per call — callers
+  // loop for multi-quantity grants so each roll gets its own rng draw.
+  AddResult add(GameItem item);
   bool remove_by_uuid(const std::string& uuid, GameItem* out);
   GameItem* find_by_uuid(const std::string& uuid);
   const GameItem* find_by_uuid(const std::string& uuid) const;
@@ -665,11 +668,13 @@ class WearSet {
   std::map<std::string, GameItem> slots_;
 };
 
-// A ground item in a scene (loot.js toWorldInstance shape).
+// A ground item in a scene (loot.js toWorldInstance shape). Coordinates are
+// the raw continuous drop position (dev drops/overflow land exactly at the
+// player's feet); monster loot is spiralled onto integer tiles first.
 struct GroundItem {
   GameItem item;
-  int x = 0;
-  int y = 0;
+  double x = 0;
+  double y = 0;
   std::int64_t timestamp = 0;  // placement time; menus sort newest-first
 };
 
@@ -866,8 +871,8 @@ class WorldSimulation {
   // brand service advances its persistent stream.
   VesselForge& forge() { return forge_; }
   // dev:drop / world-drop / overflow spill: place an item on the current
-  // scene at (x, y).
-  void add_ground_item(GameItem item, int x, int y);
+  // scene at the raw (x, y) position.
+  void add_ground_item(GameItem item, double x, double y);
   // Remove a ground item by uuid (take). Returns false when absent.
   bool take_ground_item(const std::string& uuid, GameItem* out);
   // Kill rewards: coins always (Wealthy-boosted) + rarity-gated gear roll.
