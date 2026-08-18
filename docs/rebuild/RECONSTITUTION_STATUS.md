@@ -92,6 +92,15 @@ outside production until the owner resolves asset provenance/packaging.
 
 ## Current coordinator gates
 
+- Fresh detached audit of architect tip `915f226a7` with normal dependencies:
+  native `build.ps1 -RunTests` PASS; browser unit `npm run test:unit` PASS
+  (123 files / 788 tests); focused recovery rerun (`first-goal`,
+  `house-treasury`, `mortality`, `party-stories`, `persistence`, `quest`,
+  `respawn`, `session-arc`) PASS 8/8. A sequential all-scenarios run first
+  reported 16/31 after a `first-goal` timeout and subsequent server cascade;
+  the focused rerun cleared all eight without source changes, so this is
+  recorded as harness/environment variance rather than a product regression.
+
 - Browser unit suite: 122 files / 779 tests passed.
 - A dependency-complete current-tip browser health run at `a62951e4` repeated
   that result from a fresh worktree with normal install scripts; the server
