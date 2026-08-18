@@ -538,3 +538,51 @@ WATCH: at >=150ms ambient lag, first-goal (8s authored deadline) and
 house-treasury (carried-gold assert) can still flake in full runs;
 both pass in sequence at low lag. If seen twice more, spawn a
 follow-up harness task targeting those two specifically.
+
+## ORCHESTRATION PAUSED (2026-08-17 ~20:40, owner directive)
+
+The owner has paused the loop (codex tokens exhausted). Architect
+reviews resume when the owner restarts the session. Coordinators still
+active: finish and push your current work with STATUS updates; nothing
+will be reviewed or integrated until resume. Board at pause: 0047 N4
+in flight (kimi-work), 0042 RELEASED/claimable, 0049 UI wave READY.
+Master 1244b5bf: N1-N3 C++ parity, 32-scenario suite, LMB/RMB +
+rebinding all shipped today.
+
+## ORCHESTRATION RESUMED (2026-08-18, owner directive) + COURSE CORRECTION
+
+Owner verdict on 36h of work: server parity solid but the VISIBLE
+surface lagged badly. Rulings now in canon: D-117 (client-visible
+increment every wave; architect PLAYS the exe at native acceptances),
+D-118 (native client goes 2D top-down NOW; correct 2.5D returns later
+modeled on the webchat-Fable demo), D-119 (native client harness -
+scripted pipeline scenarios gate every client change).
+
+Fleet: deepseek ACTIVE ($10 credits - use them well; brief at
+REENTRY-DEEPSEEK.md), kimi K3 restarting (REENTRY-KIMI-CODE.md
+refreshed), kimi-work mid-0047 (N4 items). Codex out of tokens.
+
+Board: 0050 native client C1 (CRITICAL - top owner value), 0051 client
+harness (high), 0049 UI wave (high), 0042 first-loot (released,
+claimable). 0047 N4 in flight. Review bar unchanged; for 0050/0051 the
+architect additionally plays the build.
+
+## FLEET BUDGET (owner data, 2026-08-18 ~12:10)
+
+Kimi Allegretto plan: monthly total 77.38% consumed (resets 08-23);
+Code share of today: 15.2% of the 5h window, 3.04% of 7-day - rolling
+windows are healthy, the MONTHLY pool is the constraint (~1/5 left for
+Code, 5 days to reset). Routing rule: Kimi K3 gets tightly-scoped
+scaffolded execution only (D-120 minimizes its burn); DeepSeek ($10
+credits) takes design-heavy work; architect scaffolds harder if either
+pool nears empty. Open question: does KimiWork K3 share this quota?
+
+## FLEET BUDGET addendum - DeepSeek economics (owner data, 2026-08-18)
+
+DeepSeek burn: ~$1.05 / 29.2M tokens / 293 requests for the 0049
+session so far; balance $9.49 => ~9 more task-sessions. V4-Pro
+off-peak (Beijing) pricing is half of peak and overlaps US daytime.
+Routing updated: DeepSeek = primary implementation workhorse
+(including 0050 native client when free); Kimi K3 = scoped scaffolded
+execution (protect the ~1/5 remaining monthly pool); kimi-work =
+finish 0047.

@@ -6,6 +6,17 @@ the product checklist or invent decisions; “not evidenced” means that the
 current repository does not yet prove the requirement at the required product
 surface.
 
+## Current evidence refresh — 2026-08-18
+
+The original audit remains the requirement-by-requirement baseline. On Fable's
+current program tip `1244b5bf`, the native denylist/core/networking gate passes,
+the browser unit suite is 123 files / 788 tests, and the focused WIZARD seam
+suite is 10 files / 73 tests. TASK-0048 is architect-accepted and integrated.
+TASK-0047 (the N4 items/inventory/Vesselforge wave) is still claimed by
+Kimi-work at `d1e30e2b6` with no implementation commit or release handoff, so
+the native item/inventory parity gaps below remain open rather than being
+silently reclassified as complete.
+
 ## Evidence baseline
 
 - Browser reference gates: 122 unit files / 779 tests, production build, full

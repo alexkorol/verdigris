@@ -50,6 +50,7 @@ import ClientUI from '../core/utilities/client-ui.js';
 import bus from '../core/utilities/bus.js';
 import Socket from '../core/utilities/socket.js';
 import InputController from '../core/utilities/input-controller.js';
+import { recordSkillAttempt } from '../core/mana-directive.js';
 
 export default {
   name: 'Game',
@@ -659,6 +660,8 @@ export default {
       if (options.phase === 'end') {
         return;
       }
+
+      recordSkillAttempt(skillId);
 
       const facing = options.direction
         || this.aimDirection
