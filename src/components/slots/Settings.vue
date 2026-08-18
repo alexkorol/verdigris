@@ -53,6 +53,11 @@
         </span>
       </label>
     </div>
+
+    <p class="settings__eyebrow">Controls</p>
+    <div class="settings__section">
+      <SettingsBindings />
+    </div>
   </div>
 </template>
 
@@ -65,8 +70,10 @@ import {
   setAmbientCycleEnabled,
 } from '../../core/config/ambient-clock.js';
 import bus from '../../core/utilities/bus.js';
+import SettingsBindings from '../ui/SettingsBindings.vue';
 
 export default {
+  components: { SettingsBindings },
   data() {
     return {
       selected: {
