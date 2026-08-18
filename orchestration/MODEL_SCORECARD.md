@@ -11,8 +11,8 @@ identity. Recalibrate after model/harness/prompt/acceptance changes.
 | codex coordinator (Sol) | investigation/disproof | 1 | 100% (0048) | 0 | strong evidence-based diagnosis |
 | Kimi Work K3 (kimi CLI) | native C++ parity waves | 1 | 100% (0044 N2) | 0 | BOUNDED-DESIGN works; honest stub inventories |
 | Kimi Work K3 (kimi CLI) | browser features | 1 | 100% (0038) | 0 | delivered hard-fail captures unprompted; high trust |
-| Kimi K3 console | browser features | 1 in flight (0042) | â€” | â€” | stalled once (quota); re-asserted |
-| DeepSeek V4-Pro (dsh) | browser UI wave | 1 in flight (0049) | â€” | â€” | methodical; caught own flaky capture; ~$1/session, 99% cache hit |
+| Kimi K3 console | browser features | 1 | 100% (0042) | 0 | first-pass accept; self-run stale-base check + honest flake triage; additive renderer deviation disclosed properly | BOUNDED-DESIGN works |
+| DeepSeek V4-Pro (dsh) | browser UI wave | 1 | 100% (0049) | 0 | first-pass accept, $1.47, 21 new tests, self-cleanup; one scope deviation (mirrored constants vs ask); BOUNDED-DESIGN works |
 | Fable (architect) | scaffolding/reviews/integration | â€” | â€” | 0 | control plane + D-120 scaffolds |
 
 ## Calibration notes
