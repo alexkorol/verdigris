@@ -70,8 +70,9 @@ Evidence captures added with this report:
    `captures/native-build-tests-2026-08-17.txt`.
 2. Rebuilt native server attach command, unchanged harness — all 7 scenarios
    PASS: `combat`, `encounter-variety`, `boss-mechanic`, `quickstart`,
-   `single-session`, `movement`, `zones`. Harness commit was the current
-   repository harness at execution time; no playtest files were changed.
+   `single-session`, `movement`, `zones`. Harness commit:
+   `babba96fcde5ca1d55610853ad59af4fd57e2374`. No playtest files were
+   changed.
    See `captures/attach-7-of-7-2026-08-17.txt`.
 3. C++ assertions added in `native/tests/networking_tests.cpp` cover: marsh
    population, one rare named modifier, Empowered aura state, named Warden,

@@ -1,6 +1,6 @@
 ---
 task: TASK-0045
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: codex
 worker: Luna native protocol N3 implementer
 worker_branch: codex/TASK-0045-native-protocol-n3
