@@ -1,0 +1,10 @@
+TASK-0046 connection-proof stop-condition capture
+
+Current tip: c3988b29 (descendant of 45846af7)
+Fresh npm ci and npm run build: PASS
+Server: NODE_ENV=production, free loopback port 6542; owner port 6500 untouched
+In-app evaluator: window.ws?.url => null; window.ws?.readyState => null
+Server logs nevertheless recorded client connection/login.
+
+This observation was later reconciled as an isolated-world evaluator issue;
+the coordinator page-context probe captured an OPEN socket on ws://127.0.0.1:6542/.
