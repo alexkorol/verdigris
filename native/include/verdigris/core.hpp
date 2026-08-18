@@ -399,4 +399,156 @@ class Simulation {
 std::vector<std::uint8_t> snapshot(const Simulation& simulation);
 Simulation restore(const std::vector<std::uint8_t>& bytes);
 
+// ────────────────────────────────────────────────────────────────────────────
+// Parity wave N2: tile-space world rules.
+//
+// These rules mirror the browser server's continuous movement contract
+// (server/shared/movement.js + movement-handler.js): one player:move sample
+// advances the player 1/3 tile along an 8-way normalised vector, positions
+// round to 6 decimals with an integer snap, and blocking is checked against
+// the rounded target tile (with the both-orthogonal-neighbours diagonal
+// rule).  The combat Simulation above keeps the D-114 world-unit envelope;
+// this section is the tile-space world the wire protocol speaks.
+// ────────────────────────────────────────────────────────────────────────────
+
+struct WorldPosition {
+  double x = 0;
+  double y = 0;
+};
+
+namespace tile_movement {
+// Browser feel constants (post-0037): one tile takes 150 ms, a held key
+// samples every 50 ms, so each sample moves exactly 1/3 tile.
+inline constexpr double kTileTravelMs = 150.0;
+inline constexpr double kSampleMs = 50.0;
+inline constexpr double kMoveDistance = kSampleMs / kTileTravelMs;
+inline constexpr int kPositionPrecision = 6;
+
+// Normalised 8-way sample delta (PLAYER_MOVE_DISTANCE along the vector).
+// Returns nullopt for unknown direction names.
+std::optional<WorldPosition> movement_delta(const std::string& direction);
+// Number(v).toFixed(6) with the JS integer snap (within 2e-6 of a tile).
+double round_position(double value);
+// Math.round per axis (positions are non-negative in practice).
+Vec2 occupied_tile(const WorldPosition& position);
+}  // namespace tile_movement
+
+struct TileGrid {
+  int width = 0;
+  int height = 0;
+  // Row-major, 1 = walkable, 0 = blocked.  N2 stub: the JS server derives
+  // this from tileset/object tables; generated instance maps and the town
+  // field carry their walkability directly until N3+ ports the tile tables.
+  std::vector<std::uint8_t> walkable;
+
+  bool in_bounds(int x, int y) const;
+  bool walkable_at(int x, int y) const;  // out of bounds = blocked
+};
+
+struct WorldMonster {
+  std::string uuid;
+  std::string id;
+  std::string name;
+  int x = 0;
+  int y = 0;
+  int level = 1;
+  int life = 30;
+  int life_max = 30;
+  bool alive = true;
+};
+
+struct InstanceMetadata {
+  std::uint64_t seed = 0;
+  std::string theme;    // zone template (dungeon/grove/crypt/wilds/marsh)
+  std::string layout;   // warren/clearings/gauntlet, empty = theme default
+  int depth = 1;
+  Vec2 stairs_up{0, 0};
+  Vec2 stairs_down{0, 0};
+  std::vector<Vec2> spawn_points;
+};
+
+struct MovementStepInfo {
+  std::uint64_t sequence = 0;
+  std::int64_t started_at_ms = 0;
+  int duration_ms = 0;
+  std::string direction;
+  bool blocked = false;
+};
+
+struct ZoneDescriptor {
+  std::string id;
+  std::string name;
+  std::string template_id;
+  std::string layout;
+};
+
+// The Adventure-menu table (party.js ADVENTURE_ZONES): art template + layout
+// shape pair with the display name the HUD/transition payload carries.
+const std::vector<ZoneDescriptor>& adventure_zones();
+bool is_zone_template(const std::string& template_id);
+bool is_zone_layout(const std::string& layout);
+
+// Deterministic tile-space world for one player: town scene, solo instance
+// scenes, continuous movement, and stair portals.  Transport-agnostic; the
+// networking layer maps envelopes onto these verbs.
+class WorldSimulation {
+ public:
+  WorldSimulation(std::uint64_t seed, std::string player_uuid);
+
+  // Scene state.
+  const std::string& scene_id() const { return scene_id_; }
+  const std::string& scene_type() const { return scene_type_; }
+  const std::string& scene_name() const { return scene_name_; }
+  WorldPosition position() const { return position_; }
+  const std::string& facing() const { return facing_; }
+  const MovementStepInfo& last_step() const { return last_step_; }
+  const InstanceMetadata& metadata() const { return metadata_; }
+  const std::vector<WorldMonster>& monsters() const { return monsters_; }
+  const TileGrid& grid() const { return grid_; }
+  bool in_instance() const { return scene_type_ == "instance"; }
+
+  // One player:move sample.  Returns true when the step was applied.
+  bool apply_movement_sample(const std::string& direction, std::int64_t now_ms);
+  // dev:teleport: floors onto the target tile, then runs the portal check
+  // (landing on the entry stairs returns to town, like the JS game loop).
+  void teleport(int x, int y, std::int64_t now_ms);
+  // instance:enterSolo: validates template/layout against the Adventure table
+  // (unknown template -> dungeon, unknown layout -> theme default), saves the
+  // pre-instance position on first entry, and places the player at a spawn.
+  void enter_solo_instance(const std::string& template_id, const std::string& layout);
+  // Display name for a template/layout pair (falls back to template-only,
+  // then a capitalised template), matching the JS zone naming.
+  static std::string zone_display_name(const std::string& template_id, const std::string& layout,
+                                       int depth = 1);
+
+ private:
+  bool can_move_to(double target_x, double target_y) const;
+  bool is_blocked(const WorldPosition& origin, const WorldPosition& delta) const;
+  void register_step(const std::string& direction, int duration_ms, bool blocked,
+                     std::int64_t now_ms);
+  void generate_instance();
+  void return_to_town();
+  // Portal check after a step/teleport changed the occupied tile.
+  void check_stair_transition();
+
+  std::uint64_t seed_;
+  std::string player_uuid_;
+  std::uint64_t serial_ = 0;
+
+  WorldPosition position_{38.0, 115.0};  // town login spawn (TOWN_FALLBACK_SPAWN)
+  std::string facing_ = "down";
+  std::string scene_type_ = "town";
+  std::string scene_id_ = "town:verdigris";
+  std::string scene_name_ = "Verdigris";
+  TileGrid grid_;
+  InstanceMetadata metadata_;
+  std::vector<WorldMonster> monsters_;
+  MovementStepInfo last_step_;
+  // Where the player entered the current instance chain from (first entry
+  // only, not instance->instance hops), restored on stair return.
+  bool has_pre_instance_ = false;
+  WorldPosition pre_instance_position_{};
+  std::string pre_instance_scene_id_;
+};
+
 }  // namespace verdigris

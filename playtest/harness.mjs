@@ -23,6 +23,7 @@ import {
   PLAYER_MOVE_DISTANCE,
   PLAYER_MOVE_SAMPLE_MS,
 } from '#shared/movement.js';
+import { adaptiveTimeoutMs, loadMode } from './timing.mjs';
 
 const DEFAULT_URL = process.env.PLAYTEST_WS_URL || 'ws://localhost:6500';
 const DEFAULT_TIMEOUT_MS = 8000;
@@ -36,6 +37,7 @@ export class HeadlessPlayer {
     this.scene = null; // latest scene payload (login or transition)
     this.messages = []; // game:send:message texts
     this.hits = []; // combat:hit payloads
+    this.hitEvents = []; // combat:hit payloads with local receipt timestamps
     this.telegraphs = []; // monster:telegraph payloads
     this.inventory = [];
     this.stats = null; // latest player:stats:update for us
@@ -60,6 +62,11 @@ export class HeadlessPlayer {
     this.currentScreen = null;
     this.currentScreenPayload = null;
     this.chronicle = null;
+    // Dev controls share a 10/s server bucket. Keep their wire order and
+    // leave enough refill time between controls so a busy setup cannot drop a
+    // teleport/heal/reset immediately before a real gameplay action.
+    this.outbound = Promise.resolve();
+    this.lastDevControlAt = 0;
     this.houseName = options.houseName || 'Playtest House';
     this.scionName = options.scionName || 'Harness';
 
@@ -181,6 +188,7 @@ export class HeadlessPlayer {
         break;
       case 'combat:hit':
         this.hits.push(data);
+        this.hitEvents.push({ data, at: Date.now() });
         break;
       case 'monster:telegraph':
         this.telegraphs.push(data);
@@ -242,7 +250,24 @@ export class HeadlessPlayer {
   }
 
   emit(event, data) {
-    this.ws.send(JSON.stringify({ event, data }));
+    const message = JSON.stringify({ event, data });
+    const send = async () => {
+      if (this.ws.readyState !== WebSocket.OPEN) return;
+      if (event.startsWith('dev:') && event !== 'dev:state') {
+        const waitMs = Math.max(0, this.lastDevControlAt + 120 - Date.now());
+        if (waitMs) await sleep(waitMs);
+        this.lastDevControlAt = Date.now();
+      }
+      try {
+        this.ws.send(message);
+      } catch (error) {
+        // A scenario may close a player while queued setup commands remain.
+        // The close is authoritative; do not turn a late diagnostic send into
+        // an unhandled rejection.
+      }
+    };
+    this.outbound = this.outbound.then(send, send);
+    return this.outbound;
   }
 
   /** Authoritative snapshot: position, hp, inventory/bank, NPCs, monsters, items, tree… */
@@ -250,28 +275,41 @@ export class HeadlessPlayer {
     this.stateCounter += 1;
     const requestId = `state-${this.stateCounter}`;
     return new Promise((resolve, reject) => {
-      // This read still uses a bounded development-rate bucket. Retry the
-      // idempotent request below that bucket's refill rate instead of failing
-      // the whole playtest on one dropped diagnostic frame.
+      const effectiveTimeoutMs = adaptiveTimeoutMs(timeoutMs);
+      // Development reads have a per-connection token bucket. Retry the
+      // idempotent request with backoff so a dropped diagnostic frame does not
+      // turn scheduler pressure into a false scenario failure, while keeping
+      // one bounded deadline for the whole read.
       const request = () => this.emit('dev:state', { requestId });
-      const retry = setInterval(request, 1000);
+      let attempt = 0;
+      let retry = null;
+      const scheduleRetry = () => {
+        attempt += 1;
+        const delayMs = Math.min(2000, 250 * (2 ** Math.min(attempt - 1, 3)));
+        retry = setTimeout(() => {
+          request();
+          scheduleRetry();
+        }, delayMs);
+      };
       const timer = setTimeout(() => {
-        clearInterval(retry);
+        clearTimeout(retry);
         this.pendingState.delete(requestId);
         reject(new Error('dev:state timed out — is the server running with NODE_ENV!==production?'));
-      }, timeoutMs);
+      }, effectiveTimeoutMs);
       this.pendingState.set(requestId, (value) => {
-        clearInterval(retry);
+        clearTimeout(retry);
         clearTimeout(timer);
         resolve(value);
       });
       request();
+      scheduleRetry();
     });
   }
 
   /** Wait until predicate() (sync or async) is truthy. */
   async waitFor(predicate, { timeoutMs = DEFAULT_TIMEOUT_MS, intervalMs = 150, label = 'condition' } = {}) {
-    const deadline = Date.now() + timeoutMs;
+    const effectiveTimeoutMs = adaptiveTimeoutMs(timeoutMs);
+    const deadline = Date.now() + effectiveTimeoutMs;
      
     while (Date.now() < deadline) {
       const result = await predicate();
@@ -281,7 +319,7 @@ export class HeadlessPlayer {
       await sleep(intervalMs);
     }
      
-    throw new Error(`Timed out waiting for ${label} (${timeoutMs}ms)`);
+    throw new Error(`Timed out waiting for ${label} (${effectiveTimeoutMs}ms; authored ${timeoutMs}ms)`);
   }
 
   // ── Player verbs ──────────────────────────────────────────────────────
@@ -328,6 +366,12 @@ export class HeadlessPlayer {
 
   /** Enter a solo Adventure zone (template + optional layout). */
   async enterZone(template, layout = null, { timeoutMs = DEFAULT_TIMEOUT_MS } = {}) {
+    // Instance admission is a server-side observation: under the documented
+    // CPU-load gate the child can be starved even while this client remains
+    // responsive. Give that one transition a bounded 12s authored floor
+    // (21s after the existing 1.75x load cap); ordinary runs retain callers'
+    // original deadline and a missing transition still fails finitely.
+    const transitionTimeoutMs = loadMode ? Math.max(timeoutMs, 12000) : timeoutMs;
     // The server throttles instance starts per player (anti-spam). If we hit
     // the cooldown, wait it out and retry instead of failing the scenario.
     const maxAttempts = 4;
@@ -336,12 +380,22 @@ export class HeadlessPlayer {
       // the transition event, not on the id changing.
       const transitionsBefore = this.sceneTransitions || 0;
       const errorsBefore = (this.partyErrors || []).length;
-      this.emit('instance:enterSolo', { template, layout });
-      await this.waitFor(() => (
-        (this.sceneTransitions || 0) > transitionsBefore
-        || (this.partyErrors || []).length > errorsBefore
-      ), {
-        timeoutMs,
+      let lastSentAt = 0;
+      const sendEntry = async () => {
+        lastSentAt = Date.now();
+        await this.emit('instance:enterSolo', { template, layout });
+      };
+      await sendEntry();
+      await this.waitFor(async () => {
+        if ((this.sceneTransitions || 0) > transitionsBefore
+          || (this.partyErrors || []).length > errorsBefore) return true;
+        // A general-bucket frame can be lost while the server is starved. A
+        // bounded resend keeps one authored transition deadline and does not
+        // turn a missing transition into an unbounded retry loop.
+        if (Date.now() - lastSentAt >= 1000) await sendEntry();
+        return false;
+      }, {
+        timeoutMs: transitionTimeoutMs,
         label: `zone transition to ${template}`,
       });
 
@@ -565,51 +619,51 @@ export class HeadlessPlayer {
   // ── Wiz/dev commands ─────────────────────────────────────────────────
 
   devTeleport(x, y, sceneId = undefined) {
-    this.emit('dev:teleport', { x, y, sceneId });
+    return this.emit('dev:teleport', { x, y, sceneId });
   }
 
   devGive(itemId, qty = 1, options = {}) {
-    this.emit('dev:give', { itemId, qty, ...options });
+    return this.emit('dev:give', { itemId, qty, ...options });
   }
 
   devDrop(itemId, options = {}) {
-    this.emit('dev:drop', { itemId, ...options });
+    return this.emit('dev:drop', { itemId, ...options });
   }
 
   devResetMonster(monsterUuid, options = {}) {
-    this.emit('dev:monster:reset', { monsterUuid, ...options });
+    return this.emit('dev:monster:reset', { monsterUuid, ...options });
   }
 
   devClearFloor() {
-    this.emit('dev:clear-floor', {});
+    return this.emit('dev:clear-floor', {});
   }
 
   devSetLevel(level) {
-    this.emit('dev:setlevel', { level });
+    return this.emit('dev:setlevel', { level });
   }
 
   devHeal() {
-    this.emit('dev:heal', {});
+    return this.emit('dev:heal', {});
   }
 
   devForceCritical() {
-    this.emit('dev:forcecritical', {});
+    return this.emit('dev:forcecritical', {});
   }
 
   devKill({ allowCheatDeath = false } = {}) {
-    this.emit('dev:kill', { allowCheatDeath });
+    return this.emit('dev:kill', { allowCheatDeath });
   }
 
   devHurt(amount = 5) {
-    this.emit('dev:hurt', { amount });
+    return this.emit('dev:hurt', { amount });
   }
 
   devPrepareFinalDeath() {
-    this.emit('dev:prepare-final-death', {});
+    return this.emit('dev:prepare-final-death', {});
   }
 
   devReleaseRelic() {
-    this.emit('dev:release-relic', {});
+    return this.emit('dev:release-relic', {});
   }
 
   close() {

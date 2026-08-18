@@ -424,3 +424,63 @@ recoverability, 0021 slice camera all integrated.
 - Asset plates: downscaled magenta-keyed derivatives are vendored under
   prototypes only. Full-resolution provenance/packaging for native remains
   an owner decision (D-O2).
+
+## BOARD NUDGE (2026-08-17 ~06:45)
+
+0043's ten-run proof is inherently serial, but it does NOT need the
+whole fleet. TASK-0044 (parity wave N2 — the mission's critical path),
+TASK-0038 (rebinding), and TASK-0042 (first-loot) are claimable NOW with
+disjoint paths from 0043 (playtest/** vs native/** vs src+server loot
+paths vs input/settings). Codex: parallelize. Kimi instances: any of the
+three is yours if you claim first.
+
+## 0043 REVIEW (2026-08-17 ~08:20)
+
+REVISE. Ten-run loaded proof checked out, but architect's own
+default-mode (no flag) full run at the merged tip failed session-arc
+30/31 under ambient 122ms lag; solo rerun passed. Correction: adaptive
+guard must key off measured lag, not the env flag; proof = 3 consecutive
+default-mode full runs green + architect rerun. Harness-only changes
+provisionally merged to program branch (documented in REVIEW.md) to
+avoid revert-of-merge hazard; task stays open. Board otherwise: 0044
+(N2, critical) / 0038 / 0042 still unclaimed - Kimis re-entering.
+
+## 0043 ACCEPTED + INTEGRATED (2026-08-17 ~09:05)
+
+Rev1 verified: lag-keyed default-mode guard; coordinator 3x default full
+runs green; architect gate 31/31 at 130ms peak ambient lag. Integrated
+at 1f470e3; shipping to master next. One 10/31 architect run between
+rounds was Windows Firewall consent dialogs blocking fresh server
+binaries (owner clicked Allow) - environmental, documented in REVIEW.
+
+## STANDING GUIDANCE - loopback binds (2026-08-17)
+
+All test/dev servers (playtest server/index.js boot, native
+verdigris_server, any harness listener) should bind 127.0.0.1
+explicitly, not 0.0.0.0. Loopback binds never trigger Windows Firewall
+consent prompts; wildcard binds prompt once per new binary, which
+stalls sockets until a human clicks Allow (this collapsed a full
+playtest run today, and every fresh C++ server build will re-prompt).
+Fold into 0044 implementation (native server default bind) and the next
+harness touch. LAN play later can make the bind address a config knob.
+
+## BOARD (post-0043)
+
+0044 parity N2: CLAIMED by kimi-work (branch codex/TASK-0044-native-protocol-n2,
+base 32d7b6e, own clone KimiWork). 0038 rebinding + 0042 first-loot:
+still open - kimi (console) or codex/Luna may claim. 0043: done.
+
+## 0044 ACCEPTED + INTEGRATED (2026-08-17 ~09:30)
+
+Parity wave N2 landed: world/movement/zones over the C++ server.
+Architect rebuilt the branch, ran native gates green, and attached the
+UNCHANGED post-0043 harness to my own server build: movement + zones +
+quickstart + single-session 4/4. Movement constants literally mirror
+server/shared/movement.js. Honest 8-item stub inventory carried into
+the N3 spec notes (real generator, town tiles, depth>1, monsters as
+Simulation actors, stdin idle fix). kimi-work delivered the mission
+critical path within ~90 min of re-entry. Shipping 0043+0044 to master.
+
+Board: 0038 (LMB/RMB + rebinding) and 0042 (first-loot moment) remain
+open for kimi (console) or codex/Luna. N3 spec is the architect's next
+authoring task.

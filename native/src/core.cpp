@@ -1,6 +1,7 @@
 #include "verdigris/core.hpp"
 
 #include <cmath>
+#include <cctype>
 #include <charconv>
 #include <iomanip>
 #include <limits>
@@ -1284,6 +1285,361 @@ Simulation restore(const std::vector<std::uint8_t>& bytes) {
   }
   simulation.actors_.push_back(std::move(player));
   return simulation;
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Parity wave N2: tile-space world rules.
+// ────────────────────────────────────────────────────────────────────────────
+
+namespace tile_movement {
+
+namespace {
+// server/shared/movement.js DIRECTION_VECTORS.  Diagonals are normalised with
+// the same hypot() the JS uses, then scaled by PLAYER_MOVE_DISTANCE.
+const std::map<std::string, Vec2>& direction_vectors() {
+  static const std::map<std::string, Vec2> vectors = {
+      {"right", {1, 0}},  {"left", {-1, 0}},   {"up", {0, -1}},  {"down", {0, 1}},
+      {"up-right", {1, -1}}, {"down-right", {1, 1}}, {"up-left", {-1, -1}}, {"down-left", {-1, 1}},
+  };
+  return vectors;
+}
+}  // namespace
+
+std::optional<WorldPosition> movement_delta(const std::string& direction) {
+  const auto it = direction_vectors().find(direction);
+  if (it == direction_vectors().end()) return std::nullopt;
+  const double length = std::hypot(static_cast<double>(it->second.x), static_cast<double>(it->second.y));
+  return WorldPosition{it->second.x / length * kMoveDistance,
+                       it->second.y / length * kMoveDistance};
+}
+
+double round_position(double value) {
+  const double scale = 1000000.0;  // 10 ** POSITION_PRECISION
+  const double rounded = std::round(value * scale) / scale;
+  const double nearest = std::round(rounded);
+  return std::abs(rounded - nearest) <= 2e-6 ? nearest : rounded;
+}
+
+Vec2 occupied_tile(const WorldPosition& position) {
+  return Vec2{static_cast<int>(std::round(position.x)),
+              static_cast<int>(std::round(position.y))};
+}
+
+}  // namespace tile_movement
+
+bool TileGrid::in_bounds(int x, int y) const {
+  return x >= 0 && y >= 0 && x < width && y < height;
+}
+
+bool TileGrid::walkable_at(int x, int y) const {
+  if (!in_bounds(x, y)) return false;
+  return walkable[static_cast<std::size_t>(y) * static_cast<std::size_t>(width) +
+                  static_cast<std::size_t>(x)] != 0;
+}
+
+const std::vector<ZoneDescriptor>& adventure_zones() {
+  // party.js ADVENTURE_ZONES, row for row.
+  static const std::vector<ZoneDescriptor> zones = {
+      {"old-barrow", "The Old Barrow", "dungeon", "warren"},
+      {"verdant-grove", "Verdant Grove", "grove", "clearings"},
+      {"sunken-colonnade", "Sunken Colonnade", "crypt", "gauntlet"},
+      {"weir-crypt", "Weir Crypt", "crypt", "warren"},
+      {"the-wilds", "The Wilds", "wilds", "clearings"},
+      {"marsh-of-reeds", "Marsh of Reeds", "marsh", "clearings"},
+  };
+  return zones;
+}
+
+bool is_zone_template(const std::string& template_id) {
+  for (const auto& zone : adventure_zones()) {
+    if (zone.template_id == template_id) return true;
+  }
+  return false;
+}
+
+bool is_zone_layout(const std::string& layout) {
+  return layout == "warren" || layout == "clearings" || layout == "gauntlet";
+}
+
+namespace {
+
+// N2 stub geometry.  The JS server generates floors from seeded template
+// tables; the playtest scenarios only exercise walkability around the spawn,
+// both stair tiles, and monster population, so the generated floor keeps a
+// protected spawn clearing and layout-shaped obstacle bodies.  N3+ replaces
+// this with the real generator.
+constexpr int kInstanceWidth = 40;
+constexpr int kInstanceHeight = 40;
+constexpr Vec2 kStairsUp{5, 20};
+constexpr Vec2 kStairsDown{34, 20};
+constexpr Vec2 kSpawn{6, 20};
+constexpr int kInstanceMonsterCount = 18;
+constexpr int kTownSize = 200;
+
+std::uint64_t fnv1a(const std::string& text, std::uint64_t seed) {
+  std::uint64_t hash = seed ? seed : 1469598103934665603ULL;
+  for (unsigned char ch : text) {
+    hash = (hash ^ ch) * 1099511628211ULL;
+  }
+  return hash;
+}
+
+bool in_spawn_clearing(int x, int y) {
+  // Protected bubble around the entry: no obstacles and no monsters, so the
+  // first steps in any direction behave exactly like town.
+  return x >= 2 && x <= 10 && y >= 16 && y <= 24;
+}
+
+}  // namespace
+
+WorldSimulation::WorldSimulation(std::uint64_t seed, std::string player_uuid)
+    : seed_(seed), player_uuid_(std::move(player_uuid)) {
+  // N2 stub: town collision geometry is an open field.  The town login spawn
+  // area the scenarios walk (38,115 +/- a few tiles) is open in the real map
+  // too; porting the town tile tables is N3+ work documented in the report.
+  grid_.width = kTownSize;
+  grid_.height = kTownSize;
+  grid_.walkable.assign(static_cast<std::size_t>(kTownSize) * kTownSize, 1);
+}
+
+bool WorldSimulation::can_move_to(double target_x, double target_y) const {
+  const int tile_x = static_cast<int>(std::round(target_x));
+  const int tile_y = static_cast<int>(std::round(target_y));
+  if (!grid_.in_bounds(tile_x, tile_y)) return false;
+  for (const auto& monster : monsters_) {
+    if (monster.alive && monster.x == tile_x && monster.y == tile_y) return false;
+  }
+  return grid_.walkable_at(tile_x, tile_y);
+}
+
+bool WorldSimulation::is_blocked(const WorldPosition& origin, const WorldPosition& delta) const {
+  if (!can_move_to(origin.x + delta.x, origin.y + delta.y)) return true;
+  const bool diagonal = delta.x != 0.0 && delta.y != 0.0;
+  if (diagonal) {
+    // movement-handler.js: a diagonal is blocked only when BOTH orthogonal
+    // neighbours are unwalkable.
+    const bool horizontal = can_move_to(origin.x + delta.x, origin.y);
+    const bool vertical = can_move_to(origin.x, origin.y + delta.y);
+    if (!horizontal && !vertical) return true;
+  }
+  return false;
+}
+
+void WorldSimulation::register_step(const std::string& direction, int duration_ms, bool blocked,
+                                    std::int64_t now_ms) {
+  last_step_.sequence += 1;
+  last_step_.started_at_ms = now_ms;
+  last_step_.duration_ms = duration_ms;
+  last_step_.direction = direction;
+  last_step_.blocked = blocked;
+}
+
+bool WorldSimulation::apply_movement_sample(const std::string& direction, std::int64_t now_ms) {
+  const auto delta = tile_movement::movement_delta(direction);
+  if (!delta) return false;
+
+  // movement-handler.js setFacing: diagonals collapse onto their horizontal
+  // component so the run animation has a stable left/right read.
+  if (direction.find("left") != std::string::npos) facing_ = "left";
+  else if (direction.find("right") != std::string::npos) facing_ = "right";
+  else facing_ = direction;
+
+  if (is_blocked(position_, *delta)) {
+    register_step(direction, 0, true, now_ms);
+    return false;
+  }
+
+  const Vec2 previous_tile = tile_movement::occupied_tile(position_);
+  position_.x = tile_movement::round_position(position_.x + delta->x);
+  position_.y = tile_movement::round_position(position_.y + delta->y);
+  register_step(direction, static_cast<int>(tile_movement::kSampleMs), false, now_ms);
+
+  const Vec2 current_tile = tile_movement::occupied_tile(position_);
+  if (current_tile.x != previous_tile.x || current_tile.y != previous_tile.y) {
+    check_stair_transition();
+  }
+  return true;
+}
+
+void WorldSimulation::teleport(int x, int y, std::int64_t now_ms) {
+  // dev.js dev:teleport floors onto the target tile and outranks any
+  // in-flight client interpolation with a fresh zero-duration step.
+  position_.x = static_cast<double>(x);
+  position_.y = static_cast<double>(y);
+  register_step("", 0, false, now_ms);
+  check_stair_transition();
+}
+
+void WorldSimulation::check_stair_transition() {
+  if (!in_instance()) return;
+  const Vec2 tile = tile_movement::occupied_tile(position_);
+  if (metadata_.depth <= 1 && tile.x == metadata_.stairs_up.x && tile.y == metadata_.stairs_up.y) {
+    return_to_town();
+  }
+  // N2 stub: stairsDown (deeper floors) is generated in metadata but does not
+  // descend yet — no scenario exercises depth > 1 in this wave.
+}
+
+void WorldSimulation::return_to_town() {
+  scene_type_ = "town";
+  scene_id_ = "town:verdigris";
+  scene_name_ = "Verdigris";
+  metadata_ = InstanceMetadata{};
+  monsters_.clear();
+  grid_.width = kTownSize;
+  grid_.height = kTownSize;
+  grid_.walkable.assign(static_cast<std::size_t>(kTownSize) * kTownSize, 1);
+  if (has_pre_instance_) {
+    position_ = pre_instance_position_;
+    scene_id_ = pre_instance_scene_id_.empty() ? scene_id_ : pre_instance_scene_id_;
+  } else {
+    position_ = WorldPosition{38.0, 115.0};
+  }
+  has_pre_instance_ = false;
+  pre_instance_scene_id_.clear();
+}
+
+std::string WorldSimulation::zone_display_name(const std::string& template_id,
+                                               const std::string& layout, int depth) {
+  std::string name;
+  for (const auto& zone : adventure_zones()) {
+    if (zone.template_id == template_id && zone.layout == layout) {
+      name = zone.name;
+      break;
+    }
+  }
+  if (name.empty()) {
+    for (const auto& zone : adventure_zones()) {
+      if (zone.template_id == template_id) {
+        name = zone.name;
+        break;
+      }
+    }
+  }
+  if (name.empty()) {
+    name = template_id.empty() ? "Dungeon" : template_id;
+    name[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(name[0])));
+  }
+  if (depth > 1) {
+    name += " · Floor " + std::to_string(depth);
+  }
+  return name;
+}
+
+void WorldSimulation::generate_instance() {
+  const std::string& layout = metadata_.layout;
+  const std::string effective = layout.empty() ? "warren" : layout;
+
+  grid_.width = kInstanceWidth;
+  grid_.height = kInstanceHeight;
+  grid_.walkable.assign(static_cast<std::size_t>(kInstanceWidth) * kInstanceHeight, 1);
+
+  auto block = [&](int x, int y) {
+    if (grid_.in_bounds(x, y) && !in_spawn_clearing(x, y)
+        && !(x == kStairsUp.x && y == kStairsUp.y)
+        && !(x == kStairsDown.x && y == kStairsDown.y)) {
+      grid_.walkable[static_cast<std::size_t>(y) * kInstanceWidth + x] = 0;
+    }
+  };
+
+  // Border walls.
+  for (int x = 0; x < kInstanceWidth; ++x) { block(x, 0); block(x, kInstanceHeight - 1); }
+  for (int y = 0; y < kInstanceHeight; ++y) { block(0, y); block(kInstanceWidth - 1, y); }
+
+  if (effective == "warren") {
+    // Tight dungeon: vertical wall ribs with staggered gaps.
+    for (int rib = 12; rib <= 32; rib += 6) {
+      for (int y = 3; y < kInstanceHeight - 3; ++y) {
+        const bool gap = (y >= 10 && y <= 12) || (y >= 26 && y <= 28) || (y >= 19 && y <= 21);
+        if (!gap) block(rib, y);
+      }
+    }
+  } else if (effective == "clearings") {
+    // Open field: a few scattered 2x2 thickets.
+    const Vec2 thickets[] = {{14, 9}, {25, 13}, {17, 28}, {29, 30}, {13, 33}};
+    for (const auto& thicket : thickets) {
+      for (int dx = 0; dx < 2; ++dx)
+        for (int dy = 0; dy < 2; ++dy) block(thicket.x + dx, thicket.y + dy);
+    }
+  } else {  // gauntlet: a linear push down a walled corridor.
+    for (int x = 2; x < kInstanceWidth - 2; ++x) {
+      block(x, 14);
+      block(x, 26);
+    }
+  }
+
+  metadata_.stairs_up = kStairsUp;
+  metadata_.stairs_down = kStairsDown;
+  metadata_.spawn_points = {kSpawn};
+
+  // Deterministic monster scatter: seeded LCG picks candidate tiles; only
+  // walkable tiles well away from the entry clearing and stairs are used so
+  // population never interferes with movement parity.
+  monsters_.clear();
+  std::uint64_t state = metadata_.seed ? metadata_.seed : 0x9e3779b97f4a7c15ULL;
+  auto next = [&]() {
+    state ^= state << 13;
+    state ^= state >> 7;
+    state ^= state << 17;
+    return state;
+  };
+  const int level = metadata_.theme == "crypt" ? 4
+                  : metadata_.theme == "wilds" ? 6
+                  : metadata_.theme == "marsh" ? 8
+                  : 2;
+  int placed = 0;
+  int attempts = 0;
+  while (placed < kInstanceMonsterCount && attempts < 4000) {
+    ++attempts;
+    const int x = static_cast<int>(next() % kInstanceWidth);
+    const int y = static_cast<int>(next() % kInstanceHeight);
+    if (!grid_.walkable_at(x, y) || in_spawn_clearing(x, y)) continue;
+    if (std::abs(x - kStairsUp.x) + std::abs(y - kStairsUp.y) < 5) continue;
+    if (std::abs(x - kStairsDown.x) + std::abs(y - kStairsDown.y) < 3) continue;
+    bool occupied = false;
+    for (const auto& monster : monsters_) {
+      if (monster.x == x && monster.y == y) { occupied = true; break; }
+    }
+    if (occupied) continue;
+    WorldMonster monster;
+    monster.uuid = "monster-" + std::to_string(serial_) + "-" + std::to_string(placed);
+    monster.id = metadata_.theme + "-lurker";
+    monster.name = zone_display_name(metadata_.theme, "", 1) + " Lurker";
+    monster.x = x;
+    monster.y = y;
+    monster.level = level;
+    monster.life = 20 + level * 5;
+    monster.life_max = monster.life;
+    monsters_.push_back(std::move(monster));
+    ++placed;
+  }
+}
+
+void WorldSimulation::enter_solo_instance(const std::string& template_id, const std::string& layout) {
+  const std::string theme = is_zone_template(template_id) ? template_id : "dungeon";
+  const std::string applied_layout = is_zone_layout(layout) ? layout : "";
+
+  if (!in_instance() && !has_pre_instance_) {
+    // First entry only: instance -> instance hops keep the original surface
+    // position so the stair return lands where the party left.
+    pre_instance_position_ = position_;
+    pre_instance_scene_id_ = scene_id_;
+    has_pre_instance_ = true;
+  }
+
+  serial_ += 1;
+  metadata_ = InstanceMetadata{};
+  metadata_.seed = fnv1a(theme + ":" + applied_layout, seed_);
+  metadata_.theme = theme;
+  metadata_.layout = applied_layout;
+  metadata_.depth = 1;
+  generate_instance();
+
+  scene_type_ = "instance";
+  scene_id_ = "instance:" + theme + ":" + (applied_layout.empty() ? "default" : applied_layout);
+  scene_name_ = zone_display_name(theme, applied_layout, 1);
+  position_.x = static_cast<double>(metadata_.spawn_points.front().x);
+  position_.y = static_cast<double>(metadata_.spawn_points.front().y);
 }
 
 }  // namespace verdigris
