@@ -178,3 +178,16 @@ philosophy: scripted input sequences driving the REAL client loop with
 assertions on authoritative state and presentation output, run as a
 gate on every client change. Test the whole pipeline as we build - we
 are not going to let both layers regress.
+
+## D-120 - Tiered delegation + architect scaffolding (owner-ruled, 2026-08-18)
+
+The architect (Fable, most capable model in the fleet) architects AND
+writes code scaffolding for implementers: interfaces, the hard
+math/algorithms, and test skeletons that lock correctness in before
+delegation. Task detail is matched to model capability (weak = exact
+steps + scaffolding; medium = pinned interfaces). The living record is
+orchestration/ORCHESTRATION-LEARNINGS.md, updated by the architect
+automatically after every notable review or failure - no owner prompt
+needed. This amends the architect-does-not-implement rule: scaffolding
+and reference math are architect work; feature implementation remains
+coordinator work.
