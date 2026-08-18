@@ -60,16 +60,15 @@ outside production until the owner resolves asset provenance/packaging.
   [`coordinator-native-attach-2026-08-17.txt`](../../orchestration/tasks/TASK-0044-native-protocol-n2/captures/coordinator-native-attach-2026-08-17.txt).
   The JS/native contract comparison and intentional N2 population stub are
   recorded in [`coordinator-dual-run-matrix-2026-08-17.txt`](../../orchestration/tasks/TASK-0044-native-protocol-n2/captures/coordinator-dual-run-matrix-2026-08-17.txt).
-- TASK‑0038 controls/rebinding: implementation is available on
-  `4a8983cb`; unit (123/791), build, and lint gates pass, but smoke still
-  expects the pre-rebind `Space / 1` and unmodified right-click contract.
-  Ownership expansion, updated browser expectations, and pointer/reload
-  captures are still required before review handoff. TASK‑0042 first-loot
-  remains `BLOCKED` on its documented ownership seam.
-- TASK‑0045 native protocol N3 combat/skills: `REVIEW_REQUESTED` at
-  `6d39565c` on post-N2 tip `ca0dd2df`. Native gates, unchanged 7-scenario
-  attach, unit coverage, and authentic negative are captured; architect
-  rebuild/acceptance is pending.
+- TASK‑0038 controls/rebinding: `INTEGRATED` at `2c0a00c3` from accepted
+  candidate `c73fff1`; Fable verified the rendered pointer/rebind captures,
+  WS frame log, unit 788/788, smoke 1/1, and playtest 31/31. Shift+RMB keeps
+  the legacy context menu available. TASK‑0042 first-loot remains `BLOCKED`
+  on its documented ownership seam.
+- TASK‑0045 native protocol N3 combat/skills: architect-accepted and integrated
+  at `c49f8c51`/master PR #17 (`86688c1f`), with the review handoff at `6d39565c`.
+  Native gates and unchanged 7-scenario attach are green; N4 is now the next
+  native parity wave.
 - TASK‑0046 playability re-evaluation: `REVIEW_REQUESTED` at worker evidence
   commit `ec42e843` (worker candidate `1de6e45b`) on current tip `45846af7`.
   Coordinator completed both approximately ten-minute arcs with headless
