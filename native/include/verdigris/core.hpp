@@ -262,6 +262,7 @@ enum class CommandType {
   Interact,
   PickUp,
   Equip,
+  Unequip,
   EnterInstance,
   ExtractToHouse,
   AimIntent
@@ -280,6 +281,7 @@ struct Command {
   static Command interact(const std::string& target);
   static Command pick_up(const std::string& item_id);
   static Command equip(const std::string& item_id);
+  static Command unequip();
   static Command enter(const std::string& route_id);
   static Command extract();
 };
@@ -354,6 +356,7 @@ class Simulation {
   void resolve_interact(const std::string& target);
   void resolve_pickup(const std::string& item_id);
   void resolve_equip(const std::string& item_id);
+  void resolve_unequip();
   void resolve_enter(const std::string& route_id);
   void resolve_extract();
   void retire_instance();

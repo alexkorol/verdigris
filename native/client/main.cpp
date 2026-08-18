@@ -70,7 +70,8 @@ struct EffectFx {
     Impact,
     DeathRing,
     Dust,
-    Sparkle
+    Sparkle,
+    DamageNumber
   };
   Kind kind = Kind::Impact;
   double wx = 0.0;
@@ -78,6 +79,8 @@ struct EffectFx {
   double angle = 0.0;
   int age = 0;
   int ttl = 8;
+  int value = 0;
+  bool damage_to_player = false;
 };
 
 // AttackTelegraphed is the simulation's warning contract.  The client keeps
@@ -992,6 +995,16 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       draw_line(dc, base.x, base.y - r, base.x, base.y + r, color, 1);
       break;
     }
+    case EffectFx::Kind::DamageNumber: {
+      const int lift = static_cast<int>(kTileUnits * (0.35 + grow * 0.75) * base.scale);
+      const COLORREF color = fx.damage_to_player ? RGB(255, 118, 104) : RGB(240, 218, 132);
+      SetBkMode(dc, TRANSPARENT);
+      SetTextColor(dc, color);
+      const std::string text = std::to_string(fx.value);
+      TextOutA(dc, base.x - 9, base.y - lift, text.c_str(),
+               static_cast<int>(text.size()));
+      break;
+    }
   }
 }
 
@@ -1092,9 +1105,23 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         if (event.text == "war-cry")
           state.effects.push_back({EffectFx::Kind::WarCryAura, ex, ey, 0.0, 0, 14});
         break;
-      case verdigris::EventType::DamageApplied:
+      case verdigris::EventType::DamageApplied: {
         state.effects.push_back({EffectFx::Kind::Impact, ex, ey, 0.0, 0, 4});
+        // Floating damage number: the value the core resolved, rising above
+        // the target. Colored red when the Scion took the hit so "what hit
+        // me" reads at a glance.
+        EffectFx number;
+        number.kind = EffectFx::Kind::DamageNumber;
+        number.wx = ex;
+        number.wy = ey;
+        number.age = 0;
+        number.ttl = 26;
+        number.value = event.value;
+        number.damage_to_player =
+            subject && subject->kind == verdigris::ActorKind::Player;
+        state.effects.push_back(number);
         break;
+      }
       case verdigris::EventType::ActorDied:
         state.telegraphs.erase(event.actor_id);
         // The core cancels all elite windups when the Scion dies; clear any
@@ -1181,10 +1208,12 @@ std::string loot_label(const verdigris::Simulation& simulation,
 
 void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds) {
   if (!state.gear_overlay) return;
-  const int left = std::max(24, static_cast<int>(bounds.right) - 360);
-  const int top = 118;
-  const int right = static_cast<int>(bounds.right) - 24;
-  const int bottom = std::min(static_cast<int>(bounds.bottom) - 36, top + 300);
+  const int panel_w = 380;
+  const int left = std::max(24, static_cast<int>(bounds.right) - panel_w - 24);
+  const int top = 64;
+  const int right = left + panel_w;
+  const int bottom = std::min(static_cast<int>(bounds.bottom) - 28, top + 430);
+
   HBRUSH panel = CreateSolidBrush(RGB(25, 33, 37));
   RECT panel_rect{left, top, right, bottom};
   FillRect(dc, &panel_rect, panel);
@@ -1198,27 +1227,112 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds) {
   DeleteObject(border);
 
   SetBkMode(dc, TRANSPARENT);
+
+  // Title.
   SetTextColor(dc, RGB(230, 235, 220));
-  const std::string title = "Gear / House  |  " + state.simulation->house().name;
-  TextOutA(dc, left + 16, top + 14, title.c_str(), static_cast<int>(title.size()));
+  const std::string title = "Gear / House " + state.simulation->house().name;
+  TextOutA(dc, left + 14, top + 12, title.c_str(), static_cast<int>(title.size()));
+
+  // Authoritative stats readout. The base attack is the actor's stat; the
+  // equipped item's attack bonus (authoritative item data) is added on top,
+  // matching how the core folds it into damage resolution.
+  const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
   const auto& items = state.simulation->scion().carried_items;
+  int equipped_bonus = 0;
+  for (const auto& item : items)
+    if (item.equipped) {
+      equipped_bonus = item.attack_bonus;
+      break;
+    }
+  const int base_attack = player ? player->stats.attack : 0;
+  std::string attack_text = std::to_string(base_attack + equipped_bonus);
+  if (equipped_bonus != 0)
+    attack_text += " (+" + std::to_string(equipped_bonus) + ")";
+  SetTextColor(dc, RGB(150, 170, 158));
+  std::string stats_line =
+      "LIFE " + std::to_string(player ? player->stats.life : 0) + "/" +
+      std::to_string(player ? player->stats.life_max : 0) + "  RES " +
+      std::to_string(player ? player->stats.resource : 0) + "/" +
+      std::to_string(player ? player->stats.resource_max : 0) + "  ATK " +
+      attack_text + "  DEF " +
+      std::to_string(player ? player->stats.defense : 0) + "  LVL " +
+      std::to_string(player ? player->stats.level : 0);
+  TextOutA(dc, left + 14, top + 36, stats_line.c_str(),
+           static_cast<int>(stats_line.size()));
+
+  // Weapon (paperdoll) seat.
+  const int seat_top = top + 58;
+  const int seat_left = left + 14;
+  const int seat_w = right - left - 28;
+  RECT seat{seat_left, seat_top, seat_left + seat_w, seat_top + 24};
+  HBRUSH seat_bg = CreateSolidBrush(RGB(32, 40, 42));
+  FillRect(dc, &seat, seat_bg);
+  DeleteObject(seat_bg);
+  HPEN seat_pen = CreatePen(PS_SOLID, 1, RGB(104, 160, 137));
+  HGDIOBJ sp = SelectObject(dc, seat_pen);
+  Rectangle(dc, seat.left, seat.top, seat.right, seat.bottom);
+  SelectObject(dc, sp);
+  DeleteObject(seat_pen);
+  SetTextColor(dc, RGB(170, 190, 178));
+  const char* seat_label = "Weapon";
+  TextOutA(dc, seat_left + 6, seat_top + 5, seat_label, static_cast<int>(strlen(seat_label)));
+  std::string equipped_name = "(empty)";
+  for (const auto& item : items)
+    if (item.equipped) {
+      equipped_name = item.name;
+      break;
+    }
+  SetTextColor(dc, RGB(230, 220, 180));
+  TextOutA(dc, seat_left + 96, seat_top + 5, equipped_name.c_str(),
+           static_cast<int>(equipped_name.size()));
+
+  // Grid backpack (4 columns).
+  constexpr int kGridColumns = 4;
+  const int cell_w = (right - left - 28 - (kGridColumns - 1) * 6) / kGridColumns;
+  const int cell_h = 40;
+  const int grid_top = seat_top + 34;
   if (items.empty()) {
-    const char* empty = "No carried items. X picks up the nearest drop.";
-    TextOutA(dc, left + 16, top + 48, empty, static_cast<int>(strlen(empty)));
+    SetTextColor(dc, RGB(150, 160, 150));
+    const char* empty = "Backpack empty. X picks up the nearest drop.";
+    TextOutA(dc, left + 14, grid_top + 6, empty, static_cast<int>(strlen(empty)));
   } else {
     for (std::size_t i = 0; i < items.size(); ++i) {
-      const auto& item = items[i];
+      const int col = static_cast<int>(i % kGridColumns);
+      const int row = static_cast<int>(i / kGridColumns);
+      const int cx = left + 14 + col * (cell_w + 6);
+      const int cy = grid_top + row * (cell_h + 6);
       const bool selected = i == std::min(state.selected_item, items.size() - 1);
-      SetTextColor(dc, selected ? RGB(239, 208, 116) : RGB(205, 215, 204));
-      std::string line = (selected ? "> " : "  ") + item.name +
-                         (item.equipped ? "  [equipped]" : "");
-      TextOutA(dc, left + 16, top + 48 + static_cast<int>(i) * 22, line.c_str(),
-               static_cast<int>(line.size()));
+      const bool equipped = items[i].equipped;
+      RECT cell{cx, cy, cx + cell_w, cy + cell_h};
+      HBRUSH cell_bg = CreateSolidBrush(selected ? RGB(52, 74, 66) : RGB(30, 38, 40));
+      FillRect(dc, &cell, cell_bg);
+      DeleteObject(cell_bg);
+      HPEN cell_pen = CreatePen(
+          PS_SOLID, 1,
+          equipped ? RGB(210, 180, 90) : (selected ? RGB(104, 160, 137) : RGB(56, 66, 64)));
+      HGDIOBJ cp = SelectObject(dc, cell_pen);
+      Rectangle(dc, cell.left, cell.top, cell.right, cell.bottom);
+      SelectObject(dc, cp);
+      DeleteObject(cell_pen);
+      SetTextColor(dc, equipped ? RGB(240, 210, 120) : RGB(205, 215, 204));
+      std::string name = items[i].name;
+      if (name.size() > 12) name = name.substr(0, 11) + ".";
+      TextOutA(dc, cx + 4, cy + 4, name.c_str(), static_cast<int>(name.size()));
+      SetTextColor(dc, RGB(150, 165, 152));
+      std::string bonus = "+" + std::to_string(items[i].attack_bonus) + " ATK" +
+                          (equipped ? "  [E]" : "");
+      TextOutA(dc, cx + 4, cy + 21, bonus.c_str(), static_cast<int>(bonus.size()));
     }
   }
+
+  // Banked / extraction summary.
   SetTextColor(dc, RGB(150, 170, 158));
-  const char* controls = "Up/Down select | Enter or LMB equip | I close";
-  TextOutA(dc, left + 16, bottom - 28, controls, static_cast<int>(strlen(controls)));
+  const std::string banked =
+      "Banked  items " + std::to_string(state.simulation->house().stored_items.size()) +
+      "  trophies " + std::to_string(state.simulation->house().stored_trophies.size());
+  TextOutA(dc, left + 14, bottom - 46, banked.c_str(), static_cast<int>(banked.size()));
+  const char* controls = "Arrows select | Enter equip | U unequip | I close";
+  TextOutA(dc, left + 14, bottom - 24, controls, static_cast<int>(strlen(controls)));
 }
 
 void paint_skill_strip(const ClientState& state, HDC dc, const RECT& bounds) {
@@ -1686,17 +1800,23 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         state->selected_item = 0;
         if (state->gear_overlay) show_hint(*state, "Gear opened");
       }
-      if (state->gear_overlay && wparam == VK_UP &&
-          !state->simulation->scion().carried_items.empty()) {
-        if (state->selected_item > 0) --state->selected_item;
+      if (state->gear_overlay && !state->simulation->scion().carried_items.empty()) {
+        const std::size_t count = state->simulation->scion().carried_items.size();
+        constexpr int kGridColumns = 4;
+        if (wparam == VK_UP && state->selected_item >= kGridColumns)
+          state->selected_item -= kGridColumns;
+        if (wparam == VK_DOWN)
+          state->selected_item =
+              std::min(count - 1, state->selected_item + kGridColumns);
+        if (wparam == VK_LEFT && state->selected_item > 0) --state->selected_item;
+        if (wparam == VK_RIGHT)
+          state->selected_item = std::min(count - 1, state->selected_item + 1);
+        if (wparam == VK_RETURN) equip_selected(*state);
+        if (wparam == 'U') {
+          state->simulation->dispatch(verdigris::Command::unequip());
+          show_hint(*state, "Weapon unequipped");
+        }
       }
-      if (state->gear_overlay && wparam == VK_DOWN &&
-          !state->simulation->scion().carried_items.empty()) {
-        state->selected_item = std::min(
-            state->selected_item + 1,
-            state->simulation->scion().carried_items.size() - 1);
-      }
-      if (state->gear_overlay && wparam == VK_RETURN) equip_selected(*state);
       if (wparam == VK_HOME) {
         state->camera.zoom = kCameraDefaultZoom;
       }
