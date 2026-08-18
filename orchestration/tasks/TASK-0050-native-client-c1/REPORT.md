@@ -125,5 +125,6 @@ against the seeded `route:tin:1:0` start.
 
 ## Commits
 
-- `5cfb0c4` (claim), `98b8e38a` (D1), plus the D2/D3 + core-unequip commit
-  (SHA recorded at push).
+- `a5f1f561` — claim (STATUS.md)
+- `98b8e38a` — D1 clean 2D top-down camera
+- `d5046ed1` — D2 visible combat + D3 inventory pane + core `unequip`
