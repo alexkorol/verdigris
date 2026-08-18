@@ -538,3 +538,13 @@ WATCH: at >=150ms ambient lag, first-goal (8s authored deadline) and
 house-treasury (carried-gold assert) can still flake in full runs;
 both pass in sequence at low lag. If seen twice more, spawn a
 follow-up harness task targeting those two specifically.
+
+## ORCHESTRATION PAUSED (2026-08-17 ~20:40, owner directive)
+
+The owner has paused the loop (codex tokens exhausted). Architect
+reviews resume when the owner restarts the session. Coordinators still
+active: finish and push your current work with STATUS updates; nothing
+will be reviewed or integrated until resume. Board at pause: 0047 N4
+in flight (kimi-work), 0042 RELEASED/claimable, 0049 UI wave READY.
+Master 1244b5bf: N1-N3 C++ parity, 32-scenario suite, LMB/RMB +
+rebinding all shipped today.
