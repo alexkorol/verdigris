@@ -1,0 +1,13 @@
+Timing guard: load-adaptive deadlines enabled (max 1.75x; explicit load mode: off; baseline 20ms event-loop lag)
+Playing against ws://127.0.0.1:6513
+
+  ▶ vesselforge-brand
+      ✓ a vessel item exposes the Delaford brand service
+      ✓ the menu states the exact crafting cost
+  FAIL vesselforge-brand: ASSERT FAILED: adding a brand spends exactly 100 coins
+
+────────────────────────────────
+ FAIL  vesselforge-brand (175ms)
+
+0/1 scenarios passed
+Timing diagnostics: {"loadMode":false,"p99EventLoopLagMs":32.194559,"maxEventLoopLagMs":32.194559}

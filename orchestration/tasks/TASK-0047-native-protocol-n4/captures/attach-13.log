@@ -1,0 +1,151 @@
+Timing guard: load-adaptive deadlines enabled (max 1.75x; explicit load mode: off; baseline 20ms event-loop lag)
+Playing against ws://127.0.0.1:6512
+
+  ▶ boss-mechanic
+      ✓ Old Barrow ends in its named boss
+      ✓ the warning declares a meaningful danger radius
+      ✓ the warning leaves a readable dodge window
+      ✓ leaving the marked circle avoids the ground slam
+      ✓ remaining in the circle takes the named boss hit
+      ✓ the opening boss mechanic is survivable at its level band
+  PASS boss-mechanic (2135ms)
+
+  ▶ combat
+      ✓ instance is populated (20 monsters)
+      ✓ found a trash monster to fight
+      ✓ killed a pack member within 30s (healer race is winnable)
+      ✓ survived the pack (hp 145/150)
+      ✓ combat log recorded the kill
+  PASS combat (1017ms)
+
+  ▶ depth-loot
+      ✓ floor 1 contains a guaranteed item-level treasure
+      ✓ floor 5 contains a guaranteed item-level treasure
+      ✓ floor 5 treasure visibly raises item level (10 -> 50)
+      ✓ displayed item level comes from the live vessel
+  PASS depth-loot (1009ms)
+
+  ▶ encounter-variety
+      ✓ crypt packs lean toward close melee pressure
+      ✓ crypt packs include aura buffers
+      ✓ marsh packs add more ranged pressure than crypts
+      ✓ marsh packs include aura buffers
+      ✓ rare enemies expose one named combat modifier
+      ✓ a nearby ally receives the buffer damage aura
+      ✓ an aura-empowered pack member dies within the 15s TTK bound
+  PASS encounter-variety (1333ms)
+
+  ▶ equipment-slots
+      ✓ the first ring stays in the primary seat
+      ✓ a second ring fills the second seat
+      ✓ a belt equips into the waist slot
+      ✓ both ring seats survive equipping the belt
+  PASS equipment-slots (414ms)
+
+  ▶ loot
+      ✓ found a monster to loot
+      ✓ coins entered the inventory (100 -> 205)
+  PASS loot (1081ms)
+
+  ▶ movement
+      ✓ stopped between tiles (115.333333)
+      ✓ moved down (115 -> 118.333333)
+      ✓ moved right (38 -> 41)
+      ✓ moved back up-left
+      ✓ still in the instance after 2s (scene: The Old Barrow)
+      ✓ no bounce back to town
+      ✓ moved inside the instance
+  PASS movement (4612ms)
+
+  ▶ overflow
+      ✓ backpack accepts every sword that fits
+      ✓ overflow swords fall to the ground
+      ✓ no generated sword is lost
+      ✓ inventory rewards bind to the real player after world admission
+      ✓ overflow rewards stay bound at the player feet
+      ✓ fungible currency does not create an avoidable overflow drop
+  PASS overflow (421ms)
+
+  ▶ quickstart
+      ✓ fresh guest reached combat in 0.17s
+  PASS quickstart (166ms)
+
+  ▶ single-session
+      ✓ loot from the replaced session survived the handoff
+      ✓ new session stays connected
+  PASS single-session (317ms)
+
+  ▶ vesselforge
+      ✓ Keen Eye reaches combat state (22%)
+      ✓ Keen Eye is presented as a live Brand
+      ✓ the deterministic Wealthy ring contributes its 10% Brand
+      ✓ Wealthy reaches combat state (10%)
+      ✓ Wealthy is presented as a live Brand
+      ✓ Beastbane reaches combat state (13%)
+      ✓ Beastbane is presented as a live Brand
+      ✓ found a target for the critical strike
+      ✓ target carries a measurable coin bounty
+      ✓ critical hit deals the measured 1.5x result (162 -> 243)
+      ✓ Wealthy boosts the real coin bounty by 10% (20 -> 22)
+      ✓ the generated grove exposes an explicitly tagged beast
+      ✓ Beastbane applies the measured 13% bonus (162 -> 183)
+  PASS vesselforge (1346ms)
+
+  ▶ vesselforge-brand
+      ✓ a vessel item exposes the Delaford brand service
+      ✓ the menu states the exact crafting cost
+      ✓ adding a brand spends exactly 100 coins
+      ✓ the refreshed tooltip contains the new brand
+  PASS vesselforge-brand (170ms)
+
+  ▶ zones
+      ✓ dungeon/warren: entered an instance
+      ✓ dungeon/warren: layout applied (warren)
+      ✓ dungeon/warren: both stairs exist
+      ✓ dungeon/warren: scene has a display name (The Old Barrow)
+      ✓ dungeon/warren: populated (20 monsters)
+      ✓ grove/clearings: entered an instance
+      ✓ grove/clearings: layout applied (clearings)
+      ✓ grove/clearings: both stairs exist
+      ✓ grove/clearings: scene has a display name (Verdant Grove)
+      ✓ grove/clearings: populated (20 monsters)
+      ✓ crypt/gauntlet: entered an instance
+      ✓ crypt/gauntlet: layout applied (gauntlet)
+      ✓ crypt/gauntlet: both stairs exist
+      ✓ crypt/gauntlet: scene has a display name (Sunken Colonnade)
+      ✓ crypt/gauntlet: populated (20 monsters)
+      ✓ crypt/warren: entered an instance
+      ✓ crypt/warren: layout applied (warren)
+      ✓ crypt/warren: both stairs exist
+      ✓ crypt/warren: scene has a display name (Weir Crypt)
+      ✓ crypt/warren: populated (20 monsters)
+      ✓ wilds/clearings: entered an instance
+      ✓ wilds/clearings: layout applied (clearings)
+      ✓ wilds/clearings: both stairs exist
+      ✓ wilds/clearings: scene has a display name (The Wilds)
+      ✓ wilds/clearings: populated (20 monsters)
+      ✓ marsh/clearings: entered an instance
+      ✓ marsh/clearings: layout applied (clearings)
+      ✓ marsh/clearings: both stairs exist
+      ✓ marsh/clearings: scene has a display name (Marsh of Reeds)
+      ✓ marsh/clearings: populated (20 monsters)
+      ✓ returned to the pre-entry position (38,115 vs 38,115)
+  PASS zones (1195ms)
+
+────────────────────────────────
+ PASS  boss-mechanic (2135ms)
+ PASS  combat (1017ms)
+ PASS  depth-loot (1009ms)
+ PASS  encounter-variety (1333ms)
+ PASS  equipment-slots (414ms)
+ PASS  loot (1081ms)
+ PASS  movement (4612ms)
+ PASS  overflow (421ms)
+ PASS  quickstart (166ms)
+ PASS  single-session (317ms)
+ PASS  vesselforge (1346ms)
+ PASS  vesselforge-brand (170ms)
+ PASS  zones (1195ms)
+
+13/13 scenarios passed
+Timing diagnostics: {"loadMode":false,"p99EventLoopLagMs":33.243135,"maxEventLoopLagMs":35.389439}
