@@ -1,6 +1,6 @@
 ---
 task: TASK-0052
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: kimi
 worker: kimi-code-cli
 worker_branch: codex/TASK-0052-suite-flake-hardening

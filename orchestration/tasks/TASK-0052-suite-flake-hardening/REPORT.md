@@ -3,6 +3,7 @@ task: TASK-0052
 state: REVIEW_REQUESTED
 worker_commits:
   - d0ef8a6
+  - 7fc97d2
 base_commit: cc67a15
 ---
 
