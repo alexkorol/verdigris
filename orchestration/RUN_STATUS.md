@@ -1,4 +1,4 @@
-# Run status (snapshot — rewritten each architect sweep, never a diary)
+﻿# Run status (snapshot â€” rewritten each architect sweep, never a diary)
 
 - Current integration tip: origin/codex/native-reconstitution @ e5c43672
 - Master: 1244b5bf (PR #19)
@@ -25,22 +25,21 @@
 
 ## VERIFY / MERGE QUEUE
 
-(empty — next expected: 0049 REVIEW_REQUESTED)
+(empty â€” next expected: 0049 REVIEW_REQUESTED)
 
 ## BLOCKED / WATCH
 
-- WATCH: first-goal + house-treasury flake at >=150ms ambient lag
-  (2 sightings; third spawns a harness task).
+- WATCH RESOLVED into TASK-0052 (3rd sighting via deepseek run): first-goal + house-treasury flake hardening, READY, MECHANICAL packet.
 - Owner decision pending: GitHub branch protection on master;
   does KimiWork K3 share the Allegretto quota?
 
 ## Fleet + budget
 
-- deepseek: $9.49 credits (~$1/task-session, 99% cache hit) — primary
-  implementation lane; ports 6540–6559.
-- kimi K3: monthly pool ~1/5 left (resets 08-23) — scoped MECHANICAL
-  packets only; ports 9880–9899.
-- kimi-work K3: active on 0047; ports 6510–6529.
+- deepseek: $9.23 credits ($1.25 today, 38M tok) (~$1/task-session, 99% cache hit) â€” primary
+  implementation lane; ports 6540â€“6559.
+- kimi K3: monthly 78% used (resets 08-23), 5h window 31.9% â€” scoped MECHANICAL
+  packets only; ports 9880â€“9899.
+- kimi-work K3: active on 0047; ports 6510â€“6529.
 - codex: out of tokens.
 
 ## Experiments in flight (see LEARNINGS for hypotheses)
@@ -55,3 +54,4 @@
 1. Review 0049 on REVIEW_REQUESTED (screenshots + scope diff + gates).
 2. Route first free coordinator to 0050.
 3. Ask owner for branch protection on master.
+
