@@ -14,6 +14,7 @@
 #include "verdigris/core.hpp"
 #include "verdigris/seasonal.hpp"
 #include "camera2d.hpp"
+#include "render_list.hpp"
 
 #ifdef VERDIGRIS_NATIVE_WINDOWS
 #define WIN32_LEAN_AND_MEAN
@@ -213,6 +214,7 @@ struct ClientState {
   std::size_t selected_item = 0;
   std::string hint;
   int hint_ticks = 0;
+  render::List render_list;
 };
 
 std::string executable_directory() {
@@ -803,9 +805,16 @@ void draw_scenery_fallback(HDC dc, const ScreenPoint& base, const SceneryItem& i
 }
 
 void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& camera,
-                       const RECT& bounds, const SceneryItem& item) {
+                       const RECT& bounds, const SceneryItem& item,
+                       render::List& rl) {
   const ScreenPoint base =
       project(camera, bounds, item.position.x, item.position.y);
+  rl.push_back({render::Op::Scenery, static_cast<double>(base.x),
+                static_cast<double>(base.y), 0.0, 0,
+                static_cast<int>(item.kind) == 0   ? "tree"
+                : static_cast<int>(item.kind) == 1 ? "ruin"
+                : static_cast<int>(item.kind) == 2 ? "dwelling"
+                                                   : "shrine"});
   draw_contact_shadow(dc, base, item.radius * 0.9);
   const SpriteBitmap& sprite = scenery_sprite(assets, item.kind);
   if (!draw_billboard_sprite(assets, dc, sprite, base,
@@ -835,12 +844,14 @@ COLORREF telegraph_color(double visibility, COLORREF source) {
 
 void draw_thrust_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
                            const ActiveTelegraph& telegraph, double visibility,
-                           double length) {
+                           double length, render::List& rl) {
   const double facing_x = static_cast<double>(telegraph.facing.x);
   const double facing_y = static_cast<double>(telegraph.facing.y);
   const double angle = std::atan2(facing_y, facing_x);
   const ScreenPoint base = project(camera, bounds, telegraph.position.x,
                                    telegraph.position.y);
+  rl.push_back({render::Op::Telegraph, static_cast<double>(base.x),
+                static_cast<double>(base.y), 0.0, 0, "thrust"});
   // The shared resolver accepts the full forward half-plane (strict dot > 0),
   // so the warning uses a broad 180-degree fan instead of promising a
   // narrower client-only hit cone.
@@ -877,10 +888,13 @@ void draw_thrust_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
 
 void draw_sweep_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
                           const ActiveTelegraph& telegraph, double visibility,
-                          double radius_world) {
+                          double radius_world, render::List& rl) {
   const ScreenPoint base = project(camera, bounds, telegraph.position.x,
                                    telegraph.position.y);
   const int radius = std::max(4, static_cast<int>(radius_world * base.scale));
+  rl.push_back({render::Op::Telegraph, static_cast<double>(base.x),
+                static_cast<double>(base.y), static_cast<double>(radius), 0,
+                "sweep"});
   const COLORREF fill = telegraph_color(visibility * 0.28, RGB(214, 52, 52));
   const COLORREF edge = telegraph_color(visibility, RGB(238, 72, 64));
   fill_ellipse(dc, base.x, base.y, radius, radius, fill);
@@ -906,7 +920,8 @@ double telegraph_visibility(const ClientState& state,
   return std::clamp((0.38 + 0.62 * progress) * pulse, 0.18, 1.0);
 }
 
-void paint_telegraphs(const ClientState& state, HDC dc, const RECT& bounds) {
+void paint_telegraphs(const ClientState& state, HDC dc, const RECT& bounds,
+                      render::List& rl) {
   const verdigris::PresentationCatalog catalog =
       verdigris::Simulation::presentation_catalog();
   for (const auto& entry : state.telegraphs) {
@@ -914,19 +929,22 @@ void paint_telegraphs(const ClientState& state, HDC dc, const RECT& bounds) {
     const double visibility = telegraph_visibility(state, telegraph);
     if (telegraph.action == "sweep")
       draw_sweep_telegraph(dc, state.camera, bounds, telegraph, visibility,
-                           catalog.melee_range);
+                           catalog.melee_range, rl);
     else
       draw_thrust_telegraph(dc, state.camera, bounds, telegraph, visibility,
-                            catalog.thrust_range);
+                            catalog.thrust_range, rl);
   }
 }
 
-void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectFx& fx) {
+void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectFx& fx,
+                 render::List& rl) {
   const ScreenPoint base = project(camera, bounds, fx.wx, fx.wy);
   const double life = 1.0 - static_cast<double>(fx.age) / fx.ttl;
   const double grow = static_cast<double>(fx.age) / fx.ttl;
   switch (fx.kind) {
     case EffectFx::Kind::Swing: {
+      rl.push_back({render::Op::Swing, static_cast<double>(base.x),
+                    static_cast<double>(base.y)});
       // A readable melee arc sweeping toward the aim angle, drawn flat on the
       // top-down ground plane.
       const int radius = static_cast<int>(kTileUnits * 1.1 * base.scale);
@@ -947,6 +965,8 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       // facing direction that the deterministic action does not own.
       const int radius = static_cast<int>(kTileUnits * (0.72 + grow * 0.62) *
                                           base.scale);
+      rl.push_back({render::Op::Sweep, static_cast<double>(base.x),
+                    static_cast<double>(base.y), static_cast<double>(radius)});
       const COLORREF color = fade_to_background(RGB(116, 204, 208), life);
       ring_ellipse(dc, base.x, base.y, radius, radius, color, 3);
       if (radius > 8)
@@ -958,6 +978,8 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       // turning the renderer into a second source of gameplay state.
       const int radius = static_cast<int>(kTileUnits * (0.38 + grow * 0.72) *
                                           base.scale);
+      rl.push_back({render::Op::WarCry, static_cast<double>(base.x),
+                    static_cast<double>(base.y), static_cast<double>(radius)});
       const COLORREF color = fade_to_background(RGB(239, 190, 78), life);
       ring_ellipse(dc, base.x, base.y, radius, radius, color, 3);
       ring_ellipse(dc, base.x, base.y, std::max(3, radius - 8),
@@ -965,11 +987,15 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       break;
     }
     case EffectFx::Kind::Impact: {
+      rl.push_back({render::Op::Impact, static_cast<double>(base.x),
+                    static_cast<double>(base.y)});
       const int r = std::max(4, static_cast<int>(kTileUnits * 0.35 * base.scale));
       fill_ellipse(dc, base.x, base.y, r, r, fade_to_background(RGB(255, 214, 120), life));
       break;
     }
     case EffectFx::Kind::DeathRing: {
+      rl.push_back({render::Op::Death, static_cast<double>(base.x),
+                    static_cast<double>(base.y)});
       const int rx = static_cast<int>(kTileUnits * (0.3 + grow * 1.5) * base.scale);
       ring_ellipse(dc, base.x, base.y, rx, rx,
                    fade_to_background(RGB(214, 118, 86), life), 2);
@@ -996,6 +1022,9 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       break;
     }
     case EffectFx::Kind::DamageNumber: {
+      rl.push_back({render::Op::Damage, static_cast<double>(base.x),
+                    static_cast<double>(base.y), 0.0, fx.value,
+                    fx.damage_to_player ? "player" : "monster"});
       const int lift = static_cast<int>(kTileUnits * (0.35 + grow * 0.75) * base.scale);
       const COLORREF color = fx.damage_to_player ? RGB(255, 118, 104) : RGB(240, 218, 132);
       SetBkMode(dc, TRANSPARENT);
@@ -1206,7 +1235,8 @@ std::string loot_label(const verdigris::Simulation& simulation,
   return id;
 }
 
-void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds) {
+void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds,
+                        render::List& rl) {
   if (!state.gear_overlay) return;
   const int panel_w = 380;
   const int left = std::max(24, static_cast<int>(bounds.right) - panel_w - 24);
@@ -1257,6 +1287,7 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds) {
       attack_text + "  DEF " +
       std::to_string(player ? player->stats.defense : 0) + "  LVL " +
       std::to_string(player ? player->stats.level : 0);
+  rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0, stats_line});
   TextOutA(dc, left + 14, top + 36, stats_line.c_str(),
            static_cast<int>(stats_line.size()));
 
@@ -1283,6 +1314,7 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds) {
       break;
     }
   SetTextColor(dc, RGB(230, 220, 180));
+  rl.push_back({render::Op::PaneWeapon, 0.0, 0.0, 0.0, 0, equipped_name});
   TextOutA(dc, seat_left + 96, seat_top + 5, equipped_name.c_str(),
            static_cast<int>(equipped_name.size()));
 
@@ -1317,6 +1349,9 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds) {
       SetTextColor(dc, equipped ? RGB(240, 210, 120) : RGB(205, 215, 204));
       std::string name = items[i].name;
       if (name.size() > 12) name = name.substr(0, 11) + ".";
+      rl.push_back({render::Op::PaneItem, static_cast<double>(cx),
+                    static_cast<double>(cy), 0.0, items[i].attack_bonus,
+                    equipped ? name + " [E]" : name});
       TextOutA(dc, cx + 4, cy + 4, name.c_str(), static_cast<int>(name.size()));
       SetTextColor(dc, RGB(150, 165, 152));
       std::string bonus = "+" + std::to_string(items[i].attack_bonus) + " ATK" +
@@ -1330,12 +1365,14 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds) {
   const std::string banked =
       "Banked  items " + std::to_string(state.simulation->house().stored_items.size()) +
       "  trophies " + std::to_string(state.simulation->house().stored_trophies.size());
+  rl.push_back({render::Op::PaneBanked, 0.0, 0.0, 0.0, 0, banked});
   TextOutA(dc, left + 14, bottom - 46, banked.c_str(), static_cast<int>(banked.size()));
   const char* controls = "Arrows select | Enter equip | U unequip | I close";
   TextOutA(dc, left + 14, bottom - 24, controls, static_cast<int>(strlen(controls)));
 }
 
-void paint_skill_strip(const ClientState& state, HDC dc, const RECT& bounds) {
+void paint_skill_strip(const ClientState& state, HDC dc, const RECT& bounds,
+                       render::List& rl) {
   const auto* player =
       state.simulation->actor(state.simulation->scion().actor_id);
   const verdigris::PresentationCatalog catalog =
@@ -1384,12 +1421,14 @@ void paint_skill_strip(const ClientState& state, HDC dc, const RECT& bounds) {
     } else {
       state_text = "ready";
     }
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                  std::string(skill.name) + " " + state_text});
     TextOutA(dc, left + 25, slot.top + 29, state_text.c_str(),
              static_cast<int>(state_text.size()));
   }
 }
 
-void paint_resource_hud(const verdigris::Actor* player, HDC dc) {
+void paint_resource_hud(const verdigris::Actor* player, HDC dc, render::List& rl) {
   if (!player) return;
   constexpr int left = 18;
   constexpr int width = 200;
@@ -1403,6 +1442,7 @@ void paint_resource_hud(const verdigris::Actor* player, HDC dc) {
     SetTextColor(dc, RGB(185, 198, 188));
     const std::string caption = std::string(label) + " " + std::to_string(value) +
                                 "/" + std::to_string(maximum);
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, caption});
     TextOutA(dc, left, y - 15, caption.c_str(), static_cast<int>(caption.size()));
     RECT background{left, y, left + width, y + height};
     HBRUSH back_brush = CreateSolidBrush(RGB(45, 51, 50));
@@ -1428,6 +1468,7 @@ void paint_resource_hud(const verdigris::Actor* player, HDC dc) {
 
 void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   const auto& sim = *state.simulation;
+  render::List rl;
   HBRUSH background = CreateSolidBrush(RGB(23, 29, 32));
   FillRect(dc, &bounds, background);
   DeleteObject(background);
@@ -1438,12 +1479,14 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   const auto& extraction = sim.instance().extraction_point;
   const ScreenPoint pad = project(state.camera, bounds, extraction.x, extraction.y);
   const int pad_r = static_cast<int>(kTileUnits * 0.6 * pad.scale);
+  rl.push_back({render::Op::Extraction, static_cast<double>(pad.x),
+                static_cast<double>(pad.y), static_cast<double>(pad_r)});
   fill_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(41, 62, 88));
   ring_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(88, 132, 190), 2);
 
   // Warnings live on the ground plane beneath billboards and loot so their
   // footprint remains readable without obscuring the actor that owns them.
-  paint_telegraphs(state, dc, bounds);
+  paint_telegraphs(state, dc, bounds, rl);
 
   const verdigris::Actor* player = sim.actor(sim.scion().actor_id);
 
@@ -1490,11 +1533,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     switch (entry.what) {
       case DepthDraw::What::Scenery:
         draw_scenery_item(state.billboards, dc, state.camera, bounds,
-                          state.scenery[entry.index]);
+                          state.scenery[entry.index], rl);
         break;
       case DepthDraw::What::Player: {
         const ScreenPoint base =
             project(state.camera, bounds, player->position.x, player->position.y);
+        rl.push_back({render::Op::Player, static_cast<double>(base.x),
+                      static_cast<double>(base.y)});
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
         if (!draw_billboard_sprite(state.billboards, dc, state.billboards.player, base,
                                    kTileUnits * 1.35, player->facing.x))
@@ -1516,6 +1561,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         const auto& monster = actors[entry.index];
         const ScreenPoint base =
             project(state.camera, bounds, monster.position.x, monster.position.y);
+        rl.push_back({render::Op::Monster, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, monster.stats.life,
+                      monster.elite ? "elite" : "monster"});
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
         const SpriteBitmap& monster_sprite = monster.elite ? state.billboards.boss
                                                             : state.billboards.raider;
@@ -1558,6 +1606,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         const auto& entry_loot = loot[entry.index];
         const ScreenPoint base = project(state.camera, bounds, entry_loot.second.x,
                                          entry_loot.second.y);
+        rl.push_back({render::Op::Drop, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, 0, entry_loot.first});
         draw_contact_shadow(dc, base, kTileUnits * 0.2);
         const int r = std::max(3, static_cast<int>(kTileUnits * 0.16 * base.scale));
         const int lift = static_cast<int>(kTileUnits * 0.28 * base.scale);
@@ -1587,7 +1637,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         break;
       }
       case DepthDraw::What::Effect:
-        draw_effect(dc, state.camera, bounds, state.effects[entry.index]);
+        draw_effect(dc, state.camera, bounds, state.effects[entry.index], rl);
         break;
     }
   }
@@ -1595,9 +1645,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   // The default testbed view is intentionally sparse: only the compact
   // resource bars and three-slot strip remain over the playfield. Diagnostics
   // are still available for driven tests and the architect's F3 inspection.
-  paint_resource_hud(player, dc);
-  paint_skill_strip(state, dc, bounds);
-  paint_gear_overlay(state, dc, bounds);
+  paint_resource_hud(player, dc, rl);
+  paint_skill_strip(state, dc, bounds, rl);
+  paint_gear_overlay(state, dc, bounds, rl);
+  state.render_list = std::move(rl);
   if (state.debug_overlay) {
     SetBkMode(dc, TRANSPARENT);
     SetTextColor(dc, RGB(230, 235, 220));
@@ -1883,6 +1934,243 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
   }
   return DefWindowProc(window, message, wparam, lparam);
 }
+
+// ── D-119 scenario harness ──────────────────────────────────────────────
+// Drives the REAL input→simulation→presentation pipeline with deterministic
+// input scripts and asserts on three layers: authoritative core state, the
+// recorded render list, and the pane/HUD. The interactive window path is
+// untouched; scenarios present into an offscreen memory DC.
+
+int scenario_failures = 0;
+
+void scenario_check(bool ok, const char* label) {
+  if (ok) {
+    std::printf("    ok: %s\n", label);
+  } else {
+    std::printf("    FAIL: %s\n", label);
+    ++scenario_failures;
+  }
+}
+
+void scenario_present(ClientState& state) {
+  constexpr int width = 960;
+  constexpr int height = 600;
+  HDC dc = CreateCompatibleDC(nullptr);
+  HBITMAP bitmap = CreateCompatibleBitmap(dc, width, height);
+  HGDIOBJ old = SelectObject(dc, bitmap);
+  RECT bounds{0, 0, width, height};
+  paint_scene(state, dc, bounds);
+  SelectObject(dc, old);
+  DeleteObject(bitmap);
+  DeleteDC(dc);
+}
+
+void scenario_follow_camera(ClientState& state) {
+  const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
+  if (player) {
+    state.camera.x = static_cast<double>(player->position.x);
+    state.camera.y = static_cast<double>(player->position.y);
+  }
+}
+
+// One full pipeline step: dispatch, ingest events, age effects, follow the
+// camera, and present — the headless equivalent of timer_step + paint.
+void scenario_step(ClientState& state, const verdigris::Command& command) {
+  RECT bounds{0, 0, 960, 600};
+  state.simulation->dispatch(command);
+  ingest_events(state, bounds);
+  for (auto& fx : state.effects) ++fx.age;
+  state.effects.erase(std::remove_if(state.effects.begin(), state.effects.end(),
+                                     [](const EffectFx& fx) { return fx.age >= fx.ttl; }),
+                      state.effects.end());
+  scenario_follow_camera(state);
+  scenario_present(state);
+}
+
+void scenario_begin(ClientState& state) {
+  state.simulation =
+      std::make_unique<verdigris::Simulation>(0xC011AB1EULL, "House Verdigris");
+  state.simulation->dispatch(verdigris::Command::enter("route:tin:1:0"));
+  generate_scenery(state);
+}
+
+std::vector<std::pair<double, double>> scenery_screen_positions(const ClientState& state) {
+  std::vector<std::pair<double, double>> positions;
+  for (const auto& op : state.render_list)
+    if (op.op == render::Op::Scenery) positions.push_back({op.x, op.y});
+  return positions;
+}
+
+int scenario_move_and_camera() {
+  ClientState state;
+  scenario_begin(state);
+  state.camera.x = 0.0;
+  state.camera.y = 0.0;
+  scenario_present(state);
+  const auto baseline = scenery_screen_positions(state);
+  scenario_check(baseline.size() > 3, "move-and-camera: scenery present in render list");
+
+  const int steps[4][2] = {{40, 0}, {0, 40}, {-40, 0}, {0, -40}};
+  for (const auto& step : steps) {
+    state.camera.x = static_cast<double>(step[0]);
+    state.camera.y = static_cast<double>(step[1]);
+    scenario_present(state);
+    const auto moved = scenery_screen_positions(state);
+    if (moved.size() != baseline.size()) {
+      scenario_check(false, "move-and-camera: scenery count stable across camera moves");
+      continue;
+    }
+    const double dx0 = moved[0].first - baseline[0].first;
+    const double dy0 = moved[0].second - baseline[0].second;
+    bool uniform = true;
+    for (std::size_t i = 0; i < moved.size(); ++i) {
+      if (std::abs((moved[i].first - baseline[i].first) - dx0) > 1.0 ||
+          std::abs((moved[i].second - baseline[i].second) - dy0) > 1.0) {
+        uniform = false;
+      }
+    }
+    scenario_check(uniform, "move-and-camera: every scenery entity shifts by one uniform delta");
+    const double expect_x = -static_cast<double>(step[0]) * state.camera.zoom;
+    const double expect_y = -static_cast<double>(step[1]) * state.camera.zoom;
+    scenario_check(std::abs(dx0 - expect_x) <= 1.0 && std::abs(dy0 - expect_y) <= 1.0,
+                   "move-and-camera: uniform delta equals camera shift * zoom");
+  }
+  return 0;
+}
+
+int scenario_first_fight() {
+  ClientState state;
+  scenario_begin(state);
+  for (int i = 0; i < 52; ++i)
+    scenario_step(state, verdigris::Command::move(1, 0));
+
+  bool saw_swing = false, saw_damage = false, saw_death = false, saw_drop = false;
+  for (int i = 0; i < 10 && !saw_death; ++i) {
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
+    saw_swing = saw_swing || render::any(state.render_list, render::Op::Swing);
+    saw_damage = saw_damage || render::any(state.render_list, render::Op::Damage);
+    saw_death = saw_death || render::any(state.render_list, render::Op::Death);
+    saw_drop = saw_drop || render::any(state.render_list, render::Op::Drop);
+  }
+  scenario_check(saw_swing, "first-fight: a swing is drawn");
+  scenario_check(saw_damage, "first-fight: a floating damage number is spawned");
+  scenario_check(saw_death, "first-fight: a death ring is drawn");
+  scenario_check(saw_drop, "first-fight: the drop becomes visible");
+  scenario_check(!render::any(state.render_list, render::Op::Monster),
+                 "first-fight: the dead monster is removed from the render list");
+  return 0;
+}
+
+int scenario_loot_to_bank() {
+  ClientState state;
+  scenario_begin(state);
+  for (int i = 0; i < 52; ++i)
+    scenario_step(state, verdigris::Command::move(1, 0));
+  for (int i = 0; i < 8; ++i)
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
+  scenario_check(render::any(state.render_list, render::Op::Drop),
+                 "loot-to-bank: drop visible before pickup");
+
+  if (!state.simulation->ground_items().empty())
+    scenario_step(state, verdigris::Command::pick_up(state.simulation->ground_items().front().id));
+  if (!state.simulation->ground_trophies().empty())
+    scenario_step(state, verdigris::Command::pick_up(state.simulation->ground_trophies().front().id));
+  const bool has_item = !state.simulation->scion().carried_items.empty();
+  scenario_check(has_item, "loot-to-bank: pickup fills the carried grid");
+
+  state.gear_overlay = true;
+  scenario_present(state);
+  scenario_check(render::any(state.render_list, render::Op::PaneItem),
+                 "loot-to-bank: grid cell rendered in the pane");
+  const render::Item* weapon = render::first(state.render_list, render::Op::PaneWeapon);
+  scenario_check(weapon && weapon->label == "(empty)",
+                 "loot-to-bank: weapon seat empty before equip");
+
+  if (has_item) {
+    scenario_step(state, verdigris::Command::equip(
+                              state.simulation->scion().carried_items.front().id));
+    state.gear_overlay = true;
+    scenario_present(state);
+    weapon = render::first(state.render_list, render::Op::PaneWeapon);
+    scenario_check(weapon && weapon->label != "(empty)",
+                   "loot-to-bank: equip fills the weapon seat");
+    const render::Item* stat = render::first(state.render_list, render::Op::PaneStat);
+    scenario_check(stat && stat->label.find("(+") != std::string::npos,
+                   "loot-to-bank: equipped bonus appears in the stat readout");
+  }
+
+  state.gear_overlay = false;
+  for (int i = 0; i < 52; ++i)
+    scenario_step(state, verdigris::Command::move(-1, 0));
+  scenario_step(state, verdigris::Command::extract());
+  scenario_check(state.simulation->house().stored_items.size() == 1,
+                 "loot-to-bank: extraction banks the item");
+  scenario_check(state.simulation->house().stored_trophies.size() == 1,
+                 "loot-to-bank: extraction banks the trophy");
+
+  state.gear_overlay = true;
+  scenario_present(state);
+  const render::Item* banked = render::first(state.render_list, render::Op::PaneBanked);
+  scenario_check(banked && banked->label.find("items 1") != std::string::npos &&
+                     banked->label.find("trophies 1") != std::string::npos,
+                 "loot-to-bank: banked footer reflects the extraction");
+  return 0;
+}
+
+int scenario_telegraph_dodge() {
+  ClientState state;
+  scenario_begin(state);
+  const auto* before = state.simulation->actor(state.simulation->scion().actor_id);
+  if (!before) return 0;
+  const int start_life = before->stats.life;
+
+  // Spawn an elite at melee range behind the player's initial +x facing so a
+  // single dash carries the player out of the sweep radius before the windup.
+  const int melee = verdigris::world_scale::kMeleeRange;
+  state.simulation->spawn_monster(
+      {before->position.x - melee, before->position.y}, 1, true);
+
+  // The elite's turn schedules a melee-range sweep telegraph.
+  scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+  scenario_check(render::any(state.render_list, render::Op::Telegraph),
+                 "telegraph-dodge: elite telegraph is drawn");
+
+  // Dodge: dash along the facing (away from the elite) and let the windup
+  // resolve across the remaining ticks.
+  scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Dash));
+  for (int i = 0; i < 3; ++i)
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+
+  const auto* after = state.simulation->actor(state.simulation->scion().actor_id);
+  scenario_check(after && after->stats.life == start_life,
+                 "telegraph-dodge: moving out avoids the telegraphed damage");
+  return 0;
+}
+
+int run_scenarios(const std::string& which) {
+  struct Entry {
+    const char* name;
+    int (*fn)();
+  };
+  const Entry entries[] = {
+      {"move-and-camera", scenario_move_and_camera},
+      {"first-fight", scenario_first_fight},
+      {"loot-to-bank", scenario_loot_to_bank},
+      {"telegraph-dodge", scenario_telegraph_dodge},
+  };
+  int total_failures = 0;
+  for (const auto& entry : entries) {
+    if (which != "all" && which != entry.name) continue;
+    scenario_failures = 0;
+    std::printf("== scenario %s ==\n", entry.name);
+    entry.fn();
+    total_failures += scenario_failures;
+    std::printf("   %s (%d failures)\n", scenario_failures == 0 ? "PASS" : "FAIL",
+                scenario_failures);
+  }
+  return total_failures;
+}
+
 }  // namespace
 
 int run_headless_demo() {
@@ -1911,8 +2199,11 @@ int run_headless_demo() {
 // A standard main() keeps the console subsystem so --headless output reaches
 // stdout; the interactive window is created explicitly from the module handle.
 int main(int argc, char** argv) {
-  for (int i = 1; i < argc; ++i)
+  for (int i = 1; i < argc; ++i) {
     if (std::strcmp(argv[i], "--headless") == 0) return run_headless_demo();
+    if (std::strcmp(argv[i], "--scenario") == 0 && i + 1 < argc)
+      return run_scenarios(argv[i + 1]);
+  }
   HINSTANCE instance = GetModuleHandle(nullptr);
   auto state = std::make_unique<ClientState>();
   state->simulation = std::make_unique<verdigris::Simulation>(0xC011AB1EULL, "House Verdigris");

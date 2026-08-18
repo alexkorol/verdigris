@@ -1,6 +1,7 @@
 param(
   [switch]$RunTests,
-  [switch]$RunClient
+  [switch]$RunClient,
+  [switch]$RunClientScenarios
 )
 
 $ErrorActionPreference = "Stop"
@@ -108,3 +109,4 @@ if ($RunTests) { & $testExe }
 if ($RunTests) { & $networkingTestExe }
 if ($RunTests) { & $camera2dTestExe }
 if ($RunClient) { & $clientExe --headless }
+if ($RunClientScenarios) { & $clientExe --scenario all }

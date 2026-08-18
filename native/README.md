@@ -63,3 +63,34 @@ create House
 → return to the extraction point
 → extract durable House value
 ~~~
+
+## Scenario harness (D-119)
+
+The client has an automated, headless scenario runner that drives the real
+input→simulation→presentation pipeline and asserts on three layers:
+authoritative core state, the recorded render list (`render_list.hpp`), and
+pane/HUD state.
+
+~~~powershell
+./native/build.ps1 -RunClientScenarios   # build + run all scenarios
+native/build/verdigris_client.exe --scenario first-fight   # one scenario
+~~~
+
+Every future client wave must add its own scenario. To add one:
+
+1. In `native/client/main.cpp`, write `int scenario_<name>()` that:
+   - calls `scenario_begin(state)` (enters the seeded route and builds
+     scenery), then drives commands with `scenario_step(state, Command::…)`
+     (dispatch → ingest events → age effects → follow camera → present);
+   - asserts with `scenario_check(condition, "label")` against
+     `state.simulation->…` (core), `state.render_list` (`render::any` /
+     `render::first` / `render::count`), and `state.render_list` Pane*/Hud
+     ops (pane/HUD).
+2. Register it in `run_scenarios`'s `entries` table.
+3. Add a `render::Op` in `native/client/render_list.hpp` if the wave
+   introduces a new draw class, and record it in the matching draw function
+   in `main.cpp` (recording must live next to the draw so a suppressed draw
+   is caught by the scenario).
+
+The runner exits non-zero on any `scenario_check` failure.
+
