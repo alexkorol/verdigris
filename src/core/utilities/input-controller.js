@@ -1,14 +1,12 @@
 import {
   MOVEMENT_BINDINGS,
   DIAGONAL_BINDINGS,
-  SKILL_BINDINGS,
   MOVEMENT_REPEAT,
+  MOUSE_BUTTON_TO_BINDING,
+  normaliseBinding,
+  skillBindings,
+  subscribeBindings,
 } from '../config/controls.js';
-
-const NORMALISED_SPECIAL_KEYS = {
-  space: ' ',
-  spacebar: ' ',
-};
 
 const MOVEMENT_KEYS = new Set(
   Object.values(MOVEMENT_BINDINGS)
@@ -16,39 +14,50 @@ const MOVEMENT_KEYS = new Set(
     .map((key) => key.toLowerCase()),
 );
 
-const SKILL_KEY_LOOKUP = SKILL_BINDINGS.reduce((acc, binding) => {
-  binding.keys.forEach((key) => {
-    acc.set(key.toLowerCase(), binding);
-  });
-  return acc;
-}, new Map());
-
 class InputController {
   constructor(options = {}) {
     this.onMove = options.onMove || null;
     this.onStop = options.onStop || null;
     this.onSkill = options.onSkill || null;
+    // Tests may inject a fixed binding table; production reads the live,
+    // rebindable map from config/controls.js and follows rebinds instantly.
+    this.fixedBindings = Array.isArray(options.bindings) ? options.bindings : null;
 
     this.pressedKeys = new Set();
     this.activeDirection = null;
     this.repeatTimeout = null;
     this.nextRepeatAt = null;
+
+    this.rebuildSkillLookup();
+    this.unsubscribeBindings = this.fixedBindings
+      ? null
+      : subscribeBindings(() => this.rebuildSkillLookup());
   }
 
   destroy() {
     this.clearRepeat();
     this.pressedKeys.clear();
+    if (typeof this.unsubscribeBindings === 'function') {
+      this.unsubscribeBindings();
+      this.unsubscribeBindings = null;
+    }
+  }
+
+  rebuildSkillLookup() {
+    const bindings = this.fixedBindings || skillBindings();
+    this.skillLookup = bindings.reduce((acc, binding) => {
+      (binding.keys || []).forEach((key) => {
+        const value = normaliseBinding(key);
+        if (value && !acc.has(value)) {
+          acc.set(value, binding);
+        }
+      });
+      return acc;
+    }, new Map());
   }
 
   normaliseKey(rawKey) {
-    if (!rawKey) {
-      return '';
-    }
-    const lower = rawKey.toLowerCase();
-    if (NORMALISED_SPECIAL_KEYS[lower] !== undefined) {
-      return NORMALISED_SPECIAL_KEYS[lower];
-    }
-    return lower;
+    return normaliseBinding(rawKey);
   }
 
   handleKeyDown(event) {
@@ -108,7 +117,19 @@ class InputController {
   }
 
   getSkillBinding(key) {
-    return SKILL_KEY_LOOKUP.get(key) || null;
+    return this.skillLookup.get(key) || null;
+  }
+
+  /**
+   * Resolve a DOM mouse button index (0 = LMB, 2 = RMB) to the skill binding
+   * the player has mapped to it, or null when the button is unbound.
+   */
+  getMouseBinding(button) {
+    const pseudoKey = MOUSE_BUTTON_TO_BINDING[button];
+    if (!pseudoKey) {
+      return null;
+    }
+    return this.getSkillBinding(pseudoKey);
   }
 
   updateMovement(initialTrigger = false) {

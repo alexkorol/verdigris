@@ -1,4 +1,4 @@
-# TASK-0038 REPORT — LMB/RMB attacks + key/mouse rebinding UI
+﻿# TASK-0038 REPORT — LMB/RMB attacks + key/mouse rebinding UI
 
 ## Executive summary
 

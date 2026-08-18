@@ -1,4 +1,4 @@
-# Kimi Code K3 — re-entry after reset (2026-08-17 morning)
+﻿# Kimi Code K3 â€” re-entry after reset (2026-08-17 morning)
 
 You are coordinator `kimi`. Your prior clone:
 `C:\Users\Alex\Documents\Kimi\verdigris` (if missing, clone
@@ -10,12 +10,13 @@ DECISIONS.md (D-106..D-116 are owner canon), ARCHITECT_STATE.md (board
 nudge near the end).
 
 Claimable now (state READY, no STATUS.md; first-STATUS-write-wins,
-coordinator: kimi): TASK-0044 (C++ parity wave N2 — critical; your 0019
+coordinator: kimi): CLAIMABLE NOW (2026-08-18 refresh): TASK-0042 first-loot (RELEASED), TASK-0049 first-session UI wave, TASK-0050 native client C1 (critical), TASK-0051 native client harness. Pull latest before claiming - board moved a lot.
 survey skills fit the protocol-contract reading), TASK-0038 (rebinding
 UI), TASK-0042 (first-loot moment). Note TASK-0043 is claimed by codex.
 
 Evidence rules now binding: REAL screenshots for anything UI, literal
 command transcripts for gates, diff your branch against the CURRENT
 program tip before requesting review (stale-base reverts are a named
-failure class). Loop: claim → implement → verify → report → push →
+failure class). Loop: claim â†’ implement â†’ verify â†’ report â†’ push â†’
 next. Never merge pre-acceptance; never push master.
+

@@ -23,6 +23,10 @@ Coordinator rerun: 2026-08-17 12:43 local time on coordinator tip
 passed** in 3.78 seconds; raw command evidence is preserved in
 [`captures/coordinator-wizard-seams-2026-08-17.txt`](captures/coordinator-wizard-seams-2026-08-17.txt).
 
+Fresh architect-tip rerun: 2026-08-18 on Fable tip `1244b5bf`. The same
+command completed with **10 files passed, 73 tests passed** in 3.11 seconds.
+This confirms the WIZARD mesh evidence survived the TASK-0048 integration.
+
 Coverage mapping:
 
 - Orbs: `hud-orb-ui` (8) and `rendering-wizard-orb` (2).

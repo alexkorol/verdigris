@@ -496,3 +496,93 @@ stub, graduates drops to real items, 13/13 attach bar. 0046 REVISE
 stands (re-request added no arcs). In flight: 0038 kimi-work, 0042
 kimi. Reviewer ops note: stop detached review servers via the task
 runner (TaskStop), not process kills.
+
+## EVENING SWEEP (2026-08-17 ~18:50)
+
+- 0038 ACCEPTED + SHIPPED (PR #18, master d687e004): LMB/RMB attacks +
+  six-action rebinding UI with persistence. Architect verified real
+  captures + WS frame log, reran unit 788/788 + playtest 31/31.
+- 0046 rev2 ACCEPTED: two played arcs with per-arc wire proofs + full
+  disposition table. Supersedes 0034 as the "playable" definition.
+  Key: guest loop WORKS (3 kills, XP, gold); B2 zone-bounce FIXED.
+- NEW CRITICAL: TASK-0048 Chronicles silent combat (mortal-oath scion
+  cannot connect a single hit; guest path fine on same build). Specs
+  a real-path diagnosis + a Chronicles-login playtest scenario.
+- 0047 N4 items/inventory CLAIMED by kimi-work (base 05c3f46).
+- Board: 0048 open (codex free - claim it), 0042 in flight (kimi),
+  0047 in flight (kimi-work). UI backlog queued from 0046 SURVIVES
+  items (House HUD identity, ticker, zone preview, tree first-alloc).
+
+## COORDINATION NOTE - stop mirroring task evidence (2026-08-17 ~19:20)
+
+codex: your program-branch "mirror"/"materialize"/"reconcile" commits
+duplicate other coordinators' STATUS/REPORT/captures and have now
+caused three consecutive merge-conflict rounds (one baked conflict
+markers into history). New rule: task evidence lives ONLY on the
+task's worker branch and in the task folder committed by ITS OWN
+coordinator. Do not copy another task's files onto the program branch;
+the architect merges worker branches at acceptance. Board-level notes
+go in your own STATUS files or new files, never edits to files another
+writer owns (PROTOCOL single-writer rule).
+
+## 0048 ACCEPTED (2026-08-17 ~19:55) + WATCH ITEM
+
+Chronicles "silent combat" DISPROVEN with wire evidence: the 0046
+driver attacked from ~10 tiles out of contact. New standing scenario
+chronicles-first-combat (suite now 32); architect verified 1/1, 3/3
+sequenced, 32/32 full. Rulings: future arc drivers must verify target
+contact before claiming combat silence; mana rejection copy to become
+directive (amount+cadence, no balance change) - queued for UI wave.
+
+WATCH: at >=150ms ambient lag, first-goal (8s authored deadline) and
+house-treasury (carried-gold assert) can still flake in full runs;
+both pass in sequence at low lag. If seen twice more, spawn a
+follow-up harness task targeting those two specifically.
+
+## ORCHESTRATION PAUSED (2026-08-17 ~20:40, owner directive)
+
+The owner has paused the loop (codex tokens exhausted). Architect
+reviews resume when the owner restarts the session. Coordinators still
+active: finish and push your current work with STATUS updates; nothing
+will be reviewed or integrated until resume. Board at pause: 0047 N4
+in flight (kimi-work), 0042 RELEASED/claimable, 0049 UI wave READY.
+Master 1244b5bf: N1-N3 C++ parity, 32-scenario suite, LMB/RMB +
+rebinding all shipped today.
+
+## ORCHESTRATION RESUMED (2026-08-18, owner directive) + COURSE CORRECTION
+
+Owner verdict on 36h of work: server parity solid but the VISIBLE
+surface lagged badly. Rulings now in canon: D-117 (client-visible
+increment every wave; architect PLAYS the exe at native acceptances),
+D-118 (native client goes 2D top-down NOW; correct 2.5D returns later
+modeled on the webchat-Fable demo), D-119 (native client harness -
+scripted pipeline scenarios gate every client change).
+
+Fleet: deepseek ACTIVE ($10 credits - use them well; brief at
+REENTRY-DEEPSEEK.md), kimi K3 restarting (REENTRY-KIMI-CODE.md
+refreshed), kimi-work mid-0047 (N4 items). Codex out of tokens.
+
+Board: 0050 native client C1 (CRITICAL - top owner value), 0051 client
+harness (high), 0049 UI wave (high), 0042 first-loot (released,
+claimable). 0047 N4 in flight. Review bar unchanged; for 0050/0051 the
+architect additionally plays the build.
+
+## FLEET BUDGET (owner data, 2026-08-18 ~12:10)
+
+Kimi Allegretto plan: monthly total 77.38% consumed (resets 08-23);
+Code share of today: 15.2% of the 5h window, 3.04% of 7-day - rolling
+windows are healthy, the MONTHLY pool is the constraint (~1/5 left for
+Code, 5 days to reset). Routing rule: Kimi K3 gets tightly-scoped
+scaffolded execution only (D-120 minimizes its burn); DeepSeek ($10
+credits) takes design-heavy work; architect scaffolds harder if either
+pool nears empty. Open question: does KimiWork K3 share this quota?
+
+## FLEET BUDGET addendum - DeepSeek economics (owner data, 2026-08-18)
+
+DeepSeek burn: ~$1.05 / 29.2M tokens / 293 requests for the 0049
+session so far; balance $9.49 => ~9 more task-sessions. V4-Pro
+off-peak (Beijing) pricing is half of peak and overlaps US daytime.
+Routing updated: DeepSeek = primary implementation workhorse
+(including 0050 native client when free); Kimi K3 = scoped scaffolded
+execution (protect the ~1/5 remaining monthly pool); kimi-work =
+finish 0047.

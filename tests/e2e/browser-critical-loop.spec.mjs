@@ -154,8 +154,8 @@ test('the built game supports the browser-critical guest loop', async ({ page })
   await expect(minimap).toBeVisible();
   const skillBar = page.getByRole('navigation', { name: 'Skill bar' });
   await expect(skillBar.locator('.quickbar__icon')).toHaveCount(6);
-  await expect(skillBar.getByRole('button', { name: /Bronze Arc \[Space \/ 1\]/ })).toBeVisible();
-  await expect(skillBar.getByRole('button', { name: /Cinder Fan \[Q \/ 3\]/ })).toBeVisible();
+  await expect(skillBar.getByRole('button', { name: /Bronze Arc \[LMB \/ 1\]/ })).toBeVisible();
+  await expect(skillBar.getByRole('button', { name: /Cinder Fan \[RMB \/ 3\]/ })).toBeVisible();
 
   // GitHub's headless browser renders the real canvas in software. Select the
   // game's lowest supported frame-rate cap through the visible settings UI so
@@ -187,8 +187,11 @@ test('the built game supports the browser-critical guest loop', async ({ page })
   if (!canvasBounds) {
     throw new Error('Game canvas has no clickable bounds.');
   }
+  // Plain RMB is the weapon-skill attack (D-007); the context menu moved to
+  // Shift+RMB.
   await canvas.click({
     button: 'right',
+    modifiers: ['Shift'],
     position: {
       x: Math.round(canvasBounds.width * 0.55),
       y: Math.round(canvasBounds.height * 0.55),

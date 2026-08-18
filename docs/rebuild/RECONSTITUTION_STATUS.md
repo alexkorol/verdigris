@@ -60,21 +60,51 @@ outside production until the owner resolves asset provenance/packaging.
   [`coordinator-native-attach-2026-08-17.txt`](../../orchestration/tasks/TASK-0044-native-protocol-n2/captures/coordinator-native-attach-2026-08-17.txt).
   The JS/native contract comparison and intentional N2 population stub are
   recorded in [`coordinator-dual-run-matrix-2026-08-17.txt`](../../orchestration/tasks/TASK-0044-native-protocol-n2/captures/coordinator-dual-run-matrix-2026-08-17.txt).
-- TASK‑0038 controls/rebinding: implementation is available on
-  `4a8983cb`; unit (123/791), build, and lint gates pass, but smoke still
-  expects the pre-rebind `Space / 1` and unmodified right-click contract.
-  Ownership expansion, updated browser expectations, and pointer/reload
-  captures are still required before review handoff. TASK‑0042 first-loot
-  remains `BLOCKED` on its documented ownership seam.
-- TASK‑0045 native protocol N3 combat/skills: `REVIEW_REQUESTED` at
-  `6d39565c` on post-N2 tip `ca0dd2df`. Native gates, unchanged 7-scenario
-  attach, unit coverage, and authentic negative are captured; architect
-  rebuild/acceptance is pending.
-- TASK‑0046 playability re-evaluation: `REVIEW_REQUESTED` at `1de6e45b` on
-  current tip `45846af7`. The report records the bounded guest checkpoint and
-  page-context socket proof, but explicitly does not claim the two full arcs.
+- TASK‑0038 controls/rebinding: `INTEGRATED` at `2c0a00c3` from accepted
+  candidate `c73fff1`; Fable verified the rendered pointer/rebind captures,
+  WS frame log, unit 788/788, smoke 1/1, and playtest 31/31. Shift+RMB keeps
+  the legacy context menu available. TASK‑0042 first-loot remains `BLOCKED`
+  on its documented ownership seam.
+- TASK‑0045 native protocol N3 combat/skills: architect-accepted and integrated
+  at `c49f8c51`/master PR #17 (`86688c1f`), with the review handoff at `6d39565c`.
+  Native gates and unchanged 7-scenario attach are green; N4 is now the next
+  native parity wave.
+- TASK‑0046 playability re-evaluation: `REVIEW_REQUESTED` at worker evidence
+  commit `ec42e843` (worker candidate `1de6e45b`) on current tip `45846af7`.
+  Coordinator completed both approximately ten-minute arcs with headless
+  Playwright and same-owned-server correlation; guest combat is improved,
+  while the mortal-oath opener remains mechanically silent. The corrected
+  evidence is published. Fable's latest architect state records rev2
+  acceptance, but the separate REVIEW.md still contains the older REVISE text;
+  protocol reconciliation is pending before the coordinator changes lifecycle.
+- TASK‑0047 native protocol N4 items/inventory/Vesselforge: `CLAIMED` by
+  Kimi Work on `codex/TASK-0047-native-n4-kimiwork` at `d1e30e2b`, based on
+  the N3-integrated program line. The unchanged 13-scenario attach,
+  item/inventory unit coverage, and authentic-negative transcript remain the
+  required handoff gates; no implementation or acceptance is claimed yet.
+- TASK‑0048 Chronicles silent combat: architect `ACCEPTED` at `d0e60e5e`,
+  integrated at `edc9c794` (worker `810ddd924`). Real WebSocket and rendered
+  browser evidence disproved the accepted silent-combat diagnosis: the
+  baseline driver never reached the active opener, while the mortal-oath
+  regression scenario and rendered first-kill capture both pass. No
+  speculative gameplay patch or mana retune was made; future drivers must
+  verify authoritative target contact before attributing combat silence.
 
 ## Current coordinator gates
+
+- Fresh architect-tip health check at `1244b5bf` (Fable's accepted TASK-0048
+  merge): native `build.ps1 -RunTests` passed denylist/core/networking tests;
+  browser `npm run test:unit` passed 123 files / 788 tests. Warnings were the
+  existing MSVC deprecations and test-only logging; no gate failed.
+
+- Fresh detached audit of architect tip `915f226a7` with normal dependencies:
+  native `build.ps1 -RunTests` PASS; browser unit `npm run test:unit` PASS
+  (123 files / 788 tests); focused recovery rerun (`first-goal`,
+  `house-treasury`, `mortality`, `party-stories`, `persistence`, `quest`,
+  `respawn`, `session-arc`) PASS 8/8. A sequential all-scenarios run first
+  reported 16/31 after a `first-goal` timeout and subsequent server cascade;
+  the focused rerun cleared all eight without source changes, so this is
+  recorded as harness/environment variance rather than a product regression.
 
 - Browser unit suite: 122 files / 779 tests passed.
 - A dependency-complete current-tip browser health run at `a62951e4` repeated
@@ -119,16 +149,16 @@ outside production until the owner resolves asset provenance/packaging.
 
 ## Next authorized actions
 
-1. Fable issues the next READY N3 native spec, carrying the accepted N2 stub
-   inventory and the authority bridge decision.
-2. Fable answers
-   [`QUESTION-0009`](../../orchestration/questions/QUESTION-0009-native-n3-authority-bridge.md)
-   and issues the READY N3 task/spec before native combat implementation.
-3. Integrate only accepted commits; preserve coordinator-owned metadata during
+1. Monitor TASK‑0047's N4 implementation and independently validate its
+   13-scenario attach and D-106 item recoverability evidence.
+2. Obtain Fable's re-review of the newly published TASK‑0046 two-arc evidence.
+3. Preserve the accepted TASK‑0048 regression scenario and carry its contact
+   precondition into future combat evidence.
+4. Integrate only accepted commits; preserve coordinator-owned metadata during
    the known TASK‑0044 `STATUS.md` add/add merge conflict.
-4. Resolve QUESTION‑0007 and QUESTION‑0008 with the owner before implementing
+5. Resolve QUESTION‑0007 and QUESTION‑0008 with the owner before implementing
    the blocked first-loot and control-rebinding seams.
-5. Keep complete magic, production asset provenance, seasonal inheritance, and
+6. Keep complete magic, production asset provenance, seasonal inheritance, and
    economy scope behind their documented owner decisions.
 
 The N3 handoff is now explicit in

@@ -71,6 +71,7 @@ import emberVolleyIcon from '@/assets/skills/ember-volley.webp';
 import frostNovaIcon from '@/assets/skills/frost-nova.webp';
 import phantomStepIcon from '@/assets/skills/phantom-step.webp';
 import stoneguardIcon from '@/assets/skills/stoneguard.webp';
+import { primaryBindingLabel, subscribeBindings } from '../../core/config/controls.js';
 
 const SKILL_ICONS = {
   'blade-sweep': bladeSweepIcon,
@@ -79,15 +80,6 @@ const SKILL_ICONS = {
   'frost-nova': frostNovaIcon,
   'phantom-step': phantomStepIcon,
   stoneguard: stoneguardIcon,
-};
-
-const DISPLAY_HOTKEYS = {
-  'primary-attack': 'Space',
-  dash: 'Shift',
-  'ability-1': 'Q',
-  'ability-2': 'E',
-  'ability-3': 'R',
-  'ability-4': 'F',
 };
 
 const SKILL_ACCENTS = {
@@ -119,6 +111,9 @@ export default {
     return {
       now: Date.now(),
       timerId: null,
+      // Bumped whenever the player rebinds controls so hotkey labels
+      // re-render with the live bindings (TASK-0038).
+      bindingsVersion: 0,
     };
   },
   computed: {
@@ -140,8 +135,17 @@ export default {
       },
     },
   },
+  created() {
+    this.unsubscribeBindings = subscribeBindings(() => {
+      this.bindingsVersion += 1;
+    });
+  },
   beforeUnmount() {
     this.stopTicking();
+    if (typeof this.unsubscribeBindings === 'function') {
+      this.unsubscribeBindings();
+      this.unsubscribeBindings = null;
+    }
   },
   methods: {
     skillIcon(slot) {
@@ -151,7 +155,10 @@ export default {
       return SKILL_ACCENTS[slot?.skill?.category] || '#9a825b';
     },
     displayHotkey(slot) {
-      return DISPLAY_HOTKEYS[slot?.skillId] || slot?.hotkey || '';
+      // Live binding labels (TASK-0038): the skill bar mirrors whatever the
+      // player currently has bound, including the mouse buttons.
+      void this.bindingsVersion;
+      return primaryBindingLabel(slot?.skillId) || slot?.hotkey || '';
     },
     cooldownSeconds(slot) {
       return slot && slot.skill && Number.isFinite(slot.skill.cooldown) ? slot.skill.cooldown : 0;

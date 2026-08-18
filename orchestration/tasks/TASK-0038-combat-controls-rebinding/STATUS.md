@@ -1,4 +1,4 @@
----
+﻿---
 task: TASK-0038
 state: REVIEW_REQUESTED
 coordinator: kimi-work
@@ -14,3 +14,6 @@ known_risks: context menu moved to Shift+RMB (documented in REPORT deviations); 
 dependencies: TASK-0037 INTEGRATED (verified on program branch)
 architect_review_required: true
 ---
+
+# Merge note (architect): kimi-work versions kept; codex's released
+# BLOCKED record superseded per the collision ruling in program history.

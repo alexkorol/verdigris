@@ -1,4 +1,4 @@
-TASK-0046 coordinator build checkpoint
+﻿TASK-0046 coordinator build checkpoint
 Date: 2026-08-18
 Base: 45846af7 (current program tip at claim)
 Worktree: .codex/worktrees/TASK-0046-playability-reevaluation
@@ -11,3 +11,4 @@ Warnings were the existing browserslist/baseline-data, Sass legacy API, and
 large-chunk notices; no build error occurred. No product files were edited.
 The required two-arc playability evaluation and window.ws.url proofs remain
 outstanding.
+
