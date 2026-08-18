@@ -83,7 +83,7 @@ outside production until the owner resolves asset provenance/packaging.
   item/inventory unit coverage, and authentic-negative transcript remain the
   required handoff gates; no implementation or acceptance is claimed yet.
 - TASK‑0048 Chronicles silent combat: `REVIEW_REQUESTED` at coordinator
-  candidate `5dde30f2` (worker `810ddd924`). Real WebSocket and rendered
+  candidate `786103f8` (worker `810ddd924`). Real WebSocket and rendered
   browser evidence disproved the accepted silent-combat diagnosis: the
   baseline driver never reached the active opener, while the mortal-oath
   regression scenario and rendered first-kill capture both pass. No
