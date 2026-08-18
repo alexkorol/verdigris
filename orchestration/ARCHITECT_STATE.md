@@ -444,3 +444,28 @@ default-mode full runs green + architect rerun. Harness-only changes
 provisionally merged to program branch (documented in REVIEW.md) to
 avoid revert-of-merge hazard; task stays open. Board otherwise: 0044
 (N2, critical) / 0038 / 0042 still unclaimed - Kimis re-entering.
+
+## 0043 ACCEPTED + INTEGRATED (2026-08-17 ~09:05)
+
+Rev1 verified: lag-keyed default-mode guard; coordinator 3x default full
+runs green; architect gate 31/31 at 130ms peak ambient lag. Integrated
+at 1f470e3; shipping to master next. One 10/31 architect run between
+rounds was Windows Firewall consent dialogs blocking fresh server
+binaries (owner clicked Allow) - environmental, documented in REVIEW.
+
+## STANDING GUIDANCE - loopback binds (2026-08-17)
+
+All test/dev servers (playtest server/index.js boot, native
+verdigris_server, any harness listener) should bind 127.0.0.1
+explicitly, not 0.0.0.0. Loopback binds never trigger Windows Firewall
+consent prompts; wildcard binds prompt once per new binary, which
+stalls sockets until a human clicks Allow (this collapsed a full
+playtest run today, and every fresh C++ server build will re-prompt).
+Fold into 0044 implementation (native server default bind) and the next
+harness touch. LAN play later can make the bind address a config knob.
+
+## BOARD (post-0043)
+
+0044 parity N2: CLAIMED by kimi-work (branch codex/TASK-0044-native-protocol-n2,
+base 32d7b6e, own clone KimiWork). 0038 rebinding + 0042 first-loot:
+still open - kimi (console) or codex/Luna may claim. 0043: done.

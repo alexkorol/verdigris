@@ -60,6 +60,28 @@ hazard at re-integration. The TASK remains open in REVISE: revision
 commits land on the same worker branch and will merge cleanly on top.
 This does not change the acceptance bar above.
 
+# Final verdict: ACCEPTED (revision 1 verified, 2026-08-17 ~09:05)
+
+Commit `bf598d82`/`7990c5e` closes the gap exactly as specified: the
+adaptive guard now keys off max(p99, max) observed event-loop lag in
+default mode, authored deadlines stay the floor, 1.75× cap intact,
+assertions untouched. Coordinator evidence: three consecutive
+default-mode full runs 31/31 under two CPU spinners (max lag
+94–110ms). Architect gate: my own default-mode full run at the merged
+tip passed **31/31 with maxEventLoopLagMs 130.48** — heavier ambient
+contention than the run that originally flaked, and session-arc passed
+in 10.2s.
+
+Incident note for the record: one architect run between review rounds
+collapsed 10/31 with a mid-suite connection-death signature. Root cause
+was environmental — Windows Firewall consent dialogs were pending on
+the freshly-spawned server binaries, blocking sockets until the owner
+clicked Allow (~a dozen dialogs). Not a harness defect. Follow-up
+guidance issued: playtest and native servers should bind 127.0.0.1
+explicitly so loopback runs never trigger firewall prompts.
+
+Integrated at program-branch merge `1f470e3`.
+
 ## What is correct (keep)
 
 The load-method honesty, the per-run transcript format, the authentic
