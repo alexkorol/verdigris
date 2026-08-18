@@ -75,8 +75,9 @@ outside production until the owner resolves asset provenance/packaging.
   Coordinator completed both approximately ten-minute arcs with headless
   Playwright and same-owned-server correlation; guest combat is improved,
   while the mortal-oath opener remains mechanically silent. The corrected
-  evidence is now published for Fable's re-review; architect acceptance is
-  still pending.
+  evidence is published. Fable's latest architect state records rev2
+  acceptance, but the separate REVIEW.md still contains the older REVISE text;
+  protocol reconciliation is pending before the coordinator changes lifecycle.
 - TASK‑0047 native protocol N4 items/inventory/Vesselforge: `CLAIMED` by
   Kimi Work on `codex/TASK-0047-native-n4-kimiwork` at `d1e30e2b`, based on
   the N3-integrated program line. The unchanged 13-scenario attach,
