@@ -1,7 +1,9 @@
 #pragma once
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
+#include <map>
 #include <optional>
 #include <string>
 #include <vector>
@@ -400,6 +402,280 @@ std::vector<std::uint8_t> snapshot(const Simulation& simulation);
 Simulation restore(const std::vector<std::uint8_t>& bytes);
 
 // ────────────────────────────────────────────────────────────────────────────
+// Parity wave N4: items, inventory, and Vesselforge data rules.
+//
+// These types mirror the browser server's item pipeline:
+//  - server/core/items/vesselforge/engine.js + verdigris-pack.js (the seeded
+//    Vesselforge generator, brand tables, tooltip + combat derivation)
+//  - server/core/items/factory.js (catalogue -> instance, vessel attach)
+//  - server/shared/inventory-footprints.js (12x7 grid, footprint resolution)
+//  - server/shared/wear-slots.js + server/core/utilities/wear.js (equip seats,
+//    combat totals)
+//  - server/core/combat/loot.js (kill drops, Wealthy boost, loot tiles)
+// All rules live here; the networking layer only maps envelopes.
+// ────────────────────────────────────────────────────────────────────────────
+
+// mulberry32 exactly as engine.js/dev.js speak it (uint32 wraparound, /2^32).
+class Mulberry32 {
+ public:
+  explicit Mulberry32(std::uint32_t seed = 0) : state_(seed) {}
+  double next();
+  int rint(int min, int max) { return min + static_cast<int>(std::floor(next() * (max - min + 1))); }
+
+ private:
+  std::uint32_t state_;
+};
+
+struct VesselBrand {
+  std::string id;
+  std::string mod_id;
+  int tier = 1;
+  int value = 0;
+};
+
+struct VesselItem {
+  std::string id;
+  std::string form_id;
+  std::string material_id;
+  std::string kind;
+  int w = 1;
+  int h = 1;
+  int ilvl = 10;
+  int vessel = 0;
+  int scars = 0;
+  int patience = 0;
+  int patience_max = 0;
+  std::vector<VesselBrand> brands;
+  std::string epithet_name;
+};
+
+struct TooltipLine {
+  std::string section;
+  std::string text;
+  std::string tone = "normal";
+};
+
+struct ChannelRatings {
+  int stab = 0;
+  int slash = 0;
+  int crush = 0;
+  int range = 0;
+};
+
+struct CombatModifiers {
+  int block_chance = 0;
+  int critical_chance = 0;
+  int goods_found = 0;
+  int damage_against_beasts = 0;
+};
+
+struct VesselCombat {
+  ChannelRatings attack;
+  ChannelRatings defense;
+  CombatModifiers modifiers;
+  bool has_attributes = false;
+  int attributes = 0;
+  int resource_health = 0;
+  int resource_mana = 0;
+};
+
+struct VesselBlock {
+  VesselItem item;
+  std::string pack_id = "verdigris-1";
+  std::string material;
+  int material_tier = 1;
+  std::string form;
+  std::string display_name;
+  std::vector<TooltipLine> lines;
+  VesselCombat combat;
+};
+
+// The seeded Vesselforge rules (engine.js createForge + adapter.js
+// createVesselBlock/refreshVesselBlock/deriveVesselCombat). One instance per
+// session, matching the JS module-level singleton: generation reseeds from
+// the caller's rng; sear() advances the persistent stream.
+class VesselForge {
+ public:
+  VesselForge();
+
+  void reseed(std::uint32_t seed) { rand_ = Mulberry32(seed); }
+  Mulberry32& rand() { return rand_; }
+  // engine.js generateItem with explicit formId (+ optional materialId).
+  VesselItem generate_item(int ilvl, const std::string& form_id,
+                           const std::string& material_id = "");
+  // engine.js sear: spend 1 patience, roll + append a brand. False when the
+  // vessel cannot take another brand.
+  bool sear(VesselItem& item);
+  // adapter.js honest tooltip (dormant marking for inactive lines).
+  std::vector<TooltipLine> tooltip(const VesselItem& item) const;
+  // adapter.js deriveVesselCombat.
+  VesselCombat derive_combat(const VesselItem& item) const;
+  // adapter.js refreshVesselBlock: packId/material/form/displayName/lines/combat.
+  VesselBlock make_block(const VesselItem& item) const;
+
+ private:
+  struct WeightedEntry {
+    std::string id;
+    double weight = 0;
+  };
+  std::string gen_id();
+  std::vector<WeightedEntry> brand_pool(const VesselItem& item) const;
+  bool roll_brand(VesselItem& item, VesselBrand* out);
+
+  Mulberry32 rand_;
+  std::uint64_t id_counter_ = 0;
+};
+
+// Catalogue row (server/core/data/items/*): the curated bases the N4
+// scenarios touch plus the 13 Vesselforge-native vessel-* entries.
+struct ItemDef {
+  std::string id;
+  std::string name;
+  std::string type;  // weapon, armor, jewelry, currency
+  std::string slot;  // base equip slot ("" = not equippable)
+  bool stackable = false;
+  bool two_handed = false;
+  ChannelRatings attack;
+  ChannelRatings defense;
+  int size_w = 0;  // 0 = derive via the footprint rules
+  int size_h = 0;
+  std::string vessel_form;      // vesselForm / vesselforge.formId hint
+  std::string vessel_material;  // vesselMaterial hint ("" = roll from pool)
+};
+
+const ItemDef* item_def(const std::string& id);
+// loot.js GEAR_DROP_POOL order.
+const std::vector<std::string>& gear_drop_pool();
+
+struct ItemSize {
+  int width = 1;
+  int height = 1;
+};
+
+// inventory-footprints.js resolveItemSize (explicit size first, then the
+// weapon/armour id rules, then equipment-slot defaults).
+ItemSize resolve_item_size(const ItemDef& def, const VesselBlock* vessel);
+
+// A live item instance (factory.js createFromBase output shape).
+struct GameItem {
+  std::string id;
+  std::string uuid;
+  std::string name;
+  std::string display_name;
+  int qty = 1;
+  int slot = -1;  // backpack cell index; -1 outside the backpack grid
+  ItemSize size;
+  bool stackable = false;
+  bool two_handed = false;
+  std::string equip_slot;
+  ChannelRatings attack;
+  ChannelRatings defense;
+  CombatModifiers combat_bonuses;
+  int bonus_health = 0;
+  int bonus_mana = 0;
+  int bonus_attributes = 0;
+  std::optional<VesselBlock> vessel;
+  std::string bound_to;
+
+  int item_level() const { return vessel ? vessel->item.ilvl : 0; }
+};
+
+struct CreateItemOptions {
+  Mulberry32* rng = nullptr;   // deterministic vessel roll when provided
+  int item_level = 0;          // 0 = engine default (10)
+  int quantity = 1;
+  std::string bind_to;         // factory shouldBindOnPickup rules apply
+  VesselForge* forge = nullptr;
+  std::uint64_t* uuid_serial = nullptr;
+};
+
+// factory.js createById/createFromBase. Returns nullopt for unknown ids.
+std::optional<GameItem> create_game_item(const std::string& item_id,
+                                         const CreateItemOptions& options);
+
+// The 12x7 spatial backpack (inventory-footprints.js + inventory.js add()).
+class PlayerInventory {
+ public:
+  static constexpr int kColumns = 12;
+  static constexpr int kRows = 7;
+  static constexpr int kSlotCount = kColumns * kRows;
+
+  struct AddResult {
+    int added = 0;
+    std::vector<GameItem> overflow;  // instances that did not fit
+  };
+
+  const std::vector<GameItem>& items() const { return items_; }
+  std::vector<GameItem>& items() { return items_; }
+
+  // inventory.js add(): currency merges into the existing stack and never
+  // overflows; other items place first-fit one instance per qty.
+  AddResult add(GameItem item, int quantity = 1);
+  bool remove_by_uuid(const std::string& uuid, GameItem* out);
+  GameItem* find_by_uuid(const std::string& uuid);
+  const GameItem* find_by_uuid(const std::string& uuid) const;
+  int coin_total() const;
+  bool spend_coins(int amount);  // false when coin_total() < amount
+
+ private:
+  bool fits_at(const GameItem& item, int slot) const;
+  int first_fit(const GameItem& item) const;  // -1 when no placement exists
+
+  std::vector<GameItem> items_;
+};
+
+// wear-slots.js + wear.js: physical seats and combat totals.
+class WearSet {
+ public:
+  static const std::vector<std::string>& physical_slots();
+  // Base item slot -> seats in fill order (ring -> [ring, ring2]).
+  static std::vector<std::string> seats_for_base(const std::string& base_slot);
+  static bool can_use_seat(const std::string& base_slot, const std::string& seat);
+  // resolveEquipSlot: honour a valid explicit seat, else first empty, else
+  // the last seat (a swap).
+  std::string resolve_seat(const std::string& base_slot,
+                           const std::string& preferred = "") const;
+
+  const std::map<std::string, GameItem>& slots() const { return slots_; }
+  const GameItem* in_seat(const std::string& seat) const;
+  // Place an item into a seat; returns the displaced item when swapping.
+  std::optional<GameItem> equip(GameItem item, const std::string& seat);
+  std::optional<GameItem> unequip(const std::string& seat);
+
+  struct Totals {
+    ChannelRatings attack;
+    ChannelRatings defense;
+    CombatModifiers modifiers;  // capped 75/75/100/100
+  };
+  Totals totals() const;
+
+ private:
+  std::map<std::string, GameItem> slots_;
+};
+
+// A ground item in a scene (loot.js toWorldInstance shape).
+struct GroundItem {
+  GameItem item;
+  int x = 0;
+  int y = 0;
+};
+
+// Player combat modifiers the equip pipeline feeds into tile-space combat.
+struct PlayerCombatMods {
+  int critical_chance = 0;
+  int goods_found = 0;
+  int damage_against_beasts = 0;
+  bool force_critical = false;
+  std::string attack_style = "slash";
+};
+
+// loot.js applyGoodsFoundToCoins / applyGoodsFoundToGearChance.
+int apply_goods_found_to_coins(int coins, int goods_found_percent);
+double apply_goods_found_to_gear_chance(double chance, int goods_found_percent);
+// map.js instanceItemLevelForDepth: min(80, 10 + (depth-1)*10).
+int instance_item_level_for_depth(int depth);
+
+// ────────────────────────────────────────────────────────────────────────────
 // Parity wave N2: tile-space world rules.
 //
 // These rules mirror the browser server's continuous movement contract
@@ -462,6 +738,10 @@ struct WorldMonster {
   bool boss = false;
   std::uint64_t telegraph_until_ms = 0;
   std::uint64_t next_attack_ms = 0;
+  // N4: loot/behaviour facts the wire snapshot carries (JS m.rewards.coins
+  // and m.tags).
+  std::vector<std::string> tags;
+  int coins = 0;
 };
 
 struct WorldCombatEvent {
@@ -480,6 +760,13 @@ struct WorldCombatEvent {
   int x = 0;
   int y = 0;
   std::string item_id;
+  // N4: combat:hit parity fields (server/core/combat/index.js).
+  int base_amount = 0;
+  int beastbane_amount = 0;
+  int beastbane_percent = 0;
+  bool beastbane = false;
+  bool critical = false;
+  std::string attack_style = "slash";
 };
 
 struct InstanceMetadata {
@@ -557,6 +844,23 @@ class WorldSimulation {
   static std::string zone_display_name(const std::string& template_id, const std::string& layout,
                                        int depth = 1);
 
+  // ── N4: items, inventory, and depth ─────────────────────────────────────
+  // Ground items for the CURRENT scene. The town list is stashed across
+  // instance hops; per-floor lists retire with the floor, exactly like JS
+  // scene retirement (documented in the N4 report).
+  const std::vector<GroundItem>& ground_items() const { return ground_items_; }
+  // dev:drop / world-drop / overflow spill: place an item on the current
+  // scene at (x, y).
+  void add_ground_item(GameItem item, int x, int y);
+  // Remove a ground item by uuid (take). Returns false when absent.
+  bool take_ground_item(const std::string& uuid, GameItem* out);
+  // Kill rewards: coins always (Wealthy-boosted) + rarity-gated gear roll.
+  // Mirrors dropMonsterLoot in server/core/combat/loot.js.
+  void drop_monster_loot(const WorldMonster& monster, int goods_found_percent);
+  // Equip-aware combat modifiers for the next advance_combat calls.
+  void set_player_combat_mods(const PlayerCombatMods& mods) { player_mods_ = mods; }
+  PlayerCombatMods& player_combat_mods() { return player_mods_; }
+
  private:
   bool can_move_to(double target_x, double target_y) const;
   bool is_blocked(const WorldPosition& origin, const WorldPosition& delta) const;
@@ -566,6 +870,13 @@ class WorldSimulation {
   void return_to_town();
   // Portal check after a step/teleport changed the occupied tile.
   void check_stair_transition();
+  // N4: depth>1 floor chaining (party.js transitionFloor).
+  void transition_floor(int depth);
+  // N4: guaranteed per-floor treasure (map.js treasure hoard scatter).
+  void scatter_floor_treasure();
+  // N4: safe loot tile spiral (loot.js resolveLootLocation).
+  Vec2 resolve_loot_tile(int x, int y) const;
+  std::uint64_t next_world_random();
 
   std::uint64_t seed_;
   std::string player_uuid_;
@@ -590,6 +901,12 @@ class WorldSimulation {
   bool has_pre_instance_ = false;
   WorldPosition pre_instance_position_{};
   std::string pre_instance_scene_id_;
+  // N4 state.
+  std::vector<GroundItem> ground_items_;
+  std::vector<GroundItem> town_ground_items_;
+  PlayerCombatMods player_mods_;
+  std::uint64_t world_random_state_ = 0x9e3779b97f4a7c15ULL;
+  VesselForge forge_;
 };
 
 }  // namespace verdigris
