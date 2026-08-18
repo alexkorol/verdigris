@@ -70,11 +70,12 @@ outside production until the owner resolves asset provenance/packaging.
   `6d39565c` on post-N2 tip `ca0dd2df`. Native gates, unchanged 7-scenario
   attach, unit coverage, and authentic negative are captured; architect
   rebuild/acceptance is pending.
-- TASK‑0046 playability re-evaluation: `REVIEW_REQUESTED` at `1de6e45b` on
-  current tip `45846af7`. Coordinator completed both approximately ten-minute
-  arcs with first-minute page-context socket proofs; guest combat is improved,
-  while the mortal-oath opener remains mechanically silent. Architect review
-  is pending.
+- TASK‑0046 playability re-evaluation: `REVIEW_REQUESTED` at worker evidence
+  commit `78e3af37` (worker candidate `1de6e45b`) on current tip `45846af7`.
+  Coordinator completed both approximately ten-minute arcs with first-minute
+  page-context socket proofs; guest combat is improved, while the mortal-oath
+  opener remains mechanically silent. The completed evidence is now published
+  for Fable's re-review; architect acceptance is still pending.
 
 ## Current coordinator gates
 
