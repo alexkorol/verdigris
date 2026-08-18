@@ -94,6 +94,9 @@ class ProtocolSession {
   void emit_movement(const std::function<void(const Envelope&)>& emit) const;
   void emit_message(const std::function<void(const Envelope&)>& emit, const std::string& text) const;
   void emit_world(const Envelope& envelope, const std::function<void(const Envelope&)>& emit) const;
+  void process_combat(std::int64_t now_ms, const std::function<void(const Envelope&)>& emit);
+  void emit_combat_event(const WorldCombatEvent& event,
+                         const std::function<void(const Envelope&)>& emit);
   void grant_item(const std::string& item_id, int quantity);
   static std::int64_t now_ms();
 
@@ -101,6 +104,7 @@ class ProtocolSession {
   std::string socket_id_;
   bool quick_start_ = false;
   std::vector<Item> inventory_;
+  std::vector<JsonValue> ground_items_;
   std::unique_ptr<Simulation> simulation_;
   std::unique_ptr<WorldSimulation> world_;
   std::function<void(const Envelope&)> broadcast_;

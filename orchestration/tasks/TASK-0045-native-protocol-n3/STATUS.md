@@ -1,4 +1,4 @@
----
+﻿---
 task: TASK-0045
 state: REVIEW_REQUESTED
 coordinator: codex
@@ -13,6 +13,4 @@ expected_verification: powershell -File native/build.ps1 -RunTests; unchanged 7-
 known_risks: native/** ownership is broad but client remains presentation-only; combat authority must reconcile WorldSimulation positions; no playtest/server/src edits; N3 authority bridge and stubs must follow SPEC exactly
 architect_review_required: true
 report: orchestration/tasks/TASK-0045-native-protocol-n3/REPORT.md
-candidate_commit: 6d39565c67012b980a20ea1ddce908dbf436f4b4
-handoff: worker report/captures committed; independent review accepts review handoff; architect rebuild/attach rerun remains pending
 ---
