@@ -15,5 +15,5 @@ architect_review_required: true
 report: orchestration/tasks/TASK-0046-playability-reevaluation/REPORT.md
 candidate_commit: 1de6e45b
 coordinator_evidence_commit: 78e3af37
-handoff: coordinator completed both approximately ten-minute arcs and added first-minute page-context socket proofs; report ranks the Chronicles silent opener and mana/loot friction; architect review remains pending
+handoff: coordinator completed both approximately ten-minute headless Playwright arcs with per-arc page-context/server wire proofs; report ranks the Chronicles silent opener and mana/loot friction; architect acceptance is pending REVIEW.md reconciliation
 ---
