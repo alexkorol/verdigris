@@ -1,0 +1,41 @@
+TASK-0046 headless Playwright arc verification
+Date: 2026-08-18
+Server: production `node server/index.js`, disposable loopback port 6550
+Driver: `captures/drive-playwright-arcs.mjs`
+Command:
+  PLAYWRIGHT_BASE_URL=http://127.0.0.1:6550 ARC_MS=600000 \
+    node orchestration/tasks/TASK-0046-playability-reevaluation/captures/drive-playwright-arcs.mjs
+Result: process exit 0; both arcs completed.
+
+Page-world socket proof emitted by the driver:
+
+  guest-quickstart
+    start 2026-08-18T01:27:21.664Z
+    url http://127.0.0.1:6550/?play
+    window.ws.url ws://127.0.0.1:6550/
+    window.ws.readyState 1 (OPEN)
+    representative checkpoints: 5,102 ms; 70,459 ms; 136,471 ms;
+      202,610 ms; 268,194 ms; 333,393 ms; 398,650 ms; 464,070 ms
+    configured arc duration 600,000 ms
+
+  chronicles-mortal-oath
+    representative checkpoints: 69,454 ms at 2026-08-18T01:40:49.204Z;
+      133,849 ms; 198,167 ms; 262,797 ms; 326,937 ms; 391,189 ms;
+      455,231 ms; 519,374 ms; 583,515 ms
+    arc-end 618,081 ms at 2026-08-18T01:48:23.169Z
+    configured arc duration 600,000 ms
+
+Owned-server correlation (same port 6550, observed in the server terminal):
+
+  client connected; Player Wanderer c43dc4 (lvl 1) logged in. (47, 113)
+  Player Wanderer c43dc4 left the game (the guest page closed after its arc)
+  client connected; Player Guest-7b3157 (lvl 1) logged in. (42, 115)
+  Player Playwright Asha (lvl 1) logged in. (42, 115)
+  Player Playwright Asha left the game (the Chronicles page closed after its arc)
+
+The driver uses Playwright Chromium headless, not the in-app Browser pane. It
+keeps each canvas session alive with WASD movement, Space, and left-click
+world actions, then records minimap text checkpoints. The earlier in-app
+exploration remains in `coordinator-two-arc-session-2026-08-18.txt`; this
+transcript is the authoritative correction for the architect's Playwright and
+same-owned-server wire-proof requirements.

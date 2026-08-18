@@ -7,6 +7,7 @@ commits:
   - f0b6300f
   - 65b51a9a
   - 1de6e45b
+  - e3c3ca57
 base_commit: 45846af7
 architect_review_required: true
 ---
@@ -33,14 +34,24 @@ loopback ports; owner port 6500 was never used.
   `window.ws.url=ws://127.0.0.1:6548/`, readyState 1, page age 3.81s.
 - Chronicles first-minute page-context proof on port 6547:
   `window.ws.url=ws://127.0.0.1:6547/`, readyState 1, page age 56.73s.
-- The full driven arcs were run on port 6547 and the temporary servers/tabs
-  were stopped afterward. The socket-mode discrepancy in the in-app evaluator
-  is preserved in the earlier comparison capture; CDP page-context reads are
-  authoritative for these proofs.
+- The authoritative correction run used Playwright Chromium headless on
+  disposable port 6550 for both arcs, with `ARC_MS=600000`; the driver,
+  page-world socket values, and server-owned login/disconnect correlation are
+  preserved in `captures/playwright-arcs-2026-08-18.txt`. The earlier in-app
+  exploratory arc remains useful for richer qualitative notes, but it is not
+  the wire-proof or duration claim.
 
-## Arc A — guest quickstart (~10m14s)
+## Arc A — guest quickstart (~10m, Playwright correction)
 
-Timestamped observations from the real client:
+The headless driver opened `http://127.0.0.1:6550/?play`, selected Old Barrow,
+kept a real canvas session active for the configured 600,000 ms, and recorded
+`window.ws.url=ws://127.0.0.1:6550/`, readyState `1`. Server output correlated
+the same arc to `Wanderer c43dc4` logging in and later leaving. The earlier
+in-app run supplies the richer combat observations below; this run closes the
+Playwright/duration/wire-proof requirement.
+
+Qualitative observations from the earlier exploratory in-app client pass
+(supplemental, not the Playwright wire proof):
 
 - Opening: Delaford tutorial, Adventure panel, Old Barrow transition.
 - ~00:18: first Dread Vanguard kill; Aldwyn explains XP, loot, and the next
@@ -53,12 +64,16 @@ Timestamped observations from the real client:
   usable; no clear recovery/next-reward beat appeared.
 - End state at ~10m14s: Old Barrow, position around 111,83, HP 110/110.
 
-## Arc B — Chronicles House/Scion with mortal oath (~10m15s)
+## Arc B — Chronicles House/Scion with mortal oath (~10m, Playwright correction)
 
-- Landing and `Play as Guest` were immediate.
-- `House Ember` was inscribed; `Asha` was added with `Swear the mortal oath`
-  checked. The Chronicles card clearly displayed `Asha Level 1 · Mortal oath`.
-- Set Out reached Delaford and Old Barrow. The first-minute socket proof was
+- The headless driver opened the root page, clicked `Play as Guest`, inscribed
+  `Playwright Ember`, and added `Playwright Asha` with `Swear the mortal oath`
+  checked. Server output correlated `Playwright Asha (lvl 1)` on port 6550.
+- The driver selected Old Barrow and kept the canvas session active for the
+  configured 600,000 ms. The earlier Chronicles exploration recorded the
+  card text `Asha Level 1 · Mortal oath` and the setup surfaces below.
+- In the exploratory Chronicles pass, Set Out reached Delaford and Old Barrow.
+  The first-minute socket proof was
   captured before/around this transition.
 - Quest overlay clearly listed Aldwyn's Charge and its five-step verb chain.
 - Roads exposed Tin/Salt/Chalk/Copper names and directions but no concrete
@@ -122,12 +137,13 @@ Timestamped observations from the real client:
 ## Scope proof and limitations
 
 Only task-folder reports/captures changed on the coordinator branch. No source,
-server, native, playtest, package, or product files were edited. The two arcs
-were headless/in-app-browser driven; canvas actors are not represented in the
-DOM, so actor positions and combat readability are supported by screenshots,
-logs, minimap coordinates, HP, and server-backed messages rather than DOM
-labels. No death arc or compact viewport pass was forced after the observed
-full-HP outcomes.
+server, native, playtest, package, or product files were edited. The authoritative
+duration and wire-proof run used headless Playwright; the earlier in-app-browser
+session is explicitly retained as qualitative exploration only. Canvas actors
+are not represented in the DOM, so actor positions and combat readability are
+supported by logs, minimap coordinates, HP, and server-backed messages rather
+than DOM labels. No death arc or compact viewport pass was forced after the
+observed full-HP outcomes, and no screenshot files are claimed by this report.
 
 The architect must review the report and decide whether the Chronicles silent
 opener is a real current-tip regression or a presentation/input-surface issue;
