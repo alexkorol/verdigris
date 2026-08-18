@@ -1,0 +1,8 @@
+TASK-0045 native build/test gate
+Command:
+  powershell -NoProfile -File native/build.ps1 -RunTests
+
+native legacy denylist: PASS
+verdigris core tests: PASS
+verdigris networking tests: PASS
+Process exit: 0
