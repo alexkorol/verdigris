@@ -76,6 +76,11 @@ outside production until the owner resolves asset provenance/packaging.
   page-context socket proofs; guest combat is improved, while the mortal-oath
   opener remains mechanically silent. The completed evidence is now published
   for Fable's re-review; architect acceptance is still pending.
+- TASK‑0047 native protocol N4 items/inventory/Vesselforge: `CLAIMED` by
+  Kimi Work on `codex/TASK-0047-native-n4-kimiwork` at `d1e30e2b`, based on
+  the N3-integrated program line. The unchanged 13-scenario attach,
+  item/inventory unit coverage, and authentic-negative transcript remain the
+  required handoff gates; no implementation or acceptance is claimed yet.
 
 ## Current coordinator gates
 
@@ -122,11 +127,9 @@ outside production until the owner resolves asset provenance/packaging.
 
 ## Next authorized actions
 
-1. Fable issues the next READY N3 native spec, carrying the accepted N2 stub
-   inventory and the authority bridge decision.
-2. Fable answers
-   [`QUESTION-0009`](../../orchestration/questions/QUESTION-0009-native-n3-authority-bridge.md)
-   and issues the READY N3 task/spec before native combat implementation.
+1. Monitor TASK‑0047's N4 implementation and independently validate its
+   13-scenario attach and D-106 item recoverability evidence.
+2. Obtain Fable's re-review of the newly published TASK‑0046 two-arc evidence.
 3. Integrate only accepted commits; preserve coordinator-owned metadata during
    the known TASK‑0044 `STATUS.md` add/add merge conflict.
 4. Resolve QUESTION‑0007 and QUESTION‑0008 with the owner before implementing
