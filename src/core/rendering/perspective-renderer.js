@@ -260,7 +260,7 @@ class PerspectiveRenderer {
       const foot = centerOfTile(item.x, item.y, tileSize);
       draws.push({
         depthY: foot.y,
-        draw: () => this.drawItem(item, foot, tileSize),
+        draw: () => this.drawItem(item, foot, tileSize, timestamp),
       });
     });
 
@@ -568,7 +568,7 @@ class PerspectiveRenderer {
     return projected;
   }
 
-  drawItem(item, foot, tileSize) {
+  drawItem(item, foot, tileSize, timestamp = 0) {
     const info = UI.getItemData(item.id);
     if (!info || !info.graphics) {
       return;
@@ -590,6 +590,9 @@ class PerspectiveRenderer {
       weapons: this.map.images.weaponsImage,
     };
     const image = sheets[info.graphics.tileset] || sheets.weapons;
+    if (item.firstFind) {
+      this.drawFirstFindHighlight(item, foot, tileSize, timestamp);
+    }
     this.drawFrame({
       image,
       sourceX: (info.graphics.column + quantityIndex) * tileSize,
@@ -598,6 +601,66 @@ class PerspectiveRenderer {
       foot,
       scale: ITEM_SCALE,
     });
+  }
+
+  /**
+   * TASK-0042: the session's one curated first find gets the moment on the
+   * ground too — a gold ring, a soft light beam, and its name above it, so
+   * the drop reads before the pickup prompt ever fires.
+   */
+  drawFirstFindHighlight(item, foot, tileSize, timestamp) {
+    const projected = this.getProjectedFrame(foot, tileSize, 1);
+    if (!projected) {
+      return;
+    }
+
+    const ctx = this.map.bufferContext;
+    const pulse = 0.72 + (0.28 * Math.sin(timestamp / 300));
+    const radius = projected.size * 0.42;
+
+    ctx.save();
+    ctx.globalAlpha = pulse;
+    ctx.strokeStyle = '#e8c66d';
+    ctx.lineWidth = Math.max(1.25, projected.scale * 1.7);
+    ctx.shadowColor = 'rgba(232, 198, 109, 0.55)';
+    ctx.shadowBlur = Math.max(5, projected.scale * 8);
+    ctx.beginPath();
+    ctx.ellipse(projected.x, projected.y, radius, radius * 0.32, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+
+    // Light beam: a soft gold column rising from the ring, additive so it
+    // glows against the terrain without hiding the item sprite.
+    const beamHeight = projected.size * 1.6;
+    const beamHalfWidth = Math.max(3, projected.size * 0.16);
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = 0.4 * pulse;
+    const beam = ctx.createLinearGradient(0, projected.y, 0, projected.y - beamHeight);
+    beam.addColorStop(0, 'rgba(232, 198, 109, 0.85)');
+    beam.addColorStop(1, 'rgba(232, 198, 109, 0)');
+    ctx.fillStyle = beam;
+    ctx.fillRect(
+      projected.x - beamHalfWidth,
+      projected.y - beamHeight,
+      beamHalfWidth * 2,
+      beamHeight,
+    );
+    ctx.restore();
+
+    const label = item.displayName || item.name;
+    if (label) {
+      ctx.save();
+      ctx.font = `600 ${Math.max(11, 12 * projected.scale)}px "GameFont", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.lineWidth = Math.max(2.5, projected.scale * 3);
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.85)';
+      ctx.fillStyle = '#f1d58d';
+      const labelY = (projected.y - beamHeight) - Math.max(4, projected.scale * 5);
+      ctx.strokeText(label, projected.x, labelY);
+      ctx.fillText(label, projected.x, labelY);
+      ctx.restore();
+    }
   }
 
   drawPlayerActor(player, foot, timestamp) {
