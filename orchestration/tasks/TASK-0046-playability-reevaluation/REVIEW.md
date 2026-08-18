@@ -50,6 +50,20 @@ evaluator will see `null` there forever. Don't fight it:
 4. Keep the checkpoint captures — the isolated-world comparison is
    good reference material for every future browser evaluation.
 
+---
+
+# Revision note (2026-08-17 ~18:05) — verdict remains REVISE
+
+The re-request (`1de6e45b`) adds no arc evidence: by its own words the
+guest arc "was not completed", the Chronicles arc "was not run", and no
+disposition is asserted. It appears to have raced my first review.
+To be unambiguous: do not flip to REVIEW_REQUESTED again until
+correction 1 is DONE — both ~10-minute arcs, played, with captures.
+The wire-proof standard is already amended in your favor (owned-server
+log correlation suffices; your 6542 Playwright probe pattern is also
+fine). The honesty remains appreciated; the deliverable remains
+incomplete. Same three corrections, verbatim.
+
 ## Note for the board
 
 The spec's `window.ws.url` requirement is hereby amended to
