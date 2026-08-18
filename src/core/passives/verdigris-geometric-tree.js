@@ -1350,6 +1350,48 @@ export class VerdigrisGeometricTree {
       activeNodes: Array.from(this.nodes.values()).filter(node => node.active).length,
       allocatedConduits: Array.from(this.conduits.values()).filter(conduit => conduit.allocated).length,
       searchTerm: this.searchTerm,
+      firstAllocationHint: this.recommendFirstAllocation(),
+    };
+  }
+
+  /**
+   * Data-driven first-allocation hint (TASK-0049 deliverable 5). With unspent
+   * points and nothing but the Origin allocated, recommend the strongest
+   * starter node directly off the Origin so the pane can surface a sensible
+   * first pick. Presentation only — allocation stays server-authoritative.
+   */
+  recommendFirstAllocation() {
+    const hasSpend = this.points.skill > 0;
+    const allocatedBeyondOrigin = Array.from(this.nodes.values())
+      .some(node => node.active && node.id !== '0,0');
+    if (!hasSpend || allocatedBeyondOrigin) {
+      return null;
+    }
+
+    const starter = Array.from(this.nodes.values())
+      .filter(node => (
+        !node.active
+        && this.isNodeVisible(node)
+        && Array.isArray(node.connections)
+        && node.connections.includes('0,0')
+      ))
+      .sort((a, b) => {
+        const amountDiff = (b.amount || 0) - (a.amount || 0);
+        if (amountDiff) return amountDiff;
+        return String(a.id).localeCompare(String(b.id));
+      })[0] || null;
+
+    if (!starter) {
+      return null;
+    }
+
+    return {
+      nodeId: starter.id,
+      name: starter.name,
+      axis: starter.axis,
+      axisLabel: VERDIGRIS_AXIS_META[starter.axis]?.label || 'Hybrid',
+      effects: starter.effects.slice(),
+      amount: starter.amount || 0,
     };
   }
 }

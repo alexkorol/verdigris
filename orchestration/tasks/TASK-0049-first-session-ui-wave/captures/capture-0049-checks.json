@@ -1,0 +1,14 @@
+{
+  "checks": {
+    "guideBanner": true,
+    "houseIdentity": true,
+    "zoneObjective": true,
+    "skillTreeHint": true,
+    "manaDirective": true
+  },
+  "bannerText": "First things first: use W, A, S and D (or the arrow keys) to take a walk around town.",
+  "identityText": "House Ember-17vg5 — Asha-17vg5 (Mortal oath)",
+  "hintText": "Start hereLight StepDexterity · +24 to Evasion · Begin by not being where the blow lands.",
+  "finalMana": 4,
+  "chatSnippet": "Welcome to Verdigris.12:04 PMAldwyn the Guide: Welcome to Delaford, Asha-17vg5. I am Aldwyn, and it falls to me to keep new blood alive long enough to matter.12:04 PMAldwyn the Guide: First things first: use W, A, S and D (or the arrow keys) to take a walk around town.12:04 PMNeed 2 more mana — recovering 2 every 2s.12:05 PMNeed 2 more mana — recovering 2 every 2s.12:05 PM"
+}

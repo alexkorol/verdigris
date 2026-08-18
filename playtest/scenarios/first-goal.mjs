@@ -2,6 +2,8 @@
  * First explicit goal: accept Aldwyn's request in town, put down a first
  * Warden, then return for a permanent Verdigris-tree point.
  */
+import { loadMode } from '../timing.mjs';
+
 export default async function firstGoal({ connect, assert }) {
   const p = await connect({
     guestId: 'playtest-first-goal',
@@ -22,10 +24,29 @@ export default async function firstGoal({ connect, assert }) {
     assert(talk, 'Aldwyn exposes a Talk interaction in town');
 
     const messagesBefore = p.messages.length;
-    p.choose(talk, { x: 0, y: 0, world: { x: aldwyn.x, y: aldwyn.y } });
-    await p.waitFor(() => p.messages.slice(messagesBefore).some(message => (
-      /warden/i.test(message) && /come back|return/i.test(message)
-    )), { label: 'Aldwyn names the first-Warden objective' });
+    // TASK-0052, 0043's zone-admission pattern: under ambient load the server
+    // child can be starved while this client stays responsive, so a single
+    // Talk frame may be lost. Talk is idempotent (server/core/first-goal.js
+    // re-says the objective once the stage is set), so resend it at >=1s
+    // intervals inside one bounded wait; under the documented load gate the
+    // authored floor rises to 12s (21s effective). No assertion weakened.
+    let lastTalkSentAt = 0;
+    const sendTalk = async () => {
+      lastTalkSentAt = Date.now();
+      await p.choose(talk, { x: 0, y: 0, world: { x: aldwyn.x, y: aldwyn.y } });
+    };
+    await sendTalk();
+    await p.waitFor(async () => {
+      const named = p.messages.slice(messagesBefore).some(message => (
+        /warden/i.test(message) && /come back|return/i.test(message)
+      ));
+      if (named) return true;
+      if (Date.now() - lastTalkSentAt >= 1000) await sendTalk();
+      return false;
+    }, {
+      timeoutMs: loadMode ? 12000 : 8000,
+      label: 'Aldwyn names the first-Warden objective',
+    });
     assert(true, 'the accepted goal explicitly asks for a first Warden');
 
     let state = await p.state();

@@ -1,59 +1,59 @@
-﻿# Run status (snapshot â€” rewritten each architect sweep, never a diary)
+# Run status (snapshot — rewritten each architect sweep, never a diary)
 
-- Current integration tip: origin/codex/native-reconstitution @ e5c43672
-- Master: 1244b5bf (PR #19)
-- Owner-visible target: playable native client (0050) + first-session
-  browser polish (0049/0042) + N4 items parity (0047)
-- Last architect playthrough: native testbed 2026-08-18 morning (owner
-  + architect; verdict drove D-117/D-118)
+- Current integration tip: origin/codex/native-reconstitution @ 44d0b926
+- Master: 44d0b926 (PRs #20/#21/#22 shipped 2026-08-18)
+- Owner-visible target: native client C1 SHIPPED (2D top-down, visible
+  combat, inventory). Next: 0051 client harness + 0047 N4 parity.
+- Last architect playthrough: 0050 exe, 2026-08-18 ~13:55 (11 driven
+  captures — rigid world, live combat exchange, inventory verified)
 - Immutable objective: D-116 parity, D-110 playable-first
 
 ## RUNNING
 
-| Task | Owner | Topology | Base | Last evidence | Notes |
-|---|---|---|---|---|---|
-| 0049 first-session UI wave | deepseek | INDEPENDENT | 32d7b6e-era tip | 19 dirty files, capture scripts iterating | watch server/** scope on review |
-| 0042 first-loot moment | kimi | INDEPENDENT | 560fb265 claim | 10 dirty files, loot.js + item events | re-asserted after RELEASE |
-| 0047 N4 items parity | kimi-work | PIPELINED (after N3) | 05c3f46 | 3 dirty files | 13/13 attach bar |
+| Task | Owner | Topology | Notes |
+|---|---|---|---|
+| 0047 N4 items parity | kimi-work | PIPELINED | 13/13 attach bar; implementing core defs |
+| 0053 world composition polish | kimi | INDEPENDENT | continuous-mode claim; verify-first rule |
 
 ## READY (unclaimed)
 
 | Task | Packet | Notes |
 |---|---|---|
-| 0050 native client C1 (CRITICAL) | MECHANICAL | camera2d.hpp scaffold + 6-step plan supplied; highest owner value |
-| 0051 native client harness | BOUNDED-DESIGN | sequence after/with 0050; move-and-camera scenario first |
-| 0052 suite flake hardening | MECHANICAL | first-goal + house-treasury bounded waits |
-| 0053 world composition polish | BOUNDED-DESIGN | salvaged from closed PR #3; verify-first |
+| 0051 native client harness | BOUNDED-DESIGN | deepseek expected next (continuous mode); add damage-number scenario per 0050 review nit 2 |
 
-## VERIFY / MERGE QUEUE
+## SHIPPED TODAY (2026-08-18)
 
-(empty â€” next expected: 0049 REVIEW_REQUESTED)
+- PR #20: 0049 first-session UI wave (deepseek, first-pass, $1.47)
+- PR #21: 0042 first-loot moment (kimi, first-pass)
+- PR #22: 0050 native client C1 (deepseek, first-pass, architect
+  play-gate) + 0052 flake hardening (kimi, first-pass)
+- Orchestration v2, camera2d scaffold, loopback binds, branch protection
 
-## BLOCKED / WATCH
+## WATCH
 
-- WATCH RESOLVED into TASK-0052 (3rd sighting via deepseek run): first-goal + house-treasury flake hardening, READY, MECHANICAL packet.
-- Master branch protection: DONE (require PR, enforce admins, no force-push). KimiWork quota sharing: EXPERIMENT running (watch Allegretto 5h bar while kimi-work works). PR #3 closed as superseded -> TASK-0053.
+- `loot` scenario marginal timeout under load (1 sighting via 0052's
+  loaded run; 2nd sighting = extend 0052 pattern to loot.mjs).
+- KimiWork quota experiment ongoing.
+- Queued polish: "House House" pane title doubling (0050 nit 1);
+  identity-chip truncation (0049 nit); server-side adventure payload
+  to replace client mirror (0049 nit 2).
 
 ## Fleet + budget
 
-- deepseek: $9.23 credits ($1.25 today, 38M tok) (~$1/task-session, 99% cache hit) â€” primary
-  implementation lane; ports 6540â€“6559.
-- kimi K3: monthly 78% used (resets 08-23), 5h window 31.9% â€” scoped MECHANICAL
-  packets only; ports 9880â€“9899.
-- kimi-work K3: active on 0047; ports 6510â€“6529.
+- deepseek: ~$8 credits; continuous mode; expect 0051 claim. 6540–6559.
+- kimi K3: continuous mode, on 0053. Monthly pool tight (resets 08-23). 9880–9899.
+- kimi-work K3: on 0047. 6510–6529.
 - codex: out of tokens.
 
-## Experiments in flight (see LEARNINGS for hypotheses)
+## EXP-1 CLOSED (packet-type A/B)
 
-- EXP-1 (natural A/B): 0049 = BOUNDED-DESIGN packet (interface-only)
-  vs 0050 = MECHANICAL packet (full scaffold). Metric: architect
-  repair time + revision count at review. Decides default packet type
-  for medium models.
+Both arms first-pass with deepseek. Scaffolded MECHANICAL additionally
+produced zero scope deviations. RULE (adopted, enforced by spec
+authoring practice): scaffold whenever risky math/cross-cutting design
+exists; interface-only acceptable for pure presentation.
 
 ## Next architect actions
 
-1. Review 0049 on REVIEW_REQUESTED (screenshots + scope diff + gates).
-2. Route first free coordinator to 0050.
-3. Ask owner for branch protection on master.
-
-
+1. Review 0047 on flip (rebuild + 13-attach MYSELF).
+2. Review 0053 on flip (captures + gates + verify-first dispositions).
+3. Watch 0051 claim; review = run scenario set MYSELF + negative.

@@ -42,6 +42,38 @@ export const GEAR_DROP_POOL = [
   'vessel-ring',
 ];
 
+// TASK-0042: the first drop of a session is a guaranteed, named find. Early
+// kills in the first delve (the encounter table authored under D-114) always
+// yield one curated Verdigris base from server/core/data/items/verdigris.js,
+// tagged so the client can present the moment. The pool is existing item
+// data — no new items, no affixes, no economy change — and the grant fires
+// once per player session, retried across the kill window only if creation
+// itself failed.
+export const FIRST_FIND = Object.freeze({
+  id: 'first-find',
+  killWindow: 3,
+  pool: Object.freeze(['flint-spear', 'hide-wrap', 'bronze-roundshield']),
+});
+
+// Session-scoped per player object: a fresh login earns a fresh first find.
+const firstFindStates = new WeakMap();
+
+const firstFindStateFor = (player) => {
+  let state = firstFindStates.get(player);
+  if (!state) {
+    state = { kills: 0, granted: false };
+    firstFindStates.set(player, state);
+  }
+  return state;
+};
+
+const isFirstDelveScene = scene => Boolean(
+  scene
+  && scene.metadata
+  && scene.metadata.encounter
+  && scene.metadata.encounter.id === 'first-delve',
+);
+
 const goodsFoundPercent = player => Math.max(
   0,
   Math.min(100, Number(player?.combat?.goodsFound) || 0),
@@ -167,6 +199,47 @@ export const dropMonsterLoot = (monster, options = {}) => {
     }
   }
 
+  // First find: the session's first delve guarantees one curated drop within
+  // the opening kills. It lands BESIDE the coin bounty (its own tile, so the
+  // underfoot grab reaches it directly) and is tagged so the client can
+  // highlight it, prompt the Take, and toast the comparison.
+  if (player && isFirstDelveScene(scene)) {
+    const firstFind = firstFindStateFor(player);
+    if (!firstFind.granted) {
+      firstFind.kills += 1;
+      if (firstFind.kills <= FIRST_FIND.killWindow) {
+        const findId = FIRST_FIND.pool[Math.floor(rng() * FIRST_FIND.pool.length)];
+        const find = ItemFactory.createById(findId, { rng });
+        if (find) {
+          firstFind.granted = true;
+          // Own tile, not the coin pile's: the underfoot grab (and the
+          // ground label) must reach the find directly.
+          const occupied = new Set(
+            [...(Array.isArray(scene.items) ? scene.items : []), ...drops]
+              .map(item => item && `${item.x},${item.y}`),
+          );
+          const findSpot = [
+            { x: dropX + 1, y: dropY },
+            { x: dropX - 1, y: dropY },
+            { x: dropX, y: dropY + 1 },
+            { x: dropX, y: dropY - 1 },
+          ].find(spot => !occupied.has(`${spot.x},${spot.y}`)
+            && isSafeLootTile(scene, spot.x, spot.y));
+          const findLocation = findSpot || { x: dropX, y: dropY };
+          const worldFind = ItemFactory.toWorldInstance(find, { x: findLocation.x, y: findLocation.y });
+          worldFind.firstFind = FIRST_FIND.id;
+          drops.push(worldFind);
+          if (player.socket_id) {
+            Socket.emit('game:send:message', {
+              player: { socket_id: player.socket_id },
+              text: `${monster.name || 'The foe'} dropped ${worldFind.displayName || worldFind.name} — walk onto it and press Z (or right-click it and Take).`,
+            });
+          }
+        }
+      }
+    }
+  }
+
   const rarityId = monster.rarityId || 'common';
   if (rarityId === 'elite' && player && player.uuid && player.chronicles) {
     const released = chroniclesStore.beginRelicDrop(player.uuid, player.chronicles);
@@ -263,6 +336,7 @@ export default {
   dropMonsterLoot,
   GEAR_DROP_CHANCES,
   GEAR_DROP_POOL,
+  FIRST_FIND,
   applyGoodsFoundToCoins,
   applyGoodsFoundToGearChance,
 };

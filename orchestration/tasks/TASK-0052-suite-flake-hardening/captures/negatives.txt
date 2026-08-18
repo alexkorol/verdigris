@@ -1,0 +1,22 @@
+
+> verdigris@0.2.0 playtest
+> node playtest/run.mjs neg52-first-goal neg52-house-treasury
+
+Booting playtest server on :6510…
+Timing guard: load-adaptive deadlines enabled (max 1.75x; explicit load mode: off; baseline 20ms event-loop lag)
+Playing against ws://localhost:6510
+
+  ▶ neg52-first-goal
+      ✓ Aldwyn is present in the authoritative town scene
+      ✓ Aldwyn exposes a Talk interaction in town
+  FAIL neg52-first-goal: Timed out waiting for Aldwyn names the first-Warden objective (8049ms; authored 8000ms)
+
+  ▶ neg52-house-treasury
+  FAIL neg52-house-treasury: Timed out waiting for starting road purse to land (8063ms; authored 8000ms)
+
+────────────────────────────────
+ FAIL  neg52-first-goal (8346ms)
+ FAIL  neg52-house-treasury (8304ms)
+
+0/2 scenarios passed
+Timing diagnostics: {"loadMode":false,"p99EventLoopLagMs":32.194559,"maxEventLoopLagMs":35.553279}
