@@ -71,11 +71,12 @@ outside production until the owner resolves asset provenance/packaging.
   attach, unit coverage, and authentic negative are captured; architect
   rebuild/acceptance is pending.
 - TASK‑0046 playability re-evaluation: `REVIEW_REQUESTED` at worker evidence
-  commit `78e3af37` (worker candidate `1de6e45b`) on current tip `45846af7`.
-  Coordinator completed both approximately ten-minute arcs with first-minute
-  page-context socket proofs; guest combat is improved, while the mortal-oath
-  opener remains mechanically silent. The completed evidence is now published
-  for Fable's re-review; architect acceptance is still pending.
+  commit `ec42e843` (worker candidate `1de6e45b`) on current tip `45846af7`.
+  Coordinator completed both approximately ten-minute arcs with headless
+  Playwright and same-owned-server correlation; guest combat is improved,
+  while the mortal-oath opener remains mechanically silent. The corrected
+  evidence is now published for Fable's re-review; architect acceptance is
+  still pending.
 - TASK‑0047 native protocol N4 items/inventory/Vesselforge: `CLAIMED` by
   Kimi Work on `codex/TASK-0047-native-n4-kimiwork` at `d1e30e2b`, based on
   the N3-integrated program line. The unchanged 13-scenario attach,
