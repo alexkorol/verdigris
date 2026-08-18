@@ -57,3 +57,9 @@ The first safe renderer experiment is therefore a manifest-driven billboard
 layer over the existing placeholder projection. Vendoring or converting the
 binary plates is deferred until asset provenance, size, and packaging are
 approved.
+
+## Intake recheck — 2026-08-18
+
+The supplied directory still contains all 22 PNG plates (53,121,943 bytes,
+50.66 MiB). The source files remain outside the repository and unmodified;
+the manifest/provenance decision is still open.
