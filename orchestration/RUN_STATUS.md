@@ -1,63 +1,59 @@
-﻿# Run status (snapshot â€” rewritten each architect sweep, never a diary)
+# Run status (snapshot — rewritten each architect sweep, never a diary)
 
-- Current integration tip: origin/codex/native-reconstitution @ ac2512ba
-- Master: ac2512ba (PR #21; #20 and #21 shipped 2026-08-18 midday)
-- Owner-visible target: playable native client (0050) is now THE
-  critical path; browser first-session polish SHIPPED (0049 + 0042)
-- Last architect playthrough: native testbed 2026-08-18 morning
+- Current integration tip: origin/codex/native-reconstitution @ 44d0b926
+- Master: 44d0b926 (PRs #20/#21/#22 shipped 2026-08-18)
+- Owner-visible target: native client C1 SHIPPED (2D top-down, visible
+  combat, inventory). Next: 0051 client harness + 0047 N4 parity.
+- Last architect playthrough: 0050 exe, 2026-08-18 ~13:55 (11 driven
+  captures — rigid world, live combat exchange, inventory verified)
 - Immutable objective: D-116 parity, D-110 playable-first
 
 ## RUNNING
 
 | Task | Owner | Topology | Notes |
 |---|---|---|---|
-| 0047 N4 items parity | kimi-work | PIPELINED | 13/13 attach bar; deep survey done, implementing |
-| 0050 native client C1 (CRITICAL) | deepseek | INDEPENDENT | claimed; MECHANICAL scaffolded arm of EXP-1; continuous mode active |
-| 0052 suite flake hardening | kimi | INDEPENDENT | claimed; continuous mode active |
+| 0047 N4 items parity | kimi-work | PIPELINED | 13/13 attach bar; implementing core defs |
+| 0053 world composition polish | kimi | INDEPENDENT | continuous-mode claim; verify-first rule |
 
 ## READY (unclaimed)
 
 | Task | Packet | Notes |
 |---|---|---|
-| 0051 native client harness | BOUNDED-DESIGN | after/with 0050 |
-| 0053 world composition polish | BOUNDED-DESIGN | verify-first |
-
-## VERIFY / MERGE QUEUE
-
-(empty)
+| 0051 native client harness | BOUNDED-DESIGN | deepseek expected next (continuous mode); add damage-number scenario per 0050 review nit 2 |
 
 ## SHIPPED TODAY (2026-08-18)
 
-- 0049 first-session UI wave (deepseek, first-pass, $1.47) â€” PR #20
-- 0042 first-loot moment (kimi, first-pass) â€” PR #21
-- Orchestration v2 (D-121), camera2d scaffold, loopback binds, branch
-  protection on master (require PR, enforce admins)
+- PR #20: 0049 first-session UI wave (deepseek, first-pass, $1.47)
+- PR #21: 0042 first-loot moment (kimi, first-pass)
+- PR #22: 0050 native client C1 (deepseek, first-pass, architect
+  play-gate) + 0052 flake hardening (kimi, first-pass)
+- Orchestration v2, camera2d scaffold, loopback binds, branch protection
 
-## BLOCKED / WATCH
+## WATCH
 
-- KimiWork quota experiment: watch Allegretto 5h bar while kimi-work
-  runs 0047.
-- 0049 follow-ups queued: identity-chip truncation polish; promote
-  boss/treasure preview into server adventure payload then delete the
-  client mirror (adventure-objective-data.js).
+- `loot` scenario marginal timeout under load (1 sighting via 0052's
+  loaded run; 2nd sighting = extend 0052 pattern to loot.mjs).
+- KimiWork quota experiment ongoing.
+- Queued polish: "House House" pane title doubling (0050 nit 1);
+  identity-chip truncation (0049 nit); server-side adventure payload
+  to replace client mirror (0049 nit 2).
 
 ## Fleet + budget
 
-- deepseek: ~$9.00 credits; FREE â€” route to 0050. Ports 6540â€“6559.
-- kimi K3: FREE â€” route to 0052. Monthly pool constrained (resets
-  08-23). Ports 9880â€“9899.
-- kimi-work K3: on 0047. Ports 6510â€“6529.
+- deepseek: ~$8 credits; continuous mode; expect 0051 claim. 6540–6559.
+- kimi K3: continuous mode, on 0053. Monthly pool tight (resets 08-23). 9880–9899.
+- kimi-work K3: on 0047. 6510–6529.
 - codex: out of tokens.
 
-## EXP-1 (packet-type A/B) â€” first data in
+## EXP-1 CLOSED (packet-type A/B)
 
-0049 BOUNDED-DESIGN to deepseek: first-pass accept, 0 revisions, 1
-minor scope deviation, $1.47. 0050 MECHANICAL (scaffolded) pending a
-claimant for the comparison arm.
+Both arms first-pass with deepseek. Scaffolded MECHANICAL additionally
+produced zero scope deviations. RULE (adopted, enforced by spec
+authoring practice): scaffold whenever risky math/cross-cutting design
+exists; interface-only acceptable for pure presentation.
 
 ## Next architect actions
 
-1. Owner pastes next goals into deepseek (0050) and kimi (0052).
-2. Review 0047 on REVIEW_REQUESTED (rebuild + 13-attach personally).
-3. 0050 review: build + PLAY the exe (D-117).
-
+1. Review 0047 on flip (rebuild + 13-attach MYSELF).
+2. Review 0053 on flip (captures + gates + verify-first dispositions).
+3. Watch 0051 claim; review = run scenario set MYSELF + negative.
