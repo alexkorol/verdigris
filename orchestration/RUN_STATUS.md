@@ -20,7 +20,7 @@
 
 | Task | Packet | Notes |
 |---|---|---|
-| 0051 native client harness | BOUNDED-DESIGN | deepseek expected next (continuous mode); add damage-number scenario per 0050 review nit 2 |
+| 0056 N5 Chronicles parity (CRITICAL) | BOUNDED-DESIGN | UNBLOCKED by 0047 integration; kimi-work lane after 0055 |
 
 ## SHIPPED TODAY (2026-08-18)
 
