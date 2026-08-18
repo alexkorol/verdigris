@@ -20,3 +20,5 @@ program tip before requesting review (stale-base reverts are a named
 failure class). Loop: claim â†’ implement â†’ verify â†’ report â†’ push â†’
 next. Never merge pre-acceptance; never push master.
 
+
+## Continuous mode (2026-08-18): follow orchestration/STANDING-LOOP.md (NAME=kimi, PORTS=9880-9899).

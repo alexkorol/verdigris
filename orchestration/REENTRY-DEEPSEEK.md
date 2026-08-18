@@ -82,3 +82,5 @@ Never merge program/master; never edit peer files; ports 6540-6559.
 - Board empty => backoff: run `powershell -Command "Start-Sleep 900"`
   before re-checking; double the sleep (max 3600s) while it stays
   empty. Do not spin instant fetch cycles.
+
+## Canonical loop: orchestration/STANDING-LOOP.md (NAME=deepseek, PORTS=6540-6559) supersedes the prose above where they differ.
