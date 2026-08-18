@@ -1,62 +1,72 @@
----
+﻿---
 task: TASK-0034
-verdict: REVISE
+verdict: ACCEPTED
 reviewed_commits:
-  - edb75ff
+  - a4976bb
 ---
 
 ## What was reviewed
 
-The full REPORT, the ranked friction inventory, and the evaluation
-environment. The report format is exactly right — two arcs, timestamped
-captures, beat-by-beat log, honest headless-fidelity caveats, read-only
-scope. Keep all of that. The problems are environmental, and they are
-disqualifying for the rankings as they stand.
+The full evaluation: session narrative with timestamped captures across
+guest + mortal-oath Chronicles paths, the ranked friction inventory
+(2 blockers, 5 majors, minors), keep-list, the five explicit answers,
+and the headline statement. Scope proof accepted; the live server was
+respected.
 
-## Problems
+## Judgment
 
-1. **Stale base — the evaluation measured last Friday's game.** Base
-   `056746b` is the D-110 priority-reset commit itself, BEFORE roughly
-   ten shipped playability fixes. At least three headline findings are
-   already fixed on master and were architect-verified with rendered
-   screenshots at acceptance:
-   - "no death banner, no memorial beat" → the full-screen death
-     overlay shipped in TASK-0041 (PR #15).
-   - inventory pane regression class → fixed in TASK-0036.
-   - movement jank → reworked in TASK-0037.
-   Current master is `71b6b20` (also carries N2 + the 0043 harness).
+Decision-ready — the best possible answer to the owner's "bored in 10
+seconds." The headline is exactly right: the shell exists; the first
+meaningful decision (survive the fight, weigh the risk) is unreadable
+and unrewarded. Blocker 1 (opaque ranged pack as the FIRST fight) and
+blocker 2 (death without a decision moment) are the two highest-value
+fixes in the whole program. Note: kimi's independent claim of this task
+was overlapped by codex's run — if kimi's evaluation still lands, it
+will be treated as corroborating evidence, not duplication; visibility
+of worker-branch claims across coordinators needs pulling before
+claiming (reminder, not a correction).
 
-2. **The client may not have been talking to your server.** In dev
-   mode the client hard-dials `ws://<hostname>:6500` regardless of the
-   page's port ([src/main.js:30]); only `VITE_WS_URL` (build-time) or a
-   PROD same-origin serve changes that. Your page was on :9777 while
-   the owner's live pm2 server held :6500 all morning. If the client
-   dialed :6500, the whole session ran a stale client against the
-   owner's mid-play server — version skew that would manufacture
-   exactly the symptom family you recorded (context menus missing
-   Talk/Take, zone entry bouncing, skills firing without mana,
-   monsters inert). The report does not prove which server the client
-   used.
+## Wave drafted from this report
 
-## Required corrections (revision 1)
+- TASK-0040 first-encounter readability (blockers 1 + major 3).
+- TASK-0041 death decision moment (blocker 2).
+- TASK-0042 first-loot excitement (major 4).
+- Already queued: 0036 inventory/pane sweep (major 5, 6), 0037 movement,
+  0038 controls contract + rebinding (major 7).
 
-1. Rerun both arcs at current master (`71b6b20` or later program tip).
-2. Prove the wire: capture `window.ws.url` (console) in the first
-   minute of each arc and include it in the log. The client must be
-   connected to YOUR fresh-build server — either build with
-   `VITE_WS_URL=ws://localhost:<yourport>` or serve the prod build
-   from the game server process so same-origin resolves correctly.
-   Keep avoiding the owner's :6500 (that part was right).
-3. Re-verify every surviving friction item against the new session;
-   mark each prior item FIXED / SURVIVES / NOT-REPRODUCED. Items that
-   survive on a proven-correct environment become the P0 playability
-   list — that inventory is exactly what D-110 needs, which is why the
-   rerun matters.
+## Architectural effect
 
-## What is correct (keep)
+This report and OWNER-SEED jointly define "playable" until superseded.
+The parity roadmap's bar rises with each fix.
 
-The method (driven play, captures, code-cross-checking each claim
-before ranking), the read-only discipline, the honest dev:kill
-disclosure, and the positive findings (quest panel, adventure menu,
-crypt ledger, onboarding copy) — those are worth keeping in the final
-report. Fast re-review promised: this is a rerun, not a rework.
+---
+
+# Addendum — kimi's late-landing evaluation (2026-08-17 ~17:15)
+
+Per the note above, kimi's independent report (`edb75ff`, 46 captures)
+landed after acceptance and is treated as corroborating evidence, not a
+new review cycle. The task REMAINS ACCEPTED on codex's `a4976bb`.
+
+Weight assessment of the kimi report:
+
+1. **Stale base.** It evaluated `056746b` — the priority-reset commit,
+   BEFORE 0036 (inventory), 0037 (movement), 0040 (first encounter),
+   0041 (death overlay). Its "no death banner", inventory, and movement
+   findings describe already-fixed code and are discounted.
+2. **Unproven wire.** The page ran on :9777, but a dev-mode client
+   hard-dials `ws://<hostname>:6500` ([src/main.js:30]) — the owner's
+   live pm2 server. Version-skew would manufacture the symptom family
+   reported (context menus missing Talk/Take, zone bounce, inert
+   monsters, mana spam). Without a captured `window.ws.url`, those
+   findings carry low weight. Future browser evaluations MUST capture
+   `window.ws.url` in the first minute — standing requirement.
+3. **Corroboration accepted where environment-independent:** quest
+   panel/adventure menu/crypt ledger praise, onboarding copy clarity,
+   HUD-explanation gap, and House/Scion identity missing from the HUD
+   (worth folding into a future UI task).
+
+A fresh-eyes evaluation on CURRENT master is genuinely valuable now
+that the friction wave landed — speced separately as TASK-0046 rather
+than reopening this task. kimi: claim 0046 if you want the rerun; the
+method and format of your report were exactly right, only the
+environment was stale.
