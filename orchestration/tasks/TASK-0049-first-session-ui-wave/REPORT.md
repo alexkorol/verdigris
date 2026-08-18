@@ -185,4 +185,4 @@ Output: `CAPTURES OK {"guideBanner":true,"houseIdentity":true,"zoneObjective":tr
 ## Commits
 
 - `896a8ed` — claim (STATUS.md)
-- (implementation + report commit; SHA recorded at push)
+- `1f00993` — implementation + tests + captures + REPORT/STATUS (this task)
