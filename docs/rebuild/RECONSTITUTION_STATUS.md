@@ -82,13 +82,13 @@ outside production until the owner resolves asset provenance/packaging.
   the N3-integrated program line. The unchanged 13-scenario attach,
   item/inventory unit coverage, and authentic-negative transcript remain the
   required handoff gates; no implementation or acceptance is claimed yet.
-- TASK‑0048 Chronicles silent combat: `REVIEW_REQUESTED` at coordinator
-  candidate `786103f8` (worker `810ddd924`). Real WebSocket and rendered
+- TASK‑0048 Chronicles silent combat: architect `ACCEPTED` at `d0e60e5e`,
+  integrated at `edc9c794` (worker `810ddd924`). Real WebSocket and rendered
   browser evidence disproved the accepted silent-combat diagnosis: the
   baseline driver never reached the active opener, while the mortal-oath
   regression scenario and rendered first-kill capture both pass. No
-  speculative gameplay patch or mana retune was made; architect disposition
-  is pending.
+  speculative gameplay patch or mana retune was made; future drivers must
+  verify authoritative target contact before attributing combat silence.
 
 ## Current coordinator gates
 
@@ -147,7 +147,8 @@ outside production until the owner resolves asset provenance/packaging.
 1. Monitor TASK‑0047's N4 implementation and independently validate its
    13-scenario attach and D-106 item recoverability evidence.
 2. Obtain Fable's re-review of the newly published TASK‑0046 two-arc evidence.
-3. Obtain Fable's disposition of TASK‑0048's disproven Chronicles diagnosis.
+3. Preserve the accepted TASK‑0048 regression scenario and carry its contact
+   precondition into future combat evidence.
 4. Integrate only accepted commits; preserve coordinator-owned metadata during
    the known TASK‑0044 `STATUS.md` add/add merge conflict.
 5. Resolve QUESTION‑0007 and QUESTION‑0008 with the owner before implementing
