@@ -1,0 +1,55 @@
+TASK-0044 actual worker-branch recheck — 2026-08-17
+
+Worktree:
+
+    C:\Users\Alex\Documents\KimiWork\verdigris
+    branch codex/TASK-0044-native-protocol-n2
+    HEAD 6e6279c (six native files uncommitted)
+
+The worker WIP now contains the corrected networking test helper:
+
+    Envelope response;
+    parse_envelope(wire, response, &error);
+    return response.data;
+
+Native build command:
+
+    powershell -NoProfile -File native/build.ps1 -RunTests
+
+Build output included:
+
+    native legacy denylist: PASS
+    FAIL: N2 stair return restores the pre-entry position
+    verdigris networking tests: PASS
+
+The build script returns success because the networking test runs after the
+core test and masks its nonzero exit. Direct executable checks exposed the
+actual result:
+
+    native/build/verdigris_core_tests.exe       EXIT=1
+    native/build/verdigris_networking_tests.exe EXIT=0
+
+The failing core assertion is in the newly added N2 test. It captures
+`pre_entry` after `enter_solo_instance`, when the player is already at the
+instance spawn (`6,20`), then compares the stair return against that value.
+The implementation correctly restores the town position saved before entry
+(`38,115.333333`). A disposable test-only correction that captures the town
+position before entry makes both native test executables pass.
+
+Actual worker-built server attach command, port 6519:
+
+    $env:PLAYTEST_WS_URL='ws://127.0.0.1:6519'
+    node playtest/run.mjs --attach movement zones
+
+Observed result:
+
+    PASS movement (4599ms)
+    PASS zones (1108ms)
+    zones: all six zone names/layouts/stairs/18-monster populations PASS
+    zones: returned to the pre-entry position (38,115 vs 38,115)
+    2/2 scenarios passed
+
+The server was stopped cleanly. This is actual worker-branch evidence, but
+acceptance remains pending until the worker corrects the test, commits all
+WIP files, reruns the authoritative gate with exit status preserved, and
+provides the architect transcript/rerun.

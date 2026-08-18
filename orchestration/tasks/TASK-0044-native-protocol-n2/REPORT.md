@@ -1,4 +1,4 @@
-# TASK-0044 REPORT — Parity wave N2: world, movement, and zones over the C++ server
+﻿# TASK-0044 REPORT — Parity wave N2: world, movement, and zones over the C++ server
 
 ## Executive summary
 

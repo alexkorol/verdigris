@@ -66,3 +66,16 @@ raises the reference bar and its fixes define what parity means.
 - Every wave ends with the dual-run scenario matrix report committed.
 - Web-side changes after a wave lands must re-run that wave's matrix
   (regression sweep layer 1).
+
+## Coordinator evidence checkpoint — 2026-08-17
+
+The N2 contract matrix has now been run against both implementations with the
+same unchanged scenario set (`quickstart`, `single-session`, `movement`,
+`zones`): JavaScript reference **4/4**, native commit `d476788` **4/4**.
+The native run exercised all six zone/layout combinations and restored the
+pre-entry position. The comparison also records the intentional N2 boundary:
+the JS reference reports authored populations `33/56/31/46/57/54`, while the
+native adapter returns 18 actors per zone. N2 permits a minimum scenario stub;
+exact population/composition parity is therefore an explicit N3+ obligation,
+not a silently accepted mismatch. Raw comparison:
+[`coordinator-dual-run-matrix-2026-08-17.txt`](../../orchestration/tasks/TASK-0044-native-protocol-n2/captures/coordinator-dual-run-matrix-2026-08-17.txt).

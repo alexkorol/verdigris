@@ -1,0 +1,25 @@
+TASK-0044 coordinator dual-run matrix
+Date: 2026-08-17
+Scenario set: quickstart single-session movement zones
+
+REFERENCE JS SERVER
+Command: $env:PLAYTEST_PORT='6527'; npm run playtest -- quickstart single-session movement zones
+Result: 4/4 scenarios passed
+  movement 4607ms; quickstart 159ms; single-session 474ms; zones 18066ms
+  JS zone populations observed: 33, 56, 31, 46, 57, 54
+  JS restored pre-entry position: 43.666666,116.333334
+
+NATIVE N2 SERVER
+Worker tip: d476788 (C:\Users\Alex\Documents\KimiWork\verdigris)
+Command: $env:PLAYTEST_WS_URL='ws://127.0.0.1:6528'; node playtest/run.mjs --attach quickstart single-session movement zones
+Result: 4/4 scenarios passed
+  movement 4584ms; quickstart 161ms; single-session 314ms; zones 1110ms
+  native zone populations observed: 18, 18, 18, 18, 18, 18
+  native restored pre-entry position: 38,115
+
+Interpretation: the unchanged scenario contracts pass on both servers, including
+movement cadence, session replacement, all six zone/layout combinations, stairs,
+and return-position restoration. Monster counts are intentionally not equal in
+N2: SPEC.md permits a minimum scenario stub and the native adapter currently
+uses 18 per zone. Exact authored population/composition belongs to later parity
+waves (N3+), not an N2 acceptance claim.

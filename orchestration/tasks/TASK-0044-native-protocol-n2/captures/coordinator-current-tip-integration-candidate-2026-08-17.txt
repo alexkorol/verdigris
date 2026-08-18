@@ -1,0 +1,26 @@
+TASK-0044 current-tip integration candidate
+Date: 2026-08-17
+Base: coordinator tip 7a7f637a
+Candidate: 8be3dacdc12a7c58b8377993944f7aa254b1837a
+
+Integration method: disposable worktree `integrate-0044-current`; cherry-picked
+implementation commit d476788 without conflicts. The candidate changes only
+the six native files permitted by TASK-0044.
+
+Verification:
+- `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient`: PASS
+  (legacy denylist, core tests, networking tests, and client shell; stored
+  trophy/item smoke 1/1).
+- Native server attach on port 6500:
+  `PLAYTEST_WS_URL=ws://127.0.0.1:6500 node playtest/run.mjs --attach
+  quickstart single-session movement zones`: PASS, 4/4.
+- Movement: PASS (4608ms).
+- Quickstart: PASS (159ms).
+- Single-session: PASS (316ms).
+- Zones: PASS (1111ms), all six zone/layout combinations, 18-monster N2
+  minimum stub, stairs, and saved-position restoration (38,115 -> 38,115).
+- `git diff --check`: PASS.
+
+The candidate is ready for Fable's architect rerun. It is not merged because
+TASK-0044 remains architect-unaccepted; the 18-monster population is the
+spec-permitted N2 stub and is not claimed as full encounter parity.

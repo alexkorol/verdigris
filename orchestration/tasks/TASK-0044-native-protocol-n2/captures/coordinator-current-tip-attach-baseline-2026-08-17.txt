@@ -1,0 +1,24 @@
+TASK-0044 current coordinator-tip attach baseline
+Date: 2026-08-17
+Coordinator HEAD: 8385ef09
+Server: native/build/verdigris_server.exe 6530 (built from coordinator HEAD)
+
+An ancestry check confirms the worker implementation is not integrated yet:
+
+  git merge-base --is-ancestor d476788 HEAD
+  exit code: 1 (d476788 is not an ancestor of 8385ef09)
+
+Command:
+  $env:PLAYTEST_WS_URL='ws://127.0.0.1:6530';
+  node playtest/run.mjs --attach quickstart single-session movement zones
+
+Result against the unchanged harness:
+  PASS quickstart (160ms)
+  PASS single-session (315ms)
+  FAIL movement: Timed out waiting for continuous movement sample (8000ms)
+  FAIL zones: Timed out waiting for zone transition to dungeon (8000ms)
+  2/4 scenarios passed
+
+The native server was stopped in a finally block. This is an expected
+pre-integration baseline, not a TASK-0044 implementation failure: the
+coordinator tip is still N1 while d476788 remains review-requested.

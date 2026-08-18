@@ -1,0 +1,10 @@
+TASK-0043 coordinator fresh full-playtest checkpoint
+Date: 2026-08-17
+Coordinator tip: 9ee547a2339a6be6fa296505be0580334c32815c
+Command: npm run playtest
+Result: 31/31 scenarios passed
+
+The pass included the previously timing-sensitive build-divergence,
+gear-outcomes, quest, session-arc, and zones scenarios. No harness or product
+source was changed for this run; the server was booted on the playtest port
+and exited through the normal runner lifecycle.

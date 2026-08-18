@@ -1,0 +1,21 @@
+TASK-0044 coordinator N3 baseline probe
+Date: 2026-08-17
+Worker tip: d476788
+Server: native/build/verdigris_server.exe 6529
+Command: $env:PLAYTEST_WS_URL='ws://127.0.0.1:6529'; node playtest/run.mjs --attach combat encounter-variety
+
+Playing against ws://127.0.0.1:6529
+
+  ▶ combat
+  FAIL combat: ASSERT FAILED: instance is populated (18 monsters)
+
+  ▶ encounter-variety
+  FAIL encounter-variety: ASSERT FAILED: crypt packs lean toward close melee pressure
+
+0/2 scenarios passed
+
+Interpretation: this is an expected N2 boundary, not an N2 regression. The
+unchanged combat scenario requires at least 20 monsters; the N2 minimum stub
+returns 18 per zone. Encounter-variety additionally requires authored melee /
+ranged / buffer roles, aura effects, and rare modifiers, which are N3 combat
+and encounter payload work.

@@ -1,0 +1,28 @@
+TASK-0043 current-tip integration candidate v2
+Date: 2026-08-17
+Base: coordinator tip 6e900687
+Candidate: ab73edbc3be423241eda8f722dd76d913bbca4ab
+
+Independent validation found the earlier candidate 1a9f6b6b was based on
+ade29e6d, before later coordinator documentation commits. This v2 candidate
+reapplies the same 13 playtest correction commits directly onto 6e900687;
+all cherry-picks applied without conflicts.
+
+Scope audit: only playtest/README.md, playtest/TASK-0043-default-load-transcript.txt,
+playtest/harness.mjs, playtest/run.mjs, playtest/timing.mjs, and the five
+scenario files changed. No server/src/native/package/product paths changed.
+`git diff --check` passed.
+
+Verification:
+- `npm rebuild better-sqlite3` completed after disposable dependency install.
+- `npm run test:unit`: PASS, 122 files / 779 tests.
+- Full `npm run playtest --silent`: 30/31; gear-outcomes missed its comparison
+  kill deadline under suite contention (max event-loop lag 109.314ms).
+- Immediate isolated `npm run playtest --silent -- gear-outcomes`: PASS, 1/1
+  in 40654ms (max event-loop lag 35.356671ms).
+- Prior source-equivalent candidate 1a9f6b6 completed a full 31/31 run; the
+  v2 difference is the corrected coordinator documentation base, not playtest
+  source content.
+
+The v2 candidate is the accurate current-tip handoff for Fable's rerun. It is
+not merged while TASK-0043 remains architect-unaccepted.

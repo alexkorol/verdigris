@@ -1,0 +1,19 @@
+TASK-0043 coordinator revision proof
+Date: 2026-08-17
+Revision under test: f9527d9c (test(playtest): capture default contention evidence)
+Mode: npm run playtest --silent, with PLAYTEST_LOAD_MODE unset
+Moderate load: one hidden Node CPU spinner launched with
+  Start-Process node -ArgumentList @('-e','for (;;) { Math.sqrt(Math.random()); }')
+The spinner was stopped after each run. No source or server files were changed.
+
+Run 1: PASS, 31/31 scenarios, runner exit 0
+  diagnostics: loadMode=false, p99EventLoopLagMs=32.145407, maxEventLoopLagMs=112.525311
+Run 2: PASS, 31/31 scenarios, runner exit 0
+  diagnostics: loadMode=false, p99EventLoopLagMs=32.161791, maxEventLoopLagMs=110.166015
+Run 3: PASS, 31/31 scenarios, runner exit 0
+  diagnostics: loadMode=false, p99EventLoopLagMs=32.194559, maxEventLoopLagMs=97.583103
+
+Result: three consecutive no-flag default-mode runs passed 31/31 under the
+documented moderate CPU contention. This is coordinator evidence for Fable's
+TASK-0043 revision request; architect review remains authoritative and must be
+rerun/updated by Fable.

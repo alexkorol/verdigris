@@ -1,0 +1,27 @@
+TASK-0044 coordinator N3 surface audit
+Date: 2026-08-17
+Purpose: verify that the N3 handoff brief names existing browser wire events and
+native core hooks, without changing either implementation.
+
+Browser reference symbols (all present)
+  server/player/handlers/socket-events/index.js:324  player:combat:update
+  server/player/handlers/socket-events/index.js:692  player:move
+  server/player/handlers/socket-events/index.js:723  player:skill:trigger
+  server/core/combat/index.js:453                      combat:hit
+  server/core/combat/index.js:474                      world:skill:effect
+  server/core/combat/index.js:735                      world:projectile
+  server/core/entities/player/stats-manager.js:311      player:stats:update
+  server/core/entities/monster/combat-controller.js:197  monster:telegraph
+  server/core/combat/experience.js:12                    game:send:message
+
+Native core hooks (all present)
+  native/include/verdigris/core.hpp:25   enum class ActionType
+  native/include/verdigris/core.hpp:219  enum class EventType
+  native/include/verdigris/core.hpp:270  struct Command
+  native/include/verdigris/core.hpp:279  Command::action_use
+  native/include/verdigris/core.hpp:281  Command::pick_up
+  native/include/verdigris/core.hpp:282  Command::equip
+
+Result: PASS. This is a read-only contract audit. No browser, native, package,
+or protocol source was changed. Native combat implementation remains pending
+an architect-issued READY N3 task/spec.
