@@ -1,6 +1,6 @@
 ---
 task: TASK-0042
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: kimi
 worker: kimi-code-cli
 worker_branch: codex/TASK-0042-first-loot-moment
