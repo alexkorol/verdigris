@@ -85,4 +85,4 @@ re-review.
 ## Commits
 
 - `424de9f9` — claim (STATUS.md)
-- implementation + report commit (SHA recorded at push)
+- `73bd91c0` — title fix + combat juice + zoom + scenarios + REPORT/STATUS
