@@ -26,8 +26,50 @@ const globalGidsForGroup = (category) => new Set(
     .flat()
     .map(localId => DUNGEON_FIRST_GID + localId),
 );
+const globalGidsForSubgroup = (category, subgroup) => (
+  (DUNGEON_TILESET.groups?.[category]?.[subgroup] || [])
+    .map(localId => DUNGEON_FIRST_GID + localId)
+);
 const WALL_GIDS = globalGidsForGroup('wall');
 const TREE_GIDS = globalGidsForGroup('tree');
+// TASK-0053: vine walls are vegetation boundaries (grove/wilds/marsh edges),
+// not masonry; living trees are what a treeline boundary should read as.
+const VINE_WALL_GIDS = new Set(globalGidsForSubgroup('wall', 'vines'));
+const LIVING_TREE_GIDS = globalGidsForSubgroup('tree', 'tree');
+
+/**
+ * TASK-0053: a wall cell earns its raised face only when it borders walkable
+ * floor (8-neighbourhood, so corner rooms keep their corner faces). Interior
+ * wall mass is skipped entirely and stays dark room-mass, killing the
+ * repeated-brick-wallpaper read in dungeon interiors.
+ */
+export const isExposedWallCell = (background, mapWidth, mapHeight, x, y) => {
+  for (let dy = -1; dy <= 1; dy += 1) {
+    for (let dx = -1; dx <= 1; dx += 1) {
+      if (!dx && !dy) continue;
+      const nx = x + dx;
+      const ny = y + dy;
+      if (nx < 0 || ny < 0 || nx >= mapWidth || ny >= mapHeight) continue;
+      const gid = background[(ny * mapWidth) + nx] || 0;
+      if (gid && !WALL_GIDS.has(gid) && UI.tileWalkable(gid - 1, 'background')) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+/**
+ * TASK-0053: deterministic living-tree gid for a boundary cell. Keyed on the
+ * map coordinate only, so the treeline is stable frame-to-frame and identical
+ * for every viewer of the same (deterministically generated) zone.
+ */
+export const treeLineGidFor = (x, y) => {
+  if (!LIVING_TREE_GIDS.length) return 0;
+  let hash = ((x * 374761393) + (y * 668265263)) >>> 0;
+  hash = (hash ^ (hash >>> 13)) >>> 0;
+  return LIVING_TREE_GIDS[hash % LIVING_TREE_GIDS.length];
+};
 
 const clamp = (value, minimum, maximum) => Math.min(Math.max(value, minimum), maximum);
 const directionAngle = (direction = 'down') => ({
@@ -327,8 +369,19 @@ class PerspectiveRenderer {
           continue;
         }
 
-        const gid = verticalForeground ? foregroundGid : backgroundGid;
-        const kind = TREE_GIDS.has(gid) ? 'tree' : (wall ? 'wall' : 'decor');
+        // Unexposed wall mass renders no billboard: it stays dark room-mass.
+        if (wall && !verticalForeground
+          && !isExposedWallCell(this.map.background, mapSize.x, mapSize.y, worldX, worldY)) {
+          continue;
+        }
+
+        let gid = verticalForeground ? foregroundGid : backgroundGid;
+        let kind = TREE_GIDS.has(gid) ? 'tree' : (wall ? 'wall' : 'decor');
+        // Vine boundaries are vegetation: render the treeline, not the vines.
+        if (!verticalForeground && VINE_WALL_GIDS.has(gid)) {
+          gid = treeLineGidFor(worldX, worldY);
+          kind = 'tree';
+        }
         const foot = centerOfTile(worldX, worldY + 0.42, tileSize);
         draws.push({
           depthY: foot.y,
