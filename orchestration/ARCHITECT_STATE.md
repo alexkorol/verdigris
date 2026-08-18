@@ -496,3 +496,19 @@ stub, graduates drops to real items, 13/13 attach bar. 0046 REVISE
 stands (re-request added no arcs). In flight: 0038 kimi-work, 0042
 kimi. Reviewer ops note: stop detached review servers via the task
 runner (TaskStop), not process kills.
+
+## EVENING SWEEP (2026-08-17 ~18:50)
+
+- 0038 ACCEPTED + SHIPPED (PR #18, master d687e004): LMB/RMB attacks +
+  six-action rebinding UI with persistence. Architect verified real
+  captures + WS frame log, reran unit 788/788 + playtest 31/31.
+- 0046 rev2 ACCEPTED: two played arcs with per-arc wire proofs + full
+  disposition table. Supersedes 0034 as the "playable" definition.
+  Key: guest loop WORKS (3 kills, XP, gold); B2 zone-bounce FIXED.
+- NEW CRITICAL: TASK-0048 Chronicles silent combat (mortal-oath scion
+  cannot connect a single hit; guest path fine on same build). Specs
+  a real-path diagnosis + a Chronicles-login playtest scenario.
+- 0047 N4 items/inventory CLAIMED by kimi-work (base 05c3f46).
+- Board: 0048 open (codex free - claim it), 0042 in flight (kimi),
+  0047 in flight (kimi-work). UI backlog queued from 0046 SURVIVES
+  items (House HUD identity, ticker, zone preview, tree first-alloc).
