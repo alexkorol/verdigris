@@ -1,50 +1,45 @@
 ---
 task: TASK-0038
-state: BLOCKED
+state: INTEGRATED
 branch: codex/TASK-0038-rebinding-kimiwork
 commits:
   - 01a12d72
   - 4a8983cb
-base_commit: e462c26d
-architect_review_required: true
+  - c73fff1
+base_commit: 9d4f666
+integration_commit: 2c0a00c3
+architect_review: ACCEPTED
 ---
 
 ## Executive summary
 
-The worker produced a substantive controls/rebinding candidate, but it is not
-review-ready under the current task contract. The implementation reaches the
-mounted browser seams that QUESTION-0008 identified, while the declared task
-ownership does not include those seams. Unit, build, and lint gates pass; the
-unchanged smoke gate still encodes the pre-rebind UI and context-menu contract.
-
-## Implementation
-
-- `01a12d72` adds a live persisted action map and input-controller rebinding.
-- `4a8983cb` wires LMB/RMB world attacks, Shift+RMB context access, the mounted
-  settings bindings panel, and live Quickbar labels.
-- The implementation covers the actual seams in `GameCanvas.vue`,
-  `slots/Settings.vue`, `hud/Quickbar.vue`, and a new `SettingsBindings.vue`.
+TASK-0038 is accepted and integrated. It delivers cursor-aimed LMB/RMB world
+attacks, six persisted rebindable actions, live quickbar labels, conflict
+refusal, reset-all, and Shift+RMB context-menu access. The server remains
+authoritative through the existing skill-trigger protocol.
 
 ## Verification
 
-- Focused controls tests: 24/24 passed.
-- `npm run test:unit`: 123 files / 791 tests passed.
-- `npm run build`: passed.
-- `npm run lint`: passed.
-- `npm run smoke:browser`: fails at the unchanged expectation for `Bronze Arc
-  [Space / 1]`; the candidate correctly renders `LMB / 1`. The later smoke
-  step also expects unmodified right-click context-menu behavior, while the
-  candidate intentionally reserves Shift+RMB for that access.
+Fable's architect review verified real rendered captures for quickbar labels,
+LMB primary attack, RMB weapon skill, the Settings controls panel, and a
+rebind surviving a full page reload. The WS frame log showed LMB and RMB
+\`player:skill:trigger\` events followed by \`world:skill:effect\`, with
+\`rmbContextMenuOpened: false\`.
 
-## Review blockers
+- \`npm run test:unit\`: 123 files / 788 tests passed.
+- \`npm run smoke:browser\`: 1 passed.
+- \`npm run playtest\`: 31/31 passed.
 
-1. Architect/owner must expand ownership to the mounted component seams or
-   provide the alternative event seam in QUESTION-0008.
-2. The browser smoke expectations must be revised as a deliberate contract
-   update, not hidden by weakening the implementation.
-3. Required captures for persisted rebind across reload and LMB/RMB attacks
-   landing are absent.
-4. D-115 hands-on play review remains outstanding.
+## Scope and integration
 
-This report deliberately keeps the task `BLOCKED`; the source candidate is
-preserved and reviewable after those scope and evidence decisions are resolved.
+The architect explicitly ratified the minimal mounted-component ownership
+expansion for \`GameCanvas.vue\`, \`Settings.vue\`, and \`Quickbar.vue\`; no
+rendering-file overlap or native changes were introduced. Integrated at
+\`2c0a00c3\`, with the accepted program line continuing through the current
+N3/native parity work.
+
+## Known design note
+
+The legacy context menu remains available through Shift+RMB. ESC during the
+capture flow also closes the settings pane; this is documented behavior, not a
+failed gate.

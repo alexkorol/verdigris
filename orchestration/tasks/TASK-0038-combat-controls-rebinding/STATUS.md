@@ -1,24 +1,22 @@
 ---
 task: TASK-0038
-state: BLOCKED
+state: INTEGRATED
 coordinator: codex
 worker: Luna browser controls worker
-worker_branch: codex/TASK-0038-combat-controls-rebinding
+worker_branch: codex/TASK-0038-rebinding-kimiwork
 worktree: .codex/worktrees/TASK-0038-combat-controls-rebinding
-base_commit: e462c26d
-started_at: 2026-08-17T00:00:00-07:00
+base_commit: 9d4f666
+started_at: 2026-08-17T10:40:00-07:00
+completed_at: 2026-08-17T11:20:00-07:00
 dependencies: TASK-0037 accepted/integrated
 expected_verification: npm run test:unit; npm run smoke:browser; controls/rebinding captures; D-115 play gate
-known_risks: declared owned paths do not contain the mounted click handlers, settings pane, or skill-bar labels
+known_risks: context menu is intentionally available through Shift+RMB; ESC during capture also closes settings
 architect_review_required: true
-question: orchestration/questions/QUESTION-0008-task-0038-control-ownership-seam.md
-candidate_commit: 4a8983cbe7ef8892d5d703af11736186fa0e479f
-latest_audit: unit 123/791, build/lint pass; smoke fails on stale pre-rebind expectations; review handoff still blocked on ownership expansion, updated E2E expectations, and required captures
+candidate_commit: c73fff1
+integration_commit: 2c0a00c3
+architect_review: ACCEPTED (Fable review verified captures, WS frame log, unit 788/788, playtest 31/31)
+handoff: integrated on the N3/current program line; Shift+RMB preserves context menu while LMB/RMB are authoritative world attacks
 ---
 
-The worker completed a read-only baseline audit and found no safe complete
-implementation within the assigned paths. Targeted baseline tests passed 5/5;
-full unit baseline passed 122 files / 779 tests. The pinned smoke baseline was
-not valid because port 6500 was occupied and its endpoint returned HTML for the
-JSON API. Work is stopped pending the architect's ownership decision; no
-source changes were made.
+The accepted implementation is integrated at `2c0a00c3`; Fable verified the
+real captures, WS frame log, unit suite (788/788), and full playtest (31/31).
