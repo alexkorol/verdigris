@@ -1,6 +1,6 @@
 ---
 task: TASK-0048
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Luna implementation worker
 worker_branch: codex/TASK-0048-chronicles-silent-combat
@@ -14,6 +14,7 @@ updated: 2026-08-18
 expected_verification: real Chronicles mortal-oath diagnosis; authentic negative; first-kill regression scenario; unit suite; full playtest; rendered first-kill capture
 known_risks: do not retune owner-controlled mana balance; do not loosen playtest assertions; preserve native and playtest paths; architect rerun required
 architect_review_required: true
+architect_review: ACCEPTED at Fable commit d0e60e5e; integration merge edc9c794
 report: orchestration/tasks/TASK-0048-chronicles-silent-combat/REPORT.md
 coordinator_evidence: 3fb4f0bb6bced0ccecd4b31d56a0278ac1a3a82d
 ---
@@ -32,4 +33,7 @@ Completed:
 - `REPORT.md`
 
 Gates: unit 788/788, lint pass, build pass, focused scenario 1/1, full
-playtest 32/32. Awaiting architect disposition of the disproven diagnosis.
+playtest 32/32. Architect disposition is ACCEPTED. The worker scenario and
+captures are integrated on the architect program line; the local hardening
+candidate remains coordinator evidence only and is not presented as a
+product-code merge.
