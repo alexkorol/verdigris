@@ -62,3 +62,14 @@ UI wave, TASK-0050 native client C1 (CRITICAL - owner-visible, D-118 2D
 top-down + visible combat + real inventory), TASK-0051 native client
 harness (D-119). If you are confident in C++, take 0050 first; it is
 the highest owner-value item on the board.
+
+## Continuous mode (standing goal, owner-directed 2026-08-18)
+
+Do not stop after one task. Loop: pull tip -> read RUN_STATUS routing
+-> claim highest-priority READY task (first-committed-claim wins, back
+off if taken) -> implement per SPEC + ACCEPTANCE.md -> flip
+REVIEW_REQUESTED + push -> immediately claim the next READY task
+WITHOUT waiting for review. Each cycle, check your task folders for
+REVIEW.md verdicts: a REVISE outranks new claims. Stop only when the
+board is empty or credits are nearly exhausted (note it in STATUS).
+Never merge program/master; never edit peer files; ports 6540-6559.

@@ -1216,9 +1216,21 @@ void test_item_identity_and_branch() {
   const std::string item_id = sim.ground_items().front().id;
   sim.dispatch(Command::pick_up(item_id));
   sim.dispatch(Command::equip(item_id));
+  check(sim.scion().carried_items.front().equipped, "equip marks the carried item equipped");
+  {
+    const Actor* player = sim.actor(sim.scion().actor_id);
+    check(player && player->equipped_item_id && *player->equipped_item_id == item_id,
+          "equip sets the actor's equipped reference");
+  }
   sim.dispatch(Command::interact("use:" + item_id));
   check(sim.scion().carried_items.front().id == item_id, "pickup/equip/use preserve item identity");
   check(sim.scion().carried_items.front().use_count == 1, "use history increments");
+  sim.dispatch(Command::unequip());
+  check(!sim.scion().carried_items.front().equipped, "unequip clears the carried item's equipped flag");
+  {
+    const Actor* player = sim.actor(sim.scion().actor_id);
+    check(player && !player->equipped_item_id.has_value(), "unequip clears the actor's equipped reference");
+  }
   sim.dispatch(Command::interact("branch:ash"));
   check(sim.house().specializations.size() == 1 && sim.house().specializations.front() == "ash",
         "optional branch grants a House access unlock, not a rigid character class");

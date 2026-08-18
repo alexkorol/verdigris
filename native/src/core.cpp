@@ -177,6 +177,10 @@ Command Command::equip(const std::string& item_id) {
   return {CommandType::Equip, 0, 0, ActionType::Wait, item_id};
 }
 
+Command Command::unequip() {
+  return {CommandType::Unequip, 0, 0, ActionType::Wait, {}};
+}
+
 Command Command::enter(const std::string& route_id) {
   return {CommandType::EnterInstance, 0, 0, ActionType::Wait, route_id};
 }
@@ -295,6 +299,7 @@ void Simulation::dispatch(const Command& command) {
   if (command.type == CommandType::Interact) resolve_interact(command.target);
   if (command.type == CommandType::PickUp) resolve_pickup(command.target);
   if (command.type == CommandType::Equip) resolve_equip(command.target);
+  if (command.type == CommandType::Unequip) resolve_unequip();
   if (command.type == CommandType::EnterInstance) resolve_enter(command.target);
   if (command.type == CommandType::ExtractToHouse) resolve_extract();
   advance_tick();
@@ -512,6 +517,20 @@ void Simulation::resolve_equip(const std::string& item_id) {
   if (player) player->equipped_item_id = item->id;
   emit(EventType::ItemEquipped, scion_.actor_id, item->id);
   emit(EventType::ItemHistoryUpdated, scion_.actor_id, item->id, {}, "equip");
+}
+
+// Remove the equipped item without swapping in another: clear the item flag
+// and the actor's equipped reference so the stats readout drops the bonus.
+void Simulation::resolve_unequip() {
+  if (!scion_.alive) return;
+  Actor* player = actor(scion_.actor_id);
+  if (!player) return;
+  const std::string removed_id = player->equipped_item_id.value_or(std::string{});
+  for (auto& carried : scion_.carried_items) carried.equipped = false;
+  player->equipped_item_id.reset();
+  if (!removed_id.empty()) {
+    emit(EventType::ItemHistoryUpdated, scion_.actor_id, removed_id, {}, "unequip");
+  }
 }
 
 void Simulation::resolve_enter(const std::string& route_id) {

@@ -13,6 +13,7 @@
 
 #include "verdigris/core.hpp"
 #include "verdigris/seasonal.hpp"
+#include "camera2d.hpp"
 
 #ifdef VERDIGRIS_NATIVE_WINDOWS
 #define WIN32_LEAN_AND_MEAN
@@ -45,41 +46,15 @@ constexpr double kPi = 3.14159265358979323846;
 // eight grid tiles fill the arena half-extent at the default camera.
 constexpr double kTileUnits =
     static_cast<double>(verdigris::world_scale::kArenaHalfExtent) / 8.0;
-// D-107 ARPG camera preset.  The close zoom blend borrows the Miniature
-// treatment's stronger perspective without changing the default presentation.
+// D-118: clean top-down presentation. One orthographic camera with a uniform
+// zoom; scale is camera-independent so no element can slide against movement.
 constexpr double kCameraDefaultZoom = 0.85;
-constexpr double kCameraDefaultPitch = 62.0;
-constexpr double kCameraDefaultPerspective = 0.0006;
-constexpr double kCameraDefaultAnchor = 0.52;
-constexpr double kCameraDefaultFog = 0.4;
-constexpr double kCameraMiniaturePerspective = 0.0013;
-constexpr double kCameraMiniatureZoomThreshold = 1.05;
-constexpr double kCameraMiniatureBlendEndZoom = 1.35;
-// Adjustable 2.5D camera: pitch foreshortens the ground plane, zoom scales
-// world units to pixels, and perspective grows near rows / shrinks far rows.
+// Adjustable top-down camera: zoom scales world units to pixels uniformly.
 struct Camera {
   double x = 0.0;
   double y = 0.0;
-  double zoom = kCameraDefaultZoom;  // pixels per world unit
-  double pitch_deg = kCameraDefaultPitch;  // 90 = top-down, lower = flatter horizon
-  double perspective = kCameraDefaultPerspective;
-  double anchor = kCameraDefaultAnchor;
-  double fog = kCameraDefaultFog;
-
-  double ground_squash() const { return std::cos(pitch_deg * kPi / 180.0); }
-  double depth_scale(double rel_y) const {
-    return std::clamp(1.0 + rel_y * perspective, 0.65, 1.55);
-  }
+  double zoom = kCameraDefaultZoom;  // pixels per world unit (uniform, both axes)
 };
-
-void update_camera_perspective(Camera& camera) {
-  const double blend = std::clamp(
-      (camera.zoom - kCameraMiniatureZoomThreshold) /
-          (kCameraMiniatureBlendEndZoom - kCameraMiniatureZoomThreshold),
-      0.0, 1.0);
-  camera.perspective = kCameraDefaultPerspective +
-                       (kCameraMiniaturePerspective - kCameraDefaultPerspective) * blend;
-}
 
 struct ScreenPoint {
   int x = 0;
@@ -95,7 +70,8 @@ struct EffectFx {
     Impact,
     DeathRing,
     Dust,
-    Sparkle
+    Sparkle,
+    DamageNumber
   };
   Kind kind = Kind::Impact;
   double wx = 0.0;
@@ -103,6 +79,8 @@ struct EffectFx {
   double angle = 0.0;
   int age = 0;
   int ttl = 8;
+  int value = 0;
+  bool damage_to_player = false;
 };
 
 // AttackTelegraphed is the simulation's warning contract.  The client keeps
@@ -675,29 +653,18 @@ COLORREF fade_to_background(COLORREF color, double remaining) {
 }
 
 ScreenPoint project(const Camera& camera, const RECT& bounds, double wx, double wy) {
-  const double rel_x = wx - camera.x;
-  const double rel_y = wy - camera.y;
-  const double depth = camera.depth_scale(rel_y);
-  const int anchor_y = static_cast<int>(bounds.bottom * camera.anchor);
-  ScreenPoint out;
-  out.x = bounds.right / 2 + static_cast<int>(rel_x * camera.zoom * depth);
-  out.y = anchor_y +
-          static_cast<int>(rel_y * camera.zoom * camera.ground_squash() * depth);
-  out.scale = camera.zoom * depth;
-  return out;
+  const camera2d::Camera cam{camera.x, camera.y, camera.zoom};
+  const camera2d::Screen screen{bounds.right, bounds.bottom};
+  const camera2d::Point point = camera2d::project(cam, screen, wx, wy);
+  return {point.x, point.y, point.scale};
 }
 
 // Inverse of project() on the ground plane, good enough for mouse aim.
 void unproject(const Camera& camera, const RECT& bounds, int sx, int sy, double& wx,
                double& wy) {
-  const double squash = std::max(0.08, camera.ground_squash());
-  const int anchor_y = static_cast<int>(bounds.bottom * camera.anchor);
-  double rel_y = (sy - anchor_y) / (camera.zoom * squash);
-  rel_y = (sy - anchor_y) / (camera.zoom * squash * camera.depth_scale(rel_y));
-  const double rel_x =
-      (sx - bounds.right / 2) / (camera.zoom * camera.depth_scale(rel_y));
-  wx = camera.x + rel_x;
-  wy = camera.y + rel_y;
+  const camera2d::Camera cam{camera.x, camera.y, camera.zoom};
+  const camera2d::Screen screen{bounds.right, bounds.bottom};
+  camera2d::unproject(cam, screen, sx, sy, wx, wy);
 }
 
 void fill_ellipse(HDC dc, int cx, int cy, int rx, int ry, COLORREF color) {
@@ -731,11 +698,9 @@ void draw_line(HDC dc, int x0, int y0, int x1, int y1, COLORREF color, int width
   DeleteObject(pen);
 }
 
-void draw_contact_shadow(HDC dc, const Camera& camera, const ScreenPoint& base,
-                         double world_radius) {
+void draw_contact_shadow(HDC dc, const ScreenPoint& base, double world_radius) {
   const int rx = std::max(3, static_cast<int>(world_radius * base.scale));
-  const int ry = std::max(
-      2, static_cast<int>(world_radius * base.scale * camera.ground_squash() * 0.8));
+  const int ry = std::max(2, static_cast<int>(world_radius * base.scale * 0.8));
   fill_ellipse(dc, base.x, base.y, rx, ry, RGB(14, 18, 20));
 }
 
@@ -841,7 +806,7 @@ void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& came
                        const RECT& bounds, const SceneryItem& item) {
   const ScreenPoint base =
       project(camera, bounds, item.position.x, item.position.y);
-  draw_contact_shadow(dc, camera, base, item.radius * 0.9);
+  draw_contact_shadow(dc, base, item.radius * 0.9);
   const SpriteBitmap& sprite = scenery_sprite(assets, item.kind);
   if (!draw_billboard_sprite(assets, dc, sprite, base,
                              scenery_height(item.kind) * item.scale, 1))
@@ -907,9 +872,7 @@ void draw_thrust_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
       telegraph.position.y + std::sin(angle) * length);
   draw_line(dc, base.x, base.y, tip.x, tip.y, edge, 2);
   const int origin_r = std::max(4, static_cast<int>(kTileUnits * 0.18 * base.scale));
-  ring_ellipse(dc, base.x, base.y,
-               origin_r, std::max(2, static_cast<int>(origin_r * camera.ground_squash())),
-               edge, 2);
+  ring_ellipse(dc, base.x, base.y, origin_r, origin_r, edge, 2);
 }
 
 void draw_sweep_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
@@ -918,13 +881,12 @@ void draw_sweep_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
   const ScreenPoint base = project(camera, bounds, telegraph.position.x,
                                    telegraph.position.y);
   const int radius = std::max(4, static_cast<int>(radius_world * base.scale));
-  const int ry = std::max(3, static_cast<int>(radius * camera.ground_squash()));
   const COLORREF fill = telegraph_color(visibility * 0.28, RGB(214, 52, 52));
   const COLORREF edge = telegraph_color(visibility, RGB(238, 72, 64));
-  fill_ellipse(dc, base.x, base.y, radius, ry, fill);
-  ring_ellipse(dc, base.x, base.y, radius, ry, edge, 3);
+  fill_ellipse(dc, base.x, base.y, radius, radius, fill);
+  ring_ellipse(dc, base.x, base.y, radius, radius, edge, 3);
   if (radius > 12)
-    ring_ellipse(dc, base.x, base.y, radius - 10, std::max(2, ry - 5),
+    ring_ellipse(dc, base.x, base.y, radius - 10, radius - 10,
                  telegraph_color(visibility * 0.82, RGB(255, 112, 82)), 1);
 }
 
@@ -965,7 +927,8 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
   const double grow = static_cast<double>(fx.age) / fx.ttl;
   switch (fx.kind) {
     case EffectFx::Kind::Swing: {
-      // A readable melee arc sweeping toward the aim angle.
+      // A readable melee arc sweeping toward the aim angle, drawn flat on the
+      // top-down ground plane.
       const int radius = static_cast<int>(kTileUnits * 1.1 * base.scale);
       const COLORREF color = fade_to_background(RGB(226, 220, 180), life);
       const double spread = kPi * 0.45;
@@ -973,25 +936,21 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       for (int i = 0; i < 3; ++i) {
         const double a = sweep - i * 0.12;
         const int x1 = base.x + static_cast<int>(std::cos(a) * radius);
-        const int y1 = base.y - static_cast<int>(kTileUnits * 0.7 * base.scale) +
-                       static_cast<int>(std::sin(a) * radius * camera.ground_squash());
-        draw_line(dc, base.x,
-                  base.y - static_cast<int>(kTileUnits * 0.7 * base.scale), x1, y1,
-                  color, i == 0 ? 3 : 1);
+        const int y1 = base.y + static_cast<int>(std::sin(a) * radius);
+        draw_line(dc, base.x, base.y, x1, y1, color, i == 0 ? 3 : 1);
       }
       break;
     }
     case EffectFx::Kind::SweepArc: {
-      // Sweep is an area action in the core.  A complete ellipse keeps the
+      // Sweep is an area action in the core.  A complete circle keeps the
       // presentation honest about that area instead of implying a single
       // facing direction that the deterministic action does not own.
       const int radius = static_cast<int>(kTileUnits * (0.72 + grow * 0.62) *
                                           base.scale);
-      const int ry = std::max(3, static_cast<int>(radius * camera.ground_squash()));
       const COLORREF color = fade_to_background(RGB(116, 204, 208), life);
-      ring_ellipse(dc, base.x, base.y, radius, ry, color, 3);
+      ring_ellipse(dc, base.x, base.y, radius, radius, color, 3);
       if (radius > 8)
-        ring_ellipse(dc, base.x, base.y, radius - 7, std::max(2, ry - 4), color, 1);
+        ring_ellipse(dc, base.x, base.y, radius - 7, radius - 7, color, 1);
       break;
     }
     case EffectFx::Kind::WarCryAura: {
@@ -999,24 +958,20 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       // turning the renderer into a second source of gameplay state.
       const int radius = static_cast<int>(kTileUnits * (0.38 + grow * 0.72) *
                                           base.scale);
-      const int ry = std::max(3, static_cast<int>(radius * camera.ground_squash()));
       const COLORREF color = fade_to_background(RGB(239, 190, 78), life);
-      ring_ellipse(dc, base.x, base.y, radius, ry, color, 3);
+      ring_ellipse(dc, base.x, base.y, radius, radius, color, 3);
       ring_ellipse(dc, base.x, base.y, std::max(3, radius - 8),
-                   std::max(2, ry - 4), fade_to_background(RGB(255, 224, 128), life), 1);
+                   std::max(3, radius - 8), fade_to_background(RGB(255, 224, 128), life), 1);
       break;
     }
     case EffectFx::Kind::Impact: {
       const int r = std::max(4, static_cast<int>(kTileUnits * 0.35 * base.scale));
-      fill_ellipse(dc, base.x,
-                   base.y - static_cast<int>(kTileUnits * 0.7 * base.scale), r, r,
-                   fade_to_background(RGB(255, 214, 120), life));
+      fill_ellipse(dc, base.x, base.y, r, r, fade_to_background(RGB(255, 214, 120), life));
       break;
     }
     case EffectFx::Kind::DeathRing: {
       const int rx = static_cast<int>(kTileUnits * (0.3 + grow * 1.5) * base.scale);
-      const int ry = static_cast<int>(rx * camera.ground_squash());
-      ring_ellipse(dc, base.x, base.y, rx, std::max(2, ry),
+      ring_ellipse(dc, base.x, base.y, rx, rx,
                    fade_to_background(RGB(214, 118, 86), life), 2);
       break;
     }
@@ -1035,10 +990,19 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
     case EffectFx::Kind::Sparkle: {
       const double pulse = 0.6 + 0.4 * std::sin(fx.age * 0.9);
       const int r = std::max(2, static_cast<int>(kTileUnits * 0.18 * base.scale * pulse));
-      const int lift = static_cast<int>(kTileUnits * 0.5 * base.scale);
       const COLORREF color = fade_to_background(RGB(240, 214, 120), life);
-      draw_line(dc, base.x - r, base.y - lift, base.x + r, base.y - lift, color, 1);
-      draw_line(dc, base.x, base.y - lift - r, base.x, base.y - lift + r, color, 1);
+      draw_line(dc, base.x - r, base.y, base.x + r, base.y, color, 1);
+      draw_line(dc, base.x, base.y - r, base.x, base.y + r, color, 1);
+      break;
+    }
+    case EffectFx::Kind::DamageNumber: {
+      const int lift = static_cast<int>(kTileUnits * (0.35 + grow * 0.75) * base.scale);
+      const COLORREF color = fx.damage_to_player ? RGB(255, 118, 104) : RGB(240, 218, 132);
+      SetBkMode(dc, TRANSPARENT);
+      SetTextColor(dc, color);
+      const std::string text = std::to_string(fx.value);
+      TextOutA(dc, base.x - 9, base.y - lift, text.c_str(),
+               static_cast<int>(text.size()));
       break;
     }
   }
@@ -1141,9 +1105,23 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         if (event.text == "war-cry")
           state.effects.push_back({EffectFx::Kind::WarCryAura, ex, ey, 0.0, 0, 14});
         break;
-      case verdigris::EventType::DamageApplied:
+      case verdigris::EventType::DamageApplied: {
         state.effects.push_back({EffectFx::Kind::Impact, ex, ey, 0.0, 0, 4});
+        // Floating damage number: the value the core resolved, rising above
+        // the target. Colored red when the Scion took the hit so "what hit
+        // me" reads at a glance.
+        EffectFx number;
+        number.kind = EffectFx::Kind::DamageNumber;
+        number.wx = ex;
+        number.wy = ey;
+        number.age = 0;
+        number.ttl = 26;
+        number.value = event.value;
+        number.damage_to_player =
+            subject && subject->kind == verdigris::ActorKind::Player;
+        state.effects.push_back(number);
         break;
+      }
       case verdigris::EventType::ActorDied:
         state.telegraphs.erase(event.actor_id);
         // The core cancels all elite windups when the Scion dies; clear any
@@ -1230,10 +1208,12 @@ std::string loot_label(const verdigris::Simulation& simulation,
 
 void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds) {
   if (!state.gear_overlay) return;
-  const int left = std::max(24, static_cast<int>(bounds.right) - 360);
-  const int top = 118;
-  const int right = static_cast<int>(bounds.right) - 24;
-  const int bottom = std::min(static_cast<int>(bounds.bottom) - 36, top + 300);
+  const int panel_w = 380;
+  const int left = std::max(24, static_cast<int>(bounds.right) - panel_w - 24);
+  const int top = 64;
+  const int right = left + panel_w;
+  const int bottom = std::min(static_cast<int>(bounds.bottom) - 28, top + 430);
+
   HBRUSH panel = CreateSolidBrush(RGB(25, 33, 37));
   RECT panel_rect{left, top, right, bottom};
   FillRect(dc, &panel_rect, panel);
@@ -1247,27 +1227,112 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds) {
   DeleteObject(border);
 
   SetBkMode(dc, TRANSPARENT);
+
+  // Title.
   SetTextColor(dc, RGB(230, 235, 220));
-  const std::string title = "Gear / House  |  " + state.simulation->house().name;
-  TextOutA(dc, left + 16, top + 14, title.c_str(), static_cast<int>(title.size()));
+  const std::string title = "Gear / House " + state.simulation->house().name;
+  TextOutA(dc, left + 14, top + 12, title.c_str(), static_cast<int>(title.size()));
+
+  // Authoritative stats readout. The base attack is the actor's stat; the
+  // equipped item's attack bonus (authoritative item data) is added on top,
+  // matching how the core folds it into damage resolution.
+  const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
   const auto& items = state.simulation->scion().carried_items;
+  int equipped_bonus = 0;
+  for (const auto& item : items)
+    if (item.equipped) {
+      equipped_bonus = item.attack_bonus;
+      break;
+    }
+  const int base_attack = player ? player->stats.attack : 0;
+  std::string attack_text = std::to_string(base_attack + equipped_bonus);
+  if (equipped_bonus != 0)
+    attack_text += " (+" + std::to_string(equipped_bonus) + ")";
+  SetTextColor(dc, RGB(150, 170, 158));
+  std::string stats_line =
+      "LIFE " + std::to_string(player ? player->stats.life : 0) + "/" +
+      std::to_string(player ? player->stats.life_max : 0) + "  RES " +
+      std::to_string(player ? player->stats.resource : 0) + "/" +
+      std::to_string(player ? player->stats.resource_max : 0) + "  ATK " +
+      attack_text + "  DEF " +
+      std::to_string(player ? player->stats.defense : 0) + "  LVL " +
+      std::to_string(player ? player->stats.level : 0);
+  TextOutA(dc, left + 14, top + 36, stats_line.c_str(),
+           static_cast<int>(stats_line.size()));
+
+  // Weapon (paperdoll) seat.
+  const int seat_top = top + 58;
+  const int seat_left = left + 14;
+  const int seat_w = right - left - 28;
+  RECT seat{seat_left, seat_top, seat_left + seat_w, seat_top + 24};
+  HBRUSH seat_bg = CreateSolidBrush(RGB(32, 40, 42));
+  FillRect(dc, &seat, seat_bg);
+  DeleteObject(seat_bg);
+  HPEN seat_pen = CreatePen(PS_SOLID, 1, RGB(104, 160, 137));
+  HGDIOBJ sp = SelectObject(dc, seat_pen);
+  Rectangle(dc, seat.left, seat.top, seat.right, seat.bottom);
+  SelectObject(dc, sp);
+  DeleteObject(seat_pen);
+  SetTextColor(dc, RGB(170, 190, 178));
+  const char* seat_label = "Weapon";
+  TextOutA(dc, seat_left + 6, seat_top + 5, seat_label, static_cast<int>(strlen(seat_label)));
+  std::string equipped_name = "(empty)";
+  for (const auto& item : items)
+    if (item.equipped) {
+      equipped_name = item.name;
+      break;
+    }
+  SetTextColor(dc, RGB(230, 220, 180));
+  TextOutA(dc, seat_left + 96, seat_top + 5, equipped_name.c_str(),
+           static_cast<int>(equipped_name.size()));
+
+  // Grid backpack (4 columns).
+  constexpr int kGridColumns = 4;
+  const int cell_w = (right - left - 28 - (kGridColumns - 1) * 6) / kGridColumns;
+  const int cell_h = 40;
+  const int grid_top = seat_top + 34;
   if (items.empty()) {
-    const char* empty = "No carried items. X picks up the nearest drop.";
-    TextOutA(dc, left + 16, top + 48, empty, static_cast<int>(strlen(empty)));
+    SetTextColor(dc, RGB(150, 160, 150));
+    const char* empty = "Backpack empty. X picks up the nearest drop.";
+    TextOutA(dc, left + 14, grid_top + 6, empty, static_cast<int>(strlen(empty)));
   } else {
     for (std::size_t i = 0; i < items.size(); ++i) {
-      const auto& item = items[i];
+      const int col = static_cast<int>(i % kGridColumns);
+      const int row = static_cast<int>(i / kGridColumns);
+      const int cx = left + 14 + col * (cell_w + 6);
+      const int cy = grid_top + row * (cell_h + 6);
       const bool selected = i == std::min(state.selected_item, items.size() - 1);
-      SetTextColor(dc, selected ? RGB(239, 208, 116) : RGB(205, 215, 204));
-      std::string line = (selected ? "> " : "  ") + item.name +
-                         (item.equipped ? "  [equipped]" : "");
-      TextOutA(dc, left + 16, top + 48 + static_cast<int>(i) * 22, line.c_str(),
-               static_cast<int>(line.size()));
+      const bool equipped = items[i].equipped;
+      RECT cell{cx, cy, cx + cell_w, cy + cell_h};
+      HBRUSH cell_bg = CreateSolidBrush(selected ? RGB(52, 74, 66) : RGB(30, 38, 40));
+      FillRect(dc, &cell, cell_bg);
+      DeleteObject(cell_bg);
+      HPEN cell_pen = CreatePen(
+          PS_SOLID, 1,
+          equipped ? RGB(210, 180, 90) : (selected ? RGB(104, 160, 137) : RGB(56, 66, 64)));
+      HGDIOBJ cp = SelectObject(dc, cell_pen);
+      Rectangle(dc, cell.left, cell.top, cell.right, cell.bottom);
+      SelectObject(dc, cp);
+      DeleteObject(cell_pen);
+      SetTextColor(dc, equipped ? RGB(240, 210, 120) : RGB(205, 215, 204));
+      std::string name = items[i].name;
+      if (name.size() > 12) name = name.substr(0, 11) + ".";
+      TextOutA(dc, cx + 4, cy + 4, name.c_str(), static_cast<int>(name.size()));
+      SetTextColor(dc, RGB(150, 165, 152));
+      std::string bonus = "+" + std::to_string(items[i].attack_bonus) + " ATK" +
+                          (equipped ? "  [E]" : "");
+      TextOutA(dc, cx + 4, cy + 21, bonus.c_str(), static_cast<int>(bonus.size()));
     }
   }
+
+  // Banked / extraction summary.
   SetTextColor(dc, RGB(150, 170, 158));
-  const char* controls = "Up/Down select | Enter or LMB equip | I close";
-  TextOutA(dc, left + 16, bottom - 28, controls, static_cast<int>(strlen(controls)));
+  const std::string banked =
+      "Banked  items " + std::to_string(state.simulation->house().stored_items.size()) +
+      "  trophies " + std::to_string(state.simulation->house().stored_trophies.size());
+  TextOutA(dc, left + 14, bottom - 46, banked.c_str(), static_cast<int>(banked.size()));
+  const char* controls = "Arrows select | Enter equip | U unequip | I close";
+  TextOutA(dc, left + 14, bottom - 24, controls, static_cast<int>(strlen(controls)));
 }
 
 void paint_skill_strip(const ClientState& state, HDC dc, const RECT& bounds) {
@@ -1372,11 +1437,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   // Ground decals render before anything that stands on the plane.
   const auto& extraction = sim.instance().extraction_point;
   const ScreenPoint pad = project(state.camera, bounds, extraction.x, extraction.y);
-  const int pad_rx = static_cast<int>(kTileUnits * 0.6 * pad.scale);
-  const int pad_ry =
-      std::max(3, static_cast<int>(pad_rx * state.camera.ground_squash()));
-  fill_ellipse(dc, pad.x, pad.y, pad_rx, pad_ry, RGB(41, 62, 88));
-  ring_ellipse(dc, pad.x, pad.y, pad_rx, pad_ry, RGB(88, 132, 190), 2);
+  const int pad_r = static_cast<int>(kTileUnits * 0.6 * pad.scale);
+  fill_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(41, 62, 88));
+  ring_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(88, 132, 190), 2);
 
   // Warnings live on the ground plane beneath billboards and loot so their
   // footprint remains readable without obscuring the actor that owns them.
@@ -1384,29 +1447,40 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
 
   const verdigris::Actor* player = sim.actor(sim.scion().actor_id);
 
-  // Collect every standing element, then draw back-to-front by world depth.
+  // Collect every standing element, then draw back-to-front by the top-down
+  // painter's key (world y first, then world x) so lower entities render in
+  // front. camera2d::draw_order_key is translation-invariant like the rest of
+  // the camera math.
   std::vector<DepthDraw> order;
   for (std::size_t i = 0; i < state.scenery.size(); ++i)
-    order.push_back({static_cast<double>(state.scenery[i].position.y), 0,
-                     DepthDraw::What::Scenery, i});
+    order.push_back({camera2d::draw_order_key(
+                         static_cast<double>(state.scenery[i].position.y),
+                         static_cast<double>(state.scenery[i].position.x)),
+                     0, DepthDraw::What::Scenery, i});
   if (player && player->alive)
-    order.push_back({static_cast<double>(player->position.y), 1,
-                     DepthDraw::What::Player, 0});
+    order.push_back({camera2d::draw_order_key(static_cast<double>(player->position.y),
+                                              static_cast<double>(player->position.x)),
+                     1, DepthDraw::What::Player, 0});
   const auto& actors = sim.actors();
   for (std::size_t i = 0; i < actors.size(); ++i) {
     if (actors[i].kind == verdigris::ActorKind::Monster && actors[i].alive)
-      order.push_back({static_cast<double>(actors[i].position.y), 2,
-                       DepthDraw::What::Monster, i});
+      order.push_back({camera2d::draw_order_key(
+                           static_cast<double>(actors[i].position.y),
+                           static_cast<double>(actors[i].position.x)),
+                       2, DepthDraw::What::Monster, i});
   }
   std::vector<std::pair<std::string, verdigris::Vec2>> loot(
       state.loot_positions.begin(), state.loot_positions.end());
   std::sort(loot.begin(), loot.end(),
             [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; });
   for (std::size_t i = 0; i < loot.size(); ++i)
-    order.push_back({static_cast<double>(loot[i].second.y), 3,
-                     DepthDraw::What::Loot, i});
+    order.push_back({camera2d::draw_order_key(static_cast<double>(loot[i].second.y),
+                                              static_cast<double>(loot[i].second.x)),
+                     3, DepthDraw::What::Loot, i});
   for (std::size_t i = 0; i < state.effects.size(); ++i)
-    order.push_back({state.effects[i].wy + 1.0, 4, DepthDraw::What::Effect, i});
+    order.push_back({camera2d::draw_order_key(state.effects[i].wy + 1.0,
+                                              state.effects[i].wx),
+                     4, DepthDraw::What::Effect, i});
   std::sort(order.begin(), order.end(), [](const DepthDraw& lhs, const DepthDraw& rhs) {
     if (lhs.depth != rhs.depth) return lhs.depth < rhs.depth;
     return lhs.order < rhs.order;
@@ -1421,7 +1495,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       case DepthDraw::What::Player: {
         const ScreenPoint base =
             project(state.camera, bounds, player->position.x, player->position.y);
-        draw_contact_shadow(dc, state.camera, base, kTileUnits * 0.42);
+        draw_contact_shadow(dc, base, kTileUnits * 0.42);
         if (!draw_billboard_sprite(state.billboards, dc, state.billboards.player, base,
                                    kTileUnits * 1.35, player->facing.x))
           draw_billboard(dc, base, kTileUnits * 0.62, kTileUnits * 1.35,
@@ -1434,8 +1508,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         const int fx = base.x + static_cast<int>(std::cos(angle) * kTileUnits * 0.6 *
                                                  base.scale);
         const int fy = base.y + static_cast<int>(std::sin(angle) * kTileUnits * 0.6 *
-                                                 base.scale *
-                                                 state.camera.ground_squash());
+                                                 base.scale);
         draw_line(dc, base.x, base.y, fx, fy, RGB(140, 208, 172), 2);
         break;
       }
@@ -1443,7 +1516,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         const auto& monster = actors[entry.index];
         const ScreenPoint base =
             project(state.camera, bounds, monster.position.x, monster.position.y);
-        draw_contact_shadow(dc, state.camera, base, kTileUnits * 0.42);
+        draw_contact_shadow(dc, base, kTileUnits * 0.42);
         const SpriteBitmap& monster_sprite = monster.elite ? state.billboards.boss
                                                             : state.billboards.raider;
         if (!draw_billboard_sprite(state.billboards, dc, monster_sprite, base,
@@ -1485,7 +1558,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         const auto& entry_loot = loot[entry.index];
         const ScreenPoint base = project(state.camera, bounds, entry_loot.second.x,
                                          entry_loot.second.y);
-        draw_contact_shadow(dc, state.camera, base, kTileUnits * 0.2);
+        draw_contact_shadow(dc, base, kTileUnits * 0.2);
         const int r = std::max(3, static_cast<int>(kTileUnits * 0.16 * base.scale));
         const int lift = static_cast<int>(kTileUnits * 0.28 * base.scale);
         const bool is_trophy = entry_loot.first.rfind("trophy", 0) == 0;
@@ -1545,18 +1618,16 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         "X nearest pickup | Z loot labels | F contextual extract | I gear/House overlay";
     TextOutA(dc, 18, 96, help2, static_cast<int>(strlen(help2)));
     const char* camera_help =
-        "Wheel zoom | PgUp/PgDn pitch | -/= perspective | Home reset ARPG camera";
+        "Wheel zoom | Home reset zoom";
     TextOutA(dc, 18, 120, camera_help, static_cast<int>(strlen(camera_help)));
 
     SetTextColor(dc, RGB(150, 160, 150));
     char debug_line[256];
     std::snprintf(debug_line, sizeof(debug_line),
-                  "tick %llu | player %d,%d | zoom %.2f | pitch %.0f | persp %.5f | anchor %.2f | fog %.1f | effects %zu | telegraphs %zu",
+                  "tick %llu | player %d,%d | zoom %.2f | effects %zu | telegraphs %zu",
                   static_cast<unsigned long long>(sim.tick()),
                   player ? player->position.x : 0, player ? player->position.y : 0,
                   state.camera.zoom,
-                  state.camera.pitch_deg, state.camera.perspective, state.camera.anchor,
-                  state.camera.fog,
                   state.effects.size(), state.telegraphs.size());
     TextOutA(dc, 18, 144, debug_line, static_cast<int>(strlen(debug_line)));
     char asset_line[256];
@@ -1729,32 +1800,25 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         state->selected_item = 0;
         if (state->gear_overlay) show_hint(*state, "Gear opened");
       }
-      if (state->gear_overlay && wparam == VK_UP &&
-          !state->simulation->scion().carried_items.empty()) {
-        if (state->selected_item > 0) --state->selected_item;
+      if (state->gear_overlay && !state->simulation->scion().carried_items.empty()) {
+        const std::size_t count = state->simulation->scion().carried_items.size();
+        constexpr int kGridColumns = 4;
+        if (wparam == VK_UP && state->selected_item >= kGridColumns)
+          state->selected_item -= kGridColumns;
+        if (wparam == VK_DOWN)
+          state->selected_item =
+              std::min(count - 1, state->selected_item + kGridColumns);
+        if (wparam == VK_LEFT && state->selected_item > 0) --state->selected_item;
+        if (wparam == VK_RIGHT)
+          state->selected_item = std::min(count - 1, state->selected_item + 1);
+        if (wparam == VK_RETURN) equip_selected(*state);
+        if (wparam == 'U') {
+          state->simulation->dispatch(verdigris::Command::unequip());
+          show_hint(*state, "Weapon unequipped");
+        }
       }
-      if (state->gear_overlay && wparam == VK_DOWN &&
-          !state->simulation->scion().carried_items.empty()) {
-        state->selected_item = std::min(
-            state->selected_item + 1,
-            state->simulation->scion().carried_items.size() - 1);
-      }
-      if (state->gear_overlay && wparam == VK_RETURN) equip_selected(*state);
-      if (wparam == VK_PRIOR)
-        state->camera.pitch_deg = std::min(85.0, state->camera.pitch_deg + 5.0);
-      if (wparam == VK_NEXT)
-        state->camera.pitch_deg = std::max(25.0, state->camera.pitch_deg - 5.0);
-      if (wparam == VK_OEM_MINUS)
-        state->camera.perspective = std::max(0.0, state->camera.perspective - 0.0001);
-      if (wparam == VK_OEM_PLUS)
-        state->camera.perspective = std::min(kCameraMiniaturePerspective,
-                                             state->camera.perspective + 0.0001);
       if (wparam == VK_HOME) {
         state->camera.zoom = kCameraDefaultZoom;
-        state->camera.pitch_deg = kCameraDefaultPitch;
-        state->camera.perspective = kCameraDefaultPerspective;
-        state->camera.anchor = kCameraDefaultAnchor;
-        state->camera.fog = kCameraDefaultFog;
       }
       InvalidateRect(window, nullptr, FALSE);
       break;
@@ -1780,7 +1844,6 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         const int delta = GET_WHEEL_DELTA_WPARAM(wparam);
         const double factor = delta > 0 ? 1.1 : 1.0 / 1.1;
         state->camera.zoom = std::clamp(state->camera.zoom * factor, 0.15, 2.0);
-        update_camera_perspective(state->camera);
         InvalidateRect(window, nullptr, FALSE);
       }
       break;
