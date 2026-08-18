@@ -1,0 +1,36 @@
+TASK-0044 coordinator N3 core-gap audit
+Date: 2026-08-17
+Source: read-only inspection of Kimi commit d476788
+
+Observed protocol gaps
+  native/src/networking.cpp handles login, zones, movement, teleport, give,
+  and state only; no player:skill:trigger, pickup, combat dispatch, or event
+  projection.
+  player:move calls WorldSimulation::apply_movement_sample only; it does not
+  dispatch Command::move or turn an occupied tile into primary melee.
+  ProtocolSession owns separate WorldSimulation and Simulation models. There
+  is no world-monster UUID/actor mapping or position synchronization.
+  N2 creates exactly 18 shallow <theme>-lurker WorldMonster records without
+  roles, rarity, modifiers, aura, or authored encounter behavior.
+  snapshot() emits basic monster fields and hardcodes groundItems and
+  groundTrophies to empty; dev:give writes only the session inventory.
+
+Reusable core hooks
+  ActionType::{Melee, Dash, Thrust, Sweep, WarCry}
+  Command::{move, aim, action_use, pick_up, equip}
+  Simulation::{dispatch, actors, actor, ground_items, ground_trophies, events}
+  EventType::{AttackStarted, DamageApplied, ActorDied, ItemDropped,
+              TrophyDropped, BuffApplied, AttackTelegraphed, ...}
+  deterministic drop_reward() and elite telegraph scheduling
+
+Core/API gaps requiring an N3 spec
+  DamageApplied lacks source/skill/style and ActorDied lacks killer metadata;
+  ground Item/Trophy records lack coordinates; no public time-advance seam is
+  available for polling-driven aura/AI updates; ranged/buffer actions are not
+  yet in the action vocabulary; the unchanged combat scenario sends
+  dev:setlevel and dev:heal, which N2 does not handle.
+
+Conclusion
+  N3 must define one authoritative world/combat bridge and a lossless event
+  projection. A networking-only combat implementation would create a second
+  authority and violates D-002. This is read-only evidence; no source changed.

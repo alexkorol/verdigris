@@ -337,8 +337,12 @@ server.on('error', (error) => {
   throw error;
 });
 
-server.listen(port, () => {
-  process.stdout.write(`ENVIRONMENT: ${env} and PORT ${port}\n`);
+// Bind loopback by default: 127.0.0.1 listeners never trigger Windows
+// Firewall consent prompts, which stall unattended agents. Set
+// VERDIGRIS_BIND_HOST=0.0.0.0 explicitly for LAN play.
+const bindHost = process.env.VERDIGRIS_BIND_HOST || '127.0.0.1';
+server.listen(port, bindHost, () => {
+  process.stdout.write(`ENVIRONMENT: ${env} and PORT ${port} on ${bindHost}\n`);
 });
 
 const game = new Delaford(server);

@@ -153,3 +153,41 @@ may decide it.
 - **D-O4 Monetization/distribution, final naming, lore canon.**
 - **D-O5 Economy scope** — trade, passive income, currency exchange
   (flagged in the feature checklist; seams only until decided).
+
+## D-117 — Client-visible progress every wave (owner-ruled, 2026-08-18)
+
+Server-first sequencing starved the visible surface for ~36 hours of
+work. Standing rule: every parity/infra wave ships a client-visible
+increment alongside it, and the architect's acceptance gate for any
+native wave includes PLAYING the built exe, not only attaching the
+harness. Wave plans must name their owner-visible deliverable up front.
+
+## D-118 — Native client: 2D top-down now, correct projection later (owner-ruled, 2026-08-18)
+
+The current billboard/parallax projection is buggy (scenery slides
+against movement). Ruling: switch the native client to a clean 2D
+top-down presentation NOW; reintroduce the 2.5D projection later as a
+separate, carefully-verified wave modeled on the webchat-Fable demo
+(D-108 reference, docs/reference/25d-overhaul/). Correct and plain
+beats broken and fancy.
+
+## D-119 — Native client test harness (owner-ruled, 2026-08-18)
+
+The client gets its own automated harness, mirroring the playtest
+philosophy: scripted input sequences driving the REAL client loop with
+assertions on authoritative state and presentation output, run as a
+gate on every client change. Test the whole pipeline as we build - we
+are not going to let both layers regress.
+
+## D-120 - Tiered delegation + architect scaffolding (owner-ruled, 2026-08-18)
+
+The architect (Fable, most capable model in the fleet) architects AND
+writes code scaffolding for implementers: interfaces, the hard
+math/algorithms, and test skeletons that lock correctness in before
+delegation. Task detail is matched to model capability (weak = exact
+steps + scaffolding; medium = pinned interfaces). The living record is
+orchestration/ORCHESTRATION-LEARNINGS.md, updated by the architect
+automatically after every notable review or failure - no owner prompt
+needed. This amends the architect-does-not-implement rule: scaffolding
+and reference math are architect work; feature implementation remains
+coordinator work.

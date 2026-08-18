@@ -1,0 +1,19 @@
+Coordinator browser unit health gate — current tip
+Date: 2026-08-17
+Coordinator HEAD: a62951e4
+
+Setup:
+- Disposable worktree at current coordinator tip.
+- `npm ci --no-audit --no-fund` completed with install scripts enabled.
+
+Command:
+`npm run test:unit`
+
+Result: exit 0
+- Test files: 122 passed
+- Tests: 779 passed
+- Duration: 21.31s
+- Server boot smoke: PASS
+
+The disposable worktree and dependencies were removed after the run. This is
+current-tip health evidence, not an architect acceptance or TASK-0044 merge.

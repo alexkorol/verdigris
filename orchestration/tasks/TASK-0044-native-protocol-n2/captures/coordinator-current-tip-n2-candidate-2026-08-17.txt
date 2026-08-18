@@ -1,0 +1,31 @@
+TASK-0044 current-tip disposable integration candidate
+Date: 2026-08-17
+Base: coordinator HEAD 27db1611
+Candidate: f602dab4 (cherry-pick of worker d476788; disposable worktree)
+
+The candidate was created in C:\Users\Alex\AppData\Local\Temp\verdigris-current-n2-candidate. The main checkout and architect checkout were not modified.
+
+Command:
+  powershell -NoProfile -File native/build.ps1 -RunTests -RunClient
+
+Native result:
+  native legacy denylist: PASS
+  verdigris core tests: PASS
+  verdigris networking tests: PASS
+  Verdigris native client shell
+  House: House Verdigris | trophies stored: 1 | items stored: 1
+
+Command:
+  $env:PLAYTEST_WS_URL='ws://127.0.0.1:6531'
+  node playtest/run.mjs --attach quickstart single-session movement zones
+
+Unchanged attach result:
+  PASS movement (4603ms)
+  PASS quickstart (162ms)
+  PASS single-session (317ms)
+  PASS zones (1111ms)
+  4/4 scenarios passed
+
+The native server and disposable worktree were removed after the run. This
+proves the review-requested N2 commit applies cleanly to the current tip and
+is integration-ready; it does not constitute architect acceptance or a merge.

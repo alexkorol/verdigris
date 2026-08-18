@@ -1,0 +1,16 @@
+WIZARD seam verification rerun
+Date: 2026-08-17 12:43 local time
+Tip: codex/native-reconstitution @ 8db5bf78
+
+Command:
+npx vitest run tests/unit/hud-orb-ui.spec.js tests/unit/rendering-wizard-orb.spec.js tests/unit/inventory-system.spec.js tests/unit/inventory-commit.spec.js tests/unit/inventory-store.spec.js tests/unit/inventory-layout.spec.js tests/unit/inventory-item-presentation.spec.js tests/unit/map-carve-bounds.spec.js tests/unit/map-pathfinding.spec.js tests/unit/world-layout.spec.js
+
+Result: 10 test files passed, 73 tests passed, exit code 0.
+Duration: 3.78 seconds.
+
+Coverage:
+- Orbs: HUD and renderer seams, 10 tests.
+- Brands & Bonds/inventory: system, commit, store, layout, presentation, 50 tests.
+- Cartographer/map: carve bounds, pathfinding, world layout, 13 tests.
+- Verdigris Splash: reference/menu presentation boundary; no focused automated
+  test and no native simulation dependency by design.

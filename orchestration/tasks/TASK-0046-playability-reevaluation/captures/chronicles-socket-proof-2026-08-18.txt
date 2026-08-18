@@ -1,0 +1,12 @@
+TASK-0046 Chronicles first-minute socket proof
+
+Current candidate: c3988b29 descendant of 45846af7
+Production server: 127.0.0.1:6547 (owner port 6500 untouched)
+Page-context CDP evaluation during the Asha mortal-oath setup:
+  window.ws.url       = ws://127.0.0.1:6547/
+  window.ws.readyState = 1 (OPEN)
+  page age            = 56.73s
+
+The proof was captured before the Chronicles arc entered its Old Barrow
+transition and remained open through the driven session.
+

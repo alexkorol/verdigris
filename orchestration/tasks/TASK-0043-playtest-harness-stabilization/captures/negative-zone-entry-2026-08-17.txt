@@ -1,0 +1,18 @@
+TASK-0043 authentic negative regression
+
+Scratch worktree: .codex/worktrees/integrate-0043/.codex/worktrees/negative-0043
+Mutation: in playtest/harness.mjs, the real `instance:enterSolo` emission was replaced with a no-op inside `sendEntry`; no server/src/package files were changed.
+Command:
+  PLAYTEST_LOAD_MODE=1 npm run playtest --silent -- session-arc
+
+Observed:
+  Booting playtest server on :6510…
+  Timing guard: load-adaptive deadlines enabled (max 1.75x; explicit load mode: on; baseline 20ms event-loop lag)
+  ✓ the session begins with Aldwyn present in town
+  ✓ the first goal begins through an in-world Talk action
+  ✓ Aldwyn frames the first goal around a Warden
+  FAIL session-arc: Timed out waiting for zone transition to dungeon (21000ms; authored 12000ms)
+  0/1 scenarios passed
+  exit code: 1
+
+This proves the harness still fails when the authored transition frame is genuinely suppressed.

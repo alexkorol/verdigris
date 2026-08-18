@@ -1,0 +1,38 @@
+TASK-0043 full-load acceptance transcript
+
+Load method (PowerShell): a background job continuously computed [Math]::Sqrt for 250,000 iterations; PLAYTEST_LOAD_MODE=1; ten serial `npm run playtest --silent` invocations; stop on first non-zero exit. This is the documented full-worker CPU-spinner load.
+
+Integrated tip: 7b81f874
+
+RUN 1 exit=0 elapsed=191.7s
+31/31 scenarios passed
+Timing diagnostics: {"loadMode":true,"p99EventLoopLagMs":32.210943,"maxEventLoopLagMs":100.663295}
+RUN 2 exit=0 elapsed=191.9s
+31/31 scenarios passed
+Timing diagnostics: {"loadMode":true,"p99EventLoopLagMs":32.194559,"maxEventLoopLagMs":94.961663}
+RUN 3 exit=0 elapsed=187.4s
+31/31 scenarios passed
+Timing diagnostics: {"loadMode":true,"p99EventLoopLagMs":32.227327,"maxEventLoopLagMs":97.910783}
+RUN 4 exit=0 elapsed=188.5s
+31/31 scenarios passed
+Timing diagnostics: {"loadMode":true,"p99EventLoopLagMs":32.210943,"maxEventLoopLagMs":114.884607}
+RUN 5 exit=0 elapsed=183.9s
+31/31 scenarios passed
+Timing diagnostics: {"loadMode":true,"p99EventLoopLagMs":32.210943,"maxEventLoopLagMs":112.066559}
+RUN 6 exit=0 elapsed=187.0s
+31/31 scenarios passed
+Timing diagnostics: {"loadMode":true,"p99EventLoopLagMs":32.178175,"maxEventLoopLagMs":99.680255}
+RUN 7 exit=0 elapsed=193.1s
+31/31 scenarios passed
+Timing diagnostics: {"loadMode":true,"p99EventLoopLagMs":32.178175,"maxEventLoopLagMs":95.420415}
+RUN 8 exit=0 elapsed=187.0s
+31/31 scenarios passed
+Timing diagnostics: {"loadMode":true,"p99EventLoopLagMs":32.161791,"maxEventLoopLagMs":112.394239}
+RUN 9 exit=0 elapsed=187.3s
+31/31 scenarios passed
+Timing diagnostics: {"loadMode":true,"p99EventLoopLagMs":32.194559,"maxEventLoopLagMs":110.821375}
+RUN 10 exit=0 elapsed=188.8s
+31/31 scenarios passed
+Timing diagnostics: {"loadMode":true,"p99EventLoopLagMs":32.161791,"maxEventLoopLagMs":101.449727}
+
+Result: 10 consecutive full runs passed, 310/310 scenario executions; p99 event-loop lag range 32.16–32.23ms; max lag range 95.42–114.88ms.

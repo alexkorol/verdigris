@@ -1,0 +1,36 @@
+TASK-0044 actual worker-branch green recheck — 2026-08-17
+
+Worktree:
+
+    C:\Users\Alex\Documents\KimiWork\verdigris
+    branch codex/TASK-0044-native-protocol-n2
+    HEAD 6e6279c (six native files still uncommitted)
+
+The worker corrected the N2 core test to capture the town position before
+`enter_solo_instance`. The authoritative native command was rerun:
+
+    powershell -NoProfile -File native/build.ps1 -RunTests
+
+Observed result:
+
+    native legacy denylist: PASS
+    verdigris core tests: PASS
+    verdigris networking tests: PASS
+
+The rebuilt worker server was started on port 6520 and tested with the
+unchanged harness:
+
+    $env:PLAYTEST_WS_URL='ws://127.0.0.1:6520'
+    node playtest/run.mjs --attach movement zones
+
+Observed result:
+
+    PASS movement (4593ms)
+    PASS zones (1110ms)
+    zones: all six zone names/layouts/stairs/18-monster populations PASS
+    zones: returned to the pre-entry position (38,115 vs 38,115)
+    2/2 scenarios passed
+
+The server was stopped cleanly. This is actual worker-branch evidence; the
+implementation remains uncommitted and still needs the worker's final report,
+commit, and architect rerun before acceptance.

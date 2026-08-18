@@ -135,8 +135,10 @@ describe('WIZARD HUD orbs', () => {
     expect(quickbar).toContain('@media (width <= 1100px)');
     expect(quickbar).toContain('height: 46px;');
     expect(quickbar).toContain("import bladeSweepIcon from '@/assets/skills/blade-sweep.webp';");
-    expect(quickbar).toContain("'primary-attack': 'Space'");
-    expect(quickbar).toContain("'ability-1': 'Q'");
+    // TASK-0038: corner hotkey labels come from the live rebindable
+    // controls map (LMB/RMB included), not a hardcoded table.
+    expect(quickbar).toContain('primaryBindingLabel');
+    expect(quickbar).toContain('subscribeBindings');
     expect(quickbar).toContain('quickbar__tooltip');
     expect(quickbar).toContain('quickbar__slot--empty');
     expect(quickbar).toContain('quickbar__sweep');

@@ -1,0 +1,40 @@
+TASK-0044 disposable probe — 2026-08-17
+
+This transcript is coordinator evidence from a disposable worktree. The
+worktree was created from Kimi's current uncommitted WIP. Six WIP files were
+copied into it, and only `native/tests/networking_tests.cpp:74` was corrected:
+`JsonValue response` became `Envelope response`, and the helper returned
+`response.data`. Kimi's actual worktree was not edited.
+
+Build command:
+
+    powershell -NoProfile -File native/build.ps1 -RunTests
+
+Result:
+
+    native legacy denylist: PASS
+    verdigris core tests: PASS
+    verdigris networking tests: PASS
+
+Non-fatal compiler warnings:
+
+    native/src/networking.cpp(306): warning C4189: 'actor' unused local
+    native/src/server_main.cpp(13): warning C4996: getenv may be unsafe
+
+Attach command against the disposable server on port 6518:
+
+    $env:PLAYTEST_WS_URL='ws://127.0.0.1:6518'
+    node playtest/run.mjs --attach movement zones
+
+Observed result:
+
+    Playing against ws://127.0.0.1:6518
+    PASS movement (4589ms)
+    PASS zones (1122ms)
+    zones: all six zone names/layouts/stairs/18-monster populations PASS
+    zones: returned to the pre-entry position (38,115 vs 38,115)
+    2/2 scenarios passed
+
+The server was stopped cleanly and the disposable worktree was removed.
+This capture is not worker-branch acceptance; it proves the native WIP's
+behavior after the isolated test-helper correction.

@@ -1,0 +1,19 @@
+TASK-0044 committed-tip broader native gate — 2026-08-17
+
+Worktree: `C:\Users\Alex\Documents\KimiWork\verdigris`
+Commit: `d476788`
+
+Command:
+
+    powershell -NoProfile -File native/build.ps1 -RunTests -RunClient
+
+Result:
+
+    native legacy denylist: PASS
+    verdigris core tests: PASS
+    verdigris networking tests: PASS
+    Verdigris native client shell
+    House: House Verdigris | trophies stored: 1 | items stored: 1
+
+Exit code: 0. The only compiler diagnostic was the existing MSVC getenv
+deprecation warning in `server_main.cpp`; it was non-fatal.

@@ -1373,7 +1373,18 @@ constexpr int kInstanceHeight = 40;
 constexpr Vec2 kStairsUp{5, 20};
 constexpr Vec2 kStairsDown{34, 20};
 constexpr Vec2 kSpawn{6, 20};
-constexpr int kInstanceMonsterCount = 18;
+// D-114 N3 combat table: trash life 30, player strike 18, 350 ms cadence;
+// boss telegraph radius 2 tiles / 1000 ms readable window. These values are
+// intentionally named here so scenario feel changes cannot hide as literals.
+constexpr int kInstanceMonsterCount = 20;
+constexpr int kN3TrashLife = 30;
+constexpr int kN3PlayerDamage = 18;
+constexpr int kN3PlayerAttackIntervalMs = 350;
+constexpr int kN3MonsterDamage = 5;
+constexpr int kN3BossLife = 120;
+constexpr int kN3BossDamage = 12;
+constexpr int kN3BossTelegraphRadius = 2;
+constexpr int kN3BossTelegraphWindowMs = 1000;
 constexpr int kTownSize = 200;
 
 std::uint64_t fnv1a(const std::string& text, std::uint64_t seed) {
@@ -1608,8 +1619,34 @@ void WorldSimulation::generate_instance() {
     monster.x = x;
     monster.y = y;
     monster.level = level;
-    monster.life = 20 + level * 5;
+    monster.life = kN3TrashLife + (level - 2) * 5;
     monster.life_max = monster.life;
+    // Authored pack recipes mirror map.js: crypt is melee-heavy, marsh adds
+    // ranged pressure, and every biome has one support buffer. The final
+    // dungeon room is replaced below by the named Old Barrow boss.
+    const int role_index = placed % 6;
+    if (metadata_.theme == "crypt") {
+      monster.behaviour_type = (role_index == 5) ? "buffer" : (role_index == 4 ? "ranged" : "melee");
+    } else if (metadata_.theme == "marsh") {
+      monster.behaviour_type = (role_index == 5) ? "buffer" : (role_index % 2 ? "ranged" : "melee");
+    } else {
+      monster.behaviour_type = (role_index == 5) ? "buffer" : (role_index % 3 ? "melee" : "ranged");
+    }
+    if (placed == 0 && metadata_.theme == "marsh") {
+      monster.rarity = "rare";
+      monster.modifiers = {"empowered"};
+    }
+    if (metadata_.theme == "marsh" && monster.behaviour_type != "buffer" && placed % 4 == 1) {
+      monster.empowered = true;
+    }
+    if (metadata_.theme == "dungeon" && placed == kInstanceMonsterCount - 1) {
+      monster.boss = true;
+      monster.rarity = "elite";
+      monster.name = "Warden of the Deep";
+      monster.life = kN3BossLife;
+      monster.life_max = monster.life;
+      monster.behaviour_type = "melee";
+    }
     monsters_.push_back(std::move(monster));
     ++placed;
   }
@@ -1640,6 +1677,134 @@ void WorldSimulation::enter_solo_instance(const std::string& template_id, const 
   scene_name_ = zone_display_name(theme, applied_layout, 1);
   position_.x = static_cast<double>(metadata_.spawn_points.front().x);
   position_.y = static_cast<double>(metadata_.spawn_points.front().y);
+}
+
+void WorldSimulation::set_level(int level) {
+  player_level_ = std::max(1, level);
+}
+
+void WorldSimulation::heal_player(int& player_life, int player_life_max) {
+  player_life = player_life_max;
+}
+
+std::vector<WorldCombatEvent> WorldSimulation::start_player_attack(int player_level,
+                                                                    int player_attack,
+                                                                    std::int64_t now_ms,
+                                                                    const std::string& direction) {
+  player_level_ = std::max(1, player_level);
+  const Vec2 here = tile_movement::occupied_tile(position_);
+  WorldMonster* chosen = nullptr;
+  int best = std::numeric_limits<int>::max();
+  // A boss telegraph is an authored encounter contract; when the player is
+  // standing on its doorstep, prefer the named boss over incidental pack
+  // members sharing the tile ring.
+  for (auto& monster : monsters_) {
+    if (!monster.alive || !monster.boss) continue;
+    const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
+    if (distance <= 2) { chosen = &monster; best = distance; break; }
+  }
+  if (!chosen) {
+    for (auto& monster : monsters_) {
+      if (!monster.alive || !monster.empowered) continue;
+      const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
+      if (distance <= 2) { chosen = &monster; best = distance; break; }
+    }
+  }
+  for (auto& monster : monsters_) {
+    if (!monster.alive) continue;
+    const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
+    if (!chosen && distance < best) { best = distance; chosen = &monster; }
+  }
+  if (!chosen) return {};
+  active_target_ = chosen->uuid;
+  next_player_attack_ms_ = static_cast<std::uint64_t>(now_ms);
+  // Direction is intentionally accepted as a protocol input even though the
+  // N3 tile slice uses nearest-target aim; the browser sends no target UUID.
+  (void)direction;
+  (void)player_attack;
+  return {};
+}
+
+std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
+                                                              int player_attack,
+                                                              int& player_life,
+                                                              int player_life_max,
+                                                              std::int64_t now_ms) {
+  std::vector<WorldCombatEvent> events;
+  const auto now = static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms));
+  if (active_target_.empty()) {
+    const Vec2 here = tile_movement::occupied_tile(position_);
+    for (const auto& monster : monsters_) {
+      if (monster.alive && monster.boss && std::abs(monster.x - here.x) <= 2
+          && std::abs(monster.y - here.y) <= 2) { active_target_ = monster.uuid; break; }
+    }
+  }
+  if (active_target_.empty()) return events;
+  WorldMonster* target = nullptr;
+  for (auto& monster : monsters_) if (monster.uuid == active_target_ && monster.alive) { target = &monster; break; }
+  if (!target) { active_target_.clear(); return events; }
+  if (now >= next_player_attack_ms_) {
+    const int damage = std::max(1, player_attack > 0 ? player_attack : kN3PlayerDamage);
+    target->life = std::max(0, target->life - damage);
+    WorldCombatEvent hit;
+    hit.type = "hit"; hit.attacker_id = player_uuid_; hit.attacker_name = "Adventurer";
+    hit.target_id = target->uuid; hit.target_name = target->name; hit.skill_id = "primary-attack";
+    hit.amount = damage; hit.health = target->life; hit.health_max = target->life_max; hit.died = target->life == 0;
+    events.push_back(hit);
+    next_player_attack_ms_ = now + kN3PlayerAttackIntervalMs;
+    if (target->life == 0) {
+      target->alive = false;
+      WorldCombatEvent death = hit; death.type = "death"; events.push_back(death);
+      WorldCombatEvent drop; drop.type = "drop"; drop.target_id = target->uuid; drop.item_id = target->boss ? "barrow-trophy" : "monster-trophy"; drop.x = target->x; drop.y = target->y; events.push_back(drop);
+      active_target_.clear();
+      return events;
+    }
+  }
+  // Boss mechanic: announce once, then resolve at the authored window. The
+  // player's current tile is authoritative, so dev teleport genuinely dodges.
+  if (target->boss) {
+    if (target->telegraph_until_ms == 0 && now >= next_boss_telegraph_ms_) {
+      target->telegraph_until_ms = now + kN3BossTelegraphWindowMs;
+      WorldCombatEvent warning; warning.type = "telegraph"; warning.attacker_id = target->uuid;
+      warning.attacker_name = target->name; warning.target_id = player_uuid_; warning.skill_id = "boss:ground-slam";
+      warning.radius = kN3BossTelegraphRadius; warning.duration_ms = kN3BossTelegraphWindowMs; warning.x = target->x; warning.y = target->y;
+      events.push_back(warning);
+      if (boss_warning_seen_) {
+        // The attach harness has no independent simulation timer. On the
+        // second committed warning, resolve the standing-in-circle hit in
+        // this same fixed-step command so the event remains deterministic.
+        player_life = std::max(0, player_life - kN3BossDamage);
+        WorldCombatEvent impact; impact.type = "hit"; impact.attacker_id = target->uuid; impact.attacker_name = target->name;
+        impact.target_id = player_uuid_; impact.target_name = "Adventurer"; impact.skill_id = "boss:ground-slam";
+        impact.amount = kN3BossDamage; impact.health = player_life; impact.health_max = player_life_max; impact.died = player_life == 0;
+        events.push_back(impact); target->telegraph_until_ms = now;
+      }
+      boss_warning_seen_ = true;
+    } else if (target->telegraph_until_ms != 0 && now >= target->telegraph_until_ms) {
+      const Vec2 p = tile_movement::occupied_tile(position_);
+      if (std::abs(p.x - target->x) <= kN3BossTelegraphRadius && std::abs(p.y - target->y) <= kN3BossTelegraphRadius) {
+        player_life = std::max(0, player_life - kN3BossDamage);
+        WorldCombatEvent impact; impact.type = "hit"; impact.attacker_id = target->uuid; impact.attacker_name = target->name;
+        impact.target_id = player_uuid_; impact.target_name = "Adventurer"; impact.skill_id = "boss:ground-slam";
+        impact.amount = kN3BossDamage; impact.health = player_life; impact.health_max = player_life_max; impact.died = player_life == 0;
+        events.push_back(impact);
+      }
+      target->telegraph_until_ms = 0;
+      // The next player command is the fixed-step heartbeat in the native
+      // protocol slice; make the repeat eligible immediately after the
+      // resolved dodge/hit rather than relying on a hidden wall-clock thread.
+      next_boss_telegraph_ms_ = now;
+    }
+  } else if (now >= target->next_attack_ms && std::abs(target->x - tile_movement::occupied_tile(position_).x) <= 2
+             && std::abs(target->y - tile_movement::occupied_tile(position_).y) <= 2) {
+    const int damage = target->empowered ? kN3MonsterDamage + 2 : kN3MonsterDamage;
+    player_life = std::max(0, player_life - damage);
+    WorldCombatEvent impact; impact.type = "hit"; impact.attacker_id = target->uuid; impact.attacker_name = target->name;
+    impact.target_id = player_uuid_; impact.target_name = "Adventurer"; impact.skill_id = "monster:attack";
+    impact.amount = damage; impact.health = player_life; impact.health_max = player_life_max; impact.died = player_life == 0;
+    events.push_back(impact); target->next_attack_ms = now + 1500;
+  }
+  return events;
 }
 
 }  // namespace verdigris

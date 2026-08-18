@@ -331,11 +331,23 @@ export default {
       this.screenData = incoming.data.payload;
     },
     /**
-     * Right-click brings up context-menu
+     * Right-click in the world. TASK-0038: RMB is the secondary skill button
+     * (rebindable in settings) and attacks toward the cursor. The context
+     * menu stays reachable via Shift+right-click, and automatically whenever
+     * RMB is unbound.
      *
      * @param {event} event The mouse-click event
      */
     rightClick(event) {
+      event.preventDefault();
+
+      const binding = !event.shiftKey && this.inputController
+        ? this.inputController.getMouseBinding(2)
+        : null;
+      if (binding && this.dispatchSkillAtCursor(binding.id, event)) {
+        return;
+      }
+
       const coordinates = this.resolveViewportCoordinates(event);
       const snapshot = this.getViewportSnapshot();
       const world = this.getWorldCoordinates(coordinates);
@@ -349,8 +361,73 @@ export default {
         center: snapshot.center,
       };
 
-      event.preventDefault();
       bus.$emit('PLAYER:MENU', data);
+    },
+
+    /**
+     * Eight-way direction from the player toward a cursor event, for
+     * aim-at-cursor attacks. Returns null when the cursor is on the
+     * player's own tile (caller falls back to facing).
+     *
+     * @param {MouseEvent} event
+     */
+    attackDirectionFromCursor(event) {
+      const player = this.game && this.game.player;
+      if (!player || !event) {
+        return null;
+      }
+
+      const coordinates = this.resolveViewportCoordinates(event);
+      const world = this.getWorldCoordinates(coordinates);
+      if (!world) {
+        return null;
+      }
+
+      const dx = world.x - player.x;
+      const dy = world.y - player.y;
+      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
+        return null;
+      }
+
+      // Screen-space angle (y grows downward), snapped to the 8-way compass
+      // the server skill resolver speaks.
+      const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+      const compass = [
+        'right', 'down-right', 'down', 'down-left',
+        'left', 'up-left', 'up', 'up-right',
+      ];
+      const sector = Math.round(angle / 45);
+      return compass[((sector % 8) + 8) % 8];
+    },
+
+    /**
+     * Fire a skill aimed at the cursor's world tile (LMB/RMB world clicks).
+     * Returns true when the skill was dispatched.
+     *
+     * @param {string} skillId
+     * @param {MouseEvent} event
+     */
+    dispatchSkillAtCursor(skillId, event) {
+      if (!skillId || !this.game || !this.game.player) {
+        return false;
+      }
+
+      const direction = this.attackDirectionFromCursor(event)
+        || this.aimDirection
+        || (typeof this.game.getFacingDirection === 'function'
+          ? this.game.getFacingDirection()
+          : (this.game.player.animation && this.game.player.animation.direction) || 'down');
+
+      const profile = getSkillExecutionProfile(skillId) || {};
+      this.dispatchSkill(skillId, {
+        animationState: profile.animationState,
+        duration: profile.duration,
+        holdState: profile.holdState,
+        modifiers: profile.modifiers || {},
+        phase: 'start',
+        direction,
+      });
+      return true;
     },
 
     /**
@@ -365,6 +442,13 @@ export default {
         bus.$emit('contextmenu:close');
         if (typeof window.focusOnGame === 'function') {
           window.focusOnGame();
+        }
+        // TASK-0038: LMB is the primary-attack button (rebindable in
+        // settings). A world click attacks toward the cursor; a queued
+        // context-menu action (below) still takes precedence when armed.
+        const binding = this.inputController && this.inputController.getMouseBinding(0);
+        if (binding) {
+          this.dispatchSkillAtCursor(binding.id, event);
         }
         return;
       }

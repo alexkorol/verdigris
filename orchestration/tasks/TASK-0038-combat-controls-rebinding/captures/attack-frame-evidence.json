@@ -1,0 +1,121 @@
+{
+  "rmbContextMenuOpened": false,
+  "skillFrames": [
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"player:login\",\"data\":{\"player\":{\"movement\":{},\"statsManager\":{},\"combatController\":{},\"inventoryManager\":{},\"username\":\"Wayfarer\",\"x\":42,\"y\":115,\"level\":1,\"skills\":{\"attack\":{\"level\":1,\"exp\":0},\"defence\":{\"level\":1,\"exp\":0},\"fishing\":{\"level\":1,\"exp\":0},\"cooking\":{\"level\":1,\"exp\":0}},\"quests\":{\"version\":1,\"activeQuestId\":\"aldwyns-charge\",\"objectiveIndex\":0,\"startedAt\":1787015421615,\"comp"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"player:joined\",\"data\":[{\"uuid\":\"browser-guest-c846877f-0edc-4516-9dbd-240ecdc25d08\",\"username\":\"Wayfarer\",\"x\":42,\"y\":115,\"level\":1,\"facing\":\"down\",\"animation\":{\"state\":\"idle\",\"direction\":\"down\",\"sequence\":0,\"startedAt\":1787015421614,\"duration\":0,\"speed\":1,\"skillId\":null,\"holdState\":null},\"wear\":{\"right_hand\":null,\"left_hand\":null,\"armor\":null,\"head\":null,\"back\":null,\"belt\":null,\"gloves\":"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"npc:movement\",\"data\":[{\"movement\":{},\"id\":1,\"name\":\"Aldwyn the Guide\",\"examine\":\"A weathered wayfinder who watches over the Crossroads' newest scions.\",\"actions\":[\"talk\",\"examine\"],\"spawn\":{\"x\":34,\"y\":116},\"x\":34,\"y\":116,\"range\":0,\"lastAction\":0,\"column\":0,\"movementStep\":{\"sequence\":0,\"startedAt\":1787015414388,\"duration\":0,\"direction\":null,\"blocked\":false},\"facing\":\"down\",\"animation\":{\"s"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"npc:movement\",\"data\":[{\"movement\":{},\"id\":1,\"name\":\"Aldwyn the Guide\",\"examine\":\"A weathered wayfinder who watches over the Crossroads' newest scions.\",\"actions\":[\"talk\",\"examine\"],\"spawn\":{\"x\":34,\"y\":116},\"x\":34,\"y\":116,\"range\":0,\"lastAction\":0,\"column\":0,\"movementStep\":{\"sequence\":0,\"startedAt\":1787015414388,\"duration\":0,\"direction\":null,\"blocked\":false},\"facing\":\"down\",\"animation\":{\"s"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"npc:movement\",\"data\":[{\"movement\":{},\"id\":1,\"name\":\"Aldwyn the Guide\",\"examine\":\"A weathered wayfinder who watches over the Crossroads' newest scions.\",\"actions\":[\"talk\",\"examine\"],\"spawn\":{\"x\":34,\"y\":116},\"x\":34,\"y\":116,\"range\":0,\"lastAction\":0,\"column\":0,\"movementStep\":{\"sequence\":0,\"startedAt\":1787015414388,\"duration\":0,\"direction\":null,\"blocked\":false},\"facing\":\"down\",\"animation\":{\"s"
+    },
+    {
+      "dir": "sent",
+      "payload": "{\"event\":\"player:skill:trigger\",\"data\":{\"id\":\"browser-guest-c846877f-0edc-4516-9dbd-240ecdc25d08\",\"skillId\":\"primary-attack\",\"direction\":\"right\",\"issuedAt\":1787015428099,\"modifiers\":{\"globalCooldownMs\":350},\"phase\":\"start\"}}"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"world:skill:effect\",\"data\":{\"sourceId\":\"browser-guest-c846877f-0edc-4516-9dbd-240ecdc25d08\",\"skillId\":\"primary-attack\",\"direction\":\"right\",\"fromX\":42,\"fromY\":115,\"toX\":42,\"toY\":115,\"radius\":1,\"durationMs\":360,\"healing\":0,\"armourBonus\":0},\"meta\":{\"sentAt\":1787015428102}}"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"player:animation\",\"data\":{\"playerId\":\"browser-guest-c846877f-0edc-4516-9dbd-240ecdc25d08\",\"animation\":{\"state\":\"attack\",\"direction\":\"right\",\"sequence\":1,\"startedAt\":1787015428101,\"duration\":420,\"speed\":1,\"skillId\":\"primary-attack\",\"holdState\":\"idle\"}},\"meta\":{\"sentAt\":1787015428103}}"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"player:combat:update\",\"data\":{\"playerId\":\"browser-guest-c846877f-0edc-4516-9dbd-240ecdc25d08\",\"combat\":{\"attack\":{\"stab\":0,\"slash\":0,\"crush\":0,\"range\":0},\"defense\":{\"stab\":0,\"slash\":0,\"crush\":0,\"range\":0},\"blockChance\":0,\"criticalChance\":0,\"goodsFound\":0,\"damageAgainstBeasts\":0,\"stance\":\"neutral\",\"globalCooldown\":1787015428451,\"sequence\":1,\"lastSkill\":{\"id\":\"primary-attack\",\"usedAt\":1787"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"npc:movement\",\"data\":[{\"movement\":{},\"id\":1,\"name\":\"Aldwyn the Guide\",\"examine\":\"A weathered wayfinder who watches over the Crossroads' newest scions.\",\"actions\":[\"talk\",\"examine\"],\"spawn\":{\"x\":34,\"y\":116},\"x\":34,\"y\":116,\"range\":0,\"lastAction\":0,\"column\":0,\"movementStep\":{\"sequence\":0,\"startedAt\":1787015414388,\"duration\":0,\"direction\":null,\"blocked\":false},\"facing\":\"down\",\"animation\":{\"s"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"player:animation\",\"data\":{\"playerId\":\"browser-guest-c846877f-0edc-4516-9dbd-240ecdc25d08\",\"animation\":{\"state\":\"idle\",\"direction\":\"right\",\"sequence\":1.1,\"startedAt\":1787015428531,\"duration\":0,\"speed\":1,\"skillId\":null,\"holdState\":null}},\"meta\":{\"sentAt\":1787015428531}}"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"npc:movement\",\"data\":[{\"movement\":{},\"id\":1,\"name\":\"Aldwyn the Guide\",\"examine\":\"A weathered wayfinder who watches over the Crossroads' newest scions.\",\"actions\":[\"talk\",\"examine\"],\"spawn\":{\"x\":34,\"y\":116},\"x\":34,\"y\":116,\"range\":0,\"lastAction\":0,\"column\":0,\"movementStep\":{\"sequence\":0,\"startedAt\":1787015414388,\"duration\":0,\"direction\":null,\"blocked\":false},\"facing\":\"down\",\"animation\":{\"s"
+    },
+    {
+      "dir": "sent",
+      "payload": "{\"event\":\"player:skill:trigger\",\"data\":{\"id\":\"browser-guest-c846877f-0edc-4516-9dbd-240ecdc25d08\",\"skillId\":\"ability-1\",\"direction\":\"left\",\"issuedAt\":1787015431513,\"modifiers\":{},\"phase\":\"start\"}}"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"world:projectile\",\"data\":{\"fromX\":42,\"fromY\":115,\"toX\":38.375,\"toY\":115,\"travelMs\":280,\"kind\":\"player\",\"skillId\":\"ability-1\",\"blocked\":true},\"meta\":{\"sentAt\":1787015431516}}"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"world:skill:effect\",\"data\":{\"sourceId\":\"browser-guest-c846877f-0edc-4516-9dbd-240ecdc25d08\",\"skillId\":\"ability-1\",\"direction\":\"left\",\"fromX\":42,\"fromY\":115,\"toX\":42,\"toY\":115,\"radius\":1,\"durationMs\":520,\"healing\":0,\"armourBonus\":0},\"meta\":{\"sentAt\":1787015431516}}"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"player:animation\",\"data\":{\"playerId\":\"browser-guest-c846877f-0edc-4516-9dbd-240ecdc25d08\",\"animation\":{\"state\":\"attack\",\"direction\":\"left\",\"sequence\":2.1,\"startedAt\":1787015431514,\"duration\":520,\"speed\":1,\"skillId\":\"ability-1\",\"holdState\":\"idle\"}},\"meta\":{\"sentAt\":1787015431517}}"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"player:combat:update\",\"data\":{\"playerId\":\"browser-guest-c846877f-0edc-4516-9dbd-240ecdc25d08\",\"combat\":{\"attack\":{\"stab\":0,\"slash\":0,\"crush\":0,\"range\":0},\"defense\":{\"stab\":0,\"slash\":0,\"crush\":0,\"range\":0},\"blockChance\":0,\"criticalChance\":0,\"goodsFound\":0,\"damageAgainstBeasts\":0,\"stance\":\"neutral\",\"globalCooldown\":1787015431864,\"sequence\":2,\"lastSkill\":{\"id\":\"ability-1\",\"usedAt\":178701543"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"player:animation\",\"data\":{\"playerId\":\"browser-guest-c846877f-0edc-4516-9dbd-240ecdc25d08\",\"animation\":{\"state\":\"idle\",\"direction\":\"left\",\"sequence\":2.2,\"startedAt\":1787015432038,\"duration\":0,\"speed\":1,\"skillId\":null,\"holdState\":null}},\"meta\":{\"sentAt\":1787015432038}}"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"npc:movement\",\"data\":[{\"movement\":{},\"id\":1,\"name\":\"Aldwyn the Guide\",\"examine\":\"A weathered wayfinder who watches over the Crossroads' newest scions.\",\"actions\":[\"talk\",\"examine\"],\"spawn\":{\"x\":34,\"y\":116},\"x\":34,\"y\":116,\"range\":0,\"lastAction\":0,\"column\":0,\"movementStep\":{\"sequence\":0,\"startedAt\":1787015414388,\"duration\":0,\"direction\":null,\"blocked\":false},\"facing\":\"down\",\"animation\":{\"s"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"npc:movement\",\"data\":[{\"movement\":{},\"id\":1,\"name\":\"Aldwyn the Guide\",\"examine\":\"A weathered wayfinder who watches over the Crossroads' newest scions.\",\"actions\":[\"talk\",\"examine\"],\"spawn\":{\"x\":34,\"y\":116},\"x\":34,\"y\":116,\"range\":0,\"lastAction\":0,\"column\":0,\"movementStep\":{\"sequence\":0,\"startedAt\":1787015414388,\"duration\":0,\"direction\":null,\"blocked\":false},\"facing\":\"down\",\"animation\":{\"s"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"npc:movement\",\"data\":[{\"movement\":{},\"id\":1,\"name\":\"Aldwyn the Guide\",\"examine\":\"A weathered wayfinder who watches over the Crossroads' newest scions.\",\"actions\":[\"talk\",\"examine\"],\"spawn\":{\"x\":34,\"y\":116},\"x\":34,\"y\":116,\"range\":0,\"lastAction\":0,\"column\":0,\"movementStep\":{\"sequence\":0,\"startedAt\":1787015414388,\"duration\":0,\"direction\":null,\"blocked\":false},\"facing\":\"down\",\"animation\":{\"s"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"npc:movement\",\"data\":[{\"movement\":{},\"id\":1,\"name\":\"Aldwyn the Guide\",\"examine\":\"A weathered wayfinder who watches over the Crossroads' newest scions.\",\"actions\":[\"talk\",\"examine\"],\"spawn\":{\"x\":34,\"y\":116},\"x\":34,\"y\":116,\"range\":0,\"lastAction\":0,\"column\":0,\"movementStep\":{\"sequence\":0,\"startedAt\":1787015414388,\"duration\":0,\"direction\":null,\"blocked\":false},\"facing\":\"down\",\"animation\":{\"s"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"npc:movement\",\"data\":[{\"movement\":{},\"id\":1,\"name\":\"Aldwyn the Guide\",\"examine\":\"A weathered wayfinder who watches over the Crossroads' newest scions.\",\"actions\":[\"talk\",\"examine\"],\"spawn\":{\"x\":34,\"y\":116},\"x\":34,\"y\":116,\"range\":0,\"lastAction\":0,\"column\":0,\"movementStep\":{\"sequence\":0,\"startedAt\":1787015414388,\"duration\":0,\"direction\":null,\"blocked\":false},\"facing\":\"down\",\"animation\":{\"s"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"player:login\",\"data\":{\"player\":{\"movement\":{},\"statsManager\":{},\"combatController\":{},\"inventoryManager\":{},\"username\":\"Wayfarer\",\"x\":42,\"y\":115,\"level\":1,\"skills\":{\"attack\":{\"level\":1,\"exp\":0},\"defence\":{\"level\":1,\"exp\":0},\"fishing\":{\"level\":1,\"exp\":0},\"cooking\":{\"level\":1,\"exp\":0}},\"quests\":{\"version\":1,\"activeQuestId\":\"aldwyns-charge\",\"objectiveIndex\":0,\"startedAt\":1787015421615,\"comp"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"player:joined\",\"data\":[{\"uuid\":\"browser-guest-c846877f-0edc-4516-9dbd-240ecdc25d08\",\"username\":\"Wayfarer\",\"x\":42,\"y\":115,\"level\":1,\"facing\":\"down\",\"animation\":{\"state\":\"idle\",\"direction\":\"down\",\"sequence\":0,\"startedAt\":1787015441606,\"duration\":0,\"speed\":1,\"skillId\":null,\"holdState\":null},\"wear\":{\"right_hand\":null,\"left_hand\":null,\"armor\":null,\"head\":null,\"back\":null,\"belt\":null,\"gloves\":"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"npc:movement\",\"data\":[{\"movement\":{},\"id\":1,\"name\":\"Aldwyn the Guide\",\"examine\":\"A weathered wayfinder who watches over the Crossroads' newest scions.\",\"actions\":[\"talk\",\"examine\"],\"spawn\":{\"x\":34,\"y\":116},\"x\":34,\"y\":116,\"range\":0,\"lastAction\":0,\"column\":0,\"movementStep\":{\"sequence\":0,\"startedAt\":1787015414388,\"duration\":0,\"direction\":null,\"blocked\":false},\"facing\":\"down\",\"animation\":{\"s"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"npc:movement\",\"data\":[{\"movement\":{},\"id\":1,\"name\":\"Aldwyn the Guide\",\"examine\":\"A weathered wayfinder who watches over the Crossroads' newest scions.\",\"actions\":[\"talk\",\"examine\"],\"spawn\":{\"x\":34,\"y\":116},\"x\":34,\"y\":116,\"range\":0,\"lastAction\":0,\"column\":0,\"movementStep\":{\"sequence\":0,\"startedAt\":1787015414388,\"duration\":0,\"direction\":null,\"blocked\":false},\"facing\":\"down\",\"animation\":{\"s"
+    },
+    {
+      "dir": "recv",
+      "payload": "{\"event\":\"npc:movement\",\"data\":[{\"movement\":{},\"id\":1,\"name\":\"Aldwyn the Guide\",\"examine\":\"A weathered wayfinder who watches over the Crossroads' newest scions.\",\"actions\":[\"talk\",\"examine\"],\"spawn\":{\"x\":34,\"y\":116},\"x\":34,\"y\":116,\"range\":0,\"lastAction\":0,\"column\":0,\"movementStep\":{\"sequence\":0,\"startedAt\":1787015414388,\"duration\":0,\"direction\":null,\"blocked\":false},\"facing\":\"down\",\"animation\":{\"s"
+    }
+  ],
+  "checks": {
+    "primaryAttackSent": true,
+    "weaponSkillSent": true
+  }
+}

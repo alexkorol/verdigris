@@ -1,0 +1,9 @@
+TASK-0046 bounded guest arc checkpoint
+
+00:00:00 Delaford Village; Aldwyn teaches WASD/arrow movement
+00:00:03 Adventure panel; Old Barrow described as a forgiving first delve
+00:00:11 Old Barrow selected; road transition; minimap 101,99
+00:00:18 expedition settled; canvas actors are not DOM-visible
+
+This is only a bounded opening checkpoint. It is not the required ten-minute
+guest arc and does not establish a Chronicles arc or friction disposition.

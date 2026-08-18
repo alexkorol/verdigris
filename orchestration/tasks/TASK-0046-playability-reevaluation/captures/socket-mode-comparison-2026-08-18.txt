@@ -1,0 +1,11 @@
+TASK-0046 socket-mode comparison
+
+The in-app Browser Use evaluator returned window.ws === null in both
+production and Vite-dev pages because its extension/isolated world cannot
+observe page-created expando globals.
+
+Independent page-context Playwright probe on the same current tip:
+  window.ws.url       = ws://127.0.0.1:6542/
+  window.ws.readyState = OPEN
+
+No server used owner port 6500.

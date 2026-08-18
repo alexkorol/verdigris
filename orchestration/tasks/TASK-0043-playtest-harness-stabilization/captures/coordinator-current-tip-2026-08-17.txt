@@ -1,0 +1,20 @@
+Coordinator current-tip verification — 2026-08-17
+
+Coordinator branch: `codex/native-reconstitution`
+
+Commands and results:
+
+    npm run test:unit
+    Test Files  122 passed (122)
+    Tests       779 passed (779)
+
+    npm run build
+    ✓ built in 21.89s
+
+    $env:PLAYTEST_PORT='6523'; npm run playtest
+    31/31 scenarios passed
+
+The isolated playtest server listened on port 6523 and was released cleanly.
+All authored scenarios passed, including the previously timing-sensitive
+gear-outcomes, quest, session-arc, mortality, party-stories, and zones paths.
+Build emitted only existing dependency freshness/chunk-size warnings.

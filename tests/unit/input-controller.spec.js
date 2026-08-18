@@ -51,8 +51,10 @@ describe('InputController', () => {
     });
 
     expect(onSkill).toHaveBeenCalledTimes(6);
+    // D-007 shape (TASK-0038): Space is the dodge/dash key alongside Shift;
+    // primary attack moved to LMB (with the '1' quickbar alias).
     expect(onSkill.mock.calls.map(([payload]) => payload.skillId)).toEqual([
-      'primary-attack',
+      'dash',
       'dash',
       'ability-1',
       'ability-2',
