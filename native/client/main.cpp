@@ -50,6 +50,12 @@ constexpr double kTileUnits =
 // D-118: clean top-down presentation. One orthographic camera with a uniform
 // zoom; scale is camera-independent so no element can slide against movement.
 constexpr double kCameraDefaultZoom = 0.85;
+// Uniform zoom envelope: 0.5x..2x the default (TASK-0054). The spec framed
+// this as "24-96 px/unit around camera2d.zoom (48)"; the client's actual
+// played-verified unit is 0.85 px/world-unit, so the same 0.5x..2x envelope
+// is applied here rather than re-scaling the whole world.
+constexpr double kCameraMinZoom = kCameraDefaultZoom * 0.5;
+constexpr double kCameraMaxZoom = kCameraDefaultZoom * 2.0;
 // Adjustable top-down camera: zoom scales world units to pixels uniformly.
 struct Camera {
   double x = 0.0;
@@ -72,7 +78,8 @@ struct EffectFx {
     DeathRing,
     Dust,
     Sparkle,
-    DamageNumber
+    DamageNumber,
+    TargetFlash
   };
   Kind kind = Kind::Impact;
   double wx = 0.0;
@@ -214,6 +221,7 @@ struct ClientState {
   std::size_t selected_item = 0;
   std::string hint;
   int hint_ticks = 0;
+  int screen_pulse_ticks = 0;
   render::List render_list;
 };
 
@@ -1028,10 +1036,23 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       const int lift = static_cast<int>(kTileUnits * (0.35 + grow * 0.75) * base.scale);
       const COLORREF color = fx.damage_to_player ? RGB(255, 118, 104) : RGB(240, 218, 132);
       SetBkMode(dc, TRANSPARENT);
-      SetTextColor(dc, color);
+      // Rise AND fade toward the background over the effect lifetime.
+      SetTextColor(dc, fade_to_background(color, life));
       const std::string text = std::to_string(fx.value);
       TextOutA(dc, base.x - 9, base.y - lift, text.c_str(),
                static_cast<int>(text.size()));
+      break;
+    }
+    case EffectFx::Kind::TargetFlash: {
+      rl.push_back({render::Op::TargetFlash, static_cast<double>(base.x),
+                    static_cast<double>(base.y), 0.0, 0,
+                    fx.damage_to_player ? "player" : "monster"});
+      // A brief bright ring over the hit target reads as a tint on the sprite.
+      const int r = std::max(6, static_cast<int>(kTileUnits * 0.5 * base.scale));
+      ring_ellipse(dc, base.x, base.y, r, r,
+                   fade_to_background(RGB(255, 244, 190), life), 3);
+      fill_ellipse(dc, base.x, base.y, r / 2, r / 2,
+                   fade_to_background(RGB(255, 238, 160), life));
       break;
     }
   }
@@ -1135,20 +1156,32 @@ void ingest_events(ClientState& state, const RECT& bounds) {
           state.effects.push_back({EffectFx::Kind::WarCryAura, ex, ey, 0.0, 0, 14});
         break;
       case verdigris::EventType::DamageApplied: {
+        const bool to_player =
+            subject && subject->kind == verdigris::ActorKind::Player;
         state.effects.push_back({EffectFx::Kind::Impact, ex, ey, 0.0, 0, 4});
-        // Floating damage number: the value the core resolved, rising above
-        // the target. Colored red when the Scion took the hit so "what hit
-        // me" reads at a glance.
+        // Brief tint on the hit target's sprite so "what I hit" reads at a
+        // glance, separate from the position flash.
+        EffectFx flash;
+        flash.kind = EffectFx::Kind::TargetFlash;
+        flash.wx = ex;
+        flash.wy = ey;
+        flash.age = 0;
+        flash.ttl = 4;
+        flash.damage_to_player = to_player;
+        state.effects.push_back(flash);
+        // Floating damage number: the value the core resolved, rising and
+        // fading above the target over ~600ms. Red when the Scion took the hit.
         EffectFx number;
         number.kind = EffectFx::Kind::DamageNumber;
         number.wx = ex;
         number.wy = ey;
         number.age = 0;
-        number.ttl = 26;
+        number.ttl = 12;
         number.value = event.value;
-        number.damage_to_player =
-            subject && subject->kind == verdigris::ActorKind::Player;
+        number.damage_to_player = to_player;
         state.effects.push_back(number);
+        // A 150ms screen-edge red pulse when the player takes damage.
+        if (to_player) state.screen_pulse_ticks = 3;
         break;
       }
       case verdigris::EventType::ActorDied:
@@ -1260,7 +1293,8 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds,
 
   // Title.
   SetTextColor(dc, RGB(230, 235, 220));
-  const std::string title = "Gear / House " + state.simulation->house().name;
+  // house().name is already prefixed ("House Verdigris"); do not double it.
+  const std::string title = "Gear / " + state.simulation->house().name;
   TextOutA(dc, left + 14, top + 12, title.c_str(), static_cast<int>(title.size()));
 
   // Authoritative stats readout. The base attack is the actor's stat; the
@@ -1648,6 +1682,20 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_resource_hud(player, dc, rl);
   paint_skill_strip(state, dc, bounds, rl);
   paint_gear_overlay(state, dc, bounds, rl);
+
+  // Screen-edge red pulse when the player took damage (150ms).
+  if (state.screen_pulse_ticks > 0) {
+    rl.push_back({render::Op::ScreenPulse, 0.0, 0.0, 0.0, 0, "player-damage"});
+    HPEN pulse = CreatePen(PS_SOLID, 10, RGB(196, 46, 40));
+    HGDIOBJ old_pen = SelectObject(dc, pulse);
+    HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+    RECT inner{4, 4, bounds.right - 4, bounds.bottom - 4};
+    Rectangle(dc, inner.left, inner.top, inner.right, inner.bottom);
+    SelectObject(dc, old_brush);
+    SelectObject(dc, old_pen);
+    DeleteObject(pulse);
+  }
+
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
     SetBkMode(dc, TRANSPARENT);
@@ -1784,6 +1832,7 @@ void timer_step(HWND window, ClientState& state) {
                                      [](const EffectFx& fx) { return fx.age >= fx.ttl; }),
                       state.effects.end());
   if (state.hint_ticks > 0) --state.hint_ticks;
+  if (state.screen_pulse_ticks > 0) --state.screen_pulse_ticks;
 
   // The camera eases toward the player so dashes read as motion, not teleports.
   const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
@@ -1894,7 +1943,8 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (state) {
         const int delta = GET_WHEEL_DELTA_WPARAM(wparam);
         const double factor = delta > 0 ? 1.1 : 1.0 / 1.1;
-        state->camera.zoom = std::clamp(state->camera.zoom * factor, 0.15, 2.0);
+        state->camera.zoom = std::clamp(state->camera.zoom * factor,
+                                        kCameraMinZoom, kCameraMaxZoom);
         InvalidateRect(window, nullptr, FALSE);
       }
       break;
@@ -1983,6 +2033,7 @@ void scenario_step(ClientState& state, const verdigris::Command& command) {
   state.effects.erase(std::remove_if(state.effects.begin(), state.effects.end(),
                                      [](const EffectFx& fx) { return fx.age >= fx.ttl; }),
                       state.effects.end());
+  if (state.screen_pulse_ticks > 0) --state.screen_pulse_ticks;
   scenario_follow_camera(state);
   scenario_present(state);
 }
@@ -2147,6 +2198,95 @@ int scenario_telegraph_dodge() {
   return 0;
 }
 
+int scenario_combat_juice() {
+  ClientState state;
+  scenario_begin(state);
+  for (int i = 0; i < 52; ++i)
+    scenario_step(state, verdigris::Command::move(1, 0));
+
+  // Melee until the monster dies, watching for the target flash + number.
+  bool saw_target_flash = false, saw_damage = false, saw_death = false;
+  for (int i = 0; i < 10 && !saw_death; ++i) {
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
+    saw_target_flash = saw_target_flash || render::any(state.render_list, render::Op::TargetFlash);
+    saw_damage = saw_damage || render::any(state.render_list, render::Op::Damage);
+    saw_death = saw_death || render::any(state.render_list, render::Op::Death);
+  }
+  scenario_check(saw_target_flash, "combat-juice: target sprite flashes on the hit");
+  scenario_check(saw_damage, "combat-juice: a floating damage number is spawned");
+
+  // Number lifetime (~600ms = 12 ticks): present right after the killing blow,
+  // still visible ~300ms in, gone after ~650ms. No further damage once dead.
+  bool present_early = render::any(state.render_list, render::Op::Damage);
+  bool present_mid = false, gone_late = false;
+  for (int i = 0; i < 14; ++i) {
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+    if (i == 5) present_mid = render::any(state.render_list, render::Op::Damage);
+    if (i == 13) gone_late = !render::any(state.render_list, render::Op::Damage);
+  }
+  scenario_check(present_early, "combat-juice: number present right after the hit");
+  scenario_check(present_mid, "combat-juice: number still visible ~300ms in");
+  scenario_check(gone_late, "combat-juice: number faded out after ~650ms");
+
+  // Player damage: spawn an elite at melee range and let its sweep resolve
+  // (no dodge) so the player takes a hit -> screen-edge pulse + player-tagged
+  // number.
+  const auto* player0 = state.simulation->actor(state.simulation->scion().actor_id);
+  if (player0) {
+    const int melee = verdigris::world_scale::kMeleeRange;
+    state.simulation->spawn_monster(
+        {player0->position.x - melee, player0->position.y}, 1, true);
+    bool saw_pulse = false, saw_player_dmg = false;
+    for (int i = 0; i < 6; ++i) {
+      scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+      saw_pulse = saw_pulse || render::any(state.render_list, render::Op::ScreenPulse);
+      const render::Item* dmg = render::first(state.render_list, render::Op::Damage);
+      saw_player_dmg = saw_player_dmg || (dmg && dmg->label == "player");
+    }
+    scenario_check(saw_pulse, "combat-juice: screen-edge red pulse on player damage");
+    scenario_check(saw_player_dmg, "combat-juice: player damage number is player-tagged");
+  }
+  return 0;
+}
+
+int scenario_zoom_invariance() {
+  ClientState state;
+  scenario_begin(state);
+  const double zooms[] = {kCameraMinZoom, kCameraDefaultZoom, kCameraMaxZoom};
+  const char* names[] = {"min", "default", "max"};
+  for (int z = 0; z < 3; ++z) {
+    state.camera.x = 0.0;
+    state.camera.y = 0.0;
+    state.camera.zoom = zooms[z];
+    scenario_present(state);
+    const auto base = scenery_screen_positions(state);
+    scenario_check(base.size() > 3, "zoom-invariance: scenery present in render list");
+
+    state.camera.x = 40.0;
+    state.camera.y = 0.0;
+    scenario_present(state);
+    const auto moved = scenery_screen_positions(state);
+    bool uniform = moved.size() == base.size();
+    double dx0 = 0.0, dy0 = 0.0;
+    if (uniform) {
+      dx0 = moved[0].first - base[0].first;
+      dy0 = moved[0].second - base[0].second;
+      for (std::size_t i = 0; i < moved.size(); ++i) {
+        if (std::abs((moved[i].first - base[i].first) - dx0) > 1.0 ||
+            std::abs((moved[i].second - base[i].second) - dy0) > 1.0) {
+          uniform = false;
+        }
+      }
+    }
+    std::string label = std::string("zoom-invariance: uniform delta at ") + names[z] + " zoom";
+    scenario_check(uniform, label.c_str());
+    const double expect_x = -40.0 * state.camera.zoom;
+    scenario_check(std::abs(dx0 - expect_x) <= 1.0,
+                   "zoom-invariance: delta scales with the zoom factor");
+  }
+  return 0;
+}
+
 int run_scenarios(const std::string& which) {
   struct Entry {
     const char* name;
@@ -2157,6 +2297,8 @@ int run_scenarios(const std::string& which) {
       {"first-fight", scenario_first_fight},
       {"loot-to-bank", scenario_loot_to_bank},
       {"telegraph-dodge", scenario_telegraph_dodge},
+      {"combat-juice", scenario_combat_juice},
+      {"zoom-invariance", scenario_zoom_invariance},
   };
   int total_failures = 0;
   for (const auto& entry : entries) {
