@@ -1,6 +1,6 @@
 ---
 task: TASK-0046
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: codex
 worker: Luna read-only playability evaluator
 worker_branch: codex/TASK-0046-playability-reevaluation
