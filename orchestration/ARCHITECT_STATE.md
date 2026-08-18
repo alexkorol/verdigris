@@ -484,3 +484,15 @@ critical path within ~90 min of re-entry. Shipping 0043+0044 to master.
 Board: 0038 (LMB/RMB + rebinding) and 0042 (first-loot moment) remain
 open for kimi (console) or codex/Luna. N3 spec is the architect's next
 authoring task.
+
+## N3 SHIPPED + BOARD (2026-08-17 ~18:10)
+
+0045 ACCEPTED+INTEGRATED, shipped to master as PR #17 (master 86688c1f).
+Architect rebuilt and reran 7/7 attach incl combat/encounter-variety/
+boss-mechanic. C++ parity now covers N1 transport/login, N2 world/
+movement/zones, N3 combat/packs/boss. Next rung: TASK-0047 N4
+items/inventory/Vesselforge (spec READY, critical) - closes N3 depth
+stub, graduates drops to real items, 13/13 attach bar. 0046 REVISE
+stands (re-request added no arcs). In flight: 0038 kimi-work, 0042
+kimi. Reviewer ops note: stop detached review servers via the task
+runner (TaskStop), not process kills.
