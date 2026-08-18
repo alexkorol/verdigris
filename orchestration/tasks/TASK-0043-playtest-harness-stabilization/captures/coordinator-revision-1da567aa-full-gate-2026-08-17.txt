@@ -1,0 +1,24 @@
+TASK-0043 revision full disposable gate
+Date: 2026-08-17
+Candidate: a040da60 (base 3636b729 plus worker revision 1da567aa)
+
+Environment: disposable worktree with a temporary node_modules junction to
+the coordinator dependency tree. The worktree was removed after each run.
+
+Command: npm --prefix <candidate> run test:unit
+Result: PASS — 122 files / 779 tests.
+
+Command: PLAYTEST_PORT=6532 npm --prefix <candidate> run playtest
+Result: 30/31. All scenarios passed except `loot`, which timed out waiting
+for its second coin drop at the authored 30000ms deadline. Diagnostics:
+  p99 event-loop lag 32.145ms; max event-loop lag 110.166ms.
+
+An isolated `loot` retry in a fresh disposable worktree did not reach the
+scenario: the temporary dependency junction could not resolve the `compression`
+package while booting the child server. It is not evidence of a product or
+revision failure. The exact staged source variant (same timing logic) already
+has a recorded 122/779 + 31/31 gate in
+`coordinator-architect-staged-variant-2026-08-17.txt`.
+
+No full-gate result is hidden: this capture reports the fresh 30/31 run and
+the environment-only retry failure separately.

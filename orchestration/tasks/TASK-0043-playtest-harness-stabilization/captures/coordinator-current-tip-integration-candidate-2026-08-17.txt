@@ -1,0 +1,25 @@
+TASK-0043 current-tip integration candidate
+Date: 2026-08-17
+Base: coordinator tip ade29e6d
+Candidate: 1a9f6b6b12bf9499ec590d96f9af8756c1792dda
+
+Integration method: disposable worktree `integrate-0043-current`; cherry-picked
+the complete correction chain 8272eb74, babba96f, 52e2c407, 540b5987,
+58f66c66, 128035fa, c8794c47, 750a62f6, a1323cd8, a4ba0538, 7b81f874,
+7990c5e2, and f9527d9c onto the current coordinator tip. All 13 commits
+applied without conflicts.
+
+Scope audit: changed paths are playtest/README.md,
+playtest/TASK-0043-default-load-transcript.txt, playtest/harness.mjs,
+playtest/run.mjs, playtest/timing.mjs, and the five named scenario files;
+no server/src/native/package/product paths changed. `git diff --check` passed.
+
+Verification:
+- `npm rebuild better-sqlite3` completed after the disposable `npm ci --ignore-scripts`.
+- `npm run test:unit`: PASS, 122 files / 779 tests.
+- `npm run playtest --silent`: PASS, 31/31 scenarios.
+- Timing diagnostics: loadMode=false, p99EventLoopLagMs=32.145407,
+  maxEventLoopLagMs=94.044159.
+
+The candidate is ready for Fable's architect rerun. It is not merged into the
+coordinator branch because TASK-0043 remains architect-unaccepted.

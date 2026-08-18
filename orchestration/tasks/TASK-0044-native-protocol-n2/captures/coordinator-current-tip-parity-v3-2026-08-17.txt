@@ -1,0 +1,23 @@
+TASK-0044 current-tip parity refresh
+Date: 2026-08-17
+
+Disposable worktree: C:/Users/Alex/AppData/Local/Temp/verdigris-parity-v3
+Base: 9fea5668 (coordinator HEAD)
+Candidate: codex/integration-parity-candidate-v3 @ 3636b729
+Applied: d476788 (TASK-0044 implementation)
+
+Native gate:
+- powershell -NoProfile -File native/build.ps1 -RunTests -RunClient: PASS
+  (legacy denylist, core tests, networking tests, client shell)
+
+Unchanged attach gate against native/build/verdigris_server.exe on port 6532:
+- quickstart: PASS (160 ms)
+- single-session: PASS (318 ms)
+- movement: PASS (4603 ms)
+- zones: PASS (1103 ms; six combinations, pre-entry 38,115 restored)
+- total: 4/4, runner exit 0
+
+The N2 boundary remains intentional: native zones report 18 monsters each;
+authored population/role parity is deferred to the Fable-issued READY N3 task.
+The candidate is disposable and remains outside codex/native-reconstitution
+until TASK-0044 receives architect acceptance.

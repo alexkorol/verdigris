@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <thread>
+#include <chrono>
 
 int main(int argc, char** argv) {
   std::uint16_t port = 6500;
@@ -26,6 +28,13 @@ int main(int argc, char** argv) {
   std::string line;
   while (std::getline(std::cin, line)) {
     if (line == "quit" || line == "stop") break;
+  }
+  // A detached child commonly inherits a closed stdin. EOF is not a server
+  // shutdown request: keep the loopback service alive until its owner sends
+  // the explicit stop command or terminates the process.
+  if (std::cin.eof()) {
+    std::cin.clear();
+    for (;;) std::this_thread::sleep_for(std::chrono::seconds(1));
   }
   server.stop();
   return 0;

@@ -164,6 +164,43 @@ void test_instance_entry_and_stairs() {
   check(std::find(messages.begin(), messages.end(), "The party returns to the surface.") != messages.end(),
         "stair return announces the surface");
 }
+
+void test_n3_combat_rules_and_wire_events() {
+  ProtocolSession session("guest-n3-rules", "socket-n3", 101, false);
+  session.handle(Envelope{"instance:enterSolo", JsonValue::Object{{"template", "marsh"}, {"layout", "clearings"}}}, [](const Envelope&) {});
+  const auto marsh = request_state(session, "n3-marsh");
+  const auto* monsters = marsh["state"]["monsters"].array();
+  check(monsters && monsters->size() >= 20, "N3 marsh has the authored pack population");
+  bool rare = false;
+  bool empowered = false;
+  for (const auto& value : *monsters) {
+    if (value["rarity"].string() && *value["rarity"].string() == "rare"
+        && value["modifiers"].array() && value["modifiers"].array()->size() == 1) rare = true;
+    if (value["state"]["effects"]["aura"].is_object()) empowered = true;
+  }
+  check(rare, "N3 rare exposes one named modifier");
+  check(empowered, "N3 buffer aura exposes Empowered state");
+
+  ProtocolSession boss("guest-n3-boss", "socket-boss", 103, false);
+  boss.handle(Envelope{"instance:enterSolo", JsonValue::Object{{"template", "dungeon"}, {"layout", "warren"}}}, [](const Envelope&) {});
+  const auto state = request_state(boss, "n3-boss");
+  const auto* actors = state["state"]["monsters"].array();
+  check(actors != nullptr, "N3 boss snapshot has monsters");
+  const JsonValue* elite = nullptr;
+  for (const auto& value : *actors) if (value["rarity"].string() && *value["rarity"].string() == "elite") elite = &value;
+  check(elite && elite->operator[]("name").string() && *elite->operator[]("name").string() == "Warden of the Deep", "N3 names the Old Barrow boss");
+  const int x = static_cast<int>(elite->operator[]("x").number().value_or(0));
+  const int y = static_cast<int>(elite->operator[]("y").number().value_or(0));
+  bool telegraphed = false;
+  boss.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", x + 1}, {"y", y}}}, [&](const Envelope& event) {
+    if (event.event == "monster:telegraph" && event.data["skillId"].string()
+        && *event.data["skillId"].string() == "boss:ground-slam") {
+      telegraphed = event.data["radius"].number().value_or(0) >= 2
+        && event.data["durationMs"].number().value_or(0) >= 800;
+    }
+  });
+  check(telegraphed, "N3 boss emits a readable ground-slam telegraph");
+}
 }  // namespace
 
 int main() {
@@ -172,6 +209,7 @@ int main() {
     test_session_lifecycle();
     test_continuous_movement();
     test_instance_entry_and_stairs();
+    test_n3_combat_rules_and_wire_events();
     std::cout << "verdigris networking tests: PASS\n";
     return 0;
   } catch (const std::exception& error) {

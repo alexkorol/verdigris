@@ -1,0 +1,22 @@
+TASK-0043/TASK-0044 current-tip gate refresh
+Date: 2026-08-17 (coordinator checkout, HEAD 732f7fbf)
+
+The required brief was reread before this check. Existing dirty coordinator
+artifacts were preserved; no source or Fable-owned files were edited.
+
+Command: npm run test:unit
+Result: PASS
+  Test Files  122 passed (122)
+  Tests       779 passed (779)
+
+Command: powershell -NoProfile -File native/build.ps1 -RunTests -RunClient
+Result: PASS
+  native legacy denylist: PASS
+  verdigris core tests: PASS
+  verdigris networking tests: PASS
+  Verdigris native client shell
+  House: House Verdigris | trophies stored: 1 | items stored: 1
+
+This is a current-tip health check only. It does not change TASK-0043 or
+TASK-0044 lifecycle state; both remain REVIEW_REQUESTED pending Fable's
+architect review. No playtest claim is made by this capture.

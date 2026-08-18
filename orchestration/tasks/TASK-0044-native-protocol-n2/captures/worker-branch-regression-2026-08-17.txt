@@ -1,0 +1,21 @@
+TASK-0044 committed-tip regression attach — 2026-08-17
+
+Commit: `d476788`
+Server: `C:\Users\Alex\Documents\KimiWork\verdigris\native\build\verdigris_server.exe 6522`
+
+Command:
+
+    $env:PLAYTEST_WS_URL='ws://127.0.0.1:6522'
+    node playtest/run.mjs --attach quickstart single-session movement zones
+
+Result:
+
+    PASS movement (4597ms)
+    PASS quickstart (162ms)
+    PASS single-session (330ms)
+    PASS zones (1114ms)
+    4/4 scenarios passed
+
+The prior N1 quickstart and session-replacement contracts remain green under
+the N2 server, alongside the new movement/zones scenarios. The server was
+stopped cleanly.

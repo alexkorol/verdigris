@@ -6,6 +6,19 @@
   decisions, task specs). Claude/Fable is architect+reviewer; the Codex
   coordinator with Luna workers implements. Read
   `orchestration/PROTOCOL.md` first.
+- The current coordinator snapshot is indexed in
+  [`RECONSTITUTION_STATUS.md`](RECONSTITUTION_STATUS.md), including the
+  original checklist, WIZARD seams, review-ready tasks, blocked ownership
+  questions, and current gate evidence.
+- Focused WIZARD seam verification is recorded in
+  [`WIZARD_INTEGRATION_VERIFICATION.md`](WIZARD_INTEGRATION_VERIFICATION.md):
+  Orbs, inventory/Brands & Bonds, and Cartographer/map tests pass 73/73.
+- Historical Delaford-to-Verdigris coverage is mapped in
+  [`DELAFORD_COVERAGE_MATRIX.md`](DELAFORD_COVERAGE_MATRIX.md), with PvP and
+  resource skills explicitly deferred pending product authority.
+- The checklist gap audit is maintained in
+  [`VERDIGRIS_GAP_AUDIT.md`](VERDIGRIS_GAP_AUDIT.md), including evidence,
+  parity boundaries, and unresolved owner decisions.
 - Wave 1 READY: TASK-0001 (native Legends records), TASK-0002 (build/CI
   hardening), TASK-0003 (slice verification harness). DRAFT: TASK-0004
   (client control pass per decision D-007), TASK-0005 (legacy audit).
@@ -71,3 +84,93 @@
    reference ideas or a focused native billboard layer.
 3. Keep networking, persistence, complete magic, and production art out of the
    core until the first playable loop has been evaluated.
+
+## 2026-08-17 — Native parity wave N2 in progress
+
+- TASK-0044 is claimed by Kimi Code in the external worktree
+  `C:\Users\Alex\Documents\KimiWork\verdigris`; the WIP adds native world,
+  movement, solo-zone, metadata, monster, and stair-return seams without
+  changing the unchanged browser harness.
+- Coordinator evidence is kept in
+  [`TASK-0044 BASELINE.md`](../../orchestration/tasks/TASK-0044-native-protocol-n2/BASELINE.md)
+  and the provisional
+  [`REPORT.md`](../../orchestration/tasks/TASK-0044-native-protocol-n2/REPORT.md).
+- The current worker WIP now passes the native denylist, core tests, and
+  networking tests. A rebuilt server also passes unchanged `movement` and
+  `zones` attach scenarios 2/2, including all six zones and saved-position
+  restoration. Coordinator captures are preserved in the TASK-0044 folder;
+  Kimi committed the six native files as `d476788`, so the task is now
+  `REVIEW_REQUESTED` pending Fable's architect rerun and acceptance decision.
+
+## 2026-08-17 — N3 combat parity boundary prepared
+
+- The coordinator completed a read-only audit of the native/browser combat
+  seams and recorded the executable handoff in
+  [`N3_PARITY_IMPLEMENTATION_BRIEF.md`](N3_PARITY_IMPLEMENTATION_BRIEF.md).
+  It maps the existing `player:move` and `player:skill:trigger` wire events
+  into the deterministic core and lists the unchanged `combat` and
+  `encounter-variety` acceptance matrix.
+- The committed N2 server intentionally fails those two scenarios at the
+  N2 boundary (18 monsters instead of the combat scenario's minimum 20, and
+  no authored melee/ranged/buffer roles). The raw negative transcript is
+  preserved in the TASK-0044 captures; no assertion was weakened and no N2
+  source was changed.
+- This is a handoff and evidence checkpoint, not an N3 claim. Native combat
+  implementation must wait for Fable to issue a READY N3 task/spec.
+- The requested authority choice and task issuance are tracked in
+  [`QUESTION-0009`](../../orchestration/questions/QUESTION-0009-native-n3-authority-bridge.md);
+  no source workaround is authorized while it remains open.
+
+## 2026-08-17 — Current coordinator evidence refresh
+
+- The disposable combined parity candidate `codex/integration-parity-candidate-v3`
+  (`3636b729`) applies the complete TASK-0043 correction chain and TASK-0044
+  `d476788` directly onto coordinator tip `9fea5668`.
+- That candidate passes browser unit `122/779`, browser playtest `31/31`, the
+  native denylist/core/networking/client gate, and the unchanged native attach
+  matrix `quickstart`, `single-session`, `movement`, `zones` at `4/4`.
+- TASK-0043 is now accepted and integrated at `1f470e3` on program tip
+  `50ca60ad`; Fable's architect review `1f833081` records the default-mode
+  31/31 gate and loopback-bind guidance. TASK-0044 is now accepted and
+  integrated at `5b84f51e` on program tip `71b6b207`; review `5b2ee5b6`
+  records the personal 4/4 rerun and accepts the documented N3 stubs.
+- A dependency-complete rerun of that exact staged timing correction was
+  recorded at coordinator commit `9e5d9fd8`: a fresh worktree installed
+  dependencies with normal install scripts, then passed browser unit `122/779`
+  and `PLAYTEST_PORT=6538 npm run playtest` at `31/31` (`loadMode:false`,
+  p99/max event-loop lag `32.178/109.642ms`). This strengthens the evidence
+  package and is retained as coordinator provenance for the accepted
+  correction.
+- The WIZARD seam rerun is recorded at coordinator commit `6cb7b366`:
+  Orbs, Brands & Bonds/inventory, and Cartographer/map tests remain `73/73`;
+  Verdigris Splash remains intentionally presentation/reference-only.
+
+## 2026-08-17 — Current-tip N2 candidate refresh
+
+- The pre-integration coordinator tip `27db1611` is intentionally still N1:
+  its unchanged native attach baseline is 2/4 (`quickstart` and
+  `single-session` pass; `movement` and `zones` time out).
+- Disposable candidate `f602dab4` cherry-picks N2 worker commit `d476788`
+  onto that tip and passes the native denylist/core/networking/client gate plus
+  unchanged `quickstart`, `single-session`, `movement`, and `zones` at 4/4.
+- This supersedes the earlier candidate reference for handoff purposes but
+  accepted implementation and loopback-bind correction are integrated.
+
+## 2026-08-18 — N3 combat parity review handoff
+
+TASK-0045 is `REVIEW_REQUESTED` on
+`codex/TASK-0045-native-protocol-n3` at `6d39565c`. The worker owns only
+`native/**`; `playtest/**`, `server/**`, and `src/**` remain read-only. Native
+denylist/core/networking gates, unchanged seven-scenario attach, combat unit
+coverage, and the authentic telegraph-radius negative are captured. The
+architect must rebuild and rerun the attach before acceptance; no N3 source is
+integrated into the program branch yet.
+
+## 2026-08-18 — Current-master playability evaluation review handoff
+
+TASK-0046 is `REVIEW_REQUESTED` on
+`codex/TASK-0046-playability-reevaluation` at `1de6e45b`, based on current
+program tip `45846af7`. It owns only task-folder evidence. The report records
+the bounded guest/Old Barrow checkpoint, authoritative page-context
+`window.ws.url` proof, and the in-app-browser isolated-world discrepancy; the
+two full arcs and friction disposition remain explicitly unperformed.

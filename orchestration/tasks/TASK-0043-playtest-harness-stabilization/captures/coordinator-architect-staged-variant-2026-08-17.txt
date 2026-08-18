@@ -1,0 +1,20 @@
+TASK-0043 architect-staged timing variant validation
+Date: 2026-08-17
+Base: disposable candidate 3636b729
+Source overlay: Fable's staged playtest/timing.mjs snapshot (read-only copy)
+
+The temporary worktree removed the candidate-only contention-cap branch,
+leaving the architect snapshot's direct p99/max lag adaptation and existing
+1.75x ceiling. No coordinator or architect checkout was modified.
+
+Command: npm run test:unit
+Result: 122 files / 779 tests passed; exit 0.
+
+Command: PLAYTEST_PORT=6528 npm run playtest
+Result: 31/31 scenarios passed; exit 0.
+Diagnostics: loadMode=false, p99EventLoopLagMs=32.178175,
+maxEventLoopLagMs=110.952447.
+
+The temporary worktree and its generated server state were removed after the
+run. Existing docs/loop-journal.md and other coordinator artifacts were
+preserved in the main checkout.

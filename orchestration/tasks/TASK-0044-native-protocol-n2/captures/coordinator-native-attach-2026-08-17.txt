@@ -1,0 +1,58 @@
+TASK-0044 coordinator attach recheck
+Date: 2026-08-17
+Worker tip: d476788 (C:\Users\Alex\Documents\KimiWork\verdigris)
+Server: native/build/verdigris_server.exe 6526
+Command: $env:PLAYTEST_WS_URL='ws://127.0.0.1:6526'; node playtest/run.mjs --attach quickstart single-session movement zones
+
+Playing against ws://127.0.0.1:6526
+
+PASS movement (4588ms)
+      ✓ stopped between tiles (115.333333)
+      ✓ moved down (115 -> 118.333333)
+      ✓ moved right (38 -> 41)
+      ✓ moved back up-left
+      ✓ still in the instance after 2s (scene: The Old Barrow)
+      ✓ no bounce back to town
+      ✓ moved inside the instance
+
+PASS quickstart (162ms)
+      ✓ fresh guest reached combat in 0.16s
+
+PASS single-session (315ms)
+      ✓ loot from the replaced session survived the handoff
+      ✓ new session stays connected
+
+PASS zones (1108ms)
+      ✓ dungeon/warren: entered an instance
+      ✓ dungeon/warren: layout applied (warren)
+      ✓ dungeon/warren: both stairs exist
+      ✓ dungeon/warren: scene has a display name (The Old Barrow)
+      ✓ dungeon/warren: populated (18 monsters)
+      ✓ grove/clearings: entered an instance
+      ✓ grove/clearings: layout applied (clearings)
+      ✓ grove/clearings: both stairs exist
+      ✓ grove/clearings: scene has a display name (Verdant Grove)
+      ✓ grove/clearings: populated (18 monsters)
+      ✓ crypt/gauntlet: entered an instance
+      ✓ crypt/gauntlet: layout applied (gauntlet)
+      ✓ crypt/gauntlet: both stairs exist
+      ✓ crypt/gauntlet: scene has a display name (Sunken Colonnade)
+      ✓ crypt/gauntlet: populated (18 monsters)
+      ✓ crypt/warren: entered an instance
+      ✓ crypt/warren: layout applied (warren)
+      ✓ crypt/warren: both stairs exist
+      ✓ crypt/warren: scene has a display name (Weir Crypt)
+      ✓ crypt/warren: populated (18 monsters)
+      ✓ wilds/clearings: entered an instance
+      ✓ wilds/clearings: layout applied (clearings)
+      ✓ wilds/clearings: both stairs exist
+      ✓ wilds/clearings: scene has a display name (The Wilds)
+      ✓ wilds/clearings: populated (18 monsters)
+      ✓ marsh/clearings: entered an instance
+      ✓ marsh/clearings: layout applied (clearings)
+      ✓ marsh/clearings: both stairs exist
+      ✓ marsh/clearings: scene has a display name (Marsh of Reeds)
+      ✓ marsh/clearings: populated (18 monsters)
+      ✓ returned to the pre-entry position (38,115 vs 38,115)
+
+4/4 scenarios passed

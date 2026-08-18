@@ -1,0 +1,19 @@
+TASK-0045 attach gate (unchanged harness)
+Harness command:
+  PLAYTEST_WS_URL=ws://127.0.0.1:6539 node playtest/run.mjs --attach combat encounter-variety boss-mechanic quickstart single-session movement zones
+Server:
+  native/build/verdigris_server.exe 6539 (rebuilt from d9c6fc6f)
+
+Timing guard: load-adaptive deadlines enabled (max 1.75x; explicit load mode: off; baseline 20ms event-loop lag)
+Playing against ws://127.0.0.1:6539
+PASS boss-mechanic (2123ms)
+PASS combat (1002ms)
+PASS encounter-variety (1270ms)
+PASS movement (4587ms)
+PASS quickstart (165ms)
+PASS single-session (314ms)
+PASS zones (1172ms)
+
+7/7 scenarios passed
+Timing diagnostics: {"loadMode":false,"p99EventLoopLagMs":32.260095,"maxEventLoopLagMs":32.440319}
+Process exit: 0

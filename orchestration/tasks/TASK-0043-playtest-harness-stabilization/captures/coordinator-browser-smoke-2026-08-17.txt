@@ -1,0 +1,13 @@
+Coordinator browser-critical smoke — 2026-08-17
+
+Built coordinator tip with `npm run build`, then started the development
+server on isolated port 6524 and ran:
+
+    $env:PLAYWRIGHT_BASE_URL='http://127.0.0.1:6524'
+    npx playwright test tests/e2e/browser-critical-loop.spec.mjs
+
+Result:
+
+    1 passed (20.1s)
+
+The server was stopped with SIGINT after the run; no listener was left behind.
