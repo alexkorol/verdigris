@@ -87,3 +87,17 @@ status labels. New incidents append here with the template at bottom.
 - Containment; regression/eval added
 - Status: OBSERVATION / HYPOTHESIS / EXPERIMENT / RULE (+enforcement)
 - Review-after date
+
+## INC-011: Continuous-loop empty-cycle spin + stop-note self-deadlock (2026-08-18)
+
+- deepseek dsh, standing loop. Its board-empty stop-note written as
+  TASK-0054/STATUS.md made its own claim-check read the READY task as
+  claimed; it then spun 20+ empty fetch cycles with no backoff.
+- Containment: architect spec annotation (stop-notes are not claims) +
+  queue restock unblocked it.
+- RULE (enforced in coordinator briefs + standing goals): (1) stop
+  notes go in NOTES-<coordinator>.md, never a STATUS.md of an
+  unclaimed task; (2) empty board => run an actual sleep command
+  (Start-Sleep 900, doubling to 3600) between re-checks; (3) architect
+  sweep heuristic: fresh clone FETCH_HEAD + no active claim + READY
+  tasks on board = stuck claim-check, intervene via spec annotation.

@@ -82,3 +82,14 @@ ruling. External tools we cannot patch (node.exe running dsh web UIs)
 need one-time owner-run firewall allow rules - the architect must not
 change firewall settings itself.
 
+
+## 10. Architect session budget is a first-class cost (2026-08-18) - RULE
+
+A day of 25-min sweeps + full-capture eyeballing + unfiltered suite
+outputs burned 96% of the architect session window by early afternoon.
+Enforcement (loop prompt + review procedure): default sweep cadence
+50 min (standing coordinator loops make throughput insensitive to it);
+capture-script JSON assertions are primary UI evidence with 1-2
+eyeballed captures max per review; tool outputs tail-filtered; dense
+cadence only during active owner iteration. Accepted-outcome-per-cost
+includes the architect.

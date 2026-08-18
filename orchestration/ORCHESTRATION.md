@@ -96,3 +96,15 @@ frozen source history plus new observations awaiting promotion.
 3. CI stale-base check: PR diff vs current tip on rendering/protocol
    surfaces (candidate GitHub Action; task when justified).
 4. Capture scripts: hard-fail pattern is already the standard (0038).
+
+## Continuous-loop contract (promoted from INC-011, 2026-08-18)
+
+Every coordinator runs the canonical standing loop in
+STANDING-LOOP.md - claim semantics (committed CLAIMED STATUS.md is
+the ONLY claim form), notes discipline (NOTES-<name>.md, never task
+STATUS files), empty-board backoff (real sleep, doubling to 3600s),
+REVISE-first priority. Enforcement: STANDING-LOOP.md is the single
+goal source (briefs reference it; per-coordinator goal texts must not
+drift), and the architect sweep runs the stuck-loop heuristic (fresh
+clone FETCH_HEAD + no active claim + READY tasks on board =>
+intervene via spec annotation, never by editing coordinator state).
