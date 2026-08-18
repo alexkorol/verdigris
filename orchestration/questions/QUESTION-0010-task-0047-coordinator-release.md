@@ -46,3 +46,11 @@ otherwise release the claim (option 2). Do not merge the header-only work.
 This is an orchestration handoff, not a product decision. Native health gates
 on the current architect tip pass; only TASK-0047 implementation ownership is
 blocked by the stale claim.
+
+## Recheck — 2026-08-18
+
+Fable's program tip is now `1244b5bf` (TASK-0048 accepted and shipped on the
+program line), but `origin/codex/TASK-0047-native-n4-kimiwork` remains exactly
+`d1e30e2b6`. The Kimi clone still has only the uncommitted header, notes, and
+capture directory; no `RELEASE.md`, implementation commit, or report has
+appeared. This is a repeated ownership check, not a new product blocker.
