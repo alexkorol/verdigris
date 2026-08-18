@@ -6,109 +6,129 @@ commits:
   - 8dd9aee8
   - f0b6300f
   - 65b51a9a
-base_commit: c3988b29
+  - 1de6e45b
+base_commit: 45846af7
 architect_review_required: true
 ---
 
-# TASK-0046 — playability re-evaluation checkpoint
+## Verdict
 
-## Executive summary
+The browser now has a credible first-session scaffold, and the post-friction
+guest arc is playable for ten minutes: the tutorial produces readable melee
+kills, XP, and a gold pickup. It is not yet fun-adjacent across both required
+arcs. The mortal-oath Chronicles arc reaches a real House/Scion and Old Barrow
+but never produces a readable hit, kill, loot, or death despite sustained
+movement and attack attempts. Resource feedback also degenerates into repeated
+`Not enough mana.` messages. This remains `REVIEW_REQUESTED`, not accepted.
 
-The current-tip browser build was rebuilt successfully and the real client
-was launched against worker-owned loopback servers on ports 6542–6545; the
-owner's port 6500 was never used. The in-app browser rendered the game and
-its server logs recorded client connection and login. Its evaluator returned
-`window.ws === null`, however, because it evaluates in an extension/isolated
-world that cannot observe page-created expando globals. The coordinator's
-independent page-context probe on the same current tip captured
-`window.ws.url = ws://127.0.0.1:6542/` with `readyState = OPEN`; that is the
-authoritative socket proof for this task.
+## Method and socket proof
 
-This worker did not complete the two required approximately ten-minute arcs.
-The explicit arc method was stopped after a bounded guest checkpoint because
-the available browser surface could not satisfy the required socket proof.
-Consequently this report is a REVIEW_REQUESTED evidence checkpoint, not a
-claim that the post-friction first ten minutes are fun-adjacent or that the
-friction list has been re-evaluated.
+Current candidate was rebuilt from the isolated worktree at `c3988b29`, a
+descendant of program tip `45846af7`. Production servers used only disposable
+loopback ports; owner port 6500 was never used.
 
-## Build and server verification
+- `npm ci --no-audit --no-fund`: 834 packages installed.
+- `npm run build`: Vite 5.4.21, 377 modules transformed, passed.
+- Guest first-minute page-context proof on port 6548:
+  `window.ws.url=ws://127.0.0.1:6548/`, readyState 1, page age 3.81s.
+- Chronicles first-minute page-context proof on port 6547:
+  `window.ws.url=ws://127.0.0.1:6547/`, readyState 1, page age 56.73s.
+- The full driven arcs were run on port 6547 and the temporary servers/tabs
+  were stopped afterward. The socket-mode discrepancy in the in-app evaluator
+  is preserved in the earlier comparison capture; CDP page-context reads are
+  authoritative for these proofs.
 
-From the isolated worktree at current tip `c3988b29` (a descendant of
-`45846af7`):
+## Arc A — guest quickstart (~10m14s)
 
-```text
-npm ci --no-audit --no-fund
-PASS — 834 packages installed
+Timestamped observations from the real client:
 
-npm run build
-PASS — Vite 5.4.21; 377 modules transformed; dist emitted
-```
+- Opening: Delaford tutorial, Adventure panel, Old Barrow transition.
+- ~00:18: first Dread Vanguard kill; Aldwyn explains XP, loot, and the next
+  Adventure objective; 60 gold was picked up.
+- ~04:05: movement into the next pack produced incoming Dread damage, repeated
+  Bronze Arc hits, a second kill, and Attack XP.
+- ~04:10–05:15: additional melee contact produced a third kill and XP.
+- ~05:30 onward: movement continued through the dungeon, but repeated skill
+  attempts produced `Not enough mana.` while the quickbar remained visually
+  usable; no clear recovery/next-reward beat appeared.
+- End state at ~10m14s: Old Barrow, position around 111,83, HP 110/110.
 
-Production servers were started with `NODE_ENV=production` on free ports
-6542 and 6543; a development server was started on 6545, with a Vite client
-using `VITE_WS_URL=ws://localhost:6545`. No server used port 6500. Server
-output showed successful client connections and logins, including the guest
-page's `Wanderer` session.
+## Arc B — Chronicles House/Scion with mortal oath (~10m15s)
 
-## Browser evidence and limitation
+- Landing and `Play as Guest` were immediate.
+- `House Ember` was inscribed; `Asha` was added with `Swear the mortal oath`
+  checked. The Chronicles card clearly displayed `Asha Level 1 · Mortal oath`.
+- Set Out reached Delaford and Old Barrow. The first-minute socket proof was
+  captured before/around this transition.
+- Quest overlay clearly listed Aldwyn's Charge and its five-step verb chain.
+- Roads exposed Tin/Salt/Chalk/Copper names and directions but no concrete
+  destination/risk/reward preview.
+- Inventory exposed Bronze Dagger and 100 gold; skill tree exposed 2 points,
+  1 node, and no recommended first allocation.
+- In Old Barrow, the visible opening actor overlapped the player, but repeated
+  WASD movement, directional repositioning, canvas targeting, Bronze Arc,
+  number-1, and skill-bar attempts produced no combat log, damage, kill, loot,
+  or death. HP remained 110/110 through the ten-minute run.
+- End state at ~10m15s: Old Barrow, position around 109,107, HP 110/110.
 
-The production page at `http://localhost:6543/?play` rendered the live game
-screen: Delaford Village, HP 110/110, skill bar, and Aldwyn's onboarding
-messages. A bounded guest interaction reached The Old Barrow:
+## TASK-0034 disposition table
 
-```text
-00:00:00  Delaford Village; Aldwyn teaches WASD/arrow movement
-00:00:03  Adventure panel; Old Barrow is described as a forgiving first delve
-00:00:11  The Old Barrow selected; “The road is taking shape”; minimap 101,99
-00:00:18  expedition settled; canvas actors remain outside DOM visibility
-```
-
-The in-app Browser Use page evaluator returned `window.ws?.url === null` in
-both production and Vite-dev pages, even while the server logged successful
-connections. This is attributable to its isolated extension world, not a
-client/server failure. The coordinator's independent page-context probe on
-the same current tip captured the required free-port proof:
-
-```text
-window.ws.url       = ws://127.0.0.1:6542/
-window.ws.readyState = OPEN
-```
-
-The two socket-mode captures preserve the distinction:
-
-- `captures/connection-proof-blocker-2026-08-18.txt` — initial bounded
-  stop-condition observation
-- `captures/socket-mode-comparison-2026-08-18.txt` — production/dev source
-  comparison and isolated-world explanation
-
-## Arc status
-
-| Required arc | Status | Evidence |
+| Prior friction | Disposition | Evidence from this pass |
 |---|---|---|
-| Guest quickstart, ~10 minutes | Not completed | `captures/guest-arc-checkpoint-2026-08-18.txt` records only the bounded opening and Old Barrow transition |
-| Chronicles House/Scion, mortal oath, ~10 minutes | Not run | Stopped before the required client-proof method could be satisfied in this browser surface |
-| `window.ws.url` proof for each arc | Not captured by this worker | Coordinator's independent page-context proof exists for the free-port client, but is not duplicated here |
+| B1 first fight/verb chain is not safely learnable | SURVIVES in Chronicles; improved in guest | Guest produced three melee kills; mortal-oath run still could not connect an opening hit. |
+| B2 first Adventure entry ejects the player | FIXED | Both arcs remained in Old Barrow after entry; no bounce to town. |
+| M1 combat never visibly connects | PARTIALLY FIXED | Guest has hit/kill/XP logs; Chronicles remains no-hit/no-kill. |
+| M2 mana economy fights the onboarding kit | SURVIVES | Repeated `Not enough mana.` messages while skills remained visually actionable. |
+| M3 death is unreachable at level 1 | SURVIVES / not reproduced | Both arcs ended at full HP; no death or recovery decision occurred. |
+| m1 tutorial chat is easy to miss | SURVIVES | The log remains a narrow ticker/preview; the guest beat text is readable only when expanded. |
+| m2 House/Scion identity vanishes in-game | SURVIVES | Chronicles shows Asha during setup, but the in-world HUD does not keep House identity visible. |
+| m3 permadeath has no ceremony | NOT-REPRODUCED | Neither arc reached death. |
+| m4 dark rectangles read as holes/bugs | SURVIVES as visual risk | The Old Barrow screenshots retain large dark wall/floor masses; no polish change was evaluated. |
+| m5 movement speed needs hardware verification | NOT-REPRODUCED | This pass verified reachability and coordinates, not a calibrated hardware feel measurement. |
+| Major loot is not exciting/legible | SURVIVES | Guest visibly recorded only a 60-gold pickup; no memorable item reveal/comparison beat occurred. |
+| Inventory spends attention budget poorly | SURVIVES | Inventory still exposes a large, information-dense panel with no first-use comparison beat. |
+| Responsive overlays collide | NOT-REPRODUCED | No compact viewport pass was run in this task. |
+| Zone choice lacks concrete objective | SURVIVES | Old Barrow is labelled forgiving/Start here but gives no specific trophy/material/House reward preview. |
+| Skill tree lacks first allocation path | SURVIVES | Two points and one node are visible, but no recommended first change is surfaced. |
+| Roads are evocative but underspecified | SURVIVES | Only four road names/directions are shown. |
 
-## Friction dispositions and ranked new friction
+## Ranked new friction
 
-The required per-item 0034 disposition table and new blocker/major/minor
-ranking are intentionally **not asserted**. A full two-arc playability pass
-is required before classifying fixes as FIXED, SURVIVES, or NOT-REPRODUCED;
-the bounded opening is insufficient evidence for that judgment.
+### Blockers
 
-## Scope proof
+1. **Chronicles first combat can be visually present but mechanically silent.**
+   The mortal-oath arc reaches Old Barrow and shows an overlapping actor, yet
+   ten minutes of real movement/attack attempts yields no hit, damage, loot, or
+   death. This blocks the core learn→fight→loot loop for the House/Scion path.
 
-The only files changed on this worker branch are task-folder evidence and
-this report/status metadata. No product, server, native, playtest, package,
-test, or other orchestration files were edited. The temporary production and
-Vite servers were stopped after the checkpoint.
+### Major
 
-## Commits and captures
+2. **Mana rejection is noisy and non-directive.** The quickbar remains available
+   while the server repeatedly rejects casts; the player is not told when or
+   how resource recovery will make the next action useful.
+3. **The first reward is still mostly currency.** The guest run gets 60 gold,
+   but no named item/history/comparison moment that answers why the delve is
+   worth repeating.
+4. **After the authored tutorial beats, the zone has no next decision.** The
+   player can walk and strike, but there is no concrete room objective, reward
+   preview, or route reason exposed in the first ten minutes.
 
-- `8dd9aee8` — connection-proof stop-condition capture
-- `f0b6300f` — bounded guest arc checkpoint
-- `65b51a9a` — production/dev socket-mode comparison
+### Minor
 
-No unresolved product question is created by this read-only checkpoint. The
-remaining work is the actual two-arc evaluation using the coordinator's
-page-context browser harness that can observe `window.ws.url`.
+5. **House identity is absent from the in-world HUD after Set Out.** The setup
+   is legible, then the House/Scion fantasy recedes to the Chronicles panel.
+6. **The tutorial ticker remains easy to miss under the world view.**
+
+## Scope proof and limitations
+
+Only task-folder reports/captures changed on the coordinator branch. No source,
+server, native, playtest, package, or product files were edited. The two arcs
+were headless/in-app-browser driven; canvas actors are not represented in the
+DOM, so actor positions and combat readability are supported by screenshots,
+logs, minimap coordinates, HP, and server-backed messages rather than DOM
+labels. No death arc or compact viewport pass was forced after the observed
+full-HP outcomes.
+
+The architect must review the report and decide whether the Chronicles silent
+opener is a real current-tip regression or a presentation/input-surface issue;
+no product fix is invented here.

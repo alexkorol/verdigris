@@ -1,0 +1,21 @@
+TASK-0046 coordinator connection proof
+Date: 2026-08-18
+Base: 45846af7
+Worktree: .codex/worktrees/TASK-0046-playability-reevaluation
+
+Fresh production build: `npm run build` PASS (377 modules, exit 0).
+The server was started only on loopback test port 6542; the preserved owner
+listener on port 6500 was not touched.
+
+Playwright probe:
+  URL: http://127.0.0.1:6542/?play
+  window.ws.url: ws://127.0.0.1:6542/
+  window.ws.readyState: 1 (OPEN)
+  title: Verdigris · a dark multiplayer dungeon RPG
+  canvas count: 4
+
+The temporary port-6542 server and child process were stopped after the probe.
+This proves current-tip browser-to-free-port WebSocket connectivity, but does
+not replace TASK-0046's required two approximately ten-minute arcs and full
+friction disposition.
+

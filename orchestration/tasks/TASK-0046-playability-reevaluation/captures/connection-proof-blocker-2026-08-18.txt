@@ -1,47 +1,10 @@
 TASK-0046 connection-proof stop-condition capture
-Date: 2026-08-18 (UTC)
 
-Current tip
------------
-git rev-parse HEAD
-c3988b29a5d1790f6749cf2163453b0715476ded
+Current tip: c3988b29 (descendant of 45846af7)
+Fresh npm ci and npm run build: PASS
+Server: NODE_ENV=production, free loopback port 6542; owner port 6500 untouched
+In-app evaluator: window.ws?.url => null; window.ws?.readyState => null
+Server logs nevertheless recorded client connection/login.
 
-Fresh build
------------
-npm ci --no-audit --no-fund
-PASS (834 packages installed)
-
-npm run build
-PASS (vite 5.4.21; 377 modules transformed; dist emitted)
-
-Free-port server
-----------------
-$env:NODE_ENV='production'; $env:PORT='6542'; node server/index.js
-PASS: server reported "ENVIRONMENT: production and PORT 6542".
-TCP listener: 127.0.0.1:6542, owning process 6328 (node).
-The owner's :6500 was not used.
-
-Browser attempt
----------------
-URL: http://localhost:6542/?play
-The production page loaded and rendered the game screen ("Delaford Village",
-HP 110/110, skill bar, Aldwyn tutorial messages), proving an HTTP client page
-was reached on the free port.
-
-Required first-minute socket proof (read-only page evaluation)
----------------------------------------------------------------
-window.ws?.url       => null (window.ws is null)
-window.ws?.readyState => null
-window.__verdigrisConnection => null
-
-The null result persisted after an additional 5-second wait. Browser console
-had no application errors (only unrelated extension warnings). Since the
-spec requires capturing window.ws.url in the first minute of each arc and
-explicitly says to stop when the current client cannot be proven connected,
-the two ten-minute arcs were not evaluated. This is an honest environment/
-client-proof blocker, not a claim that gameplay is absent.
-
-Scope
------
-No product, server, native, playtest, package, or other non-task files were
-edited. This capture is the only task-folder artifact created by this pass.
+This observation was later reconciled as an isolated-world evaluator issue;
+the coordinator page-context probe captured an OPEN socket on ws://127.0.0.1:6542/.

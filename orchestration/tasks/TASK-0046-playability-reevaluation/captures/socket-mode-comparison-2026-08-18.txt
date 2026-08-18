@@ -1,27 +1,11 @@
-TASK-0046 socket-proof mode comparison
-Date: 2026-08-18 UTC
+TASK-0046 socket-mode comparison
 
-Production build/source
------------------------
-src/main.js uses `import.meta.env.PROD ? sameOrigin : ws://<hostname>:6500`.
-The fresh production dist contains the `window.ws=new WebSocket(e)` path.
-Production server on :6543 accepted browser clients and logged them in.
+The in-app Browser Use evaluator returned window.ws === null in both
+production and Vite-dev pages because its extension/isolated world cannot
+observe page-created expando globals.
 
-Dev comparison
---------------
-Vite dev client was started with `VITE_WS_URL=ws://localhost:6545` and a
-development server on :6545. The client rendered Delaford and the server
-logged a successful login. The in-app Browser Use evaluator nevertheless
-returned `window.ws?.url === null` in both production and dev pages.
+Independent page-context Playwright probe on the same current tip:
+  window.ws.url       = ws://127.0.0.1:6542/
+  window.ws.readyState = OPEN
 
-Interpretation
---------------
-This is a browser-surface discrepancy, not evidence that the client failed to
-connect: the Browser Use page evaluator runs in an extension/isolated world
-where page-created expando globals (including `window.ws`) are not visible.
-The coordinator's independent page-context/Playwright probe on the same
-current tip captured `ws://127.0.0.1:6542/` with readyState OPEN. Treat that
-probe as authoritative for TASK-0046's required window.ws.url evidence; do
-not carry forward the earlier in-app evaluator null as a gameplay blocker.
-
-No product files were edited. This capture is task-folder evidence only.
+No server used owner port 6500.

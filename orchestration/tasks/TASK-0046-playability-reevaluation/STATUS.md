@@ -13,4 +13,7 @@ expected_verification: fresh current-tip build; two ~10-minute arcs; window.ws.u
 known_risks: evaluation-only; never edit product code, playtest harness, package files, or owner port 6500; use a free loopback port and preserve captures
 architect_review_required: true
 report: orchestration/tasks/TASK-0046-playability-reevaluation/REPORT.md
+candidate_commit: 1de6e45b
+coordinator_evidence_commit: a0050081
+handoff: coordinator completed both approximately ten-minute arcs and added first-minute page-context socket proofs; report ranks the Chronicles silent opener and mana/loot friction; architect review remains pending
 ---

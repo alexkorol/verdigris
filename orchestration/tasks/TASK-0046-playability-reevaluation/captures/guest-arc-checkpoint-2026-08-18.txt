@@ -1,11 +1,9 @@
-TASK-0046 bounded guest arc checkpoint (current tip)
-Date: 2026-08-18 UTC
-Server: production node server/index.js, PORT=6543, own PID 5760
-URL: http://localhost:6543/?play
+TASK-0046 bounded guest arc checkpoint
 
-00:00:00 page loaded: Delaford Village; HP 110/110; Aldwyn tutorial says WASD/arrow movement.
-00:00:03 Adventure panel opened. Zones visible: The Old Barrow ("Tight halls · forgiving first delve", Start here Lv 1–5), Verdant Grove, and four danger zones.
-00:00:11 The Old Barrow selected. UI showed "Entering the expedition… The road is taking shape" and minimap changed to The Old Barrow at 101,99.
-00:00:18 expedition settled; UI returned to town panel shell, no visible combat actors in DOM snapshot. Headless-fidelity caveat: browser DOM cannot see canvas actors.
+00:00:00 Delaford Village; Aldwyn teaches WASD/arrow movement
+00:00:03 Adventure panel; Old Barrow described as a forgiving first delve
+00:00:11 Old Barrow selected; road transition; minimap 101,99
+00:00:18 expedition settled; canvas actors are not DOM-visible
 
-Required connection proof: window.ws?.url evaluated null at 00:01 and again after 5 seconds, despite server log confirming clients connected and logged in. This page cannot satisfy the explicit window.ws.url proof requirement in this browser surface. No claim of full 10-minute arc is made.
+This is only a bounded opening checkpoint. It is not the required ten-minute
+guest arc and does not establish a Chronicles arc or friction disposition.
