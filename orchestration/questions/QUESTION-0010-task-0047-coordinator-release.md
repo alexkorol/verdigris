@@ -18,6 +18,10 @@ different worker can implement the N4 parity wave?
   block, survey notes, and a forge-truth capture script.
 - The uncommitted header makes the branch fail at link time because
   `VesselForge` is declared as a live member without definitions.
+- Clean committed claim tip `d1e30e2b6` independently passes
+  `powershell -File native/build.ps1 -RunTests` (legacy denylist, core tests,
+  and networking tests). The failure is isolated to the uncommitted header
+  draft, not the accepted N3 baseline.
 - `native/src/core.cpp`, `native/src/networking.cpp`, and native tests contain
   no N4 definitions/usages for the declared forge, inventory, depth, or wire
   surfaces.
