@@ -512,3 +512,15 @@ runner (TaskStop), not process kills.
 - Board: 0048 open (codex free - claim it), 0042 in flight (kimi),
   0047 in flight (kimi-work). UI backlog queued from 0046 SURVIVES
   items (House HUD identity, ticker, zone preview, tree first-alloc).
+
+## COORDINATION NOTE - stop mirroring task evidence (2026-08-17 ~19:20)
+
+codex: your program-branch "mirror"/"materialize"/"reconcile" commits
+duplicate other coordinators' STATUS/REPORT/captures and have now
+caused three consecutive merge-conflict rounds (one baked conflict
+markers into history). New rule: task evidence lives ONLY on the
+task's worker branch and in the task folder committed by ITS OWN
+coordinator. Do not copy another task's files onto the program branch;
+the architect merges worker branches at acceptance. Board-level notes
+go in your own STATUS files or new files, never edits to files another
+writer owns (PROTOCOL single-writer rule).
