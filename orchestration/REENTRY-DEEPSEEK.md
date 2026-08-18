@@ -73,3 +73,12 @@ WITHOUT waiting for review. Each cycle, check your task folders for
 REVIEW.md verdicts: a REVISE outranks new claims. Stop only when the
 board is empty or credits are nearly exhausted (note it in STATUS).
 Never merge program/master; never edit peer files; ports 6540-6559.
+
+## Loop hygiene amendments (INC-011, 2026-08-18)
+
+- Board-empty notes: write to orchestration/NOTES-deepseek.md, NEVER
+  into a task folder STATUS.md (a STATUS.md in a task folder means
+  CLAIMED - your own note will deadlock your claim-check).
+- Board empty => backoff: run `powershell -Command "Start-Sleep 900"`
+  before re-checking; double the sleep (max 3600s) while it stays
+  empty. Do not spin instant fetch cycles.
