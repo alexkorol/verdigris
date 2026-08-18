@@ -1,0 +1,26 @@
+TASK-0045 coordinator independent current-branch verification
+
+Worker branch/current candidate: codex/TASK-0045-native-protocol-n3 at 6d39565c
+Native build gate:
+  powershell -NoProfile -File native/build.ps1 -RunTests
+  PASS native legacy denylist
+  PASS verdigris core tests
+  PASS verdigris networking tests
+
+Disposable attach server: native/build/verdigris_server.exe on
+127.0.0.1:6536. Owner port 6500 was not used.
+Command:
+  PLAYTEST_WS_URL=ws://127.0.0.1:6536 node playtest/run.mjs --attach combat encounter-variety boss-mechanic quickstart single-session movement zones
+
+Result: all seven scenarios passed; process exit 0.
+  PASS boss-mechanic (2131ms)
+  PASS combat (994ms)
+  PASS encounter-variety (1264ms)
+  PASS movement (4600ms)
+  PASS quickstart (164ms)
+  PASS single-session (313ms)
+  PASS zones (1130ms)
+  7/7 scenarios passed
+  Timing diagnostics: p99 32.325631ms, max 35.291135ms
+
+The disposable server was stopped and port 6536 released after the run.
