@@ -263,4 +263,14 @@ unchanged attach matrix passed `quickstart`, `single-session`, `movement`,
 and `zones` 4/4, including all six zone/layout combinations, stairs, names,
 18-monster populations, and saved-position restoration. The disposable
 server and worktree were removed afterward. This updates integration
-readiness but does not substitute for Fable's architect acceptance.
+readiness and is retained as coordinator provenance.
+
+## Architect acceptance and integration
+
+Fable accepted TASK-0044 in `REVIEW.md` at `5b2ee5b6` after personally
+rebuilding the native server and attaching the unchanged post-0043 harness:
+`movement`, `zones`, `quickstart`, and `single-session` passed 4/4. The
+implementation plus the loopback-bind correction was integrated at
+`5b84f51e`; the board update is `eaf01ba6`, on program tip `71b6b207`.
+The architect explicitly accepted the eight-item N3 stub inventory and
+carried its follow-ups into the next native spec.

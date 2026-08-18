@@ -49,8 +49,10 @@ outside production until the owner resolves asset provenance/packaging.
   proof: three coordinator runs and one architect run passed 31/31 with the
   observed-lag guard active. Loopback-bind standing guidance is recorded in
   the review for future test/dev servers.
-- TASK‑0044 native protocol N2: `REVIEW_REQUESTED`; committed implementation
-  `d476788`, native/client gates green, unchanged N1+N2 attach regression 4/4.
+- TASK‑0044 native protocol N2: `ACCEPTED` and integrated at `5b84f51e`
+  (program tip `71b6b207`); committed implementation `d476788` plus the
+  loopback-bind correction, native/client gates green, unchanged N1+N2 attach
+  regression 4/4.
   Report:
   [`TASK‑0044 REPORT`](../../orchestration/tasks/TASK-0044-native-protocol-n2/REPORT.md).
   The latest coordinator attach transcript is
@@ -91,23 +93,23 @@ outside production until the owner resolves asset provenance/packaging.
   [`coordinator-current-tip-native-health-2026-08-17.txt`](../../orchestration/tasks/TASK-0044-native-protocol-n2/captures/coordinator-current-tip-native-health-2026-08-17.txt).
 - Committed N2 attach regression: quickstart, single-session, movement, and
   zones passed 4/4.
-- N2 also has a clean current-tip integration candidate at `8be3dacd`, with
-  the same native gate and 4/4 attach matrix; it remains unmerged pending
-  Fable's architect review.
+- N2's clean current-tip candidate was architect-rebuilt and accepted; its
+  native gate and 4/4 attach matrix are now integrated at `5b84f51e`.
 - A combined parity dry-run at `aa45c78f` applies both review-ready chains
   conflict-free; browser unit 122/779, native gate PASS, and native attach
   4/4. Full details are in
   [`PARITY_INTEGRATION_CANDIDATE_2026-08-17.md`](PARITY_INTEGRATION_CANDIDATE_2026-08-17.md).
-- A refreshed combined candidate `3636b729` reapplies the accepted TASK‑0043
-  chain plus review-ready TASK‑0044 directly onto coordinator tip `9fea5668`;
+- A refreshed combined candidate `3636b729` reapplied both chains before N2
+  acceptance; its evidence remains useful provenance, while the accepted
+  implementation is now integrated at `5b84f51e`.
   browser unit 122/779, unchanged browser playtest 31/31, native gate PASS,
-  and native attach 4/4 all pass. It remains disposable only for TASK‑0044
-  integration pending its architect decision.
+  and native attach 4/4 all pass. It is superseded by the accepted program
+  tip and retained only as provenance.
 
 ## Next authorized actions
 
-1. Fable performs the required architect rerun and records ACCEPT/REVISE for
-   TASK‑0044; TASK‑0043 is already accepted and integrated.
+1. Fable issues the next READY N3 native spec, carrying the accepted N2 stub
+   inventory and the authority bridge decision.
 2. Fable answers
    [`QUESTION-0009`](../../orchestration/questions/QUESTION-0009-native-n3-authority-bridge.md)
    and issues the READY N3 task/spec before native combat implementation.

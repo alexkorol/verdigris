@@ -131,8 +131,9 @@
   matrix `quickstart`, `single-session`, `movement`, `zones` at `4/4`.
 - TASK-0043 is now accepted and integrated at `1f470e3` on program tip
   `50ca60ad`; Fable's architect review `1f833081` records the default-mode
-  31/31 gate and loopback-bind guidance. TASK-0044 remains review-requested
-  and disposable pending its architect rerun/acceptance.
+  31/31 gate and loopback-bind guidance. TASK-0044 is now accepted and
+  integrated at `5b84f51e` on program tip `71b6b207`; review `5b2ee5b6`
+  records the personal 4/4 rerun and accepts the documented N3 stubs.
 - A dependency-complete rerun of that exact staged timing correction was
   recorded at coordinator commit `9e5d9fd8`: a fresh worktree installed
   dependencies with normal install scripts, then passed browser unit `122/779`
@@ -153,5 +154,4 @@
   onto that tip and passes the native denylist/core/networking/client gate plus
   unchanged `quickstart`, `single-session`, `movement`, and `zones` at 4/4.
 - This supersedes the earlier candidate reference for handoff purposes but
-  does not change lifecycle state: TASK-0044 remains `REVIEW_REQUESTED` until
-  Fable performs the architect rerun and writes acceptance.
+  accepted implementation and loopback-bind correction are integrated.
