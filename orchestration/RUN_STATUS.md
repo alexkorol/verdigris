@@ -1,4 +1,4 @@
-# Run status (snapshot — rewritten each architect sweep, never a diary)
+﻿# Run status (snapshot â€” rewritten each architect sweep, never a diary)
 
 - Current integration tip: origin/codex/native-reconstitution @ ac2512ba
 - Master: ac2512ba (PR #21; #20 and #21 shipped 2026-08-18 midday)
@@ -11,16 +11,16 @@
 
 | Task | Owner | Topology | Notes |
 |---|---|---|---|
-| 0047 N4 items parity | kimi-work | PIPELINED (after N3) | 13/13 attach bar; resumed via owner paste |
+| 0047 N4 items parity | kimi-work | PIPELINED | 13/13 attach bar; deep survey done, implementing |
+| 0050 native client C1 (CRITICAL) | deepseek | INDEPENDENT | claimed; MECHANICAL scaffolded arm of EXP-1; continuous mode active |
+| 0052 suite flake hardening | kimi | INDEPENDENT | claimed; continuous mode active |
 
-## READY (unclaimed) — routing suggestions
+## READY (unclaimed)
 
-| Task | Packet | Suggested lane |
+| Task | Packet | Notes |
 |---|---|---|
-| 0050 native client C1 (CRITICAL) | MECHANICAL (scaffolded) | deepseek — NOW FREE after 0049 |
 | 0051 native client harness | BOUNDED-DESIGN | after/with 0050 |
-| 0052 suite flake hardening | MECHANICAL | kimi — NOW FREE after 0042, cheap tokens |
-| 0053 world composition polish | BOUNDED-DESIGN | any; verify-first |
+| 0053 world composition polish | BOUNDED-DESIGN | verify-first |
 
 ## VERIFY / MERGE QUEUE
 
@@ -28,8 +28,8 @@
 
 ## SHIPPED TODAY (2026-08-18)
 
-- 0049 first-session UI wave (deepseek, first-pass, $1.47) — PR #20
-- 0042 first-loot moment (kimi, first-pass) — PR #21
+- 0049 first-session UI wave (deepseek, first-pass, $1.47) â€” PR #20
+- 0042 first-loot moment (kimi, first-pass) â€” PR #21
 - Orchestration v2 (D-121), camera2d scaffold, loopback binds, branch
   protection on master (require PR, enforce admins)
 
@@ -43,13 +43,13 @@
 
 ## Fleet + budget
 
-- deepseek: ~$9.00 credits; FREE — route to 0050. Ports 6540–6559.
-- kimi K3: FREE — route to 0052. Monthly pool constrained (resets
-  08-23). Ports 9880–9899.
-- kimi-work K3: on 0047. Ports 6510–6529.
+- deepseek: ~$9.00 credits; FREE â€” route to 0050. Ports 6540â€“6559.
+- kimi K3: FREE â€” route to 0052. Monthly pool constrained (resets
+  08-23). Ports 9880â€“9899.
+- kimi-work K3: on 0047. Ports 6510â€“6529.
 - codex: out of tokens.
 
-## EXP-1 (packet-type A/B) — first data in
+## EXP-1 (packet-type A/B) â€” first data in
 
 0049 BOUNDED-DESIGN to deepseek: first-pass accept, 0 revisions, 1
 minor scope deviation, $1.47. 0050 MECHANICAL (scaffolded) pending a
@@ -60,3 +60,4 @@ claimant for the comparison arm.
 1. Owner pastes next goals into deepseek (0050) and kimi (0052).
 2. Review 0047 on REVIEW_REQUESTED (rebuild + 13-attach personally).
 3. 0050 review: build + PLAY the exe (D-117).
+
