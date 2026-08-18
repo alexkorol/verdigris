@@ -2,7 +2,8 @@
 task: TASK-0048
 state: REVIEW_REQUESTED
 commits:
-  - pending
+  - 810ddd9247c4d5f0d3796886d8597fe58df2ba50
+  - 3fb4f0bb6bced0ccecd4b31d56a0278ac1a3a82d
 source_fix: none (reported combat regression disproven)
 architect_review_required: true
 ---
@@ -78,7 +79,9 @@ not hidden by weakening assertions.
 It reaches the mortal-oath UI flow, requests the real authoritative target,
 uses dev teleport for setup, sends two skill frames, and records four
 `combat:hit` frames: player damage 5/5/6, incoming damage 5, and a final
-`died:true` monster hit. The rendered body includes:
+`died:true` monster hit. The capture script hard-fails unless it observes
+positive damage, target death, and readable kill text. The rendered body
+includes:
 
 ```text
 You hit Dread Vanguard with Bronze Arc for 6.
