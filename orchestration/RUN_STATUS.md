@@ -19,14 +19,13 @@
 
 | Task | Packet | Notes |
 |---|---|---|
-| 0056 N5 Chronicles parity (CRITICAL) | BOUNDED-DESIGN | kimi-work lane after 0055; PIPELINED (0047 integrated — unblocked) |
+| 0056 N5 Chronicles parity (CRITICAL) | BOUNDED-DESIGN | RE-ROUTED to deepseek lane (kimi-work quota-stalled ~15:00 mid-0055; its claim + local work preserved). deepseek: claim 0056 now. |
 
 ## Fleet + budget
 
 - deepseek: ~$7.5 credits; on 0057. Ports 6540–6559.
-- kimi K3: idle by design (INC-011 backoff; preserves tight monthly
-  pool, resets 08-23). Ports 9880–9899.
-- kimi-work K3: on 0055 → 0056 next. Ports 6510–6529.
+- kimi K3: loop DEAD (no fetch since 13:42) — owner restart needed when quota allows. Ports 9880–9899.
+- kimi-work K3: QUOTA-STALLED mid-0055 (7 dirty preserved in clone; claim held — resume on quota reset 08-23 or owner top-up). Ports 6510–6529.
 - codex: out of tokens.
 
 ## WATCH
