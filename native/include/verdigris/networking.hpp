@@ -113,6 +113,12 @@ class ProtocolSession {
   std::string identity_;
   std::string socket_id_;
   bool quick_start_ = false;
+  // N5: mortal-oath lifecycle + soft respawn ward (server/core/lifecycle.js).
+  std::string lifecycle_ = "alive";        // alive | awaiting-respawn | dead | permadead
+  int lifecycle_deaths_ = 0;
+  std::int64_t respawn_at_ms_ = 0;
+  std::int64_t respawn_protection_until_ms_ = 0;
+  void maybe_respawn(std::int64_t now_ms);
   // N4: the real item pipeline state (12x7 backpack + wear seats); the forge
   // itself lives on the world (JS module singleton).
   PlayerInventory inventory_;
