@@ -1,61 +1,46 @@
-﻿# Run status (snapshot â€” rewritten each architect sweep, never a diary)
+# Run status (snapshot — rewritten each architect sweep)
 
-- Current integration tip: origin/codex/native-reconstitution @ 80b6c890
-- Master: 80b6c890 (PR #24 N4 parity; PRs 20-23 earlier today)
-- Owner-visible target: native client C1 SHIPPED (2D top-down, visible
-  combat, inventory). Next: 0051 client harness + 0047 N4 parity.
-- Last architect playthrough: 0050 exe, 2026-08-18 ~13:55 (11 driven
-  captures â€” rigid world, live combat exchange, inventory verified)
-- Immutable objective: D-116 parity, D-110 playable-first
+- Current integration tip: origin/codex/native-reconstitution @ 79723db3
+- Master: 79723db3 (PRs #20–#25 shipped 2026-08-18: 9 tasks)
+- Owner-visible today: first-session UI wave, first-loot moment, native
+  client C1+C2 (2D top-down, visible combat, inventory, zoom, juice),
+  wall-faces/tree-lines (+37% frame time), suite hardening, N4 parity
+- Last architect playthrough: 0054 exe spot-play ~16:00
+- Immutable objective: D-116 parity (N1–N4 done, N5+N6 remain), D-110
 
 ## RUNNING
 
 | Task | Owner | Notes |
 |---|---|---|
-| 0053 composition polish | kimi | verify-first |
-| 0054 client C2 polish | deepseek | claimed post-INC-011 fix |
-| 0055 browser follow-ups | kimi-work | claimed after 0047 |
+| 0055 browser follow-ups | kimi-work | 7 dirty; delete client mirror + chip fix |
+| 0057 clustered accents | deepseek | claimed 16:55 |
 
 ## READY (unclaimed)
 
 | Task | Packet | Notes |
 |---|---|---|
-| 0056 N5 Chronicles parity (CRITICAL) | BOUNDED-DESIGN | UNBLOCKED by 0047 integration; kimi-work lane after 0055 |
-
-## SHIPPED TODAY (2026-08-18)
-
-- PR #20: 0049 first-session UI wave (deepseek, first-pass, $1.47)
-- PR #21: 0042 first-loot moment (kimi, first-pass)
-- PR #22: 0050 native client C1 (deepseek, first-pass, architect
-  play-gate) + 0052 flake hardening (kimi, first-pass)
-- Orchestration v2, camera2d scaffold, loopback binds, branch protection
-
-## WATCH
-
-- `loot` scenario marginal timeout under load (1 sighting via 0052's
-  loaded run; 2nd sighting = extend 0052 pattern to loot.mjs).
-- KimiWork quota experiment ongoing.
-- Queued polish: "House House" pane title doubling (0050 nit 1);
-  identity-chip truncation (0049 nit); server-side adventure payload
-  to replace client mirror (0049 nit 2).
+| 0056 N5 Chronicles parity (CRITICAL) | BOUNDED-DESIGN | kimi-work lane after 0055; PIPELINED (0047 integrated — unblocked) |
 
 ## Fleet + budget
 
-- deepseek: ~$8 credits; continuous mode; expect 0051 claim. 6540â€“6559.
-- kimi K3: continuous mode, on 0053. Monthly pool tight (resets 08-23). 9880â€“9899.
-- kimi-work K3: on 0047. 6510â€“6529.
+- deepseek: ~$7.5 credits; on 0057. Ports 6540–6559.
+- kimi K3: idle by design (INC-011 backoff; preserves tight monthly
+  pool, resets 08-23). Ports 9880–9899.
+- kimi-work K3: on 0055 → 0056 next. Ports 6510–6529.
 - codex: out of tokens.
 
-## EXP-1 CLOSED (packet-type A/B)
+## WATCH
 
-Both arms first-pass with deepseek. Scaffolded MECHANICAL additionally
-produced zero scope deviations. RULE (adopted, enforced by spec
-authoring practice): scaffold whenever risky math/cross-cutting design
-exists; interface-only acceptable for pure presentation.
+- loot scenario marginal timeout under load (1 sighting).
+- KimiWork quota experiment ongoing.
+- Next wave planning: after N5 lands, spec N6 (world-web/quests —
+  final parity wave) + native client C3 (connect client to native
+  server over WS — ARCHITECTURE packet, architect scaffolds first).
 
-## Next architect actions
+## Review procedures on flip
 
-1. Review 0047 on flip (rebuild + 13-attach MYSELF).
-2. Review 0053 on flip (captures + gates + verify-first dispositions).
-3. Watch 0051 claim; review = run scenario set MYSELF + negative.
-
+- 0055: gates + capture asserts + verify adventure-objective-data.js
+  DELETED + 1-2 captures.
+- 0056: rebuild + CUMULATIVE attach set MYSELF (all wave scenarios) on
+  architect port; TaskStop the server after.
+- 0057: deterministic clustering unit test + 1-2 captures + full gates.

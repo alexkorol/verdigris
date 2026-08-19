@@ -627,6 +627,113 @@ class Map {
   }
 
   /**
+   * Paint a theme's floor accents as coherent seeded clusters (0057) instead
+   * of one-cell checkerboard noise. Blob growth from deterministic seed cells,
+   * capped so no single patch swallows a whole floor. Consumes only the rng it
+   * is given, so callers that derive that stream from a seed distinct from the
+   * main stream keep every other generation decision byte-identical.
+   */
+  static paintAccentClusters({
+    background,
+    width,
+    height,
+    rng,
+    accentPool,
+    wallFill,
+    density = 0.12,
+  }) {
+    if (!accentPool.length) {
+      return;
+    }
+    const idx = (x, y) => (y * width) + x;
+    const floorCells = [];
+    for (let i = 0; i < background.length; i += 1) {
+      if (background[i] !== wallFill) {
+        floorCells.push(i);
+      }
+    }
+    const floorCount = floorCells.length;
+    if (!floorCount) {
+      return;
+    }
+    const target = Math.floor(floorCount * density);
+    if (target < 1) {
+      return;
+    }
+
+    const accented = new Uint8Array(background.length);
+    const queue = new Int32Array(floorCount);
+    // A growth probability below the 2D site-percolation threshold keeps each
+    // blob finite and patchy rather than sprawling across the floor.
+    const growth = 0.55;
+    const maxBlob = 20;
+    let placed = 0;
+
+    const pickSeed = () => {
+      for (let attempt = 0; attempt < 24; attempt += 1) {
+        const cell = floorCells[Math.floor(rng() * floorCount)];
+        if (!accented[cell]) {
+          return cell;
+        }
+      }
+      for (const cell of floorCells) {
+        if (!accented[cell]) {
+          return cell;
+        }
+      }
+      return -1;
+    };
+
+    while (placed < target) {
+      const seed = pickSeed();
+      if (seed === -1) {
+        break;
+      }
+      let head = 0;
+      let tail = 0;
+      queue[tail] = seed;
+      tail += 1;
+      accented[seed] = 1;
+      placed += 1;
+      let blobSize = 1;
+
+      while (head < tail && placed < target && blobSize < maxBlob) {
+        const current = queue[head];
+        head += 1;
+        const cx = current % width;
+        const cy = Math.floor(current / width);
+        const neighbours = [
+          cx + 1 < width ? idx(cx + 1, cy) : -1,
+          cx > 0 ? idx(cx - 1, cy) : -1,
+          cy + 1 < height ? idx(cx, cy + 1) : -1,
+          cy > 0 ? idx(cx, cy - 1) : -1,
+        ];
+        for (const ni of neighbours) {
+          if (placed >= target || blobSize >= maxBlob) {
+            break;
+          }
+          if (ni < 0 || accented[ni] || background[ni] === wallFill) {
+            continue;
+          }
+          if (rng() < growth) {
+            accented[ni] = 1;
+            queue[tail] = ni;
+            tail += 1;
+            placed += 1;
+            blobSize += 1;
+          }
+        }
+      }
+    }
+
+    for (let i = 0; i < background.length; i += 1) {
+      if (accented[i]) {
+        background[i] = accentPool[Math.floor(rng() * accentPool.length)] || accentPool[0];
+      }
+    }
+  }
+
+  /**
    * Dress a carved instance: varied wall faces around open space, entry and
    * exit stairs, open doors where corridors meet rooms, and themed decor.
    */
@@ -869,8 +976,15 @@ class Map {
     const foreground = new Array(width * height).fill(0);
 
     const floorPicker = () => {
-      const pool = accentPool.length && rng() < 0.12 ? accentPool : floorPool;
-      return pool[Math.floor(rng() * pool.length)] || floorPool[0];
+      // 0057: floor accents are now painted as coherent seeded clusters in a
+      // dedicated post-carve pass (Map.paintAccentClusters) on their own rng
+      // stream. Keep consuming the old accent-decision call here (discarded)
+      // so the main rng stream — and therefore decor, water, monster, and item
+      // placement — stays byte-identical to the pre-clustering generator.
+      if (accentPool.length) {
+        rng();
+      }
+      return floorPool[Math.floor(rng() * floorPool.length)] || floorPool[0];
     };
 
     // The floor's shape comes entirely from the recipe now (see LAYOUT_RECIPES).
@@ -979,6 +1093,20 @@ class Map {
           carveBounds,
         );
       }
+    }
+
+    // 0057: clustered floor accents. Runs on its own rng stream derived from
+    // the floor seed, so the main stream (decor, water, monsters, items) is
+    // untouched and revisit-by-seed stays byte-identical where it matters.
+    if (accentPool.length) {
+      Map.paintAccentClusters({
+        background,
+        width,
+        height,
+        rng: Map.createSeededGenerator((seed ^ 0x9e3779b9) >>> 0),
+        accentPool,
+        wallFill,
+      });
     }
 
     Map.decorateInstance({
