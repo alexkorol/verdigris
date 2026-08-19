@@ -1,0 +1,7 @@
+{
+  "checks": {
+    "villageRendered": true,
+    "zoneRendered": true,
+    "zoneEntered": true
+  }
+}

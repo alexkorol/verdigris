@@ -1,18 +1,27 @@
 ---
 task: TASK-0057
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: deepseek
 worker_branch: codex/TASK-0057-clustered-accents-deepseek
 base_commit: 79723db35c4d2873d3c5af3fda13a4503337236d
 started_at: 2026-08-18T16:15:00-07:00
 architect_review_required: true
-expected_verification: npm run test:unit (clustering deterministic); npm run smoke:browser; npm run playtest (32/32); 1-2 rendered captures (village + one zone)
+expected_verification: npm run test:unit (830/830); npm run playtest (32/32); browser smoke (1/1); hard-fail capture (village + zone, CAPTURES OK)
 ---
 
-Claiming TASK-0057 (clustered accents, seeded generation-side clusters).
+Implemented and pushed for architect review.
 
-Owned paths per SPEC: server/core/map.js, server/core/generation/**,
-src/core/rendering/** (only if a draw hook is needed), tests/**,
-orchestration/tasks/TASK-0057-clustered-accents/**.
+Floor accents now generate as coherent seeded blobs (blob growth from seed
+cells) instead of one-cell checkerboard noise, on their own seed-derived rng
+stream so the main generation stream (decor/water/monsters/items) stays
+byte-identical. Density holds at the 12% budget (±10%).
 
-Base = current program tip 79723db3 (post 0053/0054 integration, PR #25).
+Gates green: unit 830/830 (4 new tests), playtest 32/32, browser smoke 1/1,
+hard-fail capture CAPTURES OK (village + Verdant Grove). Authentic negative:
+growth=0 → clustering tests fail → restored green. Scope note in REPORT.md:
+overworld village flowers live in world-layout.js (outside owned_paths) and
+are unchanged — flagged for architect follow-up if wanted.
+
+Commits:
+- `32fdcdf8` — claim
+- implementation commit — see git log after push
