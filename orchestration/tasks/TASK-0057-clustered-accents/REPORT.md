@@ -114,4 +114,4 @@ added to owned_paths here or a follow-up task.
 ## Commits
 
 - `32fdcdf8` — claim (STATUS.md)
-- implementation commit — recorded in STATUS.md after push
+- `23749d26` — implementation (clustered accents + tests + captures)

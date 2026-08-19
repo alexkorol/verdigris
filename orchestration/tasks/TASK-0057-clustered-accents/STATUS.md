@@ -24,4 +24,4 @@ are unchanged — flagged for architect follow-up if wanted.
 
 Commits:
 - `32fdcdf8` — claim
-- implementation commit — see git log after push
+- `23749d26` — implementation (clustered accents + tests + captures)
