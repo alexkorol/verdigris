@@ -1,6 +1,6 @@
 ---
 task: TASK-0059
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: cursor
 worker_branch: codex/TASK-0059-responsive-overlay-pass-cursor
 base_commit: 0ce26b150c106449d5bab5cf44e7a4605612308c

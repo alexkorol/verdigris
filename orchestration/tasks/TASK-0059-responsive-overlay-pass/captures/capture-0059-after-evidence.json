@@ -2,7 +2,7 @@
   "phase": "after",
   "port": 6582,
   "bindHost": "127.0.0.1",
-  "suffix": "acku5",
+  "suffix": "bv7qj",
   "checks": {
     "1366x768.guide-vs-party": true,
     "1366x768.guide-vs-minimap": true,
