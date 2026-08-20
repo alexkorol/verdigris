@@ -31,6 +31,7 @@
 | Task | Packet | Notes |
 |---|---|---|
 
+| 0062 playtest flake triage | BOUNDED-DESIGN | NEW — mac-claude suggested; diagnostics only, assertions frozen |
 | 0058 N6 final SERVER-parity wave | BOUNDED-DESIGN | HOLD until 0056 integrated AND Gate A accepted (D-122) |
 
 ## Standing duty: peer verification
