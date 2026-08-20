@@ -115,9 +115,9 @@ whether the loop invites a second run.
 - luna-mac (Codex Luna, MacBook — replaces mac-claude in this seat):
   MECHANICAL packets only, NEVER native/**; routed 0071 then 0074.
   Ports 7000–7019. Fresh calibration.
-- deepseek (now DeepSeek 4 Flash): resuming 0056/N5 claim (4 dirty in
-  clone). Lighter model — review with extra scrutiny; fresh calibration
-  row. Ports 6540–6559.
+- deepseek (DeepSeek 4 Flash): ACTIVE on 0056/N5 as of 08:10 — claim
+  re-confirmed, investigation phase (872 steps, 100% cache hit).
+  Fresh calibration row; review with extra scrutiny. Ports 6540–6559.
 - kimis quota-dead until ~08-23; codex out of tokens.
 
 ## WATCH
