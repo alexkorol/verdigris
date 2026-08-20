@@ -75,6 +75,18 @@ telegraph FX can graze the HUD corner (0068); reconnect lands in 0069.
 Feedback wanted on: movement feel, combat readability, loot moment,
 whether the loop invites a second run.
 
+## DAY RUN 2026-08-20 (D-124 — owner at work, aggressive mode)
+
+Target by evening: three-axis parity + side-by-side native-vs-browser
+screenshots. Plan: (1) 0056 N5 — deepseek Flash (419 lines in flight);
+architect takes over if no commit by ~10:00. (2) 0058 N6 releases the
+moment N5 integrates — architect implements if no lane free. (3)
+architect NOW: side-by-side visual benchmark (browser reference
+captures matching the 0070 native scenes + composites). (4) architect
+next: Gate B client scaffolding (ARCHITECTURE) so the Chronicles
+client slice starts the minute N5 lands. (5) luna-mac: 0071/0074 when
+it comes online. Sweeps every ~30 min; no idle ticks.
+
 ## RUNNING
 
 | Task | Owner | Notes |
