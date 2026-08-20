@@ -86,7 +86,7 @@ whether the loop invites a second run.
 | Task | Packet | Notes |
 |---|---|---|
 | 0071 protocol matrix audit | MECHANICAL | luna-mac routed |
-| 0073 renderer backend eval | BOUNDED-DESIGN | research-only matrix for Stage 2 ADR |
+| 0073 renderer backend eval | BOUNDED-DESIGN | research-only; unassigned (cursor stopped) |
 | 0074 gear-outcomes profile | MECHANICAL | 10-run timing distribution; browser lane |
 
 ## HOLD
@@ -107,16 +107,17 @@ whether the loop invites a second run.
 
 ## Fleet + budget
 
-- cursor (Grok 4.6): 12 tasks accepted tonight — outlier throughput,
-  0 false greens. Ports 6580–6599.
+- cursor: STOPPED by owner 07:45 (12 accepted overnight). Ports 6580–6599 reserved.
+- qwen3.8 (MacBook, FREE): scorecard now VERIFIED 7/7 battery, ~16
+  tok/s, no reasoning leakage. Standing duty added to deepseek +
+  luna-mac briefs: dispatch machine-verifiable MECHANICAL sub-steps to
+  it; driver verifies everything.
 - luna-mac (Codex Luna, MacBook — replaces mac-claude in this seat):
   MECHANICAL packets only, NEVER native/**; routed 0071 then 0074.
   Ports 7000–7019. Fresh calibration.
 - deepseek (now DeepSeek 4 Flash): resuming 0056/N5 claim (4 dirty in
   clone). Lighter model — review with extra scrutiny; fresh calibration
   row. Ports 6540–6559.
-- deepseek: STALLED mid-0056 — the LAST blocker on the parity track
-  (N5 → releases N6). Owner: relaunch dsh.
 - kimis quota-dead until ~08-23; codex out of tokens.
 
 ## WATCH
