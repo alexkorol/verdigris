@@ -28,6 +28,12 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Verify release candidate
+        # PLAYTEST_LOAD_MODE is the suite's documented, bounded (1.75x cap)
+        # shared-machine gate (playtest/timing.mjs). Two consecutive master
+        # runs failed on DIFFERENT marginal scenarios under runner load
+        # (2026-08-20); authored deadlines remain the floor.
+        env:
+          PLAYTEST_LOAD_MODE: '1'
         run: npm run verify
       - name: Upload browser failure artifacts
         if: failure()
