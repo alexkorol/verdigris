@@ -1,5 +1,56 @@
 # Run status (snapshot — rewritten each architect sweep)
 
+## ☀ MORNING SUMMARY — overnight run 2026-08-19 23:45 → 08-20 07:15
+
+**Headline: GATE A GREEN.** The C++ client plays the C++ game over a
+real WebSocket with the real presentation — first time ever. One
+command to try it: `powershell -File native/tools/play-native.ps1`.
+
+**Shipped: 10 PRs (#27–#36), 14 tasks integrated, zero false greens.**
+
+- D-122 adopted (your ChatGPT doc — its build-graph diagnosis was
+  verified true) + D-123 (READY queue never dry, min 3).
+- C3 track built end-to-end IN ONE NIGHT: 0060 session seam
+  (architect) → 0061 networked journey → 0063 server envelopes → 0064
+  presentation unify (Gate A 10/12) → 0068 polish (12/12) → 0069
+  reconnect → 0067 CI journey gate (green + verified red canary) →
+  0070 reference scenes → 0072 owner launcher.
+- Browser: 0055 identity chip + server zone preview, 0059 compact
+  overlays, 0062 flake diagnostics (marginal scenario named:
+  gear-outcomes), 0066 shared capture harness.
+- N7 groundwork: 0065 density bench — ~9000x tick headroom at N=1000.
+
+**Review verdicts:** 13 ACCEPTED (12 first-pass); 1 accepted-with-gate-
+held (0061 — debug painter; fixed by 0064 same night). Every gate
+rerun personally; two architect play passes with driven captures.
+
+**Fleet calibration:** cursor (Grok 4.6) = 12 accepted tasks tonight,
+0 false greens — new top implementer; give it explicit presentation-
+quality constraints in specs (its one miss). mac-claude (Sonnet) =
+calibrated high on 0066 + unsolicited peer-verify; docs/browser lane.
+
+**Fleet health:** deepseek STALLED all night mid-0056 (N5) — dsh
+session dead since 08-18 19:36; 4 dirty files preserved in its clone.
+kimis quota-dead until ~08-23. codex out of tokens.
+
+**Blockers needing YOU:**
+1. Relaunch deepseek (`C:\Users\Alex\tools\dsh.cmd web` + /goal from
+   BOOTSTRAP.md) — or say the word and I re-route 0056/N5 to cursor.
+   N5 is the last blocker before N6 releases (Gate A condition met).
+2. Play Gate A (script below) — feedback on movement/combat/loot feel.
+3. Review + freeze the 0070 reference scenes (10 captures) as the
+   visual baseline.
+
+**Open questions parked for you:** renderer backend shortlist will
+arrive via 0073 (research-only); trophy circulation deferred to N5;
+JS-side density-bench seam needs your OK (server change).
+
+**Board now:** READY = 0071 matrix audit, 0073 renderer eval, 0074
+gear-outcomes profile. HOLD = 0058 (N6, needs N5). RUNNING = 0056
+(stalled, see blocker 1).
+
+---
+
 - **GATE A: GREEN (2026-08-20 ~04:40).** The owner can play the native
   game against the native server with the real presentation. Rubric
   12/12 after 0068 polish (architect play passes in 0064/0068 reviews).
