@@ -13,9 +13,13 @@
 
 | Task | Owner | Notes |
 |---|---|---|
-| 0055 browser follow-ups | cursor | claimed 2ec96b77; in progress |
 | 0056 N5 Chronicles (server axis) | deepseek | STALLED ~29h (last commit 08-18 19:36; 4 dirty preserved). OWNER: relaunch dsh + re-paste /goal — it resumes the claim. Paths narrowed to native/src+tests (client is C3's now) |
 | 0060 C3 session seam scaffold | architect (Fable) | ARCHITECTURE packet — next architect work block; unblocks 0061 |
+
+## Recently integrated
+
+- 0055 (cursor) ACCEPTED first-pass 01:10 — identity chip + server zone
+  preview, mirror data file deleted. Cursor lane calibrated: high trust.
 
 ## READY / QUEUED
 
@@ -35,7 +39,7 @@ coordinator: mac-claude dispatches MECHANICAL packets to it.
 ## Fleet + budget
 
 - deepseek: STALLED mid-0056 (see RUNNING). Ports 6540–6559.
-- cursor (Grok 4.6): ACTIVE on 0055 (calibration). Ports 6580–6599.
+- cursor (Grok 4.6): idle post-0055 — next: peer-verify duty or 0059 if mac-claude stays dark. Ports 6580–6599.
 - mac-claude (Sonnet): onboarding; 0059 routed. Ports 7000–7019. NEVER native/**.
 - kimis: quota-dead until ~08-23. codex: out of tokens.
 - architect: token-rationed (eco 3600s sweeps); 0060 is the one

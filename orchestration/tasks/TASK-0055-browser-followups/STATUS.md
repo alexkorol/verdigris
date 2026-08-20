@@ -1,6 +1,6 @@
 ---
 task: TASK-0055
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: cursor
 worker_branch: codex/TASK-0055-browser-followups-cursor
 base_commit: f71815f351ea9da9ebd6459812b8a25d87a323a5

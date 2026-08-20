@@ -1,6 +1,6 @@
 {
-  "houseName": "Emberglow-646wa",
-  "scionName": "AshaLong-646wa",
+  "houseName": "Emberglow-8pqzb",
+  "scionName": "AshaLong-8pqzb",
   "checks": {
     "1366x768.houseIdentity": true,
     "1366x768.titleMatchesFullName": true,
@@ -19,9 +19,9 @@
         "width": 1366,
         "height": 768
       },
-      "identityText": "House Emberglow-646wa — AshaLong-646wa (Mortal oath)",
-      "identityTitle": "House Emberglow-646wa — AshaLong-646wa (Mortal oath)",
-      "expectedLabel": "House Emberglow-646wa — AshaLong-646wa (Mortal oath)",
+      "identityText": "House Emberglow-8pqzb — AshaLong-8pqzb (Mortal oath)",
+      "identityTitle": "House Emberglow-8pqzb — AshaLong-8pqzb (Mortal oath)",
+      "expectedLabel": "House Emberglow-8pqzb — AshaLong-8pqzb (Mortal oath)",
       "identityBox": {
         "x": 93.390625,
         "y": 474.234375,
@@ -56,9 +56,9 @@
         "width": 1920,
         "height": 1080
       },
-      "identityText": "House Emberglow-646wa — AshaLong-646wa (Mortal oath)",
-      "identityTitle": "House Emberglow-646wa — AshaLong-646wa (Mortal oath)",
-      "expectedLabel": "House Emberglow-646wa — AshaLong-646wa (Mortal oath)",
+      "identityText": "House Emberglow-8pqzb — AshaLong-8pqzb (Mortal oath)",
+      "identityTitle": "House Emberglow-8pqzb — AshaLong-8pqzb (Mortal oath)",
+      "expectedLabel": "House Emberglow-8pqzb — AshaLong-8pqzb (Mortal oath)",
       "identityBox": {
         "x": 52,
         "y": 804.484375,
