@@ -404,18 +404,18 @@ JsonValue ground_item_json(const GroundItem& ground) {
   else put(out, "itemLevel", nullptr);
   put(out, "stats", stats_json(ground.item));
   put(out, "vessel", vessel_or_null(ground.item));
-  if (!ground.legacy_relic_id.empty()) {
+  if (!ground.relic_record_id.empty()) {
     JsonValue::Object relic;
-    put(relic, "relicId", ground.legacy_relic_id);
-    put(relic, "scionId", ground.legacy_source_scion_id);
-    put(relic, "scionName", ground.legacy_source_scion_name);
+    put(relic, "relicId", ground.relic_record_id);
+    put(relic, "scionId", ground.relic_source_scion_id_field);
+    put(relic, "scionName", ground.relic_source_scion_name_field);
     put(out, "chroniclesRelic", std::move(relic));
   }
-  if (!ground.legacy_relic_id.empty()) {
-    put(out, "legacyRelicId", ground.legacy_relic_id);
+  if (!ground.relic_record_id.empty()) {
+    put(out, "legacyRelicId", ground.relic_record_id);
     JsonValue::Object legacy;
-    if (!ground.legacy_source_scion_id.empty()) put(legacy, "sourceScionId", ground.legacy_source_scion_id);
-    if (!ground.legacy_source_scion_name.empty()) put(legacy, "sourceScionName", ground.legacy_source_scion_name);
+    if (!ground.relic_source_scion_id_field.empty()) put(legacy, "sourceScionId", ground.relic_source_scion_id_field);
+    if (!ground.relic_source_scion_name_field.empty()) put(legacy, "sourceScionName", ground.relic_source_scion_name_field);
     put(out, "legacy", std::move(legacy));
   }
   return JsonValue(std::move(out));
@@ -833,8 +833,8 @@ void ProtocolSession::handle_take_ground(const std::string& uuid, const std::fun
   const int iy=static_cast<int>(std::floor(found->y));
   if ((std::max)(std::abs(ix-player_tile.x),std::abs(iy-player_tile.y))>1) return;
   const double gx=found->x; const double gy=found->y;
-  const std::string relic_scion_id = found->legacy_relic_id.empty()
-      ? std::string{} : found->legacy_source_scion_id;
+  const std::string relic_scion_id = found->relic_record_id.empty()
+      ? std::string{} : found->relic_source_scion_id_field;
   GameItem item;
   if (!world_->take_ground_item(uuid,&item)) return;
   item.slot=-1;

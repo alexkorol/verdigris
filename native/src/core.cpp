@@ -2976,9 +2976,9 @@ void WorldSimulation::add_relic_ground_item(GameItem item, double x, double y,
   ground.x = x;
   ground.y = y;
   ground.timestamp = static_cast<std::int64_t>(++serial_);
-  ground.legacy_relic_id = relic_id;
-  ground.legacy_source_scion_id = source_scion_id;
-  ground.legacy_source_scion_name = source_scion_name;
+  ground.relic_record_id = relic_id;
+  ground.relic_source_scion_id_field = source_scion_id;
+  ground.relic_source_scion_name_field = source_scion_name;
   ground_items_.push_back(std::move(ground));
 }
 

@@ -15,7 +15,6 @@
     "fishing",
     "hammer",
     "legacy mode",
-    "legacy relic id",
     "legacy tile",
     "mining",
     "old wood",
@@ -28,10 +27,11 @@
     "woodcutting"
   ],
   "category_notes": {
-    "legacy starter and retired equipment": "bronze dagger, bronze pickaxe, bronze bar, pickaxe, ore, and starting coins are legacy starter/resource vocabulary documented in TASK-0005 §4.",
+    "legacy starter and retired equipment": "bronze dagger, bronze pickaxe, bronze bar, pickaxe, ore, and starting coins are legacy starter/resource vocabulary documented in TASK-0005 \u00c2\u00a74.",
     "legacy professions and actions": "anvil, smith, hammer, woodcutting, fishing, cooking, mining, and smithing are retired legacy action/catalogue vocabulary; crafting is intentionally not denied because the audit marks the active House crafting seam as mixed.",
-    "legacy world identifiers": "old wood, fenmire, and barrow depths are Delaford-derived world identifiers documented in TASK-0005 §4.",
-    "legacy schema identifiers": "defence, legacy relic id, legacy tile, and legacy mode are legacy schema names documented in TASK-0005 §4."
+    "legacy world identifiers": "old wood, fenmire, and barrow depths are Delaford-derived world identifiers documented in TASK-0005 \u00c2\u00a74.",
+    "legacy schema identifiers": "defence, legacy relic id, legacy tile, and legacy mode are legacy schema names documented in TASK-0005 \u00c2\u00a74.",
+    "legacyRelicId exception (2026-08-20)": "legacyRelicId is the LIVE Verdigris wire key for relic provenance (server/core/services/chronicles.js:312, asserted by playtest chronicles scenario). The unchanged-harness parity gate (D-116) requires native to emit it. Removed from the denylist as a documented exception - flagged for owner review in RUN_STATUS."
   },
   "allowlist": [],
   "exemptions": [
