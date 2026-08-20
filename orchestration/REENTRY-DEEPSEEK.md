@@ -84,3 +84,19 @@ Never merge program/master; never edit peer files; ports 6540-6559.
   empty. Do not spin instant fetch cycles.
 
 ## Canonical loop: orchestration/STANDING-LOOP.md (NAME=deepseek, PORTS=6540-6559) supersedes the prose above where they differ.
+
+
+## Qwen executor duty (added 2026-08-20)
+
+A free local Qwen3.8 runs on the owner's MacBook:
+`http://alexs-macbook-pro.tail4e0d34.ts.net:1234/v1`, model `qwen3.8`,
+any api key, temperature 0, NO chat_template_kwargs. For bulk
+MECHANICAL sub-steps inside your tasks (boilerplate test cases, fixture
+generation, repetitive transforms, doc tables) dispatch the drafting to
+Qwen via curl and VERIFY the output yourself with a machine check
+(parse it, node --check it, compile it, run it) before committing -
+you own the result, Qwen is a typing engine. Check GET /v1/models
+first (Mac may be asleep); on failure just do the work yourself.
+Never send it design decisions or let its output land unverified.
+Scorecard: 7/7 verified battery, ~16 tok/s, telemetry in
+orchestration/telemetry/.
