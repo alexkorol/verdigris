@@ -527,6 +527,10 @@ void remote_render_list_ops() {
 }  // namespace
 
 int main() {
+  // CI pipes fully buffer MSVC stdout; a crash then discards every PASS/FAIL
+  // line and the failing check is unidentifiable. Unbuffered costs nothing
+  // at this volume.
+  std::setvbuf(stdout, nullptr, _IONBF, 0);
   local_session_ready_and_deterministic();
   remote_dead_endpoint_is_a_visible_failure();
   remote_handshake_reaches_ready();

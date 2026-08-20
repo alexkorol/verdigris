@@ -1,5 +1,54 @@
 # Run status (snapshot — rewritten each architect sweep)
 
+## 🌆 EVENING SUMMARY — day run 2026-08-20 (D-124), ~22:00 snapshot
+
+**Headline: SERVER/RULES PARITY COMPLETE — 32/32.** The unchanged
+32-scenario playtest harness passes against the C++ server, verified
+twice consecutively, each on a fresh server. Shipped as PR #45
+(merged; post-merge CI running at snapshot time). All native gates
+(build + unit + session + client scenarios) green.
+
+**D-122 three-axis status:**
+1. **Server/rules: DONE (32/32 ×2).** Baseline this morning was 18/19
+   N5 + 23/32 N6; the afternoon waves closed economy, quest,
+   crossroads, party, party-stories, build-divergence, gates,
+   world-web, gear-outcomes; the evening debugging closed the last
+   session-semantics cluster.
+2. **Native journey: GREEN** — the C++ client's networked journey +
+   render/scenario gates all pass against the C++ server.
+3. **Presentation: near-family.** Fresh round-3 side-by-sides
+   (`orchestration/benchmarks/side-by-side-2026-08-20/sxs3-*.jpg`,
+   regenerated with today's binary): native has terrain tiles, trees,
+   buildings, health rings, HP/mana orbs, quickbar, minimap. Visible
+   remaining deltas: village density, expedition/quest panels,
+   typography (delta list in BENCHMARK.md; 0076 successor work).
+
+**The bug that mattered:** native target selection never advanced past
+the first spawned monster (`!chosen &&` in the nearest scan) — every
+swing everywhere locked onto `monster-N-0`. Masked for weeks because
+swings had no range limit; the JS-parity range gate exposed it as
+zero-hit combat. Found via live-server instrumentation, fixed with a
+true nearest scan + direction-aware tie-breaking.
+
+**Session semantics now match JS exactly** (proven by probing the live
+JS server, not by reading code): one shared anonymous guest account;
+concurrent login replaces the old session; adoption rebuilds a fresh
+Player while loot/levels/bank/tree/quest-record persist; permadeath
+survives reconnect; the commission chain resets on scion admission;
+tree quest points (live budget) split from chain quest points
+(persistent record).
+
+**Ops lesson written in blood:** `pkill` in Git Bash does NOT kill
+native Windows exes — two stale servers produced a bogus 26/32 that
+cost a diagnosis cycle. Fresh-server law now enforced with
+PowerShell `Stop-Process` only.
+
+**Fleet:** architect solo-drove the entire parity push per D-124
+(cursor/deepseek/luna quiet all afternoon — no lane commits since
+PR #41/#42). Board restocked below.
+
+---
+
 ## ☀ MORNING SUMMARY — overnight run 2026-08-19 23:45 → 08-20 07:15
 
 **Headline: GATE A GREEN.** The C++ client plays the C++ game over a
@@ -99,13 +148,14 @@ whether the loop invites a second run.
 |---|---|---|
 | 0056 N5 Chronicles (server axis) | deepseek | STALLED since 08-18 19:36. OWNER: relaunch dsh + /goal from BOOTSTRAP.md |
 
-## READY (D-123 buffer: 3)
+## READY (D-123 buffer: 4)
 
 | Task | Packet | Notes |
 |---|---|---|
-| 0071 protocol matrix audit | MECHANICAL | luna-mac routed |
-| 0073 renderer backend eval | BOUNDED-DESIGN | research-only; unassigned (cursor stopped) |
+| 0073 renderer backend eval | BOUNDED-DESIGN | research-only; any lane |
 | 0074 gear-outcomes profile | MECHANICAL | 10-run timing distribution; browser lane |
+| 0077 native Chronicles client | CLIENT | Gate B slice; needs a strong lane |
+| 0078 native surface density | MECHANICAL-VISUAL | presentation delta #3; NEW spec |
 
 ## HOLD
 

@@ -275,6 +275,10 @@ class WebSocketServer {
   std::unordered_map<std::string, std::shared_ptr<ProtocolSession>> sessions_;
   std::unique_ptr<std::thread> accept_thread_;
   std::unique_ptr<std::thread> tick_thread_;
+  // Per-connection reader threads hold a raw `this`; they must be JOINED in
+  // stop() - a detached thread that wakes after `delete server` dereferences
+  // a freed WebSocketServer (session_tests reconnect segfault under load).
+  std::vector<std::thread> connection_threads_;
   // party.js registry: parties are server state shared across sessions.
   struct ServerParty {
     std::string id;
