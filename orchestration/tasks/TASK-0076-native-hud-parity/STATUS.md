@@ -1,6 +1,6 @@
 ---
 task: TASK-0076
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: cursor
 worker_branch: codex/TASK-0076-native-hud-parity-cursor
 base_commit: 69d60133b8fe67087a856d837f6d714fc9ddb4c6
