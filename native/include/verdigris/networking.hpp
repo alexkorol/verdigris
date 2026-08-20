@@ -124,6 +124,9 @@ class ProtocolSession {
   int carried_gold() const;
   void maybe_floor_cleared(const std::function<void(const Envelope&)>& emit);
   void auto_pickup_gold(const std::function<void(const Envelope&)>& emit);
+  void emit_wagon_screen(const std::function<void(const Envelope&)>& emit) const;
+  void quest_trigger(const char* trigger, const std::function<void(const Envelope&)>& emit,
+                     const std::string& detail_a = std::string(), const std::string& detail_b = std::string(), int depth = 0);
   void handle_take_ground(const std::string& uuid, const std::function<void(const Envelope&)>& emit);
   void handle_take_underfoot(const std::function<void(const Envelope&)>& emit);
   void handle_menu_build(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) const;
@@ -150,6 +153,15 @@ class ProtocolSession {
   // N6 house treasury + floor-clear tracking.
   int house_treasury_ = 0;
   std::uint64_t last_cleared_floor_key_ = 0;
+  bool daily_purse_claimed_ = false;
+  int home_pitch_index_ = 0;
+  // N6 ordered quest chain (server/shared/quests.js).
+  int active_quest_ = 0;      // index into kQuestChain; >= chain size = done
+  int quest_objective_ = 0;   // objectiveIndex within the active quest
+  std::vector<std::string> quests_completed_;
+  int house_renown_ = 0;
+  std::string last_instance_theme_;
+  std::string last_instance_layout_;
   // N6 combat experience (experience.js / shared/ui.js curve).
   long long combat_xp_ = 0;
   void maybe_respawn(std::int64_t now_ms);

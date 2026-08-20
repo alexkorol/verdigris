@@ -570,6 +570,34 @@ JsonValue ProtocolSession::wear_details_json() const {
   return JsonValue(std::move(wear_details));
 }
 namespace {
+// server/shared/quests.js QUEST_DEFINITIONS - ordered objective chain.
+struct QuestObjective { const char* trigger; const char* crit_a; const char* crit_b; int min_depth; };
+struct QuestDef { const char* id; const char* deed; int renown; int objective_count; QuestObjective objectives[5]; };
+const QuestDef kQuestChain[] = {
+    {"aldwyns-charge", "Answered Aldwyn's Charge", 5, 5, {
+        {"move", "", "", 0}, {"attack", "", "", 0}, {"slay", "", "", 0}, {"loot", "", "", 0}, {"delve", "", "", 0}}},
+    {"proof-of-temper", "Proved their temper in the old realms", 10, 3, {
+        {"slay-elite", "", "", 0}, {"loot-vessel", "", "", 0}, {"equip-vessel", "", "", 0}, {}, {}}},
+    {"the-pale-crown", "Broke the Pale Sovereign's seal", 15, 3, {
+        {"delve", "weir-crypt", "", 1}, {"slay-elite", "The Pale Sovereign", "crypt", 0}, {"delve", "", "crypt", 2}, {}, {}}},
+    {"rot-in-the-reeds", "Ended the rot beneath the reeds", 20, 3, {
+        {"delve", "marsh-of-reeds", "", 1}, {"slay-elite", "The Rotfather", "marsh", 0}, {"return-surface", "marsh-of-reeds", "", 0}, {}, {}}},
+};
+const int kQuestChainSize = 4;
+std::string zone_id_for_instance(const std::string& theme, const std::string& layout) {
+  // party.js ADVENTURE_ZONES: identity is theme+layout, not theme alone.
+  for (const auto& zone : adventure_zones()) {
+    if (zone.template_id == theme && zone.layout == layout) return zone.id;
+  }
+  for (const auto& zone : adventure_zones()) {
+    if (zone.template_id == theme) return zone.id;
+  }
+  return "old-barrow";
+}
+// world-layout.js WAGON_PITCHES - the plaza ring.
+const int kWagonPitches[8][2] = {{47,112},{42,109},{34,109},{29,112},{29,118},{34,121},{42,121},{47,118}};
+}  // namespace
+namespace {
 struct TownNpc { int id; const char* name; const char* examine; int x; int y; const char* actions[2]; int action_count; };
 // server/core/data/npcs.js - the Crossroads roster.
 const TownNpc kTownNpcs[] = {
@@ -669,7 +697,16 @@ JsonValue ProtocolSession::snapshot() const {
     JsonValue::Object down; put(down,"x",meta.stairs_down.x); put(down,"y",meta.stairs_down.y); put(metadata,"stairsDown",std::move(down));
     JsonValue::Array spawns; for (const auto& spawn:meta.spawn_points) { JsonValue::Object value; put(value,"x",spawn.x); put(value,"y",spawn.y); spawns.emplace_back(std::move(value)); } put(metadata,"spawnPoints",std::move(spawns));
     put(state,"sceneMetadata",std::move(metadata)); }
-  else put(state,"sceneMetadata",JsonValue::Object{});
+  else {
+    JsonValue::Object town_meta;
+    JsonValue::Array pitches;
+    for (const auto& pitch : kWagonPitches) {
+      JsonValue::Object entry; put(entry, "x", pitch[0]); put(entry, "y", pitch[1]);
+      pitches.emplace_back(std::move(entry));
+    }
+    put(town_meta, "wagonPitches", std::move(pitches));
+    put(state,"sceneMetadata",std::move(town_meta));
+  }
   // N4: the real item pipeline snapshot (dev.js buildStateSnapshot).
   put(state,"level",actor?actor->stats.level:1);
   JsonValue::Array items; for (const auto& item:inventory_.items()) items.emplace_back(snapshot_item_json(item)); put(state,"inventory",std::move(items));
@@ -836,6 +873,7 @@ void ProtocolSession::handle_equip(const JsonValue& payload, const std::function
   sync_combat_mods();
   emit_inventory_refresh(emit);
   emit_equip_state(emit);
+  quest_trigger("equip-vessel", emit);
   if (spilled) emit_ground_change(emit);
 }
 JsonValue ProtocolSession::quests_json() const {
@@ -847,6 +885,15 @@ JsonValue ProtocolSession::quests_json() const {
   else put(first_goal, "completedAt", nullptr);
   JsonValue::Object quests;
   put(quests, "firstGoal", std::move(first_goal));
+  put(quests, "activeQuestId", active_quest_ < kQuestChainSize ? JsonValue(kQuestChain[active_quest_].id) : JsonValue(nullptr));
+  put(quests, "objectiveIndex", quest_objective_);
+  put(quests, "questPoints", quest_points_);
+  JsonValue::Array completed;
+  for (const auto& done : quests_completed_) {
+    JsonValue::Object entry; put(entry, "id", done);
+    completed.emplace_back(std::move(entry));
+  }
+  put(quests, "completed", std::move(completed));
   return JsonValue(std::move(quests));
 }
 
@@ -976,6 +1023,7 @@ void ProtocolSession::handle_house_deposit(const JsonValue& payload, const std::
                      (active_house_name_.empty() ? std::string("Verdigris") : active_house_name_) + ".");
   emit_inventory_refresh(emit);
   emit_bank_screen(emit);
+  emit_wagon_screen(emit);
 }
 
 void ProtocolSession::maybe_floor_cleared(const std::function<void(const Envelope&)>& emit) {
@@ -1002,6 +1050,104 @@ void ProtocolSession::maybe_floor_cleared(const std::function<void(const Envelop
     emit_message(emit, "The floor is cleared. Return to Aldwyn at the Crossroads for your reward.");
     emit_quest_update(emit);
   }
+}
+void ProtocolSession::emit_wagon_screen(const std::function<void(const Envelope&)>& emit) const {
+  // wagon-service.js buildStock + payload: tiered outfitting from the ledger.
+  struct TierRow { int tier; const char* label; bool unlocked; const char* requirement; };
+  const TierRow tiers[3] = {
+    {1, "Road kit", true, ""},
+    {2, "Proven iron", false, "renown 500 or a level-1 House Forge"},
+    {3, "Named steel", false, "renown 1500 or a level-2 House Forge"},
+  };
+  const char* tier_items[3][3] = {
+    {"bronze-sword", "bronze-dagger", "wooden-shield"},
+    {"iron-sword", "bronze-shield", "shortbow"},
+    {"steel-battleaxe", "longbow", "gold-ring"},
+  };
+  const int tier_prices[3][3] = {{15, 10, 8}, {60, 40, 45}, {649, 320, 210}};
+  JsonValue::Array stock;
+  for (int t = 0; t < 3; ++t) {
+    JsonValue::Object tier;
+    put(tier, "tier", tiers[t].tier);
+    put(tier, "label", tiers[t].label);
+    put(tier, "unlocked", tiers[t].unlocked);
+    if (tiers[t].requirement[0]) put(tier, "requirement", tiers[t].requirement);
+    else put(tier, "requirement", nullptr);
+    JsonValue::Array items;
+    for (int i = 0; i < 3; ++i) {
+      JsonValue::Object item;
+      put(item, "id", tier_items[t][i]);
+      put(item, "name", tier_items[t][i]);
+      put(item, "price", tier_prices[t][i]);
+      items.emplace_back(std::move(item));
+    }
+    put(tier, "items", std::move(items));
+    stock.emplace_back(std::move(tier));
+  }
+  JsonValue::Object house;
+  put(house, "id", active_house_id_.empty() ? JsonValue(nullptr) : JsonValue(active_house_id_));
+  put(house, "name", active_house_name_.empty() ? JsonValue("House Verdigris") : JsonValue(active_house_name_));
+  put(house, "treasury", house_treasury_);
+  JsonValue::Object payload;
+  put(payload, "house", std::move(house));
+  put(payload, "stock", std::move(stock));
+  put(payload, "carriedCoins", carried_gold());
+  JsonValue::Object data;
+  put(data, "player", JsonValue::Object{{"socket_id", socket_id_}});
+  put(data, "screen", "wagon");
+  put(data, "payload", std::move(payload));
+  emit(Envelope{"open:screen", JsonValue(std::move(data))});
+}
+void ProtocolSession::quest_trigger(const char* trigger, const std::function<void(const Envelope&)>& emit,
+                                    const std::string& detail_a, const std::string& detail_b, int depth) {
+  if (active_quest_ >= kQuestChainSize) return;
+  const QuestDef& quest = kQuestChain[active_quest_];
+  if (quest_objective_ >= quest.objective_count) return;
+  const QuestObjective& objective = quest.objectives[quest_objective_];
+  if (std::string(objective.trigger) != trigger) return;
+  // criteria: crit_a matches zoneId or monsterName; crit_b matches theme/template.
+  if (objective.crit_a[0] && detail_a != objective.crit_a) return;
+  if (objective.crit_b[0] && detail_b != objective.crit_b) return;
+  if (objective.min_depth > 0 && depth < objective.min_depth) return;
+  if (objective.min_depth == 0 && std::string(trigger) == "delve" && objective.crit_b[0] && depth < 2) return;
+  quest_objective_ += 1;
+  if (quest_objective_ >= quest.objective_count) {
+    quests_completed_.push_back(quest.id);
+    quest_points_ = (std::min)(quest_points_ + 1, 23);
+    house_renown_ += quest.renown;
+    // chronicle: renown on the house, deed on the active scion.
+    if (auto* root = chronicle_.object()) {
+      auto houses_it = root->find("houses");
+      if (houses_it != root->end() && houses_it->second.array()) {
+        for (auto& house_entry : *houses_it->second.array()) {
+          auto* house = house_entry.object();
+          if (!house) continue;
+          auto id_it = house->find("id");
+          if (id_it == house->end() || !id_it->second.string() || *id_it->second.string() != active_house_id_) continue;
+          (*house)["renown"] = JsonValue(house_renown_);
+          auto scions_it = house->find("scions");
+          if (scions_it != house->end() && scions_it->second.array()) {
+            for (auto& scion_entry : *scions_it->second.array()) {
+              auto* scion = scion_entry.object();
+              if (!scion) continue;
+              auto sid = scion->find("id");
+              if (sid == scion->end() || !sid->second.string() || *sid->second.string() != active_scion_id_) continue;
+              auto deeds_it = scion->find("deeds");
+              if (deeds_it == scion->end() || !deeds_it->second.array()) (*scion)["deeds"] = JsonValue(JsonValue::Array{});
+              scion->find("deeds")->second.array()->emplace_back(quest.deed);
+              break;
+            }
+          }
+          chronicles_revision_ += 1;
+          break;
+        }
+      }
+    }
+    active_quest_ += 1;
+    quest_objective_ = 0;
+    emit_message(emit, std::string("Commission complete: ") + quest.id + ".");
+  }
+  emit_quest_update(emit);
 }
 void ProtocolSession::emit_quest_update(const std::function<void(const Envelope&)>& emit) const {
   // first-goal.js pushQuestState -> quest:update.
@@ -1114,7 +1260,10 @@ void ProtocolSession::handle_take_ground(const std::string& uuid, const std::fun
   GameItem item;
   if (!world_->take_ground_item(uuid,&item)) return;
   item.slot=-1;
+  const bool took_vessel = static_cast<bool>(item.vessel);
   if (!relic_scion_id.empty()) mark_relic_recovered(relic_scion_id);
+  quest_trigger("loot", emit);
+  if (took_vessel) quest_trigger("loot-vessel", emit);
   auto result=inventory_.add(std::move(item));
   bool spilled=false;
   for (auto& spill:result.overflow) { world_->add_ground_item(std::move(spill),gx,gy); spilled=true; }  // no room: stays on the ground
@@ -1151,6 +1300,18 @@ void ProtocolSession::handle_menu_build(const JsonValue& payload, const std::fun
     const auto* world_pos=tile?tile->get("world"):nullptr;
     const int wx=as_int(world_pos?world_pos->get("x"):nullptr);
     const int wy=as_int(world_pos?world_pos->get("y"):nullptr);
+    if (!world_->in_instance()) {
+      for (const auto& pitch : kWagonPitches) {
+        if (pitch[0] != wx || pitch[1] != wy) continue;
+        JsonValue::Object entry;
+        put(entry, "label", "Open the House wagon");
+        put(entry, "action", JsonValue::Object{{"name", JsonValue("wagon")}, {"actionId", JsonValue("player:screen:wagon")},
+            {"context", JsonValue::Array{JsonValue("gameMap")}}, {"nearby", true}, {"weight", 1}});
+        put(entry, "type", "wagon");
+        entries.emplace_back(std::move(entry));
+        break;
+      }
+    }
     if (!world_->in_instance() && wx==45 && wy==101) {
       // General Store floor display (town-amenities/economy): browse, buy,
       // appraise - display stock can never be taken for free.
@@ -1262,6 +1423,7 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
   const std::string uuid=as_string(item_ref?item_ref->get("uuid"):nullptr);
   if (action_id=="player:take") { handle_take_ground(uuid,emit); return; }
   if (action_id=="player:screen:bank") { emit_bank_screen(emit); return; }
+  if (action_id=="player:screen:wagon") { emit_wagon_screen(emit); return; }
   if (action_id=="player:screen:shop-display" || action_id=="player:npc:trade" ||
       action_id=="player:shop-display:buy" || action_id=="player:shop-display:appraise") {
     Envelope forwarded{action_id, payload};
@@ -1324,6 +1486,7 @@ void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std
 void ProtocolSession::process_combat(std::int64_t now, const std::function<void(const Envelope&)>& emit) {
   auto* actor = simulation_->actor(simulation_->scion().actor_id); if (!actor) return;
   const int life_before = actor->stats.life;
+  world_->set_guaranteed_elite_gear(active_quest_ == 1 && quest_objective_ == 0);
   const auto combat_totals = wear_.totals();
   const int wear_attack = (std::max)(0, (std::max)((std::max)(combat_totals.attack.stab, combat_totals.attack.slash),
                                                    (std::max)(combat_totals.attack.crush, combat_totals.attack.range)));
@@ -1338,6 +1501,15 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
   for (const auto& event : events) {
     emit_combat_event(event, emit);
     if (event.died && event.target_id != identity_) loot = true;
+    if (event.type == "hit" && event.target_id != identity_) quest_trigger("attack", emit);
+    if (event.type == "death" && event.target_id != identity_) {
+      quest_trigger("slay", emit);
+      for (const auto& monster : world_->monsters()) {
+        if (monster.uuid != event.target_id) continue;
+        if (monster.rarity == "elite") quest_trigger("slay-elite", emit, monster.name, world_->metadata().theme);
+        break;
+      }
+    }
     if (event.type == "death" && event.target_id != identity_) {
       emit_message(emit, "You have slain " + event.target_name + ".");
       // experience.js: kills grant combat XP; the character level derives
@@ -1401,7 +1573,7 @@ void ProtocolSession::handle_extract(const std::function<void(const Envelope&)>&
   emit_movement(emit);
   emit_message(emit, "The party returns to the surface.");
   finish_extraction(emit);
-  maybe_complete_first_goal(emit);
+  maybe_complete_first_goal(emit); quest_trigger("return-surface", emit, zone_id_for_instance(last_instance_theme_, last_instance_layout_), last_instance_theme_);
   emit_transition(emit, "party:scene:transition");
 }
 void ProtocolSession::handle_final_death(const std::function<void(const Envelope&)>& emit) {
@@ -1571,12 +1743,26 @@ void ProtocolSession::emit_movement(const std::function<void(const Envelope&)>& 
 void ProtocolSession::emit_message(const std::function<void(const Envelope&)>& emit, const std::string& text) const { emit(Envelope{"game:send:message",JsonValue::Object{{"text",text}}}); }
 void ProtocolSession::handle(const Envelope& envelope, const std::function<void(const Envelope&)>& emit) {
   const auto* payload=envelope.data.object()?&envelope.data:nullptr;
-  if (envelope.event=="world:zone:enter") { const auto node=as_string(payload?payload->get("nodeId"):nullptr,"tin:1:0"); simulation_->dispatch(Command::enter(node.rfind("route:",0)==0?node:"route:"+node)); world_->enter_solo_instance("dungeon",""); emit_transition(emit,"world:scene:transition"); emit_ground_change(emit); return; }
-  if (envelope.event=="instance:enterSolo") { world_->enter_solo_instance(as_string(payload?payload->get("template"):nullptr,"dungeon"),as_string(payload?payload->get("layout"):nullptr,"")); emit_transition(emit,"party:scene:transition"); emit_ground_change(emit); return; }
-  if (envelope.event=="player:move") { const auto direction=as_string(payload?payload->get("direction"):nullptr); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); if (world_->apply_movement_sample(direction,now_ms())) { emit_movement(emit); auto_pickup_gold(emit); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool scene_changed=world_->scene_id()!=scene_before; if (depth_changed||scene_changed) { if (was_instance&&!world_->in_instance()) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); } emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) emit_ground_change(emit); } } return; }
-  if (envelope.event=="dev:teleport") { if (!payload) return; const auto* x=payload->get("x"); const auto* y=payload->get("y"); if (!x||!x->number()||!y||!y->number()) return; const int tx=static_cast<int>(*x->number()); const int ty=static_cast<int>(*y->number()); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); world_->teleport(tx,ty,now_ms()); const bool returned=was_instance&&!world_->in_instance(); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool transitioned=returned||depth_changed||world_->scene_id()!=scene_before; emit_movement(emit); emit_message(emit,"Teleported to "+std::to_string(tx)+", "+std::to_string(ty)+(transitioned?" (portal followed).":".")); if (returned) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); } if (transitioned) emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) { if (depth_changed) emit_ground_change(emit); process_combat(now_ms(),emit); } return; }
+  if (envelope.event=="world:zone:enter") { const auto node=as_string(payload?payload->get("nodeId"):nullptr,"tin:1:0"); simulation_->dispatch(Command::enter(node.rfind("route:",0)==0?node:"route:"+node)); world_->enter_solo_instance("dungeon",""); emit_transition(emit,"world:scene:transition"); emit_ground_change(emit); last_instance_theme_ = world_->metadata().theme; last_instance_layout_ = world_->metadata().layout; quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); return; }
+  if (envelope.event=="instance:enterSolo") { world_->enter_solo_instance(as_string(payload?payload->get("template"):nullptr,"dungeon"),as_string(payload?payload->get("layout"):nullptr,"")); emit_transition(emit,"party:scene:transition"); emit_ground_change(emit); last_instance_theme_ = world_->metadata().theme; last_instance_layout_ = world_->metadata().layout; quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); return; }
+  if (envelope.event=="player:move") { const auto direction=as_string(payload?payload->get("direction"):nullptr); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); if (world_->apply_movement_sample(direction,now_ms())) { emit_movement(emit); auto_pickup_gold(emit); quest_trigger("move", emit); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool scene_changed=world_->scene_id()!=scene_before; if (depth_changed||scene_changed) { if (was_instance&&!world_->in_instance()) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); quest_trigger("return-surface", emit, zone_id_for_instance(last_instance_theme_, last_instance_layout_), last_instance_theme_); } if (depth_changed) quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) emit_ground_change(emit); } } return; }
+  if (envelope.event=="dev:teleport") { if (!payload) return; const auto* x=payload->get("x"); const auto* y=payload->get("y"); if (!x||!x->number()||!y||!y->number()) return; const int tx=static_cast<int>(*x->number()); const int ty=static_cast<int>(*y->number()); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); world_->teleport(tx,ty,now_ms()); const bool returned=was_instance&&!world_->in_instance(); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool transitioned=returned||depth_changed||world_->scene_id()!=scene_before; emit_movement(emit); emit_message(emit,"Teleported to "+std::to_string(tx)+", "+std::to_string(ty)+(transitioned?" (portal followed).":".")); if (returned) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); quest_trigger("return-surface", emit, zone_id_for_instance(last_instance_theme_, last_instance_layout_), last_instance_theme_); } if (transitioned) emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) { if (depth_changed) { emit_ground_change(emit); quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); } process_combat(now_ms(),emit); } return; }
   if (envelope.event=="dev:setlevel") { auto* actor=simulation_->actor(simulation_->scion().actor_id); const int level=as_int(payload?payload->get("level"):nullptr,1); if(actor){ actor->stats.level=(std::max)(1,level); actor->stats.attack=12+actor->stats.level*3; actor->stats.life_max=100+actor->stats.level*10; actor->stats.life=actor->stats.life_max; world_->set_level(actor->stats.level); } return; }
-  if (envelope.event=="player:screen:shop-display" || envelope.event=="player:npc:trade") {
+  if (envelope.event=="player:screen:wagon") { emit_wagon_screen(emit); return; }
+  if (envelope.event=="wagon:outfit:buy") {
+    const std::string item_id = as_string(payload ? payload->get("itemId") : nullptr);
+    int price = item_id == "bronze-sword" ? 15 : item_id == "bronze-dagger" ? 10 : item_id == "wooden-shield" ? 8 : -1;
+    if (price > 0 && house_treasury_ >= price) {
+      house_treasury_ -= price;
+      CreateItemOptions o;
+      auto bought = create_game_item(item_id, o);
+      if (bought) inventory_.add(std::move(*bought));
+      emit_message(emit, "The quartermaster hands down the " + item_id + "; the ledger pays " + std::to_string(price) + " gold.");
+      emit_inventory_refresh(emit);
+      emit_wagon_screen(emit);
+    }
+    return;
+  }  if (envelope.event=="player:screen:shop-display" || envelope.event=="player:npc:trade") {
     // shops.js General Store pane.
     JsonValue::Array stock;
     { JsonValue::Object row; put(row,"id","bronze-sword"); put(row,"name","Bronze Sword"); put(row,"price",15); put(row,"qty",10); stock.emplace_back(std::move(row)); }
@@ -1716,7 +1902,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
       emit_movement(emit);
       emit_message(emit, "The party returns to the surface.");
       finish_extraction(emit);
-      maybe_complete_first_goal(emit);
+      maybe_complete_first_goal(emit); quest_trigger("return-surface", emit, zone_id_for_instance(last_instance_theme_, last_instance_layout_), last_instance_theme_);
       emit_transition(emit, "party:scene:transition");
     }
     return;
@@ -1752,6 +1938,18 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   if (envelope.event=="chronicles:scion:set-out") {
     active_scion_id_=as_string(payload?payload->get("scionId"):nullptr);
     pending_chronicles_=false;
+    // crossroads: the scion spawns beside their House wagon pitch, and the
+    // first set-out of the day claims the road purse into the ledger.
+    {
+      std::uint32_t hash = 5381;
+      for (unsigned char c : active_house_id_) hash = hash * 33 + c;
+      home_pitch_index_ = static_cast<int>(hash % 8);
+    }
+    if (!daily_purse_claimed_) {
+      daily_purse_claimed_ = true;
+      house_treasury_ += 100;
+      emit_message(emit, "Your House's wagon rolls in with the dawn market. The quartermaster counts 100 gold into the ledger - the day's road purse.");
+    }
     // chronicles.js starter kit: a clean bronze dagger and road gold.
     { bool has_dagger=false; int coins=0;
       for (const auto& item:inventory_.items()) { if (item.id=="bronze-dagger") has_dagger=true; if (item.id=="coins") coins+=item.qty; }
@@ -1759,6 +1957,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
       if (coins<100) { CreateItemOptions o; o.quantity=100-coins; auto purse=create_game_item("coins",o); if (purse) inventory_.add(std::move(*purse)); }
     }
     world_->reset_to_town();
+    world_->teleport(kWagonPitches[home_pitch_index_][0], kWagonPitches[home_pitch_index_][1] + 1, now_ms());
     emit_login(emit);
     return;
   }

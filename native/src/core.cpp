@@ -3047,7 +3047,8 @@ void WorldSimulation::drop_monster_loot(const WorldMonster& monster, int goods_f
   if (monster.rarity == "rare") base_chance = 0.2;
   if (monster.rarity == "elite") base_chance = 0.5;
   const double chance = apply_goods_found_to_gear_chance(base_chance, goods_found_percent);
-  if (world_rand01(next_world_random()) < chance) {
+  const bool guaranteed = guaranteed_elite_gear_ && monster.rarity == "elite";
+  if (guaranteed || world_rand01(next_world_random()) < chance) {
     const auto& pool = gear_drop_pool();
     const std::string& gear_id =
         pool[static_cast<std::size_t>(std::floor(world_rand01(next_world_random()) * pool.size()))];

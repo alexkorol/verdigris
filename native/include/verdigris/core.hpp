@@ -841,6 +841,9 @@ class WorldSimulation {
   const MovementStepInfo& last_step() const { return last_step_; }
   const InstanceMetadata& metadata() const { return metadata_; }
   const std::vector<WorldMonster>& monsters() const { return monsters_; }
+  // loot.js: Proof of Temper guarantees the first elite gear drop while
+  // the slay-elite objective is current (session sets this per tick).
+  void set_guaranteed_elite_gear(bool value) { guaranteed_elite_gear_ = value; }
   void kill_all_monsters() { for (auto& monster : monsters_) { monster.alive = false; monster.life = 0; } active_target_.clear(); }
   const TileGrid& grid() const { return grid_; }
   bool in_instance() const { return scene_type_ == "instance"; }
@@ -933,6 +936,7 @@ class WorldSimulation {
   InstanceMetadata metadata_;
   std::vector<WorldMonster> monsters_;
   std::string active_target_;
+  bool guaranteed_elite_gear_ = false;
   std::uint64_t next_player_attack_ms_ = 0;
   std::uint64_t next_boss_telegraph_ms_ = 0;
   bool boss_warning_seen_ = false;
