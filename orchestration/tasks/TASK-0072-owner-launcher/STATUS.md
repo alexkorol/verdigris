@@ -1,6 +1,6 @@
 ---
 task: TASK-0072
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: cursor
 worker_branch: codex/TASK-0072-owner-launcher-cursor
 base_commit: 27d2be62038bba29abf68735288fd1d177b4c0aa
