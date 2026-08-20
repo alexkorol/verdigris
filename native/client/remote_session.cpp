@@ -1,5 +1,6 @@
 #include "remote_session.hpp"
 
+#include <algorithm>
 #include <cstring>
 
 #ifdef _WIN32
@@ -53,6 +54,68 @@ bool recv_all(socket_t socket, void* data, std::size_t size) {
 // development transport does not need nonce randomness (recorded coupling —
 // revisit if the transport ever leaves loopback).
 constexpr const char* kWebSocketKey = "dGhlIHNhbXBsZSBub25jZQ==";
+
+const std::string* json_string(const JsonValue* value) {
+  return value && value->string() ? value->string() : nullptr;
+}
+
+double json_number(const JsonValue* value, double fallback = 0.0) {
+  if (!value || !value->number()) return fallback;
+  return *value->number();
+}
+
+ClientItemSlot parse_item_slot(const JsonValue& entry) {
+  ClientItemSlot slot;
+  if (const auto* id = json_string(entry.get("id"))) slot.id = *id;
+  if (const auto* uuid = json_string(entry.get("uuid"))) slot.uuid = *uuid;
+  if (const auto* display = json_string(entry.get("displayName"))) slot.name = *display;
+  else if (const auto* plain = json_string(entry.get("name"))) slot.name = *plain;
+  if (const auto* index = entry.get("slot"); index && index->number()) {
+    slot.slot = static_cast<int>(*index->number());
+  }
+  if (const auto* health = entry.get("resourceBonuses")) {
+    slot.bonus_health = static_cast<int>(json_number(health->get("health")));
+  }
+  if (const auto* combat = entry.get("combatBonuses")) {
+    slot.critical_chance = static_cast<int>(json_number(combat->get("criticalChance")));
+  }
+  if (const auto* stats = entry.get("stats")) {
+    if (const auto* attack = stats->get("attack")) {
+      const int slash = static_cast<int>(json_number(attack->get("slash")));
+      const int stab = static_cast<int>(json_number(attack->get("stab")));
+      const int crush = static_cast<int>(json_number(attack->get("crush")));
+      const int range = static_cast<int>(json_number(attack->get("range")));
+      slot.critical_chance = (std::max)(slot.critical_chance,
+                                        (std::max)(slash, (std::max)(stab, (std::max)(crush, range))));
+      slot.attack_rating = (std::max)(slash, (std::max)(stab, (std::max)(crush, range)));
+    }
+  }
+  return slot;
+}
+
+void apply_player_fields(ClientPlayer& player, const JsonValue& source) {
+  if (const auto* uuid = json_string(source.get("uuid"))) player.uuid = *uuid;
+  if (const auto* scene = json_string(source.get("sceneId"))) player.scene_id = *scene;
+  if (source.get("x") && source.get("x")->number()) player.x = *source.get("x")->number();
+  if (source.get("y") && source.get("y")->number()) player.y = *source.get("y")->number();
+  if (const auto* facing = json_string(source.get("facing"))) player.facing = *facing;
+}
+
+void apply_scene_fields(ClientScene& scene, const JsonValue& source) {
+  if (const auto* id = json_string(source.get("id"))) scene.id = *id;
+  if (const auto* type = json_string(source.get("type"))) scene.type = *type;
+  if (const auto* name = json_string(source.get("name"))) scene.name = *name;
+  if (const auto* metadata = source.get("metadata")) {
+    if (const auto* stairs = metadata->get("stairsUp")) {
+      if (stairs->get("x") && stairs->get("x")->number() && stairs->get("y") &&
+          stairs->get("y")->number()) {
+        scene.stairs_up_x = *stairs->get("x")->number();
+        scene.stairs_up_y = *stairs->get("y")->number();
+        scene.has_stairs_up = true;
+      }
+    }
+  }
+}
 
 }  // namespace
 
@@ -168,37 +231,55 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       else if (command.dy > 0) direction = "down";
       else if (command.dx < 0) direction = "left";
       else if (command.dx > 0) direction = "right";
+      last_facing_ = direction;
+      model_.player.facing = direction;
       envelope.event = "player:move";
       envelope.data = JsonValue::Object{{"direction", JsonValue(direction)}};
       break;
     }
-    case ClientCommand::Type::Aim:
-      return;  // aim intent is presentation-local until 0061 maps it
+    case ClientCommand::Type::Aim: {
+      // Aim is presentation-local on this protocol: no envelope, facing
+      // updates the model so the next skill trigger carries direction.
+      if (command.dy < 0) last_facing_ = "up";
+      else if (command.dy > 0) last_facing_ = "down";
+      else if (command.dx < 0) last_facing_ = "left";
+      else if (command.dx > 0) last_facing_ = "right";
+      model_.player.facing = last_facing_;
+      return;
+    }
     case ClientCommand::Type::UseAction: {
-      const char* direction = "down";
       envelope.event = "player:skill:trigger";
       envelope.data = JsonValue::Object{{"skill", JsonValue(command.target)},
-                                        {"direction", JsonValue(direction)}};
+                                        {"direction", JsonValue(last_facing_)}};
       break;
     }
     case ClientCommand::Type::PickUp:
       envelope.event = "player:take:underfoot";
       break;
     case ClientCommand::Type::Equip:
+      pending_equip_uuid_ = command.target;
       envelope.event = "item:equip";
-      envelope.data = JsonValue::Object{{"uuid", JsonValue(command.target)}};
+      envelope.data = JsonValue::Object{
+          {"item", JsonValue::Object{{"uuid", JsonValue(command.target)}}}};
       break;
     case ClientCommand::Type::EnterZone:
       envelope.event = "world:zone:enter";
       envelope.data = JsonValue::Object{{"nodeId", JsonValue(command.target)}};
       break;
     case ClientCommand::Type::Extract:
-      return;  // extraction envelope lands with 0061 (server surface pending)
+      // No player:extract handler exists on the native server. The owner
+      // extracts by walking onto stairs-up (existing player:move surface).
+      pending_events_.push_back({PresentationEventType::Message, "", "",
+                                 "Reach the exit stairs to return to the surface.", 0});
+      return;
   }
   if (!envelope.event.empty()) send_envelope(envelope);
 }
 
 void RemoteProtocolSession::poll() {
+  if (peer_dropped_.exchange(false)) {
+    fail(ConnectionState::Disconnected, "server closed the connection");
+  }
   std::deque<std::string> batch;
   {
     std::lock_guard lock(inbox_mutex_);
@@ -292,8 +373,9 @@ void RemoteProtocolSession::reader_loop() {
     }
   }
   if (running_.load()) {
-    // The peer dropped us; surface it (never fall back to local play).
-    state_.store(ConnectionState::Disconnected);
+    // The peer dropped us; surface it on the next poll (never fall back
+    // to local play — fail() emits ConnectionLost on the session thread).
+    peer_dropped_.store(true);
     running_.store(false);
   }
 }
@@ -301,40 +383,21 @@ void RemoteProtocolSession::reader_loop() {
 void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   if (envelope.event == "player:login") {
     if (const auto* player = envelope.data.get("player")) {
-      if (const auto* uuid = player->get("uuid"); uuid && uuid->string()) {
-        model_.player.uuid = *uuid->string();
-      }
-      if (const auto* scene = player->get("sceneId"); scene && scene->string()) {
-        model_.player.scene_id = *scene->string();
-      }
-      if (const auto* x = player->get("x"); x && x->number()) model_.player.x = *x->number();
-      if (const auto* y = player->get("y"); y && y->number()) model_.player.y = *y->number();
-      if (const auto* facing = player->get("facing"); facing && facing->string()) {
-        model_.player.facing = *facing->string();
-      }
+      apply_player_fields(model_.player, *player);
+      last_facing_ = model_.player.facing.empty() ? last_facing_ : model_.player.facing;
       model_.inventory.clear();
       if (const auto* inventory = player->get("inventory")) {
         if (const auto* slots = inventory->get("slots"); slots && slots->array()) {
           for (const auto& entry : *slots->array()) {
-            ClientItemSlot slot;
-            if (const auto* id = entry.get("id"); id && id->string()) slot.id = *id->string();
-            if (const auto* uuid = entry.get("uuid"); uuid && uuid->string()) slot.uuid = *uuid->string();
-            if (const auto* name = entry.get("name"); name && name->string()) slot.name = *name->string();
-            if (const auto* index = entry.get("slot"); index && index->number()) {
-              slot.slot = static_cast<int>(*index->number());
-            }
-            model_.inventory.push_back(std::move(slot));
+            model_.inventory.push_back(parse_item_slot(entry));
           }
         }
       }
     }
-    if (const auto* scene = envelope.data.get("scene")) {
-      if (const auto* id = scene->get("id"); id && id->string()) model_.scene.id = *id->string();
-      if (const auto* type = scene->get("type"); type && type->string()) model_.scene.type = *type->string();
-      if (const auto* name = scene->get("name"); name && name->string()) model_.scene.name = *name->string();
-    }
+    if (const auto* scene = envelope.data.get("scene")) apply_scene_fields(model_.scene, *scene);
     state_.store(ConnectionState::Ready);
-    pending_events_.push_back({PresentationEventType::SessionReady, model_.player.uuid, "", "", 0});
+    pending_events_.push_back(
+        {PresentationEventType::SessionReady, model_.player.uuid, "", "", 0});
     return;
   }
   if (envelope.event == "player:session-replaced") {
@@ -342,14 +405,142 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     return;
   }
   if (envelope.event == "game:send:message") {
-    if (const auto* text = envelope.data.get("text"); text && text->string()) {
-      model_.last_message = *text->string();
+    if (const auto* text = json_string(envelope.data.get("text"))) {
+      model_.last_message = *text;
       pending_events_.push_back({PresentationEventType::Message, "", "", model_.last_message, 0});
+      if (model_.last_message.find("returns to the surface") != std::string::npos) {
+        model_.extracted = true;
+        pending_events_.push_back(
+            {PresentationEventType::ExtractionCompleted, model_.player.uuid, "",
+             model_.last_message, 0});
+      }
     }
     return;
   }
-  // Remaining protocol surfaces (movement echo, combat, inventory refresh)
-  // gain typed handling in 0061; unknown envelopes are not errors.
+  if (envelope.event == "player:movement") {
+    apply_player_fields(model_.player, envelope.data);
+    if (!model_.player.facing.empty()) last_facing_ = model_.player.facing;
+    return;
+  }
+  if (envelope.event == "world:scene:transition" ||
+      envelope.event == "party:scene:transition") {
+    if (const auto* scene = envelope.data.get("scene")) apply_scene_fields(model_.scene, *scene);
+    if (const auto* player_state = envelope.data.get("playerState")) {
+      apply_player_fields(model_.player, *player_state);
+    }
+    if (!model_.scene.id.empty()) model_.player.scene_id = model_.scene.id;
+    return;
+  }
+  if (envelope.event == "monster:telegraph") {
+    const auto* attacker = json_string(envelope.data.get("attackerId"));
+    const auto* name = json_string(envelope.data.get("attackerName"));
+    const auto* skill = json_string(envelope.data.get("skillId"));
+    pending_events_.push_back({PresentationEventType::Telegraph,
+                               attacker ? *attacker : "", "",
+                               std::string(name ? *name : "") + " " +
+                                   std::string(skill ? *skill : "telegraph"),
+                               static_cast<int>(json_number(envelope.data.get("durationMs")))});
+    return;
+  }
+  if (envelope.event == "combat:hit") {
+    const auto* attacker = json_string(envelope.data.get("attackerId"));
+    const auto* target = json_string(envelope.data.get("targetId"));
+    const auto* target_type = json_string(envelope.data.get("targetType"));
+    const int amount = static_cast<int>(json_number(envelope.data.get("amount")));
+    const bool died = envelope.data.get("died") && envelope.data.get("died")->boolean() &&
+                      *envelope.data.get("died")->boolean();
+    const bool hits_player =
+        (target && *target == model_.player.uuid) ||
+        (target_type && *target_type == "player");
+    if (const auto* health = envelope.data.get("health")) {
+      if (hits_player) {
+        model_.player.life = static_cast<int>(json_number(health->get("current"), model_.player.life));
+        model_.player.life_max =
+            static_cast<int>(json_number(health->get("max"), model_.player.life_max));
+        if (died) model_.player.alive = false;
+      }
+    }
+    if (hits_player) {
+      model_.last_incoming_hit = amount;
+      pending_events_.push_back({PresentationEventType::DamageApplied,
+                                 attacker ? *attacker : "", "", "incoming", amount});
+      if (died) {
+        pending_events_.push_back(
+            {PresentationEventType::ScionDied, model_.player.uuid, "", "", 0});
+      }
+    } else {
+      model_.last_outgoing_hit = amount;
+      pending_events_.push_back({PresentationEventType::AttackStarted,
+                                 attacker ? *attacker : model_.player.uuid, "",
+                                 last_facing_, amount});
+      pending_events_.push_back({PresentationEventType::DamageApplied,
+                                 target ? *target : "", "", "outgoing", amount});
+      if (died) {
+        ++model_.kills;
+        pending_events_.push_back({PresentationEventType::ActorDied,
+                                   target ? *target : "", "",
+                                   json_string(envelope.data.get("targetName"))
+                                       ? *json_string(envelope.data.get("targetName"))
+                                       : "",
+                                   amount});
+        // The native server drops loot in-world but does not emit a ground
+        // envelope. Sparkle at the last known player tile so the kill is a
+        // visible reward beat until pickup names the item.
+        pending_events_.push_back({PresentationEventType::ItemDropped,
+                                   target ? *target : "", "", "kill reward", 0});
+      }
+    }
+    return;
+  }
+  if (envelope.event == "core:refresh:inventory") {
+    const auto* slots = envelope.data.get("data");
+    std::vector<std::string> before;
+    before.reserve(model_.inventory.size());
+    ClientItemSlot equipped_snapshot;
+    for (const auto& item : model_.inventory) {
+      before.push_back(item.uuid);
+      if (!pending_equip_uuid_.empty() && item.uuid == pending_equip_uuid_) {
+        equipped_snapshot = item;
+      }
+    }
+    model_.inventory.clear();
+    if (slots && slots->array()) {
+      for (const auto& entry : *slots->array()) {
+        model_.inventory.push_back(parse_item_slot(entry));
+      }
+    }
+    for (const auto& item : model_.inventory) {
+      bool known = false;
+      for (const auto& uuid : before) {
+        if (uuid == item.uuid) {
+          known = true;
+          break;
+        }
+      }
+      if (!known && !item.uuid.empty()) {
+        pending_events_.push_back({PresentationEventType::ItemPickedUp, model_.player.uuid,
+                                   item.uuid, item.name, 0});
+      }
+    }
+    if (!pending_equip_uuid_.empty()) {
+      bool still_carried = false;
+      for (const auto& item : model_.inventory) {
+        if (item.uuid == pending_equip_uuid_) {
+          still_carried = true;
+          break;
+        }
+      }
+      if (!still_carried) {
+        if (!equipped_snapshot.uuid.empty()) model_.equipped = equipped_snapshot;
+        else model_.equipped.uuid = pending_equip_uuid_;
+        pending_events_.push_back({PresentationEventType::ItemEquipped, model_.player.uuid,
+                                   model_.equipped.uuid, model_.equipped.name,
+                                   model_.equipped.attack_rating});
+        pending_equip_uuid_.clear();
+      }
+    }
+    return;
+  }
 }
 
 void RemoteProtocolSession::fail(ConnectionState state, const std::string& error) {

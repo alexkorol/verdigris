@@ -39,14 +39,19 @@ add_library(verdigris_client_session
 )
 target_include_directories(verdigris_client_session PUBLIC client)
 target_link_libraries(verdigris_client_session PUBLIC verdigris_networking)
+if (WIN32)
+  target_link_libraries(verdigris_client_session PUBLIC ws2_32)
+endif()
 
 add_executable(verdigris_session_tests tests/session_tests.cpp)
 target_link_libraries(verdigris_session_tests PRIVATE verdigris_client_session)
 
-add_executable(verdigris_client client/main.cpp)
-target_link_libraries(verdigris_client PRIVATE verdigris_core)
+add_executable(verdigris_client client/main.cpp client/remote_play.cpp)
+target_include_directories(verdigris_client PRIVATE client)
+target_link_libraries(verdigris_client PRIVATE verdigris_core verdigris_client_session)
 if (WIN32)
   target_compile_definitions(verdigris_client PRIVATE VERDIGRIS_NATIVE_WINDOWS=1)
+  target_link_libraries(verdigris_client PRIVATE user32 gdi32)
 endif()
 
 enable_testing()
