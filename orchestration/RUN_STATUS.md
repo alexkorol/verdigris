@@ -118,7 +118,9 @@ client slice starts the minute N5 lands. (5) luna-mac: 0071 DONE (calibrated) ->
 
 ## Fleet + budget
 
-- cursor: STOPPED by owner 07:45 (12 accepted overnight). Ports 6580–6599 reserved.
+- cursor: NOW composer-2.5 (Grok 4.6 spent 22% of monthly Cursor quota
+  for 12 accepted tasks overnight — strong per-$ but unsustainable).
+  Fresh calibration row; routed 0075 terrain. Ports 6580–6599.
 - qwen3.8 (MacBook, FREE): scorecard now VERIFIED 7/7 battery, ~16
   tok/s, no reasoning leakage. Standing duty added to deepseek +
   luna-mac briefs: dispatch machine-verifiable MECHANICAL sub-steps to
