@@ -239,3 +239,17 @@ backlog (convergence gates, parity waves, N7 better-than, infra debt).
 Spec-ahead is architect work of first rank - equal priority with
 reviews. Enforcement: sweep checklist step; RUN_STATUS lists the READY
 count; a sweep that leaves READY < 3 must say why.
+
+## D-124 - Aggressive daytime run (owner-ruled, 2026-08-20 ~08:20)
+
+Owner (leaving for work): no more completing a tiny goal and pausing
+for hours; be ambitious and aggressive in scope. Day target: TRUE
+three-axis parity, plus side-by-side screenshots of the native client
+vs the browser version showing near-identical presentation. Operating
+changes: (1) architect works OWN tracked tasks continuously between
+reviews - idle sweeps are a defect; (2) takeover threshold - a
+critical-path lane that produces no commit for ~2 sweeps gets its task
+taken over by the architect as a tracked implementation task; (3)
+sweep cadence tightens to ~30 min while the owner is away; (4) token
+rationing is subordinate to this directive for today (owner accepted
+the spend by issuing it).
