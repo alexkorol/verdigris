@@ -30,8 +30,14 @@ try {
   $camObj = Join-Path $logDir "camera2d_tests.obj"
   $camExe = Join-Path $logDir "camera2d_tests.exe"
   Invoke-Logged "camera2d compile" {
-    cl /nologo /std:c++20 /EHsc /W4 /I"$nativeRoot\include" `
-      "$nativeRoot\tests\camera2d_tests.cpp" /Fo"$camObj" /Fe"$camExe"
+    $clArgs = @(
+      '/nologo', '/std:c++20', '/EHsc', '/W4',
+      "/I$nativeRoot\include",
+      "$nativeRoot\tests\camera2d_tests.cpp",
+      "/Fo$camObj",
+      "/Fe$camExe"
+    )
+    & cl.exe @clArgs
   }
   Invoke-Logged "camera2d tests" { & $camExe }
 
