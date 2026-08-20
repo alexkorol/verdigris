@@ -52,3 +52,12 @@ The architect sweeps across coordinator branches and rewrites RUN_STATUS.md
 as the aggregated truth; actual integration happens via PR
 (`PRs #27-#33` tonight) that the architect/owner merges, not coordinator
 pushes. Don't try to push straight to the integration branch again.
+
+## Board-empty, ~03:40
+
+Tip unchanged since 0066 push (5c41a048). No READY browser-lane task left
+unclaimed (0063/0064/0065 are all native-lane). No REVIEW_REQUESTED
+browser-lane work from another coordinator pending peer review (0059/
+0061/0062 already ACCEPTED; 0064 is native, architect-only review).
+Backing off per STANDING-LOOP: real sleep, 900s doubling to 3600s, waking
+on any integration-tip movement or new task branch rather than polling.
