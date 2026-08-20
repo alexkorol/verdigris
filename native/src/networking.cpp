@@ -511,7 +511,7 @@ std::string emit_envelope(const Envelope& envelope) {
 ProtocolSession::ProtocolSession(std::string identity, std::string socket_id, std::uint64_t seed, bool quick_start)
     : identity_(std::move(identity)), socket_id_(std::move(socket_id)), quick_start_(quick_start),
       session_rng_(static_cast<std::uint32_t>(seed ^ (seed >> 32))),
-      simulation_(std::make_unique<Simulation>(seed, "House Verdigris")), world_(std::make_unique<WorldSimulation>(seed, identity_)) {
+      simulation_(std::make_unique<Simulation>(seed, "House Verdigris")), world_(std::make_shared<WorldSimulation>(seed, identity_)) {
   // Fresh-scion admission (server/core treasuries/fresh profile): the purse
   // is the only starting inventory; the legacy starter blade is retired
   // vocabulary and intentionally absent (see the N4 report).
@@ -536,23 +536,45 @@ void ProtocolSession::tick(std::int64_t now) {
 }
 
 void ProtocolSession::reset_world_for_new_socket() {
-  // Fresh-Player semantics for the anonymous guest account: quest progress
-  // belongs to the PLAYER (resets per socket on JS), while the passive tree,
-  // inventory, level and chronicle belong to the ACCOUNT (persist).
-  if (identity_.rfind("default-guest", 0) == 0) {
-    first_goal_stage_ = "available";
-    first_goal_started_ms_ = 0;
-    first_goal_completed_ms_ = 0;
-    active_quest_ = 0;
-    quest_objective_ = 0;
-    quests_completed_.clear();
-    quest_points_ = 0;
-  }
   // JS parity: a NEW socket gets a fresh Player position (town) while the
-  // account state (stats, inventory, chronicle) persists. Same-socket
-  // re-logins never pass through here, so hot dev re-logins keep the
-  // instance (networking_tests: instance re-login snapshot).
+  // account state (stats, inventory, quests, chronicle) persists - guests
+  // "survive relogins" via the saved snapshot on JS. The commission chain
+  // resets only on scion admission (player:chronicles:select), never here.
+  // Same-socket re-logins never pass through here, so hot dev re-logins
+  // keep the instance (networking_tests: instance re-login snapshot).
+  //
+  // JS builds a brand-new Player object per login and merges ONLY the saved
+  // snapshot fields (loot, levels, bank, skill tree, quest record) over the
+  // template. Everything transient must therefore reset here, or state from
+  // one closed session bleeds into the account's next login (a dead
+  // lifecycle blocked respawn.mjs; a leftover Chronicle draft broke
+  // mortality.mjs's seeded revision).
   std::lock_guard<std::recursive_mutex> lock(mutex_);
+  tree_quest_points_ = 0;  // JS: a rebuilt Player starts with questPoints 0
+  if (lifecycle_ != "permadead") {
+    // A soft death clears on re-login (fresh Player), but a mortal Scion's
+    // final death is Chronicle history - reconnecting must NOT resurrect
+    // them; only selecting an heir through chronicles admission does.
+    lifecycle_ = "alive";
+    lifecycle_mode_ = "soft";
+    mortal_oath_ = false;
+    lifecycle_deaths_ = 0;
+  }
+  respawn_at_ms_ = 0;
+  respawn_protection_until_ms_ = 0;
+  prepare_final_death_ = false;
+  first_goal_stage_ = "available";
+  first_goal_started_ms_ = 0;
+  first_goal_completed_ms_ = 0;
+  shop_open_ = false;
+  bank_open_ = false;
+  active_skill_id_ = "primary-attack";
+  pending_chronicles_ = false;
+  current_node_id_.clear();
+  current_child_id_.clear();
+  if (auto* actor = simulation_->actor(simulation_->scion().actor_id)) {
+    actor->stats.life = actor->stats.life_max;  // fresh Player logs in healthy
+  }
   world_->reset_to_town();
 }
 void ProtocolSession::set_broadcast(std::function<void(const Envelope&)> broadcast) { std::lock_guard<std::recursive_mutex> lock(mutex_); broadcast_=std::move(broadcast); }
@@ -790,22 +812,19 @@ JsonValue ProtocolSession::snapshot() const {
   JsonValue::Object chronicles; put(chronicles,"mortal",mortal_oath_); put(chronicles,"scionId",active_scion_id_.empty()?JsonValue(nullptr):JsonValue(active_scion_id_)); put(chronicles,"houseId",active_house_id_.empty()?JsonValue(nullptr):JsonValue(active_house_id_)); put(state,"chronicles",std::move(chronicles));
   put(state,"bestDepth",best_depth_);
   put(state,"quests",quests_json());
-  put(state,"questPoints",quest_points_);
+  put(state,"questPoints",tree_quest_points_);
   put(state,"bank",bank_items_json());
   put(state,"passiveTree",passive_tree_json());
   { // stats-manager attributes: base 10s plus the tree path. STUB NOTE:
     // per-node attribute identity from the 271-node graph is approximated
     // as +2/attr per allocated node beyond the root until the geometric
     // tree engine is ported (successor task).
-    int allocated = 0;
-    if (passive_tree_saved_) {
-      if (const auto* nodes = passive_tree_.get("nodes"); nodes && nodes->array())
-        allocated = (std::max)(0, static_cast<int>(nodes->array()->size()) - 1);
-    }
+    int str_attr = 10, dex_attr = 10, int_attr = 10;
+    tree_attributes(&str_attr, &dex_attr, &int_attr);
     JsonValue::Object attributes;
-    put(attributes, "strength", 10 + allocated * 2);
-    put(attributes, "dexterity", 10 + allocated * 2);
-    put(attributes, "intelligence", 10 + allocated * 2);
+    put(attributes, "strength", str_attr);
+    put(attributes, "dexterity", dex_attr);
+    put(attributes, "intelligence", int_attr);
     put(state, "attributes", std::move(attributes));
   }
   JsonValue::Array npcs;
@@ -1070,13 +1089,41 @@ JsonValue ProtocolSession::quests_json() const {
   return JsonValue(std::move(quests));
 }
 
+void ProtocolSession::tree_attributes(int* strength, int* dexterity, int* intelligence) const {
+  // verdigris-geometric-tree.js: the tree is GEOMETRIC - node "q,r" ids sit
+  // on hex axes (STR {q:-1,r:1}, DEX {q:0,r:-1}, INT {q:1,r:0}). Each
+  // allocated node feeds the attribute whose axis it best aligns with.
+  int str_total = 10, dex_total = 10, int_total = 10;
+  if (passive_tree_saved_) {
+    if (const auto* nodes = passive_tree_.get("nodes"); nodes && nodes->array()) {
+      for (const auto& entry : *nodes->array()) {
+        if (!entry.string()) continue;
+        const std::string& id = *entry.string();
+        const auto comma = id.find(',');
+        if (comma == std::string::npos) continue;
+        int q = 0, r = 0;
+        try { q = std::stoi(id.substr(0, comma)); r = std::stoi(id.substr(comma + 1)); } catch (...) { continue; }
+        if (q == 0 && r == 0) continue;  // root grants nothing
+        const int str_score = -q + r;
+        const int dex_score = -r;
+        const int int_score = q;
+        if (str_score >= dex_score && str_score >= int_score) str_total += 2;
+        else if (dex_score >= int_score) dex_total += 2;
+        else int_total += 2;
+      }
+    }
+  }
+  if (strength) *strength = str_total;
+  if (dexterity) *dexterity = dex_total;
+  if (intelligence) *intelligence = int_total;
+}
 JsonValue ProtocolSession::passive_tree_json() const {
   // verdigris-authority.js: server owns the budget. earned =
   // min(140, min(max(2, level), 117) + min(questPoints, 23)).
   const auto* actor = simulation_->actor(simulation_->scion().actor_id);
   const int level = actor ? actor->stats.level : 1;
   const int earned = (std::min)(140, (std::min)((std::max)(2, level), 117) +
-                                     (std::min)((std::max)(0, quest_points_), 23));
+                                     (std::min)((std::max)(0, tree_quest_points_), 23));
   JsonValue::Array nodes;
   JsonValue::Array conduits;
   std::string selected = "0,0";
@@ -1085,10 +1132,12 @@ JsonValue ProtocolSession::passive_tree_json() const {
   if (passive_tree_saved_) {
     if (const auto* saved_nodes = passive_tree_.get("nodes"); saved_nodes && saved_nodes->array()) {
       nodes = *saved_nodes->array();
-      spent = static_cast<int>(nodes.size());
+      spent = (std::max)(0, static_cast<int>(nodes.size()) - 1);  // root is free
     }
-    if (const auto* saved_conduits = passive_tree_.get("conduits"); saved_conduits && saved_conduits->array())
+    if (const auto* saved_conduits = passive_tree_.get("conduits"); saved_conduits && saved_conduits->array()) {
       conduits = *saved_conduits->array();
+      spent += static_cast<int>(conduits.size());  // each conduit choice costs a point
+    }
     if (const auto* sel = passive_tree_.get("selectedNodeId"); sel && sel->string()) selected = *sel->string();
     if (const auto* order = passive_tree_.get("classOrder"); order && order->array()) class_order = *order->array();
   } else {
@@ -1322,6 +1371,7 @@ void ProtocolSession::quest_trigger(const char* trigger, const std::function<voi
   if (quest_objective_ >= quest.objective_count) {
     quests_completed_.push_back(quest.id);
     quest_points_ = (std::min)(quest_points_ + 1, 23);
+    tree_quest_points_ = (std::min)(tree_quest_points_ + 1, 23);
     house_renown_ += quest.renown;
     // chronicle: renown on the house, deed on the active scion.
     if (auto* root = chronicle_.object()) {
@@ -1437,8 +1487,26 @@ void ProtocolSession::enter_shared_instance(const std::string& scene_id, const s
   emit_ground_change(emit);
 }
 
+void ProtocolSession::adopt_world(std::shared_ptr<WorldSimulation> world, const std::string& scene_id, const std::function<void(const Envelope&)>& emit) {
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  world_ = std::move(world);
+  (void)scene_id;
+  emit_transition(emit, "party:scene:transition");
+  emit_ground_change(emit);
+}
+
 void ProtocolSession::leave_to_town(const std::function<void(const Envelope&)>& emit) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
+  if (world_.use_count() > 1) {
+    // leaving a SHARED party world: fall back to a personal town world so
+    // the remaining members keep their live instance untouched.
+    std::uint64_t seed = 1469598103934665603ULL;
+    for (unsigned char c : identity_) seed = (seed ^ c) * 1099511628211ULL;
+    world_ = std::make_shared<WorldSimulation>(seed, identity_);
+    emit_movement(emit);
+    emit_transition(emit, "party:scene:transition");
+    return;
+  }
   if (world_->in_instance()) {
     world_->return_to_surface();
     emit_movement(emit);
@@ -1471,7 +1539,7 @@ void ProtocolSession::emit_quest_update(const std::function<void(const Envelope&
   JsonValue::Object data;
   put(data, "player", JsonValue::Object{{"socket_id", socket_id_}});
   put(data, "quests", quests_json());
-  put(data, "questPoints", quest_points_);
+  put(data, "questPoints", tree_quest_points_);
   put(data, "passiveTree", passive_tree_json());
   emit(Envelope{"quest:update", JsonValue(std::move(data))});
 }
@@ -1526,7 +1594,7 @@ void ProtocolSession::maybe_complete_first_goal(const std::function<void(const E
   if (first_goal_stage_ != "return-to-town") return;
   first_goal_stage_ = "complete";
   first_goal_completed_ms_ = now_ms();
-  quest_points_ = (std::min)(quest_points_ + 1, 12);
+  tree_quest_points_ = (std::min)(tree_quest_points_ + 1, 12);
   emit_message(emit, "You kept your word. Take this Verdigris point; it opens another path in your skill tree.");
   emit_quest_update(emit);
 }
@@ -1928,7 +1996,7 @@ void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std
   // N4: kill rewards go through world_->drop_monster_loot inside
   // advance_combat; the legacy synthetic 'drop' trophy event is retired.
   JsonValue::Object data; put(data,"attackerId",event.attacker_id); put(data,"attackerName",event.attacker_name); put(data,"targetId",event.target_id);
-  put(data,"targetName",event.target_name); put(data,"targetType",event.target_id==identity_?"player":"monster"); put(data,"skillId",event.skill_id);
+  put(data,"targetName",event.target_name); put(data,"targetType",event.target_id==identity_?"player":"monster"); put(data,"skillId",event.target_id==identity_?event.skill_id:active_skill_id_);
   put(data,"amount",event.amount); put(data,"died",event.died); put(data,"health",JsonValue::Object{{"current",event.health},{"max",event.health_max}});
   // combat/index.js hit parity fields.
   put(data,"baseAmount",event.base_amount); put(data,"beastbaneAmount",event.beastbane_amount);
@@ -1943,11 +2011,16 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
   const auto combat_totals = wear_.totals();
   const int wear_attack = (std::max)(0, (std::max)((std::max)(combat_totals.attack.stab, combat_totals.attack.slash),
                                                    (std::max)(combat_totals.attack.crush, combat_totals.attack.range)));
-  // combat/index.js rollPlayerDamage: 2 + STR*0.45 + weaponPower*1.5 - the
-  // weapon is the core ARPG upgrade lever, not the character level.
-  const int player_power = (std::max)(1, static_cast<int>(std::lround(
-      2.0 + actor->stats.strength * 0.45 + wear_attack * 1.5)));
-  const auto events = world_->advance_combat(actor->stats.level, player_power, actor->stats.life, actor->stats.life_max, now);
+  // combat/index.js rollPlayerDamage: melee = 2 + STR*0.45 + weapon*1.5;
+  // mana skills = 4 + INT*0.5 (no weapon term). Tree attributes feed both.
+  int str_attr = 10, dex_attr = 10, int_attr = 10;
+  tree_attributes(&str_attr, &dex_attr, &int_attr);
+  const bool mana_skill = active_skill_id_.rfind("ability", 0) == 0;
+  const int player_power = (std::max)(1, static_cast<int>(std::lround(mana_skill
+      ? 4.0 + int_attr * 0.5
+      : 2.0 + str_attr * 0.45 + wear_attack * 1.5)));
+  const bool engaged_here = world_->engaged_by().empty() || world_->engaged_by() == identity_;
+  const auto events = world_->advance_combat(actor->stats.level, engaged_here ? player_power : 0, actor->stats.life, actor->stats.life_max, now);
   // N5 respawn ward: monsters cannot damage a freshly-respawned scion until
   // the scion acts. Absorb monster damage here (the player still lands hits);
   // the skill handler ends the ward.
@@ -2021,7 +2094,9 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
           if (found) {
             static std::atomic<std::uint64_t> kill_relic_serial{1};
             const std::string relic_id = "relic-" + std::to_string(kill_relic_serial++);
-            relic.item.bound_to.clear();
+            // Own-account recovery keeps the House binding (mortality flow);
+            // only a relic circulated to a stranger surfaces unbound.
+            if (relic.item.bound_to != identity_) relic.item.bound_to.clear();
             world_->add_relic_ground_item(std::move(relic.item), monster.x, monster.y, relic_id,
                                           relic.scion_id, relic.scion_name);
             emit_message(emit, "A relic of the fallen has surfaced.");
@@ -2347,7 +2422,9 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
       const auto position = world_->position();
       static std::atomic<std::uint64_t> relic_serial{1};
       const std::string relic_id = "relic-" + std::to_string(relic_serial++);
-      relic.item.bound_to.clear();  // circulated relics surface unbound
+      // Own-account releases keep the binding; cross-account circulation
+      // surfaces unbound so any finder can claim it.
+      if (relic.item.bound_to != identity_) relic.item.bound_to.clear();
       world_->add_relic_ground_item(std::move(relic.item), position.x, position.y, relic_id,
                                     relic.scion_id, relic.scion_name);
       emit_message(emit, "A relic of the fallen has surfaced.");
@@ -2355,7 +2432,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     }
     return;
   }
-  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ if (respawn_protection_until_ms_ > 0) respawn_protection_until_ms_ = 0; const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); const auto wear_totals=wear_.totals(); const int wear_bonus=(std::max)((std::max)(wear_totals.attack.stab,wear_totals.attack.slash),(std::max)(wear_totals.attack.crush,wear_totals.attack.range)); world_->start_player_attack(actor->stats.level,actor->stats.attack+(std::max)(0,wear_bonus),now_ms(),direction); process_combat(now_ms(),emit); /* real-clock cadence: polls advance combat */ } return; }
+  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ if (respawn_protection_until_ms_ > 0) respawn_protection_until_ms_ = 0; active_skill_id_=as_string(payload?payload->get("skillId"):nullptr,"primary-attack"); world_->set_engaged_by(identity_); const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); const auto wear_totals=wear_.totals(); const int wear_bonus=(std::max)((std::max)(wear_totals.attack.stab,wear_totals.attack.slash),(std::max)(wear_totals.attack.crush,wear_totals.attack.range)); world_->start_player_attack(actor->stats.level,actor->stats.attack+(std::max)(0,wear_bonus),now_ms(),direction); process_combat(now_ms(),emit); /* real-clock cadence: polls advance combat */ } return; }
   if (envelope.event=="dev:give") { if (payload) handle_give(*payload,emit); return; }
   if (envelope.event=="dev:drop") { if (payload) handle_drop(*payload,emit); return; }
   if (envelope.event=="dev:forcecritical") { world_->player_combat_mods().force_critical=true; emit_message(emit,"Your next strike will be a critical hit."); return; }
@@ -2560,6 +2637,11 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     lifecycle_mode_=mortal_oath_?"hard":"soft";
     lifecycle_="alive"; lifecycle_deaths_=0; respawn_at_ms_=0; respawn_protection_until_ms_=0; prepare_final_death_=false;
     pending_chronicles_=false;
+    // Scion admission starts the commission chain fresh (JS: quests begin
+    // "authoritatively on world admission"); a plain re-login keeps the
+    // chain, so points survive relogging on the same account.
+    first_goal_stage_="available"; first_goal_started_ms_=0; first_goal_completed_ms_=0;
+    active_quest_=0; quest_objective_=0; quests_completed_.clear(); quest_points_=0; tree_quest_points_=0;
     // A new scion starts with the fresh-scion profile (purse only), never a
     // duplicate of the previous scion's equipment.
     wear_.clear(); inventory_.clear();
@@ -2743,12 +2825,21 @@ bool WebSocketServer::handle_party_event(const std::shared_ptr<Connection>& conn
         snapshot = *party; found = true; } }
     if (!found) return true;
     const std::string scene_id = "instance-" + snapshot.id;
+    std::shared_ptr<ProtocolSession> leader_session;
+    { std::lock_guard lock(mutex_); auto it = sessions_.find(snapshot.leader_uuid); if (it != sessions_.end()) leader_session = it->second; }
+    std::shared_ptr<WorldSimulation> shared_world;
+    if (leader_session) {
+      auto leader_id = snapshot.leader_uuid;
+      leader_session->enter_shared_instance(scene_id, [this, leader_id](const Envelope& out) { send_to_identity(leader_id, out); });
+      shared_world = leader_session->shared_world();
+    }
     for (const auto& member : snapshot.member_uuids) {
+      if (member == snapshot.leader_uuid) continue;
       std::shared_ptr<ProtocolSession> member_session;
       { std::lock_guard lock(mutex_); auto it = sessions_.find(member); if (it != sessions_.end()) member_session = it->second; }
-      if (member_session) {
+      if (member_session && shared_world) {
         auto member_id = member;
-        member_session->enter_shared_instance(scene_id, [this, member_id](const Envelope& out) { send_to_identity(member_id, out); });
+        member_session->adopt_world(shared_world, scene_id, [this, member_id](const Envelope& out) { send_to_identity(member_id, out); });
       }
     }
     send_party_update(snapshot);
@@ -2784,22 +2875,10 @@ bool WebSocketServer::handle_party_event(const std::shared_ptr<Connection>& conn
   return false;
 }
 void WebSocketServer::handle_message(const std::shared_ptr<Connection>& connection,const std::string& text){ Envelope envelope; std::string error;if(!parse_envelope(text,envelope,&error))return; if(envelope.event=="player:login"){const auto* guest=envelope.data.get("guestId");std::string identity=(guest&&guest->string())?*guest->string():"default-guest";
-if(!(guest&&guest->string())){
-  // party.js: two concurrent anonymous sockets are two distinct players.
-  // Reuse "default-guest" only when no LIVE connection holds it; otherwise
-  // mint a serial guest identity for the newcomer.
-  std::lock_guard lock(mutex_);
-  auto existing=sessions_.find(identity);
-  if(existing!=sessions_.end()){
-    for(const auto& candidate:connections_){
-      if(candidate->session==existing->second&&candidate!=connection&&!candidate->closed){
-        static std::atomic<std::uint64_t> guest_serial{2};
-        identity="default-guest-"+std::to_string(guest_serial++);
-        break;
-      }
-    }
-  }
-}const bool quick=as_bool(envelope.data.get("quickGuest"));const auto* playtest_guest=envelope.data.get("playtestGuestId");if(playtest_guest&&playtest_guest->string())identity=*playtest_guest->string();const auto* playtest_name=envelope.data.get("playtestGuestName");std::shared_ptr<ProtocolSession> session;std::shared_ptr<Connection> old;{std::lock_guard lock(mutex_);auto it=sessions_.find(identity);if(it!=sessions_.end()){for(const auto& candidate:connections_)if(candidate->session==it->second&&candidate!=connection&&!candidate->closed){old=candidate;break;}session=it->second;}if(!session){std::uint64_t seed=1469598103934665603ULL;for(unsigned char c:identity)seed=(seed^c)*1099511628211ULL;session=std::make_shared<ProtocolSession>(identity,connection->id,seed,quick);sessions_[identity]=session;}else { const bool adopted = connection->session != session; session->replace_socket(connection->id); if (adopted) session->reset_world_for_new_socket(); } connection->session=session;}session->set_broadcast([this](const Envelope& event){broadcast(event);});if(playtest_name&&playtest_name->string())session->set_username(*playtest_name->string());session->set_direct_emit([connection](const Envelope& event){connection->send_text(emit_envelope(event));});if(old){old->send_text(emit_envelope(Envelope{"player:session-replaced",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",old->id}}}}}));old->shutdown_send();old->close();}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});return;} auto session=connection->session;if(!session)return;if(envelope.event.rfind("party:",0)==0&&handle_party_event(connection,envelope))return;session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});}
+// JS parity: the anonymous guest is ONE shared account. A second concurrent
+// login replaces the earlier session (replaceExistingSession); multiplayer
+// scenarios that need distinct players carry playtestGuestId/guestId.
+const bool quick=as_bool(envelope.data.get("quickGuest"));const auto* playtest_guest=envelope.data.get("playtestGuestId");if(playtest_guest&&playtest_guest->string())identity=*playtest_guest->string();const auto* playtest_name=envelope.data.get("playtestGuestName");std::shared_ptr<ProtocolSession> session;std::shared_ptr<Connection> old;{std::lock_guard lock(mutex_);auto it=sessions_.find(identity);if(it!=sessions_.end()){for(const auto& candidate:connections_)if(candidate->session==it->second&&candidate!=connection&&!candidate->closed){old=candidate;break;}session=it->second;}if(!session){std::uint64_t seed=1469598103934665603ULL;for(unsigned char c:identity)seed=(seed^c)*1099511628211ULL;session=std::make_shared<ProtocolSession>(identity,connection->id,seed,quick);sessions_[identity]=session;}else { const bool adopted = connection->session != session; session->replace_socket(connection->id); if (adopted) session->reset_world_for_new_socket(); } connection->session=session;}session->set_broadcast([this](const Envelope& event){broadcast(event);});if(playtest_name&&playtest_name->string())session->set_username(*playtest_name->string());session->set_direct_emit([connection](const Envelope& event){connection->send_text(emit_envelope(event));});if(old){old->send_text(emit_envelope(Envelope{"player:session-replaced",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",old->id}}}}}));old->shutdown_send();old->close();}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});return;} auto session=connection->session;if(!session)return;if(envelope.event.rfind("party:",0)==0&&handle_party_event(connection,envelope))return;session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});}
 void WebSocketServer::broadcast(const Envelope& envelope){ std::vector<std::shared_ptr<Connection>> targets; {std::lock_guard lock(mutex_);targets=connections_;} const auto wire=emit_envelope(envelope); for(const auto& candidate:targets) if(candidate->session&&!candidate->closed) candidate->send_text(wire); }
 void WebSocketServer::remove_connection(const std::shared_ptr<Connection>& connection){std::lock_guard lock(mutex_);connections_.erase(std::remove(connections_.begin(),connections_.end(),connection),connections_.end());}
 

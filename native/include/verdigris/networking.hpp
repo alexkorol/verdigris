@@ -99,6 +99,8 @@ class ProtocolSession {
   void tick(std::int64_t now_ms);
   void enter_shared_instance(const std::string& scene_id, const std::function<void(const Envelope&)>& emit);
   void leave_to_town(const std::function<void(const Envelope&)>& emit);
+  std::shared_ptr<WorldSimulation> shared_world() { return world_; }
+  void adopt_world(std::shared_ptr<WorldSimulation> world, const std::string& scene_id, const std::function<void(const Envelope&)>& emit);
 
  private:
   std::string player_payload() const;
@@ -133,6 +135,7 @@ class ProtocolSession {
   void maybe_complete_first_goal(const std::function<void(const Envelope&)>& emit);
   JsonValue quests_json() const;
   JsonValue passive_tree_json() const;
+  void tree_attributes(int* strength, int* dexterity, int* intelligence) const;
   void handle_skilltree_save(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
   void emit_bank_screen(const std::function<void(const Envelope&)>& emit) const;
   void handle_house_deposit(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
@@ -169,6 +172,9 @@ class ProtocolSession {
   std::int64_t first_goal_started_ms_ = 0;
   std::int64_t first_goal_completed_ms_ = 0;
   int quest_points_ = 0;
+  // JS Player.questPoints: the LIVE session tree budget. Unlike the chain
+  // record above it does not survive a plain re-login (skilltree relog).
+  int tree_quest_points_ = 0;
   // N6 passive tree (verdigris-authority.js) - stored allocation + budget.
   JsonValue passive_tree_;
   bool passive_tree_saved_ = false;
@@ -198,6 +204,7 @@ class ProtocolSession {
   std::string current_child_name_;
   bool node_warden_dead_on_entry_ = false;
   std::set<std::string> kitted_scions_;
+  std::string active_skill_id_ = "primary-attack";
   // N6 combat experience (experience.js / shared/ui.js curve).
   long long combat_xp_ = 0;
   void maybe_respawn(std::int64_t now_ms);
@@ -232,7 +239,9 @@ class ProtocolSession {
   std::vector<GameItem> house_store_;
   Mulberry32 session_rng_;
   std::unique_ptr<Simulation> simulation_;
-  std::unique_ptr<WorldSimulation> world_;
+  // shared_ptr: party instances share ONE authoritative world between
+  // member sessions (build-divergence: both builds hit the same monster).
+  std::shared_ptr<WorldSimulation> world_;
   std::function<void(const Envelope&)> broadcast_;
   std::function<void(const Envelope&)> direct_emit_;
   mutable std::recursive_mutex mutex_;

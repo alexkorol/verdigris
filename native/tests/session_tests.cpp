@@ -79,6 +79,40 @@ void local_session_ready_and_deterministic() {
         "local: shutdown reaches disconnected state");
 }
 
+void hunt_step(verdigris::client::IClientSession& session) {
+  // The swing range gate (JS parity) means the driver must close distance:
+  // walk toward the nearest live monster in the authoritative model, then
+  // strike once adjacent-ish.
+  const auto& model = session.model();
+  const verdigris::client::ClientMonster* nearest = nullptr;
+  double best = 1e9;
+  for (const auto& monster : model.monsters) {
+    if (!monster.alive) continue;
+    const double dx = monster.x - model.player.x;
+    const double dy = monster.y - model.player.y;
+    const double d = std::abs(dx) + std::abs(dy);
+    if (d < best) { best = d; nearest = &monster; }
+  }
+  if (!nearest) { session.submit(verdigris::client::ClientCommand::move(1, 0)); return; }
+  const int step_x = nearest->x > model.player.x + 0.5 ? 1 : (nearest->x < model.player.x - 0.5 ? -1 : 0);
+  const int step_y = nearest->y > model.player.y + 0.5 ? 1 : (nearest->y < model.player.y - 0.5 ? -1 : 0);
+  if (best > 2.0) {
+    // Warren layouts are mazes; approach exactly the way the browser
+    // scenarios do - through the served dev:teleport control surface.
+    auto* remote = dynamic_cast<verdigris::client::RemoteProtocolSession*>(&session);
+    if (remote) {
+      verdigris::networking::JsonValue::Object tp;
+      tp["x"] = verdigris::networking::JsonValue(static_cast<int>(nearest->x) + 1);
+      tp["y"] = verdigris::networking::JsonValue(static_cast<int>(nearest->y));
+      remote->send_raw("dev:teleport", verdigris::networking::JsonValue(std::move(tp)));
+    } else if (step_x != 0) {
+      session.submit(verdigris::client::ClientCommand::move(step_x, 0));
+    } else if (step_y != 0) {
+      session.submit(verdigris::client::ClientCommand::move(0, step_y));
+    }
+  }
+  session.submit(verdigris::client::ClientCommand::use_action("melee"));
+}
 std::uint16_t start_server(verdigris::networking::WebSocketServer*& out) {
   // Architect capsule 6560-6579 (ORCHESTRATION.md); scan for a free port so
   // parallel suites cannot collide.
@@ -197,7 +231,15 @@ void remote_guest_journey() {
   check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
         "journey: handshake ready");
 
-  session.submit(verdigris::client::ClientCommand::enter_zone("tin:1:0"));
+  { // pin the protocol slice to the fixed dungeon/warren surface - the
+    // per-house world-web node behind enter_zone has its own attach coverage.
+    verdigris::networking::JsonValue::Object solo;
+    solo["template"] = verdigris::networking::JsonValue("dungeon");
+    solo["layout"] = verdigris::networking::JsonValue("warren");
+    auto* remote = dynamic_cast<verdigris::client::RemoteProtocolSession*>(&session);
+    if (remote) remote->send_raw("instance:enterSolo", verdigris::networking::JsonValue(std::move(solo)));
+    else session.submit(verdigris::client::ClientCommand::enter_zone("tin:1:0"));
+  }
   const bool entered = wait_until(session, 4000, [&] {
     return session.model().scene.type == "instance" ||
            session.model().scene.id.find("instance") != std::string::npos;
@@ -206,8 +248,9 @@ void remote_guest_journey() {
   check(session.model().scene.has_stairs_up, "journey: transition publishes exit stairs");
 
   const double start_x = session.model().player.x;
-  // Walk east along the authored y=20 corridor (away from stairs-up at x=5).
-  for (int i = 0; i < 48; ++i) {
+  // A short eastward walk proves the movement echo; the hunt loop handles
+  // closing distance to the pack (range-gated swings need adjacency).
+  for (int i = 0; i < 6; ++i) {
     session.submit(verdigris::client::ClientCommand::move(1, 0));
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
     session.poll();
@@ -228,12 +271,8 @@ void remote_guest_journey() {
   bool lost = false;
 
   for (int step = 0; step < 480; ++step) {
-    session.submit(verdigris::client::ClientCommand::use_action("melee"));
-    if (step % 4 == 0) session.submit(verdigris::client::ClientCommand::move(1, 0));
+    hunt_step(session);
     if (step % 3 == 0) session.submit(verdigris::client::ClientCommand::pick_up(""));
-    if (session.model().player.x > 28.0) {
-      session.submit(verdigris::client::ClientCommand::move(-1, 0));
-    }
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
     session.poll();
     collect_flags(session, outgoing, incoming, telegraph, kill, pickup, equipped, extracted,
@@ -243,17 +282,35 @@ void remote_guest_journey() {
   check(outgoing, "journey: outgoing combat:hit reached the client");
   check(kill, "journey: enemy death reached the client");
 
-  // Floor treasure sits at the map centre; keep walking east and taking until
-  // a named (non-coin) item is in the backpack. Kill loot is adjacent to the
-  // corpse and also eligible for take:underfoot.
+  // Kill loot and floor treasure surface in the authoritative ground list;
+  // walk the model - stand on the nearest drop and take underfoot - instead
+  // of sweeping blind (warren mazes defeat a fixed eastward walk).
   for (int step = 0; step < 200 && !first_equippable(session.model()); ++step) {
-    session.submit(verdigris::client::ClientCommand::move(1, 0));
-    session.submit(verdigris::client::ClientCommand::pick_up(""));
+    const auto& ground = session.model().ground;
+    const verdigris::client::ClientGroundItem* drop = nullptr;
+    double drop_best = 1e9;
+    for (const auto& item : ground) {
+      const double d = std::abs(item.x - session.model().player.x) +
+                       std::abs(item.y - session.model().player.y);
+      if (d < drop_best) { drop_best = d; drop = &item; }
+    }
+    if (drop) {
+      auto* remote = dynamic_cast<verdigris::client::RemoteProtocolSession*>(&session);
+      if (remote && drop_best > 0.5) {
+        verdigris::networking::JsonValue::Object tp;
+        tp["x"] = verdigris::networking::JsonValue(static_cast<int>(drop->x));
+        tp["y"] = verdigris::networking::JsonValue(static_cast<int>(drop->y));
+        remote->send_raw("dev:teleport", verdigris::networking::JsonValue(std::move(tp)));
+      }
+      session.submit(verdigris::client::ClientCommand::pick_up(""));
+    } else {
+      hunt_step(session);  // no drops yet: keep clearing the pack
+      session.submit(verdigris::client::ClientCommand::pick_up(""));
+    }
     std::this_thread::sleep_for(std::chrono::milliseconds(25));
     session.poll();
     collect_flags(session, outgoing, incoming, telegraph, kill, pickup, equipped, extracted,
                   lost);
-    if (session.model().player.x > 28.0) break;
   }
   const auto* gear = first_equippable(session.model());
   check(gear != nullptr, "journey: named item entered inventory (pickup)");
@@ -424,7 +481,15 @@ void remote_render_list_ops() {
   check(session.start(&error), "render-list: connect");
   check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
         "render-list: ready");
-  session.submit(verdigris::client::ClientCommand::enter_zone("tin:1:0"));
+  { // pin the protocol slice to the fixed dungeon/warren surface - the
+    // per-house world-web node behind enter_zone has its own attach coverage.
+    verdigris::networking::JsonValue::Object solo;
+    solo["template"] = verdigris::networking::JsonValue("dungeon");
+    solo["layout"] = verdigris::networking::JsonValue("warren");
+    auto* remote = dynamic_cast<verdigris::client::RemoteProtocolSession*>(&session);
+    if (remote) remote->send_raw("instance:enterSolo", verdigris::networking::JsonValue(std::move(solo)));
+    else session.submit(verdigris::client::ClientCommand::enter_zone("tin:1:0"));
+  }
   wait_until(session, 4000, [&] {
     return session.model().scene.type == "instance" ||
            session.model().scene.id.find("instance") != std::string::npos;
@@ -434,8 +499,7 @@ void remote_render_list_ops() {
   verdigris::client::WorldView world;
   bool saw_monster = false, saw_swing = false, saw_drop = false;
   for (int step = 0; step < 240 && !(saw_monster && saw_swing && saw_drop); ++step) {
-    session.submit(verdigris::client::ClientCommand::use_action("melee"));
-    if (step % 4 == 0) session.submit(verdigris::client::ClientCommand::move(1, 0));
+    hunt_step(session);
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
     session.poll();
     verdigris::client::sync_world_from_model(world, session.model());

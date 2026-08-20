@@ -959,9 +959,13 @@ class WorldSimulation {
   bool spawn_suppressed_ = false;
   bool block_stairs_down_ = false;
   bool stairs_up_returns_to_town_ = false;
+  std::string engaged_by_;
 public:
   void set_block_stairs_down(bool value) { block_stairs_down_ = value; }
   void set_stairs_up_returns_to_town(bool value) { stairs_up_returns_to_town_ = value; }
+  // shared party worlds: swings resolve only on the session that engaged.
+  void set_engaged_by(const std::string& identity) { engaged_by_ = identity; }
+  const std::string& engaged_by() const { return engaged_by_; }
 private:
   std::uint64_t next_player_attack_ms_ = 0;
   std::uint64_t next_boss_telegraph_ms_ = 0;

@@ -1785,17 +1785,31 @@ std::vector<WorldCombatEvent> WorldSimulation::start_player_attack(int player_le
       if (distance <= 2) { chosen = &monster; best = distance; break; }
     }
   }
-  for (auto& monster : monsters_) {
-    if (!monster.alive) continue;
-    const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
-    if (!chosen && distance < best) { best = distance; chosen = &monster; }
+  if (!chosen) {
+    // Nearest alive monster wins (combat/index.js nearest-target aim). The
+    // scan must keep improving `best` — an early-out here silently locks the
+    // aim onto the first spawn in the pack list. Among equally-near monsters
+    // the aimed direction breaks the tie (the browser swings where the
+    // player faces), so repeated aimed swings hold focus on one target
+    // instead of drifting across a pack (healer-race focus).
+    int aim_dx = 0, aim_dy = 0;
+    if (direction.find("left") != std::string::npos) aim_dx = -1;
+    if (direction.find("right") != std::string::npos) aim_dx = 1;
+    if (direction.find("up") != std::string::npos) aim_dy = -1;
+    if (direction.find("down") != std::string::npos) aim_dy = 1;
+    int best_aim = std::numeric_limits<int>::min();
+    for (auto& monster : monsters_) {
+      if (!monster.alive) continue;
+      const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
+      const int aim = aim_dx * (monster.x - here.x) + aim_dy * (monster.y - here.y);
+      if (distance < best || (distance == best && aim > best_aim)) {
+        best = distance; best_aim = aim; chosen = &monster;
+      }
+    }
   }
   if (!chosen) return {};
   active_target_ = chosen->uuid;
   next_player_attack_ms_ = static_cast<std::uint64_t>(now_ms);
-  // Direction is intentionally accepted as a protocol input even though the
-  // N3 tile slice uses nearest-target aim; the browser sends no target UUID.
-  (void)direction;
   (void)player_attack;
   return {};
 }
@@ -1848,6 +1862,16 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
   WorldMonster* target = nullptr;
   for (auto& monster : monsters_) if (monster.uuid == active_target_ && monster.alive) { target = &monster; break; }
   if (!target) { active_target_.clear(); return events; }
+  { // JS combat: walking out of melee reach disengages - the swing loop must
+    // not chase a target across the map (build-comparison parking relies on it).
+    const Vec2 here = tile_movement::occupied_tile(position_);
+    if (std::abs(target->x - here.x) > 4 || std::abs(target->y - here.y) > 4) {
+      active_target_.clear();
+      return events;
+    }
+  }
+  if (player_attack <= 0) return events;  // another session owns the swing
+  fprintf(stderr,"[swing] tgt=%s now=%llu next=%llu range-ok\n",active_target_.c_str(),(unsigned long long)now,(unsigned long long)next_player_attack_ms_);
   if (now >= next_player_attack_ms_) {
     // N4 hit pipeline (server/core/combat/index.js applyHitToMonster):
     // base roll -> Beastbane vs 'beast'-tagged targets -> critical multiplier
@@ -1898,16 +1922,9 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       warning.attacker_name = target->name; warning.target_id = player_uuid_; warning.skill_id = "boss:ground-slam";
       warning.radius = kN3BossTelegraphRadius; warning.duration_ms = kN3BossTelegraphWindowMs; warning.x = target->x; warning.y = target->y;
       events.push_back(warning);
-      if (boss_warning_seen_) {
-        // The attach harness has no independent simulation timer. On the
-        // second committed warning, resolve the standing-in-circle hit in
-        // this same fixed-step command so the event remains deterministic.
-        player_life = std::max(0, player_life - kN3BossDamage);
-        WorldCombatEvent impact; impact.type = "hit"; impact.attacker_id = target->uuid; impact.attacker_name = target->name;
-        impact.target_id = player_uuid_; impact.target_name = "Adventurer"; impact.skill_id = "boss:ground-slam";
-        impact.amount = kN3BossDamage; impact.health = player_life; impact.health_max = player_life_max; impact.died = player_life == 0;
-        events.push_back(impact); target->telegraph_until_ms = now;
-      }
+      // Every warning resolves at its authored window below - the server
+      // tick thread is the simulation timer, so an instant second-warning
+      // resolution would punish a player who already left the circle.
       boss_warning_seen_ = true;
     } else if (target->telegraph_until_ms != 0 && now >= target->telegraph_until_ms) {
       const Vec2 p = tile_movement::occupied_tile(position_);
