@@ -3,7 +3,8 @@
 Coordinator: `luna-mac`  
 Worker branch: `codex/TASK-0071-protocol-matrix-audit-luna-mac`  
 Audit base: `5d8d8c60837ea826851c0ceaef04d463b2060c25`  
-Audit tip after claim commit: `b13dd7bef27579d093e899b1892fa34d78b96f70`
+Audit evidence commit: `b13dd7bef27579d093e899b1892fa34d78b96f70`  
+Worker tip after merging current origin tip: `e30c943e4d6c4e3ff55c66a0bbb3d6d638b2c1de`
 
 ## Scope and result
 
@@ -72,4 +73,19 @@ exit code: 0
 ```
 
 The `git diff --name-only` transcript above was captured before this report
-was created; the final commit contains the matrix and this task report only.
+was created; the task implementation commit contains the matrix, STATUS.md,
+and this task report only.
+
+## Current-tip synchronization transcript
+
+```text
+$ git merge --no-edit origin/codex/native-reconstitution
+Merge made by the 'ort' strategy.
+ orchestration/DECISIONS.md  | 14 ++++++++++++++
+ orchestration/RUN_STATUS.md | 12 ++++++++++++
+ 2 files changed, 26 insertions(+)
+exit code: 0
+```
+
+The synchronization changed coordination truth only; the audited session and
+networking test sources were unchanged.
