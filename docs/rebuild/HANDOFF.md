@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-08-20 — TASK-0068 remote presentation polish (cursor, REVIEW_REQUESTED)
+
+- Worker `codex/TASK-0068-remote-presentation-polish-cursor` off `1f45eb33`.
+  Telegraph rings clip/clamp out of the HUD reserve; monsters get a rust
+  silhouette and larger scale; stairs-up is an in-world EXIT pad; remote HUD
+  shows `connection ` + `connection_state_label`.
+- Gates: `build.ps1 -RunTests -RunClientScenarios` green (HUD-safe telegraph,
+  Extraction stairs-up, connection chip). Architect `--remote` rescore
+  target 12/12.
+
 ## 2026-08-20 — TASK-0064 remote presentation unify (cursor, REVIEW_REQUESTED)
 
 - Worker `codex/TASK-0064-remote-presentation-unify-cursor` off program tip

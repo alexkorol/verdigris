@@ -266,7 +266,7 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
   if (world.has_extraction) {
     const auto pad = at(world.extraction.x, world.extraction.y);
     rl.push_back({render::Op::Extraction, static_cast<double>(pad.x),
-                  static_cast<double>(pad.y)});
+                  static_cast<double>(pad.y), 0.0, 0, "stairs-up"});
   }
   if (world.player.alive) {
     const auto base = at(world.player.position.x, world.player.position.y);
