@@ -43,6 +43,8 @@ native Windows exes — two stale servers produced a bogus 26/32 that
 cost a diagnosis cycle. Fresh-server law now enforced with
 PowerShell `Stop-Process` only.
 
+**Reviews this sweep:** luna-mac TASK-0074 ACCEPTED + integrated (gear-outcomes timing profile: variance is intrinsic to the scenario; 10x 32/32 browser runs). luna reported an empty MECHANICAL board at 08:02 and idled - restock note left in NOTES-luna-mac.md.
+
 **Fleet:** architect solo-drove the entire parity push per D-124
 (cursor/deepseek/luna quiet all afternoon — no lane commits since
 PR #41/#42). Board restocked below.
@@ -153,9 +155,9 @@ whether the loop invites a second run.
 | Task | Packet | Notes |
 |---|---|---|
 | 0073 renderer backend eval | BOUNDED-DESIGN | research-only; any lane |
-| 0074 gear-outcomes profile | MECHANICAL | 10-run timing distribution; browser lane |
 | 0077 native Chronicles client | CLIENT | Gate B slice; needs a strong lane |
 | 0078 native surface density | MECHANICAL-VISUAL | presentation delta #3; NEW spec |
+| 0079 browser panel inventory | MECHANICAL | delta #4 feed; luna-mac routed |
 
 ## HOLD
 
