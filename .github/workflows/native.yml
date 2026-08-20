@@ -27,11 +27,16 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Set up MSVC developer environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
       - name: Native owner-path gates
-        # build.ps1 locates MSVC via vswhere. This is the same path the
-        # owner runs locally: denylist, core/networking/camera/session
-        # tests (session tests start their own loopback server), then
-        # local client --scenario all. Density bench is opt-in and omitted.
+        # configure/build, denylist, core/networking/session tests (session
+        # tests bind their own loopback server), camera2d, local scenarios.
+        # Density bench is opt-in and omitted. Transcripts go to
+        # native/build/ci-logs/ and upload on failure.
         run: powershell -NoProfile -File native/tools/ci-native.ps1
 
       - name: Upload native CI transcripts
