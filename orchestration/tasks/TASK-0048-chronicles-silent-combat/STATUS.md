@@ -1,6 +1,6 @@
----
+﻿---
 task: TASK-0048
-state: REVIEW_REQUESTED
+state: INTEGRATED
 updated: 2026-08-17
 ---
 
@@ -19,3 +19,5 @@ Completed:
 
 Gates: unit 788/788, lint pass, build pass, focused scenario 1/1, full
 playtest 32/32. Awaiting architect disposition of the disproven diagnosis.
+
+Architect close-out 2026-08-20: work shipped in earlier merged PRs; state line was stale. Verified end-to-end today by the full 32/32 attach run on master (PR #45/#46).

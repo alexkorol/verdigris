@@ -1,6 +1,6 @@
----
+﻿---
 task: TASK-0051
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: deepseek
 worker_branch: codex/TASK-0051-native-client-harness-deepseek
 base_commit: 8ea0887cbfca8f024ca8c8ddb6b19746e5fab4f5
@@ -24,5 +24,7 @@ Implemented and pushed for architect review. D-119 scenario harness is live:
 Details in `REPORT.md`. The architect should rerun the scenario set
 personally (G5).
 
-Board re-check 2026-08-18 (post-0051): no further unclaimed READY tasks —
+Board re-check 2026-08-18 (post-0051): no further unclaimed READY tasks â€”
 0053 (kimi) and 0047 (kimi-work) are peer-claimed. Re-checking next cycle.
+
+Architect close-out 2026-08-20: work shipped in earlier merged PRs; state line was stale. Verified end-to-end today by the full 32/32 attach run on master (PR #45/#46).

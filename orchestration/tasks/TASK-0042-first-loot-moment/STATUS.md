@@ -1,6 +1,6 @@
----
+﻿---
 task: TASK-0042
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: kimi
 worker: kimi-code-cli
 worker_branch: codex/TASK-0042-first-loot-moment
@@ -29,3 +29,5 @@ assigns it to kimi. QUESTION-0007's seam concern is answered in
 REPORT.md - the LootMoment toast mounts through the existing
 open:screen seam with no GameContainer wiring; only the ground
 beam/label needed the renderer.
+
+Architect close-out 2026-08-20: work shipped in earlier merged PRs; state line was stale. Verified end-to-end today by the full 32/32 attach run on master (PR #45/#46).

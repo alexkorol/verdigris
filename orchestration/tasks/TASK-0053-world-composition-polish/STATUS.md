@@ -1,6 +1,6 @@
----
+﻿---
 task: TASK-0053
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: kimi
 worker: kimi-code-cli
 worker_branch: codex/TASK-0053-world-composition-polish
@@ -16,3 +16,5 @@ Claimed per RUN_STATUS (0053 = any lane, verify-first). 0051 left for
 sequencing with deepseek's in-flight 0050 (shared native/** surface).
 Plan: verify each of the three deliverables against the current renderer
 FIRST, then implement only what is missing.
+
+Architect close-out 2026-08-20: work shipped in earlier merged PRs; state line was stale. Verified end-to-end today by the full 32/32 attach run on master (PR #45/#46).

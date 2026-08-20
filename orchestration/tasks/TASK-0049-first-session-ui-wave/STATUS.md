@@ -1,6 +1,6 @@
----
+﻿---
 task: TASK-0049
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: deepseek
 worker_branch: codex/TASK-0049-first-session-ui-wave-deepseek
 base_commit: 34b7069f12930933b66fde0e81c27e2cb44007e8
@@ -24,3 +24,5 @@ Gates green on the final code: `test:unit` 128 files / 809 tests;
 `smoke:browser` 1/1; `playtest` 32/32. Hard-fail capture
 `captures/capture-0049.mjs` produced five rendered PNGs with all on-screen
 text assertions passing. Details in `REPORT.md`.
+
+Architect close-out 2026-08-20: work shipped in earlier merged PRs; state line was stale. Verified end-to-end today by the full 32/32 attach run on master (PR #45/#46).
