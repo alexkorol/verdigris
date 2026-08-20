@@ -1,0 +1,7 @@
+{
+  "login": true,
+  "combat-walk": true,
+  "aftermath": true,
+  "inventory": true,
+  "hud": true
+}
