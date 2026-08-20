@@ -1662,7 +1662,9 @@ void WorldSimulation::generate_instance() {
     monster.name = zone_display_name(metadata_.theme, "", 1) + " Lurker";
     monster.x = x;
     monster.y = y;
-    monster.level = level;
+    // map.js: level = max(1, floor(1 + index*0.14)) + (depth-1)*2 + theme
+    // bonus. Deeper floors are the authoritative difficulty wall.
+    monster.level = level + (metadata_.depth - 1) * 2 + placed / 7;
     monster.life = kN3TrashLife + (level - 2) * 5;
     monster.life_max = monster.life;
     // Authored pack recipes mirror map.js: crypt is melee-heavy, marsh adds
@@ -2549,6 +2551,8 @@ const ItemDef kItemCatalogue[] = {
     {"vessel-ring", "Ring", "armor", "ring", false, false, {}, {}, 0, 0, "ring", ""},
     // weapons.js iron weaponry: the mortality successor grants iron-sword.
     {"iron-sword", "Iron Sword", "weapon", "right_hand", false, false, {6, 4, -2, 0}, {0, 3, 2, 0}, 0, 0, "", ""},
+    // weapons.js steel-battleaxe (session-arc reward drop).
+    {"steel-battleaxe", "Steel Battleaxe", "weapon", "right_hand", false, false, {-2, 19, 13, 0}, {0, 1, 2, 2}, 0, 0, "", ""},
 };
 
 // Process-wide instance identity source (factory.js uuid v4): uniqueness is

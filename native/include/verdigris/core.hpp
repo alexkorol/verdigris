@@ -841,6 +841,7 @@ class WorldSimulation {
   const MovementStepInfo& last_step() const { return last_step_; }
   const InstanceMetadata& metadata() const { return metadata_; }
   const std::vector<WorldMonster>& monsters() const { return monsters_; }
+  void kill_all_monsters() { for (auto& monster : monsters_) { monster.alive = false; monster.life = 0; } active_target_.clear(); }
   const TileGrid& grid() const { return grid_; }
   bool in_instance() const { return scene_type_ == "instance"; }
 

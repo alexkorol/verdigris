@@ -535,6 +535,9 @@ std::int64_t ProtocolSession::now_ms() { return std::chrono::duration_cast<std::
 std::string ProtocolSession::player_payload() const {
   JsonValue::Object player; const auto position=world_->position();
   put(player,"uuid",identity_); put(player,"username",active_scion_name_.empty()?identity_:active_scion_name_); put(player,"socket_id",socket_id_); put(player,"sceneId",world_->scene_id()); put(player,"x",position.x); put(player,"y",position.y); put(player,"facing",world_->facing());
+  { const auto* actor=simulation_->actor(simulation_->scion().actor_id); put(player,"level",actor?actor->stats.level:1); }
+  put(player,"passiveTree",passive_tree_json());
+  put(player,"quests",quests_json());
   JsonValue::Array slots; for (const auto& item:inventory_.items()) { JsonValue::Object value; put(value,"id",item.id); put(value,"uuid",item.uuid); put(value,"name",item.name); if(item.slot>=0) put(value,"slot",item.slot); else put(value,"slot",nullptr); slots.emplace_back(std::move(value)); }
   JsonValue::Object inventory; put(inventory,"slots",std::move(slots)); put(player,"inventory",std::move(inventory));
   JsonValue::Object chronicles; put(chronicles,"mortal",mortal_oath_); put(chronicles,"scionId",active_scion_id_.empty()?JsonValue(nullptr):JsonValue(active_scion_id_)); put(chronicles,"houseId",active_house_id_.empty()?JsonValue(nullptr):JsonValue(active_house_id_)); put(player,"chronicles",std::move(chronicles));
@@ -566,6 +569,17 @@ JsonValue ProtocolSession::wear_details_json() const {
   }
   return JsonValue(std::move(wear_details));
 }
+namespace {
+struct TownNpc { int id; const char* name; const char* examine; int x; int y; const char* actions[2]; int action_count; };
+// server/core/data/npcs.js - the Crossroads roster.
+const TownNpc kTownNpcs[] = {
+    {1, "Aldwyn the Guide", "A weathered wayfinder who watches over the Crossroads' newest scions.", 34, 116, {"talk", "examine"}, 2},
+    {2, "Mara, General Trader", "Keeps the general stall at the Crossroads bazaar. Buys most things, sells the rest.", 49, 103, {"trade", "examine"}, 2},
+    {3, "Ludovicus, Weapons Trader", "Sells iron for the road. Claims every axe on his boards outlived its first three owners.", 19, 113, {"examine", "trade"}, 2},
+    {4, "Rhea of the Countinghouse", "Keeps the countinghouse tent: personal storage, honest scales, no questions.", 31, 121, {"examine", "bank"}, 2},
+};
+}  // namespace
+
 JsonValue ProtocolSession::combat_totals_json() const {
   const auto totals = wear_.totals();
   JsonValue::Object combat;
@@ -598,6 +612,38 @@ JsonValue ProtocolSession::snapshot() const {
   put(state,"lifecycleMode",lifecycle_mode_);
   JsonValue::Object chronicles; put(chronicles,"mortal",mortal_oath_); put(chronicles,"scionId",active_scion_id_.empty()?JsonValue(nullptr):JsonValue(active_scion_id_)); put(chronicles,"houseId",active_house_id_.empty()?JsonValue(nullptr):JsonValue(active_house_id_)); put(state,"chronicles",std::move(chronicles));
   put(state,"bestDepth",best_depth_);
+  put(state,"quests",quests_json());
+  put(state,"questPoints",quest_points_);
+  put(state,"passiveTree",passive_tree_json());
+  { // stats-manager attributes: base 10s plus the tree path. STUB NOTE:
+    // per-node attribute identity from the 271-node graph is approximated
+    // as +2/attr per allocated node beyond the root until the geometric
+    // tree engine is ported (successor task).
+    int allocated = 0;
+    if (passive_tree_saved_) {
+      if (const auto* nodes = passive_tree_.get("nodes"); nodes && nodes->array())
+        allocated = (std::max)(0, static_cast<int>(nodes->array()->size()) - 1);
+    }
+    JsonValue::Object attributes;
+    put(attributes, "strength", 10 + allocated * 2);
+    put(attributes, "dexterity", 10 + allocated * 2);
+    put(attributes, "intelligence", 10 + allocated * 2);
+    put(state, "attributes", std::move(attributes));
+  }
+  JsonValue::Array npcs;
+  if (!world_->in_instance()) {
+    for (const auto& npc : kTownNpcs) {
+      JsonValue::Object entry;
+      put(entry, "id", npc.id); put(entry, "name", npc.name);
+      put(entry, "x", npc.x); put(entry, "y", npc.y);
+      put(entry, "tileX", npc.x); put(entry, "tileY", npc.y);
+      JsonValue::Array actions;
+      for (int i = 0; i < npc.action_count; ++i) actions.emplace_back(npc.actions[i]);
+      put(entry, "actions", std::move(actions));
+      npcs.emplace_back(std::move(entry));
+    }
+  }
+  put(state,"npcs",std::move(npcs));
   { // dev.js: chroniclesRecord mirrors chroniclesStore.snapshot(uuid).
     JsonValue::Object record;
     put(record,"exists",chronicles_revision_>0);
@@ -792,6 +838,216 @@ void ProtocolSession::handle_equip(const JsonValue& payload, const std::function
   emit_equip_state(emit);
   if (spilled) emit_ground_change(emit);
 }
+JsonValue ProtocolSession::quests_json() const {
+  JsonValue::Object first_goal;
+  put(first_goal, "stage", first_goal_stage_);
+  if (first_goal_started_ms_ > 0) put(first_goal, "startedAt", static_cast<double>(first_goal_started_ms_));
+  else put(first_goal, "startedAt", nullptr);
+  if (first_goal_completed_ms_ > 0) put(first_goal, "completedAt", static_cast<double>(first_goal_completed_ms_));
+  else put(first_goal, "completedAt", nullptr);
+  JsonValue::Object quests;
+  put(quests, "firstGoal", std::move(first_goal));
+  return JsonValue(std::move(quests));
+}
+
+JsonValue ProtocolSession::passive_tree_json() const {
+  // verdigris-authority.js: server owns the budget. earned =
+  // min(140, min(max(2, level), 117) + min(questPoints, 23)).
+  const auto* actor = simulation_->actor(simulation_->scion().actor_id);
+  const int level = actor ? actor->stats.level : 1;
+  const int earned = (std::min)(140, (std::min)((std::max)(2, level), 117) +
+                                     (std::min)((std::max)(0, quest_points_), 23));
+  JsonValue::Array nodes;
+  JsonValue::Array conduits;
+  std::string selected = "0,0";
+  JsonValue::Array class_order;
+  int spent = 1;
+  if (passive_tree_saved_) {
+    if (const auto* saved_nodes = passive_tree_.get("nodes"); saved_nodes && saved_nodes->array()) {
+      nodes = *saved_nodes->array();
+      spent = static_cast<int>(nodes.size());
+    }
+    if (const auto* saved_conduits = passive_tree_.get("conduits"); saved_conduits && saved_conduits->array())
+      conduits = *saved_conduits->array();
+    if (const auto* sel = passive_tree_.get("selectedNodeId"); sel && sel->string()) selected = *sel->string();
+    if (const auto* order = passive_tree_.get("classOrder"); order && order->array()) class_order = *order->array();
+  } else {
+    nodes.emplace_back("0,0");
+  }
+  JsonValue::Object tree;
+  put(tree, "schemaVersion", 2);
+  put(tree, "nodes", std::move(nodes));
+  put(tree, "conduits", std::move(conduits));
+  put(tree, "points", JsonValue::Object{{"skill", JsonValue((std::max)(0, earned - spent))}});
+  put(tree, "earned", earned);
+  put(tree, "selectedNodeId", selected);
+  put(tree, "classOrder", std::move(class_order));
+  return JsonValue(std::move(tree));
+}
+
+void ProtocolSession::handle_skilltree_save(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) {
+  const auto* snapshot = payload.get("snapshot");
+  if (!snapshot || !snapshot->object()) return;
+  passive_tree_ = *snapshot;
+  passive_tree_saved_ = true;
+  JsonValue::Object data;
+  put(data, "player", JsonValue::Object{{"socket_id", socket_id_}});
+  put(data, "passiveTree", passive_tree_json());
+  emit(Envelope{"player:skilltree:update", JsonValue(std::move(data))});
+}
+
+namespace {
+// shared/ui.js getExperience/getLevel (RS-style curve).
+long long xp_for_level(int level) {
+  long long a = 0;
+  for (int x = 1; x < level; ++x) a += static_cast<long long>(std::floor(x + 265.0 * std::pow(2.0, x / 7.0)));
+  return a / 4;
+}
+int level_from_xp(long long exp) {
+  if (exp <= 0) return 1;
+  int level = 1;
+  long long calc = 0;
+  while (exp > calc) {
+    calc = xp_for_level(level);
+    if (calc > exp) break;
+    level += 1;
+  }
+  return (std::max)(1, level - 1);
+}
+}  // namespace
+int ProtocolSession::carried_gold() const {
+  int total = 0;
+  for (const auto& item : inventory_.items()) if (item.id == "coins") total += item.qty;
+  return total;
+}
+
+void ProtocolSession::emit_bank_screen(const std::function<void(const Envelope&)>& emit) const {
+  // chronicles.js sendBankState: open:screen bank with House treasury.
+  JsonValue::Object house;
+  put(house, "id", active_house_id_.empty() ? JsonValue(nullptr) : JsonValue(active_house_id_));
+  put(house, "name", active_house_name_.empty() ? JsonValue("House Verdigris") : JsonValue(active_house_name_));
+  put(house, "treasury", house_treasury_);
+  JsonValue::Object payload;
+  put(payload, "items", JsonValue::Array{});
+  put(payload, "carriedCoins", carried_gold());
+  put(payload, "house", std::move(house));
+  JsonValue::Object data;
+  put(data, "player", JsonValue::Object{{"socket_id", socket_id_}});
+  put(data, "screen", "bank");
+  put(data, "payload", std::move(payload));
+  emit(Envelope{"open:screen", JsonValue(std::move(data))});
+}
+
+void ProtocolSession::handle_house_deposit(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) {
+  const int amount = as_int(payload.get("amount"), 0);
+  if (amount <= 0 || carried_gold() < amount) return;
+  int remaining = amount;
+  auto slots = inventory_.items();
+  for (const auto& item : slots) {
+    if (remaining <= 0) break;
+    if (item.id != "coins") continue;
+    GameItem taken;
+    if (!inventory_.remove_by_uuid(item.uuid, &taken)) continue;
+    if (taken.qty > remaining) {
+      GameItem back = taken;
+      back.qty = taken.qty - remaining;
+      inventory_.add(std::move(back));
+      remaining = 0;
+    } else {
+      remaining -= taken.qty;
+    }
+  }
+  house_treasury_ += amount;
+  if (auto* root = chronicle_.object()) {
+    auto houses_it = root->find("houses");
+    if (houses_it != root->end() && houses_it->second.array()) {
+      for (auto& house_entry : *houses_it->second.array()) {
+        auto* house = house_entry.object();
+        if (!house) continue;
+        auto id_it = house->find("id");
+        if (id_it == house->end() || !id_it->second.string() || *id_it->second.string() != active_house_id_) continue;
+        (*house)["treasury"] = JsonValue(house_treasury_);
+        chronicles_revision_ += 1;
+        break;
+      }
+    }
+  }
+  emit_message(emit, std::to_string(amount) + " gold nailed under the boards of House " +
+                     (active_house_name_.empty() ? std::string("Verdigris") : active_house_name_) + ".");
+  emit_inventory_refresh(emit);
+  emit_bank_screen(emit);
+}
+
+void ProtocolSession::maybe_floor_cleared(const std::function<void(const Envelope&)>& emit) {
+  // party.js completeInstanceFloor: fires once per floor when the pack dies.
+  if (!world_->in_instance()) return;
+  bool any_alive = false;
+  for (const auto& monster : world_->monsters()) if (monster.alive) { any_alive = true; break; }
+  if (any_alive) return;
+  const auto& meta = world_->metadata();
+  const std::uint64_t key = meta.seed * 131u + static_cast<std::uint64_t>(meta.depth);
+  if (key == last_cleared_floor_key_) return;
+  last_cleared_floor_key_ = key;
+  {
+    JsonValue::Object data;
+    put(data, "player", JsonValue::Object{{"socket_id", socket_id_}});
+    put(data, "depth", meta.depth);
+    put(data, "rewards", JsonValue::Object{{"coins", JsonValue(0)}});
+    emit(Envelope{"party:instance:complete", JsonValue(std::move(data))});
+  }
+  emit_message(emit, "Floor " + std::to_string(meta.depth) +
+      " cleared! Rewards distributed - find the stairs to descend, or take the entry stairs to leave.");
+  if (first_goal_stage_ == "clear-floor" && meta.theme == "dungeon" && meta.layout == "warren" && meta.depth == 1) {
+    first_goal_stage_ = "return-to-town";
+    emit_message(emit, "The floor is cleared. Return to Aldwyn at the Crossroads for your reward.");
+    emit_quest_update(emit);
+  }
+}
+void ProtocolSession::emit_quest_update(const std::function<void(const Envelope&)>& emit) const {
+  // first-goal.js pushQuestState -> quest:update.
+  JsonValue::Object data;
+  put(data, "player", JsonValue::Object{{"socket_id", socket_id_}});
+  put(data, "quests", quests_json());
+  put(data, "questPoints", quest_points_);
+  put(data, "passiveTree", passive_tree_json());
+  emit(Envelope{"quest:update", JsonValue(std::move(data))});
+}
+
+void ProtocolSession::handle_npc_talk(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) {
+  // actions/index.js player:npc:talk - Aldwyn only, town only, chebyshev<=1.
+  const auto* item = payload.get("item");
+  const int npc_id = as_int(item ? item->get("id") : nullptr, -1);
+  if (npc_id != 1 || world_->in_instance()) return;
+  const Vec2 tile = tile_movement::occupied_tile(world_->position());
+  if ((std::max)(std::abs(tile.x - 34), std::abs(tile.y - 116)) > 1) return;
+  if (first_goal_stage_ == "available") {
+    first_goal_stage_ = "clear-floor";
+    first_goal_started_ms_ = now_ms();
+    emit_message(emit, "No road holds past a living Warden. Take any gate out - the first stretch of every road is on your House's chart - put its Warden down, and come back to me.");
+    emit_quest_update(emit);
+    return;
+  }
+  if (first_goal_stage_ == "clear-floor") {
+    emit_message(emit, "Your task remains: put down the Warden of any first stretch on your chart, then return to me.");
+    return;
+  }
+  if (first_goal_stage_ == "return-to-town") {
+    emit_message(emit, "The country lies still. Walk back through the gate and I will mark the deed.");
+    return;
+  }
+  emit_message(emit, "The chart remembers your first Warden. Spend your Verdigris point wisely.");
+}
+
+void ProtocolSession::maybe_complete_first_goal(const std::function<void(const Envelope&)>& emit) {
+  // first-goal.js notifyFirstGoalReturned - completes on returning to town.
+  if (first_goal_stage_ != "return-to-town") return;
+  first_goal_stage_ = "complete";
+  first_goal_completed_ms_ = now_ms();
+  quest_points_ = (std::min)(quest_points_ + 1, 12);
+  emit_message(emit, "You kept your word. Take this Verdigris point; it opens another path in your skill tree.");
+  emit_quest_update(emit);
+}
+
 void ProtocolSession::mark_relic_recovered(const std::string& scion_id) {
   auto* root = chronicle_.object();
   if (!root) return;
@@ -875,6 +1131,30 @@ void ProtocolSession::handle_menu_build(const JsonValue& payload, const std::fun
     const auto* world_pos=tile?tile->get("world"):nullptr;
     const int wx=as_int(world_pos?world_pos->get("x"):nullptr);
     const int wy=as_int(world_pos?world_pos->get("y"):nullptr);
+    if (!world_->in_instance()) {
+      for (const auto& npc : kTownNpcs) {
+        if (npc.x != wx || npc.y != wy) continue;
+        for (int i = 0; i < npc.action_count; ++i) {
+          const std::string action = npc.actions[i];
+          JsonValue::Object entry;
+          const char* action_id = action == "talk" ? "player:npc:talk"
+                                : action == "trade" ? "player:npc:trade"
+                                : action == "bank" ? "player:screen:bank"
+                                : "player:npc:examine";
+          put(entry, "label", (action == "talk" ? std::string("Talk to ") + npc.name
+                              : action == "trade" ? std::string("Trade with ") + npc.name
+                              : action == "bank" ? std::string("Bank with ") + npc.name
+                              : std::string("Examine ") + npc.name));
+          put(entry, "action", JsonValue::Object{{"name", JsonValue(action)}, {"actionId", JsonValue(action_id)},
+              {"context", JsonValue::Array{JsonValue("gameMap")}}, {"nearby", true}, {"weight", 1}});
+          put(entry, "type", "npc");
+          JsonValue::Object item_ref; put(item_ref, "id", npc.id); put(item_ref, "name", npc.name);
+          put(entry, "item", std::move(item_ref));
+          put(entry, "id", npc.id);
+          entries.emplace_back(std::move(entry));
+        }
+      }
+    }
     std::vector<const GroundItem*> matches;
     for (const auto& ground:world_->ground_items()) {
       if (static_cast<int>(std::floor(ground.x))==wx&&static_cast<int>(std::floor(ground.y))==wy) matches.push_back(&ground);
@@ -932,6 +1212,8 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
   const auto* item_ref=queue_item?queue_item->get("item"):nullptr;
   const std::string uuid=as_string(item_ref?item_ref->get("uuid"):nullptr);
   if (action_id=="player:take") { handle_take_ground(uuid,emit); return; }
+  if (action_id=="player:screen:bank") { emit_bank_screen(emit); return; }
+  if (action_id=="player:npc:talk") { if (queue_item) handle_npc_talk(*queue_item, emit); return; }
   if (action_id=="player:vesselforge:add-brand") {
     // vesselforge-brand.js: town service, 100 coins, sear on the live item;
     // a failed roll spends nothing (engine rolls on a clone internally).
@@ -987,7 +1269,10 @@ void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std
 void ProtocolSession::process_combat(std::int64_t now, const std::function<void(const Envelope&)>& emit) {
   auto* actor = simulation_->actor(simulation_->scion().actor_id); if (!actor) return;
   const int life_before = actor->stats.life;
-  const auto events = world_->advance_combat(actor->stats.level, actor->stats.attack, actor->stats.life, actor->stats.life_max, now);
+  const auto combat_totals = wear_.totals();
+  const int wear_attack = (std::max)(0, (std::max)((std::max)(combat_totals.attack.stab, combat_totals.attack.slash),
+                                                   (std::max)(combat_totals.attack.crush, combat_totals.attack.range)));
+  const auto events = world_->advance_combat(actor->stats.level, actor->stats.attack + wear_attack, actor->stats.life, actor->stats.life_max, now);
   // N5 respawn ward: monsters cannot damage a freshly-respawned scion until
   // the scion acts. Absorb monster damage here (the player still lands hits);
   // the skill handler ends the ward.
@@ -1000,6 +1285,34 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
     if (event.died && event.target_id != identity_) loot = true;
     if (event.type == "death" && event.target_id != identity_) {
       emit_message(emit, "You have slain " + event.target_name + ".");
+      // experience.js: kills grant combat XP; the character level derives
+      // from the shared curve. Level-ups refresh and refill resources.
+      {
+        int monster_level = 1;
+        for (const auto& monster : world_->monsters())
+          if (monster.uuid == event.target_id) { monster_level = (std::max)(1, monster.level); break; }
+        combat_xp_ += static_cast<long long>(monster_level) * 12;
+        const int derived = level_from_xp(combat_xp_);
+        if (derived > actor->stats.level) {
+          actor->stats.level = derived;
+          actor->stats.attack = 12 + derived * 3;
+          actor->stats.life_max = 100 + derived * 10;
+          actor->stats.life = actor->stats.life_max;
+          world_->set_level(derived);
+          emit_message(emit, "You are now level " + std::to_string(derived) + "!");
+        }
+      }
+      // first-goal.js notifyFirstGoalWardenDown: any tier-1 (depth-1) boss.
+      if (first_goal_stage_ == "clear-floor" && world_->metadata().depth <= 1) {
+        for (const auto& monster : world_->monsters()) {
+          if (monster.uuid == event.target_id && monster.boss) {
+            first_goal_stage_ = "return-to-town";
+            emit_message(emit, "Your first Warden is down. Return to Aldwyn at the Crossroads for your reward.");
+            emit_quest_update(emit);
+            break;
+          }
+        }
+      }
       // Relic circulation (D-106): an elite slain by a living scion returns
       // one queued House heirloom to the floor where it fell.
       if (!pending_relic_items_.empty()) {
@@ -1018,6 +1331,7 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
     }
   }
   if (loot) emit_ground_change(emit);
+  maybe_floor_cleared(emit);
   // A mortal scion's lethal wound is final: commit to the crypt (D-106).
   if (actor->stats.life <= 0 && (prepare_final_death_ || mortal_oath_) && lifecycle_ != "permadead") {
     handle_final_death(emit);
@@ -1032,6 +1346,7 @@ void ProtocolSession::handle_extract(const std::function<void(const Envelope&)>&
   emit_movement(emit);
   emit_message(emit, "The party returns to the surface.");
   finish_extraction(emit);
+  maybe_complete_first_goal(emit);
   emit_transition(emit, "party:scene:transition");
 }
 void ProtocolSession::handle_final_death(const std::function<void(const Envelope&)>& emit) {
@@ -1203,8 +1518,8 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   const auto* payload=envelope.data.object()?&envelope.data:nullptr;
   if (envelope.event=="world:zone:enter") { const auto node=as_string(payload?payload->get("nodeId"):nullptr,"tin:1:0"); simulation_->dispatch(Command::enter(node.rfind("route:",0)==0?node:"route:"+node)); world_->enter_solo_instance("dungeon",""); emit_transition(emit,"world:scene:transition"); emit_ground_change(emit); return; }
   if (envelope.event=="instance:enterSolo") { world_->enter_solo_instance(as_string(payload?payload->get("template"):nullptr,"dungeon"),as_string(payload?payload->get("layout"):nullptr,"")); emit_transition(emit,"party:scene:transition"); emit_ground_change(emit); return; }
-  if (envelope.event=="player:move") { const auto direction=as_string(payload?payload->get("direction"):nullptr); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); if (world_->apply_movement_sample(direction,now_ms())) { emit_movement(emit); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool scene_changed=world_->scene_id()!=scene_before; if (depth_changed||scene_changed) { if (was_instance&&!world_->in_instance()) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); } emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) emit_ground_change(emit); } } return; }
-  if (envelope.event=="dev:teleport") { if (!payload) return; const auto* x=payload->get("x"); const auto* y=payload->get("y"); if (!x||!x->number()||!y||!y->number()) return; const int tx=static_cast<int>(*x->number()); const int ty=static_cast<int>(*y->number()); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); world_->teleport(tx,ty,now_ms()); const bool returned=was_instance&&!world_->in_instance(); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool transitioned=returned||depth_changed||world_->scene_id()!=scene_before; emit_movement(emit); emit_message(emit,"Teleported to "+std::to_string(tx)+", "+std::to_string(ty)+(transitioned?" (portal followed).":".")); if (returned) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); } if (transitioned) emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) { if (depth_changed) emit_ground_change(emit); process_combat(now_ms(),emit); } return; }
+  if (envelope.event=="player:move") { const auto direction=as_string(payload?payload->get("direction"):nullptr); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); if (world_->apply_movement_sample(direction,now_ms())) { emit_movement(emit); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool scene_changed=world_->scene_id()!=scene_before; if (depth_changed||scene_changed) { if (was_instance&&!world_->in_instance()) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); } emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) emit_ground_change(emit); } } return; }
+  if (envelope.event=="dev:teleport") { if (!payload) return; const auto* x=payload->get("x"); const auto* y=payload->get("y"); if (!x||!x->number()||!y||!y->number()) return; const int tx=static_cast<int>(*x->number()); const int ty=static_cast<int>(*y->number()); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); world_->teleport(tx,ty,now_ms()); const bool returned=was_instance&&!world_->in_instance(); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool transitioned=returned||depth_changed||world_->scene_id()!=scene_before; emit_movement(emit); emit_message(emit,"Teleported to "+std::to_string(tx)+", "+std::to_string(ty)+(transitioned?" (portal followed).":".")); if (returned) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); } if (transitioned) emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) { if (depth_changed) emit_ground_change(emit); process_combat(now_ms(),emit); } return; }
   if (envelope.event=="dev:setlevel") { auto* actor=simulation_->actor(simulation_->scion().actor_id); const int level=as_int(payload?payload->get("level"):nullptr,1); if(actor){ actor->stats.level=(std::max)(1,level); actor->stats.attack=12+actor->stats.level*3; actor->stats.life_max=100+actor->stats.level*10; actor->stats.life=actor->stats.life_max; world_->set_level(actor->stats.level); } return; }
   if (envelope.event=="dev:heal") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor) world_->heal_player(actor->stats.life,actor->stats.life_max); return; }
   if (envelope.event=="dev:kill") {
@@ -1250,7 +1565,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     }
     return;
   }
-  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ if (respawn_protection_until_ms_ > 0) respawn_protection_until_ms_ = 0; const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); world_->start_player_attack(actor->stats.level,actor->stats.attack,now_ms(),direction); std::int64_t t=now_ms(); for(int i=0;i<25;++i){ process_combat(t,emit); t+=400; } } return; }
+  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ if (respawn_protection_until_ms_ > 0) respawn_protection_until_ms_ = 0; const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); const auto wear_totals=wear_.totals(); const int wear_bonus=(std::max)((std::max)(wear_totals.attack.stab,wear_totals.attack.slash),(std::max)(wear_totals.attack.crush,wear_totals.attack.range)); world_->start_player_attack(actor->stats.level,actor->stats.attack+(std::max)(0,wear_bonus),now_ms(),direction); std::int64_t t=now_ms(); for(int i=0;i<25;++i){ process_combat(t,emit); t+=400; } } return; }
   if (envelope.event=="dev:give") { if (payload) handle_give(*payload,emit); return; }
   if (envelope.event=="dev:drop") { if (payload) handle_drop(*payload,emit); return; }
   if (envelope.event=="dev:forcecritical") { world_->player_combat_mods().force_critical=true; emit_message(emit,"Your next strike will be a critical hit."); return; }
@@ -1267,6 +1582,31 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   }
   if (envelope.event=="item:equip") { if (payload) handle_equip(*payload,emit); return; }
   if (envelope.event=="player:extract") { handle_extract(emit); return; }
+  if (envelope.event=="player:npc:talk") { if (payload) handle_npc_talk(*payload, emit); return; }
+  if (envelope.event=="player:skilltree:save") { if (payload) handle_skilltree_save(*payload, emit); return; }
+  if (envelope.event=="chronicles:house:deposit") { if (payload) handle_house_deposit(*payload, emit); return; }
+  if (envelope.event=="dev:clear-floor") {
+    // dev.js dev:clear-floor: kill every monster on the active floor.
+    if (world_->in_instance()) {
+      world_->kill_all_monsters();
+      emit_message(emit, "Cleared the active floor for objective verification.");
+      emit_ground_change(emit);
+      maybe_floor_cleared(emit);
+    }
+    return;
+  }
+  if (envelope.event=="party:returnToTown") {
+    // party.js party:returnToTown: leave the instance for the surface.
+    if (world_->in_instance()) {
+      world_->return_to_surface();
+      emit_movement(emit);
+      emit_message(emit, "The party returns to the surface.");
+      finish_extraction(emit);
+      maybe_complete_first_goal(emit);
+      emit_transition(emit, "party:scene:transition");
+    }
+    return;
+  }
   if (envelope.event=="player:take:underfoot") { handle_take_underfoot(emit); return; }
   if (envelope.event=="player:context-menu:build") { if (payload) handle_menu_build(*payload,emit); return; }
   if (envelope.event=="player:context-menu:action") { if (payload) handle_menu_action(*payload,emit); return; }
@@ -1279,6 +1619,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     const std::string house_id="house-"+std::to_string(house_serial++);
     ensure_chronicle_house(house_id,name);
     active_house_id_=house_id;
+    active_house_name_=name;
     chronicles_revision_+=1;
     emit(Envelope{"chronicles:state",chronicles_state_payload("")});
     return;

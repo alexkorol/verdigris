@@ -113,6 +113,16 @@ class ProtocolSession {
   void handle_equip(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
   void handle_extract(const std::function<void(const Envelope&)>& emit);
   void mark_relic_recovered(const std::string& scion_id);
+  void handle_npc_talk(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
+  void emit_quest_update(const std::function<void(const Envelope&)>& emit) const;
+  void maybe_complete_first_goal(const std::function<void(const Envelope&)>& emit);
+  JsonValue quests_json() const;
+  JsonValue passive_tree_json() const;
+  void handle_skilltree_save(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
+  void emit_bank_screen(const std::function<void(const Envelope&)>& emit) const;
+  void handle_house_deposit(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
+  int carried_gold() const;
+  void maybe_floor_cleared(const std::function<void(const Envelope&)>& emit);
   void handle_take_ground(const std::string& uuid, const std::function<void(const Envelope&)>& emit);
   void handle_take_underfoot(const std::function<void(const Envelope&)>& emit);
   void handle_menu_build(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) const;
@@ -128,6 +138,19 @@ class ProtocolSession {
   int lifecycle_deaths_ = 0;
   std::int64_t respawn_at_ms_ = 0;
   std::int64_t respawn_protection_until_ms_ = 0;
+  // N6 first-goal quest machine (server/core/first-goal.js).
+  std::string first_goal_stage_ = "available";
+  std::int64_t first_goal_started_ms_ = 0;
+  std::int64_t first_goal_completed_ms_ = 0;
+  int quest_points_ = 0;
+  // N6 passive tree (verdigris-authority.js) - stored allocation + budget.
+  JsonValue passive_tree_;
+  bool passive_tree_saved_ = false;
+  // N6 house treasury + floor-clear tracking.
+  int house_treasury_ = 0;
+  std::uint64_t last_cleared_floor_key_ = 0;
+  // N6 combat experience (experience.js / shared/ui.js curve).
+  long long combat_xp_ = 0;
   void maybe_respawn(std::int64_t now_ms);
   void handle_final_death(const std::function<void(const Envelope&)>& emit);
   // N5: Chronicles auth (server/core/services/chronicles.js + chronicles store).
@@ -138,6 +161,7 @@ class ProtocolSession {
   bool mortal_oath_ = false;
   std::string active_scion_id_;
   std::string active_house_id_;
+  std::string active_house_name_;
   std::string active_scion_name_;
   bool prepare_final_death_ = false;
   int best_depth_ = 0;
