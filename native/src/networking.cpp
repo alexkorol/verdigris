@@ -536,6 +536,18 @@ void ProtocolSession::tick(std::int64_t now) {
 }
 
 void ProtocolSession::reset_world_for_new_socket() {
+  // Fresh-Player semantics for the anonymous guest account: quest progress
+  // belongs to the PLAYER (resets per socket on JS), while the passive tree,
+  // inventory, level and chronicle belong to the ACCOUNT (persist).
+  if (identity_.rfind("default-guest", 0) == 0) {
+    first_goal_stage_ = "available";
+    first_goal_started_ms_ = 0;
+    first_goal_completed_ms_ = 0;
+    active_quest_ = 0;
+    quest_objective_ = 0;
+    quests_completed_.clear();
+    quest_points_ = 0;
+  }
   // JS parity: a NEW socket gets a fresh Player position (town) while the
   // account state (stats, inventory, chronicle) persists. Same-socket
   // re-logins never pass through here, so hot dev re-logins keep the
@@ -547,7 +559,7 @@ void ProtocolSession::set_broadcast(std::function<void(const Envelope&)> broadca
 std::int64_t ProtocolSession::now_ms() { return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count(); }
 std::string ProtocolSession::player_payload() const {
   JsonValue::Object player; const auto position=world_->position();
-  put(player,"uuid",identity_); put(player,"username",active_scion_name_.empty()?identity_:active_scion_name_); put(player,"socket_id",socket_id_); put(player,"sceneId",world_->scene_id()); put(player,"x",position.x); put(player,"y",position.y); put(player,"facing",world_->facing());
+  put(player,"uuid",identity_); put(player,"username",!username_.empty()?username_:(active_scion_name_.empty()?identity_:active_scion_name_)); put(player,"socket_id",socket_id_); put(player,"sceneId",world_->scene_id()); put(player,"x",position.x); put(player,"y",position.y); put(player,"facing",world_->facing());
   { const auto* actor=simulation_->actor(simulation_->scion().actor_id); put(player,"level",actor?actor->stats.level:1); }
   put(player,"passiveTree",passive_tree_json());
   put(player,"quests",quests_json());
@@ -708,6 +720,12 @@ bool parse_node_id(const std::string& id, std::string* road, int* tier, int* ind
   } catch (...) { return false; }
   return *tier >= 1 && *index >= 0;
 }
+// chronicles repository parity: relic circulation is WORLD state - a fallen
+// scion gear can surface for any survivor (party-stories), preferring the
+// fallen own account (mortality/chronicles).
+struct CirculatingRelic { GameItem item; std::string scion_id; std::string scion_name; std::string account; };
+std::vector<CirculatingRelic>& circulation_pool() { static std::vector<CirculatingRelic> pool; return pool; }
+std::mutex& circulation_mutex() { static std::mutex m; return m; }
 struct RoadGateTile { int x; int y; const char* road; };
 const RoadGateTile kRoadGates[4] = {{37, 94, "tin"}, {64, 114, "salt"}, {37, 138, "chalk"}, {12, 115, "copper"}};
 
@@ -1406,6 +1424,27 @@ void ProtocolSession::enter_road_node(const std::string& node_id, const std::fun
   quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth);
 }
 
+void ProtocolSession::enter_shared_instance(const std::string& scene_id, const std::function<void(const Envelope&)>& emit) {
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  current_node_id_.clear();
+  world_->set_block_stairs_down(false);
+  world_->set_stairs_up_returns_to_town(false);
+  world_->enter_solo_instance("dungeon", "warren");
+  world_->set_scene_id(scene_id);
+  last_instance_theme_ = world_->metadata().theme;
+  last_instance_layout_ = world_->metadata().layout;
+  emit_transition(emit, "party:scene:transition");
+  emit_ground_change(emit);
+}
+
+void ProtocolSession::leave_to_town(const std::function<void(const Envelope&)>& emit) {
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  if (world_->in_instance()) {
+    world_->return_to_surface();
+    emit_movement(emit);
+    emit_transition(emit, "party:scene:transition");
+  }
+}
 void ProtocolSession::check_road_gates(const std::function<void(const Envelope&)>& emit) {
   // gates.mjs: standing on a road-gate tile in town opens that chart.
   if (world_->in_instance()) {
@@ -1969,17 +2008,24 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
         }
       }
       // Relic circulation (D-106): an elite slain by a living scion returns
-      // one queued House heirloom to the floor where it fell.
-      if (!pending_relic_items_.empty()) {
+      // one circulating House heirloom to the floor where it fell.
+      {
         for (const auto& monster : world_->monsters()) {
           if (monster.uuid != event.target_id || monster.rarity != "elite") continue;
-          GameItem relic = pending_relic_items_.front();
-          pending_relic_items_.erase(pending_relic_items_.begin());
-          static std::atomic<std::uint64_t> kill_relic_serial{1};
-          const std::string relic_id = "relic-" + std::to_string(kill_relic_serial++);
-          world_->add_relic_ground_item(std::move(relic), monster.x, monster.y, relic_id,
-                                        relic_source_scion_id_, relic_source_scion_name_);
-          emit_message(emit, "A relic of the fallen has surfaced.");
+          CirculatingRelic relic; bool found = false;
+          { std::lock_guard<std::mutex> pool_lock(circulation_mutex());
+            auto& pool = circulation_pool();
+            for (std::size_t i2 = 0; i2 < pool.size() && !found; ++i2)
+              if (pool[i2].account == identity_) { relic = pool[i2]; pool.erase(pool.begin() + static_cast<long long>(i2)); found = true; }
+          }
+          if (found) {
+            static std::atomic<std::uint64_t> kill_relic_serial{1};
+            const std::string relic_id = "relic-" + std::to_string(kill_relic_serial++);
+            relic.item.bound_to.clear();
+            world_->add_relic_ground_item(std::move(relic.item), monster.x, monster.y, relic_id,
+                                          relic.scion_id, relic.scion_name);
+            emit_message(emit, "A relic of the fallen has surfaced.");
+          }
           break;
         }
       }
@@ -2016,6 +2062,10 @@ void ProtocolSession::handle_final_death(const std::function<void(const Envelope
   for (const auto& item : inventory_.items()) if (item.id != "coins" && item.id != "bronze-dagger") pending_relic_items_.push_back(item);
   for (const auto& [seat, item] : wear_.slots()) (void)seat, pending_relic_items_.push_back(item);
   int relic_count = static_cast<int>(pending_relic_items_.size());
+  { std::lock_guard<std::mutex> pool_lock(circulation_mutex());
+    for (const auto& item : pending_relic_items_)
+      circulation_pool().push_back({item, active_scion_id_, active_scion_name_, identity_});
+  }
   pending_relic_count_ = relic_count;
   relic_source_scion_name_ = active_scion_name_;
   relic_source_scion_id_ = active_scion_id_;
@@ -2063,6 +2113,14 @@ void ProtocolSession::handle_final_death(const std::function<void(const Envelope
   put(data, "relicCount", relic_count);
   put(data, "chronicle", chronicle_);
   emit(Envelope{"chronicles:scion-fallen", JsonValue(std::move(data))});
+  if (broadcast_) {
+    JsonValue::Object witnessed_fallen;
+    put(witnessed_fallen, "name", active_scion_name_.empty() ? (username_.empty() ? identity_ : username_) : active_scion_name_);
+    JsonValue::Object witnessed;
+    put(witnessed, "fallen", std::move(witnessed_fallen));
+    put(witnessed, "relicCount", relic_count);
+    broadcast_(Envelope{"chronicles:scion-witnessed", JsonValue(std::move(witnessed))});
+  }
   // lifecycle.js broadcastStats: the mortal death is authoritative state.
   JsonValue::Object stats;
   put(stats, "playerId", identity_);
@@ -2276,17 +2334,24 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     return;
   }
   if (envelope.event=="dev:release-relic") {
-    // dev.js dev:release-relic: drop the next queued heirloom on the active
-    // floor with its fallen-scion provenance.
-    if (!pending_relic_items_.empty()) {
-      GameItem item = pending_relic_items_.front();
-      pending_relic_items_.erase(pending_relic_items_.begin());
+    // dev.js dev:release-relic: surface the next circulating heirloom - own
+    // account first, then any House the world remembers.
+    CirculatingRelic relic; bool found = false;
+    { std::lock_guard<std::mutex> pool_lock(circulation_mutex());
+      auto& pool = circulation_pool();
+      for (std::size_t i2 = 0; i2 < pool.size() && !found; ++i2)
+        if (pool[i2].account == identity_) { relic = pool[i2]; pool.erase(pool.begin() + static_cast<long long>(i2)); found = true; }
+      if (!found && !pool.empty()) { relic = pool.front(); pool.erase(pool.begin()); found = true; }
+    }
+    if (found) {
       const auto position = world_->position();
       static std::atomic<std::uint64_t> relic_serial{1};
       const std::string relic_id = "relic-" + std::to_string(relic_serial++);
-      world_->add_relic_ground_item(std::move(item), position.x, position.y, relic_id,
-                                    relic_source_scion_id_, relic_source_scion_name_);
+      relic.item.bound_to.clear();  // circulated relics surface unbound
+      world_->add_relic_ground_item(std::move(relic.item), position.x, position.y, relic_id,
+                                    relic.scion_id, relic.scion_name);
       emit_message(emit, "A relic of the fallen has surfaced.");
+      emit_ground_change(emit);
     }
     return;
   }
@@ -2572,7 +2637,169 @@ void WebSocketServer::stop(){ if(!running_)return; running_=false; close_socket(
 }
 void WebSocketServer::accept_loop(){ while(running_){ sockaddr_in address{}; socket_length_t length=sizeof(address); const auto client=::accept(static_cast<socket_t>(listen_socket_),reinterpret_cast<sockaddr*>(&address),&length); if(client==invalid_socket){if(running_)continue;break;} auto connection=std::make_shared<Connection>(); connection->socket=client; static std::atomic<std::uint64_t> serial{1}; connection->id="native-"+std::to_string(serial++); {std::lock_guard lock(mutex_);connections_.push_back(connection);} std::thread(&WebSocketServer::handle_connection,this,connection).detach(); } }
 void WebSocketServer::handle_connection(std::shared_ptr<Connection> connection){ std::string headers; char buffer[1024]; while(headers.find("\r\n\r\n")==std::string::npos&&headers.size()<8192){ const auto got=recv(connection->socket,buffer,sizeof(buffer),0); if(got<=0){connection->close();remove_connection(connection);return;} headers.append(buffer,buffer+got); } const auto key_pos=headers.find("Sec-WebSocket-Key:"); if(key_pos==std::string::npos){connection->close();remove_connection(connection);return;} auto start=key_pos+18; while(start<headers.size()&&headers[start]==' ')++start; auto end=headers.find("\r\n",start); const auto key=headers.substr(start,end-start); const std::string response="HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: "+ws_accept_key(key)+"\r\n\r\n"; if(!send_all(connection->socket,response.data(),response.size())){connection->close();remove_connection(connection);return;} while(running_&&!connection->closed){ std::uint8_t header[2];if(!recv_all(connection->socket,header,2))break; const auto opcode=header[0]&0x0f; bool masked=(header[1]&0x80)!=0; std::uint64_t length=header[1]&0x7f; if(length==126){std::uint8_t ext[2];if(!recv_all(connection->socket,ext,2))break;length=(ext[0]<<8)|ext[1];}else if(length==127){std::uint8_t ext[8];if(!recv_all(connection->socket,ext,8))break;length=0;for(auto byte:ext)length=(length<<8)|byte;} if(length>16384||!masked)break; std::array<std::uint8_t,4> mask{};if(!recv_all(connection->socket,mask.data(),4))break;std::string payload(length,'\0');if(!recv_all(connection->socket,payload.data(),length))break;for(std::size_t i=0;i<length;++i)payload[i]^=mask[i%4]; if(opcode==8)break;if(opcode==9){std::vector<std::uint8_t> pong{0x8a,static_cast<std::uint8_t>(length)};pong.insert(pong.end(),payload.begin(),payload.end());send_all(connection->socket,pong.data(),pong.size());continue;}if(opcode==1)handle_message(connection,payload); } connection->close();remove_connection(connection); }
-void WebSocketServer::handle_message(const std::shared_ptr<Connection>& connection,const std::string& text){ Envelope envelope; std::string error;if(!parse_envelope(text,envelope,&error))return; if(envelope.event=="player:login"){const auto* guest=envelope.data.get("guestId");const auto identity=(guest&&guest->string())?*guest->string():"default-guest";const bool quick=as_bool(envelope.data.get("quickGuest"));std::shared_ptr<ProtocolSession> session;std::shared_ptr<Connection> old;{std::lock_guard lock(mutex_);auto it=sessions_.find(identity);if(it!=sessions_.end()){for(const auto& candidate:connections_)if(candidate->session==it->second&&candidate!=connection&&!candidate->closed){old=candidate;break;}session=it->second;}if(!session){std::uint64_t seed=1469598103934665603ULL;for(unsigned char c:identity)seed=(seed^c)*1099511628211ULL;session=std::make_shared<ProtocolSession>(identity,connection->id,seed,quick);sessions_[identity]=session;}else { const bool adopted = connection->session != session; session->replace_socket(connection->id); if (adopted) session->reset_world_for_new_socket(); } connection->session=session;}session->set_broadcast([this](const Envelope& event){broadcast(event);});session->set_direct_emit([connection](const Envelope& event){connection->send_text(emit_envelope(event));});if(old){old->send_text(emit_envelope(Envelope{"player:session-replaced",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",old->id}}}}}));old->shutdown_send();old->close();}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});return;} auto session=connection->session;if(!session)return;session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});}
+std::shared_ptr<ProtocolSession> WebSocketServer::session_by_username(const std::string& username) {
+  std::lock_guard lock(mutex_);
+  for (auto& [key, session] : sessions_) {
+    if (session->matches_name(username)) return session;
+  }
+  return nullptr;
+}
+
+void WebSocketServer::send_to_identity(const std::string& identity, const Envelope& envelope) {
+  std::vector<std::shared_ptr<Connection>> targets;
+  { std::lock_guard lock(mutex_);
+    for (const auto& candidate : connections_) {
+      if (candidate->session && !candidate->closed && candidate->session->identity() == identity) targets.push_back(candidate);
+    } }
+  const auto wire = emit_envelope(envelope);
+  for (auto& target : targets) target->send_text(wire);
+}
+
+void WebSocketServer::send_party_update(const ServerParty& party) {
+  JsonValue::Array members;
+  for (const auto& uuid : party.member_uuids) {
+    std::shared_ptr<ProtocolSession> session;
+    { std::lock_guard lock(mutex_); auto it = sessions_.find(uuid); if (it != sessions_.end()) session = it->second; }
+    JsonValue::Object entry;
+    put(entry, "uuid", uuid);
+    put(entry, "username", session ? session->display_name() : uuid);
+    auto ready_it = party.ready.find(uuid);
+    put(entry, "ready", ready_it != party.ready.end() && ready_it->second);
+    members.emplace_back(std::move(entry));
+  }
+  JsonValue::Object party_json;
+  put(party_json, "id", party.id);
+  put(party_json, "leaderId", party.leader_uuid);
+  put(party_json, "state", party.state);
+  put(party_json, "members", std::move(members));
+  for (const auto& uuid : party.member_uuids) {
+    send_to_identity(uuid, Envelope{"party:update", JsonValue::Object{{"party", JsonValue(party_json)}}});
+  }
+}
+
+bool WebSocketServer::handle_party_event(const std::shared_ptr<Connection>& connection, const Envelope& envelope) {
+  auto session = connection->session;
+  if (!session) return false;
+  const std::string uuid = session->identity();
+  auto emit_to_self = [&](const Envelope& out) { connection->send_text(emit_envelope(out)); };
+  if (envelope.event == "party:create") {
+    static std::atomic<std::uint64_t> party_serial{1};
+    ServerParty party;
+    party.id = "party-" + std::to_string(party_serial++);
+    party.leader_uuid = uuid;
+    party.member_uuids.push_back(uuid);
+    party.ready[uuid] = false;
+    { std::lock_guard lock(mutex_); parties_[party.id] = party; party_by_uuid_[uuid] = party.id; }
+    send_party_update(party);
+    return true;
+  }
+  auto party_of = [&](const std::string& member) -> ServerParty* {
+    auto id_it = party_by_uuid_.find(member);
+    if (id_it == party_by_uuid_.end()) return nullptr;
+    auto party_it = parties_.find(id_it->second);
+    return party_it == parties_.end() ? nullptr : &party_it->second;
+  };
+  if (envelope.event == "party:invite") {
+    const auto* name = envelope.data.get("username");
+    if (!name || !name->string()) return true;
+    auto target = session_by_username(*name->string());
+    ServerParty* party = party_of(uuid);
+    if (!target || !party) return true;
+    JsonValue::Object invite;
+    put(invite, "partyId", party->id);
+    put(invite, "invitedBy", session->display_name());
+    send_to_identity(target->identity(), Envelope{"party:invited", JsonValue::Object{{"invite", JsonValue(std::move(invite))}}});
+    return true;
+  }
+  if (envelope.event == "party:invite:accept") {
+    const auto* party_id = envelope.data.get("partyId");
+    if (!party_id || !party_id->string()) return true;
+    ServerParty snapshot;
+    { std::lock_guard lock(mutex_);
+      auto it = parties_.find(*party_id->string());
+      if (it == parties_.end()) return true;
+      it->second.member_uuids.push_back(uuid);
+      it->second.ready[uuid] = false;
+      party_by_uuid_[uuid] = it->second.id;
+      snapshot = it->second; }
+    send_party_update(snapshot);
+    return true;
+  }
+  if (envelope.event == "party:ready") {
+    ServerParty snapshot; bool found = false;
+    { std::lock_guard lock(mutex_);
+      ServerParty* party = party_of(uuid);
+      if (party) { party->ready[uuid] = true; snapshot = *party; found = true; } }
+    if (found) send_party_update(snapshot);
+    return true;
+  }
+  if (envelope.event == "party:startInstance") {
+    ServerParty snapshot; bool found = false;
+    { std::lock_guard lock(mutex_);
+      ServerParty* party = party_of(uuid);
+      if (party) {
+        party->state = "instance";
+        for (auto& [member, ready] : party->ready) ready = false;
+        snapshot = *party; found = true; } }
+    if (!found) return true;
+    const std::string scene_id = "instance-" + snapshot.id;
+    for (const auto& member : snapshot.member_uuids) {
+      std::shared_ptr<ProtocolSession> member_session;
+      { std::lock_guard lock(mutex_); auto it = sessions_.find(member); if (it != sessions_.end()) member_session = it->second; }
+      if (member_session) {
+        auto member_id = member;
+        member_session->enter_shared_instance(scene_id, [this, member_id](const Envelope& out) { send_to_identity(member_id, out); });
+      }
+    }
+    send_party_update(snapshot);
+    return true;
+  }
+  if (envelope.event == "party:leave") {
+    ServerParty snapshot; bool had_party = false;
+    { std::lock_guard lock(mutex_);
+      ServerParty* party = party_of(uuid);
+      if (party) {
+        had_party = true;
+        party->member_uuids.erase(std::remove(party->member_uuids.begin(), party->member_uuids.end(), uuid), party->member_uuids.end());
+        party->ready.erase(uuid);
+        party_by_uuid_.erase(uuid);
+        snapshot = *party; } }
+    if (!had_party) return true;
+    session->leave_to_town(emit_to_self);
+    emit_to_self(Envelope{"party:update", JsonValue::Object{{"party", JsonValue(nullptr)}}});
+    if (!snapshot.member_uuids.empty()) send_party_update(snapshot);
+    return true;
+  }
+  if (envelope.event == "party:returnToTown") {
+    ServerParty snapshot; bool in_party = false;
+    { std::lock_guard lock(mutex_);
+      ServerParty* party = party_of(uuid);
+      if (party) { party->state = "lobby"; snapshot = *party; in_party = true; } }
+    if (!in_party) return false;  // solo semantics fall through to the session handler
+    session->leave_to_town(emit_to_self);
+    session->handle(Envelope{"party:returnToTown:solo-complete", JsonValue::Object{}}, emit_to_self);
+    send_party_update(snapshot);
+    return true;
+  }
+  return false;
+}
+void WebSocketServer::handle_message(const std::shared_ptr<Connection>& connection,const std::string& text){ Envelope envelope; std::string error;if(!parse_envelope(text,envelope,&error))return; if(envelope.event=="player:login"){const auto* guest=envelope.data.get("guestId");std::string identity=(guest&&guest->string())?*guest->string():"default-guest";
+if(!(guest&&guest->string())){
+  // party.js: two concurrent anonymous sockets are two distinct players.
+  // Reuse "default-guest" only when no LIVE connection holds it; otherwise
+  // mint a serial guest identity for the newcomer.
+  std::lock_guard lock(mutex_);
+  auto existing=sessions_.find(identity);
+  if(existing!=sessions_.end()){
+    for(const auto& candidate:connections_){
+      if(candidate->session==existing->second&&candidate!=connection&&!candidate->closed){
+        static std::atomic<std::uint64_t> guest_serial{2};
+        identity="default-guest-"+std::to_string(guest_serial++);
+        break;
+      }
+    }
+  }
+}const bool quick=as_bool(envelope.data.get("quickGuest"));const auto* playtest_guest=envelope.data.get("playtestGuestId");if(playtest_guest&&playtest_guest->string())identity=*playtest_guest->string();const auto* playtest_name=envelope.data.get("playtestGuestName");std::shared_ptr<ProtocolSession> session;std::shared_ptr<Connection> old;{std::lock_guard lock(mutex_);auto it=sessions_.find(identity);if(it!=sessions_.end()){for(const auto& candidate:connections_)if(candidate->session==it->second&&candidate!=connection&&!candidate->closed){old=candidate;break;}session=it->second;}if(!session){std::uint64_t seed=1469598103934665603ULL;for(unsigned char c:identity)seed=(seed^c)*1099511628211ULL;session=std::make_shared<ProtocolSession>(identity,connection->id,seed,quick);sessions_[identity]=session;}else { const bool adopted = connection->session != session; session->replace_socket(connection->id); if (adopted) session->reset_world_for_new_socket(); } connection->session=session;}session->set_broadcast([this](const Envelope& event){broadcast(event);});if(playtest_name&&playtest_name->string())session->set_username(*playtest_name->string());session->set_direct_emit([connection](const Envelope& event){connection->send_text(emit_envelope(event));});if(old){old->send_text(emit_envelope(Envelope{"player:session-replaced",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",old->id}}}}}));old->shutdown_send();old->close();}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});return;} auto session=connection->session;if(!session)return;if(envelope.event.rfind("party:",0)==0&&handle_party_event(connection,envelope))return;session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});}
 void WebSocketServer::broadcast(const Envelope& envelope){ std::vector<std::shared_ptr<Connection>> targets; {std::lock_guard lock(mutex_);targets=connections_;} const auto wire=emit_envelope(envelope); for(const auto& candidate:targets) if(candidate->session&&!candidate->closed) candidate->send_text(wire); }
 void WebSocketServer::remove_connection(const std::shared_ptr<Connection>& connection){std::lock_guard lock(mutex_);connections_.erase(std::remove(connections_.begin(),connections_.end(),connection),connections_.end());}
 

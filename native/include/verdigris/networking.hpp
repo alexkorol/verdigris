@@ -75,6 +75,14 @@ class ProtocolSession {
                   bool quick_start);
 
   const std::string& identity() const { return identity_; }
+  const std::string& username() const { return username_; }
+  void set_username(const std::string& name) { username_ = name; }
+  std::string display_name() const {
+    return !username_.empty() ? username_ : (!active_scion_name_.empty() ? active_scion_name_ : identity_);
+  }
+  bool matches_name(const std::string& name) const {
+    return name == username_ || name == active_scion_name_ || name == identity_;
+  }
   const std::string& socket_id() const { return socket_id_; }
   std::string login_payload() const;
   std::string state_payload(const std::string& request_id) const;
@@ -89,6 +97,8 @@ class ProtocolSession {
   // advance on the tick, not only on inbound envelopes.
   void set_direct_emit(std::function<void(const Envelope&)> emit);
   void tick(std::int64_t now_ms);
+  void enter_shared_instance(const std::string& scene_id, const std::function<void(const Envelope&)>& emit);
+  void leave_to_town(const std::function<void(const Envelope&)>& emit);
 
  private:
   std::string player_payload() const;
@@ -134,6 +144,7 @@ class ProtocolSession {
   JsonValue bank_items_json() const;
   void emit_chart_screen(const std::string& road_id, const std::function<void(const Envelope&)>& emit) const;
   void enter_road_node(const std::string& node_id, const std::function<void(const Envelope&)>& emit);
+
   void check_road_gates(const std::function<void(const Envelope&)>& emit);
   void quest_trigger(const char* trigger, const std::function<void(const Envelope&)>& emit,
                      const std::string& detail_a = std::string(), const std::string& detail_b = std::string(), int depth = 0);
@@ -146,6 +157,7 @@ class ProtocolSession {
 
   std::string identity_;
   std::string socket_id_;
+  std::string username_;
   bool quick_start_ = false;
   // N5: mortal-oath lifecycle + soft respawn ward (server/core/lifecycle.js).
   std::string lifecycle_ = "alive";        // alive | awaiting-respawn | dead | permadead
@@ -254,6 +266,20 @@ class WebSocketServer {
   std::unordered_map<std::string, std::shared_ptr<ProtocolSession>> sessions_;
   std::unique_ptr<std::thread> accept_thread_;
   std::unique_ptr<std::thread> tick_thread_;
+  // party.js registry: parties are server state shared across sessions.
+  struct ServerParty {
+    std::string id;
+    std::string leader_uuid;
+    std::vector<std::string> member_uuids;
+    std::map<std::string, bool> ready;
+    std::string state = "lobby";
+  };
+  std::map<std::string, ServerParty> parties_;
+  std::map<std::string, std::string> party_by_uuid_;
+  bool handle_party_event(const std::shared_ptr<Connection>& connection, const Envelope& envelope);
+  void send_party_update(const ServerParty& party);
+  void send_to_identity(const std::string& identity, const Envelope& envelope);
+  std::shared_ptr<ProtocolSession> session_by_username(const std::string& username);
 };
 
 }  // namespace verdigris::networking

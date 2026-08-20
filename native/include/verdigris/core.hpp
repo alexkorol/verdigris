@@ -849,6 +849,7 @@ class WorldSimulation {
   void set_boss_name_override(const std::string& name) { boss_name_override_ = name; }
   void set_spawn_suppressed(bool value) { spawn_suppressed_ = value; }
   void set_scene_name(const std::string& name) { scene_name_ = name; }
+  void set_scene_id(const std::string& id) { scene_id_ = id; }
   // dev:monster:reset - revive one monster at a chosen max health for
   // deterministic comparison trials.
   bool reset_monster(const std::string& uuid, int max_health) {
