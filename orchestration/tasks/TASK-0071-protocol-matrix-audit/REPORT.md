@@ -1,8 +1,8 @@
 # TASK-0071 protocol matrix audit
 
-Coordinator: `luna-mac`  
-Worker branch: `codex/TASK-0071-protocol-matrix-audit-luna-mac`  
-Audit base: `5d8d8c60837ea826851c0ceaef04d463b2060c25`  
+Coordinator: `luna-mac`
+Worker branch: `codex/TASK-0071-protocol-matrix-audit-luna-mac`
+Audit base: `5d8d8c60837ea826851c0ceaef04d463b2060c25`
 Audit evidence commit: `b13dd7bef27579d093e899b1892fa34d78b96f70`  
 Worker tip after merging current origin tip: `e30c943e4d6c4e3ff55c66a0bbb3d6d638b2c1de`
 
