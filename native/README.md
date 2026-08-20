@@ -37,6 +37,29 @@ The client window is interactive: WASD moves, mouse aiming is represented by
 the cursor, left mouse attacks, right mouse/Space dashes, P picks up, E equips,
 and X extracts.
 
+## Owner play (one command)
+
+`native/tools/play-native.ps1` builds if the exes are missing or stale, starts
+`verdigris_server` on a free **6520–6539** port (never 6500), launches
+`verdigris_client --remote` against it, tees server output under
+`native/build/logs/`, and stops the server when the client exits.
+
+~~~powershell
+powershell -NoProfile -File native/tools/play-native.ps1
+powershell -NoProfile -File native/tools/play-native.ps1 -Local
+powershell -NoProfile -File native/tools/play-native.ps1 -Port 6521 -Rebuild
+~~~
+
+Windows desktop shortcut Target (one line):
+
+~~~text
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File <clone>\native\tools\play-native.ps1
+~~~
+
+Replace the path with this clone. Start in the repository root. Esc or closing
+the window quits; the script prints a no-orphan process check and the server log
+path.
+
 ## Build on macOS/Linux
 
 With CMake and a C++20 compiler:
