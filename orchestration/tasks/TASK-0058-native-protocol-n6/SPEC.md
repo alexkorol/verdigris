@@ -1,10 +1,11 @@
 ---
 task: TASK-0058
-title: Parity wave N6 — world web, quests, economy, party (FINAL parity wave)
-state: READY (PIPELINED — claimable only AFTER TASK-0056 N5 is INTEGRATED)
+title: Parity wave N6 — world web, quests, economy, party (final SERVER-parity wave, D-122)
+state: HOLD (D-122 — releases only after TASK-0056 N5 INTEGRATED **and** Gate A / TASK-0061 ACCEPTED)
 priority: critical (D-116 — completes full 32-scenario parity)
 owned_paths:
-  - native/**
+  - native/src/**
+  - native/tests/**  # NOT native/client/** — C3 lane owns it (D-122)
   - orchestration/tasks/TASK-0058-native-protocol-n6/**
 forbidden_paths:
   - playtest/** ; server/**, src/** read-only
