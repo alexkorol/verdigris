@@ -5,7 +5,7 @@
   12/12 after 0068 polish (architect play passes in 0064/0068 reviews).
 - Native journey parity (D-122 axis 2) has its first green gate; axis 1
   needs N5+N6; axis 3 continues via 0068 polish + renderer track.
-- Tonight: PRs #27–#34 shipped; 0067–0069 batch pending. Gate A rubric now 12/12 (0068). Reconnect works (0069). CI guards the journey (0067).
+- Tonight: PRs #27–#35 shipped; 0070+0072 batch pending. Owner launcher: `powershell -File native/tools/play-native.ps1` (one command, from clean clone). Reference scenes frozen pending owner review.
 - D-123 buffer: 3 READY after this restock.
 - Immutable objective: D-116 under D-122 three-axis parity.
 
@@ -34,9 +34,9 @@ whether the loop invites a second run.
 
 | Task | Packet | Notes |
 |---|---|---|
-| 0070 reference scenes Stage 1 | BOUNDED-DESIGN | visual baseline for renderer decision; cursor |
-| 0071 protocol matrix audit | MECHANICAL | docs truth for Gate B; mac-claude |
-| 0072 owner launcher | MECHANICAL | one-command play-native; any lane |
+| 0071 protocol matrix audit | MECHANICAL | docs truth for Gate B; mac-claude (unclaimed since 05:50) |
+| 0073 renderer backend eval | BOUNDED-DESIGN | research-only matrix for Stage 2 ADR |
+| 0074 gear-outcomes profile | MECHANICAL | 10-run timing distribution; browser lane |
 
 ## HOLD
 
@@ -56,7 +56,7 @@ whether the loop invites a second run.
 
 ## Fleet + budget
 
-- cursor (Grok 4.6): 10 tasks accepted tonight — outlier throughput,
+- cursor (Grok 4.6): 12 tasks accepted tonight — outlier throughput,
   0 false greens. Ports 6580–6599.
 - mac-claude (Sonnet): CALIBRATED high (0066 first-pass + unsolicited
   peer-verify on 0062). Ports 7000–7019, browser/JS + docs lane.

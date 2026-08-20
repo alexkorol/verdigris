@@ -1,0 +1,28 @@
+{
+  "scene": "01-route-entrance",
+  "width": 1920,
+  "height": 1080,
+  "ops": [
+    {"op":"Extraction","x":960.0000,"y":540.0000,"radius":82.0000,"value":0,"label":"stairs-up"},
+    {"op":"Scenery","x":1292.0000,"y":12.0000,"radius":0.0000,"value":0,"label":"tree"},
+    {"op":"Scenery","x":1371.0000,"y":12.0000,"radius":0.0000,"value":0,"label":"tree"},
+    {"op":"Scenery","x":365.0000,"y":115.0000,"radius":0.0000,"value":0,"label":"tree"},
+    {"op":"Scenery","x":1011.0000,"y":149.0000,"radius":0.0000,"value":0,"label":"shrine"},
+    {"op":"Scenery","x":1572.0000,"y":183.0000,"radius":0.0000,"value":0,"label":"tree"},
+    {"op":"Scenery","x":1249.0000,"y":285.0000,"radius":0.0000,"value":0,"label":"dwelling"},
+    {"op":"Scenery","x":1552.0000,"y":293.0000,"radius":0.0000,"value":0,"label":"tree"},
+    {"op":"Scenery","x":1059.0000,"y":318.0000,"radius":0.0000,"value":0,"label":"tree"},
+    {"op":"Scenery","x":688.0000,"y":319.0000,"radius":0.0000,"value":0,"label":"dwelling"},
+    {"op":"Scenery","x":1181.0000,"y":455.0000,"radius":0.0000,"value":0,"label":"tree"},
+    {"op":"Player","x":960.0000,"y":540.0000,"radius":0.0000,"value":0,"label":""},
+    {"op":"Monster","x":1568.0000,"y":540.0000,"radius":0.0000,"value":35,"label":"monster"},
+    {"op":"Scenery","x":686.0000,"y":583.0000,"radius":0.0000,"value":0,"label":"tree"},
+    {"op":"Scenery","x":603.0000,"y":693.0000,"radius":0.0000,"value":0,"label":"dwelling"},
+    {"op":"Scenery","x":297.0000,"y":897.0000,"radius":0.0000,"value":0,"label":"tree"},
+    {"op":"Hud","x":0.0000,"y":0.0000,"radius":0.0000,"value":0,"label":"LIFE 100/100"},
+    {"op":"Hud","x":0.0000,"y":0.0000,"radius":0.0000,"value":0,"label":"RESOURCE 50/50"},
+    {"op":"Hud","x":0.0000,"y":0.0000,"radius":0.0000,"value":0,"label":"Thrust ready"},
+    {"op":"Hud","x":0.0000,"y":0.0000,"radius":0.0000,"value":0,"label":"Sweep ready"},
+    {"op":"Hud","x":0.0000,"y":0.0000,"radius":0.0000,"value":0,"label":"WarCry ready"}
+  ]
+}
