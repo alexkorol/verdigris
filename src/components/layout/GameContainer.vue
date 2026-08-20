@@ -288,6 +288,7 @@ import DeathOverlay from '../ui/world/DeathOverlay.vue';
 import GuideBanner from '../ui/world/GuideBanner.vue';
 import bus from '../../core/utilities/bus.js';
 import { zoneObjective, adventureZoneTick } from '../../core/adventure-objectives.js';
+import { presentFirstFindPickup } from '../../core/player/events/loot-moment.js';
 import { shouldSurfaceGuideBeat, stripGuidePrefix } from '../../core/tutorial-beats.js';
 
 export default {
@@ -775,6 +776,37 @@ export default {
     onMounted(() => {
       nextTick(() => setDefaultChatDock());
       bus.$on('tutorial:beat', handleTutorialBeat);
+      if (typeof window !== 'undefined') {
+        window.__verdigrisOverlayCapture = {
+          setGuide(text) {
+            guideBeat.value = '';
+            nextTick(() => {
+              guideBeat.value = String(text || '');
+            });
+          },
+          showDeath(summary = {}) {
+            bus.$emit('player:death-summary', {
+              permanent: false,
+              losses: [],
+              protected: [],
+              destination: 'Delaford',
+              ...summary,
+            });
+          },
+          showLoot() {
+            presentFirstFindPickup({
+              item: {
+                uuid: `capture-loot-${Date.now()}`,
+                displayName: 'Capture Find',
+                examine: 'Stand-in for compact overlay collision capture.',
+                firstFind: true,
+                stats: { attack: { slash: 3 } },
+              },
+              player: props.game && props.game.player,
+            });
+          },
+        };
+      }
     });
 
     watch(
@@ -804,6 +836,9 @@ export default {
     onBeforeUnmount(() => {
       cleanupChatDrag();
       bus.$off('tutorial:beat', handleTutorialBeat);
+      if (typeof window !== 'undefined' && window.__verdigrisOverlayCapture) {
+        delete window.__verdigrisOverlayCapture;
+      }
       if (chatPeekClickTimer) {
         window.clearTimeout(chatPeekClickTimer);
         chatPeekClickTimer = null;
@@ -1504,6 +1539,47 @@ export default {
 @media (width > 639px) and (width <= 1100px) {
   .game-container {
     --hud-orb-size: clamp(112px, 12vw, 136px);
+  }
+}
+
+/* TASK-0059: compact laptop stack (1280x720 / 1366x768). 1920x1080 is unchanged. */
+@media (width <= 1366px) {
+  .game-container {
+    --hud-chat-clearance: calc(var(--hud-orb-size) * 0.92);
+  }
+
+  .game-container__guide-banner {
+    left: 186px;
+    right: auto;
+    transform: none;
+    max-width: calc(100% - 186px - 316px);
+  }
+
+  .game-container__party-overlay {
+    z-index: 80;
+    width: min(280px, 38%);
+    max-width: min(280px, 38%);
+    align-items: stretch;
+  }
+
+  .game-container__zone-menu {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - var(--hud-orb-size, 152px) - 340px);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .game-container__zone-note,
+  .game-container__zone-objective {
+    white-space: normal;
+  }
+
+  .game-container__chat-peek,
+  .game-container__chat-overlay {
+    left: calc(clamp(8px, 1.2vw, 18px) + min(28vw, 240px) + 12px);
+    max-width: min(280px, calc(100% - (var(--hud-orb-size) * 0.9) - 28px));
   }
 }
 </style>

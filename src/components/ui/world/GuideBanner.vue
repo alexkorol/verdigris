@@ -77,6 +77,7 @@ export default {
   flex-direction: column;
   gap: 3px;
   max-width: min(560px, calc(100% - 24px));
+  box-sizing: border-box;
   padding: 10px 14px;
   border: 1px solid rgba(224, 180, 92, 0.5);
   border-left: 3px solid var(--color-accent-strong, #e0b45c);

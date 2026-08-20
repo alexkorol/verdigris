@@ -385,6 +385,37 @@ export default {
   max-width: none;
 }
 
+/* TASK-0059: compact laptop — keep HUD orbs and a playable canvas; 1920 unchanged. */
+@media (width <= 1366px) {
+  .pane-host {
+    --pane-host-panel-bottom: calc(var(--hud-orb-size, 152px) + 120px);
+  }
+
+  .pane-host__overlay {
+    z-index: 88;
+  }
+
+  .pane-host__overlay-card--compact {
+    max-height: 100%;
+  }
+
+  .pane-host__overlay-card--compact :deep(.pane-card) {
+    max-height: calc(100dvh - var(--pane-host-panel-top) - var(--pane-host-panel-bottom) - 8px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pane-host__overlay-card--compact :deep(.pane-card__body) {
+    max-height: none;
+    overflow: auto;
+  }
+
+  .pane-host__side--inventory {
+    width: min(calc(100vw - 24px), 680px);
+    max-width: min(calc(100vw - 24px), 680px);
+  }
+}
+
 .pane-slide-enter-active,
 .pane-slide-leave-active {
   transition: opacity 180ms ease-out, transform 180ms ease-out;
