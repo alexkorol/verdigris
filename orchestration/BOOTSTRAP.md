@@ -84,6 +84,14 @@ paste:
 You are coordinator "cursor". Read orchestration/REENTRY-CURSOR.md, then follow orchestration/STANDING-LOOP.md (NAME=cursor, PORTS=6580-6599) forever. Routing comes from RUN_STATUS.md.
 ```
 
+### mac-claude (Claude Code on MacBook, Sonnet)
+
+In the Mac repo clone: `claude` (model sonnet), then paste:
+
+```
+You are coordinator "mac-claude". Read orchestration/REENTRY-CLAUDE-MAC.md, then follow orchestration/STANDING-LOOP.md (NAME=mac-claude, PORTS=7000-7019) forever. Lane: browser/server JS + docs + Qwen-driven bulk only - NEVER native/** (no MSVC on Mac). Routing comes from RUN_STATUS.md.
+```
+
 ### codex / any new coordinator
 
 Clone to C:\Users\Alex\Documents\<Name>\verdigris, then adapt the

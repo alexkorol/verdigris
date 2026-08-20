@@ -21,6 +21,7 @@
 |---|---|---|
 | 0055 browser follow-ups | BOUNDED-DESIGN | RELEASED from kimi-work (quota); cursor lane — calibration task |
 | 0058 N6 FINAL parity wave (CRITICAL) | BOUNDED-DESIGN | PIPELINED after 0056 integrates |
+| 0059 responsive overlay pass | BOUNDED-DESIGN | mac-claude lane suggested (browser-only) |
 
 ## Fleet + budget
 
@@ -31,6 +32,11 @@
 - cursor (Grok 4.6, Cursor desktop): NEW lane, clone ready at
   Documents\Cursor\verdigris, ports 6580-6599; first task calibrates
   its scorecard row.
+- mac-claude (Claude Code Sonnet, MacBook): NEW lane, ports 7000-7019 (Mac-local); browser/JS + docs + Qwen-executor only, NEVER native. First task calibrates.
+- qwen3.8 local (MacBook/Tailscale): DISPATCHABLE as of 2026-08-18
+  re-probe (6/6 clean, old thinking-runaway fixed at template). Lane:
+  MECHANICAL packets + offline eval only — no interactive loops. See
+  MODEL_SCORECARD for endpoint details.
 
 ## WATCH
 
