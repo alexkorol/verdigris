@@ -3,6 +3,7 @@
     <div
       v-if="identityLabel"
       class="hud-shell__identity"
+      :title="identityLabel"
       aria-label="House and scion"
     >
       {{ identityLabel }}
@@ -118,14 +119,16 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: visible;
   pointer-events: none;
 }
 
 .hud-shell__identity {
   position: absolute;
-  left: clamp(12px, 1.6vw, 26px);
-  bottom: calc(var(--hud-orb-size, 152px) * 0.6);
-  max-width: min(46vw, 380px);
+  left: clamp(8px, 1.2vw, 18px);
+  bottom: calc(var(--hud-orb-size, 152px) + 28px);
+  z-index: 4;
+  max-width: min(28vw, 240px);
   padding: 5px 9px;
   border: 1px solid rgba(183, 146, 79, 0.4);
   border-left: 3px solid var(--color-accent-strong, #e0b45c);
@@ -137,7 +140,7 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .hud-shell__row {

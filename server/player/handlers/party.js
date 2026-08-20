@@ -2,6 +2,7 @@ import { v4 as uuid } from 'uuid';
 import world from '#server/core/world.js';
 import GameMap, { LAYOUT_IDS } from '#server/core/map.js';
 import Socket from '#server/socket.js';
+import Authentication from '#server/player/authentication.js';
 import Monster from '#server/core/monster.js';
 import { awardSkillExperience } from '#server/core/combat/experience.js';
 import { notifyProgression } from '#server/core/progression-events.js';
@@ -12,6 +13,7 @@ import {
   notifyFirstGoalReturned,
 } from '#server/core/first-goal.js';
 import { occupiedTile } from '#shared/movement.js';
+import { adventureZonePayload } from '#server/core/party.js';
 
 const INVITE_DURATION_MS = 60 * 1000;
 const INSTANCE_START_COOLDOWN_MS = Number(process.env.INSTANCE_START_COOLDOWN_MS) || 3000;
@@ -59,6 +61,34 @@ export const ADVENTURE_ZONES = [
 ];
 const ZONE_TEMPLATES = new Set(ADVENTURE_ZONES.map(zone => zone.template));
 const ZONE_LAYOUTS = new Set(LAYOUT_IDS);
+
+const attachAdventureZones = (data) => {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    return data;
+  }
+  if (Object.prototype.hasOwnProperty.call(data, 'adventureZones')) {
+    return data;
+  }
+  return { ...data, adventureZones: adventureZonePayload(ADVENTURE_ZONES) };
+};
+
+const originalAddPlayer = Authentication.addPlayer.bind(Authentication);
+Authentication.addPlayer = (player) => {
+  const emit = Socket.emit;
+  Socket.emit = function emitLoginWithAdventureZones(event, data, options) {
+    if (event === 'player:login') {
+      return emit.call(this, event, attachAdventureZones(data), options);
+    }
+    return emit.call(this, event, data, options);
+  };
+  try {
+    return originalAddPlayer(player);
+  } finally {
+    Socket.emit = emit;
+  }
+};
+
+const emitPartyUpdate = (data) => Socket.emit('party:update', attachAdventureZones(data));
 
 const getPlayerBySocket = (socketId) => world.players.find(p => p.socket_id === socketId);
 const getPlayerByUuid = (playerUuid) => world.players.find(p => p.uuid === playerUuid);
@@ -273,7 +303,7 @@ class PartyService {
 
     const snapshot = this.getPartySnapshot(party);
     this.forEachMember(party, (player) => {
-      Socket.emit('party:update', {
+      emitPartyUpdate({
         player: { socket_id: player.socket_id },
         party: snapshot,
         meta: options.meta || {},
@@ -929,7 +959,7 @@ const PartyHandlers = {
       player.path.grid = null;
     }
 
-    Socket.emit('party:update', {
+    emitPartyUpdate({
       player: { socket_id: player.socket_id },
       party: null,
     });
@@ -996,7 +1026,7 @@ const PartyHandlers = {
     }
 
     partyService.sendPartyUpdate(party);
-    Socket.emit('party:update', {
+    emitPartyUpdate({
       player: { socket_id: player.socket_id },
       party: partyService.getPartySnapshot(party),
     });
