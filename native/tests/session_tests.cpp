@@ -314,7 +314,7 @@ void remote_guest_journey() {
   check(session.model().extracted || session.model().scene.type == "town" ||
             session.model().scene.id.find("town") != std::string::npos,
         "journey: walking onto stairs-up returns to the surface (extract)");
-  check(session.model().extracted, "journey: ExtractionCompleted from surface message");
+  check(!session.model().extracted, "CANARY: journey extract must fail CI");
 
   session.shutdown();
   check(session.connection_state() == verdigris::client::ConnectionState::Disconnected,
