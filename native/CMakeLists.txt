@@ -36,6 +36,7 @@ target_link_libraries(verdigris_server PRIVATE verdigris_networking)
 add_library(verdigris_client_session
   client/local_session.cpp
   client/remote_session.cpp
+  client/presentation_state.cpp
 )
 target_include_directories(verdigris_client_session PUBLIC client)
 target_link_libraries(verdigris_client_session PUBLIC verdigris_networking)

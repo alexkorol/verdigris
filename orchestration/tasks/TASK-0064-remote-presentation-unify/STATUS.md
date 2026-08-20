@@ -1,13 +1,12 @@
 ---
 task: TASK-0064
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: cursor
 worker_branch: codex/TASK-0064-remote-presentation-unify-cursor
 base_commit: 5c41a04821695e38261fdb52f2e86b2dea67f21d
-started_at: 2026-08-20T03:30:00-07:00
 architect_review_required: true
-expected_verification: powershell -File native/build.ps1 -RunTests -RunClientScenarios; remote render-list scenario; architect plays --remote and rescores Gate A rubric
-notes: main.cpp SINGLE-WRITER this session (0064 unifies remote onto the local presentation pipeline)
+expected_verification: powershell -File native/build.ps1 -RunTests -RunClientScenarios; architect plays --remote and rescores Gate A rubric (no zeroes, >=9/12)
+notes: main.cpp SINGLE-WRITER this session; 0061 debug painter replaced
 ---
 
-Claimed per RUN_STATUS: 0064 READY CRITICAL (Gate A red on presentation only; cursor suggested; single-writer main.cpp). Ports 6580-6599. 0066 claimed by mac-claude.
+Implemented. Remote `--remote` now uses the same `paint_scene` / billboard / HUD / camera2d pipeline as local play. No in-process Simulation in remote mode. Gates green including `remote-render-list`.

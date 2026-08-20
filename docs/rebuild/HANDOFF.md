@@ -1,5 +1,18 @@
 # Native reconstitution handoff
 
+## 2026-08-20 — TASK-0064 remote presentation unify (cursor, REVIEW_REQUESTED)
+
+- Worker `codex/TASK-0064-remote-presentation-unify-cursor` off program tip
+  `5c41a048`. `--remote` uses the local `paint_scene` pipeline (billboards,
+  FX, HUD, camera2d); the 0061 debug painter is gone. No Simulation in
+  remote mode.
+- Gates: `build.ps1 -RunTests -RunClientScenarios` green, including new
+  `remote-render-list` (Monster/Swing/Drop via paint_scene) and session
+  `render-list` ops. Architect still needs to play `--remote` and rescore
+  Gate A (no zeroes, ≥9/12).
+- Play: N enters tin route (E is Sweep); X take-underfoot; walk stairs to
+  extract. Monster/loot positions are inferred until 0063 snapshots.
+
 ## 2026-08-15 (latest) — Orchestration program active
 
 - The program is now coordinated through `orchestration/` (protocol, state,

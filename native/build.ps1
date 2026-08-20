@@ -93,7 +93,8 @@ Invoke-Msvc ('/c "' + $nativeRoot + '\tests\networking_tests.cpp" /Fo"' + $build
 Invoke-Msvc ('/c "' + $nativeRoot + '\tests\camera2d_tests.cpp" /Fo"' + $buildRoot + '\camera2d_tests.obj"')
 Invoke-Msvc ('/c "' + $nativeRoot + '\client\local_session.cpp" /Fo"' + $buildRoot + '\local_session.obj"')
 Invoke-Msvc ('/c "' + $nativeRoot + '\client\remote_session.cpp" /Fo"' + $buildRoot + '\remote_session.obj"')
-Invoke-Msvc ('/c "' + $nativeRoot + '\tests\session_tests.cpp" /Fo"' + $buildRoot + '\session_tests.obj"')
+Invoke-Msvc ('/c "' + $nativeRoot + '\client\presentation_state.cpp" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\presentation_state.obj"')
+Invoke-Msvc ('/c "' + $nativeRoot + '\tests\session_tests.cpp" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\session_tests.obj"')
 $serverCompileArguments = '/c "' + $nativeRoot + '\src\server_main.cpp" /Fo"' + $buildRoot + '\server.obj"'
 Invoke-Msvc $serverCompileArguments
 $clientCompileArguments = '/c "' + $nativeRoot + '\client\main.cpp" /DVERDIGRIS_NATIVE_WINDOWS=1 /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\client.obj"'
@@ -106,10 +107,10 @@ Invoke-Msvc $remotePlayCompileArguments -RequireNativeWindowsDefine
 Invoke-Msvc ('"' + $buildRoot + '\tests.obj" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $testExe + '"')
 Invoke-Msvc ('"' + $buildRoot + '\networking_tests.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $networkingTestExe + '" /link ws2_32.lib')
 Invoke-Msvc ('"' + $buildRoot + '\server.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $serverExe + '" /link ws2_32.lib')
-Invoke-Msvc ('"' + $buildRoot + '\client.obj" "' + $buildRoot + '\remote_play.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\local_session.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $clientExe + '" /link user32.lib gdi32.lib ws2_32.lib')
+Invoke-Msvc ('"' + $buildRoot + '\client.obj" "' + $buildRoot + '\remote_play.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $clientExe + '" /link user32.lib gdi32.lib ws2_32.lib')
 
 Invoke-Msvc ('"' + $buildRoot + '\camera2d_tests.obj" /Fe"' + $camera2dTestExe + '"')
-Invoke-Msvc ('"' + $buildRoot + '\session_tests.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\remote_session.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $sessionTestExe + '" /link ws2_32.lib')
+Invoke-Msvc ('"' + $buildRoot + '\session_tests.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $sessionTestExe + '" /link ws2_32.lib')
 
 python (Join-Path $nativeRoot "tools\check_legacy_denylist.py")
 if ($RunTests) { & $testExe }
