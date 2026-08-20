@@ -85,6 +85,16 @@ export default {
   pointer-events: none;
 }
 
+@media (width <= 1366px) {
+  .loot-moment {
+    padding-top: clamp(96px, 18vh, 160px);
+  }
+
+  .loot-moment__card {
+    width: min(400px, 86%);
+  }
+}
+
 .loot-moment__card {
   width: min(440px, 90%);
   padding: 18px 22px 16px;
