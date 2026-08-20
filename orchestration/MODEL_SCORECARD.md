@@ -19,6 +19,7 @@ identity. Recalibrate after model/harness/prompt/acceptance changes.
 | Claude Sonnet (Claude Code, MacBook) | browser infra (calibration) | 1 | 100% (0066) | 0 | first-pass; unsolicited peer-verify on 0062 first (standing-loop duty); clean lane discipline; browser/JS + docs lane |
 | Codex Luna (MacBook) | docs/audit MECHANICAL (calibration) | 1 | 100% (0071) | 0 | precise file:line citations, honest gap tables; minor notes-file naming nit; MECHANICAL-only lane holds |
 | Fable (architect) | scaffolding/reviews/integration | â€” | â€” | 0 | control plane + D-120 scaffolds |
+| Fable (architect) | solo implementation (D-124 takeover) | 1 day | delivered 32/32 attach parity + 4 PRs | 0 | ANTI-PATTERN, see INC-012: correct output, wrong actor. Cost the owner a full billing week of Claude budget for work three cheaper lanes could have done. Retired from the fleet 2026-08-20. Do not repeat: a dark fleet is a stop condition, not a takeover trigger |
 
 ## Calibration notes
 

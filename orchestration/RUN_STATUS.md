@@ -1,5 +1,18 @@
 # Run status (snapshot — rewritten each architect sweep)
 
+> **ORCHESTRATOR HANDOFF — 2026-08-20.** Fable (Claude Code) is retired
+> from the fleet; the Claude budget is exhausted for this billing week.
+> **Codex Sol holds the orchestrator role.** Entry point:
+> `orchestration/ONBOARDING-SOL-ORCHESTRATOR.md`. Read `INCIDENTS.md`
+> INC-012 before the first sweep — it is the failure that ended the
+> previous tenure, and its rules are binding on the role, not the model.
+>
+> Fleet is COLD: all three implementation lanes dark since ~08:00
+> (cursor 07:41, luna-mac 08:02, deepseek ~08:03). Confirm liveness
+> before planning. Board holds 4 READY (0073, 0077, 0078, 0079).
+> master green through PR #48; D-122 axis 1 complete at 32/32.
+
+
 ## 🌆 EVENING SUMMARY — day run 2026-08-20 (D-124), ~22:00 snapshot
 
 **Headline: SERVER/RULES PARITY COMPLETE — 32/32.** The unchanged
