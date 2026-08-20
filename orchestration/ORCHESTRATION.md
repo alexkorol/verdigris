@@ -61,7 +61,8 @@ local freedom), ARCHITECTURE (architect-only).
 ## Resource capsules (ports)
 
 - kimi-work: 6510–6529 · deepseek: 6540–6559 · kimi: 9880–9899 ·
-  architect: 6560–6579 · owner live server: 6500 (never touch) ·
+  architect: 6560–6579 · cursor (Grok 4.6): 6580–6599 ·
+  owner live server: 6500 (never touch) ·
   playtest default: 6510 (serialized — one full suite at a time per
   machine). All binds 127.0.0.1 (enforced in server/index.js default).
 

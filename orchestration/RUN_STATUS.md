@@ -19,7 +19,8 @@
 
 | Task | Packet | Notes |
 |---|---|---|
-| 0056 N5 Chronicles parity (CRITICAL) | BOUNDED-DESIGN | RE-ROUTED to deepseek lane (kimi-work quota-stalled ~15:00 mid-0055; its claim + local work preserved). deepseek: claim 0056 now. |
+| 0055 browser follow-ups | BOUNDED-DESIGN | RELEASED from kimi-work (quota); cursor lane — calibration task |
+| 0058 N6 FINAL parity wave (CRITICAL) | BOUNDED-DESIGN | PIPELINED after 0056 integrates |
 
 ## Fleet + budget
 
