@@ -6,6 +6,7 @@
 // visible failure, never a silent fallback to local play.
 
 #include <atomic>
+#include <chrono>
 #include <cstdint>
 #include <deque>
 #include <memory>
@@ -40,6 +41,10 @@ class RemoteProtocolSession final : public IClientSession {
  private:
   bool send_envelope(const verdigris::networking::Envelope& envelope);
   bool send_frame(std::uint8_t opcode, const std::string& payload);
+  bool connect_transport(std::string* error);
+  void close_transport();
+  void begin_retry(const std::string& reason);
+  void pump_retry();
   void reader_loop();
   void apply_envelope(const verdigris::networking::Envelope& envelope);
   void fail(ConnectionState state, const std::string& error);
@@ -53,6 +58,11 @@ class RemoteProtocolSession final : public IClientSession {
   std::atomic<ConnectionState> state_{ConnectionState::Idle};
   std::unique_ptr<std::thread> reader_;
   std::atomic<bool> running_{false};
+  bool wsa_started_ = false;
+  bool ever_ready_ = false;
+  bool suppress_retry_ = false;
+  int retry_attempt_ = 0;
+  std::chrono::steady_clock::time_point retry_at_{};
 
   std::mutex send_mutex_;
   std::mutex inbox_mutex_;

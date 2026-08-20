@@ -1,5 +1,13 @@
 # Native reconstitution handoff
 
+## 2026-08-20 — TASK-0069 remote reconnect/retry (cursor, REVIEW_REQUESTED)
+
+- Worker `codex/TASK-0069-remote-reconnect-cursor` off `1f45eb33`. Unexpected
+  drop enters `Retrying` (1s/2s/4s, three attempts), re-logs the same guest,
+  and resumes from the login snapshot. `player:session-replaced` stays
+  terminal `Disconnected`.
+- Gates: `build.ps1 -RunTests` green (reconnect resume + replaced no-retry).
+
 ## 2026-08-20 — TASK-0064 remote presentation unify (cursor, REVIEW_REQUESTED)
 
 - Worker `codex/TASK-0064-remote-presentation-unify-cursor` off program tip

@@ -1,6 +1,7 @@
 #include "remote_session.hpp"
 
 #include <algorithm>
+#include <chrono>
 #include <cstring>
 
 #ifdef _WIN32
@@ -174,19 +175,10 @@ RemoteProtocolSession::RemoteProtocolSession(std::string host, std::uint16_t por
 
 RemoteProtocolSession::~RemoteProtocolSession() { shutdown(); }
 
-bool RemoteProtocolSession::start(std::string* error) {
-  state_.store(ConnectionState::Connecting);
-#ifdef _WIN32
-  WSADATA data{};
-  if (WSAStartup(MAKEWORD(2, 2), &data) != 0) {
-    fail(ConnectionState::Rejected, "WSAStartup failed");
-    if (error) *error = last_error_;
-    return false;
-  }
-#endif
+bool RemoteProtocolSession::connect_transport(std::string* error) {
   const auto socket = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (socket == kInvalidSocket) {
-    fail(ConnectionState::Rejected, "socket() failed");
+    last_error_ = "socket() failed";
     if (error) *error = last_error_;
     return false;
   }
@@ -196,8 +188,7 @@ bool RemoteProtocolSession::start(std::string* error) {
   address.sin_port = htons(port_);
   if (::connect(socket, reinterpret_cast<sockaddr*>(&address), sizeof(address)) < 0) {
     close_socket(socket);
-    fail(ConnectionState::Rejected,
-         "connection refused at " + host_ + ":" + std::to_string(port_));
+    last_error_ = "connection refused at " + host_ + ":" + std::to_string(port_);
     if (error) *error = last_error_;
     return false;
   }
@@ -208,7 +199,7 @@ bool RemoteProtocolSession::start(std::string* error) {
       kWebSocketKey + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
   if (!send_all(socket, request.data(), request.size())) {
     close_socket(socket);
-    fail(ConnectionState::Rejected, "upgrade request send failed");
+    last_error_ = "upgrade request send failed";
     if (error) *error = last_error_;
     return false;
   }
@@ -223,8 +214,7 @@ bool RemoteProtocolSession::start(std::string* error) {
   if (response.find(" 101 ") == std::string::npos ||
       response.find("\r\n\r\n") == std::string::npos) {
     close_socket(socket);
-    fail(ConnectionState::ProtocolMismatch,
-         "endpoint did not complete a websocket upgrade");
+    last_error_ = "endpoint did not complete a websocket upgrade";
     if (error) *error = last_error_;
     return false;
   }
@@ -240,7 +230,80 @@ bool RemoteProtocolSession::start(std::string* error) {
       {"guestId", JsonValue(guest_id_)},
       {"quickGuest", JsonValue(quick_guest_)}}};
   if (!send_envelope(login)) {
-    fail(ConnectionState::Disconnected, "login send failed");
+    last_error_ = "login send failed";
+    if (error) *error = last_error_;
+    close_transport();
+    return false;
+  }
+  return true;
+}
+
+void RemoteProtocolSession::close_transport() {
+  running_.store(false);
+  if (socket_ != -1) {
+    send_frame(0x8, "");
+    close_socket(static_cast<socket_t>(socket_));
+    socket_ = -1;
+  }
+  if (reader_ && reader_->joinable()) reader_->join();
+  reader_.reset();
+}
+
+void RemoteProtocolSession::begin_retry(const std::string& reason) {
+  close_transport();
+  if (suppress_retry_ || !ever_ready_) {
+    fail(ConnectionState::Disconnected, reason);
+    return;
+  }
+  last_error_ = reason;
+  if (state_.load() != ConnectionState::Retrying) {
+    pending_events_.push_back(
+        {PresentationEventType::ConnectionLost, "", "", reason, 0});
+  }
+  if (retry_attempt_ >= 3) {
+    fail(ConnectionState::Disconnected, "reconnect failed after 3 attempts");
+    return;
+  }
+  static constexpr int kBackoffMs[3] = {1000, 2000, 4000};
+  state_.store(ConnectionState::Retrying);
+  retry_at_ = std::chrono::steady_clock::now() +
+              std::chrono::milliseconds(kBackoffMs[retry_attempt_]);
+}
+
+void RemoteProtocolSession::pump_retry() {
+  if (state_.load() != ConnectionState::Retrying) return;
+  if (std::chrono::steady_clock::now() < retry_at_) return;
+  if (retry_attempt_ >= 3) {
+    fail(ConnectionState::Disconnected, "reconnect failed after 3 attempts");
+    return;
+  }
+  std::string error;
+  if (connect_transport(&error)) return;
+  ++retry_attempt_;
+  if (retry_attempt_ >= 3) {
+    fail(ConnectionState::Disconnected, "reconnect failed after 3 attempts");
+    return;
+  }
+  static constexpr int kBackoffMs[3] = {1000, 2000, 4000};
+  retry_at_ = std::chrono::steady_clock::now() +
+              std::chrono::milliseconds(kBackoffMs[retry_attempt_]);
+}
+
+bool RemoteProtocolSession::start(std::string* error) {
+  state_.store(ConnectionState::Connecting);
+#ifdef _WIN32
+  WSADATA data{};
+  if (WSAStartup(MAKEWORD(2, 2), &data) != 0) {
+    fail(ConnectionState::Rejected, "WSAStartup failed");
+    if (error) *error = last_error_;
+    return false;
+  }
+  wsa_started_ = true;
+#endif
+  if (!connect_transport(error)) {
+    const bool protocol = last_error_.find("websocket") != std::string::npos;
+    fail(protocol ? ConnectionState::ProtocolMismatch : ConnectionState::Rejected,
+         last_error_);
     if (error) *error = last_error_;
     return false;
   }
@@ -248,20 +311,18 @@ bool RemoteProtocolSession::start(std::string* error) {
 }
 
 void RemoteProtocolSession::shutdown() {
-  running_.store(false);
-  if (socket_ != -1) {
-    send_frame(0x8, "");  // close frame; best effort
-    close_socket(static_cast<socket_t>(socket_));
-    socket_ = -1;
-  }
-  if (reader_ && reader_->joinable()) reader_->join();
-  reader_.reset();
+  suppress_retry_ = true;
+  close_transport();
   const auto state = state_.load();
-  if (state == ConnectionState::Connected || state == ConnectionState::Ready) {
+  if (state == ConnectionState::Connecting || state == ConnectionState::Connected ||
+      state == ConnectionState::Ready || state == ConnectionState::Retrying) {
     state_.store(ConnectionState::Disconnected);
   }
 #ifdef _WIN32
-  WSACleanup();
+  if (wsa_started_) {
+    WSACleanup();
+    wsa_started_ = false;
+  }
 #endif
 }
 
@@ -325,9 +386,6 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
 }
 
 void RemoteProtocolSession::poll() {
-  if (peer_dropped_.exchange(false)) {
-    fail(ConnectionState::Disconnected, "server closed the connection");
-  }
   std::deque<std::string> batch;
   {
     std::lock_guard lock(inbox_mutex_);
@@ -342,6 +400,15 @@ void RemoteProtocolSession::poll() {
     }
     apply_envelope(envelope);
   }
+  if (peer_dropped_.exchange(false)) {
+    if (suppress_retry_ || state_.load() == ConnectionState::Disconnected ||
+        state_.load() == ConnectionState::Rejected) {
+      close_transport();
+    } else {
+      begin_retry("server closed the connection");
+    }
+  }
+  pump_retry();
 }
 
 std::vector<PresentationEvent> RemoteProtocolSession::drain_events() {
@@ -444,12 +511,16 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     }
     if (const auto* scene = envelope.data.get("scene")) apply_scene_fields(model_.scene, *scene);
     state_.store(ConnectionState::Ready);
+    ever_ready_ = true;
+    retry_attempt_ = 0;
     pending_events_.push_back(
         {PresentationEventType::SessionReady, model_.player.uuid, "", "", 0});
     return;
   }
   if (envelope.event == "player:session-replaced") {
+    suppress_retry_ = true;
     fail(ConnectionState::Disconnected, "session replaced by a newer connection");
+    close_transport();
     return;
   }
   if (envelope.event == "game:send:message") {

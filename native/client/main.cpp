@@ -918,6 +918,57 @@ void draw_ground_grid(HDC dc, const Camera& camera, const RECT& bounds) {
   }
 }
 
+// HUD reserve the architect scored as overlapping telegraph rings: vitals
+// (top-left LIFE/RESOURCE) and the skill strip (bottom-left). FX must clip
+// or fade before entering these rects (TASK-0068).
+struct HudSafeZones {
+  RECT vitals{};
+  RECT skills{};
+};
+
+HudSafeZones hud_safe_zones(const RECT& bounds) {
+  HudSafeZones zones;
+  zones.vitals = {0, 0, 248, 78};
+  const int skill_bottom = std::max(54, static_cast<int>(bounds.bottom) - 18);
+  const int skill_top = skill_bottom - 54;
+  zones.skills = {0, skill_top - 10, 380, static_cast<int>(bounds.bottom)};
+  return zones;
+}
+
+bool circle_hits_rect(double x, double y, double radius, const RECT& rc) {
+  const double nearest_x =
+      std::clamp(x, static_cast<double>(rc.left), static_cast<double>(rc.right));
+  const double nearest_y =
+      std::clamp(y, static_cast<double>(rc.top), static_cast<double>(rc.bottom));
+  const double dx = x - nearest_x;
+  const double dy = y - nearest_y;
+  return dx * dx + dy * dy <= radius * radius;
+}
+
+double clamp_radius_from_hud(double x, double y, double radius, const RECT& bounds) {
+  const HudSafeZones zones = hud_safe_zones(bounds);
+  double r = radius;
+  while (r > 4.0 && (circle_hits_rect(x, y, r, zones.vitals) ||
+                     circle_hits_rect(x, y, r, zones.skills)))
+    r -= 2.0;
+  if (circle_hits_rect(x, y, std::max(r, 4.0), zones.vitals) ||
+      circle_hits_rect(x, y, std::max(r, 4.0), zones.skills))
+    return 0.0;
+  return r;
+}
+
+bool telegraph_avoids_hud(const render::List& list, const RECT& bounds) {
+  const HudSafeZones zones = hud_safe_zones(bounds);
+  for (const auto& item : list) {
+    if (item.op != render::Op::Telegraph) continue;
+    const double radius = std::max(item.radius, 4.0);
+    if (circle_hits_rect(item.x, item.y, radius, zones.vitals) ||
+        circle_hits_rect(item.x, item.y, radius, zones.skills))
+      return false;
+  }
+  return true;
+}
+
 COLORREF telegraph_color(double visibility, COLORREF source) {
   return fade_to_background(source, std::clamp(visibility, 0.0, 1.0));
 }
@@ -963,7 +1014,16 @@ void draw_thrust_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
       telegraph.position.y + std::sin(angle) * length);
   draw_line(dc, base.x, base.y, tip.x, tip.y, edge, 2);
   const int origin_r = std::max(4, static_cast<int>(kTileUnits * 0.18 * base.scale));
-  ring_ellipse(dc, base.x, base.y, origin_r, origin_r, edge, 2);
+  const double clamped =
+      clamp_radius_from_hud(static_cast<double>(base.x), static_cast<double>(base.y),
+                            static_cast<double>(origin_r), bounds);
+  rl.back().radius = clamped;
+  if (clamped <= 0.0) {
+    rl.pop_back();
+    return;
+  }
+  ring_ellipse(dc, base.x, base.y, static_cast<int>(clamped), static_cast<int>(clamped),
+               edge, 2);
 }
 
 void draw_sweep_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
@@ -972,15 +1032,19 @@ void draw_sweep_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
   const ScreenPoint base = project(camera, bounds, telegraph.position.x,
                                    telegraph.position.y);
   const int radius = std::max(4, static_cast<int>(radius_world * base.scale));
+  const double clamped =
+      clamp_radius_from_hud(static_cast<double>(base.x), static_cast<double>(base.y),
+                            static_cast<double>(radius), bounds);
+  if (clamped <= 0.0) return;
   rl.push_back({render::Op::Telegraph, static_cast<double>(base.x),
-                static_cast<double>(base.y), static_cast<double>(radius), 0,
-                "sweep"});
+                static_cast<double>(base.y), clamped, 0, "sweep"});
   const COLORREF fill = telegraph_color(visibility * 0.28, RGB(214, 52, 52));
   const COLORREF edge = telegraph_color(visibility, RGB(238, 72, 64));
-  fill_ellipse(dc, base.x, base.y, radius, radius, fill);
-  ring_ellipse(dc, base.x, base.y, radius, radius, edge, 3);
-  if (radius > 12)
-    ring_ellipse(dc, base.x, base.y, radius - 10, radius - 10,
+  const int draw_r = static_cast<int>(clamped);
+  fill_ellipse(dc, base.x, base.y, draw_r, draw_r, fill);
+  ring_ellipse(dc, base.x, base.y, draw_r, draw_r, edge, 3);
+  if (draw_r > 12)
+    ring_ellipse(dc, base.x, base.y, draw_r - 10, draw_r - 10,
                  telegraph_color(visibility * 0.82, RGB(255, 112, 82)), 1);
 }
 
@@ -1005,6 +1069,12 @@ void paint_telegraphs(const ClientState& state, HDC dc, const RECT& bounds,
                       render::List& rl) {
   const verdigris::PresentationCatalog catalog =
       verdigris::Simulation::presentation_catalog();
+  const int saved = SaveDC(dc);
+  const HudSafeZones zones = hud_safe_zones(bounds);
+  ExcludeClipRect(dc, zones.vitals.left, zones.vitals.top, zones.vitals.right,
+                  zones.vitals.bottom);
+  ExcludeClipRect(dc, zones.skills.left, zones.skills.top, zones.skills.right,
+                  zones.skills.bottom);
   for (const auto& entry : state.telegraphs) {
     const ActiveTelegraph& telegraph = entry.second;
     const double visibility = telegraph_visibility(state, telegraph);
@@ -1015,6 +1085,7 @@ void paint_telegraphs(const ClientState& state, HDC dc, const RECT& bounds,
       draw_thrust_telegraph(dc, state.camera, bounds, telegraph, visibility,
                             catalog.thrust_range, rl);
   }
+  RestoreDC(dc, saved);
 }
 
 void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectFx& fx,
@@ -1586,11 +1657,25 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   if (world.has_extraction) {
     const ScreenPoint pad =
         project(state.camera, bounds, world.extraction.x, world.extraction.y);
-    const int pad_r = static_cast<int>(kTileUnits * 0.6 * pad.scale);
+    const int pad_r = static_cast<int>(kTileUnits * 0.9 * pad.scale);
     rl.push_back({render::Op::Extraction, static_cast<double>(pad.x),
-                  static_cast<double>(pad.y), static_cast<double>(pad_r)});
-    fill_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(41, 62, 88));
-    ring_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(88, 132, 190), 2);
+                  static_cast<double>(pad.y), static_cast<double>(pad_r), 0,
+                  "stairs-up"});
+    fill_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(36, 78, 58));
+    ring_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(120, 214, 168), 3);
+    const int inner = std::max(6, pad_r * 2 / 3);
+    ring_ellipse(dc, pad.x, pad.y, inner, inner, RGB(239, 208, 116), 2);
+    const int step = std::max(4, pad_r / 3);
+    for (int i = 0; i < 3; ++i) {
+      const int y = pad.y + pad_r / 4 - i * step;
+      draw_line(dc, pad.x - pad_r / 2 + i * 3, y, pad.x, y - step, RGB(239, 208, 116),
+                2);
+      draw_line(dc, pad.x + pad_r / 2 - i * 3, y, pad.x, y - step, RGB(239, 208, 116),
+                2);
+    }
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, RGB(239, 208, 116));
+    TextOutA(dc, pad.x - 14, pad.y + pad_r + 2, "EXIT", 4);
   }
 
   // Warnings live on the ground plane beneath billboards and loot so their
@@ -1674,11 +1759,19 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
         const SpriteBitmap& monster_sprite = monster.elite ? state.billboards.boss
                                                             : state.billboards.raider;
-        if (!draw_billboard_sprite(state.billboards, dc, monster_sprite, base,
-                                   monster.elite ? kTileUnits * 1.45 : kTileUnits * 1.25,
+        const double foe_height =
+            monster.elite ? kTileUnits * 1.85 : kTileUnits * 1.58;
+        draw_contact_shadow(dc, base, kTileUnits * 0.55);
+        {
+          const int halo_h = std::max(6, static_cast<int>(foe_height * base.scale));
+          const int halo_w = std::max(5, static_cast<int>(halo_h * 0.42));
+          fill_ellipse(dc, base.x, base.y - halo_h / 3, halo_w, halo_h / 2,
+                       RGB(72, 22, 20));
+        }
+        if (!draw_billboard_sprite(state.billboards, dc, monster_sprite, base, foe_height,
                                    monster.facing.x))
-          draw_billboard(dc, base, kTileUnits * 0.68, kTileUnits * 1.25,
-                         RGB(168, 84, 70), RGB(212, 122, 96));
+          draw_billboard(dc, base, kTileUnits * 0.88, kTileUnits * 1.12,
+                         RGB(186, 58, 44), RGB(42, 18, 16));
         const int bar_w = static_cast<int>(kTileUnits * 0.7 * base.scale);
         const int bar_y =
             base.y - static_cast<int>(kTileUnits * 1.5 * base.scale);
@@ -1766,10 +1859,41 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
 
   if (state.session) {
     const auto conn = state.session->connection_state();
+    const char* label = verdigris::client::connection_state_label(conn);
+    const std::string chip = std::string("connection ") + label;
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, chip});
+    COLORREF chip_color = RGB(185, 198, 188);
+    if (conn == verdigris::client::ConnectionState::Ready)
+      chip_color = RGB(120, 214, 168);
+    else if (conn == verdigris::client::ConnectionState::Connecting ||
+             conn == verdigris::client::ConnectionState::Connected ||
+             conn == verdigris::client::ConnectionState::Retrying)
+      chip_color = RGB(239, 208, 116);
+    else if (conn == verdigris::client::ConnectionState::Disconnected ||
+             conn == verdigris::client::ConnectionState::Rejected ||
+             conn == verdigris::client::ConnectionState::ProtocolMismatch)
+      chip_color = RGB(255, 80, 70);
+    const int chip_w = 168;
+    const int chip_h = 22;
+    const int chip_x = std::max(18, static_cast<int>(bounds.right) - chip_w - 18);
+    const int chip_y = 12;
+    RECT chip_rect{chip_x, chip_y, chip_x + chip_w, chip_y + chip_h};
+    HBRUSH chip_bg = CreateSolidBrush(RGB(25, 33, 37));
+    FillRect(dc, &chip_rect, chip_bg);
+    DeleteObject(chip_bg);
+    HPEN chip_pen = CreatePen(PS_SOLID, 1, chip_color);
+    HGDIOBJ old_chip_pen = SelectObject(dc, chip_pen);
+    HGDIOBJ old_chip_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+    Rectangle(dc, chip_rect.left, chip_rect.top, chip_rect.right, chip_rect.bottom);
+    SelectObject(dc, old_chip_brush);
+    SelectObject(dc, old_chip_pen);
+    DeleteObject(chip_pen);
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, chip_color);
+    TextOutA(dc, chip_x + 8, chip_y + 3, chip.c_str(), static_cast<int>(chip.size()));
     if (conn == verdigris::client::ConnectionState::Disconnected ||
         conn == verdigris::client::ConnectionState::Rejected ||
         conn == verdigris::client::ConnectionState::ProtocolMismatch) {
-      SetBkMode(dc, TRANSPARENT);
       SetTextColor(dc, RGB(255, 80, 70));
       const char* banner = "CONNECTION LOST — not playing offline";
       TextOutA(dc, 18, 76, banner, static_cast<int>(strlen(banner)));
@@ -2284,6 +2408,8 @@ int scenario_telegraph_dodge() {
   scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
   scenario_check(render::any(state.render_list, render::Op::Telegraph),
                  "telegraph-dodge: elite telegraph is drawn");
+  scenario_check(telegraph_avoids_hud(state.render_list, RECT{0, 0, 960, 600}),
+                 "telegraph-dodge: telegraph stays outside HUD reserve");
 
   // Dodge: dash along the facing (away from the elite) and let the windup
   // resolve across the remaining ticks.
@@ -2387,6 +2513,19 @@ int scenario_remote_render_list() {
   sync_world(state);
   state.camera.x = static_cast<double>(state.world.player.position.x);
   state.camera.y = static_cast<double>(state.world.player.position.y);
+  scenario_present(state);
+  const render::Item* extract = render::first(state.render_list, render::Op::Extraction);
+  scenario_check(extract && extract->label == "stairs-up",
+                 "remote-render-list: Extraction pad marked stairs-up");
+  bool saw_conn = false;
+  const char* conn_label =
+      verdigris::client::connection_state_label(state.session->connection_state());
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Hud &&
+        item.label == std::string("connection ") + conn_label)
+      saw_conn = true;
+  }
+  scenario_check(saw_conn, "remote-render-list: connection chip uses connection_state_label");
 
   bool saw_monster = false, saw_swing = false, saw_drop = false;
   for (int step = 0; step < 240; ++step) {
