@@ -13,10 +13,13 @@
 
 | Task | Owner | Notes |
 |---|---|---|
+| 0061 networked guest slice (Gate A) | cursor | claimed 2094e09a — critical path; single-writer main.cpp is theirs |
 | 0056 N5 Chronicles (server axis) | deepseek | STALLED ~29h (last commit 08-18 19:36; 4 dirty preserved). OWNER: relaunch dsh + re-paste /goal — it resumes the claim. Paths narrowed to native/src+tests (client is C3's now) |
 
 ## Recently integrated
 
+- 0059 (cursor) ACCEPTED first-pass 02:30 — compact overlay stack at
+  1366/1280; 55/55 capture asserts; honest defect audit. Cursor 2/2.
 - 0060 (architect) DONE 01:35 — C3 session seam: FIRST EVER native
   client↔native server WebSocket handshake (login → authoritative
   snapshot). 19/19 session tests; scenarios untouched. 0061 UNBLOCKED.
@@ -27,8 +30,7 @@
 
 | Task | Packet | Notes |
 |---|---|---|
-| 0059 responsive overlay pass | BOUNDED-DESIGN | mac-claude lane; onboarding as of 00:30 |
-| 0061 networked guest slice (Gate A) | BOUNDED-DESIGN | **READY — top priority.** Seam integrated; frozen interfaces in native/client/session.hpp |
+
 | 0058 N6 final SERVER-parity wave | BOUNDED-DESIGN | HOLD until 0056 integrated AND Gate A accepted (D-122) |
 
 ## Standing duty: peer verification
@@ -41,8 +43,8 @@ coordinator: mac-claude dispatches MECHANICAL packets to it.
 ## Fleet + budget
 
 - deepseek: STALLED mid-0056 (see RUNNING). Ports 6540–6559.
-- cursor (Grok 4.6): idle post-0055 — next: peer-verify duty or 0059 if mac-claude stays dark. Ports 6580–6599.
-- mac-claude (Sonnet): onboarding; 0059 routed. Ports 7000–7019. NEVER native/**.
+- cursor (Grok 4.6): ON FIRE — 3 claims tonight (0055+0059 accepted, 0061 running). Ports 6580–6599.
+- mac-claude (Sonnet): NO activity by 02:30 (0059 taken by cursor). If still dark at morning: owner re-check the Mac session. Ports 7000–7019. NEVER native/**.
 - kimis: quota-dead until ~08-23. codex: out of tokens.
 - architect: token-rationed (eco 3600s sweeps); 0060 is the one
   architect implementation block, per D-120.
@@ -53,7 +55,7 @@ coordinator: mac-claude dispatches MECHANICAL packets to it.
   second critical path that does NOT depend on N5.
 - kimi-work's stale 0055 clone work: discard on resume (cursor owns 0055).
 - Single-writer main.cpp: 0061 claims it session-by-session in STATUS notes.
-- loot scenario marginal timeout (1 sighting); suite contention (serialize per machine).
+- playtest marginal-timeout flake: 2nd sighting (0059 review, 31/32 then 2x 32/32). Escalation due: flake-triage task (capture failing scenario id + timing) — speccing if a 3rd sighting or when a lane frees.
 
 ## Review procedures on flip
 
