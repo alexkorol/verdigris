@@ -846,6 +846,10 @@ class WorldSimulation {
   // (unknown template -> dungeon, unknown layout -> theme default), saves the
   // pre-instance position on first entry, and places the player at a spawn.
   void enter_solo_instance(const std::string& template_id, const std::string& layout);
+  // Same resolution as walking the depth-1 entry stairs: retire the instance
+  // and restore the stashed town scene. player:extract and stairs-up both
+  // converge here (TASK-0063).
+  void return_to_surface();
   // N3 deterministic combat seam. The transport supplies the authoritative
   // player actor's level/life; this world owns tile-space targets and emits
   // protocol-ready facts without putting networking into the core.
