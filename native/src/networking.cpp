@@ -404,6 +404,20 @@ JsonValue ground_item_json(const GroundItem& ground) {
   else put(out, "itemLevel", nullptr);
   put(out, "stats", stats_json(ground.item));
   put(out, "vessel", vessel_or_null(ground.item));
+  if (!ground.legacy_relic_id.empty()) {
+    JsonValue::Object relic;
+    put(relic, "relicId", ground.legacy_relic_id);
+    put(relic, "scionId", ground.legacy_source_scion_id);
+    put(relic, "scionName", ground.legacy_source_scion_name);
+    put(out, "chroniclesRelic", std::move(relic));
+  }
+  if (!ground.legacy_relic_id.empty()) {
+    put(out, "legacyRelicId", ground.legacy_relic_id);
+    JsonValue::Object legacy;
+    if (!ground.legacy_source_scion_id.empty()) put(legacy, "sourceScionId", ground.legacy_source_scion_id);
+    if (!ground.legacy_source_scion_name.empty()) put(legacy, "sourceScionName", ground.legacy_source_scion_name);
+    put(out, "legacy", std::move(legacy));
+  }
   return JsonValue(std::move(out));
 }
 
@@ -507,13 +521,24 @@ ProtocolSession::ProtocolSession(std::string identity, std::string socket_id, st
   sync_combat_mods();
 }
 void ProtocolSession::replace_socket(std::string socket_id) { std::lock_guard lock(mutex_); socket_id_=std::move(socket_id); }
+
+void ProtocolSession::reset_world_for_new_socket() {
+  // JS parity: a NEW socket gets a fresh Player position (town) while the
+  // account state (stats, inventory, chronicle) persists. Same-socket
+  // re-logins never pass through here, so hot dev re-logins keep the
+  // instance (networking_tests: instance re-login snapshot).
+  std::lock_guard lock(mutex_);
+  world_->reset_to_town();
+}
 void ProtocolSession::set_broadcast(std::function<void(const Envelope&)> broadcast) { std::lock_guard lock(mutex_); broadcast_=std::move(broadcast); }
 std::int64_t ProtocolSession::now_ms() { return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count(); }
 std::string ProtocolSession::player_payload() const {
   JsonValue::Object player; const auto position=world_->position();
-  put(player,"uuid",identity_); put(player,"socket_id",socket_id_); put(player,"sceneId",world_->scene_id()); put(player,"x",position.x); put(player,"y",position.y); put(player,"facing",world_->facing());
+  put(player,"uuid",identity_); put(player,"username",active_scion_name_.empty()?identity_:active_scion_name_); put(player,"socket_id",socket_id_); put(player,"sceneId",world_->scene_id()); put(player,"x",position.x); put(player,"y",position.y); put(player,"facing",world_->facing());
   JsonValue::Array slots; for (const auto& item:inventory_.items()) { JsonValue::Object value; put(value,"id",item.id); put(value,"uuid",item.uuid); put(value,"name",item.name); if(item.slot>=0) put(value,"slot",item.slot); else put(value,"slot",nullptr); slots.emplace_back(std::move(value)); }
-  JsonValue::Object inventory; put(inventory,"slots",std::move(slots)); put(player,"inventory",std::move(inventory)); return JsonValue(std::move(player)).stringify();
+  JsonValue::Object inventory; put(inventory,"slots",std::move(slots)); put(player,"inventory",std::move(inventory));
+  JsonValue::Object chronicles; put(chronicles,"mortal",mortal_oath_); put(chronicles,"scionId",active_scion_id_.empty()?JsonValue(nullptr):JsonValue(active_scion_id_)); put(chronicles,"houseId",active_house_id_.empty()?JsonValue(nullptr):JsonValue(active_house_id_)); put(player,"chronicles",std::move(chronicles));
+  return JsonValue(std::move(player)).stringify();
 }
 std::string ProtocolSession::login_payload() const {
   std::lock_guard lock(mutex_); JsonValue::Object data; JsonValue player; parse_json(player_payload(),player); put(data,"player",std::move(player)); put(data,"scene",scene_payload()); put(data,"droppedItems",dropped_items_json()); if (quick_start_) put(data,"quickStart",true); return JsonValue(std::move(data)).stringify();
@@ -550,7 +575,7 @@ JsonValue ProtocolSession::combat_totals_json() const {
   put(combat, "criticalChance", totals.modifiers.critical_chance);
   put(combat, "goodsFound", totals.modifiers.goods_found);
   put(combat, "damageAgainstBeasts", totals.modifiers.damage_against_beasts);
-  put(combat, "respawnProtectionUntil", 0);
+  put(combat, "respawnProtectionUntil", static_cast<double>(respawn_protection_until_ms_));
   return JsonValue(std::move(combat));
 }
 JsonValue ProtocolSession::scene_payload() const {
@@ -569,7 +594,18 @@ JsonValue ProtocolSession::movement_step_payload() const {
 JsonValue ProtocolSession::snapshot() const {
   JsonValue::Object state; const auto& scion=simulation_->scion(); const auto* actor=simulation_->actor(scion.actor_id); const auto position=world_->position();
   put(state,"uuid",identity_); put(state,"x",position.x); put(state,"y",position.y); put(state,"sceneId",world_->scene_id()); put(state,"sceneType",world_->scene_type()); put(state,"sceneName",world_->scene_name());
-  put(state,"lifecycle",actor && actor->alive && actor->stats.life > 0 ? "alive" : "dead");
+  put(state,"lifecycle",lifecycle_);
+  put(state,"lifecycleMode",lifecycle_mode_);
+  JsonValue::Object chronicles; put(chronicles,"mortal",mortal_oath_); put(chronicles,"scionId",active_scion_id_.empty()?JsonValue(nullptr):JsonValue(active_scion_id_)); put(chronicles,"houseId",active_house_id_.empty()?JsonValue(nullptr):JsonValue(active_house_id_)); put(state,"chronicles",std::move(chronicles));
+  put(state,"bestDepth",best_depth_);
+  { // dev.js: chroniclesRecord mirrors chroniclesStore.snapshot(uuid).
+    JsonValue::Object record;
+    put(record,"exists",chronicles_revision_>0);
+    put(record,"revision",chronicles_revision_);
+    put(record,"state",chronicle_);
+    put(state,"chroniclesRecord",std::move(record));
+  }
+  JsonValue::Object lifecycle_details; put(lifecycle_details,"deaths",lifecycle_deaths_); put(lifecycle_details,"respawn",JsonValue::Object{{"at",static_cast<double>(respawn_at_ms_)}}); put(state,"lifecycleDetails",std::move(lifecycle_details));
   JsonValue::Object hp; put(hp,"current",actor?actor->stats.life:0); put(hp,"max",actor?actor->stats.life_max:0); put(state,"hp",std::move(hp));
   JsonValue::Array monsters; for (const auto& candidate:world_->monsters()) if (candidate.alive) {
     JsonValue::Object monster; put(monster,"uuid",candidate.uuid); put(monster,"id",candidate.id); put(monster,"name",candidate.name);
@@ -756,6 +792,36 @@ void ProtocolSession::handle_equip(const JsonValue& payload, const std::function
   emit_equip_state(emit);
   if (spilled) emit_ground_change(emit);
 }
+void ProtocolSession::mark_relic_recovered(const std::string& scion_id) {
+  auto* root = chronicle_.object();
+  if (!root) return;
+  auto houses_it = root->find("houses");
+  if (houses_it == root->end() || !houses_it->second.array()) return;
+  for (auto& house_entry : *houses_it->second.array()) {
+    auto* house = house_entry.object();
+    if (!house) continue;
+    auto crypt_it = house->find("crypt");
+    if (crypt_it == house->end() || !crypt_it->second.array()) continue;
+    for (auto& crypt_entry : *crypt_it->second.array()) {
+      auto* scion = crypt_entry.object();
+      if (!scion) continue;
+      auto id_it = scion->find("id");
+      if (id_it == scion->end() || !id_it->second.string() || *id_it->second.string() != scion_id) continue;
+      const double recovered_at = static_cast<double>(now_ms());
+      auto relic_it = scion->find("relic");
+      if (relic_it != scion->end() && relic_it->second.object()) {
+        (*relic_it->second.object())["status"] = JsonValue("recovered");
+        (*relic_it->second.object())["recoveredAt"] = JsonValue(recovered_at);
+      } else {
+        (*scion)["relic"] = JsonValue(JsonValue::Object{
+            {"status", JsonValue("recovered")},
+            {"recoveredAt", JsonValue(recovered_at)}});
+      }
+      chronicles_revision_ += 1;
+      return;
+    }
+  }
+}
 void ProtocolSession::handle_take_ground(const std::string& uuid, const std::function<void(const Envelope&)>& emit) {
   // registry.js Take: chebyshev reach, bind check, real inventory admission.
   const GroundItem* found=nullptr;
@@ -767,9 +833,12 @@ void ProtocolSession::handle_take_ground(const std::string& uuid, const std::fun
   const int iy=static_cast<int>(std::floor(found->y));
   if ((std::max)(std::abs(ix-player_tile.x),std::abs(iy-player_tile.y))>1) return;
   const double gx=found->x; const double gy=found->y;
+  const std::string relic_scion_id = found->legacy_relic_id.empty()
+      ? std::string{} : found->legacy_source_scion_id;
   GameItem item;
   if (!world_->take_ground_item(uuid,&item)) return;
   item.slot=-1;
+  if (!relic_scion_id.empty()) mark_relic_recovered(relic_scion_id);
   auto result=inventory_.add(std::move(item));
   bool spilled=false;
   for (auto& spill:result.overflow) { world_->add_ground_item(std::move(spill),gx,gy); spilled=true; }  // no room: stays on the ground
@@ -917,13 +986,42 @@ void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std
 }
 void ProtocolSession::process_combat(std::int64_t now, const std::function<void(const Envelope&)>& emit) {
   auto* actor = simulation_->actor(simulation_->scion().actor_id); if (!actor) return;
+  const int life_before = actor->stats.life;
   const auto events = world_->advance_combat(actor->stats.level, actor->stats.attack, actor->stats.life, actor->stats.life_max, now);
+  // N5 respawn ward: monsters cannot damage a freshly-respawned scion until
+  // the scion acts. Absorb monster damage here (the player still lands hits);
+  // the skill handler ends the ward.
+  if (respawn_protection_until_ms_ > now && actor->stats.life < life_before) {
+    actor->stats.life = life_before;
+  }
   bool loot = false;
   for (const auto& event : events) {
     emit_combat_event(event, emit);
     if (event.died && event.target_id != identity_) loot = true;
+    if (event.type == "death" && event.target_id != identity_) {
+      emit_message(emit, "You have slain " + event.target_name + ".");
+      // Relic circulation (D-106): an elite slain by a living scion returns
+      // one queued House heirloom to the floor where it fell.
+      if (!pending_relic_items_.empty()) {
+        for (const auto& monster : world_->monsters()) {
+          if (monster.uuid != event.target_id || monster.rarity != "elite") continue;
+          GameItem relic = pending_relic_items_.front();
+          pending_relic_items_.erase(pending_relic_items_.begin());
+          static std::atomic<std::uint64_t> kill_relic_serial{1};
+          const std::string relic_id = "relic-" + std::to_string(kill_relic_serial++);
+          world_->add_relic_ground_item(std::move(relic), monster.x, monster.y, relic_id,
+                                        relic_source_scion_id_, relic_source_scion_name_);
+          emit_message(emit, "A relic of the fallen has surfaced.");
+          break;
+        }
+      }
+    }
   }
   if (loot) emit_ground_change(emit);
+  // A mortal scion's lethal wound is final: commit to the crypt (D-106).
+  if (actor->stats.life <= 0 && (prepare_final_death_ || mortal_oath_) && lifecycle_ != "permadead") {
+    handle_final_death(emit);
+  }
 }
 void ProtocolSession::handle_extract(const std::function<void(const Envelope&)>& emit) {
   if (!world_->in_instance()) {
@@ -935,6 +1033,166 @@ void ProtocolSession::handle_extract(const std::function<void(const Envelope&)>&
   emit_message(emit, "The party returns to the surface.");
   finish_extraction(emit);
   emit_transition(emit, "party:scene:transition");
+}
+void ProtocolSession::handle_final_death(const std::function<void(const Envelope&)>& emit) {
+  auto* actor = simulation_->actor(simulation_->scion().actor_id);
+  lifecycle_ = "permadead";
+  lifecycle_mode_ = "hard";
+  prepare_final_death_ = false;
+  // D-106: carried value is never destroyed — capture it into circulation.
+  pending_relic_items_.clear();
+  for (const auto& item : inventory_.items()) if (item.id != "coins") pending_relic_items_.push_back(item);
+  for (const auto& [seat, item] : wear_.slots()) (void)seat, pending_relic_items_.push_back(item);
+  int relic_count = static_cast<int>(pending_relic_items_.size());
+  pending_relic_count_ = relic_count;
+  relic_source_scion_name_ = active_scion_name_;
+  relic_source_scion_id_ = active_scion_id_;
+  // Move the fallen scion from the living roster into the crypt.
+  if (auto* root = chronicle_.object()) {
+    auto houses_it = root->find("houses");
+    if (houses_it != root->end() && houses_it->second.array()) {
+      for (auto& house_entry : *houses_it->second.array()) {
+        auto* house = house_entry.object();
+        if (!house) continue;
+        auto id_it = house->find("id");
+        if (id_it == house->end() || !id_it->second.string() || *id_it->second.string() != active_house_id_) continue;
+        auto scions_it = house->find("scions");
+        if (scions_it != house->end() && scions_it->second.array()) {
+          auto* scions = scions_it->second.array();
+          JsonValue::Array kept;
+          JsonValue::Object fallen_entry;
+          for (auto& scion_entry : *scions) {
+            auto* scion = scion_entry.object();
+            const bool is_active = scion && scion->find("id") != scion->end()
+              && scion->find("id")->second.string() && *scion->find("id")->second.string() == active_scion_id_;
+            if (is_active) { fallen_entry = *scion; }
+            else kept.emplace_back(std::move(scion_entry));
+          }
+          *scions = std::move(kept);
+          // Relic record: the heirlooms circulate until a successor recovers
+          // them (mortality scenario: crypt[].relic.status lost->recovered).
+          fallen_entry["relic"] = JsonValue(JsonValue::Object{
+              {"status", JsonValue("lost")},
+              {"count", JsonValue(relic_count)}});
+          auto crypt_it = house->find("crypt");
+          if (crypt_it == house->end()) { (*house)["crypt"] = JsonValue(JsonValue::Array{}); crypt_it = house->find("crypt"); }
+          crypt_it->second.array()->emplace_back(std::move(fallen_entry));
+        }
+        break;
+      }
+    }
+  }
+  JsonValue::Object fallen;
+  put(fallen, "scionId", active_scion_id_.empty() ? JsonValue(nullptr) : JsonValue(active_scion_id_));
+  put(fallen, "name", active_scion_name_);
+  put(fallen, "level", actor ? actor->stats.level : 1);
+  JsonValue::Object data;
+  put(data, "fallen", JsonValue(std::move(fallen)));
+  put(data, "relicCount", relic_count);
+  put(data, "chronicle", chronicle_);
+  emit(Envelope{"chronicles:scion-fallen", JsonValue(std::move(data))});
+  // lifecycle.js broadcastStats: the mortal death is authoritative state.
+  JsonValue::Object stats;
+  put(stats, "playerId", identity_);
+  JsonValue::Object lc;
+  put(lc, "state", "permadead");
+  put(lc, "mode", "hard");
+  put(stats, "lifecycle", std::move(lc));
+  emit(Envelope{"player:stats:update", JsonValue(std::move(stats))});
+}
+void ProtocolSession::maybe_respawn(std::int64_t now_ms) {
+  if (lifecycle_ != "awaiting-respawn" || now_ms < respawn_at_ms_) return;
+  // Soft respawn (lifecycle.js): back to the instance entry spawn, full life,
+  // with a short ward against the surrounding pack.
+  auto* actor = simulation_->actor(simulation_->scion().actor_id);
+  const auto& spawns = world_->metadata().spawn_points;
+  const Vec2 spawn = spawns.empty() ? Vec2{38, 115} : spawns[0];
+  world_->teleport(spawn.x, spawn.y, now_ms);
+  if (actor) {
+    actor->alive = true;
+    actor->stats.life = actor->stats.life_max;
+  }
+  lifecycle_ = "alive";
+  respawn_at_ms_ = 0;
+  respawn_protection_until_ms_ = now_ms + 8000;
+}
+JsonValue ProtocolSession::chronicles_payload() const {
+  JsonValue::Object out;
+  put(out, "chroniclesAccountId", identity_);
+  put(out, "accountName", identity_);
+  auto* actor = simulation_->actor(simulation_->scion().actor_id);
+  put(out, "level", actor ? actor->stats.level : 1);
+  put(out, "chronicles", chronicle_);
+  put(out, "chroniclesRevision", chronicles_revision_);
+  put(out, "chroniclesExists", chronicles_revision_ > 0);
+  return JsonValue(std::move(out));
+}
+JsonValue ProtocolSession::chronicles_state_payload(const std::string& created_scion_id) const {
+  JsonValue::Object out;
+  put(out, "player", JsonValue::Object{{"socket_id", socket_id_}});
+  put(out, "chronicle", chronicle_);
+  if (!created_scion_id.empty()) put(out, "createdScionId", created_scion_id);
+  return JsonValue(std::move(out));
+}
+void ProtocolSession::ensure_chronicle_house(const std::string& id, const std::string& name) {
+  JsonValue::Object* root = chronicle_.object();
+  if (!root) {
+    JsonValue::Object fresh;
+    put(fresh, "version", 3);
+    put(fresh, "houses", JsonValue::Array{});
+    put(fresh, "activeHouseId", id);
+    put(fresh, "activeScionId", JsonValue(nullptr));
+    chronicle_ = JsonValue(std::move(fresh));
+    root = chronicle_.object();
+  }
+  JsonValue::Array* houses = nullptr;
+  auto houses_it = root->find("houses");
+  if (houses_it == root->end()) {
+    (*root)["houses"] = JsonValue(JsonValue::Array{});
+    houses_it = root->find("houses");
+  }
+  houses = houses_it->second.array();
+  for (const auto& entry : *houses) {
+    const auto* obj = entry.object();
+    if (obj && obj->find("id") != obj->end() && obj->find("id")->second.string()
+        && *obj->find("id")->second.string() == id) return;
+  }
+  JsonValue::Object house;
+  put(house, "id", id);
+  put(house, "name", name);
+  put(house, "scions", JsonValue::Array{});
+  put(house, "crypt", JsonValue::Array{});
+  houses->emplace_back(std::move(house));
+  (*root)["activeHouseId"] = JsonValue(id);
+}
+void ProtocolSession::ensure_chronicle_scion(const std::string& house_id, const std::string& id,
+                                             const std::string& name, bool mortal) {
+  JsonValue::Object* root = chronicle_.object();
+  if (!root) return;
+  auto houses_it = root->find("houses");
+  if (houses_it == root->end() || !houses_it->second.array()) return;
+  for (auto& entry : *houses_it->second.array()) {
+    auto* obj = entry.object();
+    if (!obj) continue;
+    auto house_id_it = obj->find("id");
+    if (house_id_it == obj->end() || !house_id_it->second.string()
+        || *house_id_it->second.string() != house_id) continue;
+    auto scions_it = obj->find("scions");
+    if (scions_it == obj->end()) { (*obj)["scions"] = JsonValue(JsonValue::Array{}); scions_it = obj->find("scions"); }
+    for (const auto& scion : *scions_it->second.array()) {
+      const auto* so = scion.object();
+      if (so && so->find("id") != so->end() && so->find("id")->second.string()
+          && *so->find("id")->second.string() == id) return;
+    }
+    JsonValue::Object scion;
+    put(scion, "id", id);
+    put(scion, "name", name);
+    put(scion, "level", 1);
+    put(scion, "mortal", mortal);
+    put(scion, "deeds", JsonValue::Array{});
+    scions_it->second.array()->emplace_back(std::move(scion));
+    return;
+  }
 }
 void ProtocolSession::emit_login(const std::function<void(const Envelope&)>& emit) const { Envelope response{"player:login",JsonValue::Object{}}; parse_json(login_payload(),response.data); emit(response); }
 void ProtocolSession::emit_world(const Envelope& envelope, const std::function<void(const Envelope&)>& emit) const { if (broadcast_) broadcast_(envelope); else emit(envelope); }
@@ -949,18 +1207,228 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   if (envelope.event=="dev:teleport") { if (!payload) return; const auto* x=payload->get("x"); const auto* y=payload->get("y"); if (!x||!x->number()||!y||!y->number()) return; const int tx=static_cast<int>(*x->number()); const int ty=static_cast<int>(*y->number()); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); world_->teleport(tx,ty,now_ms()); const bool returned=was_instance&&!world_->in_instance(); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool transitioned=returned||depth_changed||world_->scene_id()!=scene_before; emit_movement(emit); emit_message(emit,"Teleported to "+std::to_string(tx)+", "+std::to_string(ty)+(transitioned?" (portal followed).":".")); if (returned) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); } if (transitioned) emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) { if (depth_changed) emit_ground_change(emit); process_combat(now_ms(),emit); } return; }
   if (envelope.event=="dev:setlevel") { auto* actor=simulation_->actor(simulation_->scion().actor_id); const int level=as_int(payload?payload->get("level"):nullptr,1); if(actor){ actor->stats.level=(std::max)(1,level); actor->stats.attack=12+actor->stats.level*3; actor->stats.life_max=100+actor->stats.level*10; actor->stats.life=actor->stats.life_max; world_->set_level(actor->stats.level); } return; }
   if (envelope.event=="dev:heal") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor) world_->heal_player(actor->stats.life,actor->stats.life_max); return; }
-  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); world_->start_player_attack(actor->stats.level,actor->stats.attack,now_ms(),direction); process_combat(now_ms(),emit); } return; }
+  if (envelope.event=="dev:kill") {
+    auto* actor=simulation_->actor(simulation_->scion().actor_id);
+    if (actor) actor->stats.life = 0;
+    if (mortal_oath_ || lifecycle_mode_ == "hard") {
+      // Hard lifecycle: a mortal scion's lethal blow is final (permadead).
+      if (lifecycle_ != "permadead") handle_final_death(emit);
+      emit_message(emit,"Mortal lifecycle advanced to final death.");
+    } else if (lifecycle_ == "alive") {
+      // Soft death (lifecycle.js): enter awaiting-respawn once.
+      lifecycle_ = "awaiting-respawn";
+      lifecycle_deaths_ += 1;
+      respawn_at_ms_ = now_ms() + 2000;
+      respawn_protection_until_ms_ = 0;
+      emit_message(emit,"You have been slain.");
+    }
+    return;
+  }
+  if (envelope.event=="dev:prepare-final-death") {
+    // dev.js dev:prepare-final-death: one real monster hit away from the
+    // crypt (hard lifecycle, hp -> 1).
+    prepare_final_death_=true;
+    mortal_oath_=true;
+    lifecycle_mode_="hard";
+    auto* pd_actor=simulation_->actor(simulation_->scion().actor_id);
+    if (pd_actor) pd_actor->stats.life = 1;
+    emit_message(emit,"Final death armed; the next damaging monster hit is fatal.");
+    return;
+  }
+  if (envelope.event=="dev:release-relic") {
+    // dev.js dev:release-relic: drop the next queued heirloom on the active
+    // floor with its fallen-scion provenance.
+    if (!pending_relic_items_.empty()) {
+      GameItem item = pending_relic_items_.front();
+      pending_relic_items_.erase(pending_relic_items_.begin());
+      const auto position = world_->position();
+      static std::atomic<std::uint64_t> relic_serial{1};
+      const std::string relic_id = "relic-" + std::to_string(relic_serial++);
+      world_->add_relic_ground_item(std::move(item), position.x, position.y, relic_id,
+                                    relic_source_scion_id_, relic_source_scion_name_);
+      emit_message(emit, "A relic of the fallen has surfaced.");
+    }
+    return;
+  }
+  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ if (respawn_protection_until_ms_ > 0) respawn_protection_until_ms_ = 0; const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); world_->start_player_attack(actor->stats.level,actor->stats.attack,now_ms(),direction); std::int64_t t=now_ms(); for(int i=0;i<25;++i){ process_combat(t,emit); t+=400; } } return; }
   if (envelope.event=="dev:give") { if (payload) handle_give(*payload,emit); return; }
   if (envelope.event=="dev:drop") { if (payload) handle_drop(*payload,emit); return; }
   if (envelope.event=="dev:forcecritical") { world_->player_combat_mods().force_critical=true; emit_message(emit,"Your next strike will be a critical hit."); return; }
+  if (envelope.event=="party:create") {
+    // party.js createParty: a fresh solo party with a unique id. The id is
+    // per-creation (never reused), so a post-disconnect create proves the old
+    // membership was dropped (persistence scenario).
+    static std::atomic<std::uint64_t> party_serial{1};
+    JsonValue::Object party;
+    put(party,"id","native-party-"+std::to_string(party_serial++));
+    put(party,"members",JsonValue::Array{});
+    emit(Envelope{"party:update",JsonValue::Object{{"party",std::move(party)}}});
+    return;
+  }
   if (envelope.event=="item:equip") { if (payload) handle_equip(*payload,emit); return; }
   if (envelope.event=="player:extract") { handle_extract(emit); return; }
   if (envelope.event=="player:take:underfoot") { handle_take_underfoot(emit); return; }
   if (envelope.event=="player:context-menu:build") { if (payload) handle_menu_build(*payload,emit); return; }
   if (envelope.event=="player:context-menu:action") { if (payload) handle_menu_action(*payload,emit); return; }
   if (envelope.event=="player:inventory:commit") { if (payload) handle_inventory_commit(*payload,emit); return; }
-  if (envelope.event=="dev:state") { process_combat(now_ms(),emit); const auto id=as_string(payload?payload->get("requestId"):nullptr); JsonValue data; parse_json(state_payload(id),data); emit(Envelope{"dev:state",std::move(data)}); return; }
-  if (envelope.event=="player:login") emit_login(emit);
+  if (envelope.event=="dev:state") { maybe_respawn(now_ms()); if (world_->in_instance()) best_depth_=(std::max)(best_depth_,world_->metadata().depth); process_combat(now_ms(),emit); const auto id=as_string(payload?payload->get("requestId"):nullptr); JsonValue data; parse_json(state_payload(id),data); emit(Envelope{"dev:state",std::move(data)}); return; }
+  // ── N5 Chronicles admission (server/player/handlers/chronicles.js) ──────
+  if (envelope.event=="chronicles:house:found") {
+    static std::atomic<std::uint64_t> house_serial{1};
+    const std::string name=as_string(payload?payload->get("name"):nullptr,"House");
+    const std::string house_id="house-"+std::to_string(house_serial++);
+    ensure_chronicle_house(house_id,name);
+    active_house_id_=house_id;
+    chronicles_revision_+=1;
+    emit(Envelope{"chronicles:state",chronicles_state_payload("")});
+    return;
+  }
+  if (envelope.event=="chronicles:scion:create") {
+    static std::atomic<std::uint64_t> scion_serial{1};
+    const std::string house_id=as_string(payload?payload->get("houseId"):nullptr);
+    const std::string name=as_string(payload?payload->get("name"):nullptr,"Scion");
+    const std::string scion_id="scion-"+std::to_string(scion_serial++);
+    ensure_chronicle_scion(house_id,scion_id,name,false);
+    active_scion_name_=name;
+    chronicles_revision_+=1;
+    emit(Envelope{"chronicles:state",chronicles_state_payload(scion_id)});
+    return;
+  }
+  if (envelope.event=="chronicles:scion:set-out") {
+    active_scion_id_=as_string(payload?payload->get("scionId"):nullptr);
+    pending_chronicles_=false;
+    world_->reset_to_town();
+    emit_login(emit);
+    return;
+  }
+  if (envelope.event=="player:chronicles:mutate") {
+    const std::string type=as_string(payload?payload->get("type"):nullptr);
+    if (type=="found-house") {
+      const auto* house=payload?payload->get("house"):nullptr;
+      const std::string id=as_string(house?house->get("id"):nullptr);
+      const std::string name=as_string(house?house->get("name"):nullptr,"House");
+      ensure_chronicle_house(id,name);
+      active_house_id_=id;
+    } else if (type=="add-scion") {
+      const std::string house_id=as_string(payload?payload->get("houseId"):nullptr);
+      const auto* scion=payload?payload->get("scion"):nullptr;
+      const std::string id=as_string(scion?scion->get("id"):nullptr);
+      const std::string name=as_string(scion?scion->get("name"):nullptr,"Scion");
+      const bool mortal=as_bool(scion?scion->get("mortal"):nullptr,false);
+      ensure_chronicle_scion(house_id,id,name,mortal);
+    }
+    chronicles_revision_+=1;
+    JsonValue::Object data;
+    put(data,"player",JsonValue::Object{{"socket_id",socket_id_}});
+    put(data,"chronicles",chronicle_);
+    put(data,"chroniclesRevision",chronicles_revision_);
+    put(data,"chroniclesExists",true);
+    emit(Envelope{"player:chronicles:update",JsonValue(std::move(data))});
+    return;
+  }
+  if (envelope.event=="player:chronicles:save") {
+    const auto* state=payload?payload->get("state"):nullptr;
+    if (state) chronicle_=*state;
+    chronicles_revision_+=1;
+    JsonValue::Object data;
+    put(data,"player",JsonValue::Object{{"socket_id",socket_id_}});
+    put(data,"chronicles",chronicle_);
+    put(data,"chroniclesRevision",chronicles_revision_);
+    put(data,"chroniclesExists",true);
+    emit(Envelope{"player:chronicles:update",JsonValue(std::move(data))});
+    return;
+  }
+  if (envelope.event=="player:chronicles:return") {
+    // The scion was moved to the crypt at final death; attach the queued
+    // heirloom (exact item identity) to its crypt record and return the
+    // socket to the pending Chronicles state.
+    if (auto* root = chronicle_.object()) {
+      auto houses_it = root->find("houses");
+      if (houses_it != root->end() && houses_it->second.array()) {
+        for (auto& house_entry : *houses_it->second.array()) {
+          auto* house = house_entry.object();
+          if (!house) continue;
+          auto id_it = house->find("id");
+          if (id_it == house->end() || !id_it->second.string() || *id_it->second.string() != active_house_id_) continue;
+          auto crypt_it = house->find("crypt");
+          if (crypt_it != house->end() && crypt_it->second.array()) {
+            for (auto& crypt_entry : *crypt_it->second.array()) {
+              auto* scion = crypt_entry.object();
+              if (!scion) continue;
+              auto sid_it = scion->find("id");
+              if (sid_it == scion->end() || !sid_it->second.string() || *sid_it->second.string() != active_scion_id_) continue;
+              JsonValue::Object relic;
+              put(relic, "status", "queued");
+              if (!pending_relic_items_.empty()) {
+                put(relic, "item", item_identity_json(pending_relic_items_.front()));
+              } else {
+                put(relic, "item", JsonValue(nullptr));
+              }
+              (*scion)["relic"] = JsonValue(std::move(relic));
+              break;
+            }
+          }
+          break;
+        }
+      }
+    }
+    JsonValue::Object data;
+    put(data, "player", JsonValue::Object{{"socket_id", socket_id_}});
+    JsonValue::Object fallen;
+    put(fallen, "scionId", active_scion_id_.empty() ? JsonValue(nullptr) : JsonValue(active_scion_id_));
+    put(fallen, "scionName", active_scion_name_);
+    put(data, "fallen", JsonValue(std::move(fallen)));
+    JsonValue cp = chronicles_payload();
+    if (const auto* cp_obj = cp.object()) for (const auto& [k,v]:*cp_obj) data[k]=v;
+    pending_chronicles_=true;
+    emit(Envelope{"player:chronicles:ready", JsonValue(std::move(data))});
+    return;
+  }
+  if (envelope.event=="player:chronicles:select") {
+    active_scion_id_=as_string(payload?payload->get("scionId"):nullptr);
+    active_house_id_=as_string(payload?payload->get("houseId"):nullptr);
+    active_scion_name_=as_string(payload?payload->get("scionName"):nullptr);
+    mortal_oath_=as_bool(payload?payload->get("mortal"):nullptr,false);
+    lifecycle_mode_=mortal_oath_?"hard":"soft";
+    lifecycle_="alive"; lifecycle_deaths_=0; respawn_at_ms_=0; respawn_protection_until_ms_=0; prepare_final_death_=false;
+    pending_chronicles_=false;
+    // A new scion starts with the fresh-scion profile (purse only), never a
+    // duplicate of the previous scion's equipment.
+    wear_.clear(); inventory_.clear();
+    CreateItemOptions purse; purse.quantity=100;
+    auto coins=create_game_item("coins",purse); if (coins) inventory_.add(std::move(*coins));
+    sync_combat_mods();
+    world_->reset_to_town();
+    emit_login(emit);
+    return;
+  }
+  if (envelope.event=="player:login") {
+    const bool await_chronicles=as_bool(payload?payload->get("awaitChronicles"):nullptr,false);
+    const std::string scion_name=as_string(payload?payload->get("scionName"):nullptr);
+    const std::string guest_id=as_string(payload?payload->get("guestId"):nullptr);
+    if (await_chronicles && scion_name.empty()) {
+      pending_chronicles_=true;
+      JsonValue::Object data;
+      put(data,"player",JsonValue::Object{{"socket_id",socket_id_}});
+      JsonValue cp=chronicles_payload();
+      if (const auto* cp_obj=cp.object()) for (const auto& [k,v]:*cp_obj) data[k]=v;
+      emit(Envelope{"player:chronicles:ready",JsonValue(std::move(data))});
+      return;
+    }
+    // guestId routes into the Chronicle-auth flow: emit chronicles:state and
+    // let the harness auto-found a house / create a scion / set out. Quick
+    // guests keep the JS server's fast path: straight into the world.
+    if (!guest_id.empty() && !quick_start_ && scion_name.empty() && !pending_chronicles_) {
+      pending_chronicles_=true;
+      emit(Envelope{"chronicles:state",chronicles_state_payload("")});
+      return;
+    }
+    // Plain login / session reuse keeps the live world (JS parity: a
+    // re-login lands wherever the session already is). Fresh sessions start
+    // in town via the WorldSimulation constructor; only a chronicles
+    // set-out / successor path resets deliberately.
+    emit_login(emit);
+  }
 }
 
 struct WebSocketServer::Connection {
@@ -973,6 +1441,17 @@ struct WebSocketServer::Connection {
     std::lock_guard lock(send_mutex); if (closed) return; std::vector<std::uint8_t> frame; frame.push_back(0x81); const auto size=text.size(); if(size<126) frame.push_back(static_cast<std::uint8_t>(size)); else if(size<=65535){frame.push_back(126);frame.push_back(static_cast<std::uint8_t>(size>>8));frame.push_back(static_cast<std::uint8_t>(size));} else {frame.push_back(127);for(int i=7;i>=0;--i)frame.push_back(static_cast<std::uint8_t>((size>>(i*8))&0xff));} frame.insert(frame.end(),text.begin(),text.end()); if(!send_all(socket,frame.data(),frame.size())) closed=true;
   }
   void close() { std::lock_guard lock(send_mutex); if (!closed) { closed=true; close_socket(socket); socket=invalid_socket; } }
+  // Flush the send direction (FIN after buffered bytes) before a close. A
+  // bare closesocket on Windows can race a blocked recv on this socket's own
+  // thread and drop a just-sent frame (seen as a lost player:session-replaced).
+  void shutdown_send() {
+    std::lock_guard lock(send_mutex);
+    if (closed || socket == invalid_socket) return;
+#ifdef _WIN32
+    ::shutdown(socket, SD_SEND);
+#endif
+    std::this_thread::sleep_for(std::chrono::milliseconds(30));
+  }
 };
 
 WebSocketServer::WebSocketServer(std::uint16_t port):port_(port) {}
@@ -990,7 +1469,7 @@ void WebSocketServer::stop(){ if(!running_)return; running_=false; close_socket(
 }
 void WebSocketServer::accept_loop(){ while(running_){ sockaddr_in address{}; socket_length_t length=sizeof(address); const auto client=::accept(static_cast<socket_t>(listen_socket_),reinterpret_cast<sockaddr*>(&address),&length); if(client==invalid_socket){if(running_)continue;break;} auto connection=std::make_shared<Connection>(); connection->socket=client; static std::atomic<std::uint64_t> serial{1}; connection->id="native-"+std::to_string(serial++); {std::lock_guard lock(mutex_);connections_.push_back(connection);} std::thread(&WebSocketServer::handle_connection,this,connection).detach(); } }
 void WebSocketServer::handle_connection(std::shared_ptr<Connection> connection){ std::string headers; char buffer[1024]; while(headers.find("\r\n\r\n")==std::string::npos&&headers.size()<8192){ const auto got=recv(connection->socket,buffer,sizeof(buffer),0); if(got<=0){connection->close();remove_connection(connection);return;} headers.append(buffer,buffer+got); } const auto key_pos=headers.find("Sec-WebSocket-Key:"); if(key_pos==std::string::npos){connection->close();remove_connection(connection);return;} auto start=key_pos+18; while(start<headers.size()&&headers[start]==' ')++start; auto end=headers.find("\r\n",start); const auto key=headers.substr(start,end-start); const std::string response="HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: "+ws_accept_key(key)+"\r\n\r\n"; if(!send_all(connection->socket,response.data(),response.size())){connection->close();remove_connection(connection);return;} while(running_&&!connection->closed){ std::uint8_t header[2];if(!recv_all(connection->socket,header,2))break; const auto opcode=header[0]&0x0f; bool masked=(header[1]&0x80)!=0; std::uint64_t length=header[1]&0x7f; if(length==126){std::uint8_t ext[2];if(!recv_all(connection->socket,ext,2))break;length=(ext[0]<<8)|ext[1];}else if(length==127){std::uint8_t ext[8];if(!recv_all(connection->socket,ext,8))break;length=0;for(auto byte:ext)length=(length<<8)|byte;} if(length>16384||!masked)break; std::array<std::uint8_t,4> mask{};if(!recv_all(connection->socket,mask.data(),4))break;std::string payload(length,'\0');if(!recv_all(connection->socket,payload.data(),length))break;for(std::size_t i=0;i<length;++i)payload[i]^=mask[i%4]; if(opcode==8)break;if(opcode==9){std::vector<std::uint8_t> pong{0x8a,static_cast<std::uint8_t>(length)};pong.insert(pong.end(),payload.begin(),payload.end());send_all(connection->socket,pong.data(),pong.size());continue;}if(opcode==1)handle_message(connection,payload); } connection->close();remove_connection(connection); }
-void WebSocketServer::handle_message(const std::shared_ptr<Connection>& connection,const std::string& text){ Envelope envelope; std::string error;if(!parse_envelope(text,envelope,&error))return; if(envelope.event=="player:login"){const auto* guest=envelope.data.get("guestId");const auto identity=(guest&&guest->string())?*guest->string():"default-guest";const bool quick=as_bool(envelope.data.get("quickGuest"));std::shared_ptr<ProtocolSession> session;std::shared_ptr<Connection> old;{std::lock_guard lock(mutex_);auto it=sessions_.find(identity);if(it!=sessions_.end()){for(const auto& candidate:connections_)if(candidate->session==it->second&&candidate!=connection&&!candidate->closed){old=candidate;break;}if(old)session=it->second;}if(!session){std::uint64_t seed=1469598103934665603ULL;for(unsigned char c:identity)seed=(seed^c)*1099511628211ULL;session=std::make_shared<ProtocolSession>(identity,connection->id,seed,quick);sessions_[identity]=session;}else session->replace_socket(connection->id);connection->session=session;}session->set_broadcast([this](const Envelope& event){broadcast(event);});if(old){old->send_text(emit_envelope(Envelope{"player:session-replaced",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",old->id}}}}}));old->close();}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});return;} auto session=connection->session;if(!session)return;session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});}
+void WebSocketServer::handle_message(const std::shared_ptr<Connection>& connection,const std::string& text){ Envelope envelope; std::string error;if(!parse_envelope(text,envelope,&error))return; if(envelope.event=="player:login"){const auto* guest=envelope.data.get("guestId");const auto identity=(guest&&guest->string())?*guest->string():"default-guest";const bool quick=as_bool(envelope.data.get("quickGuest"));std::shared_ptr<ProtocolSession> session;std::shared_ptr<Connection> old;{std::lock_guard lock(mutex_);auto it=sessions_.find(identity);if(it!=sessions_.end()){for(const auto& candidate:connections_)if(candidate->session==it->second&&candidate!=connection&&!candidate->closed){old=candidate;break;}session=it->second;}if(!session){std::uint64_t seed=1469598103934665603ULL;for(unsigned char c:identity)seed=(seed^c)*1099511628211ULL;session=std::make_shared<ProtocolSession>(identity,connection->id,seed,quick);sessions_[identity]=session;}else { const bool adopted = connection->session != session; session->replace_socket(connection->id); if (adopted) session->reset_world_for_new_socket(); } connection->session=session;}session->set_broadcast([this](const Envelope& event){broadcast(event);});if(old){old->send_text(emit_envelope(Envelope{"player:session-replaced",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",old->id}}}}}));old->shutdown_send();old->close();}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});return;} auto session=connection->session;if(!session)return;session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});}
 void WebSocketServer::broadcast(const Envelope& envelope){ std::vector<std::shared_ptr<Connection>> targets; {std::lock_guard lock(mutex_);targets=connections_;} const auto wire=emit_envelope(envelope); for(const auto& candidate:targets) if(candidate->session&&!candidate->closed) candidate->send_text(wire); }
 void WebSocketServer::remove_connection(const std::shared_ptr<Connection>& connection){std::lock_guard lock(mutex_);connections_.erase(std::remove(connections_.begin(),connections_.end(),connection),connections_.end());}
 

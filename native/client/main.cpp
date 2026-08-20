@@ -150,9 +150,12 @@ struct BillboardAssets {
   SpriteBitmap ruin;
   SpriteBitmap dwelling;
   SpriteBitmap shrine;
+  SpriteBitmap terrain1;
+  SpriteBitmap terrain4;
   std::string root;
   std::string status = "billboards: off (fallback capsules; assets not loaded)";
   std::string scenery_status = "scenery: off (fallback shapes; assets not loaded)";
+  std::string terrain_status = "terrain: off (flat fill; terrain plates missing)";
 
   ~BillboardAssets() {
     player.reset();
@@ -162,6 +165,8 @@ struct BillboardAssets {
     ruin.reset();
     dwelling.reset();
     shrine.reset();
+    terrain1.reset();
+    terrain4.reset();
     if (gdiplus_shutdown && gdiplus_token) gdiplus_shutdown(gdiplus_token);
     if (gdiplus_module) FreeLibrary(gdiplus_module);
     if (msimg32_module) FreeLibrary(msimg32_module);
@@ -368,6 +373,89 @@ bool load_sprite(BillboardAssets& assets, const std::string& path, SpriteBitmap&
   return true;
 }
 
+bool load_terrain_plate(BillboardAssets& assets, const std::string& path,
+                        SpriteBitmap& sprite) {
+  if (!assets.create_bitmap || !assets.image_width || !assets.image_height ||
+      !assets.create_hbitmap || !assets.dispose_image)
+    return false;
+  const std::wstring filename = wide_path(path);
+  if (filename.empty()) return false;
+  GpBitmap* image = nullptr;
+  if (assets.create_bitmap(filename.c_str(), &image) != 0 || !image) return false;
+  UINT width = 0;
+  UINT height = 0;
+  HBITMAP source = nullptr;
+  const bool dimensions_ok = assets.image_width(image, &width) == 0 &&
+                             assets.image_height(image, &height) == 0 && width > 0 &&
+                             height > 0;
+  const bool bitmap_ok = dimensions_ok && assets.create_hbitmap(image, &source, 0) == 0 &&
+                         source != nullptr;
+  assets.dispose_image(image);
+  if (!bitmap_ok) {
+    if (source) DeleteObject(source);
+    return false;
+  }
+
+  BITMAPINFO info{};
+  info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  info.bmiHeader.biWidth = static_cast<LONG>(width);
+  info.bmiHeader.biHeight = -static_cast<LONG>(height);
+  info.bmiHeader.biPlanes = 1;
+  info.bmiHeader.biBitCount = 32;
+  info.bmiHeader.biCompression = BI_RGB;
+  std::vector<std::uint8_t> pixels(static_cast<std::size_t>(width) * height * 4);
+  HDC screen = GetDC(nullptr);
+  const int copied = GetDIBits(screen, source, 0, height, pixels.data(), &info,
+                               DIB_RGB_COLORS);
+  ReleaseDC(nullptr, screen);
+  DeleteObject(source);
+  if (copied == 0) return false;
+
+  for (std::size_t index = 0; index < pixels.size(); index += 4)
+    pixels[index + 3] = 255;
+
+  // 0075 rev2: the floor is context, not content. Desaturate toward
+  // luminance and pull the plate down toward the scene's dark base so
+  // actors, FX, and loot stay dominant.
+  for (std::size_t index = 0; index < pixels.size(); index += 4) {
+    const int b = pixels[index + 0];
+    const int g = pixels[index + 1];
+    const int r = pixels[index + 2];
+    const int luma = (r * 54 + g * 183 + b * 19) >> 8;
+    const auto tone = [luma](int channel) {
+      const int desaturated = (channel + luma) / 2;   // 50% toward grey
+      return static_cast<std::uint8_t>((desaturated * 140) >> 8);  // ~55% brightness
+    };
+    pixels[index + 0] = tone(b);
+    pixels[index + 1] = tone(g);
+    pixels[index + 2] = tone(r);
+  }
+
+  std::vector<std::uint8_t> mirrored(pixels.size());
+  for (UINT y = 0; y < height; ++y) {
+    for (UINT x = 0; x < width; ++x) {
+      const std::size_t source_index = (static_cast<std::size_t>(y) * width + x) * 4;
+      const std::size_t target_index =
+          (static_cast<std::size_t>(y) * width + (width - x - 1)) * 4;
+      std::memcpy(mirrored.data() + target_index, pixels.data() + source_index, 4);
+    }
+  }
+
+  sprite.reset();
+  sprite.width = static_cast<int>(width);
+  sprite.height = static_cast<int>(height);
+  sprite.base_y = static_cast<int>(height);
+  sprite.bitmap = make_dib(pixels, sprite.width, sprite.height, &sprite.dc,
+                           &sprite.old_bitmap);
+  sprite.mirror_bitmap = make_dib(mirrored, sprite.width, sprite.height,
+                                  &sprite.mirror_dc, &sprite.old_mirror_bitmap);
+  if (!sprite.ready()) {
+    sprite.reset();
+    return false;
+  }
+  return true;
+}
+
 bool initialize_gdiplus(BillboardAssets& assets) {
   assets.gdiplus_module = LoadLibraryA("gdiplus.dll");
   if (!assets.gdiplus_module) return false;
@@ -449,12 +537,26 @@ void load_billboards(BillboardAssets& assets) {
       assets.dwelling.reset();
       assets.shrine.reset();
     }
-    if (actors_loaded || scenery_loaded) return;
+
+    const bool terrain_loaded =
+        load_terrain_plate(assets, root + "\\terrain1.png", assets.terrain1) &&
+        load_terrain_plate(assets, root + "\\terrain4.png", assets.terrain4);
+    if (terrain_loaded) {
+      if (assets.root.empty()) assets.root = root;
+      assets.terrain_status = "terrain: on (terrain1 / terrain4 tiled floor)";
+    } else {
+      assets.terrain1.reset();
+      assets.terrain4.reset();
+    }
+
+    if (actors_loaded || scenery_loaded || terrain_loaded) return;
   }
   if (assets.player.ready() == false)
     assets.status = "billboards: off (fallback capsules; asset plates missing)";
   assets.scenery_status =
       "scenery: off (fallback shapes; asset plates missing)";
+  if (!assets.terrain1.ready() || !assets.terrain4.ready())
+    assets.terrain_status = "terrain: off (flat fill; terrain plates missing)";
 }
 
 std::uint64_t scenery_seed(const std::string& route_id) {
@@ -928,20 +1030,100 @@ void draw_ground_grid(HDC dc, const Camera& camera, const RECT& bounds) {
   }
 }
 
-// HUD reserve the architect scored as overlapping telegraph rings: vitals
-// (top-left LIFE/RESOURCE) and the skill strip (bottom-left). FX must clip
-// or fade before entering these rects (TASK-0068).
+bool terrain_theme_prefers_alt(const std::string& route_id) {
+  return route_id.find("marsh") != std::string::npos ||
+         route_id.find("barrow") != std::string::npos ||
+         route_id.find("circle") != std::string::npos;
+}
+
+std::uint32_t terrain_tile_hash(int tx, int ty) {
+  std::uint32_t hash = static_cast<std::uint32_t>(tx) * 374761393U +
+                       static_cast<std::uint32_t>(ty) * 668265263U;
+  hash ^= hash >> 13;
+  hash *= 1274126177U;
+  hash ^= hash >> 16;
+  return hash;
+}
+
+bool terrain_tile_uses_alt(int tx, int ty, bool theme_alt) {
+  // 0075 rev2: one dominant plate with an occasional variant — a 50/50-ish
+  // mix read as a loud checkerboard.
+  const int bucket = static_cast<int>(terrain_tile_hash(tx, ty) % 100);
+  return theme_alt ? bucket >= 12 : bucket < 12;
+}
+
+bool draw_terrain_tile(HDC dc, const SpriteBitmap& sprite, int dest_x, int dest_y,
+                       int dest_w, int dest_h, std::uint32_t hash) {
+  if (!sprite.ready()) return false;
+  // 0075 rev2: sample a hashed quadrant of the plate per tile so the grain
+  // reads finer than one plate-per-tile, without new assets.
+  const int src_w = std::max(1, sprite.width / 2);
+  const int src_h = std::max(1, sprite.height / 2);
+  const int src_x = (hash & 1u) ? src_w : 0;
+  const int src_y = (hash & 2u) ? src_h : 0;
+  return StretchBlt(dc, dest_x, dest_y, dest_w, dest_h, sprite.dc, src_x, src_y,
+                    src_w, src_h, SRCCOPY) != FALSE;
+}
+
+void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
+                const RECT& bounds, const std::string& route_id, render::List& rl) {
+  const bool tiled = assets.terrain1.ready() && assets.terrain4.ready();
+  rl.push_back({render::Op::Floor, 0.0, 0.0, 0.0, tiled ? 1 : 0,
+                tiled ? "tiled" : "flat"});
+
+  HBRUSH background = CreateSolidBrush(RGB(23, 29, 32));
+  FillRect(dc, &bounds, background);
+  DeleteObject(background);
+
+  if (!tiled) {
+    draw_ground_grid(dc, camera, bounds);
+    return;
+  }
+
+  const double range = static_cast<double>(verdigris::world_scale::kArenaHalfExtent);
+  const double tile = kTileUnits;
+  const int start_tx = static_cast<int>(std::floor((camera.x - range) / tile));
+  const int end_tx = static_cast<int>(std::ceil((camera.x + range) / tile));
+  const int start_ty = static_cast<int>(std::floor((camera.y - range) / tile));
+  const int end_ty = static_cast<int>(std::ceil((camera.y + range) / tile));
+  const bool theme_alt = terrain_theme_prefers_alt(route_id);
+  const double half = tile * 0.5;
+
+  for (int ty = start_ty; ty <= end_ty; ++ty) {
+    for (int tx = start_tx; tx <= end_tx; ++tx) {
+      const double wx = static_cast<double>(tx) * tile;
+      const double wy = static_cast<double>(ty) * tile;
+      // 0075 rev2: seam-free tiling — adjacent tiles share projected corner
+      // coordinates exactly, so no background grid bleeds through.
+      const ScreenPoint corner0 = project(camera, bounds, wx, wy);
+      const ScreenPoint corner1 = project(camera, bounds, wx + tile, wy + tile);
+      const ScreenPoint center = project(camera, bounds, wx + half, wy + half);
+      const bool use_alt = terrain_tile_uses_alt(tx, ty, theme_alt);
+      const SpriteBitmap& sprite = use_alt ? assets.terrain4 : assets.terrain1;
+      const std::string label =
+          std::string(use_alt ? "terrain4" : "terrain1") + ":" + std::to_string(tx) + ":" +
+          std::to_string(ty);
+      rl.push_back({render::Op::Tile, static_cast<double>(center.x),
+                    static_cast<double>(center.y), half * center.scale, 0, label});
+      draw_terrain_tile(dc, sprite, corner0.x, corner0.y, corner1.x - corner0.x,
+                        corner1.y - corner0.y, terrain_tile_hash(tx, ty) >> 8);
+    }
+  }
+}
+
+// HUD reserve (TASK-0068 / TASK-0076): minimap top-left; orbs + quickbar along
+// the bottom edge. FX must clip or fade before entering these rects.
 struct HudSafeZones {
-  RECT vitals{};
-  RECT skills{};
+  RECT minimap{};
+  RECT bottom_hud{};
 };
 
 HudSafeZones hud_safe_zones(const RECT& bounds) {
   HudSafeZones zones;
-  zones.vitals = {0, 0, 248, 78};
-  const int skill_bottom = std::max(54, static_cast<int>(bounds.bottom) - 18);
-  const int skill_top = skill_bottom - 54;
-  zones.skills = {0, skill_top - 10, 380, static_cast<int>(bounds.bottom)};
+  zones.minimap = {0, 0, 132, 132};
+  const int bottom = static_cast<int>(bounds.bottom);
+  const int right = static_cast<int>(bounds.right);
+  zones.bottom_hud = {0, std::max(0, bottom - 96), right, bottom};
   return zones;
 }
 
@@ -958,11 +1140,11 @@ bool circle_hits_rect(double x, double y, double radius, const RECT& rc) {
 double clamp_radius_from_hud(double x, double y, double radius, const RECT& bounds) {
   const HudSafeZones zones = hud_safe_zones(bounds);
   double r = radius;
-  while (r > 4.0 && (circle_hits_rect(x, y, r, zones.vitals) ||
-                     circle_hits_rect(x, y, r, zones.skills)))
+  while (r > 4.0 && (circle_hits_rect(x, y, r, zones.minimap) ||
+                     circle_hits_rect(x, y, r, zones.bottom_hud)))
     r -= 2.0;
-  if (circle_hits_rect(x, y, std::max(r, 4.0), zones.vitals) ||
-      circle_hits_rect(x, y, std::max(r, 4.0), zones.skills))
+  if (circle_hits_rect(x, y, std::max(r, 4.0), zones.minimap) ||
+      circle_hits_rect(x, y, std::max(r, 4.0), zones.bottom_hud))
     return 0.0;
   return r;
 }
@@ -972,8 +1154,8 @@ bool telegraph_avoids_hud(const render::List& list, const RECT& bounds) {
   for (const auto& item : list) {
     if (item.op != render::Op::Telegraph) continue;
     const double radius = std::max(item.radius, 4.0);
-    if (circle_hits_rect(item.x, item.y, radius, zones.vitals) ||
-        circle_hits_rect(item.x, item.y, radius, zones.skills))
+    if (circle_hits_rect(item.x, item.y, radius, zones.minimap) ||
+        circle_hits_rect(item.x, item.y, radius, zones.bottom_hud))
       return false;
   }
   return true;
@@ -1081,10 +1263,10 @@ void paint_telegraphs(const ClientState& state, HDC dc, const RECT& bounds,
       verdigris::Simulation::presentation_catalog();
   const int saved = SaveDC(dc);
   const HudSafeZones zones = hud_safe_zones(bounds);
-  ExcludeClipRect(dc, zones.vitals.left, zones.vitals.top, zones.vitals.right,
-                  zones.vitals.bottom);
-  ExcludeClipRect(dc, zones.skills.left, zones.skills.top, zones.skills.right,
-                  zones.skills.bottom);
+  ExcludeClipRect(dc, zones.minimap.left, zones.minimap.top, zones.minimap.right,
+                  zones.minimap.bottom);
+  ExcludeClipRect(dc, zones.bottom_hud.left, zones.bottom_hud.top, zones.bottom_hud.right,
+                  zones.bottom_hud.bottom);
   for (const auto& entry : state.telegraphs) {
     const ActiveTelegraph& telegraph = entry.second;
     const double visibility = telegraph_visibility(state, telegraph);
@@ -1560,108 +1742,232 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds,
   TextOutA(dc, left + 14, bottom - 24, controls, static_cast<int>(strlen(controls)));
 }
 
-void paint_skill_strip(const ClientState& state, HDC dc, const RECT& bounds,
-                       render::List& rl) {
+void draw_orb(HDC dc, int cx, int cy, int radius, double ratio, COLORREF fill,
+              COLORREF rim, const std::string& caption, bool pulse, render::List& rl,
+              const char* label) {
+  const int bounded = static_cast<int>(std::clamp(ratio, 0.0, 1.0) * 100.0);
+  rl.push_back({render::Op::Orb, static_cast<double>(cx), static_cast<double>(cy),
+                static_cast<double>(radius), bounded, label});
+  fill_ellipse(dc, cx, cy, radius, radius, RGB(14, 18, 20));
+  if (ratio > 0.0) {
+    HRGN outer = CreateEllipticRgn(cx - radius, cy - radius, cx + radius, cy + radius);
+    const int fill_top =
+        cy + radius - static_cast<int>(static_cast<double>(radius) * 2.0 * ratio);
+    HRGN fill_rgn = CreateRectRgn(cx - radius, fill_top, cx + radius, cy + radius);
+    HRGN clip = CreateRectRgn(0, 0, 0, 0);
+    CombineRgn(clip, outer, fill_rgn, RGN_AND);
+    SelectClipRgn(dc, clip);
+    fill_ellipse(dc, cx, cy, radius - 2, radius - 2, fill);
+    SelectClipRgn(dc, nullptr);
+    DeleteObject(clip);
+    DeleteObject(fill_rgn);
+    DeleteObject(outer);
+  }
+  const int pulse_r = pulse ? radius + 3 : radius;
+  ring_ellipse(dc, cx, cy, pulse_r, pulse_r, pulse ? RGB(220, 72, 58) : rim, pulse ? 3 : 2);
+  SetBkMode(dc, TRANSPARENT);
+  SetTextColor(dc, RGB(232, 223, 202));
+  const int text_x = cx - static_cast<int>(caption.size()) * 3;
+  TextOutA(dc, text_x, cy - 6, caption.c_str(), static_cast<int>(caption.size()));
+}
+
+void paint_vital_orbs(const WorldActor& player, std::uint64_t tick, int screen_pulse_ticks,
+                      HDC dc, const RECT& bounds, render::List& rl) {
+  if (!player.alive && player.life <= 0 && player.life_max <= 0) return;
+  constexpr int radius = 34;
+  const int bottom = static_cast<int>(bounds.bottom) - 18;
+  const int left_cx = 18 + radius;
+  const int right_cx = static_cast<int>(bounds.right) - 18 - radius;
+  const int cy = bottom - radius;
+
+  const int life_max = std::max(1, player.life_max);
+  const int resource_max = std::max(1, player.resource_max);
+  const double life_ratio =
+      std::clamp(static_cast<double>(player.life) / life_max, 0.0, 1.0);
+  const double resource_ratio =
+      std::clamp(static_cast<double>(player.resource) / resource_max, 0.0, 1.0);
+  const bool low_life = player.life * 4 < life_max;
+  const bool pulse = low_life && (screen_pulse_ticks > 0 || (tick % 24) < 12);
+
+  const std::string life_caption =
+      std::to_string(player.life) + "/" + std::to_string(player.life_max);
+  const std::string resource_caption =
+      std::to_string(player.resource) + "/" + std::to_string(player.resource_max);
+  draw_orb(dc, left_cx, cy, radius, life_ratio, RGB(177, 72, 62), RGB(214, 128, 96),
+           life_caption, pulse, rl, "life");
+  draw_orb(dc, right_cx, cy, radius, resource_ratio, RGB(58, 138, 168), RGB(120, 188, 214),
+           resource_caption, false, rl, "resource");
+}
+
+struct QuickbarSlotDef {
+  const char* key_label;
+  const char* name;
+  verdigris::ActionType action;
+};
+
+constexpr QuickbarSlotDef kQuickbarSlots[] = {
+    {"LMB", "Strike", verdigris::ActionType::Melee},
+    {"Q", "Thrust", verdigris::ActionType::Thrust},
+    {"E", "Sweep", verdigris::ActionType::Sweep},
+    {"R", "WarCry", verdigris::ActionType::WarCry},
+};
+
+void paint_quickbar(const ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
   const WorldActor& player = state.world.player;
   const verdigris::PresentationCatalog catalog =
       verdigris::Simulation::presentation_catalog();
-  for (int i = 0; i < 3; ++i) {
-    const SkillInfo& skill = kSkills[i];
-    const int resource_cost = skill_resource_cost(catalog, skill.action);
+  constexpr int slot_w = 58;
+  constexpr int slot_h = 52;
+  constexpr int gap = 8;
+  const int count = static_cast<int>(sizeof(kQuickbarSlots) / sizeof(kQuickbarSlots[0]));
+  const int strip_w = count * slot_w + (count - 1) * gap;
+  const int bottom = static_cast<int>(bounds.bottom) - 18;
+  const int top = bottom - slot_h;
+  const int left = (static_cast<int>(bounds.right) - strip_w) / 2;
+
+  HBRUSH strip_bg = CreateSolidBrush(RGB(18, 24, 26));
+  RECT strip{left - 10, top - 8, left + strip_w + 10, bottom + 4};
+  FillRect(dc, &strip, strip_bg);
+  DeleteObject(strip_bg);
+  HPEN strip_pen = CreatePen(PS_SOLID, 1, RGB(86, 116, 104));
+  HGDIOBJ old_strip_pen = SelectObject(dc, strip_pen);
+  HGDIOBJ old_strip_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+  Rectangle(dc, strip.left, strip.top, strip.right, strip.bottom);
+  SelectObject(dc, old_strip_brush);
+  SelectObject(dc, old_strip_pen);
+  DeleteObject(strip_pen);
+
+  for (int i = 0; i < count; ++i) {
+    const QuickbarSlotDef& slot = kQuickbarSlots[i];
+    const int slot_left = left + i * (slot_w + gap);
+    const int cx = slot_left + slot_w / 2;
+    const int cy = top + slot_h / 2;
+    const int resource_cost = skill_resource_cost(catalog, slot.action);
     const bool cooldown =
-        skill.action != verdigris::ActionType::WarCry &&
-        player.cooldown_ticks > 0;
+        slot.action != verdigris::ActionType::WarCry && player.cooldown_ticks > 0;
     const bool affordable = player.resource >= resource_cost;
     const bool available = player.alive && affordable && !cooldown;
-    const bool active = skill.action == verdigris::ActionType::WarCry &&
-                        player.war_cry_ticks_remaining > 0;
-    const int left = 18 + i * 116;
-    const int bottom = std::max(54, static_cast<int>(bounds.bottom) - 18);
-    const int top = bottom - 54;
-    RECT slot{left, top, left + 106, bottom};
+    const bool active =
+        slot.action == verdigris::ActionType::WarCry && player.war_cry_ticks_remaining > 0;
+
+    RECT box{slot_left, top, slot_left + slot_w, bottom};
     HBRUSH fill = CreateSolidBrush(available ? RGB(35, 42, 44) : RGB(29, 33, 34));
-    FillRect(dc, &slot, fill);
+    FillRect(dc, &box, fill);
     DeleteObject(fill);
     HPEN border = CreatePen(PS_SOLID, 1,
-                            available ? RGB(86, 116, 104) : RGB(63, 70, 68));
+                            available ? RGB(120, 164, 142) : RGB(63, 70, 68));
     HGDIOBJ old_pen = SelectObject(dc, border);
     HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
-    Rectangle(dc, slot.left, slot.top, slot.right, slot.bottom);
+    Rectangle(dc, box.left, box.top, box.right, box.bottom);
     SelectObject(dc, old_brush);
     SelectObject(dc, old_pen);
     DeleteObject(border);
-    SetBkMode(dc, TRANSPARENT);
-    SetTextColor(dc, available ? RGB(239, 208, 116) : RGB(112, 119, 115));
-    TextOutA(dc, left + 8, slot.top + 7, &skill.key, 1);
-    SetTextColor(dc, available ? RGB(205, 221, 207) : RGB(112, 119, 115));
-    const std::string name_and_cost = std::string(skill.name) + "  " +
-                                      std::to_string(resource_cost);
-    TextOutA(dc, left + 25, slot.top + 7, name_and_cost.c_str(),
-             static_cast<int>(name_and_cost.size()));
-    std::string state_text;
-    if (active) {
-      state_text = "active " + std::to_string(player.war_cry_ticks_remaining);
-    } else if (cooldown) {
-      state_text = "cooldown " + std::to_string(player.cooldown_ticks);
-    } else if (!affordable) {
-      state_text = "need " + std::to_string(resource_cost);
-    } else {
-      state_text = "ready";
+
+    if (cooldown && player.cooldown_ticks > 0) {
+      const int max_ticks = 30;
+      const double sweep =
+          std::clamp(static_cast<double>(player.cooldown_ticks) / max_ticks, 0.0, 1.0);
+      const int overlay_h = static_cast<int>(slot_h * sweep);
+      RECT overlay{box.left, box.top, box.right, box.top + overlay_h};
+      HBRUSH overlay_brush = CreateSolidBrush(RGB(10, 12, 14));
+      FillRect(dc, &overlay, overlay_brush);
+      DeleteObject(overlay_brush);
     }
-    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
-                  std::string(skill.name) + " " + state_text});
-    TextOutA(dc, left + 25, slot.top + 29, state_text.c_str(),
-             static_cast<int>(state_text.size()));
+
+    rl.push_back({render::Op::Quickbar, static_cast<double>(cx), static_cast<double>(cy),
+                  static_cast<double>(slot_w), active ? 1 : 0,
+                  std::string(slot.key_label) + ":" + slot.name});
+
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, RGB(239, 208, 116));
+    TextOutA(dc, box.left + 6, box.top + 4, slot.key_label,
+             static_cast<int>(strlen(slot.key_label)));
+    SetTextColor(dc, available ? RGB(205, 221, 207) : RGB(112, 119, 115));
+    TextOutA(dc, box.left + 6, box.top + 22, slot.name, static_cast<int>(strlen(slot.name)));
   }
 }
 
-void paint_resource_hud(const WorldActor& player, HDC dc, render::List& rl) {
-  if (!player.alive && player.life <= 0 && player.life_max <= 0) return;
-  constexpr int left = 18;
-  constexpr int width = 200;
-  constexpr int height = 8;
-  const auto draw_bar = [&](int y, const char* label, int value, int maximum,
-                            COLORREF color) {
-    const int bounded_maximum = std::max(1, maximum);
-    const double ratio = std::clamp(static_cast<double>(value) / bounded_maximum,
-                                    0.0, 1.0);
-    SetBkMode(dc, TRANSPARENT);
-    SetTextColor(dc, RGB(185, 198, 188));
-    const std::string caption = std::string(label) + " " + std::to_string(value) +
-                                "/" + std::to_string(maximum);
-    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, caption});
-    TextOutA(dc, left, y - 15, caption.c_str(), static_cast<int>(caption.size()));
-    RECT background{left, y, left + width, y + height};
-    HBRUSH back_brush = CreateSolidBrush(RGB(45, 51, 50));
-    FillRect(dc, &background, back_brush);
-    DeleteObject(back_brush);
-    RECT fill{left, y, left + static_cast<int>(width * ratio), y + height};
-    HBRUSH fill_brush = CreateSolidBrush(color);
-    FillRect(dc, &fill, fill_brush);
-    DeleteObject(fill_brush);
-    HPEN border = CreatePen(PS_SOLID, 1, RGB(92, 104, 99));
-    HGDIOBJ old_pen = SelectObject(dc, border);
-    HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
-    Rectangle(dc, background.left, background.top, background.right, background.bottom);
-    SelectObject(dc, old_brush);
-    SelectObject(dc, old_pen);
-    DeleteObject(border);
+void paint_minimap(const ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
+  constexpr int kSize = 108;
+  constexpr int margin = 12;
+  RECT panel{margin, margin, margin + kSize, margin + kSize};
+  HBRUSH panel_bg = CreateSolidBrush(RGB(16, 22, 24));
+  FillRect(dc, &panel, panel_bg);
+  DeleteObject(panel_bg);
+  HPEN panel_pen = CreatePen(PS_SOLID, 1, RGB(86, 116, 104));
+  HGDIOBJ old_pen = SelectObject(dc, panel_pen);
+  HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+  Rectangle(dc, panel.left, panel.top, panel.right, panel.bottom);
+  SelectObject(dc, old_brush);
+  SelectObject(dc, old_pen);
+  DeleteObject(panel_pen);
+
+  const WorldView& world = state.world;
+  const double arena = static_cast<double>(verdigris::world_scale::kArenaHalfExtent);
+  const double map_scale = static_cast<double>(kSize) / (arena * 2.2);
+  const int center_x = (panel.left + panel.right) / 2;
+  const int center_y = (panel.top + panel.bottom) / 2;
+  const double origin_x = static_cast<double>(world.player.position.x);
+  const double origin_y = static_cast<double>(world.player.position.y);
+
+  auto to_map = [&](double wx, double wy) {
+    const int mx = center_x + static_cast<int>((wx - origin_x) * map_scale);
+    const int my = center_y + static_cast<int>((wy - origin_y) * map_scale);
+    return std::pair<int, int>{mx, my};
   };
-  draw_bar(28, "LIFE", player.life, player.life_max,
-           RGB(177, 82, 75));
-  draw_bar(52, "RESOURCE", player.resource, player.resource_max,
-           RGB(72, 168, 191));
+
+  int dots = 0;
+  for (const auto& item : state.scenery) {
+    const auto [mx, my] = to_map(item.position.x, item.position.y);
+    if (mx < panel.left + 2 || mx >= panel.right - 2 || my < panel.top + 2 ||
+        my >= panel.bottom - 2)
+      continue;
+    fill_ellipse(dc, mx, my, 2, 2, RGB(96, 112, 98));
+    ++dots;
+  }
+
+  if (world.has_extraction) {
+    const auto [mx, my] = to_map(world.extraction.x, world.extraction.y);
+    fill_ellipse(dc, mx, my, 4, 4, RGB(239, 208, 116));
+    ++dots;
+  }
+
+  for (const auto& monster : world.monsters) {
+    if (!monster.alive) continue;
+    const auto [mx, my] = to_map(monster.position.x, monster.position.y);
+    fill_ellipse(dc, mx, my, 3, 3, RGB(196, 58, 48));
+    ++dots;
+  }
+
+  const auto [px, py] = to_map(origin_x, origin_y);
+  const double facing_angle =
+      std::atan2(world.player.facing.y, world.player.facing.x);
+  const int tip_x = px + static_cast<int>(std::cos(facing_angle) * 8.0);
+  const int tip_y = py + static_cast<int>(std::sin(facing_angle) * 8.0);
+  const int wing_x = px - static_cast<int>(std::cos(facing_angle) * 4.0);
+  const int wing_y = py - static_cast<int>(std::sin(facing_angle) * 4.0);
+  const double wing = facing_angle + kPi * 0.75;
+  const int wing_a_x = wing_x + static_cast<int>(std::cos(wing) * 5.0);
+  const int wing_a_y = wing_y + static_cast<int>(std::sin(wing) * 5.0);
+  const int wing_b_x = wing_x + static_cast<int>(std::cos(wing + kPi * 0.5) * 5.0);
+  const int wing_b_y = wing_y + static_cast<int>(std::sin(wing + kPi * 0.5) * 5.0);
+  POINT arrow[3] = {{tip_x, tip_y}, {wing_a_x, wing_a_y}, {wing_b_x, wing_b_y}};
+  HBRUSH player_brush = CreateSolidBrush(RGB(168, 214, 188));
+  HGDIOBJ old_arrow_brush = SelectObject(dc, player_brush);
+  Polygon(dc, arrow, 3);
+  SelectObject(dc, old_arrow_brush);
+  DeleteObject(player_brush);
+
+  rl.push_back({render::Op::Minimap, static_cast<double>(panel.left),
+                static_cast<double>(panel.top), static_cast<double>(kSize), dots, "panel"});
 }
 
 void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   sync_world(state);
   const WorldView& world = state.world;
   render::List rl;
-  HBRUSH background = CreateSolidBrush(RGB(23, 29, 32));
-  FillRect(dc, &bounds, background);
-  DeleteObject(background);
 
-  draw_ground_grid(dc, state.camera, bounds);
+  draw_floor(state.billboards, dc, state.camera, bounds, world.route_id, rl);
 
   // Ground decals render before anything that stands on the plane.
   if (world.has_extraction) {
@@ -1851,8 +2157,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     }
   }
 
-  paint_resource_hud(player, dc, rl);
-  paint_skill_strip(state, dc, bounds, rl);
+  paint_minimap(state, dc, bounds, rl);
+  paint_vital_orbs(player, world.tick, state.screen_pulse_ticks, dc, bounds, rl);
+  paint_quickbar(state, dc, bounds, rl);
   paint_gear_overlay(state, dc, bounds, rl);
 
   if (state.screen_pulse_ticks > 0) {
@@ -2272,6 +2579,7 @@ void scenario_step(ClientState& state, const verdigris::Command& command) {
 }
 
 void scenario_begin(ClientState& state) {
+  load_billboards(state.billboards);
   state.simulation =
       std::make_unique<verdigris::Simulation>(0xC011AB1EULL, "House Verdigris");
   state.simulation->dispatch(verdigris::Command::enter("route:tin:1:0"));
@@ -2285,6 +2593,15 @@ std::vector<std::pair<double, double>> scenery_screen_positions(const ClientStat
   return positions;
 }
 
+std::unordered_map<std::string, std::pair<double, double>> tile_screen_by_label(
+    const ClientState& state) {
+  std::unordered_map<std::string, std::pair<double, double>> positions;
+  for (const auto& op : state.render_list) {
+    if (op.op == render::Op::Tile) positions[op.label] = {op.x, op.y};
+  }
+  return positions;
+}
+
 int scenario_move_and_camera() {
   ClientState state;
   scenario_begin(state);
@@ -2292,7 +2609,17 @@ int scenario_move_and_camera() {
   state.camera.y = 0.0;
   scenario_present(state);
   const auto baseline = scenery_screen_positions(state);
+  const auto tile_baseline = tile_screen_by_label(state);
   scenario_check(baseline.size() > 3, "move-and-camera: scenery present in render list");
+  scenario_check(render::any(state.render_list, render::Op::Floor),
+                 "move-and-camera: Floor op recorded");
+  scenario_check(tile_baseline.size() > 8, "move-and-camera: terrain tiles present in render list");
+  scenario_check(render::count(state.render_list, render::Op::Orb) >= 2,
+                 "move-and-camera: life and resource orbs recorded");
+  scenario_check(render::count(state.render_list, render::Op::Quickbar) >= 4,
+                 "move-and-camera: quickbar slots recorded");
+  scenario_check(render::any(state.render_list, render::Op::Minimap),
+                 "move-and-camera: minimap panel recorded");
 
   const int steps[4][2] = {{40, 0}, {0, 40}, {-40, 0}, {0, -40}};
   for (const auto& step : steps) {
@@ -2300,6 +2627,7 @@ int scenario_move_and_camera() {
     state.camera.y = static_cast<double>(step[1]);
     scenario_present(state);
     const auto moved = scenery_screen_positions(state);
+    const auto tiles_moved = tile_screen_by_label(state);
     if (moved.size() != baseline.size()) {
       scenario_check(false, "move-and-camera: scenery count stable across camera moves");
       continue;
@@ -2318,6 +2646,35 @@ int scenario_move_and_camera() {
     const double expect_y = -static_cast<double>(step[1]) * state.camera.zoom;
     scenario_check(std::abs(dx0 - expect_x) <= 1.0 && std::abs(dy0 - expect_y) <= 1.0,
                    "move-and-camera: uniform delta equals camera shift * zoom");
+
+    if (tiles_moved.size() >= tile_baseline.size() / 2 && !tile_baseline.empty()) {
+      const double expect_x = -static_cast<double>(step[0]) * state.camera.zoom;
+      const double expect_y = -static_cast<double>(step[1]) * state.camera.zoom;
+      int matched = 0;
+      double tdx0 = 0.0;
+      double tdy0 = 0.0;
+      bool tiles_uniform = true;
+      for (const auto& entry : tile_baseline) {
+        const auto it = tiles_moved.find(entry.first);
+        if (it == tiles_moved.end()) continue;
+        const double dx = it->second.first - entry.second.first;
+        const double dy = it->second.second - entry.second.second;
+        if (matched == 0) {
+          tdx0 = dx;
+          tdy0 = dy;
+        } else if (std::abs(dx - tdx0) > 1.0 || std::abs(dy - tdy0) > 1.0) {
+          tiles_uniform = false;
+        }
+        ++matched;
+      }
+      scenario_check(matched > 8, "move-and-camera: overlapping terrain tiles across camera moves");
+      scenario_check(tiles_uniform,
+                     "move-and-camera: every overlapping terrain tile shifts by one uniform delta");
+      scenario_check(std::abs(tdx0 - expect_x) <= 1.0 && std::abs(tdy0 - expect_y) <= 1.0,
+                     "move-and-camera: terrain delta equals camera shift * zoom");
+    } else {
+      scenario_check(false, "move-and-camera: terrain tiles overlap across camera moves");
+    }
   }
   return 0;
 }
@@ -2523,7 +2880,18 @@ int scenario_remote_render_list() {
   sync_world(state);
   state.camera.x = static_cast<double>(state.world.player.position.x);
   state.camera.y = static_cast<double>(state.world.player.position.y);
+  load_billboards(state.billboards);
   scenario_present(state);
+  scenario_check(render::any(state.render_list, render::Op::Floor),
+                 "remote-render-list: Floor op in paint_scene render list");
+  scenario_check(render::any(state.render_list, render::Op::Tile),
+                 "remote-render-list: Tile ops in paint_scene render list");
+  scenario_check(render::count(state.render_list, render::Op::Orb) >= 2,
+                 "remote-render-list: vital orbs in paint_scene render list");
+  scenario_check(render::count(state.render_list, render::Op::Quickbar) >= 4,
+                 "remote-render-list: quickbar slots in paint_scene render list");
+  scenario_check(render::any(state.render_list, render::Op::Minimap),
+                 "remote-render-list: minimap in paint_scene render list");
   const render::Item* extract = render::first(state.render_list, render::Op::Extraction);
   scenario_check(extract && extract->label == "stairs-up",
                  "remote-render-list: Extraction pad marked stairs-up");
@@ -2579,12 +2947,15 @@ int scenario_zoom_invariance() {
     state.camera.zoom = zooms[z];
     scenario_present(state);
     const auto base = scenery_screen_positions(state);
+    const auto tile_base = tile_screen_by_label(state);
     scenario_check(base.size() > 3, "zoom-invariance: scenery present in render list");
+    scenario_check(tile_base.size() > 8, "zoom-invariance: terrain tiles present in render list");
 
     state.camera.x = 40.0;
     state.camera.y = 0.0;
     scenario_present(state);
     const auto moved = scenery_screen_positions(state);
+    const auto tiles_moved = tile_screen_by_label(state);
     bool uniform = moved.size() == base.size();
     double dx0 = 0.0, dy0 = 0.0;
     if (uniform) {
@@ -2602,6 +2973,31 @@ int scenario_zoom_invariance() {
     const double expect_x = -40.0 * state.camera.zoom;
     scenario_check(std::abs(dx0 - expect_x) <= 1.0,
                    "zoom-invariance: delta scales with the zoom factor");
+
+    if (!tile_base.empty()) {
+      int matched = 0;
+      double tdx0 = 0.0;
+      double tdy0 = 0.0;
+      bool tiles_uniform = true;
+      for (const auto& entry : tile_base) {
+        const auto it = tiles_moved.find(entry.first);
+        if (it == tiles_moved.end()) continue;
+        const double dx = it->second.first - entry.second.first;
+        const double dy = it->second.second - entry.second.second;
+        if (matched == 0) {
+          tdx0 = dx;
+          tdy0 = dy;
+        } else if (std::abs(dx - tdx0) > 1.0 || std::abs(dy - tdy0) > 1.0) {
+          tiles_uniform = false;
+        }
+        ++matched;
+      }
+      scenario_check(matched > 8, "zoom-invariance: overlapping terrain tiles across camera shift");
+      scenario_check(tiles_uniform,
+                     "zoom-invariance: overlapping terrain tiles shift uniformly at zoom level");
+    } else {
+      scenario_check(false, "zoom-invariance: terrain tiles overlap across camera shift");
+    }
   }
   return 0;
 }
@@ -2635,6 +3031,8 @@ int run_scenarios(const std::string& which) {
 
 const char* render_op_name(render::Op op) {
   switch (op) {
+    case render::Op::Floor: return "Floor";
+    case render::Op::Tile: return "Tile";
     case render::Op::Scenery: return "Scenery";
     case render::Op::Player: return "Player";
     case render::Op::Monster: return "Monster";
@@ -2650,6 +3048,9 @@ const char* render_op_name(render::Op op) {
     case render::Op::Drop: return "Drop";
     case render::Op::Extraction: return "Extraction";
     case render::Op::Hud: return "Hud";
+    case render::Op::Orb: return "Orb";
+    case render::Op::Quickbar: return "Quickbar";
+    case render::Op::Minimap: return "Minimap";
     case render::Op::PaneStat: return "PaneStat";
     case render::Op::PaneWeapon: return "PaneWeapon";
     case render::Op::PaneItem: return "PaneItem";

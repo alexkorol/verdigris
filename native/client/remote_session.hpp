@@ -63,6 +63,7 @@ class RemoteProtocolSession final : public IClientSession {
   bool suppress_retry_ = false;
   int retry_attempt_ = 0;
   std::chrono::steady_clock::time_point retry_at_{};
+  std::chrono::steady_clock::time_point last_state_request_{};
 
   std::mutex send_mutex_;
   std::mutex inbox_mutex_;

@@ -14,6 +14,8 @@
 namespace render {
 
 enum class Op {
+  Floor,      // label = "tiled" | "flat"; value = 1 when textured tiles drawn
+  Tile,       // label = "terrain1" | "terrain4"; x/y = projected tile center
   Scenery,    // label = kind name; x/y = projected screen base point
   Player,     // x/y = projected screen base point
   Monster,    // x/y = projected base point; value = current life
@@ -29,6 +31,9 @@ enum class Op {
   Drop,       // label = ground item/trophy id; x/y = base
   Extraction, // x/y = projected extraction pad base; radius = pixels
   Hud,        // label = hud text (life/resource/skill strip)
+  Orb,        // label = "life" | "resource"; x/y = center; radius = px; value = fill %
+  Quickbar,   // label = key + skill name; x/y = slot center
+  Minimap,    // label = "panel"; x/y = top-left; radius = panel size
   PaneStat,   // label = stats readout line
   PaneWeapon, // label = equipped weapon name (or "(empty)")
   PaneItem,   // label = backpack cell contents

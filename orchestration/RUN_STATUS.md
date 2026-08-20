@@ -75,16 +75,18 @@ telegraph FX can graze the HUD corner (0068); reconnect lands in 0069.
 Feedback wanted on: movement feel, combat readability, loot moment,
 whether the loop invites a second run.
 
-## DAY RUN 2026-08-20 (D-124 — owner at work, aggressive mode)
+## DAY RUN 2026-08-20 (D-124) — 11:00 snapshot
 
-Target by evening: three-axis parity + side-by-side native-vs-browser
-screenshots. Plan: (1) 0056 N5 — deepseek Flash (419 lines in flight);
-architect takes over if no commit by ~10:00. (2) 0058 N6 releases the
-moment N5 integrates — architect implements if no lane free. (3)
-architect NOW: side-by-side visual benchmark (browser reference
-captures matching the 0070 native scenes + composites). (4) architect
-next: Gate B client scaffolding (ARCHITECTURE) so the Chronicles
-client slice starts the minute N5 lands. (5) luna-mac: 0071 DONE (calibrated) -> 0074 next. Sweeps every ~30 min; no idle ticks.
+- **N5 Chronicles: 18/19 attach (architect takeover of 0056).** Full
+  D-106 loop green natively: mortal death → crypt → successor → relic
+  circulation on elite kill → recovery persisted. Fresh-Player-per-
+  socket JS parity implemented. session-arc = the one red (needs town
+  NPC surface — moved to N6 scope with 0058).
+- 0076 HUD parity ACCEPTED (orbs/minimap/quickbar/chip live).
+- 0075 terrain: rev2 completed by architect (cursor idle 2h) — INTEGRATED.
+- Batch PR shipping now: N5 18/19 + terrain rev2 + HUD parity + side-by-side round 2 (sxs2-*: near-family visual parity).
+- deepseek Flash: clone frozen since morning; takeover annotated in
+  0056 STATUS. luna-mac: 0074 in progress presumably.
 
 ## RUNNING
 
@@ -118,7 +120,9 @@ client slice starts the minute N5 lands. (5) luna-mac: 0071 DONE (calibrated) ->
 
 ## Fleet + budget
 
-- cursor: STOPPED by owner 07:45 (12 accepted overnight). Ports 6580–6599 reserved.
+- cursor: NOW composer-2.5 (Grok 4.6 spent 22% of monthly Cursor quota
+  for 12 accepted tasks overnight — strong per-$ but unsustainable).
+  Fresh calibration row; routed 0075 terrain. Ports 6580–6599.
 - qwen3.8 (MacBook, FREE): scorecard now VERIFIED 7/7 battery, ~16
   tok/s, no reasoning leakage. Standing duty added to deepseek +
   luna-mac briefs: dispatch machine-verifiable MECHANICAL sub-steps to

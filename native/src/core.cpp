@@ -1523,6 +1523,12 @@ void WorldSimulation::return_to_surface() {
   return_to_town();
 }
 
+void WorldSimulation::reset_to_town() {
+  has_pre_instance_ = false;
+  pre_instance_scene_id_.clear();
+  return_to_town();
+}
+
 void WorldSimulation::return_to_town() {
   scene_type_ = "town";
   scene_id_ = "town:verdigris";
@@ -1677,10 +1683,16 @@ void WorldSimulation::generate_instance() {
     if (metadata_.theme == "marsh" && monster.behaviour_type != "buffer" && placed % 4 == 1) {
       monster.empowered = true;
     }
-    if (metadata_.theme == "dungeon" && placed == kInstanceMonsterCount - 1) {
+    if (placed == kInstanceMonsterCount - 1) {
+      // Every theme fields its boss (server/core/map.js THEME_MONSTERS);
+      // native "dungeon" mirrors the JS "stone" theme.
       monster.boss = true;
       monster.rarity = "elite";
-      monster.name = "Warden of the Deep";
+      if (metadata_.theme == "grove") monster.name = "The Elder Oak";
+      else if (metadata_.theme == "crypt") monster.name = "The Pale Sovereign";
+      else if (metadata_.theme == "wilds") monster.name = "Alpha of the Wilds";
+      else if (metadata_.theme == "marsh") monster.name = "The Rotfather";
+      else monster.name = "Warden of the Deep";
       monster.life = kN3BossLife;
       monster.life_max = monster.life;
       monster.behaviour_type = "melee";
@@ -1791,9 +1803,17 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
   const auto now = static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms));
   if (active_target_.empty()) {
     const Vec2 here = tile_movement::occupied_tile(position_);
+    // N5: a scion standing beside a pack member is engaged even without
+    // swinging (JS monster AI). Prefer a boss, then any in-range monster.
     for (const auto& monster : monsters_) {
       if (monster.alive && monster.boss && std::abs(monster.x - here.x) <= 2
           && std::abs(monster.y - here.y) <= 2) { active_target_ = monster.uuid; break; }
+    }
+    if (active_target_.empty()) {
+      for (const auto& monster : monsters_) {
+        if (monster.alive && std::abs(monster.x - here.x) <= 2
+            && std::abs(monster.y - here.y) <= 2) { active_target_ = monster.uuid; break; }
+      }
     }
   }
   if (active_target_.empty()) return events;
@@ -2527,6 +2547,8 @@ const ItemDef kItemCatalogue[] = {
     {"vessel-sandals", "Sandals", "armor", "feet", false, false, {}, {}, 0, 0, "sandals", ""},
     {"vessel-gorget", "Gorget", "armor", "necklace", false, false, {}, {}, 0, 0, "gorget", ""},
     {"vessel-ring", "Ring", "armor", "ring", false, false, {}, {}, 0, 0, "ring", ""},
+    // weapons.js iron weaponry: the mortality successor grants iron-sword.
+    {"iron-sword", "Iron Sword", "weapon", "right_hand", false, false, {6, 4, -2, 0}, {0, 3, 2, 0}, 0, 0, "", ""},
 };
 
 // Process-wide instance identity source (factory.js uuid v4): uniqueness is
@@ -2942,6 +2964,21 @@ void WorldSimulation::add_ground_item(GameItem item, double x, double y) {
   ground.x = x;
   ground.y = y;
   ground.timestamp = static_cast<std::int64_t>(++serial_);
+  ground_items_.push_back(std::move(ground));
+}
+
+void WorldSimulation::add_relic_ground_item(GameItem item, double x, double y,
+                                            const std::string& relic_id,
+                                            const std::string& source_scion_id,
+                                            const std::string& source_scion_name) {
+  GroundItem ground;
+  ground.item = std::move(item);
+  ground.x = x;
+  ground.y = y;
+  ground.timestamp = static_cast<std::int64_t>(++serial_);
+  ground.legacy_relic_id = relic_id;
+  ground.legacy_source_scion_id = source_scion_id;
+  ground.legacy_source_scion_name = source_scion_name;
   ground_items_.push_back(std::move(ground));
 }
 
