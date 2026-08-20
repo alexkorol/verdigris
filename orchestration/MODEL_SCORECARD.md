@@ -17,6 +17,7 @@ identity. Recalibrate after model/harness/prompt/acceptance changes.
 | Cursor Grok 4.6 (Cursor desktop) | browser features + infra | 3 | 100% (0055, 0059, 0062) | 0 | first-pass accept on calibration; hard-fail captures + authentic negative + disclosed deviations w/ repro; strong evidence discipline; BOUNDED-DESIGN works |
 | Cursor Grok 4.6 (Cursor desktop) | native C++ features + CI | 9 | 0061 rubric miss then 8 straight first-pass (Gate A 12/12, reference scenes, launcher) | 0 | protocol/session/render/bench all strong; honest gap notes; give explicit presentation-quality constraints in SPECs |
 | Claude Sonnet (Claude Code, MacBook) | browser infra (calibration) | 1 | 100% (0066) | 0 | first-pass; unsolicited peer-verify on 0062 first (standing-loop duty); clean lane discipline; browser/JS + docs lane |
+| Codex Luna (MacBook) | docs/audit MECHANICAL (calibration) | 1 | 100% (0071) | 0 | precise file:line citations, honest gap tables; minor notes-file naming nit; MECHANICAL-only lane holds |
 | Fable (architect) | scaffolding/reviews/integration | â€” | â€” | 0 | control plane + D-120 scaffolds |
 
 ## Calibration notes
