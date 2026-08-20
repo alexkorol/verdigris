@@ -14,6 +14,8 @@
 namespace render {
 
 enum class Op {
+  Floor,      // label = "tiled" | "flat"; value = 1 when textured tiles drawn
+  Tile,       // label = "terrain1" | "terrain4"; x/y = projected tile center
   Scenery,    // label = kind name; x/y = projected screen base point
   Player,     // x/y = projected screen base point
   Monster,    // x/y = projected base point; value = current life
