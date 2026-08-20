@@ -680,9 +680,9 @@ struct GroundItem {
   std::int64_t timestamp = 0;  // placement time; menus sort newest-first
   // N5 relic circulation provenance (server/core/services/chronicles.js
   // drawCirculatingRelic): set when this drop is a recovered heirloom.
-  std::string legacy_relic_id;
-  std::string legacy_source_scion_id;
-  std::string legacy_source_scion_name;
+  std::string relic_record_id;
+  std::string relic_source_scion_id_field;
+  std::string relic_source_scion_name_field;
 };
 
 // Player combat modifiers the equip pipeline feeds into tile-space combat.

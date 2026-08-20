@@ -1,7 +1,7 @@
 ---
 task: TASK-0058
 title: Parity wave N6 — world web, quests, economy, party (final SERVER-parity wave, D-122)
-state: HOLD (D-122 — releases only after TASK-0056 N5 INTEGRATED **and** Gate A / TASK-0061 ACCEPTED)
+state: READY (released 2026-08-20 ~11:45 — N5 integrated at 18/19, Gate A green. ALSO IN SCOPE now: session-arc + town-amenities town/NPC surface, the deliberate N5 leftover)
 priority: critical (D-116 — completes full 32-scenario parity)
 owned_paths:
   - native/src/**

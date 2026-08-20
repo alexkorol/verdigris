@@ -114,6 +114,7 @@ Invoke-Msvc ('"' + $buildRoot + '\camera2d_tests.obj" /Fe"' + $camera2dTestExe +
 Invoke-Msvc ('"' + $buildRoot + '\session_tests.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $sessionTestExe + '" /link ws2_32.lib')
 
 python (Join-Path $nativeRoot "tools\check_legacy_denylist.py")
+if ($LASTEXITCODE -ne 0) { throw "legacy denylist failed" }
 if ($RunTests) { & $testExe }
 if ($RunTests) { & $networkingTestExe }
 if ($RunTests) { & $camera2dTestExe }
