@@ -1,0 +1,13 @@
+---
+task: TASK-0075
+state: CLAIMED
+coordinator: cursor
+worker_branch: codex/TASK-0075-native-terrain-tiles-cursor
+base_commit: 69d60133b8fe67087a856d837f6d714fc9ddb4c6
+started_at: 2026-08-20T07:30:00-07:00
+architect_review_required: true
+expected_verification: powershell -File native/build.ps1 -RunTests -RunClientScenarios; --reference-scene all; side-by-side floor gap closed
+notes: terrain1/terrain4 from prototypes/founding-slice/assets. Ports 6580-6599.
+---
+
+Claimed per routed first task (D-124 CRITICAL). 0076 pipelined after.
