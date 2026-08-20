@@ -1,6 +1,4 @@
 # Native CI helper (TASK-0067).
-# GitHub windows-latest ships VS 2022 under "Program Files", which native/build.ps1
-# does not probe (it looks under Program Files (x86) / vswhere). This script uses
 # the MSVC developer PATH from ilammy/msvc-dev-cmd and the CMake preset the
 # previous native workflow already ran, then adds the owner-path steps CMake
 # omitted: denylist, camera2d tests, local --scenario all. Session tests (remote
@@ -27,17 +25,22 @@ try {
   Invoke-Logged "legacy denylist" { python tools/check_legacy_denylist.py }
   Invoke-Logged "ctest (core/networking/session)" { ctest --preset windows-msvc --output-on-failure }
 
+  # Match native/build.ps1 (cl via cmd so /std:c++20 is not eaten by pwsh).
+  # windows-latest is VS 18; range-for over a braced list needs <initializer_list>
+  # and the test file does not include it. /FI avoids editing unowned tests.
   $camObj = Join-Path $logDir "camera2d_tests.obj"
   $camExe = Join-Path $logDir "camera2d_tests.exe"
+  $camSrc = Join-Path $nativeRoot "tests\camera2d_tests.cpp"
+  $camInc = Join-Path $nativeRoot "include"
   Invoke-Logged "camera2d compile" {
-    $clArgs = @(
-      '/nologo', '/std:c++20', '/EHsc', '/W4',
-      "/I$nativeRoot\include",
-      "$nativeRoot\tests\camera2d_tests.cpp",
-      "/Fo$camObj",
-      "/Fe$camExe"
-    )
-    & cl.exe @clArgs
+    $compile = 'cl /nologo /std:c++20 /EHsc /W4 /FIinitializer_list /I"' + $camInc + '" /c "' + $camSrc + '" /Fo"' + $camObj + '"'
+    Write-Host "ci-native: $compile"
+    & cmd.exe /d /s /c $compile
+  }
+  Invoke-Logged "camera2d link" {
+    $link = 'cl /nologo "' + $camObj + '" /Fe"' + $camExe + '"'
+    Write-Host "ci-native: $link"
+    & cmd.exe /d /s /c $link
   }
   Invoke-Logged "camera2d tests" { & $camExe }
 
