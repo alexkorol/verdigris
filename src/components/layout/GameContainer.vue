@@ -287,7 +287,7 @@ import WorldMinimap from '../hud/WorldMinimap.vue';
 import DeathOverlay from '../ui/world/DeathOverlay.vue';
 import GuideBanner from '../ui/world/GuideBanner.vue';
 import bus from '../../core/utilities/bus.js';
-import { zoneObjective } from '../../core/adventure-objectives.js';
+import { zoneObjective, adventureZoneTick } from '../../core/adventure-objectives.js';
 import { shouldSurfaceGuideBeat, stripGuidePrefix } from '../../core/tutorial-beats.js';
 
 export default {
@@ -514,14 +514,19 @@ export default {
 
     // Solo Adventure zones must match the server's ADVENTURE_ZONES; each
     // pairs an art template with a layout shape, both validated server-side.
-    const adventureZones = [
+    // Objective lines recompute when the server adventureZones payload arrives.
+    const adventureZoneCatalog = [
       { id: 'old-barrow', name: 'The Old Barrow', note: 'Tight halls · forgiving first delve', template: 'dungeon', layout: 'warren', minLevel: 1, maxLevel: 5, levelHint: '1–5' },
       { id: 'verdant-grove', name: 'Verdant Grove', note: 'Open clearings · roaming packs', template: 'grove', layout: 'clearings', minLevel: 1, maxLevel: 6, levelHint: '1–6' },
       { id: 'sunken-colonnade', name: 'Sunken Colonnade', note: 'A narrow, punishing gauntlet', template: 'crypt', layout: 'gauntlet', minLevel: 3, maxLevel: 8, levelHint: '3–8' },
       { id: 'weir-crypt', name: 'Weir Crypt', note: 'Dense rooms · little retreat', template: 'crypt', layout: 'warren', minLevel: 4, maxLevel: 9, levelHint: '4–9' },
       { id: 'the-wilds', name: 'The Wilds', note: 'Broad hunting grounds', template: 'wilds', layout: 'clearings', minLevel: 6, maxLevel: 12, levelHint: '6–12' },
       { id: 'marsh-of-reeds', name: 'Marsh of Reeds', note: 'Hostile wetlands · elite packs', template: 'marsh', layout: 'clearings', minLevel: 8, maxLevel: 14, levelHint: '8–14' },
-    ].map((zone) => ({ ...zone, objective: zoneObjective(zone).line }));
+    ];
+    const adventureZones = computed(() => {
+      adventureZoneTick.value;
+      return adventureZoneCatalog.map((zone) => ({ ...zone, objective: zoneObjective(zone).line }));
+    });
 
     const zoneStatus = (zone) => {
       const level = Number(props.playerProgress?.level) || 1;
