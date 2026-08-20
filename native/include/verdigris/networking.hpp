@@ -125,6 +125,8 @@ class ProtocolSession {
   void maybe_floor_cleared(const std::function<void(const Envelope&)>& emit);
   void auto_pickup_gold(const std::function<void(const Envelope&)>& emit);
   void emit_wagon_screen(const std::function<void(const Envelope&)>& emit) const;
+  void emit_shop_screen(const std::function<void(const Envelope&)>& emit) const;
+  JsonValue bank_items_json() const;
   void quest_trigger(const char* trigger, const std::function<void(const Envelope&)>& emit,
                      const std::string& detail_a = std::string(), const std::string& detail_b = std::string(), int depth = 0);
   void handle_take_ground(const std::string& uuid, const std::function<void(const Envelope&)>& emit);
@@ -162,6 +164,10 @@ class ProtocolSession {
   int house_renown_ = 0;
   std::string last_instance_theme_;
   std::string last_instance_layout_;
+  // N6 economy: personal bank + shop session state.
+  std::vector<GameItem> bank_;
+  bool shop_open_ = false;
+  bool bank_open_ = false;
   // N6 combat experience (experience.js / shared/ui.js curve).
   long long combat_xp_ = 0;
   void maybe_respawn(std::int64_t now_ms);

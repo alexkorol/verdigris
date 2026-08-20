@@ -2558,6 +2558,8 @@ const ItemDef kItemCatalogue[] = {
     {"bronze-med-helm", "Bronze Med Helm", "armor", "head", false, false, {0, 0, 0, 0}, {3, 4, 3, 0}, 0, 0, "", ""},
     {"bronze-gloves", "Bronze Gloves", "armor", "gloves", false, false, {0, 0, 0, 0}, {1, 2, 1, 0}, 0, 0, "", ""},
     {"bronze-boots", "Bronze Boots", "armor", "feet", false, false, {0, 0, 0, 0}, {1, 2, 2, 0}, 0, 0, "", ""},
+    {"knife", "Knife", "sharp", "", false, false, {0, 0, 0, 0}, {0, 0, 0, 0}, 0, 0, "", ""},
+    {"wooden-shield", "Wooden Shield", "armor", "left_hand", false, false, {0, 0, 0, 0}, {2, 1, 3, 0}, 0, 0, "", ""},
 };
 
 // Process-wide instance identity source (factory.js uuid v4): uniqueness is
@@ -2744,7 +2746,7 @@ bool PlayerInventory::fits_at(const GameItem& item, int slot) const {
       const int y = y0 + dy;
       if (x >= kColumns || y >= kRows) return false;
       for (const auto& other : items_) {
-        if (other.id == "coins" || other.slot < 0) continue;  // currency occupies no cells
+        if (other.slot < 0) continue;  // unplaced stacks block nothing
         const int ox = other.slot % kColumns;
         const int oy = other.slot / kColumns;
         if (x >= ox && x < ox + other.size.width && y >= oy && y < oy + other.size.height) {
@@ -2776,7 +2778,9 @@ PlayerInventory::AddResult PlayerInventory::add(GameItem item) {
         return result;
       }
     }
-    item.slot = -1;
+    // JS parity: a new stack occupies a real backpack cell like any item;
+    // -1 only when the grid is genuinely full (the balance still counts).
+    item.slot = first_fit(item);
     result.added = item.qty;
     items_.push_back(std::move(item));
     return result;

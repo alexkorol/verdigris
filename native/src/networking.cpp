@@ -353,6 +353,7 @@ JsonValue snapshot_item_json(const GameItem& item) {
 // dev.js itemIdentity (server/shared item identity projection).
 JsonValue item_identity_json(const GameItem& item) {
   JsonValue::Object out;
+  put(out, "slot", item.slot >= 0 ? JsonValue(item.slot) : JsonValue(nullptr));
   put(out, "id", item.id);
   put(out, "uuid", item.uuid);
   put(out, "name", item.name);
@@ -642,6 +643,7 @@ JsonValue ProtocolSession::snapshot() const {
   put(state,"bestDepth",best_depth_);
   put(state,"quests",quests_json());
   put(state,"questPoints",quest_points_);
+  put(state,"bank",bank_items_json());
   put(state,"passiveTree",passive_tree_json());
   { // stats-manager attributes: base 10s plus the tree path. STUB NOTE:
     // per-node attribute identity from the 271-node graph is approximated
@@ -968,6 +970,41 @@ int ProtocolSession::carried_gold() const {
   return total;
 }
 
+void ProtocolSession::emit_shop_screen(const std::function<void(const Envelope&)>& emit) const {
+  // shops.js General Store: fixed stock rows with pane slot indices.
+  struct StockRow { const char* id; const char* name; int price; };
+  const StockRow rows[3] = {{"knife", "Knife", 5}, {"bronze-sword", "Bronze Sword", 15}, {"wooden-shield", "Wooden Shield", 8}};
+  JsonValue::Array stock;
+  for (int i = 0; i < 3; ++i) {
+    JsonValue::Object row;
+    put(row, "id", rows[i].id); put(row, "name", rows[i].name);
+    put(row, "price", rows[i].price); put(row, "qty", 10); put(row, "slot", i);
+    stock.emplace_back(std::move(row));
+  }
+  JsonValue::Object payload;
+  put(payload, "name", "General Store");
+  put(payload, "npcId", 2);
+  { JsonValue::Array copy = stock; put(payload, "items", std::move(copy)); }
+  put(payload, "inventory", std::move(stock));
+  put(payload, "carriedCoins", carried_gold());
+  JsonValue::Object data;
+  put(data, "player", JsonValue::Object{{"socket_id", socket_id_}});
+  put(data, "screen", "shop");
+  put(data, "payload", std::move(payload));
+  emit(Envelope{"open:screen", JsonValue(std::move(data))});
+}
+
+JsonValue ProtocolSession::bank_items_json() const {
+  JsonValue::Array items;
+  int index = 0;
+  for (const auto& item : bank_) {
+    JsonValue row = snapshot_item_json(item);
+    if (auto* obj = row.object()) (*obj)["slot"] = JsonValue(index);
+    items.emplace_back(std::move(row));
+    ++index;
+  }
+  return JsonValue(std::move(items));
+}
 void ProtocolSession::emit_bank_screen(const std::function<void(const Envelope&)>& emit) const {
   // chronicles.js sendBankState: open:screen bank with House treasury.
   JsonValue::Object house;
@@ -975,7 +1012,7 @@ void ProtocolSession::emit_bank_screen(const std::function<void(const Envelope&)
   put(house, "name", active_house_name_.empty() ? JsonValue("House Verdigris") : JsonValue(active_house_name_));
   put(house, "treasury", house_treasury_);
   JsonValue::Object payload;
-  put(payload, "items", JsonValue::Array{});
+  put(payload, "items", bank_items_json());
   put(payload, "carriedCoins", carried_gold());
   put(payload, "house", std::move(house));
   JsonValue::Object data;
@@ -1294,6 +1331,69 @@ void ProtocolSession::handle_menu_build(const JsonValue& payload, const std::fun
     return false;
   };
   JsonValue::Array entries;
+  if (clicked_has("shopSlot")) {
+    // shops.js pane menu: Buy-1 from the shop stock row.
+    const int slot = as_int(misc ? misc->get("slot") : nullptr, -1);
+    const char* ids[3] = {"knife", "bronze-sword", "wooden-shield"};
+    const int prices[3] = {5, 15, 8};
+    if (slot >= 0 && slot < 3) {
+      JsonValue::Object entry;
+      put(entry, "label", std::string("Buy-1 ") + ids[slot]);
+      put(entry, "action", JsonValue::Object{{"name", JsonValue("Buy")}, {"actionId", JsonValue("player:shop:buy")},
+          {"context", JsonValue::Array{JsonValue("shopSlot")}}, {"nearby", false}, {"weight", 1}});
+      put(entry, "type", "shop");
+      JsonValue::Object item_ref; put(item_ref, "id", ids[slot]); put(item_ref, "price", prices[slot]); put(item_ref, "slot", slot);
+      put(entry, "item", std::move(item_ref));
+      entries.emplace_back(std::move(entry));
+    }
+  }
+  if (clicked_has("inventorySlot") && (shop_open_ || bank_open_)) {
+    const int slot = as_int(misc ? misc->get("slot") : nullptr, -1);
+    const GameItem* item = nullptr;
+    if (slot >= 0) {
+      for (const auto& candidate : inventory_.items()) { if (candidate.slot == slot) { item = &candidate; break; } }
+    }
+    if (item && shop_open_) {
+      JsonValue::Object entry;
+      put(entry, "label", std::string("Sell-1 ") + item->name);
+      put(entry, "action", JsonValue::Object{{"name", JsonValue("Sell")}, {"actionId", JsonValue("player:shop:sell")},
+          {"context", JsonValue::Array{JsonValue("inventorySlot")}}, {"nearby", false}, {"weight", 1}});
+      put(entry, "type", "shop");
+      JsonValue::Object item_ref; put(item_ref, "uuid", item->uuid); put(item_ref, "id", item->id); put(item_ref, "slot", slot);
+      put(entry, "item", std::move(item_ref));
+      entries.emplace_back(std::move(entry));
+    }
+    if (item && bank_open_) {
+      const int quantities[3] = {1, 5, 10};
+      for (int q : quantities) {
+        JsonValue::Object entry;
+        put(entry, "label", "Deposit-" + std::to_string(q));
+        put(entry, "action", JsonValue::Object{{"name", JsonValue("Deposit")}, {"actionId", JsonValue("player:bank:deposit")},
+            {"context", JsonValue::Array{JsonValue("inventorySlot")}}, {"nearby", false}, {"weight", 1}});
+        put(entry, "type", "bank");
+        JsonValue::Object item_ref; put(item_ref, "uuid", item->uuid); put(item_ref, "id", item->id); put(item_ref, "slot", slot); put(item_ref, "qty", q);
+        put(entry, "item", std::move(item_ref));
+        entries.emplace_back(std::move(entry));
+      }
+    }
+  }
+  if (clicked_has("bankSlot") && bank_open_) {
+    const int slot = as_int(misc ? misc->get("slot") : nullptr, -1);
+    if (slot >= 0 && slot < static_cast<int>(bank_.size())) {
+      const GameItem& item = bank_[static_cast<std::size_t>(slot)];
+      const int quantities[3] = {1, 5, 10};
+      for (int q : quantities) {
+        JsonValue::Object entry;
+        put(entry, "label", "Withdraw-" + std::to_string(q));
+        put(entry, "action", JsonValue::Object{{"name", JsonValue("Withdraw")}, {"actionId", JsonValue("player:bank:withdraw")},
+            {"context", JsonValue::Array{JsonValue("bankSlot")}}, {"nearby", false}, {"weight", 1}});
+        put(entry, "type", "bank");
+        JsonValue::Object item_ref; put(item_ref, "uuid", item.uuid); put(item_ref, "id", item.id); put(item_ref, "slot", slot); put(item_ref, "qty", q);
+        put(entry, "item", std::move(item_ref));
+        entries.emplace_back(std::move(entry));
+      }
+    }
+  }
   if (clicked_has("gameMap")) {
     // World variant: Take per ground item on the clicked tile, newest first.
     const auto* tile=payload.get("tile");
@@ -1419,11 +1519,84 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
   const auto* queue_item=payload.get("queueItem");
   const auto* action=queue_item?queue_item->get("action"):nullptr;
   const std::string action_id=as_string(action?action->get("actionId"):nullptr);
-  const auto* item_ref=queue_item?queue_item->get("item"):nullptr;
+  // choose() forwards only {uuid,id} in queueItem.item; the FULL menu entry
+  // (with our item payload: price, slot, qty) rides in data.item.
+  const auto* data_wrap=payload.get("data");
+  const auto* full_entry=data_wrap?data_wrap->get("item"):nullptr;
+  const auto* entry_item=full_entry?full_entry->get("item"):nullptr;
+  const auto* item_ref=entry_item?entry_item:(queue_item?queue_item->get("item"):nullptr);
   const std::string uuid=as_string(item_ref?item_ref->get("uuid"):nullptr);
   if (action_id=="player:take") { handle_take_ground(uuid,emit); return; }
-  if (action_id=="player:screen:bank") { emit_bank_screen(emit); return; }
-  if (action_id=="player:screen:wagon") { emit_wagon_screen(emit); return; }
+  if (action_id=="player:screen:bank") { bank_open_ = true; shop_open_ = false; emit_bank_screen(emit); return; }
+  if (action_id=="player:shop:buy") {
+    const std::string item_id = as_string(item_ref ? item_ref->get("id") : nullptr);
+    const int price = as_int(item_ref ? item_ref->get("price") : nullptr, item_id == "knife" ? 5 : 15);
+    if (carried_gold() >= price) {
+      int remaining = price;
+      auto slots = inventory_.items();
+      for (const auto& coin : slots) {
+        if (remaining <= 0) break;
+        if (coin.id != "coins") continue;
+        GameItem taken;
+        if (!inventory_.remove_by_uuid(coin.uuid, &taken)) continue;
+        if (taken.qty > remaining) { GameItem back = taken; back.qty = taken.qty - remaining; inventory_.add(std::move(back)); remaining = 0; }
+        else remaining -= taken.qty;
+      }
+      CreateItemOptions o; auto bought = create_game_item(item_id, o);
+      if (bought) inventory_.add(std::move(*bought));
+      emit_inventory_refresh(emit);
+      emit_shop_screen(emit);
+    }
+    return;
+  }
+  if (action_id=="player:shop:sell") {
+    GameItem sold;
+    if (inventory_.remove_by_uuid(uuid, &sold)) {
+      const int value = sold.id == "knife" ? 5 : sold.id == "bronze-sword" ? 15 : 8;
+      CreateItemOptions o; o.quantity = value;
+      auto coins = create_game_item("coins", o);
+      if (coins) inventory_.add(std::move(*coins));
+      emit_inventory_refresh(emit);
+      emit_shop_screen(emit);
+    }
+    return;
+  }
+  if (action_id=="player:bank:withdraw") {
+    const int qty = as_int(item_ref ? item_ref->get("qty") : nullptr, 1);
+    for (std::size_t i = 0; i < bank_.size(); ++i) {
+      if (bank_[i].uuid != uuid) continue;
+      GameItem out = bank_[i];
+      if (out.stackable && out.qty > qty) {
+        bank_[i].qty -= qty;
+        out.qty = qty;
+      } else {
+        bank_.erase(bank_.begin() + static_cast<long long>(i));
+      }
+      inventory_.add(std::move(out));
+      emit_inventory_refresh(emit);
+      emit_bank_screen(emit);
+      break;
+    }
+    return;
+  }  if (action_id=="player:bank:deposit") {
+    const int qty = as_int(item_ref ? item_ref->get("qty") : nullptr, 1);
+    GameItem taken;
+    if (inventory_.remove_by_uuid(uuid, &taken)) {
+      if (taken.stackable && taken.qty > qty) {
+        GameItem back = taken; back.qty = taken.qty - qty;
+        inventory_.add(std::move(back));
+        taken.qty = qty;
+      }
+      bool merged = false;
+      for (auto& existing : bank_) {
+        if (existing.id == taken.id && existing.stackable) { existing.qty += taken.qty; merged = true; break; }
+      }
+      if (!merged) bank_.push_back(std::move(taken));
+      emit_inventory_refresh(emit);
+      emit_bank_screen(emit);
+    }
+    return;
+  }  if (action_id=="player:screen:wagon") { emit_wagon_screen(emit); return; }
   if (action_id=="player:screen:shop-display" || action_id=="player:npc:trade" ||
       action_id=="player:shop-display:buy" || action_id=="player:shop-display:appraise") {
     Envelope forwarded{action_id, payload};
@@ -1763,19 +1936,8 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     }
     return;
   }  if (envelope.event=="player:screen:shop-display" || envelope.event=="player:npc:trade") {
-    // shops.js General Store pane.
-    JsonValue::Array stock;
-    { JsonValue::Object row; put(row,"id","bronze-sword"); put(row,"name","Bronze Sword"); put(row,"price",15); put(row,"qty",10); stock.emplace_back(std::move(row)); }
-    JsonValue::Object payload_out;
-    put(payload_out,"name","General Store");
-    put(payload_out,"npcId",2);
-    put(payload_out,"items",std::move(stock));
-    put(payload_out,"carriedCoins",carried_gold());
-    JsonValue::Object data;
-    put(data,"player",JsonValue::Object{{"socket_id",socket_id_}});
-    put(data,"screen","shop");
-    put(data,"payload",std::move(payload_out));
-    emit(Envelope{"open:screen",JsonValue(std::move(data))});
+    shop_open_ = true; bank_open_ = false;
+    emit_shop_screen(emit);
     return;
   }
   if (envelope.event=="player:shop-display:appraise") {
