@@ -20,32 +20,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  journey:
     runs-on: windows-latest
-    timeout-minutes: 20
-    defaults:
-      run:
-        working-directory: native
+    timeout-minutes: 14
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # CMake schema v2 requires an explicit generator.  The preset uses the
-      # VS-version-neutral NMake generator; this action supplies cl/nmake and
-      # the installed Visual Studio environment on windows-latest.
-      - name: Set up MSVC developer environment
-        uses: ilammy/msvc-dev-cmd@v1
+      - name: Native owner-path gates
+        # build.ps1 locates MSVC via vswhere. This is the same path the
+        # owner runs locally: denylist, core/networking/camera/session
+        # tests (session tests start their own loopback server), then
+        # local client --scenario all. Density bench is opt-in and omitted.
+        run: powershell -NoProfile -File native/tools/ci-native.ps1
+
+      - name: Upload native CI transcripts
+        if: failure()
+        uses: actions/upload-artifact@v4
         with:
-          arch: x64
-
-      - name: Configure native workspace
-        run: cmake --preset windows-msvc
-
-      - name: Build native workspace
-        run: cmake --build --preset windows-msvc
-
-      - name: Run native tests
-        run: ctest --preset windows-msvc
-
-      - name: Check legacy denylist
-        run: python tools/check_legacy_denylist.py
+          name: native-ci-logs
+          path: native/build/ci-logs/
+          if-no-files-found: ignore
