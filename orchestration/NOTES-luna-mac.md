@@ -1,0 +1,1 @@
+2026-08-20T08:02:16-07:00 board empty for eligible MECHANICAL Mac work after TASK-0071 and TASK-0074; peer REVIEW_REQUESTED tasks exist, but peer task-folder edits are forbidden by the coordinator hard limit, so peer verification was skipped.
