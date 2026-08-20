@@ -65,6 +65,14 @@ vi.mock('#server/core/entities/player/stats-manager.js', () => ({
 
 vi.mock('#server/core/map.js', () => ({
   LAYOUT_IDS: ['warren', 'clearings', 'gauntlet'],
+  THEME_MONSTERS: {
+    stone: { boss: 'Warden of the Deep' },
+    grove: { boss: 'The Elder Oak' },
+    crypt: { boss: 'The Pale Sovereign' },
+    wilds: { boss: 'Alpha of the Wilds' },
+    marsh: { boss: 'The Rotfather' },
+  },
+  instanceItemLevelForDepth: (depth) => 10 + ((Math.max(1, depth) - 1) * 10),
   default: {
     generateInstance: vi.fn().mockImplementation(async (options = {}) => {
       const depth = options.depth || 1;

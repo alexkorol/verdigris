@@ -66,6 +66,14 @@ vi.mock('#server/core/entities/player/stats-manager.js', () => ({
 
 vi.mock('#server/core/map.js', () => ({
   LAYOUT_IDS: ['warren', 'clearings', 'gauntlet'],
+  THEME_MONSTERS: {
+    stone: { boss: 'Warden of the Deep' },
+    grove: { boss: 'The Elder Oak' },
+    crypt: { boss: 'The Pale Sovereign' },
+    wilds: { boss: 'Alpha of the Wilds' },
+    marsh: { boss: 'The Rotfather' },
+  },
+  instanceItemLevelForDepth: (depth) => 10 + ((Math.max(1, depth) - 1) * 10),
   default: {
     generateInstance: vi.fn().mockResolvedValue({
       map: { background: [], foreground: [] },
@@ -267,6 +275,30 @@ describe('PartyService', () => {
       .map(([, payload]) => payload.party);
     expect(updates).not.toHaveLength(0);
     expect(updates.at(-1).members.every(entry => entry.ready === false)).toBe(true);
+  });
+
+  it('attaches additive adventureZones preview fields on party:update', async () => {
+    const { default: Socket } = await import('#server/socket.js');
+    const party = service.createParty(leader);
+    Socket.emit.mockClear();
+    service.sendPartyUpdate(party);
+    const update = Socket.emit.mock.calls.find(([event]) => event === 'party:update');
+    expect(update).toBeTruthy();
+    expect(update[1].party).toEqual(expect.objectContaining({ id: party.id }));
+    expect(update[1].adventureZones).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        id: 'old-barrow',
+        template: 'dungeon',
+        bossDisplayName: 'Warden of the Deep',
+        treasureItemLevel: 10,
+        depth: 1,
+      }),
+      expect.objectContaining({
+        id: 'verdant-grove',
+        template: 'grove',
+        bossDisplayName: 'The Elder Oak',
+      }),
+    ]));
   });
 
   it('startSoloInstance falls back to the dungeon template for unknown zones', async () => {

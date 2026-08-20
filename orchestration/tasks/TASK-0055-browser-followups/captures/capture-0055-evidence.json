@@ -1,0 +1,92 @@
+{
+  "houseName": "Emberglow-646wa",
+  "scionName": "AshaLong-646wa",
+  "checks": {
+    "1366x768.houseIdentity": true,
+    "1366x768.titleMatchesFullName": true,
+    "1366x768.chipDoesNotOverlapHpOrb": true,
+    "1366x768.serverPayloadPresent": true,
+    "1366x768.adventureMatchesServer": true,
+    "1920x1080.houseIdentity": true,
+    "1920x1080.titleMatchesFullName": true,
+    "1920x1080.chipDoesNotOverlapHpOrb": true,
+    "1920x1080.serverPayloadPresent": true,
+    "1920x1080.adventureMatchesServer": true
+  },
+  "results": [
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "identityText": "House Emberglow-646wa — AshaLong-646wa (Mortal oath)",
+      "identityTitle": "House Emberglow-646wa — AshaLong-646wa (Mortal oath)",
+      "expectedLabel": "House Emberglow-646wa — AshaLong-646wa (Mortal oath)",
+      "identityBox": {
+        "x": 93.390625,
+        "y": 474.234375,
+        "width": 240,
+        "height": 23.515625
+      },
+      "orbBox": {
+        "x": 93.390625,
+        "y": 515.75,
+        "width": 150.25,
+        "height": 150.25
+      },
+      "overlapsOrb": false,
+      "zoneText": "Choose an expeditionYou: Lv 1The Old BarrowTight halls · forgiving first delveWarden of the Deep · item-level 10 gear · depth 1Start hereLv 1–5Verdant GroveOpen clearings · roaming packsThe Elder Oak · item-level 10 gear · depth 1ReadyLv 1–6Sunken ColonnadeA narrow, punishing gauntletThe Pale Sovereign · item-level 10 gear · depth 1DangerLv 3–8Weir CryptDense rooms · little retreatThe Pale Sovereign · item-level 10 gear · depth 1DangerLv 4–9The WildsBroad hunting groundsAlpha of the Wilds · item-level 10 gear · depth 1DangerLv 6–12Marsh of ReedsHostile wetlands · elite packsThe Rotfather · item-level 10 gear · depth 1DangerLv 8–14",
+      "barrowObjective": "Warden of the Deep · item-level 10 gear · depth 1",
+      "expectedLine": "Warden of the Deep · item-level 10 gear · depth 1",
+      "payloadCount": 6,
+      "barrowPayload": {
+        "id": "old-barrow",
+        "name": "The Old Barrow",
+        "template": "dungeon",
+        "layout": "warren",
+        "levelHint": "1–5",
+        "bossDisplayName": "Warden of the Deep",
+        "treasureItemLevel": 10,
+        "depth": 1
+      },
+      "payloadLogged": true
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "identityText": "House Emberglow-646wa — AshaLong-646wa (Mortal oath)",
+      "identityTitle": "House Emberglow-646wa — AshaLong-646wa (Mortal oath)",
+      "expectedLabel": "House Emberglow-646wa — AshaLong-646wa (Mortal oath)",
+      "identityBox": {
+        "x": 52,
+        "y": 804.484375,
+        "width": 240,
+        "height": 23.515625
+      },
+      "orbBox": {
+        "x": 52,
+        "y": 846,
+        "width": 168,
+        "height": 168
+      },
+      "overlapsOrb": false,
+      "zoneText": "Choose an expeditionYou: Lv 1The Old BarrowTight halls · forgiving first delveWarden of the Deep · item-level 10 gear · depth 1Start hereLv 1–5Verdant GroveOpen clearings · roaming packsThe Elder Oak · item-level 10 gear · depth 1ReadyLv 1–6Sunken ColonnadeA narrow, punishing gauntletThe Pale Sovereign · item-level 10 gear · depth 1DangerLv 3–8Weir CryptDense rooms · little retreatThe Pale Sovereign · item-level 10 gear · depth 1DangerLv 4–9The WildsBroad hunting groundsAlpha of the Wilds · item-level 10 gear · depth 1DangerLv 6–12Marsh of ReedsHostile wetlands · elite packsThe Rotfather · item-level 10 gear · depth 1DangerLv 8–14",
+      "barrowObjective": "Warden of the Deep · item-level 10 gear · depth 1",
+      "expectedLine": "Warden of the Deep · item-level 10 gear · depth 1",
+      "payloadCount": 6,
+      "barrowPayload": {
+        "id": "old-barrow",
+        "name": "The Old Barrow",
+        "template": "dungeon",
+        "layout": "warren",
+        "levelHint": "1–5",
+        "bossDisplayName": "Warden of the Deep",
+        "treasureItemLevel": 10,
+        "depth": 1
+      },
+      "payloadLogged": true
+    }
+  ]
+}
