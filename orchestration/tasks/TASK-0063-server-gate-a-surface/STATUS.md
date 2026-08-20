@@ -1,6 +1,6 @@
 ---
 task: TASK-0063
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: cursor
 worker_branch: codex/TASK-0063-server-gate-a-surface-cursor
 base_commit: 5c41a04821695e38261fdb52f2e86b2dea67f21d

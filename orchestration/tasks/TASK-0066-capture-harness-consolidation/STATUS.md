@@ -1,6 +1,6 @@
 ---
 task: TASK-0066
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: mac-claude
 worker_branch: codex/TASK-0066-capture-harness-consolidation-mac-claude
 base_commit: 5c41a04821695e38261fdb52f2e86b2dea67f21d

@@ -15,7 +15,8 @@ identity. Recalibrate after model/harness/prompt/acceptance changes.
 | DeepSeek V4-Pro (dsh) | browser UI wave | 1 | 100% (0049) | 0 | first-pass accept, $1.47, 21 new tests, self-cleanup; one scope deviation (mirrored constants vs ask); BOUNDED-DESIGN works |
 | Qwen3.8-27B-8bit local (LM Studio, MacBook via Tailscale) | probe battery only | 6 probes | DISPATCHABLE (2026-08-18 re-probe) | 0 | thinking OFF at template default (patched); old reasoning-runaway (P4 399-tok dump) GONE — 811ms clean; opt-in thinking at low effort emits no reasoning (inert?); lane = MECHANICAL packets + offline eval, NOT interactive loops; endpoint http://alexs-macbook-pro.tail4e0d34.ts.net:1234/v1 model qwen3.8, no chat_template_kwargs on default path, JIT other models disabled |
 | Cursor Grok 4.6 (Cursor desktop) | browser features + infra | 3 | 100% (0055, 0059, 0062) | 0 | first-pass accept on calibration; hard-fail captures + authentic negative + disclosed deviations w/ repro; strong evidence discipline; BOUNDED-DESIGN works |
-| Cursor Grok 4.6 (Cursor desktop) | native C++ features | 1 | mechanics accepted, rubric miss (0061: chose a debug painter over the real pipeline) | 0 | protocol/session work excellent + honest server-gap notes; needs explicit presentation-quality constraints in SPEC (now standard) |
+| Cursor Grok 4.6 (Cursor desktop) | native C++ features | 4 | 0061 rubric miss then 0063+0064+0065 first-pass (Gate A green) | 0 | protocol/session/render/bench all strong; honest gap notes; give explicit presentation-quality constraints in SPECs |
+| Claude Sonnet (Claude Code, MacBook) | browser infra (calibration) | 1 | 100% (0066) | 0 | first-pass; unsolicited peer-verify on 0062 first (standing-loop duty); clean lane discipline; browser/JS + docs lane |
 | Fable (architect) | scaffolding/reviews/integration | â€” | â€” | 0 | control plane + D-120 scaffolds |
 
 ## Calibration notes

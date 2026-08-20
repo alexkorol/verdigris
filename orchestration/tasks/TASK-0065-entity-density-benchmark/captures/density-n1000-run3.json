@@ -7,9 +7,9 @@
   "monsters_start": 1000,
   "monsters_end": 1000,
   "spawned_via_seam": 999,
-  "elapsed_s": 0.005433,
-  "ticks_per_sec": 184043.434250,
-  "p99_tick_ms": 0.005400,
+  "elapsed_s": 0.005571,
+  "ticks_per_sec": 179491.321595,
+  "p99_tick_ms": 0.008600,
   "tick_ms": 50,
   "host": "windows",
   "note": "core Simulation spawn_monster + Melee dispatch; JS has no matching spawn seam"
