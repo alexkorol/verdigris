@@ -150,9 +150,12 @@ struct BillboardAssets {
   SpriteBitmap ruin;
   SpriteBitmap dwelling;
   SpriteBitmap shrine;
+  SpriteBitmap terrain1;
+  SpriteBitmap terrain4;
   std::string root;
   std::string status = "billboards: off (fallback capsules; assets not loaded)";
   std::string scenery_status = "scenery: off (fallback shapes; assets not loaded)";
+  std::string terrain_status = "terrain: off (flat fill; terrain plates missing)";
 
   ~BillboardAssets() {
     player.reset();
@@ -162,6 +165,8 @@ struct BillboardAssets {
     ruin.reset();
     dwelling.reset();
     shrine.reset();
+    terrain1.reset();
+    terrain4.reset();
     if (gdiplus_shutdown && gdiplus_token) gdiplus_shutdown(gdiplus_token);
     if (gdiplus_module) FreeLibrary(gdiplus_module);
     if (msimg32_module) FreeLibrary(msimg32_module);
@@ -368,6 +373,72 @@ bool load_sprite(BillboardAssets& assets, const std::string& path, SpriteBitmap&
   return true;
 }
 
+bool load_terrain_plate(BillboardAssets& assets, const std::string& path,
+                        SpriteBitmap& sprite) {
+  if (!assets.create_bitmap || !assets.image_width || !assets.image_height ||
+      !assets.create_hbitmap || !assets.dispose_image)
+    return false;
+  const std::wstring filename = wide_path(path);
+  if (filename.empty()) return false;
+  GpBitmap* image = nullptr;
+  if (assets.create_bitmap(filename.c_str(), &image) != 0 || !image) return false;
+  UINT width = 0;
+  UINT height = 0;
+  HBITMAP source = nullptr;
+  const bool dimensions_ok = assets.image_width(image, &width) == 0 &&
+                             assets.image_height(image, &height) == 0 && width > 0 &&
+                             height > 0;
+  const bool bitmap_ok = dimensions_ok && assets.create_hbitmap(image, &source, 0) == 0 &&
+                         source != nullptr;
+  assets.dispose_image(image);
+  if (!bitmap_ok) {
+    if (source) DeleteObject(source);
+    return false;
+  }
+
+  BITMAPINFO info{};
+  info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  info.bmiHeader.biWidth = static_cast<LONG>(width);
+  info.bmiHeader.biHeight = -static_cast<LONG>(height);
+  info.bmiHeader.biPlanes = 1;
+  info.bmiHeader.biBitCount = 32;
+  info.bmiHeader.biCompression = BI_RGB;
+  std::vector<std::uint8_t> pixels(static_cast<std::size_t>(width) * height * 4);
+  HDC screen = GetDC(nullptr);
+  const int copied = GetDIBits(screen, source, 0, height, pixels.data(), &info,
+                               DIB_RGB_COLORS);
+  ReleaseDC(nullptr, screen);
+  DeleteObject(source);
+  if (copied == 0) return false;
+
+  for (std::size_t index = 0; index < pixels.size(); index += 4)
+    pixels[index + 3] = 255;
+
+  std::vector<std::uint8_t> mirrored(pixels.size());
+  for (UINT y = 0; y < height; ++y) {
+    for (UINT x = 0; x < width; ++x) {
+      const std::size_t source_index = (static_cast<std::size_t>(y) * width + x) * 4;
+      const std::size_t target_index =
+          (static_cast<std::size_t>(y) * width + (width - x - 1)) * 4;
+      std::memcpy(mirrored.data() + target_index, pixels.data() + source_index, 4);
+    }
+  }
+
+  sprite.reset();
+  sprite.width = static_cast<int>(width);
+  sprite.height = static_cast<int>(height);
+  sprite.base_y = static_cast<int>(height);
+  sprite.bitmap = make_dib(pixels, sprite.width, sprite.height, &sprite.dc,
+                           &sprite.old_bitmap);
+  sprite.mirror_bitmap = make_dib(mirrored, sprite.width, sprite.height,
+                                  &sprite.mirror_dc, &sprite.old_mirror_bitmap);
+  if (!sprite.ready()) {
+    sprite.reset();
+    return false;
+  }
+  return true;
+}
+
 bool initialize_gdiplus(BillboardAssets& assets) {
   assets.gdiplus_module = LoadLibraryA("gdiplus.dll");
   if (!assets.gdiplus_module) return false;
@@ -449,12 +520,26 @@ void load_billboards(BillboardAssets& assets) {
       assets.dwelling.reset();
       assets.shrine.reset();
     }
-    if (actors_loaded || scenery_loaded) return;
+
+    const bool terrain_loaded =
+        load_terrain_plate(assets, root + "\\terrain1.png", assets.terrain1) &&
+        load_terrain_plate(assets, root + "\\terrain4.png", assets.terrain4);
+    if (terrain_loaded) {
+      if (assets.root.empty()) assets.root = root;
+      assets.terrain_status = "terrain: on (terrain1 / terrain4 tiled floor)";
+    } else {
+      assets.terrain1.reset();
+      assets.terrain4.reset();
+    }
+
+    if (actors_loaded || scenery_loaded || terrain_loaded) return;
   }
   if (assets.player.ready() == false)
     assets.status = "billboards: off (fallback capsules; asset plates missing)";
   assets.scenery_status =
       "scenery: off (fallback shapes; asset plates missing)";
+  if (!assets.terrain1.ready() || !assets.terrain4.ready())
+    assets.terrain_status = "terrain: off (flat fill; terrain plates missing)";
 }
 
 std::uint64_t scenery_seed(const std::string& route_id) {
@@ -925,6 +1010,79 @@ void draw_ground_grid(HDC dc, const Camera& camera, const RECT& bounds) {
     const ScreenPoint a = project(camera, bounds, camera.x - range, gy);
     const ScreenPoint b = project(camera, bounds, camera.x + range, gy);
     draw_line(dc, a.x, a.y, b.x, b.y, RGB(33, 41, 44), 1);
+  }
+}
+
+bool terrain_theme_prefers_alt(const std::string& route_id) {
+  return route_id.find("marsh") != std::string::npos ||
+         route_id.find("barrow") != std::string::npos ||
+         route_id.find("circle") != std::string::npos;
+}
+
+std::uint32_t terrain_tile_hash(int tx, int ty) {
+  std::uint32_t hash = static_cast<std::uint32_t>(tx) * 374761393U +
+                       static_cast<std::uint32_t>(ty) * 668265263U;
+  hash ^= hash >> 13;
+  hash *= 1274126177U;
+  hash ^= hash >> 16;
+  return hash;
+}
+
+bool terrain_tile_uses_alt(int tx, int ty, bool theme_alt) {
+  const int bucket = static_cast<int>(terrain_tile_hash(tx, ty) % 100);
+  return theme_alt ? bucket < 75 : bucket < 30;
+}
+
+bool draw_terrain_tile(HDC dc, const SpriteBitmap& sprite, const ScreenPoint& center,
+                       double world_half_extent) {
+  if (!sprite.ready()) return false;
+  const int half = std::max(2, static_cast<int>(world_half_extent * center.scale));
+  const int dest_w = half * 2;
+  const int dest_h = half * 2;
+  const int dest_x = center.x - half;
+  const int dest_y = center.y - half;
+  return StretchBlt(dc, dest_x, dest_y, dest_w, dest_h, sprite.dc, 0, 0, sprite.width,
+                    sprite.height, SRCCOPY) != FALSE;
+}
+
+void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
+                const RECT& bounds, const std::string& route_id, render::List& rl) {
+  const bool tiled = assets.terrain1.ready() && assets.terrain4.ready();
+  rl.push_back({render::Op::Floor, 0.0, 0.0, 0.0, tiled ? 1 : 0,
+                tiled ? "tiled" : "flat"});
+
+  HBRUSH background = CreateSolidBrush(RGB(23, 29, 32));
+  FillRect(dc, &bounds, background);
+  DeleteObject(background);
+
+  if (!tiled) {
+    draw_ground_grid(dc, camera, bounds);
+    return;
+  }
+
+  const double range = static_cast<double>(verdigris::world_scale::kArenaHalfExtent);
+  const double tile = kTileUnits;
+  const int start_tx = static_cast<int>(std::floor((camera.x - range) / tile));
+  const int end_tx = static_cast<int>(std::ceil((camera.x + range) / tile));
+  const int start_ty = static_cast<int>(std::floor((camera.y - range) / tile));
+  const int end_ty = static_cast<int>(std::ceil((camera.y + range) / tile));
+  const bool theme_alt = terrain_theme_prefers_alt(route_id);
+  const double half = tile * 0.5;
+
+  for (int ty = start_ty; ty <= end_ty; ++ty) {
+    for (int tx = start_tx; tx <= end_tx; ++tx) {
+      const double wx = static_cast<double>(tx) * tile;
+      const double wy = static_cast<double>(ty) * tile;
+      const ScreenPoint center = project(camera, bounds, wx + half, wy + half);
+      const bool use_alt = terrain_tile_uses_alt(tx, ty, theme_alt);
+      const SpriteBitmap& sprite = use_alt ? assets.terrain4 : assets.terrain1;
+      const std::string label =
+          std::string(use_alt ? "terrain4" : "terrain1") + ":" + std::to_string(tx) + ":" +
+          std::to_string(ty);
+      rl.push_back({render::Op::Tile, static_cast<double>(center.x),
+                    static_cast<double>(center.y), half * center.scale, 0, label});
+      draw_terrain_tile(dc, sprite, center, half);
+    }
   }
 }
 
@@ -1657,11 +1815,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   sync_world(state);
   const WorldView& world = state.world;
   render::List rl;
-  HBRUSH background = CreateSolidBrush(RGB(23, 29, 32));
-  FillRect(dc, &bounds, background);
-  DeleteObject(background);
 
-  draw_ground_grid(dc, state.camera, bounds);
+  draw_floor(state.billboards, dc, state.camera, bounds, world.route_id, rl);
 
   // Ground decals render before anything that stands on the plane.
   if (world.has_extraction) {
@@ -2272,6 +2427,7 @@ void scenario_step(ClientState& state, const verdigris::Command& command) {
 }
 
 void scenario_begin(ClientState& state) {
+  load_billboards(state.billboards);
   state.simulation =
       std::make_unique<verdigris::Simulation>(0xC011AB1EULL, "House Verdigris");
   state.simulation->dispatch(verdigris::Command::enter("route:tin:1:0"));
@@ -2285,6 +2441,15 @@ std::vector<std::pair<double, double>> scenery_screen_positions(const ClientStat
   return positions;
 }
 
+std::unordered_map<std::string, std::pair<double, double>> tile_screen_by_label(
+    const ClientState& state) {
+  std::unordered_map<std::string, std::pair<double, double>> positions;
+  for (const auto& op : state.render_list) {
+    if (op.op == render::Op::Tile) positions[op.label] = {op.x, op.y};
+  }
+  return positions;
+}
+
 int scenario_move_and_camera() {
   ClientState state;
   scenario_begin(state);
@@ -2292,7 +2457,11 @@ int scenario_move_and_camera() {
   state.camera.y = 0.0;
   scenario_present(state);
   const auto baseline = scenery_screen_positions(state);
+  const auto tile_baseline = tile_screen_by_label(state);
   scenario_check(baseline.size() > 3, "move-and-camera: scenery present in render list");
+  scenario_check(render::any(state.render_list, render::Op::Floor),
+                 "move-and-camera: Floor op recorded");
+  scenario_check(tile_baseline.size() > 8, "move-and-camera: terrain tiles present in render list");
 
   const int steps[4][2] = {{40, 0}, {0, 40}, {-40, 0}, {0, -40}};
   for (const auto& step : steps) {
@@ -2300,6 +2469,7 @@ int scenario_move_and_camera() {
     state.camera.y = static_cast<double>(step[1]);
     scenario_present(state);
     const auto moved = scenery_screen_positions(state);
+    const auto tiles_moved = tile_screen_by_label(state);
     if (moved.size() != baseline.size()) {
       scenario_check(false, "move-and-camera: scenery count stable across camera moves");
       continue;
@@ -2318,6 +2488,35 @@ int scenario_move_and_camera() {
     const double expect_y = -static_cast<double>(step[1]) * state.camera.zoom;
     scenario_check(std::abs(dx0 - expect_x) <= 1.0 && std::abs(dy0 - expect_y) <= 1.0,
                    "move-and-camera: uniform delta equals camera shift * zoom");
+
+    if (tiles_moved.size() >= tile_baseline.size() / 2 && !tile_baseline.empty()) {
+      const double expect_x = -static_cast<double>(step[0]) * state.camera.zoom;
+      const double expect_y = -static_cast<double>(step[1]) * state.camera.zoom;
+      int matched = 0;
+      double tdx0 = 0.0;
+      double tdy0 = 0.0;
+      bool tiles_uniform = true;
+      for (const auto& entry : tile_baseline) {
+        const auto it = tiles_moved.find(entry.first);
+        if (it == tiles_moved.end()) continue;
+        const double dx = it->second.first - entry.second.first;
+        const double dy = it->second.second - entry.second.second;
+        if (matched == 0) {
+          tdx0 = dx;
+          tdy0 = dy;
+        } else if (std::abs(dx - tdx0) > 1.0 || std::abs(dy - tdy0) > 1.0) {
+          tiles_uniform = false;
+        }
+        ++matched;
+      }
+      scenario_check(matched > 8, "move-and-camera: overlapping terrain tiles across camera moves");
+      scenario_check(tiles_uniform,
+                     "move-and-camera: every overlapping terrain tile shifts by one uniform delta");
+      scenario_check(std::abs(tdx0 - expect_x) <= 1.0 && std::abs(tdy0 - expect_y) <= 1.0,
+                     "move-and-camera: terrain delta equals camera shift * zoom");
+    } else {
+      scenario_check(false, "move-and-camera: terrain tiles overlap across camera moves");
+    }
   }
   return 0;
 }
@@ -2523,7 +2722,12 @@ int scenario_remote_render_list() {
   sync_world(state);
   state.camera.x = static_cast<double>(state.world.player.position.x);
   state.camera.y = static_cast<double>(state.world.player.position.y);
+  load_billboards(state.billboards);
   scenario_present(state);
+  scenario_check(render::any(state.render_list, render::Op::Floor),
+                 "remote-render-list: Floor op in paint_scene render list");
+  scenario_check(render::any(state.render_list, render::Op::Tile),
+                 "remote-render-list: Tile ops in paint_scene render list");
   const render::Item* extract = render::first(state.render_list, render::Op::Extraction);
   scenario_check(extract && extract->label == "stairs-up",
                  "remote-render-list: Extraction pad marked stairs-up");
@@ -2579,12 +2783,15 @@ int scenario_zoom_invariance() {
     state.camera.zoom = zooms[z];
     scenario_present(state);
     const auto base = scenery_screen_positions(state);
+    const auto tile_base = tile_screen_by_label(state);
     scenario_check(base.size() > 3, "zoom-invariance: scenery present in render list");
+    scenario_check(tile_base.size() > 8, "zoom-invariance: terrain tiles present in render list");
 
     state.camera.x = 40.0;
     state.camera.y = 0.0;
     scenario_present(state);
     const auto moved = scenery_screen_positions(state);
+    const auto tiles_moved = tile_screen_by_label(state);
     bool uniform = moved.size() == base.size();
     double dx0 = 0.0, dy0 = 0.0;
     if (uniform) {
@@ -2602,6 +2809,31 @@ int scenario_zoom_invariance() {
     const double expect_x = -40.0 * state.camera.zoom;
     scenario_check(std::abs(dx0 - expect_x) <= 1.0,
                    "zoom-invariance: delta scales with the zoom factor");
+
+    if (!tile_base.empty()) {
+      int matched = 0;
+      double tdx0 = 0.0;
+      double tdy0 = 0.0;
+      bool tiles_uniform = true;
+      for (const auto& entry : tile_base) {
+        const auto it = tiles_moved.find(entry.first);
+        if (it == tiles_moved.end()) continue;
+        const double dx = it->second.first - entry.second.first;
+        const double dy = it->second.second - entry.second.second;
+        if (matched == 0) {
+          tdx0 = dx;
+          tdy0 = dy;
+        } else if (std::abs(dx - tdx0) > 1.0 || std::abs(dy - tdy0) > 1.0) {
+          tiles_uniform = false;
+        }
+        ++matched;
+      }
+      scenario_check(matched > 8, "zoom-invariance: overlapping terrain tiles across camera shift");
+      scenario_check(tiles_uniform,
+                     "zoom-invariance: overlapping terrain tiles shift uniformly at zoom level");
+    } else {
+      scenario_check(false, "zoom-invariance: terrain tiles overlap across camera shift");
+    }
   }
   return 0;
 }
@@ -2635,6 +2867,8 @@ int run_scenarios(const std::string& which) {
 
 const char* render_op_name(render::Op op) {
   switch (op) {
+    case render::Op::Floor: return "Floor";
+    case render::Op::Tile: return "Tile";
     case render::Op::Scenery: return "Scenery";
     case render::Op::Player: return "Player";
     case render::Op::Monster: return "Monster";
