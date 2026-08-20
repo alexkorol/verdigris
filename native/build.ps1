@@ -1,7 +1,8 @@
 param(
   [switch]$RunTests,
   [switch]$RunClient,
-  [switch]$RunClientScenarios
+  [switch]$RunClientScenarios,
+  [switch]$RunDensityBench
 )
 
 $ErrorActionPreference = "Stop"
@@ -119,3 +120,18 @@ if ($RunTests) { & $camera2dTestExe }
 if ($RunTests) { & $sessionTestExe; if ($LASTEXITCODE -ne 0) { throw "session tests failed" } }
 if ($RunClient) { & $clientExe --headless }
 if ($RunClientScenarios) { & $clientExe --scenario all }
+if ($RunDensityBench) {
+  $densityBenchObj = Join-Path $buildRoot "entity_density_bench.obj"
+  $densityBenchExe = Join-Path $buildRoot "entity_density_bench.exe"
+  Invoke-Msvc ('/c "' + $nativeRoot + '\tools\entity_density_bench.cpp" /Fo"' + $densityBenchObj + '"')
+  Invoke-Msvc ('"' + $densityBenchObj + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $densityBenchExe + '"')
+  $captureDir = Join-Path $nativeRoot "..\orchestration\tasks\TASK-0065-entity-density-benchmark\captures"
+  New-Item -ItemType Directory -Force -Path $captureDir | Out-Null
+  foreach ($n in @(50, 200, 500, 1000)) {
+    foreach ($run in @(1, 2, 3)) {
+      $outFile = Join-Path $captureDir ("density-n{0}-run{1}.json" -f $n, $run)
+      & $densityBenchExe --n $n --run $run --out $outFile
+      if ($LASTEXITCODE -ne 0) { throw "density bench failed n=$n run=$run" }
+    }
+  }
+}
