@@ -1,6 +1,6 @@
 ---
 task: TASK-0062
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: cursor
 worker_branch: codex/TASK-0062-playtest-flake-triage-cursor
 base_commit: 7f3ba270ef3f9d561188942aeb738fb8b0647097

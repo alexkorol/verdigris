@@ -1,70 +1,78 @@
 # Run status (snapshot — rewritten each architect sweep)
 
-- Current integration tip: origin/codex/native-reconstitution @ 03678a06 (+ D-122 ship pending)
-- Master: 03678a06 (PRs #20–#28)
-- **D-122 adopted (owner research, 2026-08-20): three-axis parity.**
-  The native exe currently never connects to the C++ server
-  (verdigris_client links core only). C3 starts NOW, parallel to N5.
-  N6 releases only after Gate A. Canon:
-  docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md.
-- Immutable objective: D-116 under the D-122 three-axis definition.
+- Current integration tip: pending push (post-0061/0062 batch); master ce9dacfc + batch
+- Overnight run: PRs #27–#32 shipped so far tonight; batch PR pending.
+- **Gate A status: RED on presentation only.** The networked journey is
+  REAL (0061: native client plays guest loop vs verdigris_server over
+  WS — architect-played 04:00) but the remote window is a debug painter.
+  0064 unblocks the gate.
+- D-123 adopted (owner-ruled): READY queue never runs dry — min 3
+  claimable packets at all times, restocked every sweep.
+- Immutable objective: D-116 under D-122 three-axis parity.
 
 ## RUNNING
 
 | Task | Owner | Notes |
 |---|---|---|
-| 0061 networked guest slice (Gate A) | cursor | claimed 2094e09a — critical path; single-writer main.cpp is theirs |
-| 0056 N5 Chronicles (server axis) | deepseek | STALLED ~29h (last commit 08-18 19:36; 4 dirty preserved). OWNER: relaunch dsh + re-paste /goal — it resumes the claim. Paths narrowed to native/src+tests (client is C3's now) |
+| 0056 N5 Chronicles (server axis) | deepseek | STALLED since 08-18 19:36. OWNER: relaunch dsh + /goal from BOOTSTRAP.md |
 
-## Recently integrated
-
-- 0059 (cursor) ACCEPTED first-pass 02:30 — compact overlay stack at
-  1366/1280; 55/55 capture asserts; honest defect audit. Cursor 2/2.
-- 0060 (architect) DONE 01:35 — C3 session seam: FIRST EVER native
-  client↔native server WebSocket handshake (login → authoritative
-  snapshot). 19/19 session tests; scenarios untouched. 0061 UNBLOCKED.
-- 0055 (cursor) ACCEPTED first-pass 01:10 — identity chip + server zone
-  preview, mirror data file deleted. Cursor lane calibrated: high trust.
-
-## READY / QUEUED
+## READY (D-123 buffer: 4)
 
 | Task | Packet | Notes |
 |---|---|---|
+| 0064 remote presentation unify | BOUNDED-DESIGN | **CRITICAL — Gate A red solely on this.** cursor suggested |
+| 0063 server Gate A surface | BOUNDED-DESIGN | drops/extract/equip envelopes; any native lane |
+| 0065 N7 entity-density benchmark | BOUNDED-DESIGN | independent; any native lane |
+| 0066 shared capture harness | MECHANICAL | browser infra; mac-claude suggested |
 
-| 0062 playtest flake triage | BOUNDED-DESIGN | NEW — mac-claude suggested; diagnostics only, assertions frozen |
-| 0058 N6 final SERVER-parity wave | BOUNDED-DESIGN | HOLD until 0056 integrated AND Gate A accepted (D-122) |
+## HOLD
+
+- 0058 N6 final SERVER-parity wave: until 0056 integrated AND Gate A green.
+
+## Recently integrated (tonight)
+
+- 0061 (cursor) mechanics ACCEPTED 04:10 — full networked guest journey
+  over WS, machine-checked + architect-played; Gate A rubric failed on
+  visual cohesion (debug painter) → 0064 spawned. PR pending.
+- 0062 (cursor) ACCEPTED 04:05 — playtest flake diagnostics; marginal
+  scenario named: gear-outcomes (32–53s spread). PR pending.
+- 0059 (cursor) ACCEPTED 02:30 (PR #32). 0055 (cursor) ACCEPTED 01:10
+  (PR #30). 0060 (architect) C3 seam (PR #31) — first native
+  client↔server handshake. D-122 adoption (PR #29). Docs (PRs #27–28).
 
 ## Standing duty: peer verification
 
 Idle coordinators rerun peers' REVIEW_REQUESTED browser gates
 (REVIEW-PEER-<name>.md) before backoff — see STANDING-LOOP.md.
-Verdicts stay architect-only. qwen3.8 is an endpoint, not a
-coordinator: mac-claude dispatches MECHANICAL packets to it.
+qwen3.8 is an endpoint, not a coordinator (mac-claude dispatches).
 
 ## Fleet + budget
 
-- deepseek: STALLED mid-0056 (see RUNNING). Ports 6540–6559.
-- cursor (Grok 4.6): ON FIRE — 3 claims tonight (0055+0059 accepted, 0061 running). Ports 6580–6599.
-- mac-claude (Sonnet): NO activity by 02:30 (0059 taken by cursor). If still dark at morning: owner re-check the Mac session. Ports 7000–7019. NEVER native/**.
-- kimis: quota-dead until ~08-23. codex: out of tokens.
-- architect: token-rationed (eco 3600s sweeps); 0060 is the one
-  architect implementation block, per D-120.
+- cursor (Grok 4.6): 4/4 accepted tonight (0055, 0059, 0061 mechanics,
+  0062) — exceptional throughput; one rubric miss (0061 presentation).
+  Ports 6580–6599.
+- deepseek: STALLED mid-0056; 4 dirty preserved. Ports 6540–6559.
+- mac-claude (Sonnet): dark all night (no origin claims). Owner:
+  re-check the Mac session in the morning. Ports 7000–7019.
+- kimis quota-dead until ~08-23; codex out of tokens.
+- architect: reviews + play passes + restock per D-123; token-rationed.
 
 ## WATCH
 
-- deepseek stall = critical-path risk for N5; C3 (0060→0061) is now a
-  second critical path that does NOT depend on N5.
-- kimi-work's stale 0055 clone work: discard on resume (cursor owns 0055).
-- Single-writer main.cpp: 0061 claims it session-by-session in STATUS notes.
-- playtest marginal-timeout flake: 2nd sighting (0059 review, 31/32 then 2x 32/32). Escalation due: flake-triage task (capture failing scenario id + timing) — speccing if a 3rd sighting or when a lane frees.
+- gear-outcomes = the marginal playtest scenario (0062 finding);
+  diagnostics now name any failure. 3rd flake sighting → dedicated fix task.
+- kimi-work's stale 0055 clone work: discard on resume (0055 shipped by cursor).
+- Single-writer main.cpp: assigned to 0064 (cursor) until further notice.
+- 0061 review deferred item: first sweep after owner wakes includes one
+  visual spot-check of 0059's 1366 capture (skipped for token rationing).
 
 ## Review procedures on flip
 
-- 0055 (cursor, CALIBRATION): rerun unit+playtest+smoke myself; verify
-  adventure-objective-data.js DELETED; ≤1 eyeballed capture.
-- 0056 (deepseek): rebuild + CUMULATIVE attach set myself on architect
-  port; D-106/ADR-002/D-109 in diff; TaskStop server after.
-- 0059 (mac-claude, CALIBRATION): rerun browser gates on Windows;
-  JSON asserts at 1366x768 + 1280x720.
-- 0061 (later): full gates + I PLAY the exe vs the server + quality
-  rubric (no zeroes, ≥9/12).
+- 0064: gates + remote render-list scenario + architect PLAYS --remote,
+  rescore Gate A rubric (no zeroes, ≥9/12) — the gate-flip review.
+- 0063: gates + N1–N4 attach transcript + extended drive script shows
+  live drop labels.
+- 0065: rerun one N=500 pass; check no native/src behavior diffs.
+- 0066: run the demo capture script; assert parity with 0059 set.
+- 0056 (deepseek, on revival): rebuild + CUMULATIVE attach set MYSELF;
+  D-106/ADR-002/D-109 in diff; TaskStop server after.

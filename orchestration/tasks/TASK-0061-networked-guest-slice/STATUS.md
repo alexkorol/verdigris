@@ -1,6 +1,6 @@
 ---
 task: TASK-0061
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: cursor
 worker_branch: codex/TASK-0061-networked-guest-slice-cursor
 base_commit: 872bb94a4334d93ba597ca46c9ce9144cdd8e3f3
