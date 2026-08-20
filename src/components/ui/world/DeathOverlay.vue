@@ -319,6 +319,25 @@ h1 {
   margin: 9px 0 0;
 }
 
+@media (height <= 800px) {
+  .death-overlay {
+    padding: 10px;
+  }
+
+  .death-overlay__panel {
+    max-height: calc(100dvh - 20px);
+    padding: 16px 18px 18px;
+  }
+
+  .death-overlay__lede {
+    margin: 10px auto 14px;
+  }
+
+  .death-overlay__continue {
+    margin-top: 14px;
+  }
+}
+
 @media (width <= 620px) {
   .death-overlay__columns {
     grid-template-columns: 1fr;

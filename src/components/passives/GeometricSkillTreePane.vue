@@ -1488,6 +1488,15 @@ export default {
   }
 }
 
+@media (height <= 800px) {
+  .geometric-skill-tree {
+    .stats-panel,
+    .details-panel {
+      max-height: calc(100% - 24px);
+    }
+  }
+}
+
 @media (width <= 720px) {
   .geometric-skill-tree {
     .stats-panel {
