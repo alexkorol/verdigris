@@ -1,5 +1,18 @@
 # Native reconstitution handoff
 
+## 2026-08-20 — TASK-0067 native journey CI (cursor, REVIEW_REQUESTED)
+
+- Worker `codex/TASK-0067-native-journey-ci-cursor` off program tip
+  `1f45eb33`. Native workflow job `journey` runs CMake + denylist +
+  core/networking/session ctest + camera2d + `--scenario all` on
+  windows-latest. Density bench is not in CI.
+- Green: https://github.com/alexkorol/verdigris/actions/runs/32365296275
+  Canary (journey extract inverted, reverted):
+  https://github.com/alexkorol/verdigris/actions/runs/32365594226
+- Architect retriggers Native once. `build.ps1` is unchanged; CI uses
+  `ilammy/msvc-dev-cmd` because the runner's VS 18 is not on the script's
+  probe list.
+
 ## 2026-08-20 — TASK-0064 remote presentation unify (cursor, REVIEW_REQUESTED)
 
 - Worker `codex/TASK-0064-remote-presentation-unify-cursor` off program tip
