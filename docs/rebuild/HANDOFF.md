@@ -205,3 +205,35 @@ proofs on disposable ports, and a new disposition/ranking. Guest produces
 readable melee kills/XP/gold; the mortal-oath Chronicles arc remains blocked
 at a visually present but mechanically silent opener. Architect review is
 pending.
+
+## 2026-08-20 — Server/rules parity COMPLETE (32/32 attach)
+
+D-122 axis 1 is done: the unchanged 32-scenario playtest harness passes
+against the native C++ server, verified twice consecutively on fresh
+servers (PR #45, hotfix PR #46). Native gates (build + unit + session +
+client scenarios) all green; session tests survive 8/8 under heavy CPU
+load after the reader-thread join fix.
+
+Load-bearing findings for successors:
+
+- Target selection: `start_player_attack` now does a true nearest scan
+  with direction-aware tie-breaks. The old scan silently locked onto
+  the first spawned monster; anything combat-adjacent that "worked"
+  before 08-20 may have depended on that bug.
+- Session semantics mirror JS exactly (proven by probing the live JS
+  server): one shared anonymous guest account; concurrent anonymous
+  login REPLACES the old session; adoption rebuilds a fresh Player
+  while loot/levels/bank/tree/quest-record persist; permadeath
+  survives reconnect; the commission chain resets on scion admission
+  only. Two quest-point counters exist on purpose: quests.questPoints
+  (persistent chain record) vs top-level questPoints (live tree
+  budget, resets per login).
+- WebSocketServer::stop() now joins per-connection reader threads.
+  Never revert to detach: a reader waking after `delete server`
+  dereferences the freed object (the 08-20 Native CI segfault).
+- Ops: kill servers with PowerShell Stop-Process, never Git Bash
+  pkill (MSYS pkill cannot kill native Windows exes; a stale server
+  produced a bogus 26/32).
+
+Remaining axes: presentation deltas #3/#4 (surface density TASK-0078,
+panels/typography unspecced), Gate B Chronicles client (TASK-0077).

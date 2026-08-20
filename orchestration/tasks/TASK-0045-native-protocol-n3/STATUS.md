@@ -1,6 +1,6 @@
 ﻿---
 task: TASK-0045
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Luna native protocol N3 implementer
 worker_branch: codex/TASK-0045-native-protocol-n3
@@ -14,3 +14,5 @@ known_risks: native/** ownership is broad but client remains presentation-only; 
 architect_review_required: true
 report: orchestration/tasks/TASK-0045-native-protocol-n3/REPORT.md
 ---
+
+Architect close-out 2026-08-20: work shipped in earlier merged PRs; state line was stale. Verified end-to-end today by the full 32/32 attach run on master (PR #45/#46).

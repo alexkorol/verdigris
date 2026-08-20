@@ -1,6 +1,6 @@
----
+﻿---
 task: TASK-0057
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: deepseek
 worker_branch: codex/TASK-0057-clustered-accents-deepseek
 base_commit: 79723db35c4d2873d3c5af3fda13a4503337236d
@@ -14,14 +14,16 @@ Implemented and pushed for architect review.
 Floor accents now generate as coherent seeded blobs (blob growth from seed
 cells) instead of one-cell checkerboard noise, on their own seed-derived rng
 stream so the main generation stream (decor/water/monsters/items) stays
-byte-identical. Density holds at the 12% budget (±10%).
+byte-identical. Density holds at the 12% budget (Â±10%).
 
 Gates green: unit 830/830 (4 new tests), playtest 32/32, browser smoke 1/1,
 hard-fail capture CAPTURES OK (village + Verdant Grove). Authentic negative:
-growth=0 → clustering tests fail → restored green. Scope note in REPORT.md:
+growth=0 â†’ clustering tests fail â†’ restored green. Scope note in REPORT.md:
 overworld village flowers live in world-layout.js (outside owned_paths) and
-are unchanged — flagged for architect follow-up if wanted.
+are unchanged â€” flagged for architect follow-up if wanted.
 
 Commits:
-- `32fdcdf8` — claim
-- `23749d26` — implementation (clustered accents + tests + captures)
+- `32fdcdf8` â€” claim
+- `23749d26` â€” implementation (clustered accents + tests + captures)
+
+Architect close-out 2026-08-20: work shipped in earlier merged PRs; state line was stale. Verified end-to-end today by the full 32/32 attach run on master (PR #45/#46).

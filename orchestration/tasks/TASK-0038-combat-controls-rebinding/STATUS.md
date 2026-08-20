@@ -1,6 +1,6 @@
 ﻿---
 task: TASK-0038
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: kimi-work
 worker: Kimi Work K3 implementation worker
 worker_branch: codex/TASK-0038-rebinding-kimiwork
@@ -17,3 +17,5 @@ architect_review_required: true
 
 # Merge note (architect): kimi-work versions kept; codex's released
 # BLOCKED record superseded per the collision ruling in program history.
+
+Architect close-out 2026-08-20: work shipped in earlier merged PRs; state line was stale. Verified end-to-end today by the full 32/32 attach run on master (PR #45/#46).

@@ -1,6 +1,6 @@
 ﻿---
 task: TASK-0046
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: Luna read-only playability evaluator
 worker_branch: codex/TASK-0046-playability-reevaluation
@@ -17,3 +17,5 @@ candidate_commit: 1de6e45b
 coordinator_evidence_commit: 78e3af37
 handoff: coordinator completed both approximately ten-minute arcs and added first-minute page-context socket proofs; report ranks the Chronicles silent opener and mana/loot friction; architect review remains pending
 ---
+
+Architect close-out 2026-08-20: work shipped in earlier merged PRs; state line was stale. Verified end-to-end today by the full 32/32 attach run on master (PR #45/#46).

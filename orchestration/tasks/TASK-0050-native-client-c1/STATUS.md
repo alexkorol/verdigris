@@ -1,6 +1,6 @@
----
+﻿---
 task: TASK-0050
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: deepseek
 worker_branch: codex/TASK-0050-native-client-c1-deepseek
 base_commit: cc67a15ee7adb4244ba12d2e14296097f6afa288
@@ -20,3 +20,5 @@ Implemented and pushed for architect review. All three deliverables done:
 Gates green: denylist, core, networking, and camera2d tests all PASS; headless
 proof `trophies stored: 1 | items stored: 1`. The architect should build and
 PLAY the exe before ACCEPTED (D-117). Details in `REPORT.md`.
+
+Architect close-out 2026-08-20: work shipped in earlier merged PRs; state line was stale. Verified end-to-end today by the full 32/32 attach run on master (PR #45/#46).
