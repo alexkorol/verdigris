@@ -123,6 +123,7 @@ class ProtocolSession {
   void handle_house_deposit(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
   int carried_gold() const;
   void maybe_floor_cleared(const std::function<void(const Envelope&)>& emit);
+  void auto_pickup_gold(const std::function<void(const Envelope&)>& emit);
   void handle_take_ground(const std::string& uuid, const std::function<void(const Envelope&)>& emit);
   void handle_take_underfoot(const std::function<void(const Envelope&)>& emit);
   void handle_menu_build(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) const;

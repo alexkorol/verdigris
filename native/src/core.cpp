@@ -2553,6 +2553,11 @@ const ItemDef kItemCatalogue[] = {
     {"iron-sword", "Iron Sword", "weapon", "right_hand", false, false, {6, 4, -2, 0}, {0, 3, 2, 0}, 0, 0, "", ""},
     // weapons.js steel-battleaxe (session-arc reward drop).
     {"steel-battleaxe", "Steel Battleaxe", "weapon", "right_hand", false, false, {-2, 19, 13, 0}, {0, 1, 2, 2}, 0, 0, "", ""},
+    // town-amenities starter kit + small armor footprints.
+    {"bronze-dagger", "Bronze Dagger", "weapon", "right_hand", false, false, {4, 2, -1, 0}, {0, 1, 0, 0}, 0, 0, "", ""},
+    {"bronze-med-helm", "Bronze Med Helm", "armor", "head", false, false, {0, 0, 0, 0}, {3, 4, 3, 0}, 0, 0, "", ""},
+    {"bronze-gloves", "Bronze Gloves", "armor", "gloves", false, false, {0, 0, 0, 0}, {1, 2, 1, 0}, 0, 0, "", ""},
+    {"bronze-boots", "Bronze Boots", "armor", "feet", false, false, {0, 0, 0, 0}, {1, 2, 2, 0}, 0, 0, "", ""},
 };
 
 // Process-wide instance identity source (factory.js uuid v4): uniqueness is

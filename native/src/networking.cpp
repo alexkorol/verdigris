@@ -1038,6 +1038,26 @@ void ProtocolSession::handle_npc_talk(const JsonValue& payload, const std::funct
   emit_message(emit, "The chart remembers your first Warden. Spend your Verdigris point wisely.");
 }
 
+void ProtocolSession::auto_pickup_gold(const std::function<void(const Envelope&)>& emit) {
+  // gold.js: nearby coins enter the carried balance without a Take action.
+  const Vec2 tile=tile_movement::occupied_tile(world_->position());
+  std::vector<std::string> picked;
+  for (const auto& ground:world_->ground_items()) {
+    if (ground.item.id!="coins") continue;
+    if ((std::max)(std::abs(static_cast<int>(std::floor(ground.x))-tile.x),
+                   std::abs(static_cast<int>(std::floor(ground.y))-tile.y))>1) continue;
+    picked.push_back(ground.item.uuid);
+  }
+  bool changed=false;
+  for (const auto& uuid:picked) {
+    GameItem item;
+    if (!world_->take_ground_item(uuid,&item)) continue;
+    item.slot=-1;
+    inventory_.add(std::move(item));
+    changed=true;
+  }
+  if (changed) { emit_inventory_refresh(emit); emit_ground_change(emit); }
+}
 void ProtocolSession::maybe_complete_first_goal(const std::function<void(const Envelope&)>& emit) {
   // first-goal.js notifyFirstGoalReturned - completes on returning to town.
   if (first_goal_stage_ != "return-to-town") return;
@@ -1131,6 +1151,35 @@ void ProtocolSession::handle_menu_build(const JsonValue& payload, const std::fun
     const auto* world_pos=tile?tile->get("world"):nullptr;
     const int wx=as_int(world_pos?world_pos->get("x"):nullptr);
     const int wy=as_int(world_pos?world_pos->get("y"):nullptr);
+    if (!world_->in_instance() && wx==45 && wy==101) {
+      // General Store floor display (town-amenities/economy): browse, buy,
+      // appraise - display stock can never be taken for free.
+      const char* kDisplayActions[3][3] = {
+        {"Browse the General Store", "browse", "player:screen:shop-display"},
+        {"Buy Bronze Sword", "buy", "player:shop-display:buy"},
+        {"Appraise Bronze Sword", "appraise", "player:shop-display:appraise"},
+      };
+      for (const auto& row : kDisplayActions) {
+        JsonValue::Object entry;
+        put(entry, "label", row[0]);
+        put(entry, "action", JsonValue::Object{{"name", JsonValue(row[1])}, {"actionId", JsonValue(row[2])},
+            {"context", JsonValue::Array{JsonValue("gameMap")}}, {"nearby", true}, {"weight", 1}});
+        put(entry, "type", "shop-display");
+        put(entry, "shopItemId", "bronze-sword");
+        JsonValue::Object item_ref; put(item_ref, "id", 1); put(item_ref, "shopItemId", "bronze-sword");
+        put(entry, "item", std::move(item_ref));
+        entries.emplace_back(std::move(entry));
+      }
+    }
+    if (!world_->in_instance() && wx==38 && wy==115) {
+      // town fountain (town-amenities): Drink restores to full.
+      JsonValue::Object entry;
+      put(entry, "label", "Drink from the fountain");
+      put(entry, "action", JsonValue::Object{{"name", JsonValue("drink")}, {"actionId", JsonValue("player:fountain:drink")},
+          {"context", JsonValue::Array{JsonValue("gameMap")}}, {"nearby", true}, {"weight", 1}});
+      put(entry, "type", "object");
+      entries.emplace_back(std::move(entry));
+    }
     if (!world_->in_instance()) {
       for (const auto& npc : kTownNpcs) {
         if (npc.x != wx || npc.y != wy) continue;
@@ -1213,6 +1262,12 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
   const std::string uuid=as_string(item_ref?item_ref->get("uuid"):nullptr);
   if (action_id=="player:take") { handle_take_ground(uuid,emit); return; }
   if (action_id=="player:screen:bank") { emit_bank_screen(emit); return; }
+  if (action_id=="player:screen:shop-display" || action_id=="player:npc:trade" ||
+      action_id=="player:shop-display:buy" || action_id=="player:shop-display:appraise") {
+    Envelope forwarded{action_id, payload};
+    handle(forwarded, emit);
+    return;
+  }
   if (action_id=="player:npc:talk") { if (queue_item) handle_npc_talk(*queue_item, emit); return; }
   if (action_id=="player:vesselforge:add-brand") {
     // vesselforge-brand.js: town service, 100 coins, sear on the live item;
@@ -1518,9 +1573,68 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   const auto* payload=envelope.data.object()?&envelope.data:nullptr;
   if (envelope.event=="world:zone:enter") { const auto node=as_string(payload?payload->get("nodeId"):nullptr,"tin:1:0"); simulation_->dispatch(Command::enter(node.rfind("route:",0)==0?node:"route:"+node)); world_->enter_solo_instance("dungeon",""); emit_transition(emit,"world:scene:transition"); emit_ground_change(emit); return; }
   if (envelope.event=="instance:enterSolo") { world_->enter_solo_instance(as_string(payload?payload->get("template"):nullptr,"dungeon"),as_string(payload?payload->get("layout"):nullptr,"")); emit_transition(emit,"party:scene:transition"); emit_ground_change(emit); return; }
-  if (envelope.event=="player:move") { const auto direction=as_string(payload?payload->get("direction"):nullptr); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); if (world_->apply_movement_sample(direction,now_ms())) { emit_movement(emit); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool scene_changed=world_->scene_id()!=scene_before; if (depth_changed||scene_changed) { if (was_instance&&!world_->in_instance()) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); } emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) emit_ground_change(emit); } } return; }
+  if (envelope.event=="player:move") { const auto direction=as_string(payload?payload->get("direction"):nullptr); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); if (world_->apply_movement_sample(direction,now_ms())) { emit_movement(emit); auto_pickup_gold(emit); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool scene_changed=world_->scene_id()!=scene_before; if (depth_changed||scene_changed) { if (was_instance&&!world_->in_instance()) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); } emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) emit_ground_change(emit); } } return; }
   if (envelope.event=="dev:teleport") { if (!payload) return; const auto* x=payload->get("x"); const auto* y=payload->get("y"); if (!x||!x->number()||!y||!y->number()) return; const int tx=static_cast<int>(*x->number()); const int ty=static_cast<int>(*y->number()); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); world_->teleport(tx,ty,now_ms()); const bool returned=was_instance&&!world_->in_instance(); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool transitioned=returned||depth_changed||world_->scene_id()!=scene_before; emit_movement(emit); emit_message(emit,"Teleported to "+std::to_string(tx)+", "+std::to_string(ty)+(transitioned?" (portal followed).":".")); if (returned) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); } if (transitioned) emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) { if (depth_changed) emit_ground_change(emit); process_combat(now_ms(),emit); } return; }
   if (envelope.event=="dev:setlevel") { auto* actor=simulation_->actor(simulation_->scion().actor_id); const int level=as_int(payload?payload->get("level"):nullptr,1); if(actor){ actor->stats.level=(std::max)(1,level); actor->stats.attack=12+actor->stats.level*3; actor->stats.life_max=100+actor->stats.level*10; actor->stats.life=actor->stats.life_max; world_->set_level(actor->stats.level); } return; }
+  if (envelope.event=="player:screen:shop-display" || envelope.event=="player:npc:trade") {
+    // shops.js General Store pane.
+    JsonValue::Array stock;
+    { JsonValue::Object row; put(row,"id","bronze-sword"); put(row,"name","Bronze Sword"); put(row,"price",15); put(row,"qty",10); stock.emplace_back(std::move(row)); }
+    JsonValue::Object payload_out;
+    put(payload_out,"name","General Store");
+    put(payload_out,"npcId",2);
+    put(payload_out,"items",std::move(stock));
+    put(payload_out,"carriedCoins",carried_gold());
+    JsonValue::Object data;
+    put(data,"player",JsonValue::Object{{"socket_id",socket_id_}});
+    put(data,"screen","shop");
+    put(data,"payload",std::move(payload_out));
+    emit(Envelope{"open:screen",JsonValue(std::move(data))});
+    return;
+  }
+  if (envelope.event=="player:shop-display:appraise") {
+    emit_message(emit,"Bronze Sword: 15 coins.");
+    return;
+  }
+  if (envelope.event=="player:shop-display:buy") {
+    if (carried_gold()>=15) {
+      JsonValue::Object spend; 
+      // deduct 15 coins then grant the sword.
+      int remaining=15;
+      auto slots=inventory_.items();
+      for (const auto& item:slots) {
+        if (remaining<=0) break;
+        if (item.id!="coins") continue;
+        GameItem taken;
+        if (!inventory_.remove_by_uuid(item.uuid,&taken)) continue;
+        if (taken.qty>remaining) { GameItem back=taken; back.qty=taken.qty-remaining; inventory_.add(std::move(back)); remaining=0; }
+        else remaining-=taken.qty;
+      }
+      CreateItemOptions o; auto sword=create_game_item("bronze-sword",o);
+      if (sword) inventory_.add(std::move(*sword));
+      emit_message(emit,"You buy the Bronze Sword for 15 coins.");
+      emit_inventory_refresh(emit);
+    } else {
+      emit_message(emit,"You cannot afford that.");
+    }
+    return;
+  }
+  if (envelope.event=="player:fountain:drink") {
+    auto* actor=simulation_->actor(simulation_->scion().actor_id);
+    const Vec2 tile=tile_movement::occupied_tile(world_->position());
+    if (actor && !world_->in_instance() && (std::max)(std::abs(tile.x-38),std::abs(tile.y-115))<=1) {
+      actor->stats.life=actor->stats.life_max;
+      world_->heal_player(actor->stats.life,actor->stats.life_max);
+      emit_message(emit,"Cool water. The road ahead feels lighter.");
+    }
+    return;
+  }
+  if (envelope.event=="dev:hurt") {
+    auto* actor=simulation_->actor(simulation_->scion().actor_id);
+    const int amount=as_int(payload?payload->get("amount"):nullptr,5);
+    if (actor) actor->stats.life=(std::max)(1,actor->stats.life-amount);
+    return;
+  }
   if (envelope.event=="dev:heal") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor) world_->heal_player(actor->stats.life,actor->stats.life_max); return; }
   if (envelope.event=="dev:kill") {
     auto* actor=simulation_->actor(simulation_->scion().actor_id);
@@ -1638,6 +1752,12 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   if (envelope.event=="chronicles:scion:set-out") {
     active_scion_id_=as_string(payload?payload->get("scionId"):nullptr);
     pending_chronicles_=false;
+    // chronicles.js starter kit: a clean bronze dagger and road gold.
+    { bool has_dagger=false; int coins=0;
+      for (const auto& item:inventory_.items()) { if (item.id=="bronze-dagger") has_dagger=true; if (item.id=="coins") coins+=item.qty; }
+      if (!has_dagger) { CreateItemOptions o; auto dagger=create_game_item("bronze-dagger",o); if (dagger) inventory_.add(std::move(*dagger)); }
+      if (coins<100) { CreateItemOptions o; o.quantity=100-coins; auto purse=create_game_item("coins",o); if (purse) inventory_.add(std::move(*purse)); }
+    }
     world_->reset_to_town();
     emit_login(emit);
     return;
