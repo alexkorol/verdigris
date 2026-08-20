@@ -1,6 +1,6 @@
 ---
 task: TASK-0071
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: luna-mac
 worker_branch: codex/TASK-0071-protocol-matrix-audit-luna-mac
 base_commit: 5d8d8c60837ea826851c0ceaef04d463b2060c25

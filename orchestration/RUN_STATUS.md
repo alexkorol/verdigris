@@ -84,8 +84,7 @@ moment N5 integrates — architect implements if no lane free. (3)
 architect NOW: side-by-side visual benchmark (browser reference
 captures matching the 0070 native scenes + composites). (4) architect
 next: Gate B client scaffolding (ARCHITECTURE) so the Chronicles
-client slice starts the minute N5 lands. (5) luna-mac: 0071/0074 when
-it comes online. Sweeps every ~30 min; no idle ticks.
+client slice starts the minute N5 lands. (5) luna-mac: 0071 DONE (calibrated) -> 0074 next. Sweeps every ~30 min; no idle ticks.
 
 ## RUNNING
 
