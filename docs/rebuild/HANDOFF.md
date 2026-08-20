@@ -1,5 +1,13 @@
 # Native reconstitution handoff
 
+## 2026-08-20 — TASK-0070 reference scenes Stage 1 (cursor, REVIEW_REQUESTED)
+
+- Worker `codex/TASK-0070-reference-scenes-cursor` off `27d2be62`.
+  `verdigris_client.exe --reference-scene all` writes 10 PNGs (1920x1080 and
+  1366x768) and 5 render-list JSON dumps. Two-run JSON must match.
+- Gates: `build.ps1 -RunTests` green. Architect eyeballs one scene per
+  resolution.
+
 ## 2026-08-20 — TASK-0069 remote reconnect/retry (cursor, REVIEW_REQUESTED)
 
 - Worker `codex/TASK-0069-remote-reconnect-cursor` off `1f45eb33`. Unexpected
