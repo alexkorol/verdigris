@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
 #include <iostream>
 #include <limits>
 #include <memory>
@@ -46,6 +47,9 @@ using GdipCreateBitmapFromFileProc = GpStatus(WINAPI*)(const WCHAR*, GpBitmap**)
 using GdipGetImageWidthProc = GpStatus(WINAPI*)(GpBitmap*, UINT*);
 using GdipGetImageHeightProc = GpStatus(WINAPI*)(GpBitmap*, UINT*);
 using GdipCreateHBITMAPFromBitmapProc = GpStatus(WINAPI*)(GpBitmap*, HBITMAP*, std::uint32_t);
+using GdipCreateBitmapFromHBITMAPProc = GpStatus(WINAPI*)(HBITMAP, HPALETTE, GpBitmap**);
+using GdipSaveImageToFileProc = GpStatus(WINAPI*)(GpBitmap*, const WCHAR*, const CLSID*,
+                                                  const void*);
 using GdipDisposeImageProc = GpStatus(WINAPI*)(GpBitmap*);
 using AlphaBlendProc = BOOL(WINAPI*)(HDC, int, int, int, int, HDC, int, int, int, int,
                                      BLENDFUNCTION);
@@ -134,6 +138,8 @@ struct BillboardAssets {
   GdipGetImageWidthProc image_width = nullptr;
   GdipGetImageHeightProc image_height = nullptr;
   GdipCreateHBITMAPFromBitmapProc create_hbitmap = nullptr;
+  GdipCreateBitmapFromHBITMAPProc create_bitmap_from_hbitmap = nullptr;
+  GdipSaveImageToFileProc save_image_to_file = nullptr;
   GdipDisposeImageProc dispose_image = nullptr;
   HMODULE msimg32_module = nullptr;
   AlphaBlendProc alpha_blend = nullptr;
@@ -377,6 +383,10 @@ bool initialize_gdiplus(BillboardAssets& assets) {
       GetProcAddress(assets.gdiplus_module, "GdipGetImageHeight"));
   assets.create_hbitmap = reinterpret_cast<GdipCreateHBITMAPFromBitmapProc>(
       GetProcAddress(assets.gdiplus_module, "GdipCreateHBITMAPFromBitmap"));
+  assets.create_bitmap_from_hbitmap = reinterpret_cast<GdipCreateBitmapFromHBITMAPProc>(
+      GetProcAddress(assets.gdiplus_module, "GdipCreateBitmapFromHBITMAP"));
+  assets.save_image_to_file = reinterpret_cast<GdipSaveImageToFileProc>(
+      GetProcAddress(assets.gdiplus_module, "GdipSaveImageToFile"));
   assets.dispose_image = reinterpret_cast<GdipDisposeImageProc>(
       GetProcAddress(assets.gdiplus_module, "GdipDisposeImage"));
   if (!startup || !assets.gdiplus_shutdown || !assets.create_bitmap ||
@@ -2623,6 +2633,307 @@ int run_scenarios(const std::string& which) {
   return total_failures;
 }
 
+const char* render_op_name(render::Op op) {
+  switch (op) {
+    case render::Op::Scenery: return "Scenery";
+    case render::Op::Player: return "Player";
+    case render::Op::Monster: return "Monster";
+    case render::Op::Telegraph: return "Telegraph";
+    case render::Op::Swing: return "Swing";
+    case render::Op::Sweep: return "Sweep";
+    case render::Op::WarCry: return "WarCry";
+    case render::Op::Impact: return "Impact";
+    case render::Op::Death: return "Death";
+    case render::Op::Damage: return "Damage";
+    case render::Op::TargetFlash: return "TargetFlash";
+    case render::Op::ScreenPulse: return "ScreenPulse";
+    case render::Op::Drop: return "Drop";
+    case render::Op::Extraction: return "Extraction";
+    case render::Op::Hud: return "Hud";
+    case render::Op::PaneStat: return "PaneStat";
+    case render::Op::PaneWeapon: return "PaneWeapon";
+    case render::Op::PaneItem: return "PaneItem";
+    case render::Op::PaneBanked: return "PaneBanked";
+  }
+  return "Unknown";
+}
+
+std::string json_escape(const std::string& text) {
+  std::string out;
+  out.reserve(text.size());
+  for (char character : text) {
+    if (character == '"' || character == '\\') out.push_back('\\');
+    if (character == '\n') {
+      out += "\\n";
+      continue;
+    }
+    out.push_back(character);
+  }
+  return out;
+}
+
+std::string dump_render_list_json(const std::string& scene, int width, int height,
+                                  const render::List& list) {
+  std::string json = "{\n  \"scene\": \"" + json_escape(scene) + "\",\n  \"width\": " +
+                     std::to_string(width) + ",\n  \"height\": " + std::to_string(height) +
+                     ",\n  \"ops\": [\n";
+  for (std::size_t i = 0; i < list.size(); ++i) {
+    const auto& item = list[i];
+    char line[512];
+    std::snprintf(line, sizeof(line),
+                  "    {\"op\":\"%s\",\"x\":%.4f,\"y\":%.4f,\"radius\":%.4f,\"value\":%d,"
+                  "\"label\":\"%s\"}%s\n",
+                  render_op_name(item.op), item.x, item.y, item.radius, item.value,
+                  json_escape(item.label).c_str(), i + 1 < list.size() ? "," : "");
+    json += line;
+  }
+  json += "  ]\n}\n";
+  return json;
+}
+
+std::string reference_capture_dir() {
+  std::vector<std::string> bases{".", executable_directory()};
+  const char* marker = "orchestration\\tasks\\TASK-0070-reference-scenes";
+  for (const auto& base : bases) {
+    std::string prefix = base;
+    for (int depth = 0; depth <= 6; ++depth) {
+      const std::string folder = prefix + (prefix.empty() ? "" : "\\") + marker;
+      if (directory_exists(folder)) {
+        const std::string captures = folder + "\\captures";
+        CreateDirectoryA(captures.c_str(), nullptr);
+        return captures;
+      }
+      prefix += prefix.empty() ? ".." : "\\..";
+    }
+  }
+  CreateDirectoryA("captures", nullptr);
+  return "captures";
+}
+
+bool save_hbitmap_png(BillboardAssets& assets, HBITMAP bitmap, const std::string& path) {
+  if (!assets.create_bitmap_from_hbitmap || !assets.save_image_to_file ||
+      !assets.dispose_image)
+    return false;
+  GpBitmap* image = nullptr;
+  if (assets.create_bitmap_from_hbitmap(bitmap, nullptr, &image) != 0 || !image) return false;
+  const CLSID png_clsid = {0x557cf406, 0x1a04, 0x11d3, {0x9a, 0x73, 0x00, 0x00, 0xf8, 0x1e, 0xf3, 0x2e}};
+  const std::wstring wide = wide_path(path);
+  const bool ok = !wide.empty() && assets.save_image_to_file(image, wide.c_str(), &png_clsid, nullptr) == 0;
+  assets.dispose_image(image);
+  return ok;
+}
+
+bool reference_present(ClientState& state, int width, int height, const std::string& png_path) {
+  BITMAPINFO info{};
+  info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  info.bmiHeader.biWidth = width;
+  info.bmiHeader.biHeight = -height;
+  info.bmiHeader.biPlanes = 1;
+  info.bmiHeader.biBitCount = 32;
+  info.bmiHeader.biCompression = BI_RGB;
+  void* bits = nullptr;
+  HBITMAP bitmap = CreateDIBSection(nullptr, &info, DIB_RGB_COLORS, &bits, nullptr, 0);
+  if (!bitmap) return false;
+  HDC dc = CreateCompatibleDC(nullptr);
+  HGDIOBJ old = SelectObject(dc, bitmap);
+  RECT bounds{0, 0, width, height};
+  paint_scene(state, dc, bounds);
+  bool saved = png_path.empty() || save_hbitmap_png(state.billboards, bitmap, png_path);
+  SelectObject(dc, old);
+  DeleteDC(dc);
+  DeleteObject(bitmap);
+  return saved;
+}
+
+void reference_step(ClientState& state, const verdigris::Command& command, int width, int height) {
+  RECT bounds{0, 0, width, height};
+  state.simulation->dispatch(command);
+  ingest_events(state, bounds);
+  for (auto& fx : state.effects) ++fx.age;
+  state.effects.erase(std::remove_if(state.effects.begin(), state.effects.end(),
+                                     [](const EffectFx& fx) { return fx.age >= fx.ttl; }),
+                      state.effects.end());
+  if (state.screen_pulse_ticks > 0) --state.screen_pulse_ticks;
+  scenario_follow_camera(state);
+  reference_present(state, width, height, "");
+}
+
+bool setup_reference_scene(int scene, ClientState& state, int width, int height, std::string& why) {
+  scenario_begin(state);
+  load_billboards(state.billboards);
+  scenario_follow_camera(state);
+  const int melee = verdigris::world_scale::kMeleeRange;
+  const auto* scion = state.simulation->actor(state.simulation->scion().actor_id);
+  if (!scion) {
+    why = "no scion";
+    return false;
+  }
+  const verdigris::Vec2 spawn = scion->position;
+
+  if (scene == 1) {
+    reference_present(state, width, height, "");
+    return true;
+  }
+
+  if (scene == 2) {
+    state.simulation->spawn_monster({spawn.x + melee, spawn.y}, 1, false);
+    state.simulation->spawn_monster({spawn.x + melee, spawn.y + melee}, 1, false);
+    for (int i = 0; i < 8; ++i)
+      reference_step(state, verdigris::Command::move(1, 0), width, height);
+    bool saw_swing = false;
+    int monsters = 0;
+    for (int i = 0; i < 12; ++i) {
+      reference_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee), width,
+                     height);
+      saw_swing = saw_swing || render::any(state.render_list, render::Op::Swing);
+      monsters = render::count(state.render_list, render::Op::Monster);
+      if (saw_swing && monsters >= 2) break;
+    }
+    if (!saw_swing || monsters < 2) {
+      why = "pack combat missing swing or second monster";
+      return false;
+    }
+    return true;
+  }
+
+  if (scene == 3) {
+    state.simulation->spawn_monster({spawn.x - melee, spawn.y}, 1, true);
+    reference_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait), width,
+                   height);
+    if (!render::any(state.render_list, render::Op::Telegraph)) {
+      why = "elite telegraph not drawn";
+      return false;
+    }
+    return true;
+  }
+
+  if (scene == 4) {
+    for (int i = 0; i < 52; ++i)
+      reference_step(state, verdigris::Command::move(1, 0), width, height);
+    for (int i = 0; i < 12; ++i)
+      reference_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee), width,
+                     height);
+    if (!state.simulation->ground_items().empty())
+      reference_step(state, verdigris::Command::pick_up(state.simulation->ground_items().front().id),
+                     width, height);
+    if (!state.simulation->ground_trophies().empty())
+      reference_step(
+          state, verdigris::Command::pick_up(state.simulation->ground_trophies().front().id), width,
+          height);
+    if (state.world.carried.empty()) {
+      why = "named drop did not enter inventory";
+      return false;
+    }
+    state.gear_overlay = true;
+    reference_present(state, width, height, "");
+    if (!render::any(state.render_list, render::Op::PaneItem) &&
+        !render::any(state.render_list, render::Op::PaneWeapon)) {
+      why = "gear pane not in render list";
+      return false;
+    }
+    if (!render::any(state.render_list, render::Op::Drop) && state.world.carried.empty()) {
+      why = "no drop or carried item";
+      return false;
+    }
+    return true;
+  }
+
+  if (scene == 5) {
+    for (int i = 0; i < 52; ++i)
+      reference_step(state, verdigris::Command::move(1, 0), width, height);
+    sync_world(state);
+    const verdigris::Vec2 here = state.world.player.position;
+    state.simulation->spawn_monster({here.x - melee, here.y}, 1, true);
+    state.simulation->spawn_monster({here.x - melee, here.y + melee}, 1, true);
+    state.simulation->spawn_monster({here.x + melee, here.y}, 1, false);
+    bool critical = false;
+    for (int i = 0; i < 80; ++i) {
+      reference_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait), width,
+                     height);
+      sync_world(state);
+      const int maximum = std::max(1, state.world.player.life_max);
+      const bool pulse = state.screen_pulse_ticks > 0 ||
+                         render::any(state.render_list, render::Op::ScreenPulse);
+      if (state.world.player.life * 4 < maximum && pulse) {
+        critical = true;
+        break;
+      }
+    }
+    if (!critical) {
+      why = "life " + std::to_string(state.world.player.life) + "/" +
+            std::to_string(state.world.player.life_max) + " pulse=" +
+            std::to_string(state.screen_pulse_ticks);
+      return false;
+    }
+    return true;
+  }
+
+  why = "unknown scene";
+  return false;
+}
+
+int run_reference_scenes(const std::string& which) {
+  struct Scene {
+    int id;
+    const char* name;
+  };
+  const Scene scenes[] = {
+      {1, "01-route-entrance"}, {2, "02-pack-combat"}, {3, "03-elite-telegraph"},
+      {4, "04-named-drop-gear"}, {5, "05-critical-health"},
+  };
+  const std::string out_dir = reference_capture_dir();
+  std::printf("reference-scene: writing to %s\n", out_dir.c_str());
+  int failures = 0;
+  for (const auto& scene : scenes) {
+    if (which != "all" && which != std::to_string(scene.id) && which != scene.name) continue;
+    std::string why;
+    ClientState first;
+    if (!setup_reference_scene(scene.id, first, 1920, 1080, why)) {
+      std::printf("FAIL %s: %s\n", scene.name, why.c_str());
+      ++failures;
+      continue;
+    }
+    const std::string json = dump_render_list_json(scene.name, 1920, 1080, first.render_list);
+    ClientState second;
+    if (!setup_reference_scene(scene.id, second, 1920, 1080, why)) {
+      std::printf("FAIL %s second run: %s\n", scene.name, why.c_str());
+      ++failures;
+      continue;
+    }
+    const std::string json2 = dump_render_list_json(scene.name, 1920, 1080, second.render_list);
+    if (json != json2) {
+      std::printf("FAIL %s: render-list JSON differed across two runs\n", scene.name);
+      ++failures;
+      continue;
+    }
+    const std::string json_path = out_dir + "\\" + scene.name + ".json";
+    std::ofstream file(json_path, std::ios::binary);
+    file << json;
+    file.close();
+    if (!file) {
+      std::printf("FAIL %s: could not write %s\n", scene.name, json_path.c_str());
+      ++failures;
+      continue;
+    }
+    const std::string png_1080 = out_dir + "\\" + scene.name + "-1920x1080.png";
+    const std::string png_768 = out_dir + "\\" + scene.name + "-1366x768.png";
+    if (!reference_present(first, 1920, 1080, png_1080)) {
+      std::printf("FAIL %s: PNG 1920x1080\n", scene.name);
+      ++failures;
+      continue;
+    }
+    ClientState wide;
+    if (!setup_reference_scene(scene.id, wide, 1366, 768, why) ||
+        !reference_present(wide, 1366, 768, png_768)) {
+      std::printf("FAIL %s: PNG 1366x768 (%s)\n", scene.name, why.c_str());
+      ++failures;
+      continue;
+    }
+    std::printf("ok %s (%zu ops)\n", scene.name, first.render_list.size());
+  }
+  return failures;
+}
+
 }  // namespace
 
 int run_remote_native_client(const char* host, unsigned short port, const char* guest_id) {
@@ -2691,6 +3002,8 @@ int main(int argc, char** argv) {
     if (std::strcmp(argv[i], "--headless") == 0) return run_headless_demo();
     if (std::strcmp(argv[i], "--scenario") == 0 && i + 1 < argc)
       return run_scenarios(argv[i + 1]);
+    if (std::strcmp(argv[i], "--reference-scene") == 0 && i + 1 < argc)
+      return run_reference_scenes(argv[i + 1]);
     if (std::strcmp(argv[i], "--remote") == 0) {
       const char* host = "127.0.0.1";
       unsigned short port = 6580;
