@@ -75,16 +75,19 @@ telegraph FX can graze the HUD corner (0068); reconnect lands in 0069.
 Feedback wanted on: movement feel, combat readability, loot moment,
 whether the loop invites a second run.
 
-## DAY RUN 2026-08-20 (D-124 — owner at work, aggressive mode)
+## DAY RUN 2026-08-20 (D-124) — 11:00 snapshot
 
-Target by evening: three-axis parity + side-by-side native-vs-browser
-screenshots. Plan: (1) 0056 N5 — deepseek Flash (419 lines in flight);
-architect takes over if no commit by ~10:00. (2) 0058 N6 releases the
-moment N5 integrates — architect implements if no lane free. (3)
-architect NOW: side-by-side visual benchmark (browser reference
-captures matching the 0070 native scenes + composites). (4) architect
-next: Gate B client scaffolding (ARCHITECTURE) so the Chronicles
-client slice starts the minute N5 lands. (5) luna-mac: 0071 DONE (calibrated) -> 0074 next. Sweeps every ~30 min; no idle ticks.
+- **N5 Chronicles: 18/19 attach (architect takeover of 0056).** Full
+  D-106 loop green natively: mortal death → crypt → successor → relic
+  circulation on elite kill → recovery persisted. Fresh-Player-per-
+  socket JS parity implemented. session-arc = the one red (needs town
+  NPC surface — moved to N6 scope with 0058).
+- 0076 HUD parity ACCEPTED (orbs/minimap/quickbar/chip live).
+- 0075 terrain REVISE with numbered corrections (scale/tone/grid) —
+  cursor picks it up from the pushed review.
+- Batch PR to master HOLDS until 0075-rev2 lands (one clean ship).
+- deepseek Flash: clone frozen since morning; takeover annotated in
+  0056 STATUS. luna-mac: 0074 in progress presumably.
 
 ## RUNNING
 
