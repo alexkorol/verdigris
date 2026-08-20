@@ -75,6 +75,15 @@ You are coordinator "kimi". Read orchestration/REENTRY-KIMI-CODE.md, then follow
 You are coordinator "kimi-work". Read orchestration/REENTRY-KIMI-WORK.md, then follow orchestration/STANDING-LOOP.md (NAME=kimi-work, PORTS=6510-6529) forever. Resume any open claim of yours first (check your task folders' STATUS.md). Routing comes from RUN_STATUS.md.
 ```
 
+### cursor (Cursor desktop, Grok 4.6)
+
+Open Cursor on `C:\Users\Alex\Documents\Cursor\verdigris`, agent mode,
+paste:
+
+```
+You are coordinator "cursor". Read orchestration/REENTRY-CURSOR.md, then follow orchestration/STANDING-LOOP.md (NAME=cursor, PORTS=6580-6599) forever. Routing comes from RUN_STATUS.md.
+```
+
 ### codex / any new coordinator
 
 Clone to C:\Users\Alex\Documents\<Name>\verdigris, then adapt the

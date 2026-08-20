@@ -28,6 +28,9 @@
 - kimi K3: loop DEAD (no fetch since 13:42) — owner restart needed when quota allows. Ports 9880–9899.
 - kimi-work K3: QUOTA-STALLED mid-0055 (7 dirty preserved in clone; claim held — resume on quota reset 08-23 or owner top-up). Ports 6510–6529.
 - codex: out of tokens.
+- cursor (Grok 4.6, Cursor desktop): NEW lane, clone ready at
+  Documents\Cursor\verdigris, ports 6580-6599; first task calibrates
+  its scorecard row.
 
 ## WATCH
 
