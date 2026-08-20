@@ -1,8 +1,10 @@
 # Native CI helper (TASK-0067).
-# the MSVC developer PATH from ilammy/msvc-dev-cmd and the CMake preset the
-# previous native workflow already ran, then adds the owner-path steps CMake
-# omitted: denylist, camera2d tests, local --scenario all. Session tests (remote
-# journey + clean shutdown) are part of ctest. Density bench is not invoked.
+# GitHub windows-latest ships VS 18 under Program Files; native/build.ps1 does
+# not probe that path. This script uses the MSVC developer PATH from
+# ilammy/msvc-dev-cmd and the CMake preset the previous native workflow already
+# ran, then adds the owner-path steps CMake omitted: denylist, camera2d tests,
+# local --scenario all. Session tests (remote journey + clean shutdown) are
+# part of ctest. Density bench is not invoked.
 $ErrorActionPreference = "Stop"
 $nativeRoot = Split-Path $PSScriptRoot -Parent
 Set-Location $nativeRoot
