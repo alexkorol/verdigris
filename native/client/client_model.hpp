@@ -19,7 +19,20 @@ struct ClientPlayer {
   int level = 1;
   int life = 100;
   int life_max = 100;
+  int resource = 50;
+  int resource_max = 50;
   int attack = 12;
+  bool alive = true;
+};
+
+struct ClientMonster {
+  std::string id;
+  std::string name;
+  double x = 0.0;
+  double y = 0.0;
+  int life = 1;
+  int life_max = 1;
+  bool elite = false;
   bool alive = true;
 };
 
@@ -53,6 +66,7 @@ struct ClientModel {
   ClientPlayer player;
   std::vector<ClientItemSlot> inventory;
   std::vector<ClientGroundItem> ground;
+  std::vector<ClientMonster> monsters;
   ClientItemSlot equipped;
   ClientScene scene;
   std::string house_name;
@@ -61,6 +75,8 @@ struct ClientModel {
   int last_outgoing_hit = 0;
   int last_incoming_hit = 0;
   int kills = 0;
+  int stored_items = 0;
+  int stored_trophies = 0;
   bool extracted = false;
 };
 

@@ -1,0 +1,18 @@
+{
+  "1366x768.guide-vs-party": true,
+  "1366x768.guide-vs-minimap": true,
+  "1366x768.zoneMenu-vs-quickbar": true,
+  "1366x768.zoneMenu-vs-mpOrb": true,
+  "1366x768.identity-vs-chatPeek": true,
+  "1366x768.identity-vs-hpOrb": true,
+  "1366x768.chatPeek-vs-hpOrb": true,
+  "1366x768.inventory-vs-hpOrb": true,
+  "1366x768.inventory-vs-mpOrb": true,
+  "1366x768.inventory-vs-quickbar": true,
+  "1366x768.zoneMenu-in-viewport": true,
+  "1366x768.party-in-viewport": true,
+  "1366x768.guide-in-viewport": true,
+  "1366x768.inventory-in-viewport": true,
+  "1366x768.zoneMenu-fits-party-column": true,
+  "1366x768.inventory-leaves-canvas": true
+}

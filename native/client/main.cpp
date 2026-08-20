@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cctype>
+#include <chrono>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -9,14 +10,19 @@
 #include <memory>
 #include <string>
 #include <cstdint>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
 #include "verdigris/core.hpp"
 #include "verdigris/seasonal.hpp"
+#include "verdigris/networking.hpp"
 #include "camera2d.hpp"
 #include "render_list.hpp"
 #include "remote_play.hpp"
+#include "remote_session.hpp"
+#include "presentation_state.hpp"
+#include "session.hpp"
 
 #ifdef VERDIGRIS_NATIVE_WINDOWS
 #define WIN32_LEAN_AND_MEAN
@@ -71,39 +77,11 @@ struct ScreenPoint {
   double scale = 1.0;
 };
 
-struct EffectFx {
-  enum class Kind {
-    Swing,
-    SweepArc,
-    WarCryAura,
-    Impact,
-    DeathRing,
-    Dust,
-    Sparkle,
-    DamageNumber,
-    TargetFlash
-  };
-  Kind kind = Kind::Impact;
-  double wx = 0.0;
-  double wy = 0.0;
-  double angle = 0.0;
-  int age = 0;
-  int ttl = 8;
-  int value = 0;
-  bool damage_to_player = false;
-};
-
-// AttackTelegraphed is the simulation's warning contract.  The client keeps
-// only the event-time presentation snapshot; it never predicts range,
-// facing, damage, or whether the pending action will ultimately resolve.
-struct ActiveTelegraph {
-  std::string actor_id;
-  std::string action;
-  verdigris::Vec2 position;
-  verdigris::Vec2 facing{1, 0};
-  std::uint64_t start_tick = 0;
-  int windup_ticks = 1;
-};
+using verdigris::client::ActiveTelegraph;
+using verdigris::client::EffectFx;
+using verdigris::client::WorldActor;
+using verdigris::client::WorldCarriedItem;
+using verdigris::client::WorldView;
 
 struct SpriteBitmap {
   HDC dc = nullptr;
@@ -199,6 +177,8 @@ struct SceneryItem {
 
 struct ClientState {
   std::unique_ptr<verdigris::Simulation> simulation;
+  std::unique_ptr<verdigris::client::IClientSession> session;
+  WorldView world;
   BillboardAssets billboards;
   std::vector<SceneryItem> scenery;
   bool w = false;
@@ -511,7 +491,9 @@ void add_scenery(std::vector<SceneryItem>& scenery, SceneryKind kind, double x,
 
 void generate_scenery(ClientState& state) {
   state.scenery.clear();
-  const std::string& route_id = state.simulation->instance().route_id;
+  std::string route_id = state.world.route_id;
+  if (state.simulation) route_id = state.simulation->instance().route_id;
+  else if (state.session) route_id = state.session->model().scene.id;
   if (route_id.empty()) return;
 
   SceneryRng rng(scenery_seed(route_id));
@@ -572,6 +554,90 @@ ClientState* state_from(HWND window) {
   return reinterpret_cast<ClientState*>(GetWindowLongPtr(window, GWLP_USERDATA));
 }
 
+bool is_remote(const ClientState& state) { return static_cast<bool>(state.session); }
+
+void sync_world(ClientState& state) {
+  if (state.simulation)
+    verdigris::client::sync_world_from_simulation(state.world, *state.simulation);
+  else if (state.session)
+    verdigris::client::sync_world_from_model(state.world, state.session->model());
+}
+
+void ingest_session_events(ClientState& state) {
+  if (!state.session) return;
+  verdigris::client::PresentationFx fx;
+  fx.effects = std::move(state.effects);
+  fx.telegraphs = std::move(state.telegraphs);
+  fx.loot_positions = std::move(state.loot_positions);
+  fx.last_death_pos = state.last_death_pos;
+  fx.loot_scatter = state.loot_scatter;
+  fx.screen_pulse_ticks = state.screen_pulse_ticks;
+  fx.event_log = std::move(state.event_log);
+  fx.hint = state.hint;
+  fx.hint_ticks = state.hint_ticks;
+  ++state.world.tick;
+  const std::string route_before = state.world.route_id;
+  for (const auto& event : state.session->drain_events()) {
+    verdigris::client::apply_presentation_event(fx, state.world, event, state.world.tick);
+    if (!fx.hint.empty()) {
+      state.hint = fx.hint;
+      state.hint_ticks = fx.hint_ticks;
+    }
+  }
+  sync_world(state);
+  if (state.world.route_id != route_before) generate_scenery(state);
+  state.effects = std::move(fx.effects);
+  state.telegraphs = std::move(fx.telegraphs);
+  state.loot_positions = std::move(fx.loot_positions);
+  state.last_death_pos = fx.last_death_pos;
+  state.loot_scatter = fx.loot_scatter;
+  state.screen_pulse_ticks = fx.screen_pulse_ticks;
+  state.event_log = std::move(fx.event_log);
+}
+
+void submit_move(ClientState& state, int dx, int dy) {
+  if (state.session)
+    state.session->submit(verdigris::client::ClientCommand::move(dx, dy));
+  else if (state.simulation)
+    state.simulation->dispatch(verdigris::Command::move(dx, dy));
+}
+
+void submit_aim(ClientState& state, int dx, int dy) {
+  if (state.session)
+    state.session->submit(verdigris::client::ClientCommand::aim(dx, dy));
+  else if (state.simulation)
+    state.simulation->dispatch(verdigris::Command::aim(dx, dy));
+}
+
+void submit_action(ClientState& state, verdigris::ActionType action, const char* remote_name) {
+  if (state.session) {
+    state.session->submit(verdigris::client::ClientCommand::use_action(remote_name));
+    return;
+  }
+  if (state.simulation) state.simulation->dispatch(verdigris::Command::action_use(action));
+}
+
+void submit_pick_up(ClientState& state, const std::string& id) {
+  if (state.session)
+    state.session->submit(verdigris::client::ClientCommand::pick_up(id));
+  else if (state.simulation)
+    state.simulation->dispatch(verdigris::Command::pick_up(id));
+}
+
+void submit_equip(ClientState& state, const std::string& id) {
+  if (state.session)
+    state.session->submit(verdigris::client::ClientCommand::equip(id));
+  else if (state.simulation)
+    state.simulation->dispatch(verdigris::Command::equip(id));
+}
+
+void submit_extract(ClientState& state) {
+  if (state.session)
+    state.session->submit(verdigris::client::ClientCommand::extract());
+  else if (state.simulation)
+    state.simulation->dispatch(verdigris::Command::extract());
+}
+
 void show_hint(ClientState& state, const std::string& message) {
   state.hint = message;
   state.hint_ticks = 80;
@@ -608,11 +674,16 @@ const SkillInfo* skill_for_key(WPARAM key) {
 void dispatch_skill(ClientState& state, const SkillInfo& skill) {
   // Do not duplicate target/range/cooldown rules in the client.  A key press
   // is a presentation request; the core decides whether it resolves.
-  state.simulation->dispatch(verdigris::Command::action_use(skill.action));
+  const char* remote = "melee";
+  if (skill.action == verdigris::ActionType::Thrust) remote = "thrust";
+  else if (skill.action == verdigris::ActionType::Sweep) remote = "sweep";
+  else if (skill.action == verdigris::ActionType::WarCry) remote = "war-cry";
+  submit_action(state, skill.action, remote);
   show_hint(state, std::string(skill.name) + " requested");
 }
 
 std::string nearest_pickup_id(const ClientState& state) {
+  if (is_remote(state)) return {};
   const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
   if (!player) return {};
 
@@ -644,14 +715,13 @@ std::string nearest_pickup_id(const ClientState& state) {
 }
 
 void equip_selected(ClientState& state) {
-  const auto& items = state.simulation->scion().carried_items;
-  if (items.empty()) {
+  if (state.world.carried.empty()) {
     show_hint(state, "Gear empty: pick up an item first");
     return;
   }
-  state.selected_item = std::min(state.selected_item, items.size() - 1);
-  state.simulation->dispatch(verdigris::Command::equip(items[state.selected_item].id));
-  show_hint(state, "Equipped " + items[state.selected_item].name);
+  state.selected_item = std::min(state.selected_item, state.world.carried.size() - 1);
+  submit_equip(state, state.world.carried[state.selected_item].id);
+  show_hint(state, "Equipped " + state.world.carried[state.selected_item].name);
 }
 
 COLORREF fade_to_background(COLORREF color, double remaining) {
@@ -916,10 +986,11 @@ void draw_sweep_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
 
 double telegraph_visibility(const ClientState& state,
                             const ActiveTelegraph& telegraph) {
+  const std::uint64_t now = state.world.tick != 0 || !state.simulation
+                                ? state.world.tick
+                                : state.simulation->tick();
   const std::uint64_t elapsed_ticks =
-      state.simulation->tick() >= telegraph.start_tick
-          ? state.simulation->tick() - telegraph.start_tick
-          : 0;
+      now >= telegraph.start_tick ? now - telegraph.start_tick : 0;
   const double progress = std::clamp(
       static_cast<double>(elapsed_ticks) /
           std::max(1, telegraph.windup_ticks),
@@ -1104,9 +1175,12 @@ verdigris::Vec2 quantized_mouse_aim(const ClientState& state, const RECT& bounds
 }
 
 void dispatch_aim_if_changed(ClientState& state, const RECT& bounds, bool force = false) {
-  const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
-  if (!player || !player->alive) return;
-  const verdigris::Vec2 direction = quantized_mouse_aim(state, bounds, *player);
+  sync_world(state);
+  if (!state.world.player.alive) return;
+  verdigris::Actor stand_in;
+  stand_in.position = state.world.player.position;
+  stand_in.facing = state.world.player.facing;
+  const verdigris::Vec2 direction = quantized_mouse_aim(state, bounds, stand_in);
   if (direction.x == 0 && direction.y == 0) return;
   if (!force && state.aim_direction_initialized &&
       state.last_aim_direction.x == direction.x &&
@@ -1115,13 +1189,14 @@ void dispatch_aim_if_changed(ClientState& state, const RECT& bounds, bool force 
   }
   // The quantized heading is the only client-side state used for throttling;
   // facing and all consequences remain authoritative in the core.
-  state.simulation->dispatch(verdigris::Command::aim(direction.x, direction.y));
+  submit_aim(state, direction.x, direction.y);
   state.last_aim_direction = direction;
   state.aim_direction_initialized = true;
 }
 
 // Turn new simulation events into procedural presentation effects.
 void ingest_events(ClientState& state, const RECT& bounds) {
+  if (!state.simulation) return;
   const auto& sim = *state.simulation;
   const auto& events = sim.events();
   for (; state.processed_events < events.size(); ++state.processed_events) {
@@ -1261,12 +1336,9 @@ struct DepthDraw {
   std::size_t index = 0;
 };
 
-std::string loot_label(const verdigris::Simulation& simulation,
-                       const std::string& id) {
-  for (const auto& item : simulation.ground_items())
-    if (item.id == id) return item.name;
-  for (const auto& trophy : simulation.ground_trophies())
-    if (trophy.id == id) return trophy.name;
+std::string loot_label(const ClientState& state, const std::string& id) {
+  auto found = state.world.loot_names.find(id);
+  if (found != state.world.loot_names.end()) return found->second;
   return id;
 }
 
@@ -1296,33 +1368,33 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds,
   // Title.
   SetTextColor(dc, RGB(230, 235, 220));
   // house().name is already prefixed ("House Verdigris"); do not double it.
-  const std::string title = "Gear / " + state.simulation->house().name;
+  const std::string title = "Gear / " + state.world.house_name;
   TextOutA(dc, left + 14, top + 12, title.c_str(), static_cast<int>(title.size()));
 
   // Authoritative stats readout. The base attack is the actor's stat; the
   // equipped item's attack bonus (authoritative item data) is added on top,
   // matching how the core folds it into damage resolution.
-  const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
-  const auto& items = state.simulation->scion().carried_items;
+  const WorldActor& player = state.world.player;
+  const auto& items = state.world.carried;
   int equipped_bonus = 0;
   for (const auto& item : items)
     if (item.equipped) {
       equipped_bonus = item.attack_bonus;
       break;
     }
-  const int base_attack = player ? player->stats.attack : 0;
+  const int base_attack = player.attack;
   std::string attack_text = std::to_string(base_attack + equipped_bonus);
   if (equipped_bonus != 0)
     attack_text += " (+" + std::to_string(equipped_bonus) + ")";
   SetTextColor(dc, RGB(150, 170, 158));
   std::string stats_line =
-      "LIFE " + std::to_string(player ? player->stats.life : 0) + "/" +
-      std::to_string(player ? player->stats.life_max : 0) + "  RES " +
-      std::to_string(player ? player->stats.resource : 0) + "/" +
-      std::to_string(player ? player->stats.resource_max : 0) + "  ATK " +
+      "LIFE " + std::to_string(player.life) + "/" +
+      std::to_string(player.life_max) + "  RES " +
+      std::to_string(player.resource) + "/" +
+      std::to_string(player.resource_max) + "  ATK " +
       attack_text + "  DEF " +
-      std::to_string(player ? player->stats.defense : 0) + "  LVL " +
-      std::to_string(player ? player->stats.level : 0);
+      std::to_string(player.defense) + "  LVL " +
+      std::to_string(player.level);
   rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0, stats_line});
   TextOutA(dc, left + 14, top + 36, stats_line.c_str(),
            static_cast<int>(stats_line.size()));
@@ -1399,8 +1471,8 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds,
   // Banked / extraction summary.
   SetTextColor(dc, RGB(150, 170, 158));
   const std::string banked =
-      "Banked  items " + std::to_string(state.simulation->house().stored_items.size()) +
-      "  trophies " + std::to_string(state.simulation->house().stored_trophies.size());
+      "Banked  items " + std::to_string(state.world.stored_items) +
+      "  trophies " + std::to_string(state.world.stored_trophies);
   rl.push_back({render::Op::PaneBanked, 0.0, 0.0, 0.0, 0, banked});
   TextOutA(dc, left + 14, bottom - 46, banked.c_str(), static_cast<int>(banked.size()));
   const char* controls = "Arrows select | Enter equip | U unequip | I close";
@@ -1409,21 +1481,19 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds,
 
 void paint_skill_strip(const ClientState& state, HDC dc, const RECT& bounds,
                        render::List& rl) {
-  const auto* player =
-      state.simulation->actor(state.simulation->scion().actor_id);
+  const WorldActor& player = state.world.player;
   const verdigris::PresentationCatalog catalog =
       verdigris::Simulation::presentation_catalog();
   for (int i = 0; i < 3; ++i) {
     const SkillInfo& skill = kSkills[i];
     const int resource_cost = skill_resource_cost(catalog, skill.action);
     const bool cooldown =
-        player && skill.action != verdigris::ActionType::WarCry &&
-        player->cooldown_ticks > 0;
-    const bool affordable =
-        player && player->stats.resource >= resource_cost;
-    const bool available = player && affordable && !cooldown;
-    const bool active = player && skill.action == verdigris::ActionType::WarCry &&
-                        player->war_cry_ticks_remaining > 0;
+        skill.action != verdigris::ActionType::WarCry &&
+        player.cooldown_ticks > 0;
+    const bool affordable = player.resource >= resource_cost;
+    const bool available = player.alive && affordable && !cooldown;
+    const bool active = skill.action == verdigris::ActionType::WarCry &&
+                        player.war_cry_ticks_remaining > 0;
     const int left = 18 + i * 116;
     const int bottom = std::max(54, static_cast<int>(bounds.bottom) - 18);
     const int top = bottom - 54;
@@ -1449,9 +1519,9 @@ void paint_skill_strip(const ClientState& state, HDC dc, const RECT& bounds,
              static_cast<int>(name_and_cost.size()));
     std::string state_text;
     if (active) {
-      state_text = "active " + std::to_string(player->war_cry_ticks_remaining);
+      state_text = "active " + std::to_string(player.war_cry_ticks_remaining);
     } else if (cooldown) {
-      state_text = "cooldown " + std::to_string(player->cooldown_ticks);
+      state_text = "cooldown " + std::to_string(player.cooldown_ticks);
     } else if (!affordable) {
       state_text = "need " + std::to_string(resource_cost);
     } else {
@@ -1464,8 +1534,8 @@ void paint_skill_strip(const ClientState& state, HDC dc, const RECT& bounds,
   }
 }
 
-void paint_resource_hud(const verdigris::Actor* player, HDC dc, render::List& rl) {
-  if (!player) return;
+void paint_resource_hud(const WorldActor& player, HDC dc, render::List& rl) {
+  if (!player.alive && player.life <= 0 && player.life_max <= 0) return;
   constexpr int left = 18;
   constexpr int width = 200;
   constexpr int height = 8;
@@ -1496,14 +1566,15 @@ void paint_resource_hud(const verdigris::Actor* player, HDC dc, render::List& rl
     SelectObject(dc, old_pen);
     DeleteObject(border);
   };
-  draw_bar(28, "LIFE", player->stats.life, player->stats.life_max,
+  draw_bar(28, "LIFE", player.life, player.life_max,
            RGB(177, 82, 75));
-  draw_bar(52, "RESOURCE", player->stats.resource, player->stats.resource_max,
+  draw_bar(52, "RESOURCE", player.resource, player.resource_max,
            RGB(72, 168, 191));
 }
 
 void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
-  const auto& sim = *state.simulation;
+  sync_world(state);
+  const WorldView& world = state.world;
   render::List rl;
   HBRUSH background = CreateSolidBrush(RGB(23, 29, 32));
   FillRect(dc, &bounds, background);
@@ -1512,19 +1583,21 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   draw_ground_grid(dc, state.camera, bounds);
 
   // Ground decals render before anything that stands on the plane.
-  const auto& extraction = sim.instance().extraction_point;
-  const ScreenPoint pad = project(state.camera, bounds, extraction.x, extraction.y);
-  const int pad_r = static_cast<int>(kTileUnits * 0.6 * pad.scale);
-  rl.push_back({render::Op::Extraction, static_cast<double>(pad.x),
-                static_cast<double>(pad.y), static_cast<double>(pad_r)});
-  fill_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(41, 62, 88));
-  ring_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(88, 132, 190), 2);
+  if (world.has_extraction) {
+    const ScreenPoint pad =
+        project(state.camera, bounds, world.extraction.x, world.extraction.y);
+    const int pad_r = static_cast<int>(kTileUnits * 0.6 * pad.scale);
+    rl.push_back({render::Op::Extraction, static_cast<double>(pad.x),
+                  static_cast<double>(pad.y), static_cast<double>(pad_r)});
+    fill_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(41, 62, 88));
+    ring_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(88, 132, 190), 2);
+  }
 
   // Warnings live on the ground plane beneath billboards and loot so their
   // footprint remains readable without obscuring the actor that owns them.
   paint_telegraphs(state, dc, bounds, rl);
 
-  const verdigris::Actor* player = sim.actor(sim.scion().actor_id);
+  const WorldActor& player = world.player;
 
   // Collect every standing element, then draw back-to-front by the top-down
   // painter's key (world y first, then world x) so lower entities render in
@@ -1536,16 +1609,15 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                          static_cast<double>(state.scenery[i].position.y),
                          static_cast<double>(state.scenery[i].position.x)),
                      0, DepthDraw::What::Scenery, i});
-  if (player && player->alive)
-    order.push_back({camera2d::draw_order_key(static_cast<double>(player->position.y),
-                                              static_cast<double>(player->position.x)),
+  if (player.alive)
+    order.push_back({camera2d::draw_order_key(static_cast<double>(player.position.y),
+                                              static_cast<double>(player.position.x)),
                      1, DepthDraw::What::Player, 0});
-  const auto& actors = sim.actors();
-  for (std::size_t i = 0; i < actors.size(); ++i) {
-    if (actors[i].kind == verdigris::ActorKind::Monster && actors[i].alive)
+  for (std::size_t i = 0; i < world.monsters.size(); ++i) {
+    if (world.monsters[i].alive)
       order.push_back({camera2d::draw_order_key(
-                           static_cast<double>(actors[i].position.y),
-                           static_cast<double>(actors[i].position.x)),
+                           static_cast<double>(world.monsters[i].position.y),
+                           static_cast<double>(world.monsters[i].position.x)),
                        2, DepthDraw::What::Monster, i});
   }
   std::vector<std::pair<std::string, verdigris::Vec2>> loot(
@@ -1573,19 +1645,18 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         break;
       case DepthDraw::What::Player: {
         const ScreenPoint base =
-            project(state.camera, bounds, player->position.x, player->position.y);
+            project(state.camera, bounds, player.position.x, player.position.y);
         rl.push_back({render::Op::Player, static_cast<double>(base.x),
                       static_cast<double>(base.y)});
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
         if (!draw_billboard_sprite(state.billboards, dc, state.billboards.player, base,
-                                   kTileUnits * 1.35, player->facing.x))
+                                   kTileUnits * 1.35, player.facing.x))
           draw_billboard(dc, base, kTileUnits * 0.62, kTileUnits * 1.35,
                          RGB(84, 158, 128), RGB(140, 208, 172));
-        // Draw the authoritative simulation facing, rather than a client-only
-        // mouse hint. The core owns the integer heading used by Thrust.
+        // Draw the authoritative facing, rather than a client-only mouse hint.
         const double angle =
-            std::atan2(static_cast<double>(player->facing.y),
-                       static_cast<double>(player->facing.x));
+            std::atan2(static_cast<double>(player.facing.y),
+                       static_cast<double>(player.facing.x));
         const int fx = base.x + static_cast<int>(std::cos(angle) * kTileUnits * 0.6 *
                                                  base.scale);
         const int fy = base.y + static_cast<int>(std::sin(angle) * kTileUnits * 0.6 *
@@ -1594,11 +1665,11 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         break;
       }
       case DepthDraw::What::Monster: {
-        const auto& monster = actors[entry.index];
+        const auto& monster = world.monsters[entry.index];
         const ScreenPoint base =
             project(state.camera, bounds, monster.position.x, monster.position.y);
         rl.push_back({render::Op::Monster, static_cast<double>(base.x),
-                      static_cast<double>(base.y), 0.0, monster.stats.life,
+                      static_cast<double>(base.y), 0.0, monster.life,
                       monster.elite ? "elite" : "monster"});
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
         const SpriteBitmap& monster_sprite = monster.elite ? state.billboards.boss
@@ -1608,13 +1679,12 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                                    monster.facing.x))
           draw_billboard(dc, base, kTileUnits * 0.68, kTileUnits * 1.25,
                          RGB(168, 84, 70), RGB(212, 122, 96));
-        // Compact life bar instead of a menu: readable elite math at a glance.
         const int bar_w = static_cast<int>(kTileUnits * 0.7 * base.scale);
         const int bar_y =
             base.y - static_cast<int>(kTileUnits * 1.5 * base.scale);
         const double ratio =
-            std::clamp(static_cast<double>(monster.stats.life) /
-                           std::max(1, monster.stats.life_max),
+            std::clamp(static_cast<double>(monster.life) /
+                           std::max(1, monster.life_max),
                        0.0, 1.0);
         draw_line(dc, base.x - bar_w / 2, bar_y, base.x + bar_w / 2, bar_y,
                   RGB(52, 40, 38), 3);
@@ -1664,7 +1734,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         DeleteObject(brush);
         DeleteObject(pen);
         if (state.loot_labels) {
-          const std::string label = loot_label(sim, entry_loot.first);
+          const std::string label = loot_label(state, entry_loot.first);
           SetBkMode(dc, TRANSPARENT);
           SetTextColor(dc, color);
           TextOutA(dc, base.x + r + 4, base.y - lift - r - 5, label.c_str(),
@@ -1678,14 +1748,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     }
   }
 
-  // The default testbed view is intentionally sparse: only the compact
-  // resource bars and three-slot strip remain over the playfield. Diagnostics
-  // are still available for driven tests and the architect's F3 inspection.
   paint_resource_hud(player, dc, rl);
   paint_skill_strip(state, dc, bounds, rl);
   paint_gear_overlay(state, dc, bounds, rl);
 
-  // Screen-edge red pulse when the player took damage (150ms).
   if (state.screen_pulse_ticks > 0) {
     rl.push_back({render::Op::ScreenPulse, 0.0, 0.0, 0.0, 0, "player-damage"});
     HPEN pulse = CreatePen(PS_SOLID, 10, RGB(196, 46, 40));
@@ -1698,19 +1764,30 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     DeleteObject(pulse);
   }
 
+  if (state.session) {
+    const auto conn = state.session->connection_state();
+    if (conn == verdigris::client::ConnectionState::Disconnected ||
+        conn == verdigris::client::ConnectionState::Rejected ||
+        conn == verdigris::client::ConnectionState::ProtocolMismatch) {
+      SetBkMode(dc, TRANSPARENT);
+      SetTextColor(dc, RGB(255, 80, 70));
+      const char* banner = "CONNECTION LOST — not playing offline";
+      TextOutA(dc, 18, 76, banner, static_cast<int>(strlen(banner)));
+    }
+  }
+
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
     SetBkMode(dc, TRANSPARENT);
     SetTextColor(dc, RGB(230, 235, 220));
-    const int life = player ? player->stats.life : 0;
+    const int life = player.life;
     const std::string status =
-        "House " + sim.house().name + " | Scion " + sim.scion().name + " | Life " +
+        "House " + world.house_name + " | Scion " + world.scion_name + " | Life " +
         std::to_string(life) + " | Resource " +
-        std::to_string(player ? player->stats.resource : 0) + " | Stored trophies " +
-        std::to_string(sim.house().stored_trophies.size()) + " | Stored items " +
-        std::to_string(sim.house().stored_items.size()) + " | Carried " +
-        std::to_string(sim.scion().carried_items.size() +
-                       sim.scion().carried_trophies.size());
+        std::to_string(player.resource) + " | Stored trophies " +
+        std::to_string(world.stored_trophies) + " | Stored items " +
+        std::to_string(world.stored_items) + " | Carried " +
+        std::to_string(world.carried.size() + world.carried_trophies);
     TextOutA(dc, 18, 16, status.c_str(), static_cast<int>(status.size()));
     const char* help =
         "WASD move | Mouse aim | LMB melee | RMB/Space dash | Q Thrust | E Sweep | R WarCry";
@@ -1726,8 +1803,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     char debug_line[256];
     std::snprintf(debug_line, sizeof(debug_line),
                   "tick %llu | player %d,%d | zoom %.2f | effects %zu | telegraphs %zu",
-                  static_cast<unsigned long long>(sim.tick()),
-                  player ? player->position.x : 0, player ? player->position.y : 0,
+                  static_cast<unsigned long long>(world.tick),
+                  player.position.x, player.position.y,
                   state.camera.zoom,
                   state.effects.size(), state.telegraphs.size());
     TextOutA(dc, 18, 144, debug_line, static_cast<int>(strlen(debug_line)));
@@ -1747,7 +1824,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     }
   }
 }
-
+  render::List rl;
 constexpr double kActorColliderRadius =
     static_cast<double>(verdigris::world_scale::kActorColliderRadius);
 
@@ -1778,6 +1855,7 @@ bool scenery_blocks_segment(const ClientState& state, verdigris::Vec2 from,
 
 bool movement_hits_scenery(const ClientState& state, int dx, int dy,
                            int tick_multiplier = 1) {
+  if (is_remote(state) || !state.simulation) return false;
   const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
   if (!player || !player->alive) return false;
   const int step = verdigris::movement_step_per_tick(player->stats.move_speed) *
@@ -1811,19 +1889,28 @@ void timer_step(HWND window, ClientState& state) {
   RECT bounds;
   GetClientRect(window, &bounds);
 
+  if (state.session) {
+    state.session->poll();
+    sync_world(state);
+    ingest_session_events(state);
+  }
+
   int dx = (state.d ? 1 : 0) - (state.a ? 1 : 0);
   int dy = (state.s ? 1 : 0) - (state.w ? 1 : 0);
   const bool moving = dx != 0 || dy != 0;
-  if (moving && !movement_hits_scenery(state, dx, dy)) {
-    state.simulation->dispatch(verdigris::Command::move(dx, dy));
-  } else {
-    state.simulation->dispatch(verdigris::Command::action_use(verdigris::ActionType::Wait));
-    if (moving && state.hint_ticks == 0) show_hint(state, "Blocked by scenery");
+  if (state.session) {
+    if (state.session->connection_state() == verdigris::client::ConnectionState::Ready) {
+      if (moving) submit_move(state, dx, dy);
+    }
+  } else if (state.simulation) {
+    if (moving && !movement_hits_scenery(state, dx, dy)) {
+      state.simulation->dispatch(verdigris::Command::move(dx, dy));
+    } else {
+      state.simulation->dispatch(verdigris::Command::action_use(verdigris::ActionType::Wait));
+      if (moving && state.hint_ticks == 0) show_hint(state, "Blocked by scenery");
+    }
   }
 
-  // Movement owns facing while the actor is moving. Re-send the throttled
-  // mouse heading on the first idle tick so aiming immediately takes over
-  // again without sending a command every frame.
   dispatch_aim_if_changed(state, bounds, !moving && state.was_moving);
   state.was_moving = moving;
 
@@ -1836,23 +1923,20 @@ void timer_step(HWND window, ClientState& state) {
   if (state.hint_ticks > 0) --state.hint_ticks;
   if (state.screen_pulse_ticks > 0) --state.screen_pulse_ticks;
 
-  // The camera eases toward the player so dashes read as motion, not teleports.
-  const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
-  if (player) {
-    state.camera.x += (player->position.x - state.camera.x) * 0.2;
-    state.camera.y += (player->position.y - state.camera.y) * 0.2;
-  }
+  sync_world(state);
+  state.camera.x += (state.world.player.position.x - state.camera.x) * 0.2;
+  state.camera.y += (state.world.player.position.y - state.camera.y) * 0.2;
 }
 
 void dispatch_dash(ClientState& state) {
-  const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
-  if (!player || !player->alive) return;
-  if (movement_hits_scenery(state, player->facing.x, player->facing.y, 10)) {
+  sync_world(state);
+  if (!state.world.player.alive) return;
+  if (movement_hits_scenery(state, state.world.player.facing.x,
+                            state.world.player.facing.y, 10)) {
     show_hint(state, "Dash blocked by scenery");
     return;
   }
-  state.simulation->dispatch(
-      verdigris::Command::action_use(verdigris::ActionType::Dash));
+  submit_action(state, verdigris::ActionType::Dash, "dash");
 }
 
 LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam) {
@@ -1871,19 +1955,30 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         InvalidateRect(window, nullptr, FALSE);
         break;
       }
+      if (wparam == VK_ESCAPE) {
+        PostQuitMessage(0);
+        break;
+      }
       if (wparam == 'W') state->w = true;
       if (wparam == 'A') state->a = true;
       if (wparam == 'S') state->s = true;
       if (wparam == 'D') state->d = true;
       if (wparam == VK_SPACE) dispatch_dash(*state);
       if (const SkillInfo* skill = skill_for_key(wparam)) dispatch_skill(*state, *skill);
+      if (wparam == 'N' && state->session)
+        state->session->submit(verdigris::client::ClientCommand::enter_zone("tin:1:0"));
       if (wparam == 'X') {
-        const std::string target = nearest_pickup_id(*state);
-        if (target.empty()) {
-          show_hint(*state, "No ground item or trophy nearby");
+        if (is_remote(*state)) {
+          submit_pick_up(*state, "");
+          show_hint(*state, "Take underfoot requested");
         } else {
-          state->simulation->dispatch(verdigris::Command::pick_up(target));
-          show_hint(*state, "Picked up nearest drop");
+          const std::string target = nearest_pickup_id(*state);
+          if (target.empty()) {
+            show_hint(*state, "No ground item or trophy nearby");
+          } else {
+            submit_pick_up(*state, target);
+            show_hint(*state, "Picked up nearest drop");
+          }
         }
       }
       if (wparam == 'Z') {
@@ -1891,19 +1986,18 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         show_hint(*state, state->loot_labels ? "Loot names shown" : "Loot names hidden");
       }
       if (wparam == 'F') {
-        // Ask the simulation to resolve the contextual interaction.  The
-        // core owns the extraction pad/range rule; the client does not mirror
-        // that gameplay decision.
-        state->simulation->dispatch(verdigris::Command::extract());
+        submit_extract(*state);
         show_hint(*state, "Contextual interaction requested");
       }
       if (wparam == 'I') {
+        sync_world(*state);
         state->gear_overlay = !state->gear_overlay;
         state->selected_item = 0;
         if (state->gear_overlay) show_hint(*state, "Gear opened");
       }
-      if (state->gear_overlay && !state->simulation->scion().carried_items.empty()) {
-        const std::size_t count = state->simulation->scion().carried_items.size();
+      sync_world(*state);
+      if (state->gear_overlay && !state->world.carried.empty()) {
+        const std::size_t count = state->world.carried.size();
         constexpr int kGridColumns = 4;
         if (wparam == VK_UP && state->selected_item >= kGridColumns)
           state->selected_item -= kGridColumns;
@@ -1914,10 +2008,16 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         if (wparam == VK_RIGHT)
           state->selected_item = std::min(count - 1, state->selected_item + 1);
         if (wparam == VK_RETURN) equip_selected(*state);
-        if (wparam == 'U') {
+        if (wparam == 'U' && state->simulation) {
           state->simulation->dispatch(verdigris::Command::unequip());
           show_hint(*state, "Weapon unequipped");
         }
+      }
+      if (wparam >= '1' && wparam <= '9' && state->session) {
+        const std::size_t index = static_cast<std::size_t>(wparam - '1');
+        sync_world(*state);
+        if (index < state->world.carried.size())
+          submit_equip(*state, state->world.carried[index].id);
       }
       if (wparam == VK_HOME) {
         state->camera.zoom = kCameraDefaultZoom;
@@ -1955,8 +2055,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         if (state->gear_overlay)
           equip_selected(*state);
         else
-          state->simulation->dispatch(
-              verdigris::Command::action_use(verdigris::ActionType::Melee));
+          submit_action(*state, verdigris::ActionType::Melee, "melee");
       }
       InvalidateRect(window, nullptr, FALSE);
       break;
@@ -2018,11 +2117,9 @@ void scenario_present(ClientState& state) {
 }
 
 void scenario_follow_camera(ClientState& state) {
-  const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
-  if (player) {
-    state.camera.x = static_cast<double>(player->position.x);
-    state.camera.y = static_cast<double>(player->position.y);
-  }
+  sync_world(state);
+  state.camera.x = static_cast<double>(state.world.player.position.x);
+  state.camera.y = static_cast<double>(state.world.player.position.y);
 }
 
 // One full pipeline step: dispatch, ingest events, age effects, follow the
@@ -2251,6 +2348,77 @@ int scenario_combat_juice() {
   return 0;
 }
 
+int scenario_remote_render_list() {
+  verdigris::networking::WebSocketServer* server = nullptr;
+  std::uint16_t port = 0;
+  for (std::uint16_t candidate = 6580; candidate <= 6599; ++candidate) {
+    auto* probe = new verdigris::networking::WebSocketServer(candidate);
+    std::string error;
+    if (probe->start(&error)) {
+      server = probe;
+      port = candidate;
+      break;
+    }
+    delete probe;
+  }
+  scenario_check(server != nullptr, "remote-render-list: bound cursor-capsule server");
+  if (!server) return 0;
+
+  ClientState state;
+  state.session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+      "127.0.0.1", port, "cursor-render-0064", true);
+  std::string error;
+  scenario_check(state.session->start(&error), "remote-render-list: session start");
+  bool ready = false;
+  for (int i = 0; i < 250 && !ready; ++i) {
+    state.session->poll();
+    ready = state.session->connection_state() == verdigris::client::ConnectionState::Ready;
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  }
+  scenario_check(ready, "remote-render-list: handshake ready");
+  state.session->submit(verdigris::client::ClientCommand::enter_zone("tin:1:0"));
+  for (int i = 0; i < 80; ++i) {
+    state.session->poll();
+    ingest_session_events(state);
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    if (state.session->model().scene.type == "instance") break;
+  }
+  generate_scenery(state);
+  sync_world(state);
+  state.camera.x = static_cast<double>(state.world.player.position.x);
+  state.camera.y = static_cast<double>(state.world.player.position.y);
+
+  bool saw_monster = false, saw_swing = false, saw_drop = false;
+  for (int step = 0; step < 240; ++step) {
+    state.session->submit(verdigris::client::ClientCommand::use_action("melee"));
+    if (step % 4 == 0) state.session->submit(verdigris::client::ClientCommand::move(1, 0));
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    state.session->poll();
+    ingest_session_events(state);
+    sync_world(state);
+    state.camera.x = static_cast<double>(state.world.player.position.x);
+    state.camera.y = static_cast<double>(state.world.player.position.y);
+    for (auto& fx : state.effects) ++fx.age;
+    state.effects.erase(std::remove_if(state.effects.begin(), state.effects.end(),
+                                       [](const EffectFx& fx) { return fx.age >= fx.ttl; }),
+                        state.effects.end());
+    scenario_present(state);
+    saw_monster = saw_monster || render::any(state.render_list, render::Op::Monster);
+    saw_swing = saw_swing || render::any(state.render_list, render::Op::Swing);
+    saw_drop = saw_drop || render::any(state.render_list, render::Op::Drop);
+    if (saw_monster && saw_swing && saw_drop) break;
+  }
+  scenario_check(saw_monster, "remote-render-list: Monster op in paint_scene render list");
+  scenario_check(saw_swing, "remote-render-list: Swing op in paint_scene render list");
+  scenario_check(saw_drop, "remote-render-list: Drop op in paint_scene render list");
+  scenario_check(!state.simulation, "remote-render-list: remote present uses no Simulation");
+
+  if (state.session) state.session->shutdown();
+  server->stop();
+  delete server;
+  return 0;
+}
+
 int scenario_zoom_invariance() {
   ClientState state;
   scenario_begin(state);
@@ -2300,6 +2468,7 @@ int run_scenarios(const std::string& which) {
       {"loot-to-bank", scenario_loot_to_bank},
       {"telegraph-dodge", scenario_telegraph_dodge},
       {"combat-juice", scenario_combat_juice},
+      {"remote-render-list", scenario_remote_render_list},
       {"zoom-invariance", scenario_zoom_invariance},
   };
   int total_failures = 0;
@@ -2316,6 +2485,42 @@ int run_scenarios(const std::string& which) {
 }
 
 }  // namespace
+
+int run_remote_native_client(const char* host, unsigned short port, const char* guest_id) {
+  auto state = std::make_unique<ClientState>();
+  state->session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+      host ? host : "127.0.0.1", port, guest_id ? guest_id : "cursor-guest", true);
+  std::string error;
+  if (!state->session->start(&error)) {
+    std::fprintf(stderr, "verdigris_client --remote: %s\n", error.c_str());
+    state->hint = error;
+    state->hint_ticks = 200;
+  }
+  load_billboards(state->billboards);
+
+  HINSTANCE instance = GetModuleHandle(nullptr);
+  WNDCLASSA window_class{};
+  window_class.hInstance = instance;
+  window_class.lpfnWndProc = window_proc;
+  window_class.lpszClassName = "VerdigrisNativeClient";
+  window_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
+  RegisterClassA(&window_class);
+
+  HWND window =
+      CreateWindowExA(0, window_class.lpszClassName, "Verdigris Remote Guest", WS_OVERLAPPEDWINDOW,
+                      CW_USEDEFAULT, CW_USEDEFAULT, 960, 600, nullptr, nullptr, instance,
+                      state.get());
+  ShowWindow(window, SW_SHOW);
+  SetTimer(window, 1, 50, nullptr);
+
+  MSG message{};
+  while (GetMessage(&message, nullptr, 0, 0) > 0) {
+    TranslateMessage(&message);
+    DispatchMessage(&message);
+  }
+  if (state->session) state->session->shutdown();
+  return static_cast<int>(message.wParam);
+}
 
 int run_headless_demo() {
   verdigris::Simulation simulation(0xC011AB1EULL, "House Verdigris");

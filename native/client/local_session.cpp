@@ -138,12 +138,35 @@ void LocalCoreSession::refresh_model() {
     model_.player.y = actor->position.y;
     model_.player.life = actor->stats.life;
     model_.player.life_max = actor->stats.life_max;
+    model_.player.resource = actor->stats.resource;
+    model_.player.resource_max = actor->stats.resource_max;
+    model_.player.attack = actor->stats.attack;
+    if (actor->facing.x < 0) model_.player.facing = "left";
+    else if (actor->facing.x > 0) model_.player.facing = "right";
+    else if (actor->facing.y < 0) model_.player.facing = "up";
+    else model_.player.facing = "down";
   }
   model_.scene.id = simulation_->instance().active ? simulation_->instance().route_id : "surface";
   model_.inventory.clear();
+  model_.equipped = {};
   for (const auto& item : scion.carried_items) {
-    model_.inventory.push_back({item.id, item.id, item.name, -1});
+    ClientItemSlot slot{item.id, item.id, item.name, -1, 0, 0, item.attack_bonus};
+    model_.inventory.push_back(slot);
+    if (item.equipped) model_.equipped = slot;
   }
+  model_.ground.clear();
+  for (const auto& item : simulation_->ground_items())
+    model_.ground.push_back({item.id, item.name, 0.0, 0.0});
+  model_.monsters.clear();
+  for (const auto& actor : simulation_->actors()) {
+    if (actor.kind != verdigris::ActorKind::Monster || !actor.alive) continue;
+    model_.monsters.push_back({actor.id, actor.elite ? "elite" : "monster",
+                               static_cast<double>(actor.position.x),
+                               static_cast<double>(actor.position.y), actor.stats.life,
+                               actor.stats.life_max, actor.elite, actor.alive});
+  }
+  model_.stored_items = static_cast<int>(simulation_->house().stored_items.size());
+  model_.stored_trophies = static_cast<int>(simulation_->house().stored_trophies.size());
 }
 
 void LocalCoreSession::translate_new_events() {

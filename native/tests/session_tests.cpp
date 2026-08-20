@@ -10,6 +10,7 @@
 
 #include "../client/local_session.hpp"
 #include "../client/remote_session.hpp"
+#include "../client/presentation_state.hpp"
 #include "verdigris/networking.hpp"
 
 namespace {
@@ -392,6 +393,53 @@ void remote_session_replaced() {
   delete server;
 }
 
+void remote_render_list_ops() {
+  verdigris::networking::WebSocketServer* server = nullptr;
+  const auto port = start_server_cursor(server);
+  check(server != nullptr, "render-list: cursor-capsule server bound");
+  if (!server) return;
+
+  verdigris::client::RemoteProtocolSession session("127.0.0.1", port, "cursor-render-ops", true);
+  std::string error;
+  check(session.start(&error), "render-list: connect");
+  check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
+        "render-list: ready");
+  session.submit(verdigris::client::ClientCommand::enter_zone("tin:1:0"));
+  wait_until(session, 4000, [&] {
+    return session.model().scene.type == "instance" ||
+           session.model().scene.id.find("instance") != std::string::npos;
+  });
+
+  verdigris::client::PresentationFx fx;
+  verdigris::client::WorldView world;
+  bool saw_monster = false, saw_swing = false, saw_drop = false;
+  for (int step = 0; step < 240 && !(saw_monster && saw_swing && saw_drop); ++step) {
+    session.submit(verdigris::client::ClientCommand::use_action("melee"));
+    if (step % 4 == 0) session.submit(verdigris::client::ClientCommand::move(1, 0));
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    session.poll();
+    verdigris::client::sync_world_from_model(world, session.model());
+    ++world.tick;
+    for (const auto& event : session.drain_events())
+      verdigris::client::apply_presentation_event(fx, world, event, world.tick);
+    verdigris::client::age_presentation_fx(fx);
+    verdigris::client::sync_world_from_model(world, session.model());
+    render::List list;
+    camera2d::Camera camera{static_cast<double>(world.player.position.x),
+                            static_cast<double>(world.player.position.y), 0.85};
+    verdigris::client::record_world_ops(list, world, fx, camera, 960, 600);
+    saw_monster = saw_monster || render::any(list, render::Op::Monster);
+    saw_swing = saw_swing || render::any(list, render::Op::Swing);
+    saw_drop = saw_drop || render::any(list, render::Op::Drop);
+  }
+  check(saw_monster, "render-list: Monster op recorded from remote model");
+  check(saw_swing, "render-list: Swing op recorded from AttackStarted");
+  check(saw_drop, "render-list: Drop op recorded from kill loot");
+  session.shutdown();
+  server->stop();
+  delete server;
+}
+
 }  // namespace
 
 int main() {
@@ -401,6 +449,7 @@ int main() {
   remote_guest_journey();
   remote_mid_session_disconnect();
   remote_session_replaced();
+  remote_render_list_ops();
   if (failures == 0) {
     std::printf("session tests passed\n");
     return 0;

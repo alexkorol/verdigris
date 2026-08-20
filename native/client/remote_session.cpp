@@ -101,6 +101,54 @@ void apply_player_fields(ClientPlayer& player, const JsonValue& source) {
   if (const auto* facing = json_string(source.get("facing"))) player.facing = *facing;
 }
 
+void facing_delta(const std::string& facing, double& dx, double& dy) {
+  dx = 0.0;
+  dy = 1.0;
+  if (facing == "left" || facing == "west") {
+    dx = -1.0;
+    dy = 0.0;
+  } else if (facing == "right" || facing == "east") {
+    dx = 1.0;
+    dy = 0.0;
+  } else if (facing == "up" || facing == "north") {
+    dx = 0.0;
+    dy = -1.0;
+  }
+}
+
+void place_in_front(const ClientPlayer& player, double& x, double& y) {
+  double dx = 0.0;
+  double dy = 1.0;
+  facing_delta(player.facing, dx, dy);
+  x = player.x + dx;
+  y = player.y + dy;
+}
+
+ClientMonster* find_monster(ClientModel& model, const std::string& id) {
+  for (auto& monster : model.monsters)
+    if (monster.id == id) return &monster;
+  return nullptr;
+}
+
+ClientMonster& upsert_monster(ClientModel& model, const std::string& id, const std::string& name,
+                              bool elite) {
+  if (ClientMonster* existing = find_monster(model, id.empty() ? name : id)) {
+    if (!name.empty()) existing->name = name;
+    if (elite) existing->elite = true;
+    existing->alive = true;
+    return *existing;
+  }
+  ClientMonster monster;
+  monster.id = id.empty() ? ("foe-" + std::to_string(model.monsters.size() + 1)) : id;
+  monster.name = name.empty() ? "monster" : name;
+  place_in_front(model.player, monster.x, monster.y);
+  monster.elite = elite;
+  monster.life = elite ? 80 : 40;
+  monster.life_max = monster.life;
+  model.monsters.push_back(std::move(monster));
+  return model.monsters.back();
+}
+
 void apply_scene_fields(ClientScene& scene, const JsonValue& source) {
   if (const auto* id = json_string(source.get("id"))) scene.id = *id;
   if (const auto* type = json_string(source.get("type"))) scene.type = *type;
@@ -429,16 +477,21 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       apply_player_fields(model_.player, *player_state);
     }
     if (!model_.scene.id.empty()) model_.player.scene_id = model_.scene.id;
+    model_.monsters.clear();
+    model_.ground.clear();
     return;
   }
   if (envelope.event == "monster:telegraph") {
     const auto* attacker = json_string(envelope.data.get("attackerId"));
     const auto* name = json_string(envelope.data.get("attackerName"));
     const auto* skill = json_string(envelope.data.get("skillId"));
+    const std::string skill_id = skill ? *skill : "telegraph";
+    const bool elite = skill_id.find("sweep") != std::string::npos ||
+                       skill_id.find("boss") != std::string::npos;
+    upsert_monster(model_, attacker ? *attacker : "", name ? *name : "", elite);
     pending_events_.push_back({PresentationEventType::Telegraph,
                                attacker ? *attacker : "", "",
-                               std::string(name ? *name : "") + " " +
-                                   std::string(skill ? *skill : "telegraph"),
+                               std::string(name ? *name : "") + " " + skill_id,
                                static_cast<int>(json_number(envelope.data.get("durationMs")))});
     return;
   }
@@ -461,6 +514,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       }
     }
     if (hits_player) {
+      if (attacker) upsert_monster(model_, *attacker, "", true);
       model_.last_incoming_hit = amount;
       pending_events_.push_back({PresentationEventType::DamageApplied,
                                  attacker ? *attacker : "", "", "incoming", amount});
@@ -470,6 +524,17 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       }
     } else {
       model_.last_outgoing_hit = amount;
+      ClientMonster& foe = upsert_monster(model_, target ? *target : "",
+                                          json_string(envelope.data.get("targetName"))
+                                              ? *json_string(envelope.data.get("targetName"))
+                                              : "",
+                                          false);
+      if (const auto* health = envelope.data.get("health")) {
+        foe.life = static_cast<int>(json_number(health->get("current"), foe.life));
+        foe.life_max = static_cast<int>(json_number(health->get("max"), foe.life_max));
+      } else {
+        foe.life = (std::max)(0, foe.life - amount);
+      }
       pending_events_.push_back({PresentationEventType::AttackStarted,
                                  attacker ? *attacker : model_.player.uuid, "",
                                  last_facing_, amount});
@@ -477,6 +542,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
                                  target ? *target : "", "", "outgoing", amount});
       if (died) {
         ++model_.kills;
+        foe.alive = false;
+        foe.life = 0;
         pending_events_.push_back({PresentationEventType::ActorDied,
                                    target ? *target : "", "",
                                    json_string(envelope.data.get("targetName"))
@@ -486,8 +553,10 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         // The native server drops loot in-world but does not emit a ground
         // envelope. Sparkle at the last known player tile so the kill is a
         // visible reward beat until pickup names the item.
+        const std::string drop_id = "drop-" + std::to_string(model_.kills);
+        model_.ground.push_back({drop_id, "kill reward", foe.x, foe.y});
         pending_events_.push_back({PresentationEventType::ItemDropped,
-                                   target ? *target : "", "", "kill reward", 0});
+                                   target ? *target : "", drop_id, "kill reward", 0});
       }
     }
     return;

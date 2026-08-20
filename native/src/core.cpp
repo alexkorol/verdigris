@@ -1518,6 +1518,11 @@ void WorldSimulation::check_stair_transition() {
   }
 }
 
+void WorldSimulation::return_to_surface() {
+  if (!in_instance()) return;
+  return_to_town();
+}
+
 void WorldSimulation::return_to_town() {
   scene_type_ = "town";
   scene_id_ = "town:verdigris";

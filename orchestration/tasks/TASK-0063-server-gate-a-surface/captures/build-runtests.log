@@ -1,0 +1,12 @@
+powershell -File native/build.ps1 -RunTests
+Date: 2026-08-20 04:03 PDT
+Worker: codex/TASK-0063-server-gate-a-surface-cursor
+Port capsule: 6580-6599 (session tests)
+
+native legacy denylist: PASS
+verdigris core tests: PASS
+verdigris networking tests: PASS
+camera2d tests: PASS
+session tests passed
+exit_code: 0
+elapsed_ms: 61461
