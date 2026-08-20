@@ -75,6 +75,18 @@ telegraph FX can graze the HUD corner (0068); reconnect lands in 0069.
 Feedback wanted on: movement feel, combat readability, loot moment,
 whether the loop invites a second run.
 
+## DAY RUN 2026-08-20 (D-124 — owner at work, aggressive mode)
+
+Target by evening: three-axis parity + side-by-side native-vs-browser
+screenshots. Plan: (1) 0056 N5 — deepseek Flash (419 lines in flight);
+architect takes over if no commit by ~10:00. (2) 0058 N6 releases the
+moment N5 integrates — architect implements if no lane free. (3)
+architect NOW: side-by-side visual benchmark (browser reference
+captures matching the 0070 native scenes + composites). (4) architect
+next: Gate B client scaffolding (ARCHITECTURE) so the Chronicles
+client slice starts the minute N5 lands. (5) luna-mac: 0071/0074 when
+it comes online. Sweeps every ~30 min; no idle ticks.
+
 ## RUNNING
 
 | Task | Owner | Notes |
@@ -115,9 +127,9 @@ whether the loop invites a second run.
 - luna-mac (Codex Luna, MacBook — replaces mac-claude in this seat):
   MECHANICAL packets only, NEVER native/**; routed 0071 then 0074.
   Ports 7000–7019. Fresh calibration.
-- deepseek (now DeepSeek 4 Flash): resuming 0056/N5 claim (4 dirty in
-  clone). Lighter model — review with extra scrutiny; fresh calibration
-  row. Ports 6540–6559.
+- deepseek (DeepSeek 4 Flash): ACTIVE on 0056/N5 as of 08:10 — claim
+  re-confirmed, investigation phase (872 steps, 100% cache hit).
+  Fresh calibration row; review with extra scrutiny. Ports 6540–6559.
 - kimis quota-dead until ~08-23; codex out of tokens.
 
 ## WATCH
