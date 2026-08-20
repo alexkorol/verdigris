@@ -29,6 +29,16 @@
 - codex: out of tokens.
 - qwen3.8 local (MacBook): DISPATCHABLE — MECHANICAL/offline eval only, via mac-claude as executor.
 
+## Standing duty (new, 2026-08-20): peer verification
+
+Idle coordinators (empty board) act as peer-verifiers before backoff:
+rerun another coordinator's REVIEW_REQUESTED browser gates, commit
+REVIEW-PEER-<name>.md transcripts. See STANDING-LOOP.md +
+ORCHESTRATION.md G5 peer-rerun. Verdicts remain architect-only.
+qwen3.8 note: it is an endpoint, not a coordinator — it works only
+when mac-claude dispatches MECHANICAL packets to it (0059 bulk parts
+qualify).
+
 ## WATCH
 
 - deepseek stall = top fleet risk: N5+N6 are the critical path and only

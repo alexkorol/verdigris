@@ -76,6 +76,16 @@ G4 default owner path + owner-visible artifact (screenshots/playthrough) ·
 G5 architect reruns the exact gate personally (testimony ≠ evidence) ·
 G6 post-merge revalidation of affected checks.
 
+G5 peer-rerun option (token-scarcity adaptation, 2026-08-20): for
+non-critical BROWSER tasks, G5 may be satisfied by a PEER RERUN — a
+coordinator other than the implementer reruns the exact acceptance
+gates in its own clone (fresh merge with current tip) and commits
+literal transcripts to the task folder as REVIEW-PEER-<name>.md. The
+architect then reads the diff plus both evidence sets and issues the
+verdict, rerunning personally only on conflict or suspicion. Personal
+architect rerun stays MANDATORY for: native waves, any lane's first
+task (calibration), anything modifying tests/playtest assertions.
+
 Greens are revision- and environment-bound: stale after relevant code,
 base, evaluator, or environment changes. PARTIAL is failure unless the
 contract defined a partial deliverable. Modified tests are listed and
