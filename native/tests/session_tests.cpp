@@ -326,38 +326,52 @@ void remote_guest_journey() {
 void remote_mid_session_disconnect() {
   verdigris::networking::WebSocketServer* server = nullptr;
   const auto port = start_server_cursor(server);
-  check(server != nullptr, "disconnect: cursor-capsule server bound");
+  check(server != nullptr, "reconnect: cursor-capsule server bound");
   if (!server) return;
 
-  verdigris::client::RemoteProtocolSession session("127.0.0.1", port, "cursor-disconnect", true);
+  verdigris::client::RemoteProtocolSession session("127.0.0.1", port, "cursor-reconnect", true);
   std::string error;
-  check(session.start(&error), "disconnect: connected");
+  check(session.start(&error), "reconnect: connected");
   check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
-        "disconnect: ready before the drop");
+        "reconnect: ready before the drop");
+  const std::string guest = session.model().player.uuid;
+  const auto x = session.model().player.x;
 
   server->stop();
   delete server;
   server = nullptr;
 
   bool lost = false;
-  const bool dropped = wait_until(session, 4000, [&] {
+  const bool retrying = wait_until(session, 4000, [&] {
     session.poll();
     for (const auto& event : session.drain_events()) {
       if (event.type == verdigris::client::PresentationEventType::ConnectionLost) lost = true;
     }
-    return session.connection_state() == verdigris::client::ConnectionState::Disconnected;
+    return session.connection_state() == verdigris::client::ConnectionState::Retrying;
   });
-  check(dropped, "disconnect: mid-session server kill reaches Disconnected");
-  check(lost, "disconnect: ConnectionLost is visible (no silent local fallback)");
-  check(!session.last_error().empty(), "disconnect: last_error explains the drop");
+  check(retrying, "reconnect: unexpected drop enters Retrying");
+  check(lost, "reconnect: ConnectionLost is visible (no silent local fallback)");
+  check(!session.last_error().empty(), "reconnect: last_error explains the drop");
 
-  const auto x = session.model().player.x;
   session.submit(verdigris::client::ClientCommand::move(1, 0));
   session.poll();
-  check(session.connection_state() == verdigris::client::ConnectionState::Disconnected,
-        "disconnect: commands after the drop do not revive a local sim");
-  check(session.model().player.x == x, "disconnect: position does not keep playing offline");
+  check(session.connection_state() == verdigris::client::ConnectionState::Retrying,
+        "reconnect: commands after the drop do not leave Retrying for a local sim");
+  check(session.model().player.x == x, "reconnect: position does not keep playing offline");
+
+  server = new verdigris::networking::WebSocketServer(port);
+  check(server->start(&error), "reconnect: server restarted on the same port");
+
+  const bool resumed = wait_for_state(session, verdigris::client::ConnectionState::Ready, 8000);
+  check(resumed, "reconnect: Retrying then Ready after server restart");
+  check(session.model().player.uuid == guest, "reconnect: same guest identity re-logged in");
+  check(!session.model().scene.id.empty(), "reconnect: login snapshot is authoritative");
+
   session.shutdown();
+  if (server) {
+    server->stop();
+    delete server;
+  }
 }
 
 void remote_session_replaced() {
@@ -378,8 +392,11 @@ void remote_session_replaced() {
         "replaced: second session ready");
 
   bool lost = false;
+  bool saw_retrying = false;
   const bool flushed = wait_until(first, 4000, [&] {
     first.poll();
+    if (first.connection_state() == verdigris::client::ConnectionState::Retrying)
+      saw_retrying = true;
     for (const auto& event : first.drain_events()) {
       if (event.type == verdigris::client::PresentationEventType::ConnectionLost) lost = true;
     }
@@ -387,6 +404,9 @@ void remote_session_replaced() {
   });
   check(flushed, "replaced: first session is disconnected");
   check(lost, "replaced: ConnectionLost from player:session-replaced");
+  check(!saw_retrying, "replaced: session-replaced does not enter Retrying");
+  check(first.connection_state() != verdigris::client::ConnectionState::Retrying,
+        "replaced: stays terminal Disconnected (no retry)");
   first.shutdown();
   second.shutdown();
   server->stop();
