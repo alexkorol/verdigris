@@ -1,6 +1,6 @@
 ---
 task: TASK-0069
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: cursor
 worker_branch: codex/TASK-0069-remote-reconnect-cursor
 base_commit: 1f45eb337b29995485ba2b5adf60f5cdb00393c3

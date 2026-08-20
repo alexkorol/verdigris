@@ -2,10 +2,10 @@
 
 - **GATE A: GREEN (2026-08-20 ~04:40).** The owner can play the native
   game against the native server with the real presentation. Rubric
-  10/12, no zeroes (architect play pass, evidence in 0064 review).
+  12/12 after 0068 polish (architect play passes in 0064/0068 reviews).
 - Native journey parity (D-122 axis 2) has its first green gate; axis 1
   needs N5+N6; axis 3 continues via 0068 polish + renderer track.
-- Tonight so far: PRs #27–#33 shipped; batch PR for 0063–0066 pending.
+- Tonight: PRs #27–#34 shipped; 0067–0069 batch pending. Gate A rubric now 12/12 (0068). Reconnect works (0069). CI guards the journey (0067).
 - D-123 buffer: 3 READY after this restock.
 - Immutable objective: D-116 under D-122 three-axis parity.
 
@@ -34,9 +34,9 @@ whether the loop invites a second run.
 
 | Task | Packet | Notes |
 |---|---|---|
-| 0067 native journey CI | BOUNDED-DESIGN | Gate A regression guard; mac-claude or cursor |
-| 0068 remote presentation polish | BOUNDED-DESIGN | rubric 10→12; cursor suggested |
-| 0069 remote reconnect/retry | BOUNDED-DESIGN | Gate B groundwork; any native lane |
+| 0070 reference scenes Stage 1 | BOUNDED-DESIGN | visual baseline for renderer decision; cursor |
+| 0071 protocol matrix audit | MECHANICAL | docs truth for Gate B; mac-claude |
+| 0072 owner launcher | MECHANICAL | one-command play-native; any lane |
 
 ## HOLD
 
@@ -56,7 +56,7 @@ whether the loop invites a second run.
 
 ## Fleet + budget
 
-- cursor (Grok 4.6): 7 tasks accepted tonight — outlier throughput,
+- cursor (Grok 4.6): 10 tasks accepted tonight — outlier throughput,
   0 false greens. Ports 6580–6599.
 - mac-claude (Sonnet): CALIBRATED high (0066 first-pass + unsolicited
   peer-verify on 0062). Ports 7000–7019, browser/JS + docs lane.
