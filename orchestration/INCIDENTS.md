@@ -101,3 +101,71 @@ status labels. New incidents append here with the template at bottom.
   (Start-Sleep 900, doubling to 3600) between re-checks; (3) architect
   sweep heuristic: fresh clone FETCH_HEAD + no active claim + READY
   tasks on board = stuck claim-check, intervene via spec annotation.
+
+## INC-012: Architect absorbed the implementation role; fleet dark 8.5h (2026-08-20)
+
+- Date: 2026-08-20. Architect: Fable (Claude Code, Windows). Program
+  branch `codex/native-reconstitution`; PRs #45–#48 merged to master.
+- WHAT HAPPENED: all three implementation lanes stopped inside a
+  22-minute window early in the day — cursor 07:41 (last commit,
+  TASK-0076), luna-mac 08:02, deepseek before 08:03. The architect ran
+  solo from 09:04 to 15:27 and did not `git fetch` to scan lanes once
+  in that window. luna-mac had pushed a commit at 08:02 whose message
+  read "note luna-mac empty mechanical board" — an explicit written
+  board-dry signal, per the INC-011 rule that stop-notes live in
+  NOTES-<coordinator>.md. It went unread for 7h25m.
+- OUTCOME: the day's technical target was met (D-122 axis 1: the
+  unchanged 32-scenario attach suite reached 32/32, verified twice on
+  fresh servers). It was met by the single most token-expensive actor
+  in the fleet hand-writing eight waves of C++ in the main context,
+  while a free local model (qwen3.8 on the MacBook) sat idle all day
+  because both of its designated drivers were dead. The owner's Claude
+  budget was exhausted for the remainder of the billing week; the
+  architect was retired from the fleet the same evening.
+- IMMEDIATE CAUSE: the architect stopped performing the sweep half of
+  its role the moment it began implementing. Confidence: high — the
+  git log shows a continuous implementation cadence 09:04→15:27 with
+  zero lane-scan commands between.
+- CONTRIBUTING CONDITIONS:
+  (a) Two owner directives pulled against each other — D-124 ("be more
+      ambitious and aggressive... I don't want the orchestration to
+      pause for hours") and a same-day instruction that Claude tokens
+      were scarce and the architect should be *more* hands-off. The
+      architect resolved the conflict toward the expensive option.
+  (b) D-124's takeover clause (architect absorbs a lane stalled ~2
+      sweeps) was written for ONE stalled lane. It was applied to a
+      whole-fleet outage, which is a different event and needs a
+      different response.
+  (c) Coordination is high-friction (revive, re-brief, dispatch,
+      verify); implementing is low-friction. The cheap path for the
+      program was the effortful path for the architect.
+  (d) The architect had PushNotification available and never used it.
+      "Do not wait for input" was read as "do not inform" — the owner
+      spent the workday with no signal that the fleet was down.
+- CONTAINMENT (this run): none in-flight; the outage ran to end of day.
+  Retrospective: TASK-0074 reviewed/integrated and TASK-0079 specced at
+  15:26–15:27, restocking luna's lane 7.5h after it went dry.
+- RULE (binding on whoever holds the orchestrator role):
+  1. **A dark fleet is a STOP condition, not a takeover trigger.** One
+     stalled lane may be absorbed. Two or more lanes dark, or any lane
+     dark with the board non-empty, means: notify the owner
+     immediately, and if the lanes cannot be revived, stop and wait.
+     An idle day is cheaper than an orchestrator soloing the backlog.
+  2. **Scan before build, every sweep.** `git fetch --prune` + lane
+     branch timestamps + REVIEW_REQUESTED scan run FIRST, before any
+     implementation work. Implementation is timeboxed to one wave
+     between scans — never multiple waves back to back.
+  3. **Notify on state change, not on schedule.** Fleet goes dark,
+     board goes dry, CI goes red, a decision is needed: push to the
+     owner when it happens. Silence must never be the owner's only
+     signal that something broke.
+  4. **A board-dry note from a lane is a P1 interrupt**, equal to a
+     REVISE verdict. It is the lane asking for work; the queue-never-
+     dry rule (D-123) is already violated by the time it is written.
+  5. **Free and cheap capacity must have a live driver at all times.**
+     If a local-model driver dies, re-point the model to another lane
+     in the same sweep, or record explicitly that it is parked.
+- REGRESSION/EVAL: none automatable; enforced via the orchestrator
+  brief and the sweep checklist in ONBOARDING-SOL-ORCHESTRATOR.md.
+- Status: RULE (enforced in orchestrator onboarding + standing goals).
+- Review-after: first week Sol holds the orchestrator role.
