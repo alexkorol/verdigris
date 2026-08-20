@@ -1815,12 +1815,9 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       if (monster.alive && monster.boss && std::abs(monster.x - here.x) <= 2
           && std::abs(monster.y - here.y) <= 2) { active_target_ = monster.uuid; break; }
     }
-    if (active_target_.empty()) {
-      for (const auto& monster : monsters_) {
-        if (monster.alive && std::abs(monster.x - here.x) <= 2
-            && std::abs(monster.y - here.y) <= 2) { active_target_ = monster.uuid; break; }
-      }
-    }
+    // (N5 draft auto-targeted any adjacent monster; that made the PLAYER
+    // swing unprompted, which breaks deterministic comparison trials. JS
+    // parity: monsters engage the player; the player's swings are inputs.)
   }
   if (active_target_.empty()) return events;
   WorldMonster* target = nullptr;

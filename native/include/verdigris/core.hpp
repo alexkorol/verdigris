@@ -849,6 +849,18 @@ class WorldSimulation {
   void set_boss_name_override(const std::string& name) { boss_name_override_ = name; }
   void set_spawn_suppressed(bool value) { spawn_suppressed_ = value; }
   void set_scene_name(const std::string& name) { scene_name_ = name; }
+  // dev:monster:reset - revive one monster at a chosen max health for
+  // deterministic comparison trials.
+  bool reset_monster(const std::string& uuid, int max_health) {
+    for (auto& monster : monsters_) {
+      if (monster.uuid != uuid) continue;
+      monster.alive = true;
+      if (max_health > 0) monster.life_max = max_health;
+      monster.life = monster.life_max;
+      return true;
+    }
+    return false;
+  }
   void kill_all_monsters() { for (auto& monster : monsters_) { monster.alive = false; monster.life = 0; } active_target_.clear(); }
   const TileGrid& grid() const { return grid_; }
   bool in_instance() const { return scene_type_ == "instance"; }

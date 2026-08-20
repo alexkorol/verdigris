@@ -846,6 +846,15 @@ JsonValue ProtocolSession::snapshot() const {
   JsonValue::Array items; for (const auto& item:inventory_.items()) items.emplace_back(snapshot_item_json(item)); put(state,"inventory",std::move(items));
   JsonValue::Array details; for (const auto& item:inventory_.items()) details.emplace_back(item_identity_json(item)); put(state,"inventoryDetails",std::move(details));
   put(state,"wear",wear_json()); put(state,"wearDetails",wear_details_json());
+  { // dev.js wornItems: per-seat worn item identity (uuid-bearing).
+    JsonValue::Object worn;
+    for (const auto& [seat, item] : wear_.slots()) {
+      JsonValue::Object entry;
+      put(entry, "uuid", item.uuid); put(entry, "id", item.id); put(entry, "name", item.name);
+      put(worn, seat, std::move(entry));
+    }
+    put(state, "wornItems", std::move(worn));
+  }
   put(state,"combat",combat_totals_json());
   put(state,"groundItems",dropped_items_json());
   put(state,"droppedItems",dropped_items_json());
@@ -1883,7 +1892,11 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
   const auto combat_totals = wear_.totals();
   const int wear_attack = (std::max)(0, (std::max)((std::max)(combat_totals.attack.stab, combat_totals.attack.slash),
                                                    (std::max)(combat_totals.attack.crush, combat_totals.attack.range)));
-  const auto events = world_->advance_combat(actor->stats.level, actor->stats.attack + wear_attack, actor->stats.life, actor->stats.life_max, now);
+  // combat/index.js rollPlayerDamage: 2 + STR*0.45 + weaponPower*1.5 - the
+  // weapon is the core ARPG upgrade lever, not the character level.
+  const int player_power = (std::max)(1, static_cast<int>(std::lround(
+      2.0 + actor->stats.strength * 0.45 + wear_attack * 1.5)));
+  const auto events = world_->advance_combat(actor->stats.level, player_power, actor->stats.life, actor->stats.life_max, now);
   // N5 respawn ward: monsters cannot damage a freshly-respawned scion until
   // the scion acts. Absorb monster damage here (the player still lands hits);
   // the skill handler ends the ward.
@@ -2258,7 +2271,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     }
     return;
   }
-  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ if (respawn_protection_until_ms_ > 0) respawn_protection_until_ms_ = 0; const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); const auto wear_totals=wear_.totals(); const int wear_bonus=(std::max)((std::max)(wear_totals.attack.stab,wear_totals.attack.slash),(std::max)(wear_totals.attack.crush,wear_totals.attack.range)); world_->start_player_attack(actor->stats.level,actor->stats.attack+(std::max)(0,wear_bonus),now_ms(),direction); std::int64_t t=now_ms(); for(int i=0;i<25;++i){ process_combat(t,emit); t+=400; } } return; }
+  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ if (respawn_protection_until_ms_ > 0) respawn_protection_until_ms_ = 0; const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); const auto wear_totals=wear_.totals(); const int wear_bonus=(std::max)((std::max)(wear_totals.attack.stab,wear_totals.attack.slash),(std::max)(wear_totals.attack.crush,wear_totals.attack.range)); world_->start_player_attack(actor->stats.level,actor->stats.attack+(std::max)(0,wear_bonus),now_ms(),direction); process_combat(now_ms(),emit); /* real-clock cadence: polls advance combat */ } return; }
   if (envelope.event=="dev:give") { if (payload) handle_give(*payload,emit); return; }
   if (envelope.event=="dev:drop") { if (payload) handle_drop(*payload,emit); return; }
   if (envelope.event=="dev:forcecritical") { world_->player_combat_mods().force_critical=true; emit_message(emit,"Your next strike will be a critical hit."); return; }
@@ -2278,6 +2291,14 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   if (envelope.event=="player:npc:talk") { if (payload) handle_npc_talk(*payload, emit); return; }
   if (envelope.event=="player:skilltree:save") { if (payload) handle_skilltree_save(*payload, emit); return; }
   if (envelope.event=="chronicles:house:deposit") { if (payload) handle_house_deposit(*payload, emit); return; }
+  if (envelope.event=="dev:monster:reset") {
+    const std::string monster_uuid = as_string(payload ? payload->get("monsterUuid") : nullptr);
+    const int max_health = as_int(payload ? payload->get("maxHealth") : nullptr, 0);
+    if (world_->in_instance() && world_->reset_monster(monster_uuid, max_health)) {
+      emit_message(emit, "Reset the monster for a comparison trial.");
+    }
+    return;
+  }
   if (envelope.event=="dev:clear-floor") {
     // dev.js dev:clear-floor: kill every monster on the active floor.
     if (world_->in_instance()) {
