@@ -386,6 +386,17 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
 }
 
 void RemoteProtocolSession::poll() {
+  // Authoritative monster/ground sync: the server's dev:state snapshot is
+  // the source of truth (browser parity) — inference from combat envelopes
+  // alone can miss fast kills entirely. Throttled to ~4Hz while Ready.
+  if (state_.load() == ConnectionState::Ready) {
+    const auto now = std::chrono::steady_clock::now();
+    if (now - last_state_request_ > std::chrono::milliseconds(250)) {
+      last_state_request_ = now;
+      Envelope request{"dev:state", JsonValue::Object{{"requestId", JsonValue("model-sync")}}};
+      send_envelope(request);
+    }
+  }
   std::deque<std::string> batch;
   {
     std::lock_guard lock(inbox_mutex_);
@@ -628,6 +639,41 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         model_.ground.push_back({drop_id, "kill reward", foe.x, foe.y});
         pending_events_.push_back({PresentationEventType::ItemDropped,
                                    target ? *target : "", drop_id, "kill reward", 0});
+      }
+    }
+    return;
+  }
+  if (envelope.event == "dev:state") {
+    const auto* state = envelope.data.get("state");
+    if (!state) return;
+    if (const auto* monsters = state->get("monsters"); monsters && monsters->array()) {
+      model_.monsters.clear();
+      for (const auto& entry : *monsters->array()) {
+        ClientMonster monster;
+        if (const auto* uuid = json_string(entry.get("uuid"))) monster.id = *uuid;
+        if (const auto* name = json_string(entry.get("name"))) monster.name = *name;
+        monster.x = json_number(entry.get("x"), 0.0);
+        monster.y = json_number(entry.get("y"), 0.0);
+        if (const auto* hp = entry.get("hp")) {
+          monster.life = static_cast<int>(json_number(hp->get("current"), monster.life));
+          monster.life_max = static_cast<int>(json_number(hp->get("max"), monster.life_max));
+        }
+        if (const auto* rarity = json_string(entry.get("rarity"))) {
+          monster.elite = (*rarity != "normal" && !rarity->empty());
+        }
+        monster.alive = monster.life > 0;
+        model_.monsters.push_back(std::move(monster));
+      }
+    }
+    if (const auto* ground = state->get("groundItems"); ground && ground->array()) {
+      model_.ground.clear();
+      for (const auto& entry : *ground->array()) {
+        ClientGroundItem item;
+        if (const auto* uuid = json_string(entry.get("uuid"))) item.uuid = *uuid;
+        if (const auto* name = json_string(entry.get("name"))) item.name = *name;
+        item.x = json_number(entry.get("x"), 0.0);
+        item.y = json_number(entry.get("y"), 0.0);
+        model_.ground.push_back(std::move(item));
       }
     }
     return;

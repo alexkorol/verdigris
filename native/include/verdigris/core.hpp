@@ -621,6 +621,7 @@ class PlayerInventory {
 
   const std::vector<GameItem>& items() const { return items_; }
   std::vector<GameItem>& items() { return items_; }
+  void clear() { items_.clear(); }
 
   // inventory.js add(): currency merges into the existing stack and never
   // overflows; other items place first-fit. One instance per call — callers
@@ -652,6 +653,7 @@ class WearSet {
                            const std::string& preferred = "") const;
 
   const std::map<std::string, GameItem>& slots() const { return slots_; }
+  void clear() { slots_.clear(); }
   const GameItem* in_seat(const std::string& seat) const;
   // Place an item into a seat; returns the displaced item when swapping.
   std::optional<GameItem> equip(GameItem item, const std::string& seat);
@@ -676,6 +678,11 @@ struct GroundItem {
   double x = 0;
   double y = 0;
   std::int64_t timestamp = 0;  // placement time; menus sort newest-first
+  // N5 relic circulation provenance (server/core/services/chronicles.js
+  // drawCirculatingRelic): set when this drop is a recovered heirloom.
+  std::string legacy_relic_id;
+  std::string legacy_source_scion_id;
+  std::string legacy_source_scion_name;
 };
 
 // Player combat modifiers the equip pipeline feeds into tile-space combat.
@@ -842,6 +849,9 @@ class WorldSimulation {
   // dev:teleport: floors onto the target tile, then runs the portal check
   // (landing on the entry stairs returns to town, like the JS game loop).
   void teleport(int x, int y, std::int64_t now_ms);
+  // Fresh world admission lands at the town spawn (JS direct-admission: every
+  // login re-enters the world at the plaza, whatever a prior session left).
+  void reset_to_town();
   // instance:enterSolo: validates template/layout against the Adventure table
   // (unknown template -> dungeon, unknown layout -> theme default), saves the
   // pre-instance position on first entry, and places the player at a spawn.
@@ -877,6 +887,12 @@ class WorldSimulation {
   // dev:drop / world-drop / overflow spill: place an item on the current
   // scene at the raw (x, y) position.
   void add_ground_item(GameItem item, double x, double y);
+  // N5 relic circulation: place a recovered heirloom with its fallen-scion
+  // provenance (drawCirculatingRelic in server/core/services/chronicles.js).
+  void add_relic_ground_item(GameItem item, double x, double y,
+                             const std::string& relic_id,
+                             const std::string& source_scion_id,
+                             const std::string& source_scion_name);
   // Remove a ground item by uuid (take). Returns false when absent.
   bool take_ground_item(const std::string& uuid, GameItem* out);
   // Kill rewards: coins always (Wealthy-boosted) + rarity-gated gear roll.

@@ -79,6 +79,7 @@ class ProtocolSession {
   std::string state_payload(const std::string& request_id) const;
   void handle(const Envelope& envelope, const std::function<void(const Envelope&)>& emit);
   void replace_socket(std::string socket_id);
+  void reset_world_for_new_socket();
   // World events (movement, scene transitions) are broadcast to every live
   // connection, mirroring the JS server's room broadcast.  Unit tests leave
   // this unset and receive the same envelopes through the requester's emit.
@@ -111,6 +112,7 @@ class ProtocolSession {
   void handle_drop(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
   void handle_equip(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
   void handle_extract(const std::function<void(const Envelope&)>& emit);
+  void mark_relic_recovered(const std::string& scion_id);
   void handle_take_ground(const std::string& uuid, const std::function<void(const Envelope&)>& emit);
   void handle_take_underfoot(const std::function<void(const Envelope&)>& emit);
   void handle_menu_build(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) const;
@@ -127,6 +129,27 @@ class ProtocolSession {
   std::int64_t respawn_at_ms_ = 0;
   std::int64_t respawn_protection_until_ms_ = 0;
   void maybe_respawn(std::int64_t now_ms);
+  void handle_final_death(const std::function<void(const Envelope&)>& emit);
+  // N5: Chronicles auth (server/core/services/chronicles.js + chronicles store).
+  JsonValue chronicle_;               // { version, houses:[...], activeHouseId, activeScionId }
+  int chronicles_revision_ = 0;
+  bool pending_chronicles_ = false;   // login admitted to the pending state
+  std::string lifecycle_mode_ = "soft";
+  bool mortal_oath_ = false;
+  std::string active_scion_id_;
+  std::string active_house_id_;
+  std::string active_scion_name_;
+  bool prepare_final_death_ = false;
+  int best_depth_ = 0;
+  int pending_relic_count_ = 0;
+  std::vector<GameItem> pending_relic_items_;
+  std::string relic_source_scion_name_;
+  std::string relic_source_scion_id_;
+  JsonValue chronicles_payload() const;
+  JsonValue chronicles_state_payload(const std::string& created_scion_id) const;
+  void ensure_chronicle_house(const std::string& id, const std::string& name);
+  void ensure_chronicle_scion(const std::string& house_id, const std::string& id,
+                              const std::string& name, bool mortal);
   // N4: the real item pipeline state (12x7 backpack + wear seats); the forge
   // itself lives on the world (JS module singleton).
   PlayerInventory inventory_;
