@@ -414,6 +414,23 @@ bool load_terrain_plate(BillboardAssets& assets, const std::string& path,
   for (std::size_t index = 0; index < pixels.size(); index += 4)
     pixels[index + 3] = 255;
 
+  // 0075 rev2: the floor is context, not content. Desaturate toward
+  // luminance and pull the plate down toward the scene's dark base so
+  // actors, FX, and loot stay dominant.
+  for (std::size_t index = 0; index < pixels.size(); index += 4) {
+    const int b = pixels[index + 0];
+    const int g = pixels[index + 1];
+    const int r = pixels[index + 2];
+    const int luma = (r * 54 + g * 183 + b * 19) >> 8;
+    const auto tone = [luma](int channel) {
+      const int desaturated = (channel + luma) / 2;   // 50% toward grey
+      return static_cast<std::uint8_t>((desaturated * 140) >> 8);  // ~55% brightness
+    };
+    pixels[index + 0] = tone(b);
+    pixels[index + 1] = tone(g);
+    pixels[index + 2] = tone(r);
+  }
+
   std::vector<std::uint8_t> mirrored(pixels.size());
   for (UINT y = 0; y < height; ++y) {
     for (UINT x = 0; x < width; ++x) {
@@ -1029,20 +1046,23 @@ std::uint32_t terrain_tile_hash(int tx, int ty) {
 }
 
 bool terrain_tile_uses_alt(int tx, int ty, bool theme_alt) {
+  // 0075 rev2: one dominant plate with an occasional variant — a 50/50-ish
+  // mix read as a loud checkerboard.
   const int bucket = static_cast<int>(terrain_tile_hash(tx, ty) % 100);
-  return theme_alt ? bucket < 75 : bucket < 30;
+  return theme_alt ? bucket >= 12 : bucket < 12;
 }
 
-bool draw_terrain_tile(HDC dc, const SpriteBitmap& sprite, const ScreenPoint& center,
-                       double world_half_extent) {
+bool draw_terrain_tile(HDC dc, const SpriteBitmap& sprite, int dest_x, int dest_y,
+                       int dest_w, int dest_h, std::uint32_t hash) {
   if (!sprite.ready()) return false;
-  const int half = std::max(2, static_cast<int>(world_half_extent * center.scale));
-  const int dest_w = half * 2;
-  const int dest_h = half * 2;
-  const int dest_x = center.x - half;
-  const int dest_y = center.y - half;
-  return StretchBlt(dc, dest_x, dest_y, dest_w, dest_h, sprite.dc, 0, 0, sprite.width,
-                    sprite.height, SRCCOPY) != FALSE;
+  // 0075 rev2: sample a hashed quadrant of the plate per tile so the grain
+  // reads finer than one plate-per-tile, without new assets.
+  const int src_w = std::max(1, sprite.width / 2);
+  const int src_h = std::max(1, sprite.height / 2);
+  const int src_x = (hash & 1u) ? src_w : 0;
+  const int src_y = (hash & 2u) ? src_h : 0;
+  return StretchBlt(dc, dest_x, dest_y, dest_w, dest_h, sprite.dc, src_x, src_y,
+                    src_w, src_h, SRCCOPY) != FALSE;
 }
 
 void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
@@ -1073,6 +1093,10 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
     for (int tx = start_tx; tx <= end_tx; ++tx) {
       const double wx = static_cast<double>(tx) * tile;
       const double wy = static_cast<double>(ty) * tile;
+      // 0075 rev2: seam-free tiling — adjacent tiles share projected corner
+      // coordinates exactly, so no background grid bleeds through.
+      const ScreenPoint corner0 = project(camera, bounds, wx, wy);
+      const ScreenPoint corner1 = project(camera, bounds, wx + tile, wy + tile);
       const ScreenPoint center = project(camera, bounds, wx + half, wy + half);
       const bool use_alt = terrain_tile_uses_alt(tx, ty, theme_alt);
       const SpriteBitmap& sprite = use_alt ? assets.terrain4 : assets.terrain1;
@@ -1081,7 +1105,8 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
           std::to_string(ty);
       rl.push_back({render::Op::Tile, static_cast<double>(center.x),
                     static_cast<double>(center.y), half * center.scale, 0, label});
-      draw_terrain_tile(dc, sprite, center, half);
+      draw_terrain_tile(dc, sprite, corner0.x, corner0.y, corner1.x - corner0.x,
+                        corner1.y - corner0.y, terrain_tile_hash(tx, ty) >> 8);
     }
   }
 }
