@@ -1506,11 +1506,14 @@ void WorldSimulation::check_stair_transition() {
   // party.js checkStairTransitions: stairsDown descends a floor, stairsUp
   // climbs — and only floor 1's climb returns to the surface.
   if (tile.x == metadata_.stairs_down.x && tile.y == metadata_.stairs_down.y) {
+    if (block_stairs_down_) return;  // "No road holds past a living Warden."
     transition_floor(metadata_.depth + 1);
     return;
   }
   if (tile.x == metadata_.stairs_up.x && tile.y == metadata_.stairs_up.y) {
-    if (metadata_.depth <= 1) {
+    if (metadata_.depth <= 1 || stairs_up_returns_to_town_) {
+      // world-web: a node's entry waymark walks back to the Crossroads from
+      // any stage of the road.
       return_to_town();
     } else {
       transition_floor(metadata_.depth - 1);
@@ -1644,7 +1647,7 @@ void WorldSimulation::generate_instance() {
                   : 2;
   int placed = 0;
   int attempts = 0;
-  while (placed < kInstanceMonsterCount && attempts < 4000) {
+  while (!spawn_suppressed_ && placed < kInstanceMonsterCount && attempts < 4000) {
     ++attempts;
     const int x = static_cast<int>(next() % kInstanceWidth);
     const int y = static_cast<int>(next() % kInstanceHeight);
@@ -1690,7 +1693,8 @@ void WorldSimulation::generate_instance() {
       // native "dungeon" mirrors the JS "stone" theme.
       monster.boss = true;
       monster.rarity = "elite";
-      if (metadata_.theme == "grove") monster.name = "The Elder Oak";
+      if (!boss_name_override_.empty()) monster.name = boss_name_override_;
+      else if (metadata_.theme == "grove") monster.name = "The Elder Oak";
       else if (metadata_.theme == "crypt") monster.name = "The Pale Sovereign";
       else if (metadata_.theme == "wilds") monster.name = "Alpha of the Wilds";
       else if (metadata_.theme == "marsh") monster.name = "The Rotfather";

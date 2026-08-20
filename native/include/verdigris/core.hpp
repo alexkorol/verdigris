@@ -844,6 +844,11 @@ class WorldSimulation {
   // loot.js: Proof of Temper guarantees the first elite gear drop while
   // the slay-elite objective is current (session sets this per tick).
   void set_guaranteed_elite_gear(bool value) { guaranteed_elite_gear_ = value; }
+  // world-web node instances: the boss carries the node warden name; a
+  // cleared node spawns no monsters at all (dead stays dead).
+  void set_boss_name_override(const std::string& name) { boss_name_override_ = name; }
+  void set_spawn_suppressed(bool value) { spawn_suppressed_ = value; }
+  void set_scene_name(const std::string& name) { scene_name_ = name; }
   void kill_all_monsters() { for (auto& monster : monsters_) { monster.alive = false; monster.life = 0; } active_target_.clear(); }
   const TileGrid& grid() const { return grid_; }
   bool in_instance() const { return scene_type_ == "instance"; }
@@ -937,6 +942,14 @@ class WorldSimulation {
   std::vector<WorldMonster> monsters_;
   std::string active_target_;
   bool guaranteed_elite_gear_ = false;
+  std::string boss_name_override_;
+  bool spawn_suppressed_ = false;
+  bool block_stairs_down_ = false;
+  bool stairs_up_returns_to_town_ = false;
+public:
+  void set_block_stairs_down(bool value) { block_stairs_down_ = value; }
+  void set_stairs_up_returns_to_town(bool value) { stairs_up_returns_to_town_ = value; }
+private:
   std::uint64_t next_player_attack_ms_ = 0;
   std::uint64_t next_boss_telegraph_ms_ = 0;
   bool boss_warning_seen_ = false;

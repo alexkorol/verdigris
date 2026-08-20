@@ -595,6 +595,110 @@ std::string zone_id_for_instance(const std::string& theme, const std::string& la
   }
   return "old-barrow";
 }
+// server/core/world-web.js - deterministic per-house road chart. The hash
+// need not match JS bit-for-bit: node identity only has to be stable and
+// self-consistent within this server (house ids are per-session anyway).
+struct RoadDef { const char* id; const char* name; const char* direction; const char* blurb; const char* pairs[4][2]; };
+const RoadDef kRoads[4] = {
+    {"tin", "The Tin Road", "north", "North into the old quarry country.",
+     {{"dungeon", "warren"}, {"dungeon", "gauntlet"}, {"wilds", "clearings"}, {"dungeon", "clearings"}}},
+    {"salt", "The Salt Road", "east", "East through the fens.",
+     {{"marsh", "clearings"}, {"grove", "clearings"}, {"marsh", "gauntlet"}, {"grove", "warren"}}},
+    {"chalk", "The Chalk Road", "south", "South over the downs and their graves.",
+     {{"crypt", "warren"}, {"crypt", "gauntlet"}, {"wilds", "clearings"}, {"crypt", "clearings"}}},
+    {"copper", "The Copper Road", "west", "West into the burnt hills.",
+     {{"crypt", "warren"}, {"wilds", "clearings"}, {"crypt", "gauntlet"}, {"wilds", "warren"}}},
+};
+const char* kRoadFirsts[4][6] = {
+    {"Hoar", "Grey", "Whet", "Stone", "Cold", "Scree"},
+    {"Eel", "Sedge", "Rush", "Weir", "Mere", "Fen"},
+    {"Barrow", "Chalk", "Bone", "Lych", "Grave", "Dust"},
+    {"Ash", "Cinder", "Ember", "Slag", "Copper", "Forge"},
+};
+const char* kRoadSeconds[4][6] = {
+    {"fell", "moor", "delf", "gate", "cleft", "howe"},
+    {"fen", "mere", "carr", "weir", "holm", "hythe"},
+    {"down", "barrow", "field", "kirk", "vault", "howe"},
+    {"hill", "works", "kiln", "heath", "brink", "reach"},
+};
+int road_index(const std::string& road_id) {
+  for (int i = 0; i < 4; ++i) if (road_id == kRoads[i].id) return i;
+  return -1;
+}
+std::uint32_t web_hash(const std::string& text) {
+  std::uint32_t h = 2166136261u;
+  for (unsigned char c : text) { h ^= c; h *= 16777619u; }
+  return h;
+}
+struct RoadNode {
+  std::string id, name, template_id, layout, parent_id, warden_name;
+  int tier = 1, index = 0;
+  std::vector<std::string> child_ids;
+};
+int web_tier_width(const std::string& house, const std::string& road, int tier) {
+  if (tier <= 1) return 1;
+  const int previous = web_tier_width(house, road, tier - 1);
+  const int step_pick = static_cast<int>(web_hash(house + "|" + road + "|" + std::to_string(tier) + "|width") % 4);
+  const int step = step_pick == 0 ? -1 : (step_pick == 3 ? 1 : 0);
+  return (std::max)(1, (std::min)(3, previous + step));
+}
+std::vector<RoadNode> web_road_nodes(const std::string& house, const std::string& road_id, int max_tier) {
+  std::vector<RoadNode> nodes;
+  const int ri = road_index(road_id);
+  if (ri < 0) return nodes;
+  std::vector<int> previous_tier;  // indices into nodes
+  std::set<std::string> used;
+  for (int tier = 1; tier <= max_tier; ++tier) {
+    const int width = web_tier_width(house, road_id, tier);
+    std::vector<int> current_tier;
+    for (int index = 0; index < width; ++index) {
+      const std::uint32_t h = web_hash(house + "|" + road_id + "|" + std::to_string(tier) + "|" + std::to_string(index));
+      RoadNode node;
+      node.id = road_id + ":" + std::to_string(tier) + ":" + std::to_string(index);
+      node.tier = tier;
+      node.index = index;
+      const auto& pair = kRoads[ri].pairs[h % 4];
+      node.template_id = pair[0];
+      node.layout = pair[1];
+      std::string name = std::string(kRoadFirsts[ri][(h >> 4) % 6]) + kRoadSeconds[ri][(h >> 8) % 6];
+      while (used.count(name)) name += " Deep";
+      used.insert(name);
+      node.name = name;
+      node.warden_name = "Warden of " + name;
+      if (!previous_tier.empty()) {
+        const int parent_pick = (std::min)(static_cast<int>(previous_tier.size()) - 1,
+                                           (index * static_cast<int>(previous_tier.size())) / width);
+        node.parent_id = nodes[previous_tier[static_cast<std::size_t>(parent_pick)]].id;
+      }
+      current_tier.push_back(static_cast<int>(nodes.size()));
+      nodes.push_back(std::move(node));
+    }
+    for (int node_index : current_tier) {
+      if (!nodes[node_index].parent_id.empty()) {
+        for (auto& candidate : nodes) {
+          if (candidate.id == nodes[node_index].parent_id) { candidate.child_ids.push_back(nodes[node_index].id); break; }
+        }
+      }
+    }
+    previous_tier = current_tier;
+  }
+  return nodes;
+}
+bool parse_node_id(const std::string& id, std::string* road, int* tier, int* index) {
+  const auto first = id.find(':');
+  const auto second = id.find(':', first == std::string::npos ? first : first + 1);
+  if (first == std::string::npos || second == std::string::npos) return false;
+  *road = id.substr(0, first);
+  if (road_index(*road) < 0) return false;
+  try {
+    *tier = std::stoi(id.substr(first + 1, second - first - 1));
+    *index = std::stoi(id.substr(second + 1));
+  } catch (...) { return false; }
+  return *tier >= 1 && *index >= 0;
+}
+struct RoadGateTile { int x; int y; const char* road; };
+const RoadGateTile kRoadGates[4] = {{37, 94, "tin"}, {64, 114, "salt"}, {37, 138, "chalk"}, {12, 115, "copper"}};
+
 // world-layout.js WAGON_PITCHES - the plaza ring.
 const int kWagonPitches[8][2] = {{47,112},{42,109},{34,109},{29,112},{29,118},{34,121},{42,121},{47,118}};
 }  // namespace
@@ -628,6 +732,20 @@ JsonValue ProtocolSession::scene_payload() const {
     JsonValue::Object up; put(up,"x",meta.stairs_up.x); put(up,"y",meta.stairs_up.y); put(metadata,"stairsUp",std::move(up));
     JsonValue::Object down; put(down,"x",meta.stairs_down.x); put(down,"y",meta.stairs_down.y); put(metadata,"stairsDown",std::move(down));
     JsonValue::Array spawns; for (const auto& spawn:meta.spawn_points) { JsonValue::Object value; put(value,"x",spawn.x); put(value,"y",spawn.y); spawns.emplace_back(std::move(value)); } put(metadata,"spawnPoints",std::move(spawns));
+    if (!current_node_id_.empty()) {
+      put(metadata, "nodeId", current_node_id_);
+      put(metadata, "tier", current_node_tier_);
+      JsonValue::Object entry_gate; put(entry_gate, "x", meta.stairs_up.x); put(entry_gate, "y", meta.stairs_up.y);
+      put(metadata, "entryGate", std::move(entry_gate));
+      JsonValue::Array zone_gates;
+      if (!current_child_id_.empty()) {
+        JsonValue::Object gate; put(gate, "x", meta.stairs_down.x); put(gate, "y", meta.stairs_down.y);
+        put(gate, "nodeId", current_child_id_); put(gate, "name", current_child_name_);
+        zone_gates.emplace_back(std::move(gate));
+      }
+      put(metadata, "zoneGates", std::move(zone_gates));
+      put(metadata, "wardenDead", cleared_nodes_.count(current_node_id_) > 0);
+    }
     put(scene,"metadata",std::move(metadata)); }
   return JsonValue(std::move(scene));
 }
@@ -698,6 +816,20 @@ JsonValue ProtocolSession::snapshot() const {
     JsonValue::Object up; put(up,"x",meta.stairs_up.x); put(up,"y",meta.stairs_up.y); put(metadata,"stairsUp",std::move(up));
     JsonValue::Object down; put(down,"x",meta.stairs_down.x); put(down,"y",meta.stairs_down.y); put(metadata,"stairsDown",std::move(down));
     JsonValue::Array spawns; for (const auto& spawn:meta.spawn_points) { JsonValue::Object value; put(value,"x",spawn.x); put(value,"y",spawn.y); spawns.emplace_back(std::move(value)); } put(metadata,"spawnPoints",std::move(spawns));
+    if (!current_node_id_.empty()) {
+      put(metadata, "nodeId", current_node_id_);
+      put(metadata, "tier", current_node_tier_);
+      JsonValue::Object entry_gate; put(entry_gate, "x", meta.stairs_up.x); put(entry_gate, "y", meta.stairs_up.y);
+      put(metadata, "entryGate", std::move(entry_gate));
+      JsonValue::Array zone_gates;
+      if (!current_child_id_.empty()) {
+        JsonValue::Object gate; put(gate, "x", meta.stairs_down.x); put(gate, "y", meta.stairs_down.y);
+        put(gate, "nodeId", current_child_id_); put(gate, "name", current_child_name_);
+        zone_gates.emplace_back(std::move(gate));
+      }
+      put(metadata, "zoneGates", std::move(zone_gates));
+      put(metadata, "wardenDead", cleared_nodes_.count(current_node_id_) > 0);
+    }
     put(state,"sceneMetadata",std::move(metadata)); }
   else {
     JsonValue::Object town_meta;
@@ -1185,6 +1317,94 @@ void ProtocolSession::quest_trigger(const char* trigger, const std::function<voi
     emit_message(emit, std::string("Commission complete: ") + quest.id + ".");
   }
   emit_quest_update(emit);
+}
+void ProtocolSession::emit_chart_screen(const std::string& road_id, const std::function<void(const Envelope&)>& emit) const {
+  const int ri = road_index(road_id);
+  if (ri < 0) return;
+  const std::string house = active_house_id_.empty() ? identity_ : active_house_id_;
+  int frontier = 1;
+  for (const auto& cleared : cleared_nodes_) {
+    std::string road; int tier = 0; int index = 0;
+    if (parse_node_id(cleared, &road, &tier, &index) && road == road_id) frontier = (std::max)(frontier, tier + 1);
+  }
+  const auto nodes = web_road_nodes(house, road_id, frontier);
+  JsonValue::Array node_rows;
+  for (const auto& node : nodes) {
+    const bool is_cleared = cleared_nodes_.count(node.id) > 0;
+    const bool unlocked = node.tier == 1 || (!node.parent_id.empty() && cleared_nodes_.count(node.parent_id) > 0);
+    JsonValue::Object row;
+    put(row, "id", node.id); put(row, "name", node.name);
+    put(row, "tier", node.tier); put(row, "index", node.index);
+    put(row, "roadId", road_id); put(row, "roadName", kRoads[ri].name);
+    put(row, "template", node.template_id); put(row, "layout", node.layout);
+    put(row, "wardenName", node.warden_name);
+    put(row, "parentId", node.parent_id.empty() ? JsonValue(nullptr) : JsonValue(node.parent_id));
+    put(row, "status", is_cleared ? "cleared" : (unlocked ? "open" : "barred"));
+    node_rows.emplace_back(std::move(row));
+  }
+  JsonValue::Object payload;
+  put(payload, "roadId", road_id); put(payload, "roadName", kRoads[ri].name);
+  put(payload, "direction", kRoads[ri].direction); put(payload, "blurb", kRoads[ri].blurb);
+  put(payload, "nodes", std::move(node_rows));
+  JsonValue::Object data;
+  put(data, "player", JsonValue::Object{{"socket_id", socket_id_}});
+  put(data, "screen", "chart");
+  put(data, "payload", std::move(payload));
+  emit(Envelope{"open:screen", JsonValue(std::move(data))});
+}
+
+void ProtocolSession::enter_road_node(const std::string& node_id, const std::function<void(const Envelope&)>& emit) {
+  std::string road; int tier = 0; int index = 0;
+  if (!parse_node_id(node_id, &road, &tier, &index)) return;
+  const std::string house = active_house_id_.empty() ? identity_ : active_house_id_;
+  const auto nodes = web_road_nodes(house, road, tier + 1);
+  const RoadNode* node = nullptr;
+  for (const auto& candidate : nodes) if (candidate.id == node_id) { node = &candidate; break; }
+  if (!node) return;
+  current_node_id_ = node->id;
+  current_node_tier_ = node->tier;
+  current_node_name_ = node->name;
+  current_child_id_ = node->child_ids.empty() ? std::string() : node->child_ids.front();
+  current_child_name_.clear();
+  if (!current_child_id_.empty()) {
+    for (const auto& candidate : nodes) if (candidate.id == current_child_id_) { current_child_name_ = candidate.name; break; }
+  }
+  node_warden_dead_on_entry_ = cleared_nodes_.count(node->id) > 0;
+  world_->set_boss_name_override(node->warden_name);
+  world_->set_spawn_suppressed(node_warden_dead_on_entry_);
+  world_->enter_solo_instance(node->template_id, node->layout);
+  world_->set_spawn_suppressed(false);
+  world_->set_boss_name_override(std::string());
+  world_->set_block_stairs_down(!node_warden_dead_on_entry_);
+  world_->set_scene_name(current_node_name_);
+  world_->set_stairs_up_returns_to_town(true);
+  last_instance_theme_ = world_->metadata().theme;
+  last_instance_layout_ = world_->metadata().layout;
+  emit_transition(emit, "world:scene:transition");
+  emit_ground_change(emit);
+  quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth);
+}
+
+void ProtocolSession::check_road_gates(const std::function<void(const Envelope&)>& emit) {
+  // gates.mjs: standing on a road-gate tile in town opens that chart.
+  if (world_->in_instance()) {
+    // node instances: landing on the stairs-down gate while the Warden
+    // lives holds the road (world-web.mjs section 3).
+    if (!current_node_id_.empty()) {
+      const Vec2 tile = tile_movement::occupied_tile(world_->position());
+      const auto& meta = world_->metadata();
+      if (tile.x == meta.stairs_down.x && tile.y == meta.stairs_down.y) {
+        bool warden_alive = false;
+        for (const auto& monster : world_->monsters()) if (monster.alive && monster.boss) { warden_alive = true; break; }
+        if (warden_alive) emit_message(emit, "No road holds past a living Warden.");
+      }
+    }
+    return;
+  }
+  const Vec2 tile = tile_movement::occupied_tile(world_->position());
+  for (const auto& gate : kRoadGates) {
+    if (gate.x == tile.x && gate.y == tile.y) { emit_chart_screen(gate.road, emit); break; }
+  }
 }
 void ProtocolSession::emit_quest_update(const std::function<void(const Envelope&)>& emit) const {
   // first-goal.js pushQuestState -> quest:update.
@@ -1702,6 +1922,16 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
           emit_message(emit, "You are now level " + std::to_string(derived) + "!");
         }
       }
+      // world-web: the node Warden falls - dead stays dead, the road opens.
+      if (!current_node_id_.empty()) {
+        for (const auto& monster : world_->monsters()) {
+          if (monster.uuid != event.target_id || !monster.boss) continue;
+          cleared_nodes_.insert(current_node_id_);
+          world_->set_block_stairs_down(false);
+          emit_message(emit, "The " + std::string("Warden of ") + current_node_name_ + " is down. The road runs on.");
+          break;
+        }
+      }
       // first-goal.js notifyFirstGoalWardenDown: any tier-1 (depth-1) boss.
       if (first_goal_stage_ == "clear-floor" && world_->metadata().depth <= 1) {
         for (const auto& monster : world_->monsters()) {
@@ -1916,12 +2146,13 @@ void ProtocolSession::emit_movement(const std::function<void(const Envelope&)>& 
 void ProtocolSession::emit_message(const std::function<void(const Envelope&)>& emit, const std::string& text) const { emit(Envelope{"game:send:message",JsonValue::Object{{"text",text}}}); }
 void ProtocolSession::handle(const Envelope& envelope, const std::function<void(const Envelope&)>& emit) {
   const auto* payload=envelope.data.object()?&envelope.data:nullptr;
-  if (envelope.event=="world:zone:enter") { const auto node=as_string(payload?payload->get("nodeId"):nullptr,"tin:1:0"); simulation_->dispatch(Command::enter(node.rfind("route:",0)==0?node:"route:"+node)); world_->enter_solo_instance("dungeon",""); emit_transition(emit,"world:scene:transition"); emit_ground_change(emit); last_instance_theme_ = world_->metadata().theme; last_instance_layout_ = world_->metadata().layout; quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); return; }
-  if (envelope.event=="instance:enterSolo") { world_->enter_solo_instance(as_string(payload?payload->get("template"):nullptr,"dungeon"),as_string(payload?payload->get("layout"):nullptr,"")); emit_transition(emit,"party:scene:transition"); emit_ground_change(emit); last_instance_theme_ = world_->metadata().theme; last_instance_layout_ = world_->metadata().layout; quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); return; }
-  if (envelope.event=="player:move") { const auto direction=as_string(payload?payload->get("direction"):nullptr); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); if (world_->apply_movement_sample(direction,now_ms())) { emit_movement(emit); auto_pickup_gold(emit); quest_trigger("move", emit); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool scene_changed=world_->scene_id()!=scene_before; if (depth_changed||scene_changed) { if (was_instance&&!world_->in_instance()) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); quest_trigger("return-surface", emit, zone_id_for_instance(last_instance_theme_, last_instance_layout_), last_instance_theme_); } if (depth_changed) quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) emit_ground_change(emit); } } return; }
-  if (envelope.event=="dev:teleport") { if (!payload) return; const auto* x=payload->get("x"); const auto* y=payload->get("y"); if (!x||!x->number()||!y||!y->number()) return; const int tx=static_cast<int>(*x->number()); const int ty=static_cast<int>(*y->number()); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); world_->teleport(tx,ty,now_ms()); const bool returned=was_instance&&!world_->in_instance(); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool transitioned=returned||depth_changed||world_->scene_id()!=scene_before; emit_movement(emit); emit_message(emit,"Teleported to "+std::to_string(tx)+", "+std::to_string(ty)+(transitioned?" (portal followed).":".")); if (returned) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); quest_trigger("return-surface", emit, zone_id_for_instance(last_instance_theme_, last_instance_layout_), last_instance_theme_); } if (transitioned) emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) { if (depth_changed) { emit_ground_change(emit); quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); } process_combat(now_ms(),emit); } return; }
+  if (envelope.event=="world:zone:enter") { const auto node=as_string(payload?payload->get("nodeId"):nullptr,"tin:1:0"); simulation_->dispatch(Command::enter(node.rfind("route:",0)==0?node:"route:"+node)); { std::string web_road; int web_tier=0; int web_index=0; if (parse_node_id(node,&web_road,&web_tier,&web_index)) { enter_road_node(node, emit); return; } } current_node_id_.clear(); world_->set_block_stairs_down(false); world_->set_stairs_up_returns_to_town(false); world_->enter_solo_instance("dungeon",""); emit_transition(emit,"world:scene:transition"); emit_ground_change(emit); last_instance_theme_ = world_->metadata().theme; last_instance_layout_ = world_->metadata().layout; quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); return; }
+  if (envelope.event=="instance:enterSolo") { current_node_id_.clear(); world_->set_block_stairs_down(false); world_->set_stairs_up_returns_to_town(false); world_->enter_solo_instance(as_string(payload?payload->get("template"):nullptr,"dungeon"),as_string(payload?payload->get("layout"):nullptr,"")); emit_transition(emit,"party:scene:transition"); emit_ground_change(emit); last_instance_theme_ = world_->metadata().theme; last_instance_layout_ = world_->metadata().layout; quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); return; }
+  if (envelope.event=="player:move") { const auto direction=as_string(payload?payload->get("direction"):nullptr); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); if (world_->apply_movement_sample(direction,now_ms())) { emit_movement(emit); auto_pickup_gold(emit); quest_trigger("move", emit); check_road_gates(emit); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool scene_changed=world_->scene_id()!=scene_before; if (depth_changed||scene_changed) { if (was_instance&&!world_->in_instance()) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); quest_trigger("return-surface", emit, zone_id_for_instance(last_instance_theme_, last_instance_layout_), last_instance_theme_); } if (depth_changed) quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); if (depth_changed && !current_node_id_.empty() && !current_child_id_.empty()) { current_node_id_ = current_child_id_; current_node_tier_ += 1; current_node_name_ = current_child_name_.empty() ? current_node_name_ : current_child_name_; current_child_id_.clear(); world_->set_block_stairs_down(true); } emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) emit_ground_change(emit); } } return; }
+  if (envelope.event=="dev:teleport") { if (!payload) return; const auto* x=payload->get("x"); const auto* y=payload->get("y"); if (!x||!x->number()||!y||!y->number()) return; const int tx=static_cast<int>(*x->number()); const int ty=static_cast<int>(*y->number()); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); world_->teleport(tx,ty,now_ms()); const bool returned=was_instance&&!world_->in_instance(); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool transitioned=returned||depth_changed||world_->scene_id()!=scene_before; emit_movement(emit); emit_message(emit,"Teleported to "+std::to_string(tx)+", "+std::to_string(ty)+(transitioned?" (portal followed).":".")); check_road_gates(emit); if (returned) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); quest_trigger("return-surface", emit, zone_id_for_instance(last_instance_theme_, last_instance_layout_), last_instance_theme_); } if (transitioned) emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) { if (depth_changed) { emit_ground_change(emit); quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); if (!current_node_id_.empty() && !current_child_id_.empty()) { current_node_id_ = current_child_id_; current_node_tier_ += 1; if (!current_child_name_.empty()) { current_node_name_ = current_child_name_; world_->set_scene_name(current_node_name_); } current_child_id_.clear(); world_->set_block_stairs_down(true); } } process_combat(now_ms(),emit); } return; }
   if (envelope.event=="dev:setlevel") { auto* actor=simulation_->actor(simulation_->scion().actor_id); const int level=as_int(payload?payload->get("level"):nullptr,1); if(actor){ actor->stats.level=(std::max)(1,level); actor->stats.attack=12+actor->stats.level*3; actor->stats.life_max=100+actor->stats.level*10; actor->stats.life=actor->stats.life_max; world_->set_level(actor->stats.level); } return; }
   if (envelope.event=="player:screen:wagon") { emit_wagon_screen(emit); return; }
+  if (envelope.event=="world:road:chart") { emit_chart_screen(as_string(payload?payload->get("roadId"):nullptr,"tin"), emit); return; }
   if (envelope.event=="wagon:outfit:buy") {
     const std::string item_id = as_string(payload ? payload->get("itemId") : nullptr);
     int price = item_id == "bronze-sword" ? 15 : item_id == "bronze-dagger" ? 10 : item_id == "wooden-shield" ? 8 : -1;
@@ -2050,7 +2281,14 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   if (envelope.event=="dev:clear-floor") {
     // dev.js dev:clear-floor: kill every monster on the active floor.
     if (world_->in_instance()) {
+      bool warden_was_alive = false;
+      for (const auto& monster : world_->monsters()) if (monster.alive && monster.boss) { warden_was_alive = true; break; }
       world_->kill_all_monsters();
+      if (warden_was_alive && !current_node_id_.empty()) {
+        cleared_nodes_.insert(current_node_id_);
+        world_->set_block_stairs_down(false);
+        emit_message(emit, "The Warden of " + current_node_name_ + " is down. The road runs on.");
+      }
       emit_message(emit, "Cleared the active floor for objective verification.");
       emit_ground_change(emit);
       maybe_floor_cleared(emit);

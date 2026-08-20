@@ -5,6 +5,7 @@
 #include <memory>
 #include <mutex>
 #include <optional>
+#include <set>
 #include <string>
 #include <thread>
 #include <map>
@@ -127,6 +128,9 @@ class ProtocolSession {
   void emit_wagon_screen(const std::function<void(const Envelope&)>& emit) const;
   void emit_shop_screen(const std::function<void(const Envelope&)>& emit) const;
   JsonValue bank_items_json() const;
+  void emit_chart_screen(const std::string& road_id, const std::function<void(const Envelope&)>& emit) const;
+  void enter_road_node(const std::string& node_id, const std::function<void(const Envelope&)>& emit);
+  void check_road_gates(const std::function<void(const Envelope&)>& emit);
   void quest_trigger(const char* trigger, const std::function<void(const Envelope&)>& emit,
                      const std::string& detail_a = std::string(), const std::string& detail_b = std::string(), int depth = 0);
   void handle_take_ground(const std::string& uuid, const std::function<void(const Envelope&)>& emit);
@@ -168,6 +172,15 @@ class ProtocolSession {
   std::vector<GameItem> bank_;
   bool shop_open_ = false;
   bool bank_open_ = false;
+  // N6 world-web (server/core/world-web.js): per-house deterministic road
+  // chart; cleared wardens persist for the session (dead stays dead).
+  std::set<std::string> cleared_nodes_;
+  std::string current_node_id_;
+  int current_node_tier_ = 0;
+  std::string current_node_name_;
+  std::string current_child_id_;
+  std::string current_child_name_;
+  bool node_warden_dead_on_entry_ = false;
   // N6 combat experience (experience.js / shared/ui.js curve).
   long long combat_xp_ = 0;
   void maybe_respawn(std::int64_t now_ms);
