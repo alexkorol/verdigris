@@ -10,6 +10,7 @@
 
 #include "../client/local_session.hpp"
 #include "../client/remote_session.hpp"
+#include "../client/presentation_state.hpp"
 #include "verdigris/networking.hpp"
 
 namespace {
@@ -325,38 +326,52 @@ void remote_guest_journey() {
 void remote_mid_session_disconnect() {
   verdigris::networking::WebSocketServer* server = nullptr;
   const auto port = start_server_cursor(server);
-  check(server != nullptr, "disconnect: cursor-capsule server bound");
+  check(server != nullptr, "reconnect: cursor-capsule server bound");
   if (!server) return;
 
-  verdigris::client::RemoteProtocolSession session("127.0.0.1", port, "cursor-disconnect", true);
+  verdigris::client::RemoteProtocolSession session("127.0.0.1", port, "cursor-reconnect", true);
   std::string error;
-  check(session.start(&error), "disconnect: connected");
+  check(session.start(&error), "reconnect: connected");
   check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
-        "disconnect: ready before the drop");
+        "reconnect: ready before the drop");
+  const std::string guest = session.model().player.uuid;
+  const auto x = session.model().player.x;
 
   server->stop();
   delete server;
   server = nullptr;
 
   bool lost = false;
-  const bool dropped = wait_until(session, 4000, [&] {
+  const bool retrying = wait_until(session, 4000, [&] {
     session.poll();
     for (const auto& event : session.drain_events()) {
       if (event.type == verdigris::client::PresentationEventType::ConnectionLost) lost = true;
     }
-    return session.connection_state() == verdigris::client::ConnectionState::Disconnected;
+    return session.connection_state() == verdigris::client::ConnectionState::Retrying;
   });
-  check(dropped, "disconnect: mid-session server kill reaches Disconnected");
-  check(lost, "disconnect: ConnectionLost is visible (no silent local fallback)");
-  check(!session.last_error().empty(), "disconnect: last_error explains the drop");
+  check(retrying, "reconnect: unexpected drop enters Retrying");
+  check(lost, "reconnect: ConnectionLost is visible (no silent local fallback)");
+  check(!session.last_error().empty(), "reconnect: last_error explains the drop");
 
-  const auto x = session.model().player.x;
   session.submit(verdigris::client::ClientCommand::move(1, 0));
   session.poll();
-  check(session.connection_state() == verdigris::client::ConnectionState::Disconnected,
-        "disconnect: commands after the drop do not revive a local sim");
-  check(session.model().player.x == x, "disconnect: position does not keep playing offline");
+  check(session.connection_state() == verdigris::client::ConnectionState::Retrying,
+        "reconnect: commands after the drop do not leave Retrying for a local sim");
+  check(session.model().player.x == x, "reconnect: position does not keep playing offline");
+
+  server = new verdigris::networking::WebSocketServer(port);
+  check(server->start(&error), "reconnect: server restarted on the same port");
+
+  const bool resumed = wait_for_state(session, verdigris::client::ConnectionState::Ready, 8000);
+  check(resumed, "reconnect: Retrying then Ready after server restart");
+  check(session.model().player.uuid == guest, "reconnect: same guest identity re-logged in");
+  check(!session.model().scene.id.empty(), "reconnect: login snapshot is authoritative");
+
   session.shutdown();
+  if (server) {
+    server->stop();
+    delete server;
+  }
 }
 
 void remote_session_replaced() {
@@ -377,8 +392,11 @@ void remote_session_replaced() {
         "replaced: second session ready");
 
   bool lost = false;
+  bool saw_retrying = false;
   const bool flushed = wait_until(first, 4000, [&] {
     first.poll();
+    if (first.connection_state() == verdigris::client::ConnectionState::Retrying)
+      saw_retrying = true;
     for (const auto& event : first.drain_events()) {
       if (event.type == verdigris::client::PresentationEventType::ConnectionLost) lost = true;
     }
@@ -386,8 +404,58 @@ void remote_session_replaced() {
   });
   check(flushed, "replaced: first session is disconnected");
   check(lost, "replaced: ConnectionLost from player:session-replaced");
+  check(!saw_retrying, "replaced: session-replaced does not enter Retrying");
+  check(first.connection_state() != verdigris::client::ConnectionState::Retrying,
+        "replaced: stays terminal Disconnected (no retry)");
   first.shutdown();
   second.shutdown();
+  server->stop();
+  delete server;
+}
+
+void remote_render_list_ops() {
+  verdigris::networking::WebSocketServer* server = nullptr;
+  const auto port = start_server_cursor(server);
+  check(server != nullptr, "render-list: cursor-capsule server bound");
+  if (!server) return;
+
+  verdigris::client::RemoteProtocolSession session("127.0.0.1", port, "cursor-render-ops", true);
+  std::string error;
+  check(session.start(&error), "render-list: connect");
+  check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
+        "render-list: ready");
+  session.submit(verdigris::client::ClientCommand::enter_zone("tin:1:0"));
+  wait_until(session, 4000, [&] {
+    return session.model().scene.type == "instance" ||
+           session.model().scene.id.find("instance") != std::string::npos;
+  });
+
+  verdigris::client::PresentationFx fx;
+  verdigris::client::WorldView world;
+  bool saw_monster = false, saw_swing = false, saw_drop = false;
+  for (int step = 0; step < 240 && !(saw_monster && saw_swing && saw_drop); ++step) {
+    session.submit(verdigris::client::ClientCommand::use_action("melee"));
+    if (step % 4 == 0) session.submit(verdigris::client::ClientCommand::move(1, 0));
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    session.poll();
+    verdigris::client::sync_world_from_model(world, session.model());
+    ++world.tick;
+    for (const auto& event : session.drain_events())
+      verdigris::client::apply_presentation_event(fx, world, event, world.tick);
+    verdigris::client::age_presentation_fx(fx);
+    verdigris::client::sync_world_from_model(world, session.model());
+    render::List list;
+    camera2d::Camera camera{static_cast<double>(world.player.position.x),
+                            static_cast<double>(world.player.position.y), 0.85};
+    verdigris::client::record_world_ops(list, world, fx, camera, 960, 600);
+    saw_monster = saw_monster || render::any(list, render::Op::Monster);
+    saw_swing = saw_swing || render::any(list, render::Op::Swing);
+    saw_drop = saw_drop || render::any(list, render::Op::Drop);
+  }
+  check(saw_monster, "render-list: Monster op recorded from remote model");
+  check(saw_swing, "render-list: Swing op recorded from AttackStarted");
+  check(saw_drop, "render-list: Drop op recorded from kill loot");
+  session.shutdown();
   server->stop();
   delete server;
 }
@@ -401,6 +469,7 @@ int main() {
   remote_guest_journey();
   remote_mid_session_disconnect();
   remote_session_replaced();
+  remote_render_list_ops();
   if (failures == 0) {
     std::printf("session tests passed\n");
     return 0;

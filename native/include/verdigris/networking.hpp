@@ -99,10 +99,18 @@ class ProtocolSession {
                          const std::function<void(const Envelope&)>& emit);
   // N4 item pipeline (dev.js / inventory.js / wear-slots.js / registry.js).
   void emit_inventory_refresh(const std::function<void(const Envelope&)>& emit) const;
+  void emit_ground_change(const std::function<void(const Envelope&)>& emit) const;
+  void emit_equip_state(const std::function<void(const Envelope&)>& emit) const;
+  JsonValue wear_json() const;
+  JsonValue wear_details_json() const;
+  JsonValue combat_totals_json() const;
+  JsonValue dropped_items_json() const;
   void sync_combat_mods();
+  void finish_extraction(const std::function<void(const Envelope&)>& emit);
   void handle_give(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
   void handle_drop(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
   void handle_equip(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
+  void handle_extract(const std::function<void(const Envelope&)>& emit);
   void handle_take_ground(const std::string& uuid, const std::function<void(const Envelope&)>& emit);
   void handle_take_underfoot(const std::function<void(const Envelope&)>& emit);
   void handle_menu_build(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) const;
@@ -117,6 +125,9 @@ class ProtocolSession {
   // itself lives on the world (JS module singleton).
   PlayerInventory inventory_;
   WearSet wear_;
+  // Protocol House bank (JS has no player:extract; core Simulation::house is
+  // const from this layer). Extraction and stairs-up both drain here.
+  std::vector<GameItem> house_store_;
   Mulberry32 session_rng_;
   std::unique_ptr<Simulation> simulation_;
   std::unique_ptr<WorldSimulation> world_;

@@ -84,6 +84,14 @@ paste:
 You are coordinator "cursor". Read orchestration/REENTRY-CURSOR.md, then follow orchestration/STANDING-LOOP.md (NAME=cursor, PORTS=6580-6599) forever. Routing comes from RUN_STATUS.md.
 ```
 
+### luna-mac (Codex Luna on MacBook)
+
+In the Mac repo clone, launch codex (Luna), then paste:
+
+```
+You are coordinator "luna-mac". git pull first. Read orchestration/REENTRY-LUNA-MAC.md, then follow orchestration/STANDING-LOOP.md (NAME=luna-mac, PORTS=7000-7019) forever. MECHANICAL packets only; NEVER native/**. Routing comes from RUN_STATUS.md.
+```
+
 ### mac-claude (Claude Code on MacBook, Sonnet)
 
 In the Mac repo clone: `claude` (model sonnet), then paste:

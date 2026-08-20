@@ -1,14 +1,79 @@
 # Run status (snapshot — rewritten each architect sweep)
 
-- Current integration tip: pending push (post-0061/0062 batch); master ce9dacfc + batch
-- Overnight run: PRs #27–#32 shipped so far tonight; batch PR pending.
-- **Gate A status: RED on presentation only.** The networked journey is
-  REAL (0061: native client plays guest loop vs verdigris_server over
-  WS — architect-played 04:00) but the remote window is a debug painter.
-  0064 unblocks the gate.
-- D-123 adopted (owner-ruled): READY queue never runs dry — min 3
-  claimable packets at all times, restocked every sweep.
+## ☀ MORNING SUMMARY — overnight run 2026-08-19 23:45 → 08-20 07:15
+
+**Headline: GATE A GREEN.** The C++ client plays the C++ game over a
+real WebSocket with the real presentation — first time ever. One
+command to try it: `powershell -File native/tools/play-native.ps1`.
+
+**Shipped: 10 PRs (#27–#36), 14 tasks integrated, zero false greens.**
+
+- D-122 adopted (your ChatGPT doc — its build-graph diagnosis was
+  verified true) + D-123 (READY queue never dry, min 3).
+- C3 track built end-to-end IN ONE NIGHT: 0060 session seam
+  (architect) → 0061 networked journey → 0063 server envelopes → 0064
+  presentation unify (Gate A 10/12) → 0068 polish (12/12) → 0069
+  reconnect → 0067 CI journey gate (green + verified red canary) →
+  0070 reference scenes → 0072 owner launcher.
+- Browser: 0055 identity chip + server zone preview, 0059 compact
+  overlays, 0062 flake diagnostics (marginal scenario named:
+  gear-outcomes), 0066 shared capture harness.
+- N7 groundwork: 0065 density bench — ~9000x tick headroom at N=1000.
+
+**Review verdicts:** 13 ACCEPTED (12 first-pass); 1 accepted-with-gate-
+held (0061 — debug painter; fixed by 0064 same night). Every gate
+rerun personally; two architect play passes with driven captures.
+
+**Fleet calibration:** cursor (Grok 4.6) = 12 accepted tasks tonight,
+0 false greens — new top implementer; give it explicit presentation-
+quality constraints in specs (its one miss). mac-claude (Sonnet) =
+calibrated high on 0066 + unsolicited peer-verify; docs/browser lane.
+
+**Fleet health:** deepseek STALLED all night mid-0056 (N5) — dsh
+session dead since 08-18 19:36; 4 dirty files preserved in its clone.
+kimis quota-dead until ~08-23. codex out of tokens.
+
+**Blockers needing YOU:**
+1. Relaunch deepseek (`C:\Users\Alex\tools\dsh.cmd web` + /goal from
+   BOOTSTRAP.md) — or say the word and I re-route 0056/N5 to cursor.
+   N5 is the last blocker before N6 releases (Gate A condition met).
+2. Play Gate A (script below) — feedback on movement/combat/loot feel.
+3. Review + freeze the 0070 reference scenes (10 captures) as the
+   visual baseline.
+
+**Open questions parked for you:** renderer backend shortlist will
+arrive via 0073 (research-only); trophy circulation deferred to N5;
+JS-side density-bench seam needs your OK (server change).
+
+**Board now:** READY = 0071 matrix audit, 0073 renderer eval, 0074
+gear-outcomes profile. HOLD = 0058 (N6, needs N5). RUNNING = 0056
+(stalled, see blocker 1).
+
+---
+
+- **GATE A: GREEN (2026-08-20 ~04:40).** The owner can play the native
+  game against the native server with the real presentation. Rubric
+  12/12 after 0068 polish (architect play passes in 0064/0068 reviews).
+- Native journey parity (D-122 axis 2) has its first green gate; axis 1
+  needs N5+N6; axis 3 continues via 0068 polish + renderer track.
+- Tonight: PRs #27–#35 shipped; 0070+0072 batch pending. Owner launcher: `powershell -File native/tools/play-native.ps1` (one command, from clean clone). Reference scenes frozen pending owner review.
+- D-123 buffer: 3 READY after this restock.
 - Immutable objective: D-116 under D-122 three-axis parity.
+
+## OWNER PLAY SCRIPT (Gate A checkpoint, per convergence doc §owner)
+
+```
+powershell -File native/build.ps1
+powershell -File orchestration/tasks/TASK-0061-networked-guest-slice/run-gate-a.ps1
+```
+
+Keys: N enter route · WASD move · mouse aim · LMB/Q/E/R fight · X take
+· 1–9 equip · F or walk stairs to extract · Esc quit. Expect: connect,
+route, fight (telegraphs, HP bars), named loot, equip stat change,
+extract/bank, clean shutdown. Known limits: trophy circulation is N5;
+telegraph FX can graze the HUD corner (0068); reconnect lands in 0069.
+Feedback wanted on: movement feel, combat readability, loot moment,
+whether the loop invites a second run.
 
 ## RUNNING
 
@@ -16,63 +81,59 @@
 |---|---|---|
 | 0056 N5 Chronicles (server axis) | deepseek | STALLED since 08-18 19:36. OWNER: relaunch dsh + /goal from BOOTSTRAP.md |
 
-## READY (D-123 buffer: 4)
+## READY (D-123 buffer: 3)
 
 | Task | Packet | Notes |
 |---|---|---|
-| 0064 remote presentation unify | BOUNDED-DESIGN | **CRITICAL — Gate A red solely on this.** cursor suggested |
-| 0063 server Gate A surface | BOUNDED-DESIGN | drops/extract/equip envelopes; any native lane |
-| 0065 N7 entity-density benchmark | BOUNDED-DESIGN | independent; any native lane |
-| 0066 shared capture harness | MECHANICAL | browser infra; mac-claude suggested |
+| 0071 protocol matrix audit | MECHANICAL | luna-mac routed |
+| 0073 renderer backend eval | BOUNDED-DESIGN | research-only; unassigned (cursor stopped) |
+| 0074 gear-outcomes profile | MECHANICAL | 10-run timing distribution; browser lane |
 
 ## HOLD
 
-- 0058 N6 final SERVER-parity wave: until 0056 integrated AND Gate A green.
+- 0058 N6 final SERVER-parity wave: releases when 0056 integrates
+  (Gate A condition now MET).
 
-## Recently integrated (tonight)
+## Integrated tonight (chronological)
 
-- 0061 (cursor) mechanics ACCEPTED 04:10 — full networked guest journey
-  over WS, machine-checked + architect-played; Gate A rubric failed on
-  visual cohesion (debug painter) → 0064 spawned. PR pending.
-- 0062 (cursor) ACCEPTED 04:05 — playtest flake diagnostics; marginal
-  scenario named: gear-outcomes (32–53s spread). PR pending.
-- 0059 (cursor) ACCEPTED 02:30 (PR #32). 0055 (cursor) ACCEPTED 01:10
-  (PR #30). 0060 (architect) C3 seam (PR #31) — first native
-  client↔server handshake. D-122 adoption (PR #29). Docs (PRs #27–28).
-
-## Standing duty: peer verification
-
-Idle coordinators rerun peers' REVIEW_REQUESTED browser gates
-(REVIEW-PEER-<name>.md) before backoff — see STANDING-LOOP.md.
-qwen3.8 is an endpoint, not a coordinator (mac-claude dispatches).
+- 0055 identity chip + server zone preview (cursor) — PR #30
+- 0060 C3 session seam, first client↔server handshake (architect) — PR #31
+- 0059 compact overlay stack (cursor) — PR #32
+- 0061 networked guest journey mechanics (cursor) + 0062 flake
+  diagnostics (cursor) + D-123 + specs — PR #33
+- 0063 server Gate A envelopes (cursor) + 0064 presentation unify
+  (cursor, GATE A GREEN) + 0065 density bench ~9000x headroom (cursor)
+  + 0066 shared capture harness (mac-claude, calibrated) — batch PR pending
 
 ## Fleet + budget
 
-- cursor (Grok 4.6): 4/4 accepted tonight (0055, 0059, 0061 mechanics,
-  0062) — exceptional throughput; one rubric miss (0061 presentation).
-  Ports 6580–6599.
-- deepseek: STALLED mid-0056; 4 dirty preserved. Ports 6540–6559.
-- mac-claude (Sonnet): dark all night (no origin claims). Owner:
-  re-check the Mac session in the morning. Ports 7000–7019.
+- cursor: STOPPED by owner 07:45 (12 accepted overnight). Ports 6580–6599 reserved.
+- qwen3.8 (MacBook, FREE): scorecard now VERIFIED 7/7 battery, ~16
+  tok/s, no reasoning leakage. Standing duty added to deepseek +
+  luna-mac briefs: dispatch machine-verifiable MECHANICAL sub-steps to
+  it; driver verifies everything.
+- luna-mac (Codex Luna, MacBook — replaces mac-claude in this seat):
+  MECHANICAL packets only, NEVER native/**; routed 0071 then 0074.
+  Ports 7000–7019. Fresh calibration.
+- deepseek (DeepSeek 4 Flash): ACTIVE on 0056/N5 as of 08:10 — claim
+  re-confirmed, investigation phase (872 steps, 100% cache hit).
+  Fresh calibration row; review with extra scrutiny. Ports 6540–6559.
 - kimis quota-dead until ~08-23; codex out of tokens.
-- architect: reviews + play passes + restock per D-123; token-rationed.
 
 ## WATCH
 
-- gear-outcomes = the marginal playtest scenario (0062 finding);
-  diagnostics now name any failure. 3rd flake sighting → dedicated fix task.
-- kimi-work's stale 0055 clone work: discard on resume (0055 shipped by cursor).
-- Single-writer main.cpp: assigned to 0064 (cursor) until further notice.
-- 0061 review deferred item: first sweep after owner wakes includes one
-  visual spot-check of 0059's 1366 capture (skipped for token rationing).
+- gear-outcomes = the named marginal playtest scenario; diagnostics
+  now print DIAG on any failure. 3rd sighting → fix task.
+- kimi-work's stale 0055 clone work: discard on resume (superseded).
+- Single-writer main.cpp: released by 0064; assign per-claim in 0068.
+- Deferred: one visual spot-check of 0059's 1366 capture (token
+  rationing) — first sweep after owner wakes.
 
 ## Review procedures on flip
 
-- 0064: gates + remote render-list scenario + architect PLAYS --remote,
-  rescore Gate A rubric (no zeroes, ≥9/12) — the gate-flip review.
-- 0063: gates + N1–N4 attach transcript + extended drive script shows
-  live drop labels.
-- 0065: rerun one N=500 pass; check no native/src behavior diffs.
-- 0066: run the demo capture script; assert parity with 0059 set.
+- 0067: inspect workflow diff + both Actions run links (green + canary
+  red) + retrigger once myself.
+- 0068: gates + render-list asserts + play pass rubric rescore.
+- 0069: gates + reconnect tests; verify replaced ≠ retry.
 - 0056 (deepseek, on revival): rebuild + CUMULATIVE attach set MYSELF;
   D-106/ADR-002/D-109 in diff; TaskStop server after.

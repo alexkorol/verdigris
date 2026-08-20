@@ -1,6 +1,7 @@
 #include "remote_session.hpp"
 
 #include <algorithm>
+#include <chrono>
 #include <cstring>
 
 #ifdef _WIN32
@@ -101,6 +102,54 @@ void apply_player_fields(ClientPlayer& player, const JsonValue& source) {
   if (const auto* facing = json_string(source.get("facing"))) player.facing = *facing;
 }
 
+void facing_delta(const std::string& facing, double& dx, double& dy) {
+  dx = 0.0;
+  dy = 1.0;
+  if (facing == "left" || facing == "west") {
+    dx = -1.0;
+    dy = 0.0;
+  } else if (facing == "right" || facing == "east") {
+    dx = 1.0;
+    dy = 0.0;
+  } else if (facing == "up" || facing == "north") {
+    dx = 0.0;
+    dy = -1.0;
+  }
+}
+
+void place_in_front(const ClientPlayer& player, double& x, double& y) {
+  double dx = 0.0;
+  double dy = 1.0;
+  facing_delta(player.facing, dx, dy);
+  x = player.x + dx;
+  y = player.y + dy;
+}
+
+ClientMonster* find_monster(ClientModel& model, const std::string& id) {
+  for (auto& monster : model.monsters)
+    if (monster.id == id) return &monster;
+  return nullptr;
+}
+
+ClientMonster& upsert_monster(ClientModel& model, const std::string& id, const std::string& name,
+                              bool elite) {
+  if (ClientMonster* existing = find_monster(model, id.empty() ? name : id)) {
+    if (!name.empty()) existing->name = name;
+    if (elite) existing->elite = true;
+    existing->alive = true;
+    return *existing;
+  }
+  ClientMonster monster;
+  monster.id = id.empty() ? ("foe-" + std::to_string(model.monsters.size() + 1)) : id;
+  monster.name = name.empty() ? "monster" : name;
+  place_in_front(model.player, monster.x, monster.y);
+  monster.elite = elite;
+  monster.life = elite ? 80 : 40;
+  monster.life_max = monster.life;
+  model.monsters.push_back(std::move(monster));
+  return model.monsters.back();
+}
+
 void apply_scene_fields(ClientScene& scene, const JsonValue& source) {
   if (const auto* id = json_string(source.get("id"))) scene.id = *id;
   if (const auto* type = json_string(source.get("type"))) scene.type = *type;
@@ -126,19 +175,10 @@ RemoteProtocolSession::RemoteProtocolSession(std::string host, std::uint16_t por
 
 RemoteProtocolSession::~RemoteProtocolSession() { shutdown(); }
 
-bool RemoteProtocolSession::start(std::string* error) {
-  state_.store(ConnectionState::Connecting);
-#ifdef _WIN32
-  WSADATA data{};
-  if (WSAStartup(MAKEWORD(2, 2), &data) != 0) {
-    fail(ConnectionState::Rejected, "WSAStartup failed");
-    if (error) *error = last_error_;
-    return false;
-  }
-#endif
+bool RemoteProtocolSession::connect_transport(std::string* error) {
   const auto socket = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (socket == kInvalidSocket) {
-    fail(ConnectionState::Rejected, "socket() failed");
+    last_error_ = "socket() failed";
     if (error) *error = last_error_;
     return false;
   }
@@ -148,8 +188,7 @@ bool RemoteProtocolSession::start(std::string* error) {
   address.sin_port = htons(port_);
   if (::connect(socket, reinterpret_cast<sockaddr*>(&address), sizeof(address)) < 0) {
     close_socket(socket);
-    fail(ConnectionState::Rejected,
-         "connection refused at " + host_ + ":" + std::to_string(port_));
+    last_error_ = "connection refused at " + host_ + ":" + std::to_string(port_);
     if (error) *error = last_error_;
     return false;
   }
@@ -160,7 +199,7 @@ bool RemoteProtocolSession::start(std::string* error) {
       kWebSocketKey + "\r\nSec-WebSocket-Version: 13\r\n\r\n";
   if (!send_all(socket, request.data(), request.size())) {
     close_socket(socket);
-    fail(ConnectionState::Rejected, "upgrade request send failed");
+    last_error_ = "upgrade request send failed";
     if (error) *error = last_error_;
     return false;
   }
@@ -175,8 +214,7 @@ bool RemoteProtocolSession::start(std::string* error) {
   if (response.find(" 101 ") == std::string::npos ||
       response.find("\r\n\r\n") == std::string::npos) {
     close_socket(socket);
-    fail(ConnectionState::ProtocolMismatch,
-         "endpoint did not complete a websocket upgrade");
+    last_error_ = "endpoint did not complete a websocket upgrade";
     if (error) *error = last_error_;
     return false;
   }
@@ -192,7 +230,80 @@ bool RemoteProtocolSession::start(std::string* error) {
       {"guestId", JsonValue(guest_id_)},
       {"quickGuest", JsonValue(quick_guest_)}}};
   if (!send_envelope(login)) {
-    fail(ConnectionState::Disconnected, "login send failed");
+    last_error_ = "login send failed";
+    if (error) *error = last_error_;
+    close_transport();
+    return false;
+  }
+  return true;
+}
+
+void RemoteProtocolSession::close_transport() {
+  running_.store(false);
+  if (socket_ != -1) {
+    send_frame(0x8, "");
+    close_socket(static_cast<socket_t>(socket_));
+    socket_ = -1;
+  }
+  if (reader_ && reader_->joinable()) reader_->join();
+  reader_.reset();
+}
+
+void RemoteProtocolSession::begin_retry(const std::string& reason) {
+  close_transport();
+  if (suppress_retry_ || !ever_ready_) {
+    fail(ConnectionState::Disconnected, reason);
+    return;
+  }
+  last_error_ = reason;
+  if (state_.load() != ConnectionState::Retrying) {
+    pending_events_.push_back(
+        {PresentationEventType::ConnectionLost, "", "", reason, 0});
+  }
+  if (retry_attempt_ >= 3) {
+    fail(ConnectionState::Disconnected, "reconnect failed after 3 attempts");
+    return;
+  }
+  static constexpr int kBackoffMs[3] = {1000, 2000, 4000};
+  state_.store(ConnectionState::Retrying);
+  retry_at_ = std::chrono::steady_clock::now() +
+              std::chrono::milliseconds(kBackoffMs[retry_attempt_]);
+}
+
+void RemoteProtocolSession::pump_retry() {
+  if (state_.load() != ConnectionState::Retrying) return;
+  if (std::chrono::steady_clock::now() < retry_at_) return;
+  if (retry_attempt_ >= 3) {
+    fail(ConnectionState::Disconnected, "reconnect failed after 3 attempts");
+    return;
+  }
+  std::string error;
+  if (connect_transport(&error)) return;
+  ++retry_attempt_;
+  if (retry_attempt_ >= 3) {
+    fail(ConnectionState::Disconnected, "reconnect failed after 3 attempts");
+    return;
+  }
+  static constexpr int kBackoffMs[3] = {1000, 2000, 4000};
+  retry_at_ = std::chrono::steady_clock::now() +
+              std::chrono::milliseconds(kBackoffMs[retry_attempt_]);
+}
+
+bool RemoteProtocolSession::start(std::string* error) {
+  state_.store(ConnectionState::Connecting);
+#ifdef _WIN32
+  WSADATA data{};
+  if (WSAStartup(MAKEWORD(2, 2), &data) != 0) {
+    fail(ConnectionState::Rejected, "WSAStartup failed");
+    if (error) *error = last_error_;
+    return false;
+  }
+  wsa_started_ = true;
+#endif
+  if (!connect_transport(error)) {
+    const bool protocol = last_error_.find("websocket") != std::string::npos;
+    fail(protocol ? ConnectionState::ProtocolMismatch : ConnectionState::Rejected,
+         last_error_);
     if (error) *error = last_error_;
     return false;
   }
@@ -200,20 +311,18 @@ bool RemoteProtocolSession::start(std::string* error) {
 }
 
 void RemoteProtocolSession::shutdown() {
-  running_.store(false);
-  if (socket_ != -1) {
-    send_frame(0x8, "");  // close frame; best effort
-    close_socket(static_cast<socket_t>(socket_));
-    socket_ = -1;
-  }
-  if (reader_ && reader_->joinable()) reader_->join();
-  reader_.reset();
+  suppress_retry_ = true;
+  close_transport();
   const auto state = state_.load();
-  if (state == ConnectionState::Connected || state == ConnectionState::Ready) {
+  if (state == ConnectionState::Connecting || state == ConnectionState::Connected ||
+      state == ConnectionState::Ready || state == ConnectionState::Retrying) {
     state_.store(ConnectionState::Disconnected);
   }
 #ifdef _WIN32
-  WSACleanup();
+  if (wsa_started_) {
+    WSACleanup();
+    wsa_started_ = false;
+  }
 #endif
 }
 
@@ -277,9 +386,6 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
 }
 
 void RemoteProtocolSession::poll() {
-  if (peer_dropped_.exchange(false)) {
-    fail(ConnectionState::Disconnected, "server closed the connection");
-  }
   std::deque<std::string> batch;
   {
     std::lock_guard lock(inbox_mutex_);
@@ -294,6 +400,15 @@ void RemoteProtocolSession::poll() {
     }
     apply_envelope(envelope);
   }
+  if (peer_dropped_.exchange(false)) {
+    if (suppress_retry_ || state_.load() == ConnectionState::Disconnected ||
+        state_.load() == ConnectionState::Rejected) {
+      close_transport();
+    } else {
+      begin_retry("server closed the connection");
+    }
+  }
+  pump_retry();
 }
 
 std::vector<PresentationEvent> RemoteProtocolSession::drain_events() {
@@ -396,12 +511,16 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     }
     if (const auto* scene = envelope.data.get("scene")) apply_scene_fields(model_.scene, *scene);
     state_.store(ConnectionState::Ready);
+    ever_ready_ = true;
+    retry_attempt_ = 0;
     pending_events_.push_back(
         {PresentationEventType::SessionReady, model_.player.uuid, "", "", 0});
     return;
   }
   if (envelope.event == "player:session-replaced") {
+    suppress_retry_ = true;
     fail(ConnectionState::Disconnected, "session replaced by a newer connection");
+    close_transport();
     return;
   }
   if (envelope.event == "game:send:message") {
@@ -429,16 +548,21 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       apply_player_fields(model_.player, *player_state);
     }
     if (!model_.scene.id.empty()) model_.player.scene_id = model_.scene.id;
+    model_.monsters.clear();
+    model_.ground.clear();
     return;
   }
   if (envelope.event == "monster:telegraph") {
     const auto* attacker = json_string(envelope.data.get("attackerId"));
     const auto* name = json_string(envelope.data.get("attackerName"));
     const auto* skill = json_string(envelope.data.get("skillId"));
+    const std::string skill_id = skill ? *skill : "telegraph";
+    const bool elite = skill_id.find("sweep") != std::string::npos ||
+                       skill_id.find("boss") != std::string::npos;
+    upsert_monster(model_, attacker ? *attacker : "", name ? *name : "", elite);
     pending_events_.push_back({PresentationEventType::Telegraph,
                                attacker ? *attacker : "", "",
-                               std::string(name ? *name : "") + " " +
-                                   std::string(skill ? *skill : "telegraph"),
+                               std::string(name ? *name : "") + " " + skill_id,
                                static_cast<int>(json_number(envelope.data.get("durationMs")))});
     return;
   }
@@ -461,6 +585,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       }
     }
     if (hits_player) {
+      if (attacker) upsert_monster(model_, *attacker, "", true);
       model_.last_incoming_hit = amount;
       pending_events_.push_back({PresentationEventType::DamageApplied,
                                  attacker ? *attacker : "", "", "incoming", amount});
@@ -470,6 +595,17 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       }
     } else {
       model_.last_outgoing_hit = amount;
+      ClientMonster& foe = upsert_monster(model_, target ? *target : "",
+                                          json_string(envelope.data.get("targetName"))
+                                              ? *json_string(envelope.data.get("targetName"))
+                                              : "",
+                                          false);
+      if (const auto* health = envelope.data.get("health")) {
+        foe.life = static_cast<int>(json_number(health->get("current"), foe.life));
+        foe.life_max = static_cast<int>(json_number(health->get("max"), foe.life_max));
+      } else {
+        foe.life = (std::max)(0, foe.life - amount);
+      }
       pending_events_.push_back({PresentationEventType::AttackStarted,
                                  attacker ? *attacker : model_.player.uuid, "",
                                  last_facing_, amount});
@@ -477,6 +613,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
                                  target ? *target : "", "", "outgoing", amount});
       if (died) {
         ++model_.kills;
+        foe.alive = false;
+        foe.life = 0;
         pending_events_.push_back({PresentationEventType::ActorDied,
                                    target ? *target : "", "",
                                    json_string(envelope.data.get("targetName"))
@@ -486,8 +624,10 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         // The native server drops loot in-world but does not emit a ground
         // envelope. Sparkle at the last known player tile so the kill is a
         // visible reward beat until pickup names the item.
+        const std::string drop_id = "drop-" + std::to_string(model_.kills);
+        model_.ground.push_back({drop_id, "kill reward", foe.x, foe.y});
         pending_events_.push_back({PresentationEventType::ItemDropped,
-                                   target ? *target : "", "", "kill reward", 0});
+                                   target ? *target : "", drop_id, "kill reward", 0});
       }
     }
     return;

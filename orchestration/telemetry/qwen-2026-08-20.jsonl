@@ -1,0 +1,7 @@
+{"family": "json-normalize", "case": "env1", "pass": true, "wall_s": 2.01, "prompt_tokens": 67, "completion_tokens": 18, "reasoning_chars": 0, "note": ""}
+{"family": "json-normalize", "case": "env2", "pass": true, "wall_s": 1.94, "prompt_tokens": 72, "completion_tokens": 25, "reasoning_chars": 0, "note": ""}
+{"family": "json-normalize", "case": "env3", "pass": true, "wall_s": 1.82, "prompt_tokens": 76, "completion_tokens": 23, "reasoning_chars": 0, "note": ""}
+{"family": "code-edit", "case": "rename-var", "pass": true, "wall_s": 4.12, "prompt_tokens": 110, "completion_tokens": 59, "reasoning_chars": 0, "note": ""}
+{"family": "test-gen", "case": "clampLife", "pass": true, "wall_s": 9.28, "prompt_tokens": 127, "completion_tokens": 144, "reasoning_chars": 0, "note": ""}
+{"family": "doc-table", "case": "csv3", "pass": true, "wall_s": 4.46, "prompt_tokens": 73, "completion_tokens": 66, "reasoning_chars": 0, "note": ""}
+{"family": "throughput", "case": "sustained", "pass": true, "wall_s": 30.07, "prompt_tokens": 35, "completion_tokens": 492, "reasoning_chars": 0, "note": "16.4 tok/s"}

@@ -40,9 +40,11 @@ void test_session_lifecycle() {
   check(response.event == "player:login", "session emits player:login");
   check(response.data["quickStart"].boolean().value_or(false), "quick guest marks quickStart");
 
+  bool saw_zone_transition = false;
   session.handle(Envelope{"world:zone:enter", JsonValue::Object{{"nodeId", "tin:1:0"}}}, [&](const Envelope& event) {
-    check(event.event == "world:scene:transition", "zone enter emits scene transition");
+    if (event.event == "world:scene:transition") saw_zone_transition = true;
   });
+  check(saw_zone_transition, "zone enter emits scene transition");
   std::string state_wire;
   session.handle(Envelope{"dev:state", JsonValue::Object{{"requestId", "state-1"}}}, [&](const Envelope& event) {
     state_wire = emit_envelope(event);
@@ -126,7 +128,9 @@ void test_instance_entry_and_stairs() {
 
   std::optional<Envelope> transition;
   session.handle(Envelope{"instance:enterSolo", JsonValue::Object{{"template", "dungeon"}, {"layout", "warren"}}},
-                 [&](const Envelope& event) { transition = event; });
+                 [&](const Envelope& event) {
+                   if (event.event == "party:scene:transition") transition = event;
+                 });
   check(transition && transition->event == "party:scene:transition", "solo entry emits a scene transition");
   const auto& scene = (*transition).data["scene"];
   check(scene["name"].string() && *scene["name"].string() == "The Old Barrow", "zone display name comes from the adventure table");
@@ -207,6 +211,224 @@ void test_n3_combat_rules_and_wire_events() {
   });
   check(telegraphed, "N3 boss emits a readable ground-slam telegraph");
 }
+
+bool ground_item_has_fields(const JsonValue& item) {
+  return item["uuid"].string() && !item["uuid"].string()->empty()
+      && item["id"].string() && !item["id"].string()->empty()
+      && item["name"].string() && !item["name"].string()->empty()
+      && item["x"].number().has_value() && item["y"].number().has_value();
+}
+
+std::string inventory_uuid_for(const JsonValue& state, const char* item_id) {
+  if (const auto* inventory = state["state"]["inventory"].array()) {
+    for (const auto& entry : *inventory) {
+      if (entry["id"].string() && *entry["id"].string() == item_id && entry["uuid"].string()) {
+        return *entry["uuid"].string();
+      }
+    }
+  }
+  return {};
+}
+
+int inventory_count(const JsonValue& state) {
+  if (const auto* inventory = state["state"]["inventory"].array()) {
+    return static_cast<int>(inventory->size());
+  }
+  return 0;
+}
+
+const JsonValue::Array* ground_list_from_change(const Envelope& event) {
+  return event.data["data"].array();
+}
+
+void test_gate_a_ground_login_and_kill_loot() {
+  ProtocolSession session("guest-0063-ground", "socket-g", 19, false);
+  std::string login_wire;
+  session.handle(Envelope{"player:login", JsonValue::Object{{"useGuestAccount", true}}},
+                 [&](const Envelope& event) {
+                   if (event.event == "player:login") login_wire = emit_envelope(event);
+                 });
+  Envelope login;
+  check(parse_envelope(login_wire, login), "login parses");
+  check(login.data["droppedItems"].is_array(), "login includes droppedItems");
+
+  std::optional<Envelope> change;
+  std::optional<Envelope> dropped;
+  session.handle(Envelope{"instance:enterSolo", JsonValue::Object{{"template", "dungeon"}, {"layout", "warren"}}},
+                 [&](const Envelope& event) {
+                   if (event.event == "item:change") change = event;
+                   if (event.event == "world:itemDropped") dropped = event;
+                 });
+  check(change.has_value() && dropped.has_value(),
+        "floor treasure emits item:change and world:itemDropped");
+  const auto* floor = ground_list_from_change(*change);
+  check(floor && !floor->empty(), "item:change carries the floor ground list");
+  check(ground_item_has_fields((*floor)[0]), "ground envelope has uuid, id, name, x, y");
+
+  session.handle(Envelope{"player:login", JsonValue::Object{{"useGuestAccount", true}}},
+                 [&](const Envelope& event) {
+                   if (event.event == "player:login") login_wire = emit_envelope(event);
+                 });
+  check(parse_envelope(login_wire, login), "instance re-login parses");
+  const auto* login_ground = login.data["droppedItems"].array();
+  check(login_ground && !login_ground->empty(), "login snapshot includes instance ground items");
+  check(ground_item_has_fields((*login_ground)[0]), "login ground items have uuid, id, name, x, y");
+  check(login.data["scene"]["droppedItems"].is_array()
+            && login.data["scene"]["droppedItems"].array()->size() == login_ground->size(),
+        "scene.droppedItems matches login droppedItems");
+
+  const auto state = request_state(session, "g-1");
+  check(state["state"]["groundItems"].array()
+            && state["state"]["groundItems"].array()->size() == login_ground->size(),
+        "dev:state groundItems matches login");
+
+  bool drop_change = false;
+  session.handle(Envelope{"dev:drop", JsonValue::Object{{"itemId", "coins"}}}, [&](const Envelope& event) {
+    if (event.event != "item:change") return;
+    if (const auto* items = ground_list_from_change(event)) {
+      for (const auto& item : *items) {
+        if (item["id"].string() && *item["id"].string() == "coins" && ground_item_has_fields(item)) {
+          drop_change = true;
+        }
+      }
+    }
+  });
+  check(drop_change, "dev:drop emits item:change with uuid, id, name, x, y");
+
+  session.handle(Envelope{"dev:setlevel", JsonValue::Object{{"level", 40}}}, [](const Envelope&) {});
+  const auto pack = request_state(session, "g-kill");
+  const JsonValue* target = nullptr;
+  if (const auto* monsters = pack["state"]["monsters"].array()) {
+    for (const auto& monster : *monsters) {
+      if (monster["rarity"].string() && *monster["rarity"].string() != "elite") {
+        target = &monster;
+        break;
+      }
+    }
+  }
+  check(target != nullptr, "found a non-elite for kill-loot");
+  const int mx = static_cast<int>(target->operator[]("x").number().value_or(0));
+  const int my = static_cast<int>(target->operator[]("y").number().value_or(0));
+  session.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", mx + 1.0}, {"y", static_cast<double>(my)}}},
+                 [](const Envelope&) {});
+  bool kill_loot = false;
+  for (int swing = 0; swing < 40 && !kill_loot; ++swing) {
+    session.handle(Envelope{"dev:forcecritical", JsonValue::Object{}}, [](const Envelope&) {});
+    session.handle(Envelope{"player:skill:trigger", JsonValue::Object{{"direction", "left"}}},
+                   [&](const Envelope& event) {
+                     if (event.event != "item:change") return;
+                     if (const auto* items = ground_list_from_change(event)) {
+                       for (const auto& item : *items) {
+                         if (item["id"].string() && *item["id"].string() == "coins"
+                             && ground_item_has_fields(item)) {
+                           kill_loot = true;
+                         }
+                       }
+                     }
+                   });
+  }
+  check(kill_loot, "kill loot emits item:change with coin drop fields");
+}
+
+void test_gate_a_extract_and_stairs() {
+  ProtocolSession extract_session("guest-0063-extract", "socket-ex", 23, false);
+  extract_session.handle(Envelope{"dev:give", JsonValue::Object{{"itemId", "garnet-amulet"}, {"qty", 1}}},
+                         [](const Envelope&) {});
+  extract_session.handle(Envelope{"instance:enterSolo",
+                                  JsonValue::Object{{"template", "dungeon"}, {"layout", "warren"}}},
+                         [](const Envelope&) {});
+  check(!inventory_uuid_for(request_state(extract_session, "ex-0"), "garnet-amulet").empty(),
+        "amulet is carried before extract");
+
+  std::optional<Envelope> summary;
+  extract_session.handle(Envelope{"player:extract", JsonValue::Object{}}, [&](const Envelope& event) {
+    if (event.event == "player:extract") summary = event;
+  });
+  check(summary.has_value(), "player:extract emits a bank summary");
+  check(summary->data["items"].number().value_or(0) >= 1, "extract banks at least the amulet");
+  const auto after = request_state(extract_session, "ex-1");
+  check(after["state"]["sceneType"].string() && *after["state"]["sceneType"].string() == "town",
+        "extract returns to town");
+  check(inventory_uuid_for(after, "garnet-amulet").empty(), "extract clears the amulet from the backpack");
+  bool stored = false;
+  if (const auto* bank = after["state"]["houseStoredItems"].array()) {
+    for (const auto& item : *bank) {
+      if (item["id"].string() && *item["id"].string() == "garnet-amulet") stored = true;
+    }
+  }
+  check(stored, "extract places the amulet in the House store");
+
+  ProtocolSession stairs("guest-0063-stairs", "socket-st", 29, false);
+  stairs.handle(Envelope{"dev:give", JsonValue::Object{{"itemId", "bronze-sword"}, {"qty", 1}}},
+                [](const Envelope&) {});
+  stairs.handle(Envelope{"instance:enterSolo", JsonValue::Object{{"template", "dungeon"}, {"layout", "warren"}}},
+                [](const Envelope&) {});
+  const auto in_zone = request_state(stairs, "st-1");
+  const double stairs_x = in_zone["state"]["sceneMetadata"]["stairsUp"]["x"].number().value_or(0);
+  const double stairs_y = in_zone["state"]["sceneMetadata"]["stairsUp"]["y"].number().value_or(0);
+  std::optional<Envelope> stairs_summary;
+  stairs.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", stairs_x}, {"y", stairs_y}}},
+                [&](const Envelope& event) {
+                  if (event.event == "player:extract") stairs_summary = event;
+                });
+  check(stairs_summary.has_value(), "stairs-up emits the same player:extract bank summary");
+  const auto back = request_state(stairs, "st-2");
+  check(back["state"]["sceneType"].string() && *back["state"]["sceneType"].string() == "town",
+        "stairs-up still returns to town");
+  check(inventory_uuid_for(back, "bronze-sword").empty(), "stairs-up banks carried items");
+  bool sword_stored = false;
+  if (const auto* bank = back["state"]["houseStoredItems"].array()) {
+    for (const auto& item : *bank) {
+      if (item["id"].string() && *item["id"].string() == "bronze-sword") sword_stored = true;
+    }
+  }
+  check(sword_stored, "stairs-up and player:extract converge on the House store");
+}
+
+void test_gate_a_equip_totals_and_unknown_uuid() {
+  ProtocolSession session("guest-0063-equip", "socket-eq", 31, false);
+  session.handle(Envelope{"dev:give", JsonValue::Object{{"itemId", "garnet-amulet"}, {"qty", 1}}},
+                 [](const Envelope&) {});
+  const auto before = request_state(session, "eq-0");
+  const std::string uuid = inventory_uuid_for(before, "garnet-amulet");
+  check(!uuid.empty(), "granted amulet has a uuid");
+  const double before_stab = before["state"]["combat"]["attack"]["stab"].number().value_or(0);
+
+  std::optional<Envelope> equipped;
+  session.handle(Envelope{"item:equip", JsonValue::Object{{"item", JsonValue::Object{{"uuid", uuid}}}}},
+                 [&](const Envelope& event) {
+                   if (event.event == "player:equippedAnItem") equipped = event;
+                 });
+  check(equipped.has_value(), "item:equip emits player:equippedAnItem");
+  check(equipped->data["wear"]["necklace"].string()
+            && *equipped->data["wear"]["necklace"].string() == "garnet-amulet",
+        "equip response includes wear-slot state");
+  check(equipped->data["combat"]["attack"]["stab"].number().value_or(0) > before_stab,
+        "equip response includes derived combat totals");
+
+  const auto worn = request_state(session, "eq-1");
+  check(worn["state"]["wear"]["necklace"].string()
+            && *worn["state"]["wear"]["necklace"].string() == "garnet-amulet",
+        "snapshot wear matches the equip response");
+
+  bool error = false;
+  bool refresh = false;
+  session.handle(Envelope{"item:equip", JsonValue::Object{{"item", JsonValue::Object{{"uuid", "missing-uuid"}}}}},
+                 [&](const Envelope& event) {
+                   if (event.event == "game:send:message" && event.data["text"].string()
+                       && *event.data["text"].string() == "That item is no longer in your inventory.") {
+                     error = true;
+                   }
+                   if (event.event == "core:refresh:inventory") refresh = true;
+                   if (event.event == "player:equippedAnItem") equipped.reset();
+                 });
+  check(error && refresh, "unknown uuid emits the JS inventory error envelope");
+  const auto after = request_state(session, "eq-2");
+  check(after["state"]["wear"]["necklace"].string()
+            && *after["state"]["wear"]["necklace"].string() == "garnet-amulet",
+        "unknown uuid does not change wear");
+  check(inventory_count(after) == inventory_count(worn), "unknown uuid does not change inventory");
+}
 }  // namespace
 
 int main() {
@@ -216,6 +438,9 @@ int main() {
     test_continuous_movement();
     test_instance_entry_and_stairs();
     test_n3_combat_rules_and_wire_events();
+    test_gate_a_ground_login_and_kill_loot();
+    test_gate_a_extract_and_stairs();
+    test_gate_a_equip_totals_and_unknown_uuid();
     std::cout << "verdigris networking tests: PASS\n";
     return 0;
   } catch (const std::exception& error) {
