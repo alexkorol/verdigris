@@ -14,10 +14,12 @@
 | Task | Owner | Notes |
 |---|---|---|
 | 0056 N5 Chronicles (server axis) | deepseek | STALLED ~29h (last commit 08-18 19:36; 4 dirty preserved). OWNER: relaunch dsh + re-paste /goal — it resumes the claim. Paths narrowed to native/src+tests (client is C3's now) |
-| 0060 C3 session seam scaffold | architect (Fable) | ARCHITECTURE packet — next architect work block; unblocks 0061 |
 
 ## Recently integrated
 
+- 0060 (architect) DONE 01:35 — C3 session seam: FIRST EVER native
+  client↔native server WebSocket handshake (login → authoritative
+  snapshot). 19/19 session tests; scenarios untouched. 0061 UNBLOCKED.
 - 0055 (cursor) ACCEPTED first-pass 01:10 — identity chip + server zone
   preview, mirror data file deleted. Cursor lane calibrated: high trust.
 
@@ -26,7 +28,7 @@
 | Task | Packet | Notes |
 |---|---|---|
 | 0059 responsive overlay pass | BOUNDED-DESIGN | mac-claude lane; onboarding as of 00:30 |
-| 0061 networked guest slice (Gate A) | BOUNDED-DESIGN | PIPELINED after 0060 integrates — **new critical path** |
+| 0061 networked guest slice (Gate A) | BOUNDED-DESIGN | **READY — top priority.** Seam integrated; frozen interfaces in native/client/session.hpp |
 | 0058 N6 final SERVER-parity wave | BOUNDED-DESIGN | HOLD until 0056 integrated AND Gate A accepted (D-122) |
 
 ## Standing duty: peer verification

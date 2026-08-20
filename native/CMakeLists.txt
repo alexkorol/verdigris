@@ -29,6 +29,20 @@ target_link_libraries(verdigris_networking_tests PRIVATE verdigris_networking)
 add_executable(verdigris_server src/server_main.cpp)
 target_link_libraries(verdigris_server PRIVATE verdigris_networking)
 
+# C3 session seam (D-122): the only client code allowed to own a Simulation
+# (local) or a socket (remote). Links verdigris_networking for the shared
+# envelope codec — recorded interim coupling; a verdigris_protocol extraction
+# is the successor cleanup if the codec needs to shed the server.
+add_library(verdigris_client_session
+  client/local_session.cpp
+  client/remote_session.cpp
+)
+target_include_directories(verdigris_client_session PUBLIC client)
+target_link_libraries(verdigris_client_session PUBLIC verdigris_networking)
+
+add_executable(verdigris_session_tests tests/session_tests.cpp)
+target_link_libraries(verdigris_session_tests PRIVATE verdigris_client_session)
+
 add_executable(verdigris_client client/main.cpp)
 target_link_libraries(verdigris_client PRIVATE verdigris_core)
 if (WIN32)
@@ -38,3 +52,4 @@ endif()
 enable_testing()
 add_test(NAME verdigris_core_tests COMMAND verdigris_core_tests)
 add_test(NAME verdigris_networking_tests COMMAND verdigris_networking_tests)
+add_test(NAME verdigris_session_tests COMMAND verdigris_session_tests)
