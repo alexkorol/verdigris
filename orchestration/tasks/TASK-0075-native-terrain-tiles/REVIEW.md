@@ -21,3 +21,12 @@ Numbered corrections:
    ONE dominant tile with occasional variant, per theme.
 Re-request review with an updated play capture + the same determinism
 evidence. Everything else stands.
+
+## Rev2 - ACCEPTED (architect-completed, D-124 idle rule)
+
+Cursor loop idle ~2h; architect implemented the four corrections
+directly (desaturate+darken at load, quadrant sampling, corner-
+projected seam-free tiling, 88/12 dominant variation). Gates green,
+play pass: floor is muted context, no grid, no checkerboard. New
+side-by-side (sxs2-*) shows the browser-family look. Cursor retains
+credit for the mechanics; scorecard notes the quality miss + idle.

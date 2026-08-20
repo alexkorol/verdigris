@@ -83,9 +83,8 @@ whether the loop invites a second run.
   socket JS parity implemented. session-arc = the one red (needs town
   NPC surface — moved to N6 scope with 0058).
 - 0076 HUD parity ACCEPTED (orbs/minimap/quickbar/chip live).
-- 0075 terrain REVISE with numbered corrections (scale/tone/grid) —
-  cursor picks it up from the pushed review.
-- Batch PR to master HOLDS until 0075-rev2 lands (one clean ship).
+- 0075 terrain: rev2 completed by architect (cursor idle 2h) — INTEGRATED.
+- Batch PR shipping now: N5 18/19 + terrain rev2 + HUD parity + side-by-side round 2 (sxs2-*: near-family visual parity).
 - deepseek Flash: clone frozen since morning; takeover annotated in
   0056 STATUS. luna-mac: 0074 in progress presumably.
 

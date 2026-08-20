@@ -1,6 +1,6 @@
 ---
 task: TASK-0075
-state: REVISE
+state: INTEGRATED
 coordinator: cursor
 worker_branch: codex/TASK-0075-native-terrain-tiles-cursor
 base_commit: 69d60133b8fe67087a856d837f6d714fc9ddb4c6
