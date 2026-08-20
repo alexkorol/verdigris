@@ -50,10 +50,19 @@ opinion.
   persistence files. Green: `respawn`, `session-arc`, Chronicles
   scenarios.
 - **N6. World-web + quests**: route graph, Wardens, quest state.
-  Green: `world-web`, `quest`, remaining matrix — FULL PARITY.
+  Green: `world-web`, `quest`, remaining matrix — FULL **SERVER**
+  PARITY (axis 1 of 3; see below).
 - **N7. Better-than**: performance headroom proof (entity-density
   benchmark vs JS), then the native client resumes (browser-validated
   design, D-113 art) as the superior front end.
+
+**Scope correction (D-122, 2026-08-20):** N1–N6 prove SERVER/PROTOCOL
+parity only — the harness measures the C++ server through the browser
+client. Native PRODUCT parity additionally requires native journey
+parity (the native client playing against the C++ server over WS) and
+presentation parity. The client convergence track (C3+) runs in
+PARALLEL from the N4 surface onward — N6 releases only after Gate A.
+Canon: docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md.
 
 Waves land sequentially; within a wave, tasks split by disjoint files.
 The browser playability wave (0032–0038) continues in parallel — it

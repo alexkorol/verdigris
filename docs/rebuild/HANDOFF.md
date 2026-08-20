@@ -1,5 +1,34 @@
 # Native reconstitution handoff
 
+## 2026-08-20 — TASK-0070 reference scenes Stage 1 (cursor, REVIEW_REQUESTED)
+
+- Worker `codex/TASK-0070-reference-scenes-cursor` off `27d2be62`.
+  `verdigris_client.exe --reference-scene all` writes 10 PNGs (1920x1080 and
+  1366x768) and 5 render-list JSON dumps. Two-run JSON must match.
+- Gates: `build.ps1 -RunTests` green. Architect eyeballs one scene per
+  resolution.
+
+## 2026-08-20 — TASK-0069 remote reconnect/retry (cursor, REVIEW_REQUESTED)
+
+- Worker `codex/TASK-0069-remote-reconnect-cursor` off `1f45eb33`. Unexpected
+  drop enters `Retrying` (1s/2s/4s, three attempts), re-logs the same guest,
+  and resumes from the login snapshot. `player:session-replaced` stays
+  terminal `Disconnected`.
+- Gates: `build.ps1 -RunTests` green (reconnect resume + replaced no-retry).
+
+## 2026-08-20 — TASK-0064 remote presentation unify (cursor, REVIEW_REQUESTED)
+
+- Worker `codex/TASK-0064-remote-presentation-unify-cursor` off program tip
+  `5c41a048`. `--remote` uses the local `paint_scene` pipeline (billboards,
+  FX, HUD, camera2d); the 0061 debug painter is gone. No Simulation in
+  remote mode.
+- Gates: `build.ps1 -RunTests -RunClientScenarios` green, including new
+  `remote-render-list` (Monster/Swing/Drop via paint_scene) and session
+  `render-list` ops. Architect still needs to play `--remote` and rescore
+  Gate A (no zeroes, ≥9/12).
+- Play: N enters tin route (E is Sweep); X take-underfoot; walk stairs to
+  extract. Monster/loot positions are inferred until 0063 snapshots.
+
 ## 2026-08-15 (latest) — Orchestration program active
 
 - The program is now coordinated through `orchestration/` (protocol, state,

@@ -210,3 +210,46 @@ solo on accepted-outcome-per-dollar; greens are revision+environment
 bound; consensus is not truth (preserve dissent, select don't blend);
 every adopted lesson becomes a regression or experiment. Enforcement
 backlog and EXP-1 (packet-type A/B) recorded in the new docs.
+
+## D-122 - Three-axis parity + C3 now (owner research, 2026-08-20)
+
+Owner-supplied program correction (chatgpt_pro writeup, verified at
+tip: verdigris_client links ONLY verdigris_core - the launched exe
+never talks to the C++ server the N-waves prove). Parity has three
+axes: (1) server/rules parity - browser harness vs C++ server, the
+N1-N6 waves; (2) native journey parity - the native client completes
+real player journeys against the C++ server over WS, no in-process
+sim, no dev grants; (3) presentation/feel parity - readability and
+cohesion via a scored quality gate. "Full native parity" may only
+describe all three passed. N6 is renamed "full SERVER parity".
+Sequencing: C3 (client<->server connect) starts NOW against the N4
+surface, parallel to N5 - NOT after N6. N6 releases only after Gate A
+(networked guest expedition) is real. Canon lives in
+docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md (gates A/B/C, quality
+rubric, session architecture, single-writer main.cpp rule, protocol
+matrix). Throughput metric: complete player journeys moved red->green
+in the native executable - not merged handlers/effects/tasks.
+
+## D-123 - The READY queue never runs dry (owner-ruled, 2026-08-20)
+
+Owner: "this should never be a thing that the specced packet runs dry."
+Standing rule: the board carries a MINIMUM of 3 claimable READY packets
+at all times, restocked at every architect sweep from the strategic
+backlog (convergence gates, parity waves, N7 better-than, infra debt).
+Spec-ahead is architect work of first rank - equal priority with
+reviews. Enforcement: sweep checklist step; RUN_STATUS lists the READY
+count; a sweep that leaves READY < 3 must say why.
+
+## D-124 - Aggressive daytime run (owner-ruled, 2026-08-20 ~08:20)
+
+Owner (leaving for work): no more completing a tiny goal and pausing
+for hours; be ambitious and aggressive in scope. Day target: TRUE
+three-axis parity, plus side-by-side screenshots of the native client
+vs the browser version showing near-identical presentation. Operating
+changes: (1) architect works OWN tracked tasks continuously between
+reviews - idle sweeps are a defect; (2) takeover threshold - a
+critical-path lane that produces no commit for ~2 sweeps gets its task
+taken over by the architect as a tracked implementation task; (3)
+sweep cadence tightens to ~30 min while the owner is away; (4) token
+rationing is subordinate to this directive for today (owner accepted
+the spend by issuing it).

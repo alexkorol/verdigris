@@ -61,7 +61,8 @@ local freedom), ARCHITECTURE (architect-only).
 ## Resource capsules (ports)
 
 - kimi-work: 6510–6529 · deepseek: 6540–6559 · kimi: 9880–9899 ·
-  architect: 6560–6579 · owner live server: 6500 (never touch) ·
+  architect: 6560–6579 · cursor (Grok 4.6): 6580–6599 ·
+  owner live server: 6500 (never touch) ·
   playtest default: 6510 (serialized — one full suite at a time per
   machine). All binds 127.0.0.1 (enforced in server/index.js default).
 
@@ -74,6 +75,16 @@ G3 subsystem/integration on a base merged with CURRENT tip ·
 G4 default owner path + owner-visible artifact (screenshots/playthrough) ·
 G5 architect reruns the exact gate personally (testimony ≠ evidence) ·
 G6 post-merge revalidation of affected checks.
+
+G5 peer-rerun option (token-scarcity adaptation, 2026-08-20): for
+non-critical BROWSER tasks, G5 may be satisfied by a PEER RERUN — a
+coordinator other than the implementer reruns the exact acceptance
+gates in its own clone (fresh merge with current tip) and commits
+literal transcripts to the task folder as REVIEW-PEER-<name>.md. The
+architect then reads the diff plus both evidence sets and issues the
+verdict, rerunning personally only on conflict or suspicion. Personal
+architect rerun stays MANDATORY for: native waves, any lane's first
+task (calibration), anything modifying tests/playtest assertions.
 
 Greens are revision- and environment-bound: stale after relevant code,
 base, evaluator, or environment changes. PARTIAL is failure unless the

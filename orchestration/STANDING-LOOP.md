@@ -33,9 +33,21 @@ Repeat forever:
   are claiming it. Board-empty/status notes go to
   `orchestration/NOTES-NAME.md` only.
 
+## Empty-board: peer verification first, then backoff
+
+Before sleeping on an empty board, check for any task in
+`REVIEW_REQUESTED` implemented by a DIFFERENT coordinator whose folder
+has no `REVIEW-PEER-*.md` yet. If one exists and it is a browser task:
+rerun its exact acceptance gates in YOUR clone (fresh merge with
+current tip first), commit literal transcripts as
+`REVIEW-PEER-NAME.md` in that task folder, push. Report facts only —
+verdicts stay with the architect. Never edit the implementer's files
+or STATUS. Native tasks: skip (architect-only review).
+
 ## Empty-board backoff (INC-011)
 
-If no READY task exists after a fetch: append one line to
+If no READY task exists after a fetch (and no peer verification is
+pending): append one line to
 `NOTES-NAME.md` (first time only), then run an actual sleep command
 (`powershell -Command "Start-Sleep 900"`), re-check, and DOUBLE the
 sleep up to 3600s while the board stays empty. Never spin

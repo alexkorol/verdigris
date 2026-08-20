@@ -17,6 +17,14 @@ import fs from 'node:fs';
 import HeadlessPlayer from './harness.mjs';
 import { recordCriticMetrics } from './critic.mjs';
 import { loadMode, resetTimingDiagnostics, timingDiagnostics } from './timing.mjs';
+import {
+  appendTimingLog,
+  collectFailureDiagnosis,
+  formatFailureDiagnosis,
+  installPlaytestDiagnostics,
+  timingLogEnabled,
+  timingLogPath,
+} from './lib/diagnostics.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(here, '..');
@@ -116,15 +124,23 @@ const main = async () => {
   try {
     await waitForSocket(url);
     resetTimingDiagnostics();
+    installPlaytestDiagnostics(HeadlessPlayer);
+    const logFile = timingLogEnabled() ? timingLogPath(projectRoot) : null;
+    if (logFile) log(`Timing log: ${logFile}`);
     log(`Timing guard: load-adaptive deadlines enabled (max 1.75x; explicit load mode: ${loadMode ? 'on' : 'off'}; baseline 20ms event-loop lag)`);
     log(`Playing against ${url}\n`);
 
-    const connect = options => HeadlessPlayer.connect({ url, ...(options || {}) });
+    const scenarioPlayers = [];
+    const connect = options => HeadlessPlayer.connect({ url, ...(options || {}) }).then((player) => {
+      scenarioPlayers.push(player);
+      return player;
+    });
     const results = [];
 
      
     for (const name of toRun) {
       log(`  ▶ ${name}`);
+      scenarioPlayers.length = 0;
       const startedAt = Date.now();
       try {
         const scenario = (await import(`./scenarios/${name}.mjs`)).default;
@@ -135,11 +151,37 @@ const main = async () => {
           return recordCriticMetrics({ projectRoot, scenario: name, metrics, log });
         };
         await scenario({ connect, assert, recordMetrics });
-        results.push({ name, ok: true, ms: Date.now() - startedAt });
-        log(`  PASS ${name} (${Date.now() - startedAt}ms)\n`);
+        const ms = Date.now() - startedAt;
+        results.push({ name, ok: true, ms });
+        log(`  PASS ${name} (${ms}ms)\n`);
+        if (logFile) {
+          appendTimingLog(logFile, {
+            at: new Date().toISOString(),
+            scenario: name,
+            ok: true,
+            ms,
+            ...timingDiagnostics(),
+            port: PORT,
+          });
+        }
       } catch (error) {
-        results.push({ name, ok: false, ms: Date.now() - startedAt, error });
-        log(`  FAIL ${name}: ${error.message}\n`);
+        const ms = Date.now() - startedAt;
+        results.push({ name, ok: false, ms, error });
+        log(`  FAIL ${name}: ${error.message}`);
+        log(formatFailureDiagnosis(name, ms, collectFailureDiagnosis(scenarioPlayers)));
+        log('');
+        if (logFile) {
+          appendTimingLog(logFile, {
+            at: new Date().toISOString(),
+            scenario: name,
+            ok: false,
+            ms,
+            error: error.message,
+            diagnosis: collectFailureDiagnosis(scenarioPlayers),
+            ...timingDiagnostics(),
+            port: PORT,
+          });
+        }
       }
       // Let the server settle disconnects between scenarios.
       await new Promise(resolve => { setTimeout(resolve, 700); });

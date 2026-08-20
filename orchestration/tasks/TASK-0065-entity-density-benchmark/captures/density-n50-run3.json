@@ -1,0 +1,16 @@
+{
+  "task": "TASK-0065",
+  "n": 50,
+  "run": 3,
+  "ticks": 1000,
+  "seed": 3507880739,
+  "monsters_start": 50,
+  "monsters_end": 50,
+  "spawned_via_seam": 49,
+  "elapsed_s": 0.000544,
+  "ticks_per_sec": 1838235.294118,
+  "p99_tick_ms": 0.000500,
+  "tick_ms": 50,
+  "host": "windows",
+  "note": "core Simulation spawn_monster + Melee dispatch; JS has no matching spawn seam"
+}

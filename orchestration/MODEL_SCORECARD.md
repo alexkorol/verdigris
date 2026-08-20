@@ -13,6 +13,11 @@ identity. Recalibrate after model/harness/prompt/acceptance changes.
 | Kimi Work K3 (kimi CLI) | browser features | 1 | 100% (0038) | 0 | delivered hard-fail captures unprompted; high trust |
 | Kimi K3 console | browser features | 1 | 100% (0042) | 0 | first-pass accept; self-run stale-base check + honest flake triage; additive renderer deviation disclosed properly | BOUNDED-DESIGN works |
 | DeepSeek V4-Pro (dsh) | browser UI wave | 1 | 100% (0049) | 0 | first-pass accept, $1.47, 21 new tests, self-cleanup; one scope deviation (mirrored constants vs ask); BOUNDED-DESIGN works |
+| Qwen3.8-27B-8bit local (LM Studio, MacBook) | verified MECHANICAL battery | 7 tasks | 7/7 (2026-08-20: json-normalize x3, code-edit node-checked, test-gen executed, md-table, throughput) | 0 | ~16 tok/s sustained, 1.8-9.3s per small task, zero reasoning leakage at temp 0; telemetry orchestration/telemetry/qwen-2026-08-20.jsonl; DRIVERS: deepseek (Tailscale URL) + luna-mac (localhost:1234); dispatch only with a machine verifier (parse/node --check/run tests); never interactive loops |
+| Cursor Grok 4.6 (Cursor desktop) | browser features + infra | 3 | 100% (0055, 0059, 0062) | 0 | first-pass accept on calibration; hard-fail captures + authentic negative + disclosed deviations w/ repro; strong evidence discipline; BOUNDED-DESIGN works |
+| Cursor Grok 4.6 (Cursor desktop) | native C++ features + CI | 9 | 0061 rubric miss then 8 straight first-pass (Gate A 12/12, reference scenes, launcher) | 0 | protocol/session/render/bench all strong; honest gap notes; give explicit presentation-quality constraints in SPECs |
+| Claude Sonnet (Claude Code, MacBook) | browser infra (calibration) | 1 | 100% (0066) | 0 | first-pass; unsolicited peer-verify on 0062 first (standing-loop duty); clean lane discipline; browser/JS + docs lane |
+| Codex Luna (MacBook) | docs/audit MECHANICAL (calibration) | 1 | 100% (0071) | 0 | precise file:line citations, honest gap tables; minor notes-file naming nit; MECHANICAL-only lane holds |
 | Fable (architect) | scaffolding/reviews/integration | â€” | â€” | 0 | control plane + D-120 scaffolds |
 
 ## Calibration notes

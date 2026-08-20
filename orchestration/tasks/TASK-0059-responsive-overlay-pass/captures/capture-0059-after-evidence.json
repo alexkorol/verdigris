@@ -1,0 +1,883 @@
+{
+  "phase": "after",
+  "port": 6582,
+  "bindHost": "127.0.0.1",
+  "suffix": "bv7qj",
+  "checks": {
+    "1366x768.guide-vs-party": true,
+    "1366x768.guide-vs-minimap": true,
+    "1366x768.zoneMenu-vs-quickbar": true,
+    "1366x768.zoneMenu-vs-mpOrb": true,
+    "1366x768.identity-vs-chatPeek": true,
+    "1366x768.identity-vs-hpOrb": true,
+    "1366x768.chatPeek-vs-hpOrb": true,
+    "1366x768.inventory-vs-hpOrb": true,
+    "1366x768.inventory-vs-mpOrb": true,
+    "1366x768.inventory-vs-quickbar": true,
+    "1366x768.loot-vs-guide": true,
+    "1366x768.zoneMenu-in-viewport": true,
+    "1366x768.party-in-viewport": true,
+    "1366x768.guide-in-viewport": true,
+    "1366x768.inventory-in-viewport": true,
+    "1366x768.settings-in-viewport": true,
+    "1366x768.skillSearch-in-viewport": true,
+    "1366x768.loot-in-viewport": true,
+    "1366x768.deathPanel-in-viewport": true,
+    "1366x768.continue-in-viewport": true,
+    "1366x768.skill-search-visible": true,
+    "1366x768.death-continue-visible": true,
+    "1366x768.zoneMenu-fits-party-column": true,
+    "1366x768.inventory-leaves-canvas": true,
+    "1280x720.guide-vs-party": true,
+    "1280x720.guide-vs-minimap": true,
+    "1280x720.zoneMenu-vs-quickbar": true,
+    "1280x720.zoneMenu-vs-mpOrb": true,
+    "1280x720.identity-vs-chatPeek": true,
+    "1280x720.identity-vs-hpOrb": true,
+    "1280x720.chatPeek-vs-hpOrb": true,
+    "1280x720.inventory-vs-hpOrb": true,
+    "1280x720.inventory-vs-mpOrb": true,
+    "1280x720.inventory-vs-quickbar": true,
+    "1280x720.loot-vs-guide": true,
+    "1280x720.zoneMenu-in-viewport": true,
+    "1280x720.party-in-viewport": true,
+    "1280x720.guide-in-viewport": true,
+    "1280x720.inventory-in-viewport": true,
+    "1280x720.settings-in-viewport": true,
+    "1280x720.skillSearch-in-viewport": true,
+    "1280x720.loot-in-viewport": true,
+    "1280x720.deathPanel-in-viewport": true,
+    "1280x720.continue-in-viewport": true,
+    "1280x720.skill-search-visible": true,
+    "1280x720.death-continue-visible": true,
+    "1280x720.zoneMenu-fits-party-column": true,
+    "1280x720.inventory-leaves-canvas": true,
+    "1920x1080.identity-vs-hpOrb": true,
+    "1920x1080.zoneMenu-in-viewport": true,
+    "1920x1080.guide-in-viewport": true,
+    "1920x1080.skill-search-visible": true,
+    "1920x1080.death-continue-visible": true,
+    "1920x1080.guide-stays-centered": true,
+    "1920x1080.inventory-stays-wide": true
+  },
+  "results": [
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768,
+        "name": "1366x768"
+      },
+      "chromeBoxes": {
+        "guide": {
+          "x": 267,
+          "y": 106,
+          "width": 616.8,
+          "height": 54.9
+        },
+        "party": {
+          "x": 1009,
+          "y": 104,
+          "width": 280,
+          "height": 361.7
+        },
+        "zoneMenu": {
+          "x": 1009,
+          "y": 188,
+          "width": 280,
+          "height": 277.7
+        },
+        "minimap": {
+          "x": 89,
+          "y": 104,
+          "width": 168,
+          "height": 183.1
+        },
+        "chatPeek": {
+          "x": 89,
+          "y": 295.1,
+          "width": 280,
+          "height": 29.2
+        },
+        "identity": {
+          "x": 93.4,
+          "y": 474.2,
+          "width": 240,
+          "height": 23.5
+        },
+        "hpOrb": {
+          "x": 93.4,
+          "y": 515.8,
+          "width": 150.3,
+          "height": 150.3
+        },
+        "mpOrb": {
+          "x": 1122.4,
+          "y": 515.8,
+          "width": 150.3,
+          "height": 150.3
+        },
+        "hud": {
+          "x": 77,
+          "y": 584.9,
+          "width": 1212,
+          "height": 91.1
+        },
+        "quickbar": {
+          "x": 428,
+          "y": 584.9,
+          "width": 510,
+          "height": 73
+        }
+      },
+      "inventoryBoxes": {
+        "guide": {
+          "x": 267,
+          "y": 106,
+          "width": 499.8,
+          "height": 54.9
+        },
+        "party": {
+          "x": 1009,
+          "y": 104,
+          "width": 280,
+          "height": 361.7
+        },
+        "zoneMenu": {
+          "x": 1009,
+          "y": 188,
+          "width": 280,
+          "height": 277.7
+        },
+        "minimap": null,
+        "chatPeek": {
+          "x": 89,
+          "y": 295.1,
+          "width": 280,
+          "height": 29.2
+        },
+        "identity": {
+          "x": 93.4,
+          "y": 474.2,
+          "width": 240,
+          "height": 23.5
+        },
+        "hpOrb": {
+          "x": 93.4,
+          "y": 515.8,
+          "width": 150.3,
+          "height": 150.3
+        },
+        "mpOrb": {
+          "x": 1122.4,
+          "y": 515.8,
+          "width": 150.3,
+          "height": 150.3
+        },
+        "hud": {
+          "x": 77,
+          "y": 584.9,
+          "width": 1212,
+          "height": 91.1
+        },
+        "quickbar": {
+          "x": 428,
+          "y": 584.9,
+          "width": 510,
+          "height": 73
+        },
+        "inventory": {
+          "x": 678,
+          "y": 8,
+          "width": 680,
+          "height": 489.8
+        }
+      },
+      "settingsBoxes": {
+        "settings": {
+          "x": 403,
+          "y": 8,
+          "width": 560,
+          "height": 489.8
+        },
+        "hud": {
+          "x": 77,
+          "y": 584.9,
+          "width": 1212,
+          "height": 91.1
+        },
+        "party": {
+          "x": 1009,
+          "y": 104,
+          "width": 280,
+          "height": 361.7
+        }
+      },
+      "skillBoxes": {
+        "skillTree": {
+          "x": 8,
+          "y": 8,
+          "width": 1350,
+          "height": 489.8
+        },
+        "search": {
+          "x": 60,
+          "y": 332,
+          "width": 256,
+          "height": 38
+        }
+      },
+      "lootBoxes": {
+        "loot": {
+          "x": 469,
+          "y": 263,
+          "width": 440,
+          "height": 159
+        },
+        "guide": {
+          "x": 267,
+          "y": 106,
+          "width": 609.9,
+          "height": 54.9
+        },
+        "hud": {
+          "x": 77,
+          "y": 584.9,
+          "width": 1212,
+          "height": 91.1
+        }
+      },
+      "deathBoxes": {
+        "death": {
+          "x": 0,
+          "y": 0,
+          "width": 1366,
+          "height": 768
+        },
+        "panel": {
+          "x": 323,
+          "y": 195.9,
+          "width": 720,
+          "height": 376.3
+        },
+        "continue": {
+          "x": 568,
+          "y": 494.5,
+          "width": 230,
+          "height": 38
+        }
+      },
+      "pairs": [
+        {
+          "left": "guide",
+          "right": "party",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "guide",
+          "right": "minimap",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "zoneMenu",
+          "right": "quickbar",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "zoneMenu",
+          "right": "mpOrb",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "identity",
+          "right": "chatPeek",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "identity",
+          "right": "hpOrb",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "chatPeek",
+          "right": "hpOrb",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "inventory",
+          "right": "hpOrb",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "inventory",
+          "right": "mpOrb",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "inventory",
+          "right": "quickbar",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "loot",
+          "right": "guide",
+          "overlap": false,
+          "missing": false
+        }
+      ],
+      "overflows": {
+        "zoneMenu": false,
+        "party": false,
+        "guide": false,
+        "inventory": false,
+        "settings": false,
+        "skillSearch": false,
+        "loot": false,
+        "deathPanel": false,
+        "continue": false
+      },
+      "shots": {
+        "chrome": "after-1366x768-chrome.png",
+        "inventory": "after-1366x768-inventory.png",
+        "settings": "after-1366x768-settings.png",
+        "skillTree": "after-1366x768-skill-tree.png",
+        "loot": "after-1366x768-loot.png",
+        "death": "after-1366x768-death.png"
+      },
+      "desktopUnchanged": null
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720,
+        "name": "1280x720"
+      },
+      "chromeBoxes": {
+        "guide": {
+          "x": 224,
+          "y": 82,
+          "width": 616.8,
+          "height": 54.9
+        },
+        "party": {
+          "x": 966,
+          "y": 80,
+          "width": 280,
+          "height": 323.2
+        },
+        "zoneMenu": {
+          "x": 966,
+          "y": 164,
+          "width": 280,
+          "height": 239.2
+        },
+        "minimap": {
+          "x": 46,
+          "y": 80,
+          "width": 168,
+          "height": 183.1
+        },
+        "chatPeek": {
+          "x": 46,
+          "y": 271.1,
+          "width": 280,
+          "height": 29.2
+        },
+        "identity": {
+          "x": 49.4,
+          "y": 459.7,
+          "width": 240,
+          "height": 23.5
+        },
+        "hpOrb": {
+          "x": 49.4,
+          "y": 501.2,
+          "width": 140.8,
+          "height": 140.8
+        },
+        "mpOrb": {
+          "x": 1089.8,
+          "y": 501.2,
+          "width": 140.8,
+          "height": 140.8
+        },
+        "hud": {
+          "x": 34,
+          "y": 561,
+          "width": 1212,
+          "height": 91
+        },
+        "quickbar": {
+          "x": 385,
+          "y": 561,
+          "width": 510,
+          "height": 73
+        }
+      },
+      "inventoryBoxes": {
+        "guide": {
+          "x": 224,
+          "y": 82,
+          "width": 499.8,
+          "height": 54.9
+        },
+        "party": {
+          "x": 966,
+          "y": 80,
+          "width": 280,
+          "height": 323.2
+        },
+        "zoneMenu": {
+          "x": 966,
+          "y": 164,
+          "width": 280,
+          "height": 239.2
+        },
+        "minimap": null,
+        "chatPeek": {
+          "x": 46,
+          "y": 271.1,
+          "width": 280,
+          "height": 29.2
+        },
+        "identity": {
+          "x": 49.4,
+          "y": 459.7,
+          "width": 240,
+          "height": 23.5
+        },
+        "hpOrb": {
+          "x": 49.4,
+          "y": 501.2,
+          "width": 140.8,
+          "height": 140.8
+        },
+        "mpOrb": {
+          "x": 1089.8,
+          "y": 501.2,
+          "width": 140.8,
+          "height": 140.8
+        },
+        "hud": {
+          "x": 34,
+          "y": 561,
+          "width": 1212,
+          "height": 91
+        },
+        "quickbar": {
+          "x": 385,
+          "y": 561,
+          "width": 510,
+          "height": 73
+        },
+        "inventory": {
+          "x": 592,
+          "y": 8,
+          "width": 680,
+          "height": 451.2
+        }
+      },
+      "settingsBoxes": {
+        "settings": {
+          "x": 360,
+          "y": 8,
+          "width": 560,
+          "height": 451.2
+        },
+        "hud": {
+          "x": 34,
+          "y": 561,
+          "width": 1212,
+          "height": 91
+        },
+        "party": {
+          "x": 966,
+          "y": 80,
+          "width": 280,
+          "height": 323.2
+        }
+      },
+      "skillBoxes": {
+        "skillTree": {
+          "x": 8,
+          "y": 8,
+          "width": 1264,
+          "height": 451.2
+        },
+        "search": {
+          "x": 60,
+          "y": 332,
+          "width": 256,
+          "height": 38
+        }
+      },
+      "lootBoxes": {
+        "loot": {
+          "x": 426,
+          "y": 230.4,
+          "width": 440,
+          "height": 159
+        },
+        "guide": {
+          "x": 224,
+          "y": 82,
+          "width": 609.9,
+          "height": 54.9
+        },
+        "hud": {
+          "x": 34,
+          "y": 561,
+          "width": 1212,
+          "height": 91
+        }
+      },
+      "deathBoxes": {
+        "death": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720
+        },
+        "panel": {
+          "x": 280,
+          "y": 171.9,
+          "width": 720,
+          "height": 376.3
+        },
+        "continue": {
+          "x": 525,
+          "y": 470.5,
+          "width": 230,
+          "height": 38
+        }
+      },
+      "pairs": [
+        {
+          "left": "guide",
+          "right": "party",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "guide",
+          "right": "minimap",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "zoneMenu",
+          "right": "quickbar",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "zoneMenu",
+          "right": "mpOrb",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "identity",
+          "right": "chatPeek",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "identity",
+          "right": "hpOrb",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "chatPeek",
+          "right": "hpOrb",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "inventory",
+          "right": "hpOrb",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "inventory",
+          "right": "mpOrb",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "inventory",
+          "right": "quickbar",
+          "overlap": false,
+          "missing": false
+        },
+        {
+          "left": "loot",
+          "right": "guide",
+          "overlap": false,
+          "missing": false
+        }
+      ],
+      "overflows": {
+        "zoneMenu": false,
+        "party": false,
+        "guide": false,
+        "inventory": false,
+        "settings": false,
+        "skillSearch": false,
+        "loot": false,
+        "deathPanel": false,
+        "continue": false
+      },
+      "shots": {
+        "chrome": "after-1280x720-chrome.png",
+        "inventory": "after-1280x720-inventory.png",
+        "settings": "after-1280x720-settings.png",
+        "skillTree": "after-1280x720-skill-tree.png",
+        "loot": "after-1280x720-loot.png",
+        "death": "after-1280x720-death.png"
+      },
+      "desktopUnchanged": null
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "name": "1920x1080"
+      },
+      "chromeBoxes": {
+        "guide": {
+          "x": 686,
+          "y": 70,
+          "width": 560,
+          "height": 74.8
+        },
+        "party": {
+          "x": 1586,
+          "y": 68,
+          "width": 300,
+          "height": 475.6
+        },
+        "zoneMenu": {
+          "x": 1443.5,
+          "y": 152,
+          "width": 442.5,
+          "height": 391.6
+        },
+        "minimap": {
+          "x": 46,
+          "y": 68,
+          "width": 168,
+          "height": 183.1
+        },
+        "chatPeek": {
+          "x": 46,
+          "y": 259.1,
+          "width": 340,
+          "height": 29.2
+        },
+        "identity": {
+          "x": 52,
+          "y": 804.5,
+          "width": 240,
+          "height": 23.5
+        },
+        "hpOrb": {
+          "x": 52,
+          "y": 846,
+          "width": 168,
+          "height": 168
+        },
+        "mpOrb": {
+          "x": 1700,
+          "y": 846,
+          "width": 168,
+          "height": 168
+        },
+        "hud": {
+          "x": 34,
+          "y": 927,
+          "width": 1852,
+          "height": 97
+        },
+        "quickbar": {
+          "x": 705,
+          "y": 930,
+          "width": 510,
+          "height": 73
+        }
+      },
+      "inventoryBoxes": {
+        "guide": {
+          "x": 716.1,
+          "y": 70,
+          "width": 499.8,
+          "height": 54.9
+        },
+        "party": {
+          "x": 1586,
+          "y": 68,
+          "width": 300,
+          "height": 475.6
+        },
+        "zoneMenu": {
+          "x": 1443.5,
+          "y": 152,
+          "width": 442.5,
+          "height": 391.6
+        },
+        "minimap": null,
+        "chatPeek": {
+          "x": 46,
+          "y": 259.1,
+          "width": 340,
+          "height": 29.2
+        },
+        "identity": {
+          "x": 52,
+          "y": 804.5,
+          "width": 240,
+          "height": 23.5
+        },
+        "hpOrb": {
+          "x": 52,
+          "y": 846,
+          "width": 168,
+          "height": 168
+        },
+        "mpOrb": {
+          "x": 1700,
+          "y": 846,
+          "width": 168,
+          "height": 168
+        },
+        "hud": {
+          "x": 34,
+          "y": 927,
+          "width": 1852,
+          "height": 97
+        },
+        "quickbar": {
+          "x": 705,
+          "y": 930,
+          "width": 510,
+          "height": 73
+        },
+        "inventory": {
+          "x": 672,
+          "y": 8,
+          "width": 1240,
+          "height": 968
+        }
+      },
+      "settingsBoxes": {
+        "settings": {
+          "x": 680,
+          "y": 208.5,
+          "width": 560,
+          "height": 567
+        },
+        "hud": {
+          "x": 34,
+          "y": 927,
+          "width": 1852,
+          "height": 97
+        },
+        "party": {
+          "x": 1586,
+          "y": 68,
+          "width": 300,
+          "height": 475.6
+        }
+      },
+      "skillBoxes": {
+        "skillTree": {
+          "x": 8,
+          "y": 8,
+          "width": 1904,
+          "height": 968
+        },
+        "search": {
+          "x": 66.9,
+          "y": 338.9,
+          "width": 256,
+          "height": 38
+        }
+      },
+      "lootBoxes": {
+        "loot": {
+          "x": 746,
+          "y": 228,
+          "width": 440,
+          "height": 159
+        },
+        "guide": {
+          "x": 686,
+          "y": 70,
+          "width": 560,
+          "height": 74.8
+        },
+        "hud": {
+          "x": 34,
+          "y": 927,
+          "width": 1852,
+          "height": 97
+        }
+      },
+      "deathBoxes": {
+        "death": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        },
+        "panel": {
+          "x": 600,
+          "y": 310.9,
+          "width": 720,
+          "height": 458.3
+        },
+        "continue": {
+          "x": 845,
+          "y": 663.5,
+          "width": 230,
+          "height": 38
+        }
+      },
+      "pairs": [
+        {
+          "left": "identity",
+          "right": "hpOrb",
+          "overlap": false,
+          "missing": false
+        }
+      ],
+      "overflows": {
+        "zoneMenu": false,
+        "guide": false
+      },
+      "shots": {
+        "chrome": "after-1920x1080-chrome.png",
+        "inventory": "after-1920x1080-inventory.png",
+        "settings": "after-1920x1080-settings.png",
+        "skillTree": "after-1920x1080-skill-tree.png",
+        "loot": "after-1920x1080-loot.png",
+        "death": "after-1920x1080-death.png"
+      },
+      "desktopUnchanged": {
+        "guideCentered": true,
+        "inventoryWide": true
+      }
+    }
+  ]
+}
