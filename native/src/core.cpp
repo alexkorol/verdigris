@@ -1819,6 +1819,31 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     // swing unprompted, which breaks deterministic comparison trials. JS
     // parity: monsters engage the player; the player's swings are inputs.)
   }
+  // JS monster AI: pack members adjacent to the player strike on their own
+  // cooldown whether or not the player is fighting back. This is what makes
+  // standing in a pack lethal (mortality / final-death flows).
+  {
+    const Vec2 here = tile_movement::occupied_tile(position_);
+    for (auto& monster : monsters_) {
+      if (!monster.alive || monster.boss) continue;
+      if (std::abs(monster.x - here.x) > 1 || std::abs(monster.y - here.y) > 1) continue;
+      if (now < monster.next_attack_ms) continue;
+      monster.next_attack_ms = now + 1200;
+      const int damage = 4 + monster.level * 2;
+      player_life = std::max(0, player_life - damage);
+      WorldCombatEvent impact;
+      impact.type = "hit";
+      impact.attacker_id = monster.uuid;
+      impact.attacker_name = monster.name;
+      impact.target_id = player_uuid_;
+      impact.amount = damage;
+      impact.health = player_life;
+      impact.health_max = player_life_max;
+      impact.died = player_life == 0;
+      events.push_back(impact);
+      if (player_life == 0) break;
+    }
+  }
   if (active_target_.empty()) return events;
   WorldMonster* target = nullptr;
   for (auto& monster : monsters_) if (monster.uuid == active_target_ && monster.alive) { target = &monster; break; }

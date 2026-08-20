@@ -85,6 +85,10 @@ class ProtocolSession {
   // connection, mirroring the JS server's room broadcast.  Unit tests leave
   // this unset and receive the same envelopes through the requester's emit.
   void set_broadcast(std::function<void(const Envelope&)> broadcast);
+  // JS parity: the server runs its own game loop; combat and respawns
+  // advance on the tick, not only on inbound envelopes.
+  void set_direct_emit(std::function<void(const Envelope&)> emit);
+  void tick(std::int64_t now_ms);
 
  private:
   std::string player_payload() const;
@@ -181,6 +185,7 @@ class ProtocolSession {
   std::string current_child_id_;
   std::string current_child_name_;
   bool node_warden_dead_on_entry_ = false;
+  std::set<std::string> kitted_scions_;
   // N6 combat experience (experience.js / shared/ui.js curve).
   long long combat_xp_ = 0;
   void maybe_respawn(std::int64_t now_ms);
@@ -217,7 +222,8 @@ class ProtocolSession {
   std::unique_ptr<Simulation> simulation_;
   std::unique_ptr<WorldSimulation> world_;
   std::function<void(const Envelope&)> broadcast_;
-  mutable std::mutex mutex_;
+  std::function<void(const Envelope&)> direct_emit_;
+  mutable std::recursive_mutex mutex_;
 };
 
 class WebSocketServer {
@@ -247,6 +253,7 @@ class WebSocketServer {
   std::vector<std::shared_ptr<Connection>> connections_;
   std::unordered_map<std::string, std::shared_ptr<ProtocolSession>> sessions_;
   std::unique_ptr<std::thread> accept_thread_;
+  std::unique_ptr<std::thread> tick_thread_;
 };
 
 }  // namespace verdigris::networking
