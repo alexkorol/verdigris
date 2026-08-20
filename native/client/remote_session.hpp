@@ -36,6 +36,9 @@ class RemoteProtocolSession final : public IClientSession {
   ConnectionState connection_state() const override { return state_.load(); }
   const ClientModel& model() const override { return model_; }
   std::vector<PresentationEvent> drain_events() override;
+  // Test-harness escape hatch: send a raw protocol envelope (dev:* control
+  // surface). Production presentation code never calls this.
+  bool send_raw(const std::string& event, verdigris::networking::JsonValue data);
   const std::string& last_error() const override { return last_error_; }
 
  private:

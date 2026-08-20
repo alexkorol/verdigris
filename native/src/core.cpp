@@ -1506,11 +1506,14 @@ void WorldSimulation::check_stair_transition() {
   // party.js checkStairTransitions: stairsDown descends a floor, stairsUp
   // climbs — and only floor 1's climb returns to the surface.
   if (tile.x == metadata_.stairs_down.x && tile.y == metadata_.stairs_down.y) {
+    if (block_stairs_down_) return;  // "No road holds past a living Warden."
     transition_floor(metadata_.depth + 1);
     return;
   }
   if (tile.x == metadata_.stairs_up.x && tile.y == metadata_.stairs_up.y) {
-    if (metadata_.depth <= 1) {
+    if (metadata_.depth <= 1 || stairs_up_returns_to_town_) {
+      // world-web: a node's entry waymark walks back to the Crossroads from
+      // any stage of the road.
       return_to_town();
     } else {
       transition_floor(metadata_.depth - 1);
@@ -1644,7 +1647,7 @@ void WorldSimulation::generate_instance() {
                   : 2;
   int placed = 0;
   int attempts = 0;
-  while (placed < kInstanceMonsterCount && attempts < 4000) {
+  while (!spawn_suppressed_ && placed < kInstanceMonsterCount && attempts < 4000) {
     ++attempts;
     const int x = static_cast<int>(next() % kInstanceWidth);
     const int y = static_cast<int>(next() % kInstanceHeight);
@@ -1662,7 +1665,9 @@ void WorldSimulation::generate_instance() {
     monster.name = zone_display_name(metadata_.theme, "", 1) + " Lurker";
     monster.x = x;
     monster.y = y;
-    monster.level = level;
+    // map.js: level = max(1, floor(1 + index*0.14)) + (depth-1)*2 + theme
+    // bonus. Deeper floors are the authoritative difficulty wall.
+    monster.level = level + (metadata_.depth - 1) * 2 + placed / 7;
     monster.life = kN3TrashLife + (level - 2) * 5;
     monster.life_max = monster.life;
     // Authored pack recipes mirror map.js: crypt is melee-heavy, marsh adds
@@ -1688,7 +1693,8 @@ void WorldSimulation::generate_instance() {
       // native "dungeon" mirrors the JS "stone" theme.
       monster.boss = true;
       monster.rarity = "elite";
-      if (metadata_.theme == "grove") monster.name = "The Elder Oak";
+      if (!boss_name_override_.empty()) monster.name = boss_name_override_;
+      else if (metadata_.theme == "grove") monster.name = "The Elder Oak";
       else if (metadata_.theme == "crypt") monster.name = "The Pale Sovereign";
       else if (metadata_.theme == "wilds") monster.name = "Alpha of the Wilds";
       else if (metadata_.theme == "marsh") monster.name = "The Rotfather";
@@ -1779,17 +1785,31 @@ std::vector<WorldCombatEvent> WorldSimulation::start_player_attack(int player_le
       if (distance <= 2) { chosen = &monster; best = distance; break; }
     }
   }
-  for (auto& monster : monsters_) {
-    if (!monster.alive) continue;
-    const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
-    if (!chosen && distance < best) { best = distance; chosen = &monster; }
+  if (!chosen) {
+    // Nearest alive monster wins (combat/index.js nearest-target aim). The
+    // scan must keep improving `best` — an early-out here silently locks the
+    // aim onto the first spawn in the pack list. Among equally-near monsters
+    // the aimed direction breaks the tie (the browser swings where the
+    // player faces), so repeated aimed swings hold focus on one target
+    // instead of drifting across a pack (healer-race focus).
+    int aim_dx = 0, aim_dy = 0;
+    if (direction.find("left") != std::string::npos) aim_dx = -1;
+    if (direction.find("right") != std::string::npos) aim_dx = 1;
+    if (direction.find("up") != std::string::npos) aim_dy = -1;
+    if (direction.find("down") != std::string::npos) aim_dy = 1;
+    int best_aim = std::numeric_limits<int>::min();
+    for (auto& monster : monsters_) {
+      if (!monster.alive) continue;
+      const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
+      const int aim = aim_dx * (monster.x - here.x) + aim_dy * (monster.y - here.y);
+      if (distance < best || (distance == best && aim > best_aim)) {
+        best = distance; best_aim = aim; chosen = &monster;
+      }
+    }
   }
   if (!chosen) return {};
   active_target_ = chosen->uuid;
   next_player_attack_ms_ = static_cast<std::uint64_t>(now_ms);
-  // Direction is intentionally accepted as a protocol input even though the
-  // N3 tile slice uses nearest-target aim; the browser sends no target UUID.
-  (void)direction;
   (void)player_attack;
   return {};
 }
@@ -1809,17 +1829,49 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       if (monster.alive && monster.boss && std::abs(monster.x - here.x) <= 2
           && std::abs(monster.y - here.y) <= 2) { active_target_ = monster.uuid; break; }
     }
-    if (active_target_.empty()) {
-      for (const auto& monster : monsters_) {
-        if (monster.alive && std::abs(monster.x - here.x) <= 2
-            && std::abs(monster.y - here.y) <= 2) { active_target_ = monster.uuid; break; }
-      }
+    // (N5 draft auto-targeted any adjacent monster; that made the PLAYER
+    // swing unprompted, which breaks deterministic comparison trials. JS
+    // parity: monsters engage the player; the player's swings are inputs.)
+  }
+  // JS monster AI: pack members adjacent to the player strike on their own
+  // cooldown whether or not the player is fighting back. This is what makes
+  // standing in a pack lethal (mortality / final-death flows).
+  {
+    const Vec2 here = tile_movement::occupied_tile(position_);
+    for (auto& monster : monsters_) {
+      if (!monster.alive || monster.boss) continue;
+      if (std::abs(monster.x - here.x) > 1 || std::abs(monster.y - here.y) > 1) continue;
+      if (now < monster.next_attack_ms) continue;
+      monster.next_attack_ms = now + 1200;
+      const int damage = 4 + monster.level * 2;
+      player_life = std::max(0, player_life - damage);
+      WorldCombatEvent impact;
+      impact.type = "hit";
+      impact.attacker_id = monster.uuid;
+      impact.attacker_name = monster.name;
+      impact.target_id = player_uuid_;
+      impact.amount = damage;
+      impact.health = player_life;
+      impact.health_max = player_life_max;
+      impact.died = player_life == 0;
+      events.push_back(impact);
+      if (player_life == 0) break;
     }
   }
   if (active_target_.empty()) return events;
   WorldMonster* target = nullptr;
   for (auto& monster : monsters_) if (monster.uuid == active_target_ && monster.alive) { target = &monster; break; }
   if (!target) { active_target_.clear(); return events; }
+  { // JS combat: walking out of melee reach disengages - the swing loop must
+    // not chase a target across the map (build-comparison parking relies on it).
+    const Vec2 here = tile_movement::occupied_tile(position_);
+    if (std::abs(target->x - here.x) > 4 || std::abs(target->y - here.y) > 4) {
+      active_target_.clear();
+      return events;
+    }
+  }
+  if (player_attack <= 0) return events;  // another session owns the swing
+  fprintf(stderr,"[swing] tgt=%s now=%llu next=%llu range-ok\n",active_target_.c_str(),(unsigned long long)now,(unsigned long long)next_player_attack_ms_);
   if (now >= next_player_attack_ms_) {
     // N4 hit pipeline (server/core/combat/index.js applyHitToMonster):
     // base roll -> Beastbane vs 'beast'-tagged targets -> critical multiplier
@@ -1870,16 +1922,9 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       warning.attacker_name = target->name; warning.target_id = player_uuid_; warning.skill_id = "boss:ground-slam";
       warning.radius = kN3BossTelegraphRadius; warning.duration_ms = kN3BossTelegraphWindowMs; warning.x = target->x; warning.y = target->y;
       events.push_back(warning);
-      if (boss_warning_seen_) {
-        // The attach harness has no independent simulation timer. On the
-        // second committed warning, resolve the standing-in-circle hit in
-        // this same fixed-step command so the event remains deterministic.
-        player_life = std::max(0, player_life - kN3BossDamage);
-        WorldCombatEvent impact; impact.type = "hit"; impact.attacker_id = target->uuid; impact.attacker_name = target->name;
-        impact.target_id = player_uuid_; impact.target_name = "Adventurer"; impact.skill_id = "boss:ground-slam";
-        impact.amount = kN3BossDamage; impact.health = player_life; impact.health_max = player_life_max; impact.died = player_life == 0;
-        events.push_back(impact); target->telegraph_until_ms = now;
-      }
+      // Every warning resolves at its authored window below - the server
+      // tick thread is the simulation timer, so an instant second-warning
+      // resolution would punish a player who already left the circle.
       boss_warning_seen_ = true;
     } else if (target->telegraph_until_ms != 0 && now >= target->telegraph_until_ms) {
       const Vec2 p = tile_movement::occupied_tile(position_);
@@ -2549,6 +2594,15 @@ const ItemDef kItemCatalogue[] = {
     {"vessel-ring", "Ring", "armor", "ring", false, false, {}, {}, 0, 0, "ring", ""},
     // weapons.js iron weaponry: the mortality successor grants iron-sword.
     {"iron-sword", "Iron Sword", "weapon", "right_hand", false, false, {6, 4, -2, 0}, {0, 3, 2, 0}, 0, 0, "", ""},
+    // weapons.js steel-battleaxe (session-arc reward drop).
+    {"steel-battleaxe", "Steel Battleaxe", "weapon", "right_hand", false, false, {-2, 19, 13, 0}, {0, 1, 2, 2}, 0, 0, "", ""},
+    // town-amenities starter kit + small armor footprints.
+    {"bronze-dagger", "Bronze Dagger", "weapon", "right_hand", false, false, {4, 2, -1, 0}, {0, 1, 0, 0}, 0, 0, "", ""},
+    {"bronze-med-helm", "Bronze Med Helm", "armor", "head", false, false, {0, 0, 0, 0}, {3, 4, 3, 0}, 0, 0, "", ""},
+    {"bronze-gloves", "Bronze Gloves", "armor", "gloves", false, false, {0, 0, 0, 0}, {1, 2, 1, 0}, 0, 0, "", ""},
+    {"bronze-boots", "Bronze Boots", "armor", "feet", false, false, {0, 0, 0, 0}, {1, 2, 2, 0}, 0, 0, "", ""},
+    {"knife", "Knife", "sharp", "", false, false, {0, 0, 0, 0}, {0, 0, 0, 0}, 0, 0, "", ""},
+    {"wooden-shield", "Wooden Shield", "armor", "left_hand", false, false, {0, 0, 0, 0}, {2, 1, 3, 0}, 0, 0, "", ""},
 };
 
 // Process-wide instance identity source (factory.js uuid v4): uniqueness is
@@ -2735,7 +2789,7 @@ bool PlayerInventory::fits_at(const GameItem& item, int slot) const {
       const int y = y0 + dy;
       if (x >= kColumns || y >= kRows) return false;
       for (const auto& other : items_) {
-        if (other.id == "coins" || other.slot < 0) continue;  // currency occupies no cells
+        if (other.slot < 0) continue;  // unplaced stacks block nothing
         const int ox = other.slot % kColumns;
         const int oy = other.slot / kColumns;
         if (x >= ox && x < ox + other.size.width && y >= oy && y < oy + other.size.height) {
@@ -2767,7 +2821,9 @@ PlayerInventory::AddResult PlayerInventory::add(GameItem item) {
         return result;
       }
     }
-    item.slot = -1;
+    // JS parity: a new stack occupies a real backpack cell like any item;
+    // -1 only when the grid is genuinely full (the balance still counts).
+    item.slot = first_fit(item);
     result.added = item.qty;
     items_.push_back(std::move(item));
     return result;
@@ -3038,7 +3094,8 @@ void WorldSimulation::drop_monster_loot(const WorldMonster& monster, int goods_f
   if (monster.rarity == "rare") base_chance = 0.2;
   if (monster.rarity == "elite") base_chance = 0.5;
   const double chance = apply_goods_found_to_gear_chance(base_chance, goods_found_percent);
-  if (world_rand01(next_world_random()) < chance) {
+  const bool guaranteed = guaranteed_elite_gear_ && monster.rarity == "elite";
+  if (guaranteed || world_rand01(next_world_random()) < chance) {
     const auto& pool = gear_drop_pool();
     const std::string& gear_id =
         pool[static_cast<std::size_t>(std::floor(world_rand01(next_world_random()) * pool.size()))];

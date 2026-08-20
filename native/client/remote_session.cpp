@@ -428,6 +428,11 @@ std::vector<PresentationEvent> RemoteProtocolSession::drain_events() {
   return drained;
 }
 
+bool RemoteProtocolSession::send_raw(const std::string& event, verdigris::networking::JsonValue data) {
+  Envelope envelope{event, std::move(data)};
+  return send_envelope(envelope);
+}
+
 bool RemoteProtocolSession::send_envelope(const Envelope& envelope) {
   return send_frame(0x1, verdigris::networking::emit_envelope(envelope));
 }

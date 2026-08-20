@@ -841,6 +841,28 @@ class WorldSimulation {
   const MovementStepInfo& last_step() const { return last_step_; }
   const InstanceMetadata& metadata() const { return metadata_; }
   const std::vector<WorldMonster>& monsters() const { return monsters_; }
+  // loot.js: Proof of Temper guarantees the first elite gear drop while
+  // the slay-elite objective is current (session sets this per tick).
+  void set_guaranteed_elite_gear(bool value) { guaranteed_elite_gear_ = value; }
+  // world-web node instances: the boss carries the node warden name; a
+  // cleared node spawns no monsters at all (dead stays dead).
+  void set_boss_name_override(const std::string& name) { boss_name_override_ = name; }
+  void set_spawn_suppressed(bool value) { spawn_suppressed_ = value; }
+  void set_scene_name(const std::string& name) { scene_name_ = name; }
+  void set_scene_id(const std::string& id) { scene_id_ = id; }
+  // dev:monster:reset - revive one monster at a chosen max health for
+  // deterministic comparison trials.
+  bool reset_monster(const std::string& uuid, int max_health) {
+    for (auto& monster : monsters_) {
+      if (monster.uuid != uuid) continue;
+      monster.alive = true;
+      if (max_health > 0) monster.life_max = max_health;
+      monster.life = monster.life_max;
+      return true;
+    }
+    return false;
+  }
+  void kill_all_monsters() { for (auto& monster : monsters_) { monster.alive = false; monster.life = 0; } active_target_.clear(); }
   const TileGrid& grid() const { return grid_; }
   bool in_instance() const { return scene_type_ == "instance"; }
 
@@ -932,6 +954,19 @@ class WorldSimulation {
   InstanceMetadata metadata_;
   std::vector<WorldMonster> monsters_;
   std::string active_target_;
+  bool guaranteed_elite_gear_ = false;
+  std::string boss_name_override_;
+  bool spawn_suppressed_ = false;
+  bool block_stairs_down_ = false;
+  bool stairs_up_returns_to_town_ = false;
+  std::string engaged_by_;
+public:
+  void set_block_stairs_down(bool value) { block_stairs_down_ = value; }
+  void set_stairs_up_returns_to_town(bool value) { stairs_up_returns_to_town_ = value; }
+  // shared party worlds: swings resolve only on the session that engaged.
+  void set_engaged_by(const std::string& identity) { engaged_by_ = identity; }
+  const std::string& engaged_by() const { return engaged_by_; }
+private:
   std::uint64_t next_player_attack_ms_ = 0;
   std::uint64_t next_boss_telegraph_ms_ = 0;
   bool boss_warning_seen_ = false;

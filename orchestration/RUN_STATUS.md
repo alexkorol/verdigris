@@ -75,18 +75,23 @@ telegraph FX can graze the HUD corner (0068); reconnect lands in 0069.
 Feedback wanted on: movement feel, combat readability, loot moment,
 whether the loop invites a second run.
 
-## DAY RUN 2026-08-20 (D-124) — 11:00 snapshot
+## DAY RUN 2026-08-20 (D-124) — 13:30 snapshot
 
-- **N5 Chronicles: 18/19 attach (architect takeover of 0056).** Full
-  D-106 loop green natively: mortal death → crypt → successor → relic
-  circulation on elite kill → recovery persisted. Fresh-Player-per-
-  socket JS parity implemented. session-arc = the one red (needs town
-  NPC surface — moved to N6 scope with 0058).
-- 0076 HUD parity ACCEPTED (orbs/minimap/quickbar/chip live).
-- 0075 terrain: rev2 completed by architect (cursor idle 2h) — INTEGRATED.
-- Batch PR shipping now: N5 18/19 + terrain rev2 + HUD parity + side-by-side round 2 (sxs2-*: near-family visual parity).
-- deepseek Flash: clone frozen since morning; takeover annotated in
-  0056 STATUS. luna-mac: 0074 in progress presumably.
+- N6 grind (architect, 0058 takeover): **23/32 attach** (was 18 at
+  baseline). Green today: session-arc (full 30-min loop!), first-goal,
+  skilltree, house-treasury, town-amenities + all N5. Implemented: town
+  NPCs, first-goal quest machine, kill XP/leveling (shared/ui curve),
+  tree save/budget, bank+treasury, fountain, auto-gold, shop display,
+  floor-clear + instance-complete, depth-scaled monster levels.
+- Remaining 9: economy, quest, crossroads, party, party-stories,
+  build-divergence, gates, world-web, gear-outcomes.
+- Master CI GREEN both workflows (denylist hotfix PR #43 + load-mode
+  PR #44). Two documented denylist exceptions flagged for owner:
+  legacyRelicId, bronze-dagger (live protocol/harness require them).
+- Attribute stub note: tree node attrs approximated (+2/attr/node)
+  until the 271-node engine ports — successor task queued in HANDOFF.
+- Fleet: cursor + deepseek frozen since morning; luna-mac last seen on
+  0071 (integrated PR #41). Architect implementing solo per D-124.
 
 ## RUNNING
 
