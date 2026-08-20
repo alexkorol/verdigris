@@ -5,7 +5,11 @@ state: READY (PIPELINED — claimable only AFTER TASK-0047 is INTEGRATED;
   verify 0047's item types exist in native/src/core.cpp before branching)
 priority: critical (mission critical path, D-116)
 owned_paths:
-  - native/**
+  - native/src/**
+  - native/tests/**
+  # ARCHITECT NOTE 2026-08-20 (D-122): native/client/** is now the C3
+  # lane (TASK-0060/0061) and native/CMakeLists.txt is architect
+  # single-writer. Your in-flight work is server-side and unaffected.
   - orchestration/tasks/TASK-0056-native-protocol-n5/**
 forbidden_paths:
   - playtest/** (harness is the measuring stick)

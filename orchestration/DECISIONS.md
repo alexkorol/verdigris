@@ -210,3 +210,22 @@ solo on accepted-outcome-per-dollar; greens are revision+environment
 bound; consensus is not truth (preserve dissent, select don't blend);
 every adopted lesson becomes a regression or experiment. Enforcement
 backlog and EXP-1 (packet-type A/B) recorded in the new docs.
+
+## D-122 - Three-axis parity + C3 now (owner research, 2026-08-20)
+
+Owner-supplied program correction (chatgpt_pro writeup, verified at
+tip: verdigris_client links ONLY verdigris_core - the launched exe
+never talks to the C++ server the N-waves prove). Parity has three
+axes: (1) server/rules parity - browser harness vs C++ server, the
+N1-N6 waves; (2) native journey parity - the native client completes
+real player journeys against the C++ server over WS, no in-process
+sim, no dev grants; (3) presentation/feel parity - readability and
+cohesion via a scored quality gate. "Full native parity" may only
+describe all three passed. N6 is renamed "full SERVER parity".
+Sequencing: C3 (client<->server connect) starts NOW against the N4
+surface, parallel to N5 - NOT after N6. N6 releases only after Gate A
+(networked guest expedition) is real. Canon lives in
+docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md (gates A/B/C, quality
+rubric, session architecture, single-writer main.cpp rule, protocol
+matrix). Throughput metric: complete player journeys moved red->green
+in the native executable - not merged handlers/effects/tasks.
