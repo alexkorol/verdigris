@@ -2,6 +2,7 @@
 #include <cctype>
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <limits>
@@ -15,6 +16,7 @@
 #include "verdigris/seasonal.hpp"
 #include "camera2d.hpp"
 #include "render_list.hpp"
+#include "remote_play.hpp"
 
 #ifdef VERDIGRIS_NATIVE_WINDOWS
 #define WIN32_LEAN_AND_MEAN
@@ -2345,6 +2347,21 @@ int main(int argc, char** argv) {
     if (std::strcmp(argv[i], "--headless") == 0) return run_headless_demo();
     if (std::strcmp(argv[i], "--scenario") == 0 && i + 1 < argc)
       return run_scenarios(argv[i + 1]);
+    if (std::strcmp(argv[i], "--remote") == 0) {
+      const char* host = "127.0.0.1";
+      unsigned short port = 6580;
+      if (i + 1 < argc && argv[i + 1][0] != '-') {
+        const bool dotted = std::strchr(argv[i + 1], '.') != nullptr;
+        if (dotted) {
+          host = argv[++i];
+          if (i + 1 < argc && argv[i + 1][0] != '-')
+            port = static_cast<unsigned short>(std::atoi(argv[++i]));
+        } else {
+          port = static_cast<unsigned short>(std::atoi(argv[++i]));
+        }
+      }
+      return run_remote_native_client(host, port, "cursor-guest");
+    }
   }
   HINSTANCE instance = GetModuleHandle(nullptr);
   auto state = std::make_unique<ClientState>();

@@ -57,10 +57,13 @@ class RemoteProtocolSession final : public IClientSession {
   std::mutex send_mutex_;
   std::mutex inbox_mutex_;
   std::deque<std::string> inbox_;
+  std::atomic<bool> peer_dropped_{false};
 
   ClientModel model_;
   std::vector<PresentationEvent> pending_events_;
   std::string last_error_;
+  std::string last_facing_{"down"};
+  std::string pending_equip_uuid_;
 };
 
 }  // namespace verdigris::client

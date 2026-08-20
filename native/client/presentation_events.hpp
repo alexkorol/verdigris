@@ -21,6 +21,7 @@ enum class PresentationEventType {
   ItemEquipped,
   ExtractionCompleted,
   ScionDied,
+  Telegraph,
   Message,             // human-readable server/system line in `text`
   ProtocolError,       // malformed or unexpected envelope in `text`
 };

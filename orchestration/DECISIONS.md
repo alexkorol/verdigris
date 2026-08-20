@@ -229,3 +229,13 @@ docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md (gates A/B/C, quality
 rubric, session architecture, single-writer main.cpp rule, protocol
 matrix). Throughput metric: complete player journeys moved red->green
 in the native executable - not merged handlers/effects/tasks.
+
+## D-123 - The READY queue never runs dry (owner-ruled, 2026-08-20)
+
+Owner: "this should never be a thing that the specced packet runs dry."
+Standing rule: the board carries a MINIMUM of 3 claimable READY packets
+at all times, restocked at every architect sweep from the strategic
+backlog (convergence gates, parity waves, N7 better-than, infra debt).
+Spec-ahead is architect work of first rank - equal priority with
+reviews. Enforcement: sweep checklist step; RUN_STATUS lists the READY
+count; a sweep that leaves READY < 3 must say why.
