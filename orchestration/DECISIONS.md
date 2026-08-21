@@ -253,3 +253,23 @@ taken over by the architect as a tracked implementation task; (3)
 sweep cadence tightens to ~30 min while the owner is away; (4) token
 rationing is subordinate to this directive for today (owner accepted
 the spend by issuing it).
+
+## D-125 - Durable queue runway (owner-ruled, 2026-08-20 evening)
+
+The owner identified that the morning fleet outage was compounded by a queue
+that would have drained quickly even if every model had stayed connected. A raw
+count of immutable SPEC headers is not runway: integrated historical tasks,
+claimed work, HOLD items, and overlapping owned paths do not count.
+
+Standing rule: before three implementation lanes are active, the board carries
+at least **8 effective READY packets** with no unresolved owned-path collision,
+plus at least **4 sequenced DRAFT/PIPELINED successors**. During ordinary
+operation the reserve floor is the greater of 8 or two effective READY packets
+per live coordinator. A claim consumes reserve and triggers restocking in the
+same architect sweep. If the floor cannot be met without inventing filler or
+crossing an owner-only decision, `RUN_STATUS.md` states the reason and the
+architect stages lane revival instead of pretending the queue is healthy.
+
+`RUN_STATUS.md` is the authoritative list of effective READY work. Machine
+enforcement is TASK-0080. D-123 remains the original never-dry law; D-125
+strengthens its depth and counting semantics.

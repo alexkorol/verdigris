@@ -119,3 +119,14 @@ goal source (briefs reference it; per-coordinator goal texts must not
 drift), and the architect sweep runs the stuck-loop heuristic (fresh
 clone FETCH_HEAD + no active claim + READY tasks on board =>
 intervene via spec annotation, never by editing coordinator state).
+
+## Durable queue runway (D-125, 2026-08-20)
+
+Queue health is measured from the effective READY table in `RUN_STATUS.md`,
+not from immutable historical SPEC headers. Integrated, claimed, held,
+superseded, dependent, or owned-path-colliding packets do not count. Before a
+three-lane restart, hold at least 8 effective READY packets plus 4 sequenced
+successors; thereafter keep the greater of 8 or two per live coordinator. A
+claim triggers same-sweep restocking. Useful runway outranks filler: when the
+floor cannot be met without crossing owner authority, stage lane revival and
+report the real deficit.

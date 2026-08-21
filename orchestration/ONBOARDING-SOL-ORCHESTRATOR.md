@@ -111,6 +111,13 @@ other work.
 6. Rewrite `RUN_STATUS.md`; log failures in `INCIDENTS.md`; recalibrate
    `MODEL_SCORECARD.md`.
 
+**D-125 supersedes the numeric floor in step 5:** effective READY means the
+current `RUN_STATUS.md` queue after excluding historical/integrated states,
+claims, HOLD/dependency gates, and owned-path collisions. Before three lanes
+are live, stock at least 8 effective READY plus 4 sequenced successors; keep
+the greater of 8 or two per live coordinator thereafter. TASK-0080 is the
+machine-enforcement packet.
+
 ## The rules that cost the most to learn
 
 - **A dark fleet is a stop condition, not a takeover trigger** (INC-012).
