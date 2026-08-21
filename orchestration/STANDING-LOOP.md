@@ -13,8 +13,10 @@ Repeat forever:
    `ACCEPTANCE.md`.
 2. Check your task folders for new `REVIEW.md` verdicts — a REVISE on
    your work outranks everything; fix and re-request first.
-3. Otherwise claim the highest-priority READY task not already
-   claimed, preferring your lane suggestion in RUN_STATUS.
+3. Otherwise claim the highest-priority task listed in the current
+   `RUN_STATUS.md` **Effective READY** table, preferring your lane routing.
+   Historical immutable SPEC headers may still say READY after integration;
+   they are not claimable unless RUN_STATUS lists them. HOLD always wins.
 4. Implement per SPEC: owned paths only, literal gate transcripts per
    ACCEPTANCE.md, hard-fail captures for UI, your PORTS only,
    loopback binds, never port 6500.
@@ -52,6 +54,11 @@ pending): append one line to
 (`powershell -Command "Start-Sleep 900"`), re-check, and DOUBLE the
 sleep up to 3600s while the board stays empty. Never spin
 instant-fetch cycles.
+
+The architect owns D-125 runway depth. Coordinators do not create filler or
+claim HOLD work when the effective queue dips below its floor; they finish the
+current task, write one board-dry note if needed, and continue the canonical
+backoff while Sol restocks.
 
 ## Stop conditions
 
