@@ -1,0 +1,218 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "synthetic-run-0139-forbidden-port",
+  "label": "clean_machine_verified",
+  "platform": "windows-x64",
+  "host": {
+    "disposable": true,
+    "id": "syn-host-0139",
+    "image": "windows-x64:synthetic-base-image@sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "base_commit": "be6d555688619819084b352660fc0336a90d0ec3",
+  "resolved_head": "be6d555688619819084b352660fc0336a90d0ec3",
+  "checkout": {
+    "fresh_clone": true,
+    "git_status_clean": true,
+    "repository_url": "https://github.com/alexkorol/verdigris"
+  },
+  "toolchain": [
+    {
+      "tool": "node",
+      "observed_version": "22.14.0"
+    },
+    {
+      "tool": "npm",
+      "observed_version": "10.9.2"
+    },
+    {
+      "tool": "git",
+      "observed_version": "2.47.1"
+    },
+    {
+      "tool": "cmake",
+      "observed_version": "3.31.1"
+    },
+    {
+      "tool": "pwsh",
+      "observed_version": "7.4.6"
+    }
+  ],
+  "dependencies": {
+    "install_command": "npm ci --no-audit --no-fund",
+    "fingerprint_before": "sha256:synthetic-deps-fingerprint",
+    "fingerprint_after": "sha256:synthetic-deps-fingerprint"
+  },
+  "caches": [
+    {
+      "name": "npm-store",
+      "outcome": "cold_miss"
+    },
+    {
+      "name": "native-build-cache",
+      "outcome": "hit",
+      "key": "native-build:be6d555688619819084b352660fc0336a90d0ec3",
+      "content_hash": "sha256:synthetic-native-artifacts-hash",
+      "producer_run_id": "synthetic-run-0138-seed"
+    }
+  ],
+  "capsule": {
+    "lane": "ox-pc-g",
+    "low": 6740,
+    "high": 6759
+  },
+  "listeners": [
+    {
+      "process": "verdigris_server",
+      "pid": 67402,
+      "port": 6500,
+      "bind_address": "127.0.0.1"
+    }
+  ],
+  "processes": {
+    "tracked_pids": [
+      67401
+    ],
+    "leaked_pids": []
+  },
+  "stages": [
+    {
+      "stage": "checkout",
+      "host_id": "syn-host-0139",
+      "host_image": "windows-x64:synthetic-base-image",
+      "base_commit": "be6d555688619819084b352660fc0336a90d0ec3",
+      "command": "git clone --no-checkout https://github.com/alexkorol/verdigris workspace && git -C workspace checkout --detach be6d555688619819084b352660fc0336a90d0ec3 && git -C workspace status --porcelain && git -C workspace rev-parse HEAD",
+      "exit_code": 0,
+      "started_at_utc": "2026-08-21T23:40:00Z",
+      "finished_at_utc": "2026-08-21T23:40:20Z",
+      "log_ref": "artifacts/logs/01-checkout.log",
+      "clean_flags": [
+        "FRESH_VOLUME",
+        "PINNED_BASE"
+      ]
+    },
+    {
+      "stage": "toolchain",
+      "host_id": "syn-host-0139",
+      "host_image": "windows-x64:synthetic-base-image",
+      "base_commit": "be6d555688619819084b352660fc0336a90d0ec3",
+      "command": "node --version; npm --version; git --version; cmake --version; pwsh --version",
+      "exit_code": 0,
+      "started_at_utc": "2026-08-21T23:40:20Z",
+      "finished_at_utc": "2026-08-21T23:40:30Z",
+      "log_ref": "artifacts/logs/02-toolchain.log"
+    },
+    {
+      "stage": "dependencies",
+      "host_id": "syn-host-0139",
+      "host_image": "windows-x64:synthetic-base-image",
+      "base_commit": "be6d555688619819084b352660fc0336a90d0ec3",
+      "command": "npm ci --no-audit --no-fund",
+      "exit_code": 0,
+      "started_at_utc": "2026-08-21T23:40:30Z",
+      "finished_at_utc": "2026-08-21T23:42:00Z",
+      "log_ref": "artifacts/logs/03-dependencies.log"
+    },
+    {
+      "stage": "cache",
+      "host_id": "syn-host-0139",
+      "host_image": "windows-x64:synthetic-base-image",
+      "base_commit": "be6d555688619819084b352660fc0336a90d0ec3",
+      "command": "harness: record cache provenance for npm-store (cold_miss) and native-build-cache (hit with key, content_hash, producer_run_id)",
+      "exit_code": 0,
+      "started_at_utc": "2026-08-21T23:42:00Z",
+      "finished_at_utc": "2026-08-21T23:42:05Z",
+      "log_ref": "artifacts/logs/04-cache.log",
+      "cache_provenance": {
+        "recorded": true
+      }
+    },
+    {
+      "stage": "build",
+      "host_id": "syn-host-0139",
+      "host_image": "windows-x64:synthetic-base-image",
+      "base_commit": "be6d555688619819084b352660fc0336a90d0ec3",
+      "command": "npm run build && powershell -File native/build.ps1",
+      "exit_code": 0,
+      "started_at_utc": "2026-08-21T23:42:05Z",
+      "finished_at_utc": "2026-08-21T23:46:00Z",
+      "log_ref": "artifacts/logs/05-build.log"
+    },
+    {
+      "stage": "tests",
+      "host_id": "syn-host-0139",
+      "host_image": "windows-x64:synthetic-base-image",
+      "base_commit": "be6d555688619819084b352660fc0336a90d0ec3",
+      "command": "powershell -File native/build.ps1 -RunTests && npm run test:unit",
+      "exit_code": 0,
+      "started_at_utc": "2026-08-21T23:46:00Z",
+      "finished_at_utc": "2026-08-21T23:52:00Z",
+      "log_ref": "artifacts/logs/06-tests.log"
+    },
+    {
+      "stage": "launch",
+      "host_id": "syn-host-0139",
+      "host_image": "windows-x64:synthetic-base-image",
+      "base_commit": "be6d555688619819084b352660fc0336a90d0ec3",
+      "command": "start native/build/verdigris_server.exe bound to 127.0.0.1:6500 (forbidden owner port)",
+      "exit_code": 0,
+      "started_at_utc": "2026-08-21T23:52:00Z",
+      "finished_at_utc": "2026-08-21T23:52:15Z",
+      "log_ref": "artifacts/logs/07-launch-forbidden.log"
+    },
+    {
+      "stage": "smoke",
+      "host_id": "syn-host-0139",
+      "host_image": "windows-x64:synthetic-base-image",
+      "base_commit": "be6d555688619819084b352660fc0336a90d0ec3",
+      "command": "PLAYTEST_WS_URL=ws://127.0.0.1:6742 node playtest/run.mjs --attach synthetic-smoke-set",
+      "exit_code": 0,
+      "started_at_utc": "2026-08-21T23:52:15Z",
+      "finished_at_utc": "2026-08-21T23:54:00Z",
+      "log_ref": "artifacts/logs/08-smoke.log"
+    },
+    {
+      "stage": "process",
+      "host_id": "syn-host-0139",
+      "host_image": "windows-x64:synthetic-base-image",
+      "base_commit": "be6d555688619819084b352660fc0336a90d0ec3",
+      "command": "harness: enumerate listeners on capsule ports before and after the run; verify tracked pids exited cleanly",
+      "exit_code": 0,
+      "started_at_utc": "2026-08-21T23:54:00Z",
+      "finished_at_utc": "2026-08-21T23:54:10Z",
+      "log_ref": "artifacts/logs/09-process.log"
+    },
+    {
+      "stage": "port",
+      "host_id": "syn-host-0139",
+      "host_image": "windows-x64:synthetic-base-image",
+      "base_commit": "be6d555688619819084b352660fc0336a90d0ec3",
+      "command": "harness: cross-check listener table against PORT-1 loopback-only, PORT-2 capsule-only, PORT-3 forbidden port ban",
+      "exit_code": 0,
+      "started_at_utc": "2026-08-21T23:54:10Z",
+      "finished_at_utc": "2026-08-21T23:54:20Z",
+      "log_ref": "artifacts/logs/10-port.log"
+    },
+    {
+      "stage": "cleanup",
+      "host_id": "syn-host-0139",
+      "host_image": "windows-x64:synthetic-base-image",
+      "base_commit": "be6d555688619819084b352660fc0336a90d0ec3",
+      "command": "terminate tracked pids [67401]; re-enumerate capsule listeners (must be empty); record host_disposition=destroyed",
+      "exit_code": 0,
+      "started_at_utc": "2026-08-21T23:54:20Z",
+      "finished_at_utc": "2026-08-21T23:54:45Z",
+      "log_ref": "artifacts/logs/11-cleanup.log"
+    },
+    {
+      "stage": "artifacts",
+      "host_id": "syn-host-0139",
+      "host_image": "windows-x64:synthetic-base-image",
+      "base_commit": "be6d555688619819084b352660fc0336a90d0ec3",
+      "command": "write artifacts/run-manifest.json with per-artifact SHA-256 hashes",
+      "exit_code": 0,
+      "started_at_utc": "2026-08-21T23:54:45Z",
+      "finished_at_utc": "2026-08-21T23:55:00Z",
+      "log_ref": "artifacts/logs/12-artifacts.log"
+    }
+  ]
+}
