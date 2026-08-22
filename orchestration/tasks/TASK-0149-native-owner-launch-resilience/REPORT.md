@@ -1,5 +1,114 @@
 # REPORT — TASK-0149 native owner-launch resilience
 
+Revision 2 (REVISE fix): adds the post-spawn readiness-failure orphan-leak
+fix and the deterministic live negative control requested in
+`REVIEW.md` (verdict REVISE against head
+`96f4ccbd1572add96e34ccb230b9935b743d7ff3`, program review commit
+`4400ea66`). Revision scope stayed inside the review's numbered item; all
+accepted happy paths and prior controls are preserved.
+
+## Revision 2 — leak fix and control
+
+- `Start-OwnerServer` now owns cleanup for every exception after
+  `Start-Process`: the whole post-spawn readiness sequence is wrapped so any
+  failure path stops the spawned process before rethrowing, with a distinct
+  message when the spawn already exited by itself.
+- The spawned server PID is published to `$script:lastSpawnedServerPid`
+  immediately after `Start-Process` and before every throwable readiness
+  check, so callers and fault scenarios can always name the exact PID even
+  though PowerShell never completes `$server = Start-OwnerServer ...` on a
+  throw.
+- New optional switch `-ReadinessFaultControl` deterministically replays both
+  live post-spawn readiness failures without touching forbidden files:
+  - `readiness-timeout`: impostor process (`powershell.exe -Command
+    "Start-Sleep -Seconds 120"`) stays alive silently through the full 12s
+    deadline;
+  - `port-mismatch`: live impostor prints
+    `verdigris_server listening on ws://127.0.0.1:6599` through the redirected
+    stdout, tripping the port-match assertion while still alive.
+  Each scenario requires the launcher to fail, requires a published PID > 0,
+  and then proves that exact PID is gone.
+- New guard combos fail fast: `-ReadinessFaultControl` refuses `-Local`,
+  `-Port`, and pairing with `-LifecycleSelfTest`.
+
+### Revision gate transcripts
+
+New control (`powershell -NoProfile -ExecutionPolicy Bypass -File
+native/tools/play-native.ps1 -ReadinessFaultControl`):
+
+```text
+play-native: fault-control readiness-timeout starting on port 6520 (12s readiness deadline against a live silent process)
+play-native: starting verdigris_server on ws://127.0.0.1:6520 (capsule 6520-6539)
+play-native: startup readiness failed; stopped spawned server pid 24496 to prevent an orphan
+play-native: fault-control readiness-timeout observed the expected failure - play-native: verdigris_server (pid 24496) printed no listening line within 12s; see ...\faultctl-readiness-timeout-20260822-035656-759.log
+play-native: fault-control readiness-timeout PASS (published pid 24496 is gone; no orphan)
+play-native: fault-control port-mismatch starting on port 6520 (port-mismatch assertion against a live impostor process)
+play-native: starting verdigris_server on ws://127.0.0.1:6520 (capsule 6520-6539)
+play-native: startup readiness failed; stopped spawned server pid 13024 to prevent an orphan
+play-native: fault-control port-mismatch observed the expected failure - play-native: verdigris_server reported port 6599 but the launcher chose 6520
+play-native: fault-control port-mismatch PASS (published pid 13024 is gone; no orphan)
+play-native: readiness fault control PASS (live post-spawn failures left no orphan server)
+FAULT-CONTROL exit=0
+```
+
+Preserved negative controls (all exit 1):
+
+```text
+exit=1 for [-Port 6500]
+exit=1 for [-Port 7000]
+exit=1 for [-LifecycleSelfTest -Local]
+exit=1 for [-LifecycleSelfTest -Port 6521]
+```
+
+New guard combos (all exit 1, messages verified):
+
+```text
+-LifecycleSelfTest -ReadinessFaultControl -> "...separate controls; run one at a time."
+-ReadinessFaultControl -Local             -> "...drop -Local."
+-ReadinessFaultControl -Port 6522         -> "...drop -Port."
+```
+
+Full native tests (`native/build.ps1 -RunTests`, final run):
+
+```text
+native legacy denylist: PASS
+[core/networking/camera2d suites: PASS lines as in revision 1]
+session tests passed
+BUILD+TESTS exit=0
+```
+
+Reviewer's exact combo (`play-native.ps1 -Rebuild -LifecycleSelfTest`):
+
+```text
+play-native: building via native/build.ps1
+native legacy denylist: PASS
+play-native: selftest normal-close ... client pid 25344 (--remote 127.0.0.1 6520)
+play-native: selftest normal-close normal close accepted (client pid 25344 exited by itself with code 0)
+play-native: normal-close left no orphan verdigris processes (verified by pid)
+play-native: selftest normal-close PASS (port 6520, ...)
+play-native: selftest forced-exit ... client pid 21164 (--remote 127.0.0.1 6520)
+play-native: selftest forced-exit forced client exit done (pid 21164 killed)
+play-native: forced-exit left no orphan verdigris processes (verified by pid)
+play-native: selftest forced-exit PASS (port 6520, ...)
+play-native: lifecycle selftest PASS (normal close and forced client exit both cleaned up)
+REBUILD+SELFTEST exit=0
+```
+
+`git diff --check` (revision diff): exit 0; changed file is exactly
+`native/tools/play-native.ps1` (+88/-24 vs revision 1 head).
+
+Flake note (unchanged sources): during this revision's first `-RunTests` run,
+the same four timing-sensitive `reconnect:` checks failed exactly as during
+revision 1, and an immediate rerun passed everything again (exit 0). Pattern:
+fails only under back-to-back full-suite load, never in direct
+`verdigris_session_tests.exe` runs or the reviewer's independent run. The
+reconnect suite is in `native/tests/session_tests.cpp` / client session code,
+untouched and unfixable from this task's owned paths.
+
+---
+
+# Revision 1 report
+
 Worker: `ox-pc-j` (branch `codex/TASK-0149-native-owner-launch-resilience-ox-pc-j`)
 Base: routed head `30e98e024d4a22a744be4bee63dfcf607f63010a`; immutable SPEC
 base `060c11517d2ebb0aec0c4d4a38c5e3eb53141cb2` verified ancestor.
