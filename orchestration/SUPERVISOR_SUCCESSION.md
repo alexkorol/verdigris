@@ -77,7 +77,10 @@ request.
     because it never placed multiple living threats on the floor; its first
     revision process stopped clean before writes and recovery PID 6816 is active
     on the simultaneous elite/flanker fix. This lane has consumed one recovery;
-  - ox-pc-p, ports 6920-6939, TASK-0147 claim `3ee9f928`, process PID 20868;
+  - ox-pc-p, ports 6920-6939, TASK-0147 claim `3ee9f928`; first process exited
+    with owned-path edits preserved after its real GDI capture exposed broken
+    scenery geometry. Exact-worktree recovery PID 8520 is active and has
+    consumed the lane's one recovery;
   - ox-pc-q, ports 6940-6959, TASK-0148 claim `815a359b` released and clean
     preserved after its recovery proposed `mutate/select` for the first Scion,
     bypassing the required accepted `create/set-out` chain. It is exhausted,
