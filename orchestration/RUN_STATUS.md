@@ -1,13 +1,14 @@
 # Run status — Codex Sol PC surge sweep
 
-Snapshot: 2026-08-21 19:29 PDT
+Snapshot: 2026-08-21 19:58 PDT
 
-Sweep base: `d2423873c577d299b3b39c56024d1d840993c72b`
-(`codex/native-reconstitution`, equal to `origin/master` and
-`origin/codex/native-reconstitution` at preflight).
+Sweep base: `7f2716911e0136ad4c89d552f6ca0c33fd185eb4`
+(`codex/native-reconstitution`; `origin/master` remains at the previously green
+`d2423873` merge tip).
 
-GitHub: no open PRs. Latest master CI run 32441409427 passed at this exact SHA.
-No current REVIEW_REQUESTED or REVISE transition exists.
+GitHub: no open PRs. Latest master CI run 32441409427 passed at `d2423873`;
+the coordination-only `7f271691` push did not dispatch a new workflow. No
+current REVIEW_REQUESTED or REVISE transition exists.
 
 Orchestrator: **Codex Sol**, PC architect checkout
 `Z:\Code\Games\delaford\delaford_game`. Architect coordinates, reviews,
@@ -33,7 +34,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
-| ox-pc-a | 6620-6639 | Planned single Verdigris worker; no committed claim/worker branch yet; requires a clean dedicated clone | TASK-0081 Gate B wire freeze |
+| ox-pc-a | 6620-6639 | PROVISIONED, UNCLAIMED: `Z:\Code\.worktrees\verdigris\ox-pc-a`, branch `codex/TASK-0081-gate-b-wire-contract-ox-pc-a`, base `7f271691`; local START packet ignored | TASK-0081 Gate B wire freeze |
 
 The stopped `ox-pc-b` and `ox-pc-c` tabs shared the same OpenCode project,
 stopped before claims or writes, and are not Verdigris lanes, stalls, dark
@@ -47,9 +48,15 @@ clones and must not be reset, cleaned, or silently repurposed. The first
 committed Ox claim registers its actual clone path and full scorecard
 experimental unit.
 
-Before the first claim, the owner must open `ox-pc-a` on a clean dedicated
-clone, synchronize the pushed program branch, and provide the shared re-entry
-document. Sol will not take over its implementation.
+Provisioning is complete. The only owner action before claim is to open the
+exact Ox worktree as its own OpenCode project and paste: `Read
+START_HERE_OX_PC_A.md completely and execute it now.` Sol does not claim or
+write worker STATUS/REPORT and will not take over implementation.
+
+Persistent supervision: Codex app heartbeat `verdigris-surge-supervisor` is
+ACTIVE every 15 minutes on this architect task. It fetches/scans first,
+reviews/integrates/restocks on transitions, updates scorecards, and alerts only
+on meaningful state changes.
 
 ## Interrupts and authority
 

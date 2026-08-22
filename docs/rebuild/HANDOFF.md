@@ -13,9 +13,16 @@
   presentation, renderer, campaign, combat, skill, monster, item, progression,
   persistence, replay, performance, tooling, packaging, and polish graph.
 - Initial one-at-a-time route: TASK-0081 Gate B wire-contract freeze. The
-  worker must use a clean dedicated clone of `codex/native-reconstitution`,
-  read `REENTRY-OX-ALPHA-PC.md`, claim by committed STATUS, and never use the
-  architect checkout.
+  isolated worktree now exists at
+  `Z:\Code\.worktrees\verdigris\ox-pc-a` on
+  `codex/TASK-0081-gate-b-wire-contract-ox-pc-a` at base `7f271691`. Its local
+  ignored `START_HERE_OX_PC_A.md` carries the complete claim/implementation/
+  evidence/push/continuation packet; the architect did not claim or write
+  STATUS/REPORT.
+- Recurring supervision is active through Codex app heartbeat
+  `verdigris-surge-supervisor` every 15 minutes. It resumes this architect
+  task, scans before action, reviews/integrates/restocks transitions, and
+  suppresses unchanged-state noise.
 - Owner-only decisions are batched under `orchestration/owner-input/`; none
   blocks TASK-0081. This milestone changes coordination only, not gameplay.
 

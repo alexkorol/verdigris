@@ -9,19 +9,27 @@ is intentionally short; the canonical rules remain in the linked documents.
 |---|---|---|
 | `ox-pc-a` | Windows implementation | 6620-6639 |
 
+Provisioned worktree:
+`Z:\Code\.worktrees\verdigris\ox-pc-a`; worker branch:
+`codex/TASK-0081-gate-b-wire-contract-ox-pc-a`; initial task base:
+`7f2716911e0136ad4c89d552f6ca0c33fd185eb4`. The local ignored
+`START_HERE_OX_PC_A.md` is the complete launch packet.
+
 Only `ox-pc-a` is currently registered as Verdigris capacity. The stopped
 `ox-pc-b` and `ox-pc-c` OpenCode tabs shared one project, made no claim or
 write, and are not lanes, stalls, incidents, or capacity. Do not route work to
 them unless the owner explicitly registers new independent Verdigris workers.
 
-Use a dedicated clean clone or worktree. The architect checkout at
+Use only the provisioned dedicated worktree. The architect checkout at
 `Z:\Code\Games\delaford\delaford_game` is forbidden. Never reset, clean, or
 reuse a dirty legacy clone. Register the actual clone path in the first
 committed task `STATUS.md`.
 
 ## Read and run
 
-1. Fetch `origin`; fast-forward a clean local `codex/native-reconstitution`.
+1. Prove the exact worktree/branch/base from `START_HERE_OX_PC_A.md`, then
+   fetch `origin` and reconcile current program routing without mutating the
+   architect branch.
 2. Read `orchestration/PROTOCOL.md`, `ORCHESTRATION.md`, `RUN_STATUS.md`,
    `ACCEPTANCE.md`, `STANDING-LOOP.md`, and `MODEL_SCORECARD.md`.
 3. Follow `STANDING-LOOP.md` with NAME set to the lane name above and the
