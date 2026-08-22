@@ -131,3 +131,26 @@ request.
   must fetch both repositories, reproduce this checkpoint against live evidence,
   acknowledge the current alerts/reviews/automations, and only then assume the
   loop.
+
+### Live routing delta — 2026-08-22 06:31 PDT
+
+- Program head before this coordination refresh is `9fe673b6`; standalone PC
+  broadcast head is `fffb70c` on `codex/pc-overnight-game-wave`. Shared
+  orchestration `main` remains Mac-owned and untouched.
+- TASK-0147 fresh captures now come from an executable built after the corrected
+  generated header and are coherent at 1366x768 and 1920x1080. The worker is
+  still producing committed default-resolution/composite evidence; no handoff
+  has been accepted yet.
+- TASK-0148 now proves ordinary-combat death, successor creation, and reconnect
+  continuity. Its heirloom-recovery leg is still running and remains an
+  acceptance blocker.
+- Three additional read-only prerequisite lanes are active from exact routed
+  base `9fe673b6`: ox-pc-s / TASK-0116 claim `297b4e9d`, ox-pc-t / TASK-0117
+  claim `763228e1`, and ox-pc-u / TASK-0119 claim `fad856c3`. Their worker
+  branches are pushed. They may write only their task audit folders; their
+  purpose is immediate promotion of product-facing VFX, synthetic-placeholder
+  audio, and first-session implementation successors after independent review.
+- Dashboard JSON and monitor script parse successfully. Human dashboard remains
+  HTTP 200; visible monitor PID 18184 watches the three new lanes as well as the
+  current p/r routes. No new Codex task was created.
+- Owner action required now: none.
