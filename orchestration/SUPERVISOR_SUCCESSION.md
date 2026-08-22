@@ -60,20 +60,20 @@ State: `PRIMARY_ACTIVE`; this is a succession checkpoint, not a retirement
 request.
 
 - Program checkout: `Z:\Code\Games\delaford\delaford_game`, branch
-  `codex/native-reconstitution`, clean local head `67658814` before this
+  `codex/native-reconstitution`, clean local/remote product head `a81642ae` before this
   checkpoint refresh commit. `origin/master` is not the worker base; workers use the exact
   routed program heads recorded in `RUN_STATUS.md`.
 - Standalone broadcast checkout:
   `Z:\Code\.worktrees\orchestration\pc-overnight-game-wave`, clean branch
-  `codex/pc-overnight-game-wave`, local/remote head `835de51`; observed
+  `codex/pc-overnight-game-wave`, local/remote head `54c53d3`; observed
   standalone `origin/main` is `59a70b6`. PC has no shared-main authority.
 - Active implementation/revision evidence:
   - TASK-0145 head `78dcac60` and TASK-0149 revision head `a88d307d` are
     independently ACCEPTED and integrated at `2df5eac5` and through
     `8677f021`; combined program binaries passed all native suites, all eight
     client scenarios, and the real-window lifecycle selftest;
-  - ox-pc-l, ports 6840-6859, TASK-0146 claim `78a0c4a0`, dirty/fresh process
-    PID 4108;
+  - ox-pc-l, ports 6840-6859, TASK-0146 local implementation commit
+    `e0ca05f6` not yet pushed or handed off, clean/fresh process PID 4108;
   - ox-pc-p, ports 6920-6939, TASK-0147 claim `3ee9f928`, process PID 20868;
   - ox-pc-q, ports 6940-6959, TASK-0148 claim `815a359b`, process PID 7324.
 - Preserved/non-capacity: ox-pc-d/e/g/m are dirty P0 quarantines after exhausting
@@ -82,21 +82,25 @@ request.
   exhausted routes as detailed in `RUN_STATUS.md`; ox-pc-o is clean but
   exhausted after its claim plus one stopped recovery. Never infer capacity
   from their old logs or pushed claim heads.
-- Queue/factory: board sentinel healthy, 27 effective READY, one REVISE, 17
+- Queue/factory: board sentinel healthy, 27 effective READY, zero REVISE, 17
   sequenced DRAFT successors, zero owned-path collisions; deterministic factory
   verified at 2,000 nodes / 500 packets. Runway remains honestly `UNKNOWN`.
 - Local supervision: human dashboard `http://127.0.0.1:4737/` health 200,
-  Node PID 5964; visible PowerShell monitor PID 25480. Same-task automation
+  Node PID 12400; visible PowerShell monitor PID 25480. Same-task automation
   `verdigris-surge-supervisor` is ACTIVE every five minutes and derives lanes
   dynamically from current routing/config. Chat-spawning cron
   `pc-fleet-emergency-monitor` remains PAUSED.
-- Exact next sweep: launch p/q from the pushed coordination head and enforce
-  their ten-minute claim SLA; verify all live PIDs/log ages and pushed heads; freeze any
-  clean `REVIEW_REQUESTED` head; run every literal SPEC gate independently;
-  integrate only ACCEPTED commits; then run the complete combined native
-  build/client scenario suite and real visible owner launch. Visual/encounter/
-  Chronicles activity does not count as morning success until integrated and
-  freshly launched.
+- Shared native session tests use the 6580-6599 capsule across worktrees. One
+  combined run overlapped ox-pc-l's test process and failed different timing
+  checks; after its listener exited, the exact integrated binaries passed
+  core/networking/camera/session, all eight client scenarios, and lifecycle.
+  Do not classify a concurrent-capsule failure without listener/parent-process
+  evidence; route a deterministic isolation hardening packet.
+- Exact next sweep: verify l/p/q PIDs, logs, git changes, and pushed heads;
+  require l to push its implementation and clean REVIEW_REQUESTED handoff;
+  freeze any clean review head; run every literal SPEC gate independently and
+  visually inspect TASK-0147 captures; integrate only ACCEPTED commits; rerun
+  combined native gates and the owner launch after each product integration.
 - Owner action required now: none. On credit-driven replacement, the successor
   must fetch both repositories, reproduce this checkpoint against live evidence,
   acknowledge the current alerts/reviews/automations, and only then assume the
