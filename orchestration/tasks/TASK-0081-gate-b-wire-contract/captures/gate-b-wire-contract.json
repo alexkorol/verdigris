@@ -238,7 +238,7 @@
         {
           "event": "player:login",
           "responseKeys": ["player", "scene", "droppedItems[]", "(quickStart only when quick-start session)"],
-          "condition": "FALL-THROUGH only (:2676-2680): plain login / session reuse matching neither chronicle branch; a same-identity relaunch takes this path after admission already completed",
+          "condition": "FALL-THROUGH only (:2676-2680): reached when BOTH earlier predicates are false - NOT(awaitChronicles && scionName empty) AND NOT(guestId non-empty && !quick_start_ && scionName empty && !pending_chronicles_); equivalently awaitChronicles false OR scionName non-empty, AND guestId empty OR quick_start_ true OR scionName non-empty OR pending_chronicles_ true",
           "handlerLines": "2655-2681, emit_login 2302"
         }
       ],

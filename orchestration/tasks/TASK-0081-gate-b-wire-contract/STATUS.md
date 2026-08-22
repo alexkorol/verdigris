@@ -2,7 +2,7 @@
 
 - task: TASK-0081
 - state: REVIEW_REQUESTED
-- transitioned-at (commit clock): 2026-08-21 20:42:44 PDT (-07:00), author/committer time of review-request commit `0302ea4c`; rev2 re-request uses its own commit clock recorded in REPORT.md (wall-clock session notes like "started ~20:20 PDT" are approximate and are NOT used for duration math)
+- transitioned-at (commit clock): 2026-08-21 20:42:44 PDT (-07:00), author/committer time of review-request commit `0302ea4c`; rev2 `52a7377b` at 21:03:34 PDT; rev3 clock recorded in REPORT.md commits section (wall-clock session notes like "started ~20:20 PDT" are approximate and are NOT used for duration math)
 - coordinator: ox-pc-a
 - worker: ox-pc-a (only registered PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0081-gate-b-wire-contract-ox-pc-a`
@@ -16,8 +16,12 @@
 ## Experimental-unit configuration provenance
 
 - endpoint: local OpenCode TUI session in `Z:\Code\.worktrees\verdigris\ox-pc-a`
-- provider: `opencode/x-preview-f-free` (model id exactly as served by the harness)
-- model alias: `ox-alpha` agent persona running on exact model id `opencode/x-preview-f-free`
+- provider (harness-visible): `opencode`; upstream provider remains unknown
+- model id: `x-preview-f-free`; variant: `max` (normalized per saved OpenCode
+  session metadata; supersedes the earlier combined `opencode/x-preview-f-free`
+  id-string phrasing)
+- agent alias: `ox-alpha` persona running on that model/variant
+- NOT OpenRouter: this run must not be labeled OpenRouter in any scorecard row
 - harness: OpenCode CLI/TUI; version not exposed by `opencode --version` on this PATH
 - configuration provenance: owner-launched OpenCode project rooted at
   `Z:\Code\.worktrees\verdigris\ox-pc-a`; system prompt + repository

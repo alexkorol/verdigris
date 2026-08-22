@@ -218,7 +218,10 @@ in-process session-reuse labels (session_tests.cpp:409-411, 423-425).
 
 ## Experimental unit / telemetry (scorecard calibration)
 
-- model id: `opencode/x-preview-f-free` (agent alias `ox-alpha`)
+- experimental identity (normalized per saved OpenCode session metadata):
+  harness-visible provider `opencode`, model id `x-preview-f-free`, variant
+  `max`, agent alias `ox-alpha`; upstream provider remains unknown; this run is
+  NOT OpenRouter and must not be labeled so
 - harness: OpenCode TUI session, DESKTOP-TVU7OR7, worktree
   `Z:\Code\.worktrees\verdigris\ox-pc-a`; configuration provenance recorded in
   `STATUS.md`
@@ -243,10 +246,97 @@ in-process session-reuse labels (session_tests.cpp:409-411, 423-425).
   missing relaunch conditionals, imprecise telemetry), not gate escapes.
 - changed tests: none (audit task; tests are read-only evidence inputs)
 
+## Rev3 post-correction acceptance rerun (literal, at pinned rev2 head)
+
+Rerun after applying rev2-review corrections; captured at HEAD
+`52a7377b7654523044a2779a19ac2afaabdeda87` with the three evidence edits
+staged-but-uncommitted (gate outputs are independent of those .md/.json
+edits; gate #5 working-tree listing shows them).
+
+### Gate 1 — contract JSON parses
+
+```
+=== GATE 1 ===
+gate-b contract JSON: PASS
+EXIT=0
+```
+
+### Gate 2 — wire surface present in source/tests
+
+```
+=== GATE 2 ===
+native/src/networking.cpp:2190:  emit(Envelope{"chronicles:scion-fallen", JsonValue(std::move(data))});
+native/src/networking.cpp:2498:  if (envelope.event=="chronicles:house:found") {
+native/src/networking.cpp:2506:    emit(Envelope{"chronicles:state",chronicles_state_payload("")});
+native/src/networking.cpp:2509:  if (envelope.event=="chronicles:scion:create") {
+native/src/networking.cpp:2517:    emit(Envelope{"chronicles:state",chronicles_state_payload(scion_id)});
+native/src/networking.cpp:2520:  if (envelope.event=="chronicles:scion:set-out") {
+native/src/networking.cpp:2549:  if (envelope.event=="player:chronicles:mutate") {
+native/src/networking.cpp:2668:    // guestId routes into the Chronicle-auth flow: emit chronicles:state and
+native/src/networking.cpp:2673:      emit(Envelope{"chronicles:state",chronicles_state_payload("")});
+EXIT=0
+```
+
+### Gate 3 — matrix sections exist
+
+```
+=== GATE 3 ===
+28:| Persistence | relaunch after death | login | N5 persistence | persisted House | House state | — | ⬜ Gap: ... TASK-0056 (N5) |
+45:| House lifecycle | Found: `chronicles:house:found` {name} → `chronicles:state` ... | 🧩 | 🔴 RED: no native test label |
+46:| Scion lifecycle | Create: `chronicles:scion:create` {houseId, name} → `chronicles:state` + `createdScionId` ... | 🧩 | 🔴 RED: no native test label |
+47:| Death | Server-initiated fatal fall ... | 🧩 | 🔴 RED: no native test label |
+48:| Successor | No dedicated successor event: reuse `chronicles:scion:create` → `player:chronicles:select` ... | 🧩 | 🔴 RED: no native test label anywhere on the chain |
+49:| Persistence | In-process session reuse proven ... | ⬜ RED: durable restore envelope + end-to-end test missing | Durable leg unrouted ... |
+EXIT=0
+```
+
+(Rows elided for width here only; full literal text is in the committed
+matrix and was reproduced verbatim in the rev1 transcript above.)
+
+### Gate 4 — diff hygiene
+
+```
+=== GATE 4 ===
+(no output)
+EXIT=0
+```
+
+### Gate 5 — changed paths + complete base→rev2 owned range proof
+
+```
+=== GATE 5 (working tree vs HEAD) ===
+orchestration/tasks/TASK-0081-gate-b-wire-contract/REPORT.md
+orchestration/tasks/TASK-0081-gate-b-wire-contract/STATUS.md
+orchestration/tasks/TASK-0081-gate-b-wire-contract/captures/gate-b-wire-contract.json
+EXIT=0
+
+=== PINNED RANGE base...HEAD ===
+$ git diff --name-only 986264f44b6bd3e03633d05f8b3e69fad35d4688...HEAD
+docs/rebuild/NATIVE_CLIENT_PROTOCOL_MATRIX.md
+orchestration/tasks/TASK-0081-gate-b-wire-contract/REPORT.md
+orchestration/tasks/TASK-0081-gate-b-wire-contract/STATUS.md
+orchestration/tasks/TASK-0081-gate-b-wire-contract/captures/gate-b-wire-contract.json
+EXIT=0
+
+=== HEAD ===
+52a7377b7654523044a2779a19ac2afaabdeda87
+```
+
+The complete base→rev2 range is exactly four paths: the two owned surfaces
+(`docs/rebuild/NATIVE_CLIENT_PROTOCOL_MATRIX.md`,
+`orchestration/tasks/TASK-0081-gate-b-wire-contract/**`). No forbidden path
+appears.
+
 ## Commits
 
 - `f08131c0` TASK-0081: claim Gate B wire-contract freeze (ox-pc-a)
+  — author/commit clock 2026-08-21 20:21:49 PDT (-07:00)
 - `0302ea4c` TASK-0081: freeze Gate B Chronicles wire contract + matrix rows
-  (review-request rev1, reviewed REVISE at this head)
-- revision commit(s): follow in branch log ("rev2 per REVIEW.md"), never
-  amended or force-pushed
+  (review-request rev1; reviewed REVISE at this head)
+  — author/commit clock 2026-08-21 20:42:44 PDT (-07:00); claim→rev1 latency 20m55s
+- `52a7377b7654523044a2779a19ac2afaabdeda87` TASK-0081: rev2 per REVIEW.md —
+  mortal-oath response, relaunch conditionals, commit-clock telemetry
+  — author/commit clock 2026-08-21 21:03:34 PDT (-07:00) (reviewed REVISE at
+  this head; two wire corrections accepted)
+- rev3 (final evidence revision): follows in branch log; never amended or
+  force-pushed
