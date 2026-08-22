@@ -1,0 +1,241 @@
+{
+  "$schema_note": "TASK-0081 Gate B Chronicles wire-contract freeze. Current-tip inventory of the already-landed native-server surface. No envelope was invented; every key list below is copied from the cited source lines. A missing response or automated test remains explicitly red.",
+  "meta": {
+    "task": "TASK-0081",
+    "capturedAt": "2026-08-21 20:40 PDT (-07:00)",
+    "coordinator": "ox-pc-a",
+    "baseCommit": "986264f44b6bd3e03633d05f8b3e69fad35d4688",
+    "primarySource": "native/src/networking.cpp",
+    "testEvidenceCommand": "rg -n 'chronicles' native/tests/networking_tests.cpp native/tests/session_tests.cpp",
+    "testEvidenceResult": "no matches in either file (exit code 1): zero native automated test labels exist for any chronicles journey step",
+    "persistenceNote": "rg -n 'ofstream|ifstream|fopen|fwrite' native/src -> no matches: the native server has no on-disk store; chronicle state survives only inside a live server process.",
+    "statusLegend": {
+      "responseProven_true": "every listed response event/key was read from the cited current source lines",
+      "responseProven_false": "an absent response, left red rather than guessed",
+      "testLabelFound_false": "no current automated native test label covers this step (explicitly red)"
+    }
+  },
+  "records": [
+    {
+      "id": "house-found",
+      "journeyStep": "House found",
+      "clientEvent": "chronicles:house:found",
+      "payloadKeys": ["name"],
+      "payloadNotes": "name optional, server defaults to \"House\" (networking.cpp:2500). Server mints house-<serial> itself (:2499-2504).",
+      "responses": [
+        {
+          "event": "chronicles:state",
+          "responseKeys": ["player.socket_id", "chronicle.version", "chronicle.houses[].id", "chronicle.houses[].name", "chronicle.houses[].scions[]", "chronicle.houses[].crypt[]", "chronicle.activeHouseId", "chronicle.activeScionId"]
+        }
+      ],
+      "responseNotes": "createdScionId key is present only when a scion id was passed to the payload builder; omitted here (:2239).",
+      "handler": { "symbol": "ProtocolSession::handle (inline branch); payload builder ProtocolSession::chronicles_state_payload; house record ProtocolSession::ensure_chronicle_house", "file": "native/src/networking.cpp", "lines": "2498-2508, 2235-2241, 2242-2272" },
+      "alternateExistingEnvelope": {
+        "event": "player:chronicles:mutate",
+        "payloadKeys": ["type=found-house", "house.id", "house.name"],
+        "response": "player:chronicles:update",
+        "responseKeys": ["player.socket_id", "chronicles", "chroniclesRevision", "chroniclesExists"],
+        "handlerLines": "2549-2572"
+      },
+      "testEvidence": { "nativeTestLabel": null, "status": "RED", "reason": "rg -n 'chronicles' native/tests/networking_tests.cpp native/tests/session_tests.cpp -> no matches" }
+    },
+    {
+      "id": "house-restore",
+      "journeyStep": "House restore (re-login admission)",
+      "clientEvent": "player:login",
+      "payloadKeys": ["guestId", "awaitChronicles"],
+      "payloadNotes": "Two distinct proven restore paths (:2655-2681). awaitChronicles=true with empty scionName -> ready payload. guestId path (non quick-start, empty scionName, not already pending) -> chronicles:state.",
+      "responses": [
+        {
+          "event": "chronicles:state",
+          "responseKeys": ["player.socket_id", "chronicle", "(createdScionId only when created_scion_id non-empty)"],
+          "handlerLines": "2671-2674"
+        },
+        {
+          "event": "player:chronicles:ready",
+          "responseKeys": ["player.socket_id", "chroniclesAccountId", "accountName", "level", "chronicles", "chroniclesRevision", "chroniclesExists"],
+          "handlerLines": "2659-2666"
+        }
+      ],
+      "responseNotes": "player:chronicles:ready keys come from ProtocolSession::chronicles_payload (2224-2234); player:chronicles:return (2586-2630) merges the same keys plus fallen{scionId,scionName} into its ready emission (:2620-2629).",
+      "handler": { "symbol": "ProtocolSession::handle (player:login branch)", "file": "native/src/networking.cpp", "lines": "2655-2681" },
+      "testEvidence": { "nativeTestLabel": null, "status": "RED", "reason": "no chronicles coverage in native/tests (rg no matches)" }
+    },
+    {
+      "id": "scion-create",
+      "journeyStep": "Scion create",
+      "clientEvent": "chronicles:scion:create",
+      "payloadKeys": ["houseId", "name"],
+      "payloadNotes": "name optional, defaults to \"Scion\" (:2512). Server mints scion-<serial>; ensure_chronicle_scion stores entry keys id,name,level(1),mortal(false always on this path),deaths[] (:2292-2298).",
+      "responses": [
+        {
+          "event": "chronicles:state",
+          "responseKeys": ["player.socket_id", "chronicle", "createdScionId"]
+        }
+      ],
+      "handler": { "symbol": "ProtocolSession::handle (inline branch); ProtocolSession::ensure_chronicle_scion; ProtocolSession::chronicles_state_payload", "file": "native/src/networking.cpp", "lines": "2509-2518, 2273-2301, 2235-2241" },
+      "testEvidence": { "nativeTestLabel": null, "status": "RED", "reason": "no chronicles coverage in native/tests (rg no matches)" }
+    },
+    {
+      "id": "scion-select",
+      "journeyStep": "Scion select (admission into the world)",
+      "clientEvent": "player:chronicles:select",
+      "payloadKeys": ["scionId", "houseId", "scionName", "mortal"],
+      "responses": [
+        {
+          "event": "player:login",
+          "responseKeys": ["player.uuid", "player.username", "player.socket_id", "player.sceneId", "player.x", "player.y", "player.facing", "player.level", "player.passiveTree", "player.quests", "player.inventory.slots[]", "player.chronicles.mortal", "player.chronicles.scionId", "player.chronicles.houseId", "scene", "droppedItems[]", "quickStart (only when quick-start session)"]
+        }
+      ],
+      "responseNotes": "emit_login wraps login_payload (2302, 593-595); player.chronicles sub-object built at 582-591 (put at 590). Select side effects: lifecycle hard/soft per mortal (:2637), fresh commission chain (:2643-2644), wear/inventory cleared + 100-coin purse (:2647-2649), reset_to_town (:2651).",
+      "handler": { "symbol": "ProtocolSession::handle (inline branch); ProtocolSession::emit_login; ProtocolSession::login_payload; ProtocolSession::player_payload", "file": "native/src/networking.cpp", "lines": "2632-2654, 2302, 593-595, 582-591" },
+      "testEvidence": { "nativeTestLabel": null, "status": "RED", "reason": "no chronicles coverage in native/tests (rg no matches)" }
+    },
+    {
+      "id": "scion-set-out",
+      "journeyStep": "Scion set-out",
+      "clientEvent": "chronicles:scion:set-out",
+      "payloadKeys": ["scionId"],
+      "responses": [
+        {
+          "event": "player:login",
+          "responseKeys": ["player", "scene", "droppedItems[]", "quickStart (conditional)"]
+        },
+        {
+          "event": "game:send:message",
+          "responseKeys": ["text"],
+          "conditional": "only when daily_purse_claimed_ was false: House road-purse +100 gold notice (:2530-2534)"
+        }
+      ],
+      "responseNotes": "Side effects: pending_chronicles_=false (:2522), home pitch hash from active_house_id_ (:2525-2529), once-per-scion starter kit (bronze-dagger if absent, coins topped to 100) (:2537-2543), world reset to town at the House wagon pitch (:2544-2545), emit_login (:2546).",
+      "handler": { "symbol": "ProtocolSession::handle (inline branch); ProtocolSession::emit_login", "file": "native/src/networking.cpp", "lines": "2520-2548, 2302" },
+      "testEvidence": { "nativeTestLabel": null, "status": "RED", "reason": "no chronicles coverage in native/tests (rg no matches)" }
+    },
+    {
+      "id": "mortal-oath-state",
+      "journeyStep": "Mortal-oath state",
+      "clientEvent": "player:chronicles:select",
+      "payloadKeys": ["mortal"],
+      "payloadNotes": "No dedicated oath event exists. mortal is carried on the select payload (:2636) or on player:chronicles:mutate type=add-scion scion.mortal (:2557-2563). Dev-only arming: dev:prepare-final-death sets mortal_oath_=true, lifecycle_mode_=hard, life=1 (:2400-2409).",
+      "exposureSurfaces": [
+        { "event": "player:login", "keys": ["player.chronicles.mortal", "player.chronicles.scionId", "player.chronicles.houseId"], "sourceLine": 590 },
+        { "event": "dev:state", "keys": ["state.lifecycle", "state.lifecycleMode", "state.chronicles.mortal", "state.chronicles.scionId", "state.chronicles.houseId", "state.chroniclesRecord.exists", "state.chroniclesRecord.revision", "state.chroniclesRecord.state"], "sourceLines": "807-851 (snapshot puts at 810-812, 844-850), wrapper state_payload at 913, dev:state branch at 2496" },
+        { "event": "chronicles:scion-fallen", "keys": ["chronicle (full snapshot incl. scions[].mortal)"], "sourceLine": 2189 }
+      ],
+      "responses": [],
+      "responseNotes": "State exposure only; the oath produces no standalone response envelope on the current tip.",
+      "handler": { "symbol": "ProtocolSession::handle (select/mutate branches); ProtocolSession::snapshot; ProtocolSession::state_payload", "file": "native/src/networking.cpp", "lines": "2632-2654, 2549-2572, 807-851, 913" },
+      "testEvidence": { "nativeTestLabel": null, "status": "RED", "reason": "no chronicles coverage in native/tests (rg no matches)" }
+    },
+    {
+      "id": "fatal-fall",
+      "journeyStep": "Fatal fall (final death)",
+      "clientEvent": null,
+      "clientEventNote": "Server-initiated: process_combat commits final death on a lethal wound when (prepare_final_death_ || mortal_oath_) && lifecycle != permadead (:2111-2114). No client request triggers this envelope.",
+      "payloadKeys": [],
+      "responses": [
+        {
+          "event": "chronicles:scion-fallen",
+          "responseKeys": ["fallen.scionId|null", "fallen.name", "fallen.level", "relicCount", "chronicle"],
+          "emittedAt": "networking.cpp:2190"
+        },
+        {
+          "event": "chronicles:scion-witnessed",
+          "responseKeys": ["fallen.name", "relicCount"],
+          "broadcastOnly": true,
+          "emittedAt": "networking.cpp:2191-2198"
+        },
+        {
+          "event": "player:stats:update",
+          "responseKeys": ["playerId", "lifecycle.state=permadead", "lifecycle.mode=hard"],
+          "emittedAt": "networking.cpp:2199-2206"
+        }
+      ],
+      "responseNotes": "Death also moves the fallen scion from houses[].scions[] into houses[].crypt[] with relic{status:\"lost\",count} (:2147-2176) and queues earned (non-starter) gear into the global circulation pool (:2133-2146).",
+      "handler": { "symbol": "ProtocolSession::handle_final_death (triggered from ProtocolSession::process_combat)", "file": "native/src/networking.cpp", "lines": "2128-2207 (trigger 2111-2114)" },
+      "testEvidence": { "nativeTestLabel": null, "status": "RED", "reason": "no chronicles coverage in native/tests (rg no matches)" }
+    },
+    {
+      "id": "crypt-relic-state",
+      "journeyStep": "Crypt/relic state",
+      "clientEvent": "player:chronicles:return",
+      "payloadKeys": [],
+      "responses": [
+        {
+          "event": "player:chronicles:ready",
+          "responseKeys": ["player.socket_id", "fallen.scionId|null", "fallen.scionName", "chroniclesAccountId", "accountName", "level", "chronicles", "chroniclesRevision", "chroniclesExists"]
+        }
+      ],
+      "responseNotes": "Return attaches the queued heirloom (exact item identity or null) onto the fallen scion's crypt entry as relic{status:\"queued\", item|item:null} (:2605-2613) then emits ready with pending_chronicles_=true (:2620-2629). Crypt states observable in chronicle payloads: lost{status,count} at death (:2171-2176), queued after return (:2605-2613), recovered{status,recoveredAt} via ProtocolSession::mark_relic_recovered (:1602-1631). No standalone crypt event exists; crypt is readable only through the chronicle object (chronicles payloads, dev:state chroniclesRecord.state).",
+      "handler": { "symbol": "ProtocolSession::handle (return branch); ProtocolSession::mark_relic_recovered; ProtocolSession::chronicles_payload", "file": "native/src/networking.cpp", "lines": "2586-2631, 1602-1631, 2224-2234" },
+      "testEvidence": { "nativeTestLabel": null, "status": "RED", "reason": "no chronicles coverage in native/tests (rg no matches)" }
+    },
+    {
+      "id": "successor-creation",
+      "journeyStep": "Successor creation",
+      "clientEvent": "chronicles:scion:create",
+      "payloadKeys": ["houseId", "name"],
+      "payloadNotes": "Reuses the ordinary create/select envelopes after a fall; there is NO dedicated successor event on the current tip. Typical chain proven by source: chronicles:scion:create -> player:chronicles:ready (via return/login paths) -> player:chronicles:select resets lifecycle alive/hard-per-mortal and starts a fresh commission chain (:2632-2654).",
+      "responses": [
+        { "event": "chronicles:state", "responseKeys": ["player.socket_id", "chronicle", "createdScionId"] },
+        { "event": "player:login", "responseKeys": ["player (incl. player.chronicles.mortal/scionId/houseId)", "scene", "droppedItems[]"] }
+      ],
+      "handler": { "symbol": "ProtocolSession::handle (create + select branches)", "file": "native/src/networking.cpp", "lines": "2509-2518, 2632-2654" },
+      "testEvidence": { "nativeTestLabel": null, "status": "RED", "reason": "no chronicles coverage in native/tests (rg no matches)" }
+    },
+    {
+      "id": "recovery",
+      "journeyStep": "Recovery (heirloom surfacing + pickup)",
+      "clientEvent": "player:take:underfoot",
+      "payloadKeys": [],
+      "payloadNotes": "Pickup takes ONE ground item underfoot (:1659-1671). Surfacing is server-side: an elite slain by a living scion pops the account's next circulating heirloom onto the floor (:2083-2104); dev-only shortcut dev:release-relic (:2411-2434). Surfaced relic ground items carry chroniclesRelic{relicId,scionId,scionName} in ground-item JSON (:408-413).",
+      "responses": [
+        { "event": "core:refresh:inventory", "responseKeys": ["player.socket_id", "data[] (item identity list)"], "emittedAt": "1655, builder 914-917" },
+        { "event": "world:itemDropped", "responseKeys": ["data[] (ground items incl. chroniclesRelic when relic)"], "emittedAt": "919-927" },
+        { "event": "item:change", "responseKeys": ["data[] (same array as world:itemDropped)"], "emittedAt": "919-927" }
+      ],
+      "responseNotes": "handle_take_ground calls mark_relic_recovered when the taken ground item has a relic record (:1643-1649), flipping crypt[].relic.status lost->recovered with recoveredAt and bumping chronicles_revision_ (:1617-1627). Surfacing also emits game:send:message \"A relic of the fallen has surfaced.\" (:2102, :2430).",
+      "handler": { "symbol": "ProtocolSession::handle_take_underfoot; ProtocolSession::handle_take_ground; ProtocolSession::process_combat (elite surfacing); ProtocolSession::mark_relic_recovered; ProtocolSession::emit_ground_change", "file": "native/src/networking.cpp", "lines": "1659-1671, 1632-1658, 2083-2104, 1602-1631, 919-927" },
+      "testEvidence": { "nativeTestLabel": null, "status": "RED", "reason": "no chronicles coverage in native/tests (rg no matches)" }
+    },
+    {
+      "id": "quit",
+      "journeyStep": "Quit",
+      "clientEvent": null,
+      "clientEventNote": "EXPLICITLY RED: no quit/logout envelope exists anywhere in the native dispatch table (all envelope.event==\"...\" branches inspected; the only \"quit\" token is the server console command in native/src/server_main.cpp:30). Quitting is transport-level WS close only.",
+      "payloadKeys": [],
+      "responses": [],
+      "responseProven": false,
+      "responseNotes": "Server-side close handling resets transient world state for a NEW socket via ProtocolSession::reset_world_for_new_socket (:538-579); a mortal Scion's permadead lifecycle is deliberately NOT resurrected on reconnection (:554-562).",
+      "handler": { "symbol": "ProtocolSession::reset_world_for_new_socket; WebSocketServer connection close", "file": "native/src/networking.cpp", "lines": "538-579" },
+      "testEvidence": { "nativeTestLabel": null, "status": "RED", "reason": "no quit/logout event and no chronicles coverage in native/tests" },
+      "rowStatus": "RED"
+    },
+    {
+      "id": "relaunch",
+      "journeyStep": "Relaunch",
+      "clientEvent": "player:login",
+      "payloadKeys": ["guestId"],
+      "responses": [
+        { "event": "player:login", "responseKeys": ["player", "scene", "droppedItems[]"] }
+      ],
+      "responseProven": true,
+      "responseNotes": "In-process relaunch is proven: new socket, same guest identity re-login restores session/account state including chronicle_ within a LIVE server process (matrix rows Disconnect/Reconnect cite native/tests/session_tests.cpp:409-411 and 423-425: 'reconnect: Retrying then Ready after server restart', 'reconnect: same guest identity re-logged in', 'reconnect: login snapshot is authoritative'). DURABLE CROSS-PROCESS PERSISTENCE IS EXPLICITLY RED: rg -n 'ofstream|ifstream|fopen|fwrite' native/src -> no matches; no on-disk House/Scion store exists on the native tip, so a server restart loses chronicle state (JS parity store CHRONICLES_STORE_FILE lives in playtest/run.mjs:54 against the Node server, not the native server).",
+      "handler": { "symbol": "ProtocolSession::handle (player:login branch); ProtocolSession::reset_world_for_new_socket", "file": "native/src/networking.cpp", "lines": "2655-2681, 538-579" },
+      "testEvidence": {
+        "nativeTestLabel": "reconnect: Retrying then Ready after server restart; reconnect: same guest identity re-logged in; reconnect: login snapshot is authoritative (native/tests/session_tests.cpp:423-425) - generic login/reconnect only, ZERO chronicle-specific assertions",
+        "status": "PARTIAL",
+        "reason": "session-level relaunch has a real test label; chronicle restore across relaunch has none"
+      },
+      "rowStatus": "RED (durable persistence leg)"
+    }
+  ],
+  "summary": {
+    "recordsTotal": 12,
+    "responseShapeProvenFromSource": 11,
+    "responseAbsentRedRows": ["quit"],
+    "durableLegRedRows": ["relaunch (cross-process persistence)"],
+    "nativeAutomatedTestLabelsForChroniclesSteps": 0,
+    "redRule": "Per SPEC: a missing response or test remains explicitly red; nothing was invented and no code was changed."
+  }
+}
