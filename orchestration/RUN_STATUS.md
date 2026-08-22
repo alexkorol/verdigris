@@ -1,8 +1,8 @@
 # Run status — Codex Sol PC surge sweep
 
-Snapshot: 2026-08-21 20:29 PDT
+Snapshot: 2026-08-21 20:37 PDT
 
-Sweep base: `f3540d7dd7b9ac820e16d363f6672dcc887669a5`
+Sweep base: `a7e9c95f3ac6e3a65864fdfbf3183cb79ff7a9ad`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
 `d2423873` merge tip).
 
@@ -57,7 +57,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
-| ox-pc-a | 6620-6639 | `CLAIMED`, awaiting post-claim progress: valid claim-only commit `f08131c0` pushed 20:21 PDT from `Z:\Code\.worktrees\verdigris\ox-pc-a`, branch `codex/TASK-0081-gate-b-wire-contract-ox-pc-a`, base `986264f4`; only the task STATUS changed | TASK-0081 Gate B wire freeze |
+| ox-pc-a | 6620-6639 | `ACTIVE_LOCAL_PENDING_COMMIT`: valid claim `f08131c0` pushed 20:21 PDT from `Z:\Code\.worktrees\verdigris\ox-pc-a`, branch `codex/TASK-0081-gate-b-wire-contract-ox-pc-a`, base `986264f4`; owned `captures/gate-b-wire-contract.json` appeared at 20:37; remote remains claim-only | TASK-0081 Gate B wire freeze |
 
 The stopped `ox-pc-b` and `ox-pc-c` tabs shared the same OpenCode project,
 stopped before claims or writes, and are not Verdigris lanes, stalls, dark
@@ -85,10 +85,10 @@ write worker STATUS/REPORT and will not take over implementation.
   and the ignored `START_HERE_OX_PC_A.md` launch packet.
 - **Observed transition:** the earlier visible worker-C session was misrouted,
   but a new correctly rooted worker committed and pushed the exact TASK-0081
-  claim. The activation alarm is clear; the worker remains `CLAIMED`, not
-  `ACTIVE`, until a fresh post-claim implementation/evidence commit appears.
-- **Capacity accounting:** one claimed Verdigris Ox lane, zero proven ACTIVE
-  lanes. This was not an incident against stopped `ox-pc-b`/`ox-pc-c`.
+  claim. Fresh owned-path evidence appeared locally at 20:37, promoting the
+  worker to `ACTIVE_LOCAL_PENDING_COMMIT`; independent review waits for push.
+- **Capacity accounting:** one active local Verdigris Ox lane. This was not an
+  incident against stopped `ox-pc-b`/`ox-pc-c`.
 
 Persistent supervision: Codex app heartbeat `verdigris-surge-supervisor` is
 ACTIVE every 15 minutes on this architect task. It fetches/scans first,
@@ -123,8 +123,9 @@ another provider by assumption.
 
 - REVIEW_REQUESTED: **none**.
 - REVISE: **none**.
-- Active claims: **TASK-0081 by ox-pc-a** (`f08131c0`, claim-only; awaiting
-  progress). Separate project: orchestration bootstrap claim `795a9b3`.
+- Active claims: **TASK-0081 by ox-pc-a** (`f08131c0`; owned capture evidence
+  active locally, remote claim-only). Separate project: orchestration bootstrap
+  claim `795a9b3`, also active locally pending its first milestone commit.
 - Historical TASK-0056 and legacy clone WIP are superseded/preserved, never
   resumed.
 - Historical QUESTION-0007/0008/0009/0010/0011 are resolved by integrated work.
