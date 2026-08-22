@@ -1,0 +1,312 @@
+{
+  "task": "TASK-0119",
+  "title": "Native onboarding and first-session journey audit",
+  "captured_at": "2026-08-22",
+  "captured_by": {
+    "worker": "ox-pc-u",
+    "coordinator": "codex",
+    "provider": "openrouter",
+    "model": "stealth/ox-alpha"
+  },
+  "base_commit": "9fe673b66ffc082e865e0f0fb66f454ec1984949",
+  "spec_base_commit": "9bd689b4cebac0fe1f79ba54edcc9967a1a8f0d4",
+  "capture_method": "static evidence audit of native client/server sources, tests, and rebuild docs on the routed base; read-only resource capsule (no ports opened, no play-server mutation, no runtime captures)",
+  "journey_mode": "remote owner path (verdigris_client --remote, chronicles front door default per native/client/main.cpp:4618-4623); local testbed and --quick guest noted where they diverge",
+  "design_guards": [
+    "preserve loose quest guidance: the objective-strip pattern (native/client/main.cpp:2914-2943) is the reference style",
+    "no checklist tutorial design: fixes below surface decisions and consequences, they do not add step-list onboarding",
+    "all narrative wording, names, and lore stay owner-owned (SPEC owner_input_dependency); fixes are structural only"
+  ],
+  "steps": [
+    {
+      "id": 1,
+      "phase": "launch",
+      "title": "Launch the native client",
+      "client_shows": [
+        "Owner one-command launch: play-native.ps1 builds if stale, starts verdigris_server in the 6520-6539 capsule, and starts the client with --remote (native/tools/play-native.ps1:392-402; native/README.md:40-57)",
+        "Default remote mode opens at the Chronicles front door, window title 'Verdigris Chronicles' (native/client/main.cpp:4529-4558, 4618-4623)",
+        "No-argument launch instead opens the 'Verdigris Core Testbed' straight into a seeded local simulation as fixed 'House Verdigris' (native/client/main.cpp:4626-4646)"
+      ],
+      "player_decision": "Run the owner launcher (or shortcut) rather than the bare exe",
+      "decision_legible": true,
+      "evidence": [
+        "native/README.md:53-57 — desktop shortcut target documented",
+        "native/tools/play-native.ps1:40-47 — port 6500 refused; capsule 6520-6539 enforced",
+        "native/client/main.cpp:4595-4625 — arg parsing: --headless, --scenario, --reference-scene, --remote"
+      ],
+      "friction": [
+        "Two different first-session shapes exist: bare exe = anonymous local testbed with a hardcoded House; launcher = Chronicles owner path. A new owner double-clicking an installed exe gets the testbed, not the front door",
+        "Local testbed identity is always 'House Verdigris' regardless of any owner account (native/client/main.cpp:4628)"
+      ],
+      "smallest_fix": "Make the owner path the no-argument default on Windows (or make the bare exe print/launch the owner path); keep --headless/--scenario/--quick as explicit flags. No wording changes required."
+    },
+    {
+      "id": 2,
+      "phase": "connect",
+      "title": "Connect to the server; front door opens",
+      "client_shows": [
+        "Status line cycles: 'The chronicles lie closed - connection lost.' (disconnected), 'Opening the chronicles...' (awaiting payload), 'Account of <name>' once chronicles:state arrives (native/client/main.cpp:2483-2495)",
+        "Connection chip on every screen: 'connection <state>' with color-coded Ready/Connecting/Retrying/Disconnected (native/client/main.cpp:2570-2616)",
+        "Login sends guestId + awaitChronicles:true and the server answers chronicles:state (native/client/remote_session.cpp:277-297; native/src/networking.cpp:2656-2673)"
+      ],
+      "player_decision": "Wait for the chronicle payload; nothing else is actionable yet",
+      "decision_legible": true,
+      "evidence": [
+        "native/client/remote_session.cpp:650-671 — chronicles:state/player:chronicles:ready set chronicle.present and chronicles_pending",
+        "native/tests/session_tests.cpp:1-5 — dead endpoint is a visible hard failure, never a silent local fallback"
+      ],
+      "friction": [
+        "No spinner/progress affordance beyond the text line; acceptable at current scope"
+      ],
+      "smallest_fix": "None required for legibility; the status line already names the three states."
+    },
+    {
+      "id": 3,
+      "phase": "house-scion",
+      "title": "Found the House and name the first Scion",
+      "client_shows": [
+        "Menu rebuilt from the authoritative chronicle model each frame: '[F] Found your House' when no House exists; then numbered '[1..9] Set out as <scion>', '[C] Name a new Scion (<derived name>)', '[M] Mortal oath: not taken/ARMED' (native/client/main.cpp:2321-2369, 2532-2542)",
+        "House and Scion names are auto-derived: 'House of <account>' and '<House> Firstborn/Secondborn/...' ordinals (native/client/main.cpp:2292-2317)",
+        "Oath field line explains soft vs mortal: 'soft - wounds can be recovered' / 'mortal - death is final' (native/client/main.cpp:2538-2542)"
+      ],
+      "player_decision": "Found the House (F), create the Scion (C), optionally arm the mortal oath (M), then set out (digit or Enter)",
+      "decision_legible": true,
+      "evidence": [
+        "native/client/main.cpp:2407-2426 — found/create/select/set-out submit the frozen Gate-B envelopes",
+        "native/client/remote_session.cpp:443-484 — chronicles:house:found, chronicles:scion:create, player:chronicles:select (mortal flag), chronicles:scion:set-out",
+        "orchestration/tasks/TASK-0145-native-chronicles-owner-journey/REVIEW.md:22 — chronicles-gate-b scenario 38/38 checks accepted"
+      ],
+      "friction": [
+        "No text input exists anywhere: House and Scion names are derived from the guest identity (comment at native/client/main.cpp:2292-2293 says so explicitly). The owner cannot name their own lineage on the first session",
+        "Front door is keyboard-only; the menu lines do show '[key] label', so the input model is at least visible",
+        "The mortal-oath consequence line is good, but nothing explains that the oath choice applies to the NEXT admission until you read the label change"
+      ],
+      "smallest_fix": "Add a minimal text-input seam (one-line prompt on the front door) for House and Scion names, falling back to the current derived names when left empty. Wording stays owner-owned; this is interaction, not lore."
+    },
+    {
+      "id": 4,
+      "phase": "controls",
+      "title": "Learn the controls",
+      "client_shows": [
+        "Quickbar with four labeled slots: LMB Strike, Q Thrust, E Sweep, R WarCry (native/client/main.cpp:2124-2129, 2131-2203)",
+        "Gear pane footer: 'Arrows select | Enter equip | U unequip | I close' (native/client/main.cpp:2057); empty-backpack hint: 'Backpack empty. X picks up the nearest drop.' (native/client/main.cpp:2015)",
+        "Objective strip references 'press F there' for extraction (native/client/main.cpp:2933)",
+        "Full control legend (WASD, mouse aim, RMB/Space dash, X, Z, F, I, wheel zoom, Home) exists ONLY inside the F3 debug overlay (native/client/main.cpp:3001-3009)"
+      ],
+      "player_decision": "Discover and adopt WASD + mouse + quickbar keys without leaving the fiction",
+      "decision_legible": true,
+      "evidence": [
+        "docs/product/VERDIGRIS_CONSTITUTION.md:94-101 — control reference: WASD, mouse aim, LMB/RMB, Q/E/R, Space, Z loot filter, X pickup, gold auto-pickup",
+        "native/client/main.cpp:3167-3246 — implemented bindings match the constitution (W/A/S/D, Space dash, Q/E/R, X, Z, F, I, 1-9, F3, Esc, Home)"
+      ],
+      "friction": [
+        "The complete key legend is debug-gated (F3); a first-session owner never sees dash (Space/RMB), loot labels (Z), gear (I), or zoom (wheel/Home) documented in-game",
+        "native/README.md:36-38 still documents the old bindings ('P picks up, E equips, and X extracts'), contradicting the shipped client — doc drift that misleads anyone reading the README before playing"
+      ],
+      "smallest_fix": "Promote a compact always-available controls hint (e.g., one status-chip line or a first-minute fading hint reusing the existing hint system, native/client/main.cpp:812-815) and correct native/README.md:36-38 to the implemented bindings. Loose phrasing, no checklist."
+    },
+    {
+      "id": 5,
+      "phase": "goal-choice",
+      "title": "Choose an expedition goal",
+      "client_shows": [
+        "Nothing: there is no route, goal, or expedition choice surface on the front door or in the expedition HUD",
+        "The only zone entry in the client is a hardcoded 'N' key that enters tin:1:0 (native/client/main.cpp:3189-3190); 'N' is not listed even in the F3 help text (native/client/main.cpp:3001-3009)",
+        "The simulation internally tracks expedition phases SlayWardens -> ExtractCarriedValue and emits ExpeditionPhaseChanged (native/include/verdigris/core.hpp:251,301; native/src/core.cpp:850-859), but event_label() has no case for it (native/client/main.cpp:1673-1694) and the objective strip only ever says 'objective: explore the route' or 'objective: reach/carry to the EXIT' (native/client/main.cpp:2917-2943)"
+      ],
+      "player_decision": "Pick a specific expedition goal (trophy, material, route) before setting out",
+      "decision_legible": false,
+      "evidence": [
+        "docs/product/VERDIGRIS_CONSTITUTION.md:22-35 — the durable loop begins with 'choose a specific expedition goal'; players leave with a concrete goal, not a checklist quest",
+        "native/client/main.cpp:3189-3190 — hardcoded enter_zone('tin:1:0') is the only route choice",
+        "native/client/main.cpp:2465-2568 — front door lists House/Scion/oath actions only; no expedition choices",
+        "native/client/main.cpp:1673-1694 — ExpeditionPhaseChanged is dropped from the owner-facing event log"
+      ],
+      "friction": [
+        "This is the audit's negative control: the loop's first player decision (goal choice) is currently invisible. The world auto-assigns tin:1:0 on admission and the objective strip fills in after the fact",
+        "The core's own slay-wardens/extract-value phase signal never reaches the HUD, so even the implicit goal of the current route is unexplained"
+      ],
+      "smallest_fix": "Two structural, non-lore moves: (1) render the existing ExpeditionPhaseChanged event in the objective strip / event log (label wording owner-owned), and (2) reserve a front-door 'set out toward <route/goal>' choice listing authoritative unlocked routes once more than one exists. No tutorial, no invented copy."
+    },
+    {
+      "id": 6,
+      "phase": "combat",
+      "title": "First engagement: move, aim, strike, dodge",
+      "client_shows": [
+        "WASD movement with mouse-aim facing; facing line drawn from the Scion (native/client/main.cpp:2756-2764, 3110-3131)",
+        "Elite windups drawn as ground telegraphs (thrust fan / sweep circle) with pulse and HUD-safe clipping (native/client/main.cpp:1433-1546); '! <ACTION>' text over the monster bar (native/client/main.cpp:2837-2849)",
+        "Impact flash, floating damage numbers (red when the Scion is hit), screen-edge pulse on player damage, death ring/dust on kills (native/client/main.cpp:1774-1813, 1633-1669)",
+        "Blocked movement shows hint 'Blocked by scenery' (native/client/main.cpp:3122-3127)"
+      ],
+      "player_decision": "Engage or avoid; dodge telegraphed elite attacks (dash with Space/RMB)",
+      "decision_legible": true,
+      "evidence": [
+        "native/client/main.cpp:3535-3551 — scenario first-fight proves swing/damage/death/drop render through the real pipeline",
+        "native/client/main.cpp:3633-3663 — scenario telegraph-dodge proves moving out avoids telegraphed damage",
+        "native/client/main.cpp:3665-3713 — scenario combat-juice proves target flash, number lifetime, and player-damage pulse"
+      ],
+      "friction": [
+        "Dash (Space/RMB) is the key defensive answer to telegraphs but is only documented in the F3 overlay (see step 4)"
+      ],
+      "smallest_fix": "Same as step 4: surface the compact control hint; optionally name the dash in the telegraph hint path (wording owner-owned)."
+    },
+    {
+      "id": 7,
+      "phase": "loot",
+      "title": "See and take loot",
+      "client_shows": [
+        "Drops render as colored diamonds (gold item, purple trophy) with sparkles at the kill site; Z toggles name labels (native/client/main.cpp:2853-2885, 1823-1841, 3205-3208)",
+        "X picks up the nearest drop locally (deterministic nearest scan, native/client/main.cpp:856-886); on the remote path X sends player:take:underfoot and hints 'Take underfoot requested' (native/client/main.cpp:3191-3204; native/client/remote_session.cpp:424-426)",
+        "Event log lines 'Picked up <name>' (native/client/presentation_state.cpp:256-258)"
+      ],
+      "player_decision": "Walk to drops and spend X (or walk over and take underfoot remotely)",
+      "decision_legible": true,
+      "evidence": [
+        "native/client/main.cpp:3562-3570 — loot-to-bank scenario proves drop visibility and pickup fill the carried grid",
+        "docs/product/VERDIGRIS_CONSTITUTION.md:96-97 — X picks up nearest, gold auto-picks up; implemented behavior matches"
+      ],
+      "friction": [
+        "Remote kill drops are synthesized client-side as 'kill reward' placeholders until a pickup names the item, because the native server drops loot in-world without a ground envelope (native/client/remote_session.cpp:799-806). Labels (Z) show the placeholder, not the real item name"
+      ],
+      "smallest_fix": "Client-side only: keep the sparkle but hide the placeholder label until the authoritative name arrives (or label it generically without fake specificity). Server envelope work belongs to a server lane, not this fix."
+    },
+    {
+      "id": 8,
+      "phase": "equip",
+      "title": "Equip and read gear",
+      "client_shows": [
+        "I opens the Gear/House pane: authoritative stat readout LIFE/RES/ATK (base + equipped bonus)/DEF/LVL, weapon seat, 4-column backpack grid with [E] equipped markers, banked items/trophies footer (native/client/main.cpp:1924-2059)",
+        "Digits 1-9 quick-equip carried items; Enter equips the selected cell; U unequips (local) (native/client/main.cpp:3220-3242, 888-896)",
+        "Empty-gear attempt hints 'Gear empty: pick up an item first' (native/client/main.cpp:889-892)"
+      ],
+      "player_decision": "Compare the equipped bonus and choose what to equip",
+      "decision_legible": true,
+      "evidence": [
+        "native/client/main.cpp:3574-3591 — loot-to-bank scenario proves weapon seat fills and the stat readout shows the (+N) bonus",
+        "native/client/presentation_state.cpp:122-132 — remote inventory/equipped sync into the same pane"
+      ],
+      "friction": [
+        "Only attack bonuses are shown per item; defense/resource/health bonuses parsed from the protocol (native/client/remote_session.cpp:74-93) are not surfaced in the pane, so equip choices under-inform",
+        "Remote unequip has no wire command; U silently does nothing off-local (native/client/main.cpp:3232-3235 gates on state->simulation)"
+      ],
+      "smallest_fix": "Surface the already-parsed bonuses in the pane rows and disable/hide the U affordance on the remote path (or hint that it is local-only)."
+    },
+    {
+      "id": 9,
+      "phase": "extraction",
+      "title": "Extract value to the House",
+      "client_shows": [
+        "EXIT pad: bright pulsing plate with gold chevrons and an 'EXIT' label; minimap shows a gold dot for it (native/client/main.cpp:2636-2684, 2245-2249)",
+        "Objective strip points at the EXIT with compass direction and distance, switching to 'carry your loot to the EXIT' while carrying (native/client/main.cpp:2917-2943)",
+        "Remote extraction is by walking onto stairs-up; F instead hints 'Reach the exit stairs to return to the surface.' (native/client/remote_session.cpp:437-442); success message 'Returned to the surface' (native/client/presentation_state.cpp:225-228)"
+      ],
+      "player_decision": "Push farther or return and bank",
+      "decision_legible": true,
+      "evidence": [
+        "native/client/main.cpp:3605-3629 — loot-to-bank scenario proves extraction banks item+trophy and the objective strip keeps guiding",
+        "docs/product/VERDIGRIS_CONSTITUTION.md:48-53 — unextracted value can be lost on death; the return decision is the loop's tension"
+      ],
+      "friction": [
+        "Contract mismatch on the owner path: the objective strip says 'press F there' (main.cpp:2933) but on remote F does not extract (remote_session.cpp:437-442) — the owner must walk onto the pad. Locally F works. One of the two surfaces is wrong depending on mode"
+      ],
+      "smallest_fix": "Make the objective strip mode-aware (remote: point at the pad and say walk-onto; wording owner-owned), or route F to a walk-onto request on remote. Pure interaction contract, no lore."
+    },
+    {
+      "id": 10,
+      "phase": "progression",
+      "title": "See progression (level, bank, tree)",
+      "client_shows": [
+        "Chronicle roster lists each living Scion with level (and '(mortal)') (native/client/main.cpp:2505-2510); expedition identity chip names House and Scion (native/client/main.cpp:2945-2955)",
+        "Gear pane shows LVL plus stats; banked items/trophies counted after extraction (native/client/main.cpp:1968-1979, 2051-2056)",
+        "Server derives level from combat XP (native/src/networking.cpp:2045-2052, 1169-1181) and includes a passiveTree object in payloads (native/src/networking.cpp:586, 817)"
+      ],
+      "player_decision": "Invest progression (passive tree) — currently impossible in the native client",
+      "decision_legible": false,
+      "evidence": [
+        "native/client/remote_session.cpp:614-917 — apply_envelope handles login/chronicle/combat/state/inventory but never reads passiveTree",
+        "grep of native/client: no passiveTree reference in any client file; the payload field is dropped on the floor",
+        "docs/product/VERDIGRIS_CONSTITUTION.md:103-106 — player-facing progression includes inventory, stats, a passive skill tree, and loose quest threads"
+      ],
+      "friction": [
+        "Level-ups happen server-side with no client moment (no flash, no delta line); the number in the pane simply changes",
+        "The passive tree exists in the wire contract and server but has no native surface; progression beyond gear is invisible on the first session"
+      ],
+      "smallest_fix": "Non-lore minimum: announce level changes (compare model level across dev:state polls and emit the existing hint/event-log line) and add a read-only passive-tree summary chip (points available/spent from the authoritative payload). Full tree UI is a successor lane; this makes progression legible without inventing rules."
+    },
+    {
+      "id": 11,
+      "phase": "death-recovery",
+      "title": "Understand death and recovery",
+      "client_shows": [
+        "Soft death (lifecycle awaiting-respawn) keeps the expedition screen; hard mortal fall emits chronicles:scion-fallen with the message 'The chronicle records the fall of <name>.' and returns the owner to the front door (native/client/main.cpp:2371-2384; native/client/remote_session.cpp:673-694)",
+        "Front door then records the fall with name and level, lists the Scion in the crypt with heirloom status, and offers '[C] Name a new Scion' plus heir-admission ('Set out as <heir>, heir of <fallen>') (native/client/main.cpp:2511-2530, 2329-2356)",
+        "Heirloom recovery surfaces the relic in-world and toasts 'Heirloom of <name> recovered' (native/client/main.cpp:2386-2405, 2957-2966)"
+      ],
+      "player_decision": "Admit an heir (select path) and understand what was lost/kept",
+      "decision_legible": true,
+      "evidence": [
+        "native/client/main.cpp:2329-2343 — wire contract comment: heirs are admitted through player:chronicles:select (resets permadead lifecycle); set-out is the living scion's road-purse outing",
+        "native/client/main.cpp:4049-4108 — gate-b scenario proves fall recording, crypt entry, succession select, and the RECORDED RED: successor inherits a zero-life actor until a fresh heal (routed to TASK-0148, not client-fixable)",
+        "native/persistence/README.md:21-28 — snapshot boundary retires the active instance; carried value stays on the Scion, floor value disappears, relic candidates return to recovery queues"
+      ],
+      "friction": [
+        "The zero-life-heir red is recorded and owned by TASK-0148 (server); until it lands, a succession admission can show a dead-in-world heir — the single worst first-impression moment in the current journey",
+        "What death does to carried loot is implemented (persistence boundary) but never stated to the owner in-client; the fall message records the Scion, not the loss rule",
+        "Soft death (awaiting-respawn) has no visible explanation on the expedition screen; the owner sees orbs at zero and must guess"
+      ],
+      "smallest_fix": "Client-side: on awaiting-respawn show the existing hint channel with an owner-owned explanation line; on succession admission, keep the front door visible until model.player.life > 0 (the scenario already waits on exactly this condition, main.cpp:4103-4107). The heal fix itself stays with TASK-0148."
+    },
+    {
+      "id": 12,
+      "phase": "quit-relaunch",
+      "title": "Quit and relaunch",
+      "client_shows": [
+        "Esc or window close quits immediately; session shutdown is clean (native/client/main.cpp:3174-3177, 3302-3305; native/client/remote_session.cpp:372-386)",
+        "play-native lifecycle selftest proves normal close exits 0 and both processes are reaped (native/tools/play-native.ps1:262-309, 352-357)",
+        "Relaunch restores the account roster: chronicles:state re-renders House, living heirs, and crypt (native/client/main.cpp:4143-4166 scenario step 10)"
+      ],
+      "player_decision": "Quit now (abandoning the active instance) or extract first",
+      "decision_legible": true,
+      "evidence": [
+        "native/persistence/README.md:24-28 — an active instance is retired at the snapshot boundary; ordinary floor value disappears, carried value stays with the Scion",
+        "native/src/networking.cpp:540 — account state (stats, inventory, quests, chronicle) persists across sessions for guests"
+      ],
+      "friction": [
+        "Esc quits instantly with no confirmation even while carrying unextracted loot; the loss rule for the abandoned instance exists in the persistence contract but is never shown at the quit moment",
+        "No 'quit to front door' (soft exit) distinct from 'quit the game'; both are the same instant action"
+      ],
+      "smallest_fix": "When carried value exists, make Esc first show a hint/confirm in the existing hint channel naming the stake (wording owner-owned); second Esc quits. No menus, no checklist."
+    },
+    {
+      "id": 13,
+      "phase": "error-reconnect",
+      "title": "Errors and reconnect",
+      "client_shows": [
+        "Connection chip is always visible on both screens with honest states: connecting/connected/ready/retrying/disconnected/rejected/protocol mismatch (native/client/main.cpp:2570-2616; native/client/remote_session.hpp state enum)",
+        "Hard failure banner: 'CONNECTION LOST — not playing offline' plus hint pulse (native/client/main.cpp:2609-2615; native/client/presentation_state.cpp:229-233)",
+        "Retry policy: only after having been Ready; 3 attempts at 1s/2s/4s backoff, then terminal 'reconnect failed after 3 attempts' (native/client/remote_session.cpp:311-349)",
+        "player:session-replaced is terminal: 'session replaced by a newer connection' (native/client/remote_session.cpp:695-700); protocol upgrade failures classify as ProtocolMismatch (native/client/remote_session.cpp:362-368)"
+      ],
+      "player_decision": "Recognize the failure and relaunch (there is no in-client retry control)",
+      "decision_legible": true,
+      "evidence": [
+        "native/tests/session_tests.cpp:405-406 — 'replaced: first session is disconnected' contract test",
+        "docs/rebuild/NATIVE_CLIENT_PROTOCOL_MATRIX.md:14 — session-replaced row documents the Disconnected/ConnectionLost contract"
+      ],
+      "friction": [
+        "After the third failed retry the client sits on the front door with a red chip but no 'retry now' affordance; the only recovery is closing the window and relaunching",
+        "Retry only ever re-establishes transport; the front door payload refresh depends on the server re-emitting chronicles:state on the new login (works, but the owner sees 'Opening the chronicles...' again with no explanation of what happened)"
+      ],
+      "smallest_fix": "Add a keyboard 'R: attempt to reconnect' action to the front door action list when state is Disconnected/Rejected (it already owns the full action-menu machinery, native/client/main.cpp:2321-2443). Structural, no copy invention."
+    }
+  ],
+  "summary_counts": {
+    "steps": 13,
+    "decisions_legible": 11,
+    "decisions_not_legible": 2,
+    "negative_controls": [
+      "step 5 goal-choice: the durable loop's first decision has no surface at all (hardcoded tin:1:0; phase events dropped)",
+      "step 10 progression: passive-tree progression exists on the wire but has no native surface; level-ups are silent"
+    ]
+  }
+}
