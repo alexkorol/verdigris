@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <polygon points="0,0 64,0 64,64 0,64" fill="#46653f"/>
+  <circle cx="55" cy="49" r="2.17" fill="#57794d"/>
+  <circle cx="9" cy="26" r="2.32" fill="#3d5938"/>
+  <circle cx="44" cy="39" r="1.06" fill="#3d5938"/>
+  <circle cx="9" cy="21" r="2.49" fill="#57794d"/>
+  <circle cx="25" cy="47" r="2.38" fill="#4f7047"/>
+  <circle cx="53" cy="7" r="1.46" fill="#3d5938"/>
+  <circle cx="47" cy="41" r="1.35" fill="#3d5938"/>
+  <circle cx="8" cy="55" r="2.33" fill="#57794d"/>
+  <circle cx="50" cy="18" r="2.36" fill="#4f7047"/>
+  <circle cx="25" cy="48" r="2.02" fill="#4f7047"/>
+  <circle cx="23" cy="9" r="2.18" fill="#4f7047"/>
+  <circle cx="34" cy="58" r="1.73" fill="#4f7047"/>
+  <circle cx="8" cy="35" r="1.74" fill="#4f7047"/>
+  <circle cx="13" cy="33" r="2.53" fill="#4f7047"/>
+  <circle cx="55" cy="26" r="1.21" fill="#57794d"/>
+  <circle cx="36" cy="22" r="2.22" fill="#3d5938"/>
+  <circle cx="27" cy="42" r="2.39" fill="#4f7047"/>
+  <circle cx="40" cy="53" r="1.97" fill="#57794d"/>
+  <circle cx="15" cy="10" r="1.69" fill="#57794d"/>
+  <circle cx="13" cy="35" r="2.23" fill="#4f7047"/>
+  <circle cx="45" cy="16" r="2.22" fill="#4f7047"/>
+  <circle cx="12" cy="26" r="2.39" fill="#4f7047"/>
+  <circle cx="49" cy="32" r="2.19" fill="#3d5938"/>
+  <circle cx="44" cy="44" r="2.09" fill="#57794d"/>
+  <circle cx="14" cy="10" r="1.26" fill="#4f7047"/>
+  <circle cx="48" cy="19" r="1.32" fill="#57794d"/>
+  <polygon points="29.73,51.32 34.55,51.7 35.05,54.91 29.23,55.72" fill="#6b7060"/>
+  <polygon points="51.58,15.4 55.22,15.51 55.72,19.88 51.08,20.08" fill="#5c6154"/>
+  <polygon points="27.36,15.55 32.24,16.18 32.74,19.64 26.86,19.79" fill="#6b7060"/>
+  <polygon points="49.55,44.83 52.88,44.85 53.38,48.95 49.05,49.61" fill="#5c6154"/>
+</svg>
