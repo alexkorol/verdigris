@@ -30,7 +30,7 @@ The independent `ox-bootstrap` orchestration worker has pushed M3 head
 `82de84ef` after M2 `5627916f`. The standalone repo's Tier-B review contract
 still governs acceptance and this lane never counts as Verdigris capacity.
 
-Snapshot: 2026-08-22 03:32 PDT
+Snapshot: 2026-08-22 03:35 PDT
 
 Sweep base: `df851cead0dadcd96176b370ad132f8344c3c21d`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
@@ -100,13 +100,14 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-d | 6680-6699 | TASK-0146 second post-claim stop after one recovery; claim `7e416ff3` released | P0 quarantined/preserved, not capacity |
 | ox-pc-e | 6700-6719 | TASK-0147 second post-claim stop after one recovery; claim `068a1358` released | P0 quarantined/preserved, not capacity |
 | ox-pc-f | 6720-6739 | TASK-0138 accepted/integrated at `38942560`; lane available | current-tip successor pending |
-| ox-pc-g | 6740-6759 | TASK-0148 pushed claim head `1b058604`; one exact-session recovery active | reconnect-safe Chronicles runtime |
+| ox-pc-g | 6740-6759 | TASK-0148 second post-claim stop after one recovery; claim `1b058604` released | P0 quarantined/preserved, not capacity |
 | ox-pc-h | 6760-6779 | TASK-0136 second post-claim process exit; dirty worktree preserved; claim released | P0 quarantined, not capacity |
 | ox-pc-i | 6780-6799 | TASK-0145 replacement claim `226e5149` pushed from current program tip | Chronicles owner-facing client journey replacement active |
 | ox-pc-j | 6800-6819 | TASK-0149 pushed claim `2d200041`; one exact-session recovery active | real owner launch and cleanup resilience |
 | ox-pc-k | 6820-6839 | TASK-0150 frozen head `54417592` independently ACCEPTED; implementation integrated at `10039385` | lane complete/available after worker stops |
 | ox-pc-l | 6840-6859 | fresh TASK-0146 replacement launch requested after this coordination push | independent encounter-wave replacement |
 | ox-pc-m | 6860-6879 | fresh TASK-0147 replacement launch requested after this coordination push | independent visual-polish replacement |
+| ox-pc-n | 6880-6899 | fresh TASK-0148 replacement launch requested after this coordination push | independent reconnect-runtime replacement |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -197,11 +198,10 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - Released: **TASK-0136** claims `6ea36f5a`/`7b24e5d3`/`7026892e` after a real
   duplicate-dispatch collision. Lane c remains quarantined; the clean lane h
   receives the replacement route after this coordination push.
-- Active work: TASK-0148 reconnect-runtime claim head `1b058604` on ox-pc-g,
-  TASK-0145 replacement claim `226e5149` on ox-pc-i, and TASK-0149 claim
-  `2d200041` on ox-pc-j. Fresh replacement launches for released TASK-0146 and
-  TASK-0147 route to ox-pc-l/m after this push. All valid claims are excluded
-  from READY accounting.
+- Active work: TASK-0145 replacement claim `226e5149` on ox-pc-i and TASK-0149
+  claim `2d200041` on ox-pc-j. Fresh replacement launches for released
+  TASK-0146, TASK-0147, and TASK-0148 route to ox-pc-l/m/n after their
+  coordination pushes. All valid claims are excluded from READY accounting.
 - Launch requested at 02:49 PDT: TASK-0149 on fresh lane ox-pc-j and TASK-0150
   on fresh lane ox-pc-k. These pairwise-disjoint reliability packets raise
   the product wave to six workers. Both claims landed inside the ten-minute
@@ -214,9 +214,12 @@ harness-visible provider/model. These are separate scorecard experimental units.
   `068a1358` are released; dirty d/e worktrees are P0-quarantined and preserved.
   Fresh l/m replacements must implement independently and must not copy the
   unreviewed dirty edits.
-- TASK-0148 and TASK-0149 stopped once with dirty work after their claim. Their
-  exact sessions received their single permitted recovery on the same branch;
-  a second stop before valid handoff is quarantine/release.
+- TASK-0148 reached its second post-claim stop after the one permitted recovery.
+  Claim `1b058604` is released; the dirty g worktree is P0-quarantined and
+  preserved. Fresh lane n must implement independently without copying it.
+- TASK-0149 stopped once with dirty work after its claim. Its exact session
+  received the single permitted recovery on the same branch; a second stop
+  before valid handoff is quarantine/release.
 - P0 quarantined: TASK-0136 replacement claim `ddd00857` on ox-pc-h. The first
   process exit received one exact-session recovery; the recovery also exited
   with dirty uncommitted work. RELEASE now returns the task to READY. Preserve
