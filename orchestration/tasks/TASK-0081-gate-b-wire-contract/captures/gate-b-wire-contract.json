@@ -122,8 +122,14 @@
         { "event": "dev:state", "keys": ["state.lifecycle", "state.lifecycleMode", "state.chronicles.mortal", "state.chronicles.scionId", "state.chronicles.houseId", "state.chroniclesRecord.exists", "state.chroniclesRecord.revision", "state.chroniclesRecord.state"], "sourceLines": "807-851 (snapshot puts at 810-812, 844-850), wrapper state_payload at 913, dev:state branch at 2496" },
         { "event": "chronicles:scion-fallen", "keys": ["chronicle (full snapshot incl. scions[].mortal)"], "sourceLine": 2189 }
       ],
-      "responses": [],
-      "responseNotes": "State exposure only; the oath produces no standalone response envelope on the current tip.",
+      "responses": [
+        {
+          "event": "player:login",
+          "responseKeys": ["player.uuid", "player.username", "player.socket_id", "player.sceneId", "player.x", "player.y", "player.facing", "player.level", "player.passiveTree", "player.quests", "player.inventory.slots[]", "player.chronicles.mortal (oath-bearing key)", "player.chronicles.scionId", "player.chronicles.houseId", "scene", "droppedItems[]"],
+          "emittedAt": "networking.cpp:2632-2654 via emit_login :2302 / login_payload :593-595"
+        }
+      ],
+      "responseNotes": "The oath-carrying request player:chronicles:select is NOT response-less: it produces a full player:login admission payload through emit_login (:2637 sets lifecycle hard/soft from mortal; :2652 emits). The oath has no standalone envelope beyond that login response and the exposure surfaces listed above.",
       "handler": { "symbol": "ProtocolSession::handle (select/mutate branches); ProtocolSession::snapshot; ProtocolSession::state_payload", "file": "native/src/networking.cpp", "lines": "2632-2654, 2549-2572, 807-851, 913" },
       "testEvidence": { "nativeTestLabel": null, "status": "RED", "reason": "no chronicles coverage in native/tests (rg no matches)" }
     },
@@ -217,15 +223,33 @@
       "clientEvent": "player:login",
       "payloadKeys": ["guestId"],
       "responses": [
-        { "event": "player:login", "responseKeys": ["player", "scene", "droppedItems[]"] }
+        {
+          "event": "chronicles:state",
+          "responseKeys": ["player.socket_id", "chronicle", "(createdScionId only when created_scion_id non-empty)"],
+          "condition": "dispatch branch :2671-2674: guestId non-empty AND !quick_start_ AND scionName empty AND !pending_chronicles_ (fresh Chronicle admission on relaunch)",
+          "handlerLines": "2668-2674"
+        },
+        {
+          "event": "player:chronicles:ready",
+          "responseKeys": ["player.socket_id", "chroniclesAccountId", "accountName", "level", "chronicles", "chroniclesRevision", "chroniclesExists"],
+          "condition": "payload awaitChronicles=true with empty scionName",
+          "handlerLines": "2659-2666"
+        },
+        {
+          "event": "player:login",
+          "responseKeys": ["player", "scene", "droppedItems[]", "(quickStart only when quick-start session)"],
+          "condition": "FALL-THROUGH only (:2676-2680): plain login / session reuse matching neither chronicle branch; a same-identity relaunch takes this path after admission already completed",
+          "handlerLines": "2655-2681, emit_login 2302"
+        }
       ],
       "responseProven": true,
-      "responseNotes": "In-process relaunch is proven: new socket, same guest identity re-login restores session/account state including chronicle_ within a LIVE server process (matrix rows Disconnect/Reconnect cite native/tests/session_tests.cpp:409-411 and 423-425: 'reconnect: Retrying then Ready after server restart', 'reconnect: same guest identity re-logged in', 'reconnect: login snapshot is authoritative'). DURABLE CROSS-PROCESS PERSISTENCE IS EXPLICITLY RED: rg -n 'ofstream|ifstream|fopen|fwrite' native/src -> no matches; no on-disk House/Scion store exists on the native tip, so a server restart loses chronicle state (JS parity store CHRONICLES_STORE_FILE lives in playtest/run.mjs:54 against the Node server, not the native server).",
+      "responseNotes": "emit_login is NOT the fresh-guestId response: at :2655-2681 the dispatch order is awaitChronicles -> player:chronicles:ready, then non-quick/non-pending guestId with empty scionName -> chronicles:state, then fall-through player:login. In-process relaunch is proven: new socket, same guest identity re-login restores session/account state including chronicle_ within a LIVE server process (matrix rows Disconnect/Reconnect cite native/tests/session_tests.cpp:409-411 and 423-425). DURABLE CROSS-PROCESS PERSISTENCE IS EXPLICITLY RED: rg -n 'ofstream|ifstream|fopen|fwrite' native/src -> no matches; no on-disk House/Scion store exists on the native tip, so a server restart loses chronicle state (JS parity store CHRONICLES_STORE_FILE lives in playtest/run.mjs:54 against the Node server, not the native server).",
+      "proofBoundaryNote": "The server-restart tests are generic by design: they prove reconnection, identity persistence across sockets, and an authoritative login snapshot - they do NOT prove Chronicle/account-state durability across a server restart, and no test does.",
       "handler": { "symbol": "ProtocolSession::handle (player:login branch); ProtocolSession::reset_world_for_new_socket", "file": "native/src/networking.cpp", "lines": "2655-2681, 538-579" },
       "testEvidence": {
-        "nativeTestLabel": "reconnect: Retrying then Ready after server restart; reconnect: same guest identity re-logged in; reconnect: login snapshot is authoritative (native/tests/session_tests.cpp:423-425) - generic login/reconnect only, ZERO chronicle-specific assertions",
+        "nativeTestLabel": "reconnect: Retrying then Ready after server restart; reconnect: same guest identity re-logged in; reconnect: login snapshot is authoritative (native/tests/session_tests.cpp:423-425) - GENERIC ONLY: these prove reconnection, identity, and a login snapshot, not Chronicle/account-state durability across server restart",
         "status": "PARTIAL",
-        "reason": "session-level relaunch has a real test label; chronicle restore across relaunch has none"
+        "reason": "generic reconnect labels exist; chronicle/account durability across restart has none"
       },
       "rowStatus": "RED (durable persistence leg)"
     }
@@ -233,9 +257,11 @@
   "summary": {
     "recordsTotal": 12,
     "responseShapeProvenFromSource": 11,
+    "countBasis": "12 records; exactly one ('quit') has no provable response and stays red; every other record now names at least one source-proven response (rev2 corrected 'mortal-oath-state', whose select request does emit player:login)",
     "responseAbsentRedRows": ["quit"],
     "durableLegRedRows": ["relaunch (cross-process persistence)"],
     "nativeAutomatedTestLabelsForChroniclesSteps": 0,
+    "revision": "rev2 per TASK-0081 REVIEW.md corrections 1-2 (2026-08-21): mortal-oath response recorded, relaunch dispatch conditionals frozen, proof-boundary note added, counts reconciled",
     "redRule": "Per SPEC: a missing response or test remains explicitly red; nothing was invented and no code was changed."
   }
 }

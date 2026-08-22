@@ -2,7 +2,7 @@
 
 - task: TASK-0081
 - state: REVIEW_REQUESTED
-- transitioned-at: 2026-08-21 20:55 PDT (-07:00)
+- transitioned-at (commit clock): 2026-08-21 20:42:44 PDT (-07:00), author/committer time of review-request commit `0302ea4c`; rev2 re-request uses its own commit clock recorded in REPORT.md (wall-clock session notes like "started ~20:20 PDT" are approximate and are NOT used for duration math)
 - coordinator: ox-pc-a
 - worker: ox-pc-a (only registered PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0081-gate-b-wire-contract-ox-pc-a`

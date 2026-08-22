@@ -6,7 +6,28 @@
 - base SHA: `986264f44b6bd3e03633d05f8b3e69fad35d4688`
 - head SHA: see "Commits" below (final push recorded on branch)
 - program tip observed at claim time: `600e6432b03ba5ca063ef0cbdc9ad643c4a70308` (coordination-only delta vs base; no source change — preserved required base)
-- started: 2026-08-21 20:20 PDT (-07:00) · claimed+pushed 20:21 PDT · implemented+pushed same session
+- started: 2026-08-21 20:06 PDT launch request; ~20:20 PDT approximate session start (imprecise, not used for durations)
+- commit clocks: claim `f08131c0` 20:21:49 PDT · review-request rev1 `0302ea4c` 20:42:44 PDT · rev2 per branch log
+
+## Revise cycle (architect REVIEW.md at 0302ea4c, 2026-08-21 20:43 PDT)
+
+REVISE verdict with four numbered corrections; all applied in rev2:
+
+1. mortal-oath-state: recorded the true `player:login` response of
+   `player:chronicles:select` (emit_login :2632-2654) instead of an empty
+   responses list; summary counts reconciled (11/12 proven, quit still red).
+2. relaunch: froze the actual dispatch conditionals at :2655-2681
+   (awaitChronicles → ready; guestId non-quick/non-pending → chronicles:state;
+   fall-through → player:login) and added the explicit proof-boundary note
+   that server-restart tests prove reconnection/identity/snapshot only, never
+   Chronicle durability.
+3. telemetry: replaced imprecise wall-clock "~35 min" with durable commit-clock
+   latency 20m55s; transitioned-at now cites the authoritative commit clock.
+4. all five SPEC acceptance commands rerun after corrections (transcripts
+   below unchanged where output is identical), `git diff --check` clean,
+   base→revision path list verified to touch only the two owned surfaces,
+   STATUS back to REVIEW_REQUESTED, revision commit pushed on the same worker
+   branch without amend/force-push.
 
 ## Executive summary
 
@@ -202,18 +223,30 @@ in-process session-reuse labels (session_tests.cpp:409-411, 423-425).
   `Z:\Code\.worktrees\verdigris\ox-pc-a`; configuration provenance recorded in
   `STATUS.md`
 - task family: MECHANICAL / INDEPENDENT audit
-- run/task ids: TASK-0081; claim commit `f08131c0` pushed 2026-08-21 20:21 PDT
-  (within the 10-minute activation window from the 20:06 PDT launch request)
-- wall time: ~35 min claim→review-requested (single continuous session)
+- run/task ids: TASK-0081; claim commit `f08131c0` (author/commit clock
+  2026-08-21 20:21:49 PDT) pushed inside the 10-minute activation window from
+  the 20:06 PDT launch request; review-request commit `0302ea4c` (author/
+  commit clock 2026-08-21 20:42:44 PDT)
+- **durable claim→review-request latency (commit clock): 20m55s**
+  (`f08131c0` 20:21:49 → `0302ea4c` 20:42:44). Earlier "~35 min" wall-clock
+  wording was wrong and is retracted; approximate session-start notes (~20:20)
+  are kept separately and are not used for duration math.
+- rev2 latency: corrections applied after the architect's 20:43 PDT review;
+  revision commit clock recorded in the branch log entry below.
 - tokens/tool calls: not exposed by this harness — unknown/omitted, not
   fabricated
 - first-pass result: acceptance gates passed first run EXCEPT one authoring
   slip: the captures JSON initially contained invalid JSON prose (duplicate
   key + unquoted text) caught by acceptance gate #1 and fixed before commit —
-  counted as a false-green-prevented event, not a hidden failure
+  counted as a false-green-prevented event, not a hidden failure. REVISE
+  findings 1-3 were legitimate review catches (missing select response,
+  missing relaunch conditionals, imprecise telemetry), not gate escapes.
 - changed tests: none (audit task; tests are read-only evidence inputs)
 
 ## Commits
 
 - `f08131c0` TASK-0081: claim Gate B wire-contract freeze (ox-pc-a)
-- (implementation + review-request commits follow; see branch log)
+- `0302ea4c` TASK-0081: freeze Gate B Chronicles wire contract + matrix rows
+  (review-request rev1, reviewed REVISE at this head)
+- revision commit(s): follow in branch log ("rev2 per REVIEW.md"), never
+  amended or force-pushed
