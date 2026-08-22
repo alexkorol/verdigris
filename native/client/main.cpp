@@ -2579,13 +2579,17 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
 
 // Shared owner-facing chrome: the visible connection state lives on both
 // screens — a failed connection is always explicit, never a silent fallback.
+// TASK-0153 rev2: the chip draws where the measured top-HUD planner puts it.
+constexpr int kConnectionChipW = 168;
+constexpr int kConnectionChipH = 22;
 void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
-                           render::List& rl) {
+                           render::List& rl, int chip_x, int chip_y) {
   if (!state.session) return;
     const auto conn = state.session->connection_state();
     const char* label = verdigris::client::connection_state_label(conn);
     const std::string chip = std::string("connection ") + label;
-    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, chip});
+    rl.push_back({render::Op::Hud, static_cast<double>(chip_x),
+                  static_cast<double>(chip_y), 0.0, 0, chip});
     COLORREF chip_color = RGB(185, 198, 188);
     if (conn == verdigris::client::ConnectionState::Ready)
       chip_color = RGB(120, 214, 168);
@@ -2597,11 +2601,8 @@ void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
              conn == verdigris::client::ConnectionState::Rejected ||
              conn == verdigris::client::ConnectionState::ProtocolMismatch)
       chip_color = RGB(255, 80, 70);
-    const int chip_w = 168;
-    const int chip_h = 22;
-    const int chip_x = std::max(18, static_cast<int>(bounds.right) - chip_w - 18);
-    const int chip_y = 12;
-    RECT chip_rect{chip_x, chip_y, chip_x + chip_w, chip_y + chip_h};
+    RECT chip_rect{chip_x, chip_y, chip_x + kConnectionChipW,
+                   chip_y + kConnectionChipH};
     HBRUSH chip_bg = CreateSolidBrush(RGB(25, 33, 37));
     FillRect(dc, &chip_rect, chip_bg);
     DeleteObject(chip_bg);
@@ -2625,6 +2626,99 @@ void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
     }
 }
 
+// ── TASK-0153 rev2: measured top-HUD row planner ────────────────────────
+// The review blocker at 960x600 was the long chronicle-derived identity line
+// colliding with the centered objective strip. Every normal-HUD top region —
+// identity, objective, connection, art-status, controls — is now placed by
+// this one pure integer-geometry pass from actually measured extents, so the
+// five regions can never overlap at any width, including 960x600 and
+// 1366x768. The painter draws exactly what this returns; the deterministic
+// scenario runs the same function over worst-case strings as acceptance
+// evidence.
+constexpr int kTopHudGutter = 12;      // screen-edge breathing room
+constexpr int kTopHudGap = 10;         // minimum clearance between regions
+constexpr int kTopHudRow0Y = 12;
+constexpr int kTopHudRowStep = 34;     // clears a chip's full height + margin
+constexpr int kTopHudRowCount = 4;
+
+struct TopHudRect {
+  int x = 0;
+  int y = 0;
+  int w = 0;
+  int h = 0;
+};
+
+struct TopHudLayout {
+  TopHudRect identity;
+  TopHudRect objective;
+  TopHudRect connection;
+  TopHudRect art;
+  TopHudRect controls;
+  bool objective_placed = false;
+  bool controls_placed = false;
+};
+
+bool top_hud_clear(const TopHudRect& a, const TopHudRect& b, int gap) {
+  return a.x + a.w + gap <= b.x || b.x + b.w + gap <= a.x ||
+         a.y + a.h + gap <= b.y || b.y + b.h + gap <= a.y;
+}
+
+TopHudLayout plan_top_hud(int width, const TopHudRect& identity_size,
+                          const TopHudRect& objective_size,
+                          const TopHudRect& art_size,
+                          const TopHudRect& controls_size, bool session) {
+  TopHudLayout layout;
+  std::vector<TopHudRect> occupied[kTopHudRowCount];
+  const auto row_y = [&](int row) { return kTopHudRow0Y + row * kTopHudRowStep; };
+  const auto fits = [&](int row, const TopHudRect& cand) {
+    if (cand.x < kTopHudGutter) return false;
+    if (cand.x + cand.w > width - kTopHudGutter) return false;
+    for (const auto& taken : occupied[row])
+      if (!top_hud_clear(cand, taken, kTopHudGap)) return false;
+    return true;
+  };
+  // Right-aligned chips keep their historical edge pin; if row 0 is crowded
+  // (or the identity line reaches across), the next row takes them.
+  const auto place_right = [&](const TopHudRect& size) {
+    for (int row = 0; row < kTopHudRowCount; ++row) {
+      TopHudRect cand{std::max(kTopHudGutter, width - kTopHudGutter - size.w),
+                      row_y(row), size.w, size.h};
+      if (fits(row, cand)) {
+        occupied[row].push_back(cand);
+        return cand;
+      }
+    }
+    return TopHudRect{};
+  };
+  const auto place_centered = [&](const TopHudRect& size, bool& placed) {
+    for (int row = 0; row < kTopHudRowCount; ++row) {
+      TopHudRect cand{std::max(kTopHudGutter, (width - size.w) / 2), row_y(row),
+                      size.w, size.h};
+      if (fits(row, cand)) {
+        occupied[row].push_back(cand);
+        placed = true;
+        return cand;
+      }
+    }
+    placed = false;
+    return TopHudRect{};
+  };
+
+  layout.identity = TopHudRect{kTopHudGutter + 6, row_y(0), identity_size.w,
+                               identity_size.h};
+  occupied[0].push_back(layout.identity);
+  if (session)
+    layout.connection =
+        place_right(TopHudRect{0, 0, kConnectionChipW, kConnectionChipH});
+  // Art keeps its historical rows: beside the identity locally, under the
+  // connection chip on the remote owner path (row 0 is taken there).
+  layout.art = place_right(art_size);
+  // The objective outranks the controls hint when rows are contested.
+  layout.objective = place_centered(objective_size, layout.objective_placed);
+  layout.controls = place_centered(controls_size, layout.controls_placed);
+  return layout;
+}
+
 void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   sync_world(state);
   const WorldView& world = state.world;
@@ -2635,7 +2729,12 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   // entirely; the door renders from the authoritative chronicle model.
   if (state.screen == Screen::Chronicles) {
     paint_chronicles_front_door(state, dc, bounds, rl);
-    paint_connection_chip(state, dc, bounds, rl);
+    // The front door owns its whole canvas, so the shared chip keeps its
+    // historical edge-pin position here; the planner governs the expedition.
+    paint_connection_chip(state, dc, bounds, rl,
+                          std::max(18, static_cast<int>(bounds.right) -
+                                           kConnectionChipW - 18),
+                          12);
     state.render_list = std::move(rl);
     return;
   }
@@ -2917,16 +3016,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     DeleteObject(pulse);
   }
 
-  if (state.session) {
-    paint_connection_chip(state, dc, bounds, rl);
-  }
-
-  // TASK-0142: owner-facing objective strip, centered at the top. TASK-0153
-  // makes it phase-truthful and mode-truthful: the slay objective comes from
-  // the authoritative expedition phase (core state locally, the session's
-  // authoritative foe snapshot remotely), and the exit instruction is the
-  // real extraction contract for the active session mode — never "press F"
-  // on the remote owner path, where walking onto the stairs is the action.
+  // TASK-0153 rev2: every normal-HUD top region is measured, then placed by
+  // the single pure planner pass, then drawn exactly where it was placed.
   {
     std::string objective;
     COLORREF accent = RGB(120, 214, 168);
@@ -2950,50 +3041,83 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       objective += extraction_action_hint(is_remote(state));
       if (carrying) accent = RGB(239, 208, 116);
     }
-    SIZE extent{};
-    GetTextExtentPoint32A(dc, objective.c_str(),
-                          static_cast<int>(objective.size()), &extent);
-    const int chip_x =
-        std::max(12, (static_cast<int>(bounds.right) -
-                      static_cast<int>(extent.cx) - 16) / 2);
-    paint_status_chip(dc, chip_x, 12, objective, accent, rl);
-  }
 
-  // TASK-0145: expedition identity chip — the current House and Scion are
-  // always named, straight from the authoritative session model.
-  {
-    const std::string identity = "House " + world.house_name + " - Scion " +
-                                 (world.scion_name.empty() ? std::string("(unnamed)")
-                                                           : world.scion_name);
-    rl.push_back({render::Op::HouseChip, 0.0, 0.0, 0.0, 0, identity});
-    SetBkMode(dc, TRANSPARENT);
-    SetTextColor(dc, RGB(140, 208, 172));
-    TextOutA(dc, 18, 12, identity.c_str(), static_cast<int>(identity.size()));
-  }
-
-  // TASK-0153: restrained always-available controls line. Essential
-  // combat/loot/gear answers — including dash, the response to every enemy
-  // telegraph — live on the normal HUD instead of behind the F3 debug
-  // overlay. It is a single dim reference line (loose guidance, not a
-  // checklist tutorial) placed under the objective/identity row and clear of
-  // the art/connection chips at both 960x600 and 1366x768.
-  {
+    const std::string identity =
+        "House " + world.house_name + " - Scion " +
+        (world.scion_name.empty() ? std::string("(unnamed)") : world.scion_name);
     static constexpr char kControls[] =
         "WASD move | mouse aim | LMB attack | RMB/Space dash | Q E R skills | "
         "X take | Z names | I gear";
-    SIZE extent{};
+    const std::string& art_text = state.billboards.status;
+
+    SIZE identity_extent{}, objective_extent{}, art_extent{}, controls_extent{};
+    GetTextExtentPoint32A(dc, identity.c_str(),
+                          static_cast<int>(identity.size()), &identity_extent);
+    GetTextExtentPoint32A(dc, objective.c_str(),
+                          static_cast<int>(objective.size()), &objective_extent);
+    GetTextExtentPoint32A(dc, art_text.c_str(),
+                          static_cast<int>(art_text.size()), &art_extent);
     GetTextExtentPoint32A(dc, kControls,
-                          static_cast<int>(sizeof(kControls) - 1), &extent);
-    const int line_x =
-        std::max(12, (static_cast<int>(bounds.right) -
-                      static_cast<int>(extent.cx)) / 2);
-    const int line_y = state.session ? 64 : 40;
+                          static_cast<int>(sizeof(kControls) - 1),
+                          &controls_extent);
+
+    const int width = static_cast<int>(bounds.right);
+    const TopHudRect identity_size{0, 0, identity_extent.cx + 6,
+                                   identity_extent.cy + 8};
+    const TopHudRect objective_size{0, 0, objective_extent.cx + 16,
+                                    objective_extent.cy + 8};
+    const TopHudRect art_size{0, 0, art_extent.cx + 16, art_extent.cy + 8};
+    const TopHudRect controls_size{0, 0, controls_extent.cx + 12,
+                                   controls_extent.cy + 6};
+    const TopHudLayout layout =
+        plan_top_hud(width, identity_size, objective_size, art_size,
+                     controls_size, static_cast<bool>(state.session));
+
+    // Historical placements double as fallbacks for degenerate widths where
+    // the planner cannot fit a region in any row.
+    const auto placed_or = [](const TopHudRect& r, int fb_x, int fb_y) {
+      return r.w > 0 ? r : TopHudRect{fb_x, fb_y, 0, 0};
+    };
+    const TopHudRect objective_at = placed_or(
+        layout.objective,
+        std::max(12, (width - objective_size.w) / 2), kTopHudRow0Y);
+    const TopHudRect connection_at = placed_or(
+        layout.connection,
+        std::max(18, width - kConnectionChipW - 18), kTopHudRow0Y);
+    const TopHudRect art_at = placed_or(
+        layout.art, std::max(12, width - art_size.w - 18),
+        state.session ? 38 : 12);
+    const TopHudRect controls_at = placed_or(
+        layout.controls, std::max(12, (width - controls_size.w) / 2),
+        state.session ? 64 : 40);
+
     SetBkMode(dc, TRANSPARENT);
+
+    if (state.session)
+      paint_connection_chip(state, dc, bounds, rl, connection_at.x,
+                            connection_at.y);
+
+    paint_status_chip(dc, objective_at.x, objective_at.y, objective, accent, rl);
+
+    rl.push_back({render::Op::HouseChip, 0.0, 0.0, 0.0, 0, identity});
+    SetTextColor(dc, RGB(140, 208, 172));
+    TextOutA(dc, layout.identity.x, layout.identity.y, identity.c_str(),
+             static_cast<int>(identity.size()));
+
     SetTextColor(dc, RGB(148, 160, 150));
-    TextOutA(dc, line_x, line_y, kControls, static_cast<int>(sizeof(kControls) - 1));
-    rl.push_back({render::Op::Hud, static_cast<double>(line_x),
-                  static_cast<double>(line_y), 0.0, 0,
+    TextOutA(dc, controls_at.x, controls_at.y, kControls,
+             static_cast<int>(sizeof(kControls) - 1));
+    rl.push_back({render::Op::Hud, static_cast<double>(controls_at.x),
+                  static_cast<double>(controls_at.y), 0.0, 0,
                   std::string("controls: ") + kControls});
+
+    const bool plates =
+        state.billboards.player.ready() && state.billboards.raider.ready() &&
+        state.billboards.boss.ready();
+    const COLORREF art_accent =
+        plates ? RGB(120, 214, 168) : RGB(239, 190, 78);
+    paint_status_chip(dc, art_at.x, art_at.y, state.billboards.status,
+                      art_accent, rl);
   }
 
   // TASK-0145: relic-recovery toast — an authoritative crypt transition is
@@ -3005,26 +3129,6 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     SetTextColor(dc, RGB(239, 208, 116));
     TextOutA(dc, 18, bounds.bottom - 28, state.relic_toast.c_str(),
              static_cast<int>(state.relic_toast.size()));
-  }
-
-  // TASK-0142: honest art-status chip. It reports what is really on screen —
-  // PNG plates when loaded, the embedded procedural kit otherwise — so a
-  // missing asset can never masquerade as loaded art.
-  {
-    const bool plates =
-        state.billboards.player.ready() && state.billboards.raider.ready() &&
-        state.billboards.boss.ready();
-    const COLORREF art_accent =
-        plates ? RGB(120, 214, 168) : RGB(239, 190, 78);
-    SIZE art_extent{};
-    GetTextExtentPoint32A(dc, state.billboards.status.c_str(),
-                          static_cast<int>(state.billboards.status.size()),
-                          &art_extent);
-    const int art_x =
-        std::max(12, static_cast<int>(bounds.right) -
-                         static_cast<int>(art_extent.cx) - 16 - 18);
-    paint_status_chip(dc, art_x, state.session ? 38 : 12,
-                      state.billboards.status, art_accent, rl);
   }
 
   state.render_list = std::move(rl);
