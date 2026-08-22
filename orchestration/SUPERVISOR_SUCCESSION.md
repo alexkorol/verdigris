@@ -61,12 +61,12 @@ request.
 
 - Program checkout: `Z:\Code\Games\delaford\delaford_game`, branch
   `codex/native-reconstitution`, clean local/remote program head
-  `657ab514827398e0aca734a8ff11a4e0454cbe2f` before this checkpoint refresh
+  `e812c20ade6c022b163a047e32f311a1119db8fb` before this checkpoint refresh
   commit. `origin/master` is not the worker base;
   workers use the exact routed program heads recorded in `RUN_STATUS.md`.
 - Standalone broadcast checkout:
   `Z:\Code\.worktrees\orchestration\pc-overnight-game-wave`, clean branch
-  `codex/pc-overnight-game-wave`, local/remote head `ff49efc`; observed
+  `codex/pc-overnight-game-wave`, local/remote head `98ab162`; observed
   standalone `origin/main` is `59a70b6`. PC has no shared-main authority.
 - Active implementation/revision evidence:
   - TASK-0145 head `78dcac60` and TASK-0149 revision head `a88d307d` are
