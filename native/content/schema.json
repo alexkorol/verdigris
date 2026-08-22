@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "name": "verdigris-native-content",
+  "summary": "Content-neutral, versioned authoring schema for native zones, encounters, and visual-role references. Carries no production lore or balance values.",
+  "identifier_rules": {
+    "max_length": 64,
+    "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+  },
+  "display_name_rules": {
+    "min_length": 1,
+    "max_length": 80
+  },
+  "enums": {
+    "encounter_family": ["elite", "skirmish", "warden"],
+    "exit_kind": ["stairs", "walk"],
+    "visual_role": [
+      "actor.combatant",
+      "actor.warden",
+      "effect.telegraph",
+      "effect.treasure",
+      "prop.blocking",
+      "prop.decorative",
+      "terrain.blocking",
+      "terrain.exit",
+      "terrain.floor",
+      "terrain.fluid"
+    ],
+    "visual_slot": ["actors", "effects", "exits", "floor", "props", "walls"],
+    "zone_layout": ["clearings", "gauntlet", "warren"],
+    "zone_template": ["crypt", "dungeon", "grove", "marsh", "wilds"]
+  },
+  "entities": {
+    "encounter": {
+      "required_fields": ["display_name", "family", "id", "visual_roles", "zone"],
+      "fields": {
+        "display_name": "string",
+        "family": "enum:encounter_family",
+        "id": "identifier",
+        "visual_roles": "slot_role_map",
+        "zone": "reference:zone"
+      }
+    },
+    "zone": {
+      "required_fields": ["display_name", "exits", "id", "layout", "template_id", "visual_roles"],
+      "fields": {
+        "display_name": "string",
+        "exits": "array:exit",
+        "id": "identifier",
+        "layout": "enum:zone_layout",
+        "template_id": "enum:zone_template",
+        "visual_roles": "slot_role_map"
+      }
+    }
+  },
+  "composite_types": {
+    "exit": {
+      "required_fields": ["kind", "to"],
+      "fields": {
+        "kind": "enum:exit_kind",
+        "to": "identifier"
+      }
+    },
+    "slot_role_map": {
+      "keys": "enum:visual_slot",
+      "values": "enum:visual_role"
+    }
+  },
+  "seed_files": {
+    "encounter": "seeds/encounters.json",
+    "zone": "seeds/zones.json"
+  }
+}

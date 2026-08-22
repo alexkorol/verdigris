@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "encounter",
+  "items": [
+    {
+      "id": "example-encounter-one",
+      "display_name": "Example Encounter One",
+      "family": "skirmish",
+      "zone": "example-field-one",
+      "visual_roles": {
+        "actors": "actor.combatant",
+        "effects": "effect.telegraph"
+      }
+    },
+    {
+      "id": "example-encounter-two",
+      "display_name": "Example Encounter Two",
+      "family": "warden",
+      "zone": "example-hall-two",
+      "visual_roles": {
+        "actors": "actor.warden",
+        "effects": "effect.treasure"
+      }
+    },
+    {
+      "id": "example-encounter-three",
+      "display_name": "Example Encounter Three",
+      "family": "elite",
+      "zone": "example-mire-one",
+      "visual_roles": {
+        "actors": "actor.combatant"
+      }
+    }
+  ]
+}
