@@ -25,8 +25,10 @@ integrates, and specs; it does not absorb implementation.
    not a stopping point.
 
 Emergency surge floor: at least 24 effective, dependency-free, pairwise
-path-disjoint READY packets plus 12 concrete successors. Current board:
-**30 READY + 18 successors**. D-128 supersedes count-only sufficiency.
+path-disjoint READY packets plus 12 concrete successors. TASK-0081's claim
+consumed one packet and TASK-0128 restocked the same sweep; current board stays
+at **30 effective READY + 18 successors**. D-128 supersedes count-only
+sufficiency.
 
 ## Autonomous runway and factory status
 
@@ -136,7 +138,6 @@ wins after a fresh fetch.
 
 | Pri | Task | Topology / job | Preferred route | Owner-visible contribution |
 |---|---|---|---|---|
-| P0 | TASK-0081 Gate B wire-contract freeze | INDEPENDENT / MECHANICAL | ox-pc-a first | safely unlocks Chronicles client journey |
 | P0 | TASK-0083 server lifecycle soak | INDEPENDENT / BOUNDED-DESIGN | future after current claim | guards the reader-thread crash fix |
 | P0 | TASK-0086 Gate C contract audit | INDEPENDENT / MECHANICAL | future after current claim | exposes missing route-decision information |
 | P0 | TASK-0080 board sentinel | INDEPENDENT / MECHANICAL | future after current claim | machine-enforces queue and collision truth |
@@ -146,6 +147,7 @@ wins after a fresh fetch.
 | P0 | TASK-0105 passive-tree authority audit | INDEPENDENT / MECHANICAL | future after current claim | replaces approximation with an evidence path |
 | P0 | TASK-0119 onboarding/first-session audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes launch through first extraction legible |
 | P0 | TASK-0120 release verification audit | INDEPENDENT / MECHANICAL | future after current claim | freezes clean-machine/migration/soak release proof |
+| P0 | TASK-0128 accepted-throughput normalization | INDEPENDENT / MECHANICAL | ox-pc-a next only after TASK-0081 transition | makes adaptive autonomous-runway hours reproducible without guessed telemetry |
 | P1 | TASK-0082 dual-server matrix runner | INDEPENDENT / BOUNDED-DESIGN | future after current claim | automates unchanged JS/C++ parity evidence |
 | P1 | TASK-0115 browser panel/typography inventory | INDEPENDENT / MECHANICAL | future after current claim | freezes presentation delta #4 |
 | P1 | TASK-0091 protocol coverage sentinel design | INDEPENDENT / MECHANICAL | future after current claim | catches lost journey wire steps |

@@ -85,6 +85,7 @@ TASK-0094 asset provenance -> shippable asset manifest ---------------------> pa
 | Packaging | 0092, 0094, 0099 | packaging/launcher releases after dependencies | owner-playable build, clean-machine launch, Windows/macOS delivery |
 | Release/migration | 0120 | 0126, 0127 | clean-machine, soak, save migration/recovery, upgrade/rollback, release evidence |
 | Owner content | 0121 | approved content waves by domain | art/lore/naming/balance/economy/content decisions without agent invention |
+| Orchestration/runway | 0128 | normalized accepted-throughput collector; then exact-unit runway rates | replaces count-only queue claims with reproducible 72h/48h/24h evidence |
 
 ## Deeper dependency graph
 
