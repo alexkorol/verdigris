@@ -1,6 +1,6 @@
 ---
 task: TASK-0116
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: ox-alpha
 worker: ox-pc-s (headless OpenCode Ox Alpha worker)
 provider: openrouter
@@ -32,4 +32,6 @@ revision: >
   warnings name only the quarantined ox-pc-e/ox-pc-m attempts. git diff --check
   clean; changes confined to this task folder.
 revision_commit: 678407c2008f617bb52fc18cc520489df94ac07b
+accepted_head: 5b007e7e3950d451d7cd64be2bdc98e3211df222
+integrated_at: b8030f10de0783171ac7c022de2510a9d4d3fa92
 ---
