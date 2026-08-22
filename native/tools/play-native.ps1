@@ -2,6 +2,7 @@ param(
   [switch]$Local,
   [switch]$Rebuild,
   [switch]$LifecycleSelfTest,
+  [switch]$ReadinessFaultControl,
   [int]$Port = 0
 )
 
@@ -104,6 +105,11 @@ if ($Port -ne 0) { Assert-PortInCapsule $Port }
 if ($LifecycleSelfTest) {
   if ($Local) { Fail "-LifecycleSelfTest exercises the real remote client/server path; drop -Local." }
   if ($Port -ne 0) { Fail "-LifecycleSelfTest picks its own free capsule ports deterministically; drop -Port." }
+  if ($ReadinessFaultControl) { Fail "-LifecycleSelfTest and -ReadinessFaultControl are separate controls; run one at a time." }
+}
+if ($ReadinessFaultControl) {
+  if ($Local) { Fail "-ReadinessFaultControl exercises the real remote spawn path; drop -Local." }
+  if ($Port -ne 0) { Fail "-ReadinessFaultControl picks its own free capsule ports deterministically; drop -Port." }
 }
 if (-not (Test-Path $buildScript)) { Fail "missing $buildScript; run this script from a full native/ checkout" }
 
@@ -116,37 +122,53 @@ if (-not $Local -and -not (Test-Path $serverExe)) { Fail "missing $serverExe; ru
 
 New-Item -ItemType Directory -Force -Path $logDir | Out-Null
 
-function Start-OwnerServer([int]$chosenPort, [string]$outLog, [string]$errLog) {
+function Start-OwnerServer([int]$chosenPort, [string]$outLog, [string]$errLog,
+  [string]$exePath = "", [string]$exeArguments = "") {
+  if ($exePath -eq "") {
+    $exePath = $serverExe
+    $exeArguments = "$chosenPort"
+  }
   Write-Host "play-native: starting verdigris_server on ws://127.0.0.1:$chosenPort (capsule $capsuleStart-$capsuleEnd)"
-  $proc = Start-Process -FilePath $serverExe -ArgumentList "$chosenPort" -PassThru `
+  $proc = Start-Process -FilePath $exePath -ArgumentList $exeArguments -PassThru `
     -WindowStyle Hidden `
     -RedirectStandardOutput $outLog `
     -RedirectStandardError $errLog
-  $deadline = (Get-Date).AddSeconds(12)
-  $readyPort = 0
-  while ((Get-Date) -lt $deadline) {
-    if ($proc.HasExited) { break }
-    if (Test-Path $outLog) {
-      $text = Get-Content -Path $outLog -Raw -ErrorAction SilentlyContinue
-      if ($text -match "listening on ws://127\.0\.0\.1:(\d+)") {
-        $readyPort = [int]$Matches[1]
-        break
+  $script:lastSpawnedServerPid = $proc.Id
+  try {
+    $deadline = (Get-Date).AddSeconds(12)
+    $readyPort = 0
+    while ((Get-Date) -lt $deadline) {
+      if ($proc.HasExited) { break }
+      if (Test-Path $outLog) {
+        $text = Get-Content -Path $outLog -Raw -ErrorAction SilentlyContinue
+        if ($text -match "listening on ws://127\.0\.0\.1:(\d+)") {
+          $readyPort = [int]$Matches[1]
+          break
+        }
       }
+      Start-Sleep -Milliseconds 150
     }
-    Start-Sleep -Milliseconds 150
-  }
-  if ($proc.HasExited) {
-    $tail = ""
-    if (Test-Path $errLog) {
-      $tail = (Get-Content -Path $errLog -Tail 5 -ErrorAction SilentlyContinue) -join " | "
+    if ($proc.HasExited) {
+      $tail = ""
+      if (Test-Path $errLog) {
+        $tail = (Get-Content -Path $errLog -Tail 5 -ErrorAction SilentlyContinue) -join " | "
+      }
+      Fail "verdigris_server (pid $($proc.Id)) exited during startup with code $($proc.ExitCode); stderr: $tail"
     }
-    Fail "verdigris_server (pid $($proc.Id)) exited during startup with code $($proc.ExitCode); stderr: $tail"
-  }
-  if ($readyPort -eq 0) {
-    Fail "verdigris_server (pid $($proc.Id)) printed no listening line within 12s; see $outLog"
-  }
-  if ($readyPort -ne $chosenPort) {
-    Fail "verdigris_server reported port $readyPort but the launcher chose $chosenPort"
+    if ($readyPort -eq 0) {
+      Fail "verdigris_server (pid $($proc.Id)) printed no listening line within 12s; see $outLog"
+    }
+    if ($readyPort -ne $chosenPort) {
+      Fail "verdigris_server reported port $readyPort but the launcher chose $chosenPort"
+    }
+  } catch {
+    if (-not $proc.HasExited) {
+      Stop-OwnerServer $proc 5
+      Write-Host "play-native: startup readiness failed; stopped spawned server pid $($proc.Id) to prevent an orphan"
+    } else {
+      Write-Host "play-native: startup readiness failed; spawned server pid $($proc.Id) already exited"
+    }
+    throw
   }
   Write-Host "play-native: server ready (pid $($proc.Id), stdout log $outLog, stderr log $errLog)"
   return $proc
@@ -173,6 +195,7 @@ function Wait-ClientExit([object]$proc, [int]$timeoutSeconds) {
 
 $script:gameWindowClass = "VerdigrisNativeClient"
 $script:enumWindowsFound = @()
+$script:lastSpawnedServerPid = 0
 
 function Wait-ClientGameWindow([object]$proc, [int]$timeoutSeconds) {
   if (-not ("VerdigrisLaunch.NativeWindow" -as [type])) {
@@ -283,6 +306,47 @@ function Invoke-LifecycleScenario([string]$name, [switch]$ForceKill) {
     @{ Name = "verdigris_client"; Id = $client.Id }
   )
   Write-Host "play-native: selftest $name PASS (port $chosenPort, server log $outLog)"
+}
+
+function Invoke-ReadinessFaultScenario([string]$name, [switch]$FakeListeningLine) {
+  if ($FakeListeningLine) {
+    $fakeInner = "[Console]::Out.WriteLine('verdigris_server listening on ws://127.0.0.1:6599'); Start-Sleep -Seconds 120"
+    $expectedReason = "port-mismatch assertion against a live impostor process"
+  } else {
+    $fakeInner = "Start-Sleep -Seconds 120"
+    $expectedReason = "12s readiness deadline against a live silent process"
+  }
+  $stamp = Get-Date -Format "yyyyMMdd-HHmmss-fff"
+  $outLog = Join-Path $logDir ("faultctl-$name-$stamp.log")
+  $errLog = Join-Path $logDir ("faultctl-$name-$stamp.err.log")
+  $chosenPort = Find-OwnerPlayPort
+  Write-Host "play-native: fault-control $name starting on port $chosenPort ($expectedReason)"
+  $script:lastSpawnedServerPid = 0
+  $threw = $false
+  try {
+    Start-OwnerServer $chosenPort $outLog $errLog "powershell.exe" "-NoProfile -Command `"$fakeInner`"" | Out-Null
+  } catch {
+    $threw = $true
+    Write-Host "play-native: fault-control $name observed the expected failure - $($_.Exception.Message)"
+  }
+  if (-not $threw) {
+    Fail "fault-control ${name}: a live post-spawn readiness failure did NOT fail the launcher; the control is broken"
+  }
+  $leakedPid = $script:lastSpawnedServerPid
+  if ($leakedPid -le 0) {
+    Fail "fault-control ${name}: launcher published no spawned server pid before the readiness checks"
+  }
+  if (Test-PidAlive $leakedPid) {
+    Fail "fault-control ${name}: live post-spawn failure leaked server pid $leakedPid"
+  }
+  Write-Host "play-native: fault-control $name PASS (published pid $leakedPid is gone; no orphan)"
+}
+
+if ($ReadinessFaultControl) {
+  Invoke-ReadinessFaultScenario "readiness-timeout"
+  Invoke-ReadinessFaultScenario "port-mismatch" -FakeListeningLine
+  Write-Host "play-native: readiness fault control PASS (live post-spawn failures left no orphan server)"
+  exit 0
 }
 
 if ($LifecycleSelfTest) {

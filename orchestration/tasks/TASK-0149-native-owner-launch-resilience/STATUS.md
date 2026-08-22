@@ -5,10 +5,36 @@ state: REVIEW_REQUESTED
 coordinator: ox-alpha
 worker: ox-pc-j
 started-at: 2026-08-22T02:53:00-07:00
-review-requested-at: 2026-08-22T03:45:00-07:00
+review-requested-at: 2026-08-22T04:10:00-07:00
+revision: 2
 ---
 
-# Review request
+# Review request (revision 2)
+
+REVISE item from `REVIEW.md` (reviewed head `96f4ccbd`, review commit
+`4400ea66`) fixed exactly and nothing else:
+
+1. `Start-OwnerServer` owns cleanup for every exception after `Start-Process`
+   (stops the live spawn before rethrowing; distinct message when the spawn
+   already exited).
+2. Spawned server PID published (`$script:lastSpawnedServerPid`) before any
+   throwable readiness check.
+3. New deterministic live post-spawn negative control
+   (`-ReadinessFaultControl`): readiness-timeout (live silent impostor
+   through the 12s deadline) and port-mismatch (live impostor printing a
+   foreign listening line); both require launcher failure, published PID,
+   and prove that exact PID is gone. Transcripts in `REPORT.md`.
+4. All accepted happy paths and prior controls preserved and re-proven:
+   full `native/build.ps1 -RunTests` exit 0 (one transient load flake in
+   untouched `reconnect:` checks documented, immediate rerun green),
+   reviewer's exact `-Rebuild -LifecycleSelfTest` exit 0 with both scenarios
+   PASS, four original negative controls exit 1, `git diff --check` exit 0.
+
+Changed file is exactly `native/tools/play-native.ps1`; no forbidden path,
+no gameplay/client/server/build/capsule changes; no merge; no force-push;
+previous head preserved.
+
+# Review request (revision 1)
 
 Implementation complete at this branch head; all SPEC acceptance gates run
 with literal transcripts in `REPORT.md`:
