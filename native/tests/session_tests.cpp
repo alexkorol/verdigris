@@ -13,6 +13,7 @@
 #include <mutex>
 #include <thread>
 #include <utility>
+#include <vector>
 #include "../client/local_session.hpp"
 #include "../client/remote_session.hpp"
 #include "../client/presentation_state.hpp"
@@ -129,9 +130,10 @@ void hunt_step(verdigris::client::IClientSession& session) {
   session.submit(verdigris::client::ClientCommand::use_action("melee"));
 }
 std::uint16_t start_server(verdigris::networking::WebSocketServer*& out) {
-  // Architect capsule 6560-6579 (ORCHESTRATION.md); scan for a free port so
-  // parallel suites cannot collide.
-  for (std::uint16_t port = 6572; port <= 6579; ++port) {
+  // This suite's assigned loopback capsule is 7160-7179 (TASK-0163
+  // resource_capsule); scan upward inside it so parallel suites cannot
+  // collide and no other lane's ports are ever touched.
+  for (std::uint16_t port = 7160; port <= 7179; ++port) {
     auto* server = new verdigris::networking::WebSocketServer(port);
     std::string error;
     if (server->start(&error)) {
@@ -145,9 +147,9 @@ std::uint16_t start_server(verdigris::networking::WebSocketServer*& out) {
 }
 
 void remote_dead_endpoint_is_a_visible_failure() {
-  // Nothing listens on this port (start_server scans upward from 6572; 6571
+  // Nothing listens on this port (start_server scans upward from 7160; 7159
   // is reserved for this negative and never bound).
-  verdigris::client::RemoteProtocolSession session("127.0.0.1", 6571, "negative-guest");
+  verdigris::client::RemoteProtocolSession session("127.0.0.1", 7159, "negative-guest");
   std::string error;
   const bool started = session.start(&error);
   check(!started, "remote-negative: dead endpoint fails start()");
@@ -160,7 +162,7 @@ void remote_dead_endpoint_is_a_visible_failure() {
 void remote_handshake_reaches_ready() {
   verdigris::networking::WebSocketServer* server = nullptr;
   const auto port = start_server(server);
-  check(server != nullptr, "remote: test server bound inside the architect capsule");
+  check(server != nullptr, "remote: test server bound inside the TASK-0163 capsule");
   if (!server) return;
 
   {
@@ -196,8 +198,9 @@ void remote_handshake_reaches_ready() {
 }
 
 std::uint16_t start_server_cursor(verdigris::networking::WebSocketServer*& out) {
-  // Cursor capsule 6580-6599 (ORCHESTRATION.md).
-  for (std::uint16_t port = 6580; port <= 6599; ++port) {
+  // Same TASK-0163 loopback capsule (7160-7179); earlier suites release
+  // their listener before this runs, so the scan resumes inside the range.
+  for (std::uint16_t port = 7160; port <= 7179; ++port) {
     auto* server = new verdigris::networking::WebSocketServer(port);
     std::string error;
     if (server->start(&error)) {
@@ -237,7 +240,7 @@ const verdigris::client::ClientItemSlot* first_equippable(
 void remote_guest_journey() {
   verdigris::networking::WebSocketServer* server = nullptr;
   const auto port = start_server_cursor(server);
-  check(server != nullptr, "journey: test server bound inside the cursor capsule 6580-6599");
+  check(server != nullptr, "journey: test server bound inside the TASK-0163 capsule 7160-7179");
   if (!server) return;
 
   verdigris::client::RemoteProtocolSession session("127.0.0.1", port, "cursor-guest-0061", true);
@@ -398,7 +401,7 @@ void remote_guest_journey() {
 void remote_mid_session_disconnect() {
   verdigris::networking::WebSocketServer* server = nullptr;
   const auto port = start_server_cursor(server);
-  check(server != nullptr, "reconnect: cursor-capsule server bound");
+  check(server != nullptr, "reconnect: TASK-0163 capsule server bound");
   if (!server) return;
 
   verdigris::client::RemoteProtocolSession session("127.0.0.1", port, "cursor-reconnect", true);
@@ -554,6 +557,35 @@ void remote_render_list_ops() {
 // shortcut for the first admission, no test bypass. The driver is a minimal
 // RFC6455 client because RemoteProtocolSession polls dev:state for its own
 // model sync, which this journey must not depend on.
+//
+// TASK-0163 driver correction (test-only; no runtime or rule change). Both
+// recorded program-gate failures traced to the OLD exploration state machine:
+//
+//   (a) Seven-minute hunt, four kills, no named Warden. The serpentine
+//       lattice joined full-height lane legs with GREEDY diagonal transits
+//       and a left-hand block rotation; that pair pins the walk against the
+//       warren's vertical wall ribs on the wrong side (a replay of the exact
+//       algorithm on this guest's seeded floor never got past lane 7 in nine
+//       thousand steps), so legs were reached only by accident. Under load,
+//       late step echoes read as walls and the 25 s waypoint deadline skipped
+//       more legs - the Warden's seeded tile sits inside a rib pocket whose
+//       only entries are authored gap corridors, so no run ever came within
+//       the two-tile reveal ring and no monster:telegraph ever fired. The
+//       recorded four kills are the eastern trash packs traded on the way.
+//   (b) Retry with no observed fatal fall. The pre-death sweep was pure
+//       right-hand wall following that treated ONE silent 400 ms window as a
+//       wall. A load-delayed echo therefore permanently rotated the walk onto
+//       a different maze cycle; the retry's cycle held no monster, so no
+//       incoming hit (hence no chronicles:scion-fallen) could occur.
+//
+// The corrected machine keeps every action on ordinary client surfaces and
+// replaces only navigation: a fixed boustrophedon lane plan whose full-height
+// legs pass within one tile of every walkable column (adjacency contact for
+// the fall, inside the two-tile reveal ring for the Warden), waypoint
+// discipline instead of deadline-skipped diagonals, and a silent-step policy
+// that re-issues the same direction before declaring a wall so a slow echo
+// costs latency, never the path. Focused controls for the plan and the
+// silent-step policy live in gateb_driver_state_machine_controls().
 
 using JV = verdigris::networking::JsonValue;
 using WBEnvelope = verdigris::networking::Envelope;
@@ -989,9 +1021,9 @@ class LoopbackClient {
 // ── Journey driving helpers ───────────────────────────────────────────────
 
 std::uint16_t start_server_worker_capsule(verdigris::networking::WebSocketServer*& out) {
-  // ox-pc-r worker capsule 6960-6979 (START_HERE_OX_PC_R.md): never 6500,
-  // never another lane's capsule.
-  for (std::uint16_t port = 6960; port <= 6979; ++port) {
+  // ox-pc-ac worker capsule 7160-7179 (TASK-0163 resource_capsule): never
+  // 6500, never another lane's capsule.
+  for (std::uint16_t port = 7160; port <= 7179; ++port) {
     auto* server = new verdigris::networking::WebSocketServer(port);
     std::string error;
     if (server->start(&error)) {
@@ -1009,6 +1041,17 @@ const char* gateb_dir(int heading) {
   return kDirs[heading & 3];
 }
 
+// Tile derivation for every driver decision. The runtime's authoritative
+// occupied-tile convention ROUNDS the fractional position a movement echo
+// carries (each player:move is one sub-tile interpolation sample), so the
+// driver must derive tiles with the same rounding or its adjacency, stair,
+// and waypoint math disagrees with the server by up to one tile - which is
+// exactly how the recorded take-relic leg silently missed the chebyshev
+// reach gate.
+int gateb_tile_of(double value) {
+  return static_cast<int>(std::lround(value));
+}
+
 int gateb_heading_for(int dx, int dy) {
   if (dx > 0) return 0;
   if (dy > 0) return 1;
@@ -1023,32 +1066,135 @@ bool gateb_on_stairs(const GateBView& view, int tile_x, int tile_y) {
   return false;
 }
 
-// One movement sample with echo confirmation; silent means blocked (the
-// server only emits player:movement for accepted steps). Rotates the caller's
-// heading right-hand-style on a wall, and never steps onto a stair tile.
+// ── Deterministic driver state machine (TASK-0163) ────────────────────────
+
+bool gateb_step(LoopbackClient& client, int& heading);
+
+// A silent movement window means blocked OR slow - the wire carries no
+// rejection. The same direction is re-issued this many times before a wall
+// is declared, so a load-delayed echo costs latency and never the path.
+constexpr int kGatebSilentRetries = 2;
+
+bool gateb_declares_wall(int silent_streak) {
+  return silent_streak > kGatebSilentRetries;
+}
+
+// Warren lanes for the boustrophedon sweep: every walkable instance column
+// lies within one tile of a planned lane, so a full-height leg brushes every
+// monster tile (passive pack AI answers at adjacency - the ordinary fall)
+// and every boss tile (inside the two-tile telegraph reveal ring). The
+// skipped columns are the warren layout's static wall ribs plus the border
+// walls - scene geometry from the served layout, never spawn positions.
+const std::vector<int>& gateb_lane_plan() {
+  static const std::vector<int> lanes{2, 4, 6, 8, 10, 14, 16, 20, 22,
+                                      26, 28, 32, 34, 36, 38};
+  return lanes;
+}
+
+// Frozen visit order: each lane is traversed at full floor height, and lane
+// legs alternate entry ends so inter-lane transits stay short horizontal
+// hops along the open top/bottom rings.
+std::vector<std::pair<int, int>> gateb_serpentine_waypoints() {
+  std::vector<std::pair<int, int>> waypoints;
+  bool enter_top = true;
+  for (const int lane : gateb_lane_plan()) {
+    waypoints.emplace_back(lane, enter_top ? 1 : 38);
+    waypoints.emplace_back(lane, enter_top ? 38 : 1);
+    enter_top = !enter_top;
+  }
+  return waypoints;
+}
+
+// Per-journey-leg cursor over the plan: current waypoint plus the window in
+// which it must be reached (a bounded skip WITH EVIDENCE, never a silent
+// hole; typical legs finish in well under two seconds).
+struct GatebSweepState {
+  size_t cursor = 0;
+  std::chrono::steady_clock::time_point waypoint_started{};
+};
+
+// One navigation iteration toward the current waypoint: primary axis first
+// (larger delta), secondary axis on a confirmed wall, then gateb_step's own
+// right-hand detour while boxed in. Returns true when the driver believes it
+// advanced one tile toward the plan's next uncovered column.
+bool gateb_waypoint_nudge(LoopbackClient& client, GatebSweepState& sweep) {
+  GateBView& view = client.view();
+  if (!view.has_pos) return false;
+  const auto waypoints = gateb_serpentine_waypoints();
+  if (sweep.cursor >= waypoints.size()) {
+    std::printf("note: sweep plan restart (floor re-cover)\n");
+    sweep.cursor = 0;
+  }
+  const auto [wp_x, wp_y] = waypoints[sweep.cursor];
+  const int px = gateb_tile_of(view.px);
+  const int py = gateb_tile_of(view.py);
+  if (px == wp_x && py == wp_y) {
+    ++sweep.cursor;
+    sweep.waypoint_started = std::chrono::steady_clock::now();
+    return false;
+  }
+  if (std::chrono::steady_clock::now() - sweep.waypoint_started >
+      std::chrono::seconds(25)) {
+    std::printf("note: sweep skips waypoint (%d,%d)\n", wp_x, wp_y);
+    ++sweep.cursor;
+    sweep.waypoint_started = std::chrono::steady_clock::now();
+    return false;
+  }
+  const int dx = wp_x - px;
+  const int dy = wp_y - py;
+  const bool horizontal_primary = std::abs(dx) >= std::abs(dy);
+  for (int pass = 0; pass < 2; ++pass) {
+    const bool try_horizontal = horizontal_primary == (pass == 0);
+    int heading;
+    if (try_horizontal) {
+      if (dx == 0) continue;
+      heading = dx > 0 ? 0 : 2;
+    } else {
+      if (dy == 0) continue;
+      heading = dy > 0 ? 1 : 3;
+    }
+    if (gateb_step(client, heading)) return true;
+    // gateb_step rotated `heading` through its wall detours; hand the next
+    // call a fresh axis on the following pass.
+  }
+  return false;  // boxed in this tick; retry next iteration
+}
+
+// One movement request toward `heading`, confirmed by a position echo. A
+// silent window means blocked or slow - indistinguishable on the wire - so
+// the same direction is re-issued before any wall is declared; a load-delayed
+// echo then costs latency only, never the path (the TASK-0163 fix for the
+// diverted-walk flake). Rotation stays right-hand-style on a wall confirmed
+// by repetition, and never steps onto a stair tile.
 bool gateb_step(LoopbackClient& client, int& heading) {
   GateBView& view = client.view();
   if (!view.has_pos) return false;
   for (int attempt = 0; attempt < 4; ++attempt) {
     const int delta_x = heading == 0 ? 1 : heading == 2 ? -1 : 0;
     const int delta_y = heading == 1 ? 1 : heading == 3 ? -1 : 0;
-    const int next_x = static_cast<int>(std::floor(view.px)) + delta_x;
-    const int next_y = static_cast<int>(std::floor(view.py)) + delta_y;
+    const int next_x = gateb_tile_of(view.px) + delta_x;
+    const int next_y = gateb_tile_of(view.py) + delta_y;
     if (gateb_on_stairs(view, next_x, next_y)) {
       heading = (heading + 1) & 3;
       continue;
     }
-    const double ox = view.px;
-    const double oy = view.py;
-    JV::Object move;
-    move.emplace("direction", JV(gateb_dir(heading)));
-    client.send("player:move", JV(std::move(move)));
-    const auto deadline =
-        std::chrono::steady_clock::now() + std::chrono::milliseconds(400);
-    while (std::chrono::steady_clock::now() < deadline) {
-      client.service();
-      if (!view.has_pos || view.px != ox || view.py != oy) return true;
-      std::this_thread::sleep_for(std::chrono::milliseconds(4));
+    int silent_streak = 0;
+    while (true) {
+      const double ox = view.px;
+      const double oy = view.py;
+      JV::Object move;
+      move.emplace("direction", JV(gateb_dir(heading)));
+      client.send("player:move", JV(std::move(move)));
+      const auto deadline =
+          std::chrono::steady_clock::now() + std::chrono::milliseconds(400);
+      while (std::chrono::steady_clock::now() < deadline) {
+        client.service();
+        if (!view.has_pos || view.px != ox || view.py != oy) return true;
+        std::this_thread::sleep_for(std::chrono::milliseconds(4));
+      }
+      ++silent_streak;
+      if (!gateb_declares_wall(silent_streak)) continue;  // maybe just slow
+      break;  // wall confirmed by repetition
     }
     heading = (heading + 1) & 3;  // wall: right hand takes over
   }
@@ -1073,23 +1219,30 @@ void gateb_swing(LoopbackClient& client, int heading) {
   client.send("player:skill:trigger", JV(std::move(trigger)));
 }
 
-// Sweep-walk (no swinging) until the scion falls in ordinary combat. This is
-// the pre-change failing step: without the mortal-oath admission nothing is
-// ever emitted for an ordinary lethal wound.
+// Sweep-walk the boustrophedon lane plan (no swinging) until the scion falls
+// in ordinary combat. Full-height lane legs pass within one tile of every
+// walkable column, so passive pack adjacency - the only damage channel while
+// nobody swings - is guaranteed contact; the corrected silent-step policy
+// keeps load-delayed echoes from diverting the walk onto a monster-free
+// cycle, which was the recorded retry failure.
 bool gateb_sweep_until_fallen(LoopbackClient& client, const std::string& scion_id,
                               int timeout_ms, bool* made_contact) {
   GateBView& view = client.view();
-  int heading = 0;
   size_t index = client.mark();
   bool contact = false;
   const auto deadline =
       std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+  GatebSweepState sweep;
+  sweep.waypoint_started = std::chrono::steady_clock::now();
+  bool fallen = false;
   while (std::chrono::steady_clock::now() < deadline) {
     LoopbackClient::Line line;
     while (client.scan_from(index, [](const LoopbackClient::Line&) { return true; }, &line)) {
       if (line.env.event == "chronicles:scion-fallen") {
-        const JV* fallen = line.env.data.get("fallen");
-        if (fallen && gateb_str(*fallen, "scionId") == scion_id) return true;
+        const JV* fallen_payload = line.env.data.get("fallen");
+        if (fallen_payload && gateb_str(*fallen_payload, "scionId") == scion_id) {
+          fallen = true;
+        }
       }
       if (line.env.event == "combat:hit" && gateb_str(line.env.data, "targetType") == "player") {
         contact = true;
@@ -1097,14 +1250,20 @@ bool gateb_sweep_until_fallen(LoopbackClient& client, const std::string& scion_i
       }
       if (view.player_died_hit) contact = true;
     }
+    if (fallen) return true;
     if (!contact) {
       gateb_ensure_instance(client);
-      gateb_step(client, heading);
+      gateb_waypoint_nudge(client, sweep);
+      std::this_thread::sleep_for(std::chrono::milliseconds(12));
+    } else {
+      // Engaged: hold ground and let ordinary combat finish the fall.
+      std::this_thread::sleep_for(std::chrono::milliseconds(30));
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(contact ? 30 : 15));
     client.service();
   }
-  return false;
+  std::printf("note: sweep diagnostics contact=%d at=(%d,%d)\n", contact ? 1 : 0,
+              gateb_tile_of(view.px), gateb_tile_of(view.py));
+  return fallen;
 }
 
 // Hunt as a normal player hunts: sweep the floor until something exchanges
@@ -1124,8 +1283,8 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
     const auto deadline =
         std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout);
     for (;;) {
-      const int dx = target_x - static_cast<int>(std::floor(view.px));
-      const int dy = target_y - static_cast<int>(std::floor(view.py));
+      const int dx = target_x - gateb_tile_of(view.px);
+      const int dy = target_y - gateb_tile_of(view.py);
       if (std::abs(dx) <= 1 && std::abs(dy) <= 1) return true;
       if (std::chrono::steady_clock::now() >= deadline) return false;
       heading = std::abs(dx) >= std::abs(dy)
@@ -1191,10 +1350,10 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
   int approach_best_dist = 1 << 30;
   bool approach_escape = false;
   auto heartbeat_at = now() + std::chrono::seconds(10);
-  // Serpentine sweep lattice state.
-  int wp_serial = 0;
-  int wp_x = -1, wp_y = -1;
-  auto wp_deadline = now();
+  // Deterministic boustrophedon sweep state (TASK-0163): full-height lane
+  // legs instead of deadline-skipped greedy diagonals.
+  GatebSweepState sweep;
+  sweep.waypoint_started = now();
   const auto chebyshev = [](int ax, int ay, int bx, int by) {
     return (std::max)(std::abs(ax - bx), std::abs(ay - by));
   };
@@ -1268,9 +1427,8 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
       approach_phase_until = now();
       approach_best_dist = 1 << 30;
       approach_escape = false;
-      wp_serial = 0;
-      wp_x = -1;
-      wp_y = -1;
+      sweep.cursor = 0;
+      sweep.waypoint_started = now();
       last_outgoing = never;
       last_incoming = never;
       continue;
@@ -1280,13 +1438,13 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
       std::printf(
           "note: hunt heartbeat hp=%d at=(%d,%d) kills=%d elite_known=%d "
           "elite=(%d,%d) ground=%zu scene=%s\n",
-          view.hp, static_cast<int>(std::floor(view.px)),
-          static_cast<int>(std::floor(view.py)), *kills,
+          view.hp, gateb_tile_of(view.px),
+          gateb_tile_of(view.py), *kills,
           elite_known ? 1 : 0, elite_x, elite_y, view.ground.size(),
           view.scene_type.c_str());
     }
-    const int tile_x = static_cast<int>(std::floor(view.px));
-    const int tile_y = static_cast<int>(std::floor(view.py));
+    const int tile_x = gateb_tile_of(view.px);
+    const int tile_y = gateb_tile_of(view.py);
     bool acted = false;
     if (now() < slam_clear_at && chebyshev(tile_x, tile_y, slam_x, slam_y) <= slam_radius) {
       // A normal player steps out of the marked circle before it resolves.
@@ -1355,36 +1513,12 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
         }
       } else {
         gateb_ensure_instance(client);
-        // Serpentine lattice exploration: a border-hugging right-hand sweep
-        // orbits the outer wall ring forever and never comes within reveal
-        // range of an interior elite. Waypoints march serpentine columns so
-        // the whole floor is covered; each waypoint is bounded and skipped
-        // with evidence if a wall pocket blocks it.
-        const bool wp_reached = wp_x >= 0 &&
-                                std::abs(tile_x - wp_x) <= 1 &&
-                                std::abs(tile_y - wp_y) <= 1;
-        if (wp_x < 0 || wp_reached || now() >= wp_deadline) {
-          if (wp_x >= 0 && !wp_reached) {
-            std::printf("note: hunt sweep skips waypoint (%d,%d)\n", wp_x,
-                        wp_y);
-          }
-          const int col = 2 + (wp_serial / 2) * 5;
-          wp_x = col;
-          wp_y = (wp_serial % 2 == 1) ? 36 : 2;
-          ++wp_serial;
-          if (col > 36) wp_serial = 0;  // restart the lattice after coverage
-          wp_deadline = now() + std::chrono::seconds(25);
-        }
-        const int wdx = wp_x - tile_x;
-        const int wdy = wp_y - tile_y;
-        fight_heading = gateb_heading_for(wdx > 0 ? 1 : (wdx < 0 ? -1 : 0),
-                                          wdy > 0 ? 1 : (wdy < 0 ? -1 : 0));
-        const int wp_primary =
-            gateb_heading_for(wdx > 0 ? 1 : (wdx < 0 ? -1 : 0), 0);
-        const int wp_secondary =
-            gateb_heading_for(0, wdy > 0 ? 1 : (wdy < 0 ? -1 : 0));
-        int wp_lane = std::abs(wdx) >= std::abs(wdy) ? wp_primary : wp_secondary;
-        gateb_step(client, wp_lane);
+        // Deterministic boustrophedon coverage (TASK-0163): full-height lane
+        // legs guarantee the walk passes within one tile of every walkable
+        // column - inside the elite's two-tile reveal ring - and the
+        // silent-step policy keeps a slow echo from diverting the walk onto
+        // a Warden-free cycle.
+        gateb_waypoint_nudge(client, sweep);
       }
       std::this_thread::sleep_for(std::chrono::milliseconds(12));
     } else {
@@ -1442,10 +1576,12 @@ bool gateb_take_relic(LoopbackClient& client, const std::string& relic_uuid,
       std::printf("note: take-relic: relic left the ground list\n");
       return false;
     }
-    const int dx = static_cast<int>(std::floor(relic->x)) -
-                   static_cast<int>(std::floor(view.px));
-    const int dy = static_cast<int>(std::floor(relic->y)) -
-                   static_cast<int>(std::floor(view.py));
+    const int dx = gateb_tile_of(relic->x) - gateb_tile_of(view.px);
+    const int dy = gateb_tile_of(relic->y) - gateb_tile_of(view.py);
+    if (std::chrono::steady_clock::now() >= deadline) {
+      std::printf("note: take-relic: never reached the relic tile\n");
+      return false;
+    }
     if (std::abs(dx) <= 1 && std::abs(dy) <= 1) {
       size_t mark = client.mark();
       JV::Object action;
@@ -1470,7 +1606,6 @@ bool gateb_take_relic(LoopbackClient& client, const std::string& relic_uuid,
           });
       return took;
     }
-    if (std::chrono::steady_clock::now() >= deadline) return false;
     // Greedy toward the larger axis delta first; wall fallback rotates.
     const int primary = gateb_heading_for(dx > 0 ? 1 : (dx < 0 ? -1 : 0), 0);
     const int secondary = gateb_heading_for(0, dy > 0 ? 1 : (dy < 0 ? -1 : 0));
@@ -1484,13 +1619,82 @@ bool gateb_take_relic(LoopbackClient& client, const std::string& relic_uuid,
   }
 }
 
+// Focused deterministic controls for the corrected driver state machine
+// (TASK-0163 required proof). Socket-free; they pin the plan contract and
+// the silent-step policy so neither can quietly regress into the recorded
+// nondeterminism.
+void gateb_driver_state_machine_controls() {
+  // 1) Plan contract: the driver walks exactly this frozen visit order.
+  const std::vector<std::pair<int, int>> expected = {
+      {2, 1}, {2, 38}, {4, 38}, {4, 1}, {6, 1}, {6, 38},
+      {8, 38}, {8, 1}, {10, 1}, {10, 38}, {14, 38}, {14, 1},
+      {16, 1}, {16, 38}, {20, 38}, {20, 1}, {22, 1}, {22, 38},
+      {26, 38}, {26, 1}, {28, 1}, {28, 38}, {32, 38}, {32, 1},
+      {34, 1}, {34, 38}, {36, 38}, {36, 1}, {38, 1}, {38, 38}};
+  check(gateb_serpentine_waypoints() == expected,
+        "gate-b-driver: serpentine plan matches its frozen contract");
+
+  // 2) Coverage: every walkable instance column lies within one lane-step of
+  // a planned lane. Wall columns are the warren layout's static ribs plus
+  // the border walls - scene geometry, never spawn positions - so a
+  // full-height leg brushes every monster tile (adjacency) and every boss
+  // tile (the two-tile reveal ring).
+  bool covered = true;
+  for (int column = 1; column <= 38; ++column) {
+    if (column == 12 || column == 18 || column == 24 || column == 30) continue;
+    bool near_lane = false;
+    for (const int lane : gateb_lane_plan())
+      if (std::abs(column - lane) <= 1) near_lane = true;
+    if (!near_lane) covered = false;
+  }
+  check(covered,
+        "gate-b-driver: lane plan sweeps within one tile of every walkable "
+        "column");
+
+  // 3) Silent-step policy: a late echo must cost latency, never the path -
+  // streaks inside the retry budget keep the direction; only a wall
+  // confirmed by repetition rotates.
+  bool policy = true;
+  for (int streak = 1; streak <= kGatebSilentRetries; ++streak)
+    if (gateb_declares_wall(streak)) policy = false;
+  if (!gateb_declares_wall(kGatebSilentRetries + 1)) policy = false;
+  check(policy,
+        "gate-b-driver: silent steps re-issue before any wall rotation");
+
+  // 4) Full-height legs at both extremes: nothing hides in the top or
+  // bottom rings.
+  const auto waypoints = gateb_serpentine_waypoints();
+  bool full_height = true;
+  for (const int lane : gateb_lane_plan()) {
+    bool top = false;
+    bool bottom = false;
+    for (const auto& [x, y] : waypoints) {
+      if (x == lane && y == 1) top = true;
+      if (x == lane && y == 38) bottom = true;
+    }
+    if (!top || !bottom) full_height = false;
+  }
+  check(full_height,
+        "gate-b-driver: every lane leg spans the full floor height");
+
+  // 5) Strict boustrophedon order: consecutive legs share their end row, so
+  // inter-lane transits are short hops along the open rings.
+  bool alternating = waypoints.size() % 2 == 0;
+  for (size_t i = 1; i + 1 < waypoints.size(); i += 2)
+    if (waypoints[i].second != waypoints[i + 1].second) alternating = false;
+  for (size_t i = 0; i < waypoints.size(); i += 2)
+    if (waypoints[i].first != waypoints[i + 1].first) alternating = false;
+  check(alternating,
+        "gate-b-driver: plan is strictly boustrophedon over its lanes");
+}
+
 // The complete frozen Gate-B journey over loopback with only accepted
 // envelopes. Pre-change this fails at the ordinary-death fall; post-change
 // every step must pass.
 void gate_b_chronicles_reconnect_journey() {
   verdigris::networking::WebSocketServer* server = nullptr;
   const auto port = start_server_worker_capsule(server);
-  check(server != nullptr, "gate-b: worker-capsule server bound (6960-6979)");
+  check(server != nullptr, "gate-b: worker-capsule server bound (7160-7179)");
   if (!server) return;
 
   const std::string guest = "ox-pc-r-gateb";
@@ -1890,6 +2094,7 @@ int main() {
   remote_mid_session_disconnect();
   remote_session_replaced();
   remote_render_list_ops();
+  gateb_driver_state_machine_controls();
   gate_b_chronicles_reconnect_journey();
   if (failures == 0) {
     std::printf("session tests passed\n");
