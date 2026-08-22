@@ -341,6 +341,13 @@ class Simulation {
   // opponent without changing the combat implementation or test-only state.
   std::string spawn_monster(Vec2 position, int level = 1, bool elite = false);
 
+  // Wardens of the active instance that have not materialized yet. The first
+  // expedition reveals its pack in deterministic waves: each warden kill
+  // schedules the next roster entry kTelegraphTicks later. Like the rest of
+  // the live instance state, the pending roster is retired at every instance
+  // boundary and is deliberately absent from durable snapshots.
+  const std::vector<Actor>& pending_wave() const { return pending_wave_; }
+
   // Stable hooks used by external seasonal mechanics and deterministic tests.
   void grant_seasonal_reward(const std::string& reward);
   void add_seasonal_objective(const std::string& description);
@@ -377,7 +384,9 @@ class Simulation {
   void retire_instance();
   void advance_tick();
   void enemy_turn();
+  Actor make_monster(Vec2 position, int level, bool elite);
   void spawn_enemy();
+  void materialize_wave();
   void record_equipped_item_use(Actor& attacker);
   void drop_reward();
   void clear_route_and_unlock_children();
@@ -394,6 +403,11 @@ class Simulation {
   std::vector<Scion> fallen_scions_;
   std::vector<Actor> actors_;
   InstanceState instance_;
+  // Unmaterialized warden roster of the active instance (see pending_wave()).
+  std::vector<Actor> pending_wave_;
+  // Tick at which the next pending warden materializes; 0 when nothing is
+  // scheduled. A kill inside an active instance re-arms it deterministically.
+  std::uint64_t wave_materialization_tick_ = 0;
   std::vector<Item> ground_items_;
   std::vector<Trophy> ground_trophies_;
   // A surfaced recovery candidate remains recoverable across an instance
