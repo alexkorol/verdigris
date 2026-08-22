@@ -22,11 +22,13 @@
   and is routed to remove this nondeterminism without gameplay shortcuts or
   weaker assertions.
 - Valid pushed claims now recorded on the program branch: ox-pc-z/TASK-0159
-  `0e74c185`, ox-pc-aa/TASK-0158 `d1fd4e40`, and ox-pc-ab/TASK-0157
-  `c08ad621`. The aa/ab first post-claim processes exited with owned-path edits;
-  preserved single recoveries are PID 26668 and PID 7652. ox-pc-z remains live
-  at PID 32. Stopped processes are alerts, never counted as working capacity.
-- Human dashboard is HTTP 200 at `http://127.0.0.1:4737/` (PID 21208); the
+  `0e74c185` and ox-pc-aa/TASK-0158 `d1fd4e40`. The aa first post-claim process
+  exited with owned-path edits; its preserved single recovery is PID 26668.
+  ox-pc-ab/TASK-0157 claim `c08ad621` and its one dirty recovery both exited
+  without a handoff, so the lane is exhausted, preserved, and released for a
+  fresh replacement. ox-pc-z remains live at PID 32. Stopped processes are
+  alerts, never counted as working capacity.
+- Human dashboard is HTTP 200 at `http://127.0.0.1:4737/` (PID 23504); the
   visible low-cost monitor remains PID 2664. Owner action required now: none.
 
 ## TASK-0155 accepted; three claims live — 2026-08-22 13:40 PDT
