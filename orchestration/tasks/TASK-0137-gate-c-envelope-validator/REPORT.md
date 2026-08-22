@@ -174,12 +174,13 @@ REVIEW_REQUESTED commits land, the additional names are exclusively under
 
 | Commit | Content |
 |---|---|
-| `0d175a2f` | CLAIMED status |
-| `<impl>` | validator CLI + tests + fixtures (implementation commit) |
-| `<review-requested>` | REPORT.md + STATUS flip to REVIEW_REQUESTED |
+| `0d175a2f` | CLAIMED status by ox-pc-e |
+| `013c7883` | same claim repackaged into canonical STATUS format (lane supervisor, STATUS.md only, pushed while implementation was in progress; preserved intact) |
+| `f63c9550` | validator CLI + tests + fixtures + this report |
+| `<review-requested>` | STATUS transition to REVIEW_REQUESTED + report commit-SHA table fixup (this commit) |
 
-(Branch tip at push is the authoritative REVIEW_REQUESTED evidence head; see
-pushed refs for exact SHAs.)
+The branch tip at push (`<review-requested>`) is the authoritative
+REVIEW_REQUESTED evidence head.
 
 ## Deviations
 
