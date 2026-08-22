@@ -105,10 +105,12 @@ change is required for successful alarm runs.
 `Z:\Code\.worktrees\orchestration\ox-bootstrap` worker pushed valid claim-only
 commit `795a9b3` at 20:20 on
 `codex/ox-bootstrap-portable-orchestration`; only `bootstrap/CLAIM.md` changed.
-Its P1 activation alert is clear. Fresh local writes through 20:29 cover M0
-packages, adapters, packs, tests, and docs, so it is
-`ACTIVE_LOCAL_PENDING_COMMIT`; review waits for a pushed milestone. It is
-supervised as a separate project and never counts toward Verdigris capacity.
+Its activation claim remains valid. Local writes through 20:36 cover M0
+packages, adapters, packs, tests, and docs, but at 20:54 no execution child
+process remains and the remote branch is still claim-only. It is therefore P1
+`STALLED_LOCAL_UNCOMMITTED`; the owner has been notified to resume the existing
+correctly rooted tab without discarding dirty work. It is supervised as a
+separate project and never counts toward Verdigris capacity.
 
 ### Endpoint identity watch
 
