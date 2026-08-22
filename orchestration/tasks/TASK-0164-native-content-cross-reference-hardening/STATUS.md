@@ -1,5 +1,5 @@
 ---
-state: CLAIMED
+state: REVIEW_REQUESTED
 task: TASK-0164-native-content-cross-reference-hardening
 coordinator: codex
 worker_lane: ox-pc-ag
@@ -34,3 +34,13 @@ and disjoint from owner-only port 6500 and all other lanes. Work is restricted
 to owned paths `native/content/validate_content.py`,
 `native/content/tests/**`, and this task folder STATUS/REPORT only; accepted
 schema.json and seeds remain untouched.
+
+Transition to REVIEW_REQUESTED at 2026-08-22 15:34 -07:00. Implementation
+commit 342ed4f5d80e165c3464829ac7717baf708ac0b5 (tree touches only
+`native/content/validate_content.py` and `native/content/tests/**`). Gates:
+SPEC-literal positive validator exit 0 with byte-identical output across two
+runs; negative suite exit 0 twice, byte-identical, checks=27 failures=0
+including new isolated E_REFERENCE_TYPE_MISMATCH, E_UNREACHABLE_ENCOUNTER, and
+string schema-version-linkage fixtures; `git diff --check` clean; scope proven
+owned-paths-only. Full evidence, interpretation note, and transcripts in
+REPORT.md.
