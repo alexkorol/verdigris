@@ -8,8 +8,8 @@
 ## Executive summary
 
 The native animation/VFX contract is audited end-to-end in `FINDINGS.md` with a
-machine-readable `captures/animation-vfx-matrix.json` (18 rows: 7 COMPLETE,
-9 PARTIAL, 4 MISSING, 1 OWNER-ASSET; 5 negative controls; 4 successor phases).
+machine-readable `captures/animation-vfx-matrix.json` (18 rows: 8 COMPLETE,
+7 PARTIAL, 2 MISSING, 1 OWNER-ASSET; 5 negative controls; 4 successor phases).
 Headline: the **contract skeleton is sound and locked** (simulation telegraph
 timing, D-119 render list, byte-deterministic captures, scenario/test layers),
 but there is **no actual animation yet** — no walk cycle, no actor
@@ -93,8 +93,11 @@ extract-now vs defer, windup unit unification choice (ticks vs ms).
 - Audit reflects base `9fe673b6`; if the program branch moves before review,
   line numbers may drift slightly (structure unlikely to change — no other
   task owns these files).
-- TASK-0147 polish remains quarantined/unintegrated; its RELEASE.md warnings
-  are restated in FINDINGS F-PROV so the successor doesn't resume dirty work.
+- TASK-0147 provenance: the clean replacement was accepted (`6575f330`) and
+  integrated at `19be98db` on the program branch immediately after this
+  audit's base `9fe673b6`; it is usable capacity. The older ox-pc-e/ox-pc-m
+  dirty attempts remain claim-released/quarantined per RELEASE.md — see
+  FINDINGS F-PROV; the successor must not resume those specific attempts.
 
 ## Follow-ups (successor promotion package)
 

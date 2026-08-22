@@ -21,7 +21,7 @@
     "MISSING": "The aspect has no proved implementation or no proved visual timing/capture.",
     "OWNER-ASSET": "Blocked on owner art-direction decisions per D-113; contract/test decomposition continues without generating art."
   },
-  "summary_counts": { "COMPLETE": 7, "PARTIAL": 9, "MISSING": 4, "OWNER_ASSET": 1 },
+  "summary_counts": { "COMPLETE": 8, "PARTIAL": 7, "MISSING": 2, "OWNER_ASSET": 1 },
   "matrix": [
     {
       "id": "R01",
@@ -418,7 +418,7 @@
       "simulation_authority": ["N/A"],
       "presentation_only": [
         "Fallback chain PNG plate -> committed vector kit symbol -> geometric stand-in; art-status chip must name what actually rendered: native/client/main.cpp:957-1103, first-fight honesty check native/client/main.cpp:3474-3508",
-        "Committed kit provenance: TASK-0141 generator + TASK-0144 literal conformance (git history b17d36b0, a60232fa); TASK-0147 polish wave was claim-released twice and is quarantined/unintegrated - replacement must reimplement clean (orchestration/tasks/TASK-0147-procedural-native-visual-polish-wave/RELEASE.md)"
+        "Committed kit provenance: TASK-0141 generator + TASK-0144 literal conformance (git history b17d36b0, a60232fa). The TASK-0147 clean replacement was accepted (6575f330) and integrated at 19be98db on the program branch immediately after this audit's base 9fe673b6; that integrated work is usable capacity. Only the older ox-pc-e/ox-pc-m dirty attempts remain claim-released/quarantined per orchestration/tasks/TASK-0147-procedural-native-visual-polish-wave/RELEASE.md and must not be resumed"
       ],
       "tests_locking": ["kit tests exist from TASK-0141/0144 lineage (visual-kit generator/header round-trip)."],
       "captures": ["triage-captures/*.png document plate-vs-kit rendering states."],
@@ -529,7 +529,7 @@
     "F-CLOCK: dual telegraph time systems (local 3 ticks @50 ms vs remote durationMs with /50 heuristic at presentation_state.cpp:196) - see R05 gap.",
     "F-SYNTH: remote kills synthesize a ground drop at the last known PLAYER tile, not the monster's tile: native/client/remote_session.cpp:799-805 - acceptable stopgap, must be replaced by real drop envelopes.",
     "F-SEAM: renderer/ remains documentation-only (native/renderer/README.md:1-5); all presentation logic lives in client/main.cpp - TASK-0122 should decide extract-now vs annotate-and-defer explicitly.",
-    "F-PROV: committed visual kit is TASK-0141/TASK-0144 work; TASK-0147 polish is double-released/quarantined and MUST NOT be resumed or copied (RELEASE.md)."
+    "F-PROV: committed visual kit is TASK-0141/TASK-0144 work; the TASK-0147 clean replacement was accepted (6575f330) and integrated at 19be98db on the program branch immediately after this audit's base 9fe673b6, so it is usable capacity; only the older ox-pc-e/ox-pc-m dirty attempts stay quarantined per RELEASE.md - do not resume those."
   ],
   "successor_phases": {
     "A_contracts": "Map dropped events (ScionLost, BuffExpired, spawn) through the session seam; carry telegraph radius/position/facing and hit critical/style fields end-to-end; unify telegraph windup units; remove monster-facing inversion. All are event-vocabulary changes with zero feel risk; each lands with a session/scenario test.",
