@@ -1,6 +1,6 @@
 # TASK-0133 status
 
-- state: CLAIMED
+- state: REVIEW_REQUESTED
 - coordinator: ox-pc-h
 - worker: ox-pc-h
 - provider: openrouter
