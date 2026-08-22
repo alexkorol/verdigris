@@ -106,9 +106,11 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-j | 6800-6819 | TASK-0149 frozen review head `96f4ccbd`; independent verdict REVISE; exact-session revision active | fix post-spawn readiness failure orphan path |
 | ox-pc-k | 6820-6839 | TASK-0150 frozen head `54417592` independently ACCEPTED; implementation integrated at `10039385` | lane complete/available after worker stops |
 | ox-pc-l | 6840-6859 | TASK-0146 replacement claim `78a0c4a0` pushed | independent encounter-wave replacement active |
-| ox-pc-m | 6860-6879 | TASK-0147 replacement claim `7d092a74`; one exact-session recovery active after dirty process exit | independent visual-polish replacement active |
+| ox-pc-m | 6860-6879 | TASK-0147 second post-claim stop after one recovery; claim `7d092a74` released; dirty worktree preserved | P0 quarantined, not capacity |
 | ox-pc-n | 6880-6899 | TASK-0148 clean launch and its one recovery both stopped before claim/write | activation failed; clean preserved, not capacity |
-| ox-pc-o | 6900-6919 | TASK-0148 replacement claim `71a73de8`; one exact-session recovery active after clean post-claim exit | independent reconnect-runtime replacement active |
+| ox-pc-o | 6900-6919 | TASK-0148 second post-claim stop after one recovery; claim `71a73de8` released; clean worktree preserved | exhausted, not capacity |
+| ox-pc-p | 6920-6939 | fresh route requested at current pushed coordination head | TASK-0147 independent visual-polish replacement |
+| ox-pc-q | 6940-6959 | fresh route requested at current pushed coordination head | TASK-0148 independent reconnect-runtime replacement |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -199,12 +201,13 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - Released: **TASK-0136** claims `6ea36f5a`/`7b24e5d3`/`7026892e` after a real
   duplicate-dispatch collision. Lane c remains quarantined; the clean lane h
   receives the replacement route after this coordination push.
-- Active work: TASK-0145 replacement claim `226e5149` on ox-pc-i,
-  TASK-0146 replacement claim `78a0c4a0` on ox-pc-l, and TASK-0147 replacement
-  claim `7d092a74` on ox-pc-m, and TASK-0148 replacement claim `71a73de8` on
-  ox-pc-o. TASK-0149 head `96f4ccbd` is frozen at REVISE; its exact-session
-  narrow revision is active. All valid claims are excluded from READY
-  accounting.
+- Active work: TASK-0145 replacement claim `226e5149` on ox-pc-i and
+  TASK-0146 replacement claim `78a0c4a0` on ox-pc-l. TASK-0149 revision 2 is
+  clean and pushed at `a88d307d` with `REVIEW_REQUESTED`; freeze that exact
+  head for independent review. TASK-0147 claim `7d092a74` on ox-pc-m and
+  TASK-0148 claim `71a73de8` on ox-pc-o are released after each replacement
+  exhausted its one recovery. Fresh independent attempts are requested on
+  ox-pc-p and ox-pc-q. All valid claims are excluded from READY accounting.
 - Launch requested at 02:49 PDT: TASK-0149 on fresh lane ox-pc-j and TASK-0150
   on fresh lane ox-pc-k. These pairwise-disjoint reliability packets raise
   the product wave to six workers. Both claims landed inside the ten-minute
@@ -223,12 +226,23 @@ harness-visible provider/model. These are separate scorecard experimental units.
   first clean launch stopped during preflight before any claim/write; its one
   permitted exact-session recovery also stopped before claim/write. Lane n is
   activation-failed and clean-preserved, not capacity. Route the next clean
-  independent attempt to ox-pc-o.
+  independent attempt to ox-pc-o. Lane o then pushed claim `71a73de8`, stopped
+  clean, and its one exact-session recovery also stopped clean before an
+  implementation commit. Its recovery budget is exhausted; route a new
+  independent attempt to ox-pc-q and do not treat recent o log timestamps as
+  capacity.
+- TASK-0147 replacement lane m likewise stopped dirty and then stopped again
+  during its one exact-session recovery before committed handoff. Claim
+  `7d092a74` is released and the dirty m worktree is P0-quarantined. Route a
+  fresh independent attempt to ox-pc-p; do not inspect or copy m/e edits.
 - TASK-0149 used one exact-session recovery, then completed a clean pushed
   REVIEW_REQUESTED handoff at `96f4ccbd`. Independent real-window happy-path
   gates passed, but readiness-timeout/wrong-port exceptions can orphan the
   already-started server because the caller never receives its PID. Verdict is
   REVISE; resume only for that precise correction and negative control.
+  Revision 2 is now clean and pushed at `a88d307d`; independently rerun the
+  deterministic readiness-fault control, lifecycle selftest, negative guards,
+  and full native suite before changing the verdict.
 - P0 quarantined: TASK-0136 replacement claim `ddd00857` on ox-pc-h. The first
   process exit received one exact-session recovery; the recovery also exited
   with dirty uncommitted work. RELEASE now returns the task to READY. Preserve

@@ -22,3 +22,19 @@ claim or owned-path write. Its one exact-session recovery also stopped before a
 claim/write. The activation recovery budget is exhausted, so n is preserved
 clean and is not capacity. A new clean lane must claim independently; do not
 resume n or count its process/log activity as work.
+
+## ox-pc-o replacement release — 2026-08-22 04:12 PDT
+
+Released claim: `71a73de8` on replacement worker `ox-pc-o`.
+
+The first process pushed a valid claim and stopped clean before an
+implementation write. Its one permitted exact-session recovery resumed the
+same session, investigated the current runtime surface, and then stopped again
+with the worktree still clean at the claim head. This is the second post-claim
+stop for this route, so its recovery budget is exhausted.
+
+`Z:\\Code\\.worktrees\\verdigris\\ox-pc-o` and branch
+`codex/TASK-0148-native-chronicles-reconnect-runtime-ox-pc-o-r3` are preserved
+unchanged and are not capacity. Do not resume or count their recent log
+timestamps as work. Route the next attempt to a fresh worktree at the current
+pushed program head and require an independent claim.
