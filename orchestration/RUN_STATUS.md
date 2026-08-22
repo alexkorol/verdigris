@@ -67,8 +67,9 @@ are excluded from READY accounting. After five expansion claims and promotion
 of TASK-0135 and i's valid claim, d then claimed TASK-0135 at `50cd286f`,
 leaving 24. Four accepted-contract validator implementations are now promoted,
   restoring 28 effective READY before c/e/f/g claim them. Their four valid,
-  pushed claims now leave **24 effective READY + 17 successors**, preserving
-  the absolute packet floor. D-128 supersedes count-only sufficiency.
+  pushed claims left 24; accepted TASK-0135 now promotes TASK-0140, leaving
+  **25 effective READY + 17 successors** before d claims it and preserving the
+  absolute packet floor. D-128 supersedes count-only sufficiency.
 
 ## Autonomous runway and factory status
 
@@ -83,7 +84,7 @@ leaving 24. Four accepted-contract validator implementations are now promoted,
   immutable base and remain nonclaimable until current-tip READY promotion.
 - Reserve composition: 100 each implementation, integration, presentation,
   hardening, and release; 0 pure audit/research/inventory/evaluation; 25 packets
-  (5%) owner-blocked. The immediate 24 READY board remains audit-heavy and its
+  (5%) owner-blocked. The immediate 25 READY board remains audit-heavy and its
   accepted audits must fan out before or at acceptance.
 - Deterministic validation: `node orchestration/backlog-factory/build-manifests.mjs --check`
   passes with 2,000 unique nodes and 500 unique packets.
@@ -100,7 +101,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-a | 6620-6639 | CLAIMED `0d1898bd`; existing desktop session | TASK-0128 throughput normalization |
 | ox-pc-b | 6640-6659 | revision commit `a0419710` local; recovery process packaging/pushing | TASK-0080 board sentinel |
 | ox-pc-c | 6660-6679 | CLAIMED and pushed `7b24e5d3`; implementation active | TASK-0136 passive-tree validator |
-| ox-pc-d | 6680-6699 | REVIEW_REQUESTED and pushed `88092c97`; supervisor review | TASK-0135 soak integration policy |
+| ox-pc-d | 6680-6699 | TASK-0135 accepted/integrated at `88092c97`; successor launch requested | TASK-0140 soak evidence validator |
 | ox-pc-e | 6700-6719 | CLAIMED and pushed `0d175a2f`; implementation active | TASK-0137 Gate C validator |
 | ox-pc-f | 6720-6739 | CLAIMED and pushed `f9458f4e`; implementation active | TASK-0138 release-proof validator |
 | ox-pc-g | 6740-6759 | CLAIMED and pushed `5df94011`; implementation active | TASK-0139 clean-machine evidence validator |
@@ -190,7 +191,8 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - Accepted/integrated this sweep: **TASK-0086** at `8ddfb06e`, **TASK-0105**
   at `8e6e42b3`, and **TASK-0120** at `4e0920d4`.
 - Active claims: **TASK-0128 by ox-pc-a**; TASK-0080 remains assigned to
-  ox-pc-b through revision; TASK-0135 is in review at d head `88092c97`;
+  ox-pc-b through revision; TASK-0135 is accepted/integrated at d head
+  `88092c97` and releases TASK-0140 to d;
   TASK-0133 is assigned back to h for revision; TASK-0134 remains claimed by i
   at `5b952c08`; TASK-0136/0137/0138/0139 are valid pushed claims at
   `7b24e5d3`/`0d175a2f`/`f9458f4e`/`5df94011` and are active.
@@ -203,7 +205,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 24 packets
+## Effective READY — 25 packets
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -211,6 +213,7 @@ wins after a fresh fetch.
 
 | Pri | Task | Topology / job | Preferred route | Owner-visible contribution |
 |---|---|---|---|---|
+| P1 | TASK-0140 soak evidence validator | INDEPENDENT / IMPLEMENTATION | ox-pc-d after coordination push | mechanically rejects stale, incomplete, or retry-masked soak proof |
 | P0 | TASK-0097 persistence durability audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | protects House/Scion/item saves |
 | P0 | TASK-0100 deterministic replay audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes divergences reproducible |
 | P0 | TASK-0104 itemization/history audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages memorable history-bearing loot |
