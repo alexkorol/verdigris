@@ -5,6 +5,7 @@
 - worker: `ox-pc-h`
 - reviewer: PC Verdigris architect/orchestrator
 - verdict: **ACCEPTED** for integration
+- integrated-at: `aa95ec76`
 
 ## Evidence
 
