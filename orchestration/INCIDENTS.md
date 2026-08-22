@@ -205,3 +205,26 @@ status labels. New incidents append here with the template at bottom.
   the path-disjoint hotfix route. Acceptance forbids disabling the test,
   weakening its zoom matrix, or bypassing CI. Release health remains red until
   a follow-up protected PR is green.
+
+## INC-014: GitHub Actions failure-email fanout obscured fleet signal (2026-08-22)
+
+- OWNER EVIDENCE: the Gmail Updates inbox contained repeated failure messages
+  for Verdigris worker/program pushes and standalone-orchestration PC broadcast
+  pushes. The volume was unacceptable and made a real protected-master failure
+  harder to distinguish from repeated copies.
+- ROOT CAUSE: Verdigris `Native` ran on every `native/**` push regardless of
+  branch; orchestration `ci` ran its three-OS matrix on every branch push. One
+  inherited compiler defect and one unformatted broadcast therefore generated
+  multiple owner emails as workers checkpointed.
+- CORRECTION: retain authoritative checks on `master`/`main` pushes and every
+  pull request, but stop raw worker-branch pushes from starting workflows.
+  Add concurrency cancellation so superseded PR/ref runs do not pile up. Fix
+  the orchestration broadcast's actual Prettier failure; do not hide failures
+  that reach integration surfaces.
+- RELEASE EVIDENCE: TASK-0154 hotfix PR #52 merged as `4e55f4f9`; post-merge
+  Native run `32578735987` passed on the current MSVC clean runner. Workflow
+  trigger tuning ships separately so its own PR evidence remains visible.
+- RULE: owner notifications are escalation signal, not raw checkpoint
+  telemetry. Worker pushes remain observable in Git/dashboard state; GitHub
+  email is reserved for PR and canonical-branch gate failures.
+- Status: CONTAINED in local branches; protected workflow PRs pending.
