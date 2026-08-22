@@ -23,15 +23,17 @@ REVISE at reviewed head `0ab4e7a5`; ox-pc-b has resumed the preserved session
 for the controller-state correction. ox-pc-d is released to replacement packet
 TASK-0129. Its predecessor TASK-0083 was rejected before claim because the
 immutable base object is absent from origin; no worker files were written.
-ox-pc-e remains idle as immediate review/recovery reserve.
+The replacement then committed and pushed valid claim `a5bd928e` inside its
+activation window and has fresh post-claim execution. ox-pc-e remains idle as
+immediate review/recovery reserve.
 
 The independent `ox-bootstrap` orchestration worker has pushed M3 head
 `82de84ef` after M2 `5627916f`. The standalone repo's Tier-B review contract
 still governs acceptance and this lane never counts as Verdigris capacity.
 
-Snapshot: 2026-08-21 22:23 PDT
+Snapshot: 2026-08-21 22:32 PDT
 
-Sweep base: `1455c536caeb02b88a7355e75a6efe71f0358667`
+Sweep base: `0d40d79db80c53280bb7cfe6f42318b39dab6f4c`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
 `d2423873` merge tip).
 
@@ -54,9 +56,9 @@ integrates, and specs; it does not absorb implementation.
    not a stopping point.
 
 Emergency surge floor: at least 24 effective, dependency-free, pairwise
-path-disjoint READY packets plus 12 concrete successors. The five current
-claims are excluded from READY accounting; the current board is **25 effective
-READY + 18 successors**, still above the absolute floor. D-128 supersedes
+path-disjoint READY packets plus 12 concrete successors. Current claims are
+excluded from READY accounting; after TASK-0129's valid claim the board is
+**24 effective READY + 18 successors**, exactly at the absolute floor. D-128 supersedes
 count-only sufficiency, and the next factory promotion should restore deeper
 headroom rather than create filler.
 
@@ -90,7 +92,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-a | 6620-6639 | CLAIMED `0d1898bd`; existing desktop session | TASK-0128 throughput normalization |
 | ox-pc-b | 6640-6659 | REVISE `0ab4e7a5`; revision process active; session `ses_fd8378c52ffevZPjVDjFGOZfYa` | TASK-0080 board sentinel |
 | ox-pc-c | 6660-6679 | ACCEPTED `8ddfb06e`; integrated by `1455c536` | TASK-0086 Gate C contract audit complete |
-| ox-pc-d | 6680-6699 | TASK-0105 ACCEPTED/integrated; replacement launch requested | TASK-0129 server lifecycle soak |
+| ox-pc-d | 6680-6699 | ACTIVE; TASK-0129 claim pushed `a5bd928e`; fresh post-claim process | TASK-0129 server lifecycle soak |
 | ox-pc-e | 6700-6719 | TASK-0120 ACCEPTED/integrated; idle reserve | review/recovery reserve |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
@@ -172,8 +174,8 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - Accepted/integrated this sweep: **TASK-0086** at `8ddfb06e`, **TASK-0105**
   at `8e6e42b3`, and **TASK-0120** at `4e0920d4`.
 - Active claims: **TASK-0128 by ox-pc-a**; TASK-0080 remains assigned to
-  ox-pc-b through revision. TASK-0129 is launch-requested on ox-pc-d but does
-  not count as capacity or leave READY until its committed pushed claim exists.
+  ox-pc-b through revision; **TASK-0129 by ox-pc-d** at pushed claim
+  `a5bd928e` with fresh post-claim activity.
   Separate project: orchestration bootstrap claim `795a9b3`, with pushed M3
   head `82de84ef` awaiting its configured Tier-B acceptance path.
 - Historical TASK-0056 and legacy clone WIP are superseded/preserved, never
@@ -183,7 +185,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 25 packets
+## Effective READY — 24 packets
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -191,7 +193,6 @@ wins after a fresh fetch.
 
 | Pri | Task | Topology / job | Preferred route | Owner-visible contribution |
 |---|---|---|---|---|
-| P0 | TASK-0129 server lifecycle soak | INDEPENDENT / BOUNDED-DESIGN | ox-pc-d launch requested | guards the reader-thread crash fix |
 | P0 | TASK-0097 persistence durability audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | protects House/Scion/item saves |
 | P0 | TASK-0100 deterministic replay audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes divergences reproducible |
 | P0 | TASK-0104 itemization/history audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages memorable history-bearing loot |
