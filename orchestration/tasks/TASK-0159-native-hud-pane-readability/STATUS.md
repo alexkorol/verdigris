@@ -1,6 +1,6 @@
 ---
 task: TASK-0159
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: ox-pc-z
 machine: DESKTOP-TVU7OR7
@@ -15,6 +15,9 @@ harness: OpenCode CLI 1.18.21 variant max
 started_at: 2026-08-22T21:16:45Z
 claim_commit: 0e74c1854c2a0531ec6d071cb21c0cbde1811f15
 implementation_commit: 22377cf0bed832afba18f0b2ebfeaecea8d02e37
+integrated_at: 2026-08-22T16:15:00-07:00
+program_implementation_commit: 6cbb1324
+program_terminal_commit: fbe8f49c
 expected_verification: powershell -NoProfile -ExecutionPolicy Bypass -File native/build.ps1 -RunTests -RunClientScenarios; native/build/verdigris_client.exe --scenario first-session-clarity; git diff --check; git diff --name-only
 verification_outcome: full native gate PASS with EXIT=0 (denylist PASS; core/networking/camera2d/session/presentation-events suites green; all 12 client scenarios 0 failures incl. new hud-pane-readability); focused first-session-clarity PASS exit 0 (Esc contracts re-proven); git diff --check clean; changed files exactly the owned paths
 captures:
@@ -35,7 +38,7 @@ STATUS.md/claim or RELEASE.md in the task folder on current origin; owned-path
 isolation with zero dirty files. Work is confined to
 native/client/main.cpp and this task folder.
 
-REVIEW_REQUESTED: implementation commit 22377cf0bed832afba18f0b2ebfeaecea8d02e37
+INTEGRATED: implementation commit 22377cf0bed832afba18f0b2ebfeaecea8d02e37
 removes every owner-visible collision found at base — identity line painted
 across the minimap, the doubled "House House" prefix, the global controls hint
 and objective/art/connection chips entering the open gear pane — via one pure

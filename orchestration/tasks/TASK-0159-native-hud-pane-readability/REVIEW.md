@@ -5,7 +5,7 @@ reviewed_head: 7ca17bfe2808b85b3510cafb51b84b2d66a4e996
 reviewed_branch: codex/TASK-0159-native-hud-pane-readability-ox-pc-z
 reviewed_by: PC Verdigris architect/orchestrator
 reviewed_at: 2026-08-22 16:11 -07:00
-integrated_at: pending
+integrated_at: fbe8f49c
 ---
 
 # TASK-0159 architect review — ACCEPTED
@@ -48,3 +48,15 @@ Integrate implementation/evidence commit `22377cf0` and terminal status commit
 `7ca17bfe`, then run the complete native test and client-scenario gate on the
 combined program head before recording lifecycle integration.
 
+## Program integration
+
+- Architect verdict: `f3954c50`
+- Implementation/evidence: `6cbb1324`
+- Terminal status: `fbe8f49c`
+- Combined `native/build.ps1 -RunTests -RunClientScenarios`: PASS, exit 0
+- Corrected Gate-B journey, audio suite, all 12 client scenarios, both Escape
+  contracts, and both required capture sizes passed together.
+- Five sibling scenario captures regenerated during the all-scenarios gate were
+  restored to their committed bytes; no unrelated evidence churn remains.
+
+Lifecycle is now **INTEGRATED**.
