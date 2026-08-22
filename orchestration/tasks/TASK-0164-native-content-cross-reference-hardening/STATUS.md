@@ -1,7 +1,9 @@
 ---
 state: CLAIMED
 task: TASK-0164-native-content-cross-reference-hardening
-coordinator: ox-alpha (lane ox-pc-ag, worker id ox-pc-ag)
+coordinator: codex
+worker_lane: ox-pc-ag
+worker_id: ox-pc-ag
 provider: openrouter
 model: stealth/ox-alpha
 harness: OpenCode CLI 1.18.21, variant max
