@@ -72,3 +72,28 @@ evidence/precision corrections remain:
 Push an additive evidence revision without amending or force-pushing. No
 accepted matrix/capture content outside the one conditional sentence should
 change.
+
+## Rev3 review at `dff39173` — ACCEPTED
+
+Accepted at exact worker head
+`dff39173d9f8e213d0fa9a8d27674aa967680bf9` (commit clock
+2026-08-21 21:21:41 PDT, -07:00).
+
+The relaunch record now states the actual negation of both prior dispatch
+predicates and no longer treats same identity as sufficient for fall-through.
+Historical provider identity is normalized to harness-visible `opencode`, model
+`x-preview-f-free`, variant `max`, with upstream provider unknown. The literal
+post-correction gate transcript and complete four-path base-to-rev2 ownership
+proof are present. Independent architect rerun at rev3 confirms JSON parse,
+wire/matrix searches, diff hygiene, exact four-path base-to-head ownership, a
+clean worktree, and a pushed worker head matching origin.
+
+Telemetry clarification: STATUS says the rev3 clock is recorded in REPORT's
+commit section, while that section still says rev3 "follows in branch log."
+This review is the authoritative correction and records the exact rev3 SHA and
+clock above. The inconsistency is non-blocking because the requested rev2
+SHA/clock is present, no duration calculation depends on the missing duplicate,
+and another worker cycle would change evidence prose only.
+
+Verdict: **ACCEPTED**. Preserve the explicit RED rows: no native Chronicle test
+labels, no quit/logout envelope, and no durable cross-process Chronicle store.
