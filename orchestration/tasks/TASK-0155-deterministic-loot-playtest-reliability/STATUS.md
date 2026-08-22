@@ -1,6 +1,6 @@
 # TASK-0155 STATUS
 
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
 - task: TASK-0155-deterministic-loot-playtest-reliability
 - coordinator: ox-alpha
 - worker: ox-pc-z
@@ -54,3 +54,16 @@ retry. Root cause removed: per-poll nearest-target chasing replaced with a
 single retained uuid target plus first-stack exclusion
 (`drop2.uuid !== drop.uuid` asserted). No timeouts inflated, no retries added,
 no assertions swallowed, no fake drops, no gameplay or server changes.
+
+## Architect acceptance and integration
+
+- frozen remote handoff: `b06f5740801d263a4cc2207b68d73211cf929de3`
+- architect review: ACCEPTED in `REVIEW.md`
+- program implementation: `7771da43`
+- program handoff records: `46822df2`
+- independent G5: lint, five focused real-server loot journeys, and default
+  32/32 goal harness passed from the exact frozen head on review port 7180
+- post-integration G6: focused loot passed in 5885 ms and the complete default
+  goal harness passed 32/32 in 196.21 s on program port 7200
+- generated `docs/loop-journal.md` telemetry from G6 was removed before commit;
+  no out-of-scope file was integrated

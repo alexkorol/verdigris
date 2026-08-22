@@ -1,15 +1,21 @@
 # Run status — PC Verdigris overnight product wave
 
-## Claims live; historical GitHub mail storm bounded — 2026-08-22 13:24 PDT
+## TASK-0155 accepted; three claims live — 2026-08-22 13:40 PDT
 
-- All four routed workers claimed from exact base `c2b81448`, pushed only their
-  worker branches, and showed fresh post-claim activity. Frozen claim heads:
-  ox-pc-z/TASK-0155 `386aa2ee`, ox-pc-aa/TASK-0156 `e3f4bdf6`,
-  ox-pc-ab/TASK-0151 `57627ca3`, and ox-pc-ac/TASK-0152 `5156c33e`.
-- The four one-file claim commits are now present on the coordination line.
-  Claim-aware board proof is healthy at 24 effective READY, 4 CLAIMED,
-  16 sequenced successors, and zero owned-path collisions. Provisioning is no
-  longer being mistaken for capacity.
+- TASK-0155 worker implementation `3cae8a2d` and frozen handoff `b06f5740`
+  passed the mandatory independent architect rerun because this task modifies
+  a goal-harness assertion path. Exact-head lint, five focused real-server
+  journeys, and the default 32/32 harness passed. After integration, focused
+  loot passed in 5885 ms and the combined program harness passed 32/32 in
+  196.21 s. Verdict: ACCEPTED; program commits `7771da43` and `46822df2`.
+- ox-pc-z stopped after its pushed handoff and is no longer capacity. The
+  remaining valid claims are ox-pc-aa/TASK-0156 `e3f4bdf6`,
+  ox-pc-ab/TASK-0151 `57627ca3`, and ox-pc-ac/TASK-0152 `5156c33e`; all three
+  retain isolated worktrees, branches, ports, provider identity, and fresh
+  post-claim activity.
+- Claim-aware board proof remains healthy at 24 effective READY, 3 CLAIMED,
+  16 sequenced successors, and zero owned-path collisions. The integrated task
+  is excluded from both READY and active capacity.
 - The owner inbox screenshot is historical failure mail from before the two
   trigger-contract releases. Since Verdigris PR #56's trigger fix began, GitHub
   records 4 protected PR/master runs and 0 failures; since standalone-
