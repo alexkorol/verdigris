@@ -40,6 +40,7 @@ All inside owned paths `orchestration/tasks/TASK-0086-gate-c-contract-audit/**`:
 - `STATUS.md` — CLAIMED at `2ed4799a`, now REVIEW_REQUESTED.
 - `FINDINGS.md` — new.
 - `captures/gate-c-contract.json` — new.
+- `captures/gate-c-rg-evidence.txt` — new (revision r2): unabridged Gate 2 rg stdout.
 
 No file outside the task folder was created, modified, or deleted by this
 worker (verified below). Forbidden paths (`native/**`, `server/**`, `src/**`,
@@ -63,58 +64,19 @@ EXIT CODE: 0
 
 ```
 $ rg -n 'world:road:chart|world:zone:enter|nodeId|warden|trophy|depth|stairs|extract' native/src/networking.cpp native/tests/networking_tests.cpp playtest/scenarios/world-web.mjs playtest/scenarios/quest.mjs
-native/src/networking.cpp:621:struct QuestObjective { const char* trigger; const char* crit_a; const char* crit_b; int min_depth; };
-native/src/networking.cpp:680:  std::string id, name, template_id, layout, parent_id, warden_name;
-native/src/networking.cpp:713:      node.warden_name = "Warden of " + name;
-native/src/networking.cpp:783:  ... put(metadata,"depth",meta.depth);
-native/src/networking.cpp:784:    JsonValue::Object up; put(up,"x",meta.stairs_up.x); put(up,"y",meta.stairs_up.y); put(metadata,"stairsUp",std::move(up));
-native/src/networking.cpp:785:    JsonValue::Object down; put(down,"x",meta.stairs_down.x); put(down,"y",meta.stairs_down.y); put(metadata,"stairsDown",std::move(down));
-native/src/networking.cpp:788:      put(metadata, "nodeId", current_node_id_);
-native/src/networking.cpp:790:      JsonValue::Object entry_gate; put(entry_gate, "x", meta.stairs_up.x); put(entry_gate, "y", meta.stairs_up.y);
-native/src/networking.cpp:794:        JsonValue::Object gate; put(gate, "x", meta.stairs_down.x); put(gate, "y", meta.stairs_down.y);
-native/src/networking.cpp:795:        put(gate, "nodeId", current_child_id_); put(gate, "name", current_child_name_);
-native/src/networking.cpp:799:      put(metadata, "wardenDead", cleared_nodes_.count(current_node_id_) > 0);
-native/src/networking.cpp:813:  put(state,"bestDepth",best_depth_);
-native/src/networking.cpp:864:  ... put(metadata,"depth",meta.depth);   [second state builder]
-native/src/networking.cpp:865-880: [stairsUp/stairsDown/nodeId/entryGate/zoneGates/wardenDead mirrors]
-native/src/networking.cpp:939:void ProtocolSession::finish_extraction(const std::function<void(const Envelope&)>& emit) {
-native/src/networking.cpp:940:  // Drain backpack + wear into the House store. JS has no player:extract;
-native/src/networking.cpp:968:  emit(Envelope{"player:extract", JsonValue(std::move(summary))});
-native/src/networking.cpp:1293:  const std::uint64_t key = meta.seed * 131u + static_cast<std::uint64_t>(meta.depth);
-native/src/networking.cpp:1299:    put(data, "depth", meta.depth);
-native/src/networking.cpp:1303-1305:  emit_message(emit, "Floor " + std::to_string(meta.depth) + " cleared! Rewards distributed - find the stairs to descend, or take the entry stairs to leave."); / first_goal depth checks
-native/src/networking.cpp:1359,1368,1369:  quest objective min_depth plumbing
-native/src/networking.cpp:1429:    put(row, "wardenName", node.warden_name);
-native/src/networking.cpp:1461-1481:  enter_road_node warden/stairs wiring (set_boss_name_override :1462, set_block_stairs_down :1467/:1480, set_stairs_up_returns_to_town :1469/:1481)
-native/src/networking.cpp:1519-1527:  stairs-down Warden refusal ("No road holds past a living Warden.")
-native/src/networking.cpp:1997:  // advance_combat; the legacy synthetic 'drop' trophy event is retired.
-native/src/networking.cpp:2067,2072,2073:  post-combat stairs/first-goal depth logic
-native/src/networking.cpp:2116-2124:  handle_extract ("There is no extraction here." / finish_extraction)
-native/src/networking.cpp:2314:  world:zone:enter dispatch (nodeId default "tin:1:0", delve depth trigger)
-native/src/networking.cpp:2315:  instance:enterSolo dispatch
-native/src/networking.cpp:2316:  player:move depth/return-surface/extraction chain
-native/src/networking.cpp:2317:  dev:teleport depth/return/extraction chain
-native/src/networking.cpp:2320:  if (envelope.event=="world:road:chart") { emit_chart_screen(...); return; }
-native/src/networking.cpp:2451:  if (envelope.event=="player:extract") { handle_extract(emit); return; }
-native/src/networking.cpp:2466-2496:  Warden-death unlock, stairs unblock, finish_extraction, dev:state bestDepth
-playtest/scenarios/world-web.mjs:31:    p.emit('world:zone:enter', { nodeId: root.id });
-playtest/scenarios/world-web.mjs:34,54,74,75,104:  sceneMetadata.nodeId assertions
-playtest/scenarios/world-web.mjs:40-41:  `the ${root.wardenName} keeps the ground`
-playtest/scenarios/world-web.mjs:79:    p.emit('world:road:chart', { roadId: 'tin' });
-playtest/scenarios/world-web.mjs:110:  'the Warden stays down inside the linger window'
-playtest/scenarios/quest.mjs:255-257:  sceneMetadata.stairsDown assertions/use
-playtest/scenarios/quest.mjs:260:  next.sceneMetadata.depth === 2
-playtest/scenarios/quest.mjs:325:  state.sceneMetadata.stairsUp
-native/tests/networking_tests.cpp:44:  world:zone:enter {nodeId: "tin:1:0"}
-native/tests/networking_tests.cpp:124,143-144,165-171:  test_instance_entry_and_stairs / "both stairs exist" / "entry stairs return to town"
-native/tests/networking_tests.cpp:333-385:  test_gate_a_extract_and_stairs ("player:extract emits a bank summary", "stairs-up emits the same player:extract bank summary", ...)
-native/tests/networking_tests.cpp:439,442:  test registration calls
 EXIT CODE: 0
 ```
 
-(Full unabridged output captured in the session transcript; elisions above are
-line-folding of repeated metadata builders only — every matched line number is
-listed.)
+Unabridged stdout (119 matched lines, no elisions) is preserved verbatim in
+`captures/gate-c-rg-evidence.txt` inside this task folder (revision r2). The
+matches cover, across all four files: the `world:road:chart` /
+`world:zone:enter` handlers (`native/src/networking.cpp:2314,2320`), chart
+rows (`:1429` wardenName), zone metadata (`:783-799`, `:864-880` nodeId /
+stairsUp / stairsDown / entryGate / zoneGates / wardenDead), extraction
+(`:939-968`, `:2116-2124`, `:2451`, `:2486`), Warden refusal (`:1527`),
+test labels (`native/tests/networking_tests.cpp:44,124,143-144,165-171,333-385`),
+and scenario assertions (`playtest/scenarios/world-web.mjs:31,34,40-41,54,74-79,101,104,110`;
+`playtest/scenarios/quest.mjs:255-260,325`).
 
 ### Gates 3 & 4 — whitespace check and changed-file list (run with deliverables on disk)
 
@@ -156,7 +118,7 @@ changes never leave `orchestration/tasks/TASK-0086-gate-c-contract-audit/**`.
 ## Commit SHAs
 
 - `2ed4799a5385f2d6237697a31305f5671b437e93` — claim (STATUS.md only).
-- `<this commit>` — REVIEW_REQUESTED: FINDINGS.md, captures/gate-c-contract.json, REPORT.md, STATUS.md transition.
+- `d8ab6670df742d3946886de91913be728bb535ed` — REVIEW_REQUESTED: FINDINGS.md, captures/gate-c-contract.json, REPORT.md, STATUS.md transition (architect-reviewed head).
 
 ## Deviations
 
@@ -189,3 +151,23 @@ identity P2/P3) belong to future owner-authority packets, not questions.
 - Candidate owners for the MISSING fields per RUN_STATUS board: TASK-0104
   itemization/history audit, TASK-0103 monster/encounter gap audit, plus an
   owner ruling on chart-goal content.
+
+## Revision r2 — evidence-only corrections per REVIEW.md (REVISE)
+
+Architect review at head `d8ab6670df742d3946886de91913be728bb535ed` required
+exactly two evidence corrections; both applied additively with all substantive
+findings and classifications preserved:
+
+1. Gate 2's rg transcript is now the unabridged, unelided stdout saved
+   durably at `captures/gate-c-rg-evidence.txt` (119 lines, exit 0); REPORT
+   cites the artifact instead of the session transcript.
+2. The `<this commit>` placeholder is replaced with the exact reviewed head
+   `d8ab6670df742d3946886de91913be728bb535ed`; this revision's SHA is appended
+   below after pushing. STATUS remains REVIEW_REQUESTED at the new head.
+
+Post-correction reruns at the revision head: Gate 1 PASS (exit 0), Gate 2
+exit 0, `git diff --check` exit 0, `git diff --name-only` empty (exit 0),
+and `git diff --name-only 039dcfa7..HEAD` contains only this task folder's
+files plus the architect's coordination refresh — owned-path boundary holds.
+
+- Revision r2 evidence commit: PENDING-SHA

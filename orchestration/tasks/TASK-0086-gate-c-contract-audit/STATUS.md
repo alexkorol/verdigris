@@ -29,3 +29,9 @@ satisfiable from the current surface — goal and trophy/material/item family
 MISSING; boss/danger, depth, extraction/return condition AVAILABLE; branch
 consequence derivable for the immediate stage only. All worker commits are
 confined to this task folder.
+
+Evidence-only revision per `REVIEW.md` REVISE (architect review at head
+`d8ab6670df742d3946886de91913be728bb535ed`): unabridged Gate 2 rg stdout saved
+to `captures/gate-c-rg-evidence.txt`; REPORT placeholder replaced with the
+reviewed head. Substantive findings unchanged. State remains REVIEW_REQUESTED
+at the new head.
