@@ -1,5 +1,33 @@
 # Run status — PC Verdigris overnight product wave
 
+## Content validation shipped; audio accepted behind Gate-B hold — 2026-08-22 15:46 PDT
+
+- TASK-0164 replacement worker head `cedabc72` is independently ACCEPTED and
+  INTEGRATED as program commits `9ffea0b4` + `3961733b`, lifecycle
+  `f764600e`. Combined positive seed validation and two deterministic 27/27
+  negative-suite runs pass. Cross-collection type mismatches, dangling
+  references, and unreachable encounter anchors now fail closed; schema,
+  seeds, authored content, and runtime remain unchanged.
+- TASK-0157 revision head `bb7b8ceb` is ACCEPTED but intentionally not yet
+  integrated. A clean detached checkout proved `build.ps1 -RunTests` now
+  creates the audio test executable; that binary passed twice with identical
+  output and correct `monster`/`scion` discrimination. The same full run then
+  hit the known unrelated Gate-B exact-relic/continuity failure. Integration
+  waits for TASK-0163 and a green combined native gate; this is not an audio
+  revision request.
+- TASK-0163's first process stopped at a clean reasoning boundary with its
+  owned session-test correction uncommitted. Its one same-session recovery is
+  PID 26948 and preserves the exact dirty worktree; an earlier diagnostic run
+  already passed the full Gate-B chain after replacing inconsistent floor
+  conversion with the shared tile conversion, and the recovery is removing
+  probes and running the literal gates. ox-pc-z/TASK-0159 remains active at
+  PID 32.
+- Program head `f764600e8b8c57fbeca1ba2251fd011156aa925c` is clean/pushed.
+  Queue proof remains healthy at 24 effective READY, 17 sequenced successors,
+  and zero collisions. Dashboard PID 22096 serves HTTP 200; monitor PID 2664
+  is live. Raw program/worker pushes continue to start zero workflows. Owner
+  action required now: none.
+
 ## Review truth enforced; stopped lane replaced inside SLA — 2026-08-22 15:26 PDT
 
 - TASK-0157 predecessor handoff `024dabb5` is **REVISE**, not integrated.

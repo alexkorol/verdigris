@@ -56,6 +56,27 @@ over implementation.
 
 ## Verified live PC checkpoint — 2026-08-22 15:01 PDT
 
+### Delta — 2026-08-22 15:46 PDT
+
+- Program head is clean/pushed at
+  `f764600e8b8c57fbeca1ba2251fd011156aa925c`.
+- TASK-0164 head `cedabc72` is ACCEPTED/INTEGRATED as `9ffea0b4` +
+  `3961733b`, lifecycle `f764600e`; combined positive and 27/27-twice
+  negative gates are green. ox-pc-ag is terminal, stopped, clean, and not
+  capacity.
+- TASK-0157 head `bb7b8ceb` is ACCEPTED with an explicit integration hold on
+  TASK-0163. The focused audio proof is green; the detached full gate retained
+  the known Gate-B exact-relic failure. Do not cherry-pick audio implementation
+  until TASK-0163 is integrated and the combined native gate passes.
+- Live workers: ox-pc-z/TASK-0159 PID 32; ox-pc-ac/TASK-0163 recovery PID
+  26948. Preserved/non-capacity: ox-pc-af terminal accepted; ox-pc-ag terminal
+  integrated; ox-pc-ae dirty released quarantine; ox-pc-ad predecessor
+  handoff; ox-pc-ab dirty exhausted quarantine.
+- Dashboard PID 22096 is HTTP 200; monitor PID 2664 is live. Queue proof is 24
+  effective READY, 17 successors, zero collisions. Exact next gate is the
+  TASK-0163 handoff/review, then combined TASK-0163 + TASK-0157 integration
+  verification. Owner action required now: none.
+
 ### Delta — 2026-08-22 15:26 PDT
 
 - Program pre-delta head is clean/pushed at
