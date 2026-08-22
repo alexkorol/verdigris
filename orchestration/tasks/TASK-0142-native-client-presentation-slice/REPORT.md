@@ -110,8 +110,8 @@ above (command recorded in the transcript).
 ## Commits
 
 - `6ec90d4a` CLAIMED (STATUS.md), pushed to origin within the routing window.
-- Implementation commit (main.cpp): see git log on this branch.
-- REVIEW_REQUESTED commit: STATUS/REPORT/transcript update on branch
+- `f6912ea2` implementation (main.cpp).
+- `629dfc5f` REVIEW_REQUESTED (STATUS/REPORT/transcript) on branch
   `codex/TASK-0142-native-client-presentation-slice-ox-pc-h`, pushed to
   origin (this branch only).
 
