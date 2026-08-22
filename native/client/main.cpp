@@ -2190,6 +2190,23 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds,
       "  trophies " + std::to_string(state.world.stored_trophies);
   rl.push_back({render::Op::PaneBanked, 0.0, 0.0, 0.0, 0, banked});
   TextOutA(dc, left + 14, bottom - 46, banked.c_str(), static_cast<int>(banked.size()));
+  // TASK-0156: compact authoritative progression summary, mirrored from the
+  // passiveTree payload. Absence is stated as absence — never rendered as
+  // zero — and no node ids, allocation actions, or invented copy appear.
+  std::string progression;
+  if (state.world.progression.present) {
+    progression = "TREE pts " +
+                  std::to_string(state.world.progression.unspent_points) + "/" +
+                  std::to_string(state.world.progression.earned_points) +
+                  "  nodes " + std::to_string(state.world.progression.node_count) +
+                  "  conduits " +
+                  std::to_string(state.world.progression.conduit_count);
+  } else {
+    progression = "TREE no authoritative data";
+  }
+  rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0, progression});
+  TextOutA(dc, left + 14, bottom - 70, progression.c_str(),
+           static_cast<int>(progression.size()));
   const char* controls = "Arrows select | Enter equip | U unequip | I close";
   TextOutA(dc, left + 14, bottom - 24, controls, static_cast<int>(strlen(controls)));
 }
@@ -2604,6 +2621,28 @@ std::string animation_vfx_capture_dir() {
   std::vector<std::string> bases{".", executable_directory()};
   const char* marker =
       "orchestration\\tasks\\TASK-0122-animation-vfx-system-wave";
+  for (const auto& base : bases) {
+    std::string prefix = base;
+    for (int depth = 0; depth <= 6; ++depth) {
+      const std::string folder = prefix + (prefix.empty() ? "" : "\\") + marker;
+      if (directory_exists(folder)) {
+        const std::string captures = folder + "\\captures";
+        CreateDirectoryA(captures.c_str(), nullptr);
+        return captures;
+      }
+      prefix += prefix.empty() ? ".." : "\\..";
+    }
+  }
+  CreateDirectoryA("captures", nullptr);
+  return "captures";
+}
+
+// TASK-0156: fresh progression-surface evidence lands in THIS task's
+// captures/ folder for architect visual review.
+std::string progression_capture_dir() {
+  std::vector<std::string> bases{".", executable_directory()};
+  const char* marker =
+      "orchestration\\tasks\\TASK-0156-native-progression-visibility";
   for (const auto& base : bases) {
     std::string prefix = base;
     for (int depth = 0; depth <= 6; ++depth) {
@@ -4769,6 +4808,157 @@ int scenario_first_session_clarity();
 // can emit fresh PNG evidence into this task's captures/ folder.
 int scenario_animation_vfx_phase_a();
 
+// TASK-0156 progression-surface scenario; defined below so it can emit fresh
+// PNG evidence into this task's captures/ folder.
+int scenario_progression_surface();
+
+// ── TASK-0156: progression-surface ──────────────────────────────────────
+// Proves the shipped gear overlay mirrors ONLY the authoritative passiveTree
+// payload: absent before any payload arrives, nonzero from a real quick-guest
+// admission, zero from a real server-committed tree snapshot. Every payload
+// flows through the production parser/presentation seam against an in-process
+// protocol server bound to this lane's routed loopback capsule (7120-7139).
+// The player:skilltree:save envelope below is the existing browser-wire event
+// driven through the documented test-harness escape hatch so the ZERO state
+// is produced by the real authority, never fabricated by the test.
+int scenario_progression_surface() {
+  verdigris::networking::WebSocketServer* server = nullptr;
+  std::uint16_t port = 0;
+  for (std::uint16_t candidate = 7120; candidate <= 7139; ++candidate) {
+    auto* probe = new verdigris::networking::WebSocketServer(candidate);
+    std::string error;
+    if (probe->start(&error)) {
+      server = probe;
+      port = candidate;
+      break;
+    }
+    delete probe;
+  }
+  scenario_check(server != nullptr,
+                 "progression-surface: bound ox-pc-aa capsule server");
+  if (!server) return 0;
+
+  using verdigris::client::ClientCommand;
+  using verdigris::client::ConnectionState;
+  using verdigris::networking::JsonValue;
+  ClientState state;
+  state.session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+      "127.0.0.1", port, "progression-surface-0156", true);
+  load_billboards(state.billboards);
+
+  // 1) ABSENT: no passiveTree payload has ever arrived on this connection.
+  // The surface must say so instead of rendering zeros.
+  scenario_check(!state.session->model().progression.present,
+                 "absent: no passiveTree payload has arrived");
+  generate_scenery(state);
+  sync_world(state);
+  state.camera.x = static_cast<double>(state.world.player.position.x);
+  state.camera.y = static_cast<double>(state.world.player.position.y);
+  state.gear_overlay = true;
+  reference_present(state, 960, 600, "");
+  scenario_check(
+      render_list_has(state, render::Op::PaneStat, "TREE no authoritative data"),
+      "absent: the gear pane states absence, not zeros");
+
+  // 2) NONZERO: a real admission carries the authoritative tree payload
+  // through the production parser seam.
+  std::string error;
+  scenario_check(state.session->start(&error),
+                 "nonzero: session start");
+  bool ready = false;
+  for (int i = 0; i < 250 && !ready; ++i) {
+    state.session->poll();
+    ready = state.session->connection_state() == ConnectionState::Ready;
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  }
+  scenario_check(ready, "nonzero: handshake ready");
+  bool in_instance = false;
+  state.session->submit(ClientCommand::enter_zone("tin:1:0"));
+  for (int i = 0; i < 80 && !in_instance; ++i) {
+    state.session->poll();
+    ingest_session_events(state);
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    in_instance = state.session->model().scene.type == "instance";
+  }
+  scenario_check(in_instance, "nonzero: expedition entered");
+  generate_scenery(state);
+  ingest_session_events(state);
+  sync_world(state);
+  state.camera.x = static_cast<double>(state.world.player.position.x);
+  state.camera.y = static_cast<double>(state.world.player.position.y);
+  const auto& earned_view = state.session->model().progression;
+  scenario_check(earned_view.present,
+                 "nonzero: authoritative payload mirrored into the model");
+  scenario_check(earned_view.unspent_points > 0 && earned_view.earned_points > 0,
+                 "nonzero: unspent and earned points are nonzero");
+  scenario_check(earned_view.unspent_points <= earned_view.earned_points,
+                 "nonzero: unspent never exceeds earned");
+  scenario_check(earned_view.node_count >= 1,
+                 "nonzero: the committed node count mirrors the payload");
+  state.gear_overlay = true;
+  const std::string dir = progression_capture_dir();
+  const std::string png_960 = dir + "\\progression-surface-nonzero-960x600.png";
+  reference_present(state, 960, 600, png_960);
+  scenario_check(
+      render_list_has(state, render::Op::PaneStat,
+                      "TREE pts " + std::to_string(earned_view.unspent_points) +
+                          "/" + std::to_string(earned_view.earned_points)),
+      "nonzero: the pane text shows the authoritative points");
+  scenario_check(!render_list_has(state, render::Op::PaneStat,
+                                  "no authoritative data"),
+                 "nonzero: a present payload never renders as absence");
+
+  // 3) ZERO: a real server-committed snapshot spends every point. The reply
+  // (player:skilltree:update) re-mirrors through the same production seam.
+  JsonValue snapshot(JsonValue::Object{
+      {"nodes",
+       JsonValue(JsonValue::Array{JsonValue("0,0"), JsonValue("1,0"),
+                                  JsonValue("-1,1")})},
+      {"conduits", JsonValue(JsonValue::Array{})},
+      {"selectedNodeId", JsonValue("1,0")}});
+  send_dev_envelope(state, "player:skilltree:save",
+                    {{"snapshot", snapshot}});
+  bool zero_landed = false;
+  for (int i = 0; i < 250 && !zero_landed; ++i) {
+    state.session->poll();
+    ingest_session_events(state);
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    const auto& progression = state.session->model().progression;
+    zero_landed = progression.present && progression.unspent_points == 0 &&
+                  progression.node_count == 3 && progression.conduit_count == 0;
+  }
+  scenario_check(zero_landed,
+                 "zero: the committed mirror shows zero unspent points");
+  sync_world(state);
+  state.gear_overlay = true;
+  const std::string png_1366 =
+      dir + "\\progression-surface-zero-1366x768.png";
+  reference_present(state, 1366, 768, png_1366);
+  scenario_check(render_list_has(state, render::Op::PaneStat, "TREE pts 0/"),
+                 "zero: genuine zeros are rendered as zeros");
+  scenario_check(!render_list_has(state, render::Op::PaneStat,
+                                  "no authoritative data"),
+                 "zero: zero is not rendered as absence");
+
+  // Capture integrity: both PNGs exist and are non-trivial.
+  for (const std::string& path : {png_960, png_1366}) {
+    std::ifstream probe(path, std::ios::binary);
+    scenario_check(probe.good(), "progression-surface: capture readable");
+    probe.seekg(0, std::ios::end);
+    const std::streamoff bytes = probe.tellg();
+    char line[512];
+    std::snprintf(line, sizeof(line), "    capture: %s (%lld bytes)\n",
+                  path.c_str(), static_cast<long long>(bytes));
+    std::printf("%s", line);
+    scenario_check(bytes > 1024, "progression-surface: capture is non-trivial");
+  }
+
+  if (state.session) state.session->shutdown();
+  server->stop();
+  delete server;
+  return 0;
+}
+
 int run_scenarios(const std::string& which) {
   struct Entry {
     const char* name;
@@ -4785,6 +4975,7 @@ int run_scenarios(const std::string& which) {
       {"chronicles-gate-b", scenario_chronicles_gate_b},
       {"first-session-clarity", scenario_first_session_clarity},
       {"animation-vfx-phase-a", scenario_animation_vfx_phase_a},
+      {"progression-surface", scenario_progression_surface},
   };
   int total_failures = 0;
   for (const auto& entry : entries) {
