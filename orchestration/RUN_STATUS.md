@@ -1,5 +1,23 @@
 # Run status — PC Verdigris overnight product wave
 
+## Morning protected-master release — 2026-08-22 07:12 PDT
+
+- Program branch pushed head: `eb65c08b76c95564d61422a51748dbdb476306a9`.
+- Protected `master` release: PR #51 merged at
+  `db3fc0467ed0cc978f5152aeec558208825bd0af`; GitHub CI/Native checks were
+  still running after merge and are not yet claimed green.
+- Exact pre-merge release gate: full native build/tests/all client scenarios
+  passed. The merge tree equals the program tree.
+- Owner live verdict: playable and materially improved, but still extremely
+  janky; repetitive terrain overwhelms the embedded vector motifs. This
+  supersedes any interpretation of presence/capture tests as a quality verdict.
+- Owner defect: Esc globally exits even with gear open. ox-pc-v now has verified
+  TASK-0153 claim `8474ac51` and a binding first-Esc-closes-pane/second-bare-
+  Esc-exits scenario contract. Its initial provisioned-but-unclaimed SLA breach
+  is recorded as INC-013.
+- ox-pc-r was deliberately paused only for the shared-capsule release gate and
+  resumed in its exact preserved session at PID 2388. No edits were reset.
+
 ## Leader-austerity override — 2026-08-21
 
 The owner adopted event-driven leadership. `LEADER_POLICY.md` keeps the

@@ -183,3 +183,22 @@ request.
   contracts that must produce executable implementation successors after
   independent review.
 - Owner action required now: none.
+
+### Morning ship and owner-play checkpoint — 2026-08-22 07:12 PDT
+
+- PR #51 merged the verified program head `eb65c08b` to protected `master` at
+  `db3fc0467ed0cc978f5152aeec558208825bd0af`. The local full native release
+  gate passed before the PR; GitHub CI/Native workflows remained in progress
+  at merge time and must be followed to terminal state.
+- The owner live-played the release and judged it materially better but still
+  far below a real-game presentation bar. Embedded vector assets are compiled
+  and rendered, yet are visually dominated by the repetitive procedural tile
+  field. Presence, deterministic captures, and coherent geometry are no longer
+  sufficient visual-acceptance proxies; whole-frame owner play is binding.
+- Owner found deterministic Esc behavior: `VK_ESCAPE` calls
+  `PostQuitMessage(0)` before checking `gear_overlay`. TASK-0153 on ox-pc-v is
+  the active hotfix/clarity lane; verified claim `8474ac51`. It must prove Esc
+  closes gear first without quitting and a subsequent bare Esc exits.
+- INC-013 records ox-pc-v's initial activation-SLA breach and claim-first
+  recovery. ox-pc-r was serialized around the release gate and resumed with
+  every dirty owned-path edit preserved. Owner action required now: none.
