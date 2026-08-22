@@ -176,3 +176,94 @@ test('kit artifacts carry no forbidden port or external references', () => {
     }
   }
 });
+
+test('polish wave materially increases authored geometry over TASK-0141', () => {
+  const baselineShapes = {
+    player: 19,
+    raider: 13,
+    elite: 19,
+    tree: 12,
+    ruin: 12,
+    dwelling: 14,
+    shrine: 11,
+    'terrain-a': 31,
+    'terrain-b': 19,
+  };
+  const baselinePoints = {
+    player: 55,
+    raider: 45,
+    elite: 55,
+    tree: 34,
+    ruin: 36,
+    dwelling: 47,
+    shrine: 37,
+    'terrain-a': 20,
+    'terrain-b': 28,
+  };
+  const { manifest } = buildKit();
+  for (const entry of manifest.roles) {
+    for (const motif of entry.motifs) {
+      const svgName = motif.symbol === 'terrain_a' ? 'terrain-a' : motif.symbol === 'terrain_b' ? 'terrain-b' : motif.symbol;
+      const svg = readFileSync(path.join(REPO_ROOT, motif.source), 'utf8');
+      const shapes = (svg.match(/<(polygon|polyline|circle|ellipse)/g) || []).length;
+      let points = 0;
+      for (const m of svg.matchAll(/ points="([^"]+)"/g)) points += m[1].trim().split(/\s+/).length;
+      assert.ok(
+        shapes >= baselineShapes[svgName] * 2,
+        `${motif.symbol}: ${shapes} shapes must exceed twice the TASK-0141 count (${baselineShapes[svgName]})`,
+      );
+      assert.ok(
+        points > baselinePoints[svgName],
+        `${motif.symbol}: ${points} polygon vertices must exceed the TASK-0141 count (${baselinePoints[svgName]})`,
+      );
+    }
+  }
+});
+
+test('every authored shape stays inside the 64-unit viewBox', () => {
+  const limit = 64;
+  const clampCheck = (value, label) => {
+    assert.ok(Number.isFinite(value), `${label} finite`);
+    assert.ok(value >= 0 && value <= limit, `${label} inside viewBox: ${value}`);
+  };
+  const kit = buildKit();
+  for (const variant of kit.manifest.roles.flatMap((entry) =>
+    entry.motifs.map((motif) => ({ role: entry.role, motif })),
+  )) {
+    const svg = readFileSync(path.join(REPO_ROOT, variant.motif.source), 'utf8');
+    for (const m of svg.matchAll(/ points="([^"]+)"/g)) {
+      for (const pair of m[1].trim().split(/\s+/)) {
+        const [x, y] = pair.split(',').map(Number);
+        clampCheck(x, `${variant.motif.symbol} point x`);
+        clampCheck(y, `${variant.motif.symbol} point y`);
+      }
+    }
+    for (const m of svg.matchAll(/<circle cx="([-\d.]+)" cy="([-\d.]+)" r="([-\d.]+)"/g)) {
+      const [, cx, cy, r] = m.map(Number);
+      clampCheck(cx - r, `${variant.motif.symbol} circle left`);
+      clampCheck(cx + r, `${variant.motif.symbol} circle right`);
+      clampCheck(cy - r, `${variant.motif.symbol} circle top`);
+      clampCheck(cy + r, `${variant.motif.symbol} circle bottom`);
+    }
+    for (const m of svg.matchAll(/<ellipse cx="([-\d.]+)" cy="([-\d.]+)" rx="([-\d.]+)" ry="([-\d.]+)"/g)) {
+      const [, cx, cy, rx, ry] = m.map(Number);
+      clampCheck(cx - rx, `${variant.motif.symbol} ellipse left`);
+      clampCheck(cx + rx, `${variant.motif.symbol} ellipse right`);
+      clampCheck(cy - ry, `${variant.motif.symbol} ellipse top`);
+      clampCheck(cy + ry, `${variant.motif.symbol} ellipse bottom`);
+    }
+  }
+});
+
+test('generated float literals are standards-conforming C++ tokens', () => {
+  const header = headerFromDisk();
+  const tables = header.slice(header.indexOf('inline constexpr Color kColors'));
+  const literals = [...tables.matchAll(/(-?\d+(?:\.\d*)?)f\b/g)].map((m) => m[1]);
+  assert.ok(literals.length > 100, `expected a large generated table, found ${literals.length}`);
+  for (const literal of literals) {
+    assert.ok(
+      literal.includes('.'),
+      `non-conforming float literal "${literal}f" (bare digit-suffix reserves the f operator)`,
+    );
+  }
+});
