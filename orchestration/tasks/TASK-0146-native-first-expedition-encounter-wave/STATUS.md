@@ -1,6 +1,6 @@
 # TASK-0146 STATUS
 
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: ox-alpha (OpenCode PC lane)
 worker: ox-pc-l
 machine: DESKTOP-TVU7OR7
@@ -17,4 +17,19 @@ started_at: 2026-08-22 03:32 -07:00
 
 Replacement claim per RELEASE.md (2026-08-22): the stale ox-pc-d claim
 (7e416ff3) is released; its quarantined worktree was not inspected, resumed,
-or copied. Independent implementation from clean current program head begins.
+or copied. Independent implementation from clean current program head.
+
+## Implementation commits
+
+- 78a0c4a0 CLAIMED STATUS
+- e0ca05f6 deterministic first-expedition Warden pack wave in core
+- (this commit) REVIEW_REQUESTED + REPORT
+
+## Acceptance evidence
+
+All literal SPEC gates green on the committed tree:
+build.ps1 -RunTests -RunClientScenarios (denylist, core, networking,
+camera2d, session tests, all 7 client scenarios PASS); the three named
+scenarios re-run individually exit 0; `git diff --check` clean. Full
+transcript, approach, constants reused, test changes, deviations, and risks
+in REPORT.md.
