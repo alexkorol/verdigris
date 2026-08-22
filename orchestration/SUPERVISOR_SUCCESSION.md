@@ -54,48 +54,48 @@ A failed handoff or missing acknowledgement is an owner-notification event. It
 does not authorize the outgoing supervisor to burn remaining credits by taking
 over implementation.
 
-## Verified live PC checkpoint — 2026-08-22 04:44 PDT
+## Verified live PC checkpoint — 2026-08-22 05:41 PDT
 
 State: `PRIMARY_ACTIVE`; this is a succession checkpoint, not a retirement
 request.
 
 - Program checkout: `Z:\Code\Games\delaford\delaford_game`, branch
-  `codex/native-reconstitution`, clean local/remote coordination head
-  `491cff3c` before this checkpoint refresh commit; accepted product content is
-  integrated through `a81642ae`. `origin/master` is not the worker base;
+  `codex/native-reconstitution`, clean local/remote program head
+  `08e8776ecbce2152364c2bdd4d62004795c6ce32` before this checkpoint refresh
+  commit. `origin/master` is not the worker base;
   workers use the exact routed program heads recorded in `RUN_STATUS.md`.
 - Standalone broadcast checkout:
   `Z:\Code\.worktrees\orchestration\pc-overnight-game-wave`, clean branch
-  `codex/pc-overnight-game-wave`, local/remote head `8b55376`; observed
+  `codex/pc-overnight-game-wave`, local/remote head `a4748f0`; observed
   standalone `origin/main` is `59a70b6`. PC has no shared-main authority.
 - Active implementation/revision evidence:
   - TASK-0145 head `78dcac60` and TASK-0149 revision head `a88d307d` are
     independently ACCEPTED and integrated at `2df5eac5` and through
     `8677f021`; combined program binaries passed all native suites, all eight
     client scenarios, and the real-window lifecycle selftest;
-  - ox-pc-l, ports 6840-6859, TASK-0146 frozen head `a72b6317` reviewed REVISE
-    because it never placed multiple living threats on the floor; its first
-    revision process stopped clean before writes and recovery PID 6816 is active
-    on the simultaneous elite/flanker fix. This lane has consumed one recovery;
+  - ox-pc-l, ports 6840-6859, TASK-0146 revision head `086ac07b` independently
+    ACCEPTED and integrated as the four-commit program chain through `5324f13e`;
+    combined program gates passed and pushed head is `08e8776e`;
   - ox-pc-p, ports 6920-6939, TASK-0147 claim `3ee9f928`; first process exited
     with owned-path edits preserved after its real GDI capture exposed broken
-    scenery geometry. Exact-worktree recovery PID 8520 is active and has
-    consumed the lane's one recovery;
+    scenery geometry. The exact session is resumed at PID 15840 and has found
+    generated polygon point-range bleed as the concrete corruption mechanism;
   - ox-pc-q, ports 6940-6959, TASK-0148 claim `815a359b` released and clean
     preserved after its recovery proposed `mutate/select` for the first Scion,
     bypassing the required accepted `create/set-out` chain. It is exhausted,
     not capacity;
   - ox-pc-r, ports 6960-6979, TASK-0148 fresh r5 route from release head
     `c1acd4ec`, independent claim `837a412f` pushed inside the activation SLA,
-    process PID 13120. Its start contract freezes the accepted first-Scion chain
-    and bans `dev:*`, `player:chronicles:mutate`, and direct state shortcuts.
+    clean pre-write exit resumed in the exact session at PID 7324. Its start
+    contract freezes the accepted first-Scion chain and bans `dev:*`,
+    `player:chronicles:mutate`, and direct state shortcuts.
 - Preserved/non-capacity: ox-pc-d/e/g/m are dirty P0 quarantines after exhausting
   one recovery; ox-pc-n is a clean activation failure after its launch and one
   recovery both stopped before claim; a/b/c/h are preserved historical or
   exhausted routes as detailed in `RUN_STATUS.md`; ox-pc-o is clean but
   exhausted after its claim plus one stopped recovery. Never infer capacity
   from their old logs or pushed claim heads.
-- Queue/factory: board sentinel healthy, 27 effective READY, one REVISE, 17
+- Queue/factory: board sentinel healthy, 27 effective READY, zero REVISE, 17
   sequenced DRAFT successors, zero owned-path collisions; deterministic factory
   verified at 2,000 nodes / 500 packets. Runway remains honestly `UNKNOWN`.
 - Local supervision: human dashboard `http://127.0.0.1:4737/` health 200,
@@ -112,9 +112,13 @@ request.
   core/networking/camera/session, all eight client scenarios, and lifecycle.
   Do not classify a concurrent-capsule failure without listener/parent-process
   evidence; route a deterministic isolation hardening packet.
-- Exact next sweep: verify l/p/q PIDs, logs, git changes, and pushed heads;
-  require l to close the numbered simultaneous-pack revision; freeze any clean
-  REVIEW_REQUESTED head; run every literal SPEC gate independently and
+- A stale local TASK-0141 cherry-pick tool chain was found trying to write the
+  program worktree during TASK-0146 integration. App thread inventory proved
+  no second live coordinator existed and TASK-0141 was already integrated;
+  the exact orphan process tree was terminated before it altered the index.
+  Never permit two coordinator commands to share this checkout.
+- Exact next sweep: verify p/r PIDs, logs, git changes, and pushed heads;
+  freeze any clean REVIEW_REQUESTED head; run every literal SPEC gate independently and
   visually inspect TASK-0147 captures; reject any TASK-0148 journey containing
   `dev:*` setup or direct state mutation; integrate only ACCEPTED commits; rerun
   combined native gates and the owner launch after each product integration.
