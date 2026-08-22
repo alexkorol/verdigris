@@ -8,6 +8,7 @@ on:
       - "config/legacy-denylist.json"
       - ".github/workflows/native.yml"
   pull_request:
+    branches: [master]
     paths:
       - "native/**"
       - "config/legacy-denylist.json"

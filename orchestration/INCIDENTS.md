@@ -216,8 +216,9 @@ status labels. New incidents append here with the template at bottom.
   branch; orchestration `ci` ran its three-OS matrix on every branch push. One
   inherited compiler defect and one unformatted broadcast therefore generated
   multiple owner emails as workers checkpointed.
-- CORRECTION: retain authoritative checks on `master`/`main` pushes and every
-  pull request, but stop raw worker-branch pushes from starting workflows.
+- CORRECTION: retain authoritative checks on `master`/`main` pushes and
+  protected-branch pull requests, but stop raw worker-branch pushes and
+  non-release pull requests from starting workflows.
   Add concurrency cancellation so superseded PR/ref runs do not pile up. Fix
   the orchestration broadcast's actual Prettier failure; do not hide failures
   that reach integration surfaces.
@@ -229,7 +230,9 @@ status labels. New incidents append here with the template at bottom.
   email is reserved for PR and canonical-branch gate failures.
 - Status: RESOLVED. Orchestration PR #3 merged as `d068012a`; Verdigris PR
   #53 merged as `60e9f963`. Their PR gates were green, and the prior PC branch
-  pushes with the corrected workflow produced no branch-push runs.
+  pushes with the corrected workflow produced no branch-push runs. Follow-up
+  hardening explicitly limits Verdigris pull-request runs to `master` and adds
+  a unit contract over both workflow trigger blocks.
 
 ## INC-015: duplicate OpenCode writers entered one TASK-0148 worktree (2026-08-22)
 
