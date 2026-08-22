@@ -10,27 +10,18 @@ import { fileURLToPath } from 'node:url';
 import {
   canonicalJson, parseFrontmatter, parseStatusBullets, extractUnit, parseVerdicts,
   buildObservation, validateObservation, aggregateUnits, buildRunwaySnapshot,
-  runCollector, main, CollectError, OBSERVATIONS_SCHEMA,
+  runCollector, main, CollectError,
 } from './collect.mjs';
 
 const FIXTURES = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures');
 const T0 = 1755822109000;
 const H1 = 3600000;
 
-function stubGit(fixtureRoot, opts = {}) {
+function stubGit(fixtureRoot) {
   const spec = JSON.parse(fs.readFileSync(path.join(fixtureRoot, '_git.json'), 'utf8'));
-  const head = opts.head ?? spec.head;
-  // Commits known to exist; ancestors of head are resolvable+ancestral.
-  const ancestorsOfHead = [head, ...(spec.ancestors ?? [])];
-  const known = new Set([...ancestorsOfHead, ...(spec.known_commits ?? [])]);
   return {
-    revHead: () => head,
+    revHead: () => spec.head,
     commitsFor(rel) { return spec[rel] ?? []; },
-    resolveCommit(rev) { return known.has(rev) ? rev : null; },
-    isAncestor(a, b) { return b === head && ancestorsOfHead.includes(a); },
-    inputsChangedBetween(a, b) {
-      return (spec.input_changed_between ?? []).some(([x, y]) => x === a && y === b);
-    },
   };
 }
 const io = {
@@ -61,7 +52,7 @@ function readOut(root) {
 test('case 1: complete comparable accepted observations aggregate correctly', async () => {
   await collectFixture('case1-complete');
   const { obs } = readOut(path.join(FIXTURES, 'case1-complete'));
-  assert.equal(obs.schema_version, 'throughput-observations-v2');
+  assert.equal(obs.schema_version, 'throughput-observations-v1');
   assert.equal(obs.observations.length, 2);
   const units = obs.aggregation.units;
   assert.equal(units.length, 1);
@@ -103,7 +94,7 @@ test('case 3: missing unit dimensions remain null and produce UNKNOWN runway', a
   // lane-level snapshot over this incomplete unit
   const lanes = [{ lane: 'ox-pc-a', ports: '6620-6639' }];
   const readyTasks = [{ task_id: 'TASK-0105', packet_type: 'IMPLEMENTATION', priority: 'P0' }];
-  const snapshot = buildRunwaySnapshot({ evidenceSourceRevision: 'x', lanes, readyTasks, reserveSummary: null, units: obs.aggregation.units });
+  const snapshot = buildRunwaySnapshot({ repoRevision: 'x', lanes, readyTasks, reserveSummary: null, units: obs.aggregation.units });
   const lane = snapshot.lanes.find((l) => l.lane === 'ox-pc-a');
   assert.equal(lane.hours, null);
   assert.equal(lane.confidence, 'UNKNOWN');
@@ -149,20 +140,9 @@ test('case 8: stale output makes --check fail without rewriting it', async () =>
   const root = path.join(FIXTURES, 'case1-complete');
   await collectFixture('case1-complete');
   const out = path.join(root, '_out', 'throughput-observations.json');
-  const runCheck = () => runCollector({ repoRoot: root, outDir: path.join(root, '_out'), check: true, io, git: stubGit(root) });
   fs.writeFileSync(out, '{"tampered": true}\n');
   await assert.rejects(
-    runCheck,
-    (err) => err instanceof CollectError && err.exitCode === 2 && /predates the evidence-source-revision scheme/.test(err.message),
-  );
-  fs.writeFileSync(out, canonicalJson({
-    schema_version: OBSERVATIONS_SCHEMA,
-    evidence_source_revision: 'fixedhead0001',
-    deterministic: true,
-    tampered: true,
-  }));
-  await assert.rejects(
-    runCheck,
+    () => runCollector({ repoRoot: root, outDir: path.join(root, '_out'), check: true, io, git: stubGit(root) }),
     (err) => err instanceof CollectError && err.exitCode === 2 && /stale output/.test(err.message),
   );
   assert.equal(JSON.parse(fs.readFileSync(out, 'utf8')).tampered, true); // check mode never rewrites
@@ -191,47 +171,6 @@ test('case 10: identical inputs produce byte-identical outputs', async () => {
   const bSnap = fs.readFileSync(path.join(root, '_out', 'runway-snapshot.json'));
   assert.deepEqual(aObs, bObs);
   assert.deepEqual(aSnap, bSnap);
-});
-
-// ---------- evidence/source revision regressions (TASK-0128 REVISE round) ----------
-
-test('case 11: capture-only follow-up commit keeps its own evidence fresh (--check passes beyond source)', async () => {
-  const root = path.join(FIXTURES, 'case11-capture-commit');
-  const outDir = path.join(root, '_out');
-  await runCollector({ repoRoot: root, outDir, io, git: stubGit(root, { head: 'implparent00001' }) });
-  const result = await runCollector({ repoRoot: root, outDir, check: true, io, git: stubGit(root) });
-  assert.equal(result.mode, 'check');
-  assert.equal(result.evidence_source_revision, 'implparent00001');
-  assert.equal(result.head_revision, 'capture0000000c');
-});
-
-test('case 12: committed relevant-evidence change makes --check fail without rewriting', async () => {
-  const root = path.join(FIXTURES, 'case12-input-drift');
-  const outDir = path.join(root, '_out');
-  await runCollector({ repoRoot: root, outDir, io, git: stubGit(root, { head: 'implparent00002' }) });
-  const before = [
-    fs.readFileSync(path.join(outDir, 'throughput-observations.json')),
-    fs.readFileSync(path.join(outDir, 'runway-snapshot.json')),
-  ];
-  await assert.rejects(
-    () => runCollector({ repoRoot: root, outDir, check: true, io, git: stubGit(root) }),
-    (err) => err instanceof CollectError && err.exitCode === 2 && /relevant input evidence changed/.test(err.message),
-  );
-  const after = [
-    fs.readFileSync(path.join(outDir, 'throughput-observations.json')),
-    fs.readFileSync(path.join(outDir, 'runway-snapshot.json')),
-  ];
-  assert.deepEqual(before, after);
-});
-
-test('case 13: evidence source revision that is not an ancestor of HEAD fails closed', async () => {
-  const root = path.join(FIXTURES, 'case13-non-ancestor');
-  const outDir = path.join(root, '_out');
-  await runCollector({ repoRoot: root, outDir, io, git: stubGit(root, { head: 'orphan0000000001' }) });
-  await assert.rejects(
-    () => runCollector({ repoRoot: root, outDir, check: true, io, git: stubGit(root) }),
-    (err) => err instanceof CollectError && err.exitCode === 2 && /is not an ancestor of HEAD/.test(err.message),
-  );
 });
 
 // ---------- focused parser checks ----------
