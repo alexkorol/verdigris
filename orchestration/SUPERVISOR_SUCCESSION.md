@@ -230,3 +230,11 @@ request.
   and refresh both program and standalone broadcast heads.
 - Owner action required now: none. A replacement supervisor must fetch both
   repositories and reproduce this checkpoint before assuming authority.
+
+TASK-0128's durable integration/capture head is
+`b4c9ce9d44e0343e78e52947fe0083e63f153697`. Its captures are bound to source
+`847067e40230869e0a21b4be5e2ec67037fd69e5` and independently pass `--check`
+at that later capture commit. The ledger-refresh commit containing this note
+changes no collector input or task evidence. After the checkpoint, ox-pc-x
+produced owned client-source writes and remains live; it is no longer a
+pre-write recovery risk.
