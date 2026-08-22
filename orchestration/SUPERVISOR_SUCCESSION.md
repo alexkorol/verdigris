@@ -56,6 +56,35 @@ over implementation.
 
 ## Verified live PC checkpoint — 2026-08-22 15:01 PDT
 
+### Delta — 2026-08-22 15:26 PDT
+
+- Program pre-delta head is clean/pushed at
+  `2404097bca3dc634c3bb9219733070a8df638d81`; protected `master` remains green
+  at `a28ac92f6f4fa5fa5a467ecb8353ad1c55667ecb`.
+- TASK-0157 is REVISE at frozen worker head `024dabb5`, never integrated.
+  ox-pc-af owns the two-correction revision, valid pushed claim `7ffc8696`,
+  PID 26068, branch
+  `codex/TASK-0157-native-procedural-audio-scheduler-ox-pc-af-r3`, ports
+  7220-7239, log
+  `Z:\Code\.fleet\logs\ox-pc-af-task0157-revision3.jsonl`.
+- TASK-0164 ox-pc-ae claim `949508f5` is released after its recovery exited
+  dirty on a denied global-temp capture; preserve
+  `Z:\Code\.worktrees\verdigris\ox-pc-ae`. Replacement ox-pc-ag has repaired
+  valid claim head `dfd40ee2`, PID 21748, branch
+  `codex/TASK-0164-native-content-cross-reference-hardening-ox-pc-ag-r2`,
+  ports 7240-7259, dedicated temp `Z:\Code\.fleet\tmp\ox-pc-ag`, log
+  `Z:\Code\.fleet\logs\ox-pc-ag-task0164-r2-recovery1.jsonl`.
+- Unchanged live claims: ox-pc-z/TASK-0159 `0e74c185`, PID 32, ports
+  7100-7119; ox-pc-ac/TASK-0163 `d872687f`, PID 17644, ports 7160-7179.
+- Queue proof: 24 effective READY, 17 successors, zero collisions; TASK-0157
+  remains an explicit REVISE bucket. Dashboard PID 25984 is HTTP 200; monitor
+  PID 2664 is live. Raw program and worker pushes start zero workflows.
+- Exact next sweep: freeze the first z/ac/af/ag REVIEW_REQUESTED handoff;
+  independently execute its literal gates and negative controls; reject any
+  out-of-scope capture churn; integrate only ACCEPTED work; restock the READY
+  floor in the same sweep; publish only the PC broadcast branch in the
+  standalone repository. Owner action required now: none.
+
 State: `PRIMARY_ACTIVE`; this is a succession checkpoint, not a retirement
 request.
 

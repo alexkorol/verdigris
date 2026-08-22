@@ -1,5 +1,41 @@
 # Run status — PC Verdigris overnight product wave
 
+## Review truth enforced; stopped lane replaced inside SLA — 2026-08-22 15:26 PDT
+
+- TASK-0157 predecessor handoff `024dabb5` is **REVISE**, not integrated.
+  Independent clean-worktree verification proved the report's literal build
+  claim was masked by an unrecorded manual CMake prebuild: after
+  `native/build.ps1 -RunTests`, the required
+  `native/build/verdigris_audio_mixer_tests.exe` did not exist. Source
+  inspection also proved every `ActorDied` event was mapped to enemy-kill
+  audio even though core emits `text == "scion"` immediately before
+  `ScionLost`. Fresh revision lane ox-pc-af pushed valid claim `7ffc8696`,
+  ports 7220-7239, and is applying only the two numbered corrections. No audio
+  implementation has entered the program branch.
+- TASK-0164 predecessor ox-pc-ae pushed claim `949508f5`, then exited dirty
+  after OpenCode auto-rejected a global-temp evidence capture. Its prior clean
+  activation recovery was already spent, so the claim is released and the
+  worktree is quarantined intact. Fresh lane ox-pc-ag, ports 7240-7259, uses
+  dedicated temp `Z:\Code\.fleet\tmp\ox-pc-ag`. The low-cost claim validator
+  rejected its first `coordinator: ox-alpha` metadata; same-session activation
+  recovery repaired it to `coordinator: codex` and pushed exact head
+  `dfd40ee2` inside the activation SLA. Program records are `68ec7306` and
+  `2404097b`.
+- Current live OpenRouter Ox Alpha processes: ox-pc-z/TASK-0159 PID 32,
+  ox-pc-ac/TASK-0163 PID 17644, ox-pc-af/TASK-0157 revision PID 26068, and
+  ox-pc-ag/TASK-0164 replacement PID 21748. Pushed claims plus fresh activity
+  are authoritative; stopped ae/ad and terminal aa are not capacity.
+- Claim-aware queue proof is healthy: 24 effective READY, 17 sequenced DRAFT
+  successors, zero owned-path collisions, with TASK-0157 surfaced separately
+  as REVISE. Board tests pass 22/22. The human dashboard is HTTP 200 at
+  `http://127.0.0.1:4737/` on PID 25984; transition monitor PID 2664 remains
+  active.
+- Program pre-checkpoint head `2404097bca3dc634c3bb9219733070a8df638d81`
+  is pushed on `codex/native-reconstitution`. Protected `master` remains green
+  at `a28ac92f`. Program/revision/replacement pushes launched zero workflows;
+  GitHub Actions remains reserved for PRs targeting `master` and protected
+  `master` pushes. Owner action required now: none.
+
 ## Pane foundation integrated; four-lane product/reliability wave sustained — 2026-08-22 15:01 PDT
 
 - TASK-0158 frozen worker head
