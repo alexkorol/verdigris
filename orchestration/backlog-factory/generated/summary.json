@@ -1,0 +1,67 @@
+{
+  "schema_version": "d128-v1",
+  "authority": "D-128",
+  "graph_nodes": 2000,
+  "detailed_packet_reserve": 500,
+  "packet_states": {
+    "AUTO_RELEASE": 400,
+    "DRAFT": 100
+  },
+  "packet_categories": {
+    "HARDENING": 100,
+    "IMPLEMENTATION": 100,
+    "INTEGRATION": 100,
+    "PRESENTATION": 100,
+    "RELEASE": 100
+  },
+  "graph_domains": {
+    "accessibility": 100,
+    "animation-vfx": 100,
+    "audio-music": 100,
+    "campaign-endgame": 100,
+    "combat": 100,
+    "content-production": 100,
+    "controls-movement": 100,
+    "core-simulation": 100,
+    "encounters": 100,
+    "itemization": 100,
+    "monsters": 100,
+    "networking-protocol": 100,
+    "owner-governance": 100,
+    "persistence-recovery": 100,
+    "player-entry-journey": 100,
+    "progression": 100,
+    "quality-release": 100,
+    "rendering-presentation": 100,
+    "skills-magic": 100,
+    "ui-ux": 100
+  },
+  "terminal_gates": {
+    "T1": 300,
+    "T2": 200,
+    "T3": 100,
+    "T4": 700,
+    "T5": 500,
+    "T6": 80,
+    "T7": 100,
+    "T8": 20
+  },
+  "graph_acyclic": true,
+  "implementation_integration_content_presentation_polish_release_share": 1,
+  "pure_audit_research_inventory_evaluation_share": 0,
+  "owner_blocked_packets": 25,
+  "owner_blocked_share": 0.05,
+  "emergency_ready_floor": 24,
+  "emergency_successor_floor": 12,
+  "autonomous_runway": {
+    "hours": null,
+    "confidence": "UNKNOWN",
+    "reason": "Comparable trailing accepted-throughput samples by full experimental unit and packet type have not yet been normalized."
+  },
+  "runway_policy": {
+    "target_hours": 72,
+    "warning_below_hours": 48,
+    "critical_below_hours": 24
+  },
+  "completion_claim": false
+}

@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0.0",
+  "note": "Synthetic content-neutral fixture: structurally valid but honestly incomplete, mirroring the accepted TASK-0130 envelope's shape. All values are placeholders; no campaign/reward/economy/risk/balance content.",
+  "route_identity": {
+    "road": { "roadId": "synthetic-road-vi", "roadName": "synthetic-road-vi", "direction": "north", "blurb": "terrain flavor only" },
+    "node": { "nodeId": "synthetic-node-vi1", "name": "synthetic-node-vi1", "template": "template-string", "layout": "layout-string", "index": 0, "status": "open" },
+    "tier": 1
+  },
+  "concrete_goal": { "state": "MISSING", "value": null, "owner_pending": true },
+  "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+  "expected_item_family": { "state": "MISSING", "value": null, "owner_pending": true },
+  "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+  "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": null, "scope": "immediate next stage only", "derivation": "computed from cited statuses/unlock rule/links" },
+  "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns; linger window applies" },
+  "evidence_provenance": {
+    "authority_source": "docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md:68-72",
+    "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369",
+    "base_commit": "be6d555688619819084b352660fc0336a90d0ec3"
+  },
+  "completeness": {
+    "ready": false,
+    "missing_fields": ["concrete_goal", "expected_item_family"],
+    "derivable_only_fields": ["branch_consequence"],
+    "owner_pending_content": [
+      "Concrete goal content per route/node (campaign authority)",
+      "Expected trophy/material/item family tables (economy/reward authority)"
+    ]
+  }
+}

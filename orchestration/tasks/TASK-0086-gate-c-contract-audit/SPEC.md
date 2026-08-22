@@ -6,7 +6,7 @@ packet: MECHANICAL
 topology: INDEPENDENT
 priority: high (D-122 Gate C preparation)
 lane: deepseek or any exact-audit lane
-base_commit: 1f82623d9a3936513327cc43362703443e14b02a
+base_commit: 42718fbc4340589e606fff94a6eaa3dfbd03ad1c
 owned_paths:
   - orchestration/tasks/TASK-0086-gate-c-contract-audit/**
 forbidden_paths:

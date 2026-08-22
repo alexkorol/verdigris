@@ -1,0 +1,119 @@
+{
+  "fixture_set": "TASK-0133 negative cases",
+  "safety": "Every case runs against disposable synthetic stores created inside the run's hermetic directories (GUEST_SAVE_DIR / CHRONICLES_STORE_FILE overrides). No case may ever reference, copy, or open a real profile or database.",
+  "cases": [
+    {
+      "id": "NEG-01",
+      "expected_error": "UNKNOWN_SOURCE_VERSION",
+      "title": "Store whose version cannot be classified refuses to migrate",
+      "fixture": {
+        "store": "synthetic-guest.json",
+        "content": { "level": 3, "inventory": [{ "id": "bronze-dagger", "uuid": "00000000-0000-4000-8000-000000000001" }] },
+        "why_unversioned": "Matches no declared_version and fails every shape probe in the source_version registry."
+      },
+      "injected_fault": "Preflight P-04 detection runs against the synthetic store above.",
+      "detection_point": "preflight P-04 (source_version.detection_order rule 3)",
+      "contract_clause": "source_version.detection_order; preflight P-04",
+      "required_behavior": "Abort before any read-modify-write; emit RUN_FINISHED with final_status ABORTED_UNKNOWN_SOURCE_VERSION; store bytes untouched."
+    },
+    {
+      "id": "NEG-02",
+      "expected_error": "BACKUP_FAILED",
+      "title": "Backup copy or hash mismatch aborts with zero mutations",
+      "fixture": {
+        "store": "synthetic-chronicles.json",
+        "content": { "accounts": { "acct-A": { "revision": 7 } } },
+        "fault": "Simulated ENOSPC during copy, or sha256(backup) != sha256(source), or backup re-parse count mismatch."
+      },
+      "injected_fault": "B-02/B-03 verification observes a corrupted or truncated backup.",
+      "detection_point": "backup B-02/B-03",
+      "contract_clause": "backup.steps; backup.fail_error",
+      "required_behavior": "Abort with BACKUP_FAILED; no migration step has run; original store byte-identical to pre-run; .bak quarantined for forensics."
+    },
+    {
+      "id": "NEG-03",
+      "expected_error": "MIGRATION_FAILED",
+      "title": "Transformer failure mid-step halts and rolls back completed stores",
+      "fixture": {
+        "store": "synthetic-guest.json",
+        "content": { "savedAt": 1, "level": 2, "wear": { "weapon": { "id": "x", "uuid": "u-1", "affixes": "CORRUPTED_NOT_AN_ARRAY" } } },
+        "fault": "Step transformer throws on the malformed affix field."
+      },
+      "injected_fault": "MigrationStep transformer raises after the temp file is staged but before rename commit.",
+      "detection_point": "migration step execution",
+      "contract_clause": "migration.ordering_rules; failure_isolation.zones",
+      "required_behavior": "Emit STEP_FAILED then MIGRATION_FAILED; temp output discarded; store rolled back from verified .bak if any earlier step had committed; final_status ROLLED_BACK."
+    },
+    {
+      "id": "NEG-04",
+      "expected_error": "VERIFY_FAILED",
+      "title": "Post-migration invariant mismatch discards output and restores backup",
+      "fixture": {
+        "store": "synthetic-guest.json",
+        "content": { "savedAt": 1, "level": 9, "questPoints": 5, "inventory": [{ "id": "bronze-dagger", "uuid": "u-2" }] },
+        "fault": "Migrated output drops the inventory item and lowers level to 1."
+      },
+      "injected_fault": "V-02 count mismatch and V-03 durable-field loss detected on the migrated candidate.",
+      "detection_point": "verification V-02/V-03",
+      "contract_clause": "verification.checks_per_store; rollback.triggers",
+      "required_behavior": "VERIFY_FAILED; migrated candidate discarded; store atomically restored from verified .bak; RollbackEvidence emitted; final_status ROLLED_BACK."
+    },
+    {
+      "id": "NEG-05",
+      "expected_error": "NON_IDEMPOTENT",
+      "title": "Double-apply is refused or provably byte-neutral",
+      "fixture": {
+        "store": "synthetic-guest.json",
+        "sidecar": "synthetic-guest.migration-token",
+        "content": "token already present from a prior successful verified run; a re-run attempts the same step again"
+      },
+      "injected_fault": "Second run encounters matching migration_token.",
+      "detection_point": "idempotence token check",
+      "contract_clause": "idempotence.rules; idempotence.token_scheme",
+      "required_behavior": "Step records SKIPPED_ALREADY_APPLIED and performs no transform; if any implementation re-transforms anyway, the byte-diff probe flags NON_IDEMPOTENT and the run is rejected."
+    },
+    {
+      "id": "NEG-06",
+      "expected_error": "ROLLBACK_FAILED",
+      "title": "Restore failure quarantines everything and halts for operator review",
+      "fixture": {
+        "store": "synthetic-guest.json",
+        "backup": "synthetic-guest.pre-migration-<run_id>.bak truncated after backup verification (simulated post-verify corruption)"
+      },
+      "injected_fault": "R-02 sha256 re-verification of the .bak fails at rollback time.",
+      "detection_point": "rollback R-02",
+      "contract_clause": "rollback.escalation",
+      "required_behavior": "ROLLBACK_FAILED; rename both store and .bak to *.quarantine-<run_id>; no further writes; final_status QUARANTINED_ROLLBACK_FAILED; at most one restore retry; question filed."
+    },
+    {
+      "id": "NEG-07",
+      "expected_error": "DATA_LOSS",
+      "title": "Undeclared durable regression refuses the commit",
+      "fixture": {
+        "store": "synthetic-guest.json",
+        "content": {
+          "before": { "level": 12, "questPoints": 4, "inventory": [{ "id": "heirloom-blade", "uuid": "u-3", "affixes": ["a1"] }] },
+          "after": { "level": 12, "questPoints": 4, "inventory": [] }
+        },
+        "fault": "Step declares no lossy allowance, yet the heirloom UUID vanished."
+      },
+      "injected_fault": "data_loss_detection set-difference finds DROPPED_DURABLE_ITEM u-3.",
+      "detection_point": "data_loss_detection.counters_per_store",
+      "contract_clause": "data_loss_detection.regression_classes; data_loss_detection.verdict",
+      "required_behavior": "DATA_LOSS_DETECTED; halt; rollback; final_status QUARANTINED_DATA_LOSS; evidence itemizes the dropped UUID; question filed."
+    },
+    {
+      "id": "NEG-08",
+      "expected_error": "LOCK_HELD",
+      "title": "Concurrent run refuses to start",
+      "fixture": {
+        "store": "synthetic-guest.json",
+        "lock": "synthetic-guest.migration-lock owned by a foreign run_id"
+      },
+      "injected_fault": "P-02 finds an existing lock file.",
+      "detection_point": "preflight P-02",
+      "contract_clause": "preflight.mandatory_steps P-02",
+      "required_behavior": "Refuse to run; emit RUN_FINISHED with the conflict detail; touch nothing."
+    }
+  ]
+}

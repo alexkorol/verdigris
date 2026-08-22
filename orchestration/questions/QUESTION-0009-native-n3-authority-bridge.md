@@ -2,7 +2,7 @@
 question: QUESTION-0009
 related_task: TASK-0045 (proposed native parity N3)
 owner: Fable / architect
-state: OPEN
+state: RESOLVED
 ---
 
 # Native N3 authority bridge and task issuance
@@ -51,3 +51,9 @@ failure behavior explicitly.
 This question blocks only the proposed N3 implementation task. It does not
 block browser regression work, current N2 review evidence, or owner decisions
 already documented in `DECISIONS.md`. No source code was changed.
+
+## Resolution
+
+TASK-0045 N3 was issued, accepted, and integrated; later N4-N6 work reached
+full server parity. Current source and D-002 remain the authority. This question
+must not block current routing.

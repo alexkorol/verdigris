@@ -1,0 +1,90 @@
+TAP version 13
+# Subtest: integrated historical READY is excluded from effective READY
+ok 1 - integrated historical READY is excluded from effective READY
+  ---
+  duration_ms: 137.2979
+  ...
+# Subtest: a live READY row counts
+ok 2 - a live READY row counts
+  ---
+  duration_ms: 132.092
+  ...
+# Subtest: CLAIMED removes a task from READY
+ok 3 - CLAIMED removes a task from READY
+  ---
+  duration_ms: 132.9889
+  ...
+# Subtest: REVIEW_REQUESTED is surfaced
+ok 4 - REVIEW_REQUESTED is surfaced
+  ---
+  duration_ms: 124.758
+  ...
+# Subtest: overlapping owned paths fail
+ok 5 - overlapping owned paths fail
+  ---
+  duration_ms: 121.0268
+  ...
+# Subtest: HOLD is excluded even when its immutable SPEC header says READY
+ok 6 - HOLD is excluded even when its immutable SPEC header says READY
+  ---
+  duration_ms: 128.3086
+  ...
+# Subtest: stale claim is named when its implementation was integrated
+ok 7 - stale claim is named when its implementation was integrated
+  ---
+  duration_ms: 192.1561
+  ...
+# Subtest: duplicate task id fails
+ok 8 - duplicate task id fails
+  ---
+  duration_ms: 164.8252
+  ...
+# Subtest: malformed task state fails
+ok 9 - malformed task state fails
+  ---
+  duration_ms: 117.3155
+  ...
+# Subtest: healthy eight-task runway exits zero
+ok 10 - healthy eight-task runway exits zero
+  ---
+  duration_ms: 131.7127
+  ...
+# Subtest: queue floor violation exits non-zero
+ok 11 - queue floor violation exits non-zero
+  ---
+  duration_ms: 131.1572
+  ...
+# Subtest: coordinator remote-branch timestamps are listed when refs exist
+ok 12 - coordinator remote-branch timestamps are listed when refs exist
+  ---
+  duration_ms: 439.0072
+  ...
+# Subtest: bullet-list STATUS grammar (historical format) parses
+ok 13 - bullet-list STATUS grammar (historical format) parses
+  ---
+  duration_ms: 110.3776
+  ...
+# Subtest: contradictory READY+HOLD listing fails
+ok 14 - contradictory READY+HOLD listing fails
+  ---
+  duration_ms: 100.3074
+  ...
+# Subtest: annotated historical SPEC state parses by its leading state token
+ok 15 - annotated historical SPEC state parses by its leading state token
+  ---
+  duration_ms: 110.1965
+  ...
+# Subtest: non-JSON human output keeps the same exit code
+ok 16 - non-JSON human output keeps the same exit code
+  ---
+  duration_ms: 127.3017
+  ...
+1..16
+# tests 16
+# suites 0
+# pass 16
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2534.0366

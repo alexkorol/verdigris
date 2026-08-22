@@ -1,0 +1,297 @@
+{
+  "schema_version": "1.0.0",
+  "policy_id": "verdigris.soak-integration-policy",
+  "revision": 1,
+  "defined_by_task": "TASK-0135",
+  "governs_task": "TASK-0129",
+  "content_neutrality": {
+    "statement": "This policy governs only when and how the accepted TASK-0129 server lifecycle soak executes and how its evidence is judged. It binds no gameplay, item, campaign, House, or progression content and changes no simulation, server, client, CI, or harness behavior.",
+    "ci_change_authorized": false,
+    "release_policy_declaration_authorized": false
+  },
+  "subject_gate": {
+    "name": "server_lifecycle_soak",
+    "implementation": "native/tools/server_lifecycle_soak.cpp",
+    "invocation": "powershell -File native/build.ps1 -RunServerLifecycleSoak",
+    "evidence_emitter": "--out JSON artifact written next to the run",
+    "default_capture_location": "orchestration/tasks/TASK-0129-server-lifecycle-soak/captures/",
+    "process_exit_codes": {
+      "0": "clean run: requested evidence written and all cycles plus burst green",
+      "1": "run failure: at least one cycle or burst phase failed",
+      "2": "run failure: evidence file could not be opened or written",
+      "3": "run failure: hard watchdog deadline exceeded (hang backstop)"
+    }
+  },
+  "source_head": {
+    "requirement": "Every soak execution and every verdict binds the exact git commit SHA of the working tree at run start.",
+    "capture_command": "git rev-parse HEAD",
+    "recorded_as": "verdict.evidence.source_head",
+    "staleness_rules": [
+      "A PASS bound to a source head other than the tip under judgment is invalid (STALE_SOURCE_HEAD).",
+      "Per ACCEPTANCE.md universal invalidation, a green goes stale when the base advances over the native networking/session/lifecycle surface, the evaluator (build.ps1 gate or soak tool) changes, or the environment changes; it must be re-run before reuse.",
+      "Relabeling, copying, or time-shifting an artifact across heads is evidence fabrication."
+    ],
+    "on_violation": "FAIL with error code STALE_SOURCE_HEAD"
+  },
+  "platform": {
+    "evidence_required": [
+      "os_name",
+      "os_version",
+      "cpu_architecture",
+      "toolchain"
+    ],
+    "supported_now": [
+      {
+        "os_name": "windows",
+        "cpu_architecture": "x64",
+        "toolchain": "MSVC cl.exe driven by native/build.ps1"
+      }
+    ],
+    "unsupported_pending_owner": [
+      {
+        "os_name": "linux",
+        "reason": "no MSVC-independent soak build path is accepted; execution and cost decisions belong to the owner"
+      },
+      {
+        "os_name": "macos",
+        "reason": "same as linux; never report extrapolated greens"
+      }
+    ],
+    "rule": "A verdict lacking any required platform evidence field is invalid (MISSING_PLATFORM_EVIDENCE). Platforms outside supported_now stay OWNER_PENDING and must never be reported green by extrapolation."
+  },
+  "port_capsule": {
+    "host": "127.0.0.1",
+    "owner_lane": "ox-pc-d",
+    "allowed_range": [6680, 6699],
+    "forbidden_ports": [6500],
+    "loopback_only": true,
+    "rules": [
+      "All listeners and clients bind loopback inside allowed_range only.",
+      "Port 6500 is owner-reserved; selecting, probing, or binding it is a P0 protocol violation, never a retryable condition.",
+      "The soak allocator rotates strictly inside allowed_range."
+    ],
+    "collision_classification": "An attempt failing in phase server-start or burst-server-start with a capsule-exhausted binder error, where no client upgrade was ever attempted, classifies as ENVIRONMENTAL (PORT_CAPSULE_COLLISION). Any failure after a successful server start classifies as DETERMINISTIC.",
+    "on_collision": "Enter the quarantine path; the collided attempt itself can never supply a green verdict.",
+    "on_forbidden_port_use": "Immediate FAIL with error code FORBIDDEN_PORT_6500, halt, and P0 report; no retry and no remediation inside the worker lane."
+  },
+  "repetition": {
+    "cycles_per_run": 100,
+    "burst_clients_per_run": 8,
+    "independent_runs_by_context": {
+      "local": 1,
+      "pre_merge": 1,
+      "nightly": 1,
+      "release_proof": 3
+    },
+    "independence_requirements": "Independent runs use fresh processes and distinct evidence files; release-proof runs additionally require non-overlapping wall-clock intervals and one shared source_head.",
+    "counting_rule": "Only complete runs (all requested cycles plus burst present in the artifact) count toward the requirement; partial runs earn no partial credit and are FAIL evidence."
+  },
+  "timeout": {
+    "login_acknowledgement_ms": 5000,
+    "burst_window_ms": 15000,
+    "hard_watchdog_ms": 900000,
+    "context_wall_clock_budget_ms": {
+      "local": 1200000,
+      "pre_merge": 1500000,
+      "nightly": 1500000,
+      "release_proof": 4500000
+    },
+    "on_breach": "FAIL with error code TIMEOUT. A timed-out or watchdog-aborted run yields no green and no partial credit; triage may classify the cause afterwards, but the run verdict stays FAIL."
+  },
+  "artifacts": {
+    "required_fields": [
+      "tool",
+      "task",
+      "host",
+      "portCapsule",
+      "startedAt",
+      "finishedAt",
+      "cyclesRequested",
+      "cyclesCompleted",
+      "upgradesSucceeded",
+      "loginsSucceeded",
+      "cleanCloses",
+      "burstPassed",
+      "passed",
+      "failures"
+    ],
+    "naming_pattern": "lifecycle-soak-<yyyyMMdd-HHmmss>.json",
+    "integrity_binding": "Each verdict references every artifact by relative path, sha256, startedAt, and finishedAt.",
+    "missing_rule": "Exit code 0 without a parseable artifact containing all required_fields is FAIL with error code MISSING_ARTIFACT; re-deriving numbers from stdout can never substitute for the artifact.",
+    "retention_days": {
+      "local": 14,
+      "pre_merge": 90,
+      "nightly": 180,
+      "release_proof": "OWNER_PENDING: long-lived storage location and cost require owner authority; retain locally until the owner decides"
+    },
+    "dispute_rule": "Artifacts backing any verdict under review or dispute are retained until the dispute closes regardless of retention defaults."
+  },
+  "retry": {
+    "purpose_boundary": "Retrying exists only to ride out environmental port contention; it is never a mechanism to obtain a green outcome.",
+    "allowed_triggers": [
+      "environmental_port_contention classified by port_capsule.collision_classification"
+    ],
+    "forbidden_triggers": [
+      "deterministic_failure",
+      "timeout without proven environmental cause",
+      "missing_artifact",
+      "any failed or incomplete run"
+    ],
+    "max_attempts_per_verdict_session": 3,
+    "cooldown_seconds_between_attempts": 60,
+    "non_masking_invariants": [
+      "Every attempt, including failures, stays on disk and is referenced by the verdict.",
+      "A green verdict cites exactly one clean, complete, unassisted PASS artifact per required independent run.",
+      "If any attempt on a source head fails deterministically, the verdict for that head is FAIL and no later retry on the same head may flip it to PASS; a fresh verdict requires a fresh source head.",
+      "Overwriting or silently replacing a failed attempt's artifact is RETRY_MASKED_FAILURE and invalidates the entire verdict session."
+    ],
+    "on_violation": "FAIL with error code RETRY_MASKED_FAILURE plus escalation"
+  },
+  "quarantine": {
+    "trigger": "environmental_port_contention per port_capsule.collision_classification",
+    "procedure": [
+      "Record the collided attempt and its binder error transcript.",
+      "Wait retry.cooldown_seconds_between_attempts.",
+      "Probe the capsule with a loopback bind test and log which ports answer.",
+      "Re-run the full soak once from scratch; never resume a partial run."
+    ],
+    "limits": "At most retry.max_attempts_per_verdict_session minus one quarantined re-runs per verdict session; persistent collisions are never absorbed silently.",
+    "persistent_collision_outcome": "BLOCKED_ENVIRONMENTAL: file an environment question naming the occupying-process evidence; emit neither PASS nor FAIL for the software in that session."
+  },
+  "escalation": {
+    "deterministic_failure": {
+      "actions": [
+        "set verdict FAIL for the source head",
+        "record failing phases and errors verbatim",
+        "do not request review or integration on that head",
+        "notify the architect with the evidence bundle"
+      ],
+      "forbidden": [
+        "auto-fixing outside owned paths",
+        "weakening the gate",
+        "retrying toward green"
+      ]
+    },
+    "persistent_environmental_collision": {
+      "actions": [
+        "set BLOCKED_ENVIRONMENTAL",
+        "file an environment question with occupant evidence",
+        "stop soak work in the affected context until the lane is clear"
+      ]
+    },
+    "forbidden_port_usage": "P0 protocol violation report to the owner; immediate halt; no in-lane remediation.",
+    "recurrent_timeout": "Two consecutive TIMEOUT verdicts on the same head in the same environment escalate to the architect as a suspected regression or environment fault before further runs."
+  },
+  "verdict": {
+    "allowed_values": ["PASS", "FAIL", "BLOCKED_ENVIRONMENTAL"],
+    "green_requires_all": [
+      "complete platform evidence recorded",
+      "source_head equals the tip under judgment and satisfies source_head.staleness_rules",
+      "all sockets loopback-bound inside allowed_range and never on forbidden_ports",
+      "the context's full independent run count completed",
+      "each cited artifact parses, contains artifacts.required_fields, has passed=true, failures=[], cyclesCompleted==cyclesRequested, and burstPassed=true",
+      "no attempt in the session failed deterministically or breached a timeout",
+      "all earlier attempts in the session are disclosed with their artifacts"
+    ],
+    "never_green_when": [
+      "an artifact is missing, unparsable, or field-incomplete (MISSING_ARTIFACT)",
+      "the process exited 1, 2, or 3 (NONZERO_SOAK, MISSING_ARTIFACT, TIMEOUT)",
+      "any cycle or burst phase failed (NONZERO_SOAK)",
+      "a wall-clock or watchdog budget was breached (TIMEOUT)",
+      "the capsule collided and no clean full re-run completed (PORT_CAPSULE_COLLISION stays BLOCKED_ENVIRONMENTAL, never PASS)",
+      "port 6500 was selected, probed, or bound (FORBIDDEN_PORT_6500)",
+      "a failed or missing run was replaced or papered over by a retry (RETRY_MASKED_FAILURE)"
+    ],
+    "evidence_bundle_schema": {
+      "source_head": "40-hex git SHA string",
+      "platform": {
+        "os_name": "string",
+        "os_version": "string",
+        "cpu_architecture": "string",
+        "toolchain": "string"
+      },
+      "context": "local|pre_merge|nightly|release_proof",
+      "attempts": [
+        {
+          "artifact_path": "string",
+          "sha256": "64-hex string",
+          "started_at": "ISO-8601 string",
+          "finished_at": "ISO-8601 string",
+          "outcome": "PASS|FAIL|QUARANTINED",
+          "classification": "DETERMINISTIC|ENVIRONMENTAL|NOT_APPLICABLE"
+        }
+      ],
+      "conclusion": "PASS|FAIL|BLOCKED_ENVIRONMENTAL"
+    },
+    "authority_note": "Verdicts judge soak evidence only. They never assert release readiness, product quality beyond the soaked lifecycle surface, or owner scheduling, spending, or shipping policy."
+  },
+  "contexts": {
+    "local": {
+      "purpose": "fast developer-side regression guard while editing the native networking/server lifecycle surface",
+      "enabled": true,
+      "trigger": "manual, before committing changes that touch the soaked surface",
+      "blocking": false,
+      "disclosure_rule": "A local FAIL or MISSING_ARTIFACT must never be pushed or described as green; fix or disclose it before review.",
+      "independent_runs": 1,
+      "wall_clock_budget_ms": 1200000,
+      "retention_days": 14
+    },
+    "pre_merge": {
+      "purpose": "integration-grade evidence before REVIEW_REQUESTED or integration of diffs touching native networking, sessions, or the build.ps1 soak gate",
+      "enabled": true,
+      "trigger": "automatic-by-contract on qualifying diffs; enforced through review evidence requirements only",
+      "ci_modification": "none authorized by this policy",
+      "blocking": true,
+      "independent_runs": 1,
+      "wall_clock_budget_ms": 1500000,
+      "retention_days": 90
+    },
+    "nightly": {
+      "purpose": "daily drift detection for the lifecycle surface",
+      "enabled": false,
+      "state": "OWNER_PENDING",
+      "blocked_on": "schedule and hosting authority (machine ownership or paid runner minutes)",
+      "smallest_future_owner_paths": [
+        "Option A, zero marginal cost: owner registers one Windows Task Scheduler daily job running powershell -File native/build.ps1 -RunServerLifecycleSoak writing into the captures folder.",
+        "Option B, costs hosted-runner minutes and owner approval: owner adds a scheduled workflow dispatching the same gate; no worker may author it."
+      ],
+      "bindings_once_enabled": {
+        "independent_runs": 1,
+        "wall_clock_budget_ms": 1500000,
+        "retention_days": 180
+      }
+    },
+    "release_proof": {
+      "purpose": "high-confidence lifecycle evidence attached to a release candidate",
+      "enabled": false,
+      "state": "OWNER_PENDING",
+      "blocked_on": "declaring release policy is owner authority; this policy defines evidence only and declares nothing about shipping",
+      "evidence_contract_once_requested": {
+        "independent_runs": 3,
+        "fresh_process_per_run": true,
+        "single_source_head_across_runs": true,
+        "total_wall_clock_budget_ms": 4500000,
+        "interpretation_authority": "owner"
+      }
+    }
+  },
+  "owner_pending": [
+    {
+      "item": "nightly soak schedule and host",
+      "smallest_future_owner_path": "choose Option A local Task Scheduler job (zero cost) or Option B approved scheduled workflow (runner minutes)"
+    },
+    {
+      "item": "release-proof activation and interpretation",
+      "smallest_future_owner_path": "owner requests the evidence bundle for a named candidate and rules on its meaning"
+    },
+    {
+      "item": "long-term artifact storage location and cost",
+      "smallest_future_owner_path": "owner names a durable store; lanes otherwise keep local retention defaults"
+    },
+    {
+      "item": "unsupported-platform soak execution (linux, macos)",
+      "smallest_future_owner_path": "owner commissions a portable soak build decision as a future packet"
+    }
+  ],
+  "supreme_non_masking_invariant": "No retry, re-run, reclassification, aggregation, or evidence transformation may convert a failed or missing soak into a green verdict."
+}

@@ -1,0 +1,299 @@
+{
+  "task": "TASK-0105",
+  "title": "Passive-tree and progression authority gap audit",
+  "worker": "ox-pc-d",
+  "generatedAt": "2026-08-22T05:20:00Z",
+  "baseCommit": "42718fbc4340589e606fff94a6eaa3dfbd03ad1c",
+  "auditScope": "read-only evidence audit; no tree content, no balance, no node invention",
+  "statusLegend": {
+    "authoritative": "behavior pinned by server code plus passing source-cited test evidence on the default path",
+    "approximation": "explicitly NON-AUTHORITATIVE stand-in behavior; must not be ratified",
+    "unruled": "no owner ruling or frozen contract yet; owner-only content/balance decisions reserved"
+  },
+  "frozenInvariants": [
+    {
+      "id": "F-1",
+      "invariant": "Two quest-point counters exist on purpose with distinct persistence semantics",
+      "statement": "quests.questPoints is the persistent commission-chain record; top-level questPoints is the live tree budget whose reset rule differs per implementation (see rows QP-1/QP-2). Do not merge them.",
+      "sources": [
+        "docs/rebuild/HANDOFF.md:254-256",
+        "native/include/verdigris/networking.hpp:174-177",
+        "server/core/player.js:57",
+        "server/core/services/quest-service.js:48-52"
+      ]
+    },
+    {
+      "id": "F-2",
+      "invariant": "The +2-per-node attribute approximation must not be ratified",
+      "statement": "native/src/networking.cpp tree_attributes() assigns +2 to the best-aligned hex axis per allocated non-root node. Its own STUB NOTE marks it an approximation until the geometric tree engine is ported. Recorded as the negative control of this audit.",
+      "sources": ["native/src/networking.cpp:818-821", "native/src/networking.cpp:1092-1119"]
+    },
+    {
+      "id": "F-3",
+      "invariant": "Tree topology, node content, and balance are owner-only",
+      "statement": "Final topology/node content/balance remain owner-only per SPEC owner_input_dependency and OI-004 (WAITING_EVIDENCE on TASK-0105). This audit invents nothing.",
+      "sources": [
+        "orchestration/tasks/TASK-0105-passive-tree-progression-gap-audit/SPEC.md",
+        "orchestration/owner-input/OI-004-passive-tree-source.md"
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "id": "LV-1",
+      "area": "levels",
+      "status": "authoritative",
+      "summary": "RS-style XP curve shared by browser and native; kills grant monsterLevel*12 XP; level-ups refill resources and raise attack/life in native.",
+      "browserEvidence": [
+        "shared/ui.js getExperience/getLevel referenced by server/player/handlers/dev.js:385 (dev:setlevel clamps 1..100)",
+        "playtest/scenarios/session-arc.mjs levels through real kills"
+      ],
+      "nativeEvidence": [
+        "native/src/networking.cpp:1170-1185 xp_for_level/level_from_xp mirror shared/ui.js curve",
+        "native/src/networking.cpp:2045-2060 kill XP combat_xp_ += monster_level*12; derived > level triggers level-up (attack = 12 + derived*3, life_max = 100 + derived*10, refill)"
+      ],
+      "tests": ["playtest/scenarios/session-arc.mjs (level via real kills)", "native/tests/networking_tests.cpp dev:state coverage"]
+    },
+    {
+      "id": "LV-2",
+      "area": "levels -> point budget",
+      "status": "authoritative",
+      "summary": "Earned passive points from levels: min(max(2, level), 117) inside a lifetime cap min(140, ...) - authored ten-ring economy 140 = 117 levels + 23 quests.",
+      "browserEvidence": [
+        "src/core/passives/verdigris-skill-tree.js:1-11 VERDIGRIS_SKILL_TREE_POINTS.skill=140, SOURCES.levels=117, SOURCES.quests=23",
+        "server/core/passives/verdigris-authority.js:10-19 earnedVerdigrisPoints()"
+      ],
+      "nativeEvidence": [
+        "native/src/networking.cpp:1120-1126 earned = min(140, min(max(2,level),117) + min(tree_quest_points_,23))"
+      ],
+      "tests": ["tests/unit/verdigris-authority.spec.js", "playtest/scenarios/build-divergence.mjs devSetLevel(20) then save"]
+    },
+    {
+      "id": "AT-1",
+      "area": "attributes (base)",
+      "status": "authoritative",
+      "summary": "Base attributes are 10/10/10 in both implementations; native enemy stats scale +2/attr/level but player base stays flat 10s.",
+      "browserEvidence": ["server/core/entities/player/stats-manager.js buildInitialStats base sources"],
+      "nativeEvidence": [
+        "native/src/core.cpp:68-84 player_stats(): strength/dexterity/intelligence = 10",
+        "native/src/networking.cpp:822,1096 attribute snapshot starts at 10/10/10"
+      ],
+      "tests": ["playtest/scenarios/build-divergence.mjs asserts STR path beats INT path on strength"]
+    },
+    {
+      "id": "AT-2",
+      "area": "attributes (tree contribution)",
+      "status": "approximation",
+      "negativeControl": true,
+      "summary": "NATIVE ONLY: +2 to the best-aligned axis per allocated non-root node (str=-q+r, dex=-r, int=q). Explicit STUB NOTE says it approximates per-node identity from the graph until the geometric engine is ported. NON-AUTHORITATIVE; do not ratify.",
+      "browserEvidence": [
+        "AUTHORITATIVE: src/core/passives/verdigris-geometric-tree.js:994-1050 computeStats() sums authored seat stats, conduit path attrs (ring-scaled 5-8 with arc bias), loop empowerments, shape bonuses; derives life=STR*7, mana=INT*5 etc.",
+        "server rebuilds attrs only through resolveVerdigrisTree (verdigris-authority.js:104-109)"
+      ],
+      "nativeEvidence": [
+        "native/src/networking.cpp:818-821 STUB NOTE (+2/attr approximation)",
+        "native/src/networking.cpp:1092-1119 tree_attributes()",
+        "native/src/networking.cpp:2014-2021 approximation feeds melee (2 + STR*0.45 + weapon*1.5) and mana (4 + INT*0.5) power"
+      ],
+      "tests": [
+        "playtest/scenarios/build-divergence.mjs passes against the BROWSER authority (STR/INT divergence >=15%)",
+        "NO native test pins the approximation (rg over native/tests returns nothing for skilltree/passive)"
+      ],
+      "gap": "Native lacks the geometric engine entirely: no authored seats, conduit variants, loop empowerment, or derived conversions."
+    },
+    {
+      "id": "QP-1",
+      "area": "quest-point counters (chain record)",
+      "status": "authoritative",
+      "summary": "quests.questPoints is the persistent commission-chain record: +1 per completed commission, capped at 23, survives plain re-login, resets only on scion admission.",
+      "browserEvidence": [
+        "server/core/services/quest-service.js:142-156 completeQuest adds rewards.passivePoints (=1 each, shared/quests.js MAX_QUEST_POINTS=23)",
+        "server/core/services/quest-service.js:13-53 normaliseQuestState carries questPoints",
+        "player.quests persists via playerPersistence/guest saves"
+      ],
+      "nativeEvidence": [
+        "native/src/networking.cpp:1370-1374 quest_points_ = min(quest_points_+1, 23) on commission completion",
+        "native/src/networking.cpp:1082 put(quests, \"questPoints\", quest_points_)",
+        "login reset does NOT touch quest_points_ (networking.cpp:540-579); scion admission resets it (networking.cpp:2640-2644)"
+      ],
+      "tests": [
+        "playtest/scenarios/quest.mjs:120,201,266,336 one point per commission",
+        "playtest/scenarios/quest.mjs:348 points survive relogging"
+      ]
+    },
+    {
+      "id": "QP-2",
+      "area": "quest-point counters (live tree budget)",
+      "status": "approximation",
+      "negativeControl": false,
+      "summary": "Top-level questPoints semantics DIVERGE. Browser: fed by first-goal completion (+1, cap QUEST_POINT_CAP=23) and restored from saves, so it persists; commissions do NOT feed it (client pane falls back to quests.questPoints for display only). Native: live counter resets to 0 on every login, but is incremented by BOTH commissions (cap 23) and first goal (cap min(+1,12)). Two unsynced counter pairs feed the same budget formula.",
+      "browserEvidence": [
+        "server/core/player.js:57 restore clamp 0..23",
+        "server/core/first-goal.js:104 player.questPoints = min(23, qp+1); refreshTreeBudget resolves with player.questPoints",
+        "server/core/passives/verdigris-authority.js consumed with player.questPoints at socket-events/index.js:622 and player.js:114",
+        "src/components/passives/GeometricSkillTreePane.vue:255-270 earnedPointsForPlayer uses player?.questPoints ?? quests?.questPoints"
+      ],
+      "nativeEvidence": [
+        "native/src/networking.cpp:553 tree_quest_points_ = 0 on login",
+        "native/src/networking.cpp:1374 commissions add to tree_quest_points_ (cap 23)",
+        "native/src/networking.cpp:1597 first goal adds min(+1,12) cap 12",
+        "native/src/networking.cpp:815,1126 top-level state.questPoints and earned formula use tree_quest_points_",
+        "native/include/verdigris/networking.hpp:174-177 documents the intended two-counter split"
+      ],
+      "tests": [
+        "playtest/scenarios/first-goal.mjs:73-74 state.questPoints===1 and passiveTree.earned+1",
+        "playtest/scenarios/session-arc.mjs:158 goal reward grants exactly one Verdigris point"
+      ],
+      "gap": "Which counter(s) may feed earned budget across relogins is not frozen by any spec; native and browser disagree on increment sources, caps (12 vs 23), and reset rules. Needs an architect/owner ruling; scaffold must expose counters explicitly instead of guessing."
+    },
+    {
+      "id": "AL-1",
+      "area": "allocation commands / wire requests",
+      "status": "authoritative",
+      "summary": "Allocation is a client-computed, server-validated save envelope: player:skilltree:save {snapshot}. No chat command exists; the pane commits nodes/conduits locally then persists on every change and on close.",
+      "browserEvidence": [
+        "src/components/passives/GeometricSkillTreePane.vue:769-784 persistTree() emits Socket.emit('player:skilltree:save', {snapshot})",
+        "src/core/utilities/socket.js:3 whitelists the event",
+        "server/player/handlers/socket-events/index.js:615-643 sanitisePassiveTree + resolveVerdigrisTree; reject reasons sent as game:send:message"
+      ],
+      "nativeEvidence": [
+        "native/src/networking.cpp:2453 routes player:skilltree:save",
+        "native/src/networking.cpp:1157-1166 handle_skilltree_save stores payload verbatim, replies player:skilltree:update",
+        "playtest/harness.mjs:539-541 saveSkillTree helper"
+      ],
+      "tests": ["playtest/scenarios/skilltree.mjs end-to-end save/relog", "playtest/scenarios/build-divergence.mjs axis builds via handleNodeClick/handleConduitClick"]
+    },
+    {
+      "id": "AL-2",
+      "area": "allocation validation (authority boundary)",
+      "status": "approximation",
+      "negativeControl": true,
+      "summary": "Browser server REBUILDS and validates the allocation against the canonical graph (schemaVersion, origin required, unknown ids rejected, duplicate/malformed conduits rejected, conduit joins allocated nodes, spend <= earned, reachability from origin, locked subtree visibility, class order). Native ACCEPTS THE RAW SNAPSHOT UNVALIDATED: no schemaVersion check, no budget check, no adjacency check. A client can store an arbitrary overspent/disconnected tree natively; only the +2 attr walk and earned-spent arithmetic read it back.",
+      "browserEvidence": [
+        "server/core/passives/verdigris-authority.js:28-111 resolveVerdigrisTree (comment line 24: 'snapshots are no longer trusted save blobs')",
+        "server/core/passives/verdigris-authority.js:113-128 resetVerdigrisTree / legacy pre-schemaVersion snapshots receive a one-time full refund",
+        "server/player/handlers/socket-events/index.js:64-85 sanitisePassiveTree shape/size caps (512 nodes / 1024 conduits)"
+      ],
+      "nativeEvidence": ["native/src/networking.cpp:1157-1166 (stores *snapshot verbatim)", "native/src/networking.cpp:1120-1155 passive_tree_json recomputes earned/spent arithmetically only"],
+      "tests": ["tests/unit/verdigris-authority.spec.js covers browser validation", "NO native validation test exists (gap)"]
+    },
+    {
+      "id": "HX-1",
+      "area": "current hex projection",
+      "status": "authoritative",
+      "summary": "Node ids are axial hex coordinates 'q,r'. Axis directions after the WIZARD rotation: INT {q:1,r:0}, STR {q:-1,r:1}, DEX {q:0,r:-1}; pixel projection x=r*sqrt(3)/2*RADIUS, y=-(q+r/2)*RADIUS. Native's alignment scores (-q+r, -r, q) reproduce these axes correctly; only the MAGNITUDE (+2) is the approximation (see AT-2).",
+      "browserEvidence": [
+        "src/core/passives/verdigris-geometric-tree.js:101-110 AXIS_VECTORS/HEX_DIRECTIONS",
+        "src/core/passives/verdigris-geometric-tree.js:254-265 toPixel/neighbor",
+        "src/core/passives/verdigris-geometric-tree.js:275-303 axisWeightsFromPosition/pathAttributesFromWeights (weights squared-dot normalized; ring scale 5..8)"
+      ],
+      "nativeEvidence": ["native/src/networking.cpp:1092-1112 axis scoring comment and str/dex/int scores"],
+      "tests": ["playtest/scenarios/build-divergence.mjs allocateNodeToward walks 'q,r' ids along an axis"]
+    },
+    {
+      "id": "GR-1",
+      "area": "referenced 271-node gap",
+      "status": "unruled",
+      "summary": "The '271-node' figure is stale prose from the nine-ring era. The generated canonical graph today is 331 main-lattice nodes (origin + 6*(1+..+10)) + 34 subtree nodes behind six gateway annexes = 365 nodes, 974 conduits, verified by executing the engine. vision.md still says nine-ring 271 nodes + 123-point economy (100 levels) while the shipped constants are ten-ring 331+34 and 140/117/23. No owner ruling freezes which document is authoritative; content itself remains owner-only.",
+      "browserEvidence": [
+        "docs/vision.md:19-23 ('nine-ring ... 271 nodes + 34 subtree ... 123-point economy')",
+        "server/core/passives/verdigris-authority.js:24 ('canonical 271-node' comment)",
+        "src/core/passives/verdigris-skill-tree.js:13-17 VERDIGRIS_SKILL_TREE_TOTALS layers=10 nodes=331 subtreeNodes=34",
+        "src/core/passives/verdigris-geometric-tree.js:500-513 generateTree(10 rings)",
+        "EXECUTED CHECK (this audit): main lattice nodes: 331; subtree nodes: 34; total: 365; conduits: 974; schemaVersion: 2"
+      ],
+      "nativeEvidence": ["native/src/networking.cpp:818-821 stub note repeats the 271 figure"],
+      "tests": ["tests/unit/verdigris-geometric-tree.spec.js pins engine structure"],
+      "gap": "Docs/comment drift is unruled; OI-004 requires a versioned machine-readable graph so prose counts stop being load-bearing."
+    },
+    {
+      "id": "PR-1",
+      "area": "persistence / reset rules",
+      "status": "authoritative",
+      "summary": "Browser: skilltree snapshots persist via guest-save-store, account SQLite (scion/token), and chronicles profile; quests (chain record incl. questPoints) persist alongside; pre-schemaVersion-2 trees get a one-time refund; commission chain resets only on scion admission; permadeath survives reconnect. Native mirrors session semantics in-memory per login: login resets the LIVE counter and transient state but keeps chain record/tree/xp; scion admission resets the whole chain; permadead lifecycle blocks resurrection.",
+      "browserEvidence": [
+        "server/core/repositories/guest-save-store.js:83 (questPoints saved)",
+        "server/core/services/chronicles.js:55 (profile snapshot carries questPoints)",
+        "server/core/player.js:112-133 restore + refreshDerivedStats",
+        "server/core/entities/player/fresh-scion-profile.js:43 fresh scion questPoints: 0"
+      ],
+      "nativeEvidence": [
+        "native/src/networking.cpp:540-579 login reset block (tree_quest_points_=0; chain kept)",
+        "native/src/networking.cpp:2632-2653 player:chronicles:select resets chain + counters + gear",
+        "native/src/networking.cpp:554-562 permadead lifecycle preserved across reconnect",
+        "docs/rebuild/HANDOFF.md:249-256 records the probed JS session semantics"
+      ],
+      "tests": [
+        "playtest/scenarios/skilltree.mjs (saved build survives full relog)",
+        "playtest/scenarios/quest.mjs:348 (chain points survive relog)",
+        "native/tests/networking_tests.cpp instance re-login snapshot coverage"
+      ]
+    },
+    {
+      "id": "NP-1",
+      "area": "network payloads",
+      "status": "authoritative",
+      "summary": "Envelope is {event,data}. Progression surfaces: login block player.passiveTree + player.quests; dev:state snapshot adds top-level questPoints, passiveTree (schemaVersion/nodes/conduits/points.skill/earned/selectedNodeId/classOrder), attributes {strength,dexterity,intelligence}, quests{firstGoal,activeQuestId,objectiveIndex,questPoints,completed}; quest:update pushes quests+questPoints+passiveTree; player:skilltree:update echoes the resolved tree after save.",
+      "browserEvidence": [
+        "server/core/first-goal.js:24-31 pushQuestState quest:update payload",
+        "server/player/handlers/socket-events/index.js:615-643 save handler",
+        "server/core/player.js broadcastStats feeds stats.attributes.sources.passives (stats-manager.js:83-93,217-231)"
+      ],
+      "nativeEvidence": [
+        "native/src/networking.cpp:586 login player.passiveTree",
+        "native/src/networking.cpp:814-829 snapshot quests/questPoints/passiveTree/attributes",
+        "native/src/networking.cpp:1071-1090 quests_json",
+        "native/src/networking.cpp:1146-1154 passive_tree_json fields",
+        "native/src/networking.cpp:1537-1545 emit_quest_update",
+        "native/src/networking.cpp:2453 event routing"
+      ],
+      "tests": ["native/tests/networking_tests.cpp request/response id echo + state wire checks", "playtest harness exposes state().passiveTree/questPoints/attributes"]
+    },
+    {
+      "id": "CP-1",
+      "area": "client presentation",
+      "status": "unruled",
+      "summary": "Browser ships the full presentation (SVG geometric pane with pending conduit choices, undo history (32), search dimming, class/sign seats, gateway annexes; Stats.vue aggregates base/equipment/bonuses/passives with a local flower fallback). The native client renders NO passive-tree surface and NO attribute HUD at all (only scenery 'tree.png' sprites and HUD safe zones). Presentation parity for the pane is unspecced (panels/typography remain open deltas), and pane layout itself stays owner-gated via OI-004's 'no balance embedded in renderer/UI'.",
+      "browserEvidence": [
+        "src/components/passives/GeometricSkillTreePane.vue (mounted/restore/watch/persistTree, SVGRenderer, ViewController)",
+        "src/components/slots/Stats.vue:139-150,261-293 attributes aggregation",
+        "docs/vision.md:16-23 pane provenance (WIZARD prototypes)"
+      ],
+      "nativeEvidence": [
+        "native/client/main.cpp:149,526-535 scenery tree sprite only",
+        "rg over native/client shows no skilltree/passiveTree/attribute rendering"
+      ],
+      "tests": ["tests/unit/skill-tree-hint.spec.js (first-allocation hint)", "no native client test possible without a surface"]
+    },
+    {
+      "id": "TS-1",
+      "area": "tests",
+      "status": "authoritative",
+      "summary": "Browser-side progression is test-pinned at three layers (unit specs, hard-fail playtest scenarios, critic metric). Native has ZERO progression tests: rg finds no skilltree/passive/questPoint references under native/tests; the approximation and the unvalidated save path are unpinned.",
+      "browserEvidence": [
+        "tests/unit/verdigris-geometric-tree.spec.js",
+        "tests/unit/verdigris-authority.spec.js",
+        "tests/unit/skill-tree-hint.spec.js",
+        "playtest/scenarios/{first-goal,quest,skilltree,build-divergence,session-arc,persistence,mortality}.mjs",
+        "playtest/critic.mjs:36-41 meaningfulChoices.treePoints metric"
+      ],
+      "nativeEvidence": ["native/tests/networking_tests.cpp: no skilltree/passive/questPoints assertions (verified by empty rg)"],
+      "tests": []
+    }
+  ],
+  "successorProposal": {
+    "name": "TASK-0112 passive-tree scaffold (existing DRAFT; dependency TASK-0105 accepted)",
+    "shape": "scaffold-first: port the deterministic geometric engine (graph build, budget, validation) headless into native before ANY content; keep node seats/effects data-driven; expose both quest-point counters explicitly in the session state; add native parity tests against resolveVerdigrisTree outputs; UI last.",
+    "guardrails": [
+      "Do not port node content/balance as code; load authored data from a versioned source pending OI-004.",
+      "Keep the +2/attr path clearly quarantined until replaced; never let it become the default authority silently.",
+      "Preserve F-1 two-counter semantics and the current 140/117/23 constants unless the owner changes them."
+    ]
+  },
+  "acceptanceGates": {
+    "rg_scan": "PASS (exit 0; transcript in REPORT.md)",
+    "matrix_json_parse": "PASS (node JSON.parse; transcript in REPORT.md)",
+    "git_diff_check": "PASS (whitespace clean; transcript in REPORT.md)",
+    "git_diff_name_only": "PASS (only task-folder evidence files; transcript in REPORT.md)"
+  }
+}

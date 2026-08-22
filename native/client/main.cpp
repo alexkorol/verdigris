@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <limits>
 #include <memory>
@@ -30,6 +31,12 @@
 #define NOMINMAX
 #include <windows.h>
 #include <windowsx.h>
+
+// TASK-0141 data-only generated vector kit. Read-only consumption: the
+// client never mutates these tables; art changes flow through the generator.
+// The generator emits standards-conforming literals ("22.f"), so no
+// reserved-suffix compatibility operators are needed here.
+#include "assets/generated/visual_kit.h"
 
 namespace {
 
@@ -153,9 +160,9 @@ struct BillboardAssets {
   SpriteBitmap terrain1;
   SpriteBitmap terrain4;
   std::string root;
-  std::string status = "billboards: off (fallback capsules; assets not loaded)";
-  std::string scenery_status = "scenery: off (fallback shapes; assets not loaded)";
-  std::string terrain_status = "terrain: off (flat fill; terrain plates missing)";
+  std::string status = "art: loading";
+  std::string scenery_status = "scenery: loading";
+  std::string terrain_status = "terrain: loading";
 
   ~BillboardAssets() {
     player.reset();
@@ -184,6 +191,21 @@ struct SceneryItem {
   double radius = static_cast<double>(verdigris::world_scale::kSceneryColliderRadius);
   double scale = 1.0;
   bool solid = true;
+};
+
+// TASK-0145: the two owner-facing screens. Expedition is the historical
+// TASK-0142 presentation, untouched. Chronicles is the pre-game front door
+// (House/Scion/oath/admission) plus the post-fall succession view.
+enum class Screen { Expedition, Chronicles };
+
+// One actionable front-door control, rebuilt deterministically from the
+// authoritative chronicle model every frame. `key` is the keyboard binding
+// shown to the owner; `command`/`arg` feed IClientSession::submit.
+struct ChronicleAction {
+  std::string key;
+  std::string command;
+  std::string arg;
+  std::string label;
 };
 
 struct ClientState {
@@ -216,6 +238,13 @@ struct ClientState {
   int hint_ticks = 0;
   int screen_pulse_ticks = 0;
   render::List render_list;
+  Screen screen = Screen::Expedition;
+  bool chronicles_mode = false;  // remote owner path launched at the front door
+  bool chronicles_oath = false;  // mortal-oath choice applied to the next admission
+  std::vector<ChronicleAction> chronicles_menu;
+  std::string relic_toast;
+  int relic_toast_ticks = 0;
+  std::unordered_map<std::string, std::string> known_crypt_status;
 };
 
 std::string executable_directory() {
@@ -487,14 +516,52 @@ bool initialize_gdiplus(BillboardAssets& assets) {
 }
 
 std::vector<std::string> billboard_roots() {
-  std::vector<std::string> roots{"prototypes\\founding-slice\\assets"};
+  std::vector<std::string> roots;
+  // TASK-0142: discovery must hold from the repository root, the build
+  // directory, and an installed-style directory where plates ship beside the
+  // executable. Every candidate is checked for existence before any load, so
+  // a miss is cheap and silent.
   const std::string executable = executable_directory();
-  for (int depth = 1; depth <= 5; ++depth) {
-    std::string prefix = executable;
-    for (int part = 0; part < depth; ++part) prefix += "\\..";
+  if (!executable.empty()) {
+    // Installed-style: an assets folder shipped next to the executable.
+    roots.push_back(executable + "\\assets");
+    for (int depth = 1; depth <= 6; ++depth) {
+      std::string prefix = executable;
+      for (int part = 0; part < depth; ++part) prefix += "\\..";
+      // Installed-style: assets folder beside a nested install root.
+      roots.push_back(prefix + "\\assets");
+      // Repository checkout reached by walking up from the build directory.
+      roots.push_back(prefix + "\\prototypes\\founding-slice\\assets");
+    }
+  }
+  // Repository checkout relative to the current working directory (the
+  // historical layout, kept last so an explicit install always wins).
+  std::string prefix = ".";
+  for (int depth = 0; depth <= 4; ++depth) {
     roots.push_back(prefix + "\\prototypes\\founding-slice\\assets");
+    prefix += "\\..";
   }
   return roots;
+}
+
+// TASK-0142: one honest source for the art status copy. The text is always
+// derived from what is actually ready, never from what a load attempt hoped
+// for, so the owner-facing HUD cannot claim assets it does not have.
+void refresh_art_status(BillboardAssets& assets) {
+  if (assets.player.ready() && assets.raider.ready() && assets.boss.ready())
+    assets.status = "art: PNG billboards loaded";
+  else
+    assets.status = std::string("art: embedded vector kit ") +
+                    verdigris::visual_kit::kKitVersion + " (procedural placeholder)";
+  if (assets.tree.ready() && assets.ruin.ready() && assets.dwelling.ready() &&
+      assets.shrine.ready())
+    assets.scenery_status = "scenery: PNG plates loaded";
+  else
+    assets.scenery_status = "scenery: embedded vector kit (procedural placeholder)";
+  if (assets.terrain1.ready() && assets.terrain4.ready())
+    assets.terrain_status = "terrain: PNG plates tiled";
+  else
+    assets.terrain_status = "terrain: embedded vector kit tiles (procedural placeholder)";
 }
 
 void load_billboards(BillboardAssets& assets) {
@@ -502,9 +569,7 @@ void load_billboards(BillboardAssets& assets) {
   assets.alpha_blend = reinterpret_cast<AlphaBlendProc>(
       assets.msimg32_module ? GetProcAddress(assets.msimg32_module, "AlphaBlend") : nullptr);
   if (!assets.alpha_blend || !initialize_gdiplus(assets)) {
-    assets.status = "billboards: off (fallback capsules; GDI image support unavailable)";
-    assets.scenery_status =
-        "scenery: off (fallback shapes; GDI image support unavailable)";
+    refresh_art_status(assets);
     return;
   }
   for (const auto& root : billboard_roots()) {
@@ -515,7 +580,6 @@ void load_billboards(BillboardAssets& assets) {
         load_sprite(assets, root + "\\boss.png", assets.boss);
     if (actors_loaded) {
       assets.root = root;
-      assets.status = "billboards: on (scion_str / raider / boss; magenta keyed)";
     } else {
       assets.player.reset();
       assets.raider.reset();
@@ -529,8 +593,6 @@ void load_billboards(BillboardAssets& assets) {
         load_sprite(assets, root + "\\shrine.png", assets.shrine);
     if (scenery_loaded) {
       if (assets.root.empty()) assets.root = root;
-      assets.scenery_status =
-          "scenery: on (tree / ruin / dwelling / shrine; magenta keyed)";
     } else {
       assets.tree.reset();
       assets.ruin.reset();
@@ -543,20 +605,17 @@ void load_billboards(BillboardAssets& assets) {
         load_terrain_plate(assets, root + "\\terrain4.png", assets.terrain4);
     if (terrain_loaded) {
       if (assets.root.empty()) assets.root = root;
-      assets.terrain_status = "terrain: on (terrain1 / terrain4 tiled floor)";
     } else {
       assets.terrain1.reset();
       assets.terrain4.reset();
     }
 
+    // One honest status refresh for whatever actually loaded — the early
+    // return must not skip it.
+    refresh_art_status(assets);
     if (actors_loaded || scenery_loaded || terrain_loaded) return;
   }
-  if (assets.player.ready() == false)
-    assets.status = "billboards: off (fallback capsules; asset plates missing)";
-  assets.scenery_status =
-      "scenery: off (fallback shapes; asset plates missing)";
-  if (!assets.terrain1.ready() || !assets.terrain4.ready())
-    assets.terrain_status = "terrain: off (flat fill; terrain plates missing)";
+  refresh_art_status(assets);
 }
 
 std::uint64_t scenery_seed(const std::string& route_id) {
@@ -892,10 +951,170 @@ void draw_line(HDC dc, int x0, int y0, int x1, int y1, COLORREF color, int width
   DeleteObject(pen);
 }
 
+// ── TASK-0142: embedded vector kit renderer ─────────────────────────────
+// Draws the TASK-0141 generated symbols (verdigris::visual_kit) straight
+// from the data-only header with plain GDI fills. This is the deterministic
+// owner-facing fallback when PNG/GDI+ plates are unavailable — no files are
+// consulted, so it renders identically on every machine. The kit is a
+// placeholder art pass, never claimed as final owner-approved art.
+
+namespace kit = verdigris::visual_kit;
+
+COLORREF kit_color(int index) {
+  const kit::Color& color = kit::kColors[index];
+  // GDI has no per-shape alpha; blend translucent kit colors over the dark
+  // scene background so authored shadows/flames keep their softness.
+  const double alpha = std::clamp(static_cast<double>(color.a), 0.0, 1.0);
+  const auto mix = [alpha](float channel, int background) {
+    const double foreground = static_cast<double>(channel) * 255.0;
+    return static_cast<int>(background + (foreground - background) * alpha + 0.5);
+  };
+  return RGB(mix(color.r, 23), mix(color.g, 29), mix(color.b, 32));
+}
+
+const kit::Symbol* kit_symbol(const char* role, const char* motif = nullptr) {
+  for (int i = 0; i < kit::kSymbolCount; ++i) {
+    const kit::Symbol& symbol = kit::kSymbols[i];
+    if (std::strcmp(symbol.role, role) != 0) continue;
+    if (motif && std::strcmp(symbol.motif, motif) != 0) continue;
+    return &symbol;
+  }
+  return nullptr;
+}
+
+struct KitPlacement {
+  HDC dc;
+  double origin_x;   // screen x of the viewBox left edge
+  double origin_y;   // screen y of the viewBox top edge
+  double scale;      // pixels per viewBox unit
+  double box_width;  // authored symbol width in viewBox units
+  bool mirror;       // flip horizontally around the viewBox center
+};
+
+POINT kit_point(const KitPlacement& placement, float x, float y) {
+  const double units_x =
+      placement.mirror ? placement.box_width - static_cast<double>(x)
+                       : static_cast<double>(x);
+  return {static_cast<int>(std::lround(placement.origin_x +
+                                       units_x * placement.scale)),
+          static_cast<int>(std::lround(placement.origin_y +
+                                       static_cast<double>(y) * placement.scale))};
+}
+
+void draw_kit_shape(const KitPlacement& placement, const kit::Shape& shape) {
+  constexpr int kColorCount =
+      static_cast<int>(sizeof(kit::kColors) / sizeof(kit::kColors[0]));
+  const bool has_fill =
+      shape.fill >= 0 && shape.fill < kColorCount;
+  const bool has_stroke =
+      shape.stroke >= 0 && shape.stroke < kColorCount;
+  if (!has_fill && !has_stroke) return;
+  COLORREF fill_color = has_fill ? kit_color(shape.fill) : 0;
+  const int stroke_w =
+      has_stroke ? std::max(1, static_cast<int>(std::lround(
+                                     shape.stroke_width * placement.scale)))
+                 : 1;
+
+  HBRUSH brush = nullptr;
+  HPEN pen = nullptr;
+  HGDIOBJ old_brush = nullptr;
+  HGDIOBJ old_pen = nullptr;
+  HGDIOBJ old_hollow = nullptr;
+  if (has_fill) {
+    brush = CreateSolidBrush(fill_color);
+    old_brush = SelectObject(placement.dc, brush);
+  } else {
+    // Stroke-only shapes must not inherit whatever brush the DC last used.
+    old_hollow = SelectObject(placement.dc, GetStockObject(NULL_BRUSH));
+  }
+  if (has_stroke) {
+    pen = CreatePen(PS_SOLID, stroke_w, kit_color(shape.stroke));
+    old_pen = SelectObject(placement.dc, pen);
+  }
+
+  switch (shape.kind) {
+    case kit::ShapeKind::Polygon:
+    case kit::ShapeKind::Polyline: {
+      const int count = shape.point_end - shape.point_begin;
+      if (count > 1) {
+        std::vector<POINT> points(static_cast<std::size_t>(count));
+        for (int p = 0; p < count; ++p) {
+          points[static_cast<std::size_t>(p)] = kit_point(
+              placement, kit::kPoints[(shape.point_begin + p) * 2],
+              kit::kPoints[(shape.point_begin + p) * 2 + 1]);
+        }
+        if (shape.kind == kit::ShapeKind::Polygon)
+          Polygon(placement.dc, points.data(), count);
+        else
+          Polyline(placement.dc, points.data(), count);
+      }
+      break;
+    }
+    case kit::ShapeKind::Circle:
+    case kit::ShapeKind::Ellipse: {
+      const double units_x =
+          placement.mirror ? placement.box_width - static_cast<double>(shape.cx)
+                           : static_cast<double>(shape.cx);
+      const int cx = static_cast<int>(
+          std::lround(placement.origin_x + units_x * placement.scale));
+      const int cy = static_cast<int>(std::lround(
+          placement.origin_y + static_cast<double>(shape.cy) * placement.scale));
+      const int rx =
+          std::max(1, static_cast<int>(std::lround(
+                           static_cast<double>(shape.rx) * placement.scale)));
+      const int ry_raw = shape.kind == kit::ShapeKind::Ellipse
+                             ? static_cast<int>(shape.ry)
+                             : static_cast<int>(shape.rx);
+      const int ry =
+          std::max(1, static_cast<int>(std::lround(
+                           static_cast<double>(ry_raw) * placement.scale)));
+      Ellipse(placement.dc, cx - rx, cy - ry, cx + rx, cy + ry);
+      break;
+    }
+  }
+
+  if (old_pen) SelectObject(placement.dc, old_pen);
+  if (old_hollow) SelectObject(placement.dc, old_hollow);
+  if (old_brush) SelectObject(placement.dc, old_brush);
+  if (pen) DeleteObject(pen);
+  if (brush) DeleteObject(brush);
+}
+
+// Draws one symbol standing on (base_x, base_y). pixel_height scales the
+// authored 64-unit box; the motif's ground baseline sits ~90% down the box,
+// so feet land on the contact point and the lower margin overlaps the
+// contact shadow like a keyed PNG plate would.
+void draw_kit_symbol(HDC dc, const kit::Symbol& symbol, int base_x, int base_y,
+                     int pixel_height, bool mirror) {
+  if (pixel_height <= 0 || symbol.width <= 0 || symbol.height <= 0) return;
+  constexpr double kGroundFraction = 58.0 / 64.0;
+  const double scale = static_cast<double>(pixel_height) /
+                       static_cast<double>(symbol.height);
+  const int baseline_offset =
+      static_cast<int>(std::lround(static_cast<double>(pixel_height) *
+                                   kGroundFraction));
+  KitPlacement placement{dc,
+                         static_cast<double>(base_x) -
+                             static_cast<double>(symbol.width) * scale * 0.5,
+                         static_cast<double>(base_y - baseline_offset), scale,
+                         static_cast<double>(symbol.width), mirror};
+  for (int i = symbol.shape_begin; i < symbol.shape_end; ++i)
+    draw_kit_shape(placement, kit::kShapes[i]);
+}
+
 void draw_contact_shadow(HDC dc, const ScreenPoint& base, double world_radius) {
   const int rx = std::max(3, static_cast<int>(world_radius * base.scale));
   const int ry = std::max(2, static_cast<int>(world_radius * base.scale * 0.8));
   fill_ellipse(dc, base.x, base.y, rx, ry, RGB(14, 18, 20));
+}
+
+// TASK-0142: a squashed ground ring in team colors so friend/foe reads at a
+// glance even before the silhouette resolves.
+void draw_team_ring(HDC dc, const ScreenPoint& base, double world_radius,
+                    COLORREF color) {
+  const int rx = std::max(5, static_cast<int>(world_radius * base.scale));
+  const int ry = std::max(3, static_cast<int>(world_radius * base.scale * 0.62));
+  ring_ellipse(dc, base.x, base.y, rx, ry, color, 2);
 }
 
 // A billboard stands vertically on its ground point regardless of camera pitch.
@@ -940,6 +1159,16 @@ const SpriteBitmap& scenery_sprite(const BillboardAssets& assets, SceneryKind ki
     case SceneryKind::Shrine: return assets.shrine;
   }
   return assets.tree;
+}
+
+const char* scenery_kit_role(SceneryKind kind) {
+  switch (kind) {
+    case SceneryKind::Tree: return "tree";
+    case SceneryKind::Ruin: return "ruin";
+    case SceneryKind::Dwelling: return "dwelling";
+    case SceneryKind::Shrine: return "shrine";
+  }
+  return "tree";
 }
 
 double scenery_height(SceneryKind kind) {
@@ -1010,8 +1239,17 @@ void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& came
   draw_contact_shadow(dc, base, item.radius * 0.9);
   const SpriteBitmap& sprite = scenery_sprite(assets, item.kind);
   if (!draw_billboard_sprite(assets, dc, sprite, base,
-                             scenery_height(item.kind) * item.scale, 1))
-    draw_scenery_fallback(dc, base, item, camera);
+                             scenery_height(item.kind) * item.scale, 1)) {
+    // TASK-0142: deterministic vector-kit silhouette before the geometric
+    // last resort, so a machine without PNG plates still reads as a game.
+    const int kit_height =
+        std::max(8, static_cast<int>(scenery_height(item.kind) * item.scale *
+                                     base.scale));
+    if (const kit::Symbol* symbol = kit_symbol(scenery_kit_role(item.kind)))
+      draw_kit_symbol(dc, *symbol, base.x, base.y, kit_height, false);
+    else
+      draw_scenery_fallback(dc, base, item, camera);
+  }
 }
 
 void draw_ground_grid(HDC dc, const Camera& camera, const RECT& bounds) {
@@ -1068,14 +1306,23 @@ bool draw_terrain_tile(HDC dc, const SpriteBitmap& sprite, int dest_x, int dest_
 void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
                 const RECT& bounds, const std::string& route_id, render::List& rl) {
   const bool tiled = assets.terrain1.ready() && assets.terrain4.ready();
-  rl.push_back({render::Op::Floor, 0.0, 0.0, 0.0, tiled ? 1 : 0,
-                tiled ? "tiled" : "flat"});
+  // TASK-0142: with the embedded vector kit the floor stays textured even
+  // when PNG plates are missing — the "tiled" contract is honest in both
+  // paths because real tiles are drawn.
+  const kit::Symbol* motif_primary =
+      tiled ? nullptr : kit_symbol("terrain", "grass-court");
+  const kit::Symbol* motif_alt =
+      tiled ? nullptr : kit_symbol("terrain", "mossy-stone");
+  const bool vector_tiled = motif_primary && motif_alt;
+  rl.push_back({render::Op::Floor, 0.0, 0.0, 0.0,
+                (tiled || vector_tiled) ? 1 : 0,
+                (tiled || vector_tiled) ? "tiled" : "flat"});
 
   HBRUSH background = CreateSolidBrush(RGB(23, 29, 32));
   FillRect(dc, &bounds, background);
   DeleteObject(background);
 
-  if (!tiled) {
+  if (!tiled && !vector_tiled) {
     draw_ground_grid(dc, camera, bounds);
     return;
   }
@@ -1099,14 +1346,32 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
       const ScreenPoint corner1 = project(camera, bounds, wx + tile, wy + tile);
       const ScreenPoint center = project(camera, bounds, wx + half, wy + half);
       const bool use_alt = terrain_tile_uses_alt(tx, ty, theme_alt);
-      const SpriteBitmap& sprite = use_alt ? assets.terrain4 : assets.terrain1;
       const std::string label =
           std::string(use_alt ? "terrain4" : "terrain1") + ":" + std::to_string(tx) + ":" +
           std::to_string(ty);
       rl.push_back({render::Op::Tile, static_cast<double>(center.x),
                     static_cast<double>(center.y), half * center.scale, 0, label});
-      draw_terrain_tile(dc, sprite, corner0.x, corner0.y, corner1.x - corner0.x,
-                        corner1.y - corner0.y, terrain_tile_hash(tx, ty) >> 8);
+      if (tiled) {
+        const SpriteBitmap& sprite = use_alt ? assets.terrain4 : assets.terrain1;
+        draw_terrain_tile(dc, sprite, corner0.x, corner0.y, corner1.x - corner0.x,
+                          corner1.y - corner0.y, terrain_tile_hash(tx, ty) >> 8);
+      } else if (vector_tiled) {
+        // Deterministic vector motif tile: same hashed dominant/variant mix
+        // as the PNG path (marsh/barrow/circle themes favor mossy stone).
+        const kit::Symbol& motif = use_alt ? *motif_alt : *motif_primary;
+        const int dest_w = corner1.x - corner0.x;
+        const int dest_h = corner1.y - corner0.y;
+        if (dest_w > 0 && dest_h > 0 && corner0.x < bounds.right &&
+            corner0.y < bounds.bottom && corner1.x > 0 && corner1.y > 0) {
+          const double scale = static_cast<double>(dest_w) /
+                               static_cast<double>(motif.width);
+          KitPlacement placement{dc, static_cast<double>(corner0.x),
+                                 static_cast<double>(corner0.y), scale,
+                                 static_cast<double>(motif.width), false};
+          for (int i = motif.shape_begin; i < motif.shape_end; ++i)
+            draw_kit_shape(placement, kit::kShapes[i]);
+        }
+      }
     }
   }
 }
@@ -1372,11 +1637,22 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       const int lift = static_cast<int>(kTileUnits * (0.35 + grow * 0.75) * base.scale);
       const COLORREF color = fx.damage_to_player ? RGB(255, 118, 104) : RGB(240, 218, 132);
       SetBkMode(dc, TRANSPARENT);
+      // TASK-0142: bold numerals so the resolved damage reads instantly.
+      const int font_h = std::clamp(
+          static_cast<int>(kTileUnits * 0.34 * base.scale), 13, 22);
+      HFONT number_font = CreateFontA(font_h, 0, 0, 0, FW_BOLD, FALSE, FALSE,
+                                      FALSE, DEFAULT_CHARSET,
+                                      OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                                      DEFAULT_QUALITY, FF_SWISS,
+                                      "Verdana");
+      HGDIOBJ old_number_font = SelectObject(dc, number_font);
       // Rise AND fade toward the background over the effect lifetime.
       SetTextColor(dc, fade_to_background(color, life));
       const std::string text = std::to_string(fx.value);
       TextOutA(dc, base.x - 9, base.y - lift, text.c_str(),
                static_cast<int>(text.size()));
+      SelectObject(dc, old_number_font);
+      DeleteObject(number_font);
       break;
     }
     case EffectFx::Kind::TargetFlash: {
@@ -1598,6 +1874,46 @@ struct DepthDraw {
   enum class What { Scenery, Player, Monster, Loot, Effect } what = What::Player;
   std::size_t index = 0;
 };
+
+// TASK-0142: eight-way compass for the objective strip; world y grows
+// southward exactly like the ground projection.
+const char* compass_step(int dx, int dy) {
+  if (dx == 0 && dy == 0) return "here";
+  static const char* const kNames[8] = {"E",  "SE", "S", "SW",
+                                        "W",  "NW", "N", "NE"};
+  const double angle = std::atan2(static_cast<double>(dy),
+                                  static_cast<double>(dx));
+  const int octant =
+      static_cast<int>(std::lround(angle / (kPi / 4.0)));
+  return kNames[((octant % 8) + 8) % 8];
+}
+
+// Draws one owner-facing status chip and records it as a Hud op. Returns the
+// chip width so callers can lay out stacked chips deterministically.
+int paint_status_chip(HDC dc, int x, int y, const std::string& text,
+                      COLORREF accent, render::List& rl) {
+  SIZE extent{};
+  GetTextExtentPoint32A(dc, text.c_str(), static_cast<int>(text.size()), &extent);
+  const int width = extent.cx + 16;
+  const int height = extent.cy + 8;
+  RECT rect{x, y, x + width, y + height};
+  HBRUSH bg = CreateSolidBrush(RGB(25, 33, 37));
+  FillRect(dc, &rect, bg);
+  DeleteObject(bg);
+  HPEN pen = CreatePen(PS_SOLID, 1, accent);
+  HGDIOBJ old_pen = SelectObject(dc, pen);
+  HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+  Rectangle(dc, rect.left, rect.top, rect.right, rect.bottom);
+  SelectObject(dc, old_brush);
+  SelectObject(dc, old_pen);
+  DeleteObject(pen);
+  SetBkMode(dc, TRANSPARENT);
+  SetTextColor(dc, accent);
+  TextOutA(dc, x + 8, y + 4, text.c_str(), static_cast<int>(text.size()));
+  rl.push_back({render::Op::Hud, static_cast<double>(x), static_cast<double>(y),
+                0.0, 0, text});
+  return width;
+}
 
 std::string loot_label(const ClientState& state, const std::string& id) {
   auto found = state.world.loot_names.find(id);
@@ -1962,10 +2278,357 @@ void paint_minimap(const ClientState& state, HDC dc, const RECT& bounds, render:
                 static_cast<double>(panel.top), static_cast<double>(kSize), dots, "panel"});
 }
 
+// ── TASK-0145: Chronicles owner journey ─────────────────────────────────
+// The front door is the default remote owner path: a coherent pre-game
+// screen over the accepted Gate-B envelopes. Everything here renders the
+// authoritative ClientModel; no House, Scion, oath, or relic is ever
+// invented presentation-side.
+
+std::string chronicle_account_root(const ClientState& state) {
+  if (!state.session) return {};
+  return state.session->model().chronicle.account_name;
+}
+
+// Deterministic founder naming without any text-input console: derive the
+// House name from the guest identity once the account payload arrives.
+std::string house_display_name(const ClientState& state) {
+  const std::string account = chronicle_account_root(state);
+  if (account.empty()) return "New House";
+  std::string root = account;
+  for (auto& character : root)
+    character = static_cast<char>(character == '-' ? ' ' : character);
+  if (!root.empty())
+    root[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(root[0])));
+  return "House of " + root;
+}
+
+std::string next_scion_name(const ClientState& state) {
+  static const char* kOrdinals[] = {"Firstborn", "Secondborn", "Thirdborn",
+                                    "Fourthborn", "Fifthborn"};
+  std::size_t total = 0;
+  if (state.session) {
+    for (const auto& house : state.session->model().chronicle.houses)
+      total += house.scions.size() + house.crypt.size();
+  }
+  const std::string house_name = house_display_name(state);
+  if (total < sizeof(kOrdinals) / sizeof(kOrdinals[0]))
+    return house_name + " " + kOrdinals[total];
+  return house_name + " Heir " + std::to_string(total + 1);
+}
+
+// The actionable front-door menu. Order is deterministic so scenarios and
+// keyboard input agree: found → per-scion admissions → create → oath.
+std::vector<ChronicleAction> chronicle_actions(const ClientState& state) {
+  std::vector<ChronicleAction> menu;
+  if (!state.session) return menu;
+  const auto& model = state.session->model();
+  // A fall awaits succession while the active scion is the fallen one. The
+  // wire contract is explicit: heirs are admitted through
+  // player:chronicles:select (it alone resets the permadead lifecycle);
+  // chronicles:scion:set-out is the living scion's road-purse outing.
+  const bool succession_pending =
+      !model.chronicle.fallen.scion_id.empty() &&
+      model.chronicle.fallen.scion_id == model.chronicle.active_scion_id;
+  if (!model.chronicle.present || model.chronicle.houses.empty()) {
+    menu.push_back({"F", "found-house", "", "Found your House"});
+    return menu;
+  }
+  int slot = 1;
+  for (const auto& house : model.chronicle.houses) {
+    for (const auto& scion : house.scions) {
+      ChronicleAction action;
+      action.key = std::to_string(std::min(slot, 9));
+      // The mortal oath rides only on player:chronicles:select on the wire,
+      // so an armed oath admits through select; a plain journey claims the
+      // road purse via chronicles:scion:set-out.
+      if (state.chronicles_oath || succession_pending) {
+        action.command = "select-scion";
+        action.arg = scion.id;
+        action.label = "Set out as " + scion.name;
+        if (succession_pending)
+          action.label += ", heir of " + model.chronicle.fallen.name;
+        if (state.chronicles_oath) action.label += " under the mortal oath";
+      } else {
+        action.command = "set-out";
+        action.arg = scion.id;
+        action.label = "Set out as " + scion.name;
+      }
+      menu.push_back(std::move(action));
+      if (++slot > 9) break;
+    }
+    if (slot > 9) break;
+  }
+  menu.push_back({"C", "create-scion", "",
+                  "Name a new Scion (" + next_scion_name(state) + ")"});
+  ChronicleAction oath;
+  oath.key = "M";
+  oath.command = "oath-toggle";
+  oath.label = state.chronicles_oath ? "Mortal oath: ARMED" : "Mortal oath: not taken";
+  menu.push_back(std::move(oath));
+  return menu;
+}
+
+// Screen authority: expedition while admitted+alive; the front door before
+// admission, during hard-death consequences, or whenever the connection is
+// not usable (visible failure, never silent local fallback).
+void update_screen_for_model(ClientState& state) {
+  if (!state.chronicles_mode || !state.session) return;
+  const auto& model = state.session->model();
+  const bool soft_death = model.lifecycle == "awaiting-respawn";
+  const bool admitted_and_alive =
+      state.session->connection_state() ==
+          verdigris::client::ConnectionState::Ready &&
+      !model.chronicles_pending && model.player.alive;
+  state.screen =
+      (admitted_and_alive || soft_death) ? Screen::Expedition : Screen::Chronicles;
+}
+
+// Crypt transitions are authoritative relic-recovery beats: lost → recovered
+// deserves an honest toast naming the fallen.
+void watch_crypt_statuses(ClientState& state) {
+  if (!state.session) return;
+  const auto& model = state.session->model();
+  std::unordered_map<std::string, std::string> current;
+  for (const auto& house : model.chronicle.houses) {
+    for (const auto& entry : house.crypt) {
+      const std::string key = house.id + "/" + entry.id;
+      current[key] = entry.relic_status;
+      const auto it = state.known_crypt_status.find(key);
+      if (it != state.known_crypt_status.end() &&
+          it->second == "lost" && entry.relic_status == "recovered") {
+        state.relic_toast = "Heirloom of " + entry.name + " recovered";
+        state.relic_toast_ticks = 160;
+      }
+    }
+  }
+  state.known_crypt_status = std::move(current);
+}
+
+void submit_chronicle_action(ClientState& state, const ChronicleAction& action) {
+  using verdigris::client::ClientCommand;
+  if (action.command == "found-house") {
+    state.session->submit(ClientCommand::found_house(house_display_name(state)));
+    show_hint(state, "Your House enters the chronicles");
+  } else if (action.command == "create-scion") {
+    state.session->submit(ClientCommand::create_scion(next_scion_name(state)));
+    show_hint(state, "A new Scion joins the lineage");
+  } else if (action.command == "select-scion") {
+    state.session->submit(
+        ClientCommand::select_scion(action.arg, state.chronicles_oath));
+    show_hint(state, state.chronicles_oath ? "The mortal oath is spoken"
+                                           : "The heir walks on");
+  } else if (action.command == "set-out") {
+    state.session->submit(ClientCommand::set_out(action.arg));
+    show_hint(state, "The wagon rolls out");
+  } else if (action.command == "oath-toggle") {
+    state.chronicles_oath = !state.chronicles_oath;
+  }
+}
+
+void handle_chronicles_key(ClientState& state, WPARAM wparam) {
+  state.chronicles_menu = chronicle_actions(state);
+  for (const auto& action : state.chronicles_menu) {
+    if (action.key.size() == 1 && wparam == static_cast<WPARAM>(action.key[0])) {
+      submit_chronicle_action(state, action);
+      return;
+    }
+  }
+  if (wparam == VK_RETURN && !state.chronicles_menu.empty()) {
+    for (const auto& action : state.chronicles_menu)
+      if (action.command == "set-out" || action.command == "select-scion") {
+        submit_chronicle_action(state, action);
+        return;
+      }
+  }
+}
+
+std::string chronicles_capture_dir() {
+  std::vector<std::string> bases{".", executable_directory()};
+  const char* marker =
+      "orchestration\\tasks\\TASK-0145-native-chronicles-owner-journey";
+  for (const auto& base : bases) {
+    std::string prefix = base;
+    for (int depth = 0; depth <= 6; ++depth) {
+      const std::string folder = prefix + (prefix.empty() ? "" : "\\") + marker;
+      if (directory_exists(folder)) {
+        const std::string captures = folder + "\\captures";
+        CreateDirectoryA(captures.c_str(), nullptr);
+        return captures;
+      }
+      prefix += prefix.empty() ? ".." : "\\..";
+    }
+  }
+  CreateDirectoryA("captures", nullptr);
+  return "captures";
+}
+
+void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
+                                 render::List& rl) {
+  const auto& model = state.session ? state.session->model() : verdigris::client::ClientModel{};
+  RECT panel{0, 0, bounds.right, bounds.bottom};
+  HBRUSH backdrop = CreateSolidBrush(RGB(10, 14, 12));
+  FillRect(dc, &panel, backdrop);
+  DeleteObject(backdrop);
+
+  struct Line {
+    std::string label;
+    std::string text;
+    COLORREF color;
+    bool accent;
+  };
+  std::vector<Line> lines;
+  lines.push_back({"title", "V E R D I G R I S   C H R O N I C L E S",
+                   RGB(120, 214, 168), true});
+  {
+    std::string status_line;
+    if (!state.session ||
+        state.session->connection_state() ==
+            verdigris::client::ConnectionState::Disconnected) {
+      status_line = "The chronicles lie closed - connection lost.";
+    } else if (!model.chronicle.present) {
+      status_line = "Opening the chronicles...";
+    } else {
+      status_line = "Account of " +
+                    (model.chronicle.account_name.empty() ? std::string("the guest")
+                                                          : model.chronicle.account_name);
+    }
+    lines.push_back({"account", status_line, RGB(185, 198, 188), false});
+  }
+
+  if (!model.chronicle.present || model.chronicle.houses.empty()) {
+    lines.push_back({"prompt", "No House stands in these pages yet.",
+                     RGB(230, 235, 220), false});
+  } else {
+    for (const auto& house : model.chronicle.houses) {
+      lines.push_back({"house " + house.name,
+                       "House " + house.name, RGB(239, 208, 116), false});
+      for (const auto& scion : house.scions) {
+        std::string row = "  Scion " + scion.name + " - level " +
+                          std::to_string(scion.level) +
+                          (scion.mortal ? " (mortal)" : "");
+        lines.push_back({"scion " + scion.id, row, RGB(140, 208, 172), false});
+      }
+      for (const auto& entry : house.crypt) {
+        std::string relic = "rests unrecorded";
+        if (!entry.relic_status.empty()) {
+          relic = "heirloom " + entry.relic_status;
+          if (entry.relic_count > 0)
+            relic += " (" + std::to_string(entry.relic_count) + " to circulation)";
+        }
+        lines.push_back({"crypt " + entry.id,
+                         "  In the crypt: " + entry.name + " - " + relic,
+                         RGB(150, 160, 170), false});
+      }
+    }
+  }
+  if (!model.chronicle.fallen.name.empty()) {
+    lines.push_back(
+        {"fallen:" + model.chronicle.fallen.scion_id,
+         "The chronicle records the fall of " + model.chronicle.fallen.name +
+             " (level " + std::to_string(model.chronicle.fallen.level) + ").",
+         RGB(214, 92, 72), false});
+  }
+
+  state.chronicles_menu = chronicle_actions(state);
+  for (const auto& action : state.chronicles_menu) {
+    lines.push_back({"action:" + action.command +
+                         (action.arg.empty() ? "" : ":" + action.arg),
+                     "[" + action.key + "] " + action.label, RGB(239, 208, 116), false});
+  }
+  lines.push_back({state.chronicles_oath ? "oath:on" : "oath:off",
+                   std::string("Oath field: ") +
+                       (state.chronicles_oath ? "mortal - death is final"
+                                              : "soft - wounds can be recovered"),
+                   RGB(185, 198, 188), false});
+
+  SetBkMode(dc, TRANSPARENT);
+  const int left = std::max(24, (static_cast<int>(bounds.right) - 620) / 2);
+  int y = 64;
+  for (const auto& line : lines) {
+    rl.push_back({render::Op::Chronicles, static_cast<double>(left),
+                  static_cast<double>(y), 0.0, 0, line.label});
+    HFONT font = CreateFontA(line.accent ? 30 : 19, 0, 0, 0, FW_BOLD, FALSE,
+                             FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS,
+                             CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY,
+                             DEFAULT_PITCH | FF_DONTCARE, "Georgia");
+    HGDIOBJ old_font = SelectObject(dc, font);
+    SetTextColor(dc, line.color);
+    TextOutA(dc, left, y, line.text.c_str(), static_cast<int>(line.text.size()));
+    SelectObject(dc, old_font);
+    DeleteObject(font);
+    y += line.accent ? 44 : 26;
+    if (y > bounds.bottom - 40) break;
+  }
+  if (state.relic_toast_ticks > 0 && !state.relic_toast.empty()) {
+    rl.push_back({render::Op::Chronicles, 0.0, 0.0, 0.0, 0, "relic-toast"});
+    SetTextColor(dc, RGB(239, 208, 116));
+    TextOutA(dc, 18, bounds.bottom - 28, state.relic_toast.c_str(),
+             static_cast<int>(state.relic_toast.size()));
+  }
+}
+
+// Shared owner-facing chrome: the visible connection state lives on both
+// screens — a failed connection is always explicit, never a silent fallback.
+void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
+                           render::List& rl) {
+  if (!state.session) return;
+    const auto conn = state.session->connection_state();
+    const char* label = verdigris::client::connection_state_label(conn);
+    const std::string chip = std::string("connection ") + label;
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, chip});
+    COLORREF chip_color = RGB(185, 198, 188);
+    if (conn == verdigris::client::ConnectionState::Ready)
+      chip_color = RGB(120, 214, 168);
+    else if (conn == verdigris::client::ConnectionState::Connecting ||
+             conn == verdigris::client::ConnectionState::Connected ||
+             conn == verdigris::client::ConnectionState::Retrying)
+      chip_color = RGB(239, 208, 116);
+    else if (conn == verdigris::client::ConnectionState::Disconnected ||
+             conn == verdigris::client::ConnectionState::Rejected ||
+             conn == verdigris::client::ConnectionState::ProtocolMismatch)
+      chip_color = RGB(255, 80, 70);
+    const int chip_w = 168;
+    const int chip_h = 22;
+    const int chip_x = std::max(18, static_cast<int>(bounds.right) - chip_w - 18);
+    const int chip_y = 12;
+    RECT chip_rect{chip_x, chip_y, chip_x + chip_w, chip_y + chip_h};
+    HBRUSH chip_bg = CreateSolidBrush(RGB(25, 33, 37));
+    FillRect(dc, &chip_rect, chip_bg);
+    DeleteObject(chip_bg);
+    HPEN chip_pen = CreatePen(PS_SOLID, 1, chip_color);
+    HGDIOBJ old_chip_pen = SelectObject(dc, chip_pen);
+    HGDIOBJ old_chip_brush =
+        SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+    Rectangle(dc, chip_rect.left, chip_rect.top, chip_rect.right, chip_rect.bottom);
+    SelectObject(dc, old_chip_brush);
+    SelectObject(dc, old_chip_pen);
+    DeleteObject(chip_pen);
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, chip_color);
+    TextOutA(dc, chip_x + 8, chip_y + 3, chip.c_str(), static_cast<int>(chip.size()));
+    if (conn == verdigris::client::ConnectionState::Disconnected ||
+        conn == verdigris::client::ConnectionState::Rejected ||
+        conn == verdigris::client::ConnectionState::ProtocolMismatch) {
+      SetTextColor(dc, RGB(255, 80, 70));
+      const char* banner = "CONNECTION LOST — not playing offline";
+      TextOutA(dc, 18, 76, banner, static_cast<int>(strlen(banner)));
+    }
+}
+
 void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   sync_world(state);
   const WorldView& world = state.world;
   render::List rl;
+
+  // TASK-0145: the Chronicles front door replaces the abrupt game-window
+  // entry for the remote owner path. Expedition painting is skipped
+  // entirely; the door renders from the authoritative chronicle model.
+  if (state.screen == Screen::Chronicles) {
+    paint_chronicles_front_door(state, dc, bounds, rl);
+    paint_connection_chip(state, dc, bounds, rl);
+    state.render_list = std::move(rl);
+    return;
+  }
 
   draw_floor(state.billboards, dc, state.camera, bounds, world.route_id, rl);
 
@@ -1977,21 +2640,47 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     rl.push_back({render::Op::Extraction, static_cast<double>(pad.x),
                   static_cast<double>(pad.y), static_cast<double>(pad_r), 0,
                   "stairs-up"});
-    fill_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(36, 78, 58));
+    // TASK-0142: the pad must own its corner of the screen — a bright plate,
+    // a slow tick-driven pulse, and gold chevrons pointing at the way out.
+    const bool pulse_on = (world.tick / 9) % 2 == 0;
+    fill_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(30, 92, 64));
     ring_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(120, 214, 168), 3);
+    if (pulse_on && pad_r > 6)
+      ring_ellipse(dc, pad.x, pad.y, pad_r + 5, pad_r + 5, RGB(160, 236, 190), 2);
     const int inner = std::max(6, pad_r * 2 / 3);
     ring_ellipse(dc, pad.x, pad.y, inner, inner, RGB(239, 208, 116), 2);
-    const int step = std::max(4, pad_r / 3);
+    const int step = std::max(5, pad_r / 3);
     for (int i = 0; i < 3; ++i) {
       const int y = pad.y + pad_r / 4 - i * step;
-      draw_line(dc, pad.x - pad_r / 2 + i * 3, y, pad.x, y - step, RGB(239, 208, 116),
-                2);
-      draw_line(dc, pad.x + pad_r / 2 - i * 3, y, pad.x, y - step, RGB(239, 208, 116),
-                2);
+      const int spread = std::max(3, pad_r / 2 - i * 3);
+      const int tip_y = y - step;
+      draw_line(dc, pad.x - spread, y, pad.x, tip_y, RGB(239, 208, 116), 3);
+      draw_line(dc, pad.x + spread, y, pad.x, tip_y, RGB(239, 208, 116), 3);
+      // Arrowheads make the chevron read as direction, not decoration.
+      draw_line(dc, pad.x - spread / 2, tip_y + std::max(2, step / 4), pad.x,
+                tip_y, RGB(255, 232, 150), 2);
+      draw_line(dc, pad.x + spread / 2, tip_y + std::max(2, step / 4), pad.x,
+                tip_y, RGB(255, 232, 150), 2);
     }
-    SetBkMode(dc, TRANSPARENT);
-    SetTextColor(dc, RGB(239, 208, 116));
-    TextOutA(dc, pad.x - 14, pad.y + pad_r + 2, "EXIT", 4);
+    {
+      RECT label_backing{pad.x - 22, pad.y + pad_r + 2, pad.x + 22,
+                         pad.y + pad_r + 18};
+      HBRUSH label_bg = CreateSolidBrush(RGB(16, 22, 20));
+      FillRect(dc, &label_backing, label_bg);
+      DeleteObject(label_bg);
+      HPEN label_pen = CreatePen(PS_SOLID, 1, RGB(120, 214, 168));
+      HGDIOBJ old_label_pen = SelectObject(dc, label_pen);
+      HGDIOBJ old_label_brush =
+          SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+      Rectangle(dc, label_backing.left, label_backing.top, label_backing.right,
+                label_backing.bottom);
+      SelectObject(dc, old_label_brush);
+      SelectObject(dc, old_label_pen);
+      DeleteObject(label_pen);
+      SetBkMode(dc, TRANSPARENT);
+      SetTextColor(dc, RGB(239, 208, 116));
+      TextOutA(dc, pad.x - 14, pad.y + pad_r + 4, "EXIT", 4);
+    }
   }
 
   // Warnings live on the ground plane beneath billboards and loot so their
@@ -2050,10 +2739,20 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         rl.push_back({render::Op::Player, static_cast<double>(base.x),
                       static_cast<double>(base.y)});
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
+        draw_team_ring(dc, base, kTileUnits * 0.55, RGB(120, 214, 168));
         if (!draw_billboard_sprite(state.billboards, dc, state.billboards.player, base,
-                                   kTileUnits * 1.35, player.facing.x))
-          draw_billboard(dc, base, kTileUnits * 0.62, kTileUnits * 1.35,
-                         RGB(84, 158, 128), RGB(140, 208, 172));
+                                   kTileUnits * 1.35, player.facing.x)) {
+          // TASK-0142: generated vector silhouette before the capsule.
+          const int kit_height =
+              std::max(8, static_cast<int>(kTileUnits * 1.35 * base.scale));
+          const kit::Symbol* symbol = kit_symbol("player");
+          if (symbol)
+            draw_kit_symbol(dc, *symbol, base.x, base.y, kit_height,
+                            player.facing.x < 0);
+          else
+            draw_billboard(dc, base, kTileUnits * 0.62, kTileUnits * 1.35,
+                           RGB(84, 158, 128), RGB(140, 208, 172));
+        }
         // Draw the authoritative facing, rather than a client-only mouse hint.
         const double angle =
             std::atan2(static_cast<double>(player.facing.y),
@@ -2073,11 +2772,12 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                       static_cast<double>(base.y), 0.0, monster.life,
                       monster.elite ? "elite" : "monster"});
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
+        draw_team_ring(dc, base, kTileUnits * 0.58,
+                       monster.elite ? RGB(239, 208, 116) : RGB(214, 92, 72));
         const SpriteBitmap& monster_sprite = monster.elite ? state.billboards.boss
                                                             : state.billboards.raider;
         const double foe_height =
             monster.elite ? kTileUnits * 1.85 : kTileUnits * 1.58;
-        draw_contact_shadow(dc, base, kTileUnits * 0.55);
         {
           const int halo_h = std::max(6, static_cast<int>(foe_height * base.scale));
           const int halo_w = std::max(5, static_cast<int>(halo_h * 0.42));
@@ -2085,22 +2785,55 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                        RGB(72, 22, 20));
         }
         if (!draw_billboard_sprite(state.billboards, dc, monster_sprite, base, foe_height,
-                                   monster.facing.x))
-          draw_billboard(dc, base, kTileUnits * 0.88, kTileUnits * 1.12,
-                         RGB(186, 58, 44), RGB(42, 18, 16));
-        const int bar_w = static_cast<int>(kTileUnits * 0.7 * base.scale);
+                                   monster.facing.x)) {
+          // TASK-0142: generated vector silhouettes (horned raider / caped
+          // elite) before the capsule.
+          const int kit_height =
+              std::max(8, static_cast<int>(foe_height * base.scale));
+          const kit::Symbol* symbol =
+              kit_symbol(monster.elite ? "elite" : "raider");
+          if (symbol)
+            draw_kit_symbol(dc, *symbol, base.x, base.y, kit_height,
+                            monster.facing.x < 0);
+          else
+            draw_billboard(dc, base, kTileUnits * 0.88, kTileUnits * 1.12,
+                           RGB(186, 58, 44), RGB(42, 18, 16));
+        }
+        // TASK-0142: bordered life bar with a dark backing so the remaining
+        // fraction stays readable against any floor.
+        const int bar_w = static_cast<int>(kTileUnits * 0.7 * base.scale) + 4;
         const int bar_y =
-            base.y - static_cast<int>(kTileUnits * 1.5 * base.scale);
+            base.y - static_cast<int>(kTileUnits * 1.5 * base.scale) - 4;
         const double ratio =
             std::clamp(static_cast<double>(monster.life) /
                            std::max(1, monster.life_max),
                        0.0, 1.0);
-        draw_line(dc, base.x - bar_w / 2, bar_y, base.x + bar_w / 2, bar_y,
-                  RGB(52, 40, 38), 3);
-        if (ratio > 0.0)
-          draw_line(dc, base.x - bar_w / 2, bar_y,
-                    base.x - bar_w / 2 + static_cast<int>(bar_w * ratio), bar_y,
-                    RGB(214, 118, 86), 3);
+        {
+          RECT backing{base.x - bar_w / 2 - 1, bar_y - 3, base.x + bar_w / 2 + 1,
+                       bar_y + 3};
+          HBRUSH backing_brush = CreateSolidBrush(RGB(12, 14, 15));
+          FillRect(dc, &backing, backing_brush);
+          DeleteObject(backing_brush);
+          if (ratio > 0.0) {
+            const int fill_w = static_cast<int>(bar_w * ratio);
+            RECT fill_rect{base.x - bar_w / 2, bar_y - 2,
+                           base.x - bar_w / 2 + fill_w, bar_y + 2};
+            const COLORREF bar_color = ratio > 0.55   ? RGB(120, 200, 130)
+                                       : ratio > 0.25 ? RGB(239, 208, 116)
+                                                      : RGB(214, 72, 58);
+            HBRUSH fill_brush = CreateSolidBrush(bar_color);
+            FillRect(dc, &fill_rect, fill_brush);
+            DeleteObject(fill_brush);
+          }
+          HPEN bar_pen = CreatePen(PS_SOLID, 1, RGB(86, 116, 104));
+          HGDIOBJ old_bar_pen = SelectObject(dc, bar_pen);
+          HGDIOBJ old_bar_brush =
+              SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+          Rectangle(dc, backing.left, backing.top, backing.right, backing.bottom);
+          SelectObject(dc, old_bar_brush);
+          SelectObject(dc, old_bar_pen);
+          DeleteObject(bar_pen);
+        }
         const auto telegraph = state.telegraphs.find(monster.id);
         if (telegraph != state.telegraphs.end()) {
           const ActiveTelegraph& warning = telegraph->second;
@@ -2175,46 +2908,81 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   }
 
   if (state.session) {
-    const auto conn = state.session->connection_state();
-    const char* label = verdigris::client::connection_state_label(conn);
-    const std::string chip = std::string("connection ") + label;
-    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, chip});
-    COLORREF chip_color = RGB(185, 198, 188);
-    if (conn == verdigris::client::ConnectionState::Ready)
-      chip_color = RGB(120, 214, 168);
-    else if (conn == verdigris::client::ConnectionState::Connecting ||
-             conn == verdigris::client::ConnectionState::Connected ||
-             conn == verdigris::client::ConnectionState::Retrying)
-      chip_color = RGB(239, 208, 116);
-    else if (conn == verdigris::client::ConnectionState::Disconnected ||
-             conn == verdigris::client::ConnectionState::Rejected ||
-             conn == verdigris::client::ConnectionState::ProtocolMismatch)
-      chip_color = RGB(255, 80, 70);
-    const int chip_w = 168;
-    const int chip_h = 22;
-    const int chip_x = std::max(18, static_cast<int>(bounds.right) - chip_w - 18);
-    const int chip_y = 12;
-    RECT chip_rect{chip_x, chip_y, chip_x + chip_w, chip_y + chip_h};
-    HBRUSH chip_bg = CreateSolidBrush(RGB(25, 33, 37));
-    FillRect(dc, &chip_rect, chip_bg);
-    DeleteObject(chip_bg);
-    HPEN chip_pen = CreatePen(PS_SOLID, 1, chip_color);
-    HGDIOBJ old_chip_pen = SelectObject(dc, chip_pen);
-    HGDIOBJ old_chip_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
-    Rectangle(dc, chip_rect.left, chip_rect.top, chip_rect.right, chip_rect.bottom);
-    SelectObject(dc, old_chip_brush);
-    SelectObject(dc, old_chip_pen);
-    DeleteObject(chip_pen);
-    SetBkMode(dc, TRANSPARENT);
-    SetTextColor(dc, chip_color);
-    TextOutA(dc, chip_x + 8, chip_y + 3, chip.c_str(), static_cast<int>(chip.size()));
-    if (conn == verdigris::client::ConnectionState::Disconnected ||
-        conn == verdigris::client::ConnectionState::Rejected ||
-        conn == verdigris::client::ConnectionState::ProtocolMismatch) {
-      SetTextColor(dc, RGB(255, 80, 70));
-      const char* banner = "CONNECTION LOST — not playing offline";
-      TextOutA(dc, 18, 76, banner, static_cast<int>(strlen(banner)));
+    paint_connection_chip(state, dc, bounds, rl);
+  }
+
+  // TASK-0142: owner-facing objective strip, centered at the top. The copy
+  // always reflects the authoritative world (extraction presence, carried
+  // loot) and names the concrete action that banks progress.
+  {
+    std::string objective;
+    COLORREF accent = RGB(120, 214, 168);
+    if (!world.has_extraction) {
+      objective = "objective: explore the route";
+    } else {
+      const int ddx = world.extraction.x - player.position.x;
+      const int ddy = world.extraction.y - player.position.y;
+      const int dist = static_cast<int>(
+          std::lround(std::sqrt(static_cast<double>(ddx * ddx + ddy * ddy))));
+      const bool carrying =
+          !world.carried.empty() || world.carried_trophies > 0;
+      objective = std::string(carrying
+                                  ? "objective: carry your loot to the EXIT ("
+                                  : "objective: reach the EXIT (");
+      objective += compass_step(ddx, ddy);
+      objective += ", " + std::to_string(dist) + "u) - press F there";
+      if (carrying) accent = RGB(239, 208, 116);
     }
+    SIZE extent{};
+    GetTextExtentPoint32A(dc, objective.c_str(),
+                          static_cast<int>(objective.size()), &extent);
+    const int chip_x =
+        std::max(12, (static_cast<int>(bounds.right) -
+                      static_cast<int>(extent.cx) - 16) / 2);
+    paint_status_chip(dc, chip_x, 12, objective, accent, rl);
+  }
+
+  // TASK-0145: expedition identity chip — the current House and Scion are
+  // always named, straight from the authoritative session model.
+  {
+    const std::string identity = "House " + world.house_name + " - Scion " +
+                                 (world.scion_name.empty() ? std::string("(unnamed)")
+                                                           : world.scion_name);
+    rl.push_back({render::Op::HouseChip, 0.0, 0.0, 0.0, 0, identity});
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, RGB(140, 208, 172));
+    TextOutA(dc, 18, 12, identity.c_str(), static_cast<int>(identity.size()));
+  }
+
+  // TASK-0145: relic-recovery toast — an authoritative crypt transition is
+  // announced by name while exploring.
+  if (state.relic_toast_ticks > 0 && !state.relic_toast.empty()) {
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                  "relic: " + state.relic_toast});
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, RGB(239, 208, 116));
+    TextOutA(dc, 18, bounds.bottom - 28, state.relic_toast.c_str(),
+             static_cast<int>(state.relic_toast.size()));
+  }
+
+  // TASK-0142: honest art-status chip. It reports what is really on screen —
+  // PNG plates when loaded, the embedded procedural kit otherwise — so a
+  // missing asset can never masquerade as loaded art.
+  {
+    const bool plates =
+        state.billboards.player.ready() && state.billboards.raider.ready() &&
+        state.billboards.boss.ready();
+    const COLORREF art_accent =
+        plates ? RGB(120, 214, 168) : RGB(239, 190, 78);
+    SIZE art_extent{};
+    GetTextExtentPoint32A(dc, state.billboards.status.c_str(),
+                          static_cast<int>(state.billboards.status.size()),
+                          &art_extent);
+    const int art_x =
+        std::max(12, static_cast<int>(bounds.right) -
+                         static_cast<int>(art_extent.cx) - 16 - 18);
+    paint_status_chip(dc, art_x, state.session ? 38 : 12,
+                      state.billboards.status, art_accent, rl);
   }
 
   state.render_list = std::move(rl);
@@ -2334,12 +3102,19 @@ void timer_step(HWND window, ClientState& state) {
     state.session->poll();
     sync_world(state);
     ingest_session_events(state);
+    update_screen_for_model(state);
+    watch_crypt_statuses(state);
   }
+  if (state.relic_toast_ticks > 0) --state.relic_toast_ticks;
 
+  const bool at_front_door =
+      state.screen == Screen::Chronicles && state.session != nullptr;
   int dx = (state.d ? 1 : 0) - (state.a ? 1 : 0);
   int dy = (state.s ? 1 : 0) - (state.w ? 1 : 0);
   const bool moving = dx != 0 || dy != 0;
-  if (state.session) {
+  if (at_front_door) {
+    // The front door consumes movement: no world input exists pre-admission.
+  } else if (state.session) {
     if (state.session->connection_state() == verdigris::client::ConnectionState::Ready) {
       if (moving) submit_move(state, dx, dy);
     }
@@ -2352,7 +3127,7 @@ void timer_step(HWND window, ClientState& state) {
     }
   }
 
-  dispatch_aim_if_changed(state, bounds, !moving && state.was_moving);
+  if (!at_front_door) dispatch_aim_if_changed(state, bounds, !moving && state.was_moving);
   state.was_moving = moving;
 
   ingest_events(state, bounds);
@@ -2398,6 +3173,11 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       }
       if (wparam == VK_ESCAPE) {
         PostQuitMessage(0);
+        break;
+      }
+      if (state->screen == Screen::Chronicles && state->session) {
+        handle_chronicles_key(*state, wparam);
+        InvalidateRect(window, nullptr, FALSE);
         break;
       }
       if (wparam == 'W') state->w = true;
@@ -2613,6 +3393,12 @@ int scenario_move_and_camera() {
   scenario_check(baseline.size() > 3, "move-and-camera: scenery present in render list");
   scenario_check(render::any(state.render_list, render::Op::Floor),
                  "move-and-camera: Floor op recorded");
+  {
+    const render::Item* floor =
+        render::first(state.render_list, render::Op::Floor);
+    scenario_check(floor && floor->value == 1,
+                   "move-and-camera: floor is textured (plates or vector kit)");
+  }
   scenario_check(tile_baseline.size() > 8, "move-and-camera: terrain tiles present in render list");
   scenario_check(render::count(state.render_list, render::Op::Orb) >= 2,
                  "move-and-camera: life and resource orbs recorded");
@@ -2682,6 +3468,70 @@ int scenario_move_and_camera() {
 int scenario_first_fight() {
   ClientState state;
   scenario_begin(state);
+  state.camera.x = static_cast<double>(state.world.player.position.x);
+  state.camera.y = static_cast<double>(state.world.player.position.y);
+
+  // TASK-0142 owner-facing checks: the HUD names the objective, the art chip
+  // honestly reports what loaded, and the extraction pad is marked.
+  scenario_present(state);
+  bool art_op = false;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Hud &&
+        item.label.rfind("art: ", 0) == 0)
+      art_op = true;
+  scenario_check(art_op, "first-fight: an honest art-status line is on the HUD");
+  const bool claims_plates =
+      state.billboards.status.find("PNG billboards") != std::string::npos;
+  const bool really_plates = state.billboards.player.ready() &&
+                             state.billboards.raider.ready() &&
+                             state.billboards.boss.ready();
+  scenario_check(claims_plates == really_plates,
+                 "first-fight: art status matches what actually loaded");
+  bool objective_op = false;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Hud &&
+        item.label.rfind("objective:", 0) == 0)
+      objective_op = true;
+  scenario_check(objective_op,
+                 "first-fight: an objective strip is on the HUD");
+  if (state.world.has_extraction) {
+    const render::Item* pad =
+        render::first(state.render_list, render::Op::Extraction);
+    scenario_check(pad && pad->label == "stairs-up" && pad->radius > 0.0,
+                   "first-fight: the extraction pad is marked stairs-up");
+  }
+  scenario_check(render::any(state.render_list, render::Op::Player),
+                 "first-fight: the Scion silhouette is recorded");
+
+  // TASK-0142: force the deterministic vector-kit path by releasing the PNG
+  // plates, then re-present. This proves the no-assets fallback still draws
+  // the full owner-facing scene on any machine.
+  state.billboards.player.reset();
+  state.billboards.raider.reset();
+  state.billboards.boss.reset();
+  state.billboards.tree.reset();
+  state.billboards.ruin.reset();
+  state.billboards.dwelling.reset();
+  state.billboards.shrine.reset();
+  state.billboards.terrain1.reset();
+  state.billboards.terrain4.reset();
+  refresh_art_status(state.billboards);
+  scenario_check(state.billboards.status.find("vector kit") != std::string::npos,
+                 "first-fight: vector fallback reports itself honestly");
+  scenario_present(state);
+  {
+    const render::Item* floor =
+        render::first(state.render_list, render::Op::Floor);
+    scenario_check(floor && floor->value == 1 && floor->label == "tiled",
+                   "first-fight: vector terrain keeps the floor tiled");
+    scenario_check(render::count(state.render_list, render::Op::Tile) > 8,
+                   "first-fight: vector motif tiles are drawn");
+    scenario_check(render::any(state.render_list, render::Op::Scenery),
+                   "first-fight: vector scenery silhouettes are drawn");
+    scenario_check(render::any(state.render_list, render::Op::Player),
+                   "first-fight: vector Scion silhouette is drawn");
+  }
+
   for (int i = 0; i < 52; ++i)
     scenario_step(state, verdigris::Command::move(1, 0));
 
@@ -2740,6 +3590,18 @@ int scenario_loot_to_bank() {
                    "loot-to-bank: equipped bonus appears in the stat readout");
   }
 
+  bool objective_carries = false;
+  {
+    state.gear_overlay = false;
+    scenario_present(state);
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud &&
+          item.label.rfind("objective: carry your loot", 0) == 0)
+        objective_carries = true;
+  }
+  scenario_check(objective_carries,
+                 "loot-to-bank: objective strip points at the EXIT while carrying");
+
   state.gear_overlay = false;
   for (int i = 0; i < 52; ++i)
     scenario_step(state, verdigris::Command::move(-1, 0));
@@ -2755,6 +3617,16 @@ int scenario_loot_to_bank() {
   scenario_check(banked && banked->label.find("items 1") != std::string::npos &&
                      banked->label.find("trophies 1") != std::string::npos,
                  "loot-to-bank: banked footer reflects the extraction");
+
+  // TASK-0142: the owner-facing objective strip walks the loop — it points
+  // at the EXIT while loot is carried and keeps guiding after banking.
+  bool objective_points_exit = false;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Hud &&
+        item.label.rfind("objective: reach the EXIT", 0) == 0)
+      objective_points_exit = true;
+  scenario_check(objective_points_exit,
+                 "loot-to-bank: objective strip guides back to the extraction");
   return 0;
 }
 
@@ -3002,6 +3874,320 @@ int scenario_zoom_invariance() {
   return 0;
 }
 
+// ── TASK-0145: chronicles-gate-b scenario ───────────────────────────────
+// Drives the FULL owner screen-state journey against a real remote session
+// and a real in-process protocol server bound to this lane's loopback
+// capsule (6780-6799): front door → found → create → mortal oath →
+// admission → expedition → fatal fall → succession → relic recovery →
+// reconnect roster restore. Asserts screen transitions and actionable
+// controls, never just parsed fields.
+
+bool reference_present(ClientState& state, int width, int height,
+                       const std::string& png_path);
+
+bool chronicles_pump(ClientState& state, int max_ticks,
+                     const std::function<bool()>& done) {
+  for (int i = 0; i < max_ticks; ++i) {
+    state.session->poll();
+    ingest_session_events(state);
+    update_screen_for_model(state);
+    watch_crypt_statuses(state);
+    if (state.relic_toast_ticks > 0) --state.relic_toast_ticks;
+    for (auto& fx : state.effects) ++fx.age;
+    state.effects.erase(std::remove_if(state.effects.begin(), state.effects.end(),
+                                       [](const EffectFx& fx) { return fx.age >= fx.ttl; }),
+                        state.effects.end());
+    if (state.screen_pulse_ticks > 0) --state.screen_pulse_ticks;
+    if (done()) return true;
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  }
+  return done();
+}
+
+bool render_list_has(const ClientState& state, render::Op op,
+                     const std::string& prefix) {
+  for (const auto& item : state.render_list) {
+    if (item.op != op) continue;
+    if (prefix.empty() || item.label.rfind(prefix, 0) == 0) return true;
+  }
+  return false;
+}
+
+void fire_chronicle_action(ClientState& state, const std::string& command,
+                           const std::string& arg = "") {
+  state.chronicles_menu = chronicle_actions(state);
+  for (const auto& action : state.chronicles_menu) {
+    if (action.command != command) continue;
+    if (!arg.empty() && action.arg != arg) continue;
+    submit_chronicle_action(state, action);
+    return;
+  }
+}
+
+// Test-harness escape hatch: dev:* control-surface envelopes through the real
+// remote session (same seam the remote render-list scenario's transport
+// exposes). Production presentation code never calls these.
+void send_dev_envelope(ClientState& state, const char* event,
+                       verdigris::networking::JsonValue::Object fields = {}) {
+  auto* remote =
+      static_cast<verdigris::client::RemoteProtocolSession*>(state.session.get());
+  remote->send_raw(event, verdigris::networking::JsonValue(std::move(fields)));
+}
+
+int scenario_chronicles_gate_b() {
+  verdigris::networking::WebSocketServer* server = nullptr;
+  std::uint16_t port = 0;
+  for (std::uint16_t candidate = 6780; candidate <= 6799; ++candidate) {
+    auto* probe = new verdigris::networking::WebSocketServer(candidate);
+    std::string error;
+    if (probe->start(&error)) {
+      server = probe;
+      port = candidate;
+      break;
+    }
+    delete probe;
+  }
+  scenario_check(server != nullptr, "chronicles-gate-b: bound ox-pc-i capsule server");
+  if (!server) return 0;
+
+  ClientState state;
+  state.chronicles_mode = true;
+  state.screen = Screen::Chronicles;
+  load_billboards(state.billboards);
+  const std::string capture_dir = chronicles_capture_dir();
+
+  using verdigris::client::ClientCommand;
+  using verdigris::client::ConnectionState;
+  state.session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+      "127.0.0.1", port, "ox-pc-i-gate-b", false);
+  std::string error;
+  scenario_check(state.session->start(&error), "chronicles-gate-b: session start");
+
+  // 1) The coherent pre-game screen: account payload opens the front door.
+  const bool door_ready = chronicles_pump(
+      state, 250, [&] { return state.session->model().chronicle.present; });
+  scenario_check(door_ready, "front door: the account chronicle opens the door");
+  scenario_present(state);
+  scenario_check(render_list_has(state, render::Op::Chronicles, "title"),
+                 "front door: the Chronicles title is on screen");
+  scenario_check(render_list_has(state, render::Op::Chronicles, "action:found-house"),
+                 "front door: founding a House is an actionable control");
+
+  // 2) Found the House.
+  fire_chronicle_action(state, "found-house");
+  const bool house_ok = chronicles_pump(state, 250, [&] {
+    return state.session->model().chronicle.houses.size() == 1;
+  });
+  scenario_check(house_ok, "front door: founding renders the House roster");
+  scenario_present(state);
+  scenario_check(render_list_has(state, render::Op::Chronicles, "house "),
+                 "front door: the new House is named on screen");
+  scenario_check(render_list_has(state, render::Op::Chronicles, "action:create-scion"),
+                 "front door: naming a Scion is offered");
+
+  // 3) Create the first Scion; the oath field starts soft.
+  fire_chronicle_action(state, "create-scion");
+  const bool scion_ok = chronicles_pump(state, 250, [&] {
+    const auto& houses = state.session->model().chronicle.houses;
+    return !houses.empty() && houses.front().scions.size() == 1;
+  });
+  scenario_check(scion_ok, "front door: the first Scion joins the roster");
+  scenario_present(state);
+  scenario_check(render_list_has(state, render::Op::Chronicles, "action:set-out:"),
+                 "front door: set-out is actionable for the new Scion");
+  scenario_check(render_list_has(state, render::Op::Chronicles, "oath:off"),
+                 "front door: the mortal-oath field renders its soft state");
+
+  // 4) Arm the mortal oath and admit through the oath-bearing select path.
+  fire_chronicle_action(state, "oath-toggle");
+  scenario_present(state);
+  scenario_check(render_list_has(state, render::Op::Chronicles, "oath:on"),
+                 "front door: the mortal-oath field arms on demand");
+  const std::string first_scion_id =
+      state.session->model().chronicle.houses.front().scions.front().id;
+  fire_chronicle_action(state, "select-scion", first_scion_id);
+  const bool admitted = chronicles_pump(state, 250, [&] {
+    return state.session->connection_state() == ConnectionState::Ready &&
+           !state.session->model().chronicles_pending &&
+           state.session->model().player.alive &&
+           state.screen == Screen::Expedition;
+  });
+  scenario_check(admitted, "admission: the mortal-oath select lands in the world");
+  scenario_follow_camera(state);
+  scenario_present(state);
+  scenario_check(!render_list_has(state, render::Op::Chronicles, "title"),
+                 "admission: the front door is dismissed");
+  scenario_check(render_list_has(state, render::Op::HouseChip, "House "),
+                 "admission: the expedition names the House and Scion");
+
+  // 5) Take the road: the expedition HUD keeps the TASK-0142 presentation.
+  state.session->submit(ClientCommand::enter_zone("tin:1:0"));
+  const bool in_instance = chronicles_pump(state, 250, [&] {
+    return state.session->model().scene.type == "instance";
+  });
+  scenario_check(in_instance, "expedition: the road instance is entered");
+  generate_scenery(state);
+  scenario_follow_camera(state);
+  scenario_present(state);
+  scenario_check(render::any(state.render_list, render::Op::Floor),
+                 "expedition: the route renders with the existing presentation");
+
+  // 6) Earn gear so the fatal fall commits a real heirloom to circulation.
+  // dev:give runs the real inventory pipeline; the seeded grant keeps the
+  // journey deterministic. Only starter coins/daggers are exempt from
+  // circulation, so this sword is exactly what the fall will commit.
+  send_dev_envelope(state, "dev:give",
+                    {{"itemId", verdigris::networking::JsonValue("bronze-sword")},
+                     {"seed", verdigris::networking::JsonValue(20260822)}});
+  const bool sword_ok = chronicles_pump(state, 250, [&] {
+    for (const auto& item : state.session->model().inventory)
+      if (item.id == "bronze-sword") return true;
+    return false;
+  });
+  scenario_check(sword_ok, "expedition: earned gear enters the inventory");
+
+  // 7) The fatal fall: server-authoritative final death for the mortal oath.
+  send_dev_envelope(state, "dev:kill");
+  const bool fallen = chronicles_pump(state, 250, [&] {
+    return state.session->model().chronicle.fallen.scion_id == first_scion_id;
+  });
+  scenario_check(fallen, "consequence: scion-fallen names the fallen Scion");
+  scenario_check(state.screen == Screen::Chronicles,
+                 "consequence: the fall returns the owner to the chronicles");
+  chronicles_pump(state, 40, [&] { return false; });  // let dev:state refresh the crypt
+  scenario_present(state);
+  scenario_check(render_list_has(state, render::Op::Chronicles, "fallen:"),
+                 "consequence: the fall is recorded on the front door");
+  scenario_check(render_list_has(state, render::Op::Chronicles, "crypt " + first_scion_id),
+                 "consequence: the fallen Scion rests in the crypt");
+  scenario_check(render_list_has(state, render::Op::Chronicles, "action:create-scion"),
+                 "succession: naming a successor is actionable after the fall");
+  const bool door_png = reference_present(state, 960, 600,
+                                          capture_dir + "\\front-door-960x600.png");
+  scenario_check(door_png, "evidence: front-door capture written");
+
+  // 8) Succession: the heir is admitted through the succession select path
+  // (the only wire admission that resets a permadead lifecycle), with the
+  // oath disarmed so the soft-heir journey is what ships.
+  fire_chronicle_action(state, "create-scion");
+  const bool successor_ok = chronicles_pump(state, 250, [&] {
+    const auto& houses = state.session->model().chronicle.houses;
+    return !houses.empty() && !houses.front().scions.empty() &&
+           houses.front().scions.back().id != first_scion_id;
+  });
+  scenario_check(successor_ok, "succession: the heir joins the living roster");
+  const std::string successor_id =
+      state.session->model().chronicle.houses.front().scions.back().id;
+  const std::string successor_name =
+      state.session->model().chronicle.houses.front().scions.back().name;
+  scenario_present(state);
+  scenario_check(
+      render_list_has(state, render::Op::Chronicles, "action:select-scion:" + successor_id),
+      "succession: heirship admission is actionable without the oath");
+  fire_chronicle_action(state, "oath-toggle");  // disarm for the soft heir
+  fire_chronicle_action(state, "select-scion", successor_id);
+  const bool admitted_heir = chronicles_pump(state, 250, [&] {
+    return state.session->connection_state() == ConnectionState::Ready &&
+           !state.session->model().chronicles_pending &&
+           state.session->model().player.alive &&
+           state.screen == Screen::Expedition;
+  });
+  scenario_check(admitted_heir,
+                 "succession: the heirship select admits the successor");
+  // RECORDED RED (TASK-0081 discipline): on the current tip
+  // player:chronicles:select resets the lifecycle but not the Simulation
+  // actor's life, so a successor inherits a zero-life seat until a fresh
+  // socket heal. Continue every independent UI state via the accepted
+  // dev:heal surface rather than editing forbidden server authority.
+  send_dev_envelope(state, "dev:heal");
+  const bool heir_out = chronicles_pump(state, 250, [&] {
+    const auto& model = state.session->model();
+    return model.player.alive && model.player.life > 0 &&
+           model.lifecycle == "alive" && state.screen == Screen::Expedition;
+  });
+  scenario_check(heir_out, "succession: the heir takes a healed field");
+  scenario_follow_camera(state);
+  scenario_present(state);
+  {
+    bool chip_names_heir = false;
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::HouseChip &&
+          item.label.find(successor_name) != std::string::npos)
+        chip_names_heir = true;
+    scenario_check(chip_names_heir, "succession: the identity chip names the heir");
+  }
+
+  // 9) Relic recovery: surface the heirloom, take it, watch the crypt flip.
+  send_dev_envelope(state, "dev:release-relic");
+  const bool surfaced = chronicles_pump(state, 250, [&] {
+    for (const auto& item : state.session->model().ground)
+      if (item.relic) return true;
+    return false;
+  });
+  scenario_check(surfaced, "recovery: the surfaced heirloom carries its provenance");
+  state.session->submit(ClientCommand::pick_up(""));
+  const bool recovered = chronicles_pump(state, 250, [&] {
+    for (const auto& house : state.session->model().chronicle.houses)
+      for (const auto& entry : house.crypt)
+        if (entry.id == first_scion_id && entry.relic_status == "recovered") return true;
+    return false;
+  });
+  scenario_check(recovered, "recovery: the crypt record flips lost to recovered");
+  scenario_check(!state.relic_toast.empty(),
+                 "recovery: the recovery toast names the fallen");
+  scenario_follow_camera(state);
+  scenario_present(state);
+  scenario_check(render_list_has(state, render::Op::Hud, "relic: "),
+                 "recovery: the expedition HUD announces the recovery");
+
+  // 10) Reconnect: the existing House/Scion state renders without any login
+  // side effects — the front door shows the persisted roster.
+  state.session->shutdown();
+  state.session.reset();
+  state.screen = Screen::Chronicles;
+  state.session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+      "127.0.0.1", port, "ox-pc-i-gate-b", false);
+  scenario_check(state.session->start(&error), "reconnect: session restarts");
+  const bool roster_ok = chronicles_pump(state, 250, [&] {
+    const auto& chronicle = state.session->model().chronicle;
+    if (!chronicle.present) return false;
+    bool heir_listed = false;
+    for (const auto& house : chronicle.houses) {
+      for (const auto& scion : house.scions)
+        if (scion.id == successor_id) heir_listed = true;
+      for (const auto& entry : house.crypt)
+        if (entry.id == first_scion_id && entry.relic_status == "recovered") heir_listed = true;
+    }
+    return heir_listed && state.screen == Screen::Chronicles;
+  });
+  scenario_check(roster_ok, "reconnect: House, heir, and crypt render on return");
+  scenario_present(state);
+  scenario_check(render_list_has(state, render::Op::Chronicles, "scion " + successor_id),
+                 "reconnect: the living heir is listed");
+
+  // 11) Re-admit the heir — a living scion's plain outing now takes the
+  // chronicles:scion:set-out wire path (road purse) — and capture the
+  // expedition HUD evidence.
+  fire_chronicle_action(state, "set-out", successor_id);
+  const bool heir_again = chronicles_pump(state, 250, [&] {
+    const auto& model = state.session->model();
+    return state.session->connection_state() == ConnectionState::Ready &&
+           !model.chronicles_pending && model.player.alive &&
+           model.player.life > 0 && state.screen == Screen::Expedition;
+  });
+  scenario_check(heir_again, "reconnect: re-admission returns to the expedition");
+  scenario_follow_camera(state);
+  scenario_present(state);
+  const bool hud_png = reference_present(state, 960, 600,
+                                         capture_dir + "\\expedition-hud-960x600.png");
+  scenario_check(hud_png, "evidence: expedition HUD capture written");
+
+  if (state.session) state.session->shutdown();
+  server->stop();
+  delete server;
+  return 0;
+}
+
 int run_scenarios(const std::string& which) {
   struct Entry {
     const char* name;
@@ -3015,6 +4201,7 @@ int run_scenarios(const std::string& which) {
       {"combat-juice", scenario_combat_juice},
       {"remote-render-list", scenario_remote_render_list},
       {"zoom-invariance", scenario_zoom_invariance},
+      {"chronicles-gate-b", scenario_chronicles_gate_b},
   };
   int total_failures = 0;
   for (const auto& entry : entries) {
@@ -3055,6 +4242,8 @@ const char* render_op_name(render::Op op) {
     case render::Op::PaneWeapon: return "PaneWeapon";
     case render::Op::PaneItem: return "PaneItem";
     case render::Op::PaneBanked: return "PaneBanked";
+    case render::Op::Chronicles: return "Chronicles";
+    case render::Op::HouseChip: return "HouseChip";
   }
   return "Unknown";
 }
@@ -3337,10 +4526,14 @@ int run_reference_scenes(const std::string& which) {
 
 }  // namespace
 
-int run_remote_native_client(const char* host, unsigned short port, const char* guest_id) {
+int run_remote_native_client(const char* host, unsigned short port, const char* guest_id,
+                             bool chronicles_mode) {
   auto state = std::make_unique<ClientState>();
+  state->chronicles_mode = chronicles_mode;
+  state->screen = chronicles_mode ? Screen::Chronicles : Screen::Expedition;
   state->session = std::make_unique<verdigris::client::RemoteProtocolSession>(
-      host ? host : "127.0.0.1", port, guest_id ? guest_id : "cursor-guest", true);
+      host ? host : "127.0.0.1", port, guest_id ? guest_id : "cursor-guest",
+      !chronicles_mode);
   std::string error;
   if (!state->session->start(&error)) {
     std::fprintf(stderr, "verdigris_client --remote: %s\n", error.c_str());
@@ -3357,10 +4550,11 @@ int run_remote_native_client(const char* host, unsigned short port, const char* 
   window_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
   RegisterClassA(&window_class);
 
-  HWND window =
-      CreateWindowExA(0, window_class.lpszClassName, "Verdigris Remote Guest", WS_OVERLAPPEDWINDOW,
-                      CW_USEDEFAULT, CW_USEDEFAULT, 960, 600, nullptr, nullptr, instance,
-                      state.get());
+  HWND window = CreateWindowExA(
+      0, window_class.lpszClassName,
+      chronicles_mode ? "Verdigris Chronicles" : "Verdigris Remote Guest",
+      WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 960, 600, nullptr, nullptr,
+      instance, state.get());
   ShowWindow(window, SW_SHOW);
   SetTimer(window, 1, 50, nullptr);
 
@@ -3408,6 +4602,7 @@ int main(int argc, char** argv) {
     if (std::strcmp(argv[i], "--remote") == 0) {
       const char* host = "127.0.0.1";
       unsigned short port = 6580;
+      const char* guest = "cursor-guest";
       if (i + 1 < argc && argv[i + 1][0] != '-') {
         const bool dotted = std::strchr(argv[i + 1], '.') != nullptr;
         if (dotted) {
@@ -3417,8 +4612,15 @@ int main(int argc, char** argv) {
         } else {
           port = static_cast<unsigned short>(std::atoi(argv[++i]));
         }
+        // Optional guest identity token after host/port.
+        if (i + 1 < argc && argv[i + 1][0] != '-') guest = argv[++i];
       }
-      return run_remote_native_client(host, port, "cursor-guest");
+      // TASK-0145: the remote owner path opens at the Chronicles front door
+      // by default; --quick preserves the legacy straight-into-world guest.
+      bool chronicles_mode = true;
+      for (int k = 1; k < argc; ++k)
+        if (std::strcmp(argv[k], "--quick") == 0) chronicles_mode = false;
+      return run_remote_native_client(host, port, guest, chronicles_mode);
     }
   }
   HINSTANCE instance = GetModuleHandle(nullptr);

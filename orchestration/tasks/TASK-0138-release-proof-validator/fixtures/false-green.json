@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0.0",
+  "task": "TASK-0138-FALSE-GREEN",
+  "title": "Synthetic false-green release-proof manifest",
+  "purpose": "Fixture for the validator: looks green on paper (verdict.release_ready true) while every load-bearing binding is planted with a precise integrity defect. Never cited as evidence of anything.",
+  "source_head": {
+    "commit": "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+    "branch": "synthetic/false-green",
+    "immutable_task_base": "0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+    "base_ancestry_verified": true,
+    "worktree_clean_at_claim": true
+  },
+  "commands": [
+    {
+      "name": "synthetic.build",
+      "command": "make release",
+      "exit_code": 0,
+      "status": "pass",
+      "ci_label": "green"
+    },
+    {
+      "name": "synthetic.smoke",
+      "command": "make smoke",
+      "exit_code": 0,
+      "status": "fail"
+    }
+  ],
+  "environment": {
+    "os": "Synthetic OS",
+    "architecture": "SYNTH64",
+    "node": "v22.11.0",
+    "worker": "ox-pc-f",
+    "verified": true,
+    "verification_outputs": [
+      { "command": "node --version", "output": "v22.11.0" }
+    ],
+    "status": "verified"
+  },
+  "artifacts": [
+    {
+      "path": "orchestration/tasks/TASK-0138-release-proof-validator/fixtures/false-green-artifact.txt",
+      "role": "release bundle stand-in bound to a deliberately wrong digest",
+      "bytes": 999999,
+      "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    {
+      "path": "orchestration/tasks/TASK-0138-release-proof-validator/fixtures/does-not-exist.bin",
+      "role": "installer stand-in that was never produced",
+      "bytes": 4096,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    {
+      "path": "orchestration/tasks/TASK-0138-release-proof-validator/fixtures/false-green-artifact.txt",
+      "role": "digestless copy with no explanatory note"
+    }
+  ],
+  "platform_coverage": [
+    {
+      "platform": "synthetic-x64",
+      "role": "target distribution platform",
+      "build_artifact": null,
+      "installer_artifact": null,
+      "runtime_verification": null,
+      "status": "proven"
+    }
+  ],
+  "rollback": {
+    "status": "proven",
+    "release_to_rollback": "1.0.0 -> 0.9.9",
+    "procedure_documented": false,
+    "procedure_artifact": null,
+    "rehearsal_evidence": null
+  },
+  "owner_actions": [
+    {
+      "action": "release build",
+      "authorized": false,
+      "performed": true,
+      "evidence": null
+    }
+  ],
+  "verdict": {
+    "release_ready": true,
+    "state": "PROVEN",
+    "evidence_gaps": [],
+    "statement": "Everything is green. Trust the labels."
+  }
+}

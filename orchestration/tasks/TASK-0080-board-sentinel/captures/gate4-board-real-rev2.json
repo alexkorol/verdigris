@@ -1,0 +1,761 @@
+{
+  "schema": "board-sentinel/1",
+  "repo": "Z:\\Code\\.worktrees\\verdigris\\ox-pc-b",
+  "min_ready": 8,
+  "counts": {
+    "effective_ready": 29,
+    "claimed": 1,
+    "review_requested": 2,
+    "revise": 0,
+    "hold": 4,
+    "draft": 18,
+    "stale_claims": 0,
+    "collisions": 0,
+    "integrated": 73,
+    "coordinator_branches": 96
+  },
+  "effective_ready": [
+    "TASK-0083",
+    "TASK-0086",
+    "TASK-0097",
+    "TASK-0100",
+    "TASK-0104",
+    "TASK-0105",
+    "TASK-0119",
+    "TASK-0120",
+    "TASK-0128",
+    "TASK-0082",
+    "TASK-0115",
+    "TASK-0091",
+    "TASK-0092",
+    "TASK-0093",
+    "TASK-0095",
+    "TASK-0096",
+    "TASK-0098",
+    "TASK-0099",
+    "TASK-0101",
+    "TASK-0102",
+    "TASK-0103",
+    "TASK-0116",
+    "TASK-0117",
+    "TASK-0118",
+    "TASK-0121",
+    "TASK-0084",
+    "TASK-0085",
+    "TASK-0114",
+    "TASK-0094"
+  ],
+  "claimed": [
+    {
+      "id": "TASK-0056",
+      "state": "CLAIMED",
+      "coordinator": "deepseek",
+      "worker_branch": "codex/TASK-0056-native-protocol-n5-deepseek",
+      "started_at": "2026-08-18T18:00:00-07:00"
+    }
+  ],
+  "review_requested": [
+    {
+      "id": "TASK-0080",
+      "coordinator": "codex (worker: ox-pc-b)"
+    },
+    {
+      "id": "TASK-0081",
+      "coordinator": "ox-pc-a"
+    }
+  ],
+  "revise": [],
+  "hold": [
+    "TASK-0077",
+    "TASK-0078",
+    "TASK-0073",
+    "TASK-0079"
+  ],
+  "draft": [
+    "TASK-0087",
+    "TASK-0088",
+    "TASK-0089",
+    "TASK-0090",
+    "TASK-0106",
+    "TASK-0107",
+    "TASK-0108",
+    "TASK-0109",
+    "TASK-0110",
+    "TASK-0111",
+    "TASK-0112",
+    "TASK-0113",
+    "TASK-0122",
+    "TASK-0123",
+    "TASK-0124",
+    "TASK-0125",
+    "TASK-0126",
+    "TASK-0127"
+  ],
+  "stale_claims": [],
+  "collisions": [],
+  "coordinator_branches": [
+    {
+      "ref": "codexclone/codex/TASK-0001-native-legends-records",
+      "task_id": "TASK-0001",
+      "commit": "7ed844d8",
+      "committed_at": "2026-08-15T23:47:49-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0002-build-ci-hardening",
+      "task_id": "TASK-0002",
+      "commit": "f9c979b4",
+      "committed_at": "2026-08-16T09:11:27-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0003-slice-verification-harness",
+      "task_id": "TASK-0003",
+      "commit": "e25336da",
+      "committed_at": "2026-08-16T00:02:06-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0004-native-client-direct-control",
+      "task_id": "TASK-0004",
+      "commit": "7ac51d49",
+      "committed_at": "2026-08-16T09:11:29-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0005-legacy-archaeology-audit",
+      "task_id": "TASK-0005",
+      "commit": "ff2ea30f",
+      "committed_at": "2026-08-16T08:39:02-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0006-native-relic-reentry",
+      "task_id": "TASK-0006",
+      "commit": "f542a04f",
+      "committed_at": "2026-08-16T09:02:41-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0007-native-skill-actions",
+      "task_id": "TASK-0007",
+      "commit": "e7505ad2",
+      "committed_at": "2026-08-16T09:46:21-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0008-denylist-hardening",
+      "task_id": "TASK-0008",
+      "commit": "56ac8f0e",
+      "committed_at": "2026-08-16T09:47:38-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0009-client-skill-bindings",
+      "task_id": "TASK-0009",
+      "commit": "629a1c04",
+      "committed_at": "2026-08-16T10:26:00-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0010-native-actor-facing",
+      "task_id": "TASK-0010",
+      "commit": "7e066aa5",
+      "committed_at": "2026-08-16T10:50:40-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0011-monster-skill-ai",
+      "task_id": "TASK-0011",
+      "commit": "8c68aede",
+      "committed_at": "2026-08-16T11:16:50-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0012-slice-camera-evidence",
+      "task_id": "TASK-0012",
+      "commit": "4b277574",
+      "committed_at": "2026-08-16T11:43:15-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0013-client-telegraph-rendering",
+      "task_id": "TASK-0013",
+      "commit": "c2d62c30",
+      "committed_at": "2026-08-16T12:12:21-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0017-native-movement-feel",
+      "task_id": "TASK-0017",
+      "commit": "5b73a241",
+      "committed_at": "2026-08-16T16:34:22-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0020-browser-disconnect-safety-rev1",
+      "task_id": "TASK-0020",
+      "commit": "ae7cbfcc",
+      "committed_at": "2026-08-16T14:38:50-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0022-browser-25d-phase1",
+      "task_id": "TASK-0022",
+      "commit": "c9563abe",
+      "committed_at": "2026-08-16T15:27:49-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0023-browser-25d-phase2",
+      "task_id": "TASK-0023",
+      "commit": "48725e3f",
+      "committed_at": "2026-08-16T15:49:08-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0025-instance-lifecycle-correctness",
+      "task_id": "TASK-0025",
+      "commit": "63df51fd",
+      "committed_at": "2026-08-16T16:54:58-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0026-native-ci-path-filter",
+      "task_id": "TASK-0026",
+      "commit": "146e3b7a",
+      "committed_at": "2026-08-16T16:42:50-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0027-browser-25d-phase4-codex",
+      "task_id": "TASK-0027",
+      "commit": "c980cb1b",
+      "committed_at": "2026-08-16T20:15:29-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0028-native-scenery-and-catalog",
+      "task_id": "TASK-0028",
+      "commit": "b90e6984",
+      "committed_at": "2026-08-16T19:32:13-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0029-browser-25d-phase5",
+      "task_id": "TASK-0029",
+      "commit": "a8993245",
+      "committed_at": "2026-08-16T20:51:43-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0030-native-persistence",
+      "task_id": "TASK-0030",
+      "commit": "94719ae6",
+      "committed_at": "2026-08-16T21:47:38-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0031-browser-d106-audit",
+      "task_id": "TASK-0031",
+      "commit": "e080b32a",
+      "committed_at": "2026-08-16T21:53:04-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0032-browser-d106-implementation",
+      "task_id": "TASK-0032",
+      "commit": "ac3a7216",
+      "committed_at": "2026-08-16T22:50:24-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0033-daytime-default",
+      "task_id": "TASK-0033",
+      "commit": "ea33c63d",
+      "committed_at": "2026-08-16T23:15:47-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0034-playability-evaluation",
+      "task_id": "TASK-0034",
+      "commit": "9b59d8d2",
+      "committed_at": "2026-08-16T23:59:22-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0035-native-exe-triage",
+      "task_id": "TASK-0035",
+      "commit": "225078d1",
+      "committed_at": "2026-08-17T02:18:25-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0036-ui-regression-sweep",
+      "task_id": "TASK-0036",
+      "commit": "34800115",
+      "committed_at": "2026-08-17T00:35:27-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0037-movement-feel-rework",
+      "task_id": "TASK-0037",
+      "commit": "15c1a531",
+      "committed_at": "2026-08-17T02:25:01-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0038-combat-controls-rebinding",
+      "task_id": "TASK-0038",
+      "commit": "f4df0b99",
+      "committed_at": "2026-08-17T09:19:27-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0039-native-protocol-server-n1",
+      "task_id": "TASK-0039",
+      "commit": "413b3aff",
+      "committed_at": "2026-08-17T03:29:27-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0040-first-encounter-readability",
+      "task_id": "TASK-0040",
+      "commit": "6295298a",
+      "committed_at": "2026-08-17T02:24:44-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0041-death-decision-moment",
+      "task_id": "TASK-0041",
+      "commit": "14a6ceea",
+      "committed_at": "2026-08-17T04:27:35-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0042-first-loot-moment",
+      "task_id": "TASK-0042",
+      "commit": "e462c26d",
+      "committed_at": "2026-08-17T08:23:40-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0043-playtest-harness-stabilization",
+      "task_id": "TASK-0043",
+      "commit": "1da567aa",
+      "committed_at": "2026-08-17T13:46:32-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0045-native-protocol-n3",
+      "task_id": "TASK-0045",
+      "commit": "6d39565c",
+      "committed_at": "2026-08-17T17:35:14-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0046-playability-reevaluation",
+      "task_id": "TASK-0046",
+      "commit": "e7a6e2cc",
+      "committed_at": "2026-08-17T19:00:01-07:00"
+    },
+    {
+      "ref": "codexclone/codex/TASK-0048-chronicles-silent-combat",
+      "task_id": "TASK-0048",
+      "commit": "810ddd92",
+      "committed_at": "2026-08-17T19:36:16-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0017-native-movement-feel",
+      "task_id": "TASK-0017",
+      "commit": "94ab87bc",
+      "committed_at": "2026-08-16T21:47:59-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0018-death-recoverability",
+      "task_id": "TASK-0018",
+      "commit": "af22af1a",
+      "committed_at": "2026-08-16T13:56:29-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0019-browser-25d-survey",
+      "task_id": "TASK-0019",
+      "commit": "832b7f3f",
+      "committed_at": "2026-08-16T13:45:19-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0024-browser-25d-phase3",
+      "task_id": "TASK-0024",
+      "commit": "6dd5795e",
+      "committed_at": "2026-08-16T17:45:06-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0027-browser-25d-phase4",
+      "task_id": "TASK-0027",
+      "commit": "8ba9dcf1",
+      "committed_at": "2026-08-16T23:35:48-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0031-browser-d106-audit",
+      "task_id": "TASK-0031",
+      "commit": "ee6ac543",
+      "committed_at": "2026-08-16T22:12:48-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0033-daytime-default",
+      "task_id": "TASK-0033",
+      "commit": "5bd81436",
+      "committed_at": "2026-08-17T00:13:11-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0034-playability-evaluation",
+      "task_id": "TASK-0034",
+      "commit": "54255877",
+      "committed_at": "2026-08-17T17:16:58-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0038-rebinding-kimiwork",
+      "task_id": "TASK-0038",
+      "commit": "c73fff1b",
+      "committed_at": "2026-08-17T18:15:22-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0042-first-loot-moment",
+      "task_id": "TASK-0042",
+      "commit": "9d0d9dfd",
+      "committed_at": "2026-08-18T12:36:37-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0044-native-protocol-n2",
+      "task_id": "TASK-0044",
+      "commit": "80286b12",
+      "committed_at": "2026-08-17T17:03:18-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0045-native-protocol-n3",
+      "task_id": "TASK-0045",
+      "commit": "6d39565c",
+      "committed_at": "2026-08-17T17:35:14-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0046-playability-reevaluation",
+      "task_id": "TASK-0046",
+      "commit": "e7a6e2cc",
+      "committed_at": "2026-08-17T19:00:01-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0047-native-n4-kimiwork",
+      "task_id": "TASK-0047",
+      "commit": "82b45637",
+      "committed_at": "2026-08-18T14:54:03-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0048-chronicles-silent-combat",
+      "task_id": "TASK-0048",
+      "commit": "810ddd92",
+      "committed_at": "2026-08-17T19:36:16-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0049-first-session-ui-wave-deepseek",
+      "task_id": "TASK-0049",
+      "commit": "54240ad2",
+      "committed_at": "2026-08-18T12:26:27-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0050-native-client-c1-deepseek",
+      "task_id": "TASK-0050",
+      "commit": "55621bca",
+      "committed_at": "2026-08-18T13:16:40-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0051-native-client-harness-deepseek",
+      "task_id": "TASK-0051",
+      "commit": "021c8366",
+      "committed_at": "2026-08-18T14:23:48-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0052-suite-flake-hardening",
+      "task_id": "TASK-0052",
+      "commit": "073845b2",
+      "committed_at": "2026-08-18T13:19:14-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0053-world-composition-polish",
+      "task_id": "TASK-0053",
+      "commit": "57040b86",
+      "committed_at": "2026-08-18T13:42:30-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0054-native-client-c2-polish-deepseek",
+      "task_id": "TASK-0054",
+      "commit": "79d1934c",
+      "committed_at": "2026-08-18T15:01:46-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0055-browser-followups-cursor",
+      "task_id": "TASK-0055",
+      "commit": "f1fb41e2",
+      "committed_at": "2026-08-19T23:59:25-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0055-browser-followups-kimiwork",
+      "task_id": "TASK-0055",
+      "commit": "6df8d648",
+      "committed_at": "2026-08-18T14:55:30-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0056-native-protocol-n5-architect",
+      "task_id": "TASK-0056",
+      "commit": "ab14bdc2",
+      "committed_at": "2026-08-20T08:57:12-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0056-native-protocol-n5-deepseek",
+      "task_id": "TASK-0056",
+      "commit": "fbe24587",
+      "committed_at": "2026-08-18T19:36:27-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0057-clustered-accents-deepseek",
+      "task_id": "TASK-0057",
+      "commit": "f6007283",
+      "committed_at": "2026-08-18T17:13:01-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0059-responsive-overlay-pass-cursor",
+      "task_id": "TASK-0059",
+      "commit": "0505bfed",
+      "committed_at": "2026-08-20T02:07:32-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0061-networked-guest-slice-cursor",
+      "task_id": "TASK-0061",
+      "commit": "ca0b7b9d",
+      "committed_at": "2026-08-20T02:43:58-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0062-playtest-flake-triage-cursor",
+      "task_id": "TASK-0062",
+      "commit": "68af057e",
+      "committed_at": "2026-08-20T02:58:56-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0062-playtest-flake-triage-mac-claude",
+      "task_id": "TASK-0062",
+      "commit": "547d9012",
+      "committed_at": "2026-08-20T03:08:10-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0063-server-gate-a-surface-cursor",
+      "task_id": "TASK-0063",
+      "commit": "aed7394b",
+      "committed_at": "2026-08-20T04:06:11-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0064-remote-presentation-unify-cursor",
+      "task_id": "TASK-0064",
+      "commit": "15562937",
+      "committed_at": "2026-08-20T03:50:00-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0065-entity-density-benchmark-cursor",
+      "task_id": "TASK-0065",
+      "commit": "d9b69c7c",
+      "committed_at": "2026-08-20T04:13:04-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0066-capture-harness-consolidation-mac-claude",
+      "task_id": "TASK-0066",
+      "commit": "2450b2a8",
+      "committed_at": "2026-08-20T04:18:25-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0067-native-journey-ci-cursor",
+      "task_id": "TASK-0067",
+      "commit": "d4657a55",
+      "committed_at": "2026-08-20T04:52:11-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0068-remote-presentation-polish-cursor",
+      "task_id": "TASK-0068",
+      "commit": "9716221b",
+      "committed_at": "2026-08-20T04:59:17-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0069-remote-reconnect-cursor",
+      "task_id": "TASK-0069",
+      "commit": "88a46e79",
+      "committed_at": "2026-08-20T05:06:12-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0070-reference-scenes-cursor",
+      "task_id": "TASK-0070",
+      "commit": "0a014420",
+      "committed_at": "2026-08-20T05:52:14-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0071-protocol-matrix-audit-luna-mac",
+      "task_id": "TASK-0071",
+      "commit": "150a3285",
+      "committed_at": "2026-08-20T07:22:23-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0072-owner-launcher-cursor",
+      "task_id": "TASK-0072",
+      "commit": "ebcebdcc",
+      "committed_at": "2026-08-20T05:57:34-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0074-gear-outcomes-profile-luna-mac",
+      "task_id": "TASK-0074",
+      "commit": "11b21c13",
+      "committed_at": "2026-08-20T08:02:25-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0075-native-terrain-tiles-cursor",
+      "task_id": "TASK-0075",
+      "commit": "2cccf0fe",
+      "committed_at": "2026-08-20T07:36:50-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0076-native-hud-parity-cursor",
+      "task_id": "TASK-0076",
+      "commit": "8bc525a8",
+      "committed_at": "2026-08-20T07:41:27-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0080-board-sentinel-ox-pc-b",
+      "task_id": "TASK-0080",
+      "commit": "0ab4e7a5",
+      "committed_at": "2026-08-21T22:14:03-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0081-gate-b-wire-contract-ox-pc-a",
+      "task_id": "TASK-0081",
+      "commit": "dff39173",
+      "committed_at": "2026-08-21T21:21:41-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0083-server-lifecycle-soak-ox-pc-d",
+      "task_id": "TASK-0083",
+      "commit": "88d9210b",
+      "committed_at": "2026-08-21T22:23:25-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0086-gate-c-contract-audit-ox-pc-c",
+      "task_id": "TASK-0086",
+      "commit": "8ddfb06e",
+      "committed_at": "2026-08-21T22:15:10-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0105-passive-tree-progression-gap-audit-ox-pc-d",
+      "task_id": "TASK-0105",
+      "commit": "8e6e42b3",
+      "committed_at": "2026-08-21T22:04:50-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0112-passive-tree-authority-schema-ox-pc-c",
+      "task_id": "TASK-0112",
+      "commit": "d14c69d4",
+      "committed_at": "2026-08-21T22:54:04-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0120-release-verification-gap-audit-ox-pc-e",
+      "task_id": "TASK-0120",
+      "commit": "4e0920d4",
+      "committed_at": "2026-08-21T22:01:42-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0128-accepted-throughput-normalization-ox-pc-a",
+      "task_id": "TASK-0128",
+      "commit": "bb67c566",
+      "committed_at": "2026-08-21T22:08:14-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0129-server-lifecycle-soak-ox-pc-d",
+      "task_id": "TASK-0129",
+      "commit": "b138871b",
+      "committed_at": "2026-08-21T22:48:45-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0130-gate-c-decision-envelope-ox-pc-e",
+      "task_id": "TASK-0130",
+      "commit": "30b851a7",
+      "committed_at": "2026-08-21T22:55:06-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0131-release-proof-manifest-ox-pc-f",
+      "task_id": "TASK-0131",
+      "commit": "584a7e11",
+      "committed_at": "2026-08-21T22:52:49-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0132-clean-machine-harness-contract-ox-pc-g",
+      "task_id": "TASK-0132",
+      "commit": "d6aa02d2",
+      "committed_at": "2026-08-21T22:53:54-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0133-save-migration-rollback-contract-ox-pc-h",
+      "task_id": "TASK-0133",
+      "commit": "bbbebb1b",
+      "committed_at": "2026-08-21T22:53:49-07:00"
+    },
+    {
+      "ref": "origin/codex/TASK-0134-distribution-signing-boundary-ox-pc-i",
+      "task_id": "TASK-0134",
+      "commit": "b3599c80",
+      "committed_at": "2026-08-21T22:45:35-07:00"
+    }
+  ],
+  "spec_state_annotations": {
+    "TASK-0056": "(PIPELINED ΓÇö claimable only AFTER TASK-0047 is INTEGRATED;",
+    "TASK-0058": "(released 2026-08-20 ~11:45 ΓÇö N5 integrated at 18/19, Gate A green. ALSO IN SCOPE now: session-arc + town-amenities town/NPC surface, the deliberate N5 leftover)"
+  },
+  "integrated": [
+    "TASK-0001",
+    "TASK-0002",
+    "TASK-0003",
+    "TASK-0004",
+    "TASK-0005",
+    "TASK-0006",
+    "TASK-0007",
+    "TASK-0008",
+    "TASK-0009",
+    "TASK-0010",
+    "TASK-0011",
+    "TASK-0012",
+    "TASK-0013",
+    "TASK-0014",
+    "TASK-0015",
+    "TASK-0016",
+    "TASK-0017",
+    "TASK-0018",
+    "TASK-0019",
+    "TASK-0020",
+    "TASK-0021",
+    "TASK-0022",
+    "TASK-0023",
+    "TASK-0024",
+    "TASK-0025",
+    "TASK-0026",
+    "TASK-0027",
+    "TASK-0028",
+    "TASK-0029",
+    "TASK-0030",
+    "TASK-0031",
+    "TASK-0032",
+    "TASK-0033",
+    "TASK-0034",
+    "TASK-0035",
+    "TASK-0036",
+    "TASK-0037",
+    "TASK-0038",
+    "TASK-0039",
+    "TASK-0040",
+    "TASK-0041",
+    "TASK-0042",
+    "TASK-0043",
+    "TASK-0044",
+    "TASK-0045",
+    "TASK-0046",
+    "TASK-0047",
+    "TASK-0048",
+    "TASK-0049",
+    "TASK-0050",
+    "TASK-0051",
+    "TASK-0052",
+    "TASK-0053",
+    "TASK-0054",
+    "TASK-0055",
+    "TASK-0057",
+    "TASK-0059",
+    "TASK-0060",
+    "TASK-0061",
+    "TASK-0062",
+    "TASK-0063",
+    "TASK-0064",
+    "TASK-0065",
+    "TASK-0066",
+    "TASK-0067",
+    "TASK-0068",
+    "TASK-0069",
+    "TASK-0070",
+    "TASK-0071",
+    "TASK-0072",
+    "TASK-0074",
+    "TASK-0075",
+    "TASK-0076"
+  ],
+  "queue_floor": {
+    "min_ready": 8,
+    "effective_ready_count": 29,
+    "satisfied": true
+  },
+  "errors": [],
+  "healthy": true,
+  "exit_code": 0
+}

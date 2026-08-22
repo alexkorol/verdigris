@@ -30,3 +30,9 @@ Recommendation: option 1 is the smallest coherent change.
 
 No source changes were made because an implementation limited to the declared
 paths would be unreachable.
+
+## Resolution — RESOLVED
+
+TASK-0038 was accepted and integrated with the required mounted control,
+settings, and quickbar seams. This historical ownership question is not a live
+blocker at `d2423873`.

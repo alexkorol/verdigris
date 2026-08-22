@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "task": "TASK-0134",
+  "title": "Distribution boundary negative-case fixtures",
+  "purpose": "Declarative fixtures defining the failure modes any future distribution validator (first wired by TASK-0126) must reject. Each case is a simulated precondition; the validator under test must produce exactly the declared expected_error and fail closed. No case executes an installer, contacts a service, or requires credentials.",
+  "consumption_contract": {
+    "how_used": "A validator loads this file, materializes each 'simulated_condition' against disposable copies of the artifacts/manifests, and asserts the observed error equals 'expected_error'.",
+    "pass_rule": "A case passes only when expected_error fires and execution halts without side effects on real data.",
+    "fail_rule": "Silent acceptance, a different error, or partial progress beyond the gate all count as failure."
+  },
+  "cases": [
+    {
+      "id": "N01",
+      "name": "manifest lists artifact that does not exist",
+      "simulated_condition": "hash manifest references 'native/build/dist/verdigris_client.zip' but the path is absent from the artifact set.",
+      "expected_error": "MISSING_ARTIFACT",
+      "boundary_response": "Refuse to emit or accept the manifest; no partial distribution bundle is produced.",
+      "machine_verifiable": true
+    },
+    {
+      "id": "N02",
+      "name": "artifact bytes differ from recorded hash",
+      "simulated_condition": "verdigris_server binary recomputes to a SHA-256 different from the manifest line.",
+      "expected_error": "HASH_MISMATCH",
+      "boundary_response": "Quarantine artifact and fail closed; rebuild from pinned commit; never proceed with a warning.",
+      "machine_verifiable": true
+    },
+    {
+      "id": "N03",
+      "name": "distribution artifact carries no signature",
+      "simulated_condition": "update/installer validation runs against an artifact whose signature_status is absent or false.",
+      "expected_error": "UNSIGNED_ARTIFACT",
+      "boundary_response": "Reject for end-user pathways. Unsigned intermediates are legal only inside the machine lane before owner handoff.",
+      "machine_verifiable": true,
+      "note": "Signature presence is machine-checkable; signature creation stays OA-2 owner-only."
+    },
+    {
+      "id": "N04",
+      "name": "shipped asset lacks license provenance",
+      "simulated_condition": "asset inventory entry has empty/unknown license field while the asset is included in the artifact set.",
+      "expected_error": "MISSING_LICENSE",
+      "boundary_response": "Block packaging of that asset; route to TASK-0094 inventory then OA-4 ruling. Workers record facts, never interpret licenses.",
+      "machine_verifiable": true
+    },
+    {
+      "id": "N05",
+      "name": "action requires credential workers must not hold",
+      "simulated_condition": "pipeline step attempts store upload, account login, or certificate import.",
+      "expected_error": "OWNER_CREDENTIAL_REQUIRED",
+      "boundary_response": "Halt and emit handoff bundle for the owner lane instead. This error firing is itself the correct behavior when a misconfigured pipeline reaches the boundary.",
+      "machine_verifiable": true
+    },
+    {
+      "id": "N06",
+      "name": "notarization claimed without attestation",
+      "simulated_condition": "release record asserts notarized=true with no owner-authored attestation reference.",
+      "expected_error": "NOTARIZATION_UNPROVEN",
+      "boundary_response": "Treat as notarized=false everywhere; downgrade release readiness rather than trusting prose claims.",
+      "machine_verifiable": true,
+      "note": "Mirrors TASK-0120 finding: signing/notarization evidence must be owner-attested, never worker-asserted."
+    },
+    {
+      "id": "N07",
+      "name": "rollback drill missing or failing for update path",
+      "simulated_condition": "update approval requested while rollback_drill_status is UNPROVEN, absent, or its transcript shows failed restore.",
+      "expected_error": "ROLLBACK_UNPROVEN",
+      "boundary_response": "Withhold update/release sign-off until TASK-0127-backed drill proves old-version relaunch accepts restored data.",
+      "machine_verifiable": true
+    }
+  ]
+}

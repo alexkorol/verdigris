@@ -2,7 +2,8 @@ param(
   [switch]$RunTests,
   [switch]$RunClient,
   [switch]$RunClientScenarios,
-  [switch]$RunDensityBench
+  [switch]$RunDensityBench,
+  [switch]$RunServerLifecycleSoak
 )
 
 $ErrorActionPreference = "Stop"
@@ -135,4 +136,19 @@ if ($RunDensityBench) {
       if ($LASTEXITCODE -ne 0) { throw "density bench failed n=$n run=$run" }
     }
   }
+}
+if ($RunServerLifecycleSoak) {
+  $soakObj = Join-Path $buildRoot "server_lifecycle_soak.obj"
+  $soakExe = Join-Path $buildRoot "server_lifecycle_soak.exe"
+  Invoke-Msvc ('/c "' + $nativeRoot + '\tools\server_lifecycle_soak.cpp" /I"' + $nativeRoot + '\client" /Fo"' + $soakObj + '"')
+  # Link against the proven session-seam object set so the soak drives the
+  # REAL WebSocketServer through the same client transport the tests use.
+  Invoke-Msvc ('"' + $soakObj + '" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $soakExe + '" /link ws2_32.lib')
+  $soakCaptureDir = Join-Path $nativeRoot "..\orchestration\tasks\TASK-0129-server-lifecycle-soak\captures"
+  New-Item -ItemType Directory -Force -Path $soakCaptureDir | Out-Null
+  # Timestamped output: each independent gate invocation preserves its own
+  # JSON evidence under this task's captures/ folder.
+  $soakOutFile = Join-Path $soakCaptureDir ("lifecycle-soak-{0}.json" -f (Get-Date -Format "yyyyMMdd-HHmmss"))
+  & $soakExe --out $soakOutFile
+  if ($LASTEXITCODE -ne 0) { throw "server lifecycle soak failed with exit code $LASTEXITCODE" }
 }
