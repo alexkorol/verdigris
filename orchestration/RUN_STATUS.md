@@ -105,7 +105,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-i | 6780-6799 | TASK-0145 frozen head `78dcac60` independently ACCEPTED and integrated at `2df5eac5` | lane complete/available after worker stops |
 | ox-pc-j | 6800-6819 | TASK-0149 revision head `a88d307d` independently ACCEPTED and integrated through `8677f021` | lane complete/available |
 | ox-pc-k | 6820-6839 | TASK-0150 frozen head `54417592` independently ACCEPTED; implementation integrated at `10039385` | lane complete/available after worker stops |
-| ox-pc-l | 6840-6859 | TASK-0146 replacement claim `78a0c4a0` pushed | independent encounter-wave replacement active |
+| ox-pc-l | 6840-6859 | TASK-0146 head `a72b6317` reviewed REVISE: reinforcements were serial, never a live pack | revision queued on frozen worker branch |
 | ox-pc-m | 6860-6879 | TASK-0147 second post-claim stop after one recovery; claim `7d092a74` released; dirty worktree preserved | P0 quarantined, not capacity |
 | ox-pc-n | 6880-6899 | TASK-0148 clean launch and its one recovery both stopped before claim/write | activation failed; clean preserved, not capacity |
 | ox-pc-o | 6900-6919 | TASK-0148 second post-claim stop after one recovery; claim `71a73de8` released; clean worktree preserved | exhausted, not capacity |
@@ -201,7 +201,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - Released: **TASK-0136** claims `6ea36f5a`/`7b24e5d3`/`7026892e` after a real
   duplicate-dispatch collision. Lane c remains quarantined; the clean lane h
   receives the replacement route after this coordination push.
-- Active work: TASK-0146 replacement claim `78a0c4a0` on ox-pc-l,
+- Active work: TASK-0146 revision 1 queued on ox-pc-l after exact-head review,
   TASK-0147 replacement claim `3ee9f928` on ox-pc-p, and TASK-0148 replacement
   claim `815a359b` on ox-pc-q. TASK-0145 frozen head `78dcac60` and
   TASK-0149 revision head `a88d307d` are independently ACCEPTED and integrated.
