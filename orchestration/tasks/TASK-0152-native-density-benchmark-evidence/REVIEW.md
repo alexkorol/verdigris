@@ -1,10 +1,10 @@
 ---
 task: TASK-0152
-verdict: REVISE
-reviewed_commit: 86f72c1cb04f21062eae16e299f3e05e8e88a70d
-reviewed_at: 2026-08-22T20:51:00Z
+verdict: ACCEPTED
+reviewed_commit: d34097d9148f60f71d88f51d3bbec4a7c236b27a
+reviewed_at: 2026-08-22T21:22:00Z
 reviewer: PC Verdigris architect/orchestrator
-revision: 1
+revision: 2
 ---
 
 # Review — REVISE
@@ -34,3 +34,18 @@ positive/negative validator matrix, deterministic double-process probe, scope
 check, and `git diff --check`; then update REPORT/STATUS and push a new frozen
 `REVIEW_REQUESTED` head.
 
+## Revision 2 — ACCEPTED
+
+Frozen worker head `d34097d9148f60f71d88f51d3bbec4a7c236b27a`
+implements the requested correction entirely within the existing owned paths.
+The validator now binds the fixed route/action, pins every threshold row's
+operator and bound, recomputes each value from its authoritative evidence
+field, and compares the stored pass result with the recomputed result.
+
+Independent review in a detached exact-head worktree passed the full native
+build/test gate. A fresh MSVC `/W4` compile of the benchmark emitted no
+warnings; all six committed positive captures validated; all twelve negative
+fixtures failed with exit 1, including the seven focused value/bound/operator/
+pass/route/action/threshold-forgery controls. The frozen diff is limited to
+`native/tools/entity_density_bench.cpp` and this task folder, and
+`git diff --check` is clean. Verdict: ACCEPTED for program integration.
