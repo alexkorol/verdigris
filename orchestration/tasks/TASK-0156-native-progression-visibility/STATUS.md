@@ -1,6 +1,6 @@
 ---
 task: TASK-0156
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: ox-pc-aa
 machine: DESKTOP-TVU7OR7
@@ -37,3 +37,10 @@ shipped gear overlay with absent/zero/nonzero distinguished. Full native gate
 plus the new `progression-surface` scenario pass; both required real-GDI
 captures were produced under this task folder and inspected before handoff.
 See REPORT.md for literal transcripts and exact SHAs.
+
+Architect transition to INTEGRATED at 2026-08-22 14:10 -07:00. Frozen remote
+head `fc2edd39beb3416883240e16d6050dd74a3f384a` was independently reviewed and
+ACCEPTED. Program commits: review `e145d6db`, implementation `8244fa37`, and
+handoff `d0bdfb0e`. Post-integration verification reran the complete native
+test suite and every client scenario successfully, including the Esc-first
+pane-dismissal contract and all absent/zero/nonzero progression checks.
