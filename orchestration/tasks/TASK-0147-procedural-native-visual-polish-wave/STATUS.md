@@ -1,6 +1,6 @@
 # TASK-0147 — STATUS
 
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: ox-alpha (OpenCode)
 worker: ox-pc-p
 machine: DESKTOP-TVU7OR7
@@ -14,6 +14,10 @@ immutable_spec_base: 060c11517d2ebb0aec0c4d4a38c5e3eb53141cb2
 worktree: Z:\Code\.worktrees\verdigris\ox-pc-p
 started_at: 2026-08-22T00:00Z (local claim time; see claim commit timestamp)
 review_requested_at: 2026-08-22T06:30Z (approximate local completion time)
+accepted_head: 974ccab6d53f8572736559fb302a70f17053dcdd
+accepted_review: 6575f330f47831123f45624961794ac929b8923b
+integrated_at: 19be98db836b4d036e5d2ee7e20e222e15fe5d51
+combined_verification: full native build/tests/all client scenarios and direct first-fight passed on the integrated program head
 
 ## Dirty-lane salvage summary
 

@@ -109,9 +109,12 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-m | 6860-6879 | TASK-0147 second post-claim stop after one recovery; claim `7d092a74` released; dirty worktree preserved | P0 quarantined, not capacity |
 | ox-pc-n | 6880-6899 | TASK-0148 clean launch and its one recovery both stopped before claim/write | activation failed; clean preserved, not capacity |
 | ox-pc-o | 6900-6919 | TASK-0148 second post-claim stop after one recovery; claim `71a73de8` released; clean worktree preserved | exhausted, not capacity |
-| ox-pc-p | 6920-6939 | TASK-0147 claim `3ee9f928`; corrected motifs are coherent, but stale-executable captures are invalid; one retry had an argument-parsing fault and the exact session then wedged silently | final fresh-context dirty-lane salvage PID 25328; next stop without handoff quarantines lane |
+| ox-pc-p | 6920-6939 | TASK-0147 frozen head `974ccab6` independently ACCEPTED and integrated at `19be98db`; fresh visual evidence and combined native gates passed | handoff complete; available only after worker process exits |
 | ox-pc-q | 6940-6959 | TASK-0148 claim `815a359b` released after recovery proposed a second normal-path bypass (`mutate/select` instead of `create/set-out`); clean claim head preserved | exhausted, not capacity |
 | ox-pc-r | 6960-6979 | TASK-0148 independent claim `837a412f` pushed from release head `c1acd4ec`; clean pre-write exit recovered in the same session at PID 7324 | accepted-chain recovery active |
+| ox-pc-s | 6980-6999 | TASK-0116 claim `297b4e9d` pushed from program base `9fe673b6` | animation/VFX contract audit active; implementation successor pending review |
+| ox-pc-t | 7000-7019 | TASK-0117 claim `763228e1` pushed from program base `9fe673b6` | audio/runtime contract audit active; implementation successor pending review |
+| ox-pc-u | 7020-7039 | TASK-0119 claim `fad856c3` pushed from program base `9fe673b6` | first-session/onboarding audit active; implementation successor pending review |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered

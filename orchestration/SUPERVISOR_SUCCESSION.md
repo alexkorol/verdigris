@@ -154,3 +154,21 @@ request.
   HTTP 200; visible monitor PID 18184 watches the three new lanes as well as the
   current p/r routes. No new Codex task was created.
 - Owner action required now: none.
+
+### Product integration checkpoint — 2026-08-22 06:50 PDT
+
+- TASK-0147 worker head `974ccab6` is independently ACCEPTED (review
+  `6575f330`) and integrated at program commit `19be98db`. The coordinator
+  reran the full native build/test/client-scenario suite and direct
+  `first-fight`; all passed on the combined program head.
+- Fresh visual evidence proves the executable postdates the corrected generated
+  header. Five wide scenes, five compact scenes, the default-window scene, and
+  representative before/after composites were visually inspected. The native
+  presentation is materially richer and coherent, while remaining honestly
+  labeled as procedural placeholder art rather than final terrain quality.
+- TASK-0148 on ox-pc-r remains active and blocked on a normal-play heirloom
+  recovery proof after succession; no shortcut or direct-state workaround may
+  be accepted. ox-pc-s/t/u remain active on read-only VFX, audio, and onboarding
+  contracts that must produce executable implementation successors after
+  independent review.
+- Owner action required now: none.

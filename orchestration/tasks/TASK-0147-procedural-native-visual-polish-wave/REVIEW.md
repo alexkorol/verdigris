@@ -5,6 +5,7 @@ reviewed_head: `974ccab6d53f8572736559fb302a70f17053dcdd`
 reviewed_branch: `codex/TASK-0147-procedural-native-visual-polish-wave-ox-pc-p-r3`
 reviewed_by: PC Verdigris architect/orchestrator
 reviewed_at: 2026-08-22 06:47 PDT
+integrated_at: `19be98db836b4d036e5d2ee7e20e222e15fe5d51`
 
 ## Acceptance finding
 
