@@ -63,8 +63,9 @@ The eight promoted packets add four routed product tasks and four unclaimed
 restock tasks. TASK-0136 returned to READY after the ox-pc-h release. Excluding
 valid claims leaves **29 effective READY + 17
 successors**, above the absolute floors. D-128 supersedes count-only
-sufficiency; TASK-0128 remains in active REVISE until its captures bind their
-own final evidence revision.
+sufficiency; TASK-0128 worker head `d247638e` fixes the original self-reference
+but remains REVISE because its green test run dirties six committed golden
+fixtures. The branch is preserved and runway remains UNKNOWN.
 
 ## Autonomous runway and factory status
 
@@ -93,7 +94,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
-| ox-pc-a | 6620-6639 | TASK-0128 REVISE active from pushed head `bb67c566`; two architect-regenerated captures preserved | worker correcting evidence revision |
+| ox-pc-a | 6620-6639 | TASK-0128 revision `d247638e` pushed via narrow handoff repair; second review remains REVISE; worker recovery exhausted | preserved, not active capacity |
 | ox-pc-b | 6640-6659 | TASK-0145 claim `4aa9e0c3` pushed after one claim-first activation recovery | Chronicles owner-facing client journey |
 | ox-pc-c | 6660-6679 | TASK-0136 claim released after duplicate-dispatch collision; dirty worktree quarantined | not available |
 | ox-pc-d | 6680-6699 | TASK-0146 pushed claim `7e416ff3`; worker active | first-expedition encounter wave |
@@ -188,8 +189,8 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - Released: **TASK-0136** claims `6ea36f5a`/`7b24e5d3`/`7026892e` after a real
   duplicate-dispatch collision. Lane c remains quarantined; the clean lane h
   receives the replacement route after this coordination push.
-- Active work: TASK-0128 revision on ox-pc-a; TASK-0146 encounter wave claim
-  `7e416ff3` on ox-pc-d; TASK-0148 reconnect-runtime claim beginning `642bfa25`
+- Active work: TASK-0146 encounter wave claim `7e416ff3` on ox-pc-d;
+  TASK-0148 reconnect-runtime claim beginning `642bfa25`
   on ox-pc-g; TASK-0147 claim `068a1358` on ox-pc-e; TASK-0145 claim `4aa9e0c3`
   on ox-pc-b after one exact-session claim-first recovery. All valid claims are
   excluded from READY accounting.
@@ -197,6 +198,10 @@ harness-visible provider/model. These are separate scorecard experimental units.
   process exit received one exact-session recovery; the recovery also exited
   with dirty uncommitted work. RELEASE now returns the task to READY. Preserve
   the worktree and do not recover it again.
+- REVISE preserved: TASK-0128 worker head `d247638e` on ox-pc-a. Its exact
+  recovery exited after a clean local commit; the supervisor published that
+  exact commit, independently found test-induced tracked-output drift, and
+  reverted the unpushed trial integration. No further automatic recovery.
   Separate project: orchestration bootstrap claim `795a9b3`, with pushed M3
   head `82de84ef` awaiting its configured Tier-B acceptance path.
 - Historical TASK-0056 and legacy clone WIP are superseded/preserved, never
