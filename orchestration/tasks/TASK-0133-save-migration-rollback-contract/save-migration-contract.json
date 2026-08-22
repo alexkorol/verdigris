@@ -68,14 +68,23 @@
     ]
   },
   "target_version": {
-    "definition": "The single ratified target format today is the native durable-state snapshot v1 byte format. The target registry is extensible; adding a target requires an architect-ratified spec.",
-    "current_target": "native-snapshot-v1",
-    "round_trip_requirements": [
-      "rng.state and rng.serial must round-trip exactly.",
-      "schemaVersion line mandatory; unknown keys ignored on restore; missing required values or malformed known values fail restore instead of silently altering state."
-    ],
-    "citations": ["native/persistence/README.md:14-23", "orchestration/tasks/TASK-0030-native-persistence/REVIEW.md:12-13"],
-    "open_gap": "No durable cross-process persistence exists on the native tip yet (TASK-0081 Gate B row 28); migrations targeting live native saves are rehearsals only until that lands."
+    "definition": "No migration target format is ratified for the estate today. Target selection is OWNER_PENDING with the architect and is intentionally not chosen here; this section records observed candidate formats only. Ratifying a target is an owner decision (see unresolved_mappings U-03); adding a candidate requires citations for where its bytes are observed.",
+    "current_target": null,
+    "selection_state": "OWNER_PENDING",
+    "candidates": [
+      {
+        "id": "native-snapshot-v1",
+        "status": "observed-candidate",
+        "location": "verdigris::snapshot(const Simulation&) bytes; one House save file via native/persistence adapter",
+        "format": "canonical line-oriented text: schemaVersion=1 first line, decimal numbers/booleans, UTF-8 strings as lower-case hex, fixed field order, .count-prefixed collections",
+        "round_trip_requirements_if_selected": [
+          "rng.state and rng.serial must round-trip exactly.",
+          "schemaVersion line mandatory; unknown keys ignored on restore; missing required values or malformed known values fail restore instead of silently altering state."
+        ],
+        "citations": ["native/persistence/README.md:1-35", "native/persistence/README.md:14-23", "orchestration/tasks/TASK-0030-native-persistence/REVIEW.md:12-13"],
+        "candidate_limits": "Observed candidate only, not the chosen cross-estate migration destination: browser-to-native portability is unresolved (U-03), the guest-json -> native-snapshot-v1 step stays BLOCKED, and no durable cross-process persistence exists on the native tip yet (TASK-0081 Gate B row 28), so migrations targeting live native saves are rehearsals only until that lands."
+      }
+    ]
   },
   "preflight": {
     "purpose": "Prove the run can proceed safely BEFORE any mutation, using disposable stores only.",

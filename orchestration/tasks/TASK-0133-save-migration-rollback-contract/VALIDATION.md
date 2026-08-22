@@ -65,6 +65,35 @@ Executed 2026-08-22 UTC from repository root; outputs verbatim.
    `orchestration/tasks/TASK-0133-save-migration-rollback-contract/**`
    per `owned_paths`.
 
+## Revision r2 gate rerun (post-review owner-authority correction)
+
+Architect REVIEW verdict `REVISE` (reviewed head `b44ab0ab`) required exactly
+one semantic correction: `target_version.current_target` must be
+null/`OWNER_PENDING`, dropping the claim that native-snapshot-v1 is "the
+single ratified target format today"; native-snapshot-v1 is preserved as an
+observed candidate with citations, not a chosen cross-estate destination.
+Applied to `save-migration-contract.json` § `target_version`; no other
+section, fixture id, or source path changed. All five literal SPEC commands
+were rerun from the repository root on this branch:
+
+```text
+save migration contract: PASS
+GATE1-EXIT:0
+```
+
+```text
+save migration negatives: PASS
+GATE2-EXIT:0
+```
+
+Gate 3 rg exit 0 (959 matched lines at this head; the r1 transcript at
+`captures/gate3-seam-inventory.txt` remains the unabridged r1 evidence
+capture and was not regenerated for this prose-only-plus-contract-field
+revision). Gate 4 `git diff --check` clean, exit 0. Gate 5 base-to-head path
+list exit 0 — unchanged except this task folder's own files; the non-folder
+entries remain the architect routing commit `b3599c80`'s introductions, not
+worker-authored.
+
 ## Manual verification
 
 - No persistent user data was read, copied, mutated, or created. The only

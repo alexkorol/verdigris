@@ -126,3 +126,36 @@ skilltree save path before reuse (TASK-0105 flag).
 - Non-atomic guest writes (S1) remain a live hazard for owner machines;
   backup-first containment is contractual but the underlying write should
   be made atomic in a future code task.
+
+## Revision r2 — owner-authority correction (post-review)
+
+Architect REVIEW verdict `REVISE` against head `b44ab0ab` required exactly
+one semantic correction before acceptance: replace
+`target_version.current_target: native-snapshot-v1` and the claim that it is
+"the single ratified target format today" with an honest OWNER_PENDING/null
+target selection, preserving native-snapshot-v1 as an observed candidate
+with citations rather than the chosen cross-estate migration destination.
+
+Correction applied in `save-migration-contract.json` § `target_version`:
+
+- `current_target` is now `null` with `selection_state: "OWNER_PENDING"`;
+  the definition states no target format is ratified for the estate today
+  and that ratification is an architect decision (unresolved_mappings U-03).
+- Native snapshot v1 moved into a `candidates[]` entry with status
+  `observed-candidate`, its prior citations kept
+  (`native/persistence/README.md:1-35`, `native/persistence/README.md:14-23`,
+  TASK-0030 REVIEW), round-trip requirements relabeled
+  `round_trip_requirements_if_selected`, and a `candidate_limits` note tying
+  it to the BLOCKED guest-json→native step and the missing durable native
+  persistence gap. The former `open_gap` content lives there verbatim.
+- No fixture id, seam fact, gate command, or path outside the task folder
+  changed; the BLOCKED step catalog entries are untouched.
+
+All five literal SPEC commands rerun at this revision: Gate 1
+`save migration contract: PASS` (exit 0), Gate 2
+`save migration negatives: PASS` (exit 0), Gate 3 rg exit 0 (959 matched
+lines; the r1 capture file stands as the unabridged r1 evidence), Gate 4
+`git diff --check` clean exit 0, Gate 5 base-to-head path list exit 0 —
+worker-authored paths strictly under owned_paths. Full record in
+`VALIDATION.md` § "Revision r2 gate rerun". Status remains REVIEW_REQUESTED
+at the pushed revised head.
