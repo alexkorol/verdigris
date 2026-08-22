@@ -75,23 +75,41 @@ export default async function loot({ connect, assert }) {
     assert(coinsAfter > coinsBefore, `coins entered the inventory (${coinsBefore} -> ${coinsAfter})`);
 
     // Underfoot grab key: kill another mob, stand ON its drop, press grab.
+    // Lock ONE explicit second victim by uuid before polling. Re-choosing
+    // "nearest" every tick lets a wandering pack make each teleport+swing
+    // pair land on a different member — wounding many, killing none — which
+    // starved this wait under release-runner load (PR #56 run 32594398265).
+    scene = await p.state();
+    const secondTarget = scene.monsters
+      .filter(m => m.rarity !== 'elite')
+      .sort((a, b) => (Math.abs(a.x - scene.x) + Math.abs(a.y - scene.y))
+        - (Math.abs(b.x - scene.x) + Math.abs(b.y - scene.y)))[0];
+    assert(secondTarget && (!secondTarget.hp || secondTarget.hp.current > 0),
+      'found a live second monster to loot');
+
     const drop2 = await p.waitFor(async () => {
       const s = await p.state();
       if (s.lifecycle !== 'alive') await p.devHeal();
-      const coins = s.groundItems.find(item => item.id === 'coins');
+      // Only a NEW stack counts; the first drop must stay taken and can
+      // never be re-served as the second.
+      const coins = s.groundItems.find(item => item.id === 'coins' && item.uuid !== drop.uuid);
       if (coins) return coins;
-      const nearest = s.monsters
-        .filter(m => m.rarity !== 'elite')
-        .sort((a, b) => (Math.abs(a.x - s.x) + Math.abs(a.y - s.y))
-          - (Math.abs(b.x - s.x) + Math.abs(b.y - s.y)))[0];
-      if (nearest && Math.abs(nearest.x - s.x) <= 1.6 && Math.abs(nearest.y - s.y) <= 1.6) {
-        await p.attack(nearest);
-      } else if (nearest) {
-        await p.devTeleport(Math.round(nearest.x) + 1, Math.round(nearest.y));
-        await p.attack(nearest);
+      // Chase coordinates, never identity: reposition next to the SAME
+      // retained victim's current tile each poll and keep the real attack
+      // paired with the reposition so one dropped dev frame costs one poll,
+      // not the deadline.
+      const victim = s.monsters.find(m => m.uuid === secondTarget.uuid);
+      if (!victim) return false;
+      const adjacent = Math.abs(Math.round(victim.x) - s.x) <= 1
+        && Math.abs(Math.round(victim.y) - s.y) <= 1;
+      if (!adjacent) {
+        await p.devTeleport(Math.round(victim.x) + 1, Math.round(victim.y));
       }
+      await p.attack(victim);
       return false;
     }, { timeoutMs: 30000, intervalMs: 400, label: 'a second coin drop' });
+    assert(drop2.uuid !== drop.uuid,
+      `second drop uuid ${drop2.uuid} differs from first ${drop.uuid}`);
 
     await p.devTeleport(drop2.x, drop2.y); // stand ON it
     const underfoot = await p.waitFor(async () => {
