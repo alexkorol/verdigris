@@ -1,14 +1,13 @@
-# Run status — Codex Sol PC surge sweep
+# Run status — PC Verdigris overnight product wave
 
 ## Leader-austerity override — 2026-08-21
 
-The owner adopted event-driven leadership. `LEADER_POLICY.md` supersedes the
-standing 15-minute Sol polling model: deterministic local `orchd` becomes the
-always-on reconciler, while Sol/Fable wake for Tier C, conflicting evidence,
-protected surfaces, owner authority, or repeated unexplained failures. Until
-orchd is accepted, monitoring is reduced to an hourly short read-only safety
-check. This does not release current claims, change task ownership, or authorize
-the architect to implement worker work.
+The owner adopted event-driven leadership. `LEADER_POLICY.md` keeps the
+supervisor focused on transitions, acceptance, collisions, and owner-visible
+product convergence. The low-cost same-thread heartbeat and local dashboard
+remain the deterministic safety net while `orchd` matures. This does not
+release claims, change task ownership, or authorize the architect to implement
+worker work.
 
 Automation state: the thread-local `verdigris-surge-supervisor` heartbeat is
 ACTIVE every five minutes on the existing supervision thread, with a concise
@@ -17,30 +16,23 @@ read-only fleet sweep and deduplicated output. The standalone
 task on every run. Retire the heartbeat once orchd passes its vertical-slice
 acceptance; do not re-enable the chat-spawning cron.
 
-The first four-lane OpenRouter wave produced three accepted integrations,
-TASK-0129 is now also accepted/integrated at worker head `b138871b`, and
-TASK-0080 has a local revision commit `a0419710` pending final STATUS/REPORT
-packaging and push. TASK-0083 remains a no-write invalid-base replacement, not
-an incident. The accepted TASK-0129 dependency releases TASK-0135 as a
-task-folder-only successor for ox-pc-d after this coordination push.
-
-Owner-authorized expansion registers four additional OpenRouter CLI lanes,
-ox-pc-f through ox-pc-i, and recycles completed c/e. Six pairwise-disjoint
-task-folder architecture packets are launch-requested after this coordination
-push: TASK-0112, TASK-0130, TASK-0131, TASK-0132, TASK-0133, and TASK-0134.
-Valid pushed claims registered c/e/f/g/h, and all five have already pushed
-REVIEW_REQUESTED heads. Lane i hit a pre-claim permission denial followed by
-the known missing-`node_modules` Yorkie activation fault; after the supervisor
-installed locked dependencies, its hook-valid claim reached origin at
-`5b952c08` and implementation resumed.
+The completed PC wave integrated the first native gameplay objective,
+procedural vector presentation, portability correction, and four release/
+validator packets. Owner feedback raises tonight's success bar from queue
+motion to a visibly better playable C++ game. Program commit `df851cea`
+therefore promotes four pairwise-disjoint P0 implementation packets:
+TASK-0145 Chronicles owner UI, TASK-0146 first-expedition encounter wave,
+TASK-0147 procedural visual polish, and TASK-0148 reconnect-safe Chronicles
+runtime. Four additional implementation packets (0149-0152) restock the
+claimable reserve without consuming strong workers on audit-only work.
 
 The independent `ox-bootstrap` orchestration worker has pushed M3 head
 `82de84ef` after M2 `5627916f`. The standalone repo's Tier-B review contract
 still governs acceptance and this lane never counts as Verdigris capacity.
 
-Snapshot: 2026-08-22 01:35 PDT
+Snapshot: 2026-08-22 02:10 PDT
 
-Sweep base: `d2311bc8e1a8bea7f7efb210737847117d235277`
+Sweep base: `df851cead0dadcd96176b370ad132f8344c3c21d`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
 `d2423873` merge tip).
 
@@ -48,7 +40,7 @@ GitHub: no open PRs. Latest master CI run 32441409427 passed at `d2423873`;
 the coordination-only program pushes did not dispatch a new workflow.
 TASK-0081 rev3 is accepted and integrated at `31d21579`.
 
-Orchestrator: **Codex Sol**, PC architect checkout
+Orchestrator: **PC Verdigris fleet lead**, architect checkout
 `Z:\Code\Games\delaford\delaford_game`. Architect coordinates, reviews,
 integrates, and specs; it does not absorb implementation.
 
@@ -66,12 +58,12 @@ Emergency surge floor: at least 24 effective, dependency-free, pairwise
 path-disjoint READY packets plus 12 concrete successors. Current valid claims
 are excluded from READY accounting. Four accepted-contract validator
 implementations restored 28 effective READY. TASK-0080, TASK-0137, TASK-0138,
-and TASK-0140 are now accepted; the collided TASK-0136 claim is released back
-to the executable board, and replacement lane h has now pushed claim
-`ddd00857`. Excluding that valid claim leaves **24 effective READY + 17
-successors**, exactly preserving the absolute packet floor. D-128 supersedes
-count-only sufficiency; TASK-0128 remains in active REVISE because its
-committed runway captures are self-stale at the pushed worker head.
+and TASK-0140 are accepted; TASK-0136 is validly claimed on replacement lane h.
+The eight promoted packets add four routed product tasks and four unclaimed
+restock tasks. Excluding valid claims leaves **28 effective READY + 17
+successors**, above the absolute floors. D-128 supersedes count-only
+sufficiency; TASK-0128 remains in active REVISE until its captures bind their
+own final evidence revision.
 
 ## Autonomous runway and factory status
 
@@ -86,8 +78,8 @@ committed runway captures are self-stale at the pushed worker head.
   immutable base and remain nonclaimable until current-tip READY promotion.
 - Reserve composition: 100 each implementation, integration, presentation,
   hardening, and release; 0 pure audit/research/inventory/evaluation; 25 packets
-  (5%) owner-blocked. The immediate 25 READY board remains audit-heavy and its
-  accepted audits must fan out before or at acceptance.
+  (5%) owner-blocked. The immediate board remains audit-heavy, so strong worker
+  routes are biased toward implementation and owner-visible convergence.
 - Deterministic validation: `node orchestration/backlog-factory/build-manifests.mjs --check`
   passes with 2,000 unique nodes and 500 unique packets.
 - Binding contracts: `BACKLOG_FACTORY.md`, `CONTENT_SCALE_MATRIX.md`, and
@@ -101,12 +93,12 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
 | ox-pc-a | 6620-6639 | TASK-0128 REVISE active from pushed head `bb67c566`; two architect-regenerated captures preserved | worker correcting evidence revision |
-| ox-pc-b | 6640-6659 | TASK-0080 accepted/integrated through `facfd7e4`; lane available | current-tip successor pending |
+| ox-pc-b | 6640-6659 | TASK-0145 launched from `df851cea`; pushed claim required by activation SLA | Chronicles owner-facing client journey |
 | ox-pc-c | 6660-6679 | TASK-0136 claim released after duplicate-dispatch collision; dirty worktree quarantined | not available |
-| ox-pc-d | 6680-6699 | TASK-0140 accepted/integrated at `46574f4e`; lane available | current-tip successor pending |
-| ox-pc-e | 6700-6719 | TASK-0137 accepted/integrated at `83d8f959`; lane available | current-tip successor pending |
+| ox-pc-d | 6680-6699 | TASK-0146 pushed claim `7e416ff3`; worker active | first-expedition encounter wave |
+| ox-pc-e | 6700-6719 | TASK-0147 launched from `df851cea`; pushed claim required by activation SLA | procedural native visual polish |
 | ox-pc-f | 6720-6739 | TASK-0138 accepted/integrated at `38942560`; lane available | current-tip successor pending |
-| ox-pc-g | 6740-6759 | TASK-0144 accepted/integrated at `b17d36b0`; lane available | current-tip successor pending |
+| ox-pc-g | 6740-6759 | TASK-0148 pushed claim line begins `642bfa25`; worker active | reconnect-safe Chronicles runtime |
 | ox-pc-h | 6760-6779 | TASK-0136 replacement claim pushed at `ddd00857`; implementation active | TASK-0136 passive-tree contract validator |
 | ox-pc-i | 6780-6799 | TASK-0143 accepted/integrated at `ac1fc54a`; lane available for successor promotion | successor pending current-tip validation |
 
@@ -196,7 +188,11 @@ harness-visible provider/model. These are separate scorecard experimental units.
   duplicate-dispatch collision. Lane c remains quarantined; the clean lane h
   receives the replacement route after this coordination push.
 - Active work: TASK-0128 revision on ox-pc-a; TASK-0136 replacement claim
-  `ddd00857` on ox-pc-h. The latter is excluded from READY accounting.
+  `ddd00857` on ox-pc-h; TASK-0146 encounter wave claim `7e416ff3` on ox-pc-d;
+  TASK-0148 reconnect-runtime claim beginning `642bfa25` on ox-pc-g. TASK-0145
+  on b and TASK-0147 on e are inside the ten-minute activation window and do
+  not count as capacity until their claims are committed and pushed. All valid
+  claims are excluded from READY accounting.
   Separate project: orchestration bootstrap claim `795a9b3`, with pushed M3
   head `82de84ef` awaiting its configured Tier-B acceptance path.
 - Historical TASK-0056 and legacy clone WIP are superseded/preserved, never
@@ -206,7 +202,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 24 packets
+## Effective READY — 28 packets
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -238,6 +234,10 @@ wins after a fresh fetch.
 | P2 | TASK-0085 denylist exception audit | INDEPENDENT / MECHANICAL | future after current claim | prepares owner compatibility ruling |
 | P2 | TASK-0114 renderer backend evaluation | EXPLORATORY / BOUNDED-DESIGN | future after current claim | feeds cross-platform renderer ADR |
 | P2 | TASK-0094 asset provenance audit | INDEPENDENT / MECHANICAL | future after current claim | prevents unshippable assets/fonts |
+| P1 | TASK-0149 native owner-launch resilience | INDEPENDENT / IMPLEMENTATION | future clean lane | makes the real client/server launch fail-fast and orphan-free |
+| P1 | TASK-0150 native clean-build convergence | INDEPENDENT / IMPLEMENTATION | future clean lane | proves the complete C++ build from a disposable directory |
+| P1 | TASK-0151 native content schema seed | INDEPENDENT / IMPLEMENTATION | future clean lane | creates a deterministic content-neutral authoring seam |
+| P1 | TASK-0152 native density benchmark evidence | INDEPENDENT / IMPLEMENTATION | future clean lane | measures encounter/presentation headroom reproducibly |
 
 ## HOLD despite historical READY headers
 

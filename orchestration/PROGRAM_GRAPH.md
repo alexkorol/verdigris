@@ -43,6 +43,27 @@ throughput by full experimental unit and packet type is normalized.
 
 ## Current critical path
 
+The overnight owner-visible convergence wave runs four disjoint implementation
+surfaces from program tip `df851cea`:
+
+```text
+TASK-0148 reconnect-safe Chronicles runtime --+
+                                              +-> TASK-0145 owner-facing
+TASK-0081 accepted Gate-B contract ------------+   House/Scion journey
+
+TASK-0143 expedition phase -> TASK-0146 deterministic encounter pack
+TASK-0141/0144 vector kit  -> TASK-0147 procedural visual polish
+
+0145 + 0146 + 0147 + 0148 accepted
+  -> full native build/scenarios
+  -> real owner launch through native/tools/play-native.ps1
+  -> morning play verdict and correction wave
+```
+
+The parallel branches are path-disjoint. Integration is sequenced runtime and
+assets before the client journey's final post-integration play gate. Queue
+depth remains above floor, but no audit packet displaces these product lanes.
+
 ```text
 server/rules parity (DONE, 32/32)
   -> Gate A networked native guest journey (GREEN)
