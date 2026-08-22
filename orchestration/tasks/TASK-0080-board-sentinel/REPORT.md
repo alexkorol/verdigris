@@ -11,13 +11,19 @@ Machine DESKTOP-TVU7OR7.
 ## Executive summary
 
 Implemented `orchestration/tools/board-sentinel.mjs`, a read-only CLI that
-turns coordination files into one deterministic sweep report, plus a 16-test
-suite in `orchestration/tools/board-sentinel.test.mjs`. On the real board it
-reports **29 effective READY** (the RUN_STATUS table's 30 minus this task's own
-live claim), floor 8 satisfied, 0 owned-path collisions, 0 stale claims,
-4 HOLD, 18 DRAFT successors, 91 coordinator remote branches timestamped, exit
-code 0. All five literal acceptance gates pass; a negative control
-(`--min-ready 200`) fails with exit 1 as designed.
+turns coordination files into one deterministic sweep report, plus a
+22-test suite in `orchestration/tools/board-sentinel.test.mjs`. On the real
+board it reports **29 effective READY** (the RUN_STATUS table's 30 minus this
+task's own live claim), floor 8 satisfied, 0 owned-path collisions, 0 stale
+claims, 4 HOLD, 18 DRAFT successors, 102 coordinator remote branches
+timestamped, exit code 0. All five literal acceptance gates pass on the rev3
+head; a negative control (`--min-ready 200`) fails with exit 1 as designed.
+
+Rev3 applies the reviewer correction: ACCEPTED task folders already recorded
+as integrated are classified as integrated — they are never swept in as live
+REVIEW_REQUESTED claims by the off-board detection, and their stale STATUS
+without a coordinator line raises no `malformed_status_missing_coordinator`.
+Genuine off-board pushed claims remain globally surfaced.
 
 ## Approach
 
@@ -33,6 +39,13 @@ code 0. All five literal acceptance gates pass; a negative control
   integrated/superseded evidence, minus REVISE, minus live claims
   (CLAIMED/IMPLEMENTED/REVIEW_REQUESTED). Historical SPEC headers alone never
   count.
+- A folder whose latest REVIEW verdict is ACCEPTED and whose id appears in an
+  integration log is terminal ("accepted-and-integrated") everywhere: the
+  off-board sweep files it under `integrated` instead of a live bucket, and a
+  missing `coordinator:` line in its stale STATUS is tolerated rather than
+  fatal. Such folders may still be named in `stale_claims` informationally —
+  the leftover live STATUS still needs reconciliation — without affecting
+  health.
 - Stale claim = live claim status while REVIEW/SPEC says SUPERSEDED or the
   implementation appears in an integration log. Reported informationally;
   only floor violation, unresolved collision, malformed state, or duplicate id
@@ -59,6 +72,12 @@ code 0. All five literal acceptance gates pass; a negative control
   (new evidence)
 - `orchestration/tasks/TASK-0080-board-sentinel/REPORT.md` (this file)
 
+Revision captures (provenance kept per revision): rev1
+`gate3-node-test.tap.txt` / `gate4-board-real.json`; rev2
+`gate3-node-test-rev2.tap.txt` / `gate4-board-real-rev2.json`; rev3
+`gate3-node-test-rev3.tap.txt` / `gate4-board-real-rev3.json`;
+`negative-control-floor.json` refreshed in place each revision.
+
 No file outside the owned paths was created, modified, or deleted.
 
 ## Public interfaces added
@@ -79,8 +98,9 @@ errors, healthy, exit_code.
 
 ## Acceptance gates — literal commands, output, exit codes
 
-Run from repository root on head `e789c17`-lineage worktree (see commit SHAs
-below), 2026-08-21 ~22:20 PDT:
+Run from repository root on the rev3 head (see commit SHAs below),
+2026-08-21 ~23:40 PDT. All five gates were re-run at the final rev3 code
+state after every edit; outputs below are from that final rerun.
 
 ### Gate 1
 
@@ -102,10 +122,11 @@ exit=0
 
 ```
 $ node --test orchestration/tools/board-sentinel.test.mjs
-(exit 0; full TAP transcript committed at captures/gate3-node-test.tap.txt)
+(exit 0; full TAP transcript committed at
+ captures/gate3-node-test-rev3.tap.txt)
 
-# tests 16
-# pass 16
+# tests 22
+# pass 22
 # fail 0
 exit=0
 ```
@@ -117,8 +138,14 @@ named (integration-log evidence); duplicate task id fails; malformed state
 fails; healthy eight-task runway exits zero; queue-floor violation exits
 non-zero; coordinator remote-branch timestamps extracted from a real temp git
 ref; bullet-list historical STATUS grammar parses; annotated SPEC state
-grammar parses; READY+HOLD contradiction fails; non-JSON mode keeps exit
-semantics.
+grammar parses; READY+HOLD contradiction fails; live CLAIMED task absent from
+the READY table is surfaced globally; live REVIEW_REQUESTED task absent from
+the READY table is surfaced globally; **off-board accepted-and-integrated
+folder is not a live REVIEW_REQUESTED claim (rev3)**; **off-board
+accepted-and-integrated folder raises no missing-coordinator error (rev3)**;
+**genuine off-board claim without a coordinator line still fails — narrowness
+guard (rev3)**; global live claim colliding with a READY task fails; non-JSON
+mode keeps exit semantics.
 
 ### Gate 4
 
@@ -127,15 +154,16 @@ $ node orchestration/tools/board-sentinel.mjs --repo . --min-ready 8 --json
 exit=0
 ```
 
-Byte-exact JSON committed at `captures/gate4-board-real.json`. Key facts:
+Byte-exact JSON committed at `captures/gate4-board-real-rev3.json` (rev3
+rerun). Key facts:
 
 ```json
 {
   "healthy": true,
   "counts": {
-    "effective_ready": 29, "claimed": 1, "review_requested": 0,
+    "effective_ready": 29, "claimed": 1, "review_requested": 2,
     "revise": 0, "hold": 4, "draft": 18, "stale_claims": 0,
-    "collisions": 0, "integrated": 73, "coordinator_branches": 91
+    "collisions": 0, "integrated": 73, "coordinator_branches": 102
   },
   "queue_floor": { "min_ready": 8, "effective_ready_count": 29, "satisfied": true },
   "errors": []
@@ -143,10 +171,14 @@ Byte-exact JSON committed at `captures/gate4-board-real.json`. Key facts:
 ```
 
 Human mode, same tree: `board-sentinel: effective READY 29 (floor 8),
-claimed 1, review_requested 0, revise 0, hold 4, draft 18, stale 0,
+claimed 1, review_requested 2, revise 0, hold 4, draft 18, stale 0,
 collisions 0 / healthy` — exit 0. The single claimed task is
-TASK-0080 itself (this worker's live claim), correctly removed from the
-effective count of 30 table rows.
+TASK-0056; the two review_requested entries are TASK-0080 (this worker's live
+claim) and TASK-0081. TASK-0081 remains surfaced because its acceptance and
+integration exist only in coordination prose — neither INTEGRATION_LOG.md nor
+its STATUS.md records it machine-readably, so the rev3 correction's
+"recorded as integrated" predicate does not fire for it (finding 2 below;
+coordination truth is off-limits to this task).
 
 ### Gate 5
 
@@ -168,6 +200,23 @@ exit=1
 
 The gate demonstrably fails when the property is broken.
 
+## Revision history
+
+- **rev2 (`a0419710`)** — per review: live CLAIMED/IMPLEMENTED/
+  REVIEW_REQUESTED task folders absent from the RUN_STATUS READY table are
+  surfaced globally instead of silently ignored (suite 16 → 19).
+- **rev3 (this revision)** — reviewer correction: ACCEPTED task folders
+  already recorded as integrated must not be treated as live
+  REVIEW_REQUESTED claims and must not raise
+  `malformed_status_missing_coordinator`. Implementation: integration-log ids
+  load before folder scanning; `scanTaskFolders` reads REVIEW.md before
+  STATUS.md and suppresses the missing-coordinator error exactly when
+  (verdict ACCEPTED ∧ id ∈ integration log); the off-board sweep files such
+  folders under `integrated` rather than a live bucket while genuine off-board
+  claims keep surfacing. Deterministic tests added for the corrected case,
+  its coordinator-less variant, and a narrowness guard proving a genuine
+  off-board claim without a coordinator still fails (suite 19 → 22).
+
 ## Manual verification
 
 - Ran the CLI against the real repository in both modes; outputs above.
@@ -185,7 +234,10 @@ The gate demonstrably fails when the property is broken.
 |---|---|
 | `22ada117` | claim-only STATUS.md (pushed within the 10-minute window) |
 | `a947136e` | sentinel + tests + gate/negative-control captures |
-| branch tip | this REPORT + STATUS → REVIEW_REQUESTED transition |
+| `0ab4e7a5` | REPORT + STATUS → REVIEW_REQUESTED handoff (pushed) |
+| `a0419710` | rev2 — global off-board live-claim surfacing (pushed) |
+| `f9a9c821` | rev3 — accepted-and-integrated correction + tests + rev3 captures |
+| branch tip | this REPORT/STATUS handoff update |
 
 ## Deviations
 
