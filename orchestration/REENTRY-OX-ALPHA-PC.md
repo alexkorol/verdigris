@@ -18,6 +18,8 @@ is intentionally short; the canonical rules remain in the linked documents.
 | `ox-pc-i` | Windows implementation | 6780-6799 |
 | `ox-pc-j` | Windows implementation | 6800-6819 |
 | `ox-pc-k` | Windows implementation | 6820-6839 |
+| `ox-pc-l` | Windows implementation | 6840-6859 |
+| `ox-pc-m` | Windows implementation | 6860-6879 |
 
 Provisioned worktree:
 `Z:\Code\.worktrees\verdigris\ox-pc-a`; worker branch:
@@ -50,6 +52,8 @@ or quarantined a/b/c/h worktrees available again.
 | ox-pc-i | `Z:\Code\.worktrees\verdigris\ox-pc-i` | `codex/TASK-0134-distribution-signing-boundary-ox-pc-i` | TASK-0134 |
 | ox-pc-j | `Z:\Code\.worktrees\verdigris\ox-pc-j` | `codex/TASK-0149-native-owner-launch-resilience-ox-pc-j` | TASK-0149 |
 | ox-pc-k | `Z:\Code\.worktrees\verdigris\ox-pc-k` | `codex/TASK-0150-native-clean-build-convergence-ox-pc-k` | TASK-0150 |
+| ox-pc-l | `Z:\Code\.worktrees\verdigris\ox-pc-l` | `codex/TASK-0146-native-first-expedition-encounter-wave-ox-pc-l-r2` | TASK-0146 replacement |
+| ox-pc-m | `Z:\Code\.worktrees\verdigris\ox-pc-m` | `codex/TASK-0147-procedural-native-visual-polish-wave-ox-pc-m-r2` | TASK-0147 replacement |
 
 Use only the provisioned dedicated worktree. The architect checkout at
 `Z:\Code\Games\delaford\delaford_game` is forbidden. Never reset, clean, or
