@@ -1,7 +1,7 @@
 # TASK-0129 claim
 
 - task: TASK-0129
-- state: CLAIMED
+- state: REVIEW_REQUESTED
 - coordinator: ox-pc-d
 - worker: ox-pc-d (isolated PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0129-server-lifecycle-soak-ox-pc-d`
@@ -33,3 +33,19 @@
   RELEASE.md in the task folder, and origin's
   `codex/TASK-0129-server-lifecycle-soak-ox-pc-d` sits at the same route HEAD
   with no claim commit.
+
+## Transition log
+
+- CLAIMED: commit `a5bd928e` (STATUS.md only), pushed to origin.
+- IMPLEMENTED: commit `d5cfec59` (native/tools/server_lifecycle_soak.cpp +
+  native/build.ps1 `-RunServerLifecycleSoak` gate + captures). All four
+  literal SPEC gates green with exit code 0; both independent soak runs PASS
+  100/100 cycles (100 upgrades / 100 logins / 100 clean closes) plus the
+  eight-client burst 8/8; JSON evidence preserved at
+  `captures/lifecycle-soak-20260821-224506.json` and
+  `captures/lifecycle-soak-20260821-224623.json`. Negative control (capsule
+  occupied) recorded at `captures/negative-capsule-occupied.json`: exit 1,
+  passed=false, failures=100. Route-head-to-worker-head diff touches owned
+  paths only.
+- REVIEW_REQUESTED: REPORT.md written; this commit pushed to this worker
+  branch only. No merge, no force-push, port 6500 untouched.
