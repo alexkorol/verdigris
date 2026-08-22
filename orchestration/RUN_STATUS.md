@@ -30,7 +30,7 @@ The independent `ox-bootstrap` orchestration worker has pushed M3 head
 `82de84ef` after M2 `5627916f`. The standalone repo's Tier-B review contract
 still governs acceptance and this lane never counts as Verdigris capacity.
 
-Snapshot: 2026-08-22 04:03 PDT
+Snapshot: 2026-08-22 05:39 PDT
 
 Sweep base: `df851cead0dadcd96176b370ad132f8344c3c21d`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
@@ -105,13 +105,13 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-i | 6780-6799 | TASK-0145 frozen head `78dcac60` independently ACCEPTED and integrated at `2df5eac5` | lane complete/available after worker stops |
 | ox-pc-j | 6800-6819 | TASK-0149 revision head `a88d307d` independently ACCEPTED and integrated through `8677f021` | lane complete/available |
 | ox-pc-k | 6820-6839 | TASK-0150 frozen head `54417592` independently ACCEPTED; implementation integrated at `10039385` | lane complete/available after worker stops |
-| ox-pc-l | 6840-6859 | TASK-0146 head `a72b6317` reviewed REVISE; first revision process stopped clean before writes, recovery PID 6816 | simultaneous-pack revision recovery active; one recovery consumed |
+| ox-pc-l | 6840-6859 | TASK-0146 revision head `086ac07b` independently ACCEPTED; implementation integrated as `c873c5af`, full chain through `5324f13e` | complete/available after worker exit |
 | ox-pc-m | 6860-6879 | TASK-0147 second post-claim stop after one recovery; claim `7d092a74` released; dirty worktree preserved | P0 quarantined, not capacity |
 | ox-pc-n | 6880-6899 | TASK-0148 clean launch and its one recovery both stopped before claim/write | activation failed; clean preserved, not capacity |
 | ox-pc-o | 6900-6919 | TASK-0148 second post-claim stop after one recovery; claim `71a73de8` released; clean worktree preserved | exhausted, not capacity |
-| ox-pc-p | 6920-6939 | TASK-0147 claim `3ee9f928`; first process exited with owned-path art edits preserved after a malformed native capture; exact-worktree recovery PID 8520 | visual recovery active; one recovery consumed |
+| ox-pc-p | 6920-6939 | TASK-0147 claim `3ee9f928`; malformed native capture preserved; exact session resumed at PID 15840 after diagnosing generated point-range bleed | visual recovery active; one recovery session continued |
 | ox-pc-q | 6940-6959 | TASK-0148 claim `815a359b` released after recovery proposed a second normal-path bypass (`mutate/select` instead of `create/set-out`); clean claim head preserved | exhausted, not capacity |
-| ox-pc-r | 6960-6979 | TASK-0148 independent claim `837a412f` pushed from release head `c1acd4ec`, process PID 13120 | accepted-chain replacement active inside activation SLA |
+| ox-pc-r | 6960-6979 | TASK-0148 independent claim `837a412f` pushed from release head `c1acd4ec`; clean pre-write exit recovered in the same session at PID 7324 | accepted-chain recovery active |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -129,7 +129,7 @@ with explicit `openrouter/stealth/ox-alpha`; no owner tab opening is required.
 `Z:\Code\.fleet\Watch-VerdigrisFleet.ps1` supplies one human-readable five-second
 dashboard and transition-deduplicated Windows P1/P0 activation notifications.
 Its live-alert set is restricted to current completed handoffs and registered
-active routes (`i/j/k/l/p/q`); historical/quarantined worktrees remain visible
+active routes (`i/j/k/l/p/r`); historical/quarantined worktrees remain visible
 in the web dashboard for audit but cannot generate false live toasts.
 An unattended REVISE route is a distinct P1 alert, so a stopped revision worker
 cannot be masked by the task-level review verdict.

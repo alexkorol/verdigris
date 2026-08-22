@@ -1,6 +1,6 @@
 # TASK-0146 STATUS
 
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: ox-alpha (OpenCode PC lane)
 worker: ox-pc-l
 machine: DESKTOP-TVU7OR7
@@ -48,3 +48,18 @@ telegraph-dodge, and loot-to-bank re-run individually exit 0;
 `git diff --check` clean; base..HEAD name-only list unchanged in scope.
 Full transcript, correction mapping, constants reused, strengthened test
 proofs, deviations, and risks in REPORT.md.
+
+## INTEGRATED (2026-08-22 05:39 -07:00)
+
+Architect verdict: ACCEPTED at frozen remote head
+`086ac07b2958ec5f3bdbe246754c2591c535369c`; revision implementation
+`4d2b47f37b08f4329020740ef3e0adcdd927eda7` is preserved on the worker
+branch and integrated on the program line as `c873c5af`. The complete worker
+chain is integrated through program head `5324f13e`.
+
+Independent detached review and the post-integration program run both passed
+the complete native build, denylist/core/networking/camera/session suites, and
+all eight current client scenarios. Direct first-fight, telegraph-dodge, and
+loot-to-bank reruns also passed. The immutable SPEC-base diff's inherited
+coordination files and three pre-existing trailing-blank warnings are recorded
+in REVIEW.md; the revision diff itself is clean and owned-scope only.
