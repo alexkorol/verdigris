@@ -2,6 +2,7 @@ name: Native
 
 on:
   push:
+    branches: [master]
     paths:
       - "native/**"
       - "config/legacy-denylist.json"
