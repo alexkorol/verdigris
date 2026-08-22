@@ -10,11 +10,12 @@ orchd is accepted, monitoring is reduced to an hourly short read-only safety
 check. This does not release current claims, change task ownership, or authorize
 the architect to implement worker work.
 
-Automation state: the 15-minute Sol heartbeat
-`verdigris-surge-supervisor` is PAUSED. Temporary local cron
-`pc-fleet-emergency-monitor` is ACTIVE hourly on `gpt-5.6-luna` with minimal
-reasoning and a transition-only, no-write scope. Retire it once orchd passes its
-vertical-slice acceptance.
+Automation state: the thread-local `verdigris-surge-supervisor` heartbeat is
+ACTIVE every five minutes on the existing supervision thread, with a concise
+read-only fleet sweep and deduplicated output. The standalone
+`pc-fleet-emergency-monitor` cron is PAUSED because it was creating a new Codex
+task on every run. Retire the heartbeat once orchd passes its vertical-slice
+acceptance; do not re-enable the chat-spawning cron.
 
 The first four-lane OpenRouter wave produced three accepted integrations,
 TASK-0129 is now also accepted/integrated at worker head `b138871b`, and
@@ -63,13 +64,12 @@ integrates, and specs; it does not absorb implementation.
 
 Emergency surge floor: at least 24 effective, dependency-free, pairwise
 path-disjoint READY packets plus 12 concrete successors. Current valid claims
-are excluded from READY accounting. After five expansion claims and promotion
-of TASK-0135 and i's valid claim, d then claimed TASK-0135 at `50cd286f`,
-leaving 24. Four accepted-contract validator implementations are now promoted,
-  restoring 28 effective READY before c/e/f/g claim them. Their four valid,
-  pushed claims left 24; accepted TASK-0135 now promotes TASK-0140, leaving
-  **25 effective READY + 17 successors** before d claims it and preserving the
-  absolute packet floor. D-128 supersedes count-only sufficiency.
+are excluded from READY accounting. Four accepted-contract validator
+implementations restored 28 effective READY; the valid pushed claims for
+TASK-0141 (ox-pc-g) and TASK-0143 (ox-pc-i) now leave **26 effective READY +
+17 successors**, preserving the absolute packet floor. TASK-0142 remains
+sequenced behind TASK-0141 acceptance because it consumes that asset interface.
+D-128 supersedes count-only sufficiency.
 
 ## Autonomous runway and factory status
 
@@ -104,9 +104,9 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-d | 6680-6699 | TASK-0135 accepted/integrated at `88092c97`; successor launch requested | TASK-0140 soak evidence validator |
 | ox-pc-e | 6700-6719 | CLAIMED and pushed `0d175a2f`; implementation active | TASK-0137 Gate C validator |
 | ox-pc-f | 6720-6739 | CLAIMED and pushed `f9458f4e`; implementation active | TASK-0138 release-proof validator |
-| ox-pc-g | 6740-6759 | TASK-0139 accepted/integrated at `934863cb`; successor launch requested | TASK-0141 procedural native visual kit |
-| ox-pc-h | 6760-6779 | TASK-0133 accepted/integrated at `678c7b80`; successor launch requested | TASK-0142 native client presentation slice |
-| ox-pc-i | 6780-6799 | TASK-0134 accepted/integrated at `b7464d94`; successor launch requested | TASK-0143 native gameplay/runtime slice |
+| ox-pc-g | 6740-6759 | CLAIMED and pushed `3f100c3e`; implementation active | TASK-0141 procedural native visual kit |
+| ox-pc-h | 6760-6779 | TASK-0133 accepted/integrated at `678c7b80`; successor sequenced behind TASK-0141 | TASK-0142 native client presentation slice |
+| ox-pc-i | 6780-6799 | CLAIMED and pushed `5147cbed`; implementation active | TASK-0143 native gameplay/runtime slice |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -153,13 +153,14 @@ not enabled.
   not an incident against the stopped tabs. Five newly isolated CLI lanes are
   now registered; only valid committed claims count as active.
 
-Persistent Sol supervision is paused under `LEADER_POLICY.md`. The temporary
-hourly Luna monitor observes transitions until orchd takes over deterministic
-session reconciliation and dispatch.
+Persistent thread-local supervision is active under `LEADER_POLICY.md`. The
+low-cost Luna heartbeat observes transitions until orchd takes over deterministic
+session reconciliation and dispatch; it reports in this thread rather than
+opening new Codex tasks.
 
 ### Cross-project control-plane watch (not Verdigris capacity)
 
-`alexkorol/orchestration` PC main is clean/synced at `4ec2a9d5`. The isolated
+`alexkorol/orchestration` PC main is clean/synced at `b4e8a3aa`. The isolated
 `Z:\Code\.worktrees\orchestration\ox-bootstrap` worker pushed valid claim-only
 commit `795a9b3` at 20:20 on
 `codex/ox-bootstrap-portable-orchestration`; only `bootstrap/CLAIM.md` changed.
@@ -196,6 +197,8 @@ harness-visible provider/model. These are separate scorecard experimental units.
   and integrated at `678c7b80`/`b7464d94`/`934863cb` and release the three
   game-facing successors TASK-0141/0142/0143. TASK-0136/0137/0138 remain
   valid pushed implementation claims at `7b24e5d3`/`0d175a2f`/`f9458f4e`.
+  TASK-0141 is claimed by ox-pc-g at `3f100c3e`; TASK-0143 is claimed by
+  ox-pc-i at `5147cbed`; TASK-0142 remains sequenced behind TASK-0141.
   Separate project: orchestration bootstrap claim `795a9b3`, with pushed M3
   head `82de84ef` awaiting its configured Tier-B acceptance path.
 - Historical TASK-0056 and legacy clone WIP are superseded/preserved, never
@@ -205,7 +208,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 28 packets
+## Effective READY — 26 packets
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -213,9 +216,7 @@ wins after a fresh fetch.
 
 | Pri | Task | Topology / job | Preferred route | Owner-visible contribution |
 |---|---|---|---|---|
-| P0 | TASK-0141 procedural native visual kit | INDEPENDENT / IMPLEMENTATION | ox-pc-g after coordination push | removes fallback-only presentation with deterministic vector/SVG-derived assets |
-| P0 | TASK-0142 native client presentation slice | INDEPENDENT / IMPLEMENTATION | ox-pc-h after coordination push | makes the owner-facing native window read as a game, not a debug shell |
-| P0 | TASK-0143 native gameplay/runtime slice | INDEPENDENT / IMPLEMENTATION | ox-pc-i after coordination push | advances a real C++ combat/extraction loop under the scenario harness |
+| P0 | TASK-0142 native client presentation slice | INDEPENDENT / IMPLEMENTATION | ox-pc-h after TASK-0141 ACCEPTED | makes the owner-facing native window read as a game, not a debug shell |
 | P1 | TASK-0140 soak evidence validator | INDEPENDENT / IMPLEMENTATION | ox-pc-d after coordination push | mechanically rejects stale, incomplete, or retry-masked soak proof |
 | P0 | TASK-0097 persistence durability audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | protects House/Scion/item saves |
 | P0 | TASK-0100 deterministic replay audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes divergences reproducible |
