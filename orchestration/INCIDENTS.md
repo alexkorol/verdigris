@@ -195,3 +195,13 @@ status labels. New incidents append here with the template at bottom.
   use the explicit per-command no-hooks path rather than spending activation
   time debating or installing unrelated browser dependencies.
 - Status: CONTAINED; worker claim verified, implementation active.
+- Date: 2026-08-22 07:11 PDT. Surface: protected `master` Native CI,
+  post-release run `32577972059`. State: **P0 RELEASE RED / ROUTED**.
+  The pre-release Visual Studio 2019 gate passed, but the current GitHub MSVC
+  19.51 clean runner rejected `native/tests/camera2d_tests.cpp:64` with C3312
+  because the braced range did not have a directly available standard
+  `begin`/`end` declaration; later diagnostics were cascading. The protected
+  PR had already merged as `db3fc046` while checks were running. TASK-0154 is
+  the path-disjoint hotfix route. Acceptance forbids disabling the test,
+  weakening its zoom matrix, or bypassing CI. Release health remains red until
+  a follow-up protected PR is green.
