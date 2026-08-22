@@ -64,8 +64,27 @@ void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& s
 }
 
 void sync_world_from_model(WorldView& world, const ClientModel& model) {
-  world.house_name = model.house_name.empty() ? "House Verdigris" : model.house_name;
-  world.scion_name = model.player.uuid;
+  // TASK-0145: prefer the authoritative chronicle identity when present.
+  std::string house_name = model.house_name;
+  std::string scion_name;
+  if (!model.chronicle.active_house_id.empty()) {
+    if (const auto* house =
+            find_chronicle_house(model.chronicle, model.chronicle.active_house_id)) {
+      house_name = house->name;
+      for (const auto& scion : house->scions)
+        if (scion.id == model.chronicle.active_scion_id) scion_name = scion.name;
+    }
+  }
+  if (scion_name.empty()) {
+    const auto* scion =
+        find_chronicle_scion(model.chronicle, model.chronicle.active_scion_id);
+    if (scion) scion_name = scion->name;
+  }
+  world.house_name = house_name.empty() ? "House Verdigris" : house_name;
+  world.scion_name = !scion_name.empty() ? scion_name
+                                         : (!model.player.display_name.empty()
+                                                ? model.player.display_name
+                                                : model.player.uuid);
   world.route_id = model.scene.id;
   world.player.id = model.player.uuid;
   world.player.position = {static_cast<int>(std::lround(protocol_to_world(model.player.x))),

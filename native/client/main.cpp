@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <limits>
 #include <memory>
@@ -192,6 +193,21 @@ struct SceneryItem {
   bool solid = true;
 };
 
+// TASK-0145: the two owner-facing screens. Expedition is the historical
+// TASK-0142 presentation, untouched. Chronicles is the pre-game front door
+// (House/Scion/oath/admission) plus the post-fall succession view.
+enum class Screen { Expedition, Chronicles };
+
+// One actionable front-door control, rebuilt deterministically from the
+// authoritative chronicle model every frame. `key` is the keyboard binding
+// shown to the owner; `command`/`arg` feed IClientSession::submit.
+struct ChronicleAction {
+  std::string key;
+  std::string command;
+  std::string arg;
+  std::string label;
+};
+
 struct ClientState {
   std::unique_ptr<verdigris::Simulation> simulation;
   std::unique_ptr<verdigris::client::IClientSession> session;
@@ -222,6 +238,13 @@ struct ClientState {
   int hint_ticks = 0;
   int screen_pulse_ticks = 0;
   render::List render_list;
+  Screen screen = Screen::Expedition;
+  bool chronicles_mode = false;  // remote owner path launched at the front door
+  bool chronicles_oath = false;  // mortal-oath choice applied to the next admission
+  std::vector<ChronicleAction> chronicles_menu;
+  std::string relic_toast;
+  int relic_toast_ticks = 0;
+  std::unordered_map<std::string, std::string> known_crypt_status;
 };
 
 std::string executable_directory() {
@@ -2255,10 +2278,357 @@ void paint_minimap(const ClientState& state, HDC dc, const RECT& bounds, render:
                 static_cast<double>(panel.top), static_cast<double>(kSize), dots, "panel"});
 }
 
+// ── TASK-0145: Chronicles owner journey ─────────────────────────────────
+// The front door is the default remote owner path: a coherent pre-game
+// screen over the accepted Gate-B envelopes. Everything here renders the
+// authoritative ClientModel; no House, Scion, oath, or relic is ever
+// invented presentation-side.
+
+std::string chronicle_account_root(const ClientState& state) {
+  if (!state.session) return {};
+  return state.session->model().chronicle.account_name;
+}
+
+// Deterministic founder naming without any text-input console: derive the
+// House name from the guest identity once the account payload arrives.
+std::string house_display_name(const ClientState& state) {
+  const std::string account = chronicle_account_root(state);
+  if (account.empty()) return "New House";
+  std::string root = account;
+  for (auto& character : root)
+    character = static_cast<char>(character == '-' ? ' ' : character);
+  if (!root.empty())
+    root[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(root[0])));
+  return "House of " + root;
+}
+
+std::string next_scion_name(const ClientState& state) {
+  static const char* kOrdinals[] = {"Firstborn", "Secondborn", "Thirdborn",
+                                    "Fourthborn", "Fifthborn"};
+  std::size_t total = 0;
+  if (state.session) {
+    for (const auto& house : state.session->model().chronicle.houses)
+      total += house.scions.size() + house.crypt.size();
+  }
+  const std::string house_name = house_display_name(state);
+  if (total < sizeof(kOrdinals) / sizeof(kOrdinals[0]))
+    return house_name + " " + kOrdinals[total];
+  return house_name + " Heir " + std::to_string(total + 1);
+}
+
+// The actionable front-door menu. Order is deterministic so scenarios and
+// keyboard input agree: found → per-scion admissions → create → oath.
+std::vector<ChronicleAction> chronicle_actions(const ClientState& state) {
+  std::vector<ChronicleAction> menu;
+  if (!state.session) return menu;
+  const auto& model = state.session->model();
+  // A fall awaits succession while the active scion is the fallen one. The
+  // wire contract is explicit: heirs are admitted through
+  // player:chronicles:select (it alone resets the permadead lifecycle);
+  // chronicles:scion:set-out is the living scion's road-purse outing.
+  const bool succession_pending =
+      !model.chronicle.fallen.scion_id.empty() &&
+      model.chronicle.fallen.scion_id == model.chronicle.active_scion_id;
+  if (!model.chronicle.present || model.chronicle.houses.empty()) {
+    menu.push_back({"F", "found-house", "", "Found your House"});
+    return menu;
+  }
+  int slot = 1;
+  for (const auto& house : model.chronicle.houses) {
+    for (const auto& scion : house.scions) {
+      ChronicleAction action;
+      action.key = std::to_string(std::min(slot, 9));
+      // The mortal oath rides only on player:chronicles:select on the wire,
+      // so an armed oath admits through select; a plain journey claims the
+      // road purse via chronicles:scion:set-out.
+      if (state.chronicles_oath || succession_pending) {
+        action.command = "select-scion";
+        action.arg = scion.id;
+        action.label = "Set out as " + scion.name;
+        if (succession_pending)
+          action.label += ", heir of " + model.chronicle.fallen.name;
+        if (state.chronicles_oath) action.label += " under the mortal oath";
+      } else {
+        action.command = "set-out";
+        action.arg = scion.id;
+        action.label = "Set out as " + scion.name;
+      }
+      menu.push_back(std::move(action));
+      if (++slot > 9) break;
+    }
+    if (slot > 9) break;
+  }
+  menu.push_back({"C", "create-scion", "",
+                  "Name a new Scion (" + next_scion_name(state) + ")"});
+  ChronicleAction oath;
+  oath.key = "M";
+  oath.command = "oath-toggle";
+  oath.label = state.chronicles_oath ? "Mortal oath: ARMED" : "Mortal oath: not taken";
+  menu.push_back(std::move(oath));
+  return menu;
+}
+
+// Screen authority: expedition while admitted+alive; the front door before
+// admission, during hard-death consequences, or whenever the connection is
+// not usable (visible failure, never silent local fallback).
+void update_screen_for_model(ClientState& state) {
+  if (!state.chronicles_mode || !state.session) return;
+  const auto& model = state.session->model();
+  const bool soft_death = model.lifecycle == "awaiting-respawn";
+  const bool admitted_and_alive =
+      state.session->connection_state() ==
+          verdigris::client::ConnectionState::Ready &&
+      !model.chronicles_pending && model.player.alive;
+  state.screen =
+      (admitted_and_alive || soft_death) ? Screen::Expedition : Screen::Chronicles;
+}
+
+// Crypt transitions are authoritative relic-recovery beats: lost → recovered
+// deserves an honest toast naming the fallen.
+void watch_crypt_statuses(ClientState& state) {
+  if (!state.session) return;
+  const auto& model = state.session->model();
+  std::unordered_map<std::string, std::string> current;
+  for (const auto& house : model.chronicle.houses) {
+    for (const auto& entry : house.crypt) {
+      const std::string key = house.id + "/" + entry.id;
+      current[key] = entry.relic_status;
+      const auto it = state.known_crypt_status.find(key);
+      if (it != state.known_crypt_status.end() &&
+          it->second == "lost" && entry.relic_status == "recovered") {
+        state.relic_toast = "Heirloom of " + entry.name + " recovered";
+        state.relic_toast_ticks = 160;
+      }
+    }
+  }
+  state.known_crypt_status = std::move(current);
+}
+
+void submit_chronicle_action(ClientState& state, const ChronicleAction& action) {
+  using verdigris::client::ClientCommand;
+  if (action.command == "found-house") {
+    state.session->submit(ClientCommand::found_house(house_display_name(state)));
+    show_hint(state, "Your House enters the chronicles");
+  } else if (action.command == "create-scion") {
+    state.session->submit(ClientCommand::create_scion(next_scion_name(state)));
+    show_hint(state, "A new Scion joins the lineage");
+  } else if (action.command == "select-scion") {
+    state.session->submit(
+        ClientCommand::select_scion(action.arg, state.chronicles_oath));
+    show_hint(state, state.chronicles_oath ? "The mortal oath is spoken"
+                                           : "The heir walks on");
+  } else if (action.command == "set-out") {
+    state.session->submit(ClientCommand::set_out(action.arg));
+    show_hint(state, "The wagon rolls out");
+  } else if (action.command == "oath-toggle") {
+    state.chronicles_oath = !state.chronicles_oath;
+  }
+}
+
+void handle_chronicles_key(ClientState& state, WPARAM wparam) {
+  state.chronicles_menu = chronicle_actions(state);
+  for (const auto& action : state.chronicles_menu) {
+    if (action.key.size() == 1 && wparam == static_cast<WPARAM>(action.key[0])) {
+      submit_chronicle_action(state, action);
+      return;
+    }
+  }
+  if (wparam == VK_RETURN && !state.chronicles_menu.empty()) {
+    for (const auto& action : state.chronicles_menu)
+      if (action.command == "set-out" || action.command == "select-scion") {
+        submit_chronicle_action(state, action);
+        return;
+      }
+  }
+}
+
+std::string chronicles_capture_dir() {
+  std::vector<std::string> bases{".", executable_directory()};
+  const char* marker =
+      "orchestration\\tasks\\TASK-0145-native-chronicles-owner-journey";
+  for (const auto& base : bases) {
+    std::string prefix = base;
+    for (int depth = 0; depth <= 6; ++depth) {
+      const std::string folder = prefix + (prefix.empty() ? "" : "\\") + marker;
+      if (directory_exists(folder)) {
+        const std::string captures = folder + "\\captures";
+        CreateDirectoryA(captures.c_str(), nullptr);
+        return captures;
+      }
+      prefix += prefix.empty() ? ".." : "\\..";
+    }
+  }
+  CreateDirectoryA("captures", nullptr);
+  return "captures";
+}
+
+void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
+                                 render::List& rl) {
+  const auto& model = state.session ? state.session->model() : verdigris::client::ClientModel{};
+  RECT panel{0, 0, bounds.right, bounds.bottom};
+  HBRUSH backdrop = CreateSolidBrush(RGB(10, 14, 12));
+  FillRect(dc, &panel, backdrop);
+  DeleteObject(backdrop);
+
+  struct Line {
+    std::string label;
+    std::string text;
+    COLORREF color;
+    bool accent;
+  };
+  std::vector<Line> lines;
+  lines.push_back({"title", "V E R D I G R I S   C H R O N I C L E S",
+                   RGB(120, 214, 168), true});
+  {
+    std::string status_line;
+    if (!state.session ||
+        state.session->connection_state() ==
+            verdigris::client::ConnectionState::Disconnected) {
+      status_line = "The chronicles lie closed - connection lost.";
+    } else if (!model.chronicle.present) {
+      status_line = "Opening the chronicles...";
+    } else {
+      status_line = "Account of " +
+                    (model.chronicle.account_name.empty() ? std::string("the guest")
+                                                          : model.chronicle.account_name);
+    }
+    lines.push_back({"account", status_line, RGB(185, 198, 188), false});
+  }
+
+  if (!model.chronicle.present || model.chronicle.houses.empty()) {
+    lines.push_back({"prompt", "No House stands in these pages yet.",
+                     RGB(230, 235, 220), false});
+  } else {
+    for (const auto& house : model.chronicle.houses) {
+      lines.push_back({"house " + house.name,
+                       "House " + house.name, RGB(239, 208, 116), false});
+      for (const auto& scion : house.scions) {
+        std::string row = "  Scion " + scion.name + " - level " +
+                          std::to_string(scion.level) +
+                          (scion.mortal ? " (mortal)" : "");
+        lines.push_back({"scion " + scion.id, row, RGB(140, 208, 172), false});
+      }
+      for (const auto& entry : house.crypt) {
+        std::string relic = "rests unrecorded";
+        if (!entry.relic_status.empty()) {
+          relic = "heirloom " + entry.relic_status;
+          if (entry.relic_count > 0)
+            relic += " (" + std::to_string(entry.relic_count) + " to circulation)";
+        }
+        lines.push_back({"crypt " + entry.id,
+                         "  In the crypt: " + entry.name + " - " + relic,
+                         RGB(150, 160, 170), false});
+      }
+    }
+  }
+  if (!model.chronicle.fallen.name.empty()) {
+    lines.push_back(
+        {"fallen:" + model.chronicle.fallen.scion_id,
+         "The chronicle records the fall of " + model.chronicle.fallen.name +
+             " (level " + std::to_string(model.chronicle.fallen.level) + ").",
+         RGB(214, 92, 72), false});
+  }
+
+  state.chronicles_menu = chronicle_actions(state);
+  for (const auto& action : state.chronicles_menu) {
+    lines.push_back({"action:" + action.command +
+                         (action.arg.empty() ? "" : ":" + action.arg),
+                     "[" + action.key + "] " + action.label, RGB(239, 208, 116), false});
+  }
+  lines.push_back({state.chronicles_oath ? "oath:on" : "oath:off",
+                   std::string("Oath field: ") +
+                       (state.chronicles_oath ? "mortal - death is final"
+                                              : "soft - wounds can be recovered"),
+                   RGB(185, 198, 188), false});
+
+  SetBkMode(dc, TRANSPARENT);
+  const int left = std::max(24, (static_cast<int>(bounds.right) - 620) / 2);
+  int y = 64;
+  for (const auto& line : lines) {
+    rl.push_back({render::Op::Chronicles, static_cast<double>(left),
+                  static_cast<double>(y), 0.0, 0, line.label});
+    HFONT font = CreateFontA(line.accent ? 30 : 19, 0, 0, 0, FW_BOLD, FALSE,
+                             FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS,
+                             CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY,
+                             DEFAULT_PITCH | FF_DONTCARE, "Georgia");
+    HGDIOBJ old_font = SelectObject(dc, font);
+    SetTextColor(dc, line.color);
+    TextOutA(dc, left, y, line.text.c_str(), static_cast<int>(line.text.size()));
+    SelectObject(dc, old_font);
+    DeleteObject(font);
+    y += line.accent ? 44 : 26;
+    if (y > bounds.bottom - 40) break;
+  }
+  if (state.relic_toast_ticks > 0 && !state.relic_toast.empty()) {
+    rl.push_back({render::Op::Chronicles, 0.0, 0.0, 0.0, 0, "relic-toast"});
+    SetTextColor(dc, RGB(239, 208, 116));
+    TextOutA(dc, 18, bounds.bottom - 28, state.relic_toast.c_str(),
+             static_cast<int>(state.relic_toast.size()));
+  }
+}
+
+// Shared owner-facing chrome: the visible connection state lives on both
+// screens — a failed connection is always explicit, never a silent fallback.
+void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
+                           render::List& rl) {
+  if (!state.session) return;
+    const auto conn = state.session->connection_state();
+    const char* label = verdigris::client::connection_state_label(conn);
+    const std::string chip = std::string("connection ") + label;
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, chip});
+    COLORREF chip_color = RGB(185, 198, 188);
+    if (conn == verdigris::client::ConnectionState::Ready)
+      chip_color = RGB(120, 214, 168);
+    else if (conn == verdigris::client::ConnectionState::Connecting ||
+             conn == verdigris::client::ConnectionState::Connected ||
+             conn == verdigris::client::ConnectionState::Retrying)
+      chip_color = RGB(239, 208, 116);
+    else if (conn == verdigris::client::ConnectionState::Disconnected ||
+             conn == verdigris::client::ConnectionState::Rejected ||
+             conn == verdigris::client::ConnectionState::ProtocolMismatch)
+      chip_color = RGB(255, 80, 70);
+    const int chip_w = 168;
+    const int chip_h = 22;
+    const int chip_x = std::max(18, static_cast<int>(bounds.right) - chip_w - 18);
+    const int chip_y = 12;
+    RECT chip_rect{chip_x, chip_y, chip_x + chip_w, chip_y + chip_h};
+    HBRUSH chip_bg = CreateSolidBrush(RGB(25, 33, 37));
+    FillRect(dc, &chip_rect, chip_bg);
+    DeleteObject(chip_bg);
+    HPEN chip_pen = CreatePen(PS_SOLID, 1, chip_color);
+    HGDIOBJ old_chip_pen = SelectObject(dc, chip_pen);
+    HGDIOBJ old_chip_brush =
+        SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+    Rectangle(dc, chip_rect.left, chip_rect.top, chip_rect.right, chip_rect.bottom);
+    SelectObject(dc, old_chip_brush);
+    SelectObject(dc, old_chip_pen);
+    DeleteObject(chip_pen);
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, chip_color);
+    TextOutA(dc, chip_x + 8, chip_y + 3, chip.c_str(), static_cast<int>(chip.size()));
+    if (conn == verdigris::client::ConnectionState::Disconnected ||
+        conn == verdigris::client::ConnectionState::Rejected ||
+        conn == verdigris::client::ConnectionState::ProtocolMismatch) {
+      SetTextColor(dc, RGB(255, 80, 70));
+      const char* banner = "CONNECTION LOST — not playing offline";
+      TextOutA(dc, 18, 76, banner, static_cast<int>(strlen(banner)));
+    }
+}
+
 void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   sync_world(state);
   const WorldView& world = state.world;
   render::List rl;
+
+  // TASK-0145: the Chronicles front door replaces the abrupt game-window
+  // entry for the remote owner path. Expedition painting is skipped
+  // entirely; the door renders from the authoritative chronicle model.
+  if (state.screen == Screen::Chronicles) {
+    paint_chronicles_front_door(state, dc, bounds, rl);
+    paint_connection_chip(state, dc, bounds, rl);
+    state.render_list = std::move(rl);
+    return;
+  }
 
   draw_floor(state.billboards, dc, state.camera, bounds, world.route_id, rl);
 
@@ -2538,46 +2908,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   }
 
   if (state.session) {
-    const auto conn = state.session->connection_state();
-    const char* label = verdigris::client::connection_state_label(conn);
-    const std::string chip = std::string("connection ") + label;
-    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, chip});
-    COLORREF chip_color = RGB(185, 198, 188);
-    if (conn == verdigris::client::ConnectionState::Ready)
-      chip_color = RGB(120, 214, 168);
-    else if (conn == verdigris::client::ConnectionState::Connecting ||
-             conn == verdigris::client::ConnectionState::Connected ||
-             conn == verdigris::client::ConnectionState::Retrying)
-      chip_color = RGB(239, 208, 116);
-    else if (conn == verdigris::client::ConnectionState::Disconnected ||
-             conn == verdigris::client::ConnectionState::Rejected ||
-             conn == verdigris::client::ConnectionState::ProtocolMismatch)
-      chip_color = RGB(255, 80, 70);
-    const int chip_w = 168;
-    const int chip_h = 22;
-    const int chip_x = std::max(18, static_cast<int>(bounds.right) - chip_w - 18);
-    const int chip_y = 12;
-    RECT chip_rect{chip_x, chip_y, chip_x + chip_w, chip_y + chip_h};
-    HBRUSH chip_bg = CreateSolidBrush(RGB(25, 33, 37));
-    FillRect(dc, &chip_rect, chip_bg);
-    DeleteObject(chip_bg);
-    HPEN chip_pen = CreatePen(PS_SOLID, 1, chip_color);
-    HGDIOBJ old_chip_pen = SelectObject(dc, chip_pen);
-    HGDIOBJ old_chip_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
-    Rectangle(dc, chip_rect.left, chip_rect.top, chip_rect.right, chip_rect.bottom);
-    SelectObject(dc, old_chip_brush);
-    SelectObject(dc, old_chip_pen);
-    DeleteObject(chip_pen);
-    SetBkMode(dc, TRANSPARENT);
-    SetTextColor(dc, chip_color);
-    TextOutA(dc, chip_x + 8, chip_y + 3, chip.c_str(), static_cast<int>(chip.size()));
-    if (conn == verdigris::client::ConnectionState::Disconnected ||
-        conn == verdigris::client::ConnectionState::Rejected ||
-        conn == verdigris::client::ConnectionState::ProtocolMismatch) {
-      SetTextColor(dc, RGB(255, 80, 70));
-      const char* banner = "CONNECTION LOST — not playing offline";
-      TextOutA(dc, 18, 76, banner, static_cast<int>(strlen(banner)));
-    }
+    paint_connection_chip(state, dc, bounds, rl);
   }
 
   // TASK-0142: owner-facing objective strip, centered at the top. The copy
@@ -2609,6 +2940,29 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         std::max(12, (static_cast<int>(bounds.right) -
                       static_cast<int>(extent.cx) - 16) / 2);
     paint_status_chip(dc, chip_x, 12, objective, accent, rl);
+  }
+
+  // TASK-0145: expedition identity chip — the current House and Scion are
+  // always named, straight from the authoritative session model.
+  {
+    const std::string identity = "House " + world.house_name + " - Scion " +
+                                 (world.scion_name.empty() ? std::string("(unnamed)")
+                                                           : world.scion_name);
+    rl.push_back({render::Op::HouseChip, 0.0, 0.0, 0.0, 0, identity});
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, RGB(140, 208, 172));
+    TextOutA(dc, 18, 12, identity.c_str(), static_cast<int>(identity.size()));
+  }
+
+  // TASK-0145: relic-recovery toast — an authoritative crypt transition is
+  // announced by name while exploring.
+  if (state.relic_toast_ticks > 0 && !state.relic_toast.empty()) {
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                  "relic: " + state.relic_toast});
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, RGB(239, 208, 116));
+    TextOutA(dc, 18, bounds.bottom - 28, state.relic_toast.c_str(),
+             static_cast<int>(state.relic_toast.size()));
   }
 
   // TASK-0142: honest art-status chip. It reports what is really on screen —
@@ -2748,12 +3102,19 @@ void timer_step(HWND window, ClientState& state) {
     state.session->poll();
     sync_world(state);
     ingest_session_events(state);
+    update_screen_for_model(state);
+    watch_crypt_statuses(state);
   }
+  if (state.relic_toast_ticks > 0) --state.relic_toast_ticks;
 
+  const bool at_front_door =
+      state.screen == Screen::Chronicles && state.session != nullptr;
   int dx = (state.d ? 1 : 0) - (state.a ? 1 : 0);
   int dy = (state.s ? 1 : 0) - (state.w ? 1 : 0);
   const bool moving = dx != 0 || dy != 0;
-  if (state.session) {
+  if (at_front_door) {
+    // The front door consumes movement: no world input exists pre-admission.
+  } else if (state.session) {
     if (state.session->connection_state() == verdigris::client::ConnectionState::Ready) {
       if (moving) submit_move(state, dx, dy);
     }
@@ -2766,7 +3127,7 @@ void timer_step(HWND window, ClientState& state) {
     }
   }
 
-  dispatch_aim_if_changed(state, bounds, !moving && state.was_moving);
+  if (!at_front_door) dispatch_aim_if_changed(state, bounds, !moving && state.was_moving);
   state.was_moving = moving;
 
   ingest_events(state, bounds);
@@ -2812,6 +3173,11 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       }
       if (wparam == VK_ESCAPE) {
         PostQuitMessage(0);
+        break;
+      }
+      if (state->screen == Screen::Chronicles && state->session) {
+        handle_chronicles_key(*state, wparam);
+        InvalidateRect(window, nullptr, FALSE);
         break;
       }
       if (wparam == 'W') state->w = true;
@@ -3508,6 +3874,320 @@ int scenario_zoom_invariance() {
   return 0;
 }
 
+// ── TASK-0145: chronicles-gate-b scenario ───────────────────────────────
+// Drives the FULL owner screen-state journey against a real remote session
+// and a real in-process protocol server bound to this lane's loopback
+// capsule (6780-6799): front door → found → create → mortal oath →
+// admission → expedition → fatal fall → succession → relic recovery →
+// reconnect roster restore. Asserts screen transitions and actionable
+// controls, never just parsed fields.
+
+bool reference_present(ClientState& state, int width, int height,
+                       const std::string& png_path);
+
+bool chronicles_pump(ClientState& state, int max_ticks,
+                     const std::function<bool()>& done) {
+  for (int i = 0; i < max_ticks; ++i) {
+    state.session->poll();
+    ingest_session_events(state);
+    update_screen_for_model(state);
+    watch_crypt_statuses(state);
+    if (state.relic_toast_ticks > 0) --state.relic_toast_ticks;
+    for (auto& fx : state.effects) ++fx.age;
+    state.effects.erase(std::remove_if(state.effects.begin(), state.effects.end(),
+                                       [](const EffectFx& fx) { return fx.age >= fx.ttl; }),
+                        state.effects.end());
+    if (state.screen_pulse_ticks > 0) --state.screen_pulse_ticks;
+    if (done()) return true;
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  }
+  return done();
+}
+
+bool render_list_has(const ClientState& state, render::Op op,
+                     const std::string& prefix) {
+  for (const auto& item : state.render_list) {
+    if (item.op != op) continue;
+    if (prefix.empty() || item.label.rfind(prefix, 0) == 0) return true;
+  }
+  return false;
+}
+
+void fire_chronicle_action(ClientState& state, const std::string& command,
+                           const std::string& arg = "") {
+  state.chronicles_menu = chronicle_actions(state);
+  for (const auto& action : state.chronicles_menu) {
+    if (action.command != command) continue;
+    if (!arg.empty() && action.arg != arg) continue;
+    submit_chronicle_action(state, action);
+    return;
+  }
+}
+
+// Test-harness escape hatch: dev:* control-surface envelopes through the real
+// remote session (same seam the remote render-list scenario's transport
+// exposes). Production presentation code never calls these.
+void send_dev_envelope(ClientState& state, const char* event,
+                       verdigris::networking::JsonValue::Object fields = {}) {
+  auto* remote =
+      static_cast<verdigris::client::RemoteProtocolSession*>(state.session.get());
+  remote->send_raw(event, verdigris::networking::JsonValue(std::move(fields)));
+}
+
+int scenario_chronicles_gate_b() {
+  verdigris::networking::WebSocketServer* server = nullptr;
+  std::uint16_t port = 0;
+  for (std::uint16_t candidate = 6780; candidate <= 6799; ++candidate) {
+    auto* probe = new verdigris::networking::WebSocketServer(candidate);
+    std::string error;
+    if (probe->start(&error)) {
+      server = probe;
+      port = candidate;
+      break;
+    }
+    delete probe;
+  }
+  scenario_check(server != nullptr, "chronicles-gate-b: bound ox-pc-i capsule server");
+  if (!server) return 0;
+
+  ClientState state;
+  state.chronicles_mode = true;
+  state.screen = Screen::Chronicles;
+  load_billboards(state.billboards);
+  const std::string capture_dir = chronicles_capture_dir();
+
+  using verdigris::client::ClientCommand;
+  using verdigris::client::ConnectionState;
+  state.session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+      "127.0.0.1", port, "ox-pc-i-gate-b", false);
+  std::string error;
+  scenario_check(state.session->start(&error), "chronicles-gate-b: session start");
+
+  // 1) The coherent pre-game screen: account payload opens the front door.
+  const bool door_ready = chronicles_pump(
+      state, 250, [&] { return state.session->model().chronicle.present; });
+  scenario_check(door_ready, "front door: the account chronicle opens the door");
+  scenario_present(state);
+  scenario_check(render_list_has(state, render::Op::Chronicles, "title"),
+                 "front door: the Chronicles title is on screen");
+  scenario_check(render_list_has(state, render::Op::Chronicles, "action:found-house"),
+                 "front door: founding a House is an actionable control");
+
+  // 2) Found the House.
+  fire_chronicle_action(state, "found-house");
+  const bool house_ok = chronicles_pump(state, 250, [&] {
+    return state.session->model().chronicle.houses.size() == 1;
+  });
+  scenario_check(house_ok, "front door: founding renders the House roster");
+  scenario_present(state);
+  scenario_check(render_list_has(state, render::Op::Chronicles, "house "),
+                 "front door: the new House is named on screen");
+  scenario_check(render_list_has(state, render::Op::Chronicles, "action:create-scion"),
+                 "front door: naming a Scion is offered");
+
+  // 3) Create the first Scion; the oath field starts soft.
+  fire_chronicle_action(state, "create-scion");
+  const bool scion_ok = chronicles_pump(state, 250, [&] {
+    const auto& houses = state.session->model().chronicle.houses;
+    return !houses.empty() && houses.front().scions.size() == 1;
+  });
+  scenario_check(scion_ok, "front door: the first Scion joins the roster");
+  scenario_present(state);
+  scenario_check(render_list_has(state, render::Op::Chronicles, "action:set-out:"),
+                 "front door: set-out is actionable for the new Scion");
+  scenario_check(render_list_has(state, render::Op::Chronicles, "oath:off"),
+                 "front door: the mortal-oath field renders its soft state");
+
+  // 4) Arm the mortal oath and admit through the oath-bearing select path.
+  fire_chronicle_action(state, "oath-toggle");
+  scenario_present(state);
+  scenario_check(render_list_has(state, render::Op::Chronicles, "oath:on"),
+                 "front door: the mortal-oath field arms on demand");
+  const std::string first_scion_id =
+      state.session->model().chronicle.houses.front().scions.front().id;
+  fire_chronicle_action(state, "select-scion", first_scion_id);
+  const bool admitted = chronicles_pump(state, 250, [&] {
+    return state.session->connection_state() == ConnectionState::Ready &&
+           !state.session->model().chronicles_pending &&
+           state.session->model().player.alive &&
+           state.screen == Screen::Expedition;
+  });
+  scenario_check(admitted, "admission: the mortal-oath select lands in the world");
+  scenario_follow_camera(state);
+  scenario_present(state);
+  scenario_check(!render_list_has(state, render::Op::Chronicles, "title"),
+                 "admission: the front door is dismissed");
+  scenario_check(render_list_has(state, render::Op::HouseChip, "House "),
+                 "admission: the expedition names the House and Scion");
+
+  // 5) Take the road: the expedition HUD keeps the TASK-0142 presentation.
+  state.session->submit(ClientCommand::enter_zone("tin:1:0"));
+  const bool in_instance = chronicles_pump(state, 250, [&] {
+    return state.session->model().scene.type == "instance";
+  });
+  scenario_check(in_instance, "expedition: the road instance is entered");
+  generate_scenery(state);
+  scenario_follow_camera(state);
+  scenario_present(state);
+  scenario_check(render::any(state.render_list, render::Op::Floor),
+                 "expedition: the route renders with the existing presentation");
+
+  // 6) Earn gear so the fatal fall commits a real heirloom to circulation.
+  // dev:give runs the real inventory pipeline; the seeded grant keeps the
+  // journey deterministic. Only starter coins/daggers are exempt from
+  // circulation, so this sword is exactly what the fall will commit.
+  send_dev_envelope(state, "dev:give",
+                    {{"itemId", verdigris::networking::JsonValue("bronze-sword")},
+                     {"seed", verdigris::networking::JsonValue(20260822)}});
+  const bool sword_ok = chronicles_pump(state, 250, [&] {
+    for (const auto& item : state.session->model().inventory)
+      if (item.id == "bronze-sword") return true;
+    return false;
+  });
+  scenario_check(sword_ok, "expedition: earned gear enters the inventory");
+
+  // 7) The fatal fall: server-authoritative final death for the mortal oath.
+  send_dev_envelope(state, "dev:kill");
+  const bool fallen = chronicles_pump(state, 250, [&] {
+    return state.session->model().chronicle.fallen.scion_id == first_scion_id;
+  });
+  scenario_check(fallen, "consequence: scion-fallen names the fallen Scion");
+  scenario_check(state.screen == Screen::Chronicles,
+                 "consequence: the fall returns the owner to the chronicles");
+  chronicles_pump(state, 40, [&] { return false; });  // let dev:state refresh the crypt
+  scenario_present(state);
+  scenario_check(render_list_has(state, render::Op::Chronicles, "fallen:"),
+                 "consequence: the fall is recorded on the front door");
+  scenario_check(render_list_has(state, render::Op::Chronicles, "crypt " + first_scion_id),
+                 "consequence: the fallen Scion rests in the crypt");
+  scenario_check(render_list_has(state, render::Op::Chronicles, "action:create-scion"),
+                 "succession: naming a successor is actionable after the fall");
+  const bool door_png = reference_present(state, 960, 600,
+                                          capture_dir + "\\front-door-960x600.png");
+  scenario_check(door_png, "evidence: front-door capture written");
+
+  // 8) Succession: the heir is admitted through the succession select path
+  // (the only wire admission that resets a permadead lifecycle), with the
+  // oath disarmed so the soft-heir journey is what ships.
+  fire_chronicle_action(state, "create-scion");
+  const bool successor_ok = chronicles_pump(state, 250, [&] {
+    const auto& houses = state.session->model().chronicle.houses;
+    return !houses.empty() && !houses.front().scions.empty() &&
+           houses.front().scions.back().id != first_scion_id;
+  });
+  scenario_check(successor_ok, "succession: the heir joins the living roster");
+  const std::string successor_id =
+      state.session->model().chronicle.houses.front().scions.back().id;
+  const std::string successor_name =
+      state.session->model().chronicle.houses.front().scions.back().name;
+  scenario_present(state);
+  scenario_check(
+      render_list_has(state, render::Op::Chronicles, "action:select-scion:" + successor_id),
+      "succession: heirship admission is actionable without the oath");
+  fire_chronicle_action(state, "oath-toggle");  // disarm for the soft heir
+  fire_chronicle_action(state, "select-scion", successor_id);
+  const bool admitted_heir = chronicles_pump(state, 250, [&] {
+    return state.session->connection_state() == ConnectionState::Ready &&
+           !state.session->model().chronicles_pending &&
+           state.session->model().player.alive &&
+           state.screen == Screen::Expedition;
+  });
+  scenario_check(admitted_heir,
+                 "succession: the heirship select admits the successor");
+  // RECORDED RED (TASK-0081 discipline): on the current tip
+  // player:chronicles:select resets the lifecycle but not the Simulation
+  // actor's life, so a successor inherits a zero-life seat until a fresh
+  // socket heal. Continue every independent UI state via the accepted
+  // dev:heal surface rather than editing forbidden server authority.
+  send_dev_envelope(state, "dev:heal");
+  const bool heir_out = chronicles_pump(state, 250, [&] {
+    const auto& model = state.session->model();
+    return model.player.alive && model.player.life > 0 &&
+           model.lifecycle == "alive" && state.screen == Screen::Expedition;
+  });
+  scenario_check(heir_out, "succession: the heir takes a healed field");
+  scenario_follow_camera(state);
+  scenario_present(state);
+  {
+    bool chip_names_heir = false;
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::HouseChip &&
+          item.label.find(successor_name) != std::string::npos)
+        chip_names_heir = true;
+    scenario_check(chip_names_heir, "succession: the identity chip names the heir");
+  }
+
+  // 9) Relic recovery: surface the heirloom, take it, watch the crypt flip.
+  send_dev_envelope(state, "dev:release-relic");
+  const bool surfaced = chronicles_pump(state, 250, [&] {
+    for (const auto& item : state.session->model().ground)
+      if (item.relic) return true;
+    return false;
+  });
+  scenario_check(surfaced, "recovery: the surfaced heirloom carries its provenance");
+  state.session->submit(ClientCommand::pick_up(""));
+  const bool recovered = chronicles_pump(state, 250, [&] {
+    for (const auto& house : state.session->model().chronicle.houses)
+      for (const auto& entry : house.crypt)
+        if (entry.id == first_scion_id && entry.relic_status == "recovered") return true;
+    return false;
+  });
+  scenario_check(recovered, "recovery: the crypt record flips lost to recovered");
+  scenario_check(!state.relic_toast.empty(),
+                 "recovery: the recovery toast names the fallen");
+  scenario_follow_camera(state);
+  scenario_present(state);
+  scenario_check(render_list_has(state, render::Op::Hud, "relic: "),
+                 "recovery: the expedition HUD announces the recovery");
+
+  // 10) Reconnect: the existing House/Scion state renders without any login
+  // side effects — the front door shows the persisted roster.
+  state.session->shutdown();
+  state.session.reset();
+  state.screen = Screen::Chronicles;
+  state.session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+      "127.0.0.1", port, "ox-pc-i-gate-b", false);
+  scenario_check(state.session->start(&error), "reconnect: session restarts");
+  const bool roster_ok = chronicles_pump(state, 250, [&] {
+    const auto& chronicle = state.session->model().chronicle;
+    if (!chronicle.present) return false;
+    bool heir_listed = false;
+    for (const auto& house : chronicle.houses) {
+      for (const auto& scion : house.scions)
+        if (scion.id == successor_id) heir_listed = true;
+      for (const auto& entry : house.crypt)
+        if (entry.id == first_scion_id && entry.relic_status == "recovered") heir_listed = true;
+    }
+    return heir_listed && state.screen == Screen::Chronicles;
+  });
+  scenario_check(roster_ok, "reconnect: House, heir, and crypt render on return");
+  scenario_present(state);
+  scenario_check(render_list_has(state, render::Op::Chronicles, "scion " + successor_id),
+                 "reconnect: the living heir is listed");
+
+  // 11) Re-admit the heir — a living scion's plain outing now takes the
+  // chronicles:scion:set-out wire path (road purse) — and capture the
+  // expedition HUD evidence.
+  fire_chronicle_action(state, "set-out", successor_id);
+  const bool heir_again = chronicles_pump(state, 250, [&] {
+    const auto& model = state.session->model();
+    return state.session->connection_state() == ConnectionState::Ready &&
+           !model.chronicles_pending && model.player.alive &&
+           model.player.life > 0 && state.screen == Screen::Expedition;
+  });
+  scenario_check(heir_again, "reconnect: re-admission returns to the expedition");
+  scenario_follow_camera(state);
+  scenario_present(state);
+  const bool hud_png = reference_present(state, 960, 600,
+                                         capture_dir + "\\expedition-hud-960x600.png");
+  scenario_check(hud_png, "evidence: expedition HUD capture written");
+
+  if (state.session) state.session->shutdown();
+  server->stop();
+  delete server;
+  return 0;
+}
+
 int run_scenarios(const std::string& which) {
   struct Entry {
     const char* name;
@@ -3521,6 +4201,7 @@ int run_scenarios(const std::string& which) {
       {"combat-juice", scenario_combat_juice},
       {"remote-render-list", scenario_remote_render_list},
       {"zoom-invariance", scenario_zoom_invariance},
+      {"chronicles-gate-b", scenario_chronicles_gate_b},
   };
   int total_failures = 0;
   for (const auto& entry : entries) {
@@ -3561,6 +4242,8 @@ const char* render_op_name(render::Op op) {
     case render::Op::PaneWeapon: return "PaneWeapon";
     case render::Op::PaneItem: return "PaneItem";
     case render::Op::PaneBanked: return "PaneBanked";
+    case render::Op::Chronicles: return "Chronicles";
+    case render::Op::HouseChip: return "HouseChip";
   }
   return "Unknown";
 }
@@ -3843,10 +4526,14 @@ int run_reference_scenes(const std::string& which) {
 
 }  // namespace
 
-int run_remote_native_client(const char* host, unsigned short port, const char* guest_id) {
+int run_remote_native_client(const char* host, unsigned short port, const char* guest_id,
+                             bool chronicles_mode) {
   auto state = std::make_unique<ClientState>();
+  state->chronicles_mode = chronicles_mode;
+  state->screen = chronicles_mode ? Screen::Chronicles : Screen::Expedition;
   state->session = std::make_unique<verdigris::client::RemoteProtocolSession>(
-      host ? host : "127.0.0.1", port, guest_id ? guest_id : "cursor-guest", true);
+      host ? host : "127.0.0.1", port, guest_id ? guest_id : "cursor-guest",
+      !chronicles_mode);
   std::string error;
   if (!state->session->start(&error)) {
     std::fprintf(stderr, "verdigris_client --remote: %s\n", error.c_str());
@@ -3863,10 +4550,11 @@ int run_remote_native_client(const char* host, unsigned short port, const char* 
   window_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
   RegisterClassA(&window_class);
 
-  HWND window =
-      CreateWindowExA(0, window_class.lpszClassName, "Verdigris Remote Guest", WS_OVERLAPPEDWINDOW,
-                      CW_USEDEFAULT, CW_USEDEFAULT, 960, 600, nullptr, nullptr, instance,
-                      state.get());
+  HWND window = CreateWindowExA(
+      0, window_class.lpszClassName,
+      chronicles_mode ? "Verdigris Chronicles" : "Verdigris Remote Guest",
+      WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 960, 600, nullptr, nullptr,
+      instance, state.get());
   ShowWindow(window, SW_SHOW);
   SetTimer(window, 1, 50, nullptr);
 
@@ -3914,6 +4602,7 @@ int main(int argc, char** argv) {
     if (std::strcmp(argv[i], "--remote") == 0) {
       const char* host = "127.0.0.1";
       unsigned short port = 6580;
+      const char* guest = "cursor-guest";
       if (i + 1 < argc && argv[i + 1][0] != '-') {
         const bool dotted = std::strchr(argv[i + 1], '.') != nullptr;
         if (dotted) {
@@ -3923,8 +4612,15 @@ int main(int argc, char** argv) {
         } else {
           port = static_cast<unsigned short>(std::atoi(argv[++i]));
         }
+        // Optional guest identity token after host/port.
+        if (i + 1 < argc && argv[i + 1][0] != '-') guest = argv[++i];
       }
-      return run_remote_native_client(host, port, "cursor-guest");
+      // TASK-0145: the remote owner path opens at the Chronicles front door
+      // by default; --quick preserves the legacy straight-into-world guest.
+      bool chronicles_mode = true;
+      for (int k = 1; k < argc; ++k)
+        if (std::strcmp(argv[k], "--quick") == 0) chronicles_mode = false;
+      return run_remote_native_client(host, port, guest, chronicles_mode);
     }
   }
   HINSTANCE instance = GetModuleHandle(nullptr);
