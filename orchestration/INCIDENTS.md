@@ -227,4 +227,6 @@ status labels. New incidents append here with the template at bottom.
 - RULE: owner notifications are escalation signal, not raw checkpoint
   telemetry. Worker pushes remain observable in Git/dashboard state; GitHub
   email is reserved for PR and canonical-branch gate failures.
-- Status: CONTAINED in local branches; protected workflow PRs pending.
+- Status: RESOLVED. Orchestration PR #3 merged as `d068012a`; Verdigris PR
+  #53 merged as `60e9f963`. Their PR gates were green, and the prior PC branch
+  pushes with the corrected workflow produced no branch-push runs.
