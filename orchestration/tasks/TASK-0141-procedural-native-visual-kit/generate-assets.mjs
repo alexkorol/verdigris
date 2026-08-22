@@ -28,7 +28,12 @@ function fmt(value) {
 }
 
 function cppFloat(value) {
-  return `${fmt(value)}f`;
+  // Standards-conforming C++ float literals: bare digit-suffix tokens such as
+  // "22f" reserve "f" as a literal-operator suffix (MSVC C4455). Emitting an
+  // explicit decimal point ("22.f") keeps every literal conforming.
+  let text = fmt(value);
+  if (!text.includes('.')) text = `${text}.`;
+  return `${text}f`;
 }
 
 function polygon(points, fill, options = {}) {
