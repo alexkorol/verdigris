@@ -1,111 +1,111 @@
-# TASK-0157 REPORT — native procedural audio scheduler foundation
+# TASK-0157 REPORT — native procedural audio scheduler foundation (revision 3)
 
-worker: ox-pc-ad · branch `codex/TASK-0157-native-procedural-audio-scheduler-ox-pc-ad-r2`
-base `373860af7b6b57a9ab9b4be50af027d175194e0f` (current pushed program tip; SPEC base
-`ad1a1e17…` verified ancestor) · claim commit `a41f1013` · implementation commit
-`601ca1e8` · machine DESKTOP-TVU7OR7
+worker: ox-pc-af · branch `codex/TASK-0157-native-procedural-audio-scheduler-ox-pc-af-r3`
+routed base `c1ca7d7a` (= pushed revision branch head on origin) · claim commit
+`7ffc8696` · implementation commit `1a91583e` · machine DESKTOP-TVU7OR7.
+Frozen predecessor (ox-pc-ad r2): head `024dabb5`, claim `a41f1013`,
+implementation `601ca1e8`, REVIEW verdict REVISE with exactly two numbered
+corrections. This report is self-contained for revision 3.
 
 ## Executive summary
 
-Implemented exactly the READY SPEC: a small backend-neutral static library
-(`verdigris_audio`) with an injectable recording sink, deterministic `CueSpec`
-scheduling, SFX/music bus state (mute/volume), priority classes
-(UI > player-feedback > world), and bounded voice caps with steal-oldest
-eviction. The five representative existing `PresentationEvent` values named by
-the SPEC (ordinary hit, critical hit, enemy defeat, Scion loss, war-cry
-expiry) translate into content-neutral procedural cue parameters via one
-stable keyed table. A dedicated CMake test target
-(`verdigris_audio_mixer_tests`) proves stable mapping, deterministic ordering,
-bus mute/volume, cap eviction, unknown-event silence, and byte-identical
-serialized schedules across two runs. Every acceptance command exits 0; the
-two required test-binary runs produced SHA-256-identical output. This packet
-schedules data only and makes no audible-playback claim.
+Revision 3 applies exactly the two REVISE corrections and nothing else:
 
-## Approach
+1. **Correction 1 — literal clean-worktree acceptance is now true.**
+   `native/build.ps1 -RunTests` itself now compiles the `verdigris_audio`
+   library sources plus `native/tests/audio_mixer_tests.cpp` and links
+   `native/build/verdigris_audio_mixer_tests.exe` at the SPEC-required path,
+   then executes it as part of `-RunTests`. No separate manual CMake step is
+   needed or used. Proven from a deleted `native/build/` directory: after the
+   literal command, the exe exists and both direct executions pass with
+   byte-identical output.
+2. **Correction 2 — enemy-defeat cue discriminator restored.** The cue table's
+   `ActorDied` arm now maps only when `event.text == "monster"`.
+   `"scion"` (which core emits immediately before `ScionLost` on player
+   death), empty, case-mismatched, and unknown discriminators stay silent, so
+   one Scion death schedules exactly one Scion-loss cue and never also a kill
+   cue. Focused positive/negative tests prove it; this restores the accepted
+   TASK-0117 contract that cues are keyed by `(PresentationEventType, text
+   discriminator, value)`.
 
-1. Preflight per AGENTS.md/PROTOCOL.md: fetch --prune; proved clean HEAD at the
-   routed base equal to `origin/codex/native-reconstitution`; verified SPEC
-   base ancestry; honored RELEASE.md by replacing (not editing around) the
-   released ox-pc-ab STATUS on a fresh branch from the current program base.
-   The quarantined `ox-pc-ab2` worktree and the released worker's branch were
-   never read for reuse.
-2. Read TASK-0117's accepted REPORT/FINDINGS/REVIEW and implemented its
-   successor contract verbatim where it overlaps this SPEC: `Sink`
-   (`schedule(CueSpec)`), recording sink tests, two buses, priority classes
-   UI > player-feedback > world, voice caps with steal-oldest, procedural
-   content-neutral placeholder cues.
-3. Kept the library independent of windowing/GPU/sockets/DOM/assets: it reads
-   only the header-only `client/presentation_events.hpp` data contract;
-   simulation (`native/src/**`, `native/include/**`), client sources, wire
-   formats, and server were untouched.
-4. Chose deliberately non-final integer parameters (Hz/duration/gain in
-   permille) documented as provisional placeholders — no final frequency/music
-   decision was made, per SPEC owner_input_dependency. Values are my own
-   neutral placeholders, not copied from the browser reference, sidestepping
-   TASK-0117's carry-over question.
+The backend-neutral library shape from the reviewed predecessor is otherwise
+preserved unchanged in behavior: injectable recording sink, deterministic
+`CueSpec` scheduling, SFX/music bus state, priority classes
+(UI > player-feedback > world), bounded voice caps with steal-oldest,
+five-beat event translation, byte-identical serialized schedules across runs.
+This packet still schedules data only and claims no audible playback.
 
-## Changed files (all inside owned_paths)
+## Changed files (all inside revision-owned paths)
 
-- `native/audio/cue_spec.hpp` / `.cpp` — `Bus`, `PriorityClass`, `Waveform`,
-  `CueParams`, `CueSpec`, canonical byte-deterministic serializer
-  (`serialize_schedule`).
-- `native/audio/event_cues.hpp` / `.cpp` — `cue_for_event()`: the five-beat
-  translation table keyed by `(PresentationEventType, text discriminator,
-  critical)`; everything else returns false (silence).
-- `native/audio/audio_mixer.hpp` / `.cpp` — `Sink`, `RecordingSink`,
-  `AudioMixer` (`ingest`, `submit`, bus volume/mute permille state,
-  `drain_scheduled()` with gating + caps + steal-oldest, deterministic
-  `(tick, sequence)` voiced order).
-- `native/tests/audio_mixer_tests.cpp` — dedicated acceptance suite.
-- `native/CMakeLists.txt` — `verdigris_audio` static library +
-  `verdigris_audio_mixer_tests` executable + CTest registration.
+- `native/build.ps1` — narrow test-target wiring only (granted by REVIEW
+  correction 1): four added `cl /c` compiles (`audio/cue_spec.cpp`,
+  `audio/event_cues.cpp`, `audio/audio_mixer.cpp`,
+  `tests/audio_mixer_tests.cpp` with `/I audio` + `/I client`), one link into
+  `$buildRoot\verdigris_audio_mixer_tests.exe`, one `-RunTests` execution line
+  with exit-code guard. No other build behavior broadened or weakened;
+  pre-existing targets, defines, and run lines are untouched.
+- `native/audio/event_cues.cpp` — `ActorDied` arm gated on
+  `event.text != "monster" → return false`; explanatory comment naming the
+  core emission contract.
+- `native/tests/audio_mixer_tests.cpp` — pinned table row and scripted/ordering
+  fixtures updated to use text `"monster"`; new focused test
+  `enemy_defeat_requires_monster_discriminator()` (positive mapping to the
+  kill cue; silence for `"scion"`, empty, `"elite"`, `"MONSTER"`, and
+  critical-flag variants; mixer-level proof that the real player-death
+  sequence ActorDied("scion") → ScionLost yields exactly one `scion-lost`
+  cue); registered in `main()`.
+- `orchestration/tasks/TASK-0157-native-procedural-audio-scheduler/STATUS.md`,
+  `REPORT.md` — this handoff. SPEC.md and REVIEW.md untouched.
 
-## Public interfaces added
+Unchanged from the frozen predecessor: `native/audio/cue_spec.*`,
+`native/audio/audio_mixer.*`, `native/CMakeLists.txt` (CMake target already
+correct there).
+
+## Public interfaces
+
+No interface changes versus the reviewed predecessor; semantics of one arm of
+one function tightened per REVIEW correction 2:
 
 ```text
-verdigris::audio::Bus{Sfx,Music}; PriorityClass{World,PlayerFeedback,Ui}
-verdigris::audio::Waveform{Sine,Square,Sawtooth,Noise}
-verdigris::audio::CueParams{waveform,start_hz,end_hz,duration_ms,gain_permille}
-verdigris::audio::CueSpec{cue_id,bus,priority,scheduled_tick,sequence,
-                          effective_gain_permille,params}
-verdigris::audio::serialize_schedule(const std::vector<CueSpec>&)
 bool verdigris::audio::cue_for_event(const client::PresentationEvent&, CueSpec*)
-verdigris::audio::Sink { virtual void schedule(const CueSpec&) }
-verdigris::audio::RecordingSink { schedule(); cues(); clear() }
-verdigris::audio::AudioMixer(Sink&, sfx_cap=8, music_cap=2)
-  ingest(event, tick)->bool; submit(CueSpec); set_bus_volume(Bus,int permille);
-  set_bus_muted(Bus,bool); bus_volume(Bus); bus_muted(Bus);
-  drain_scheduled()->std::vector<CueSpec>; pending(); last_sequence()
+  — ActorDied now maps ONLY when event.text == "monster" (→ "kill" cue);
+    all other ActorDied texts return false (silence).
 ```
 
-## Acceptance commands and outcomes (literal)
+## Acceptance commands and outcomes (literal, clean starting state)
+
+Starting state proven before the run: `Remove-Item -Recurse -Force
+native/build` succeeded (`Test-Path native/build` → False), `git status
+--porcelain` empty at implementation commit `1a91583e`. No hidden prebuild.
 
 1. `powershell -NoProfile -ExecutionPolicy Bypass -File native/build.ps1 -RunTests`
-   → exit 0. Full transcript captured above in-session: MSVC build of all
-   pre-existing targets plus `native legacy denylist: PASS`,
-   `verdigris core tests: PASS`, `verdigris networking tests: PASS`,
-   `camera2d tests: PASS`, full session/journey/reconnect/gate-b suites green,
-   `presentation events tests: PASS`. The only warnings are pre-existing ones
-   in files this task does not own (`core.cpp`, `networking.cpp`,
-   `remote_session.cpp`, `session_tests.cpp`, `server_main.cpp`, `main.cpp`).
-2. `native/build/verdigris_audio_mixer_tests.exe` → exit 0; all checks PASS;
-   prints the canonical schedule block between markers.
-3. `native/build/verdigris_audio_mixer_tests.exe` (second run) → exit 0.
-   Byte comparison of the two runs:
-   `675CC7FD3729B5DC72EFF55E04E86B652F834582ABD6C52E163FDBEDD91CA060` ==
-   `675CC7FD3729B5DC72EFF55E04E86B652F834582ABD6C52E163FDBEDD91CA060`;
-   `Compare-Object` empty → **BYTE-IDENTICAL ACROSS RUNS**.
-4. `git diff --check` → exit 0 (no whitespace errors).
-5. `git diff --name-only` (+ `git status --porcelain`) → only
-   `native/CMakeLists.txt` modified; untracked additions confined to
-   `native/audio/` and `native/tests/audio_mixer_tests.cpp` — owned paths
-   only.
+   → exit 0. Full transcript captured in-session (SHA-256 of capture
+   `84C23BDF…D36D1A`): MSVC compiles of every pre-existing target plus the
+   four audio objects, links including `verdigris_audio_mixer_tests.exe`,
+   then `native legacy denylist: PASS`, `verdigris core tests: PASS`,
+   `verdigris networking tests: PASS`, `camera2d tests: PASS`,
+   session/journey/reconnect/replaced/render-list/gate-b suites green,
+   `session tests passed`, `presentation events tests: PASS`, the full audio
+   mixer suite (mapping, discriminator, silence, ordering, bus, cap,
+   serialization checks all PASS), `all audio mixer checks passed`.
+   Only warnings are the pre-existing ones in files this task does not own.
+   **After this literal command, `Test-Path
+   native/build/verdigris_audio_mixer_tests.exe` → True** (the exact point
+   that failed under review).
+2. `native/build/verdigris_audio_mixer_tests.exe` → exit 0; output captured;
+   SHA-256 `88793B5F…A063A4`.
+3. `native/build/verdigris_audio_mixer_tests.exe` (second direct run) →
+   exit 0; SHA-256 identical:
+   `88793B5F317B42A1255FD9B3D0E867F95E5F317FB0ABC28D2AA4AA26A6A063A4` ==
+   `88793B5F317B42A1255FD9B3D0E867F95E5F317FB0ABC28D2AA4AA26A6A063A4`;
+   `Compare-Object` count 0 → **BYTE-IDENTICAL ACROSS RUNS**, no hidden
+   prebuild involved.
+4. `git diff --check` → exit 0.
+5. `git diff --name-only` → empty; `git status --porcelain` → empty (all work
+   committed; tree confined to owned paths by construction).
 
-Additional evidence beyond the SPEC list:
-
-- `ctest --test-dir native/build -R verdigris_audio_mixer_tests
-  --output-on-failure` → `100% tests passed` (proves the CTest registration).
-- Canonical schedule printed by the test (identical both runs):
+Canonical schedule printed identically in both direct runs (unchanged content;
+only the ingesting event text changed):
 
 ```text
 cue[000003] tick=5 bus=sfx prio=world id=kill wave=sawtooth 196->49Hz 240ms gain=560 effective=560
@@ -118,51 +118,47 @@ cue[000006] tick=12 bus=music prio=ui id=menu-loop wave=sine 262->262Hz 1000ms g
 
 ## Manual verification / negative controls
 
-- Unknown-event silence: 12 unmapped `PresentationEventType` values plus
-  `BuffExpired` with a non-`war-cry` discriminator schedule nothing; drain
-  leaves the recording sink empty (test-asserted).
-- No playback claim: the only sink in the binary is the in-process recorder;
-  the library links no audio backend, device API, asset, or third-party
-  dependency (structural fact of the target graph; `ldd`-style proof is the
-  CMake target itself). Nothing in this packet asserts audibility.
-- Simulation/wire/client untouched: diff confined to owned paths; port 6500
-  never approached (no server needed; ports 7180-7199 unused as none of this
-  work binds sockets at all).
+- Discriminator focus (correction 2): positive `"monster"` → kill cue
+  (Sfx/world/sawtooth shape asserted); negative `"scion"`, `""`, `"elite"`,
+  `"MONSTER"` (case), critical-flag variants → all silent; end-to-end
+  player-death sequence asserts exactly one scheduled cue.
+- Unknown-event silence retained: 12 unmapped `PresentationEventType` values
+  plus `BuffExpired` with a non-`war-cry` discriminator schedule nothing.
+- No playback claim: only sink is the in-process recorder; no audio backend,
+  device API, asset, dependency, socket, or listener anywhere (ports
+  7220-7239 never bound; port 6500 never approached).
+- Simulation/wire/client/server/assets untouched: implementation diff touches
+  only `native/audio/event_cues.cpp`, `native/tests/audio_mixer_tests.cpp`,
+  and `native/build.ps1` within the granted scope.
 
 ## Deviations
 
-1. Pre-commit hook bypassed (`--no-verify`) for both commits: yorkie cannot
-   run in this isolated worktree (no `node_modules`), and its lint-staged
-   globs (`*.{js,vue}` / `*.vue`) match nothing in these commits (C++/CMake/
-   Markdown only) — same precedent as accepted TASK-0117 deviation #2.
-2. `native/build.ps1` is outside owned paths, so it cannot learn the new
-   target. The SPEC-expected exe path `native/build/verdigris_audio_mixer_tests.exe`
-   is produced by configuring the owned `native/CMakeLists.txt` directly
-   (`cmake -S native -B native/build -G "NMake Makefiles"` under vcvars64),
-   then running the literal acceptance sequence unchanged. The preset-based
-   flow (`build/cmake/<preset>`) also works and registers the same CTest.
-3. STATUS frontmatter records routed base `373860af…` (= pushed program tip,
-   per RELEASE.md instruction) while the SPEC pins `ad1a1e17…`; the latter is
-   a verified ancestor. Recorded for reviewer awareness, mirroring TASK-0117
-   deviation #1.
+1. Pre-commit hook bypassed (`core.hooksPath=Z:/Code/.fleet/no-hooks`) for
+   both commits, per packet instruction; same precedent as the predecessor
+   report (yorkie cannot run in this isolated worktree and its globs match
+   nothing committed here).
+2. None other. The prior deviation about `build.ps1` being outside owned
+   paths is resolved by REVIEW correction 1's explicit grant; the routed-base
+   deviation note from r2 does not recur (this lane was routed at
+   `c1ca7d7a` = pushed branch head, and SPEC base `ad1a1e17` remains an
+   ancestor of it via the program line).
 
 ## Unresolved questions
 
-1. None blocking. Owner decisions remain queued exactly as the SPEC states:
-   device backend, final sounds, music, licensing, composition.
+None blocking. Owner-gated decisions unchanged: device backend, final sounds,
+music, licensing, composition.
 
 ## Risks
 
-- Placeholder cue parameters are intentionally non-final; any owner audio
-  direction will change pinned test literals. Contained: values live in one
-  table (`event_cues.cpp`) and one expected block in the test.
-- Future integration must not let presentation-side cue scheduling mutate the
-  simulation; the mixer API is read-only over events, but callers own that
-  discipline.
+- Pinned cue literals remain provisional placeholders awaiting owner audio
+  direction; contained in `event_cues.cpp` + one expected block in the test
+  (unchanged assessment).
+- If future core code ever emits `ActorDied` with an enemy text other than
+  `"monster"`, it will stay silent until the table gains that discriminator;
+  this is the conservative direction required by the REVIEW.
 
 ## Follow-ups
 
-1. Successor (owner-gated): pick the device backend and land the real Sink
-   implementation behind the frozen seam.
-2. Optional: extend the cue table when `PresentationEventType` gains the
-   additive session beats TASK-0117 listed (instance/phase/relic/trophy).
+1. Successor (owner-gated): device backend Sink behind the frozen seam.
+2. Optional: extend the cue table for additive session beats listed by
+   TASK-0117 (instance/phase/relic/trophy).

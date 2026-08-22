@@ -1,6 +1,6 @@
 ---
 task: TASK-0157
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: codex
 worker: ox-pc-af
 machine: DESKTOP-TVU7OR7
@@ -15,6 +15,8 @@ predecessor_worker: ox-pc-ad
 predecessor_branch: codex/TASK-0157-native-procedural-audio-scheduler-ox-pc-ad-r2
 predecessor_claim_commit: a41f10138fe511878e7a6da1db9a3599355500ee
 predecessor_implementation_commit: 601ca1e8fd817665bf610fd4ca3de72084342983
+claim_commit: 7ffc869664316989848216b9cd3454f2e3b75b1f
+implementation_commit: 1a91583e8a08a8ff277a7d2b48c81b85b6871af3
 ports: 7220-7239 loopback only; port 6500 never touched (no sockets used at all)
 provider: openrouter
 endpoint: openrouter
@@ -22,16 +24,29 @@ model: stealth/ox-alpha
 harness: OpenCode 1.18.21, model alias stealth/ox-alpha via openrouter, variant max
 task_family: native procedural audio scheduler foundation (backend-neutral cue seam, revision 3)
 started_at: 2026-08-22T22:17:50Z
+review_requested_at: 2026-08-22T22:47:12Z
 ---
 
-CLAIMED (revision 3). Fresh architect-directed REVISE continuation from routed
-base `c1ca7d7a` (= pushed revision branch head on origin, exact ref name
-verified; no upstream configured). Frozen predecessor head `024dabb5` verified
-ancestor. Preflight proved: clean worktree at the routed base, REVIEW.md verdict
-REVISE with two numbered corrections, predecessor STATUS in REVIEW_REQUESTED (no
-live claim collision), ports 7220-7239 free of any registered lane. Scope:
-exactly REVIEW corrections 1 (`native/build.ps1 -RunTests` must build/link
-`native/build/verdigris_audio_mixer_tests.exe`, narrow wiring only) and 2
-(enemy-defeat cue restricted to `ActorDied` + text `"monster"` with focused
-positive/negative tests). SPEC.md/REVIEW.md untouched. No merge, rebase,
-amend, or force-push of the reviewed branch.
+REVIEW_REQUESTED (revision 3). Exactly the two numbered REVISE corrections
+implemented; nothing else changed:
+
+- Correction 1: `native/build.ps1 -RunTests` now compiles and links
+  `native/build/verdigris_audio_mixer_tests.exe` itself (narrow target wiring
+  only) and runs it. Proven from a deleted `native/build/` directory: after
+  the literal build command the exe exists (`Test-Path` → True), and both
+  direct executions exit 0 with SHA-256-identical output
+  (`88793B5F…A063A4`) — byte-identical schedules, no hidden prebuild.
+- Correction 2: enemy-defeat cue restricted to `ActorDied` with text
+  `"monster"`; `"scion"`, empty, case-mismatched, and unknown discriminators
+  are silent, so one Scion death schedules exactly one Scion-loss cue.
+  Focused positive/negative tests prove it (restores the TASK-0117 keyed-table
+  contract).
+
+Full literal gate sequence green from clean starting state: `build.ps1
+-RunTests` exit 0 (all pre-existing suites + full audio suite PASS),
+two direct exe runs exit 0 and byte-identical, `git diff --check` exit 0,
+`git diff --name-only` empty. Negative controls held: no audio asset,
+backend/device API, dependency, simulation/wire/client edit, or final sound/
+frequency/music decision; no playback claim; port 6500 untouched. Frozen
+predecessor branch unmodified (no merge/rebase/amend/force-push). Full
+evidence in REPORT.md. Pushed to this worker branch only.
