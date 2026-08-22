@@ -24,7 +24,7 @@
   PID 32.
 - Program head `f764600e8b8c57fbeca1ba2251fd011156aa925c` is clean/pushed.
   Queue proof remains healthy at 24 effective READY, 17 sequenced successors,
-  and zero collisions. Dashboard PID 22096 serves HTTP 200; monitor PID 2664
+  and zero collisions. Dashboard PID 26104 serves HTTP 200; monitor PID 2664
   is live. Raw program/worker pushes continue to start zero workflows. Owner
   action required now: none.
 

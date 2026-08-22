@@ -72,7 +72,7 @@ over implementation.
   26948. Preserved/non-capacity: ox-pc-af terminal accepted; ox-pc-ag terminal
   integrated; ox-pc-ae dirty released quarantine; ox-pc-ad predecessor
   handoff; ox-pc-ab dirty exhausted quarantine.
-- Dashboard PID 22096 is HTTP 200; monitor PID 2664 is live. Queue proof is 24
+- Dashboard PID 26104 is HTTP 200; monitor PID 2664 is live. Queue proof is 24
   effective READY, 17 successors, zero collisions. Exact next gate is the
   TASK-0163 handoff/review, then combined TASK-0163 + TASK-0157 integration
   verification. Owner action required now: none.
