@@ -1,6 +1,6 @@
 # TASK-0117 status
 
-state: CLAIMED
+state: REVIEW_REQUESTED
 worker: ox-pc-t
 provider: openrouter
 model: stealth/ox-alpha
@@ -14,3 +14,9 @@ Claim is first-STATUS-write-wins per orchestration/PROTOCOL.md. No pre-existing
 STATUS.md or RELEASE.md was present in this folder at claim time, and no remote
 branch of the same name existed. Work confined to owned_paths:
 orchestration/tasks/TASK-0117-audio-music-runtime-audit/**.
+
+REVIEW_REQUESTED (2026-08-22): all SPEC acceptance commands pass on the final
+tree; deliverables are FINDINGS.md, captures/audio-surfaces.json, REPORT.md.
+One recovery resume occurred after a process stop before handoff; all preserved
+edits verified intact via git status prior to resuming. Only this branch is
+pushed.

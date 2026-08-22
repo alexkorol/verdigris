@@ -1,0 +1,197 @@
+{
+  "meta": {
+    "task": "TASK-0117",
+    "title": "Native sound and music runtime audit",
+    "generated_at": "2026-08-22",
+    "generated_by": {
+      "worker": "ox-pc-t",
+      "provider": "openrouter",
+      "model": "stealth/ox-alpha"
+    },
+    "base_commit": "9fe673b66ffc082e865e0f0fb66f454ec1984949",
+    "spec_base_commit": "9bd689b4cebac0fe1f79ba54edcc9967a1a8f0d4",
+    "scope": "read-only audit; no assets downloaded, generated, played, or packaged; no ports opened",
+    "evidence_command": "rg -n \"audio|sound|music|volume|mute|device|spatial|voice|ambience\" native src server docs --glob \"*.md\" --glob \"*.cpp\" --glob \"*.hpp\" --glob \"*.js\" --glob \"*.vue\" --glob \"*.json\""
+  },
+  "summary": {
+    "native_audio_code_files": 0,
+    "native_audio_dependencies": 0,
+    "browser_audio_production_instances": 0,
+    "browser_audio_seam_files": 3,
+    "audio_asset_files_in_repo": 1,
+    "authoritative_event_inputs_available": true,
+    "headline_gap": "No native audio runtime exists. The browser reference has a synth SFX seam that is never instantiated in app code, one menu-music loop, and four of five mapped SFX cues have no producers."
+  },
+  "native_surfaces": {
+    "audio_runtime": {
+      "status": "absent",
+      "evidence": [
+        "Acceptance rg sweep over native/ matches only std::mutex, 'spatial backpack' inventory comments (native/include/verdigris/core.hpp:639), and a volume comment in native/tests/session_tests.cpp:532.",
+        "native/CMakeLists.txt declares no audio library, source, or dependency (targets: verdigris_core, verdigris_networking, verdigris_core_tests, verdigris_networking_tests, verdigris_server, verdigris_client_session).",
+        "rg -i 'audio|openal|sdl|miniaudio|wasapi|coreaudio' native/CMakeLists.txt: no matches."
+      ]
+    },
+    "authoritative_event_inputs": {
+      "core_event_log": {
+        "type": "Simulation::emit(EventType, actor_id, item_id, trophy_id, text, value) appended to events_ vector with tick stamp",
+        "declaration": "native/include/verdigris/core.hpp:221-262 (EventType enum, Event struct), :329 (events() accessor), :373-374 (emit)",
+        "emission_sites": [
+          { "event": "AttackStarted", "site": "native/src/core.cpp:405", "text_field": "action name" },
+          { "event": "DamageApplied", "site": "native/src/core.cpp:417 (player attack), :714 (enemy melee)", "value_field": "damage" },
+          { "event": "ActorDied", "site": "native/src/core.cpp:824 (monster, text='monster'), :892 (scion, text='scion')" },
+          { "event": "ScionLost", "site": "native/src/core.cpp:893" },
+          { "event": "ItemDropped", "site": "native/src/core.cpp:749" },
+          { "event": "TrophyDropped", "site": "native/src/core.cpp:784" },
+          { "event": "ItemPickedUp", "site": "native/src/core.cpp:506" },
+          { "event": "TrophyPickedUp", "site": "native/src/core.cpp:493" },
+          { "event": "ItemEquipped", "site": "native/src/core.cpp:522" },
+          { "event": "ItemHistoryUpdated", "site": "native/src/core.cpp:436,448,523,536 (use/equip/unequip)" },
+          { "event": "InstanceEntered", "site": "native/src/core.cpp:559" },
+          { "event": "ExpeditionPhaseChanged", "site": "native/src/core.cpp:858" },
+          { "event": "RouteUnlocked", "site": "native/src/core.cpp:798" },
+          { "event": "BranchUnlocked", "site": "native/src/core.cpp:465" },
+          { "event": "RelicResurfaced", "site": "native/src/core.cpp:761" },
+          { "event": "TrophyResurfaced", "site": "native/src/core.cpp:776" },
+          { "event": "BuffApplied/BuffExpired (war-cry)", "site": "native/src/core.cpp:352,734" },
+          { "event": "AttackTelegraphed (thrust/sweep + windup ticks)", "site": "native/src/core.cpp:694,700" },
+          { "event": "ActorMoved (move/dash)", "site": "native/src/core.cpp:320,343" }
+        ],
+        "note": "Event struct carries type, ids, text discriminator, value, tick — sufficient for cue selection without any simulation changes."
+      },
+      "presentation_event_seam": {
+        "type": "C3 session seam (D-122): transient PresentationEvent stream drained by the client; carries no gameplay authority",
+        "enum": "native/client/presentation_events.hpp:12-35 (ConnectionEstablished, ConnectionLost, SessionReady, AttackStarted, DamageApplied, ActorDied, ItemDropped, ItemPickedUp, ItemEquipped, ExtractionCompleted, ScionDied, Telegraph, Message, ProtocolError)",
+        "drain_api": "Session::drain_events() at native/client/session.hpp:94; implementations local_session.cpp:158, remote_session.cpp:525",
+        "consumers_today": [
+          "native/client/main.cpp:1737 ingest_events() — local pipeline turns events into procedural visual effects only",
+          "native/client/main.cpp:737 ingest_session_events() — remote variant",
+          "native/src/seasonal.cpp:10 — seasonal extension observes EventType::ActorDied"
+        ],
+        "coverage_gaps_for_audio": [
+          "No InstanceEntered / ExpeditionPhaseChanged / RouteUnlocked / RelicResurfaced mapped into PresentationEventType yet (zone/sting cues would need them).",
+          "No BuffApplied/BuffExpired mapping (war-cry cue would need it).",
+          "No TrophyPickedUp/TrophyDropped mapping (trophy cues fall back to item cues).",
+          "PresentationEvent lacks a tick field; core Event has tick (core.hpp:261)."
+        ]
+      },
+      "wire_envelopes_remote_path": {
+        "combat_hit": {
+          "envelope": "{ event: 'combat:hit', data }",
+          "built_at": "native/src/networking.cpp:1990-2006 emit_combat_event()",
+          "fields": ["attackerId", "attackerName", "targetId", "targetName", "targetType(player|monster)", "skillId", "amount", "died", "health.current", "health.max", "baseAmount", "beastbaneAmount", "beastbanePercent", "beastbane", "critical", "attackStyle"],
+          "audio_relevance": "primary combat feedback input on the remote path"
+        },
+        "telegraph": { "envelope": "{ event: 'monster:telegraph', data }", "fields": ["attackerId", "attackerName", "skillId", "x", "y", "radius", "durationMs"], "built_at": "native/src/networking.cpp:1991-1995" }
+      }
+    },
+    "client_ingest_pattern_to_extend": {
+      "description": "Cursor-based drain: state.processed_events advances over sim.events(); switch on event.type pushes transient effects. An AudioMixer could sit beside this switch consuming the same stream.",
+      "local": "native/client/main.cpp:1736-1810 (AttackTelegraphed, AttackStarted, BuffApplied, DamageApplied, ActorDied cases visible)",
+      "remote": "native/client/main.cpp:737-751 drains session->drain_events()"
+    },
+    "buses_spatialization_priorities_voice_limits": {
+      "status": "none anywhere (native or browser)",
+      "evidence": "Sweep shows no bus, priority, voice-limit, or spatializer concepts in any audio context; nearest 'spatial' hits are the inventory footprint system (core.hpp:639, docs/vision.md:37,100)."
+    },
+    "music_states_transitions": { "status": "none in native", "browser_reference": "menu loop start/stop only; no in-game music state machine exists in either codebase" },
+    "ambience": { "status": "none", "evidence": "'ambience' has zero non-noise matches repo-wide" },
+    "ui_cues": { "status": "none in native", "browser_reference": "Settings copy promises 'Combat, loot, and world cues' (src/components/slots/Settings.vue:52); only loot is actually emitted (sound:loot)" },
+    "device_lifecycle": {
+      "native": "no audio device lifecycle exists",
+      "browser_reference": "AudioContext created lazily and resumed after user gesture; suspended-context cues are dropped, not queued (src/core/audio/sound-system.js:31-45)"
+    },
+    "volume_mute_accessibility_settings": {
+      "native": "none exist",
+      "browser_reference": [
+        "Persistent soundEffects boolean default true (src/stores/ui.js:22,80 via setSettings)",
+        "Settings toggle emits SETTINGS:SOUND on the bus (src/components/slots/Settings.vue:107-112) — no listener anywhere (dead event)",
+        "Music mute is per-component <audio>.muted with aria-label Unmute/Mute music (src/components/sub/AudioMainMenu.vue:7,110-116)",
+        "No master/music/sfx volume sliders exist"
+      ]
+    },
+    "deterministic_test_seams": {
+      "existing": [
+        "vitest fake AudioContext asserting oscillator counts/types and suspended-context drop behavior (tests/unit/sound-system.spec.js:7-60)",
+        "bus $emit spies assert sound producers without audio hardware (tests/unit/loot-first-find.spec.js:241-254)",
+        "native scenario harness drives dispatch->ingest->present and asserts recorded ops (native/README.md:90-118); render_list.hpp op-recording precedent for an equivalent audio-op recorder",
+        "session_tests drain_events() loops for presentation-event assertions (native/tests/session_tests.cpp:71,163,201,404,457,507)"
+      ],
+      "requirement_for_successor": "audio output must be an injectable sink so headless tests assert scheduled cues, never real devices"
+    },
+    "packaging": {
+      "native": "CMake targets listed under native_surfaces.audio_runtime evidence; no asset pipeline, no audio codecs linked",
+      "browser": "single mp3 shipped as a static component-referenced asset (~4.83 MB on disk, src/assets/audio/music/main_menu.mp3); archived review flags the 5 MB main_menu mp3 as bundle bloat recommending lazy-load (docs/archive/code-review.md:229,282)",
+      "constraint": "resource capsule forbids downloading or generating assets in this task; successor must keep synthetic-placeholder generation offline and license-clean"
+    },
+    "windows_macos_backend_requirements": {
+      "repo_constraints": [
+        "Native proof is deliberately dependency-free C++20 (native/README.md:3)",
+        "platform/ is the reserved seam for focused SDL3/winit-style platform decisions (native/platform/README.md)",
+        "Simulation must stay headless/deterministic; audio is presentation-only (AGENTS.md native boundary; constitution native architecture invariant)"
+      ],
+      "candidate_backends": [
+        { "name": "miniaudio (header-only, WASAPI on Windows / CoreAudio on macOS)", "pros": "no link-time deps, matches dependency-free ethos, device enumeration + duplex built in", "cons": "vendored third-party header needs an ownership/licensing decision" },
+        { "name": "SDL3 audio subsystem", "pros": "aligns with the already-named SDL3 platform direction, cross-platform device hotplug", "cons": "larger dependency than audio alone requires today" },
+        { "name": "raw WASAPI + CoreAudio behind one seam", "pros": "zero dependencies", "cons": "two hand-maintained backends; highest long-term cost" }
+      ],
+      "lifecycle_requirements": ["enumerate/default-output-device notification", "suspend/resume on focus and gesture unlock parity with browser behavior", "graceful silence when no device"]
+    }
+  },
+  "browser_reference_surfaces": {
+    "synth_sfx_seam": {
+      "file": "src/core/audio/sound-system.js",
+      "instantiated_in_app_code": false,
+      "evidence": "Only importer is tests/unit/sound-system.spec.js:4; rg 'SoundSystem|sound-system' finds no src/ import outside the module itself",
+      "event_cue_map": {
+        "sound:combat-hit": { "cue": "hit", "params": "105->62 Hz square, 0.08s, vol 0.055", "producer_count": 0 },
+        "sound:monster-kill": { "cue": "kill", "params": "190->70 Hz sawtooth, 0.22s, vol 0.07", "producer_count": 0 },
+        "sound:loot": { "cue": "loot", "params": "520->620 Hz then 780->920 Hz sine pair, vol 0.05/0.045", "producer_count": 2 },
+        "sound:zone": { "cue": "zone", "params": "90->145 Hz sine, 0.45s, vol 0.045", "producer_count": 0 },
+        "sound:final-death": { "cue": "death", "params": "220->42 Hz saw + 110->32 Hz sine layered, vol 0.085/0.065", "producer_count": 0 }
+      },
+      "producers": [
+        { "event": "sound:loot", "site": "src/core/player/events/item.js:25", "trigger": "core:refresh:inventory quantity increase (client-side diff)" },
+        { "event": "sound:loot", "site": "src/core/player/events/loot-moment.js:87", "trigger": "announceFirstFindDrop" }
+      ],
+      "synthesis": "per-cue oscillator+gain envelopes direct to context.destination (sound-system.js:41-74); no buses, no voice cap"
+    },
+    "music_player": {
+      "component": "src/components/sub/AudioMainMenu.vue",
+      "mounted_by": "src/components/layout/AuthContainer.vue:10 (auth/menu shell only)",
+      "asset": "src/assets/audio/music/main_menu.mp3 (5068686 bytes, looped <audio> element)",
+      "bus_listeners": ["music:start -> startPlayer (line 77)", "music:stop -> stopPlayer (line 78)"],
+      "music_start_producers": 0,
+      "music_stop_producer": "src/Delaford.vue:1735 in startGame()",
+      "states": "null | 'playing' | 'muted' | false (lines 49,64-66,88-117)"
+    },
+    "event_bus": { "implementation": "mitt wrapper with $on/$off/$emit aliases (src/core/utilities/bus.js)" },
+    "server_side_audio_events": { "status": "none", "evidence": "server/ sweep matches only the word 'sounder' in flavor text (server/core/items/vesselforge/verdigris-pack.js:292); loot chime is derived client-side from inventory diff" }
+  },
+  "negative_controls": [
+    {
+      "name": "combat:hit (remote wire) / DamageApplied (core event)",
+      "kind": "load-bearing combat event with no audio consumer",
+      "evidence": "Emitted for every strike with amount/critical/attackStyle fields (native/src/networking.cpp:2005; core emission native/src/core.cpp:417,714); consumed exclusively for visuals (native/client/main.cpp:1774-1801). No audio consumer exists in any codebase.",
+      "successor_requirement": "first cue the placeholder runtime must own"
+    },
+    {
+      "name": "SETTINGS:SOUND",
+      "kind": "settings event with no listener",
+      "evidence": "Emitted at src/components/slots/Settings.vue:109; rg finds zero listeners."
+    },
+    {
+      "name": "music:start",
+      "kind": "listener with no producer (inverse dead seam)",
+      "evidence": "Listener registered at src/components/sub/AudioMainMenu.vue:77; zero emitters repo-wide, so menu music starts only by manual button click."
+    },
+    {
+      "name": "sound:combat-hit / sound:monster-kill / sound:zone / sound:final-death",
+      "kind": "mapped cues with zero producers, inside a system never instantiated",
+      "evidence": "Map at src/core/audio/sound-system.js:3-9; producer search across src/ server/ tests/ returns nothing; SoundSystem imported only by its spec."
+    }
+  ],
+  "constitution_alignment": {
+    "authority": "docs/product/VERDIGRIS_CONSTITUTION.md native architecture invariant: presentation requests actions, simulation resolves, simulation emits results, presentation displays results",
+    "implication": "Audio must consume the post-resolution Event/PresentationEvent streams and never write simulation state; legacy-denylist contains no audio entries, so carry-over adjudication is still open for the successor task"
+  }
+}
