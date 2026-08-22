@@ -23,8 +23,17 @@ acceptance_results:
   rg_combat_vocabulary_sweep: exit 0
   combat_matrix_json_parse: PASS (exit 0)
   git_diff_check: exit 0
+  git_diff_check_final_committed_range_610a240e_to_HEAD: exit 0
   git_diff_name_only: owned task paths only
   negative_control_combo_grep: exit 1 (zero matches, family absent)
+revision_1:
+  review_verdict: REVISE
+  review_program_commit: 1a434371b281494d3f5aa6bdc3e50447e1814855
+  revised_head_superseded: 7794883eb98f69eb1203d22221774b75fbaebb41
+  corrections_applied:
+    - trailing whitespace removed from FINDINGS.md W2/W4 lines; final committed-range diff gate clean
+    - W1 owns the readable telegraph/hit-beat presentation seam with a deterministic session lock; GAP-TELEGRAPH-CATALOG routes first if readability is split out
+    - JSON matrix, FINDINGS, REPORT, and STATUS kept mutually consistent; all gates re-run
 deliverables:
   - FINDINGS.md
   - captures/combat-matrix.json

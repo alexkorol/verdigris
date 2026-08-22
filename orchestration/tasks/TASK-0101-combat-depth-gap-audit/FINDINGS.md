@@ -109,23 +109,42 @@ treats as one game.
 Each names exact paths a future task would own, dependencies, negative
 controls, locking tests, and the owner-visible outcome. None proposes values.
 
-### W1 — Realize ranged behaviour in tile-space combat (rank 1)
+### W1 — Realize ranged behaviour in tile-space combat, readably (rank 1)
 - Own: `native/src/core.cpp` (advance_combat monster branch ~2012–2022),
-  `native/tests/core_tests.cpp`.
-- Dep: none; wire already carries `behaviour.type` (`networking.cpp:930`).
+  `native/tests/core_tests.cpp`, plus the readable-beat seam so ranged damage
+  is never invisible: `native/include/verdigris/core.hpp`
+  (WorldCombatEvent already carries type/radius/duration fields, core.hpp
+  801–824), `native/client/presentation_state.cpp` (event→FX translation,
+  196–260), `native/client/render_list.hpp` (existing Telegraph/Damage/Impact
+  ops, 22–30), `native/client/main.cpp` (telegraph painters and FX ingest),
+  and `native/tests/session_tests.cpp` (wire-level lock). No new render op,
+  projectile art, cadence, or damage value is invented: the wave reuses the
+  shipped telegraph/damage vocabulary.
+- Dep: none hard; if the coordinator splits readability out, W2 (telegraph
+  catalog unification) routes first and W1 depends on it explicitly — ranged
+  resolution must not land without its readable telegraph contract on one of
+  the two paths.
 - Negative control: a `behaviour_type == "melee"` monster must produce a
   byte-identical event stream before/after the wave (existing N2/N3 suites
   stay green unchanged).
 - Locking tests: seeded world where a `ranged` monster damages the player
   from beyond 2-tile Chebyshev contact while a `melee` twin does not; replay
   determinism of the ranged stream; `buffer` stays inert unless routed.
+  Readable lock (deterministic, client/session level): every resolved ranged
+  hit is preceded in the same seeded run by an emitted telegraph event that
+  reaches the client as a Telegraph render op, and the hit itself produces a
+  Damage/Impact op attributed to the ranged attacker — asserted through the
+  session transcript the way session_tests already assert
+  monster:telegraph/combat:hit delivery (session_tests.cpp:284–370), with no
+  snapshot diffing.
 - Owner-visible outcome: expedition packs visibly mix contact and pressure
-  roles using already-broadcast data; values reuse authored constants until
-  the owner retunes.
+  roles using already-broadcast data, and each ranged attack is preceded by a
+  readable warning and lands with a visible hit beat; values reuse authored
+  constants until the owner retunes.
 
 ### W2 — One telegraph catalog row per telegraphed action (rank 2)
 - Own: `native/include/verdigris/core.hpp` (PresentationCatalog),
-  `native/src/core.cpp` (catalog builder + slam constants), 
+  `native/src/core.cpp` (catalog builder + slam constants),
   `native/client/presentation_state.cpp` (delete the unit-guess heuristic at
   line 239), `native/client/main.cpp`, `native/tests/core_tests.cpp`.
 - Dep: none; prerequisite for any future telegraphed slam/leap-style wave.
@@ -153,7 +172,7 @@ controls, locking tests, and the owner-visible outcome. None proposes values.
   serializer surgery; mechanism only, no new effects designed here.
 
 ### W4 — Consume defensive equip channels passively in the one pipeline (rank 4)
-- Own: `native/src/core.cpp` (resolve_damage defender side), 
+- Own: `native/src/core.cpp` (resolve_damage defender side),
   `native/include/verdigris/core.hpp`, `native/tests/core_tests.cpp`.
 - Dep: standalone; composes with W3 if blocks become visible beats.
 - Negative control: zero-block/zero-defense-modifier actors produce

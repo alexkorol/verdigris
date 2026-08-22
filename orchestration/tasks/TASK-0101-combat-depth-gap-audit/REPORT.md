@@ -57,9 +57,27 @@ rg -n "attack|damage|hit|telegraph|dodge|dash|guard|slam|thrust|combo|war cry|ef
 node -e "JSON.parse(require('fs').readFileSync('orchestration/tasks/TASK-0101-combat-depth-gap-audit/captures/combat-matrix.json','utf8')); console.log('combat matrix: PASS')"
 # output: "combat matrix: PASS"; exit 0
 
-git diff --check        # exit 0 (no whitespace/conflict markers)
+git diff --check        # exit 0 at first submission (evidence still untracked)
 git diff --name-only    # only owned task paths (untracked evidence at run time)
 ```
+
+Revision 1 (architect REVISE in program commit
+`1a434371b281494d3f5aa6bdc3e50447e1814855`) added the final committed-range
+gate and the readable-successor correction:
+
+```powershell
+git diff --check 610a240e..HEAD   # exit 0 over the committed artifact range
+```
+
+The two trailing-whitespace defects the review found (FINDINGS.md W2/W4
+owned-path lines, committed lines 128 and 156) are removed in this revision.
+W1 no longer routes invisible ranged damage: it now owns the readable
+telegraph/hit-beat seam (`core.hpp` event fields,
+`presentation_state.cpp`, `render_list.hpp`, `main.cpp`,
+`session_tests.cpp`), reuses only shipped render ops and constants, and adds
+a deterministic session-level lock requiring every ranged hit to be preceded
+by a Telegraph op and land as a Damage/Impact op; if readability is split out,
+GAP-TELEGRAPH-CATALOG routes first as an explicit dependency.
 
 Negative control (SPEC): designated absent family **combos** —
 
@@ -103,6 +121,12 @@ Local HEAD was verified equal to `origin/codex/TASK-0101-...` after every push
   silently fixed.
 - Session stopped once after the claim with analysis uncommitted; resumed in
   the same session per supervisor recovery memo; no work was redone or lost.
+- Revision 1: first submission ran `git diff --check` while evidence files
+  were still untracked (they were committed moments later in `aeab40fe`), so
+  the gate had not inspected the final artifact; the review found two
+  trailing-whitespace defects in FINDINGS.md. Fixed here; the corrected gate
+  is `git diff --check 610a240e..HEAD`, exit 0, recorded above. W1 was also
+  rewritten to carry its readable presentation contract per the REVISE.
 
 ## Risks / unresolved questions
 
@@ -115,10 +139,15 @@ Local HEAD was verified equal to `origin/codex/TASK-0101-...` after every push
 
 ## Follow-ups (immediate highest-value successor)
 
-**W1 — realize ranged behaviour in tile-space combat**: own
+**W1 — realize ranged behaviour in tile-space combat, readably**: own
 `native/src/core.cpp` (advance_combat monster branch) +
-`native/tests/core_tests.cpp`; negative control keeps melee streams
-byte-identical; locks prove a `ranged` monster damages from beyond contact
-while its melee twin does not, with deterministic replay. Owner-visible
-outcome: packs read as composed encounters using already-broadcast
-`behaviour.type` data. Full W2–W6 specifications in FINDINGS.md.
+`native/tests/core_tests.cpp` + the readable-beat seam (`core.hpp`,
+`presentation_state.cpp`, `render_list.hpp`, `main.cpp`,
+`session_tests.cpp`); negative control keeps melee streams byte-identical;
+locks prove a `ranged` monster damages from beyond contact while its melee
+twin does not, with deterministic replay, AND that every ranged hit is
+preceded by a client-visible Telegraph op and lands as a Damage/Impact op
+(session-transcript asserted). If readability is split out, W2 routes first
+as an explicit dependency. Owner-visible outcome: packs read as composed
+encounters and ranged attacks are warned-then-visible. Full W2–W6
+specifications in FINDINGS.md.

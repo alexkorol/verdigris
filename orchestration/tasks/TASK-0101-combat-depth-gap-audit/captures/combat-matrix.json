@@ -291,11 +291,21 @@
     {
       "rank": 1,
       "id": "GAP-RANGED-BEHAVIOUR",
-      "summary": "Realize the authored ranged/buffer behaviour_type contract in tile-space monster resolution",
+      "summary": "Realize the authored ranged/buffer behaviour_type contract in tile-space monster resolution together with its readable telegraph and hit-beat presentation",
       "kind": "missing_mechanic",
-      "player_visible_value": "packs stop being a uniform melee blob; expeditions read as composed encounters the constitution promises (rarity, packs, support)",
-      "dependency": "independent; wire already broadcasts behaviour.type so clients need no protocol change for the fact",
-      "owner_input": "range band and damage values may temporarily reuse authored constants (kN3MonsterDamage family); any retune is owner-only"
+      "player_visible_value": "packs stop being a uniform melee blob and every ranged attack is preceded by a readable warning with a visible hit beat; expeditions read as composed encounters the constitution promises (rarity, packs, support)",
+      "owned_paths": [
+        "native/src/core.cpp (advance_combat monster branch ~2012-2022)",
+        "native/include/verdigris/core.hpp (WorldCombatEvent fields 801-824; no schema change required)",
+        "native/client/presentation_state.cpp (event-to-FX translation 196-260)",
+        "native/client/render_list.hpp (reuse existing Telegraph/Damage/Impact ops 22-30)",
+        "native/client/main.cpp (telegraph painters and FX ingest)",
+        "native/tests/core_tests.cpp",
+        "native/tests/session_tests.cpp"
+      ],
+      "dependency": "no hard dependency; if readability is split into its own packet, GAP-TELEGRAPH-CATALOG routes first and ranged resolution depends on it - invisible ranged damage must not route",
+      "readable_lock": "deterministic session/client lock: each resolved ranged hit is preceded by an emitted telegraph event reaching the client as a Telegraph render op and lands as a Damage/Impact op attributed to the ranged attacker, asserted via session transcript like session_tests.cpp:284-370",
+      "owner_input": "range band and damage values may temporarily reuse authored constants (kN3MonsterDamage family); any retune is owner-only; no projectile art or cadence invented"
     },
     {
       "rank": 2,
