@@ -342,10 +342,11 @@ class Simulation {
   std::string spawn_monster(Vec2 position, int level = 1, bool elite = false);
 
   // Wardens of the active instance that have not materialized yet. The first
-  // expedition reveals its pack in deterministic waves: each warden kill
-  // schedules the next roster entry kTelegraphTicks later. Like the rest of
-  // the live instance state, the pending roster is retired at every instance
-  // boundary and is deliberately absent from durable snapshots.
+  // expedition reveals its pack deterministically: when a kill leaves roster
+  // entries owed, they all materialize together kTelegraphTicks later on
+  // their fixed anchors. Like the rest of the live instance state, the
+  // pending roster is retired at every instance boundary and is deliberately
+  // absent from durable snapshots.
   const std::vector<Actor>& pending_wave() const { return pending_wave_; }
 
   // Stable hooks used by external seasonal mechanics and deterministic tests.
@@ -405,8 +406,9 @@ class Simulation {
   InstanceState instance_;
   // Unmaterialized warden roster of the active instance (see pending_wave()).
   std::vector<Actor> pending_wave_;
-  // Tick at which the next pending warden materializes; 0 when nothing is
-  // scheduled. A kill inside an active instance re-arms it deterministically.
+  // Tick at which the remaining owed pack materializes together; 0 when
+  // nothing is scheduled. A kill inside an active instance re-arms it
+  // deterministically.
   std::uint64_t wave_materialization_tick_ = 0;
   std::vector<Item> ground_items_;
   std::vector<Trophy> ground_trophies_;
