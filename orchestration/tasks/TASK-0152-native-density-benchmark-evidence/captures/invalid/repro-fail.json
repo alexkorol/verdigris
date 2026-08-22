@@ -1,0 +1,126 @@
+{
+  "schema": "verdigris-density-evidence/2",
+  "task": "TASK-0152",
+  "scenario": {
+    "id": "density-melee-contact",
+    "route": "route:tin:1:0",
+    "action": "Melee",
+    "n": 50,
+    "ticks": 1000,
+    "seed": 424242,
+    "run": 1
+  },
+  "provenance": {
+    "generated_at_utc": "2026-08-22T20:36:31Z",
+    "tool_version": "2.0.0",
+    "git_ref": "5156c33e826481f6e427498b0b755f35245c3ae2",
+    "compiler": "msvc-192930157",
+    "cxx_standard": "c++20",
+    "build_config": "debug-no-ndebug",
+    "os": "Windows_NT",
+    "arch": "x86_64",
+    "cpu": "AMD Ryzen 5 1600 Six-Core Processor",
+    "cpu_cores": 12,
+    "timer": "std::chrono::steady_clock",
+    "timer_resolution_ns": 100.0,
+    "host": "Windows_NT"
+  },
+  "determinism": {
+    "runs": 2,
+    "reproducible": false,
+    "counts_match": true,
+    "checksum_match": false,
+    "state_checksum": "fnv1a64:3798bf673ec63b90",
+    "state_checksum_repeat": "fnv1a64:3798bf673ec63b90",
+    "counts": {
+      "monsters_start": 50,
+      "monsters_end": 50,
+      "spawned_via_seam": 49,
+      "events": 19,
+      "final_tick": 1001
+    },
+    "counts_repeat": {
+      "monsters_start": 50,
+      "monsters_end": 50,
+      "spawned_via_seam": 49,
+      "events": 19,
+      "final_tick": 1001
+    }
+  },
+  "timings": {
+    "tick_budget_ms": 50.0,
+    "elapsed_s": 0.0400401,
+    "ticks_per_sec": 24974.962599994,
+    "samples": 1000,
+    "percentile_method": "nearest-rank",
+    "update_ms": {
+      "p50": 0.0005,
+      "p90": 0.0006,
+      "p99": 0.0009,
+      "max": 0.0417,
+      "mean": 0.0005342
+    },
+    "frame_ms": {
+      "p50": 0.0384,
+      "p90": 0.0417,
+      "p99": 0.0627,
+      "max": 0.1176,
+      "mean": 0.0398937
+    }
+  },
+  "thresholds": {
+    "contract": "verdigris-density-threshold/1",
+    "all_pass": false,
+    "checks": [
+      {
+        "id": "monsters_spawned",
+        "value": 50.0,
+        "op": "min",
+        "bound": 50.0,
+        "pass": true
+      },
+      {
+        "id": "samples_complete",
+        "value": 1000.0,
+        "op": "min",
+        "bound": 1000.0,
+        "pass": true
+      },
+      {
+        "id": "reproducible",
+        "value": 1.0,
+        "op": "min",
+        "bound": 1.0,
+        "pass": false
+      },
+      {
+        "id": "frame_p99_within_budget",
+        "value": 0.0627,
+        "op": "max",
+        "bound": 50.0,
+        "pass": true
+      },
+      {
+        "id": "frame_mean_within_budget",
+        "value": 0.0398937,
+        "op": "max",
+        "bound": 50.0,
+        "pass": true
+      },
+      {
+        "id": "update_p99_within_budget",
+        "value": 0.0009,
+        "op": "max",
+        "bound": 50.0,
+        "pass": true
+      },
+      {
+        "id": "ticks_per_sec_floor",
+        "value": 24974.962599994,
+        "op": "min",
+        "bound": 20.0,
+        "pass": true
+      }
+    ]
+  }
+}

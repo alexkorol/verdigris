@@ -1,6 +1,6 @@
 # STATUS — TASK-0152-native-density-benchmark-evidence
 
-state: CLAIMED
+state: REVIEW_REQUESTED
 task: TASK-0152-native-density-benchmark-evidence
 worker (lane): ox-pc-ac
 coordinator: ox-alpha
@@ -30,3 +30,19 @@ claim basis: first STATUS write wins — no STATUS.md or RELEASE.md existed for
   orchestration/tasks/TASK-0152-native-density-benchmark-evidence/**.
   All other paths treated as read-only.
 started_at: 2026-08-22T20:18:16Z
+
+transition:
+  state: REVIEW_REQUESTED
+  at: 2026-08-22T21:05:00Z (UTC, approximate completion of acceptance runs)
+  claim_commit: 5156c33e826481f6e427498b0b755f35245c3ae2
+  evidence:
+    - captures/density-n{50,500,1000}-seed*-run{A,B}.json (six seeded process
+      invocations; A/B agree on counts and fnv1a64 state checksums; all
+      threshold checks pass; --validate exit 0)
+    - captures/invalid/{truncated,garbage,missing-provenance,repro-fail,
+      incomplete-percentiles}.json (all fail --validate with exit 1)
+  gates:
+    - native/build.ps1 -RunTests EXIT=0 (unit gates + legacy denylist green)
+    - bench compiled with build.ps1's exact cl flags, /W4 clean, EXIT=0
+    - git diff --check clean
+  report: REPORT.md (executive summary, transcripts, deviations, risks)
