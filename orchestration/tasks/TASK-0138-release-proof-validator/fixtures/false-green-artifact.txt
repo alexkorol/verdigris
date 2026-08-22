@@ -1,0 +1,2 @@
+false-green synthetic artifact: this file exists so the manifest can bind a
+deliberately wrong SHA-256 digest to a real on-disk file.
