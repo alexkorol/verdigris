@@ -49,10 +49,35 @@ contact via `Simulation::spawn_monster`, drive T scripted `Melee` frames).
 - 1 — malformed, incomplete, irreproducible, threshold-failing, or unwritable
 - 2 — usage error (unknown scenario id, bad flags)
 
+## Validation strictness (revision 1)
+
+`--validate` does not trust stored `pass` booleans. It re-enforces
+`verdigris-density-threshold/1` from the evidence itself:
+
+- `scenario.route` must be exactly `route:tin:1:0` and `scenario.action`
+  exactly `Melee` (the fixed scenario bindings).
+- Every check id's operator and bound must equal the documented row above
+  (`monsters_spawned`/`samples_complete` bounds derive from
+  `scenario.n`/`scenario.ticks`).
+- Each check's `value` must equal its source field recomputed from the
+  evidence (`determinism.counts.monsters_start`, `timings.samples`,
+  `determinism.reproducible`, `timings.frame_ms.p99`,
+  `timings.frame_ms.mean`, `timings.update_ms.p99`,
+  `timings.ticks_per_sec`).
+- Each stored `pass` must equal the result of reapplying the row's operator
+  to the recomputed value and bound, so fabricated passing checks or a
+  loosened/relabeled row cannot turn threshold-failing evidence green.
+
 ## Captures
 
 - `captures/density-n{50,500,1000}-seed*-run{A,B}.json` — two identical seeded
   process invocations per density; A/B agree on counts and checksums.
 - `captures/invalid/*.json` — negative fixtures; every one exits 1 under
   `--validate` (truncated JSON, garbage, missing provenance field, flipped
-  reproducibility/threshold, incomplete percentiles/samples).
+  reproducibility/threshold, incomplete percentiles/samples) plus the
+  revision-1 tamper fixtures proving contract re-enforcement:
+  `tampered-check-value.json`, `tampered-check-bound.json`,
+  `tampered-check-op.json`, `tampered-check-pass.json`,
+  `tampered-threshold-fail.json` (threshold-failing frame p99 with a
+  fabricated pass flag), `tampered-route.json`, `tampered-action.json`.
+  Regenerate them with `make-invalid-fixtures.ps1`.

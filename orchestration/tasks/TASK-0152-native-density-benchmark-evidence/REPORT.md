@@ -156,7 +156,9 @@ PS> git diff --check      (run against staged diff; clean, no output, exit 0)
 ## Commit SHAs
 
 - Claim commit: `5156c33e826481f6e427498b0b755f35245c3ae2`
-- Implementation commit: see branch tip after push (REPORT + REVIEW_REQUESTED).
+- Revision-0 implementation commit (REVIEW input): `86f72c1cb04f21062eae16e299f3e05e8e88a70d`
+- Revision-1 commit: branch tip at push (validator re-enforcement + fixtures +
+  this REPORT/STATUS update).
 
 ## Deviations
 
@@ -190,3 +192,72 @@ PS> git diff --check      (run against staged diff; clean, no output, exit 0)
   native/build.ps1).
 - Optional JS-side parity once the browser server gains a spawn verb
   (inherited TASK-0065 note, unchanged).
+
+## Revision 1 (REVIEW correction 1)
+
+Reviewed commit `86f72c1cb04f21062eae16e299f3e05e8e88a70d` returned REVISE
+with one correction: `--validate` had to independently re-enforce
+`verdigris-density-threshold/1` from the evidence fields instead of trusting
+seven recognized ids plus stored `pass: true` booleans, and bind the fixed
+scenario route/action values.
+
+Implementation (single owned source file,
+`native/tools/entity_density_bench.cpp`):
+
+- `scenario.route` must equal `route:tin:1:0` and `scenario.action` must
+  equal `Melee` exactly (new `kScenarioAction` constant).
+- A per-id contract row table (`kContractRows`) pins each check's operator.
+- Each check's bound must equal the documented row: `scenario.n` for
+  `monsters_spawned`, `scenario.ticks` for `samples_complete`, 1 for
+  `reproducible`, 50 ms for the three budget checks, 20 for
+  `ticks_per_sec_floor`.
+- Each check's `value` must equal its source field recomputed from the
+  evidence (`determinism.counts.monsters_start`, `timings.samples`,
+  `determinism.reproducible`, `timings.frame_ms.p99`,
+  `timings.frame_ms.mean`, `timings.update_ms.p99`,
+  `timings.ticks_per_sec`), and each stored `pass` must equal the operator
+  reapplied to the recomputed value/bound. Fabricated passing checks,
+  loosened bounds, flipped operators, or lying pass flags now fail with a
+  targeted diagnostic naming the contradicted source field.
+
+New focused negative fixtures (all derived from the committed positive
+capture `density-n500-seed777-runA.json` by `make-invalid-fixtures.ps1`,
+which is committed alongside for reproducibility):
+
+| fixture | tamper | validator diagnostic |
+|---|---|---|
+| tampered-check-value.json | check value 0.0011 vs source 0.0041, pass kept true | value disagrees with timings.update_ms.p99 |
+| tampered-check-bound.json | ticks_per_sec_floor bound 20→10 | bound contradicts contract bound |
+| tampered-check-op.json | frame_p99 op max→min | op contradicts contract op |
+| tampered-check-pass.json | reproducible pass flipped to false | stored pass contradicts recomputed result |
+| tampered-threshold-fail.json | frame p99 raised to 61.12 ms consistently (field + check value, percentiles monotonic) with pass kept true | stored pass contradicts recomputed result — the exact fabrication the correction forbids |
+| tampered-route.json | route → route:tin:9:9 | scenario.route must be the fixed route |
+| tampered-action.json | action → Sweep | scenario.action must be Melee |
+
+Revision-1 gate reruns (all literal):
+
+1. `powershell -NoProfile -ExecutionPolicy Bypass -File native\build.ps1
+   -RunTests` → GATE_EXIT=0 (core, networking, camera2d, session, journey,
+   reconnect, gate-b, render-list, presentation events + legacy denylist
+   PASS; only pre-existing warnings in non-owned files).
+2. Bench compile with build.ps1's exact flags (MSVC 2019 v16.11.42 vcvars64):
+   `cl /nologo /std:c++20 /EHsc /W4 ...` compile+link COMPILE_EXIT=0, zero
+   warnings.
+3. Validator matrix: all six committed positive captures VALIDATE exit=0;
+   all twelve negative fixtures (five original + seven new) exit=1 with the
+   expected diagnostics (transcript above in the fixture table; originals
+   unchanged).
+4. Deterministic double-process probe: two fresh processes
+   `--n 1000 --run 1 --seed 42424242` both exit 0, checksums
+   `fnv1a64:9f2964a4df5ac069` identical to each other and to the committed
+   n=1000 capture; counts equal across all three. The fresh evidence also
+   passes the new stricter `--validate` (exit 0).
+5. Usage errors unchanged: `--scenario bogus` → exit 2, `--n 0` → exit 2.
+6. Scope check: `git status --short` shows only
+   `native/tools/entity_density_bench.cpp` and
+   `orchestration/tasks/TASK-0152-native-density-benchmark-evidence/**`.
+   `git diff --check` clean (exit 0).
+
+No gameplay, simulation, presentation, or other-task behavior changed; the
+producer's run-mode output format is byte-identical to revision 0 (verified
+by the fresh capture validating and matching the committed checksum).

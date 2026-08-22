@@ -30,7 +30,11 @@
 // Exit codes: 0 = evidence complete and passing; 1 = invalid, incomplete,
 // irreproducible, threshold-failing, or unwritable evidence; 2 = usage error.
 // `--validate <file>` re-checks any stored capture against the full schema,
-// provenance completeness, percentile sanity, and threshold contract.
+// the fixed scenario route/action bindings, provenance completeness,
+// percentile sanity, and independently re-enforces the whole threshold
+// contract: every check's operator/bound must match the documented row and
+// its value/pass pair is recomputed from scenario/determinism/timings, so
+// fabricated passing checks cannot validate.
 #include "verdigris/core.hpp"
 
 #if defined(_MSC_VER)
@@ -68,6 +72,7 @@ constexpr const char* kTask = "TASK-0152";
 constexpr const char* kToolVersion = "2.0.0";
 constexpr const char* kScenarioId = "density-melee-contact";
 constexpr const char* kRouteId = "route:tin:1:0";
+constexpr const char* kScenarioAction = "Melee";
 constexpr const char* kThresholdContract = "verdigris-density-threshold/1";
 constexpr const char* kRequiredCheckIds[] = {
     "monsters_spawned",
@@ -1243,6 +1248,24 @@ int validate_evidence(const std::string& path) {
                        kTask);
   }
 
+  // Raw evidence sources captured for independent threshold re-enforcement.
+  // Populated silently: missing/invalid fields are already reported by the
+  // per-section checks below.
+  bool have_monsters_start = false;
+  double monsters_start = 0.0;
+  bool have_reproducible_flag = false;
+  bool reproducible_flag = false;
+  bool have_samples_value = false;
+  double samples_value = 0.0;
+  bool have_ticks_per_sec_value = false;
+  double ticks_per_sec_value = 0.0;
+  bool have_frame_p99 = false;
+  double frame_p99_value = 0.0;
+  bool have_frame_mean = false;
+  double frame_mean_value = 0.0;
+  bool have_update_p99 = false;
+  double update_p99_value = 0.0;
+
   const JValue* scenario = field_object(root, "scenario", &failures);
   double n = 0.0;
   double ticks = 0.0;
@@ -1254,9 +1277,16 @@ int validate_evidence(const std::string& path) {
       failures.push_back(std::string("unknown scenario id '") + scenario_id + "'");
     }
     std::string route;
+    if (field_string(*scenario, "route", &failures, &route) && route != kRouteId) {
+      failures.push_back(std::string("scenario.route must be the fixed '") +
+                         kRouteId + "' (got '" + route + "')");
+    }
     std::string action;
-    field_string(*scenario, "route", &failures, &route);
-    field_string(*scenario, "action", &failures, &action);
+    if (field_string(*scenario, "action", &failures, &action) &&
+        action != kScenarioAction) {
+      failures.push_back(std::string("scenario.action must be the fixed '") +
+                         kScenarioAction + "' (got '" + action + "')");
+    }
     if (field_number(*scenario, "n", &failures, &n) &&
         (!is_integral(n) || n < 1)) {
       failures.push_back("scenario.n must be a positive integer");
@@ -1301,6 +1331,11 @@ int validate_evidence(const std::string& path) {
 
   const JValue* determinism = field_object(root, "determinism", &failures);
   if (determinism) {
+    const JValue* reproducible_field = determinism->find("reproducible");
+    if (reproducible_field && reproducible_field->type == JValue::Type::Bool) {
+      reproducible_flag = reproducible_field->boolean;
+      have_reproducible_flag = true;
+    }
     double runs = 0.0;
     if (field_number(*determinism, "runs", &failures, &runs) &&
         (!is_integral(runs) || runs != 2)) {
@@ -1330,6 +1365,15 @@ int validate_evidence(const std::string& path) {
     if (counts && counts_repeat && is_integral(n) && is_integral(ticks)) {
       validate_counts(*counts, *counts_repeat, static_cast<long>(n),
                       static_cast<long>(ticks), &failures);
+    }
+    if (counts) {
+      const JValue* start_field = counts->find("monsters_start");
+      if (start_field && start_field->type == JValue::Type::Number &&
+          std::isfinite(start_field->number) &&
+          is_integral(start_field->number)) {
+        monsters_start = start_field->number;
+        have_monsters_start = true;
+      }
     }
   }
 
@@ -1362,6 +1406,44 @@ int validate_evidence(const std::string& path) {
     }
     validate_percentile_block(*timings, "update_ms", &failures);
     validate_percentile_block(*timings, "frame_ms", &failures);
+
+    const JValue* samples_field = timings->find("samples");
+    if (samples_field && samples_field->type == JValue::Type::Number &&
+        std::isfinite(samples_field->number) &&
+        is_integral(samples_field->number)) {
+      samples_value = samples_field->number;
+      have_samples_value = true;
+    }
+    const JValue* rate_field = timings->find("ticks_per_sec");
+    if (rate_field && rate_field->type == JValue::Type::Number &&
+        std::isfinite(rate_field->number)) {
+      ticks_per_sec_value = rate_field->number;
+      have_ticks_per_sec_value = true;
+    }
+    const JValue* frame_block = timings->find("frame_ms");
+    if (frame_block && frame_block->type == JValue::Type::Object) {
+      const JValue* p99_field = frame_block->find("p99");
+      if (p99_field && p99_field->type == JValue::Type::Number &&
+          std::isfinite(p99_field->number)) {
+        frame_p99_value = p99_field->number;
+        have_frame_p99 = true;
+      }
+      const JValue* mean_field = frame_block->find("mean");
+      if (mean_field && mean_field->type == JValue::Type::Number &&
+          std::isfinite(mean_field->number)) {
+        frame_mean_value = mean_field->number;
+        have_frame_mean = true;
+      }
+    }
+    const JValue* update_block = timings->find("update_ms");
+    if (update_block && update_block->type == JValue::Type::Object) {
+      const JValue* p99_field = update_block->find("p99");
+      if (p99_field && p99_field->type == JValue::Type::Number &&
+          std::isfinite(p99_field->number)) {
+        update_p99_value = p99_field->number;
+        have_update_p99 = true;
+      }
+    }
   }
 
   const JValue* thresholds = field_object(root, "thresholds", &failures);
@@ -1377,6 +1459,26 @@ int validate_evidence(const std::string& path) {
     if (!checks || checks->type != JValue::Type::Array) {
       failures.push_back("thresholds.checks must be an array");
     } else {
+      struct ContractRow {
+        const char* id;
+        const char* op;
+      };
+      static constexpr ContractRow kContractRows[kRequiredCheckCount] = {
+          {"monsters_spawned", "min"},
+          {"samples_complete", "min"},
+          {"reproducible", "min"},
+          {"frame_p99_within_budget", "max"},
+          {"frame_mean_within_budget", "max"},
+          {"update_p99_within_budget", "max"},
+          {"ticks_per_sec_floor", "min"},
+      };
+      auto contract_row = [](const std::string& id) -> const ContractRow* {
+        for (const ContractRow& row : kContractRows) {
+          if (id == row.id) return &row;
+        }
+        return nullptr;
+      };
+
       std::vector<std::string> seen_ids;
       for (const JValue& check : checks->items) {
         if (check.type != JValue::Type::Object) {
@@ -1386,15 +1488,111 @@ int validate_evidence(const std::string& path) {
         std::string id;
         if (!field_string(check, "id", &failures, &id)) continue;
         seen_ids.push_back(id);
-        field_bool_true(check, "pass", &failures);
+
         double value = 0.0;
         double bound = 0.0;
         field_number(check, "value", &failures, &value);
         field_number(check, "bound", &failures, &bound);
         std::string op;
-        if (field_string(check, "op", &failures, &op) && op != "min" && op != "max") {
-          failures.push_back("threshold check '" + id + "' has unknown op '" + op +
-                             "'");
+        field_string(check, "op", &failures, &op);
+
+        const ContractRow* row = contract_row(id);
+        if (!row) continue;  // unknown ids are reported by the coverage check
+
+        // Stored operator/bound must match the documented contract row
+        // exactly; a relabeled or loosened bound cannot manufacture a pass.
+        if (op != row->op) {
+          failures.push_back(std::string("check '") + id + "' op '" + op +
+                             "' contradicts contract op '" + row->op + "'");
+        }
+        double expected_bound = 0.0;
+        if (id == "monsters_spawned") {
+          expected_bound = n;
+        } else if (id == "samples_complete") {
+          expected_bound = ticks;
+        } else if (id == "reproducible") {
+          expected_bound = 1.0;
+        } else if (id == "ticks_per_sec_floor") {
+          expected_bound = kTicksPerSecFloor;
+        } else {
+          expected_bound = kTickBudgetMs;
+        }
+        if (bound != expected_bound) {
+          failures.push_back("check '" + id + "' bound " +
+                             std::to_string(bound) +
+                             " contradicts contract bound " +
+                             std::to_string(expected_bound));
+        }
+
+        // Recompute value and result from the evidence source and require
+        // the recorded pair to agree; stored pass booleans alone are not
+        // trusted.
+        double recomputed_value = 0.0;
+        bool recomputed_pass = false;
+        bool have_recomputed = false;
+        std::string source;
+        if (id == "monsters_spawned") {
+          source = "determinism.counts.monsters_start";
+          have_recomputed = have_monsters_start;
+          recomputed_value = monsters_start;
+          recomputed_pass = have_recomputed && monsters_start >= expected_bound;
+        } else if (id == "samples_complete") {
+          source = "timings.samples";
+          have_recomputed = have_samples_value;
+          recomputed_value = samples_value;
+          recomputed_pass = have_recomputed && samples_value >= expected_bound;
+        } else if (id == "reproducible") {
+          source = "determinism.reproducible";
+          have_recomputed = have_reproducible_flag;
+          recomputed_value = (have_recomputed && reproducible_flag) ? 1.0 : 0.0;
+          recomputed_pass = have_recomputed && reproducible_flag;
+        } else if (id == "frame_p99_within_budget") {
+          source = "timings.frame_ms.p99";
+          have_recomputed = have_frame_p99;
+          recomputed_value = frame_p99_value;
+          recomputed_pass =
+              have_recomputed && frame_p99_value <= expected_bound;
+        } else if (id == "frame_mean_within_budget") {
+          source = "timings.frame_ms.mean";
+          have_recomputed = have_frame_mean;
+          recomputed_value = frame_mean_value;
+          recomputed_pass =
+              have_recomputed && frame_mean_value <= expected_bound;
+        } else if (id == "update_p99_within_budget") {
+          source = "timings.update_ms.p99";
+          have_recomputed = have_update_p99;
+          recomputed_value = update_p99_value;
+          recomputed_pass =
+              have_recomputed && update_p99_value <= expected_bound;
+        } else if (id == "ticks_per_sec_floor") {
+          source = "timings.ticks_per_sec";
+          have_recomputed = have_ticks_per_sec_value;
+          recomputed_value = ticks_per_sec_value;
+          recomputed_pass =
+              have_recomputed && ticks_per_sec_value >= expected_bound;
+        }
+        if (!have_recomputed) continue;  // source failure already reported
+
+        if (value != recomputed_value) {
+          failures.push_back("check '" + id + "' value " +
+                             std::to_string(value) + " disagrees with " +
+                             source + " (= " +
+                             std::to_string(recomputed_value) + ")");
+        }
+        bool stored_pass = false;
+        bool have_stored_pass = false;
+        const JValue* pass_field = check.find("pass");
+        if (pass_field && pass_field->type == JValue::Type::Bool) {
+          stored_pass = pass_field->boolean;
+          have_stored_pass = true;
+        }
+        if (!have_stored_pass) {
+          failures.push_back(std::string("check '") + id +
+                             "' requires a boolean 'pass'");
+        } else if (stored_pass != recomputed_pass) {
+          failures.push_back("check '" + id + "' stored pass contradicts the " +
+                             kThresholdContract + " result recomputed from " +
+                             source);
         }
       }
       if (seen_ids.size() != kRequiredCheckCount) {
