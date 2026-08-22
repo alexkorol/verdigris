@@ -170,4 +170,4 @@ exit 0, `git diff --check` exit 0, `git diff --name-only` empty (exit 0),
 and `git diff --name-only 039dcfa7..HEAD` contains only this task folder's
 files plus the architect's coordination refresh — owned-path boundary holds.
 
-- Revision r2 evidence commit: PENDING-SHA
+- Revision r2 evidence commit: `d13eea12058e6d4c76bc61677cca4d22b0a7eb5b`
