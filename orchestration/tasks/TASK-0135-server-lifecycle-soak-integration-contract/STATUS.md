@@ -38,4 +38,9 @@
 
 ## Transition log
 
-- CLAIMED: this commit (STATUS.md only), pushed to origin.
+- CLAIMED: commit `50cd286f` (STATUS.md only), pushed to origin.
+- IMPLEMENTED: `soak-integration-policy.json`, `fixtures/negative-cases.json`,
+  and `VALIDATION.md` written inside the task folder only; both literal JSON
+  gates plus a fixture-to-policy rule-resolution self-check green (exit 0).
+  Remaining SPEC gates run before REVIEW_REQUESTED; transcripts preserved in
+  REPORT.md.
