@@ -1,7 +1,10 @@
 # TASK-0122 STATUS
 
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: ox-alpha
+accepted_head: d67129e4d78f79457c8c5867bd9dee7fce2842a0
+integrated_as: 032ae03e
+combined_program_head: 8d314d5c7e417956041994168f0db07a9ccb9f22
 
 - worker: ox-pc-x (OpenCode Ox Alpha implementation worker)
 - provider: openrouter
@@ -50,3 +53,9 @@ the literal acceptance gates and set REVIEW_REQUESTED.
   (scenario + unit test evidence, REPORT.md §6).
 - Handoff: this is a review request only — the architect must rerun the gates
   and inspect both images before ACCEPTED.
+
+## Architect disposition
+
+Accepted and integrated after independent frozen-head native, focused,
+browser-playtest, diff, negative-control, and two-resolution visual gates. See
+`REVIEW.md` for the exact evidence and recorded timing seam.

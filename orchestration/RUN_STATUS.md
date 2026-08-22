@@ -1,5 +1,32 @@
 # Run status — PC Verdigris overnight product wave
 
+## PC accepted product integration — 2026-08-22 12:11 PDT
+
+- TASK-0122 frozen worker head `d67129e4` is independently ACCEPTED and
+  integrated as `032ae03e`. Frozen-head native gates, 24/24 focused tests,
+  31/31 VFX scenario checks, browser playtest 32/32, diff/scope checks, the
+  simulation-untouched negative control, and both final images passed.
+- TASK-0148 frozen worker head `9f00e198` (implementation `5732367e`) is
+  independently ACCEPTED and integrated as `127a540e` + `8d314d5c`. The
+  architect rerun proved the complete normal-envelope Gate-B journey through
+  ordinary death, successor, exact relic recovery, and same-guest reconnect.
+- Combined program native gates pass with all ten client scenarios. The first
+  combined browser run missed `session-arc` final death by 384 ms beyond its
+  15 s budget; the scenario then passed in 11.7 s and the full rerun passed
+  32/32 with `session-arc` at 12.3 s. The timing seam is retained in review
+  evidence; no deterministic product regression reproduces.
+- ox-pc-r and ox-pc-x are stopped, clean, pushed handoffs and no longer count
+  as active capacity. No other OpenCode process is registered as active
+  Verdigris capacity. Protected `master` is still `230a8adf` until the verified
+  program update completes its protected PR path.
+- Human dashboard is HTTP 200 at `http://127.0.0.1:4737/`; the visible rows
+  identify both lanes as supervisor-reviewed handoffs rather than workers.
+- Post-integration board sentinel is healthy: 24 effective READY, zero live
+  claims/reviews/revisions, 16 sequenced DRAFT successors, zero collisions,
+  and 108 integrated packets. Its 22-test suite passes. The deterministic
+  factory still verifies 2,000 graph nodes and 500 reserve packets; autonomous
+  runway remains honestly `UNKNOWN` until comparable throughput exists.
+
 ## PC live sweep — 2026-08-22 09:58 PDT
 
 - Program branch `codex/native-reconstitution` has independently ACCEPTED and
@@ -153,13 +180,13 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-o | 6900-6919 | TASK-0148 second post-claim stop after one recovery; claim `71a73de8` released; clean worktree preserved | exhausted, not capacity |
 | ox-pc-p | 6920-6939 | TASK-0147 frozen head `974ccab6` independently ACCEPTED and integrated at `19be98db`; fresh visual evidence and combined native gates passed | handoff complete; available only after worker process exits |
 | ox-pc-q | 6940-6959 | TASK-0148 claim `815a359b` released after recovery proposed a second normal-path bypass (`mutate/select` instead of `create/set-out`); clean claim head preserved | exhausted, not capacity |
-| ox-pc-r | 6960-6979 | TASK-0148 independent claim `837a412f`; workflow guard `3119a08e`; sole OpenCode PID 17640 with dirty owned implementation preserved | ordinary-play recovery active; no handoff accepted |
+| ox-pc-r | 6960-6979 | TASK-0148 frozen head `9f00e198` independently ACCEPTED; implementation integrated as `127a540e`, handoff as `8d314d5c`; full normal-play reconnect gate green | complete; stopped/clean, not active capacity |
 | ox-pc-s | 6980-6999 | TASK-0116 corrected audit head `5b007e7e` independently ACCEPTED and integrated through `8eb95893` | audit complete; TASK-0122 successor routed |
 | ox-pc-t | 7000-7019 | TASK-0117 frozen head `5a7c22cb` independently ACCEPTED and integrated at `7052feca` | handoff complete; procedural-audio successor sequenced behind current client-main owner |
 | ox-pc-u | 7020-7039 | TASK-0119 frozen head `4104e0c8` independently ACCEPTED and integrated at `a5f4133e` | handoff complete; executable onboarding successor ready to route |
 | ox-pc-v | 7040-7059 | TASK-0153 final worker head `30ab95fd`; Esc/first-session fix shipped to protected master `230a8adf` with green CI | complete/available |
 | ox-pc-w | 7080-7099 | TASK-0154 clean-runner portability head `2dc4bfb2`; protected hotfix master `4e55f4f9` green | complete/available |
-| ox-pc-x | 7060-7079 | TASK-0122 valid claim `fdbbdca6`; one same-session implementation recovery at PID 18144 | client-only VFX Phase A active |
+| ox-pc-x | 7060-7079 | TASK-0122 frozen head `d67129e4` independently ACCEPTED and integrated as `032ae03e`; native/browser/visual/negative-control gates green | complete; stopped/clean, not active capacity |
 | ox-pc-y | none | TASK-0128 fresh-lane head `2b469e3d` independently ACCEPTED and integrated through `882de214`; 19/19 clean | complete/available after worker exit |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,

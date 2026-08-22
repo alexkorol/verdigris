@@ -43,8 +43,12 @@ throughput by full experimental unit and packet type is normalized.
 
 ## Current critical path
 
-The overnight owner-visible convergence wave runs four disjoint implementation
-surfaces from program tip `df851cea`:
+The overnight owner-visible convergence wave's four disjoint implementation
+surfaces are accepted and integrated. TASK-0148 now closes the normal-envelope
+death/successor/relic/reconnect runtime gap, and TASK-0122 adds the first
+client-only readable animation/VFX wave. The next critical path is combined
+owner play and the still-open Gate C/presentation-quality work, not redoing
+these accepted packets:
 
 ```text
 TASK-0148 reconnect-safe Chronicles runtime --+

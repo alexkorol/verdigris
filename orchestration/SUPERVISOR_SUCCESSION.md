@@ -238,3 +238,26 @@ at that later capture commit. The ledger-refresh commit containing this note
 changes no collector input or task evidence. After the checkpoint, ox-pc-x
 produced owned client-source writes and remains live; it is no longer a
 pre-write recovery risk.
+
+### Accepted TASK-0122/TASK-0148 checkpoint — 2026-08-22 12:11 PDT
+
+- Program implementation head before this ledger commit is `8d314d5c` on
+  `codex/native-reconstitution`; protected `master` remains `230a8adf` pending
+  the protected PR/check path.
+- TASK-0122 worker head `d67129e4` is independently ACCEPTED and integrated as
+  `032ae03e`; full native, focused VFX, browser 32/32, negative-control, scope,
+  and two-resolution visual gates pass.
+- TASK-0148 worker head `9f00e198` (implementation `5732367e`) is independently
+  ACCEPTED and integrated as `127a540e` + `8d314d5c`; the architect proved the
+  complete normal-envelope death/succession/exact-relic/reconnect chain.
+- Combined native gates pass. Combined browser acceptance passed 32/32 after
+  one retained timing diagnostic: `session-arc` first missed its 15 s death
+  wait by 384 ms, then passed standalone in 11.7 s and in the full rerun at
+  12.3 s.
+- ox-pc-r and ox-pc-x are stopped, clean, and no longer active capacity. No
+  other OpenCode Verdigris lane is active. Dashboard remains HTTP 200; monitor
+  remains the live activation/stall/CI-signal safety net.
+- Exact next step: re-prove board/factory invariants, push coordination truth,
+  complete protected PR checks, refresh standalone PC broadcast without
+  writing shared `main`, and then route only current-tip disjoint product work.
+- Owner action required now: none.
