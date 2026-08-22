@@ -1,5 +1,34 @@
 # Run status — PC Verdigris overnight product wave
 
+## Protected release green; Gate-B reliability blocker routed — 2026-08-22 14:27 PDT
+
+- Protected PR #57 merged the loot reliability, native content schema, and
+  progression-visibility wave to `master` at
+  `a28ac92f6f4fa5fa5a467ecb8353ad1c55667ecb`. Both PR checks passed. The
+  post-merge Native run `32598557565` passed; CI run `32598557570` retained a
+  first-attempt `session-arc` named-Warden miss at 31/32, then its single
+  bounded rerun passed all 32 scenarios. Raw worker/program pushes launched no
+  workflows, so GitHub mail is now reserved for protected release signal.
+- TASK-0152 revision head `d34097d9` is independently ACCEPTED: frozen full
+  native gate passed, its MSVC `/W4` build was warning-free, all six positive
+  captures validated, and all twelve negative captures failed as required.
+  Program staging commits are review `3da054b6`, original implementation
+  `59ab5083`, and correction `76837dec`.
+- The combined program native gate then failed the ordinary-play Gate-B
+  heirloom hunt after seven minutes (four kills; Warden never surfaced). One
+  bounded exact-session retry failed at the earlier fatal-fall step. These two
+  distinct failures do not implicate TASK-0152's measurement-only diff, but
+  they block terminal integration truth. TASK-0163 owns only the journey test
+  and is routed to remove this nondeterminism without gameplay shortcuts or
+  weaker assertions.
+- Valid pushed claims now recorded on the program branch: ox-pc-z/TASK-0159
+  `0e74c185`, ox-pc-aa/TASK-0158 `d1fd4e40`, and ox-pc-ab/TASK-0157
+  `c08ad621`. The aa/ab first post-claim processes exited with owned-path edits;
+  preserved single recoveries are PID 26668 and PID 7652. ox-pc-z remains live
+  at PID 32. Stopped processes are alerts, never counted as working capacity.
+- Human dashboard is HTTP 200 at `http://127.0.0.1:4737/` (PID 21208); the
+  visible low-cost monitor remains PID 2664. Owner action required now: none.
+
 ## TASK-0155 accepted; three claims live — 2026-08-22 13:40 PDT
 
 - TASK-0155 worker implementation `3cae8a2d` and frozen handoff `b06f5740`
@@ -429,7 +458,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 27 packets before the next three claims
+## Effective READY — 25 packets after three live claims, before TASK-0163 claim
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -467,7 +496,8 @@ wins after a fresh fetch.
 | P1 | TASK-0158 pane model foundation | INDEPENDENT / IMPLEMENTATION | future clean lane | creates responsive collision-free pane geometry without choosing final styling |
 | P0 | TASK-0159 native HUD/pane readability | INDEPENDENT / IMPLEMENTATION | fresh native-client lane | removes owner-visible text collisions and prototype-like hierarchy defects |
 | P1 | TASK-0160 native visual-kit packaging proof | INDEPENDENT / IMPLEMENTATION | future clean lane | proves committed procedural/vector placeholders survive source-to-owner launch reproducibly |
-| P1 | TASK-0162 passive-tree payload hardening | INDEPENDENT / IMPLEMENTATION | future clean lane | prevents malformed progression payloads from becoming false owner-visible state |
+| P0 | TASK-0163 Gate-B ordinary-play journey reliability | INDEPENDENT / IMPLEMENTATION | fresh recovered native-test lane | removes the release-blocking fatal-fall/Warden nondeterminism without runtime shortcuts |
+| P1 | TASK-0164 native content cross-reference hardening | INDEPENDENT / IMPLEMENTATION | future clean content-validation lane | rejects dangling zone/encounter seed references before content reaches a shipped runtime |
 
 ## HOLD despite historical READY headers
 
@@ -477,6 +507,7 @@ wins after a fresh fetch.
 | TASK-0078 native surface density | TASK-0077 ACCEPTED/integrated | both own `native/client/**`; single-writer rule |
 | TASK-0073 renderer backend evaluation | SUPERSEDED by TASK-0114 | surge replacement supplies exact evidence, acceptance, and stop contracts |
 | TASK-0079 browser panel inventory | SUPERSEDED by TASK-0115 | surge replacement supplies hard-fail capture and exact gate contracts |
+| TASK-0162 passive-tree payload hardening | PIPELINED behind TASK-0163 | both require `native/tests/session_tests.cpp`; reliability blocker owns the surface first |
 
 ## Sequenced successors — 17 DRAFT
 
