@@ -1,6 +1,6 @@
 # TASK-0150 STATUS
 
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: ox-pc-k (isolated Windows implementation worker, ports 6820-6839)
 machine: Windows (win32), pwsh 7.x
@@ -43,3 +43,10 @@ only). Full evidence in REPORT.md. Acceptance gates, all literal, all green:
 
 No gameplay/client/server/tool sources touched; forbidden paths untouched;
 no packaging/signing; port 6500 never used. Pushed: this worker branch only.
+
+## INTEGRATED (2026-08-22T10:21:00Z)
+
+Architect verdict: ACCEPTED at frozen worker head `54417592`. Implementation
+integrated at program commit `10039385`; REPORT/STATUS integrated at
+`ad51287b`. Independent canonical native gate, disposable 22/22 build, CTest
+5/5, direct seven-scenario run, owned-scope check, and diff check all passed.

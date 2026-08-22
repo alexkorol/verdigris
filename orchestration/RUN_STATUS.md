@@ -30,7 +30,7 @@ The independent `ox-bootstrap` orchestration worker has pushed M3 head
 `82de84ef` after M2 `5627916f`. The standalone repo's Tier-B review contract
 still governs acceptance and this lane never counts as Verdigris capacity.
 
-Snapshot: 2026-08-22 02:59 PDT
+Snapshot: 2026-08-22 03:21 PDT
 
 Sweep base: `df851cead0dadcd96176b370ad132f8344c3c21d`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
@@ -104,7 +104,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-h | 6760-6779 | TASK-0136 second post-claim process exit; dirty worktree preserved; claim released | P0 quarantined, not capacity |
 | ox-pc-i | 6780-6799 | TASK-0145 replacement claim `226e5149` pushed from current program tip | Chronicles owner-facing client journey replacement active |
 | ox-pc-j | 6800-6819 | TASK-0149 pushed claim `2d200041`; worker active | real owner launch and cleanup resilience |
-| ox-pc-k | 6820-6839 | TASK-0150 pushed claim `ffb51437` after one clean exact-session activation recovery | clean native build convergence |
+| ox-pc-k | 6820-6839 | TASK-0150 frozen head `54417592` independently ACCEPTED; implementation integrated at `10039385` | lane complete/available after worker stops |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -188,6 +188,10 @@ harness-visible provider/model. These are separate scorecard experimental units.
   **TASK-0137** at `83d8f959`, **TASK-0138** at `38942560`, and **TASK-0140**
   at `46574f4e`. Machine-readable terminal states were also restored for the
   earlier accepted PC wave; no implementation content changed in that cleanup.
+- Accepted/integrated: **TASK-0150** frozen worker head `54417592`, native
+  implementation `ae54f024`, integrated as `10039385` with report/status at
+  `ad51287b`. Independent canonical and disposable gates are green; CTest now
+  proves 5/5 including camera and all seven client scenarios.
 - Released: **TASK-0136** claims `6ea36f5a`/`7b24e5d3`/`7026892e` after a real
   duplicate-dispatch collision. Lane c remains quarantined; the clean lane h
   receives the replacement route after this coordination push.
@@ -201,7 +205,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
   the product wave to six workers. Both claims landed inside the ten-minute
   SLA: `2d200041` and `ffb51437`. Lane k's first process exited clean before
   writing; its one exact-session recovery restored dependencies for the
-  repository hook, pushed the claim, and is active. TASK-0151 and TASK-0152
+  repository hook, pushed the claim, and completed TASK-0150. TASK-0151 and TASK-0152
   stay READY rather than consuming strong overnight workers on lower-immediacy
   schema or benchmark work.
 - TASK-0146's original process exited after a denied external-temp diagnostic
