@@ -615,8 +615,9 @@ void Simulation::spawn_enemy() {
   spawn_monster({kEnemySpawnX, 0}, level, deep);
   // The first expedition is a Warden pack, not a single sentry. The entry
   // warden holds the D-114 spawn point; its two pack mates wait in the
-  // roster and materialize one telegraph window after the previous warden
-  // falls. Every offset reuses the shared melee range, so the pack stays on
+  // roster and materialize together one telegraph window after the entry
+  // warden falls, so the player faces a converged normal/elite pack. Every
+  // offset reuses the shared melee range, so the pack stays on
   // the authoritative world-scale table with no new balance numbers: the
   // elite anchors one melee range deeper on the approach line, and the last
   // normal flanks one melee range off it. The deep route keeps its single
@@ -634,8 +635,14 @@ void Simulation::materialize_wave() {
       tick_ < wave_materialization_tick_) {
     return;
   }
-  actors_.push_back(pending_wave_.front());
-  pending_wave_.erase(pending_wave_.begin());
+  // The owed pack arrives as one body: every entry still waiting in the
+  // roster steps onto its deterministic anchor at the same telegraph
+  // deadline, so the reinforcement reads as a converging pack rather than a
+  // queue of serial single-target duels.
+  for (const Actor& monster : pending_wave_) {
+    actors_.push_back(monster);
+  }
+  pending_wave_.clear();
   wave_materialization_tick_ = 0;
 }
 
@@ -826,9 +833,10 @@ void Simulation::handle_death(Actor& actor_value, const std::string& killer_id) 
     if (instance_.active) {
       drop_reward();
       // A fallen warden alerts the rest of its pack: while roster entries
-      // remain, the next one materializes one telegraph window after this
-      // death. Pack-clear progression therefore waits for both the living
-      // wardens and the unmaterialized roster before flipping the objective.
+      // remain, the entire remaining pack materializes together one
+      // telegraph window after this death. Pack-clear progression therefore
+      // waits for both the living wardens and any unmaterialized roster
+      // before flipping the objective.
       if (!pending_wave_.empty()) {
         wave_materialization_tick_ = tick_ + kTelegraphTicks;
       }
