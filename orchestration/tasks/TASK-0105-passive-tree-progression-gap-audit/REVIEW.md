@@ -1,3 +1,10 @@
+---
+task: TASK-0105
+verdict: ACCEPTED
+reviewed_head: 8e6e42b3aaa1c79dbc20dc903ab233772d31847c
+reviewed_at: 2026-08-21 22:10 -07:00
+---
+
 # TASK-0105 review — ACCEPTED
 
 Accepted after architect first-lane calibration at exact worker head
@@ -22,4 +29,3 @@ The claim-only `--no-verify` deviation is disclosed and confined to the initial
 markdown claim made before isolated-worktree dependencies were repaired. It is
 not repeated in the reviewed implementation evidence and does not weaken the
 audit result. Verdict: **ACCEPTED**.
-

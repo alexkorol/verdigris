@@ -1,3 +1,10 @@
+---
+task: TASK-0120
+verdict: ACCEPTED
+reviewed_head: 4e0920d4b23aeae63c78b5d1e148d2fa16b9df6e
+reviewed_at: 2026-08-21 22:10 -07:00
+---
+
 # TASK-0120 review — ACCEPTED
 
 Accepted after architect first-lane calibration at exact worker head
@@ -21,4 +28,3 @@ and account actions remain owner-only and were not executed.
 The initial hook/dependency activation repair used `npm ci`; the worker's claim
 and evidence commits ran with hooks enabled, and no external-directory or
 shared-Git write was permitted. Verdict: **ACCEPTED**.
-

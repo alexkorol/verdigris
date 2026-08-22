@@ -1,4 +1,26 @@
-# TASK-0086 review — REVISE
+---
+task: TASK-0086
+verdict: ACCEPTED
+reviewed_head: 8ddfb06e16f85c150e9a79ccc9d8bd4932664369
+reviewed_at: 2026-08-21 22:24 -07:00
+---
+
+# TASK-0086 review — ACCEPTED after evidence revision
+
+The evidence-only revision is accepted at exact pushed worker head
+`8ddfb06e16f85c150e9a79ccc9d8bd4932664369`. The architect reran every
+literal SPEC command: the contract JSON parses, the complete source/test rg
+returns exit 0, `git diff --check` returns exit 0, and the path list remains
+confined to this task folder. The committed capture now contains all 119 rg
+matches without elision, and REPORT records both the original reviewed head
+and the additive revision SHA.
+
+The substantive result is unchanged and accepted: goal plus expected
+trophy/material/item family are honestly MISSING, the four other fields are
+cited at their supported classifications, and no owner-only campaign, loot,
+economy, balance, or risk value was invented.
+
+## Revision history — initial REVISE
 
 Architect first-lane calibration review at exact worker head
 `d8ab6670df742d3946886de91913be728bb535ed` on 2026-08-21 22:10 PDT.
@@ -24,4 +46,3 @@ Two evidence-only corrections are required:
 Rerun every literal SPEC gate after the evidence correction, preserve exit
 codes, run the complete `039dcfa7..HEAD` path-boundary check, and push an
 additive revision on the same worker branch. Never amend or force-push.
-
