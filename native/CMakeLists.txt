@@ -44,6 +44,8 @@ if (WIN32)
   target_link_libraries(verdigris_client_session PUBLIC ws2_32)
 endif()
 
+add_executable(camera2d_tests tests/camera2d_tests.cpp)
+
 add_executable(verdigris_session_tests tests/session_tests.cpp)
 target_link_libraries(verdigris_session_tests PRIVATE verdigris_client_session)
 
@@ -58,4 +60,6 @@ endif()
 enable_testing()
 add_test(NAME verdigris_core_tests COMMAND verdigris_core_tests)
 add_test(NAME verdigris_networking_tests COMMAND verdigris_networking_tests)
+add_test(NAME camera2d_tests COMMAND camera2d_tests)
 add_test(NAME verdigris_session_tests COMMAND verdigris_session_tests)
+add_test(NAME verdigris_client_scenarios COMMAND verdigris_client --scenario all)
