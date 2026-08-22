@@ -1,0 +1,353 @@
+{
+  "schema_version": "1.0.0",
+  "contract": {
+    "name": "verdigris-clean-machine-harness",
+    "task": "TASK-0132",
+    "status": "PROPOSED",
+    "purpose": "Define the deterministic stage contract a future disposable-host execution harness must satisfy before any Verdigris green counts as clean-machine evidence rather than cached developer success.",
+    "audience": "Implementers of the future clean-machine release harness (successor to TASK-0126 planning; consumes TASK-0092, TASK-0094, TASK-0099, TASK-0120 outcomes).",
+    "authority": {
+      "constitution": "docs/product/VERDIGRIS_CONSTITUTION.md",
+      "acceptance_registry": "orchestration/ACCEPTANCE.md",
+      "protocol": "orchestration/PROTOCOL.md"
+    },
+    "definitions": {
+      "disposable_host": "A machine provisioned from a declared base image, destroyed or reset after the run, with no inherited workspace state from any prior run.",
+      "clean_machine_run": "A run on a disposable host whose workspace was freshly cloned at a pinned commit, whose caches started cold or carry complete provenance, and which produced the full evidence bundle defined by this contract.",
+      "cached_developer_success": "Any green produced on a long-lived developer machine with warm caches, pre-built artifacts, or manually installed state. It is valid developer feedback and is NEVER clean-machine evidence.",
+      "stage": "A named, ordered unit of harness work with pinned inputs, pinned commands, and a mandatory evidence record.",
+      "evidence_record": "The machine-readable receipt a stage must emit; a stage without its evidence record is a failed stage regardless of exit code.",
+      "capsule": "The loopback-only port range assigned to a lane (for example 6740-6759 for ox-pc-g)."
+    },
+    "invariants": [
+      "INV-1: Every stage runs top-to-bottom in the declared order; no stage may be skipped, retried silently, or reordered without a new contract version.",
+      "INV-2: Every stage emits an evidence record with exit_code, command, base_commit, host identity, and UTC timestamps; missing evidence fails the run.",
+      "INV-3: A green is clean-machine evidence only when produced on a disposable host under a fresh checkout with cache provenance recorded; all other greens are cached developer success.",
+      "INV-4: All network binds are 127.0.0.1 only; all ports come from the lane capsule; port 6500 is owner-reserved and forbidden to every harness stage on every platform.",
+      "INV-5: The harness only terminates processes it started and tracked; it never signals peer processes.",
+      "INV-6: No stage installs system software, mutates CI configuration, or requires credentials beyond the read-only repository access needed for checkout.",
+      "INV-7: Determinism: identical inputs (base commit, lockfiles, toolchain pins, base image) must produce identical stage outcomes; any nondeterminism must be declared in the stage's nondeterminism_sources."
+    ],
+    "evidence_record_schema": {
+      "type": "object",
+      "required": [
+        "stage",
+        "host_id",
+        "host_image",
+        "base_commit",
+        "command",
+        "exit_code",
+        "started_at_utc",
+        "finished_at_utc",
+        "log_ref"
+      ],
+      "properties": {
+        "stage": { "type": "string" },
+        "host_id": { "type": "string", "description": "Unique identifier of the disposable host instance." },
+        "host_image": { "type": "string", "description": "Declared base image and digest/version." },
+        "base_commit": { "type": "string", "description": "Full 40-hex commit the workspace was checked out at." },
+        "command": { "type": "string", "description": "Literal command executed." },
+        "exit_code": { "type": "integer" },
+        "started_at_utc": { "type": "string", "format": "date-time" },
+        "finished_at_utc": { "type": "string", "format": "date-time" },
+        "log_ref": { "type": "string", "description": "Reference to the captured raw log artifact." },
+        "cache_provenance": { "type": "object", "description": "Required when the stage consumed or populated a cache; see cache stage." },
+        "clean_flags": { "type": "array", "items": { "type": "string" }, "description": "Preconditions proven before the stage ran, e.g. FRESH_CHECKOUT, COLD_CACHE." }
+      }
+    }
+  },
+  "checkout": {
+    "id": "checkout",
+    "order": 1,
+    "purpose": "Produce a byte-deterministic workspace at one pinned commit with no inherited state.",
+    "determinism": "Commit is pinned by full SHA; clone is shallow-free and verified against the pinned SHA; worktree is empty before clone.",
+    "commands": [
+      "git clone --no-checkout <repository_url> workspace",
+      "git -C workspace checkout --detach <base_commit>",
+      "git -C workspace status --porcelain (must be empty)",
+      "git -C workspace rev-parse HEAD (must equal <base_commit>)"
+    ],
+    "preconditions": [
+      "FRESH_VOLUME: workspace path absent or emptied before clone",
+      "PINNED_BASE: base_commit supplied by the harness caller, never resolved from a moving branch"
+    ],
+    "evidence": [
+      "resolved HEAD SHA equals pinned base_commit",
+      "git status --porcelain output is empty (DIRTY_BASE otherwise)",
+      "clone log artifact"
+    ],
+    "failure_modes": ["DIRTY_BASE"],
+    "nondeterminism_sources": []
+  },
+  "toolchain": {
+    "id": "toolchain",
+    "order": 2,
+    "purpose": "Prove the pinned toolchain exists and matches declared versions before anything builds.",
+    "determinism": "Versions are pinned as exact-or-floor pairs; the harness records observed versions and fails on mismatch.",
+    "commands": [
+      "node --version",
+      "npm --version",
+      "git --version",
+      "cmake --version (native builds)",
+      "pwsh --version (build scripts)"
+    ],
+    "pins": {
+      "node": { "floor": "22.11.0", "policy": "exact-or-higher-patch, recorded" },
+      "npm": { "floor": "10.0.0", "policy": "recorded" },
+      "git": { "policy": "recorded" },
+      "cmake": { "policy": "recorded; required only when native stage enabled" },
+      "pwsh": { "policy": "recorded" }
+    },
+    "evidence": [
+      "observed version for every required tool",
+      "explicit MISSING_TOOLCHAIN failure naming the absent tool and the pin it violated"
+    ],
+    "failure_modes": ["MISSING_TOOLCHAIN"],
+    "nondeterminism_sources": [
+      "host image tool drift; mitigated by pinning the base image digest per platform_matrix row"
+    ]
+  },
+  "dependencies": {
+    "id": "dependencies",
+    "order": 3,
+    "purpose": "Install dependencies exactly as locked, then prove the installed tree matches the lockfiles.",
+    "determinism": "Only lockfile-driven installs are allowed; npm install, yarn, pnpm ad-hoc installs are forbidden.",
+    "commands": [
+      "npm ci --no-audit --no-fund",
+      "dependency-tree fingerprint: hash of lockfile plus installed tree manifest, recorded as dependencies_fingerprint"
+    ],
+    "forbidden": ["npm install", "npm update", "manual node_modules copies", "global installs"],
+    "evidence": [
+      "npm ci exit code and log",
+      "dependencies_fingerprint recorded before and after install; equality proves no drift",
+      "DEPENDENCY_DRIFT failure names the fingerprint mismatch"
+    ],
+    "failure_modes": ["DEPENDENCY_DRIFT"],
+    "nondeterminism_sources": [
+      "registry-side package changes; mitigated by lockfile integrity hashes and optional offline mirror"
+    ]
+  },
+  "cache": {
+    "id": "cache",
+    "order": 4,
+    "purpose": "Make every cache use auditable so cached developer success can never masquerade as clean-machine proof.",
+    "determinism": "Cache keys are derived from content hashes (lockfile bytes, toolchain versions, source tree manifest), never from wall-clock or host name.",
+    "rules": [
+      "CACHE-1: A clean-machine run must record, for every optional cache, either a cold-miss (populated during this run) or a hit with full provenance: key, source, content hash, and the producing run id.",
+      "CACHE-2: The first run on any new base image must be executed with all caches disabled; its artifacts seed the cache and its evidence is the only clean-machine baseline for that image.",
+      "CACHE-3: A cache hit without provenance is a CACHE_LEAK: the run is invalid as clean-machine evidence even if every stage exits zero.",
+      "CACHE-4: Developer workstations may use caches freely; their runs are labeled developer_local and are out of scope for acceptance evidence."
+    ],
+    "evidence": [
+      "per-cache record: {name, key, cold_miss|hit, content_hash, producer_run_id?}",
+      "CACHE_LEAK failure names the cache and the missing provenance field"
+    ],
+    "failure_modes": ["CACHE_LEAK"],
+    "nondeterminism_sources": []
+  },
+  "build": {
+    "id": "build",
+    "order": 5,
+    "purpose": "Compile browser and native targets from the proven-clean workspace.",
+    "determinism": "Build commands are fixed; build IDs embed base commit; warnings are recorded, not suppressed.",
+    "commands": [
+      "npm run build (browser target)",
+      "powershell -File native/build.ps1 (native target, no test flags)"
+    ],
+    "evidence": [
+      "exit code per command",
+      "artifact directory listing with sizes",
+      "NONZERO_STAGE failure names the stage, command, and captured log tail"
+    ],
+    "failure_modes": ["NONZERO_STAGE"],
+    "nondeterminism_sources": [
+      "compiler/linker timestamps embedded in binaries; mitigated by recording build IDs rather than byte-comparing binaries"
+    ]
+  },
+  "tests": {
+    "id": "tests",
+    "order": 6,
+    "purpose": "Run the deterministic test gates and record exact pass counts.",
+    "determinism": "Fixed test invocation, fixed ordering, no sharding unless declared; flaky retries forbidden (a retried pass is recorded as flaky, not green).",
+    "commands": [
+      "powershell -File native/build.ps1 -RunTests",
+      "npm run test:unit"
+    ],
+    "evidence": [
+      "per-suite pass/fail counts stated numerically",
+      "exit code per command",
+      "NONZERO_STAGE failure includes failing test names and log tail"
+    ],
+    "failure_modes": ["NONZERO_STAGE"],
+    "nondeterminism_sources": [
+      "port collisions; mitigated by capsule allocation in the port stage"
+    ]
+  },
+  "launch": {
+    "id": "launch",
+    "order": 7,
+    "purpose": "Start the built server and client processes under harness ownership with recorded PIDs.",
+    "determinism": "Launch commands and flags are fixed; ports are allocated only from the lane capsule; readiness is polled, never slept blindly.",
+    "commands": [
+      "start native/build/verdigris_server.exe bound to 127.0.0.1:<capsule port>",
+      "record PID and command line per process into the run manifest"
+    ],
+    "preconditions": [
+      "CAPSULE_FREE: every allocated port verified free before launch",
+      "LOOPBACK_ONLY: bind address 127.0.0.1 asserted from process evidence, not from configuration intent"
+    ],
+    "evidence": [
+      "PID table: {process, pid, port, bind_address}",
+      "NON_LOOPBACK_BIND failure names process, port, and observed bind address",
+      "FORBIDDEN_PORT_6500 failure if any launch argument, config, or observed listener references port 6500"
+    ],
+    "failure_modes": ["NON_LOOPBACK_BIND", "FORBIDDEN_PORT_6500"],
+    "nondeterminism_sources": []
+  },
+  "smoke": {
+    "id": "smoke",
+    "order": 8,
+    "purpose": "Prove the launched system serves the critical loop end-to-end.",
+    "determinism": "One fixed smoke scenario per platform row; assertions are hard-fail (non-zero exit unless every on-screen/protocol assertion holds).",
+    "commands": [
+      "PLAYTEST_WS_URL=ws://127.0.0.1:<capsule port> node playtest/run.mjs --attach <smoke set>",
+      "browser lane: npm run smoke:browser (only where the platform row declares it)"
+    ],
+    "evidence": [
+      "scenario name, assertion count, pass count, exit code",
+      "screenshot or protocol transcript artifact per scenario",
+      "NONZERO_STAGE failure includes the failed assertion list"
+    ],
+    "failure_modes": ["NONZERO_STAGE"],
+    "nondeterminism_sources": [
+      "rendering timing on headless GPUs; mitigated by polling-based assertions with declared timeouts"
+    ]
+  },
+  "process": {
+    "id": "process",
+    "order": 9,
+    "purpose": "Account for every process the run created and prove none leaked.",
+    "determinism": "The harness tracks PIDs from launch; leak detection compares the tracked set against live processes after cleanup.",
+    "commands": [
+      "enumerate listeners on capsule ports before and after the run",
+      "verify each tracked PID either exited cleanly or was terminated by the cleanup stage"
+    ],
+    "rules": [
+      "PROC-1: The harness may signal only PIDs recorded in its own run manifest.",
+      "PROC-2: Any tracked process still alive after cleanup is a LEAKED_PROCESS failure.",
+      "PROC-3: Untracked processes are never touched; they are reported, not killed."
+    ],
+    "evidence": [
+      "before/after listener snapshots on the capsule range",
+      "per-PID exit status",
+      "LEAKED_PROCESS failure names pid, process, and held port"
+    ],
+    "failure_modes": ["LEAKED_PROCESS"],
+    "nondeterminism_sources": []
+  },
+  "port": {
+    "id": "port",
+    "order": 10,
+    "purpose": "Enforce capsule-only, loopback-only port usage and the absolute ban on port 6500.",
+    "determinism": "Port allocation is deterministic from the lane capsule; the forbidden set is fixed by contract, not configuration.",
+    "rules": [
+      "PORT-1: All binds are 127.0.0.1.",
+      "PORT-2: All listening ports come from the lane capsule declared by the harness caller.",
+      "PORT-3: Port 6500 (owner live server) is forbidden in every config, command line, environment default, and observed listener, on every platform, for every lane.",
+      "PORT-4: The playtest default port 6510 may be used only by a full-suite run that holds the machine-wide serialization lease."
+    ],
+    "evidence": [
+      "allocated port list with capsule bounds",
+      "observed listener table cross-checked against PORT-1/2/3",
+      "FORBIDDEN_PORT_6500 failure is always severity P0 and never waivable"
+    ],
+    "failure_modes": ["NON_LOOPBACK_BIND", "FORBIDDEN_PORT_6500"],
+    "nondeterminism_sources": []
+  },
+  "cleanup": {
+    "id": "cleanup",
+    "order": 11,
+    "purpose": "Return the host to a state safe to destroy: stop tracked processes, release capsule ports, remove run-local state.",
+    "determinism": "Cleanup order is fixed: terminate tracked processes, wait with timeout, then verify; host reset is the caller's responsibility and is recorded as host_disposition.",
+    "commands": [
+      "terminate tracked PIDs (graceful then forced)",
+      "re-enumerate capsule listeners (must be empty)",
+      "record workspace disposition: destroyed|preserved-for-debug"
+    ],
+    "evidence": [
+      "cleanup record per PID and per port",
+      "LEAKED_PROCESS failure if verification finds survivors"
+    ],
+    "failure_modes": ["LEAKED_PROCESS"],
+    "nondeterminism_sources": []
+  },
+  "artifacts": {
+    "id": "artifacts",
+    "order": 12,
+    "purpose": "Preserve durable, self-describing evidence for every run.",
+    "manifest": {
+      "path": "artifacts/run-manifest.json",
+      "contents": [
+        "run_id",
+        "base_commit",
+        "host_id",
+        "host_image",
+        "platform",
+        "stage evidence records in execution order",
+        "cache provenance records",
+        "PID table",
+        "port allocation and listener snapshots",
+        "artifact file list with SHA-256 hashes"
+      ]
+    },
+    "retention_rules": [
+      "ART-1: Raw logs are captured verbatim; summaries never replace raw logs.",
+      "ART-2: Every artifact is hashed; the manifest carries the hashes.",
+      "ART-3: A run without a complete manifest is not evidence of anything.",
+      "ART-4: Debug-preserved workspaces must record their disposition and expiry."
+    ],
+    "failure_modes": ["NONZERO_STAGE"],
+    "nondeterminism_sources": []
+  },
+  "platform_matrix": [
+    {
+      "platform": "windows-x64",
+      "priority": 1,
+      "host_image": "to-be-declared (current development reference: Windows Server-class image, x64)",
+      "toolchain": ["node", "npm", "git", "cmake", "pwsh", "MSVC toolset"],
+      "gates": ["checkout", "toolchain", "dependencies", "cache", "build", "tests", "launch", "smoke", "process", "port", "cleanup", "artifacts"],
+      "evidence_status": "UNPROVEN: no disposable-host run has been executed under this contract; the current repository greens are cached developer success on a long-lived workstation",
+      "notes": "Native build via native/build.ps1; full playtest suite requires the 6510 serialization lease."
+    },
+    {
+      "platform": "linux-x64",
+      "priority": 2,
+      "host_image": "to-be-declared",
+      "toolchain": ["node", "npm", "git", "cmake", "pwsh or bash adapter", "C++ toolchain"],
+      "gates": ["checkout", "toolchain", "dependencies", "cache", "build", "tests", "launch", "smoke", "process", "port", "cleanup", "artifacts"],
+      "evidence_status": "UNPROVEN: no run executed under this contract",
+      "notes": "native/build.ps1 requires a pwsh or ported adapter; do not claim coverage without a recorded run."
+    },
+    {
+      "platform": "macos-arm64",
+      "priority": 3,
+      "host_image": "to-be-declared",
+      "toolchain": ["node", "npm", "git", "cmake", "pwsh or bash adapter", "Xcode CLT"],
+      "gates": ["checkout", "toolchain", "dependencies", "cache", "build", "tests", "launch", "smoke", "process", "port", "cleanup", "artifacts"],
+      "evidence_status": "UNPROVEN: no run executed under this contract",
+      "notes": "Existing macOS notes live in orchestration/NOTES-mac-claude.md and NOTES-luna-mac.md; they are observations, not platform evidence."
+    }
+  ],
+  "clean_machine_decision": {
+    "purpose": "Single decision procedure separating clean-machine proof from cached developer success.",
+    "procedure": [
+      "D-1: Was the host disposable and provisioned from a declared image? If no -> developer_local.",
+      "D-2: Was the workspace freshly cloned at a pinned commit with empty git status? If no -> DIRTY_BASE, invalid.",
+      "D-3: Did every cache record cold-miss or full provenance? If no -> CACHE_LEAK, invalid.",
+      "D-4: Did every stage emit a complete evidence record with exit code zero (or a declared, handled failure)? If no -> NONZERO_STAGE, invalid.",
+      "D-5: Did process/port verification prove no leaks, loopback-only binds, capsule-only ports, and zero contact with port 6500? If no -> LEAKED_PROCESS / NON_LOOPBACK_BIND / FORBIDDEN_PORT_6500, invalid.",
+      "D-6: Only when D-1 through D-5 all hold is the run labeled clean_machine_verified; anything else is developer_local evidence."
+    ],
+    "labels": ["clean_machine_verified", "developer_local", "invalid"]
+  }
+}

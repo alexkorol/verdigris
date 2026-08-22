@@ -1,0 +1,1254 @@
+package.json:17:    "dev:server": "cross-env NODE_ENV=development PORT=6500 nodemon --watch server --ext js,json --exec \"node --enable-source-maps server/index.js\"",
+package.json:29:    "test:e2e:built": "start-server-and-test start:e2e http://127.0.0.1:6500 \"playwright test\"",
+package.json:31:    "playtest": "node playtest/run.mjs",
+package.json:34:    "smoke:public": "node playtest/public-smoke.mjs",
+package.json:35:    "smoke:production-local": "node playtest/local-production-smoke.mjs",
+package.json:36:    "smoke:browser": "npm run build && start-server-and-test start:e2e http://127.0.0.1:6500 \"playwright test tests/e2e/browser-critical-loop.spec.mjs\"",
+package.json:37:    "smoke:public-tunnel": "node playtest/public-tunnel-smoke.mjs",
+package.json:38:    "verify": "npm run lint && npm run lint:css && npm run test:unit && npm run build && npm run playtest && npm run test:e2e:built"
+orchestration\ACCEPTANCE.md:11:| Browser smoke | `npm run smoke:browser` | e2e critical loop passes | includes build |
+orchestration\ACCEPTANCE.md:12:| Full playtest | `npm run playtest` | 32/32, default flags | ~3.5 min; serialize per machine; boots :6510 |
+orchestration\ACCEPTANCE.md:13:| Targeted playtest | `npm run playtest -- <scenarios>` | named scenarios pass | for iteration; full suite still required at acceptance |
+orchestration\ACCEPTANCE.md:20:| Build+tests | `powershell -File native/build.ps1 -RunTests` | denylist PASS, core PASS, networking PASS, camera2d PASS | |
+orchestration\ACCEPTANCE.md:22:| Parity attach | start `verdigris_server.exe` (loopback, own port range) then `PLAYTEST_WS_URL=ws://127.0.0.1:<port> node playtest/run.mjs --attach <set>` | named set green, harness UNCHANGED (state harness commit) | N-wave sets defined in wave specs |
+.github\CONTRIBUTING.md:26:headless core-loop playtest, and a real Chromium smoke test.
+.github\workflows\ci.yml:27:        run: npm ci
+.github\workflows\ci.yml:32:        # shared-machine gate (playtest/timing.mjs). Two consecutive master
+.github\workflows\ci.yml:38:      - name: Upload browser failure artifacts
+.github\workflows\ci.yml:40:        uses: actions/upload-artifact@v4
+.github\workflows\native.yml:44:        uses: actions/upload-artifact@v4
+orchestration\ARCHITECT_STATE.md:12:   Key fix this session: `build.ps1` never defined `VERDIGRIS_NATIVE_WINDOWS`,
+orchestration\ARCHITECT_STATE.md:42:- Passing: `./native/build.ps1 -RunTests -RunClient` (build, denylist,
+orchestration\ARCHITECT_STATE.md:45:- Historical browser game untouched and still gated by `npm run playtest`.
+orchestration\ARCHITECT_STATE.md:190:and the unchanged 31-scenario playtest harness become the parity bar.
+orchestration\ARCHITECT_STATE.md:280:npm run smoke:browser     # proves the built game boots + plays the guest loop
+orchestration\ARCHITECT_STATE.md:283:http://localhost:6500 (client + WS on one process).
+orchestration\ARCHITECT_STATE.md:285:**Native lab client**: `powershell -File native/build.ps1 -RunClient`
+orchestration\ARCHITECT_STATE.md:286:builds and smoke-runs; then launch `native/build/verdigris_client.exe`
+orchestration\ARCHITECT_STATE.md:291:**Founding slice**: the claude.ai artifact link, or serve
+orchestration\ARCHITECT_STATE.md:341:QUESTION-0003 exposed that the documented `smoke:browser` gate never
+orchestration\ARCHITECT_STATE.md:348:- TASK-0014 **ACCEPTED** (`b068964`) — smoke:browser verified end to end
+orchestration\ARCHITECT_STATE.md:349:  (1/1 browser spec green, port 6500 released). QUESTION-0003 closable.
+orchestration\ARCHITECT_STATE.md:433:disjoint paths from 0043 (playtest/** vs native/** vs src+server loot
+orchestration\ARCHITECT_STATE.md:458:All test/dev servers (playtest server/index.js boot, native
+orchestration\ARCHITECT_STATE.md:463:playtest run today, and every fresh C++ server build will re-prompt).
+orchestration\ARCHITECT_STATE.md:504:  captures + WS frame log, reran unit 788/788 + playtest 31/31.
+orchestration\ARCHITECT_STATE.md:510:  a real-path diagnosis + a Chronicles-login playtest scenario.
+orchestration\BACKLOG_FACTORY.md:101:- quality/release: unit through clean-machine/soak/performance/migration/crash,
+orchestration\BOOTSTRAP.md:22:You are Codex Sol, the ARCHITECT/ORCHESTRATOR for Verdigris (repo alexkorol/verdigris, program branch codex/native-reconstitution, dedicated worktree /Users/alexkorol/Code/verdigris-sol). You are the control plane, not an implementation lane. Read IN ORDER before acting: orchestration/ONBOARDING-SOL-ORCHESTRATOR.md, PROTOCOL.md, ACCEPTANCE.md, docs/product/VERDIGRIS_CONSTITUTION.md, DECISIONS.md, INCIDENTS.md, RUN_STATUS.md, and docs/rebuild/HANDOFF.md. Every sweep starts with fetch + lane branch timestamps + NOTES/REVIEW_REQUESTED scan. Review exact gates personally, integrate only ACCEPTED work, ship through merge PRs (never squash), rewrite RUN_STATUS, and keep D-125 runway: at least 8 effective non-overlapping READY packets before three lanes are live plus 4 sequenced successors. Never absorb a dark fleet (INC-012); notify the owner. Owner-only: seasons, magic, economy, naming, lore, assets, balance, irreversible/account actions, GitHub settings. Loopback only, port 6500 untouchable, harness assertions immutable.
+orchestration\CONTENT_SCALE_MATRIX.md:37:baseline; captured regression and clean-machine launch proof. Placeholder
+orchestration\CONTENT_SCALE_MATRIX.md:54:where applicable, upgrade/support plans, and repeated clean-machine/soak/owner
+docs\25d-overhaul-plan.md:192:`npm run playtest` green plus `npm run test:e2e` (or at minimum
+docs\25d-overhaul-plan.md:193:`smoke:browser`) and a real-browser look per phase; the legacy toggle stays
+docs\25d-overhaul-plan.md:251:- Full gates: `npm run lint`, `test:unit`, `playtest`, `test:e2e`; profile on
+docs\25d-overhaul-plan.md:282:- **Harness blindness**: `playtest` proves protocol, not pixels (root
+native\build.ps1:2:  [switch]$RunTests,
+native\build.ps1:4:  [switch]$RunClientScenarios,
+native\build.ps1:118:if ($RunTests) { & $testExe }
+native\build.ps1:119:if ($RunTests) { & $networkingTestExe }
+native\build.ps1:120:if ($RunTests) { & $camera2dTestExe }
+native\build.ps1:121:if ($RunTests) { & $sessionTestExe; if ($LASTEXITCODE -ne 0) { throw "session tests failed" } }
+native\build.ps1:123:if ($RunClientScenarios) { & $clientExe --scenario all }
+native\CMakePresets.json:8:      "binaryDir": "${sourceDir}/build/cmake/${presetName}",
+native\CMakePresets.json:18:      "binaryDir": "${sourceDir}/build/cmake/${presetName}"
+native\README.md:31:./native/build.ps1
+native\README.md:32:./native/build.ps1 -RunTests
+native\README.md:33:./native/build.ps1 -RunClient
+native\README.md:43:`verdigris_server` on a free **6520–6539** port (never 6500), launches
+native\README.md:68:cmake -S native -B native/build
+native\README.md:69:cmake --build native/build
+native\README.md:98:./native/build.ps1 -RunClientScenarios   # build + run all scenarios
+native\networking\README.md:10:powershell -File native/build.ps1 -RunTests
+native\networking\README.md:11:native/build/verdigris_server.exe 6500
+native\networking\README.md:16:6500, start `verdigris_server.exe 6511` and invoke:
+native\networking\README.md:20:npm run playtest -- quickstart single-session
+native\networking\README.md:26:served: the playtest harness is a direct WebSocket client, and the native
+native\tools\ci-native.ps1:2:# GitHub windows-latest ships VS 18 under Program Files; native/build.ps1 does
+native\tools\ci-native.ps1:25:  Invoke-Logged "cmake configure" { cmake --preset windows-msvc }
+native\tools\ci-native.ps1:26:  Invoke-Logged "cmake build" { cmake --build --preset windows-msvc }
+native\tools\ci-native.ps1:30:  # Match native/build.ps1 (cl via cmd so /std:c++20 is not eaten by pwsh).
+native\tools\ci-native.ps1:49:  $clientExe = Join-Path $nativeRoot "build\cmake\windows-msvc\verdigris_client.exe"
+native\tools\play-native.ps1:13:$buildScript = Join-Path $nativeRoot "build.ps1"
+native\tools\play-native.ps1:15:if ($Port -eq 6500) {
+native\tools\play-native.ps1:16:  throw "play-native: port 6500 is reserved for the historical browser server. Use 6520-6539."
+native\tools\play-native.ps1:45:    (Join-Path $nativeRoot "build.ps1")
+native\tools\play-native.ps1:56:  Write-Host "play-native: building via native/build.ps1"
+native\tools\play-native.ps1:58:  if ($LASTEXITCODE -ne 0) { throw "play-native: native/build.ps1 failed with exit $LASTEXITCODE" }
+native\tools\play-native.ps1:78:    if ($chosenPort -eq 6500) {
+native\tools\play-native.ps1:79:      throw "play-native: port 6500 is reserved for the historical browser server."
+orchestration\DECISIONS.md:88:  31-scenario playtest harness the PARITY BAR and regression suite for
+orchestration\DECISIONS.md:91:  `docs/rebuild/PARITY_ROADMAP.md`. Sweep layers: (1) protocol/playtest
+orchestration\DECISIONS.md:138:- **D-105 smoke:browser lifecycle**: QUESTION-0003 resolved with its
+orchestration\DECISIONS.md:139:  option 1 — `smoke:browser` keeps its documented name and adopts the
+orchestration\DECISIONS.md:141:  Port 6500 stays pinned.
+orchestration\DECISIONS.md:176:The client gets its own automated harness, mirroring the playtest
+docs\crossroads-world-web.md:155:- `instance:enterSolo` (Adventure menu protocol) stays for the playtest
+docs\deployment.md:5:**everything is one port** (default `6500`).
+docs\deployment.md:14:npm ci
+docs\deployment.md:38:npm ci
+docs\deployment.md:54:traffic to `127.0.0.1:6500`. Expose only ports 80/443, not 6500. WebSockets are same-origin, so no
+docs\deployment.md:64:npm run smoke:production-local
+docs\deployment.md:65:npm run smoke:public -- https://play.example.com
+docs\deployment.md:77:npm run smoke:public-tunnel
+docs\deployment.md:89:- **Same machine:** http://localhost:6500
+docs\deployment.md:90:- **LAN:** http://&lt;machine-ip&gt;:6500 (open TCP 6500 in the OS firewall)
+docs\deployment.md:93:  then play via http://&lt;tailscale-name-or-100.x-ip&gt;:6500. Traffic is
+docs\deployment.md:100:| `PORT` | `6500` | HTTP + WebSocket port |
+docs\development-setup.md:43:- Visit `http://localhost:5173` to interact with the game client. The Express API and WebSocket game server share `http://localhost:6500` / `ws://localhost:6500`.
+docs\development-setup.md:58:- `npm run playtest` - Boot a disposable game server and play the full core loop over the real WebSocket protocol.
+docs\development-setup.md:60:- `npm run verify` - Run lint, stylelint, unit tests, the production build, the goal harness, and the browser smoke test.
+docs\development-setup.md:63:- `npm run preview` - Serve the production build locally for smoke testing.
+docs\archive\dependency-plan.md:51:1. Apply Phase 1 upgrades in a dedicated branch (run lint/tests, smoke test).
+docs\loop-journal.md:12:  browser smoke opens the menu, switches into Settings, backs out, reopens it,
+docs\loop-journal.md:16:  0; `npm run smoke:browser` — production build and 2/2 browser tests; `npm run
+docs\loop-journal.md:17:  playtest` — 21/21 scenarios with session critic 100/100.
+docs\loop-journal.md:45:  0; `npm run playtest` — 21/21 scenarios with session critic 100/100.
+docs\loop-journal.md:61:  0; `npm run smoke:browser` — production build and 2/2 browser tests.
+docs\loop-journal.md:79:  0; `npm run smoke:browser` — production build and 2/2 browser tests.
+docs\loop-journal.md:100:  0; `npm run smoke:browser` — production build and 2/2 browser tests; `npm run
+docs\loop-journal.md:101:  playtest` — 21/21 scenarios with session critic 100/100.
+docs\loop-journal.md:121:  0; `npm run playtest` — 21/21 scenarios with session critic 100/100.
+docs\loop-journal.md:141:  0; `npm run playtest` — 21/21 scenarios with session critic 100/100.
+docs\loop-journal.md:164:  0; `npm run smoke:browser` — production build and 2/2 browser tests; `npm run
+docs\loop-journal.md:165:  playtest` — 21/21 scenarios with session critic 100/100.
+docs\loop-journal.md:186:  0; `npm run smoke:browser` — production build and 2/2 browser tests; `npm run
+docs\loop-journal.md:187:  playtest` — 21/21 scenarios with session critic 100/100.
+docs\loop-journal.md:208:  0; `npm run smoke:browser` — production build and 2/2 browser tests; `npm run
+docs\loop-journal.md:209:  playtest` — 21/21 scenarios with session critic 100/100.
+docs\loop-journal.md:230:  0; `npm run smoke:browser` — production build and 2/2 browser tests; `npm run
+docs\loop-journal.md:231:  playtest` — 21/21 scenarios with session critic 100/100.
+docs\loop-journal.md:252:  0; `npm run smoke:browser` — production build and 2/2 browser tests; `npm run
+docs\loop-journal.md:253:  playtest` — 21/21 scenarios.
+docs\loop-journal.md:278:- Evidence: `npm run playtest` — 21/21 scenarios with session critic 100/100;
+docs\loop-journal.md:280:  run smoke:browser` — 2/2.
+docs\loop-journal.md:298:- Evidence: `npm run playtest` — 20/20 scenarios with session critic 100/100;
+docs\loop-journal.md:300:  run smoke:browser` — 2/2.
+docs\loop-journal.md:319:- Evidence: `npm run playtest` — 20/20 scenarios with session critic 100/100;
+docs\loop-journal.md:321:  run smoke:browser` — 2/2.
+docs\loop-journal.md:342:  run playtest` — 19/19 scenarios, session critic 100/100; `npm run test:unit`
+docs\loop-journal.md:343:  — 81 files and 531 tests; `npm run lint` — exit 0; `npm run smoke:browser`
+docs\loop-journal.md:383:  playtest` — 18/18 scenarios with session critic 100/100; `npm run test:unit`
+docs\loop-journal.md:403:  `npm run playtest` — 18/18 scenarios; `npm run test:unit` — 79 files and 525
+docs\loop-journal.md:421:  rejects hostile origins and wrong ports. Browser smoke now creates a real
+docs\loop-journal.md:425:  touched-file ESLint — exit 0; `npm run smoke:browser` — 2/2 passed.
+docs\loop-journal.md:432:- Failing scenario: the full `npm run playtest` run timed out at
+docs\loop-journal.md:441:- Evidence: `npm run playtest` — 13/13 scenarios; `npm run test:unit` — 73
+docs\loop-journal.md:458:- Implementation: the playtest runner validates and prints a JSON metrics
+docs\loop-journal.md:461:- Evidence: `npm run playtest` — 13/13 scenarios; `npm run test:unit` — 74
+docs\loop-journal.md:472:- Failing scenario: the new browser smoke completed movement-after-UI-click
+docs\loop-journal.md:475:- Scenario added: `browser-smoke.spec.mjs` drives a real built client and
+docs\loop-journal.md:480:  `PLAYER:MENU` request as legacy item grids. `npm run smoke:browser` builds the
+docs\loop-journal.md:482:- Evidence: `npm run smoke:browser` — 1/1; `npm run playtest` — 13/13;
+docs\loop-journal.md:503:- Evidence: `npm run playtest` — 14/14; `npm run test:unit` — 74 files and 506
+docs\loop-journal.md:522:  37 vs 9 damage while INT Frost Nova won 40 vs 10. `npm run playtest` passed
+docs\loop-journal.md:552:- Evidence: `npm run playtest` — 16/16 scenarios; `npm run test:unit` — 75
+docs\loop-journal.md:554:  exit 0; `npm run smoke:browser` — 1/1.
+docs\loop-journal.md:577:- Evidence: `npm run playtest` — 17/17 scenarios; `npm run test:unit` — 77
+docs\loop-journal.md:578:  files and 516 tests; `npm run lint` — exit 0; `npm run smoke:browser` — 1/1.
+docs\loop-journal.md:598:- Evidence: `npm run playtest` — 18/18 scenarios; `npm run test:unit` — 77
+docs\loop-journal.md:599:  files and 517 tests; `npm run lint` — exit 0; `npm run smoke:browser` — 1/1.
+docs\loop-journal.md:617:  text and applies live `quest:update` payloads. Browser smoke opens Quests
+docs\loop-journal.md:622:- Evidence: `npm run playtest` — 18/18 scenarios; `npm run test:unit` — 78
+docs\loop-journal.md:623:  files and 520 tests; `npm run lint` — exit 0; `npm run smoke:browser` — 1/1.
+docs\loop-journal.md:645:- Evidence: `npm run playtest -- session-arc` passed consecutive runs at
+docs\loop-journal.md:646:  100/100; final `npm run playtest` passed 18/18; `npm run test:unit` passed 78
+docs\loop-journal.md:647:  files and 521 tests; `npm run lint` exited 0; `npm run smoke:browser` passed
+docs\loop-journal.md:670:  smoke proves a 100-gold scion-to-House transfer updates both balances.
+docs\loop-journal.md:678:  `npm run lint:css` exited 0; `npm run playtest` passed 21/21 scenarios,
+docs\loop-journal.md:680:  `npm run smoke:browser` rebuilt production and passed 2/2 browser journeys.
+docs\loop-journal.md:693:- Browser smoke starts from the old persisted guest flag, proves account sign-in
+docs\loop-journal.md:697:  tests; `npm run smoke:browser` rebuilt production and passed 2/2 journeys;
+docs\loop-journal.md:698:  `npm run playtest -- quickstart` passed 1/1.
+docs\loop-journal.md:717:- Browser smoke now checks the immediate post-click render as well as rapid
+docs\loop-journal.md:721:  passed 85 files / 533 tests; `npm run smoke:browser` rebuilt production and
+docs\loop-journal.md:722:  passed 2/2 journeys; full `npm run playtest` passed 21/21 scenarios.
+docs\loop-journal.md:743:- Browser smoke now includes a 480 × 800 journey that opens the real Escape
+docs\loop-journal.md:752:  passed 85 files / 533 tests; `npm run smoke:browser` rebuilt production and
+docs\loop-journal.md:753:  passed 3/3 browser journeys; full `npm run playtest` passed 21/21 scenarios.
+docs\loop-journal.md:775:  `npm run smoke:browser` rebuilt production and passed 3/3 browser journeys;
+docs\loop-journal.md:776:  full `npm run playtest` passed 21/21 scenarios with a 100/100 session score.
+docs\loop-journal.md:795:  Wayfarers Chronicle. Browser smoke asserts the warning and rejects both old
+docs\loop-journal.md:815:- Proof: 541 unit tests, production browser smoke, focused persistence/build
+docs\loop-journal.md:816:  playtests, and the full 21-scenario goal harness pass.
+docs\ui-regression-checklist.md:22:  - Pixel edges remain crisp at 2x scale; no browser smoothing or stretching artifacts when resizing.
+docs\product\OPEN_DECISIONS.md:13:| OD-006 | How do relic recovery probabilities work? | Demonstrate one candidate and explicit loss; tune predictable/uncertain recovery from playtests. |
+docs\product\OPEN_DECISIONS.md:19:| OD-012 | What risk and destination rules govern fast travel/town portals? | Add travel as a command/presentation seam first; decide extraction, encounter, and cost rules from playtests. |
+orchestration\INCIDENTS.md:28:  build.ps1). Packet types MECHANICAL/BOUNDED-DESIGN/ARCHITECTURE.
+orchestration\INCIDENTS.md:53:## INC-007: Driver artifact read as product bug (0046 "silent combat")
+orchestration\INCIDENTS.md:68:- Collapsed one full playtest (10/31); stalled fleet twice.
+docs\vision.md:13:follow-up; the server systems and playtests for it are already live. One
+docs\vision.md:81:also clear readiness before they reach either client. The built-browser smoke
+docs\vision.md:88:suite, production build, every real-server playtest scenario, and the built-game
+docs\vision.md:94:   bosses, rewards, persistence, and playtest coverage for each arc.
+orchestration\INTEGRATION_LOG.md:8:2026-08-16 — TASK-0001-native-legends-records — worker `7ed844d8d5a9a6fb2f5a2d2ee9428c10b1cf7fad`; integrated as `5487778`. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` (native denylist, core tests, and client shell PASS). Independent validator `/root/validate_task_0001` ACCEPT; architect review ACCEPTED. Notes: bounded deterministic Legends records integrated in native core.
+orchestration\INTEGRATION_LOG.md:20:2026-08-16 — TASK-0007-native-skill-actions — worker `e7505ad`; integrated as `a832b2b`. Independent validator `/root/validate_task_0007` ACCEPT; architect review ACCEPTED. Verification: full native `-RunTests -RunClient` gate PASS. Notes: deterministic Thrust/Sweep/WarCry actions and resource economy integrated.
+orchestration\INTEGRATION_LOG.md:24:2026-08-16 — TASK-0009-client-skill-bindings — worker `629a1c0`; integrated in the dedicated integration worktree as `fe3173b` and preserved on the program branch as `0434ebb`. Independent validator `/root/validate_task_0009` ACCEPT; architect review `6ade261` ACCEPTED. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` (denylist, core tests, and client shell PASS); `git diff --check` PASS. Notes: Q/E/R now dispatch the authoritative Thrust/Sweep/WarCry actions with HUD resource/cooldown/buff state and procedural skill effects.
+orchestration\INTEGRATION_LOG.md:26:2026-08-16 — TASK-0010-native-actor-facing — worker `7e066aa`; integrated in the dedicated wave-6 integration worktree as `d6e48f4`. Independent validator `/root/validate_task_0010` ACCEPT; architect review `deb8ced` ACCEPTED. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` (denylist, core tests, and client shell PASS); `git diff --check` PASS. Notes: integer 8-way simulation-owned facing, appended AimIntent, forward-half-plane Thrust, monster pursuit facing, and quantized/throttled mouse aim are integrated.
+orchestration\INTEGRATION_LOG.md:28:2026-08-16 — TASK-0011-monster-skill-ai — worker `8c68aed`; integrated in the dedicated wave-7 integration worktree as `b6d8796` and preserved on the program branch as `c733945`. Independent validator `/root/validate_task_0011` ACCEPT; architect review `4ffbad0` ACCEPTED. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` (denylist, core tests, and client shell PASS); `git diff --check` PASS. Notes: elite monsters now use deterministic telegraphed Thrust/Sweep actions through the shared resolver with cancellation and non-elite cadence preservation.
+orchestration\INTEGRATION_LOG.md:32:2026-08-16 — TASK-0013-client-telegraph-rendering — worker `c2d62c3`; architect review `5cc9eaa` ACCEPTED; integrated in dedicated wave-8 worktree as `9ccb494` and preserved on the program branch as `cbdc85e`. Independent validator `/root/validate_task_0013` ACCEPT. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` (denylist, core tests, headless output, and Win32 client build PASS); `git diff --check` PASS. Notes: simulation telegraphs now render end to end in the native client; approximate private ranges remain explicitly presentation-only and are a future snapshot/query seam watch item.
+orchestration\INTEGRATION_LOG.md:34:2026-08-16 — TASK-0014-smoke-browser-repair — worker `b068964`; architect review `11a5325` ACCEPTED; integrated as `b068964`. Verification: `npm run smoke:browser` (1 passed, port 6500 released); `npm run test:e2e` (3 passed, port 6500 released); `git diff --check` PASS. Notes: D-105 lifecycle repair closes QUESTION-0003; the documented smoke gate now boots and tears down its server.
+orchestration\INTEGRATION_LOG.md:36:2026-08-16 — TASK-0015-core-presentation-catalog — worker `76ff52d`; architect review `2af6b2d` ACCEPTED; integrated as `76ff52d`. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests` (denylist and core tests PASS); `git diff --check` PASS; single-definition audit PASS. Notes: read-only presentation costs, ranges, telegraph timing, War Cry metadata, and resource regeneration now come from one native catalog source.
+orchestration\INTEGRATION_LOG.md:38:2026-08-16 — TASK-0016-native-billboard-experiment — worker `6d1b7d6`; architect review `42fd837` ACCEPTED; integrated on the program tip. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` PASS; driven billboard/fallback captures independently verified by the architect. Notes: runtime keyed plates and capsule fallback are now part of the native client lab.
+orchestration\INTEGRATION_LOG.md:46:2026-08-16 — TASK-0020-browser-disconnect-safety — revision `174d769` (source implementation `e5d87a5`); architect review `0c69920` ACCEPTED; integrated on the program tip as `b035b56`. Verification: full unit 744/744 and playtest 31/31. Notes: disconnect teardown now removes by player identity after persistence, preventing an old socket from deleting a replacement session during zone transitions.
+orchestration\INTEGRATION_LOG.md:48:2026-08-16 — TASK-0022-browser-25d-phase1 — revision `907024e` (source implementation `c17963b`); architect review `5efc48e` ACCEPTED; integrated as `705b6c3`, with required capture relocation finalized in `4533bc4`. Verification: `npm run test:unit` (115 files/744 tests), clean disposable `npm run playtest` (31/31), `npm run smoke:browser` (1/1), CSS/ESLint/diff checks PASS. Notes: ARPG camera/focus conformance, zero DoF at/below base zoom, neutral terrain fetch with lighting-pass grading, scoped legacy CSS grade, and flat foot/contact shadows; evidence lives in `orchestration/tasks/TASK-0022-browser-25d-phase1/captures/`.
+orchestration\INTEGRATION_LOG.md:50:2026-08-16 — TASK-0017-native-movement-feel — source `5b73a24`; architect review `f4ea440` ACCEPTED; integrated in isolated worktree as `ed1cd26`. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` (denylist, core tests, headless client, and Win32 client build PASS); `git diff --check` PASS. Notes: deterministic 50ms movement (220 u/s → 11 u/tick), readable dash, D-107 ARPG camera defaults and close-zoom perspective blend are integrated; TASK-0025 is unblocked.
+orchestration\INTEGRATION_LOG.md:52:2026-08-16 — TASK-0023-browser-25d-phase2 — source `48725e3`; architect review `c7293b9` ACCEPTED; integrated in isolated worktree as `864c497`. Verification: `npm run test:unit` (115 files/744 tests), `npm run smoke:browser` (1/1), production build, and complete `npm run playtest` (31/31); ESLint and diff check PASS. Notes: governing terrain haze curve and finite-edge ARPG horizon are integrated; Phase-3 lighting/atmosphere work is deferred to TASK-0024. A transient first-run gear-outcomes miss cleared on targeted and full reruns.
+orchestration\INTEGRATION_LOG.md:54:2026-08-16 — TASK-0025-instance-lifecycle-correctness — source `63df51f`; architect review `5204835` ACCEPTED; integrated as `621fdf5` in the combined TASK-0025/TASK-0026 worktree. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` PASS; YAML parse and `git diff --check` PASS. Notes: instance retirement now enforces stale-pickup boundaries, preserves surfaced recovery candidates exactly once, and delays route clear until the final living monster.
+orchestration\INTEGRATION_LOG.md:58:2026-08-16 — TASK-0024-browser-25d-phase3 — source `4e9274e` plus revision `0424e3a`; independent validator `/root/validate_task_0024_rev1` ACCEPT; architect review `837aa32` ACCEPTED. Integrated as `af6cfd2` plus `0135819`. Verification: `npm run test:unit` (115 files/744 tests), `npm run smoke:browser` (1/1), `npm run playtest` (31/31), and `git diff --check` PASS. Notes: Phase-3 lighting/atmosphere is anchored to Verdigris albedo with midday luminance above baseline, capped vignette, normalized cloud core, and recaptured evidence; architect carried the night HUD-orb compositing issue into TASK-0027 Phase 4.
+orchestration\INTEGRATION_LOG.md:60:2026-08-16 — TASK-0027-browser-25d-phase4 — source `c980cb1b`; independent scope validator ACCEPT; architect review ACCEPTED (Q5 closed, NaN clock-domain theory proven, deviations ratified). Integrated in dedicated worktree `codex/integrate-TASK-0027` as `d917113b`. Verification: `npm run test:unit` (116 files/747 tests), `npm run smoke:browser` (1/1), `npm run playtest` (31/31); clean integration worktree and captures preserved. Notes: orb RAF deltas are finite/clamped, the capture harness shares a clock domain, and DoF blur remains continuous; TASK-0029 Phase 5 is now unblocked.
+orchestration\INTEGRATION_LOG.md:62:2026-08-16 — TASK-0029-browser-25d-phase5 — source `a8993245`; independent scope validator ACCEPT; architect review ACCEPTED. Integrated in dedicated worktree `codex/integrate-TASK-0029` as `cd5b45e1`. Verification: `npm run test:unit` (117 files/750 tests), `npm run smoke:browser` (1/1; port 6500 released), and `npm run playtest` (31/31 on rerun; one initial gear-outcomes timing miss cleared without changing the assertion). Notes: cached sky gradients and shared billboard state reduce frame time while preserving visual parity; terrain context/teardown hardening is live. The 25D overhaul plan is complete per architect review.
+orchestration\INTEGRATION_LOG.md:64:2026-08-16 — TASK-0030-native-persistence — source `43b796e6` plus revision `94719ae6`; independent validator ACCEPT; architect review ACCEPTED. Integrated in dedicated worktree `codex/integrate-TASK-0030-0031` as `2b2140a2`. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests` (denylist and core tests PASS). Notes: versioned byte-stable snapshot/restore, RNG continuation, D-109 House landing with carried items, recovery pools, and atomic adapter are live.
+orchestration\INTEGRATION_LOG.md:68:2026-08-17 — TASK-0032-browser-d106-implementation — source `749cc4a6` plus revision `ac3a7216`; independent validator ACCEPT; architect review ACCEPTED. Integrated in dedicated worktree `codex/integrate-TASK-0032-latest` as `b952fdac` on Fable tip `96601378`. Verification: integration unit 118 files/757 tests PASS; clean rerun playtest 31/31 PASS; architect smoke 1/1 PASS; local smoke attempt encountered owner PM2 PID 10276 on port 6500 and was preserved. Notes: D-106 all-value death recovery, durable SQLite/JSON relic+trophy adapters, one-time instance requeue, JSON underfoot recovery, and D-109 failed-save queue are live.
+orchestration\INTEGRATION_LOG.md:70:2026-08-17 — TASK-0033-daytime-default — source `bf404b3d` plus revision `f409b99a`; independent validator ACCEPT; architect review ACCEPTED at Fable commit `0b12a0a`; integrated in dedicated worktree `codex/integrate-TASK-0033` as `b494c1fe` and `91f61d92`. Verification: full unit 119 files/761 tests PASS; production build PASS; pinned smoke reached the pre-existing owner listener on port 6500 but its API probe received SPA HTML, so the process was preserved. Notes: daytime is now default with opt-in persisted cycle and emitter lights retained.
+orchestration\INTEGRATION_LOG.md:74:2026-08-17 — TASK-0036-ui-regression-sweep — source `7c648a55`; architect review ACCEPTED; integrated on updated program base in `codex/integrate-0036-final` as `5cbf0165`. Verification: `npm run test:unit` (120 files/768 tests PASS), production build plus alternate-port browser smoke (1/1 PASS), inventory captures preserved, and isolated zone/movement checks PASS. Full batch playtest remained timing-sensitive in prior runs (`quest`/zone dev-state transitions), so no false 31/31 claim is made; the inventory-owned paths and browser-critical loop are green.
+orchestration\INTEGRATION_LOG.md:76:2026-08-17 — TASK-0035-native-exe-triage — source `809de7bb`, `e562ad1e`, `225078d1`; architect review ACCEPTED at Fable commit `91f2c210`; integrated in combined worktree `codex/integrate-0035-0037` as native chain through `092159d3`. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` (denylist, core tests, client shell, and literal `trophies stored: 1 | items stored: 1` PASS); direct failure-path evidence and captures preserved. Combined browser playtest was noisy after an encounter-variety transition; isolated relevant scenarios passed.
+orchestration\INTEGRATION_LOG.md:78:2026-08-17 — TASK-0037-movement-feel-rework — source `46c51412`, `33798746`, `64d57bc7`, `31413c99`, `15c1a531`; architect review ACCEPTED at Fable commit `91f2c210`; integrated in combined worktree `codex/integrate-0035-0037` as browser chain through `4a843ce3`. Verification: `npm run test:unit` (120 files/768 tests PASS), `npm run build` + alternate smoke (1/1 PASS), `git diff 6e277cf4 -- src/core/rendering/` empty, and isolated movement/encounter-variety reruns PASS. The full batch playtest was 7/31 due a server-side dev-state/transition failure after the first seven scenarios; this is recorded as harness variance rather than claimed green.
+orchestration\INTEGRATION_LOG.md:80:2026-08-17 — TASK-0040-first-encounter-readability — source `8abad0bf`, `cf9282c1`, `049be9b7`, `d30a1f1c`, `69995508`, `e0dacfc8`, `6295298a`; architect review ACCEPTED under QUESTION-0006 at `77d9f57e`; integrated in isolated worktree `codex/integrate-0040` (coordinator commits `0d748d23` through `52aff088`, metadata `fc3083e1`, final evidence `45286aca`). Verification: focused encounter/balance 16/16, clean integration unit 121 files/774 tests, exact direct-WASD/teleport regression and real WebSocket transcript PASS, `git diff --check` PASS. The shared full-playtest variance was ratified on evidence (exact-tip validator runs 17/31, 30/31, 28/31; affected isolated reruns PASS); TASK-0043 now owns harness stabilization. Notes: initial scene payload still exposes dormant actors client-side because filtering is outside TASK-0040 scope; D-115 hands-on play remains an owner follow-up.
+orchestration\INTEGRATION_LOG.md:82:2026-08-17 — TASK-0041-death-decision-moment — source `0e23e3bf`, `212a1e1c`, `14a6ceea`; architect review ACCEPTED at `40389099`; integrated in coordinator worktree `codex/integrate-0041` as `16293d7d`, `037045fa`, `cbab2ce4`. Verification: focused death suite 5/5, clean integration unit 122/779, production build, ESLint, Stylelint, diff-check, worker playtest 31/31, alternate browser gate 1/1, and real oathed/unoathed 1920×1080 JPEG captures. Notes: the D-106 death summary is now an input-capturing decision moment; default port 6500 smoke remained unclaimed because the preserved owner listener was intentionally not killed.
+orchestration\INTEGRATION_LOG.md:84:2026-08-17 — TASK-0041-death-decision-moment — worker source `0e23e3bf`, `212a1e1c`; coordinator validation worktree `codex/integrate-0041` as `5a493083`, `dfb41955`. Status: REVIEW_REQUESTED pending architect D-115 hands-on play. Verification: focused death suite 5/5 (14 assertions), clean integration unit 122/779, production build, ESLint, Stylelint, diff-check, worker playtest 31/31, and alternate browser gate 1/1 on port 6512. Default smoke was not claimed because preserved owner PID 10276 owns port 6500. Captures cover oathed and unoathed decisions; no Chronicles fork or persistence rewrite.
+orchestration\INTEGRATION_LOG.md:87:2026-08-17 — TASK-0043-playtest-harness-stabilization — revision `1da567aa`; architect review `1f833081` ACCEPTED; integrated at `1f470e3` and carried on program tip `50ca60ad`. Verification: three coordinator default-mode full runs and the architect's default-mode full run passed 31/31 under measured lag; authored deadlines remain floors, the 1.75x cap remains intact, and assertions were not loosened. Notes: loopback binds are now standing guidance after the documented Windows Firewall consent incident.
+orchestration\INTEGRATION_LOG.md:90:2026-08-17 — TASK-0038-combat-controls-rebinding — worker `c73fff1`; architect review `4d0be153` ACCEPTED; integrated as `2c0a00c3` and shipped in master PR #18 (`d687e004`). Verification: real rendered captures, attack-frame evidence, unit 788/788, and playtest 31/31. Notes: LMB/RMB attacks and persistent six-action rebinding are live; Shift+RMB preserves the context-menu contract.
+orchestration\INTEGRATION_LOG.md:95:2026-08-17 — TASK-0048-chronicles-silent-combat — worker `810ddd924`; architect review `d0e60e5e` ACCEPTED; integrated at `edc9c794` (program tip `1244b5bf`). Verification: real Chronicles WebSocket first-combat scenario, rendered first-kill capture, unit 788/788, focused 1/1, and architect full suite 32/32. Notes: the accepted silent-combat diagnosis was disproven as a non-contact driver artifact; future combat drivers must verify authoritative target contact. Mana rejection copy is queued for a later UI wave without balance changes.
+docs\rebuild\DELAFORD_COVERAGE_MATRIX.md:9:| Player walking / pathfinding | Covered | Native movement feel and browser movement gates; current full playtest movement passes. |
+docs\rebuild\DELAFORD_COVERAGE_MATRIX.md:12:| Inventory / character wear | Covered | Inventory, equipment, persistence, and current playtest gates. |
+docs\rebuild\DELAFORD_COVERAGE_MATRIX.md:13:| First quest | Covered | `first-goal`, `quest`, and full playtest campaign checks. |
+docs\rebuild\DELAFORD_COVERAGE_MATRIX.md:14:| Inventory / quests / chat / wear UI | Covered in browser reference | Focused UI tests and full playtest; presentation remains browser-track evidence, not native-core authority. |
+docs\rebuild\DELAFORD_COVERAGE_MATRIX.md:15:| NPC trading / banking / walking | Covered | Economy, town amenities, and full playtest gates. |
+docs\rebuild\DELAFORD_COVERAGE_MATRIX.md:19:| Networking: player trading | Covered as browser economy path | Trade/shop/bank playtest evidence; not yet a native multiplayer economy protocol. |
+docs\archive\fix-plan-2026-07-04.md:18:> production-built browser smoke test.
+docs\archive\fix-plan-2026-07-04.md:94:### 1d. Orb rendering artifacts
+docs\archive\fix-plan-2026-07-04.md:276:Manual loop with the dev server (`npm run dev`, client 5173, ws 6500 â€” do NOT
+orchestration\MODEL_SCORECARD.md:10:| Luna workers via codex CLI | evaluation/playtesting | 3 | 33% | 0 (honest incompletes) | honest but driver-error-prone (INC-007); needs G0 preconditions |
+orchestration\NOTES-mac-claude.md:15:- TASK-0062 (playtest flake triage): claimed by mistake — cursor's claim
+orchestration\NOTES-mac-claude.md:19:  reran `npm run test:unit` (134/841) and 3x full playtest
+orchestration\NOTES-mac-claude.md:30:  (rejects 6500). Demo script reproduces 0059's full 1366x768 compact
+orchestration\ONBOARDING-KIMI.md:43:- Browser-game changes additionally require `npm run playtest` (and
+orchestration\ONBOARDING-KIMI.md:44:  `npm run smoke:browser` for client/UI) before review requests.
+docs\rebuild\HANDOFF.md:34:- Gates: `build.ps1 -RunTests` green. Architect eyeballs one scene per
+docs\rebuild\HANDOFF.md:43:- Gates: `build.ps1 -RunTests` green (reconnect resume + replaced no-retry).
+docs\rebuild\HANDOFF.md:51:- Gates: `build.ps1 -RunTests -RunClientScenarios` green, including new
+docs\rebuild\HANDOFF.md:87:- Fixed a real Milestone D defect: `build.ps1` never defined
+docs\rebuild\HANDOFF.md:119:  and extraction controls; `--headless` provides a self-terminating smoke run.
+docs\rebuild\HANDOFF.md:184:- That candidate passes browser unit `122/779`, browser playtest `31/31`, the
+docs\rebuild\HANDOFF.md:195:  and `PLAYTEST_PORT=6538 npm run playtest` at `31/31` (`loadMode:false`,
+docs\rebuild\HANDOFF.md:218:`native/**`; `playtest/**`, `server/**`, and `src/**` remain read-only. Native
+docs\rebuild\HANDOFF.md:237:D-122 axis 1 is done: the unchanged 32-scenario playtest harness passes
+docs\rebuild\N3_PARITY_IMPLEMENTATION_BRIEF.md:5:browser server, `playtest/harness.mjs`, the native deterministic core, and the
+orchestration\ONBOARDING-SOL-ORCHESTRATOR.md:53:- **Axis 1, server/rules: DONE.** The unchanged 32-scenario playtest
+orchestration\ONBOARDING-SOL-ORCHESTRATOR.md:143:  harness.** `npm run playtest` for browser, the attach suite for
+orchestration\ONBOARDING-SOL-ORCHESTRATOR.md:151:  `PLAYTEST_WS_URL=ws://127.0.0.1:PORT node playtest/run.mjs --attach [scenarios]`.
+orchestration\ONBOARDING-SOL-ORCHESTRATOR.md:153:- **Native gates:** `powershell -File native/build.ps1 -RunTests -RunClientScenarios`.
+orchestration\ONBOARDING-SOL-ORCHESTRATOR.md:155:- **Loopback binds only. Port 6500 is the owner's and is untouchable.**
+orchestration\ORCHESTRATION-LEARNINGS.md:53:7. **Driver artifacts read as product bugs** (0046 "silent combat"):
+orchestration\ORCHESTRATION-LEARNINGS.md:76:(collapsed a full playtest run once; stalled the fleet again today).
+orchestration\ORCHESTRATION.md:76:  owner live server: 6500 (never touch) ·
+orchestration\ORCHESTRATION.md:77:  playtest default: 6510 (serialized — one full suite at a time per
+orchestration\ORCHESTRATION.md:86:G4 default owner path + owner-visible artifact (screenshots/playthrough) ·
+orchestration\ORCHESTRATION.md:98:task (calibration), anything modifying tests/playtest assertions.
+docs\rebuild\NATIVE_PRODUCT_CONVERGENCE.md:11:| 1. Server/rules parity | C++ server passes the UNCHANGED browser client + playtest harness | N1–N6 attach waves |
+docs\rebuild\NATIVE_PRODUCT_CONVERGENCE.md:94:shutdown; failure artifacts (logs, protocol transcript, final render
+docs\rebuild\PARITY_INTEGRATION_CANDIDATE_2026-08-17.md:18:- `playtest/**` (TASK-0043 harness/timing correction)
+docs\rebuild\PARITY_INTEGRATION_CANDIDATE_2026-08-17.md:28:- `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient`:
+docs\rebuild\PARITY_INTEGRATION_CANDIDATE_2026-08-17.md:47:- unchanged browser playtest: 31/31, runner exit 0;
+docs\rebuild\PARITY_ROADMAP.md:5:playtest harness, pointed at the C++ server.
+docs\rebuild\PARITY_ROADMAP.md:10:protocol on :6500, so the UNCHANGED web client and the UNCHANGED playtest
+docs\rebuild\PARITY_ROADMAP.md:18:- The playtest harness already encodes what "the current web version's
+docs\rebuild\PARITY_ROADMAP.md:29:1. **Protocol scenarios**: playtest matrix dual-run (JS vs C++);
+docs\rebuild\PARITY_ROADMAP.md:35:## Waves (each = tasks with the playtest scenarios it must turn green)
+orchestration\PROGRAM_GRAPH.md:17:| T7 Release hardening | Full regression, deterministic replay, lifecycle/long soak, clean-machine builds, asset/runtime manifests, save migration/recovery, upgrade/rollback, platform packaging and release gates |
+orchestration\PROGRAM_GRAPH.md:85:| Packaging | 0092, 0094, 0099 | packaging/launcher releases after dependencies | owner-playable build, clean-machine launch, Windows/macOS delivery |
+orchestration\PROGRAM_GRAPH.md:86:| Release/migration | 0120 | 0126, 0127 | clean-machine, soak, save migration/recovery, upgrade/rollback, release evidence |
+orchestration\PROGRAM_GRAPH.md:125:    soak, and failure artifacts form the release ladder.
+orchestration\PROGRAM_GRAPH.md:131:    clean-machine inventory precede installer/signing/notarization. Those
+orchestration\PROGRAM_GRAPH.md:148:18. **Release convergence**: clean-machine packaging and save migration matrices
+orchestration\PROTOCOL.md:99:- Browser-game changes still require the repo's `npm run playtest` gate;
+orchestration\REENTRY-CLAUDE-MAC.md:7:run `npm ci` once if node_modules is missing. Read IN ORDER at the
+orchestration\REENTRY-CLAUDE-MAC.md:17:- Browser gates (`npm run test:unit`, `npm run playtest`,
+orchestration\REENTRY-CLAUDE-MAC.md:18:  `npm run smoke:browser`) run fine on macOS — run them all, default
+orchestration\REENTRY-CLAUDE-MAC.md:38:never weaken playtest assertions; never merge program/master; never
+orchestration\REENTRY-CURSOR.md:18:captures; loopback only; never port 6500; never weaken the harness.
+orchestration\questions\QUESTION-0001-cmake-presets-toolchain.md:14:`cmake` is not available on `PATH`.
+orchestration\questions\QUESTION-0001-cmake-presets-toolchain.md:18:- `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` passes in
+orchestration\questions\QUESTION-0001-cmake-presets-toolchain.md:20:- `cmake --list-presets --preset-dir native` cannot run from `PATH`.
+orchestration\questions\QUESTION-0003-smoke-browser-server-bootstrap.md:8:# Standalone browser smoke command does not boot its server
+orchestration\questions\QUESTION-0003-smoke-browser-server-bootstrap.md:12:Should `npm run smoke:browser` be repaired so it starts the production/dev
+orchestration\questions\QUESTION-0003-smoke-browser-server-bootstrap.md:14:`npm run test:e2e` as the sole browser smoke gate and retire the standalone
+orchestration\questions\QUESTION-0003-smoke-browser-server-bootstrap.md:19:- `npm run smoke:browser` completed its Vite build, then failed at
+orchestration\questions\QUESTION-0003-smoke-browser-server-bootstrap.md:21:  `http://127.0.0.1:6500/`.
+orchestration\questions\QUESTION-0003-smoke-browser-server-bootstrap.md:22:- `package.json` defines `smoke:browser` as `npm run build && playwright test`,
+orchestration\questions\QUESTION-0003-smoke-browser-server-bootstrap.md:24:- `npm run test:e2e` uses `start-server-and-test start:e2e http://127.0.0.1:6500
+orchestration\questions\QUESTION-0003-smoke-browser-server-bootstrap.md:29:1. Repair `smoke:browser` to use the same server lifecycle as `test:e2e`
+orchestration\owner-input\OI-008-owner-content-approvals.md:11:dependency deadline, two viable alternatives, exact artifact/source, and a
+orchestration\REENTRY-DEEPSEEK.md:20:STATUS.md. Never merge program/master, edit peer evidence, touch port 6500,
+docs\rebuild\RECONSTITUTION_STATUS.md:45:- TASK‑0043 playtest harness stabilization: `ACCEPTED` and integrated at
+docs\rebuild\RECONSTITUTION_STATUS.md:46:  `1f470e3` (program tip `50ca60ad`); current-tip unit/build/full-playtest/
+docs\rebuild\RECONSTITUTION_STATUS.md:47:  browser-smoke evidence is green. Report:
+docs\rebuild\RECONSTITUTION_STATUS.md:48:  [`TASK-0043 REPORT`](../../orchestration/tasks/TASK-0043-playtest-harness-stabilization/REPORT.md).
+docs\rebuild\RECONSTITUTION_STATUS.md:65:  WS frame log, unit 788/788, smoke 1/1, and playtest 31/31. Shift+RMB keeps
+docs\rebuild\RECONSTITUTION_STATUS.md:96:  merge): native `build.ps1 -RunTests` passed denylist/core/networking tests;
+docs\rebuild\RECONSTITUTION_STATUS.md:101:  native `build.ps1 -RunTests` PASS; browser unit `npm run test:unit` PASS
+docs\rebuild\RECONSTITUTION_STATUS.md:112:  boot smoke also passed. Evidence:
+docs\rebuild\RECONSTITUTION_STATUS.md:115:- Isolated full browser playtest: prior clean checkpoints passed 31/31; the
+docs\rebuild\RECONSTITUTION_STATUS.md:119:- Fresh coordinator full playtest at the current source-equivalent tip also
+docs\rebuild\RECONSTITUTION_STATUS.md:121:  [`coordinator-fresh-full-playtest-2026-08-17.txt`](../../orchestration/tasks/TASK-0043-playtest-harness-stabilization/captures/coordinator-fresh-full-playtest-2026-08-17.txt).
+docs\rebuild\RECONSTITUTION_STATUS.md:122:- Browser-critical Playwright smoke: 1/1 passed on an isolated port.
+docs\rebuild\RECONSTITUTION_STATUS.md:146:  browser unit 122/779, unchanged browser playtest 31/31, native gate PASS,
+orchestration\REENTRY-LUNA-MAC.md:15:- Browser/JS, docs, audits, profiling. The playtest suite runs on Mac
+orchestration\REENTRY-LUNA-MAC.md:16:  (node); use YOUR ports only, loopback binds, never 6500.
+orchestration\REENTRY-OX-ALPHA-PC.md:41:| ox-pc-g | `Z:\Code\.worktrees\verdigris\ox-pc-g` | `codex/TASK-0132-clean-machine-harness-contract-ox-pc-g` | TASK-0132 |
+orchestration\REENTRY-OX-ALPHA-PC.md:91:Never touch port 6500, non-loopback binds, peer task files, peer processes,
+orchestration\RUN_STATUS.md:105:| ox-pc-g | 6740-6759 | new isolated worktree launch requested | TASK-0132 clean-machine harness contract |
+orchestration\RUN_STATUS.md:131:with `npm ci`, granted read-only access only to the lane's external Git metadata,
+orchestration\RUN_STATUS.md:195:- Port 6500 remains owner-only; every worker uses only its loopback capsule.
+orchestration\RUN_STATUS.md:214:| P0 | TASK-0132 clean-machine harness contract | INDEPENDENT / ARCHITECTURE | future after current claim | separates cached developer success from disposable-host proof |
+orchestration\RUN_STATUS.md:266:| TASK-0126 clean-machine release harness | 0092 + 0094 + 0099 + 0120 accepted |
+orchestration\STANDING-LOOP.md:22:   loopback binds, never port 6500.
+orchestration\STANDING-LOOP.md:72:6500; weakening playtest assertions; claiming work you have not run.
+orchestration\tasks\TASK-0002-build-ci-hardening\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests -RunClient; cmake --list-presets --preset-dir native
+orchestration\tasks\TASK-0003-slice-verification-harness\SPEC.md:88:- No visual-regression screenshots (optional artifacts are welcome but not
+orchestration\tasks\TASK-0002-build-ci-hardening\SPEC.md:11:  - native/build.ps1
+orchestration\tasks\TASK-0002-build-ci-hardening\SPEC.md:26:  - powershell -File native/build.ps1 -RunTests -RunClient
+orchestration\tasks\TASK-0002-build-ci-hardening\SPEC.md:36:`build.ps1` hardcodes two vcvars paths (2019/2017 BuildTools) and each MSVC
+orchestration\tasks\TASK-0002-build-ci-hardening\SPEC.md:46:- `build.ps1` remains the one-command Windows entry; its three modes
+orchestration\tasks\TASK-0002-build-ci-hardening\SPEC.md:47:  (default build, `-RunTests`, `-RunClient` headless) keep working.
+orchestration\tasks\TASK-0002-build-ci-hardening\SPEC.md:53:- `native/build.ps1`, `native/CMakeLists.txt`, `native/README.md`.
+orchestration\tasks\TASK-0002-build-ci-hardening\SPEC.md:59:1. `build.ps1`: locate MSVC via `vswhere.exe` when present
+orchestration\tasks\TASK-0002-build-ci-hardening\SPEC.md:73:   `cmake --preset` works on Windows/macOS/Linux.
+orchestration\tasks\TASK-0002-build-ci-hardening\SPEC.md:77:   build.ps1, so the workflow also proves the CMake path that macOS will
+orchestration\tasks\TASK-0002-build-ci-hardening\SPEC.md:79:5. Suppress or bypass the harmless vswhere stderr noise in build.ps1 output.
+orchestration\tasks\TASK-0002-build-ci-hardening\SPEC.md:90:- Updated `native/build.ps1`, new `native/CMakePresets.json`,
+orchestration\tasks\TASK-0002-build-ci-hardening\SPEC.md:98:- `powershell -File native/build.ps1 -RunTests -RunClient` exits 0 on the
+orchestration\tasks\TASK-0002-build-ci-hardening\SPEC.md:101:- `cmake --list-presets` shows the new presets and a local
+orchestration\tasks\TASK-0002-build-ci-hardening\SPEC.md:102:  `cmake --preset windows-msvc` configure succeeds (build may be exercised
+orchestration\tasks\TASK-0002-build-ci-hardening\SPEC.md:111:powershell -File native/build.ps1 -RunTests -RunClient
+orchestration\tasks\TASK-0002-build-ci-hardening\SPEC.md:112:cmake --list-presets --preset-dir native  # or equivalent from native/
+orchestration\tasks\TASK-0002-build-ci-hardening\REVIEW.md:23:- Reconfirmed: `build.ps1 -RunTests -RunClient` exits 0 (denylist, tests,
+orchestration\tasks\TASK-0002-build-ci-hardening\REVIEW.md:34:presets schema v3; no `cmake` on PATH), and the preserved uncommitted work
+orchestration\tasks\TASK-0002-build-ci-hardening\REVIEW.md:57:3. The `.github/workflows/native.yml` job uses `cmake --preset default`
+orchestration\tasks\TASK-0002-build-ci-hardening\REVIEW.md:63:   `build.ps1 -RunTests -RunClient` acceptance run.
+orchestration\tasks\TASK-0002-build-ci-hardening\REVIEW.md:80:verified on this machine: `build.ps1 -RunTests -RunClient` exits 0 with the
+orchestration\tasks\TASK-0002-build-ci-hardening\REVIEW.md:89:   ship VS2022, so the CI job's `cmake --preset windows-msvc` will fail.
+orchestration\tasks\TASK-0002-build-ci-hardening\REVIEW.md:104:- `powershell -File native/build.ps1 -RunTests -RunClient` → denylist PASS,
+orchestration\tasks\TASK-0003-slice-verification-harness\REPORT.md:94:drift probe preserves the committed artifact, and found no scope violations.
+orchestration\tasks\TASK-0002-build-ci-hardening\REPORT.md:30:- `native/build.ps1` preserves vswhere discovery/fallback, the Windows define
+orchestration\tasks\TASK-0002-build-ci-hardening\REPORT.md:40:- `powershell -File native/build.ps1 -RunTests -RunClient`: denylist, core
+orchestration\tasks\TASK-0002-build-ci-hardening\REPORT.md:52:- `native/build.ps1`: vswhere discovery, edition-aware fallback, clear probe
+orchestration\tasks\TASK-0002-build-ci-hardening\REPORT.md:64:- `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient`: PASS.
+orchestration\tasks\TASK-0002-build-ci-hardening\REPORT.md:67:- `cmake` is not on `PATH`.
+orchestration\tasks\TASK-0002-build-ci-hardening\REPORT.md:72:`orchestration/questions/QUESTION-0001-cmake-presets-toolchain.md` records
+orchestration\tasks\TASK-0002-build-ci-hardening\REPORT.md:83:The repository does not provide `cmake` on PATH, so local preset evidence uses
+orchestration\tasks\TASK-0002-build-ci-hardening\REPORT.md:102:2. In `native/build.ps1`, prepend the VS Installer directory to the spawned
+orchestration\tasks\TASK-0002-build-ci-hardening\REPORT.md:115:at `cmake -S native --preset windows-msvc` because `NMake Makefiles` requires
+orchestration\tasks\TASK-0002-build-ci-hardening\REPORT.md:131:`build.ps1 -RunTests -RunClient`, YAML parse, diff-check, and no-vswhere-noise
+orchestration\tasks\TASK-0002-build-ci-hardening\REPORT.md:144:- `native/build.ps1`
+orchestration\tasks\TASK-0002-build-ci-hardening\REPORT.md:150:The Windows entrypoint remains `native/build.ps1`; schema-v2 configure,
+orchestration\tasks\TASK-0002-build-ci-hardening\REPORT.md:170:the runner's MSVC environment; the local build.ps1 path remains independent.
+orchestration\tasks\TASK-0004-native-client-direct-control\REPORT.md:28:powershell -NoProfile -File native/build.ps1 -RunTests -RunClient
+orchestration\tasks\TASK-0004-native-client-direct-control\REPORT.md:56:  `native/client/direct-control-captures/` and are evidence artifacts, not
+orchestration\tasks\TASK-0008-denylist-hardening\REPORT.md:22:`.c`, `.cc`, `.cmake`, `.cpp`, `.cxx`, `.h`, `.hpp`, `.js`, `.json`, `.ps1`,
+orchestration\tasks\TASK-0008-denylist-hardening\REPORT.md:51:- `powershell -NoProfile -File native/build.ps1 -RunTests`: denylist PASS,
+orchestration\tasks\TASK-0004-native-client-direct-control\REVIEW.md:11:independent `build.ps1 -RunTests -RunClient` run (denylist, tests, headless
+orchestration\tasks\TASK-0008-denylist-hardening\REVIEW.md:36:   allowlist entry will be an explicit review artifact. No change needed.
+orchestration\questions\QUESTION-0005-task-0027-orb-clock-domain.md:68:   captures cannot manufacture this artifact.
+orchestration\tasks\TASK-0007-native-skill-actions\REPORT.md:44:powershell -NoProfile -File native/build.ps1 -RunTests — PASS
+orchestration\tasks\TASK-0010-native-actor-facing\REPORT.md:44:- `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` — PASS.
+orchestration\questions\QUESTION-0006-task-0040-playtest-timing-ratification.md:1:# QUESTION-0006 — TASK-0040 full-playtest timing ratification
+orchestration\questions\QUESTION-0006-task-0040-playtest-timing-ratification.md:7:May the owner ratify the documented full `npm run playtest` timing variance
+orchestration\questions\QUESTION-0006-task-0040-playtest-timing-ratification.md:28:   gates; track the shared playtest scheduler/poll quantization separately.
+orchestration\tasks\TASK-0007-native-skill-actions\REVIEW.md:11:`build.ps1 -RunTests` rerun in the worker worktree (denylist PASS, all
+orchestration\tasks\TASK-0004-native-client-direct-control\SPEC.md:16:  - native/build.ps1
+orchestration\tasks\TASK-0004-native-client-direct-control\SPEC.md:21:  - powershell -File native/build.ps1 -RunTests -RunClient
+orchestration\tasks\TASK-0004-native-client-direct-control\SPEC.md:27:uses whatever build.ps1 exists on the worker's base.
+orchestration\tasks\TASK-0004-native-client-direct-control\SPEC.md:54:- `--headless` behavior and output must remain byte-compatible (the smoke
+orchestration\tasks\TASK-0004-native-client-direct-control\SPEC.md:92:- `build.ps1 -RunTests -RunClient` exits 0 (build, tests, denylist,
+orchestration\tasks\TASK-0004-native-client-direct-control\SPEC.md:102:powershell -File native/build.ps1 -RunTests -RunClient
+orchestration\tasks\TASK-0008-denylist-hardening\STATUS.md:10:expected_verification: python native/tools/check_legacy_denylist.py; python native/tools/check_legacy_denylist.py --self-test; powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0008-denylist-hardening\SPEC.md:24:  - powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0008-denylist-hardening\SPEC.md:60:   text, cmake, ps1 — pick the concrete extension list and document it),
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:12:forbidden_paths: [native/**, server/**, src/**, playtest/**, credentials, external accounts, release publication]
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:22:artifact/hash/installer/update/rollback evidence from owner-only certificate,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:29:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0134-distribution-signing-boundary/distribution-boundary.json','utf8'));for(const k of ['schema_version','artifacts','hashes','installer','update','rollback','machine_actions','owner_actions','handoff'])if(!(k in j))throw Error('missing '+k);console.log('distribution boundary: PASS')"
+orchestration\tasks\TASK-0006-native-relic-reentry\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0006-native-relic-reentry\SPEC.md:17:  - native/build.ps1
+orchestration\tasks\TASK-0006-native-relic-reentry\SPEC.md:23:  - powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0006-native-relic-reentry\SPEC.md:86:- `native/build.ps1 -RunTests` exits 0 with new tests green.
+orchestration\tasks\TASK-0006-native-relic-reentry\SPEC.md:102:powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0006-native-relic-reentry\REVIEW.md:12:`build.ps1 -RunTests` rerun in the worker worktree (denylist PASS, all
+orchestration\tasks\TASK-0006-native-relic-reentry\REPORT.md:21:powershell -NoProfile -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:12:forbidden_paths: [native/**, server/**, src/**, playtest/**, persistent user data]
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:32:rg -n 'schemaVersion|migration|rollback|backup|SQLite|persist|save|guest-save-store|profile' native server docs playtest orchestration -g '*.cpp' -g '*.hpp' -g '*.js' -g '*.mjs' -g '*.md'
+orchestration\tasks\TASK-0026-native-ci-path-filter\STATUS.md:23:integration_verification: powershell -NoProfile -File native/build.ps1 -RunTests -RunClient PASS; YAML parse PASS; git diff --check PASS
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:1:# VALIDATION — TASK-0132 clean-machine harness contract
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:9:Static validation of the contract artifacts produced by this task, plus the
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:11:clean-machine run: per the SPEC stop conditions, no platform is claimed as
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:19:| Contract parses and carries every mandatory stage key | `node -e "…clean-machine-contract.json…"` | PASS, exit 0 |
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:21:| Repo-wide keyword survey for contract vocabulary | `rg -n 'npm ci|cmake|build.ps1|RunTests|RunClientScenarios|playtest|smoke|6500|clean.machine|artifact' …` | ran; exit 0; see REPORT |
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:39:| NEG-008 | any reference or listener on port 6500 | port invariant sweep | FORBIDDEN_PORT_6500 |
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:43:expected errors and labels the run `clean_machine_verified`.
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:45:## Cached developer success vs clean machine (decision procedure)
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:47:The contract's `clean_machine_decision` block is normative: D-1 through D-6.
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:48:Summary — a green counts as clean-machine evidence only when the host was
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:53:and zero contact with port 6500 (D-5). Everything else is labeled
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:56:`clean_machine_verified` run manifest.
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:58:## Port 6500 enforcement points
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:60:Port 6500 is forbidden at four independent layers so no single missed check
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:63:NEG-008 must reproduce the failure, (4) `clean_machine_decision` D-5 refuses
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:64:the label if any contact with 6500 is observed. Severity is P0 and never
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:70:  artifact, not an executed proof. Stop condition honored rather than claiming
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\VALIDATION.md:75:  for `native/build.ps1` that belongs to the implementing harness task.
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\STATUS.md:7:- worker branch: `codex/TASK-0132-clean-machine-harness-contract-ox-pc-g`
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\STATUS.md:11:- ports: 6740-6759 reserved for this lane (loopback only; port 6500 untouched)
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\STATUS.md:28:  RUN_STATUS.md effective READY table row "TASK-0132 clean-machine harness
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\STATUS.md:31:  `codex/TASK-0132-clean-machine-harness-contract-ox-pc-g`, HEAD `b3599c80`,
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\STATUS.md:35:  `codex/TASK-0132-clean-machine-harness-contract-ox-pc-g` sits at the same
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\SPEC.md:11:owned_paths: [orchestration/tasks/TASK-0132-clean-machine-harness-contract/**]
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\SPEC.md:12:forbidden_paths: [native/**, server/**, src/**, playtest/**, CI or machine mutation]
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\SPEC.md:20:Produce `clean-machine-contract.json`, `VALIDATION.md`,
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\SPEC.md:22:dependency, toolchain, build, test, launch, smoke, cleanup, artifact, cache,
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\SPEC.md:25:machine and must keep port 6500 forbidden.
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\SPEC.md:30:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0132-clean-machine-harness-contract/clean-machine-contract.json','utf8'));for(const k of ['schema_version','checkout','toolchain','dependencies','build','tests','launch','smoke','cleanup','artifacts','platform_matrix'])if(!(k in j))throw Error('missing '+k);console.log('clean-machine contract: PASS')"
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\SPEC.md:31:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0132-clean-machine-harness-contract/fixtures/negative-cases.json','utf8'));for(const k of ['DIRTY_BASE','CACHE_LEAK','MISSING_TOOLCHAIN','DEPENDENCY_DRIFT','NONZERO_STAGE','LEAKED_PROCESS','NON_LOOPBACK_BIND','FORBIDDEN_PORT_6500'])if(!j.cases.some(x=>x.expected_error===k))throw Error('missing '+k);console.log('clean-machine negatives: PASS')"
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\SPEC.md:32:rg -n 'npm ci|cmake|build.ps1|RunTests|RunClientScenarios|playtest|smoke|6500|clean.machine|artifact' .github native docs package.json orchestration -g '*.yml' -g '*.yaml' -g '*.md' -g '*.ps1' -g '*.json'
+orchestration\tasks\TASK-0004-native-client-direct-control\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests -RunClient; driven-input pass with logged assertions/captures
+orchestration\tasks\TASK-0001-native-legends-records\REVIEW.md:12:`powershell -File native/build.ps1 -RunTests` in the worker worktree
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\fixtures\negative-cases.json:3:  "purpose": "Negative control fixtures for the clean-machine harness contract. Each case describes an injected fault, the stage that must detect it, the detection predicate, and the expected_error code the harness must report. A validator must be able to reproduce every case deterministically and must fail if any case produces a green.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\fixtures\negative-cases.json:4:  "contract_ref": "orchestration/tasks/TASK-0132-clean-machine-harness-contract/clean-machine-contract.json",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\fixtures\negative-cases.json:23:      "expected_behavior": "Even with all stages exiting zero, the run is rejected as clean-machine evidence with CACHE_LEAK; it may only be labeled developer_local.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\fixtures\negative-cases.json:31:      "injection": "Run on a host image with cmake removed from PATH (or node absent).",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\fixtures\negative-cases.json:41:      "injection": "After npm ci completes, add an extraneous package to node_modules (for example npm install left-pad@1.3.0 --no-save) or delete an installed package directory.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\fixtures\negative-cases.json:51:      "injection": "Inject a failing assertion into one deterministic unit test (or force native/build.ps1 -RunTests to fail by breaking a fixture).",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\fixtures\negative-cases.json:78:      "expected_error": "FORBIDDEN_PORT_6500",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\fixtures\negative-cases.json:81:      "injection": "Set the server (or smoke client) target port to 6500 — the owner-reserved live server port — via config, command line, or environment default.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\fixtures\negative-cases.json:82:      "detection": "Any launch argument, configuration value, environment default, or observed listener references port 6500, regardless of bind address.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\fixtures\negative-cases.json:83:      "expected_behavior": "The run fails with FORBIDDEN_PORT_6500 before or at launch; this failure is never waivable and is reported at P0 on every platform.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\fixtures\negative-cases.json:90:    "Positive control: the unmodified pipeline on a fresh disposable host must produce zero expected_error codes and label the run clean_machine_verified."
+orchestration\tasks\TASK-0001-native-legends-records\REPORT.md:45:powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0001-native-legends-records\REPORT.md:82:`powershell -File native/build.ps1 -RunTests`, confirmed denylist and core test
+orchestration\tasks\TASK-0001-native-legends-records\SPEC.md:17:  - native/build.ps1
+orchestration\tasks\TASK-0001-native-legends-records\SPEC.md:24:  - powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0001-native-legends-records\SPEC.md:86:  if a new file cannot be added without touching CMake/build.ps1, extend
+orchestration\tasks\TASK-0001-native-legends-records\SPEC.md:92:- `native/build.ps1 -RunTests` exits 0: build clean, denylist PASS, all
+orchestration\tasks\TASK-0001-native-legends-records\SPEC.md:103:powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0009-client-skill-bindings\REPORT.md:40:- `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` — PASS
+orchestration\tasks\TASK-0009-client-skill-bindings\REPORT.md:78:`0434ebb`. The integrated native gate (`native/build.ps1 -RunTests
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:4:    "name": "verdigris-clean-machine-harness",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:7:    "purpose": "Define the deterministic stage contract a future disposable-host execution harness must satisfy before any Verdigris green counts as clean-machine evidence rather than cached developer success.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:8:    "audience": "Implementers of the future clean-machine release harness (successor to TASK-0126 planning; consumes TASK-0092, TASK-0094, TASK-0099, TASK-0120 outcomes).",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:16:      "clean_machine_run": "A run on a disposable host whose workspace was freshly cloned at a pinned commit, whose caches started cold or carry complete provenance, and which produced the full evidence bundle defined by this contract.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:17:      "cached_developer_success": "Any green produced on a long-lived developer machine with warm caches, pre-built artifacts, or manually installed state. It is valid developer feedback and is NEVER clean-machine evidence.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:25:      "INV-3: A green is clean-machine evidence only when produced on a disposable host under a fresh checkout with cache provenance recorded; all other greens are cached developer success.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:26:      "INV-4: All network binds are 127.0.0.1 only; all ports come from the lane capsule; port 6500 is owner-reserved and forbidden to every harness stage on every platform.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:53:        "log_ref": { "type": "string", "description": "Reference to the captured raw log artifact." },
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:77:      "clone log artifact"
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:91:      "cmake --version (native builds)",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:98:      "cmake": { "policy": "recorded; required only when native stage enabled" },
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:116:      "npm ci --no-audit --no-fund",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:121:      "npm ci exit code and log",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:133:    "purpose": "Make every cache use auditable so cached developer success can never masquerade as clean-machine proof.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:136:      "CACHE-1: A clean-machine run must record, for every optional cache, either a cold-miss (populated during this run) or a hit with full provenance: key, source, content hash, and the producing run id.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:137:      "CACHE-2: The first run on any new base image must be executed with all caches disabled; its artifacts seed the cache and its evidence is the only clean-machine baseline for that image.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:138:      "CACHE-3: A cache hit without provenance is a CACHE_LEAK: the run is invalid as clean-machine evidence even if every stage exits zero.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:155:      "powershell -File native/build.ps1 (native target, no test flags)"
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:159:      "artifact directory listing with sizes",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:173:      "powershell -File native/build.ps1 -RunTests",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:202:      "FORBIDDEN_PORT_6500 failure if any launch argument, config, or observed listener references port 6500"
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:204:    "failure_modes": ["NON_LOOPBACK_BIND", "FORBIDDEN_PORT_6500"],
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:207:  "smoke": {
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:208:    "id": "smoke",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:211:    "determinism": "One fixed smoke scenario per platform row; assertions are hard-fail (non-zero exit unless every on-screen/protocol assertion holds).",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:213:      "PLAYTEST_WS_URL=ws://127.0.0.1:<capsule port> node playtest/run.mjs --attach <smoke set>",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:214:      "browser lane: npm run smoke:browser (only where the platform row declares it)"
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:218:      "screenshot or protocol transcript artifact per scenario",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:251:    "purpose": "Enforce capsule-only, loopback-only port usage and the absolute ban on port 6500.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:256:      "PORT-3: Port 6500 (owner live server) is forbidden in every config, command line, environment default, and observed listener, on every platform, for every lane.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:257:      "PORT-4: The playtest default port 6510 may be used only by a full-suite run that holds the machine-wide serialization lease."
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:262:      "FORBIDDEN_PORT_6500 failure is always severity P0 and never waivable"
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:264:    "failure_modes": ["NON_LOOPBACK_BIND", "FORBIDDEN_PORT_6500"],
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:284:  "artifacts": {
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:285:    "id": "artifacts",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:289:      "path": "artifacts/run-manifest.json",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:300:        "artifact file list with SHA-256 hashes"
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:305:      "ART-2: Every artifact is hashed; the manifest carries the hashes.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:317:      "toolchain": ["node", "npm", "git", "cmake", "pwsh", "MSVC toolset"],
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:318:      "gates": ["checkout", "toolchain", "dependencies", "cache", "build", "tests", "launch", "smoke", "process", "port", "cleanup", "artifacts"],
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:320:      "notes": "Native build via native/build.ps1; full playtest suite requires the 6510 serialization lease."
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:326:      "toolchain": ["node", "npm", "git", "cmake", "pwsh or bash adapter", "C++ toolchain"],
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:327:      "gates": ["checkout", "toolchain", "dependencies", "cache", "build", "tests", "launch", "smoke", "process", "port", "cleanup", "artifacts"],
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:329:      "notes": "native/build.ps1 requires a pwsh or ported adapter; do not claim coverage without a recorded run."
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:335:      "toolchain": ["node", "npm", "git", "cmake", "pwsh or bash adapter", "Xcode CLT"],
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:336:      "gates": ["checkout", "toolchain", "dependencies", "cache", "build", "tests", "launch", "smoke", "process", "port", "cleanup", "artifacts"],
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:341:  "clean_machine_decision": {
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:342:    "purpose": "Single decision procedure separating clean-machine proof from cached developer success.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:348:      "D-5: Did process/port verification prove no leaks, loopback-only binds, capsule-only ports, and zero contact with port 6500? If no -> LEAKED_PROCESS / NON_LOOPBACK_BIND / FORBIDDEN_PORT_6500, invalid.",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:349:      "D-6: Only when D-1 through D-5 all hold is the run labeled clean_machine_verified; anything else is developer_local evidence."
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\clean-machine-contract.json:351:    "labels": ["clean_machine_verified", "developer_local", "invalid"]
+orchestration\tasks\TASK-0001-native-legends-records\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0009-client-skill-bindings\REVIEW.md:11:`build.ps1 -RunTests -RunClient` (all gates green), and my own PostMessage
+orchestration\tasks\TASK-0009-client-skill-bindings\SPEC.md:16:  - native/build.ps1
+orchestration\tasks\TASK-0009-client-skill-bindings\SPEC.md:21:  - powershell -File native/build.ps1 -RunTests -RunClient
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:295:| Delaford-derived identifiers without the literal word (`town:old-wood`, `zone:fenmire`, `dungeon:barrow-depths`, `delafordGuest`) | `server/core/world-layout.js:10-17`; guest namespace `server/player/playtest-guest.js:1-35` | `Delaford` is caught only when the literal substring is present; the old zone names and compound IDs are absent from `config/legacy-denylist.json:3-13`. |
+orchestration\tasks\TASK-0009-client-skill-bindings\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests -RunClient; PostMessage-driven Q/E/R client pass
+orchestration\tasks\TASK-0009-client-skill-bindings\STATUS.md:21:integration_verification: powershell -NoProfile -File native/build.ps1 -RunTests -RunClient; git diff --check
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:12:forbidden_paths: [native/**, server/**, src/**, playtest/**, deployment actions, signing credentials]
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:22:source head, commands/exit codes, environment identity, artifacts/hashes,
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:25:stand in for artifacts. No build, deployment, installer, signing, notarization,
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:31:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0131-release-proof-manifest/release-proof-manifest.json','utf8'));for(const k of ['schema_version','source_head','commands','environment','artifacts','platform_coverage','rollback','owner_actions','verdict'])if(!(k in j))throw Error('missing '+k);console.log('release proof manifest: PASS')"
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:33:rg -n 'release|artifact|installer|sign|notari|rollback|deploy|workflow_dispatch' .github native docs orchestration -g '*.yml' -g '*.yaml' -g '*.md' -g '*.ps1'
+orchestration\tasks\TASK-0058-native-protocol-n6\SPEC.md:11:  - playtest/** ; server/**, src/** read-only
+orchestration\tasks\TASK-0130-gate-c-decision-envelope\SPEC.md:17:  - playtest/**
+orchestration\tasks\TASK-0130-gate-c-decision-envelope\SPEC.md:57:rg -n 'world:road:chart|world:zone:enter|nodeId|warden|trophy|depth|stairs|extract' native/src/networking.cpp native/tests/networking_tests.cpp playtest/scenarios/world-web.mjs playtest/scenarios/quest.mjs
+orchestration\tasks\TASK-0025-instance-lifecycle-correctness\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0025-instance-lifecycle-correctness\STATUS.md:15:verification: powershell -NoProfile -File native/build.ps1 -RunTests PASS; git diff --check PASS
+orchestration\tasks\TASK-0025-instance-lifecycle-correctness\STATUS.md:23:integration_verification: powershell -NoProfile -File native/build.ps1 -RunTests -RunClient PASS; YAML parse PASS; git diff --check PASS
+orchestration\tasks\TASK-0025-instance-lifecycle-correctness\SPEC.md:17:  - native/build.ps1
+orchestration\tasks\TASK-0025-instance-lifecycle-correctness\SPEC.md:23:  - powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0025-instance-lifecycle-correctness\REVIEW.md:11:guard, 124 test lines) and an independent `build.ps1 -RunTests` rerun
+orchestration\tasks\TASK-0129-server-lifecycle-soak\SPEC.md:12:  - native/build.ps1
+orchestration\tasks\TASK-0129-server-lifecycle-soak\SPEC.md:19:  - playtest/**
+orchestration\tasks\TASK-0129-server-lifecycle-soak\SPEC.md:47:powershell -File native/build.ps1 -RunTests -RunClientScenarios
+orchestration\tasks\TASK-0129-server-lifecycle-soak\SPEC.md:48:powershell -File native/build.ps1 -RunServerLifecycleSoak
+orchestration\tasks\TASK-0129-server-lifecycle-soak\SPEC.md:49:powershell -File native/build.ps1 -RunServerLifecycleSoak
+orchestration\tasks\TASK-0025-instance-lifecycle-correctness\REPORT.md:47:- `powershell -NoProfile -File native/build.ps1 -RunTests` — PASS
+orchestration\tasks\TASK-0025-instance-lifecycle-correctness\REPORT.md:66:as `2f75dad`; the combined native gate (`-RunTests -RunClient`), YAML parse,
+orchestration\tasks\TASK-0066-capture-harness-consolidation\SPEC.md:13:  - src/**, server/**, playtest/**
+orchestration\tasks\TASK-0066-capture-harness-consolidation\REVIEW.md:7:evidence untouched; port required with no default and 6500 explicitly
+orchestration\tasks\TASK-0066-capture-harness-consolidation\REPORT.md:21:rejects 6500 (owner's live server).
+orchestration\tasks\TASK-0066-capture-harness-consolidation\REPORT.md:33:No `src/**`, `server/**`, or `playtest/**` changes. No existing task capture
+orchestration\tasks\TASK-0128-accepted-throughput-normalization\SPEC.md:20:  - playtest/**
+orchestration\tasks\TASK-0126-clean-machine-release-harness\SPEC.md:17:gate for Windows and CI equivalents for macOS, with exact artifact manifests,
+orchestration\tasks\TASK-0057-clustered-accents\STATUS.md:9:expected_verification: npm run test:unit (830/830); npm run playtest (32/32); browser smoke (1/1); hard-fail capture (village + zone, CAPTURES OK)
+orchestration\tasks\TASK-0057-clustered-accents\STATUS.md:19:Gates green: unit 830/830 (4 new tests), playtest 32/32, browser smoke 1/1,
+orchestration\tasks\TASK-0057-clustered-accents\SPEC.md:13:  - playtest/** assertions
+orchestration\tasks\TASK-0057-clustered-accents\SPEC.md:23:full gates (unit/playtest/smoke) default path. Provenance: 0053 D3,
+orchestration\tasks\TASK-0057-clustered-accents\REVIEW.md:11:- Architect gates at merged tip: unit 830/830; playtest run 1 hit
+orchestration\tasks\TASK-0057-clustered-accents\REPORT.md:37:No `playtest/**` changes; no `src/**` changes; no `native/**` changes.
+orchestration\tasks\TASK-0057-clustered-accents\REPORT.md:58:`npm run playtest` (PLAYTEST_PORT=6540, loopback):
+orchestration\tasks\TASK-0056-native-protocol-n5\STATUS.md:9:expected_verification: powershell -File native/build.ps1 -RunTests (denylist/core/networking PASS); PLAYTEST_WS_URL attach of Chronicles/death family + N1-N4 regression, harness UNCHANGED; one authentic negative; C++ unit coverage list
+orchestration\tasks\TASK-0056-native-protocol-n5\SPEC.md:15:  - playtest/** (harness is the measuring stick)
+orchestration\questions\QUESTION-0010-task-0047-coordinator-release.md:22:  `powershell -File native/build.ps1 -RunTests` (legacy denylist, core tests,
+orchestration\tasks\TASK-0070-reference-scenes\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests; native/build/verdigris_client.exe --reference-scene all; eyeball one PNG per resolution
+orchestration\tasks\TASK-0070-reference-scenes\SPEC.md:14:  - playtest/**
+orchestration\tasks\TASK-0070-reference-scenes\SPEC.md:41:build.ps1 gates green + `--reference-scene all` exits 0 + the 10
+orchestration\tasks\TASK-0070-reference-scenes\REVIEW.md:3:Architect rerun 2026-08-20 ~06:40: full -RunTests green; --reference-scene
+orchestration\tasks\TASK-0070-reference-scenes\REPORT.md:35:`powershell -File native/build.ps1 -RunTests` green (2026-08-20).
+docs\rebuild\VERDIGRIS_GAP_AUDIT.md:23:  playtest 31/31, and browser-critical smoke 1/1.
+orchestration\tasks\TASK-0055-browser-followups\STATUS.md:10:expected_verification: npm run test:unit (133 files / 838 tests); PLAYTEST_PORT=6580 npm run playtest 32/32; browser smoke 1/1 on 127.0.0.1:6581; hard-fail captures CAPTURES OK at 1366x768 and 1920x1080; adventure-objective-data.js deleted
+orchestration\tasks\TASK-0055-browser-followups\STATUS.md:20:Gates green: unit 838/838, playtest 32/32, browser smoke 1/1, hard-fail capture
+orchestration\tasks\TASK-0055-browser-followups\STATUS.md:22:invents no boss name (unit). Ports 6580-6599; never 6500.
+orchestration\tasks\TASK-0055-browser-followups\SPEC.md:15:  - playtest/** assertions (new/strengthened scenarios welcome)
+orchestration\tasks\TASK-0055-browser-followups\SPEC.md:39:1. `npm run test:unit` + full `npm run playtest` + `npm run
+orchestration\tasks\TASK-0055-browser-followups\SPEC.md:40:   smoke:browser` literal transcripts (default path).
+orchestration\tasks\TASK-0055-browser-followups\REVIEW.md:7:- `PLAYTEST_PORT=6560 npm run playtest`: 32/32, p99 lag 32.3ms.
+orchestration\tasks\TASK-0055-browser-followups\REVIEW.md:8:- `SMOKE_PORT=6561 npm run smoke:browser`: 1/1.
+orchestration\tasks\TASK-0055-browser-followups\REPORT.md:49:No `playtest/**` assertion changes. No `native/**` changes.
+orchestration\tasks\TASK-0055-browser-followups\REPORT.md:66:`npm run playtest` (PLAYTEST_PORT=6580, bind 127.0.0.1):
+orchestration\tasks\TASK-0055-browser-followups\REPORT.md:73:Browser smoke (build + Playwright critical loop; server on 127.0.0.1:6581,
+orchestration\tasks\TASK-0055-browser-followups\REPORT.md:74:never 6500 — cursor capsule):
+orchestration\tasks\TASK-0065-entity-density-benchmark\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests (default gates unchanged); -RunDensityBench writes 12 JSON files; architect reruns one N=500 pass
+orchestration\tasks\TASK-0065-entity-density-benchmark\SPEC.md:29:Benchmark exe/target added to build.ps1 (opt-in flag, not in default
+orchestration\tasks\TASK-0065-entity-density-benchmark\RESULTS.md:10:powershell -File native/build.ps1 -RunDensityBench
+orchestration\tasks\TASK-0065-entity-density-benchmark\REPORT.md:14:A opt-in native benchmark (`powershell -File native/build.ps1 -RunDensityBench`)
+orchestration\tasks\TASK-0065-entity-density-benchmark\REPORT.md:26:- `native/build.ps1 -RunDensityBench` — compile/link the bench and loop the
+orchestration\tasks\TASK-0065-entity-density-benchmark\REPORT.md:27:  12 runs into the task `captures/` folder. Not part of `-RunTests`.
+orchestration\tasks\TASK-0065-entity-density-benchmark\REPORT.md:35:- `native/build.ps1` — opt-in `-RunDensityBench`
+orchestration\tasks\TASK-0065-entity-density-benchmark\REPORT.md:41:1. `powershell -File native/build.ps1 -RunTests` — denylist / core /
+orchestration\tasks\TASK-0065-entity-density-benchmark\REPORT.md:44:2. `powershell -File native/build.ps1 -RunDensityBench` — 12/12 JSON files.
+orchestration\tasks\TASK-0096-campaign-graph-measurement-audit\SPEC.md:34:rg -n "road|route|node|branch|warden|waymark|stairs|extract|campaign" native/src native/include native/tests playtest/scenarios/world-web.mjs playtest/scenarios/quest.mjs
+orchestration\tasks\TASK-0007-native-skill-actions\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0007-native-skill-actions\SPEC.md:17:  - native/build.ps1
+orchestration\tasks\TASK-0007-native-skill-actions\SPEC.md:23:  - powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0007-native-skill-actions\SPEC.md:92:`build.ps1 -RunTests` exits 0; each scope-4 behavior has a named test;
+orchestration\tasks\TASK-0007-native-skill-actions\SPEC.md:98:powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0024-browser-25d-phase3\STATUS.md:12:expected_verification: npm run test:unit; npm run smoke:browser; npm run playtest (browser-track gate)
+orchestration\tasks\TASK-0024-browser-25d-phase3\STATUS.md:20:verification: rev1 — npm run test:unit (PASS: 115 files/744 tests); npm run smoke:browser (PASS: 1/1, port 6500 released); npm run playtest (PASS: 31/31 clean rerun after transient dev:state contention flakes); luminance bar PASS (after-arpg 40.14 >= before 39.82; after-edge-north 37.98 >= before 37.33)
+orchestration\tasks\TASK-0024-browser-25d-phase3\STATUS.md:26:integration_verification: npm run test:unit; npm run smoke:browser; npm run playtest; git diff --check
+orchestration\tasks\TASK-0024-browser-25d-phase3\SPEC.md:23:  - npm run smoke:browser
+orchestration\tasks\TASK-0024-browser-25d-phase3\REVIEW.md:16:legible, player lit). Gates green including playtest 31/31.
+orchestration\tasks\TASK-0024-browser-25d-phase3\REPORT.md:92:- `npm run smoke:browser` — PASS (1/1; own server lifecycle, port 6500
+orchestration\tasks\TASK-0024-browser-25d-phase3\REPORT.md:94:- `npm run playtest` — PASS (31/31 scenarios)
+orchestration\tasks\TASK-0024-browser-25d-phase3\REPORT.md:163:- `npm run smoke:browser` — PASS (1/1, port 6500 released)
+orchestration\tasks\TASK-0024-browser-25d-phase3\REPORT.md:164:- `npm run playtest` — PASS (31/31). Two earlier attempts flaked on
+orchestration\tasks\TASK-0024-browser-25d-phase3\REPORT.md:166:  machine contention (multiple coordinators active); the playtest path never
+orchestration\tasks\TASK-0074-gear-outcomes-profile\STATUS.md:10:notes: Ten serialized 32/32 runs complete on ports 7001–7010. FINDINGS.md and timing.jsonl contain the profile. No code/playtest files changed; the runner appended unrelated docs/loop-journal.md telemetry, left uncommitted.
+orchestration\tasks\TASK-0074-gear-outcomes-profile\SPEC.md:11:  - playtest/** (read-only; PLAYTEST_TIMING_LOG already exists)
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:12:with zero failed records and zero diagnosis records. No code or playtest files
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:61:1. `playtest/scenarios/gear-outcomes.mjs:7-63` performs multiple serialized
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:65:2. `playtest/scenarios/gear-outcomes.mjs:83-120` adds bounded drop, pickup,
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:67:3. `playtest/scenarios/gear-outcomes.mjs:140-185` intentionally performs
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:93:$ PLAYTEST_PORT=7000 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:94:> verdigris@0.2.0 playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:95:> node playtest/run.mjs
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:96:Booting playtest server on :7000…
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:113:$ PLAYTEST_PORT=7001 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:119:$ PLAYTEST_PORT=7002 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:125:$ PLAYTEST_PORT=7003 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:131:$ PLAYTEST_PORT=7004 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:137:$ PLAYTEST_PORT=7005 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:143:$ PLAYTEST_PORT=7006 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:149:$ PLAYTEST_PORT=7007 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:155:$ PLAYTEST_PORT=7008 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:161:$ PLAYTEST_PORT=7009 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:167:$ PLAYTEST_PORT=7010 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0010-native-actor-facing\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests -RunClient; driven aim-left then Q pass
+orchestration\tasks\TASK-0010-native-actor-facing\STATUS.md:21:integration_verification: powershell -NoProfile -File native/build.ps1 -RunTests -RunClient; git diff --check
+orchestration\tasks\TASK-0010-native-actor-facing\SPEC.md:17:  - native/build.ps1
+orchestration\tasks\TASK-0010-native-actor-facing\SPEC.md:23:  - powershell -File native/build.ps1 -RunTests -RunClient
+orchestration\tasks\TASK-0010-native-actor-facing\SPEC.md:89:`build.ps1 -RunTests -RunClient` exits 0; the scope-5 behaviors each have
+orchestration\tasks\TASK-0010-native-actor-facing\SPEC.md:96:powershell -File native/build.ps1 -RunTests -RunClient
+orchestration\tasks\TASK-0010-native-actor-facing\REVIEW.md:11:independent `build.ps1 -RunTests -RunClient` rerun (all gates green).
+orchestration\tasks\TASK-0042-first-loot-moment\STATUS.md:12:expected_verification: npm run test:unit; npm run playtest; npm run smoke:browser
+orchestration\tasks\TASK-0042-first-loot-moment\STATUS.md:22:all verified with unit tests, 31/31 playtest, alternate-port browser
+orchestration\tasks\TASK-0042-first-loot-moment\SPEC.md:24:  - npm run playtest
+orchestration\tasks\TASK-0042-first-loot-moment\SPEC.md:25:  - npm run smoke:browser
+orchestration\tasks\TASK-0042-first-loot-moment\SPEC.md:46:4. Tests: first-drop rule; comparison content; playtest loot scenarios
+orchestration\tasks\TASK-0042-first-loot-moment\REVIEW.md:22:  together): unit 821/821, full playtest 32/32, smoke:browser pass.
+orchestration\tasks\TASK-0042-first-loot-moment\REVIEW.md:25:  smoke justified by the owner's :6500 server per the 0041 precedent;
+orchestration\tasks\TASK-0023-browser-25d-phase2\STATUS.md:11:expected_verification: npm run test:unit; npm run smoke:browser; npm run playtest (if scope or regression evidence warrants)
+orchestration\tasks\TASK-0023-browser-25d-phase2\STATUS.md:19:verification: npm run test:unit (PASS: 115 files/744 tests); npm run smoke:browser (PASS: 1/1); npm run playtest (PASS: 31/31); build, ESLint, and git diff --check PASS
+orchestration\tasks\TASK-0023-browser-25d-phase2\SPEC.md:21:  - npm run smoke:browser
+orchestration\tasks\TASK-0023-browser-25d-phase2\SPEC.md:54:- Both acceptance commands green (playtest additionally if any doubt
+orchestration\tasks\TASK-0042-first-loot-moment\REPORT.md:82:  mandated playtest runs (harness-written; see Risks).
+orchestration\tasks\TASK-0042-first-loot-moment\REPORT.md:93:- `npm run playtest` — 32/32 scenarios PASS at the merged tip
+orchestration\tasks\TASK-0042-first-loot-moment\REPORT.md:104:- Browser gate: default `npm run smoke:browser` cannot run on this
+orchestration\tasks\TASK-0042-first-loot-moment\REPORT.md:105:  machine — port 6500 is owned by the owner's persistent server (PID
+orchestration\tasks\TASK-0042-first-loot-moment\REPORT.md:140:2. `docs/loop-journal.md` rows appended by the playtest gate itself.
+orchestration\tasks\TASK-0042-first-loot-moment\REPORT.md:156:  `world:itemDropped` broadcast instead. If a future playtest scenario
+orchestration\tasks\TASK-0023-browser-25d-phase2\REVIEW.md:13:`src/core/rendering/**` (verified), so server playtest is unaffected by
+orchestration\tasks\TASK-0023-browser-25d-phase2\REVIEW.md:14:construction; coordinator validation ran unit+smoke green, consistent
+orchestration\tasks\TASK-0023-browser-25d-phase2\REPORT.md:45:- `npm run smoke:browser` — PASS (1/1)
+orchestration\tasks\TASK-0023-browser-25d-phase2\REPORT.md:46:- `npm run playtest` — PASS (31/31)
+orchestration\tasks\TASK-0023-browser-25d-phase2\REPORT.md:56:task-folder captures under the size limit, and the 744/744 unit, 1/1 smoke,
+orchestration\tasks\TASK-0023-browser-25d-phase2\REPORT.md:57:31/31 playtest, ESLint, and diff checks.
+orchestration\tasks\TASK-0023-browser-25d-phase2\REPORT.md:79:smoke gates passed, and the complete playtest passed 31/31 scenarios. A first
+orchestration\tasks\TASK-0023-browser-25d-phase2\REPORT.md:80:full playtest had one timing-sensitive `gear-outcomes` miss; the targeted
+orchestration\tasks\TASK-0054-native-client-c2-polish\STATUS.md:9:expected_verification: powershell -File native/build.ps1 -RunTests -RunClientScenarios (all 6 scenarios PASS); headless 1|1; one authentic negative
+orchestration\tasks\TASK-0120-release-verification-gap-audit\STATUS.md:11:- ports: 6700-6719 reserved for this lane (resource capsule read-only expected; port 6500 untouched)
+orchestration\tasks\TASK-0120-release-verification-gap-audit\STATUS.md:41:  upgrade-safety claim unsupported by any clean-machine/migration artifact).
+orchestration\tasks\TASK-0041-death-decision-moment\STATUS.md:11:expected_verification: npm run test:unit; npm run playtest; npm run smoke:browser; oathed/unoathed death captures
+orchestration\tasks\TASK-0041-death-decision-moment\STATUS.md:16:verification: revision focused death suite 5/5; revision production build PASS; worker alternate-port browser gate 1/1; real oathed/unoathed 1920x1080 JPEGs 43,215/37,777 bytes; default smoke remains unclaimed because owner PID 10276 holds port 6500
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:30:rg -n "CI|clean|build|package|launcher|soak|migration|upgrade|rollback|sign|notar|installer|release|artifact|crash|save" .github native docs orchestration --glob "*.md" --glob "*.yml" --glob "*.yaml" --glob "*.ps1" --glob "*.json"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:38:clean-machine or migration artifact. Stop before account/irreversible actions;
+orchestration\tasks\TASK-0054-native-client-c2-polish\SPEC.md:10:  - playtest/**, server/**, src/**
+orchestration\tasks\TASK-0054-native-client-c2-polish\SPEC.md:40:1. `powershell -File native/build.ps1 -RunTests -RunClientScenarios`
+orchestration\tasks\TASK-0041-death-decision-moment\SPEC.md:23:  - npm run playtest
+orchestration\tasks\TASK-0041-death-decision-moment\SPEC.md:24:  - npm run smoke:browser
+orchestration\tasks\TASK-0041-death-decision-moment\SPEC.md:47:   transfer results; oathed vs unoathed variants; playtest death/respawn
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REVIEW.md:24:recipe is a valid negative control because no clean-machine, migration, or
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REVIEW.md:25:rollback artifact supports it. Installer, signing, notarization, distribution,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REVIEW.md:28:The initial hook/dependency activation repair used `npm ci`; the worker's claim
+orchestration\tasks\TASK-0054-native-client-c2-polish\REVIEW.md:8:- Rebuilt branch: all native gates PASS; -RunClientScenarios 6/6
+orchestration\tasks\TASK-0041-death-decision-moment\REVIEW.md:10:The report (unit 779/779, focused death-decision 5/5, worker playtest
+orchestration\tasks\TASK-0054-native-client-c2-polish\REPORT.md:26:   `--scenario` runner and the `-RunClientScenarios` gate.
+orchestration\tasks\TASK-0054-native-client-c2-polish\REPORT.md:35:No `playtest/**`, `server/**`, or `src/**` changes; no core (`native/src`,
+orchestration\tasks\TASK-0054-native-client-c2-polish\REPORT.md:40:`powershell -File native/build.ps1 -RunTests -RunClient -RunClientScenarios`:
+orchestration\tasks\TASK-0041-death-decision-moment\REPORT.md:40:- Worker `npm run playtest` — 31/31 scenarios PASS.
+orchestration\tasks\TASK-0041-death-decision-moment\REPORT.md:42:- Default `npm run smoke:browser` was not claimed because the preserved owner
+orchestration\tasks\TASK-0041-death-decision-moment\REPORT.md:43:  listener/PID 10276 already owns port 6500; the alternate-port gate is the
+orchestration\tasks\TASK-0041-death-decision-moment\REPORT.md:64:on the current tip. The default smoke port conflict is environmental and was
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:11:protocol regression, and native server shutdown are proven; clean-machine
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:25:   `native/build.ps1`, `native/README.md`, `native/persistence/README.md`,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:28:   `docs/deployment.md`, playtest harness (`playtest/soak.mjs`),
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:56:rg -n "CI|clean|build|package|launcher|soak|migration|upgrade|rollback|sign|notar|installer|release|artifact|crash|save" .github native docs orchestration --glob "*.md" --glob "*.yml" --glob "*.yaml" --glob "*.ps1" --glob "*.json"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:100:but has **no** clean-machine or migration artifact behind it — schemaVersion
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:117:  account touched, no ports bound, port 6500 untouched throughout.
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:131:  `node_modules` was absent; the owner restored dependencies via `npm ci`
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:137:- None blocking review. If the architect wants `playtest/soak.mjs` wired
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:154:- TASK-0126 clean-machine release harness and TASK-0127 save-migration
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:7:  mutation, no ports bound; port 6500 untouched. Machine-verifiable inventory:
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:15:proven; every distribution-adjacent surface — clean-machine harness, long
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:22:1. **Current CI** — `ci.yml` (ubuntu, Node 22, `npm ci`, `npm run verify`
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:23:   = lint + lint:css + unit + build + full playtest + built e2e, failure
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:24:   artifacts) and `native.yml` (windows-latest, MSVC preset, denylist, ctest
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:27:2. **Protocol regression** — full `npm run playtest` 32/32 is a mandatory
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:38:   run, which is a proxy, not a release harness: no retained build artifacts,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:41:   reproducible `npm ci`; native is dependency-free. No SBOM, no bundled
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:45:   launcher smoke gate.
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:48:   stored replay artifact, or divergence runner (TASK-0100 READY audit +
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:58:    `ci-logs` artifacts on failure. No one-command support bundle; no
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:67:12. **Long soak** — `playtest/soak.mjs` exists but is invoked by no gate or
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:71:    (`ci-native.ps1`), `bench:instance` manual-only, playtest load mode is a
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:91:    clean-machine inventory (this audit) before installer/signing work.
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:100:**Claim:** the `docs/deployment.md` update recipe (`git pull; npm ci;
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:103:**Finding: unsupported.** No clean-machine or migration artifact backs it —
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:108:cross-version data compatibility. Discharge: TASK-0126 + TASK-0127 artifacts
+orchestration\tasks\TASK-0063-server-gate-a-surface\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests; C++ envelope unit coverage; PLAYTEST_WS_URL attach N1-N4 (13/13); unknown-uuid equip negative
+orchestration\tasks\TASK-0063-server-gate-a-surface\STATUS.md:11:notes: closes 0061 server gaps (item:change/world:itemDropped, player:extract + stairs-up bank, player:equippedAnItem wear+combat, login/dev:state ground). Ports 6580-6599. Did not edit native/client (0064) or playtest.
+orchestration\tasks\TASK-0063-server-gate-a-surface\SPEC.md:14:  - playtest/** assertions (harness unchanged - it must still pass 32/32)
+orchestration\tasks\TASK-0063-server-gate-a-surface\SPEC.md:41:build.ps1 -RunTests green + new C++ unit coverage for each envelope +
+orchestration\tasks\TASK-0063-server-gate-a-surface\REVIEW.md:3:Architect rerun 2026-08-20 ~04:30: build.ps1 -RunTests green (incl. new
+orchestration\tasks\TASK-0063-server-gate-a-surface\REPORT.md:56:1. `powershell -File native/build.ps1 -RunTests` (2026-08-20 04:03 PDT) —
+orchestration\tasks\TASK-0063-server-gate-a-surface\REPORT.md:59:2. Attach, cursor port **6587**, harness **unchanged** (no `playtest/**`
+orchestration\tasks\TASK-0063-server-gate-a-surface\REPORT.md:60:   edits; last `playtest/` commit on this tip is `68af057e`, 0062
+orchestration\tasks\TASK-0063-server-gate-a-surface\REPORT.md:65:node playtest/run.mjs --attach quickstart single-session movement zones combat encounter-variety boss-mechanic loot equipment-slots depth-loot overflow vesselforge vesselforge-brand
+orchestration\tasks\TASK-0083-server-lifecycle-soak\SPEC.md:12:  - native/build.ps1
+orchestration\tasks\TASK-0083-server-lifecycle-soak\SPEC.md:19:  - playtest/**
+orchestration\tasks\TASK-0083-server-lifecycle-soak\SPEC.md:42:powershell -File native/build.ps1 -RunTests -RunClientScenarios
+orchestration\tasks\TASK-0083-server-lifecycle-soak\SPEC.md:43:powershell -File native/build.ps1 -RunServerLifecycleSoak
+orchestration\tasks\TASK-0083-server-lifecycle-soak\SPEC.md:44:powershell -File native/build.ps1 -RunServerLifecycleSoak
+orchestration\tasks\TASK-0092-owner-launch-packaging-audit\SPEC.md:22:save locations, clean-machine assumptions, failure messages, version metadata,
+orchestration\tasks\TASK-0092-owner-launch-packaging-audit\SPEC.md:28:Owner port 6500, loopback-only servers, forgiving persistence, and current
+orchestration\tasks\TASK-0092-owner-launch-packaging-audit\SPEC.md:36:rg -n "play-native|verdigris_client|verdigris_server|6520|6539" native/README.md native/tools native/build.ps1
+orchestration\tasks\TASK-0092-owner-launch-packaging-audit\SPEC.md:37:rg -n "CMAKE|MSVC|WIN32|APPLE|install|package" native/CMakeLists.txt native/CMakePresets.json native/build.ps1
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:11:  - playtest/tools/dual-server-matrix.mjs
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:14:  - playtest/harness.mjs
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:15:  - playtest/run.mjs
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:16:  - playtest/scenarios/**
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:24:Add a self-terminating wrapper that runs the unchanged playtest scenarios
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:26:comparison JSON artifact. The wrapper owns process startup/shutdown, uses two
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:33:node playtest/tools/dual-server-matrix.mjs \
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:37:  --out orchestration/tasks/TASK-0082-dual-server-matrix/captures/smoke.json
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:48:Use two ports in 6540-6559, never 6500. Paste literal transcripts and exit
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:52:powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:53:node --check playtest/tools/dual-server-matrix.mjs
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:54:node playtest/tools/dual-server-matrix.mjs --native-exe native/build/verdigris_server.exe --js-port 6541 --native-port 6542 --scenarios quickstart,movement,zones --out orchestration/tasks/TASK-0082-dual-server-matrix/captures/smoke.json
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:55:node -e "const r=require('./orchestration/tasks/TASK-0082-dual-server-matrix/captures/smoke.json'); if(!r.parity) process.exit(1); console.log('dual-server smoke: PASS')"
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:65:non-loopback address, touching port 6500, or killing a process it did not
+orchestration\tasks\TASK-0062-playtest-flake-triage\STATUS.md:5:worker_branch: codex/TASK-0062-playtest-flake-triage-cursor
+orchestration\tasks\TASK-0062-playtest-flake-triage\STATUS.md:10:expected_verification: three serialized PLAYTEST_PORT=6580 PLAYTEST_TIMING_LOG=1 npm run playtest 32/32; npm run test:unit 134/841; no scenario assertion/timeout/retry diffs; architect reruns one suite with diagnostics on
+orchestration\tasks\TASK-0062-playtest-flake-triage\SPEC.md:9:  - playtest/run.mjs (diagnostics ONLY — see hard constraint)
+orchestration\tasks\TASK-0062-playtest-flake-triage\SPEC.md:10:  - playtest/lib/** (diagnostics ONLY)
+orchestration\tasks\TASK-0062-playtest-flake-triage\SPEC.md:11:  - orchestration/tasks/TASK-0062-playtest-flake-triage/**
+orchestration\tasks\TASK-0062-playtest-flake-triage\SPEC.md:13:  - playtest scenario assertions, timeouts, retries (measuring stick —
+orchestration\tasks\TASK-0062-playtest-flake-triage\SPEC.md:42:- Full playtest still 32/32 (three runs recorded).
+orchestration\tasks\TASK-0062-playtest-flake-triage\REPORT.md:5:worker_branch: codex/TASK-0062-playtest-flake-triage-cursor
+orchestration\tasks\TASK-0062-playtest-flake-triage\REPORT.md:25:- `playtest/lib/diagnostics.mjs` — waitFor wrap (budgets untouched),
+orchestration\tasks\TASK-0062-playtest-flake-triage\REPORT.md:27:- `playtest/run.mjs` — install diagnostics; print DIAG on fail; optional
+orchestration\tasks\TASK-0062-playtest-flake-triage\REPORT.md:29:- `orchestration/tasks/TASK-0062-playtest-flake-triage/{STATUS,REPORT,FINDINGS,timing.jsonl}`
+orchestration\tasks\TASK-0062-playtest-flake-triage\REPORT.md:31:No `playtest/scenarios/**` edits. No timeout/retry/assert changes.
+orchestration\tasks\TASK-0062-playtest-flake-triage\REPORT.md:42:`PLAYTEST_PORT=6580 PLAYTEST_TIMING_LOG=1 npm run playtest` (three runs):
+orchestration\tasks\TASK-0062-playtest-flake-triage\REPORT.md:61:- `playtest/lib/` did not exist; created for the owned diagnostics module
+orchestration\tasks\TASK-0062-playtest-flake-triage\FINDINGS.md:1:# TASK-0062 FINDINGS — playtest marginal-timeout flake
+orchestration\tasks\TASK-0068-remote-presentation-polish\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests -RunClientScenarios; architect --remote play pass rescores Gate A rubric (target 12/12)
+orchestration\tasks\TASK-0068-remote-presentation-polish\SPEC.md:13:  - playtest/**
+orchestration\tasks\TASK-0068-remote-presentation-polish\SPEC.md:30:build.ps1 -RunTests -RunClientScenarios green + updated remote
+orchestration\tasks\TASK-0068-remote-presentation-polish\REPORT.md:38:`powershell -File native/build.ps1 -RunTests -RunClientScenarios` (2026-08-20):
+orchestration\tasks\TASK-0061-networked-guest-slice\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests (denylist/core/networking/camera2d/session journey+disconnect+replaced); run-gate-a.ps1 plays verdigris_client --remote against loopback 6580; authentic negative is session_tests mid-session server kill
+orchestration\tasks\TASK-0061-networked-guest-slice\run-gate-a.ps1:12:  throw "Build the native tree first: powershell -File native/build.ps1"
+orchestration\tasks\TASK-0061-networked-guest-slice\REVIEW.md:5:- build.ps1 -RunTests -RunClientScenarios: all suites green, incl. the
+orchestration\tasks\TASK-0061-networked-guest-slice\REVIEW.md:15:  No server/**, src/**, playtest/** changes in the diff.
+orchestration\tasks\TASK-0061-networked-guest-slice\REPORT.md:20:Owner path (after `powershell -File native/build.ps1`):
+orchestration\tasks\TASK-0061-networked-guest-slice\REPORT.md:51:- `native/build.ps1`, `native/CMakeLists.txt` — link remote play + ws2_32.
+orchestration\tasks\TASK-0061-networked-guest-slice\REPORT.md:71:`powershell -File native/build.ps1 -RunTests` (2026-08-20 ~02:24 PDT):
+orchestration\tasks\TASK-0061-networked-guest-slice\REPORT.md:86:`powershell -File native/build.ps1 -RunClient`:
+orchestration\tasks\TASK-0061-networked-guest-slice\README.md:7:Usage (from repo root, after `powershell -File native/build.ps1`):
+orchestration\tasks\TASK-0040-first-encounter-readability\STATUS.md:13:expected_verification: npm run test:unit; npm run playtest; first-delve transcript; D-114 constants table; capture evidence
+orchestration\tasks\TASK-0040-first-encounter-readability\STATUS.md:15:verification: focused encounter/balance 16/16; integration full unit 121 files/774 tests; direct-WASD and exact-teleport regression passed; driven WebSocket transcript captured; full-playtest variance ratified by architect under QUESTION-0006; diff check passed
+orchestration\tasks\TASK-0040-first-encounter-readability\SPEC.md:26:  - npm run playtest
+orchestration\tasks\TASK-0040-first-encounter-readability\SPEC.md:54:   separation invariant, curve progression; playtest 31/31 (update
+orchestration\tasks\TASK-0040-first-encounter-readability\REVIEW.md:12:1/2/3→4, and overlap repair. Full-run playtest variance is the harness's
+orchestration\tasks\TASK-0040-first-encounter-readability\REPORT.md:54:- Broader affected playtest subset — 4/4 passed.
+orchestration\tasks\TASK-0040-first-encounter-readability\REPORT.md:56:- `npm run playtest` — latest full run 25/31; the six failed scenarios
+orchestration\tasks\TASK-0040-first-encounter-readability\REPORT.md:73:existing playtest harness.
+orchestration\tasks\TASK-0040-first-encounter-readability\REPORT.md:91:Independent validator re-ran the exact-tip full playtest three times: 17/31,
+orchestration\tasks\TASK-0040-first-encounter-readability\REPORT.md:105:pre-existing playtest can inspect an isolated boss/loot comparison; ordinary
+orchestration\tasks\TASK-0040-first-encounter-readability\REPORT.md:124:Generated `docs/loop-journal.md` playtest lines remain uncommitted and outside
+orchestration\tasks\TASK-0040-first-encounter-readability\REPORT.md:129:QUESTION-0006 is answered and ratified: the shared full-playtest timing
+orchestration\tasks\TASK-0090-native-progression-panes\SPEC.md:16:  - playtest/**
+orchestration\tasks\TASK-0022-browser-25d-phase1\STATUS.md:11:expected_verification: npm run test:unit; npm run playtest; npm run smoke:browser
+orchestration\tasks\TASK-0022-browser-25d-phase1\STATUS.md:20:revision_reason: independent validator found evidence artifacts outside the task folder and a wide-zoom DoF floor contradicting the governing zero-at/below-base rule; corrections implemented and architect accepted
+orchestration\tasks\TASK-0022-browser-25d-phase1\STATUS.md:24:verification: npm run test:unit (PASS: 115 files/744 tests); npm run playtest (PASS: 31/31); npm run smoke:browser (PASS: 1/1); npm run lint:css -- --quiet (PASS); ESLint changed files (PASS); git diff --check (PASS)
+orchestration\tasks\TASK-0022-browser-25d-phase1\SPEC.md:21:  - npm run playtest
+orchestration\tasks\TASK-0022-browser-25d-phase1\SPEC.md:22:  - npm run smoke:browser
+orchestration\tasks\TASK-0022-browser-25d-phase1\SPEC.md:72:- All three acceptance commands green (playtest 31/31 — note TASK-0020's
+orchestration\tasks\TASK-0022-browser-25d-phase1\SPEC.md:74:  where playtest is green, or coordinate integration order).
+orchestration\tasks\TASK-0022-browser-25d-phase1\SPEC.md:90:in-revision server work are impossible by path, but if playtest is red on
+orchestration\tasks\TASK-0022-browser-25d-phase1\SPEC.md:91:your base for its reasons, say so in STATUS and proceed with unit+smoke
+orchestration\tasks\TASK-0022-browser-25d-phase1\REVIEW.md:13:`smoke:browser` 1/1 on the built client, playtest covered by 31/31 at
+orchestration\tasks\TASK-0022-browser-25d-phase1\REPORT.md:75:- `npm run playtest` — PASS (31/31 scenarios)
+orchestration\tasks\TASK-0022-browser-25d-phase1\REPORT.md:76:- `npm run smoke:browser` — PASS (1 browser-critical test; 18.2s)
+orchestration\tasks\TASK-0022-browser-25d-phase1\REPORT.md:95:playtest scenarios passed after the correction.
+orchestration\tasks\TASK-0022-browser-25d-phase1\REPORT.md:111:commits `705b6c3` and `4533bc4`; the repository root is free of the four capture artifacts,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:11:    "missing": "no committed artifact provides this release proof; named successor packets own closing the gap",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:21:        ".github/workflows/ci.yml (ubuntu-latest, Node 22, npm ci, npx playwright install chromium, PLAYTEST_LOAD_MODE=1, npm run verify = lint + lint:css + test:unit + build + playtest + test:e2e:built, failure artifacts test-results/)",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:22:        ".github/workflows/native.yml (windows-latest, msvc-dev-cmd x64, native/tools/ci-native.ps1: cmake configure/build windows-msvc preset, legacy denylist, ctest core/networking/session incl. remote journey + clean shutdown, camera2d compile/link/tests, verdigris_client --scenario all, transcripts uploaded on failure)",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:32:        "Both workflows start from actions/checkout@v4 on fresh runners and complete configure+build from scratch each run (browser: npm ci + vite build; native: cmake preset windows-msvc)",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:35:      "gap": "No dedicated clean-machine release harness or artifact: no script proves a bare machine -> playable build end to end, no produced build artifacts are retained from green runs. orchestration/tasks/TASK-0126-clean-machine-release-harness/SPEC.md owns this and is DRAFT pending this audit."
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:42:        "package.json engines node>=22 npm>=10; volta pins node 22.11.0 / npm 10.9.2; package-lock.json enables reproducible npm ci",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:53:        "native/tools/play-native.ps1: one-command Windows owner launch (build if stale, free-port server in 6520-6539 never 6500, client --remote, log tee under native/build/logs/, stop server on client exit, no-orphan process check); desktop shortcut recipe documented in native/README.md",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:56:      "gap": "Windows-only launcher; no macOS/Linux double-clickable launcher; no launcher smoke test wired into CI"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:74:        "playtest/soak.mjs exists (~150s default, SOAK_SECONDS override, isolated guest saves, :6511) but is invoked nowhere in ci.yml verify, ACCEPTANCE.md gates, or any workflow",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:84:        "ACCEPTANCE.md requires full npm run playtest 32/32 at acceptance; targeted sets supported",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:98:      "gap": "No versioned replay record format, stored replay artifacts, or divergence-diffing runner: orchestration/tasks/TASK-0100-deterministic-replay-coverage-audit/SPEC.md (READY) and TASK-0106 successor own this"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:107:        "playtest/timing.mjs load mode is a shared-machine fairness cap (1.75x), not a performance budget"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:138:        "docs/deployment.md 'Updating to a new version': git pull, npm ci, npm run build, pm2 restart (upgrade half only)"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:156:        "Windows fully exercised: .github/workflows/native.yml (windows-latest) builds/tests/runs scenarios; build.ps1 MSVC path; Win32 client",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:177:        "BACKLOG_FACTORY.md quality-release domain lists 'installer/signing/notarization/update/support' as future terminal work; PROGRAM_GRAPH.md orders clean-machine inventory before installer/signing"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:187:        "play-native.ps1 tees server output under native/build/logs/ and prints the log path; native CI uploads native/build/ci-logs/ artifacts on failure",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:200:      "gap": "The ladder governs task acceptance, not product release: no release checklist binds all of the above surfaces to a tagged build with recorded evidence, sign-off, and artifact retention"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:212:    "claim_examined": "docs/deployment.md's update recipe (git pull; npm ci; npm run build; pm2 restart) makes upgrading a live production server safe.",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:213:    "why_unsupported": "No clean-machine or migration artifact backs this claim: there is no save-migration matrix (a snapshot written by a different schemaVersion hard-fails restore per native/src/core.cpp and the browser SQLite stores have no versioned migration path either), no rollback procedure exists anywhere in the repository, and no clean-machine harness reproduces the update on a pristine host. The claim silently assumes data compatibility across versions.",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:214:    "discharge_path": "TASK-0127 save-migration matrix + TASK-0126 clean-machine release harness (both sequenced after this audit) must produce those artifacts before the upgrade claim may be treated as release proof."
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:218:      "command": "rg -n \"CI|clean|build|package|launcher|soak|migration|upgrade|rollback|sign|notar|installer|release|artifact|crash|save\" .github native docs orchestration --glob \"*.md\" --glob \"*.yml\" --glob \"*.yaml\" --glob \"*.ps1\" --glob \"*.json\"",
+orchestration\tasks\TASK-0053-world-composition-polish\STATUS.md:10:expected_verification: per-deliverable verdicts (IMPLEMENTED / ALREADY-PRESENT / NOT-NEEDED) with hard-fail Playwright captures; npm run test:unit; npm run playtest; alternate-port browser gate (6500 is the owner's)
+orchestration\tasks\TASK-0053-world-composition-polish\SPEC.md:11:  - server/**, native/**, playtest/** (assertions; new scenarios fine)
+orchestration\tasks\TASK-0053-world-composition-polish\SPEC.md:53:2. `npm run test:unit` + `npm run smoke:browser` + full
+orchestration\tasks\TASK-0053-world-composition-polish\SPEC.md:54:   `npm run playtest` transcripts, default path.
+orchestration\tasks\TASK-0053-world-composition-polish\REVIEW.md:15:- Architect gates at combined tip (0053+0054): unit 826/826, playtest
+orchestration\tasks\TASK-0053-world-composition-polish\REVIEW.md:16:  32/32 at 129ms peak lag (0052 hardening held), smoke pass.
+orchestration\tasks\TASK-0053-world-composition-polish\REPORT.md:65:- `npm run playtest` — 32/32 PASS (isolated run; p99 lag 32.3ms).
+orchestration\tasks\TASK-0053-world-composition-polish\REPORT.md:67:- Browser gate: alternate-port pattern (port 6500 is the owner's
+orchestration\tasks\TASK-0053-world-composition-polish\REPORT.md:80:  the mandated playtest runs.
+orchestration\tasks\TASK-0072-owner-launcher\STATUS.md:11:notes: Owner-play ports 6520-6539. Never 6500. -Local / -Port / -Rebuild.
+orchestration\tasks\TASK-0072-owner-launcher\SPEC.md:21:build.ps1), starts verdigris_server on a free port from 6520-6539
+orchestration\tasks\TASK-0072-owner-launcher\SPEC.md:22:(owner-play range — NOT coordinator capsules, never 6500), starts the
+orchestration\tasks\TASK-0072-owner-launcher\REPORT.md:16:on a free **6520–6539** port (never 6500), launches
+orchestration\tasks\TASK-0072-owner-launcher\REPORT.md:26:  `native/src`, `native/client`, `native/include`, plus `native/build.ps1`.
+orchestration\tasks\TASK-0072-owner-launcher\REPORT.md:27:  Build always delegates to `native/build.ps1`.
+orchestration\tasks\TASK-0072-owner-launcher\REPORT.md:29:  Explicit `-Port 6500` throws before bind.
+orchestration\tasks\TASK-0115-browser-panel-typography-inventory\SPEC.md:16:resource_capsule: ox-pc-a ports 6620-6639 if later routed; loopback only; never 6500
+orchestration\tasks\TASK-0115-browser-panel-typography-inventory\SPEC.md:45:Stop if reaching a panel requires source/assertion changes or port 6500.
+orchestration\tasks\TASK-0040-first-encounter-readability\captures\first-delve-seed-90140.md:52:## Development-only playtest inspection
+orchestration\tasks\TASK-0060-c3-session-seam-scaffold\SPEC.md:38:`powershell -File native/build.ps1 -RunTests -RunClient
+orchestration\tasks\TASK-0060-c3-session-seam-scaffold\SPEC.md:39:-RunClientScenarios` fully green + the new remote handshake test green
+orchestration\tasks\TASK-0060-c3-session-seam-scaffold\REPORT.md:24:  build.ps1 compiles/links/runs session tests with hard exit-code check.
+orchestration\tasks\TASK-0060-c3-session-seam-scaffold\REPORT.md:36:- `native/build.ps1 -RunTests`: denylist PASS, core PASS, networking
+orchestration\tasks\TASK-0060-c3-session-seam-scaffold\REPORT.md:38:- `native/build.ps1 -RunClientScenarios`: PASS (0 failures) — main.cpp
+orchestration\tasks\TASK-0067-native-journey-ci\STATUS.md:11:notes: CI uses msvc-dev-cmd + CMake preset, not build.ps1 (VS 18 path). No density bench. Session tests bind ephemeral loopback.
+orchestration\tasks\TASK-0067-native-journey-ci\SPEC.md:14:  - playtest/** assertions
+orchestration\tasks\TASK-0067-native-journey-ci\SPEC.md:23:failure upload artifacts: build log, test transcripts. Windows runner
+orchestration\tasks\TASK-0067-native-journey-ci\REVIEW.md:8:failure artifacts. The build.ps1 VS-18 probe gap on hosted runners is
+orchestration\tasks\TASK-0067-native-journey-ci\REPORT.md:21:`native/build.ps1` is unchanged (not owned). It still cannot find VS 18 on
+orchestration\tasks\TASK-0067-native-journey-ci\REPORT.md:40:  artifact upload
+orchestration\tasks\TASK-0067-native-journey-ci\REPORT.md:60:- Did not invoke `native/build.ps1` in Actions. First attempt
+orchestration\tasks\TASK-0069-remote-reconnect\REPORT.md:37:`powershell -File native/build.ps1 -RunTests` (2026-08-20): denylist, core,
+orchestration\tasks\TASK-0069-remote-reconnect\REPORT.md:43:Architect reruns `-RunTests`.
+orchestration\tasks\TASK-0069-remote-reconnect\SPEC.md:14:  - playtest/**
+orchestration\tasks\TASK-0069-remote-reconnect\SPEC.md:31:build.ps1 -RunTests green incl. new reconnect tests (drop → Retrying →
+orchestration\tasks\TASK-0089-gate-c-native-client\SPEC.md:18:  - playtest/**
+orchestration\tasks\TASK-0071-protocol-matrix-audit\REPORT.md:21:`native/**`, `playtest/**`, or peer task files were edited.
+orchestration\tasks\TASK-0080-board-sentinel\SPEC.md:21:  - playtest/**
+orchestration\tasks\TASK-0020-browser-disconnect-safety\STATUS.md:11:expected_verification: npm run test:unit; npm run playtest
+orchestration\tasks\TASK-0020-browser-disconnect-safety\STATUS.md:18:revision_reason: architect review 42fd837 bisected a 31/31 to 27/31 playtest regression to the disconnect change, clustered around zone transitions and dev:state
+orchestration\tasks\TASK-0020-browser-disconnect-safety\STATUS.md:21:verification: targeted tests (PASS: 40); full unit (PASS: 115 files/744 tests); ESLint (PASS); git diff --check (PASS); npm run playtest on port 6520 (PASS: 31/31)
+orchestration\tasks\TASK-0020-browser-disconnect-safety\STATUS.md:23:integration_verification: architect gate PASS at program tip; full unit 744/744 and playtest 31/31
+orchestration\tasks\TASK-0020-browser-disconnect-safety\SPEC.md:22:  - npm run playtest
+orchestration\tasks\TASK-0020-browser-disconnect-safety\SPEC.md:58:   e2e/playtest scenario if the harness supports a mid-combat disconnect
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REVIEW.md:16:`npm run playtest` **31/31**, `npm run test:unit` **744/744**. D-109 is
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REVIEW.md:29:playtest` on the Codex tip versus a pre-0020 baseline worktree.
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REVIEW.md:40:   machine load). The spec's acceptance command `npm run playtest` was
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REVIEW.md:48:   playtest harness. Reproduce with `npm run playtest` at your tip vs
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:62:- `npm run playtest -- gear-outcomes` — PASS on isolated rerun.
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:63:- `npm run playtest` — all core scenarios exercised; one timing-sensitive
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:67:  architect review rather than changing the unrelated playtest threshold.
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:84:No product or wire-protocol deviations. The full playtest suite has a known
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:125:- `npm run playtest` on fresh port 6520 — PASS (31/31 scenarios).
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:134:`npm run playtest` (31/31). The implementation was already present on the
+orchestration\tasks\TASK-0079-browser-panel-inventory\SPEC.md:26:   from your capsule; owner :6500 untouchable) saved in the task
+orchestration\tasks\TASK-0079-browser-panel-inventory\SPEC.md:42:- `npm run playtest` untouched (no code changed — state it).
+orchestration\tasks\TASK-0112-passive-tree-engine-scaffold\SPEC.md:17:  - playtest/**
+orchestration\tasks\TASK-0087-native-panel-shell\SPEC.md:17:  - playtest/**
+orchestration\tasks\TASK-0078-native-surface-density\SPEC.md:38:- `powershell -File native/build.ps1 -RunTests -RunClientScenarios`
+orchestration\tasks\TASK-0059-responsive-overlay-pass\STATUS.md:9:expected_verification: npm run test:unit (134 files / 841 tests); PLAYTEST_PORT=6580 npm run playtest 32/32; browser smoke 1/1 on 127.0.0.1:6581; hard-fail captures CAPTURES OK at 1366x768, 1280x720, and 1920x1080
+orchestration\tasks\TASK-0059-responsive-overlay-pass\SPEC.md:12:  - server/**, native/**, playtest/** assertions
+orchestration\tasks\TASK-0059-responsive-overlay-pass\SPEC.md:38:npm run test:unit + full npm run playtest + npm run smoke:browser
+orchestration\tasks\TASK-0059-responsive-overlay-pass\REVIEW.md:7:- playtest: one 31/32 run, then two consecutive 32/32 — flake, 2nd
+orchestration\tasks\TASK-0059-responsive-overlay-pass\REVIEW.md:10:- smoke 1/1; capture script (now self-starting — 0055 nit applied)
+orchestration\tasks\TASK-0059-responsive-overlay-pass\REVIEW.md:17:  culture we want. No playtest/native changes; owned paths respected.
+orchestration\tasks\TASK-0059-responsive-overlay-pass\REPORT.md:17:owns a production server on 127.0.0.1:6582 (cursor range; never 6500).
+orchestration\tasks\TASK-0059-responsive-overlay-pass\REPORT.md:49:No `server/**`, `native/**`, or `playtest/**` assertion changes. 1920 inventory
+orchestration\tasks\TASK-0059-responsive-overlay-pass\REPORT.md:62:`npm run playtest` (PLAYTEST_PORT=6580, bind 127.0.0.1):
+orchestration\tasks\TASK-0059-responsive-overlay-pass\REPORT.md:69:Browser smoke (production dist + `start:e2e`-equivalent NODE_ENV=development
+orchestration\tasks\TASK-0059-responsive-overlay-pass\REPORT.md:70:server so `/world/players` exists; 127.0.0.1:6581, never 6500 — cursor capsule):
+orchestration\tasks\TASK-0069-remote-reconnect\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests (drop to Retrying then Ready; session-replaced stays Disconnected, no retry)
+orchestration\tasks\TASK-0069-remote-reconnect\STATUS.md:14:Remote reconnect REVIEW_REQUESTED. Gates green. See REPORT.md. Architect reruns -RunTests.
+orchestration\tasks\TASK-0081-gate-b-wire-contract\REPORT.md:54:`playtest/**` untouched.
+orchestration\tasks\TASK-0077-native-chronicles-client\SPEC.md:13:  - playtest/**
+orchestration\tasks\TASK-0077-native-chronicles-client\SPEC.md:31:build.ps1 full gates green + new Gate B session scenario green +
+orchestration\tasks\TASK-0081-gate-b-wire-contract\captures\gate-b-wire-contract.json:246:      "responseNotes": "emit_login is NOT the fresh-guestId response: at :2655-2681 the dispatch order is awaitChronicles -> player:chronicles:ready, then non-quick/non-pending guestId with empty scionName -> chronicles:state, then fall-through player:login. In-process relaunch is proven: new socket, same guest identity re-login restores session/account state including chronicle_ within a LIVE server process (matrix rows Disconnect/Reconnect cite native/tests/session_tests.cpp:409-411 and 423-425). DURABLE CROSS-PROCESS PERSISTENCE IS EXPLICITLY RED: rg -n 'ofstream|ifstream|fopen|fwrite' native/src -> no matches; no on-disk House/Scion store exists on the native tip, so a server restart loses chronicle state (JS parity store CHRONICLES_STORE_FILE lives in playtest/run.mjs:54 against the Node server, not the native server).",
+orchestration\tasks\TASK-0081-gate-b-wire-contract\SPEC.md:17:  - playtest/**
+orchestration\tasks\TASK-0052-suite-flake-hardening\STATUS.md:10:expected_verification: both scenarios green solo; full suite green under documented CPU load (0043 spinner); authentic negative (suppressed push still fails); default-mode npm run playtest green
+orchestration\tasks\TASK-0052-suite-flake-hardening\STATUS.md:17:house-treasury.mjs, using playtest/timing.mjs helpers unchanged.
+orchestration\tasks\TASK-0052-suite-flake-hardening\SPEC.md:7:  - playtest/scenarios/first-goal.mjs
+orchestration\tasks\TASK-0052-suite-flake-hardening\SPEC.md:8:  - playtest/scenarios/house-treasury.mjs
+orchestration\tasks\TASK-0052-suite-flake-hardening\SPEC.md:11:  - playtest/harness.mjs, playtest/timing.mjs (0043's guard is settled)
+orchestration\tasks\TASK-0052-suite-flake-hardening\SPEC.md:38:   (use the exported helpers from playtest/timing.mjs — do NOT edit
+orchestration\tasks\TASK-0052-suite-flake-hardening\SPEC.md:53:3. Full default-mode `npm run playtest` green transcript.
+orchestration\tasks\TASK-0052-suite-flake-hardening\REPORT.md:14:bounded, load-adaptive waits using the exported `playtest/timing.mjs`
+orchestration\tasks\TASK-0052-suite-flake-hardening\REPORT.md:15:helpers. `playtest/harness.mjs` and `playtest/timing.mjs` untouched.
+orchestration\tasks\TASK-0052-suite-flake-hardening\REPORT.md:19:- `playtest/scenarios/first-goal.mjs` — the objective-naming wait now
+orchestration\tasks\TASK-0052-suite-flake-hardening\REPORT.md:25:- `playtest/scenarios/house-treasury.mjs` — a bounded wait for the starting
+orchestration\tasks\TASK-0052-suite-flake-hardening\REPORT.md:32:- Solo, default mode: `npm run playtest -- first-goal house-treasury` —
+orchestration\tasks\TASK-0052-suite-flake-hardening\REPORT.md:51:- Default full suite, no load: `npm run playtest` — 32/32 PASS.
+orchestration\tasks\TASK-0086-gate-c-contract-audit\FINDINGS.md:29:  `playtest/scenarios/world-web.mjs`, `playtest/scenarios/quest.mjs`.
+orchestration\tasks\TASK-0086-gate-c-contract-audit\FINDINGS.md:61:`playtest/scenarios/world-web.mjs:39-41` ("the ${wardenName} keeps the
+orchestration\tasks\TASK-0086-gate-c-contract-audit\FINDINGS.md:70:(`playtest/scenarios/quest.mjs:175-178`). Native drop pipeline comment even
+orchestration\tasks\TASK-0085-denylist-exception-audit\SPEC.md:17:  - playtest/**
+orchestration\tasks\TASK-0039-native-protocol-server-n1\STATUS.md:11:expected_verification: native/build.ps1 -RunTests; quickstart and single-session against C++ server; ADR-003 comparison and transcripts
+orchestration\tasks\TASK-0039-native-protocol-server-n1\STATUS.md:16:verification: native/build.ps1 -RunTests PASS (core, networking, denylist); unchanged harness quickstart + single-session against verdigris_server on port 6511 PASS 2/2; diff-check PASS; architect review required for ADR-003 and D-115 protocol play
+orchestration\tasks\TASK-0039-native-protocol-server-n1\SPEC.md:16:  - native/build.ps1
+orchestration\tasks\TASK-0039-native-protocol-server-n1\SPEC.md:25:  - powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0039-native-protocol-server-n1\SPEC.md:32:enough that the UNCHANGED playtest harness passes its `quickstart` and
+orchestration\tasks\TASK-0039-native-protocol-server-n1\SPEC.md:33:`single-session` scenarios against it on :6500.
+orchestration\tasks\TASK-0039-native-protocol-server-n1\SPEC.md:53:2. A `verdigris_server` target: accepts WS connections on :6500, parses
+orchestration\tasks\TASK-0039-native-protocol-server-n1\SPEC.md:60:   (check how playtest boots; if it serves via the JS process only, the
+orchestration\tasks\TASK-0039-native-protocol-server-n1\SPEC.md:64:   README-documented command to run the playtest scenarios against the
+orchestration\tasks\TASK-0039-native-protocol-server-n1\SPEC.md:77:- `quickstart` + `single-session` playtest scenarios PASS against the
+orchestration\tasks\TASK-0039-native-protocol-server-n1\SPEC.md:80:  + harness override if 6500 is occupied; document).
+orchestration\tasks\TASK-0039-native-protocol-server-n1\SPEC.md:93:lives in playtest config — ask first).
+orchestration\tasks\TASK-0039-native-protocol-server-n1\REVIEW.md:16:the UNCHANGED playtest harness against it —
+orchestration\tasks\TASK-0106-deterministic-replay-runner\SPEC.md:16:Scaffold then implement a versioned command/seed/tick replay artifact and a
+orchestration\tasks\TASK-0081-gate-b-wire-contract\STATUS.md:12:- ports: 6620-6639 loopback only (this audit task is expected to need no server); port 6500 untouched
+orchestration\tasks\TASK-0039-native-protocol-server-n1\REPORT.md:40:- `native/build.ps1`
+orchestration\tasks\TASK-0039-native-protocol-server-n1\REPORT.md:51:- `powershell -NoProfile -File native/build.ps1 -RunTests` — PASS: core tests,
+orchestration\tasks\TASK-0039-native-protocol-server-n1\REPORT.md:53:- `node playtest/run.mjs --attach quickstart single-session` with
+orchestration\tasks\TASK-0039-native-protocol-server-n1\REPORT.md:82:current tip as `76ed1839` and `6aec15bc`. No JS server, client, or playtest
+orchestration\tasks\TASK-0084-reference-capture-manifest\SPEC.md:18:  - playtest/**
+orchestration\tasks\TASK-0103-monster-encounter-gap-audit\SPEC.md:35:rg -n "monster|pack|spawn|rarity|unique|warden|boss|aggro|telegraph|elite|role" native/include native/src native/client native/tests playtest/scenarios
+orchestration\tasks\TASK-0018-death-recoverability\STATUS.md:11:expected_verification: powershell -NoProfile -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0018-death-recoverability\STATUS.md:18:verification: powershell -NoProfile -File native/build.ps1 -RunTests (PASS); git diff --check (PASS); named D-106 recovery/replay tests (PASS)
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\SPEC.md:35:rg -n "passive|tree|questPoints|attribute|strength|dexterity|intelligence|allocate|271|hex" native/include native/src native/client native/tests playtest docs/rebuild
+orchestration\tasks\TASK-0018-death-recoverability\SPEC.md:17:  - native/build.ps1
+orchestration\tasks\TASK-0018-death-recoverability\SPEC.md:23:  - powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\REPORT.md:30:   `playtest/scenarios/*`, `playtest/critic.mjs`,
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\REPORT.md:38:5. Wrote evidence artifacts inside the task folder only; ran all four
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\REPORT.md:60:PS Z:\Code\.worktrees\verdigris\ox-pc-d> rg -n "passive|tree|questPoints|attribute|strength|dexterity|intelligence|allocate|271|hex" native/include native/src native/client native/tests playtest docs/rebuild
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\REPORT.md:62:native/client, playtest, docs/rebuild — key hits: networking.cpp:553,815,818-828,1082,1092-1155,1157-1166,1374,1542,1597,2014-2021,2453,2644;
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\REPORT.md:157:   port 6500 untouched.
+orchestration\tasks\TASK-0018-death-recoverability\REPORT.md:38:- `powershell -NoProfile -File native/build.ps1 -RunTests` — PASS;
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\FINDINGS.md:14:hard-fail playtest scenarios pinning it. The native server currently
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\FINDINGS.md:65:| TS-1 | Tests | authoritative (browser) / gap (native) | 3 unit specs + 7 playtest scenarios + critic metric vs **zero** native progression tests |
+orchestration\tasks\TASK-0086-gate-c-contract-audit\captures\gate-c-contract.json:38:      "playtest/scenarios/world-web.mjs",
+orchestration\tasks\TASK-0086-gate-c-contract-audit\captures\gate-c-contract.json:39:      "playtest/scenarios/quest.mjs"
+orchestration\tasks\TASK-0086-gate-c-contract-audit\captures\gate-c-contract.json:76:          "test": "playtest/scenarios/world-web.mjs:22-26 ('the north gate reads the Tin Road', 'tier 1 is charted from the start', 'deeper stages stay off the chart until the Warden falls')"
+orchestration\tasks\TASK-0086-gate-c-contract-audit\captures\gate-c-contract.json:120:          "test": "playtest/scenarios/world-web.mjs:39-41"
+orchestration\tasks\TASK-0086-gate-c-contract-audit\captures\gate-c-contract.json:129:      "notes": "Named boss identity and a coarse difficulty band are on the wire pre-choice. Exact monster composition is only visible after entry (playtest/scenarios/world-web.mjs:39)."
+orchestration\tasks\TASK-0086-gate-c-contract-audit\captures\gate-c-contract.json:149:          "test": "playtest/scenarios/quest.mjs:175-178 ('the quest guardian guarantees a native Vessel drop'), :287"
+orchestration\tasks\TASK-0086-gate-c-contract-audit\captures\gate-c-contract.json:154:          "test": "playtest/scenarios/world-web.mjs:21-26 (chart payload asserted without any reward key)"
+orchestration\tasks\TASK-0086-gate-c-contract-audit\captures\gate-c-contract.json:173:          "test": "playtest/scenarios/world-web.mjs:76 ('the child zone is one stage deeper')"
+orchestration\tasks\TASK-0086-gate-c-contract-audit\captures\gate-c-contract.json:183:          "test": "playtest/scenarios/quest.mjs:255-264"
+orchestration\tasks\TASK-0086-gate-c-contract-audit\captures\gate-c-contract.json:227:          "test": "playtest/scenarios/world-web.mjs:25-26,86-87"
+orchestration\tasks\TASK-0086-gate-c-contract-audit\captures\gate-c-contract.json:266:          "test": "playtest/scenarios/world-web.mjs:92-98,108-110"
+orchestration\tasks\TASK-0099-native-performance-budget-audit\SPEC.md:34:rg -n "benchmark|duration|latency|frame|memory|density|soak|p95|p99|timing" native orchestration playtest --glob "*.md" --glob "*.json" --glob "*.mjs" --glob "*.cpp" --glob "*.ps1"
+orchestration\tasks\TASK-0051-native-client-harness\STATUS.md:9:expected_verification: powershell -File native/build.ps1 -RunTests -RunClientScenarios (all scenarios PASS); one authentic negative; README note
+orchestration\tasks\TASK-0051-native-client-harness\STATUS.md:19:- `native/build.ps1 -RunClientScenarios` gate wired.
+orchestration\tasks\TASK-0051-native-client-harness\SPEC.md:10:  - playtest/**, server/**, src/**
+orchestration\tasks\TASK-0051-native-client-harness\SPEC.md:21:so client regressions are caught the way playtest catches server
+orchestration\tasks\TASK-0051-native-client-harness\SPEC.md:46:4. **Gate wiring**: `native/build.ps1 -RunTests` (or a new
+orchestration\tasks\TASK-0051-native-client-harness\SPEC.md:47:   `-RunClientScenarios` flag wired into CI) runs the scenario set;
+orchestration\tasks\TASK-0051-native-client-harness\REVIEW.md:13:  PASS, headless proof 1|1, `-RunClientScenarios` all 4 PASS.
+orchestration\tasks\TASK-0051-native-client-harness\REPORT.md:14:The native client now has what the server playtest has: an automated,
+orchestration\tasks\TASK-0051-native-client-harness\REPORT.md:17:regressions are caught the way playtest catches server regressions. Four
+orchestration\tasks\TASK-0051-native-client-harness\REPORT.md:35:4. **Gate wiring** — `native/build.ps1 -RunClientScenarios` runs the full set.
+orchestration\tasks\TASK-0051-native-client-harness\REPORT.md:42:- `native/build.ps1` — `-RunClientScenarios` flag
+orchestration\tasks\TASK-0051-native-client-harness\REPORT.md:46:No `playtest/**`, `server/**`, or `src/**` changes. No core
+orchestration\tasks\TASK-0051-native-client-harness\REPORT.md:51:`powershell -File native/build.ps1 -RunTests -RunClient -RunClientScenarios`:
+orchestration\tasks\TASK-0076-native-hud-parity\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests -RunClientScenarios; Orb/Quickbar/Minimap asserts; captures 1920+1366
+orchestration\tasks\TASK-0076-native-hud-parity\REPORT.md:37:`powershell -File native/build.ps1 -RunTests -RunClientScenarios` (2026-08-20,
+orchestration\tasks\TASK-0013-client-telegraph-rendering\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests -RunClient; driven route:tin:2:0 telegraph pass
+orchestration\tasks\TASK-0013-client-telegraph-rendering\STATUS.md:22:integration_verification: powershell -NoProfile -File native/build.ps1 -RunTests -RunClient; git diff --check
+orchestration\tasks\TASK-0013-client-telegraph-rendering\SPEC.md:16:  - native/build.ps1
+orchestration\tasks\TASK-0013-client-telegraph-rendering\SPEC.md:22:  - powershell -File native/build.ps1 -RunTests -RunClient
+orchestration\tasks\TASK-0013-client-telegraph-rendering\SPEC.md:69:- `build.ps1 -RunTests -RunClient` exits 0; headless output unchanged.
+orchestration\tasks\TASK-0013-client-telegraph-rendering\REVIEW.md:10:Client-only diff at `c2d62c3`, independent `build.ps1 -RunTests
+orchestration\tasks\TASK-0013-client-telegraph-rendering\REPORT.md:39:- `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` — PASS
+orchestration\tasks\TASK-0013-client-telegraph-rendering\REPORT.md:78:tip passed `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient`
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:49:        "playtest/scenarios/session-arc.mjs levels through real kills"
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:55:      "tests": ["playtest/scenarios/session-arc.mjs (level via real kills)", "native/tests/networking_tests.cpp dev:state coverage"]
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:69:      "tests": ["tests/unit/verdigris-authority.spec.js", "playtest/scenarios/build-divergence.mjs devSetLevel(20) then save"]
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:81:      "tests": ["playtest/scenarios/build-divergence.mjs asserts STR path beats INT path on strength"]
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:99:        "playtest/scenarios/build-divergence.mjs passes against the BROWSER authority (STR/INT divergence >=15%)",
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:120:        "playtest/scenarios/quest.mjs:120,201,266,336 one point per commission",
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:121:        "playtest/scenarios/quest.mjs:348 points survive relogging"
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:144:        "playtest/scenarios/first-goal.mjs:73-74 state.questPoints===1 and passiveTree.earned+1",
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:145:        "playtest/scenarios/session-arc.mjs:158 goal reward grants exactly one Verdigris point"
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:162:        "playtest/harness.mjs:539-541 saveSkillTree helper"
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:164:      "tests": ["playtest/scenarios/skilltree.mjs end-to-end save/relog", "playtest/scenarios/build-divergence.mjs axis builds via handleNodeClick/handleConduitClick"]
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:191:      "tests": ["playtest/scenarios/build-divergence.mjs allocateNodeToward walks 'q,r' ids along an axis"]
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:227:        "playtest/scenarios/skilltree.mjs (saved build survives full relog)",
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:228:        "playtest/scenarios/quest.mjs:348 (chain points survive relog)",
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:250:      "tests": ["native/tests/networking_tests.cpp request/response id echo + state wire checks", "playtest harness exposes state().passiveTree/questPoints/attributes"]
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:272:      "summary": "Browser-side progression is test-pinned at three layers (unit specs, hard-fail playtest scenarios, critic metric). Native has ZERO progression tests: rg finds no skilltree/passive/questPoint references under native/tests; the approximation and the unvalidated save path are unpinned.",
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:277:        "playtest/scenarios/{first-goal,quest,skilltree,build-divergence,session-arc,persistence,mortality}.mjs",
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:278:        "playtest/critic.mjs:36-41 meaningfulChoices.treePoints metric"
+orchestration\tasks\TASK-0086-gate-c-contract-audit\REPORT.md:47:`playtest/**`, `docs/product/**`) untouched.
+orchestration\tasks\TASK-0086-gate-c-contract-audit\REPORT.md:66:$ rg -n 'world:road:chart|world:zone:enter|nodeId|warden|trophy|depth|stairs|extract' native/src/networking.cpp native/tests/networking_tests.cpp playtest/scenarios/world-web.mjs playtest/scenarios/quest.mjs
+orchestration\tasks\TASK-0086-gate-c-contract-audit\REPORT.md:78:and scenario assertions (`playtest/scenarios/world-web.mjs:31,34,40-41,54,74-79,101,104,110`;
+orchestration\tasks\TASK-0086-gate-c-contract-audit\REPORT.md:79:`playtest/scenarios/quest.mjs:255-260,325`).
+orchestration\tasks\TASK-0086-gate-c-contract-audit\REPORT.md:163:   cites the artifact instead of the session transcript.
+orchestration\tasks\TASK-0064-remote-presentation-unify\REPORT.md:53:- `native/CMakeLists.txt`, `native/build.ps1` — compile/link presentation_state
+orchestration\tasks\TASK-0064-remote-presentation-unify\REPORT.md:58:`powershell -File native/build.ps1 -RunTests -RunClientScenarios` (2026-08-20):
+orchestration\tasks\TASK-0064-remote-presentation-unify\REVIEW.md:5:- build.ps1 -RunTests -RunClientScenarios: all green, incl. the new
+orchestration\tasks\TASK-0015-core-presentation-catalog\STATUS.md:11:expected_verification: powershell -NoProfile -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0015-core-presentation-catalog\STATUS.md:16:verification: powershell -NoProfile -File native/build.ps1 -RunTests (PASS); git diff --check (PASS); single-definition audit (PASS)
+orchestration\tasks\TASK-0015-core-presentation-catalog\STATUS.md:21:integration_verification: powershell -NoProfile -File native/build.ps1 -RunTests; git diff --check; single-definition audit all PASS
+orchestration\tasks\TASK-0015-core-presentation-catalog\SPEC.md:17:  - native/build.ps1
+orchestration\tasks\TASK-0015-core-presentation-catalog\SPEC.md:23:  - powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0015-core-presentation-catalog\SPEC.md:60:`build.ps1 -RunTests` green with the scope-2 tests; a grep in REPORT.md
+orchestration\tasks\TASK-0015-core-presentation-catalog\REVIEW.md:10:The catalog diff at `76ff52d` and an independent `build.ps1 -RunTests`
+orchestration\tasks\TASK-0015-core-presentation-catalog\REPORT.md:23:- `powershell -NoProfile -File native/build.ps1 -RunTests` — PASS; denylist and
+orchestration\tasks\TASK-0017-native-movement-feel\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests -RunClient
+orchestration\tasks\TASK-0017-native-movement-feel\STATUS.md:15:verification: powershell -NoProfile -File native/build.ps1 -RunTests -RunClient PASS; denylist PASS; core tests PASS; headless client PASS; git diff --check PASS
+orchestration\tasks\TASK-0017-native-movement-feel\SPEC.md:17:  - native/build.ps1
+orchestration\tasks\TASK-0017-native-movement-feel\SPEC.md:23:  - powershell -File native/build.ps1 -RunTests -RunClient
+orchestration\tasks\TASK-0017-native-movement-feel\REVIEW.md:10:The core+client diff, an independent `build.ps1 -RunTests -RunClient`
+orchestration\tasks\TASK-0017-native-movement-feel\REPORT.md:54:- `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` — PASS
+orchestration\tasks\TASK-0017-native-movement-feel\REPORT.md:92:`powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` passed the
+orchestration\tasks\TASK-0014-smoke-browser-repair\REPORT.md:1:# TASK-0014 report — repair the `smoke:browser` lifecycle
+orchestration\tasks\TASK-0014-smoke-browser-repair\REPORT.md:5:Repaired the documented `npm run smoke:browser` gate so it boots the same
+orchestration\tasks\TASK-0014-smoke-browser-repair\REPORT.md:8:selection, and port 6500 remain unchanged.
+orchestration\tasks\TASK-0014-smoke-browser-repair\REPORT.md:12:Changed only the `smoke:browser` script in `package.json`:
+orchestration\tasks\TASK-0014-smoke-browser-repair\REPORT.md:15:npm run build && start-server-and-test start:e2e http://127.0.0.1:6500 "playwright test tests/e2e/browser-critical-loop.spec.mjs"
+orchestration\tasks\TASK-0014-smoke-browser-repair\REPORT.md:28:- `npm run smoke:browser` — PASS; Vite build completed and the critical browser
+orchestration\tasks\TASK-0014-smoke-browser-repair\REPORT.md:33:  `Get-NetTCPConnection -LocalPort 6500 -State Listen` check returned no
+orchestration\tasks\TASK-0014-smoke-browser-repair\REPORT.md:34:  listener (`port 6500 released`).
+orchestration\tasks\TASK-0014-smoke-browser-repair\STATUS.md:10:expected_verification: npm run smoke:browser; npm run test:e2e; verify port 6500 is released
+orchestration\tasks\TASK-0014-smoke-browser-repair\STATUS.md:11:known_risks: keep the change to the package.json smoke:browser script only; preserve the existing build step and port 6500 lifecycle
+orchestration\tasks\TASK-0014-smoke-browser-repair\STATUS.md:15:verification: npm run smoke:browser (1 passed, port 6500 released); npm run test:e2e (3 passed, port 6500 released); git diff --check PASS
+orchestration\tasks\TASK-0014-smoke-browser-repair\STATUS.md:20:integration_verification: npm run smoke:browser; npm run test:e2e; port 6500 released after each; git diff --check PASS
+orchestration\tasks\TASK-0014-smoke-browser-repair\SPEC.md:3:title: Repair the smoke:browser gate's server lifecycle
+orchestration\tasks\TASK-0014-smoke-browser-repair\SPEC.md:20:  - npm run smoke:browser
+orchestration\tasks\TASK-0014-smoke-browser-repair\SPEC.md:25:`npm run smoke:browser` boots the browser server exactly like
+orchestration\tasks\TASK-0014-smoke-browser-repair\SPEC.md:31:AGENTS.md documents `smoke:browser` as the required browser gate for
+orchestration\tasks\TASK-0014-smoke-browser-repair\SPEC.md:38:- Preserve the command name (documented in AGENTS.md); port 6500 stays
+orchestration\tasks\TASK-0014-smoke-browser-repair\SPEC.md:42:- The script's build step must be preserved (smoke gate covers the built
+orchestration\tasks\TASK-0014-smoke-browser-repair\SPEC.md:49:Adjust ONLY the `smoke:browser` script line in `package.json`.
+orchestration\tasks\TASK-0014-smoke-browser-repair\SPEC.md:62:- `npm run smoke:browser` exits 0 with all browser tests passing and no
+orchestration\tasks\TASK-0014-smoke-browser-repair\SPEC.md:66:  6500 is free post-run.
+orchestration\tasks\TASK-0014-smoke-browser-repair\SPEC.md:71:proof that 6500 is released.
+orchestration\tasks\TASK-0014-smoke-browser-repair\REVIEW.md:10:The one-line `package.json` diff and an independent `npm run smoke:browser`
+orchestration\tasks\TASK-0014-smoke-browser-repair\REVIEW.md:13:port 6500 released afterward (verified via Get-NetTCPConnection).
+orchestration\tasks\TASK-0011-monster-skill-ai\REPORT.md:44:- `powershell -File native/build.ps1 -RunTests` — PASS.
+orchestration\tasks\TASK-0011-monster-skill-ai\REVIEW.md:12:`build.ps1 -RunTests` rerun (denylist + all tests green).
+orchestration\tasks\TASK-0016-native-billboard-experiment\STATUS.md:11:expected_verification: powershell -NoProfile -File native/build.ps1 -RunTests -RunClient; driven PrintWindow asset and fallback captures
+orchestration\tasks\TASK-0016-native-billboard-experiment\STATUS.md:18:verification: powershell -NoProfile -File native/build.ps1 -RunTests -RunClient (PASS); git diff --check (PASS); driven asset/fallback PrintWindow captures (PASS)
+orchestration\tasks\TASK-0016-native-billboard-experiment\SPEC.md:17:  - native/build.ps1
+orchestration\tasks\TASK-0016-native-billboard-experiment\SPEC.md:26:  - powershell -File native/build.ps1 -RunTests -RunClient
+orchestration\tasks\TASK-0016-native-billboard-experiment\SPEC.md:85:- `build.ps1 -RunTests -RunClient` green; headless unchanged.
+orchestration\tasks\TASK-0016-native-billboard-experiment\REPORT.md:33:- `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` — PASS;
+orchestration\tasks\TASK-0032-browser-d106-implementation\REPORT.md:25:- Integration playtest: clean rerun 31/31 scenarios passed; isolated earlier
+orchestration\tasks\TASK-0032-browser-d106-implementation\REPORT.md:27:- Architect independently reran `npm run smoke:browser`: 1/1 passed and port
+orchestration\tasks\TASK-0032-browser-d106-implementation\REPORT.md:28:  6500 was released. A later local attempt encountered the owner’s persistent
+orchestration\tasks\TASK-0032-browser-d106-implementation\REPORT.md:29:  PM2 listener on port 6500 (PID 10276), which was preserved.
+orchestration\tasks\TASK-0029-browser-25d-phase5\REPORT.md:51:- Browser smoke: `npm run smoke:browser` — 1/1 passed; port 6500 released.
+orchestration\tasks\TASK-0029-browser-25d-phase5\REPORT.md:52:- Playtest: `npm run playtest` — 31/31 scenarios passed on the coordinator run.
+orchestration\tasks\TASK-0029-browser-25d-phase5\SPEC.md:23:  - npm run smoke:browser
+orchestration\tasks\TASK-0086-gate-c-contract-audit\REVIEW.md:40:   `captures/` folder, and make REPORT cite that durable artifact plus exit 0.
+orchestration\tasks\TASK-0029-browser-25d-phase5\STATUS.md:10:expected_verification: npm run test:unit; npm run smoke:browser; npm run playtest; scripted frame-time measurement (mean+p95 over >=10s); visual parity captures
+orchestration\tasks\TASK-0032-browser-d106-implementation\REVIEW.md:12:evidence (757/757 unit, playtest 31/31, focused suites 46), and the one
+orchestration\tasks\TASK-0032-browser-d106-implementation\REVIEW.md:13:gate the worker could not run — `smoke:browser` — which I ran myself on
+orchestration\tasks\TASK-0032-browser-d106-implementation\REVIEW.md:14:their worktree once the owner's session freed port 6500: **1/1 PASS,
+orchestration\tasks\TASK-0032-browser-d106-implementation\SPEC.md:22:  - npm run playtest
+orchestration\tasks\TASK-0032-browser-d106-implementation\SPEC.md:23:  - npm run smoke:browser
+orchestration\tasks\TASK-0032-browser-d106-implementation\SPEC.md:66:- All three gates green (playtest 31/31 — the respawn/session-arc/zones
+orchestration\tasks\TASK-0032-browser-d106-implementation\SPEC.md:76:remains; store-authority convergence; playtest stability.
+orchestration\tasks\TASK-0064-remote-presentation-unify\STATUS.md:8:expected_verification: powershell -File native/build.ps1 -RunTests -RunClientScenarios; architect plays --remote and rescores Gate A rubric (no zeroes, >=9/12)
+orchestration\tasks\TASK-0064-remote-presentation-unify\SPEC.md:13:  - playtest/**
+orchestration\tasks\TASK-0064-remote-presentation-unify\SPEC.md:35:build.ps1 -RunTests -RunClientScenarios green + remote render-list
+orchestration\tasks\TASK-0028-native-scenery-and-catalog\REPORT.md:44:- `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` — PASS
+orchestration\tasks\TASK-0030-native-persistence\STATUS.md:11:expected_verification: powershell -File native/build.ps1 -RunTests; round-trip byte equality; deterministic continuation; D-109 mid-instance semantics; unknown-field tolerance
+orchestration\tasks\TASK-0030-native-persistence\SPEC.md:18:  - native/build.ps1
+orchestration\tasks\TASK-0030-native-persistence\SPEC.md:24:  - powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0030-native-persistence\REPORT.md:49:- `powershell -File native/build.ps1 -RunTests` — passed (denylist and core
+orchestration\tasks\TASK-0011-monster-skill-ai\SPEC.md:17:  - native/build.ps1
+orchestration\tasks\TASK-0011-monster-skill-ai\SPEC.md:23:  - powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0011-monster-skill-ai\SPEC.md:84:`build.ps1 -RunTests` exits 0 with the scope-3 tests named in REPORT.md.
+orchestration\tasks\TASK-0011-monster-skill-ai\SPEC.md:89:powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0011-monster-skill-ai\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0011-monster-skill-ai\STATUS.md:22:integration_verification: powershell -NoProfile -File native/build.ps1 -RunTests -RunClient; git diff --check
+orchestration\tasks\TASK-0037-movement-feel-rework\REPORT.md:63:- `npm run playtest` — 31/31 scenarios passed.
+orchestration\tasks\TASK-0037-movement-feel-rework\REPORT.md:67:- Standard smoke wrapper could not start against the pre-existing owner
+orchestration\tasks\TASK-0037-movement-feel-rework\REPORT.md:68:  listener PID 10276 on port 6500; its stale app returned HTML for the API
+orchestration\tasks\TASK-0037-movement-feel-rework\REPORT.md:89:The pinned 6500 smoke wrapper remains environment-blocked by the existing
+orchestration\tasks\TASK-0037-movement-feel-rework\REPORT.md:140:alternate browser gate 1/1 on port 6512. A full playtest retry reached 25/31;
+orchestration\tasks\TASK-0037-movement-feel-rework\STATUS.md:11:expected_verification: npm run test:unit; npm run playtest; npm run smoke:browser; diagnosis evidence; movement constants table; dense walk/turn/diagonal captures
+orchestration\tasks\TASK-0037-movement-feel-rework\STATUS.md:16:verification: current-tip revision full unit 120 files/768 tests; empty rendering diff against 6e277cf4; alternate browser gate 1/1; playtest retry 25/31 with six isolated fixture reruns passing; dense movement captures committed
+orchestration\tasks\TASK-0037-movement-feel-rework\SPEC.md:24:  - npm run playtest
+orchestration\tasks\TASK-0037-movement-feel-rework\SPEC.md:25:  - npm run smoke:browser
+orchestration\tasks\TASK-0037-movement-feel-rework\SPEC.md:55:- All three gates green (playtest movement scenarios may need deliberate
+orchestration\tasks\TASK-0037-movement-feel-rework\REVIEW.md:12:well-evidenced), and the gates (764 unit, playtest 31/31, alternate-port
+orchestration\tasks\TASK-0037-movement-feel-rework\REVIEW.md:13:smoke — the port-6500 owner-listener handling was correct).
+orchestration\tasks\TASK-0037-movement-feel-rework\REVIEW.md:31:2. Rerun unit + playtest on the corrected base; alternate-port smoke
+orchestration\tasks\TASK-0037-movement-feel-rework\REVIEW.md:32:   again acceptable if 6500 is occupied.
+orchestration\tasks\TASK-0037-movement-feel-rework\REVIEW.md:68:tip SHA used into REPORT.md. Then rerun unit + playtest on the merged
+orchestration\tasks\TASK-0037-movement-feel-rework\REVIEW.md:80:current base with gates green (764 unit, playtest 31/31, alternate-port
+orchestration\tasks\TASK-0037-movement-feel-rework\REVIEW.md:81:smoke). The dense movement captures support the smoothness claim; final
+orchestration\tasks\TASK-0038-combat-controls-rebinding\STATUS.md:12:verification: npm run test:unit GREEN (123 files/788 tests); npm run smoke:browser GREEN (1 passed); npm run playtest GREEN (31/31); captures green (rebinding UI, rebind survives reload, LMB/RMB attacks with player:skill:trigger + world:skill:effect frame evidence)
+orchestration\tasks\TASK-0086-gate-c-contract-audit\SPEC.md:16:  - playtest/**
+orchestration\tasks\TASK-0086-gate-c-contract-audit\SPEC.md:39:rg -n 'world:road:chart|world:zone:enter|nodeId|warden|trophy|depth|stairs|extract' native/src/networking.cpp native/tests/networking_tests.cpp playtest/scenarios/world-web.mjs playtest/scenarios/quest.mjs
+orchestration\tasks\TASK-0038-combat-controls-rebinding\SPEC.md:24:  - npm run smoke:browser
+orchestration\tasks\TASK-0038-combat-controls-rebinding\REPORT.md:117:`npm run smoke:browser` — green (includes build; the updated e2e spec
+orchestration\tasks\TASK-0038-combat-controls-rebinding\REPORT.md:125:`npm run playtest` — green:
+orchestration\tasks\TASK-0038-combat-controls-rebinding\REPORT.md:142:real server on 127.0.0.1:6500; guest login → world):
+orchestration\tasks\TASK-0038-combat-controls-rebinding\REVIEW.md:26:  playtest 31/31 (default mode, 123ms peak ambient lag — the 0043
+orchestration\tasks\TASK-0050-native-client-c1\STATUS.md:9:expected_verification: powershell -File native/build.ps1 -RunTests -RunClient (camera2d PASS + headless trophies/items 1/1); documented manual play sequence
+orchestration\tasks\TASK-0050-native-client-c1\SPEC.md:10:  - playtest/**, server/**, src/** (browser untouched)
+orchestration\tasks\TASK-0050-native-client-c1\SPEC.md:52:  Already wired into `native/build.ps1 -RunTests` and green.
+orchestration\tasks\TASK-0050-native-client-c1\SPEC.md:78:5. Rebuild: `powershell -File native/build.ps1 -RunTests -RunClient`.
+orchestration\tasks\TASK-0050-native-client-c1\SPEC.md:96:1. `powershell -File native/build.ps1 -RunTests -RunClient` literal
+orchestration\tasks\TASK-0050-native-client-c1\REPORT.md:73:`powershell -File native/build.ps1 -RunTests -RunClient`:
+orchestration\tasks\TASK-0027-browser-25d-phase4\STATUS.md:10:expected_verification: npm run test:unit; npm run smoke:browser; npm run playtest (browser-track gate)
+orchestration\tasks\TASK-0027-browser-25d-phase4\STATUS.md:22:integration_verification: npm run test:unit (116 files/747 tests); npm run smoke:browser (1/1); npm run playtest (31/31)
+orchestration\tasks\TASK-0027-browser-25d-phase4\SPEC.md:23:  - npm run smoke:browser
+orchestration\tasks\TASK-0032-browser-d106-implementation\STATUS.md:11:expected_verification: npm run test:unit; npm run playtest; npm run smoke:browser; one named test per audit delta row; old-format migration test
+orchestration\tasks\TASK-0032-browser-d106-implementation\STATUS.md:19:integration_verification: unit 757/757; playtest 31/31; architect smoke 1/1; local smoke rerun blocked by owner PM2 PID 10276 on port 6500
+orchestration\tasks\TASK-0027-browser-25d-phase4\REVIEW.md:14:was correctly left untouched. Gates: 747/747 unit, smoke 1/1, playtest
+orchestration\tasks\TASK-0027-browser-25d-phase4\REPORT.md:46:- Browser smoke: `npm run smoke:browser` — 1/1 passed on the clean rerun.
+orchestration\tasks\TASK-0027-browser-25d-phase4\REPORT.md:47:- Full playtest: first run had the existing timing-sensitive `gear-outcomes`
+orchestration\tasks\TASK-0027-browser-25d-phase4\REPORT.md:74:- Capture harness still requires a running local server on port 6500 for
+orchestration\tasks\TASK-0075-native-terrain-tiles\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests -RunClientScenarios; --reference-scene all; side-by-side floor gap closed
+orchestration\tasks\TASK-0075-native-terrain-tiles\SPEC.md:40:build.ps1 -RunTests -RunClientScenarios green (render-list scenario
+orchestration\tasks\TASK-0028-native-scenery-and-catalog\SPEC.md:16:  - native/build.ps1
+orchestration\tasks\TASK-0028-native-scenery-and-catalog\SPEC.md:22:  - powershell -File native/build.ps1 -RunTests -RunClient
+orchestration\tasks\TASK-0028-native-scenery-and-catalog\STATUS.md:11:expected_verification: powershell -File native/build.ps1 -RunTests -RunClient; git diff --check; driven native client pass with task captures
+orchestration\tasks\TASK-0028-native-scenery-and-catalog\STATUS.md:19:validator_result: FUNCTIONAL ACCEPT — scope, swept collision, depth captures, and gates pass; coordinator artifacts now complete
+orchestration\tasks\TASK-0075-native-terrain-tiles\REPORT.md:38:`powershell -File native/build.ps1 -RunTests -RunClientScenarios` (2026-08-20,
+orchestration\tasks\TASK-0012-slice-camera-evidence\REPORT.md:167:driver was removed after the run, leaving the nine JPEG artifacts and this
+orchestration\tasks\TASK-0035-native-exe-triage\SPEC.md:17:  - native/build.ps1
+orchestration\tasks\TASK-0035-native-exe-triage\SPEC.md:23:  - powershell -File native/build.ps1 -RunTests -RunClient
+orchestration\tasks\TASK-0035-native-exe-triage\REVIEW.md:57:powershell -File native/build.ps1 -RunTests -RunClient
+orchestration\tasks\TASK-0035-native-exe-triage\REPORT.md:53:- `powershell -File native/build.ps1 -RunTests -RunClient` — passed.
+orchestration\tasks\TASK-0036-ui-regression-sweep\STATUS.md:11:expected_verification: npm run test:unit; npm run smoke:browser; before/after inventory captures at 1920x1080 and ~1366x768; complete pane gallery and ranked defect report
+orchestration\tasks\TASK-0036-ui-regression-sweep\STATUS.md:16:verification: unit 118 files/757 tests; build pass; smoke 1/1 on alternate port 6512; complete gallery committed
+orchestration\tasks\TASK-0036-ui-regression-sweep\SPEC.md:22:  - npm run smoke:browser
+orchestration\tasks\TASK-0036-ui-regression-sweep\REPORT.md:38:- `npm run smoke:browser` — 1/1 passed on alternate `PORT=6512` with
+orchestration\tasks\TASK-0036-ui-regression-sweep\REPORT.md:39:  `PLAYWRIGHT_BASE_URL=http://127.0.0.1:6512`; owner PID 10276 on 6500 was
+orchestration\tasks\TASK-0086-gate-c-contract-audit\STATUS.md:10:ports: 6660-6679 (loopback only; never 6500)
+orchestration\tasks\TASK-0044-native-protocol-n2\BASELINE.md:15:node playtest/run.mjs --attach movement zones
+orchestration\tasks\TASK-0044-native-protocol-n2\BASELINE.md:38:to map the harness verbs without editing `playtest/**`.
+orchestration\tasks\TASK-0044-native-protocol-n2\BASELINE.md:85:native/build.ps1 -RunTests` no longer reached the test gate: MSVC stopped in
+orchestration\tasks\TASK-0044-native-protocol-n2\BASELINE.md:103:- `powershell -NoProfile -File native/build.ps1 -RunTests` passed the legacy
+orchestration\tasks\TASK-0044-native-protocol-n2\BASELINE.md:107:  `node playtest/run.mjs --attach movement zones`: **2/2**.
+orchestration\tasks\TASK-0044-native-protocol-n2\BASELINE.md:124:- `native/build.ps1 -RunTests` prints `FAIL: N2 stair return restores the
+orchestration\tasks\TASK-0044-native-protocol-n2\BASELINE.md:159:`native/build.ps1 -RunTests -RunClient`: denylist, core/networking tests, and
+orchestration\tasks\TASK-0033-daytime-default\STATUS.md:10:expected_verification: npm run test:unit; npm run smoke:browser; default-midday and opt-in-cycle captures; reload persistence
+orchestration\tasks\TASK-0033-daytime-default\STATUS.md:18:integration_verification: npm run test:unit — 119 files / 761 tests passed; npm run build passed; npm run smoke:browser could not complete against the pre-existing owner listener on port 6500 and was preserved
+orchestration\tasks\TASK-0033-daytime-default\SPEC.md:23:  - npm run smoke:browser
+orchestration\tasks\TASK-0033-daytime-default\REPORT.md:39:- Build passed as part of the browser smoke attempt.
+orchestration\tasks\TASK-0033-daytime-default\REPORT.md:53:- Standard `npm run smoke:browser` could not complete because the pre-existing
+orchestration\tasks\TASK-0033-daytime-default\REPORT.md:54:  port-6500 process occupied the pinned port; it was not terminated.
+orchestration\tasks\TASK-0033-daytime-default\REPORT.md:71:The pinned smoke wrapper remains environment-blocked by the existing listener
+orchestration\tasks\TASK-0033-daytime-default\REPORT.md:72:on port 6500. The cycle and emitter-light code remains available for future
+orchestration\tasks\TASK-0033-daytime-default\REPORT.md:84:passed. The pinned smoke wrapper reached the existing port-6500 owner
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\INTEGRATION_LOG.md:6:- Scope audit: changes are limited to `playtest/**`; no forbidden server/src/native/package paths changed.
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\INTEGRATION_LOG.md:18:- Raw transcript `playtest/TASK-0043-default-load-transcript.txt` records
+orchestration\tasks\TASK-0045-native-protocol-n3\REPORT.md:68:1. `powershell -NoProfile -File native/build.ps1 -RunTests` — denylist,
+orchestration\tasks\TASK-0045-native-protocol-n3\REPORT.md:74:   `babba96fcde5ca1d55610853ad59af4fd57e2374`. No playtest files were
+orchestration\tasks\TASK-0034-playability-evaluation\OWNER-SEED.md:12:- Graphics: wants the webchat-artifact approach (procedural/vector +
+orchestration\tasks\TASK-0045-native-protocol-n3\SPEC.md:10:  - playtest/** (the harness is the measuring stick — never edit it here)
+orchestration\tasks\TASK-0045-native-protocol-n3\SPEC.md:19:The UNCHANGED playtest harness passes its combat-family scenarios
+orchestration\tasks\TASK-0045-native-protocol-n3\SPEC.md:62:1. `powershell -File native/build.ps1 -RunTests` — all three PASS lines.
+orchestration\tasks\TASK-0045-native-protocol-n3\SPEC.md:64:   playtest/run.mjs --attach combat encounter-variety boss-mechanic
+orchestration\tasks\TASK-0048-chronicles-silent-combat\REPORT.md:53:`playtest/scenarios/chronicles-first-combat.mjs` uses the real WebSocket
+orchestration\tasks\TASK-0048-chronicles-silent-combat\REPORT.md:105:npm run playtest -- chronicles-first-combat 1/1 passed
+orchestration\tasks\TASK-0048-chronicles-silent-combat\REPORT.md:106:npm run playtest                          32/32 scenarios passed
+orchestration\tasks\TASK-0045-native-protocol-n3\STATUS.md:12:expected_verification: powershell -File native/build.ps1 -RunTests; unchanged 7-scenario attach; unit combat coverage; authentic negative
+orchestration\tasks\TASK-0045-native-protocol-n3\STATUS.md:13:known_risks: native/** ownership is broad but client remains presentation-only; combat authority must reconcile WorldSimulation positions; no playtest/server/src edits; N3 authority bridge and stubs must follow SPEC exactly
+orchestration\tasks\TASK-0048-chronicles-silent-combat\REVIEW.md:11:- **Scope**: one new playtest scenario + task evidence; ZERO product
+orchestration\tasks\TASK-0048-chronicles-silent-combat\REVIEW.md:33:1. **0046 blocker 1 reclassified**: driver artifact (non-contact),
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:156:   `playtest/scenarios/respawn.mjs`, `session-arc.mjs`, `chronicles.mjs`, and
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:160:## Existing playtest constraints
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:164:  ([`playtest/scenarios/respawn.mjs:1-59`](../../../playtest/scenarios/respawn.mjs#L1-L59)). Any death-transfer change must leave this scenario's inventory-preserving respawn behavior intact.
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:167:  heirloom ([`playtest/scenarios/session-arc.mjs:158-180`](../../../playtest/scenarios/session-arc.mjs#L158-L180), [`playtest/scenarios/session-arc.mjs:256-304`](../../../playtest/scenarios/session-arc.mjs#L256-L304)). The new behavior must broaden recovery without breaking this exact identity/history assertion.
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:169:  and checks origin history ([`playtest/scenarios/chronicles.mjs:37-64`](../../../playtest/scenarios/chronicles.mjs#L37-L64)). Its run-delay expectations must be intentionally revised if D-106's cadence replaces the current rule.
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:172:  recovery ([`playtest/scenarios/mortality.mjs:89-142`](../../../playtest/scenarios/mortality.mjs#L89-L142), [`playtest/scenarios/mortality.mjs:177-205`](../../../playtest/scenarios/mortality.mjs#L177-L205)). It is the primary regression harness for the hard path.
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:174:  ([`playtest/scenarios/zones.mjs:1-45`](../../../playtest/scenarios/zones.mjs#L1-L45)). Add retirement/requeue assertions at the same zone boundary; keep the server pinned to port 6500 for browser gates and run the real `npm run playtest` before claiming browser gameplay.
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:211:?? .ci-artifacts/
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:218:?? .ci-artifacts/
+orchestration\tasks\TASK-0046-playability-reevaluation\REVIEW.md:13:(6542–6545, owner's :6500 untouched — correct), the bounded guest
+orchestration\tasks\TASK-0046-playability-reevaluation\REPORT.md:28:loopback ports; owner port 6500 was never used.
+orchestration\tasks\TASK-0046-playability-reevaluation\REPORT.md:30:- `npm ci --no-audit --no-fund`: 834 packages installed.
+orchestration\tasks\TASK-0046-playability-reevaluation\REPORT.md:125:server, native, playtest, package, or product files were edited. The two arcs
+orchestration\tasks\TASK-0046-playability-reevaluation\SPEC.md:27:   the log. A dev-mode client dials `ws://<hostname>:6500` regardless
+orchestration\tasks\TASK-0046-playability-reevaluation\SPEC.md:30:   the game server. NEVER evaluate against the owner's :6500.
+orchestration\tasks\TASK-0046-playability-reevaluation\STATUS.md:13:known_risks: evaluation-only; never edit product code, playtest harness, package files, or owner port 6500; use a free loopback port and preserve captures
+orchestration\tasks\TASK-0047-native-protocol-n4\NOTES.md:8:## Harness wire surface (playtest/harness.mjs + 6 scenarios)
+orchestration\tasks\TASK-0049-first-session-ui-wave\REPORT.md:15:presentation changes. No `server/**`, `native/**`, or playtest-assertion
+orchestration\tasks\TASK-0049-first-session-ui-wave\REPORT.md:124:`npm run smoke:browser` — green:
+orchestration\tasks\TASK-0049-first-session-ui-wave\REPORT.md:131:`npm run playtest` — green on a calm run:
+orchestration\tasks\TASK-0049-first-session-ui-wave\REPORT.md:138:Note: this task changes no `server/**` code and no playtest scenario; the
+orchestration\tasks\TASK-0049-first-session-ui-wave\REPORT.md:148:(Playwright, real Chromium, real server on 127.0.0.1:6500; Chronicles flow
+orchestration\tasks\TASK-0049-first-session-ui-wave\REPORT.md:182:- The playtest timing flakes are environmental and pre-date this task; no
+orchestration\tasks\TASK-0047-native-protocol-n4\REPORT.md:6:against the unchanged playtest harness. The native server now owns seeded
+orchestration\tasks\TASK-0047-native-protocol-n4\REPORT.md:86:1. `powershell -NoProfile -File native/build.ps1 -RunTests` — denylist, core
+orchestration\tasks\TASK-0047-native-protocol-n4\REPORT.md:94:   `git diff 8ea0887c -- playtest/ server/ src/` is empty; no harness or
+orchestration\tasks\TASK-0031-browser-d106-audit\REVIEW.md:12:TASK-0018/0025 semantics, the change-set forecast, and playtest
+orchestration\tasks\TASK-0049-first-session-ui-wave\REVIEW.md:11:- **Scope (G3)**: zero branch commits touch server/native/playtest/
+orchestration\tasks\TASK-0049-first-session-ui-wave\REVIEW.md:23:- **Gates rerun personally (G5)**: unit 809/809, full playtest 32/32
+orchestration\tasks\TASK-0049-first-session-ui-wave\REVIEW.md:24:  (98ms peak ambient lag), smoke:browser pass — all at the merged tip.
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:4:branch: codex/TASK-0043-playtest-harness-stabilization
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:25:Implementation is ready for architect review. The final integrated tip is `7b81f874` (worker source commits through `78434f60` plus combat target stabilization `51c5253d`). Changes are confined to `playtest/**` and the task evidence; no `server/src`, native, protocol, package, or product files were changed.
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:33:`playtest/README.md`, `playtest/harness.mjs`, `playtest/run.mjs`, `playtest/timing.mjs`, and the scenario files `build-divergence.mjs`, `combat.mjs`, `gear-outcomes.mjs`, `loot.mjs`, and `session-arc.mjs`. Evidence is under this task’s `captures/` directory.
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:43:The required full-worker CPU load was a PowerShell background job continuously computing `[Math]::Sqrt` for 250,000 iterations. With `PLAYTEST_LOAD_MODE=1`, ten full `npm run playtest --silent` runs were executed serially from the integrated tip. Every run exited 0 with 31/31 scenarios passed, for 310/310 scenario executions. Timings and diagnostics are in [`captures/full-load-ten-runs-2026-08-17.txt`](captures/full-load-ten-runs-2026-08-17.txt).
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:51:In a disposable worktree based on `7b81f874`, the real `instance:enterSolo` emission in `playtest/harness.mjs` was replaced with a no-op. Running `PLAYTEST_LOAD_MODE=1 npm run playtest --silent -- session-arc` then failed as expected:
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:83:[`playtest/TASK-0043-default-load-transcript.txt`](../../../../playtest/TASK-0043-default-load-transcript.txt).
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:116:unchanged. No orphaned spinner, server, or playtest processes remained.
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:119:currently staged `playtest/timing.mjs` snapshot to a disposable candidate
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:129:passed 122/779. `PLAYTEST_PORT=6528 npm run playtest` passed 31/31 with exit
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:156:- Load-mode-only deadlines remain bounded and are documented in `playtest/README.md`; authored non-load deadlines and assertions remain intact.
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:170:  source diff is confined to `playtest/**`, ESLint passes on changed files,
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:178:  `PLAYTEST_PORT=6514 npm run playtest` passed all 31/31 scenarios, including
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:182:  `npm run build` PASS, native `build.ps1 -RunTests -RunClient` PASS, and
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:183:  `PLAYTEST_PORT=6514 npm run playtest` 31/31. The rerun included
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:188:  `PLAYTEST_PORT=6523 npm run playtest`: `npm run test:unit` passed 122/122
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:189:  files and 779/779 tests, `npm run build` passed, and the full playtest passed
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:196:  [`captures/coordinator-browser-smoke-2026-08-17.txt`](captures/coordinator-browser-smoke-2026-08-17.txt).
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:197:- Isolated browser-critical smoke at 2026-08-17 09:45 -07:00 also passed
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:203:  `npm run playtest` **31/31**, including `build-divergence`,
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:205:  preserved in [`captures/coordinator-fresh-full-playtest-2026-08-17.txt`](captures/coordinator-fresh-full-playtest-2026-08-17.txt).
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:212:  [`captures/coordinator-current-tip-playtest-2026-08-17-followup.txt`](captures/coordinator-current-tip-playtest-2026-08-17-followup.txt).
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:219:  directly onto `6e900687` without conflicts and keeps playtest-only scope.
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:229:  `build.ps1 -RunTests -RunClient` passed denylist, core, networking, and
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:239:`playtest/timing.mjs`, aligning the worker branch exactly with Fable's staged
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:246:unit/playtest gate remain in the prior captures. The task is returned to
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:250:green at 122/779, while playtest was 30/31 solely because `loot` timed out on
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:261:`npm ci --no-audit --no-fund` with install scripts enabled. The resulting
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:262:unit gate passed 122/779 and `PLAYTEST_PORT=6538 npm run playtest` passed
+orchestration\tasks\TASK-0048-chronicles-silent-combat\SPEC.md:12:  - playtest/** assertions may not be loosened (adding a NEW scenario or
+orchestration\tasks\TASK-0048-chronicles-silent-combat\SPEC.md:40:   (the playtest harness helpers are the model), not mocks. Document
+orchestration\tasks\TASK-0048-chronicles-silent-combat\SPEC.md:49:4. Regression protection: add (or extend) a playtest scenario that
+orchestration\tasks\TASK-0048-chronicles-silent-combat\SPEC.md:60:3. Full `npm run playtest` 31/31 (or 32/32 with the new scenario) +
+orchestration\tasks\TASK-0049-first-session-ui-wave\SPEC.md:13:  - playtest/** assertions may not be loosened (new/strengthened
+orchestration\tasks\TASK-0049-first-session-ui-wave\SPEC.md:48:- `npm run test:unit` and `npm run smoke:browser` green transcripts.
+orchestration\tasks\TASK-0049-first-session-ui-wave\SPEC.md:49:- `npm run playtest` full suite green (32/32).
+orchestration\tasks\TASK-0031-browser-d106-audit\SPEC.md:43:   implementation task, including which existing playtest scenarios
+orchestration\tasks\TASK-0048-chronicles-silent-combat\STATUS.md:14:- `playtest/scenarios/chronicles-first-combat.mjs`
+orchestration\tasks\TASK-0048-chronicles-silent-combat\STATUS.md:21:playtest 32/32. Awaiting architect disposition of the disproven diagnosis.
+orchestration\tasks\TASK-0044-native-protocol-n2\REPORT.md:6:movement, and portal/zone transitions. The UNCHANGED playtest harness passes
+orchestration\tasks\TASK-0044-native-protocol-n2\REPORT.md:11:(`powershell -File native/build.ps1 -RunTests`) are green.
+orchestration\tasks\TASK-0044-native-protocol-n2\REPORT.md:51:  matches how sequential playtest scenarios behave against the JS server and
+orchestration\tasks\TASK-0044-native-protocol-n2\REPORT.md:87:$ powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0044-native-protocol-n2\REPORT.md:96:$ PLAYTEST_WS_URL=ws://127.0.0.1:6511 node playtest/run.mjs --attach movement zones
+orchestration\tasks\TASK-0044-native-protocol-n2\REPORT.md:148:$ PLAYTEST_WS_URL=ws://127.0.0.1:6511 node playtest/run.mjs --attach movement zones quickstart single-session
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REVIEW.md:11:The full diff (architect-verified playtest-only: zero non-playtest commits
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REVIEW.md:17:architect-run full playtest at the merged tip.
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REVIEW.md:23:`npm run playtest`, which is what the owner and the architect actually
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REVIEW.md:34:Immediately after, `npm run playtest --silent -- session-arc` solo
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REVIEW.md:49:   evidence: THREE consecutive default-mode (`npm run playtest`, no
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REVIEW.md:80:guidance issued: playtest and native servers should bind 127.0.0.1
+orchestration\tasks\TASK-0049-first-session-ui-wave\STATUS.md:9:expected_verification: npm run test:unit; npm run smoke:browser; npm run playtest (32/32); hard-fail Playwright captures of all five deliverables
+orchestration\tasks\TASK-0049-first-session-ui-wave\STATUS.md:13:client-presentation-only (no `server/**`, `native/**`, or playtest-assertion
+orchestration\tasks\TASK-0049-first-session-ui-wave\STATUS.md:24:`smoke:browser` 1/1; `playtest` 32/32. Hard-fail capture
+orchestration\tasks\TASK-0034-playability-evaluation\REPORT.md:20:checks. The browser server was the existing listener on port 6500 (PID 10276);
+orchestration\tasks\TASK-0034-playability-evaluation\REPORT.md:269:- Existing listener: `localhost:6500`, Node PID 10276. It was preserved.
+orchestration\tasks\TASK-0034-playability-evaluation\REPORT.md:300:browser evidence above is the verification artifact.
+orchestration\tasks\TASK-0044-native-protocol-n2\REVIEW.md:15:  worktree; `native/build.ps1 -RunTests` → denylist PASS, core tests
+orchestration\tasks\TASK-0034-playability-evaluation\REVIEW.md:57:   hard-dials `ws://<hostname>:6500` ([src/main.js:30]) — the owner's
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\STATUS.md:5:worker: Luna playtest-harness stabilization worker
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\STATUS.md:6:worker_branch: codex/TASK-0043-playtest-harness-stabilization
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\STATUS.md:7:worktree: C:\Users\Alex\Documents\ChatGPT\verdigris\.codex\worktrees\TASK-0043-playtest-harness-stabilization
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\STATUS.md:11:expected_verification: ten full playtest runs under CPU load; one authentic negative regression run; transcripts and load method captured
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\STATUS.md:12:known_risks: harness-only scope; do not loosen assertions or edit server/src/package; owner PID 10276 may occupy port 6500
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\STATUS.md:18:report: orchestration/tasks/TASK-0043-playtest-harness-stabilization/REPORT.md
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\STATUS.md:19:verification: ten consecutive loaded npm run playtest executions passed 31/31 (310/310); authentic negative zone-entry regression failed as expected; see captures/
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\STATUS.md:21:coordinator_current_tip_check: prior isolated checkpoint was 122/122 files, build PASS, and PLAYTEST_PORT=6523 playtest 31/31; latest coordinator tip cccca42c again passed unit/build/native, but full browser playtest was 30/31 on build-divergence and its immediate isolated rerun passed 1/1; see captures/coordinator-current-tip-playtest-2026-08-17-followup.txt
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\STATUS.md:22:coordinator_fresh_rerun: 2026-08-17 — unchanged `npm run playtest` at coordinator tip 9ee547a2 passed 31/31, including build-divergence, gear-outcomes, quest, session-arc, and zones; capture in captures/coordinator-fresh-full-playtest-2026-08-17.txt.
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\STATUS.md:25:architect_staged_variant_gate: 2026-08-17 — exact staged timing snapshot overlaid on disposable candidate 3636b729; `npm run test:unit` passed 122/779 and `PLAYTEST_PORT=6528 npm run playtest` passed 31/31 (exit 0), diagnostics p99/max 32.178/110.952ms. Capture: `captures/coordinator-architect-staged-variant-2026-08-17.txt`.
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\STATUS.md:26:coordinator_current_tip_candidate: 2026-08-17 — canonical v2 candidate ab73edbc cherry-picked the complete correction chain directly onto current tip 6e900687; unit 122/779, full suite 30/31 on gear-outcomes contention with immediate isolated 1/1, playtest-only scope; architect rerun required before merge.
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\STATUS.md:27:coordinator_current_tip_parity_v3: 2026-08-17 — refreshed disposable candidate 3636b729 applies the complete correction chain directly onto coordinator tip 9fea5668; unit 122/779 and unchanged browser playtest 31/31 pass. Native attach also passes 4/4 in the combined candidate; transcript is in captures/coordinator-current-tip-parity-v3-2026-08-17.txt. Architect acceptance remains required.
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\STATUS.md:28:coordinator_current_tip_gate_refresh: 2026-08-17 — coordinator HEAD 732f7fbf independently passed browser unit 122/779 and native `build.ps1 -RunTests -RunClient` (denylist/core/networking/client plus literal trophies/items 1/1). Capture: captures/coordinator-current-tip-native-browser-gates-2026-08-17.txt. This is health evidence only; lifecycle remains REVIEW_REQUESTED.
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\STATUS.md:30:revision_full_gate: 2026-08-17 — candidate a040da60 unit 122/779 passed; full playtest 30/31 with only the known loot second-drop timeout. Exact staged source variant remains independently recorded at 31/31; environment-only isolated loot retry could not resolve compression in a temporary junction. Capture: captures/coordinator-revision-1da567aa-full-gate-2026-08-17.txt.
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\STATUS.md:31:revision_dependency_complete_gate: 2026-08-17 — disposable candidate 3636b729 plus 1da567aa installed dependencies with scripts enabled, then passed `npm run test:unit` 122/779 and `PLAYTEST_PORT=6538 npm run playtest` 31/31. Diagnostics p99/max 32.178/109.642ms. Capture: captures/coordinator-exact-staged-dependency-complete-gate-2026-08-17.txt.
+orchestration\tasks\TASK-0044-native-protocol-n2\SPEC.md:20:  - playtest/**
+orchestration\tasks\TASK-0044-native-protocol-n2\SPEC.md:24:  - powershell -File native/build.ps1 -RunTests
+orchestration\tasks\TASK-0034-playability-evaluation\SPEC.md:24:player would (built client on :6500, guest and Chronicles paths) for a
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\SPEC.md:11:  - playtest/**
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\SPEC.md:23:`npm run playtest` becomes trustworthy under machine load: the observed
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\SPEC.md:40:TEN consecutive full `npm run playtest` runs, 31/31 each, executed while
+orchestration\tasks\TASK-0034-playability-evaluation\STATUS.md:12:known_risks: live browser session may contend with port 6500; record evidence only, do not fix code; preserve owner processes
+orchestration\tasks\TASK-0034-playability-evaluation\STATUS.md:19:integration_verification: read-only evidence artifact preserved; 16 captures <=250KB; no implementation files changed
+orchestration\tasks\TASK-0047-native-protocol-n4\SPEC.md:10:  - playtest/** (the harness is the measuring stick — never edit it here)
+orchestration\tasks\TASK-0047-native-protocol-n4\SPEC.md:19:The UNCHANGED playtest harness passes its item-family scenarios against
+orchestration\tasks\TASK-0047-native-protocol-n4\SPEC.md:60:1. `powershell -File native/build.ps1 -RunTests` — all PASS lines.
+orchestration\tasks\TASK-0048-chronicles-silent-combat\captures\baseline-c3988-wire.json:11443:      "at": 1787019365000
+orchestration\tasks\TASK-0047-native-protocol-n4\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests; PLAYTEST_WS_URL attach 13/13 (6 item-family + 7 N1-N3 regression, harness unchanged); C++ unit coverage for item/inventory rules; one authentic negative
+orchestration\tasks\TASK-0044-native-protocol-n2\STATUS.md:12:expected_verification: powershell -File native/build.ps1 -RunTests; PLAYTEST_WS_URL attach run of zones + movement scenarios against the native server (unchanged harness)
