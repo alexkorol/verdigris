@@ -1,0 +1,17 @@
+{
+  "head": "fixedhead0007",
+  "orchestration/tasks/TASK-0109-x/STATUS.md": [
+    {
+      "hash": "i1",
+      "authoredAtMs": 1755822109000,
+      "subject": "TASK-0109: claim"
+    }
+  ],
+  "orchestration/tasks/TASK-0109-x/REVIEW.md": [
+    {
+      "hash": "i2",
+      "authoredAtMs": 1755825709000,
+      "subject": "review: accept TASK-0109"
+    }
+  ]
+}
