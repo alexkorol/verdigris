@@ -30,7 +30,7 @@ The independent `ox-bootstrap` orchestration worker has pushed M3 head
 `82de84ef` after M2 `5627916f`. The standalone repo's Tier-B review contract
 still governs acceptance and this lane never counts as Verdigris capacity.
 
-Snapshot: 2026-08-22 03:55 PDT
+Snapshot: 2026-08-22 04:03 PDT
 
 Sweep base: `df851cead0dadcd96176b370ad132f8344c3c21d`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
@@ -106,7 +106,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-j | 6800-6819 | TASK-0149 frozen review head `96f4ccbd`; independent verdict REVISE; exact-session revision active | fix post-spawn readiness failure orphan path |
 | ox-pc-k | 6820-6839 | TASK-0150 frozen head `54417592` independently ACCEPTED; implementation integrated at `10039385` | lane complete/available after worker stops |
 | ox-pc-l | 6840-6859 | TASK-0146 replacement claim `78a0c4a0` pushed | independent encounter-wave replacement active |
-| ox-pc-m | 6860-6879 | TASK-0147 replacement claim `7d092a74` pushed | independent visual-polish replacement active |
+| ox-pc-m | 6860-6879 | TASK-0147 replacement claim `7d092a74`; one exact-session recovery active after dirty process exit | independent visual-polish replacement active |
 | ox-pc-n | 6880-6899 | TASK-0148 clean launch and its one recovery both stopped before claim/write | activation failed; clean preserved, not capacity |
 | ox-pc-o | 6900-6919 | TASK-0148 replacement claim `71a73de8`; one exact-session recovery active after clean post-claim exit | independent reconnect-runtime replacement active |
 
