@@ -1,8 +1,8 @@
 # TASK-0128 claim (fresh-lane golden-output revision)
 
 - task: TASK-0128
-- state: CLAIMED
-- transitioned-at: 2026-08-22 09:44 PDT (-07:00)
+- state: REVIEW_REQUESTED
+- transitioned-at: 2026-08-22 09:52 PDT (-07:00) (CLAIMED at 2026-08-22 09:44 PDT, claim commit `0a37bd84`)
 - coordinator: ox-alpha
 - worker: ox-pc-y
 - provider: openrouter
@@ -32,3 +32,20 @@
 2. prove `node --test orchestration/throughput/*.test.mjs` exits zero and leaves `git status --short` empty;
 3. retain the final-head/source-revision positive control and both relevant evidence-change/tamper negative controls;
 4. rerun every literal SPEC gate and request review without guessing a runway rate or changing collector semantics.
+
+## Golden-output revision (this lane)
+
+- reproduced the revision-review defect at claim head `0a37bd84`: one 19/19 test
+  run rewrote exactly six tracked fixture `throughput-observations.json` files
+  (cases 1, 2, 3, 5, 6, 7), each diff being stale `skipped_folders` entries → `[]`
+- regenerated all six with the existing corrected collector (unchanged
+  semantics/schema; committed as `6dc3632c`); a second full suite run changed
+  zero fixture bytes and left `git status --short` empty — defect closed
+- retained untouched: case 11 positive control (final-head/source-revision
+  `--check` passes beyond source) and both negative controls (case 12 committed
+  relevant-evidence drift fails exit 2 without rewriting; case 8 tamper fails
+  exit 2 without rewriting), plus the live copied-output tamper control in REPORT
+- live captures: the mandated write-mode gate rebound `evidence_source_revision`
+  to this lane's pre-capture implementation parent and absorbed this task's own
+  STATUS change into the byte guard; runway content is unchanged and still
+  honestly UNKNOWN (`hours:null`), no rate guessed, collector semantics unchanged
