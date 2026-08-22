@@ -539,6 +539,7 @@ void Simulation::resolve_enter(const std::string& route_id) {
   instance_ = {};
   instance_.active = true;
   instance_.route_id = route_id;
+  instance_.phase = ExpeditionPhase::SlayWardens;
   spawn_enemy();
   for (const auto& relic : pending_relic_items_) {
     ground_items_.push_back(relic);
@@ -792,6 +793,19 @@ void Simulation::handle_death(Actor& actor_value, const std::string& killer_id) 
             return candidate.kind == ActorKind::Monster && candidate.alive;
           });
       if (!living_monster_remains) clear_route_and_unlock_children();
+      // The expedition objective flips to extraction only once the floor is
+      // empty of living wardens; a later spawn_monster() seam call restores
+      // the slay objective on the next resolved kill.
+      const ExpeditionPhase next_phase =
+          living_monster_remains ? ExpeditionPhase::SlayWardens
+                                 : ExpeditionPhase::ExtractCarriedValue;
+      if (instance_.phase != next_phase) {
+        instance_.phase = next_phase;
+        emit(EventType::ExpeditionPhaseChanged, scion_.actor_id, {}, {},
+             next_phase == ExpeditionPhase::SlayWardens ? "slay-wardens"
+                                                        : "extract-carried-value",
+             static_cast<int>(next_phase));
+      }
     }
     return;
   }

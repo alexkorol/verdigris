@@ -245,7 +245,10 @@ enum class EventType {
   BuffApplied,
   BuffExpired,
   AttackTelegraphed,
-  TrophyResurfaced
+  TrophyResurfaced,
+  // Appended last so recorded command streams and stored event ordinals keep
+  // their historical numeric codes.
+  ExpeditionPhaseChanged
 };
 
 struct Event {
@@ -288,12 +291,22 @@ struct Command {
   static Command extract();
 };
 
+// Authoritative first-expedition objective for an active instance: defeat
+// every warden on the floor, then carry the value back to the extraction
+// point. The simulation owns the transition (last living monster dies);
+// presentation reads it instead of re-deriving the loop from actor scans.
+// The phase is descriptive telemetry, never a command gate: extraction rules
+// are unchanged. It resets to SlayWardens on every instance entry and dies
+// with the instance.
+enum class ExpeditionPhase { SlayWardens, ExtractCarriedValue };
+
 struct InstanceState {
   bool active = false;
   std::string route_id;
   Vec2 extraction_point{0, 0};
   std::vector<std::string> ground_item_ids;
   std::vector<std::string> ground_trophy_ids;
+  ExpeditionPhase phase = ExpeditionPhase::SlayWardens;
   bool seasonal_objective = false;
   std::string seasonal_objective_text;
 };
