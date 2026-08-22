@@ -429,7 +429,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 28 packets before the next four claims
+## Effective READY — 27 packets before the next three claims
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -465,6 +465,9 @@ wins after a fresh fetch.
 | P0 | TASK-0156 native progression visibility | INDEPENDENT / IMPLEMENTATION | fresh isolated native-client lane | surfaces authoritative passive-tree points in the shipped gear overlay |
 | P1 | TASK-0157 procedural audio scheduler | INDEPENDENT / IMPLEMENTATION | future clean lane | freezes backend-neutral deterministic cue behavior before owner backend choice |
 | P1 | TASK-0158 pane model foundation | INDEPENDENT / IMPLEMENTATION | future clean lane | creates responsive collision-free pane geometry without choosing final styling |
+| P0 | TASK-0159 native HUD/pane readability | INDEPENDENT / IMPLEMENTATION | fresh native-client lane | removes owner-visible text collisions and prototype-like hierarchy defects |
+| P1 | TASK-0160 native visual-kit packaging proof | INDEPENDENT / IMPLEMENTATION | future clean lane | proves committed procedural/vector placeholders survive source-to-owner launch reproducibly |
+| P1 | TASK-0162 passive-tree payload hardening | INDEPENDENT / IMPLEMENTATION | future clean lane | prevents malformed progression payloads from becoming false owner-visible state |
 
 ## HOLD despite historical READY headers
 
@@ -475,7 +478,7 @@ wins after a fresh fetch.
 | TASK-0073 renderer backend evaluation | SUPERSEDED by TASK-0114 | surge replacement supplies exact evidence, acceptance, and stop contracts |
 | TASK-0079 browser panel inventory | SUPERSEDED by TASK-0115 | surge replacement supplies hard-fail capture and exact gate contracts |
 
-## Sequenced successors — 16 DRAFT
+## Sequenced successors — 17 DRAFT
 
 | Task | Dependency / release |
 |---|---|
@@ -495,6 +498,7 @@ wins after a fresh fetch.
 | TASK-0125 onboarding first-session wave | 0119 + Gate B/C + copy placeholders |
 | TASK-0126 clean-machine release harness | 0092 + 0094 + 0099 + 0120 accepted |
 | TASK-0127 save migration matrix | 0097 + 0107 + 0120 accepted |
+| TASK-0161 native capture-output isolation | 0159 accepted; capture-root interface frozen |
 
 ## Standing sweep and restock
 
