@@ -14,7 +14,7 @@
   ports 7060-7079. Its earlier claim omitted the required coordinator field;
   the clean source tree was stopped and the same session corrected the claim
   before implementation.
-- Deterministic board sentinel: 24 effective READY, 1 valid CLAIMED, 16
+- Deterministic board sentinel: 24 effective READY, 2 valid CLAIMED, 16
   sequenced successors, zero owned-path collisions, exit 0. Factory manifests:
   2,000 graph nodes and 500 reserve packets valid; runway hours remain UNKNOWN.
 - PC-local monitor regression for INC-015 is live: more than one OpenCode writer
