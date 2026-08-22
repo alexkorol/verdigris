@@ -93,6 +93,8 @@ using verdigris::client::EffectFx;
 using verdigris::client::WorldActor;
 using verdigris::client::WorldCarriedItem;
 using verdigris::client::WorldView;
+using verdigris::client::ExpeditionPhaseView;
+using verdigris::client::extraction_action_hint;
 
 struct SpriteBitmap {
   HDC dc = nullptr;
@@ -236,6 +238,11 @@ struct ClientState {
   std::size_t selected_item = 0;
   std::string hint;
   int hint_ticks = 0;
+  // TASK-0153 owner Esc contract: Escape closes an open dismissible pane
+  // first; only a bare Escape (no pane/modal open) requests application
+  // exit. The Win32 path posts the quit from this flag so the deterministic
+  // scenario harness can exercise the identical production seam.
+  bool quit_requested = false;
   int screen_pulse_ticks = 0;
   render::List render_list;
   Screen screen = Screen::Expedition;
@@ -1689,6 +1696,9 @@ const char* event_label(verdigris::EventType type) {
     case EventType::SeasonalRewardGranted: return "seasonal reward";
     case EventType::BuffApplied: return "buff";
     case EventType::BuffExpired: return "buff expired";
+    // TASK-0153: the core's authoritative phase transition is no longer
+    // dropped; the event log carries the core's own phase tokens.
+    case EventType::ExpeditionPhaseChanged: return "phase";
     default: return nullptr;
   }
 }
@@ -2569,13 +2579,17 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
 
 // Shared owner-facing chrome: the visible connection state lives on both
 // screens — a failed connection is always explicit, never a silent fallback.
+// TASK-0153 rev2: the chip draws where the measured top-HUD planner puts it.
+constexpr int kConnectionChipW = 168;
+constexpr int kConnectionChipH = 22;
 void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
-                           render::List& rl) {
+                           render::List& rl, int chip_x, int chip_y) {
   if (!state.session) return;
     const auto conn = state.session->connection_state();
     const char* label = verdigris::client::connection_state_label(conn);
     const std::string chip = std::string("connection ") + label;
-    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, chip});
+    rl.push_back({render::Op::Hud, static_cast<double>(chip_x),
+                  static_cast<double>(chip_y), 0.0, 0, chip});
     COLORREF chip_color = RGB(185, 198, 188);
     if (conn == verdigris::client::ConnectionState::Ready)
       chip_color = RGB(120, 214, 168);
@@ -2587,11 +2601,8 @@ void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
              conn == verdigris::client::ConnectionState::Rejected ||
              conn == verdigris::client::ConnectionState::ProtocolMismatch)
       chip_color = RGB(255, 80, 70);
-    const int chip_w = 168;
-    const int chip_h = 22;
-    const int chip_x = std::max(18, static_cast<int>(bounds.right) - chip_w - 18);
-    const int chip_y = 12;
-    RECT chip_rect{chip_x, chip_y, chip_x + chip_w, chip_y + chip_h};
+    RECT chip_rect{chip_x, chip_y, chip_x + kConnectionChipW,
+                   chip_y + kConnectionChipH};
     HBRUSH chip_bg = CreateSolidBrush(RGB(25, 33, 37));
     FillRect(dc, &chip_rect, chip_bg);
     DeleteObject(chip_bg);
@@ -2615,6 +2626,99 @@ void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
     }
 }
 
+// ── TASK-0153 rev2: measured top-HUD row planner ────────────────────────
+// The review blocker at 960x600 was the long chronicle-derived identity line
+// colliding with the centered objective strip. Every normal-HUD top region —
+// identity, objective, connection, art-status, controls — is now placed by
+// this one pure integer-geometry pass from actually measured extents, so the
+// five regions can never overlap at any width, including 960x600 and
+// 1366x768. The painter draws exactly what this returns; the deterministic
+// scenario runs the same function over worst-case strings as acceptance
+// evidence.
+constexpr int kTopHudGutter = 12;      // screen-edge breathing room
+constexpr int kTopHudGap = 10;         // minimum clearance between regions
+constexpr int kTopHudRow0Y = 12;
+constexpr int kTopHudRowStep = 34;     // clears a chip's full height + margin
+constexpr int kTopHudRowCount = 4;
+
+struct TopHudRect {
+  int x = 0;
+  int y = 0;
+  int w = 0;
+  int h = 0;
+};
+
+struct TopHudLayout {
+  TopHudRect identity;
+  TopHudRect objective;
+  TopHudRect connection;
+  TopHudRect art;
+  TopHudRect controls;
+  bool objective_placed = false;
+  bool controls_placed = false;
+};
+
+bool top_hud_clear(const TopHudRect& a, const TopHudRect& b, int gap) {
+  return a.x + a.w + gap <= b.x || b.x + b.w + gap <= a.x ||
+         a.y + a.h + gap <= b.y || b.y + b.h + gap <= a.y;
+}
+
+TopHudLayout plan_top_hud(int width, const TopHudRect& identity_size,
+                          const TopHudRect& objective_size,
+                          const TopHudRect& art_size,
+                          const TopHudRect& controls_size, bool session) {
+  TopHudLayout layout;
+  std::vector<TopHudRect> occupied[kTopHudRowCount];
+  const auto row_y = [&](int row) { return kTopHudRow0Y + row * kTopHudRowStep; };
+  const auto fits = [&](int row, const TopHudRect& cand) {
+    if (cand.x < kTopHudGutter) return false;
+    if (cand.x + cand.w > width - kTopHudGutter) return false;
+    for (const auto& taken : occupied[row])
+      if (!top_hud_clear(cand, taken, kTopHudGap)) return false;
+    return true;
+  };
+  // Right-aligned chips keep their historical edge pin; if row 0 is crowded
+  // (or the identity line reaches across), the next row takes them.
+  const auto place_right = [&](const TopHudRect& size) {
+    for (int row = 0; row < kTopHudRowCount; ++row) {
+      TopHudRect cand{std::max(kTopHudGutter, width - kTopHudGutter - size.w),
+                      row_y(row), size.w, size.h};
+      if (fits(row, cand)) {
+        occupied[row].push_back(cand);
+        return cand;
+      }
+    }
+    return TopHudRect{};
+  };
+  const auto place_centered = [&](const TopHudRect& size, bool& placed) {
+    for (int row = 0; row < kTopHudRowCount; ++row) {
+      TopHudRect cand{std::max(kTopHudGutter, (width - size.w) / 2), row_y(row),
+                      size.w, size.h};
+      if (fits(row, cand)) {
+        occupied[row].push_back(cand);
+        placed = true;
+        return cand;
+      }
+    }
+    placed = false;
+    return TopHudRect{};
+  };
+
+  layout.identity = TopHudRect{kTopHudGutter + 6, row_y(0), identity_size.w,
+                               identity_size.h};
+  occupied[0].push_back(layout.identity);
+  if (session)
+    layout.connection =
+        place_right(TopHudRect{0, 0, kConnectionChipW, kConnectionChipH});
+  // Art keeps its historical rows: beside the identity locally, under the
+  // connection chip on the remote owner path (row 0 is taken there).
+  layout.art = place_right(art_size);
+  // The objective outranks the controls hint when rows are contested.
+  layout.objective = place_centered(objective_size, layout.objective_placed);
+  layout.controls = place_centered(controls_size, layout.controls_placed);
+  return layout;
+}
+
 void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   sync_world(state);
   const WorldView& world = state.world;
@@ -2625,7 +2729,12 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   // entirely; the door renders from the authoritative chronicle model.
   if (state.screen == Screen::Chronicles) {
     paint_chronicles_front_door(state, dc, bounds, rl);
-    paint_connection_chip(state, dc, bounds, rl);
+    // The front door owns its whole canvas, so the shared chip keeps its
+    // historical edge-pin position here; the planner governs the expedition.
+    paint_connection_chip(state, dc, bounds, rl,
+                          std::max(18, static_cast<int>(bounds.right) -
+                                           kConnectionChipW - 18),
+                          12);
     state.render_list = std::move(rl);
     return;
   }
@@ -2907,51 +3016,108 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     DeleteObject(pulse);
   }
 
-  if (state.session) {
-    paint_connection_chip(state, dc, bounds, rl);
-  }
-
-  // TASK-0142: owner-facing objective strip, centered at the top. The copy
-  // always reflects the authoritative world (extraction presence, carried
-  // loot) and names the concrete action that banks progress.
+  // TASK-0153 rev2: every normal-HUD top region is measured, then placed by
+  // the single pure planner pass, then drawn exactly where it was placed.
   {
     std::string objective;
     COLORREF accent = RGB(120, 214, 168);
+    const bool carrying = !world.carried.empty() || world.carried_trophies > 0;
     if (!world.has_extraction) {
       objective = "objective: explore the route";
+    } else if (world.expedition_phase == ExpeditionPhaseView::SlayWardens) {
+      objective = "objective: slay the wardens (" +
+                  std::to_string(world.monsters.size()) + " remain)";
+      accent = RGB(214, 92, 72);
     } else {
       const int ddx = world.extraction.x - player.position.x;
       const int ddy = world.extraction.y - player.position.y;
       const int dist = static_cast<int>(
           std::lround(std::sqrt(static_cast<double>(ddx * ddx + ddy * ddy))));
-      const bool carrying =
-          !world.carried.empty() || world.carried_trophies > 0;
       objective = std::string(carrying
                                   ? "objective: carry your loot to the EXIT ("
                                   : "objective: reach the EXIT (");
       objective += compass_step(ddx, ddy);
-      objective += ", " + std::to_string(dist) + "u) - press F there";
+      objective += ", " + std::to_string(dist) + "u) - ";
+      objective += extraction_action_hint(is_remote(state));
       if (carrying) accent = RGB(239, 208, 116);
     }
-    SIZE extent{};
-    GetTextExtentPoint32A(dc, objective.c_str(),
-                          static_cast<int>(objective.size()), &extent);
-    const int chip_x =
-        std::max(12, (static_cast<int>(bounds.right) -
-                      static_cast<int>(extent.cx) - 16) / 2);
-    paint_status_chip(dc, chip_x, 12, objective, accent, rl);
-  }
 
-  // TASK-0145: expedition identity chip — the current House and Scion are
-  // always named, straight from the authoritative session model.
-  {
-    const std::string identity = "House " + world.house_name + " - Scion " +
-                                 (world.scion_name.empty() ? std::string("(unnamed)")
-                                                           : world.scion_name);
-    rl.push_back({render::Op::HouseChip, 0.0, 0.0, 0.0, 0, identity});
+    const std::string identity =
+        "House " + world.house_name + " - Scion " +
+        (world.scion_name.empty() ? std::string("(unnamed)") : world.scion_name);
+    static constexpr char kControls[] =
+        "WASD move | mouse aim | LMB attack | RMB/Space dash | Q E R skills | "
+        "X take | Z names | I gear";
+    const std::string& art_text = state.billboards.status;
+
+    SIZE identity_extent{}, objective_extent{}, art_extent{}, controls_extent{};
+    GetTextExtentPoint32A(dc, identity.c_str(),
+                          static_cast<int>(identity.size()), &identity_extent);
+    GetTextExtentPoint32A(dc, objective.c_str(),
+                          static_cast<int>(objective.size()), &objective_extent);
+    GetTextExtentPoint32A(dc, art_text.c_str(),
+                          static_cast<int>(art_text.size()), &art_extent);
+    GetTextExtentPoint32A(dc, kControls,
+                          static_cast<int>(sizeof(kControls) - 1),
+                          &controls_extent);
+
+    const int width = static_cast<int>(bounds.right);
+    const TopHudRect identity_size{0, 0, identity_extent.cx + 6,
+                                   identity_extent.cy + 8};
+    const TopHudRect objective_size{0, 0, objective_extent.cx + 16,
+                                    objective_extent.cy + 8};
+    const TopHudRect art_size{0, 0, art_extent.cx + 16, art_extent.cy + 8};
+    const TopHudRect controls_size{0, 0, controls_extent.cx + 12,
+                                   controls_extent.cy + 6};
+    const TopHudLayout layout =
+        plan_top_hud(width, identity_size, objective_size, art_size,
+                     controls_size, static_cast<bool>(state.session));
+
+    // Historical placements double as fallbacks for degenerate widths where
+    // the planner cannot fit a region in any row.
+    const auto placed_or = [](const TopHudRect& r, int fb_x, int fb_y) {
+      return r.w > 0 ? r : TopHudRect{fb_x, fb_y, 0, 0};
+    };
+    const TopHudRect objective_at = placed_or(
+        layout.objective,
+        std::max(12, (width - objective_size.w) / 2), kTopHudRow0Y);
+    const TopHudRect connection_at = placed_or(
+        layout.connection,
+        std::max(18, width - kConnectionChipW - 18), kTopHudRow0Y);
+    const TopHudRect art_at = placed_or(
+        layout.art, std::max(12, width - art_size.w - 18),
+        state.session ? 38 : 12);
+    const TopHudRect controls_at = placed_or(
+        layout.controls, std::max(12, (width - controls_size.w) / 2),
+        state.session ? 64 : 40);
+
     SetBkMode(dc, TRANSPARENT);
+
+    if (state.session)
+      paint_connection_chip(state, dc, bounds, rl, connection_at.x,
+                            connection_at.y);
+
+    paint_status_chip(dc, objective_at.x, objective_at.y, objective, accent, rl);
+
+    rl.push_back({render::Op::HouseChip, 0.0, 0.0, 0.0, 0, identity});
     SetTextColor(dc, RGB(140, 208, 172));
-    TextOutA(dc, 18, 12, identity.c_str(), static_cast<int>(identity.size()));
+    TextOutA(dc, layout.identity.x, layout.identity.y, identity.c_str(),
+             static_cast<int>(identity.size()));
+
+    SetTextColor(dc, RGB(148, 160, 150));
+    TextOutA(dc, controls_at.x, controls_at.y, kControls,
+             static_cast<int>(sizeof(kControls) - 1));
+    rl.push_back({render::Op::Hud, static_cast<double>(controls_at.x),
+                  static_cast<double>(controls_at.y), 0.0, 0,
+                  std::string("controls: ") + kControls});
+
+    const bool plates =
+        state.billboards.player.ready() && state.billboards.raider.ready() &&
+        state.billboards.boss.ready();
+    const COLORREF art_accent =
+        plates ? RGB(120, 214, 168) : RGB(239, 190, 78);
+    paint_status_chip(dc, art_at.x, art_at.y, state.billboards.status,
+                      art_accent, rl);
   }
 
   // TASK-0145: relic-recovery toast — an authoritative crypt transition is
@@ -2963,26 +3129,6 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     SetTextColor(dc, RGB(239, 208, 116));
     TextOutA(dc, 18, bounds.bottom - 28, state.relic_toast.c_str(),
              static_cast<int>(state.relic_toast.size()));
-  }
-
-  // TASK-0142: honest art-status chip. It reports what is really on screen —
-  // PNG plates when loaded, the embedded procedural kit otherwise — so a
-  // missing asset can never masquerade as loaded art.
-  {
-    const bool plates =
-        state.billboards.player.ready() && state.billboards.raider.ready() &&
-        state.billboards.boss.ready();
-    const COLORREF art_accent =
-        plates ? RGB(120, 214, 168) : RGB(239, 190, 78);
-    SIZE art_extent{};
-    GetTextExtentPoint32A(dc, state.billboards.status.c_str(),
-                          static_cast<int>(state.billboards.status.size()),
-                          &art_extent);
-    const int art_x =
-        std::max(12, static_cast<int>(bounds.right) -
-                         static_cast<int>(art_extent.cx) - 16 - 18);
-    paint_status_chip(dc, art_x, state.session ? 38 : 12,
-                      state.billboards.status, art_accent, rl);
   }
 
   state.render_list = std::move(rl);
@@ -3155,6 +3301,27 @@ void dispatch_dash(ClientState& state) {
   submit_action(state, verdigris::ActionType::Dash, "dash");
 }
 
+// TASK-0153: production gear-pane toggle, shared verbatim by the Win32 key
+// path and the scenario harness ('I' opens/closes; Esc closes when open).
+void toggle_gear_overlay(ClientState& state) {
+  sync_world(state);
+  state.gear_overlay = !state.gear_overlay;
+  state.selected_item = 0;
+  if (state.gear_overlay) show_hint(state, "Gear opened");
+}
+
+// TASK-0153: the one Escape contract for every screen. A dismissible pane
+// (gear/inventory) consumes the first press and stays in the session; only
+// with nothing open does Escape request exit via ClientState::quit_requested,
+// which the window procedure turns into PostQuitMessage.
+void handle_escape_key(ClientState& state) {
+  if (state.gear_overlay) {
+    toggle_gear_overlay(state);
+    return;
+  }
+  state.quit_requested = true;
+}
+
 LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam) {
   ClientState* state = state_from(window);
   switch (message) {
@@ -3172,7 +3339,9 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         break;
       }
       if (wparam == VK_ESCAPE) {
-        PostQuitMessage(0);
+        // TASK-0153: dismiss an open pane first; exit only on a bare Escape.
+        handle_escape_key(*state);
+        if (state->quit_requested) PostQuitMessage(0);
         break;
       }
       if (state->screen == Screen::Chronicles && state->session) {
@@ -3211,10 +3380,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         show_hint(*state, "Contextual interaction requested");
       }
       if (wparam == 'I') {
-        sync_world(*state);
-        state->gear_overlay = !state->gear_overlay;
-        state->selected_item = 0;
-        if (state->gear_overlay) show_hint(*state, "Gear opened");
+        toggle_gear_overlay(*state);
       }
       sync_world(*state);
       if (state->gear_overlay && !state->world.carried.empty()) {
@@ -3364,6 +3530,45 @@ void scenario_begin(ClientState& state) {
       std::make_unique<verdigris::Simulation>(0xC011AB1EULL, "House Verdigris");
   state.simulation->dispatch(verdigris::Command::enter("route:tin:1:0"));
   generate_scenery(state);
+}
+
+// Deterministic phase-transition driver for scenarios that must reach the
+// authoritative carry-to-exit phase. Mirrors the accepted core-test
+// discipline (core_tests.cpp drive_expedition): each living warden is brought
+// into forward melee reach at one life so the Scion never leaves its approach
+// line, then the kill runs through the REAL scenario_step pipeline (dispatch
+// → events → present). An owed pack that has not yet materialized is advanced
+// with Wait ticks. Returns true when the core itself reports
+// ExtractCarriedValue; false on death or timeout.
+bool drive_to_extraction_phase(ClientState& state) {
+  auto* sim = state.simulation.get();
+  const int reach = verdigris::world_scale::kMeleeRange - 1;
+  for (int round = 0; round < 16; ++round) {
+    sync_world(state);
+    if (state.world.expedition_phase == ExpeditionPhaseView::ExtractCarriedValue)
+      return true;
+    verdigris::Actor* player = sim->actor(sim->scion().actor_id);
+    if (!player || !player->alive) return false;
+    std::string target_id;
+    for (const auto& candidate : sim->actors())
+      if (candidate.kind == verdigris::ActorKind::Monster && candidate.alive) {
+        target_id = candidate.id;
+        break;
+      }
+    if (target_id.empty()) {
+      scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+      continue;
+    }
+    verdigris::Actor* target = sim->actor(target_id);
+    player = sim->actor(sim->scion().actor_id);
+    target->position = {player->position.x + reach, player->position.y};
+    target->stats.life = 1;
+    player->cooldown_ticks = 0;
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
+  }
+  sync_world(state);
+  return state.world.expedition_phase ==
+         ExpeditionPhaseView::ExtractCarriedValue;
 }
 
 std::vector<std::pair<double, double>> scenery_screen_positions(const ClientState& state) {
@@ -3589,6 +3794,11 @@ int scenario_loot_to_bank() {
     scenario_check(stat && stat->label.find("(+") != std::string::npos,
                    "loot-to-bank: equipped bonus appears in the stat readout");
   }
+
+  // TASK-0153: the strip is phase-truthful now, so this journey must actually
+  // finish the slay leg (through the same paced real pipeline) before the
+  // carry-to-exit guidance is the authoritative thing to say.
+  drive_to_extraction_phase(state);
 
   bool objective_carries = false;
   {
@@ -4188,6 +4398,176 @@ int scenario_chronicles_gate_b() {
   return 0;
 }
 
+// ── TASK-0153: first-session-clarity ────────────────────────────────────
+// Proves the three first-session clarity contracts through the REAL
+// dispatch/ingest/present pipeline (local simulation and, for the owner
+// path, a real remote protocol session on the shared loopback capsule):
+//   1. the objective strip names the authoritative expedition phase and
+//      flips slay -> carry-to-exit only from authoritative state;
+//   2. the exit instruction is mode-aware: local play says "press F there",
+//      the remote owner path says "walk onto it" and NEVER shows "press F";
+//   3. essential controls (incl. dash) are visible on the normal HUD with
+//      F3 disabled.
+// Plus the owner Esc contract: an open gear pane consumes Escape and keeps
+// the client/session alive; only a bare Escape requests exit. The remote
+// half uses dev:clear-floor — the same accepted scenario-shortcut seam as
+// gate-b's dev:give/dev:kill — to reach the cleared floor deterministically;
+// the strip logic itself is production behavior driven by snapshots.
+
+int scenario_first_session_clarity() {
+  auto hud_labels = [](const ClientState& s) {
+    std::vector<std::string> labels;
+    for (const auto& item : s.render_list)
+      if (item.op == render::Op::Hud) labels.push_back(item.label);
+    return labels;
+  };
+  auto hud_contains = [&](const ClientState& s, const char* needle) {
+    for (const auto& label : hud_labels(s))
+      if (label.find(needle) != std::string::npos) return true;
+    return false;
+  };
+  auto hud_prefixed = [&](const ClientState& s, const char* prefix) {
+    for (const auto& label : hud_labels(s))
+      if (label.rfind(prefix, 0) == 0) return true;
+    return false;
+  };
+
+  // ── Local owner path: authoritative core phase drives the strip.
+  {
+    ClientState state;
+    scenario_begin(state);
+    scenario_follow_camera(state);
+    scenario_present(state);
+    scenario_check(hud_prefixed(state, "objective: slay the wardens"),
+                   "first-session-clarity: strip names the authoritative slay phase");
+    scenario_check(hud_contains(state, "dash"),
+                   "first-session-clarity: controls hint includes dash on the normal HUD");
+    scenario_check(!state.debug_overlay &&
+                       hud_prefixed(state, "controls:"),
+                   "first-session-clarity: controls hint visible with F3 disabled");
+
+    // Clear the warden pack; the core flips ExpeditionPhaseChanged when no
+    // wardens remain and no roster entry is owed — the strip must follow
+    // that authoritative transition.
+    const bool flipped = drive_to_extraction_phase(state);
+    scenario_check(flipped,
+                   "first-session-clarity: phase follows the core to carry-to-exit");
+    scenario_present(state);
+    const bool exit_guidance =
+        hud_prefixed(state, "objective: reach the EXIT") ||
+        hud_prefixed(state, "objective: carry your loot");
+    scenario_check(exit_guidance,
+                   "first-session-clarity: extract strip points at the EXIT locally");
+    scenario_check(hud_contains(state, extraction_action_hint(false)),
+                   "first-session-clarity: local strip gives the press-F contract");
+    scenario_check(!hud_contains(state, extraction_action_hint(true)),
+                   "first-session-clarity: local strip never shows the walk-on phrase");
+
+    // Owner Esc contract through the same production seams the Win32 path
+    // calls: open pane consumes Escape; bare Escape requests exit.
+    toggle_gear_overlay(state);
+    scenario_present(state);
+    scenario_check(render::any(state.render_list, render::Op::PaneWeapon),
+                   "first-session-clarity: gear pane renders when opened");
+    handle_escape_key(state);
+    scenario_check(!state.gear_overlay && !state.quit_requested,
+                   "first-session-clarity: first Esc closes the pane, client stays alive");
+    scenario_present(state);
+    scenario_check(!render::any(state.render_list, render::Op::PaneWeapon) &&
+                       !render::any(state.render_list, render::Op::PaneItem) &&
+                       !render::any(state.render_list, render::Op::PaneStat),
+                   "first-session-clarity: dismissed pane leaves the render list");
+    handle_escape_key(state);
+    scenario_check(state.quit_requested,
+                   "first-session-clarity: bare Escape requests application exit");
+  }
+
+  // ── Remote owner path on the shared 6580-6599 test capsule.
+  {
+    verdigris::networking::WebSocketServer* server = nullptr;
+    std::uint16_t port = 0;
+    for (std::uint16_t candidate = 6580; candidate <= 6599; ++candidate) {
+      auto* probe = new verdigris::networking::WebSocketServer(candidate);
+      std::string error;
+      if (probe->start(&error)) {
+        server = probe;
+        port = candidate;
+        break;
+      }
+      delete probe;
+    }
+    scenario_check(server != nullptr,
+                   "first-session-clarity: bound shared capsule server "
+                   "(if busy, another worker holds 6580-6599 — retry after it clears)");
+    if (!server) return 0;
+
+    ClientState state;
+    state.session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+        "127.0.0.1", port, "ox-pc-v-first-session", true);
+    std::string error;
+    scenario_check(state.session->start(&error), "first-session-clarity: remote start");
+    auto pump_remote = [&](int max_ticks, const std::function<bool()>& done) {
+      for (int i = 0; i < max_ticks; ++i) {
+        state.session->poll();
+        ingest_session_events(state);
+        sync_world(state);
+        if (done()) return true;
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+      }
+      return done();
+    };
+    const bool ready = pump_remote(250, [&] {
+      return state.session->connection_state() ==
+             verdigris::client::ConnectionState::Ready;
+    });
+    scenario_check(ready, "first-session-clarity: remote handshake ready");
+    state.session->submit(verdigris::client::ClientCommand::enter_zone("tin:1:0"));
+    const bool in_instance = pump_remote(250, [&] {
+      const auto& model = state.session->model();
+      return model.scene.type == "instance" && model.scene.has_stairs_up &&
+             !model.monsters.empty();
+    });
+    scenario_check(in_instance,
+                   "first-session-clarity: instance with authoritative foes reached");
+    generate_scenery(state);
+    scenario_follow_camera(state);
+    load_billboards(state.billboards);
+    scenario_present(state);
+    scenario_check(hud_prefixed(state, "objective: slay the wardens"),
+                   "first-session-clarity: remote strip mirrors the foe snapshot phase");
+    bool saw_press_f = false;
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud &&
+          item.label.find(extraction_action_hint(false)) != std::string::npos)
+        saw_press_f = true;
+    scenario_check(!saw_press_f,
+                   "first-session-clarity: NEGATIVE CONTROL - remote HUD never says press F");
+
+    send_dev_envelope(state, "dev:clear-floor");
+    const bool cleared = pump_remote(250, [&] {
+      for (const auto& monster : state.session->model().monsters)
+        if (monster.alive) return false;
+      return true;
+    });
+    scenario_check(cleared, "first-session-clarity: authoritative snapshot clears the floor");
+    scenario_follow_camera(state);
+    scenario_present(state);
+    const bool walk_on =
+        (hud_prefixed(state, "objective: reach the EXIT") ||
+         hud_prefixed(state, "objective: carry your loot")) &&
+        hud_contains(state, extraction_action_hint(true));
+    scenario_check(walk_on,
+                   "first-session-clarity: remote extract strip gives the walk-on contract");
+    scenario_check(!hud_contains(state, extraction_action_hint(false)),
+                   "first-session-clarity: remote strip still never says press F after clearing");
+
+    if (state.session) state.session->shutdown();
+    server->stop();
+    delete server;
+  }
+  return 0;
+}
+
 int run_scenarios(const std::string& which) {
   struct Entry {
     const char* name;
@@ -4202,6 +4582,7 @@ int run_scenarios(const std::string& which) {
       {"remote-render-list", scenario_remote_render_list},
       {"zoom-invariance", scenario_zoom_invariance},
       {"chronicles-gate-b", scenario_chronicles_gate_b},
+      {"first-session-clarity", scenario_first_session_clarity},
   };
   int total_failures = 0;
   for (const auto& entry : entries) {
