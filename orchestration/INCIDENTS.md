@@ -230,3 +230,31 @@ status labels. New incidents append here with the template at bottom.
 - Status: RESOLVED. Orchestration PR #3 merged as `d068012a`; Verdigris PR
   #53 merged as `60e9f963`. Their PR gates were green, and the prior PC branch
   pushes with the corrected workflow produced no branch-push runs.
+
+## INC-015: duplicate OpenCode writers entered one TASK-0148 worktree (2026-08-22)
+
+- Date: 2026-08-22 09:13 PDT. Lane: `ox-pc-r`, TASK-0148, worktree
+  `Z:\Code\.worktrees\verdigris\ox-pc-r`.
+- WHAT HAPPENED: an older resumed Ox Alpha Max process remained alive inside a
+  long Gate-B diagnostic command after its JSON log stopped advancing. The
+  supervisor incorrectly treated that session as exited and launched a fresh
+  Ox Alpha High recovery into the same worktree. Both processes then ran
+  session tests against the same dirty files.
+- DETECTION: the configured dashboard showed only the first matching lane PID.
+  A process-tree inspection during independent supervision found the second
+  `opencode.exe` and its separate `verdigris_session_tests.exe` child.
+- CONTAINMENT: the exact older process tree rooted at PID 26752 was stopped;
+  no file was reset, cleaned, or discarded. PID 26452 remains the sole writer.
+  Its current evidence cannot be accepted until it acknowledges the collision,
+  inventories the final diff, and reruns the full gate from the preserved final
+  file state.
+- REGRESSION: the PC-local PowerShell monitor now counts every OpenCode process
+  matching a registered lane. More than one writer for a lane produces
+  `P0_DUPLICATE_WORKTREE`, a deduplicated toast, all matching PIDs in the
+  dashboard, and a stop-extra-process action. Selecting only the first PID is
+  no longer treated as sufficient liveness evidence.
+- RULE: resuming and replacing a session are mutually exclusive transitions.
+  Before a replacement starts, verify the old PID and its descendants are
+  absent; after any collision, rerun acceptance from the final single-writer
+  tree rather than trusting an overlapping build.
+- Status: CONTAINED; fresh single-writer acceptance rerun required.
