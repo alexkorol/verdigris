@@ -20,6 +20,19 @@ if (WIN32)
   target_link_libraries(verdigris_networking PRIVATE ws2_32)
 endif()
 
+# TASK-0157: backend-neutral procedural audio scheduler foundation. Data-only
+# cue scheduling against an injectable sink; deliberately no audio backend,
+# device API, asset, or third-party dependency. Reads only the header-only
+# presentation-events contract from client/.
+add_library(verdigris_audio
+  audio/cue_spec.cpp
+  audio/event_cues.cpp
+  audio/audio_mixer.cpp
+)
+target_include_directories(verdigris_audio
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/audio ${CMAKE_CURRENT_SOURCE_DIR}/client
+)
+
 add_executable(verdigris_core_tests tests/core_tests.cpp)
 target_link_libraries(verdigris_core_tests PRIVATE verdigris_core)
 
@@ -53,6 +66,9 @@ target_link_libraries(verdigris_session_tests PRIVATE verdigris_client_session)
 add_executable(verdigris_presentation_events_tests tests/presentation_events_tests.cpp)
 target_link_libraries(verdigris_presentation_events_tests PRIVATE verdigris_client_session)
 
+add_executable(verdigris_audio_mixer_tests tests/audio_mixer_tests.cpp)
+target_link_libraries(verdigris_audio_mixer_tests PRIVATE verdigris_audio)
+
 add_executable(verdigris_client client/main.cpp client/remote_play.cpp)
 target_include_directories(verdigris_client PRIVATE client)
 target_link_libraries(verdigris_client PRIVATE verdigris_core verdigris_client_session)
@@ -67,4 +83,5 @@ add_test(NAME verdigris_networking_tests COMMAND verdigris_networking_tests)
 add_test(NAME camera2d_tests COMMAND camera2d_tests)
 add_test(NAME verdigris_session_tests COMMAND verdigris_session_tests)
 add_test(NAME verdigris_presentation_events_tests COMMAND verdigris_presentation_events_tests)
+add_test(NAME verdigris_audio_mixer_tests COMMAND verdigris_audio_mixer_tests)
 add_test(NAME verdigris_client_scenarios COMMAND verdigris_client --scenario all)
