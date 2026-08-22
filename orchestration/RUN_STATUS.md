@@ -16,20 +16,20 @@ Automation state: the 15-minute Sol heartbeat
 reasoning and a transition-only, no-write scope. Retire it once orchd passes its
 vertical-slice acceptance.
 
-At the 21:56 sweep, `ox-pc-a` had pushed its valid TASK-0128 claim at
-`0d1898bd`. Four additional isolated OpenCode CLI workers launched at 21:44
-PDT with the explicit endpoint `openrouter/stealth/ox-alpha`; all four committed
-and pushed their routed claims inside the activation window. Fresh processes or
-post-claim logs show execution after claim. The worker count is therefore five
-live Verdigris claims, not five visible windows.
+At the 22:23 sweep, the first four-lane OpenRouter wave has produced three
+accepted integrations and one focused revision. TASK-0086, TASK-0105, and
+TASK-0120 are accepted and integrated on the program branch. TASK-0080 is
+REVISE at reviewed head `0ab4e7a5`; ox-pc-b has resumed the preserved session
+for the controller-state correction. ox-pc-d is released to the next disjoint
+packet, TASK-0083. ox-pc-e remains idle as immediate review/recovery reserve.
 
 The independent `ox-bootstrap` orchestration worker has pushed M3 head
 `82de84ef` after M2 `5627916f`. The standalone repo's Tier-B review contract
 still governs acceptance and this lane never counts as Verdigris capacity.
 
-Snapshot: 2026-08-21 21:56 PDT
+Snapshot: 2026-08-21 22:23 PDT
 
-Sweep base: `039dcfa7f12497aa79c3677873a06a96c231a13d`
+Sweep base: `1455c536caeb02b88a7355e75a6efe71f0358667`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
 `d2423873` merge tip).
 
@@ -86,10 +86,10 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
 | ox-pc-a | 6620-6639 | CLAIMED `0d1898bd`; existing desktop session | TASK-0128 throughput normalization |
-| ox-pc-b | 6640-6659 | ACTIVE; claim pushed `22ada117`; PID 12248; session `ses_fd8378c52ffevZPjVDjFGOZfYa` | TASK-0080 board sentinel |
-| ox-pc-c | 6660-6679 | ACTIVE; claim pushed `2ed4799a`; PID 7140; session `ses_fd8378c23ffecJkzVFg9q54TPg` | TASK-0086 Gate C contract audit |
-| ox-pc-d | 6680-6699 | ACTIVE; claim pushed `1558c3a1`; PID 6984; session `ses_fd8378c3cffeugVxxtoWV63G29` | TASK-0105 passive-tree authority audit |
-| ox-pc-e | 6700-6719 | ACTIVE after one environment repair; claim pushed `97580939`; current PID 2704; session `ses_fd8378c4cffeqhXxkTEfTuMoVM` | TASK-0120 release verification audit |
+| ox-pc-b | 6640-6659 | REVISE `0ab4e7a5`; revision process active; session `ses_fd8378c52ffevZPjVDjFGOZfYa` | TASK-0080 board sentinel |
+| ox-pc-c | 6660-6679 | ACCEPTED `8ddfb06e`; integrated by `1455c536` | TASK-0086 Gate C contract audit complete |
+| ox-pc-d | 6680-6699 | TASK-0105 ACCEPTED/integrated; next launch requested | TASK-0083 server lifecycle soak |
+| ox-pc-e | 6700-6719 | TASK-0120 ACCEPTED/integrated; idle reserve | review/recovery reserve |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -165,11 +165,13 @@ harness-visible provider/model. These are separate scorecard experimental units.
 
 ## Interrupts and authority
 
-- REVIEW_REQUESTED: **none at snapshot**; workers remain on their exact routes.
-- REVISE: **none in the Verdigris wave at snapshot**.
-- Active claims: **TASK-0128 by ox-pc-a** (`0d1898bd`), **TASK-0080 by
-  ox-pc-b** (`22ada117`), **TASK-0086 by ox-pc-c** (`2ed4799a`), **TASK-0105
-  by ox-pc-d** (`1558c3a1`), and **TASK-0120 by ox-pc-e** (`97580939`).
+- REVIEW_REQUESTED: none awaiting first review at snapshot.
+- REVISE: **TASK-0080** at reviewed head `0ab4e7a5`; ox-pc-b revision active.
+- Accepted/integrated this sweep: **TASK-0086** at `8ddfb06e`, **TASK-0105**
+  at `8e6e42b3`, and **TASK-0120** at `4e0920d4`.
+- Active claims: **TASK-0128 by ox-pc-a**; TASK-0080 remains assigned to
+  ox-pc-b through revision. TASK-0083 is launch-requested on ox-pc-d but does
+  not count as capacity or leave READY until its committed pushed claim exists.
   Separate project: orchestration bootstrap claim `795a9b3`, with pushed M3
   head `82de84ef` awaiting its configured Tier-B acceptance path.
 - Historical TASK-0056 and legacy clone WIP are superseded/preserved, never

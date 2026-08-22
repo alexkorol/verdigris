@@ -29,7 +29,7 @@ Every registered lane below has its own Z: worktree and branch.
 | ox-pc-a | `Z:\Code\.worktrees\verdigris\ox-pc-a` | `codex/TASK-0128-accepted-throughput-normalization-ox-pc-a` | TASK-0128 |
 | ox-pc-b | `Z:\Code\.worktrees\verdigris\ox-pc-b` | `codex/TASK-0080-board-sentinel-ox-pc-b` | TASK-0080 |
 | ox-pc-c | `Z:\Code\.worktrees\verdigris\ox-pc-c` | `codex/TASK-0086-gate-c-contract-audit-ox-pc-c` | TASK-0086 |
-| ox-pc-d | `Z:\Code\.worktrees\verdigris\ox-pc-d` | `codex/TASK-0105-passive-tree-progression-gap-audit-ox-pc-d` | TASK-0105 |
+| ox-pc-d | `Z:\Code\.worktrees\verdigris\ox-pc-d` | `codex/TASK-0083-server-lifecycle-soak-ox-pc-d` | TASK-0083 |
 | ox-pc-e | `Z:\Code\.worktrees\verdigris\ox-pc-e` | `codex/TASK-0120-release-verification-gap-audit-ox-pc-e` | TASK-0120 |
 
 Use only the provisioned dedicated worktree. The architect checkout at
@@ -52,8 +52,10 @@ committed task `STATUS.md`.
 5. Work only in `owned_paths`; paste literal acceptance transcripts and exit
    codes into `REPORT.md`; push only the worker branch; request review; loop.
 
-TASK-0081 is ACCEPTED and integrated. The current five routes are frozen in the
-table above. Each lane works only one task at a time. Re-fetch before claiming because
+TASK-0081, TASK-0086, TASK-0105, and TASK-0120 are ACCEPTED and integrated.
+TASK-0080 is in a narrow architect-directed revision on its existing lane;
+ox-pc-d is released to TASK-0083 at program base
+`1455c536caeb02b88a7355e75a6efe71f0358667`. Each lane works only one task at a time. Re-fetch before claiming because
 a newer `RUN_STATUS.md`, claim, REVIEW, RELEASE, or REVISE always wins.
 
 ## Activation acknowledgement
