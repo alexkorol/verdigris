@@ -5,6 +5,7 @@ reviewed_head: bb7b8cebe0e22f832832722801f3999f6a7506be
 reviewed_branch: codex/TASK-0157-native-procedural-audio-scheduler-ox-pc-af-r3
 reviewed_by: PC Verdigris architect/orchestrator
 reviewed_at: 2026-08-22 15:10 -07:00
+integrated_at: a6c33c19
 ---
 
 # TASK-0157 architect review — REVISE
@@ -91,3 +92,18 @@ Future integration must carry the complete original implementation plus
 revision correction lineage (`601ca1e8`, `1a91583e`, and terminal evidence
 `bb7b8ceb`) and rerun the focused audio binary twice and the combined full
 native gate before recording `integrated_at`.
+
+## Program integration — hold cleared
+
+TASK-0163 is accepted and integrated, and the combined program head passed the
+complete native denylist/core/networking/camera2d/session/presentation/audio
+gate. The original audio foundation is integrated as `287433bf`; the revision
+corrections are integrated as `a6c33c19`; terminal worker evidence was already
+preserved as `0163735a`.
+
+The dedicated audio binary then passed twice at 60 output lines per run with
+byte-identical SHA-256
+`87C88BD99AB35610A9AF3D11B94D55C92AEFE140E43AEE26DBF3835F8032600C`.
+Lifecycle is now **INTEGRATED**. This remains a backend-neutral scheduler and
+cue seam: no playback, audible-output, final-frequency, music, asset, device,
+or dependency claim is made.
