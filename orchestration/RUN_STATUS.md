@@ -106,7 +106,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-f | 6720-6739 | CLAIMED and pushed `f9458f4e`; implementation active | TASK-0138 release-proof validator |
 | ox-pc-g | 6740-6759 | CLAIMED and pushed `3f100c3e`; implementation active | TASK-0141 procedural native visual kit |
 | ox-pc-h | 6760-6779 | TASK-0133 accepted/integrated at `678c7b80`; successor sequenced behind TASK-0141 | TASK-0142 native client presentation slice |
-| ox-pc-i | 6780-6799 | CLAIMED and pushed `5147cbed`; implementation active | TASK-0143 native gameplay/runtime slice |
+| ox-pc-i | 6780-6799 | TASK-0143 accepted/integrated at `ac1fc54a`; lane available for successor promotion | successor pending current-tip validation |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -197,8 +197,9 @@ harness-visible provider/model. These are separate scorecard experimental units.
   and integrated at `678c7b80`/`b7464d94`/`934863cb` and release the three
   game-facing successors TASK-0141/0142/0143. TASK-0136/0137/0138 remain
   valid pushed implementation claims at `7b24e5d3`/`0d175a2f`/`f9458f4e`.
-  TASK-0141 is claimed by ox-pc-g at `3f100c3e`; TASK-0143 is claimed by
-  ox-pc-i at `5147cbed`; TASK-0142 remains sequenced behind TASK-0141.
+  TASK-0141 is claimed by ox-pc-g at `3f100c3e`; TASK-0142 remains sequenced
+  behind TASK-0141. TASK-0143 is now accepted/integrated at `ac1fc54a`; ox-pc-i is available but
+  receives no stale-base successor until a current-tip promotion is validated.
   Separate project: orchestration bootstrap claim `795a9b3`, with pushed M3
   head `82de84ef` awaiting its configured Tier-B acceptance path.
 - Historical TASK-0056 and legacy clone WIP are superseded/preserved, never
