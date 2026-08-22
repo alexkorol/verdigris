@@ -13,7 +13,7 @@ The native presentation already has a **real, testable animation/VFX contract sk
 
 What does **not** exist is anything an ARPG player would call animation: there are **no walk cycles, no attack lunges, no spawn/death body motion, no positional interpolation of actors, no particle layer, no crit distinction, no camera shake** — actors teleport per 20 Hz tick under static mirrored billboards. The gaps are not accidents; they are unbuilt layers. Every gap below is phrased so TASK-0122 can promote directly into it.
 
-**Row scorecard:** 7 COMPLETE, 9 PARTIAL, 4 MISSING, 1 OWNER-ASSET (details in the matrix).
+**Row scorecard:** 8 COMPLETE, 7 PARTIAL, 2 MISSING, 1 OWNER-ASSET (derived from and agreeing with the matrix rows).
 
 ---
 
@@ -106,7 +106,7 @@ Inventory in R18. Holes that matter for the successor: camera lerp, Dust trail, 
 3. **F-CLOCK:** dual telegraph windup units (local 3 ticks vs remote `durationMs`/50 heuristic).
 4. **F-SYNTH:** remote kill drops synthesized at the player's last tile, not the monster's (`remote_session.cpp:799-805`).
 5. **F-SEAM:** `renderer/` is documentation-only; all presentation logic lives in `client/main.cpp` (4,682 lines). TASK-0122 should decide extract-now vs annotate-and-defer explicitly.
-6. **F-PROV:** committed visual kit is TASK-0141/TASK-0144 work; the TASK-0147 polish wave is double-released and quarantined (`RELEASE.md`) — do not resume or copy it.
+6. **F-PROV:** committed visual kit is TASK-0141/TASK-0144 work. The TASK-0147 clean replacement was accepted (`6575f330`) and integrated at `19be98db` on the program branch immediately after this audit's base `9fe673b6` — it is accepted, integrated work and usable capacity. Only the older ox-pc-e/ox-pc-m dirty attempts remain claim-released/quarantined per `RELEASE.md`; do not resume those.
 
 ---
 
@@ -115,7 +115,7 @@ Inventory in R18. Holes that matter for the successor: camera lerp, Dust trail, 
 - **Phase A — contracts (zero feel risk, do first):** map `ScionLost`/`BuffExpired`/spawn events through the session seam; carry telegraph `radius/position/facing` and hit `critical/style` end-to-end; unify windup units; delete monster-facing inversion. Each item lands with a session or scenario test. Unblocks: NC-01…NC-05.
 - **Phase B — timing pins:** one named presentation-constants table for all FX ttl/pulse values; scenario assertions for Dust trail, orb pulse cadence, camera lerp; `--reference-scene --ticks N` frame-sequence dumps for animation goldens; HUD-clamp assertion at 1920×1080.
 - **Phase C — procedural juice (D-113 vector-first, D-114 coherent, D-115 gated):** interpolation-only walk bob/attack lunge/dodge roll from `MovementStepInfo`; crit visual variant; spawn/dissolve beats; explicit decisions on hit-stop authority (sim freeze ticks vs presentation-only) and camera shake boundary.
-- **Phase D — owner assets:** owner art decision gate (plates vs approved procedural skeletons); PNG plate pipeline already exists; honest art-status chip polices claims; TASK-0147 quarantine respected.
+- **Phase D — owner assets:** owner art decision gate (plates vs approved procedural skeletons); PNG plate pipeline already exists; honest art-status chip polices claims; the integrated TASK-0147 replacement (`19be98db`, post-base) is the current polish baseline and is usable capacity.
 
 **Promotion note for the supervisor:** TASK-0122's DRAFT lists dependencies "TASK-0116 ACCEPTED, renderer/text strategy frozen, owner asset policy available or procedural fallback approved." This audit satisfies the first; Phases A–C above are implementable **now** without the owner gate (D-113 procedural-first), so the successor can be promoted immediately with Phase A as its first milestone and Phase D as its terminal gate.
 
