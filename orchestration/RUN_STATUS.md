@@ -127,6 +127,9 @@ OpenCode CLI 1.18.21 is installed and the OpenRouter lanes launch headlessly
 with explicit `openrouter/stealth/ox-alpha`; no owner tab opening is required.
 `Z:\Code\.fleet\Watch-VerdigrisFleet.ps1` supplies one human-readable five-second
 dashboard and transition-deduplicated Windows P1/P0 activation notifications.
+Its live-alert set is restricted to current completed handoffs and registered
+active routes (`i/j/k/l/p/q`); historical/quarantined worktrees remain visible
+in the web dashboard for audit but cannot generate false live toasts.
 The worker logs remain under `Z:\Code\.fleet\logs`. Sol does not claim or write
 worker STATUS/REPORT and will not take over implementation.
 

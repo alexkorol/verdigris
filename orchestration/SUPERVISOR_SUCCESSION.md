@@ -91,7 +91,9 @@ request.
   sequenced DRAFT successors, zero owned-path collisions; deterministic factory
   verified at 2,000 nodes / 500 packets. Runway remains honestly `UNKNOWN`.
 - Local supervision: human dashboard `http://127.0.0.1:4737/` health 200,
-  Node PID 12400; visible PowerShell monitor PID 25480. Same-task automation
+  Node PID 12400; visible PowerShell monitor PID 7772. The monitor's alert set
+  is restricted to current completed/active routes `i/j/k/l/p/q`, so preserved
+  historical/quarantined lanes cannot produce false toasts. Same-task automation
   `verdigris-surge-supervisor` is ACTIVE every five minutes and derives lanes
   dynamically from current routing/config. Chat-spawning cron
   `pc-fleet-emergency-monitor` remains PAUSED.
