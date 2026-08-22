@@ -1,43 +1,44 @@
 ---
 task: TASK-0146
-verdict: REVISE
-reviewed_head: a72b6317a0a57a31c2e50e91f1bd3844a5283ef8
-implementation_head: e0ca05f6fa8e5482a1586967c11200d4185bc2e3
-reviewed_at: 2026-08-22 04:37 -07:00
+verdict: ACCEPTED
+reviewed_head: 086ac07b2958ec5f3bdbe246754c2591c535369c
+implementation_head: 4d2b47f37b08f4329020740ef3e0adcdd927eda7
+supersedes_reviewed_head: a72b6317a0a57a31c2e50e91f1bd3844a5283ef8
+reviewed_at: 2026-08-22 05:34 -07:00
 ---
 
-# TASK-0146 review — REVISE
+# TASK-0146 review — ACCEPTED
 
-The pushed head is clean, scoped to the owned native core/test paths plus the
-task STATUS/REPORT, and its deterministic roster, instance-retirement, reward,
-and exactly-once phase mechanics are otherwise coherent. It does not yet meet
-the owner-visible encounter outcome, however.
+Revision 1 closes the sole prior finding. At one shared
+`kTelegraphTicks` deadline, the complete owed roster moves into the live actor
+set: the elite and normal flanker are simultaneously alive at their existing
+deterministic anchors. Killing either leaves the other alive and preserves
+`SlayWardens`; the last kill advances to `ExtractCarriedValue` exactly once.
 
-## 1. Materialize a real multi-threat pack
+The strengthened core coverage also proves the pre-deadline empty floor,
+same-seed replay equality, retirement of an armed roster on death, absence of
+a post-retirement materialization, and a fresh equivalent pack for the
+successor. Code-path inspection confirms materialization runs before the
+per-tick actor iteration, so growing `actors_` does not invalidate that loop.
 
-At the reviewed head, `materialize_wave()` moves only `pending_wave_.front()`
-into `actors_` and clears the timer. The next reserve Warden is not scheduled
-until that newly materialized Warden dies. Consequently there is never more
-than one living Warden in the first expedition. The player sees three serial
-single-target fights, not the required small pack with simultaneously legible
-normal/elite composition and spatial separation.
+## Independent evidence at frozen remote head
 
-Revise the existing kill-scheduled reinforcement design so the elite and
-normal flanker materialize together after the entry Warden's telegraph window.
-Preserve their existing deterministic anchors and shared constants. Clearing
-either reinforcement must leave `SlayWardens` active while the other remains;
-clearing the last living Warden must advance to `ExtractCarriedValue` exactly
-once. Do not weaken or reorder any existing client scenario to make this pass.
+Review worktree: `Z:\Code\.reviews\verdigris\task0146-086ac07b`
 
-Add or strengthen focused assertions proving all of the following:
+- `powershell -NoProfile -ExecutionPolicy Bypass -File native/build.ps1 -RunTests -RunClientScenarios` — PASS: denylist, core, networking, camera2d, session, and all seven client scenarios.
+- `native/build/verdigris_client.exe --scenario first-fight` — PASS.
+- `native/build/verdigris_client.exe --scenario telegraph-dodge` — PASS.
+- `native/build/verdigris_client.exe --scenario loot-to-bank` — PASS.
+- `git diff --check a72b6317..086ac07b` — PASS.
+- Revision scope is limited to `native/include/verdigris/core.hpp`,
+  `native/src/core.cpp`, `native/tests/core_tests.cpp`, and this task's
+  STATUS/REPORT.
 
-- immediately before the reinforcement deadline, no reserve Warden is alive;
-- at the deadline, both reserve Wardens are alive concurrently at their
-  deterministic elite/flanker anchors;
-- killing one leaves the other alive and does not clear the route or advance
-  the phase;
-- killing the last one clears/advances exactly once;
-- replay equality and death/recovery retirement remain deterministic.
+## Recorded gate deviation
 
-Rerun every literal SPEC acceptance command and publish a revision REPORT with
-the exact new implementation head. Preserve the frozen reviewed head for audit.
+The immutable SPEC-base-to-head diff includes later inherited program
+coordination files and reports three trailing-blank warnings in pre-existing
+RELEASE/REVIEW documents. Those bytes are outside the worker's revision and
+owned implementation commits. The worker's statement that every literal gate
+was green was therefore too broad; acceptance rests on the clean revision
+diff, exact owned scope, full independent native gate, and direct scenarios.
