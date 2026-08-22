@@ -1,6 +1,6 @@
 # TASK-0148 STATUS
 
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: ox-alpha
 worker: ox-pc-r
 provider: openrouter
@@ -12,26 +12,53 @@ worktree: Z:\Code\.worktrees\verdigris\ox-pc-r
 branch: codex/TASK-0148-native-chronicles-reconnect-runtime-ox-pc-r-r5
 routed_head: c1acd4ec215447cc8a731ccbfe977ff595888609
 spec_base_commit: 060c11517d2ebb0aec0c4d4a38c5e3eb53141cb2
+claim_commit: 837a412f (STATUS-only replacement claim r5)
+supervisor_commit: 3119a08e (.github/workflows/native.yml only; untouched)
+implementation_commit: 5732367e
 program_head: 1526f33be077cc81b3555c7a77f554f6b96b2074 (origin/codex/native-reconstitution)
 started_at: 2026-08-22 05:09 -07:00
+review_requested_at: 2026-08-22 (same session, after supervisor recoveries)
 claim_kind: independent replacement r5
 
 Preflight evidence:
 
-- Worktree clean at start; branch and routed HEAD verified exactly
+- Worktree clean at claim start; branch and routed HEAD verified exactly
   `c1acd4ec215447cc8a731ccbfe977ff595888609`.
-- `git fetch --prune origin` completed; origin program head is
-  `1526f33be077cc81b3555c7a77f554f6b96b2074`.
-- `RELEASE.md` (2026-08-22 05:06 PDT) invalidates released q claim
-  `815a359b` on `ox-pc-q`; no prior `STATUS.md` existed for this task at
-  claim time, so this STATUS-only write is the replacement claim.
+- `git fetch --prune origin` completed; RELEASE.md invalidated q claim
+  `815a359b`; this STATUS-only write was the replacement claim.
 - g/n/o/q worktrees and branches were not inspected, resumed, or copied.
 
-Plan: freeze the literal accepted normal-player journey (guest login →
-`chronicles:house:found` → `chronicles:scion:create` + `chronicles:scion:set-out`
-→ earn item → die via ordinary movement/combat → return via accepted Chronicles
-surface → `chronicles:scion:create` successor → admit via accepted successor
-path → recover exact relic via ordinary inputs → disconnect/reconnect with same
-guest identity → same House/Scion/relic state), prove the pre-change failing
-player-visible step, then make the smallest real runtime correction in owned
-paths only.
+Implementation summary (full detail in REPORT.md):
+
+- Runtime gap closed in native/src/networking.cpp: `chronicles:scion:set-out`
+  now admits the Scion under the hard mortal lifecycle (JS beginScionSession
+  parity), the sworn oath persists on the living roster across relogins, and
+  succession admission heals the reused actor so an heir never inherits the
+  fallen scion's lethal wound. No new protocol, database, lore, or economy.
+- New literal loopback scenario in native/tests/session_tests.cpp drives the
+  COMPLETE Gate-B journey with only normal accepted envelopes (no dev:*,
+  no mutate shortcut, no direct-state shortcuts): found → set-out → earn →
+  ordinary death → return → successor → elite slain surfaces heirloom → exact
+  uuid recovered via context-menu Take → disconnect/reconnect same guest →
+  identical House/Scion/relic state + oath/carried-heirloom continuity.
+
+Acceptance evidence (all literal SPEC commands exit 0, probe-free,
+single-writer, final tree = implementation commit 5732367e):
+
+- `powershell -NoProfile -ExecutionPolicy Bypass -File native/build.ps1
+  -RunTests -RunClientScenarios` → exit 0; "session tests passed"; legacy
+  denylist PASS; all client scenarios green including chronicles-gate-b.
+- `git diff --check` → clean. `git diff --name-only 060c115..HEAD` → ok.
+- captures/gate-b-loopback-prechange-fail.log names the pre-change failing
+  player-visible step (fatal fall never emitted from an ordinary lethal wound).
+- captures/gate-b-full-suite-green.log is the green full-suite transcript.
+- Ports 6580-6599 verified free before test runs; worker capsule 6960-6979
+  used by the journey server; port 6500 never touched.
+- All temporary diagnostic probes (six TEMP-GATEB-DEBUG + take trace) removed
+  before the evidence run; committed tree contains zero such traces.
+- Two intermediate invocations of the gate command failed at DIFFERENT
+  pre-existing timing-sensitive checks while the identical binary passed
+  repeatedly when run directly; judged environmental, documented in REPORT.
+
+Handoff: pushed to origin on this worker branch only. Never merged; review is
+the architect's.
