@@ -54,35 +54,40 @@ A failed handoff or missing acknowledgement is an owner-notification event. It
 does not authorize the outgoing supervisor to burn remaining credits by taking
 over implementation.
 
-## Verified live PC checkpoint — 2026-08-22 04:31 PDT
+## Verified live PC checkpoint — 2026-08-22 04:44 PDT
 
 State: `PRIMARY_ACTIVE`; this is a succession checkpoint, not a retirement
 request.
 
 - Program checkout: `Z:\Code\Games\delaford\delaford_game`, branch
-  `codex/native-reconstitution`, clean local/remote product head `a81642ae` before this
-  checkpoint refresh commit. `origin/master` is not the worker base; workers use the exact
-  routed program heads recorded in `RUN_STATUS.md`.
+  `codex/native-reconstitution`, clean local/remote coordination head
+  `491cff3c` before this checkpoint refresh commit; accepted product content is
+  integrated through `a81642ae`. `origin/master` is not the worker base;
+  workers use the exact routed program heads recorded in `RUN_STATUS.md`.
 - Standalone broadcast checkout:
   `Z:\Code\.worktrees\orchestration\pc-overnight-game-wave`, clean branch
-  `codex/pc-overnight-game-wave`, local/remote head `54c53d3`; observed
+  `codex/pc-overnight-game-wave`, local/remote head `8b55376`; observed
   standalone `origin/main` is `59a70b6`. PC has no shared-main authority.
 - Active implementation/revision evidence:
   - TASK-0145 head `78dcac60` and TASK-0149 revision head `a88d307d` are
     independently ACCEPTED and integrated at `2df5eac5` and through
     `8677f021`; combined program binaries passed all native suites, all eight
     client scenarios, and the real-window lifecycle selftest;
-  - ox-pc-l, ports 6840-6859, TASK-0146 local implementation commit
-    `e0ca05f6` not yet pushed or handed off, clean/fresh process PID 4108;
+  - ox-pc-l, ports 6840-6859, TASK-0146 frozen head `a72b6317` reviewed REVISE
+    because it never placed multiple living threats on the floor; exact branch
+    revision process PID 8108 is active on the simultaneous elite/flanker fix;
   - ox-pc-p, ports 6920-6939, TASK-0147 claim `3ee9f928`, process PID 20868;
-  - ox-pc-q, ports 6940-6959, TASK-0148 claim `815a359b`, process PID 7324.
+  - ox-pc-q, ports 6940-6959, TASK-0148 claim `815a359b`, recovery PID 6104.
+    The first process was stopped clean before writes after proposing forbidden
+    `dev:teleport` setup; this lane has consumed its one recovery and must prove
+    the complete journey using normal accepted envelopes only.
 - Preserved/non-capacity: ox-pc-d/e/g/m are dirty P0 quarantines after exhausting
   one recovery; ox-pc-n is a clean activation failure after its launch and one
   recovery both stopped before claim; a/b/c/h are preserved historical or
   exhausted routes as detailed in `RUN_STATUS.md`; ox-pc-o is clean but
   exhausted after its claim plus one stopped recovery. Never infer capacity
   from their old logs or pushed claim heads.
-- Queue/factory: board sentinel healthy, 27 effective READY, zero REVISE, 17
+- Queue/factory: board sentinel healthy, 27 effective READY, one REVISE, 17
   sequenced DRAFT successors, zero owned-path collisions; deterministic factory
   verified at 2,000 nodes / 500 packets. Runway remains honestly `UNKNOWN`.
 - Local supervision: human dashboard `http://127.0.0.1:4737/` health 200,
@@ -97,9 +102,10 @@ request.
   Do not classify a concurrent-capsule failure without listener/parent-process
   evidence; route a deterministic isolation hardening packet.
 - Exact next sweep: verify l/p/q PIDs, logs, git changes, and pushed heads;
-  require l to push its implementation and clean REVIEW_REQUESTED handoff;
-  freeze any clean review head; run every literal SPEC gate independently and
-  visually inspect TASK-0147 captures; integrate only ACCEPTED commits; rerun
+  require l to close the numbered simultaneous-pack revision; freeze any clean
+  REVIEW_REQUESTED head; run every literal SPEC gate independently and
+  visually inspect TASK-0147 captures; reject any TASK-0148 journey containing
+  `dev:*` setup or direct state mutation; integrate only ACCEPTED commits; rerun
   combined native gates and the owner launch after each product integration.
 - Owner action required now: none. On credit-driven replacement, the successor
   must fetch both repositories, reproduce this checkpoint against live evidence,
