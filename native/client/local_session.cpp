@@ -122,9 +122,19 @@ void LocalCoreSession::submit(const ClientCommand& command) {
     case ClientCommand::Type::Aim:
       simulation_->dispatch(verdigris::Command::aim(command.dx, command.dy));
       break;
-    case ClientCommand::Type::UseAction:
-      simulation_->dispatch(verdigris::Command::action_use(verdigris::ActionType::Melee));
+    case ClientCommand::Type::UseAction: {
+      // TASK-0122 Phase A: the seam now carries the named action through
+      // instead of flattening every skill to Melee, so lifecycle beats such
+      // as BuffExpired(war-cry) are reachable by seam consumers.
+      verdigris::ActionType action = verdigris::ActionType::Melee;
+      if (command.target == "war-cry") action = verdigris::ActionType::WarCry;
+      else if (command.target == "thrust") action = verdigris::ActionType::Thrust;
+      else if (command.target == "sweep") action = verdigris::ActionType::Sweep;
+      else if (command.target == "wait") action = verdigris::ActionType::Wait;
+      else if (command.target == "dash") action = verdigris::ActionType::Dash;
+      simulation_->dispatch(verdigris::Command::action_use(action));
       break;
+    }
     case ClientCommand::Type::PickUp:
       simulation_->dispatch(verdigris::Command::pick_up(command.target));
       break;
@@ -235,6 +245,10 @@ void LocalCoreSession::translate_new_events() {
       case verdigris::EventType::ItemPickedUp: out.type = PresentationEventType::ItemPickedUp; break;
       case verdigris::EventType::ItemEquipped: out.type = PresentationEventType::ItemEquipped; break;
       case verdigris::EventType::ItemExtracted: out.type = PresentationEventType::ExtractionCompleted; break;
+      // TASK-0122 Phase A: the previously-dropped lifecycle events now cross
+      // the presentation seam so every renderer consumes PresentationEvents.
+      case verdigris::EventType::ScionLost: out.type = PresentationEventType::ScionLost; break;
+      case verdigris::EventType::BuffExpired: out.type = PresentationEventType::BuffExpired; break;
       default: continue;  // remaining core events gain mappings with 0061+
     }
     pending_events_.push_back(std::move(out));

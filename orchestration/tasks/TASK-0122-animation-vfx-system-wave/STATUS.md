@@ -1,6 +1,6 @@
 # TASK-0122 STATUS
 
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: ox-alpha
 
 - worker: ox-pc-x (OpenCode Ox Alpha implementation worker)
@@ -30,3 +30,23 @@ Pre-claim preflight evidence:
 
 Next step: implement exactly the frozen Phase A packet from SPEC.md, then run
 the literal acceptance gates and set REVIEW_REQUESTED.
+
+## Completion (REVIEW_REQUESTED)
+
+- Implementation finished strictly inside owned paths; final changed-path
+  inventory in REPORT.md §3.
+- All literal SPEC gates green from the unchanged final tree: full native gate
+  (`build.ps1 -RunTests -RunClientScenarios`, exit 0),
+  `verdigris_presentation_events_tests.exe` (24/24, exit 0),
+  `verdigris_client.exe --scenario animation-vfx-phase-a` (31/31, exit 0),
+  `npm run playtest` (32/32, exit 0; first post-`npm ci` run hit the known
+  timing-sensitive `mortality` scenario which passes standalone on base and on
+  immediate re-run), `git diff --check` clean.
+- Fresh task captures: `captures/animation-vfx-phase-a-960x600.png` (960x600)
+  and `captures/animation-vfx-phase-a-1366x768.png` (1366x768); all five Phase
+  A treatments complete, labeled, and separated; architect visual gates
+  iterated to acceptance during the session.
+- Negative control: presentation beats leave simulation state untouched
+  (scenario + unit test evidence, REPORT.md §6).
+- Handoff: this is a review request only — the architect must rerun the gates
+  and inspect both images before ACCEPTED.

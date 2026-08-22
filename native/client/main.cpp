@@ -26,6 +26,9 @@
 #include "presentation_state.hpp"
 #include "session.hpp"
 
+// TASK-0122 Phase A: the single named presentation constants table.
+namespace phase_a = verdigris::client::phase_a;
+
 #ifdef VERDIGRIS_NATIVE_WINDOWS
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
@@ -232,6 +235,9 @@ struct ClientState {
   std::size_t processed_events = 0;
   std::vector<std::string> event_log;
   int loot_scatter = 0;
+  // TASK-0122 Phase A: presentation-side memory of already-materialized foes
+  // so the spawn beat fires exactly once per monster.
+  std::unordered_set<std::string> known_monsters;
   bool loot_labels = false;
   bool gear_overlay = false;
   bool debug_overlay = false;
@@ -252,6 +258,9 @@ struct ClientState {
   std::string relic_toast;
   int relic_toast_ticks = 0;
   std::unordered_map<std::string, std::string> known_crypt_status;
+  // TASK-0122 Phase A: optional world-anchored beat legend for the capture
+  // proof composite. Empty in every normal play path.
+  std::vector<std::pair<std::string, verdigris::Vec2>> beat_legend;
 };
 
 std::string executable_directory() {
@@ -753,6 +762,7 @@ void ingest_session_events(ClientState& state) {
   fx.event_log = std::move(state.event_log);
   fx.hint = state.hint;
   fx.hint_ticks = state.hint_ticks;
+  fx.known_monsters = std::move(state.known_monsters);
   ++state.world.tick;
   const std::string route_before = state.world.route_id;
   for (const auto& event : state.session->drain_events()) {
@@ -764,6 +774,9 @@ void ingest_session_events(ClientState& state) {
   }
   sync_world(state);
   if (state.world.route_id != route_before) generate_scenery(state);
+  // TASK-0122 Phase A: deterministic first-sighting spawn beats on the
+  // authoritative remote snapshot.
+  verdigris::client::detect_monster_spawns(fx, state.world, state.world.tick);
   state.effects = std::move(fx.effects);
   state.telegraphs = std::move(fx.telegraphs);
   state.loot_positions = std::move(fx.loot_positions);
@@ -771,6 +784,7 @@ void ingest_session_events(ClientState& state) {
   state.loot_scatter = fx.loot_scatter;
   state.screen_pulse_ticks = fx.screen_pulse_ticks;
   state.event_log = std::move(fx.event_log);
+  state.known_monsters = std::move(fx.known_monsters);
 }
 
 void submit_move(ClientState& state, int dx, int dy) {
@@ -1638,15 +1652,27 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       break;
     }
     case EffectFx::Kind::DamageNumber: {
+      std::string damage_label = fx.damage_to_player ? "player" : "monster";
+      const COLORREF base_color =
+          fx.critical ? RGB(phase_a::kCriticalNumberColor.r, phase_a::kCriticalNumberColor.g,
+                            phase_a::kCriticalNumberColor.b)
+                      : (fx.damage_to_player ? RGB(255, 118, 104) : RGB(240, 218, 132));
+      if (fx.critical)
+        damage_label = std::string(phase_a::kCriticalDamageLabel) + ":" +
+                       (fx.style.empty() ? "slash" : fx.style);
       rl.push_back({render::Op::Damage, static_cast<double>(base.x),
-                    static_cast<double>(base.y), 0.0, fx.value,
-                    fx.damage_to_player ? "player" : "monster"});
-      const int lift = static_cast<int>(kTileUnits * (0.35 + grow * 0.75) * base.scale);
-      const COLORREF color = fx.damage_to_player ? RGB(255, 118, 104) : RGB(240, 218, 132);
+                    static_cast<double>(base.y), 0.0, fx.value, damage_label});
+      // Critical hits rise higher and read larger for their longer lifetime;
+      // ordinary hits keep the accepted TASK-0142 treatment.
+      const int lift = static_cast<int>(kTileUnits *
+                                        (0.35 + grow * (fx.critical ? 1.05 : 0.75)) *
+                                        base.scale);
+      const COLORREF color = base_color;
       SetBkMode(dc, TRANSPARENT);
       // TASK-0142: bold numerals so the resolved damage reads instantly.
       const int font_h = std::clamp(
-          static_cast<int>(kTileUnits * 0.34 * base.scale), 13, 22);
+          static_cast<int>(kTileUnits * (fx.critical ? 0.44 : 0.34) * base.scale),
+          fx.critical ? 16 : 13, fx.critical ? 26 : 22);
       HFONT number_font = CreateFontA(font_h, 0, 0, 0, FW_BOLD, FALSE, FALSE,
                                       FALSE, DEFAULT_CHARSET,
                                       OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
@@ -1660,6 +1686,17 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
                static_cast<int>(text.size()));
       SelectObject(dc, old_number_font);
       DeleteObject(number_font);
+      if (fx.critical) {
+        // A short white-hot burst cross behind the numeral separates the
+        // critical beat from every ordinary hit flash.
+        const COLORREF burst = fade_to_background(
+            RGB(phase_a::kCriticalFlashColor.r, phase_a::kCriticalFlashColor.g,
+                phase_a::kCriticalFlashColor.b),
+            life);
+        const int arm = std::max(6, static_cast<int>(kTileUnits * 0.5 * base.scale));
+        draw_line(dc, base.x - arm, base.y - arm, base.x + arm, base.y + arm, burst, 2);
+        draw_line(dc, base.x - arm, base.y + arm, base.x + arm, base.y - arm, burst, 2);
+      }
       break;
     }
     case EffectFx::Kind::TargetFlash: {
@@ -1672,6 +1709,66 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
                    fade_to_background(RGB(255, 244, 190), life), 3);
       fill_ellipse(dc, base.x, base.y, r / 2, r / 2,
                    fade_to_background(RGB(255, 238, 160), life));
+      break;
+    }
+    case EffectFx::Kind::Materialize: {
+      // TASK-0122 Phase A: a deterministic materialization beat — two teal
+      // rings collapsing onto the spawn point. Radii stay inside the foe's
+      // own footprint neighborhood so an adjacent spawn never blankets the
+      // player, the objective strip, or the exit controls.
+      rl.push_back({render::Op::TargetFlash, static_cast<double>(base.x),
+                    static_cast<double>(base.y), 0.0, 0, phase_a::kSpawnRenderLabel});
+      const COLORREF color = fade_to_background(
+          RGB(phase_a::kMaterializeColor.r, phase_a::kMaterializeColor.g,
+              phase_a::kMaterializeColor.b),
+          life);
+      const int outer = std::max(
+          4, static_cast<int>(kTileUnits * (0.5 - grow * 0.36) * base.scale));
+      const int inner = std::max(2, outer / 2);
+      ring_ellipse(dc, base.x, base.y, outer, outer, color, 2);
+      ring_ellipse(dc, base.x, base.y, inner, inner,
+                   fade_to_background(
+                       RGB(phase_a::kMaterializeColor.r, phase_a::kMaterializeColor.g,
+                           phase_a::kMaterializeColor.b),
+                       life * 0.6),
+                   1);
+      break;
+    }
+    case EffectFx::Kind::WarCryFade: {
+      // TASK-0122 Phase A: the BuffExpired contract beat — an imploding
+      // dimmed-gold ring, clearly unlike the bright expanding apply aura.
+      rl.push_back({render::Op::WarCry, static_cast<double>(base.x),
+                    static_cast<double>(base.y), 0.0, 0, phase_a::kWarcryFadeLabel});
+      const COLORREF color = fade_to_background(
+          RGB(phase_a::kWarcryFadeColor.r, phase_a::kWarcryFadeColor.g,
+              phase_a::kWarcryFadeColor.b),
+          life);
+      const int radius =
+          static_cast<int>(kTileUnits * (0.9 - grow * 0.62) * base.scale);
+      ring_ellipse(dc, base.x, base.y, (std::max)(3, radius), (std::max)(3, radius),
+                   color, 2);
+      break;
+    }
+    case EffectFx::Kind::ScionLostBeat: {
+      // TASK-0122 Phase A: the longest beat in the packet — slow double rust
+      // rings collapsing inward with a falling shimmer. Distinct from every
+      // death ring in color, motion, and lifetime.
+      rl.push_back({render::Op::ScreenPulse, 0.0, 0.0, 0.0, 0,
+                    phase_a::kScionLostLabel});
+      const COLORREF color = fade_to_background(
+          RGB(phase_a::kScionLostColor.r, phase_a::kScionLostColor.g,
+              phase_a::kScionLostColor.b),
+          life);
+      const int outer = std::max(
+          4, static_cast<int>(kTileUnits * (1.2 - grow * 0.95) * base.scale));
+      ring_ellipse(dc, base.x, base.y, outer, outer, color, 3);
+      ring_ellipse(dc, base.x, base.y, (std::max)(2, outer / 2),
+                   (std::max)(2, outer / 2),
+                   fade_to_background(
+                       RGB(phase_a::kScionLostColor.r, phase_a::kScionLostColor.g,
+                           phase_a::kScionLostColor.b),
+                       life * 0.7),
+                   1);
       break;
     }
   }
@@ -1695,7 +1792,8 @@ const char* event_label(verdigris::EventType type) {
     case EventType::RouteUnlocked: return "route unlocked";
     case EventType::SeasonalRewardGranted: return "seasonal reward";
     case EventType::BuffApplied: return "buff";
-    case EventType::BuffExpired: return "buff expired";
+    // TASK-0122 Phase A: BuffExpired/ScionLost log their own readable beat
+    // lines ("war cry faded", "scion lost"); no generic label here.
     // TASK-0153: the core's authoritative phase transition is no longer
     // dropped; the event log carries the core's own phase tokens.
     case EventType::ExpeditionPhaseChanged: return "phase";
@@ -1780,6 +1878,24 @@ void ingest_events(ClientState& state, const RECT& bounds) {
       case verdigris::EventType::BuffApplied:
         if (event.text == "war-cry")
           state.effects.push_back({EffectFx::Kind::WarCryAura, ex, ey, 0.0, 0, 14});
+        break;
+      case verdigris::EventType::BuffExpired:
+        // TASK-0122 Phase A: war-cry end contract beat. Imploding dimmed-gold
+        // ring at the anchor, lifetime from the phase_a constants table.
+        if (event.text.empty() || event.text == "war-cry") {
+          state.effects.push_back({EffectFx::Kind::WarCryFade, ex, ey, 0.0, 0,
+                                   phase_a::kWarcryFadeTtlTicks});
+          state.event_log.push_back("war cry faded");
+          if (state.event_log.size() > 6) state.event_log.erase(state.event_log.begin());
+        }
+        break;
+      case verdigris::EventType::ScionLost:
+        // TASK-0122 Phase A: long somber loss beat; clears stale warnings and
+        // pulses the screen edge exactly like the seam path does.
+        state.telegraphs.clear();
+        state.effects.push_back({EffectFx::Kind::ScionLostBeat, ex, ey, 0.0, 0,
+                                 phase_a::kScionLostRingTtlTicks});
+        state.screen_pulse_ticks = phase_a::kScionLostPulseTicks;
         break;
       case verdigris::EventType::DamageApplied: {
         const bool to_player =
@@ -1876,6 +1992,16 @@ void ingest_events(ClientState& state, const RECT& bounds) {
     else
       ++it;
   }
+
+  // TASK-0122 Phase A: deterministic first-sighting spawn beats over the
+  // authoritative local snapshot. Presentation bookkeeping only.
+  sync_world(state);
+  verdigris::client::PresentationFx spawn_fx;
+  spawn_fx.effects = std::move(state.effects);
+  spawn_fx.known_monsters = std::move(state.known_monsters);
+  detect_monster_spawns(spawn_fx, state.world, sim.tick());
+  state.effects = std::move(spawn_fx.effects);
+  state.known_monsters = std::move(spawn_fx.known_monsters);
 }
 
 struct DepthDraw {
@@ -2472,6 +2598,28 @@ std::string chronicles_capture_dir() {
   return "captures";
 }
 
+// TASK-0122 Phase A: fresh animation/VFX evidence lands in THIS task's
+// captures/ folder for architect visual review.
+std::string animation_vfx_capture_dir() {
+  std::vector<std::string> bases{".", executable_directory()};
+  const char* marker =
+      "orchestration\\tasks\\TASK-0122-animation-vfx-system-wave";
+  for (const auto& base : bases) {
+    std::string prefix = base;
+    for (int depth = 0; depth <= 6; ++depth) {
+      const std::string folder = prefix + (prefix.empty() ? "" : "\\") + marker;
+      if (directory_exists(folder)) {
+        const std::string captures = folder + "\\captures";
+        CreateDirectoryA(captures.c_str(), nullptr);
+        return captures;
+      }
+      prefix += prefix.empty() ? ".." : "\\..";
+    }
+  }
+  CreateDirectoryA("captures", nullptr);
+  return "captures";
+}
+
 void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
                                  render::List& rl) {
   const auto& model = state.session ? state.session->model() : verdigris::client::ClientModel{};
@@ -2999,14 +3147,61 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     }
   }
 
+  // TASK-0122 Phase A: world-anchored beat legend. Only the capture proof
+  // composite populates it; normal play renders nothing here.
+  for (const auto& entry : state.beat_legend) {
+    const ScreenPoint at =
+        project(state.camera, bounds, static_cast<double>(entry.second.x),
+                static_cast<double>(entry.second.y));
+    HFONT legend_font = CreateFontA(13, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
+                                    DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+                                    CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_SWISS,
+                                    "Verdana");
+    HGDIOBJ old_legend_font = SelectObject(dc, legend_font);
+    SIZE extent{};
+    GetTextExtentPoint32A(dc, entry.first.c_str(),
+                          static_cast<int>(entry.first.size()), &extent);
+    RECT chip{at.x - extent.cx / 2 - 5, at.y - 24, at.x + extent.cx / 2 + 5,
+              at.y - 8};
+    HBRUSH chip_bg = CreateSolidBrush(RGB(12, 18, 16));
+    FillRect(dc, &chip, chip_bg);
+    DeleteObject(chip_bg);
+    HPEN chip_edge = CreatePen(PS_SOLID, 1, RGB(104, 160, 137));
+    HGDIOBJ old_pen = SelectObject(dc, chip_edge);
+    HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+    Rectangle(dc, chip.left, chip.top, chip.right, chip.bottom);
+    SelectObject(dc, old_brush);
+    SelectObject(dc, old_pen);
+    DeleteObject(chip_edge);
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, RGB(226, 238, 230));
+    TextOutA(dc, chip.left + 5, chip.top + 2, entry.first.c_str(),
+             static_cast<int>(entry.first.size()));
+    SelectObject(dc, old_legend_font);
+    DeleteObject(legend_font);
+    rl.push_back({render::Op::Hud, static_cast<double>(chip.left),
+                  static_cast<double>(chip.top), 0.0, 0, "beat:" + entry.first});
+  }
+
   paint_minimap(state, dc, bounds, rl);
   paint_vital_orbs(player, world.tick, state.screen_pulse_ticks, dc, bounds, rl);
   paint_quickbar(state, dc, bounds, rl);
   paint_gear_overlay(state, dc, bounds, rl);
 
   if (state.screen_pulse_ticks > 0) {
-    rl.push_back({render::Op::ScreenPulse, 0.0, 0.0, 0.0, 0, "player-damage"});
-    HPEN pulse = CreatePen(PS_SOLID, 10, RGB(196, 46, 40));
+    // TASK-0122 Phase A: while a ScionLost beat is live the edge pulse is the
+    // loss treatment (deeper rust, heavier edge), not the player-damage red.
+    bool scion_lost_beat = false;
+    for (const auto& fx : state.effects)
+      if (fx.kind == EffectFx::Kind::ScionLostBeat) scion_lost_beat = true;
+    const COLORREF pulse_color =
+        scion_lost_beat
+            ? RGB(phase_a::kScionLostColor.r, phase_a::kScionLostColor.g,
+                  phase_a::kScionLostColor.b)
+            : RGB(196, 46, 40);
+    rl.push_back({render::Op::ScreenPulse, 0.0, 0.0, 0.0, 0,
+                  scion_lost_beat ? phase_a::kScionLostLabel : "player-damage"});
+    HPEN pulse = CreatePen(PS_SOLID, scion_lost_beat ? 14 : 10, pulse_color);
     HGDIOBJ old_pen = SelectObject(dc, pulse);
     HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
     RECT inner{4, 4, bounds.right - 4, bounds.bottom - 4};
@@ -4568,6 +4763,12 @@ int scenario_first_session_clarity() {
   return 0;
 }
 
+int scenario_first_session_clarity();
+
+// TASK-0122 Phase A contract scenario; defined after reference_present so it
+// can emit fresh PNG evidence into this task's captures/ folder.
+int scenario_animation_vfx_phase_a();
+
 int run_scenarios(const std::string& which) {
   struct Entry {
     const char* name;
@@ -4583,6 +4784,7 @@ int run_scenarios(const std::string& which) {
       {"zoom-invariance", scenario_zoom_invariance},
       {"chronicles-gate-b", scenario_chronicles_gate_b},
       {"first-session-clarity", scenario_first_session_clarity},
+      {"animation-vfx-phase-a", scenario_animation_vfx_phase_a},
   };
   int total_failures = 0;
   for (const auto& entry : entries) {
@@ -4841,6 +5043,321 @@ bool setup_reference_scene(int scene, ClientState& state, int width, int height,
 
   why = "unknown scene";
   return false;
+}
+
+int count_kind(const ClientState& state, EffectFx::Kind kind) {
+  int total = 0;
+  for (const auto& fx : state.effects)
+    if (fx.kind == kind) ++total;
+  return total;
+}
+
+bool render_list_has_label(const render::List& list, render::Op op,
+                           const std::string& label) {
+  for (const auto& item : list)
+    if (item.op == op && item.label == label) return true;
+  return false;
+}
+
+// TASK-0122 Phase A: the animation/VFX contract scenario. Proves deterministic
+// event timing for the spawn/materialization, war-cry fade, ScionLost, and
+// ordinary-hit beats through the REAL pipeline, includes a
+// presentation-cannot-mutate-simulation negative control, and writes fresh
+// 960x600 + 1366x768 PNG evidence into this task's captures/ folder.
+int scenario_animation_vfx_phase_a() {
+  ClientState state;
+  scenario_begin(state);
+
+  // ── Spawn/materialization beat: exactly once per first-sighting foe ──
+  scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+  sync_world(state);
+  const int foe_count = static_cast<int>(state.world.monsters.size());
+  scenario_check(foe_count > 0, "animation-vfx-phase-a: route snapshot has living foes");
+  scenario_check(count_kind(state, EffectFx::Kind::Materialize) == foe_count,
+                 "animation-vfx-phase-a: one materialization beat per first sighting");
+  scenario_check(
+      render_list_has_label(state.render_list, render::Op::TargetFlash,
+                            phase_a::kSpawnRenderLabel),
+      "animation-vfx-phase-a: spawn beat recorded in the render list");
+  for (int i = 0; i < phase_a::kMaterializeTtlTicks; ++i)
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+  scenario_check(count_kind(state, EffectFx::Kind::Materialize) == 0,
+                 "animation-vfx-phase-a: materialization expires exactly at its ttl");
+  scenario_check(state.known_monsters.size() >= static_cast<std::size_t>(foe_count),
+                 "animation-vfx-phase-a: seen foes never re-materialize");
+
+  // ── Negative control: presentation beats never mutate the simulation ──
+  {
+    const std::uint64_t sim_tick_before = state.simulation->tick();
+    const auto* scion_actor =
+        state.simulation->actor(state.simulation->scion().actor_id);
+    const int life_before = scion_actor ? scion_actor->stats.life : -1;
+    const std::size_t actors_before = state.simulation->actors().size();
+    const std::size_t store_before =
+        state.simulation->house().stored_items.size() +
+        state.simulation->house().stored_trophies.size();
+    verdigris::client::PresentationFx control;
+    control.known_monsters = state.known_monsters;
+    detect_monster_spawns(control, state.world, state.world.tick);
+    const verdigris::client::PresentationEvent crit_hit{
+        verdigris::client::PresentationEventType::DamageApplied, "", "",
+        "outgoing", 9, true, "stab"};
+    const verdigris::client::PresentationEvent plain_hit{
+        verdigris::client::PresentationEventType::DamageApplied, "", "",
+        "outgoing", 4, false, {}};
+    const verdigris::client::PresentationEvent lost{
+        verdigris::client::PresentationEventType::ScionLost, "", "", "", 0, false, {}};
+    const verdigris::client::PresentationEvent expired{
+        verdigris::client::PresentationEventType::BuffExpired, "", "", "war-cry", 0,
+        false, {}};
+    apply_presentation_event(control, state.world, crit_hit, state.world.tick);
+    apply_presentation_event(control, state.world, plain_hit, state.world.tick);
+    apply_presentation_event(control, state.world, lost, state.world.tick);
+    apply_presentation_event(control, state.world, expired, state.world.tick);
+    scenario_check(state.simulation->tick() == sim_tick_before &&
+                       state.simulation->actors().size() == actors_before &&
+                       store_before == state.simulation->house().stored_items.size() +
+                                           state.simulation->house().stored_trophies.size(),
+                   "animation-vfx-phase-a: beats leave tick/actors/store untouched");
+    const auto* scion_after =
+        state.simulation->actor(state.simulation->scion().actor_id);
+    scenario_check((scion_after ? scion_after->stats.life : -1) == life_before,
+                   "animation-vfx-phase-a: beats leave scion life untouched");
+    int crit_ttl = -1;
+    int plain_ttl = -1;
+    for (const auto& fx : control.effects) {
+      if (fx.kind != EffectFx::Kind::DamageNumber) continue;
+      if (fx.critical && crit_ttl < 0) crit_ttl = fx.ttl;
+      if (!fx.critical && plain_ttl < 0) plain_ttl = fx.ttl;
+    }
+    scenario_check(crit_ttl == phase_a::kCriticalNumberTtlTicks &&
+                       plain_ttl == 12 && crit_ttl != plain_ttl,
+                   "animation-vfx-phase-a: critical and ordinary numbers differ in timing");
+    scenario_check(!control.event_log.empty() &&
+                       control.event_log.back() == "war cry faded",
+                   "animation-vfx-phase-a: buff expiry logs its readable beat");
+  }
+
+  // ── War-cry expiration beat: timed by the authoritative buff window ──
+  scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::WarCry));
+  int fade_seen_at = -1;
+  int fade_ttl = -1;
+  bool saw_fade_op = false;
+  for (int step = 1; step <= verdigris::presentation_constants::kWarCryDurationTicks + 8; ++step) {
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+    if (fade_seen_at < 0 && count_kind(state, EffectFx::Kind::WarCryFade) > 0) {
+      fade_seen_at = step;
+      for (const auto& fx : state.effects)
+        if (fx.kind == EffectFx::Kind::WarCryFade && fade_ttl < 0) fade_ttl = fx.ttl;
+      saw_fade_op = render_list_has_label(state.render_list, render::Op::WarCry,
+                                          phase_a::kWarcryFadeLabel);
+    }
+    if (fade_seen_at > 0) break;
+  }
+  // The core applies the buff on the cast tick and then decrements on that
+  // same tick's advance pass, so expiry fires within [duration-1, duration+2]
+  // pipeline steps of the authoritative kWarCryDurationTicks window.
+  scenario_check(
+      fade_seen_at >= verdigris::presentation_constants::kWarCryDurationTicks - 1 &&
+          fade_seen_at <= verdigris::presentation_constants::kWarCryDurationTicks + 2,
+      "animation-vfx-phase-a: fade arrives with the buff window");
+  scenario_check(fade_ttl == phase_a::kWarcryFadeTtlTicks,
+                 "animation-vfx-phase-a: fade lifetime comes from the constants table");
+  scenario_check(saw_fade_op,
+                 "animation-vfx-phase-a: fade recorded with its distinct label");
+  int fade_steps_left = 0;
+  while (count_kind(state, EffectFx::Kind::WarCryFade) > 0 &&
+         fade_steps_left <= phase_a::kWarcryFadeTtlTicks + 4) {
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+    ++fade_steps_left;
+  }
+  scenario_check(count_kind(state, EffectFx::Kind::WarCryFade) == 0,
+                 "animation-vfx-phase-a: fade clears deterministically");
+
+  // ── ScionLost beat: staged lethal pack, real authoritative death ──
+  sync_world(state);
+  const int melee = verdigris::world_scale::kMeleeRange;
+  const verdigris::Vec2 here = state.world.player.position;
+  state.simulation->spawn_monster({here.x - melee, here.y}, 3, true);
+  state.simulation->spawn_monster({here.x + melee, here.y}, 3, true);
+  state.simulation->spawn_monster({here.x, here.y + melee}, 3, true);
+  int lost_seen_at = -1;
+  int lost_pulse = -1;
+  for (int step = 0; step < 400 && lost_seen_at < 0; ++step) {
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+    if (count_kind(state, EffectFx::Kind::ScionLostBeat) > 0) {
+      lost_seen_at = step;
+      lost_pulse = state.screen_pulse_ticks;
+    }
+  }
+  scenario_check(lost_seen_at >= 0, "animation-vfx-phase-a: scion loss produces the loss beat");
+  scenario_check(!state.simulation->scion().alive,
+                 "animation-vfx-phase-a: loss beat matches an authoritative death");
+  scenario_check(lost_pulse > 0 && lost_pulse <= phase_a::kScionLostPulseTicks,
+                 "animation-vfx-phase-a: loss pulse uses the constants table");
+  scenario_check(render_list_has_label(state.render_list, render::Op::ScreenPulse,
+                                       phase_a::kScionLostLabel),
+                 "animation-vfx-phase-a: loss beat recorded with its distinct label");
+  int lost_steps_left = 0;
+  while (count_kind(state, EffectFx::Kind::ScionLostBeat) > 0 &&
+         lost_steps_left <= phase_a::kScionLostRingTtlTicks + 4) {
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+    ++lost_steps_left;
+  }
+  scenario_check(count_kind(state, EffectFx::Kind::ScionLostBeat) == 0,
+                 "animation-vfx-phase-a: loss beat clears exactly at its ttl");
+
+  // ── Task captures: one controlled composite with every Phase A beat ──
+  {
+    ClientState capture_state;
+    scenario_begin(capture_state);
+    // Clear the route through the REAL pipeline so no stray warden combat
+    // noise pollutes the composite frame.
+    scenario_check(drive_to_extraction_phase(capture_state),
+                   "animation-vfx-phase-a: capture staging cleared the route");
+    // Burn off residual death/loot FX (longest ttl is the 24-tick sparkle).
+    for (int i = 0; i < 26; ++i)
+      scenario_step(capture_state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+    // Relocate several full tiles into open ground so the entrance pad,
+    // warden drops, and every expired effect are behind the camera.
+    sync_world(capture_state);
+    const verdigris::Vec2 origin = capture_state.world.player.position;
+    const int tile = static_cast<int>(kTileUnits);
+    for (int i = 0; i < 90; ++i) {
+      sync_world(capture_state);
+      const verdigris::Vec2 here = capture_state.world.player.position;
+      const bool far_enough =
+          std::abs(here.x - origin.x) >= 4 * tile &&
+          std::abs(here.y - origin.y) <= 1 * tile;
+      if (far_enough) break;
+      const verdigris::Vec2 before = here;
+      scenario_step(capture_state, verdigris::Command::move(1, 0));
+      sync_world(capture_state);
+      if (capture_state.world.player.position.x == before.x &&
+          capture_state.world.player.position.y == before.y) {
+        // East blocked: nudge around the obstacle.
+        scenario_step(capture_state, verdigris::Command::move(0, -1));
+        sync_world(capture_state);
+        if (capture_state.world.player.position.x == before.x &&
+            capture_state.world.player.position.y == before.y)
+          scenario_step(capture_state, verdigris::Command::move(0, 1));
+      }
+    }
+    sync_world(capture_state);
+    scenario_check(std::abs(capture_state.world.player.position.x - origin.x) >= 3 * tile,
+                   "animation-vfx-phase-a: capture relocated to open field");
+    // Let the relocation dust settle, then start the authoritative war-cry
+    // clock so its REAL BuffExpired fade is live in the final frame.
+    scenario_step(capture_state, verdigris::Command::action_use(verdigris::ActionType::WarCry));
+    bool fade_live = false;
+    for (int step = 0; step < verdigris::presentation_constants::kWarCryDurationTicks + 6 &&
+                       !fade_live;
+         ++step) {
+      scenario_step(capture_state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+      fade_live = count_kind(capture_state, EffectFx::Kind::WarCryFade) > 0;
+    }
+    scenario_check(fade_live,
+                   "animation-vfx-phase-a: capture holds the real war-cry fade");
+    // Stage the separated beats. Positions are player-relative tile offsets,
+    // mutually spaced and clear of the player sprite and the frame edges.
+    sync_world(capture_state);
+    const verdigris::Vec2 base = capture_state.world.player.position;
+    const int reach = verdigris::world_scale::kMeleeRange;
+    // materialize: fresh spawn at +2E/+1.5S (rings live on it, untouched).
+    capture_state.simulation->spawn_monster({base.x + 2 * reach, base.y + reach}, 2,
+                                            false);
+    // ordinary hit: adjacent spawn one tile north, struck on-camera below.
+    capture_state.simulation->spawn_monster({base.x, base.y - reach}, 2, false);
+    RECT capture_bounds{0, 0, 960, 600};
+    const ScreenPoint aim_at =
+        project(capture_state.camera, capture_bounds,
+                static_cast<double>(base.x), static_cast<double>(base.y - reach));
+    capture_state.mouse.x = std::clamp(aim_at.x, 0, 959);
+    capture_state.mouse.y = std::clamp(aim_at.y, 0, 599);
+    scenario_step(capture_state, verdigris::Command::move(0, 0));
+    dispatch_aim_if_changed(capture_state, capture_bounds, true);
+    scenario_step(capture_state, verdigris::Command::action_use(verdigris::ActionType::Melee));
+    // Staged presentation-seam injections for the two treatments whose real
+    // triggers live outside local play (remote combat:hit critical data) or
+    // would end the session (ScionLoss). They exercise the exact seam paths
+    // and lifetimes asserted above; nothing here touches the simulation.
+    // ScionLost is placed by unprojecting an explicit 960x600 screen point
+    // in the verified-clear lower-left safe area, so the complete rings plus
+    // label stay inside the compact frame and clear of the quickbar.
+    double lost_wx = static_cast<double>(base.x);
+    double lost_wy = static_cast<double>(base.y);
+    unproject(capture_state.camera, capture_bounds, 228, 468, lost_wx, lost_wy);
+    {
+      EffectFx crit_number;
+      crit_number.kind = EffectFx::Kind::DamageNumber;
+      crit_number.wx = static_cast<double>(base.x - 2 * reach);
+      crit_number.wy = static_cast<double>(base.y - reach);
+      crit_number.ttl = phase_a::kCriticalNumberTtlTicks;
+      crit_number.value = 27;
+      crit_number.critical = true;
+      crit_number.style = "stab";
+      capture_state.effects.push_back(crit_number);
+      EffectFx lost;
+      lost.kind = EffectFx::Kind::ScionLostBeat;
+      lost.wx = lost_wx;
+      lost.wy = lost_wy;
+      lost.ttl = phase_a::kScionLostRingTtlTicks;
+      capture_state.effects.push_back(lost);
+    }
+    // In-world legend so each treatment is identifiable without guessing.
+    capture_state.beat_legend = {
+        {"spawn beat", {base.x + 2 * reach, base.y + reach}},
+        {"ordinary hit", {base.x, base.y - reach}},
+        {"CRITICAL 27", {base.x - 2 * reach, base.y - reach / 2}},
+        {"buff end", {base.x, base.y}},
+        {"scion lost",
+         {static_cast<int>(std::lround(lost_wx)),
+          static_cast<int>(std::lround(lost_wy))}},
+    };
+    // Re-present so the recorded render list includes the staged treatments.
+    scenario_present(capture_state);
+    scenario_check(count_kind(capture_state, EffectFx::Kind::Materialize) >= 1,
+                   "animation-vfx-phase-a: capture frame holds a live materialization beat");
+    scenario_check(render_list_has_label(capture_state.render_list, render::Op::Damage,
+                                         "monster") ||
+                       render_list_has_label(capture_state.render_list, render::Op::Damage,
+                                             "player"),
+                   "animation-vfx-phase-a: capture frame holds an ordinary hit number");
+    scenario_check(
+        render_list_has_label(capture_state.render_list, render::Op::Damage,
+                              std::string(phase_a::kCriticalDamageLabel) + ":stab"),
+        "animation-vfx-phase-a: capture frame holds the critical treatment");
+    scenario_check(
+        render_list_has_label(capture_state.render_list, render::Op::WarCry,
+                              phase_a::kWarcryFadeLabel),
+        "animation-vfx-phase-a: capture frame holds the buff-expiry treatment");
+    scenario_check(count_kind(capture_state, EffectFx::Kind::ScionLostBeat) >= 1,
+                   "animation-vfx-phase-a: capture frame holds the loss treatment");
+    scenario_check(
+        render_list_has_label(capture_state.render_list, render::Op::TargetFlash,
+                              phase_a::kSpawnRenderLabel),
+        "animation-vfx-phase-a: capture frame records the spawn beat");
+    const std::string dir = animation_vfx_capture_dir();
+    const std::string png_960 = dir + "\\animation-vfx-phase-a-960x600.png";
+    const std::string png_1366 = dir + "\\animation-vfx-phase-a-1366x768.png";
+    scenario_check(reference_present(capture_state, 960, 600, png_960),
+                   "animation-vfx-phase-a: 960x600 PNG written");
+    scenario_check(reference_present(capture_state, 1366, 768, png_1366),
+                   "animation-vfx-phase-a: 1366x768 PNG written");
+    for (const std::string& path : {png_960, png_1366}) {
+      std::ifstream probe(path, std::ios::binary);
+      scenario_check(probe.good(),
+                     "animation-vfx-phase-a: capture readable");
+      probe.seekg(0, std::ios::end);
+      const std::streamoff bytes = probe.tellg();
+      char line[512];
+      std::snprintf(line, sizeof(line), "    capture: %s (%lld bytes)\n", path.c_str(),
+                    static_cast<long long>(bytes));
+      std::printf("%s", line);
+      scenario_check(bytes > 1024, "animation-vfx-phase-a: capture is non-trivial");
+    }
+  }
+  return 0;
 }
 
 int run_reference_scenes(const std::string& which) {

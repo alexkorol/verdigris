@@ -49,6 +49,10 @@ add_executable(camera2d_tests tests/camera2d_tests.cpp)
 add_executable(verdigris_session_tests tests/session_tests.cpp)
 target_link_libraries(verdigris_session_tests PRIVATE verdigris_client_session)
 
+# TASK-0122 Phase A: dedicated presentation-events contract tests.
+add_executable(verdigris_presentation_events_tests tests/presentation_events_tests.cpp)
+target_link_libraries(verdigris_presentation_events_tests PRIVATE verdigris_client_session)
+
 add_executable(verdigris_client client/main.cpp client/remote_play.cpp)
 target_include_directories(verdigris_client PRIVATE client)
 target_link_libraries(verdigris_client PRIVATE verdigris_core verdigris_client_session)
@@ -62,4 +66,5 @@ add_test(NAME verdigris_core_tests COMMAND verdigris_core_tests)
 add_test(NAME verdigris_networking_tests COMMAND verdigris_networking_tests)
 add_test(NAME camera2d_tests COMMAND camera2d_tests)
 add_test(NAME verdigris_session_tests COMMAND verdigris_session_tests)
+add_test(NAME verdigris_presentation_events_tests COMMAND verdigris_presentation_events_tests)
 add_test(NAME verdigris_client_scenarios COMMAND verdigris_client --scenario all)
