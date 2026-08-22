@@ -1,6 +1,6 @@
 ---
 task: TASK-0131
-state: CLAIMED
+state: REVIEW_REQUESTED
 worker: ox-pc-f
 worker_branch: codex/TASK-0131-release-proof-manifest-ox-pc-f
 worktree: Z:\Code\.worktrees\verdigris\ox-pc-f
@@ -13,4 +13,8 @@ model: stealth/ox-alpha
 cli: OpenCode CLI 1.18.21
 owned_paths: [orchestration/tasks/TASK-0131-release-proof-manifest/**]
 expected_verification: acceptance commands in SPEC.md run literally; honest outputs/exit codes recorded in REPORT.md
+claim_commit: 584a7e11
+implementation_commit: 473c2414
+gates: all five SPEC acceptance commands exit 0 (see VALIDATION.md)
+verdict_recorded: NOT_PROVEN / release_ready false; no release evidence asserted
 ---

@@ -88,8 +88,10 @@ Full details and inventory highlights in `VALIDATION.md`.
 - `584a7e11` — STATUS claim (committed and pushed within the 10-minute
   window; `--no-verify` used because the yorkie pre-commit hook cannot load
   in this worktree — see Deviations).
-- Implementation commit — created together with this report; SHA recorded in
-  `STATUS.md` at `REVIEW_REQUESTED`.
+- `473c2414` — implementation: `release-proof-manifest.json`,
+  `fixtures/negative-cases.json`, `VALIDATION.md`, `REPORT.md`.
+- REVIEW_REQUESTED commit — STATUS state transition referencing the SHAs
+  above.
 
 ## Deviations
 
