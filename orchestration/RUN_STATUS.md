@@ -69,7 +69,8 @@ implementations restored 28 effective READY; the valid pushed claims for
 TASK-0141 (ox-pc-g) and TASK-0143 (ox-pc-i) now leave **26 effective READY +
 17 successors**, preserving the absolute packet floor. TASK-0142 remains
 sequenced behind TASK-0141 acceptance because it consumes that asset interface.
-D-128 supersedes count-only sufficiency.
+D-128 supersedes count-only sufficiency. TASK-0144 is a narrow current-tip
+portability correction queued after the accepted visual wave.
 
 ## Autonomous runway and factory status
 
@@ -104,7 +105,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-d | 6680-6699 | TASK-0135 accepted/integrated at `88092c97`; successor launch requested | TASK-0140 soak evidence validator |
 | ox-pc-e | 6700-6719 | CLAIMED and pushed `0d175a2f`; implementation active | TASK-0137 Gate C validator |
 | ox-pc-f | 6720-6739 | CLAIMED and pushed `f9458f4e`; implementation active | TASK-0138 release-proof validator |
-| ox-pc-g | 6740-6759 | CLAIMED and pushed `3f100c3e`; implementation active | TASK-0141 procedural native visual kit |
+| ox-pc-g | 6740-6759 | TASK-0141 accepted/integrated at `a60232fa`; successor launch requested | TASK-0144 visual-kit MSVC portability correction |
 | ox-pc-h | 6760-6779 | TASK-0142 accepted/integrated at `aa95ec76`; lane available for successor promotion | successor pending current-tip validation |
 | ox-pc-i | 6780-6799 | TASK-0143 accepted/integrated at `ac1fc54a`; lane available for successor promotion | successor pending current-tip validation |
 
@@ -197,8 +198,10 @@ harness-visible provider/model. These are separate scorecard experimental units.
   and integrated at `678c7b80`/`b7464d94`/`934863cb` and release the three
   game-facing successors TASK-0141/0142/0143. TASK-0136/0137/0138 remain
   valid pushed implementation claims at `7b24e5d3`/`0d175a2f`/`f9458f4e`.
-  TASK-0141 is claimed by ox-pc-g at `3f100c3e`; TASK-0142 remains sequenced
-  behind TASK-0141. TASK-0142 is now accepted/integrated at `aa95ec76`.
+  TASK-0141 is accepted/integrated at `a60232fa`; it released TASK-0142,
+  which consumed that interface and is accepted/integrated at `aa95ec76`.
+  TASK-0144 is queued for ox-pc-g as a narrow portability
+  correction after the visible game wave.
   TASK-0143 is now accepted/integrated at `ac1fc54a`; ox-pc-h and ox-pc-i are
   available but receive no stale-base successor until a current-tip promotion
   is validated.
@@ -219,7 +222,7 @@ wins after a fresh fetch.
 
 | Pri | Task | Topology / job | Preferred route | Owner-visible contribution |
 |---|---|---|---|---|
-| P0 | TASK-0142 native client presentation slice | INDEPENDENT / IMPLEMENTATION | ox-pc-h after TASK-0141 ACCEPTED | makes the owner-facing native window read as a game, not a debug shell |
+| P1 | TASK-0144 native visual-kit MSVC portability correction | INDEPENDENT / IMPLEMENTATION | ox-pc-g after coordination push | removes the temporary consumer literal shim without changing the visible scene |
 | P1 | TASK-0140 soak evidence validator | INDEPENDENT / IMPLEMENTATION | ox-pc-d after coordination push | mechanically rejects stale, incomplete, or retry-masked soak proof |
 | P0 | TASK-0097 persistence durability audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | protects House/Scion/item saves |
 | P0 | TASK-0100 deterministic replay audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes divergences reproducible |
