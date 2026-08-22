@@ -1,0 +1,31 @@
+{
+  "head": "fixedhead0001",
+  "orchestration/tasks/TASK-0101-x/STATUS.md": [
+    {
+      "hash": "a1",
+      "authoredAtMs": 1755822109000,
+      "subject": "TASK-0101: claim fixture-a"
+    }
+  ],
+  "orchestration/tasks/TASK-0101-x/REVIEW.md": [
+    {
+      "hash": "b1",
+      "authoredAtMs": 1755825709000,
+      "subject": "review: accept TASK-0101"
+    }
+  ],
+  "orchestration/tasks/TASK-0102-x/STATUS.md": [
+    {
+      "hash": "a2",
+      "authoredAtMs": 1755822109000,
+      "subject": "TASK-0102: claim fixture-b"
+    }
+  ],
+  "orchestration/tasks/TASK-0102-x/REVIEW.md": [
+    {
+      "hash": "b2",
+      "authoredAtMs": 1755825709000,
+      "subject": "review: accept TASK-0102"
+    }
+  ]
+}
