@@ -12,6 +12,10 @@ is intentionally short; the canonical rules remain in the linked documents.
 | `ox-pc-c` | Windows implementation | 6660-6679 |
 | `ox-pc-d` | Windows implementation | 6680-6699 |
 | `ox-pc-e` | Windows implementation | 6700-6719 |
+| `ox-pc-f` | Windows implementation | 6720-6739 |
+| `ox-pc-g` | Windows implementation | 6740-6759 |
+| `ox-pc-h` | Windows implementation | 6760-6779 |
+| `ox-pc-i` | Windows implementation | 6780-6799 |
 
 Provisioned worktree:
 `Z:\Code\.worktrees\verdigris\ox-pc-a`; worker branch:
@@ -19,7 +23,9 @@ Provisioned worktree:
 `31d215793f0f799fd365f080ca326ea04e83706c`. The local ignored
 `START_HERE_OX_PC_A.md` is the complete launch packet.
 
-The owner has now registered five isolated CLI-addressable Verdigris lanes.
+The owner has now registered eight isolated OpenRouter CLI-addressable
+Verdigris lanes (`ox-pc-b` through `ox-pc-i`). `ox-pc-a` remains a separate
+desktop-session experimental unit on its originally observed provider alias.
 The new `ox-pc-b` and `ox-pc-c` worktrees are not the historical stopped tabs:
 those old tabs shared one project, made no claim/write, and remain non-incidents.
 Every registered lane below has its own Z: worktree and branch.
@@ -28,9 +34,13 @@ Every registered lane below has its own Z: worktree and branch.
 |---|---|---|---|
 | ox-pc-a | `Z:\Code\.worktrees\verdigris\ox-pc-a` | `codex/TASK-0128-accepted-throughput-normalization-ox-pc-a` | TASK-0128 |
 | ox-pc-b | `Z:\Code\.worktrees\verdigris\ox-pc-b` | `codex/TASK-0080-board-sentinel-ox-pc-b` | TASK-0080 |
-| ox-pc-c | `Z:\Code\.worktrees\verdigris\ox-pc-c` | `codex/TASK-0086-gate-c-contract-audit-ox-pc-c` | TASK-0086 |
+| ox-pc-c | `Z:\Code\.worktrees\verdigris\ox-pc-c` | `codex/TASK-0112-passive-tree-authority-schema-ox-pc-c` | TASK-0112 |
 | ox-pc-d | `Z:\Code\.worktrees\verdigris\ox-pc-d` | `codex/TASK-0129-server-lifecycle-soak-ox-pc-d` | TASK-0129 |
-| ox-pc-e | `Z:\Code\.worktrees\verdigris\ox-pc-e` | `codex/TASK-0120-release-verification-gap-audit-ox-pc-e` | TASK-0120 |
+| ox-pc-e | `Z:\Code\.worktrees\verdigris\ox-pc-e` | `codex/TASK-0130-gate-c-decision-envelope-ox-pc-e` | TASK-0130 |
+| ox-pc-f | `Z:\Code\.worktrees\verdigris\ox-pc-f` | `codex/TASK-0131-release-proof-manifest-ox-pc-f` | TASK-0131 |
+| ox-pc-g | `Z:\Code\.worktrees\verdigris\ox-pc-g` | `codex/TASK-0132-clean-machine-harness-contract-ox-pc-g` | TASK-0132 |
+| ox-pc-h | `Z:\Code\.worktrees\verdigris\ox-pc-h` | `codex/TASK-0133-save-migration-rollback-contract-ox-pc-h` | TASK-0133 |
+| ox-pc-i | `Z:\Code\.worktrees\verdigris\ox-pc-i` | `codex/TASK-0134-distribution-signing-boundary-ox-pc-i` | TASK-0134 |
 
 Use only the provisioned dedicated worktree. The architect checkout at
 `Z:\Code\Games\delaford\delaford_game` is forbidden. Never reset, clean, or
@@ -56,7 +66,9 @@ TASK-0081, TASK-0086, TASK-0105, and TASK-0120 are ACCEPTED and integrated.
 TASK-0080 is in a narrow architect-directed revision on its existing lane.
 TASK-0083 was rejected before claim because its immutable base is absent from
 origin; replacement TASK-0129 is released to ox-pc-d at exact base
-`88d9210bf2b27ab3a776974be23f54c6174c3fff`. Each lane works only one task at a time. Re-fetch before claiming because
+`88d9210bf2b27ab3a776974be23f54c6174c3fff`. The expansion routes c/e/f/g/h/i
+are task-folder-only, pairwise disjoint architecture packets promoted at base
+`cab50d62cb121ab6a88fa513257e645447226959`. Each lane works only one task at a time. Re-fetch before claiming because
 a newer `RUN_STATUS.md`, claim, REVIEW, RELEASE, or REVISE always wins.
 
 ## Activation acknowledgement

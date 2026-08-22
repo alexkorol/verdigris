@@ -24,8 +24,15 @@ for the controller-state correction. ox-pc-d is released to replacement packet
 TASK-0129. Its predecessor TASK-0083 was rejected before claim because the
 immutable base object is absent from origin; no worker files were written.
 The replacement then committed and pushed valid claim `a5bd928e` inside its
-activation window and has fresh post-claim execution. ox-pc-e remains idle as
-immediate review/recovery reserve.
+activation window and has fresh post-claim execution. ox-pc-e's prior idle
+reserve period ends with the owner-authorized expansion below.
+
+Owner-authorized expansion registers four additional OpenRouter CLI lanes,
+ox-pc-f through ox-pc-i, and recycles completed c/e. Six pairwise-disjoint
+task-folder architecture packets are launch-requested after this coordination
+push: TASK-0112, TASK-0130, TASK-0131, TASK-0132, TASK-0133, and TASK-0134.
+They remain READY and do not count as capacity until each expected worker
+branch contains a committed pushed claim.
 
 The independent `ox-bootstrap` orchestration worker has pushed M3 head
 `82de84ef` after M2 `5627916f`. The standalone repo's Tier-B review contract
@@ -58,7 +65,7 @@ integrates, and specs; it does not absorb implementation.
 Emergency surge floor: at least 24 effective, dependency-free, pairwise
 path-disjoint READY packets plus 12 concrete successors. Current claims are
 excluded from READY accounting; after TASK-0129's valid claim the board is
-**24 effective READY + 18 successors**, exactly at the absolute floor. D-128 supersedes
+**30 effective READY + 17 successors**, above the absolute floor. D-128 supersedes
 count-only sufficiency, and the next factory promotion should restore deeper
 headroom rather than create filler.
 
@@ -91,9 +98,13 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 |---|---|---|---|
 | ox-pc-a | 6620-6639 | CLAIMED `0d1898bd`; existing desktop session | TASK-0128 throughput normalization |
 | ox-pc-b | 6640-6659 | REVISE `0ab4e7a5`; revision process active; session `ses_fd8378c52ffevZPjVDjFGOZfYa` | TASK-0080 board sentinel |
-| ox-pc-c | 6660-6679 | ACCEPTED `8ddfb06e`; integrated by `1455c536` | TASK-0086 Gate C contract audit complete |
+| ox-pc-c | 6660-6679 | TASK-0086 integrated; expansion launch requested | TASK-0112 passive-tree authority schema |
 | ox-pc-d | 6680-6699 | ACTIVE; TASK-0129 claim pushed `a5bd928e`; fresh post-claim process | TASK-0129 server lifecycle soak |
-| ox-pc-e | 6700-6719 | TASK-0120 ACCEPTED/integrated; idle reserve | review/recovery reserve |
+| ox-pc-e | 6700-6719 | TASK-0120 integrated; expansion launch requested | TASK-0130 Gate C decision envelope |
+| ox-pc-f | 6720-6739 | new isolated worktree launch requested | TASK-0131 release-proof manifest |
+| ox-pc-g | 6740-6759 | new isolated worktree launch requested | TASK-0132 clean-machine harness contract |
+| ox-pc-h | 6760-6779 | new isolated worktree launch requested | TASK-0133 save migration/rollback contract |
+| ox-pc-i | 6780-6799 | new isolated worktree launch requested | TASK-0134 distribution/signing boundary |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -106,7 +117,7 @@ clones and must not be reset, cleaned, or silently repurposed. The first
 committed Ox claim registers its actual clone path and full scorecard
 experimental unit.
 
-OpenCode CLI 1.18.21 is installed and the four new lanes launched headlessly
+OpenCode CLI 1.18.21 is installed and the OpenRouter lanes launch headlessly
 with explicit `openrouter/stealth/ox-alpha`; no owner tab opening is required.
 `Z:\Code\.fleet\Watch-VerdigrisFleet.ps1` supplies one human-readable five-second
 dashboard and transition-deduplicated Windows P1/P0 activation notifications.
@@ -185,7 +196,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 24 packets
+## Effective READY — 30 packets
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -197,6 +208,12 @@ wins after a fresh fetch.
 | P0 | TASK-0100 deterministic replay audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes divergences reproducible |
 | P0 | TASK-0104 itemization/history audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages memorable history-bearing loot |
 | P0 | TASK-0119 onboarding/first-session audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes launch through first extraction legible |
+| P0 | TASK-0112 passive-tree authority schema | INDEPENDENT / ARCHITECTURE | future after current claim | converts the accepted audit into a versioned content-neutral implementation contract |
+| P0 | TASK-0130 Gate C decision envelope | INDEPENDENT / ARCHITECTURE | future after current claim | turns the accepted Gate C audit into an exact content-neutral route contract |
+| P0 | TASK-0131 release-proof manifest | INDEPENDENT / ARCHITECTURE | future after current claim | makes release claims machine-auditable |
+| P0 | TASK-0132 clean-machine harness contract | INDEPENDENT / ARCHITECTURE | future after current claim | separates cached developer success from disposable-host proof |
+| P0 | TASK-0133 save migration/rollback contract | INDEPENDENT / ARCHITECTURE | future after current claim | stages reversible persistence upgrades without touching profiles |
+| P1 | TASK-0134 distribution/signing boundary | INDEPENDENT / ARCHITECTURE | future after current claim | isolates automatable release proof from owner credentials and publication |
 | P1 | TASK-0082 dual-server matrix runner | INDEPENDENT / BOUNDED-DESIGN | future after current claim | automates unchanged JS/C++ parity evidence |
 | P1 | TASK-0115 browser panel/typography inventory | INDEPENDENT / MECHANICAL | future after current claim | freezes presentation delta #4 |
 | P1 | TASK-0091 protocol coverage sentinel design | INDEPENDENT / MECHANICAL | future after current claim | catches lost journey wire steps |
@@ -227,7 +244,7 @@ wins after a fresh fetch.
 | TASK-0073 renderer backend evaluation | SUPERSEDED by TASK-0114 | surge replacement supplies exact evidence, acceptance, and stop contracts |
 | TASK-0079 browser panel inventory | SUPERSEDED by TASK-0115 | surge replacement supplies hard-fail capture and exact gate contracts |
 
-## Sequenced successors — 18 DRAFT
+## Sequenced successors — 17 DRAFT
 
 | Task | Dependency / release |
 |---|---|
@@ -241,7 +258,6 @@ wins after a fresh fetch.
 | TASK-0109 skill infrastructure | 0102 accepted; content-neutral interfaces frozen |
 | TASK-0110 encounter-system wave | 0103 accepted; deterministic pack/rarity seam frozen |
 | TASK-0111 item-history lifecycle | 0104 accepted; owner-independent lifecycle frozen |
-| TASK-0112 passive-tree scaffold | 0105 accepted; owner source or schema-only fallback |
 | TASK-0113 campaign/content tooling | 0095 + 0096 accepted; validators frozen |
 | TASK-0122 animation/VFX system | 0116 + renderer/asset contracts accepted |
 | TASK-0123 audio/music runtime | 0117 + backend/license/owner direction |
