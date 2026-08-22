@@ -460,7 +460,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 25 packets after three live claims, before TASK-0163 claim
+## Effective READY — 25 packets before TASK-0164 claim
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -500,6 +500,7 @@ wins after a fresh fetch.
 | P1 | TASK-0160 native visual-kit packaging proof | INDEPENDENT / IMPLEMENTATION | future clean lane | proves committed procedural/vector placeholders survive source-to-owner launch reproducibly |
 | P0 | TASK-0163 Gate-B ordinary-play journey reliability | INDEPENDENT / IMPLEMENTATION | fresh recovered native-test lane | removes the release-blocking fatal-fall/Warden nondeterminism without runtime shortcuts |
 | P1 | TASK-0164 native content cross-reference hardening | INDEPENDENT / IMPLEMENTATION | future clean content-validation lane | rejects dangling zone/encounter seed references before content reaches a shipped runtime |
+| P1 | TASK-0165 native input focus model foundation | INDEPENDENT / IMPLEMENTATION | future clean native-client seam lane | prevents future panes from reintroducing global-Esc exits or leaking gameplay input through focused UI |
 
 ## HOLD despite historical READY headers
 

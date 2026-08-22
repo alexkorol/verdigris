@@ -93,6 +93,7 @@ TASK-0119 first-session audit -> TASK-0153 native first-session clarity wave
 TASK-0117 audio audit -> TASK-0157 backend-neutral procedural cue scheduler
   -> TASK-0123 owner-approved backend/device/listening wave
 TASK-0158 pure pane model/layout -> TASK-0087 pane shell -> TASK-0090 progression panes
+TASK-0153 accepted Esc ordering -> TASK-0165 pure input-focus model -> TASK-0087 pane shell/input integration
 TASK-0155 deterministic loot harness -> trustworthy protected release signal
 ```
 
@@ -104,7 +105,7 @@ TASK-0155 deterministic loot harness -> trustworthy protected release signal
 | Presentation | 0114, 0115, 0084, 0093, 0094 | 0078, 0087, 0088, 0090 | panels, typography, renderer, surface density, cohesive HUD |
 | Animation/VFX | 0116 | 0122 | authored motion/effects, combat timing/readability, deterministic captures |
 | Audio/music | 0117 | 0123 | device/bus/voice runtime, combat/UI cues, ambience, owner-approved music |
-| Accessibility | 0118 | 0124 | rebinding, focus, scale/contrast/color/motion/audio options, persisted settings |
+| Accessibility | 0118, 0165 | 0124 | rebinding, deterministic pane focus/close ordering, scale/contrast/color/motion/audio options, persisted settings |
 | Onboarding | 0119 | 0125 | legible first launch, goals, controls, rewards, death/recovery, reconnect |
 | Regression/soak | 0080, 0082, 0083, 0098, 0099, 0100 | 0106 plus CI/soak releases | deterministic replay, dual-server parity, lifecycle and performance coverage |
 | Content tooling | 0095, 0096 | 0113 | versioned zones, campaign graphs, assets, validators, migrations |
