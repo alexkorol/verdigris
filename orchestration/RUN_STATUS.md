@@ -1,6 +1,6 @@
 # Run status — PC Verdigris overnight product wave
 
-## Three accepted integrations converged; next two-lane wave staged — 2026-08-22 16:18 PDT
+## Three accepted integrations converged; next two-lane wave claimed — 2026-08-22 16:38 PDT
 
 - TASK-0163 frozen head `a53620ef` is independently ACCEPTED and integrated as
   `acfcbfd1`; a clean detached full native gate plus three consecutive exact
@@ -17,17 +17,22 @@
   inspected; the complete combined `-RunTests -RunClientScenarios` gate passes,
   including both Escape contracts and all 12 scenarios. Procedural placeholder
   art remains intentionally non-final.
-- TASK-0161 is promoted READY at frozen integrated interface `30cdad4b`; it
-  isolates scenario capture output so full gates stop rewriting historical
-  evidence. TASK-0162 is now collision-free after TASK-0163 integration and is
-  added to the effective reserve. Before the next claims the board has 26
-  effective READY, 16 remaining DRAFT successors, and zero collisions; planned
-  routes are TASK-0161 capture isolation and TASK-0101 combat-depth audit,
-  preserving the 24-packet reserve after both claims.
-- Program head is locally clean at `30cdad4b` before this coordination update.
-  Dashboard PID 25144 serves HTTP 200 with seven terminal integrated rows and
-  zero alerts; low-cost monitor PID 2664 is live. Protected `master` remains
-  green at `a28ac92f`. Owner action required now: none.
+- TASK-0161 is claimed by `ox-pc-ah` on pushed worker head `7730e49a`, exact
+  routed base `610a240e`, ports 7260-7279. The activation controller caught a
+  valid but uncommitted claim after the first real session stopped, preserved
+  it, and recovered the same session to a durable pushed claim before source
+  work continued.
+- TASK-0101 is claimed by `ox-pc-ai` on pushed worker head `b083b58b`, exact
+  routed base `610a240e`, read-only/no-server. Its first claim used a Markdown
+  list the board could not parse; the supervisor stopped source work and the
+  same session replaced it with machine-readable YAML before proceeding.
+- Board proof is healthy at 24 effective READY, 2 CLAIMED, 16 sequenced DRAFT
+  successors, and zero owned-path collisions. Program pre-update head is
+  `16c0cd3f`. Dashboard PID 9604 serves HTTP 200; the corrected low-cost
+  monitor PID 7364 watches only these two active routes and rejects an active
+  worker immediately if its branch carries a raw-push CI trigger. Both current
+  branches pass that guard. Protected `master` is green at `a28ac92f`; the two
+  current raw claim heads each launched zero Actions runs. Owner action: none.
 
 ## Content validation shipped; audio accepted behind Gate-B hold — 2026-08-22 15:46 PDT
 
