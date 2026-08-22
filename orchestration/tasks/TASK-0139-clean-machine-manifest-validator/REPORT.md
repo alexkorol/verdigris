@@ -116,10 +116,21 @@ at REPORT time; nothing outside the owned path was touched.
 
 ## Deviations
 
-1. Extra capture file (`captures/gate-transcripts.txt`) beyond the named
+1. **Concurrent-modification incident and repair:** between this worker's
+   verified 26/26 gate run and the REVIEW_REQUESTED commit `6d9d7d6b`, an
+   external actor replaced `validator.test.mjs` and both files under
+   `fixtures/` inside this owned folder with a foreign implementation (wrong
+   sibling-contract path `../../TASK-0132-...`, foreign run ids
+   `synthetic-run-0139-*`). The committed `gate-transcripts.txt` of `6d9d7d6b`
+   honestly recorded the corrupted state (A1 24 pass/2 fail, A2 exit 1). The
+   worker's verified versions were restored and every acceptance command was
+   re-run fresh (transcript header marks the post-repair rerun); the repair is
+   the follow-up commit on this branch. Ownership violation is reported here
+   for the architect; no file outside the owned path was involved.
+2. Extra capture file (`captures/gate-transcripts.txt`) beyond the named
    deliverables, kept deliberately as durable acceptance evidence, matching the
    TASK-0132 lane precedent.
-2. Two additional deterministic shape codes beyond the contract's failure-mode
+3. Two additional deterministic shape codes beyond the contract's failure-mode
    vocabulary (`OUTSIDE_CAPSULE`, etc.) are emitted alongside — never instead
    of — the required `FORBIDDEN_PORT_6500` code; the SPEC only pins the
    forbidden-port fixture outcome, which is exact.

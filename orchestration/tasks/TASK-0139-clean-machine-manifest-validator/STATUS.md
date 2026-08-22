@@ -46,8 +46,16 @@
   (P0); `git diff --check` clean; base-diff confined to upstream architect
   files predating the claim (worker delta owned-folder only). Transcripts in
   `captures/gate-transcripts.txt`; details in REPORT.md.
-- REVIEW_REQUESTED: this commit, pushed to origin
+- REVIEW_REQUESTED: commit `6d9d7d6b`, pushed to origin
   `codex/TASK-0139-clean-machine-manifest-validator-ox-pc-g`. No stop condition
   hit: no provisioning, no CI/machine/source mutation, no merge, no force-push,
   port 6500 never bound or contacted, lane ports 6740-6759 untouched at
   runtime.
+- REVIEW_REQUESTED (repair): an external actor had replaced
+  `validator.test.mjs` and `fixtures/` inside the owned folder between the
+  verified gate run and commit `6d9d7d6b`, leaving that commit's A1 failing
+  (24/26) and A2 exiting 1, as its own committed transcript shows. Restored
+  the worker's verified artifacts and re-ran all five gates fresh: 26/26
+  tests exit 0; valid fixture exit 0 VALID; forbidden-port fixture exit 1
+  INVALID with `FORBIDDEN_PORT_6500`; `git diff --check` clean. This repair
+  commit is the authoritative REVIEW_REQUESTED state.

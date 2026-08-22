@@ -1,361 +1,163 @@
-TASK-0139 gate transcript - 2026-08-21T23:38:57.5430399-07:00 - host DESKTOP-TVU7OR7 - worktree Z:\Code\.worktrees\verdigris\ox-pc-g - branch codex/TASK-0139-clean-machine-manifest-validator-ox-pc-g
+TASK-0139 gate transcript (post-repair rerun) - 2026-08-21T23:44:23.5905669-07:00 - host DESKTOP-TVU7OR7 - worktree Z:\Code\.worktrees\verdigris\ox-pc-g - branch codex/TASK-0139-clean-machine-manifest-validator-ox-pc-g
+Note: first transcript (commit 6d9d7d6b) captured a corrupted state after an external actor replaced validator.test.mjs and fixtures/ inside this owned folder mid-session; artifacts were restored to the worker's verified versions and every gate was re-run below.
 
 == A1: node --test validator.test.mjs ==
 TAP version 13
 # Subtest: valid synthetic fixture validates with zero errors
-not ok 1 - valid synthetic fixture validates with zero errors
+ok 1 - valid synthetic fixture validates with zero errors
   ---
-  duration_ms: 6.1951
-  location: 'Z:\\Code\\.worktrees\\verdigris\\ox-pc-g\\orchestration\\tasks\\TASK-0139-clean-machine-manifest-validator\\validator.test.mjs:29:1'
-  failureType: 'testCodeFailure'
-  error: |-
-    Expected values to be strictly equal:
-    + actual - expected
-    
-    + 'INVALID'
-    - 'VALID'
-  code: 'ERR_ASSERTION'
-  name: 'AssertionError'
-  expected: 'VALID'
-  actual: 'INVALID'
-  operator: 'strictEqual'
-  stack: |-
-    TestContext.<anonymous> (file:///Z:/Code/.worktrees/verdigris/ox-pc-g/orchestration/tasks/TASK-0139-clean-machine-manifest-validator/validator.test.mjs:31:10)
-    Test.runInAsyncScope (node:async_hooks:211:14)
-    Test.run (node:internal/test_runner/test:934:25)
-    Test.start (node:internal/test_runner/test:833:17)
-    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  duration_ms: 4.9109
   ...
 # Subtest: forbidden-port fixture fails with FORBIDDEN_PORT_6500
 ok 2 - forbidden-port fixture fails with FORBIDDEN_PORT_6500
   ---
-  duration_ms: 1.6174
+  duration_ms: 1.2413
   ...
 # Subtest: dirty base is rejected
 ok 3 - dirty base is rejected
   ---
-  duration_ms: 0.7271
+  duration_ms: 0.8371
   ...
 # Subtest: unclean checkout status is rejected as DIRTY_BASE
 ok 4 - unclean checkout status is rejected as DIRTY_BASE
   ---
-  duration_ms: 0.5223
+  duration_ms: 1.1271
   ...
 # Subtest: non-disposable host is rejected
 ok 5 - non-disposable host is rejected
   ---
-  duration_ms: 0.6828
+  duration_ms: 1.1697
   ...
 # Subtest: toolchain version below floor is rejected
 ok 6 - toolchain version below floor is rejected
   ---
-  duration_ms: 1.0622
+  duration_ms: 0.6697
   ...
 # Subtest: absent required tool is rejected
 ok 7 - absent required tool is rejected
   ---
-  duration_ms: 0.5234
+  duration_ms: 1.5659
   ...
 # Subtest: dependency fingerprint mismatch is rejected
 ok 8 - dependency fingerprint mismatch is rejected
   ---
-  duration_ms: 0.5055
+  duration_ms: 0.5432
   ...
 # Subtest: non-lockfile install command is rejected
 ok 9 - non-lockfile install command is rejected
   ---
-  duration_ms: 0.8162
+  duration_ms: 0.9435
   ...
 # Subtest: cache hit without provenance is a CACHE_LEAK
 ok 10 - cache hit without provenance is a CACHE_LEAK
   ---
-  duration_ms: 0.8944
+  duration_ms: 1.0341
   ...
 # Subtest: nonzero stage exit code is rejected
 ok 11 - nonzero stage exit code is rejected
   ---
-  duration_ms: 0.6471
+  duration_ms: 0.6572
   ...
 # Subtest: missing stage evidence record is rejected
 ok 12 - missing stage evidence record is rejected
   ---
-  duration_ms: 1.0943
+  duration_ms: 0.5148
   ...
 # Subtest: reordered stages are rejected
 ok 13 - reordered stages are rejected
   ---
-  duration_ms: 0.5379
+  duration_ms: 0.9923
   ...
 # Subtest: leaked process is rejected
 ok 14 - leaked process is rejected
   ---
-  duration_ms: 0.7854
+  duration_ms: 0.7248
   ...
 # Subtest: non-loopback bind is rejected
 ok 15 - non-loopback bind is rejected
   ---
-  duration_ms: 0.8265
+  duration_ms: 0.4848
   ...
 # Subtest: listener outside the lane capsule is rejected
 ok 16 - listener outside the lane capsule is rejected
   ---
-  duration_ms: 0.8718
+  duration_ms: 0.4793
   ...
 # Subtest: capsule containing port 6500 is rejected
 ok 17 - capsule containing port 6500 is rejected
   ---
-  duration_ms: 0.8765
+  duration_ms: 0.4646
   ...
 # Subtest: developer_local label is not clean-machine evidence
 ok 18 - developer_local label is not clean-machine evidence
   ---
-  duration_ms: 0.8407
+  duration_ms: 0.4678
   ...
 # Subtest: missing required top-level field short-circuits with MISSING_FIELD
 ok 19 - missing required top-level field short-circuits with MISSING_FIELD
   ---
-  duration_ms: 0.7413
+  duration_ms: 0.422
   ...
 # Subtest: non-object manifest is rejected
 ok 20 - non-object manifest is rejected
   ---
-  duration_ms: 0.1965
+  duration_ms: 0.1444
   ...
 # Subtest: invalid contract without platform_matrix gates is rejected
 ok 21 - invalid contract without platform_matrix gates is rejected
   ---
-  duration_ms: 0.2087
+  duration_ms: 0.3185
   ...
 # Subtest: versionAtLeast compares semver numerically
 ok 22 - versionAtLeast compares semver numerically
   ---
-  duration_ms: 0.1721
+  duration_ms: 0.1809
   ...
 # Subtest: scanForbiddenPort flags string and numeric references
 ok 23 - scanForbiddenPort flags string and numeric references
   ---
-  duration_ms: 0.2033
+  duration_ms: 0.2146
   ...
 # Subtest: CLI exits zero and emits VALID json for the accepted synthetic fixture
-not ok 24 - CLI exits zero and emits VALID json for the accepted synthetic fixture
+ok 24 - CLI exits zero and emits VALID json for the accepted synthetic fixture
   ---
-  duration_ms: 66.1072
-  location: 'Z:\\Code\\.worktrees\\verdigris\\ox-pc-g\\orchestration\\tasks\\TASK-0139-clean-machine-manifest-validator\\validator.test.mjs:154:1'
-  failureType: 'testCodeFailure'
-  error: |-
-    {
-      "verdict": "INVALID",
-      "label": "clean_machine_verified",
-      "errors": [
-        {
-          "code": "STAGE_HOST_MISMATCH",
-          "severity": "P1",
-          "path": "$.stages[0].host_image",
-          "message": "stage \"checkout\" host_image does not match manifest host.image"
-        },
-        {
-          "code": "STAGE_HOST_MISMATCH",
-          "severity": "P1",
-          "path": "$.stages[1].host_image",
-          "message": "stage \"toolchain\" host_image does not match manifest host.image"
-        },
-        {
-          "code": "STAGE_HOST_MISMATCH",
-          "severity": "P1",
-          "path": "$.stages[2].host_image",
-          "message": "stage \"dependencies\" host_image does not match manifest host.image"
-        },
-        {
-          "code": "STAGE_HOST_MISMATCH",
-          "severity": "P1",
-          "path": "$.stages[3].host_image",
-          "message": "stage \"cache\" host_image does not match manifest host.image"
-        },
-        {
-          "code": "STAGE_HOST_MISMATCH",
-          "severity": "P1",
-          "path": "$.stages[4].host_image",
-          "message": "stage \"build\" host_image does not match manifest host.image"
-        },
-        {
-          "code": "STAGE_HOST_MISMATCH",
-          "severity": "P1",
-          "path": "$.stages[5].host_image",
-          "message": "stage \"tests\" host_image does not match manifest host.image"
-        },
-        {
-          "code": "STAGE_HOST_MISMATCH",
-          "severity": "P1",
-          "path": "$.stages[6].host_image",
-          "message": "stage \"launch\" host_image does not match manifest host.image"
-        },
-        {
-          "code": "STAGE_HOST_MISMATCH",
-          "severity": "P1",
-          "path": "$.stages[7].host_image",
-          "message": "stage \"smoke\" host_image does not match manifest host.image"
-        },
-        {
-          "code": "STAGE_HOST_MISMATCH",
-          "severity": "P1",
-          "path": "$.stages[8].host_image",
-          "message": "stage \"process\" host_image does not match manifest host.image"
-        },
-        {
-          "code": "STAGE_HOST_MISMATCH",
-          "severity": "P1",
-          "path": "$.stages[9].host_image",
-          "message": "stage \"port\" host_image does not match manifest host.image"
-        },
-        {
-          "code": "STAGE_HOST_MISMATCH",
-          "severity": "P1",
-          "path": "$.stages[10].host_image",
-          "message": "stage \"cleanup\" host_image does not match manifest host.image"
-        },
-        {
-          "code": "STAGE_HOST_MISMATCH",
-          "severity": "P1",
-          "path": "$.stages[11].host_image",
-          "message": "stage \"artifacts\" host_image does not match manifest host.image"
-        }
-      ],
-      "summary": {
-        "checks": 24,
-        "stages_validated": 12,
-        "error_counts": {
-          "STAGE_HOST_MISMATCH": 12
-        }
-      }
-    }
-    
-    
-    1 !== 0
-    
-  code: 'ERR_ASSERTION'
-  name: 'AssertionError'
-  expected: 0
-  actual: 1
-  operator: 'strictEqual'
-  stack: |-
-    TestContext.<anonymous> (file:///Z:/Code/.worktrees/verdigris/ox-pc-g/orchestration/tasks/TASK-0139-clean-machine-manifest-validator/validator.test.mjs:156:10)
-    Test.runInAsyncScope (node:async_hooks:211:14)
-    Test.run (node:internal/test_runner/test:934:25)
-    Test.processPendingSubtests (node:internal/test_runner/test:633:18)
-    Test.postRun (node:internal/test_runner/test:1045:19)
-    Test.run (node:internal/test_runner/test:973:12)
-    async Test.processPendingSubtests (node:internal/test_runner/test:633:7)
+  duration_ms: 68.3796
   ...
 # Subtest: CLI exits nonzero with FORBIDDEN_PORT_6500 for the forbidden-port fixture
 ok 25 - CLI exits nonzero with FORBIDDEN_PORT_6500 for the forbidden-port fixture
   ---
-  duration_ms: 64.0835
+  duration_ms: 65.1996
   ...
 # Subtest: CLI exits 2 on missing arguments
 ok 26 - CLI exits 2 on missing arguments
   ---
-  duration_ms: 60.2368
+  duration_ms: 77.6858
   ...
 1..26
 # tests 26
 # suites 0
-# pass 24
-# fail 2
+# pass 26
+# fail 0
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 330.8267
+# duration_ms 358.8713
 
-A1 LASTEXITCODE=1
+A1 LASTEXITCODE=0
 
 == A2: CLI --fixture valid-synthetic.json --json (expect exit 0 VALID) ==
 {
-  "verdict": "INVALID",
+  "verdict": "VALID",
   "label": "clean_machine_verified",
-  "errors": [
-    {
-      "code": "STAGE_HOST_MISMATCH",
-      "severity": "P1",
-      "path": "$.stages[0].host_image",
-      "message": "stage \"checkout\" host_image does not match manifest host.image"
-    },
-    {
-      "code": "STAGE_HOST_MISMATCH",
-      "severity": "P1",
-      "path": "$.stages[1].host_image",
-      "message": "stage \"toolchain\" host_image does not match manifest host.image"
-    },
-    {
-      "code": "STAGE_HOST_MISMATCH",
-      "severity": "P1",
-      "path": "$.stages[2].host_image",
-      "message": "stage \"dependencies\" host_image does not match manifest host.image"
-    },
-    {
-      "code": "STAGE_HOST_MISMATCH",
-      "severity": "P1",
-      "path": "$.stages[3].host_image",
-      "message": "stage \"cache\" host_image does not match manifest host.image"
-    },
-    {
-      "code": "STAGE_HOST_MISMATCH",
-      "severity": "P1",
-      "path": "$.stages[4].host_image",
-      "message": "stage \"build\" host_image does not match manifest host.image"
-    },
-    {
-      "code": "STAGE_HOST_MISMATCH",
-      "severity": "P1",
-      "path": "$.stages[5].host_image",
-      "message": "stage \"tests\" host_image does not match manifest host.image"
-    },
-    {
-      "code": "STAGE_HOST_MISMATCH",
-      "severity": "P1",
-      "path": "$.stages[6].host_image",
-      "message": "stage \"launch\" host_image does not match manifest host.image"
-    },
-    {
-      "code": "STAGE_HOST_MISMATCH",
-      "severity": "P1",
-      "path": "$.stages[7].host_image",
-      "message": "stage \"smoke\" host_image does not match manifest host.image"
-    },
-    {
-      "code": "STAGE_HOST_MISMATCH",
-      "severity": "P1",
-      "path": "$.stages[8].host_image",
-      "message": "stage \"process\" host_image does not match manifest host.image"
-    },
-    {
-      "code": "STAGE_HOST_MISMATCH",
-      "severity": "P1",
-      "path": "$.stages[9].host_image",
-      "message": "stage \"port\" host_image does not match manifest host.image"
-    },
-    {
-      "code": "STAGE_HOST_MISMATCH",
-      "severity": "P1",
-      "path": "$.stages[10].host_image",
-      "message": "stage \"cleanup\" host_image does not match manifest host.image"
-    },
-    {
-      "code": "STAGE_HOST_MISMATCH",
-      "severity": "P1",
-      "path": "$.stages[11].host_image",
-      "message": "stage \"artifacts\" host_image does not match manifest host.image"
-    }
-  ],
+  "errors": [],
   "summary": {
     "checks": 24,
     "stages_validated": 12,
-    "error_counts": {
-      "STAGE_HOST_MISMATCH": 12
-    }
+    "error_counts": {}
   }
 }
 
-A2 LASTEXITCODE=1
+A2 LASTEXITCODE=0
 
 == A3: CLI --fixture forbidden-port.json --json (expect exit nonzero with FORBIDDEN_PORT_6500) ==
 {
@@ -397,12 +199,28 @@ A3 LASTEXITCODE=1
 
 A4 LASTEXITCODE=0
 
-== A5: git diff --name-only be6d555688619819084b352660fc0336a90d0ec3..HEAD (pre-REPORT snapshot) ==
+== A5: git diff --name-only be6d555688619819084b352660fc0336a90d0ec3..HEAD ==
 orchestration/RUN_STATUS.md
 orchestration/tasks/TASK-0136-passive-tree-contract-validator/SPEC.md
 orchestration/tasks/TASK-0137-gate-c-envelope-validator/SPEC.md
 orchestration/tasks/TASK-0138-release-proof-validator/SPEC.md
+orchestration/tasks/TASK-0139-clean-machine-manifest-validator/REPORT.md
 orchestration/tasks/TASK-0139-clean-machine-manifest-validator/SPEC.md
 orchestration/tasks/TASK-0139-clean-machine-manifest-validator/STATUS.md
+orchestration/tasks/TASK-0139-clean-machine-manifest-validator/captures/gate-transcripts.txt
+orchestration/tasks/TASK-0139-clean-machine-manifest-validator/fixtures/forbidden-port.json
+orchestration/tasks/TASK-0139-clean-machine-manifest-validator/fixtures/valid-synthetic.json
+orchestration/tasks/TASK-0139-clean-machine-manifest-validator/validate-clean-machine-evidence.mjs
+orchestration/tasks/TASK-0139-clean-machine-manifest-validator/validator.test.mjs
 
 A5 LASTEXITCODE=0
+
+== worker delta: git diff --name-only a631cb2e74e2b7463a9f9b3706684be8988b3c09..HEAD ==
+orchestration/tasks/TASK-0139-clean-machine-manifest-validator/REPORT.md
+orchestration/tasks/TASK-0139-clean-machine-manifest-validator/STATUS.md
+orchestration/tasks/TASK-0139-clean-machine-manifest-validator/captures/gate-transcripts.txt
+orchestration/tasks/TASK-0139-clean-machine-manifest-validator/fixtures/forbidden-port.json
+orchestration/tasks/TASK-0139-clean-machine-manifest-validator/fixtures/valid-synthetic.json
+orchestration/tasks/TASK-0139-clean-machine-manifest-validator/validate-clean-machine-evidence.mjs
+orchestration/tasks/TASK-0139-clean-machine-manifest-validator/validator.test.mjs
+
