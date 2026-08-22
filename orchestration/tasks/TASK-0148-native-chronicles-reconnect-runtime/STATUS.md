@@ -53,5 +53,5 @@
 
 ## Transition log
 
-- CLAIMED: commit `<claim-sha>` (STATUS.md only), pushed to origin worker
+- CLAIMED: commit `642bfa25` (STATUS.md only), pushed to origin worker
   branch. Implementation follows on this branch.
