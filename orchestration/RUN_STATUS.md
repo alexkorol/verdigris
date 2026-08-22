@@ -1,5 +1,40 @@
 # Run status — PC Verdigris overnight product wave
 
+## Supervisor retirement handoff — 2026-08-22 16:53 PDT
+
+- Owner explicitly retired this Codex supervisor for credit exhaustion and is
+  handing control to Cursor or another harness. No OpenCode writer remains
+  active. Preserve every worktree; do not infer capacity from the dashboard.
+- Authoritative program branch `codex/native-reconstitution` is clean and
+  pushed at `1a434371b281494d3f5aa6bdc3e50447e1814855`. Protected `master`
+  remains green at `a28ac92f`; current raw worker/program pushes launch zero
+  workflows. Board sentinel is healthy at 24 READY / 2 CLAIMED / 16 successors
+  / zero collisions.
+- TASK-0161 is frozen, clean, and pushed at worker head
+  `9f004d2a6802782e2b3a79b895be2b0822f8dbf1` in
+  `Z:\Code\.worktrees\verdigris\ox-pc-ah`. Worker evidence reports two green
+  full gates. Independent detached review at
+  `Z:\Code\.worktrees\verdigris\review-task0161-9f004d2a` was interrupted by
+  the retirement request during Gate-B after ordinary succession succeeded and
+  the heir hunt reached kill 9; this is **not** an independent pass and no
+  REVIEW verdict or integration exists. Exact next action: rerun the literal
+  SPEC gate to completion from the clean detached review tree, run negative
+  controls, then ACCEPT/REVISE and integrate only if green.
+- TASK-0101 revision 1 is frozen, clean, and pushed at worker head
+  `a742355d189966f0e344d0c4763e014f87ecb820` in
+  `Z:\Code\.worktrees\verdigris\ox-pc-ai`. Program REVIEW at `1a434371`
+  rejected the original handoff because final untracked files escaped its diff
+  gate and W1 would have routed invisible ranged damage. Revision 1 removes the
+  whitespace defects and adds an explicit telegraph/client-visible hit contract.
+  Exact next action: independently re-run JSON, final-range diff, scope, and
+  source-citation checks; update REVIEW; integrate the audit evidence; only
+  then promote its readable combat successor.
+- Read-only dashboard PID 9604 serves HTTP 200 at `127.0.0.1:4737`; low-cost
+  monitor PID 7364 remains live. Standalone orchestration PC broadcast is clean
+  and pushed at `88a4b317`; `origin/main` remains Mac-owned. Owner action:
+  start the replacement supervisor with this section and
+  `orchestration/SUPERVISOR_SUCCESSION.md` as its first state read.
+
 ## Three accepted integrations converged; next two-lane wave claimed — 2026-08-22 16:38 PDT
 
 - TASK-0163 frozen head `a53620ef` is independently ACCEPTED and integrated as

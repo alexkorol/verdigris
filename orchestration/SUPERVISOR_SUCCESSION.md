@@ -54,6 +54,28 @@ A failed handoff or missing acknowledgement is an owner-notification event. It
 does not authorize the outgoing supervisor to burn remaining credits by taking
 over implementation.
 
+### Delta — 2026-08-22 16:53 PDT — owner-requested retirement
+
+- Replacement entrypoint is exact pushed program head
+  `1a434371b281494d3f5aa6bdc3e50447e1814855` on
+  `codex/native-reconstitution`; local equals remote and the architect checkout
+  is clean. Protected `master` is green at `a28ac92f`. Queue proof: 24 READY,
+  2 CLAIMED, 16 sequenced successors, zero collisions.
+- No OpenCode writer is active. TASK-0161 is frozen/pushed/clean at `9f004d2a`
+  (`ox-pc-ah`); independent review is incomplete because the owner retirement
+  request interrupted its full gate during Gate-B. Do not treat partial output
+  as green. Resume by rerunning the exact gate in clean detached worktree
+  `Z:\Code\.worktrees\verdigris\review-task0161-9f004d2a`.
+- TASK-0101 revision 1 is frozen/pushed/clean at `a742355d` (`ox-pc-ai`). It
+  answers program REVISE commit `1a434371`; re-review it before integration or
+  successor promotion. The required product invariant is explicit: do not
+  route ranged resolution without a deterministic readable telegraph and
+  client-visible attributed hit beat.
+- Dashboard PID 9604 and monitor PID 7364 are read-only and remain available.
+  Current standalone broadcast branch head before this retirement refresh is
+  `88a4b317`; shared orchestration `main` is Mac-owned. No owner gate is needed
+  beyond launching the replacement harness and pointing it at this checkpoint.
+
 ## Verified live PC checkpoint — 2026-08-22 15:01 PDT
 
 ### Delta — 2026-08-22 16:38 PDT
