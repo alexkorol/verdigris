@@ -1,9 +1,10 @@
 ---
 task: TASK-0163
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: ox-pc-ac
 worker: ox-pc-ac2 (fresh recovered native-test lane; single active writer)
 started_at: 2026-08-22T15:05:00-07:00
+review_requested_at: 2026-08-22T17:40:00-07:00
 base_commit: 7de9b31927e74448f07a26cc77e2f92e55a9a6a2
 branch: codex/TASK-0163-gate-b-ordinary-play-reliability-ox-pc-ac
 worktree: Z:\Code\.worktrees\verdigris\ox-pc-ac2
@@ -17,11 +18,16 @@ configuration_provenance: owner-launched CLI session pinned to openrouter/stealt
 task_family: IMPLEMENTATION / native Gate-B journey-test reliability
 owned_paths: [native/tests/session_tests.cpp, orchestration/tasks/TASK-0163-gate-b-ordinary-play-reliability/**]
 notes: >
-  Claimed after fresh fetch confirmed no prior claim/RELEASE and no remote
-  worker branch. Preflight clean at the exact provisioned base. Both recorded
-  program-gate failures are preserved as evidence to diagnose: (1) combined
-  program native gate heirloom hunt timed out at seven minutes with four kills
-  and no named Warden; (2) one bounded exact-session retry failed earlier by
-  never observing the fatal fall. No runtime/gameplay edits are in scope;
-  if reliability requires runtime changes this lane stops and reports the
-  runtime defect.
+  Implementation complete and handed off for review. Both recorded
+  program-gate failures are causally diagnosed in the test source and
+  REPORT; the exploration driver was replaced with a deterministic
+  boustrophedon state machine with silent-step retry policy, the floor-vs-
+  round tile convention defect is corrected via gateb_tile_of, and five
+  focused controls pin the machine. Clean-build full native gate passed
+  (denylist/core/networking/camera2d/session/presentation all PASS), then
+  three consecutive exact session-test runs passed 107/107 each with no
+  source or fixture changes between runs. git diff --check clean; changed
+  files limited to native/tests/session_tests.cpp plus this task folder.
+  One same-session recovery used after a clean stop at a reasoning
+  boundary; no runtime/gameplay edits; no assertion weakened; no timeout
+  inflated. See REPORT.md for literal transcripts and commit SHAs.
