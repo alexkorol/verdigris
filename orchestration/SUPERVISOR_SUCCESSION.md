@@ -81,7 +81,11 @@ request.
   - ox-pc-q, ports 6940-6959, TASK-0148 claim `815a359b` released and clean
     preserved after its recovery proposed `mutate/select` for the first Scion,
     bypassing the required accepted `create/set-out` chain. It is exhausted,
-    not capacity; route a fresh independent replacement from current program.
+    not capacity;
+  - ox-pc-r, ports 6960-6979, TASK-0148 fresh r5 route from release head
+    `c1acd4ec`, process PID 13120, awaiting a new independent claim inside the
+    activation SLA. Its start contract freezes the accepted first-Scion chain
+    and bans `dev:*`, `player:chronicles:mutate`, and direct state shortcuts.
 - Preserved/non-capacity: ox-pc-d/e/g/m are dirty P0 quarantines after exhausting
   one recovery; ox-pc-n is a clean activation failure after its launch and one
   recovery both stopped before claim; a/b/c/h are preserved historical or
@@ -92,8 +96,8 @@ request.
   sequenced DRAFT successors, zero owned-path collisions; deterministic factory
   verified at 2,000 nodes / 500 packets. Runway remains honestly `UNKNOWN`.
 - Local supervision: human dashboard `http://127.0.0.1:4737/` health 200,
-  Node PID 12400; visible PowerShell monitor PID 3560. The monitor's alert set
-  is restricted to current completed/active routes `i/j/k/l/p/q`, so preserved
+  Node PID 12400; visible PowerShell monitor PID 18912. The monitor's alert set
+  is restricted to current completed/active routes `i/j/k/l/p/r`, so preserved
   historical/quarantined lanes cannot produce false toasts; an unattended
   REVISE route now raises a distinct P1 alert. Same-task automation
   `verdigris-surge-supervisor` is ACTIVE every five minutes and derives lanes
