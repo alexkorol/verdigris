@@ -60,7 +60,8 @@ are excluded from READY accounting. Four accepted-contract validator
 implementations restored 28 effective READY. TASK-0080, TASK-0137, TASK-0138,
 and TASK-0140 are accepted; TASK-0136 is validly claimed on replacement lane h.
 The eight promoted packets add four routed product tasks and four unclaimed
-restock tasks. Excluding valid claims leaves **28 effective READY + 17
+restock tasks. TASK-0136 returned to READY after the ox-pc-h release. Excluding
+valid claims leaves **29 effective READY + 17
 successors**, above the absolute floors. D-128 supersedes count-only
 sufficiency; TASK-0128 remains in active REVISE until its captures bind their
 own final evidence revision.
@@ -93,13 +94,13 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
 | ox-pc-a | 6620-6639 | TASK-0128 REVISE active from pushed head `bb67c566`; two architect-regenerated captures preserved | worker correcting evidence revision |
-| ox-pc-b | 6640-6659 | TASK-0145 launched from `df851cea`; pushed claim required by activation SLA | Chronicles owner-facing client journey |
+| ox-pc-b | 6640-6659 | TASK-0145 claim `4aa9e0c3` pushed after one claim-first activation recovery | Chronicles owner-facing client journey |
 | ox-pc-c | 6660-6679 | TASK-0136 claim released after duplicate-dispatch collision; dirty worktree quarantined | not available |
 | ox-pc-d | 6680-6699 | TASK-0146 pushed claim `7e416ff3`; worker active | first-expedition encounter wave |
 | ox-pc-e | 6700-6719 | TASK-0147 launched from `df851cea`; pushed claim required by activation SLA | procedural native visual polish |
 | ox-pc-f | 6720-6739 | TASK-0138 accepted/integrated at `38942560`; lane available | current-tip successor pending |
 | ox-pc-g | 6740-6759 | TASK-0148 pushed claim line begins `642bfa25`; worker active | reconnect-safe Chronicles runtime |
-| ox-pc-h | 6760-6779 | TASK-0136 replacement claim pushed at `ddd00857`; implementation active | TASK-0136 passive-tree contract validator |
+| ox-pc-h | 6760-6779 | TASK-0136 second post-claim process exit; dirty worktree preserved; claim released | P0 quarantined, not capacity |
 | ox-pc-i | 6780-6799 | TASK-0143 accepted/integrated at `ac1fc54a`; lane available for successor promotion | successor pending current-tip validation |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
@@ -187,12 +188,15 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - Released: **TASK-0136** claims `6ea36f5a`/`7b24e5d3`/`7026892e` after a real
   duplicate-dispatch collision. Lane c remains quarantined; the clean lane h
   receives the replacement route after this coordination push.
-- Active work: TASK-0128 revision on ox-pc-a; TASK-0136 replacement claim
-  `ddd00857` on ox-pc-h; TASK-0146 encounter wave claim `7e416ff3` on ox-pc-d;
-  TASK-0148 reconnect-runtime claim beginning `642bfa25` on ox-pc-g. TASK-0145
-  on b and TASK-0147 on e are inside the ten-minute activation window and do
-  not count as capacity until their claims are committed and pushed. All valid
-  claims are excluded from READY accounting.
+- Active work: TASK-0128 revision on ox-pc-a; TASK-0146 encounter wave claim
+  `7e416ff3` on ox-pc-d; TASK-0148 reconnect-runtime claim beginning `642bfa25`
+  on ox-pc-g; TASK-0147 claim `068a1358` on ox-pc-e; TASK-0145 claim `4aa9e0c3`
+  on ox-pc-b after one exact-session claim-first recovery. All valid claims are
+  excluded from READY accounting.
+- P0 quarantined: TASK-0136 replacement claim `ddd00857` on ox-pc-h. The first
+  process exit received one exact-session recovery; the recovery also exited
+  with dirty uncommitted work. RELEASE now returns the task to READY. Preserve
+  the worktree and do not recover it again.
   Separate project: orchestration bootstrap claim `795a9b3`, with pushed M3
   head `82de84ef` awaiting its configured Tier-B acceptance path.
 - Historical TASK-0056 and legacy clone WIP are superseded/preserved, never
@@ -202,7 +206,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 28 packets
+## Effective READY — 29 packets
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -238,6 +242,7 @@ wins after a fresh fetch.
 | P1 | TASK-0150 native clean-build convergence | INDEPENDENT / IMPLEMENTATION | future clean lane | proves the complete C++ build from a disposable directory |
 | P1 | TASK-0151 native content schema seed | INDEPENDENT / IMPLEMENTATION | future clean lane | creates a deterministic content-neutral authoring seam |
 | P1 | TASK-0152 native density benchmark evidence | INDEPENDENT / IMPLEMENTATION | future clean lane | measures encounter/presentation headroom reproducibly |
+| P1 | TASK-0136 passive-tree contract validator | INDEPENDENT / MECHANICAL | fresh worktree only; quarantined lanes forbidden | fail-closes counter confusion without canonizing content |
 
 ## HOLD despite historical READY headers
 
