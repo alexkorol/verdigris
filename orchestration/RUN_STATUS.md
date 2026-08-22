@@ -50,7 +50,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
-| ox-pc-a | 6620-6639 | P0 `MISROUTED` + P1 `PROVISIONED_UNCLAIMED`: launch requested 2026-08-21 20:06 PDT; expected `Z:\Code\.worktrees\verdigris\ox-pc-a`, branch `codex/TASK-0081-gate-b-wire-contract-ox-pc-a`, base `7f271691`; no committed claim; visible OpenCode evidence resumed a legacy worker-C project instead | TASK-0081 Gate B wire freeze |
+| ox-pc-a | 6620-6639 | P0 `MISROUTED` + P1 `PROVISIONED_UNCLAIMED`: launch requested 2026-08-21 20:06 PDT; expected `Z:\Code\.worktrees\verdigris\ox-pc-a`, branch `codex/TASK-0081-gate-b-wire-contract-ox-pc-a`, base `986264f4`; no committed claim; visible OpenCode evidence resumed a legacy worker-C project instead | TASK-0081 Gate B wire freeze |
 
 The stopped `ox-pc-b` and `ox-pc-c` tabs shared the same OpenCode project,
 stopped before claims or writes, and are not Verdigris lanes, stalls, dark

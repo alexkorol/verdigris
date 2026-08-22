@@ -12,7 +12,7 @@ is intentionally short; the canonical rules remain in the linked documents.
 Provisioned worktree:
 `Z:\Code\.worktrees\verdigris\ox-pc-a`; worker branch:
 `codex/TASK-0081-gate-b-wire-contract-ox-pc-a`; initial task base:
-`7f2716911e0136ad4c89d552f6ca0c33fd185eb4`. The local ignored
+`986264f44b6bd3e03633d05f8b3e69fad35d4688`. The local ignored
 `START_HERE_OX_PC_A.md` is the complete launch packet.
 
 Only `ox-pc-a` is currently registered as Verdigris capacity. The stopped
