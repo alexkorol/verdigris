@@ -1,7 +1,7 @@
 # TASK-0132 claim
 
 - task: TASK-0132
-- state: CLAIMED
+- state: REVIEW_REQUESTED
 - coordinator: ox-pc-g
 - worker: ox-pc-g (isolated PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0132-clean-machine-harness-contract-ox-pc-g`
@@ -37,4 +37,15 @@
 
 ## Transition log
 
-- CLAIMED: this commit (STATUS.md only), pushed to origin.
+- CLAIMED: commit `d6aa02d2` (STATUS.md only), pushed to origin.
+- IMPLEMENTED: 2026-08-21 ~23:05 -07:00. Session resumed after a
+  tool-isolation denial; all acceptance commands re-run directly inside the
+  worktree with captures confined to this task folder (`captures/`). All five
+  SPEC acceptance commands PASS (transcripts in REPORT.md). Artifacts:
+  `clean-machine-contract.json`, `fixtures/negative-cases.json`,
+  `VALIDATION.md`, `REPORT.md`, `captures/rg-keyword-survey.txt`.
+- REVIEW_REQUESTED: this commit, pushed to origin
+  `codex/TASK-0132-clean-machine-harness-contract-ox-pc-g`. No stop condition
+  hit: no system software installed, no CI or machine state mutated, no shared
+  service launched, no platform claimed covered (all evidence_status UNPROVEN),
+  port 6500 untouched.
