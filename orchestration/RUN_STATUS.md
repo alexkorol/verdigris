@@ -7,8 +7,8 @@ Sweep base: `a7e9c95f3ac6e3a65864fdfbf3183cb79ff7a9ad`
 `d2423873` merge tip).
 
 GitHub: no open PRs. Latest master CI run 32441409427 passed at `d2423873`;
-the coordination-only program pushes did not dispatch a new workflow. No
-current REVIEW_REQUESTED or REVISE transition exists.
+the coordination-only program pushes did not dispatch a new workflow.
+TASK-0081 is in architect `REVISE` at worker head `0302ea4c`.
 
 Orchestrator: **Codex Sol**, PC architect checkout
 `Z:\Code\Games\delaford\delaford_game`. Architect coordinates, reviews,
@@ -57,7 +57,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
-| ox-pc-a | 6620-6639 | `ACTIVE_LOCAL_PENDING_COMMIT`: valid claim `f08131c0` pushed 20:21 PDT from `Z:\Code\.worktrees\verdigris\ox-pc-a`, branch `codex/TASK-0081-gate-b-wire-contract-ox-pc-a`, base `986264f4`; owned `captures/gate-b-wire-contract.json` appeared at 20:37; remote remains claim-only | TASK-0081 Gate B wire freeze |
+| ox-pc-a | 6620-6639 | `REVISE`: valid claim `f08131c0`; REVIEW_REQUESTED head `0302ea4c` pushed 20:42 PDT; architect review preserves the strong 12-row inventory and requires exact mortal-oath/relaunch response conditionals plus corrected commit-time telemetry | TASK-0081 Gate B wire freeze revision |
 
 The stopped `ox-pc-b` and `ox-pc-c` tabs shared the same OpenCode project,
 stopped before claims or writes, and are not Verdigris lanes, stalls, dark
@@ -85,8 +85,10 @@ write worker STATUS/REPORT and will not take over implementation.
   and the ignored `START_HERE_OX_PC_A.md` launch packet.
 - **Observed transition:** the earlier visible worker-C session was misrouted,
   but a new correctly rooted worker committed and pushed the exact TASK-0081
-  claim. Fresh owned-path evidence appeared locally at 20:37, promoting the
-  worker to `ACTIVE_LOCAL_PENDING_COMMIT`; independent review waits for push.
+  claim. It pushed REVIEW_REQUESTED head `0302ea4c` at 20:42 PDT. Independent
+  verification passed the literal gates and found two response-shape
+  precision defects plus future-dated throughput telemetry; `REVIEW.md` now
+  issues a narrow REVISE without rejecting the accepted inventory.
 - **Capacity accounting:** one active local Verdigris Ox lane. This was not an
   incident against stopped `ox-pc-b`/`ox-pc-c`.
 
@@ -121,10 +123,10 @@ another provider by assumption.
 
 ## Interrupts and authority
 
-- REVIEW_REQUESTED: **none**.
-- REVISE: **none**.
-- Active claims: **TASK-0081 by ox-pc-a** (`f08131c0`; owned capture evidence
-  active locally, remote claim-only). Separate project: orchestration bootstrap
+- REVIEW_REQUESTED: **none** (TASK-0081 was reviewed at `0302ea4c`).
+- REVISE: **TASK-0081**, four numbered exact corrections in its `REVIEW.md`.
+- Active claims: **TASK-0081 by ox-pc-a** (`f08131c0`; revision takes priority).
+  Separate project: orchestration bootstrap
   claim `795a9b3`, also active locally pending its first milestone commit.
 - Historical TASK-0056 and legacy clone WIP are superseded/preserved, never
   resumed.
