@@ -1,6 +1,7 @@
 # TASK-0122 STATUS
 
 state: CLAIMED
+coordinator: ox-alpha
 
 - worker: ox-pc-x (OpenCode Ox Alpha implementation worker)
 - provider: openrouter
@@ -17,7 +18,7 @@ state: CLAIMED
 - clone_path: `Z:\Code\.worktrees\verdigris\ox-pc-x`
 - ports: 7060-7079 reserved for this lane; verified free at claim; port 6500
   never touched
-- started_at: 2026-08-22 (owner launch request)
+- started_at: 2026-08-22T09:30:46-07:00 (PDT; owner launch request)
 
 Pre-claim preflight evidence:
 
