@@ -1,7 +1,7 @@
 # TASK-0134 claim
 
 - task: TASK-0134
-- state: CLAIMED
+- state: REVIEW_REQUESTED
 - coordinator: ox-pc-i
 - worker: ox-pc-i (isolated PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0134-distribution-signing-boundary-ox-pc-i`
@@ -45,4 +45,32 @@
 
 ## Transition log
 
-- CLAIMED: this commit (STATUS.md only), pushed to origin worker branch.
+- CLAIMED: commit `5b952c08` (STATUS.md only), pushed to origin worker
+  branch.
+- RESUMED: 2026-08-21 (same day, later session). Checked `RELEASE.md` first
+  — none present, claim stands. AGENTS.md preflight re-run: tree dirty only
+  with this task's three untracked partial-work files; branch in sync `0/0`
+  after `git fetch --prune origin`; base `cab50d62` re-verified ancestor of
+  HEAD (`merge-base --is-ancestor`, exit 0). Dependencies now installed in
+  this worktree (`node_modules/yorkie` present), so the pre-commit hook runs
+  normally on subsequent commits.
+- IMPLEMENTED: preserved the three interrupted-session files verbatim
+  (`distribution-boundary.json`, `fixtures/negative-cases.json`,
+  `captures/gate-3-rg-distribution-surface.txt`) and added the missing
+  deliverables `VALIDATION.md` + `REPORT.md`. All five SPEC acceptance
+  commands pass (exit 0), run twice; both machine gates proven fail-closed
+  via mutated-copy negative controls (see VALIDATION.md).
+- REVIEW_REQUESTED: this commit; implementation carried by commit
+  `8195c6a8`. Awaiting architect review per PROTOCOL.
+
+## Review-requested evidence summary
+
+- Gates: boundary key check PASS; negative-cases case check PASS; rg
+  distribution-surface scan exit 0 (589 lines final, captured verbatim in
+  `captures/gate-3-rg-distribution-surface.txt`); `git diff --check`
+  clean; base..HEAD diff confined to routed orchestration files.
+- Negative controls: gate snippets exit 1 against temp copies missing
+  `rollback` / `ROLLBACK_UNPROVEN` respectively.
+- Scope: writes confined to `orchestration/tasks/TASK-0134-distribution-
+  signing-boundary/**`; no credentials acquired, no external service
+  contacted, no signing/notarization/publication performed or claimed.
