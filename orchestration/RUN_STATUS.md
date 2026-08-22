@@ -1,5 +1,27 @@
 # Run status — PC Verdigris overnight product wave
 
+## PC live sweep — 2026-08-22 09:33 PDT
+
+- Program branch `codex/native-reconstitution` includes claim coordination
+  through `21736c65`; protected `master` remains green at `230a8adf` after
+  TASK-0153 first-session/Esc release.
+- ox-pc-r is the sole active writer for TASK-0148. Its first post-containment
+  full native gate is red at `gate-b: slain elite surfaces the circulating
+  heirloom`; the worker is investigating the ordinary-play combat/recovery leg.
+  No handoff or gameplay claim is accepted.
+- ox-pc-x has a valid pushed TASK-0122 visual Phase A claim at `fdbbdca6` from
+  routed base `3341a81f`, worktree `Z:\Code\.worktrees\verdigris\ox-pc-x`,
+  ports 7060-7079. Its earlier claim omitted the required coordinator field;
+  the clean source tree was stopped and the same session corrected the claim
+  before implementation.
+- Deterministic board sentinel: 24 effective READY, 1 valid CLAIMED, 16
+  sequenced successors, zero owned-path collisions, exit 0. Factory manifests:
+  2,000 graph nodes and 500 reserve packets valid; runway hours remain UNKNOWN.
+- PC-local monitor regression for INC-015 is live: more than one OpenCode writer
+  matching a registered lane raises `P0_DUPLICATE_WORKTREE` and exposes every
+  matching PID. The human-readable dashboard remains available at
+  `http://127.0.0.1:4737/`.
+
 ## Morning protected-master release — 2026-08-22 07:12 PDT
 
 - Program branch pushed head: `eb65c08b76c95564d61422a51748dbdb476306a9`.
