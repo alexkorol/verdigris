@@ -6,7 +6,7 @@ packet: MECHANICAL
 topology: INDEPENDENT
 job: MECHANICAL
 priority: P0
-base_commit: d2423873c577d299b3b39c56024d1d840993c72b
+base_commit: 42718fbc4340589e606fff94a6eaa3dfbd03ad1c
 owner_visible_contribution: replaces the known approximation with an evidence-backed route to authoritative build progression
 dependencies: []
 owner_input_dependency: final tree topology, node content, and balance remain owner-only

@@ -6,7 +6,7 @@ packet: MECHANICAL
 topology: INDEPENDENT
 priority: critical (D-125 queue runway enforcement)
 lane: luna-mac; Qwen drafting allowed with machine verification
-base_commit: 1f82623d9a3936513327cc43362703443e14b02a
+base_commit: 42718fbc4340589e606fff94a6eaa3dfbd03ad1c
 owned_paths:
   - orchestration/tools/board-sentinel.mjs
   - orchestration/tools/board-sentinel.test.mjs

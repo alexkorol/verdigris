@@ -35,7 +35,11 @@ task owns freezing them)? base commit recorded? resources isolated or
 serialized? exact acceptance path stated? review capacity exists?
 parallelism actually shortens the critical path?
 
-WIP budget: architect + 3 workers max at current review bandwidth.
+Initial CLI sub-fleet WIP budget: architect + 5 isolated Verdigris workers,
+plus the independent portable-orchestration worker. Tier A mechanical review is
+delegated under `LEADER_POLICY.md`; Tier B/C review pressure still gates further
+fan-out. Every lane requires a distinct worktree, branch, task, paths, ports,
+and launch process.
 
 ## Authority (narrower than capability)
 
@@ -67,7 +71,8 @@ local freedom), ARCHITECTURE (architect-only).
 
 - kimi-work: 6510–6529 · deepseek: 6540–6559 · kimi: 9880–9899 ·
   architect: 6560–6579 · cursor (Grok 4.6): 6580–6599 ·
-  ox-pc-a: 6620–6639 ·
+  ox-pc-a: 6620–6639 · ox-pc-b: 6640–6659 · ox-pc-c: 6660–6679 ·
+  ox-pc-d: 6680–6699 · ox-pc-e: 6700–6719 ·
   owner live server: 6500 (never touch) ·
   playtest default: 6510 (serialized — one full suite at a time per
   machine). All binds 127.0.0.1 (enforced in server/index.js default).

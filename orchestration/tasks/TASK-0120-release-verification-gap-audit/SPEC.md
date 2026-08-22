@@ -6,7 +6,7 @@ packet: MECHANICAL
 topology: INDEPENDENT
 job: MECHANICAL
 priority: P0
-base_commit: 9bd689b4cebac0fe1f79ba54edcc9967a1a8f0d4
+base_commit: 42718fbc4340589e606fff94a6eaa3dfbd03ad1c
 owner_visible_contribution: defines the proof required before a native build can be called safely releasable
 dependencies: []
 owner_input_dependency: signing, notarization, distribution, and account actions remain owner-only

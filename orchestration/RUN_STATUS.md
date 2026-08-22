@@ -18,8 +18,8 @@ vertical-slice acceptance.
 
 Both saved PC OpenCode sessions showed fresh streaming/tool activity during
 this transition. `ox-pc-a` pushed accepted TASK-0081 rev3 `dff39173`; it was
-integrated at merge `31d21579` after green Tier-C review. Its next single-lane
-route is mechanical Tier-A TASK-0128 from base `31d21579` on branch
+integrated at merge `31d21579` after green Tier-C review. Its next route is
+mechanical Tier-A TASK-0128 from base `31d21579` on branch
 `codex/TASK-0128-accepted-throughput-normalization-ox-pc-a`.
 `ox-bootstrap` has pushed orchestration M1 head
 `bcd98d04` and is actively writing M2 controller/detector files. Neither lane is
@@ -83,13 +83,16 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
-| ox-pc-a | 6620-6639 | `REVISE`: valid claim `f08131c0`; rev2 head `52a7377b` pushed 21:03 PDT and passes all gates; two wire corrections are accepted, with only exact fall-through wording, rev2 commit/provider evidence, and post-correction transcript remaining | TASK-0081 Gate B final evidence revision |
+| ox-pc-a | 6620-6639 | TASK-0081 accepted/integrated; switched to isolated TASK-0128 branch | TASK-0128 throughput normalization |
+| ox-pc-b | 6640-6659 | newly provisioned independent CLI lane; awaiting claim | TASK-0080 board sentinel |
+| ox-pc-c | 6660-6679 | newly provisioned independent CLI lane; awaiting claim | TASK-0086 Gate C contract audit |
+| ox-pc-d | 6680-6699 | newly provisioned independent CLI lane; awaiting claim | TASK-0105 passive-tree authority audit |
+| ox-pc-e | 6700-6719 | newly provisioned independent CLI lane; awaiting claim | TASK-0120 release verification audit |
 
-The stopped `ox-pc-b` and `ox-pc-c` tabs shared the same OpenCode project,
-stopped before claims or writes, and are not Verdigris lanes, stalls, dark
-capacity, or incidents. The owner reserved that capacity for separate projects;
-Verdigris does not direct or monitor it. Route only one Ox Verdigris task at a
-time until the owner explicitly adds independent workers.
+The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
+stopped before claims/writes, and remain non-incidents. The newly registered
+lanes reuse those names only for new independent Z: worktrees and CLI sessions;
+they do not retroactively convert the old tabs into capacity.
 
 Legacy PC clones under ChatGPT, Cursor, DeepSeek, kimi, and KimiWork are stale
 and/or dirty with preserved user/worker work. They are **not** registered as Ox
@@ -97,10 +100,10 @@ clones and must not be reset, cleaned, or silently repurposed. The first
 committed Ox claim registers its actual clone path and full scorecard
 experimental unit.
 
-Provisioning is complete. The only owner action before claim is to open the
-exact Ox worktree as its own OpenCode project and paste: `Read
-START_HERE_OX_PC_A.md completely and execute it now.` Sol does not claim or
-write worker STATUS/REPORT and will not take over implementation.
+OpenCode CLI 1.18.21 is installed and the new lanes are launched headlessly with
+explicit `openrouter/stealth/ox-alpha`; no owner tab opening is required. Sol
+does not claim or write worker STATUS/REPORT and will not take over
+implementation.
 
 ### Resolved activation alert
 
@@ -115,15 +118,13 @@ write worker STATUS/REPORT and will not take over implementation.
   verification passed the literal gates and found two response-shape
   precision defects plus future-dated throughput telemetry; `REVIEW.md` now
   issues a narrow REVISE without rejecting the accepted inventory.
-- **Capacity accounting:** one active local Verdigris Ox lane. This was not an
-  incident against stopped `ox-pc-b`/`ox-pc-c`.
+- **Capacity accounting:** the historical alert closed with TASK-0081. It was
+  not an incident against the stopped tabs. Five newly isolated CLI lanes are
+  now registered; only valid committed claims count as active.
 
-Persistent supervision: Codex app heartbeat `verdigris-surge-supervisor` is
-ACTIVE every 15 minutes on this architect task. It fetches/scans first,
-reviews/integrates/restocks on transitions, enforces D-127/D-128, updates
-scorecards, and reports meaningful state changes. At 20:16 its notification
-policy was corrected from failed-runs-only to normal notifications; no owner UI
-change is required for successful alarm runs.
+Persistent Sol supervision is paused under `LEADER_POLICY.md`. The temporary
+hourly Luna monitor observes transitions until orchd takes over deterministic
+session reconciliation and dispatch.
 
 ### Cross-project control-plane watch (not Verdigris capacity)
 

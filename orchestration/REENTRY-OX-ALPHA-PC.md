@@ -8,6 +8,10 @@ is intentionally short; the canonical rules remain in the linked documents.
 | Name | Primary lane | Ports |
 |---|---|---|
 | `ox-pc-a` | Windows implementation | 6620-6639 |
+| `ox-pc-b` | Windows implementation | 6640-6659 |
+| `ox-pc-c` | Windows implementation | 6660-6679 |
+| `ox-pc-d` | Windows implementation | 6680-6699 |
+| `ox-pc-e` | Windows implementation | 6700-6719 |
 
 Provisioned worktree:
 `Z:\Code\.worktrees\verdigris\ox-pc-a`; worker branch:
@@ -15,10 +19,18 @@ Provisioned worktree:
 `31d215793f0f799fd365f080ca326ea04e83706c`. The local ignored
 `START_HERE_OX_PC_A.md` is the complete launch packet.
 
-Only `ox-pc-a` is currently registered as Verdigris capacity. The stopped
-`ox-pc-b` and `ox-pc-c` OpenCode tabs shared one project, made no claim or
-write, and are not lanes, stalls, incidents, or capacity. Do not route work to
-them unless the owner explicitly registers new independent Verdigris workers.
+The owner has now registered five isolated CLI-addressable Verdigris lanes.
+The new `ox-pc-b` and `ox-pc-c` worktrees are not the historical stopped tabs:
+those old tabs shared one project, made no claim/write, and remain non-incidents.
+Every registered lane below has its own Z: worktree and branch.
+
+| Lane | Worktree | Branch | Route |
+|---|---|---|---|
+| ox-pc-a | `Z:\Code\.worktrees\verdigris\ox-pc-a` | `codex/TASK-0128-accepted-throughput-normalization-ox-pc-a` | TASK-0128 |
+| ox-pc-b | `Z:\Code\.worktrees\verdigris\ox-pc-b` | `codex/TASK-0080-board-sentinel-ox-pc-b` | TASK-0080 |
+| ox-pc-c | `Z:\Code\.worktrees\verdigris\ox-pc-c` | `codex/TASK-0086-gate-c-contract-audit-ox-pc-c` | TASK-0086 |
+| ox-pc-d | `Z:\Code\.worktrees\verdigris\ox-pc-d` | `codex/TASK-0105-passive-tree-progression-gap-audit-ox-pc-d` | TASK-0105 |
+| ox-pc-e | `Z:\Code\.worktrees\verdigris\ox-pc-e` | `codex/TASK-0120-release-verification-gap-audit-ox-pc-e` | TASK-0120 |
 
 Use only the provisioned dedicated worktree. The architect checkout at
 `Z:\Code\Games\delaford\delaford_game` is forbidden. Never reset, clean, or
@@ -40,9 +52,8 @@ committed task `STATUS.md`.
 5. Work only in `owned_paths`; paste literal acceptance transcripts and exit
    codes into `REPORT.md`; push only the worker branch; request review; loop.
 
-TASK-0081 is ACCEPTED and integrated. The current route is
-`ox-pc-a` -> TASK-0128. Route only one Verdigris task at a time until the owner
-explicitly adds workers. Re-fetch before claiming because
+TASK-0081 is ACCEPTED and integrated. The current five routes are frozen in the
+table above. Each lane works only one task at a time. Re-fetch before claiming because
 a newer `RUN_STATUS.md`, claim, REVIEW, RELEASE, or REVISE always wins.
 
 ## Activation acknowledgement
