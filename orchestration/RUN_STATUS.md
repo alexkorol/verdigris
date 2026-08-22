@@ -102,7 +102,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-f | 6720-6739 | TASK-0138 accepted/integrated at `38942560`; lane available | current-tip successor pending |
 | ox-pc-g | 6740-6759 | TASK-0148 pushed claim line begins `642bfa25`; worker active | reconnect-safe Chronicles runtime |
 | ox-pc-h | 6760-6779 | TASK-0136 second post-claim process exit; dirty worktree preserved; claim released | P0 quarantined, not capacity |
-| ox-pc-i | 6780-6799 | clean lane selected for TASK-0145 replacement from current program tip | Chronicles owner-facing client journey replacement |
+| ox-pc-i | 6780-6799 | TASK-0145 replacement claim `226e5149` pushed from current program tip | Chronicles owner-facing client journey replacement active |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -191,9 +191,9 @@ harness-visible provider/model. These are separate scorecard experimental units.
   receives the replacement route after this coordination push.
 - Active work: TASK-0146 encounter wave claim `7e416ff3` on ox-pc-d;
   TASK-0148 reconnect-runtime claim beginning `642bfa25`
-  on ox-pc-g; TASK-0147 claim `068a1358` on ox-pc-e. TASK-0145 is released
-  from failed ox-pc-b and launch-requested on clean ox-pc-i. All valid claims
-  are excluded from READY accounting.
+  on ox-pc-g; TASK-0147 claim `068a1358` on ox-pc-e; TASK-0145 replacement
+  claim `226e5149` on clean ox-pc-i after failed ox-pc-b was released. All
+  valid claims are excluded from READY accounting.
 - P0 quarantined: TASK-0136 replacement claim `ddd00857` on ox-pc-h. The first
   process exit received one exact-session recovery; the recovery also exited
   with dirty uncommitted work. RELEASE now returns the task to READY. Preserve
