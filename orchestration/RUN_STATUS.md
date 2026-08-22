@@ -1,5 +1,30 @@
 # Run status — PC Verdigris overnight product wave
 
+## Claims live; historical GitHub mail storm bounded — 2026-08-22 13:24 PDT
+
+- All four routed workers claimed from exact base `c2b81448`, pushed only their
+  worker branches, and showed fresh post-claim activity. Frozen claim heads:
+  ox-pc-z/TASK-0155 `386aa2ee`, ox-pc-aa/TASK-0156 `e3f4bdf6`,
+  ox-pc-ab/TASK-0151 `57627ca3`, and ox-pc-ac/TASK-0152 `5156c33e`.
+- The four one-file claim commits are now present on the coordination line.
+  Claim-aware board proof is healthy at 24 effective READY, 4 CLAIMED,
+  16 sequenced successors, and zero owned-path collisions. Provisioning is no
+  longer being mistaken for capacity.
+- The owner inbox screenshot is historical failure mail from before the two
+  trigger-contract releases. Since Verdigris PR #56's trigger fix began, GitHub
+  records 4 protected PR/master runs and 0 failures; since standalone-
+  orchestration PR #3's trigger fix began, it records 2 protected PR/main runs
+  and 0 failures. Raw worker, program, and PC broadcast pushes remain quiet.
+- One ox-pc-ac shell invocation opened the architect checkout's commit editor
+  and left an idle `git commit` child even though the worker's valid claim had
+  already landed. The supervisor matched and stopped only that exact child;
+  both repositories stayed clean and the OpenCode worker continued. Future
+  launch packets must use an explicit commit message as well as the no-hooks
+  path so unattended workers cannot wait on an interactive editor.
+- Dashboard PID 9260 is HTTP 200 and the visible low-cost monitor is PID 2664.
+  Owner action required now: none. Historical mail may be archived separately;
+  real protected-branch or protected-PR failures remain intentionally visible.
+
 ## Four-lane product/reliability activation — 2026-08-22 13:06 PDT
 
 - Queue restock commit `c2b814488278f4f093e754cf695ea9ed749d81fb`

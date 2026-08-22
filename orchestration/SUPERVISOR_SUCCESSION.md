@@ -284,3 +284,24 @@ tested isolated-branch implementation, returns HTTP 200, and shows ox-pc-r/x
 as terminal integrated lanes with `Complete · no worker action`; its override
 is honored only for stopped, clean, pushed worktrees. Dashboard tests pass
 35/35, typecheck/build/lint pass, and the low-cost monitor is one live process.
+
+### Four-lane succession checkpoint — 2026-08-22 13:24 PDT
+
+- Program line before this ledger commit contains four frozen claim records:
+  TASK-0155/ox-pc-z `386aa2ee`, TASK-0156/ox-pc-aa `e3f4bdf6`,
+  TASK-0151/ox-pc-ab `57627ca3`, and TASK-0152/ox-pc-ac `5156c33e`.
+  Every remote head equals the recorded claim, every worker process is live,
+  and every session has fresh post-claim activity.
+- Claim-aware board sentinel is healthy at 24 effective READY, 4 CLAIMED,
+  16 sequenced successors, zero collisions, and 108 integrated packets.
+- Dashboard PID 9260 serves HTTP 200 on `127.0.0.1:4737`; visible monitor PID
+  2664 covers only terminal r/x plus active z/aa/ab/ac. Process visibility is
+  not capacity; pushed claim plus fresh post-claim activity remains binding.
+- Protected workflow signal is quiet and verified: zero Verdigris failures in
+  four PR/master runs since PR #56's trigger contract, and zero standalone-
+  orchestration failures in two PR/main runs since PR #3's equivalent change.
+  Historical GitHub failure mail predates those cutoffs.
+- Exact next sweep: freeze any REVIEW_REQUESTED head, validate frozen scope and
+  literal task gates, route REVISE before new work, keep at least 24 effective
+  READY, and publish the resulting coordination head to the isolated PC
+  broadcast branch. Shared orchestration `main` remains Mac-owned.
