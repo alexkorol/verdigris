@@ -1,7 +1,7 @@
 # TASK-0141 claim
 
 - task: TASK-0141
-- state: CLAIMED
+- state: REVIEW_REQUESTED
 - coordinator: ox-pc-g
 - worker: ox-pc-g (isolated PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0141-procedural-native-visual-kit-ox-pc-g`
@@ -35,4 +35,19 @@
   `orchestration/tasks/TASK-0141-procedural-native-visual-kit/**`; forbidden
   paths (`native/client/main.cpp`, `native/src/**`, `native/include/**`,
   `native/tests/**`, `server/**`, `src/**`, `playtest/**`, `.github/**`,
-  CI/machine mutation) will not be touched.
+  CI/machine mutation) were not touched.
+
+## Transition log
+
+- CLAIMED: commit `3f100c3e` (STATUS.md only), pushed to origin within the
+  10-minute routing window.
+- IMPLEMENTED: procedural generator, nine SVG sources, manifest, and
+  data-only C++ header delivered inside owned paths only (commit `2ff50b52`).
+- REVIEW_REQUESTED: all four SPEC acceptance commands PASS with exit 0 —
+  node --test 9/9; generate-assets --check 11x OK "visual kit up to date";
+  `git diff --check` clean; base-diff confined to owned task files plus
+  upstream architect specs staged in routed HEAD before the claim. Literal
+  transcript in `captures-gate-transcript.txt`; details in REPORT.md.
+  No stop condition hit: no CI/machine/source mutation, no merge, no
+  force-push, no external downloads, port 6500 never bound or contacted,
+  lane ports 6740-6759 untouched at runtime.
