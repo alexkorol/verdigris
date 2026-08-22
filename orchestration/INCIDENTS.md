@@ -169,3 +169,39 @@ status labels. New incidents append here with the template at bottom.
   brief and the sweep checklist in ONBOARDING-SOL-ORCHESTRATOR.md.
 - Status: RULE (enforced in orchestrator onboarding + standing goals).
 - Review-after: first week Sol holds the orchestrator role.
+
+## INC-013: ox-pc-v exceeded activation SLA before claim (2026-08-22)
+
+- Date: 2026-08-22 06:55–07:10 PDT. Lane: `ox-pc-v`, TASK-0153,
+  OpenCode `openrouter/stealth/ox-alpha`, worktree
+  `Z:\Code\.worktrees\verdigris\ox-pc-v`.
+- WHAT HAPPENED: the headless process remained alive and consumed source
+  context for more than five minutes without creating or pushing its required
+  first-STATUS-write claim. The human monitor correctly showed a starting/
+  unclaimed lane but did not autonomously stop it. The supervisor sweep caught
+  the breach, verified the worktree was clean, and stopped only that exact PID.
+- RECOVERY: the exact OpenCode session was resumed claim-first. The first commit
+  attempt was blocked by the shared Yorkie hook because isolated worktrees have
+  no `node_modules`; the supervisor paused it again and explicitly authorized
+  the nonpersistent per-command hook override used by established PC lanes.
+  Claim `8474ac5125d3725c7fd119ac907e907c14da75d6` was then pushed and verified
+  on the worker branch before implementation continued.
+- OWNER FEEDBACK ADDED: the live owner session proved Esc globally quit the
+  client while the gear pane was open. TASK-0153 now must prove first Esc closes
+  the pane without quitting and only a later bare Esc exits.
+- RULE: live PID/log activity is not capacity until the remote claim exists.
+  A five-minute provisioned-but-unclaimed state is a P1 transition requiring
+  notification and claim-first recovery; hook-unavailable isolated worktrees
+  use the explicit per-command no-hooks path rather than spending activation
+  time debating or installing unrelated browser dependencies.
+- Status: CONTAINED; worker claim verified, implementation active.
+- Date: 2026-08-22 07:11 PDT. Surface: protected `master` Native CI,
+  post-release run `32577972059`. State: **P0 RELEASE RED / ROUTED**.
+  The pre-release Visual Studio 2019 gate passed, but the current GitHub MSVC
+  19.51 clean runner rejected `native/tests/camera2d_tests.cpp:64` with C3312
+  because the braced range did not have a directly available standard
+  `begin`/`end` declaration; later diagnostics were cascading. The protected
+  PR had already merged as `db3fc046` while checks were running. TASK-0154 is
+  the path-disjoint hotfix route. Acceptance forbids disabling the test,
+  weakening its zoom matrix, or bypassing CI. Release health remains red until
+  a follow-up protected PR is green.
