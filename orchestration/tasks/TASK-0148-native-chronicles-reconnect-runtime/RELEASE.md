@@ -15,3 +15,10 @@ unchanged for forensic comparison and are not capacity. Do not resume or copy
 their dirty edit. A replacement must implement independently from a clean
 current program head and create a new replacement claim.
 
+## ox-pc-n activation failure — 2026-08-22 03:42 PDT
+
+Fresh replacement lane `ox-pc-n` stopped cleanly during preflight before any
+claim or owned-path write. Its one exact-session recovery also stopped before a
+claim/write. The activation recovery budget is exhausted, so n is preserved
+clean and is not capacity. A new clean lane must claim independently; do not
+resume n or count its process/log activity as work.

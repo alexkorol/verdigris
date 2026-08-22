@@ -30,7 +30,7 @@ The independent `ox-bootstrap` orchestration worker has pushed M3 head
 `82de84ef` after M2 `5627916f`. The standalone repo's Tier-B review contract
 still governs acceptance and this lane never counts as Verdigris capacity.
 
-Snapshot: 2026-08-22 03:40 PDT
+Snapshot: 2026-08-22 03:42 PDT
 
 Sweep base: `df851cead0dadcd96176b370ad132f8344c3c21d`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
@@ -107,7 +107,8 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-k | 6820-6839 | TASK-0150 frozen head `54417592` independently ACCEPTED; implementation integrated at `10039385` | lane complete/available after worker stops |
 | ox-pc-l | 6840-6859 | TASK-0146 replacement claim `78a0c4a0` pushed | independent encounter-wave replacement active |
 | ox-pc-m | 6860-6879 | TASK-0147 replacement claim `7d092a74` pushed | independent visual-polish replacement active |
-| ox-pc-n | 6880-6899 | TASK-0148 clean first launch stopped before claim; one exact-session recovery active | independent reconnect-runtime replacement claiming |
+| ox-pc-n | 6880-6899 | TASK-0148 clean launch and its one recovery both stopped before claim/write | activation failed; clean preserved, not capacity |
+| ox-pc-o | 6900-6919 | fresh TASK-0148 replacement launch requested after this coordination push | independent reconnect-runtime replacement |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -200,9 +201,9 @@ harness-visible provider/model. These are separate scorecard experimental units.
   receives the replacement route after this coordination push.
 - Active work: TASK-0145 replacement claim `226e5149` on ox-pc-i, TASK-0149
   claim `2d200041` on ox-pc-j, TASK-0146 replacement claim `78a0c4a0` on
-  ox-pc-l, and TASK-0147 replacement claim `7d092a74` on ox-pc-m. TASK-0148
-  replacement ox-pc-n is in its one permitted exact-session pre-claim recovery.
-  All valid claims are excluded from READY accounting.
+  ox-pc-l, and TASK-0147 replacement claim `7d092a74` on ox-pc-m. Fresh
+  TASK-0148 replacement route ox-pc-o launches after this push because n failed
+  activation before claim. All valid claims are excluded from READY accounting.
 - Launch requested at 02:49 PDT: TASK-0149 on fresh lane ox-pc-j and TASK-0150
   on fresh lane ox-pc-k. These pairwise-disjoint reliability packets raise
   the product wave to six workers. Both claims landed inside the ten-minute
@@ -218,9 +219,10 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - TASK-0148 reached its second post-claim stop after the one permitted recovery.
   Claim `1b058604` is released; the dirty g worktree is P0-quarantined and
   preserved. Fresh lane n must implement independently without copying it. Its
-  first clean launch stopped during preflight before any claim/write; the one
-  permitted exact-session recovery is active and must push a claim inside the
-  activation SLA or be released without counting as capacity.
+  first clean launch stopped during preflight before any claim/write; its one
+  permitted exact-session recovery also stopped before claim/write. Lane n is
+  activation-failed and clean-preserved, not capacity. Route the next clean
+  independent attempt to ox-pc-o.
 - TASK-0149 stopped once with dirty work after its claim. Its exact session
   received the single permitted recovery on the same branch; a second stop
   before valid handoff is quarantine/release.

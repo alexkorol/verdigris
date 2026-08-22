@@ -21,6 +21,7 @@ is intentionally short; the canonical rules remain in the linked documents.
 | `ox-pc-l` | Windows implementation | 6840-6859 |
 | `ox-pc-m` | Windows implementation | 6860-6879 |
 | `ox-pc-n` | Windows implementation | 6880-6899 |
+| `ox-pc-o` | Windows implementation | 6900-6919 |
 
 Provisioned worktree:
 `Z:\Code\.worktrees\verdigris\ox-pc-a`; worker branch:
@@ -56,6 +57,7 @@ or quarantined a/b/c/h worktrees available again.
 | ox-pc-l | `Z:\Code\.worktrees\verdigris\ox-pc-l` | `codex/TASK-0146-native-first-expedition-encounter-wave-ox-pc-l-r2` | TASK-0146 replacement |
 | ox-pc-m | `Z:\Code\.worktrees\verdigris\ox-pc-m` | `codex/TASK-0147-procedural-native-visual-polish-wave-ox-pc-m-r2` | TASK-0147 replacement |
 | ox-pc-n | `Z:\Code\.worktrees\verdigris\ox-pc-n` | `codex/TASK-0148-native-chronicles-reconnect-runtime-ox-pc-n-r2` | TASK-0148 replacement |
+| ox-pc-o | `Z:\Code\.worktrees\verdigris\ox-pc-o` | `codex/TASK-0148-native-chronicles-reconnect-runtime-ox-pc-o-r3` | TASK-0148 replacement |
 
 Use only the provisioned dedicated worktree. The architect checkout at
 `Z:\Code\Games\delaford\delaford_game` is forbidden. Never reset, clean, or
