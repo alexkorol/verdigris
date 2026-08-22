@@ -30,7 +30,7 @@ The independent `ox-bootstrap` orchestration worker has pushed M3 head
 `82de84ef` after M2 `5627916f`. The standalone repo's Tier-B review contract
 still governs acceptance and this lane never counts as Verdigris capacity.
 
-Snapshot: 2026-08-22 03:47 PDT
+Snapshot: 2026-08-22 03:50 PDT
 
 Sweep base: `df851cead0dadcd96176b370ad132f8344c3c21d`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
@@ -103,12 +103,12 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-g | 6740-6759 | TASK-0148 second post-claim stop after one recovery; claim `1b058604` released | P0 quarantined/preserved, not capacity |
 | ox-pc-h | 6760-6779 | TASK-0136 second post-claim process exit; dirty worktree preserved; claim released | P0 quarantined, not capacity |
 | ox-pc-i | 6780-6799 | TASK-0145 replacement claim `226e5149` pushed from current program tip | Chronicles owner-facing client journey replacement active |
-| ox-pc-j | 6800-6819 | TASK-0149 frozen review head `96f4ccbd`; independent verdict REVISE | post-spawn readiness failure can orphan server; revision required |
+| ox-pc-j | 6800-6819 | TASK-0149 frozen review head `96f4ccbd`; independent verdict REVISE; exact-session revision active | fix post-spawn readiness failure orphan path |
 | ox-pc-k | 6820-6839 | TASK-0150 frozen head `54417592` independently ACCEPTED; implementation integrated at `10039385` | lane complete/available after worker stops |
 | ox-pc-l | 6840-6859 | TASK-0146 replacement claim `78a0c4a0` pushed | independent encounter-wave replacement active |
 | ox-pc-m | 6860-6879 | TASK-0147 replacement claim `7d092a74` pushed | independent visual-polish replacement active |
 | ox-pc-n | 6880-6899 | TASK-0148 clean launch and its one recovery both stopped before claim/write | activation failed; clean preserved, not capacity |
-| ox-pc-o | 6900-6919 | fresh TASK-0148 replacement launch requested after this coordination push | independent reconnect-runtime replacement |
+| ox-pc-o | 6900-6919 | TASK-0148 replacement claim `71a73de8` pushed | independent reconnect-runtime replacement active |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -201,10 +201,10 @@ harness-visible provider/model. These are separate scorecard experimental units.
   receives the replacement route after this coordination push.
 - Active work: TASK-0145 replacement claim `226e5149` on ox-pc-i,
   TASK-0146 replacement claim `78a0c4a0` on ox-pc-l, and TASK-0147 replacement
-  claim `7d092a74` on ox-pc-m. TASK-0149 head `96f4ccbd` is frozen at REVISE;
-  its same worker route must handle the narrow revision before new work. Fresh
-  TASK-0148 replacement route ox-pc-o launches after this push because n failed
-  activation before claim. All valid claims are excluded from READY accounting.
+  claim `7d092a74` on ox-pc-m, and TASK-0148 replacement claim `71a73de8` on
+  ox-pc-o. TASK-0149 head `96f4ccbd` is frozen at REVISE; its exact-session
+  narrow revision is active. All valid claims are excluded from READY
+  accounting.
 - Launch requested at 02:49 PDT: TASK-0149 on fresh lane ox-pc-j and TASK-0150
   on fresh lane ox-pc-k. These pairwise-disjoint reliability packets raise
   the product wave to six workers. Both claims landed inside the ten-minute
