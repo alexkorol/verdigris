@@ -1,14 +1,22 @@
----
-task: TASK-0133
-verdict: REVISE
-reviewed_head: b44ab0ab7944896a6bf1118973b9354b1eb91fb8
-reviewed_at: 2026-08-21 23:13 -07:00
----
+# REVIEW — TASK-0133 save migration and rollback evidence contract
 
-# TASK-0133 review — REVISE
+Verdict: **ACCEPTED**
 
-The evidence, rollback, idempotence, failure-isolation, and negative-case work is strong, and the architect reran both JSON gates plus `git diff --check` with exit 0. One owner-authority correction is required before acceptance:
+Reviewed worker head: `678c7b80884be494984de3567c2eb5662a568018`
 
-1. In `save-migration-contract.json`, replace `target_version.current_target: native-snapshot-v1` and the claim that it is “the single ratified target format today” with an honest `OWNER_PENDING`/null target selection. Preserve native snapshot v1 as an observed candidate format with citations, not the chosen cross-estate migration destination. The SPEC explicitly forbids choosing unresolved legacy mappings, and U-03 already records that browser-to-native portability is unresolved. Update VALIDATION/REPORT/fixtures as needed, rerun every literal gate, set REVIEW_REQUESTED, and push the revised exact head.
+The required owner-authority correction is present: `target_version` has
+`current_target: null` and `selection_state: OWNER_PENDING`; native-snapshot-v1
+is retained only as an observed candidate. The contract, negative fixtures,
+validation record, report, and revision evidence stay under the task folder.
 
-Do not modify source, real data, CI, or any path outside TASK-0133.
+Architect verification on the frozen head:
+
+- contract key gate: `save migration contract: PASS`, exit 0;
+- negative vocabulary gate: `save migration negatives: PASS`, exit 0;
+- seam inventory `rg`: exit 0;
+- `git diff --check`: clean;
+- worker-authored paths from the implementation/revision commits are
+  task-folder-only.
+
+No persistent data, product source, or owner-only compatibility decision was
+modified.

@@ -104,9 +104,9 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-d | 6680-6699 | TASK-0135 accepted/integrated at `88092c97`; successor launch requested | TASK-0140 soak evidence validator |
 | ox-pc-e | 6700-6719 | CLAIMED and pushed `0d175a2f`; implementation active | TASK-0137 Gate C validator |
 | ox-pc-f | 6720-6739 | CLAIMED and pushed `f9458f4e`; implementation active | TASK-0138 release-proof validator |
-| ox-pc-g | 6740-6759 | CLAIMED and pushed `5df94011`; implementation active | TASK-0139 clean-machine evidence validator |
-| ox-pc-h | 6760-6779 | REVISE at `b44ab0ab`; owner-target correction queued | TASK-0133 save migration/rollback contract |
-| ox-pc-i | 6780-6799 | CLAIMED `5b952c08`; partial work preserved; recovery queued | TASK-0134 distribution/signing boundary |
+| ox-pc-g | 6740-6759 | TASK-0139 accepted/integrated at `934863cb`; successor launch requested | TASK-0141 procedural native visual kit |
+| ox-pc-h | 6760-6779 | TASK-0133 accepted/integrated at `678c7b80`; successor launch requested | TASK-0142 native client presentation slice |
+| ox-pc-i | 6780-6799 | TASK-0134 accepted/integrated at `b7464d94`; successor launch requested | TASK-0143 native gameplay/runtime slice |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -192,10 +192,10 @@ harness-visible provider/model. These are separate scorecard experimental units.
   at `8e6e42b3`, and **TASK-0120** at `4e0920d4`.
 - Active claims: **TASK-0128 by ox-pc-a**; TASK-0080 remains assigned to
   ox-pc-b through revision; TASK-0135 is accepted/integrated at d head
-  `88092c97` and releases TASK-0140 to d;
-  TASK-0133 is assigned back to h for revision; TASK-0134 remains claimed by i
-  at `5b952c08`; TASK-0136/0137/0138/0139 are valid pushed claims at
-  `7b24e5d3`/`0d175a2f`/`f9458f4e`/`5df94011` and are active.
+  `88092c97` and releases TASK-0140 to d; TASK-0133/0134/0139 are accepted
+  and integrated at `678c7b80`/`b7464d94`/`934863cb` and release the three
+  game-facing successors TASK-0141/0142/0143. TASK-0136/0137/0138 remain
+  valid pushed implementation claims at `7b24e5d3`/`0d175a2f`/`f9458f4e`.
   Separate project: orchestration bootstrap claim `795a9b3`, with pushed M3
   head `82de84ef` awaiting its configured Tier-B acceptance path.
 - Historical TASK-0056 and legacy clone WIP are superseded/preserved, never
@@ -205,7 +205,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 25 packets
+## Effective READY — 28 packets
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -213,6 +213,9 @@ wins after a fresh fetch.
 
 | Pri | Task | Topology / job | Preferred route | Owner-visible contribution |
 |---|---|---|---|---|
+| P0 | TASK-0141 procedural native visual kit | INDEPENDENT / IMPLEMENTATION | ox-pc-g after coordination push | removes fallback-only presentation with deterministic vector/SVG-derived assets |
+| P0 | TASK-0142 native client presentation slice | INDEPENDENT / IMPLEMENTATION | ox-pc-h after coordination push | makes the owner-facing native window read as a game, not a debug shell |
+| P0 | TASK-0143 native gameplay/runtime slice | INDEPENDENT / IMPLEMENTATION | ox-pc-i after coordination push | advances a real C++ combat/extraction loop under the scenario harness |
 | P1 | TASK-0140 soak evidence validator | INDEPENDENT / IMPLEMENTATION | ox-pc-d after coordination push | mechanically rejects stale, incomplete, or retry-masked soak proof |
 | P0 | TASK-0097 persistence durability audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | protects House/Scion/item saves |
 | P0 | TASK-0100 deterministic replay audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes divergences reproducible |
