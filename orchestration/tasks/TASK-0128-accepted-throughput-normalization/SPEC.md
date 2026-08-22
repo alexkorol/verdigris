@@ -6,7 +6,7 @@ packet: IMPLEMENTATION
 topology: INDEPENDENT
 job: MECHANICAL
 priority: P0
-base_commit: 10740898ee967bbff3025737ffc895480e20545c
+base_commit: 31d215793f0f799fd365f080ca326ea04e83706c
 owner_visible_contribution: replaces guessed queue sufficiency with reproducible accepted-throughput and autonomous-runway evidence
 dependencies: []
 owner_input_dependency: none; missing provider/model/harness telemetry remains unknown rather than guessed
@@ -56,8 +56,11 @@ Each accepted/integrated observation records, when explicitly evidenced:
 - source file/commit provenance for every non-null field.
 
 Unknown values are JSON `null`, never `0`, empty strings, aliases promoted to
-facts, or inferred providers. The current `opencode/x-preview-f-free` claims
-remain provider-unconfirmed unless authoritative evidence says otherwise.
+facts, or inferred providers. Saved PC session metadata confirms the historical
+TASK-0081 experimental unit as harness-visible provider `opencode`, model id
+`x-preview-f-free`, variant `max`; its upstream provider remains unknown. A
+future `openrouter/stealth/ox-alpha` turn is a distinct unit and is recorded as
+OpenRouter only when current harness/session evidence proves that selection.
 
 ## Aggregation key
 
@@ -126,7 +129,7 @@ node orchestration/throughput/collect.mjs --repo . --out orchestration/tasks/TAS
 node --test orchestration/throughput/*.test.mjs
 node -e "const fs=require('fs'); const o=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0128-accepted-throughput-normalization/captures/throughput-observations.json','utf8')); const r=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0128-accepted-throughput-normalization/captures/runway-snapshot.json','utf8')); if(!Array.isArray(o.observations)||!o.schema_version) throw Error('bad observations'); if(r.thresholds.target_hours!==72||r.thresholds.warning_below_hours!==48||r.thresholds.critical_below_hours!==24) throw Error('bad thresholds'); if(r.hours===0 && r.confidence==='UNKNOWN') throw Error('unknown encoded as zero'); console.log('throughput/runway schema: PASS')"
 git diff --check
-git diff --name-only 10740898ee967bbff3025737ffc895480e20545c...HEAD
+git diff --name-only 31d215793f0f799fd365f080ca326ea04e83706c...HEAD
 ```
 
 Expected: deterministic collector/check/test/schema gates pass; changed paths

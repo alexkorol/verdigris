@@ -11,8 +11,8 @@ is intentionally short; the canonical rules remain in the linked documents.
 
 Provisioned worktree:
 `Z:\Code\.worktrees\verdigris\ox-pc-a`; worker branch:
-`codex/TASK-0081-gate-b-wire-contract-ox-pc-a`; initial task base:
-`986264f44b6bd3e03633d05f8b3e69fad35d4688`. The local ignored
+`codex/TASK-0128-accepted-throughput-normalization-ox-pc-a`; routed task base:
+`31d215793f0f799fd365f080ca326ea04e83706c`. The local ignored
 `START_HERE_OX_PC_A.md` is the complete launch packet.
 
 Only `ox-pc-a` is currently registered as Verdigris capacity. The stopped
@@ -40,8 +40,9 @@ committed task `STATUS.md`.
 5. Work only in `owned_paths`; paste literal acceptance transcripts and exit
    codes into `REPORT.md`; push only the worker branch; request review; loop.
 
-The initial route is `ox-pc-a` -> TASK-0081. Route only one Verdigris task at a
-time until the owner explicitly adds workers. Re-fetch before claiming because
+TASK-0081 is ACCEPTED and integrated. The current route is
+`ox-pc-a` -> TASK-0128. Route only one Verdigris task at a time until the owner
+explicitly adds workers. Re-fetch before claiming because
 a newer `RUN_STATUS.md`, claim, REVIEW, RELEASE, or REVISE always wins.
 
 ## Activation acknowledgement

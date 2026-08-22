@@ -11,8 +11,11 @@ check. This does not release current claims, change task ownership, or authorize
 the architect to implement worker work.
 
 Both saved PC OpenCode sessions showed fresh streaming/tool activity during
-this transition. `ox-pc-a` is applying TASK-0081 final evidence corrections in
-its existing worktree; `ox-bootstrap` has pushed orchestration M1 head
+this transition. `ox-pc-a` pushed accepted TASK-0081 rev3 `dff39173`; it was
+integrated at merge `31d21579` after green Tier-C review. Its next single-lane
+route is mechanical Tier-A TASK-0128 from base `31d21579` on branch
+`codex/TASK-0128-accepted-throughput-normalization-ox-pc-a`.
+`ox-bootstrap` has pushed orchestration M1 head
 `bcd98d04` and is actively writing M2 controller/detector files. Neither lane is
 stalled or dark. The orchestration repo's `ORCHD_P0.md` is the next
 control-plane acceptance boundary; existing M0 review corrections still apply.
