@@ -130,6 +130,20 @@
   },
   "budget": {
     "envelope": "verdigris.passive-tree-authority/budget@1",
+    "persistent_commission_points": {
+      "ledger": "persistent commission-chain record counter",
+      "wire_identity": "quests.questPoints",
+      "lifecycle": "persists across plain re-login in the current browser authority",
+      "semantics": "increment sources, caps, and reset rule are OWNER_PENDING (unresolved cross-stack divergence recorded as QP-2 by TASK-0105)",
+      "collapse_rule": "MUST NEVER be merged with, aliased to, or derived from live_tree_points"
+    },
+    "live_tree_points": {
+      "ledger": "live session tree-budget counter feeding the earned-points calculation",
+      "wire_identity": "top-level live tree-budget counter (browser Player.questPoints analogue)",
+      "lifecycle": "persistence/reset semantics diverge between browser and native stacks",
+      "semantics": "canonical semantics OWNER_PENDING (same QP-2 route); observed formulas documented in REPORT.md as provenance only",
+      "collapse_rule": "MUST NEVER be merged with, aliased to, or derived from persistent_commission_points"
+    },
     "type": "object",
     "required": ["persistent_commission_points", "live_tree_points", "earned", "spent", "unspent"],
     "properties": {
