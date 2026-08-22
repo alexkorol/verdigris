@@ -1071,6 +1071,73 @@ void test_pack_clear_waits_for_the_last_monster() {
         "pack lifecycle and delayed clear remain deterministic under replay");
 }
 
+void test_expedition_phase_makes_the_first_expedition_loop_explicit() {
+  auto drive_expedition = [](Simulation& sim) {
+    sim.dispatch(Command::enter("route:tin:1:0"));
+    check(sim.instance().active &&
+              sim.instance().phase == ExpeditionPhase::SlayWardens,
+          "entering a route opens the authoritative slay objective");
+    check(count_events(sim, EventType::ExpeditionPhaseChanged) == 0,
+          "the initial slay objective is state, not a transition event");
+
+    Actor* player = sim.actor(sim.scion().actor_id);
+    Actor* first = first_monster(sim);
+    check(player && first, "expedition setup has a player and a warden");
+    player->position = {0, 0};
+    player->stats.life = player->stats.life_max;
+    first->position = {world_scale::kMeleeRange - 1, 0};
+    first->stats.life = 1;
+    const std::string first_id = first->id;
+    const std::string second_id = sim.spawn_monster({world_scale::kMeleeRange, 0});
+    sim.actor(second_id)->stats.life = 1;
+
+    sim.dispatch(Command::action_use(ActionType::Melee));
+    check(!sim.actor(first_id)->alive && sim.actor(second_id)->alive,
+          "the first kill leaves the pack's last warden standing");
+    check(sim.instance().phase == ExpeditionPhase::SlayWardens &&
+              count_events(sim, EventType::ExpeditionPhaseChanged) == 0,
+          "a living warden keeps the slay objective with no transition");
+
+    sim.actor(sim.scion().actor_id)->cooldown_ticks = 0;
+    sim.dispatch(Command::action_use(ActionType::Melee));
+    check(!sim.actor(second_id)->alive &&
+              sim.instance().phase == ExpeditionPhase::ExtractCarriedValue,
+          "the last kill flips the objective to extraction");
+    const Event* transition = last_event(sim, EventType::ExpeditionPhaseChanged);
+    check(transition && transition->text == "extract-carried-value" &&
+              count_events(sim, EventType::ExpeditionPhaseChanged) == 1,
+          "exactly one authoritative phase transition is emitted");
+
+    pick_all_rewards(sim);
+    extract_from_start(sim);
+    check(!sim.instance().active, "extraction closes the expedition");
+  };
+
+  Simulation replay_a(0x0143ULL);
+  drive_expedition(replay_a);
+  Simulation replay_b(0x0143ULL);
+  drive_expedition(replay_b);
+  check(relevant(replay_a) == relevant(replay_b) &&
+            replay_a.instance().phase == replay_b.instance().phase,
+        "the objective timeline is deterministic under replay");
+
+  // The stale ExtractCarriedValue phase of the retired instance must not leak
+  // into the next expedition.
+  replay_a.dispatch(Command::enter("route:tin:1:0"));
+  check(replay_a.instance().active &&
+            replay_a.instance().phase == ExpeditionPhase::SlayWardens,
+        "a fresh expedition always restarts on the slay objective");
+
+  // The phase is telemetry, not a gate: extraction rules are unchanged.
+  Simulation ungated(0x0143ULL);
+  ungated.dispatch(Command::enter("route:tin:1:0"));
+  check(ungated.instance().phase == ExpeditionPhase::SlayWardens,
+        "an untouched expedition still reads the slay objective");
+  ungated.dispatch(Command::extract());
+  check(!ungated.instance().active,
+        "extraction remains available without a phase gate");
+}
+
 void test_extraction() {
   Simulation sim(11);
   sim.dispatch(Command::enter("route:tin:1:0"));
@@ -1757,6 +1824,7 @@ int main() {
   test_instance_lifecycle_rejects_stale_pickups();
   test_death_retires_floor_without_double_registering_relics();
   test_pack_clear_waits_for_the_last_monster();
+  test_expedition_phase_makes_the_first_expedition_loop_explicit();
   test_extraction();
   test_death_and_successor();
   test_d106_all_carried_value_is_recoverable();
