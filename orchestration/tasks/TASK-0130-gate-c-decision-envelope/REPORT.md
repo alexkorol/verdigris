@@ -213,3 +213,12 @@ push (observable as the tip of
 REVIEW_REQUESTED at the pushed head.
 
 - REVIEW_REQUESTED evidence commit: `70d52b52b1cf5e730b2ae0d7ae7209ab760f9bd0`
+
+## Revision r2 — post-revision gate rerun
+
+All five literal SPEC commands were rerun at revision head
+`a0d6afe6c1cb54c43ce408d7859f2f7a325aec37`: Gate 1 `gate-c envelope: PASS`
+(exit 0), Gate 2 `gate-c negative fixtures: PASS` (exit 0), Gate 3 rg exit 0,
+`git diff --check` exit 0 (empty), and the base-to-head path list exit 0 —
+unchanged except this task folder's own files. This revision touches only
+REPORT.md prose inside the owned folder.
