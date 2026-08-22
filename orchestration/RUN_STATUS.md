@@ -292,7 +292,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 27 packets
+## Effective READY — 25 packets
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -316,7 +316,6 @@ wins after a fresh fetch.
 | P1 | TASK-0101 combat-depth gap audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | selects coherent player-visible combat waves |
 | P1 | TASK-0102 skill-system gap audit | INDEPENDENT / MECHANICAL | future after current claim | maps LMB/RMB/Q/E/R end to end |
 | P1 | TASK-0103 monster/encounter gap audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages packs, rarity, uniques, bosses |
-| P1 | TASK-0116 animation/VFX contract audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages readable production motion and effects |
 | P1 | TASK-0117 audio/music runtime audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | defines combat/UI/ambience/music runtime |
 | P1 | TASK-0118 accessibility/options audit | INDEPENDENT / MECHANICAL | future after current claim | stages broad readable and controllable play |
 | P1 | TASK-0121 owner content approval matrix | INDEPENDENT / MECHANICAL | future after current claim | batches art/lore/naming/balance/economy/content gates |
@@ -329,6 +328,7 @@ wins after a fresh fetch.
 | P1 | TASK-0151 native content schema seed | INDEPENDENT / IMPLEMENTATION | future clean lane | creates a deterministic content-neutral authoring seam |
 | P1 | TASK-0152 native density benchmark evidence | INDEPENDENT / IMPLEMENTATION | future clean lane | measures encounter/presentation headroom reproducibly |
 | P1 | TASK-0136 passive-tree contract validator | INDEPENDENT / MECHANICAL | fresh worktree only; quarantined lanes forbidden | fail-closes counter confusion without canonizing content |
+| P1 | TASK-0122 native animation/VFX Phase A | INDEPENDENT / IMPLEMENTATION | ox-pc-x, ports 7060-7079 | distinct critical/spawn/lifecycle beats with real captures |
 
 ## HOLD despite historical READY headers
 
@@ -339,7 +339,7 @@ wins after a fresh fetch.
 | TASK-0073 renderer backend evaluation | SUPERSEDED by TASK-0114 | surge replacement supplies exact evidence, acceptance, and stop contracts |
 | TASK-0079 browser panel inventory | SUPERSEDED by TASK-0115 | surge replacement supplies hard-fail capture and exact gate contracts |
 
-## Sequenced successors — 17 DRAFT
+## Sequenced successors — 16 DRAFT
 
 | Task | Dependency / release |
 |---|---|
@@ -354,7 +354,6 @@ wins after a fresh fetch.
 | TASK-0110 encounter-system wave | 0103 accepted; deterministic pack/rarity seam frozen |
 | TASK-0111 item-history lifecycle | 0104 accepted; owner-independent lifecycle frozen |
 | TASK-0113 campaign/content tooling | 0095 + 0096 accepted; validators frozen |
-| TASK-0122 animation/VFX system | 0116 + renderer/asset contracts accepted |
 | TASK-0123 audio/music runtime | 0117 + backend/license/owner direction |
 | TASK-0124 accessibility/options wave | 0118 + pane/input/settings ownership |
 | TASK-0125 onboarding first-session wave | 0119 + Gate B/C + copy placeholders |
