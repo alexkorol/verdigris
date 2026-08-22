@@ -28,3 +28,25 @@
   ox-pc-a to TASK-0128 from base `31d21579` after the accepted+integrated
   TASK-0081 rev3 `dff39173` (merge `31d21579`). Claimed per STANDING-LOOP with a
   fresh fetch immediately before branching.
+
+## REVISE round 1 (review of bb67c566)
+
+- review verdict received: REVISE at reviewed head `bb67c566`
+  (origin/codex/native-reconstitution REVIEW.md, 2026-08-22 01:35 -07:00);
+  collector design, UNKNOWN/null discipline, aggregation key, path containment,
+  and test battery explicitly remain accepted foundations
+- release-blocking defect: captures bound `repo_revision` to the commit lineage
+  containing their own bytes, so every capture commit invalidated its own
+  evidence; the architect gate reproduced this by write-mode regenerating both
+  capture files from `0d1898bd` to `bb67c566` (those two dirty files were
+  preserved untouched until this revision replaced them under the corrected
+  scheme)
+- this revision: explicit deterministic evidence/source revision (write mode
+  binds the head at write time, i.e. the implementation parent of the capture
+  commit); `--check` now verifies that revision resolves, is an ancestor of
+  HEAD, and that no relevant input evidence changed in between before
+  byte-comparing recomputed output; schema bumped to v2; regression cases 11-13
+  added; all literal SPEC gates and the tamper negative control rerun
+- runway semantics unchanged and still honest: `hours:null` / confidence
+  `UNKNOWN` for lane ox-pc-a; no rate guessed
+- state remains REVIEW_REQUESTED, now for this revision
