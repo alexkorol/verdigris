@@ -16,25 +16,26 @@ Automation state: the 15-minute Sol heartbeat
 reasoning and a transition-only, no-write scope. Retire it once orchd passes its
 vertical-slice acceptance.
 
-Both saved PC OpenCode sessions showed fresh streaming/tool activity during
-this transition. `ox-pc-a` pushed accepted TASK-0081 rev3 `dff39173`; it was
-integrated at merge `31d21579` after green Tier-C review. Its next route is
-mechanical Tier-A TASK-0128 from base `31d21579` on branch
-`codex/TASK-0128-accepted-throughput-normalization-ox-pc-a`.
-`ox-bootstrap` has pushed orchestration M1 head
-`bcd98d04` and is actively writing M2 controller/detector files. Neither lane is
-stalled or dark. The orchestration repo's `ORCHD_P0.md` is the next
-control-plane acceptance boundary; existing M0 review corrections still apply.
+At the 21:56 sweep, `ox-pc-a` had pushed its valid TASK-0128 claim at
+`0d1898bd`. Four additional isolated OpenCode CLI workers launched at 21:44
+PDT with the explicit endpoint `openrouter/stealth/ox-alpha`; all four committed
+and pushed their routed claims inside the activation window. Fresh processes or
+post-claim logs show execution after claim. The worker count is therefore five
+live Verdigris claims, not five visible windows.
 
-Snapshot: 2026-08-21 20:37 PDT
+The independent `ox-bootstrap` orchestration worker has pushed M3 head
+`82de84ef` after M2 `5627916f`. The standalone repo's Tier-B review contract
+still governs acceptance and this lane never counts as Verdigris capacity.
 
-Sweep base: `a7e9c95f3ac6e3a65864fdfbf3183cb79ff7a9ad`
+Snapshot: 2026-08-21 21:56 PDT
+
+Sweep base: `039dcfa7f12497aa79c3677873a06a96c231a13d`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
 `d2423873` merge tip).
 
 GitHub: no open PRs. Latest master CI run 32441409427 passed at `d2423873`;
 the coordination-only program pushes did not dispatch a new workflow.
-TASK-0081 is in final evidence `REVISE` at worker rev2 head `52a7377b`.
+TASK-0081 rev3 is accepted and integrated at `31d21579`.
 
 Orchestrator: **Codex Sol**, PC architect checkout
 `Z:\Code\Games\delaford\delaford_game`. Architect coordinates, reviews,
@@ -51,16 +52,17 @@ integrates, and specs; it does not absorb implementation.
    not a stopping point.
 
 Emergency surge floor: at least 24 effective, dependency-free, pairwise
-path-disjoint READY packets plus 12 concrete successors. TASK-0081's claim
-consumed one packet and TASK-0128 restocked the same sweep; current board stays
-at **30 effective READY + 18 successors**. D-128 supersedes count-only
-sufficiency.
+path-disjoint READY packets plus 12 concrete successors. The five current
+claims are excluded from READY accounting; the current board is **25 effective
+READY + 18 successors**, still above the absolute floor. D-128 supersedes
+count-only sufficiency, and the next factory promotion should restore deeper
+headroom rather than create filler.
 
 ## Autonomous runway and factory status
 
 - Autonomous runway: **UNKNOWN / P0 instrumentation gap**. The board has not
   yet been weighted against trailing accepted throughput by full experimental
-  unit and packet type; 30+18 must not be reported as adequate runway.
+  unit and packet type; 25+18 must not be reported as adequate runway.
 - Target/warning/critical: 72h / <48h / <24h.
 - Terminal graph: **2,000 validated concrete nodes** across 20 domains and all
   T1-T8 gates in `backlog-factory/generated/product-graph.nodes.jsonl`.
@@ -83,11 +85,11 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
-| ox-pc-a | 6620-6639 | TASK-0081 accepted/integrated; switched to isolated TASK-0128 branch | TASK-0128 throughput normalization |
-| ox-pc-b | 6640-6659 | newly provisioned independent CLI lane; awaiting claim | TASK-0080 board sentinel |
-| ox-pc-c | 6660-6679 | newly provisioned independent CLI lane; awaiting claim | TASK-0086 Gate C contract audit |
-| ox-pc-d | 6680-6699 | newly provisioned independent CLI lane; awaiting claim | TASK-0105 passive-tree authority audit |
-| ox-pc-e | 6700-6719 | newly provisioned independent CLI lane; awaiting claim | TASK-0120 release verification audit |
+| ox-pc-a | 6620-6639 | CLAIMED `0d1898bd`; existing desktop session | TASK-0128 throughput normalization |
+| ox-pc-b | 6640-6659 | ACTIVE; claim pushed `22ada117`; PID 12248; session `ses_fd8378c52ffevZPjVDjFGOZfYa` | TASK-0080 board sentinel |
+| ox-pc-c | 6660-6679 | ACTIVE; claim pushed `2ed4799a`; PID 7140; session `ses_fd8378c23ffecJkzVFg9q54TPg` | TASK-0086 Gate C contract audit |
+| ox-pc-d | 6680-6699 | ACTIVE; claim pushed `1558c3a1`; PID 6984; session `ses_fd8378c3cffeugVxxtoWV63G29` | TASK-0105 passive-tree authority audit |
+| ox-pc-e | 6700-6719 | ACTIVE after one environment repair; claim pushed `97580939`; current PID 2704; session `ses_fd8378c4cffeqhXxkTEfTuMoVM` | TASK-0120 release verification audit |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -100,10 +102,22 @@ clones and must not be reset, cleaned, or silently repurposed. The first
 committed Ox claim registers its actual clone path and full scorecard
 experimental unit.
 
-OpenCode CLI 1.18.21 is installed and the new lanes are launched headlessly with
-explicit `openrouter/stealth/ox-alpha`; no owner tab opening is required. Sol
-does not claim or write worker STATUS/REPORT and will not take over
-implementation.
+OpenCode CLI 1.18.21 is installed and the four new lanes launched headlessly
+with explicit `openrouter/stealth/ox-alpha`; no owner tab opening is required.
+`Z:\Code\.fleet\Watch-VerdigrisFleet.ps1` supplies one human-readable five-second
+dashboard and transition-deduplicated Windows P1/P0 activation notifications.
+The worker logs remain under `Z:\Code\.fleet\logs`. Sol does not claim or write
+worker STATUS/REPORT and will not take over implementation.
+
+The `ox-pc-e` initial process exited after the repository's yorkie pre-commit
+hook found no local `node_modules`, leaving only a staged claim. This was a
+centralized environment/permission activation fault, not worker implementation
+failure and not an incident. The supervisor installed the locked dependencies
+with `npm ci`, granted read-only access only to the lane's external Git metadata,
+resumed the preserved session once, and the worker committed and pushed the
+claim with hooks enabled at `97580939`. The same narrow read-only Git-metadata
+permission is present in every ignored lane-local `opencode.json`; `--auto` is
+not enabled.
 
 ### Resolved activation alert
 
@@ -128,13 +142,13 @@ session reconciliation and dispatch.
 
 ### Cross-project control-plane watch (not Verdigris capacity)
 
-`alexkorol/orchestration` PC main is clean/synced at `a57e21c`. The isolated
+`alexkorol/orchestration` PC main is clean/synced at `4ec2a9d5`. The isolated
 `Z:\Code\.worktrees\orchestration\ox-bootstrap` worker pushed valid claim-only
 commit `795a9b3` at 20:20 on
 `codex/ox-bootstrap-portable-orchestration`; only `bootstrap/CLAIM.md` changed.
-Its activation claim remains valid and M0 head `b91db15` pushed at 21:05.
-Independent review passes build/typecheck/lint/22 tests/CLI, but clean
-`format:check` fails and three-OS CI run `32550754204` is red; M0 is `REVISE`.
+Its activation claim remains valid and M3 head `82de84ef` is pushed after M2
+`5627916f`. Tier-B acceptance requires the two independent peer reviews recorded
+on standalone main before integration.
 The earlier no-child-process stall alarm was a false positive because the
 OpenCode sidecar was still streaming. Detection now requires corroborating
 session, Git/file, backoff, and elapsed evidence. This separate project never
@@ -142,25 +156,22 @@ counts toward Verdigris capacity.
 
 ### Endpoint identity watch
 
-Both saved OpenCode session records identify the selected endpoint as
-`providerID: opencode`, `modelID: x-preview-f-free`, variant `max`. That proves
-the current harness-visible provider is OpenCode, not OpenRouter; any upstream
-inference behind the free alias remains unknown. The bootstrap claim's
-`Provider: OpenRouter` field is contradicted by this authoritative local
-selection and must be corrected in its first reviewable milestone. Work may
-continue and must not be discarded, but neither run may be aggregated under
-OpenRouter. If the owner wants the next turn to be an OpenRouter experiment,
-they must explicitly choose OpenRouter -> Ox Alpha in each OpenCode model
-picker; that provider change starts a distinct experimental unit.
+The existing saved desktop sessions (`ox-pc-a` and `ox-bootstrap`) remain pinned
+to their originally observed `opencode/x-preview-f-free` endpoint and are not
+relabeled as OpenRouter. The four new CLI sessions explicitly selected
+`openrouter/stealth/ox-alpha`, variant `max`; their JSON events contain
+OpenRouter reasoning metadata and their committed claims record the same
+harness-visible provider/model. These are separate scorecard experimental units.
 
 ## Interrupts and authority
 
-- REVIEW_REQUESTED: **none** (TASK-0081 rev2 was reviewed at `52a7377b`).
-- REVISE: **TASK-0081**, final three-item evidence correction in `REVIEW.md`;
-  rev2's mortal-oath and relaunch response-shape corrections are preserved.
-- Active claims: **TASK-0081 by ox-pc-a** (`f08131c0`; revision takes priority).
-  Separate project: orchestration bootstrap
-  claim `795a9b3`, also active locally pending its first milestone commit.
+- REVIEW_REQUESTED: **none at snapshot**; workers remain on their exact routes.
+- REVISE: **none in the Verdigris wave at snapshot**.
+- Active claims: **TASK-0128 by ox-pc-a** (`0d1898bd`), **TASK-0080 by
+  ox-pc-b** (`22ada117`), **TASK-0086 by ox-pc-c** (`2ed4799a`), **TASK-0105
+  by ox-pc-d** (`1558c3a1`), and **TASK-0120 by ox-pc-e** (`97580939`).
+  Separate project: orchestration bootstrap claim `795a9b3`, with pushed M3
+  head `82de84ef` awaiting its configured Tier-B acceptance path.
 - Historical TASK-0056 and legacy clone WIP are superseded/preserved, never
   resumed.
 - Historical QUESTION-0007/0008/0009/0010/0011 are resolved by integrated work.
@@ -168,7 +179,7 @@ picker; that provider change starts a distinct experimental unit.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 30 packets
+## Effective READY — 25 packets
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -177,15 +188,10 @@ wins after a fresh fetch.
 | Pri | Task | Topology / job | Preferred route | Owner-visible contribution |
 |---|---|---|---|---|
 | P0 | TASK-0083 server lifecycle soak | INDEPENDENT / BOUNDED-DESIGN | future after current claim | guards the reader-thread crash fix |
-| P0 | TASK-0086 Gate C contract audit | INDEPENDENT / MECHANICAL | future after current claim | exposes missing route-decision information |
-| P0 | TASK-0080 board sentinel | INDEPENDENT / MECHANICAL | future after current claim | machine-enforces queue and collision truth |
 | P0 | TASK-0097 persistence durability audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | protects House/Scion/item saves |
 | P0 | TASK-0100 deterministic replay audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes divergences reproducible |
 | P0 | TASK-0104 itemization/history audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages memorable history-bearing loot |
-| P0 | TASK-0105 passive-tree authority audit | INDEPENDENT / MECHANICAL | future after current claim | replaces approximation with an evidence path |
 | P0 | TASK-0119 onboarding/first-session audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes launch through first extraction legible |
-| P0 | TASK-0120 release verification audit | INDEPENDENT / MECHANICAL | future after current claim | freezes clean-machine/migration/soak release proof |
-| P0 | TASK-0128 accepted-throughput normalization | INDEPENDENT / MECHANICAL | ox-pc-a next only after TASK-0081 transition | makes adaptive autonomous-runway hours reproducible without guessed telemetry |
 | P1 | TASK-0082 dual-server matrix runner | INDEPENDENT / BOUNDED-DESIGN | future after current claim | automates unchanged JS/C++ parity evidence |
 | P1 | TASK-0115 browser panel/typography inventory | INDEPENDENT / MECHANICAL | future after current claim | freezes presentation delta #4 |
 | P1 | TASK-0091 protocol coverage sentinel design | INDEPENDENT / MECHANICAL | future after current claim | catches lost journey wire steps |
