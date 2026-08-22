@@ -1,0 +1,354 @@
+{
+  "task": "TASK-0101",
+  "title": "Combat depth and feel gap audit - combat matrix",
+  "generated_by": "ox-pc-ai (openrouter/stealth/ox-alpha)",
+  "base_commit": "610a240e1e4bdfacfd77bec49e36be945a1ced13",
+  "branch": "codex/TASK-0101-combat-depth-gap-audit-ox-pc-ai",
+  "constitution_source": "docs/product/VERDIGRIS_CONSTITUTION.md",
+  "status_vocabulary": {
+    "PRESENT": "implemented in an authoritative surface and exercised by locking tests",
+    "PARTIAL": "exists but narrower than the constitution family",
+    "DATA_ONLY": "authored/serialized data exists but no authoritative code consumes it in play",
+    "ABSENT": "no implementation and no consuming data path"
+  },
+  "classification_vocabulary": {
+    "present": "no work needed beyond owner tuning",
+    "missing_mechanic": "bounded implementable gap; successor can be routed",
+    "feel_tuning": "mechanism exists; perceived quality depends on owner-judged values (D-114/D-115)",
+    "owner_only_design": "shape is undecided by the owner; audit stops here",
+    "coherence_gap": "two authoritative surfaces express the same contract differently"
+  },
+  "authoritative_surfaces": [
+    {
+      "name": "Simulation (D-114 world-unit path)",
+      "entry": "native/include/verdigris/core.hpp:314",
+      "notes": "Fixed 20 Hz, command/event driven. Action vocabulary native/include/verdigris/core.hpp:27."
+    },
+    {
+      "name": "WorldSimulation (tile-space parity path)",
+      "entry": "native/include/verdigris/core.hpp:860",
+      "notes": "Browser-parity wire world: primary attack, monster attacks, boss ground-slam."
+    }
+  ],
+  "action_families": [
+    {
+      "family": "swings",
+      "citation": "docs/product/VERDIGRIS_CONSTITUTION.md:99-101",
+      "status": "PRESENT",
+      "classification": "present",
+      "evidence": [
+        {"path": "native/src/core.cpp", "lines": "356-420", "note": "Melee hits nearest living target in kMeleeRange; Sweep variant hits every target in melee range"},
+        {"path": "native/client/render_list.hpp", "lines": "22-26", "note": "Swing and Impact render ops"},
+        {"path": "native/tests/core_tests.cpp", "lines": "2086-2092", "note": "resource gating, multi-target sweep, shared-pipeline locks"}
+      ],
+      "notes": "Single-target melee resolves against nearest target only (core.cpp:384-390); no directional arc selectivity in the simulation."
+    },
+    {
+      "family": "thrusts",
+      "citation": "docs/product/VERDIGRIS_CONSTITUTION.md:99-101",
+      "status": "PRESENT",
+      "classification": "present",
+      "evidence": [
+        {"path": "native/include/verdigris/core.hpp", "lines": "66", "note": "kThrustRange = melee * 3/2 (D-114 derivation)"},
+        {"path": "native/src/core.cpp", "lines": "374-380", "note": "forward-cone predicate is_forward gates Thrust targets"},
+        {"path": "native/tests/core_tests.cpp", "lines": "150-215", "note": "gating, funding, behind-target aim, shared cooldown"}
+      ],
+      "notes": ""
+    },
+    {
+      "family": "slams",
+      "citation": "docs/product/VERDIGRIS_CONSTITUTION.md:99-101",
+      "status": "PARTIAL",
+      "classification": "missing_mechanic",
+      "evidence": [
+        {"path": "native/src/core.cpp", "lines": "1986-2011", "note": "boss:ground-slam telegraph radius 2 tiles / 1000 ms window exists only in the tile-space path, boss-only"},
+        {"path": "native/include/verdigris/core.hpp", "lines": "27", "note": "ActionType {Melee, Dash, Wait, Thrust, Sweep, WarCry} - no slam member"},
+        {"path": "native/tests/networking_tests.cpp", "lines": "204-212", "note": "N3 boss emits readable ground-slam telegraph"}
+      ],
+      "notes": "The D-114 Simulation has no slam at all; the one slam is enemy-only and confined to the parity world. No player-facing slam exists on either surface."
+    },
+    {
+      "family": "leaps",
+      "citation": "docs/product/VERDIGRIS_CONSTITUTION.md:99-101",
+      "status": "ABSENT",
+      "classification": "owner_only_design",
+      "evidence": [
+        {"path": "rg -i \"\\bleap(s|ing)?\\b\" native/include native/src", "lines": "exit 1", "note": "zero matches in authoritative headers/sources at base_commit"}
+      ],
+      "notes": "Dash (core.cpp:338-344) is the only mobility verb. Whether a leap is a second movement ability or a skill is owner design; audit stops here."
+    },
+    {
+      "family": "guarded actions",
+      "citation": "docs/product/VERDIGRIS_CONSTITUTION.md:99-101",
+      "status": "ABSENT",
+      "classification": "missing_mechanic",
+      "evidence": [
+        {"path": "rg -i \"\\bguard(ed|ing)?\\b\" native/include native/src (excluding lock_guard)", "lines": "exit 1", "note": "zero guard action/stance code"},
+        {"path": "native/src/core.cpp", "lines": "2577, 3037-3042", "note": "block_chance is derived from brands and capped at 75 in WearSet::totals but no code ever rolls or consumes it in damage resolution"},
+        {"path": "native/include/verdigris/core.hpp", "lines": "497-502, 718-724", "note": "CombatModifiers.block_chance exists; PlayerCombatMods carries no block/defense consumption"}
+      ],
+      "notes": "Passive consumption of already-authored block_chance data is routable; an active guard stance/verb is owner design."
+    },
+    {
+      "family": "buffs",
+      "citation": "docs/product/VERDIGRIS_CONSTITUTION.md:99-101",
+      "status": "PARTIAL",
+      "classification": "missing_mechanic",
+      "evidence": [
+        {"path": "native/src/core.cpp", "lines": "347-353, 730-736", "note": "exactly one self-buff (war-cry) as two hard-coded Actor fields"},
+        {"path": "native/include/verdigris/core.hpp", "lines": "245-246", "note": "BuffApplied/BuffExpired events exist and are generic in name"},
+        {"path": "native/client/presentation_events.hpp", "lines": "25, 68-71", "note": "presentation consumes BuffExpired keyed on the war-cry discriminator"}
+      ],
+      "notes": "No effect-slot list, no debuffs, no enemy-applied effects; adding any second buff today requires editing the Actor struct and every serializer."
+    },
+    {
+      "family": "war cries",
+      "citation": "docs/product/VERDIGRIS_CONSTITUTION.md:99-101",
+      "status": "PRESENT",
+      "classification": "feel_tuning",
+      "evidence": [
+        {"path": "native/src/core.cpp", "lines": "347-353", "note": "cost 20 resource, +4 attack, 20 ticks; constants in core.hpp:81-90"},
+        {"path": "native/tests/core_tests.cpp", "lines": "2095", "note": "expiry and replay-determinism lock"},
+        {"path": "native/client/main.cpp", "lines": "1945-1953", "note": "WarCryAura/WarCryFade presentation beats"}
+      ],
+      "notes": "Self-buff only; group/affect-enemy cries are owner design. Values are owner tuning territory (not proposed here)."
+    },
+    {
+      "family": "combos",
+      "citation": "docs/product/VERDIGRIS_CONSTITUTION.md:99-101",
+      "status": "ABSENT",
+      "classification": "owner_only_design",
+      "evidence": [
+        {"path": "rg -i \"combo\" native/include native/src native/client native/tests", "lines": "exit 1", "note": "DESIGNATED NEGATIVE CONTROL: zero matches anywhere in the native tree at base_commit"}
+      ],
+      "notes": "No chaining, follow-up windows, or sequence state. Combo grammar is owner design space."
+    },
+    {
+      "family": "ranged attacks",
+      "citation": "docs/product/VERDIGRIS_CONSTITUTION.md:99-101",
+      "status": "DATA_ONLY",
+      "classification": "missing_mechanic",
+      "evidence": [
+        {"path": "native/src/core.cpp", "lines": "1742-1750", "note": "spawn assigns behaviour_type ranged/buffer/melee by deterministic role roll"},
+        {"path": "native/src/networking.cpp", "lines": "930", "note": "behaviour.type serialized to the wire snapshot"},
+        {"path": "native/src/core.cpp", "lines": "2012-2019", "note": "advance_combat treats EVERY non-boss monster identically: 2-tile Chebyshev melee, 1500 ms interval - behaviour_type never branches resolution"},
+        {"path": "native/include/verdigris/core.hpp", "lines": "490-495", "note": "ChannelRatings.range is an item rating; consumed only for display max() in native/client/remote_session.cpp:84-91"}
+      ],
+      "notes": "No player or monster ranged attack exists on either surface despite authored data advertising it to clients."
+    },
+    {
+      "family": "magic",
+      "citation": "docs/product/VERDIGRIS_CONSTITUTION.md:118-123",
+      "status": "ABSENT",
+      "classification": "owner_only_design",
+      "evidence": [
+        {"path": "rg -i \"\\bmagic\\b|\\bspell\\b\" native/include native/src (code only)", "lines": "exit 1", "note": "zero spell/magic action code; resource is generic (core.hpp:113-114)"},
+        {"path": "native/include/verdigris/core.hpp", "lines": "2575, 2832", "note": "'mana' appears only as vessel sheet bookkeeping (resource_health/resource_mana)"}
+      ],
+      "notes": "Constitution defers wizard specifics to docs/product/WIZARD_ARCANE_LATTICE_REFERENCE.md and forbids inventing a generic mana wizard this sprint."
+    }
+  ],
+  "enemy_responses": {
+    "d114_simulation": {
+      "ai": "pursuit facing quantized to 8-way; elite Thrust/Sweep scheduled with kTelegraphTicks=3 windup then resolved through the shared action pipeline; non-elites plain melee cadence",
+      "evidence": ["native/src/core.cpp:649-720", "native/tests/core_tests.cpp:2088-2094"],
+      "support_roles": "none in this surface",
+      "equipment_on_enemies": "none; resolve_damage item_bonus passes 0 for monsters (native/src/core.cpp:409-410)"
+    },
+    "tile_space": {
+      "ai": "uniform: every non-boss monster melees within 2 tiles every 1500 ms; empowered adds +2; boss alternates slam telegraph/resolution",
+      "evidence": ["native/src/core.cpp:2012-2019"],
+      "support_roles": "buffer/ranged roles assigned at spawn and broadcast but behaviorally inert",
+      "equipment_on_enemies": "none"
+    },
+    "constitution_target": "docs/product/VERDIGRIS_CONSTITUTION.md:87-92,113-116: human enemies differently built/equipped; elite difficulty from level/build/equipment/actions/support; pack spawning, rarity, uniques",
+    "classification": "missing_mechanic"
+  },
+  "telegraphs": {
+    "d114": {
+      "window_ticks": 3,
+      "source": "native/include/verdigris/core.hpp:32",
+      "events": "AttackTelegraphed emitted for elite thrust/sweep; canceled on actor or target death; replay byte-identical",
+      "evidence": ["native/src/core.cpp:690-702", "native/tests/core_tests.cpp:2092-2093"]
+    },
+    "tile_space": {
+      "window_ms": 1000,
+      "radius_tiles": 2,
+      "source": "native/src/core.cpp:1473-1474,1986-2011"
+    },
+    "presentation": {
+      "renderers": "draw_thrust_telegraph cone and draw_sweep_telegraph arc with HUD-reserve avoidance",
+      "heuristic_risk": "presentation_state.cpp:239 converts wire windup by unit guessing (event.value > 20 ? value/50 : value); main.cpp reads the typed PresentationCatalog instead",
+      "evidence": ["native/client/main.cpp:1519-1631", "native/client/presentation_state.cpp:230-240"],
+      "classification": "coherence_gap"
+    },
+    "notes": "Two unrelated telegram vocabularies (ticks vs ms, cone/sweep vs circle) with no shared catalog row; boss slam window is a file-local constant, not in PresentationCatalog (core.hpp:92-104)."
+  },
+  "impact_feedback": {
+    "visual": {
+      "ops": ["Swing", "Telegraph", "Impact", "TargetFlash", "Damage", "ScreenPulse"],
+      "source": "native/client/render_list.hpp:22-30",
+      "beats": [
+        "floating damage number 600 ms, rising/fading (native/client/main.cpp:1977-1994)",
+        "critical treatment: 800 ms orange numeral, near-white burst cross, style-labeled (native/client/presentation_events.hpp:51-61, native/tests/presentation_events_tests.cpp:72-101)",
+        "target sprite tint flash (main.cpp:1968-1976)",
+        "screen-edge red pulse on player damage (main.cpp:1990-1994)",
+        "death ring + dust, dash dust, drop sparkle, war-cry aura/fade, scion-lost beat (main.cpp:1945-2012)"
+      ]
+    },
+    "audio": {
+      "cue_table_size": 5,
+      "mapped_beats": ["hit", "crit", "kill", "scion-lost", "warcry-expire"],
+      "unmapped_existing_beats": ["AttackStarted swing start", "Telegraph warning", "Dash", "boss slam impact", "BuffApplied activation"],
+      "source": "native/audio/event_cues.cpp:9-63",
+      "classification": "feel_tuning"
+    },
+    "absent_physics_feel": ["hit-stop", "knockback/stagger displacement", "directional damage indicators beyond the uniform edge pulse"],
+    "classification": "feel_tuning"
+  },
+  "equipment_effects": {
+    "consumed_in_play": [
+      {"effect": "flat attack_bonus folded into resolve_damage", "evidence": "native/src/core.cpp:409-410, equipped_attack_bonus"},
+      {"effect": "critical_chance roll capped 75 (tile-space only)", "evidence": "native/src/core.cpp:1957-1959"},
+      {"effect": "damage_against_beasts multiplier (tile-space only)", "evidence": "native/src/core.cpp:1950-1952"},
+      {"effect": "force_critical one-shot (Proof of Temper seam)", "evidence": "native/src/core.cpp:1954-1956"},
+      {"effect": "goods_found boosts coin/gear rolls", "evidence": "native/src/core.cpp:3152"}
+    ],
+    "data_only": [
+      {"field": "CombatModifiers.block_chance", "note": "derived_and_capped_but_never_rolled", "evidence": "native/src/core.cpp:2577,3037-3042"},
+      {"field": "ActorStats.resistances", "note": "schema_field_never_consulted_by_any_pipeline", "evidence": "native/include/verdigris/core.hpp:119 vs native/src/core.cpp:423-428"},
+      {"field": "ChannelRatings.defense", "note": "summed_for_wire_state_not_consumed_in_resolution", "evidence": "native/include/verdigris/core.hpp:691-696"},
+      {"field": "attack_style", "note": "label_only_on_the_wire", "evidence": "native/src/core.cpp:1971, native/client/remote_session.cpp:799-807"}
+    ],
+    "absent": ["reach-changing equipment", "cadence-changing equipment", "attack-form-changing equipment", "movement-changing equipment", "technique-granting equipment"],
+    "constitution_target": "docs/product/VERDIGRIS_CONSTITUTION.md:48-51: equipment changes reach, cadence, attack form, movement, defense, resources, techniques, or build direction",
+    "classification": "missing_mechanic"
+  },
+  "damage_pipeline_symmetry": {
+    "within_d114": "one resolve_damage shared by players, monsters, elites; locked by tests (core_tests.cpp:927-928,1597)",
+    "across_surfaces": "tile-space uses flat constants kN3PlayerDamage/kN3MonsterDamage plus equip crit/beastbane instead of the stat-derived formula - two different pipelines ship under one product",
+    "crit_coverage": "critical chance exists only on the tile-space path; the D-114 Simulation cannot crit",
+    "evidence": ["native/src/core.cpp:423-428", "native/src/core.cpp:1950-2019"],
+    "classification": "coherence_gap"
+  },
+  "control_vocabulary": [
+    {"control": "WASD movement", "status": "PRESENT", "evidence": "native/client/main.cpp:3786-3801"},
+    {"control": "mouse aiming (quantized 8-way)", "status": "PRESENT", "evidence": "native/client/main.cpp:1869-1905"},
+    {"control": "LMB action", "status": "PRESENT", "evidence": "native/client/main.cpp:3968-3974"},
+    {"control": "RMB action", "status": "PRESENT", "evidence": "native/client/main.cpp:3977-3980 (dash)"},
+    {"control": "Q/E/R skills", "status": "PRESENT", "evidence": "native/client/main.cpp:2396-2401,3885"},
+    {"control": "Space movement ability", "status": "PRESENT", "evidence": "native/client/main.cpp:3884, dispatch_dash 3821-3830"},
+    {"control": "Z loot filter/highlight toggle", "status": "PRESENT", "evidence": "native/client/main.cpp:3902-3905"},
+    {"control": "X nearest-item pickup", "status": "PRESENT", "evidence": "native/client/main.cpp:3888-3899"},
+    {"control": "gold auto-picks up", "status": "ABSENT", "evidence": "coins drop as ground items requiring manual pickup (native/src/core.cpp:3152-3157); no proximity collection anywhere; D-114 Simulation has no currency", "classification": "missing_mechanic"},
+    {"control": "no context-menu scheme", "status": "HONORED", "evidence": "no context-menu handlers in native/client"}
+  ],
+  "test_inventory": {
+    "core_locks": [
+      "test_dash_is_a_named_readable_burst (core_tests.cpp:290-302)",
+      "test_skill_resource_gating_and_thrust (150-215)",
+      "test_sweep_hits_multiple_targets_and_gates_resource (341-378)",
+      "test_elite_thrust_telegraph_timing (395-419)",
+      "test_elite_skill_cone_gating (422-444)",
+      "test_elite_skill_fizzles_when_resolution_gates_fail (446-451)",
+      "test_elite_sweep_uses_shared_pipeline (453-476)",
+      "test_elite_telegraph_cancels_on_death (476-511)",
+      "test_elite_skill_replay_is_deterministic (513-528)",
+      "test_non_elite_melee_cadence_is_unchanged (530-552)",
+      "test_war_cry_buff_expiry_and_replay_determinism (554-582)",
+      "test_presentation_catalog_is_authoritative_and_stable (920-975)",
+      "test_actor_symmetry + test_elite_uses_same_universe (2079,2110)"
+    ],
+    "session_locks": [
+      "journey: outgoing/incoming combat:hit and monster:telegraph reach the client (session_tests.cpp:284-370)",
+      "gate-b: dodge a revealed ground-slam using only the telegraph payload (session_tests.cpp:1271-1460)"
+    ],
+    "presentation_locks": [
+      "negative control: presentation effects never mutate simulation state (presentation_events_tests.cpp:5)",
+      "critical damage is distinct and style-labeled (presentation_events_tests.cpp:72-101)"
+    ],
+    "client_scenarios": [
+      "first-fight floating damage number (main.cpp:4271-4280)",
+      "telegraph-dodge: dash out avoids telegraphed damage; telegraph avoids HUD reserve (main.cpp:4371-4399)",
+      "combat-juice: target flash, numbers, player pulse (main.cpp:4406-4449)",
+      "first-session-clarity: controls hint includes dash (main.cpp:4937-4972)"
+    ],
+    "coverage_holes": [
+      "no test pins gold/coin pickup behavior (feature absent)",
+      "no test distinguishes monster behaviour_type outcomes (feature inert)",
+      "no lock proves block_chance or resistances stay inert (they are simply unreachable)",
+      "no lock prevents a second damage formula from appearing in resolve_damage callers (symmetry is enforced per-surface only)"
+    ]
+  },
+  "negative_control": {
+    "designated_family": "combos",
+    "command": "rg -n -i \"combo\" native/include native/src native/client native/tests",
+    "exit_code": 1,
+    "interpretation": "the constitution lists combos as part of the readable physical-space vocabulary; zero matches prove the family is absent rather than generically covered by attack parity",
+    "supporting_absences": ["leaps (exit 1)", "guarded actions (exit 1 excluding lock_guard)", "magic/spell code (exit 1)"]
+  },
+  "gap_ranking": [
+    {
+      "rank": 1,
+      "id": "GAP-RANGED-BEHAVIOUR",
+      "summary": "Realize the authored ranged/buffer behaviour_type contract in tile-space monster resolution",
+      "kind": "missing_mechanic",
+      "player_visible_value": "packs stop being a uniform melee blob; expeditions read as composed encounters the constitution promises (rarity, packs, support)",
+      "dependency": "independent; wire already broadcasts behaviour.type so clients need no protocol change for the fact",
+      "owner_input": "range band and damage values may temporarily reuse authored constants (kN3MonsterDamage family); any retune is owner-only"
+    },
+    {
+      "rank": 2,
+      "id": "GAP-TELEGRAPH-CATALOG",
+      "summary": "One PresentationCatalog row per telegraph (thrust, sweep, boss slam) covering ticks/ms/radius so both surfaces and both client paths share one contract",
+      "kind": "coherence_gap",
+      "player_visible_value": "identical warning readability everywhere; removes presentation unit-guessing heuristics",
+      "dependency": "prerequisite infrastructure for any future slam/leap-style telegraphed action",
+      "owner_input": "none mechanical; feel windows remain D-114/D-115 gated"
+    },
+    {
+      "rank": 3,
+      "id": "GAP-EFFECT-SLOTS",
+      "summary": "Generalize the two hard-coded war-cry fields into an ordered per-actor effect list behind the existing BuffApplied/BuffExpired events",
+      "kind": "missing_mechanic",
+      "player_visible_value": "enables any future buff/debuff/status content without re-editing Actor and every serializer",
+      "dependency": "foundational for magic/status waves; must preserve stale-snapshot restore compatibility",
+      "owner_input": "which effects exist remains owner design; this wave ships the slot mechanism only"
+    },
+    {
+      "rank": 4,
+      "id": "GAP-EQUIP-DEFENSIVE-CHANNELS",
+      "summary": "Consume already-derived block_chance (and defense channel) passively inside the one damage pipeline",
+      "kind": "missing_mechanic",
+      "player_visible_value": "defensive loot stops being decorative; items change survivability as the constitution requires",
+      "dependency": "standalone; composes with GAP-EFFECT-SLOTS if blocks become visible effects",
+      "owner_input": "cap values already authored (75); active guard stances stay owner-only"
+    },
+    {
+      "rank": 5,
+      "id": "GAP-GOLD-AUTO-PICKUP",
+      "summary": "Coins auto-collect on proximity per the constitution control contract",
+      "kind": "missing_mechanic",
+      "player_visible_value": "small but daily-visibility fidelity fix; removes pointless X-presses on coin showers",
+      "dependency": "independent; tile-space only until the D-114 surface grows currency",
+      "owner_input": "pickup radius inherits existing contact scale rules"
+    },
+    {
+      "rank": 6,
+      "id": "GAP-AUDIO-CUE-COVERAGE",
+      "summary": "Extend the five-beat cue table with rows for already-emitted AttackStarted, Telegraph, and dash events",
+      "kind": "feel_tuning",
+      "player_visible_value": "swings and enemy windups become audible; reaction gameplay improves without any authority change",
+      "dependency": "independent; pure presentation-seam data translation",
+      "owner_input": "final sound parameters stay TASK-0157 owner-owned placeholders"
+    }
+  ],
+  "stop_boundary_owner_only": [
+    "leap/movement-ability design (family absent; shape undecided)",
+    "combo grammar and any chained-action design",
+    "player-facing slams and any new skill/action designs or names",
+    "magic and spell systems (deferred by constitution to WIZARD reference)",
+    "all numeric retunes: costs, cooldowns, multipliers, telegraph windows, damage values",
+    "final sound parameters and art (TASK-0157/TASK-0159 ownership)"
+  ]
+}
