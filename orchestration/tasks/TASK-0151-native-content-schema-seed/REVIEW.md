@@ -23,4 +23,3 @@ strict unknown-field handling, cross-collection duplicate detection, graph
 reference validation, and no undeclared writes or runtime dependency changes.
 
 Verdict: **ACCEPTED** for integration on `codex/native-reconstitution`.
-

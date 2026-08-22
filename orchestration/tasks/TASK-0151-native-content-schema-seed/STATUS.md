@@ -1,5 +1,5 @@
 ---
-state: REVIEW_REQUESTED
+state: INTEGRATED
 task: TASK-0151-native-content-schema-seed
 coordinator: ox-alpha (lane ox-pc-ab, worker id ox-pc-ab)
 provider: openrouter
@@ -29,3 +29,10 @@ commit 0707b819e16d1996ca29b933b61f337d4c37c323 (tree touches only
 byte-identical repeated output; negative suite 23/23 PASS including unknown
 roles, duplicate IDs, and invalid graph references; `git diff --check`
 clean. Full evidence in REPORT.md.
+
+Architect transition to INTEGRATED at 2026-08-22 14:02 -07:00. Frozen remote
+head `001bf8e77d138ee6997f0e06e5717d271d06da6b` was independently reviewed and
+ACCEPTED. Program commits: review `17673f86`, implementation `3d860a29`, and
+handoff `7b7f597e`. Post-integration verification reran the committed validator
+and all 23 deterministic negative cases successfully; scope remained limited
+to the declared native-content seam and task folder.
