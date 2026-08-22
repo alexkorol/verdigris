@@ -1,7 +1,7 @@
 # TASK-0128 fresh-lane revision release — 2026-08-22 09:40 PDT
 
 Released worker: `ox-pc-a` after pushed revision head
-`d247638e7cbc73183cf32c5277263111d280e6cb`.
+`d247638e34ea9f27de98d6fc316fd3361fb75427`.
 
 This is not a dark-lane incident. The original worker completed its permitted
 recovery and pushed a reviewable correction, then exhausted its automatic
@@ -15,7 +15,7 @@ six tracked fixture golden outputs (`skipped_folders` changes to the collector's
 current canonical value).
 
 Fresh lane `ox-pc-y` is authorized to branch from exact preserved head
-`d247638e7cbc73183cf32c5277263111d280e6cb` as
+`d247638e34ea9f27de98d6fc316fd3361fb75427` as
 `codex/TASK-0128-runway-golden-revision-ox-pc-y`, replace the old STATUS claim,
 and make only the review-requested revision:
 
