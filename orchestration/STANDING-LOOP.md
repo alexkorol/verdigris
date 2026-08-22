@@ -1,7 +1,7 @@
 # Standing loop — canonical coordinator contract (v2, 2026-08-18)
 
 Single source of truth for every coordinator's continuous-mode goal.
-Substitute NAME (deepseek | kimi | kimi-work), CLONE path, and PORTS.
+Substitute NAME, CLONE path, and PORTS from the current re-entry brief.
 Briefs reference this file; goal texts must not drift from it.
 
 ## The loop

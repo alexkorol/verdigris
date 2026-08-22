@@ -273,3 +273,19 @@ architect stages lane revival instead of pretending the queue is healthy.
 `RUN_STATUS.md` is the authoritative list of effective READY work. Machine
 enforcement is TASK-0080. D-123 remains the original never-dry law; D-125
 strengthens its depth and counting semantics.
+
+## D-126 - PC Ox Alpha single-lane surge topology (owner-ruled, 2026-08-21)
+
+Verdigris currently registers one planned PC OpenCode/Ox Alpha implementation
+worker: `ox-pc-a`, Windows implementation, ports 6620-6639. Route one
+Verdigris task at a time until the owner explicitly adds independent workers.
+The stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project, made no
+claim or write, and are not lanes, stalls, dark capacity, or incidents. Other
+Ox capacity belongs to separate owner-run projects and Verdigris does not
+direct, monitor, or depend on it.
+
+Surge ambition remains a queue/graph requirement despite single-lane dispatch:
+at least 24 effective dependency-free, path-disjoint READY packets, at least 12
+sequenced successors, and a deeper whole-program graph. Queue depth prepares
+future lanes but never authorizes concurrent claims without explicit owner
+registration or relaxes acceptance and owner-authority boundaries.

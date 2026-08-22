@@ -1,5 +1,24 @@
 # Native reconstitution handoff
 
+## 2026-08-21 — PC single-lane Ox Alpha surge runway
+
+- Program truth at sweep start: `d2423873`; `origin/master` and
+  `origin/codex/native-reconstitution` matched, latest exact-SHA CI was green,
+  and no PR, active claim, REVIEW_REQUESTED, or REVISE transition existed.
+- D-126 registers only `ox-pc-a` (Windows, ports 6620-6639). The stopped b/c
+  tabs shared one OpenCode project, made no claim/write, and are explicitly not
+  Verdigris lanes or incidents.
+- `RUN_STATUS.md` now exposes 24 effective pairwise path-disjoint READY packets
+  plus 12 DRAFT successors. `PROGRAM_GRAPH.md` carries the deeper journey,
+  presentation, renderer, campaign, combat, skill, monster, item, progression,
+  persistence, replay, performance, tooling, packaging, and polish graph.
+- Initial one-at-a-time route: TASK-0081 Gate B wire-contract freeze. The
+  worker must use a clean dedicated clone of `codex/native-reconstitution`,
+  read `REENTRY-OX-ALPHA-PC.md`, claim by committed STATUS, and never use the
+  architect checkout.
+- Owner-only decisions are batched under `orchestration/owner-input/`; none
+  blocks TASK-0081. This milestone changes coordination only, not gameplay.
+
 ## 2026-08-20 — TASK-0070 reference scenes Stage 1 (cursor, REVIEW_REQUESTED)
 
 - Worker `codex/TASK-0070-reference-scenes-cursor` off `27d2be62`.

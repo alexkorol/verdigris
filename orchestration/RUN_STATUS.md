@@ -1,100 +1,142 @@
-# Run status — Codex Sol sweep
+# Run status — Codex Sol PC surge sweep
 
-Snapshot: 2026-08-20 19:45 PDT
+Snapshot: 2026-08-21 19:29 PDT
 
-Sweep base: `1f82623d` (`codex/native-reconstitution`)
+Sweep base: `d2423873c577d299b3b39c56024d1d840993c72b`
+(`codex/native-reconstitution`, equal to `origin/master` and
+`origin/codex/native-reconstitution` at preflight).
 
-GitHub: PR #49 merged; latest program and master CI green; no open PRs.
+GitHub: no open PRs. Latest master CI run 32441409427 passed at this exact SHA.
+No current REVIEW_REQUESTED or REVISE transition exists.
 
-Orchestrator: **Codex Sol**, active from the clean MacBook worktree
-`/Users/alexkorol/Code/verdigris-sol`.
+Orchestrator: **Codex Sol**, PC architect checkout
+`Z:\Code\Games\delaford\delaford_game`. Architect coordinates, reviews,
+integrates, and specs; it does not absorb implementation.
 
 ## Objective and proof state
 
-Immutable objective: D-116 under D-122's three axes.
-
-1. Server/rules parity: **DONE** — unchanged attach suite 32/32 twice on
-   fresh native servers, plus post-hotfix verification.
+1. Server/rules parity: **DONE** — unchanged native attach suite 32/32 twice on
+   fresh servers plus post-hotfix verification.
 2. Native journey parity: Gate A **GREEN**; Gate B and Gate C remain.
-3. Presentation parity: terrain and HUD landed; surface density and
-   panels/typography remain.
+3. Presentation parity: terrain/HUD landed; surface density,
+   panels/typography, and Stage-2 renderer choice remain.
+4. Post-parity full ARPG graph: active in `PROGRAM_GRAPH.md`; parity is a gate,
+   not a stopping point.
 
-D-125 is now binding: before three coordinators are live, maintain at least 8
-effective READY packets plus 4 sequenced successors. Effective means listed
-below, unclaimed, dependency-free, and without owned-path collision.
+Surge floor: at least 24 effective, dependency-free, pairwise path-disjoint
+READY packets plus 12 concrete successors. Current board: **24 READY + 12
+successors**.
 
-## Fleet liveness
+## PC Ox Alpha fleet reconciliation
 
-| Lane | State | Last remote evidence | Current instruction |
+Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
+
+| Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
-| cursor / composer-2.5 | PAUSED by owner | TASK-0076 at 2026-08-20 07:41 PDT | Resume on TASK-0083 calibration; do not claim native-client work concurrently |
-| deepseek Flash | PAUSED by owner | TASK-0056 worker at 2026-08-18 19:36 PDT | Old 0056 claim is obsolete; resume on TASK-0081 |
-| luna-mac | COLD | TASK-0074 at 2026-08-20 08:02 PDT | Separate coordinator process required; resume on TASK-0079 |
-| qwen3.8 local | HEALTHY | `/v1/models` returned `qwen3.8` at this sweep | Executor only; a live coordinator must machine-verify its output |
+| ox-pc-a | 6620-6639 | Planned single Verdigris worker; no committed claim/worker branch yet; requires a clean dedicated clone | TASK-0081 Gate B wire freeze |
 
-INC-012 remains binding: Sol does not absorb the implementation backlog while
-two or more lanes are dark. The owner launches/revives coordinators.
+The stopped `ox-pc-b` and `ox-pc-c` tabs shared the same OpenCode project,
+stopped before claims or writes, and are not Verdigris lanes, stalls, dark
+capacity, or incidents. The owner reserved that capacity for separate projects;
+Verdigris does not direct or monitor it. Route only one Ox Verdigris task at a
+time until the owner explicitly adds independent workers.
 
-## Interrupts
+Legacy PC clones under ChatGPT, Cursor, DeepSeek, kimi, and KimiWork are stale
+and/or dirty with preserved user/worker work. They are **not** registered as Ox
+clones and must not be reset, cleaned, or silently repurposed. The first
+committed Ox claim registers its actual clone path and full scorecard
+experimental unit.
+
+Before the first claim, the owner must open `ox-pc-a` on a clean dedicated
+clone, synchronize the pushed program branch, and provide the shared re-entry
+document. Sol will not take over its implementation.
+
+## Interrupts and authority
 
 - REVIEW_REQUESTED: **none**.
 - REVISE: **none**.
-- TASK-0056's committed CLAIMED status is stale provenance; the architect
-  takeover and full server parity supersede it. No coordinator may resume it.
-- Port 6500 remains owner-only. Port 7000 is occupied by a macOS system
-  service; luna uses 7001-7019.
+- Active claims: **none**.
+- Historical TASK-0056 and legacy clone WIP are superseded/preserved, never
+  resumed.
+- Historical QUESTION-0007/0008/0009/0010/0011 are resolved by integrated work.
+- Port 6500 remains owner-only; every worker uses only its loopback capsule.
+- This owner correction explicitly authorizes pushing the architect coordination
+  commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 9 packets
+## Effective READY — 24 packets
 
-These paths are disjoint at the board level. First committed claim wins.
+Every row is dependency-free at this snapshot. Owned paths are pairwise
+disjoint; initial routes do not constitute claims. First committed `STATUS.md`
+wins after a fresh fetch.
 
-| Priority | Task | Packet | Route | Contribution |
+| Pri | Task | Topology / job | Preferred route | Owner-visible contribution |
 |---|---|---|---|---|
-| P0 | TASK-0081 Gate B wire-contract freeze | MECHANICAL | deepseek | freezes the N5/N6 envelopes before client work |
-| P0 | TASK-0080 board sentinel | MECHANICAL | luna-mac + Qwen | machine-enforces D-125 and collision/liveness truth |
-| P1 | TASK-0079 browser panel inventory | MECHANICAL | luna-mac | supplies presentation delta #4 contract |
-| P1 | TASK-0083 server lifecycle soak | BOUNDED-DESIGN | cursor calibration | guards the PR #46 reader-thread lifetime fix |
-| P1 | TASK-0082 dual-server matrix runner | BOUNDED-DESIGN | deepseek after 0081 | automates D-116 dual-server regression evidence |
-| P1 | TASK-0086 Gate C contract audit | MECHANICAL | deepseek/docs lane | maps current N6 information before Gate C UI |
-| P2 | TASK-0084 reference-capture manifest | MECHANICAL | luna-mac + Qwen | detects stale/missing presentation evidence |
-| P2 | TASK-0085 denylist exception audit | MECHANICAL | luna-mac + Qwen | prepares owner ruling without changing canon |
-| P2 | TASK-0073 renderer backend evaluation | BOUNDED-DESIGN | any research lane | feeds Stage 2 renderer ADR |
+| P0 | TASK-0081 Gate B wire-contract freeze | INDEPENDENT / MECHANICAL | ox-pc-a first | safely unlocks Chronicles client journey |
+| P0 | TASK-0083 server lifecycle soak | INDEPENDENT / BOUNDED-DESIGN | future after current claim | guards the reader-thread crash fix |
+| P0 | TASK-0086 Gate C contract audit | INDEPENDENT / MECHANICAL | future after current claim | exposes missing route-decision information |
+| P0 | TASK-0080 board sentinel | INDEPENDENT / MECHANICAL | future after current claim | machine-enforces queue and collision truth |
+| P0 | TASK-0097 persistence durability audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | protects House/Scion/item saves |
+| P0 | TASK-0100 deterministic replay audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes divergences reproducible |
+| P0 | TASK-0104 itemization/history audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages memorable history-bearing loot |
+| P0 | TASK-0105 passive-tree authority audit | INDEPENDENT / MECHANICAL | future after current claim | replaces approximation with an evidence path |
+| P1 | TASK-0082 dual-server matrix runner | INDEPENDENT / BOUNDED-DESIGN | future after current claim | automates unchanged JS/C++ parity evidence |
+| P1 | TASK-0115 browser panel/typography inventory | INDEPENDENT / MECHANICAL | future after current claim | freezes presentation delta #4 |
+| P1 | TASK-0091 protocol coverage sentinel design | INDEPENDENT / MECHANICAL | future after current claim | catches lost journey wire steps |
+| P1 | TASK-0092 owner launch/packaging audit | INDEPENDENT / MECHANICAL | future after current claim | maps double-clickable build gaps |
+| P1 | TASK-0093 typography contract audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | enables readable native panels/text |
+| P1 | TASK-0095 content-authoring schema audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | enables scalable validated content |
+| P1 | TASK-0096 campaign graph measurement | INDEPENDENT / MECHANICAL | future after current claim | measures the route to multi-act campaign/endgame |
+| P1 | TASK-0098 wire parser robustness audit | INDEPENDENT / MECHANICAL | future after current claim | hardens malformed-client boundaries |
+| P1 | TASK-0099 performance budget audit | INDEPENDENT / MECHANICAL | future after current claim | defines dense-ARPG headroom evidence |
+| P1 | TASK-0101 combat-depth gap audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | selects coherent player-visible combat waves |
+| P1 | TASK-0102 skill-system gap audit | INDEPENDENT / MECHANICAL | future after current claim | maps LMB/RMB/Q/E/R end to end |
+| P1 | TASK-0103 monster/encounter gap audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages packs, rarity, uniques, bosses |
+| P2 | TASK-0084 reference-capture manifest | INDEPENDENT / MECHANICAL | future after current claim | detects stale/missing visual evidence |
+| P2 | TASK-0085 denylist exception audit | INDEPENDENT / MECHANICAL | future after current claim | prepares owner compatibility ruling |
+| P2 | TASK-0114 renderer backend evaluation | EXPLORATORY / BOUNDED-DESIGN | future after current claim | feeds cross-platform renderer ADR |
+| P2 | TASK-0094 asset provenance audit | INDEPENDENT / MECHANICAL | future after current claim | prevents unshippable assets/fonts |
 
 ## HOLD despite historical READY headers
 
-`RUN_STATUS.md` is current routing truth; the immutable SPEC headers remain as
-issued history.
-
 | Task | Release condition | Reason |
 |---|---|---|
-| TASK-0077 native Chronicles client | TASK-0081 ACCEPTED and architect freezes exact client interfaces | Gate B event names/payloads must be pinned before implementation |
+| TASK-0077 native Chronicles client | TASK-0081 ACCEPTED; architect freezes exact client interfaces | Gate B event/payload contract first |
 | TASK-0078 native surface density | TASK-0077 ACCEPTED/integrated | both own `native/client/**`; single-writer rule |
+| TASK-0073 renderer backend evaluation | SUPERSEDED by TASK-0114 | surge replacement supplies exact evidence, acceptance, and stop contracts |
+| TASK-0079 browser panel inventory | SUPERSEDED by TASK-0115 | surge replacement supplies hard-fail capture and exact gate contracts |
 
-## Sequenced successors — 4 DRAFT
+## Sequenced successors — 12 DRAFT
 
-| Task | Dependency |
+| Task | Dependency / release |
 |---|---|
-| TASK-0087 native pane shell | 0079 + 0078 accepted; architect freezes pane model |
-| TASK-0088 renderer ADR | 0073 accepted; owner approves any new dependency |
-| TASK-0089 Gate C native journey | 0077 + 0078 + 0086 accepted; missing contract fields resolved |
-| TASK-0090 native progression panes | 0087 accepted; authoritative payload audit complete |
+| TASK-0087 native pane shell | 0115 + 0078 accepted; pane model frozen |
+| TASK-0088 renderer ADR | 0114 accepted; owner approves any dependency |
+| TASK-0089 Gate C native journey | 0077 + 0078 + 0086; missing fields resolved |
+| TASK-0090 native progression panes | 0087 + authoritative payload audit |
+| TASK-0106 deterministic replay runner | 0100 accepted; record/divergence interfaces frozen |
+| TASK-0107 persistence fault matrix | 0097 accepted; disposable profile/fault contract frozen |
+| TASK-0108 combat-depth wave | 0101 accepted; scaffold and D-114 table ready |
+| TASK-0109 skill infrastructure | 0102 accepted; content-neutral interfaces frozen |
+| TASK-0110 encounter-system wave | 0103 accepted; deterministic pack/rarity seam frozen |
+| TASK-0111 item-history lifecycle | 0104 accepted; owner-independent lifecycle frozen |
+| TASK-0112 passive-tree scaffold | 0105 accepted; owner source or schema-only fallback |
+| TASK-0113 campaign/content tooling | 0095 + 0096 accepted; validators frozen |
 
-## Restart order
+## Standing sweep and restock
 
-1. Unpause DeepSeek with its refreshed standing goal; it claims TASK-0081.
-2. Unpause Cursor with its refreshed standing goal; it claims TASK-0083.
-3. Start a separate luna-mac coordinator; it claims TASK-0079, then uses Qwen
-   only for verified mechanical substeps.
-4. Sol sweeps immediately after each claim, reviews every flip, restocks in
-   the same sweep, and promotes pipeline work only when dependencies are
-   ACCEPTED/integrated.
+1. Fetch/prune, compare program/master tips, scan Ox branches/timestamps and
+   every STATUS/REPORT/REVIEW/RELEASE/QUESTION transition.
+2. Review any `REVIEW_REQUESTED` immediately at exact head/base with default
+   commands, fresh servers where required, driver preconditions, captures, and
+   modified-test inspection.
+3. Verdict ACCEPTED/REVISE/BLOCKED/SUPERSEDED with numbered testable findings.
+4. Integrate only ACCEPTED work; run affected post-integration gates; restock
+   the lane in the same sweep; update full scorecard experimental unit.
+5. When no review exists, deepen `PROGRAM_GRAPH.md`, scaffold risky seams, or
+   prepare successor packets—never take feature implementation.
 
-WIP remains architect + 3 workers maximum. A task count never justifies an
-owned-path collision or an owner-only product decision.
+## Owner-input queue
 
-## Owner decisions still parked
-
-- `legacyRelicId` and `bronze-dagger` denylist dispositions (TASK-0085 gathers
-  evidence only).
-- Renderer production dependency after TASK-0073/TASK-0088.
-- OD-001 and OD-007 through OD-013 remain owner-only where applicable.
+Current batched packets are indexed at `orchestration/owner-input/README.md`.
+None blocks the three initial Ox routes. Evidence-dependent questions remain
+quiet until their prerequisite audit/ADR is accepted.

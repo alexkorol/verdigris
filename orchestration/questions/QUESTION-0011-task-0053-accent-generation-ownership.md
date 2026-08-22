@@ -1,7 +1,7 @@
 ---
 id: QUESTION-0011
 task: TASK-0053
-status: OPEN
+status: RESOLVED
 asked_by: kimi (Kimi Code CLI)
 ---
 
@@ -41,3 +41,8 @@ authoritative map data and could fight future server-side themes.
 Deliverables 1 (exposed-face walls) and 2 (tree-line boundaries) are
 implemented renderer-side, tested, and capture-verified independently of
 this answer.
+
+## Resolution
+
+The clustered-accent work was split to TASK-0057, accepted, and integrated.
+This ownership seam is historical and does not block the surge board.

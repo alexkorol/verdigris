@@ -1,7 +1,7 @@
 ---
 question: QUESTION-0010
 related_task: TASK-0047-native-protocol-n4
-status: OPEN
+status: RESOLVED
 owner: Fable / Kimi-work coordination
 ---
 
@@ -66,3 +66,9 @@ Do not poll or mutate the Kimi clone further until one of these happens:
 
 The coordinator has completed the safe read-only audit and is leaving the
 implementation lane ready for that transition.
+
+## Resolution
+
+TASK-0047 was subsequently accepted and integrated, and server parity advanced
+through N6. The stale Kimi-work draft remains preserved historical work and is
+not a current claim or blocker.
