@@ -1,7 +1,7 @@
 # TASK-0142 claim
 
 - task: TASK-0142
-- state: CLAIMED
+- state: REVIEW_REQUESTED
 - coordinator: ox-pc-h
 - worker: ox-pc-h (isolated PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0142-native-client-presentation-slice-ox-pc-h`
@@ -42,5 +42,17 @@
 
 ## Transition log
 
-- CLAIMED: commit recorded here (STATUS.md only), pushed to origin within
-  the 10-minute routing window.
+- CLAIMED: commit `6ec90d4a` (STATUS.md only), pushed to origin within the
+  10-minute routing window.
+- IMPLEMENTED: vector-kit renderer, robust asset-root discovery, extraction/
+  actor/HUD readability, honest objective + art-status chips, and hardened
+  client scenarios delivered inside owned paths only (`native/client/main.cpp`
+  plus this task folder; `render_list.hpp` needed no change).
+- REVIEW_REQUESTED: all four SPEC acceptance commands exit 0 — build+tests+
+  all seven scenarios PASS; `--scenario first-fight` 15/15 ok;
+  `git diff --check` clean; base-diff confined to owned task files plus
+  upstream commits staged in routed HEAD before the claim. Literal transcript
+  in `captures-gate-transcript.txt`; details in REPORT.md. No stop condition
+  hit: no simulation/server/browser/CI/asset-kit mutation, no merge, no
+  force-push, no external downloads, port 6500 never bound or contacted,
+  lane ports 6760-6779 untouched at runtime.
