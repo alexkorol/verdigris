@@ -16,6 +16,8 @@ is intentionally short; the canonical rules remain in the linked documents.
 | `ox-pc-g` | Windows implementation | 6740-6759 |
 | `ox-pc-h` | Windows implementation | 6760-6779 |
 | `ox-pc-i` | Windows implementation | 6780-6799 |
+| `ox-pc-j` | Windows implementation | 6800-6819 |
+| `ox-pc-k` | Windows implementation | 6820-6839 |
 
 Provisioned worktree:
 `Z:\Code\.worktrees\verdigris\ox-pc-a`; worker branch:
@@ -30,6 +32,11 @@ The new `ox-pc-b` and `ox-pc-c` worktrees are not the historical stopped tabs:
 those old tabs shared one project, made no claim/write, and remain non-incidents.
 Every registered lane below has its own Z: worktree and branch.
 
+The overnight owner-visible wave may use up to eight simultaneous Ox Alpha
+workers. Lanes `ox-pc-j` and `ox-pc-k` are clean expansion lanes added for
+launch resilience and clean-build convergence; they do not make the preserved
+or quarantined a/b/c/h worktrees available again.
+
 | Lane | Worktree | Branch | Route |
 |---|---|---|---|
 | ox-pc-a | `Z:\Code\.worktrees\verdigris\ox-pc-a` | `codex/TASK-0128-accepted-throughput-normalization-ox-pc-a` | TASK-0128 |
@@ -41,6 +48,8 @@ Every registered lane below has its own Z: worktree and branch.
 | ox-pc-g | `Z:\Code\.worktrees\verdigris\ox-pc-g` | `codex/TASK-0132-clean-machine-harness-contract-ox-pc-g` | TASK-0132 |
 | ox-pc-h | `Z:\Code\.worktrees\verdigris\ox-pc-h` | `codex/TASK-0133-save-migration-rollback-contract-ox-pc-h` | TASK-0133 |
 | ox-pc-i | `Z:\Code\.worktrees\verdigris\ox-pc-i` | `codex/TASK-0134-distribution-signing-boundary-ox-pc-i` | TASK-0134 |
+| ox-pc-j | `Z:\Code\.worktrees\verdigris\ox-pc-j` | `codex/TASK-0149-native-owner-launch-resilience-ox-pc-j` | TASK-0149 |
+| ox-pc-k | `Z:\Code\.worktrees\verdigris\ox-pc-k` | `codex/TASK-0150-native-clean-build-convergence-ox-pc-k` | TASK-0150 |
 
 Use only the provisioned dedicated worktree. The architect checkout at
 `Z:\Code\Games\delaford\delaford_game` is forbidden. Never reset, clean, or

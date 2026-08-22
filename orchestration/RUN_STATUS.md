@@ -30,7 +30,7 @@ The independent `ox-bootstrap` orchestration worker has pushed M3 head
 `82de84ef` after M2 `5627916f`. The standalone repo's Tier-B review contract
 still governs acceptance and this lane never counts as Verdigris capacity.
 
-Snapshot: 2026-08-22 02:10 PDT
+Snapshot: 2026-08-22 02:49 PDT
 
 Sweep base: `df851cead0dadcd96176b370ad132f8344c3c21d`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
@@ -103,6 +103,8 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-g | 6740-6759 | TASK-0148 pushed claim line begins `642bfa25`; worker active | reconnect-safe Chronicles runtime |
 | ox-pc-h | 6760-6779 | TASK-0136 second post-claim process exit; dirty worktree preserved; claim released | P0 quarantined, not capacity |
 | ox-pc-i | 6780-6799 | TASK-0145 replacement claim `226e5149` pushed from current program tip | Chronicles owner-facing client journey replacement active |
+| ox-pc-j | 6800-6819 | TASK-0149 clean expansion route; claim required inside activation SLA | real owner launch and cleanup resilience |
+| ox-pc-k | 6820-6839 | TASK-0150 clean expansion route; claim required inside activation SLA | clean native build convergence |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -194,6 +196,11 @@ harness-visible provider/model. These are separate scorecard experimental units.
   on ox-pc-g; TASK-0147 claim `068a1358` on ox-pc-e; TASK-0145 replacement
   claim `226e5149` on clean ox-pc-i after failed ox-pc-b was released. All
   valid claims are excluded from READY accounting.
+- Launch requested at 02:49 PDT: TASK-0149 on fresh lane ox-pc-j and TASK-0150
+  on fresh lane ox-pc-k. These pairwise-disjoint reliability packets raise
+  the product wave to six workers when their pushed claims land. TASK-0151 and
+  TASK-0152 stay READY rather than consuming strong overnight workers on
+  lower-immediacy schema or benchmark work.
 - P0 quarantined: TASK-0136 replacement claim `ddd00857` on ox-pc-h. The first
   process exit received one exact-session recovery; the recovery also exited
   with dirty uncommitted work. RELEASE now returns the task to READY. Preserve
