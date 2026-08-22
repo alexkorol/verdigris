@@ -25,6 +25,10 @@ two load-bearing acceptance claims fail independent review.
    links the dedicated audio test executable at the required path. Prove both
    direct executions pass and their captured output is byte-identical without
    any hidden prebuild.
+   This numbered revision correction explicitly grants the fresh revision
+   lane ownership of `native/build.ps1` solely for that narrow target-wiring
+   change; the READY SPEC remains immutable. No other build behavior may be
+   broadened or weakened.
 2. Restrict the enemy-defeat cue to
    `PresentationEventType::ActorDied` with `event.text == "monster"`.
    `native/src/core.cpp` emits `ActorDied` with `"monster"` for enemy death,

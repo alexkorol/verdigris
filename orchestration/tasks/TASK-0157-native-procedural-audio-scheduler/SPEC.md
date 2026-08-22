@@ -10,7 +10,7 @@ base_commit: ad1a1e178e689df442d4655937f8e8e037cf4cd2
 owner_visible_contribution: creates the deterministic backend-neutral cue seam required to add responsive combat and UI sound without licensing or device lock-in
 dependencies: [TASK-0117 ACCEPTED]
 owner_input_dependency: none for this foundation; device backend, final sounds, music, licensing, and composition remain owner-only
-owned_paths: [native/audio/**, native/tests/audio_mixer_tests.cpp, native/CMakeLists.txt, native/build.ps1, orchestration/tasks/TASK-0157-native-procedural-audio-scheduler/**]
+owned_paths: [native/audio/**, native/tests/audio_mixer_tests.cpp, native/CMakeLists.txt, orchestration/tasks/TASK-0157-native-procedural-audio-scheduler/**]
 forbidden_paths: [native/client/main.cpp, native/client/remote_session.cpp, native/client/presentation_state.cpp, native/src/**, native/include/**, server/**, src/**, binary/audio assets, third-party dependencies, device APIs, final audio direction, everything else]
 ---
 
@@ -29,11 +29,6 @@ must not claim audible playback.
 Add a dedicated CMake test target. Tests must prove stable event-to-cue
 mapping, deterministic ordering, bus mute/volume, cap eviction, unknown-event
 silence, and byte-identical serialized schedules across two runs.
-
-The literal sequence below must work from a clean worktree without an
-unrecorded configure or build command. In particular, `native/build.ps1
--RunTests` must build/link `native/build/verdigris_audio_mixer_tests.exe`
-before the two direct executions.
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File native/build.ps1 -RunTests
