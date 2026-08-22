@@ -30,7 +30,7 @@ The independent `ox-bootstrap` orchestration worker has pushed M3 head
 `82de84ef` after M2 `5627916f`. The standalone repo's Tier-B review contract
 still governs acceptance and this lane never counts as Verdigris capacity.
 
-Snapshot: 2026-08-22 02:49 PDT
+Snapshot: 2026-08-22 02:59 PDT
 
 Sweep base: `df851cead0dadcd96176b370ad132f8344c3c21d`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
@@ -97,14 +97,14 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-a | 6620-6639 | TASK-0128 revision `d247638e` pushed via narrow handoff repair; second review remains REVISE; worker recovery exhausted | preserved, not active capacity |
 | ox-pc-b | 6640-6659 | TASK-0145 recovered claim `4aa9e0c3` then worker exited dirty; claim released | P0 quarantined, not capacity |
 | ox-pc-c | 6660-6679 | TASK-0136 claim released after duplicate-dispatch collision; dirty worktree quarantined | not available |
-| ox-pc-d | 6680-6699 | TASK-0146 pushed claim `7e416ff3`; worker active | first-expedition encounter wave |
+| ox-pc-d | 6680-6699 | TASK-0146 claim `7e416ff3`; one exact-session recovery active after external-temp permission exit | first-expedition encounter wave |
 | ox-pc-e | 6700-6719 | TASK-0147 launched from `df851cea`; pushed claim required by activation SLA | procedural native visual polish |
 | ox-pc-f | 6720-6739 | TASK-0138 accepted/integrated at `38942560`; lane available | current-tip successor pending |
 | ox-pc-g | 6740-6759 | TASK-0148 pushed claim line begins `642bfa25`; worker active | reconnect-safe Chronicles runtime |
 | ox-pc-h | 6760-6779 | TASK-0136 second post-claim process exit; dirty worktree preserved; claim released | P0 quarantined, not capacity |
 | ox-pc-i | 6780-6799 | TASK-0145 replacement claim `226e5149` pushed from current program tip | Chronicles owner-facing client journey replacement active |
-| ox-pc-j | 6800-6819 | TASK-0149 clean expansion route; claim required inside activation SLA | real owner launch and cleanup resilience |
-| ox-pc-k | 6820-6839 | TASK-0150 clean expansion route; claim required inside activation SLA | clean native build convergence |
+| ox-pc-j | 6800-6819 | TASK-0149 pushed claim `2d200041`; worker active | real owner launch and cleanup resilience |
+| ox-pc-k | 6820-6839 | TASK-0150 pushed claim `ffb51437` after one clean exact-session activation recovery | clean native build convergence |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -198,9 +198,16 @@ harness-visible provider/model. These are separate scorecard experimental units.
   valid claims are excluded from READY accounting.
 - Launch requested at 02:49 PDT: TASK-0149 on fresh lane ox-pc-j and TASK-0150
   on fresh lane ox-pc-k. These pairwise-disjoint reliability packets raise
-  the product wave to six workers when their pushed claims land. TASK-0151 and
-  TASK-0152 stay READY rather than consuming strong overnight workers on
-  lower-immediacy schema or benchmark work.
+  the product wave to six workers. Both claims landed inside the ten-minute
+  SLA: `2d200041` and `ffb51437`. Lane k's first process exited clean before
+  writing; its one exact-session recovery restored dependencies for the
+  repository hook, pushed the claim, and is active. TASK-0151 and TASK-0152
+  stay READY rather than consuming strong overnight workers on lower-immediacy
+  schema or benchmark work.
+- TASK-0146's original process exited after a denied external-temp diagnostic
+  request while preserving its dirty gameplay work. Its one exact-session
+  recovery is active on the same branch/session and must be quarantined on any
+  second exit before a valid handoff.
 - P0 quarantined: TASK-0136 replacement claim `ddd00857` on ox-pc-h. The first
   process exit received one exact-session recovery; the recovery also exited
   with dirty uncommitted work. RELEASE now returns the task to READY. Preserve
