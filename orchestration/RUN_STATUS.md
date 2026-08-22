@@ -112,14 +112,16 @@ supervised as a separate project and never counts toward Verdigris capacity.
 
 ### Endpoint identity watch
 
-Both claim payloads report the selected model reference
-`opencode/x-preview-f-free`. The local OpenCode configuration also sets that as
-the default reference and contains no explicit OpenRouter provider mapping.
-The bootstrap claim labels the provider OpenRouter while the Verdigris claim
-labels it `opencode`; the full experimental unit therefore remains
-**provider-unconfirmed** until the harness exposes authoritative routing. Work
-may continue, but scorecards must not aggregate these runs under OpenRouter or
-another provider by assumption.
+Both saved OpenCode session records identify the selected endpoint as
+`providerID: opencode`, `modelID: x-preview-f-free`, variant `max`. That proves
+the current harness-visible provider is OpenCode, not OpenRouter; any upstream
+inference behind the free alias remains unknown. The bootstrap claim's
+`Provider: OpenRouter` field is contradicted by this authoritative local
+selection and must be corrected in its first reviewable milestone. Work may
+continue and must not be discarded, but neither run may be aggregated under
+OpenRouter. If the owner wants the next turn to be an OpenRouter experiment,
+they must explicitly choose OpenRouter -> Ox Alpha in each OpenCode model
+picker; that provider change starts a distinct experimental unit.
 
 ## Interrupts and authority
 
