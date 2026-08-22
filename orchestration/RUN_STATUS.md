@@ -1,5 +1,39 @@
 # Run status — PC Verdigris overnight product wave
 
+## Pane foundation integrated; four-lane product/reliability wave sustained — 2026-08-22 15:01 PDT
+
+- TASK-0158 frozen worker head
+  `016d35a25a86d048ab1c1412fbd23e3dc1f33243` is independently ACCEPTED and
+  INTEGRATED. Both the detached worker-head review and combined program head
+  passed the 413-check MSVC `/W4` pane-model harness, native legacy denylist,
+  scope, ancestry, and diff-hygiene gates. Program lineage is architect review
+  `9fd04e98`, implementation `14809519`, evidence `2be77c30`, and lifecycle
+  close `b949b3e4`. The pure header remains intentionally unwired until a
+  separately accepted painting/input successor.
+- Current valid claims: ox-pc-z/TASK-0159 `0e74c185` (PID 32, owned
+  `main.cpp` edit active); ox-pc-ac/TASK-0163 `d872687f` (PID 17644, Gate-B
+  test-only reliability diagnosis active); and replacement
+  ox-pc-ad/TASK-0157 `a41f1013` (PID 25328, owned audio/CMake edits active).
+  Historical ox-pc-ab remains dirty, exhausted, quarantined, and is not
+  capacity. Completed ox-pc-aa is a terminal reviewed lane, not a live PID.
+- Fresh ox-pc-ae is LAUNCH_REQUESTED for TASK-0164 from exact pushed base
+  `b949b3e4653961b7f13661f38ef3addfb8af0df4`, branch
+  `codex/TASK-0164-native-content-cross-reference-hardening-ox-pc-ae`, ports
+  7200-7219, OpenRouter Ox Alpha PID 26840. It does not count as capacity
+  until its STATUS claim is committed and pushed. P1
+  PROVISIONED_UNCLAIMED is due on the first observation after 15:07:50 PDT;
+  P0 ACTIVATION_FAILED is due at 30 minutes or two failed sweeps.
+- TASK-0165 adds a concrete, disjoint pure input-focus/close-ordering seam tied
+  to the accepted Esc regression and future panes. Board sentinel is healthy
+  at 25 effective READY before the TASK-0164 claim, 17 sequenced successors,
+  and zero owned-path collisions; after that claim is recorded the floor will
+  remain exactly 24.
+- Human dashboard is HTTP 200 at `http://127.0.0.1:4737/` (PID 26988), with
+  TASK-0158 shown as terminal and ox-pc-ae visible during activation. The
+  low-cost transition monitor remains PID 2664. Protected `master` remains
+  green at release SHA `a28ac92f`; raw program/worker pushes continue to start
+  zero Actions workflows. Owner action required now: none.
+
 ## Protected release green; Gate-B reliability blocker routed — 2026-08-22 14:27 PDT
 
 - Protected PR #57 merged the loot reliability, native content schema, and

@@ -54,7 +54,62 @@ A failed handoff or missing acknowledgement is an owner-notification event. It
 does not authorize the outgoing supervisor to burn remaining credits by taking
 over implementation.
 
-## Verified live PC checkpoint — 2026-08-22 05:41 PDT
+## Verified live PC checkpoint — 2026-08-22 15:01 PDT
+
+State: `PRIMARY_ACTIVE`; this is a succession checkpoint, not a retirement
+request.
+
+- Program checkout: `Z:\Code\Games\delaford\delaford_game`, branch
+  `codex/native-reconstitution`, clean pushed pre-checkpoint head
+  `2185f88a3ce220adce7e77d5e2b4877f5a963593`. Protected `master` release
+  `a28ac92f6f4fa5fa5a467ecb8353ad1c55667ecb` is green in CI and Native.
+- Standalone broadcast checkout:
+  `Z:\Code\.worktrees\orchestration\pc-overnight-game-wave`, clean branch
+  `codex/pc-overnight-game-wave`, pushed head `61fb2731228a9391dac63561c0abc4e344f62d8b`.
+  Observed `origin/main` is Mac-owned at
+  `d068012abd549b6c40a3317e4367a88747768d28`; PC must not merge or rewrite it.
+- Accepted/integrated transition: TASK-0158 worker head `016d35a2` passed
+  independent frozen/combined MSVC `/W4` 413-check harnesses plus denylist,
+  scope, ancestry, and diff gates. Program commits are review `9fd04e98`,
+  implementation `14809519`, evidence `2be77c30`, lifecycle `b949b3e4`.
+- Active claimed workers:
+  - ox-pc-z, PID 32, TASK-0159, claim `0e74c185`, branch
+    `codex/TASK-0159-native-hud-pane-readability-ox-pc-z`, ports 7100-7119,
+    log `Z:\Code\.fleet\logs\ox-pc-z-task0159.jsonl`;
+  - ox-pc-ac, PID 17644, TASK-0163, claim `d872687f`, branch
+    `codex/TASK-0163-gate-b-ordinary-play-reliability-ox-pc-ac`, ports
+    7160-7179, log `Z:\Code\.fleet\logs\ox-pc-ac-task0163.jsonl`;
+  - ox-pc-ad, PID 25328, TASK-0157 replacement, claim `a41f1013`, branch
+    `codex/TASK-0157-native-procedural-audio-scheduler-ox-pc-ad-r2`, ports
+    7180-7199, log `Z:\Code\.fleet\logs\ox-pc-ad-task0157-r2.jsonl`.
+- Pending activation: ox-pc-ae, PID 26840, TASK-0164, exact base `b949b3e4`,
+  branch `codex/TASK-0164-native-content-cross-reference-hardening-ox-pc-ae`,
+  ports 7200-7219, log
+  `Z:\Code\.fleet\logs\ox-pc-ae-task0164.jsonl`. It is not capacity until a
+  pushed claim exists. P1 claim deadline: first sweep after 15:07:50 PDT; P0
+  at 30 minutes or two failed sweeps.
+- Preserved/non-capacity: ox-pc-aa/TASK-0158 is terminal integrated;
+  ox-pc-ab/TASK-0157 is a dirty exhausted quarantine after its original and
+  single recovery processes exited without handoff. Never clean, resume, or
+  count ox-pc-ab.
+- Queue/factory: board sentinel healthy at 25 effective READY before the
+  pending TASK-0164 claim (24 after it), 17 sequenced DRAFT successors, zero
+  collisions, and 2,000 graph nodes / 500 reserve packets. Runway hours remain
+  honestly UNKNOWN.
+- Local supervision: dashboard `http://127.0.0.1:4737/` is HTTP 200 at PID
+  26988; visible low-cost monitor PID 2664 reads the live config and emits
+  transition-deduplicated activation/stall/review alerts. Chat-spawning cron
+  remains paused.
+- Exact next sweep: verify ox-pc-ae claim/remote head before its SLA, record it
+  on the program branch, rerun the board sentinel at the expected 24 floor;
+  freeze any REVIEW_REQUESTED z/ac/ad/ae head; validate every literal SPEC and
+  negative control independently; integrate only ACCEPTED work; then refresh
+  this checkpoint and the PC-only standalone broadcast branch.
+- Owner action required now: none. A replacement supervisor must fetch both
+  repositories, reproduce this checkpoint from Git/process/log evidence, and
+  acknowledge the current routes before assuming authority.
+
+## Historical verified live PC checkpoint — 2026-08-22 05:41 PDT
 
 State: `PRIMARY_ACTIVE`; this is a succession checkpoint, not a retirement
 request.
