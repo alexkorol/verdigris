@@ -1,0 +1,273 @@
+{
+  "contract_id": "verdigris.passive-tree-authority",
+  "schema_version": "1.0.0",
+  "status": "PROPOSED_CONTRACT",
+  "content_neutrality": {
+    "statement": "This contract defines envelopes, identities, invariants, and error semantics only. It deliberately fixes no topology, no node or effect content, no point awards, caps, costs, migration outcomes, or balance.",
+    "owner_pending_marker": "OWNER_PENDING",
+    "owner_pending_route": "OI-004 (authoritative passive-tree source), then owner-approved content tables; smallest future path is a versioned, machine-readable graph document plus an owner-controlled balance table consumed by this contract unchanged.",
+    "synthetic_identifier_rule": "Every identifier and placeholder value in this contract and its fixtures is obviously synthetic (n:000, e:000, v:0 style) and carries no player-facing content."
+  },
+  "counter_separation": {
+    "invariant": "The persistent commission-chain counter and the live tree-budget counter are structurally distinct ledgers. They may never be collapsed into one field, derived from each other, or given new semantics by this contract or any implementation of it.",
+    "persistent_commission_points": "quests.questPoints - persistent commission-chain record counter. Survives plain re-login in the browser authority. Canonical increment sources, caps, and reset rule are OWNER_PENDING (unresolved cross-stack divergence recorded as QP-2 by TASK-0105).",
+    "live_tree_points": "Top-level live session tree-budget counter feeding the earned-points calculation. Persistence/reset semantics diverge between browser and native stacks; canonical semantics OWNER_PENDING (same QP-2 route).",
+    "violation_error": "COUNTER_CONFUSION"
+  },
+  "graph": {
+    "envelope": "verdigris.passive-tree-authority/graph@1",
+    "type": "object",
+    "required": ["graph_version", "origin", "nodes", "edges"],
+    "properties": {
+      "graph_version": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "Monotonically increasing content-generation version owned by the authoritative source. Observed current value in both live stacks is 2 (src/core/passives/verdigris-geometric-tree.js VERDIGRIS_PASSIVE_TREE_SCHEMA_VERSION; native networking.cpp passive_tree_json). The contract does not pin the value; implementations read it from the approved content source.",
+        "known_versions": {
+          "owner_observed_current": 2,
+          "provenance": "BROWSER_AUTHORITY + NATIVE_APPROXIMATION"
+        }
+      },
+      "origin": {
+        "type": "string",
+        "description": "Stable node_id of the single mandatory root every allocation must include and connect to. The literal id string is OWNER_PENDING content (browser currently uses a coordinate-pair id)."
+      },
+      "nodes": {
+        "type": "array",
+        "items": { "ref": "verdigris.passive-tree-authority/node@1" },
+        "unique_by": "node_id"
+      },
+      "edges": {
+        "type": "array",
+        "items": { "ref": "verdigris.passive-tree-authority/edge@1" },
+        "unique_by": "edge_id"
+      },
+      "visibility_rules": {
+        "type": "array",
+        "owner_pending": true,
+        "description": "Rules that gate which nodes may be allocated (browser precedent: locked outer-circle/subtree nodes cannot be allocated). Rule shapes and content OWNER_PENDING via OI-004."
+      }
+    }
+  },
+  "node": {
+    "envelope": "verdigris.passive-tree-authority/node@1",
+    "type": "object",
+    "required": ["node_id"],
+    "properties": {
+      "node_id": {
+        "type": "string",
+        "description": "Opaque, stable, unique identity assigned by the approved content source. The contract never interprets node_id structure; consumers must not parse meaning out of it (the native axis-score walk that parses ids is a named negative control).",
+        "pattern_note": "No structural pattern is imposed so that any future owner-chosen identifier scheme fits without a contract change."
+      },
+      "content": {
+        "type": "object",
+        "owner_pending": true,
+        "description": "All gameplay meaning: attribute bindings, effect bindings, costs, visibility class, display data. Entirely OWNER_PENDING; this contract neither enumerates nor constrains these fields beyond requiring they be data, not code."
+      }
+    },
+    "forbidden_interpretations": [
+      "Deriving attributes or effects from the textual form of node_id (native +2/axis walk is a negative control, never an accepted authority).",
+      "Assigning default costs or effects when the owner table omits them."
+    ]
+  },
+  "edge": {
+    "envelope": "verdigris.passive-tree-authority/edge@1",
+    "type": "object",
+    "required": ["edge_id", "from_node", "to_node", "variants"],
+    "properties": {
+      "edge_id": {
+        "type": "string",
+        "description": "Opaque, stable, unique connection identity."
+      },
+      "from_node": { "type": "string", "ref": "verdigris.passive-tree-authority/node@1#/properties/node_id" },
+      "to_node": { "type": "string", "ref": "verdigris.passive-tree-authority/node@1#/properties/node_id" },
+      "variants": {
+        "type": "array",
+        "min_items": 1,
+        "items": { "type": "string" },
+        "description": "Opaque variant identifiers for the connection choice (browser precedent: conduit variants selectable at allocation time). Variant meanings are OWNER_PENDING content."
+      },
+      "cost": {
+        "owner_pending": true,
+        "description": "Per-choice cost is OWNER_PENDING balance; the current observed convention (one point per chosen edge) is recorded in REPORT.md as provenance, not fixed here."
+      }
+    }
+  },
+  "allocation": {
+    "envelope": "verdigris.passive-tree-authority/allocation@1",
+    "type": "object",
+    "required": ["graph_version", "allocated_nodes", "edge_choices"],
+    "properties": {
+      "graph_version": { "type": "integer", "minimum": 1 },
+      "allocated_nodes": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Node identities claimed as allocated. Must contain origin exactly once (duplicates are DUPLICATE_NODE); every entry must exist in the referenced graph (UNKNOWN_NODE); every entry must be connected to origin through allocated nodes only (DISCONNECTED_ALLOCATION)."
+      },
+      "edge_choices": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["edge_id", "variant"],
+          "properties": {
+            "edge_id": { "type": "string" },
+            "variant": { "type": "string" }
+          },
+          "description": "Selected variant per chosen edge. Unknown edge_id, unknown variant, duplicate edge_id, or endpoints outside the allocated set are MALFORMED_EDGE / DISCONNECTED_ALLOCATION respectively."
+        }
+      },
+      "selected_node": {
+        "type": ["string", "null"],
+        "description": "Currently highlighted node; if present it must be an allocated node id, otherwise the authority falls back to origin (browser precedent)."
+      },
+      "calling_order": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Ordered list of allocated calling/class node ids (browser wire key classOrder). Entries must all be allocated calling-class nodes; ordering semantics OWNER_PENDING."
+      }
+    },
+    "trust_boundary": "An allocation claim is an untrusted request. The authority rebuilds validity from the approved graph and budget context; it never trusts a previously stored blob in place of validation."
+  },
+  "budget": {
+    "envelope": "verdigris.passive-tree-authority/budget@1",
+    "type": "object",
+    "required": ["persistent_commission_points", "live_tree_points", "earned", "spent", "unspent"],
+    "properties": {
+      "persistent_commission_points": {
+        "type": "integer",
+        "minimum": 0,
+        "description": "Balance of the persistent commission-chain ledger (quests.questPoints). Distinct field, distinct lifecycle; never interchangeable with live_tree_points."
+      },
+      "live_tree_points": {
+        "type": "integer",
+        "minimum": 0,
+        "description": "Balance of the live session tree-budget ledger feeding earned calculation. Distinct field, distinct lifecycle; never interchangeable with persistent_commission_points."
+      },
+      "earned": {
+        "type": "integer",
+        "minimum": 0,
+        "description": "Total spendable points derived by the authority from level plus exactly one designated tree-budget counter input. The derivation formula, caps, and which counter feeds it are OWNER_PENDING (QP-2); observed formulas on both stacks are documented in REPORT.md as provenance only."
+      },
+      "spent": {
+        "type": "integer",
+        "minimum": 0,
+        "description": "Points consumed by the allocation claim under owner-approved cost rules (observed convention: one per non-origin node plus one per chosen edge)."
+      },
+      "unspent": {
+        "type": "integer",
+        "minimum": 0,
+        "computed_as": "earned - spent",
+        "description": "Non-negative remainder; a negative result must surface as OVERSPENT, never clamp silently (the silent-clamp behaviour of the native approximation is part of the named negative control)."
+      }
+    },
+    "invariants": [
+      "spent <= earned, else OVERSPENT.",
+      "persistent_commission_points and live_tree_points are separate ledgers; collapsing them in any payload, persistence record, or API is COUNTER_CONFUSION.",
+      "No cap, award, or cost constant is embedded in this contract; all numeric balance lives in owner-controlled tables (OWNER_PENDING)."
+    ]
+  },
+  "validation_result": {
+    "envelope": "verdigris.passive-tree-authority/validation-result@1",
+    "type": "object",
+    "required": ["ok", "errors"],
+    "properties": {
+      "ok": { "type": "boolean" },
+      "errors": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["code", "element"],
+          "properties": {
+            "code": { "enum": ["MALFORMED_ALLOCATION", "UNKNOWN_GRAPH_VERSION", "UNSUPPORTED_MIGRATION", "UNKNOWN_NODE", "DUPLICATE_NODE", "MALFORMED_EDGE", "DISCONNECTED_ALLOCATION", "OVERSPENT", "COUNTER_CONFUSION"] },
+            "element": {
+              "type": ["string", "null"],
+              "description": "Stable identity of the first offending element under the deterministic tie-break (lexicographic by identity), or null for envelope-level failures."
+            },
+            "message_key": {
+              "type": "string",
+              "description": "Stable lookup key for presentation text; wording is presentation-layer and OWNER_PENDING."
+            }
+          }
+        },
+        "ordering": "Ascending by validation rank (see VALIDATION.md), then lexicographic by element. Deterministic regardless of input order."
+      },
+      "accepted_snapshot": {
+        "type": "object",
+        "description": "Present only when ok=true: the canonical rebuilt state (mirrors allocation envelope plus resolved budget numbers). This snapshot is authoritative output, never trusted input."
+      }
+    }
+  },
+  "migration": {
+    "envelope": "verdigris.passive-tree-authority/migration@1",
+    "type": "object",
+    "required": ["from_version", "to_version"],
+    "properties": {
+      "from_version": { "type": "integer", "minimum": 1 },
+      "to_version": { "type": "integer", "minimum": 1 },
+      "strategies": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["strategy"],
+          "properties": {
+            "strategy": {
+              "enum": ["revalidate_in_place", "full_refund_reset"],
+              "description": "revalidate_in_place: migrate structural form, then run normal validation. full_refund_reset: discard the old allocation and grant a reset state (browser precedent for pre-current persisted blobs: one-time full refund, verdigris-authority.js resolvePersistedVerdigrisTree). Which strategy applies to which version transition is OWNER_PENDING."
+            }
+          }
+        }
+      },
+      "rules": [
+        "A version with a registered strategy migrates before validation; outcome selection is OWNER_PENDING per transition.",
+        "A version below the declared migration floor, or above any registered path, raises UNSUPPORTED_MIGRATION instead of guessing.",
+        "Migration never rewrites history silently: the pre-migration graph_version is retained in the persistence envelope audit field."
+      ]
+    }
+  },
+  "persistence": {
+    "envelope": "verdigris.passive-tree-authority/persistence@1",
+    "type": "object",
+    "required": ["blob"],
+    "properties": {
+      "blob": {
+        "type": "object",
+        "required": ["graph_version", "allocation", "validation_provenance"],
+        "properties": {
+          "graph_version": { "type": "integer", "minimum": 1 },
+          "allocation": { "ref": "verdigris.passive-tree-authority/allocation@1" },
+          "validation_provenance": {
+            "type": "object",
+            "required": ["authority", "result"],
+            "properties": {
+              "authority": { "type": "string", "description": "Identifier of the validating authority instance/build." },
+              "result": { "ref": "verdigris.passive-tree-authority/validation-result@1", "description": "The validation_result emitted when this blob was last rebuilt." }
+            }
+          }
+        }
+      },
+      "trust_boundary": "Snapshots are not trusted save blobs. A persistence write is legal only for a blob carrying validation_provenance from the authority; a raw client payload must be rejected/rebuilt first. Storing client payloads verbatim is forbidden.",
+      "negative_control": "native/src/networking.cpp handle_skilltree_save stores the client snapshot verbatim with no schema/budget/connectivity checks (TASK-0105 raw-snapshot trust gap). This contract forbids that shape of trust; see fixtures case NEG-010."
+    }
+  },
+  "negative_controls": [
+    {
+      "name": "native_plus_two_axis_walk",
+      "definition": "native/src/networking.cpp tree_attributes approximates attribute identity by parsing 'q,r'-style ids and awarding a flat bonus per allocated node along the best-scoring axis (STUB NOTE at networking.cpp:818-821).",
+      "status": "NON-AUTHORITATIVE; named negative control. Never promoted to accepted authority by this contract or any consumer of it."
+    },
+    {
+      "name": "native_raw_snapshot_save",
+      "definition": "native/src/networking.cpp handle_skilltree_save persists client snapshots verbatim without validation.",
+      "status": "NON-AUTHORITATIVE; named negative control (raw-snapshot trust gap identified by TASK-0105)."
+    },
+    {
+      "name": "counter_collapse",
+      "definition": "Any merge, aliasing, or mutual derivation of quests.questPoints and the live tree-budget counter.",
+      "status": "FORBIDDEN under COUNTER_CONFUSION regardless of stack."
+    }
+  ],
+  "versioning_policy": {
+    "contract_version_semantics": "schema_version follows semver; additive envelope fields are minor, breaking envelope changes are major and require a migration entry.",
+    "compatibility": "Implementations declare which contract schema_version they implement; unknown newer contracts must fail closed with UNKNOWN_GRAPH_VERSION on the graph space and UNSUPPORTED_MIGRATION on the persistence space."
+  }
+}

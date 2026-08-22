@@ -1,6 +1,9 @@
 # STATUS — TASK-0112 passive-tree authority contract
 
-- state: CLAIMED
+- state: IMPLEMENTED
+- transition history:
+  - CLAIMED at commit d14c69d4 (claim-only push within window)
+  - IMPLEMENTED at this commit (contract + VALIDATION + negative fixtures committed)
 - worker: ox-pc-c (OpenCode CLI sub-fleet, PC lane c)
 - coordinator/worker id: ox-pc-c
 - provider: openrouter
