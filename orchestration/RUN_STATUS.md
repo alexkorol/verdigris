@@ -1,5 +1,34 @@
 # Run status — PC Verdigris overnight product wave
 
+## Three accepted integrations converged; next two-lane wave staged — 2026-08-22 16:18 PDT
+
+- TASK-0163 frozen head `a53620ef` is independently ACCEPTED and integrated as
+  `acfcbfd1`; a clean detached full native gate plus three consecutive exact
+  session runs passed 107/107, and the combined-program gate passed. The
+  ordinary House/fall/succession/named-Warden/exact-relic/reconnect release
+  journey is no longer blocked by the old load-sensitive driver.
+- TASK-0157 accepted audio lineage is now integrated as `287433bf` +
+  `a6c33c19` after the Gate-B hold cleared. The combined full native gate and
+  60-check audio suite pass; two direct audio runs are byte-identical at
+  SHA-256 `87C88BD9...2600C`. This remains a backend-neutral scheduler/cue seam,
+  not an audible-playback or final-sound claim.
+- TASK-0159 frozen head `7ca17bfe` is independently ACCEPTED and integrated as
+  `6cbb1324` + `fbe8f49c`. Four real-GDI 960x600/1366x768 captures were visually
+  inspected; the complete combined `-RunTests -RunClientScenarios` gate passes,
+  including both Escape contracts and all 12 scenarios. Procedural placeholder
+  art remains intentionally non-final.
+- TASK-0161 is promoted READY at frozen integrated interface `30cdad4b`; it
+  isolates scenario capture output so full gates stop rewriting historical
+  evidence. TASK-0162 is now collision-free after TASK-0163 integration and is
+  added to the effective reserve. Before the next claims the board has 26
+  effective READY, 16 remaining DRAFT successors, and zero collisions; planned
+  routes are TASK-0161 capture isolation and TASK-0101 combat-depth audit,
+  preserving the 24-packet reserve after both claims.
+- Program head is locally clean at `30cdad4b` before this coordination update.
+  Dashboard PID 25144 serves HTTP 200 with seven terminal integrated rows and
+  zero alerts; low-cost monitor PID 2664 is live. Protected `master` remains
+  green at `a28ac92f`. Owner action required now: none.
+
 ## Content validation shipped; audio accepted behind Gate-B hold — 2026-08-22 15:46 PDT
 
 - TASK-0164 replacement worker head `cedabc72` is independently ACCEPTED and
@@ -558,7 +587,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 25 packets before TASK-0164 claim
+## Effective READY — 26 packets before next claims
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -599,6 +628,8 @@ wins after a fresh fetch.
 | P0 | TASK-0163 Gate-B ordinary-play journey reliability | INDEPENDENT / IMPLEMENTATION | fresh recovered native-test lane | removes the release-blocking fatal-fall/Warden nondeterminism without runtime shortcuts |
 | P1 | TASK-0164 native content cross-reference hardening | INDEPENDENT / IMPLEMENTATION | future clean content-validation lane | rejects dangling zone/encounter seed references before content reaches a shipped runtime |
 | P1 | TASK-0165 native input focus model foundation | INDEPENDENT / IMPLEMENTATION | future clean native-client seam lane | prevents future panes from reintroducing global-Esc exits or leaking gameplay input through focused UI |
+| P1 | TASK-0161 native scenario capture-output isolation | PIPELINED / IMPLEMENTATION | fresh native-client lane after TASK-0159 | prevents complete gates from rewriting historical visual evidence |
+| P1 | TASK-0162 native passive-tree payload hardening | INDEPENDENT / IMPLEMENTATION | future clean session-parser lane after TASK-0163 | rejects malformed progression mirrors without inventing balance |
 
 ## HOLD despite historical READY headers
 
@@ -608,7 +639,6 @@ wins after a fresh fetch.
 | TASK-0078 native surface density | TASK-0077 ACCEPTED/integrated | both own `native/client/**`; single-writer rule |
 | TASK-0073 renderer backend evaluation | SUPERSEDED by TASK-0114 | surge replacement supplies exact evidence, acceptance, and stop contracts |
 | TASK-0079 browser panel inventory | SUPERSEDED by TASK-0115 | surge replacement supplies hard-fail capture and exact gate contracts |
-| TASK-0162 passive-tree payload hardening | PIPELINED behind TASK-0163 | both require `native/tests/session_tests.cpp`; reliability blocker owns the surface first |
 
 ## Sequenced successors — 17 DRAFT
 
@@ -630,7 +660,6 @@ wins after a fresh fetch.
 | TASK-0125 onboarding first-session wave | 0119 + Gate B/C + copy placeholders |
 | TASK-0126 clean-machine release harness | 0092 + 0094 + 0099 + 0120 accepted |
 | TASK-0127 save migration matrix | 0097 + 0107 + 0120 accepted |
-| TASK-0161 native capture-output isolation | 0159 accepted; capture-root interface frozen |
 
 ## Standing sweep and restock
 
