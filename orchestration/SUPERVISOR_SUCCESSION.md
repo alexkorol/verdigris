@@ -78,8 +78,10 @@ request.
     combined program gates passed and pushed head is `08e8776e`;
   - ox-pc-p, ports 6920-6939, TASK-0147 claim `3ee9f928`; first process exited
     with owned-path edits preserved after its real GDI capture exposed broken
-    scenery geometry. The exact session is resumed at PID 15840 and has found
-    generated polygon point-range bleed as the concrete corruption mechanism;
+    scenery geometry. The supervisor independently rejected the worker's fresh
+    05:40 tree/dwelling/elite probes as still slabbed/wedged after its claimed
+    range correction; the exact session is resumed at PID 17888 and must prove
+    coherent real pixels before any handoff;
   - ox-pc-q, ports 6940-6959, TASK-0148 claim `815a359b` released and clean
     preserved after its recovery proposed `mutate/select` for the first Scion,
     bypassing the required accepted `create/set-out` chain. It is exhausted,
