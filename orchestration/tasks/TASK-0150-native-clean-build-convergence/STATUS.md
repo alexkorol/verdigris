@@ -1,6 +1,6 @@
 # TASK-0150 STATUS
 
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: codex
 worker: ox-pc-k (isolated Windows implementation worker, ports 6820-6839)
 machine: Windows (win32), pwsh 7.x
@@ -27,3 +27,19 @@ disposable build directory with installed toolchains only; remove only evidenced
 build-helper friction inside owned paths (native/build.ps1, native/CMakeLists.txt,
 native/CMakePresets.json); run every literal acceptance gate; then set
 REVIEW_REQUESTED with REPORT.md and push only this worker branch.
+
+## REVIEW_REQUESTED (2026-08-22T10:14:39Z)
+
+Implementation commit: `ae54f024` (native/CMakeLists.txt, +4 lines, owned path
+only). Full evidence in REPORT.md. Acceptance gates, all literal, all green:
+
+- Disposable dir `%TEMP%\opencode\task0150-build` (fresh, wiped): configure
+  exit 0 → build exit 0 (Ninja, VS2019 MSVC 14.29, bundled CMake 3.20) →
+  `ctest --output-on-failure` 5/5 passed exit 0 → direct
+  `verdigris_client.exe --scenario all` exit 0 (7 scenarios PASS).
+- Default `native/build.ps1 -RunTests -RunClientScenarios` from wiped
+  `native\build` → exit 0 (proven before AND after the change).
+- `git diff --check` → clean.
+
+No gameplay/client/server/tool sources touched; forbidden paths untouched;
+no packaging/signing; port 6500 never used. Pushed: this worker branch only.
