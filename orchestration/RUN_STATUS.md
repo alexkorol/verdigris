@@ -40,7 +40,7 @@ still governs acceptance and this lane never counts as Verdigris capacity.
 
 Snapshot: 2026-08-22 01:35 PDT
 
-Sweep base: `16903a6e` plus the pending coordination reconciliation
+Sweep base: `d2311bc8e1a8bea7f7efb210737847117d235277`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
 `d2423873` merge tip).
 
@@ -67,10 +67,11 @@ path-disjoint READY packets plus 12 concrete successors. Current valid claims
 are excluded from READY accounting. Four accepted-contract validator
 implementations restored 28 effective READY. TASK-0080, TASK-0137, TASK-0138,
 and TASK-0140 are now accepted; the collided TASK-0136 claim is released back
-to the executable board. The reconciled board therefore holds **25 effective
-READY + 17 successors**, above the absolute packet floor. D-128 supersedes
-count-only sufficiency; TASK-0128 remains in REVISE because its committed
-runway captures are self-stale at the pushed worker head.
+to the executable board, and replacement lane h has now pushed claim
+`ddd00857`. Excluding that valid claim leaves **24 effective READY + 17
+successors**, exactly preserving the absolute packet floor. D-128 supersedes
+count-only sufficiency; TASK-0128 remains in active REVISE because its
+committed runway captures are self-stale at the pushed worker head.
 
 ## Autonomous runway and factory status
 
@@ -99,14 +100,14 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
-| ox-pc-a | 6620-6639 | TASK-0128 REVIEW_REQUESTED at `bb67c566`; REVISE issued for self-stale captures | restart revision worker after push |
+| ox-pc-a | 6620-6639 | TASK-0128 REVISE active from pushed head `bb67c566`; two architect-regenerated captures preserved | worker correcting evidence revision |
 | ox-pc-b | 6640-6659 | TASK-0080 accepted/integrated through `facfd7e4`; lane available | current-tip successor pending |
 | ox-pc-c | 6660-6679 | TASK-0136 claim released after duplicate-dispatch collision; dirty worktree quarantined | not available |
 | ox-pc-d | 6680-6699 | TASK-0140 accepted/integrated at `46574f4e`; lane available | current-tip successor pending |
 | ox-pc-e | 6700-6719 | TASK-0137 accepted/integrated at `83d8f959`; lane available | current-tip successor pending |
 | ox-pc-f | 6720-6739 | TASK-0138 accepted/integrated at `38942560`; lane available | current-tip successor pending |
 | ox-pc-g | 6740-6759 | TASK-0144 accepted/integrated at `b17d36b0`; lane available | current-tip successor pending |
-| ox-pc-h | 6760-6779 | TASK-0142 accepted/integrated at `aa95ec76`; clean lane selected for replacement claim | TASK-0136 after coordination push |
+| ox-pc-h | 6760-6779 | TASK-0136 replacement claim pushed at `ddd00857`; implementation active | TASK-0136 passive-tree contract validator |
 | ox-pc-i | 6780-6799 | TASK-0143 accepted/integrated at `ac1fc54a`; lane available for successor promotion | successor pending current-tip validation |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
@@ -194,8 +195,8 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - Released: **TASK-0136** claims `6ea36f5a`/`7b24e5d3`/`7026892e` after a real
   duplicate-dispatch collision. Lane c remains quarantined; the clean lane h
   receives the replacement route after this coordination push.
-- Active implementation claims: none until the TASK-0128 revision and
-  TASK-0136 replacement workers commit fresh post-push states.
+- Active work: TASK-0128 revision on ox-pc-a; TASK-0136 replacement claim
+  `ddd00857` on ox-pc-h. The latter is excluded from READY accounting.
   Separate project: orchestration bootstrap claim `795a9b3`, with pushed M3
   head `82de84ef` awaiting its configured Tier-B acceptance path.
 - Historical TASK-0056 and legacy clone WIP are superseded/preserved, never
@@ -205,7 +206,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 25 packets
+## Effective READY — 24 packets
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -213,7 +214,6 @@ wins after a fresh fetch.
 
 | Pri | Task | Topology / job | Preferred route | Owner-visible contribution |
 |---|---|---|---|---|
-| P1 | TASK-0136 passive-tree contract validator | INDEPENDENT / IMPLEMENTATION | ox-pc-h replacement after coordination push | mechanically rejects illegal passive-tree authority or graph contracts |
 | P0 | TASK-0097 persistence durability audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | protects House/Scion/item saves |
 | P0 | TASK-0100 deterministic replay audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes divergences reproducible |
 | P0 | TASK-0104 itemization/history audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages memorable history-bearing loot |
