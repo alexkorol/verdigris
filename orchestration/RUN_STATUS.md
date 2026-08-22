@@ -1,8 +1,8 @@
 # Run status — Codex Sol PC surge sweep
 
-Snapshot: 2026-08-21 20:16 PDT
+Snapshot: 2026-08-21 20:29 PDT
 
-Sweep base: `600e6432b03ba5ca063ef0cbdc9ad643c4a70308`
+Sweep base: `f3540d7dd7b9ac820e16d363f6672dcc887669a5`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
 `d2423873` merge tip).
 
@@ -99,12 +99,14 @@ change is required for successful alarm runs.
 
 ### Cross-project control-plane watch (not Verdigris capacity)
 
-`alexkorol/orchestration` PC main is clean/synced at `e7b0d3e`. The isolated
+`alexkorol/orchestration` PC main is clean/synced at `a57e21c`. The isolated
 `Z:\Code\.worktrees\orchestration\ox-bootstrap` worker pushed valid claim-only
 commit `795a9b3` at 20:20 on
 `codex/ox-bootstrap-portable-orchestration`; only `bootstrap/CLAIM.md` changed.
-Its P1 activation alert is clear. It is `CLAIMED`, awaiting post-claim progress,
-supervised as a separate project, and never counts toward Verdigris capacity.
+Its P1 activation alert is clear. Fresh local writes through 20:29 cover M0
+packages, adapters, packs, tests, and docs, so it is
+`ACTIVE_LOCAL_PENDING_COMMIT`; review waits for a pushed milestone. It is
+supervised as a separate project and never counts toward Verdigris capacity.
 
 ### Endpoint identity watch
 
