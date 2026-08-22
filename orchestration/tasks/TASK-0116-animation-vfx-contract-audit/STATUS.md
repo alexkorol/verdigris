@@ -1,6 +1,6 @@
 ---
 task: TASK-0116
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: ox-alpha
 worker: ox-pc-s (headless OpenCode Ox Alpha worker)
 provider: openrouter
@@ -15,4 +15,7 @@ expected_verification: >
   node JSON.parse gate on captures/animation-vfx-matrix.json ;
   git diff --check ; git diff --name-only (only this task folder)
 known_risks: audit-only capsule; no source edits, ports, or asset generation; owner asset decisions remain open per D-113
+implementation_commit: 6d6fcf4b
+report: REPORT.md (executive summary, evidence, acceptance outcomes, successor promotion package)
+review_requested_at: 2026-08-22T07:00:05-07:00
 ---
