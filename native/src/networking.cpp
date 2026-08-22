@@ -211,6 +211,72 @@ bool as_bool(const JsonValue* value, bool fallback = false) {
   return value && value->boolean() ? *value->boolean() : fallback;
 }
 
+// ── N5 chronicle roster helpers (mortal-oath persistence) ──────────────────
+// The living roster is the only durable home for a scion's sworn oath in the
+// native server (no database seam yet). Admissions persist it so a re-login
+// restores the hard lifecycle exactly like the JS beginScionSession rebuild
+// (server/core/services/chronicles.js forces lifecycle.mode 'hard' on every
+// set-out).
+JsonValue::Object* find_chronicle_house_object(JsonValue& chronicle, const std::string& house_id) {
+  if (auto* root = chronicle.object()) {
+    auto houses_it = root->find("houses");
+    if (houses_it != root->end() && houses_it->second.array()) {
+      for (auto& entry : *houses_it->second.array()) {
+        auto* house = entry.object();
+        if (!house) continue;
+        auto id_it = house->find("id");
+        if (id_it != house->end() && id_it->second.string()
+            && *id_it->second.string() == house_id) return house;
+      }
+    }
+  }
+  return nullptr;
+}
+
+void set_scion_record_mortal(JsonValue& chronicle, const std::string& house_id,
+                             const std::string& scion_id, bool mortal) {
+  JsonValue::Object* house = find_chronicle_house_object(chronicle, house_id);
+  if (!house) return;
+  auto scions_it = house->find("scions");
+  if (scions_it == house->end() || !scions_it->second.array()) return;
+  for (auto& entry : *scions_it->second.array()) {
+    auto* scion = entry.object();
+    if (!scion) continue;
+    auto id_it = scion->find("id");
+    if (id_it == scion->end() || !id_it->second.string()
+        || *id_it->second.string() != scion_id) continue;
+    (*scion)["mortal"] = JsonValue(mortal);
+    return;
+  }
+}
+
+bool scion_record_mortal(const JsonValue& chronicle, const std::string& house_id,
+                         const std::string& scion_id) {
+  const auto* root = chronicle.object();
+  if (!root) return false;
+  auto houses_it = root->find("houses");
+  if (houses_it == root->end() || !houses_it->second.array()) return false;
+  for (const auto& house_entry : *houses_it->second.array()) {
+    const auto* house = house_entry.object();
+    if (!house) continue;
+    auto id_it = house->find("id");
+    if (id_it == house->end() || !id_it->second.string()
+        || *id_it->second.string() != house_id) continue;
+    auto scions_it = house->find("scions");
+    if (scions_it == house->end() || !scions_it->second.array()) return false;
+    for (const auto& scion_entry : *scions_it->second.array()) {
+      const auto* scion = scion_entry.object();
+      if (!scion) continue;
+      auto sid_it = scion->find("id");
+      if (sid_it == scion->end() || !sid_it->second.string()
+          || *sid_it->second.string() != scion_id) continue;
+      auto mortal_it = scion->find("mortal");
+      return mortal_it != scion->end() && as_bool(&mortal_it->second);
+    }
+  }
+  return false;
+}
+
 // ── N4 item wire shapes (server/player/handlers/dev.js buildStateSnapshot) ──
 
 JsonValue ratings_json(const ChannelRatings& ratings) {
@@ -556,9 +622,15 @@ void ProtocolSession::reset_world_for_new_socket() {
     // final death is Chronicle history - reconnecting must NOT resurrect
     // them; only selecting an heir through chronicles admission does.
     lifecycle_ = "alive";
-    lifecycle_mode_ = "soft";
-    mortal_oath_ = false;
     lifecycle_deaths_ = 0;
+    // JS parity: beginScionSession rebuilds mode:'hard' whenever an admitted
+    // scion resumes, so a sworn oath survives relogins; a socket with no
+    // admitted scion keeps the legacy soft-guest profile.
+    const bool sworn = active_scion_id_.empty()
+        ? false
+        : scion_record_mortal(chronicle_, active_house_id_, active_scion_id_);
+    mortal_oath_ = sworn;
+    lifecycle_mode_ = sworn ? "hard" : "soft";
   }
   respawn_at_ms_ = 0;
   respawn_protection_until_ms_ = 0;
@@ -2520,6 +2592,20 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   if (envelope.event=="chronicles:scion:set-out") {
     active_scion_id_=as_string(payload?payload->get("scionId"):nullptr);
     pending_chronicles_=false;
+    // JS beginScionSession parity (server/core/services/chronicles.js:210-219):
+    // EVERY Chronicles set-out admits the scion under the hard lifecycle -
+    // the mortal oath is the Chronicles admission contract, not a dev-only
+    // arming path. Without it process_combat's final-death gate can never
+    // fire from an ordinary lethal wound, so a normal player can never reach
+    // the crypt, circulation, or succession (the TASK-0148 Gate-B gap).
+    mortal_oath_=true;
+    lifecycle_mode_="hard";
+    lifecycle_="alive";
+    lifecycle_deaths_=0;
+    respawn_at_ms_=0;
+    respawn_protection_until_ms_=0;
+    prepare_final_death_=false;
+    set_scion_record_mortal(chronicle_, active_house_id_, active_scion_id_, true);
     // crossroads: the scion spawns beside their House wagon pitch, and the
     // first set-out of the day claims the road purse into the ledger.
     {
@@ -2637,6 +2723,9 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     lifecycle_mode_=mortal_oath_?"hard":"soft";
     lifecycle_="alive"; lifecycle_deaths_=0; respawn_at_ms_=0; respawn_protection_until_ms_=0; prepare_final_death_=false;
     pending_chronicles_=false;
+    // Persist the sworn oath on the living roster so relogins restore the
+    // same lifecycle (see reset_world_for_new_socket).
+    set_scion_record_mortal(chronicle_, active_house_id_, active_scion_id_, mortal_oath_);
     // Scion admission starts the commission chain fresh (JS: quests begin
     // "authoritatively on world admission"); a plain re-login keeps the
     // chain, so points survive relogging on the same account.
@@ -2647,6 +2736,15 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     wear_.clear(); inventory_.clear();
     CreateItemOptions purse; purse.quantity=100;
     auto coins=create_game_item("coins",purse); if (coins) inventory_.add(std::move(*coins));
+    // JS parity (createScionSessionProfile): an admitted scion arrives with
+    // full resources. The Simulation actor is reused across scions, so the
+    // heir must not inherit the fallen scion's lethal wound - leaving life 0
+    // makes the next process_combat tick commit a second fall with no combat
+    // input at all.
+    if (auto* fresh_actor = simulation_->actor(simulation_->scion().actor_id)) {
+      fresh_actor->alive = true;
+      fresh_actor->stats.life = fresh_actor->stats.life_max;
+    }
     sync_combat_mods();
     world_->reset_to_town();
     emit_login(emit);
