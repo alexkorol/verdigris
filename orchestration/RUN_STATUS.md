@@ -2,12 +2,12 @@
 
 Snapshot: 2026-08-21 19:58 PDT
 
-Sweep base: `7f2716911e0136ad4c89d552f6ca0c33fd185eb4`
+Sweep base: `9bd689b4cebac0fe1f79ba54edcc9967a1a8f0d4`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
 `d2423873` merge tip).
 
 GitHub: no open PRs. Latest master CI run 32441409427 passed at `d2423873`;
-the coordination-only `7f271691` push did not dispatch a new workflow. No
+the coordination-only program pushes did not dispatch a new workflow. No
 current REVIEW_REQUESTED or REVISE transition exists.
 
 Orchestrator: **Codex Sol**, PC architect checkout
@@ -25,8 +25,8 @@ integrates, and specs; it does not absorb implementation.
    not a stopping point.
 
 Surge floor: at least 24 effective, dependency-free, pairwise path-disjoint
-READY packets plus 12 concrete successors. Current board: **24 READY + 12
-successors**.
+READY packets plus 12 concrete successors. Current board: **30 READY + 18
+successors**; the minimum is runway, never product completion.
 
 ## PC Ox Alpha fleet reconciliation
 
@@ -70,7 +70,7 @@ on meaningful state changes.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 24 packets
+## Effective READY — 30 packets
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -86,6 +86,8 @@ wins after a fresh fetch.
 | P0 | TASK-0100 deterministic replay audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes divergences reproducible |
 | P0 | TASK-0104 itemization/history audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages memorable history-bearing loot |
 | P0 | TASK-0105 passive-tree authority audit | INDEPENDENT / MECHANICAL | future after current claim | replaces approximation with an evidence path |
+| P0 | TASK-0119 onboarding/first-session audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes launch through first extraction legible |
+| P0 | TASK-0120 release verification audit | INDEPENDENT / MECHANICAL | future after current claim | freezes clean-machine/migration/soak release proof |
 | P1 | TASK-0082 dual-server matrix runner | INDEPENDENT / BOUNDED-DESIGN | future after current claim | automates unchanged JS/C++ parity evidence |
 | P1 | TASK-0115 browser panel/typography inventory | INDEPENDENT / MECHANICAL | future after current claim | freezes presentation delta #4 |
 | P1 | TASK-0091 protocol coverage sentinel design | INDEPENDENT / MECHANICAL | future after current claim | catches lost journey wire steps |
@@ -98,6 +100,10 @@ wins after a fresh fetch.
 | P1 | TASK-0101 combat-depth gap audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | selects coherent player-visible combat waves |
 | P1 | TASK-0102 skill-system gap audit | INDEPENDENT / MECHANICAL | future after current claim | maps LMB/RMB/Q/E/R end to end |
 | P1 | TASK-0103 monster/encounter gap audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages packs, rarity, uniques, bosses |
+| P1 | TASK-0116 animation/VFX contract audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages readable production motion and effects |
+| P1 | TASK-0117 audio/music runtime audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | defines combat/UI/ambience/music runtime |
+| P1 | TASK-0118 accessibility/options audit | INDEPENDENT / MECHANICAL | future after current claim | stages broad readable and controllable play |
+| P1 | TASK-0121 owner content approval matrix | INDEPENDENT / MECHANICAL | future after current claim | batches art/lore/naming/balance/economy/content gates |
 | P2 | TASK-0084 reference-capture manifest | INDEPENDENT / MECHANICAL | future after current claim | detects stale/missing visual evidence |
 | P2 | TASK-0085 denylist exception audit | INDEPENDENT / MECHANICAL | future after current claim | prepares owner compatibility ruling |
 | P2 | TASK-0114 renderer backend evaluation | EXPLORATORY / BOUNDED-DESIGN | future after current claim | feeds cross-platform renderer ADR |
@@ -112,7 +118,7 @@ wins after a fresh fetch.
 | TASK-0073 renderer backend evaluation | SUPERSEDED by TASK-0114 | surge replacement supplies exact evidence, acceptance, and stop contracts |
 | TASK-0079 browser panel inventory | SUPERSEDED by TASK-0115 | surge replacement supplies hard-fail capture and exact gate contracts |
 
-## Sequenced successors — 12 DRAFT
+## Sequenced successors — 18 DRAFT
 
 | Task | Dependency / release |
 |---|---|
@@ -128,6 +134,12 @@ wins after a fresh fetch.
 | TASK-0111 item-history lifecycle | 0104 accepted; owner-independent lifecycle frozen |
 | TASK-0112 passive-tree scaffold | 0105 accepted; owner source or schema-only fallback |
 | TASK-0113 campaign/content tooling | 0095 + 0096 accepted; validators frozen |
+| TASK-0122 animation/VFX system | 0116 + renderer/asset contracts accepted |
+| TASK-0123 audio/music runtime | 0117 + backend/license/owner direction |
+| TASK-0124 accessibility/options wave | 0118 + pane/input/settings ownership |
+| TASK-0125 onboarding first-session wave | 0119 + Gate B/C + copy placeholders |
+| TASK-0126 clean-machine release harness | 0092 + 0094 + 0099 + 0120 accepted |
+| TASK-0127 save migration matrix | 0097 + 0107 + 0120 accepted |
 
 ## Standing sweep and restock
 

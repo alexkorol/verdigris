@@ -13,6 +13,8 @@ promotes them to `READY_FOR_OWNER` when their named evidence is accepted.
 | OI-005 | PARKED-NONCRITICAL | before production magic content | Arcane Lattice production direction |
 | OI-006 | PARKED-NONCRITICAL | before House economy implementation | crafting/economy service boundary |
 | OI-007 | PARKED-NONCRITICAL | before authored campaign/season/travel releases | campaign density, travel risk, season inheritance |
+| OI-008 | WAITING_EVIDENCE (TASK-0121) | before production content breadth/final release | art, lore, naming, balance, and content approval batch |
+| OI-009 | WAITING_EVIDENCE (TASK-0117) | before authored sound/music content | sound, ambience, music, mix, and licensing direction |
 
-Unrelated tasks continue per each packet's fallback section. No asset
+Unrelated tasks continue per each packet's fallback section. No asset or audio
 generation is currently requested from the owner.

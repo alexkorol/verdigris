@@ -8,8 +8,8 @@
 - D-126 registers only `ox-pc-a` (Windows, ports 6620-6639). The stopped b/c
   tabs shared one OpenCode project, made no claim/write, and are explicitly not
   Verdigris lanes or incidents.
-- `RUN_STATUS.md` now exposes 24 effective pairwise path-disjoint READY packets
-  plus 12 DRAFT successors. `PROGRAM_GRAPH.md` carries the deeper journey,
+- `RUN_STATUS.md` now exposes 30 effective pairwise path-disjoint READY packets
+  plus 18 DRAFT successors. `PROGRAM_GRAPH.md` carries terminal T1-T8 proof and the deeper journey,
   presentation, renderer, campaign, combat, skill, monster, item, progression,
   persistence, replay, performance, tooling, packaging, and polish graph.
 - Initial one-at-a-time route: TASK-0081 Gate B wire-contract freeze. The
