@@ -1,6 +1,6 @@
 # TASK-0080 status
 
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex (worker: ox-pc-b)
 task family: MECHANICAL / INDEPENDENT — effective-board sentinel and fleet sweep report
 

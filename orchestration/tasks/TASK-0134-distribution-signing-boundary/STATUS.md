@@ -1,7 +1,7 @@
 # TASK-0134 claim
 
 - task: TASK-0134
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
 - coordinator: ox-pc-i
 - worker: ox-pc-i (isolated PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0134-distribution-signing-boundary-ox-pc-i`

@@ -1,6 +1,6 @@
 # STATUS
 
-state: REVIEW_REQUESTED
+state: INTEGRATED
 worker: ox-pc-g
 coordinator: codex
 branch: codex/TASK-0144-native-visual-kit-msvc-portability-ox-pc-g

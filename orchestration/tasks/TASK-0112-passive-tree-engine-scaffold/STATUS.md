@@ -1,6 +1,6 @@
 # STATUS — TASK-0112 passive-tree authority contract
 
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
 - transition history:
   - CLAIMED at commit d14c69d4 (claim-only push within window)
   - IMPLEMENTED at commit d302ac32 (contract + VALIDATION + negative fixtures committed)

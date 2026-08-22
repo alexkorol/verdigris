@@ -1,7 +1,7 @@
 # TASK-0137 claim
 
 - task: TASK-0137
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
 - review_requested_at_utc: 2026-08-22T06:52Z
 - review_head: branch tip at push of the REVIEW_REQUESTED commit; implementation head `f63c9550`
 - coordinator: ox-pc-e

@@ -1,6 +1,6 @@
 # TASK-0133 status
 
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
 - revision: r2 (owner-authority correction per architect REVISE on b44ab0ab)
 - coordinator: ox-pc-h
 - worker: ox-pc-h

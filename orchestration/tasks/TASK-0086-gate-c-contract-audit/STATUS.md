@@ -1,6 +1,6 @@
 ---
 task: TASK-0086
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: ox-pc-c
 worker: ox-pc-c
 root: Z:\Code\.worktrees\verdigris\ox-pc-c

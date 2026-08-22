@@ -1,7 +1,7 @@
 # TASK-0143 claim
 
 - task: TASK-0143
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
 - coordinator: ox-pc-i
 - worker: ox-pc-i (isolated PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0143-native-gameplay-runtime-slice-ox-pc-i`

@@ -1,6 +1,6 @@
 ---
 task: TASK-0138
-state: REVIEW_REQUESTED
+state: INTEGRATED
 worker: ox-pc-f
 worker_branch: codex/TASK-0138-release-proof-validator-ox-pc-f
 worktree: Z:\Code\.worktrees\verdigris\ox-pc-f

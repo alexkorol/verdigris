@@ -1,7 +1,7 @@
 # TASK-0141 claim
 
 - task: TASK-0141
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
 - coordinator: ox-pc-g
 - worker: ox-pc-g (isolated PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0141-procedural-native-visual-kit-ox-pc-g`

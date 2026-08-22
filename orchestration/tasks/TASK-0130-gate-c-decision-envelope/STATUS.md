@@ -1,6 +1,6 @@
 # TASK-0130 STATUS
 
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
 - review_requested_at_utc: 2026-08-22T06:06Z
 - review_head: see REPORT.md "Commit SHAs"; branch tip at push is the REVIEW_REQUESTED evidence commit
 - worker: ox-pc-e

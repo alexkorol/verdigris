@@ -1,7 +1,7 @@
 # TASK-0132 claim
 
 - task: TASK-0132
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
 - coordinator: ox-pc-g
 - worker: ox-pc-g (isolated PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0132-clean-machine-harness-contract-ox-pc-g`

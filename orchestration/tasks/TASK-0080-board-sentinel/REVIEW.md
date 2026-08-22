@@ -1,11 +1,11 @@
 ---
 task: TASK-0080
-verdict: REVISE
-reviewed_head: 0ab4e7a5712c5b06bff46b580f200fd0946ec6c3
-reviewed_at: 2026-08-21 22:24 -07:00
+verdict: ACCEPTED
+reviewed_head: cac30154e0d63ec51a720c234719e832990cd88e
+reviewed_at: 2026-08-22 01:30 -07:00
 ---
 
-# TASK-0080 review — REVISE
+# TASK-0080 initial review — REVISE
 
 The implementation is read-only, remains within the owned paths, and all five
 literal SPEC gates pass at the pushed worker head. The 16-test suite covers
@@ -31,3 +31,15 @@ One controller-critical correction is required before acceptance:
 This review deliberately preserves the existing parser, report, captures, and
 passing behavior. The required change is limited to global lifecycle
 enumeration, collision membership, and regression coverage.
+
+## Final review — ACCEPTED
+
+Rev2 `a0419710` implemented complete task-folder discovery and global collision
+membership. Rev3 `f9a9c821` then made accepted-and-integrated folders terminal
+without hiding genuine off-board claims. Independent architect verification
+passed 22/22 tests, both syntax checks, and the negative floor control. Against
+the reconciled current program tree, the sentinel reports 24 effective READY,
+zero live claims/review requests, zero collisions, one preserved superseded
+historical claim, a satisfied floor, and exit 0.
+
+Accepted worker head `cac30154`; integrated implementation tip `facfd7e4`.

@@ -1,7 +1,7 @@
 # TASK-0140 claim
 
 - task: TASK-0140
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
 - coordinator: ox-pc-d
 - worker: ox-pc-d (isolated PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0140-soak-evidence-bundle-validator-ox-pc-d`

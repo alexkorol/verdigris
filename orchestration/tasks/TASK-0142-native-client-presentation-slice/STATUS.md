@@ -1,7 +1,7 @@
 # TASK-0142 claim
 
 - task: TASK-0142
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
 - coordinator: ox-pc-h
 - worker: ox-pc-h (isolated PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0142-native-client-presentation-slice-ox-pc-h`

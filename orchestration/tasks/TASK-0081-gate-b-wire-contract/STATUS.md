@@ -1,7 +1,7 @@
 # TASK-0081 claim
 
 - task: TASK-0081
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
 - transitioned-at (commit clock): 2026-08-21 20:42:44 PDT (-07:00), author/committer time of review-request commit `0302ea4c`; rev2 `52a7377b` at 21:03:34 PDT; rev3 clock recorded in REPORT.md commits section (wall-clock session notes like "started ~20:20 PDT" are approximate and are NOT used for duration math)
 - coordinator: ox-pc-a
 - worker: ox-pc-a (only registered PC Ox Alpha implementation worker)

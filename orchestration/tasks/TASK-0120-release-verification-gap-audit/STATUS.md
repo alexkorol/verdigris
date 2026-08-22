@@ -1,7 +1,7 @@
 # TASK-0120 claim
 
 - task: TASK-0120
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
 - coordinator: ox-pc-e
 - worker: ox-pc-e (isolated PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0120-release-verification-gap-audit-ox-pc-e`

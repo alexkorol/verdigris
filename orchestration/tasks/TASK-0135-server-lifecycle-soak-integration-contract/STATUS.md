@@ -1,7 +1,7 @@
 # TASK-0135 claim
 
 - task: TASK-0135
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
 - coordinator: ox-pc-d
 - worker: ox-pc-d (isolated PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0135-server-lifecycle-soak-integration-contract-ox-pc-d`

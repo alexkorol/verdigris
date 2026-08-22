@@ -38,9 +38,9 @@ The independent `ox-bootstrap` orchestration worker has pushed M3 head
 `82de84ef` after M2 `5627916f`. The standalone repo's Tier-B review contract
 still governs acceptance and this lane never counts as Verdigris capacity.
 
-Snapshot: 2026-08-21 23:05 PDT
+Snapshot: 2026-08-22 01:35 PDT
 
-Sweep base: `0d40d79db80c53280bb7cfe6f42318b39dab6f4c`
+Sweep base: `16903a6e` plus the pending coordination reconciliation
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
 `d2423873` merge tip).
 
@@ -65,12 +65,12 @@ integrates, and specs; it does not absorb implementation.
 Emergency surge floor: at least 24 effective, dependency-free, pairwise
 path-disjoint READY packets plus 12 concrete successors. Current valid claims
 are excluded from READY accounting. Four accepted-contract validator
-implementations restored 28 effective READY; the valid pushed claims for
-TASK-0141 (ox-pc-g) and TASK-0143 (ox-pc-i) left 26 effective READY plus 17
-successors; TASK-0144 has now been accepted, leaving **25 effective READY +
-17 successors**, still above the absolute packet floor. TASK-0142 remains
-sequenced behind TASK-0141 acceptance because it consumes that asset interface.
-D-128 supersedes count-only sufficiency.
+implementations restored 28 effective READY. TASK-0080, TASK-0137, TASK-0138,
+and TASK-0140 are now accepted; the collided TASK-0136 claim is released back
+to the executable board. The reconciled board therefore holds **25 effective
+READY + 17 successors**, above the absolute packet floor. D-128 supersedes
+count-only sufficiency; TASK-0128 remains in REVISE because its committed
+runway captures are self-stale at the pushed worker head.
 
 ## Autonomous runway and factory status
 
@@ -99,14 +99,14 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
-| ox-pc-a | 6620-6639 | CLAIMED `0d1898bd`; existing desktop session | TASK-0128 throughput normalization |
-| ox-pc-b | 6640-6659 | revision commit `a0419710` local; recovery process packaging/pushing | TASK-0080 board sentinel |
-| ox-pc-c | 6660-6679 | CLAIMED and pushed `7b24e5d3`; implementation active | TASK-0136 passive-tree validator |
-| ox-pc-d | 6680-6699 | TASK-0135 accepted/integrated at `88092c97`; successor launch requested | TASK-0140 soak evidence validator |
-| ox-pc-e | 6700-6719 | CLAIMED and pushed `0d175a2f`; implementation active | TASK-0137 Gate C validator |
-| ox-pc-f | 6720-6739 | CLAIMED and pushed `f9458f4e`; implementation active | TASK-0138 release-proof validator |
+| ox-pc-a | 6620-6639 | TASK-0128 REVIEW_REQUESTED at `bb67c566`; REVISE issued for self-stale captures | restart revision worker after push |
+| ox-pc-b | 6640-6659 | TASK-0080 accepted/integrated through `facfd7e4`; lane available | current-tip successor pending |
+| ox-pc-c | 6660-6679 | TASK-0136 claim released after duplicate-dispatch collision; dirty worktree quarantined | not available |
+| ox-pc-d | 6680-6699 | TASK-0140 accepted/integrated at `46574f4e`; lane available | current-tip successor pending |
+| ox-pc-e | 6700-6719 | TASK-0137 accepted/integrated at `83d8f959`; lane available | current-tip successor pending |
+| ox-pc-f | 6720-6739 | TASK-0138 accepted/integrated at `38942560`; lane available | current-tip successor pending |
 | ox-pc-g | 6740-6759 | TASK-0144 accepted/integrated at `b17d36b0`; lane available | current-tip successor pending |
-| ox-pc-h | 6760-6779 | TASK-0142 accepted/integrated at `aa95ec76`; lane available for successor promotion | successor pending current-tip validation |
+| ox-pc-h | 6760-6779 | TASK-0142 accepted/integrated at `aa95ec76`; clean lane selected for replacement claim | TASK-0136 after coordination push |
 | ox-pc-i | 6780-6799 | TASK-0143 accepted/integrated at `ac1fc54a`; lane available for successor promotion | successor pending current-tip validation |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
@@ -184,27 +184,18 @@ harness-visible provider/model. These are separate scorecard experimental units.
 
 ## Interrupts and authority
 
-- REVIEW_REQUESTED: TASK-0112, 0130, 0131, and 0132 were accepted and
-  integrated at their exact heads. TASK-0133 `b44ab0ab` received one testable
-  REVISE correction: native snapshot v1 remains a candidate, not the selected
-  cross-estate target. TASK-0129 remains accepted at `b138871b`.
-- REVISE: **TASK-0080** at reviewed head `0ab4e7a5`; revision commit
-  `a0419710` exists locally but is not authoritative until pushed.
-- Accepted/integrated this sweep: **TASK-0086** at `8ddfb06e`, **TASK-0105**
-  at `8e6e42b3`, and **TASK-0120** at `4e0920d4`.
-- Active claims: **TASK-0128 by ox-pc-a**; TASK-0080 remains assigned to
-  ox-pc-b through revision; TASK-0135 is accepted/integrated at d head
-  `88092c97` and releases TASK-0140 to d; TASK-0133/0134/0139 are accepted
-  and integrated at `678c7b80`/`b7464d94`/`934863cb` and release the three
-  game-facing successors TASK-0141/0142/0143. TASK-0136/0137/0138 remain
-  valid pushed implementation claims at `7b24e5d3`/`0d175a2f`/`f9458f4e`.
-  TASK-0141 is accepted/integrated at `a60232fa`; it released TASK-0142,
-  which consumed that interface and is accepted/integrated at `aa95ec76`.
-  TASK-0144 is accepted/integrated at `b17d36b0`; ox-pc-g is available for a
-  current-tip successor after this coordination push.
-  TASK-0143 is now accepted/integrated at `ac1fc54a`; ox-pc-h and ox-pc-i are
-  available but receive no stale-base successor until a current-tip promotion
-  is validated.
+- REVISE: **TASK-0128** at `bb67c566`; the committed snapshots bind claim
+  commit `0d1898bd` and are stale at their own review head. Lane a must repair
+  the evidence/source-revision contract and prove final-head `--check`.
+- Accepted/integrated this sweep: **TASK-0080** through `facfd7e4`,
+  **TASK-0137** at `83d8f959`, **TASK-0138** at `38942560`, and **TASK-0140**
+  at `46574f4e`. Machine-readable terminal states were also restored for the
+  earlier accepted PC wave; no implementation content changed in that cleanup.
+- Released: **TASK-0136** claims `6ea36f5a`/`7b24e5d3`/`7026892e` after a real
+  duplicate-dispatch collision. Lane c remains quarantined; the clean lane h
+  receives the replacement route after this coordination push.
+- Active implementation claims: none until the TASK-0128 revision and
+  TASK-0136 replacement workers commit fresh post-push states.
   Separate project: orchestration bootstrap claim `795a9b3`, with pushed M3
   head `82de84ef` awaiting its configured Tier-B acceptance path.
 - Historical TASK-0056 and legacy clone WIP are superseded/preserved, never
@@ -222,7 +213,7 @@ wins after a fresh fetch.
 
 | Pri | Task | Topology / job | Preferred route | Owner-visible contribution |
 |---|---|---|---|---|
-| P1 | TASK-0140 soak evidence validator | INDEPENDENT / IMPLEMENTATION | ox-pc-d after coordination push | mechanically rejects stale, incomplete, or retry-masked soak proof |
+| P1 | TASK-0136 passive-tree contract validator | INDEPENDENT / IMPLEMENTATION | ox-pc-h replacement after coordination push | mechanically rejects illegal passive-tree authority or graph contracts |
 | P0 | TASK-0097 persistence durability audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | protects House/Scion/item saves |
 | P0 | TASK-0100 deterministic replay audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes divergences reproducible |
 | P0 | TASK-0104 itemization/history audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages memorable history-bearing loot |
