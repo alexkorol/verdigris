@@ -1,11 +1,34 @@
 ---
 task: TASK-0149
 title: Native owner-launch resilience
-state: CLAIMED
+state: REVIEW_REQUESTED
 coordinator: ox-alpha
 worker: ox-pc-j
 started-at: 2026-08-22T02:53:00-07:00
+review-requested-at: 2026-08-22T03:45:00-07:00
 ---
+
+# Review request
+
+Implementation complete at this branch head; all SPEC acceptance gates run
+with literal transcripts in `REPORT.md`:
+
+- `native/build.ps1 -RunTests`: denylist/core/networking/camera2d/session all
+  PASS, exit 0 (one transient load flake in timing-sensitive `reconnect:`
+  checks documented; did not reproduce; sources untouched by this task).
+- `play-native.ps1 -LifecycleSelfTest`: normal-close (real VerdigrisNativeClient
+  window, WM_CLOSE, client self-exit code 0) and forced-exit (client killed)
+  both leave no orphan server/client (PID-scoped assertion), exit 0.
+- Documented owner command `play-native.ps1 -Rebuild` end-to-end with
+  owner-style window close: rebuild PASS, chosen port/log self-reported,
+  real windowed remote client, client exit code 0, launcher exit code 0,
+  zero leftover verdigris processes machine-wide.
+- Negative controls (`-Port 6500`, `-Port 7000`, `-LifecycleSelfTest` with
+  `-Local`/`-Port`): fail fast pre-build, exit 1.
+- `git diff --check`: pass (exit 0).
+
+Changed file is exactly `native/tools/play-native.ps1` plus this task folder;
+no forbidden path touched; port 6500 untouched; capsule 6520-6539 preserved.
 
 # Claim
 
