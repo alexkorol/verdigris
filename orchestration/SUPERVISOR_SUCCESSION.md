@@ -74,8 +74,9 @@ request.
     `8677f021`; combined program binaries passed all native suites, all eight
     client scenarios, and the real-window lifecycle selftest;
   - ox-pc-l, ports 6840-6859, TASK-0146 frozen head `a72b6317` reviewed REVISE
-    because it never placed multiple living threats on the floor; exact branch
-    revision process PID 8108 is active on the simultaneous elite/flanker fix;
+    because it never placed multiple living threats on the floor; its first
+    revision process stopped clean before writes and recovery PID 6816 is active
+    on the simultaneous elite/flanker fix. This lane has consumed one recovery;
   - ox-pc-p, ports 6920-6939, TASK-0147 claim `3ee9f928`, process PID 20868;
   - ox-pc-q, ports 6940-6959, TASK-0148 claim `815a359b`, recovery PID 6104.
     The first process was stopped clean before writes after proposing forbidden
@@ -91,9 +92,10 @@ request.
   sequenced DRAFT successors, zero owned-path collisions; deterministic factory
   verified at 2,000 nodes / 500 packets. Runway remains honestly `UNKNOWN`.
 - Local supervision: human dashboard `http://127.0.0.1:4737/` health 200,
-  Node PID 12400; visible PowerShell monitor PID 7772. The monitor's alert set
+  Node PID 12400; visible PowerShell monitor PID 3560. The monitor's alert set
   is restricted to current completed/active routes `i/j/k/l/p/q`, so preserved
-  historical/quarantined lanes cannot produce false toasts. Same-task automation
+  historical/quarantined lanes cannot produce false toasts; an unattended
+  REVISE route now raises a distinct P1 alert. Same-task automation
   `verdigris-surge-supervisor` is ACTIVE every five minutes and derives lanes
   dynamically from current routing/config. Chat-spawning cron
   `pc-fleet-emergency-monitor` remains PAUSED.

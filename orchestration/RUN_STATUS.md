@@ -105,7 +105,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-i | 6780-6799 | TASK-0145 frozen head `78dcac60` independently ACCEPTED and integrated at `2df5eac5` | lane complete/available after worker stops |
 | ox-pc-j | 6800-6819 | TASK-0149 revision head `a88d307d` independently ACCEPTED and integrated through `8677f021` | lane complete/available |
 | ox-pc-k | 6820-6839 | TASK-0150 frozen head `54417592` independently ACCEPTED; implementation integrated at `10039385` | lane complete/available after worker stops |
-| ox-pc-l | 6840-6859 | TASK-0146 head `a72b6317` reviewed REVISE: reinforcements were serial, never a live pack | revision queued on frozen worker branch |
+| ox-pc-l | 6840-6859 | TASK-0146 head `a72b6317` reviewed REVISE; first revision process stopped clean before writes, recovery PID 6816 | simultaneous-pack revision recovery active; one recovery consumed |
 | ox-pc-m | 6860-6879 | TASK-0147 second post-claim stop after one recovery; claim `7d092a74` released; dirty worktree preserved | P0 quarantined, not capacity |
 | ox-pc-n | 6880-6899 | TASK-0148 clean launch and its one recovery both stopped before claim/write | activation failed; clean preserved, not capacity |
 | ox-pc-o | 6900-6919 | TASK-0148 second post-claim stop after one recovery; claim `71a73de8` released; clean worktree preserved | exhausted, not capacity |
@@ -130,6 +130,8 @@ dashboard and transition-deduplicated Windows P1/P0 activation notifications.
 Its live-alert set is restricted to current completed handoffs and registered
 active routes (`i/j/k/l/p/q`); historical/quarantined worktrees remain visible
 in the web dashboard for audit but cannot generate false live toasts.
+An unattended REVISE route is a distinct P1 alert, so a stopped revision worker
+cannot be masked by the task-level review verdict.
 The worker logs remain under `Z:\Code\.fleet\logs`. Sol does not claim or write
 worker STATUS/REPORT and will not take over implementation.
 
