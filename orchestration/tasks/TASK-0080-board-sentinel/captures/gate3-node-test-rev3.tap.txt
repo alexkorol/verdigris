@@ -1,0 +1,120 @@
+TAP version 13
+# Subtest: integrated historical READY is excluded from effective READY
+ok 1 - integrated historical READY is excluded from effective READY
+  ---
+  duration_ms: 158.1796
+  ...
+# Subtest: a live READY row counts
+ok 2 - a live READY row counts
+  ---
+  duration_ms: 128.5879
+  ...
+# Subtest: CLAIMED removes a task from READY
+ok 3 - CLAIMED removes a task from READY
+  ---
+  duration_ms: 131.1163
+  ...
+# Subtest: REVIEW_REQUESTED is surfaced
+ok 4 - REVIEW_REQUESTED is surfaced
+  ---
+  duration_ms: 118.345
+  ...
+# Subtest: overlapping owned paths fail
+ok 5 - overlapping owned paths fail
+  ---
+  duration_ms: 121.0845
+  ...
+# Subtest: HOLD is excluded even when its immutable SPEC header says READY
+ok 6 - HOLD is excluded even when its immutable SPEC header says READY
+  ---
+  duration_ms: 114.4552
+  ...
+# Subtest: stale claim is named when its implementation was integrated
+ok 7 - stale claim is named when its implementation was integrated
+  ---
+  duration_ms: 105.9455
+  ...
+# Subtest: duplicate task id fails
+ok 8 - duplicate task id fails
+  ---
+  duration_ms: 98.2769
+  ...
+# Subtest: malformed task state fails
+ok 9 - malformed task state fails
+  ---
+  duration_ms: 102.4077
+  ...
+# Subtest: healthy eight-task runway exits zero
+ok 10 - healthy eight-task runway exits zero
+  ---
+  duration_ms: 123.0936
+  ...
+# Subtest: queue floor violation exits non-zero
+ok 11 - queue floor violation exits non-zero
+  ---
+  duration_ms: 116.1493
+  ...
+# Subtest: coordinator remote-branch timestamps are listed when refs exist
+ok 12 - coordinator remote-branch timestamps are listed when refs exist
+  ---
+  duration_ms: 403.5024
+  ...
+# Subtest: bullet-list STATUS grammar (historical format) parses
+ok 13 - bullet-list STATUS grammar (historical format) parses
+  ---
+  duration_ms: 100.908
+  ...
+# Subtest: contradictory READY+HOLD listing fails
+ok 14 - contradictory READY+HOLD listing fails
+  ---
+  duration_ms: 96.174
+  ...
+# Subtest: annotated historical SPEC state parses by its leading state token
+ok 15 - annotated historical SPEC state parses by its leading state token
+  ---
+  duration_ms: 103.4786
+  ...
+# Subtest: live CLAIMED task absent from READY table is surfaced globally
+ok 16 - live CLAIMED task absent from READY table is surfaced globally
+  ---
+  duration_ms: 109.8849
+  ...
+# Subtest: live REVIEW_REQUESTED task absent from READY table is surfaced globally
+ok 17 - live REVIEW_REQUESTED task absent from READY table is surfaced globally
+  ---
+  duration_ms: 117.8426
+  ...
+# Subtest: off-board accepted-and-integrated folder is not a live REVIEW_REQUESTED claim
+ok 18 - off-board accepted-and-integrated folder is not a live REVIEW_REQUESTED claim
+  ---
+  duration_ms: 111.7267
+  ...
+# Subtest: off-board accepted-and-integrated folder raises no missing-coordinator error
+ok 19 - off-board accepted-and-integrated folder raises no missing-coordinator error
+  ---
+  duration_ms: 111.0553
+  ...
+# Subtest: genuine off-board claim without a coordinator line still fails
+ok 20 - genuine off-board claim without a coordinator line still fails
+  ---
+  duration_ms: 129.8544
+  ...
+# Subtest: global live claim colliding with a READY task fails
+ok 21 - global live claim colliding with a READY task fails
+  ---
+  duration_ms: 125.6998
+  ...
+# Subtest: non-JSON human output keeps the same exit code
+ok 22 - non-JSON human output keeps the same exit code
+  ---
+  duration_ms: 118.49
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2992.4923
