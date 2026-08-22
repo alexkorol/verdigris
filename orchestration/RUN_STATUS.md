@@ -370,7 +370,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 25 packets
+## Effective READY — 28 packets before the next four claims
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -381,7 +381,6 @@ wins after a fresh fetch.
 | P0 | TASK-0097 persistence durability audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | protects House/Scion/item saves |
 | P0 | TASK-0100 deterministic replay audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes divergences reproducible |
 | P0 | TASK-0104 itemization/history audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages memorable history-bearing loot |
-| P0 | TASK-0119 onboarding/first-session audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes launch through first extraction legible |
 | P1 | TASK-0082 dual-server matrix runner | INDEPENDENT / BOUNDED-DESIGN | future after current claim | automates unchanged JS/C++ parity evidence |
 | P1 | TASK-0115 browser panel/typography inventory | INDEPENDENT / MECHANICAL | future after current claim | freezes presentation delta #4 |
 | P1 | TASK-0091 protocol coverage sentinel design | INDEPENDENT / MECHANICAL | future after current claim | catches lost journey wire steps |
@@ -394,19 +393,19 @@ wins after a fresh fetch.
 | P1 | TASK-0101 combat-depth gap audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | selects coherent player-visible combat waves |
 | P1 | TASK-0102 skill-system gap audit | INDEPENDENT / MECHANICAL | future after current claim | maps LMB/RMB/Q/E/R end to end |
 | P1 | TASK-0103 monster/encounter gap audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages packs, rarity, uniques, bosses |
-| P1 | TASK-0117 audio/music runtime audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | defines combat/UI/ambience/music runtime |
 | P1 | TASK-0118 accessibility/options audit | INDEPENDENT / MECHANICAL | future after current claim | stages broad readable and controllable play |
 | P1 | TASK-0121 owner content approval matrix | INDEPENDENT / MECHANICAL | future after current claim | batches art/lore/naming/balance/economy/content gates |
 | P2 | TASK-0084 reference-capture manifest | INDEPENDENT / MECHANICAL | future after current claim | detects stale/missing visual evidence |
 | P2 | TASK-0085 denylist exception audit | INDEPENDENT / MECHANICAL | future after current claim | prepares owner compatibility ruling |
 | P2 | TASK-0114 renderer backend evaluation | EXPLORATORY / BOUNDED-DESIGN | future after current claim | feeds cross-platform renderer ADR |
 | P2 | TASK-0094 asset provenance audit | INDEPENDENT / MECHANICAL | future after current claim | prevents unshippable assets/fonts |
-| P1 | TASK-0149 native owner-launch resilience | INDEPENDENT / IMPLEMENTATION | future clean lane | makes the real client/server launch fail-fast and orphan-free |
-| P1 | TASK-0150 native clean-build convergence | INDEPENDENT / IMPLEMENTATION | future clean lane | proves the complete C++ build from a disposable directory |
 | P1 | TASK-0151 native content schema seed | INDEPENDENT / IMPLEMENTATION | future clean lane | creates a deterministic content-neutral authoring seam |
 | P1 | TASK-0152 native density benchmark evidence | INDEPENDENT / IMPLEMENTATION | future clean lane | measures encounter/presentation headroom reproducibly |
 | P1 | TASK-0136 passive-tree contract validator | INDEPENDENT / MECHANICAL | fresh worktree only; quarantined lanes forbidden | fail-closes counter confusion without canonizing content |
-| P1 | TASK-0122 native animation/VFX Phase A | INDEPENDENT / IMPLEMENTATION | ox-pc-x, ports 7060-7079 | distinct critical/spawn/lifecycle beats with real captures |
+| P0 | TASK-0155 deterministic loot reliability | INDEPENDENT / IMPLEMENTATION | fresh isolated lane | prevents load-sensitive second-drop release flakes without weakening gates |
+| P0 | TASK-0156 native progression visibility | INDEPENDENT / IMPLEMENTATION | fresh isolated native-client lane | surfaces authoritative passive-tree points in the shipped gear overlay |
+| P1 | TASK-0157 procedural audio scheduler | INDEPENDENT / IMPLEMENTATION | future clean lane | freezes backend-neutral deterministic cue behavior before owner backend choice |
+| P1 | TASK-0158 pane model foundation | INDEPENDENT / IMPLEMENTATION | future clean lane | creates responsive collision-free pane geometry without choosing final styling |
 
 ## HOLD despite historical READY headers
 
