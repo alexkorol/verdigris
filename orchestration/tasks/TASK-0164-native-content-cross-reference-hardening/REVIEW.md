@@ -5,6 +5,7 @@ reviewed_head: cedabc72ff25171823a2c9b24dfccdf17ec9acf6
 reviewed_branch: codex/TASK-0164-native-content-cross-reference-hardening-ox-pc-ag-r2
 reviewed_by: PC Verdigris architect/orchestrator
 reviewed_at: 2026-08-22 15:43 -07:00
+integrated_at: 3961733b
 ---
 
 # TASK-0164 architect review — ACCEPTED
@@ -53,3 +54,15 @@ Integrate implementation commit `342ed4f5d80e165c3464829ac7717baf708ac0b5`
 and terminal evidence commit
 `cedabc72ff25171823a2c9b24dfccdf17ec9acf6`, then rerun the positive and both
 negative gates on the combined program head before recording `integrated_at`.
+
+## Program integration
+
+- Architect verdict: `36d014a4`
+- Implementation: `9ffea0b4`
+- Terminal evidence/status: `3961733b`
+- Combined positive seed validation: PASS
+- Combined negative suite run 1: 27/27 PASS
+- Combined negative suite run 2: 27/27 PASS
+- Combined diff hygiene: PASS
+
+Lifecycle is now **INTEGRATED**.

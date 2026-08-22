@@ -1,5 +1,5 @@
 ---
-state: REVIEW_REQUESTED
+state: INTEGRATED
 task: TASK-0164-native-content-cross-reference-hardening
 coordinator: codex
 worker_lane: ox-pc-ag
@@ -18,6 +18,8 @@ ports: 7240-7259 loopback only (no listener required for this task)
 temp_dir: Z:\Code\.fleet\tmp\ox-pc-ag
 started_at: 2026-08-22 15:21 -07:00
 owned_paths: [native/content/validate_content.py, native/content/tests/**, orchestration/tasks/TASK-0164-native-content-cross-reference-hardening/**]
+integrated_at: 2026-08-22 15:45 -07:00
+program_commits: [9ffea0b4, 3961733b]
 ---
 
 Clean replacement claim of TASK-0164 by lane ox-pc-ag, re-claiming under the
