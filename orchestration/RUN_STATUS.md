@@ -98,7 +98,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-b | 6640-6659 | TASK-0145 recovered claim `4aa9e0c3` then worker exited dirty; claim released | P0 quarantined, not capacity |
 | ox-pc-c | 6660-6679 | TASK-0136 claim released after duplicate-dispatch collision; dirty worktree quarantined | not available |
 | ox-pc-d | 6680-6699 | TASK-0146 claim `7e416ff3`; one exact-session recovery active after external-temp permission exit | first-expedition encounter wave |
-| ox-pc-e | 6700-6719 | TASK-0147 launched from `df851cea`; pushed claim required by activation SLA | procedural native visual polish |
+| ox-pc-e | 6700-6719 | TASK-0147 claim `068a1358`; one exact-session recovery active after dirty process stop | procedural native visual polish |
 | ox-pc-f | 6720-6739 | TASK-0138 accepted/integrated at `38942560`; lane available | current-tip successor pending |
 | ox-pc-g | 6740-6759 | TASK-0148 pushed claim line begins `642bfa25`; worker active | reconnect-safe Chronicles runtime |
 | ox-pc-h | 6760-6779 | TASK-0136 second post-claim process exit; dirty worktree preserved; claim released | P0 quarantined, not capacity |
@@ -208,6 +208,11 @@ harness-visible provider/model. These are separate scorecard experimental units.
   request while preserving its dirty gameplay work. Its one exact-session
   recovery is active on the same branch/session and must be quarantined on any
   second exit before a valid handoff.
+- TASK-0147's original process stopped after producing the full SVG/generator/
+  manifest/header/test diff but before committing or requesting review. Its
+  one exact-session recovery is active on the same route and must resolve the
+  remaining client-math/SVG comparison, run fresh evidence gates, and hand off;
+  any second exit is quarantine, not silent capacity.
 - P0 quarantined: TASK-0136 replacement claim `ddd00857` on ox-pc-h. The first
   process exit received one exact-session recovery; the recovery also exited
   with dirty uncommitted work. RELEASE now returns the task to READY. Preserve
