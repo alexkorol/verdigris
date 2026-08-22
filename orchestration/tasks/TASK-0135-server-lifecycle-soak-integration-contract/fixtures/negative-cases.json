@@ -1,0 +1,158 @@
+{
+  "schema_version": "1.0.0",
+  "fixture": "negative-cases",
+  "policy": "soak-integration-policy.json",
+  "purpose": "Machine-readable negative cases that any evaluator of the TASK-0135 soak integration policy must reject. Each case names the policy rule that produces the rejection so coverage is checkable by script.",
+  "cases": [
+    {
+      "id": "NEG-001-stale-source-head",
+      "expected_error": "STALE_SOURCE_HEAD",
+      "scenario": "A PASS artifact captured at source head 1111...aaaa is submitted as evidence for tip 2222...bbbb after the base advanced over native/networking.",
+      "submitted_verdict": {
+        "source_head": "1111111111111111111111111111111111111111",
+        "tip_under_judgment": "2222222222222222222222222222222222222222",
+        "conclusion": "PASS"
+      },
+      "expected_conclusion": "FAIL",
+      "policy_rule": "source_head.staleness_rules",
+      "rationale": "Greens are bound to an exact head and go stale on base advance over the soaked surface; reuse across heads is fabrication."
+    },
+    {
+      "id": "NEG-002-missing-platform-evidence",
+      "expected_error": "MISSING_PLATFORM_EVIDENCE",
+      "scenario": "The verdict bundle records os_name but omits os_version, cpu_architecture, and toolchain.",
+      "submitted_verdict": {
+        "platform": {
+          "os_name": "windows"
+        },
+        "conclusion": "PASS"
+      },
+      "expected_conclusion": "FAIL",
+      "policy_rule": "platform.rule",
+      "rationale": "All platform.evidence_required fields must be present or the verdict is invalid regardless of soak outcome."
+    },
+    {
+      "id": "NEG-003-port-capsule-collision-persistent",
+      "expected_error": "PORT_CAPSULE_COLLISION",
+      "scenario": "Every attempt in the session fails in phase server-start with binder error 'no free port in capsule 6680-6699'; no client upgrade was ever attempted; retries exhaust quarantine.limits.",
+      "submitted_verdict": {
+        "attempts": [
+          {
+            "outcome": "FAIL",
+            "classification": "ENVIRONMENTAL",
+            "phase": "server-start"
+          },
+          {
+            "outcome": "FAIL",
+            "classification": "ENVIRONMENTAL",
+            "phase": "server-start"
+          },
+          {
+            "outcome": "FAIL",
+            "classification": "ENVIRONMENTAL",
+            "phase": "server-start"
+          }
+        ],
+        "conclusion": "PASS"
+      },
+      "expected_conclusion": "BLOCKED_ENVIRONMENTAL",
+      "policy_rule": "quarantine.persistent_collision_outcome",
+      "rationale": "Persistent contention blocks the context with an environment question; it can never end in PASS for the software."
+    },
+    {
+      "id": "NEG-004-forbidden-port-6500",
+      "expected_error": "FORBIDDEN_PORT_6500",
+      "scenario": "A run configuration directs the listener to port 6500 instead of the lane capsule.",
+      "submitted_verdict": {
+        "attempts": [
+          {
+            "outcome": "PASS",
+            "listener_port": 6500
+          }
+        ],
+        "conclusion": "PASS"
+      },
+      "expected_conclusion": "FAIL",
+      "policy_rule": "port_capsule.on_forbidden_port_use",
+      "rationale": "Port 6500 is owner-reserved; touching it is a P0 protocol violation with immediate FAIL, halt, report, and no retry."
+    },
+    {
+      "id": "NEG-005-timeout-watchdog-breach",
+      "expected_error": "TIMEOUT",
+      "scenario": "The soak process exits with code 3 after the hard watchdog deadline, or a run exceeds its context wall-clock budget without completing all cycles plus burst.",
+      "submitted_verdict": {
+        "attempts": [
+          {
+            "outcome": "FAIL",
+            "process_exit_code": 3,
+            "cyclesCompleted": 61,
+            "cyclesRequested": 100
+          }
+        ],
+        "conclusion": "PASS"
+      },
+      "expected_conclusion": "FAIL",
+      "policy_rule": "timeout.on_breach",
+      "rationale": "Timed-out or watchdog-aborted runs yield no green and no partial credit even if some cycles succeeded."
+    },
+    {
+      "id": "NEG-006-nonzero-soak-deterministic",
+      "expected_error": "NONZERO_SOAK",
+      "scenario": "The soak exits 1 with failures containing phase client-login on cycle 37 of a complete run; a second full run later exits 0 on the same head and is offered as the verdict.",
+      "submitted_verdict": {
+        "attempts": [
+          {
+            "outcome": "FAIL",
+            "classification": "DETERMINISTIC",
+            "process_exit_code": 1
+          },
+          {
+            "outcome": "PASS",
+            "process_exit_code": 0
+          }
+        ],
+        "conclusion": "PASS"
+      },
+      "expected_conclusion": "FAIL",
+      "policy_rule": "retry.non_masking_invariants",
+      "rationale": "A deterministic failure fixes the verdict at FAIL for that head; no same-head retry may flip it to green."
+    },
+    {
+      "id": "NEG-007-missing-artifact",
+      "expected_error": "MISSING_ARTIFACT",
+      "scenario": "The build gate reports exit code 0 but no parseable lifecycle-soak JSON exists at the cited path (or the JSON lacks required fields such as passed, failures, burstPassed).",
+      "submitted_verdict": {
+        "attempts": [
+          {
+            "outcome": "PASS",
+            "artifact_path": "captures/lifecycle-soak-20260821-999999.json",
+            "artifact_present": false,
+            "stdout_summary_used_instead": true
+          }
+        ],
+        "conclusion": "PASS"
+      },
+      "expected_conclusion": "FAIL",
+      "policy_rule": "artifacts.missing_rule",
+      "rationale": "Without a valid artifact the run is FAIL; stdout-derived numbers are inadmissible as evidence."
+    },
+    {
+      "id": "NEG-008-retry-masked-failure",
+      "expected_error": "RETRY_MASKED_FAILURE",
+      "scenario": "Attempt 1 failed with MISSING_ARTIFACT; attempt 2 passed. The verdict cites only attempt 2's artifact and omits attempt 1 from the session record.",
+      "submitted_verdict": {
+        "attempts": [
+          {
+            "outcome": "PASS",
+            "artifact_path": "captures/lifecycle-soak-20260821-230102.json"
+          }
+        ],
+        "undisclosed_failed_attempts": 1,
+        "conclusion": "PASS"
+      },
+      "expected_conclusion": "FAIL",
+      "policy_rule": "retry.non_masking_invariants",
+      "rationale": "Hiding a failed or missing run behind a passing retry invalidates the entire verdict session."
+    }
+  ]
+}
