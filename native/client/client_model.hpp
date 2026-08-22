@@ -67,6 +67,19 @@ struct ClientScene {
   bool has_stairs_up = false;
 };
 
+// TASK-0156: authoritative passive-tree progression, mirrored verbatim from
+// the existing `passiveTree` wire envelope (schemaVersion 2). Plain counts
+// copied from the payload only — no node semantics, costs, effects, or
+// balance are derived here. `present` is the tri-state anchor: false until
+// an authoritative payload arrives, so absence is never rendered as zero.
+struct ClientPassiveProgression {
+  bool present = false;
+  int unspent_points = 0;  // passiveTree.points.skill
+  int earned_points = 0;   // passiveTree.earned
+  int node_count = 0;      // passiveTree.nodes entries
+  int conduit_count = 0;   // passiveTree.conduits entries
+};
+
 // TASK-0145 Gate-B chronicle state, exactly as carried by the accepted wire
 // contract (chronicles:state / player:chronicles:ready / scion-fallen /
 // dev:state chroniclesRecord). Presentation renders this; it never invents
@@ -137,6 +150,9 @@ struct ClientModel {
   ClientChronicle chronicle;
   bool chronicles_pending = false;
   std::string lifecycle;  // "alive" | "awaiting-respawn" | "permadead"
+  // TASK-0156: mirrored passive-tree progression (absent until a payload
+  // arrives on the wire).
+  ClientPassiveProgression progression;
 };
 
 inline const ClientHouseEntry* find_chronicle_house(const ClientChronicle& chronicle,

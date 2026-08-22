@@ -94,6 +94,28 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
   return slot;
 }
 
+// TASK-0156: mirror the authoritative `passiveTree` envelope (schemaVersion
+// 2: nodes / conduits / points.skill / earned) into plain model fields. Only
+// payload-borne values are copied; the client derives no rules, costs, or
+// effects. A malformed or missing envelope leaves the previous state intact.
+void apply_passive_tree(const JsonValue& tree, ClientModel& model) {
+  if (!tree.object()) return;
+  model.progression = ClientPassiveProgression{};
+  model.progression.present = true;
+  if (const auto* points = tree.get("points")) {
+    model.progression.unspent_points =
+        static_cast<int>(json_number(points->get("skill"), 0));
+  }
+  model.progression.earned_points =
+      static_cast<int>(json_number(tree.get("earned"), 0));
+  if (const auto* nodes = tree.get("nodes"); nodes && nodes->array()) {
+    model.progression.node_count = static_cast<int>(nodes->array()->size());
+  }
+  if (const auto* conduits = tree.get("conduits"); conduits && conduits->array()) {
+    model.progression.conduit_count = static_cast<int>(conduits->array()->size());
+  }
+}
+
 void apply_player_fields(ClientPlayer& player, const JsonValue& source) {
   if (const auto* uuid = json_string(source.get("uuid"))) player.uuid = *uuid;
   if (const auto* scene = json_string(source.get("sceneId"))) player.scene_id = *scene;
@@ -634,6 +656,10 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
           }
         }
       }
+      // TASK-0156: the admission payload carries the authoritative
+      // passiveTree envelope (player_payload puts it beside quests).
+      if (const auto* tree = player->get("passiveTree"))
+        apply_passive_tree(*tree, model_);
     }
     if (const auto* scene = envelope.data.get("scene")) apply_scene_fields(model_.scene, *scene);
     // A full player:login is a world admission on the Gate-B journey: the
@@ -831,6 +857,9 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     // chronicle payloads.
     if (const auto* lifecycle = json_string(state->get("lifecycle")))
       model_.lifecycle = *lifecycle;
+    // TASK-0156: the dev:state snapshot carries the same authoritative
+    // passiveTree envelope; keep the mirror current between logins.
+    if (const auto* tree = state->get("passiveTree")) apply_passive_tree(*tree, model_);
     if (const auto* hp = state->get("hp")) {
       // Authoritative life keeps alive honest between combat envelopes.
       model_.player.life = static_cast<int>(json_number(hp->get("current"), model_.player.life));
@@ -879,6 +908,13 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         model_.ground.push_back(std::move(item));
       }
     }
+    return;
+  }
+  if (envelope.event == "player:skilltree:update") {
+    // TASK-0156: the server's reply to a committed tree snapshot carries the
+    // refreshed authoritative passiveTree envelope.
+    if (const auto* tree = envelope.data.get("passiveTree"))
+      apply_passive_tree(*tree, model_);
     return;
   }
   if (envelope.event == "core:refresh:inventory") {
