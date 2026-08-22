@@ -1,5 +1,33 @@
 # Run status — PC Verdigris overnight product wave
 
+## Four-lane product/reliability activation — 2026-08-22 13:06 PDT
+
+- Queue restock commit `c2b814488278f4f093e754cf695ea9ed749d81fb`
+  verifies 28 effective READY packets, 16 sequenced DRAFT successors, and zero
+  owned-path collisions. Four current-tip worktrees are provisioned clean at
+  that exact SHA; they do not count as fleet capacity before pushed claims.
+- `ox-pc-z`: TASK-0155 deterministic loot reliability, branch
+  `codex/TASK-0155-deterministic-loot-playtest-reliability-ox-pc-z`, ports
+  7100-7119. Removes the recorded second-drop release flake without weakening
+  the real goal harness.
+- `ox-pc-aa`: TASK-0156 native progression visibility, branch
+  `codex/TASK-0156-native-progression-visibility-ox-pc-aa`, ports 7120-7139.
+  This is the owner-visible lane: authoritative passive-tree points/allocation
+  become legible inside the shipped gear overlay with real GDI evidence.
+- `ox-pc-ab`: TASK-0151 native content schema seed, branch
+  `codex/TASK-0151-native-content-schema-seed-ox-pc-ab`, ports 7140-7159.
+  Content-neutral schema/validator only; no production lore or balance.
+- `ox-pc-ac`: TASK-0152 native density benchmark evidence, branch
+  `codex/TASK-0152-native-density-benchmark-evidence-ox-pc-ac`, ports
+  7160-7179. Reproducible evidence only; no optimization/gameplay change.
+- All four route packets require `openrouter/stealth/ox-alpha`, OpenCode CLI
+  1.18.21, variant max, an exact pushed STATUS claim within ten minutes, and
+  fresh post-claim activity before ACTIVE. Any root/branch/base/task/provider
+  mismatch is P0 MISROUTED; no historical dirty/quarantined lane is reused.
+- After four valid claims the effective READY floor remains exactly 24. The
+  backend-neutral TASK-0157 audio scheduler and TASK-0158 pane model are READY
+  replacements but are not routed in this wave.
+
 ## CI notification signal hardening — 2026-08-22 12:54 PDT
 
 - Protected PR #56 merged the workflow trigger contract to `master` at
