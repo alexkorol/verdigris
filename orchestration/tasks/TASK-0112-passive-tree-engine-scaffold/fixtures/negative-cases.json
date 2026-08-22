@@ -1,0 +1,157 @@
+{
+  "fixture_set": "verdigris.passive-tree-authority/negative-cases",
+  "schema_version": "1.0.0",
+  "purpose": "Content-neutral invalid shapes with expected deterministic error codes. Every identifier and number here is obviously synthetic; nothing is player-facing content, topology, or balance.",
+  "conventions": {
+    "synthetic_graph": {
+      "graph_version": 2,
+      "origin": "n:000",
+      "nodes": ["n:000", "n:001", "n:002", "n:003"],
+      "edges": [
+        { "edge_id": "e:001", "from_node": "n:000", "to_node": "n:001", "variants": ["v:0"] },
+        { "edge_id": "e:002", "from_node": "n:001", "to_node": "n:002", "variants": ["v:0", "v:1"] },
+        { "edge_id": "e:003", "from_node": "n:002", "to_node": "n:003", "variants": ["v:0"] }
+      ]
+    },
+    "note": "The synthetic graph above exists only to make shapes concrete. It asserts no real topology."
+  },
+  "cases": [
+    {
+      "case_id": "NEG-001",
+      "expected_error": "UNKNOWN_GRAPH_VERSION",
+      "applies_to": "validation",
+      "description": "Allocation declares a graph_version no approved content source provides.",
+      "payload": {
+        "graph_version": 9999,
+        "allocated_nodes": ["n:000"],
+        "edge_choices": []
+      }
+    },
+    {
+      "case_id": "NEG-002",
+      "expected_error": "UNKNOWN_NODE",
+      "applies_to": "validation",
+      "description": "Allocated node identity does not exist in the authoritative graph for graph_version 2.",
+      "payload": {
+        "graph_version": 2,
+        "allocated_nodes": ["n:000", "n:404"],
+        "edge_choices": []
+      }
+    },
+    {
+      "case_id": "NEG-003",
+      "expected_error": "DUPLICATE_NODE",
+      "applies_to": "validation",
+      "description": "The same node identity appears twice in allocated_nodes (origin duplication is not special-cased).",
+      "payload": {
+        "graph_version": 2,
+        "allocated_nodes": ["n:000", "n:001", "n:001"],
+        "edge_choices": [{ "edge_id": "e:001", "variant": "v:0" }]
+      }
+    },
+    {
+      "case_id": "NEG-004",
+      "expected_error": "DISCONNECTED_ALLOCATION",
+      "applies_to": "validation",
+      "description": "n:003 is claimed but no chain of allocated edges joins it to the origin through allocated nodes only (island allocation).",
+      "payload": {
+        "graph_version": 2,
+        "allocated_nodes": ["n:000", "n:003"],
+        "edge_choices": []
+      }
+    },
+    {
+      "case_id": "NEG-005",
+      "expected_error": "OVERSPENT",
+      "applies_to": "validation",
+      "context": { "earned": 2 },
+      "description": "Claim spends three non-origin nodes plus two edge choices against an earned budget of 2 (synthetic context value, not a balance statement).",
+      "payload": {
+        "graph_version": 2,
+        "allocated_nodes": ["n:000", "n:001", "n:002", "n:003"],
+        "edge_choices": [
+          { "edge_id": "e:001", "variant": "v:0" },
+          { "edge_id": "e:002", "variant": "v:1" }
+        ]
+      }
+    },
+    {
+      "case_id": "NEG-006",
+      "expected_error": "MALFORMED_EDGE",
+      "applies_to": "validation",
+      "description": "Edge choice references an edge_id absent from the graph, and a second choice uses a variant the real edge does not define.",
+      "payload": {
+        "graph_version": 2,
+        "allocated_nodes": ["n:000", "n:001"],
+        "edge_choices": [
+          { "edge_id": "e:999", "variant": "v:0" },
+          { "edge_id": "e:001", "variant": "v:7" }
+        ]
+      }
+    },
+    {
+      "case_id": "NEG-007",
+      "expected_error": "COUNTER_CONFUSION",
+      "applies_to": "persistence",
+      "description": "Persistence blob collapses the two ledgers into one merged 'points' field sourced from the commission-chain record, so the live tree-budget counter can no longer be distinguished from quests.questPoints.",
+      "payload": {
+        "blob": {
+          "graph_version": 2,
+          "points": {
+            "value": 5,
+            "source": "quests.questPoints",
+            "used_for": "both_commission_record_and_tree_budget"
+          },
+          "allocation": {
+            "graph_version": 2,
+            "allocated_nodes": ["n:000"],
+            "edge_choices": []
+          }
+        }
+      }
+    },
+    {
+      "case_id": "NEG-008",
+      "expected_error": "UNSUPPORTED_MIGRATION",
+      "applies_to": "migration",
+      "description": "Persisted blob at graph_version 1 requests restore, but no migration strategy is registered for that version (below the declared migration floor); the authority must fail closed instead of guessing an outcome.",
+      "payload": {
+        "migration_request": { "from_version": 1, "to_version": 2 },
+        "blob": {
+          "graph_version": 1,
+          "allocation": {
+            "graph_version": 1,
+            "allocated_nodes": ["legacy:n:000"],
+            "edge_choices": []
+          }
+        }
+      }
+    },
+    {
+      "case_id": "NEG-009",
+      "expected_error": "MALFORMED_ALLOCATION",
+      "applies_to": "validation",
+      "description": "Envelope-level malformation: required collections missing entirely (browser precedent rejects this shape before any content checks).",
+      "payload": {
+        "graph_version": 2
+      }
+    },
+    {
+      "case_id": "NEG-010",
+      "expected_error": "OVERSPENT",
+      "applies_to": "persistence",
+      "targets_task_0105_gap": "native_raw_snapshot_trust_gap",
+      "description": "Raw client save blob arrives unvalidated, overspent AND disconnected. Under this contract the authority validates before persisting and reports OVERSPENT (rank-first applicable code), refusing verbatim storage; the native handle_skilltree_save path stores exactly this shape verbatim, which is the TASK-0105 trust gap.",
+      "context": { "earned": 1 },
+      "payload": {
+        "raw_snapshot": {
+          "graph_version": 2,
+          "allocated_nodes": ["n:000", "n:001", "n:002", "n:003"],
+          "edge_choices": [
+            { "edge_id": "e:001", "variant": "v:0" }
+          ]
+        }
+      }
+    }
+  ]
+}

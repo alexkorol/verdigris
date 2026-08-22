@@ -1,0 +1,22 @@
+{
+  "source_head": "9aa43b7aa715b1b12efd3f33ab434acfc834de14",
+  "platform": {
+    "os_name": "windows",
+    "os_version": "10.0.19045",
+    "cpu_architecture": "x64",
+    "toolchain": "MSVC cl.exe driven by native/build.ps1"
+  },
+  "context": "local",
+  "attempts": [
+    {
+      "artifact_path": "orchestration/tasks/TASK-0140-soak-evidence-bundle-validator/fixtures/artifacts/lifecycle-soak-clean-pass-a.json",
+      "sha256": "d636192cbca8fee289bef8c0fd1c087d6f505bc533896641ec744b7ff3ef00af",
+      "started_at": "2026-08-21T10:00:00Z",
+      "finished_at": "2026-08-21T10:02:41Z",
+      "outcome": "PASS",
+      "classification": "NOT_APPLICABLE"
+    }
+  ],
+  "undisclosed_failed_attempts": 1,
+  "conclusion": "PASS"
+}

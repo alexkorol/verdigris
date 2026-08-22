@@ -27,15 +27,23 @@ Legend: ✅ working · 🧩 server ready, client pending (0061) · ⬜ pending.
 | Reconnect | relaunch | login again | session reuse | restored session | full model | — | ✅ `native/tests/session_tests.cpp:365-368` — `reconnect: Retrying then Ready after server restart`; `reconnect: same guest identity re-logged in`; `reconnect: login snapshot is authoritative` |
 | Persistence | relaunch after death | login | N5 persistence | persisted House | House state | — | ⬜ Gap: N5 durable House/Scion restore envelope and client model coverage; owner family TASK-0056 (N5) |
 
-## Gate B — N5 envelopes still required
+## Gate B — Chronicles wire-contract freeze (TASK-0081)
 
-These rows are intentionally open until the N5 server surface is released and
-the native client has named protocol tests for the durable House journey.
+TASK-0081 froze the already-landed native-server surface at worker base
+`986264f4`. Per-step records with exact payload/response keys live in
+`orchestration/tasks/TASK-0081-gate-b-wire-contract/captures/gate-b-wire-contract.json`.
+Every envelope below was read from `native/src/networking.cpp` at that base;
+nothing is invented and no code changed. Status: 🧩 server response proven
+from cited source lines, client pending · ⬜ explicit RED gap on the wire or
+store itself. The automated-test column is RED for every chronicles step:
+`rg -n 'chronicles' native/tests/networking_tests.cpp native/tests/session_tests.cpp`
+returns no matches at this base; TASK-0077 must name these labels when it
+implements the client against this frozen surface.
 
-| Envelope / journey | Required wire surface | Status | Gap owner |
+| Envelope / journey | Frozen wire surface (handler `file:line` in native/src/networking.cpp unless noted) | Status | Automated test |
 |---|---|---|---|
-| House lifecycle | House create/select/restore snapshot | ⬜ | TASK-0056 N5 must publish the authoritative House envelope and test label |
-| Scion lifecycle | Scion create/select/current identity | ⬜ | TASK-0056 N5 must publish the Scion lifecycle envelope and test label |
-| Death | Scion death result plus recoverable House pools | ⬜ | TASK-0056 N5 must publish death/recovery events and client assertions |
-| Successor | Successor creation after death with House history | ⬜ | TASK-0056 N5 must publish successor response and persistence assertions |
-| Persistence | Reloaded House/Scion state across relaunch | ⬜ | TASK-0056 N5 must publish a durable restore envelope and end-to-end test |
+| House lifecycle | Found: `chronicles:house:found` {name} → `chronicles:state` {player.socket_id, chronicle{version,houses[{id,name,scions[],crypt[]}],activeHouseId,activeScionId}} (`ProtocolSession::handle` :2498-2508; builder `chronicles_state_payload` :2235-2241; `ensure_chronicle_house` :2242-2272). Alt existing mutate path: `player:chronicles:mutate` {type:"found-house", house.id, house.name} → `player:chronicles:update` {player.socket_id, chronicles, chroniclesRevision, chroniclesExists:true} (:2549-2572). Restore: `player:login` {guestId} → `chronicles:state`; `{awaitChronicles:true}` → `player:chronicles:ready` {player.socket_id, chroniclesAccountId, accountName, level, chronicles, chroniclesRevision, chroniclesExists} (:2655-2681; ready keys :2224-2234) | 🧩 | 🔴 RED: no native test label |
+| Scion lifecycle | Create: `chronicles:scion:create` {houseId, name} → `chronicles:state` + `createdScionId` (:2509-2518; scion entry id/name/level/mortal/deaths via `ensure_chronicle_scion` :2273-2301). Select/admission: `player:chronicles:select` {scionId, houseId, scionName, mortal} → `player:login` {player(…, player.chronicles{mortal,scionId,houseId} :582-591), scene, droppedItems[]} via `emit_login`/`login_payload` (:2632-2654, :2302, :593-595); resets commission chain + purse (:2643-2649). Set-out: `chronicles:scion:set-out` {scionId} → `player:login` (+ one-shot `game:send:message` daily road-purse notice :2530-2534; once-per-scion starter kit :2537-2543; wagon-pitch town reset :2544-2546) | 🧩 | 🔴 RED: no native test label |
+| Death | Server-initiated fatal fall (no client request): lethal wound with mortal oath armed (`process_combat` trigger :2111-2114) → `ProtocolSession::handle_final_death` :2128-2207 emits `chronicles:scion-fallen` {fallen{scionId|null,name,level}, relicCount, chronicle} (:2190); broadcasts `chronicles:scion-witnessed` {fallen.name, relicCount} (:2191-2198); direct `player:stats:update` {playerId, lifecycle{state:"permadead",mode:"hard"}} (:2199-2206). Fallen scion moves houses[].scions[] → houses[].crypt[] with relic{status:"lost",count} (:2147-2176); earned gear enters the circulation pool (:2133-2146) | 🧩 | 🔴 RED: no native test label |
+| Successor | No dedicated successor event: reuse `chronicles:scion:create` → `player:chronicles:select` (:2509-2518, :2632-2654). Return path: `player:chronicles:return` {} → `player:chronicles:ready` {player.socket_id, fallen{scionId,scionName}, + ready keys} and queues crypt heirloom relic{status:"queued", item|null} (:2586-2630). Recovery leg: elite kill surfaces circulating heirloom (`process_combat` :2083-2104; dev shortcut `dev:release-relic` :2411-2434); ground JSON carries chroniclesRelic{relicId,scionId,scionName} (:393-413); pickup `player:take:underfoot` → `core:refresh:inventory` + `world:itemDropped`/`item:change` and `mark_relic_recovered` flips crypt relic lost→recovered (:1659-1671, :1632-1658, :1602-1631, ground emit :919-927) | 🧩 | 🔴 RED: no native test label anywhere on the chain |
+| Persistence | In-process session reuse proven: new socket same identity re-login restores account state incl. chronicle_ within a live server (`reset_world_for_new_socket` :538-579; permadead deliberately not resurrected :554-562); generic reconnect labels exist (session_tests.cpp:409-411, 423-425) but zero assert chronicle content. Explicit RED gaps: no quit/logout envelope exists (transport WS close only; only "quit" token is the server console command, server_main.cpp:30) and no durable cross-process store exists (`rg 'ofstream|ifstream|fopen|fwrite' native/src` → no matches), so a server restart loses Houses/Scions/crypt state | ⬜ RED: durable restore envelope + end-to-end test missing | Durable leg unrouted (candidate successor of TASK-0097 persistence audit); client tests TASK-0077 |

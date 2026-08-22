@@ -1,0 +1,589 @@
+.github\CONTRIBUTING.md:7:Make sure you are on the toolchain published in `.nvmrc` / `.tool-versions` (Node.js 22 + npm 10). The project relies on the Vite bundler and Pinia-powered stores baked into the existing npm scripts—no global installs required.
+.github\CONTRIBUTING.md:21:Before opening a pull request, run the same release gate as CI:
+orchestration\ARCHITECT_STATE.md:216:Critical path unchanged in spirit, updated in content:
+orchestration\ARCHITECT_STATE.md:245:released per protocol and completed by codex USING YOUR QUESTION-0005
+orchestration\ARCHITECT_STATE.md:349:  (1/1 browser spec green, port 6500 released). QUESTION-0003 closable.
+orchestration\ARCHITECT_STATE.md:546:active: finish and push your current work with STATUS updates; nothing
+orchestration\ARCHITECT_STATE.md:566:harness (high), 0049 UI wave (high), 0042 first-loot (released,
+orchestration\ARCHITECT_STATE.md:577:credits) takes design-heavy work; architect scaffolds harder if either
+orchestration\ARCHITECT_STATE.md:585:Routing updated: DeepSeek = primary implementation workhorse
+orchestration\BACKLOG_FACTORY.md:12:acceptance design.
+orchestration\BACKLOG_FACTORY.md:39:   commands, evidence, and stops. AUTO_RELEASE packets carry exact release and
+orchestration\BACKLOG_FACTORY.md:51:4. automatic release of valid unblocked packets;
+orchestration\BACKLOG_FACTORY.md:57:10. scorecard, coverage, and throughput update.
+orchestration\BACKLOG_FACTORY.md:84:integration, content, presentation, polish, or release work; no more than 25%
+orchestration\BACKLOG_FACTORY.md:94:  reconnect, performance, platform, renderer/audio/input, packaging/update,
+orchestration\BACKLOG_FACTORY.md:101:- quality/release: unit through clean-machine/soak/performance/migration/crash,
+orchestration\BACKLOG_FACTORY.md:103:  installer/signing/notarization/update/support.
+orchestration\BOOTSTRAP.md:52:max_steps_per_turn = 5000; after editing run /update-config in live
+orchestration\BOOTSTRAP.md:106:kimi-work prompt (NAME=<name>; architect assigns a port range in
+orchestration\INCIDENTS.md:115:  board-dry signal, per the INC-011 rule that stop-notes live in
+orchestration\INCIDENTS.md:122:  because both of its designated drivers were dead. The owner's Claude
+orchestration\INCIDENTS.md:144:      spent the workday with no signal that the fleet was down.
+orchestration\INCIDENTS.md:161:     signal that something broke.
+orchestration\INTEGRATION_LOG.md:34:2026-08-16 — TASK-0014-smoke-browser-repair — worker `b068964`; architect review `11a5325` ACCEPTED; integrated as `b068964`. Verification: `npm run smoke:browser` (1 passed, port 6500 released); `npm run test:e2e` (3 passed, port 6500 released); `git diff --check` PASS. Notes: D-105 lifecycle repair closes QUESTION-0003; the documented smoke gate now boots and tears down its server.
+orchestration\INTEGRATION_LOG.md:62:2026-08-16 — TASK-0029-browser-25d-phase5 — source `a8993245`; independent scope validator ACCEPT; architect review ACCEPTED. Integrated in dedicated worktree `codex/integrate-TASK-0029` as `cd5b45e1`. Verification: `npm run test:unit` (117 files/750 tests), `npm run smoke:browser` (1/1; port 6500 released), and `npm run playtest` (31/31 on rerun; one initial gear-outcomes timing miss cleared without changing the assertion). Notes: cached sky gradients and shared billboard state reduce frame time while preserving visual parity; terrain context/teardown hardening is live. The 25D overhaul plan is complete per architect review.
+orchestration\INTEGRATION_LOG.md:74:2026-08-17 — TASK-0036-ui-regression-sweep — source `7c648a55`; architect review ACCEPTED; integrated on updated program base in `codex/integrate-0036-final` as `5cbf0165`. Verification: `npm run test:unit` (120 files/768 tests PASS), production build plus alternate-port browser smoke (1/1 PASS), inventory captures preserved, and isolated zone/movement checks PASS. Full batch playtest remained timing-sensitive in prior runs (`quest`/zone dev-state transitions), so no false 31/31 claim is made; the inventory-owned paths and browser-critical loop are green.
+orchestration\DECISIONS.md:22:  is lost on death; significant carried items enter a House relic pool and
+orchestration\DECISIONS.md:28:  feel lab. Its code and numbers carry no design authority; findings enter
+orchestration\DECISIONS.md:44:  returns to a recoverable pool — significant items to the relic pool,
+orchestration\DECISIONS.md:56:  throwaway; its projection/terrain/lighting design is authoritative
+orchestration\DECISIONS.md:105:  rebuilds the browser-VALIDATED design system by system under the
+orchestration\DECISIONS.md:107:  parallel design invention across surfaces; browser perf work capped at
+orchestration\DECISIONS.md:149:- **D-O3 Magic system** — production spell design waits on the actual
+orchestration\DECISIONS.md:153:- **D-O4 Monetization/distribution, final naming, lore canon.**
+orchestration\DECISIONS.md:189:orchestration/ORCHESTRATION-LEARNINGS.md, updated by the architect
+orchestration\DECISIONS.md:226:surface, parallel to N5 - NOT after N6. N6 releases only after Gate A
+orchestration\DECISIONS.md:324:integration, content, presentation, polish, or release work and normally no
+orchestration\DECISIONS.md:327:The graph covers the complete ARPG through full-product and release gates, not
+orchestration\DECISIONS.md:332:dependency predicates release validated successors without owner prose. Low
+docs\vision.md:3:## Status (updated 2026-08-13)
+docs\vision.md:22:  Signs (birthsign keystones), ring-7 class masteries
+docs\vision.md:87:The release gate is `npm run verify`: lint and style checks, the complete unit
+docs\vision.md:105:   rollback, and recovery tools needed to run a persistent world.
+docs\vision.md:109:release-safe baseline.
+docs\vision.md:132:- ~~Design the skill tree with a Flower-of-Life-inspired layout.~~ ✅
+docs\vision.md:162:- Live operations tools (GM commands, rollback, event triggers).
+orchestration\CONTENT_SCALE_MATRIX.md:6:release work.
+orchestration\CONTENT_SCALE_MATRIX.md:45:packaging, update, visual/audio regression, and repeated owner-play gates pass.
+orchestration\CONTENT_SCALE_MATRIX.md:53:telemetry-informed tuning infrastructure, platform release/signing/notarization
+orchestration\MODEL_SCORECARD.md:28:- Luna's "weak" label is scoped: weak at unscaffolded design, fine at
+orchestration\LEADER_POLICY.md:14:paths, merge target, rollback evidence, and protected-branch preconditions.
+orchestration\LEADER_POLICY.md:16:## Tier B — bounded design
+orchestration\LEADER_POLICY.md:24:Requires Sol/Fable or the designated architecture leader. Tier C includes core
+orchestration\LEADER_POLICY.md:27:and irreversible release/account actions.
+docs\deployment.md:53:Caddy obtains and renews TLS certificates and proxies HTTP and WebSocket
+orchestration\ONBOARDING-SOL-ORCHESTRATOR.md:95:`MODEL_SCORECARD.md` carries per-model calibration; update it after
+.github\workflows\ci.yml:30:      - name: Verify release candidate
+docs\chronicles-persistence.md:31:`select-house`, `select-scion`). `player:chronicles:update` acknowledges the
+docs\chronicles-persistence.md:55:The next elite slain by a living Scion of that House releases one queued
+docs\crossroads-world-web.md:1:# The Crossroads & the Weathering — world redesign
+docs\crossroads-world-web.md:11:Every mechanic in this redesign is that sentence applied somewhere:
+docs\ui-regression-checklist.md:14:- With chat collapsed, send/receive a message; badge increments, preview updates, and `Show chat` opens the overlay without shifting the canvas.
+docs\ui-regression-checklist.md:16:- Press numeric keys `1-8` while the canvas is focused; the matching quick slot highlights briefly and activates its assigned skill.
+docs\25d-overhaul-plan.md:36:  (`engine.js:109-188`), which updates the map (`engine.js:110-112`) and then
+docs\25d-overhaul-plan.md:194:until phase 5 sign-off.
+docs\25d-overhaul-plan.md:252:  the weakest target; legacy-renderer retirement is an owner sign-off decision
+docs\25d-overhaul-plan.md:255:## 8. Feature-flag / toggle design
+orchestration\ORCHESTRATION-LEARNINGS.md:15:wasting tokens/time, and tune task design to each model's capability.
+orchestration\ORCHESTRATION-LEARNINGS.md:22:  Weak models need: exact file paths, function signatures, the hard
+orchestration\ORCHESTRATION-LEARNINGS.md:25:  execute well; they do not design well.
+orchestration\ORCHESTRATION-LEARNINGS.md:26:- **Medium (DeepSeek, Kimi K3):** can design within one subsystem, but
+orchestration\ORCHESTRATION-LEARNINGS.md:28:  local decisions to them; never leave cross-cutting design (camera
+orchestration\ORCHESTRATION-LEARNINGS.md:30:- **Architect (Fable):** owns all cross-cutting design and now WRITES
+orchestration\ORCHESTRATION-LEARNINGS.md:70:- Every acceptance updates this document if it taught anything.
+orchestration\PROTOCOL.md:56:  an exact machine-evaluable release predicate. When the predicate becomes
+orchestration\PROTOCOL.md:66:- **Claim release**: if a claim goes stale (coordinator outage, no
+orchestration\PROTOCOL.md:68:  task folder naming the released claim. From that moment any coordinator
+orchestration\PROGRAM_GRAPH.md:17:| T7 Release hardening | Full regression, deterministic replay, lifecycle/long soak, clean-machine builds, asset/runtime manifests, save migration/recovery, upgrade/rollback, platform packaging and release gates |
+orchestration\PROGRAM_GRAPH.md:18:| T8 Repeated owner verdicts | Owner play at each major slice and final release candidate, numbered friction/correction waves resolved, no quality-rubric zero, presentation captures at supported resolutions |
+orchestration\PROGRAM_GRAPH.md:22:release revision/environment, with owner-only gates actually decided.
+orchestration\PROGRAM_GRAPH.md:34:  presentation, 100 hardening, and 100 release packets;
+orchestration\PROGRAM_GRAPH.md:77:| Regression/soak | 0080, 0082, 0083, 0098, 0099, 0100 | 0106 plus CI/soak releases | deterministic replay, dual-server parity, lifecycle and performance coverage |
+orchestration\PROGRAM_GRAPH.md:85:| Packaging | 0092, 0094, 0099 | packaging/launcher releases after dependencies | owner-playable build, clean-machine launch, Windows/macOS delivery |
+orchestration\PROGRAM_GRAPH.md:86:| Release/migration | 0120 | 0126, 0127 | clean-machine, soak, save migration/recovery, upgrade/rollback, release evidence |
+orchestration\PROGRAM_GRAPH.md:125:    soak, and failure artifacts form the release ladder.
+orchestration\PROGRAM_GRAPH.md:131:    clean-machine inventory precede installer/signing/notarization. Those
+orchestration\PROGRAM_GRAPH.md:144:    packaging, spatial priority, and clean shutdown are release requirements.
+orchestration\PROGRAM_GRAPH.md:150:    decisions. A release candidate loops through repeated owner play and
+orchestration\PROGRAM_GRAPH.md:162:| passive-tree source | authoritative 271-node engine/content | 0105 audit, topology/persistence scaffold design |
+orchestration\PROGRAM_GRAPH.md:164:| season inheritance | season reset release | bounded versioned record seam and non-seasonal systems |
+orchestration\PROGRAM_GRAPH.md:165:| sound/music direction | authored audio/music content | 0117 audit, backend-neutral runtime/test design |
+orchestration\PROGRAM_GRAPH.md:166:| art/lore/naming/balance/content approvals | production content breadth and final release | 0121 matrix, content-neutral systems/tools/tests |
+docs\archive\interpolated-movement-plan.md:3:# Smooth Movement Redesign
+docs\archive\interpolated-movement-plan.md:5:Last updated: 2025-10-14
+docs\archive\interpolated-movement-plan.md:17:- **Network payloads**: `player:movement` events push the whole player object with updated `x`/`y` integers; clients immediately overwrite their local copies (`src/core/player/events/player.js:26`).
+docs\archive\interpolated-movement-plan.md:31:     lastUpdate: number,      // ms timestamp the server update was observed
+docs\archive\interpolated-movement-plan.md:57:> Each milestone is designed to land cleanlyâ€”compile, lint, and runâ€”so we can pause/resume between sessions.
+docs\archive\interpolated-movement-plan.md:70:2. Enhance `Engine.loop` to compute `deltaTime` and forward it to `Map.update(delta)` before drawing.
+docs\archive\interpolated-movement-plan.md:75:2. Mirror the same metadata for NPC/monster updates.
+docs\archive\interpolated-movement-plan.md:84:2. Implement idle decay so entities stop smoothly when no new updates arrive.
+docs\archive\interpolated-movement-plan.md:89:- Documentation updates, migration notes.
+docs\archive\interpolated-movement-plan.md:94:- How are monsters currently updated? Need to locate their event flow before Milestone 5.
+docs\archive\interpolated-movement-plan.md:105:| 2025-10-14 | Added continuous keyboard repeat, re-used movement controllers for joined players/NPC updates, and render remote entities/items with interpolated screen-space positions. | Next: surface server timing metadata and wire sprite animations to movement states. |
+docs\development-setup.md:3:Delaford historically targeted the archived 2020-era runtime stack, but the project now runs (and is tested) on current Node LTS releases. The steps below capture everything you need to get the modern toolchain working without guesswork.
+docs\development-setup.md:8:  The repository publishes the version in multiple formats (`.nvmrc`, `.node-version`, `.tool-versions`, and the `volta` block in `package.json`) so whichever tool you use can pick it up automatically.
+docs\archive\code-review.md:119:- Graceful shutdown handling with signal trapping and timeout
+docs\archive\code-review.md:155:- World manager (scene CRUD, player assignment)
+docs\archive\code-review.md:232:- **No object pooling.** Items, monsters, and movement steps create new objects on every tick. For a game server, object pooling can significantly reduce GC pressure.
+docs\quest-progression.md:24:- force-saves player progress and pushes a live quest-journal update.
+docs\archive\fix-plan-2026-07-04.md:5:> **Status (updated 2026-08-13):** Phases 0–7 are implemented. Chronicles now
+docs\archive\fix-plan-2026-07-04.md:175:slot triggers its skill; `skill-quickbar-integration.spec.js` updated & green.
+docs\archive\fix-plan-2026-07-04.md:191:   Server and client must agree; update `inventory-footprints`/
+docs\archive\fix-plan-2026-07-04.md:211:the doll's weapon slot and it equips (Wear.vue + server state update); hover
+docs\archive\dependency-plan.md:8:- Supporting tools: cross-env (update), uuid, eslint-plugin-vue, vue-tippy.
+docs\archive\dependency-plan.md:19:- `eslint` v8 -> v9 (requires config updates; coordinate with eslint-plugin-vue v10).
+docs\archive\dependency-plan.md:20:- `eslint-plugin-vue` v10 (update lint config).
+docs\archive\dependency-plan.md:24:- `jest` 27 -> 30 (requires Babel/Jest config updates, `@vue/vue2-jest` interplay).
+docs\loop-journal.md:26:  header to each, and updated the live vision document's two plan references.
+docs\loop-journal.md:84:- Goal: delete verified unreachable APIs, socket events, and UI signals while
+docs\loop-journal.md:112:- Implementation: local login profiles now update the SQLite identity registry,
+docs\loop-journal.md:134:  and no longer carries `x_ORIG`, `y_ORIG`, or `sign_in`.
+docs\loop-journal.md:239:- Root cause: the shared equipment defaults still assigned gloves and feet a
+docs\loop-journal.md:397:  updates now target only players in the acting scion's current scene, including
+docs\loop-journal.md:422:  local account and verifies that sign-in receives the username with a blank
+docs\loop-journal.md:617:  text and applies live `quest:update` payloads. Browser smoke opens Quests
+docs\loop-journal.md:662:  username, scrubs legacy plaintext passwords, and shows an explicit sign-in
+docs\loop-journal.md:670:  smoke proves a 100-gold scion-to-House transfer updates both balances.
+docs\loop-journal.md:685:## 2026-07-12 — Remove guest credentials from account sign-in
+docs\loop-journal.md:693:- Browser smoke starts from the old persisted guest flag, proves account sign-in
+docs\loop-journal.md:715:  localhost `dev` credential during the server transition. Failed sign-in
+docs\loop-journal.md:778:## 2026-07-12 — Separate account sign-in from browser guest play
+docs\loop-journal.md:782:- The sign-in screen is now account-only: username, password, Login, optional
+docs\loop-journal.md:788:  separate browser-local Chronicle and is never the signed-in House. Normal
+docs\loop-journal.md:796:  guest controls from the sign-in screen.
+docs\loop-journal.md:802:  prototype updates. The live game keeps its server-authoritative point,
+orchestration\ORCHESTRATION.md:28:- PIPELINED work releases only when its prerequisite is ACCEPTED.
+orchestration\ORCHESTRATION.md:29:- EXPLORATORY fan-out assigns deliberately different hypotheses or
+orchestration\ORCHESTRATION.md:177:500-packet detailed reserve, release validated successors automatically, and
+orchestration\ORCHESTRATION.md:184:retirement trigger. The outgoing supervisor publishes exact repo, worker,
+orchestration\owner-input\OI-001-denylist-dispositions.md:18:   update in one compatibility wave.
+orchestration\owner-input\OI-002-renderer-dependency.md:17:headless tests/captures, reproducible clean build, explicit license/provenance,
+native\build.ps1:80:    # vcvars64.bat invokes vswhere internally.  Put the installer directory
+orchestration\owner-input\OI-003-asset-font-policy.md:10:license/rights, SHA-256, dimensions, derivative instructions, and named package
+orchestration\owner-input\OI-003-asset-font-policy.md:14:licensed third-party pack/font with archived license and attribution terms.
+docs\product\OPEN_DECISIONS.md:10:| OD-003 | What is the production Spell/Arcane Lattice integration? | Use the inspected WIZARD reference; decide progression, authoring format, and runtime effects with a focused magic design pass. |
+orchestration\owner-input\OI-006-house-economy.md:8:passive income, and exchange held behind explicit caps/safety design.
+docs\product\WIZARD_ARCANE_LATTICE_REFERENCE.md:34:Verdigris therefore records this as design evidence only. The native sprint does
+orchestration\owner-input\OI-007-campaign-season-travel.md:4:season reset release, or fast-travel implementation.
+orchestration\owner-input\OI-008-owner-content-approvals.md:4:production content breadth; all approvals are required before final release.
+orchestration\owner-input\OI-009-audio-music-direction.md:13:sets in the playable client. Alternatives: licensed library/composer sources
+orchestration\owner-input\OI-009-audio-music-direction.md:17:license manifest, and owner listening/play verdict. No generation is requested
+orchestration\owner-input\README.md:15:| OI-007 | PARKED-NONCRITICAL | before authored campaign/season/travel releases | campaign density, travel risk, season inheritance |
+orchestration\owner-input\README.md:16:| OI-008 | WAITING_EVIDENCE (TASK-0121) | before production content breadth/final release | art, lore, naming, balance, and content approval batch |
+docs\product\VERDIGRIS_CONSTITUTION.md:123:license to invent a generic mana wizard in this sprint.
+docs\rebuild\ADR-003-networking-library.md:18:| Boost.Beast + standalone Asio | Boost license; mature WS/HTTP | Excellent protocol coverage, but the current native helper intentionally has no package-manager/Boost prerequisite; vendoring Boost is too broad for N1 | Deferred; preferred if native HTTP/TLS becomes first-class |
+docs\rebuild\ADR-001-native-language.md:10:separate interfaces. SDL3 or another permissively licensed focused library can
+docs\rebuild\ADR-002-persistence-seam.md:13:Design consequence noted for balance work later: logging out is a free
+docs\rebuild\LEGACY_MATRIX.md:21:| WIZARD Arcane Lattice | REFERENCE_ONLY | Record actual design; no generic magic replacement in this sprint. |
+docs\rebuild\LEGACY_MATRIX.md:44:| World-web graph (`server/core/world-web.js`) and seeded instance recipes (`server/core/map.js`) | REIMPLEMENT | Deterministic hash/PRNG design carries; extract recipes as data. |
+docs\rebuild\LEGACY_MATRIX.md:46:| Chronicles SQLite schema (`server/core/repositories/chronicles-repository.js`) | REFERENCE_ONLY | Design input for native persistence (future ADR-002); not a port source. |
+docs\rebuild\LEGACY_MATRIX.md:47:| Skills/quickbar registry (`server/shared/skills/index.js`) | REFERENCE_ONLY | Data-shaped definitions inform native skill design (core trio landed via TASK-0007). |
+docs\rebuild\N3_PARITY_IMPLEMENTATION_BRIEF.md:25:- `player:combat:update` — player combat/cooldown/buff/animation state.
+docs\rebuild\N3_PARITY_IMPLEMENTATION_BRIEF.md:31:- `player:stats:update` — resource/life changes and progression state.
+docs\rebuild\N3_PARITY_IMPLEMENTATION_BRIEF.md:34:- Scene/monster/item updates — live monster health/roles/effects, dead-monster
+docs\rebuild\NATIVE_PRODUCT_CONVERGENCE.md:24:N5. N6 (TASK-0058) releases only after Gate A passes. Every later
+docs\rebuild\NATIVE_PRODUCT_CONVERGENCE.md:47:architect assigns it). Extract modules only as the journey requires —
+docs\rebuild\NATIVE_PRODUCT_CONVERGENCE.md:84:→ authoritative response → ClientModel update → presentation evidence
+orchestration\questions\QUESTION-0003-smoke-browser-server-bootstrap.md:3:related_task: release-tooling
+orchestration\questions\QUESTION-0003-smoke-browser-server-bootstrap.md:38:documented browser release command fail before any page is loaded, so it
+orchestration\questions\QUESTION-0005-task-0027-orb-clock-domain.md:16:browser's native RAF timestamp. The first orb update can therefore have a
+orchestration\questions\QUESTION-0005-task-0027-orb-clock-domain.md:30:  but updates from RAF timestamps, with no lower clamp on `dt`.
+orchestration\questions\QUESTION-0005-task-0027-orb-clock-domain.md:65:   `src/core/hud/wizard-orb-renderer.js` (clamp only — no redesign) so no
+orchestration\questions\QUESTION-0004-task-0022-camera-test-ownership.md:17:camera unit test needs the corresponding expectation update for the mandated
+orchestration\questions\QUESTION-0004-task-0022-camera-test-ownership.md:23:1. Amend/replace TASK-0022 scope to authorize the focused camera test update;
+orchestration\questions\QUESTION-0004-task-0022-camera-test-ownership.md:25:2. Provide a replacement task/owned-path correction that updates the test
+orchestration\questions\QUESTION-0004-task-0022-camera-test-ownership.md:35:the focused camera expectation update, and integration commit `705b6c3` ships
+docs\rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:9:| Journey step | Player input | Outbound event | Server handler | Authoritative response | ClientModel update | Presentation evidence | Automated test |
+docs\rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:17:| Aim | mouse | presentation-local | — | — | facing | aim reticle / facing | ✅ `native/tests/session_tests.cpp:219` — `journey: aim updates facing` |
+docs\rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:45:| House lifecycle | Found: `chronicles:house:found` {name} → `chronicles:state` {player.socket_id, chronicle{version,houses[{id,name,scions[],crypt[]}],activeHouseId,activeScionId}} (`ProtocolSession::handle` :2498-2508; builder `chronicles_state_payload` :2235-2241; `ensure_chronicle_house` :2242-2272). Alt existing mutate path: `player:chronicles:mutate` {type:"found-house", house.id, house.name} → `player:chronicles:update` {player.socket_id, chronicles, chroniclesRevision, chroniclesExists:true} (:2549-2572). Restore: `player:login` {guestId} → `chronicles:state`; `{awaitChronicles:true}` → `player:chronicles:ready` {player.socket_id, chroniclesAccountId, accountName, level, chronicles, chroniclesRevision, chroniclesExists} (:2655-2681; ready keys :2224-2234) | 🧩 | 🔴 RED: no native test label |
+docs\rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:47:| Death | Server-initiated fatal fall (no client request): lethal wound with mortal oath armed (`process_combat` trigger :2111-2114) → `ProtocolSession::handle_final_death` :2128-2207 emits `chronicles:scion-fallen` {fallen{scionId|null,name,level}, relicCount, chronicle} (:2190); broadcasts `chronicles:scion-witnessed` {fallen.name, relicCount} (:2191-2198); direct `player:stats:update` {playerId, lifecycle{state:"permadead",mode:"hard"}} (:2199-2206). Fallen scion moves houses[].scions[] → houses[].crypt[] with relic{status:"lost",count} (:2147-2176); earned gear enters the circulation pool (:2133-2146) | 🧩 | 🔴 RED: no native test label |
+docs\rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:48:| Successor | No dedicated successor event: reuse `chronicles:scion:create` → `player:chronicles:select` (:2509-2518, :2632-2654). Return path: `player:chronicles:return` {} → `player:chronicles:ready` {player.socket_id, fallen{scionId,scionName}, + ready keys} and queues crypt heirloom relic{status:"queued", item|null} (:2586-2630). Recovery leg: elite kill surfaces circulating heirloom (`process_combat` :2083-2104; dev shortcut `dev:release-relic` :2411-2434); ground JSON carries chroniclesRelic{relicId,scionId,scionName} (:393-413); pickup `player:take:underfoot` → `core:refresh:inventory` + `world:itemDropped`/`item:change` and `mark_relic_recovered` flips crypt relic lost→recovered (:1659-1671, :1632-1658, :1602-1631, ground emit :919-927) | 🧩 | 🔴 RED: no native test label anywhere on the chain |
+docs\rebuild\PARITY_ROADMAP.md:38:  licensed lib — candidate set IXWebSocket / uWebSockets / Boost.Beast;
+docs\rebuild\PARITY_ROADMAP.md:57:  design, D-113 art) as the superior front end.
+docs\rebuild\PARITY_ROADMAP.md:64:PARALLEL from the N4 surface onward — N6 releases only after Gate A.
+orchestration\questions\QUESTION-0008-task-0038-control-ownership-seam.md:19:  context menu, mount rebinding UI, or update live skill labels.
+orchestration\questions\QUESTION-0009-native-n3-authority-bridge.md:19:- `player:move` updates only `WorldSimulation`; it does not dispatch
+docs\reference\25d-overhaul\HANDOFF.md:21:  solved in this design. Do not re-derive solutions to those; use the documented
+docs\reference\25d-overhaul\HANDOFF.md:88:(§8.1). Only then, with sign-off, remove or archive the legacy renderer.
+docs\reference\25d-overhaul\HANDOFF.md:95:concluding the design is at fault.
+docs\rebuild\RECONSTITUTION_STATUS.md:29:- Arcane Lattice: reference-only until the owner resolves the magic design
+docs\rebuild\RECONSTITUTION_STATUS.md:77:  evidence is published. Fable's latest architect state records rev2
+docs\rebuild\RECONSTITUTION_STATUS.md:154:2. Obtain Fable's re-review of the newly published TASK‑0046 two-arc evidence.
+docs\rebuild\SPRINTS.md:35:Each milestone ends with tests/build passing, a commit, and an update to
+docs\rebuild\VERDIGRIS_GAP_AUDIT.md:16:Kimi-work at `d1e30e2b6` with no implementation commit or release handoff, so
+docs\rebuild\VERDIGRIS_GAP_AUDIT.md:103:authoritative combat updates, monster deaths, or loot pickup over the native
+docs\reference\25d-overhaul\README.md:13:  docs/ARCHITECTURE.md  the rendering design, math, and known pitfalls
+orchestration\questions\QUESTION-0010-task-0047-coordinator-release.md:10:Should the existing Kimi-work claim on TASK-0047 be resumed or released so a
+orchestration\questions\QUESTION-0010-task-0047-coordinator-release.md:42:otherwise release the claim (option 2). Do not merge the header-only work.
+orchestration\questions\QUESTION-0010-task-0047-coordinator-release.md:62:1. Kimi publishes an implementation commit and REPORT on the claimed branch;
+docs\rebuild\WIZARD_INTEGRATION_VERIFICATION.md:46:Authoritative design boundaries remain in
+docs\reference\25d-overhaul\docs\ARCHITECTURE.md:21:## 2. The camera (grep: `updateProjection`, `proj`, `projT`, `unproj`)
+docs\reference\25d-overhaul\docs\ARCHITECTURE.md:149:updateProjection → camera lerp-follow
+orchestration\REENTRY-CLAUDE-MAC.md:28:VERIFY the output yourself before committing it. You design and
+orchestration\REENTRY-CLAUDE-MAC.md:29:verify; Qwen types. Never dispatch design decisions or anything you
+orchestration\REENTRY-CURSOR.md:22:substitute for design judgment.
+orchestration\REENTRY-OX-ALPHA-PC.md:40:| ox-pc-f | `Z:\Code\.worktrees\verdigris\ox-pc-f` | `codex/TASK-0131-release-proof-manifest-ox-pc-f` | TASK-0131 |
+orchestration\REENTRY-OX-ALPHA-PC.md:42:| ox-pc-h | `Z:\Code\.worktrees\verdigris\ox-pc-h` | `codex/TASK-0133-save-migration-rollback-contract-ox-pc-h` | TASK-0133 |
+orchestration\REENTRY-OX-ALPHA-PC.md:43:| ox-pc-i | `Z:\Code\.worktrees\verdigris\ox-pc-i` | `codex/TASK-0134-distribution-signing-boundary-ox-pc-i` | TASK-0134 |
+orchestration\REENTRY-OX-ALPHA-PC.md:58:   assigned port capsule. `RUN_STATUS.md` is the only current routing source.
+orchestration\REENTRY-OX-ALPHA-PC.md:68:origin; replacement TASK-0129 is released to ox-pc-d at exact base
+orchestration\RUN_STATUS.md:10:check. This does not release current claims, change task ownership, or authorize
+orchestration\RUN_STATUS.md:23:for the controller-state correction. ox-pc-d is released to replacement packet
+orchestration\RUN_STATUS.md:84:  hardening, and release; 0 pure audit/research/inventory/evaluation; 25 packets
+orchestration\RUN_STATUS.md:104:| ox-pc-f | 6720-6739 | new isolated worktree launch requested | TASK-0131 release-proof manifest |
+orchestration\RUN_STATUS.md:106:| ox-pc-h | 6760-6779 | new isolated worktree launch requested | TASK-0133 save migration/rollback contract |
+orchestration\RUN_STATUS.md:107:| ox-pc-i | 6780-6799 | new isolated worktree launch requested | TASK-0134 distribution/signing boundary |
+orchestration\RUN_STATUS.md:187:- Active claims: **TASK-0128 by ox-pc-a**; TASK-0080 remains assigned to
+orchestration\RUN_STATUS.md:213:| P0 | TASK-0131 release-proof manifest | INDEPENDENT / ARCHITECTURE | future after current claim | makes release claims machine-auditable |
+orchestration\RUN_STATUS.md:215:| P0 | TASK-0133 save migration/rollback contract | INDEPENDENT / ARCHITECTURE | future after current claim | stages reversible persistence upgrades without touching profiles |
+orchestration\RUN_STATUS.md:216:| P1 | TASK-0134 distribution/signing boundary | INDEPENDENT / ARCHITECTURE | future after current claim | isolates automatable release proof from owner credentials and publication |
+orchestration\RUN_STATUS.md:219:| P1 | TASK-0091 protocol coverage sentinel design | INDEPENDENT / MECHANICAL | future after current claim | catches lost journey wire steps |
+orchestration\RUN_STATUS.md:249:| Task | Dependency / release |
+orchestration\RUN_STATUS.md:263:| TASK-0123 audio/music runtime | 0117 + backend/license/owner direction |
+orchestration\RUN_STATUS.md:266:| TASK-0126 clean-machine release harness | 0092 + 0094 + 0099 + 0120 accepted |
+orchestration\RUN_STATUS.md:278:   the lane in the same sweep; update full scorecard experimental unit.
+orchestration\SUPERVISOR_SUCCESSION.md:17:- `RETIREMENT_WARNED`: owner signals likely credit-driven switch; avoid opening
+orchestration\SUPERVISOR_SUCCESSION.md:50:scan/review/integrate/release/decompose/restock. It does not restart completed
+orchestration\tasks\TASK-0001-native-legends-records\SPEC.md:136:  design the seasonal rule.
+orchestration\tasks\TASK-0001-native-legends-records\REVIEW.md:36:   (previously reassigned every clear). Behavior-improving and covered by
+orchestration\tasks\TASK-0010-native-actor-facing\STATUS.md:11:known_risks: integer heading representation and forward-cone boundary must remain deterministic; aim throttle must not starve simulation updates
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\SPEC.md:30:browser game also contains post-Delaford Verdigris design (Chronicles/House
+orchestration\tasks\TASK-0010-native-actor-facing\SPEC.md:34:TASK-0007's Thrust uses the horizontal-delta sign as a facing proxy — a
+orchestration\tasks\TASK-0010-native-actor-facing\SPEC.md:64:2. `resolve_move` updates facing from the move direction (when moving);
+orchestration\tasks\TASK-0010-native-actor-facing\SPEC.md:103:Core + tests + client (sole in-flight task; sequential by design).
+orchestration\tasks\TASK-0010-native-actor-facing\SPEC.md:118:doesn't starve facing updates.
+orchestration\tasks\TASK-0006-native-relic-reentry\SPEC.md:124:  resurfacing roll must consume from the shared Rng, update expectations
+orchestration\tasks\TASK-0006-native-relic-reentry\SPEC.md:132:- Any temptation to design relic *quality* transformation (scars, bond
+orchestration\tasks\TASK-0004-native-client-direct-control\SPEC.md:60:  (README may be updated by this task ONLY if added to owned_paths at
+orchestration\tasks\TASK-0009-client-skill-bindings\REVIEW.md:31:   by value; if the core rebalances, the strip will lie until updated. A
+orchestration\tasks\TASK-0007-native-skill-actions\SPEC.md:62:     delta sign as facing proxy), 1.3× damage, shares the attack cooldown,
+orchestration\tasks\TASK-0007-native-skill-actions\REPORT.md:19:- Thrust uses the horizontal position sign as the existing deterministic
+orchestration\tasks\TASK-0007-native-skill-actions\REPORT.md:59:assigns cooldown requirements to Thrust and Sweep only.
+orchestration\tasks\TASK-0007-native-skill-actions\REPORT.md:63:The core still uses the deterministic horizontal position sign as its facing
+orchestration\tasks\TASK-0004-native-client-direct-control\REVIEW.md:20:  hint and no command, old P/E/X bindings removed, help text updated.
+orchestration\tasks\TASK-0017-native-movement-feel\RELEASE.md:1:# Claim released by architect — 2026-08-16 16:45
+orchestration\tasks\TASK-0017-native-movement-feel\RELEASE.md:3:The `kimi` claim (2ec2b71, started 14:45) is released: the Kimi quota is
+orchestration\tasks\TASK-0017-native-movement-feel\RELEASE.md:6:re-claim by replacing STATUS.md per the PROTOCOL claim-release rule.
+orchestration\tasks\TASK-0014-smoke-browser-repair\REPORT.md:34:  listener (`port 6500 released`).
+orchestration\tasks\TASK-0004-native-client-direct-control\REPORT.md:14:Commit `7ac51d4` updates only `native/client/main.cpp` to implement the D-007
+orchestration\tasks\TASK-0004-native-client-direct-control\REPORT.md:39:and House-store updates. Captures are retained untracked under
+orchestration\tasks\TASK-0004-native-client-direct-control\REPORT.md:44:update.
+orchestration\tasks\TASK-0017-native-movement-feel\REPORT.md:73:- The worker reports no monster pursuit locomotion redesign; the task keeps
+orchestration\tasks\TASK-0014-smoke-browser-repair\REVIEW.md:13:port 6500 released afterward (verified via Get-NetTCPConnection).
+orchestration\tasks\TASK-0014-smoke-browser-repair\STATUS.md:10:expected_verification: npm run smoke:browser; npm run test:e2e; verify port 6500 is released
+orchestration\tasks\TASK-0014-smoke-browser-repair\STATUS.md:15:verification: npm run smoke:browser (1 passed, port 6500 released); npm run test:e2e (3 passed, port 6500 released); git diff --check PASS
+orchestration\tasks\TASK-0014-smoke-browser-repair\STATUS.md:20:integration_verification: npm run smoke:browser; npm run test:e2e; port 6500 released after each; git diff --check PASS
+orchestration\tasks\TASK-0017-native-movement-feel\SPEC.md:58:   REPORT.md and update tests deliberately.
+orchestration\tasks\TASK-0017-native-movement-feel\SPEC.md:69:   replay updated; melee/thrust reachability still proven by the existing
+orchestration\tasks\TASK-0017-native-movement-feel\SPEC.md:95:If the step change cascades into redesigning combat ranges wholesale →
+orchestration\tasks\TASK-0014-smoke-browser-repair\SPEC.md:71:proof that 6500 is released.
+orchestration\tasks\TASK-0014-smoke-browser-repair\SPEC.md:87:That the lifecycle matches `test:e2e` exactly and the port is released.
+orchestration\tasks\TASK-0014-smoke-browser-repair\SPEC.md:92:changes), stop and update QUESTION-0003 instead of expanding scope.
+orchestration\tasks\TASK-0012-slice-camera-evidence\STATUS.md:21:revision_required: re-encode all nine 1200x800 captures lossy at approximately quality 85 or equivalent, target <=250KB each, update report references, and verify telegraph/loot clarity
+orchestration\tasks\TASK-0012-slice-camera-evidence\SPEC.md:30:The camera envelope is an open experimental area by design. The slice has
+orchestration\tasks\TASK-0012-slice-camera-evidence\REVIEW.md:14:updated. The uncompressed originals persist in branch history (they were
+orchestration\tasks\TASK-0012-slice-camera-evidence\REVIEW.md:44:   format), target ≤250KB each, update the REPORT.md references, and
+orchestration\tasks\TASK-0016-native-billboard-experiment\SPEC.md:68:   simplest correct GDI approach), horizontal mirror by facing sign,
+orchestration\tasks\TASK-0016-native-billboard-experiment\REPORT.md:40:  the same fight after aiming to opposite sides, exercising the facing-sign
+orchestration\tasks\TASK-0016-native-billboard-experiment\REPORT.md:62:released with RAII. The simulation and its authoritative facing values remain
+orchestration\tasks\TASK-0017-native-movement-feel\REVIEW.md:25:  integer math throughout; tests updated deliberately.
+orchestration\tasks\TASK-0025-instance-lifecycle-correctness\SPEC.md:60:Client changes, loot-decay design, multi-instance simultaneity.
+orchestration\tasks\TASK-0019-browser-25d-survey\SPEC.md:58:1-5, risks, and the feature-flag/toggle design.
+orchestration\tasks\TASK-0018-death-recoverability\REPORT.md:30:- `native/tests/core_tests.cpp` — updated the old lost-forever assertion and
+orchestration\tasks\TASK-0018-death-recoverability\REPORT.md:51:  updated to the new route-specific pack history required by D-106.
+orchestration\tasks\TASK-0019-browser-25d-survey\REVIEW.md:30:  feature-flag design the reference mandates.
+orchestration\tasks\TASK-0019-browser-25d-survey\REPORT.md:47:  risks, feature-flag design.
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REVIEW.md:11:The regression's root cause was exactly the failure signature: disconnect
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:28:`player.update()`. That made cleanup immediate, but persistence happened after
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:35:the player disconnecting, cancels delayed work, awaits `player.update()`, and
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:72:  roster remains present while `update()` is pending and is removed only after
+orchestration\tasks\TASK-0018-death-recoverability\SPEC.md:64:   tests updated deliberately where the old "lost forever" assertions now
+orchestration\tasks\TASK-0018-death-recoverability\SPEC.md:84:If trophies-recovery design grows beyond a simple pool + resurface hook →
+orchestration\tasks\TASK-0032-browser-d106-implementation\REPORT.md:28:  6500 was released. A later local attempt encountered the owner’s persistent
+orchestration\tasks\TASK-0032-browser-d106-implementation\SPEC.md:67:  scenarios constrain you per the audit; update scenario expectations
+orchestration\tasks\TASK-0032-browser-d106-implementation\REVIEW.md:15:port released**. The worker's refusal to kill the owner's live session
+orchestration\tasks\TASK-0024-browser-25d-phase3\STATUS.md:11:resumed_at: 2026-08-16T17:00:00-07:00 (claim released in error at 16:45 — quota note mistaken; implementation was already complete and pushed to the worker branch at ~16:56. Re-claimed per the PROTOCOL claim-release rule: fresh STATUS.md, no other coordinator had claimed.)
+orchestration\tasks\TASK-0024-browser-25d-phase3\STATUS.md:20:verification: rev1 — npm run test:unit (PASS: 115 files/744 tests); npm run smoke:browser (PASS: 1/1, port 6500 released); npm run playtest (PASS: 31/31 clean rerun after transient dev:state contention flakes); luminance bar PASS (after-arpg 40.14 >= before 39.82; after-edge-north 37.98 >= before 37.33)
+orchestration\tasks\TASK-0030-native-persistence\REVIEW.md:35:design to running code. Integration approved.
+orchestration\tasks\TASK-0024-browser-25d-phase3\SPEC.md:47:Unit-test expectation updates for retuned constants are IN SCOPE (paths
+orchestration\tasks\TASK-0024-browser-25d-phase3\SPEC.md:48:owned above) per the QUESTION-0004 precedent — update expectations with
+orchestration\tasks\TASK-0027-browser-25d-phase4\SPEC.md:43:intact, rendering-only, test-expectation updates in owned paths, captures
+orchestration\tasks\TASK-0027-browser-25d-phase4\RELEASE.md:1:# Claim released by architect — 2026-08-16 ~19:50
+orchestration\tasks\TASK-0027-browser-25d-phase4\RELEASE.md:3:The `kimi-work` claim (60131bc, ~18:10) is released: no implementation
+orchestration\tasks\TASK-0024-browser-25d-phase3\REPORT.md:93:  verified released afterward)
+orchestration\tasks\TASK-0024-browser-25d-phase3\REPORT.md:110:  invariant section authorizes "unit-test expectation updates for retuned
+orchestration\tasks\TASK-0024-browser-25d-phase3\REPORT.md:114:  expectation update is kept as a documented deviation — and the replacement
+orchestration\tasks\TASK-0024-browser-25d-phase3\REPORT.md:156:Night-grade unit expectation updated to the renormalized [110,124,205]
+orchestration\tasks\TASK-0024-browser-25d-phase3\REPORT.md:163:- `npm run smoke:browser` — PASS (1/1, port 6500 released)
+orchestration\tasks\TASK-0029-browser-25d-phase5\REPORT.md:51:- Browser smoke: `npm run smoke:browser` — 1/1 passed; port 6500 released.
+orchestration\tasks\TASK-0024-browser-25d-phase3\RELEASE.md:1:# Claim released by architect — 2026-08-16 16:45
+orchestration\tasks\TASK-0024-browser-25d-phase3\RELEASE.md:3:The `kimi-work` claim (f683a2e) is released: the shared Kimi quota is
+orchestration\tasks\TASK-0024-browser-25d-phase3\RELEASE.md:6:PROTOCOL claim-release rule. This task is CRITICAL (owner ship goal
+orchestration\tasks\TASK-0040-first-encounter-readability\STATUS.md:16:validator: /root/validate_task_0040 — REVISE on harness reproducibility; architect ratified the evidence under QUESTION-0006 and assigned TASK-0043 to stabilize the shared harness
+orchestration\tasks\TASK-0022-browser-25d-phase1\REPORT.md:90:assertion was updated to encode the governing §6 conformance rule rather than
+orchestration\tasks\TASK-0022-browser-25d-phase1\REPORT.md:100:the focused camera unit expectation was updated to keep the required unit gate
+orchestration\tasks\TASK-0040-first-encounter-readability\SPEC.md:54:   separation invariant, curve progression; playtest 31/31 (update
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:93:  repository update from `dropped` to `claimed` ([`server/core/items/pickup.js:24-55`](../../../server/core/items/pickup.js#L24-L55), [`server/core/repositories/chronicles-repository.js:583-590`](../../../server/core/repositories/chronicles-repository.js#L583-L590)). This is distinct from the JSON Chronicle path: its action handler saves first and then calls `chroniclesStore.recoverRelic`, changing `circulating` to `recovered` ([`server/player/handlers/actions/index.js:1234-1252`](../../../server/player/handlers/actions/index.js#L1234-L1252), [`server/core/services/chronicles-store.js:523-565`](../../../server/core/services/chronicles-store.js#L523-L565)).
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:103:  awaits `player.update()`, and only then removes the player from the world
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:131:   the parent UUID plus the nested trophy IDs/payload unchanged, assign one
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:180:  relic-drop branch. A migration that updates only one can strand or duplicate
+orchestration\tasks\TASK-0037-movement-feel-rework\SPEC.md:56:  expectation updates — justify each).
+orchestration\tasks\TASK-0033-daytime-default\REPORT.md:87:release gate.
+orchestration\tasks\TASK-0033-daytime-default\SPEC.md:49:Any settings-UI redesign temptation — one toggle row only.
+orchestration\tasks\TASK-0040-first-encounter-readability\captures\first-delve-seed-90140.md:14:| Learn | Runtime stage at 0 kills: 1 active actor; every later actor has its AI update paused and is filtered from player combat targeting |
+orchestration\tasks\TASK-0040-first-encounter-readability\captures\first-delve-seed-90140.md:15:| Dormant Marksman probe | Runtime position remained `(84,107)` after an update attempt; update returned `false`; no patrol, targeting, melee, support, or aura action ran |
+orchestration\tasks\TASK-0037-movement-feel-rework\REPORT.md:29:  updates; transient feel state is non-enumerable and never serialized.
+orchestration\tasks\TASK-0037-movement-feel-rework\REPORT.md:115:speed/duration updates; new sequences still use the original reset behavior.
+orchestration\tasks\TASK-0037-movement-feel-rework\REPORT.md:122:`31413c99` includes speed, duration, skill, and hold state in the signature and
+orchestration\tasks\TASK-0037-movement-feel-rework\REPORT.md:123:adds a same-sequence speed-update assertion. The animation guard applies these
+orchestration\tasks\TASK-0034-playability-evaluation\REPORT.md:104:  and the minimap updates to the selected zone. [07-oath-expedition.jpg](captures/07-oath-expedition.jpg)
+orchestration\tasks\TASK-0035-native-exe-triage\STATUS.md:12:known_risks: native/src overlaps TASK-0039, so 0039 remains unclaimed until this task is accepted or otherwise released; do not turn the testbed into a game UI
+orchestration\tasks\TASK-0039-native-protocol-server-n1\SPEC.md:47:   library from permissively licensed candidates (IXWebSocket,
+orchestration\tasks\TASK-0068-remote-presentation-polish\SPEC.md:30:build.ps1 -RunTests -RunClientScenarios green + updated remote
+orchestration\tasks\TASK-0038-combat-controls-rebinding\STATUS.md:18:# Merge note (architect): kimi-work versions kept; codex's released
+orchestration\tasks\TASK-0068-remote-presentation-polish\REVIEW.md:7:differentiation is machine-checked in the updated render-list
+orchestration\tasks\TASK-0008-denylist-hardening\SPEC.md:71:No purges of legacy code, no docs edits (the architect updates
+orchestration\tasks\TASK-0038-combat-controls-rebinding\REVIEW.md:37:client only sends the existing trigger event. Design choice ratified:
+orchestration\tasks\TASK-0038-combat-controls-rebinding\REPORT.md:88:  updated to the D-007 defaults (Space/Shift now bind dash, not primary)
+orchestration\tasks\TASK-0038-combat-controls-rebinding\REPORT.md:89:- `tests/unit/hud-orb-ui.spec.js` — Quickbar source assertion updated to
+orchestration\tasks\TASK-0038-combat-controls-rebinding\REPORT.md:117:`npm run smoke:browser` — green (includes build; the updated e2e spec
+orchestration\tasks\TASK-0038-combat-controls-rebinding\REPORT.md:171:- (this report commit) test + e2e expectation updates, captures,
+orchestration\tasks\TASK-0038-combat-controls-rebinding\REPORT.md:181:   owned files. `tests/e2e` spec changes are expectation updates forced
+orchestration\tasks\TASK-0076-native-hud-parity\STATUS.md:11:notes: Orbs, quickbar, minimap; HUD safe zones updated. Pipelined over 0075.
+orchestration\tasks\TASK-0076-native-hud-parity\REPORT.md:18:`Orb`, `Quickbar`, `Minimap`. HUD safe zones updated for telegraph clipping
+orchestration\tasks\TASK-0055-browser-followups\STATUS.md:17:on player:login and party:update, sourced from THEME_MONSTERS + instanceItemLevelForDepth;
+orchestration\tasks\TASK-0071-protocol-matrix-audit\REPORT.md:31:215:  check(session.model().player.x > start_x, "journey: movement echo updates x");
+orchestration\tasks\TASK-0071-protocol-matrix-audit\REPORT.md:32:219:  check(session.model().player.facing == "right", "journey: aim updates facing");
+orchestration\tasks\TASK-0058-native-protocol-n6\SPEC.md:4:state: READY (released 2026-08-20 ~11:45 — N5 integrated at 18/19, Gate A green. ALSO IN SCOPE now: session-arc + town-amenities town/NPC surface, the deliberate N5 leftover)
+orchestration\tasks\TASK-0055-browser-followups\REVIEW.md:23:First-pass accept; scorecard updated.
+orchestration\tasks\TASK-0075-native-terrain-tiles\REVIEW.md:22:Re-request review with an updated play capture + the same determinism
+orchestration\tasks\TASK-0055-browser-followups\REPORT.md:21:2. **Zone preview payload**: `player:login` and `party:update` now carry an
+orchestration\tasks\TASK-0055-browser-followups\REPORT.md:34:  `party:update`.
+orchestration\tasks\TASK-0055-browser-followups\REPORT.md:41:  wiring made a computed so the panel updates when the payload arrives
+orchestration\tasks\TASK-0057-clustered-accents\REPORT.md:39:## Design note (why the main stream is preserved)
+orchestration\tasks\TASK-0057-clustered-accents\REPORT.md:103:  distribution, not checkerboard), left as-is.
+orchestration\tasks\TASK-0074-gear-outcomes-profile\SPEC.md:18:capsule, then FINDINGS.md: gear-outcomes wall-time distribution
+orchestration\tasks\TASK-0079-browser-panel-inventory\SPEC.md:34:No code changes anywhere. No native work. No redesign opinions —
+orchestration\tasks\TASK-0062-playtest-flake-triage\SPEC.md:34:   p99 lag to a JSONL file so repeat runs build a distribution.
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:19:ten free ports in the assigned 7000–7019 capsule.
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:21:## Gear-outcomes distribution
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:76:   stable 30.8–34.7 s distribution, with all neighboring scenarios under
+orchestration\tasks\TASK-0062-playtest-flake-triage\REVIEW.md:7:timing distribution is exactly the instrumentation the flake watch
+orchestration\tasks\TASK-0062-playtest-flake-triage\REVIEW.md:9:spread) — watch item updated; next sighting will name itself.
+orchestration\tasks\TASK-0085-denylist-exception-audit\SPEC.md:48:compatibility window, or item redesign is owner-only.
+orchestration\tasks\TASK-0036-ui-regression-sweep\REPORT.md:65:4. **Compact inventory scrolls by design** —
+orchestration\tasks\TASK-0060-c3-session-seam-scaffold\STATUS.md:13:runs in native/client/** concurrently — 0061 releases after this
+orchestration\tasks\TASK-0060-c3-session-seam-scaffold\REPORT.md:32:  negative/disconnect ✅; movement→extraction rows assigned to 0061).
+orchestration\tasks\TASK-0086-gate-c-contract-audit\REPORT.md:104:in both chart builders; absence of `levelHint`/`childIds`/`world:chart:updated`
+orchestration\tasks\TASK-0086-gate-c-contract-audit\FINDINGS.md:40:native mirror :1554-1558) — which assigns no per-road or per-node purpose.
+orchestration\tasks\TASK-0086-gate-c-contract-audit\FINDINGS.md:134:- **P4** Browser pushes `world:chart:updated` on Warden death
+orchestration\tasks\TASK-0081-gate-b-wire-contract\REVIEW.md:33:4. Rerun every literal SPEC acceptance command after corrections, update its
+orchestration\tasks\TASK-0081-gate-b-wire-contract\REVIEW.md:35:   base-to-revision path list includes only the two owned surfaces, update
+orchestration\tasks\TASK-0081-gate-b-wire-contract\REVIEW.md:39:No source, native test, gameplay, protocol redesign, or unrelated matrix work
+orchestration\tasks\TASK-0061-networked-guest-slice\SPEC.md:4:(deepseek/kimi-work). PIPELINED: releases only after TASK-0060
+orchestration\tasks\TASK-0081-gate-b-wire-contract\REPORT.md:42:"TASK-0056 must publish" placeholders into the frozen envelope contract.
+orchestration\tasks\TASK-0081-gate-b-wire-contract\REPORT.md:73:`player:chronicles:ready`, `player:chronicles:update`, `player:login`,
+orchestration\tasks\TASK-0081-gate-b-wire-contract\REPORT.md:76:broadcast-only `chronicles:scion-witnessed`, `player:stats:update`.
+orchestration\tasks\TASK-0081-gate-b-wire-contract\REPORT.md:148:this `REPORT.md`, updated `STATUS.md`. No forbidden path appears anywhere.
+orchestration\tasks\TASK-0081-gate-b-wire-contract\REPORT.md:217:  (unrouted), durable persistence design (TASK-0097 audit family).
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:1:# VALIDATION — TASK-0134 distribution/signing/owner-action boundary contract
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:4:`codex/TASK-0134-distribution-signing-boundary-ox-pc-i` · Routed HEAD at
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:12:distribution evidence from owner-only certificate, signing, notarization,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:15:1. `distribution-boundary.json` — the contract itself (artifacts, hashes,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:16:   installer, update, rollback, machine actions MA-1..MA-6, owner actions
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:27:signing or notarization occurred — the contract records only their absence
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:36:  claim-release rule); the claim stands.
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:38:  from the interrupted session: `distribution-boundary.json`,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:39:  `fixtures/negative-cases.json`, `captures/gate-3-rg-distribution-surface.txt`.
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:45:  `orchestration/tasks/TASK-0134-distribution-signing-boundary/**` was
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:53:| `git branch --show-current` | `codex/TASK-0134-distribution-signing-boundary-ox-pc-i` |
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:57:| `RELEASE.md` present? | no — claim not released |
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:86:| 1 | `node -e "…distribution-boundary.json…"` (required-key check) | 0 | `distribution boundary: PASS` |
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:87:| 2 | `node -e "…fixtures/negative-cases.json…"` (required-case check) | 0 | `distribution negatives: PASS` |
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:88:| 3 | `rg -n 'installer\|sign\|certificate\|notari\|distribution\|publish\|release\|license\|rollback\|update' .github native docs orchestration -g '*.yml' -g '*.yaml' -g '*.md' -g '*.ps1'` | 0 | 530 lines preliminary; final run retained verbatim in `captures/gate-3-rg-distribution-surface.txt` (growth over the preserved capture is this task's own deliverables self-matching) |
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:93:orchestration planning documents (`TASK-0120-release-verification-gap-audit`,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:96:`.github/workflows/ci.yml` ("Verify release candidate"),
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:97:`.github/CONTRIBUTING.md`, `native/build.ps1` (one installer-directory
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:98:comment), and `docs/deployment.md` (Caddy TLS certificates; git-pull update
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:99:recipe). No workflow, script, or doc in the scan performs signing,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:100:notarization, store upload, or publication — the distribution surface is
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:108:`orchestration/tasks/TASK-0134-distribution-signing-boundary/**`.
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:115:- Copy of `distribution-boundary.json` with `rollback` deleted → gate 1
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:116:  snippet exits 1 with `Error: missing rollback`.
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:125:- No release artifact, hash manifest, installer, signature, notarization,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:126:  store listing, or rollback drill exists; the contract records each as
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:149:negative controls. The packet asserts no signing, notarization, publication,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\VALIDATION.md:150:or release readiness — it only fences those actions into the owner lane and
+orchestration\tasks\TASK-0134-distribution-signing-boundary\STATUS.md:7:- worker branch: `codex/TASK-0134-distribution-signing-boundary-ox-pc-i`
+orchestration\tasks\TASK-0134-distribution-signing-boundary\STATUS.md:32:  sync (0/0) with `origin/codex/TASK-0134-distribution-signing-boundary-ox-pc-i`.
+orchestration\tasks\TASK-0134-distribution-signing-boundary\STATUS.md:41:- owned_paths only: `orchestration/tasks/TASK-0134-distribution-signing-boundary/**`
+orchestration\tasks\TASK-0134-distribution-signing-boundary\STATUS.md:44:  claim that signing/notarization occurred.
+orchestration\tasks\TASK-0114-renderer-backend-evaluation\SPEC.md:25:integration, licenses, binary/dependency weight, and migration from render-list
+orchestration\tasks\TASK-0114-renderer-backend-evaluation\SPEC.md:37:rg -n "Windows|macOS|sprite|atlas|shader|text|offscreen|license|CMake|GDI" orchestration/tasks/TASK-0114-renderer-backend-evaluation/EVALUATION.md
+orchestration\tasks\TASK-0064-remote-presentation-unify\REPORT.md:48:- `native/client/local_session.cpp` — richer model publish
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:3:title: Distribution, signing, and owner-action boundary contract
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:11:owned_paths: [orchestration/tasks/TASK-0134-distribution-signing-boundary/**]
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:12:forbidden_paths: [native/**, server/**, src/**, playtest/**, credentials, external accounts, release publication]
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:20:Produce `distribution-boundary.json`, `VALIDATION.md`,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:22:artifact/hash/installer/update/rollback evidence from owner-only certificate,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:23:signing, notarization, store, account, pricing, and publication actions. Define
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:29:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0134-distribution-signing-boundary/distribution-boundary.json','utf8'));for(const k of ['schema_version','artifacts','hashes','installer','update','rollback','machine_actions','owner_actions','handoff'])if(!(k in j))throw Error('missing '+k);console.log('distribution boundary: PASS')"
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:30:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0134-distribution-signing-boundary/fixtures/negative-cases.json','utf8'));for(const k of ['MISSING_ARTIFACT','HASH_MISMATCH','UNSIGNED_ARTIFACT','MISSING_LICENSE','OWNER_CREDENTIAL_REQUIRED','NOTARIZATION_UNPROVEN','ROLLBACK_UNPROVEN'])if(!j.cases.some(x=>x.expected_error===k))throw Error('missing '+k);console.log('distribution negatives: PASS')"
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:31:rg -n 'installer|sign|certificate|notari|distribution|publish|release|license|rollback|update' .github native docs orchestration -g '*.yml' -g '*.yaml' -g '*.md' -g '*.ps1'
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:38:STOP before credentials, account actions, publication, legal/license rulings,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:39:or claims that signing/notarization occurred.
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:1:# REPORT — TASK-0134 distribution/signing/owner-action boundary contract
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:4:`codex/TASK-0134-distribution-signing-boundary-ox-pc-i` · Base:
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:10:Delivered the distribution/signing boundary contract as four deliverables +
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:11:retained capture inside the task folder: `distribution-boundary.json` (the
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:16:`captures/gate-3-rg-distribution-surface.txt`. The contract separates what an
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:17:implementation worker can prove about release artifacts (build, hash,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:19:(certificates, signing, notarization, stores, accounts, pricing,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:22:publication action taken, and nothing claims signing/notarization occurred.
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:39:  release-verification-gap-audit findings) and routed each gap to its owning
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:40:  successor (`TASK-0126` artifacts/manifests, `TASK-0127` migration/rollback
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:41:  evidence, `TASK-0094` license inventory) so the contract creates no
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:48:All inside `orchestration/tasks/TASK-0134-distribution-signing-boundary/`:
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:50:- `distribution-boundary.json` (preserved from interrupted session)
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:52:- `captures/gate-3-rg-distribution-surface.txt` (preserved; final-state run
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:60:accounts, release publication) untouched.
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:64:- `distribution-boundary.json` schema v1: required keys `schema_version`,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:65:  `artifacts`, `hashes`, `installer`, `update`, `rollback`,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:69:- Machine→owner handoff schema: inputs (`unsigned_artifacts`,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:70:  `hash_manifest`, `negative_case_transcript`, `rollback_drill_status`,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:71:  `asset_license_inventory`, `open_risks`) and outputs expected back
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:72:  (`signature_status`, `notarization_status`, `channel_identifiers`,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:73:  `license_rulings`), with exchange rules (repo-file transport only, hashed
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:74:  bundles, unsigned artifacts cross read-only).
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:90:| boundary required-key check (node -e) | 0 | `distribution boundary: PASS` |
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:91:| negative-cases required-case check (node -e) | 0 | `distribution negatives: PASS` |
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:92:| `rg -n 'installer\|sign\|…' .github native docs orchestration …` | 0 | 530 lines preliminary; final state captured verbatim in `captures/gate-3-rg-distribution-surface.txt` |
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:97:deleting `rollback` from a boundary copy → gate exits 1 (`missing rollback`);
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:120:- REVIEW_REQUESTED status update: the follow-up commit on this branch
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:143:  acts; downstream tasks must treat signature/notarization as absent, never
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:150:- TASK-0127: supply migration/rollback evidence clearing
+orchestration\tasks\TASK-0134-distribution-signing-boundary\REPORT.md:152:- TASK-0094: asset license inventory feeding OA-4 and clearing
+orchestration\tasks\TASK-0081-gate-b-wire-contract\SPEC.md:37:No client implementation, protocol redesign, source edit, gameplay decision,
+orchestration\tasks\TASK-0093-native-typography-contract-audit\SPEC.md:12:owner_input_dependency: final font and license approval only; audit proceeds without it
+orchestration\tasks\TASK-0092-owner-launch-packaging-audit\SPEC.md:12:owner_input_dependency: none; signing and distribution remain owner-only
+orchestration\tasks\TASK-0092-owner-launch-packaging-audit\SPEC.md:24:builds, shortcuts, signing, accounts, or release infrastructure.
+orchestration\tasks\TASK-0092-owner-launch-packaging-audit\SPEC.md:30:packaging, signing/notarization, installer, and launch UX. Report base SHA,
+orchestration\tasks\TASK-0092-owner-launch-packaging-audit\SPEC.md:45:check. Stop before executing installers, changing PATH, signing, or deciding a
+orchestration\tasks\TASK-0092-owner-launch-packaging-audit\SPEC.md:46:distribution channel; continue documenting independent gaps if one is blocked.
+orchestration\tasks\TASK-0095-content-authoring-schema-audit\SPEC.md:45:validation design.
+orchestration\tasks\TASK-0101-combat-depth-gap-audit\SPEC.md:12:owner_input_dependency: balance and new action design remain owner-only
+orchestration\tasks\TASK-0101-combat-depth-gap-audit\SPEC.md:24:feel tuning and from owner-only design.
+orchestration\tasks\TASK-0101-combat-depth-gap-audit\SPEC.md:30:retunes or novel skill designs. Include exact locking tests for each successor.
+orchestration\tasks\TASK-0101-combat-depth-gap-audit\SPEC.md:43:balance/new-design choices; continue sequencing proven gaps.
+orchestration\tasks\TASK-0128-accepted-throughput-normalization\SPEC.md:73:window, tasks/hour, duration distribution, and provenance. No cross-unit pooled
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:3:title: Save migration and rollback evidence contract
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:11:owned_paths: [orchestration/tasks/TASK-0133-save-migration-rollback-contract/**]
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:22:preflight, backup, migration, verification, idempotence, rollback, failure
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:30:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0133-save-migration-rollback-contract/save-migration-contract.json','utf8'));for(const k of ['schema_version','source_version','target_version','preflight','backup','migration','verification','idempotence','rollback','evidence'])if(!(k in j))throw Error('missing '+k);console.log('save migration contract: PASS')"
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:31:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0133-save-migration-rollback-contract/fixtures/negative-cases.json','utf8'));for(const k of ['UNKNOWN_SOURCE_VERSION','BACKUP_FAILED','MIGRATION_FAILED','VERIFY_FAILED','NON_IDEMPOTENT','ROLLBACK_FAILED','DATA_LOSS'])if(!j.cases.some(x=>x.expected_error===k))throw Error('missing '+k);console.log('save migration negatives: PASS')"
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:32:rg -n 'schemaVersion|migration|rollback|backup|SQLite|persist|save|guest-save-store|profile' native server docs playtest orchestration -g '*.cpp' -g '*.hpp' -g '*.js' -g '*.mjs' -g '*.md'
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\FINDINGS.md:63:| NP-1 | Network payloads | authoritative | login block, dev:state snapshot, `quest:update`, `player:skilltree:update` fields enumerated in matrix |
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\FINDINGS.md:89:   damage outputs by design; the successor must call this out as an
+orchestration\tasks\TASK-0126-clean-machine-release-harness\SPEC.md:3:title: Clean-machine packaging and release harness
+orchestration\tasks\TASK-0126-clean-machine-release-harness\SPEC.md:10:owned_paths: [to be frozen after release audits]
+orchestration\tasks\TASK-0126-clean-machine-release-harness\SPEC.md:11:forbidden_paths: [signing/notarization/account actions without owner approval]
+orchestration\tasks\TASK-0126-clean-machine-release-harness\SPEC.md:18:runtime dependencies, rollback, and authentic failure controls. DRAFT until
+orchestration\tasks\TASK-0126-clean-machine-release-harness\SPEC.md:19:release contract and account boundaries are frozen.
+orchestration\tasks\TASK-0091-native-protocol-coverage-sentinel\SPEC.md:3:title: Native client protocol coverage sentinel design
+orchestration\tasks\TASK-0123-audio-music-runtime-wave\SPEC.md:9:dependencies: [TASK-0117 ACCEPTED, backend/license decision, owner audio direction or synthetic test assets]
+orchestration\tasks\TASK-0094-asset-provenance-manifest-audit\SPEC.md:22:bytes, hash, provenance evidence, license status, build/package use, and
+orchestration\tasks\TASK-0094-asset-provenance-manifest-audit\SPEC.md:28:No asset, license, package manifest, or product canon changes. Hash only files
+orchestration\tasks\TASK-0094-asset-provenance-manifest-audit\SPEC.md:43:infer a license. Continue hashing and classifying other assets.
+orchestration\tasks\TASK-0127-save-migration-release-matrix\SPEC.md:3:title: Versioned save migration and recovery release matrix
+orchestration\tasks\TASK-0127-save-migration-release-matrix\SPEC.md:10:owned_paths: [to be frozen after persistence/release audits]
+orchestration\tasks\TASK-0127-save-migration-release-matrix\SPEC.md:17:disposable fixtures, backup/rollback, crash recovery, deterministic migration,
+orchestration\tasks\TASK-0125-onboarding-first-session-wave\SPEC.md:11:forbidden_paths: [invented lore/naming, checklist campaign redesign]
+orchestration\tasks\TASK-0098-wire-parser-robustness-audit\SPEC.md:29:handler, and test lines. Do not send traffic, publish exploit payloads, or
+orchestration\tasks\TASK-0104-itemization-history-gap-audit\SPEC.md:27:D-106 recoverability, House ownership, significant-item history, and denylist
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:11:owned_paths: [orchestration/tasks/TASK-0131-release-proof-manifest/**]
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:12:forbidden_paths: [native/**, server/**, src/**, playtest/**, deployment actions, signing credentials]
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:20:Produce `release-proof-manifest.json`, `VALIDATION.md`,
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:23:platform coverage, rollback evidence, external owner actions, and final
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:25:stand in for artifacts. No build, deployment, installer, signing, notarization,
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:31:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0131-release-proof-manifest/release-proof-manifest.json','utf8'));for(const k of ['schema_version','source_head','commands','environment','artifacts','platform_coverage','rollback','owner_actions','verdict'])if(!(k in j))throw Error('missing '+k);console.log('release proof manifest: PASS')"
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:32:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0131-release-proof-manifest/fixtures/negative-cases.json','utf8'));for(const k of ['STALE_HEAD','NONZERO_EXIT','MISSING_ARTIFACT','HASH_MISMATCH','UNVERIFIED_ENVIRONMENT','MISSING_ROLLBACK','OWNER_ACTION_UNPROVEN'])if(!j.cases.some(x=>x.expected_error===k))throw Error('missing '+k);console.log('release proof negatives: PASS')"
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:33:rg -n 'release|artifact|installer|sign|notari|rollback|deploy|workflow_dispatch' .github native docs orchestration -g '*.yml' -g '*.yaml' -g '*.md' -g '*.ps1'
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:40:STOP rather than asserting release readiness, performing external actions, or
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:41:inventing signing/distribution evidence. Write only inside this task folder.
+orchestration\tasks\TASK-0121-owner-content-approval-matrix\SPEC.md:23:distribution, and irreversible accounts. For each, record evidence prerequisite,
+orchestration\tasks\TASK-0121-owner-content-approval-matrix\SPEC.md:31:rg -n "owner-only|OWNER|OD-[0-9]|asset|lore|naming|balance|economy|music|season|distribution" docs/product orchestration/DECISIONS.md orchestration/owner-input orchestration/PROGRAM_GRAPH.md
+orchestration\tasks\TASK-0119-onboarding-first-session-audit\SPEC.md:25:Preserve loose quest guidance and avoid checklist tutorial design.
+orchestration\tasks\TASK-0115-browser-panel-typography-inventory\SPEC.md:25:redesign, font selection, or native work. Browser behavior and capture evidence
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REVIEW.md:13:The architect personally reran all four literal SPEC commands: the release
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REVIEW.md:14:surface search exits 0, `release-gates.json` parses and prints
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REVIEW.md:15:`release gates: PASS`, `git diff --check` exits 0, and `git diff --name-only`
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REVIEW.md:20:The audit does not promote narrow CI or protocol greens into release proof.
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REVIEW.md:22:rollback, asset manifest, macOS coverage, installer, and signing remain
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REVIEW.md:25:rollback artifact supports it. Installer, signing, notarization, distribution,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\STATUS.md:7:- worker branch: `codex/TASK-0120-release-verification-gap-audit-ox-pc-e`
+orchestration\tasks\TASK-0120-release-verification-gap-audit\STATUS.md:28:  effective READY table row "TASK-0120 release verification audit".
+orchestration\tasks\TASK-0120-release-verification-gap-audit\STATUS.md:36:- IMPLEMENTED: FINDINGS.md + captures/release-gates.json +
+orchestration\tasks\TASK-0120-release-verification-gap-audit\STATUS.md:37:  captures/gate-1-rg-release-surface.txt + REPORT.md; all four literal
+orchestration\tasks\TASK-0120-release-verification-gap-audit\STATUS.md:39:  "release gates: PASS" exit 0; git diff --check clean; changed-path scope
+orchestration\tasks\TASK-0041-death-decision-moment\SPEC.md:48:   scenarios updated deliberately.
+orchestration\tasks\TASK-0050-native-client-c1\SPEC.md:72:   and `update_camera_perspective()` — plus every call site (the
+orchestration\tasks\TASK-0042-first-loot-moment\STATUS.md:27:resume lists 0042 as released/claimable, and REENTRY-KIMI-CODE.md
+orchestration\tasks\TASK-0042-first-loot-moment\STATUS.md:28:assigns it to kimi. QUESTION-0007's seam concern is answered in
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REVIEW.md:76:collapsed 10/31 with a mid-suite connection-death signature. Root cause
+orchestration\tasks\TASK-0045-native-protocol-n3\SPEC.md:41:   attack initiation, damage application, HP updates, kill events,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:1:# TASK-0120 FINDINGS — release verification gap audit
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:3:- Worker: `ox-pc-e` · Branch: `codex/TASK-0120-release-verification-gap-audit-ox-pc-e`
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:6:  scripts, docs, orchestration records). No installer execution, no account
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:8:  `captures/release-gates.json`. Literal gate transcripts: `REPORT.md` and
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:9:  `captures/gate-1-rg-release-surface.txt` (1,575 matching lines, exit 0).
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:15:proven; every distribution-adjacent surface — clean-machine harness, long
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:16:soak, performance budget, save migration, rollback, asset manifest, macOS
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:17:coverage, installer, signing — is partial, missing, or owner-only. Three
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:35:## Partial gates (evidence exists; not release-enforcing)
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:38:   run, which is a proxy, not a release harness: no retained build artifacts,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:62:    acceptance; no release checklist binds all surfaces to a tagged,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:78:15. **Upgrade/rollback** — `docs/deployment.md` documents the upgrade half
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:79:    (pull/ci/build/restart) and nothing else: no rollback procedure, no
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:81:16. **Asset/license manifest** — root LICENSE plus intake-convention docs
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:86:17. **Signing/notarization** — absent from the repository by policy (SPEC
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:87:    `owner_input_dependency`); requires owner certificates/accounts.
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:88:18. **Installer** — no packaging project exists at all; distribution
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:89:    decisions are owner authority, and executing installers is outside the
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:91:    clean-machine inventory (this audit) before installer/signing work.
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:100:**Claim:** the `docs/deployment.md` update recipe (`git pull; npm ci;
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:106:SQLite), no rollback procedure exists anywhere in the repository, and no
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:107:pristine-host drill reproduces the update. The recipe silently assumes
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:114:narrow test was promoted to broad release proof (the strongest claim any
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:116:here: signing, notarization, installer execution, distribution, and account
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:118:machine-verifiable companion inventory is `captures/release-gates.json`.
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:1:# TASK-0120 REPORT — release verification gap audit (ox-pc-e)
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:5:Audited every release-verification surface named in the SPEC against
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:9:`captures/release-gates.json` (machine-verifiable inventory, 18 surfaces,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:12:harness, long soak, performance budget, save migration, rollback, asset
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:13:manifest, macOS coverage, installer, and signing are partial, missing, or
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:30:   migration/schemaVersion, shutdown, notar/codesign/installer,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:31:   rollback/replay/support-bundle.
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:40:- `orchestration/tasks/TASK-0120-release-verification-gap-audit/STATUS.md` (claim → REVIEW_REQUESTED)
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:41:- `orchestration/tasks/TASK-0120-release-verification-gap-audit/FINDINGS.md`
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:42:- `orchestration/tasks/TASK-0120-release-verification-gap-audit/REPORT.md`
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:43:- `orchestration/tasks/TASK-0120-release-verification-gap-audit/captures/release-gates.json`
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:44:- `orchestration/tasks/TASK-0120-release-verification-gap-audit/captures/gate-1-rg-release-surface.txt`
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:53:### Gate 1 — release-surface search
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:56:rg -n "CI|clean|build|package|launcher|soak|migration|upgrade|rollback|sign|notar|installer|release|artifact|crash|save" .github native docs orchestration --glob "*.md" --glob "*.yml" --glob "*.yaml" --glob "*.ps1" --glob "*.json"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:60:- full output preserved at `captures/gate-1-rg-release-surface.txt`
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:69:node -e "JSON.parse(require('fs').readFileSync('orchestration/tasks/TASK-0120-release-verification-gap-audit/captures/release-gates.json','utf8')); console.log('release gates: PASS')"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:72:- stdout: `release gates: PASS`
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:92:  `?? orchestration/tasks/TASK-0120-release-verification-gap-audit/FINDINGS.md`
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:93:  and `?? orchestration/tasks/TASK-0120-release-verification-gap-audit/captures/`
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:98:Recorded in both FINDINGS.md and `captures/release-gates.json`
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:102:and no rollback procedure exists anywhere. Discharge path: TASK-0126 +
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:113:  broad release proof.
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:114:- Verified absence claims (installer/signing/notarization/rollback/migration
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:116:- Resource capsule respected: read-only audit; no installer executed, no
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:121:- Claim commit: `97580939` — "TASK-0120: claim release verification gap audit (ox-pc-e)" (STATUS.md only), pushed to origin.
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:154:- TASK-0126 clean-machine release harness and TASK-0127 save-migration
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:157:- Owner-only lane remains open for signing/notarization/installer/distribution
+orchestration\tasks\TASK-0042-first-loot-moment\SPEC.md:40:   data — no new item design.
+orchestration\tasks\TASK-0042-first-loot-moment\SPEC.md:47:   updated deliberately.
+orchestration\tasks\TASK-0050-native-client-c1\REPORT.md:42:  `update_camera_perspective()`.
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:3:title: Clean-machine, migration, soak, and release verification audit
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:12:owner_input_dependency: signing, notarization, distribution, and account actions remain owner-only
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:13:owned_paths: [orchestration/tasks/TASK-0120-release-verification-gap-audit/**]
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:15:resource_capsule: read-only; no installer execution, account mutation, or ports
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:20:Produce `FINDINGS.md` and `captures/release-gates.json` inventorying current CI,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:23:recovery, save-version migration, upgrade/rollback, asset/license manifest,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:24:Windows/macOS coverage, signing/notarization, installer, logs/support bundle,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:25:and release acceptance. Separate proven, missing, owner-only, and external gates.
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:30:rg -n "CI|clean|build|package|launcher|soak|migration|upgrade|rollback|sign|notar|installer|release|artifact|crash|save" .github native docs orchestration --glob "*.md" --glob "*.yml" --glob "*.yaml" --glob "*.ps1" --glob "*.json"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:31:node -e "JSON.parse(require('fs').readFileSync('orchestration/tasks/TASK-0120-release-verification-gap-audit/captures/release-gates.json','utf8')); console.log('release gates: PASS')"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:37:release proof. Negative control: identify one release claim not supported by a
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:97:remains authoritative and still needs its own rerun/update.
+orchestration\tasks\TASK-0045-native-protocol-n3\REPORT.md:58:- `dev:setlevel` and `dev:heal` update the authoritative simulation actor.
+orchestration\tasks\TASK-0042-first-loot-moment\REVIEW.md:19:  signature passthrough; untagged items render identically). No 0033/
+orchestration\tasks\TASK-0048-chronicles-silent-combat\STATUS.md:4:updated: 2026-08-17
+orchestration\tasks\TASK-0046-playability-reevaluation\SPEC.md:20:list? This updates the D-110 definition of "playable" that 0034 set.
+orchestration\tasks\TASK-0048-chronicles-silent-combat\SPEC.md:45:   balance choice functioning as designed, DO NOT retune numbers
+orchestration\tasks\TASK-0049-first-session-ui-wave\REPORT.md:181:  matching update.
+orchestration\tasks\TASK-0044-native-protocol-n2\REPORT.md:145:(harness updated by the provisional TASK-0043 merge), same C++ server binary:
+orchestration\tasks\TASK-0036-ui-regression-sweep\STATUS.md:19:integration: integrated on updated program base in `codex/integrate-0036-final` through source commit `5cbf0165`

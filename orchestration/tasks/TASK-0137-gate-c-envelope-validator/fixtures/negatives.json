@@ -1,0 +1,253 @@
+{
+  "contract_id": "gate-c-decision-envelope",
+  "validation_contract": "TASK-0130 VALIDATION.md (13 checks, deterministic order)",
+  "note": "Synthetic content-neutral negative fixtures for TASK-0137. One case per documented code; every envelope value is an obviously synthetic placeholder, never campaign/reward/economy/risk/balance content.",
+  "cases": [
+    {
+      "id": "neg-01-invalid-json",
+      "expected_error": "INVALID_JSON",
+      "envelope_text": "{ this is not valid json"
+    },
+    {
+      "id": "neg-02-unsupported-version",
+      "expected_error": "UNSUPPORTED_VERSION",
+      "envelope": {
+        "schema_version": "0.9.0",
+        "route_identity": { "road": { "roadId": "s-road", "roadName": "s-road", "direction": "north", "blurb": null }, "node": { "nodeId": "s-node", "name": "s-node", "template": "t", "layout": "l", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": null, "scope": "immediate next stage only" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns" },
+        "evidence_provenance": { "authority_source": "docs/authority.md:1-2", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "be6d555688619819084b352660fc0336a90d0ec3" }
+      }
+    },
+    {
+      "id": "neg-02b-absent-version",
+      "expected_error": "UNSUPPORTED_VERSION",
+      "envelope": {
+        "route_identity": { "road": { "roadId": "s-road", "roadName": "s-road", "direction": "north", "blurb": null }, "node": { "nodeId": "s-node", "name": "s-node", "template": "t", "layout": "l", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": null, "scope": "immediate next stage only" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns" },
+        "evidence_provenance": { "authority_source": "docs/authority.md:1-2", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "be6d555688619819084b352660fc0336a90d0ec3" }
+      }
+    },
+    {
+      "id": "neg-03-missing-route-identity",
+      "expected_error": "MISSING_ROUTE_IDENTITY",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": null, "scope": "immediate next stage only" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns" },
+        "evidence_provenance": { "authority_source": "docs/authority.md:1-2", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "be6d555688619819084b352660fc0336a90d0ec3" }
+      }
+    },
+    {
+      "id": "neg-04-route-name-only",
+      "expected_error": "ROUTE_NAME_ONLY",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "s-road", "roadName": "s-road", "direction": "east", "blurb": "terrain flavor only" }, "node": { "nodeId": "s-node", "name": "s-node", "status": "open" }, "tier": 1 }
+      }
+    },
+    {
+      "id": "neg-05-missing-provenance-empty-object",
+      "expected_error": "MISSING_PROVENANCE",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "s-road", "roadName": "s-road", "direction": "south", "blurb": null }, "node": { "nodeId": "s-node", "name": "s-node", "template": "t", "layout": "l", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": null, "scope": "immediate next stage only" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns" },
+        "evidence_provenance": {}
+      }
+    },
+    {
+      "id": "neg-05b-missing-provenance-field-absent",
+      "expected_error": "MISSING_PROVENANCE",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "s-road", "roadName": "s-road", "direction": "south", "blurb": null }, "node": { "nodeId": "s-node", "name": "s-node", "template": "t", "layout": "l", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": null, "scope": "immediate next stage only" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns" }
+      }
+    },
+    {
+      "id": "neg-06-missing-concrete-goal",
+      "expected_error": "MISSING_CONCRETE_GOAL",
+      "expect_exit_zero_blocker": true,
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "s-road", "roadName": "s-road", "direction": "west", "blurb": null }, "node": { "nodeId": "s-node", "name": "s-node", "template": "t", "layout": "l", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "MISSING", "value": null, "owner_pending": true },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "MISSING", "value": null, "owner_pending": true },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": null, "scope": "immediate next stage only" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns" },
+        "evidence_provenance": { "authority_source": "docs/authority.md:1-2", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "be6d555688619819084b352660fc0336a90d0ec3" },
+        "completeness": { "ready": false, "missing_fields": ["concrete_goal", "expected_item_family"] }
+      }
+    },
+    {
+      "id": "neg-07-missing-boss-or-danger",
+      "expected_error": "MISSING_BOSS_OR_DANGER",
+      "expect_exit_zero_blocker": true,
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "s-road", "roadName": "s-road", "direction": "north", "blurb": null }, "node": { "nodeId": "s-node", "name": "s-node", "template": "t", "layout": "l", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": null, "scope": "immediate next stage only" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns" },
+        "evidence_provenance": { "authority_source": "docs/authority.md:1-2", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "be6d555688619819084b352660fc0336a90d0ec3" },
+        "completeness": { "ready": false, "missing_fields": ["boss_or_danger"] }
+      }
+    },
+    {
+      "id": "neg-08-missing-expected-item-family",
+      "expected_error": "MISSING_EXPECTED_ITEM_FAMILY",
+      "expect_exit_zero_blocker": true,
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "s-road", "roadName": "s-road", "direction": "up", "blurb": null }, "node": { "nodeId": "s-node", "name": "s-node", "template": "t", "layout": "l", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "MISSING", "value": null, "owner_pending": true },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": null, "scope": "immediate next stage only" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns" },
+        "evidence_provenance": { "authority_source": "docs/authority.md:1-2", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "be6d555688619819084b352660fc0336a90d0ec3" },
+        "completeness": { "ready": false, "missing_fields": ["expected_item_family"] }
+      }
+    },
+    {
+      "id": "neg-09-missing-depth",
+      "expected_error": "MISSING_DEPTH",
+      "expect_exit_zero_blocker": true,
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "s-road", "roadName": "s-road", "direction": "down", "blurb": null }, "node": { "nodeId": "s-node", "name": "s-node", "template": "t", "layout": "l", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": null, "scope": "immediate next stage only" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns" },
+        "evidence_provenance": { "authority_source": "docs/authority.md:1-2", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "be6d555688619819084b352660fc0336a90d0ec3" },
+        "completeness": { "ready": false, "missing_fields": ["depth"] }
+      }
+    },
+    {
+      "id": "neg-10-missing-branch-consequence",
+      "expected_error": "MISSING_BRANCH_CONSEQUENCE",
+      "expect_exit_zero_blocker": true,
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "s-road", "roadName": "s-road", "direction": "east", "blurb": null }, "node": { "nodeId": "s-node", "name": "s-node", "template": "t", "layout": "l", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "MISSING", "value": null },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns" },
+        "evidence_provenance": { "authority_source": "docs/authority.md:1-2", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "be6d555688619819084b352660fc0336a90d0ec3" },
+        "completeness": { "ready": false, "missing_fields": ["branch_consequence"] }
+      }
+    },
+    {
+      "id": "neg-11-missing-extraction-or-return",
+      "expected_error": "MISSING_EXTRACTION_OR_RETURN",
+      "expect_exit_zero_blocker": true,
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "s-road", "roadName": "s-road", "direction": "west", "blurb": null }, "node": { "nodeId": "s-node", "name": "s-node", "template": "t", "layout": "l", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": null, "scope": "immediate next stage only" },
+        "evidence_provenance": { "authority_source": "docs/authority.md:1-2", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "be6d555688619819084b352660fc0336a90d0ec3" },
+        "completeness": { "ready": false, "missing_fields": ["extraction_or_return"] }
+      }
+    },
+    {
+      "id": "neg-12-contradictory-depth",
+      "expected_error": "CONTRADICTORY_DEPTH",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "s-road", "roadName": "s-road", "direction": "north", "blurb": null }, "node": { "nodeId": "s-node", "name": "s-node", "template": "t", "layout": "l", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1, "instance_depth": 3 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": null, "scope": "immediate next stage only" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns" },
+        "evidence_provenance": { "authority_source": "docs/authority.md:1-2", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "be6d555688619819084b352660fc0336a90d0ec3" }
+      }
+    },
+    {
+      "id": "neg-12b-depth-tier-conflicts-with-identity",
+      "expected_error": "CONTRADICTORY_DEPTH",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "s-road", "roadName": "s-road", "direction": "north", "blurb": null }, "node": { "nodeId": "s-node", "name": "s-node", "template": "t", "layout": "l", "index": 0, "status": "open" }, "tier": 2 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": null, "scope": "immediate next stage only" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns" },
+        "evidence_provenance": { "authority_source": "docs/authority.md:1-2", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "be6d555688619819084b352660fc0336a90d0ec3" }
+      }
+    },
+    {
+      "id": "neg-13-owner-pending-content-claimed-ready",
+      "expected_error": "OWNER_PENDING_CONTENT",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "s-road", "roadName": "s-road", "direction": "south", "blurb": null }, "node": { "nodeId": "s-node", "name": "s-node", "template": "t", "layout": "l", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "MISSING", "value": null, "owner_pending": true },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": null, "scope": "immediate next stage only" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns" },
+        "evidence_provenance": { "authority_source": "docs/authority.md:1-2", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "be6d555688619819084b352660fc0336a90d0ec3" },
+        "completeness": { "ready": true, "missing_fields": [] }
+      }
+    },
+    {
+      "id": "neg-13b-declared-missing-fields-nonempty-but-ready",
+      "expected_error": "OWNER_PENDING_CONTENT",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "s-road", "roadName": "s-road", "direction": "south", "blurb": null }, "node": { "nodeId": "s-node", "name": "s-node", "template": "t", "layout": "l", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": null, "scope": "immediate next stage only" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns" },
+        "evidence_provenance": { "authority_source": "docs/authority.md:1-2", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "be6d555688619819084b352660fc0336a90d0ec3" },
+        "completeness": { "ready": true, "missing_fields": ["concrete_goal"] }
+      }
+    }
+  ]
+}

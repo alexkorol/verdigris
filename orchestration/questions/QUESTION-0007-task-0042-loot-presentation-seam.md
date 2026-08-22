@@ -1,7 +1,7 @@
 ---
 id: QUESTION-0007
 task: TASK-0042
-status: OPEN
+status: RESOLVED
 asked_by: Codex / Luna browser loot-moment worker
 ---
 
@@ -27,3 +27,9 @@ Choose one:
    presentation for this slice and narrow the acceptance criterion accordingly.
 
 No first-drop or UI source changes were made while this seam is unresolved.
+
+## Resolution
+
+Superseded by the accepted and integrated TASK-0042 implementation. The
+architect-expanded mounted presentation seam is now repository history; this
+question is not a current blocker at `d2423873`.

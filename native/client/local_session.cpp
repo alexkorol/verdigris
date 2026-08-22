@@ -66,6 +66,31 @@ ClientCommand ClientCommand::extract() {
   command.type = Type::Extract;
   return command;
 }
+ClientCommand ClientCommand::found_house(std::string house_name) {
+  ClientCommand command;
+  command.type = Type::FoundHouse;
+  command.target = std::move(house_name);
+  return command;
+}
+ClientCommand ClientCommand::create_scion(std::string scion_name) {
+  ClientCommand command;
+  command.type = Type::CreateScion;
+  command.target = std::move(scion_name);
+  return command;
+}
+ClientCommand ClientCommand::select_scion(std::string scion_id, bool mortal_oath) {
+  ClientCommand command;
+  command.type = Type::SelectScion;
+  command.target = std::move(scion_id);
+  command.value = mortal_oath ? 1 : 0;
+  return command;
+}
+ClientCommand ClientCommand::set_out(std::string scion_id) {
+  ClientCommand command;
+  command.type = Type::SetOut;
+  command.target = std::move(scion_id);
+  return command;
+}
 
 LocalCoreSession::LocalCoreSession(std::uint64_t seed, std::string house_name)
     : seed_(seed), house_name_(std::move(house_name)) {}
@@ -112,6 +137,15 @@ void LocalCoreSession::submit(const ClientCommand& command) {
     case ClientCommand::Type::Extract:
       simulation_->dispatch(verdigris::Command::extract());
       break;
+    case ClientCommand::Type::FoundHouse:
+      // Local play always has its seeded House; the front door never shows.
+      break;
+    case ClientCommand::Type::CreateScion:
+    case ClientCommand::Type::SelectScion:
+    case ClientCommand::Type::SetOut:
+      // The local simulation admits its single Scion at construction; these
+      // intents have no additional local authority to invoke.
+      break;
   }
 }
 
@@ -131,6 +165,7 @@ void LocalCoreSession::refresh_model() {
   const auto& scion = simulation_->scion();
   model_.house_name = simulation_->house().name;
   model_.player.uuid = scion.id;
+  model_.player.display_name = scion.name;
   model_.player.level = scion.level;
   model_.player.alive = scion.alive;
   if (const auto* actor = simulation_->actor(scion.actor_id)) {
@@ -167,6 +202,20 @@ void LocalCoreSession::refresh_model() {
   }
   model_.stored_items = static_cast<int>(simulation_->house().stored_items.size());
   model_.stored_trophies = static_cast<int>(simulation_->house().stored_trophies.size());
+  // Local play mirrors the same chronicle view remote sessions parse: one
+  // House, its living Scion, no front-door pending state.
+  model_.chronicle.present = true;
+  model_.chronicle.account_name = scion.name;
+  if (model_.chronicle.houses.empty()) model_.chronicle.houses.emplace_back();
+  ClientHouseEntry& local_house = model_.chronicle.houses.front();
+  local_house.id = simulation_->house().id.empty() ? "local" : simulation_->house().id;
+  local_house.name = model_.house_name;
+  local_house.scions.clear();
+  local_house.scions.push_back({scion.id, scion.name, scion.level, false});
+  local_house.crypt.clear();
+  model_.chronicle.active_house_id = local_house.id;
+  model_.chronicle.active_scion_id = scion.alive ? scion.id : std::string{};
+  model_.chronicles_pending = false;
 }
 
 void LocalCoreSession::translate_new_events() {

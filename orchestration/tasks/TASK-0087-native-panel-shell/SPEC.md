@@ -6,9 +6,9 @@ packet: BOUNDED-DESIGN
 topology: PIPELINED
 priority: high (presentation delta #4)
 dependencies:
-  - TASK-0079 ACCEPTED
+  - TASK-0115 ACCEPTED
   - TASK-0078 ACCEPTED
-  - architect freezes pane interfaces from TASK-0079 findings
+  - architect freezes pane interfaces from TASK-0115 findings
 owned_paths:
   - native/client/**
   - orchestration/tasks/TASK-0087-native-panel-shell/**
@@ -23,4 +23,4 @@ Implement the first native pane shell using the accepted browser inventory as
 contract: deterministic panel model, anchor/layout rules at 1366x768 and
 1920x1080, open/close focus behavior, and the first load-bearing panels. Exact
 panel order and frozen interfaces will be added by the architect after
-TASK-0079. This task is not claimable while DRAFT.
+TASK-0115. This task is not claimable while DRAFT.

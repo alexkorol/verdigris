@@ -13,6 +13,7 @@ namespace verdigris::client {
 struct ClientPlayer {
   std::string uuid;
   std::string scene_id;
+  std::string display_name;  // server username / admitted scion name
   double x = 0.0;
   double y = 0.0;
   std::string facing = "down";
@@ -51,6 +52,10 @@ struct ClientGroundItem {
   std::string name;
   double x = 0.0;
   double y = 0.0;
+  // TASK-0145: set when the server marks the drop with a chroniclesRelic
+  // record; `relic_of` carries the fallen scion's name for honest labeling.
+  bool relic = false;
+  std::string relic_of;
 };
 
 struct ClientScene {
@@ -61,6 +66,54 @@ struct ClientScene {
   double stairs_up_y = 0.0;
   bool has_stairs_up = false;
 };
+
+// TASK-0145 Gate-B chronicle state, exactly as carried by the accepted wire
+// contract (chronicles:state / player:chronicles:ready / scion-fallen /
+// dev:state chroniclesRecord). Presentation renders this; it never invents
+// Houses, Scions, oaths, or relics on its own.
+struct ClientScionEntry {
+  std::string id;
+  std::string name;
+  int level = 1;
+  bool mortal = false;
+};
+
+struct ClientCryptEntry {
+  std::string id;
+  std::string name;
+  int level = 1;
+  // "" (no relic record) | "lost" | "queued" | "recovered"
+  std::string relic_status;
+  int relic_count = 0;
+};
+
+struct ClientHouseEntry {
+  std::string id;
+  std::string name;
+  std::vector<ClientScionEntry> scions;
+  std::vector<ClientCryptEntry> crypt;
+};
+
+struct ClientFallenScion {
+  std::string scion_id;
+  std::string name;
+  int level = 1;
+  int relic_count = 0;
+};
+
+struct ClientChronicle {
+  bool present = false;  // any authoritative chronicle payload has arrived
+  std::string account_name;
+  std::vector<ClientHouseEntry> houses;
+  std::string active_house_id;
+  std::string active_scion_id;
+  ClientFallenScion fallen;  // most recent fatal fall, empty until one occurs
+};
+
+const ClientHouseEntry* find_chronicle_house(const ClientChronicle& chronicle,
+                                             const std::string& house_id);
+const ClientScionEntry* find_chronicle_scion(const ClientChronicle& chronicle,
+                                             const std::string& scion_id);
 
 struct ClientModel {
   ClientPlayer player;
@@ -78,6 +131,27 @@ struct ClientModel {
   int stored_items = 0;
   int stored_trophies = 0;
   bool extracted = false;
+  // TASK-0145: Chronicles front-door state. `chronicles_pending` is true from
+  // the first authoritative chronicle payload until a scion admission
+  // (player:login) lands — the owner is pre-game on this connection.
+  ClientChronicle chronicle;
+  bool chronicles_pending = false;
+  std::string lifecycle;  // "alive" | "awaiting-respawn" | "permadead"
 };
+
+inline const ClientHouseEntry* find_chronicle_house(const ClientChronicle& chronicle,
+                                                    const std::string& house_id) {
+  for (const auto& house : chronicle.houses)
+    if (house.id == house_id) return &house;
+  return nullptr;
+}
+
+inline const ClientScionEntry* find_chronicle_scion(const ClientChronicle& chronicle,
+                                                    const std::string& scion_id) {
+  for (const auto& house : chronicle.houses)
+    for (const auto& scion : house.scions)
+      if (scion.id == scion_id) return &scion;
+  return nullptr;
+}
 
 }  // namespace verdigris::client

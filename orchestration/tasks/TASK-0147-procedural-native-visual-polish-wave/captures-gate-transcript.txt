@@ -1,0 +1,623 @@
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+core.cpp
+Z:\Code\.worktrees\verdigris\ox-pc-p\native\src\core.cpp(1831): warning C4100: 'player_level': unreferenced formal parameter
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+seasonal.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+networking.cpp
+Z:\Code\.worktrees\verdigris\ox-pc-p\native\src\networking.cpp(2713): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+core_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+networking_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+camera2d_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+local_session.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+remote_session.cpp
+Z:\Code\.worktrees\verdigris\ox-pc-p\native\client\remote_session.cpp(187): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+presentation_state.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+session_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+server_main.cpp
+Z:\Code\.worktrees\verdigris\ox-pc-p\native\src\server_main.cpp(15): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+main.cpp
+Z:\Code\.worktrees\verdigris\ox-pc-p\native\client\main.cpp(2183): warning C4100: 'bounds': unreferenced formal parameter
+Z:\Code\.worktrees\verdigris\ox-pc-p\native\client\main.cpp(3071): warning C4456: declaration of 'expect_x' hides previous local declaration
+Z:\Code\.worktrees\verdigris\ox-pc-p\native\client\main.cpp(3065): note: see declaration of 'expect_x'
+Z:\Code\.worktrees\verdigris\ox-pc-p\native\client\main.cpp(3072): warning C4456: declaration of 'expect_y' hides previous local declaration
+Z:\Code\.worktrees\verdigris\ox-pc-p\native\client\main.cpp(3066): note: see declaration of 'expect_y'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+remote_play.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+native legacy denylist: PASS
+verdigris core tests: PASS
+[swing] tgt=monster-1-19 now=1787404561781 next=0 range-ok
+[swing] tgt=monster-1-0 now=1787404561820 next=1787404561820 range-ok
+[swing] tgt=monster-1-0 now=1787404561820 next=1787404561820 range-ok
+[swing] tgt=monster-1-0 now=1787404561820 next=1787404561820 range-ok
+verdigris networking tests: PASS
+camera2d tests: PASS
+PASS local: start succeeds
+PASS local: state is ready without a handshake
+PASS local: scion uuid published
+PASS local: house name published
+PASS local: movement commands reach the simulation through the seam
+PASS local: SessionReady presentation event emitted
+PASS local: shutdown reaches disconnected state
+PASS remote-negative: dead endpoint fails start()
+PASS remote-negative: state is rejected, not a silent local fallback
+PASS remote-negative: hard error message supplied
+PASS remote: test server bound inside the architect capsule
+PASS remote: connect + upgrade + login sent
+PASS remote: player:login acknowledged -> ready
+PASS remote: authoritative identity mirrored into the client model
+PASS remote: scene snapshot mirrored
+PASS remote: SessionReady presentation event emitted
+PASS remote: session survives a submitted command
+PASS remote: clean shutdown reaches disconnected
+PASS remote: server stopped cleanly
+PASS journey: test server bound inside the cursor capsule 6580-6599
+PASS journey: connect + upgrade + login sent
+PASS journey: handshake ready
+PASS journey: zone enter mirrors instance scene
+PASS journey: transition publishes exit stairs
+PASS journey: movement echo updates x
+PASS journey: aim updates facing
+[swing] tgt=monster-1-12 now=1787404565242 next=1787404565242 range-ok
+[swing] tgt=monster-1-12 now=1787404565272 next=1787404565272 range-ok
+[swing] tgt=monster-1-12 now=1787404565302 next=1787404565622 range-ok
+[swing] tgt=monster-1-12 now=1787404565314 next=1787404565314 range-ok
+[swing] tgt=monster-1-12 now=1787404565333 next=1787404565664 range-ok
+[swing] tgt=monster-1-12 now=1787404565337 next=1787404565337 range-ok
+[swing] tgt=monster-1-12 now=1787404565366 next=1787404565366 range-ok
+[swing] tgt=monster-1-7 now=1787404565400 next=1787404565400 range-ok
+[swing] tgt=monster-1-7 now=1787404565430 next=1787404565430 range-ok
+[swing] tgt=monster-1-7 now=1787404565461 next=1787404565461 range-ok
+[swing] tgt=monster-1-7 now=1787404565492 next=1787404565811 range-ok
+[swing] tgt=monster-1-7 now=1787404565492 next=1787404565492 range-ok
+[swing] tgt=monster-1-7 now=1787404565524 next=1787404565524 range-ok
+[swing] tgt=monster-1-1 now=1787404565568 next=1787404565568 range-ok
+[swing] tgt=monster-1-1 now=1787404565590 next=1787404565590 range-ok
+[swing] tgt=monster-1-1 now=1787404565617 next=1787404565617 range-ok
+[swing] tgt=monster-1-1 now=1787404565648 next=1787404565967 range-ok
+[swing] tgt=monster-1-1 now=1787404565649 next=1787404565649 range-ok
+[swing] tgt=monster-1-1 now=1787404565679 next=1787404565679 range-ok
+[swing] tgt=monster-1-9 now=1787404565714 next=1787404565714 range-ok
+[swing] tgt=monster-1-9 now=1787404565742 next=1787404565742 range-ok
+[swing] tgt=monster-1-9 now=1787404565772 next=1787404565772 range-ok
+[swing] tgt=monster-1-9 now=1787404565802 next=1787404566122 range-ok
+[swing] tgt=monster-1-9 now=1787404565803 next=1787404565803 range-ok
+[swing] tgt=monster-1-9 now=1787404565834 next=1787404566153 range-ok
+[swing] tgt=monster-1-9 now=1787404565851 next=1787404565851 range-ok
+[swing] tgt=monster-1-19 now=1787404565872 next=1787404566201 range-ok
+[swing] tgt=monster-1-19 now=1787404565872 next=1787404565872 range-ok
+[swing] tgt=monster-1-19 now=1787404565896 next=1787404565896 range-ok
+[swing] tgt=monster-1-19 now=1787404565929 next=1787404565929 range-ok
+[swing] tgt=monster-1-19 now=1787404565958 next=1787404566279 range-ok
+[swing] tgt=monster-1-19 now=1787404565958 next=1787404565958 range-ok
+[swing] tgt=monster-1-19 now=1787404565988 next=1787404565988 range-ok
+[swing] tgt=monster-1-19 now=1787404566021 next=1787404566021 range-ok
+[swing] tgt=monster-1-19 now=1787404566051 next=1787404566051 range-ok
+[swing] tgt=monster-1-19 now=1787404566083 next=1787404566083 range-ok
+[swing] tgt=monster-1-19 now=1787404566113 next=1787404566433 range-ok
+[swing] tgt=monster-1-19 now=1787404566114 next=1787404566433 range-ok
+[swing] tgt=monster-1-19 now=1787404566126 next=1787404566126 range-ok
+[swing] tgt=monster-1-19 now=1787404566148 next=1787404566148 range-ok
+[swing] tgt=monster-1-19 now=1787404566176 next=1787404566176 range-ok
+[swing] tgt=monster-1-19 now=1787404566206 next=1787404566206 range-ok
+[swing] tgt=monster-1-19 now=1787404566238 next=1787404566238 range-ok
+[swing] tgt=monster-1-19 now=1787404566267 next=1787404566588 range-ok
+[swing] tgt=monster-1-19 now=1787404566268 next=1787404566268 range-ok
+[swing] tgt=monster-1-19 now=1787404566300 next=1787404566300 range-ok
+[swing] tgt=monster-1-19 now=1787404566331 next=1787404566331 range-ok
+[swing] tgt=monster-1-19 now=1787404566361 next=1787404566361 range-ok
+[swing] tgt=monster-1-19 now=1787404566393 next=1787404566711 range-ok
+[swing] tgt=monster-1-19 now=1787404566406 next=1787404566406 range-ok
+[swing] tgt=monster-1-15 now=1787404566430 next=1787404566430 range-ok
+[swing] tgt=monster-1-15 now=1787404566456 next=1787404566456 range-ok
+[swing] tgt=monster-1-15 now=1787404566487 next=1787404566487 range-ok
+[swing] tgt=monster-1-15 now=1787404566519 next=1787404566519 range-ok
+[swing] tgt=monster-1-15 now=1787404566550 next=1787404566550 range-ok
+[swing] tgt=monster-1-6 now=1787404566587 next=1787404566587 range-ok
+[swing] tgt=monster-1-6 now=1787404566612 next=1787404566612 range-ok
+[swing] tgt=monster-1-6 now=1787404566643 next=1787404566643 range-ok
+[swing] tgt=monster-1-6 now=1787404566674 next=1787404566993 range-ok
+[swing] tgt=monster-1-6 now=1787404566691 next=1787404566691 range-ok
+[swing] tgt=monster-1-6 now=1787404566709 next=1787404566709 range-ok
+[swing] tgt=monster-1-18 now=1787404566740 next=1787404566740 range-ok
+[swing] tgt=monster-1-18 now=1787404566768 next=1787404566768 range-ok
+[swing] tgt=monster-1-18 now=1787404566798 next=1787404566798 range-ok
+[swing] tgt=monster-1-18 now=1787404566830 next=1787404566830 range-ok
+[swing] tgt=monster-1-18 now=1787404566862 next=1787404566862 range-ok
+[swing] tgt=monster-1-17 now=1787404566897 next=1787404566897 range-ok
+[swing] tgt=monster-1-17 now=1787404566924 next=1787404566924 range-ok
+[swing] tgt=monster-1-17 now=1787404566955 next=1787404567274 range-ok
+[swing] tgt=monster-1-17 now=1787404566972 next=1787404566972 range-ok
+[swing] tgt=monster-1-17 now=1787404566991 next=1787404566991 range-ok
+[swing] tgt=monster-1-17 now=1787404567017 next=1787404567017 range-ok
+[swing] tgt=monster-1-0 now=1787404567054 next=1787404567054 range-ok
+[swing] tgt=monster-1-0 now=1787404567079 next=1787404567079 range-ok
+[swing] tgt=monster-1-0 now=1787404567110 next=1787404567110 range-ok
+[swing] tgt=monster-1-0 now=1787404567140 next=1787404567140 range-ok
+[swing] tgt=monster-1-0 now=1787404567171 next=1787404567171 range-ok
+[swing] tgt=monster-1-3 now=1787404567205 next=1787404567205 range-ok
+[swing] tgt=monster-1-3 now=1787404567231 next=1787404567555 range-ok
+[swing] tgt=monster-1-3 now=1787404567252 next=1787404567252 range-ok
+[swing] tgt=monster-1-3 now=1787404567267 next=1787404567267 range-ok
+[swing] tgt=monster-1-3 now=1787404567293 next=1787404567293 range-ok
+[swing] tgt=monster-1-3 now=1787404567324 next=1787404567324 range-ok
+[swing] tgt=monster-1-4 now=1787404567360 next=1787404567360 range-ok
+[swing] tgt=monster-1-4 now=1787404567387 next=1787404567387 range-ok
+[swing] tgt=monster-1-4 now=1787404567419 next=1787404567419 range-ok
+[swing] tgt=monster-1-4 now=1787404567450 next=1787404567450 range-ok
+[swing] tgt=monster-1-4 now=1787404567481 next=1787404567481 range-ok
+[swing] tgt=monster-1-14 now=1787404567533 next=1787404567533 range-ok
+[swing] tgt=monster-1-14 now=1787404567566 next=1787404567566 range-ok
+[swing] tgt=monster-1-14 now=1787404567590 next=1787404567590 range-ok
+[swing] tgt=monster-1-14 now=1787404567620 next=1787404567620 range-ok
+[swing] tgt=monster-1-14 now=1787404567650 next=1787404567650 range-ok
+[swing] tgt=monster-1-13 now=1787404567690 next=1787404567690 range-ok
+[swing] tgt=monster-1-13 now=1787404567713 next=1787404567713 range-ok
+[swing] tgt=monster-1-13 now=1787404567743 next=1787404567743 range-ok
+[swing] tgt=monster-1-13 now=1787404567774 next=1787404568093 range-ok
+[swing] tgt=monster-1-13 now=1787404567799 next=1787404567799 range-ok
+[swing] tgt=monster-1-13 now=1787404567809 next=1787404567809 range-ok
+[swing] tgt=monster-1-11 now=1787404567840 next=1787404567840 range-ok
+[swing] tgt=monster-1-11 now=1787404567867 next=1787404567867 range-ok
+[swing] tgt=monster-1-11 now=1787404567898 next=1787404567898 range-ok
+[swing] tgt=monster-1-11 now=1787404567930 next=1787404567930 range-ok
+[swing] tgt=monster-1-11 now=1787404567961 next=1787404567961 range-ok
+[swing] tgt=monster-1-2 now=1787404568002 next=1787404568002 range-ok
+[swing] tgt=monster-1-2 now=1787404568022 next=1787404568022 range-ok
+[swing] tgt=monster-1-2 now=1787404568053 next=1787404568372 range-ok
+[swing] tgt=monster-1-2 now=1787404568072 next=1787404568072 range-ok
+[swing] tgt=monster-1-2 now=1787404568088 next=1787404568088 range-ok
+[swing] tgt=monster-1-2 now=1787404568115 next=1787404568115 range-ok
+[swing] tgt=monster-1-10 now=1787404568152 next=1787404568152 range-ok
+[swing] tgt=monster-1-10 now=1787404568178 next=1787404568178 range-ok
+[swing] tgt=monster-1-10 now=1787404568208 next=1787404568208 range-ok
+[swing] tgt=monster-1-10 now=1787404568239 next=1787404568239 range-ok
+[swing] tgt=monster-1-10 now=1787404568270 next=1787404568270 range-ok
+[swing] tgt=monster-1-8 now=1787404568306 next=1787404568306 range-ok
+[swing] tgt=monster-1-8 now=1787404568332 next=1787404568656 range-ok
+[swing] tgt=monster-1-8 now=1787404568352 next=1787404568352 range-ok
+[swing] tgt=monster-1-8 now=1787404568379 next=1787404568379 range-ok
+[swing] tgt=monster-1-8 now=1787404568411 next=1787404568411 range-ok
+[swing] tgt=monster-1-8 now=1787404568442 next=1787404568761 range-ok
+[swing] tgt=monster-1-8 now=1787404568442 next=1787404568442 range-ok
+[swing] tgt=monster-1-5 now=1787404568483 next=1787404568483 range-ok
+[swing] tgt=monster-1-5 now=1787404568504 next=1787404568504 range-ok
+[swing] tgt=monster-1-5 now=1787404568535 next=1787404568535 range-ok
+[swing] tgt=monster-1-5 now=1787404568566 next=1787404568566 range-ok
+[swing] tgt=monster-1-5 now=1787404568597 next=1787404568916 range-ok
+[swing] tgt=monster-1-5 now=1787404568597 next=1787404568916 range-ok
+[swing] tgt=monster-1-5 now=1787404568616 next=1787404568616 range-ok
+[swing] tgt=monster-1-16 now=1787404568639 next=1787404568639 range-ok
+[swing] tgt=monster-1-16 now=1787404568660 next=1787404568660 range-ok
+[swing] tgt=monster-1-16 now=1787404568690 next=1787404568690 range-ok
+[swing] tgt=monster-1-16 now=1787404568722 next=1787404568722 range-ok
+[swing] tgt=monster-1-16 now=1787404568752 next=1787404569072 range-ok
+[swing] tgt=monster-1-16 now=1787404568752 next=1787404568752 range-ok
+PASS journey: outgoing combat:hit reached the client
+PASS journey: enemy death reached the client
+PASS journey: named item entered inventory (pickup)
+PASS journey: ItemPickedUp or inventory growth
+PASS journey: picked item is named
+PASS journey: equip removed the item from the backpack
+PASS journey: equipped slot mirrors the worn item
+PASS journey: incoming combat:hit reached the client
+PASS journey: monster:telegraph reached the client
+PASS journey: walking onto stairs-up returns to the surface (extract)
+PASS journey: ExtractionCompleted from surface message
+PASS journey: clean dual-side shutdown
+PASS reconnect: cursor-capsule server bound
+PASS reconnect: connected
+PASS reconnect: ready before the drop
+PASS reconnect: unexpected drop enters Retrying
+PASS reconnect: ConnectionLost is visible (no silent local fallback)
+PASS reconnect: last_error explains the drop
+PASS reconnect: commands after the drop do not leave Retrying for a local sim
+PASS reconnect: position does not keep playing offline
+PASS reconnect: server restarted on the same port
+PASS reconnect: Retrying then Ready after server restart
+PASS reconnect: same guest identity re-logged in
+PASS reconnect: login snapshot is authoritative
+PASS replaced: cursor-capsule server bound
+PASS replaced: first login
+PASS replaced: first session ready
+PASS replaced: second login same guest
+PASS replaced: second session ready
+PASS replaced: first session is disconnected
+PASS replaced: ConnectionLost from player:session-replaced
+PASS replaced: session-replaced does not enter Retrying
+PASS replaced: stays terminal Disconnected (no retry)
+PASS render-list: cursor-capsule server bound
+PASS render-list: connect
+PASS render-list: ready
+[swing] tgt=monster-1-14 now=1787404584828 next=1787404584828 range-ok
+[swing] tgt=monster-1-14 now=1787404584855 next=1787404584855 range-ok
+[swing] tgt=monster-1-14 now=1787404584885 next=1787404584885 range-ok
+[swing] tgt=monster-1-14 now=1787404584916 next=1787404584916 range-ok
+[swing] tgt=monster-1-14 now=1787404584947 next=1787404585266 range-ok
+[swing] tgt=monster-1-14 now=1787404584947 next=1787404584947 range-ok
+PASS render-list: Monster op recorded from remote model
+PASS render-list: Swing op recorded from AttackStarted
+PASS render-list: Drop op recorded from kill loot
+session tests passed
+== scenario move-and-camera ==
+    ok: move-and-camera: scenery present in render list
+    ok: move-and-camera: Floor op recorded
+    ok: move-and-camera: floor is textured (plates or vector kit)
+    ok: move-and-camera: terrain tiles present in render list
+    ok: move-and-camera: life and resource orbs recorded
+    ok: move-and-camera: quickbar slots recorded
+    ok: move-and-camera: minimap panel recorded
+    ok: move-and-camera: every scenery entity shifts by one uniform delta
+    ok: move-and-camera: uniform delta equals camera shift * zoom
+    ok: move-and-camera: overlapping terrain tiles across camera moves
+    ok: move-and-camera: every overlapping terrain tile shifts by one uniform delta
+    ok: move-and-camera: terrain delta equals camera shift * zoom
+    ok: move-and-camera: every scenery entity shifts by one uniform delta
+    ok: move-and-camera: uniform delta equals camera shift * zoom
+    ok: move-and-camera: overlapping terrain tiles across camera moves
+    ok: move-and-camera: every overlapping terrain tile shifts by one uniform delta
+    ok: move-and-camera: terrain delta equals camera shift * zoom
+    ok: move-and-camera: every scenery entity shifts by one uniform delta
+    ok: move-and-camera: uniform delta equals camera shift * zoom
+    ok: move-and-camera: overlapping terrain tiles across camera moves
+    ok: move-and-camera: every overlapping terrain tile shifts by one uniform delta
+    ok: move-and-camera: terrain delta equals camera shift * zoom
+    ok: move-and-camera: every scenery entity shifts by one uniform delta
+    ok: move-and-camera: uniform delta equals camera shift * zoom
+    ok: move-and-camera: overlapping terrain tiles across camera moves
+    ok: move-and-camera: every overlapping terrain tile shifts by one uniform delta
+    ok: move-and-camera: terrain delta equals camera shift * zoom
+   PASS (0 failures)
+== scenario first-fight ==
+    ok: first-fight: an honest art-status line is on the HUD
+    ok: first-fight: art status matches what actually loaded
+    ok: first-fight: an objective strip is on the HUD
+    ok: first-fight: the extraction pad is marked stairs-up
+    ok: first-fight: the Scion silhouette is recorded
+    ok: first-fight: vector fallback reports itself honestly
+    ok: first-fight: vector terrain keeps the floor tiled
+    ok: first-fight: vector motif tiles are drawn
+    ok: first-fight: vector scenery silhouettes are drawn
+    ok: first-fight: vector Scion silhouette is drawn
+    ok: first-fight: a swing is drawn
+    ok: first-fight: a floating damage number is spawned
+    ok: first-fight: a death ring is drawn
+    ok: first-fight: the drop becomes visible
+    ok: first-fight: the dead monster is removed from the render list
+   PASS (0 failures)
+== scenario loot-to-bank ==
+    ok: loot-to-bank: drop visible before pickup
+    ok: loot-to-bank: pickup fills the carried grid
+    ok: loot-to-bank: grid cell rendered in the pane
+    ok: loot-to-bank: weapon seat empty before equip
+    ok: loot-to-bank: equip fills the weapon seat
+    ok: loot-to-bank: equipped bonus appears in the stat readout
+    ok: loot-to-bank: objective strip points at the EXIT while carrying
+    ok: loot-to-bank: extraction banks the item
+    ok: loot-to-bank: extraction banks the trophy
+    ok: loot-to-bank: banked footer reflects the extraction
+    ok: loot-to-bank: objective strip guides back to the extraction
+   PASS (0 failures)
+== scenario telegraph-dodge ==
+    ok: telegraph-dodge: elite telegraph is drawn
+    ok: telegraph-dodge: telegraph stays outside HUD reserve
+    ok: telegraph-dodge: moving out avoids the telegraphed damage
+   PASS (0 failures)
+== scenario combat-juice ==
+    ok: combat-juice: target sprite flashes on the hit
+    ok: combat-juice: a floating damage number is spawned
+    ok: combat-juice: number present right after the hit
+    ok: combat-juice: number still visible ~300ms in
+    ok: combat-juice: number faded out after ~650ms
+    ok: combat-juice: screen-edge red pulse on player damage
+    ok: combat-juice: player damage number is player-tagged
+   PASS (0 failures)
+[swing] tgt=monster-1-9 now=1787404601878 next=1787404601878 range-ok
+[swing] tgt=monster-1-9 now=1787404601924 next=1787404601924 range-ok
+[swing] tgt=monster-1-9 now=1787404601957 next=1787404602274 range-ok
+[swing] tgt=monster-1-9 now=1787404601972 next=1787404601972 range-ok
+[swing] tgt=monster-1-9 now=1787404602021 next=1787404602021 range-ok
+[swing] tgt=monster-1-9 now=1787404602050 next=1787404602371 range-ok
+[swing] tgt=monster-1-9 now=1787404602067 next=1787404602067 range-ok
+== scenario remote-render-list ==
+    ok: remote-render-list: bound cursor-capsule server
+    ok: remote-render-list: session start
+    ok: remote-render-list: handshake ready
+    ok: remote-render-list: Floor op in paint_scene render list
+    ok: remote-render-list: Tile ops in paint_scene render list
+    ok: remote-render-list: vital orbs in paint_scene render list
+    ok: remote-render-list: quickbar slots in paint_scene render list
+    ok: remote-render-list: minimap in paint_scene render list
+    ok: remote-render-list: Extraction pad marked stairs-up
+    ok: remote-render-list: connection chip uses connection_state_label
+    ok: remote-render-list: Monster op in paint_scene render list
+    ok: remote-render-list: Swing op in paint_scene render list
+    ok: remote-render-list: Drop op in paint_scene render list
+    ok: remote-render-list: remote present uses no Simulation
+   PASS (0 failures)
+== scenario zoom-invariance ==
+    ok: zoom-invariance: scenery present in render list
+    ok: zoom-invariance: terrain tiles present in render list
+    ok: zoom-invariance: uniform delta at min zoom
+    ok: zoom-invariance: delta scales with the zoom factor
+    ok: zoom-invariance: overlapping terrain tiles across camera shift
+    ok: zoom-invariance: overlapping terrain tiles shift uniformly at zoom level
+    ok: zoom-invariance: scenery present in render list
+    ok: zoom-invariance: terrain tiles present in render list
+    ok: zoom-invariance: uniform delta at default zoom
+    ok: zoom-invariance: delta scales with the zoom factor
+    ok: zoom-invariance: overlapping terrain tiles across camera shift
+    ok: zoom-invariance: overlapping terrain tiles shift uniformly at zoom level
+    ok: zoom-invariance: scenery present in render list
+    ok: zoom-invariance: terrain tiles present in render list
+    ok: zoom-invariance: uniform delta at max zoom
+    ok: zoom-invariance: delta scales with the zoom factor
+    ok: zoom-invariance: overlapping terrain tiles across camera shift
+    ok: zoom-invariance: overlapping terrain tiles shift uniformly at zoom level
+   PASS (0 failures)
+== GATE: node --test orchestration/tasks/TASK-0141-procedural-native-visual-kit/asset-kit.test.mjs ==
+TAP version 13
+# Subtest: manifest declares exactly the eight canonical roles
+ok 1 - manifest declares exactly the eight canonical roles
+  ---
+  duration_ms: 19.055
+  ...
+# Subtest: terrain role carries exactly two motifs and others exactly one
+ok 2 - terrain role carries exactly two motifs and others exactly one
+  ---
+  duration_ms: 14.2936
+  ...
+# Subtest: every motif palette names concrete colors
+ok 3 - every motif palette names concrete colors
+  ---
+  duration_ms: 14.6498
+  ...
+# Subtest: committed SVG sources exist with valid roots matching the generator
+ok 4 - committed SVG sources exist with valid roots matching the generator
+  ---
+  duration_ms: 15.115
+  ...
+# Subtest: generation is deterministic across repeated runs
+ok 5 - generation is deterministic across repeated runs
+  ---
+  duration_ms: 13.2719
+  ...
+# Subtest: committed manifest and header match regeneration byte-for-byte
+ok 6 - committed manifest and header match regeneration byte-for-byte
+  ---
+  duration_ms: 13.4607
+  ...
+# Subtest: generated header covers every declared symbol
+ok 7 - generated header covers every declared symbol
+  ---
+  duration_ms: 1.0542
+  ...
+# Subtest: generated header is data only with no platform or behavior surface
+ok 8 - generated header is data only with no platform or behavior surface
+  ---
+  duration_ms: 0.4494
+  ...
+# Subtest: kit artifacts carry no forbidden port or external references
+ok 9 - kit artifacts carry no forbidden port or external references
+  ---
+  duration_ms: 7.2462
+  ...
+# Subtest: polish wave materially increases authored geometry over TASK-0141
+ok 10 - polish wave materially increases authored geometry over TASK-0141
+  ---
+  duration_ms: 7.3325
+  ...
+# Subtest: every authored shape stays inside the 64-unit viewBox
+ok 11 - every authored shape stays inside the 64-unit viewBox
+  ---
+  duration_ms: 9.3194
+  ...
+# Subtest: generated float literals are standards-conforming C++ tokens
+ok 12 - generated float literals are standards-conforming C++ tokens
+  ---
+  duration_ms: 2.554
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 230.5498
+exit=0
+== GATE: node orchestration/tasks/TASK-0141-procedural-native-visual-kit/generate-assets.mjs --check ==
+OK native/client/assets/svg/player.svg
+OK native/client/assets/svg/raider.svg
+OK native/client/assets/svg/elite.svg
+OK native/client/assets/svg/tree.svg
+OK native/client/assets/svg/ruin.svg
+OK native/client/assets/svg/dwelling.svg
+OK native/client/assets/svg/shrine.svg
+OK native/client/assets/svg/terrain-a.svg
+OK native/client/assets/svg/terrain-b.svg
+OK native/client/assets/manifest.json
+OK native/client/assets/generated/visual_kit.h
+visual kit up to date
+exit=0
+== GATE: native/build/verdigris_client.exe --scenario first-fight ==
+== scenario first-fight ==
+    ok: first-fight: an honest art-status line is on the HUD
+    ok: first-fight: art status matches what actually loaded
+    ok: first-fight: an objective strip is on the HUD
+    ok: first-fight: the extraction pad is marked stairs-up
+    ok: first-fight: the Scion silhouette is recorded
+    ok: first-fight: vector fallback reports itself honestly
+    ok: first-fight: vector terrain keeps the floor tiled
+    ok: first-fight: vector motif tiles are drawn
+    ok: first-fight: vector scenery silhouettes are drawn
+    ok: first-fight: vector Scion silhouette is drawn
+    ok: first-fight: a swing is drawn
+    ok: first-fight: a floating damage number is spawned
+    ok: first-fight: a death ring is drawn
+    ok: first-fight: the drop becomes visible
+    ok: first-fight: the dead monster is removed from the render list
+   PASS (0 failures)
+exit=0
+== GATE: git diff --check ==
+exit=0
+== GATE: git diff --name-only 060c11517d2ebb0aec0c4d4a38c5e3eb53141cb2..HEAD ==
+native/CMakeLists.txt
+orchestration/INTEGRATION_LOG.md
+orchestration/PROGRAM_GRAPH.md
+orchestration/REENTRY-OX-ALPHA-PC.md
+orchestration/RUN_STATUS.md
+orchestration/SUPERVISOR_SUCCESSION.md
+orchestration/tasks/TASK-0128-accepted-throughput-normalization/REVIEW.md
+orchestration/tasks/TASK-0136-passive-tree-contract-validator/RELEASE.md
+orchestration/tasks/TASK-0145-native-chronicles-owner-journey/RELEASE.md
+orchestration/tasks/TASK-0145-native-chronicles-owner-journey/SPEC.md
+orchestration/tasks/TASK-0146-native-first-expedition-encounter-wave/RELEASE.md
+orchestration/tasks/TASK-0146-native-first-expedition-encounter-wave/SPEC.md
+orchestration/tasks/TASK-0147-procedural-native-visual-polish-wave/RELEASE.md
+orchestration/tasks/TASK-0147-procedural-native-visual-polish-wave/SPEC.md
+orchestration/tasks/TASK-0147-procedural-native-visual-polish-wave/STATUS.md
+orchestration/tasks/TASK-0148-native-chronicles-reconnect-runtime/RELEASE.md
+orchestration/tasks/TASK-0148-native-chronicles-reconnect-runtime/SPEC.md
+orchestration/tasks/TASK-0149-native-owner-launch-resilience/REVIEW.md
+orchestration/tasks/TASK-0149-native-owner-launch-resilience/SPEC.md
+orchestration/tasks/TASK-0150-native-clean-build-convergence/REPORT.md
+orchestration/tasks/TASK-0150-native-clean-build-convergence/REVIEW.md
+orchestration/tasks/TASK-0150-native-clean-build-convergence/SPEC.md
+orchestration/tasks/TASK-0150-native-clean-build-convergence/STATUS.md
+orchestration/tasks/TASK-0151-native-content-schema-seed/SPEC.md
+orchestration/tasks/TASK-0152-native-density-benchmark-evidence/SPEC.md
+exit=0
+== Evidence manifest ==
+TASK-0147 evidence manifest — generated 2026-08-22 (local machine DESKTOP-TVU7OR7)
+
+== Freshness proof (stale-evidence invalidation) ==
+generated header : mtime=2026-08-22T05:39:25.803 len=41758 sha256=0C48F5C861AE4BE957E56D9F0809AC12FDEE9F70AEBDF896C9D74FCAA0611465
+built executable : mtime=2026-08-22T06:15:55.756 len=1692672 sha256=A3623EEE32AB943367919136B31F604B2993933B91B38E97C89A3B0416965CE4
+executable is STRICTLY NEWER than the header it embeds; stale pre-correction executable was sha256=B4BD79ACC79C896B586DE1022F324AA529B9ED98C855B9106A4563DF3F074FC2 (mtime 2026-08-22T04:54:40.243, the exe behind the invalidated 06:00 captures)
+
+== Copied executable used for all captures below ==
+copy: C:\Users\Alex\AppData\Local\Temp\opencode\task0147-final\verdigris_client.exe sha256=A3623EEE32AB943367919136B31F604B2993933B91B38E97C89A3B0416965CE4
+
+== Reference scenes (fresh 06:17 run, exit 0, per-scene two-run JSON determinism) ==
+  01-route-entrance-1366x768.png  len=154038  sha256=34564F02AF22C6B846075C2A43AAE9753B8E27E6E33E43F461BE1EC882DA2B42
+  01-route-entrance-1920x1080.png  len=257258  sha256=ED8B60ED6A3DD367789E1AC80BBACD8B8C32F378EB23BEBCAA3B44DC3AE50311
+  01-route-entrance.json  len=30506  sha256=4C226C3945E555DD67B8A4D9634BDB27468516B9A43DDDE8B58A0CB00747F070
+  02-pack-combat-1366x768.png  len=162877  sha256=C8C9C57409CBD2601E6E82F7E1E98EC424E92987D5FA7A5A0C6B51FB494C231D
+  02-pack-combat-1920x1080.png  len=277511  sha256=26DB784E8E37AA573CB5222BFB5110BF8FFB74F1BE4740D1F2B0A569BDBF102A
+  02-pack-combat.json  len=32853  sha256=F95CB811D1A17DC636C3D706D33C35D4FEB47C27DE5C8C3C0E858C07EE00C63E
+  03-elite-telegraph-1366x768.png  len=155726  sha256=017F678B37A77154A6904E302F8919E3DEBD48932D7856AEB71561FE8623B0D7
+  03-elite-telegraph-1920x1080.png  len=259292  sha256=D1F87507C3E5B6E18BA7715D6614976AEFE4748FE181ED846A737FF157B14033
+  03-elite-telegraph.json  len=30692  sha256=2BF7C4D5189A7F4738035369EB16D3590F724868149471F32F8F2C63FCB0E2E5
+  04-named-drop-gear-1366x768.png  len=140055  sha256=F4075B1088703C785D25FEDDAB882CAEECF4F4BDF989F3A29B15D061A42606D9
+  04-named-drop-gear-1920x1080.png  len=268766  sha256=E9F38D80DED63E686AEA33ECEC71A828E12C34191F4712DB6B90DD979F62420D
+  04-named-drop-gear.json  len=32835  sha256=7179C972AB7723A966DE4CB64DE5C78CA86584CD3213FE32CF51A445ACE46CC4
+  05-critical-health-1366x768.png  len=156141  sha256=F2F46F9F203461911E937AE9820484FA4344EA3FC2952BDD2BA58607B096E743
+  05-critical-health-1920x1080.png  len=284240  sha256=4EC6A8307BBAEAD117094423A4CA2E709B0C9A85C7AA3A7270C73C13205DF128
+  05-critical-health.json  len=33309  sha256=7C35AF77E0862BCD77DA56D257C9884C2A925A59317C2E79DC1114DC14FFF11B
+
+== Before/after SVG composites (left=base 060c1151 svg bytes, right=worktree svg bytes; base extraction verified via git hash-object) ==
+  before-after-dwelling.png  len=7948  sha256=3E4857B109E2047C4DD0C4DF8237B8F26ACCE9F2423ACFCB0BB2768FC730FDAF
+  before-after-elite.png  len=11677  sha256=A5112310402266DC1C3C0B4587EE2A75C566680CF823DC77BE4DF6E6464A66D7
+  before-after-player.png  len=8618  sha256=EDBEAA1F77A4832D1A1B261AEB156D51A4FDCD340ABA4884FEF83EB9D21DFCCC
+  before-after-raider.png  len=9254  sha256=F943E37270CD1F9B7B8C666DE91C9C85FFA15BAD4C18419E643BD1EF21FB6EC8
+  before-after-ruin.png  len=8337  sha256=0A7E4212DD26D2886AB4C48FFE8ECDF12F761821D22AC14109786E20E495C63F
+  before-after-shrine.png  len=6860  sha256=EB0F113A1403EFFE5F37AA6ABC572FB31DE7F791FAA4240F2C65C618E3EBA5D8
+  before-after-terrain-a.png  len=12107  sha256=77178C2D7444EADB40DB3F8A3E6D9F4C70269C9483F599B29AAAC2B13925E94B
+  before-after-terrain-b.png  len=11328  sha256=9FA8A8E98B632E37CD12C52B6329C126030E7AB34D8D3AF293ABFA35C414EF40
+  before-after-tree.png  len=8568  sha256=22DAE48E30BE71407DC377301A00EA3C7F6CF03F18ACA68DD7AC719432F85635
+
+== Default-resolution native capture (windowed client default window 960x600, client rect 944x561) ==
+  default-resolution-native-client.png  len=85089  sha256=1916F5A3082192245B6CA0AE5F316D5EE55361BB942D10C8401C471FDD3548D3

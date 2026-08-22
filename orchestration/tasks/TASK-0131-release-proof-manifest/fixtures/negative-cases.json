@@ -1,0 +1,107 @@
+{
+  "schema_version": "1.0.0",
+  "purpose": "Negative fixtures for a validator of release-proof-manifest.json. Each case is a minimal mutation of a valid manifest that must be rejected with the named expected_error. A validator that accepts any of these fixtures is unsound.",
+  "manifest_under_test": "release-proof-manifest.json",
+  "cases": [
+    {
+      "id": "NEG-001",
+      "expected_error": "STALE_HEAD",
+      "description": "source_head.commit does not match the repository's actual resolved HEAD commit.",
+      "fixture": {
+        "source_head": {
+          "commit": "0000000000000000000000000000000000000000",
+          "branch": "codex/TASK-0131-release-proof-manifest-ox-pc-f"
+        }
+      },
+      "detection": "Validator runs `git rev-parse HEAD` in the worktree and rejects when the recorded source_head.commit differs from the resolved value or is not a strict ancestor-descendant match for the audited revision."
+    },
+    {
+      "id": "NEG-002",
+      "expected_error": "NONZERO_EXIT",
+      "description": "A bound acceptance command recorded a nonzero exit code (or an exit code is absent) while the verdict still claims success.",
+      "fixture": {
+        "commands": [
+          {
+            "name": "acceptance.node.manifest-keys",
+            "command": "node -e \"...\"",
+            "exit_code": 1
+          }
+        ]
+      },
+      "detection": "Validator rejects any commands[] entry whose exit_code is not the integer 0, or whose exit_code field is missing, when verdict.state is PROVEN."
+    },
+    {
+      "id": "NEG-003",
+      "expected_error": "MISSING_ARTIFACT",
+      "description": "An artifacts[] entry names a path that does not exist on disk at validation time.",
+      "fixture": {
+        "artifacts": [
+          {
+            "path": "orchestration/tasks/TASK-0131-release-proof-manifest/dist/app-1.0.0.exe",
+            "sha256": null
+          }
+        ]
+      },
+      "detection": "Validator stats every artifacts[].path relative to the repository root and rejects any entry whose file is absent; a null sha256 on an existing required artifact is also rejected as unproven."
+    },
+    {
+      "id": "NEG-004",
+      "expected_error": "HASH_MISMATCH",
+      "description": "An artifacts[] entry's recorded sha256 does not match the hash recomputed from the file bytes.",
+      "fixture": {
+        "artifacts": [
+          {
+            "path": "orchestration/tasks/TASK-0131-release-proof-manifest/fixtures/negative-cases.json",
+            "sha256": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+          }
+        ]
+      },
+      "detection": "Validator recomputes SHA-256 over each artifact file and rejects on any mismatch with the recorded digest."
+    },
+    {
+      "id": "NEG-005",
+      "expected_error": "UNVERIFIED_ENVIRONMENT",
+      "description": "environment.verified is false, or verification evidence (method/outputs) is absent, while the manifest still binds release claims to that environment.",
+      "fixture": {
+        "environment": {
+          "os": "Windows 10 Pro",
+          "verified": false,
+          "verification_method": null
+        }
+      },
+      "detection": "Validator requires environment.verified === true together with a non-empty verification_method and verbatim recorded command outputs; otherwise it rejects."
+    },
+    {
+      "id": "NEG-006",
+      "expected_error": "MISSING_ROLLBACK",
+      "description": "A release-readiness verdict is asserted while rollback evidence is null or the rollback block is marked missing.",
+      "fixture": {
+        "rollback": {
+          "status": "missing",
+          "evidence": null
+        },
+        "verdict": {
+          "release_ready": true,
+          "state": "PROVEN"
+        }
+      },
+      "detection": "Validator rejects verdict.release_ready === true unless rollback.status === 'proven' and rollback.evidence references an existing, hashed artifact or executed procedure record."
+    },
+    {
+      "id": "NEG-007",
+      "expected_error": "OWNER_ACTION_UNPROVEN",
+      "description": "An owner action (build, deployment, installer, signing, notarization, account action) is marked performed or required-done without evidence, or is asserted complete on the strength of a CI label or prose instead of an artifact.",
+      "fixture": {
+        "owner_actions": [
+          {
+            "action": "signing",
+            "authorized": true,
+            "performed": true,
+            "evidence": "GitHub Actions run labelled 'signed' (no artifact attached)"
+          }
+        ]
+      },
+      "detection": "Validator rejects any owner_actions[] entry with performed === true whose evidence is not an existing hashed artifact path plus recorded exit codes; CI labels, badges, and prose strings are not acceptable evidence."
+    }
+  ]
+}

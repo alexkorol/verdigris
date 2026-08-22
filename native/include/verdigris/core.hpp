@@ -245,7 +245,10 @@ enum class EventType {
   BuffApplied,
   BuffExpired,
   AttackTelegraphed,
-  TrophyResurfaced
+  TrophyResurfaced,
+  // Appended last so recorded command streams and stored event ordinals keep
+  // their historical numeric codes.
+  ExpeditionPhaseChanged
 };
 
 struct Event {
@@ -288,12 +291,22 @@ struct Command {
   static Command extract();
 };
 
+// Authoritative first-expedition objective for an active instance: defeat
+// every warden on the floor, then carry the value back to the extraction
+// point. The simulation owns the transition (last living monster dies);
+// presentation reads it instead of re-deriving the loop from actor scans.
+// The phase is descriptive telemetry, never a command gate: extraction rules
+// are unchanged. It resets to SlayWardens on every instance entry and dies
+// with the instance.
+enum class ExpeditionPhase { SlayWardens, ExtractCarriedValue };
+
 struct InstanceState {
   bool active = false;
   std::string route_id;
   Vec2 extraction_point{0, 0};
   std::vector<std::string> ground_item_ids;
   std::vector<std::string> ground_trophy_ids;
+  ExpeditionPhase phase = ExpeditionPhase::SlayWardens;
   bool seasonal_objective = false;
   std::string seasonal_objective_text;
 };
@@ -327,6 +340,14 @@ class Simulation {
   // General deterministic content seam. Callers may add an additional
   // opponent without changing the combat implementation or test-only state.
   std::string spawn_monster(Vec2 position, int level = 1, bool elite = false);
+
+  // Wardens of the active instance that have not materialized yet. The first
+  // expedition reveals its pack deterministically: when a kill leaves roster
+  // entries owed, they all materialize together kTelegraphTicks later on
+  // their fixed anchors. Like the rest of the live instance state, the
+  // pending roster is retired at every instance boundary and is deliberately
+  // absent from durable snapshots.
+  const std::vector<Actor>& pending_wave() const { return pending_wave_; }
 
   // Stable hooks used by external seasonal mechanics and deterministic tests.
   void grant_seasonal_reward(const std::string& reward);
@@ -364,7 +385,9 @@ class Simulation {
   void retire_instance();
   void advance_tick();
   void enemy_turn();
+  Actor make_monster(Vec2 position, int level, bool elite);
   void spawn_enemy();
+  void materialize_wave();
   void record_equipped_item_use(Actor& attacker);
   void drop_reward();
   void clear_route_and_unlock_children();
@@ -381,6 +404,12 @@ class Simulation {
   std::vector<Scion> fallen_scions_;
   std::vector<Actor> actors_;
   InstanceState instance_;
+  // Unmaterialized warden roster of the active instance (see pending_wave()).
+  std::vector<Actor> pending_wave_;
+  // Tick at which the remaining owed pack materializes together; 0 when
+  // nothing is scheduled. A kill inside an active instance re-arms it
+  // deterministically.
+  std::uint64_t wave_materialization_tick_ = 0;
   std::vector<Item> ground_items_;
   std::vector<Trophy> ground_trophies_;
   // A surfaced recovery candidate remains recoverable across an instance

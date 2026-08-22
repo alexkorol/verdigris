@@ -1,0 +1,952 @@
+docs/product\WIZARD_ARCANE_LATTICE_REFERENCE.md:7:Pixel Alchemy falling-sand sandbox. It describes a connected path through a
+docs/product\WIZARD_ARCANE_LATTICE_REFERENCE.md:24:complete neighboring-stratum connectivity at Tier 2/Tesseract, with power and
+docs/product\WIZARD_ARCANE_LATTICE_REFERENCE.md:48:| Cartographer | Seeded deterministic instance/map generation | Content adapter; validate connectivity, spawns, collision, and route semantics against the native runtime. |
+docs/product\VERDIGRIS_FEATURE_CHECKLIST.md:19:- [ ] Worn equipment is reflected on the in-world character
+docs/product\VERDIGRIS_FEATURE_CHECKLIST.md:20:- [ ] Loose quest threads guide the player through the campaign
+docs/product\VERDIGRIS_FEATURE_CHECKLIST.md:22:## Houses
+docs/product\VERDIGRIS_FEATURE_CHECKLIST.md:45:- [ ] Completion once per House per season
+docs/product\VERDIGRIS_FEATURE_CHECKLIST.md:51:- [ ] Scarce equipment drops with more generous trophies and crafting
+docs/product\VERDIGRIS_FEATURE_CHECKLIST.md:56:- [ ] Respawn/permadeath system
+docs/product\VERDIGRIS_CONSTITUTION.md:23:choose a specific expedition goal
+docs/product\VERDIGRIS_CONSTITUTION.md:28:ΓåÆ extract value to the House
+docs/product\VERDIGRIS_CONSTITUTION.md:29:ΓåÆ craft, unlock, prepare, and grow the House
+docs/product\VERDIGRIS_CONSTITUTION.md:30:ΓåÆ continue or replace the current Scion
+docs/product\VERDIGRIS_CONSTITUTION.md:33:Players usually leave with a concrete goal (a trophy, material, route,
+docs/product\VERDIGRIS_CONSTITUTION.md:34:specialization, item family, or House upgrade), not a checklist quest.
+docs/product\VERDIGRIS_CONSTITUTION.md:38:- **Scion:** one mortal character with an individual level, freeform build,
+docs/product\VERDIGRIS_CONSTITUTION.md:39:  equipment, and expedition history. Scions may survive, retire, wait in
+docs/product\VERDIGRIS_CONSTITUTION.md:40:  reserve, or die; eventual death is expected.
+docs/product\VERDIGRIS_CONSTITUTION.md:41:- **House:** the persistent player identity: a lineage, tribe, political family,
+docs/product\VERDIGRIS_CONSTITUTION.md:43:  route knowledge, unlocks, relics, training, and future starting opportunities.
+docs/product\VERDIGRIS_CONSTITUTION.md:52:materials, relic components, and items. Unextracted value can be lost on death,
+docs/product\VERDIGRIS_CONSTITUTION.md:60:uncertainty. A successor does not receive a dead Scion's full inventory.
+docs/product\VERDIGRIS_CONSTITUTION.md:62:House crafting is a social/material process belonging to the House, not a
+docs/product\VERDIGRIS_CONSTITUTION.md:63:generic hideout bench. The House turns extracted value into durable advancement.
+docs/product\VERDIGRIS_CONSTITUTION.md:64:The intended House layer also includes meta-progression, passive income,
+docs/product\VERDIGRIS_CONSTITUTION.md:69:should leave records and influence future loot/spawn pools, creating a House
+docs/product\VERDIGRIS_CONSTITUTION.md:70:history that can outlive any one Scion. The first implementation may be a
+docs/product\VERDIGRIS_CONSTITUTION.md:76:The route from campaign start to endgame targets roughly 6ΓÇô30 hours depending
+docs/product\VERDIGRIS_CONSTITUTION.md:78:House per season; later Scions level without repeating the mandatory route.
+docs/product\VERDIGRIS_CONSTITUTION.md:81:league mechanics, routes, or starting opportunities. The repeatable endgame
+docs/product\VERDIGRIS_CONSTITUTION.md:82:lets the player choose areas, goals, mechanics, item targets, trophy targets,
+docs/product\VERDIGRIS_CONSTITUTION.md:89:defense, movement, attack speed, resistances, equipment, and effects. Human
+docs/product\VERDIGRIS_CONSTITUTION.md:90:enemies are differently built/equipped actors, not a second inflated universe.
+docs/product\VERDIGRIS_CONSTITUTION.md:91:Elite difficulty comes from level, build, equipment, actions, and support rather
+docs/product\VERDIGRIS_CONSTITUTION.md:104:equipment that is reflected by the in-world character, and loose quest threads
+docs/product\VERDIGRIS_CONSTITUTION.md:105:that guide campaign exploration without turning the durable loop into a rigid
+docs/product\VERDIGRIS_CONSTITUTION.md:114:pack spawning, rarity, uniques, scarce equipment drops, more generous trophies
+docs/product\VERDIGRIS_CONSTITUTION.md:127:items, extraction, or House systems. One tiny automated demonstration proves
+docs/product\VERDIGRIS_CONSTITUTION.md:149:  entrance/exit connectivity and spawn guarantees should be validated against
+docs/product\VERDIGRIS_CONSTITUTION.md:150:  Verdigris collision, route, and expedition rules before adoption.
+docs/product\VERDIGRIS_CONSTITUTION.md:164:presentation requests actions
+docs/product\VERDIGRIS_CONSTITUTION.md:170:The first implementation is intentionally small: House, Scion, shared actors,
+docs/product\VERDIGRIS_CONSTITUTION.md:171:movement, melee, one graph, one trophy, one generated item, pickup/equip,
+docs/product\VERDIGRIS_CONSTITUTION.md:172:extraction, death/loss, one relic candidate, one route unlock, and one seasonal
+docs/rebuild\VERDIGRIS_GAP_AUDIT.md:40:| Worn equipment reflected on the in-world character | Browser equipment/wear and item presentation are tested; native client has equipment state and billboard/capsule presentation | Browser covered; native visual reflection needs a D-115 play/capture check |
+docs/rebuild\VERDIGRIS_GAP_AUDIT.md:41:| Loose quest threads | Browser Aldwyn/quest chain is covered by `first-goal`, `quest`, and `session-arc`; native quest parity is N6 | Browser covered; native not yet evidenced |
+docs/rebuild\VERDIGRIS_GAP_AUDIT.md:43:## Houses and progression
+docs/rebuild\VERDIGRIS_GAP_AUDIT.md:47:| Meta-progression | House-owned routes, unlocks, renown/treasury browser paths, persistence, and native House state are tested | Covered in current slices |
+docs/rebuild\VERDIGRIS_GAP_AUDIT.md:50:| 6ΓÇô30 hour campaign range | Multizone route graph exists, but no accepted playable measurement for shortest/optional route duration | Not evidenced; OD-011/playable campaign measurement required |
+docs/rebuild\VERDIGRIS_GAP_AUDIT.md:64:| Multizone graph across acts | Browser world-web and native route/zone graph prove named routes, gates, stairs, and House-owned unlocks; N2 proves six zone payloads | Current slice covered; full native N6 parity remains |
+docs/rebuild\VERDIGRIS_GAP_AUDIT.md:66:| Once per House per season | Seasonal objective/reward extension exists, but reset/inheritance semantics are owner-only (OD-001) | Not evidenced as a final rule |
+docs/rebuild\VERDIGRIS_GAP_AUDIT.md:74:| Scarce equipment, generous trophies/materials | Browser loot/encounter/depth-loot gates and native item/trophy/relic paths | Current browser/native slices covered; full native payload parity and crafting-material economy remain |
+docs/rebuild\VERDIGRIS_GAP_AUDIT.md:80:| Respawn/permadeath | Browser soft respawn and opted-in hard/mortal Chronicles paths are tested; native death/successor/recovery is deterministic | Both lifecycle modes are evidenced; final product presentation still needs D-115/owner confirmation |
+docs/rebuild\VERDIGRIS_GAP_AUDIT.md:88:2. QUESTION-0009 records the N3 authority-bridge choice and the request for a
+docs/rebuild\VERDIGRIS_GAP_AUDIT.md:90:   items, N5 Chronicles, and N6 world-web/quests, each with the unchanged
+docs/rebuild\VERDIGRIS_GAP_AUDIT.md:103:authoritative combat updates, monster deaths, or loot pickup over the native
+docs/product\OPEN_DECISIONS.md:14:| OD-007 | What House crafting roles and economy exist? | Model durable stores/unlocks only; defer social roles, trade, and passive economy. |
+docs/product\OPEN_DECISIONS.md:15:| OD-008 | What successor starting opportunities are earned? | House route/specialization persistence is proven; exact loadouts and veteran lessons remain open. |
+docs/product\OPEN_DECISIONS.md:16:| OD-009 | What are the passive-income, async-trade, and currency-exchange rates and sinks? | Treat them as House-owned economy services; define caps, safety, and offline resolution in an economy pass. |
+docs/product\OPEN_DECISIONS.md:18:| OD-011 | What branch density produces the 6ΓÇô30 hour campaign range? | Keep a multizone, multi-act graph; measure the shortest route and optional branch depth in a playable campaign slice. |
+docs/product\OPEN_DECISIONS.md:19:| OD-012 | What risk and destination rules govern fast travel/town portals? | Add travel as a command/presentation seam first; decide extraction, encounter, and cost rules from playtests. |
+orchestration/benchmarks\side-by-side-2026-08-20\BENCHMARK.md:16:4. Panels/typography: expedition panel, guide banner, chat ΓÇö later.
+orchestration/benchmarks\side-by-side-2026-08-20\browser-scenes.mjs:20:  const browser = await chromium.launch({ headless: true });
+orchestration/benchmarks\side-by-side-2026-08-20\browser-scenes.mjs:31:    await shoot(page, '01-route-entrance');
+docs/rebuild\LEGACY_MATRIX.md:10:| Existing Chronicles House/Scion concept | REIMPLEMENT | Preserve the durable House/Scion loop in the native model. |
+docs/rebuild\LEGACY_MATRIX.md:16:| WIZARD Cartographer map generator | REIMPLEMENT | Intended seeded content adapter after native collision/route validation. |
+docs/rebuild\LEGACY_MATRIX.md:17:| Existing passive lattice | REFERENCE_ONLY | Do not bulk-port; native specialization is House-aware and open. |
+docs/rebuild\LEGACY_MATRIX.md:18:| Existing world-web routes | REIMPLEMENT | Keep graph ownership and Warden-gated progression as a small native proof. |
+docs/rebuild\LEGACY_MATRIX.md:39:| Curated Verdigris item bases (`server/core/data/items/verdigris.js`) | KEEP (as data) | Verdigris-era curated content; extract as data for native item specs, not as code. |
+docs/rebuild\LEGACY_MATRIX.md:42:| Monster catalogue/archetypes/rarities (`server/core/data/monsters/`, `server/core/monsters/`) | KEEP (as data) | Verdigris-era shared STR/DEX/INT curves and archetypes; extract as data respecting actor symmetry. |
+docs/rebuild\LEGACY_MATRIX.md:44:| World-web graph (`server/core/world-web.js`) and seeded instance recipes (`server/core/map.js`) | REIMPLEMENT | Deterministic hash/PRNG design carries; extract recipes as data. |
+docs/rebuild\SPRINTS.md:5:Constitution, open decisions, legacy matrix/denylist, canonical agent guide,
+docs/rebuild\SPRINTS.md:13:## Milestone C ΓÇö House/item/campaign loop
+docs/rebuild\SPRINTS.md:15:House and Scion persistence, extraction/death risk, item history/relic
+docs/rebuild\SPRINTS.md:17:Add the working House requirements: meta-progression, bounded Legends records,
+docs/rebuild\SPRINTS.md:24:enemy, one drop, pickup/equip, extraction, and compact House status.
+docs/rebuild\SPRINTS.md:33:consistent orb/skill-bar treatment, and equipment reflected on billboards.
+docs/rebuild\ADR-002-persistence-seam.md:4:(recorded as D-109): disconnects, quits, and crashes are FORGIVING ΓÇö
+docs/rebuild\ADR-002-persistence-seam.md:5:because the game has permadeath, connection loss must never cost a life
+docs/rebuild\ADR-002-persistence-seam.md:6:or items. On logout/disconnect/crash the Scion keeps everything carried
+docs/rebuild\ADR-002-persistence-seam.md:7:and is simply returned to town (the House) on next login; the expedition
+docs/rebuild\ADR-002-persistence-seam.md:9:Networked play must actively prevent disconnect deaths (on connection
+docs/rebuild\ADR-002-persistence-seam.md:21:death: House (name, standing-equivalents, routes/branches, stores,
+docs/rebuild\ADR-002-persistence-seam.md:22:relic pool, Legends record, lineage), the active Scion, and ΓÇö eventually ΓÇö
+docs/rebuild\ADR-002-persistence-seam.md:28:   account/House/Scion/relic/world-progress, with a bounded JSON fallback,
+docs/rebuild\ADR-002-persistence-seam.md:30:   evidence of the *shape* of durable House data ΓÇö reference only, not a
+docs/rebuild\ADR-002-persistence-seam.md:36:House/Scion state; command-log replay used for tests and debugging, not as
+docs/rebuild\ADR-002-persistence-seam.md:44:  mandatory; unknown-field tolerance mandatory) covering House, Scion,
+docs/rebuild\ADR-002-persistence-seam.md:45:  fallen Scions, Legends (bounded, so snapshots stay small), relic pool,
+docs/rebuild\ADR-002-persistence-seam.md:48:- Mid-instance state is NOT durable in v1: extraction risk means a crash
+docs/rebuild\ADR-002-persistence-seam.md:49:  or quit mid-expedition resolves conservatively (Scion returns to the
+docs/rebuild\ADR-002-persistence-seam.md:50:  House with nothing banked; carried-but-unextracted value is lost). This
+docs/rebuild\ADR-002-persistence-seam.md:53:- Storage backend in v1: one flat file per House (atomic write via
+docs/rebuild\ADR-002-persistence-seam.md:71:  with House age, every core change risks old-log compatibility, and log
+docs/rebuild\ADR-002-persistence-seam.md:80:  extraction risk).
+docs/rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:11:| Connect | launch | WS upgrade | WebSocketServer::handle_connection | 101 Switching Protocols | ConnectionState Connected | ConnectionEstablished event | Γ£à `native/tests/session_tests.cpp:121` ΓÇö `remote: connect + upgrade + login sent` |
+docs/rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:12:| Guest login | auto after connect | `player:login` {guestId, quickGuest} | handle_message login branch | `player:login` {player, scene} | uuid/x/y/facing/scene/inventory | SessionReady event | Γ£à `native/tests/session_tests.cpp:123` ΓÇö `remote: player:login acknowledged -> ready` |
+docs/rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:13:| Dead endpoint (negative) | launch vs dead port | TCP connect | ΓÇö | refused | ConnectionState Rejected (NO local fallback) | ConnectionLost event | Γ£à `native/tests/session_tests.cpp:105` ΓÇö `remote-negative: state is rejected, not a silent local fallback` |
+docs/rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:14:| Session replaced | second login same guest | ΓÇö | session-replacement flush | `player:session-replaced` | Disconnected | ConnectionLost event | Γ£à `native/tests/session_tests.cpp:405-406` ΓÇö `replaced: first session is disconnected`; `replaced: ConnectionLost from player:session-replaced` |
+docs/rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:15:| Zone entry | E / route select | `world:zone:enter` {nodeId} | handler exists | `world:scene:transition` | scene + stairs_up | scene name / stairs pad | Γ£à `native/tests/networking_tests.cpp:134-145` ΓÇö `solo entry emits a scene transition`; `state reports instance`; `both stairs exist` |
+docs/rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:21:| Enemy death | ΓÇö | ΓÇö | combat pipeline | `combat:hit` died | kills | death ring | Γ£à `native/tests/session_tests.cpp:244` ΓÇö `journey: enemy death reached the client` |
+docs/rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:24:| Equip | 1-9 | `item:equip` {item.uuid} | handler exists | `player:equippedAnItem` | equipped slot + item stats | equipped HUD | Γ£à `native/tests/networking_tests.cpp:402-412` ΓÇö `item:equip emits player:equippedAnItem`; `equip response includes wear-slot state`; `snapshot wear matches the equip response` |
+docs/rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:25:| Extraction | walk stairs-up | `player:move` onto stairs | stair transition | `player:extract` / surface message | extracted + town scene | banked banner | Γ£à `native/tests/session_tests.cpp:314-317` ΓÇö `walking onto stairs-up returns to the surface (extract)`; `ExtractionCompleted from surface message` |
+docs/rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:26:| Disconnect | quit / server kill | WS close frame | connection close | ΓÇö | Disconnected/Retrying | CONNECTION LOST banner | Γ£à `native/tests/session_tests.cpp:352-354` ΓÇö `reconnect: unexpected drop enters Retrying`; `reconnect: ConnectionLost is visible (no silent local fallback)` |
+docs/rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:27:| Reconnect | relaunch | login again | session reuse | restored session | full model | ΓÇö | Γ£à `native/tests/session_tests.cpp:365-368` ΓÇö `reconnect: Retrying then Ready after server restart`; `reconnect: same guest identity re-logged in`; `reconnect: login snapshot is authoritative` |
+docs/rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:28:| Persistence | relaunch after death | login | N5 persistence | persisted House | House state | ΓÇö | Γ¼£ Gap: N5 durable House/Scion restore envelope and client model coverage; owner family TASK-0056 (N5) |
+docs/rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:45:| House lifecycle | Found: `chronicles:house:found` {name} ΓåÆ `chronicles:state` {player.socket_id, chronicle{version,houses[{id,name,scions[],crypt[]}],activeHouseId,activeScionId}} (`ProtocolSession::handle` :2498-2508; builder `chronicles_state_payload` :2235-2241; `ensure_chronicle_house` :2242-2272). Alt existing mutate path: `player:chronicles:mutate` {type:"found-house", house.id, house.name} ΓåÆ `player:chronicles:update` {player.socket_id, chronicles, chroniclesRevision, chroniclesExists:true} (:2549-2572). Restore: `player:login` {guestId} ΓåÆ `chronicles:state`; `{awaitChronicles:true}` ΓåÆ `player:chronicles:ready` {player.socket_id, chroniclesAccountId, accountName, level, chronicles, chroniclesRevision, chroniclesExists} (:2655-2681; ready keys :2224-2234) | ≡ƒº⌐ | ≡ƒö┤ RED: no native test label |
+docs/rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:46:| Scion lifecycle | Create: `chronicles:scion:create` {houseId, name} ΓåÆ `chronicles:state` + `createdScionId` (:2509-2518; scion entry id/name/level/mortal/deaths via `ensure_chronicle_scion` :2273-2301). Select/admission: `player:chronicles:select` {scionId, houseId, scionName, mortal} ΓåÆ `player:login` {player(ΓÇª, player.chronicles{mortal,scionId,houseId} :582-591), scene, droppedItems[]} via `emit_login`/`login_payload` (:2632-2654, :2302, :593-595); resets commission chain + purse (:2643-2649). Set-out: `chronicles:scion:set-out` {scionId} ΓåÆ `player:login` (+ one-shot `game:send:message` daily road-purse notice :2530-2534; once-per-scion starter kit :2537-2543; wagon-pitch town reset :2544-2546) | ≡ƒº⌐ | ≡ƒö┤ RED: no native test label |
+docs/rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:47:| Death | Server-initiated fatal fall (no client request): lethal wound with mortal oath armed (`process_combat` trigger :2111-2114) ΓåÆ `ProtocolSession::handle_final_death` :2128-2207 emits `chronicles:scion-fallen` {fallen{scionId|null,name,level}, relicCount, chronicle} (:2190); broadcasts `chronicles:scion-witnessed` {fallen.name, relicCount} (:2191-2198); direct `player:stats:update` {playerId, lifecycle{state:"permadead",mode:"hard"}} (:2199-2206). Fallen scion moves houses[].scions[] ΓåÆ houses[].crypt[] with relic{status:"lost",count} (:2147-2176); earned gear enters the circulation pool (:2133-2146) | ≡ƒº⌐ | ≡ƒö┤ RED: no native test label |
+docs/rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:49:| Persistence | In-process session reuse proven: new socket same identity re-login restores account state incl. chronicle_ within a live server (`reset_world_for_new_socket` :538-579; permadead deliberately not resurrected :554-562); generic reconnect labels exist (session_tests.cpp:409-411, 423-425) but zero assert chronicle content. Explicit RED gaps: no quit/logout envelope exists (transport WS close only; only "quit" token is the server console command, server_main.cpp:30) and no durable cross-process store exists (`rg 'ofstream|ifstream|fopen|fwrite' native/src` ΓåÆ no matches), so a server restart loses Houses/Scions/crypt state | Γ¼£ RED: durable restore envelope + end-to-end test missing | Durable leg unrouted (candidate successor of TASK-0097 persistence audit); client tests TASK-0077 |
+docs/rebuild\NATIVE_PRODUCT_CONVERGENCE.md:6:the owner launches ran a private local simulation and never spoke to
+docs/rebuild\NATIVE_PRODUCT_CONVERGENCE.md:39:silently falls back to local (visible connection states: connecting /
+docs/rebuild\NATIVE_PRODUCT_CONVERGENCE.md:40:connected / ready / disconnected / retrying / rejected / protocol
+docs/rebuild\NATIVE_PRODUCT_CONVERGENCE.md:53:ΓåÆ start client ΓåÆ visibly connect ΓåÆ guest login ΓåÆ enter route ΓåÆ move +
+docs/rebuild\NATIVE_PRODUCT_CONVERGENCE.md:56:item ΓåÆ equip it ΓåÆ see the authoritative stat/behavior change ΓåÆ extract
+docs/rebuild\NATIVE_PRODUCT_CONVERGENCE.md:63:Create/select House ΓåÆ create Scion (optional mortal oath) ΓåÆ expedition
+docs/rebuild\NATIVE_PRODUCT_CONVERGENCE.md:65:crypt/relic/recovery ΓåÆ quit ΓåÆ relaunch ΓåÆ reconnect ΓåÆ persisted House
+docs/rebuild\NATIVE_PRODUCT_CONVERGENCE.md:70:Route choice made on concrete info: goal, boss/danger, expected
+docs/rebuild\NATIVE_PRODUCT_CONVERGENCE.md:72:extraction/return condition. A route name alone fails.
+docs/rebuild\NATIVE_PRODUCT_CONVERGENCE.md:85:ΓåÆ automated test, for: connect, login, initial state, zone entry,
+docs/rebuild\NATIVE_PRODUCT_CONVERGENCE.md:86:movement, aiming, primary/secondary action, telegraph, damage, death,
+docs/rebuild\NATIVE_PRODUCT_CONVERGENCE.md:87:drop, pickup, inventory, equip, extraction, disconnect, reconnect,
+docs/rebuild\NATIVE_PRODUCT_CONVERGENCE.md:95:list, exit codes). Post-N5: reconnect + persistence restore.
+docs/rebuild\RECONSTITUTION_STATUS.md:24:- Brands & Bonds / inventory: live item identity, equipment, and inventory
+docs/rebuild\RECONSTITUTION_STATUS.md:28:  route validation.
+docs/rebuild\RECONSTITUTION_STATUS.md:102:  (123 files / 788 tests); focused recovery rerun (`first-goal`,
+docs/rebuild\RECONSTITUTION_STATUS.md:103:  `house-treasury`, `mortality`, `party-stories`, `persistence`, `quest`,
+docs/rebuild\RECONSTITUTION_STATUS.md:105:  reported 16/31 after a `first-goal` timeout and subsequent server cascade;
+docs/rebuild\RECONSTITUTION_STATUS.md:132:  denylist/core/networking/client gate and the literal House/trophies/items
+docs/rebuild\HANDOFF.md:15:- Initial one-at-a-time route: TASK-0081 Gate B wire-contract freeze. The
+docs/rebuild\HANDOFF.md:37:## 2026-08-20 ΓÇö TASK-0069 remote reconnect/retry (cursor, REVIEW_REQUESTED)
+docs/rebuild\HANDOFF.md:39:- Worker `codex/TASK-0069-remote-reconnect-cursor` off `1f45eb33`. Unexpected
+docs/rebuild\HANDOFF.md:42:  terminal `Disconnected`.
+docs/rebuild\HANDOFF.md:43:- Gates: `build.ps1 -RunTests` green (reconnect resume + replaced no-retry).
+docs/rebuild\HANDOFF.md:55:- Play: N enters tin route (E is Sweep); X take-underfoot; walk stairs to
+docs/rebuild\HANDOFF.md:56:  extract. Monster/loot positions are inferred until 0063 snapshots.
+docs/rebuild\HANDOFF.md:67:  questions, and current gate evidence.
+docs/rebuild\HANDOFF.md:81:  ("Founding of a House"): serve the folder statically and open
+docs/rebuild\HANDOFF.md:83:  founding presentation questions and has no architectural authority.
+docs/rebuild\HANDOFF.md:95:  ground grid and extraction pad, billboard actors with enemy life bars,
+docs/rebuild\HANDOFF.md:97:  effects (swing arcs, impact flashes, death rings, dust, loot sparkles),
+docs/rebuild\HANDOFF.md:100:  the legacy denylist gate pass, `--headless` completes the extraction loop,
+docs/rebuild\HANDOFF.md:102:  PrintWindow captures) shows the fight, drops, route unlocks, and extraction
+docs/rebuild\HANDOFF.md:113:  simulation. It proves House and Scion creation, shared player/monster stats,
+docs/rebuild\HANDOFF.md:114:  movement, melee, damage/death, generated item and trophy drops, pickup/equip,
+docs/rebuild\HANDOFF.md:115:  extraction, loss and relic candidacy, House-owned route/branch progression,
+docs/rebuild\HANDOFF.md:118:  placeholder-shape window with WASD, mouse actions, Space dash, pickup/equip,
+docs/rebuild\HANDOFF.md:119:  and extraction controls; `--headless` provides a self-terminating smoke run.
+docs/rebuild\HANDOFF.md:120:- The core test executable covers the eleven requested architectural behaviors.
+docs/rebuild\HANDOFF.md:132:  with economy, Legends, branch-length, travel-risk, and UI-setting questions
+docs/rebuild\HANDOFF.md:175:- The requested authority choice and task issuance are tracked in
+docs/rebuild\HANDOFF.md:176:  [`QUESTION-0009`](../../orchestration/questions/QUESTION-0009-native-n3-authority-bridge.md);
+docs/rebuild\HANDOFF.md:252:  while loot/levels/bank/tree/quest-record persist; permadeath
+docs/rebuild\HANDOFF.md:253:  survives reconnect; the commission chain resets on scion admission
+docs/rebuild\HANDOFF.md:254:  only. Two quest-point counters exist on purpose: quests.questPoints
+docs/rebuild\HANDOFF.md:255:  (persistent chain record) vs top-level questPoints (live tree
+docs/rebuild\HANDOFF.md:257:- WebSocketServer::stop() now joins per-connection reader threads.
+docs/rebuild\CLAUDE_DEMO_ASSET_INTAKE.md:34:- `10_23_03 PM (4)`: equipment and clothing atlas.
+docs/rebuild\CLAUDE_DEMO_ASSET_INTAKE.md:50:3. Native snapshots/events expose semantic roles (tree, dwelling, Scion, and
+docs/rebuild\DELAFORD_COVERAGE_MATRIX.md:12:| Inventory / character wear | Covered | Inventory, equipment, persistence, and current playtest gates. |
+docs/rebuild\DELAFORD_COVERAGE_MATRIX.md:13:| First quest | Covered | `first-goal`, `quest`, and full playtest campaign checks. |
+docs/rebuild\DELAFORD_COVERAGE_MATRIX.md:14:| Inventory / quests / chat / wear UI | Covered in browser reference | Focused UI tests and full playtest; presentation remains browser-track evidence, not native-core authority. |
+docs/rebuild\DELAFORD_COVERAGE_MATRIX.md:16:| NPC dialog interaction | Covered for current campaign path | Aldwyn Talk interactions and quest progression are exercised; general dialog authoring is not a separate native system. |
+docs/rebuild\N3_PARITY_IMPLEMENTATION_BRIEF.md:15:| `dev:state` | `{ requestId }` | Snapshot projection containing player, live monsters, effects, combat state, ground items, and recent event-derived state |
+docs/rebuild\N3_PARITY_IMPLEMENTATION_BRIEF.md:42:- `Command::{move, aim, action_use, pick_up, equip}`
+docs/rebuild\N3_PARITY_IMPLEMENTATION_BRIEF.md:54:The review-requested N2 implementation has also been replayed on the current
+docs/rebuild\N3_PARITY_IMPLEMENTATION_BRIEF.md:72:- The native `Simulation` already has shared actor actions, damage/death
+docs/rebuild\N3_PARITY_IMPLEMENTATION_BRIEF.md:102:   and a `combat:hit` death event.
+docs/rebuild\PARITY_ROADMAP.md:23:  skills, death/relics per D-106, persistence per D-109) with tests.
+docs/rebuild\PARITY_ROADMAP.md:47:  data (LEGACY_MATRIX KEEP-as-data), equip/pickup. Green: item and
+docs/rebuild\PARITY_ROADMAP.md:49:- **N5. Chronicles**: House/Scion lifecycle, D-106 death, relics,
+docs/rebuild\PARITY_ROADMAP.md:52:- **N6. World-web + quests**: route graph, Wardens, quest state.
+docs/rebuild\PARITY_ROADMAP.md:53:  Green: `world-web`, `quest`, remaining matrix ΓÇö FULL **SERVER**
+native/tests\camera2d_tests.cpp:61://    error at any zoom.
+native/tests\camera2d_tests.cpp:70:    const double tol = 1.0 / zoom;  // one pixel of world error
+native/client\client_model.hpp:73:// Houses, Scions, oaths, or relics on its own.
+native/client\client_model.hpp:74:struct ClientScionEntry {
+native/client\client_model.hpp:90:struct ClientHouseEntry {
+native/client\client_model.hpp:93:  std::vector<ClientScionEntry> scions;
+native/client\client_model.hpp:97:struct ClientFallenScion {
+native/client\client_model.hpp:107:  std::vector<ClientHouseEntry> houses;
+native/client\client_model.hpp:110:  ClientFallenScion fallen;  // most recent fatal fall, empty until one occurs
+native/client\client_model.hpp:113:const ClientHouseEntry* find_chronicle_house(const ClientChronicle& chronicle,
+native/client\client_model.hpp:115:const ClientScionEntry* find_chronicle_scion(const ClientChronicle& chronicle,
+native/client\client_model.hpp:123:  ClientItemSlot equipped;
+native/client\client_model.hpp:133:  bool extracted = false;
+native/client\client_model.hpp:136:  // (player:login) lands ΓÇö the owner is pre-game on this connection.
+native/client\client_model.hpp:142:inline const ClientHouseEntry* find_chronicle_house(const ClientChronicle& chronicle,
+native/client\client_model.hpp:149:inline const ClientScionEntry* find_chronicle_scion(const ClientChronicle& chronicle,
+native/tests\core_tests.cpp:26:  // changing arena scale cannot leave extraction tests stranded out of reach.
+native/tests\core_tests.cpp:49:      // Fresh duel, fresh Scion: each warden is fought from full life so a
+native/tests\core_tests.cpp:68:  check(!sim.ground_items().empty(), "enemy drops an equipment item");
+native/tests\core_tests.cpp:76:void extract_from_start(Simulation& sim) {
+native/tests\core_tests.cpp:79:    if (!player || (player->position.x == sim.instance().extraction_point.x &&
+native/tests\core_tests.cpp:80:                    player->position.y == sim.instance().extraction_point.y))
+native/tests\core_tests.cpp:84:  sim.dispatch(Command::extract());
+native/tests\core_tests.cpp:101:                     legend.route_id + ":" + (legend.founding ? "founding" : "ordinary"));
+native/tests\core_tests.cpp:152:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:220:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:250:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:274:  first.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:275:  second.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:307:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:325:      Command::enter("route:tin:1:0"), Command::move(-1, 1), Command::aim(-1, 0),
+native/tests\core_tests.cpp:343:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:476:void test_elite_telegraph_cancels_on_death() {
+native/tests\core_tests.cpp:477:  Simulation monster_death(0xA015ULL);
+native/tests\core_tests.cpp:478:   Actor* elite = setup_elite(monster_death, {world_scale::kMeleeRange + 1, 0});
+native/tests\core_tests.cpp:480:  monster_death.dispatch(Command::action_use(ActionType::Wait));
+native/tests\core_tests.cpp:481:  elite = monster_death.actor(elite_id);
+native/tests\core_tests.cpp:483:  Actor* player = monster_death.actor(monster_death.scion().actor_id);
+native/tests\core_tests.cpp:486:  monster_death.dispatch(Command::action_use(ActionType::Thrust));
+native/tests\core_tests.cpp:487:  elite = monster_death.actor(elite_id);
+native/tests\core_tests.cpp:490:        "monster death cancels its pending telegraphed action");
+native/tests\core_tests.cpp:491:  bool monster_death_damaged_player = false;
+native/tests\core_tests.cpp:492:  for (const auto& event : monster_death.events()) {
+native/tests\core_tests.cpp:494:        event.actor_id == monster_death.scion().actor_id) {
+native/tests\core_tests.cpp:495:      monster_death_damaged_player = true;
+native/tests\core_tests.cpp:498:  check(!monster_death_damaged_player,
+native/tests\core_tests.cpp:501:  Simulation target_death(0xA016ULL);
+native/tests\core_tests.cpp:502:   elite = setup_elite(target_death, {world_scale::kMeleeRange + 1, 0});
+native/tests\core_tests.cpp:504:  target_death.dispatch(Command::action_use(ActionType::Wait));
+native/tests\core_tests.cpp:505:  target_death.dispatch(Command::interact("hazard:death"));
+native/tests\core_tests.cpp:506:  elite = target_death.actor(target_elite_id);
+native/tests\core_tests.cpp:507:  check(!target_death.scion().alive && elite->pending_action == ActionType::Wait &&
+native/tests\core_tests.cpp:509:        "target death cancels every pending elite action");
+native/tests\core_tests.cpp:510:  check(count_events(target_death, EventType::DamageApplied, "thrust") == 0,
+native/tests\core_tests.cpp:560:    sim->dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:601:void force_relic_resurface(Simulation& sim, const std::string& route,
+native/tests\core_tests.cpp:613:    sim.dispatch(Command::enter(route));
+native/tests\core_tests.cpp:619:      sim.dispatch(Command::interact("hazard:death"));
+native/tests\core_tests.cpp:635:void force_trophy_resurface(Simulation& sim, const std::string& route,
+native/tests\core_tests.cpp:643:    sim.dispatch(Command::enter(route));
+native/tests\core_tests.cpp:663:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:667:  sim.dispatch(Command::interact("hazard:death"));
+native/tests\core_tests.cpp:668:  check(sim.house().relic_candidates.size() == 1, "death registers one relic candidate");
+native/tests\core_tests.cpp:671:  force_relic_resurface(sim, "route:tin:1:0");
+native/tests\core_tests.cpp:681:                "resurfaced on route route:tin:1:0",
+native/tests\core_tests.cpp:682:        "resurfacing appends a route history line");
+native/tests\core_tests.cpp:686:        event.text == "route:tin:1:0") {
+native/tests\core_tests.cpp:691:  check(saw_resurfaced_event, "resurfacing emits the named event with item and route");
+native/tests\core_tests.cpp:698:  extract_from_start(sim);
+native/tests\core_tests.cpp:700:        "resurfaced relic extracts into House storage");
+native/tests\core_tests.cpp:701:  check(find_legend(sim, "relic_extracted") != nullptr,
+native/tests\core_tests.cpp:702:        "extraction records the existing relic legend");
+native/tests\core_tests.cpp:704:        "pickup history is preserved through extraction");
+native/tests\core_tests.cpp:709:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:713:  sim.dispatch(Command::interact("hazard:death"));
+native/tests\core_tests.cpp:715:  force_relic_resurface(sim, "route:tin:1:0");
+native/tests\core_tests.cpp:718:  sim.dispatch(Command::interact("hazard:death"));
+native/tests\core_tests.cpp:725:            "lost at route:tin:1:0, awaiting recovery",
+native/tests\core_tests.cpp:726:        "pack relic death records its route recovery history line");
+native/tests\core_tests.cpp:732:  first.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:733:  second.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:740:  first.dispatch(Command::interact("hazard:death"));
+native/tests\core_tests.cpp:741:  second.dispatch(Command::interact("hazard:death"));
+native/tests\core_tests.cpp:744:  force_relic_resurface(first, "route:tin:1:0");
+native/tests\core_tests.cpp:745:  force_relic_resurface(second, "route:tin:1:0");
+native/tests\core_tests.cpp:756:  Simulation original(0x0030ULL, "House of Round-Trip");
+native/tests\core_tests.cpp:757:  original.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:760:  original.dispatch(Command::equip(original.scion().carried_items.front().id));
+native/tests\core_tests.cpp:780:  mid_instance.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:790:        "D-109 restore returns the Scion to the House and drops floor state");
+native/tests\core_tests.cpp:796:  restored.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:797:  check(restored.instance().active, "a restored Scion can enter a fresh instance");
+native/tests\core_tests.cpp:799:  // Start from an extracted (non-instance) boundary so both simulations have
+native/tests\core_tests.cpp:804:  baseline.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:807:  extract_from_start(baseline);
+native/tests\core_tests.cpp:809:  baseline.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:810:  replay.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:823:  source.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:828:  source.dispatch(Command::interact("hazard:death"));
+native/tests\core_tests.cpp:831:        "recovery setup places the carried item in House relic_candidates");
+native/tests\core_tests.cpp:834:        "recovery setup places the carried trophy in House lost_trophies");
+native/tests\core_tests.cpp:849:  source.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:852:  source.dispatch(Command::interact("hazard:death"));
+native/tests\core_tests.cpp:860:  force_relic_resurface(source, "route:tin:1:0");
+native/tests\core_tests.cpp:861:  force_trophy_resurface(source, "route:tin:1:0", trophy_id);
+native/tests\core_tests.cpp:866:        "surfaced candidates leave House pools while borrowed by the instance");
+native/tests\core_tests.cpp:872:  restored.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:890:        "atomic persistence adapter replaces an existing House snapshot");
+native/tests\core_tests.cpp:897:  first.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:898:  second.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:912:  extract_from_start(first);
+native/tests\core_tests.cpp:913:  extract_from_start(second);
+native/tests\core_tests.cpp:919:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:980:  Simulation extracted(0x2501ULL);
+native/tests\core_tests.cpp:981:  extracted.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:982:  defeat_enemy(extracted);
+native/tests\core_tests.cpp:983:  const std::string extracted_item = extracted.ground_items().front().id;
+native/tests\core_tests.cpp:984:  const std::string extracted_trophy = extracted.ground_trophies().front().id;
+native/tests\core_tests.cpp:985:  extract_from_start(extracted);
+native/tests\core_tests.cpp:986:  check(!extracted.instance().active && extracted.ground_items().empty() &&
+native/tests\core_tests.cpp:987:            extracted.ground_trophies().empty(),
+native/tests\core_tests.cpp:988:        "extraction retires all uncollected floor value");
+native/tests\core_tests.cpp:989:  const int pickup_events_before = count_events(extracted, EventType::ItemPickedUp) +
+native/tests\core_tests.cpp:990:                                   count_events(extracted, EventType::TrophyPickedUp);
+native/tests\core_tests.cpp:991:  extracted.dispatch(Command::pick_up(extracted_item));
+native/tests\core_tests.cpp:992:  extracted.dispatch(Command::pick_up(extracted_trophy));
+native/tests\core_tests.cpp:993:  check(extracted.scion().carried_items.empty() && extracted.scion().carried_trophies.empty() &&
+native/tests\core_tests.cpp:994:            count_events(extracted, EventType::ItemPickedUp) +
+native/tests\core_tests.cpp:995:                    count_events(extracted, EventType::TrophyPickedUp) ==
+native/tests\core_tests.cpp:997:        "post-extraction pickup is rejected at the inactive-instance boundary");
+native/tests\core_tests.cpp:999:  Simulation cross_route(0x2502ULL);
+native/tests\core_tests.cpp:1000:  cross_route.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1001:  defeat_enemy(cross_route);
+native/tests\core_tests.cpp:1002:  const std::string stale_item = cross_route.ground_items().front().id;
+native/tests\core_tests.cpp:1003:  cross_route.dispatch(Command::enter("route:tin:2:0"));
+native/tests\core_tests.cpp:1004:  cross_route.dispatch(Command::pick_up(stale_item));
+native/tests\core_tests.cpp:1005:  check(cross_route.instance().route_id == "route:tin:2:0" &&
+native/tests\core_tests.cpp:1006:            cross_route.scion().carried_items.empty(),
+native/tests\core_tests.cpp:1007:        "cross-route stale pickup is rejected after the previous instance retires");
+native/tests\core_tests.cpp:1010:  reentry.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1014:  reentry.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1022:        "leftover floor value does not survive same-route re-entry");
+native/tests\core_tests.cpp:1029:void test_death_retires_floor_without_double_registering_relics() {
+native/tests\core_tests.cpp:1031:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1036:  sim.dispatch(Command::interact("hazard:death"));
+native/tests\core_tests.cpp:1038:        "death retires uncollected floor value");
+native/tests\core_tests.cpp:1041:        "carried death value registers in the relic pool exactly once");
+native/tests\core_tests.cpp:1047:        "floor trophies are lost without being mistaken for carried death value");
+native/tests\core_tests.cpp:1052:    sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1082:    // Bring the warden into the Scion's reach instead of moving the Scion:
+native/tests\core_tests.cpp:1083:    // the scripted Scion stays on its origin-aligned approach line so the
+native/tests\core_tests.cpp:1084:    // shared extraction helper still walks home exactly.
+native/tests\core_tests.cpp:1101:  check(!first.house().route_cleared("route:tin:1:0") &&
+native/tests\core_tests.cpp:1102:            !first.house().route_unlocked("route:tin:2:0") &&
+native/tests\core_tests.cpp:1104:        "first pack kill does not clear the route or campaign");
+native/tests\core_tests.cpp:1127:  check(!first.house().route_cleared("route:tin:1:0") &&
+native/tests\core_tests.cpp:1128:            !first.house().route_unlocked("route:tin:2:0") &&
+native/tests\core_tests.cpp:1130:        "a living flanker keeps the route uncleared");
+native/tests\core_tests.cpp:1138:  check(first.house().route_cleared("route:tin:1:0") &&
+native/tests\core_tests.cpp:1139:            first.house().route_unlocked("route:tin:2:0") && first.house().campaign_complete,
+native/tests\core_tests.cpp:1140:        "last pack kill clears the route and completes campaign progression");
+native/tests\core_tests.cpp:1146:        "pack rewards remain per-kill after delayed route clear");
+native/tests\core_tests.cpp:1158:            first.house().cleared_routes == second.house().cleared_routes &&
+native/tests\core_tests.cpp:1168:    sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1171:          "entering a route opens the authoritative slay objective");
+native/tests\core_tests.cpp:1214:    // brought into reach so the Scion never leaves its approach line.
+native/tests\core_tests.cpp:1237:          "the last kill flips the objective to extraction");
+native/tests\core_tests.cpp:1239:    check(transition && transition->text == "extract-carried-value" &&
+native/tests\core_tests.cpp:1244:    extract_from_start(sim);
+native/tests\core_tests.cpp:1245:    check(!sim.instance().active, "extraction closes the expedition");
+native/tests\core_tests.cpp:1258:  replay_a.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1264:  // The phase is telemetry, not a gate: extraction rules are unchanged.
+native/tests\core_tests.cpp:1266:  ungated.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1269:  ungated.dispatch(Command::extract());
+native/tests\core_tests.cpp:1271:        "extraction remains available without a phase gate");
+native/tests\core_tests.cpp:1278:    sim->dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1306:  other.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1320:    sim->dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1326:    extract_from_start(*sim);
+native/tests\core_tests.cpp:1330:  check(first.house().cleared_routes == second.house().cleared_routes &&
+native/tests\core_tests.cpp:1336:void test_first_expedition_wave_death_recovery_interaction() {
+native/tests\core_tests.cpp:1338:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1359:  sim.dispatch(Command::interact("hazard:death"));
+native/tests\core_tests.cpp:1360:  check(!sim.scion().alive, "a mid-wave Scion death ends the expedition");
+native/tests\core_tests.cpp:1374:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1398:void test_extraction() {
+native/tests\core_tests.cpp:1400:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1403:  extract_from_start(sim);
+native/tests\core_tests.cpp:1404:  check(!sim.instance().active, "extraction closes the instance");
+native/tests\core_tests.cpp:1405:  check(sim.house().stored_trophies.size() == 1, "extracted trophy enters durable House storage");
+native/tests\core_tests.cpp:1406:  check(sim.house().stored_items.size() == 1, "extracted item enters durable House storage");
+native/tests\core_tests.cpp:1407:  check(sim.scion().carried_trophies.empty(), "extracted trophy leaves the Scion");
+native/tests\core_tests.cpp:1410:void test_death_and_successor() {
+native/tests\core_tests.cpp:1412:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1416:  const std::string route = "route:tin:2:0";
+native/tests\core_tests.cpp:1417:  sim.dispatch(Command::interact("hazard:death"));
+native/tests\core_tests.cpp:1418:  check(!sim.scion().alive, "Scion dies in the expedition");
+native/tests\core_tests.cpp:1419:  check(sim.house().stored_trophies.empty(), "unextracted trophy is not durable House storage");
+native/tests\core_tests.cpp:1421:        "unextracted trophy enters the recoverable pool");
+native/tests\core_tests.cpp:1424:  check(sim.house().route_unlocked(route), "House route progress survives Scion death");
+native/tests\core_tests.cpp:1426:  sim.create_successor("Second Scion");
+native/tests\core_tests.cpp:1429:        "successor does not inherit the dead Scion's full progression");
+native/tests\core_tests.cpp:1430:  check(sim.fallen_scions().size() == 1, "dead Scion remains in House history");
+native/tests\core_tests.cpp:1431:  const LegendEntry* death = find_legend(sim, "scion_death");
+native/tests\core_tests.cpp:1432:  check(death && death->scion_id == old_scion, "death legend retains the fallen Scion identity");
+native/tests\core_tests.cpp:1433:  check(death->killer_id == "hazard:death" && death->route_id == "route:tin:1:0",
+native/tests\core_tests.cpp:1434:        "death legend records a stable killer and route");
+native/tests\core_tests.cpp:1436:        "death legend records the relic candidate transition");
+native/tests\core_tests.cpp:1438:        "successor creation is retained in the shared House history");
+native/tests\core_tests.cpp:1443:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1446:  const std::string equipped_id = sim.scion().carried_items.front().id;
+native/tests\core_tests.cpp:1448:  sim.dispatch(Command::equip(equipped_id));
+native/tests\core_tests.cpp:1451:  // the first pair remains carried by the same Scion.
+native/tests\core_tests.cpp:1453:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1461:  sim.dispatch(Command::interact("hazard:death"));
+native/tests\core_tests.cpp:1463:        "death clears the fallen Scion inventory without deleting its contents");
+native/tests\core_tests.cpp:1465:        "death does not bypass extraction into durable House storage");
+native/tests\core_tests.cpp:1468:  check(sim.house().relic_candidates[0].id == equipped_id &&
+native/tests\core_tests.cpp:1471:  check(sim.house().relic_candidates[0].history.back() == "registered after Scion death",
+native/tests\core_tests.cpp:1472:        "equipped item retains the established death registration history");
+native/tests\core_tests.cpp:1474:            "lost at route:tin:1:0, awaiting recovery",
+native/tests\core_tests.cpp:1475:        "pack item receives an equivalent route recovery history");
+native/tests\core_tests.cpp:1481:        "death itself does not prematurely resurface a trophy");
+native/tests\core_tests.cpp:1483:        "trophy recovery transitions are recorded in the House legend");
+native/tests\core_tests.cpp:1494:    sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1498:    sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1501:    sim.dispatch(Command::interact("hazard:death"));
+native/tests\core_tests.cpp:1511:  force_relic_resurface(first, "route:tin:1:0", first_item);
+native/tests\core_tests.cpp:1512:  force_trophy_resurface(first, "route:tin:1:0", first_trophy);
+native/tests\core_tests.cpp:1524:    force_relic_resurface(first, "route:tin:1:0", second_item);
+native/tests\core_tests.cpp:1528:            recovered_pack->history.back() == "resurfaced on route route:tin:1:0",
+native/tests\core_tests.cpp:1537:    force_trophy_resurface(first, "route:tin:1:0", first.house().lost_trophies.front().id);
+native/tests\core_tests.cpp:1545:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1549:  sim.dispatch(Command::equip(item_id));
+native/tests\core_tests.cpp:1550:  check(sim.scion().carried_items.front().equipped, "equip marks the carried item equipped");
+native/tests\core_tests.cpp:1553:    check(player && player->equipped_item_id && *player->equipped_item_id == item_id,
+native/tests\core_tests.cpp:1554:          "equip sets the actor's equipped reference");
+native/tests\core_tests.cpp:1557:  check(sim.scion().carried_items.front().id == item_id, "pickup/equip/use preserve item identity");
+native/tests\core_tests.cpp:1559:  sim.dispatch(Command::unequip());
+native/tests\core_tests.cpp:1560:  check(!sim.scion().carried_items.front().equipped, "unequip clears the carried item's equipped flag");
+native/tests\core_tests.cpp:1563:    check(player && !player->equipped_item_id.has_value(), "unequip clears the actor's equipped reference");
+native/tests\core_tests.cpp:1567:        "optional branch grants a House access unlock, not a rigid character class");
+native/tests\core_tests.cpp:1574:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1578:  check(sim.house().seasonal_rewards.size() == 1, "external mechanic feeds a distinct reward to the House");
+native/tests\core_tests.cpp:1579:  check(sim.house().route_cleared("route:tin:1:0"), "campaign graph ownership is House-level");
+native/tests\core_tests.cpp:1581:  check(sim.house().specializations.size() == 1, "optional branch grants a House specialization");
+native/tests\core_tests.cpp:1582:  check(sim.house().route_unlocked("route:tin:2:0"), "clearing a route unlocks its child");
+native/tests\core_tests.cpp:1587:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1589:  sim.dispatch(Command::enter("route:tin:2:0"));
+native/tests\core_tests.cpp:1602:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1604:  const LegendEntry* route = find_legend(sim, "route_cleared");
+native/tests\core_tests.cpp:1605:  const LegendEntry* unlock = find_legend(sim, "route_unlocked");
+native/tests\core_tests.cpp:1607:  check(route && route->subject == "route:tin:1:0", "first route clear records its stable route id");
+native/tests\core_tests.cpp:1608:  check(unlock && unlock->subject == "route:tin:2:0", "route unlock records its stable route id");
+native/tests\core_tests.cpp:1619:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1621:  sim.dispatch(Command::enter("route:tin:2:0"));
+native/tests\core_tests.cpp:1624:  // now carries elite kills from both routes; this proof targets the deep
+native/tests\core_tests.cpp:1625:  // route's recorded kill.
+native/tests\core_tests.cpp:1628:    if (candidate.kind == "elite_kill" && candidate.route_id == "route:tin:2:0") {
+native/tests\core_tests.cpp:1633:  check(elite != nullptr, "elite kill records the route");
+native/tests\core_tests.cpp:1648:  sim.dispatch(Command::enter("route:tin:1:0"));
+native/tests\core_tests.cpp:1654:    sim.dispatch(Command::interact("hazard:death"));
+native/tests\core_tests.cpp:1671:      Command::enter("route:tin:1:0"), Command::move(1, 0), Command::move(1, 0),
+native/tests\core_tests.cpp:1686:          "legend records retain the Scion identity");
+native/tests\core_tests.cpp:1687:    if (legend.kind == "route_cleared") {
+native/tests\core_tests.cpp:1688:      check(legend.subject.rfind("route:", 0) == 0, "route legend uses a stable route id");
+native/tests\core_tests.cpp:1706:        "D-114 extraction interaction derives from walking ticks");
+native/tests\core_tests.cpp:1951:  check(!wear.equip(*first, wear.resolve_seat("ring")).has_value(), "N4 empty seat equips without swap");
+native/tests\core_tests.cpp:1953:  wear.equip(*second, wear.resolve_seat("ring"));
+native/tests\core_tests.cpp:1957:  auto displaced = wear.equip(*third, wear.resolve_seat("ring"));
+native/tests\core_tests.cpp:1961:  auto removed = wear.unequip("ring");
+native/tests\core_tests.cpp:1962:  check(removed && removed->id == "ring" && wear.in_seat("ring") == nullptr, "N4 unequip frees the seat");
+native/tests\core_tests.cpp:1970:    item.equip_slot = seat;
+native/tests\core_tests.cpp:1979:  loaded.equip(make_mod_item(big, "head"), "head");
+native/tests\core_tests.cpp:1980:  loaded.equip(make_mod_item(big, "feet"), "feet");
+native/tests\core_tests.cpp:2092:  test_elite_telegraph_cancels_on_death();
+native/tests\core_tests.cpp:2098:  test_death_retires_floor_without_double_registering_relics();
+native/tests\core_tests.cpp:2103:  test_first_expedition_wave_death_recovery_interaction();
+native/tests\core_tests.cpp:2104:  test_extraction();
+native/tests\core_tests.cpp:2105:  test_death_and_successor();
+native/client\local_session.cpp:5:const char* connection_state_label(ConnectionState state) {
+native/client\local_session.cpp:8:    case ConnectionState::Connecting: return "connecting";
+native/client\local_session.cpp:9:    case ConnectionState::Connected: return "connected";
+native/client\local_session.cpp:11:    case ConnectionState::Disconnected: return "disconnected";
+native/client\local_session.cpp:52:ClientCommand ClientCommand::equip(std::string item_uuid) {
+native/client\local_session.cpp:64:ClientCommand ClientCommand::extract() {
+native/client\local_session.cpp:71:  command.type = Type::FoundHouse;
+native/client\local_session.cpp:77:  command.type = Type::CreateScion;
+native/client\local_session.cpp:83:  command.type = Type::SelectScion;
+native/client\local_session.cpp:111:  state_ = ConnectionState::Disconnected;
+native/client\local_session.cpp:132:      simulation_->dispatch(verdigris::Command::equip(command.target));
+native/client\local_session.cpp:138:      simulation_->dispatch(verdigris::Command::extract());
+native/client\local_session.cpp:140:    case ClientCommand::Type::FoundHouse:
+native/client\local_session.cpp:141:      // Local play always has its seeded House; the front door never shows.
+native/client\local_session.cpp:143:    case ClientCommand::Type::CreateScion:
+native/client\local_session.cpp:144:    case ClientCommand::Type::SelectScion:
+native/client\local_session.cpp:146:      // The local simulation admits its single Scion at construction; these
+native/client\local_session.cpp:184:  model_.scene.id = simulation_->instance().active ? simulation_->instance().route_id : "surface";
+native/client\local_session.cpp:186:  model_.equipped = {};
+native/client\local_session.cpp:190:    if (item.equipped) model_.equipped = slot;
+native/client\local_session.cpp:206:  // House, its living Scion, no front-door pending state.
+native/client\local_session.cpp:210:  ClientHouseEntry& local_house = model_.chronicle.houses.front();
+native/client\local_session.hpp:19:  explicit LocalCoreSession(std::uint64_t seed, std::string house_name = "House Verdigris");
+native/client\local_session.hpp:22:  bool start(std::string* error = nullptr) override;
+native/client\local_session.hpp:26:  ConnectionState connection_state() const override { return state_; }
+native/client\local_session.hpp:29:  const std::string& last_error() const override { return last_error_; }
+native/client\local_session.hpp:46:  std::string last_error_;
+native/client\main.cpp:198:// (House/Scion/oath/admission) plus the post-fall succession view.
+native/client\main.cpp:229:  verdigris::Vec2 last_death_pos{0, 0};
+native/client\main.cpp:242:  bool chronicles_mode = false;  // remote owner path launched at the front door
+native/client\main.cpp:621:std::uint64_t scenery_seed(const std::string& route_id) {
+native/client\main.cpp:622:  // FNV-1a keeps the route-to-layout mapping stable across processes and
+native/client\main.cpp:625:  for (unsigned char character : route_id) {
+native/client\main.cpp:665:  std::string route_id = state.world.route_id;
+native/client\main.cpp:666:  if (state.simulation) route_id = state.simulation->instance().route_id;
+native/client\main.cpp:667:  else if (state.session) route_id = state.session->model().scene.id;
+native/client\main.cpp:668:  if (route_id.empty()) return;
+native/client\main.cpp:670:  SceneryRng rng(scenery_seed(route_id));
+native/client\main.cpp:671:  const bool village = route_id.find(":1:") != std::string::npos;
+native/client\main.cpp:672:  const bool fields = route_id.find(":2:") != std::string::npos;
+native/client\main.cpp:683:    // client lab while the remaining placements keep the route spacious.
+native/client\main.cpp:743:  fx.last_death_pos = state.last_death_pos;
+native/client\main.cpp:750:  const std::string route_before = state.world.route_id;
+native/client\main.cpp:759:  if (state.world.route_id != route_before) generate_scenery(state);
+native/client\main.cpp:763:  state.last_death_pos = fx.last_death_pos;
+native/client\main.cpp:798:void submit_equip(ClientState& state, const std::string& id) {
+native/client\main.cpp:800:    state.session->submit(verdigris::client::ClientCommand::equip(id));
+native/client\main.cpp:802:    state.simulation->dispatch(verdigris::Command::equip(id));
+native/client\main.cpp:805:void submit_extract(ClientState& state) {
+native/client\main.cpp:807:    state.session->submit(verdigris::client::ClientCommand::extract());
+native/client\main.cpp:809:    state.simulation->dispatch(verdigris::Command::extract());
+native/client\main.cpp:847:  // is a presentation request; the core decides whether it resolves.
+native/client\main.cpp:853:  show_hint(state, std::string(skill.name) + " requested");
+native/client\main.cpp:888:void equip_selected(ClientState& state) {
+native/client\main.cpp:894:  submit_equip(state, state.world.carried[state.selected_item].id);
+native/client\main.cpp:1271:bool terrain_theme_prefers_alt(const std::string& route_id) {
+native/client\main.cpp:1272:  return route_id.find("marsh") != std::string::npos ||
+native/client\main.cpp:1273:         route_id.find("barrow") != std::string::npos ||
+native/client\main.cpp:1274:         route_id.find("circle") != std::string::npos;
+native/client\main.cpp:1307:                const RECT& bounds, const std::string& route_id, render::List& rl) {
+native/client\main.cpp:1336:  const bool theme_alt = terrain_theme_prefers_alt(route_id);
+native/client\main.cpp:1679:    case EventType::ActorDied: return "death";
+native/client\main.cpp:1684:    case EventType::ItemEquipped: return "equip";
+native/client\main.cpp:1685:    case EventType::ItemExtracted: return "extracted item";
+native/client\main.cpp:1686:    case EventType::TrophyExtracted: return "extracted trophy";
+native/client\main.cpp:1687:    case EventType::HouseStoreChanged: return "house store";
+native/client\main.cpp:1688:    case EventType::RouteUnlocked: return "route unlocked";
+native/client\main.cpp:1745:    const double ex = subject ? subject->position.x : state.last_death_pos.x;
+native/client\main.cpp:1746:    const double ey = subject ? subject->position.y : state.last_death_pos.y;
+native/client\main.cpp:1789:        // fading above the target over ~600ms. Red when the Scion took the hit.
+native/client\main.cpp:1805:        // The core cancels all elite windups when the Scion dies; clear any
+native/client\main.cpp:1810:        if (subject) state.last_death_pos = subject->position;
+native/client\main.cpp:1815:        // A route transition invalidates all event-time actor snapshots.
+native/client\main.cpp:1826:        verdigris::Vec2 at = state.last_death_pos;
+native/client\main.cpp:1949:  // house().name is already prefixed ("House Verdigris"); do not double it.
+native/client\main.cpp:1954:  // equipped item's attack bonus (authoritative item data) is added on top,
+native/client\main.cpp:1958:  int equipped_bonus = 0;
+native/client\main.cpp:1960:    if (item.equipped) {
+native/client\main.cpp:1961:      equipped_bonus = item.attack_bonus;
+native/client\main.cpp:1965:  std::string attack_text = std::to_string(base_attack + equipped_bonus);
+native/client\main.cpp:1966:  if (equipped_bonus != 0)
+native/client\main.cpp:1967:    attack_text += " (+" + std::to_string(equipped_bonus) + ")";
+native/client\main.cpp:1997:  std::string equipped_name = "(empty)";
+native/client\main.cpp:1999:    if (item.equipped) {
+native/client\main.cpp:2000:      equipped_name = item.name;
+native/client\main.cpp:2004:  rl.push_back({render::Op::PaneWeapon, 0.0, 0.0, 0.0, 0, equipped_name});
+native/client\main.cpp:2005:  TextOutA(dc, seat_left + 96, seat_top + 5, equipped_name.c_str(),
+native/client\main.cpp:2006:           static_cast<int>(equipped_name.size()));
+native/client\main.cpp:2024:      const bool equipped = items[i].equipped;
+native/client\main.cpp:2031:          equipped ? RGB(210, 180, 90) : (selected ? RGB(104, 160, 137) : RGB(56, 66, 64)));
+native/client\main.cpp:2036:      SetTextColor(dc, equipped ? RGB(240, 210, 120) : RGB(205, 215, 204));
+native/client\main.cpp:2041:                    equipped ? name + " [E]" : name});
+native/client\main.cpp:2045:                          (equipped ? "  [E]" : "");
+native/client\main.cpp:2050:  // Banked / extraction summary.
+native/client\main.cpp:2057:  const char* controls = "Arrows select | Enter equip | U unequip | I close";
+native/client\main.cpp:2245:  if (world.has_extraction) {
+native/client\main.cpp:2246:    const auto [mx, my] = to_map(world.extraction.x, world.extraction.y);
+native/client\main.cpp:2284:// authoritative ClientModel; no House, Scion, oath, or relic is ever
+native/client\main.cpp:2293:// House name from the guest identity once the account payload arrives.
+native/client\main.cpp:2296:  if (account.empty()) return "New House";
+native/client\main.cpp:2302:  return "House of " + root;
+native/client\main.cpp:2333:    menu.push_back({"F", "found-house", "", "Found your House"});
+native/client\main.cpp:2362:                  "Name a new Scion (" + next_scion_name(state) + ")"});
+native/client\main.cpp:2372:// admission, during hard-death consequences, or whenever the connection is
+native/client\main.cpp:2377:  const bool soft_death = model.lifecycle == "awaiting-respawn";
+native/client\main.cpp:2379:      state.session->connection_state() ==
+native/client\main.cpp:2383:      (admitted_and_alive || soft_death) ? Screen::Expedition : Screen::Chronicles;
+native/client\main.cpp:2411:    show_hint(state, "Your House enters the chronicles");
+native/client\main.cpp:2414:    show_hint(state, "A new Scion joins the lineage");
+native/client\main.cpp:2485:        state.session->connection_state() ==
+native/client\main.cpp:2486:            verdigris::client::ConnectionState::Disconnected) {
+native/client\main.cpp:2487:      status_line = "The chronicles lie closed - connection lost.";
+native/client\main.cpp:2499:    lines.push_back({"prompt", "No House stands in these pages yet.",
+native/client\main.cpp:2504:                       "House " + house.name, RGB(239, 208, 116), false});
+native/client\main.cpp:2506:        std::string row = "  Scion " + scion.name + " - level " +
+native/client\main.cpp:2540:                       (state.chronicles_oath ? "mortal - death is final"
+native/client\main.cpp:2570:// Shared owner-facing chrome: the visible connection state lives on both
+native/client\main.cpp:2571:// screens ΓÇö a failed connection is always explicit, never a silent fallback.
+native/client\main.cpp:2572:void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
+native/client\main.cpp:2575:    const auto conn = state.session->connection_state();
+native/client\main.cpp:2576:    const char* label = verdigris::client::connection_state_label(conn);
+native/client\main.cpp:2577:    const std::string chip = std::string("connection ") + label;
+native/client\main.cpp:2586:    else if (conn == verdigris::client::ConnectionState::Disconnected ||
+native/client\main.cpp:2609:    if (conn == verdigris::client::ConnectionState::Disconnected ||
+native/client\main.cpp:2628:    paint_connection_chip(state, dc, bounds, rl);
+native/client\main.cpp:2633:  draw_floor(state.billboards, dc, state.camera, bounds, world.route_id, rl);
+native/client\main.cpp:2636:  if (world.has_extraction) {
+native/client\main.cpp:2638:        project(state.camera, bounds, world.extraction.x, world.extraction.y);
+native/client\main.cpp:2911:    paint_connection_chip(state, dc, bounds, rl);
+native/client\main.cpp:2915:  // always reflects the authoritative world (extraction presence, carried
+native/client\main.cpp:2920:    if (!world.has_extraction) {
+native/client\main.cpp:2921:      objective = "objective: explore the route";
+native/client\main.cpp:2923:      const int ddx = world.extraction.x - player.position.x;
+native/client\main.cpp:2924:      const int ddy = world.extraction.y - player.position.y;
+native/client\main.cpp:2945:  // TASK-0145: expedition identity chip ΓÇö the current House and Scion are
+native/client\main.cpp:2948:    const std::string identity = "House " + world.house_name + " - Scion " +
+native/client\main.cpp:2951:    rl.push_back({render::Op::HouseChip, 0.0, 0.0, 0.0, 0, identity});
+native/client\main.cpp:2994:        "House " + world.house_name + " | Scion " + world.scion_name + " | Life " +
+native/client\main.cpp:3005:        "X nearest pickup | Z loot labels | F contextual extract | I gear/House overlay";
+native/client\main.cpp:3118:    if (state.session->connection_state() == verdigris::client::ConnectionState::Ready) {
+native/client\main.cpp:3194:          show_hint(*state, "Take underfoot requested");
+native/client\main.cpp:3210:        submit_extract(*state);
+native/client\main.cpp:3211:        show_hint(*state, "Contextual interaction requested");
+native/client\main.cpp:3231:        if (wparam == VK_RETURN) equip_selected(*state);
+native/client\main.cpp:3233:          state->simulation->dispatch(verdigris::Command::unequip());
+native/client\main.cpp:3234:          show_hint(*state, "Weapon unequipped");
+native/client\main.cpp:3241:          submit_equip(*state, state->world.carried[index].id);
+native/client\main.cpp:3277:          equip_selected(*state);
+native/client\main.cpp:3364:      std::make_unique<verdigris::Simulation>(0xC011AB1EULL, "House Verdigris");
+native/client\main.cpp:3365:  state.simulation->dispatch(verdigris::Command::enter("route:tin:1:0"));
+native/client\main.cpp:3475:  // honestly reports what loaded, and the extraction pad is marked.
+native/client\main.cpp:3497:  if (state.world.has_extraction) {
+native/client\main.cpp:3501:                   "first-fight: the extraction pad is marked stairs-up");
+native/client\main.cpp:3504:                 "first-fight: the Scion silhouette is recorded");
+native/client\main.cpp:3532:                   "first-fight: vector Scion silhouette is drawn");
+native/client\main.cpp:3538:  bool saw_swing = false, saw_damage = false, saw_death = false, saw_drop = false;
+native/client\main.cpp:3539:  for (int i = 0; i < 10 && !saw_death; ++i) {
+native/client\main.cpp:3543:    saw_death = saw_death || render::any(state.render_list, render::Op::Death);
+native/client\main.cpp:3548:  scenario_check(saw_death, "first-fight: a death ring is drawn");
+native/client\main.cpp:3578:                 "loot-to-bank: weapon seat empty before equip");
+native/client\main.cpp:3581:    scenario_step(state, verdigris::Command::equip(
+native/client\main.cpp:3587:                   "loot-to-bank: equip fills the weapon seat");
+native/client\main.cpp:3590:                   "loot-to-bank: equipped bonus appears in the stat readout");
+native/client\main.cpp:3608:  scenario_step(state, verdigris::Command::extract());
+native/client\main.cpp:3610:                 "loot-to-bank: extraction banks the item");
+native/client\main.cpp:3612:                 "loot-to-bank: extraction banks the trophy");
+native/client\main.cpp:3619:                 "loot-to-bank: banked footer reflects the extraction");
+native/client\main.cpp:3629:                 "loot-to-bank: objective strip guides back to the extraction");
+native/client\main.cpp:3672:  bool saw_target_flash = false, saw_damage = false, saw_death = false;
+native/client\main.cpp:3673:  for (int i = 0; i < 10 && !saw_death; ++i) {
+native/client\main.cpp:3677:    saw_death = saw_death || render::any(state.render_list, render::Op::Death);
+native/client\main.cpp:3721:    std::string error;
+native/client\main.cpp:3722:    if (probe->start(&error)) {
+native/client\main.cpp:3735:  std::string error;
+native/client\main.cpp:3736:  scenario_check(state.session->start(&error), "remote-render-list: session start");
+native/client\main.cpp:3740:    ready = state.session->connection_state() == verdigris::client::ConnectionState::Ready;
+native/client\main.cpp:3767:  const render::Item* extract = render::first(state.render_list, render::Op::Extraction);
+native/client\main.cpp:3768:  scenario_check(extract && extract->label == "stairs-up",
+native/client\main.cpp:3772:      verdigris::client::connection_state_label(state.session->connection_state());
+native/client\main.cpp:3775:        item.label == std::string("connection ") + conn_label)
+native/client\main.cpp:3778:  scenario_check(saw_conn, "remote-render-list: connection chip uses connection_state_label");
+native/client\main.cpp:3882:// reconnect roster restore. Asserts screen transitions and actionable
+native/client\main.cpp:3942:    std::string error;
+native/client\main.cpp:3943:    if (probe->start(&error)) {
+native/client\main.cpp:3963:  std::string error;
+native/client\main.cpp:3964:  scenario_check(state.session->start(&error), "chronicles-gate-b: session start");
+native/client\main.cpp:3974:                 "front door: founding a House is an actionable control");
+native/client\main.cpp:3976:  // 2) Found the House.
+native/client\main.cpp:3981:  scenario_check(house_ok, "front door: founding renders the House roster");
+native/client\main.cpp:3984:                 "front door: the new House is named on screen");
+native/client\main.cpp:3986:                 "front door: naming a Scion is offered");
+native/client\main.cpp:3988:  // 3) Create the first Scion; the oath field starts soft.
+native/client\main.cpp:3994:  scenario_check(scion_ok, "front door: the first Scion joins the roster");
+native/client\main.cpp:3997:                 "front door: set-out is actionable for the new Scion");
+native/client\main.cpp:4010:    return state.session->connection_state() == ConnectionState::Ready &&
+native/client\main.cpp:4020:  scenario_check(render_list_has(state, render::Op::HouseChip, "House "),
+native/client\main.cpp:4021:                 "admission: the expedition names the House and Scion");
+native/client\main.cpp:4033:                 "expedition: the route renders with the existing presentation");
+native/client\main.cpp:4049:  // 7) The fatal fall: server-authoritative final death for the mortal oath.
+native/client\main.cpp:4054:  scenario_check(fallen, "consequence: scion-fallen names the fallen Scion");
+native/client\main.cpp:4062:                 "consequence: the fallen Scion rests in the crypt");
+native/client\main.cpp:4090:    return state.session->connection_state() == ConnectionState::Ready &&
+native/client\main.cpp:4114:      if (item.op == render::Op::HouseChip &&
+native/client\main.cpp:4143:  // 10) Reconnect: the existing House/Scion state renders without any login
+native/client\main.cpp:4150:  scenario_check(state.session->start(&error), "reconnect: session restarts");
+native/client\main.cpp:4163:  scenario_check(roster_ok, "reconnect: House, heir, and crypt render on return");
+native/client\main.cpp:4166:                 "reconnect: the living heir is listed");
+native/client\main.cpp:4174:    return state.session->connection_state() == ConnectionState::Ready &&
+native/client\main.cpp:4178:  scenario_check(heir_again, "reconnect: re-admission returns to the expedition");
+native/client\main.cpp:4246:    case render::Op::HouseChip: return "HouseChip";
+native/client\main.cpp:4471:      {1, "01-route-entrance"}, {2, "02-pack-combat"}, {3, "03-elite-telegraph"},
+native/client\main.cpp:4537:  std::string error;
+native/client\main.cpp:4538:  if (!state->session->start(&error)) {
+native/client\main.cpp:4539:    std::fprintf(stderr, "verdigris_client --remote: %s\n", error.c_str());
+native/client\main.cpp:4540:    state->hint = error;
+native/client\main.cpp:4571:  verdigris::Simulation simulation(0xC011AB1EULL, "House Verdigris");
+native/client\main.cpp:4574:  simulation.dispatch(verdigris::Command::enter("route:tin:1:0"));
+native/client\main.cpp:4583:  simulation.dispatch(verdigris::Command::extract());
+native/client\main.cpp:4587:            << "House: " << simulation.house().name
+native/client\main.cpp:4628:  state->simulation = std::make_unique<verdigris::Simulation>(0xC011AB1EULL, "House Verdigris");
+native/client\main.cpp:4631:  state->simulation->dispatch(verdigris::Command::enter("route:tin:1:0"));
+native/client\main.cpp:4657:  verdigris::Simulation simulation(0xC011AB1EULL, "House Verdigris");
+native/client\main.cpp:4660:  simulation.dispatch(verdigris::Command::enter("route:tin:1:0"));
+native/client\main.cpp:4669:  simulation.dispatch(verdigris::Command::extract());
+native/client\main.cpp:4673:            << "House: " << simulation.house().name
+native/client\presentation_events.hpp:23:  ScionDied,
+native/client\presentation_state.cpp:25:  world.route_id = sim.instance().route_id;
+native/client\presentation_state.cpp:26:  world.extraction = sim.instance().extraction_point;
+native/client\presentation_state.cpp:27:  world.has_extraction = true;
+native/client\presentation_state.cpp:59:    world.carried.push_back({item.id, item.name, item.attack_bonus, item.equipped});
+native/client\presentation_state.cpp:83:  world.house_name = house_name.empty() ? "House Verdigris" : house_name;
+native/client\presentation_state.cpp:88:  world.route_id = model.scene.id;
+native/client\presentation_state.cpp:100:  world.has_extraction = model.scene.has_stairs_up;
+native/client\presentation_state.cpp:101:  world.extraction = {
+native/client\presentation_state.cpp:127:  if (!model.equipped.uuid.empty()) {
+native/client\presentation_state.cpp:129:        model.equipped.name.empty() ? model.equipped.id : model.equipped.name;
+native/client\presentation_state.cpp:131:        {model.equipped.uuid, label, model.equipped.attack_rating, true});
+native/client\presentation_state.cpp:148:  if (fx.last_death_pos.x != 0 || fx.last_death_pos.y != 0) return fx.last_death_pos;
+native/client\presentation_state.cpp:157:  const bool to_player = event.text == "incoming" || event.type == PresentationEventType::ScionDied;
+native/client\presentation_state.cpp:201:    case PresentationEventType::ScionDied:
+native/client\presentation_state.cpp:203:      if (event.type == PresentationEventType::ScionDied) fx.telegraphs.clear();
+native/client\presentation_state.cpp:204:      fx.last_death_pos = at;
+native/client\presentation_state.cpp:209:      verdigris::Vec2 drop = fx.last_death_pos;
+native/client\presentation_state.cpp:285:  if (world.has_extraction) {
+native/client\presentation_state.cpp:286:    const auto pad = at(world.extraction.x, world.extraction.y);
+native/client\presentation_state.hpp:73:  bool equipped = false;
+native/client\presentation_state.hpp:79:  verdigris::Vec2 extraction{};
+native/client\presentation_state.hpp:80:  bool has_extraction = false;
+native/client\presentation_state.hpp:81:  std::string house_name = "House Verdigris";
+native/client\presentation_state.hpp:88:  std::string route_id;
+native/client\presentation_state.hpp:96:  verdigris::Vec2 last_death_pos{};
+native/client\remote_session.cpp:172:// crypt[]{... relic{status,count}}, activeHouseId, activeScionId}.
+native/client\remote_session.cpp:177:  std::vector<ClientHouseEntry> parsed;
+native/client\remote_session.cpp:179:    ClientHouseEntry parsed_house;
+native/client\remote_session.cpp:184:        ClientScionEntry parsed_scion;
+native/client\remote_session.cpp:211:  if (const auto* active_house = json_string(source.get("activeHouseId")))
+native/client\remote_session.cpp:213:  if (const auto* active_scion = json_string(source.get("activeScionId")))
+native/client\remote_session.cpp:226:bool RemoteProtocolSession::connect_transport(std::string* error) {
+native/client\remote_session.cpp:229:    last_error_ = "socket() failed";
+native/client\remote_session.cpp:230:    if (error) *error = last_error_;
+native/client\remote_session.cpp:237:  if (::connect(socket, reinterpret_cast<sockaddr*>(&address), sizeof(address)) < 0) {
+native/client\remote_session.cpp:239:    last_error_ = "connection refused at " + host_ + ":" + std::to_string(port_);
+native/client\remote_session.cpp:240:    if (error) *error = last_error_;
+native/client\remote_session.cpp:244:  const std::string request =
+native/client\remote_session.cpp:248:  if (!send_all(socket, request.data(), request.size())) {
+native/client\remote_session.cpp:250:    last_error_ = "upgrade request send failed";
+native/client\remote_session.cpp:251:    if (error) *error = last_error_;
+native/client\remote_session.cpp:265:    last_error_ = "endpoint did not complete a websocket upgrade";
+native/client\remote_session.cpp:266:    if (error) *error = last_error_;
+native/client\remote_session.cpp:292:    last_error_ = "login send failed";
+native/client\remote_session.cpp:293:    if (error) *error = last_error_;
+native/client\remote_session.cpp:314:    fail(ConnectionState::Disconnected, reason);
+native/client\remote_session.cpp:317:  last_error_ = reason;
+native/client\remote_session.cpp:323:    fail(ConnectionState::Disconnected, "reconnect failed after 3 attempts");
+native/client\remote_session.cpp:336:    fail(ConnectionState::Disconnected, "reconnect failed after 3 attempts");
+native/client\remote_session.cpp:339:  std::string error;
+native/client\remote_session.cpp:340:  if (connect_transport(&error)) return;
+native/client\remote_session.cpp:343:    fail(ConnectionState::Disconnected, "reconnect failed after 3 attempts");
+native/client\remote_session.cpp:351:bool RemoteProtocolSession::start(std::string* error) {
+native/client\remote_session.cpp:357:    if (error) *error = last_error_;
+native/client\remote_session.cpp:362:  if (!connect_transport(error)) {
+native/client\remote_session.cpp:363:    const bool protocol = last_error_.find("websocket") != std::string::npos;
+native/client\remote_session.cpp:365:         last_error_);
+native/client\remote_session.cpp:366:    if (error) *error = last_error_;
+native/client\remote_session.cpp:378:    state_.store(ConnectionState::Disconnected);
+native/client\remote_session.cpp:428:      pending_equip_uuid_ = command.target;
+native/client\remote_session.cpp:429:      envelope.event = "item:equip";
+native/client\remote_session.cpp:438:      // No player:extract handler exists on the native server. The owner
+native/client\remote_session.cpp:439:      // extracts by walking onto stairs-up (existing player:move surface).
+native/client\remote_session.cpp:443:    case ClientCommand::Type::FoundHouse:
+native/client\remote_session.cpp:447:    case ClientCommand::Type::CreateScion: {
+native/client\remote_session.cpp:457:    case ClientCommand::Type::SelectScion: {
+native/client\remote_session.cpp:458:      // Resolve the scion's House from the authoritative chronicle roster.
+native/client\remote_session.cpp:469:      const ClientScionEntry* scion =
+native/client\remote_session.cpp:494:    if (now - last_state_request_ > std::chrono::milliseconds(250)) {
+native/client\remote_session.cpp:495:      last_state_request_ = now;
+native/client\remote_session.cpp:496:      Envelope request{"dev:state", JsonValue::Object{{"requestId", JsonValue("model-sync")}}};
+native/client\remote_session.cpp:497:      send_envelope(request);
+native/client\remote_session.cpp:507:    std::string error;
+native/client\remote_session.cpp:508:    if (!verdigris::networking::parse_envelope(text, envelope, &error)) {
+native/client\remote_session.cpp:509:      pending_events_.push_back({PresentationEventType::ProtocolError, "", "", error, 0});
+native/client\remote_session.cpp:515:    if (suppress_retry_ || state_.load() == ConnectionState::Disconnected ||
+native/client\remote_session.cpp:519:      begin_retry("server closed the connection");
+native/client\remote_session.cpp:640:    // owner has left the front door with a living Scion.
+native/client\remote_session.cpp:675:      model_.chronicle.fallen = ClientFallenScion{};
+native/client\remote_session.cpp:688:        {PresentationEventType::ScionDied, model_.chronicle.fallen.scion_id, "",
+native/client\remote_session.cpp:697:    fail(ConnectionState::Disconnected, "session replaced by a newer connection");
+native/client\remote_session.cpp:706:        model_.extracted = true;
+native/client\remote_session.cpp:769:            {PresentationEventType::ScionDied, model_.player.uuid, "", "", 0});
+native/client\remote_session.cpp:814:    // top of dev:state). Keeps death/successor states honest between
+native/client\remote_session.cpp:872:    ClientItemSlot equipped_snapshot;
+native/client\remote_session.cpp:875:      if (!pending_equip_uuid_.empty() && item.uuid == pending_equip_uuid_) {
+native/client\remote_session.cpp:876:        equipped_snapshot = item;
+native/client\remote_session.cpp:898:    if (!pending_equip_uuid_.empty()) {
+native/client\remote_session.cpp:901:        if (item.uuid == pending_equip_uuid_) {
+native/client\remote_session.cpp:907:        if (!equipped_snapshot.uuid.empty()) model_.equipped = equipped_snapshot;
+native/client\remote_session.cpp:908:        else model_.equipped.uuid = pending_equip_uuid_;
+native/client\remote_session.cpp:910:                                   model_.equipped.uuid, model_.equipped.name,
+native/client\remote_session.cpp:911:                                   model_.equipped.attack_rating});
+native/client\remote_session.cpp:912:        pending_equip_uuid_.clear();
+native/client\remote_session.cpp:919:void RemoteProtocolSession::fail(ConnectionState state, const std::string& error) {
+native/client\remote_session.cpp:920:  last_error_ = error;
+native/client\remote_session.cpp:922:  pending_events_.push_back({PresentationEventType::ConnectionLost, "", "", error, 0});
+native/client\remote_session.hpp:5:// over RFC6455. Runs NO authoritative simulation; a failed connection is a
+native/client\remote_session.hpp:32:  bool start(std::string* error = nullptr) override;
+native/client\remote_session.hpp:36:  ConnectionState connection_state() const override { return state_.load(); }
+native/client\remote_session.hpp:42:  const std::string& last_error() const override { return last_error_; }
+native/client\remote_session.hpp:47:  bool connect_transport(std::string* error);
+native/client\remote_session.hpp:53:  void fail(ConnectionState state, const std::string& error);
+native/client\remote_session.hpp:69:  std::chrono::steady_clock::time_point last_state_request_{};
+native/client\remote_session.hpp:78:  std::string last_error_;
+native/client\remote_session.hpp:80:  std::string pending_equip_uuid_;
+native/client\render_list.hpp:27:  Death,      // x/y = base (death ring)
+native/client\render_list.hpp:32:  Extraction, // x/y = projected extraction pad base; radius = pixels
+native/client\render_list.hpp:38:  PaneWeapon, // label = equipped weapon name (or "(empty)")
+native/client\render_list.hpp:44:  HouseChip,  // label = "House <name> - Scion <name>" expedition identity
+native/client\session.hpp:11://  - remote failure NEVER silently falls back to local play ΓÇö connection
+native/client\session.hpp:28:  Disconnected,      // orderly or dropped close after a connection existed
+native/client\session.hpp:29:  Retrying,          // reconnect attempt in progress (0061+)
+native/client\session.hpp:30:  Rejected,          // endpoint refused the connection
+native/client\session.hpp:34:const char* connection_state_label(ConnectionState state);
+native/client\session.hpp:47:    EnterZone,      // `target` = route/node id
+native/client\session.hpp:51:    FoundHouse,     // `target` = House display name
+native/client\session.hpp:52:    CreateScion,    // `target` = Scion display name
+native/client\session.hpp:53:    SelectScion,    // `target` = scion id; value!=0 => mortal oath
+native/client\session.hpp:68:  static ClientCommand equip(std::string item_uuid);
+native/client\session.hpp:70:  static ClientCommand extract();
+native/client\session.hpp:81:  // Establish the session (local: construct the simulation; remote: connect
+native/client\session.hpp:82:  // and upgrade). Returns false and fills `error` on hard failure.
+native/client\session.hpp:83:  virtual bool start(std::string* error = nullptr) = 0;
+native/client\session.hpp:92:  virtual ConnectionState connection_state() const = 0;
+native/client\session.hpp:95:  virtual const std::string& last_error() const = 0;
+native/tests\session_tests.cpp:31:    if (session.connection_state() == wanted) return true;
+native/tests\session_tests.cpp:35:  return session.connection_state() == wanted;
+native/tests\session_tests.cpp:52:  verdigris::client::LocalCoreSession session(0xC011AB1EULL, "House Verdigris");
+native/tests\session_tests.cpp:53:  std::string error;
+native/tests\session_tests.cpp:54:  check(session.start(&error), "local: start succeeds");
+native/tests\session_tests.cpp:55:  check(session.connection_state() == verdigris::client::ConnectionState::Ready,
+native/tests\session_tests.cpp:58:  check(session.model().house_name == "House Verdigris", "local: house name published");
+native/tests\session_tests.cpp:62:  session.submit(verdigris::client::ClientCommand::enter_zone("route:tin:1:0"));
+native/tests\session_tests.cpp:78:  check(session.connection_state() == verdigris::client::ConnectionState::Disconnected,
+native/tests\session_tests.cpp:79:        "local: shutdown reaches disconnected state");
+native/tests\session_tests.cpp:121:    std::string error;
+native/tests\session_tests.cpp:122:    if (server->start(&error)) {
+native/tests\session_tests.cpp:136:  std::string error;
+native/tests\session_tests.cpp:137:  const bool started = session.start(&error);
+native/tests\session_tests.cpp:139:  check(session.connection_state() == verdigris::client::ConnectionState::Rejected,
+native/tests\session_tests.cpp:141:  check(!error.empty(), "remote-negative: hard error message supplied");
+native/tests\session_tests.cpp:154:    std::string error;
+native/tests\session_tests.cpp:155:    check(session.start(&error), "remote: connect + upgrade + login sent");
+native/tests\session_tests.cpp:171:    check(session.connection_state() == verdigris::client::ConnectionState::Ready,
+native/tests\session_tests.cpp:174:    check(session.connection_state() == verdigris::client::ConnectionState::Disconnected,
+native/tests\session_tests.cpp:175:          "remote: clean shutdown reaches disconnected");
+native/tests\session_tests.cpp:187:    std::string error;
+native/tests\session_tests.cpp:188:    if (server->start(&error)) {
+native/tests\session_tests.cpp:199:                   bool& telegraph, bool& kill, bool& pickup, bool& equipped, bool& extracted,
+native/tests\session_tests.cpp:208:    if (event.type == T::ItemEquipped) equipped = true;
+native/tests\session_tests.cpp:209:    if (event.type == T::ExtractionCompleted) extracted = true;
+native/tests\session_tests.cpp:214:const verdigris::client::ClientItemSlot* first_equippable(
+native/tests\session_tests.cpp:229:  std::string error;
+native/tests\session_tests.cpp:230:  check(session.start(&error), "journey: connect + upgrade + login sent");
+native/tests\session_tests.cpp:269:  bool equipped = false;
+native/tests\session_tests.cpp:270:  bool extracted = false;
+native/tests\session_tests.cpp:278:    collect_flags(session, outgoing, incoming, telegraph, kill, pickup, equipped, extracted,
+native/tests\session_tests.cpp:280:    if (outgoing && kill && first_equippable(session.model())) break;
+native/tests\session_tests.cpp:283:  check(kill, "journey: enemy death reached the client");
+native/tests\session_tests.cpp:288:  for (int step = 0; step < 200 && !first_equippable(session.model()); ++step) {
+native/tests\session_tests.cpp:312:    collect_flags(session, outgoing, incoming, telegraph, kill, pickup, equipped, extracted,
+native/tests\session_tests.cpp:315:  const auto* gear = first_equippable(session.model());
+native/tests\session_tests.cpp:323:    session.submit(verdigris::client::ClientCommand::equip(uuid));
+native/tests\session_tests.cpp:326:      collect_flags(session, outgoing, incoming, telegraph, kill, pickup, equipped, extracted,
+native/tests\session_tests.cpp:328:      return equipped || session.model().equipped.uuid == uuid;
+native/tests\session_tests.cpp:330:    check(wore, "journey: equip removed the item from the backpack");
+native/tests\session_tests.cpp:331:    check(!session.model().equipped.uuid.empty(),
+native/tests\session_tests.cpp:332:          "journey: equipped slot mirrors the worn item");
+native/tests\session_tests.cpp:336:  // striking while easing east, then turn back for extract.
+native/tests\session_tests.cpp:348:    collect_flags(session, outgoing, incoming, telegraph, kill, pickup, equipped, extracted,
+native/tests\session_tests.cpp:354:  for (int step = 0; step < 360 && !session.model().extracted; ++step) {
+native/tests\session_tests.cpp:368:    collect_flags(session, outgoing, incoming, telegraph, kill, pickup, equipped, extracted,
+native/tests\session_tests.cpp:371:  check(session.model().extracted || session.model().scene.type == "town" ||
+native/tests\session_tests.cpp:373:        "journey: walking onto stairs-up returns to the surface (extract)");
+native/tests\session_tests.cpp:374:  check(session.model().extracted, "journey: ExtractionCompleted from surface message");
+native/tests\session_tests.cpp:377:  check(session.connection_state() == verdigris::client::ConnectionState::Disconnected,
+native/tests\session_tests.cpp:383:void remote_mid_session_disconnect() {
+native/tests\session_tests.cpp:386:  check(server != nullptr, "reconnect: cursor-capsule server bound");
+native/tests\session_tests.cpp:389:  verdigris::client::RemoteProtocolSession session("127.0.0.1", port, "cursor-reconnect", true);
+native/tests\session_tests.cpp:390:  std::string error;
+native/tests\session_tests.cpp:391:  check(session.start(&error), "reconnect: connected");
+native/tests\session_tests.cpp:393:        "reconnect: ready before the drop");
+native/tests\session_tests.cpp:407:    return session.connection_state() == verdigris::client::ConnectionState::Retrying;
+native/tests\session_tests.cpp:409:  check(retrying, "reconnect: unexpected drop enters Retrying");
+native/tests\session_tests.cpp:410:  check(lost, "reconnect: ConnectionLost is visible (no silent local fallback)");
+native/tests\session_tests.cpp:411:  check(!session.last_error().empty(), "reconnect: last_error explains the drop");
+native/tests\session_tests.cpp:415:  check(session.connection_state() == verdigris::client::ConnectionState::Retrying,
+native/tests\session_tests.cpp:416:        "reconnect: commands after the drop do not leave Retrying for a local sim");
+native/tests\session_tests.cpp:417:  check(session.model().player.x == x, "reconnect: position does not keep playing offline");
+native/tests\session_tests.cpp:420:  check(server->start(&error), "reconnect: server restarted on the same port");
+native/tests\session_tests.cpp:423:  check(resumed, "reconnect: Retrying then Ready after server restart");
+native/tests\session_tests.cpp:424:  check(session.model().player.uuid == guest, "reconnect: same guest identity re-logged in");
+native/tests\session_tests.cpp:425:  check(!session.model().scene.id.empty(), "reconnect: login snapshot is authoritative");
+native/tests\session_tests.cpp:441:  std::string error;
+native/tests\session_tests.cpp:442:  check(first.start(&error), "replaced: first login");
+native/tests\session_tests.cpp:447:  check(second.start(&error), "replaced: second login same guest");
+native/tests\session_tests.cpp:455:    if (first.connection_state() == verdigris::client::ConnectionState::Retrying)
+native/tests\session_tests.cpp:460:    return first.connection_state() == verdigris::client::ConnectionState::Disconnected;
+native/tests\session_tests.cpp:462:  check(flushed, "replaced: first session is disconnected");
+native/tests\session_tests.cpp:465:  check(first.connection_state() != verdigris::client::ConnectionState::Retrying,
+native/tests\session_tests.cpp:466:        "replaced: stays terminal Disconnected (no retry)");
+native/tests\session_tests.cpp:480:  std::string error;
+native/tests\session_tests.cpp:481:  check(session.start(&error), "render-list: connect");
+native/tests\session_tests.cpp:538:  remote_mid_session_disconnect();
+native/tests\networking_tests.cpp:18:  if (!condition) throw std::runtime_error(message);
+native/tests\networking_tests.cpp:25:  std::string error;
+native/tests\networking_tests.cpp:26:  check(parse_envelope(wire, decoded, &error), error.c_str());
+native/tests\networking_tests.cpp:30:  check(!parse_envelope("{\"event\":\"dev:state\",\"data\":[]}", decoded, &error), "array payload is rejected");
+native/tests\networking_tests.cpp:49:  session.handle(Envelope{"dev:state", JsonValue::Object{{"requestId", "state-1"}}}, [&](const Envelope& event) {
+native/tests\networking_tests.cpp:53:  check(response.data["requestId"].string() && *response.data["requestId"].string() == "state-1", "state request id is echoed");
+native/tests\networking_tests.cpp:58:  session.handle(Envelope{"dev:state", JsonValue::Object{{"requestId", "state-2"}}}, [&](const Envelope& event) { state_wire = emit_envelope(event); });
+native/tests\networking_tests.cpp:76:JsonValue request_state(ProtocolSession& session, const std::string& request_id) {
+native/tests\networking_tests.cpp:78:  session.handle(Envelope{"dev:state", JsonValue::Object{{"requestId", request_id}}},
+native/tests\networking_tests.cpp:81:  std::string error;
+native/tests\networking_tests.cpp:82:  check(parse_envelope(wire, response, &error), error.c_str());
+native/tests\networking_tests.cpp:88:  const auto start = request_state(session, "m-0");
+native/tests\networking_tests.cpp:94:  const auto after_one = request_state(session, "m-1");
+native/tests\networking_tests.cpp:104:  const auto after_nine = request_state(session, "m-2");
+native/tests\networking_tests.cpp:114:  check(state_axis(request_state(session, "m-3"), "x") > start_x, "right sample moves east");
+native/tests\networking_tests.cpp:117:  const auto before_bad = request_state(session, "m-4");
+native/tests\networking_tests.cpp:119:  const auto after_bad = request_state(session, "m-5");
+native/tests\networking_tests.cpp:126:  const auto town = request_state(session, "z-0");
+native/tests\networking_tests.cpp:139:  const auto in_zone = request_state(session, "z-1");
+native/tests\networking_tests.cpp:160:  const auto walked = request_state(walker, "w-1");
+native/tests\networking_tests.cpp:169:  const auto back = request_state(session, "z-2");
+native/tests\networking_tests.cpp:181:  const auto marsh = request_state(session, "n3-marsh");
+native/tests\networking_tests.cpp:196:  const auto state = request_state(boss, "n3-boss");
+native/tests\networking_tests.cpp:280:  const auto state = request_state(session, "g-1");
+native/tests\networking_tests.cpp:299:  const auto pack = request_state(session, "g-kill");
+native/tests\networking_tests.cpp:333:void test_gate_a_extract_and_stairs() {
+native/tests\networking_tests.cpp:334:  ProtocolSession extract_session("guest-0063-extract", "socket-ex", 23, false);
+native/tests\networking_tests.cpp:335:  extract_session.handle(Envelope{"dev:give", JsonValue::Object{{"itemId", "garnet-amulet"}, {"qty", 1}}},
+native/tests\networking_tests.cpp:337:  extract_session.handle(Envelope{"instance:enterSolo",
+native/tests\networking_tests.cpp:340:  check(!inventory_uuid_for(request_state(extract_session, "ex-0"), "garnet-amulet").empty(),
+native/tests\networking_tests.cpp:341:        "amulet is carried before extract");
+native/tests\networking_tests.cpp:344:  extract_session.handle(Envelope{"player:extract", JsonValue::Object{}}, [&](const Envelope& event) {
+native/tests\networking_tests.cpp:345:    if (event.event == "player:extract") summary = event;
+native/tests\networking_tests.cpp:347:  check(summary.has_value(), "player:extract emits a bank summary");
+native/tests\networking_tests.cpp:348:  check(summary->data["items"].number().value_or(0) >= 1, "extract banks at least the amulet");
+native/tests\networking_tests.cpp:349:  const auto after = request_state(extract_session, "ex-1");
+native/tests\networking_tests.cpp:351:        "extract returns to town");
+native/tests\networking_tests.cpp:352:  check(inventory_uuid_for(after, "garnet-amulet").empty(), "extract clears the amulet from the backpack");
+native/tests\networking_tests.cpp:359:  check(stored, "extract places the amulet in the House store");
+native/tests\networking_tests.cpp:366:  const auto in_zone = request_state(stairs, "st-1");
+native/tests\networking_tests.cpp:372:                  if (event.event == "player:extract") stairs_summary = event;
+native/tests\networking_tests.cpp:374:  check(stairs_summary.has_value(), "stairs-up emits the same player:extract bank summary");
+native/tests\networking_tests.cpp:375:  const auto back = request_state(stairs, "st-2");
+native/tests\networking_tests.cpp:385:  check(sword_stored, "stairs-up and player:extract converge on the House store");
+native/tests\networking_tests.cpp:388:void test_gate_a_equip_totals_and_unknown_uuid() {
+native/tests\networking_tests.cpp:389:  ProtocolSession session("guest-0063-equip", "socket-eq", 31, false);
+native/tests\networking_tests.cpp:392:  const auto before = request_state(session, "eq-0");
+native/tests\networking_tests.cpp:397:  std::optional<Envelope> equipped;
+native/tests\networking_tests.cpp:398:  session.handle(Envelope{"item:equip", JsonValue::Object{{"item", JsonValue::Object{{"uuid", uuid}}}}},
+native/tests\networking_tests.cpp:400:                   if (event.event == "player:equippedAnItem") equipped = event;
+native/tests\networking_tests.cpp:402:  check(equipped.has_value(), "item:equip emits player:equippedAnItem");
+native/tests\networking_tests.cpp:403:  check(equipped->data["wear"]["necklace"].string()
+native/tests\networking_tests.cpp:404:            && *equipped->data["wear"]["necklace"].string() == "garnet-amulet",
+native/tests\networking_tests.cpp:405:        "equip response includes wear-slot state");
+native/tests\networking_tests.cpp:406:  check(equipped->data["combat"]["attack"]["stab"].number().value_or(0) > before_stab,
+native/tests\networking_tests.cpp:407:        "equip response includes derived combat totals");
+native/tests\networking_tests.cpp:409:  const auto worn = request_state(session, "eq-1");
+native/tests\networking_tests.cpp:412:        "snapshot wear matches the equip response");
+native/tests\networking_tests.cpp:414:  bool error = false;
+native/tests\networking_tests.cpp:416:  session.handle(Envelope{"item:equip", JsonValue::Object{{"item", JsonValue::Object{{"uuid", "missing-uuid"}}}}},
+native/tests\networking_tests.cpp:420:                     error = true;
+native/tests\networking_tests.cpp:423:                   if (event.event == "player:equippedAnItem") equipped.reset();
+native/tests\networking_tests.cpp:425:  check(error && refresh, "unknown uuid emits the JS inventory error envelope");
+native/tests\networking_tests.cpp:426:  const auto after = request_state(session, "eq-2");
+native/tests\networking_tests.cpp:442:    test_gate_a_extract_and_stairs();
+native/tests\networking_tests.cpp:443:    test_gate_a_equip_totals_and_unknown_uuid();
+native/tests\networking_tests.cpp:446:  } catch (const std::exception& error) {
+native/tests\networking_tests.cpp:447:    std::cerr << "verdigris networking tests: FAIL: " << error.what() << "\n";

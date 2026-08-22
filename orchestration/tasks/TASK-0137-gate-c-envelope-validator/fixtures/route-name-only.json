@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0.0",
+  "note": "Synthetic content-neutral fixture: a route name/tier/blurb with no decision fields at all. Per NATIVE_PRODUCT_CONVERGENCE.md:72 a route name alone fails.",
+  "route_identity": {
+    "road": { "roadId": "synthetic-road-rn", "roadName": "synthetic-road-rn", "direction": "east", "blurb": "terrain flavor only" },
+    "node": { "nodeId": "synthetic-node-rn1", "name": "synthetic-node-rn1", "status": "open" },
+    "tier": 1
+  }
+}

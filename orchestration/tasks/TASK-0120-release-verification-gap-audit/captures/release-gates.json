@@ -1,0 +1,241 @@
+{
+  "task": "TASK-0120",
+  "title": "Clean-machine, migration, soak, and release verification audit",
+  "generated_by": "ox-pc-e",
+  "base_commit": "42718fbc4340589e606fff94a6eaa3dfbd03ad1c",
+  "route_head": "039dcfa7f12497aa79c3677873a06a96c231a13d",
+  "audit_scope_note": "Static read-only audit of repository evidence at base 42718fbc plus coordination commit 039dcfa7. Statuses classify the strongest existing machine-verifiable evidence per release surface. No installers were executed, no accounts touched, no ports bound.",
+  "status_legend": {
+    "proven": "a committed, runnable gate exercises this surface today and is wired into an enforced acceptance path",
+    "partial": "some committed evidence exists but it is not wired into a release-enforcing gate or has documented platform/scope gaps",
+    "missing": "no committed artifact provides this release proof; named successor packets own closing the gap",
+    "owner_only": "surface is deliberately absent from worker-reachable scope and requires owner action (signing/notarization/distribution/account)",
+    "external": "proof depends on infrastructure outside this repository"
+  },
+  "gates": [
+    {
+      "id": "current-ci",
+      "surface": "Current CI",
+      "status": "proven",
+      "evidence": [
+        ".github/workflows/ci.yml (ubuntu-latest, Node 22, npm ci, npx playwright install chromium, PLAYTEST_LOAD_MODE=1, npm run verify = lint + lint:css + test:unit + build + playtest + test:e2e:built, failure artifacts test-results/)",
+        ".github/workflows/native.yml (windows-latest, msvc-dev-cmd x64, native/tools/ci-native.ps1: cmake configure/build windows-msvc preset, legacy denylist, ctest core/networking/session incl. remote journey + clean shutdown, camera2d compile/link/tests, verdigris_client --scenario all, transcripts uploaded on failure)",
+        "orchestration/RUN_STATUS.md records latest master CI run 32441409427 passed at d2423873 (2026-08-21 snapshot)"
+      ],
+      "gap": "CI runs only on push-to-master and PRs; worker branches rely on local gates until integration"
+    },
+    {
+      "id": "clean-clone-build",
+      "surface": "Clean clone/build",
+      "status": "partial",
+      "evidence": [
+        "Both workflows start from actions/checkout@v4 on fresh runners and complete configure+build from scratch each run (browser: npm ci + vite build; native: cmake preset windows-msvc)",
+        "docs/development-setup.md documents developer setup"
+      ],
+      "gap": "No dedicated clean-machine release harness or artifact: no script proves a bare machine -> playable build end to end, no produced build artifacts are retained from green runs. orchestration/tasks/TASK-0126-clean-machine-release-harness/SPEC.md owns this and is DRAFT pending this audit."
+    },
+    {
+      "id": "dependency-runtime-packaging",
+      "surface": "Dependency/runtime packaging",
+      "status": "partial",
+      "evidence": [
+        "package.json engines node>=22 npm>=10; volta pins node 22.11.0 / npm 10.9.2; package-lock.json enables reproducible npm ci",
+        "npm run security:audit exists (npm audit --omit=dev) but is not wired into CI",
+        "native/ is deliberately dependency-free C++20 (native/README.md)"
+      ],
+      "gap": "No vendored/bundled runtime for end-user distribution, no SBOM/dependency manifest generation, security:audit not enforced in CI"
+    },
+    {
+      "id": "launcher",
+      "surface": "Launcher",
+      "status": "partial",
+      "evidence": [
+        "native/tools/play-native.ps1: one-command Windows owner launch (build if stale, free-port server in 6520-6539 never 6500, client --remote, log tee under native/build/logs/, stop server on client exit, no-orphan process check); desktop shortcut recipe documented in native/README.md",
+        "Browser side: ecosystem.config.cjs pm2 app definition + docs/deployment.md start/update recipes"
+      ],
+      "gap": "Windows-only launcher; no macOS/Linux double-clickable launcher; no launcher smoke test wired into CI"
+    },
+    {
+      "id": "server-shutdown",
+      "surface": "Server shutdown",
+      "status": "proven",
+      "evidence": [
+        "native/tests/session_tests.cpp asserts 'local: shutdown reaches disconnected state', 'remote: clean shutdown reaches disconnected', 'journey: clean dual-side shutdown' and runs inside ctest preset windows-msvc, enforced by .github/workflows/native.yml",
+        "native/tools/play-native.ps1 stops the server when the client exits and prints a no-orphan process check",
+        "ecosystem.config.cjs defines kill_timeout 8000 for graceful pm2 stop of the browser server"
+      ],
+      "gap": "Browser-server graceful-drain behavior itself has no dedicated automated gate beyond pm2 config"
+    },
+    {
+      "id": "long-soak",
+      "surface": "Long soak",
+      "status": "missing",
+      "evidence": [
+        "playtest/soak.mjs exists (~150s default, SOAK_SECONDS override, isolated guest saves, :6511) but is invoked nowhere in ci.yml verify, ACCEPTANCE.md gates, or any workflow",
+        "orchestration/tasks/TASK-0083-server-lifecycle-soak/SPEC.md (native soak, opt-in 100/100) is READY and unclaimed/unimplemented"
+      ],
+      "gap": "No long-duration stability evidence is required by any release gate today"
+    },
+    {
+      "id": "protocol-regression",
+      "surface": "Protocol regression",
+      "status": "proven",
+      "evidence": [
+        "ACCEPTANCE.md requires full npm run playtest 32/32 at acceptance; targeted sets supported",
+        "RUN_STATUS.md objective state: unchanged native attach suite 32/32 twice on fresh servers plus post-hotfix verification (server/rules parity DONE)",
+        "Native session/networking suites cover login, journey, reconnect/session-replace, shutdown inside CI native.yml"
+      ],
+      "gap": "Malformed-client/parser robustness is separate hardening (TASK-0098 READY, unimplemented); regression proof is bounded to authored scenario sets"
+    },
+    {
+      "id": "deterministic-replay",
+      "surface": "Deterministic replay",
+      "status": "partial",
+      "evidence": [
+        "native core is fixed-step deterministic; byte-equal replay determinism tests ship in native/tests/core_tests.cpp (e.g. legends/relic/elite/movement replay tests referenced across accepted task REPORTs TASK-0001/0006/0011/0017/0025)",
+        "ADR-002-persistence-seam.md: command-log replay used for tests/debugging; snapshots byte-identical for equivalent durable states (native/persistence/README.md)"
+      ],
+      "gap": "No versioned replay record format, stored replay artifacts, or divergence-diffing runner: orchestration/tasks/TASK-0100-deterministic-replay-coverage-audit/SPEC.md (READY) and TASK-0106 successor own this"
+    },
+    {
+      "id": "performance",
+      "surface": "Performance",
+      "status": "missing",
+      "evidence": [
+        "bench/instance-generation.mjs (npm run bench:instance) exists as a manual tool",
+        "ci-native.ps1 explicitly omits the density bench ('Density bench is not invoked')",
+        "playtest/timing.mjs load mode is a shared-machine fairness cap (1.75x), not a performance budget"
+      ],
+      "gap": "No frame-time/memory/p95 budget gate exists anywhere in CI or acceptance; orchestration/tasks/TASK-0099-native-performance-budget-audit/SPEC.md (READY) owns defining it"
+    },
+    {
+      "id": "crash-save-recovery",
+      "surface": "Crash/save recovery",
+      "status": "partial",
+      "evidence": [
+        "native/persistence/README.md: write_atomic (temp file + flush + atomic replace), restore fails closed on missing/malformed known values instead of mutating state",
+        "Snapshot carries pending recovery queues so surfaced relic/trophy candidates survive instance retirement (D-109); House persistence + Scion reset covered by core tests",
+        "docs/deployment.md: guest saves survive logout/process restarts; backup recipe for sqlite + -wal; pm2 autorestart with backoff and max_memory_restart 768M"
+      ],
+      "gap": "No crash-injection/fault matrix, no corrupted-save fixture corpus, no automated mid-write kill test: TASK-0107 persistence fault matrix (DRAFT successor) owns it"
+    },
+    {
+      "id": "save-version-migration",
+      "surface": "Save-version migration",
+      "status": "missing",
+      "evidence": [
+        "native/src/core.cpp enforces schemaVersion==kSnapshotSchemaVersion (currently 1): 'unsupported or missing snapshot schemaVersion' throws; unknown keys ignored, missing values fail closed (native/persistence/README.md)",
+        "No migration code path between schema versions exists anywhere in native/",
+        "orchestration/tasks/TASK-0127-save-migration-release-matrix/SPEC.md is a DRAFT successor owning the disposable-fixture migration matrix"
+      ],
+      "gap": "Behavior is fail-closed only: an older or newer save refuses to load rather than migrating; zero forward/backward migration evidence exists"
+    },
+    {
+      "id": "upgrade-rollback",
+      "surface": "Upgrade/rollback",
+      "status": "missing",
+      "evidence": [
+        "docs/deployment.md 'Updating to a new version': git pull, npm ci, npm run build, pm2 restart (upgrade half only)"
+      ],
+      "gap": "No rollback procedure, no pinned-version revert drill, no data-compat check before restart, for either browser server or native builds; PROGRAM_GRAPH.md T7 assigns upgrade/rollback to post-0120 successors (TASK-0126/0127)"
+    },
+    {
+      "id": "asset-license-manifest",
+      "surface": "Asset/license manifest",
+      "status": "missing",
+      "evidence": [
+        "Root LICENSE exists; docs/player-art-pipeline.md, docs/actor-art-pipeline.md, docs/vessel-art-pipeline.md and CLAUDE_DEMO_ASSET_INTAKE.md document intake conventions"
+      ],
+      "gap": "No generated asset inventory with license/provenance fields, no lint that shipped assets carry provenance; TASK-0094 asset provenance audit (READY) owns it"
+    },
+    {
+      "id": "windows-macos-coverage",
+      "surface": "Windows/macOS coverage",
+      "status": "partial",
+      "evidence": [
+        "Windows fully exercised: .github/workflows/native.yml (windows-latest) builds/tests/runs scenarios; build.ps1 MSVC path; Win32 client",
+        "macOS/Linux: CMake console-fallback build documented in native/README.md; native/platform/README.md reserves the macOS adapter seam"
+      ],
+      "gap": "No macOS (or Linux-native) CI job exists; the documented mac path is compiled-by-nobody and untested by automation"
+    },
+    {
+      "id": "signing-notarization",
+      "surface": "Signing/notarization",
+      "status": "owner_only",
+      "evidence": [
+        "SPEC owner_input_dependency: 'signing, notarization, distribution, and account actions remain owner-only'",
+        "No codesign/signtool/notarytool/msi/dmg assets exist in the repo (verified by literal gate 1 search)"
+      ],
+      "gap": "Entirely absent pending owner certificates/accounts; cannot be staged by workers without violating ownership boundaries"
+    },
+    {
+      "id": "installer",
+      "surface": "Installer",
+      "status": "owner_only",
+      "evidence": [
+        "No installer project, packaging/ directory, or bundle step exists (packaging/** appears only as backlog-factory domain paths in orchestration/backlog-factory/build-manifests.mjs)",
+        "BACKLOG_FACTORY.md quality-release domain lists 'installer/signing/notarization/update/support' as future terminal work; PROGRAM_GRAPH.md orders clean-machine inventory before installer/signing"
+      ],
+      "gap": "Nothing to execute or audit yet; distribution decisions are owner authority. Execution of any future installer is outside worker resource capsule regardless."
+    },
+    {
+      "id": "logs-support-bundle",
+      "surface": "Logs/support bundle",
+      "status": "partial",
+      "evidence": [
+        "pm2 writes logs/delaford.out.log + delaford.err.log (ecosystem.config.cjs, time-stamped)",
+        "play-native.ps1 tees server output under native/build/logs/ and prints the log path; native CI uploads native/build/ci-logs/ artifacts on failure",
+        "Server-side logging exists in both browser server/index.js and native server_main.cpp"
+      ],
+      "gap": "No single support-bundle command collecting versions, logs, save health, and diagnostics; log retention/rotation undocumented"
+    },
+    {
+      "id": "release-acceptance",
+      "surface": "Release acceptance",
+      "status": "partial",
+      "evidence": [
+        "orchestration/ACCEPTANCE.md defines the validation ladder G0-G6 with negative controls, default-path rule, architect personal rerun (G5) and post-merge revalidation (G6)",
+        "Owner-visible native acceptance additionally requires the architect to play the exe (D-117); ORCHESTRATION.md validation ladder section is the standing contract"
+      ],
+      "gap": "The ladder governs task acceptance, not product release: no release checklist binds all of the above surfaces to a tagged build with recorded evidence, sign-off, and artifact retention"
+    }
+  ],
+  "summary_counts": {
+    "proven": 3,
+    "partial": 8,
+    "missing": 5,
+    "owner_only": 2,
+    "external": 0,
+    "total_surfaces": 18
+  },
+  "negative_control": {
+    "claim_examined": "docs/deployment.md's update recipe (git pull; npm ci; npm run build; pm2 restart) makes upgrading a live production server safe.",
+    "why_unsupported": "No clean-machine or migration artifact backs this claim: there is no save-migration matrix (a snapshot written by a different schemaVersion hard-fails restore per native/src/core.cpp and the browser SQLite stores have no versioned migration path either), no rollback procedure exists anywhere in the repository, and no clean-machine harness reproduces the update on a pristine host. The claim silently assumes data compatibility across versions.",
+    "discharge_path": "TASK-0127 save-migration matrix + TASK-0126 clean-machine release harness (both sequenced after this audit) must produce those artifacts before the upgrade claim may be treated as release proof."
+  },
+  "literal_gates": [
+    {
+      "command": "rg -n \"CI|clean|build|package|launcher|soak|migration|upgrade|rollback|sign|notar|installer|release|artifact|crash|save\" .github native docs orchestration --glob \"*.md\" --glob \"*.yml\" --glob \"*.yaml\" --glob \"*.ps1\" --glob \"*.json\"",
+      "exit_code": 0,
+      "output_capture": "captures/gate-1-rg-release-surface.txt",
+      "matched_lines": 1575
+    },
+    {
+      "command": "node -e \"JSON.parse(require('fs').readFileSync('orchestration/tasks/TASK-0120-release-verification-gap-audit/captures/release-gates.json','utf8')); console.log('release gates: PASS')\"",
+      "expected_stdout": "release gates: PASS",
+      "exit_code": 0,
+      "note": "re-run after this file was written; see REPORT.md transcript"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "note": "see REPORT.md transcript"
+    },
+    {
+      "command": "git diff --name-only",
+      "exit_code": 0,
+      "expected": "only orchestration/tasks/TASK-0120-release-verification-gap-audit/** entries",
+      "note": "see REPORT.md transcript"
+    }
+  ]
+}

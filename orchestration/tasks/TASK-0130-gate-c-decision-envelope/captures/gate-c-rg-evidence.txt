@@ -1,0 +1,119 @@
+playtest/scenarios/quest.mjs:255:    const stairsDown = state.sceneMetadata.stairsDown;
+playtest/scenarios/quest.mjs:256:    assert(stairsDown, 'the broken seal exposes stairs to the deeper realm');
+playtest/scenarios/quest.mjs:257:    p.devTeleport(stairsDown.x, stairsDown.y);
+playtest/scenarios/quest.mjs:260:      return next.sceneMetadata.depth === 2
+playtest/scenarios/quest.mjs:325:    const marshExit = state.sceneMetadata.stairsUp;
+playtest/scenarios/world-web.mjs:31:    p.emit('world:zone:enter', { nodeId: root.id });
+playtest/scenarios/world-web.mjs:34:      return current.sceneType === 'instance' && current.sceneMetadata.nodeId === root.id
+playtest/scenarios/world-web.mjs:40:    assert(zone.monsters.some(monster => monster.name === root.wardenName),
+playtest/scenarios/world-web.mjs:41:      `the ${root.wardenName} keeps the ground`);
+playtest/scenarios/world-web.mjs:54:    assert(held.sceneMetadata.nodeId === root.id, 'the gate held the player in place');
+playtest/scenarios/world-web.mjs:74:    assert(child.sceneMetadata.nodeId === gate.nodeId,
+playtest/scenarios/world-web.mjs:75:      `pressed on into ${gate.name} (${child.sceneMetadata.nodeId})`);
+playtest/scenarios/world-web.mjs:79:    p.emit('world:road:chart', { roadId: 'tin' });
+playtest/scenarios/world-web.mjs:101:    p.emit('world:zone:enter', { nodeId: root.id });
+playtest/scenarios/world-web.mjs:104:      return current.sceneType === 'instance' && current.sceneMetadata.nodeId === root.id
+playtest/scenarios/world-web.mjs:110:    assert(revisit.sceneMetadata.wardenDead === true, 'the Warden stays down inside the linger window');
+native/tests/networking_tests.cpp:44:  session.handle(Envelope{"world:zone:enter", JsonValue::Object{{"nodeId", "tin:1:0"}}}, [&](const Envelope& event) {
+native/tests/networking_tests.cpp:124:void test_instance_entry_and_stairs() {
+native/tests/networking_tests.cpp:143:  check(in_zone["state"]["sceneMetadata"]["stairsUp"].is_object()
+native/tests/networking_tests.cpp:144:        && in_zone["state"]["sceneMetadata"]["stairsDown"].is_object(), "both stairs exist");
+native/tests/networking_tests.cpp:165:  // Teleporting onto the entry stairs returns to the pre-entry town tile.
+native/tests/networking_tests.cpp:166:  const double stairs_x = in_zone["state"]["sceneMetadata"]["stairsUp"]["x"].number().value_or(0);
+native/tests/networking_tests.cpp:167:  const double stairs_y = in_zone["state"]["sceneMetadata"]["stairsUp"]["y"].number().value_or(0);
+native/tests/networking_tests.cpp:168:  session.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", stairs_x}, {"y", stairs_y}}}, capture);
+native/tests/networking_tests.cpp:171:        "entry stairs return to town");
+native/tests/networking_tests.cpp:333:void test_gate_a_extract_and_stairs() {
+native/tests/networking_tests.cpp:334:  ProtocolSession extract_session("guest-0063-extract", "socket-ex", 23, false);
+native/tests/networking_tests.cpp:335:  extract_session.handle(Envelope{"dev:give", JsonValue::Object{{"itemId", "garnet-amulet"}, {"qty", 1}}},
+native/tests/networking_tests.cpp:337:  extract_session.handle(Envelope{"instance:enterSolo",
+native/tests/networking_tests.cpp:340:  check(!inventory_uuid_for(request_state(extract_session, "ex-0"), "garnet-amulet").empty(),
+native/tests/networking_tests.cpp:341:        "amulet is carried before extract");
+native/tests/networking_tests.cpp:344:  extract_session.handle(Envelope{"player:extract", JsonValue::Object{}}, [&](const Envelope& event) {
+native/tests/networking_tests.cpp:345:    if (event.event == "player:extract") summary = event;
+native/tests/networking_tests.cpp:347:  check(summary.has_value(), "player:extract emits a bank summary");
+native/tests/networking_tests.cpp:348:  check(summary->data["items"].number().value_or(0) >= 1, "extract banks at least the amulet");
+native/tests/networking_tests.cpp:349:  const auto after = request_state(extract_session, "ex-1");
+native/tests/networking_tests.cpp:351:        "extract returns to town");
+native/tests/networking_tests.cpp:352:  check(inventory_uuid_for(after, "garnet-amulet").empty(), "extract clears the amulet from the backpack");
+native/tests/networking_tests.cpp:359:  check(stored, "extract places the amulet in the House store");
+native/tests/networking_tests.cpp:361:  ProtocolSession stairs("guest-0063-stairs", "socket-st", 29, false);
+native/tests/networking_tests.cpp:362:  stairs.handle(Envelope{"dev:give", JsonValue::Object{{"itemId", "bronze-sword"}, {"qty", 1}}},
+native/tests/networking_tests.cpp:364:  stairs.handle(Envelope{"instance:enterSolo", JsonValue::Object{{"template", "dungeon"}, {"layout", "warren"}}},
+native/tests/networking_tests.cpp:366:  const auto in_zone = request_state(stairs, "st-1");
+native/tests/networking_tests.cpp:367:  const double stairs_x = in_zone["state"]["sceneMetadata"]["stairsUp"]["x"].number().value_or(0);
+native/tests/networking_tests.cpp:368:  const double stairs_y = in_zone["state"]["sceneMetadata"]["stairsUp"]["y"].number().value_or(0);
+native/tests/networking_tests.cpp:369:  std::optional<Envelope> stairs_summary;
+native/tests/networking_tests.cpp:370:  stairs.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", stairs_x}, {"y", stairs_y}}},
+native/tests/networking_tests.cpp:372:                  if (event.event == "player:extract") stairs_summary = event;
+native/tests/networking_tests.cpp:374:  check(stairs_summary.has_value(), "stairs-up emits the same player:extract bank summary");
+native/tests/networking_tests.cpp:375:  const auto back = request_state(stairs, "st-2");
+native/tests/networking_tests.cpp:377:        "stairs-up still returns to town");
+native/tests/networking_tests.cpp:378:  check(inventory_uuid_for(back, "bronze-sword").empty(), "stairs-up banks carried items");
+native/tests/networking_tests.cpp:385:  check(sword_stored, "stairs-up and player:extract converge on the House store");
+native/tests/networking_tests.cpp:439:    test_instance_entry_and_stairs();
+native/tests/networking_tests.cpp:442:    test_gate_a_extract_and_stairs();
+native/src/networking.cpp:621:struct QuestObjective { const char* trigger; const char* crit_a; const char* crit_b; int min_depth; };
+native/src/networking.cpp:680:  std::string id, name, template_id, layout, parent_id, warden_name;
+native/src/networking.cpp:713:      node.warden_name = "Warden of " + name;
+native/src/networking.cpp:783:  if (world_->in_instance()) { const auto& meta=world_->metadata(); JsonValue::Object metadata; put(metadata,"seed",static_cast<double>(meta.seed)); put(metadata,"theme",meta.theme); if(meta.layout.empty()) put(metadata,"layout",nullptr); else put(metadata,"layout",meta.layout); put(metadata,"depth",meta.depth);
+native/src/networking.cpp:784:    JsonValue::Object up; put(up,"x",meta.stairs_up.x); put(up,"y",meta.stairs_up.y); put(metadata,"stairsUp",std::move(up));
+native/src/networking.cpp:785:    JsonValue::Object down; put(down,"x",meta.stairs_down.x); put(down,"y",meta.stairs_down.y); put(metadata,"stairsDown",std::move(down));
+native/src/networking.cpp:788:      put(metadata, "nodeId", current_node_id_);
+native/src/networking.cpp:790:      JsonValue::Object entry_gate; put(entry_gate, "x", meta.stairs_up.x); put(entry_gate, "y", meta.stairs_up.y);
+native/src/networking.cpp:794:        JsonValue::Object gate; put(gate, "x", meta.stairs_down.x); put(gate, "y", meta.stairs_down.y);
+native/src/networking.cpp:795:        put(gate, "nodeId", current_child_id_); put(gate, "name", current_child_name_);
+native/src/networking.cpp:799:      put(metadata, "wardenDead", cleared_nodes_.count(current_node_id_) > 0);
+native/src/networking.cpp:813:  put(state,"bestDepth",best_depth_);
+native/src/networking.cpp:864:  if (world_->in_instance()) { const auto& meta=world_->metadata(); JsonValue::Object metadata; put(metadata,"seed",static_cast<double>(meta.seed)); put(metadata,"theme",meta.theme); if(meta.layout.empty()) put(metadata,"layout",nullptr); else put(metadata,"layout",meta.layout); put(metadata,"depth",meta.depth);
+native/src/networking.cpp:865:    JsonValue::Object up; put(up,"x",meta.stairs_up.x); put(up,"y",meta.stairs_up.y); put(metadata,"stairsUp",std::move(up));
+native/src/networking.cpp:866:    JsonValue::Object down; put(down,"x",meta.stairs_down.x); put(down,"y",meta.stairs_down.y); put(metadata,"stairsDown",std::move(down));
+native/src/networking.cpp:869:      put(metadata, "nodeId", current_node_id_);
+native/src/networking.cpp:871:      JsonValue::Object entry_gate; put(entry_gate, "x", meta.stairs_up.x); put(entry_gate, "y", meta.stairs_up.y);
+native/src/networking.cpp:875:        JsonValue::Object gate; put(gate, "x", meta.stairs_down.x); put(gate, "y", meta.stairs_down.y);
+native/src/networking.cpp:876:        put(gate, "nodeId", current_child_id_); put(gate, "name", current_child_name_);
+native/src/networking.cpp:880:      put(metadata, "wardenDead", cleared_nodes_.count(current_node_id_) > 0);
+native/src/networking.cpp:939:void ProtocolSession::finish_extraction(const std::function<void(const Envelope&)>& emit) {
+native/src/networking.cpp:940:  // Drain backpack + wear into the House store. JS has no player:extract;
+native/src/networking.cpp:968:  emit(Envelope{"player:extract", JsonValue(std::move(summary))});
+native/src/networking.cpp:1293:  const std::uint64_t key = meta.seed * 131u + static_cast<std::uint64_t>(meta.depth);
+native/src/networking.cpp:1299:    put(data, "depth", meta.depth);
+native/src/networking.cpp:1303:  emit_message(emit, "Floor " + std::to_string(meta.depth) +
+native/src/networking.cpp:1304:      " cleared! Rewards distributed - find the stairs to descend, or take the entry stairs to leave.");
+native/src/networking.cpp:1305:  if (first_goal_stage_ == "clear-floor" && meta.theme == "dungeon" && meta.layout == "warren" && meta.depth == 1) {
+native/src/networking.cpp:1359:                                    const std::string& detail_a, const std::string& detail_b, int depth) {
+native/src/networking.cpp:1368:  if (objective.min_depth > 0 && depth < objective.min_depth) return;
+native/src/networking.cpp:1369:  if (objective.min_depth == 0 && std::string(trigger) == "delve" && objective.crit_b[0] && depth < 2) return;
+native/src/networking.cpp:1429:    put(row, "wardenName", node.warden_name);
+native/src/networking.cpp:1461:  node_warden_dead_on_entry_ = cleared_nodes_.count(node->id) > 0;
+native/src/networking.cpp:1462:  world_->set_boss_name_override(node->warden_name);
+native/src/networking.cpp:1463:  world_->set_spawn_suppressed(node_warden_dead_on_entry_);
+native/src/networking.cpp:1467:  world_->set_block_stairs_down(!node_warden_dead_on_entry_);
+native/src/networking.cpp:1469:  world_->set_stairs_up_returns_to_town(true);
+native/src/networking.cpp:1474:  quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth);
+native/src/networking.cpp:1480:  world_->set_block_stairs_down(false);
+native/src/networking.cpp:1481:  world_->set_stairs_up_returns_to_town(false);
+native/src/networking.cpp:1519:    // node instances: landing on the stairs-down gate while the Warden
+native/src/networking.cpp:1524:      if (tile.x == meta.stairs_down.x && tile.y == meta.stairs_down.y) {
+native/src/networking.cpp:1525:        bool warden_alive = false;
+native/src/networking.cpp:1526:        for (const auto& monster : world_->monsters()) if (monster.alive && monster.boss) { warden_alive = true; break; }
+native/src/networking.cpp:1527:        if (warden_alive) emit_message(emit, "No road holds past a living Warden.");
+native/src/networking.cpp:1997:  // advance_combat; the legacy synthetic 'drop' trophy event is retired.
+native/src/networking.cpp:2067:          world_->set_block_stairs_down(false);
+native/src/networking.cpp:2072:      // first-goal.js notifyFirstGoalWardenDown: any tier-1 (depth-1) boss.
+native/src/networking.cpp:2073:      if (first_goal_stage_ == "clear-floor" && world_->metadata().depth <= 1) {
+native/src/networking.cpp:2116:void ProtocolSession::handle_extract(const std::function<void(const Envelope&)>& emit) {
+native/src/networking.cpp:2118:    emit_message(emit, "There is no extraction here.");
+native/src/networking.cpp:2124:  finish_extraction(emit);
+native/src/networking.cpp:2314:  if (envelope.event=="world:zone:enter") { const auto node=as_string(payload?payload->get("nodeId"):nullptr,"tin:1:0"); simulation_->dispatch(Command::enter(node.rfind("route:",0)==0?node:"route:"+node)); { std::string web_road; int web_tier=0; int web_index=0; if (parse_node_id(node,&web_road,&web_tier,&web_index)) { enter_road_node(node, emit); return; } } current_node_id_.clear(); world_->set_block_stairs_down(false); world_->set_stairs_up_returns_to_town(false); world_->enter_solo_instance("dungeon",""); emit_transition(emit,"world:scene:transition"); emit_ground_change(emit); last_instance_theme_ = world_->metadata().theme; last_instance_layout_ = world_->metadata().layout; quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); return; }
+native/src/networking.cpp:2315:  if (envelope.event=="instance:enterSolo") { current_node_id_.clear(); world_->set_block_stairs_down(false); world_->set_stairs_up_returns_to_town(false); world_->enter_solo_instance(as_string(payload?payload->get("template"):nullptr,"dungeon"),as_string(payload?payload->get("layout"):nullptr,"")); emit_transition(emit,"party:scene:transition"); emit_ground_change(emit); last_instance_theme_ = world_->metadata().theme; last_instance_layout_ = world_->metadata().layout; quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); return; }
+native/src/networking.cpp:2316:  if (envelope.event=="player:move") { const auto direction=as_string(payload?payload->get("direction"):nullptr); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); if (world_->apply_movement_sample(direction,now_ms())) { emit_movement(emit); auto_pickup_gold(emit); quest_trigger("move", emit); check_road_gates(emit); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool scene_changed=world_->scene_id()!=scene_before; if (depth_changed||scene_changed) { if (was_instance&&!world_->in_instance()) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); quest_trigger("return-surface", emit, zone_id_for_instance(last_instance_theme_, last_instance_layout_), last_instance_theme_); } if (depth_changed) quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); if (depth_changed && !current_node_id_.empty() && !current_child_id_.empty()) { current_node_id_ = current_child_id_; current_node_tier_ += 1; current_node_name_ = current_child_name_.empty() ? current_node_name_ : current_child_name_; current_child_id_.clear(); world_->set_block_stairs_down(true); } emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) emit_ground_change(emit); } } return; }
+native/src/networking.cpp:2317:  if (envelope.event=="dev:teleport") { if (!payload) return; const auto* x=payload->get("x"); const auto* y=payload->get("y"); if (!x||!x->number()||!y||!y->number()) return; const int tx=static_cast<int>(*x->number()); const int ty=static_cast<int>(*y->number()); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); world_->teleport(tx,ty,now_ms()); const bool returned=was_instance&&!world_->in_instance(); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool transitioned=returned||depth_changed||world_->scene_id()!=scene_before; emit_movement(emit); emit_message(emit,"Teleported to "+std::to_string(tx)+", "+std::to_string(ty)+(transitioned?" (portal followed).":".")); check_road_gates(emit); if (returned) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); maybe_complete_first_goal(emit); quest_trigger("return-surface", emit, zone_id_for_instance(last_instance_theme_, last_instance_layout_), last_instance_theme_); } if (transitioned) emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) { if (depth_changed) { emit_ground_change(emit); quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); if (!current_node_id_.empty() && !current_child_id_.empty()) { current_node_id_ = current_child_id_; current_node_tier_ += 1; if (!current_child_name_.empty()) { current_node_name_ = current_child_name_; world_->set_scene_name(current_node_name_); } current_child_id_.clear(); world_->set_block_stairs_down(true); } } process_combat(now_ms(),emit); } return; }
+native/src/networking.cpp:2320:  if (envelope.event=="world:road:chart") { emit_chart_screen(as_string(payload?payload->get("roadId"):nullptr,"tin"), emit); return; }
+native/src/networking.cpp:2451:  if (envelope.event=="player:extract") { handle_extract(emit); return; }
+native/src/networking.cpp:2466:      bool warden_was_alive = false;
+native/src/networking.cpp:2467:      for (const auto& monster : world_->monsters()) if (monster.alive && monster.boss) { warden_was_alive = true; break; }
+native/src/networking.cpp:2469:      if (warden_was_alive && !current_node_id_.empty()) {
+native/src/networking.cpp:2471:        world_->set_block_stairs_down(false);
+native/src/networking.cpp:2486:      finish_extraction(emit);
+native/src/networking.cpp:2496:  if (envelope.event=="dev:state") { maybe_respawn(now_ms()); if (world_->in_instance()) best_depth_=(std::max)(best_depth_,world_->metadata().depth); process_combat(now_ms(),emit); const auto id=as_string(payload?payload->get("requestId"):nullptr); JsonValue data; parse_json(state_payload(id),data); emit(Envelope{"dev:state",std::move(data)}); return; }

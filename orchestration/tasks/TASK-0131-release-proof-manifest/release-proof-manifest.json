@@ -1,0 +1,220 @@
+{
+  "schema_version": "1.0.0",
+  "task": "TASK-0131",
+  "title": "Release-proof manifest schema",
+  "generated_at": "2026-08-21T22:52:07-07:00",
+  "purpose": "Binding contract for what a Verdigris release claim must prove. Evidence is bound as exact values (commit SHAs, exit codes, SHA-256 digests, verbatim command outputs). Missing proof remains missing: CI labels and prose cannot stand in for artifacts.",
+  "source_head": {
+    "commit": "b3599c80122d09cd0685ae96830990cc5bada5cf",
+    "branch": "codex/TASK-0131-release-proof-manifest-ox-pc-f",
+    "immutable_task_base": "cab50d62cb121ab6a88fa513257e645447226959",
+    "base_ancestry_verified": true,
+    "worktree_clean_at_claim": true,
+    "note": "Routed HEAD at claim time. Implementation commits after 584a7e11 (claim) extend this branch; a validator must re-resolve HEAD and re-verify ancestry of the immutable task base before trusting any binding in this manifest."
+  },
+  "commands": [
+    {
+      "name": "acceptance.node.manifest-keys",
+      "command": "node -e \"const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0131-release-proof-manifest/release-proof-manifest.json','utf8'));for(const k of ['schema_version','source_head','commands','environment','artifacts','platform_coverage','rollback','owner_actions','verdict'])if(!(k in j))throw Error('missing '+k);console.log('release proof manifest: PASS')\"",
+      "exit_code": 0,
+      "stdout": "release proof manifest: PASS",
+      "status": "pass"
+    },
+    {
+      "name": "acceptance.node.negative-cases",
+      "command": "node -e \"const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0131-release-proof-manifest/fixtures/negative-cases.json','utf8'));for(const k of ['STALE_HEAD','NONZERO_EXIT','MISSING_ARTIFACT','HASH_MISMATCH','UNVERIFIED_ENVIRONMENT','MISSING_ROLLBACK','OWNER_ACTION_UNPROVEN'])if(!j.cases.some(x=>x.expected_error===k))throw Error('missing '+k);console.log('release proof negatives: PASS')\"",
+      "exit_code": 0,
+      "stdout": "release proof negatives: PASS",
+      "status": "pass"
+    },
+    {
+      "name": "acceptance.rg.release-surface-inventory",
+      "command": "rg -n 'release|artifact|installer|sign|notari|rollback|deploy|workflow_dispatch' .github native docs orchestration -g '*.yml' -g '*.yaml' -g '*.md' -g '*.ps1'",
+      "exit_code": 0,
+      "stdout_summary": "exit 0 on every run. Line counts across runs: 396 (manifest + fixtures + first VALIDATION.md draft), 419 (+ finalized VALIDATION.md), 441 (definitive run with all five task-folder files present); the growth is exclusively this task's own deliverables matching the pattern. Concentration: orchestration task documents (TASK-0120 release-verification-gap-audit REPORT/FINDINGS/SPEC/REVIEW, TASK-0134 distribution-signing-boundary SPEC, PROGRAM_GRAPH, RUN_STATUS, DECISIONS); .github/workflows/ci.yml ('Verify release candidate' step, upload-artifact actions), .github/workflows/native.yml (upload-artifact), .github/CONTRIBUTING.md; one native/build.ps1 comment mentioning an installer directory. Matches are documentation and CI plumbing surfaces, none constitute release evidence.",
+      "status": "pass",
+      "interpretation": "Inventory of existing release-related surfaces. Matches are candidates for future evidence binding, not evidence themselves."
+    },
+    {
+      "name": "acceptance.git.diff-check",
+      "command": "git diff --check",
+      "exit_code": 0,
+      "stdout": "",
+      "status": "pass"
+    },
+    {
+      "name": "acceptance.git.changed-files",
+      "command": "git diff --name-only cab50d62cb121ab6a88fa513257e645447226959..HEAD",
+      "exit_code": 0,
+      "stdout_at_preliminary_run": [
+        "orchestration/REENTRY-OX-ALPHA-PC.md",
+        "orchestration/RUN_STATUS.md",
+        "orchestration/tasks/TASK-0112-passive-tree-engine-scaffold/SPEC.md",
+        "orchestration/tasks/TASK-0130-gate-c-decision-envelope/SPEC.md",
+        "orchestration/tasks/TASK-0131-release-proof-manifest/SPEC.md",
+        "orchestration/tasks/TASK-0131-release-proof-manifest/STATUS.md",
+        "orchestration/tasks/TASK-0132-clean-machine-harness-contract/SPEC.md",
+        "orchestration/tasks/TASK-0133-save-migration-rollback-contract/SPEC.md",
+        "orchestration/tasks/TASK-0134-distribution-signing-boundary/SPEC.md"
+      ],
+      "status": "pass",
+      "interpretation": "Enumerates every file changed since the immutable task base; proves the change surface stays inside owned_paths. The first five entries and the sibling TASK SPECs were routed on this branch before the claim (routed HEAD b3599c80); this worker's writes are confined to orchestration/tasks/TASK-0131-release-proof-manifest/**."
+    }
+  ],
+  "environment": {
+    "os": "Microsoft Windows 10 Pro",
+    "os_version": "10.0.19045 (2009), Microsoft Windows NT 10.0.19045.0",
+    "architecture": "AMD64",
+    "cpu": "AMD Ryzen 5 1600 Six-Core Processor",
+    "shell": "PowerShell 7.6.4 (pwsh)",
+    "node": "v22.11.0",
+    "git": "git version 2.29.2.windows.2",
+    "ripgrep": "ripgrep 15.0.0 (rev 3a612f88b8)",
+    "opencode_cli": "1.18.21",
+    "opencode_cli_note": "Resolved via C:\\Users\\Alex\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe; the bare `opencode` command is not on this shell's PATH.",
+    "worker": "ox-pc-f",
+    "provider": "openrouter",
+    "model": "stealth/ox-alpha",
+    "port_capsule": "6720-6739",
+    "verified": true,
+    "verification_method": "Version and platform facts captured by running `node --version`, `git --version`, `rg --version`, `$PSVersionTable.PSVersion.ToString()`, `opencode.exe --version`, `Get-ComputerInfo`, `[System.Environment]::OSVersion.VersionString`, and `$env:PROCESSOR_ARCHITECTURE` inside the audited worktree on 2026-08-21; verbatim outputs recorded in VALIDATION.md.",
+    "verification_outputs": [
+      { "command": "node --version", "output": "v22.11.0" },
+      { "command": "git --version", "output": "git version 2.29.2.windows.2" },
+      { "command": "rg --version", "output": "ripgrep 15.0.0 (rev 3a612f88b8)" },
+      { "command": "$PSVersionTable.PSVersion.ToString()", "output": "7.6.4" },
+      { "command": "opencode.exe --version", "output": "1.18.21" },
+      { "command": "[System.Environment]::OSVersion.VersionString", "output": "Microsoft Windows NT 10.0.19045.0" },
+      { "command": "$env:PROCESSOR_ARCHITECTURE", "output": "AMD64" }
+    ],
+    "status": "verified"
+  },
+  "artifacts": [
+    {
+      "path": "orchestration/tasks/TASK-0131-release-proof-manifest/fixtures/negative-cases.json",
+      "role": "negative validation fixtures for the manifest schema",
+      "bytes": 4826,
+      "sha256": "e75964432c816d4fc7adb61312e62a0c9fd99776dce9d3b98fcfe8fe2b9802e7"
+    },
+    {
+      "path": "orchestration/tasks/TASK-0131-release-proof-manifest/VALIDATION.md",
+      "role": "validation record: gate runs, environment verification, honest evidence assessment",
+      "bytes": 6753,
+      "sha256": "166e5ddcadcc8673997f97d30bb1dd6e80ea99733b01bbbd08876cba93d72fd4"
+    },
+    {
+      "path": "orchestration/tasks/TASK-0131-release-proof-manifest/release-proof-manifest.json",
+      "role": "this contract",
+      "bytes": null,
+      "sha256": null,
+      "note": "Self-referential; a validator computes this digest externally and records it beside the audited head."
+    },
+    {
+      "path": "orchestration/tasks/TASK-0131-release-proof-manifest/REPORT.md",
+      "role": "implementation report",
+      "bytes": null,
+      "sha256": null,
+      "note": "Prose report; not itself evidence. Bound values live in this manifest."
+    },
+    {
+      "path": "orchestration/tasks/TASK-0131-release-proof-manifest/STATUS.md",
+      "role": "claim and lifecycle state",
+      "bytes": null,
+      "sha256": null,
+      "note": "Lifecycle file; digest intentionally omitted because it changes at each state transition."
+    }
+  ],
+  "platform_coverage": [
+    {
+      "platform": "windows-x64",
+      "role": "development and validation host",
+      "build_artifact": null,
+      "installer_artifact": null,
+      "runtime_verification": null,
+      "status": "unproven"
+    },
+    {
+      "platform": "macos-arm64",
+      "role": "target distribution platform",
+      "build_artifact": null,
+      "installer_artifact": null,
+      "runtime_verification": null,
+      "status": "unproven"
+    },
+    {
+      "platform": "macos-x64",
+      "role": "target distribution platform",
+      "build_artifact": null,
+      "installer_artifact": null,
+      "runtime_verification": null,
+      "status": "unproven"
+    },
+    {
+      "platform": "linux-x64",
+      "role": "target distribution platform",
+      "build_artifact": null,
+      "installer_artifact": null,
+      "runtime_verification": null,
+      "status": "unproven"
+    }
+  ],
+  "rollback": {
+    "status": "missing",
+    "release_to_rollback": null,
+    "procedure_documented": false,
+    "procedure_artifact": null,
+    "rehearsal_evidence": null,
+    "note": "No release artifact exists to roll back and no rollback rehearsal has been executed. Missing proof remains missing; this block MUST be 'proven' with hashed artifacts or an executed procedure record before any release_ready verdict."
+  },
+  "owner_actions": [
+    {
+      "action": "release build",
+      "authorized": false,
+      "performed": false,
+      "evidence": null
+    },
+    {
+      "action": "deployment",
+      "authorized": false,
+      "performed": false,
+      "evidence": null
+    },
+    {
+      "action": "installer packaging",
+      "authorized": false,
+      "performed": false,
+      "evidence": null
+    },
+    {
+      "action": "code signing",
+      "authorized": false,
+      "performed": false,
+      "evidence": null
+    },
+    {
+      "action": "notarization",
+      "authorized": false,
+      "performed": false,
+      "evidence": null
+    },
+    {
+      "action": "distribution account action",
+      "authorized": false,
+      "performed": false,
+      "evidence": null
+    }
+  ],
+  "verdict": {
+    "release_ready": false,
+    "state": "NOT_PROVEN",
+    "evidence_gaps": [
+      "no release build artifact exists on any platform",
+      "no installer or package artifact exists",
+      "no code-signing or notarization evidence exists (and none was authorized)",
+      "no deployment evidence exists",
+      "rollback procedure undocumented and unrehearsed",
+      "platform coverage unproven beyond the development host's toolchain inventory"
+    ],
+    "statement": "This manifest defines and demonstrates the schema only. It proves nothing about release readiness, and must never be cited as release readiness. Missing proof remains missing; CI labels and prose cannot stand in for artifacts."
+  }
+}

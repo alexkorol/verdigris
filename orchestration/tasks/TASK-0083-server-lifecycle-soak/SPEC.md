@@ -1,7 +1,7 @@
 ---
 task: TASK-0083
 title: Native WebSocket server lifecycle soak
-state: READY
+state: SUPERSEDED
 packet: BOUNDED-DESIGN
 topology: INDEPENDENT
 priority: high (INC-012 handoff regression; post-PR46 thread join)
@@ -53,3 +53,9 @@ eight-client burst. Preserve their JSON under this task's `captures/` folder.
 STOP if a source fix is needed outside the owned paths. Record the first
 failing cycle and exact transcript; do not patch networking behavior inside
 this packet.
+
+# Supersession
+
+Superseded before claim by TASK-0129. The immutable base SHA is not present in
+the repository or any origin ref and cannot be fetched from origin; ox-pc-d
+proved the mismatch during preflight and stopped before any task write.

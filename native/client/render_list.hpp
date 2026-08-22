@@ -38,6 +38,10 @@ enum class Op {
   PaneWeapon, // label = equipped weapon name (or "(empty)")
   PaneItem,   // label = backpack cell contents
   PaneBanked, // label = "items N trophies M"
+  // TASK-0145: Chronicles front door + expedition identity chip.
+  Chronicles, // label = one front-door line ("title", "house <name>",
+              // "scion <name>", "action:<id>", "oath:on|off", ...)
+  HouseChip,  // label = "House <name> - Scion <name>" expedition identity
 };
 
 struct Item {

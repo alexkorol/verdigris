@@ -1,0 +1,37 @@
+{
+  "source_head": "9aa43b7aa715b1b12efd3f33ab434acfc834de14",
+  "platform": {
+    "os_name": "windows",
+    "os_version": "10.0.19045",
+    "cpu_architecture": "x64",
+    "toolchain": "MSVC cl.exe driven by native/build.ps1"
+  },
+  "context": "local",
+  "attempts": [
+    {
+      "outcome": "QUARANTINED",
+      "classification": "ENVIRONMENTAL",
+      "phase": "server-start",
+      "binder_error": "no free port in capsule 6680-6699",
+      "started_at": "2026-08-21T11:00:00Z",
+      "finished_at": "2026-08-21T11:00:00Z"
+    },
+    {
+      "outcome": "QUARANTINED",
+      "classification": "ENVIRONMENTAL",
+      "phase": "server-start",
+      "binder_error": "no free port in capsule 6680-6699",
+      "started_at": "2026-08-21T11:03:00Z",
+      "finished_at": "2026-08-21T11:03:00Z"
+    },
+    {
+      "outcome": "QUARANTINED",
+      "classification": "ENVIRONMENTAL",
+      "phase": "server-start",
+      "binder_error": "no free port in capsule 6680-6699",
+      "started_at": "2026-08-21T11:06:00Z",
+      "finished_at": "2026-08-21T11:06:00Z"
+    }
+  ],
+  "conclusion": "BLOCKED_ENVIRONMENTAL"
+}

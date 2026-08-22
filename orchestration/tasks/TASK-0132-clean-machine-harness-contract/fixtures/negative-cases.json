@@ -1,0 +1,92 @@
+{
+  "schema_version": "1.0.0",
+  "purpose": "Negative control fixtures for the clean-machine harness contract. Each case describes an injected fault, the stage that must detect it, the detection predicate, and the expected_error code the harness must report. A validator must be able to reproduce every case deterministically and must fail if any case produces a green.",
+  "contract_ref": "orchestration/tasks/TASK-0132-clean-machine-harness-contract/clean-machine-contract.json",
+  "cases": [
+    {
+      "id": "NEG-001",
+      "expected_error": "DIRTY_BASE",
+      "stage": "checkout",
+      "severity": "blocker",
+      "injection": "After cloning at the pinned base commit, modify a tracked file (for example append a byte to package.json) before any stage runs.",
+      "detection": "git status --porcelain in the workspace is non-empty, or resolved HEAD does not equal the pinned base_commit.",
+      "expected_behavior": "The run aborts before toolchain stage and labels the run invalid with DIRTY_BASE.",
+      "must_not_pass": true
+    },
+    {
+      "id": "NEG-002",
+      "expected_error": "CACHE_LEAK",
+      "stage": "cache",
+      "severity": "blocker",
+      "injection": "Pre-populate the dependency/build cache on the host and configure the harness to restore it, but strip the provenance record (no key, source, content hash, or producer run id).",
+      "detection": "A cache hit exists in the run evidence whose record lacks any required provenance field, or a cache was consumed without any cache record at all.",
+      "expected_behavior": "Even with all stages exiting zero, the run is rejected as clean-machine evidence with CACHE_LEAK; it may only be labeled developer_local.",
+      "must_not_pass": true
+    },
+    {
+      "id": "NEG-003",
+      "expected_error": "MISSING_TOOLCHAIN",
+      "stage": "toolchain",
+      "severity": "blocker",
+      "injection": "Run on a host image with cmake removed from PATH (or node absent).",
+      "detection": "A required tool reports not-found, or its observed version violates the declared pin.",
+      "expected_behavior": "The toolchain stage fails naming the missing tool and the violated pin; the run aborts before dependencies.",
+      "must_not_pass": true
+    },
+    {
+      "id": "NEG-004",
+      "expected_error": "DEPENDENCY_DRIFT",
+      "stage": "dependencies",
+      "severity": "blocker",
+      "injection": "After npm ci completes, add an extraneous package to node_modules (for example npm install left-pad@1.3.0 --no-save) or delete an installed package directory.",
+      "detection": "Post-install dependency-tree fingerprint differs from the lockfile-derived expectation recorded at stage start.",
+      "expected_behavior": "The dependencies stage fails with DEPENDENCY_DRIFT naming the fingerprint mismatch; build never starts.",
+      "must_not_pass": true
+    },
+    {
+      "id": "NEG-005",
+      "expected_error": "NONZERO_STAGE",
+      "stage": "tests",
+      "severity": "blocker",
+      "injection": "Inject a failing assertion into one deterministic unit test (or force native/build.ps1 -RunTests to fail by breaking a fixture).",
+      "detection": "Any stage command exits non-zero; the evidence record carries the exit code, failing names, and log tail.",
+      "expected_behavior": "The run stops at the failing stage and is labeled invalid with NONZERO_STAGE; no later stage may run.",
+      "must_not_pass": true
+    },
+    {
+      "id": "NEG-006",
+      "expected_error": "LEAKED_PROCESS",
+      "stage": "process",
+      "severity": "blocker",
+      "injection": "Start the built server, then make cleanup skip termination of its PID (simulating a crashed or forgotten child).",
+      "detection": "Post-cleanup listener enumeration finds a tracked PID still alive or still holding a capsule port.",
+      "expected_behavior": "The process stage (or cleanup verification) reports LEAKED_PROCESS with pid, process name, and held port; the host is not safe to destroy and the run is invalid.",
+      "must_not_pass": true
+    },
+    {
+      "id": "NEG-007",
+      "expected_error": "NON_LOOPBACK_BIND",
+      "stage": "launch",
+      "severity": "P0",
+      "injection": "Launch the server with a configuration that binds 0.0.0.0 (or any address other than 127.0.0.1) inside the capsule range.",
+      "detection": "Observed listener table for the launched PID shows a bind address other than 127.0.0.1.",
+      "expected_behavior": "The launch stage fails immediately with NON_LOOPBACK_BIND naming the process, port, and observed address; the process is terminated as tracked and the run is invalid.",
+      "must_not_pass": true
+    },
+    {
+      "id": "NEG-008",
+      "expected_error": "FORBIDDEN_PORT_6500",
+      "stage": "port",
+      "severity": "P0",
+      "injection": "Set the server (or smoke client) target port to 6500 — the owner-reserved live server port — via config, command line, or environment default.",
+      "detection": "Any launch argument, configuration value, environment default, or observed listener references port 6500, regardless of bind address.",
+      "expected_behavior": "The run fails with FORBIDDEN_PORT_6500 before or at launch; this failure is never waivable and is reported at P0 on every platform.",
+      "must_not_pass": true
+    }
+  ],
+  "validator_requirements": [
+    "Every case must be reproducible from its injection description alone.",
+    "A harness version passes validation only when all eight cases produce their expected_error and no case produces a green run.",
+    "Positive control: the unmodified pipeline on a fresh disposable host must produce zero expected_error codes and label the run clean_machine_verified."
+  ]
+}

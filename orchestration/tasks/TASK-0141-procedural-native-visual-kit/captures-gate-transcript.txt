@@ -1,0 +1,95 @@
+PS> node --test orchestration/tasks/TASK-0141-procedural-native-visual-kit/asset-kit.test.mjs
+TAP version 13
+# Subtest: manifest declares exactly the eight canonical roles
+ok 1 - manifest declares exactly the eight canonical roles
+  ---
+  duration_ms: 11.1496
+  ...
+# Subtest: terrain role carries exactly two motifs and others exactly one
+ok 2 - terrain role carries exactly two motifs and others exactly one
+  ---
+  duration_ms: 4.0965
+  ...
+# Subtest: every motif palette names concrete colors
+ok 3 - every motif palette names concrete colors
+  ---
+  duration_ms: 3.6073
+  ...
+# Subtest: committed SVG sources exist with valid roots matching the generator
+ok 4 - committed SVG sources exist with valid roots matching the generator
+  ---
+  duration_ms: 12.606
+  ...
+# Subtest: generation is deterministic across repeated runs
+ok 5 - generation is deterministic across repeated runs
+  ---
+  duration_ms: 6.6206
+  ...
+# Subtest: committed manifest and header match regeneration byte-for-byte
+ok 6 - committed manifest and header match regeneration byte-for-byte
+  ---
+  duration_ms: 10.976
+  ...
+# Subtest: generated header covers every declared symbol
+ok 7 - generated header covers every declared symbol
+  ---
+  duration_ms: 0.9492
+  ...
+# Subtest: generated header is data only with no platform or behavior surface
+ok 8 - generated header is data only with no platform or behavior surface
+  ---
+  duration_ms: 0.4099
+  ...
+# Subtest: kit artifacts carry no forbidden port or external references
+ok 9 - kit artifacts carry no forbidden port or external references
+  ---
+  duration_ms: 8.8637
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 166.4643
+exit=0
+
+PS> node orchestration/tasks/TASK-0141-procedural-native-visual-kit/generate-assets.mjs --check
+OK native/client/assets/svg/player.svg
+OK native/client/assets/svg/raider.svg
+OK native/client/assets/svg/elite.svg
+OK native/client/assets/svg/tree.svg
+OK native/client/assets/svg/ruin.svg
+OK native/client/assets/svg/dwelling.svg
+OK native/client/assets/svg/shrine.svg
+OK native/client/assets/svg/terrain-a.svg
+OK native/client/assets/svg/terrain-b.svg
+OK native/client/assets/manifest.json
+OK native/client/assets/generated/visual_kit.h
+visual kit up to date
+exit=0
+
+PS> git diff --check
+exit=0
+
+PS> git diff --name-only d0f74af3d30f238479218f8be412a01d61e21df3..HEAD
+native/client/assets/generated/visual_kit.h
+native/client/assets/manifest.json
+native/client/assets/svg/dwelling.svg
+native/client/assets/svg/elite.svg
+native/client/assets/svg/player.svg
+native/client/assets/svg/raider.svg
+native/client/assets/svg/ruin.svg
+native/client/assets/svg/shrine.svg
+native/client/assets/svg/terrain-a.svg
+native/client/assets/svg/terrain-b.svg
+native/client/assets/svg/tree.svg
+orchestration/tasks/TASK-0141-procedural-native-visual-kit/SPEC.md
+orchestration/tasks/TASK-0141-procedural-native-visual-kit/STATUS.md
+orchestration/tasks/TASK-0141-procedural-native-visual-kit/asset-kit.test.mjs
+orchestration/tasks/TASK-0141-procedural-native-visual-kit/generate-assets.mjs
+orchestration/tasks/TASK-0142-native-client-presentation-slice/SPEC.md
+orchestration/tasks/TASK-0143-native-gameplay-runtime-slice/SPEC.md
+exit=0

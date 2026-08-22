@@ -24,16 +24,33 @@ void defeat_enemy(Simulation& sim) {
   // Approach until the D-114 contact band, then keep the primary rhythm. The
   // helper deliberately follows the same shared range table as the client so
   // changing arena scale cannot leave extraction tests stranded out of reach.
+  // The first expedition fields a Warden pack: engage the nearest living
+  // warden, hold position through the one-telegraph window in which the
+  // whole reserve pack converges, and only stop once no warden remains
+  // alive or owed.
+  std::string engaged_id;
   for (int i = 0; i < 256; ++i) {
     const Actor* player = sim.actor(sim.scion().actor_id);
     const Actor* enemy = nullptr;
     for (const auto& actor : sim.actors()) {
-      if (actor.kind == ActorKind::Monster) {
+      if (actor.kind == ActorKind::Monster && actor.alive) {
         enemy = &actor;
         break;
       }
     }
-    if (!player || !enemy || !enemy->alive) break;
+    if (!player || !enemy) {
+      if (!sim.pending_wave().empty()) {
+        sim.dispatch(Command::action_use(ActionType::Wait));
+        continue;
+      }
+      break;
+    }
+    if (enemy->id != engaged_id) {
+      // Fresh duel, fresh Scion: each warden is fought from full life so a
+      // previous pack mate cannot decide the next fight in advance.
+      sim.actor(sim.scion().actor_id)->stats.life = sim.actor(sim.scion().actor_id)->stats.life_max;
+      engaged_id = enemy->id;
+    }
     const int distance = manhattan_distance(player->position, enemy->position);
     if (distance > world_scale::kMeleeRange)
       sim.dispatch(Command::move(1, 0));
@@ -44,6 +61,7 @@ void defeat_enemy(Simulation& sim) {
   for (const auto& actor : sim.actors())
     if (actor.kind == ActorKind::Monster && actor.alive) dead = false;
   check(dead, "melee defeats the instance enemy");
+  check(sim.pending_wave().empty(), "no warden of the pack remains unmaterialized");
 }
 
 void pick_all_rewards(Simulation& sim) {
@@ -119,6 +137,14 @@ Actor* first_monster(Simulation& sim) {
     if (actor.kind == ActorKind::Monster) return sim.actor(actor.id);
   }
   return nullptr;
+}
+
+int living_monster_count(const Simulation& sim) {
+  int count = 0;
+  for (const auto& actor : sim.actors()) {
+    if (actor.kind == ActorKind::Monster && actor.alive) ++count;
+  }
+  return count;
 }
 
 void test_skill_resource_gating_and_thrust() {
@@ -1027,48 +1053,346 @@ void test_pack_clear_waits_for_the_last_monster() {
     Actor* player = sim.actor(sim.scion().actor_id);
     Actor* first = first_monster(sim);
     check(player && first, "pack setup has a player and initial monster");
+    check(sim.pending_wave().size() == 2,
+          "the entry warden holds the line while two pack mates wait in reserve");
     player->position = {0, 0};
     player->stats.life = player->stats.life_max;
     first->position = {world_scale::kMeleeRange - 1, 0};
     first->stats.life = 1;
-    const std::string first_id = first->id;
-    const std::string second_id = sim.spawn_monster({world_scale::kMeleeRange, 0});
-    Actor* second = sim.actor(second_id);
-    check(second != nullptr, "pack setup adds a second monster");
-    second->stats.life = 1;
-    return std::pair<std::string, std::string>{first_id, second_id};
+    return first->id;
+  };
+  // The whole owed pack crosses its shared deadline together: this helper
+  // walks the deterministic windup (the killing dispatch already spent the
+  // first of the kTelegraphTicks ticks), proves no reserve warden is alive
+  // just before the deadline, and lands the pack on the floor at it.
+  auto cross_reinforcement_deadline = [](Simulation& sim) {
+    check(!sim.pending_wave().empty(), "materialization setup has a pending warden");
+    for (int i = 0; i < kTelegraphTicks - 2; ++i)
+      sim.dispatch(Command::action_use(ActionType::Wait));
+    check(living_monster_count(sim) == 0,
+          "immediately before the reinforcement deadline no reserve warden is alive");
+    sim.dispatch(Command::action_use(ActionType::Wait));
+    check(sim.pending_wave().empty(),
+          "crossing the deadline steps the entire roster onto the floor");
+  };
+  auto strike_down = [](Simulation& sim, const std::string& target_id) {
+    Actor* player = sim.actor(sim.scion().actor_id);
+    Actor* target = sim.actor(target_id);
+    check(player && target && target->alive, "strike setup has a living warden");
+    // Bring the warden into the Scion's reach instead of moving the Scion:
+    // the scripted Scion stays on its origin-aligned approach line so the
+    // shared extraction helper still walks home exactly.
+    target->position = {player->position.x + world_scale::kMeleeRange - 1, player->position.y};
+    player->cooldown_ticks = 0;
+    player->stats.resource = player->stats.resource_max;
+    target->stats.life = 1;
+    sim.dispatch(Command::action_use(ActionType::Melee));
+    check(!sim.actor(target_id)->alive, "the struck warden falls");
   };
 
   Simulation first(0x2505ULL);
-  const auto ids = prepare(first);
+  const std::string entry_id = prepare(first);
+  const std::string elite_id = first.pending_wave()[0].id;
+  const std::string flanker_id = first.pending_wave()[1].id;
   first.dispatch(Command::action_use(ActionType::Melee));
-  check(!first.actor(ids.first)->alive && first.actor(ids.second)->alive,
-        "first pack kill leaves the second monster alive");
+  check(!first.actor(entry_id)->alive, "first pack kill fells the entry warden");
+  check(living_monster_count(first) == 0 && first.pending_wave().size() == 2,
+        "the entry kill leaves both reserves unmaterialized and nothing alive");
   check(!first.house().route_cleared("route:tin:1:0") &&
             !first.house().route_unlocked("route:tin:2:0") &&
             !first.house().campaign_complete,
         "first pack kill does not clear the route or campaign");
-  first.actor(first.scion().actor_id)->cooldown_ticks = 0;
-  first.dispatch(Command::action_use(ActionType::Melee));
-  check(!first.actor(ids.second)->alive && first.house().route_cleared("route:tin:1:0") &&
+  check(first.instance().phase == ExpeditionPhase::SlayWardens &&
+            count_events(first, EventType::ExpeditionPhaseChanged) == 0,
+        "an owed warden keeps the slay objective even with an empty floor");
+
+  cross_reinforcement_deadline(first);
+  const Actor* elite = first.actor(elite_id);
+  const Actor* flanker = first.actor(flanker_id);
+  check(elite && flanker && elite->alive && flanker->alive &&
+            living_monster_count(first) == 2,
+        "both reserve wardens are alive concurrently at the shared deadline");
+  check(elite->elite &&
+            elite->position.x == world_scale::kEnemySpawnDistance + world_scale::kMeleeRange &&
+            elite->position.y == 0,
+        "the pack's elite anchors one melee range deeper on the approach line");
+  check(!flanker->elite &&
+            flanker->position.x == world_scale::kEnemySpawnDistance + world_scale::kMeleeRange &&
+            flanker->position.y == world_scale::kMeleeRange,
+        "the last normal flanks one melee range off the elite's line");
+
+  strike_down(first, elite_id);
+  check(first.actor(flanker_id)->alive && living_monster_count(first) == 1,
+        "clearing the elite leaves its flanker alive");
+  check(!first.house().route_cleared("route:tin:1:0") &&
+            !first.house().route_unlocked("route:tin:2:0") &&
+            !first.house().campaign_complete,
+        "a living flanker keeps the route uncleared");
+  check(first.instance().phase == ExpeditionPhase::SlayWardens &&
+            count_events(first, EventType::ExpeditionPhaseChanged) == 0,
+        "clearing the elite does not advance the phase");
+
+  strike_down(first, flanker_id);
+  check(living_monster_count(first) == 0 && first.pending_wave().empty(),
+        "the last kill leaves neither a living nor an owed warden");
+  check(first.house().route_cleared("route:tin:1:0") &&
             first.house().route_unlocked("route:tin:2:0") && first.house().campaign_complete,
         "last pack kill clears the route and completes campaign progression");
-  check(count_events(first, EventType::ItemDropped) == 2 &&
-            count_events(first, EventType::TrophyDropped) == 2,
+  check(first.instance().phase == ExpeditionPhase::ExtractCarriedValue &&
+            count_events(first, EventType::ExpeditionPhaseChanged) == 1,
+        "exactly one authoritative phase transition closes the hunt");
+  check(count_events(first, EventType::ItemDropped) == 3 &&
+            count_events(first, EventType::TrophyDropped) == 3,
         "pack rewards remain per-kill after delayed route clear");
 
   Simulation second(0x2505ULL);
-  const auto replay_ids = prepare(second);
+  const std::string replay_entry = prepare(second);
+  const std::string replay_elite = second.pending_wave()[0].id;
+  const std::string replay_flanker = second.pending_wave()[1].id;
   second.dispatch(Command::action_use(ActionType::Melee));
-  second.actor(second.scion().actor_id)->cooldown_ticks = 0;
-  second.dispatch(Command::action_use(ActionType::Melee));
-  check(replay_ids == ids && relevant(first) == relevant(second) &&
+  cross_reinforcement_deadline(second);
+  strike_down(second, replay_elite);
+  strike_down(second, replay_flanker);
+  check(replay_entry == entry_id && replay_elite == elite_id &&
+            replay_flanker == flanker_id && relevant(first) == relevant(second) &&
             first.house().cleared_routes == second.house().cleared_routes &&
             first.ground_items().size() == second.ground_items().size() &&
             first.ground_trophies().size() == second.ground_trophies().size() &&
             first.ground_items().front().id == second.ground_items().front().id &&
             first.ground_trophies().front().id == second.ground_trophies().front().id,
         "pack lifecycle and delayed clear remain deterministic under replay");
+}
+
+void test_expedition_phase_makes_the_first_expedition_loop_explicit() {
+  auto drive_expedition = [](Simulation& sim) {
+    sim.dispatch(Command::enter("route:tin:1:0"));
+    check(sim.instance().active &&
+              sim.instance().phase == ExpeditionPhase::SlayWardens,
+          "entering a route opens the authoritative slay objective");
+    check(count_events(sim, EventType::ExpeditionPhaseChanged) == 0,
+          "the initial slay objective is state, not a transition event");
+
+    Actor* player = sim.actor(sim.scion().actor_id);
+    Actor* entry = first_monster(sim);
+    check(player && entry, "expedition setup has a player and a warden");
+    player->position = {0, 0};
+    player->stats.life = player->stats.life_max;
+    entry->position = {world_scale::kMeleeRange - 1, 0};
+    entry->stats.life = 1;
+    const std::string entry_id = entry->id;
+    const std::string elite_id = sim.pending_wave()[0].id;
+    const std::string flanker_id = sim.pending_wave()[1].id;
+
+    sim.dispatch(Command::action_use(ActionType::Melee));
+    check(!sim.actor(entry_id)->alive && living_monster_count(sim) == 0 &&
+              sim.pending_wave().size() == 2,
+          "the first kill leaves no living warden but an owed pack");
+    check(sim.instance().phase == ExpeditionPhase::SlayWardens &&
+              count_events(sim, EventType::ExpeditionPhaseChanged) == 0,
+          "an owed warden keeps the slay objective with no transition");
+
+    for (int i = 0; i < kTelegraphTicks - 2; ++i)
+      sim.dispatch(Command::action_use(ActionType::Wait));
+    check(living_monster_count(sim) == 0 && sim.pending_wave().size() == 2,
+          "immediately before the reinforcement deadline no reserve warden is alive");
+    sim.dispatch(Command::action_use(ActionType::Wait));
+    Actor* elite = sim.actor(elite_id);
+    Actor* flanker = sim.actor(flanker_id);
+    check(elite && flanker && elite->alive && flanker->alive &&
+              living_monster_count(sim) == 2 && sim.pending_wave().empty(),
+          "both reserve wardens materialize together at the shared deadline");
+    check(elite->elite &&
+              elite->position.x == world_scale::kEnemySpawnDistance + world_scale::kMeleeRange &&
+              elite->position.y == 0,
+          "the elite materializes on its deterministic anchor point");
+    check(!flanker->elite &&
+              flanker->position.x == world_scale::kEnemySpawnDistance + world_scale::kMeleeRange &&
+              flanker->position.y == world_scale::kMeleeRange,
+          "the flanker materializes on its deterministic flank point");
+
+    // Strike the elite down through the shared pipeline. The warden is
+    // brought into reach so the Scion never leaves its approach line.
+    // Pointers are re-fetched after every dispatch that grew the actor
+    // vector (the materialization push_backs), so no stale element is
+    // dereferenced.
+    player = sim.actor(sim.scion().actor_id);
+    elite->position = {player->position.x + world_scale::kMeleeRange - 1, player->position.y};
+    player = sim.actor(sim.scion().actor_id);
+    player->cooldown_ticks = 0;
+    elite->stats.life = 1;
+    sim.dispatch(Command::action_use(ActionType::Melee));
+    check(!sim.actor(elite_id)->alive && sim.actor(flanker_id)->alive &&
+              living_monster_count(sim) == 1 &&
+              sim.instance().phase == ExpeditionPhase::SlayWardens &&
+              count_events(sim, EventType::ExpeditionPhaseChanged) == 0,
+          "clearing the elite still waits for its living flanker");
+
+    flanker->position = {player->position.x + world_scale::kMeleeRange - 1, player->position.y};
+    player = sim.actor(sim.scion().actor_id);
+    player->cooldown_ticks = 0;
+    flanker->stats.life = 1;
+    sim.dispatch(Command::action_use(ActionType::Melee));
+    check(!sim.actor(flanker_id)->alive && living_monster_count(sim) == 0 &&
+              sim.instance().phase == ExpeditionPhase::ExtractCarriedValue,
+          "the last kill flips the objective to extraction");
+    const Event* transition = last_event(sim, EventType::ExpeditionPhaseChanged);
+    check(transition && transition->text == "extract-carried-value" &&
+              count_events(sim, EventType::ExpeditionPhaseChanged) == 1,
+          "exactly one authoritative phase transition is emitted");
+
+    pick_all_rewards(sim);
+    extract_from_start(sim);
+    check(!sim.instance().active, "extraction closes the expedition");
+  };
+
+  Simulation replay_a(0x0143ULL);
+  drive_expedition(replay_a);
+  Simulation replay_b(0x0143ULL);
+  drive_expedition(replay_b);
+  check(relevant(replay_a) == relevant(replay_b) &&
+            replay_a.instance().phase == replay_b.instance().phase,
+        "the objective timeline is deterministic under replay");
+
+  // The stale ExtractCarriedValue phase of the retired instance must not leak
+  // into the next expedition.
+  replay_a.dispatch(Command::enter("route:tin:1:0"));
+  check(replay_a.instance().active &&
+            replay_a.instance().phase == ExpeditionPhase::SlayWardens &&
+            replay_a.pending_wave().size() == 2,
+        "a fresh expedition always restarts on the slay objective with its full pack");
+
+  // The phase is telemetry, not a gate: extraction rules are unchanged.
+  Simulation ungated(0x0143ULL);
+  ungated.dispatch(Command::enter("route:tin:1:0"));
+  check(ungated.instance().phase == ExpeditionPhase::SlayWardens,
+        "an untouched expedition still reads the slay objective");
+  ungated.dispatch(Command::extract());
+  check(!ungated.instance().active,
+        "extraction remains available without a phase gate");
+}
+
+void test_first_expedition_wave_spawn_is_deterministic() {
+  Simulation first(0x0146ULL);
+  Simulation second(0x0146ULL);
+  for (Simulation* sim : {&first, &second}) {
+    sim->dispatch(Command::enter("route:tin:1:0"));
+    const Actor* entry = first_monster(*sim);
+    check(entry && entry->kind == ActorKind::Monster, "the entry warden exists");
+    check(entry->position.x == world_scale::kEnemySpawnDistance && entry->position.y == 0,
+          "the entry warden holds the D-114 spawn point");
+    check(entry->stats.level == 1 && !entry->elite,
+          "the entry warden keeps the established level-1 sentry identity");
+    check(sim->pending_wave().size() == 2,
+          "the first expedition fields a three-warden pack");
+    const Actor& elite = sim->pending_wave()[0];
+    const Actor& flanker = sim->pending_wave()[1];
+    check(elite.elite && !flanker.elite,
+          "the pack composition is legibly normal/elite/normal");
+    check(elite.position.x == world_scale::kEnemySpawnDistance + world_scale::kMeleeRange &&
+              elite.position.y == 0,
+          "the elite waits one melee range deeper on the approach line");
+    check(flanker.position.x == world_scale::kEnemySpawnDistance + world_scale::kMeleeRange &&
+              flanker.position.y == world_scale::kMeleeRange,
+          "the flanker waits one melee range off the elite's line");
+    check(elite.stats == entry->stats && flanker.stats == entry->stats,
+          "pack wardens use the shared authoritative stat table with no new balance");
+  }
+  check(first_monster(first)->id == first_monster(second)->id &&
+            first.pending_wave()[0].id == second.pending_wave()[0].id &&
+            first.pending_wave()[1].id == second.pending_wave()[1].id,
+        "same-seed expeditions produce identical warden identities");
+
+  Simulation other(0x0147ULL);
+  other.dispatch(Command::enter("route:tin:1:0"));
+  check(first_monster(other) != nullptr && first_monster(other)->id != first_monster(first)->id &&
+            other.pending_wave().size() == 2 &&
+            other.pending_wave()[0].position.x == first.pending_wave()[0].position.x &&
+            other.pending_wave()[0].position.y == first.pending_wave()[0].position.y &&
+            other.pending_wave()[1].position.x == first.pending_wave()[1].position.x &&
+            other.pending_wave()[1].position.y == first.pending_wave()[1].position.y,
+        "a different seed re-rolls identities but keeps the deterministic pack shape");
+}
+
+void test_first_expedition_wave_replay_is_deterministic() {
+  Simulation first(0x0146ULL);
+  Simulation second(0x0146ULL);
+  for (Simulation* sim : {&first, &second}) {
+    sim->dispatch(Command::enter("route:tin:1:0"));
+    defeat_enemy(*sim);
+    check(count_events(*sim, EventType::ItemDropped) == 3 &&
+              count_events(*sim, EventType::TrophyDropped) == 3,
+          "every fallen warden drops its own reward pair");
+    pick_all_rewards(*sim);
+    extract_from_start(*sim);
+  }
+  check(relevant(first) == relevant(second),
+        "the full pack encounter replays byte-identically");
+  check(first.house().cleared_routes == second.house().cleared_routes &&
+            first.house().stored_items.size() == 1 &&
+            first.house().stored_trophies.size() == 1,
+        "clearing the whole pack banks exactly the carried loot once");
+}
+
+void test_first_expedition_wave_death_recovery_interaction() {
+  Simulation sim(0x0146ULL);
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  Actor* player = sim.actor(sim.scion().actor_id);
+  Actor* entry = first_monster(sim);
+  player->position = {world_scale::kMeleeRange - 1, 0};
+  entry->position = {player->position.x + 1, 0};
+  entry->stats.life = 1;
+  player->cooldown_ticks = 0;
+  sim.dispatch(Command::action_use(ActionType::Melee));
+  check(!entry->alive && living_monster_count(sim) == 0 && sim.pending_wave().size() == 2,
+        "the entry warden falls owing its pack with the reinforcement armed");
+  // Death inside the armed reinforcement window follows the accepted
+  // recovery contract: the instance, its unmaterialized roster, and the
+  // pending deadline retire together, and carried value enters the recovery
+  // pools exactly once. A single pickup deliberately stays inside the window.
+  const std::string floor_item = sim.ground_items().front().id;
+  sim.dispatch(Command::pick_up(floor_item));
+  const std::string carried_item = sim.scion().carried_items.front().id;
+  check(carried_item == floor_item && sim.pending_wave().size() == 2 &&
+            living_monster_count(sim) == 0,
+        "an ordinary command inside the window leaves the reinforcement armed");
+  sim.actor(sim.scion().actor_id)->cooldown_ticks = 0;
+  sim.dispatch(Command::interact("hazard:death"));
+  check(!sim.scion().alive, "a mid-wave Scion death ends the expedition");
+  check(!sim.instance().active && sim.pending_wave().empty(),
+        "the owed roster and its deadline retire together with the failed instance");
+  // Walk past where the deadline would have fired: no reserve may appear.
+  sim.dispatch(Command::action_use(ActionType::Wait));
+  check(living_monster_count(sim) == 0,
+        "no reserve warden materializes after the instance has retired");
+  check(sim.house().relic_candidates.size() == 1 &&
+            sim.house().relic_candidates.front().id == carried_item,
+        "mid-wave carried value registers in the relic pool exactly once");
+  check(sim.ground_trophies().empty() && sim.house().lost_trophies.empty(),
+        "unpicked floor value is neither kept nor mistaken for recovery value");
+
+  sim.create_successor("Wave Successor");
+  sim.dispatch(Command::enter("route:tin:1:0"));
+  check(first_monster(sim) != nullptr && first_monster(sim)->alive &&
+            sim.pending_wave().size() == 2,
+        "a successor faces a fresh deterministic pack with no leaked state");
+
+  // The recovery path stays deterministic across the converged pack: the
+  // successor's entry kill lands both reserves together at the same shared
+  // deadline as the original run.
+  Actor* heir = sim.actor(sim.scion().actor_id);
+  Actor* heir_entry = first_monster(sim);
+  heir->position = {world_scale::kMeleeRange - 1, 0};
+  heir_entry->position = {heir->position.x + 1, 0};
+  heir_entry->stats.life = 1;
+  heir->cooldown_ticks = 0;
+  sim.dispatch(Command::action_use(ActionType::Melee));
+  for (int i = 0; i < kTelegraphTicks - 2; ++i)
+    sim.dispatch(Command::action_use(ActionType::Wait));
+  check(living_monster_count(sim) == 0 && sim.pending_wave().size() == 2,
+        "the successor's reinforcement is still fully unmaterialized before its deadline");
+  sim.dispatch(Command::action_use(ActionType::Wait));
+  check(living_monster_count(sim) == 2 && sim.pending_wave().empty(),
+        "the successor faces the same converged pack at the same deadline");
 }
 
 void test_extraction() {
@@ -1186,8 +1510,15 @@ void test_d106_recovery_is_ordered_and_deterministic() {
   const std::string first_trophy = first.house().lost_trophies.front().id;
   force_relic_resurface(first, "route:tin:1:0", first_item);
   force_trophy_resurface(first, "route:tin:1:0", first_trophy);
-  check(first.house().relic_candidates.size() == 1 &&
-            first.house().relic_candidates.front().id == second_item,
+  // A full pack clear feeds the seeded reward stream three times per round,
+  // so one search round may legitimately surface more than one candidate.
+  // The invariant under proof is order, not count: whatever remains in the
+  // pool still starts at its next-oldest head.
+  check(find_ground_item(first, first_item) != nullptr,
+        "target relic resurfaces from the reward stream");
+  check(first.house().relic_candidates.empty() ||
+            (first.house().relic_candidates.size() == 1 &&
+             first.house().relic_candidates.front().id == second_item),
         "item recovery consumes only the oldest item candidate");
   if (find_ground_item(first, second_item) == nullptr) {
     force_relic_resurface(first, "route:tin:1:0", second_item);
@@ -1289,8 +1620,17 @@ void test_elite_kill_and_recorded_event() {
   defeat_enemy(sim);
   sim.dispatch(Command::enter("route:tin:2:0"));
   defeat_enemy(sim);
-  const LegendEntry* elite = find_legend(sim, "elite_kill");
-  check(elite && elite->route_id == "route:tin:2:0", "elite kill records the route");
+  // The first expedition's pack fields its own elite, so the legend stream
+  // now carries elite kills from both routes; this proof targets the deep
+  // route's recorded kill.
+  const LegendEntry* elite = nullptr;
+  for (const auto& candidate : sim.legends()) {
+    if (candidate.kind == "elite_kill" && candidate.route_id == "route:tin:2:0") {
+      elite = &candidate;
+      break;
+    }
+  }
+  check(elite != nullptr, "elite kill records the route");
   check(!elite->killer_id.empty() && elite->subject.rfind("actor-", 0) == 0,
         "elite legend references stable actor ids");
   bool saw_recorded_event = false;
@@ -1757,6 +2097,10 @@ int main() {
   test_instance_lifecycle_rejects_stale_pickups();
   test_death_retires_floor_without_double_registering_relics();
   test_pack_clear_waits_for_the_last_monster();
+  test_expedition_phase_makes_the_first_expedition_loop_explicit();
+  test_first_expedition_wave_spawn_is_deterministic();
+  test_first_expedition_wave_replay_is_deterministic();
+  test_first_expedition_wave_death_recovery_interaction();
   test_extraction();
   test_death_and_successor();
   test_d106_all_carried_value_is_recoverable();

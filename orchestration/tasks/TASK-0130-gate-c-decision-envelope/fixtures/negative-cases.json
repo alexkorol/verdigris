@@ -1,0 +1,196 @@
+{
+  "contract_id": "gate-c-decision-envelope",
+  "contract_schema_version": "1.0.0",
+  "validation_contract": "VALIDATION.md",
+  "note": "All envelopes below are synthetic and content-neutral. Route names are placeholders; states/values describe shapes, never campaign, reward, economy, risk, or balance content. Each case pairs one deterministic error code from VALIDATION.md with the minimal envelope that triggers it.",
+  "cases": [
+    {
+      "id": "neg-01-unparseable-input",
+      "expected_error": "INVALID_JSON",
+      "why": "Check 1: the candidate envelope is not a JSON object at all.",
+      "envelope": "{ this is not valid json"
+    },
+    {
+      "id": "neg-02-unsupported-version",
+      "expected_error": "UNSUPPORTED_VERSION",
+      "why": "Check 2: schema_version is absent from supported_versions [\"1.0.0\"].",
+      "envelope": {
+        "schema_version": "0.9.0",
+        "route_identity": { "road": { "roadId": "synthetic-road-a", "roadName": "synthetic-road-a", "direction": "north", "blurb": null }, "node": { "nodeId": "synthetic-node-a1", "name": "synthetic-node-a1", "template": "template-string", "layout": "layout-string", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": "immediate-stage consequence map" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns; linger window applies" },
+        "evidence_provenance": { "authority_source": "docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md:68-72", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "cab50d62cb121ab6a88fa513257e645447226959" }
+      }
+    },
+    {
+      "id": "neg-03-missing-route-identity",
+      "expected_error": "MISSING_ROUTE_IDENTITY",
+      "why": "Check 3: route_identity is entirely absent.",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "concrete_goal": { "state": "MISSING", "value": null },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "MISSING", "value": null },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": "immediate-stage consequence map" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns; linger window applies" },
+        "evidence_provenance": { "authority_source": "docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md:68-72", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "cab50d62cb121ab6a88fa513257e645447226959" }
+      }
+    },
+    {
+      "id": "neg-04-route-name-only",
+      "expected_error": "ROUTE_NAME_ONLY",
+      "why": "Check 4: identity (name/tier/blurb) is present but none of the six decision fields carries a state or value. A route name alone fails.",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "synthetic-road-b", "roadName": "synthetic-road-b", "direction": "east", "blurb": "terrain flavor only" }, "node": { "nodeId": "synthetic-node-b1", "name": "synthetic-node-b1", "status": "open" }, "tier": 1 }
+      }
+    },
+    {
+      "id": "neg-05-missing-provenance",
+      "expected_error": "MISSING_PROVENANCE",
+      "why": "Check 5: evidence_provenance exists but lacks every required citation shape (authority source, audit reference with reviewed head, base commit).",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "synthetic-road-c", "roadName": "synthetic-road-c", "direction": "south", "blurb": null }, "node": { "nodeId": "synthetic-node-c1", "name": "synthetic-node-c1", "template": "template-string", "layout": "layout-string", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": "immediate-stage consequence map" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns; linger window applies" },
+        "evidence_provenance": {}
+      }
+    },
+    {
+      "id": "neg-06-missing-concrete-goal",
+      "expected_error": "MISSING_CONCRETE_GOAL",
+      "why": "Check 6: concrete_goal is honestly MISSING (as in today's surfaces per TASK-0086); the envelope therefore cannot support a decision.",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "synthetic-road-d", "roadName": "synthetic-road-d", "direction": "west", "blurb": null }, "node": { "nodeId": "synthetic-node-d1", "name": "synthetic-node-d1", "template": "template-string", "layout": "layout-string", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "MISSING", "value": null, "owner_pending": true },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": "immediate-stage consequence map" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns; linger window applies" },
+        "evidence_provenance": { "authority_source": "docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md:68-72", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "cab50d62cb121ab6a88fa513257e645447226959" }
+      }
+    },
+    {
+      "id": "neg-07-missing-boss-or-danger",
+      "expected_error": "MISSING_BOSS_OR_DANGER",
+      "why": "Check 7: boss_or_danger field is absent entirely.",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "synthetic-road-e", "roadName": "synthetic-road-e", "direction": "north", "blurb": null }, "node": { "nodeId": "synthetic-node-e1", "name": "synthetic-node-e1", "template": "template-string", "layout": "layout-string", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": "immediate-stage consequence map" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns; linger window applies" },
+        "evidence_provenance": { "authority_source": "docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md:68-72", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "cab50d62cb121ab6a88fa513257e645447226959" }
+      }
+    },
+    {
+      "id": "neg-08-missing-expected-item-family",
+      "expected_error": "MISSING_EXPECTED_ITEM_FAMILY",
+      "why": "Check 8: expected_item_family is honestly MISSING (as in today's surfaces per TASK-0086).",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "synthetic-road-f", "roadName": "synthetic-road-f", "direction": "up", "blurb": null }, "node": { "nodeId": "synthetic-node-f1", "name": "synthetic-node-f1", "template": "template-string", "layout": "layout-string", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "MISSING", "value": null, "owner_pending": true },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": "immediate-stage consequence map" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns; linger window applies" },
+        "evidence_provenance": { "authority_source": "docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md:68-72", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "cab50d62cb121ab6a88fa513257e645447226959" }
+      }
+    },
+    {
+      "id": "neg-09-missing-depth",
+      "expected_error": "MISSING_DEPTH",
+      "why": "Check 9: depth field is absent entirely.",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "synthetic-road-g", "roadName": "synthetic-road-g", "direction": "down", "blurb": null }, "node": { "nodeId": "synthetic-node-g1", "name": "synthetic-node-g1", "template": "template-string", "layout": "layout-string", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": "immediate-stage consequence map" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns; linger window applies" },
+        "evidence_provenance": { "authority_source": "docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md:68-72", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "cab50d62cb121ab6a88fa513257e645447226959" }
+      }
+    },
+    {
+      "id": "neg-10-missing-branch-consequence",
+      "expected_error": "MISSING_BRANCH_CONSEQUENCE",
+      "why": "Check 10: branch_consequence is honestly MISSING (not even derivable scope was recorded).",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "synthetic-road-h", "roadName": "synthetic-road-h", "direction": "east", "blurb": null }, "node": { "nodeId": "synthetic-node-h1", "name": "synthetic-node-h1", "template": "template-string", "layout": "layout-string", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "MISSING", "value": null },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns; linger window applies" },
+        "evidence_provenance": { "authority_source": "docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md:68-72", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "cab50d62cb121ab6a88fa513257e645447226959" }
+      }
+    },
+    {
+      "id": "neg-11-missing-extraction-or-return",
+      "expected_error": "MISSING_EXTRACTION_OR_RETURN",
+      "why": "Check 11: extraction_or_return field is absent entirely.",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "synthetic-road-i", "roadName": "synthetic-road-i", "direction": "west", "blurb": null }, "node": { "nodeId": "synthetic-node-i1", "name": "synthetic-node-i1", "template": "template-string", "layout": "layout-string", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": "immediate-stage consequence map" },
+        "evidence_provenance": { "authority_source": "docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md:68-72", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "cab50d62cb121ab6a88fa513257e645447226959" }
+      }
+    },
+    {
+      "id": "neg-12-contradictory-depth",
+      "expected_error": "CONTRADICTORY_DEPTH",
+      "why": "Check 12: depth claims AVAILABLE but its own values disagree (charted_tier 1 vs instance_depth 3 for the same synthetic node). Structural fixture numbers only.",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "synthetic-road-j", "roadName": "synthetic-road-j", "direction": "north", "blurb": null }, "node": { "nodeId": "synthetic-node-j1", "name": "synthetic-node-j1", "template": "template-string", "layout": "layout-string", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "AVAILABLE", "value": "owner-authored goal string" },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1, "instance_depth": 3 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": "immediate-stage consequence map" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns; linger window applies" },
+        "evidence_provenance": { "authority_source": "docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md:68-72", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "cab50d62cb121ab6a88fa513257e645447226959" }
+      }
+    },
+    {
+      "id": "neg-13-owner-pending-content-claimed-ready",
+      "expected_error": "OWNER_PENDING_CONTENT",
+      "why": "Check 13: completeness claims ready:true while concrete_goal is still MISSING/owner-pending - the false-complete pattern the SPEC's Gate 1 also rejects.",
+      "envelope": {
+        "schema_version": "1.0.0",
+        "route_identity": { "road": { "roadId": "synthetic-road-k", "roadName": "synthetic-road-k", "direction": "south", "blurb": null }, "node": { "nodeId": "synthetic-node-k1", "name": "synthetic-node-k1", "template": "template-string", "layout": "layout-string", "index": 0, "status": "open" }, "tier": 1 },
+        "concrete_goal": { "state": "MISSING", "value": null, "owner_pending": true },
+        "boss_or_danger": { "state": "AVAILABLE", "value": { "boss_name": "wardenName string", "difficulty_band": "levelHint string" } },
+        "expected_item_family": { "state": "AVAILABLE", "value": "owner-owned family label" },
+        "depth": { "state": "AVAILABLE", "value": { "charted_tier": 1 } },
+        "branch_consequence": { "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "value": "immediate-stage consequence map" },
+        "extraction_or_return": { "state": "AVAILABLE", "value": "stairsUp returns; linger window applies" },
+        "evidence_provenance": { "authority_source": "docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md:68-72", "audit_reference": "TASK-0086 ACCEPTED at 8ddfb06e16f85c150e9a79ccc9d8bd4932664369", "base_commit": "cab50d62cb121ab6a88fa513257e645447226959" },
+        "completeness": { "ready": true, "missing_fields": [] }
+      }
+    }
+  ]
+}

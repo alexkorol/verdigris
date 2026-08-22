@@ -1,0 +1,395 @@
+native\build.ps1:6:  [switch]$RunServerLifecycleSoak
+native\build.ps1:140:if ($RunServerLifecycleSoak) {
+native\build.ps1:141:  $soakObj = Join-Path $buildRoot "server_lifecycle_soak.obj"
+native\build.ps1:142:  $soakExe = Join-Path $buildRoot "server_lifecycle_soak.exe"
+native\build.ps1:143:  Invoke-Msvc ('/c "' + $nativeRoot + '\tools\server_lifecycle_soak.cpp" /I"' + $nativeRoot + '\client" /Fo"' + $soakObj + '"')
+native\README.md:43:`verdigris_server` on a free **6520ΓÇô6539** port (never 6500), launches
+native\tools\server_lifecycle_soak.cpp:7:// timeout, or hang. No server or client behavior changes live here.
+native\tools\server_lifecycle_soak.cpp:135:bool reached_ready(RemoteProtocolSession& session, int timeout_ms) {
+native\tools\server_lifecycle_soak.cpp:136:  const std::int64_t deadline = steady_now_ms() + timeout_ms;
+native\tools\server_lifecycle_soak.cpp:331:  std::string out_path = "server_lifecycle_soak.json";
+native\tools\server_lifecycle_soak.cpp:425:  json += "  \"tool\": \"server_lifecycle_soak\",\n";
+native\src\server_main.cpp:10:  std::uint16_t port = 6500;
+native\networking\README.md:11:native/build/verdigris_server.exe 6500
+native\networking\README.md:16:6500, start `verdigris_server.exe 6511` and invoke:
+native\tools\play-native.ps1:15:if ($Port -eq 6500) {
+native\tools\play-native.ps1:16:  throw "play-native: port 6500 is reserved for the historical browser server. Use 6520-6539."
+native\tools\play-native.ps1:78:    if ($chosenPort -eq 6500) {
+native\tools\play-native.ps1:79:      throw "play-native: port 6500 is reserved for the historical browser server."
+native\client\local_session.cpp:12:    case ConnectionState::Retrying: return "retrying";
+native\client\remote_session.cpp:252:void RemoteProtocolSession::begin_retry(const std::string& reason) {
+native\client\remote_session.cpp:254:  if (suppress_retry_ || !ever_ready_) {
+native\client\remote_session.cpp:263:  if (retry_attempt_ >= 3) {
+native\client\remote_session.cpp:269:  retry_at_ = std::chrono::steady_clock::now() +
+native\client\remote_session.cpp:270:              std::chrono::milliseconds(kBackoffMs[retry_attempt_]);
+native\client\remote_session.cpp:273:void RemoteProtocolSession::pump_retry() {
+native\client\remote_session.cpp:275:  if (std::chrono::steady_clock::now() < retry_at_) return;
+native\client\remote_session.cpp:276:  if (retry_attempt_ >= 3) {
+native\client\remote_session.cpp:282:  ++retry_attempt_;
+native\client\remote_session.cpp:283:  if (retry_attempt_ >= 3) {
+native\client\remote_session.cpp:288:  retry_at_ = std::chrono::steady_clock::now() +
+native\client\remote_session.cpp:289:              std::chrono::milliseconds(kBackoffMs[retry_attempt_]);
+native\client\remote_session.cpp:314:  suppress_retry_ = true;
+native\client\remote_session.cpp:415:    if (suppress_retry_ || state_.load() == ConnectionState::Disconnected ||
+native\client\remote_session.cpp:419:      begin_retry("server closed the connection");
+native\client\remote_session.cpp:422:  pump_retry();
+native\client\remote_session.cpp:531:    retry_attempt_ = 0;
+native\client\remote_session.cpp:537:    suppress_retry_ = true;
+native\tests\session_tests.cpp:26:                    verdigris::client::ConnectionState wanted, int timeout_ms) {
+native\tests\session_tests.cpp:28:      std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+native\tests\session_tests.cpp:39:bool wait_until(verdigris::client::IClientSession& session, int timeout_ms, Pred pred) {
+native\tests\session_tests.cpp:41:      std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+native\tests\session_tests.cpp:402:  const bool retrying = wait_until(session, 4000, [&] {
+native\tests\session_tests.cpp:409:  check(retrying, "reconnect: unexpected drop enters Retrying");
+native\tests\session_tests.cpp:452:  bool saw_retrying = false;
+native\tests\session_tests.cpp:456:      saw_retrying = true;
+native\tests\session_tests.cpp:464:  check(!saw_retrying, "replaced: session-replaced does not enter Retrying");
+native\tests\session_tests.cpp:466:        "replaced: stays terminal Disconnected (no retry)");
+.github\workflows\ci.yml:18:    timeout-minutes: 20
+.github\workflows\ci.yml:38:      - name: Upload browser failure artifacts
+.github\workflows\ci.yml:40:        uses: actions/upload-artifact@v4
+.github\workflows\native.yml:25:    timeout-minutes: 14
+.github\workflows\native.yml:44:        uses: actions/upload-artifact@v4
+orchestration\ARCHITECT_STATE.md:283:http://localhost:6500 (client + WS on one process).
+orchestration\ARCHITECT_STATE.md:291:**Founding slice**: the claude.ai artifact link, or serve
+orchestration\ARCHITECT_STATE.md:349:  (1/1 browser spec green, port 6500 released). QUESTION-0003 closable.
+orchestration\BOOTSTRAP.md:22:You are Codex Sol, the ARCHITECT/ORCHESTRATOR for Verdigris (repo alexkorol/verdigris, program branch codex/native-reconstitution, dedicated worktree /Users/alexkorol/Code/verdigris-sol). You are the control plane, not an implementation lane. Read IN ORDER before acting: orchestration/ONBOARDING-SOL-ORCHESTRATOR.md, PROTOCOL.md, ACCEPTANCE.md, docs/product/VERDIGRIS_CONSTITUTION.md, DECISIONS.md, INCIDENTS.md, RUN_STATUS.md, and docs/rebuild/HANDOFF.md. Every sweep starts with fetch + lane branch timestamps + NOTES/REVIEW_REQUESTED scan. Review exact gates personally, integrate only ACCEPTED work, ship through merge PRs (never squash), rewrite RUN_STATUS, and keep D-125 runway: at least 8 effective non-overlapping READY packets before three lanes are live plus 4 sequenced successors. Never absorb a dark fleet (INC-012); notify the owner. Owner-only: seasons, magic, economy, naming, lore, assets, balance, irreversible/account actions, GitHub settings. Loopback only, port 6500 untouchable, harness assertions immutable.
+orchestration\DECISIONS.md:141:  Port 6500 stays pinned.
+orchestration\INCIDENTS.md:53:## INC-007: Driver artifact read as product bug (0046 "silent combat")
+orchestration\INTEGRATION_LOG.md:34:2026-08-16 ΓÇö TASK-0014-smoke-browser-repair ΓÇö worker `b068964`; architect review `11a5325` ACCEPTED; integrated as `b068964`. Verification: `npm run smoke:browser` (1 passed, port 6500 released); `npm run test:e2e` (3 passed, port 6500 released); `git diff --check` PASS. Notes: D-105 lifecycle repair closes QUESTION-0003; the documented smoke gate now boots and tears down its server.
+orchestration\INTEGRATION_LOG.md:62:2026-08-16 ΓÇö TASK-0029-browser-25d-phase5 ΓÇö source `a8993245`; independent scope validator ACCEPT; architect review ACCEPTED. Integrated in dedicated worktree `codex/integrate-TASK-0029` as `cd5b45e1`. Verification: `npm run test:unit` (117 files/750 tests), `npm run smoke:browser` (1/1; port 6500 released), and `npm run playtest` (31/31 on rerun; one initial gear-outcomes timing miss cleared without changing the assertion). Notes: cached sky gradients and shared billboard state reduce frame time while preserving visual parity; terrain context/teardown hardening is live. The 25D overhaul plan is complete per architect review.
+orchestration\INTEGRATION_LOG.md:68:2026-08-17 ΓÇö TASK-0032-browser-d106-implementation ΓÇö source `749cc4a6` plus revision `ac3a7216`; independent validator ACCEPT; architect review ACCEPTED. Integrated in dedicated worktree `codex/integrate-TASK-0032-latest` as `b952fdac` on Fable tip `96601378`. Verification: integration unit 118 files/757 tests PASS; clean rerun playtest 31/31 PASS; architect smoke 1/1 PASS; local smoke attempt encountered owner PM2 PID 10276 on port 6500 and was preserved. Notes: D-106 all-value death recovery, durable SQLite/JSON relic+trophy adapters, one-time instance requeue, JSON underfoot recovery, and D-109 failed-save queue are live.
+orchestration\INTEGRATION_LOG.md:70:2026-08-17 ΓÇö TASK-0033-daytime-default ΓÇö source `bf404b3d` plus revision `f409b99a`; independent validator ACCEPT; architect review ACCEPTED at Fable commit `0b12a0a`; integrated in dedicated worktree `codex/integrate-TASK-0033` as `b494c1fe` and `91f61d92`. Verification: full unit 119 files/761 tests PASS; production build PASS; pinned smoke reached the pre-existing owner listener on port 6500 but its API probe received SPA HTML, so the process was preserved. Notes: daytime is now default with opt-in persisted cycle and emitter lights retained.
+orchestration\INTEGRATION_LOG.md:82:2026-08-17 ΓÇö TASK-0041-death-decision-moment ΓÇö source `0e23e3bf`, `212a1e1c`, `14a6ceea`; architect review ACCEPTED at `40389099`; integrated in coordinator worktree `codex/integrate-0041` as `16293d7d`, `037045fa`, `cbab2ce4`. Verification: focused death suite 5/5, clean integration unit 122/779, production build, ESLint, Stylelint, diff-check, worker playtest 31/31, alternate browser gate 1/1, and real oathed/unoathed 1920├ù1080 JPEG captures. Notes: the D-106 death summary is now an input-capturing decision moment; default port 6500 smoke remained unclaimed because the preserved owner listener was intentionally not killed.
+orchestration\INTEGRATION_LOG.md:84:2026-08-17 ΓÇö TASK-0041-death-decision-moment ΓÇö worker source `0e23e3bf`, `212a1e1c`; coordinator validation worktree `codex/integrate-0041` as `5a493083`, `dfb41955`. Status: REVIEW_REQUESTED pending architect D-115 hands-on play. Verification: focused death suite 5/5 (14 assertions), clean integration unit 122/779, production build, ESLint, Stylelint, diff-check, worker playtest 31/31, and alternate browser gate 1/1 on port 6512. Default smoke was not claimed because preserved owner PID 10276 owns port 6500. Captures cover oathed and unoathed decisions; no Chronicles fork or persistence rewrite.
+orchestration\INTEGRATION_LOG.md:95:2026-08-17 ΓÇö TASK-0048-chronicles-silent-combat ΓÇö worker `810ddd924`; architect review `d0e60e5e` ACCEPTED; integrated at `edc9c794` (program tip `1244b5bf`). Verification: real Chronicles WebSocket first-combat scenario, rendered first-kill capture, unit 788/788, focused 1/1, and architect full suite 32/32. Notes: the accepted silent-combat diagnosis was disproven as a non-contact driver artifact; future combat drivers must verify authoritative target contact. Mana rejection copy is queued for a later UI wave without balance changes.
+orchestration\NOTES-mac-claude.md:30:  (rejects 6500). Demo script reproduces 0059's full 1366x768 compact
+orchestration\ONBOARDING-SOL-ORCHESTRATOR.md:155:- **Loopback binds only. Port 6500 is the owner's and is untouchable.**
+orchestration\ORCHESTRATION-LEARNINGS.md:53:7. **Driver artifacts read as product bugs** (0046 "silent combat"):
+orchestration\ORCHESTRATION.md:76:  owner live server: 6500 (never touch) ┬╖
+orchestration\ORCHESTRATION.md:86:G4 default owner path + owner-visible artifact (screenshots/playthrough) ┬╖
+orchestration\PROGRAM_GRAPH.md:125:    soak, and failure artifacts form the release ladder.
+orchestration\REENTRY-CURSOR.md:18:captures; loopback only; never port 6500; never weaken the harness.
+orchestration\REENTRY-DEEPSEEK.md:20:STATUS.md. Never merge program/master, edit peer evidence, touch port 6500,
+orchestration\questions\QUESTION-0003-smoke-browser-server-bootstrap.md:21:  `http://127.0.0.1:6500/`.
+orchestration\questions\QUESTION-0003-smoke-browser-server-bootstrap.md:24:- `npm run test:e2e` uses `start-server-and-test start:e2e http://127.0.0.1:6500
+orchestration\REENTRY-OX-ALPHA-PC.md:91:Never touch port 6500, non-loopback binds, peer task files, peer processes,
+orchestration\RUN_STATUS.md:198:- Port 6500 remains owner-only; every worker uses only its loopback capsule.
+orchestration\RUN_STATUS.md:214:| P1 | TASK-0135 soak integration policy | INDEPENDENT / ARCHITECTURE | ox-pc-d after coordination push | defines non-masking local/nightly/release soak evidence without changing CI |
+orchestration\STANDING-LOOP.md:22:   loopback binds, never port 6500.
+orchestration\STANDING-LOOP.md:72:6500; weakening playtest assertions; claiming work you have not run.
+orchestration\questions\QUESTION-0005-task-0027-orb-clock-domain.md:68:   captures cannot manufacture this artifact.
+orchestration\questions\QUESTION-0006-task-0040-playtest-timing-ratification.md:20:  and dev-state/transition timeouts; affected isolated combat/encounter,
+orchestration\questions\QUESTION-0006-task-0040-playtest-timing-ratification.md:45:unrelated dev:state/zone timeouts identical to flakes seen on PRE-0040
+orchestration\REENTRY-LUNA-MAC.md:16:  (node); use YOUR ports only, loopback binds, never 6500.
+orchestration\owner-input\OI-008-owner-content-approvals.md:11:dependency deadline, two viable alternatives, exact artifact/source, and a
+orchestration\tasks\TASK-0022-browser-25d-phase1\STATUS.md:20:revision_reason: independent validator found evidence artifacts outside the task folder and a wide-zoom DoF floor contradicting the governing zero-at/below-base rule; corrections implemented and architect accepted
+orchestration\tasks\TASK-0012-slice-camera-evidence\REPORT.md:167:driver was removed after the run, leaving the nine JPEG artifacts and this
+orchestration\tasks\TASK-0037-movement-feel-rework\STATUS.md:16:verification: current-tip revision full unit 120 files/768 tests; empty rendering diff against 6e277cf4; alternate browser gate 1/1; playtest retry 25/31 with six isolated fixture reruns passing; dense movement captures committed
+orchestration\tasks\TASK-0022-browser-25d-phase1\REVIEW.md:16:environmental (8s scenario timeouts under I/O load), not the branch.
+orchestration\tasks\TASK-0022-browser-25d-phase1\REPORT.md:111:commits `705b6c3` and `4533bc4`; the repository root is free of the four capture artifacts,
+orchestration\tasks\TASK-0037-movement-feel-rework\REVIEW.md:13:smoke ΓÇö the port-6500 owner-listener handling was correct).
+orchestration\tasks\TASK-0037-movement-feel-rework\REVIEW.md:32:   again acceptable if 6500 is occupied.
+orchestration\tasks\TASK-0037-movement-feel-rework\REPORT.md:68:  listener PID 10276 on port 6500; its stale app returned HTML for the API
+orchestration\tasks\TASK-0037-movement-feel-rework\REPORT.md:89:The pinned 6500 smoke wrapper remains environment-blocked by the existing
+orchestration\tasks\TASK-0037-movement-feel-rework\REPORT.md:104:the same sprite sequence, and `ensureRepeat()` now checks the timeout/deadline
+orchestration\tasks\TASK-0037-movement-feel-rework\REPORT.md:140:alternate browser gate 1/1 on port 6512. A full playtest retry reached 25/31;
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:115:| Logout/disconnect | D-109 requires no item/progress loss and a safe pull-out, never a death ([`D-109`](../../DECISIONS.md#L61-L65)). | Successful close saves before removal, but failed saves are swallowed and removal continues ([`server/Delaford.js:201-240`](../../../server/Delaford.js#L201-L240)). | Preserve current ordering, but make failure a retry/blocking boundary or durable queue; test disconnect during combat and instance teardown. |
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:132:   recovery-owner record, and make death retry/instance retirement idempotent
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:151:   `server/Delaford.js`, but add a durable retry/ack boundary for save failure
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:174:  ([`playtest/scenarios/zones.mjs:1-45`](../../../playtest/scenarios/zones.mjs#L1-L45)). Add retirement/requeue assertions at the same zone boundary; keep the server pinned to port 6500 for browser gates and run the real `npm run playtest` before claiming browser gameplay.
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:211:?? .ci-artifacts/
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:218:?? .ci-artifacts/
+orchestration\tasks\TASK-0014-smoke-browser-repair\STATUS.md:10:expected_verification: npm run smoke:browser; npm run test:e2e; verify port 6500 is released
+orchestration\tasks\TASK-0014-smoke-browser-repair\STATUS.md:11:known_risks: keep the change to the package.json smoke:browser script only; preserve the existing build step and port 6500 lifecycle
+orchestration\tasks\TASK-0014-smoke-browser-repair\STATUS.md:15:verification: npm run smoke:browser (1 passed, port 6500 released); npm run test:e2e (3 passed, port 6500 released); git diff --check PASS
+orchestration\tasks\TASK-0014-smoke-browser-repair\STATUS.md:20:integration_verification: npm run smoke:browser; npm run test:e2e; port 6500 released after each; git diff --check PASS
+orchestration\tasks\TASK-0014-smoke-browser-repair\SPEC.md:38:- Preserve the command name (documented in AGENTS.md); port 6500 stays
+orchestration\tasks\TASK-0014-smoke-browser-repair\SPEC.md:66:  6500 is free post-run.
+orchestration\tasks\TASK-0014-smoke-browser-repair\SPEC.md:71:proof that 6500 is released.
+orchestration\tasks\TASK-0008-denylist-hardening\REVIEW.md:36:   allowlist entry will be an explicit review artifact. No change needed.
+orchestration\tasks\TASK-0014-smoke-browser-repair\REVIEW.md:13:port 6500 released afterward (verified via Get-NetTCPConnection).
+orchestration\tasks\TASK-0014-smoke-browser-repair\REPORT.md:8:selection, and port 6500 remain unchanged.
+orchestration\tasks\TASK-0014-smoke-browser-repair\REPORT.md:15:npm run build && start-server-and-test start:e2e http://127.0.0.1:6500 "playwright test tests/e2e/browser-critical-loop.spec.mjs"
+orchestration\tasks\TASK-0014-smoke-browser-repair\REPORT.md:33:  `Get-NetTCPConnection -LocalPort 6500 -State Listen` check returned no
+orchestration\tasks\TASK-0014-smoke-browser-repair\REPORT.md:34:  listener (`port 6500 released`).
+orchestration\tasks\TASK-0004-native-client-direct-control\REPORT.md:56:  `native/client/direct-control-captures/` and are evidence artifacts, not
+orchestration\tasks\TASK-0036-ui-regression-sweep\REPORT.md:39:  `PLAYWRIGHT_BASE_URL=http://127.0.0.1:6512`; owner PID 10276 on 6500 was
+orchestration\tasks\TASK-0027-browser-25d-phase4\REPORT.md:74:- Capture harness still requires a running local server on port 6500 for
+orchestration\tasks\TASK-0003-slice-verification-harness\SPEC.md:88:- No visual-regression screenshots (optional artifacts are welcome but not
+orchestration\tasks\TASK-0003-slice-verification-harness\REPORT.md:94:drift probe preserves the committed artifact, and found no scope violations.
+orchestration\tasks\TASK-0020-browser-disconnect-safety\SPEC.md:39:- D-109 exactly: on socket close/timeout ΓÇö persist the player's current
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REVIEW.md:37:   marsh/grove/crypt") and `dev:state` timeouts
+orchestration\tasks\TASK-0029-browser-25d-phase5\REPORT.md:51:- Browser smoke: `npm run smoke:browser` ΓÇö 1/1 passed; port 6500 released.
+orchestration\tasks\TASK-0024-browser-25d-phase3\STATUS.md:20:verification: rev1 ΓÇö npm run test:unit (PASS: 115 files/744 tests); npm run smoke:browser (PASS: 1/1, port 6500 released); npm run playtest (PASS: 31/31 clean rerun after transient dev:state contention flakes); luminance bar PASS (after-arpg 40.14 >= before 39.82; after-edge-north 37.98 >= before 37.33)
+orchestration\tasks\TASK-0028-native-scenery-and-catalog\STATUS.md:19:validator_result: FUNCTIONAL ACCEPT ΓÇö scope, swept collision, depth captures, and gates pass; coordinator artifacts now complete
+orchestration\tasks\TASK-0032-browser-d106-implementation\REPORT.md:28:  6500 was released. A later local attempt encountered the ownerΓÇÖs persistent
+orchestration\tasks\TASK-0032-browser-d106-implementation\REPORT.md:29:  PM2 listener on port 6500 (PID 10276), which was preserved.
+orchestration\tasks\TASK-0032-browser-d106-implementation\STATUS.md:19:integration_verification: unit 757/757; playtest 31/31; architect smoke 1/1; local smoke rerun blocked by owner PM2 PID 10276 on port 6500
+orchestration\tasks\TASK-0034-playability-evaluation\STATUS.md:12:known_risks: live browser session may contend with port 6500; record evidence only, do not fix code; preserve owner processes
+orchestration\tasks\TASK-0034-playability-evaluation\STATUS.md:19:integration_verification: read-only evidence artifact preserved; 16 captures <=250KB; no implementation files changed
+orchestration\tasks\TASK-0032-browser-d106-implementation\REVIEW.md:14:their worktree once the owner's session freed port 6500: **1/1 PASS,
+orchestration\tasks\TASK-0032-browser-d106-implementation\SPEC.md:54:   silent removal ΓÇö retry/blocking boundary or durable queue; add the
+orchestration\tasks\TASK-0034-playability-evaluation\OWNER-SEED.md:12:- Graphics: wants the webchat-artifact approach (procedural/vector +
+orchestration\tasks\TASK-0034-playability-evaluation\SPEC.md:24:player would (built client on :6500, guest and Chronicles paths) for a
+orchestration\tasks\TASK-0024-browser-25d-phase3\REPORT.md:92:- `npm run smoke:browser` ΓÇö PASS (1/1; own server lifecycle, port 6500
+orchestration\tasks\TASK-0024-browser-25d-phase3\REPORT.md:163:- `npm run smoke:browser` ΓÇö PASS (1/1, port 6500 released)
+orchestration\tasks\TASK-0024-browser-25d-phase3\REPORT.md:165:  `dev:state` timeouts / the known timing-sensitive `gear-outcomes` under
+orchestration\tasks\TASK-0034-playability-evaluation\REVIEW.md:57:   hard-dials `ws://<hostname>:6500` ([src/main.js:30]) ΓÇö the owner's
+orchestration\tasks\TASK-0069-remote-reconnect\STATUS.md:10:expected_verification: powershell -File native/build.ps1 -RunTests (drop to Retrying then Ready; session-replaced stays Disconnected, no retry)
+orchestration\tasks\TASK-0034-playability-evaluation\REPORT.md:20:checks. The browser server was the existing listener on port 6500 (PID 10276);
+orchestration\tasks\TASK-0034-playability-evaluation\REPORT.md:269:- Existing listener: `localhost:6500`, Node PID 10276. It was preserved.
+orchestration\tasks\TASK-0034-playability-evaluation\REPORT.md:300:browser evidence above is the verification artifact.
+orchestration\tasks\TASK-0033-daytime-default\REPORT.md:54:  port-6500 process occupied the pinned port; it was not terminated.
+orchestration\tasks\TASK-0033-daytime-default\REPORT.md:72:on port 6500. The cycle and emitter-light code remains available for future
+orchestration\tasks\TASK-0033-daytime-default\REPORT.md:84:passed. The pinned smoke wrapper reached the existing port-6500 owner
+orchestration\tasks\TASK-0033-daytime-default\STATUS.md:18:integration_verification: npm run test:unit ΓÇö 119 files / 761 tests passed; npm run build passed; npm run smoke:browser could not complete against the pre-existing owner listener on port 6500 and was preserved
+orchestration\tasks\TASK-0069-remote-reconnect\SPEC.md:3:title: Remote session reconnect/retry (Gate B groundwork)
+orchestration\tasks\TASK-0069-remote-reconnect\SPEC.md:26:taking the identity) must NOT trigger retry ΓÇö that stays a terminal
+orchestration\tasks\TASK-0069-remote-reconnect\SPEC.md:32:Ready resume; replaced ΓåÆ Disconnected, no retry). Architect reruns.
+orchestration\tasks\TASK-0069-remote-reconnect\REVIEW.md:7:(no retry). Backoff 1s/2s/4s per spec.
+orchestration\tasks\TASK-0041-death-decision-moment\STATUS.md:16:verification: revision focused death suite 5/5; revision production build PASS; worker alternate-port browser gate 1/1; real oathed/unoathed 1920x1080 JPEGs 43,215/37,777 bytes; default smoke remains unclaimed because owner PID 10276 holds port 6500
+orchestration\tasks\TASK-0069-remote-reconnect\REPORT.md:10:# TASK-0069 REPORT ΓÇö remote session reconnect/retry
+orchestration\tasks\TASK-0069-remote-reconnect\REPORT.md:18:not retry. There is still no local-sim fallback.
+orchestration\tasks\TASK-0069-remote-reconnect\REPORT.md:26:- Explicit `shutdown()` suppresses retry.
+orchestration\tasks\TASK-0069-remote-reconnect\REPORT.md:32:- `native/tests/session_tests.cpp` ΓÇö resume + no-retry (acceptance requires
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:15:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0135-server-lifecycle-soak-integration-contract/soak-integration-policy.json','utf8'));for(const k of ['schema_version','contexts','source_head','platform','port_capsule','repetition','timeout','artifacts','retry','quarantine','escalation','verdict'])if(!(k in j))throw Error('missing '+k);if(j.port_capsule.forbidden_ports.indexOf(6500)<0)throw Error('6500 not forbidden');console.log('soak integration policy: PASS')"
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:21:contains 6500; `port_capsule.allowed_range` is `[6680, 6699]` (this lane's
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:29:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0135-server-lifecycle-soak-integration-contract/fixtures/negative-cases.json','utf8'));for(const k of ['STALE_SOURCE_HEAD','MISSING_PLATFORM_EVIDENCE','PORT_CAPSULE_COLLISION','FORBIDDEN_PORT_6500','TIMEOUT','NONZERO_SOAK','MISSING_ARTIFACT','RETRY_MASKED_FAILURE'])if(!j.cases.some(x=>x.expected_error===k))throw Error('missing '+k);console.log('soak policy negatives: PASS')"
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:55:| NEG-003 | PORT_CAPSULE_COLLISION | `quarantine.persistent_collision_outcome` | BLOCKED_ENVIRONMENTAL |
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:56:| NEG-004 | FORBIDDEN_PORT_6500 | `port_capsule.on_forbidden_port_use` | FAIL |
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:57:| NEG-005 | TIMEOUT | `timeout.on_breach` | FAIL |
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:58:| NEG-006 | NONZERO_SOAK | `retry.non_masking_invariants` | FAIL |
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:59:| NEG-007 | MISSING_ARTIFACT | `artifacts.missing_rule` | FAIL |
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:60:| NEG-008 | RETRY_MASKED_FAILURE | `retry.non_masking_invariants` | FAIL |
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:63:verdict at FAIL with no same-head retry path, while environmental contention
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:64:(NEG-003) routes through quarantine and can end only in a clean full re-run,
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:71:missing soak into green by retry") through four mutually reinforcing rules:
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:73:1. `verdict.green_requires_all` demands every cited artifact be complete,
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:76:2. `retry.allowed_triggers` admits only environmental port contention;
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:78:   timeouts, missing artifacts, and any failed/incomplete run.
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:79:3. `retry.non_masking_invariants` requires all attempts to stay on disk and be
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:92:- **Port 6500:** listed in `forbidden_ports`; any selection, probe, or bind of it is a P0 protocol violation with immediate FAIL, halt, report, and no retry.
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:101:- Tool constants (100 cycles, 8 burst clients, 5000 ms login, 15000 ms burst, 15-minute watchdog): `native/tools/server_lifecycle_soak.cpp`
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:102:- Gate invocation and capture location: `native/build.ps1` `-RunServerLifecycleSoak` block
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\VALIDATION.md:103:- Exit-code semantics 0/1/2/3: `server_lifecycle_soak.cpp` `main()`
+orchestration\tasks\TASK-0041-death-decision-moment\REPORT.md:43:  listener/PID 10276 already owns port 6500; the alternate-port gate is the
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\STATUS.md:11:- ports: 6680-6699 reserved for this lane (loopback only; port 6500 untouched)
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\SPEC.md:25:run in local, pre-merge, nightly, and release-proof contexts. Bind source head,
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\SPEC.md:26:platform, port capsule, repetition count, timeout, artifact retention,
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\SPEC.md:27:quarantine, retry, escalation, and verdict evidence without changing CI or
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\SPEC.md:31:contention and must never convert a failed or missing soak into green by retry.
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\SPEC.md:32:Port 6500 remains forbidden. All schedule/cost choices that require owner or
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\SPEC.md:40:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0135-server-lifecycle-soak-integration-contract/soak-integration-policy.json','utf8'));for(const k of ['schema_version','contexts','source_head','platform','port_capsule','repetition','timeout','artifacts','retry','quarantine','escalation','verdict'])if(!(k in j))throw Error('missing '+k);if(j.port_capsule.forbidden_ports.indexOf(6500)<0)throw Error('6500 not forbidden');console.log('soak integration policy: PASS')"
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\SPEC.md:41:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0135-server-lifecycle-soak-integration-contract/fixtures/negative-cases.json','utf8'));for(const k of ['STALE_SOURCE_HEAD','MISSING_PLATFORM_EVIDENCE','PORT_CAPSULE_COLLISION','FORBIDDEN_PORT_6500','TIMEOUT','NONZERO_SOAK','MISSING_ARTIFACT','RETRY_MASKED_FAILURE'])if(!j.cases.some(x=>x.expected_error===k))throw Error('missing '+k);console.log('soak policy negatives: PASS')"
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\SPEC.md:42:rg -n 'RunServerLifecycleSoak|server_lifecycle_soak|nightly|workflow_dispatch|timeout|artifact|quarantine|retry|6500' native .github orchestration -g '*.ps1' -g '*.cpp' -g '*.yml' -g '*.yaml' -g '*.md' -g '*.json'
+orchestration\tasks\TASK-0053-world-composition-polish\STATUS.md:10:expected_verification: per-deliverable verdicts (IMPLEMENTED / ALREADY-PRESENT / NOT-NEEDED) with hard-fail Playwright captures; npm run test:unit; npm run playtest; alternate-port browser gate (6500 is the owner's)
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:13:    "name": "server_lifecycle_soak",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:14:    "implementation": "native/tools/server_lifecycle_soak.cpp",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:15:    "invocation": "powershell -File native/build.ps1 -RunServerLifecycleSoak",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:16:    "evidence_emitter": "--out JSON artifact written next to the run",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:32:      "Relabeling, copying, or time-shifting an artifact across heads is evidence fabrication."
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:66:    "forbidden_ports": [6500],
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:70:      "Port 6500 is owner-reserved; selecting, probing, or binding it is a P0 protocol violation, never a retryable condition.",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:74:    "on_collision": "Enter the quarantine path; the collided attempt itself can never supply a green verdict.",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:75:    "on_forbidden_port_use": "Immediate FAIL with error code FORBIDDEN_PORT_6500, halt, and P0 report; no retry and no remediation inside the worker lane."
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:83:      "nightly": 1,
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:87:    "counting_rule": "Only complete runs (all requested cycles plus burst present in the artifact) count toward the requirement; partial runs earn no partial credit and are FAIL evidence."
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:89:  "timeout": {
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:96:      "nightly": 1500000,
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:101:  "artifacts": {
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:119:    "integrity_binding": "Each verdict references every artifact by relative path, sha256, startedAt, and finishedAt.",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:120:    "missing_rule": "Exit code 0 without a parseable artifact containing all required_fields is FAIL with error code MISSING_ARTIFACT; re-deriving numbers from stdout can never substitute for the artifact.",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:124:      "nightly": 180,
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:129:  "retry": {
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:136:      "timeout without proven environmental cause",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:137:      "missing_artifact",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:144:      "A green verdict cites exactly one clean, complete, unassisted PASS artifact per required independent run.",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:145:      "If any attempt on a source head fails deterministically, the verdict for that head is FAIL and no later retry on the same head may flip it to PASS; a fresh verdict requires a fresh source head.",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:146:      "Overwriting or silently replacing a failed attempt's artifact is RETRY_MASKED_FAILURE and invalidates the entire verdict session."
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:150:  "quarantine": {
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:154:      "Wait retry.cooldown_seconds_between_attempts.",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:158:    "limits": "At most retry.max_attempts_per_verdict_session minus one quarantined re-runs per verdict session; persistent collisions are never absorbed silently.",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:172:        "retrying toward green"
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:183:    "recurrent_timeout": "Two consecutive TIMEOUT verdicts on the same head in the same environment escalate to the architect as a suspected regression or environment fault before further runs."
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:192:      "each cited artifact parses, contains artifacts.required_fields, has passed=true, failures=[], cyclesCompleted==cyclesRequested, and burstPassed=true",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:193:      "no attempt in the session failed deterministically or breached a timeout",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:194:      "all earlier attempts in the session are disclosed with their artifacts"
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:197:      "an artifact is missing, unparsable, or field-incomplete (MISSING_ARTIFACT)",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:202:      "port 6500 was selected, probed, or bound (FORBIDDEN_PORT_6500)",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:203:      "a failed or missing run was replaced or papered over by a retry (RETRY_MASKED_FAILURE)"
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:213:      "context": "local|pre_merge|nightly|release_proof",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:216:          "artifact_path": "string",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:249:    "nightly": {
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:255:        "Option A, zero marginal cost: owner registers one Windows Task Scheduler daily job running powershell -File native/build.ps1 -RunServerLifecycleSoak writing into the captures folder.",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:280:      "item": "nightly soak schedule and host",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:288:      "item": "long-term artifact storage location and cost",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\soak-integration-policy.json:296:  "supreme_non_masking_invariant": "No retry, re-run, reclassification, aggregation, or evidence transformation may convert a failed or missing soak into a green verdict."
+orchestration\tasks\TASK-0049-first-session-ui-wave\REPORT.md:148:(Playwright, real Chromium, real server on 127.0.0.1:6500; Chronicles flow
+orchestration\tasks\TASK-0048-chronicles-silent-combat\REVIEW.md:33:1. **0046 blocker 1 reclassified**: driver artifact (non-contact),
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:10:      "scenario": "A PASS artifact captured at source head 1111...aaaa is submitted as evidence for tip 2222...bbbb after the base advanced over native/networking.",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:37:      "scenario": "Every attempt in the session fails in phase server-start with binder error 'no free port in capsule 6680-6699'; no client upgrade was ever attempted; retries exhaust quarantine.limits.",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:59:      "policy_rule": "quarantine.persistent_collision_outcome",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:63:      "id": "NEG-004-forbidden-port-6500",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:64:      "expected_error": "FORBIDDEN_PORT_6500",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:65:      "scenario": "A run configuration directs the listener to port 6500 instead of the lane capsule.",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:70:            "listener_port": 6500
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:77:      "rationale": "Port 6500 is owner-reserved; touching it is a P0 protocol violation with immediate FAIL, halt, report, and no retry."
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:80:      "id": "NEG-005-timeout-watchdog-breach",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:95:      "policy_rule": "timeout.on_breach",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:117:      "policy_rule": "retry.non_masking_invariants",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:118:      "rationale": "A deterministic failure fixes the verdict at FAIL for that head; no same-head retry may flip it to green."
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:121:      "id": "NEG-007-missing-artifact",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:128:            "artifact_path": "captures/lifecycle-soak-20260821-999999.json",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:129:            "artifact_present": false,
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:136:      "policy_rule": "artifacts.missing_rule",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:137:      "rationale": "Without a valid artifact the run is FAIL; stdout-derived numbers are inadmissible as evidence."
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:140:      "id": "NEG-008-retry-masked-failure",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:142:      "scenario": "Attempt 1 failed with MISSING_ARTIFACT; attempt 2 passed. The verdict cites only attempt 2's artifact and omits attempt 1 from the session record.",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:147:            "artifact_path": "captures/lifecycle-soak-20260821-230102.json"
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:154:      "policy_rule": "retry.non_masking_invariants",
+orchestration\tasks\TASK-0135-server-lifecycle-soak-integration-contract\fixtures\negative-cases.json:155:      "rationale": "Hiding a failed or missing run behind a passing retry invalidates the entire verdict session."
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\STATUS.md:12:known_risks: harness-only scope; do not loosen assertions or edit server/src/package; owner PID 10276 may occupy port 6500
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\STATUS.md:30:revision_full_gate: 2026-08-17 ΓÇö candidate a040da60 unit 122/779 passed; full playtest 30/31 with only the known loot second-drop timeout. Exact staged source variant remains independently recorded at 31/31; environment-only isolated loot retry could not resolve compression in a temporary junction. Capture: captures/coordinator-revision-1da567aa-full-gate-2026-08-17.txt.
+orchestration\tasks\TASK-0053-world-composition-polish\REPORT.md:67:- Browser gate: alternate-port pattern (port 6500 is the owner's
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\SPEC.md:24:flake classes (dev:state probe timeouts, zone-transition 8s timeouts,
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\SPEC.md:34:retry with backoff, threshold ratios computed against a same-run
+orchestration\tasks\TASK-0046-playability-reevaluation\STATUS.md:13:known_risks: evaluation-only; never edit product code, playtest harness, package files, or owner port 6500; use a free loopback port and preserve captures
+orchestration\tasks\TASK-0042-first-loot-moment\REVIEW.md:24:  reproduction proving the timeouts predate the diff); alternate-port
+orchestration\tasks\TASK-0042-first-loot-moment\REVIEW.md:25:  smoke justified by the owner's :6500 server per the 0041 precedent;
+orchestration\tasks\TASK-0046-playability-reevaluation\SPEC.md:27:   the log. A dev-mode client dials `ws://<hostname>:6500` regardless
+orchestration\tasks\TASK-0046-playability-reevaluation\SPEC.md:30:   the game server. NEVER evaluate against the owner's :6500.
+orchestration\tasks\TASK-0042-first-loot-moment\REPORT.md:91:  (includes the 12-test first-find suite: guarantee/window/retry/scene
+orchestration\tasks\TASK-0042-first-loot-moment\REPORT.md:97:  passes when isolated); one run hit marginal zone-transition timeouts
+orchestration\tasks\TASK-0042-first-loot-moment\REPORT.md:105:  machine ΓÇö port 6500 is owned by the owner's persistent server (PID
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:47:The final harness fix keeps combat retries on the originally selected UUID, excludes support/buffer casters from the kill target while retaining the healer in the pack, and tolerates only transient `dev:state` probe timeouts inside the existing bounded wait. Three focused loaded combat runs also passed before the full gate.
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:120:worktree. With `loadMode:false`, the authored 8000ms timeout stayed 8000ms
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:157:- Zone admission and final-death observation now retry only within finite load-mode windows.
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:251:its second coin drop. A fresh isolated retry could not boot because the
+orchestration\tasks\TASK-0043-playtest-harness-stabilization\REPORT.md:259:To remove the ambiguity from the junction-based retry, a fresh disposable
+orchestration\tasks\TASK-0067-native-journey-ci\SPEC.md:23:failure upload artifacts: build log, test transcripts. Windows runner
+orchestration\tasks\TASK-0067-native-journey-ci\REVIEW.md:7:CMake preset, session tests own their loopback server, 14m timeout,
+orchestration\tasks\TASK-0067-native-journey-ci\REVIEW.md:8:failure artifacts. The build.ps1 VS-18 probe gap on hosted runners is
+orchestration\tasks\TASK-0046-playability-reevaluation\REVIEW.md:13:(6542ΓÇô6545, owner's :6500 untouched ΓÇö correct), the bounded guest
+orchestration\tasks\TASK-0067-native-journey-ci\REPORT.md:39:- `.github/workflows/native.yml` ΓÇö `journey` job, 14m timeout, failure
+orchestration\tasks\TASK-0067-native-journey-ci\REPORT.md:40:  artifact upload
+orchestration\tasks\TASK-0046-playability-reevaluation\REPORT.md:28:loopback ports; owner port 6500 was never used.
+orchestration\tasks\TASK-0052-suite-flake-hardening\SPEC.md:37:   bounded load-adaptive retry pattern 0043 used for zone admission
+orchestration\tasks\TASK-0052-suite-flake-hardening\REPORT.md:49:  marginal-timeout flake class in a scenario outside this spec's scope
+orchestration\tasks\TASK-0052-suite-flake-hardening\REPORT.md:62:- The zones/respawn marginal timeouts observed during TASK-0042
+orchestration\tasks\TASK-0052-suite-flake-hardening\REVIEW.md:26:Their loaded run surfaced the SAME marginal-timeout class in `loot`
+orchestration\tasks\TASK-0048-chronicles-silent-combat\captures\baseline-c3988-wire.json:11443:      "at": 1787019365000
+orchestration\tasks\TASK-0066-capture-harness-consolidation\REVIEW.md:7:evidence untouched; port required with no default and 6500 explicitly
+orchestration\tasks\TASK-0060-c3-session-seam-scaffold\SPEC.md:13:  retrying/rejected/protocol-mismatch).
+orchestration\tasks\TASK-0062-playtest-flake-triage\STATUS.md:10:expected_verification: three serialized PLAYTEST_PORT=6580 PLAYTEST_TIMING_LOG=1 npm run playtest 32/32; npm run test:unit 134/841; no scenario assertion/timeout/retry diffs; architect reruns one suite with diagnostics on
+orchestration\tasks\TASK-0060-c3-session-seam-scaffold\REPORT.md:11:  ConnectionState (connecting/connected/ready/disconnected/retrying/
+orchestration\tasks\TASK-0059-responsive-overlay-pass\REPORT.md:17:owns a production server on 127.0.0.1:6582 (cursor range; never 6500).
+orchestration\tasks\TASK-0059-responsive-overlay-pass\REPORT.md:70:server so `/world/players` exists; 127.0.0.1:6581, never 6500 ΓÇö cursor capsule):
+orchestration\tasks\TASK-0066-capture-harness-consolidation\REPORT.md:21:rejects 6500 (owner's live server).
+orchestration\tasks\TASK-0059-responsive-overlay-pass\REVIEW.md:8:  sighting of the marginal-timeout watch item (scenario id not captured
+orchestration\tasks\TASK-0062-playtest-flake-triage\REPORT.md:15:wall time, the `waitFor` timeline (label, authored timeout budget,
+orchestration\tasks\TASK-0062-playtest-flake-triage\REPORT.md:31:No `playtest/scenarios/**` edits. No timeout/retry/assert changes.
+orchestration\tasks\TASK-0062-playtest-flake-triage\REPORT.md:56:DIAG line includes scenario name, wait label `loot drop`, timeout budget
+orchestration\tasks\TASK-0062-playtest-flake-triage\SPEC.md:3:title: Playtest marginal-timeout flake triage + diagnostics
+orchestration\tasks\TASK-0062-playtest-flake-triage\SPEC.md:13:  - playtest scenario assertions, timeouts, retries (measuring stick ΓÇö
+orchestration\tasks\TASK-0062-playtest-flake-triage\SPEC.md:31:   for, timeout budget, elapsed), and the last 5 envelopes seen. Exit
+orchestration\tasks\TASK-0062-playtest-flake-triage\SPEC.md:44:- Diff shows NO assertion/timeout/retry changes in scenarios.
+orchestration\tasks\TASK-0062-playtest-flake-triage\REVIEW.md:5:timeout/retry/assert changes; diagnostics.mjs wraps waitFor without
+orchestration\tasks\TASK-0062-playtest-flake-triage\FINDINGS.md:1:# TASK-0062 FINDINGS ΓÇö playtest marginal-timeout flake
+orchestration\tasks\TASK-0062-playtest-flake-triage\FINDINGS.md:5:with a stub waitFor timeout (see REPORT); no live suite failure to attach a
+orchestration\tasks\TASK-0062-playtest-flake-triage\FINDINGS.md:45:timeouts from this file ΓÇö architect ruling required.
+orchestration\tasks\TASK-0039-native-protocol-server-n1\SPEC.md:33:`single-session` scenarios against it on :6500.
+orchestration\tasks\TASK-0039-native-protocol-server-n1\SPEC.md:53:2. A `verdigris_server` target: accepts WS connections on :6500, parses
+orchestration\tasks\TASK-0039-native-protocol-server-n1\SPEC.md:80:  + harness override if 6500 is occupied; document).
+orchestration\tasks\TASK-0055-browser-followups\STATUS.md:22:invents no boss name (unit). Ports 6580-6599; never 6500.
+orchestration\tasks\TASK-0092-owner-launch-packaging-audit\SPEC.md:28:Owner port 6500, loopback-only servers, forgiving persistence, and current
+orchestration\tasks\TASK-0055-browser-followups\REPORT.md:74:never 6500 ΓÇö cursor capsule):
+orchestration\tasks\TASK-0072-owner-launcher\STATUS.md:11:notes: Owner-play ports 6520-6539. Never 6500. -Local / -Port / -Rebuild.
+orchestration\tasks\TASK-0086-gate-c-contract-audit\STATUS.md:10:ports: 6660-6679 (loopback only; never 6500)
+orchestration\tasks\TASK-0072-owner-launcher\SPEC.md:22:(owner-play range ΓÇö NOT coordinator capsules, never 6500), starts the
+orchestration\tasks\TASK-0038-combat-controls-rebinding\REPORT.md:142:real server on 127.0.0.1:6500; guest login ΓåÆ world):
+orchestration\tasks\TASK-0072-owner-launcher\REPORT.md:16:on a free **6520ΓÇô6539** port (never 6500), launches
+orchestration\tasks\TASK-0072-owner-launcher\REPORT.md:29:  Explicit `-Port 6500` throws before bind.
+orchestration\tasks\TASK-0086-gate-c-contract-audit\REVIEW.md:40:   `captures/` folder, and make REPORT cite that durable artifact plus exit 0.
+orchestration\tasks\TASK-0086-gate-c-contract-audit\REPORT.md:163:   cites the artifact instead of the session transcript.
+orchestration\tasks\TASK-0083-server-lifecycle-soak\SPEC.md:11:  - native/tools/server_lifecycle_soak.cpp
+orchestration\tasks\TASK-0083-server-lifecycle-soak\SPEC.md:26:API. `-RunServerLifecycleSoak` builds a tool that performs 100 sequential
+orchestration\tasks\TASK-0083-server-lifecycle-soak\SPEC.md:31:hang, crash, or timeout.
+orchestration\tasks\TASK-0083-server-lifecycle-soak\SPEC.md:43:powershell -File native/build.ps1 -RunServerLifecycleSoak
+orchestration\tasks\TASK-0083-server-lifecycle-soak\SPEC.md:44:powershell -File native/build.ps1 -RunServerLifecycleSoak
+orchestration\tasks\TASK-0079-browser-panel-inventory\SPEC.md:26:   from your capsule; owner :6500 untouchable) saved in the task
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:26:comparison JSON artifact. The wrapper owns process startup/shutdown, uses two
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:48:Use two ports in 6540-6559, never 6500. Paste literal transcripts and exit
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:65:non-loopback address, touching port 6500, or killing a process it did not
+orchestration\tasks\TASK-0115-browser-panel-typography-inventory\SPEC.md:16:resource_capsule: ox-pc-a ports 6620-6639 if later routed; loopback only; never 6500
+orchestration\tasks\TASK-0115-browser-panel-typography-inventory\SPEC.md:45:Stop if reaching a panel requires source/assertion changes or port 6500.
+orchestration\tasks\TASK-0081-gate-b-wire-contract\STATUS.md:12:- ports: 6620-6639 loopback only (this audit task is expected to need no server); port 6500 untouched
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:82:   timeout or emitted a diagnosis proving this as the primary cause.
+orchestration\tasks\TASK-0106-deterministic-replay-runner\SPEC.md:16:Scaffold then implement a versioned command/seed/tick replay artifact and a
+orchestration\tasks\TASK-0120-release-verification-gap-audit\STATUS.md:11:- ports: 6700-6719 reserved for this lane (resource capsule read-only expected; port 6500 untouched)
+orchestration\tasks\TASK-0120-release-verification-gap-audit\STATUS.md:41:  upgrade-safety claim unsupported by any clean-machine/migration artifact).
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REVIEW.md:25:rollback artifact supports it. Installer, signing, notarization, distribution,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:30:rg -n "CI|clean|build|package|launcher|soak|migration|upgrade|rollback|sign|notar|installer|release|artifact|crash|save" .github native docs orchestration --glob "*.md" --glob "*.yml" --glob "*.yaml" --glob "*.ps1" --glob "*.json"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:38:clean-machine or migration artifact. Stop before account/irreversible actions;
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:7:  mutation, no ports bound; port 6500 untouched. Machine-verifiable inventory:
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:24:   artifacts) and `native.yml` (windows-latest, MSVC preset, denylist, ctest
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:38:   run, which is a proxy, not a release harness: no retained build artifacts,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:48:   stored replay artifact, or divergence runner (TASK-0100 READY audit +
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:58:    `ci-logs` artifacts on failure. No one-command support bundle; no
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:103:**Finding: unsupported.** No clean-machine or migration artifact backs it ΓÇö
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:108:cross-version data compatibility. Discharge: TASK-0126 + TASK-0127 artifacts
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:56:rg -n "CI|clean|build|package|launcher|soak|migration|upgrade|rollback|sign|notar|installer|release|artifact|crash|save" .github native docs orchestration --glob "*.md" --glob "*.yml" --glob "*.yaml" --glob "*.ps1" --glob "*.json"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:100:but has **no** clean-machine or migration artifact behind it ΓÇö schemaVersion
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:117:  account touched, no ports bound, port 6500 untouched throughout.
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\captures\progression-matrix.json:289:      "Keep the +2/attr path clearly quarantined until replaced; never let it become the default authority silently.",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:11:    "missing": "no committed artifact provides this release proof; named successor packets own closing the gap",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:21:        ".github/workflows/ci.yml (ubuntu-latest, Node 22, npm ci, npx playwright install chromium, PLAYTEST_LOAD_MODE=1, npm run verify = lint + lint:css + test:unit + build + playtest + test:e2e:built, failure artifacts test-results/)",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:35:      "gap": "No dedicated clean-machine release harness or artifact: no script proves a bare machine -> playable build end to end, no produced build artifacts are retained from green runs. orchestration/tasks/TASK-0126-clean-machine-release-harness/SPEC.md owns this and is DRAFT pending this audit."
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:53:        "native/tools/play-native.ps1: one-command Windows owner launch (build if stale, free-port server in 6520-6539 never 6500, client --remote, log tee under native/build/logs/, stop server on client exit, no-orphan process check); desktop shortcut recipe documented in native/README.md",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:65:        "ecosystem.config.cjs defines kill_timeout 8000 for graceful pm2 stop of the browser server"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:98:      "gap": "No versioned replay record format, stored replay artifacts, or divergence-diffing runner: orchestration/tasks/TASK-0100-deterministic-replay-coverage-audit/SPEC.md (READY) and TASK-0106 successor own this"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:187:        "play-native.ps1 tees server output under native/build/logs/ and prints the log path; native CI uploads native/build/ci-logs/ artifacts on failure",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:200:      "gap": "The ladder governs task acceptance, not product release: no release checklist binds all of the above surfaces to a tagged build with recorded evidence, sign-off, and artifact retention"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:213:    "why_unsupported": "No clean-machine or migration artifact backs this claim: there is no save-migration matrix (a snapshot written by a different schemaVersion hard-fails restore per native/src/core.cpp and the browser SQLite stores have no versioned migration path either), no rollback procedure exists anywhere in the repository, and no clean-machine harness reproduces the update on a pristine host. The claim silently assumes data compatibility across versions.",
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:214:    "discharge_path": "TASK-0127 save-migration matrix + TASK-0126 clean-machine release harness (both sequenced after this audit) must produce those artifacts before the upgrade claim may be treated as release proof."
+orchestration\tasks\TASK-0120-release-verification-gap-audit\captures\release-gates.json:218:      "command": "rg -n \"CI|clean|build|package|launcher|soak|migration|upgrade|rollback|sign|notar|installer|release|artifact|crash|save\" .github native docs orchestration --glob \"*.md\" --glob \"*.yml\" --glob \"*.yaml\" --glob \"*.ps1\" --glob \"*.json\"",
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\REPORT.md:38:5. Wrote evidence artifacts inside the task folder only; ran all four
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\REPORT.md:157:   port 6500 untouched.
+orchestration\tasks\TASK-0126-clean-machine-release-harness\SPEC.md:17:gate for Windows and CI equivalents for macOS, with exact artifact manifests,
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:22:source head, commands/exit codes, environment identity, artifacts/hashes,
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:25:stand in for artifacts. No build, deployment, installer, signing, notarization,
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:31:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0131-release-proof-manifest/release-proof-manifest.json','utf8'));for(const k of ['schema_version','source_head','commands','environment','artifacts','platform_coverage','rollback','owner_actions','verdict'])if(!(k in j))throw Error('missing '+k);console.log('release proof manifest: PASS')"
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:33:rg -n 'release|artifact|installer|sign|notari|rollback|deploy|workflow_dispatch' .github native docs orchestration -g '*.yml' -g '*.yaml' -g '*.md' -g '*.ps1'
+orchestration\tasks\TASK-0129-server-lifecycle-soak\REPORT.md:6:`-RunServerLifecycleSoak` gate on `native/build.ps1` builds and runs
+orchestration\tasks\TASK-0129-server-lifecycle-soak\REPORT.md:7:`native/tools/server_lifecycle_soak.cpp`, which drives the REAL
+orchestration\tasks\TASK-0129-server-lifecycle-soak\REPORT.md:24:  6500 is never touched; all binds are 127.0.0.1 (server-side invariant).
+orchestration\tasks\TASK-0129-server-lifecycle-soak\REPORT.md:31:  timeout; a 15-minute detached watchdog converts a hang into exit code 3.
+orchestration\tasks\TASK-0129-server-lifecycle-soak\REPORT.md:39:- `native/tools/server_lifecycle_soak.cpp` (new; owned)
+orchestration\tasks\TASK-0129-server-lifecycle-soak\REPORT.md:40:- `native/build.ps1` (added `-RunServerLifecycleSoak` param + gate block; owned)
+orchestration\tasks\TASK-0129-server-lifecycle-soak\REPORT.md:46:- Build interface: new opt-in switch `native/build.ps1 -RunServerLifecycleSoak`.
+orchestration\tasks\TASK-0129-server-lifecycle-soak\REPORT.md:47:- New tool `native/build/server_lifecycle_soak.exe` with `--out <path>`.
+orchestration\tasks\TASK-0129-server-lifecycle-soak\REPORT.md:60:2. `powershell -File native/build.ps1 -RunServerLifecycleSoak` (first run)
+orchestration\tasks\TASK-0129-server-lifecycle-soak\REPORT.md:70:3. `powershell -File native/build.ps1 -RunServerLifecycleSoak` (second run)
+orchestration\tasks\TASK-0129-server-lifecycle-soak\REPORT.md:95:plus this commit's owned files (`native/tools/server_lifecycle_soak.cpp`,
+orchestration\tasks\TASK-0129-server-lifecycle-soak\REPORT.md:134:- Future work (not this packet): wire `-RunServerLifecycleSoak` into
+orchestration\tasks\TASK-0129-server-lifecycle-soak\captures\lifecycle-soak-20260821-224506.json:2:  "tool": "server_lifecycle_soak",
+orchestration\tasks\TASK-0129-server-lifecycle-soak\captures\lifecycle-soak-20260821-224623.json:2:  "tool": "server_lifecycle_soak",
+orchestration\tasks\TASK-0129-server-lifecycle-soak\captures\negative-capsule-occupied.json:2:  "tool": "server_lifecycle_soak",
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\SPEC.md:22:dependency, toolchain, build, test, launch, smoke, cleanup, artifact, cache,
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\SPEC.md:25:machine and must keep port 6500 forbidden.
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\SPEC.md:30:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0132-clean-machine-harness-contract/clean-machine-contract.json','utf8'));for(const k of ['schema_version','checkout','toolchain','dependencies','build','tests','launch','smoke','cleanup','artifacts','platform_matrix'])if(!(k in j))throw Error('missing '+k);console.log('clean-machine contract: PASS')"
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\SPEC.md:31:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0132-clean-machine-harness-contract/fixtures/negative-cases.json','utf8'));for(const k of ['DIRTY_BASE','CACHE_LEAK','MISSING_TOOLCHAIN','DEPENDENCY_DRIFT','NONZERO_STAGE','LEAKED_PROCESS','NON_LOOPBACK_BIND','FORBIDDEN_PORT_6500'])if(!j.cases.some(x=>x.expected_error===k))throw Error('missing '+k);console.log('clean-machine negatives: PASS')"
+orchestration\tasks\TASK-0132-clean-machine-harness-contract\SPEC.md:32:rg -n 'npm ci|cmake|build.ps1|RunTests|RunClientScenarios|playtest|smoke|6500|clean.machine|artifact' .github native docs package.json orchestration -g '*.yml' -g '*.yaml' -g '*.md' -g '*.ps1' -g '*.json'
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:22:artifact/hash/installer/update/rollback evidence from owner-only certificate,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:29:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0134-distribution-signing-boundary/distribution-boundary.json','utf8'));for(const k of ['schema_version','artifacts','hashes','installer','update','rollback','machine_actions','owner_actions','handoff'])if(!(k in j))throw Error('missing '+k);console.log('distribution boundary: PASS')"
+orchestration\tasks\TASK-0129-server-lifecycle-soak\STATUS.md:11:- ports: 6680-6699 reserved for this lane (loopback only; port 6500 untouched)
+orchestration\tasks\TASK-0129-server-lifecycle-soak\STATUS.md:40:- IMPLEMENTED: commit `d5cfec59` (native/tools/server_lifecycle_soak.cpp +
+orchestration\tasks\TASK-0129-server-lifecycle-soak\STATUS.md:41:  native/build.ps1 `-RunServerLifecycleSoak` gate + captures). All four
+orchestration\tasks\TASK-0129-server-lifecycle-soak\STATUS.md:51:  branch only. No merge, no force-push, port 6500 untouched.
+orchestration\tasks\TASK-0129-server-lifecycle-soak\SPEC.md:11:  - native/tools/server_lifecycle_soak.cpp
+orchestration\tasks\TASK-0129-server-lifecycle-soak\SPEC.md:31:API. `-RunServerLifecycleSoak` builds a tool that performs 100 sequential
+orchestration\tasks\TASK-0129-server-lifecycle-soak\SPEC.md:36:hang, crash, or timeout.
+orchestration\tasks\TASK-0129-server-lifecycle-soak\SPEC.md:48:powershell -File native/build.ps1 -RunServerLifecycleSoak
+orchestration\tasks\TASK-0129-server-lifecycle-soak\SPEC.md:49:powershell -File native/build.ps1 -RunServerLifecycleSoak
+orchestration\tasks\TASK-0129-server-lifecycle-soak\REVIEW.md:12:The implementation is confined to the authorized worker commits: `native/build.ps1`, `native/tools/server_lifecycle_soak.cpp`, and the TASK-0129 task folder. The apparent broader immutable-base diff consists of later coordinator-only routing commits already on the program branch, not worker writes. The tool drives the real public `WebSocketServer` and `RemoteProtocolSession` seams on loopback ports 6680ΓÇô6699; it does not change networking, client, server, or gameplay behavior.
+orchestration\tasks\TASK-0129-server-lifecycle-soak\REVIEW.md:14:Architect verification on Windows completed with exit 0 for `-RunTests -RunClientScenarios`; all native suites and seven client scenarios passed. Two further independent `-RunServerLifecycleSoak` invocations each completed 100/100 sequential lifecycles plus 8/8 upgrades, logins, and clean closes in the burst, with exit 0. `git diff --check` is clean. The committed occupied-capsule negative control records `passed=false` and nonzero behavior. Verdict: **ACCEPTED**.

@@ -166,6 +166,54 @@ void apply_scene_fields(ClientScene& scene, const JsonValue& source) {
   }
 }
 
+// ── TASK-0145: accepted Gate-B chronicle payload parsing ────────────────
+// Shapes come verbatim from the frozen wire contract (TASK-0081 capture):
+// chronicle {version, houses[]{id,name,scions[]{id,name,level,mortal},
+// crypt[]{... relic{status,count}}, activeHouseId, activeScionId}.
+
+void apply_chronicle_object(ClientChronicle& chronicle, const JsonValue& source) {
+  const auto* houses = source.get("houses");
+  if (!houses || !houses->array()) return;
+  std::vector<ClientHouseEntry> parsed;
+  for (const auto& entry : *houses->array()) {
+    ClientHouseEntry parsed_house;
+    if (const auto* id = json_string(entry.get("id"))) parsed_house.id = *id;
+    if (const auto* name = json_string(entry.get("name"))) parsed_house.name = *name;
+    if (const auto* scions = entry.get("scions"); scions && scions->array()) {
+      for (const auto& scion_entry : *scions->array()) {
+        ClientScionEntry parsed_scion;
+        if (const auto* id = json_string(scion_entry.get("id"))) parsed_scion.id = *id;
+        if (const auto* name = json_string(scion_entry.get("name"))) parsed_scion.name = *name;
+        parsed_scion.level = static_cast<int>(json_number(scion_entry.get("level"), 1));
+        if (const auto* mortal = scion_entry.get("mortal"))
+          parsed_scion.mortal = mortal->boolean() && *mortal->boolean();
+        parsed_house.scions.push_back(std::move(parsed_scion));
+      }
+    }
+    if (const auto* crypt = entry.get("crypt"); crypt && crypt->array()) {
+      for (const auto& crypt_entry : *crypt->array()) {
+        ClientCryptEntry parsed_crypt;
+        if (const auto* id = json_string(crypt_entry.get("id"))) parsed_crypt.id = *id;
+        if (const auto* name = json_string(crypt_entry.get("name"))) parsed_crypt.name = *name;
+        parsed_crypt.level = static_cast<int>(json_number(crypt_entry.get("level"), 1));
+        if (const auto* relic = crypt_entry.get("relic"); relic && relic->object()) {
+          if (const auto* status = json_string(relic->get("status")))
+            parsed_crypt.relic_status = *status;
+          parsed_crypt.relic_count = static_cast<int>(json_number(relic->get("count"), 0));
+        }
+        parsed_house.crypt.push_back(std::move(parsed_crypt));
+      }
+    }
+    parsed.push_back(std::move(parsed_house));
+  }
+  chronicle.houses = std::move(parsed);
+  chronicle.present = true;
+  if (const auto* active_house = json_string(source.get("activeHouseId")))
+    chronicle.active_house_id = *active_house;
+  if (const auto* active_scion = json_string(source.get("activeScionId")))
+    chronicle.active_scion_id = *active_scion;
+}
+
 }  // namespace
 
 RemoteProtocolSession::RemoteProtocolSession(std::string host, std::uint16_t port,
@@ -226,9 +274,20 @@ bool RemoteProtocolSession::connect_transport(std::string* error) {
   running_.store(true);
   reader_ = std::make_unique<std::thread>(&RemoteProtocolSession::reader_loop, this);
 
-  Envelope login{"player:login", JsonValue::Object{
-      {"guestId", JsonValue(guest_id_)},
-      {"quickGuest", JsonValue(quick_guest_)}}};
+  Envelope login{"player:login", JsonValue::Object{}};
+  if (quick_guest_) {
+    // Quick guests keep the historical fast path: straight into the world.
+    login.data = JsonValue::Object{
+        {"guestId", JsonValue(guest_id_)},
+        {"quickGuest", JsonValue(quick_guest_)}};
+  } else {
+    // TASK-0145 owner path: await the Chronicles admission flow. The server
+    // answers player:chronicles:ready (frozen contract) with the account's
+    // chronicle payload instead of dropping a nameless guest into town.
+    login.data = JsonValue::Object{
+        {"guestId", JsonValue(guest_id_)},
+        {"awaitChronicles", JsonValue(true)}};
+  }
   if (!send_envelope(login)) {
     last_error_ = "login send failed";
     if (error) *error = last_error_;
@@ -381,6 +440,47 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       pending_events_.push_back({PresentationEventType::Message, "", "",
                                  "Reach the exit stairs to return to the surface.", 0});
       return;
+    case ClientCommand::Type::FoundHouse:
+      envelope.event = "chronicles:house:found";
+      envelope.data = JsonValue::Object{{"name", JsonValue(command.target)}};
+      break;
+    case ClientCommand::Type::CreateScion: {
+      std::string house_id = model_.chronicle.active_house_id;
+      if (find_chronicle_house(model_.chronicle, house_id) == nullptr &&
+          !model_.chronicle.houses.empty())
+        house_id = model_.chronicle.houses.front().id;
+      envelope.event = "chronicles:scion:create";
+      envelope.data = JsonValue::Object{{"houseId", JsonValue(house_id)},
+                                        {"name", JsonValue(command.target)}};
+      break;
+    }
+    case ClientCommand::Type::SelectScion: {
+      // Resolve the scion's House from the authoritative chronicle roster.
+      std::string house_id = model_.chronicle.active_house_id;
+      for (const auto& house : model_.chronicle.houses) {
+        bool found = false;
+        for (const auto& scion : house.scions)
+          if (scion.id == command.target) found = true;
+        if (found) {
+          house_id = house.id;
+          break;
+        }
+      }
+      const ClientScionEntry* scion =
+          find_chronicle_scion(model_.chronicle, command.target);
+      const std::string scion_name = scion ? scion->name : std::string{};
+      envelope.event = "player:chronicles:select";
+      envelope.data = JsonValue::Object{
+          {"scionId", JsonValue(command.target)},
+          {"houseId", JsonValue(house_id)},
+          {"scionName", JsonValue(scion_name)},
+          {"mortal", JsonValue(command.value != 0)}};
+      break;
+    }
+    case ClientCommand::Type::SetOut:
+      envelope.event = "chronicles:scion:set-out";
+      envelope.data = JsonValue::Object{{"scionId", JsonValue(command.target)}};
+      break;
   }
   if (!envelope.event.empty()) send_envelope(envelope);
 }
@@ -515,6 +615,16 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   if (envelope.event == "player:login") {
     if (const auto* player = envelope.data.get("player")) {
       apply_player_fields(model_.player, *player);
+      if (const auto* username = json_string(player->get("username")))
+        model_.player.display_name = *username;
+      if (const auto* chronicles = player->get("chronicles")) {
+        // Admission payload: the active scion/house ids and oath are
+        // authoritative here (player_payload puts them at :590).
+        if (const auto* scion_id = json_string(chronicles->get("scionId")))
+          model_.chronicle.active_scion_id = *scion_id;
+        if (const auto* house_id = json_string(chronicles->get("houseId")))
+          model_.chronicle.active_house_id = *house_id;
+      }
       last_facing_ = model_.player.facing.empty() ? last_facing_ : model_.player.facing;
       model_.inventory.clear();
       if (const auto* inventory = player->get("inventory")) {
@@ -526,11 +636,60 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       }
     }
     if (const auto* scene = envelope.data.get("scene")) apply_scene_fields(model_.scene, *scene);
+    // A full player:login is a world admission on the Gate-B journey: the
+    // owner has left the front door with a living Scion.
+    model_.chronicles_pending = false;
+    model_.player.alive = true;
     state_.store(ConnectionState::Ready);
     ever_ready_ = true;
     retry_attempt_ = 0;
     pending_events_.push_back(
         {PresentationEventType::SessionReady, model_.player.uuid, "", "", 0});
+    return;
+  }
+  if (envelope.event == "chronicles:state" || envelope.event == "player:chronicles:ready" ||
+      envelope.event == "player:chronicles:update") {
+    const JsonValue* chronicle = envelope.data.get("chronicle");
+    if (!chronicle) chronicle = envelope.data.get("chronicles");
+    if (chronicle) apply_chronicle_object(model_.chronicle, *chronicle);
+    // The account payload itself opens the door even before anything is
+    // founded (a fresh chronicle carries no houses yet).
+    model_.chronicle.present = true;
+    if (const auto* account = json_string(envelope.data.get("accountName")))
+      model_.chronicle.account_name = *account;
+    if (envelope.event != "player:chronicles:update") {
+      // state/ready mean the socket sits at the pre-game front door; update
+      // is a roster refresh while already admitted.
+      model_.chronicles_pending = true;
+    }
+    if (const auto* fallen = envelope.data.get("fallen")) {
+      if (const auto* scion_id = json_string(fallen->get("scionId")))
+        model_.chronicle.fallen.scion_id = *scion_id;
+      if (const auto* name = json_string(fallen->get("scionName")))
+        model_.chronicle.fallen.name = *name;
+    }
+    return;
+  }
+  if (envelope.event == "chronicles:scion-fallen") {
+    if (const auto* fallen = envelope.data.get("fallen")) {
+      model_.chronicle.fallen = ClientFallenScion{};
+      if (const auto* scion_id = json_string(fallen->get("scionId")))
+        model_.chronicle.fallen.scion_id = *scion_id;
+      if (const auto* name = json_string(fallen->get("name")))
+        model_.chronicle.fallen.name = *name;
+      model_.chronicle.fallen.level = static_cast<int>(json_number(fallen->get("level"), 1));
+    }
+    model_.chronicle.fallen.relic_count =
+        static_cast<int>(json_number(envelope.data.get("relicCount"), 0));
+    if (const auto* chronicle = envelope.data.get("chronicle"))
+      apply_chronicle_object(model_.chronicle, *chronicle);
+    model_.player.alive = false;
+    pending_events_.push_back(
+        {PresentationEventType::ScionDied, model_.chronicle.fallen.scion_id, "",
+         model_.chronicle.fallen.name, 0});
+    pending_events_.push_back(
+        {PresentationEventType::Message, "", "",
+         "The chronicle records the fall of " + model_.chronicle.fallen.name + ".", 0});
     return;
   }
   if (envelope.event == "player:session-replaced") {
@@ -651,6 +810,24 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   if (envelope.event == "dev:state") {
     const auto* state = envelope.data.get("state");
     if (!state) return;
+    // Authoritative lifecycle + oath visibility (snapshot puts these at the
+    // top of dev:state). Keeps death/successor states honest between
+    // chronicle payloads.
+    if (const auto* lifecycle = json_string(state->get("lifecycle")))
+      model_.lifecycle = *lifecycle;
+    if (const auto* hp = state->get("hp")) {
+      // Authoritative life keeps alive honest between combat envelopes.
+      model_.player.life = static_cast<int>(json_number(hp->get("current"), model_.player.life));
+      model_.player.life_max =
+          static_cast<int>(json_number(hp->get("max"), model_.player.life_max));
+      model_.player.alive = model_.player.life > 0;
+    }
+    if (const auto* record = state->get("chroniclesRecord")) {
+      if (json_number(record->get("revision"), 0) > 0.0) {
+        if (const auto* chronicle = record->get("state"))
+          apply_chronicle_object(model_.chronicle, *chronicle);
+      }
+    }
     if (const auto* monsters = state->get("monsters"); monsters && monsters->array()) {
       model_.monsters.clear();
       for (const auto& entry : *monsters->array()) {
@@ -678,6 +855,11 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         if (const auto* name = json_string(entry.get("name"))) item.name = *name;
         item.x = json_number(entry.get("x"), 0.0);
         item.y = json_number(entry.get("y"), 0.0);
+        if (const auto* relic = entry.get("chroniclesRelic"); relic && relic->object()) {
+          item.relic = true;
+          if (const auto* scion_name = json_string(relic->get("scionName")))
+            item.relic_of = *scion_name;
+        }
         model_.ground.push_back(std::move(item));
       }
     }

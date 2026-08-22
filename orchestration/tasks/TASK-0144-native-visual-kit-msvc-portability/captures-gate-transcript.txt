@@ -1,0 +1,38 @@
+== gate 1: node --test asset-kit.test.mjs ==
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 160.4417
+exit=0
+== gate 2: generate-assets.mjs --check ==
+OK native/client/assets/svg/player.svg
+OK native/client/assets/svg/raider.svg
+OK native/client/assets/svg/elite.svg
+OK native/client/assets/svg/tree.svg
+OK native/client/assets/svg/ruin.svg
+OK native/client/assets/svg/dwelling.svg
+OK native/client/assets/svg/shrine.svg
+OK native/client/assets/svg/terrain-a.svg
+OK native/client/assets/svg/terrain-b.svg
+OK native/client/assets/manifest.json
+OK native/client/assets/generated/visual_kit.h
+visual kit up to date
+exit=0
+== literal audit: bare integer-f tokens ==
+0 matches of (?<![\w.])[0-9]+f\b (no bare tokens such as 1f / 22f)
+== gate 3: build.ps1 -RunTests -RunClientScenarios ==
+    ok: zoom-invariance: terrain tiles present in render list
+    ok: zoom-invariance: uniform delta at max zoom
+    ok: zoom-invariance: delta scales with the zoom factor
+    ok: zoom-invariance: overlapping terrain tiles across camera shift
+    ok: zoom-invariance: overlapping terrain tiles shift uniformly at zoom level
+   PASS (0 failures)
+exit=0
+== gate 4: git diff --check ==
+exit=0

@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0.0",
+  "task": "TASK-0138-READY-MINIMAL",
+  "title": "Synthetic fully-proven release-proof manifest",
+  "purpose": "Fixture proving the validator emits RELEASE_READY/exit 0 only when every binding is complete and correct. All artifact bindings point at real files inside this task folder; roles are synthetic.",
+  "source_head": {
+    "commit": "be6d555688619819084b352660fc0336a90d0ec3",
+    "branch": "synthetic/ready-minimal",
+    "immutable_task_base": "be6d555688619819084b352660fc0336a90d0ec3",
+    "base_ancestry_verified": true,
+    "worktree_clean_at_claim": true
+  },
+  "commands": [
+    {
+      "name": "synthetic.acceptance",
+      "command": "node --test orchestration/tasks/TASK-0138-release-proof-validator/validator.test.mjs",
+      "exit_code": 0,
+      "status": "pass",
+      "stdout": "# pass 24\n# fail 0"
+    }
+  ],
+  "environment": {
+    "os": "Synthetic OS",
+    "architecture": "SYNTH64",
+    "node": "v22.11.0",
+    "worker": "ox-pc-f",
+    "verified": true,
+    "verification_outputs": [
+      { "command": "node --version", "output": "v22.11.0" }
+    ],
+    "status": "verified"
+  },
+  "artifacts": [
+    {
+      "path": "orchestration/tasks/TASK-0138-release-proof-validator/fixtures/false-green-artifact.txt",
+      "role": "release bundle stand-in bound with the true digest of this committed fixture file",
+      "bytes": 134,
+      "sha256": "1cfdf18d91ac96361a8efed51c367172b1508afd4a6ac3dadde4ac60da3e82fc"
+    }
+  ],
+  "platform_coverage": [
+    {
+      "platform": "windows-x64",
+      "role": "target distribution platform (synthetic)",
+      "build_artifact": "fixtures/false-green-artifact.txt",
+      "installer_artifact": "fixtures/false-green-artifact.txt",
+      "runtime_verification": "fixtures/false-green-artifact.txt",
+      "status": "proven"
+    }
+  ],
+  "rollback": {
+    "status": "proven",
+    "release_to_rollback": "1.0.0 -> 0.9.9 (synthetic)",
+    "procedure_documented": true,
+    "procedure_artifact": "fixtures/false-green-artifact.txt",
+    "rehearsal_evidence": "fixtures/false-green-artifact.txt"
+  },
+  "owner_actions": [
+    {
+      "action": "release build",
+      "authorized": true,
+      "performed": true,
+      "evidence": "fixtures/false-green-artifact.txt"
+    }
+  ],
+  "verdict": {
+    "release_ready": true,
+    "state": "PROVEN",
+    "evidence_gaps": [],
+    "statement": "Synthetic complete proof. Demonstrates the validator's only exit-0 shape; proves nothing about the actual program."
+  }
+}

@@ -38,18 +38,31 @@ conflict, stop and file a question.
 ## Task lifecycle
 
 ```text
-DRAFT → READY → CLAIMED → IMPLEMENTED → REVIEW_REQUESTED
+DRAFT → AUTO_RELEASE → READY → CLAIMED → IMPLEMENTED → REVIEW_REQUESTED
       → (REVISE → CLAIMED …) → ACCEPTED → INTEGRATED
 also: BLOCKED, SUPERSEDED
 ```
 
-- Architect sets: DRAFT, READY, REVISE, ACCEPTED, SUPERSEDED (in `SPEC.md`
-  frontmatter for DRAFT/READY/SUPERSEDED; via `REVIEW.md` verdicts for
+- Architect sets: DRAFT, AUTO_RELEASE, READY, REVISE, ACCEPTED, SUPERSEDED (in `SPEC.md`
+  frontmatter for DRAFT/AUTO_RELEASE/READY/SUPERSEDED; via `REVIEW.md` verdicts for
   REVISE/ACCEPTED).
 - Codex sets: CLAIMED, IMPLEMENTED, REVIEW_REQUESTED, INTEGRATED, BLOCKED
   (in `STATUS.md`).
+- `DRAFT` is mutable planning material. It records outcome, parent objective,
+  dependencies, topology/job type, likely paths, acceptance class, evidence,
+  owner dependency, fallback, generation provenance, and successor rule. It
+  may omit a base SHA while distant.
+- `AUTO_RELEASE` is a substantially implementation-ready sequenced packet with
+  an exact machine-evaluable release predicate. When the predicate becomes
+  true, the architect/controller validates current interfaces and collisions,
+  stamps the current exact base/resource/paths/acceptance, and promotes it to
+  READY without owner prose. Failed validation returns it to DRAFT with a
+  reason; it never becomes silently claimable.
 - Only `READY` specs are executable. After READY, the spec is immutable;
   corrections arrive as numbered items in `REVIEW.md` or a replacement task.
+- Distant DRAFT/AUTO_RELEASE packets must not carry stale immutable base SHAs.
+  READY promotion provenance records generator, parent packet, dependency
+  event, validator version, and promotion commit.
 - **Claim release**: if a claim goes stale (coordinator outage, no
   implementation commits), the ARCHITECT may place a `RELEASE.md` in the
   task folder naming the released claim. From that moment any coordinator
