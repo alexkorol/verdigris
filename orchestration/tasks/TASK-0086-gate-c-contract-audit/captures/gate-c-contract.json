@@ -1,0 +1,318 @@
+{
+  "task": "TASK-0086",
+  "title": "Gate C campaign-decision contract audit",
+  "worker": "ox-pc-c",
+  "generatedAt": "2026-08-21T22:05:00-07:00",
+  "immutableBaseCommit": "42718fbc4340589e606fff94a6eaa3dfbd03ad1c",
+  "auditHeadAtCapture": "2ed4799a5385f2d6237697a31305f5671b437e93",
+  "authority": {
+    "source": "docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md",
+    "section": "Gate C - campaign decision (after N6)",
+    "lines": "68-72",
+    "requirementsVerbatim": [
+      "Route choice made on concrete info: goal, boss/danger, expected trophy/material/item family, depth, branch consequence, extraction/return condition.",
+      "A route name alone fails."
+    ]
+  },
+  "classificationLegend": {
+    "AVAILABLE": "A concrete value or rule for this decision field is emitted on the current wire/source/test surface and can be cited.",
+    "DERIVABLE-WITHOUT-GAMEPLAY-RULES": "Not directly emitted as this decision field, but computable purely from cited existing payloads/rules without inventing any campaign, loot, economy, balance, or risk value.",
+    "MISSING": "No current source, payload, or test provides the information; producing it would require an owner-only decision."
+  },
+  "surfaces": {
+    "browserAuthoritativeServer": [
+      "server/player/handlers/world-web.js",
+      "server/core/world-web.js",
+      "server/core/services/zone-service.js",
+      "server/core/first-goal.js"
+    ],
+    "nativeN6Server": [
+      "native/src/networking.cpp"
+    ],
+    "clientConsumers": [
+      "src/components/game-panes/Chart.vue",
+      "src/Delaford.vue"
+    ],
+    "tests": [
+      "native/tests/networking_tests.cpp",
+      "playtest/scenarios/world-web.mjs",
+      "playtest/scenarios/quest.mjs"
+    ]
+  },
+  "fields": [
+    {
+      "id": "goal",
+      "requirement": "Concrete goal",
+      "classification": "MISSING",
+      "evidence": [
+        {
+          "surface": "browser-server",
+          "label": "Chart payload top-level keys are roadId/roadName/direction/blurb/nodes only; blurb is terrain flavor, not a goal",
+          "source": "server/core/world-web.js:263-269 (buildChart payload); blurb strings :19,:31,:43,:55"
+        },
+        {
+          "surface": "browser-server",
+          "label": "Node rows carry id/roadId/roadName/tier/index/name/template/layout/levelHint/parentId/childIds/wardenName/status - no goal or objective key",
+          "source": "server/core/world-web.js:203-216,254-261"
+        },
+        {
+          "surface": "native-n6-server",
+          "label": "C++ chart rows carry id/name/tier/index/roadId/roadName/template/layout/wardenName/parentId/status - no goal or objective key",
+          "source": "native/src/networking.cpp:1424-1432,1434-1437 (emit_chart_screen)"
+        },
+        {
+          "surface": "browser-server",
+          "label": "Only implemented route-adjacent goal loop is the route-agnostic first goal: Aldwyn assigns 'put its Warden down, and come back to me' for ANY tier-1 stretch; no per-road/per-node goal exists",
+          "source": "server/core/first-goal.js:48-55 (talkToAldwyn), :87-96 (notifyFirstGoalWardenDown); mirrored native/src/networking.cpp:1554-1558"
+        },
+        {
+          "surface": "browser-client",
+          "label": "Chart pane renders blurb, level hint, and Warden status only; no goal text exists to render",
+          "source": "src/components/game-panes/Chart.vue:4,32,80-88"
+        },
+        {
+          "surface": "test",
+          "label": "world-web scenario asserts chart contents and never a goal field",
+          "test": "playtest/scenarios/world-web.mjs:22-26 ('the north gate reads the Tin Road', 'tier 1 is charted from the start', 'deeper stages stay off the chart until the Warden falls')"
+        }
+      ],
+      "smallestFutureOwnerPath": "Add a per-node/per-road goal label in the two chart builders (server/core/world-web.js buildChart; native/src/networking.cpp emit_chart_screen) consumed by src/components/game-panes/Chart.vue and the future native chart pane. The CONTENT of any goal is owner product authority (campaign decision) and cannot be derived from code.",
+      "notes": "The Warden-clear micro-objective ('put down the Warden to open children') is derivable from existing rule surfaces, but Gate C asks for the concrete goal of choosing a route; no route carries one today. Marking MISSING per stop conditions; no goal invented."
+    },
+    {
+      "id": "boss-danger",
+      "requirement": "Boss/danger",
+      "classification": "AVAILABLE",
+      "evidence": [
+        {
+          "surface": "browser-server",
+          "label": "Every node generates wardenName = 'Warden of <node name>'",
+          "source": "server/core/world-web.js:215 (getRoadNodes)"
+        },
+        {
+          "surface": "native-n6-server",
+          "label": "Same warden naming; chart rows emit wardenName",
+          "source": "native/src/networking.cpp:713 (web_road_nodes), :1429 (emit_chart_screen row)"
+        },
+        {
+          "surface": "native-n6-server",
+          "label": "Zone entry pins the Warden as the floor boss via set_boss_name_override",
+          "source": "native/src/networking.cpp:1462 (enter_road_node)"
+        },
+        {
+          "surface": "browser-server",
+          "label": "Zone scene metadata exposes wardenName/wardenTemplateId/wardenDead; the generator's elite is renamed to the Warden",
+          "source": "server/core/services/zone-service.js:146-152,199-215"
+        },
+        {
+          "surface": "browser-server",
+          "label": "Difficulty band per node/gate: levelHint derived from tier ('<floor>-<floor+4>')",
+          "source": "server/core/world-web.js:169-172 (levelHintForTier), :212 (node row); gate copy zone-service.js:186; rendered src/components/game-panes/Chart.vue:32"
+        },
+        {
+          "surface": "browser-server",
+          "label": "Danger flavor per road: direction + blurb ('things that mind the stone', graves, fens, burnt hills)",
+          "source": "server/core/world-web.js:14-63 (ROADS)"
+        },
+        {
+          "surface": "test",
+          "label": "'the ${root.wardenName} keeps the ground' and population assertion",
+          "test": "playtest/scenarios/world-web.mjs:39-41"
+        },
+        {
+          "surface": "test",
+          "label": "'N3 names the Old Barrow boss' (elite named 'Warden of the Deep') plus readable telegraph",
+          "test": "native/tests/networking_tests.cpp:201,212"
+        }
+      ],
+      "smallestFutureOwnerPath": "No new field needed for the requirement itself; closing the native parity gap below only touches native/src/networking.cpp emit_chart_screen (add levelHint) if the owner wants identical chart rows.",
+      "notes": "Named boss identity and a coarse difficulty band are on the wire pre-choice. Exact monster composition is only visible after entry (playtest/scenarios/world-web.mjs:39)."
+    },
+    {
+      "id": "trophy-material-item-family",
+      "requirement": "Expected trophy or material or item family",
+      "classification": "MISSING",
+      "evidence": [
+        {
+          "surface": "browser-server",
+          "label": "No chart or node key describes expected drops, trophies, materials, or item families; rg over world-web/zone-service handlers returns zero trophy/reward-family fields",
+          "source": "server/core/world-web.js:203-216,254-269; server/core/services/zone-service.js:112-128,199-215"
+        },
+        {
+          "surface": "native-n6-server",
+          "label": "No chart row key for rewards; only runtime drop events exist (item:change, world:itemDropped)",
+          "source": "native/src/networking.cpp:1424-1432; drop pipeline :919-927,1996-1997 ('the legacy synthetic drop trophy event is retired')"
+        },
+        {
+          "surface": "test",
+          "label": "Guaranteed Vessel drops exist only inside the commission chain (discovered in-scene, not pre-announced per route)",
+          "test": "playtest/scenarios/quest.mjs:175-178 ('the quest guardian guarantees a native Vessel drop'), :287"
+        },
+        {
+          "surface": "test",
+          "label": "World-web scenario asserts zero reward-family information on charts",
+          "test": "playtest/scenarios/world-web.mjs:21-26 (chart payload asserted without any reward key)"
+        }
+      ],
+      "smallestFutureOwnerPath": "A loot-table/family source keyed by road/template/tier surfaced through the two chart builders (server/core/world-web.js buildChart; native/src/networking.cpp emit_chart_screen). Table content is owner economy/reward authority. Candidate future owners per RUN_STATUS routing (not claims): TASK-0104 itemization/history audit, TASK-0103 monster/encounter gap audit.",
+      "notes": "STOP condition honored: no reward, economy, or balance value invented; field marked MISSING."
+    },
+    {
+      "id": "depth",
+      "requirement": "Depth",
+      "classification": "AVAILABLE",
+      "evidence": [
+        {
+          "surface": "browser-server",
+          "label": "tier on every node row; instances generate at depth = node.tier",
+          "source": "server/core/world-web.js:208 (tier), server/core/services/zone-service.js:139 (depth: node.tier)"
+        },
+        {
+          "surface": "browser-server",
+          "label": "sceneMetadata.tier asserted on the child zone",
+          "test": "playtest/scenarios/world-web.mjs:76 ('the child zone is one stage deeper')"
+        },
+        {
+          "surface": "native-n6-server",
+          "label": "tier/index on chart rows; delve triggers carry metadata().depth",
+          "source": "native/src/networking.cpp:1426,1474,2314-2317"
+        },
+        {
+          "surface": "test",
+          "label": "Campaign descent asserts sceneMetadata.depth === 2 after stairsDown",
+          "test": "playtest/scenarios/quest.mjs:255-264"
+        },
+        {
+          "surface": "native-n6-server",
+          "label": "Stairs metadata (stairsUp/stairsDown coordinates) on every instance snapshot",
+          "source": "native/src/networking.cpp:784-785,865-866; test 'both stairs exist' native/tests/networking_tests.cpp:143-144"
+        }
+      ],
+      "smallestFutureOwnerPath": "None required; optional parity touch-up only (native chart rows lack the derived levelHint string, see parity observations).",
+      "notes": "Depth is charted pre-choice (tier + derived levelHint on browser surface) and authoritative in-scene on both servers."
+    },
+    {
+      "id": "branch-consequence",
+      "requirement": "Branch consequence",
+      "classification": "DERIVABLE-WITHOUT-GAMEPLAY-RULES",
+      "evidence": [
+        {
+          "surface": "browser-server",
+          "label": "Unlock rule fully on the surface: node unlocks when tier==1 or parentId cleared; statuses cleared/open/barred",
+          "source": "server/core/world-web.js:254-261 (buildChart status), :272-277 (isNodeUnlocked)"
+        },
+        {
+          "surface": "native-n6-server",
+          "label": "Same rule and statuses in the C++ chart builder",
+          "source": "native/src/networking.cpp:1414-1418,1421-1432"
+        },
+        {
+          "surface": "browser-server",
+          "label": "Parent/child links (parentId, childIds) let a client compute 'clearing X opens Y and Z' without new rules",
+          "source": "server/core/world-web.js:213-217"
+        },
+        {
+          "surface": "browser-server",
+          "label": "In-zone onward gates carry child nodeId/name/levelHint; gate refuses with the rule stated while the Warden lives",
+          "source": "server/core/services/zone-service.js:164-189 (zoneGates), :351-358 ('No road holds past a living Warden.')"
+        },
+        {
+          "surface": "native-n6-server",
+          "label": "Native gate sweep repeats the refusal and opens the chart at gates",
+          "source": "native/src/networking.cpp:1519-1535 (:1527 refusal, :1534 gate->emit_chart_screen)"
+        },
+        {
+          "surface": "test",
+          "label": "'deeper stages stay off the chart until the Warden falls'; 'the next stage is open past the dead Warden'",
+          "test": "playtest/scenarios/world-web.mjs:25-26,86-87"
+        }
+      ],
+      "smallestFutureOwnerPath": "Immediate one-stage consequences are computable from existing payloads (presentation-only work in src/components/game-panes/Chart.vue / future native pane). Anything beyond the frontier (deeper tiers, terminal states) needs an owner ruling plus a frontier-policy change in the two chart builders (server/core/world-web.js:241-270; native/src/networking.cpp:1410-1443).",
+      "notes": "Frontier is capped at deepest cleared tier + 1 (server/core/world-web.js:246-252; native/src/networking.cpp:1414-1418), so multi-stage/terminal consequences are absent today - recorded as a bounded gap, not invented. C++ rows omit childIds (see parity observations)."
+    },
+    {
+      "id": "extraction-return-condition",
+      "requirement": "Extraction/return condition",
+      "classification": "AVAILABLE",
+      "evidence": [
+        {
+          "surface": "browser-server",
+          "label": "Entry waymark (stairsUp) returns the player to the Crossroads; standing on it triggers returnToCrossroads",
+          "source": "server/core/services/zone-service.js:212 (entryGate), :288-325, :341-345"
+        },
+        {
+          "surface": "native-n6-server",
+          "label": "stairs_up_returns_to_town pinned true on road-node entry; landing on stairs-up runs finish_extraction -> player:extract bank summary",
+          "source": "native/src/networking.cpp:1469,939-968,2116-2124,2451"
+        },
+        {
+          "surface": "browser-client",
+          "label": "Chart footnote states the persistence window: cleared ground lies still a quarter hour, then re-rolls",
+          "source": "src/components/game-panes/Chart.vue:40-43"
+        },
+        {
+          "surface": "browser-server",
+          "label": "ZONE_LINGER_MS default 15 minutes drives the re-roll; respawn suppressed 24h inside the window",
+          "source": "server/core/services/zone-service.js:34,38"
+        },
+        {
+          "surface": "test",
+          "label": "'entry stairs return to town', 'stairs-up emits the same player:extract bank summary', banking assertions",
+          "test": "native/tests/networking_tests.cpp:170-175,374-385,347-359"
+        },
+        {
+          "surface": "test",
+          "label": "'entry waymark returns to the Crossroads'; 'dead stays dead'; 'the Warden stays down inside the linger window'",
+          "test": "playtest/scenarios/world-web.mjs:92-98,108-110"
+        },
+        {
+          "surface": "matrix",
+          "label": "Extraction row already proven green end-to-end",
+          "source": "docs/rebuild/NATIVE_CLIENT_PROTOCOL_MATRIX.md:25"
+        }
+      ],
+      "smallestFutureOwnerPath": "None required for the base condition; any per-node variation would live in server/core/services/zone-service.js gate sweeps and native/src/networking.cpp stair handling.",
+      "notes": "Extraction mechanism and its persistence window are communicated and tested on both servers."
+    }
+  ],
+  "parityObservations": [
+    {
+      "id": "P1",
+      "observation": "C++ chart rows omit levelHint and childIds, which the browser chart rows carry (levelHint rendered by Chart.vue); browser chart payload additionally includes houseName.",
+      "impact": "A native Gate C decider lacks the difficulty band and sibling links unless parity is closed.",
+      "sources": ["native/src/networking.cpp:1424-1432", "server/core/world-web.js:212,214,217", "server/core/services/zone-service.js:125", "src/components/game-panes/Chart.vue:32"]
+    },
+    {
+      "id": "P2",
+      "observation": "Node identity is intentionally not cross-server stable: C++ documents 'The hash need not match JS bit-for-bit' and uses FNV-1a with direct bit slices, while the browser uses xmur3 + mulberry32; name pools also differ (C++ 6x6 compounds, no standalones; JS 12x10 plus 6 standalones with dedup fallback).",
+      "impact": "The same nodeId string resolves to different name/template/layout/branching per server implementation, so concrete route info captured from the browser reference will not describe the native journey until reconciled or re-derived natively.",
+      "sources": ["native/src/networking.cpp:644-646,658-669,674-678,701-713", "server/core/world-web.js:71-92,96-122,136-153"]
+    },
+    {
+      "id": "P3",
+      "observation": "Copper Road differs materially: browser pairs are volcanic/sand with the full verdigris blurb; C++ pairs are crypt/wilds with truncated blurbs on every road.",
+      "impact": "Terroir-driven danger expectations diverge between surfaces.",
+      "sources": ["server/core/world-web.js:16-62", "native/src/networking.cpp:647-657"]
+    },
+    {
+      "id": "P4",
+      "observation": "Browser server pushes world:chart:updated on Warden death; the C++ server emits no such event (clients must re-request world:road:chart).",
+      "impact": "Native chart freshness behavior differs; harmless for the audit but part of the chart surface.",
+      "sources": ["server/core/services/zone-service.js:404-411", "native/src/networking.cpp (rg 'world:chart:updated' -> no matches)"]
+    },
+    {
+      "id": "P5",
+      "observation": "No chart pane exists in the native client (rg 'chart' over native/client/ returns no matches).",
+      "impact": "Gate C's deciding surface (chart presentation) is client-pending on native, matching the matrix's server-ready/client-pending pattern.",
+      "sources": ["native/client/ (no matches)", "docs/rebuild/NATIVE_CLIENT_PROTOCOL_MATRIX.md:7"]
+    }
+  ],
+  "verdict": {
+    "gateCRouteDecisionReadyToday": false,
+    "missingFields": ["goal", "trophy-material-item-family"],
+    "availableFields": ["boss-danger", "depth", "extraction-return-condition"],
+    "derivableFields": ["branch-consequence"],
+    "routeNameAloneSufficient": false,
+    "inventedValues": []
+  }
+}
