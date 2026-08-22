@@ -18,4 +18,18 @@ known_risks: audit-only capsule; no source edits, ports, or asset generation; ow
 implementation_commit: 6d6fcf4b
 report: REPORT.md (executive summary, evidence, acceptance outcomes, successor promotion package)
 review_requested_at: 2026-08-22T07:00:05-07:00
+revision: >
+  NARROW REVIEW REVISION applied. (1) summary_counts now derive from and agree
+  with the 18 matrix rows: 8 COMPLETE / 7 PARTIAL / 2 MISSING / 1 OWNER_ASSET;
+  FINDINGS scorecard and REPORT executive summary corrected to match.
+  Programmatic check: JSON.parse PASS + per-classification count equality PASS
+  (rows=18, actual==declared). (2) Stale TASK-0147 statements removed; truthful
+  provenance recorded everywhere: clean replacement accepted at 6575f330 and
+  integrated at 19be98db on the program branch immediately after this audit's
+  base 9fe673b6 (usable capacity); only older ox-pc-e/ox-pc-m attempts remain
+  claim-released/quarantined per RELEASE.md. rg sweep finds no remaining
+  'unintegrated/double-released/MUST NOT be resumed' phrasing; preserved
+  warnings name only the quarantined ox-pc-e/ox-pc-m attempts. git diff --check
+  clean; changes confined to this task folder.
+revision_commit: 678407c2008f617bb52fc18cc520489df94ac07b
 ---
