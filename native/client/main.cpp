@@ -33,18 +33,8 @@
 
 // TASK-0141 data-only generated vector kit. Read-only consumption: the
 // client never mutates these tables; art changes flow through the generator.
-// The generator emits GLSL-style float literals ("22f"). The standard
-// reserves bare "f" as a literal-operator suffix, but MSVC permits defining
-// one under warning C4455 — and the generated header is outside this task's
-// ownership, so the tiny compatibility operators live here instead.
-#pragma warning(disable: 4455)
-inline constexpr float operator""f(long double value) {
-  return static_cast<float>(value);
-}
-inline constexpr float operator""f(unsigned long long value) {
-  return static_cast<float>(value);
-}
-#pragma warning(default: 4455)
+// The generator emits standards-conforming literals ("22.f"), so no
+// reserved-suffix compatibility operators are needed here.
 #include "assets/generated/visual_kit.h"
 
 namespace {
