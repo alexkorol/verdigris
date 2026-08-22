@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "task": "TASK-0134",
+  "title": "Distribution, signing, and owner-action boundary contract",
+  "generated_by": "ox-pc-i",
+  "generated_at": "2026-08-21",
+  "base_commit": "cab50d62cb121ab6a88fa513257e645447226959",
+  "route_head_at_claim": "b3599c80122d09cd0685ae96830990cc5bada5cf",
+  "purpose": "Separate what implementation workers can prove about release artifacts from actions that belong to the owner alone, and define the handoff between them, without acquiring credentials, contacting external services, or claiming any signing/notarization has occurred.",
+  "authority": {
+    "spec": "orchestration/tasks/TASK-0134-distribution-signing-boundary/SPEC.md",
+    "protocol": "orchestration/PROTOCOL.md",
+    "product_authority": "docs/product/VERDIGRIS_CONSTITUTION.md",
+    "evidence_base": "orchestration/tasks/TASK-0120-release-verification-gap-audit/captures/release-gates.json",
+    "stop_conditions": "SPEC stop conditions apply verbatim: STOP before credentials, account actions, publication, legal/license rulings, or claims that signing/notarization occurred."
+  },
+  "boundary_rule": {
+    "machine_verifiable": "A property is machine-side if a worker can demonstrate it from committed repository state plus local runs only: building named CMake/npm targets, hashing bytes, diffing manifests, running existing gates on disposable fixtures, and recording outputs. Machine-side work never requires a secret, an account, a payment, or a network service beyond the repository origin and package registry already used by npm ci.",
+    "owner_only": "A property is owner-side if exercising or deciding it requires legal or economic identity that workers must never hold: certificate/private-key possession, code-signing execution, notarization submission, store listings, account creation or access, pricing, license rulings, public publication, and any claim that such an action happened.",
+    "classification_test": [
+      "Does proving this require possessing a credential or key? If yes -> owner.",
+      "Does proving this require contacting a third-party service under an identity? If yes -> owner.",
+      "Does doing this create a legal/economic commitment (license interpretation, price, terms)? If yes -> owner.",
+      "Can a fresh clone of this repository plus local tooling reproduce the evidence byte-for-byte? If yes -> machine."
+    ],
+    "hard_prohibitions": [
+      "Workers do not generate, import, export, or hold private keys or certificates.",
+      "Workers do not call codesign, signtool, notarytool, or any store/publisher API even when tools are incidentally present.",
+      "No artifact leaves the machine; 'publish' means nothing in worker scope.",
+      "No document produced by a worker may assert that signing or notarization took place; at most it may record their absence."
+    ]
+  },
+  "artifacts": {
+    "definition": "A distributable artifact is a file set a player or server operator receives, emitted by a reproducible command from a pinned commit.",
+    "required_fields_per_artifact": [
+      "name",
+      "build_command",
+      "source_commit",
+      "sha256 (see hashes)",
+      "target_platforms",
+      "runtime_dependencies",
+      "provenance_manifest_ref"
+    ],
+    "candidates_known_today": [
+      {
+        "name": "verdigris_client (Windows x64)",
+        "source": "native/CMakeLists.txt add_executable(verdigris_client ...), built via cmake preset windows-msvc / native/build.ps1",
+        "status": "buildable today; not yet packaged for distribution"
+      },
+      {
+        "name": "verdigris_server (Windows x64)",
+        "source": "native/CMakeLists.txt add_executable(verdigris_server src/server_main.cpp)",
+        "status": "buildable today; self-host distribution only until packaging exists"
+      },
+      {
+        "name": "browser bundle (dist/)",
+        "source": "vite build via npm run build; served per docs/deployment.md / ecosystem.config.cjs",
+        "status": "buildable today; deployment model is git-pull + pm2, no bundled artifact"
+      }
+    ],
+    "current_status": "No packaged release artifact, artifact manifest, or retained build output exists anywhere in the repository (verified by TASK-0120 literal gate search). Every entry above is a candidate, not a shipping artifact.",
+    "discharge_owner": "orchestration/tasks/TASK-0126-clean-machine-release-harness/SPEC.md owns producing real artifacts with manifests; this contract defines only the boundary such production must respect."
+  },
+  "hashes": {
+    "algorithm": "SHA-256 exclusively",
+    "manifest_format": "One line per artifact, BSD sha256sum-compatible: '<64 lowercase hex chars><two spaces><repo-relative path>'; manifest itself listed last and excluded from its own hash set.",
+    "verification_commands": [
+      "Get-FileHash -Algorithm SHA256 <path>  (Windows)",
+      "sha256sum -c <manifest>  (POSIX)"
+    ],
+    "rules": [
+      "A hash manifest is valid only when every listed path exists, hashes recompute identically, and the source_commit equals the commit recorded in the manifest header.",
+      "Hash equality proves bit-identity only; it proves neither authenticity nor integrity of origin. Authenticity transfers exclusively through owner signing (owner_actions).",
+      "A mismatching hash fails closed: the artifact is quarantined and rebuilt; it is never 'accepted with warnings'."
+    ],
+    "current_status": "No release hash manifest exists in the repository. The first one is expected from TASK-0126 output, consumed by this contract's handoff."
+  },
+  "installer": {
+    "scope_split": {
+      "machine_side": [
+        "Reproduce installer/bundle builds from clean clones with logged commands and exit codes.",
+        "Verify installed file sets against the hash manifest.",
+        "Prove install/uninstall/update/uninstall-again idempotence on disposable machines or VMs.",
+        "Record failure controls: disk-full, cancelled mid-install, corrupted download (negative fixtures)."
+      ],
+      "owner_side": [
+        "Choosing installer technology, bundling strategy, and store channel(s).",
+        "Any installer binary that will be signed: unsigned intermediates stay inside the machine lane.",
+        "Executing uploads to stores or download hosts.",
+        "Deciding pricing, editions, trial/upgrade policy, and EULA placement."
+      ]
+    },
+    "current_status": "No installer project, packaging directory, or bundle step exists in the repository (TASK-0120 finding). Nothing here authorizes creating one outside TASK-0126 ownership.",
+    "prerequisites_before_owner_handoff": [
+      "TASK-0126 clean-machine harness ACCEPTED with retained artifact manifests.",
+      "TASK-0094 asset provenance inventory complete so MISSING_LICENSE cannot fire.",
+      "Rollback evidence for the packaged layout (see rollback)."
+    ]
+  },
+  "update": {
+    "scope_split": {
+      "machine_side": [
+        "Versioned update channels described as data: current-version detection, manifest schema for 'newer version available'.",
+        "Update verification = hash-manifest check + signature-presence check performed locally; absence of a signature is a hard fail (UNSIGNED_ARTIFACT), never bypassed by workers.",
+        "Data-compat gate before restart: refuse update when persisted schemaVersion is unsupported (native kSnapshotSchemaVersion fail-closed behavior; browser SQLite lacks versioned migration).",
+        "Drain-and-stop ordering proof reusing proven shutdown gates (session tests, pm2 kill_timeout)."
+      ],
+      "owner_side": [
+        "Operating the update feed endpoint and its hosting account.",
+        "Publishing version announcements, timestamps, and deprecation notices.",
+        "Approving forced-vs-optional update policy."
+      ]
+    },
+    "current_status": "The only update recipe is docs/deployment.md 'Updating to a new version' (git pull; npm ci; npm run build; pm2 restart), whose safety claim was recorded as unsupported negative control in TASK-0120 (no migration matrix, no rollback). No auto-update mechanism exists."
+  },
+  "rollback": {
+    "scope_split": {
+      "machine_side": [
+        "Pinned-version revert drill on disposable fixtures: previous artifact + previous-compatible data restore, executed and logged end to end.",
+        "Backup/restore steps for saves before any upgrade attempt (sqlite + -wal per docs/deployment.md; native snapshots via write_atomic path).",
+        "Machine-verifiable definition: ROLLBACK_UNPROVEN stays asserted until a drill transcript shows old-version relaunch accepting restored data."
+      ],
+      "owner_side": [
+        "Deciding which versions remain supported/receivable.",
+        "Public communication of rollback events.",
+        "Authorizing destructive recovery on real (non-fixture) data."
+      ]
+    },
+    "current_status": "No rollback procedure exists anywhere in the repository (TASK-0120 finding); PROGRAM_GRAPH T7 assigns upgrade/rollback to post-TASK-0126/0127 successors. Until a drill exists, every release pathway must treat rollback as UNPROVEN."
+  },
+  "machine_actions": [
+    {
+      "id": "MA-1",
+      "action": "Build all distribution candidates from a pinned commit and retain exact commands, toolchain versions, and exit codes.",
+      "verification": "Clean-clone rerun reproduces byte-identical outputs or documents the nondeterminism.",
+      "owner_input_required": false
+    },
+    {
+      "id": "MA-2",
+      "action": "Emit and verify the SHA-256 manifest per the hashes rules.",
+      "verification": "Manifest recomputation passes; negative fixture HASH_MISMATCH demonstrably fails.",
+      "owner_input_required": false
+    },
+    {
+      "id": "MA-3",
+      "action": "Run negative-case fixtures (fixtures/negative-cases.json) as executable acceptance checks once validators exist.",
+      "verification": "Each case produces its declared expected_error and nothing else.",
+      "owner_input_required": false
+    },
+    {
+      "id": "MA-4",
+      "action": "Prove data-compat gating and drain/stop ordering for updates using existing persistence and shutdown tests.",
+      "verification": "Update attempt against unsupported schemaVersion refuses before mutation.",
+      "owner_input_required": false
+    },
+    {
+      "id": "MA-5",
+      "action": "Assemble the machine-to-owner handoff bundle (see handoff) with every machine-verifiable field filled.",
+      "verification": "Bundle self-check: no empty required input, no credential material present.",
+      "owner_input_required": false
+    },
+    {
+      "id": "MA-6",
+      "action": "Execute code signing, notarization, store upload, pricing, or publication.",
+      "verification": null,
+      "owner_input_required": true,
+      "note": "Listed only to mark it out of bounds; this action is never machine-performable."
+    }
+  ],
+  "owner_actions": [
+    {
+      "id": "OA-1",
+      "action": "Acquire and safeguard code-signing certificates/keys (Windows EV/OV, Apple Developer ID).",
+      "why_owner_only": "Legal identity and financial commitment; keys must never enter worker reach.",
+      "consumes_handoff_inputs": ["OA-4"],
+      "returns_to_machine_lane": "Signed artifact paths + signature verification transcript (to be re-hashed into the final manifest)."
+    },
+    {
+      "id": "OA-2",
+      "action": "Sign release artifacts (signtool/codesign or successor tooling chosen by owner).",
+      "why_owner_only": "Requires OA-1 material; workers must not invoke signing tools even if installed.",
+      "consumes_handoff_inputs": ["unsigned artifact + hash manifest"],
+      "returns_to_machine_lane": "Signature presence becomes a machine-checkable boolean for future update validation."
+    },
+    {
+      "id": "OA-3",
+      "action": "Notarize/staple macOS-or-equivalent distributions where applicable.",
+      "why_owner_only": "Submits binaries to a third-party service under an Apple/other account.",
+      "consumes_handoff_inputs": ["signed artifacts"],
+      "returns_to_machine_lane": "Notarization ticket reference recorded as owner attestation; machine side records its existence or absence only."
+    },
+    {
+      "id": "OA-4",
+      "action": "Determine licensing posture and third-party asset clearance.",
+      "why_owner_only": "Legal/license rulings are SPEC stop conditions for workers.",
+      "consumes_handoff_inputs": ["TASK-0094 provenance inventory listing licenses found, not interpreted"],
+      "returns_to_machine_lane": "License fields become lintable data in the artifact manifest."
+    },
+    {
+      "id": "OA-5",
+      "action": "Create/use store, distribution, and hosting accounts; set pricing; publish releases.",
+      "why_owner_only": "Account actions, economic decisions, and publication are explicit SPEC stop conditions.",
+      "consumes_handoff_inputs": ["final signed+hashed artifact set", "release notes draft"],
+      "returns_to_machine_lane": "Published-channel identifiers, usable later as update-feed configuration data."
+    }
+  ],
+  "handoff": {
+    "direction": "machine_to_owner",
+    "inputs": [
+      { "field": "unsigned_artifacts", "requirement": "exact repo-relative paths + build commands + source_commit" },
+      { "field": "hash_manifest", "requirement": "SHA-256 manifest passing MA-2 verification" },
+      { "field": "negative_case_transcript", "requirement": "fixtures run results proving fail-closed behavior" },
+      { "field": "rollback_drill_status", "requirement": "PROVEN with transcript, else explicitly UNPROVEN (never omitted)" },
+      { "field": "asset_license_inventory", "requirement": "TASK-0094 output: facts only, no rulings" },
+      { "field": "open_risks", "requirement": "known gaps stated plainly, e.g. macOS coverage compiled-by-nobody" }
+    ],
+    "outputs_expected_back": [
+      { "field": "signature_status", "form": "per-artifact: signed true/false + tool + timestamp (owner-authored)" },
+      { "field": "notarization_status", "form": "attestation reference or explicit none" },
+      { "field": "channel_identifiers", "form": "where the release lives, as plain data" },
+      { "field": "license_rulings", "form": "interpreted clearances consumable by manifests" }
+    ],
+    "exchange_rules": [
+      "Handoff travels through repository files or owner-designated storage only; never through worker-held credentials or ad-hoc service accounts.",
+      "Unsigned artifacts cross the boundary read-only; workers never post-process owner-signed output except re-hashing for the final manifest.",
+      "Every handoff bundle is itself hashed and its generator commit recorded, making the chain replayable."
+    ]
+  },
+  "negative_cases_ref": "fixtures/negative-cases.json",
+  "successor_wiring": {
+    "TASK-0126": "produces first real artifacts + manifests respecting this boundary; consumes machine_actions MA-1..MA-3.",
+    "TASK-0127": "supplies migration/rollback evidence that clears ROLLBACK_UNPROVEN for updated data layouts.",
+    "TASK-0094": "supplies asset license inventory feeding OA-4 and clearing MISSING_LICENSE.",
+    "owner_lane": "OA-1..OA-5 remain open until the owner acts; no task may absorb them."
+  }
+}
