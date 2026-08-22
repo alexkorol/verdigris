@@ -134,8 +134,8 @@ The approximate formula is explicitly marked NON-AUTHORITATIVE:
 ## Commits (this branch)
 
 - `1558c3a1e319ba89f9c17353c80fcfa0b129a7f8` — claim-only STATUS push.
-- `<head>` — FINDINGS + progression-matrix.json + REPORT + STATUS →
-  REVIEW_REQUESTED (recorded at push time).
+- `becd488504119eeb80f79b95e5793f9483d91b38` — FINDINGS +
+  progression-matrix.json + REPORT + STATUS → REVIEW_REQUESTED.
 
 Boundary proof: `git diff --name-only 039dcfa7..HEAD` lists only
 `orchestration/tasks/TASK-0105-passive-tree-progression-gap-audit/**`.
