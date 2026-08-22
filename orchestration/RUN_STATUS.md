@@ -114,7 +114,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-r | 6960-6979 | TASK-0148 independent claim `837a412f` pushed from release head `c1acd4ec`; clean pre-write exit recovered in the same session at PID 7324 | accepted-chain recovery active |
 | ox-pc-s | 6980-6999 | TASK-0116 claim `297b4e9d` pushed from program base `9fe673b6` | animation/VFX contract audit active; implementation successor pending review |
 | ox-pc-t | 7000-7019 | TASK-0117 claim `763228e1` pushed from program base `9fe673b6` | audio/runtime contract audit active; implementation successor pending review |
-| ox-pc-u | 7020-7039 | TASK-0119 claim `fad856c3` pushed from program base `9fe673b6` | first-session/onboarding audit active; implementation successor pending review |
+| ox-pc-u | 7020-7039 | TASK-0119 frozen head `4104e0c8` independently ACCEPTED and integrated at `a5f4133e` | handoff complete; executable onboarding successor ready to route |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered

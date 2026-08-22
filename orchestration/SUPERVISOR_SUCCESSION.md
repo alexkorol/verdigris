@@ -155,6 +155,17 @@ request.
   current p/r routes. No new Codex task was created.
 - Owner action required now: none.
 
+### First-session audit checkpoint — 2026-08-22 06:57 PDT
+
+- TASK-0119 worker head `4104e0c8` is independently ACCEPTED and integrated at
+  `a5f4133e`. Its 13-step contract identifies the remote extraction
+  instruction mismatch and the dropped expedition-phase/progression surfaces
+  as the highest-value non-lore onboarding fixes.
+- The next lane may implement those bounded interaction fixes on the current
+  program base. House/Scion naming remains owner-gated and must not be silently
+  added. Owner action required before the unblocked interaction successor:
+  none.
+
 ### Product integration checkpoint — 2026-08-22 06:50 PDT
 
 - TASK-0147 worker head `974ccab6` is independently ACCEPTED (review

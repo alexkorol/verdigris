@@ -83,6 +83,8 @@ TASK-0077 Gate B client -> TASK-0078 surface density ----+-> TASK-0087 pane shel
 TASK-0093 typography audit ------------------------------+       -> TASK-0090 progression panes
 TASK-0114 renderer evaluation -> TASK-0088 ADR -> owner dependency ruling -> Stage-2 renderer
 TASK-0094 asset provenance -> shippable asset manifest ---------------------> packaging
+TASK-0119 first-session audit -> TASK-0153 native first-session clarity wave
+  -> truthful extraction action + authoritative phase + normal-HUD controls
 ```
 
 ## Executable discovery to sequenced implementation

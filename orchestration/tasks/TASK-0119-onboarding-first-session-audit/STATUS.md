@@ -1,6 +1,6 @@
 ---
 task: TASK-0119
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: ox-pc-u
 provider: openrouter
@@ -13,4 +13,6 @@ started_at: 2026-08-22T00:00:00-07:00
 expected_verification: acceptance commands in SPEC.md (rg audit scan; first-session.json parse check; git diff checks) — all run, all PASS (see REPORT.md)
 known_risks: read-only resource capsule honored; no port or play-server mutation; narrative wording stays owner-only
 implementation_commit: see REPORT.md commit SHAs (claim fad856c3; report/review-request commit is this HEAD)
+accepted_head: 4104e0c8527638e085682ffb8bc621574cb94b7f
+integrated_at: a5f4133eac6d5b3fd41fb2b046b604460395e7b7
 ---

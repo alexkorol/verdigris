@@ -5,6 +5,7 @@ reviewed_head: `4104e0c8527638e085682ffb8bc621574cb94b7f`
 reviewed_branch: `codex/TASK-0119-onboarding-first-session-audit-ox-pc-u`
 reviewed_by: PC Verdigris architect/orchestrator
 reviewed_at: 2026-08-22 06:55 PDT
+integrated_at: `a5f4133eac6d5b3fd41fb2b046b604460395e7b7`
 
 ## Acceptance finding
 
