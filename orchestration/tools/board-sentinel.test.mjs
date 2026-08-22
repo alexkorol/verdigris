@@ -415,6 +415,78 @@ test("live REVIEW_REQUESTED task absent from READY table is surfaced globally", 
   assert.equal(json.review_requested[0].id, "TASK-0063");
 });
 
+test("off-board accepted-and-integrated folder is not a live REVIEW_REQUESTED claim", (t) => {
+  const dir = makeBoard(t, {
+    "orchestration/RUN_STATUS.md": READY_TABLE(["TASK-0066 on-board"]),
+    "orchestration/INTEGRATION_LOG.md":
+      "2026-08-21 - TASK-0067 accepted-off-board - integrated as abc123.\n",
+    [`orchestration/tasks/TASK-0066-on-board/SPEC.md`]: spec(
+      "TASK-0066",
+      "on-board",
+    ),
+    [`orchestration/tasks/TASK-0067-accepted-off-board/SPEC.md`]: spec(
+      "TASK-0067",
+      "accepted-off-board",
+    ),
+    [`orchestration/tasks/TASK-0067-accepted-off-board/REVIEW.md`]:
+      "---\nverdict: ACCEPTED\n---\n",
+    [`orchestration/tasks/TASK-0067-accepted-off-board/STATUS.md`]:
+      statusFile("REVIEW_REQUESTED", "codex (worker: ox-pc-a)"),
+  });
+  const { code, json } = runSentinel(dir, ["--min-ready", "1"]);
+  assert.equal(code, 0);
+  assert.deepEqual(json.review_requested, []);
+  assert.equal(json.counts.review_requested, 0);
+  assert.ok(json.integrated.includes("TASK-0067"));
+  assert.deepEqual(json.stale_claims.map((s) => s.id), ["TASK-0067"]);
+});
+
+test("off-board accepted-and-integrated folder raises no missing-coordinator error", (t) => {
+  const dir = makeBoard(t, {
+    "orchestration/RUN_STATUS.md": READY_TABLE(["TASK-0068 on-board"]),
+    "orchestration/INTEGRATION_LOG.md":
+      "2026-08-21 - TASK-0069 accepted-no-coord - integrated as def456.\n",
+    [`orchestration/tasks/TASK-0068-on-board/SPEC.md`]: spec(
+      "TASK-0068",
+      "on-board",
+    ),
+    [`orchestration/tasks/TASK-0069-accepted-no-coord/SPEC.md`]: spec(
+      "TASK-0069",
+      "accepted-no-coord",
+    ),
+    [`orchestration/tasks/TASK-0069-accepted-no-coord/REVIEW.md`]:
+      "---\nverdict: ACCEPTED\n---\n",
+    [`orchestration/tasks/TASK-0069-accepted-no-coord/STATUS.md`]:
+      "# status\n\nstate: REVIEW_REQUESTED\n",
+  });
+  const { code, json } = runSentinel(dir, ["--min-ready", "1"]);
+  assert.equal(code, 0);
+  assert.deepEqual(json.errors, []);
+  assert.ok(json.integrated.includes("TASK-0069"));
+  assert.deepEqual(json.review_requested, []);
+});
+
+test("genuine off-board claim without a coordinator line still fails", (t) => {
+  const dir = makeBoard(t, {
+    "orchestration/RUN_STATUS.md": READY_TABLE(["TASK-0070 on-board"]),
+    [`orchestration/tasks/TASK-0070-on-board/SPEC.md`]: spec(
+      "TASK-0070",
+      "on-board",
+    ),
+    [`orchestration/tasks/TASK-0071-genuine-claim/SPEC.md`]: spec(
+      "TASK-0071",
+      "genuine-claim",
+    ),
+    [`orchestration/tasks/TASK-0071-genuine-claim/STATUS.md`]:
+      "# status\n\nstate: CLAIMED\n",
+  });
+  const { code, json } = runSentinel(dir, ["--min-ready", "1"]);
+  assert.notEqual(code, 0);
+  assert.ok(
+    json.errors.some((e) => e.type === "malformed_status_missing_coordinator"),
+  );
+});
+
 test("global live claim colliding with a READY task fails", (t) => {
   const dir = makeBoard(t, {
     "orchestration/RUN_STATUS.md": READY_TABLE(["TASK-0064 ready-worker"]),

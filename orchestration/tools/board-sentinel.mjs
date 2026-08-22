@@ -148,7 +148,7 @@ function readRunStatus(repoPath, errors) {
   return { ready, hold, draft };
 }
 
-function scanTaskFolders(repoPath, errors, annotations) {
+function scanTaskFolders(repoPath, errors, annotations, integratedLogIds) {
   const tasksRoot = path.join(repoPath, "orchestration", "tasks");
   const tasks = new Map();
   let dirs = [];
@@ -200,6 +200,14 @@ function scanTaskFolders(repoPath, errors, annotations) {
     const ownedPaths = Array.isArray(specFields?.owned_paths)
       ? specFields.owned_paths.filter((p) => typeof p === "string" && p)
       : [];
+    let reviewVerdict = null;
+    const reviewText = readIfExists(path.join(folder, "REVIEW.md"));
+    if (reviewText !== null) {
+      const verdicts = [...reviewText.matchAll(/^verdict:\s*(\S+)/gm)];
+      if (verdicts.length) reviewVerdict = verdicts[verdicts.length - 1][1];
+    }
+    const acceptedIntegrated =
+      reviewVerdict === "ACCEPTED" && integratedLogIds.has(id);
     let status = null;
     const statusText = readIfExists(path.join(folder, "STATUS.md"));
     if (statusText !== null) {
@@ -216,13 +224,13 @@ function scanTaskFolders(repoPath, errors, annotations) {
           const coordinator = statusText.match(
             /^(?:-\s+)?coordinator:\s*(\S.*)$/m,
           );
-          if (!coordinator) {
+          if (coordinator) {
+            status.coordinator = coordinator[1].trim();
+          } else if (!acceptedIntegrated) {
             errors.push({
               type: "malformed_status_missing_coordinator",
               detail: `${dir}: ${state} claim has no coordinator line`,
             });
-          } else {
-            status.coordinator = coordinator[1].trim();
           }
           const branch = statusText.match(/^(?:-\s+)?worker_branch:\s*(\S+)/m);
           if (branch) status.worker_branch = branch[1];
@@ -230,12 +238,6 @@ function scanTaskFolders(repoPath, errors, annotations) {
           if (started) status.started_at = started[1].trim();
         }
       }
-    }
-    let reviewVerdict = null;
-    const reviewText = readIfExists(path.join(folder, "REVIEW.md"));
-    if (reviewText !== null) {
-      const verdicts = [...reviewText.matchAll(/^verdict:\s*(\S+)/gm)];
-      if (verdicts.length) reviewVerdict = verdicts[verdicts.length - 1][1];
     }
     tasks.set(id, {
       id,
@@ -372,8 +374,13 @@ export function runSentinel(repoPath, minReady) {
     }
   }
 
-  const tasks = scanTaskFolders(repoPath, errors, annotations);
   const integratedLogIds = readIntegrationLog(repoPath);
+  const tasks = scanTaskFolders(
+    repoPath,
+    errors,
+    annotations,
+    integratedLogIds,
+  );
 
   const effectiveReady = [];
   const claimed = [];
@@ -426,6 +433,10 @@ export function runSentinel(repoPath, minReady) {
   for (const task of tasks.values()) {
     if (!task.status || !LIVE_CLAIM_STATES.has(task.status.state)) continue;
     if (surfacedLive.has(task.id)) continue;
+    if (supersededOrIntegrated(task)) {
+      integrated.add(task.id);
+      continue;
+    }
     if (task.reviewVerdict === "REVISE") {
       revise.push({ id: task.id });
     } else if (task.status.state === "REVIEW_REQUESTED") {
