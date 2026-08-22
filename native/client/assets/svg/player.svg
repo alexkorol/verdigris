@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <ellipse cx="32" cy="57.5" rx="13" ry="3.5" fill="#00000040"/>
+  <polygon points="22,26 42,26 44,52 36,49 32,53 28,49 20,52" fill="#24427c"/>
+  <polygon points="26,42 31,42 30,55 25,55" fill="#37475e"/>
+  <polygon points="33,42 38,42 39,55 34,55" fill="#37475e"/>
+  <polygon points="24,53 30,53 30,58 24,58" fill="#231a10"/>
+  <polygon points="34,53 40,53 40,58 34,58" fill="#231a10"/>
+  <polygon points="23,28 41,28 39,44 25,44" fill="#93a7bd"/>
+  <polygon points="25,42 39,42 39,45 25,45" fill="#5b3a1e"/>
+  <circle cx="22" cy="29" r="4.5" fill="#aabdd2"/>
+  <circle cx="42" cy="29" r="4.5" fill="#aabdd2"/>
+  <polygon points="40,30 46,27 47,30 41,33" fill="#93a7bd"/>
+  <polygon points="45,26 49,31 46,33 42,29" fill="#5b3a1e"/>
+  <polygon points="47,28 57,17 60,19 49,31" fill="#dfe8ef"/>
+  <circle cx="44.5" cy="32" r="1.6" fill="#d9a441"/>
+  <circle cx="32" cy="19" r="7" fill="#7f93a9"/>
+  <polygon points="26,18 38,18 38,23 26,23" fill="#101720"/>
+  <polygon points="31,14 33,14 33,23 31,23" fill="#67798d"/>
+  <polygon points="29,12 34,12 37,6 31,8" fill="#3f6fd8"/>
+  <circle cx="34.5" cy="6.5" r="1.8" fill="#3f6fd8"/>
+</svg>
