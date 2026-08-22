@@ -33,9 +33,16 @@ Studio Build Tools:
 ./native/build.ps1 -RunClient
 ~~~
 
-The client window is interactive: WASD moves, mouse aiming is represented by
-the cursor, left mouse attacks, right mouse/Space dashes, P picks up, E equips,
-and X extracts.
+The client window is interactive: WASD moves, the mouse aims, left mouse
+attacks, right mouse/Space dashes (the answer to an enemy telegraph), Q/E/R
+cast Thrust/Sweep/WarCry, X takes the nearest/underfoot drop, Z toggles loot
+name labels, I opens the gear pane (Enter or click equips; 1-9 equips from
+the backpack), N enters the charted road from the remote flow, the wheel
+zooms and Home resets zoom, and F3 toggles the debug overlay. The objective
+strip is mode-aware about extraction: in local play F extracts at the EXIT;
+on the remote owner path you extract by walking onto the EXIT stairs. A
+compact controls line is always on the HUD (no F3 needed). Esc closes an
+open gear pane first; a bare Esc requests quit.
 
 ## Owner play (one command)
 
@@ -82,9 +89,9 @@ create House
 → enter route
 → move and melee the enemy
 → pick up the generated item and trophy
-→ equip (client: E)
+→ equip (gear pane: Enter, or 1-9)
 → return to the extraction point
-→ extract durable House value
+→ extract durable House value (local: F at the EXIT; remote: walk onto it)
 ~~~
 
 ## Scenario harness (D-119)
@@ -97,6 +104,7 @@ pane/HUD state.
 ~~~powershell
 ./native/build.ps1 -RunClientScenarios   # build + run all scenarios
 native/build/verdigris_client.exe --scenario first-fight   # one scenario
+native/build/verdigris_client.exe --scenario first-session-clarity   # TASK-0153 contracts
 ~~~
 
 Every future client wave must add its own scenario. To add one:

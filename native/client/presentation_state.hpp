@@ -73,6 +73,13 @@ struct WorldCarriedItem {
   bool equipped = false;
 };
 
+// TASK-0153: owner-facing expedition phase. The local path reads the core's
+// authoritative Simulation::instance().phase directly; the remote path
+// mirrors it from the already-authoritative session snapshot (living foes).
+// It is descriptive telemetry for the objective strip — never a client-side
+// rule engine, and Unknown wherever no authoritative scene exists.
+enum class ExpeditionPhaseView { Unknown, SlayWardens, ExtractCarriedValue };
+
 struct WorldView {
   WorldActor player;
   std::vector<WorldActor> monsters;
@@ -86,6 +93,7 @@ struct WorldView {
   std::size_t stored_trophies = 0;
   std::size_t carried_trophies = 0;
   std::string route_id;
+  ExpeditionPhaseView expedition_phase = ExpeditionPhaseView::Unknown;
   std::unordered_map<std::string, std::string> loot_names;
 };
 
@@ -109,6 +117,12 @@ double protocol_to_world(double protocol_units);
 
 void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& sim);
 void sync_world_from_model(WorldView& world, const ClientModel& model);
+
+// TASK-0153 mode-aware extraction contract: the one owner-facing action
+// phrase for reaching the exit. Local play resolves an F interaction at the
+// pad; the remote protocol has no extract handler and extracts by walking
+// onto stairs-up. The objective strip must never show the wrong one.
+const char* extraction_action_hint(bool remote_session);
 
 void apply_presentation_event(PresentationFx& fx, const WorldView& world,
                               const PresentationEvent& event, std::uint64_t now_tick);
