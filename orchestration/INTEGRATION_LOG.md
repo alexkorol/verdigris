@@ -5,6 +5,8 @@ date, task id, commits, verification run, notes.
 
 (empty)
 
+2026-08-22 — TASK-0163-gate-b-ordinary-play-reliability — worker `ox-pc-ac2` frozen head `a53620ef`; architect review `d81e4db1` ACCEPTED; integrated as `acfcbfd1`. Verification: independent clean full native gate passed, followed by three unchanged exact session-test runs at 107/107 each; the combined-program full native gate also passed. Notes: the test-only driver now uses a deterministic boustrophedon coverage plan, repeated-silence wall policy, and runtime-consistent tile rounding while preserving the ordinary House/fall/succession/named-Warden/exact-relic/reconnect journey; no runtime, gameplay, timeout, assertion, or owner-authority change was made.
+
 2026-08-22 — TASK-0164-native-content-cross-reference-hardening — replacement worker `ox-pc-ag` frozen head `cedabc72`; independently ACCEPTED and integrated as `9ffea0b4` + `3961733b`. Verification: committed positive seeds pass; isolated deterministic negative suite passes 27/27 twice; Python compile, scope, and diff hygiene pass. Notes: schema-v1 seed references now fail closed on dangling/type-mismatched references and unreachable encounter anchors; accepted schema/seeds and authored content remain unchanged.
 
 2026-08-16 — TASK-0001-native-legends-records — worker `7ed844d8d5a9a6fb2f5a2d2ee9428c10b1cf7fad`; integrated as `5487778`. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests -RunClient` (native denylist, core tests, and client shell PASS). Independent validator `/root/validate_task_0001` ACCEPT; architect review ACCEPTED. Notes: bounded deterministic Legends records integrated in native core.

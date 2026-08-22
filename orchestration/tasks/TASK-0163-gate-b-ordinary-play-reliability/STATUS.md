@@ -1,10 +1,11 @@
 ---
 task: TASK-0163
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: ox-pc-ac
 worker: ox-pc-ac2 (fresh recovered native-test lane; single active writer)
 started_at: 2026-08-22T15:05:00-07:00
 review_requested_at: 2026-08-22T17:40:00-07:00
+integrated_at: 2026-08-22T16:04:00-07:00
 base_commit: 7de9b31927e74448f07a26cc77e2f92e55a9a6a2
 branch: codex/TASK-0163-gate-b-ordinary-play-reliability-ox-pc-ac
 worktree: Z:\Code\.worktrees\verdigris\ox-pc-ac2
@@ -18,7 +19,8 @@ configuration_provenance: owner-launched CLI session pinned to openrouter/stealt
 task_family: IMPLEMENTATION / native Gate-B journey-test reliability
 owned_paths: [native/tests/session_tests.cpp, orchestration/tasks/TASK-0163-gate-b-ordinary-play-reliability/**]
 notes: >
-  Implementation complete and handed off for review. Both recorded
+  Independently accepted and integrated on codex/native-reconstitution as
+  acfcbfd1 after a clean combined-program native gate. Both recorded
   program-gate failures are causally diagnosed in the test source and
   REPORT; the exploration driver was replaced with a deterministic
   boustrophedon state machine with silent-step retry policy, the floor-vs-

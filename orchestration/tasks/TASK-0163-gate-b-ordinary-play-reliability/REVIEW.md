@@ -5,7 +5,7 @@ reviewed_head: a53620ef4962f8be6d049c5f801a451142639cda
 reviewed_branch: codex/TASK-0163-gate-b-ordinary-play-reliability-ox-pc-ac
 reviewed_by: PC Verdigris architect/orchestrator
 reviewed_at: 2026-08-22 15:59 -07:00
-integrated_at: pending
+integrated_at: acfcbfd1
 ---
 
 # TASK-0163 architect review — ACCEPTED
@@ -54,3 +54,13 @@ Integrate handoff commit
 `a53620ef4962f8be6d049c5f801a451142639cda`, rerun the full native gate on the
 combined program head, then record the integration SHA and lifecycle state.
 
+## Program integration
+
+- Architect verdict: `d81e4db1`
+- Worker handoff integrated as: `acfcbfd1`
+- Combined native denylist/core/networking/camera2d/session/presentation gate:
+  PASS, exit 0
+- Combined Gate-B journey killed `Warden of the Deep`, recovered the exact
+  relic UUID, and preserved same-guest reconnect continuity.
+
+Lifecycle is now **INTEGRATED**.
