@@ -12,6 +12,11 @@ cost — not agent utilization, tokens, commits, or coordination volume.
 The immutable global objective is D-116 (C++ version at web parity or
 better) under D-110 (playable-first). No local task outranks these.
 
+Leader operation is governed by `LEADER_POLICY.md`. The deterministic local
+controller is the eventual always-on component; Sol/Fable wake only for Tier C,
+review conflict, protected-surface impact, owner authority, or repeated
+unexplained gate failure.
+
 ## Topology-first dispatch
 
 Label every task before routing: INDEPENDENT / PIPELINED / COUPLED /

@@ -1,5 +1,22 @@
 # Run status — Codex Sol PC surge sweep
 
+## Leader-austerity override — 2026-08-21
+
+The owner adopted event-driven leadership. `LEADER_POLICY.md` supersedes the
+standing 15-minute Sol polling model: deterministic local `orchd` becomes the
+always-on reconciler, while Sol/Fable wake for Tier C, conflicting evidence,
+protected surfaces, owner authority, or repeated unexplained failures. Until
+orchd is accepted, monitoring is reduced to an hourly short read-only safety
+check. This does not release current claims, change task ownership, or authorize
+the architect to implement worker work.
+
+Both saved PC OpenCode sessions showed fresh streaming/tool activity during
+this transition. `ox-pc-a` is applying TASK-0081 final evidence corrections in
+its existing worktree; `ox-bootstrap` has pushed orchestration M1 head
+`bcd98d04` and is actively writing M2 controller/detector files. Neither lane is
+stalled or dark. The orchestration repo's `ORCHD_P0.md` is the next
+control-plane acceptance boundary; existing M0 review corrections still apply.
+
 Snapshot: 2026-08-21 20:37 PDT
 
 Sweep base: `a7e9c95f3ac6e3a65864fdfbf3183cb79ff7a9ad`

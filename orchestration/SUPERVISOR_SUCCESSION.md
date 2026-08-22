@@ -6,6 +6,11 @@ the owner may temporarily retire or replace it when Codex credit pressure
 requires. The supervisor cannot read the owner's account quota reliably, so an
 owner warning or switch directive is the authoritative budget trigger.
 
+Leader-token austerity is active under `LEADER_POLICY.md`. Continuous
+reconciliation transfers to the portable `orchd` controller after its vertical
+slice is accepted. Before then, any emergency monitor is short, read-only, and
+at most hourly; the leader does not remain in a 15-minute reasoning loop.
+
 ## Retirement states
 
 - `PRIMARY_ACTIVE`: normal architect/orchestrator loop.
