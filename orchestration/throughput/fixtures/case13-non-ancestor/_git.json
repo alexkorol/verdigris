@@ -1,0 +1,25 @@
+{
+  "head": "laterhead00000004",
+  "source_revision": "orphan0000000001",
+  "ancestors": [],
+  "known_commits": ["orphan0000000001"],
+  "orchestration/tasks/TASK-0107-x/STATUS.md": [
+    {
+      "hash": "k1",
+      "authoredAtMs": 1755822109000,
+      "subject": "TASK-0107: claim"
+    }
+  ],
+  "orchestration/tasks/TASK-0107-x/REVIEW.md": [
+    {
+      "hash": "k2",
+      "authoredAtMs": 1755825709000,
+      "subject": "review: revise TASK-0107"
+    },
+    {
+      "hash": "k3",
+      "authoredAtMs": 1755829309000,
+      "subject": "review: accept TASK-0107"
+    }
+  ]
+}

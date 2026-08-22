@@ -1,0 +1,546 @@
+{
+  "task": "TASK-0116",
+  "title": "Native animation and visual-effects contract audit",
+  "worker": "ox-pc-s (OpenCode Ox Alpha)",
+  "provider": "openrouter",
+  "model": "stealth/ox-alpha",
+  "base_commit": "9fe673b66ffc082e865e0f0fb66f454ec1984949",
+  "spec_base_commit": "9bd689b4cebac0fe1f79ba54edcc9967a1a8f0d4",
+  "generated_at": "2026-08-22T06:51:35-07:00",
+  "resource_capsule": "read-only audit; no game source, SPEC, REVIEW, ports, or assets touched; only this task folder changed",
+  "authorities_frozen": {
+    "commands_events": "Presentation requests actions, simulation resolves and emits results (docs/product/VERDIGRIS_CONSTITUTION.md 'Native architecture invariant'); presentation events carry no gameplay authority (native/client/presentation_events.hpp:3-6).",
+    "d114_timing_coherence": "All distance/time constants derive from one walk-cadence table; isolated constant changes are rejected (orchestration/DECISIONS.md D-114; native/include/verdigris/core.hpp:43-73; N3 table native/src/core.cpp:1463-1474).",
+    "render_list_determinism": "One semantic RenderList per presented frame, recorded next to each draw, byte-equal across two runs (native/client/render_list.hpp:1-8; native/README.md:113-116; gate at native/client/main.cpp:4493-4498).",
+    "d115_play_verdicts": "Feel-affecting work is not ACCEPTED until the architect drives a full session of the actual build (orchestration/DECISIONS.md D-115).",
+    "art_direction": "D-113: procedural/vector-first, documented relative scale; owner supplies/approves new image assets (orchestration/DECISIONS.md D-113)."
+  },
+  "classification_legend": {
+    "COMPLETE": "Simulation contract plus presentation handling plus at least one locking test or deterministic capture all exist for the audited aspect.",
+    "PARTIAL": "Some layers exist with evidence, but at least one named gap is documented below.",
+    "MISSING": "The aspect has no proved implementation or no proved visual timing/capture.",
+    "OWNER-ASSET": "Blocked on owner art-direction decisions per D-113; contract/test decomposition continues without generating art."
+  },
+  "summary_counts": { "COMPLETE": 8, "PARTIAL": 7, "MISSING": 2, "OWNER_ASSET": 1 },
+  "matrix": [
+    {
+      "id": "R01",
+      "area": "actor facing",
+      "aspect": "simulation-facing authority (state, commands, cone gating)",
+      "classification": "COMPLETE",
+      "simulation_authority": [
+        "Quantized integer 8-way facing on Actor, never float-normalized: native/include/verdigris/core.hpp:158-161",
+        "resolve_move sets facing from quantized move direction before moving: native/src/core.cpp:312-321",
+        "resolve_aim overrides facing without moving the actor: native/src/core.cpp:323-328",
+        "Monster facing tracks pursuit vector every enemy_turn: native/src/core.cpp:674-677",
+        "Thrust forward-cone predicate is a strict half-plane on facing dot delta: native/src/core.cpp:61-66"
+      ],
+      "presentation_only": [
+        "Local session converts Vec2 to wire string left/right/up/down: native/client/local_session.cpp:179-182",
+        "String back to vector for rendering: native/client/presentation_state.cpp:8-13",
+        "Sprite mirror by facing x-sign plus authoritative facing tick line: native/client/main.cpp:1147, 2751, 2756-2764",
+        "Minimap arrow uses atan2 of facing: native/client/main.cpp:2259-2270"
+      ],
+      "tests_locking": [
+        "test_actor_facing_follows_movement_and_aim - native/tests/core_tests.cpp:218",
+        "test_monster_facing_tracks_pursuit_target - native/tests/core_tests.cpp:305",
+        "test_facing_replay_is_deterministic - native/tests/core_tests.cpp:321"
+      ],
+      "captures": [
+        "native/client/triage-captures/default-clean.png, adjacent-before-strike.png, adjacent-after-strike.png show facing tick + strike geometry"
+      ],
+      "gaps": [
+        "Remote mode synthesizes monster facing by inverting player facing instead of reading a wire field: native/client/presentation_state.cpp:113-115 (same for telegraph facing at :192-194); monsters carry no facing on the wire snapshot."
+      ],
+      "successor_phase": "Phase A: put monster/telegraph facing on the wire or in presentation events; delete the inversion heuristic."
+    },
+    {
+      "id": "R02",
+      "area": "movement",
+      "aspect": "simulation movement timing (fixed-step cadence, dash burst, tile steps)",
+      "classification": "COMPLETE",
+      "simulation_authority": [
+        "20 Hz fixed step, kSimulationTickMs=50, step derived from move_speed: native/include/verdigris/core.hpp:34-41",
+        "D-114 world-scale table derives melee/thrust/extraction/spawn/collider distances from the 220 u/s walk cadence: native/include/verdigris/core.hpp:43-73",
+        "ActorMoved emitted per resolved move: native/src/core.cpp:320",
+        "Dash = kDashMovementTicks=10 ordinary ticks along facing, named ActorMoved text 'dash': native/include/verdigris/core.hpp:75-77, native/src/core.cpp:338-344",
+        "N2 tile-space movement: kTileTravelMs=150 sampled every 50 ms at 1/3 tile, 6-decimal determinism: native/include/verdigris/core.hpp:749-764, native/src/core.cpp:1526-1560",
+        "MovementStepInfo{sequence, startedAtMs, durationMs, direction, blocked} rides player:movement meta: native/include/verdigris/core.hpp:836-842, native/src/networking.cpp:805, 2305"
+      ],
+      "presentation_only": [
+        "Client WASD submits MoveIntent per tick with scenery pre-check: native/client/main.cpp:3065-3077, 3112-3128",
+        "Client dash pre-check mirrors sim multiplier then submits UseAction Dash: native/client/main.cpp:3147-3156"
+      ],
+      "tests_locking": [
+        "test_movement_step_derivation_and_actor_symmetry - native/tests/core_tests.cpp:243",
+        "test_movement_replay_is_deterministic - native/tests/core_tests.cpp:271",
+        "test_dash_is_a_named_readable_burst - native/tests/core_tests.cpp:290",
+        "test_d114_world_scale_table - native/tests/core_tests.cpp:1693",
+        "test_n2_movement_constants_mirror_browser - native/tests/core_tests.cpp:1715",
+        "test_continuous_movement (1 sample = exactly 1/3 tile + step meta broadcast) - native/tests/networking_tests.cpp:86"
+      ],
+      "captures": [
+        "Scenario move-and-camera proves uniform screen deltas equal camera shift * zoom while entities move: native/client/main.cpp:3385-3462"
+      ],
+      "gaps": [],
+      "successor_phase": "Frozen input for Phase B; any retune must re-derive the whole D-114 table in one diff."
+    },
+    {
+      "id": "R03",
+      "area": "movement",
+      "aspect": "presentation movement animation (walk cycle, position smoothing, motion of the billboard itself)",
+      "classification": "MISSING",
+      "simulation_authority": [
+        "Sim owns positions/timing only; it emits no animation-phase data (no gait phase, no speed fraction beyond position deltas)."
+      ],
+      "presentation_only": [
+        "Actor world positions snap per tick with no interpolation between samples: native/client/presentation_state.cpp:90-91 (protocol_to_world scale only).",
+        "Billboards are static sprites mirrored horizontally; there is no walk cycle, bob, lean, or lunge anywhere in draw code: native/client/main.cpp:1120-1183.",
+        "The only positional interpolation in the client is camera follow lerp 0.2/tick: native/client/main.cpp:3143-3144."
+      ],
+      "tests_locking": [],
+      "captures": [
+        "Reference scenes are single still frames; nothing captures an actor mid-stride because no stride exists."
+      ],
+      "gaps": [
+        "No walk/run cycle, no attack lunge, no spawn/death body animation; movement reads as teleport-per-tick at 20 Hz.",
+        "No presentation-side interpolator (previous-position -> current-position) exists that a successor could own; adding one must stay interpolation-only per constitution."
+      ],
+      "successor_phase": "Phase C: procedural bob/squash/lunge under D-113 (vector-first), interpolation-only, driven by MovementStepInfo sequence/duration already on the wire. Authored frame art remains OWNER-ASSET."
+    },
+    {
+      "id": "R04",
+      "area": "attack timing",
+      "aspect": "attack-started event, cooldown cadence, swing arc render op",
+      "classification": "COMPLETE",
+      "simulation_authority": [
+        "AttackStarted emitted after the cooldown gate with action name; Melee/Thrust share attack_speed_ticks, Sweep uses 3/2 cooldown: native/src/core.cpp:393-405",
+        "N3 player swing gate at 350 ms cadence: native/src/core.cpp:1469, 1941-1973"
+      ],
+      "presentation_only": [
+        "Swing/SweepArc EffectFx created from AttackStarted, ttl 6/8 ticks (presentation-chosen): native/client/main.cpp:1762-1768",
+        "Arc drawn as 3 strokes sweeping toward aim angle across fx age: native/client/main.cpp:1554-1569; full circle for Sweep ('keeps the presentation honest'): main.cpp:1571-1584",
+        "Render ops Swing/Sweep recorded next to the draw: native/client/render_list.hpp:23-24"
+      ],
+      "tests_locking": [
+        "first-fight scenario asserts a Swing op is drawn: native/client/main.cpp:3541-3546",
+        "remote_render_list_ops asserts Swing op from AttackStarted over the real protocol: native/tests/session_tests.cpp:520",
+        "test_non_elite_melee_cadence_is_unchanged - native/tests/core_tests.cpp:536",
+        "test_elite_sweep_uses_shared_pipeline - native/tests/core_tests.cpp:454"
+      ],
+      "captures": [
+        "orchestration/tasks/TASK-0070-reference-scenes/captures/02-pack-combat.json (+ PNG both resolutions) contains Swing/Sweep ops in a frozen frame"
+      ],
+      "gaps": [
+        "FX lifetime constants (ttl 6/8) are presentation-local literals, not shared catalog constants; unpinning them later needs Phase B naming."
+      ],
+      "successor_phase": "Phase B: promote FX ttl values into a named presentation-constants table with scenario assertions."
+    },
+    {
+      "id": "R05",
+      "area": "telegraph timing",
+      "aspect": "elite windup contract (emit, pending state, exact resolution offset, cancels, replay)",
+      "classification": "COMPLETE",
+      "simulation_authority": [
+        "kTelegraphTicks=3 declared part of the simulation contract so every presentation renders the same warning window: native/include/verdigris/core.hpp:29-32",
+        "Elite schedules pending_action and emits AttackTelegraphed with windup value: native/src/core.cpp:692-701",
+        "Resolution exactly kTelegraphTicks after telegraph tick; damage cannot land early: locked in test below",
+        "Death cancels all elite windups (no post-mortem damage): native/src/core.cpp:809-822",
+        "Pack reinforcement arms one telegraph window after entry/death: native/src/core.cpp:618-647, 837-842"
+      ],
+      "presentation_only": [
+        "Visibility ramp progress=elapsed/windup with sine pulse, readable from first frame: native/client/main.cpp:1508-1523",
+        "Windup duration is the upper bound for warning lifetime; cleared on AttackStarted/ActorDied/ScionDied/InstanceEntered: native/client/main.cpp:1764, 1804-1816, 1855-1868",
+        "'! SWING'-style pending-skill text over monster life bar: native/client/main.cpp:2837-2850"
+      ],
+      "tests_locking": [
+        "test_elite_thrust_telegraph_timing (value==kTelegraphTicks, no early damage, damage->tick == telegraph_tick + kTelegraphTicks) - native/tests/core_tests.cpp:395-423",
+        "test_elite_skill_cone_gating - native/tests/core_tests.cpp:425",
+        "test_elite_skill_fizzles_when_resolution_gates_fail - native/tests/core_tests.cpp:437",
+        "test_elite_telegraph_cancels_on_death - native/tests/core_tests.cpp:476",
+        "test_elite_skill_replay_is_deterministic - native/tests/core_tests.cpp:514",
+        "test_presentation_catalog_is_authoritative_and_stable (catalog telegraph_ticks match event+pending state) - native/tests/core_tests.cpp:931",
+        "scenario telegraph-dodge: telegraph drawn, stays outside HUD reserve, dash-out avoids the damage: native/client/main.cpp:3633-3663",
+        "reference scene validator requires elite telegraph visible: native/client/main.cpp:4382-4394"
+      ],
+      "captures": [
+        "orchestration/tasks/TASK-0070-reference-scenes/captures/03-elite-telegraph.json + PNG 1920x1080/1366x768 freeze a telegraph mid-windup with two-run byte-identical JSON"
+      ],
+      "gaps": [
+        "Two time systems coexist: local core uses 3 ticks @50 ms; remote wire carries only durationMs and the client heuristically divides by 50 (value>20 ? /50 : value): native/client/presentation_state.cpp:196. The windup unit is not unified across sessions."
+      ],
+      "successor_phase": "Phase A: unify windup units (send ticks or a named ms constant tied to kTelegraphTicks/kN3BossTelegraphWindowMs)."
+    },
+    {
+      "id": "R06",
+      "area": "telegraph geometry",
+      "aspect": "remote boss ground-slam area telegraph (x, y, radius)",
+      "classification": "MISSING",
+      "simulation_authority": [
+        "WorldCombatEvent carries x/y/radius/duration_ms and boss slam fills radius=kN3BossTelegraphRadius=2 tiles, window 1000 ms: native/include/verdigris/core.hpp:801-815, native/src/core.cpp:1463-1474, 1986-2011",
+        "monster:telegraph envelope ships attackerId/x/y/radius/durationMs/skillId: native/src/networking.cpp:1990-1995"
+      ],
+      "presentation_only": [
+        "Client keeps ONLY durationMs from the envelope; x/y/radius are dropped: native/client/remote_session.cpp:730-742",
+        "ActiveTelegraph has no radius member: native/client/presentation_state.hpp:43-50",
+        "Drawn wedge/circle sizes come from catalog thrust_range/melee_range, never the authored radius; anchor falls back to inverted-player-facing guess: native/client/main.cpp:1433-1505, 1538-1543, native/client/presentation_state.cpp:144-153, 188-197"
+      ],
+      "tests_locking": [
+        "test_n3_combat_rules_and_wire_events asserts the envelope fields (radius>=2, durationMs>=800, skillId boss:ground-slam) but nothing downstream renders them: native/tests/networking_tests.cpp:178-212"
+      ],
+      "captures": [
+        "None: no capture shows the authored 2-tile ground-slam radius on screen."
+      ],
+      "gaps": [
+        "Authored area telegraph geometry never reaches pixels in remote play; local-mode sweep telegraphs reuse the same range-substituted drawing."
+      ],
+      "successor_phase": "Phase A: add radius/position/facing to ActiveTelegraph from the envelope; assert geometry in remote-render-list scenario; recapture scene 03."
+    },
+    {
+      "id": "R07",
+      "area": "hit timing",
+      "aspect": "damage application feedback (impact flash, target flash, floating number, screen pulse)",
+      "classification": "PARTIAL",
+      "simulation_authority": [
+        "DamageApplied emitted in the same tick life is reduced; N3 hit pipeline computes base/beastbane/critical/attack_style: native/src/core.cpp:416-418, 1961-1972",
+        "combat:hit payload carries amount/died/health{current,max}/critical/beastbane*/attackStyle: native/src/networking.cpp:1998-2005"
+      ],
+      "presentation_only": [
+        "Impact flash ttl 4 ticks, TargetFlash ttl 4 on the hit target, DamageNumber ttl 12 rising+fading (~600 ms), ScreenPulse 3 ticks (~150 ms) on player damage: native/client/main.cpp:1777-1800",
+        "Damage number lift/fade curves: native/client/main.cpp:1633-1657",
+        "Screen-edge pulse decay: native/client/main.cpp:2898-2908, 3140"
+      ],
+      "tests_locking": [
+        "scenario combat-juice: TargetFlash present, number present right after hit, visible ~300 ms, gone ~650 ms, ScreenPulse + player-tagged number: native/client/main.cpp:3665-3713",
+        "session collect_flags asserts DamageApplied outgoing/incoming reach the client: native/tests/session_tests.cpp:198-212",
+        "remote_guest_journey asserts incoming/outgoing hits: native/tests/session_tests.cpp:222+"
+      ],
+      "captures": ["02-pack-combat.json freezes Damage/TargetFlash/Impact ops."],
+      "gaps": [
+        "critical/beastbane/base_amount/attack_style fields have NO client consumer: handler reads only amount/died/health/targetType: native/client/remote_session.cpp:744-808; numbers are visually uniform (see NC-01).",
+        "No hit-stop, knockback, or hit-reaction concept exists anywhere in sim or client (rg confirms zero hits outside passive text)."
+      ],
+      "successor_phase": "Phase A maps crit/style fields into PresentationEvent; Phase C decides procedural crit treatment and whether hit-stop is simulation-owned freeze ticks (authority change) or presentation-only."
+    },
+    {
+      "id": "R08",
+      "area": "death timing",
+      "aspect": "death event visuals (ring, dust, drop sparkle, scion fall)",
+      "classification": "PARTIAL",
+      "simulation_authority": [
+        "handle_death emits ActorDied ('monster'/'scion') plus ScionLost and legend records: native/src/core.cpp:809-899",
+        "Elite windups cancelled on death: native/src/core.cpp:813-822"
+      ],
+      "presentation_only": [
+        "DeathRing ttl 12 + Dust ttl 10 spawned at subject position; last_death_pos anchors later drops: native/client/main.cpp:1810-1812, native/client/presentation_state.cpp:202-206",
+        "ScionDied clears every telegraph: native/client/presentation_state.cpp:203",
+        "Remote kill synthesizes a Sparkle 'kill reward' at the last known PLAYER tile until pickup names the item: native/client/remote_session.cpp:799-805 (presentation invents world position)"
+      ],
+      "tests_locking": [
+        "first-fight asserts Death op drawn: native/client/main.cpp:3543-3548",
+        "loot-to-bank walks Drop -> pickup -> extraction: native/client/main.cpp:3555+",
+        "test_death_and_successor / wave death-recovery tests lock sim side: native/tests/core_tests.cpp:2098-2105"
+      ],
+      "captures": ["02-pack-combat.json includes Death/Drop ops; chronicles captures include the fatal-fall screens (TASK-0145 capture dir)."],
+      "gaps": [
+        "Body vanishes instantly when the ring expires; no corpse/fade persistence beat.",
+        "ScionLost has no distinct presentation mapping or moment (falls through default: continue at native/client/local_session.cpp:238); see NC-02.",
+        "Remote death arrives only as died-flag on combat:hit; no dedicated death envelope consumed."
+      ],
+      "successor_phase": "Phase A maps ScionLost + real drop envelopes; Phase C adds procedural dissolve/corpse beat."
+    },
+    {
+      "id": "R09",
+      "area": "dodge/dash",
+      "aspect": "dash burst feedback and telegraph avoidance read",
+      "classification": "PARTIAL",
+      "simulation_authority": [
+        "Dash is a sim action: 10-tick positional burst along facing with named ActorMoved 'dash': native/src/core.cpp:338-344",
+        "Avoidance is positional truth: leaving the cone/range before resolution simply means no damage (core.cpp:691-701 resolve path)"
+      ],
+      "presentation_only": [
+        "Dust trail keyed off ActorMoved text=='dash', ttl 8: native/client/main.cpp:1819-1822",
+        "Space/RMB dispatch dash with scenery pre-check: native/client/main.cpp:3155, 3187, 3284"
+      ],
+      "tests_locking": [
+        "test_dash_is_a_named_readable_burst - native/tests/core_tests.cpp:290",
+        "scenario telegraph-dodge proves gameplay avoidance and that life is unchanged: native/client/main.cpp:3653-3661"
+      ],
+      "captures": ["None isolate the dash dust trail; telegraph-dodge asserts Telegraph ops but never Dust."],
+      "gaps": [
+        "No i-frame/graze concept (avoidance is purely spatial).",
+        "Dust trail timing is asserted by no test and captured by no artifact.",
+        "No dodge-specific character motion (no hop/roll) - covered by R03 MISSING."
+      ],
+      "successor_phase": "Phase B adds a Dust-op assertion to telegraph-dodge; Phase C may add procedural roll."
+    },
+    {
+      "id": "R10",
+      "area": "buff/aura",
+      "aspect": "war cry aura and buff lifecycle visuals",
+      "classification": "PARTIAL",
+      "simulation_authority": [
+        "BuffApplied/BuffExpired emitted at deterministic tick boundary with war cry duration 20 ticks: native/src/core.cpp:726-734, native/include/verdigris/core.hpp:89",
+        "Empowered monster aura travels as state data aura:{label:'Empowered', id:'aura:damage'}: native/src/networking.cpp:861"
+      ],
+      "presentation_only": [
+        "WarCryAura expanding ring ttl 14 on BuffApplied only: native/client/main.cpp:1770-1773, 1585-1597",
+        "Empowered aura data is rendered NOWHERE; it is data-only on the snapshot"
+      ],
+      "tests_locking": [
+        "test_war_cry_buff_expiry_and_replay_determinism locks event ticks: native/tests/core_tests.cpp:556",
+        "networking test locks the aura data field: native/tests/networking_tests.cpp:189-192"
+      ],
+      "captures": ["None show either aura."],
+      "gaps": [
+        "BuffExpired has no mapping (local_session.cpp:238) and no visual; the buff silently ends - see NC-03.",
+        "Persistent empowered/elite halo exists only as static elite halo ring: native/client/main.cpp:2781-2786; no tie to aura:damage data."
+      ],
+      "successor_phase": "Phase A maps BuffExpired + empowered aura to presentation events; Phase C designs persistent aura rendering."
+    },
+    {
+      "id": "R11",
+      "area": "render-list events",
+      "aspect": "semantic per-frame draw-op recording (D-119 vocabulary)",
+      "classification": "COMPLETE",
+      "simulation_authority": [
+        "RenderList is explicitly a presentation diagnostic, never gameplay state: native/client/render_list.hpp:1-8",
+        "26-op vocabulary covering floor/tiles/scenery/actors/telegraphs/swing/sweep/warCry/impact/death/damage/targetFlash/screenPulse/drop/extraction/HUD/orbs/quickbar/minimap/panes/chronicles: native/client/render_list.hpp:16-45"
+      ],
+      "presentation_only": [
+        "Ops are recorded immediately next to each GDI draw inside paint_scene so a suppressed draw is caught: native/client/main.cpp:2618-3035, native/README.md:113-116",
+        "Headless recorder record_world_ops emits the same vocabulary from WorldView without GDI or Simulation: native/client/presentation_state.cpp:281-341"
+      ],
+      "tests_locking": [
+        "remote_render_list_ops drives a real WebSocket server+session and asserts Monster/Swing/Drop via record_world_ops: native/tests/session_tests.cpp:473-525",
+        "scenario remote-render-list re-proves it through paint_scene with 'remote present uses no Simulation': native/client/main.cpp:3716-3803"
+      ],
+      "captures": ["All five TASK-0070 reference-scene JSON dumps are frozen render lists."],
+      "gaps": [],
+      "successor_phase": "Frozen foundation; successor extends the Op enum per README.md:102-116 recipe."
+    },
+    {
+      "id": "R12",
+      "area": "render-list determinism",
+      "aspect": "byte-stable ordering across runs",
+      "classification": "COMPLETE",
+      "simulation_authority": [
+        "Loot iteration sorted by id before depth collection so unordered_map order never leaks: native/client/main.cpp:2713-2716"
+      ],
+      "presentation_only": [
+        "Stable sort by camera2d::draw_order_key with integer insertion-order tie-break: native/client/main.cpp:2696-2728",
+        "Two independent builds of each reference scene must produce byte-identical JSON or the run FAILs: native/client/main.cpp:4486-4498"
+      ],
+      "tests_locking": [
+        "camera2d tests pin translation invariance of the sort key's inputs: native/tests/camera2d_tests.cpp:25-98",
+        "run_reference_scenes two-run equality gate: native/client/main.cpp:4465-4525"
+      ],
+      "captures": [
+        "Checked-in TASK-0070 captures (5 JSON + 10 PNG) were produced by this gate; side-by-side benchmark reused them as frozen native-after frames (orchestration/benchmarks/side-by-side-2026-08-20/, explicitly NOT a gate)."
+      ],
+      "gaps": ["Determinism gate covers single staged frames; multi-tick sequences are not yet gated (see R17)."],
+      "successor_phase": "Phase B extends the harness to N-tick frame-sequence dumps for animation timing evidence."
+    },
+    {
+      "id": "R13",
+      "area": "particles/VFX vocabulary",
+      "aspect": "procedural effect kinds and their aging model",
+      "classification": "PARTIAL",
+      "simulation_authority": ["Sim owns none of this; effects derive solely from PresentationEvents."],
+      "presentation_only": [
+        "Nine EffectFx kinds (Swing, SweepArc, WarCryAura, Impact, DeathRing, Dust, Sparkle, DamageNumber, TargetFlash), each aged ++fx.age against ttl in 50 ms ticks: native/client/presentation_state.hpp:21-41, native/client/main.cpp:3135-3138, native/client/presentation_state.cpp:272-279",
+        "All drawing is immediate-mode GDI primitives; largest multiplicity is Dust with 5 dots: native/client/main.cpp:1548-1671",
+        "Ambient pulses: extraction pad (tick/9 % 2) + gold chevrons, low-life orb (tick%24<12), quickbar cooldown sweep overlay: native/client/main.cpp:2645, 2105-2106, 2182-2191",
+        "Procedural vector kit (committed TASK-0141/TASK-0144 baseline; 9 symbols / 375 shapes, data-only header): native/client/assets/generated/visual_kit.h consumed via kit_symbol/draw_kit_symbol native/client/main.cpp:975-1103"
+      ],
+      "tests_locking": [
+        "combat-juice pins DamageNumber lifetime curve: native/client/main.cpp:3682-3693",
+        "move-and-camera pins Orb/Quickbar/Hud op presence: native/client/main.cpp:3404-3408"
+      ],
+      "captures": ["Reference scenes freeze Sparkle/Drop/Extraction/Hud ops per scene."],
+      "gaps": [
+        "No particle system abstraction (no spawner/emitter/pool); every effect is hand-drawn switch-case code in one 4700-line file.",
+        "Dust trail, orb pulse, extraction pulse timings unpinned by tests (assertions cover presence, not cadence).",
+        "renderer/ seam is documentation-only: native/renderer/README.md:1-5 - all effect code lives in client/main.cpp paint path."
+      ],
+      "successor_phase": "Phase B/C: extract a tick-aged effect layer behind the renderer seam; name all ttl/pulse constants; keep GDI fallback."
+    },
+    {
+      "id": "R14",
+      "area": "layering/z-order",
+      "aspect": "painter's-algorithm ordering, ground-plane telegraphs, HUD reserve",
+      "classification": "COMPLETE",
+      "simulation_authority": ["Ordering is pure presentation math over sim positions; sim has no z concept beyond y/x."],
+      "presentation_only": [
+        "draw_order_key = wy*1e6+wx translation-invariant key: native/client/camera2d.hpp:59-61",
+        "DepthDraw classes Scenery<Player<Monster<Loot<Effect with effects anchored wy+1.0 above their target: native/client/main.cpp:1871-1876, 2721-2723",
+        "Ground decals (extraction pad) and telegraphs draw beneath billboards; warnings live on the ground plane: native/client/main.cpp:2633-2688",
+        "Telegraphs excluded from HUD reserve zones via clamp + ExcludeClipRect: native/client/main.cpp:1381-1430, 1530-1534",
+        "Contact shadows/team rings ground every billboard: native/client/main.cpp:1105-1118"
+      ],
+      "tests_locking": [
+        "telegraph_avoids_hud asserted in telegraph-dodge at 960x600: native/client/main.cpp:3650-3651",
+        "Byte-determinism gate transitively pins stable ordering: native/client/main.cpp:4493-4498"
+      ],
+      "captures": ["03-elite-telegraph.json/PNG shows ground telegraph beneath billboards and clear of HUD."],
+      "gaps": ["No explicit overlap-correctness assertion (y-sort vs overlapping billboards) beyond determinism; acceptable risk noted."],
+      "successor_phase": "Phase C may add an overlap fixture scene if billboard density grows."
+    },
+    {
+      "id": "R15",
+      "area": "camera response",
+      "aspect": "top-down camera math, follow lerp, zoom envelope",
+      "classification": "PARTIAL",
+      "simulation_authority": ["Sim emits no camera events and owns no camera state; camera is entirely presentation."],
+      "presentation_only": [
+        "D-118 clean orthographic top-down replaced the D-102/D-107 2.5D path in native (deletion note in header): native/client/camera2d.hpp:1-21, orchestration/DECISIONS.md D-118",
+        "project/unproject pure math, scale=zoom only: native/client/camera2d.hpp:41-57",
+        "Follow lerp 0.2 per 50 ms timer tick: native/client/main.cpp:3143-3144",
+        "Zoom envelope default 0.85 clamped to [0.425,1.7], wheel x1.1, Home reset: native/client/main.cpp:71-77, 3243-3272"
+      ],
+      "tests_locking": [
+        "translation_invariance, round_trip, uniform_scale, centering: native/tests/camera2d_tests.cpp:25-98",
+        "scenarios move-and-camera and zoom-invariance prove uniform deltas = shift*zoom at min/default/max zoom: native/client/main.cpp:3385-3462, 3811-3871"
+      ],
+      "captures": ["Reference scenes rendered at 1920x1080 AND 1366x768 exercise the camera at both target resolutions."],
+      "gaps": [
+        "The shipped follow LERP path is untested: scenario_follow_camera SNAPS camera to player (main.cpp:3340-3344), so the 0.2 lerp constant and its feel are pinned by nothing.",
+        "No camera shake; ScreenPulse substitutes (deliberate, fine - but record it).",
+        "Zoom wheel path untested headlessly."
+      ],
+      "successor_phase": "Phase B: add a lerp-follow scenario variant (drive N ticks, assert exponential approach) before anyone tunes feel; any shake stays presentation-only."
+    },
+    {
+      "id": "R16",
+      "area": "asset dependency",
+      "aspect": "billboard plates vs procedural kit vs owner art",
+      "classification": "OWNER-ASSET",
+      "simulation_authority": ["N/A"],
+      "presentation_only": [
+        "Fallback chain PNG plate -> committed vector kit symbol -> geometric stand-in; art-status chip must name what actually rendered: native/client/main.cpp:957-1103, first-fight honesty check native/client/main.cpp:3474-3508",
+        "Committed kit provenance: TASK-0141 generator + TASK-0144 literal conformance (git history b17d36b0, a60232fa). The TASK-0147 clean replacement was accepted (6575f330) and integrated at 19be98db on the program branch immediately after this audit's base 9fe673b6; that integrated work is usable capacity. Only the older ox-pc-e/ox-pc-m dirty attempts remain claim-released/quarantined per orchestration/tasks/TASK-0147-procedural-native-visual-polish-wave/RELEASE.md and must not be resumed"
+      ],
+      "tests_locking": ["kit tests exist from TASK-0141/0144 lineage (visual-kit generator/header round-trip)."],
+      "captures": ["triage-captures/*.png document plate-vs-kit rendering states."],
+      "gaps": [
+        "Character animation frames (walk/attack/death cycles) do not exist in any form; whether they arrive as OWNER image plates or approved procedural skeleton/bob is an open D-113 decision.",
+        "Owner approval required before any new image asset enters production (D-113)."
+      ],
+      "successor_phase": "Phase D: owner decision gate; successor must ship procedural fallback first so the slice never blocks on art."
+    },
+    {
+      "id": "R17",
+      "area": "deterministic capture",
+      "aspect": "frame/render-list evidence harnesses",
+      "classification": "COMPLETE",
+      "simulation_authority": [
+        "Capture scenes stage real Simulation commands via the standard pipeline (dispatch->ingest->age->camera->present): setup_reference_scene native/client/main.cpp:4351-4463"
+      ],
+      "presentation_only": [
+        "--reference-scene writes per-scene render-list JSON + PNG at 1920x1080 and 1366x768 into the TASK-0070 captures dir, enforcing two-run byte equality: native/client/main.cpp:4284-4525",
+        "Chronicles journey captures write front-door/expedition PNGs: native/client/main.cpp:2445-2463, 4065-4067, 4181-4183",
+        "Side-by-side browser benchmark (Playwright) is evidence-not-gate: orchestration/benchmarks/side-by-side-2026-08-20/browser-scenes.mjs:1-2"
+      ],
+      "tests_locking": ["run_reference_scenes failure paths (bad scene, divergent JSON, PNG write failure) all increment failures: native/client/main.cpp:4477-4523"],
+      "captures": [
+        "orchestration/tasks/TASK-0070-reference-scenes/captures/: 01-route-entrance, 02-pack-combat, 03-elite-telegraph, 04-named-drop-gear, 05-critical-health (.json + 2 PNG each, verified present)",
+        "native/client/triage-captures/: adjacent-before/after-strike, debug-f3, default-clean"
+      ],
+      "gaps": [
+        "All combat-timing captures are SINGLE frames; no multi-tick frame-sequence dump exists, so FX lifetimes rest on discrete scenario_step assertions rather than continuous capture."
+      ],
+      "successor_phase": "Phase B: extend --reference-scene with --ticks N emitting frame_N.json sequences; gives TASK-0122 real animation-timing goldens."
+    },
+    {
+      "id": "R18",
+      "area": "locking-test coverage inventory",
+      "aspect": "which animation/VFX behaviors are pinned by automated checks today",
+      "classification": "PARTIAL",
+      "simulation_authority": [
+        "Core: facing set/aim/replay (core_tests.cpp:218/305/321), dash burst (:290), telegraph timing/cone/fizzle/cancel/replay (:395-536), war cry expiry (:556), D-114 table (:1693), N2 movement (:1715-1785), catalog stability (:931), wave arming (:1274-1336).",
+        "Wire: continuous movement meta (networking_tests.cpp:86), N3 boss telegraph fields + aura data (:178-212), stairs transition (:124).",
+        "Session: presentation-event flags (:198-212), guest journey incl. aim-facing + telegraph delivery (:222+, 262, 352), remote render-list ops (:473-525).",
+        "Client scenarios: move-and-camera, first-fight, loot-to-bank, telegraph-dodge, combat-juice, remote-render-list, zoom-invariance, chronicles-gate-b (registered native/client/main.cpp:4196-4205)."
+      ],
+      "presentation_only": [],
+      "tests_locking": ["See above; these ARE the locking tests."],
+      "captures": ["TASK-0070 five-scene suite."],
+      "gaps": [
+        "Unpinned presentation behaviors: camera lerp constant, Dust trail, orb low-life pulse cadence, extraction pad pulse cadence, quickbar sweep overlay, WarCryAura/SweepArc/Impact/TargetFlash lifetimes, sprite-mirror correctness per facing, HUD-reserve clamp at other resolutions than 960x600.",
+        "LocalCoreSession drops AttackTelegraphed/BuffExpired/ScionLost at the seam (local_session.cpp:238) while local CLIENT reads raw sim events directly (main.cpp:1748-1759) - the session-seam contract 'renderers consume only PresentationEvents' is unproven for telegraphs in local mode."
+      ],
+      "successor_phase": "Phases A/B close seam gaps and add the missing assertions listed here; each becomes a REVIEWable locking test."
+    }
+  ],
+  "negative_controls": [
+    {
+      "id": "NC-01",
+      "event": "critical hit (combat:hit.critical=true)",
+      "claim": "Combat event with NO proved visual timing/capture: the field is computed and shipped but never consumed for visuals.",
+      "evidence": [
+        "Computed with beastbane pipeline and 1.5x multiplier: native/src/core.cpp:1953-1963",
+        "Shipped on combat:hit: native/src/networking.cpp:1998-2005",
+        "Client handler reads only attackerId/targetId/targetType/amount/died/health - critical/beastbane/baseAmount/attackStyle ignored: native/client/remote_session.cpp:744-808",
+        "DamageNumber rendering identical for all hits: native/client/main.cpp:1633-1657",
+        "rg over native/client finds no crit consumer (only unrelated reference-scene staging variable and stat parsing)"
+      ]
+    },
+    {
+      "id": "NC-02",
+      "event": "EventType::ScionLost",
+      "claim": "Emitted by simulation, absent from PresentationEventType and the local seam translator: no dedicated presentation moment exists.",
+      "evidence": [
+        "Emission: native/src/core.cpp:893",
+        "Enum lacks it: native/client/presentation_events.hpp:12-27",
+        "Seam drops it via default: continue: native/client/local_session.cpp:238",
+        "(ActorDied text='scion' does produce DeathRing/Dust, so the fall has generic visuals; the succession-specific beat does not.)"
+      ]
+    },
+    {
+      "id": "NC-03",
+      "event": "EventType::BuffExpired (war cry end)",
+      "claim": "No visual, no mapping, no capture; the aura simply times out client-side.",
+      "evidence": [
+        "Emission: native/src/core.cpp:734",
+        "Seam drop: native/client/local_session.cpp:230-239",
+        "Aura FX exists only on BuffApplied: native/client/main.cpp:1770-1773"
+      ]
+    },
+    {
+      "id": "NC-04",
+      "event": "monster pack materialization (wave spawn)",
+      "claim": "Monsters pop into existence with no spawn event/FX; only the reinforcement ARMING is timed (one telegraph window).",
+      "evidence": [
+        "materialize_wave places roster at deterministic anchors: native/src/core.cpp:633-647",
+        "Arming at tick_+kTelegraphTicks: native/src/core.cpp:837-842",
+        "No PresentationEventType for spawns; remote guests learn of monsters only via snapshots/upserts."
+      ]
+    },
+    {
+      "id": "NC-05",
+      "event": "remote boss ground-slam AREA telegraph",
+      "claim": "Authored radius/position never reach pixels; drawn size is substituted from melee/thrust ranges and anchor is guessed.",
+      "evidence": ["See matrix row R06."]
+    }
+  ],
+  "audit_findings_non_row": [
+    "F-DEBUG: leftover debug fprintf(stderr,\"[swing]...\") fires on EVERY player swing attempt in tile-space combat: native/src/core.cpp:1942 - pollutes server logs; flagged for the successor's owning task (this audit may not edit source).",
+    "F-AIM: AimIntent is presentation-local in remote mode (no envelope; only last-move facing reaches the server): native/client/remote_session.cpp:409-415 vs authoritative aim in local sim core.cpp:323-328 - swing direction parity between modes is unproven.",
+    "F-CLOCK: dual telegraph time systems (local 3 ticks @50 ms vs remote durationMs with /50 heuristic at presentation_state.cpp:196) - see R05 gap.",
+    "F-SYNTH: remote kills synthesize a ground drop at the last known PLAYER tile, not the monster's tile: native/client/remote_session.cpp:799-805 - acceptable stopgap, must be replaced by real drop envelopes.",
+    "F-SEAM: renderer/ remains documentation-only (native/renderer/README.md:1-5); all presentation logic lives in client/main.cpp - TASK-0122 should decide extract-now vs annotate-and-defer explicitly.",
+    "F-PROV: committed visual kit is TASK-0141/TASK-0144 work; the TASK-0147 clean replacement was accepted (6575f330) and integrated at 19be98db on the program branch immediately after this audit's base 9fe673b6, so it is usable capacity; only the older ox-pc-e/ox-pc-m dirty attempts stay quarantined per RELEASE.md - do not resume those."
+  ],
+  "successor_phases": {
+    "A_contracts": "Map dropped events (ScionLost, BuffExpired, spawn) through the session seam; carry telegraph radius/position/facing and hit critical/style fields end-to-end; unify telegraph windup units; remove monster-facing inversion. All are event-vocabulary changes with zero feel risk; each lands with a session/scenario test.",
+    "B_timing_pins": "Name all FX ttl/pulse constants in one presentation table; add Dust/orb-pulse/camera-lerp scenario assertions; extend --reference-scene with multi-tick frame-sequence dumps for animation goldens; keep D-114 table untouched.",
+    "C_juice_procedural": "Interpolation-only movement animation (bob/lunge/roll) driven by existing MovementStepInfo; crit visual variant; spawn/dissolve beats; decide hit-stop authority (sim freeze ticks vs presentation-only) and camera-shake boundary; everything D-113-vector-first, D-114-coherent, D-115-gated.",
+    "D_owner_assets": "Owner art decision gate (plates vs approved procedural skeletons); PNG plate pipeline already exists; ship procedural fallback first; honest art-status chip continues to police claims."
+  },
+  "acceptance_commands": {
+    "rg_sweep": "ran verbatim; full output captured (match count in FINDINGS.md); key clusters cited throughout this matrix",
+    "json_gate": "node JSON.parse on this file must print 'animation/VFX matrix: PASS'",
+    "git_diff_check": "must be clean",
+    "git_diff_name_only": "must list only orchestration/tasks/TASK-0116-animation-vfx-contract-audit/**"
+  }
+}

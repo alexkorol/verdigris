@@ -1,8 +1,9 @@
 ---
 task: TASK-0128
-verdict: REVISE
-reviewed_head: bb67c5660dda2745469458f258dc24ecf115415d
-reviewed_at: 2026-08-22 01:35 -07:00
+verdict: ACCEPTED
+reviewed_head: 2b469e3d0dabd0efc2036d7cb629e6add17075ca
+reviewed_at: 2026-08-22 09:55 -07:00
+integrated_at: 882de214008c4df6566155c5815a232d339d9309
 ---
 
 # TASK-0128 review — REVISE
@@ -58,3 +59,39 @@ Integration is not accepted yet:
 The worker exhausted its single recovery after creating `d247638e`; do not
 restart it automatically. Preserve the pushed branch for a later fresh-lane
 revision. Runway remains honestly UNKNOWN.
+
+## Fresh-lane revision review — ACCEPTED (`2b469e3d`)
+
+The narrowly released golden-output revision closes the remaining blocker
+without changing collector semantics, tests, schema, or runway claims.
+Independent architect verification at the exact pushed head established:
+
+1. `collect.mjs ... --check` exits 0 at final head `2b469e3d`, proving source
+   revision `6dc3632c` is an ancestor and relevant inputs are unchanged.
+2. The complete Node test suite passes 19/19 and leaves `git status --short`
+   empty. Its retained controls prove final-head/source-revision acceptance,
+   relevant-evidence drift rejection, stale-output rejection without rewrite,
+   path containment, and malformed-evidence failure.
+3. The schema gate prints `throughput/runway schema: PASS`; thresholds remain
+   72/48/24, and UNKNOWN is not encoded as zero.
+4. `git diff --check` passes. Exact fresh-lane paths are confined to this task
+   folder and `orchestration/throughput/**`.
+5. Programmatic comparison of all six regenerated fixture observations proves
+   the only semantic field change is `skipped_folders`, from one or two stale
+   legacy entries to `[]`; every other parsed value is byte-equivalent after
+   removing that field.
+6. Worker head equals its remote, the worktree is clean, and no rate was
+   guessed: the live snapshot remains `hours:null` / `UNKNOWN`.
+
+This mechanical packet satisfies the Tier-A deterministic acceptance path.
+Integrate the complete owned lineage (`bb67c566`, `d247638e`, `6dc3632c`) plus
+the final fresh-lane evidence/status commits, then rerun the affected gates on
+the program head. The historical old claim may be preserved in ancestry, but
+the terminal worker identity is `ox-pc-y` and the accepted reviewed head is
+`2b469e3d0dabd0efc2036d7cb629e6add17075ca`.
+
+Integration completed as program commits `7234fa6f`, `424f368f`, `b89b87c4`,
+`f818c9ba`, `573a97dd`, and `882de214`. On the integrated tree, the expected
+non-ancestor guard rejected the worker capture SHA before the two live captures
+were rebound to the program lineage. Final program verification again passed
+19/19 tests, `--check`, schema, and diff gates with `hours:null` / `UNKNOWN`.

@@ -1,5 +1,56 @@
 # Run status — PC Verdigris overnight product wave
 
+## PC accepted product integration — 2026-08-22 12:11 PDT
+
+- TASK-0122 frozen worker head `d67129e4` is independently ACCEPTED and
+  integrated as `032ae03e`. Frozen-head native gates, 24/24 focused tests,
+  31/31 VFX scenario checks, browser playtest 32/32, diff/scope checks, the
+  simulation-untouched negative control, and both final images passed.
+- TASK-0148 frozen worker head `9f00e198` (implementation `5732367e`) is
+  independently ACCEPTED and integrated as `127a540e` + `8d314d5c`. The
+  architect rerun proved the complete normal-envelope Gate-B journey through
+  ordinary death, successor, exact relic recovery, and same-guest reconnect.
+- Combined program native gates pass with all ten client scenarios. The first
+  combined browser run missed `session-arc` final death by 384 ms beyond its
+  15 s budget; the scenario then passed in 11.7 s and the full rerun passed
+  32/32 with `session-arc` at 12.3 s. The timing seam is retained in review
+  evidence; no deterministic product regression reproduces.
+- ox-pc-r and ox-pc-x are stopped, clean, pushed handoffs and no longer count
+  as active capacity. No other OpenCode process is registered as active
+  Verdigris capacity. Protected `master` is still `230a8adf` until the verified
+  program update completes its protected PR path.
+- Human dashboard is HTTP 200 at `http://127.0.0.1:4737/`; the visible rows
+  identify both lanes as supervisor-reviewed handoffs rather than workers.
+- Post-integration board sentinel is healthy: 24 effective READY, zero live
+  claims/reviews/revisions, 16 sequenced DRAFT successors, zero collisions,
+  and 108 integrated packets. Its 22-test suite passes. The deterministic
+  factory still verifies 2,000 graph nodes and 500 reserve packets; autonomous
+  runway remains honestly `UNKNOWN` until comparable throughput exists.
+
+## PC live sweep — 2026-08-22 09:58 PDT
+
+- Program branch `codex/native-reconstitution` has independently ACCEPTED and
+  integrated TASK-0128 through `882de214`; protected `master` remains green at
+  `230a8adf` after the TASK-0153 first-session/Esc release.
+- ox-pc-r is the sole active TASK-0148 writer at PID 17640. Supervisor commit
+  `3119a08e` added the master-only Native trigger to its pre-hygiene branch
+  without touching preserved gameplay work; that push launched zero workflows.
+  The ordinary-play heirloom recovery gate remains unresolved, so no gameplay
+  handoff is accepted.
+- ox-pc-x holds valid TASK-0122 claim `fdbbdca6` and is in its one authorized
+  same-session implementation recovery at PID 18144 after a clean context-only
+  stop. A second pre-handoff stop releases the lane.
+- TASK-0128 worker head `2b469e3d` passed final-head check, 19/19 tests with a
+  clean tree, schema/diff/scope gates, and six golden comparisons limited to
+  `skipped_folders -> []`. Program-side gates also pass; runway remains honestly
+  `hours:null` / `UNKNOWN`.
+- Deterministic board sentinel: 24 effective READY, 2 valid CLAIMED, 16
+  sequenced successors, zero owned-path collisions, exit 0. Factory target
+  remains 2,000 graph nodes and 500 reserve packets.
+- The monitor now covers duplicate writers, malformed claims, activation SLA,
+  and stale Native branch triggers (`P0_CI_TRIGGER_UNSAFE`). Human dashboard
+  health remains HTTP 200 at `http://127.0.0.1:4737/`.
+
 ## Morning protected-master release — 2026-08-22 07:12 PDT
 
 - Program branch pushed head: `eb65c08b76c95564d61422a51748dbdb476306a9`.
@@ -112,7 +163,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
-| ox-pc-a | 6620-6639 | TASK-0128 revision `d247638e` pushed via narrow handoff repair; second review remains REVISE; worker recovery exhausted | preserved, not active capacity |
+| ox-pc-a | 6620-6639 | TASK-0128 revision `d247638e` preserved; accepted foundation completed by fresh lane ox-pc-y | preserved, not active capacity |
 | ox-pc-b | 6640-6659 | TASK-0145 recovered claim `4aa9e0c3` then worker exited dirty; claim released | P0 quarantined, not capacity |
 | ox-pc-c | 6660-6679 | TASK-0136 claim released after duplicate-dispatch collision; dirty worktree quarantined | not available |
 | ox-pc-d | 6680-6699 | TASK-0146 second post-claim stop after one recovery; claim `7e416ff3` released | P0 quarantined/preserved, not capacity |
@@ -129,10 +180,14 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-o | 6900-6919 | TASK-0148 second post-claim stop after one recovery; claim `71a73de8` released; clean worktree preserved | exhausted, not capacity |
 | ox-pc-p | 6920-6939 | TASK-0147 frozen head `974ccab6` independently ACCEPTED and integrated at `19be98db`; fresh visual evidence and combined native gates passed | handoff complete; available only after worker process exits |
 | ox-pc-q | 6940-6959 | TASK-0148 claim `815a359b` released after recovery proposed a second normal-path bypass (`mutate/select` instead of `create/set-out`); clean claim head preserved | exhausted, not capacity |
-| ox-pc-r | 6960-6979 | TASK-0148 independent claim `837a412f` pushed from release head `c1acd4ec`; clean pre-write exit recovered in the same session at PID 7324 | accepted-chain recovery active |
-| ox-pc-s | 6980-6999 | TASK-0116 claim `297b4e9d` pushed from program base `9fe673b6` | animation/VFX contract audit active; implementation successor pending review |
+| ox-pc-r | 6960-6979 | TASK-0148 frozen head `9f00e198` independently ACCEPTED; implementation integrated as `127a540e`, handoff as `8d314d5c`; full normal-play reconnect gate green | complete; stopped/clean, not active capacity |
+| ox-pc-s | 6980-6999 | TASK-0116 corrected audit head `5b007e7e` independently ACCEPTED and integrated through `8eb95893` | audit complete; TASK-0122 successor routed |
 | ox-pc-t | 7000-7019 | TASK-0117 frozen head `5a7c22cb` independently ACCEPTED and integrated at `7052feca` | handoff complete; procedural-audio successor sequenced behind current client-main owner |
 | ox-pc-u | 7020-7039 | TASK-0119 frozen head `4104e0c8` independently ACCEPTED and integrated at `a5f4133e` | handoff complete; executable onboarding successor ready to route |
+| ox-pc-v | 7040-7059 | TASK-0153 final worker head `30ab95fd`; Esc/first-session fix shipped to protected master `230a8adf` with green CI | complete/available |
+| ox-pc-w | 7080-7099 | TASK-0154 clean-runner portability head `2dc4bfb2`; protected hotfix master `4e55f4f9` green | complete/available |
+| ox-pc-x | 7060-7079 | TASK-0122 frozen head `d67129e4` independently ACCEPTED and integrated as `032ae03e`; native/browser/visual/negative-control gates green | complete; stopped/clean, not active capacity |
+| ox-pc-y | none | TASK-0128 fresh-lane head `2b469e3d` independently ACCEPTED and integrated through `882de214`; 19/19 clean | complete/available after worker exit |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -148,10 +203,9 @@ experimental unit.
 OpenCode CLI 1.18.21 is installed and the OpenRouter lanes launch headlessly
 with explicit `openrouter/stealth/ox-alpha`; no owner tab opening is required.
 `Z:\Code\.fleet\Watch-VerdigrisFleet.ps1` supplies one human-readable five-second
-dashboard and transition-deduplicated Windows P1/P0 activation notifications.
-Its live-alert set is restricted to current completed handoffs and registered
-active routes (`i/j/k/l/p/r`); historical/quarantined worktrees remain visible
-in the web dashboard for audit but cannot generate false live toasts.
+dashboard and transition-deduplicated Windows P1/P0 notifications. Current live
+routes include r/x; completed y remains visible for audit. Historical and
+quarantined worktrees do not count as active capacity.
 An unattended REVISE route is a distinct P1 alert, so a stopped revision worker
 cannot be masked by the task-level review verdict.
 The worker logs remain under `Z:\Code\.fleet\logs`. Sol does not claim or write
@@ -292,7 +346,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 27 packets
+## Effective READY — 25 packets
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -316,7 +370,6 @@ wins after a fresh fetch.
 | P1 | TASK-0101 combat-depth gap audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | selects coherent player-visible combat waves |
 | P1 | TASK-0102 skill-system gap audit | INDEPENDENT / MECHANICAL | future after current claim | maps LMB/RMB/Q/E/R end to end |
 | P1 | TASK-0103 monster/encounter gap audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages packs, rarity, uniques, bosses |
-| P1 | TASK-0116 animation/VFX contract audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages readable production motion and effects |
 | P1 | TASK-0117 audio/music runtime audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | defines combat/UI/ambience/music runtime |
 | P1 | TASK-0118 accessibility/options audit | INDEPENDENT / MECHANICAL | future after current claim | stages broad readable and controllable play |
 | P1 | TASK-0121 owner content approval matrix | INDEPENDENT / MECHANICAL | future after current claim | batches art/lore/naming/balance/economy/content gates |
@@ -329,6 +382,7 @@ wins after a fresh fetch.
 | P1 | TASK-0151 native content schema seed | INDEPENDENT / IMPLEMENTATION | future clean lane | creates a deterministic content-neutral authoring seam |
 | P1 | TASK-0152 native density benchmark evidence | INDEPENDENT / IMPLEMENTATION | future clean lane | measures encounter/presentation headroom reproducibly |
 | P1 | TASK-0136 passive-tree contract validator | INDEPENDENT / MECHANICAL | fresh worktree only; quarantined lanes forbidden | fail-closes counter confusion without canonizing content |
+| P1 | TASK-0122 native animation/VFX Phase A | INDEPENDENT / IMPLEMENTATION | ox-pc-x, ports 7060-7079 | distinct critical/spawn/lifecycle beats with real captures |
 
 ## HOLD despite historical READY headers
 
@@ -339,7 +393,7 @@ wins after a fresh fetch.
 | TASK-0073 renderer backend evaluation | SUPERSEDED by TASK-0114 | surge replacement supplies exact evidence, acceptance, and stop contracts |
 | TASK-0079 browser panel inventory | SUPERSEDED by TASK-0115 | surge replacement supplies hard-fail capture and exact gate contracts |
 
-## Sequenced successors — 17 DRAFT
+## Sequenced successors — 16 DRAFT
 
 | Task | Dependency / release |
 |---|---|
@@ -354,7 +408,6 @@ wins after a fresh fetch.
 | TASK-0110 encounter-system wave | 0103 accepted; deterministic pack/rarity seam frozen |
 | TASK-0111 item-history lifecycle | 0104 accepted; owner-independent lifecycle frozen |
 | TASK-0113 campaign/content tooling | 0095 + 0096 accepted; validators frozen |
-| TASK-0122 animation/VFX system | 0116 + renderer/asset contracts accepted |
 | TASK-0123 audio/music runtime | 0117 + backend/license/owner direction |
 | TASK-0124 accessibility/options wave | 0118 + pane/input/settings ownership |
 | TASK-0125 onboarding first-session wave | 0119 + Gate B/C + copy placeholders |

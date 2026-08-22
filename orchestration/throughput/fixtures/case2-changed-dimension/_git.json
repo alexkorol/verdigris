@@ -1,0 +1,31 @@
+{
+  "head": "fixedhead0002",
+  "orchestration/tasks/TASK-0103-x/STATUS.md": [
+    {
+      "hash": "c1",
+      "authoredAtMs": 1755822109000,
+      "subject": "TASK-0103: claim"
+    }
+  ],
+  "orchestration/tasks/TASK-0103-x/REVIEW.md": [
+    {
+      "hash": "c2",
+      "authoredAtMs": 1755825709000,
+      "subject": "review: accept TASK-0103"
+    }
+  ],
+  "orchestration/tasks/TASK-0104-x/STATUS.md": [
+    {
+      "hash": "d1",
+      "authoredAtMs": 1755822109000,
+      "subject": "TASK-0104: claim"
+    }
+  ],
+  "orchestration/tasks/TASK-0104-x/REVIEW.md": [
+    {
+      "hash": "d2",
+      "authoredAtMs": 1755825709000,
+      "subject": "review: accept TASK-0104"
+    }
+  ]
+}

@@ -202,3 +202,62 @@ request.
 - INC-013 records ox-pc-v's initial activation-SLA breach and claim-first
   recovery. ox-pc-r was serialized around the release gate and resumed with
   every dirty owned-path edit preserved. Owner action required now: none.
+
+### PC coordination checkpoint — 2026-08-22 09:58 PDT
+
+- Protected Verdigris `master` is green at `230a8adf`. Program branch
+  `codex/native-reconstitution` has TASK-0128 integrated through `882de214`
+  before final coordination/capture binding. Standalone PC broadcast branch was
+  last pushed at `11f9788`; shared orchestration `main` remains Mac-owned at
+  `d068012a`.
+- TASK-0128 fresh worker head `2b469e3d` is Tier-A ACCEPTED (review `f7260900`)
+  and integrated. Both worker and program gates pass 19/19; the deterministic
+  snapshot remains `hours:null` / `UNKNOWN`.
+- Active implementation lanes: ox-pc-r / TASK-0148, ports 6960-6979, PID 17640,
+  valid claim `837a412f`, remote workflow guard `3119a08e`, dirty owned paths
+  preserved; ox-pc-x / TASK-0122, ports 7060-7079, PID 18144, valid claim
+  `fdbbdca6`, one authorized same-session recovery after a clean pre-write stop.
+  No other OpenCode CLI process counts as live Verdigris capacity.
+- Queue proof is 24 effective READY, 2 valid CLAIMED, 16 sequenced successors,
+  zero collisions. Factory target remains 2,000 nodes / 500 packets and runway
+  hours remain UNKNOWN pending comparable accepted telemetry.
+- Local monitor PID 17316 and dashboard PID 9588 were healthy with dashboard
+  HTTP 200 before this checkpoint. The monitor now detects activation failure,
+  malformed claims, duplicate worktree writers, and stale Native push triggers.
+- Exact next sweep: verify x produced its first owned source write or release it;
+  freeze any r/x handoff; reject TASK-0148 temporary probes or shortcut paths;
+  run literal task gates, integrate only ACCEPTED work, re-prove board/factory,
+  and refresh both program and standalone broadcast heads.
+- Owner action required now: none. A replacement supervisor must fetch both
+  repositories and reproduce this checkpoint before assuming authority.
+
+TASK-0128's durable integration/capture head is
+`b4c9ce9d44e0343e78e52947fe0083e63f153697`. Its captures are bound to source
+`847067e40230869e0a21b4be5e2ec67037fd69e5` and independently pass `--check`
+at that later capture commit. The ledger-refresh commit containing this note
+changes no collector input or task evidence. After the checkpoint, ox-pc-x
+produced owned client-source writes and remains live; it is no longer a
+pre-write recovery risk.
+
+### Accepted TASK-0122/TASK-0148 checkpoint — 2026-08-22 12:11 PDT
+
+- Program implementation head before this ledger commit is `8d314d5c` on
+  `codex/native-reconstitution`; protected `master` remains `230a8adf` pending
+  the protected PR/check path.
+- TASK-0122 worker head `d67129e4` is independently ACCEPTED and integrated as
+  `032ae03e`; full native, focused VFX, browser 32/32, negative-control, scope,
+  and two-resolution visual gates pass.
+- TASK-0148 worker head `9f00e198` (implementation `5732367e`) is independently
+  ACCEPTED and integrated as `127a540e` + `8d314d5c`; the architect proved the
+  complete normal-envelope death/succession/exact-relic/reconnect chain.
+- Combined native gates pass. Combined browser acceptance passed 32/32 after
+  one retained timing diagnostic: `session-arc` first missed its 15 s death
+  wait by 384 ms, then passed standalone in 11.7 s and in the full rerun at
+  12.3 s.
+- ox-pc-r and ox-pc-x are stopped, clean, and no longer active capacity. No
+  other OpenCode Verdigris lane is active. Dashboard remains HTTP 200; monitor
+  remains the live activation/stall/CI-signal safety net.
+- Exact next step: re-prove board/factory invariants, push coordination truth,
+  complete protected PR checks, refresh standalone PC broadcast without
+  writing shared `main`, and then route only current-tip disjoint product work.
+- Owner action required now: none.

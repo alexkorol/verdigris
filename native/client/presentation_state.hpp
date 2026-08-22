@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "camera2d.hpp"
@@ -28,7 +29,12 @@ struct EffectFx {
     Dust,
     Sparkle,
     DamageNumber,
-    TargetFlash
+    TargetFlash,
+    // TASK-0122 Phase A beats. All lifetimes come from the phase_a constants
+    // table in presentation_events.hpp; none of them touch simulation state.
+    Materialize,    // deterministic first-sighting spawn beat
+    WarCryFade,     // BuffExpired("war-cry") contract beat
+    ScionLostBeat,  // ScionLost contract beat
   };
   Kind kind = Kind::Impact;
   double wx = 0.0;
@@ -38,6 +44,9 @@ struct EffectFx {
   int ttl = 8;
   int value = 0;
   bool damage_to_player = false;
+  // TASK-0122 Phase A: critical/style parity data copied from the event.
+  bool critical = false;
+  std::string style;
 };
 
 struct ActiveTelegraph {
@@ -107,9 +116,19 @@ struct PresentationFx {
   std::vector<std::string> event_log;
   std::string hint;
   int hint_ticks = 0;
+  // TASK-0122 Phase A: monster ids already seen by the presentation, so the
+  // spawn/materialization beat fires exactly once per foe. Presentation
+  // bookkeeping only — it never creates, moves, or damages an actor.
+  std::unordered_set<std::string> known_monsters;
 };
 
 verdigris::Vec2 facing_vector(const std::string& facing);
+
+// TASK-0122 Phase A: push a deterministic materialization beat for every
+// monster present in `world` that the presentation has never seen before.
+// Pure presentation bookkeeping over the already-authoritative snapshot.
+void detect_monster_spawns(PresentationFx& fx, const WorldView& world,
+                           std::uint64_t now_tick);
 
 // Protocol scene coordinates are tile-sized; native presentation uses D-114
 // world units. One protocol tile equals one ground-grid tile.

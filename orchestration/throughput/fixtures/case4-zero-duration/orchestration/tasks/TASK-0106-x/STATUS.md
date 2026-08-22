@@ -1,0 +1,14 @@
+- task: TASK-0106
+- state: REVIEW_REQUESTED
+- coordinator: ox-pc-a
+- worker branch: codex/fixture-f-ox-pc-a
+- base sha: aaa111
+- machine: TESTBOX (windows)
+- endpoint: local OpenCode TUI session
+- provider: opencode
+- model id: x-preview-f-free; variant: max
+- agent alias: ox-alpha
+- harness: OpenCode CLI/TUI
+- harness version: 1.2.3
+- configuration provenance: owner-launched project at Z:\fixture
+- task family: MECHANICAL / audit
