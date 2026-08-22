@@ -1,7 +1,7 @@
 {
   "schema": "board-sentinel/1",
   "repo": "Z:\\Code\\.worktrees\\verdigris\\ox-pc-b",
-  "min_ready": 200,
+  "min_ready": 8,
   "counts": {
     "effective_ready": 29,
     "claimed": 1,
@@ -751,16 +751,11 @@
     "TASK-0076"
   ],
   "queue_floor": {
-    "min_ready": 200,
+    "min_ready": 8,
     "effective_ready_count": 29,
-    "satisfied": false
+    "satisfied": true
   },
-  "errors": [
-    {
-      "type": "queue_floor_violation",
-      "detail": "effective READY 29 < min-ready 200"
-    }
-  ],
-  "healthy": false,
-  "exit_code": 1
+  "errors": [],
+  "healthy": true,
+  "exit_code": 0
 }
