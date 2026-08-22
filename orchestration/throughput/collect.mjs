@@ -3,13 +3,31 @@
 // Dependency-free Node.js 22. Deterministic: outputs depend only on committed
 // repository evidence (task folders, RUN_STATUS.md, generated D-128 summary,
 // Git history). Unknown values are JSON null, never 0 or inferred facts.
+// Committed captures bind an explicit evidence/source revision (the head at
+// write time, i.e. the implementation parent of the capture commit) instead of
+// their own containing commit; `--check` proves that revision is an ancestor of
+// HEAD with unchanged input evidence before byte-comparing recomputed output.
 import { spawnSync } from 'node:child_process';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const OBSERVATIONS_SCHEMA = 'throughput-observations-v1';
-export const SNAPSHOT_SCHEMA = 'runway-snapshot-v1';
+export const OBSERVATIONS_SCHEMA = 'throughput-observations-v2';
+export const SNAPSHOT_SCHEMA = 'runway-snapshot-v2';
+
+// Input evidence the collector reads. Committed captures bind an explicit
+// evidence/source revision (normally the implementation parent of the capture
+// commit); `--check` verifies that revision is an ancestor of HEAD and that no
+// path below changed in between. The task folder that owns the capture outputs
+// is excluded from this set: capture/report/status-only commits must not make
+// their own evidence stale (byte comparison still guards anything
+// output-visible, including the owning task's own parsed STATUS fields).
+export const INPUT_EVIDENCE_PATHS = [
+  'orchestration/tasks',
+  'orchestration/RUN_STATUS.md',
+  'orchestration/backlog-factory/generated/summary.json',
+];
+const OUTPUT_NAMES = ['throughput-observations.json', 'runway-snapshot.json'];
 
 export class CollectError extends Error {
   constructor(message, code) { super(message); this.name = 'CollectError'; this.exitCode = code; }
@@ -321,7 +339,7 @@ async function specPacketType(tasksRoot, taskId) {
 
 // ---------- runway snapshot ----------
 
-export function buildRunwaySnapshot({ repoRevision, lanes, readyTasks, reserveSummary, units }) {
+export function buildRunwaySnapshot({ evidenceSourceRevision, lanes, readyTasks, reserveSummary, units }) {
   const thresholds = { target_hours: 72, warning_below_hours: 48, critical_below_hours: 24 };
   const readyCountsByPacket = new Map();
   for (const t of readyTasks) readyCountsByPacket.set(t.packet_type, (readyCountsByPacket.get(t.packet_type) || 0) + 1);
@@ -360,7 +378,7 @@ export function buildRunwaySnapshot({ repoRevision, lanes, readyTasks, reserveSu
   const primary = laneSnapshots[0] || null;
   return {
     schema_version: SNAPSHOT_SCHEMA,
-    repo_revision: repoRevision,
+    evidence_source_revision: evidenceSourceRevision,
     thresholds,
     board: {
       effective_ready: readyTasks.length,
@@ -373,7 +391,7 @@ export function buildRunwaySnapshot({ repoRevision, lanes, readyTasks, reserveSu
     confidence: primary ? primary.confidence : null,
     overall_state,
     unknown_is_non_green: true,
-    note: 'hours:null means no comparable accepted sample exists in this exact experimental unit; historical fleet averages and illustrative numbers are excluded',
+    note: 'hours:null means no comparable accepted sample exists in this exact experimental unit; historical fleet averages and illustrative numbers are excluded; evidence_source_revision names the implementation commit whose tree holds the verified input evidence, never the capture commit itself',
   };
 }
 
@@ -400,6 +418,22 @@ export function realGit(repoRoot) {
         return { hash, authoredAtMs: Date.parse(iso), subject };
       });
     },
+    resolveCommit(rev) {
+      const r = spawnSync('git', ['-C', repoRoot, 'rev-parse', '--verify', '--quiet', `${rev}^{commit}`], { encoding: 'utf8' });
+      return r.status === 0 ? r.stdout.trim() : null;
+    },
+    isAncestor(anc, desc) {
+      const r = spawnSync('git', ['-C', repoRoot, 'merge-base', '--is-ancestor', anc, desc], { encoding: 'utf8' });
+      if (r.status === 0) return true;
+      if (r.status === 1) return false;
+      throw new CollectError(`git merge-base --is-ancestor failed: ${r.stderr}`, EXIT_MALFORMED);
+    },
+    inputsChangedBetween(a, b, pathspecs) {
+      const r = spawnSync('git', ['-C', repoRoot, 'diff', '--quiet', a, b, '--', ...pathspecs], { encoding: 'utf8' });
+      if (r.status === 0) return false;
+      if (r.status === 1) return true;
+      throw new CollectError(`git diff failed between ${a} and ${b}: ${r.stderr}`, EXIT_MALFORMED);
+    },
   };
 }
 
@@ -415,10 +449,77 @@ const defaultIo = {
 
 // ---------- pipeline ----------
 
+// The task folder that contains the capture outputs, expressed as a repo-rooted
+// POSIX path, or null when the outputs live elsewhere. Used to exclude the
+// owning task's own capture/report/status commits from the input-stability
+// verification so a capture commit never invalidates its own evidence.
+export function owningTaskFolder(absRepo, absOut) {
+  const rel = path.relative(absRepo, absOut).split(path.sep).join('/');
+  const prefix = 'orchestration/tasks/';
+  if (rel === 'orchestration/tasks' || !rel.startsWith(prefix)) return null;
+  const seg = rel.slice(prefix.length).split('/')[0];
+  return seg ? `${prefix}${seg}` : null;
+}
+
+function verifyEvidenceSourceRevision({ git, evidenceSourceRevision, headRevision, ownedFolder }) {
+  if (!git.resolveCommit(evidenceSourceRevision)) {
+    throw new CollectError(
+      `--check failed: evidence source revision ${evidenceSourceRevision} does not resolve to a commit`,
+      EXIT_STALE);
+  }
+  if (!git.isAncestor(evidenceSourceRevision, headRevision)) {
+    throw new CollectError(
+      `--check failed: evidence source revision ${evidenceSourceRevision} is not an ancestor of HEAD ${headRevision}`,
+      EXIT_STALE);
+  }
+  const pathspecs = [...INPUT_EVIDENCE_PATHS];
+  if (ownedFolder) pathspecs.push(`:(exclude)${ownedFolder}`);
+  if (git.inputsChangedBetween(evidenceSourceRevision, headRevision, pathspecs)) {
+    throw new CollectError(
+      `--check failed: relevant input evidence changed between ${evidenceSourceRevision} and HEAD ${headRevision}; regenerate captures`,
+      EXIT_STALE);
+  }
+}
+
 export async function runCollector({ repoRoot, outDir, check = false, io = defaultIo, git = realGit(path.resolve(repoRoot)) }) {
   const absRepo = path.resolve(repoRoot);
   const absOut = resolveInside(absRepo, outDir);
-  const repoRevision = git.revHead();
+  const headRevision = git.revHead();
+
+  // Write mode binds the evidence source revision to the current head (the
+  // implementation parent of the capture commit about to be created). Check
+  // mode trusts the stored binding only after proving it is an ancestor of
+  // HEAD with unchanged input evidence, then byte-compares recomputed output.
+  let evidenceSourceRevision = headRevision;
+  let storedOutputs = null;
+  if (check) {
+    storedOutputs = [];
+    for (const name of OUTPUT_NAMES) {
+      const target = path.join(absOut, name);
+      let raw = null;
+      try { raw = await io.readFile(target); } catch { raw = null; }
+      if (raw == null) throw new CollectError(`--check failed: missing output ${target}`, EXIT_STALE);
+      let parsed;
+      try { parsed = JSON.parse(raw); } catch {
+        throw new CollectError(`--check failed: unparsable stored output ${target}`, EXIT_STALE);
+      }
+      if (typeof parsed.evidence_source_revision !== 'string') {
+        throw new CollectError(
+          `--check failed: ${name} predates the evidence-source-revision scheme; regenerate captures`,
+          EXIT_STALE);
+      }
+      storedOutputs.push({ name, target, raw, parsed });
+    }
+    const revs = new Set(storedOutputs.map((s) => s.parsed.evidence_source_revision));
+    if (revs.size !== 1) {
+      throw new CollectError('--check failed: stored outputs disagree on evidence_source_revision', EXIT_STALE);
+    }
+    [evidenceSourceRevision] = revs;
+    verifyEvidenceSourceRevision({
+      git, evidenceSourceRevision, headRevision, ownedFolder: owningTaskFolder(absRepo, absOut),
+    });
+  }
+
   const tasksRoot = path.join(absRepo, 'orchestration', 'tasks');
 
   const entries = (await io.readdir(tasksRoot, { withFileTypes: true }))
@@ -459,12 +560,12 @@ export async function runCollector({ repoRoot, outDir, check = false, io = defau
   const aggregation = aggregateUnits(observations);
   observations.forEach(stripMs);
 
-  const snapshot = buildRunwaySnapshot({ repoRevision, lanes, readyTasks, reserveSummary, units: aggregation.units });
+  const snapshot = buildRunwaySnapshot({ evidenceSourceRevision, lanes, readyTasks, reserveSummary, units: aggregation.units });
 
   const outputs = [
     ['throughput-observations.json', canonicalJson({
       schema_version: OBSERVATIONS_SCHEMA,
-      repo_revision: repoRevision,
+      evidence_source_revision: evidenceSourceRevision,
       deterministic: true,
       skipped_folders: skipped.sort((a, b) => a.folder < b.folder ? -1 : 1),
       observations,
@@ -474,21 +575,26 @@ export async function runCollector({ repoRoot, outDir, check = false, io = defau
   ];
 
   if (check) {
-    for (const [name, expected] of outputs) {
-      const target = path.join(absOut, name);
-      let actual = null;
-      try { actual = await io.readFile(target); } catch { actual = null; }
-      if (actual == null) throw new CollectError(`--check failed: missing output ${target}`, EXIT_STALE);
-      if (actual !== expected) {
-        throw new CollectError(`--check failed: stale output ${target} does not match recomputed evidence at ${repoRevision}`, EXIT_STALE);
+    for (let i = 0; i < outputs.length; i++) {
+      const [name, expected] = outputs[i];
+      const stored = storedOutputs.find((s) => s.name === name);
+      if (stored.raw !== expected) {
+        throw new CollectError(
+          `--check failed: stale output ${stored.target} does not match recomputed evidence from source revision ${evidenceSourceRevision}`,
+          EXIT_STALE);
       }
     }
-    return { ok: true, mode: 'check', files: outputs.map(([n]) => n), repo_revision: repoRevision };
+    return {
+      ok: true, mode: 'check',
+      files: outputs.map(([n]) => n),
+      evidence_source_revision: evidenceSourceRevision,
+      head_revision: headRevision,
+    };
   }
 
   await io.mkdir(absOut, { recursive: true });
   for (const [name, json] of outputs) await io.writeFile(path.join(absOut, name), json);
-  return { ok: true, mode: 'write', wrote: outputs.map(([n]) => path.join(absOut, n)), repo_revision: repoRevision };
+  return { ok: true, mode: 'write', wrote: outputs.map(([n]) => path.join(absOut, n)), evidence_source_revision: evidenceSourceRevision };
 }
 
 function byTaskId(a, b) { return a.task_id < b.task_id ? -1 : a.task_id > b.task_id ? 1 : 0; }
@@ -512,8 +618,11 @@ export async function main(argv, io = defaultIo) {
   }
   try {
     const result = await runCollector({ repoRoot: args.repo, outDir: args.out, check: !!args.check, io });
-    if (result.mode === 'check') process.stdout.write(`collect --check OK at ${result.repo_revision}: ${result.files.join(', ')}\n`);
-    else process.stdout.write(`collect wrote ${result.wrote.length} file(s) at ${result.repo_revision}\n`);
+    if (result.mode === 'check') {
+      process.stdout.write(`collect --check OK: evidence source ${result.evidence_source_revision} is an ancestor of HEAD ${result.head_revision} with unchanged input evidence; ${result.files.join(', ')}\n`);
+    } else {
+      process.stdout.write(`collect wrote ${result.wrote.length} file(s); evidence_source_revision=${result.evidence_source_revision}\n`);
+    }
     return EXIT_OK;
   } catch (err) {
     process.stderr.write(`collect error (${err.exitCode ?? 1}): ${err.message}\n`);
