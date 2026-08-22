@@ -16,29 +16,28 @@ Automation state: the 15-minute Sol heartbeat
 reasoning and a transition-only, no-write scope. Retire it once orchd passes its
 vertical-slice acceptance.
 
-At the 22:23 sweep, the first four-lane OpenRouter wave has produced three
-accepted integrations and one focused revision. TASK-0086, TASK-0105, and
-TASK-0120 are accepted and integrated on the program branch. TASK-0080 is
-REVISE at reviewed head `0ab4e7a5`; ox-pc-b has resumed the preserved session
-for the controller-state correction. ox-pc-d is released to replacement packet
-TASK-0129. Its predecessor TASK-0083 was rejected before claim because the
-immutable base object is absent from origin; no worker files were written.
-The replacement then committed and pushed valid claim `a5bd928e` inside its
-activation window and has fresh post-claim execution. ox-pc-e's prior idle
-reserve period ends with the owner-authorized expansion below.
+The first four-lane OpenRouter wave produced three accepted integrations,
+TASK-0129 is now also accepted/integrated at worker head `b138871b`, and
+TASK-0080 has a local revision commit `a0419710` pending final STATUS/REPORT
+packaging and push. TASK-0083 remains a no-write invalid-base replacement, not
+an incident. The accepted TASK-0129 dependency releases TASK-0135 as a
+task-folder-only successor for ox-pc-d after this coordination push.
 
 Owner-authorized expansion registers four additional OpenRouter CLI lanes,
 ox-pc-f through ox-pc-i, and recycles completed c/e. Six pairwise-disjoint
 task-folder architecture packets are launch-requested after this coordination
 push: TASK-0112, TASK-0130, TASK-0131, TASK-0132, TASK-0133, and TASK-0134.
-They remain READY and do not count as capacity until each expected worker
-branch contains a committed pushed claim.
+Valid pushed claims registered c/e/f/g/h, and all five have already pushed
+REVIEW_REQUESTED heads. Lane i hit a pre-claim permission denial followed by
+the known missing-`node_modules` Yorkie activation fault; after the supervisor
+installed locked dependencies, its hook-valid claim reached origin at
+`5b952c08` and implementation resumed.
 
 The independent `ox-bootstrap` orchestration worker has pushed M3 head
 `82de84ef` after M2 `5627916f`. The standalone repo's Tier-B review contract
 still governs acceptance and this lane never counts as Verdigris capacity.
 
-Snapshot: 2026-08-21 22:32 PDT
+Snapshot: 2026-08-21 23:05 PDT
 
 Sweep base: `0d40d79db80c53280bb7cfe6f42318b39dab6f4c`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
@@ -63,11 +62,11 @@ integrates, and specs; it does not absorb implementation.
    not a stopping point.
 
 Emergency surge floor: at least 24 effective, dependency-free, pairwise
-path-disjoint READY packets plus 12 concrete successors. Current claims are
-excluded from READY accounting; after TASK-0129's valid claim the board is
-**30 effective READY + 17 successors**, above the absolute floor. D-128 supersedes
-count-only sufficiency, and the next factory promotion should restore deeper
-headroom rather than create filler.
+path-disjoint READY packets plus 12 concrete successors. Current valid claims
+are excluded from READY accounting. After five expansion claims and promotion
+of TASK-0135 and i's valid claim the board is **25 effective READY + 17
+successors**; d's successor claim will consume exactly one and preserve the
+absolute 24-packet floor. D-128 supersedes count-only sufficiency.
 
 ## Autonomous runway and factory status
 
@@ -97,14 +96,14 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
 | ox-pc-a | 6620-6639 | CLAIMED `0d1898bd`; existing desktop session | TASK-0128 throughput normalization |
-| ox-pc-b | 6640-6659 | REVISE `0ab4e7a5`; revision process active; session `ses_fd8378c52ffevZPjVDjFGOZfYa` | TASK-0080 board sentinel |
-| ox-pc-c | 6660-6679 | TASK-0086 integrated; expansion launch requested | TASK-0112 passive-tree authority schema |
-| ox-pc-d | 6680-6699 | ACTIVE; TASK-0129 claim pushed `a5bd928e`; fresh post-claim process | TASK-0129 server lifecycle soak |
-| ox-pc-e | 6700-6719 | TASK-0120 integrated; expansion launch requested | TASK-0130 Gate C decision envelope |
-| ox-pc-f | 6720-6739 | new isolated worktree launch requested | TASK-0131 release-proof manifest |
-| ox-pc-g | 6740-6759 | new isolated worktree launch requested | TASK-0132 clean-machine harness contract |
-| ox-pc-h | 6760-6779 | new isolated worktree launch requested | TASK-0133 save migration/rollback contract |
-| ox-pc-i | 6780-6799 | new isolated worktree launch requested | TASK-0134 distribution/signing boundary |
+| ox-pc-b | 6640-6659 | revision commit `a0419710` local; recovery process packaging/pushing | TASK-0080 board sentinel |
+| ox-pc-c | 6660-6679 | REVIEW_REQUESTED `e44a93c4` | TASK-0112 passive-tree authority schema |
+| ox-pc-d | 6680-6699 | TASK-0129 accepted/integrated; successor launch requested | TASK-0135 soak integration policy |
+| ox-pc-e | 6700-6719 | REVIEW_REQUESTED `df4397a9` | TASK-0130 Gate C decision envelope |
+| ox-pc-f | 6720-6739 | REVIEW_REQUESTED `a3e4bdd0` | TASK-0131 release-proof manifest |
+| ox-pc-g | 6740-6759 | REVIEW_REQUESTED `039f6073`; recovered after worktree-bound permission denial | TASK-0132 clean-machine harness contract |
+| ox-pc-h | 6760-6779 | REVIEW_REQUESTED `b44ab0ab` | TASK-0133 save migration/rollback contract |
+| ox-pc-i | 6780-6799 | CLAIMED `5b952c08`; Yorkie environment repaired; implementation active | TASK-0134 distribution/signing boundary |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -180,13 +179,17 @@ harness-visible provider/model. These are separate scorecard experimental units.
 
 ## Interrupts and authority
 
-- REVIEW_REQUESTED: none awaiting first review at snapshot.
-- REVISE: **TASK-0080** at reviewed head `0ab4e7a5`; ox-pc-b revision active.
+- REVIEW_REQUESTED: TASK-0112 `e44a93c4`, TASK-0130 `df4397a9`, TASK-0131
+  `a3e4bdd0`, TASK-0132 `039f6073`, and TASK-0133 `b44ab0ab` await exact-head
+  architect review. TASK-0129 was accepted at `b138871b` after all native
+  gates passed independently.
+- REVISE: **TASK-0080** at reviewed head `0ab4e7a5`; revision commit
+  `a0419710` exists locally but is not authoritative until pushed.
 - Accepted/integrated this sweep: **TASK-0086** at `8ddfb06e`, **TASK-0105**
   at `8e6e42b3`, and **TASK-0120** at `4e0920d4`.
 - Active claims: **TASK-0128 by ox-pc-a**; TASK-0080 remains assigned to
-  ox-pc-b through revision; **TASK-0129 by ox-pc-d** at pushed claim
-  `a5bd928e` with fresh post-claim activity.
+  ox-pc-b through revision; TASK-0112/0130/0131/0132/0133 are at pushed review
+  handoffs; TASK-0134 is actively claimed by i at `5b952c08`.
   Separate project: orchestration bootstrap claim `795a9b3`, with pushed M3
   head `82de84ef` awaiting its configured Tier-B acceptance path.
 - Historical TASK-0056 and legacy clone WIP are superseded/preserved, never
@@ -196,7 +199,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 30 packets
+## Effective READY — 25 packets
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -208,12 +211,7 @@ wins after a fresh fetch.
 | P0 | TASK-0100 deterministic replay audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes divergences reproducible |
 | P0 | TASK-0104 itemization/history audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages memorable history-bearing loot |
 | P0 | TASK-0119 onboarding/first-session audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes launch through first extraction legible |
-| P0 | TASK-0112 passive-tree authority schema | INDEPENDENT / ARCHITECTURE | future after current claim | converts the accepted audit into a versioned content-neutral implementation contract |
-| P0 | TASK-0130 Gate C decision envelope | INDEPENDENT / ARCHITECTURE | future after current claim | turns the accepted Gate C audit into an exact content-neutral route contract |
-| P0 | TASK-0131 release-proof manifest | INDEPENDENT / ARCHITECTURE | future after current claim | makes release claims machine-auditable |
-| P0 | TASK-0132 clean-machine harness contract | INDEPENDENT / ARCHITECTURE | future after current claim | separates cached developer success from disposable-host proof |
-| P0 | TASK-0133 save migration/rollback contract | INDEPENDENT / ARCHITECTURE | future after current claim | stages reversible persistence upgrades without touching profiles |
-| P1 | TASK-0134 distribution/signing boundary | INDEPENDENT / ARCHITECTURE | future after current claim | isolates automatable release proof from owner credentials and publication |
+| P1 | TASK-0135 soak integration policy | INDEPENDENT / ARCHITECTURE | ox-pc-d after coordination push | defines non-masking local/nightly/release soak evidence without changing CI |
 | P1 | TASK-0082 dual-server matrix runner | INDEPENDENT / BOUNDED-DESIGN | future after current claim | automates unchanged JS/C++ parity evidence |
 | P1 | TASK-0115 browser panel/typography inventory | INDEPENDENT / MECHANICAL | future after current claim | freezes presentation delta #4 |
 | P1 | TASK-0091 protocol coverage sentinel design | INDEPENDENT / MECHANICAL | future after current claim | catches lost journey wire steps |
