@@ -54,13 +54,13 @@ A failed handoff or missing acknowledgement is an owner-notification event. It
 does not authorize the outgoing supervisor to burn remaining credits by taking
 over implementation.
 
-## Verified live PC checkpoint — 2026-08-22 04:12 PDT
+## Verified live PC checkpoint — 2026-08-22 04:31 PDT
 
 State: `PRIMARY_ACTIVE`; this is a succession checkpoint, not a retirement
 request.
 
 - Program checkout: `Z:\Code\Games\delaford\delaford_game`, branch
-  `codex/native-reconstitution`, clean local/remote head `6c568f87` before this
+  `codex/native-reconstitution`, clean local head `67658814` before this
   checkpoint refresh commit. `origin/master` is not the worker base; workers use the exact
   routed program heads recorded in `RUN_STATUS.md`.
 - Standalone broadcast checkout:
@@ -68,17 +68,14 @@ request.
   `codex/pc-overnight-game-wave`, local/remote head `835de51`; observed
   standalone `origin/main` is `59a70b6`. PC has no shared-main authority.
 - Active implementation/revision evidence:
-  - ox-pc-i, ports 6780-6799, TASK-0145 claim `226e5149`, dirty/fresh process
-    PID 1560;
-  - ox-pc-j, ports 6800-6819, TASK-0149 revision 2 clean/pushed
-    `REVIEW_REQUESTED` head `a88d307d`; freeze that exact head for independent
-    review;
+  - TASK-0145 head `78dcac60` and TASK-0149 revision head `a88d307d` are
+    independently ACCEPTED and integrated at `2df5eac5` and through
+    `8677f021`; combined program binaries passed all native suites, all eight
+    client scenarios, and the real-window lifecycle selftest;
   - ox-pc-l, ports 6840-6859, TASK-0146 claim `78a0c4a0`, dirty/fresh process
     PID 4108;
-  - ox-pc-p, ports 6920-6939, TASK-0147 fresh independent replacement requested
-    after coordination push;
-  - ox-pc-q, ports 6940-6959, TASK-0148 fresh independent replacement requested
-    after coordination push.
+  - ox-pc-p, ports 6920-6939, TASK-0147 claim `3ee9f928`, process PID 20868;
+  - ox-pc-q, ports 6940-6959, TASK-0148 claim `815a359b`, process PID 7324.
 - Preserved/non-capacity: ox-pc-d/e/g/m are dirty P0 quarantines after exhausting
   one recovery; ox-pc-n is a clean activation failure after its launch and one
   recovery both stopped before claim; a/b/c/h are preserved historical or
@@ -89,7 +86,7 @@ request.
   sequenced DRAFT successors, zero owned-path collisions; deterministic factory
   verified at 2,000 nodes / 500 packets. Runway remains honestly `UNKNOWN`.
 - Local supervision: human dashboard `http://127.0.0.1:4737/` health 200,
-  Node PID 2028; visible PowerShell monitor PID 6824. Same-task automation
+  Node PID 5964; visible PowerShell monitor PID 25480. Same-task automation
   `verdigris-surge-supervisor` is ACTIVE every five minutes and derives lanes
   dynamically from current routing/config. Chat-spawning cron
   `pc-fleet-emergency-monitor` remains PAUSED.

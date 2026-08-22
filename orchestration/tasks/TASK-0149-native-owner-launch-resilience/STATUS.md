@@ -1,11 +1,14 @@
 ---
 task: TASK-0149
 title: Native owner-launch resilience
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: ox-alpha
 worker: ox-pc-j
 started-at: 2026-08-22T02:53:00-07:00
 review-requested-at: 2026-08-22T04:10:00-07:00
+integrated-at: 2026-08-22T04:31:00-07:00
+integrated-implementation: 43c8223f,8677f021
+review-verdict: ACCEPTED
 revision: 2
 ---
 
