@@ -21,6 +21,26 @@ No task count, green unit suite, server parity, technical demo, or exhausted
 queue proves completion. Terminal status requires T1-T8 current at the same
 release revision/environment, with owner-only gates actually decided.
 
+## Machine-scale D-128 graph and reserve
+
+The curated deterministic factory under `orchestration/backlog-factory/`
+currently validates:
+
+- 2,000 concrete graph nodes: 100 in each of 20 full-product domains;
+- coverage of every terminal gate T1-T8;
+- 500 detailed reserve packets: 100 DRAFT and 400 exact-condition
+  AUTO_RELEASE;
+- reserve composition of 100 implementation, 100 integration, 100
+  presentation, 100 hardening, and 100 release packets;
+- no immutable base SHA on distant mutable packets;
+- 25 owner-blocked packets (5%) with nonblocking fallback rules.
+
+These manifests reach D-128's initial graph/reserve floors, not product or
+runway completion. They remain nonclaimable planning authority until current-tip
+promotion validates paths, interfaces, resource capsules, exact commands, and
+collisions. Autonomous runway remains UNKNOWN until comparable accepted
+throughput by full experimental unit and packet type is normalized.
+
 ## Current critical path
 
 ```text

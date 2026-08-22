@@ -1,8 +1,8 @@
 # Run status — Codex Sol PC surge sweep
 
-Snapshot: 2026-08-21 19:58 PDT
+Snapshot: 2026-08-21 20:16 PDT
 
-Sweep base: `9bd689b4cebac0fe1f79ba54edcc9967a1a8f0d4`
+Sweep base: `600e6432b03ba5ca063ef0cbdc9ad643c4a70308`
 (`codex/native-reconstitution`; `origin/master` remains at the previously green
 `d2423873` merge tip).
 
@@ -34,12 +34,17 @@ path-disjoint READY packets plus 12 concrete successors. Current board:
   yet been weighted against trailing accepted throughput by full experimental
   unit and packet type; 30+18 must not be reported as adequate runway.
 - Target/warning/critical: 72h / <48h / <24h.
-- Terminal graph: terminal gates T1-T8 exist, but the D-128 concrete-node count
-  is below the initial 2,000-node floor and requires systematic decomposition.
-- Detailed reserve: 18 known successors, below the initial 500 DRAFT/
-  AUTO_RELEASE floor.
-- Composition: current near-term board is audit-heavy; every accepted audit
-  must fan out into executable implementation/content/polish/test successors.
+- Terminal graph: **2,000 validated concrete nodes** across 20 domains and all
+  T1-T8 gates in `backlog-factory/generated/product-graph.nodes.jsonl`.
+- Detailed reserve: **500 validated packets**: 100 DRAFT + 400 AUTO_RELEASE in
+  `backlog-factory/generated/packet-reserve.jsonl`. Distant packets carry no
+  immutable base and remain nonclaimable until current-tip READY promotion.
+- Reserve composition: 100 each implementation, integration, presentation,
+  hardening, and release; 0 pure audit/research/inventory/evaluation; 25 packets
+  (5%) owner-blocked. The immediate 30 READY board remains audit-heavy and its
+  accepted audits must fan out before or at acceptance.
+- Deterministic validation: `node orchestration/backlog-factory/build-manifests.mjs --check`
+  passes with 2,000 unique nodes and 500 unique packets.
 - Binding contracts: `BACKLOG_FACTORY.md`, `CONTENT_SCALE_MATRIX.md`, and
   D-128. Backlog production continues every sweep and never authorizes Sol to
   implement worker tasks.
@@ -50,7 +55,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
-| ox-pc-a | 6620-6639 | P0 `MISROUTED` + P1 `PROVISIONED_UNCLAIMED`: launch requested 2026-08-21 20:06 PDT; expected `Z:\Code\.worktrees\verdigris\ox-pc-a`, branch `codex/TASK-0081-gate-b-wire-contract-ox-pc-a`, base `986264f4`; no committed claim; visible OpenCode evidence resumed a legacy worker-C project instead | TASK-0081 Gate B wire freeze |
+| ox-pc-a | 6620-6639 | `CLAIMED`, awaiting post-claim progress: valid claim-only commit `f08131c0` pushed 20:21 PDT from `Z:\Code\.worktrees\verdigris\ox-pc-a`, branch `codex/TASK-0081-gate-b-wire-contract-ox-pc-a`, base `986264f4`; only the task STATUS changed | TASK-0081 Gate B wire freeze |
 
 The stopped `ox-pc-b` and `ox-pc-c` tabs shared the same OpenCode project,
 stopped before claims or writes, and are not Verdigris lanes, stalls, dark
@@ -69,35 +74,53 @@ exact Ox worktree as its own OpenCode project and paste: `Read
 START_HERE_OX_PC_A.md completely and execute it now.` Sol does not claim or
 write worker STATUS/REPORT and will not take over implementation.
 
-### Open activation alert -- owner notification required
+### Resolved activation alert
 
-- **Lane:** `ox-pc-a`; **state:** P0 `MISROUTED` plus P1
-  `PROVISIONED_UNCLAIMED`; **first observed:** 2026-08-21 20:06 PDT.
+- **Lane:** `ox-pc-a`; **prior state:** P0 `MISROUTED` plus P1
+  `PROVISIONED_UNCLAIMED`; **launch:** 20:06 PDT; **P1 notification:** 20:16;
+  **cleared by valid claim:** 20:21 (`f08131c0`).
 - **Expected:** the exact provisioned worktree/branch/base above, TASK-0081,
   and the ignored `START_HERE_OX_PC_A.md` launch packet.
-- **Observed:** no TASK-0081 claim commit on the worker branch. The owner
-  screenshot instead shows a resumed `Verdigris worker C preflight` session
-  inspecting `Z:\Code\Games\delaford` and a legacy C: clone.
-- **Capacity accounting:** zero active Verdigris Ox lanes. This alert is not an
-  incident against stopped `ox-pc-b`/`ox-pc-c`, and neither is capacity.
-- **Clear condition:** a protocol-valid TASK-0081 claim on the expected branch;
-  `ACTIVE` additionally requires fresh post-claim execution evidence.
-- **Escalation:** if still unclaimed at 20:36 PDT or after two supervisor
-  sweeps, mark P0 `ACTIVATION_FAILED` and re-notify the owner. Never take over
-  implementation.
+- **Observed transition:** the earlier visible worker-C session was misrouted,
+  but a new correctly rooted worker committed and pushed the exact TASK-0081
+  claim. The activation alarm is clear; the worker remains `CLAIMED`, not
+  `ACTIVE`, until a fresh post-claim implementation/evidence commit appears.
+- **Capacity accounting:** one claimed Verdigris Ox lane, zero proven ACTIVE
+  lanes. This was not an incident against stopped `ox-pc-b`/`ox-pc-c`.
 
 Persistent supervision: Codex app heartbeat `verdigris-surge-supervisor` is
 ACTIVE every 15 minutes on this architect task. It fetches/scans first,
-reviews/integrates/restocks on transitions, updates scorecards, and reports
-meaningful state changes. Owner OS/app notifications for successful alarm runs
-must be enabled in the Automations UI; the current failed-run-only setting is
-insufficient for D-127 alerts.
+reviews/integrates/restocks on transitions, enforces D-127/D-128, updates
+scorecards, and reports meaningful state changes. At 20:16 its notification
+policy was corrected from failed-runs-only to normal notifications; no owner UI
+change is required for successful alarm runs.
+
+### Cross-project control-plane watch (not Verdigris capacity)
+
+`alexkorol/orchestration` PC main is clean/synced at `e7b0d3e`. The isolated
+`Z:\Code\.worktrees\orchestration\ox-bootstrap` worker pushed valid claim-only
+commit `795a9b3` at 20:20 on
+`codex/ox-bootstrap-portable-orchestration`; only `bootstrap/CLAIM.md` changed.
+Its P1 activation alert is clear. It is `CLAIMED`, awaiting post-claim progress,
+supervised as a separate project, and never counts toward Verdigris capacity.
+
+### Endpoint identity watch
+
+Both claim payloads report the selected model reference
+`opencode/x-preview-f-free`. The local OpenCode configuration also sets that as
+the default reference and contains no explicit OpenRouter provider mapping.
+The bootstrap claim labels the provider OpenRouter while the Verdigris claim
+labels it `opencode`; the full experimental unit therefore remains
+**provider-unconfirmed** until the harness exposes authoritative routing. Work
+may continue, but scorecards must not aggregate these runs under OpenRouter or
+another provider by assumption.
 
 ## Interrupts and authority
 
 - REVIEW_REQUESTED: **none**.
 - REVISE: **none**.
-- Active claims: **none**.
+- Active claims: **TASK-0081 by ox-pc-a** (`f08131c0`, claim-only; awaiting
+  progress). Separate project: orchestration bootstrap claim `795a9b3`.
 - Historical TASK-0056 and legacy clone WIP are superseded/preserved, never
   resumed.
 - Historical QUESTION-0007/0008/0009/0010/0011 are resolved by integrated work.
