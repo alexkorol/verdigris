@@ -31,6 +31,12 @@ bool cue_for_event(const verdigris::client::PresentationEvent& event,
       out->priority = PriorityClass::PlayerFeedback;
       return true;
     case verdigris::client::PresentationEventType::ActorDied:
+      // Keyed by (type, text discriminator), restoring the accepted
+      // TASK-0117 contract: core emits ActorDied with "monster" for enemy
+      // death but also ActorDied with "scion" immediately before ScionLost
+      // for player death. Only "monster" maps; every other discriminator
+      // stays silent so a Scion death never schedules a kill cue.
+      if (event.text != "monster") return false;
       out->cue_id = "kill";
       out->params = kKillParams;
       out->bus = Bus::Sfx;

@@ -69,6 +69,7 @@ $testExe = Join-Path $buildRoot "verdigris_core_tests.exe"
 $networkingTestExe = Join-Path $buildRoot "verdigris_networking_tests.exe"
 $sessionTestExe = Join-Path $buildRoot "verdigris_session_tests.exe"
 $presentationEventsTestExe = Join-Path $buildRoot "verdigris_presentation_events_tests.exe"
+$audioTestExe = Join-Path $buildRoot "verdigris_audio_mixer_tests.exe"
 $camera2dTestExe = Join-Path $buildRoot "camera2d_tests.exe"
 $serverExe = Join-Path $buildRoot "verdigris_server.exe"
 $clientExe = Join-Path $buildRoot "verdigris_client.exe"
@@ -100,6 +101,13 @@ Invoke-Msvc ('/c "' + $nativeRoot + '\client\presentation_state.cpp" /I"' + $nat
 Invoke-Msvc ('/c "' + $nativeRoot + '\tests\session_tests.cpp" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\session_tests.obj"')
 # TASK-0122 Phase A: dedicated presentation-events test binary.
 Invoke-Msvc ('/c "' + $nativeRoot + '\tests\presentation_events_tests.cpp" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\presentation_events_tests.obj"')
+# TASK-0157 revision: narrow test-target wiring granted by REVIEW correction 1.
+# Builds and links the dedicated audio test executable at the SPEC-required
+# path so -RunTests alone proves it; no other build behavior changes.
+Invoke-Msvc ('/c "' + $nativeRoot + '\audio\cue_spec.cpp" /I"' + $nativeRoot + '\audio" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\audio_cue_spec.obj"')
+Invoke-Msvc ('/c "' + $nativeRoot + '\audio\event_cues.cpp" /I"' + $nativeRoot + '\audio" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\audio_event_cues.obj"')
+Invoke-Msvc ('/c "' + $nativeRoot + '\audio\audio_mixer.cpp" /I"' + $nativeRoot + '\audio" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\audio_audio_mixer.obj"')
+Invoke-Msvc ('/c "' + $nativeRoot + '\tests\audio_mixer_tests.cpp" /I"' + $nativeRoot + '\audio" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\audio_mixer_tests.obj"')
 $serverCompileArguments = '/c "' + $nativeRoot + '\src\server_main.cpp" /Fo"' + $buildRoot + '\server.obj"'
 Invoke-Msvc $serverCompileArguments
 $clientCompileArguments = '/c "' + $nativeRoot + '\client\main.cpp" /DVERDIGRIS_NATIVE_WINDOWS=1 /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\client.obj"'
@@ -117,6 +125,7 @@ Invoke-Msvc ('"' + $buildRoot + '\client.obj" "' + $buildRoot + '\remote_play.ob
 Invoke-Msvc ('"' + $buildRoot + '\camera2d_tests.obj" /Fe"' + $camera2dTestExe + '"')
 Invoke-Msvc ('"' + $buildRoot + '\session_tests.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $sessionTestExe + '" /link ws2_32.lib')
 Invoke-Msvc ('"' + $buildRoot + '\presentation_events_tests.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $presentationEventsTestExe + '" /link ws2_32.lib')
+Invoke-Msvc ('"' + $buildRoot + '\audio_mixer_tests.obj" "' + $buildRoot + '\audio_cue_spec.obj" "' + $buildRoot + '\audio_event_cues.obj" "' + $buildRoot + '\audio_audio_mixer.obj" /Fe"' + $audioTestExe + '"')
 
 python (Join-Path $nativeRoot "tools\check_legacy_denylist.py")
 if ($LASTEXITCODE -ne 0) { throw "legacy denylist failed" }
@@ -125,6 +134,7 @@ if ($RunTests) { & $networkingTestExe }
 if ($RunTests) { & $camera2dTestExe }
 if ($RunTests) { & $sessionTestExe; if ($LASTEXITCODE -ne 0) { throw "session tests failed" } }
 if ($RunTests) { & $presentationEventsTestExe; if ($LASTEXITCODE -ne 0) { throw "presentation events tests failed" } }
+if ($RunTests) { & $audioTestExe; if ($LASTEXITCODE -ne 0) { throw "audio mixer tests failed" } }
 if ($RunClient) { & $clientExe --headless }
 if ($RunClientScenarios) { & $clientExe --scenario all }
 if ($RunDensityBench) {
