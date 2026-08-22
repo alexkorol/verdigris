@@ -1,7 +1,7 @@
 # TASK-0143 claim
 
 - task: TASK-0143
-- state: CLAIMED
+- state: REVIEW_REQUESTED
 - coordinator: ox-pc-i
 - worker: ox-pc-i (isolated PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0143-native-gameplay-runtime-slice-ox-pc-i`
@@ -44,3 +44,20 @@
 - forbidden paths honored: no `native/client/**`, no `native/CMakeLists.txt`
   or `native/build.ps1`, no `server/**`, `src/**`, `playtest/**`, `.github/**`;
   no CI, merges, force-pushes, or port 6500.
+
+## Transition log
+
+- CLAIMED: commit `5147cbed` (STATUS.md only), pushed to origin worker branch.
+- IMPLEMENTED (2026-08-22 00:10 -07:00): commit `ef35c911`. Authoritative
+  expedition objective
+  state added to the core — `ExpeditionPhase` (`SlayWardens` /
+  `ExtractCarriedValue`) on `InstanceState`, transitioned by the simulation
+  exactly when the last living warden dies, with one appended
+  `EventType::ExpeditionPhaseChanged` telemetry event and a focused
+  regression test pinning the transition, replay determinism, fresh-entry
+  reset, and non-gating behavior. Mechanics, balance, recovery semantics,
+  save format, and client files untouched. Native core gate green:
+  denylist PASS, core PASS, networking PASS, camera2d PASS, session tests
+  passed; exit 0. See REPORT.md for literal transcripts.
+- REVIEW_REQUESTED: this commit; implementation carried by the IMPLEMENTED
+  commit. Awaiting architect review per PROTOCOL.
