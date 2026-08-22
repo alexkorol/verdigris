@@ -111,7 +111,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-o | 6900-6919 | TASK-0148 second post-claim stop after one recovery; claim `71a73de8` released; clean worktree preserved | exhausted, not capacity |
 | ox-pc-p | 6920-6939 | TASK-0147 claim `3ee9f928`; first process exited with owned-path art edits preserved after a malformed native capture; exact-worktree recovery PID 8520 | visual recovery active; one recovery consumed |
 | ox-pc-q | 6940-6959 | TASK-0148 claim `815a359b` released after recovery proposed a second normal-path bypass (`mutate/select` instead of `create/set-out`); clean claim head preserved | exhausted, not capacity |
-| ox-pc-r | 6960-6979 | TASK-0148 fresh r5 route from release head `c1acd4ec`, process PID 13120 | awaiting independent claim inside activation SLA |
+| ox-pc-r | 6960-6979 | TASK-0148 independent claim `837a412f` pushed from release head `c1acd4ec`, process PID 13120 | accepted-chain replacement active inside activation SLA |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
