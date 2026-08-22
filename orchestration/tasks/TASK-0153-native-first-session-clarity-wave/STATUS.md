@@ -1,6 +1,6 @@
 ---
 task: TASK-0153
-state: REVIEW_REQUESTED
+state: INTEGRATED
 worker: ox-pc-v
 provider: openrouter
 model: stealth/ox-alpha
@@ -14,11 +14,13 @@ claim_commit: 8474ac5125d3725c7fd119ac907e907c14da75d6
 implementation_commit: 8d386e24
 revision: rev2
 revised_at: 2026-08-22 (bounded final handoff)
+integrated_at: 2026-08-22 08:54 PDT
+program_branch: codex/native-reconstitution
 ---
 
 # TASK-0153 status (ox-pc-v)
 
-REVISED (rev2) and REVIEW_REQUESTED (bounded final handoff).
+REVISED (rev2), independently accepted, and INTEGRATED on the program branch.
 
 ## Revision cause
 
@@ -28,9 +30,9 @@ strip. Before image: `captures/review-blocker-960x600.png`. Rev2 replaces the
 independent fixed-position top-HUD painters with one pure integer-geometry
 planner (`plan_top_hud`, native/client/main.cpp) that measures real text
 extents and places identity, objective, connection, art-status, and controls
-regions across up to four rows so they cannot overlap at any width. The
-painter draws exactly what the planner returns; the deterministic scenario
-runs the same function over worst-case strings.
+regions across up to four rows so they do not overlap at the accepted 960 and
+1366 widths. The painter draws exactly what the planner returns; independent
+real-paint captures verify both accepted sizes.
 
 ## Revision evidence (exact commands/outcomes)
 

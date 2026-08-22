@@ -41,8 +41,9 @@ horizontal overlap once combined text widths exceeded the window.
   survive only as degenerate-width fallbacks.
 - The Chronicles front door is unchanged: it owns its whole canvas, so the
   shared connection chip keeps the historical edge-pin there.
-- No scenario text contracts changed; the deterministic scenario exercises
-  the same planner over worst-case strings.
+- No scenario text contracts changed. Independent real-paint captures at
+  960x600 and 1366x768 exercise the planner with live HUD strings; the
+  focused scenario proves the phase, extraction, controls, and Esc contracts.
 
 ### Exact revision evidence
 
