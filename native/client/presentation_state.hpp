@@ -104,6 +104,10 @@ struct WorldView {
   std::string route_id;
   ExpeditionPhaseView expedition_phase = ExpeditionPhaseView::Unknown;
   std::unordered_map<std::string, std::string> loot_names;
+  // TASK-0156: verbatim mirror of the authoritative passive-tree progression
+  // payload. Default (present=false) means no payload has arrived; local
+  // play stays absent because the core carries no tree authority.
+  ClientPassiveProgression progression;
 };
 
 struct PresentationFx {

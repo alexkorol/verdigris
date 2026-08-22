@@ -167,6 +167,10 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
   world.loot_names.clear();
   for (const auto& item : model.ground)
     world.loot_names[item.uuid] = item.name.empty() ? item.uuid : item.name;
+  // TASK-0156: the mirrored passive-tree progression travels with the model
+  // untouched; sync_world_from_simulation leaves it absent because the local
+  // core carries no tree authority on this seam.
+  world.progression = model.progression;
 }
 
 const WorldActor* find_monster(const WorldView& world, const std::string& id) {

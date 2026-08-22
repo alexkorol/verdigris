@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "kind": "zone",
+  "items": [
+    {
+      "id": "example-hall-one",
+      "display_name": "Example Hall One",
+      "template_id": "dungeon",
+      "layout": "warren",
+      "exits": [
+        {
+          "to": "example-hall-two",
+          "kind": "stairs"
+        }
+      ],
+      "visual_roles": {
+        "exits": "terrain.exit",
+        "floor": "terrain.floor",
+        "walls": "terrain.blocking"
+      }
+    },
+    {
+      "id": "example-hall-two",
+      "display_name": "Example Hall Two",
+      "template_id": "dungeon",
+      "layout": "warren",
+      "exits": [
+        {
+          "to": "example-hall-one",
+          "kind": "walk"
+        },
+        {
+          "to": "example-field-one",
+          "kind": "stairs"
+        }
+      ],
+      "visual_roles": {
+        "exits": "terrain.exit",
+        "floor": "terrain.floor",
+        "props": "prop.decorative",
+        "walls": "terrain.blocking"
+      }
+    },
+    {
+      "id": "example-field-one",
+      "display_name": "Example Field One",
+      "template_id": "grove",
+      "layout": "clearings",
+      "exits": [
+        {
+          "to": "example-field-two",
+          "kind": "walk"
+        }
+      ],
+      "visual_roles": {
+        "effects": "effect.telegraph",
+        "floor": "terrain.floor",
+        "walls": "terrain.blocking"
+      }
+    },
+    {
+      "id": "example-field-two",
+      "display_name": "Example Field Two",
+      "template_id": "grove",
+      "layout": "clearings",
+      "exits": [
+        {
+          "to": "example-mire-one",
+          "kind": "walk"
+        }
+      ],
+      "visual_roles": {
+        "actors": "actor.combatant",
+        "floor": "terrain.floor",
+        "props": "prop.blocking"
+      }
+    },
+    {
+      "id": "example-mire-one",
+      "display_name": "Example Mire One",
+      "template_id": "marsh",
+      "layout": "clearings",
+      "exits": [
+        {
+          "to": "example-field-two",
+          "kind": "stairs"
+        },
+        {
+          "to": "example-hall-two",
+          "kind": "stairs"
+        }
+      ],
+      "visual_roles": {
+        "effects": "effect.treasure",
+        "floor": "terrain.fluid",
+        "walls": "terrain.blocking"
+      }
+    }
+  ]
+}

@@ -1,5 +1,82 @@
 # Run status — PC Verdigris overnight product wave
 
+## TASK-0155 accepted; three claims live — 2026-08-22 13:40 PDT
+
+- TASK-0155 worker implementation `3cae8a2d` and frozen handoff `b06f5740`
+  passed the mandatory independent architect rerun because this task modifies
+  a goal-harness assertion path. Exact-head lint, five focused real-server
+  journeys, and the default 32/32 harness passed. After integration, focused
+  loot passed in 5885 ms and the combined program harness passed 32/32 in
+  196.21 s. Verdict: ACCEPTED; program commits `7771da43` and `46822df2`.
+- ox-pc-z stopped after its pushed handoff and is no longer capacity. The
+  remaining valid claims are ox-pc-aa/TASK-0156 `e3f4bdf6`,
+  ox-pc-ab/TASK-0151 `57627ca3`, and ox-pc-ac/TASK-0152 `5156c33e`; all three
+  retain isolated worktrees, branches, ports, provider identity, and fresh
+  post-claim activity.
+- Claim-aware board proof remains healthy at 24 effective READY, 3 CLAIMED,
+  16 sequenced successors, and zero owned-path collisions. The integrated task
+  is excluded from both READY and active capacity.
+- The owner inbox screenshot is historical failure mail from before the two
+  trigger-contract releases. Since Verdigris PR #56's trigger fix began, GitHub
+  records 4 protected PR/master runs and 0 failures; since standalone-
+  orchestration PR #3's trigger fix began, it records 2 protected PR/main runs
+  and 0 failures. Raw worker, program, and PC broadcast pushes remain quiet.
+- One ox-pc-ac shell invocation opened the architect checkout's commit editor
+  and left an idle `git commit` child even though the worker's valid claim had
+  already landed. The supervisor matched and stopped only that exact child;
+  both repositories stayed clean and the OpenCode worker continued. Future
+  launch packets must use an explicit commit message as well as the no-hooks
+  path so unattended workers cannot wait on an interactive editor.
+- Dashboard PID 9260 is HTTP 200 and the visible low-cost monitor is PID 2664.
+  Owner action required now: none. Historical mail may be archived separately;
+  real protected-branch or protected-PR failures remain intentionally visible.
+
+## Four-lane product/reliability activation — 2026-08-22 13:06 PDT
+
+- Queue restock commit `c2b814488278f4f093e754cf695ea9ed749d81fb`
+  verifies 28 effective READY packets, 16 sequenced DRAFT successors, and zero
+  owned-path collisions. Four current-tip worktrees are provisioned clean at
+  that exact SHA; they do not count as fleet capacity before pushed claims.
+- `ox-pc-z`: TASK-0155 deterministic loot reliability, branch
+  `codex/TASK-0155-deterministic-loot-playtest-reliability-ox-pc-z`, ports
+  7100-7119. Removes the recorded second-drop release flake without weakening
+  the real goal harness.
+- `ox-pc-aa`: TASK-0156 native progression visibility, branch
+  `codex/TASK-0156-native-progression-visibility-ox-pc-aa`, ports 7120-7139.
+  This is the owner-visible lane: authoritative passive-tree points/allocation
+  become legible inside the shipped gear overlay with real GDI evidence.
+- `ox-pc-ab`: TASK-0151 native content schema seed, branch
+  `codex/TASK-0151-native-content-schema-seed-ox-pc-ab`, ports 7140-7159.
+  Content-neutral schema/validator only; no production lore or balance.
+- `ox-pc-ac`: TASK-0152 native density benchmark evidence, branch
+  `codex/TASK-0152-native-density-benchmark-evidence-ox-pc-ac`, ports
+  7160-7179. Reproducible evidence only; no optimization/gameplay change.
+- All four route packets require `openrouter/stealth/ox-alpha`, OpenCode CLI
+  1.18.21, variant max, an exact pushed STATUS claim within ten minutes, and
+  fresh post-claim activity before ACTIVE. Any root/branch/base/task/provider
+  mismatch is P0 MISROUTED; no historical dirty/quarantined lane is reused.
+- After four valid claims the effective READY floor remains exactly 24. The
+  backend-neutral TASK-0157 audio scheduler and TASK-0158 pane model are READY
+  replacements but are not routed in this wave.
+
+## CI notification signal hardening — 2026-08-22 12:54 PDT
+
+- Protected PR #56 merged the workflow trigger contract to `master` at
+  `81ea0d39ca30fc576509afe3af757bde73ee2401`. Both CI and Native now run only
+  for `master` pushes and pull requests whose base is `master`; raw worker,
+  program, broadcast, and non-release PR activity cannot fan out Actions mail.
+- The program push at `36b9cf2f` dispatched zero workflows. The added
+  `tests/unit/ci-signal-hygiene.spec.js` contract passed 2/2 and covers both
+  workflow trigger blocks.
+- PR Native run `32594398255` passed. PR CI run `32594398265` first recorded a
+  load-sensitive existing `loot` scenario miss while 31/32 scenarios passed,
+  then its single bounded retry passed the full suite in 6m30s. The failure is
+  retained for a deterministic-loot reliability successor; it was not hidden
+  and the gate was not weakened.
+- Post-merge Native run `32595081869` and CI run `32595081863` both passed.
+  Exactly those two protected-branch runs launched; no worker/coordination run
+  was created. Owner action required: none.
+
 ## PC accepted product integration — 2026-08-22 12:11 PDT
 
 - TASK-0122 frozen worker head `d67129e4` is independently ACCEPTED and
@@ -352,7 +429,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 25 packets
+## Effective READY — 28 packets before the next four claims
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -363,7 +440,6 @@ wins after a fresh fetch.
 | P0 | TASK-0097 persistence durability audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | protects House/Scion/item saves |
 | P0 | TASK-0100 deterministic replay audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes divergences reproducible |
 | P0 | TASK-0104 itemization/history audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages memorable history-bearing loot |
-| P0 | TASK-0119 onboarding/first-session audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes launch through first extraction legible |
 | P1 | TASK-0082 dual-server matrix runner | INDEPENDENT / BOUNDED-DESIGN | future after current claim | automates unchanged JS/C++ parity evidence |
 | P1 | TASK-0115 browser panel/typography inventory | INDEPENDENT / MECHANICAL | future after current claim | freezes presentation delta #4 |
 | P1 | TASK-0091 protocol coverage sentinel design | INDEPENDENT / MECHANICAL | future after current claim | catches lost journey wire steps |
@@ -376,19 +452,19 @@ wins after a fresh fetch.
 | P1 | TASK-0101 combat-depth gap audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | selects coherent player-visible combat waves |
 | P1 | TASK-0102 skill-system gap audit | INDEPENDENT / MECHANICAL | future after current claim | maps LMB/RMB/Q/E/R end to end |
 | P1 | TASK-0103 monster/encounter gap audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages packs, rarity, uniques, bosses |
-| P1 | TASK-0117 audio/music runtime audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | defines combat/UI/ambience/music runtime |
 | P1 | TASK-0118 accessibility/options audit | INDEPENDENT / MECHANICAL | future after current claim | stages broad readable and controllable play |
 | P1 | TASK-0121 owner content approval matrix | INDEPENDENT / MECHANICAL | future after current claim | batches art/lore/naming/balance/economy/content gates |
 | P2 | TASK-0084 reference-capture manifest | INDEPENDENT / MECHANICAL | future after current claim | detects stale/missing visual evidence |
 | P2 | TASK-0085 denylist exception audit | INDEPENDENT / MECHANICAL | future after current claim | prepares owner compatibility ruling |
 | P2 | TASK-0114 renderer backend evaluation | EXPLORATORY / BOUNDED-DESIGN | future after current claim | feeds cross-platform renderer ADR |
 | P2 | TASK-0094 asset provenance audit | INDEPENDENT / MECHANICAL | future after current claim | prevents unshippable assets/fonts |
-| P1 | TASK-0149 native owner-launch resilience | INDEPENDENT / IMPLEMENTATION | future clean lane | makes the real client/server launch fail-fast and orphan-free |
-| P1 | TASK-0150 native clean-build convergence | INDEPENDENT / IMPLEMENTATION | future clean lane | proves the complete C++ build from a disposable directory |
 | P1 | TASK-0151 native content schema seed | INDEPENDENT / IMPLEMENTATION | future clean lane | creates a deterministic content-neutral authoring seam |
 | P1 | TASK-0152 native density benchmark evidence | INDEPENDENT / IMPLEMENTATION | future clean lane | measures encounter/presentation headroom reproducibly |
 | P1 | TASK-0136 passive-tree contract validator | INDEPENDENT / MECHANICAL | fresh worktree only; quarantined lanes forbidden | fail-closes counter confusion without canonizing content |
-| P1 | TASK-0122 native animation/VFX Phase A | INDEPENDENT / IMPLEMENTATION | ox-pc-x, ports 7060-7079 | distinct critical/spawn/lifecycle beats with real captures |
+| P0 | TASK-0155 deterministic loot reliability | INDEPENDENT / IMPLEMENTATION | fresh isolated lane | prevents load-sensitive second-drop release flakes without weakening gates |
+| P0 | TASK-0156 native progression visibility | INDEPENDENT / IMPLEMENTATION | fresh isolated native-client lane | surfaces authoritative passive-tree points in the shipped gear overlay |
+| P1 | TASK-0157 procedural audio scheduler | INDEPENDENT / IMPLEMENTATION | future clean lane | freezes backend-neutral deterministic cue behavior before owner backend choice |
+| P1 | TASK-0158 pane model foundation | INDEPENDENT / IMPLEMENTATION | future clean lane | creates responsive collision-free pane geometry without choosing final styling |
 
 ## HOLD despite historical READY headers
 

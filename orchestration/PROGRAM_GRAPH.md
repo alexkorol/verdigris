@@ -89,6 +89,11 @@ TASK-0114 renderer evaluation -> TASK-0088 ADR -> owner dependency ruling -> Sta
 TASK-0094 asset provenance -> shippable asset manifest ---------------------> packaging
 TASK-0119 first-session audit -> TASK-0153 native first-session clarity wave
   -> truthful extraction action + authoritative phase + normal-HUD controls
+  -> TASK-0156 authoritative passive-tree progression visibility
+TASK-0117 audio audit -> TASK-0157 backend-neutral procedural cue scheduler
+  -> TASK-0123 owner-approved backend/device/listening wave
+TASK-0158 pure pane model/layout -> TASK-0087 pane shell -> TASK-0090 progression panes
+TASK-0155 deterministic loot harness -> trustworthy protected release signal
 ```
 
 ## Executable discovery to sequenced implementation
