@@ -110,7 +110,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-n | 6880-6899 | TASK-0148 clean launch and its one recovery both stopped before claim/write | activation failed; clean preserved, not capacity |
 | ox-pc-o | 6900-6919 | TASK-0148 second post-claim stop after one recovery; claim `71a73de8` released; clean worktree preserved | exhausted, not capacity |
 | ox-pc-p | 6920-6939 | TASK-0147 independent claim `3ee9f928` pushed inside activation SLA | visual-polish replacement active |
-| ox-pc-q | 6940-6959 | TASK-0148 independent claim `815a359b` pushed inside activation SLA | reconnect-runtime replacement active |
+| ox-pc-q | 6940-6959 | TASK-0148 claim `815a359b`; first process stopped clean before writes after proposing forbidden dev-only journey setup; exact lane recovery PID 6104 | reconnect-runtime normal-envelope recovery active; one recovery consumed |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -203,7 +203,8 @@ harness-visible provider/model. These are separate scorecard experimental units.
   receives the replacement route after this coordination push.
 - Active work: TASK-0146 revision 1 queued on ox-pc-l after exact-head review,
   TASK-0147 replacement claim `3ee9f928` on ox-pc-p, and TASK-0148 replacement
-  claim `815a359b` on ox-pc-q. TASK-0145 frozen head `78dcac60` and
+  claim `815a359b` on ox-pc-q (one exact-lane recovery consumed after the
+  clean first process proposed a forbidden `dev:teleport` journey). TASK-0145 frozen head `78dcac60` and
   TASK-0149 revision head `a88d307d` are independently ACCEPTED and integrated.
   TASK-0147 claim `7d092a74` on ox-pc-m and
   TASK-0148 claim `71a73de8` on ox-pc-o are released after each replacement
