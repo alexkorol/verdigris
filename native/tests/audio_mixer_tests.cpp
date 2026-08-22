@@ -64,7 +64,8 @@ std::vector<CueSpec> scripted_schedule(RecordingSink* sink) {
                                 "outgoing"),
                      10),
         "byte-identical: critical hit ingests");
-  check(mixer.ingest(make_event(PresentationEventType::ActorDied, false, ""),
+  check(mixer.ingest(make_event(PresentationEventType::ActorDied, false,
+                                "monster"),
                      5),
         "byte-identical: enemy defeat ingests");
   check(mixer.ingest(make_event(PresentationEventType::ScionLost, false, ""),
@@ -101,7 +102,7 @@ void stable_event_to_cue_mapping() {
       {PresentationEventType::DamageApplied, true, "outgoing", "crit",
        Bus::Sfx, PriorityClass::PlayerFeedback, Waveform::Square, 440, 110,
        150, 640},
-      {PresentationEventType::ActorDied, false, "", "kill", Bus::Sfx,
+      {PresentationEventType::ActorDied, false, "monster", "kill", Bus::Sfx,
        PriorityClass::World, Waveform::Sawtooth, 196, 49, 240, 560},
       {PresentationEventType::ScionLost, false, "", "scion-lost", Bus::Sfx,
        PriorityClass::PlayerFeedback, Waveform::Sine, 165, 41, 900, 700},
@@ -133,6 +134,50 @@ void stable_event_to_cue_mapping() {
         a.params.gain_permille == row.gain_permille;
     check(shape, "mapping: representative cue shape matches the pinned table");
   }
+}
+
+void enemy_defeat_requires_monster_discriminator() {
+  CueSpec cue;
+  const bool monster_mapped = verdigris::audio::cue_for_event(
+      make_event(PresentationEventType::ActorDied, false, "monster"), &cue);
+  check(monster_mapped && cue.cue_id == "kill" && cue.bus == Bus::Sfx &&
+            cue.priority == PriorityClass::World,
+        "discriminator: ActorDied \"monster\" maps to the kill cue");
+
+  struct Silent {
+    PresentationEventType type;
+    bool critical;
+    const char* text;
+  };
+  const Silent silent[] = {
+      {PresentationEventType::ActorDied, false, "scion"},
+      {PresentationEventType::ActorDied, false, ""},
+      {PresentationEventType::ActorDied, false, "elite"},
+      {PresentationEventType::ActorDied, false, "MONSTER"},
+      {PresentationEventType::ActorDied, true, "scion"},
+      {PresentationEventType::ActorDied, true, ""},
+  };
+  for (const Silent& row : silent) {
+    CueSpec ignored;
+    check(!verdigris::audio::cue_for_event(
+              make_event(row.type, row.critical, row.text), &ignored),
+          "discriminator: non-monster ActorDied stays silent");
+  }
+
+  // Player-death sequence as core actually emits it: ActorDied "scion"
+  // immediately before ScionLost. Exactly one cue (the Scion-loss cue) may
+  // be scheduled — never also the kill cue.
+  RecordingSink sink;
+  AudioMixer mixer(sink);
+  check(!mixer.ingest(
+            make_event(PresentationEventType::ActorDied, false, "scion"), 5),
+        "discriminator: scion death ingests silently");
+  check(mixer.ingest(make_event(PresentationEventType::ScionLost, false, ""),
+                     5),
+        "discriminator: ScionLost still ingests");
+  const std::vector<CueSpec> voiced = mixer.drain_scheduled();
+  check(voiced.size() == 1 && voiced[0].cue_id == "scion-lost",
+        "discriminator: one Scion death schedules exactly the Scion-loss cue");
 }
 
 void unknown_events_are_silent() {
@@ -170,7 +215,8 @@ void deterministic_ordering() {
   AudioMixer mixer(sink);
   // Interleave ticks so arrival order differs from schedule order.
   mixer.ingest(make_event(PresentationEventType::DamageApplied, false, ""), 20);
-  mixer.ingest(make_event(PresentationEventType::ActorDied, false, ""), 5);
+  mixer.ingest(
+      make_event(PresentationEventType::ActorDied, false, "monster"), 5);
   mixer.ingest(make_event(PresentationEventType::DamageApplied, true, ""), 20);
   mixer.ingest(make_event(PresentationEventType::ScionLost, false, ""), 5);
   mixer.ingest(
@@ -303,6 +349,7 @@ void byte_identical_serialization_across_runs() {
 
 int main() {
   stable_event_to_cue_mapping();
+  enemy_defeat_requires_monster_discriminator();
   unknown_events_are_silent();
   deterministic_ordering();
   bus_mute_and_volume();
