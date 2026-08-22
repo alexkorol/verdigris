@@ -93,6 +93,8 @@ using verdigris::client::EffectFx;
 using verdigris::client::WorldActor;
 using verdigris::client::WorldCarriedItem;
 using verdigris::client::WorldView;
+using verdigris::client::ExpeditionPhaseView;
+using verdigris::client::extraction_action_hint;
 
 struct SpriteBitmap {
   HDC dc = nullptr;
@@ -236,6 +238,11 @@ struct ClientState {
   std::size_t selected_item = 0;
   std::string hint;
   int hint_ticks = 0;
+  // TASK-0153 owner Esc contract: Escape closes an open dismissible pane
+  // first; only a bare Escape (no pane/modal open) requests application
+  // exit. The Win32 path posts the quit from this flag so the deterministic
+  // scenario harness can exercise the identical production seam.
+  bool quit_requested = false;
   int screen_pulse_ticks = 0;
   render::List render_list;
   Screen screen = Screen::Expedition;
@@ -1689,6 +1696,9 @@ const char* event_label(verdigris::EventType type) {
     case EventType::SeasonalRewardGranted: return "seasonal reward";
     case EventType::BuffApplied: return "buff";
     case EventType::BuffExpired: return "buff expired";
+    // TASK-0153: the core's authoritative phase transition is no longer
+    // dropped; the event log carries the core's own phase tokens.
+    case EventType::ExpeditionPhaseChanged: return "phase";
     default: return nullptr;
   }
 }
@@ -2911,26 +2921,33 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     paint_connection_chip(state, dc, bounds, rl);
   }
 
-  // TASK-0142: owner-facing objective strip, centered at the top. The copy
-  // always reflects the authoritative world (extraction presence, carried
-  // loot) and names the concrete action that banks progress.
+  // TASK-0142: owner-facing objective strip, centered at the top. TASK-0153
+  // makes it phase-truthful and mode-truthful: the slay objective comes from
+  // the authoritative expedition phase (core state locally, the session's
+  // authoritative foe snapshot remotely), and the exit instruction is the
+  // real extraction contract for the active session mode — never "press F"
+  // on the remote owner path, where walking onto the stairs is the action.
   {
     std::string objective;
     COLORREF accent = RGB(120, 214, 168);
+    const bool carrying = !world.carried.empty() || world.carried_trophies > 0;
     if (!world.has_extraction) {
       objective = "objective: explore the route";
+    } else if (world.expedition_phase == ExpeditionPhaseView::SlayWardens) {
+      objective = "objective: slay the wardens (" +
+                  std::to_string(world.monsters.size()) + " remain)";
+      accent = RGB(214, 92, 72);
     } else {
       const int ddx = world.extraction.x - player.position.x;
       const int ddy = world.extraction.y - player.position.y;
       const int dist = static_cast<int>(
           std::lround(std::sqrt(static_cast<double>(ddx * ddx + ddy * ddy))));
-      const bool carrying =
-          !world.carried.empty() || world.carried_trophies > 0;
       objective = std::string(carrying
                                   ? "objective: carry your loot to the EXIT ("
                                   : "objective: reach the EXIT (");
       objective += compass_step(ddx, ddy);
-      objective += ", " + std::to_string(dist) + "u) - press F there";
+      objective += ", " + std::to_string(dist) + "u) - ";
+      objective += extraction_action_hint(is_remote(state));
       if (carrying) accent = RGB(239, 208, 116);
     }
     SIZE extent{};
@@ -2952,6 +2969,31 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     SetBkMode(dc, TRANSPARENT);
     SetTextColor(dc, RGB(140, 208, 172));
     TextOutA(dc, 18, 12, identity.c_str(), static_cast<int>(identity.size()));
+  }
+
+  // TASK-0153: restrained always-available controls line. Essential
+  // combat/loot/gear answers — including dash, the response to every enemy
+  // telegraph — live on the normal HUD instead of behind the F3 debug
+  // overlay. It is a single dim reference line (loose guidance, not a
+  // checklist tutorial) placed under the objective/identity row and clear of
+  // the art/connection chips at both 960x600 and 1366x768.
+  {
+    static constexpr char kControls[] =
+        "WASD move | mouse aim | LMB attack | RMB/Space dash | Q E R skills | "
+        "X take | Z names | I gear";
+    SIZE extent{};
+    GetTextExtentPoint32A(dc, kControls,
+                          static_cast<int>(sizeof(kControls) - 1), &extent);
+    const int line_x =
+        std::max(12, (static_cast<int>(bounds.right) -
+                      static_cast<int>(extent.cx)) / 2);
+    const int line_y = state.session ? 64 : 40;
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, RGB(148, 160, 150));
+    TextOutA(dc, line_x, line_y, kControls, static_cast<int>(sizeof(kControls) - 1));
+    rl.push_back({render::Op::Hud, static_cast<double>(line_x),
+                  static_cast<double>(line_y), 0.0, 0,
+                  std::string("controls: ") + kControls});
   }
 
   // TASK-0145: relic-recovery toast — an authoritative crypt transition is
@@ -3155,6 +3197,27 @@ void dispatch_dash(ClientState& state) {
   submit_action(state, verdigris::ActionType::Dash, "dash");
 }
 
+// TASK-0153: production gear-pane toggle, shared verbatim by the Win32 key
+// path and the scenario harness ('I' opens/closes; Esc closes when open).
+void toggle_gear_overlay(ClientState& state) {
+  sync_world(state);
+  state.gear_overlay = !state.gear_overlay;
+  state.selected_item = 0;
+  if (state.gear_overlay) show_hint(state, "Gear opened");
+}
+
+// TASK-0153: the one Escape contract for every screen. A dismissible pane
+// (gear/inventory) consumes the first press and stays in the session; only
+// with nothing open does Escape request exit via ClientState::quit_requested,
+// which the window procedure turns into PostQuitMessage.
+void handle_escape_key(ClientState& state) {
+  if (state.gear_overlay) {
+    toggle_gear_overlay(state);
+    return;
+  }
+  state.quit_requested = true;
+}
+
 LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam) {
   ClientState* state = state_from(window);
   switch (message) {
@@ -3172,7 +3235,9 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         break;
       }
       if (wparam == VK_ESCAPE) {
-        PostQuitMessage(0);
+        // TASK-0153: dismiss an open pane first; exit only on a bare Escape.
+        handle_escape_key(*state);
+        if (state->quit_requested) PostQuitMessage(0);
         break;
       }
       if (state->screen == Screen::Chronicles && state->session) {
@@ -3211,10 +3276,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         show_hint(*state, "Contextual interaction requested");
       }
       if (wparam == 'I') {
-        sync_world(*state);
-        state->gear_overlay = !state->gear_overlay;
-        state->selected_item = 0;
-        if (state->gear_overlay) show_hint(*state, "Gear opened");
+        toggle_gear_overlay(*state);
       }
       sync_world(*state);
       if (state->gear_overlay && !state->world.carried.empty()) {
@@ -3364,6 +3426,45 @@ void scenario_begin(ClientState& state) {
       std::make_unique<verdigris::Simulation>(0xC011AB1EULL, "House Verdigris");
   state.simulation->dispatch(verdigris::Command::enter("route:tin:1:0"));
   generate_scenery(state);
+}
+
+// Deterministic phase-transition driver for scenarios that must reach the
+// authoritative carry-to-exit phase. Mirrors the accepted core-test
+// discipline (core_tests.cpp drive_expedition): each living warden is brought
+// into forward melee reach at one life so the Scion never leaves its approach
+// line, then the kill runs through the REAL scenario_step pipeline (dispatch
+// → events → present). An owed pack that has not yet materialized is advanced
+// with Wait ticks. Returns true when the core itself reports
+// ExtractCarriedValue; false on death or timeout.
+bool drive_to_extraction_phase(ClientState& state) {
+  auto* sim = state.simulation.get();
+  const int reach = verdigris::world_scale::kMeleeRange - 1;
+  for (int round = 0; round < 16; ++round) {
+    sync_world(state);
+    if (state.world.expedition_phase == ExpeditionPhaseView::ExtractCarriedValue)
+      return true;
+    verdigris::Actor* player = sim->actor(sim->scion().actor_id);
+    if (!player || !player->alive) return false;
+    std::string target_id;
+    for (const auto& candidate : sim->actors())
+      if (candidate.kind == verdigris::ActorKind::Monster && candidate.alive) {
+        target_id = candidate.id;
+        break;
+      }
+    if (target_id.empty()) {
+      scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+      continue;
+    }
+    verdigris::Actor* target = sim->actor(target_id);
+    player = sim->actor(sim->scion().actor_id);
+    target->position = {player->position.x + reach, player->position.y};
+    target->stats.life = 1;
+    player->cooldown_ticks = 0;
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
+  }
+  sync_world(state);
+  return state.world.expedition_phase ==
+         ExpeditionPhaseView::ExtractCarriedValue;
 }
 
 std::vector<std::pair<double, double>> scenery_screen_positions(const ClientState& state) {
@@ -3589,6 +3690,11 @@ int scenario_loot_to_bank() {
     scenario_check(stat && stat->label.find("(+") != std::string::npos,
                    "loot-to-bank: equipped bonus appears in the stat readout");
   }
+
+  // TASK-0153: the strip is phase-truthful now, so this journey must actually
+  // finish the slay leg (through the same paced real pipeline) before the
+  // carry-to-exit guidance is the authoritative thing to say.
+  drive_to_extraction_phase(state);
 
   bool objective_carries = false;
   {
@@ -4188,6 +4294,176 @@ int scenario_chronicles_gate_b() {
   return 0;
 }
 
+// ── TASK-0153: first-session-clarity ────────────────────────────────────
+// Proves the three first-session clarity contracts through the REAL
+// dispatch/ingest/present pipeline (local simulation and, for the owner
+// path, a real remote protocol session on the shared loopback capsule):
+//   1. the objective strip names the authoritative expedition phase and
+//      flips slay -> carry-to-exit only from authoritative state;
+//   2. the exit instruction is mode-aware: local play says "press F there",
+//      the remote owner path says "walk onto it" and NEVER shows "press F";
+//   3. essential controls (incl. dash) are visible on the normal HUD with
+//      F3 disabled.
+// Plus the owner Esc contract: an open gear pane consumes Escape and keeps
+// the client/session alive; only a bare Escape requests exit. The remote
+// half uses dev:clear-floor — the same accepted scenario-shortcut seam as
+// gate-b's dev:give/dev:kill — to reach the cleared floor deterministically;
+// the strip logic itself is production behavior driven by snapshots.
+
+int scenario_first_session_clarity() {
+  auto hud_labels = [](const ClientState& s) {
+    std::vector<std::string> labels;
+    for (const auto& item : s.render_list)
+      if (item.op == render::Op::Hud) labels.push_back(item.label);
+    return labels;
+  };
+  auto hud_contains = [&](const ClientState& s, const char* needle) {
+    for (const auto& label : hud_labels(s))
+      if (label.find(needle) != std::string::npos) return true;
+    return false;
+  };
+  auto hud_prefixed = [&](const ClientState& s, const char* prefix) {
+    for (const auto& label : hud_labels(s))
+      if (label.rfind(prefix, 0) == 0) return true;
+    return false;
+  };
+
+  // ── Local owner path: authoritative core phase drives the strip.
+  {
+    ClientState state;
+    scenario_begin(state);
+    scenario_follow_camera(state);
+    scenario_present(state);
+    scenario_check(hud_prefixed(state, "objective: slay the wardens"),
+                   "first-session-clarity: strip names the authoritative slay phase");
+    scenario_check(hud_contains(state, "dash"),
+                   "first-session-clarity: controls hint includes dash on the normal HUD");
+    scenario_check(!state.debug_overlay &&
+                       hud_prefixed(state, "controls:"),
+                   "first-session-clarity: controls hint visible with F3 disabled");
+
+    // Clear the warden pack; the core flips ExpeditionPhaseChanged when no
+    // wardens remain and no roster entry is owed — the strip must follow
+    // that authoritative transition.
+    const bool flipped = drive_to_extraction_phase(state);
+    scenario_check(flipped,
+                   "first-session-clarity: phase follows the core to carry-to-exit");
+    scenario_present(state);
+    const bool exit_guidance =
+        hud_prefixed(state, "objective: reach the EXIT") ||
+        hud_prefixed(state, "objective: carry your loot");
+    scenario_check(exit_guidance,
+                   "first-session-clarity: extract strip points at the EXIT locally");
+    scenario_check(hud_contains(state, extraction_action_hint(false)),
+                   "first-session-clarity: local strip gives the press-F contract");
+    scenario_check(!hud_contains(state, extraction_action_hint(true)),
+                   "first-session-clarity: local strip never shows the walk-on phrase");
+
+    // Owner Esc contract through the same production seams the Win32 path
+    // calls: open pane consumes Escape; bare Escape requests exit.
+    toggle_gear_overlay(state);
+    scenario_present(state);
+    scenario_check(render::any(state.render_list, render::Op::PaneWeapon),
+                   "first-session-clarity: gear pane renders when opened");
+    handle_escape_key(state);
+    scenario_check(!state.gear_overlay && !state.quit_requested,
+                   "first-session-clarity: first Esc closes the pane, client stays alive");
+    scenario_present(state);
+    scenario_check(!render::any(state.render_list, render::Op::PaneWeapon) &&
+                       !render::any(state.render_list, render::Op::PaneItem) &&
+                       !render::any(state.render_list, render::Op::PaneStat),
+                   "first-session-clarity: dismissed pane leaves the render list");
+    handle_escape_key(state);
+    scenario_check(state.quit_requested,
+                   "first-session-clarity: bare Escape requests application exit");
+  }
+
+  // ── Remote owner path on the shared 6580-6599 test capsule.
+  {
+    verdigris::networking::WebSocketServer* server = nullptr;
+    std::uint16_t port = 0;
+    for (std::uint16_t candidate = 6580; candidate <= 6599; ++candidate) {
+      auto* probe = new verdigris::networking::WebSocketServer(candidate);
+      std::string error;
+      if (probe->start(&error)) {
+        server = probe;
+        port = candidate;
+        break;
+      }
+      delete probe;
+    }
+    scenario_check(server != nullptr,
+                   "first-session-clarity: bound shared capsule server "
+                   "(if busy, another worker holds 6580-6599 — retry after it clears)");
+    if (!server) return 0;
+
+    ClientState state;
+    state.session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+        "127.0.0.1", port, "ox-pc-v-first-session", true);
+    std::string error;
+    scenario_check(state.session->start(&error), "first-session-clarity: remote start");
+    auto pump_remote = [&](int max_ticks, const std::function<bool()>& done) {
+      for (int i = 0; i < max_ticks; ++i) {
+        state.session->poll();
+        ingest_session_events(state);
+        sync_world(state);
+        if (done()) return true;
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+      }
+      return done();
+    };
+    const bool ready = pump_remote(250, [&] {
+      return state.session->connection_state() ==
+             verdigris::client::ConnectionState::Ready;
+    });
+    scenario_check(ready, "first-session-clarity: remote handshake ready");
+    state.session->submit(verdigris::client::ClientCommand::enter_zone("tin:1:0"));
+    const bool in_instance = pump_remote(250, [&] {
+      const auto& model = state.session->model();
+      return model.scene.type == "instance" && model.scene.has_stairs_up &&
+             !model.monsters.empty();
+    });
+    scenario_check(in_instance,
+                   "first-session-clarity: instance with authoritative foes reached");
+    generate_scenery(state);
+    scenario_follow_camera(state);
+    load_billboards(state.billboards);
+    scenario_present(state);
+    scenario_check(hud_prefixed(state, "objective: slay the wardens"),
+                   "first-session-clarity: remote strip mirrors the foe snapshot phase");
+    bool saw_press_f = false;
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud &&
+          item.label.find(extraction_action_hint(false)) != std::string::npos)
+        saw_press_f = true;
+    scenario_check(!saw_press_f,
+                   "first-session-clarity: NEGATIVE CONTROL - remote HUD never says press F");
+
+    send_dev_envelope(state, "dev:clear-floor");
+    const bool cleared = pump_remote(250, [&] {
+      for (const auto& monster : state.session->model().monsters)
+        if (monster.alive) return false;
+      return true;
+    });
+    scenario_check(cleared, "first-session-clarity: authoritative snapshot clears the floor");
+    scenario_follow_camera(state);
+    scenario_present(state);
+    const bool walk_on =
+        (hud_prefixed(state, "objective: reach the EXIT") ||
+         hud_prefixed(state, "objective: carry your loot")) &&
+        hud_contains(state, extraction_action_hint(true));
+    scenario_check(walk_on,
+                   "first-session-clarity: remote extract strip gives the walk-on contract");
+    scenario_check(!hud_contains(state, extraction_action_hint(false)),
+                   "first-session-clarity: remote strip still never says press F after clearing");
+
+    if (state.session) state.session->shutdown();
+    server->stop();
+    delete server;
+  }
+  return 0;
+}
+
 int run_scenarios(const std::string& which) {
   struct Entry {
     const char* name;
@@ -4202,6 +4478,7 @@ int run_scenarios(const std::string& which) {
       {"remote-render-list", scenario_remote_render_list},
       {"zoom-invariance", scenario_zoom_invariance},
       {"chronicles-gate-b", scenario_chronicles_gate_b},
+      {"first-session-clarity", scenario_first_session_clarity},
   };
   int total_failures = 0;
   for (const auto& entry : entries) {

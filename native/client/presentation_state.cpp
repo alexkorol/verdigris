@@ -17,12 +17,26 @@ double protocol_to_world(double protocol_units) {
          (static_cast<double>(verdigris::world_scale::kArenaHalfExtent) / 8.0);
 }
 
+const char* extraction_action_hint(bool remote_session) {
+  // TASK-0153: exactly one truthful action per session mode (F-3 in accepted
+  // TASK-0119). Remote Extract is a deliberate no-op on this wire; walking
+  // onto the stairs is the contract.
+  return remote_session ? "walk onto it" : "press F there";
+}
+
 void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& sim) {
   world = WorldView{};
   world.house_name = sim.house().name;
   world.scion_name = sim.scion().name;
   world.tick = sim.tick();
   world.route_id = sim.instance().route_id;
+  // TASK-0153: the core's authoritative expedition phase (SlayWardens ->
+  // ExtractCarriedValue, emitted as ExpeditionPhaseChanged) is read directly;
+  // the client never re-derives it from actor scans in local play.
+  world.expedition_phase =
+      sim.instance().phase == verdigris::ExpeditionPhase::ExtractCarriedValue
+          ? ExpeditionPhaseView::ExtractCarriedValue
+          : ExpeditionPhaseView::SlayWardens;
   world.extraction = sim.instance().extraction_point;
   world.has_extraction = true;
   world.stored_items = sim.house().stored_items.size();
@@ -98,6 +112,24 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
   world.player.level = model.player.level;
   world.player.alive = model.player.alive;
   world.has_extraction = model.scene.has_stairs_up;
+  // TASK-0153 remote phase view: this wire carries no dedicated phase event,
+  // so the strip mirrors the equivalent already-authoritative session state —
+  // the living-foe snapshot the server publishes. No state is invented: with
+  // wardens alive the objective is the slay objective; once the snapshot
+  // shows none remaining, only the carry-to-exit leg remains. Outside an
+  // authoritative instance scene there is no phase at all (Unknown).
+  if (!model.scene.has_stairs_up) {
+    world.expedition_phase = ExpeditionPhaseView::Unknown;
+  } else {
+    bool foes_remain = false;
+    for (const auto& monster : model.monsters)
+      if (monster.alive) {
+        foes_remain = true;
+        break;
+      }
+    world.expedition_phase = foes_remain ? ExpeditionPhaseView::SlayWardens
+                                         : ExpeditionPhaseView::ExtractCarriedValue;
+  }
   world.extraction = {
       static_cast<int>(std::lround(protocol_to_world(model.scene.stairs_up_x))),
       static_cast<int>(std::lround(protocol_to_world(model.scene.stairs_up_y)))};
