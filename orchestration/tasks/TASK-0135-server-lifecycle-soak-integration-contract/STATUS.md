@@ -1,7 +1,7 @@
 # TASK-0135 claim
 
 - task: TASK-0135
-- state: CLAIMED
+- state: REVIEW_REQUESTED
 - coordinator: ox-pc-d
 - worker: ox-pc-d (isolated PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0135-server-lifecycle-soak-integration-contract-ox-pc-d`
@@ -39,8 +39,13 @@
 ## Transition log
 
 - CLAIMED: commit `50cd286f` (STATUS.md only), pushed to origin.
-- IMPLEMENTED: `soak-integration-policy.json`, `fixtures/negative-cases.json`,
-  and `VALIDATION.md` written inside the task folder only; both literal JSON
-  gates plus a fixture-to-policy rule-resolution self-check green (exit 0).
-  Remaining SPEC gates run before REVIEW_REQUESTED; transcripts preserved in
-  REPORT.md.
+- IMPLEMENTED: commit `f58cb814` (`soak-integration-policy.json` +
+  `fixtures/negative-cases.json` + `VALIDATION.md`). All five literal SPEC
+  gates green with exit code 0; extra fixture-to-policy rule-resolution
+  self-check green (8/8 cases). Full gate-3 rg transcript (395 lines)
+  preserved at `evidence/gate3-rg-transcript.txt`. Worker writes confined to
+  the task folder; no CI/native/server/src/playtest mutation; port 6500
+  untouched.
+- REVIEW_REQUESTED: REPORT.md written with literal gate transcripts and exit
+  codes; this commit pushed to this worker branch only. No merge, no
+  force-push.
