@@ -54,14 +54,14 @@ A failed handoff or missing acknowledgement is an owner-notification event. It
 does not authorize the outgoing supervisor to burn remaining credits by taking
 over implementation.
 
-## Verified live PC checkpoint — 2026-08-22 03:54 PDT
+## Verified live PC checkpoint — 2026-08-22 03:55 PDT
 
 State: `PRIMARY_ACTIVE`; this is a succession checkpoint, not a retirement
 request.
 
 - Program checkout: `Z:\Code\Games\delaford\delaford_game`, branch
-  `codex/native-reconstitution`, clean local/remote head `761737c2` before this
-  ledger commit. `origin/master` is not the worker base; workers use the exact
+  `codex/native-reconstitution`, clean local/remote head `6f1b60e6` before this
+  checkpoint refresh commit. `origin/master` is not the worker base; workers use the exact
   routed program heads recorded in `RUN_STATUS.md`.
 - Standalone broadcast checkout:
   `Z:\Code\.worktrees\orchestration\pc-overnight-game-wave`, clean branch
@@ -76,8 +76,9 @@ request.
     PID 4108;
   - ox-pc-m, ports 6860-6879, TASK-0147 claim `7d092a74`, dirty/fresh process
     PID 23076;
-  - ox-pc-o, ports 6900-6919, TASK-0148 claim `71a73de8`, clean/fresh process
-    PID 25176.
+  - ox-pc-o, ports 6900-6919, TASK-0148 claim `71a73de8`; original process
+    stopped clean after claim and its one permitted exact-session recovery is
+    fresh at PID 25572. A second stop before handoff is quarantine/release.
 - Preserved/non-capacity: ox-pc-d/e/g are dirty P0 quarantines after exhausting
   one recovery; ox-pc-n is a clean activation failure after its launch and one
   recovery both stopped before claim; a/b/c/h are preserved historical or
@@ -87,7 +88,7 @@ request.
   sequenced DRAFT successors, zero owned-path collisions; deterministic factory
   verified at 2,000 nodes / 500 packets. Runway remains honestly `UNKNOWN`.
 - Local supervision: human dashboard `http://127.0.0.1:4737/` health 200,
-  Node PID 25336; visible PowerShell monitor PID 6824. Same-task automation
+  Node PID 20216; visible PowerShell monitor PID 6824. Same-task automation
   `verdigris-surge-supervisor` is ACTIVE every five minutes and derives lanes
   dynamically from current routing/config. Chat-spawning cron
   `pc-fleet-emergency-monitor` remains PAUSED.
