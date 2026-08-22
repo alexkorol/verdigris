@@ -66,9 +66,9 @@ path-disjoint READY packets plus 12 concrete successors. Current valid claims
 are excluded from READY accounting. After five expansion claims and promotion
 of TASK-0135 and i's valid claim, d then claimed TASK-0135 at `50cd286f`,
 leaving 24. Four accepted-contract validator implementations are now promoted,
-restoring **28 effective READY + 17 successors** before c/e/f/g claim them;
-those four claims preserve the absolute 24-packet floor. D-128 supersedes
-count-only sufficiency.
+  restoring 28 effective READY before c/e/f/g claim them. Their four valid,
+  pushed claims now leave **24 effective READY + 17 successors**, preserving
+  the absolute packet floor. D-128 supersedes count-only sufficiency.
 
 ## Autonomous runway and factory status
 
@@ -83,7 +83,7 @@ count-only sufficiency.
   immutable base and remain nonclaimable until current-tip READY promotion.
 - Reserve composition: 100 each implementation, integration, presentation,
   hardening, and release; 0 pure audit/research/inventory/evaluation; 25 packets
-  (5%) owner-blocked. The immediate 30 READY board remains audit-heavy and its
+  (5%) owner-blocked. The immediate 24 READY board remains audit-heavy and its
   accepted audits must fan out before or at acceptance.
 - Deterministic validation: `node orchestration/backlog-factory/build-manifests.mjs --check`
   passes with 2,000 unique nodes and 500 unique packets.
@@ -99,11 +99,11 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 |---|---|---|---|
 | ox-pc-a | 6620-6639 | CLAIMED `0d1898bd`; existing desktop session | TASK-0128 throughput normalization |
 | ox-pc-b | 6640-6659 | revision commit `a0419710` local; recovery process packaging/pushing | TASK-0080 board sentinel |
-| ox-pc-c | 6660-6679 | TASK-0112 accepted/integrated; successor launch requested | TASK-0136 passive-tree validator |
-| ox-pc-d | 6680-6699 | CLAIMED `50cd286f`; implementation active | TASK-0135 soak integration policy |
-| ox-pc-e | 6700-6719 | TASK-0130 accepted/integrated; successor launch requested | TASK-0137 Gate C validator |
-| ox-pc-f | 6720-6739 | TASK-0131 accepted/integrated; successor launch requested | TASK-0138 release-proof validator |
-| ox-pc-g | 6740-6759 | TASK-0132 accepted/integrated; successor launch requested | TASK-0139 clean-machine evidence validator |
+| ox-pc-c | 6660-6679 | CLAIMED and pushed `7b24e5d3`; implementation active | TASK-0136 passive-tree validator |
+| ox-pc-d | 6680-6699 | REVIEW_REQUESTED and pushed `88092c97`; supervisor review | TASK-0135 soak integration policy |
+| ox-pc-e | 6700-6719 | CLAIMED and pushed `0d175a2f`; implementation active | TASK-0137 Gate C validator |
+| ox-pc-f | 6720-6739 | CLAIMED and pushed `f9458f4e`; implementation active | TASK-0138 release-proof validator |
+| ox-pc-g | 6740-6759 | CLAIMED and pushed `5df94011`; implementation active | TASK-0139 clean-machine evidence validator |
 | ox-pc-h | 6760-6779 | REVISE at `b44ab0ab`; owner-target correction queued | TASK-0133 save migration/rollback contract |
 | ox-pc-i | 6780-6799 | CLAIMED `5b952c08`; partial work preserved; recovery queued | TASK-0134 distribution/signing boundary |
 
@@ -190,9 +190,10 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - Accepted/integrated this sweep: **TASK-0086** at `8ddfb06e`, **TASK-0105**
   at `8e6e42b3`, and **TASK-0120** at `4e0920d4`.
 - Active claims: **TASK-0128 by ox-pc-a**; TASK-0080 remains assigned to
-  ox-pc-b through revision; TASK-0135 is claimed by d at `50cd286f`;
+  ox-pc-b through revision; TASK-0135 is in review at d head `88092c97`;
   TASK-0133 is assigned back to h for revision; TASK-0134 remains claimed by i
-  at `5b952c08`; c/e/f/g await successor launch after this push.
+  at `5b952c08`; TASK-0136/0137/0138/0139 are valid pushed claims at
+  `7b24e5d3`/`0d175a2f`/`f9458f4e`/`5df94011` and are active.
   Separate project: orchestration bootstrap claim `795a9b3`, with pushed M3
   head `82de84ef` awaiting its configured Tier-B acceptance path.
 - Historical TASK-0056 and legacy clone WIP are superseded/preserved, never
@@ -202,7 +203,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 28 packets
+## Effective READY — 24 packets
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -214,10 +215,6 @@ wins after a fresh fetch.
 | P0 | TASK-0100 deterministic replay audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes divergences reproducible |
 | P0 | TASK-0104 itemization/history audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages memorable history-bearing loot |
 | P0 | TASK-0119 onboarding/first-session audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes launch through first extraction legible |
-| P1 | TASK-0136 passive-tree validator | INDEPENDENT / IMPLEMENTATION | ox-pc-c after coordination push | turns accepted passive-tree authority into deterministic executable validation |
-| P1 | TASK-0137 Gate C envelope validator | INDEPENDENT / IMPLEMENTATION | ox-pc-e after coordination push | rejects incomplete route decisions without inventing product content |
-| P1 | TASK-0138 release-proof validator | INDEPENDENT / IMPLEMENTATION | ox-pc-f after coordination push | makes stale/missing/false-green release evidence fail closed |
-| P1 | TASK-0139 clean-machine evidence validator | INDEPENDENT / IMPLEMENTATION | ox-pc-g after coordination push | distinguishes disposable-host proof from cached developer success mechanically |
 | P1 | TASK-0082 dual-server matrix runner | INDEPENDENT / BOUNDED-DESIGN | future after current claim | automates unchanged JS/C++ parity evidence |
 | P1 | TASK-0115 browser panel/typography inventory | INDEPENDENT / MECHANICAL | future after current claim | freezes presentation delta #4 |
 | P1 | TASK-0091 protocol coverage sentinel design | INDEPENDENT / MECHANICAL | future after current claim | catches lost journey wire steps |
