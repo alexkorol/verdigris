@@ -2723,7 +2723,128 @@ void handle_chronicles_key(ClientState& state, WPARAM wparam) {
   }
 }
 
+// ── TASK-0161: contained capture-root isolation ─────────────────────────
+// A full validation gate passes -CaptureRoot (threaded through the
+// VERDIGRIS_CAPTURE_ROOT environment seam) so fresh evidence lands in a
+// disposable directory instead of rewriting committed captures from earlier
+// tasks. Without that variable every helper keeps its historical ladder, so
+// default owner play and direct task-specific evidence runs are unchanged.
+
+std::string absolute_path_normalized(const std::string& raw) {
+  char full[MAX_PATH]{};
+  const DWORD length = GetFullPathNameA(raw.c_str(), MAX_PATH, full, nullptr);
+  if (length == 0 || length >= MAX_PATH) return {};
+  return std::string(full, length);
+}
+
+std::string lowercase_ascii(std::string value) {
+  for (char& character : value)
+    if (character >= 'A' && character <= 'Z')
+      character = static_cast<char>(character - 'A' + 'a');
+  return value;
+}
+
+// Repository root: nearest ancestor of the cwd (then the executable
+// directory) holding both native\ and orchestration\ markers.
+std::string repository_root_for_capture_validation() {
+  std::vector<std::string> bases;
+  const std::string cwd = absolute_path_normalized(".");
+  if (!cwd.empty()) bases.push_back(cwd);
+  const std::string exe_dir = absolute_path_normalized(executable_directory());
+  if (!exe_dir.empty()) bases.push_back(exe_dir);
+  for (const auto& base : bases) {
+    std::string prefix = base;
+    for (int depth = 0; depth <= 6; ++depth) {
+      if (directory_exists(prefix + "\\native") &&
+          directory_exists(prefix + "\\orchestration"))
+        return prefix;
+      prefix += "\\..";
+    }
+  }
+  return {};
+}
+
+bool create_directories_nested(const std::string& abs_path) {
+  if (abs_path.size() < 3 || abs_path[1] != ':') return false;
+  std::size_t index = 3;  // skip "X:\"
+  while (true) {
+    const std::size_t slash = abs_path.find('\\', index);
+    const std::string part =
+        abs_path.substr(0, slash == std::string::npos ? abs_path.size() : slash);
+    if (!directory_exists(part) && !CreateDirectoryA(part.c_str(), nullptr) &&
+        !directory_exists(part))
+      return false;
+    if (slash == std::string::npos) break;
+    index = slash + 1;
+  }
+  return directory_exists(abs_path);
+}
+
+struct CaptureRootDecision {
+  bool active = false;  // override requested via VERDIGRIS_CAPTURE_ROOT
+  bool valid = false;   // contained inside the repository and created
+  std::string dir;      // absolute contained root when valid
+  std::string error;    // rejection reason when active but invalid
+};
+
+const CaptureRootDecision& capture_root_decision() {
+  static const CaptureRootDecision decision = [] {
+    CaptureRootDecision computed;
+    const char* override_raw = std::getenv("VERDIGRIS_CAPTURE_ROOT");
+    if (!override_raw) return computed;
+    computed.active = true;
+    const std::string requested = absolute_path_normalized(override_raw);
+    if (requested.empty()) {
+      computed.error = "capture root does not resolve to an absolute path";
+      return computed;
+    }
+    const std::string repo_root = repository_root_for_capture_validation();
+    if (repo_root.empty()) {
+      computed.error = "repository root not found; capture containment cannot be proven";
+      return computed;
+    }
+    const std::string request_lower = lowercase_ascii(requested);
+    const std::string repo_prefix = lowercase_ascii(repo_root) + "\\";
+    // Strictly inside only: an exact repository-root target would scatter
+    // evidence into the worktree itself.
+    if (request_lower.size() <= repo_prefix.size() ||
+        request_lower.compare(0, repo_prefix.size(), repo_prefix) != 0) {
+      computed.error = "capture root '" + requested +
+                       "' is outside repository root '" + repo_root + "'";
+      return computed;
+    }
+    // Containment is proven before any filesystem mutation, so a rejected
+    // target can never be created or written.
+    if (!create_directories_nested(requested)) {
+      computed.error = "capture root '" + requested + "' could not be created";
+      return computed;
+    }
+    computed.valid = true;
+    computed.dir = requested;
+    return computed;
+  }();
+  return decision;
+}
+
+// Consulted by every scenario capture helper. Returns 0 when no override is
+// active (caller uses its historical ladder), 1 with *out set to the
+// validated contained root, or -1 after reporting the rejection; on -1 the
+// caller must fail the run without attempting any write.
+int capture_root_override(std::string* out) {
+  const CaptureRootDecision& decision = capture_root_decision();
+  if (!decision.active) return 0;
+  if (!decision.valid) {
+    std::printf("FAIL capture-root: %s (nothing written)\n", decision.error.c_str());
+    return -1;
+  }
+  *out = decision.dir;
+  return 1;
+}
+
 std::string chronicles_capture_dir() {
+  std::string forced;
+  const int overridden = capture_root_override(&forced);
+  if (overridden != 0) return overridden > 0 ? forced : std::string{};
   std::vector<std::string> bases{".", executable_directory()};
   const char* marker =
       "orchestration\\tasks\\TASK-0145-native-chronicles-owner-journey";
@@ -2746,6 +2867,9 @@ std::string chronicles_capture_dir() {
 // TASK-0122 Phase A: fresh animation/VFX evidence lands in THIS task's
 // captures/ folder for architect visual review.
 std::string animation_vfx_capture_dir() {
+  std::string forced;
+  const int overridden = capture_root_override(&forced);
+  if (overridden != 0) return overridden > 0 ? forced : std::string{};
   std::vector<std::string> bases{".", executable_directory()};
   const char* marker =
       "orchestration\\tasks\\TASK-0122-animation-vfx-system-wave";
@@ -2768,6 +2892,9 @@ std::string animation_vfx_capture_dir() {
 // TASK-0156: fresh progression-surface evidence lands in THIS task's
 // captures/ folder for architect visual review.
 std::string progression_capture_dir() {
+  std::string forced;
+  const int overridden = capture_root_override(&forced);
+  if (overridden != 0) return overridden > 0 ? forced : std::string{};
   std::vector<std::string> bases{".", executable_directory()};
   const char* marker =
       "orchestration\\tasks\\TASK-0156-native-progression-visibility";
@@ -4693,6 +4820,11 @@ int scenario_chronicles_gate_b() {
   state.screen = Screen::Chronicles;
   load_billboards(state.billboards);
   const std::string capture_dir = chronicles_capture_dir();
+  if (capture_dir.empty()) {
+    // TASK-0161: a rejected capture root fails before any evidence write.
+    scenario_check(false, "evidence: capture root rejected before any write");
+    return 0;
+  }
 
   using verdigris::client::ClientCommand;
   using verdigris::client::ConnectionState;
@@ -5191,6 +5323,11 @@ int scenario_progression_surface() {
                  "nonzero: the committed node count mirrors the payload");
   state.gear_overlay = true;
   const std::string dir = progression_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false,
+                   "progression-surface: capture root rejected before any write");
+    return 0;
+  }
   const std::string png_960 = dir + "\\progression-surface-nonzero-960x600.png";
   reference_present(state, 960, 600, png_960);
   scenario_check(
@@ -5256,6 +5393,9 @@ int scenario_progression_surface() {
 // TASK-0159: fresh readability evidence lands in THIS task's captures/
 // folder for architect visual review.
 std::string readability_capture_dir() {
+  std::string forced;
+  const int overridden = capture_root_override(&forced);
+  if (overridden != 0) return overridden > 0 ? forced : std::string{};
   std::vector<std::string> bases{".", executable_directory()};
   const char* marker =
       "orchestration\\tasks\\TASK-0159-native-hud-pane-readability";
@@ -5301,6 +5441,11 @@ int scenario_hud_pane_readability() {
 
   const struct Size { int w; int h; } sizes[] = {{960, 600}, {1366, 768}};
   const std::string dir = readability_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false,
+                   "hud-pane-readability: capture root rejected before any write");
+    return 0;
+  }
 
   // ── Local owner path: both required resolutions, closed then open pane.
   for (const auto& size : sizes) {
@@ -5632,6 +5777,9 @@ std::string dump_render_list_json(const std::string& scene, int width, int heigh
 }
 
 std::string reference_capture_dir() {
+  std::string forced;
+  const int overridden = capture_root_override(&forced);
+  if (overridden != 0) return overridden > 0 ? forced : std::string{};
   std::vector<std::string> bases{".", executable_directory()};
   const char* marker = "orchestration\\tasks\\TASK-0070-reference-scenes";
   for (const auto& base : bases) {
@@ -6105,6 +6253,11 @@ int scenario_animation_vfx_phase_a() {
                               phase_a::kSpawnRenderLabel),
         "animation-vfx-phase-a: capture frame records the spawn beat");
     const std::string dir = animation_vfx_capture_dir();
+    if (dir.empty()) {
+      scenario_check(
+          false, "animation-vfx-phase-a: capture root rejected before any write");
+      return 0;
+    }
     const std::string png_960 = dir + "\\animation-vfx-phase-a-960x600.png";
     const std::string png_1366 = dir + "\\animation-vfx-phase-a-1366x768.png";
     scenario_check(reference_present(capture_state, 960, 600, png_960),
@@ -6137,6 +6290,10 @@ int run_reference_scenes(const std::string& which) {
       {4, "04-named-drop-gear"}, {5, "05-critical-health"},
   };
   const std::string out_dir = reference_capture_dir();
+  if (out_dir.empty()) {
+    std::printf("FAIL reference-scene: capture root rejected before any write\n");
+    return 1;
+  }
   std::printf("reference-scene: writing to %s\n", out_dir.c_str());
   int failures = 0;
   for (const auto& scene : scenes) {
