@@ -142,9 +142,11 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     monster.id = source.id;
     monster.position = {static_cast<int>(std::lround(protocol_to_world(source.x))),
                         static_cast<int>(std::lround(protocol_to_world(source.y)))};
-    monster.facing = facing_vector(model.player.facing);
-    monster.facing.x = -monster.facing.x;
-    monster.facing.y = -monster.facing.y;
+    // TASK-0122 Phase A: the wire snapshot carries no monster facing field,
+    // so the proved client-only fabrication (inverting the player's facing)
+    // is removed. Monsters keep the neutral default until the wire ships an
+    // authoritative facing; the presentation never invents one from the
+    // player's aim.
     monster.life = source.life;
     monster.life_max = source.life_max;
     monster.alive = source.alive;
@@ -202,16 +204,20 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       flash.kind = EffectFx::Kind::TargetFlash;
       flash.wx = ex;
       flash.wy = ey;
-      flash.ttl = 4;
+      flash.ttl = event.critical ? phase_a::kCriticalFlashTtlTicks : 4;
       flash.damage_to_player = to_player;
+      flash.critical = event.critical;
+      flash.style = event.style;
       fx.effects.push_back(flash);
       EffectFx number;
       number.kind = EffectFx::Kind::DamageNumber;
       number.wx = ex;
       number.wy = ey;
-      number.ttl = 12;
+      number.ttl = event.critical ? phase_a::kCriticalNumberTtlTicks : 12;
       number.value = event.value;
       number.damage_to_player = to_player;
+      number.critical = event.critical;
+      number.style = event.style;
       fx.effects.push_back(number);
       if (to_player) fx.screen_pulse_ticks = 3;
       break;
@@ -221,9 +227,10 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       telegraph.actor_id = event.actor_id;
       telegraph.action = event.text.find("sweep") != std::string::npos ? "sweep" : "thrust";
       telegraph.position = event_anchor(world, fx, event, false);
-      telegraph.facing = world.player.facing;
-      telegraph.facing.x = -telegraph.facing.x;
-      telegraph.facing.y = -telegraph.facing.y;
+      // TASK-0122 Phase A: same inversion removal as monster sync. Without an
+      // authoritative telegraph facing on the wire (radius/position wire work
+      // is deferred), the warning keeps its neutral default instead of a
+      // client-only inverted copy of the player's aim.
       telegraph.start_tick = now_tick;
       telegraph.windup_ticks = std::max(1, event.value > 20 ? event.value / 50 : event.value);
       fx.telegraphs[event.actor_id.empty() ? "foe" : event.actor_id] = std::move(telegraph);
@@ -236,6 +243,25 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       fx.last_death_pos = at;
       fx.effects.push_back({EffectFx::Kind::DeathRing, ex, ey, 0.0, 0, 12});
       fx.effects.push_back({EffectFx::Kind::Dust, ex, ey, 0.7, 0, 10});
+      break;
+    case PresentationEventType::ScionLost:
+      // TASK-0122 Phase A: a long, distinct loss beat anchored on the player.
+      // Distinct from death rings in color, shape, and lifetime; it decorates
+      // the already-resolved loss and mutates nothing authoritative.
+      fx.telegraphs.clear();
+      fx.effects.push_back(
+          {EffectFx::Kind::ScionLostBeat, static_cast<double>(world.player.position.x),
+           static_cast<double>(world.player.position.y), 0.0, 0,
+           phase_a::kScionLostRingTtlTicks});
+      fx.screen_pulse_ticks = phase_a::kScionLostPulseTicks;
+      break;
+    case PresentationEventType::BuffExpired:
+      // TASK-0122 Phase A: the war-cry end contract beat — an imploding,
+      // dimmed-gold ring at its anchor (the empowered self), clearly unlike
+      // the expanding bright aura shown on BuffApplied.
+      if (event.text.empty() || event.text == "war-cry")
+        fx.effects.push_back({EffectFx::Kind::WarCryFade, ex, ey, 0.0, 0,
+                              phase_a::kWarcryFadeTtlTicks});
       break;
     case PresentationEventType::ItemDropped: {
       verdigris::Vec2 drop = fx.last_death_pos;
@@ -291,6 +317,13 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       case PresentationEventType::ConnectionLost:
         line = "DISCONNECTED " + event.text;
         break;
+      // TASK-0122 Phase A readable beat lines.
+      case PresentationEventType::ScionLost:
+        line = "scion lost";
+        break;
+      case PresentationEventType::BuffExpired:
+        if (event.text.empty() || event.text == "war-cry") line = "war cry faded";
+        break;
       default:
         break;
     }
@@ -308,6 +341,24 @@ void age_presentation_fx(PresentationFx& fx) {
                    fx.effects.end());
   if (fx.hint_ticks > 0) --fx.hint_ticks;
   if (fx.screen_pulse_ticks > 0) --fx.screen_pulse_ticks;
+}
+
+void detect_monster_spawns(PresentationFx& fx, const WorldView& world,
+                           std::uint64_t now_tick) {
+  (void)now_tick;
+  // TASK-0122 Phase A: one materialization beat per never-before-seen living
+  // foe, in the deterministic snapshot order. This reads the authoritative
+  // snapshot only — it never creates, moves, or damages an actor.
+  for (const auto& monster : world.monsters) {
+    if (!monster.alive) continue;
+    if (!fx.known_monsters.insert(monster.id).second) continue;
+    EffectFx spawn;
+    spawn.kind = EffectFx::Kind::Materialize;
+    spawn.wx = static_cast<double>(monster.position.x);
+    spawn.wy = static_cast<double>(monster.position.y);
+    spawn.ttl = phase_a::kMaterializeTtlTicks;
+    fx.effects.push_back(std::move(spawn));
+  }
 }
 
 void record_world_ops(render::List& rl, const WorldView& world, const PresentationFx& fx,
@@ -350,11 +401,16 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
         rl.push_back({render::Op::Sweep, static_cast<double>(base.x),
                       static_cast<double>(base.y)});
         break;
-      case EffectFx::Kind::DamageNumber:
+      case EffectFx::Kind::DamageNumber: {
+        std::string damage_label =
+            effect.damage_to_player ? "player" : "monster";
+        if (effect.critical)
+          damage_label = std::string(phase_a::kCriticalDamageLabel) + ":" +
+                         (effect.style.empty() ? "slash" : effect.style);
         rl.push_back({render::Op::Damage, static_cast<double>(base.x),
-                      static_cast<double>(base.y), 0.0, effect.value,
-                      effect.damage_to_player ? "player" : "monster"});
+                      static_cast<double>(base.y), 0.0, effect.value, damage_label});
         break;
+      }
       case EffectFx::Kind::DeathRing:
         rl.push_back({render::Op::Death, static_cast<double>(base.x),
                       static_cast<double>(base.y)});
@@ -363,6 +419,20 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
         rl.push_back({render::Op::TargetFlash, static_cast<double>(base.x),
                       static_cast<double>(base.y), 0.0, 0,
                       effect.damage_to_player ? "player" : "monster"});
+        break;
+      case EffectFx::Kind::Materialize:
+        // TASK-0122 Phase A: recorded on the existing vocabulary with a
+        // distinct label so the render list stays honest without new ops.
+        rl.push_back({render::Op::TargetFlash, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, 0, phase_a::kSpawnRenderLabel});
+        break;
+      case EffectFx::Kind::WarCryFade:
+        rl.push_back({render::Op::WarCry, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, 0, phase_a::kWarcryFadeLabel});
+        break;
+      case EffectFx::Kind::ScionLostBeat:
+        rl.push_back({render::Op::ScreenPulse, 0.0, 0.0, 0.0, 0,
+                      phase_a::kScionLostLabel});
         break;
       default:
         break;

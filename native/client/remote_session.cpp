@@ -770,6 +770,16 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       }
     } else {
       model_.last_outgoing_hit = amount;
+      // TASK-0122 Phase A: consume the already-shipped combat:hit parity
+      // fields (server networking.cpp emits critical/attackStyle). Copied
+      // verbatim into the presentation event; the client never computes them
+      // and the envelope stays untouched.
+      bool critical = false;
+      if (const auto* crit = envelope.data.get("critical"))
+        critical = crit->boolean() && *crit->boolean();
+      std::string style;
+      if (const auto* style_value = json_string(envelope.data.get("attackStyle")))
+        style = *style_value;
       ClientMonster& foe = upsert_monster(model_, target ? *target : "",
                                           json_string(envelope.data.get("targetName"))
                                               ? *json_string(envelope.data.get("targetName"))
@@ -784,8 +794,14 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       pending_events_.push_back({PresentationEventType::AttackStarted,
                                  attacker ? *attacker : model_.player.uuid, "",
                                  last_facing_, amount});
-      pending_events_.push_back({PresentationEventType::DamageApplied,
-                                 target ? *target : "", "", "outgoing", amount});
+      PresentationEvent outgoing;
+      outgoing.type = PresentationEventType::DamageApplied;
+      outgoing.actor_id = target ? *target : "";
+      outgoing.text = "outgoing";
+      outgoing.value = amount;
+      outgoing.critical = critical;
+      outgoing.style = style;
+      pending_events_.push_back(std::move(outgoing));
       if (died) {
         ++model_.kills;
         foe.alive = false;

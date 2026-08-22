@@ -68,6 +68,7 @@ $networkingObject = Join-Path $buildRoot "networking.obj"
 $testExe = Join-Path $buildRoot "verdigris_core_tests.exe"
 $networkingTestExe = Join-Path $buildRoot "verdigris_networking_tests.exe"
 $sessionTestExe = Join-Path $buildRoot "verdigris_session_tests.exe"
+$presentationEventsTestExe = Join-Path $buildRoot "verdigris_presentation_events_tests.exe"
 $camera2dTestExe = Join-Path $buildRoot "camera2d_tests.exe"
 $serverExe = Join-Path $buildRoot "verdigris_server.exe"
 $clientExe = Join-Path $buildRoot "verdigris_client.exe"
@@ -97,6 +98,8 @@ Invoke-Msvc ('/c "' + $nativeRoot + '\client\local_session.cpp" /Fo"' + $buildRo
 Invoke-Msvc ('/c "' + $nativeRoot + '\client\remote_session.cpp" /Fo"' + $buildRoot + '\remote_session.obj"')
 Invoke-Msvc ('/c "' + $nativeRoot + '\client\presentation_state.cpp" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\presentation_state.obj"')
 Invoke-Msvc ('/c "' + $nativeRoot + '\tests\session_tests.cpp" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\session_tests.obj"')
+# TASK-0122 Phase A: dedicated presentation-events test binary.
+Invoke-Msvc ('/c "' + $nativeRoot + '\tests\presentation_events_tests.cpp" /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\presentation_events_tests.obj"')
 $serverCompileArguments = '/c "' + $nativeRoot + '\src\server_main.cpp" /Fo"' + $buildRoot + '\server.obj"'
 Invoke-Msvc $serverCompileArguments
 $clientCompileArguments = '/c "' + $nativeRoot + '\client\main.cpp" /DVERDIGRIS_NATIVE_WINDOWS=1 /I"' + $nativeRoot + '\client" /Fo"' + $buildRoot + '\client.obj"'
@@ -113,6 +116,7 @@ Invoke-Msvc ('"' + $buildRoot + '\client.obj" "' + $buildRoot + '\remote_play.ob
 
 Invoke-Msvc ('"' + $buildRoot + '\camera2d_tests.obj" /Fe"' + $camera2dTestExe + '"')
 Invoke-Msvc ('"' + $buildRoot + '\session_tests.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $sessionTestExe + '" /link ws2_32.lib')
+Invoke-Msvc ('"' + $buildRoot + '\presentation_events_tests.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $presentationEventsTestExe + '" /link ws2_32.lib')
 
 python (Join-Path $nativeRoot "tools\check_legacy_denylist.py")
 if ($LASTEXITCODE -ne 0) { throw "legacy denylist failed" }
@@ -120,6 +124,7 @@ if ($RunTests) { & $testExe }
 if ($RunTests) { & $networkingTestExe }
 if ($RunTests) { & $camera2dTestExe }
 if ($RunTests) { & $sessionTestExe; if ($LASTEXITCODE -ne 0) { throw "session tests failed" } }
+if ($RunTests) { & $presentationEventsTestExe; if ($LASTEXITCODE -ne 0) { throw "presentation events tests failed" } }
 if ($RunClient) { & $clientExe --headless }
 if ($RunClientScenarios) { & $clientExe --scenario all }
 if ($RunDensityBench) {
