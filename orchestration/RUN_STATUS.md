@@ -8,7 +8,7 @@ Sweep base: `a7e9c95f3ac6e3a65864fdfbf3183cb79ff7a9ad`
 
 GitHub: no open PRs. Latest master CI run 32441409427 passed at `d2423873`;
 the coordination-only program pushes did not dispatch a new workflow.
-TASK-0081 is in architect `REVISE` at worker head `0302ea4c`.
+TASK-0081 is in final evidence `REVISE` at worker rev2 head `52a7377b`.
 
 Orchestrator: **Codex Sol**, PC architect checkout
 `Z:\Code\Games\delaford\delaford_game`. Architect coordinates, reviews,
@@ -57,7 +57,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
-| ox-pc-a | 6620-6639 | `REVISE`: valid claim `f08131c0`; REVIEW_REQUESTED head `0302ea4c` pushed 20:42 PDT; architect review preserves the strong 12-row inventory and requires exact mortal-oath/relaunch response conditionals plus corrected commit-time telemetry | TASK-0081 Gate B wire freeze revision |
+| ox-pc-a | 6620-6639 | `REVISE`: valid claim `f08131c0`; rev2 head `52a7377b` pushed 21:03 PDT and passes all gates; two wire corrections are accepted, with only exact fall-through wording, rev2 commit/provider evidence, and post-correction transcript remaining | TASK-0081 Gate B final evidence revision |
 
 The stopped `ox-pc-b` and `ox-pc-c` tabs shared the same OpenCode project,
 stopped before claims or writes, and are not Verdigris lanes, stalls, dark
@@ -127,8 +127,9 @@ picker; that provider change starts a distinct experimental unit.
 
 ## Interrupts and authority
 
-- REVIEW_REQUESTED: **none** (TASK-0081 was reviewed at `0302ea4c`).
-- REVISE: **TASK-0081**, four numbered exact corrections in its `REVIEW.md`.
+- REVIEW_REQUESTED: **none** (TASK-0081 rev2 was reviewed at `52a7377b`).
+- REVISE: **TASK-0081**, final three-item evidence correction in `REVIEW.md`;
+  rev2's mortal-oath and relaunch response-shape corrections are preserved.
 - Active claims: **TASK-0081 by ox-pc-a** (`f08131c0`; revision takes priority).
   Separate project: orchestration bootstrap
   claim `795a9b3`, also active locally pending its first milestone commit.
