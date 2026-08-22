@@ -10,6 +10,12 @@ orchd is accepted, monitoring is reduced to an hourly short read-only safety
 check. This does not release current claims, change task ownership, or authorize
 the architect to implement worker work.
 
+Automation state: the 15-minute Sol heartbeat
+`verdigris-surge-supervisor` is PAUSED. Temporary local cron
+`pc-fleet-emergency-monitor` is ACTIVE hourly on `gpt-5.6-luna` with minimal
+reasoning and a transition-only, no-write scope. Retire it once orchd passes its
+vertical-slice acceptance.
+
 Both saved PC OpenCode sessions showed fresh streaming/tool activity during
 this transition. `ox-pc-a` pushed accepted TASK-0081 rev3 `dff39173`; it was
 integrated at merge `31d21579` after green Tier-C review. Its next single-lane
