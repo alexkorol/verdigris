@@ -17,8 +17,9 @@
   evidence; no deterministic product regression reproduces.
 - ox-pc-r and ox-pc-x are stopped, clean, pushed handoffs and no longer count
   as active capacity. No other OpenCode process is registered as active
-  Verdigris capacity. Protected `master` is still `230a8adf` until the verified
-  program update completes its protected PR path.
+  Verdigris capacity. Protected PR #55 merged the verified program head to
+  `master` at `f9973df632dbdbee4e8fee24da97627d5400bb50`; post-merge Native
+  run `32593413272` and CI run `32593413286` both passed.
 - Human dashboard is HTTP 200 at `http://127.0.0.1:4737/`; the visible rows
   identify both lanes as supervisor-reviewed handoffs rather than workers.
 - Post-integration board sentinel is healthy: 24 effective READY, zero live
