@@ -1,8 +1,10 @@
 # TASK-0128 claim (fresh-lane golden-output revision)
 
 - task: TASK-0128
-- state: REVIEW_REQUESTED
-- transitioned-at: 2026-08-22 09:52 PDT (-07:00) (CLAIMED at 2026-08-22 09:44 PDT, claim commit `0a37bd84`)
+- state: INTEGRATED
+- transitioned-at: 2026-08-22 09:58 PDT (-07:00) (REVIEW_REQUESTED at 09:52 PDT; CLAIMED at 09:44 PDT, claim commit `0a37bd84`)
+- architect-review: ACCEPTED at program commit `f7260900`
+- integrated-at: `882de214008c4df6566155c5815a232d339d9309`
 - coordinator: ox-alpha
 - worker: ox-pc-y
 - provider: openrouter

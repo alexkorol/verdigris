@@ -3,6 +3,7 @@ task: TASK-0128
 verdict: ACCEPTED
 reviewed_head: 2b469e3d0dabd0efc2036d7cb629e6add17075ca
 reviewed_at: 2026-08-22 09:55 -07:00
+integrated_at: 882de214008c4df6566155c5815a232d339d9309
 ---
 
 # TASK-0128 review — REVISE
@@ -88,3 +89,9 @@ the final fresh-lane evidence/status commits, then rerun the affected gates on
 the program head. The historical old claim may be preserved in ancestry, but
 the terminal worker identity is `ox-pc-y` and the accepted reviewed head is
 `2b469e3d0dabd0efc2036d7cb629e6add17075ca`.
+
+Integration completed as program commits `7234fa6f`, `424f368f`, `b89b87c4`,
+`f818c9ba`, `573a97dd`, and `882de214`. On the integrated tree, the expected
+non-ancestor guard rejected the worker capture SHA before the two live captures
+were rebound to the program lineage. Final program verification again passed
+19/19 tests, `--check`, schema, and diff gates with `hours:null` / `UNKNOWN`.

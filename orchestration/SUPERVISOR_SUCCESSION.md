@@ -202,3 +202,31 @@ request.
 - INC-013 records ox-pc-v's initial activation-SLA breach and claim-first
   recovery. ox-pc-r was serialized around the release gate and resumed with
   every dirty owned-path edit preserved. Owner action required now: none.
+
+### PC coordination checkpoint — 2026-08-22 09:58 PDT
+
+- Protected Verdigris `master` is green at `230a8adf`. Program branch
+  `codex/native-reconstitution` has TASK-0128 integrated through `882de214`
+  before final coordination/capture binding. Standalone PC broadcast branch was
+  last pushed at `11f9788`; shared orchestration `main` remains Mac-owned at
+  `d068012a`.
+- TASK-0128 fresh worker head `2b469e3d` is Tier-A ACCEPTED (review `f7260900`)
+  and integrated. Both worker and program gates pass 19/19; the deterministic
+  snapshot remains `hours:null` / `UNKNOWN`.
+- Active implementation lanes: ox-pc-r / TASK-0148, ports 6960-6979, PID 17640,
+  valid claim `837a412f`, remote workflow guard `3119a08e`, dirty owned paths
+  preserved; ox-pc-x / TASK-0122, ports 7060-7079, PID 18144, valid claim
+  `fdbbdca6`, one authorized same-session recovery after a clean pre-write stop.
+  No other OpenCode CLI process counts as live Verdigris capacity.
+- Queue proof is 24 effective READY, 2 valid CLAIMED, 16 sequenced successors,
+  zero collisions. Factory target remains 2,000 nodes / 500 packets and runway
+  hours remain UNKNOWN pending comparable accepted telemetry.
+- Local monitor PID 17316 and dashboard PID 9588 were healthy with dashboard
+  HTTP 200 before this checkpoint. The monitor now detects activation failure,
+  malformed claims, duplicate worktree writers, and stale Native push triggers.
+- Exact next sweep: verify x produced its first owned source write or release it;
+  freeze any r/x handoff; reject TASK-0148 temporary probes or shortcut paths;
+  run literal task gates, integrate only ACCEPTED work, re-prove board/factory,
+  and refresh both program and standalone broadcast heads.
+- Owner action required now: none. A replacement supervisor must fetch both
+  repositories and reproduce this checkpoint before assuming authority.

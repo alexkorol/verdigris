@@ -1,26 +1,28 @@
 # Run status — PC Verdigris overnight product wave
 
-## PC live sweep — 2026-08-22 09:33 PDT
+## PC live sweep — 2026-08-22 09:58 PDT
 
-- Program branch `codex/native-reconstitution` includes claim coordination
-  through `21736c65`; protected `master` remains green at `230a8adf` after
-  TASK-0153 first-session/Esc release.
-- ox-pc-r is the sole active writer for TASK-0148. Its first post-containment
-  full native gate is red at `gate-b: slain elite surfaces the circulating
-  heirloom`; the worker is investigating the ordinary-play combat/recovery leg.
-  No handoff or gameplay claim is accepted.
-- ox-pc-x has a valid pushed TASK-0122 visual Phase A claim at `fdbbdca6` from
-  routed base `3341a81f`, worktree `Z:\Code\.worktrees\verdigris\ox-pc-x`,
-  ports 7060-7079. Its earlier claim omitted the required coordinator field;
-  the clean source tree was stopped and the same session corrected the claim
-  before implementation.
+- Program branch `codex/native-reconstitution` has independently ACCEPTED and
+  integrated TASK-0128 through `882de214`; protected `master` remains green at
+  `230a8adf` after the TASK-0153 first-session/Esc release.
+- ox-pc-r is the sole active TASK-0148 writer at PID 17640. Supervisor commit
+  `3119a08e` added the master-only Native trigger to its pre-hygiene branch
+  without touching preserved gameplay work; that push launched zero workflows.
+  The ordinary-play heirloom recovery gate remains unresolved, so no gameplay
+  handoff is accepted.
+- ox-pc-x holds valid TASK-0122 claim `fdbbdca6` and is in its one authorized
+  same-session implementation recovery at PID 18144 after a clean context-only
+  stop. A second pre-handoff stop releases the lane.
+- TASK-0128 worker head `2b469e3d` passed final-head check, 19/19 tests with a
+  clean tree, schema/diff/scope gates, and six golden comparisons limited to
+  `skipped_folders -> []`. Program-side gates also pass; runway remains honestly
+  `hours:null` / `UNKNOWN`.
 - Deterministic board sentinel: 24 effective READY, 2 valid CLAIMED, 16
-  sequenced successors, zero owned-path collisions, exit 0. Factory manifests:
-  2,000 graph nodes and 500 reserve packets valid; runway hours remain UNKNOWN.
-- PC-local monitor regression for INC-015 is live: more than one OpenCode writer
-  matching a registered lane raises `P0_DUPLICATE_WORKTREE` and exposes every
-  matching PID. The human-readable dashboard remains available at
-  `http://127.0.0.1:4737/`.
+  sequenced successors, zero owned-path collisions, exit 0. Factory target
+  remains 2,000 graph nodes and 500 reserve packets.
+- The monitor now covers duplicate writers, malformed claims, activation SLA,
+  and stale Native branch triggers (`P0_CI_TRIGGER_UNSAFE`). Human dashboard
+  health remains HTTP 200 at `http://127.0.0.1:4737/`.
 
 ## Morning protected-master release — 2026-08-22 07:12 PDT
 
@@ -134,7 +136,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
-| ox-pc-a | 6620-6639 | TASK-0128 revision `d247638e` pushed via narrow handoff repair; second review remains REVISE; worker recovery exhausted | preserved, not active capacity |
+| ox-pc-a | 6620-6639 | TASK-0128 revision `d247638e` preserved; accepted foundation completed by fresh lane ox-pc-y | preserved, not active capacity |
 | ox-pc-b | 6640-6659 | TASK-0145 recovered claim `4aa9e0c3` then worker exited dirty; claim released | P0 quarantined, not capacity |
 | ox-pc-c | 6660-6679 | TASK-0136 claim released after duplicate-dispatch collision; dirty worktree quarantined | not available |
 | ox-pc-d | 6680-6699 | TASK-0146 second post-claim stop after one recovery; claim `7e416ff3` released | P0 quarantined/preserved, not capacity |
@@ -151,10 +153,14 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-o | 6900-6919 | TASK-0148 second post-claim stop after one recovery; claim `71a73de8` released; clean worktree preserved | exhausted, not capacity |
 | ox-pc-p | 6920-6939 | TASK-0147 frozen head `974ccab6` independently ACCEPTED and integrated at `19be98db`; fresh visual evidence and combined native gates passed | handoff complete; available only after worker process exits |
 | ox-pc-q | 6940-6959 | TASK-0148 claim `815a359b` released after recovery proposed a second normal-path bypass (`mutate/select` instead of `create/set-out`); clean claim head preserved | exhausted, not capacity |
-| ox-pc-r | 6960-6979 | TASK-0148 independent claim `837a412f` pushed from release head `c1acd4ec`; clean pre-write exit recovered in the same session at PID 7324 | accepted-chain recovery active |
-| ox-pc-s | 6980-6999 | TASK-0116 claim `297b4e9d` pushed from program base `9fe673b6` | animation/VFX contract audit active; implementation successor pending review |
+| ox-pc-r | 6960-6979 | TASK-0148 independent claim `837a412f`; workflow guard `3119a08e`; sole OpenCode PID 17640 with dirty owned implementation preserved | ordinary-play recovery active; no handoff accepted |
+| ox-pc-s | 6980-6999 | TASK-0116 corrected audit head `5b007e7e` independently ACCEPTED and integrated through `8eb95893` | audit complete; TASK-0122 successor routed |
 | ox-pc-t | 7000-7019 | TASK-0117 frozen head `5a7c22cb` independently ACCEPTED and integrated at `7052feca` | handoff complete; procedural-audio successor sequenced behind current client-main owner |
 | ox-pc-u | 7020-7039 | TASK-0119 frozen head `4104e0c8` independently ACCEPTED and integrated at `a5f4133e` | handoff complete; executable onboarding successor ready to route |
+| ox-pc-v | 7040-7059 | TASK-0153 final worker head `30ab95fd`; Esc/first-session fix shipped to protected master `230a8adf` with green CI | complete/available |
+| ox-pc-w | 7080-7099 | TASK-0154 clean-runner portability head `2dc4bfb2`; protected hotfix master `4e55f4f9` green | complete/available |
+| ox-pc-x | 7060-7079 | TASK-0122 valid claim `fdbbdca6`; one same-session implementation recovery at PID 18144 | client-only VFX Phase A active |
+| ox-pc-y | none | TASK-0128 fresh-lane head `2b469e3d` independently ACCEPTED and integrated through `882de214`; 19/19 clean | complete/available after worker exit |
 
 The historical stopped `ox-pc-b` and `ox-pc-c` tabs shared one OpenCode project,
 stopped before claims/writes, and remain non-incidents. The newly registered
@@ -170,10 +176,9 @@ experimental unit.
 OpenCode CLI 1.18.21 is installed and the OpenRouter lanes launch headlessly
 with explicit `openrouter/stealth/ox-alpha`; no owner tab opening is required.
 `Z:\Code\.fleet\Watch-VerdigrisFleet.ps1` supplies one human-readable five-second
-dashboard and transition-deduplicated Windows P1/P0 activation notifications.
-Its live-alert set is restricted to current completed handoffs and registered
-active routes (`i/j/k/l/p/r`); historical/quarantined worktrees remain visible
-in the web dashboard for audit but cannot generate false live toasts.
+dashboard and transition-deduplicated Windows P1/P0 notifications. Current live
+routes include r/x; completed y remains visible for audit. Historical and
+quarantined worktrees do not count as active capacity.
 An unattended REVISE route is a distinct P1 alert, so a stopped revision worker
 cannot be masked by the task-level review verdict.
 The worker logs remain under `Z:\Code\.fleet\logs`. Sol does not claim or write
