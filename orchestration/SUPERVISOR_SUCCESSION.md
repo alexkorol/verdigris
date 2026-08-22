@@ -78,10 +78,10 @@ request.
     revision process stopped clean before writes and recovery PID 6816 is active
     on the simultaneous elite/flanker fix. This lane has consumed one recovery;
   - ox-pc-p, ports 6920-6939, TASK-0147 claim `3ee9f928`, process PID 20868;
-  - ox-pc-q, ports 6940-6959, TASK-0148 claim `815a359b`, recovery PID 6104.
-    The first process was stopped clean before writes after proposing forbidden
-    `dev:teleport` setup; this lane has consumed its one recovery and must prove
-    the complete journey using normal accepted envelopes only.
+  - ox-pc-q, ports 6940-6959, TASK-0148 claim `815a359b` released and clean
+    preserved after its recovery proposed `mutate/select` for the first Scion,
+    bypassing the required accepted `create/set-out` chain. It is exhausted,
+    not capacity; route a fresh independent replacement from current program.
 - Preserved/non-capacity: ox-pc-d/e/g/m are dirty P0 quarantines after exhausting
   one recovery; ox-pc-n is a clean activation failure after its launch and one
   recovery both stopped before claim; a/b/c/h are preserved historical or

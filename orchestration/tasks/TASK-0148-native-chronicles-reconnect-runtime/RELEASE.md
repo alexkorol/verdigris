@@ -38,3 +38,21 @@ stop for this route, so its recovery budget is exhausted.
 unchanged and are not capacity. Do not resume or count their recent log
 timestamps as work. Route the next attempt to a fresh worktree at the current
 pushed program head and require an independent claim.
+
+## ox-pc-q replacement release — 2026-08-22 05:06 PDT
+
+Released claim: `815a359b` on replacement worker `ox-pc-q`.
+
+The first process was stopped clean before writes after proposing a forbidden
+`dev:teleport`/`dev:state` journey setup. Its one permitted recovery explicitly
+banned every `dev:*` surface, but then planned to create/admit the first Scion
+through `player:chronicles:mutate` plus `player:chronicles:select`, bypassing the
+required accepted chain `chronicles:scion:create` plus
+`chronicles:scion:set-out`. That would hide the exact normal-player runtime gap
+TASK-0148 must close. The recovery was stopped before any repository write.
+
+`Z:\Code\.worktrees\verdigris\ox-pc-q` and branch
+`codex/TASK-0148-native-chronicles-reconnect-runtime-ox-pc-q-r4` are clean and
+preserved at claim head `815a359b`; the route is exhausted and is not capacity.
+The next replacement must start from a fresh current program head and freeze
+the exact accepted first-Scion and successor envelope chains before probing.
