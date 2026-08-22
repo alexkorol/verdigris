@@ -105,12 +105,13 @@ change is required for successful alarm runs.
 `Z:\Code\.worktrees\orchestration\ox-bootstrap` worker pushed valid claim-only
 commit `795a9b3` at 20:20 on
 `codex/ox-bootstrap-portable-orchestration`; only `bootstrap/CLAIM.md` changed.
-Its activation claim remains valid. Local writes through 20:36 cover M0
-packages, adapters, packs, tests, and docs, but at 20:54 no execution child
-process remains and the remote branch is still claim-only. It is therefore P1
-`STALLED_LOCAL_UNCOMMITTED`; the owner has been notified to resume the existing
-correctly rooted tab without discarding dirty work. It is supervised as a
-separate project and never counts toward Verdigris capacity.
+Its activation claim remains valid and M0 head `b91db15` pushed at 21:05.
+Independent review passes build/typecheck/lint/22 tests/CLI, but clean
+`format:check` fails and three-OS CI run `32550754204` is red; M0 is `REVISE`.
+The earlier no-child-process stall alarm was a false positive because the
+OpenCode sidecar was still streaming. Detection now requires corroborating
+session, Git/file, backoff, and elapsed evidence. This separate project never
+counts toward Verdigris capacity.
 
 ### Endpoint identity watch
 
