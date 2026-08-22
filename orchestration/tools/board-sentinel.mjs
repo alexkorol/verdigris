@@ -417,6 +417,28 @@ export function runSentinel(repoPath, minReady) {
   for (const id of board.hold) hold.push(id);
   for (const id of board.draft) draft.push(id);
 
+  const surfacedLive = new Set([
+    ...effectiveReady,
+    ...claimed.map((c) => c.id),
+    ...reviewRequested.map((c) => c.id),
+    ...revise.map((c) => c.id),
+  ]);
+  for (const task of tasks.values()) {
+    if (!task.status || !LIVE_CLAIM_STATES.has(task.status.state)) continue;
+    if (surfacedLive.has(task.id)) continue;
+    if (task.reviewVerdict === "REVISE") {
+      revise.push({ id: task.id });
+    } else if (task.status.state === "REVIEW_REQUESTED") {
+      reviewRequested.push({
+        id: task.id,
+        coordinator: task.status.coordinator ?? null,
+      });
+    } else {
+      claimed.push({ id: task.id, ...task.status });
+    }
+    surfacedLive.add(task.id);
+  }
+
   for (const task of tasks.values()) {
     const live = task.status && LIVE_CLAIM_STATES.has(task.status.state);
     if (!live) {

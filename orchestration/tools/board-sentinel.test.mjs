@@ -371,6 +371,82 @@ state: READY (PIPELINED — claimable only AFTER TASK-0042 is INTEGRATED)
   assert.equal(json.errors.length, 0);
 });
 
+test("live CLAIMED task absent from READY table is surfaced globally", (t) => {
+  const dir = makeBoard(t, {
+    "orchestration/RUN_STATUS.md": READY_TABLE(["TASK-0060 on-board"]),
+    [`orchestration/tasks/TASK-0060-on-board/SPEC.md`]: spec(
+      "TASK-0060",
+      "on-board",
+    ),
+    [`orchestration/tasks/TASK-0061-off-board/SPEC.md`]: spec(
+      "TASK-0061",
+      "off-board",
+    ),
+    [`orchestration/tasks/TASK-0061-off-board/STATUS.md`]:
+      statusFile("CLAIMED", "kimi-work (worker: kw)"),
+  });
+  const { code, json } = runSentinel(dir, ["--min-ready", "1"]);
+  assert.equal(code, 0);
+  assert.deepEqual(json.effective_ready, ["TASK-0060"]);
+  assert.equal(json.counts.effective_ready, 1);
+  assert.equal(json.counts.claimed, 1);
+  assert.equal(json.claimed[0].id, "TASK-0061");
+  assert.match(json.claimed[0].coordinator, /kimi-work/);
+});
+
+test("live REVIEW_REQUESTED task absent from READY table is surfaced globally", (t) => {
+  const dir = makeBoard(t, {
+    "orchestration/RUN_STATUS.md": READY_TABLE(["TASK-0062 on-board"]),
+    [`orchestration/tasks/TASK-0062-on-board/SPEC.md`]: spec(
+      "TASK-0062",
+      "on-board",
+    ),
+    [`orchestration/tasks/TASK-0063-off-board/SPEC.md`]: spec(
+      "TASK-0063",
+      "off-board",
+    ),
+    [`orchestration/tasks/TASK-0063-off-board/STATUS.md`]:
+      statusFile("REVIEW_REQUESTED", "deepseek (worker: ds)"),
+  });
+  const { code, json } = runSentinel(dir, ["--min-ready", "1"]);
+  assert.equal(code, 0);
+  assert.deepEqual(json.effective_ready, ["TASK-0062"]);
+  assert.equal(json.counts.review_requested, 1);
+  assert.equal(json.review_requested[0].id, "TASK-0063");
+});
+
+test("global live claim colliding with a READY task fails", (t) => {
+  const dir = makeBoard(t, {
+    "orchestration/RUN_STATUS.md": READY_TABLE(["TASK-0064 ready-worker"]),
+    [`orchestration/tasks/TASK-0064-ready-worker/SPEC.md`]: `---
+task: TASK-0064
+state: READY
+owned_paths: [shared/module/**]
+---
+`,
+    [`orchestration/tasks/TASK-0065-hidden-claim/SPEC.md`]: `---
+task: TASK-0065
+state: READY
+owned_paths: [shared/module/deep.cpp]
+---
+`,
+    [`orchestration/tasks/TASK-0065-hidden-claim/STATUS.md`]:
+      statusFile("IMPLEMENTED", "codex (worker: ox-pc-x)"),
+  });
+  const { code, json } = runSentinel(dir, ["--min-ready", "1"]);
+  assert.notEqual(code, 0);
+  assert.equal(json.counts.collisions, 1);
+  assert.equal(
+    json.collisions[0].a === "TASK-0064" || json.collisions[0].b === "TASK-0064",
+    true,
+  );
+  assert.equal(
+    json.collisions[0].a === "TASK-0065" || json.collisions[0].b === "TASK-0065",
+    true,
+  );
+  assert.ok(json.errors.some((e) => e.type === "owned_path_collision"));
+});
+
 test("non-JSON human output keeps the same exit code", (t) => {
   const dir = makeBoard(t, {
     "orchestration/RUN_STATUS.md": READY_TABLE(
