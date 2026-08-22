@@ -1,0 +1,169 @@
+{
+  "schema_version": "1.0.0",
+  "supported_versions": ["1.0.0"],
+  "contract_id": "gate-c-decision-envelope",
+  "title": "Gate C route-decision envelope and validation contract",
+  "derived_from": {
+    "audit_task": "TASK-0086",
+    "audit_verdict": "ACCEPTED",
+    "audit_reviewed_head": "8ddfb06e16f85c150e9a79ccc9d8bd4932664369",
+    "authority": "docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md:68-72",
+    "authority_verbatim": [
+      "Route choice made on concrete info: goal, boss/danger, expected trophy/material/item family, depth, branch consequence, extraction/return condition.",
+      "A route name alone fails."
+    ]
+  },
+  "content_neutrality": {
+    "policy": "This contract defines shapes, states, and evidence citations only. It contains no campaign, reward, economy, risk, or balance value, no concrete goal text, and no expected item-family content. All such content is owner product authority and stays null/owner-pending here.",
+    "invented_values": []
+  },
+  "field_states": {
+    "enum": ["AVAILABLE", "DERIVABLE-WITHOUT-GAMEPLAY-RULES", "MISSING"],
+    "legend_source": "orchestration/tasks/TASK-0086-gate-c-contract-audit/captures/gate-c-contract.json classificationLegend"
+  },
+  "route_identity": {
+    "state": "AVAILABLE",
+    "requirement": "Identify the route being decided: road, direction, node identity, and charted tier/status.",
+    "wire_shape": {
+      "road": "roadId + roadName + direction + blurb (blurb is terrain flavor, not a goal)",
+      "node": "nodeId + name + template + layout + index + status (cleared|open|barred)",
+      "tier": "node tier integer",
+      "lineage": "parentId and childIds on the browser surface; parentId only on the native surface (parity P1)"
+    },
+    "route_name_alone_sufficient": false,
+    "evidence": [
+      "server/core/world-web.js:203-216,254-277 (node rows, statuses, unlock rule)",
+      "native/src/networking.cpp:1424-1437 (emit_chart_screen rows)",
+      "playtest/scenarios/world-web.mjs:22-26 (chart contents asserted)"
+    ],
+    "notes": "Identity is fully on the wire today, but identity alone fails the Gate C contract by definition (NATIVE_PRODUCT_CONVERGENCE.md:72). Node identity is intentionally not cross-server stable (TASK-0086 parity P2); this contract does not reconcile it - that is an owner/implementation ruling, not a contract field."
+  },
+  "concrete_goal": {
+    "state": "MISSING",
+    "value": null,
+    "owner_pending": true,
+    "requirement": "A concrete, route-specific goal that makes choosing this route meaningful.",
+    "evidence": [
+      "MISSING per TASK-0086 FINDINGS.md '1. Concrete goal': no goal/objective key exists on either chart builder (server/core/world-web.js:203-216,254-269; native/src/networking.cpp:1424-1437).",
+      "The only route-adjacent goal loop is the route-agnostic first goal (server/core/first-goal.js:48-55; native mirror networking.cpp:1554-1558), which assigns no per-road or per-node purpose."
+    ],
+    "smallest_future_owner_path": "Owner authors the per-node/per-road goal content; implementation adds a goal label in the two chart builders (server/core/world-web.js buildChart; native/src/networking.cpp emit_chart_screen) consumed by src/components/game-panes/Chart.vue and the future native chart pane. Content is owner campaign authority and cannot be derived from code."
+  },
+  "boss_or_danger": {
+    "state": "AVAILABLE",
+    "requirement": "Named boss/danger and a coarse difficulty band visible before the route choice.",
+    "wire_shape": {
+      "boss_name": "wardenName = 'Warden of <node name>' on every node row; pinned as floor boss on zone entry",
+      "difficulty_band": "levelHint derived from tier by levelHintForTier ('<floor>-<floor+4>'); rendered as 'Lv <hint>' on the browser chart",
+      "danger_flavor": "per-road direction + blurb",
+      "bounded_gap": "exact pack composition is visible only after entry"
+    },
+    "evidence": [
+      "server/core/world-web.js:215 (wardenName), :169-172 (levelHintForTier)",
+      "native/src/networking.cpp:713,1429 (wardenName on rows), :1462 (set_boss_name_override)",
+      "server/core/services/zone-service.js:146-152 (elite renamed to Warden)",
+      "playtest/scenarios/world-web.mjs:39-41; native/tests/networking_tests.cpp:201,212"
+    ],
+    "smallest_future_owner_path": "None required for the base condition. Optional native parity touch-up only: native chart rows omit levelHint (TASK-0086 parity P1)."
+  },
+  "expected_item_family": {
+    "state": "MISSING",
+    "value": null,
+    "owner_pending": true,
+    "requirement": "The expected trophy/material/item family a traveler should anticipate on this route.",
+    "evidence": [
+      "MISSING per TASK-0086 FINDINGS.md '3. Expected trophy/material/item family': no chart/node key describes expected drops, trophies, materials, or item families on either surface (server/core/world-web.js:203-216,254-269; server/core/services/zone-service.js:112-128,199-215; native/src/networking.cpp:1424-1432).",
+      "The only drop guarantees live inside the commission chain and are discovered in-scene, not pre-announced per route (playtest/scenarios/quest.mjs:175-178); the legacy synthetic trophy event is retired (networking.cpp:1996-1997)."
+    ],
+    "smallest_future_owner_path": "An owner-owned loot-table/family source keyed by road/template/tier, surfaced through both chart builders (server/core/world-web.js buildChart; native/src/networking.cpp emit_chart_screen). Table content is owner economy/reward authority. Candidate future owners per RUN_STATUS routing (suggestions, not claims): TASK-0104 itemization/history audit, TASK-0103 monster/encounter gap audit."
+  },
+  "depth": {
+    "state": "AVAILABLE",
+    "requirement": "How deep the route goes, visible before and authoritative inside the instance.",
+    "wire_shape": {
+      "charted": "tier on every node row; browser rows additionally carry the derived levelHint band",
+      "in_instance": "instances generate at depth = node.tier; delve triggers carry metadata().depth; stairs metadata (stairsUp/stairsDown) on every instance snapshot"
+    },
+    "evidence": [
+      "server/core/world-web.js:208 (tier); server/core/services/zone-service.js:139 (depth: node.tier)",
+      "native/src/networking.cpp:1426,1474,2314-2317; stairs :784-785,865-866",
+      "playtest/scenarios/world-web.mjs:76 (sceneMetadata.tier === 2); playtest/scenarios/quest.mjs:255-264 (sceneMetadata.depth === 2); native/tests/networking_tests.cpp:143-144 ('both stairs exist')"
+    ],
+    "smallest_future_owner_path": "None required; optional parity touch-up only (native chart rows lack the derived levelHint string, parity P1)."
+  },
+  "branch_consequence": {
+    "state": "DERIVABLE-WITHOUT-GAMEPLAY-RULES",
+    "value": null,
+    "scope": "immediate next stage only",
+    "requirement": "What choosing this route opens, closes, or forecloses.",
+    "derivation": "A client can compute 'clearing X opens Y and Z' for the immediate next stage purely from existing payloads: statuses (cleared|open|barred), the unlock rule (tier==1 or parentId cleared), parentId/childIds links, and in-zone gates naming child node + levelHint. No new gameplay rules are needed.",
+    "bounded_gaps": [
+      "The frontier caps visibility at deepest cleared tier + 1 (server/core/world-web.js:246-252; native/src/networking.cpp:1414-1418), so multi-stage or terminal consequences are absent; changing that is an owner ruling plus a frontier-policy change in the two chart builders.",
+      "C++ chart rows omit childIds (TASK-0086 parity P1), so a native client currently lacks sibling links."
+    ],
+    "evidence": [
+      "server/core/world-web.js:254-261 (status), :272-277 (isNodeUnlocked), :213-217 (parentId/childIds)",
+      "server/core/services/zone-service.js:164-189 (zoneGates), :351-358 ('No road holds past a living Warden.')",
+      "native/src/networking.cpp:1414-1418,1421-1432 (rule/statuses), :1519-1535 (gate sweep)",
+      "playtest/scenarios/world-web.mjs:25-26,86-87"
+    ],
+    "smallest_future_owner_path": "Immediate-stage presentation is computable now (Chart.vue / future native chart pane). Anything beyond the frontier needs an owner ruling on frontier policy; native sibling links need the P1 parity touch-up."
+  },
+  "extraction_or_return": {
+    "state": "AVAILABLE",
+    "requirement": "How the traveler leaves the route and what persists.",
+    "wire_shape": {
+      "return": "entry waymark (stairsUp) returns to the Crossroads; native pins stairs_up_returns_to_town and routes stairs-up through finish_extraction -> player:extract bank summary",
+      "persistence": "cleared ground lies still inside a linger window (ZONE_LINGER_MS default 15 minutes) with 24h respawn suppression, communicated in the chart footnote"
+    },
+    "evidence": [
+      "server/core/services/zone-service.js:212,288-325,341-345 (entryGate/returnToCrossroads), :34,38 (ZONE_LINGER_MS)",
+      "native/src/networking.cpp:1469 (stairs_up_returns_to_town), :939-968,:2116-2124,:2451 (finish_extraction/player:extract)",
+      "src/components/game-panes/Chart.vue:40-43 (footnote)",
+      "native/tests/networking_tests.cpp:170-175,374-385; playtest/scenarios/world-web.mjs:92-110; docs/rebuild/NATIVE_CLIENT_PROTOCOL_MATRIX.md:25 (extraction row green)"
+    ],
+    "smallest_future_owner_path": "None required for the base condition; per-node variation would live in zone-service gate sweeps and native stair handling."
+  },
+  "evidence_provenance": {
+    "state": "AVAILABLE",
+    "requirement": "Every envelope must cite where each field's evidence came from: an authority document, an accepted audit (with its reviewed head), and the base commit the envelope was generated at.",
+    "provenance_of_this_contract": [
+      "Audit: orchestration/tasks/TASK-0086-gate-c-contract-audit/ (verdict ACCEPTED at reviewed head 8ddfb06e16f85c150e9a79ccc9d8bd4932664369; narrative FINDINGS.md; machine-readable captures/gate-c-contract.json)",
+      "Authority: docs/rebuild/NATIVE_PRODUCT_CONVERGENCE.md:68-72 (Gate C - campaign decision)",
+      "Generated at base cab50d62cb121ab6a88fa513257e645447226959 on branch codex/TASK-0130-gate-c-decision-envelope-ox-pc-e by worker ox-pc-e"
+    ],
+    "required_shape_for_future_envelopes": {
+      "authority_source": "document path + section/lines",
+      "audit_reference": "task id + verdict + reviewed head",
+      "per_field_evidence": "surface + source/test citations for every field not MISSING",
+      "base_commit": "exact commit the envelope describes"
+    },
+    "evidence": [
+      "TASK-0086 REVIEW.md frontmatter (verdict: ACCEPTED)",
+      "TASK-0086 captures/gate-c-contract.json (fields, parity observations P1-P5, verdict)"
+    ]
+  },
+  "completeness": {
+    "ready": false,
+    "missing_fields": ["concrete_goal", "expected_item_family"],
+    "derivable_only_fields": ["branch_consequence"],
+    "available_fields": ["route_identity", "boss_or_danger", "depth", "extraction_or_return", "evidence_provenance"],
+    "route_name_only_valid": false,
+    "blocked_by_codes": ["MISSING_CONCRETE_GOAL", "MISSING_EXPECTED_ITEM_FAMILY"],
+    "owner_pending_content": [
+      "Concrete goal content per route/node (campaign authority)",
+      "Expected trophy/material/item family tables (economy/reward authority)",
+      "Owner ruling on multi-stage/terminal branch consequence beyond the frontier cap",
+      "Owner/implementation ruling on native/browser node identity reconciliation (TASK-0086 parity P2; deliberately NOT reconciled here)",
+      "Native chart-pane presentation (parity P5, client-pending)"
+    ],
+    "rule": "ready may become true only when every decision field state is AVAILABLE or DERIVABLE-WITHOUT-GAMEPLAY-RULES within its documented scope, no owner_pending flag is true, and missing_fields is empty. A route name, tier, or blurb alone remains invalid."
+  },
+  "open_parity_observations": {
+    "source": "TASK-0086 captures/gate-c-contract.json parityObservations",
+    "ids": ["P1", "P2", "P3", "P4", "P5"],
+    "note": "Recorded as open observations; none are resolved or reconciled by this contract."
+  },
+  "validation_contract": "VALIDATION.md",
+  "negative_fixtures": "fixtures/negative-cases.json"
+}
