@@ -1,7 +1,8 @@
 # TASK-0128 claim
 
 - task: TASK-0128
-- state: CLAIMED
+- state: REVIEW_REQUESTED
+- transitioned-at (commit clock): recorded in this revision's commit metadata (wall-clock note: ~22:07 PDT 2026-08-21; approximate, not used for durations)
 - coordinator: ox-pc-a
 - worker: ox-pc-a (only registered PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0128-accepted-throughput-normalization-ox-pc-a`

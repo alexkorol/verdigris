@@ -1,0 +1,4 @@
+- task: TASK-0105
+- state: CLAIMED
+- coordinator: ox-pc-a
+- base sha: bbb222
