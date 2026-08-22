@@ -214,7 +214,6 @@ wins after a fresh fetch.
 | P0 | TASK-0100 deterministic replay audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes divergences reproducible |
 | P0 | TASK-0104 itemization/history audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | stages memorable history-bearing loot |
 | P0 | TASK-0119 onboarding/first-session audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | makes launch through first extraction legible |
-| P1 | TASK-0135 soak integration policy | INDEPENDENT / ARCHITECTURE | ox-pc-d after coordination push | defines non-masking local/nightly/release soak evidence without changing CI |
 | P1 | TASK-0136 passive-tree validator | INDEPENDENT / IMPLEMENTATION | ox-pc-c after coordination push | turns accepted passive-tree authority into deterministic executable validation |
 | P1 | TASK-0137 Gate C envelope validator | INDEPENDENT / IMPLEMENTATION | ox-pc-e after coordination push | rejects incomplete route decisions without inventing product content |
 | P1 | TASK-0138 release-proof validator | INDEPENDENT / IMPLEMENTATION | ox-pc-f after coordination push | makes stale/missing/false-green release evidence fail closed |
