@@ -1,6 +1,6 @@
 # TASK-0117 status
 
-state: REVIEW_REQUESTED
+state: INTEGRATED
 worker: ox-pc-t
 provider: openrouter
 model: stealth/ox-alpha
@@ -20,3 +20,6 @@ tree; deliverables are FINDINGS.md, captures/audio-surfaces.json, REPORT.md.
 One recovery resume occurred after a process stop before handoff; all preserved
 edits verified intact via git status prior to resuming. Only this branch is
 pushed.
+
+accepted_head: 5a7c22cba5322aba8b29d9b982d72c7278e77817
+integrated_at: 7052feca9e0cd81647ec174f646b48d6221ee121

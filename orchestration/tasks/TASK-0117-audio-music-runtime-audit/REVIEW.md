@@ -5,6 +5,7 @@ reviewed_head: `5a7c22cba5322aba8b29d9b982d72c7278e77817`
 reviewed_branch: `codex/TASK-0117-audio-music-runtime-audit-ox-pc-t`
 reviewed_by: PC Verdigris architect/orchestrator
 reviewed_at: 2026-08-22 07:01 PDT
+integrated_at: `7052feca9e0cd81647ec174f646b48d6221ee121`
 
 ## Acceptance finding
 
