@@ -62,3 +62,14 @@ Integrate implementation commit `5c65a0f290dd685295f65760e5746bf595b4a584`
 and handoff/evidence commit
 `016d35a25a86d048ab1c1412fbd23e3dc1f33243`, then rerun the focused harness
 and denylist from the combined program head before marking INTEGRATED.
+
+## Program integration
+
+- Architect verdict commit: `9fd04e98`
+- Program implementation commit: `14809519`
+- Program evidence/handoff commit: `2be77c30`
+- Combined-head MSVC harness: PASS (413 checks, `/W4`)
+- Combined-head native legacy denylist: PASS
+- Combined-head diff hygiene: PASS
+
+Lifecycle is now **INTEGRATED**.

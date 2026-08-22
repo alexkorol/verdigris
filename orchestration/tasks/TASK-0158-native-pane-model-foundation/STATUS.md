@@ -1,6 +1,6 @@
 ---
 task: TASK-0158
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: ox-pc-aa (worktree ox-pc-aa2)
 machine: DESKTOP-TVU7OR7
@@ -14,6 +14,9 @@ model: stealth/ox-alpha
 harness: OpenCode CLI 1.18.21 variant max
 started_at: 2026-08-22T21:14:58Z
 implementation_commit: 5c65a0f2
+architect_verdict: ACCEPTED
+architect_review_commit: 9fd04e98
+integration_commits: 14809519, 2be77c30
 expected_verification: powershell -NoProfile -ExecutionPolicy Bypass -File orchestration/tasks/TASK-0158-native-pane-model-foundation/run-tests.ps1; git diff --check; git diff --name-only
 ---
 
@@ -48,3 +51,10 @@ acceptance harness PASS (413 checks, MSVC 2019 v16.11.42 /std:c++20 /W4),
 git diff --check clean, git diff --name-only clean, legacy denylist PASS.
 All changes remain inside owned paths. No forbidden path touched; no port
 used besides none (pure offline model); port 6500 never approached.
+
+INTEGRATED by the PC architect after independent frozen-head and combined-head
+verification. Both runs passed the 413-check MSVC `/W4` harness; the native
+legacy denylist and diff hygiene passed. Architect verdict is recorded in
+REVIEW.md. Program implementation/evidence commits are `14809519` and
+`2be77c30`; the header remains intentionally unreferenced until its separately
+scoped painting successor.
