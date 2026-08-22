@@ -159,9 +159,9 @@ rejected pattern.
 - `30b851a72e59f7a6989c375abe2c0c167bf57f8f` — claim (STATUS.md only).
 - `419cf3b116699823a83dc0b9eb0feeaef1d28de5` — gate-c-decision-envelope.json,
   VALIDATION.md, fixtures/negative-cases.json.
-- `<REVIEW_REQUESTED commit>` — captures/gate-c-rg-evidence.txt, REPORT.md,
-  STATUS transition to REVIEW_REQUESTED (exact SHA appended below after
-  committing, per handoff discipline; never amended).
+- `70d52b52b1cf5e730b2ae0d7ae7209ab760f9bd0` — REVIEW_REQUESTED:
+  captures/gate-c-rg-evidence.txt, REPORT.md, STATUS transition to
+  REVIEW_REQUESTED.
 
 ## Deviations
 
@@ -205,6 +205,11 @@ packets, as recorded in `completeness.owner_pending_content`.
 
 ## Revision r1 — record REVIEW_REQUESTED head
 
-Appended after pushing per the REPORT placeholder above.
+Appended after committing per the placeholder above. The REVIEW_REQUESTED
+state takes effect at `70d52b52b1cf5e730b2ae0d7ae7209ab760f9bd0`; this
+evidence-only revision records that exact SHA and is itself the branch tip at
+push (observable as the tip of
+`origin/codex/TASK-0130-gate-c-decision-envelope-ox-pc-e`). STATUS remains
+REVIEW_REQUESTED at the pushed head.
 
-- REVIEW_REQUESTED evidence commit: `<appended post-push>`
+- REVIEW_REQUESTED evidence commit: `70d52b52b1cf5e730b2ae0d7ae7209ab760f9bd0`
