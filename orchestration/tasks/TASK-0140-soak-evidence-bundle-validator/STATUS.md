@@ -1,7 +1,7 @@
 # TASK-0140 claim
 
 - task: TASK-0140
-- state: CLAIMED
+- state: REVIEW_REQUESTED
 - coordinator: ox-pc-d
 - worker: ox-pc-d (isolated PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0140-soak-evidence-bundle-validator-ox-pc-d`
@@ -45,4 +45,14 @@
 
 ## Transition log
 
-- CLAIMED: this commit (STATUS.md only), pushed to origin worker branch.
+- CLAIMED: commit `2a1a1d9c` (STATUS.md only), pushed to origin.
+- IMPLEMENTED: commit `d9910a6d` (`validate-soak-evidence.mjs`,
+  `validate-soak-evidence.test.mjs`, four fixtures + generator,
+  `VALIDATION.md`). All five SPEC gates green with literal transcripts in
+  REPORT.md: unit suite 33/33 exit 0; valid-pass fixture exit 0; retry-masked
+  negative control exit 1 emitting RETRY_MASKED_FAILURE (nonzero negative
+  control honored); `git diff --check` clean. Worker writes confined to the
+  task folder; no soak executed; no port bound or probed (6500 untouched);
+  TASK-0135 untouched; no CI/native/server/src/playtest mutation.
+- REVIEW_REQUESTED: REPORT.md written with gate transcripts and exit codes;
+  this commit pushed to this worker branch only. No merge, no force-push.
