@@ -31,6 +31,22 @@
 #include <windows.h>
 #include <windowsx.h>
 
+// TASK-0141 data-only generated vector kit. Read-only consumption: the
+// client never mutates these tables; art changes flow through the generator.
+// The generator emits GLSL-style float literals ("22f"). The standard
+// reserves bare "f" as a literal-operator suffix, but MSVC permits defining
+// one under warning C4455 — and the generated header is outside this task's
+// ownership, so the tiny compatibility operators live here instead.
+#pragma warning(disable: 4455)
+inline constexpr float operator""f(long double value) {
+  return static_cast<float>(value);
+}
+inline constexpr float operator""f(unsigned long long value) {
+  return static_cast<float>(value);
+}
+#pragma warning(default: 4455)
+#include "assets/generated/visual_kit.h"
+
 namespace {
 
 using GpStatus = int;
@@ -153,9 +169,9 @@ struct BillboardAssets {
   SpriteBitmap terrain1;
   SpriteBitmap terrain4;
   std::string root;
-  std::string status = "billboards: off (fallback capsules; assets not loaded)";
-  std::string scenery_status = "scenery: off (fallback shapes; assets not loaded)";
-  std::string terrain_status = "terrain: off (flat fill; terrain plates missing)";
+  std::string status = "art: loading";
+  std::string scenery_status = "scenery: loading";
+  std::string terrain_status = "terrain: loading";
 
   ~BillboardAssets() {
     player.reset();
@@ -487,14 +503,52 @@ bool initialize_gdiplus(BillboardAssets& assets) {
 }
 
 std::vector<std::string> billboard_roots() {
-  std::vector<std::string> roots{"prototypes\\founding-slice\\assets"};
+  std::vector<std::string> roots;
+  // TASK-0142: discovery must hold from the repository root, the build
+  // directory, and an installed-style directory where plates ship beside the
+  // executable. Every candidate is checked for existence before any load, so
+  // a miss is cheap and silent.
   const std::string executable = executable_directory();
-  for (int depth = 1; depth <= 5; ++depth) {
-    std::string prefix = executable;
-    for (int part = 0; part < depth; ++part) prefix += "\\..";
+  if (!executable.empty()) {
+    // Installed-style: an assets folder shipped next to the executable.
+    roots.push_back(executable + "\\assets");
+    for (int depth = 1; depth <= 6; ++depth) {
+      std::string prefix = executable;
+      for (int part = 0; part < depth; ++part) prefix += "\\..";
+      // Installed-style: assets folder beside a nested install root.
+      roots.push_back(prefix + "\\assets");
+      // Repository checkout reached by walking up from the build directory.
+      roots.push_back(prefix + "\\prototypes\\founding-slice\\assets");
+    }
+  }
+  // Repository checkout relative to the current working directory (the
+  // historical layout, kept last so an explicit install always wins).
+  std::string prefix = ".";
+  for (int depth = 0; depth <= 4; ++depth) {
     roots.push_back(prefix + "\\prototypes\\founding-slice\\assets");
+    prefix += "\\..";
   }
   return roots;
+}
+
+// TASK-0142: one honest source for the art status copy. The text is always
+// derived from what is actually ready, never from what a load attempt hoped
+// for, so the owner-facing HUD cannot claim assets it does not have.
+void refresh_art_status(BillboardAssets& assets) {
+  if (assets.player.ready() && assets.raider.ready() && assets.boss.ready())
+    assets.status = "art: PNG billboards loaded";
+  else
+    assets.status = std::string("art: embedded vector kit ") +
+                    verdigris::visual_kit::kKitVersion + " (procedural placeholder)";
+  if (assets.tree.ready() && assets.ruin.ready() && assets.dwelling.ready() &&
+      assets.shrine.ready())
+    assets.scenery_status = "scenery: PNG plates loaded";
+  else
+    assets.scenery_status = "scenery: embedded vector kit (procedural placeholder)";
+  if (assets.terrain1.ready() && assets.terrain4.ready())
+    assets.terrain_status = "terrain: PNG plates tiled";
+  else
+    assets.terrain_status = "terrain: embedded vector kit tiles (procedural placeholder)";
 }
 
 void load_billboards(BillboardAssets& assets) {
@@ -502,9 +556,7 @@ void load_billboards(BillboardAssets& assets) {
   assets.alpha_blend = reinterpret_cast<AlphaBlendProc>(
       assets.msimg32_module ? GetProcAddress(assets.msimg32_module, "AlphaBlend") : nullptr);
   if (!assets.alpha_blend || !initialize_gdiplus(assets)) {
-    assets.status = "billboards: off (fallback capsules; GDI image support unavailable)";
-    assets.scenery_status =
-        "scenery: off (fallback shapes; GDI image support unavailable)";
+    refresh_art_status(assets);
     return;
   }
   for (const auto& root : billboard_roots()) {
@@ -515,7 +567,6 @@ void load_billboards(BillboardAssets& assets) {
         load_sprite(assets, root + "\\boss.png", assets.boss);
     if (actors_loaded) {
       assets.root = root;
-      assets.status = "billboards: on (scion_str / raider / boss; magenta keyed)";
     } else {
       assets.player.reset();
       assets.raider.reset();
@@ -529,8 +580,6 @@ void load_billboards(BillboardAssets& assets) {
         load_sprite(assets, root + "\\shrine.png", assets.shrine);
     if (scenery_loaded) {
       if (assets.root.empty()) assets.root = root;
-      assets.scenery_status =
-          "scenery: on (tree / ruin / dwelling / shrine; magenta keyed)";
     } else {
       assets.tree.reset();
       assets.ruin.reset();
@@ -543,20 +592,17 @@ void load_billboards(BillboardAssets& assets) {
         load_terrain_plate(assets, root + "\\terrain4.png", assets.terrain4);
     if (terrain_loaded) {
       if (assets.root.empty()) assets.root = root;
-      assets.terrain_status = "terrain: on (terrain1 / terrain4 tiled floor)";
     } else {
       assets.terrain1.reset();
       assets.terrain4.reset();
     }
 
+    // One honest status refresh for whatever actually loaded — the early
+    // return must not skip it.
+    refresh_art_status(assets);
     if (actors_loaded || scenery_loaded || terrain_loaded) return;
   }
-  if (assets.player.ready() == false)
-    assets.status = "billboards: off (fallback capsules; asset plates missing)";
-  assets.scenery_status =
-      "scenery: off (fallback shapes; asset plates missing)";
-  if (!assets.terrain1.ready() || !assets.terrain4.ready())
-    assets.terrain_status = "terrain: off (flat fill; terrain plates missing)";
+  refresh_art_status(assets);
 }
 
 std::uint64_t scenery_seed(const std::string& route_id) {
@@ -892,10 +938,170 @@ void draw_line(HDC dc, int x0, int y0, int x1, int y1, COLORREF color, int width
   DeleteObject(pen);
 }
 
+// ── TASK-0142: embedded vector kit renderer ─────────────────────────────
+// Draws the TASK-0141 generated symbols (verdigris::visual_kit) straight
+// from the data-only header with plain GDI fills. This is the deterministic
+// owner-facing fallback when PNG/GDI+ plates are unavailable — no files are
+// consulted, so it renders identically on every machine. The kit is a
+// placeholder art pass, never claimed as final owner-approved art.
+
+namespace kit = verdigris::visual_kit;
+
+COLORREF kit_color(int index) {
+  const kit::Color& color = kit::kColors[index];
+  // GDI has no per-shape alpha; blend translucent kit colors over the dark
+  // scene background so authored shadows/flames keep their softness.
+  const double alpha = std::clamp(static_cast<double>(color.a), 0.0, 1.0);
+  const auto mix = [alpha](float channel, int background) {
+    const double foreground = static_cast<double>(channel) * 255.0;
+    return static_cast<int>(background + (foreground - background) * alpha + 0.5);
+  };
+  return RGB(mix(color.r, 23), mix(color.g, 29), mix(color.b, 32));
+}
+
+const kit::Symbol* kit_symbol(const char* role, const char* motif = nullptr) {
+  for (int i = 0; i < kit::kSymbolCount; ++i) {
+    const kit::Symbol& symbol = kit::kSymbols[i];
+    if (std::strcmp(symbol.role, role) != 0) continue;
+    if (motif && std::strcmp(symbol.motif, motif) != 0) continue;
+    return &symbol;
+  }
+  return nullptr;
+}
+
+struct KitPlacement {
+  HDC dc;
+  double origin_x;   // screen x of the viewBox left edge
+  double origin_y;   // screen y of the viewBox top edge
+  double scale;      // pixels per viewBox unit
+  double box_width;  // authored symbol width in viewBox units
+  bool mirror;       // flip horizontally around the viewBox center
+};
+
+POINT kit_point(const KitPlacement& placement, float x, float y) {
+  const double units_x =
+      placement.mirror ? placement.box_width - static_cast<double>(x)
+                       : static_cast<double>(x);
+  return {static_cast<int>(std::lround(placement.origin_x +
+                                       units_x * placement.scale)),
+          static_cast<int>(std::lround(placement.origin_y +
+                                       static_cast<double>(y) * placement.scale))};
+}
+
+void draw_kit_shape(const KitPlacement& placement, const kit::Shape& shape) {
+  constexpr int kColorCount =
+      static_cast<int>(sizeof(kit::kColors) / sizeof(kit::kColors[0]));
+  const bool has_fill =
+      shape.fill >= 0 && shape.fill < kColorCount;
+  const bool has_stroke =
+      shape.stroke >= 0 && shape.stroke < kColorCount;
+  if (!has_fill && !has_stroke) return;
+  COLORREF fill_color = has_fill ? kit_color(shape.fill) : 0;
+  const int stroke_w =
+      has_stroke ? std::max(1, static_cast<int>(std::lround(
+                                     shape.stroke_width * placement.scale)))
+                 : 1;
+
+  HBRUSH brush = nullptr;
+  HPEN pen = nullptr;
+  HGDIOBJ old_brush = nullptr;
+  HGDIOBJ old_pen = nullptr;
+  HGDIOBJ old_hollow = nullptr;
+  if (has_fill) {
+    brush = CreateSolidBrush(fill_color);
+    old_brush = SelectObject(placement.dc, brush);
+  } else {
+    // Stroke-only shapes must not inherit whatever brush the DC last used.
+    old_hollow = SelectObject(placement.dc, GetStockObject(NULL_BRUSH));
+  }
+  if (has_stroke) {
+    pen = CreatePen(PS_SOLID, stroke_w, kit_color(shape.stroke));
+    old_pen = SelectObject(placement.dc, pen);
+  }
+
+  switch (shape.kind) {
+    case kit::ShapeKind::Polygon:
+    case kit::ShapeKind::Polyline: {
+      const int count = shape.point_end - shape.point_begin;
+      if (count > 1) {
+        std::vector<POINT> points(static_cast<std::size_t>(count));
+        for (int p = 0; p < count; ++p) {
+          points[static_cast<std::size_t>(p)] = kit_point(
+              placement, kit::kPoints[(shape.point_begin + p) * 2],
+              kit::kPoints[(shape.point_begin + p) * 2 + 1]);
+        }
+        if (shape.kind == kit::ShapeKind::Polygon)
+          Polygon(placement.dc, points.data(), count);
+        else
+          Polyline(placement.dc, points.data(), count);
+      }
+      break;
+    }
+    case kit::ShapeKind::Circle:
+    case kit::ShapeKind::Ellipse: {
+      const double units_x =
+          placement.mirror ? placement.box_width - static_cast<double>(shape.cx)
+                           : static_cast<double>(shape.cx);
+      const int cx = static_cast<int>(
+          std::lround(placement.origin_x + units_x * placement.scale));
+      const int cy = static_cast<int>(std::lround(
+          placement.origin_y + static_cast<double>(shape.cy) * placement.scale));
+      const int rx =
+          std::max(1, static_cast<int>(std::lround(
+                           static_cast<double>(shape.rx) * placement.scale)));
+      const int ry_raw = shape.kind == kit::ShapeKind::Ellipse
+                             ? static_cast<int>(shape.ry)
+                             : static_cast<int>(shape.rx);
+      const int ry =
+          std::max(1, static_cast<int>(std::lround(
+                           static_cast<double>(ry_raw) * placement.scale)));
+      Ellipse(placement.dc, cx - rx, cy - ry, cx + rx, cy + ry);
+      break;
+    }
+  }
+
+  if (old_pen) SelectObject(placement.dc, old_pen);
+  if (old_hollow) SelectObject(placement.dc, old_hollow);
+  if (old_brush) SelectObject(placement.dc, old_brush);
+  if (pen) DeleteObject(pen);
+  if (brush) DeleteObject(brush);
+}
+
+// Draws one symbol standing on (base_x, base_y). pixel_height scales the
+// authored 64-unit box; the motif's ground baseline sits ~90% down the box,
+// so feet land on the contact point and the lower margin overlaps the
+// contact shadow like a keyed PNG plate would.
+void draw_kit_symbol(HDC dc, const kit::Symbol& symbol, int base_x, int base_y,
+                     int pixel_height, bool mirror) {
+  if (pixel_height <= 0 || symbol.width <= 0 || symbol.height <= 0) return;
+  constexpr double kGroundFraction = 58.0 / 64.0;
+  const double scale = static_cast<double>(pixel_height) /
+                       static_cast<double>(symbol.height);
+  const int baseline_offset =
+      static_cast<int>(std::lround(static_cast<double>(pixel_height) *
+                                   kGroundFraction));
+  KitPlacement placement{dc,
+                         static_cast<double>(base_x) -
+                             static_cast<double>(symbol.width) * scale * 0.5,
+                         static_cast<double>(base_y - baseline_offset), scale,
+                         static_cast<double>(symbol.width), mirror};
+  for (int i = symbol.shape_begin; i < symbol.shape_end; ++i)
+    draw_kit_shape(placement, kit::kShapes[i]);
+}
+
 void draw_contact_shadow(HDC dc, const ScreenPoint& base, double world_radius) {
   const int rx = std::max(3, static_cast<int>(world_radius * base.scale));
   const int ry = std::max(2, static_cast<int>(world_radius * base.scale * 0.8));
   fill_ellipse(dc, base.x, base.y, rx, ry, RGB(14, 18, 20));
+}
+
+// TASK-0142: a squashed ground ring in team colors so friend/foe reads at a
+// glance even before the silhouette resolves.
+void draw_team_ring(HDC dc, const ScreenPoint& base, double world_radius,
+                    COLORREF color) {
+  const int rx = std::max(5, static_cast<int>(world_radius * base.scale));
+  const int ry = std::max(3, static_cast<int>(world_radius * base.scale * 0.62));
+  ring_ellipse(dc, base.x, base.y, rx, ry, color, 2);
 }
 
 // A billboard stands vertically on its ground point regardless of camera pitch.
@@ -940,6 +1146,16 @@ const SpriteBitmap& scenery_sprite(const BillboardAssets& assets, SceneryKind ki
     case SceneryKind::Shrine: return assets.shrine;
   }
   return assets.tree;
+}
+
+const char* scenery_kit_role(SceneryKind kind) {
+  switch (kind) {
+    case SceneryKind::Tree: return "tree";
+    case SceneryKind::Ruin: return "ruin";
+    case SceneryKind::Dwelling: return "dwelling";
+    case SceneryKind::Shrine: return "shrine";
+  }
+  return "tree";
 }
 
 double scenery_height(SceneryKind kind) {
@@ -1010,8 +1226,17 @@ void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& came
   draw_contact_shadow(dc, base, item.radius * 0.9);
   const SpriteBitmap& sprite = scenery_sprite(assets, item.kind);
   if (!draw_billboard_sprite(assets, dc, sprite, base,
-                             scenery_height(item.kind) * item.scale, 1))
-    draw_scenery_fallback(dc, base, item, camera);
+                             scenery_height(item.kind) * item.scale, 1)) {
+    // TASK-0142: deterministic vector-kit silhouette before the geometric
+    // last resort, so a machine without PNG plates still reads as a game.
+    const int kit_height =
+        std::max(8, static_cast<int>(scenery_height(item.kind) * item.scale *
+                                     base.scale));
+    if (const kit::Symbol* symbol = kit_symbol(scenery_kit_role(item.kind)))
+      draw_kit_symbol(dc, *symbol, base.x, base.y, kit_height, false);
+    else
+      draw_scenery_fallback(dc, base, item, camera);
+  }
 }
 
 void draw_ground_grid(HDC dc, const Camera& camera, const RECT& bounds) {
@@ -1068,14 +1293,23 @@ bool draw_terrain_tile(HDC dc, const SpriteBitmap& sprite, int dest_x, int dest_
 void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
                 const RECT& bounds, const std::string& route_id, render::List& rl) {
   const bool tiled = assets.terrain1.ready() && assets.terrain4.ready();
-  rl.push_back({render::Op::Floor, 0.0, 0.0, 0.0, tiled ? 1 : 0,
-                tiled ? "tiled" : "flat"});
+  // TASK-0142: with the embedded vector kit the floor stays textured even
+  // when PNG plates are missing — the "tiled" contract is honest in both
+  // paths because real tiles are drawn.
+  const kit::Symbol* motif_primary =
+      tiled ? nullptr : kit_symbol("terrain", "grass-court");
+  const kit::Symbol* motif_alt =
+      tiled ? nullptr : kit_symbol("terrain", "mossy-stone");
+  const bool vector_tiled = motif_primary && motif_alt;
+  rl.push_back({render::Op::Floor, 0.0, 0.0, 0.0,
+                (tiled || vector_tiled) ? 1 : 0,
+                (tiled || vector_tiled) ? "tiled" : "flat"});
 
   HBRUSH background = CreateSolidBrush(RGB(23, 29, 32));
   FillRect(dc, &bounds, background);
   DeleteObject(background);
 
-  if (!tiled) {
+  if (!tiled && !vector_tiled) {
     draw_ground_grid(dc, camera, bounds);
     return;
   }
@@ -1099,14 +1333,32 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
       const ScreenPoint corner1 = project(camera, bounds, wx + tile, wy + tile);
       const ScreenPoint center = project(camera, bounds, wx + half, wy + half);
       const bool use_alt = terrain_tile_uses_alt(tx, ty, theme_alt);
-      const SpriteBitmap& sprite = use_alt ? assets.terrain4 : assets.terrain1;
       const std::string label =
           std::string(use_alt ? "terrain4" : "terrain1") + ":" + std::to_string(tx) + ":" +
           std::to_string(ty);
       rl.push_back({render::Op::Tile, static_cast<double>(center.x),
                     static_cast<double>(center.y), half * center.scale, 0, label});
-      draw_terrain_tile(dc, sprite, corner0.x, corner0.y, corner1.x - corner0.x,
-                        corner1.y - corner0.y, terrain_tile_hash(tx, ty) >> 8);
+      if (tiled) {
+        const SpriteBitmap& sprite = use_alt ? assets.terrain4 : assets.terrain1;
+        draw_terrain_tile(dc, sprite, corner0.x, corner0.y, corner1.x - corner0.x,
+                          corner1.y - corner0.y, terrain_tile_hash(tx, ty) >> 8);
+      } else if (vector_tiled) {
+        // Deterministic vector motif tile: same hashed dominant/variant mix
+        // as the PNG path (marsh/barrow/circle themes favor mossy stone).
+        const kit::Symbol& motif = use_alt ? *motif_alt : *motif_primary;
+        const int dest_w = corner1.x - corner0.x;
+        const int dest_h = corner1.y - corner0.y;
+        if (dest_w > 0 && dest_h > 0 && corner0.x < bounds.right &&
+            corner0.y < bounds.bottom && corner1.x > 0 && corner1.y > 0) {
+          const double scale = static_cast<double>(dest_w) /
+                               static_cast<double>(motif.width);
+          KitPlacement placement{dc, static_cast<double>(corner0.x),
+                                 static_cast<double>(corner0.y), scale,
+                                 static_cast<double>(motif.width), false};
+          for (int i = motif.shape_begin; i < motif.shape_end; ++i)
+            draw_kit_shape(placement, kit::kShapes[i]);
+        }
+      }
     }
   }
 }
@@ -1372,11 +1624,22 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       const int lift = static_cast<int>(kTileUnits * (0.35 + grow * 0.75) * base.scale);
       const COLORREF color = fx.damage_to_player ? RGB(255, 118, 104) : RGB(240, 218, 132);
       SetBkMode(dc, TRANSPARENT);
+      // TASK-0142: bold numerals so the resolved damage reads instantly.
+      const int font_h = std::clamp(
+          static_cast<int>(kTileUnits * 0.34 * base.scale), 13, 22);
+      HFONT number_font = CreateFontA(font_h, 0, 0, 0, FW_BOLD, FALSE, FALSE,
+                                      FALSE, DEFAULT_CHARSET,
+                                      OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                                      DEFAULT_QUALITY, FF_SWISS,
+                                      "Verdana");
+      HGDIOBJ old_number_font = SelectObject(dc, number_font);
       // Rise AND fade toward the background over the effect lifetime.
       SetTextColor(dc, fade_to_background(color, life));
       const std::string text = std::to_string(fx.value);
       TextOutA(dc, base.x - 9, base.y - lift, text.c_str(),
                static_cast<int>(text.size()));
+      SelectObject(dc, old_number_font);
+      DeleteObject(number_font);
       break;
     }
     case EffectFx::Kind::TargetFlash: {
@@ -1598,6 +1861,46 @@ struct DepthDraw {
   enum class What { Scenery, Player, Monster, Loot, Effect } what = What::Player;
   std::size_t index = 0;
 };
+
+// TASK-0142: eight-way compass for the objective strip; world y grows
+// southward exactly like the ground projection.
+const char* compass_step(int dx, int dy) {
+  if (dx == 0 && dy == 0) return "here";
+  static const char* const kNames[8] = {"E",  "SE", "S", "SW",
+                                        "W",  "NW", "N", "NE"};
+  const double angle = std::atan2(static_cast<double>(dy),
+                                  static_cast<double>(dx));
+  const int octant =
+      static_cast<int>(std::lround(angle / (kPi / 4.0)));
+  return kNames[((octant % 8) + 8) % 8];
+}
+
+// Draws one owner-facing status chip and records it as a Hud op. Returns the
+// chip width so callers can lay out stacked chips deterministically.
+int paint_status_chip(HDC dc, int x, int y, const std::string& text,
+                      COLORREF accent, render::List& rl) {
+  SIZE extent{};
+  GetTextExtentPoint32A(dc, text.c_str(), static_cast<int>(text.size()), &extent);
+  const int width = extent.cx + 16;
+  const int height = extent.cy + 8;
+  RECT rect{x, y, x + width, y + height};
+  HBRUSH bg = CreateSolidBrush(RGB(25, 33, 37));
+  FillRect(dc, &rect, bg);
+  DeleteObject(bg);
+  HPEN pen = CreatePen(PS_SOLID, 1, accent);
+  HGDIOBJ old_pen = SelectObject(dc, pen);
+  HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+  Rectangle(dc, rect.left, rect.top, rect.right, rect.bottom);
+  SelectObject(dc, old_brush);
+  SelectObject(dc, old_pen);
+  DeleteObject(pen);
+  SetBkMode(dc, TRANSPARENT);
+  SetTextColor(dc, accent);
+  TextOutA(dc, x + 8, y + 4, text.c_str(), static_cast<int>(text.size()));
+  rl.push_back({render::Op::Hud, static_cast<double>(x), static_cast<double>(y),
+                0.0, 0, text});
+  return width;
+}
 
 std::string loot_label(const ClientState& state, const std::string& id) {
   auto found = state.world.loot_names.find(id);
@@ -1977,21 +2280,47 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     rl.push_back({render::Op::Extraction, static_cast<double>(pad.x),
                   static_cast<double>(pad.y), static_cast<double>(pad_r), 0,
                   "stairs-up"});
-    fill_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(36, 78, 58));
+    // TASK-0142: the pad must own its corner of the screen — a bright plate,
+    // a slow tick-driven pulse, and gold chevrons pointing at the way out.
+    const bool pulse_on = (world.tick / 9) % 2 == 0;
+    fill_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(30, 92, 64));
     ring_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(120, 214, 168), 3);
+    if (pulse_on && pad_r > 6)
+      ring_ellipse(dc, pad.x, pad.y, pad_r + 5, pad_r + 5, RGB(160, 236, 190), 2);
     const int inner = std::max(6, pad_r * 2 / 3);
     ring_ellipse(dc, pad.x, pad.y, inner, inner, RGB(239, 208, 116), 2);
-    const int step = std::max(4, pad_r / 3);
+    const int step = std::max(5, pad_r / 3);
     for (int i = 0; i < 3; ++i) {
       const int y = pad.y + pad_r / 4 - i * step;
-      draw_line(dc, pad.x - pad_r / 2 + i * 3, y, pad.x, y - step, RGB(239, 208, 116),
-                2);
-      draw_line(dc, pad.x + pad_r / 2 - i * 3, y, pad.x, y - step, RGB(239, 208, 116),
-                2);
+      const int spread = std::max(3, pad_r / 2 - i * 3);
+      const int tip_y = y - step;
+      draw_line(dc, pad.x - spread, y, pad.x, tip_y, RGB(239, 208, 116), 3);
+      draw_line(dc, pad.x + spread, y, pad.x, tip_y, RGB(239, 208, 116), 3);
+      // Arrowheads make the chevron read as direction, not decoration.
+      draw_line(dc, pad.x - spread / 2, tip_y + std::max(2, step / 4), pad.x,
+                tip_y, RGB(255, 232, 150), 2);
+      draw_line(dc, pad.x + spread / 2, tip_y + std::max(2, step / 4), pad.x,
+                tip_y, RGB(255, 232, 150), 2);
     }
-    SetBkMode(dc, TRANSPARENT);
-    SetTextColor(dc, RGB(239, 208, 116));
-    TextOutA(dc, pad.x - 14, pad.y + pad_r + 2, "EXIT", 4);
+    {
+      RECT label_backing{pad.x - 22, pad.y + pad_r + 2, pad.x + 22,
+                         pad.y + pad_r + 18};
+      HBRUSH label_bg = CreateSolidBrush(RGB(16, 22, 20));
+      FillRect(dc, &label_backing, label_bg);
+      DeleteObject(label_bg);
+      HPEN label_pen = CreatePen(PS_SOLID, 1, RGB(120, 214, 168));
+      HGDIOBJ old_label_pen = SelectObject(dc, label_pen);
+      HGDIOBJ old_label_brush =
+          SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+      Rectangle(dc, label_backing.left, label_backing.top, label_backing.right,
+                label_backing.bottom);
+      SelectObject(dc, old_label_brush);
+      SelectObject(dc, old_label_pen);
+      DeleteObject(label_pen);
+      SetBkMode(dc, TRANSPARENT);
+      SetTextColor(dc, RGB(239, 208, 116));
+      TextOutA(dc, pad.x - 14, pad.y + pad_r + 4, "EXIT", 4);
+    }
   }
 
   // Warnings live on the ground plane beneath billboards and loot so their
@@ -2050,10 +2379,20 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         rl.push_back({render::Op::Player, static_cast<double>(base.x),
                       static_cast<double>(base.y)});
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
+        draw_team_ring(dc, base, kTileUnits * 0.55, RGB(120, 214, 168));
         if (!draw_billboard_sprite(state.billboards, dc, state.billboards.player, base,
-                                   kTileUnits * 1.35, player.facing.x))
-          draw_billboard(dc, base, kTileUnits * 0.62, kTileUnits * 1.35,
-                         RGB(84, 158, 128), RGB(140, 208, 172));
+                                   kTileUnits * 1.35, player.facing.x)) {
+          // TASK-0142: generated vector silhouette before the capsule.
+          const int kit_height =
+              std::max(8, static_cast<int>(kTileUnits * 1.35 * base.scale));
+          const kit::Symbol* symbol = kit_symbol("player");
+          if (symbol)
+            draw_kit_symbol(dc, *symbol, base.x, base.y, kit_height,
+                            player.facing.x < 0);
+          else
+            draw_billboard(dc, base, kTileUnits * 0.62, kTileUnits * 1.35,
+                           RGB(84, 158, 128), RGB(140, 208, 172));
+        }
         // Draw the authoritative facing, rather than a client-only mouse hint.
         const double angle =
             std::atan2(static_cast<double>(player.facing.y),
@@ -2073,11 +2412,12 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                       static_cast<double>(base.y), 0.0, monster.life,
                       monster.elite ? "elite" : "monster"});
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
+        draw_team_ring(dc, base, kTileUnits * 0.58,
+                       monster.elite ? RGB(239, 208, 116) : RGB(214, 92, 72));
         const SpriteBitmap& monster_sprite = monster.elite ? state.billboards.boss
                                                             : state.billboards.raider;
         const double foe_height =
             monster.elite ? kTileUnits * 1.85 : kTileUnits * 1.58;
-        draw_contact_shadow(dc, base, kTileUnits * 0.55);
         {
           const int halo_h = std::max(6, static_cast<int>(foe_height * base.scale));
           const int halo_w = std::max(5, static_cast<int>(halo_h * 0.42));
@@ -2085,22 +2425,55 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                        RGB(72, 22, 20));
         }
         if (!draw_billboard_sprite(state.billboards, dc, monster_sprite, base, foe_height,
-                                   monster.facing.x))
-          draw_billboard(dc, base, kTileUnits * 0.88, kTileUnits * 1.12,
-                         RGB(186, 58, 44), RGB(42, 18, 16));
-        const int bar_w = static_cast<int>(kTileUnits * 0.7 * base.scale);
+                                   monster.facing.x)) {
+          // TASK-0142: generated vector silhouettes (horned raider / caped
+          // elite) before the capsule.
+          const int kit_height =
+              std::max(8, static_cast<int>(foe_height * base.scale));
+          const kit::Symbol* symbol =
+              kit_symbol(monster.elite ? "elite" : "raider");
+          if (symbol)
+            draw_kit_symbol(dc, *symbol, base.x, base.y, kit_height,
+                            monster.facing.x < 0);
+          else
+            draw_billboard(dc, base, kTileUnits * 0.88, kTileUnits * 1.12,
+                           RGB(186, 58, 44), RGB(42, 18, 16));
+        }
+        // TASK-0142: bordered life bar with a dark backing so the remaining
+        // fraction stays readable against any floor.
+        const int bar_w = static_cast<int>(kTileUnits * 0.7 * base.scale) + 4;
         const int bar_y =
-            base.y - static_cast<int>(kTileUnits * 1.5 * base.scale);
+            base.y - static_cast<int>(kTileUnits * 1.5 * base.scale) - 4;
         const double ratio =
             std::clamp(static_cast<double>(monster.life) /
                            std::max(1, monster.life_max),
                        0.0, 1.0);
-        draw_line(dc, base.x - bar_w / 2, bar_y, base.x + bar_w / 2, bar_y,
-                  RGB(52, 40, 38), 3);
-        if (ratio > 0.0)
-          draw_line(dc, base.x - bar_w / 2, bar_y,
-                    base.x - bar_w / 2 + static_cast<int>(bar_w * ratio), bar_y,
-                    RGB(214, 118, 86), 3);
+        {
+          RECT backing{base.x - bar_w / 2 - 1, bar_y - 3, base.x + bar_w / 2 + 1,
+                       bar_y + 3};
+          HBRUSH backing_brush = CreateSolidBrush(RGB(12, 14, 15));
+          FillRect(dc, &backing, backing_brush);
+          DeleteObject(backing_brush);
+          if (ratio > 0.0) {
+            const int fill_w = static_cast<int>(bar_w * ratio);
+            RECT fill_rect{base.x - bar_w / 2, bar_y - 2,
+                           base.x - bar_w / 2 + fill_w, bar_y + 2};
+            const COLORREF bar_color = ratio > 0.55   ? RGB(120, 200, 130)
+                                       : ratio > 0.25 ? RGB(239, 208, 116)
+                                                      : RGB(214, 72, 58);
+            HBRUSH fill_brush = CreateSolidBrush(bar_color);
+            FillRect(dc, &fill_rect, fill_brush);
+            DeleteObject(fill_brush);
+          }
+          HPEN bar_pen = CreatePen(PS_SOLID, 1, RGB(86, 116, 104));
+          HGDIOBJ old_bar_pen = SelectObject(dc, bar_pen);
+          HGDIOBJ old_bar_brush =
+              SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+          Rectangle(dc, backing.left, backing.top, backing.right, backing.bottom);
+          SelectObject(dc, old_bar_brush);
+          SelectObject(dc, old_bar_pen);
+          DeleteObject(bar_pen);
+        }
         const auto telegraph = state.telegraphs.find(monster.id);
         if (telegraph != state.telegraphs.end()) {
           const ActiveTelegraph& warning = telegraph->second;
@@ -2215,6 +2588,57 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       const char* banner = "CONNECTION LOST — not playing offline";
       TextOutA(dc, 18, 76, banner, static_cast<int>(strlen(banner)));
     }
+  }
+
+  // TASK-0142: owner-facing objective strip, centered at the top. The copy
+  // always reflects the authoritative world (extraction presence, carried
+  // loot) and names the concrete action that banks progress.
+  {
+    std::string objective;
+    COLORREF accent = RGB(120, 214, 168);
+    if (!world.has_extraction) {
+      objective = "objective: explore the route";
+    } else {
+      const int ddx = world.extraction.x - player.position.x;
+      const int ddy = world.extraction.y - player.position.y;
+      const int dist = static_cast<int>(
+          std::lround(std::sqrt(static_cast<double>(ddx * ddx + ddy * ddy))));
+      const bool carrying =
+          !world.carried.empty() || world.carried_trophies > 0;
+      objective = std::string(carrying
+                                  ? "objective: carry your loot to the EXIT ("
+                                  : "objective: reach the EXIT (");
+      objective += compass_step(ddx, ddy);
+      objective += ", " + std::to_string(dist) + "u) - press F there";
+      if (carrying) accent = RGB(239, 208, 116);
+    }
+    SIZE extent{};
+    GetTextExtentPoint32A(dc, objective.c_str(),
+                          static_cast<int>(objective.size()), &extent);
+    const int chip_x =
+        std::max(12, (static_cast<int>(bounds.right) -
+                      static_cast<int>(extent.cx) - 16) / 2);
+    paint_status_chip(dc, chip_x, 12, objective, accent, rl);
+  }
+
+  // TASK-0142: honest art-status chip. It reports what is really on screen —
+  // PNG plates when loaded, the embedded procedural kit otherwise — so a
+  // missing asset can never masquerade as loaded art.
+  {
+    const bool plates =
+        state.billboards.player.ready() && state.billboards.raider.ready() &&
+        state.billboards.boss.ready();
+    const COLORREF art_accent =
+        plates ? RGB(120, 214, 168) : RGB(239, 190, 78);
+    SIZE art_extent{};
+    GetTextExtentPoint32A(dc, state.billboards.status.c_str(),
+                          static_cast<int>(state.billboards.status.size()),
+                          &art_extent);
+    const int art_x =
+        std::max(12, static_cast<int>(bounds.right) -
+                         static_cast<int>(art_extent.cx) - 16 - 18);
+    paint_status_chip(dc, art_x, state.session ? 38 : 12,
+                      state.billboards.status, art_accent, rl);
   }
 
   state.render_list = std::move(rl);
@@ -2613,6 +3037,12 @@ int scenario_move_and_camera() {
   scenario_check(baseline.size() > 3, "move-and-camera: scenery present in render list");
   scenario_check(render::any(state.render_list, render::Op::Floor),
                  "move-and-camera: Floor op recorded");
+  {
+    const render::Item* floor =
+        render::first(state.render_list, render::Op::Floor);
+    scenario_check(floor && floor->value == 1,
+                   "move-and-camera: floor is textured (plates or vector kit)");
+  }
   scenario_check(tile_baseline.size() > 8, "move-and-camera: terrain tiles present in render list");
   scenario_check(render::count(state.render_list, render::Op::Orb) >= 2,
                  "move-and-camera: life and resource orbs recorded");
@@ -2682,6 +3112,70 @@ int scenario_move_and_camera() {
 int scenario_first_fight() {
   ClientState state;
   scenario_begin(state);
+  state.camera.x = static_cast<double>(state.world.player.position.x);
+  state.camera.y = static_cast<double>(state.world.player.position.y);
+
+  // TASK-0142 owner-facing checks: the HUD names the objective, the art chip
+  // honestly reports what loaded, and the extraction pad is marked.
+  scenario_present(state);
+  bool art_op = false;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Hud &&
+        item.label.rfind("art: ", 0) == 0)
+      art_op = true;
+  scenario_check(art_op, "first-fight: an honest art-status line is on the HUD");
+  const bool claims_plates =
+      state.billboards.status.find("PNG billboards") != std::string::npos;
+  const bool really_plates = state.billboards.player.ready() &&
+                             state.billboards.raider.ready() &&
+                             state.billboards.boss.ready();
+  scenario_check(claims_plates == really_plates,
+                 "first-fight: art status matches what actually loaded");
+  bool objective_op = false;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Hud &&
+        item.label.rfind("objective:", 0) == 0)
+      objective_op = true;
+  scenario_check(objective_op,
+                 "first-fight: an objective strip is on the HUD");
+  if (state.world.has_extraction) {
+    const render::Item* pad =
+        render::first(state.render_list, render::Op::Extraction);
+    scenario_check(pad && pad->label == "stairs-up" && pad->radius > 0.0,
+                   "first-fight: the extraction pad is marked stairs-up");
+  }
+  scenario_check(render::any(state.render_list, render::Op::Player),
+                 "first-fight: the Scion silhouette is recorded");
+
+  // TASK-0142: force the deterministic vector-kit path by releasing the PNG
+  // plates, then re-present. This proves the no-assets fallback still draws
+  // the full owner-facing scene on any machine.
+  state.billboards.player.reset();
+  state.billboards.raider.reset();
+  state.billboards.boss.reset();
+  state.billboards.tree.reset();
+  state.billboards.ruin.reset();
+  state.billboards.dwelling.reset();
+  state.billboards.shrine.reset();
+  state.billboards.terrain1.reset();
+  state.billboards.terrain4.reset();
+  refresh_art_status(state.billboards);
+  scenario_check(state.billboards.status.find("vector kit") != std::string::npos,
+                 "first-fight: vector fallback reports itself honestly");
+  scenario_present(state);
+  {
+    const render::Item* floor =
+        render::first(state.render_list, render::Op::Floor);
+    scenario_check(floor && floor->value == 1 && floor->label == "tiled",
+                   "first-fight: vector terrain keeps the floor tiled");
+    scenario_check(render::count(state.render_list, render::Op::Tile) > 8,
+                   "first-fight: vector motif tiles are drawn");
+    scenario_check(render::any(state.render_list, render::Op::Scenery),
+                   "first-fight: vector scenery silhouettes are drawn");
+    scenario_check(render::any(state.render_list, render::Op::Player),
+                   "first-fight: vector Scion silhouette is drawn");
+  }
+
   for (int i = 0; i < 52; ++i)
     scenario_step(state, verdigris::Command::move(1, 0));
 
@@ -2740,6 +3234,18 @@ int scenario_loot_to_bank() {
                    "loot-to-bank: equipped bonus appears in the stat readout");
   }
 
+  bool objective_carries = false;
+  {
+    state.gear_overlay = false;
+    scenario_present(state);
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud &&
+          item.label.rfind("objective: carry your loot", 0) == 0)
+        objective_carries = true;
+  }
+  scenario_check(objective_carries,
+                 "loot-to-bank: objective strip points at the EXIT while carrying");
+
   state.gear_overlay = false;
   for (int i = 0; i < 52; ++i)
     scenario_step(state, verdigris::Command::move(-1, 0));
@@ -2755,6 +3261,16 @@ int scenario_loot_to_bank() {
   scenario_check(banked && banked->label.find("items 1") != std::string::npos &&
                      banked->label.find("trophies 1") != std::string::npos,
                  "loot-to-bank: banked footer reflects the extraction");
+
+  // TASK-0142: the owner-facing objective strip walks the loop — it points
+  // at the EXIT while loot is carried and keeps guiding after banking.
+  bool objective_points_exit = false;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Hud &&
+        item.label.rfind("objective: reach the EXIT", 0) == 0)
+      objective_points_exit = true;
+  scenario_check(objective_points_exit,
+                 "loot-to-bank: objective strip guides back to the extraction");
   return 0;
 }
 
