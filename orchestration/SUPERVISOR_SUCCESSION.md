@@ -81,8 +81,10 @@ request.
     scenery geometry. The supervisor independently rejected the worker's fresh
     05:40 stale probes; the actually regenerated 05:41 motif set is coherent.
     Its 06:00 native capture then used a stale 04:54 executable predating the
-    05:39 header, so the exact session is resumed at PID 9048 and must rebuild,
-    prove executable freshness, and recapture before any handoff;
+    05:39 header. One retry failed from a supervisor argument-parsing fault and
+    the exact session retry then wedged without an event; final fresh-context
+    dirty-lane salvage PID 25328 must rebuild, prove executable freshness, and
+    recapture. Its next stop without handoff quarantines the lane;
   - ox-pc-q, ports 6940-6959, TASK-0148 claim `815a359b` released and clean
     preserved after its recovery proposed `mutate/select` for the first Scion,
     bypassing the required accepted `create/set-out` chain. It is exhausted,

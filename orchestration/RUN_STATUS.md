@@ -109,7 +109,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 | ox-pc-m | 6860-6879 | TASK-0147 second post-claim stop after one recovery; claim `7d092a74` released; dirty worktree preserved | P0 quarantined, not capacity |
 | ox-pc-n | 6880-6899 | TASK-0148 clean launch and its one recovery both stopped before claim/write | activation failed; clean preserved, not capacity |
 | ox-pc-o | 6900-6919 | TASK-0148 second post-claim stop after one recovery; claim `71a73de8` released; clean worktree preserved | exhausted, not capacity |
-| ox-pc-p | 6920-6939 | TASK-0147 claim `3ee9f928`; corrected 05:41 motif probes are coherent, but the 06:00 native capture used a stale 04:54 executable predating the 05:39 header | exact session resumed at PID 9048; rebuild and timestamp/hash proof required before recapture |
+| ox-pc-p | 6920-6939 | TASK-0147 claim `3ee9f928`; corrected motifs are coherent, but stale-executable captures are invalid; one retry had an argument-parsing fault and the exact session then wedged silently | final fresh-context dirty-lane salvage PID 25328; next stop without handoff quarantines lane |
 | ox-pc-q | 6940-6959 | TASK-0148 claim `815a359b` released after recovery proposed a second normal-path bypass (`mutate/select` instead of `create/set-out`); clean claim head preserved | exhausted, not capacity |
 | ox-pc-r | 6960-6979 | TASK-0148 independent claim `837a412f` pushed from release head `c1acd4ec`; clean pre-write exit recovered in the same session at PID 7324 | accepted-chain recovery active |
 
