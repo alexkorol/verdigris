@@ -245,10 +245,14 @@ Actor* Simulation::actor(const std::string& id) {
   return nullptr;
 }
 
-std::string Simulation::spawn_monster(Vec2 position, int level, bool elite) {
+Actor Simulation::make_monster(Vec2 position, int level, bool elite) {
   const int bounded_level = std::max(1, level);
-  Actor enemy{rng_.token("actor"), ActorKind::Monster, enemy_stats(bounded_level), position,
-              true, 0, std::nullopt, elite};
+  return Actor{rng_.token("actor"), ActorKind::Monster, enemy_stats(bounded_level), position,
+               true, 0, std::nullopt, elite};
+}
+
+std::string Simulation::spawn_monster(Vec2 position, int level, bool elite) {
+  Actor enemy = make_monster(position, level, elite);
   actors_.push_back(enemy);
   return enemy.id;
 }
@@ -592,15 +596,47 @@ void Simulation::retire_instance() {
   resurfaced_trophy_ids_.clear();
   instance_.ground_item_ids.clear();
   instance_.ground_trophy_ids.clear();
+  // Unmaterialized pack wardens belong to the instance that summoned them.
+  // Leaving by extraction, death, or a route transition discards the roster
+  // exactly like the other floor state; a fresh entry rebuilds it.
+  pending_wave_.clear();
+  wave_materialization_tick_ = 0;
   instance_.active = false;
 }
 
 void Simulation::spawn_enemy() {
-  const int level = instance_.route_id == "route:tin:2:0" ? 2 : 1;
+  const bool deep = instance_.route_id == "route:tin:2:0";
+  const int level = deep ? 2 : 1;
   actors_.erase(std::remove_if(actors_.begin(), actors_.end(),
                                [](const Actor& value) { return value.kind == ActorKind::Monster; }),
                 actors_.end());
-  spawn_monster({kEnemySpawnX, 0}, level, instance_.route_id == "route:tin:2:0");
+  pending_wave_.clear();
+  wave_materialization_tick_ = 0;
+  spawn_monster({kEnemySpawnX, 0}, level, deep);
+  // The first expedition is a Warden pack, not a single sentry. The entry
+  // warden holds the D-114 spawn point; its two pack mates wait in the
+  // roster and materialize one telegraph window after the previous warden
+  // falls. Every offset reuses the shared melee range, so the pack stays on
+  // the authoritative world-scale table with no new balance numbers: the
+  // elite anchors one melee range deeper on the approach line, and the last
+  // normal flanks one melee range off it. The deep route keeps its single
+  // level-2 elite identity.
+  if (!deep) {
+    pending_wave_.push_back(
+        make_monster({kEnemySpawnX + kMeleeRange, 0}, level, true));
+    pending_wave_.push_back(
+        make_monster({kEnemySpawnX + kMeleeRange, kMeleeRange}, level, false));
+  }
+}
+
+void Simulation::materialize_wave() {
+  if (pending_wave_.empty() || wave_materialization_tick_ == 0 ||
+      tick_ < wave_materialization_tick_) {
+    return;
+  }
+  actors_.push_back(pending_wave_.front());
+  pending_wave_.erase(pending_wave_.begin());
+  wave_materialization_tick_ = 0;
 }
 
 void Simulation::enemy_turn() {
@@ -678,6 +714,7 @@ void Simulation::enemy_turn() {
 
 void Simulation::advance_tick() {
   ++tick_;
+  materialize_wave();
   for (auto& actor_value : actors_) {
     actor_value.stats.resource =
         std::min(actor_value.stats.resource_max,
@@ -788,17 +825,26 @@ void Simulation::handle_death(Actor& actor_value, const std::string& killer_id) 
     }
     if (instance_.active) {
       drop_reward();
-      const bool living_monster_remains = std::any_of(
-          actors_.begin(), actors_.end(), [](const Actor& candidate) {
-            return candidate.kind == ActorKind::Monster && candidate.alive;
-          });
-      if (!living_monster_remains) clear_route_and_unlock_children();
+      // A fallen warden alerts the rest of its pack: while roster entries
+      // remain, the next one materializes one telegraph window after this
+      // death. Pack-clear progression therefore waits for both the living
+      // wardens and the unmaterialized roster before flipping the objective.
+      if (!pending_wave_.empty()) {
+        wave_materialization_tick_ = tick_ + kTelegraphTicks;
+      }
+      const bool pack_remains = !pending_wave_.empty() ||
+                                std::any_of(actors_.begin(), actors_.end(),
+                                            [](const Actor& candidate) {
+                                              return candidate.kind == ActorKind::Monster &&
+                                                     candidate.alive;
+                                            });
+      if (!pack_remains) clear_route_and_unlock_children();
       // The expedition objective flips to extraction only once the floor is
-      // empty of living wardens; a later spawn_monster() seam call restores
-      // the slay objective on the next resolved kill.
+      // empty of living wardens and no roster entry is still owed; a later
+      // spawn_monster() seam call restores the slay objective on the next
+      // resolved kill.
       const ExpeditionPhase next_phase =
-          living_monster_remains ? ExpeditionPhase::SlayWardens
-                                 : ExpeditionPhase::ExtractCarriedValue;
+          pack_remains ? ExpeditionPhase::SlayWardens : ExpeditionPhase::ExtractCarriedValue;
       if (instance_.phase != next_phase) {
         instance_.phase = next_phase;
         emit(EventType::ExpeditionPhaseChanged, scion_.actor_id, {}, {},
