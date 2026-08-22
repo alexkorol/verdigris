@@ -1,0 +1,250 @@
+{
+  "contract": "TASK-0133-save-migration-rollback-contract",
+  "schema_version": 1,
+  "authority": {
+    "constitution": "docs/product/VERDIGRIS_CONSTITUTION.md",
+    "spec": "orchestration/tasks/TASK-0133-save-migration-rollback-contract/SPEC.md",
+    "scope": "Evidence contract only. No code, no real profile, no database, and no persistent user data is touched by this contract or by any rehearsal conducted under it."
+  },
+  "source_version": {
+    "definition": "A source_version identifies the durable format of an existing persisted store. Versions are declared per store family because the estate has no single version counter.",
+    "detection_order": [
+      "1. If the store carries an explicit machine-readable schemaVersion field (native snapshot line `schemaVersion=N`, skill-tree snapshot `schemaVersion:N`), that value is authoritative.",
+      "2. Else if the store matches exactly one shape-probe in the registry below (field-set equality on a parsed object), the provisional shape version applies and evidence MUST record detection_mode=PROVISIONAL_SHAPE.",
+      "3. Else the run MUST abort with UNKNOWN_SOURCE_VERSION before any read-modify-write begins."
+    ],
+    "registry": [
+      {
+        "id": "browser-guest-json",
+        "declared_version": null,
+        "provisional_shape_version": "guest-json-shape-1",
+        "location": "<GUEST_SAVE_DIR or server/data/guest-saves>/<sanitized uuid>.json",
+        "shape_fields": ["savedAt", "x", "y", "level", "skills", "wear", "inventory", "bank", "passiveTree", "quests", "questPoints", "chronicles", "lifecycle", "resources"],
+        "citations": ["server/core/repositories/guest-save-store.js:73-87", "server/core/repositories/guest-save-store.js:19-23"],
+        "notes": "No schemaVersion field exists in this format; detection is shape-provisional until the owner ratifies an explicit version field (see unresolved_mappings U-01)."
+      },
+      {
+        "id": "browser-localstorage-verdigris-houses",
+        "declared_version": null,
+        "location": "browser localStorage key verdigris_houses (pre-server-persistence Chronicles records)",
+        "citations": ["docs/chronicles-persistence.md:34-37"],
+        "notes": "One-time import path via player:chronicles:save, accepted only when the account has no server record."
+      },
+      {
+        "id": "chronicles-store-json",
+        "declared_version": "chronicle-schema-v3",
+        "version_counter": "monotonic per-account revision",
+        "location": "<CHRONICLES_STORE_FILE or server/data/chronicles-store.json>",
+        "citations": ["docs/chronicles-persistence.md:7-24"],
+        "notes": "Writes are temp+rename atomic per docs/chronicles-persistence.md:10-12; malformed records are skipped at load rather than blocking startup."
+      },
+      {
+        "id": "chronicles-repository-sqlite",
+        "declared_version": "sqlite-chronicles-1",
+        "location": "server/core/repositories/chronicles-repository.js default store",
+        "citations": ["server/core/repositories/chronicles-repository.js:8-10", "server/core/repositories/chronicles-repository.js:68-160"],
+        "notes": "Repository defaults to SQLite while the public doc describes the JSON file as the default; which authority wins is an owner decision (unresolved_mappings U-02)."
+      },
+      {
+        "id": "identity-registry-sqlite",
+        "declared_version": "identity-sqlite-1",
+        "location": "server identity/credential registry",
+        "citations": ["server/core/services/identity-registry.js:24-105"],
+        "notes": "Credentials and login profiles. Out of migration scope today; listed so preflight inventories it and never mutates it implicitly."
+      },
+      {
+        "id": "skill-tree-snapshot-v2",
+        "declared_version": 2,
+        "location": "embedded in guest/account snapshots under passiveTree; wire message player:skilltree:save {snapshot}",
+        "citations": ["playtest/scenarios/skilltree.mjs:8", "server/core/passives/verdigris-authority.js:124-128"]
+      },
+      {
+        "id": "native-snapshot-v1",
+        "declared_version": 1,
+        "location": "verdigris::snapshot(const Simulation&) bytes; one House save file via native/persistence adapter",
+        "format": "canonical line-oriented text: schemaVersion=1 first line, decimal numbers/booleans, UTF-8 strings as lower-case hex, fixed field order, .count-prefixed collections",
+        "citations": ["native/persistence/README.md:1-35", "native/persistence/adapter.hpp"]
+      }
+    ]
+  },
+  "target_version": {
+    "definition": "The single ratified target format today is the native durable-state snapshot v1 byte format. The target registry is extensible; adding a target requires an architect-ratified spec.",
+    "current_target": "native-snapshot-v1",
+    "round_trip_requirements": [
+      "rng.state and rng.serial must round-trip exactly.",
+      "schemaVersion line mandatory; unknown keys ignored on restore; missing required values or malformed known values fail restore instead of silently altering state."
+    ],
+    "citations": ["native/persistence/README.md:14-23", "orchestration/tasks/TASK-0030-native-persistence/REVIEW.md:12-13"],
+    "open_gap": "No durable cross-process persistence exists on the native tip yet (TASK-0081 Gate B row 28); migrations targeting live native saves are rehearsals only until that lands."
+  },
+  "preflight": {
+    "purpose": "Prove the run can proceed safely BEFORE any mutation, using disposable stores only.",
+    "mandatory_steps": [
+      {
+        "id": "P-01",
+        "step": "Resolve every store path through its documented override mechanism (GUEST_SAVE_DIR, CHRONICLES_STORE_FILE) and assert none resolves into a real owner profile directory.",
+        "fail_error": "UNKNOWN_SOURCE_VERSION if a path cannot be classified; hard abort if a real profile dir is targeted."
+      },
+      {
+        "id": "P-02",
+        "step": "Acquire a single-writer marker for each resolved store (exclusive create of <store>.migration-lock containing run_id). Refuse to run when a lock exists.",
+        "fail_error": "LOCK_HELD"
+      },
+      {
+        "id": "P-03",
+        "step": "Read-only dry parse of every store; classify each record parseable or malformed; record counts. Malformed records do not abort (mirrors chronicles load policy) but MUST be itemized in evidence.",
+        "fail_error": "MIGRATION_FAILED if a whole store is unreadable."
+      },
+      {
+        "id": "P-04",
+        "step": "Detect source_version for every store per source_version.detection_order.",
+        "fail_error": "UNKNOWN_SOURCE_VERSION"
+      },
+      {
+        "id": "P-05",
+        "step": "Verify free space >= 2x total bytes of all stores plus backups.",
+        "fail_error": "BACKUP_FAILED"
+      },
+      {
+        "id": "P-06",
+        "step": "Confirm the run is hermetic: rehearsal runs set GUEST_SAVE_DIR and CHRONICLES_STORE_FILE to disposable directories created for the run; production runs require operator confirmation token recorded in evidence.",
+        "fail_error": "hard abort"
+      }
+    ]
+  },
+  "backup": {
+    "principle": "No mutation without a verified backup. Stores written non-atomically upstream make this non-negotiable.",
+    "steps": [
+      "B-01 Copy each store byte-for-byte to <store>.pre-migration-<run_id>.bak alongside the original.",
+      "B-02 Record sha256 of source and backup; both must match.",
+      "B-03 Re-parse the backup with the same parser used on the source; record counts equal to P-03 counts.",
+      "B-04 Only after B-01..B-03 succeed for ALL stores may any step mutate anything."
+    ],
+    "atomicity_note": "saveGuest currently writes directly with fs.writeFileSync (server/core/repositories/guest-save-store.js:97), not temp+rename; a crash mid-write truncates the save. Backup-first exists to contain exactly this class of fault.",
+    "retention": "Backups are kept until the task is ACCEPTED and integrated, then disposed with operator sign-off. Automatic deletion is forbidden.",
+    "fail_error": "BACKUP_FAILED aborts with zero mutations performed."
+  },
+  "migration": {
+    "unit": "MigrationStep",
+    "step_envelope": {
+      "step_id": "string, unique per run",
+      "applies_to": "{ store_id, from_version, to_version }",
+      "mutates": "path or logical record selector",
+      "reversibility_class": "reversible | compensable | lossy-declared | irreversible",
+      "guards": ["preflight_passed", "backup_verified", "lock_held"],
+      "emits": "StepEvidence envelope id"
+    },
+    "ordering_rules": [
+      "Independent stores may migrate in any order; dependent steps run after their dependencies complete verification.",
+      "Any step failure halts the run, emits MIGRATION_FAILED StepEvidence, and invokes rollback for already-completed stores.",
+      "All-or-nothing per store: partial writes within one store are forbidden; use temp+rename commit semantics mirroring chronicles/native precedent."
+    ],
+    "known_step_catalog": [
+      {
+        "step": "skill-tree pre-v2 refund",
+        "behavior": "Snapshots whose schemaVersion differs from the current tree schema receive a one-time full refund (resetVerdigrisTree); node-for-node migration is intentionally NOT attempted.",
+        "reversibility_class": "lossy-declared",
+        "status": "existing ratified behavior",
+        "citations": ["server/core/passives/verdigris-authority.js:121-128"]
+      },
+      {
+        "step": "legacy verdigris_houses import",
+        "behavior": "player:chronicles:save accepts a complete client state once, only when no server record exists; server acknowledges, then client caches account-scoped and deletes the legacy key.",
+        "reversibility_class": "irreversible-after-key-deletion",
+        "status": "existing ratified behavior; contract adds requirement: export+hash the legacy payload into evidence BEFORE acknowledging the import",
+        "citations": ["docs/chronicles-persistence.md:34-37"]
+      },
+      {
+        "step": "guest-json -> native-snapshot-v1",
+        "reversibility_class": "irreversible",
+        "status": "BLOCKED pending owner decisions U-01/U-03; no transformer may be implemented or rehearsed against real data until ratified"
+      },
+      {
+        "step": "chronicles SQLite/JSON authority convergence",
+        "reversibility_class": "irreversible",
+        "status": "BLOCKED pending owner decision U-02; both adapters stay preserved as-is (TASK-0032 REVIEW)"
+      }
+    ]
+  },
+  "verification": {
+    "purpose": "Prove the migrated store is correct and complete BEFORE any rollback safety net is released.",
+    "checks_per_store": [
+      "V-01 Parse success with zero new malformed records vs P-03 baseline.",
+      "V-02 Record count equals expected post-migration count declared by the step.",
+      "V-03 Durable-field preservation: item UUIDs, rolls, affixes, vessel, binding survive (buildDurableItemSnapshot field set); world-only fields (x/y/timestamp/context/respawn*/isLocked) remain excluded from durable identity.",
+      "V-04 Scalar progression non-regression: level, questPoints (within declared caps), House treasury never decrease unless the step declares the allowance in advance.",
+      "V-05 Native targets: byte-stability across two consecutive snapshot() calls of restored state; rng.state+rng.serial exact round-trip.",
+      "V-06 Hermetic round-trip: load migrated stores into a disposable instance via env overrides; hydrate a fresh session; compare hydration facts against the step's declared expectations; discard the instance afterwards."
+    ],
+    "fail_error": "VERIFY_FAILED triggers immediate rollback of the failing store; no partial acceptance."
+  },
+  "idempotence": {
+    "token_scheme": "migration_token = sha256(profile_id | store_id | from_version | to_version | contract_schema_version); stored atomically in sidecar <store>.migration-token only after full verification passes.",
+    "rules": [
+      "Re-run with matching token present: skip store entirely; evidence records SKIPPED_ALREADY_APPLIED. Re-running a completed migration must be a no-op, never a re-transform.",
+      "Token present but mismatched: refuse with UNKNOWN_SOURCE_VERSION-classified conflict; never overwrite.",
+      "Step transforms must be deterministic pure functions of input bytes: identical inputs produce identical outputs, so interrupted-and-resumed runs converge.",
+      "Entombment-style natural idempotence (repeat request returns existing record without duplicating) is the behavioral precedent migrated steps must match where applicable."
+    ],
+    "citations": ["docs/chronicles-persistence.md:61-63", "docs/chronicles-persistence.md:55-59"],
+    "negative_probe": "NON_IDEMPOTENT case proves double-apply is refused or provably byte-neutral."
+  },
+  "rollback": {
+    "triggers": ["BACKUP_FAILED (nothing to roll back; abort)", "MIGRATION_FAILED", "VERIFY_FAILED", "DATA_LOSS detection", "operator abort at any phase"],
+    "procedure": [
+      "R-01 Halt all further steps immediately.",
+      "R-02 For each mutated store, in reverse completion order: verify sha256 of its .bak, atomically replace the store with the backup, re-parse, spot-check V-01/V-02.",
+      "R-03 Emit RollbackEvidence per store (original run_id, backup hash, restore result).",
+      "R-04 Release locks; leave .bak files in place; report final_status ROLLED_BACK."
+    ],
+    "escalation": "If a restore itself fails (missing/corrupt backup): emit ROLLBACK_FAILED, quarantine BOTH the mutated store and the damaged .bak by renaming to *.quarantine-<run_id>, touch nothing further, halt, and file a question. Never auto-retry a failed restore more than once; never delete backups automatically.",
+    "invariant": "Rollback must always be able to return every store to its exact backed-up bytes; any design that cannot guarantee this must not ship."
+  },
+  "failure_isolation": {
+    "zones": "Each store migrates inside its own isolation zone: a failure in one store blocks only that store's completion, other completed stores still roll back or stand as verified per the trigger type.",
+    "read_policy": "Malformed individual records are skipped-and-itemized during reads (chronicles precedent) but NEVER silently dropped during writes; write paths are all-or-nothing per store.",
+    "crash_policy": "Because at least one upstream writer is non-atomic (guest-save-store.js:97), every contract run assumes crash-mid-write is possible and treats verified backups + temp+rename commits as the containment boundary.",
+    "no_shared_failure": "Backup verification failures abort globally (B-04 gate); verification failures isolate per store."
+  },
+  "data_loss_detection": {
+    "counters_per_store": [
+      "record_count_before / record_count_after",
+      "item_uuid_set_before / item_uuid_set_after (set difference both directions)",
+      "scalar_checksums: level, questPoints, treasury, renown, rng.serial"
+    ],
+    "regression_classes": [
+      "DROPPED_RECORD: record present before, absent after, not declared lossy by the step.",
+      "DROPPED_DURABLE_ITEM: UUID-bearing item vanished or lost identity fields.",
+      "PROGRESSION_REGRESSION: protected scalar decreased without a declared allowance.",
+      "IDENTITY_COLLISION: duplicate UUIDs after migration (TASK-0032 dedup precedent)."
+    ],
+    "verdict": "Any regression outside the step's declared-lossy allowances emits DATA_LOSS, halts, rolls back, and files a question. Declared-lossy examples: the pre-v2 skill-tree refund (full node-graph reset is the intended outcome)."
+  },
+  "evidence": {
+    "envelope_name": "migration.evidence.v1",
+    "storage": "Append-only JSONL manifest per run at orchestration/tasks/<task>/captures/migration-evidence-<run_id>.jsonl; unabridged tool transcripts alongside.",
+    "required_events_in_order": ["RUN_STARTED", "PREFLIGHT_COMPLETED", "BACKUP_VERIFIED", "STEP_APPLIED | STEP_SKIPPED_ALREADY_APPLIED | STEP_FAILED", "VERIFICATION_PASSED | VERIFICATION_FAILED", "ROLLBACK_PERFORMED | ROLLBACK_FAILED", "DATA_LOSS_DETECTED (when applicable)", "RUN_FINISHED"],
+    "event_fields": ["event", "ts_utc", "run_id", "store_id?", "detail (redacted: no item names beyond ids, no credentials, no personal data)", "hashes? (sha256 hex)"],
+    "final_status_enum": ["SUCCESS", "ROLLED_BACK", "ABORTED_BACKUP_FAILED", "ABORTED_UNKNOWN_SOURCE_VERSION", "QUARANTINED_ROLLBACK_FAILED", "QUARANTINED_DATA_LOSS"],
+    "redaction_rule": "Evidence must be safe to commit: synthetic or disposable data only, sanitized uuid-shaped identifiers allowed, never real owner profile contents."
+  },
+  "seam_map": [
+    { "seam": "S1", "name": "Guest JSON snapshots", "where": "server/core/repositories/guest-save-store.js:89-117", "facts": "unversioned pretty JSON; direct non-atomic writeFileSync; load failure returns null (silent fresh start risk); GUEST_SAVE_DIR override enables hermetic runs" },
+    { "seam": "S2", "name": "PlayerPersistenceService router", "where": "server/core/services/player-persistence.js:44-79", "facts": "throttled saves route Scion->Chronicles, local account->SQLite, guest->file; force flush on disconnect (D-109)" },
+    { "seam": "S3", "name": "Chronicles SQLite repository", "where": "server/core/repositories/chronicles-repository.js:68-160", "facts": "default SQLite tables for Account/House/Scion/relic/world-progress" },
+    { "seam": "S4", "name": "Chronicles JSON fallback store", "where": "server/core/services/chronicles-store.js + docs/chronicles-persistence.md:7-24", "facts": "temp+rename atomic ack; monotonic revisions; schema v3 Chronicle; malformed skipped on load" },
+    { "seam": "S5", "name": "Identity registry", "where": "server/core/services/identity-registry.js:24-105", "facts": "SQLite credentials/profiles; inventoried only, never implicitly mutated" },
+    { "seam": "S6", "name": "Native v1 snapshot bytes", "where": "native/persistence/README.md:1-35; native/persistence/adapter.hpp", "facts": "canonical text format, schemaVersion mandatory, unknown keys ignored, malformed fail restore; write_atomic temp+flush+replace" },
+    { "seam": "S7", "name": "Skill-tree snapshot v2", "where": "playtest/scenarios/skilltree.mjs:8; server/core/passives/verdigris-authority.js", "facts": "explicit schemaVersion 2; authoritative validation owns budget/reachability" },
+    { "seam": "S8", "name": "Pre-v2 refund migration", "where": "server/core/passives/verdigris-authority.js:121-128", "facts": "only existing ratified migration in the estate; lossy by declaration (one-time full refund)" },
+    { "seam": "S9", "name": "Legacy localStorage import", "where": "docs/chronicles-persistence.md:34-37; server/player/handlers/socket-events/index.js:485-492", "facts": "one-time player:chronicles:save import gated on absence of server record" },
+    { "seam": "S10", "name": "Native raw skilltree save path", "where": "native/src/networking.cpp handle_skilltree_save (~1157-1166)", "facts": "accepts snapshots without schemaVersion/budget/adjacency validation; flagged untrusted by TASK-0105; no durable cross-process persistence on native tip yet (TASK-0081 row 28)" },
+    { "seam": "S11", "name": "Chronicles doc drift", "where": "docs/chronicles-persistence.md:7-12 vs server/core/repositories/chronicles-repository.js:8-10", "facts": "doc says JSON file default; repository defaults to SQLite; authority selection unresolved" }
+  ],
+  "unresolved_mappings": [
+    { "id": "U-01", "question": "Adopt an explicit schemaVersion field inside browser guest JSON saves?", "owner": "architect", "state": "OPEN", "note": "Detection stays shape-provisional until answered." },
+    { "id": "U-02", "question": "Single Chronicles persistence authority: SQLite repository vs JSON store (and doc correction)?", "owner": "architect", "state": "OPEN", "note": "TASK-0032 preserved both adapters deliberately; this contract does not choose." },
+    { "id": "U-03", "question": "Cross-estate portability: will browser guest/accounts ever migrate into native House saves, and with what identity key?", "owner": "architect", "state": "OPEN", "note": "guest-json -> native-snapshot-v1 step stays BLOCKED; treating any untested mapping as reversible is a stop condition." },
+    { "id": "U-04", "question": "Validate the native raw skilltree save path before any migrated snapshot flows through it?", "owner": "architect", "state": "OPEN", "note": "TASK-0105 flagged the trust gap; contract requires validation gates before reuse regardless." }
+  ]
+}
