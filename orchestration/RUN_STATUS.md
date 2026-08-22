@@ -1,5 +1,23 @@
 # Run status — PC Verdigris overnight product wave
 
+## CI notification signal hardening — 2026-08-22 12:54 PDT
+
+- Protected PR #56 merged the workflow trigger contract to `master` at
+  `81ea0d39ca30fc576509afe3af757bde73ee2401`. Both CI and Native now run only
+  for `master` pushes and pull requests whose base is `master`; raw worker,
+  program, broadcast, and non-release PR activity cannot fan out Actions mail.
+- The program push at `36b9cf2f` dispatched zero workflows. The added
+  `tests/unit/ci-signal-hygiene.spec.js` contract passed 2/2 and covers both
+  workflow trigger blocks.
+- PR Native run `32594398255` passed. PR CI run `32594398265` first recorded a
+  load-sensitive existing `loot` scenario miss while 31/32 scenarios passed,
+  then its single bounded retry passed the full suite in 6m30s. The failure is
+  retained for a deterministic-loot reliability successor; it was not hidden
+  and the gate was not weakened.
+- Post-merge Native run `32595081869` and CI run `32595081863` both passed.
+  Exactly those two protected-branch runs launched; no worker/coordination run
+  was created. Owner action required: none.
+
 ## PC accepted product integration — 2026-08-22 12:11 PDT
 
 - TASK-0122 frozen worker head `d67129e4` is independently ACCEPTED and

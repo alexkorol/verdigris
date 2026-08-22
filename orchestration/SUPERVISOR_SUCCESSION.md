@@ -263,6 +263,20 @@ pre-write recovery risk.
   release/program line.
 - Owner action required now: none.
 
+### CI notification signal checkpoint — 2026-08-22 12:54 PDT
+
+- Protected PR #56 merged program head `36b9cf2f` to `master` at `81ea0d39`.
+  Push and pull-request triggers for both Verdigris workflows are now scoped
+  to `master`; the unit trigger contract passed 2/2.
+- The raw program push launched zero workflows. PR Native `32594398255` passed;
+  PR CI `32594398265` passed after one bounded retry of a preserved existing
+  `loot` timing miss. Post-merge Native `32595081869` and CI `32595081863`
+  both passed, and exactly those two canonical runs launched.
+- Do not suppress canonical failures. Route the recorded second-coin-drop
+  nondeterminism as reliability work; GitHub mail is now reserved for the
+  protected PR/master surface while dashboard/monitor owns fleet telemetry.
+- Owner action required now: none.
+
 Standalone refresh completed after that checkpoint: PC broadcast branch
 `codex/pc-overnight-game-wave` is clean/pushed at `004acf1a`; observed shared
 `origin/main` remains `d068012a` and was not written. The dashboard runs the
