@@ -1,7 +1,9 @@
 # TASK-0137 claim
 
 - task: TASK-0137
-- state: CLAIMED
+- state: REVIEW_REQUESTED
+- review_requested_at_utc: 2026-08-22T06:52Z
+- review_head: branch tip at push of the REVIEW_REQUESTED commit; implementation head `f63c9550`
 - coordinator: ox-pc-e
 - worker: ox-pc-e (isolated PC Ox Alpha implementation worker)
 - worker branch: `codex/TASK-0137-gate-c-envelope-validator-ox-pc-e`
@@ -34,4 +36,11 @@
 
 ## Transition log
 
-- CLAIMED: this commit (STATUS.md only), pushed to origin.
+- CLAIMED: `0d175a2f` (STATUS.md only, within the 10-minute claim window),
+  repackaged as `013c7883` by the lane supervisor without content loss.
+- IMPLEMENTED: `f63c9550` — dependency-free validator CLI, 16-test suite
+  (16/16 pass), synthetic fixtures; all five SPEC acceptance gates green,
+  including the expected-nonzero route-name-only negative control (exit 1,
+  `ROUTE_NAME_ONLY`). Evidence: REPORT.md literal transcripts.
+- REVIEW_REQUESTED: this commit — only REPORT.md SHA-table fixup and this
+  transition appended; implementation evidence unchanged at `f63c9550`.
