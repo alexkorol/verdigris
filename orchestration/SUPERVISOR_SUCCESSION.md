@@ -242,8 +242,9 @@ pre-write recovery risk.
 ### Accepted TASK-0122/TASK-0148 checkpoint — 2026-08-22 12:11 PDT
 
 - Program implementation head before this ledger commit is `8d314d5c` on
-  `codex/native-reconstitution`; protected `master` remains `230a8adf` pending
-  the protected PR/check path.
+  `codex/native-reconstitution`; protected PR #55 merged coordination head
+  `daf5daeb` to `master` at `f9973df6`. Post-merge Native run `32593413272`
+  and CI run `32593413286` are both green.
 - TASK-0122 worker head `d67129e4` is independently ACCEPTED and integrated as
   `032ae03e`; full native, focused VFX, browser 32/32, negative-control, scope,
   and two-resolution visual gates pass.
@@ -257,7 +258,15 @@ pre-write recovery risk.
 - ox-pc-r and ox-pc-x are stopped, clean, and no longer active capacity. No
   other OpenCode Verdigris lane is active. Dashboard remains HTTP 200; monitor
   remains the live activation/stall/CI-signal safety net.
-- Exact next step: re-prove board/factory invariants, push coordination truth,
-  complete protected PR checks, refresh standalone PC broadcast without
-  writing shared `main`, and then route only current-tip disjoint product work.
+- Exact next step: refresh the standalone PC broadcast without writing shared
+  `main`, then route only current-tip disjoint product work from the verified
+  release/program line.
 - Owner action required now: none.
+
+Standalone refresh completed after that checkpoint: PC broadcast branch
+`codex/pc-overnight-game-wave` is clean/pushed at `004acf1a`; observed shared
+`origin/main` remains `d068012a` and was not written. The dashboard runs the
+tested isolated-branch implementation, returns HTTP 200, and shows ox-pc-r/x
+as terminal integrated lanes with `Complete · no worker action`; its override
+is honored only for stopped, clean, pushed worktrees. Dashboard tests pass
+35/35, typecheck/build/lint pass, and the low-cost monitor is one live process.

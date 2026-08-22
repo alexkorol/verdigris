@@ -5,7 +5,7 @@ reviewed_head: `d67129e4d78f79457c8c5867bd9dee7fce2842a0`
 reviewed_branch: `codex/TASK-0122-animation-vfx-phase-a-ox-pc-x`
 reviewed_by: PC Verdigris architect/orchestrator
 reviewed_at: 2026-08-22 12:11 PDT
-integrated_as: `032ae03e`
+integrated_at: `032ae03e`
 combined_program_head: `8d314d5c7e417956041994168f0db07a9ccb9f22`
 
 ## Acceptance finding
@@ -39,4 +39,3 @@ combined browser run missed `session-arc` final death by 384 ms beyond its 15 s
 budget; the exact integrated tree then passed that scenario in 11.7 s and a
 full rerun passed 32/32 with `session-arc` at 12.3 s. This timing seam is
 recorded rather than hidden and does not reproduce as a deterministic defect.
-

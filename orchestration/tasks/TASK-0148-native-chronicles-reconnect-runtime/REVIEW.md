@@ -6,7 +6,7 @@ implementation_head: `5732367e`
 reviewed_branch: `codex/TASK-0148-native-chronicles-reconnect-runtime-ox-pc-r-r5`
 reviewed_by: PC Verdigris architect/orchestrator
 reviewed_at: 2026-08-22 12:11 PDT
-integrated_as: `127a540e`, `8d314d5c`
+integrated_at: `8d314d5c`
 combined_program_head: `8d314d5c7e417956041994168f0db07a9ccb9f22`
 
 ## Acceptance finding
@@ -35,4 +35,3 @@ timing-sensitive checks. The probe-free binary passed repeatedly, the final
 literal worker gate passed, the independent frozen-head gate passed on its
 first run, and the combined program native gate passed. No test-only bypass or
 direct-state shortcut is accepted.
-
