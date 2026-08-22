@@ -1,0 +1,914 @@
+playtest\harness.mjs:95:    // quickGuest routes into the Chronicle-auth flow (SQLite houses/scions,
+playtest\harness.mjs:540:  saveSkillTree(snapshot) {
+playtest\harness.mjs:541:    this.emit('player:skilltree:save', { snapshot });
+playtest\harness.mjs:578:  async saveChronicles(state, { timeoutMs = DEFAULT_TIMEOUT_MS } = {}) {
+playtest\harness.mjs:580:    this.emit('player:chronicles:save', { state });
+playtest\harness.mjs:582:      label: 'Chronicles persistence',
+orchestration\LEADER_POLICY.md:14:paths, merge target, rollback evidence, and protected-branch preconditions.
+orchestration\LEADER_POLICY.md:25:interface freezes, wire protocol changes, persistence formats, deterministic
+orchestration\INTEGRATION_LOG.md:46:2026-08-16 — TASK-0020-browser-disconnect-safety — revision `174d769` (source implementation `e5d87a5`); architect review `0c69920` ACCEPTED; integrated on the program tip as `b035b56`. Verification: full unit 744/744 and playtest 31/31. Notes: disconnect teardown now removes by player identity after persistence, preventing an old socket from deleting a replacement session during zone transitions.
+orchestration\INTEGRATION_LOG.md:64:2026-08-16 — TASK-0030-native-persistence — source `43b796e6` plus revision `94719ae6`; independent validator ACCEPT; architect review ACCEPTED. Integrated in dedicated worktree `codex/integrate-TASK-0030-0031` as `2b2140a2`. Verification: `powershell -NoProfile -File native/build.ps1 -RunTests` (denylist and core tests PASS). Notes: versioned byte-stable snapshot/restore, RNG continuation, D-109 House landing with carried items, recovery pools, and atomic adapter are live.
+orchestration\INTEGRATION_LOG.md:68:2026-08-17 — TASK-0032-browser-d106-implementation — source `749cc4a6` plus revision `ac3a7216`; independent validator ACCEPT; architect review ACCEPTED. Integrated in dedicated worktree `codex/integrate-TASK-0032-latest` as `b952fdac` on Fable tip `96601378`. Verification: integration unit 118 files/757 tests PASS; clean rerun playtest 31/31 PASS; architect smoke 1/1 PASS; local smoke attempt encountered owner PM2 PID 10276 on port 6500 and was preserved. Notes: D-106 all-value death recovery, durable SQLite/JSON relic+trophy adapters, one-time instance requeue, JSON underfoot recovery, and D-109 failed-save queue are live.
+orchestration\INTEGRATION_LOG.md:70:2026-08-17 — TASK-0033-daytime-default — source `bf404b3d` plus revision `f409b99a`; independent validator ACCEPT; architect review ACCEPTED at Fable commit `0b12a0a`; integrated in dedicated worktree `codex/integrate-TASK-0033` as `b494c1fe` and `91f61d92`. Verification: full unit 119 files/761 tests PASS; production build PASS; pinned smoke reached the pre-existing owner listener on port 6500 but its API probe received SPA HTML, so the process was preserved. Notes: daytime is now default with opt-in persisted cycle and emitter lights retained.
+orchestration\INTEGRATION_LOG.md:84:2026-08-17 — TASK-0041-death-decision-moment — worker source `0e23e3bf`, `212a1e1c`; coordinator validation worktree `codex/integrate-0041` as `5a493083`, `dfb41955`. Status: REVIEW_REQUESTED pending architect D-115 hands-on play. Verification: focused death suite 5/5 (14 assertions), clean integration unit 122/779, production build, ESLint, Stylelint, diff-check, worker playtest 31/31, and alternate browser gate 1/1 on port 6512. Default smoke was not claimed because preserved owner PID 10276 owns port 6500. Captures cover oathed and unoathed decisions; no Chronicles fork or persistence rewrite.
+orchestration\INTEGRATION_LOG.md:90:2026-08-17 — TASK-0038-combat-controls-rebinding — worker `c73fff1`; architect review `4d0be153` ACCEPTED; integrated as `2c0a00c3` and shipped in master PR #18 (`d687e004`). Verification: real rendered captures, attack-frame evidence, unit 788/788, and playtest 31/31. Notes: LMB/RMB attacks and persistent six-action rebinding are live; Shift+RMB preserves the context-menu contract.
+orchestration\BACKLOG_FACTORY.md:69:- architecture/interface: 5-20 implementation, migration, negative-test, and
+orchestration\BACKLOG_FACTORY.md:76:  tuning, migration, UI, and regression packets.
+orchestration\BACKLOG_FACTORY.md:93:  actor model, persistence/migration/recovery, replay, network/protocol,
+orchestration\BACKLOG_FACTORY.md:96:- player experience: profile, House/Scion lifecycle, selection, control,
+orchestration\BACKLOG_FACTORY.md:98:  progression/travel/endgame, save/relaunch, settings/accessibility/onboarding;
+orchestration\BACKLOG_FACTORY.md:101:- quality/release: unit through clean-machine/soak/performance/migration/crash,
+docs\vision.md:9:per zone gating the next, ~15-minute zone persistence, zones private to a
+docs\vision.md:49:persistence model (`src/core/chronicles/houses.js`).
+docs\vision.md:51:Chronicles creation, authoritative persistence, mortal Scion entombment, and
+docs\vision.md:94:   bosses, rewards, persistence, and playtest coverage for each arc.
+docs\vision.md:102:   account service, then document and test backup/restore for guest saves and
+docs\vision.md:105:   rollback, and recovery tools needed to run a persistent world.
+docs\vision.md:117:- **Party-Based Instances**: towns are persistent hubs; adventures occur in instanced realms.
+docs\vision.md:162:- Live operations tools (GM commands, rollback, event triggers).
+docs\vision.md:169:  damage against explicitly tagged creatures are now live and persisted, with
+orchestration\ORCHESTRATION-LEARNINGS.md:3:> **2026-08-18 migration note:** this file is now FROZEN SOURCE
+orchestration\ORCHESTRATION-LEARNINGS.md:29:  math, protocol shapes, persistence seams) to them.
+orchestration\BOOTSTRAP.md:60:### deepseek (into dsh — set as /goal so it persists)
+orchestration\DECISIONS.md:19:- **D-004 House/Scion model**: the House is the persistent identity
+orchestration\DECISIONS.md:61:- **D-109 Forgiving persistence (OWNER-RULED 2026-08-16)**: logout,
+orchestration\CONTENT_SCALE_MATRIX.md:36:VFX, and audio content; deterministic save/replay; keyboard/accessibility
+orchestration\CONTENT_SCALE_MATRIX.md:43:and migration tooling; no debug presentation on default path; difficulty,
+orchestration\CONTENT_SCALE_MATRIX.md:44:economy, performance, accessibility, resolution/device, save recovery, soak,
+native\tests\core_tests.cpp:9:#include "verdigris/persistence.hpp"
+native\tests\core_tests.cpp:729:void test_persistence_round_trip_and_unknown_fields() {
+native\tests\core_tests.cpp:737:  check(first_text.find("schemaVersion=1\n") == 0, "snapshot has a mandatory schemaVersion field");
+native\tests\core_tests.cpp:752:void test_persistence_d109_mid_instance_and_rng_continuation() {
+native\tests\core_tests.cpp:795:void test_persistence_recovery_pools() {
+native\tests\core_tests.cpp:821:void test_persistence_surfaced_recovery_becomes_pending() {
+native\tests\core_tests.cpp:854:void test_persistence_file_adapter() {
+native\tests\core_tests.cpp:859:  verdigris::persistence::write_atomic(target, bytes);
+native\tests\core_tests.cpp:860:  check(verdigris::persistence::read(target) == bytes,
+native\tests\core_tests.cpp:861:        "atomic persistence adapter writes and reads snapshot bytes");
+native\tests\core_tests.cpp:862:  verdigris::persistence::write_atomic(target, bytes);
+native\tests\core_tests.cpp:863:  check(verdigris::persistence::read(target) == bytes,
+native\tests\core_tests.cpp:864:        "atomic persistence adapter replaces an existing House snapshot");
+native\tests\core_tests.cpp:1163:        "successor starts empty while the recoverable pools persist");
+native\tests\core_tests.cpp:1733:  test_persistence_round_trip_and_unknown_fields();
+native\tests\core_tests.cpp:1734:  test_persistence_d109_mid_instance_and_rng_continuation();
+native\tests\core_tests.cpp:1735:  test_persistence_recovery_pools();
+native\tests\core_tests.cpp:1736:  test_persistence_surfaced_recovery_becomes_pending();
+native\tests\core_tests.cpp:1737:  test_persistence_file_adapter();
+orchestration\backlog-factory\build-manifests.mjs:12:  ["networking-protocol", "Networking, protocol, and session authority", ["core-simulation"], "T1", "native/src/networking*; native/include/**; server/**", ["transport lifecycle", "protocol version negotiation", "authentication and sessions", "reconnect and resume", "state replication", "input validation", "rate and abuse controls", "party coordination", "latency handling", "protocol migration"]],
+orchestration\backlog-factory\build-manifests.mjs:13:  ["persistence-recovery", "Persistence, migration, and recovery", ["core-simulation"], "T1", "native/src/persistence*; native/include/**; server/**", ["account profile saves", "House saves", "Scion saves", "inventory saves", "progression saves", "world-state saves", "save slots", "schema migration", "corruption recovery", "backup and restore"]],
+orchestration\backlog-factory\build-manifests.mjs:14:  ["player-entry-journey", "Account-to-play player entry journey", ["networking-protocol", "persistence-recovery"], "T2", "native/src/**; native/include/**; packaging/**", ["launcher and updater", "account entry", "profile selection", "House creation", "Scion creation", "character selection", "initial world load", "settings bootstrap", "reconnect return", "save and relaunch"]],
+orchestration\backlog-factory\build-manifests.mjs:20:  ["itemization", "Items, identity, loot, and economy surfaces", ["persistence-recovery", "combat"], "T4", "native/src/**; native/include/**; content/**", ["item bases", "item identity", "rarity", "affixes", "item history", "extraction and loss", "recovery", "relics Brands and Bonds", "crafting and stores", "comparison filtering and tooltips"]],
+orchestration\backlog-factory\build-manifests.mjs:21:  ["progression", "Character, House, and account progression", ["persistence-recovery", "itemization"], "T4", "native/src/**; native/include/**; content/**", ["character stats", "passive tree", "allocation and respec", "House progression", "Scion progression", "Legends", "unlocks", "milestones and difficulty", "account and seasonal state", "tuning tools"]],
+orchestration\backlog-factory\build-manifests.mjs:26:  ["ui-ux", "Player-facing UI and information architecture", ["player-entry-journey", "persistence-recovery"], "T5", "native/src/**; native/include/**; assets/**", ["UI frame system", "HUD", "menus", "inventory", "equipment", "passive tree UI", "map and quest UI", "tooltips", "settings", "onboarding UI"]],
+orchestration\backlog-factory\build-manifests.mjs:29:  ["quality-release", "Quality, packaging, release, and support", ["networking-protocol", "campaign-endgame", "rendering-presentation", "audio-music", "accessibility"], "T7", ".github/**; native/**; playtest/**; packaging/**; docs/**", ["unit verification", "integration verification", "protocol parity", "deterministic replay", "soak testing", "performance testing", "clean-machine testing", "save migration and corruption", "device resolution and accessibility", "packaging signing updates and support"]],
+orchestration\backlog-factory\build-manifests.mjs:43:  ["release", "Prove clean-machine release, migration, and support readiness for", "RELEASE", "RELEASE_GATE"],
+orchestration\PROGRAM_GRAPH.md:14:| T4 Production systems | Combat, skills/magic seams, monsters/packs/uniques/bosses, itemization/history, passive progression, persistence, content tooling, networking, performance, packaging |
+orchestration\PROGRAM_GRAPH.md:17:| T7 Release hardening | Full regression, deterministic replay, lifecycle/long soak, clean-machine builds, asset/runtime manifests, save migration/recovery, upgrade/rollback, platform packaging and release gates |
+orchestration\PROGRAM_GRAPH.md:75:| Accessibility | 0118 | 0124 | rebinding, focus, scale/contrast/color/motion/audio options, persisted settings |
+orchestration\PROGRAM_GRAPH.md:78:| Content tooling | 0095, 0096 | 0113 | versioned zones, campaign graphs, assets, validators, migrations |
+orchestration\PROGRAM_GRAPH.md:79:| Persistence | 0097 | 0107 | crash-safe, versioned House/Scion/item persistence and relaunch |
+orchestration\PROGRAM_GRAPH.md:84:| Progression | 0105 | 0112 | authoritative passive tree, stats, allocation, migrations, panes |
+orchestration\PROGRAM_GRAPH.md:86:| Release/migration | 0120 | 0126, 0127 | clean-machine, soak, save migration/recovery, upgrade/rollback, release evidence |
+orchestration\PROGRAM_GRAPH.md:93:   of product parity. Reconnect, persistence fault coverage, and protocol
+orchestration\PROGRAM_GRAPH.md:115:   topology/persistence interfaces, obtain owner-approved source data, then
+orchestration\PROGRAM_GRAPH.md:116:   build allocation, migration, and UI. Never canonize the approximation.
+orchestration\PROGRAM_GRAPH.md:120:10. **Legends**: item/monster stable identities + persistence durability +
+orchestration\PROGRAM_GRAPH.md:129:13. **Packaging and launch**: content/asset manifests, persistence locations,
+orchestration\PROGRAM_GRAPH.md:148:18. **Release convergence**: clean-machine packaging and save migration matrices
+orchestration\PROGRAM_GRAPH.md:149:    consume persistence, assets, performance, networking, replay, and platform
+orchestration\PROGRAM_GRAPH.md:162:| passive-tree source | authoritative 271-node engine/content | 0105 audit, topology/persistence scaffold design |
+orchestration\RUN_STATUS.md:106:| ox-pc-h | 6760-6779 | new isolated worktree launch requested | TASK-0133 save migration/rollback contract |
+orchestration\RUN_STATUS.md:174:The existing saved desktop sessions (`ox-pc-a` and `ox-bootstrap`) remain pinned
+orchestration\RUN_STATUS.md:207:| P0 | TASK-0097 persistence durability audit | INDEPENDENT / BOUNDED-DESIGN | future after current claim | protects House/Scion/item saves |
+orchestration\RUN_STATUS.md:215:| P0 | TASK-0133 save migration/rollback contract | INDEPENDENT / ARCHITECTURE | future after current claim | stages reversible persistence upgrades without touching profiles |
+orchestration\RUN_STATUS.md:256:| TASK-0107 persistence fault matrix | 0097 accepted; disposable profile/fault contract frozen |
+orchestration\RUN_STATUS.md:267:| TASK-0127 save migration matrix | 0097 + 0107 + 0120 accepted |
+orchestration\owner-input\OI-004-passive-tree-source.md:10:edges, start positions, attribute/effect references, migration version, and a
+orchestration\owner-input\OI-004-passive-tree-source.md:15:persistence contracts are built. Do not silently promote the approximation.
+orchestration\owner-input\OI-004-passive-tree-source.md:18:migration behavior, two-counter quest-point semantics preserved, and no balance
+orchestration\owner-input\OI-004-passive-tree-source.md:20:versioned schema, parser tests, persistence seams, and pane layout continue.
+orchestration\ARCHITECT_STATE.md:130:from the 0005 report; draft ADR-002 (serialization/persistence seam) when
+orchestration\ARCHITECT_STATE.md:139:  (architect debt cleared). Remaining debt: ADR-002 persistence seam.
+orchestration\ARCHITECT_STATE.md:155:- Architect debt remaining: ADR-002 persistence/serialization seam draft.
+orchestration\ARCHITECT_STATE.md:177:- `docs/rebuild/ADR-002-persistence-seam.md` drafted, status PROPOSED —
+orchestration\ARCHITECT_STATE.md:178:  snapshot-based persistence with RNG state, mid-instance non-durability
+orchestration\ARCHITECT_STATE.md:179:  as the honest extraction-risk reading, flat-file v1, SQLite deferred.
+orchestration\ARCHITECT_STATE.md:253:- **TASK-0030** native persistence (C++ snapshot/restore per ADR-002).
+orchestration\ARCHITECT_STATE.md:266:Next frontier issued: TASK-0030 native persistence (ADR-002/D-109
+orchestration\ARCHITECT_STATE.md:282:or run it persistently: `pm2 start ecosystem.config.cjs` then open
+orchestration\ARCHITECT_STATE.md:322:  persistence seam (PROPOSED — your call)**, DECISIONS.md D-001..D-104.
+orchestration\ARCHITECT_STATE.md:325:1. ADR-002 persistence proposal (accept/amend).
+orchestration\ARCHITECT_STATE.md:402:- **D-109 (owner-ruled)**: forgiving persistence — logout/disconnect/crash
+orchestration\ARCHITECT_STATE.md:503:  six-action rebinding UI with persistence. Architect verified real
+orchestration\owner-input\OI-009-audio-music-direction.md:11:no-device tests, buses/voice limits, persisted controls, package provenance,
+orchestration\REENTRY-OX-ALPHA-PC.md:42:| ox-pc-h | `Z:\Code\.worktrees\verdigris\ox-pc-h` | `codex/TASK-0133-save-migration-rollback-contract-ox-pc-h` | TASK-0133 |
+orchestration\REENTRY-LUNA-MAC.md:31:labels) then TASK-0074 (gear-outcomes timing profile — 10 serialized
+orchestration\owner-input\OI-002-renderer-dependency.md:16:named migration trigger. Acceptance rubric: no simulation coupling, no loss of
+orchestration\owner-input\OI-001-denylist-dispositions.md:10:wire key until a versioned migration exists; migrate `bronze-dagger` away from
+orchestration\owner-input\OI-001-denylist-dispositions.md:17:2. Version and migrate both together, accepting every named client/save/harness
+orchestration\owner-input\OI-001-denylist-dispositions.md:21:Acceptance rubric: no save loss, no unchanged-harness regression, no denied
+orchestration\owner-input\OI-008-owner-content-approvals.md:18:IDs/versioning, migration impact, readability/play verdict, and no legacy
+orchestration\owner-input\OI-006-house-economy.md:10:production persistence. Acceptance: House—not hideout bench—ownership, no
+orchestration\owner-input\OI-007-campaign-season-travel.md:15:disconnect cannot become travel, and reset/migration is explicit. No assets are
+orchestration\questions\QUESTION-0005-task-0027-orb-clock-domain.md:42:method and compare orb-region pixels. If the symptom persists, TASK-0027 can
+native\src\networking.cpp:515:  // Fresh-scion admission (server/core treasuries/fresh profile): the purse
+native\src\networking.cpp:540:  // account state (stats, inventory, quests, chronicle) persists - guests
+native\src\networking.cpp:541:  // "survive relogins" via the saved snapshot on JS. The commission chain
+native\src\networking.cpp:546:  // JS builds a brand-new Player object per login and merges ONLY the saved
+native\src\networking.cpp:1097:  if (passive_tree_saved_) {
+native\src\networking.cpp:1132:  if (passive_tree_saved_) {
+native\src\networking.cpp:1133:    if (const auto* saved_nodes = passive_tree_.get("nodes"); saved_nodes && saved_nodes->array()) {
+native\src\networking.cpp:1134:      nodes = *saved_nodes->array();
+native\src\networking.cpp:1137:    if (const auto* saved_conduits = passive_tree_.get("conduits"); saved_conduits && saved_conduits->array()) {
+native\src\networking.cpp:1138:      conduits = *saved_conduits->array();
+native\src\networking.cpp:1147:  put(tree, "schemaVersion", 2);
+native\src\networking.cpp:1157:void ProtocolSession::handle_skilltree_save(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) {
+native\src\networking.cpp:1161:  passive_tree_saved_ = true;
+native\src\networking.cpp:2442:    // membership was dropped (persistence scenario).
+native\src\networking.cpp:2453:  if (envelope.event=="player:skilltree:save") { if (payload) handle_skilltree_save(*payload, emit); return; }
+native\src\networking.cpp:2574:  if (envelope.event=="player:chronicles:save") {
+native\src\networking.cpp:2645:    // A new scion starts with the fresh-scion profile (purse only), never a
+playtest\run.mjs:52:      // Hermetic saves: never inherit or clobber the developer's character.
+playtest\scenarios\world-web.mjs:5: * and a cleared zone persists (dead stays dead) across re-entry.
+playtest\scenarios\build-divergence.mjs:94:    strength.saveSkillTree(axisBuild('STR'));
+playtest\scenarios\build-divergence.mjs:95:    intellect.saveSkillTree(axisBuild('INT'));
+playtest\scenarios\build-divergence.mjs:122:    // profile samples, just as it does for quickbar presses in the client.
+playtest\scenarios\build-divergence.mjs:131:      `STR build wins melee profile (${strengthMelee.amount} vs ${intellectMelee.amount})`);
+playtest\scenarios\build-divergence.mjs:133:      `INT build wins skill profile (${intellectSkill.amount} vs ${strengthSkill.amount})`);
+orchestration\tasks\TASK-0001-native-legends-records\SPEC.md:76:- No serialization/persistence work.
+playtest\README.md:64:p.saveSkillTree(snapshot);                     // what the tree pane persists
+playtest\README.md:93:| `skilltree` | a saved build survives a full relog |
+playtest\README.md:96:| `world-web` | chart → zone travel, Warden bars the onward gate, Warden death unlocks children + persists, cleared zone stays cleared on re-entry |
+native\src\core.cpp:1160:  put_number(output, "schemaVersion", kSnapshotSchemaVersion);
+native\src\core.cpp:1231:  if (required_number<std::uint64_t>(fields, "schemaVersion") != kSnapshotSchemaVersion) {
+native\src\core.cpp:1232:    throw std::runtime_error("unsupported or missing snapshot schemaVersion");
+native\src\core.cpp:2581:    // combat profile are rolled by the forge (disableAffixes in JS).
+playtest\scenarios\vesselforge-brand.mjs:1:/** A town forge turns one visible inventory choice into a persistent item change. */
+playtest\scenarios\skilltree.mjs:8:    schemaVersion: 2,
+playtest\scenarios\skilltree.mjs:19:    first.saveSkillTree(snapshot);
+playtest\scenarios\skilltree.mjs:23:    }, { label: 'tree saved server-side' });
+playtest\scenarios\skilltree.mjs:34:    assert(restored, 'login block carries the saved tree');
+playtest\scenarios\single-session.mjs:4: * "foreign player reference" rejections and its unsaved loot vanished.
+playtest\scenarios\single-session.mjs:30:    // The unsaved loot from the first session must have crossed over.
+playtest\scenarios\session-arc.mjs:72:  let persistedAttack;
+playtest\scenarios\session-arc.mjs:150:      'the cleared floor persists the return-to-Aldwyn objective');
+playtest\scenarios\session-arc.mjs:206:    first.saveSkillTree({
+playtest\scenarios\session-arc.mjs:207:      schemaVersion: 2,
+playtest\scenarios\session-arc.mjs:220:    assert(true, 'level-up becomes a persisted build choice');
+playtest\scenarios\session-arc.mjs:235:    persistedAttack = state.combat.attack.slash;
+playtest\scenarios\session-arc.mjs:264:    assert(restored.combat.attack.slash === persistedAttack, 'relogin rebuilds the weapon combat bonus');
+playtest\scenarios\quest.mjs:17:      chronicle = await p.saveChronicles({
+playtest\scenarios\quest.mjs:120:    assert(completed.quests.questPoints === 1, 'quest grants one persistent passive point');
+native\README.md:17:  House persistence, Scion reset, item identity, campaign ownership, optional
+native\README.md:21:- platform/, renderer/, networking/, persistence/, and content/ document the
+orchestration\tasks\TASK-0012-slice-camera-evidence\REVIEW.md:14:updated. The uncompressed originals persist in branch history (they were
+playtest\scenarios\persistence.mjs:3: * or char gets saved when I relogin". Grant an item and a level, disconnect
+playtest\scenarios\persistence.mjs:4: * (which force-flushes the guest save file), relog, and both must be there.
+playtest\scenarios\persistence.mjs:6:export default async function persistence({ connect, assert }) {
+playtest\scenarios\persistence.mjs:87:    first.close(); // disconnect triggers a forced save
+orchestration\tasks\TASK-0012-slice-camera-evidence\REPORT.md:173:python -  (Pillow Image.convert('RGB').save(..., format='JPEG', quality=85,
+server\README.md:8:SQLite. Character state is saved into the living scion's Chronicle snapshot;
+playtest\scenarios\mortality.mjs:59:    const seeded = await p.saveChronicles(initialChronicle);
+playtest\scenarios\mortality.mjs:95:    // immediate hard-death save must prevent a reconnect from reviving this
+playtest\scenarios\mortality.mjs:199:    }, { label: 'heirloom recovery persisted' });
+playtest\scenarios\house-treasury.mjs:1:/** A scion can turn carried dungeon gold into persistent House development funds. */
+playtest\scenarios\house-treasury.mjs:68:    const persistedHouse = p2.chronicle.houses.find(house => house.name === 'Ledger');
+playtest\scenarios\house-treasury.mjs:69:    assert(persistedHouse?.treasury === treasuryBefore + 100, 'House treasury survives a new session');
+playtest\scenarios\house-treasury.mjs:70:    const persisted = await p2.state();
+playtest\scenarios\house-treasury.mjs:71:    const persistedCoins = persisted.inventory
+playtest\scenarios\house-treasury.mjs:74:    assert(persistedCoins === coinsBefore - 100, 'the scion cannot recover deposited gold by relogging');
+native\persistence\README.md:8:schemaVersion=1
+native\persistence\README.md:17:states produce byte-identical snapshots. `schemaVersion` is mandatory and
+native\persistence\README.md:31:House save file. `persistence::write_atomic(path, bytes)` writes a temporary
+native\persistence\README.md:33:`rename` elsewhere). `persistence::read(path)` only reads bytes; neither
+native\persistence\adapter.hpp:18:namespace verdigris::persistence {
+native\persistence\adapter.hpp:86:}  // namespace verdigris::persistence
+docs\loop-journal.md:10:  save-aware Log Out route, with visible hotkey labels and responsive layout.
+docs\loop-journal.md:23:  plans and pre-migration code review findings as active work.
+docs\loop-journal.md:43:  authoritative local save on disconnect.
+docs\loop-journal.md:85:  preserving compatibility at save boundaries.
+docs\loop-journal.md:91:  obsolete operational document; retired the empty JSON identity migration;
+docs\loop-journal.md:94:  and removed the retired quiver image. Pre-quiver save scrubbing remains with
+docs\loop-journal.md:105:## 2026-07-11 — Keep account persistence local
+docs\loop-journal.md:107:- Goal: remove the archived website POST path so local accounts persist on the
+docs\loop-journal.md:109:- Root cause: a `local:` login token still routed autosaves through an Axios
+docs\loop-journal.md:110:  repository using the obsolete `SITE_URL`, making saves depend on an unrelated
+docs\loop-journal.md:112:- Implementation: local login profiles now update the SQLite identity registry,
+docs\loop-journal.md:113:  Chronicle scions continue to save with their House, and guest or retired-token
+docs\loop-journal.md:114:  profiles use the local JSON snapshot store. The remote repository and its
+docs\loop-journal.md:116:  actual HTTP/WebSocket port and local persistence boundaries.
+docs\loop-journal.md:117:- Proof added: registry tests verify profile changes survive without allowing a
+docs\loop-journal.md:118:  snapshot to replace account identity; persistence tests cover local accounts,
+docs\loop-journal.md:143:  persistence and remove its obsolete SITE_URL configuration.
+docs\loop-journal.md:150:- Audit result: monster rarity, ECS AI, player persistence, foreground data,
+docs\loop-journal.md:189:  protocols, keeping compatibility handlers only where persisted or deployed
+docs\loop-journal.md:218:  sheet supports arrows or a quiver. Server hydration and both persistence paths
+docs\loop-journal.md:222:  slot styling. The stale-save filters remain intentionally at persistence
+docs\loop-journal.md:238:  footprint, including items loaded from old persisted snapshots.
+docs\loop-journal.md:244:  2×2 shapes across item creation, persisted-inventory repacking, and client
+docs\loop-journal.md:268:  increased treasury in one SQLite transaction, validates living-scion House
+docs\loop-journal.md:272:  persistence. Full-message socket payloads now work for bank and shop openings;
+docs\loop-journal.md:276:  Repository and handler specs cover atomic persistence, ownership, proximity,
+docs\loop-journal.md:292:  Thick Hide and Frenzied enemies. `bestDepth` is persisted for the scion.
+docs\loop-journal.md:302:  with a small server-owned bag contract and add UI only after persistence and
+docs\loop-journal.md:309:- Implementation: biome-specific role profiles now vary melee, ranged, and
+docs\loop-journal.md:317:  dormant-scene behavior, role profiles, modifier math, rising rare share, and
+docs\loop-journal.md:333:  vessel tooltip/combat projection, and marks the scion dirty for persistence.
+docs\loop-journal.md:427:  cross-instance broadcasts, and stale persisted-data failures.
+docs\loop-journal.md:511:  skill combat profiles at equal level and point spend.
+docs\loop-journal.md:516:  pack and prove distinct melee and mana-skill profiles.
+docs\loop-journal.md:549:  Quest state and its 23-point capped reward source persist with guest,
+docs\loop-journal.md:674:- Settings now present an accurate 60 FPS default plus a persistent sound-effects
+docs\loop-journal.md:687:- Goal: stop persisted guest mode from flashing the legacy `dev` username and
+docs\loop-journal.md:689:- Removed guest mode from persisted UI state and removed the hardcoded guest
+docs\loop-journal.md:693:- Browser smoke starts from the old persisted guest flag, proves account sign-in
+docs\loop-journal.md:714:  browser password manager has no mounted field in which to repaint a saved
+docs\loop-journal.md:808:- Versioned passive snapshots at schema 2. Loading any older persisted tree now
+docs\loop-journal.md:810:  refunded; subsequent schema-2 saves restore normally instead of resetting
+docs\loop-journal.md:815:- Proof: 541 unit tests, production browser smoke, focused persistence/build
+orchestration\tasks\TASK-0020-browser-disconnect-safety\STATUS.md:12:known_risks: preserve the existing guest/Chronicles persistence seams while making persistence precede world removal and preventing all post-close combat/movement work
+orchestration\tasks\TASK-0020-browser-disconnect-safety\SPEC.md:39:- D-109 exactly: on socket close/timeout — persist the player's current
+orchestration\tasks\TASK-0020-browser-disconnect-safety\SPEC.md:45:- Server-authoritative persistence paths only (PlayerPersistenceService /
+orchestration\tasks\TASK-0020-browser-disconnect-safety\SPEC.md:47:  do not invent parallel save paths.
+orchestration\tasks\TASK-0020-browser-disconnect-safety\SPEC.md:54:2. Implement: immediate persist on disconnect; safe removal from combat/
+orchestration\tasks\TASK-0020-browser-disconnect-safety\SPEC.md:56:3. Tests: unit spec for the disconnect handler (persist called, actor
+orchestration\tasks\TASK-0020-browser-disconnect-safety\SPEC.md:74:No posthumous deaths, persistence ordering (persist BEFORE removal), and
+docs\development-setup.md:50:| `PLAYER_AUTO_SAVE_INTERVAL_MS` | Frequency for the server scheduler to flush all connected players to persistent storage. | `120000` (2 minutes) |
+docs\development-setup.md:51:| `PLAYER_SAVE_COOLDOWN_MS` | Minimum delay between saves for the same player when the scheduler runs. Use lower values if you want very aggressive persistence. | `60000` (1 minute) |
+docs\development-setup.md:53:The backend snapshots connected players in the background. Chronicle scions and local login profiles persist to SQLite; guest profiles use machine-local JSON snapshots. Raising the interval lowers write pressure, while lowering it gives quicker crash recovery at the cost of more frequent writes.
+docs\development-setup.md:79:- Local authentication and Chronicle state use the SQLite database under `server/data/` by default.
+server\player\playtest-guest.js:19:  // localStorage. Give each one a durable legacy-profile namespace instead
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REVIEW.md:13:the async disconnect save (which is what zone transitions do) was torn
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REVIEW.md:56:The D-109 intent mapping (persist on close, safe removal, town spawn,
+docs\deployment.md:23:pm2 save               # remember the process list across pm2 restarts
+docs\deployment.md:81:24/7 URL still needs the named DNS/Caddy setup above (or a persistent named
+docs\deployment.md:104:| `CHRONICLES_DB_FILE` | `server/data/verdigris.sqlite` | SQLite House/scion/relic database |
+docs\deployment.md:105:| `IDENTITY_DB_FILE` | Chronicle DB path | Optional separate SQLite identity database |
+docs\deployment.md:107:## Persistence and backups
+docs\deployment.md:109:Guest progress is stored locally under `server/data/guest-saves/` and survives
+docs\deployment.md:111:`server/data/verdigris.sqlite`. Back up the guest-saves directory plus the
+docs\deployment.md:112:SQLite file and its `-wal` sidecar while running, or stop PM2 briefly and copy
+docs\deployment.md:114:writes use only SQLite. Non-guest accounts can still use the external
+docs\deployment.md:115:`SITE_URL` auth/persistence API; that account service is not yet bundled for
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:16:The browser server now treats socket loss as a forgiving persistence boundary.
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:18:and auto-attack, persists the authoritative player snapshot, and only then
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:21:guest and Chronicles persistence paths remain the only save seams; their
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:22:instance snapshots already surface at the saved pre-instance/town position,
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:28:`player.update()`. That made cleanup immediate, but persistence happened after
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:37:departure notifications still run even when persistence or account logout
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:42:- `server/Delaford.js` — persist-before-remove close ordering, duplicate-close
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:54:No wire envelope, native, prototype, or persistence repository schema changed.
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:66:  no D-109 scenario or persistence assertion failed. This is recorded for
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:71:- Persist-before-remove ordering is asserted with a deferred save: the world
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:79:  town/pre-instance coordinates on the next login; no parallel save path was
+orchestration\tasks\TASK-0020-browser-disconnect-safety\REPORT.md:110:disconnect's awaited save later called UUID-based `world.removePlayer`, which
+docs\crossroads-world-web.md:18:| Zones persist ~15 minutes after you leave | Ground remembers footsteps for about a quarter hour |
+docs\crossroads-world-web.md:153:  Ruins) is removed; stale persisted `sceneId`s already fall back to the
+docs\chronicles-persistence.md:1:# Chronicles persistence
+docs\chronicles-persistence.md:5:records created before server persistence existed.
+docs\chronicles-persistence.md:34:`player:chronicles:save` accepts a complete state only when the account has no
+docs\chronicles-persistence.md:40:living Scion into the crypt, persists that revision, removes the player from
+docs\chronicles-persistence.md:57:House/Scion provenance. A successful real pickup persists the character item
+docs\rebuild\VERDIGRIS_GAP_AUDIT.md:47:| Meta-progression | House-owned routes, unlocks, renown/treasury browser paths, persistence, and native House state are tested | Covered in current slices |
+docs\rebuild\VERDIGRIS_GAP_AUDIT.md:48:| Persistent Legends records | Native bounded deterministic records, persistence, founding milestones, relic/trophy history, and seasonal extension are tested | Bounded record system covered; full simulation influence on future loot/spawn pools remains open (OD-010) |
+orchestration\tasks\TASK-0003-slice-verification-harness\SPEC.md:48:  enterNode, spawnEnemy, tick, NODES, save) and ticks via a hidden-tab
+orchestration\tasks\TASK-0003-slice-verification-harness\SPEC.md:79:      clear, found the House, assert `house.founded` and name persistence
+docs\rebuild\SPRINTS.md:15:House and Scion persistence, extraction/death risk, item history/relic
+orchestration\tasks\TASK-0003-slice-verification-harness\REVIEW.md:16:loop with persistence).
+docs\rebuild\RECONSTITUTION_STATUS.md:103:  `house-treasury`, `mortality`, `party-stories`, `persistence`, `quest`,
+docs\rebuild\PARITY_ROADMAP.md:23:  skills, death/relics per D-106, persistence per D-109) with tests.
+docs\rebuild\PARITY_ROADMAP.md:50:  persistence files. Green: `respawn`, `session-arc`, Chronicles
+orchestration\tasks\TASK-0003-slice-verification-harness\REPORT.md:25:  persistence/console behavior through the existing `window.__V` surface.
+docs\rebuild\PARITY_INTEGRATION_CANDIDATE_2026-08-17.md:32:- Zones exercised all six N2 combinations, stairs, and saved-position
+docs\rebuild\NATIVE_PRODUCT_CONVERGENCE.md:52:Fresh profile, one command: start server on a task-owned loopback port
+docs\rebuild\NATIVE_PRODUCT_CONVERGENCE.md:61:## Gate B — Chronicles + persistence (after N5)
+docs\rebuild\NATIVE_PRODUCT_CONVERGENCE.md:65:crypt/relic/recovery → quit → relaunch → reconnect → persisted House
+docs\rebuild\NATIVE_PRODUCT_CONVERGENCE.md:88:persistence (post-N5).
+docs\rebuild\NATIVE_PRODUCT_CONVERGENCE.md:95:list, exit codes). Post-N5: reconnect + persistence restore.
+docs\archive\interpolated-movement-plan.md:89:- Documentation updates, migration notes.
+docs\rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:28:| Persistence | relaunch after death | login | N5 persistence | persisted House | House state | — | ⬜ Gap: N5 durable House/Scion restore envelope and client model coverage; owner family TASK-0056 (N5) |
+docs\rebuild\NATIVE_CLIENT_PROTOCOL_MATRIX.md:49:| Persistence | In-process session reuse proven: new socket same identity re-login restores account state incl. chronicle_ within a live server (`reset_world_for_new_socket` :538-579; permadead deliberately not resurrected :554-562); generic reconnect labels exist (session_tests.cpp:409-411, 423-425) but zero assert chronicle content. Explicit RED gaps: no quit/logout envelope exists (transport WS close only; only "quit" token is the server console command, server_main.cpp:30) and no durable cross-process store exists (`rg 'ofstream|ifstream|fopen|fwrite' native/src` → no matches), so a server restart loses Houses/Scions/crypt state | ⬜ RED: durable restore envelope + end-to-end test missing | Durable leg unrouted (candidate successor of TASK-0097 persistence audit); client tests TASK-0077 |
+native\include\verdigris\persistence.hpp:4:// implementation remains under native/persistence so the simulation core has
+native\include\verdigris\persistence.hpp:6:#include "../../persistence/adapter.hpp"
+docs\archive\fix-plan-2026-07-04.md:6:> has creation, authoritative persistence, mortal entombment, successor relic
+docs\archive\fix-plan-2026-07-04.md:217:port: **account = House (persistent meta), characters = scions (permadeath);
+docs\archive\fix-plan-2026-07-04.md:234:  `src/core/chronicles/houses.js` with load/save/migrate + unit spec
+native\include\verdigris\networking.hpp:139:  void handle_skilltree_save(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
+native\include\verdigris\networking.hpp:180:  bool passive_tree_saved_ = false;
+native\include\verdigris\networking.hpp:198:  // chart; cleared wardens persist for the session (dead stays dead).
+docs\archive\dependency-plan.md:21:- `vue-tippy` latest (verify Vue 2 compatibility; otherwise hold for Vue 3 migration).
+docs\archive\dependency-plan.md:26:- Evaluate switching to `vitest` once Vue 3 migration is planned.
+docs\archive\dependency-plan.md:28:### Phase 3 – Core framework migration
+docs\archive\dependency-plan.md:47:- Do we need SSR or prerendering as part of Vite migration?
+docs\archive\dependency-plan.md:52:2. Draft RFC for Vue 3 + Vite migration including timeline and risks.
+orchestration\tasks\TASK-0019-browser-25d-survey\REPORT.md:62:non-persisted `?camera=` debug override for that A/B loop.
+orchestration\tasks\TASK-0008-denylist-hardening\SPEC.md:43:  `server/` stay exempt while the migration is active.
+native\include\verdigris\core.hpp:336:  // Durable persistence is deliberately a free-function boundary.  The
+native\include\verdigris\core.hpp:508:// the caller's rng; sear() advances the persistent stream.
+native\include\verdigris\core.hpp:878:  // (unknown template -> dungeon, unknown layout -> theme default), saves the
+native\include\verdigris\core.hpp:907:  // brand service advances its persistent stream.
+docs\archive\code-review.md:49:      services/        # Name validation, player persistence
+docs\archive\code-review.md:113:- The game loop in `Delaford.js` uses a `setTimeout`-based tick with accumulator-based periodic tasks (NPC movement, monster AI, item respawns, auto-save)
+docs\archive\code-review.md:140:- Pinia stores with persisted state for client-side data
+docs\archive\code-review.md:171:- Player persistence service
+docs\archive\code-review.md:277:10. Increase test coverage to 60%+ (focus on affix engine, handler dispatch, persistence)
+docs\rebuild\LEGACY_MATRIX.md:46:| Chronicles SQLite schema (`server/core/repositories/chronicles-repository.js`) | REFERENCE_ONLY | Design input for native persistence (future ADR-002); not a port source. |
+docs\rebuild\LEGACY_MATRIX.md:52:`docs/chronicles-persistence.md` describes JSON-file persistence as the
+docs\rebuild\LEGACY_MATRIX.md:53:default while the authoritative repository defaults to SQLite
+docs\25d-overhaul-plan.md:251:- Full gates: `npm run lint`, `test:unit`, `playtest`, `test:e2e`; profile on
+docs\25d-overhaul-plan.md:262:only addition is a non-persisted `?camera=` debug override (phase 1) so the
+docs\rebuild\ADR-002-persistence-seam.md:25:1. Determinism gives us a second persistence primitive for free: a seed +
+docs\rebuild\ADR-002-persistence-seam.md:27:2. The browser game's Chronicles repository (SQLite tables for
+docs\rebuild\ADR-002-persistence-seam.md:35:**Snapshot-based persistence with a versioned, explicitly-serialized
+docs\rebuild\ADR-002-persistence-seam.md:39:- The core gains a serialization boundary (`persistence/` seam, already
+docs\rebuild\ADR-002-persistence-seam.md:43:- Format: a small versioned binary or JSON structure (schemaVersion field
+docs\rebuild\ADR-002-persistence-seam.md:54:  temp+rename). SQLite is deliberately deferred until there is a concrete
+docs\rebuild\ADR-002-persistence-seam.md:60:- Restoring RNG state means save/load cannot be used to reroll drops —
+docs\rebuild\ADR-002-persistence-seam.md:73:- **SQLite-first**: schema migrations and a C dependency before any query
+docs\rebuild\ADR-001-native-language.md:39:| Debug/profiling | mature native profilers | strong tooling, different workflow | C++ |
+server\player\handlers\wagon.js:8:import playerPersistence from '#server/core/services/player-persistence.js';
+orchestration\tasks\TASK-0018-death-recoverability\REPORT.md:34:No client, build, persistence, seasonal, or prototype files were changed.
+docs\quest-progression.md:3:Quest progress is server-authored and persisted with the player. Definitions
+docs\quest-progression.md:24:- force-saves player progress and pushes a live quest-journal update.
+docs\quest-progression.md:51:Guest saves include the quest state. Account saves send it as `questsData`.
+docs\quest-progression.md:52:Malformed or unknown persisted quest entries are discarded and quest points
+docs\rebuild\HANDOFF.md:14:  persistence, replay, performance, tooling, packaging, and polish graph.
+docs\rebuild\HANDOFF.md:121:- Explicit `platform/`, `renderer/`, `networking/`, `persistence/`, and
+docs\rebuild\HANDOFF.md:140:3. Keep networking, persistence, complete magic, and production art out of the
+docs\rebuild\HANDOFF.md:155:  `zones` attach scenarios 2/2, including all six zones and saved-position
+docs\rebuild\HANDOFF.md:252:  while loot/levels/bank/tree/quest-record persist; permadeath
+docs\rebuild\HANDOFF.md:255:  (persistent chain record) vs top-level questPoints (live tree
+orchestration\tasks\TASK-0032-browser-d106-implementation\STATUS.md:11:expected_verification: npm run test:unit; npm run playtest; npm run smoke:browser; one named test per audit delta row; old-format migration test
+docs\rebuild\DELAFORD_COVERAGE_MATRIX.md:12:| Inventory / character wear | Covered | Inventory, equipment, persistence, and current playtest gates. |
+orchestration\tasks\TASK-0032-browser-d106-implementation\SPEC.md:30:disconnect/save failure never loses value (D-109).
+orchestration\tasks\TASK-0032-browser-d106-implementation\SPEC.md:47:3. **Single relic authority**: converge or adapter the SQLite/JSON
+orchestration\tasks\TASK-0032-browser-d106-implementation\SPEC.md:49:   other; no duplicate UUIDs after migration.
+orchestration\tasks\TASK-0032-browser-d106-implementation\SPEC.md:53:5. **D-109 hardening**: a failed disconnect save must not proceed to
+orchestration\tasks\TASK-0032-browser-d106-implementation\SPEC.md:56:6. Migration safety for existing saves per the audit's risk section.
+orchestration\tasks\TASK-0032-browser-d106-implementation\SPEC.md:71:- Migration path exercised in a test (old-format save loads clean).
+orchestration\tasks\TASK-0038-combat-controls-rebinding\SPEC.md:33:buttons remappable, persisted client-side, with reset-to-default.
+orchestration\tasks\TASK-0038-combat-controls-rebinding\SPEC.md:39:   actions on one binding), persistence (localStorage), live apply.
+orchestration\tasks\TASK-0032-browser-d106-implementation\REVIEW.md:23:- SQLite/JSON store convergence via migration + UUID dedup; old-save
+orchestration\tasks\TASK-0032-browser-d106-implementation\REVIEW.md:28:- The D-109 hole closed: failed disconnect saves queue a complete atomic
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\SPEC.md:53:   professions, crafting, persistence, networking envelope) with entry-point
+orchestration\tasks\TASK-0044-native-protocol-n2\REPORT.md:34:  save/restore (first entry only, matching `teleportMembersToSpawns`).
+orchestration\tasks\TASK-0032-browser-d106-implementation\REPORT.md:14:carried value into recovery pools, SQLite/JSON recovery is migration-safe,
+orchestration\tasks\TASK-0032-browser-d106-implementation\REPORT.md:16:completes recovery, and failed disconnect saves queue the complete snapshot
+orchestration\tasks\TASK-0032-browser-d106-implementation\REPORT.md:28:  6500 was released. A later local attempt encountered the owner’s persistent
+orchestration\tasks\TASK-0032-browser-d106-implementation\REPORT.md:39:Long-term SQLite/JSON authority remains an owner-facing decision; both
+orchestration\tasks\TASK-0032-browser-d106-implementation\REPORT.md:40:adapters and stable UUID migration behavior are preserved as specified.
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REVIEW.md:27:- The documentation drift found (chronicles-persistence.md JSON-default vs
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REVIEW.md:28:  SQLite-default repository) is a real catch.
+docs\product\WIZARD_ARCANE_LATTICE_REFERENCE.md:31:gating to the host game. Per-node VFX profiles are treated as identity, not
+docs\product\WIZARD_ARCANE_LATTICE_REFERENCE.md:47:| Verdigris Splash | Menu/splash world, atmosphere, and title presentation | Presentation only; no simulation or persistence dependency. |
+orchestration\tasks\TASK-0038-combat-controls-rebinding\REVIEW.md:34:actions with conflict refusal and live apply, persistence across
+orchestration\tasks\TASK-0041-death-decision-moment\REPORT.md:29:Chronicles persistence code changed. The overlay uses the existing bus/socket
+docs\product\VERDIGRIS_CONSTITUTION.md:41:- **House:** the persistent player identity: a lineage, tribe, political family,
+docs\product\VERDIGRIS_CONSTITUTION.md:68:Verdigris also has a persistent Legends direction: storied items and monsters
+docs\product\VERDIGRIS_CONSTITUTION.md:160:networking, persistence, content, and tools. The simulation is fixed-step,
+orchestration\tasks\TASK-0038-combat-controls-rebinding\REPORT.md:11:localStorage persistence, and live apply (no reload needed). The quickbar
+orchestration\tasks\TASK-0038-combat-controls-rebinding\REPORT.md:68:- `src/core/config/controls.js` — rebindable action map, persistence,
+orchestration\tasks\TASK-0038-combat-controls-rebinding\REPORT.md:153:- `06-rebind-persists-after-reload.png` — the same `T` chip after a full
+orchestration\tasks\TASK-0038-combat-controls-rebinding\REPORT.md:154:  page reload (localStorage persistence)
+docs\product\OPEN_DECISIONS.md:12:| OD-005 | What persistence and networking transport is production-grade? | Keep the core free of storage/sockets; evaluate a content-versioned persistence layer after the loop is stable. |
+docs\product\OPEN_DECISIONS.md:15:| OD-008 | What successor starting opportunities are earned? | House route/specialization persistence is proven; exact loadouts and veteran lessons remain open. |
+docs\product\OPEN_DECISIONS.md:20:| OD-013 | Which pane/minimap settings persist and how do they interact? | Support side/overlay modes, transparency, zoom, and side placement in the UI contract; finalize defaults after the native shell pass. |
+orchestration\tasks\TASK-0044-native-protocol-n2\BASELINE.md:54:return to the saved surface position.
+orchestration\tasks\TASK-0044-native-protocol-n2\BASELINE.md:74:  populations passed, but the final stair return failed the saved-position
+orchestration\tasks\TASK-0044-native-protocol-n2\BASELINE.md:109:  zone names/layouts/stairs/populations and saved-position restoration
+orchestration\tasks\TASK-0044-native-protocol-n2\BASELINE.md:113:not yet in Kimi's branch, the prior direct WIP run had a different saved
+orchestration\tasks\TASK-0044-native-protocol-n2\BASELINE.md:131:  restores the town position saved before entry (`38,115.333333`), so the
+orchestration\tasks\TASK-0044-native-protocol-n2\BASELINE.md:137:1108ms; all six zones, metadata, stairs, populations, and saved-position
+orchestration\tasks\TASK-0044-native-protocol-n2\BASELINE.md:152:combinations and saved-position restoration. The exact output is preserved in
+docs\player-art-pipeline.md:23:2. Left profile
+docs\player-art-pipeline.md:24:3. Right profile
+server\Delaford.js:14:import playerPersistenceService from '#server/core/services/player-persistence.js';
+server\Delaford.js:19:import { enqueueDisconnectSave } from '#server/core/services/disconnect-save-queue.js';
+server\Delaford.js:102:      || data.event === 'player:chronicles:save'
+server\Delaford.js:197:   * Log the user out and save the player profile
+server\Delaford.js:205:    // short await, so persistence happens before world removal without a
+server\Delaford.js:233:    let persisted = false;
+server\Delaford.js:234:    let saveError = null;
+server\Delaford.js:235:    for (let attempt = 0; attempt < 1 && !persisted; attempt += 1) {
+server\Delaford.js:239:        // undefined on a successful guest save.  Null is the explicit failure
+server\Delaford.js:240:        // signal used by the persistence service.
+server\Delaford.js:241:        persisted = result !== null;
+server\Delaford.js:243:        saveError = error;
+server\Delaford.js:246:    if (!persisted) {
+server\Delaford.js:247:      const queued = enqueueDisconnectSave(player, saveError || new Error('profile save returned no durable snapshot'));
+server\Delaford.js:250:        console.error(`[disconnect] Blocking removal after save failure for ${player.username}: ${queued.reason}`);
+server\Delaford.js:254:      console.error(`[disconnect] Queued failed save for ${player.username}: ${saveError instanceof Error ? saveError.message : 'profile save unavailable'}`);
+server\Delaford.js:322:    this.addPeriodicTask('player:auto-save', this.playerAutoSaveInterval, () => playerPersistenceService.flushAllPlayers());
+server\Delaford.js:432:      // as a skill-tree save or harness control command on the same connection.
+server\player\handlers\socket-events\index.js:12:import playerPersistence from '#server/core/services/player-persistence.js';
+server\player\handlers\socket-events\index.js:17:import { loadGuest, saveGuest } from '#server/core/repositories/guest-save-store.js';
+server\player\handlers\socket-events\index.js:29:import { createFreshScionProfile } from '#server/core/entities/player/fresh-scion-profile.js';
+server\player\handlers\socket-events\index.js:31:// Fast in-process mirror; authoritative scion snapshots also persist this in
+server\player\handlers\socket-events\index.js:32:// SQLite through PlayerPersistenceService.
+server\player\handlers\socket-events\index.js:44:    saveGuest(existing);
+server\player\handlers\socket-events\index.js:76:    schemaVersion: Number.isInteger(snapshot.schemaVersion) ? snapshot.schemaVersion : null,
+server\player\handlers\socket-events\index.js:114: * this projection never mutates the player or persistence state.
+server\player\handlers\socket-events\index.js:348:      // resolveGuestProfile still isolates it from the shared dev profile.
+server\player\handlers\socket-events\index.js:362:          accountId, profile: playerGuest, token: 'none', isGuest: true,
+server\player\handlers\socket-events\index.js:393:        // Guests persist to a local file (same shape as the template), so
+server\player\handlers\socket-events\index.js:395:        // saved snapshot over the template before constructing the player.
+server\player\handlers\socket-events\index.js:396:        const saved = loadGuest(guestProfile.uuid);
+server\player\handlers\socket-events\index.js:397:        const guestData = saved ? { ...guestProfile, ...saved } : guestProfile;
+server\player\handlers\socket-events\index.js:399:        // In-process fallback for the skill tree (covers saves made moments
+server\player\handlers\socket-events\index.js:477:      playerPersistence.savePlayer(player, { force: true }).catch(() => {});
+server\player\handlers\socket-events\index.js:485:  'player:chronicles:save': ({ data }, ws) => {
+server\player\handlers\socket-events\index.js:492:    const result = chroniclesStore.save(player.uuid, data && data.state);
+server\player\handlers\socket-events\index.js:611:   * A player saves their skill-tree allocations. Stored on the live Player
+server\player\handlers\socket-events\index.js:612:   * (so reopening the pane restores it), cached for guest relogs, and saved
+server\player\handlers\socket-events\index.js:613:   * to local SQLite for login accounts.
+server\player\handlers\socket-events\index.js:615:  'player:skilltree:save': ({ data }, ws) => {
+server\player\handlers\socket-events\index.js:638:    // Chronicle scions save to SQLite even for guests. A legacy non-scion
+server\player\handlers\socket-events\index.js:639:    // local account uses the login registry profile fallback.
+server\player\handlers\socket-events\index.js:641:      playerPersistence.savePlayer(player).catch(() => {});
+orchestration\tasks\TASK-0031-browser-d106-audit\SPEC.md:45:4. Risks: save-format migrations, live-player compatibility.
+server\player\handlers\party.js:924:    // invite was in flight. Otherwise the stale membership persists in the
+orchestration\tasks\TASK-0038-combat-controls-rebinding\captures\capture-0038.mjs:1:// TASK-0038 captures: rebinding UI, persistence across reload, LMB/RMB attacks.
+orchestration\tasks\TASK-0038-combat-controls-rebinding\captures\capture-0038.mjs:105:  // 06 — the rebind survives a full page reload (localStorage persistence).
+orchestration\tasks\TASK-0038-combat-controls-rebinding\captures\capture-0038.mjs:109:  const persistedRow = reopened.bindings.locator('.bindings__row', { hasText: 'Cairn Ward' });
+orchestration\tasks\TASK-0038-combat-controls-rebinding\captures\capture-0038.mjs:110:  await persistedRow.locator('.bindings__chip', { hasText: 'T' }).waitFor({ timeout: 5_000 });
+orchestration\tasks\TASK-0038-combat-controls-rebinding\captures\capture-0038.mjs:111:  await page.screenshot({ path: path.join(outDir, '06-rebind-persists-after-reload.png') });
+orchestration\tasks\TASK-0031-browser-d106-audit\REVIEW.md:19:carried items (D-106 violation); no durable trophy pool exists; SQLite
+orchestration\tasks\TASK-0031-browser-d106-audit\REVIEW.md:22:disconnect path swallows failed saves while proceeding with removal — a
+server\index.js:125:// creation cannot be scripted to flood the SQLite store. Behind a TLS proxy,
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:21:The server verifies account credentials with scrypt against a SQLite
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:26:The same area still has a development profile and Delaford-facing UI language
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:54:`server/core/combat/index.js` validates life, cooldown, mana, skill profiles,
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:98:`docs/inventory-spec.md:8-40` and `docs/chronicles-persistence.md:45-59`.
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:102:`WorldManager` owns persistent towns plus transient instances/zones and stores
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:152:Server execution resolves only registry profiles, applies resource gates and
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:159:The old profile still initializes `attack`, `defence`, `fishing`, and `cooking`
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:160:(`server/core/entities/player/fresh-scion-profile.js:4-9,35-40`; template
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:195:world nodes are SQLite tables (`server/core/repositories/chronicles-repository.js:68-160`).
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:196:Login profiles also live in SQLite through `IdentityRegistry`; guest/dev and
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:197:retired-token profiles use machine-local JSON snapshots, with world coordinates
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:199:(`server/core/repositories/guest-save-store.js:1-23,25-87,89-117`).
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:200:`PlayerPersistenceService` throttles saves, routes Scions to Chronicle
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:201:snapshots, local accounts to SQLite and guests to files
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:202:(`server/core/services/player-persistence.js:5-17,44-79`). Stale inventory
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:209:(`src/core/chronicles/houses.js:85-161`, `docs/chronicles-persistence.md:26-43`).
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:210:Note a documentation drift: `docs/chronicles-persistence.md:7-12` describes a
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:212:defaults to SQLite at `server/core/repositories/chronicles-repository.js:8-10,68-76`.
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:215:guest saves/accounts (`e5b4e38`, `cbbe409`, `abd676b`) and authoritative
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:225:save while disconnected, and refuses gameplay replay (`src/core/utilities/socket.js:1-28,64-105,130-157`).
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:241:| Login/identity | mixed | local SQLite + Chronicles gate: `server/core/services/identity-registry.js:24-105`; pending admission: `server/player/handlers/socket-events/index.js:281-332` | `596c6fc`, `e5b4e38`, `51251a0`, `a246bcd` |
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:249:| Persistence | mixed | SQLite Chronicle tables: `server/core/repositories/chronicles-repository.js:93-160`; guest JSON: `server/core/repositories/guest-save-store.js:73-117` | `596c6fc`, `e5b4e38`, `cbbe409`, `51251a0` |
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:270:| Passive tree | `src/core/passives/verdigris-authored-tree-data.js:1-13,58-100` plus server validator `server/core/passives/verdigris-authority.js:23-110` | Generated JSON-like graph, schemaVersion, seats, conduits, stat effects; server owns budget/reachability. |
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:276:| Chronicle persistence | SQLite schema `server/core/repositories/chronicles-repository.js:93-160`; JSON compatibility store `server/core/services/chronicles-store.js:24-36` | Account/House/Scion/relic/world-progress rows; bounded JSON-compatible fallback and migration limits. |
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:277:| Guest/player saves | `server/core/repositories/guest-save-store.js:73-117` | Pretty JSON snapshots; durable item fields retain UUID, rolls, affixes, vessel, binding while world coordinates/locks are stripped. |
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:291:| Hyphenated `bronze-dagger` | `server/core/entities/player/fresh-scion-profile.js:13-19`; template `server/core/data/helpers/player.json:39-49`; item definition `server/core/data/items/weapons.js:91-118` | Denylist has `bronze dagger` and `bronze_dagger`, not `bronze-dagger`; native data files are not scanned at all. |
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:292:| Camel/Pascal starter variants (`startingCoins`, `StartingCoins`, `starting-coins`) | Legacy starter contract is represented as item ID/quantity in `server/core/entities/player/fresh-scion-profile.js:13-19` and template `:39-49` | Only `starting coins` and `starting_coins` are listed (`config/legacy-denylist.json:4-8`). |
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:293:| `bronze-pickaxe`, `pickaxe`, `bronze-bar`, `ore` | `tests/unit/fresh-scion-profile.spec.js:39-40`; size heuristics `server/shared/inventory-footprints.js:73-90,137-143`; retired-loop note `server/core/data/helpers/database.js:49-56` | None are denylist identifiers; `mining` alone is not guaranteed to catch compound IDs such as `bronze-pickaxe`. |
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:296:| Legacy schema names (`defence`, `legacyRelicId`, `legacyTile`, `LEGACY_MODE`) | `server/core/entities/player/fresh-scion-profile.js:4-9`; `server/core/services/chronicles.js:255-269`; `src/core/inventory/constants.js:3-7`; `src/core/rendering/renderer-mode.js:1-2` | The checker is identifier-substring based and has no schema/semantic rules. |
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:297:| Denied content in native non-C++ data | Checker extension allow-list `native/tools/check_legacy_denylist.py:10-14`; current item/profile data are JSON/JS (`server/core/data/helpers/player.json:39-49`, `server/core/data/items/weapons.js:91-118`) | A native `.json`, `.toml`, `.yaml`, `.txt`, or `.js` content file can carry any denied string without being visited. |
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:307:   include fishing/cooking (`server/core/entities/player/fresh-scion-profile.js:4-19,35-40`).
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:340:5. **There are multiple persistence authorities and a stale persistence doc.**
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:341:   Identity and Chronicle repositories use SQLite (`server/core/services/identity-registry.js:5,24-33`;
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:343:   JSON (`server/core/repositories/guest-save-store.js:89-117`), and a separate
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:345:   (`server/core/services/chronicles-store.js:1-36`). The public persistence doc
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:347:   (`docs/chronicles-persistence.md:7-12`). Native extraction must select one
+orchestration\tasks\TASK-0005-legacy-archaeology-audit\REPORT.md:348:   authority and document migration rather than infer it from the browser.
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:21:wear entries failing the notable predicate are not recoverable. The SQLite
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:23:`entombFallenScion` ([`server/core/services/chronicles.js:206-218`](../../../server/core/services/chronicles.js#L206-L218), [`server/core/repositories/chronicles-repository.js:467-505`](../../../server/core/repositories/chronicles-repository.js#L467-L505)). The later return handler's `removeItemIdentity` is a separate JSON-Store path: it is guarded by `record.exists` and only runs when that JSON `entomb` returns a relic ([`server/player/handlers/socket-events/index.js:462-482`](../../../server/player/handlers/socket-events/index.js#L462-L482)). It is therefore incorrect to say the selected relic is universally removed only on return. In either path the dead player is then removed from the world and a successor is created from the fresh Scion profile ([`server/player/handlers/socket-events/index.js:484-507`](../../../server/player/handlers/socket-events/index.js#L484-L507), [`server/core/entities/player/fresh-scion-profile.js:21-46`](../../../server/core/entities/player/fresh-scion-profile.js#L21-L46)). Thus remaining carried state disappears with the dead in-memory player. D-106 requires every carried item and trophy to remain recoverable, so the hard path is a direct product violation.
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:25:There is no browser `relic_candidates`/`lost_trophies` equivalent. Browser relics are individual crypt rows with a run-delay and kill-based circulation; the JSON Chronicle path and SQLite Chronicle path coexist and are wired through different services ([`server/core/repositories/chronicles-repository.js:467-505`](../../../server/core/repositories/chronicles-repository.js#L467-L505), [`server/core/services/chronicles-store.js:423-487`](../../../server/core/services/chronicles-store.js#L423-L487), [`server/player/handlers/socket-events/index.js:5-30`](../../../server/player/handlers/socket-events/index.js#L5-L30)). Standalone Vesselforge trophy fragments live in a separate engine character object, not the browser `Player` snapshot ([`server/core/items/vesselforge/engine.js:443-452`](../../../server/core/items/vesselforge/engine.js#L443-L452), [`server/core/items/vesselforge/engine.js:478-490`](../../../server/core/items/vesselforge/engine.js#L478-L490)); socketed trophies are merely fields inside an item clone and are preserved only when that item itself survives ([`server/core/items/vesselforge/engine.js:175-194`](../../../server/core/items/vesselforge/engine.js#L175-L194), [`server/core/repositories/guest-save-store.js:25-42`](../../../server/core/repositories/guest-save-store.js#L25-L42)).
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:44:* Direct account login constructs a `Player` from the authentication profile;
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:50:* Chronicle-auth sessions use the separate SQLite-backed `beginScionSession`
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:51:  path and restore a saved snapshot into town ([`server/player/handlers/socket-events/index.js:236-279`](../../../server/player/handlers/socket-events/index.js#L236-L279), [`server/core/services/chronicles.js:140-194`](../../../server/core/services/chronicles.js#L140-L194)). This is important for migration: the repository and the JSON store are not interchangeable records.
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:63:  inventory fields ([`server/core/repositories/guest-save-store.js:45-87`](../../../server/core/repositories/guest-save-store.js#L45-L87), [`server/core/services/chronicles.js:45-58`](../../../server/core/services/chronicles.js#L45-L58)).
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:69:  ([`server/core/entities/monster/combat-controller.js:331-369`](../../../server/core/entities/monster/combat-controller.js#L331-L369)). The hard-death save is also requested immediately in the player stats manager ([`server/core/entities/player/stats-manager.js:238-261`](../../../server/core/entities/player/stats-manager.js#L238-L261)); this creates an ordering/migration risk noted below.
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:73:* The SQLite entomb transaction marks the Scion dead, nulls its snapshot, and
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:84:  carried state ([`server/core/entities/player/fresh-scion-profile.js:21-46`](../../../server/core/entities/player/fresh-scion-profile.js#L21-L46)). This correctly prevents duplicate inheritance, but does not make the dead Scion's other carried values recoverable.
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:88:* SQLite relic re-entry is not native-style FIFO pool resurface. `drawEligibleRelic`
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:90:  separate 12% circulation chance ([`server/core/repositories/chronicles-repository.js:508-541`](../../../server/core/repositories/chronicles-repository.js#L508-L541), [`server/core/combat/loot.js:13-23`](../../../server/core/combat/loot.js#L13-L23)). The separate elite-only JSON-store branch is explicit at [`server/core/combat/loot.js:170-183`](../../../server/core/combat/loot.js#L170-L183): `chroniclesStore.beginRelicDrop` consumes `queued` and emits that item, with its JSON status transition defined at [`server/core/services/chronicles-store.js:490-520`](../../../server/core/services/chronicles-store.js#L490-L520). The general SQLite draw is at [`server/core/combat/loot.js:209-223`](../../../server/core/combat/loot.js#L209-L223).
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:91:* SQLite pickup claims synchronously inside `commitGroundItemPickup`: the item
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:93:  repository update from `dropped` to `claimed` ([`server/core/items/pickup.js:24-55`](../../../server/core/items/pickup.js#L24-L55), [`server/core/repositories/chronicles-repository.js:583-590`](../../../server/core/repositories/chronicles-repository.js#L583-L590)). This is distinct from the JSON Chronicle path: its action handler saves first and then calls `chroniclesStore.recoverRelic`, changing `circulating` to `recovered` ([`server/player/handlers/actions/index.js:1234-1252`](../../../server/player/handlers/actions/index.js#L1234-L1252), [`server/core/services/chronicles-store.js:523-565`](../../../server/core/services/chronicles-store.js#L523-L565)).
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:96:  `Player`-level carried-trophy vector ([`server/core/items/vesselforge/engine.js:175-194`](../../../server/core/items/vesselforge/engine.js#L175-L194), [`server/core/items/vesselforge/engine.js:443-452`](../../../server/core/items/vesselforge/engine.js#L443-L452), [`server/core/items/vesselforge/engine.js:478-490`](../../../server/core/items/vesselforge/engine.js#L478-L490)). An embedded trophy survives a normal durable item clone because the clone removes placement/session fields only ([`server/core/repositories/guest-save-store.js:25-42`](../../../server/core/repositories/guest-save-store.js#L25-L42)); it is lost with an unselected item on hard death.
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:98:  requeueing a surfaced candidate ([`server/core/world.js:532-545`](../../../server/core/world.js#L532-L545)). Party teardown and route changes call that destruction ([`server/player/handlers/party.js:175-180`](../../../server/player/handlers/party.js#L175-L180), [`server/player/handlers/party.js:342-349`](../../../server/player/handlers/party.js#L342-L349), [`server/player/handlers/party.js:431-438`](../../../server/player/handlers/party.js#L431-L438)). A server restart happens to reset SQLite rows in `dropped` state to `circulating`, but ordinary instance retirement has no equivalent recovery ([`server/core/repositories/chronicles-repository.js:87-90`](../../../server/core/repositories/chronicles-repository.js#L87-L90)).
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:104:  ([`server/Delaford.js:201-240`](../../../server/Delaford.js#L201-L240)). Snapshot builders move an instance player to its saved pre-instance surface position while retaining wear/inventory ([`server/core/repositories/guest-save-store.js:59-87`](../../../server/core/repositories/guest-save-store.js#L59-L87), [`server/core/services/chronicles.js:33-58`](../../../server/core/services/chronicles.js#L33-L58)). This is substantially aligned with D-109 for successful saves.
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:105:* Save failures are logged and teardown continues ([`server/Delaford.js:230-240`](../../../server/Delaford.js#L230-L240)); guest file failures similarly return `null` after warning ([`server/core/repositories/guest-save-store.js:89-103`](../../../server/core/repositories/guest-save-store.js#L89-L103)). A failed persistence operation can therefore still lose live progress, which is a D-109 live-compatibility risk rather than a death-rule match.
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:112:| Relic resurface | Native recovery candidates resurface oldest-first on deterministic seeded 1-in-4 cadence ([`TASK-0018 REPORT`](../TASK-0018-death-recoverability/REPORT.md#L18-L21), [`TASK-0018 REPORT`](../TASK-0018-death-recoverability/REPORT.md#L63-L64)); recovered floor candidates requeue once at retirement ([`TASK-0025 REPORT`](../TASK-0025-instance-lifecycle-correctness/REPORT.md#L27-L30)). | Browser SQLite rows wait `run_count + 3`, then `drawEligibleRelic` oldest-first behind kill circulation; its lifecycle includes `circulating` at entomb, `dropped` on draw, and `claimed` on synchronous pickup ([`server/core/repositories/chronicles-repository.js:467-505`](../../../server/core/repositories/chronicles-repository.js#L467-L505), [`server/core/repositories/chronicles-repository.js:508-541`](../../../server/core/repositories/chronicles-repository.js#L508-L541), [`server/core/repositories/chronicles-repository.js:583-590`](../../../server/core/repositories/chronicles-repository.js#L583-L590)). The JSON store separately transitions `queued→circulating→recovered` ([`server/core/services/chronicles-store.js:447-466`](../../../server/core/services/chronicles-store.js#L447-L466), [`server/core/services/chronicles-store.js:490-520`](../../../server/core/services/chronicles-store.js#L490-L520), [`server/core/services/chronicles-store.js:523-565`](../../../server/core/services/chronicles-store.js#L523-L565)). | Cadence, storage, and event semantics differ; choose the product-authoritative pool and migrate both stores without duplicate UUIDs. |
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:114:| Instance retirement boundary | TASK-0025 retires ground state, rejects stale pickups, requeues an unclaimed surfaced relic/trophy exactly once, and loses ordinary leftovers ([`TASK-0025 REPORT`](../TASK-0025-instance-lifecycle-correctness/REPORT.md#L15-L30), [`TASK-0025 REPORT`](../TASK-0025-instance-lifecycle-correctness/REPORT.md#L56-L57)). | `destroyInstance` drops scene arrays wholesale; only restart resets SQLite `dropped` rows ([`server/core/world.js:532-545`](../../../server/core/world.js#L532-L545), [`server/core/repositories/chronicles-repository.js:87-90`](../../../server/core/repositories/chronicles-repository.js#L87-L90)). | Add an explicit browser retirement routine with active-instance membership and candidate requeue before destruction. |
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:115:| Logout/disconnect | D-109 requires no item/progress loss and a safe pull-out, never a death ([`D-109`](../../DECISIONS.md#L61-L65)). | Successful close saves before removal, but failed saves are swallowed and removal continues ([`server/Delaford.js:201-240`](../../../server/Delaford.js#L201-L240)). | Preserve current ordering, but make failure a retry/blocking boundary or durable queue; test disconnect during combat and instance teardown. |
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:116:| Chronicle ownership | Native House owns recovery pools; successor does not inherit the dead Scion's full inventory ([`D-004`](../../DECISIONS.md#L21-L23), [`TASK-0018 REPORT`](../TASK-0018-death-recoverability/REPORT.md#L14-L21)). | Browser has JSON `chroniclesStore` and SQLite `chroniclesRepository` paths in the same handler/loot surface ([`server/player/handlers/socket-events/index.js:5-30`](../../../server/player/handlers/socket-events/index.js#L5-L30), [`server/core/combat/loot.js:1-5`](../../../server/core/combat/loot.js#L1-L5)). | Migration must converge authority or define an adapter; otherwise a relic can be committed in one store and surfaced/claimed in another. |
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:135:   ([`server/core/items/vesselforge/engine.js:443-452`](../../../server/core/items/vesselforge/engine.js#L443-L452), [`server/core/items/vesselforge/engine.js:478-490`](../../../server/core/items/vesselforge/engine.js#L478-L490)); the forecast is a House-owned lost-trophy record keyed by a stable fragment ID/type and quantity, transferred once, removed atomically on claim, and requeued at most once on retirement. Keep successor construction in `fresh-scion-profile.js` empty except for the intentional starter contract.
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:140:   atomic with persistence rather than “save then claim” races.
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:145:4. **Persistence migration:** version guest snapshots and Chronicle rows in
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:146:   `server/core/repositories/guest-save-store.js`, the SQLite migration in
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:150:5. **D-109 failure handling:** retain the disconnect save-before-remove order in
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:151:   `server/Delaford.js`, but add a durable retry/ack boundary for save failure
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:155:   duplicate death/reconnect, old-save migration, and save failure. Extend
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:165:* `session-arc` persists a looted/equipped weapon across relog, enters several
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:178:* **Dual Chronicle authority:** SQLite `chroniclesRepository` is used by the
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:180:  relic-drop branch. A migration that updates only one can strand or duplicate
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:183:* **Death/save race:** hard death requests an immediate living snapshot before
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:186:  SQLite/JSON rows may already be `queued`, `circulating`, `dropped`, or
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:187:  `recovered` ([`server/core/services/chronicles-store.js:447-466`](../../../server/core/services/chronicles-store.js#L447-L466), [`server/core/services/chronicles-store.js:490-520`](../../../server/core/services/chronicles-store.js#L490-L520), [`server/core/services/chronicles-store.js:523-565`](../../../server/core/services/chronicles-store.js#L523-L565), [`server/core/repositories/chronicles-repository.js:467-541`](../../../server/core/repositories/chronicles-repository.js#L467-L541)). Migration must preserve UUIDs and provenance; startup currently changes SQLite `dropped` rows only as a crash repair ([`server/core/repositories/chronicles-repository.js:87-90`](../../../server/core/repositories/chronicles-repository.js#L87-L90)).
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:188:* **Live players:** disconnect save errors currently do not stop removal
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:213:?? .repo-backups/
+orchestration\tasks\TASK-0031-browser-d106-audit\REPORT.md:220:?? .repo-backups/
+server\player\handlers\chronicles.js:9:import playerPersistence from '#server/core/services/player-persistence.js';
+native\client\main.cpp:142:  GdipSaveImageToFileProc save_image_to_file = nullptr;
+native\client\main.cpp:476:  assets.save_image_to_file = reinterpret_cast<GdipSaveImageToFileProc>(
+native\client\main.cpp:1264:  const int saved = SaveDC(dc);
+native\client\main.cpp:1280:  RestoreDC(dc, saved);
+native\client\main.cpp:3114:bool save_hbitmap_png(BillboardAssets& assets, HBITMAP bitmap, const std::string& path) {
+native\client\main.cpp:3115:  if (!assets.create_bitmap_from_hbitmap || !assets.save_image_to_file ||
+native\client\main.cpp:3122:  const bool ok = !wide.empty() && assets.save_image_to_file(image, wide.c_str(), &png_clsid, nullptr) == 0;
+native\client\main.cpp:3142:  bool saved = png_path.empty() || save_hbitmap_png(state.billboards, bitmap, png_path);
+native\client\main.cpp:3146:  return saved;
+server\player\authentication.js:20:// layout (a decor tile may now occupy them, or a save from another surface
+server\player\authentication.js:60:   * Log the player in, get the JWT token and then their profile
+server\player\authentication.js:63:   * @returns {object} Their player profile and token
+orchestration\tasks\TASK-0040-first-encounter-readability\REPORT.md:112:overlap can persist until the next approximately 150 ms combat tick. Staged
+orchestration\tasks\TASK-0030-native-persistence\STATUS.md:5:worker: Luna native persistence implementer
+orchestration\tasks\TASK-0030-native-persistence\STATUS.md:6:worker_branch: codex/TASK-0030-native-persistence
+orchestration\tasks\TASK-0030-native-persistence\STATUS.md:7:worktree: C:\Users\Alex\Documents\ChatGPT\verdigris\.codex\worktrees\TASK-0030-native-persistence
+orchestration\tasks\TASK-0030-native-persistence\STATUS.md:16:validator: independent read-only TASK-0030 persistence validator
+orchestration\tasks\TASK-0030-native-persistence\STATUS.md:18:report: orchestration/tasks/TASK-0030-native-persistence/REPORT.md
+server\player\handlers\actions\index.js:38:import playerPersistence from '#server/core/services/player-persistence.js';
+server\player\handlers\actions\index.js:64:// SQLite candidates are claimed by commitGroundItemPickup.  Keep this small
+server\player\handlers\actions\index.js:73:    .then(() => playerPersistence.savePlayer(player, { force: true }))
+server\player\handlers\actions\index.js:75:      console.warn(`[actions] Failed to persist recovered Chronicle item ${worldItem.uuid}: ${error.message}`);
+orchestration\tasks\TASK-0030-native-persistence\SPEC.md:3:title: Native persistence — snapshot/restore per ADR-002 (D-109)
+orchestration\tasks\TASK-0030-native-persistence\SPEC.md:14:  - native/persistence/**
+orchestration\tasks\TASK-0030-native-persistence\SPEC.md:36:- ADR-002 verbatim: schemaVersion field mandatory; unknown-field
+orchestration\tasks\TASK-0030-native-persistence\SPEC.md:48:- File I/O (atomic temp+rename) belongs in `native/persistence/` as a
+orchestration\tasks\TASK-0030-native-persistence\SPEC.md:55:2. The persistence-adapter file layer (write/read with temp+rename).
+orchestration\tasks\TASK-0030-native-persistence\SPEC.md:66:Client save/load UI, browser persistence, seasonal transforms, save-file
+orchestration\tasks\TASK-0030-native-persistence\SPEC.md:72:`native/persistence/README.md` (that README is inside owned paths).
+orchestration\tasks\TASK-0030-native-persistence\REVIEW.md:12:(schemaVersion validated hard; `rng.state`+`rng.serial` round-tripped),
+orchestration\tasks\TASK-0030-native-persistence\REVIEW.md:13:the four persistence test suites, and an independent gate rerun (green).
+orchestration\tasks\TASK-0030-native-persistence\REVIEW.md:25:- File I/O isolated in `native/persistence/adapter.hpp` (temp+rename);
+orchestration\tasks\TASK-0030-native-persistence\REVIEW.md:34:The native game can now save and load. ADR-002 moves from accepted
+orchestration\tasks\TASK-0030-native-persistence\REPORT.md:4:branch: codex/TASK-0030-native-persistence
+orchestration\tasks\TASK-0030-native-persistence\REPORT.md:13:Native persistence now exposes pure deterministic snapshot/restore bytes for
+orchestration\tasks\TASK-0030-native-persistence\REPORT.md:25:  `schemaVersion=1`, fixed field order, stable collection indexes, and RNG
+orchestration\tasks\TASK-0030-native-persistence\REPORT.md:27:- Added the thin `native/persistence/` file adapter with flush plus atomic
+orchestration\tasks\TASK-0030-native-persistence\REPORT.md:30:  `native/persistence/README.md`.
+orchestration\tasks\TASK-0030-native-persistence\REPORT.md:36:- `native/include/verdigris/persistence.hpp`
+orchestration\tasks\TASK-0030-native-persistence\REPORT.md:37:- `native/persistence/adapter.hpp`
+orchestration\tasks\TASK-0030-native-persistence\REPORT.md:38:- `native/persistence/README.md`
+orchestration\tasks\TASK-0030-native-persistence\REPORT.md:44:- Platform file boundary: `persistence::write_atomic`, `read`, and aliases
+orchestration\tasks\TASK-0030-native-persistence\REPORT.md:57:- Independent validator `/root/validate_task_0030_persistence`: ACCEPT.
+orchestration\tasks\TASK-0030-native-persistence\REPORT.md:72:- The v1 format is deliberately internal and un-obfuscated; migrations and
+orchestration\tasks\TASK-0042-first-loot-moment\REVIEW.md:26:  session-scoped WeakMap avoids persistence pollution; once-per-uuid
+orchestration\tasks\TASK-0042-first-loot-moment\REPORT.md:45:  toasts once per uuid, so persisted items never re-toast on login.
+orchestration\tasks\TASK-0042-first-loot-moment\REPORT.md:105:  machine — port 6500 is owned by the owner's persistent server (PID
+orchestration\tasks\TASK-0042-first-loot-moment\REPORT.md:153:  persistence, that is a Chronicles-storage follow-up.
+server\core\world.js:48:    persistent = false,
+server\core\world.js:59:    this.persistent = Boolean(persistent);
+server\core\world.js:88:      persistent: true,
+server\core\world.js:161:    // A disconnect save is asynchronous. A replacement session with the
+server\core\world.js:162:    // same UUID may be admitted before the old socket finishes persisting;
+server\core\world.js:382:        persistent: options.persistent !== undefined ? options.persistent : true,
+server\core\world.js:413:        persistent: options.persistent !== undefined ? options.persistent : true,
+server\core\world.js:429:    scene.persistent = options.persistent !== undefined ? options.persistent : scene.persistent;
+server\core\world.js:440:   * World-web zones: persistent-for-a-while instances keyed by
+server\core\world.js:455:      persistent: false,
+server\core\world.js:510:      persistent: false,
+orchestration\tasks\TASK-0042-first-loot-moment\captures\_driver.mjs:26:const saveShot = async (page, name) => {
+orchestration\tasks\TASK-0042-first-loot-moment\captures\_driver.mjs:179:  await saveShot(page, '01-drop-moment.jpg');
+orchestration\tasks\TASK-0042-first-loot-moment\captures\_driver.mjs:186:  await saveShot(page, '02-pickup-prompt.jpg');
+orchestration\tasks\TASK-0042-first-loot-moment\captures\_driver.mjs:196:  await saveShot(page, '03-comparison-toast.jpg');
+server\core\world-layout.js:304:  persistent = true,
+server\core\world-layout.js:315:  persistent,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:22:artifact/hash/installer/update/rollback evidence from owner-only certificate,
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:29:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0134-distribution-signing-boundary/distribution-boundary.json','utf8'));for(const k of ['schema_version','artifacts','hashes','installer','update','rollback','machine_actions','owner_actions','handoff'])if(!(k in j))throw Error('missing '+k);console.log('distribution boundary: PASS')"
+orchestration\tasks\TASK-0134-distribution-signing-boundary\SPEC.md:31:rg -n 'installer|sign|certificate|notari|distribution|publish|release|license|rollback|update' .github native docs orchestration -g '*.yml' -g '*.yaml' -g '*.md' -g '*.ps1'
+orchestration\tasks\TASK-0034-playability-evaluation\REPORT.md:24:than a missing shell: onboarding, quest text, zone choices, persistence
+orchestration\tasks\TASK-0034-playability-evaluation\REPORT.md:96:### Chronicles persistence and progression surfaces
+orchestration\tasks\TASK-0034-playability-evaluation\REPORT.md:213:- Chronicles makes House persistence and Scion succession legible; the
+orchestration\tasks\TASK-0034-playability-evaluation\REPORT.md:250:  persistence, Scion choice, quests, skill tree, roads, and six expedition
+server\core\utilities\wear.js:54:   * player object lets the Player constructor restore persisted equipment
+orchestration\tasks\TASK-0033-daytime-default\REPORT.md:14:single existing-settings toggle opts into the full day/night cycle, persists
+orchestration\tasks\TASK-0033-daytime-default\REPORT.md:20:- Added `ambient-clock.js` with an explicit persisted opt-in key.
+orchestration\tasks\TASK-0033-daytime-default\REVIEW.md:10:settings toggle opts into the full cycle, persisted, defaults off; unit
+orchestration\tasks\TASK-0033-daytime-default\SPEC.md:30:becomes an opt-in settings toggle (persisted client-side), OFF by
+orchestration\tasks\TASK-0033-daytime-default\SPEC.md:37:expose the toggle in the existing settings UI surface; persist the
+orchestration\tasks\TASK-0033-daytime-default\STATUS.md:10:expected_verification: npm run test:unit; npm run smoke:browser; default-midday and opt-in-cycle captures; reload persistence
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\STATUS.md:10:- branch/worktree: codex/TASK-0133-save-migration-rollback-contract-ox-pc-h @ Z:\Code\.worktrees\verdigris\ox-pc-h
+orchestration\tasks\TASK-0053-world-composition-polish\REPORT.md:68:  persistent server, PID 17960; documented in 0041/0042 reports): own
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:3:title: Save migration and rollback evidence contract
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:11:owned_paths: [orchestration/tasks/TASK-0133-save-migration-rollback-contract/**]
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:12:forbidden_paths: [native/**, server/**, src/**, playtest/**, persistent user data]
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:20:Produce `save-migration-contract.json`, `VALIDATION.md`,
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:22:preflight, backup, migration, verification, idempotence, rollback, failure
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:24:persistence seams without choosing unresolved legacy mappings or touching any
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:25:real profile/database.
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:30:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0133-save-migration-rollback-contract/save-migration-contract.json','utf8'));for(const k of ['schema_version','source_version','target_version','preflight','backup','migration','verification','idempotence','rollback','evidence'])if(!(k in j))throw Error('missing '+k);console.log('save migration contract: PASS')"
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:31:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0133-save-migration-rollback-contract/fixtures/negative-cases.json','utf8'));for(const k of ['UNKNOWN_SOURCE_VERSION','BACKUP_FAILED','MIGRATION_FAILED','VERIFY_FAILED','NON_IDEMPOTENT','ROLLBACK_FAILED','DATA_LOSS'])if(!j.cases.some(x=>x.expected_error===k))throw Error('missing '+k);console.log('save migration negatives: PASS')"
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:32:rg -n 'schemaVersion|migration|rollback|backup|SQLite|persist|save|guest-save-store|profile' native server docs playtest orchestration -g '*.cpp' -g '*.hpp' -g '*.js' -g '*.mjs' -g '*.md'
+orchestration\tasks\TASK-0133-save-migration-rollback-contract\SPEC.md:39:STOP before mutating persistent data, selecting owner-only compatibility
+server\core\utilities\common\player\inventory.js:55:    const persistedSlots = Array.isArray(slots) ? slots : [];
+server\core\utilities\common\player\inventory.js:56:    this.slots = packInventoryItems(persistedSlots.map(hydrateInventoryItem).filter(Boolean));
+orchestration\tasks\TASK-0074-gear-outcomes-profile\STATUS.md:5:worker_branch: codex/TASK-0074-gear-outcomes-profile-luna-mac
+orchestration\tasks\TASK-0074-gear-outcomes-profile\STATUS.md:10:notes: Ten serialized 32/32 runs complete on ports 7001–7010. FINDINGS.md and timing.jsonl contain the profile. No code/playtest files changed; the runner appended unrelated docs/loop-journal.md telemetry, left uncommitted.
+orchestration\tasks\TASK-0074-gear-outcomes-profile\SPEC.md:3:title: gear-outcomes timing profile (flake root-cause groundwork)
+orchestration\tasks\TASK-0074-gear-outcomes-profile\SPEC.md:9:  - orchestration/tasks/TASK-0074-gear-outcomes-profile/**
+orchestration\tasks\TASK-0028-native-scenery-and-catalog\REPORT.md:67:The scenery catalog is presentation-only and intentionally does not persist
+orchestration\tasks\TASK-0047-native-protocol-n4\REVIEW.md:27:full scenario parity: N5 Chronicles/death/persistence (TASK-0056 —
+orchestration\tasks\TASK-0053-world-composition-polish\captures\_driver.mjs:23:const saveShot = async (page, name) => {
+orchestration\tasks\TASK-0053-world-composition-polish\captures\_driver.mjs:116:  await saveShot(page, '01-barrow-interior.jpg');
+orchestration\tasks\TASK-0053-world-composition-polish\captures\_driver.mjs:130:  await saveShot(page, '02-grove-treeline.jpg');
+orchestration\tasks\TASK-0049-first-session-ui-wave\REPORT.md:139:harness boots its own isolated server on :6510 with hermetic saves. During
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:23:platform coverage, rollback evidence, external owner actions, and final
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:31:node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('orchestration/tasks/TASK-0131-release-proof-manifest/release-proof-manifest.json','utf8'));for(const k of ['schema_version','source_head','commands','environment','artifacts','platform_coverage','rollback','owner_actions','verdict'])if(!(k in j))throw Error('missing '+k);console.log('release proof manifest: PASS')"
+orchestration\tasks\TASK-0131-release-proof-manifest\SPEC.md:33:rg -n 'release|artifact|installer|sign|notari|rollback|deploy|workflow_dispatch' .github native docs orchestration -g '*.yml' -g '*.yaml' -g '*.md' -g '*.ps1'
+orchestration\tasks\TASK-0056-native-protocol-n5\STATUS.md:12:Claiming TASK-0056 (N5 Chronicles/death/persistence parity over the C++
+orchestration\tasks\TASK-0049-first-session-ui-wave\captures\capture-0049.mjs:4:// unless every on-screen check passes; saves PNGs + a checks JSON here.
+orchestration\tasks\TASK-0049-first-session-ui-wave\captures\capture-0049.mjs:13:// Unique per run so a persistent server DB never collides across re-runs.
+orchestration\tasks\TASK-0056-native-protocol-n5\SPEC.md:3:title: Parity wave N5 — Chronicles, death, and persistence over the C++ server
+orchestration\tasks\TASK-0056-native-protocol-n5\SPEC.md:28:  `persistence` (relogin state), `single-session` re-verified
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:1:# TASK-0074 gear-outcomes timing profile
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:4:Worker branch: `codex/TASK-0074-gear-outcomes-profile-luna-mac`
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:93:$ PLAYTEST_PORT=7000 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:113:$ PLAYTEST_PORT=7001 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:119:$ PLAYTEST_PORT=7002 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:125:$ PLAYTEST_PORT=7003 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:131:$ PLAYTEST_PORT=7004 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:137:$ PLAYTEST_PORT=7005 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:143:$ PLAYTEST_PORT=7006 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:149:$ PLAYTEST_PORT=7007 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:155:$ PLAYTEST_PORT=7008 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:161:$ PLAYTEST_PORT=7009 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:167:$ PLAYTEST_PORT=7010 PLAYTEST_TIMING_LOG=1 PLAYTEST_TIMING_LOG_PATH=/Users/alexkorol/Code/verdigris/orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl npm run playtest
+orchestration\tasks\TASK-0074-gear-outcomes-profile\FINDINGS.md:197:$ rg -n DIAG orchestration/tasks/TASK-0074-gear-outcomes-profile/timing.jsonl
+orchestration\tasks\TASK-0052-suite-flake-hardening\REPORT.md:28:  downstream check (deposit math, persistence, relog) are untouched.
+orchestration\tasks\TASK-0071-protocol-matrix-audit\REPORT.md:18:Scion, death, successor, and persistence envelopes as open rows.
+server\core\services\zone-service.js:13: * owning House and the child nodes unlock — permanently, in SQLite.
+server\core\services\zone-service.js:287:  /** Individual exit: the zone persists behind whoever steps out. */
+orchestration\tasks\TASK-0046-playability-reevaluation\REVIEW2.md:27:points at Chronicles/scion state initialization (combat profile, skill
+orchestration\tasks\TASK-0071-protocol-matrix-audit\SPEC.md:24:House/Scion lifecycle, death, successor, persistence) as ⬜ rows.
+server\core\services\scion-relics.js:1:import { buildDurableItemSnapshot } from '#server/core/repositories/guest-save-store.js';
+orchestration\tasks\TASK-0073-renderer-backend-eval\SPEC.md:23:migration sketch from the current render_list (ops stay the contract).
+server\core\services\quest-service.js:9:import playerPersistence from '#server/core/services/player-persistence.js';
+server\core\services\quest-service.js:168:  playerPersistence.savePlayer(player, { force: true }).catch(() => {});
+orchestration\tasks\TASK-0048-chronicles-silent-combat\SPEC.md:32:profile, skill kit, resource state, or target/faction wiring — not the
+orchestration\tasks\TASK-0102-skill-system-gap-audit\SPEC.md:22:events, client model, HUD presentation, persistence, and tests. Separate
+server\core\services\player-persistence.js:1:import { buildGuestSnapshot, saveGuest } from '#server/core/repositories/guest-save-store.js';
+server\core\services\player-persistence.js:12:export const saveLocalAccountProfile = (player) => {
+server\core\services\player-persistence.js:21:    saveGuestPlayer = saveGuest,
+server\core\services\player-persistence.js:22:    saveLocalProfile = saveLocalAccountProfile,
+server\core\services\player-persistence.js:26:    this.saveGuestPlayer = saveGuestPlayer;
+server\core\services\player-persistence.js:27:    this.saveLocalProfile = saveLocalProfile;
+server\core\services\player-persistence.js:44:  async savePlayer(player, options = {}) {
+server\core\services\player-persistence.js:54:    // complete snapshot with the House instead of a fallback profile. Dynamic
+server\core\services\player-persistence.js:58:      const { saveLivingScion } = await import('#server/core/services/chronicles.js');
+server\core\services\player-persistence.js:59:      const snapshot = saveLivingScion(player);
+server\core\services\player-persistence.js:65:      // Local login accounts live in the same SQLite registry as credentials.
+server\core\services\player-persistence.js:67:      // archived website API is no longer part of Verdigris persistence.
+server\core\services\player-persistence.js:69:        ? await this.saveLocalProfile(player)
+server\core\services\player-persistence.js:70:        : await this.saveGuestPlayer(player);
+server\core\services\player-persistence.js:76:        this.logger.error(`[player-persistence] Failed to save ${player.username || player.uuid} locally`, error);
+server\core\services\player-persistence.js:85:      return { saved: 0, total: 0 };
+server\core\services\player-persistence.js:90:        const saved = await this.savePlayer(player, options);
+server\core\services\player-persistence.js:91:        return saved ? 1 : 0;
+server\core\services\player-persistence.js:97:    const savedCount = results.reduce((sum, value) => sum + value, 0);
+server\core\services\player-persistence.js:98:    return { saved: savedCount, total: players.length };
+orchestration\tasks\TASK-0115-browser-panel-typography-inventory\SPEC.md:21:Produce `FINDINGS.md`, one hard-fail capture per persistent/situational browser
+server\core\services\name-validation.js:125:          process.stderr.write(`[name-validation] Failed to persist cached identity binding. ${error}\n`);
+orchestration\tasks\TASK-0048-chronicles-silent-combat\REPORT.md:47:fresh profile, matching `tests/unit/fresh-scion-profile.spec.js` and the
+server\core\services\identity-registry.js:30:        profile_json TEXT NOT NULL,
+server\core\services\identity-registry.js:55:    const profile = {
+server\core\services\identity-registry.js:70:          (account_id, username, password_salt, password_hash, profile_json, created_at)
+server\core\services\identity-registry.js:77:        JSON.stringify(profile),
+server\core\services\identity-registry.js:92:      SELECT account_id, password_salt, password_hash, profile_json
+server\core\services\identity-registry.js:100:      const profile = JSON.parse(row.profile_json);
+server\core\services\identity-registry.js:101:      return profile && typeof profile === 'object' ? clone(profile) : null;
+server\core\services\identity-registry.js:107:  updateLoginProfile(accountId, profile = {}) {
+server\core\services\identity-registry.js:108:    if (!accountId || !profile || typeof profile !== 'object' || Array.isArray(profile)) return false;
+server\core\services\identity-registry.js:109:    const row = this.db.prepare('SELECT profile_json FROM login_accounts WHERE account_id = ?')
+server\core\services\identity-registry.js:115:      current = JSON.parse(row.profile_json);
+server\core\services\identity-registry.js:122:      ...clone(profile),
+server\core\services\identity-registry.js:124:      username: current?.username || profile.username,
+server\core\services\identity-registry.js:126:    const result = this.db.prepare('UPDATE login_accounts SET profile_json = ? WHERE account_id = ?')
+server\core\services\disconnect-save-queue.js:3: * profile writer is unavailable, capture the exact durable guest-shaped
+server\core\services\disconnect-save-queue.js:5: * and retryable; a failed save is never treated as a successful empty save.
+server\core\services\disconnect-save-queue.js:10:import { buildGuestSnapshot } from '#server/core/repositories/guest-save-store.js';
+server\core\services\disconnect-save-queue.js:14:const DEFAULT_QUEUE_FILE = path.resolve(here, '..', '..', 'data', 'disconnect-save-queue.json');
+server\core\services\disconnect-save-queue.js:36:      error: error ? String(error.message || error) : 'profile save failed',
+orchestration\tasks\TASK-0107-persistence-fault-matrix\SPEC.md:3:title: Disposable-profile persistence fault matrix
+orchestration\tasks\TASK-0107-persistence-fault-matrix\SPEC.md:9:dependencies: [TASK-0097 ACCEPTED, architect freezes disposable profile and atomicity contracts]
+orchestration\tasks\TASK-0107-persistence-fault-matrix\SPEC.md:11:forbidden_paths: [real owner saves, gameplay-rule changes]
+orchestration\tasks\TASK-0107-persistence-fault-matrix\SPEC.md:17:behavior with disposable profiles while preserving D-106/D-109. Exact fault
+orchestration\tasks\TASK-0114-renderer-backend-evaluation\SPEC.md:25:integration, licenses, binary/dependency weight, and migration from render-list
+orchestration\tasks\TASK-0114-renderer-backend-evaluation\SPEC.md:32:base SHA, version/SHA of each evaluated upstream, risk table, migration sketch,
+server\core\services\chronicles.js:9:import { createScionSessionProfile } from '#server/core/entities/player/fresh-scion-profile.js';
+server\core\services\chronicles.js:15:    // Keep retired quiver data from being written back by stale Chronicle saves.
+server\core\services\chronicles.js:46:  savedAt: Date.now(),
+server\core\services\chronicles.js:91: * persistence adapter.
+server\core\services\chronicles.js:208:  const saved = scion.snapshot && typeof scion.snapshot === 'object' ? scion.snapshot : {};
+server\core\services\chronicles.js:209:  const savedLifecycle = saved.lifecycle && typeof saved.lifecycle === 'object' ? saved.lifecycle : {};
+server\core\services\chronicles.js:211:    ...savedLifecycle,
+server\core\services\chronicles.js:213:    state: ['alive', 'cheat-death'].includes(savedLifecycle.state) ? savedLifecycle.state : 'alive',
+server\core\services\chronicles.js:215:      ...(savedLifecycle.respawn || {}),
+server\core\services\chronicles.js:222:      accountProfile: auth.profile,
+server\core\services\chronicles.js:223:      snapshot: saved,
+server\core\services\chronicles.js:231:  // also keeps stale saved coordinates from older town layouts harmless.
+server\core\services\chronicles.js:251:export const saveLivingScion = (player) => {
+server\core\services\chronicles.js:253:  return chroniclesRepository.saveScionSnapshot(
+server\core\services\chronicles.js:362:  saveLivingScion,
+orchestration\tasks\TASK-0066-capture-harness-consolidation\REPORT.md:16:(build+spawn+ready-wait+teardown, isolated guest-save/Chronicles state per
+server\core\services\chronicles-store.js:4: * Browser localStorage is retained as an offline cache and one-time migration
+server\core\services\chronicles-store.js:19:import { buildDurableItemSnapshot } from '#server/core/repositories/guest-save-store.js';
+server\core\services\chronicles-store.js:302:  persist() {
+server\core\services\chronicles-store.js:321:      // before acknowledging the mutation so "saved" really means durable.
+server\core\services\chronicles-store.js:322:      this.persist();
+server\core\services\chronicles-store.js:329:      this.logger.error(`[chronicles-store] Failed to persist ${key}. ${error.message}`);
+server\core\services\chronicles-store.js:330:      return { ok: false, reason: 'The server could not save this Chronicle.' };
+server\core\services\chronicles-store.js:335:  save(accountId, candidate) {
+orchestration\tasks\TASK-0100-deterministic-replay-coverage-audit\SPEC.md:10:owner_visible_contribution: makes regressions reproducible across core, server, persistence, and future content
+orchestration\tasks\TASK-0100-deterministic-replay-coverage-audit\SPEC.md:21:seeds, ticks, clocks, RNG streams, snapshots, persistence, networking adapters,
+orchestration\tasks\TASK-0100-deterministic-replay-coverage-audit\SPEC.md:28:clock, sockets, renderer, and persistence may not enter core determinism. Cite
+orchestration\tasks\TASK-0113-campaign-content-tooling-scaffold\SPEC.md:17:with migration and connectivity tests. Owner-authored content remains data, not
+orchestration\tasks\TASK-0127-save-migration-release-matrix\SPEC.md:3:title: Versioned save migration and recovery release matrix
+orchestration\tasks\TASK-0127-save-migration-release-matrix\SPEC.md:9:dependencies: [TASK-0097 ACCEPTED, TASK-0107 ACCEPTED, TASK-0120 ACCEPTED, persistence versions and fixtures frozen]
+orchestration\tasks\TASK-0127-save-migration-release-matrix\SPEC.md:10:owned_paths: [to be frozen after persistence/release audits]
+orchestration\tasks\TASK-0127-save-migration-release-matrix\SPEC.md:11:forbidden_paths: [real owner saves, destructive migration, gameplay-rule invention]
+orchestration\tasks\TASK-0127-save-migration-release-matrix\SPEC.md:16:Prove supported old/current/future-unknown/corrupt/partial save behavior through
+orchestration\tasks\TASK-0127-save-migration-release-matrix\SPEC.md:17:disposable fixtures, backup/rollback, crash recovery, deterministic migration,
+orchestration\tasks\TASK-0045-native-protocol-n3\REPORT.md:91:  buffer; broader effect stacking and persistence are later combat/item
+server\core\repositories\player-repository.js:83:  async save(player) {
+orchestration\tasks\TASK-0126-clean-machine-release-harness\SPEC.md:18:runtime dependencies, rollback, and authentic failure controls. DRAFT until
+server\core\repositories\guest-save-store.js:2: * File-based persistence for guest/dev accounts. Guests have no account API
+server\core\repositories\guest-save-store.js:7: * hydrates them exactly like a fresh profile.
+server\core\repositories\guest-save-store.js:18:// never inherit (or clobber) the developer's own character save.
+server\core\repositories\guest-save-store.js:21:  : path.resolve(here, '..', '..', 'data', 'guest-saves');
+server\core\repositories\guest-save-store.js:23:const savePath = uuid => path.join(SAVE_DIR, `${String(uuid).replace(/[^a-zA-Z0-9-]/g, '')}.json`);
+server\core\repositories\guest-save-store.js:47:    // Keep retired quiver data from being written back by stale guest saves.
+server\core\repositories\guest-save-store.js:59:// Never persist instance coordinates: guests always reload into town, and
+server\core\repositories\guest-save-store.js:74:  savedAt: Date.now(),
+server\core\repositories\guest-save-store.js:89:export const saveGuest = (player) => {
+server\core\repositories\guest-save-store.js:97:    fs.writeFileSync(savePath(player.uuid), JSON.stringify(snapshot, null, 2));
+server\core\repositories\guest-save-store.js:100:    console.warn(`[guest-save] Failed to save ${player.username || player.uuid}:`, error.message);
+server\core\repositories\guest-save-store.js:107:    const file = savePath(uuid);
+server\core\repositories\guest-save-store.js:114:    console.warn(`[guest-save] Failed to load ${uuid}:`, error.message);
+server\core\repositories\guest-save-store.js:119:export default { saveGuest, loadGuest, buildGuestSnapshot };
+orchestration\tasks\TASK-0112-passive-tree-engine-scaffold\SPEC.md:34:   allocation, budget, validation-result, migration, and persistence envelopes;
+orchestration\tasks\TASK-0112-passive-tree-engine-scaffold\SPEC.md:37:   overspend, malformed edge, counter confusion, and unsupported migration;
+orchestration\tasks\TASK-0112-passive-tree-engine-scaffold\SPEC.md:44:The two point sources remain structurally distinct: persistent commission-chain
+orchestration\tasks\TASK-0112-passive-tree-engine-scaffold\SPEC.md:55:node -e "const fs=require('fs');const p='orchestration/tasks/TASK-0112-passive-tree-engine-scaffold/passive-tree-contract.json';const j=JSON.parse(fs.readFileSync(p,'utf8'));const req=['schema_version','graph','allocation','budget','validation_result','migration','persistence'];for(const k of req)if(!(k in j))throw new Error('missing '+k);if(j.budget.persistent_commission_points===j.budget.live_tree_points)throw new Error('counters collapsed');console.log('passive-tree contract: PASS')"
+orchestration\tasks\TASK-0112-passive-tree-engine-scaffold\SPEC.md:57:rg -n 'resolveVerdigrisTree|validateSnapshot|questPoints|live_tree_points|player:skilltree:save|\+2|STUB NOTE' server/core/passives/verdigris-authority.js server/game/verdigris-skill-tree.js native/src/networking.cpp native/include/verdigris/networking.hpp
+orchestration\tasks\TASK-0112-passive-tree-engine-scaffold\SPEC.md:65:point awards/caps, migration outcomes, or balance. Mark such fields
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\STATUS.md:33:  approximation and unvalidated native save path) recorded in matrix
+server\core\repositories\chronicles-repository.js:82:        // Read-only/networked dev folders may reject WAL sidecars. SQLite's
+server\core\repositories\chronicles-repository.js:83:        // default journal still gives authoritative persistence.
+server\core\repositories\chronicles-repository.js:357:      return { ok: false, reason: 'The scion snapshot could not be saved.' };
+server\core\repositories\chronicles-repository.js:507:  saveScionSnapshot(accountId, scionId, snapshot) {
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\SPEC.md:22:the referenced 271-node gap, persistence/reset rules, network payloads, client
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\SPEC.md:28:Two quest-point counters and their distinct persistence semantics are frozen.
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\SPEC.md:43:continue isolating persistence, wire, and UI contracts.
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\REVIEW.md:20:The audit keeps the two quest-point counters and their distinct persistence
+server\core\player.js:5:import playerPersistenceService from '#server/core/services/player-persistence.js';
+server\core\player.js:26:    const persisted = source[skillId] && typeof source[skillId] === 'object'
+server\core\player.js:29:    const exp = Number.isFinite(persisted.exp) ? Math.max(0, persisted.exp) : 0;
+server\core\player.js:30:    return [skillId, { ...persisted, exp, level: UI.getLevel(exp) }];
+server\core\player.js:44:    // authenticated account identity separate so profile saves never rename
+server\core\player.js:93:    // Set during the persist-before-remove disconnect boundary. Combat and
+server\core\player.js:113:    // persisted via player:skilltree:save).
+server\core\player.js:125:    // Guest saves persist this so reconnecting cannot reset a mortal Scion's
+server\core\player.js:367:   * Persist the player profile through the local persistence service
+server\core\player.js:369:   * @param {object} options Additional persistence options
+server\core\player.js:377:    return playerPersistenceService.savePlayer(this, context);
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\REPORT.md:9:referenced 271-node gap, persistence/reset rules, network payloads,
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\REPORT.md:13:unvalidated save path are recorded as explicit negative controls
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\REPORT.md:34:   nodes + 34 subtree nodes = 365 total, 974 conduits, schemaVersion 2**
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\REPORT.md:115:  raw-snapshot save path (`networking.cpp:1157-1166`) as the two seams
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\REPORT.md:127:  schemaVersion: 2`.
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\REPORT.md:131:  as QP-2 (browser goal-fed/persisted/cap 23 vs native login-reset,
+orchestration\tasks\TASK-0097-persistence-durability-audit\SPEC.md:3:title: Native persistence durability and fault-model audit
+orchestration\tasks\TASK-0097-persistence-durability-audit\SPEC.md:13:owned_paths: [orchestration/tasks/TASK-0097-persistence-durability-audit/**]
+orchestration\tasks\TASK-0097-persistence-durability-audit\SPEC.md:15:resource_capsule: read-only; do not mutate real saves
+orchestration\tasks\TASK-0097-persistence-durability-audit\SPEC.md:20:Produce `FINDINGS.md` and `captures/persistence-contract.json` mapping every
+orchestration\tasks\TASK-0097-persistence-durability-audit\SPEC.md:21:persisted field, save trigger, serialization/version seam, file location,
+orchestration\tasks\TASK-0097-persistence-durability-audit\SPEC.md:23:mode. Define a deterministic disposable-profile fault matrix for a successor.
+orchestration\tasks\TASK-0097-persistence-durability-audit\SPEC.md:28:loses progress. Never touch real owner profiles. Cite source/tests for every
+orchestration\tasks\TASK-0097-persistence-durability-audit\SPEC.md:35:rg -n "persist|save|load|profile|serialize|version|reconnect|relic|House|Scion" native/src native/include native/tests
+orchestration\tasks\TASK-0097-persistence-durability-audit\SPEC.md:36:node -e "JSON.parse(require('fs').readFileSync('orchestration/tasks/TASK-0097-persistence-durability-audit/captures/persistence-contract.json','utf8')); console.log('persistence contract: PASS')"
+orchestration\tasks\TASK-0097-persistence-durability-audit\SPEC.md:43:modifying or opening non-disposable saves; continue source/test mapping.
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\FINDINGS.md:20:2. an **unvalidated save path** — `handle_skilltree_save`
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\FINDINGS.md:22:   schemaVersion/budget/adjacency checks, exactly the trust the browser
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\FINDINGS.md:23:   authority removed ("snapshots are no longer trusted save blobs",
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\FINDINGS.md:39:- **F-1 Two counters, distinct persistence.** `quests.questPoints`
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\FINDINGS.md:40:  (persistent commission-chain record) vs top-level live tree budget are
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\FINDINGS.md:57:| QP-2 | Live-budget counter | **approximation/divergent** | browser first-goal-fed, persisted (`first-goal.js:104`, `player.js:57`); native login-reset, commission+goal fed, cap 12 on goal (`networking.cpp:553,1374,1597`) |
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\FINDINGS.md:58:| AL-1 | Allocation command/wire | authoritative | `player:skilltree:save {snapshot}` pane→socket→handler; harness `saveSkillTree` |
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\FINDINGS.md:61:| GR-1 | "271-node" reference | unruled (stale prose) | executed check: 331 + 34 = 365 nodes, 974 conduits, schemaVersion 2; vision.md/authority-comment/native stub say 271 |
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\FINDINGS.md:62:| PR-1 | Persistence/reset rules | authoritative | guest-save-store/SQLite persist tree+questPoints; pre-v2 one-time refund (`verdigris-authority.js:121-128`); native login vs scion-admission reset boundary `networking.cpp:540-579,2632-2653`; permadeath preserved |
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\FINDINGS.md:77:   `questPoints`: first-goal-fed, capped 23, persisted. Native live
+orchestration\tasks\TASK-0105-passive-tree-progression-gap-audit\FINDINGS.md:106:at the boundary above: persistence, wire, and UI contracts are isolated
+orchestration\tasks\TASK-0124-accessibility-options-wave\SPEC.md:17:UI, persisted/resettable settings, hard-fail captures, and owner play evidence.
+server\core\passives\verdigris-authority.js:26: * resulting attributes; snapshots are no longer trusted save blobs.
+server\core\passives\verdigris-authority.js:32:  if (incoming.schemaVersion !== VERDIGRIS_PASSIVE_TREE_SCHEMA_VERSION) {
+server\core\passives\verdigris-authority.js:96:      schemaVersion: VERDIGRIS_PASSIVE_TREE_SCHEMA_VERSION,
+server\core\passives\verdigris-authority.js:114:  schemaVersion: VERDIGRIS_PASSIVE_TREE_SCHEMA_VERSION,
+server\core\passives\verdigris-authority.js:125:  incoming?.schemaVersion === VERDIGRIS_PASSIVE_TREE_SCHEMA_VERSION
+orchestration\tasks\TASK-0120-release-verification-gap-audit\STATUS.md:41:  upgrade-safety claim unsupported by any clean-machine/migration artifact).
+orchestration\tasks\TASK-0123-audio-music-runtime-wave\SPEC.md:17:ambience proof with deterministic no-device tests, settings persistence, clean
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:3:title: Clean-machine, migration, soak, and release verification audit
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:22:long soak, protocol regression, deterministic replay, performance, crash/save
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:23:recovery, save-version migration, upgrade/rollback, asset/license manifest,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:30:rg -n "CI|clean|build|package|launcher|soak|migration|upgrade|rollback|sign|notar|installer|release|artifact|crash|save" .github native docs orchestration --glob "*.md" --glob "*.yml" --glob "*.yaml" --glob "*.ps1" --glob "*.json"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\SPEC.md:38:clean-machine or migration artifact. Stop before account/irreversible actions;
+orchestration\tasks\TASK-0104-itemization-history-gap-audit\SPEC.md:22:death recovery, relic candidacy, scars/history, crafting/storage, persistence,
+orchestration\tasks\TASK-0095-content-authoring-schema-audit\SPEC.md:30:schema needs from owner-only content. Include locking validators and migration
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REVIEW.md:21:Clean-machine execution, long soak, performance budget, save migration,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REVIEW.md:22:rollback, asset manifest, macOS coverage, installer, and signing remain
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REVIEW.md:24:recipe is a valid negative control because no clean-machine, migration, or
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REVIEW.md:25:rollback artifact supports it. Installer, signing, notarization, distribution,
+server\core\first-goal.js:6:import playerPersistence from '#server/core/services/player-persistence.js';
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:12:harness, long soak, performance budget, save migration, rollback, asset
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:25:   `native/build.ps1`, `native/README.md`, `native/persistence/README.md`,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:30:   migration/schemaVersion, shutdown, notar/codesign/installer,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:31:   rollback/replay/support-bundle.
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:56:rg -n "CI|clean|build|package|launcher|soak|migration|upgrade|rollback|sign|notar|installer|release|artifact|crash|save" .github native docs orchestration --glob "*.md" --glob "*.yml" --glob "*.yaml" --glob "*.ps1" --glob "*.json"
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:100:but has **no** clean-machine or migration artifact behind it — schemaVersion
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:101:mismatch fails restore closed, browser SQLite has no versioned migration,
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:102:and no rollback procedure exists anywhere. Discharge path: TASK-0126 +
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:114:- Verified absence claims (installer/signing/notarization/rollback/migration
+orchestration\tasks\TASK-0120-release-verification-gap-audit\REPORT.md:154:- TASK-0126 clean-machine release harness and TASK-0127 save-migration
+server\core\map.js:1811:    townScene.persistent = town.persistent;
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:16:soak, performance budget, save migration, rollback, asset manifest, macOS
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:50:8. **Crash/save recovery** — `write_atomic` + fail-closed restore, pending
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:51:   recovery queues, guest saves surviving restarts, pm2 autorestart with
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:52:   backoff/memory cap. No crash-injection matrix or corrupted-save corpus
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:73:14. **Save-version migration** — fail-closed only: `core.cpp` throws on
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:74:    unsupported/missing `schemaVersion`; unknown keys ignored; **no
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:75:    migration code path between schema versions exists**. The browser SQLite
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:76:    stores have no versioned migration either. TASK-0127 (DRAFT successor)
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:78:15. **Upgrade/rollback** — `docs/deployment.md` documents the upgrade half
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:79:    (pull/ci/build/restart) and nothing else: no rollback procedure, no
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:103:**Finding: unsupported.** No clean-machine or migration artifact backs it —
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:104:a save written by a different schema version hard-fails restore rather than
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:105:migrating (native) or has no versioned migration path at all (browser
+orchestration\tasks\TASK-0120-release-verification-gap-audit\FINDINGS.md:106:SQLite), no rollback procedure exists anywhere in the repository, and no
+orchestration\tasks\TASK-0109-skill-infrastructure-wave\SPEC.md:16:Scaffold authoritative LMB/RMB/Q/E/R definitions, validation, persistence, and
+orchestration\tasks\TASK-0082-dual-server-matrix\SPEC.md:27:explicit loopback ports from the coordinator capsule, creates isolated save
+orchestration\tasks\TASK-0092-owner-launch-packaging-audit\SPEC.md:22:save locations, clean-machine assumptions, failure messages, version metadata,
+orchestration\tasks\TASK-0092-owner-launch-packaging-audit\SPEC.md:28:Owner port 6500, loopback-only servers, forgiving persistence, and current
+orchestration\tasks\TASK-0079-browser-panel-inventory\SPEC.md:16:Produce `FINDINGS.md` in this task folder cataloguing every persistent
+orchestration\tasks\TASK-0079-browser-panel-inventory\SPEC.md:26:   from your capsule; owner :6500 untouchable) saved in the task
+orchestration\tasks\TASK-0077-native-chronicles-client\SPEC.md:23:relic recovery states), and relaunch persistence (reconnect shows the
+orchestration\tasks\TASK-0077-native-chronicles-client\SPEC.md:26:-> quit -> reconnect -> persisted). Protocol matrix Gate B rows get
+server\core\entities\player\stats-manager.js:16:import playerPersistenceService from '#server/core/services/player-persistence.js';
+server\core\entities\player\stats-manager.js:253:  // Hard-mode final death is an identity boundary, not an ordinary autosave
+server\core\entities\player\stats-manager.js:258:    playerPersistenceService.savePlayer(player, { force: true }).catch(() => {});
+orchestration\tasks\TASK-0118-accessibility-options-audit\SPEC.md:23:minimap/pane options, difficulty-independent readability, persistence, reset,
+server\core\entities\player\inventory-manager.js:15:      const saved = wearData[property];
+server\core\entities\player\inventory-manager.js:16:      const id = typeof saved === 'object' ? saved.id : saved;
+server\core\entities\player\inventory-manager.js:18:      // A saved character can reference an item id that no longer exists in the
+server\core\entities\player\inventory-manager.js:25:      const hydrated = typeof saved === 'object'
+server\core\entities\player\inventory-manager.js:26:        ? ItemFactory.adoptExisting({ ...definition, ...saved }, { baseItem: definition })
+server\core\items\vesselforge\engine.js:604:    if (data.packId !== pack.id) throw new Error(`save is for pack ${data.packId}, forge runs ${pack.id}`);
+server\core\items\vesselforge\engine.js:644:    // persistence
+orchestration\tasks\TASK-0081-gate-b-wire-contract\STATUS.md:20:- model id: `x-preview-f-free`; variant: `max` (normalized per saved OpenCode
+server\core\entities\player\fresh-scion-profile.js:24: * an account profile cannot silently turn them into inherited character data.
+server\core\entities\player\fresh-scion-profile.js:49: * Resume saved Scion progression when it exists; otherwise use the clean
+server\core\entities\player\fresh-scion-profile.js:50: * starter contract. Account profile progression is intentionally excluded.
+server\core\entities\player\fresh-scion-profile.js:57:  const saved = snapshot && typeof snapshot === 'object' && !Array.isArray(snapshot)
+server\core\entities\player\fresh-scion-profile.js:68:    ...saved,
+server\core\items\vesselforge\adapter.js:194: * Rebuild the derived and presentation layers of a persisted Vessel while
+server\core\items\vesselforge\adapter.js:196: * old saves without rerolling their identity, material, Brands, or patience.
+server\core\items\vesselforge\adapter.js:198:export const refreshVesselBlock = (savedVessel) => {
+server\core\items\vesselforge\adapter.js:199:  const vesselItem = savedVessel?.item;
+server\core\items\vesselforge\adapter.js:208:    ...savedVessel,
+server\core\items\vesselforge\adapter.js:215:      || savedVessel.displayName
+orchestration\tasks\TASK-0081-gate-b-wire-contract\REPORT.md:69:`player:chronicles:mutate`, `player:chronicles:save`, `player:login`
+orchestration\tasks\TASK-0081-gate-b-wire-contract\REPORT.md:119:28:| Persistence | relaunch after death | login | N5 persistence | persisted House | House state | — | ⬜ Gap: N5 durable House/Scion restore envelope and client model coverage; owner family TASK-0056 (N5) |
+orchestration\tasks\TASK-0081-gate-b-wire-contract\REPORT.md:173:→ No durable cross-process persistence exists on the native tip;
+orchestration\tasks\TASK-0081-gate-b-wire-contract\REPORT.md:217:  (unrouted), durable persistence design (TASK-0097 audit family).
+orchestration\tasks\TASK-0081-gate-b-wire-contract\REPORT.md:221:- experimental identity (normalized per saved OpenCode session metadata):
+orchestration\tasks\TASK-0081-gate-b-wire-contract\REPORT.md:284:28:| Persistence | relaunch after death | login | N5 persistence | persisted House | House state | — | ⬜ Gap: ... TASK-0056 (N5) |
+orchestration\tasks\TASK-0086-gate-c-contract-audit\STATUS.md:34:`d8ab6670df742d3946886de91913be728bb535ed`): unabridged Gate 2 rg stdout saved
+orchestration\tasks\TASK-0081-gate-b-wire-contract\REVIEW.md:62:   identity now proven by saved OpenCode session metadata: harness-visible
+server\core\items\factory.js:184:  // current dedicated frame when an older save still carries its legacy atlas
+orchestration\tasks\TASK-0086-gate-c-contract-audit\REVIEW.md:39:   Rerun the exact command, save its unabridged stdout inside this task's
+orchestration\tasks\TASK-0086-gate-c-contract-audit\REPORT.md:161:1. Gate 2's rg transcript is now the unabridged, unelided stdout saved
+server\core\combat\index.js:462:const broadcastSkillEffect = (player, skill, profile, origin, direction, outcome = {}) => {
+server\core\combat\index.js:483:    durationMs: durations[skill.id] || Math.max(320, profile.duration || 0),
+server\core\combat\index.js:569:const applyMovementEffect = (player, skill, profile, payload, now, outcome) => {
+server\core\combat\index.js:597:  const duration = Number.isFinite(profile.duration)
+server\core\combat\index.js:598:    ? profile.duration
+server\core\combat\index.js:643:  const profile = getSkillExecutionProfile(payload.skillId);
+server\core\combat\index.js:644:  if (!profile) {
+server\core\combat\index.js:653:  const { skill } = profile;
+server\core\combat\index.js:674:    animationState: payload.animationState || profile.animationState,
+server\core\combat\index.js:675:    duration: payload.duration !== undefined ? payload.duration : profile.duration,
+server\core\combat\index.js:676:    holdState: payload.holdState !== undefined ? payload.holdState : profile.holdState,
+server\core\combat\index.js:702:  if (applyMovementEffect(player, skill, profile, payload, now, outcome)) {
+server\core\combat\index.js:703:    broadcastSkillEffect(player, skill, profile, effectOrigin, direction, outcome);
+server\core\combat\index.js:708:    broadcastSkillEffect(player, skill, profile, effectOrigin, direction, outcome);
+server\core\combat\index.js:713:    broadcastSkillEffect(player, skill, profile, effectOrigin, direction, outcome);
+server\core\combat\index.js:719:    broadcastSkillEffect(player, skill, profile, effectOrigin, direction, outcome);
+server\core\combat\index.js:768:  broadcastSkillEffect(player, skill, profile, effectOrigin, direction, outcome);
+server\core\combat\loot.js:14:// House-relic circulation (SQLite Chronicles): chance per kill that a fallen
+server\core\combat\loot.js:26:// name, footprint and combat profile are rolled together, avoiding the old
+server\core\combat\loot.js:295:  // SQLite Chronicles circulation: fallen scions of Houses present in the
+server\core\combat\loot.js:306:    // Direct-admission/legacy Chronicle sessions have no SQLite account id.
+server\core\combat\loot.js:308:    // the historical browser flow without creating a second SQLite record.
+server\core\data\items\vessels.js:36:// ItemFactory and then persist as one immutable item identity.
+server\core\data\respawn\weapons.js:2:// loot. Keep the retired mining pickaxe definition for old-save tolerance,
