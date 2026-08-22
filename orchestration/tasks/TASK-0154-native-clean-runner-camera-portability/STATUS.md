@@ -1,6 +1,6 @@
 # TASK-0154 STATUS
 
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: ox-pc-w (isolated Windows implementation worker, ports 7060-7079 reserved)
 machine: Windows (win32), pwsh 7.x
@@ -15,12 +15,23 @@ implementation-head: f947f91aeb30699e3aac2509fb7868aace7af30d
 worktree: Z:\Code\.worktrees\verdigris\ox-pc-w
 started-at: 2026-08-22T07:16:49-07:00
 updated-at: 2026-08-22T07:22:26-07:00
+integrated-implementation: f6475a85
+reviewed-worker-head: 2dc4bfb29b420fa472c35dc8e2abf72a6e3b8ac1
+review-verdict: ACCEPTED
 
 First committed STATUS write wins. At preflight the task folder contained only
 SPEC.md, the worktree was clean, HEAD was exactly the routed head, and the
 branch identity matched. Commit and push this claim before implementation.
 Then make only the standards-portability correction in the owned camera test,
 run every literal gate, and hand off as REVIEW_REQUESTED.
+
+## INTEGRATED
+
+The architect independently reviewed frozen pushed head `2dc4bfb2`, repeated
+the complete native build/test/scenario gate from a detached clean review
+worktree with exit 0, and accepted the one-line portability change. The worker
+implementation is integrated on the program branch as `f6475a85`. A protected
+hotfix PR to `master` is the remaining release action.
 
 ## Handoff (REVIEW_REQUESTED)
 
