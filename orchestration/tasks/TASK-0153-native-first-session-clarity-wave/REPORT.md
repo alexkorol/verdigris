@@ -9,9 +9,55 @@ claim_commit: 8474ac5125d3725c7fd119ac907e907c14da75d6
 implementation_commit: 8d386e24
 branch: codex/TASK-0153-native-first-session-clarity-wave-ox-pc-v
 completed_at: 2026-08-22 07:52 PDT
+revision: rev2 (bounded final handoff)
+revised_at: 2026-08-22
 ---
 
 # TASK-0153 report — native first-session clarity wave (ox-pc-v)
+
+## Revision — rev2 (bounded final handoff)
+
+### Revision cause
+
+The review blocked rev1 (`8d386e24`) on a layout collision: at 960x600 the
+long chronicle-derived identity line ("House … - Scion …") painted at its
+fixed top-left position ran into the centered objective strip. Before image:
+`captures/review-blocker-960x600.png`. Rev1's painters each chose their own
+fixed coordinates (identity pinned left at y=12, objective centered at y=12,
+connection chip right-pinned, art chip right-pinned), so nothing prevented
+horizontal overlap once combined text widths exceeded the window.
+
+### Rev2 approach
+
+- One pure integer-geometry planner, `plan_top_hud` (native/client/main.cpp):
+  measures real `GetTextExtentPoint32A` extents for identity, objective,
+  art-status, and controls; places right-aligned chips and centered regions
+  across up to four rows (`kTopHudRowStep = 34`) with a 10px minimum gap and
+  12px screen gutter, first-fit per row with an occupancy check
+  (`top_hud_clear`). Priority order: identity row 0, connection/art
+  right-aligned, then objective, then controls — the objective outranks the
+  controls hint when rows are contested.
+- The painter draws exactly what the planner returns; historical placements
+  survive only as degenerate-width fallbacks.
+- The Chronicles front door is unchanged: it owns its whole canvas, so the
+  shared connection chip keeps the historical edge-pin there.
+- No scenario text contracts changed; the deterministic scenario exercises
+  the same planner over worst-case strings.
+
+### Exact revision evidence
+
+1. `powershell native/build.ps1 -RunTests -RunClientScenarios` → exit 0
+   (denylist PASS; core/networking/camera2d tests PASS; session tests PASS;
+   all nine client scenarios PASS).
+2. Focused `native/build/verdigris_client.exe --scenario
+   first-session-clarity` → exit 0, 20/20 checks ok.
+3. `git diff --check` → clean.
+4. Visual evidence: `captures/accepted-hud-960x600.png` and
+   `captures/accepted-hud-1366x768.png` show non-overlapping top HUD at both
+   accepted resolutions; `captures/review-blocker-960x600.png` retained as
+   the before image.
+5. Changed paths verified confined to owned files: `native/client/main.cpp`
+   plus this task folder (STATUS.md, REPORT.md, captures/).
 
 ## Executive summary
 
