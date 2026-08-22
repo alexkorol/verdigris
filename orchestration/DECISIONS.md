@@ -289,3 +289,46 @@ at least 24 effective dependency-free, path-disjoint READY packets, at least 12
 sequenced successors, and a deeper whole-program graph. Queue depth prepares
 future lanes but never authorizes concurrent claims without explicit owner
 registration or relaxes acceptance and owner-authority boundaries.
+
+## D-127 - Provisioned is not active; activation alarms are binding (owner-ruled, 2026-08-21)
+
+A worktree, branch, port reservation, launch packet, process, or visible tab is
+not fleet capacity. A registered lane becomes live only after the exact worker
+branch carries a protocol-valid committed claim, and becomes active only after
+fresh post-claim execution evidence. Supervisors record launch requests with
+timestamp plus exact repository/worktree/branch/base/task/identity.
+
+A requested local worker still unclaimed after 10 minutes raises P1
+`PROVISIONED_UNCLAIMED` and an owner notification on the first observing
+sweep. At 30 minutes or two sweeps it escalates to P0 `ACTIVATION_FAILED`.
+Wrong repository, worktree, branch, base, task, or identity is immediate P0
+`MISROUTED`. Notifications deduplicate by lane/task/state and repeat only on
+escalation or changed evidence. A parked or stopped lane with no launch request
+is neither dark capacity nor an incident. The supervisor may repair routing
+and provisioning, but never absorbs the worker's implementation task.
+
+## D-128 - Permanent full-product backlog factory (owner-ruled, 2026-08-21)
+
+The 24 READY + 12 successor target is only an emergency anti-stall floor. It is
+not adequate runway, planning completion, or a reportable success by itself.
+Primary queue health is autonomous runway hours: target at least 72, warn below
+48, and treat below 24 as a critical queue incident. Required packet count is
+derived from trailing accepted throughput by full experimental unit and packet
+type, never human developer estimates.
+
+Maintain three layers continuously: an initial 2,000-node concrete terminal
+product graph, an initial 500-packet detailed DRAFT/AUTO_RELEASE reserve, and a
+validated 72-hour READY/AUTO_RELEASE runway. These are rolling floors, not
+caps. Every accepted packet receives successor analysis; audits must feed
+implementation. Runnable consumption targets at least 60% implementation,
+integration, content, presentation, polish, or release work and normally no
+more than 25% pure audit/research/inventory/evaluation.
+
+The graph covers the complete ARPG through full-product and release gates, not
+only parity. `BACKLOG_FACTORY.md` is the operating contract and
+`CONTENT_SCALE_MATRIX.md` is the provisional owner-review envelope, with
+blockbuster-scale capacity used for planning until the owner selects another
+tier. Distant mutable packets do not receive stale immutable bases; exact
+dependency predicates release validated successors without owner prose. Low
+runway is repaired by decomposition and packet production, never by architect
+implementation takeover.

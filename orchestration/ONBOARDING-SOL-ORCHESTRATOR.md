@@ -40,6 +40,10 @@ read it before your first sweep.
    spin) and **INC-012** (the failure that cost you your predecessor).
 6. `orchestration/RUN_STATUS.md` — current board and fleet.
 7. `docs/rebuild/HANDOFF.md` — load-bearing technical findings.
+8. `orchestration/BACKLOG_FACTORY.md` and `CONTENT_SCALE_MATRIX.md` — D-128
+   autonomous-runway and full-product decomposition authority.
+9. `orchestration/SUPERVISOR_SUCCESSION.md` — credit-aware replacement and
+   temporary-retirement contract.
 
 ## Program state at handoff
 
@@ -98,25 +102,36 @@ other work.
 
 1. `git fetch --prune origin`; list lane branch commit times. Any lane
    with no push in ~90 minutes while holding a claim is stalled.
-2. Read `NOTES-<coordinator>.md` files and any `STATUS.md` flipped to
+2. Reconcile every registered lane through D-127's activation states. A
+   worktree/window is not capacity. Compare each `LAUNCH_REQUESTED` record to
+   its exact repository, worktree, branch, base, task, and committed claim.
+   Notify the owner at 10 minutes unclaimed; escalate at 30 minutes/two sweeps;
+   treat any path/branch/task mismatch as immediate P0 `MISROUTED`.
+3. Read `NOTES-<coordinator>.md` files and any `STATUS.md` flipped to
    `REVIEW_REQUESTED`. A board-dry note is a P1 interrupt — restock
    that lane this sweep.
-3. Review every `REVIEW_REQUESTED` task per ACCEPTANCE.md. Rerun the
+4. Review every `REVIEW_REQUESTED` task per ACCEPTANCE.md. Rerun the
    spec's exact gates yourself; never accept a claim on the strength of
    a report alone.
-4. Batch accepted work: `gh pr create` then
+5. Batch accepted work: `gh pr create` then
    `gh pr merge -R alexkorol/verdigris --merge`. **Never squash** —
    master is branch-protected and the owner wants merge commits.
-5. Restock the board to ≥3 READY.
-6. Rewrite `RUN_STATUS.md`; log failures in `INCIDENTS.md`; recalibrate
+6. Restock the board to ≥3 READY.
+7. Rewrite `RUN_STATUS.md`; log failures in `INCIDENTS.md`; recalibrate
    `MODEL_SCORECARD.md`.
 
-**D-125 supersedes the numeric floor in step 5:** effective READY means the
+**D-125 supersedes the numeric floor in step 6:** effective READY means the
 current `RUN_STATUS.md` queue after excluding historical/integrated states,
 claims, HOLD/dependency gates, and owned-path collisions. Before three lanes
 are live, stock at least 8 effective READY plus 4 sequenced successors; keep
 the greater of 8 or two per live coordinator thereafter. TASK-0080 is the
 machine-enforcement packet.
+
+**D-128 supersedes count-only sufficiency:** calculate autonomous runway on
+every sweep; target 72 hours, warn below 48, and treat below 24 as a critical
+queue incident. Maintain the terminal graph and detailed reserve even while
+the immediate lane is busy. Unknown runway is an instrumentation gap, not
+healthy capacity.
 
 ## The rules that cost the most to learn
 

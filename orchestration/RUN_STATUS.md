@@ -24,9 +24,25 @@ integrates, and specs; it does not absorb implementation.
 4. Post-parity full ARPG graph: active in `PROGRAM_GRAPH.md`; parity is a gate,
    not a stopping point.
 
-Surge floor: at least 24 effective, dependency-free, pairwise path-disjoint
-READY packets plus 12 concrete successors. Current board: **30 READY + 18
-successors**; the minimum is runway, never product completion.
+Emergency surge floor: at least 24 effective, dependency-free, pairwise
+path-disjoint READY packets plus 12 concrete successors. Current board:
+**30 READY + 18 successors**. D-128 supersedes count-only sufficiency.
+
+## Autonomous runway and factory status
+
+- Autonomous runway: **UNKNOWN / P0 instrumentation gap**. The board has not
+  yet been weighted against trailing accepted throughput by full experimental
+  unit and packet type; 30+18 must not be reported as adequate runway.
+- Target/warning/critical: 72h / <48h / <24h.
+- Terminal graph: terminal gates T1-T8 exist, but the D-128 concrete-node count
+  is below the initial 2,000-node floor and requires systematic decomposition.
+- Detailed reserve: 18 known successors, below the initial 500 DRAFT/
+  AUTO_RELEASE floor.
+- Composition: current near-term board is audit-heavy; every accepted audit
+  must fan out into executable implementation/content/polish/test successors.
+- Binding contracts: `BACKLOG_FACTORY.md`, `CONTENT_SCALE_MATRIX.md`, and
+  D-128. Backlog production continues every sweep and never authorizes Sol to
+  implement worker tasks.
 
 ## PC Ox Alpha fleet reconciliation
 
@@ -34,7 +50,7 @@ Shared entry: `orchestration/REENTRY-OX-ALPHA-PC.md`.
 
 | Lane | Ports | Repository evidence | Initial route |
 |---|---|---|---|
-| ox-pc-a | 6620-6639 | PROVISIONED, UNCLAIMED: `Z:\Code\.worktrees\verdigris\ox-pc-a`, branch `codex/TASK-0081-gate-b-wire-contract-ox-pc-a`, base `7f271691`; local START packet ignored | TASK-0081 Gate B wire freeze |
+| ox-pc-a | 6620-6639 | P0 `MISROUTED` + P1 `PROVISIONED_UNCLAIMED`: launch requested 2026-08-21 20:06 PDT; expected `Z:\Code\.worktrees\verdigris\ox-pc-a`, branch `codex/TASK-0081-gate-b-wire-contract-ox-pc-a`, base `7f271691`; no committed claim; visible OpenCode evidence resumed a legacy worker-C project instead | TASK-0081 Gate B wire freeze |
 
 The stopped `ox-pc-b` and `ox-pc-c` tabs shared the same OpenCode project,
 stopped before claims or writes, and are not Verdigris lanes, stalls, dark
@@ -53,10 +69,29 @@ exact Ox worktree as its own OpenCode project and paste: `Read
 START_HERE_OX_PC_A.md completely and execute it now.` Sol does not claim or
 write worker STATUS/REPORT and will not take over implementation.
 
+### Open activation alert -- owner notification required
+
+- **Lane:** `ox-pc-a`; **state:** P0 `MISROUTED` plus P1
+  `PROVISIONED_UNCLAIMED`; **first observed:** 2026-08-21 20:06 PDT.
+- **Expected:** the exact provisioned worktree/branch/base above, TASK-0081,
+  and the ignored `START_HERE_OX_PC_A.md` launch packet.
+- **Observed:** no TASK-0081 claim commit on the worker branch. The owner
+  screenshot instead shows a resumed `Verdigris worker C preflight` session
+  inspecting `Z:\Code\Games\delaford` and a legacy C: clone.
+- **Capacity accounting:** zero active Verdigris Ox lanes. This alert is not an
+  incident against stopped `ox-pc-b`/`ox-pc-c`, and neither is capacity.
+- **Clear condition:** a protocol-valid TASK-0081 claim on the expected branch;
+  `ACTIVE` additionally requires fresh post-claim execution evidence.
+- **Escalation:** if still unclaimed at 20:36 PDT or after two supervisor
+  sweeps, mark P0 `ACTIVATION_FAILED` and re-notify the owner. Never take over
+  implementation.
+
 Persistent supervision: Codex app heartbeat `verdigris-surge-supervisor` is
 ACTIVE every 15 minutes on this architect task. It fetches/scans first,
-reviews/integrates/restocks on transitions, updates scorecards, and alerts only
-on meaningful state changes.
+reviews/integrates/restocks on transitions, updates scorecards, and reports
+meaningful state changes. Owner OS/app notifications for successful alarm runs
+must be enabled in the Automations UI; the current failed-run-only setting is
+insufficient for D-127 alerts.
 
 ## Interrupts and authority
 

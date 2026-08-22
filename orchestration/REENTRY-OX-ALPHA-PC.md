@@ -44,6 +44,21 @@ The initial route is `ox-pc-a` -> TASK-0081. Route only one Verdigris task at a
 time until the owner explicitly adds workers. Re-fetch before claiming because
 a newer `RUN_STATUS.md`, claim, REVIEW, RELEASE, or REVISE always wins.
 
+## Activation acknowledgement
+
+Provisioned is not active. When the owner or supervisor requests launch,
+`RUN_STATUS.md` records the request time and the expected worktree, branch,
+base, task, and packet. The lane becomes live only when the expected worker
+branch contains a protocol-valid committed claim. It becomes `ACTIVE` only
+after fresh post-claim execution evidence appears.
+
+No valid claim within 10 minutes of a launch request is a P1
+`PROVISIONED_UNCLAIMED` alert. No claim after 30 minutes or two sweeps is P0
+`ACTIVATION_FAILED`. Any resumed tab or process attached to a different
+project, worktree, branch, base, task, or identity is immediate P0
+`MISROUTED`. The architect notifies the owner with expected versus observed
+evidence; it does not claim or implement the worker task.
+
 ## Hard stops
 
 Never touch port 6500, non-loopback binds, peer task files, peer processes,

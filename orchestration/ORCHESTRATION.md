@@ -121,6 +121,36 @@ drift), and the architect sweep runs the stuck-loop heuristic (fresh
 clone FETCH_HEAD + no active claim + READY tasks on board =>
 intervene via spec annotation, never by editing coordinator state).
 
+## Worker activation and liveness contract (D-127, 2026-08-21)
+
+Provisioning is not activation. A worktree, branch, port capsule, launch packet,
+or visible application window does not count as fleet capacity. Every routed
+lane moves through explicit evidence states:
+
+1. `PROVISIONED_PARKED` -- resources exist, but no launch has been requested;
+   not capacity and not an alert.
+2. `LAUNCH_REQUESTED` -- the owner or supervisor has asked a worker to start;
+   record the timestamp, exact worktree, branch, base, task, and launch packet.
+3. `CLAIMED` -- the expected branch contains the protocol-valid committed
+   `STATUS.md` claim. This is the first point at which the lane counts as live.
+4. `ACTIVE` -- post-claim branch evidence or a fresh task heartbeat proves the
+   worker started execution. A claim-only lane remains separately visible.
+
+At every sweep, compare requested activations with repository evidence before
+counting capacity. A requested local worker that has not committed a valid
+claim within 10 minutes is `P1 PROVISIONED_UNCLAIMED`: notify the owner on the
+first observing sweep. If it remains unclaimed for 30 minutes or two sweeps,
+escalate to `P0 ACTIVATION_FAILED`. A project/repository, worktree, branch,
+base, task, or identity mismatch is `P0 MISROUTED` immediately. Alerts include
+expected versus observed values and the smallest owner action that can restore
+the lane. They deduplicate by lane + expected task + state and re-notify only
+on escalation or material evidence change.
+
+Do not rewrite a stopped or never-launched lane as dark capacity, and do not
+open an incident against an unrelated historical tab. Activation failure is a
+control-plane alert. The architect may re-provision or re-brief the lane, but
+must never claim or implement its task.
+
 ## Durable queue runway (D-125, 2026-08-20)
 
 Queue health is measured from the effective READY table in `RUN_STATUS.md`,
@@ -131,3 +161,17 @@ successors; thereafter keep the greater of 8 or two per live coordinator. A
 claim triggers same-sweep restocking. Useful runway outranks filler: when the
 floor cannot be met without crossing owner authority, stage lane revival and
 report the real deficit.
+
+D-128 supersedes count-only queue sufficiency. Follow `BACKLOG_FACTORY.md`:
+measure 72-hour autonomous runway, maintain the 2,000-node terminal graph and
+500-packet detailed reserve, release validated successors automatically, and
+report domain/composition/owner-blocked coverage. The 24+12 surge target remains
+only the emergency absolute floor.
+
+## Supervisor succession
+
+Follow `SUPERVISOR_SUCCESSION.md`. Owner-reported credit pressure is a planned
+retirement trigger. The outgoing supervisor publishes exact repo, worker,
+claim, review, alert, runway, automation, and next-sweep state; a replacement
+acknowledges that evidence before the predecessor retires unless the owner
+orders an immediate stop.
