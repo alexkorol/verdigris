@@ -27,6 +27,11 @@
   and 108 integrated packets. Its 22-test suite passes. The deterministic
   factory still verifies 2,000 graph nodes and 500 reserve packets; autonomous
   runway remains honestly `UNKNOWN` until comparable throughput exists.
+- Standalone cross-host broadcast branch is clean/pushed at `004acf1a` on
+  `codex/pc-overnight-game-wave`; observed shared `origin/main` remains
+  Mac-owned at `d068012a`. The PC dashboard now renders both completed lanes as
+  terminal `integrated` with no worker action, HTTP 200 on port 4737. The
+  low-cost PowerShell monitor is restored as one process.
 
 ## PC live sweep — 2026-08-22 09:58 PDT
 

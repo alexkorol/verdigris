@@ -262,3 +262,11 @@ pre-write recovery risk.
   `main`, then route only current-tip disjoint product work from the verified
   release/program line.
 - Owner action required now: none.
+
+Standalone refresh completed after that checkpoint: PC broadcast branch
+`codex/pc-overnight-game-wave` is clean/pushed at `004acf1a`; observed shared
+`origin/main` remains `d068012a` and was not written. The dashboard runs the
+tested isolated-branch implementation, returns HTTP 200, and shows ox-pc-r/x
+as terminal integrated lanes with `Complete · no worker action`; its override
+is honored only for stopped, clean, pushed worktrees. Dashboard tests pass
+35/35, typecheck/build/lint pass, and the low-cost monitor is one live process.
