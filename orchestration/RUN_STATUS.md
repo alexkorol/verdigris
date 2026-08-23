@@ -1,5 +1,19 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED 8 audits this session — 2026-08-23 19:05 UTC
+
+- **TASK-0091** (protocol coverage sentinel design, bc) ACCEPTED + integrated
+  at `76a22bcf`. FINDINGS mapped all 23 matrix rows (19 COVERED/2 PARTIAL/
+  2 RED) with 4 literal negative controls verified (item-drop + equip response
+  envelopes dead letters client-side; no successor-return seam; no durable
+  store). Proposed a read-only static sentinel wired to coverage.json.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099 all
+  ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (ranged combat, P0, mid-implementation);
+  `ox-pc-bb` -> TASK-0102 (skill system gap audit, claimed `33a381b8`);
+  `ox-pc-bc` -> TASK-0091 now integrated (lane freed, re-point pending);
+  `ox-pc-bd` -> TASK-0092 (owner launch/packaging audit, surveying).
+
 ## SHIPPED 7 audits this session — 2026-08-23 18:45 UTC
 
 - **TASK-0099** (native performance budget inventory, bd) ACCEPTED +
