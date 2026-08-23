@@ -1,5 +1,18 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED 7 audits this session — 2026-08-23 18:45 UTC
+
+- **TASK-0099** (native performance budget inventory, bd) ACCEPTED +
+  integrated at `58c038bf`. FINDINGS inventoried all 8 surfaces; negative
+  control verified (DECISIONS.md:101 "~43ms" has no provenance). Proposed a
+  machine-tagged benchmark ladder (L0→L3).
+- Prior this session: TASK-0097, TASK-0082, TASK-0100, TASK-0104, TASK-0103,
+  TASK-0098 all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (ranged combat, P0, mid-implementation);
+  `ox-pc-bb` -> TASK-0102 (skill system gap audit, claimed `33a381b8`);
+  `ox-pc-bc` -> TASK-0091 (protocol coverage sentinel, claimed `64fab114`);
+  `ox-pc-bd` -> TASK-0099 now integrated (lane freed, re-point pending).
+
 ## SHIPPED 6 audits this session — 2026-08-23 18:25 UTC
 
 - **TASK-0097** (persistence durability, bc) ACCEPTED + integrated at `32ac5a61`.
