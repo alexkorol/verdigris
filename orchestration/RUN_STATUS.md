@@ -1,5 +1,28 @@
 # Run status — PC Verdigris overnight product wave
 
+## Fleet re-pointed + running (4 valid lanes) — 2026-08-23 15:59 UTC
+
+- Lead re-pointed the three P0-misrouted lanes to valid READY tasks and
+  relaunched them (auth verified; `OPENROUTER_API_KEY` present, opencode
+  `auth.json` has the openrouter provider):
+  - `ox-pc-bb` -> **TASK-0082** (dual-server parity matrix; ports 6540-6559) —
+    running (PID 11100).
+  - `ox-pc-bc` -> **TASK-0097** (persistence durability audit; read-only) —
+    running (PID 21044).
+  - `ox-pc-bd` -> **TASK-0100** (deterministic replay audit; read-only) —
+    running (PID 16340).
+  - `ox-pc-ba` -> **TASK-0108** (readable ranged combat, P0) — still running
+    (PID 9148).
+  - `ox-pc-be` -> TASK-0165 already SHIPPED (independent ACCEPTED +
+    integrated at 71b3dd0d).
+- Each worktree was reset to the current program tip (`f1180a29`) and given a
+  fresh `START_HERE_<lane>.md` packet for its new task. The old misrouted
+  claims (bb->0148, bc->0157, bd->0158 on integrated tasks) are abandoned;
+  the new workers will push valid claims for the re-pointed tasks.
+- VALIDATION WATCH: as lanes flip `REVIEW_REQUESTED`, the independent
+  validator will gate each at its exact frozen head and ship ACCEPTED work
+  (TASK-0165 pattern).
+
 ## SHIPPED TASK-0165 + fleet status — 2026-08-23 15:55 UTC
 
 - **TASK-0165 (input-focus model foundation, ox-pc-be) SHIPPED.** Independent
