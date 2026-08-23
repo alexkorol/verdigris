@@ -7,8 +7,10 @@
 - claimed at (UTC): 2026-08-23T09:05Z (approx; claim commit 9e92a4f65b57a1527342bc6c57e8c4a6aee22d03)
 - branch: worker/verdigris/pc/ox-pc-bf
 - ports capsule: acceptance run used 6541 (JS) / 6542 (native) per SPEC; never 6500
-- frozen head: recorded in the follow-up review-request commit (a commit cannot
-  contain its own SHA); branch is not touched after that push
+- frozen head: 34486f121461544b28310bf44739a1b05db3179e — the deliverable
+  commit (tool + captures + evidence). A commit cannot contain its own SHA, so
+  it is recorded here in this final review-request commit; the branch is not
+  touched after this push. Verify content at that SHA.
 
 ## Deliverable
 
