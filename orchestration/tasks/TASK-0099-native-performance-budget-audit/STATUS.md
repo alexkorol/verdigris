@@ -1,7 +1,9 @@
 # TASK-0099 status
 
 - task: TASK-0099-native-performance-budget-audit
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
+- reviewed_commit: a12b4999
+- reviewed_at: 2026-08-23T18:40:00Z
 - lane: ox-pc-bd
 - model: openrouter/stealth/ox-alpha
 - base_commit: d2423873c577d299b3b39c56024d1d840993c72b

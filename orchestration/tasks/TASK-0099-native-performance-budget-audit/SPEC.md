@@ -1,7 +1,8 @@
 ---
 task: TASK-0099
 title: Native performance budget and benchmark inventory
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head a12b4999, 2026-08-23)
 packet: MECHANICAL
 topology: INDEPENDENT
 job: MECHANICAL
