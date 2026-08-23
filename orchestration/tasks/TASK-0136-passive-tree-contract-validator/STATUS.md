@@ -1,6 +1,8 @@
 # STATUS — TASK-0136 passive-tree contract validator
 
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
+- reviewed_commit: aad6dadb
+- reviewed_at: 2026-08-23T23:05:00Z
 - transition history:
   - CLAIMED at commit f1ffa64b (first post-RELEASE STATUS write; fresh
     independent worktree per RELEASE.md, no quarantined implementation copied)
