@@ -1,7 +1,8 @@
 ---
 task: TASK-0160
 title: Native procedural visual-kit packaging proof
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head be1289b7, 2026-08-24)
 packet: IMPLEMENTATION
 topology: INDEPENDENT
 job: IMPLEMENTATION

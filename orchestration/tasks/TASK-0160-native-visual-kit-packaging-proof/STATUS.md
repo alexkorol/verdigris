@@ -1,6 +1,8 @@
 # STATUS — TASK-0160 native procedural visual-kit packaging proof
 
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
+- reviewed_commit: be1289b7
+- reviewed_at: 2026-08-24T00:05:00Z
 - lane: ox-pc-bd
 - model: openrouter/stealth/ox-alpha (OpenCode CLI)
 - base_commit: dc8df4399da4c2a0b8b92a4ea395cba79cc6ff17 (verified ancestor of routed HEAD)
