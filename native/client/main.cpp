@@ -213,6 +213,66 @@ struct ChronicleAction {
   std::string label;
 };
 
+// ── TASK-0159: deterministic readability geometry ────────────────────────
+// One pure integer-geometry source of truth for every fixed screen region the
+// readability contract names (gear pane, minimap, quickbar, vital orbs). The
+// painter, the top-HUD planner, and the scenario harness all reason about
+// these exact rectangles, so a collision is a provable fact rather than a
+// pixel impression. No asset, font, or windowing dependency.
+struct HudRect {
+  int x = 0;
+  int y = 0;
+  int w = 0;
+  int h = 0;
+};
+
+bool hud_rects_overlap(const HudRect& a, const HudRect& b) {
+  return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h &&
+         b.y < a.y + a.h;
+}
+
+// The shipped gear pane. Identical numbers to the historical painter, now
+// shared with the planner so global HUD text can never be placed onto it.
+HudRect gear_pane_rect(int width, int height) {
+  constexpr int kPaneW = 380;
+  constexpr int kPaneTop = 64;
+  const int x = std::max(24, width - kPaneW - 24);
+  const int bottom = std::min(height - 28, kPaneTop + 430);
+  return {x, kPaneTop, std::min(kPaneW, std::max(0, width - x)),
+          std::max(0, bottom - kPaneTop)};
+}
+
+HudRect minimap_rect() {
+  constexpr int kSize = 108;
+  constexpr int kMargin = 12;
+  return {kMargin, kMargin, kSize, kSize};
+}
+
+constexpr int kVitalOrbRadius = 34;
+
+HudRect vital_orb_rect(int width, int height, bool resource) {
+  const int cx = resource ? width - 18 - kVitalOrbRadius : 18 + kVitalOrbRadius;
+  const int cy = height - 18 - kVitalOrbRadius;
+  // +3 clears the low-life pulse ring, the widest the orb ever paints.
+  const int r = kVitalOrbRadius + 3;
+  return {cx - r, cy - r, r * 2, r * 2};
+}
+
+constexpr int kQuickbarSlotCount = 4;
+
+HudRect quickbar_strip_rect(int width, int height) {
+  constexpr int kSlotW = 58;
+  constexpr int kSlotH = 52;
+  constexpr int kGap = 8;
+  const int strip_w =
+      kQuickbarSlotCount * kSlotW + (kQuickbarSlotCount - 1) * kGap;
+  const int bottom = height - 18;
+  const int top = bottom - kSlotH;
+  const int left = (width - strip_w) / 2;
+  // The painted plate extends 10 left/right of the slots and 8 above/4 below.
+  return {left - 10, top - 8, strip_w + 20, kSlotH + 12};
+}
+
 struct ClientState {
   std::unique_ptr<verdigris::Simulation> simulation;
   std::unique_ptr<verdigris::client::IClientSession> session;
@@ -234,6 +294,11 @@ struct ClientState {
   verdigris::Vec2 last_death_pos{0, 0};
   std::size_t processed_events = 0;
   std::vector<std::string> event_log;
+  // TASK-0159: rectangles of every readability-contract HUD region, recorded
+  // next to each draw (the same discipline as render_list ops) so the
+  // deterministic scenario can hard-fail on intersections. Presentation
+  // diagnostic only; normal play never reads it.
+  std::vector<std::pair<std::string, HudRect>> hud_rect_trace;
   int loot_scatter = 0;
   // TASK-0122 Phase A: presentation-side memory of already-materialized foes
   // so the spawn beat fires exactly once per monster.
@@ -2057,14 +2122,18 @@ std::string loot_label(const ClientState& state, const std::string& id) {
   return id;
 }
 
-void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds,
+void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
                         render::List& rl) {
   if (!state.gear_overlay) return;
-  const int panel_w = 380;
-  const int left = std::max(24, static_cast<int>(bounds.right) - panel_w - 24);
-  const int top = 64;
-  const int right = left + panel_w;
-  const int bottom = std::min(static_cast<int>(bounds.bottom) - 28, top + 430);
+  // TASK-0159: the pane rectangle comes from the shared pure geometry so the
+  // planner, painter, and scenario harness cannot drift apart.
+  const HudRect pane = gear_pane_rect(static_cast<int>(bounds.right),
+                                      static_cast<int>(bounds.bottom));
+  const int left = pane.x;
+  const int top = pane.y;
+  const int right = left + pane.w;
+  const int bottom = top + pane.h;
+  state.hud_rect_trace.push_back({"pane-frame", pane});
 
   HBRUSH panel = CreateSolidBrush(RGB(25, 33, 37));
   RECT panel_rect{left, top, right, bottom};
@@ -2084,6 +2153,13 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds,
   SetTextColor(dc, RGB(230, 235, 220));
   // house().name is already prefixed ("House Verdigris"); do not double it.
   const std::string title = "Gear / " + state.world.house_name;
+  {
+    SIZE extent{};
+    GetTextExtentPoint32A(dc, title.c_str(), static_cast<int>(title.size()),
+                          &extent);
+    state.hud_rect_trace.push_back(
+        {"pane-title", {left + 14, top + 12, extent.cx, extent.cy}});
+  }
   TextOutA(dc, left + 14, top + 12, title.c_str(), static_cast<int>(title.size()));
 
   // Authoritative stats readout. The base attack is the actor's stat; the
@@ -2111,6 +2187,13 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds,
       std::to_string(player.defense) + "  LVL " +
       std::to_string(player.level);
   rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0, stats_line});
+  {
+    SIZE extent{};
+    GetTextExtentPoint32A(dc, stats_line.c_str(),
+                          static_cast<int>(stats_line.size()), &extent);
+    state.hud_rect_trace.push_back(
+        {"pane-stats", {left + 14, top + 36, extent.cx, extent.cy}});
+  }
   TextOutA(dc, left + 14, top + 36, stats_line.c_str(),
            static_cast<int>(stats_line.size()));
 
@@ -2119,6 +2202,8 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds,
   const int seat_left = left + 14;
   const int seat_w = right - left - 28;
   RECT seat{seat_left, seat_top, seat_left + seat_w, seat_top + 24};
+  state.hud_rect_trace.push_back(
+      {"pane-seat", {seat.left, seat.top, seat_w, 24}});
   HBRUSH seat_bg = CreateSolidBrush(RGB(32, 40, 42));
   FillRect(dc, &seat, seat_bg);
   DeleteObject(seat_bg);
@@ -2175,6 +2260,8 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds,
       rl.push_back({render::Op::PaneItem, static_cast<double>(cx),
                     static_cast<double>(cy), 0.0, items[i].attack_bonus,
                     equipped ? name + " [E]" : name});
+      state.hud_rect_trace.push_back(
+          {"pane-cell", {cx, cy, cell_w, cell_h}});
       TextOutA(dc, cx + 4, cy + 4, name.c_str(), static_cast<int>(name.size()));
       SetTextColor(dc, RGB(150, 165, 152));
       std::string bonus = "+" + std::to_string(items[i].attack_bonus) + " ATK" +
@@ -2189,6 +2276,13 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds,
       "Banked  items " + std::to_string(state.world.stored_items) +
       "  trophies " + std::to_string(state.world.stored_trophies);
   rl.push_back({render::Op::PaneBanked, 0.0, 0.0, 0.0, 0, banked});
+  {
+    SIZE extent{};
+    GetTextExtentPoint32A(dc, banked.c_str(), static_cast<int>(banked.size()),
+                          &extent);
+    state.hud_rect_trace.push_back(
+        {"pane-banked", {left + 14, bottom - 46, extent.cx, extent.cy}});
+  }
   TextOutA(dc, left + 14, bottom - 46, banked.c_str(), static_cast<int>(banked.size()));
   // TASK-0156: compact authoritative progression summary, mirrored from the
   // passiveTree payload. Absence is stated as absence — never rendered as
@@ -2205,9 +2299,23 @@ void paint_gear_overlay(const ClientState& state, HDC dc, const RECT& bounds,
     progression = "TREE no authoritative data";
   }
   rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0, progression});
+  {
+    SIZE extent{};
+    GetTextExtentPoint32A(dc, progression.c_str(),
+                          static_cast<int>(progression.size()), &extent);
+    state.hud_rect_trace.push_back(
+        {"pane-progression", {left + 14, bottom - 70, extent.cx, extent.cy}});
+  }
   TextOutA(dc, left + 14, bottom - 70, progression.c_str(),
            static_cast<int>(progression.size()));
   const char* controls = "Arrows select | Enter equip | U unequip | I close";
+  {
+    SIZE extent{};
+    GetTextExtentPoint32A(dc, controls, static_cast<int>(strlen(controls)),
+                          &extent);
+    state.hud_rect_trace.push_back(
+        {"pane-footer", {left + 14, bottom - 24, extent.cx, extent.cy}});
+  }
   TextOutA(dc, left + 14, bottom - 24, controls, static_cast<int>(strlen(controls)));
 }
 
@@ -2241,9 +2349,10 @@ void draw_orb(HDC dc, int cx, int cy, int radius, double ratio, COLORREF fill,
 }
 
 void paint_vital_orbs(const WorldActor& player, std::uint64_t tick, int screen_pulse_ticks,
-                      HDC dc, const RECT& bounds, render::List& rl) {
+                      HDC dc, const RECT& bounds, render::List& rl,
+                      std::vector<std::pair<std::string, HudRect>>* trace) {
   if (!player.alive && player.life <= 0 && player.life_max <= 0) return;
-  constexpr int radius = 34;
+  const int radius = kVitalOrbRadius;
   const int bottom = static_cast<int>(bounds.bottom) - 18;
   const int left_cx = 18 + radius;
   const int right_cx = static_cast<int>(bounds.right) - 18 - radius;
@@ -2266,6 +2375,16 @@ void paint_vital_orbs(const WorldActor& player, std::uint64_t tick, int screen_p
            life_caption, pulse, rl, "life");
   draw_orb(dc, right_cx, cy, radius, resource_ratio, RGB(58, 138, 168), RGB(120, 188, 214),
            resource_caption, false, rl, "resource");
+  // TASK-0159: record the exact painted orb extents (+pulse ring) so the
+  // readability scenario can prove the pane never reaches into them.
+  if (trace) {
+    trace->push_back({"orb-life", vital_orb_rect(static_cast<int>(bounds.right),
+                                                 static_cast<int>(bounds.bottom),
+                                                 false)});
+    trace->push_back({"orb-resource",
+                      vital_orb_rect(static_cast<int>(bounds.right),
+                                     static_cast<int>(bounds.bottom), true)});
+  }
 }
 
 struct QuickbarSlotDef {
@@ -2281,7 +2400,11 @@ constexpr QuickbarSlotDef kQuickbarSlots[] = {
     {"R", "WarCry", verdigris::ActionType::WarCry},
 };
 
-void paint_quickbar(const ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
+static_assert(kQuickbarSlotCount ==
+                  sizeof(kQuickbarSlots) / sizeof(kQuickbarSlots[0]),
+              "quickbar geometry helper and painter must agree on slot count");
+
+void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
   const WorldActor& player = state.world.player;
   const verdigris::PresentationCatalog catalog =
       verdigris::Simulation::presentation_catalog();
@@ -2296,6 +2419,10 @@ void paint_quickbar(const ClientState& state, HDC dc, const RECT& bounds, render
 
   HBRUSH strip_bg = CreateSolidBrush(RGB(18, 24, 26));
   RECT strip{left - 10, top - 8, left + strip_w + 10, bottom + 4};
+  state.hud_rect_trace.push_back(
+      {"quickbar-strip",
+       {strip.left, strip.top, strip.right - strip.left,
+        strip.bottom - strip.top}});
   FillRect(dc, &strip, strip_bg);
   DeleteObject(strip_bg);
   HPEN strip_pen = CreatePen(PS_SOLID, 1, RGB(86, 116, 104));
@@ -2356,10 +2483,11 @@ void paint_quickbar(const ClientState& state, HDC dc, const RECT& bounds, render
   }
 }
 
-void paint_minimap(const ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
+void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
+  const HudRect map = minimap_rect();
   constexpr int kSize = 108;
-  constexpr int margin = 12;
-  RECT panel{margin, margin, margin + kSize, margin + kSize};
+  RECT panel{map.x, map.y, map.x + map.w, map.y + map.h};
+  state.hud_rect_trace.push_back({"minimap", map});
   HBRUSH panel_bg = CreateSolidBrush(RGB(16, 22, 24));
   FillRect(dc, &panel, panel_bg);
   DeleteObject(panel_bg);
@@ -2595,7 +2723,128 @@ void handle_chronicles_key(ClientState& state, WPARAM wparam) {
   }
 }
 
+// ── TASK-0161: contained capture-root isolation ─────────────────────────
+// A full validation gate passes -CaptureRoot (threaded through the
+// VERDIGRIS_CAPTURE_ROOT environment seam) so fresh evidence lands in a
+// disposable directory instead of rewriting committed captures from earlier
+// tasks. Without that variable every helper keeps its historical ladder, so
+// default owner play and direct task-specific evidence runs are unchanged.
+
+std::string absolute_path_normalized(const std::string& raw) {
+  char full[MAX_PATH]{};
+  const DWORD length = GetFullPathNameA(raw.c_str(), MAX_PATH, full, nullptr);
+  if (length == 0 || length >= MAX_PATH) return {};
+  return std::string(full, length);
+}
+
+std::string lowercase_ascii(std::string value) {
+  for (char& character : value)
+    if (character >= 'A' && character <= 'Z')
+      character = static_cast<char>(character - 'A' + 'a');
+  return value;
+}
+
+// Repository root: nearest ancestor of the cwd (then the executable
+// directory) holding both native\ and orchestration\ markers.
+std::string repository_root_for_capture_validation() {
+  std::vector<std::string> bases;
+  const std::string cwd = absolute_path_normalized(".");
+  if (!cwd.empty()) bases.push_back(cwd);
+  const std::string exe_dir = absolute_path_normalized(executable_directory());
+  if (!exe_dir.empty()) bases.push_back(exe_dir);
+  for (const auto& base : bases) {
+    std::string prefix = base;
+    for (int depth = 0; depth <= 6; ++depth) {
+      if (directory_exists(prefix + "\\native") &&
+          directory_exists(prefix + "\\orchestration"))
+        return prefix;
+      prefix += "\\..";
+    }
+  }
+  return {};
+}
+
+bool create_directories_nested(const std::string& abs_path) {
+  if (abs_path.size() < 3 || abs_path[1] != ':') return false;
+  std::size_t index = 3;  // skip "X:\"
+  while (true) {
+    const std::size_t slash = abs_path.find('\\', index);
+    const std::string part =
+        abs_path.substr(0, slash == std::string::npos ? abs_path.size() : slash);
+    if (!directory_exists(part) && !CreateDirectoryA(part.c_str(), nullptr) &&
+        !directory_exists(part))
+      return false;
+    if (slash == std::string::npos) break;
+    index = slash + 1;
+  }
+  return directory_exists(abs_path);
+}
+
+struct CaptureRootDecision {
+  bool active = false;  // override requested via VERDIGRIS_CAPTURE_ROOT
+  bool valid = false;   // contained inside the repository and created
+  std::string dir;      // absolute contained root when valid
+  std::string error;    // rejection reason when active but invalid
+};
+
+const CaptureRootDecision& capture_root_decision() {
+  static const CaptureRootDecision decision = [] {
+    CaptureRootDecision computed;
+    const char* override_raw = std::getenv("VERDIGRIS_CAPTURE_ROOT");
+    if (!override_raw) return computed;
+    computed.active = true;
+    const std::string requested = absolute_path_normalized(override_raw);
+    if (requested.empty()) {
+      computed.error = "capture root does not resolve to an absolute path";
+      return computed;
+    }
+    const std::string repo_root = repository_root_for_capture_validation();
+    if (repo_root.empty()) {
+      computed.error = "repository root not found; capture containment cannot be proven";
+      return computed;
+    }
+    const std::string request_lower = lowercase_ascii(requested);
+    const std::string repo_prefix = lowercase_ascii(repo_root) + "\\";
+    // Strictly inside only: an exact repository-root target would scatter
+    // evidence into the worktree itself.
+    if (request_lower.size() <= repo_prefix.size() ||
+        request_lower.compare(0, repo_prefix.size(), repo_prefix) != 0) {
+      computed.error = "capture root '" + requested +
+                       "' is outside repository root '" + repo_root + "'";
+      return computed;
+    }
+    // Containment is proven before any filesystem mutation, so a rejected
+    // target can never be created or written.
+    if (!create_directories_nested(requested)) {
+      computed.error = "capture root '" + requested + "' could not be created";
+      return computed;
+    }
+    computed.valid = true;
+    computed.dir = requested;
+    return computed;
+  }();
+  return decision;
+}
+
+// Consulted by every scenario capture helper. Returns 0 when no override is
+// active (caller uses its historical ladder), 1 with *out set to the
+// validated contained root, or -1 after reporting the rejection; on -1 the
+// caller must fail the run without attempting any write.
+int capture_root_override(std::string* out) {
+  const CaptureRootDecision& decision = capture_root_decision();
+  if (!decision.active) return 0;
+  if (!decision.valid) {
+    std::printf("FAIL capture-root: %s (nothing written)\n", decision.error.c_str());
+    return -1;
+  }
+  *out = decision.dir;
+  return 1;
+}
+
 std::string chronicles_capture_dir() {
+  std::string forced;
+  const int overridden = capture_root_override(&forced);
+  if (overridden != 0) return overridden > 0 ? forced : std::string{};
   std::vector<std::string> bases{".", executable_directory()};
   const char* marker =
       "orchestration\\tasks\\TASK-0145-native-chronicles-owner-journey";
@@ -2618,6 +2867,9 @@ std::string chronicles_capture_dir() {
 // TASK-0122 Phase A: fresh animation/VFX evidence lands in THIS task's
 // captures/ folder for architect visual review.
 std::string animation_vfx_capture_dir() {
+  std::string forced;
+  const int overridden = capture_root_override(&forced);
+  if (overridden != 0) return overridden > 0 ? forced : std::string{};
   std::vector<std::string> bases{".", executable_directory()};
   const char* marker =
       "orchestration\\tasks\\TASK-0122-animation-vfx-system-wave";
@@ -2640,6 +2892,9 @@ std::string animation_vfx_capture_dir() {
 // TASK-0156: fresh progression-surface evidence lands in THIS task's
 // captures/ folder for architect visual review.
 std::string progression_capture_dir() {
+  std::string forced;
+  const int overridden = capture_root_override(&forced);
+  if (overridden != 0) return overridden > 0 ? forced : std::string{};
   std::vector<std::string> bases{".", executable_directory()};
   const char* marker =
       "orchestration\\tasks\\TASK-0156-native-progression-visibility";
@@ -2790,6 +3045,11 @@ void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
       chip_color = RGB(255, 80, 70);
     RECT chip_rect{chip_x, chip_y, chip_x + kConnectionChipW,
                    chip_y + kConnectionChipH};
+    state.hud_rect_trace.push_back(
+        {"connection",
+         {chip_rect.left, chip_rect.top,
+          chip_rect.right - chip_rect.left,
+          chip_rect.bottom - chip_rect.top}});
     HBRUSH chip_bg = CreateSolidBrush(RGB(25, 33, 37));
     FillRect(dc, &chip_rect, chip_bg);
     DeleteObject(chip_bg);
@@ -2809,31 +3069,34 @@ void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
         conn == verdigris::client::ConnectionState::ProtocolMismatch) {
       SetTextColor(dc, RGB(255, 80, 70));
       const char* banner = "CONNECTION LOST — not playing offline";
-      TextOutA(dc, 18, 76, banner, static_cast<int>(strlen(banner)));
+      // TASK-0159: the banner keeps the left column but starts below the
+      // minimap panel instead of painting across it.
+      const HudRect map = minimap_rect();
+      const int banner_y = std::max(76, map.y + map.h + 8);
+      TextOutA(dc, 18, banner_y, banner, static_cast<int>(strlen(banner)));
     }
 }
 
-// ── TASK-0153 rev2: measured top-HUD row planner ────────────────────────
-// The review blocker at 960x600 was the long chronicle-derived identity line
-// colliding with the centered objective strip. Every normal-HUD top region —
-// identity, objective, connection, art-status, controls — is now placed by
-// this one pure integer-geometry pass from actually measured extents, so the
-// five regions can never overlap at any width, including 960x600 and
-// 1366x768. The painter draws exactly what this returns; the deterministic
-// scenario runs the same function over worst-case strings as acceptance
-// evidence.
+// ── TASK-0153 rev2 / TASK-0159: measured top-HUD row planner ────────────
+// Every normal-HUD top region — identity, objective, connection, art-status,
+// controls — is placed by one pure integer-geometry pass from actually
+// measured extents. TASK-0159 extends the pass with the fixed screen regions
+// those rows must never fight: the minimap panel always, and the shipped gear
+// pane whenever it is open, plus the bottom quickbar/orbs for completeness.
+// Candidates walk deterministic fallback ladders (centered/right pins, then a
+// left lane beside the minimap, then the raw gutter), so no region is ever
+// deleted and none lands inside another at any width, including 960x600 and
+// 1366x768. The painter draws exactly what this returns; the scenario runs
+// the same function over real frames as acceptance evidence.
 constexpr int kTopHudGutter = 12;      // screen-edge breathing room
 constexpr int kTopHudGap = 10;         // minimum clearance between regions
 constexpr int kTopHudRow0Y = 12;
 constexpr int kTopHudRowStep = 34;     // clears a chip's full height + margin
-constexpr int kTopHudRowCount = 4;
+constexpr int kTopHudRowCount = 6;     // headroom for pane-open fallback rows
 
-struct TopHudRect {
-  int x = 0;
-  int y = 0;
-  int w = 0;
-  int h = 0;
-};
+// TASK-0159: the planner's rectangle type is now the shared HudRect, so the
+// blocked fixed regions and the placed text regions are one geometry.
+using TopHudRect = HudRect;
 
 struct TopHudLayout {
   TopHudRect identity;
@@ -2843,6 +3106,13 @@ struct TopHudLayout {
   TopHudRect controls;
   bool objective_placed = false;
   bool controls_placed = false;
+  // TASK-0159: when even the fallback ladders cannot fit the one-line
+  // controls hint (a 643 px line cannot sit beside the open gear pane at
+  // 960 width), the planner places the hint as two stacked lines instead of
+  // letting the painter fall back onto other regions. Same words, same
+  // authority, wrapped — never deleted.
+  bool controls_wrapped = false;
+  TopHudRect controls_second;
 };
 
 bool top_hud_clear(const TopHudRect& a, const TopHudRect& b, int gap) {
@@ -2850,11 +3120,24 @@ bool top_hud_clear(const TopHudRect& a, const TopHudRect& b, int gap) {
          a.y + a.h + gap <= b.y || b.y + b.h + gap <= a.y;
 }
 
-TopHudLayout plan_top_hud(int width, const TopHudRect& identity_size,
+TopHudLayout plan_top_hud(int width, int height, bool gear_open,
+                          const TopHudRect& identity_size,
                           const TopHudRect& objective_size,
                           const TopHudRect& art_size,
-                          const TopHudRect& controls_size, bool session) {
+                          const TopHudRect& controls_size,
+                          const TopHudRect& controls_size_a,
+                          const TopHudRect& controls_size_b, bool session) {
   TopHudLayout layout;
+  std::vector<TopHudRect> blocked;
+  const auto keep_out = [&](const HudRect& r) {
+    blocked.push_back(TopHudRect{r.x, r.y, r.w, r.h});
+  };
+  keep_out(minimap_rect());
+  keep_out(quickbar_strip_rect(width, height));
+  keep_out(vital_orb_rect(width, height, false));
+  keep_out(vital_orb_rect(width, height, true));
+  if (gear_open) keep_out(gear_pane_rect(width, height));
+
   std::vector<TopHudRect> occupied[kTopHudRowCount];
   const auto row_y = [&](int row) { return kTopHudRow0Y + row * kTopHudRowStep; };
   const auto fits = [&](int row, const TopHudRect& cand) {
@@ -2862,10 +3145,27 @@ TopHudLayout plan_top_hud(int width, const TopHudRect& identity_size,
     if (cand.x + cand.w > width - kTopHudGutter) return false;
     for (const auto& taken : occupied[row])
       if (!top_hud_clear(cand, taken, kTopHudGap)) return false;
+    for (const auto& keep_out_zone : blocked)
+      if (!top_hud_clear(cand, keep_out_zone, kTopHudGap)) return false;
     return true;
   };
-  // Right-aligned chips keep their historical edge pin; if row 0 is crowded
-  // (or the identity line reaches across), the next row takes them.
+  const HudRect map = minimap_rect();
+  // The left lane beside the minimap: the deterministic second anchor for
+  // every region whose preferred pin is crowded or pane-blocked.
+  const int lane_x = map.x + map.w + kTopHudGap;
+  const auto try_rows_left = [&](const TopHudRect& size,
+                                 int x) -> TopHudRect {
+    for (int row = 0; row < kTopHudRowCount; ++row) {
+      TopHudRect cand{x, row_y(row), size.w, size.h};
+      if (fits(row, cand)) {
+        occupied[row].push_back(cand);
+        return cand;
+      }
+    }
+    return TopHudRect{};
+  };
+  // Right-aligned chips keep their historical edge pin; if the right side is
+  // crowded or pane-blocked, the left lane takes them instead.
   const auto place_right = [&](const TopHudRect& size) {
     for (int row = 0; row < kTopHudRowCount; ++row) {
       TopHudRect cand{std::max(kTopHudGutter, width - kTopHudGutter - size.w),
@@ -2875,7 +3175,7 @@ TopHudLayout plan_top_hud(int width, const TopHudRect& identity_size,
         return cand;
       }
     }
-    return TopHudRect{};
+    return try_rows_left(size, lane_x);
   };
   const auto place_centered = [&](const TopHudRect& size, bool& placed) {
     for (int row = 0; row < kTopHudRowCount; ++row) {
@@ -2888,21 +3188,68 @@ TopHudLayout plan_top_hud(int width, const TopHudRect& identity_size,
       }
     }
     placed = false;
+    // Centered fallback ladder: the left lane beside the minimap, then the
+    // raw gutter once rows have cleared the map's height.
+    for (int pass = 0; pass < 2 && !placed; ++pass) {
+      const TopHudRect got =
+          try_rows_left(size, pass == 0 ? lane_x : kTopHudGutter + 6);
+      if (got.w > 0) {
+        placed = true;
+        return got;
+      }
+    }
     return TopHudRect{};
   };
 
-  layout.identity = TopHudRect{kTopHudGutter + 6, row_y(0), identity_size.w,
-                               identity_size.h};
-  occupied[0].push_back(layout.identity);
+  // Identity leads the hierarchy: top row, in the lane beside the minimap so
+  // it can never paint across the map again; deeper rows only if contested.
+  layout.identity = try_rows_left(identity_size, lane_x);
+  if (layout.identity.w == 0)
+    layout.identity = try_rows_left(identity_size, kTopHudGutter + 6);
+  if (layout.identity.w == 0) {
+    layout.identity =
+        TopHudRect{kTopHudGutter + 6, row_y(0), identity_size.w, identity_size.h};
+    occupied[0].push_back(layout.identity);
+  }
   if (session)
     layout.connection =
         place_right(TopHudRect{0, 0, kConnectionChipW, kConnectionChipH});
   // Art keeps its historical rows: beside the identity locally, under the
-  // connection chip on the remote owner path (row 0 is taken there).
+  // connection chip on the remote owner path (row 0 is taken there); the left
+  // lane catches it when an open gear pane owns the right side.
   layout.art = place_right(art_size);
   // The objective outranks the controls hint when rows are contested.
   layout.objective = place_centered(objective_size, layout.objective_placed);
   layout.controls = place_centered(controls_size, layout.controls_placed);
+  // TASK-0159: if no single-line slot exists, wrap the hint into two stacked
+  // lines placed as one unit on the left ladders.
+  if (layout.controls.w == 0 && controls_size_b.w > 0) {
+    const auto try_rows_left_pair = [&](const TopHudRect& first,
+                                        const TopHudRect& second,
+                                        int x) -> TopHudRect {
+      for (int row = 0; row + 1 < kTopHudRowCount; ++row) {
+        TopHudRect cand_a{x, row_y(row), first.w, first.h};
+        TopHudRect cand_b{x, row_y(row + 1), second.w, second.h};
+        if (fits(row, cand_a) && fits(row + 1, cand_b)) {
+          occupied[row].push_back(cand_a);
+          occupied[row + 1].push_back(cand_b);
+          layout.controls_wrapped = true;
+          layout.controls_second = cand_b;
+          return cand_a;
+        }
+      }
+      return TopHudRect{};
+    };
+    for (int pass = 0; pass < 2 && !layout.controls_wrapped; ++pass) {
+      const TopHudRect got = try_rows_left_pair(
+          controls_size_a, controls_size_b,
+          pass == 0 ? lane_x : kTopHudGutter + 6);
+      if (got.w > 0) {
+        layout.controls = got;
+        layout.controls_placed = true;
+      }
+    }
+  }
   return layout;
 }
 
@@ -2910,6 +3257,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   sync_world(state);
   const WorldView& world = state.world;
   render::List rl;
+  // TASK-0159: one fresh rectangle trace per presented frame.
+  state.hud_rect_trace.clear();
 
   // TASK-0145: the Chronicles front door replaces the abrupt game-window
   // entry for the remote owner path. Expedition painting is skipped
@@ -3223,7 +3572,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   }
 
   paint_minimap(state, dc, bounds, rl);
-  paint_vital_orbs(player, world.tick, state.screen_pulse_ticks, dc, bounds, rl);
+  paint_vital_orbs(player, world.tick, state.screen_pulse_ticks, dc, bounds, rl,
+                   &state.hud_rect_trace);
   paint_quickbar(state, dc, bounds, rl);
   paint_gear_overlay(state, dc, bounds, rl);
 
@@ -3276,13 +3626,46 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       if (carrying) accent = RGB(239, 208, 116);
     }
 
+    // TASK-0159: house().name is already prefixed ("House Verdigris") — the
+    // leading literal here painted "House House Verdigris" on the shipped HUD.
     const std::string identity =
-        "House " + world.house_name + " - Scion " +
+        world.house_name + " - Scion " +
         (world.scion_name.empty() ? std::string("(unnamed)") : world.scion_name);
     static constexpr char kControls[] =
         "WASD move | mouse aim | LMB attack | RMB/Space dash | Q E R skills | "
         "X take | Z names | I gear";
     const std::string& art_text = state.billboards.status;
+
+    // TASK-0159: pre-measure the controls hint and its deterministic
+    // mid-separator wrap (the " | " boundary nearest the middle) so the
+    // planner can stack the hint when no single line fits.
+    const std::string controls_full(kControls);
+    std::string controls_line_a = controls_full;
+    std::string controls_line_b;
+    {
+      std::size_t best = std::string::npos;
+      std::size_t pos = controls_full.find(" | ");
+      const long middle = static_cast<long>(controls_full.size() / 2);
+      while (pos != std::string::npos) {
+        if (best == std::string::npos ||
+            std::labs(static_cast<long>(pos) - middle) <
+                std::labs(static_cast<long>(best) - middle))
+          best = pos;
+        pos = controls_full.find(" | ", pos + 1);
+      }
+      if (best != std::string::npos) {
+        controls_line_a = controls_full.substr(0, best);
+        controls_line_b = controls_full.substr(best + 3);
+      }
+    }
+    SIZE controls_a_extent{}, controls_b_extent{};
+    GetTextExtentPoint32A(dc, controls_line_a.c_str(),
+                          static_cast<int>(controls_line_a.size()),
+                          &controls_a_extent);
+    if (!controls_line_b.empty())
+      GetTextExtentPoint32A(dc, controls_line_b.c_str(),
+                            static_cast<int>(controls_line_b.size()),
+                            &controls_b_extent);
 
     SIZE identity_extent{}, objective_extent{}, art_extent{}, controls_extent{};
     GetTextExtentPoint32A(dc, identity.c_str(),
@@ -3303,9 +3686,18 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     const TopHudRect art_size{0, 0, art_extent.cx + 16, art_extent.cy + 8};
     const TopHudRect controls_size{0, 0, controls_extent.cx + 12,
                                    controls_extent.cy + 6};
-    const TopHudLayout layout =
-        plan_top_hud(width, identity_size, objective_size, art_size,
-                     controls_size, static_cast<bool>(state.session));
+    const TopHudRect controls_size_a{
+        0, 0, controls_line_b.empty() ? controls_extent.cx + 12
+                                      : controls_a_extent.cx + 12,
+        controls_line_b.empty() ? controls_extent.cy + 6
+                                : controls_a_extent.cy + 6};
+    const TopHudRect controls_size_b{
+        0, 0, controls_line_b.empty() ? 0 : controls_b_extent.cx + 12,
+        controls_line_b.empty() ? 0 : controls_b_extent.cy + 6};
+    const TopHudLayout layout = plan_top_hud(
+        width, static_cast<int>(bounds.bottom), state.gear_overlay,
+        identity_size, objective_size, art_size, controls_size,
+        controls_size_a, controls_size_b, static_cast<bool>(state.session));
 
     // Historical placements double as fallbacks for degenerate widths where
     // the planner cannot fit a region in any row.
@@ -3332,18 +3724,45 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                             connection_at.y);
 
     paint_status_chip(dc, objective_at.x, objective_at.y, objective, accent, rl);
+    state.hud_rect_trace.push_back(
+        {"objective",
+         {objective_at.x, objective_at.y, objective_size.w, objective_size.h}});
 
     rl.push_back({render::Op::HouseChip, 0.0, 0.0, 0.0, 0, identity});
     SetTextColor(dc, RGB(140, 208, 172));
     TextOutA(dc, layout.identity.x, layout.identity.y, identity.c_str(),
              static_cast<int>(identity.size()));
+    state.hud_rect_trace.push_back(
+        {"identity",
+         {layout.identity.x, layout.identity.y, identity_extent.cx,
+          identity_extent.cy}});
 
     SetTextColor(dc, RGB(148, 160, 150));
-    TextOutA(dc, controls_at.x, controls_at.y, kControls,
-             static_cast<int>(sizeof(kControls) - 1));
+    if (layout.controls_wrapped) {
+      TextOutA(dc, controls_at.x, controls_at.y, controls_line_a.c_str(),
+               static_cast<int>(controls_line_a.size()));
+      state.hud_rect_trace.push_back(
+          {"controls",
+           {controls_at.x, controls_at.y, controls_a_extent.cx,
+            controls_a_extent.cy}});
+      TextOutA(dc, layout.controls_second.x, layout.controls_second.y,
+               controls_line_b.c_str(),
+               static_cast<int>(controls_line_b.size()));
+      state.hud_rect_trace.push_back(
+          {"controls-second",
+           {layout.controls_second.x, layout.controls_second.y,
+            controls_b_extent.cx, controls_b_extent.cy}});
+    } else {
+      TextOutA(dc, controls_at.x, controls_at.y, kControls,
+               static_cast<int>(sizeof(kControls) - 1));
+      state.hud_rect_trace.push_back(
+          {"controls",
+           {controls_at.x, controls_at.y, controls_extent.cx,
+            controls_extent.cy}});
+    }
     rl.push_back({render::Op::Hud, static_cast<double>(controls_at.x),
                   static_cast<double>(controls_at.y), 0.0, 0,
-                  std::string("controls: ") + kControls});
+                  std::string("controls: ") + controls_full});
 
     const bool plates =
         state.billboards.player.ready() && state.billboards.raider.ready() &&
@@ -3352,6 +3771,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         plates ? RGB(120, 214, 168) : RGB(239, 190, 78);
     paint_status_chip(dc, art_at.x, art_at.y, state.billboards.status,
                       art_accent, rl);
+    state.hud_rect_trace.push_back(
+        {"art", {art_at.x, art_at.y, art_size.w, art_size.h}});
   }
 
   // TASK-0145: relic-recovery toast — an authoritative crypt transition is
@@ -4399,6 +4820,11 @@ int scenario_chronicles_gate_b() {
   state.screen = Screen::Chronicles;
   load_billboards(state.billboards);
   const std::string capture_dir = chronicles_capture_dir();
+  if (capture_dir.empty()) {
+    // TASK-0161: a rejected capture root fails before any evidence write.
+    scenario_check(false, "evidence: capture root rejected before any write");
+    return 0;
+  }
 
   using verdigris::client::ClientCommand;
   using verdigris::client::ConnectionState;
@@ -4897,6 +5323,11 @@ int scenario_progression_surface() {
                  "nonzero: the committed node count mirrors the payload");
   state.gear_overlay = true;
   const std::string dir = progression_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false,
+                   "progression-surface: capture root rejected before any write");
+    return 0;
+  }
   const std::string png_960 = dir + "\\progression-surface-nonzero-960x600.png";
   reference_present(state, 960, 600, png_960);
   scenario_check(
@@ -4959,6 +5390,295 @@ int scenario_progression_surface() {
   return 0;
 }
 
+// TASK-0159: fresh readability evidence lands in THIS task's captures/
+// folder for architect visual review.
+std::string readability_capture_dir() {
+  std::string forced;
+  const int overridden = capture_root_override(&forced);
+  if (overridden != 0) return overridden > 0 ? forced : std::string{};
+  std::vector<std::string> bases{".", executable_directory()};
+  const char* marker =
+      "orchestration\\tasks\\TASK-0159-native-hud-pane-readability";
+  for (const auto& base : bases) {
+    std::string prefix = base;
+    for (int depth = 0; depth <= 6; ++depth) {
+      const std::string folder = prefix + (prefix.empty() ? "" : "\\") + marker;
+      if (directory_exists(folder)) {
+        const std::string captures = folder + "\\captures";
+        CreateDirectoryA(captures.c_str(), nullptr);
+        return captures;
+      }
+      prefix += prefix.empty() ? ".." : "\\..";
+    }
+  }
+  CreateDirectoryA("captures", nullptr);
+  return "captures";
+}
+
+// ── TASK-0159: hud-pane-readability ─────────────────────────────────────
+// Opens the REAL gear pane through the production presentation path at
+// 960x600 and 1366x768 and hard-fails on any rectangle intersection between
+// the global HUD regions (identity, controls, objective, art/connection
+// chips), the pane chrome (title/stats/seat/cells/banked/progression/footer),
+// and the fixed combat surfaces (minimap, quickbar, vital orbs). Rectangles
+// come from state.hud_rect_trace, recorded beside every draw during the real
+// GDI presents, so a suppressed or moved draw cannot fake the proof. The Esc
+// contracts are re-proven through the same production seams after each pass.
+int scenario_hud_pane_readability() {
+  auto trace_find = [](const ClientState& s,
+                       const char* label) -> const HudRect* {
+    for (const auto& entry : s.hud_rect_trace)
+      if (entry.first == label) return &entry.second;
+    return nullptr;
+  };
+
+  const char* kGlobalRegions[] = {"identity", "controls",     "objective",
+                                  "art",      "minimap",      "quickbar-strip",
+                                  "orb-life", "orb-resource"};
+  const char* kPaneLines[] = {"pane-title",       "pane-stats",
+                              "pane-seat",        "pane-banked",
+                              "pane-progression", "pane-footer"};
+
+  const struct Size { int w; int h; } sizes[] = {{960, 600}, {1366, 768}};
+  const std::string dir = readability_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false,
+                   "hud-pane-readability: capture root rejected before any write");
+    return 0;
+  }
+
+  // ── Local owner path: both required resolutions, closed then open pane.
+  for (const auto& size : sizes) {
+    const std::string tag =
+        std::to_string(size.w) + "x" + std::to_string(size.h);
+    ClientState state;
+    scenario_begin(state);
+    load_billboards(state.billboards);
+    scenario_follow_camera(state);
+
+    auto assert_pairwise_disjoint = [&](const ClientState& s,
+                                        const char* const* labels,
+                                        int count, const char* scope) {
+      for (int i = 0; i < count; ++i)
+        for (int j = i + 1; j < count; ++j) {
+          const HudRect* a = trace_find(s, labels[i]);
+          const HudRect* b = trace_find(s, labels[j]);
+          char line[192];
+          std::snprintf(line, sizeof(line), "%s: %s vs %s stays clear (%s)",
+                        scope, labels[i], labels[j], tag.c_str());
+          if (!a || !b) {
+            scenario_check(false, line);
+            continue;
+          }
+          scenario_check(!hud_rects_overlap(*a, *b), line);
+        }
+    };
+
+    // Closed pane: the normal HUD is already collision-free.
+    reference_present(state, size.w, size.h, "");
+    const std::string png_closed = dir + "\\hud-pane-readability-closed-" +
+                                   tag + ".png";
+    reference_present(state, size.w, size.h, png_closed);
+    scenario_check(trace_find(state, "identity") && trace_find(state, "controls"),
+                   ("hud-pane-readability: closed HUD regions recorded (" +
+                    tag + ")").c_str());
+    assert_pairwise_disjoint(state, kGlobalRegions, 8, "hud-pane-readability");
+
+    // Open the shipped gear pane through the production toggle seam.
+    toggle_gear_overlay(state);
+    scenario_check(state.gear_overlay,
+                   "hud-pane-readability: gear pane opened through the "
+                   "production seam");
+    const std::string png_open =
+        dir + "\\hud-pane-readability-open-" + tag + ".png";
+    reference_present(state, size.w, size.h, png_open);
+
+    // The pane really rendered its authoritative content.
+    scenario_check(render::any(state.render_list, render::Op::PaneStat) &&
+                       render::any(state.render_list, render::Op::PaneWeapon),
+                   ("hud-pane-readability: pane content rendered (" + tag + ")")
+                       .c_str());
+
+    // No global HUD region may intersect the open pane.
+    const HudRect* pane = trace_find(state, "pane-frame");
+    scenario_check(pane != nullptr && pane->w > 100,
+                   "hud-pane-readability: pane frame recorded");
+    for (const char* region : kGlobalRegions) {
+      const HudRect* rect = trace_find(state, region);
+      char line[192];
+      std::snprintf(line, sizeof(line),
+                    "hud-pane-readability: %s never enters the gear pane (%s)",
+                    region, tag.c_str());
+      scenario_check(pane && rect && !hud_rects_overlap(*pane, *rect), line);
+    }
+    // The wrapped second controls line (when the planner stacked the hint)
+    // obeys the same pane exclusion.
+    if (const HudRect* second = trace_find(state, "controls-second")) {
+      char line[192];
+      std::snprintf(line, sizeof(line),
+                    "hud-pane-readability: controls-second never enters the "
+                    "gear pane (%s)",
+                    tag.c_str());
+      scenario_check(pane && !hud_rects_overlap(*pane, *second), line);
+    }
+
+    // Full mutual clearance still holds among global regions WITH the pane
+    // open — the exact gap a fallback pin once slipped through.
+    assert_pairwise_disjoint(state, kGlobalRegions, 8, "hud-pane-open");
+    bool wrap_clear = true;
+    if (const HudRect* second = trace_find(state, "controls-second")) {
+      for (const char* region : kGlobalRegions) {
+        const HudRect* rect = trace_find(state, region);
+        if (rect && hud_rects_overlap(*second, *rect)) wrap_clear = false;
+      }
+    }
+    scenario_check(wrap_clear,
+                   ("hud-pane-readability: controls-second clears every "
+                    "global region (" + tag + ")").c_str());
+
+    // Pane chrome lines stay mutually clear, including backpack cells.
+    assert_pairwise_disjoint(state, kPaneLines, 6, "hud-pane-readability");
+    bool cells_clear = true;
+    for (const auto& entry : state.hud_rect_trace) {
+      if (entry.first != "pane-cell") continue;
+      for (const char* line_label : kPaneLines) {
+        const HudRect* other = trace_find(state, line_label);
+        if (other && hud_rects_overlap(entry.second, *other))
+          cells_clear = false;
+      }
+    }
+    scenario_check(cells_clear,
+                   ("hud-pane-readability: backpack cells clear of pane "
+                    "chrome (" + tag + ")").c_str());
+
+    // Hierarchy without deletion: every authority line survives.
+    scenario_check(render_list_has(state, render::Op::HouseChip, "House ") &&
+                       !render_list_has(state, render::Op::HouseChip,
+                                        "House House"),
+                   "hud-pane-readability: identity keeps its single House "
+                   "prefix");
+    scenario_check(render_list_has(state, render::Op::Hud, "controls:") &&
+                       render::any(state.render_list, render::Op::Hud) &&
+                       render_list_has(state, render::Op::PaneBanked, "Banked") &&
+                       render_list_has(state, render::Op::PaneStat, "TREE"),
+                   "hud-pane-readability: controls, banked, and progression "
+                   "truth all remain");
+
+    // Owner Esc contracts through the identical production seams.
+    handle_escape_key(state);
+    scenario_check(!state.gear_overlay && !state.quit_requested,
+                   "hud-pane-readability: first Escape closes the pane");
+    scenario_present(state);
+    scenario_check(!render::any(state.render_list, render::Op::PaneStat) &&
+                       !render::any(state.render_list, render::Op::PaneItem),
+                   "hud-pane-readability: dismissed pane leaves the render "
+                   "list");
+    handle_escape_key(state);
+    scenario_check(state.quit_requested,
+                   "hud-pane-readability: bare Escape requests exit");
+
+    // Capture integrity for this resolution.
+    for (const std::string& path : {png_closed, png_open}) {
+      std::ifstream probe(path, std::ios::binary);
+      scenario_check(probe.good(),
+                     ("hud-pane-readability: capture readable (" + tag + ")")
+                         .c_str());
+      probe.seekg(0, std::ios::end);
+      const std::streamoff bytes = probe.tellg();
+      char line[512];
+      std::snprintf(line, sizeof(line), "    capture: %s (%lld bytes)\n",
+                    path.c_str(), static_cast<long long>(bytes));
+      std::printf("%s", line);
+      scenario_check(bytes > 1024,
+                     ("hud-pane-readability: capture non-trivial (" + tag + ")")
+                         .c_str());
+    }
+  }
+
+  // ── Remote owner path on this lane's routed loopback capsule (7100-7119):
+  // the connection chip and art chip must also clear the open pane.
+  {
+    verdigris::networking::WebSocketServer* server = nullptr;
+    std::uint16_t port = 0;
+    for (std::uint16_t candidate = 7100; candidate <= 7119; ++candidate) {
+      auto* probe = new verdigris::networking::WebSocketServer(candidate);
+      std::string error;
+      if (probe->start(&error)) {
+        server = probe;
+        port = candidate;
+        break;
+      }
+      delete probe;
+    }
+    scenario_check(server != nullptr,
+                   "hud-pane-readability: bound ox-pc-z capsule server "
+                   "(if busy, another process holds 7100-7119)");
+    if (server) {
+      ClientState state;
+      state.session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+          "127.0.0.1", port, "ox-pc-z-hud-readability", true);
+      load_billboards(state.billboards);
+      std::string error;
+      scenario_check(state.session->start(&error),
+                     "hud-pane-readability: remote start");
+      bool ready = false;
+      for (int i = 0; i < 250 && !ready; ++i) {
+        state.session->poll();
+        ready = state.session->connection_state() ==
+                verdigris::client::ConnectionState::Ready;
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+      }
+      scenario_check(ready, "hud-pane-readability: remote handshake ready");
+      state.session->submit(
+          verdigris::client::ClientCommand::enter_zone("tin:1:0"));
+      bool in_instance = false;
+      for (int i = 0; i < 80 && !in_instance; ++i) {
+        state.session->poll();
+        ingest_session_events(state);
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        in_instance = state.session->model().scene.type == "instance";
+      }
+      scenario_check(in_instance,
+                     "hud-pane-readability: remote expedition entered");
+      generate_scenery(state);
+      sync_world(state);
+      state.camera.x = static_cast<double>(state.world.player.position.x);
+      state.camera.y = static_cast<double>(state.world.player.position.y);
+      toggle_gear_overlay(state);
+      reference_present(state, 960, 600, "");
+      auto trace_find = [&](const char* label) -> const HudRect* {
+        for (const auto& entry : state.hud_rect_trace)
+          if (entry.first == label) return &entry.second;
+        return nullptr;
+      };
+      const HudRect* pane = trace_find("pane-frame");
+      const HudRect* connection = trace_find("connection");
+      const HudRect* art = trace_find("art");
+      scenario_check(pane && connection,
+                     "hud-pane-readability: remote pane and connection chip "
+                     "recorded");
+      scenario_check(pane && art,
+                     "hud-pane-readability: remote art chip recorded");
+      scenario_check(pane && connection &&
+                         !hud_rects_overlap(*pane, *connection),
+                     "hud-pane-readability: connection chip clears the open "
+                     "pane (960x600)");
+      scenario_check(pane && art && !hud_rects_overlap(*pane, *art),
+                     "hud-pane-readability: art chip clears the open pane "
+                     "(960x600)");
+      const HudRect* map = trace_find("minimap");
+      const HudRect* identity = trace_find("identity");
+      scenario_check(map && identity && !hud_rects_overlap(*map, *identity),
+                     "hud-pane-readability: identity clears the minimap on "
+                     "the remote path");
+      if (state.session) state.session->shutdown();
+      server->stop();
+      delete server;
+    }
+  }
+  return 0;
+}
+
 int run_scenarios(const std::string& which) {
   struct Entry {
     const char* name;
@@ -4976,6 +5696,7 @@ int run_scenarios(const std::string& which) {
       {"first-session-clarity", scenario_first_session_clarity},
       {"animation-vfx-phase-a", scenario_animation_vfx_phase_a},
       {"progression-surface", scenario_progression_surface},
+      {"hud-pane-readability", scenario_hud_pane_readability},
   };
   int total_failures = 0;
   for (const auto& entry : entries) {
@@ -5056,6 +5777,9 @@ std::string dump_render_list_json(const std::string& scene, int width, int heigh
 }
 
 std::string reference_capture_dir() {
+  std::string forced;
+  const int overridden = capture_root_override(&forced);
+  if (overridden != 0) return overridden > 0 ? forced : std::string{};
   std::vector<std::string> bases{".", executable_directory()};
   const char* marker = "orchestration\\tasks\\TASK-0070-reference-scenes";
   for (const auto& base : bases) {
@@ -5529,6 +6253,11 @@ int scenario_animation_vfx_phase_a() {
                               phase_a::kSpawnRenderLabel),
         "animation-vfx-phase-a: capture frame records the spawn beat");
     const std::string dir = animation_vfx_capture_dir();
+    if (dir.empty()) {
+      scenario_check(
+          false, "animation-vfx-phase-a: capture root rejected before any write");
+      return 0;
+    }
     const std::string png_960 = dir + "\\animation-vfx-phase-a-960x600.png";
     const std::string png_1366 = dir + "\\animation-vfx-phase-a-1366x768.png";
     scenario_check(reference_present(capture_state, 960, 600, png_960),
@@ -5561,6 +6290,10 @@ int run_reference_scenes(const std::string& which) {
       {4, "04-named-drop-gear"}, {5, "05-critical-health"},
   };
   const std::string out_dir = reference_capture_dir();
+  if (out_dir.empty()) {
+    std::printf("FAIL reference-scene: capture root rejected before any write\n");
+    return 1;
+  }
   std::printf("reference-scene: writing to %s\n", out_dir.c_str());
   int failures = 0;
   for (const auto& scene : scenes) {

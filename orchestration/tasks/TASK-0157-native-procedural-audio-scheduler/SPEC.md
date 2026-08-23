@@ -43,4 +43,3 @@ git diff --name-only
 No audio asset, backend/device API, dependency, simulation mutation, wire
 change, final frequency/music decision, or client integration. STOP rather
 than choosing miniaudio, SDL, WASAPI, CoreAudio, a license, or authored sound.
-

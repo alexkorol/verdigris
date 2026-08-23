@@ -1,5 +1,260 @@
 # Run status — PC Verdigris overnight product wave
 
+## Ship for cloud/other harnesses — 2026-08-22 17:32 PDT
+
+- Owner is leaving the PC Ox launcher and will continue on cloud/other
+  harnesses. Program `codex/native-reconstitution` is clean/pushed at
+  `8a9b8a29`. Combined native G6 passed. Next protected action is PR+merge to
+  `master` so clones start from the shipped tip.
+- Claimable product packet: TASK-0108 READY, base `76368466`, ports 7280-7299.
+- Shared `alexkorol/orchestration` `main` remains Mac-owned. Owner action:
+  use the merged `master` / this program SHA as the cloud entrypoint.
+
+## TASK-0161 accepted; readable combat successor READY — 2026-08-22 17:22 PDT
+
+- Independent detached TASK-0161 gate at `9f004d2a` passed (`GATE-EXIT=0`) with
+  clean tree and fail-closed capture-root negatives. Integrated at `76368466`.
+  Combined program G6 `-RunTests -RunClientScenarios -CaptureRoot` on that
+  implementation tip also exited 0; working tree stayed clean (no historical
+  capture rewrite).
+- TASK-0108 is READY from TASK-0101 W1 on base `76368466`. It owns the
+  readable ranged seam but not `session_tests.cpp` (TASK-0162). Ports 7280-7299.
+  Owner launches workers; this successor does not implement the packet.
+- Board tables now list 0108 under effective READY and drop it from DRAFT
+  successors. Owner action: none.
+
+## TASK-0101 accepted; 0161 independent gate next — 2026-08-22 17:12 PDT
+
+- Cursor successor acknowledgement is durable at `5c62c904`. TASK-0101
+  revision 1 is independently ACCEPTED (`34ff3137`) and integrated
+  (`bdecf037`) from frozen worker head `a742355d`. JSON, final-range diff,
+  owned scope, combo absence, and the readable ranged contract all passed.
+- TASK-0108 remains DRAFT with W1 selected. READY promotion waits on
+  TASK-0161 releasing `native/client/main.cpp`.
+- Exact next action: rerun TASK-0161's entire SPEC gate from clean detached
+  `Z:\Code\.worktrees\verdigris\review-task0161-9f004d2a` at `9f004d2a`. Do
+  not treat the interrupted Gate-B as green. Owner action: none.
+
+## Cursor successor acknowledgement — 2026-08-22 17:05 PDT
+
+- Owner launched a Cursor successor after retiring Codex Sol. This is the
+  durable `SUCCESSOR_ACKNOWLEDGED` record required by
+  `SUPERVISOR_SUCCESSION.md`. The successor does not implement worker tasks.
+- Program: `Z:\Code\Games\delaford\delaford_game` on
+  `codex/native-reconstitution`, clean local/remote
+  `2e2dece09433bb991b927305eadc52e7f5155556`. Protected `master` `a28ac92f`.
+  Broadcast: `Z:\Code\.worktrees\orchestration\pc-overnight-game-wave`
+  `3fa4f54c`; Mac-owned `origin/main` `d068012a` untouched.
+- Frozen reviews, not capacity: TASK-0161 `9f004d2a` in
+  `Z:\Code\.worktrees\verdigris\ox-pc-ah`; TASK-0101 revision 1 `a742355d` in
+  `Z:\Code\.worktrees\verdigris\ox-pc-ai`. Detached 0161 review tree remains
+  `Z:\Code\.worktrees\verdigris\review-task0161-9f004d2a`.
+- Queue: board sentinel healthy, 24 READY, 16 sequenced DRAFT successors, zero
+  collisions. Runway hours remain UNKNOWN. Dashboard PID 9604 HTTP 200;
+  monitor PID 7364 live. No headless OpenCode writer.
+- Exact next action: re-review TASK-0101 `a742355d` (JSON, final-range diff,
+  citations, readable ranged contract); independently complete TASK-0161's
+  literal gate; integrate only ACCEPTED work; do not promote W1/TASK-0108
+  while TASK-0161 still owns `native/client/main.cpp`. Owner action: none.
+
+## Supervisor retirement handoff — 2026-08-22 16:53 PDT
+
+- Owner explicitly retired this Codex supervisor for credit exhaustion and is
+  handing control to Cursor or another harness. No OpenCode writer remains
+  active. Preserve every worktree; do not infer capacity from the dashboard.
+- Authoritative program branch `codex/native-reconstitution` is clean and
+  pushed at `1a434371b281494d3f5aa6bdc3e50447e1814855`. Protected `master`
+  remains green at `a28ac92f`; current raw worker/program pushes launch zero
+  workflows. Board sentinel is healthy at 24 READY / 2 CLAIMED / 16 successors
+  / zero collisions.
+- TASK-0161 is frozen, clean, and pushed at worker head
+  `9f004d2a6802782e2b3a79b895be2b0822f8dbf1` in
+  `Z:\Code\.worktrees\verdigris\ox-pc-ah`. Worker evidence reports two green
+  full gates. Independent detached review at
+  `Z:\Code\.worktrees\verdigris\review-task0161-9f004d2a` was interrupted by
+  the retirement request during Gate-B after ordinary succession succeeded and
+  the heir hunt reached kill 9; this is **not** an independent pass and no
+  REVIEW verdict or integration exists. Exact next action: rerun the literal
+  SPEC gate to completion from the clean detached review tree, run negative
+  controls, then ACCEPT/REVISE and integrate only if green.
+- TASK-0101 revision 1 is frozen, clean, and pushed at worker head
+  `a742355d189966f0e344d0c4763e014f87ecb820` in
+  `Z:\Code\.worktrees\verdigris\ox-pc-ai`. Program REVIEW at `1a434371`
+  rejected the original handoff because final untracked files escaped its diff
+  gate and W1 would have routed invisible ranged damage. Revision 1 removes the
+  whitespace defects and adds an explicit telegraph/client-visible hit contract.
+  Exact next action: independently re-run JSON, final-range diff, scope, and
+  source-citation checks; update REVIEW; integrate the audit evidence; only
+  then promote its readable combat successor.
+- Read-only dashboard PID 9604 serves HTTP 200 at `127.0.0.1:4737`; low-cost
+  monitor PID 7364 remains live. Standalone orchestration PC broadcast is clean
+  and pushed at `88a4b317`; `origin/main` remains Mac-owned. Owner action:
+  start the replacement supervisor with this section and
+  `orchestration/SUPERVISOR_SUCCESSION.md` as its first state read.
+
+## Three accepted integrations converged; next two-lane wave claimed — 2026-08-22 16:38 PDT
+
+- TASK-0163 frozen head `a53620ef` is independently ACCEPTED and integrated as
+  `acfcbfd1`; a clean detached full native gate plus three consecutive exact
+  session runs passed 107/107, and the combined-program gate passed. The
+  ordinary House/fall/succession/named-Warden/exact-relic/reconnect release
+  journey is no longer blocked by the old load-sensitive driver.
+- TASK-0157 accepted audio lineage is now integrated as `287433bf` +
+  `a6c33c19` after the Gate-B hold cleared. The combined full native gate and
+  60-check audio suite pass; two direct audio runs are byte-identical at
+  SHA-256 `87C88BD9...2600C`. This remains a backend-neutral scheduler/cue seam,
+  not an audible-playback or final-sound claim.
+- TASK-0159 frozen head `7ca17bfe` is independently ACCEPTED and integrated as
+  `6cbb1324` + `fbe8f49c`. Four real-GDI 960x600/1366x768 captures were visually
+  inspected; the complete combined `-RunTests -RunClientScenarios` gate passes,
+  including both Escape contracts and all 12 scenarios. Procedural placeholder
+  art remains intentionally non-final.
+- TASK-0161 is claimed by `ox-pc-ah` on pushed worker head `7730e49a`, exact
+  routed base `610a240e`, ports 7260-7279. The activation controller caught a
+  valid but uncommitted claim after the first real session stopped, preserved
+  it, and recovered the same session to a durable pushed claim before source
+  work continued.
+- TASK-0101 is claimed by `ox-pc-ai` on pushed worker head `b083b58b`, exact
+  routed base `610a240e`, read-only/no-server. Its first claim used a Markdown
+  list the board could not parse; the supervisor stopped source work and the
+  same session replaced it with machine-readable YAML before proceeding.
+- Board proof is healthy at 24 effective READY, 2 CLAIMED, 16 sequenced DRAFT
+  successors, and zero owned-path collisions. Program pre-update head is
+  `16c0cd3f`. Dashboard PID 9604 serves HTTP 200; the corrected low-cost
+  monitor PID 7364 watches only these two active routes and rejects an active
+  worker immediately if its branch carries a raw-push CI trigger. Both current
+  branches pass that guard. Protected `master` is green at `a28ac92f`; the two
+  current raw claim heads each launched zero Actions runs. Owner action: none.
+
+## Content validation shipped; audio accepted behind Gate-B hold — 2026-08-22 15:46 PDT
+
+- TASK-0164 replacement worker head `cedabc72` is independently ACCEPTED and
+  INTEGRATED as program commits `9ffea0b4` + `3961733b`, lifecycle
+  `f764600e`. Combined positive seed validation and two deterministic 27/27
+  negative-suite runs pass. Cross-collection type mismatches, dangling
+  references, and unreachable encounter anchors now fail closed; schema,
+  seeds, authored content, and runtime remain unchanged.
+- TASK-0157 revision head `bb7b8ceb` is ACCEPTED but intentionally not yet
+  integrated. A clean detached checkout proved `build.ps1 -RunTests` now
+  creates the audio test executable; that binary passed twice with identical
+  output and correct `monster`/`scion` discrimination. The same full run then
+  hit the known unrelated Gate-B exact-relic/continuity failure. Integration
+  waits for TASK-0163 and a green combined native gate; this is not an audio
+  revision request.
+- TASK-0163's first process stopped at a clean reasoning boundary with its
+  owned session-test correction uncommitted. Its one same-session recovery is
+  PID 26948 and preserves the exact dirty worktree; an earlier diagnostic run
+  already passed the full Gate-B chain after replacing inconsistent floor
+  conversion with the shared tile conversion, and the recovery is removing
+  probes and running the literal gates. ox-pc-z/TASK-0159 remains active at
+  PID 32.
+- Program head `f764600e8b8c57fbeca1ba2251fd011156aa925c` is clean/pushed.
+  Queue proof remains healthy at 24 effective READY, 17 sequenced successors,
+  and zero collisions. Dashboard PID 26104 serves HTTP 200; monitor PID 2664
+  is live. Raw program/worker pushes continue to start zero workflows. Owner
+  action required now: none.
+
+## Review truth enforced; stopped lane replaced inside SLA — 2026-08-22 15:26 PDT
+
+- TASK-0157 predecessor handoff `024dabb5` is **REVISE**, not integrated.
+  Independent clean-worktree verification proved the report's literal build
+  claim was masked by an unrecorded manual CMake prebuild: after
+  `native/build.ps1 -RunTests`, the required
+  `native/build/verdigris_audio_mixer_tests.exe` did not exist. Source
+  inspection also proved every `ActorDied` event was mapped to enemy-kill
+  audio even though core emits `text == "scion"` immediately before
+  `ScionLost`. Fresh revision lane ox-pc-af pushed valid claim `7ffc8696`,
+  ports 7220-7239, and is applying only the two numbered corrections. No audio
+  implementation has entered the program branch.
+- TASK-0164 predecessor ox-pc-ae pushed claim `949508f5`, then exited dirty
+  after OpenCode auto-rejected a global-temp evidence capture. Its prior clean
+  activation recovery was already spent, so the claim is released and the
+  worktree is quarantined intact. Fresh lane ox-pc-ag, ports 7240-7259, uses
+  dedicated temp `Z:\Code\.fleet\tmp\ox-pc-ag`. The low-cost claim validator
+  rejected its first `coordinator: ox-alpha` metadata; same-session activation
+  recovery repaired it to `coordinator: codex` and pushed exact head
+  `dfd40ee2` inside the activation SLA. Program records are `68ec7306` and
+  `2404097b`.
+- Current live OpenRouter Ox Alpha processes: ox-pc-z/TASK-0159 PID 32,
+  ox-pc-ac/TASK-0163 PID 17644, ox-pc-af/TASK-0157 revision PID 26068, and
+  ox-pc-ag/TASK-0164 replacement PID 21748. Pushed claims plus fresh activity
+  are authoritative; stopped ae/ad and terminal aa are not capacity.
+- Claim-aware queue proof is healthy: 24 effective READY, 17 sequenced DRAFT
+  successors, zero owned-path collisions, with TASK-0157 surfaced separately
+  as REVISE. Board tests pass 22/22. The human dashboard is HTTP 200 at
+  `http://127.0.0.1:4737/` on PID 25984; transition monitor PID 2664 remains
+  active.
+- Program pre-checkpoint head `2404097bca3dc634c3bb9219733070a8df638d81`
+  is pushed on `codex/native-reconstitution`. Protected `master` remains green
+  at `a28ac92f`. Program/revision/replacement pushes launched zero workflows;
+  GitHub Actions remains reserved for PRs targeting `master` and protected
+  `master` pushes. Owner action required now: none.
+
+## Pane foundation integrated; four-lane product/reliability wave sustained — 2026-08-22 15:01 PDT
+
+- TASK-0158 frozen worker head
+  `016d35a25a86d048ab1c1412fbd23e3dc1f33243` is independently ACCEPTED and
+  INTEGRATED. Both the detached worker-head review and combined program head
+  passed the 413-check MSVC `/W4` pane-model harness, native legacy denylist,
+  scope, ancestry, and diff-hygiene gates. Program lineage is architect review
+  `9fd04e98`, implementation `14809519`, evidence `2be77c30`, and lifecycle
+  close `b949b3e4`. The pure header remains intentionally unwired until a
+  separately accepted painting/input successor.
+- Current valid claims: ox-pc-z/TASK-0159 `0e74c185` (PID 32, owned
+  `main.cpp` edit active); ox-pc-ac/TASK-0163 `d872687f` (PID 17644, Gate-B
+  test-only reliability diagnosis active); and replacement
+  ox-pc-ad/TASK-0157 `a41f1013` (PID 25328, owned audio/CMake edits active).
+  Historical ox-pc-ab remains dirty, exhausted, quarantined, and is not
+  capacity. Completed ox-pc-aa is a terminal reviewed lane, not a live PID.
+- Fresh ox-pc-ae is LAUNCH_REQUESTED for TASK-0164 from exact pushed base
+  `b949b3e4653961b7f13661f38ef3addfb8af0df4`, branch
+  `codex/TASK-0164-native-content-cross-reference-hardening-ox-pc-ae`, ports
+  7200-7219, OpenRouter Ox Alpha PID 26840. It does not count as capacity
+  until its STATUS claim is committed and pushed. P1
+  PROVISIONED_UNCLAIMED is due on the first observation after 15:07:50 PDT;
+  P0 ACTIVATION_FAILED is due at 30 minutes or two failed sweeps.
+- TASK-0165 adds a concrete, disjoint pure input-focus/close-ordering seam tied
+  to the accepted Esc regression and future panes. Board sentinel is healthy
+  at 25 effective READY before the TASK-0164 claim, 17 sequenced successors,
+  and zero owned-path collisions; after that claim is recorded the floor will
+  remain exactly 24.
+- Human dashboard is HTTP 200 at `http://127.0.0.1:4737/` (PID 26988), with
+  TASK-0158 shown as terminal and ox-pc-ae visible during activation. The
+  low-cost transition monitor remains PID 2664. Protected `master` remains
+  green at release SHA `a28ac92f`; raw program/worker pushes continue to start
+  zero Actions workflows. Owner action required now: none.
+
+## Protected release green; Gate-B reliability blocker routed — 2026-08-22 14:27 PDT
+
+- Protected PR #57 merged the loot reliability, native content schema, and
+  progression-visibility wave to `master` at
+  `a28ac92f6f4fa5fa5a467ecb8353ad1c55667ecb`. Both PR checks passed. The
+  post-merge Native run `32598557565` passed; CI run `32598557570` retained a
+  first-attempt `session-arc` named-Warden miss at 31/32, then its single
+  bounded rerun passed all 32 scenarios. Raw worker/program pushes launched no
+  workflows, so GitHub mail is now reserved for protected release signal.
+- TASK-0152 revision head `d34097d9` is independently ACCEPTED: frozen full
+  native gate passed, its MSVC `/W4` build was warning-free, all six positive
+  captures validated, and all twelve negative captures failed as required.
+  Program staging commits are review `3da054b6`, original implementation
+  `59ab5083`, and correction `76837dec`.
+- The combined program native gate then failed the ordinary-play Gate-B
+  heirloom hunt after seven minutes (four kills; Warden never surfaced). One
+  bounded exact-session retry failed at the earlier fatal-fall step. These two
+  distinct failures do not implicate TASK-0152's measurement-only diff, but
+  they block terminal integration truth. TASK-0163 owns only the journey test
+  and is routed to remove this nondeterminism without gameplay shortcuts or
+  weaker assertions.
+- Valid pushed claims now recorded on the program branch: ox-pc-z/TASK-0159
+  `0e74c185` and ox-pc-aa/TASK-0158 `d1fd4e40`. The aa first post-claim process
+  exited with owned-path edits; its preserved single recovery is PID 26668.
+  ox-pc-ab/TASK-0157 claim `c08ad621` and its one dirty recovery both exited
+  without a handoff, so the lane is exhausted, preserved, and released for a
+  fresh replacement. ox-pc-z remains live at PID 32. Stopped processes are
+  alerts, never counted as working capacity.
+- Human dashboard is HTTP 200 at `http://127.0.0.1:4737/` (PID 23504); the
+  visible low-cost monitor remains PID 2664. Owner action required now: none.
+
 ## TASK-0155 accepted; three claims live — 2026-08-22 13:40 PDT
 
 - TASK-0155 worker implementation `3cae8a2d` and frozen handoff `b06f5740`
@@ -429,7 +684,7 @@ harness-visible provider/model. These are separate scorecard experimental units.
 - This owner correction explicitly authorizes pushing the architect coordination
   commit to the program branch. Workers still push only their own branches.
 
-## Effective READY — 28 packets before the next four claims
+## Effective READY — 26 packets before next claims
 
 Every row is dependency-free at this snapshot. Owned paths are pairwise
 disjoint; initial routes do not constitute claims. First committed `STATUS.md`
@@ -465,6 +720,14 @@ wins after a fresh fetch.
 | P0 | TASK-0156 native progression visibility | INDEPENDENT / IMPLEMENTATION | fresh isolated native-client lane | surfaces authoritative passive-tree points in the shipped gear overlay |
 | P1 | TASK-0157 procedural audio scheduler | INDEPENDENT / IMPLEMENTATION | future clean lane | freezes backend-neutral deterministic cue behavior before owner backend choice |
 | P1 | TASK-0158 pane model foundation | INDEPENDENT / IMPLEMENTATION | future clean lane | creates responsive collision-free pane geometry without choosing final styling |
+| P0 | TASK-0159 native HUD/pane readability | INDEPENDENT / IMPLEMENTATION | fresh native-client lane | removes owner-visible text collisions and prototype-like hierarchy defects |
+| P1 | TASK-0160 native visual-kit packaging proof | INDEPENDENT / IMPLEMENTATION | future clean lane | proves committed procedural/vector placeholders survive source-to-owner launch reproducibly |
+| P0 | TASK-0163 Gate-B ordinary-play journey reliability | INDEPENDENT / IMPLEMENTATION | fresh recovered native-test lane | removes the release-blocking fatal-fall/Warden nondeterminism without runtime shortcuts |
+| P1 | TASK-0164 native content cross-reference hardening | INDEPENDENT / IMPLEMENTATION | future clean content-validation lane | rejects dangling zone/encounter seed references before content reaches a shipped runtime |
+| P1 | TASK-0165 native input focus model foundation | INDEPENDENT / IMPLEMENTATION | future clean native-client seam lane | prevents future panes from reintroducing global-Esc exits or leaking gameplay input through focused UI |
+| P1 | TASK-0161 native scenario capture-output isolation | PIPELINED / IMPLEMENTATION | fresh native-client lane after TASK-0159 | prevents complete gates from rewriting historical visual evidence |
+| P1 | TASK-0162 native passive-tree payload hardening | INDEPENDENT / IMPLEMENTATION | future clean session-parser lane after TASK-0163 | rejects malformed progression mirrors without inventing balance |
+| P0 | TASK-0108 readable ranged combat successor | INDEPENDENT / IMPLEMENTATION | fresh native combat lane after 0101+0161; ports 7280-7299 | packs mix pressure roles with a telegraph and attributed hit beat |
 
 ## HOLD despite historical READY headers
 
@@ -485,7 +748,6 @@ wins after a fresh fetch.
 | TASK-0090 native progression panes | 0087 + authoritative payload audit |
 | TASK-0106 deterministic replay runner | 0100 accepted; record/divergence interfaces frozen |
 | TASK-0107 persistence fault matrix | 0097 accepted; disposable profile/fault contract frozen |
-| TASK-0108 combat-depth wave | 0101 accepted; scaffold and D-114 table ready |
 | TASK-0109 skill infrastructure | 0102 accepted; content-neutral interfaces frozen |
 | TASK-0110 encounter-system wave | 0103 accepted; deterministic pack/rarity seam frozen |
 | TASK-0111 item-history lifecycle | 0104 accepted; owner-independent lifecycle frozen |

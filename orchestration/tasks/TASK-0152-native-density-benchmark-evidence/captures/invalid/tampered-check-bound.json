@@ -1,0 +1,60 @@
+{
+  "schema": "verdigris-density-evidence/2",
+  "task": "TASK-0152",
+  "scenario": {
+    "id": "density-melee-contact",
+    "route": "route:tin:1:0",
+    "action": "Melee",
+    "n": 500,
+    "ticks": 1000,
+    "seed": 777,
+    "run": 1
+  },
+  "provenance": {
+    "generated_at_utc": "2026-08-22T20:36:32Z",
+    "tool_version": "2.0.0",
+    "git_ref": "5156c33e826481f6e427498b0b755f35245c3ae2",
+    "compiler": "msvc-192930157",
+    "cxx_standard": "c++20",
+    "build_config": "debug-no-ndebug",
+    "os": "Windows_NT",
+    "arch": "x86_64",
+    "cpu": "AMD Ryzen 5 1600 Six-Core Processor",
+    "cpu_cores": 12,
+    "timer": "std::chrono::steady_clock",
+    "timer_resolution_ns": 100.000000000,
+    "host": "Windows_NT"
+  },
+  "determinism": {
+    "runs": 2,
+    "reproducible": true,
+    "counts_match": true,
+    "checksum_match": true,
+    "state_checksum": "fnv1a64:84cf19822434d14f",
+    "state_checksum_repeat": "fnv1a64:84cf19822434d14f",
+    "counts": {"monsters_start": 500, "monsters_end": 500, "spawned_via_seam": 499, "events": 19, "final_tick": 1001},
+    "counts_repeat": {"monsters_start": 500, "monsters_end": 500, "spawned_via_seam": 499, "events": 19, "final_tick": 1001}
+  },
+  "timings": {
+    "tick_budget_ms": 50.000000000,
+    "elapsed_s": 0.406948100,
+    "ticks_per_sec": 2457.315810050,
+    "samples": 1000,
+    "percentile_method": "nearest-rank",
+    "update_ms": {"p50": 0.002700000, "p90": 0.002800000, "p99": 0.004100000, "max": 0.047600000, "mean": 0.002829600},
+    "frame_ms": {"p50": 0.372700000, "p90": 0.385100000, "p99": 1.119100000, "max": 1.131300000, "mean": 0.406781700}
+  },
+  "thresholds": {
+    "contract": "verdigris-density-threshold/1",
+    "all_pass": true,
+    "checks": [
+      {"id": "monsters_spawned", "value": 500.000000000, "op": "min", "bound": 500.000000000, "pass": true},
+      {"id": "samples_complete", "value": 1000.000000000, "op": "min", "bound": 1000.000000000, "pass": true},
+      {"id": "reproducible", "value": 1.000000000, "op": "min", "bound": 1.000000000, "pass": true},
+      {"id": "frame_p99_within_budget", "value": 1.119100000, "op": "max", "bound": 50.000000000, "pass": true},
+      {"id": "frame_mean_within_budget", "value": 0.406781700, "op": "max", "bound": 50.000000000, "pass": true},
+      {"id": "update_p99_within_budget", "value": 0.004100000, "op": "max", "bound": 50.000000000, "pass": true},
+      {"id": "ticks_per_sec_floor", "value": 2457.315810050, "op": "min", "bound": 10.000000000, "pass": true}
+    ]
+  }
+}

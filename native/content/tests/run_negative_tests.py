@@ -55,6 +55,10 @@ def build_cases(seeds):
         edge = copy.deepcopy(doc["items"][0]["exits"][0])
         doc["items"][0]["exits"].append(edge)
 
+    def isolate_mire(doc):
+        for item in doc["items"]:
+            item["exits"] = [edge for edge in item["exits"] if edge.get("to") != "example-mire-one"]
+
     cases = [
         ("unknown_visual_role", "zones", lambda d: d["items"][0]["visual_roles"].__setitem__("floor", "terrain.lava"), ["E_UNKNOWN_ROLE"]),
         ("unknown_visual_slot", "zones", lambda d: d["items"][0]["visual_roles"].__setitem__("turrets", "terrain.floor"), ["E_UNKNOWN_SLOT"]),
@@ -63,6 +67,10 @@ def build_cases(seeds):
         ("cross_collection_id_collision", "zones", lambda d: d["items"][0].__setitem__("id", "example-encounter-one"), ["E_DUPLICATE_ID"]),
         ("exit_to_unknown_zone", "zones", lambda d: d["items"][0]["exits"][0].__setitem__("to", "example-nowhere"), ["E_UNKNOWN_ZONE_REF"]),
         ("encounter_references_unknown_zone", "encounters", lambda d: d["items"][0].__setitem__("zone", "example-nowhere"), ["E_UNKNOWN_ZONE_REF"]),
+        ("exit_to_encounter_id_type_mismatch", "zones", lambda d: d["items"][0]["exits"][0].__setitem__("to", "example-encounter-two"), ["E_REFERENCE_TYPE_MISMATCH"]),
+        ("encounter_zone_type_mismatch", "encounters", lambda d: d["items"][0].__setitem__("zone", "example-encounter-two"), ["E_REFERENCE_TYPE_MISMATCH"]),
+        ("unreachable_encounter_zone", "zones", isolate_mire, ["E_UNREACHABLE_ENCOUNTER"]),
+        ("string_schema_version_linkage", "encounters", lambda d: d.__setitem__("schema_version", "1"), ["E_SCHEMA_VERSION"]),
         ("unknown_zone_template", "zones", lambda d: d["items"][0].__setitem__("template_id", "volcano"), ["E_UNKNOWN_TEMPLATE"]),
         ("unknown_zone_layout", "zones", lambda d: d["items"][0].__setitem__("layout", "labyrinth"), ["E_UNKNOWN_LAYOUT"]),
         ("unknown_exit_kind", "zones", lambda d: d["items"][0]["exits"][0].__setitem__("kind", "teleport"), ["E_UNKNOWN_EXIT_KIND"]),
