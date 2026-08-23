@@ -2,8 +2,8 @@
 
 ## 2026-08-22 — shipped for cloud/other harnesses
 
-- Program tip `8a9b8a29` on `codex/native-reconstitution` is the Cursor
-  successor ship line. Protected merge target is `master` (was `a28ac92f`).
+- Program tip `bb454c3c` on `codex/native-reconstitution` shipped via PR #58.
+  Protected `master` is `2d3e92a5`.
 - TASK-0101 and TASK-0161 are ACCEPTED/INTEGRATED. Combined native G6 with
   `-CaptureRoot` passed (`COMBINED-EXIT=0`).
 - TASK-0108 is READY (readable ranged combat, ports 7280-7299). Exact base

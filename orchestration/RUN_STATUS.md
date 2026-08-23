@@ -3,9 +3,8 @@
 ## Ship for cloud/other harnesses — 2026-08-22 17:32 PDT
 
 - Owner is leaving the PC Ox launcher and will continue on cloud/other
-  harnesses. Program `codex/native-reconstitution` is clean/pushed at
-  `8a9b8a29`. Combined native G6 passed. Next protected action is PR+merge to
-  `master` so clones start from the shipped tip.
+  harnesses. PR #58 merged: protected `master` `2d3e92a5`, program
+  `bb454c3c`. Combined native G6 and PR Native/CI both passed.
 - Claimable product packet: TASK-0108 READY, base `76368466`, ports 7280-7299.
 - Shared `alexkorol/orchestration` `main` remains Mac-owned. Owner action:
   use the merged `master` / this program SHA as the cloud entrypoint.
