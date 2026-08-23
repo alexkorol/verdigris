@@ -1,5 +1,25 @@
 # Run status — PC Verdigris overnight product wave
 
+## Fleet running — 4 lanes claimed/active; resume loop in place — 2026-08-23 16:15 UTC
+
+- Active fleet (all VALID routes):
+  - ox-pc-ba -> TASK-0108 (readable ranged combat, P0): claimed `d9396fb6`,
+    running.
+  - ox-pc-bb -> TASK-0082 (dual-server matrix): claimed `4ede0d76`, running.
+  - ox-pc-bc -> TASK-0097 (persistence durability audit): claimed `c289156a`,
+    running.
+  - ox-pc-bd -> TASK-0100 (deterministic replay audit): resumed after a
+    one-shot stop; claim drafting (STATUS staged), process running.
+  - ox-pc-be -> TASK-0165: SHIPPED (independent ACCEPTED + integrated).
+- Note: `opencode run --agent build` is one-shot (exits after a turn), so the
+  fleet is maintained by RESUMING lanes ("You are resuming... continue where
+  you left off") rather than one long-lived process. The lead resumes any lane
+  that stops before flipping REVIEW_REQUESTED, and validates + ships each
+  REVIEW_REQUESTED head at its exact frozen commit.
+- Duplicate-writer watch: some lanes show two matching opencode processes
+  (owner launcher + lead relaunch); watching for two writers touching the same
+  worktree (INC-015 pattern) — no conflict observed yet.
+
 ## Fleet bootstrap corrections + re-pointed lanes claiming — 2026-08-23 16:05 UTC
 
 - Bootstrap review against `Z:\Code\orchestration\FLEET_BOOTSTRAP.md`:
