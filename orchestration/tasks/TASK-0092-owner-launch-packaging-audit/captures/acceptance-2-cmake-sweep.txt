@@ -1,0 +1,15 @@
+native/CMakePresets.json:10:        "CMAKE_BUILD_TYPE": "Debug"
+native/CMakePresets.json:15:      "displayName": "Verdigris native (MSVC)",
+native/CMakePresets.json:16:      "description": "Version-neutral NMake preset; schema v2 requires an explicit generator, so the workflow supplies the MSVC developer environment instead of pinning a VS edition.",
+native/build.ps1:43:# Prefer the supported Visual Studio installation query, then retain a
+native/build.ps1:54:  # vswhere can print an error when an installation is incomplete; that is
+native/build.ps1:85:  throw "MSVC Build Tools vcvars64.bat was not found. Probed:`n$probeText"
+native/build.ps1:112:    # vcvars64.bat invokes vswhere internally.  Put the installer directory
+native/build.ps1:118:  if ($LASTEXITCODE -ne 0) { throw "MSVC command failed with exit code $LASTEXITCODE" }
+native/CMakeLists.txt:4:set(CMAKE_CXX_STANDARD 20)
+native/CMakeLists.txt:5:set(CMAKE_CXX_STANDARD_REQUIRED ON)
+native/CMakeLists.txt:6:set(CMAKE_CXX_EXTENSIONS OFF)
+native/CMakeLists.txt:19:if (WIN32)
+native/CMakeLists.txt:33:  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/audio ${CMAKE_CURRENT_SOURCE_DIR}/client
+native/CMakeLists.txt:56:if (WIN32)
+native/CMakeLists.txt:75:if (WIN32)
