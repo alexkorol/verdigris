@@ -1,5 +1,19 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED 9 audits this session — 2026-08-23 19:25 UTC
+
+- **TASK-0092** (owner launch/packaging audit, bd) ACCEPTED + integrated at
+  `0f114de4`. FINDINGS: launcher is owner-grade on run-loop but developer-grade
+  around it. Negative control verified (bare `python` in build.ps1:159 with no
+  preflight fails late on clean machines); latent 6500-default invariant risk
+  verified (server_main.cpp:10). Sequenced packaging packets PK-0→PK-5 defined.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091 all
+  ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (ranged combat, P0, mid-implementation);
+  `ox-pc-bb` -> TASK-0102 (skill system gap audit, claimed `33a381b8`);
+  `ox-pc-bc` -> TASK-0093 (typography contract audit, launched);
+  `ox-pc-bd` -> TASK-0092 now integrated (lane freed, re-point pending).
+
 ## SHIPPED 8 audits this session — 2026-08-23 19:05 UTC
 
 - **TASK-0091** (protocol coverage sentinel design, bc) ACCEPTED + integrated
