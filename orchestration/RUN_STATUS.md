@@ -1,5 +1,25 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED 13 audits this session — 2026-08-23 20:55 UTC
+
+- **TASK-0094** (asset provenance manifest audit, bc) ACCEPTED + integrated at
+  `73c571c7`. FINDINGS inventoried 179 assets across 20 families (150 KEEP/29
+  UNKNOWN/0 BLOCKED); native runtime verified to read no source assets; negative
+  control verified (29 UNKNOWN named). Stale objects.tsx/objects.png dimension
+  mismatch (288×1024 vs 288×1056) documented.
+- **TASK-0095** (content/asset-authoring schema audit, bd) ACCEPTED + integrated
+  at `cbfd9c64`. FINDINGS mapped all content surfaces + stable IDs + seed
+  boundaries; negative control verified (gear_drop_pool positional order).
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093 all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0096 (campaign graph measurement, claimed `f852254d`,
+  deliverables staged); `ox-pc-bc` -> TASK-0094 now integrated (lane freed);
+  `ox-pc-bd` -> TASK-0095 now integrated (lane freed).
+- Note: bc's TASK-0094 claim STATUS.md was briefly misrouted to the program
+  branch (benign coordination doc) but the real worker work landed correctly on
+  `worker/verdigris/pc/ox-pc-bc`.
+
 ## SHIPPED 11 audits this session — 2026-08-23 20:15 UTC
 
 - **TASK-0093** (typography/text-rendering contract audit, bc) ACCEPTED +
