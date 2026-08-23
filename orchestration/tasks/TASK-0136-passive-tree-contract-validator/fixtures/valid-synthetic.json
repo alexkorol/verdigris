@@ -1,0 +1,117 @@
+{
+  "fixture_set": "verdigris.passive-tree-authority/task-0136-valid-synthetic",
+  "schema_version": "1.0.0",
+  "purpose": "Content-neutral synthetic candidates that MUST pass the TASK-0112 contract validation pipeline. Every identifier is obviously synthetic (n:000 / e:001 / v:0 style, inherited unchanged from the TASK-0112 conventions block) and every number is a harness context value, not authored balance. The chain graph asserts no real topology; it exists only to make envelope shapes concrete.",
+  "authority": {
+    "role": "synthetic stand-in for the future OI-004 approved passive-tree content source; scoped to this fixture run only",
+    "graph_version": 2,
+    "migration_floor": 1,
+    "registered_migrations": [
+      { "from_version": 1, "to_version": 2, "strategy": "revalidate_in_place" }
+    ]
+  },
+  "graph": {
+    "envelope": "verdigris.passive-tree-authority/graph@1",
+    "graph_version": 2,
+    "origin": "n:000",
+    "nodes": [
+      { "node_id": "n:000" },
+      { "node_id": "n:001" },
+      { "node_id": "n:002" },
+      { "node_id": "n:003" }
+    ],
+    "edges": [
+      { "edge_id": "e:001", "from_node": "n:000", "to_node": "n:001", "variants": ["v:0"] },
+      { "edge_id": "e:002", "from_node": "n:001", "to_node": "n:002", "variants": ["v:0", "v:1"] },
+      { "edge_id": "e:003", "from_node": "n:002", "to_node": "n:003", "variants": ["v:0"] }
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "VAL-001-direct-claim",
+      "mode": "allocation",
+      "allocation": {
+        "envelope": "verdigris.passive-tree-authority/allocation@1",
+        "graph_version": 2,
+        "allocated_nodes": ["n:000", "n:001", "n:002"],
+        "edge_choices": [
+          { "edge_id": "e:001", "variant": "v:0" },
+          { "edge_id": "e:002", "variant": "v:1" }
+        ],
+        "selected_node": "n:001",
+        "calling_order": ["n:001"]
+      },
+      "budget": {
+        "persistent_commission_points": 7,
+        "live_tree_points": 5,
+        "earned": 5,
+        "spent": 4,
+        "unspent": 1
+      }
+    },
+    {
+      "case_id": "VAL-002-persistence-load",
+      "mode": "persistence",
+      "blob": {
+        "envelope": "verdigris.passive-tree-authority/persistence@1",
+        "graph_version": 2,
+        "allocation": {
+          "graph_version": 2,
+          "allocated_nodes": ["n:000"],
+          "edge_choices": []
+        },
+        "validation_provenance": {
+          "authority": "task-0136-synthetic-authority",
+          "result": { "ok": true, "errors": [] }
+        }
+      },
+      "budget": {
+        "persistent_commission_points": 2,
+        "live_tree_points": 9,
+        "earned": 9,
+        "spent": 0,
+        "unspent": 9
+      }
+    },
+    {
+      "case_id": "VAL-003-supported-migration",
+      "mode": "migration_request",
+      "migration_request": { "from_version": 1, "to_version": 2 },
+      "blob": {
+        "graph_version": 1,
+        "allocation": {
+          "graph_version": 1,
+          "allocated_nodes": ["n:000"],
+          "edge_choices": []
+        },
+        "validation_provenance": {
+          "authority": "task-0136-synthetic-authority",
+          "result": { "ok": true, "errors": [] }
+        }
+      },
+      "budget": {
+        "persistent_commission_points": 0,
+        "live_tree_points": 4,
+        "earned": 4,
+        "spent": 0,
+        "unspent": 4
+      }
+    },
+    {
+      "case_id": "VAL-004-raw-snapshot-rebuilt",
+      "mode": "raw_snapshot",
+      "raw_snapshot": {
+        "graph_version": 2,
+        "allocated_nodes": ["n:000", "n:001"],
+        "edge_choices": [{ "edge_id": "e:001", "variant": "v:0" }]
+      },
+      "budget": {
+        "persistent_commission_points": 1,
+        "live_tree_points": 2,
+        "earned": 2,
+        "spent": 2,
+        "unspent": 0
+      }
+    }
+  ]
+}
