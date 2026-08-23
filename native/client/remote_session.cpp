@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <cstring>
 
 #ifdef _WIN32
@@ -94,26 +95,89 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
   return slot;
 }
 
+// ── TASK-0156 + TASK-0162: authoritative passiveTree mirroring ──────────
 // TASK-0156: mirror the authoritative `passiveTree` envelope (schemaVersion
 // 2: nodes / conduits / points.skill / earned) into plain model fields. Only
 // payload-borne values are copied; the client derives no rules, costs, or
-// effects. A malformed or missing envelope leaves the previous state intact.
-void apply_passive_tree(const JsonValue& tree, ClientModel& model) {
-  if (!tree.object()) return;
-  model.progression = ClientPassiveProgression{};
-  model.progression.present = true;
-  if (const auto* points = tree.get("points")) {
-    model.progression.unspent_points =
-        static_cast<int>(json_number(points->get("skill"), 0));
+// effects.
+// TASK-0162: the mirror lands ONLY from an envelope that validates against
+// the frozen wire shape. Anything malformed — missing fields, wrong types,
+// fractional/negative/non-finite/out-of-range numbers, oversized arrays —
+// fails closed: the last valid authoritative snapshot is preserved untouched
+// and a deterministic parser diagnostic surfaces as a ProtocolError event.
+
+// Transport bounds, NOT product/balance rules. They exist solely so a hostile
+// payload cannot overflow the int-sized mirror fields or force pathological
+// allocations; both sit orders of magnitude above any real authored payload
+// and encode nothing about tree design, costs, or progression.
+constexpr std::size_t kPassiveTreeMaxEntries = 10000;
+constexpr double kPassiveTreeMaxPointValue = 2147483647.0;  // int range cap
+
+// Sane mirrored count: present, a JSON number, finite, integral, and within
+// [0, int-max]. Fractional, negative, and huge values are rejected outright,
+// never clamped or truncated.
+bool sane_passive_tree_count(const JsonValue* value, double* out) {
+  if (!value || !value->number()) return false;
+  const double number = *value->number();
+  if (!std::isfinite(number)) return false;
+  if (std::floor(number) != number) return false;
+  if (number < 0.0 || number > kPassiveTreeMaxPointValue) return false;
+  *out = number;
+  return true;
+}
+
+// Validates against the frozen schemaVersion-2 wire contract. Returns
+// nullptr and fills `mirror` on success; otherwise returns a stable,
+// deterministic description of the FIRST violated expectation.
+const char* validate_passive_tree(const JsonValue& tree,
+                                  ClientPassiveProgression* mirror) {
+  if (!tree.object()) return "envelope must be an object";
+
+  const auto* schema = tree.get("schemaVersion");
+  double schema_version = 0.0;
+  if (!sane_passive_tree_count(schema, &schema_version) ||
+      schema_version != 2.0)
+    return "schemaVersion must be the number 2";
+
+  const auto* points = tree.get("points");
+  if (!points || !points->object()) return "points must be an object";
+  double unspent_points = 0.0;
+  if (!sane_passive_tree_count(points->get("skill"), &unspent_points))
+    return "points.skill must be a finite nonnegative integer";
+
+  double earned_points = 0.0;
+  if (!sane_passive_tree_count(tree.get("earned"), &earned_points))
+    return "earned must be a finite nonnegative integer";
+
+  const auto* nodes = tree.get("nodes");
+  if (!nodes || !nodes->array()) return "nodes must be an array";
+  if (nodes->array()->size() > kPassiveTreeMaxEntries)
+    return "nodes exceeds the transport entry bound";
+
+  const auto* conduits = tree.get("conduits");
+  if (!conduits || !conduits->array()) return "conduits must be an array";
+  if (conduits->array()->size() > kPassiveTreeMaxEntries)
+    return "conduits exceeds the transport entry bound";
+
+  mirror->present = false;  // caller stamps presence only after validation
+  mirror->unspent_points = static_cast<int>(unspent_points);
+  mirror->earned_points = static_cast<int>(earned_points);
+  mirror->node_count = static_cast<int>(nodes->array()->size());
+  mirror->conduit_count = static_cast<int>(conduits->array()->size());
+  return nullptr;
+}
+
+void apply_passive_tree(const JsonValue& tree, ClientModel& model,
+                        std::vector<PresentationEvent>& diagnostics) {
+  ClientPassiveProgression mirror;
+  if (const char* problem = validate_passive_tree(tree, &mirror)) {
+    diagnostics.push_back({PresentationEventType::ProtocolError, "", "",
+                           std::string("passiveTree rejected: ") + problem, 0});
+    // Fail closed: an invalid update never mutates the last valid snapshot.
+    return;
   }
-  model.progression.earned_points =
-      static_cast<int>(json_number(tree.get("earned"), 0));
-  if (const auto* nodes = tree.get("nodes"); nodes && nodes->array()) {
-    model.progression.node_count = static_cast<int>(nodes->array()->size());
-  }
-  if (const auto* conduits = tree.get("conduits"); conduits && conduits->array()) {
-    model.progression.conduit_count = static_cast<int>(conduits->array()->size());
-  }
+  mirror.present = true;
+  model.progression = mirror;
 }
 
 void apply_player_fields(ClientPlayer& player, const JsonValue& source) {
@@ -659,7 +723,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       // TASK-0156: the admission payload carries the authoritative
       // passiveTree envelope (player_payload puts it beside quests).
       if (const auto* tree = player->get("passiveTree"))
-        apply_passive_tree(*tree, model_);
+        apply_passive_tree(*tree, model_, pending_events_);
     }
     if (const auto* scene = envelope.data.get("scene")) apply_scene_fields(model_.scene, *scene);
     // A full player:login is a world admission on the Gate-B journey: the
@@ -859,7 +923,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       model_.lifecycle = *lifecycle;
     // TASK-0156: the dev:state snapshot carries the same authoritative
     // passiveTree envelope; keep the mirror current between logins.
-    if (const auto* tree = state->get("passiveTree")) apply_passive_tree(*tree, model_);
+    if (const auto* tree = state->get("passiveTree"))
+      apply_passive_tree(*tree, model_, pending_events_);
     if (const auto* hp = state->get("hp")) {
       // Authoritative life keeps alive honest between combat envelopes.
       model_.player.life = static_cast<int>(json_number(hp->get("current"), model_.player.life));
@@ -914,7 +979,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     // TASK-0156: the server's reply to a committed tree snapshot carries the
     // refreshed authoritative passiveTree envelope.
     if (const auto* tree = envelope.data.get("passiveTree"))
-      apply_passive_tree(*tree, model_);
+      apply_passive_tree(*tree, model_, pending_events_);
     return;
   }
   if (envelope.event == "core:refresh:inventory") {

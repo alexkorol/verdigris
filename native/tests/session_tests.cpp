@@ -1876,6 +1876,667 @@ void gate_b_chronicles_reconnect_journey() {
   check(true, "gate-b: journey server stopped cleanly");
 }
 
+// ── TASK-0162: passive-tree payload hardening ─────────────────────────────
+// Drives the PRODUCTION envelope seam (parse_envelope ->
+// RemoteProtocolSession::apply_envelope -> apply_passive_tree) over a real
+// socket with hand-authored wire text, including overflow literals such as
+// 1e400 that no in-process JsonValue builder can produce.
+
+// A minimal RFC6455 SERVER endpoint: completes the documented loopback
+// upgrade handshake, discards everything the client sends, and delivers
+// exactly the envelope text the test dictates. This isolates the parser from
+// any real server behavior so malformed payloads can be injected verbatim.
+// Capsule 6980-6999 is reserved for this lane's parser harness (never 6500,
+// never another lane's capsule).
+#if defined(_WIN32)
+using PTreeSocket = SOCKET;
+#else
+using PTreeSocket = int;
+#endif
+
+class FakeEnvelopeServer {
+ public:
+  explicit FakeEnvelopeServer(std::uint16_t port) : port_(port) {}
+  ~FakeEnvelopeServer() { stop(); }
+  FakeEnvelopeServer(const FakeEnvelopeServer&) = delete;
+  FakeEnvelopeServer& operator=(const FakeEnvelopeServer&) = delete;
+
+  bool start(std::string* error) {
+#ifdef _WIN32
+    WSADATA wsa{};
+    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+      if (error) *error = "WSAStartup failed";
+      return false;
+    }
+    wsa_started_ = true;
+#endif
+    listener_ = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (listener_ == kInvalidSocketV) {
+      if (error) *error = "socket() failed";
+      return false;
+    }
+    sockaddr_in address{};
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = inet_addr("127.0.0.1");
+    address.sin_port = htons(port_);
+    if (::bind(listener_, reinterpret_cast<sockaddr*>(&address),
+               sizeof(address)) < 0 ||
+        ::listen(listener_, 4) < 0) {
+      if (error) *error = "bind/listen failed";
+      close_listener();
+      return false;
+    }
+    running_.store(true);
+    acceptor_ = std::thread(&FakeEnvelopeServer::accept_loop, this);
+    return true;
+  }
+
+  void send_text(std::string text) {
+    std::lock_guard lock(queue_mutex_);
+    queue_.push_back(std::move(text));
+  }
+
+  void stop() {
+    running_.store(false);
+    close_listener();
+    if (acceptor_.joinable()) acceptor_.join();
+#ifdef _WIN32
+    if (wsa_started_) {
+      WSACleanup();
+      wsa_started_ = false;
+    }
+#endif
+  }
+
+ private:
+  static constexpr auto kInvalidSocketV =
+#ifdef _WIN32
+      INVALID_SOCKET
+#else
+      -1
+#endif
+      ;
+
+  void accept_loop() {
+    while (running_.load()) {
+      const auto conn = ::accept(listener_, nullptr, nullptr);
+      if (conn == kInvalidSocketV) {
+        if (!running_.load()) break;
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        continue;
+      }
+      serve(conn);
+    }
+  }
+
+  void serve(PTreeSocket conn) {
+    std::string request;
+    char buffer[1024];
+    while (request.find("\r\n\r\n") == std::string::npos &&
+           request.size() < 8192) {
+      const auto got = ::recv(conn, buffer, sizeof(buffer), 0);
+      if (got <= 0) {
+        close_conn(conn);
+        return;
+      }
+      request.append(buffer, buffer + got);
+    }
+    // The client's fixed loopback Sec-WebSocket-Key (see remote_session)
+    // pairs with this RFC6455 example accept value; the production client
+    // verifies only the 101 status line and header terminator.
+    static const std::string kUpgrade =
+        "HTTP/1.1 101 Switching Protocols\r\n"
+        "Upgrade: websocket\r\n"
+        "Connection: Upgrade\r\n"
+        "Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n"
+        "\r\n";
+    if (!send_all(conn, kUpgrade.data(), kUpgrade.size())) {
+      close_conn(conn);
+      return;
+    }
+    while (running_.load()) {
+      if (!drain_inbound(conn)) break;
+      std::string payload;
+      {
+        std::lock_guard lock(queue_mutex_);
+        if (!queue_.empty()) {
+          payload = std::move(queue_.front());
+          queue_.pop_front();
+        }
+      }
+      if (!payload.empty() && !send_text_frame(conn, payload)) break;
+      std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    }
+    close_conn(conn);
+  }
+
+  // Non-blocking discard of client frames (login echo, dev:state requests).
+  static bool drain_inbound(PTreeSocket socket) {
+    char scratch[4096];
+    for (;;) {
+      fd_set read_set;
+      FD_ZERO(&read_set);
+      FD_SET(socket, &read_set);
+      timeval zero{};
+      const int ready =
+#ifdef _WIN32
+          ::select(0, &read_set, nullptr, nullptr, &zero);
+#else
+          ::select(static_cast<int>(socket) + 1, &read_set, nullptr, nullptr,
+                   &zero);
+#endif
+      if (ready <= 0) return true;
+      const auto got = ::recv(socket, scratch, sizeof(scratch), 0);
+      if (got <= 0) return false;
+    }
+  }
+
+  static bool send_text_frame(PTreeSocket socket, const std::string& payload) {
+    std::vector<std::uint8_t> frame;
+    frame.push_back(0x81);  // FIN + text opcode
+    const auto size = payload.size();
+    if (size < 126) {
+      frame.push_back(static_cast<std::uint8_t>(size));
+    } else if (size <= 65535) {
+      frame.push_back(126);
+      frame.push_back(static_cast<std::uint8_t>((size >> 8) & 0xff));
+      frame.push_back(static_cast<std::uint8_t>(size & 0xff));
+    } else {
+      frame.push_back(127);
+      for (int i = 7; i >= 0; --i)
+        frame.push_back(static_cast<std::uint8_t>(
+            (static_cast<std::uint64_t>(size) >> (i * 8)) & 0xff));
+    }
+    frame.insert(frame.end(), payload.begin(), payload.end());
+    return send_all(socket, frame.data(), frame.size());
+  }
+
+  static bool send_all(PTreeSocket socket, const void* data, size_t size) {
+    const char* cursor = static_cast<const char*>(data);
+    size_t remaining = size;
+    while (remaining > 0) {
+#ifdef _WIN32
+      const auto sent = ::send(socket, cursor, static_cast<int>(remaining), 0);
+#else
+      const auto sent = ::send(socket, cursor, remaining, 0);
+#endif
+      if (sent <= 0) return false;
+      cursor += sent;
+      remaining -= static_cast<size_t>(sent);
+    }
+    return true;
+  }
+
+  void close_listener() {
+    if (listener_ == kInvalidSocketV) return;
+#ifdef _WIN32
+    ::shutdown(listener_, SD_BOTH);
+    closesocket(listener_);
+#else
+    ::shutdown(listener_, SHUT_RDWR);
+    ::close(listener_);
+#endif
+    listener_ = kInvalidSocketV;
+  }
+
+  static void close_conn(PTreeSocket socket) {
+#ifdef _WIN32
+    closesocket(socket);
+#else
+    ::close(socket);
+#endif
+  }
+
+  std::uint16_t port_;
+#ifdef _WIN32
+  SOCKET listener_ = INVALID_SOCKET;
+  bool wsa_started_ = false;
+#else
+  int listener_ = -1;
+#endif
+  std::atomic<bool> running_{false};
+  std::thread acceptor_;
+  std::mutex queue_mutex_;
+  std::deque<std::string> queue_;
+};
+
+std::uint16_t start_fake_envelope_server(FakeEnvelopeServer*& out) {
+  for (std::uint16_t port = 6980; port <= 6999; ++port) {
+    auto* server = new FakeEnvelopeServer(port);
+    std::string error;
+    if (server->start(&error)) {
+      out = server;
+      return port;
+    }
+    delete server;
+  }
+  out = nullptr;
+  return 0;
+}
+
+using PTreeModel = verdigris::client::ClientModel;
+
+// Wire-text builders. The passiveTree value text is inserted VERBATIM so the
+// tests can inject fractional/overflow literals the JsonValue builders
+// cannot express.
+std::string ptree_tree(const std::string& members) {
+  return "{" + members + "}";
+}
+
+std::string ptree_login_text(bool with_tree, const std::string& tree_value) {
+  std::string player =
+      "{\"uuid\":\"ptree-guest\",\"username\":\"Tree Guest\","
+      "\"sceneId\":\"town\",\"x\":3,\"y\":4,\"facing\":\"down\"";
+  if (with_tree) player += ",\"passiveTree\":" + tree_value;
+  player += "}";
+  return "{\"event\":\"player:login\",\"data\":{\"player\":" + player +
+         ",\"scene\":{\"id\":\"town\",\"type\":\"town\",\"name\":\"Town\"}}}";
+}
+
+std::string ptree_state_text(const std::string* tree_value) {
+  std::string members =
+      "\"lifecycle\":\"alive\",\"hp\":{\"current\":100,\"max\":100}";
+  if (tree_value) members += ",\"passiveTree\":" + *tree_value;
+  return "{\"event\":\"dev:state\",\"data\":{\"requestId\":\"t162\","
+         "\"state\":{" +
+         members + "}}}";
+}
+
+std::string ptree_skilltree_update_text(const std::string& tree_value) {
+  return "{\"event\":\"player:skilltree:update\",\"data\":{"
+         "\"socket_id\":\"s1\",\"passiveTree\":" +
+         tree_value + "}}";
+}
+
+bool progression_equals(const verdigris::client::ClientPassiveProgression& a,
+                        const verdigris::client::ClientPassiveProgression& b) {
+  return a.present == b.present && a.unspent_points == b.unspent_points &&
+         a.earned_points == b.earned_points &&
+         a.node_count == b.node_count && a.conduit_count == b.conduit_count;
+}
+
+std::vector<std::string> drain_passive_tree_rejections(
+    verdigris::client::RemoteProtocolSession& session) {
+  std::vector<std::string> found;
+  for (const auto& event : session.drain_events()) {
+    if (event.type == verdigris::client::PresentationEventType::ProtocolError &&
+        event.text.rfind("passiveTree rejected: ", 0) == 0)
+      found.push_back(event.text);
+  }
+  return found;
+}
+
+template <typename Pred>
+bool ptree_wait_model(verdigris::client::RemoteProtocolSession& session,
+                      int timeout_ms, Pred pred) {
+  const auto deadline =
+      std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+  for (;;) {
+    session.poll();
+    if (pred(session.model())) return true;
+    if (std::chrono::steady_clock::now() >= deadline) return false;
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+  }
+}
+
+template <typename Pred>
+bool ptree_wait_rejection(verdigris::client::RemoteProtocolSession& session,
+                          int timeout_ms, Pred pred) {
+  const auto deadline =
+      std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+  for (;;) {
+    session.poll();
+    for (const auto& text : drain_passive_tree_rejections(session))
+      if (pred(text)) return true;
+    if (std::chrono::steady_clock::now() >= deadline) return false;
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+  }
+}
+
+const char* kValidTreeMembers =
+    "\"schemaVersion\":2,"
+    "\"nodes\":[\"0,0\",\"1,0\"],"
+    "\"conduits\":[],"
+    "\"points\":{\"skill\":3},"
+    "\"earned\":5,"
+    "\"selectedNodeId\":\"1,0\","
+    "\"classOrder\":[]";
+
+void passive_tree_absent_stays_absent() {
+  FakeEnvelopeServer* server = nullptr;
+  const auto port = start_fake_envelope_server(server);
+  check(server != nullptr,
+        "ptree-absent: parser-harness server bound (capsule 6980-6999)");
+  if (!server) return;
+
+  verdigris::client::RemoteProtocolSession session("127.0.0.1", port,
+                                                   "ptree-absent", true);
+  std::string error;
+  check(session.start(&error),
+        "ptree-absent: connect + upgrade through the harness");
+
+  // A login WITHOUT a passiveTree payload admits the session and leaves the
+  // mirror absent (absence is never rewritten into present-with-zeros).
+  server->send_text(ptree_login_text(false, ""));
+  check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
+        "ptree-absent: login without passiveTree still admits the session");
+  check(!session.model().progression.present,
+        "ptree-absent: mirror stays absent before any payload arrives");
+
+  server->send_text(ptree_state_text(nullptr));
+  ptree_wait_model(session, 400, [](const PTreeModel&) { return false; });
+  check(!session.model().progression.present,
+        "ptree-absent: dev:state without passiveTree keeps absence intact");
+  check(drain_passive_tree_rejections(session).empty(),
+        "ptree-absent: absent payloads raise no rejection diagnostic");
+
+  session.shutdown();
+  server->stop();
+  delete server;
+}
+
+void passive_tree_valid_payloads_mirror() {
+  FakeEnvelopeServer* server = nullptr;
+  const auto port = start_fake_envelope_server(server);
+  check(server != nullptr, "ptree-valid: parser-harness server bound");
+  if (!server) return;
+
+  verdigris::client::RemoteProtocolSession session("127.0.0.1", port,
+                                                   "ptree-valid", true);
+  std::string error;
+  check(session.start(&error), "ptree-valid: connect + upgrade");
+
+  // 1) Valid login payload: nonzero counts mirror exactly.
+  const std::string login_tree = ptree_tree(kValidTreeMembers);
+  server->send_text(ptree_login_text(true, login_tree));
+  check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
+        "ptree-valid: login admitted");
+  const bool login_mirrored = ptree_wait_model(
+      session, 4000, [](const PTreeModel& model) {
+        const auto& p = model.progression;
+        return p.present && p.unspent_points == 3 && p.earned_points == 5 &&
+               p.node_count == 2 && p.conduit_count == 0;
+      });
+  check(login_mirrored, "ptree-valid: login payload mirrors nonzero counts");
+
+  // 2) Valid dev:state update: different authoritative counts re-mirror.
+  const std::string update_tree = ptree_tree(
+      "\"schemaVersion\":2,"
+      "\"nodes\":[\"0,0\",\"1,0\",\"-1,1\",\"2,0\"],"
+      "\"conduits\":[{\"from\":\"0,0\",\"to\":\"1,0\"},"
+      "{\"from\":\"1,0\",\"to\":\"-1,1\"}],"
+      "\"points\":{\"skill\":0},\"earned\":140");
+  server->send_text(ptree_state_text(&update_tree));
+  const bool state_mirrored = ptree_wait_model(
+      session, 4000, [](const PTreeModel& model) {
+        const auto& p = model.progression;
+        return p.present && p.unspent_points == 0 && p.earned_points == 140 &&
+               p.node_count == 4 && p.conduit_count == 2;
+      });
+  check(state_mirrored,
+        "ptree-valid: dev:state update re-mirrors authoritative counts");
+
+  // 3) Valid committed ZERO snapshot: present-with-zeros stays valid and is
+  // never confused with absence.
+  const std::string zero_tree = ptree_tree(
+      "\"schemaVersion\":2,\"nodes\":[],\"conduits\":[],"
+      "\"points\":{\"skill\":0},\"earned\":0");
+  server->send_text(ptree_skilltree_update_text(zero_tree));
+  const bool zero_mirrored = ptree_wait_model(
+      session, 4000, [](const PTreeModel& model) {
+        const auto& p = model.progression;
+        return p.present && p.unspent_points == 0 && p.earned_points == 0 &&
+               p.node_count == 0 && p.conduit_count == 0;
+      });
+  check(zero_mirrored,
+        "ptree-valid: zero snapshot stays present-with-zeros, not absent");
+  check(drain_passive_tree_rejections(session).empty(),
+        "ptree-valid: valid envelopes never emit rejection diagnostics");
+
+  session.shutdown();
+  server->stop();
+  delete server;
+}
+
+void passive_tree_invalid_payloads_fail_closed() {
+  FakeEnvelopeServer* server = nullptr;
+  const auto port = start_fake_envelope_server(server);
+  check(server != nullptr, "ptree-invalid: parser-harness server bound");
+  if (!server) return;
+
+  verdigris::client::RemoteProtocolSession session("127.0.0.1", port,
+                                                   "ptree-invalid", true);
+  std::string error;
+  check(session.start(&error), "ptree-invalid: connect + upgrade");
+
+  // Establish the last valid authoritative snapshot.
+  const std::string login_tree = ptree_tree(kValidTreeMembers);
+  server->send_text(ptree_login_text(true, login_tree));
+  check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
+        "ptree-invalid: valid login baseline admitted");
+  const bool baseline_ready = ptree_wait_model(
+      session, 4000, [](const PTreeModel& model) {
+        const auto& p = model.progression;
+        return p.present && p.unspent_points == 3 && p.earned_points == 5 &&
+               p.node_count == 2 && p.conduit_count == 0;
+      });
+  check(baseline_ready, "ptree-invalid: baseline snapshot mirrored");
+  const auto baseline = session.model().progression;
+
+  // Oversized arrays: one entry past the documented transport bound (a
+  // memory/representation guard, not a balance rule). Only the named key is
+  // oversized; the other array stays present so duplicate JSON object keys
+  // cannot mask the violation.
+  auto oversized_members = [](const char* key) {
+    const std::string name(key);
+    std::string members = std::string("\"schemaVersion\":2,\"") + key + "\":[";
+    for (int i = 0; i < 10001; ++i) {
+      if (i) members += ",";
+      members += "\"e\"";
+    }
+    members += "]";
+    if (name != "nodes") members += ",\"nodes\":[\"0,0\"]";
+    if (name != "conduits") members += ",\"conduits\":[]";
+    members += ",\"points\":{\"skill\":1},\"earned\":2";
+    return members;
+  };
+
+  struct InvalidCase {
+    std::string label;
+    std::string tree_value;  // full JSON value text for passiveTree
+    std::string expected;    // exact stable diagnostic suffix
+  };
+  const std::vector<InvalidCase> cases = {
+      {"missing schemaVersion",
+       ptree_tree("\"nodes\":[\"0,0\"],\"conduits\":[],"
+                  "\"points\":{\"skill\":1},\"earned\":2"),
+       "passiveTree rejected: schemaVersion must be the number 2"},
+      {"wrong-type schemaVersion string",
+       ptree_tree("\"schemaVersion\":\"2\",\"nodes\":[\"0,0\"],"
+                  "\"conduits\":[],\"points\":{\"skill\":1},\"earned\":2"),
+       "passiveTree rejected: schemaVersion must be the number 2"},
+      {"unsupported schemaVersion",
+       ptree_tree("\"schemaVersion\":3,\"nodes\":[\"0,0\"],"
+                  "\"conduits\":[],\"points\":{\"skill\":1},\"earned\":2"),
+       "passiveTree rejected: schemaVersion must be the number 2"},
+      {"missing points",
+       ptree_tree("\"schemaVersion\":2,\"nodes\":[\"0,0\"],"
+                  "\"conduits\":[],\"earned\":2"),
+       "passiveTree rejected: points must be an object"},
+      {"wrong-type points number",
+       ptree_tree("\"schemaVersion\":2,\"nodes\":[\"0,0\"],"
+                  "\"conduits\":[],\"points\":7,\"earned\":2"),
+       "passiveTree rejected: points must be an object"},
+      {"missing points.skill",
+       ptree_tree("\"schemaVersion\":2,\"nodes\":[\"0,0\"],"
+                  "\"conduits\":[],\"points\":{},\"earned\":2"),
+       "passiveTree rejected: points.skill must be a finite nonnegative integer"},
+      {"wrong-type points.skill string",
+       ptree_tree("\"schemaVersion\":2,\"nodes\":[\"0,0\"],"
+                  "\"conduits\":[],\"points\":{\"skill\":\"3\"},\"earned\":2"),
+       "passiveTree rejected: points.skill must be a finite nonnegative integer"},
+      {"fractional points.skill",
+       ptree_tree("\"schemaVersion\":2,\"nodes\":[\"0,0\"],"
+                  "\"conduits\":[],\"points\":{\"skill\":2.5},\"earned\":2"),
+       "passiveTree rejected: points.skill must be a finite nonnegative integer"},
+      {"negative points.skill",
+       ptree_tree("\"schemaVersion\":2,\"nodes\":[\"0,0\"],"
+                  "\"conduits\":[],\"points\":{\"skill\":-1},\"earned\":2"),
+       "passiveTree rejected: points.skill must be a finite nonnegative integer"},
+      {"overflow points.skill beyond int range",
+       ptree_tree("\"schemaVersion\":2,\"nodes\":[\"0,0\"],"
+                  "\"conduits\":[],\"points\":{\"skill\":2147483648},\"earned\":2"),
+       "passiveTree rejected: points.skill must be a finite nonnegative integer"},
+      {"non-finite points.skill (1e400)",
+       "{\"schemaVersion\":2,\"nodes\":[\"0,0\"],\"conduits\":[],"
+       "\"points\":{\"skill\":1e400},\"earned\":2}",
+       "passiveTree rejected: points.skill must be a finite nonnegative integer"},
+      {"missing earned",
+       ptree_tree("\"schemaVersion\":2,\"nodes\":[\"0,0\"],"
+                  "\"conduits\":[],\"points\":{\"skill\":1}"),
+       "passiveTree rejected: earned must be a finite nonnegative integer"},
+      {"wrong-type earned boolean",
+       ptree_tree("\"schemaVersion\":2,\"nodes\":[\"0,0\"],"
+                  "\"conduits\":[],\"points\":{\"skill\":1},\"earned\":true"),
+       "passiveTree rejected: earned must be a finite nonnegative integer"},
+      {"fractional earned",
+       ptree_tree("\"schemaVersion\":2,\"nodes\":[\"0,0\"],"
+                  "\"conduits\":[],\"points\":{\"skill\":1},\"earned\":5.5"),
+       "passiveTree rejected: earned must be a finite nonnegative integer"},
+      {"negative earned",
+       ptree_tree("\"schemaVersion\":2,\"nodes\":[\"0,0\"],"
+                  "\"conduits\":[],\"points\":{\"skill\":1},\"earned\":-4"),
+       "passiveTree rejected: earned must be a finite nonnegative integer"},
+      {"overflow-like huge earned",
+       ptree_tree("\"schemaVersion\":2,\"nodes\":[\"0,0\"],"
+                  "\"conduits\":[],\"points\":{\"skill\":1},"
+                  "\"earned\":999999999999999999999"),
+       "passiveTree rejected: earned must be a finite nonnegative integer"},
+      {"non-finite negative earned (-1e400)",
+       "{\"schemaVersion\":2,\"nodes\":[\"0,0\"],\"conduits\":[],"
+       "\"points\":{\"skill\":1},\"earned\":-1e400}",
+       "passiveTree rejected: earned must be a finite nonnegative integer"},
+      {"missing nodes",
+       ptree_tree("\"schemaVersion\":2,\"conduits\":[],"
+                  "\"points\":{\"skill\":1},\"earned\":2"),
+       "passiveTree rejected: nodes must be an array"},
+      {"wrong-type nodes object",
+       ptree_tree("\"schemaVersion\":2,\"nodes\":{},\"conduits\":[],"
+                  "\"points\":{\"skill\":1},\"earned\":2"),
+       "passiveTree rejected: nodes must be an array"},
+      {"oversized nodes array",
+       ptree_tree(oversized_members("nodes")),
+       "passiveTree rejected: nodes exceeds the transport entry bound"},
+      {"missing conduits",
+       ptree_tree("\"schemaVersion\":2,\"nodes\":[\"0,0\"],"
+                  "\"points\":{\"skill\":1},\"earned\":2"),
+       "passiveTree rejected: conduits must be an array"},
+      {"wrong-type conduits string",
+       ptree_tree("\"schemaVersion\":2,\"nodes\":[\"0,0\"],"
+                  "\"conduits\":\"none\",\"points\":{\"skill\":1},\"earned\":2"),
+       "passiveTree rejected: conduits must be an array"},
+      {"oversized conduits array",
+       ptree_tree(oversized_members("conduits")),
+       "passiveTree rejected: conduits exceeds the transport entry bound"},
+      {"passiveTree itself not an object", "7",
+       "passiveTree rejected: envelope must be an object"},
+  };
+
+  int index = 0;
+  for (const auto& bad : cases) {
+    ++index;
+    server->send_text(ptree_state_text(&bad.tree_value));
+    const std::string label_prefix =
+        "ptree-invalid[" + std::to_string(index) + "] " + bad.label + ": ";
+    std::string diagnostic;
+    const bool reported = ptree_wait_rejection(
+        session, 4000,
+        [&](const std::string& text) {
+          if (text == bad.expected) {
+            diagnostic = text;
+            return true;
+          }
+          return false;
+        });
+    check(reported, (label_prefix + "reports the exact stable diagnostic").c_str());
+    check(progression_equals(session.model().progression, baseline),
+          (label_prefix + "preserves the last valid snapshot").c_str());
+    if (!reported) {
+      // Surface what actually arrived so a mismatch is diagnosable from the
+      // transcript alone.
+      for (const auto& text : drain_passive_tree_rejections(session))
+        std::printf("note: observed diagnostic: %s\n", text.c_str());
+    }
+  }
+
+  // Determinism: the identical malformed payload twice yields the identical
+  // diagnostic text both times.
+  server->send_text(ptree_state_text(&cases[7].tree_value));  // fractional skill
+  std::string first_text;
+  check(ptree_wait_rejection(session, 4000,
+                             [&](const std::string& text) {
+                               if (text == cases[7].expected) {
+                                 first_text = text;
+                                 return true;
+                               }
+                               return false;
+                             }),
+        "ptree-invalid determinism: first repeat reports");
+  server->send_text(ptree_state_text(&cases[7].tree_value));
+  std::string second_text;
+  check(ptree_wait_rejection(session, 4000,
+                             [&](const std::string& text) {
+                               if (text == cases[7].expected) {
+                                 second_text = text;
+                                 return true;
+                               }
+                               return false;
+                             }),
+        "ptree-invalid determinism: second repeat reports");
+  check(!first_text.empty() && first_text == second_text,
+        "ptree-invalid determinism: identical payload -> identical text");
+  check(progression_equals(session.model().progression, baseline),
+        "ptree-invalid determinism: repeats preserve the snapshot");
+
+  // The invalid-login seam fails closed too: player.passiveTree with a
+  // fractional earned never reaches the mirror.
+  const std::string bad_login_tree = ptree_tree(
+      "\"schemaVersion\":2,\"nodes\":[\"0,0\"],\"conduits\":[],"
+      "\"points\":{\"skill\":1},\"earned\":1.5");
+  server->send_text(ptree_login_text(true, bad_login_tree));
+  check(ptree_wait_rejection(
+            session, 4000,
+            [&](const std::string& text) {
+              return text ==
+                     "passiveTree rejected: earned must be a finite "
+                     "nonnegative integer";
+            }),
+        "ptree-invalid login seam: fractional earned in player:login rejected");
+  check(progression_equals(session.model().progression, baseline),
+        "ptree-invalid login seam: snapshot preserved through login rejection");
+
+  // Recovery: after every rejection the pipeline still accepts a fresh VALID
+  // authoritative update (rejection wedges nothing).
+  const std::string recovery_tree = ptree_tree(
+      "\"schemaVersion\":2,"
+      "\"nodes\":[\"0,0\",\"1,0\",\"2,0\",\"3,0\"],"
+      "\"conduits\":[{\"from\":\"0,0\",\"to\":\"1,0\"}],"
+      "\"points\":{\"skill\":7},\"earned\":9");
+  server->send_text(ptree_skilltree_update_text(recovery_tree));
+  const bool recovered = ptree_wait_model(
+      session, 4000, [](const PTreeModel& model) {
+        const auto& p = model.progression;
+        return p.present && p.unspent_points == 7 && p.earned_points == 9 &&
+               p.node_count == 4 && p.conduit_count == 1;
+      });
+  check(recovered, "ptree-recovery: a subsequent valid update still lands");
+  drain_passive_tree_rejections(session);
+
+  session.shutdown();
+  server->stop();
+  delete server;
+}
+
 }  // namespace
 
 int main() {
@@ -1891,6 +2552,10 @@ int main() {
   remote_session_replaced();
   remote_render_list_ops();
   gate_b_chronicles_reconnect_journey();
+  // TASK-0162: passive-tree payload hardening against the production parser.
+  passive_tree_absent_stays_absent();
+  passive_tree_valid_payloads_mirror();
+  passive_tree_invalid_payloads_fail_closed();
   if (failures == 0) {
     std::printf("session tests passed\n");
     return 0;
