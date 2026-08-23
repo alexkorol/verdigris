@@ -1,0 +1,296 @@
+{
+  "recordVersion": 1,
+  "task": "TASK-0100-deterministic-replay-coverage-audit",
+  "worker": "ox-sw-f",
+  "base_sha": "d2423873c577d299b3b39c56024d1d840993c72b",
+  "head_sha_at_audit": "143d4890 (claim commit; see REPORT.md for final)",
+  "audit_scope": ["native/include", "native/src", "native/tests"],
+  "frozen_invariants": {
+    "authoritative": [
+      "fixed-step headless Simulation: kSimulationTickMs=50, 20 Hz cadence (native/include/verdigris/core.hpp:34-41)",
+      "commands resolve -> events emit; tick_ advances once per dispatched command via advance_tick() (native/src/core.cpp:678-679)",
+      "durable state only through snapshot()/restore() free functions (native/include/verdigris/core.hpp:401-405)"
+    ],
+    "forbidden_in_core": {
+      "wall_clock": "absent from Simulation; present only in transport/session layer (see clock_boundaries)",
+      "sockets_renderer_persistence": "Simulation has no socket/renderer/file dependency; persistence is a header-only adapter consumed by tests only"
+    }
+  },
+  "rng_streams": [
+    {
+      "id": "simulation-core-rng",
+      "algorithm": "splitmix64",
+      "declared": "native/include/verdigris/core.hpp:342-350 (struct Rng {state, serial})",
+      "implemented": "native/src/core.cpp:140-154 (next/range/token); token = prefix + hex(next) + '-' + serial++",
+      "seeded_at": "native/src/core.cpp:192 Simulation::Simulation(seed, house_name) : rng_(seed)",
+      "consumers": [
+        "house/scion/actor token ids: native/src/core.cpp:193,201,203,250",
+        "reward drops: native/src/core.cpp:698-710,725,736",
+        "relic/trophy resurface one-in-four gate: native/src/core.cpp:710,725"
+      ],
+      "serialized": true,
+      "snapshot_fields": ["rng.state", "rng.serial"],
+      "snapshot_write": "native/src/core.cpp:1161-1162",
+      "snapshot_restore": "native/src/core.cpp:1239-1240"
+    },
+    {
+      "id": "mulberry32-js-parity",
+      "algorithm": "mulberry32 (uint32 wraparound, /2^32)",
+      "declared": "native/include/verdigris/core.hpp:422-430",
+      "instances": [
+        {
+          "id": "vesselforge-stream",
+          "owner": "VesselForge::rand_ (one per WorldSimulation session; JS module-singleton parity)",
+          "declared": "native/include/verdigris/core.hpp:505-542",
+          "reseeded_by": "caller rng draw * 2^32: native/src/core.cpp:2736-2738 (adapter createVesselBlock parity), 3105-3108 and 3132-3134 (factory createById parity)",
+          "consumers": ["generate_item", "sear brand rolls", "dev:give / dev:drop item rolls"],
+          "serialized": false
+        },
+        {
+          "id": "session-rng",
+          "owner": "ProtocolSession::session_rng_",
+          "declared": "native/include/verdigris/networking.hpp:240",
+          "seeded_at": "native/src/networking.cpp:513 session_rng_(static_cast<uint32_t>(seed ^ (seed >> 32)))",
+          "consumers": "unseeded dev:give / dev:drop grants (JS Math.random parity): native/src/networking.cpp:992-995,1023-1026; client-supplied payload seed overrides it",
+          "serialized": false
+        }
+      ],
+      "ground_truth_tests": [
+        "test_n4_mulberry32_matches_js seed 42 vs TASK-0047 captures: native/tests/core_tests.cpp:1450-1465",
+        "test_n4_ground_truth_rolls forge reseed + rolls: native/tests/core_tests.cpp:1467-1532"
+      ]
+    },
+    {
+      "id": "world-random",
+      "algorithm": "splitmix64",
+      "declared": "native/include/verdigris/core.hpp:942,984 (world_random_state_ fixed constant 0x9e3779b97f4a7c15)",
+      "implemented": "native/src/core.cpp:2999-3007 next_world_random(); world_rand01 core.cpp:3011-3013",
+      "note_risk": "initial state is a CONSTANT, not derived from seed_; two sessions with different seeds start identical loot-roll sequences until draw counts diverge",
+      "consumers": [
+        "gear drop chance roll + pool pick: native/src/core.cpp:3098-3101",
+        "floor treasure coins/pool/reseed draws: native/src/core.cpp:3123-3134",
+        "critical-chance roll in advance_combat: native/src/core.cpp:1890"
+      ],
+      "serialized": false
+    },
+    {
+      "id": "monster-scatter-lcg",
+      "algorithm": "xorshift64 (state^=<<13,>>7,<<17)",
+      "implemented": "native/src/core.cpp:1633-1654 (local closure inside generate_instance)",
+      "seeded_from": "metadata_.seed (fallback 0x9e3779b97f4a7c15): native/src/core.cpp:1637",
+      "metadata_seed_derivation": "fnv1a(theme+':'+layout+':floor-'+depth, seed_): native/src/core.cpp:1734,3154; fnv1a at native/src/core.cpp:1409-1415",
+      "serialized": false,
+      "reproducible_via": "same seed_ + theme/layout/depth => same scatter (pure function of floor metadata)"
+    }
+  ],
+  "seed_derivations": [
+    {
+      "where": "guest identity -> FNV-1a session seed",
+      "sites": [
+        "native/src/networking.cpp:2890 (login handler inline loop: seed=FNV_OFFSET; for c in identity seed=(seed^c)*FNV_PRIME)",
+        "native/src/networking.cpp:1503-1505 (party leave_to_town personal world rebuild)"
+      ],
+      "feeds": ["Simulation(seed)", "WorldSimulation(seed)", "session_rng_(seed^(seed>>32))"]
+    },
+    {
+      "where": "per-floor instance seeds",
+      "sites": ["native/src/core.cpp:1734 generate_instance", "native/src/core.cpp:3154 transition_floor"],
+      "derivation": "fnv1a(theme:layout:floor-N, world seed_)"
+    },
+    {
+      "where": "explicit client-provided seed",
+      "sites": ["dev:give payload.seed native/src/networking.cpp:994-995", "dev:drop payload.seed native/src/networking.cpp:1025-1026"]
+    },
+    {
+      "where": "bench default seed",
+      "sites": ["native/tools/entity_density_bench.cpp:116-119 (--seed flag; deterministic default 0xD1160000 + n*16 + run)"]
+    }
+  ],
+  "ticks_and_cadence": {
+    "core_simulation": {
+      "fixed_step_ms": 50,
+      "hz": 20,
+      "constants": "native/include/verdigris/core.hpp:29-76 (kTelegraphTicks=3, kSimulationTickMs=50, movement_step_per_tick, world_scale table, kDashMovementTicks=10)",
+      "advance": "advance_tick() increments tick_, decrements cooldowns/war cry/regen: native/src/core.cpp:678-697",
+      "heartbeat": "each dispatched Command resolves then advance_tick(): native/src/core.cpp:305",
+      "elite_windup": "pending_action_ticks countdown: native/src/core.cpp:617-667"
+    },
+    "tile_world": {
+      "sample_based": "kTileTravelMs=150, kSampleMs=50, move 1/3 tile per sample: native/include/verdigris/core.hpp:720-735",
+      "no_internal_tick_counter": "WorldSimulation has no tick_; combat/movement take transport now_ms parameters",
+      "movement_entry": "apply_movement_sample(direction, now_ms): native/src/core.cpp:1467-1492; register_step records started_at_ms: 1458-1465",
+      "combat_timing_state_ms_units": [
+        "kN3PlayerAttackIntervalMs=350: native/src/core.cpp:1401",
+        "next_player_attack_ms_: native/src/core.cpp:1812,1905",
+        "monster next_attack_ms = now+1200: native/src/core.cpp:1844-1845",
+        "boss telegraph window 1000ms: kN3BossTelegraphWindowMs native/src/core.cpp:1406, resolved 1919-1943"
+      ]
+    }
+  },
+  "clock_boundaries": [
+    {
+      "boundary": "ProtocolSession::now_ms()",
+      "file_line": "native/src/networking.cpp:581",
+      "clock": "std::chrono::system_clock::now() wall clock",
+      "call_sites": [
+        "player:move sample: native/src/networking.cpp:2316",
+        "dev:teleport: native/src/networking.cpp:2317",
+        "soft-death respawn schedule (+2000ms): native/src/networking.cpp:2394",
+        "player:skill:trigger swing + poll: native/src/networking.cpp:2435",
+        "dev:state poll: native/src/networking.cpp:2496",
+        "first-goal timestamps: native/src/networking.cpp:1556,1596",
+        "relic recovered_at: native/src/networking.cpp:1617",
+        "wagon teleport: native/src/networking.cpp:2545"
+      ]
+    },
+    {
+      "boundary": "WebSocketServer tick thread",
+      "file_line": "native/src/networking.cpp:2713",
+      "clock": "sleep_for(150ms) loop + system_clock::now(); drives ProtocolSession::tick(now) -> maybe_respawn + process_combat (native/src/networking.cpp:531-536)",
+      "note": "150 ms server heartbeat is NOT the 50 ms core cadence; core Simulation ticks are command-driven, never thread-driven"
+    },
+    {
+      "boundary": "respawn protection window",
+      "file_line": "native/src/networking.hpp:168-169 (respawn_at_ms_, respawn_protection_until_ms_), native/src/networking.cpp:2208-2222, cleared on skill trigger 2435"
+    },
+    {
+      "boundary": "client presentation clocks (outside simulation authority)",
+      "sites": [
+        "RemoteProtocolSession retry/backoff steady_clock: native/client/remote_session.cpp:269,275,288,393",
+        "Win32 timer_step frame pump: native/client/main.cpp:2329,2509",
+        "scenario runner sleeps: native/client/main.cpp:2869,2876,2912"
+      ],
+      "note": "presentation-only; never feeds Simulation or WorldSimulation math"
+    },
+    {
+      "boundary": "measurement-only clocks",
+      "sites": ["entity_density_bench steady_clock measures dispatch latency, never enters state: native/tools/entity_density_bench.cpp:141-144"]
+    }
+  ],
+  "snapshots": [
+    {
+      "id": "core-durable-snapshot",
+      "api": "snapshot(const Simulation&) / restore(bytes)",
+      "declared": "native/include/verdigris/core.hpp:401-405",
+      "implemented": "serialize native/src/core.cpp:1158-1227; parse/restore native/src/core.cpp:1229+",
+      "schema_version": "kSnapshotSchemaVersion=1: native/src/core.cpp:896, written 1160, enforced 1231-1232",
+      "contents": [
+        "rng.state, rng.serial, tick, nextLegendOrdinal (1161-1164)",
+        "house routes/unlocked/cleared/specializations/trophies/items/relicCandidates/lostTrophies/seasonalRewards/legends/campaignComplete (1166-1189)",
+        "scion + fallenScions (1191-1195)",
+        "pendingRelicItems/pendingRelicTrophies folded back from ground pools (1197-1223)"
+      ],
+      "deliberately_absent": "active instance floor state retired at boundary (D-109): comment native/src/core.cpp:1197-1199",
+      "canonicality": "byte-stable text format, unknown fields tolerated on restore",
+      "tests": [
+        "test_persistence_round_trip_and_unknown_fields: native/tests/core_tests.cpp:729-750 (schemaVersion prefix 737, byte-stable 740, tolerance 749)",
+        "test_persistence_d109_mid_instance_and_rng_continuation: native/tests/core_tests.cpp:752-793 (RNG continuation drop identity 787-790, snapshot equality 791)",
+        "test_persistence_recovery_pools: native/tests/core_tests.cpp:795-819 (snapshot(restored)==bytes 817)"
+      ]
+    },
+    {
+      "id": "wire-state-snapshot-json",
+      "api": "ProtocolSession::snapshot() / scene_payload / state_payload",
+      "implemented": "native/src/networking.cpp:807+ (buildStateSnapshot parity incl. inventory 893-895), scene metadata seed/theme/layout/depth 783,864; state_payload 913",
+      "note": "client-facing JSON, not canonical bytes, not durable, carries no RNG stream state"
+    },
+    {
+      "id": "world-simulation-snapshot",
+      "status": "MISSING",
+      "detail": "WorldSimulation (monsters, ground items, position/facing, last_step, forge stream, world_random_state_, serial_, engaged_by, next_player_attack_ms_, boss windows) has no serializer and no restore path anywhere in native/",
+      "consequence": "mid-floor crash/restart cannot resume reproducibly; D-109 snapshot intentionally retires floors so no proof exists for resumed-floor divergence"
+    },
+    {
+      "id": "protocol-session-persistence",
+      "status": "MISSING",
+      "detail": "inventory_/wear_/bank_/quests/passive_tree_/chronicle_ are memory-only; server_main keeps all sessions in RAM (native/src/server_main.cpp:20-40); no save/load of session state exists"
+    }
+  ],
+  "persistence_boundary": {
+    "adapter": "native/persistence/adapter.hpp:23-84 write_atomic (tmp+rename, MoveFileExW on win32) / read; declared to core as native/include/verdigris/persistence.hpp:1-6",
+    "purity": "core has zero filesystem dependency; adapter consumes snapshot() bytes only",
+    "production_users": "none (server persists nothing to disk today)",
+    "test_users": ["test_persistence_file_adapter: native/tests/core_tests.cpp:854-865 (write/read round-trip, replace-existing)"]
+  },
+  "networking_adapters": [
+    {
+      "id": "websocket-server",
+      "role": "transport: sockets + accept/tick threads; maps envelopes onto session verbs",
+      "file_lines": "native/src/networking.cpp:2713 (start/tick thread), 2715 (stop/join), handle_message dispatch ~2316-2890",
+      "envelope": "{event,data[,meta]} parse_envelope/emit_envelope pure helpers: native/src/networking.cpp:500-509",
+      "session_seed": "identity FNV-1a at login: native/src/networking.cpp:2890",
+      "shared_worlds": "party worlds shared via shared_ptr<WorldSimulation>: native/include/verdigris/networking.hpp:242-244"
+    },
+    {
+      "id": "remote-client-session",
+      "role": "client WebSocket adapter (RemoteProtocolSession), presentation only",
+      "file_lines": "native/client/remote_session.cpp (handshake 244+, reconnect/backoff 269-288, send_frame masking 440-467, ping 498)"
+    },
+    {
+      "id": "local-core-session",
+      "role": "in-process adapter mapping ClientCommand -> Simulation::dispatch; deterministic local play",
+      "file_lines": "native/client/local_session.cpp:70-122 (ctor seed 70-71, start 75-82, submit map 89-116, poll 118-122)"
+    }
+  ],
+  "command_vocabulary": {
+    "core_commands": "CommandType {MoveIntent,UseAction,Interact,PickUp,Equip,Unequip,EnterInstance,ExtractToHouse,AimIntent}: native/include/verdigris/core.hpp:261-289; factories native/src/core.cpp:156-190",
+    "event_vocabulary": "EventType 27 variants: native/include/verdigris/core.hpp:221-249; Event.tick stamped: native/src/core.cpp:262",
+    "client_commands_mapped": "native/client/local_session.cpp:89-116; remote envelopes mapped in networking handle()"
+  },
+  "existing_replay_and_byte_equality_tests": [
+    {"name": "test_determinism", "file_line": "native/tests/core_tests.cpp:868-889", "proof": "same seed 0xBADC0FFEE + identical command stream -> identical relevant() fingerprints (events + ids + legends)"},
+    {"name": "relevant() fingerprint helper", "file_line": "native/tests/core_tests.cpp:69-86", "proof": "event type/id/text/value + house/scion ids + full legend tuples"},
+    {"name": "test_movement_replay_is_deterministic", "file_line": "native/tests/core_tests.cpp:245-262", "proof": "identical replay positions + event count"},
+    {"name": "test_facing_replay_is_deterministic", "file_line": "native/tests/core_tests.cpp:295-312", "proof": "byte-identical events and facing state"},
+    {"name": "test_elite_skill_replay_is_deterministic", "file_line": "native/tests/core_tests.cpp:488-508", "proof": "telegraph/skill resolution replays identically incl. pending_action_ticks"},
+    {"name": "test_war_cry_buff_expiry_and_replay_determinism", "file_line": "native/tests/core_tests.cpp:530-569", "proof": "buff expiry at deterministic tick boundary under replay"},
+    {"name": "test_legend_stable_ids_and_deterministic_replay", "file_line": "native/tests/core_tests.cpp:1327-1343", "proof": "byte-identical legend records for identical seed+commands"},
+    {"name": "test_relic_resurface_replay_is_deterministic", "file_line": "native/tests/core_tests.cpp:703-727", "proof": "identical resurface counts + stable item identity"},
+    {"name": "test_d106_recovery_is_ordered_and_deterministic", "file_line": "native/tests/core_tests.cpp:1166-1183", "proof": "recovery pool order stable under replay"},
+    {"name": "snapshot round-trip trio", "file_line": "native/tests/core_tests.cpp:729-819", "proof": "byte-stable snapshot/restore, RNG continuation, recovery pools equality"},
+    {"name": "test_persistence_file_adapter", "file_line": "native/tests/core_tests.cpp:854-865", "proof": "atomic file adapter preserves exact bytes"},
+    {"name": "test_n4_mulberry32_matches_js", "file_line": "native/tests/core_tests.cpp:1450-1465", "proof": "C++ Mulberry32 equals JS ground truth (TASK-0047 captures)"},
+    {"name": "local seam determinism", "file_line": "native/tests/session_tests.cpp:51-80", "proof": "LocalCoreSession seeded 0xC011AB1E moves deterministically through the client seam"},
+    {"name": "wire shape assertions (NOT replay-proof)", "file_line": "native/tests/networking_tests.cpp:21-420", "proof": "envelope round trip, movement/stairs/combat/extract/equip wire shapes; no cross-restart byte-equality, no RNG-state assertion"}
+  ],
+  "gates_that_run_them": {
+    "windows": "./native/build.ps1 -RunTests (native/README.md:30-34)",
+    "cross_platform": "cmake -S native -B native/build && cmake --build && ctest --test-dir native/build --output-on-failure (native/README.md:67-71)",
+    "ci": "cmake --preset windows-msvc; build; denylist; ctest --preset windows-msvc --output-on-failure; camera2d cl compile/link/run; verdigris_client --scenario all (native/tools/ci-native.ps1:25-53)",
+    "bench_not_in_ci": "entity_density_bench excluded from CI by design (ci-native.ps1:7)"
+  },
+  "negative_control": {
+    "id": "live-world-floor-state-unprovable",
+    "claim": "No current test or artifact can prove that a WorldSimulation resumed mid-instance reproduces identical subsequent outcomes.",
+    "uncaptured_inputs": [
+      "monsters life/position/alive/next_attack_ms/telegraph_until_ms (struct: native/include/verdigris/core.hpp:749-770)",
+      "player tile-space position/facing/last_step sequence (core.hpp:944-974)",
+      "ground_items order + timestamps + relic provenance (core.hpp:980-982)",
+      "forge Mulberry32 state and world_random_state_ (core.hpp:984-985)",
+      "engaged_by / block_stairs_down flags (core.hpp:960-968)",
+      "transport-supplied now_ms timeline driving combat resolution order (native/src/networking.cpp:581,2713)"
+    ],
+    "why_it_escapes_current_proof": "D-109 snapshot deliberately retires active floors (native/src/core.cpp:1197-1223); wire snapshots carry shapes not streams (networking.cpp:807+); no test restarts a live floor",
+    "minimal_probe_a_successor_should_add": "capture two ProtocolSessions mid-fight with identical envelope transcripts but different real-time gaps between player:skill:trigger sends; show hit/drop sequences diverge because now_ms gates swings (350ms interval) and loot draws - i.e., the ms timeline is an unrecorded hidden input"
+    },
+  "observed_anomalies": [
+    {
+      "finding": "stray debug fprintf in production combat path",
+      "file_line": "native/src/core.cpp:1874",
+      "detail": "fprintf(stderr,\"[swing] ...\") prints on every advance_combat poll while a target is held; harmless to determinism but noisy across threads; flagged, NOT modified (read-only audit)",
+    "severity": "low"
+    },
+    {
+      "finding": "world_random_state_ initial value is a fixed constant unrelated to seed_",
+      "file_line": "native/include/verdigris/core.hpp:984",
+      "detail": "two different-seed sessions begin with identical loot/crit streams; divergence appears only after draw-count paths separate; comparison trials relying on 'different seed => different loot' are subtly wrong until first draw",
+      "severity": "medium"
+    },
+    {
+      "finding": "server tick cadence (150ms) is decoupled from core cadence (50ms) and from combat intervals (350/1200ms)",
+      "file_lines": "native/src/networking.cpp:2713; native/src/core.cpp:1401,1845",
+      "detail": "swing/telegraph resolution granularity is bounded by poll timing, so identical command transcripts can produce different hit ordering depending on when polls land relative to now_ms",
+      "severity": "high (for replay fidelity of tile-world combat)"
+    }
+  ]
+}
