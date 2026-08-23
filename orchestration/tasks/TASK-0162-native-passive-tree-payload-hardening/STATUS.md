@@ -5,7 +5,7 @@ model: openrouter/stealth/ox-alpha
 base_commit: dc8df4399da4c2a0b8b92a4ea395cba79cc6ff17
 branch: worker/verdigris/pc/ox-pc-bc
 claim_commit: 1486f0e02a8f073654518f2c7e29d59354e9ecb4
-implementation_head: (frozen at push; see git log of worker/verdigris/pc/ox-pc-bc)
+implementation_commit: c4346d98938057f6f7639521cf4012749f6bc69a
 ---
 
 CLAIMED: TASK-0162 (native passive-tree payload hardening) on worker branch
