@@ -1,0 +1,235 @@
+{
+  "$contract": "verdigris.audit.encounter-matrix",
+  "version": 1,
+  "task": "TASK-0103",
+  "title": "Monster, pack, rarity, and encounter gap audit",
+  "lane": "ox-pc-bd",
+  "model": "openrouter/stealth/ox-alpha",
+  "base_commit": "d2423873c577d299b3b39c56024d1d840993c72b",
+  "audited_head": "6d4effdbfd720d1f9f2bd4696af00c349eeda665",
+  "generated_at": "2026-08-23T16:50:53Z",
+  "read_only": true,
+  "frozen_invariants_honored": [
+    "monster/player stat symmetry (core.cpp:74-99 enemy_stats derives from player_stats; core_tests.cpp:243)",
+    "deterministic seeds (instance seed fnv1a core.cpp:1802; core Rng serialized in snapshot/restore)"
+  ],
+  "owner_input_dependency_preserved": [
+    "monster roster and names (five placeholder boss names core.cpp:1764-1769; 'Lurker' naming core.cpp:1733)",
+    "lore and titles (absent by design in native)",
+    "balance numbers: theme levels core.cpp:1712-1715; kInstanceMonsterCount/kN3TrashLife/kN3BossLife/kN3BossDamage core.cpp:1466-1472; coin stand-in core.cpp:1774-1780; gear drop pool contents; scenario TTK bounds"
+  ],
+  "engines": {
+    "d114_combat_sim": {
+      "actor_type": "Actor{kind=Monster} core.hpp:140-161 with ActorStats core.hpp:106-122",
+      "has_pack_wave": true,
+      "has_elite_skills_telegraph": true,
+      "has_rarity": false,
+      "has_roles": false,
+      "loot_style": "seeded item+trophy core.cpp:741-785"
+    },
+    "tile_world_n_series": {
+      "actor_type": "WorldMonster core.hpp:778-799",
+      "has_pack_wave": false,
+      "has_elite_skills_telegraph": "boss ground-slam only core.cpp:1986-2011",
+      "has_rarity": true,
+      "has_roles": true,
+      "loot_style": "loot.js parity coins + rarity-gated gear core.cpp:3147-3180"
+    }
+  },
+  "surfaces": [
+    {
+      "id": "spawning",
+      "engine_status": "present-both",
+      "engine_gaps": ["no shared pack definition across engines", "tile scatter is 20 independent placements"],
+      "citations": [
+        "native/include/verdigris/core.hpp:53,69,340-342,833,879",
+        "native/src/core.cpp:254-258,607-615,1699,1701-1729,1802"
+      ],
+      "tests": ["networking_tests.cpp:124 test_instance_entry_and_stairs"]
+    },
+    {
+      "id": "pack_composition",
+      "engine_status": "present-d114-only",
+      "engine_gaps": ["no authoritative cross-engine definition of 'pack'", "composition hardcoded to route:tin:2:0 shape"],
+      "citations": [
+        "native/include/verdigris/core.hpp:344-350,407-412",
+        "native/src/core.cpp:616-630,633-647,840-842,599-603"
+      ],
+      "tests": ["core_tests.cpp:23-65 defeat_enemy walks pack incl. pending wave"]
+    },
+    {
+      "id": "roles",
+      "engine_status": "label-only-tile-world",
+      "engine_gaps": ["behaviour_type ranged/buffer have no simulated behavior", "wire aura:damage effect has no simulation source", "empowered is spawn-time flag only"],
+      "citations": [
+        "native/include/verdigris/core.hpp:788",
+        "native/src/core.cpp:1741-1751,1752-1757,2014",
+        "native/src/networking.cpp:930,933"
+      ],
+      "tests": ["playtest/scenarios/encounter-variety.mjs (browser engine only)"]
+    },
+    {
+      "id": "aggro_targeting",
+      "engine_status": "partial-both",
+      "engine_gaps": ["no threat table/taunt/leash/reset anywhere", "d114 aggro unconditional and monsters never move", "tile aggro distance-only with adjacency strikes and reach-4 disengage"],
+      "citations": [
+        "native/src/core.cpp:649-720,1833-1883,1904-1927,1933-1940,318-319,341-342"
+      ],
+      "tests": ["core_tests.cpp:305 test_monster_facing_tracks_pursuit_target"]
+    },
+    {
+      "id": "rarity",
+      "engine_status": "present-tile-world-only",
+      "engine_gaps": [
+        "free-string rarity, no enum/validator",
+        "producer set {common,rare,elite} != consumer set {common,uncommon,rare,elite}; 'uncommon' orphaned",
+        "gate table untested; typo silently falls back to common chance",
+        "rarity dropped at wire->presentation boundary (client WorldActor carries elite bool only)"
+      ],
+      "citations": [
+        "native/include/verdigris/core.hpp:789",
+        "native/src/core.cpp:1752-1755,1763,3160-3163,1781",
+        "native/client/presentation_state.hpp:75",
+        "native/client/presentation_state.cpp:153"
+      ],
+      "tests": []
+    },
+    {
+      "id": "equipment_on_monsters",
+      "engine_status": "seam-reserved-not-wired",
+      "engine_gaps": ["damage resolver pays equip bonus for Player kind only core.cpp:410", "no spawner equips a monster"],
+      "citations": ["native/include/verdigris/core.hpp:147", "native/src/core.cpp:248-252,410"],
+      "tests": []
+    },
+    {
+      "id": "unique_boss_seams",
+      "engine_status": "boss-present-uniques-absent",
+      "engine_gaps": ["no unique-affix system; nearest seams are VesselBrand tiers and the rarity gate", "'unique' absent from native production code"],
+      "citations": [
+        "native/src/core.cpp:1464-1474,1759-1773,1986-2011,826-832",
+        "native/include/verdigris/core.hpp:461-466,876-878,193",
+        "native/src/networking.cpp:1534,1538,2082,2111,2136-2147,2158-2159,2539-2540,699-703"
+      ],
+      "tests": ["networking_tests.cpp:178 test_n3_combat_rules_and_wire_events"]
+    },
+    {
+      "id": "telegraphs",
+      "engine_status": "present-both-divergent-time-bases",
+      "engine_gaps": ["tick-based kTelegraphTicks vs wall-clock ms telegraph_until_ms/next_attack_ms supplied by transport now_ms; replay-hostile"],
+      "citations": [
+        "native/include/verdigris/core.hpp:29-32,98,793-794",
+        "native/src/core.cpp:228,681-702,655-672",
+        "native/client/main.cpp:1503-1591",
+        "native/client/render_list.hpp:22",
+        "native/tests/session_tests.cpp:370",
+        "native/tests/presentation_events_tests.cpp (catalog pins kTelegraphTicks)"
+      ],
+      "tests": [
+        "core_tests.cpp:395,425,437,454,476,514,536",
+        "main.cpp:4505-4560,5892 telegraph-dodge scenarios"
+      ]
+    },
+    {
+      "id": "rewards_scarcity",
+      "engine_status": "present-both-owner-numbers-pending",
+      "engine_gaps": ["world_random_state_ loot/crit stream not captured in any snapshot; reward sequences unreproducible across save/load", "coin formula is an authored stand-in"],
+      "owner_unknowns_preserved": ["drop rates", "coin tables", "gear pool contents", "TTK bounds"],
+      "citations": [
+        "native/src/core.cpp:29,741-785,3147-3180,3171,3182-3211,3067-3077,1774-1780",
+        "native/include/verdigris/core.hpp:591-592,726-728,873-875,1013",
+        "native/src/networking.cpp:2082"
+      ],
+      "tests": ["networking_tests.cpp:244 test_gate_a_ground_login_and_kill_loot (presence only, not gating)"]
+    },
+    {
+      "id": "deterministic_generation",
+      "engine_status": "frozen-proven",
+      "engine_gaps": [],
+      "citations": ["native/src/core.cpp:86-99,74-84,1802", "native/tests/core_tests.cpp:243,271,321,514", "native/include/verdigris/networking.hpp:243"],
+      "tests": ["core_tests.cpp replay trio", "build-divergence contract networking.hpp:243"]
+    },
+    {
+      "id": "network_snapshots",
+      "engine_status": "present",
+      "engine_gaps": ["snapshot omits facing and non-alive pack state", "world RNG uncaptured"],
+      "citations": [
+        "native/src/networking.cpp:925-935,936-949,2063-2066,2096-2099",
+        "native/client/presentation_state.cpp:145"
+      ],
+      "tests": ["session_tests.cpp:370,537"]
+    },
+    {
+      "id": "presentation",
+      "engine_status": "elite-readable-gaps-below",
+      "engine_gaps": ["rarity/modifiers never reach render state", "no wave-convergence visual/event", "buffer aura has nothing to present"],
+      "citations": [
+        "native/client/main.cpp:3416-3439,6289",
+        "native/client/presentation_state.cpp:118-126",
+        "native/client/presentation_state.hpp:132-134",
+        "native/client/render_list.hpp:21-22"
+      ],
+      "tests": ["main.cpp:4410,4505-4560,4660,5720,5877-5892 scenario assertions"]
+    },
+    {
+      "id": "tests_scenarios",
+      "engine_status": "strong-d114-elite-pack-weak-rarity-roles",
+      "engine_gaps": ["no native test for biome role mixes or buffer aura", "no native test for rarity gate table"],
+      "native": [
+        {"name": "defeat_enemy (pack incl. pending wave)", "cite": "native/tests/core_tests.cpp:23-65"},
+        {"name": "test_movement_step_derivation_and_actor_symmetry", "cite": "native/tests/core_tests.cpp:243"},
+        {"name": "test_monster_facing_tracks_pursuit_target", "cite": "native/tests/core_tests.cpp:305"},
+        {"name": "test_elite_thrust_telegraph_timing", "cite": "native/tests/core_tests.cpp:395"},
+        {"name": "test_elite_skill_cone_gating", "cite": "native/tests/core_tests.cpp:425"},
+        {"name": "test_elite_skill_fizzles_when_resolution_gates_fail", "cite": "native/tests/core_tests.cpp:437"},
+        {"name": "test_elite_sweep_uses_shared_pipeline", "cite": "native/tests/core_tests.cpp:454"},
+        {"name": "test_elite_telegraph_cancels_on_death", "cite": "native/tests/core_tests.cpp:476"},
+        {"name": "test_elite_skill_replay_is_deterministic", "cite": "native/tests/core_tests.cpp:514"},
+        {"name": "test_non_elite_melee_cadence_is_unchanged", "cite": "native/tests/core_tests.cpp:536"},
+        {"name": "test_n3_combat_rules_and_wire_events", "cite": "native/tests/networking_tests.cpp:178"},
+        {"name": "test_gate_a_ground_login_and_kill_loot", "cite": "native/tests/networking_tests.cpp:244"},
+        {"name": "remote monster:telegraph delivery / Monster render op", "cite": "native/tests/session_tests.cpp:370,537"}
+      ],
+      "browser_reference_scenarios": [
+        {"scenario": "boss-mechanic.mjs", "cite": "playtest/scenarios/boss-mechanic.mjs", "asserts": "slam announced before damage; radius>=2; window>=800ms; dodge by teleport avoids; staying commits named hit"},
+        {"scenario": "encounter-variety.mjs", "cite": "playtest/scenarios/encounter-variety.mjs", "asserts": "biome role mixes; buffer presence; rare single modifier; live aura application; 15s TTK bound"},
+        {"scenario": "respawn.mjs | combat.mjs | loot.mjs | mortality.mjs | session-arc.mjs | quest.mjs", "cite": "playtest/scenarios/", "asserts": "encounter-adjacent lifecycle coverage on the browser server"}
+      ]
+    }
+  ],
+  "negative_control": {
+    "invariant": "Each rarity tier maps to exactly one defined gear drop chance.",
+    "verdict": "NO AUTHORITATIVE COVERAGE",
+    "evidence": [
+      "mapping exists only inside drop_monster_loot if-chain core.cpp:3160-3163",
+      "rarity is a free string default 'common' core.hpp:789; no enum/validator/catalog",
+      "orphaned tier: 'uncommon' consumed at core.cpp:3161 but produced by no generator (only common/rare/elite emitted: core.cpp:789,1753,1763)",
+      "zero direct tests: no native assertion maps tier -> chance; networking_tests.cpp:244 asserts loot presence only",
+      "secondary pack invariant also uncovered: 'pack = 3 converging wardens' core.cpp:616-624 vs 'pack = 20 scattered singles' core.cpp:1466,1718 coexist without a shared definition"
+    ],
+    "successor_rule": "TASK-0110 lands RarityGateTable + PackRecipe contracts before adding affix/unique tiers or new pack shapes"
+  },
+  "engine_gaps_ranked": [
+    {"id": "E1", "gap": "No shared PackRecipe across engines; wave logic hardcoded to one route", "cite": "core.cpp:607-630 vs 1701-1784", "successor_scaffold": "S1"},
+    {"id": "E2", "gap": "Role labels without behavior binding; ranged/buffer inert; aura id on wire with no source", "cite": "core.cpp:1741-1757, networking.cpp:933", "successor_scaffold": "S3"},
+    {"id": "E3", "gap": "Rarity authority: free string, orphaned uncommon tier, untested gate table", "cite": "core.hpp:789, core.cpp:3160-3163", "successor_scaffold": "S2"},
+    {"id": "E4", "gap": "Aggro vocabulary missing (threat/leash/taunt/multi-target)", "cite": "core.cpp:649-720,1833-1940", "successor_scaffold": "none yet"},
+    {"id": "E5", "gap": "D-114 monster locomotion absent: facing tracks pursuit, position never advances", "cite": "core.cpp:674-709,318-319,341-342", "successor_scaffold": "none yet"},
+    {"id": "E6", "gap": "Equipment-for-enemies unwired: player-only equip bonus in resolver", "cite": "core.cpp:410", "successor_scaffold": "none yet"},
+    {"id": "E7", "gap": "Encounter time base: ms deadlines supplied by transport clock; replay-hostile", "cite": "core.hpp:793-794, core.cpp:1885-1891", "successor_scaffold": "S4 partially"},
+    {"id": "E8", "gap": "Snapshot fidelity: rarity/modifiers/behaviour/facing lost wire->render; world RNG uncaptured", "cite": "presentation_state.cpp:139-154, TASK-0100 FINDINGS §6", "successor_scaffold": "S5"},
+    {"id": "E9", "gap": "Hygiene: stray debug fprintf in swing hot path", "cite": "core.cpp:1942", "successor_scaffold": "trivial"}
+  ],
+  "owner_content_gaps_ranked": [
+    {"id": "O1", "gap": "Monster roster/names beyond five placeholder bosses + Lurker pattern", "cite": "core.cpp:1733,1764-1769", "status": "STOP - owner-only"},
+    {"id": "O2", "gap": "Lore/titles/epithets for encounters", "cite": "absent by design", "status": "STOP - owner-only"},
+    {"id": "O3", "gap": "Balance tables: theme level bands, trash/boss life+damage, coin formula, gear pool contents, TTK bounds", "cite": "core.cpp:1466-1472,1712-1715,1774-1780, encounter-variety.mjs", "status": "STOP - owner-only"},
+    {"id": "O4", "gap": "Unique affix design and Legends influence on future spawn pools", "cite": "VERDIGRIS_CONSTITUTION.md:69-72 leaves formula open", "status": "STOP - owner-only"}
+  ],
+  "successor_scaffolds_defined_not_implemented": [
+    {"id": "S1", "name": "PackRecipe contract", "asserts": "any recipe materializes all members within kTelegraphTicks of trigger kill on declared anchors; retirement discards roster; colliding/blocked anchors fail construction"},
+    {"id": "S2", "name": "RarityGateTable contract", "asserts": "single tier->{gear_chance,coin_multiplier,label} table; generators emit table keys only; unknown string is construction error; producer-set==consumer-set; 'uncommon' hits 0.1 gate once produced"},
+    {"id": "S3", "name": "RoleBehavior binding contract", "asserts": "every behaviour_type resolves to registered behavior at generation; unbound role fails loudly (buffer would fail today)"},
+    {"id": "S4", "name": "BossContract native scenario", "asserts": "announce-once per window; resolution strictly at deadline; tile-authoritative dodge; repeat eligible post-resolution"},
+    {"id": "S5", "name": "EncounterSnapshotContract", "asserts": "wire->render preserves rarity/modifiers/behaviour/facing; missing field fails session render-list check"}
+  ]
+}
