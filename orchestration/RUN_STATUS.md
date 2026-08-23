@@ -1,5 +1,17 @@
 # Run status — PC Verdigris overnight product wave
 
+## TASK-0101 accepted; 0161 independent gate next — 2026-08-22 17:12 PDT
+
+- Cursor successor acknowledgement is durable at `5c62c904`. TASK-0101
+  revision 1 is independently ACCEPTED (`34ff3137`) and integrated
+  (`bdecf037`) from frozen worker head `a742355d`. JSON, final-range diff,
+  owned scope, combo absence, and the readable ranged contract all passed.
+- TASK-0108 remains DRAFT with W1 selected. READY promotion waits on
+  TASK-0161 releasing `native/client/main.cpp`.
+- Exact next action: rerun TASK-0161's entire SPEC gate from clean detached
+  `Z:\Code\.worktrees\verdigris\review-task0161-9f004d2a` at `9f004d2a`. Do
+  not treat the interrupted Gate-B as green. Owner action: none.
+
 ## Cursor successor acknowledgement — 2026-08-22 17:05 PDT
 
 - Owner launched a Cursor successor after retiring Codex Sol. This is the

@@ -7,6 +7,7 @@
 - answers program REVISE: `1a434371b281494d3f5aa6bdc3e50447e1814855`
 - reviewer: Cursor successor architect/orchestrator
 - reviewed_at: 2026-08-22T17:08:00-07:00
+- integrated_at: `bdecf037`
 
 Revision 1 is accepted. The three numbered REVISE items are closed on the
 frozen pushed head. Independent verification on
