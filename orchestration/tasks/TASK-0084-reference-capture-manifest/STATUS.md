@@ -2,7 +2,7 @@
 
 - task: TASK-0084
 - title: Reference-capture integrity manifest
-- state: CLAIMED
+- state: REVIEW_REQUESTED
 - lane: ox-pc-bb
 - model: openrouter/stealth/ox-alpha
 - base_commit: d2423873c577d299b3b39c56024d1d840993c72b
@@ -36,5 +36,24 @@
 
 ## Transition log
 
-- CLAIMED: this commit (STATUS.md only), pushed to origin
+- CLAIMED: commit `30a96556` (STATUS.md only), pushed to origin
   worker/verdigris/pc/ox-pc-bb.
+- EVIDENCE COMPLETE: `reference-manifest.mjs` (dependency-free verifier:
+  five-scene naming matrix, PNG IHDR / JPEG SOF header dimension parsing
+  without pixel decode, SHA-256 hashing, render-list JSON structural
+  validation, missing/duplicate/zero-byte/wrong-resolution/malformed/
+  unmanifested failure modes, read-only verify by default, `--write`
+  regenerates only `reference-manifest.json`) plus the frozen 30-entry
+  manifest committed as `2481abb0`. A first negative run exposed a
+  cwd-relative `--manifest` resolution bug with an unclean crash; fixed in
+  `91630905`. All four SPEC acceptance commands then re-run literally against
+  final code (all exit 0) and an authentic one-bad-hash negative on a
+  disposable copied manifest exited 1 and was removed without touching any
+  evidence. Transcripts in REPORT.md.
+- REVIEW_REQUESTED: REPORT.md carries literal acceptance transcripts;
+  frozen review head recorded in the follow-up record commit per house
+  pattern. Worker writes confined to owned paths (`reference-manifest.mjs`,
+  `reference-manifest.json`, this task folder); no forbidden path touched;
+  image evidence never rewritten or decoded; no binary dependency added; no
+  ports bound or probed (6500 untouched). No merge, no force-push, no
+  program-branch push.
