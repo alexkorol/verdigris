@@ -1,5 +1,25 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED 6 audits this session — 2026-08-23 18:25 UTC
+
+- **TASK-0097** (persistence durability, bc) ACCEPTED + integrated at `32ac5a61`.
+- **TASK-0082** (dual-server parity matrix, bb) ACCEPTED + integrated at `cc85786f`.
+- **TASK-0100** (deterministic replay coverage, bd) ACCEPTED + integrated at `c7aeb400`.
+- **TASK-0104** (itemization lifecycle gap, bb) ACCEPTED + integrated at `a5078d32`.
+- **TASK-0103** (monster/encounter gap, bd) ACCEPTED + integrated at `a72ce5c3`.
+- **TASK-0098** (wire parser robustness, bc) ACCEPTED + integrated at `1bf53a17`.
+  - **Two crash-class findings VERIFIED + escalated (PC-014/PC-015):** JsonParser
+    has no JSON nesting-depth budget (networking.cpp:94-200) and `web_tier_width`
+    recurses to the wire-supplied node tier (networking.cpp:756-762) — both
+    pre-auth/loopback-reachable stack-exhaustion candidates with zero test
+    coverage. Owner should commission an approved offline confirmation harness
+    and apply the remediation sketches (depth budget; clamp tier / iterative
+    web_tier_width). Negative control PC-014 delivered, not marked safe.
+- Lanes re-pointed: `ox-pc-bc` -> **TASK-0098** now integrated (lane freed);
+  `ox-pc-bb` -> **TASK-0102** (skill system gap audit, claimed `33a381b8`);
+  `ox-pc-bd` -> **TASK-0099** (performance budget inventory, launched);
+  `ox-pc-ba` -> **TASK-0108** (readable ranged combat, P0, mid-implementation).
+
 ## SHIPPED TASK-0100; 3 shipped this session — 2026-08-23 17:40 UTC
 
 - **TASK-0100 (deterministic replay coverage audit, ox-pc-bd) SHIPPED.**
