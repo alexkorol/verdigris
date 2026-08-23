@@ -1,5 +1,25 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED 2 audits; lanes re-pointed — 2026-08-23 17:25 UTC
+
+- **TASK-0097 (persistence durability audit, ox-pc-bc) SHIPPED.** Independent
+  validator ACCEPTED at `0c373d2f`; merged + STATUS INTEGRATED (reviews at
+  `32ac5a61`). SPEC superseded.
+- **TASK-0082 (dual-server parity matrix, ox-pc-bb) SHIPPED.** Independent
+  validator ACCEPTED at `bf13efa7` (tool `playtest/tools/dual-server-matrix.mjs`,
+  ports 6541/6542, parity true 6/6); merged + STATUS INTEGRATED (reviews at
+  `cc85786f`). SPEC superseded.
+  - Note: the native `-RunTests` gate showed 5 session-test failures on one run,
+    but a direct re-run of `verdigris_session_tests.exe` passed ALL checks. The
+    intermittent failure is the known-flaky gate-b hunt leg (RNG-dependent), not
+    caused by this task (zero native changes in its delta).
+- Lanes re-pointed to new READY packets after resetting to program tip
+  `cc85786f`: `ox-pc-bb` -> **TASK-0104** (itemization lifecycle gap audit, P0,
+  read-only), `ox-pc-bc` -> **TASK-0098** (wire parser robustness audit, P1,
+  read-only). Launched.
+- Active: `ox-pc-ba` -> TASK-0108 (ranged combat, mid-implementation, running);
+  `ox-pc-bd` -> TASK-0100 (deliverables staged; resume launched to commit + flip).
+
 ## Fleet running — 4 lanes claimed/active; resume loop in place — 2026-08-23 16:15 UTC
 
 - Active fleet (all VALID routes):
