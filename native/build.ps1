@@ -3,11 +3,40 @@ param(
   [switch]$RunClient,
   [switch]$RunClientScenarios,
   [switch]$RunDensityBench,
-  [switch]$RunServerLifecycleSoak
+  [switch]$RunServerLifecycleSoak,
+  # TASK-0161: optional contained capture root. When set, scenario evidence
+  # is isolated under this directory instead of rewriting committed captures
+  # from historical task folders.
+  [string]$CaptureRoot
 )
 
 $ErrorActionPreference = "Stop"
 $nativeRoot = $PSScriptRoot
+
+# TASK-0161: validate the capture root before any build or run work so an
+# invalid or outside-repository target fails before writing anything.
+$script:captureRootAbsolute = $null
+if ($CaptureRoot -ne "") {
+  if ([string]::IsNullOrWhiteSpace($CaptureRoot)) {
+    throw "-CaptureRoot was provided but empty; pass a repository-contained directory."
+  }
+  $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $nativeRoot "..")).TrimEnd('\')
+  if ([System.IO.Path]::IsPathRooted($CaptureRoot)) {
+    $candidate = $CaptureRoot
+  } else {
+    # Relative roots resolve against the repository root, not the invoking
+    # shell's cwd, so the acceptance command behaves identically anywhere.
+    $candidate = Join-Path $repoRoot $CaptureRoot
+  }
+  $resolved = [System.IO.Path]::GetFullPath($candidate).TrimEnd('\')
+  $contained = $resolved.StartsWith($repoRoot + '\', [StringComparison]::OrdinalIgnoreCase)
+  if (-not $contained) {
+    throw ("-CaptureRoot '{0}' resolves to '{1}', which is outside the repository root '{2}'. " +
+           "Refusing to write evidence outside a contained root.") -f $CaptureRoot, $resolved, $repoRoot
+  }
+  $script:captureRootAbsolute = $resolved
+}
+
 $buildRoot = Join-Path $nativeRoot "build"
 New-Item -ItemType Directory -Force -Path $buildRoot | Out-Null
 
@@ -136,7 +165,26 @@ if ($RunTests) { & $sessionTestExe; if ($LASTEXITCODE -ne 0) { throw "session te
 if ($RunTests) { & $presentationEventsTestExe; if ($LASTEXITCODE -ne 0) { throw "presentation events tests failed" } }
 if ($RunTests) { & $audioTestExe; if ($LASTEXITCODE -ne 0) { throw "audio mixer tests failed" } }
 if ($RunClient) { & $clientExe --headless }
-if ($RunClientScenarios) { & $clientExe --scenario all }
+if ($RunClientScenarios) {
+  # TASK-0161: hand the validated contained capture root to the client seam
+  # for this invocation only, and propagate a failing scenario exit code so
+  # the gate cannot swallow evidence failures.
+  $previousCaptureRoot = $env:VERDIGRIS_CAPTURE_ROOT
+  try {
+    if ($script:captureRootAbsolute) {
+      $env:VERDIGRIS_CAPTURE_ROOT = $script:captureRootAbsolute
+      Write-Host "capture root: isolating scenario evidence under $script:captureRootAbsolute"
+    }
+    & $clientExe --scenario all
+    if ($LASTEXITCODE -ne 0) { throw "client scenarios failed with exit code $LASTEXITCODE" }
+  } finally {
+    if ($null -ne $previousCaptureRoot) {
+      $env:VERDIGRIS_CAPTURE_ROOT = $previousCaptureRoot
+    } else {
+      Remove-Item Env:VERDIGRIS_CAPTURE_ROOT -ErrorAction SilentlyContinue
+    }
+  }
+}
 if ($RunDensityBench) {
   $densityBenchObj = Join-Path $buildRoot "entity_density_bench.obj"
   $densityBenchExe = Join-Path $buildRoot "entity_density_bench.exe"
