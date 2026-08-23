@@ -1,0 +1,336 @@
+{
+  "task": "TASK-0103-monster-encounter-gap-audit",
+  "worker": "ox-sw-h",
+  "base_commit": "d2423873c577d299b3b39c56024d1d840993c72b",
+  "audit_head_commit": "078640f6",
+  "scope": ["native/include", "native/src", "native/client", "native/tests", "playtest/scenarios"],
+  "classification_legend": {
+    "ENGINE": "content-neutral engine gap; fixable without roster/lore/balance choices",
+    "CONTENT": "owner-dependent gap; requires monster roster, names, lore, or balance authority",
+    "coverage": "none | test | scenario | partial"
+  },
+  "negative_control": {
+    "invariant": "The 'uncommon' rarity tier has an authored loot-drop branch but no producer anywhere in the native codebase and no authoritative coverage in any test or scenario.",
+    "evidence": [
+      "native/src/core.cpp:3092-3095 assigns base_chance 0.1 to rarity 'uncommon' inside WorldSimulation::drop_monster_loot",
+      "native/src/core.cpp:1684-1687 is the only non-default rarity assignment outside bosses ('rare', marsh first spawn)",
+      "native/src/core.cpp:1691-1695 assigns 'elite' to the per-floor boss slot",
+      "native/include/verdigris/core.hpp:760 defaults WorldMonster::rarity to 'common'",
+      "No occurrence of the literal \"uncommon\" exists in any producer path; no test in native/tests or scenario in playtest/scenarios exercises an uncommon monster"
+    ],
+    "risk": "A successor wave that authors uncommon monsters inherits an unverified drop-rate constant (0.1) with zero ground truth; the branch is dead code today.",
+    "required_negative_test": "Generator exhaustiveness: for every rarity literal compared in drop_monster_loot, a generator path must exist that can emit it; enumerate produced rarities from generate_instance across all themes/layouts and assert set equality with the consumed set."
+  },
+  "matrix": [
+    {
+      "dimension": "spawning",
+      "surfaces": [
+        {"area": "native/include", "symbol": "Simulation::spawn_monster", "cite": "native/include/verdigris/core.hpp:329", "state": "public deterministic seam"},
+        {"area": "native/src", "symbol": "Simulation::spawn_enemy", "cite": "native/src/core.cpp:597-603", "state": "one monster per route; level 2 only for route:tin:2:0"},
+        {"area": "native/src", "symbol": "WorldSimulation::generate_instance scatter", "cite": "native/src/core.cpp:1636-1716", "state": "seeded xorshift LCG, 20 slots, 4000-attempt cap"},
+        {"area": "native/src", "symbol": "spawn clearing + stair exclusion", "cite": "native/src/core.cpp:1417-1421,1654-1656", "state": "entry bubble x2..10,y16..24 kept monster-free"},
+        {"area": "native/tools", "symbol": "entity_density_bench spawn seam", "cite": "native/tools/entity_density_bench.cpp:129-135", "state": "benchmark spawns via the public seam only"},
+        {"area": "playtest/scenarios", "symbol": "instance entry population", "cite": "playtest/scenarios/encounter-variety.mjs:11-20", "state": "scenario reads state.monsters after enterSolo"}
+      ],
+      "engine_gaps": [
+        "Monster placement is a flat independent scatter; there is no spatial sub-pack grouping anchor, so 'packs' are coincidental adjacencies (native/src/core.cpp:1650-1661).",
+        "Attempts cap (4000) makes placed count silently fall below kInstanceMonsterCount on dense layouts with no event or counter surfaced (native/src/core.cpp:1650).",
+        "spawn_suppressed_ removes the boss along with trash for cleared world-web nodes; a suppressed floor cannot be distinguished from a generation failure (native/src/core.cpp:1650, native/include/verdigris/core.hpp:850)."
+      ],
+      "content_gaps": [
+        "Spawn-table authorship per theme/layout/depth is owner territory; current theme level table crypt=4/wilds=6/marsh=8/dungeon-grove=2 is a stand-in (native/src/core.cpp:1644-1647)."
+      ],
+      "successor_scaffolding": "Introduce a pure-data EncounterRecipe (theme, layout, depth -> count, role weights, group anchors) consulted by generate_instance; keep the LCG draw order stable so recorded seeds stay valid.",
+      "negative_tests": [
+        "Assert exactly kInstanceMonsterCount placements or an explicit under-placement event when the attempt cap trips (currently unobservable).",
+        "Assert no monster tile lies within the spawn clearing or stair exclusion radii for every theme/layout/depth combination."
+      ],
+      "coverage": "partial"
+    },
+    {
+      "dimension": "pack_composition",
+      "surfaces": [
+        {"area": "native/src", "symbol": "role_index recipes", "cite": "native/src/core.cpp:1673-1689", "state": "crypt melee-heavy, marsh ranged-heavy, every pack one buffer (role_index==5)"},
+        {"area": "native/src", "symbol": "rare+empowered marsh leader", "cite": "native/src/core.cpp:1684-1690", "state": "placed==0 rare with modifiers=[empowered]; every 4th non-buffer empowered"},
+        {"area": "native/tests", "symbol": "N3 pack population", "cite": "native/tests/networking_tests.cpp:183-191", "state": "marsh >=20 monsters, exactly one rare with one modifier"},
+        {"area": "playtest/scenarios", "symbol": "encounter-variety role ratios", "cite": "playtest/scenarios/encounter-variety.mjs:13-19", "state": "crypt melee>ranged; marsh ranged>crypt ranged; buffers present"}
+      ],
+      "engine_gaps": [
+        "Composition is positional modulo arithmetic over placement order, not a grouped recipe: members never share an anchor, leash, or shared aggro state (native/src/core.cpp:1676-1682)."
+      ],
+      "content_gaps": [
+        "Which biome fields which mix, champion counts, and pack sizes beyond the fixed 20 are owner decisions."
+      ],
+      "successor_scaffolding": "Promote the modulo tables into named PackRecipe structs (role list + optional leader) selected deterministically from metadata_.seed; keep behaviour_type strings on the wire unchanged.",
+      "negative_tests": [
+        "Replay two seeds of the same theme/layout and assert identical role sequences (determinism pin for any recipe refactor).",
+        "Assert each generated pack contains >=1 buffer while the current invariant holds, so its removal is a conscious decision."
+      ],
+      "coverage": "test"
+    },
+    {
+      "dimension": "roles",
+      "surfaces": [
+        {"area": "native/include", "symbol": "WorldMonster::behaviour_type", "cite": "native/include/verdigris/core.hpp:759", "state": "free string default 'melee'"},
+        {"area": "native/src", "symbol": "wire behaviour payload", "cite": "native/src/networking.cpp:858", "state": "behaviour.type serialized"},
+        {"area": "native/client", "symbol": "client parse surface", "cite": "native/client/remote_session.cpp:656-671", "state": "client reads uuid/name/x/y/hp/rarity only; behaviour_type dropped"},
+        {"area": "playtest/scenarios", "symbol": "role assertions", "cite": "playtest/scenarios/encounter-variety.mjs:11-32", "state": "browser harness asserts role ratios and aura labels"}
+      ],
+      "engine_gaps": [
+        "Roles carry no mechanics: ranged monsters attack only from Chebyshev<=1 adjacency exactly like melee (native/src/core.cpp:1841-1845), and buffer has no aura logic in C++ - the 'Empowered' aura on the wire is a static decoration derived from the separate empowered bool (native/src/networking.cpp:861), not from behaviour_type=='buffer'.",
+        "No role enum exists server-side; string comparisons would be needed to add mechanics, inviting typo drift between generator (core.cpp:1678-1682) and consumers."
+      ],
+      "content_gaps": [
+        "What each role should do mechanically (heal amounts, ranges, aura magnitudes) is design-balance territory."
+      ],
+      "successor_scaffolding": "Add enum class MonsterRole {Melee,Ranged,Buffer} with a total from_string mapping pinned by test; gate all future role mechanics behind the enum so the wire string remains presentation-only.",
+      "negative_tests": [
+        "Round-trip: every behaviour_type emitted by generate_instance must parse into a MonsterRole without fallback (fails today by design until the enum lands).",
+        "Ranged reach gating: once ranged roles gain reach, assert a ranged monster at Chebyshev 2 strikes while a melee one does not."
+      ],
+      "coverage": "scenario"
+    },
+    {
+      "dimension": "aggro",
+      "surfaces": [
+        {"area": "native/src", "symbol": "adjacent auto-strike", "cite": "native/src/core.cpp:1836-1859", "state": "non-boss pack members strike on 1200ms cadence at Chebyshev<=1, damage 4+level*2"},
+        {"area": "native/src", "symbol": "boss doorstep engagement", "cite": "native/src/core.cpp:1824-1834", "state": "active_target_ auto-locks a boss within Chebyshev<=2"},
+        {"area": "native/src", "symbol": "disengage radius", "cite": "native/src/core.cpp:1865-1872", "state": "target dropped beyond Chebyshev 4"},
+        {"area": "native/src", "symbol": "actor-sim pursuit facing", "cite": "native/src/core.cpp:630-634", "state": "monsters update facing toward player but never translate"},
+        {"area": "native/tests", "symbol": "journey adjacency gating", "cite": "native/tests/session_tests.cpp:252,335-352", "state": "hits/telegraphs require closing distance"}
+      ],
+      "engine_gaps": [
+        "No locomotion: monsters never move in either simulation (world sim scatters statically; actor sim updates facing only, navigation explicitly deferred native/src/core.cpp:661-665). Engagement is therefore a pure proximity threshold.",
+        "No threat/aggro table, no leash/home position, no call-for-help: killing a pack member does not alter neighbours' behaviour; disengage at range 4 lets players trivially reset any fight.",
+        "Two engagement vocabularies coexist: actor-sim elites act unconditionally each tick within range bands (native/src/core.cpp:636-658) while world-sim monsters need adjacency plus per-monster next_attack_ms clocks (native/src/core.cpp:1844-1845,1951)."
+      ],
+      "content_gaps": [
+        "Per-monster aggro ranges, leash distances, and pack alerting radii are balance inputs."
+      ],
+      "successor_scaffolding": "Add home{ x,y } and aggro_radius to WorldMonster with a single pursue() seam called from advance_combat before the strike loops; keep all movement on integer tiles via the existing walkable grid so determinism holds.",
+      "negative_tests": [
+        "Deterministic pursuit replay: same seed + command script must yield identical monster positions every tick once locomotion exists.",
+        "Leash snap-back: monster pulled beyond aggro_radius from home must return and fully heal only if authored so - assert whatever rule is chosen is stable across replays.",
+        "No free damage: a player outside every monster's aggro_radius must receive zero incoming hit events over N ticks."
+      ],
+      "coverage": "partial"
+    },
+    {
+      "dimension": "rarity",
+      "surfaces": [
+        {"area": "native/include", "symbol": "WorldMonster::rarity default", "cite": "native/include/verdigris/core.hpp:760", "state": "'common'"},
+        {"area": "native/src", "symbol": "producer assignments", "cite": "native/src/core.cpp:1684-1695", "state": "'rare' (marsh leader), 'elite' (boss slot); nothing else"},
+        {"area": "native/src", "symbol": "consumers", "cite": "native/src/core.cpp:1712-1713; native/src/core.cpp:3092-3097; native/src/networking.cpp:2039,2087", "state": "coin x3 elite, gear chances .05/.10/.20/.50, guaranteed elite gear, slay-elite quest, relic circulation"},
+        {"area": "native/client", "symbol": "client rarity mapping", "cite": "native/client/remote_session.cpp:666-668", "state": "elite = rarity != 'normal' && !empty"},
+        {"area": "native/tests", "symbol": "rarity reads", "cite": "native/tests/networking_tests.cpp:187-200,303-309", "state": "tests read raw JSON rarity values"}
+      ],
+      "engine_gaps": [
+        "Vocabulary mismatch: the server vocabulary is common/rare/elite (native/src/core.cpp:1685,1695; core.hpp:760) but the client maps anything != 'normal' to elite (remote_session.cpp:667), so every common monster renders through the elite/boss sprite path (native/client/main.cpp:2076-2079). No test covers this seam.",
+        "'uncommon' is consumed by drop_monster_loot but produced nowhere (see negative_control).",
+        "A true 'unique' tier does not exist in native code at all; the keyword appears only as std::make_unique/uniqueness comments. Unique/boss distinction collapses onto rarity=='elite' plus the separate boss bool.",
+        "rarity is a free string on both struct and wire; no exhaustive switch protects consumers from a new tier."
+      ],
+      "content_gaps": [
+        "Tier naming, drop-chance curves per tier, and which tiers exist long-term are owner decisions; scarcity/reward unknowns deliberately preserved (constants core.cpp:3092-3095 are parity placeholders)."
+      ],
+      "successor_scaffolding": "Define enum class RarityTier {Common,Uncommon,Rare,Elite} with from_string/to_string pinned by round-trip tests; make drop_monster_loot switch exhaustively on it; fix the client mapping to the server vocabulary.",
+      "negative_tests": [
+        "Wire round-trip: snapshot a rarity='common' monster and assert the client model reports elite==false (fails today - pins the vocabulary fix).",
+        "Producer/consumer set equality over drop_monster_loot literals vs generator emissions (the negative-control test).",
+        "Exhaustive-switch compile-time assertion: adding a RarityTier value without a drop branch breaks the build."
+      ],
+      "coverage": "none"
+    },
+    {
+      "dimension": "equipment",
+      "surfaces": [
+        {"area": "native/include", "symbol": "Actor::equipped_item_id", "cite": "native/include/verdigris/core.hpp:147", "state": "monsters always nullopt (spawn core.cpp:250-251)"},
+        {"area": "native/src", "symbol": "resolve_damage item_bonus", "cite": "native/src/core.cpp:405-406,419-424", "state": "item bonus granted only to Player attackers"},
+        {"area": "native/include", "symbol": "WorldMonster fields", "cite": "native/include/verdigris/core.hpp:749-770", "state": "no equipment/loadout fields exist"}
+      ],
+      "engine_gaps": [
+        "No monster-loadout seam: the stat-symmetric Actor pipeline supports attacker item bonuses, but there is no way to attach an Item to a monster without hand-editing actors_ in tests."
+      ],
+      "content_gaps": [
+        "Whether monsters wield visible gear, and which bases, is roster/loot-owner territory."
+      ],
+      "successor_scaffolding": "Reuse equipped_item_id + resolve_damage(item_bonus) as-is; expose Simulation::equip_monster(id, item) mirroring resolve_equip so successors never touch actor internals.",
+      "negative_tests": [
+        "Symmetry guard: a monster with attack_bonus X and a player with the same gear must produce mirrored resolve_damage outputs (extends test_actor_symmetry native/tests/core_tests.cpp:891)."
+      ],
+      "coverage": "none"
+    },
+    {
+      "dimension": "unique_boss_seams",
+      "surfaces": [
+        {"area": "native/src", "symbol": "boss slot assignment", "cite": "native/src/core.cpp:1691-1705", "state": "last placed monster (index 19) becomes boss; life 120, melee"},
+        {"area": "native/src", "symbol": "theme warden names", "cite": "native/src/core.cpp:1696-1701", "state": "Elder Oak / Pale Sovereign / Alpha of the Wilds / Rotfather / Warden of the Deep"},
+        {"area": "native/include", "symbol": "warden override + suppression", "cite": "native/include/verdigris/core.hpp:849-850", "state": "world-web nodes rename/suppress via setters"},
+        {"area": "native/src", "symbol": "stairs-down warden lock", "cite": "native/src/core.cpp:1508-1511; native/src/networking.cpp:2062-2070", "state": "blocked until node boss dies; cleared_nodes_ unlocks"},
+        {"area": "native/src", "symbol": "boss target preference", "cite": "native/src/core.cpp:1773-1787", "state": "boss then empowered preferred within radius 2"},
+        {"area": "native/tests", "symbol": "N3 boss wire test", "cite": "native/tests/networking_tests.cpp:194-212", "state": "named boss present, ground-slam telegraph readable"}
+      ],
+      "engine_gaps": [
+        "Boss staging has no arena semantics: the boss lands wherever the LCG places slot 19, potentially adjacent to trash, with no carved room, no entrance gate, and no separation from the pack (native/src/core.cpp:1650-1716).",
+        "Boss identity is not on the dev:state wire (networking.cpp:853-863 emits no boss flag); clients infer boss-ness from telegraph skillId substrings (remote_session.cpp:575-577) or names.",
+        "Exactly one boss archetype mechanic exists (ground slam, native/src/core.cpp:1918-1943); the seam supports one telegraph skill per boss with no multi-phase or per-theme mechanic table.",
+        "Dead-stays-dead for nodes lives in in-memory networking state (cleared_nodes_, networking.cpp:2066) rather than the simulation, so it does not survive a server restart by construction."
+      ],
+      "content_gaps": [
+        "Warden names, lore, phase scripts, and signature mechanics per theme are explicitly owner-only (SPEC owner_input_dependency)."
+      ],
+      "successor_scaffolding": "Add `bool boss` to the monster wire object; carve a deterministic boss arena (fixed offsets from stairs_down like the existing layout bodies) into generate_instance; introduce BossScript {telegraph skills, phases} resolved through the existing WorldCombatEvent channel.",
+      "negative_tests": [
+        "Exactly-one-boss invariant per generated floor across all themes/layouts/depths.",
+        "Boss reachability: BFS from spawn must reach the boss tile without crossing blocked tiles (untested today).",
+        "Wire completeness: parsed client model must expose boss==true for the warden without name heuristics."
+      ],
+      "coverage": "test"
+    },
+    {
+      "dimension": "telegraphs",
+      "surfaces": [
+        {"area": "native/include", "symbol": "kTelegraphTicks contract", "cite": "native/include/verdigris/core.hpp:29-32", "state": "3-tick windup, part of the simulation contract"},
+        {"area": "native/src", "symbol": "actor-sim elite telegraphs", "cite": "native/src/core.cpp:637-658", "state": "Thrust cone / Sweep melee-band selection, AttackTelegraphed events"},
+        {"area": "native/src", "symbol": "windup resolution + cancel-on-death", "cite": "native/src/core.cpp:611-628,769-776", "state": "death cancels all pending windups"},
+        {"area": "native/src", "symbol": "world-sim boss ground slam", "cite": "native/src/core.cpp:1916-1943", "state": "radius 2 / 1000ms window; teleport genuinely dodges; immediate re-arm"},
+        {"area": "native/src", "symbol": "monster:telegraph envelope", "cite": "native/src/networking.cpp:1991-1994", "state": "attackerId/Name, skillId, x, y, radius, durationMs"},
+        {"area": "native/client", "symbol": "client consumption", "cite": "native/client/remote_session.cpp:571-584", "state": "reads attackerId/Name, skillId, durationMs; drops x/y/radius"},
+        {"area": "native/client", "symbol": "render cone/sweep", "cite": "native/client/main.cpp:1168-1240; native/client/presentation_state.cpp:168-178", "state": "shape inferred from skillId substring; anchored to player-facing inverse"},
+        {"area": "native/tests", "symbol": "telegraph timing suite", "cite": "native/tests/core_tests.cpp:369-508; native/tests/session_tests.cpp:335-352", "state": "timing, cone gating, fizzle, cancel, replay determinism, wire delivery"}
+      ],
+      "engine_gaps": [
+        "Two disjoint telegraph universes: elite Thrust/Sweep telegraphs live only in the actor Simulation, while tile-space encounters (the ones networked clients play) telegraph exclusively for bosses. A world-sim elite can never telegraph (native/src/core.cpp:1836-1859 has no telegraph branch).",
+        "Telegraph geometry is not honored end-to-end: the wire carries x/y/radius (networking.cpp:1993) but the native client discards them (remote_session.cpp:579-582) and renders a directional cone anchored to the player's inverted facing (presentation_state.cpp:171-175), so the authored boss circle is drawn as the wrong shape at the wrong origin.",
+        "presentation_state windup heuristic event.value>50 treated as ms (presentation_state.cpp:177) silently conflates tick-based and ms-based durations on one field.",
+        "Only one shape vocabulary exists client-side (cone thrust vs sweep arc); a circle telegraph cannot be rendered even though the boss mechanic is circular."
+      ],
+      "content_gaps": [
+        "New telegraphed skills per boss/elite are content; the channel and shapes above are the engine prerequisites."
+      ],
+      "successor_scaffolding": "Extend WorldCombatEvent with shape enum {Cone,Circle} already implied by radius/x/y; render circles from the wire values; unify elite telegraphs into WorldSimulation via the same monster:telegraph envelope so both sims share one presentation contract.",
+      "negative_tests": [
+        "Geometry fidelity: emit monster:telegraph with known x/y/radius and assert the rendered op bounds center/radius match (fails today).",
+        "Dodge authority regression: for any future telegraphed elite skill, resolution must read player tile at the resolve tick (pattern from core.cpp:1929-1937).",
+        "Windup unit purity: PresentationEventType::Telegraph value must be ticks <=kTelegraphTicks or an explicit ms flag, never ambiguous."
+      ],
+      "coverage": "test"
+    },
+    {
+      "dimension": "rewards",
+      "surfaces": [
+        {"area": "native/src", "symbol": "drop_monster_loot", "cite": "native/src/core.cpp:3079-3111", "state": "coins always; rarity-gated gear roll; goods_found boosts; ilvl min(80, level*2)"},
+        {"area": "native/src", "symbol": "monster coin bounty stand-in", "cite": "native/src/core.cpp:1706-1713", "state": "coins = 10 + level*5, x3 elite; documented authored stand-in"},
+        {"area": "native/src", "symbol": "floor treasure scatter stub", "cite": "native/src/core.cpp:3114-3143", "state": "map-centre hoard, shared pool, documented stub"},
+        {"area": "native/src", "symbol": "actor-sim drop_reward", "cite": "native/src/core.cpp:696-740", "state": "fixed Ember-edged axe 4+rng(0..3) + Warden's ember trophy + relic/trophy resurface 1-in-4"},
+        {"area": "native/include", "symbol": "Proof of Temper guarantee", "cite": "native/include/verdigris/core.hpp:845-846; native/src/networking.cpp:2010", "state": "first elite gear guaranteed during slay-elite objective"},
+        {"area": "native/src", "symbol": "relic circulation on elite kill", "cite": "native/src/networking.cpp:2083-2105", "state": "D-106 heirloom surfaces where the elite fell"},
+        {"area": "playtest/scenarios", "symbol": "loot/gear-outcomes/mortality", "cite": "playtest/scenarios/loot.mjs:16; playtest/scenarios/gear-outcomes.mjs:2; playtest/scenarios/mortality.mjs:143-181", "state": "non-elite kill loot, elite heirloom path"}
+      ],
+      "engine_gaps": [
+        "Loot RNG stream is decoupled from the world seed: world_random_state_ initializes to the fixed constant 0x9e3779b97f4a7c15 (native/include/verdigris/core.hpp:984), so two worlds with different seeds roll identical loot given identical command scripts - cross-world correlation, still replayable per run.",
+        "No loot attribution/allocation model for shared scenes: engaged_by gates swings (native/src/core.hpp:966-968) but any session's kill rolls from the same world RNG stream, interleaving nondeterministically across sessions.",
+        "Actor-sim rewards are a fixed singleton table (one axe, one trophy) with no variance seam distinct from the world-sim pool."
+      ],
+      "content_gaps": [
+        "Authored JS reward tables are intentionally not ported; coin bounties and treasure placement remain documented stand-ins (native/src/core.cpp:1706-1708,3114-3118). Scarcity/reward unknowns preserved per SPEC."
+      ],
+      "successor_scaffolding": "Derive world_random_state_ from seed_ (e.g. fnv1a(\"loot\", seed_)) behind a named constant so replay tests keep working; define a LootRollContext {monster, goods_found, rng_stream} free function so allocation policy can change without touching combat code.",
+      "negative_tests": [
+        "Seed coupling: two worlds differing only in seed must diverge in loot output within K kills (defines the fix for the fixed-seed correlation).",
+        "Single-owner drops: every ground item uuid must appear exactly once across all sessions' snapshots after simultaneous kills.",
+        "Guarantee exhaustion: Proof-of-Temper guarantee must fire at most once per objective window and never stack."
+      ],
+      "coverage": "test"
+    },
+    {
+      "dimension": "deterministic_generation",
+      "surfaces": [
+        {"area": "native/src", "symbol": "instance seed derivation", "cite": "native/src/core.cpp:1734,3154", "state": "fnv1a(theme:layout[:floor-N], world_seed)"},
+        {"area": "native/src", "symbol": "placement LCG", "cite": "native/src/core.cpp:1637-1643", "state": "xorshift64 seeded directly from metadata_.seed"},
+        {"area": "native/src", "symbol": "splitmix64 world stream", "cite": "native/src/core.cpp:2999-3007", "state": "crit/crit/loot draws; fixed init core.hpp:984"},
+        {"area": "native/src", "symbol": "forge reseed per drop", "cite": "native/src/core.cpp:3105-3108,3133-3134", "state": "one draw reseeds mulberry32 forge"},
+        {"area": "native/tests", "symbol": "determinism suite", "cite": "native/tests/core_tests.cpp:245,295,488,868,1450,1467", "state": "movement/facing/elite-skill/persistence/mulberry32 replay pins"}
+      ],
+      "engine_gaps": [
+        "metadata_.seed feeds the placement LCG raw: small fnv1a outputs aside, seed==0 falls back to a different constant than the member default (native/src/core.cpp:1637 uses 0x9e37... when seed falsy) - two encodings of 'no seed' exist.",
+        "Loot stream not seed-derived (cross-references rewards row).",
+        "Placement occupancy scan is O(n^2) over monsters (native/src/core.cpp:1657-1661) - harmless at 20 but a trap for density successor work."
+      ],
+      "content_gaps": [],
+      "successor_scaffolding": "Route all generation draws through one Rng facade constructed from metadata_.seed so placement/loot/decoration share a provable order; document draw order as contract.",
+      "negative_tests": [
+        "Full-floor replay: identical seed + commands => byte-identical monster set, treasure set, and first-K combat events (exists partially; extend to treasure + loot).",
+        "Distinct seeds => distinct floors: hash(monsters) differs across 100 seed pairs for the same theme/layout (would fail today for loot-only comparisons)."
+      ],
+      "coverage": "test"
+    },
+    {
+      "dimension": "network_snapshots",
+      "surfaces": [
+        {"area": "native/src", "symbol": "dev:state monsters array", "cite": "native/src/networking.cpp:853-863", "state": "uuid,id,name,x,y,level,rarity,tags,coins,behaviour,hp,modifiers,state.effects; alive-only"},
+        {"area": "native/src", "symbol": "sceneMetadata", "cite": "native/src/networking.cpp:864-882", "state": "seed,theme,layout,depth,stairs,spawnPoints,nodeId,tier,gates,wardenDead"},
+        {"area": "native/src", "symbol": "combat events", "cite": "native/src/networking.cpp:1990-2005", "state": "combat:hit with N4 parity fields; monster:telegraph"},
+        {"area": "native/client", "symbol": "dev:state parse", "cite": "native/client/remote_session.cpp:651-684", "state": "uuid,name,x,y,hp,rarity consumed; level/tags/coins/behaviour/modifiers ignored"},
+        {"area": "native/tests", "symbol": "wire assertions", "cite": "native/tests/networking_tests.cpp:178-243,299-309", "state": "pack population, rarity reads, telegraph delivery"}
+      ],
+      "engine_gaps": [
+        "Missing monster fields on the wire: boss flag, empowered bool (only decorated as modifiers/effects), next_attack_ms, telegraph_until_ms, engaged_by - clients cannot render engagement state or boss identity without heuristics.",
+        "Alive-only filtering (networking.cpp:853) means corpses vanish instantly; no death linger event other than combat:hit died=true.",
+        "Client-side parse discards most payload richness the server already pays for (level/tags/coins/behaviour/modifiers), making native-client encounter rendering strictly poorer than the browser harness."
+      ],
+      "content_gaps": [],
+      "successor_scaffolding": "Version the monster object (add optional boss/empowered/state fields) rather than overloading modifiers arrays; mirror the full parse in the native client model.",
+      "negative_tests": [
+        "Snapshot schema test: every field written at networking.cpp:853-863 must survive a client-model round trip or be listed as presentation-dropped (pins drift in both directions).",
+        "Boss visibility: after enterSolo, parsed client model marks exactly one monster boss=true (requires the wire field)."
+      ],
+      "coverage": "partial"
+    },
+    {
+      "dimension": "presentation",
+      "surfaces": [
+        {"area": "native/client", "symbol": "local session monster mapping", "cite": "native/client/local_session.cpp:163-166", "state": "actor.elite drives label/scale"},
+        {"area": "native/client", "symbol": "billboard sprites", "cite": "native/client/main.cpp:2074-2079", "state": "elite=>boss.png at 1.85x vs 1.58x"},
+        {"area": "native/client", "symbol": "telegraph ops + HUD avoidance", "cite": "native/client/render_list.hpp:22; native/client/main.cpp:1152-1162", "state": "Op::Telegraph with HUD overlap check"},
+        {"area": "native/client", "symbol": "kill-reward sparkle substitute", "cite": "native/client/remote_session.cpp:640-646", "state": "server drops loot in-world but emits no ground envelope on kill; client fakes 'kill reward' sparkle"},
+        {"area": "native/client", "symbol": "capture journey stages", "cite": "native/client/main.cpp:3282", "state": "01-route-entrance, 02-pack-combat, 03-elite-telegraph staged captures"}
+      ],
+      "engine_gaps": [
+        "Elite mis-render cascade: because of the rarity vocabulary mismatch (see rarity row) every common monster takes the boss sprite at 1.85x scale on remote clients (remote_session.cpp:667 -> main.cpp:2076-2079).",
+        "Ground-item envelopes on kill: the server mutates world ground items but the client invents placeholder drops (remote_session.cpp:640-646 comment admits the missing envelope), so real loot identity/location is invisible until some later sync.",
+        "Telegraph anchoring bug (see telegraphs row): circle rendered as player-relative cone."
+      ],
+      "content_gaps": [
+        "Sprite/billboard art per monster type is asset-owner territory; engine exposes only elite/common split today."
+      ],
+      "successor_scaffolding": "Emit a ground-change envelope from drop_monster_loot paths; key presentation off the wire boss/empowered fields once added instead of rarity string comparisons.",
+      "negative_tests": [
+        "Render-list snapshot: a common monster must NOT select the boss billboard (regression pin for the vocabulary fix).",
+        "Loot beat fidelity: within one tick of a death, client ground model must contain the server's actual drop uuid/name."
+      ],
+      "coverage": "partial"
+    },
+    {
+      "dimension": "tests",
+      "surfaces": [
+        {"area": "native/tests", "symbol": "core_tests encounter suite", "cite": "native/tests/core_tests.cpp:369-508,1024,1254,1286", "state": "elite timing/cone/fizzle/cancel/replay, pack clear waits for last monster, symmetry, elite legend"},
+        {"area": "native/tests", "symbol": "networking_tests encounter coverage", "cite": "native/tests/networking_tests.cpp:178-243,244-332", "state": "N3 rules, marsh pack, boss telegraph, kill-loot non-elite path"},
+        {"area": "native/tests", "symbol": "session journey", "cite": "native/tests/session_tests.cpp:245-370", "state": "end-to-end hunt: pack clear, equip, telegraph receipt"},
+        {"area": "playtest/scenarios", "symbol": "encounter scenarios", "cite": "playtest/scenarios/encounter-variety.mjs; playtest/scenarios/boss-mechanic.mjs; playtest/scenarios/mortality.mjs", "state": "biome roles, TTK bound, dodge/commit slam, elite heirloom path"},
+        {"area": "native/tools", "symbol": "density bench", "cite": "native/tools/entity_density_bench.cpp:129-189", "state": "spawn-seam throughput evidence"}
+      ],
+      "engine_gaps": [
+        "No test covers the remote-client rarity mapping or telegraph geometry (both flagged gaps ship green today).",
+        "No generator-level invariant tests (exactly-one-boss, spawn-clearing purity, boss reachability) - they are asserted only indirectly via scenario spot checks.",
+        "No negative test binds rarity producers to consumers (negative_control)."
+      ],
+      "content_gaps": [],
+      "successor_scaffolding": "Add a native generator-invariants test binary (pure WorldSimulation, no transport) as the home for the negative tests listed across this matrix.",
+      "negative_tests": [
+        "See per-row definitions; consolidate into generator_invariants_test with tags [rarity][pack][boss][telegraph][loot]."
+      ],
+      "coverage": "partial"
+    }
+  ]
+}
