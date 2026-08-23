@@ -53,6 +53,12 @@
   ox-pc-bd -> TASK-0104 (P0 itemization/history audit); TASK-0082 (dual-server
   matrix, base refreshed in INC-016) is also route-ready. ba -> TASK-0108 and
   be -> TASK-0165 stand as provisioned.
+- Maintenance observation: `INTEGRATION_LOG.md` is stale — it records only
+  TASK-0028 (2026-08-16) while the board shows 120 integrated tasks through
+  TASK-0164. The board sentinel is unaffected (it keys on STATUS/REVIEW
+  verdicts, not the log), but the log should be backfilled by the
+  coordinators or its convention re-confirmed by the owner. Dashboard healthy
+  (HTTP 200 on 4737); master `2d3e92a5` unchanged.
 
 ## Ship for cloud/other harnesses — 2026-08-22 17:32 PDT
 
