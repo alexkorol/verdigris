@@ -1,0 +1,85 @@
+{
+  "task": "TASK-0104",
+  "title": "Itemization, extraction, and item-history gap audit",
+  "lane": "ox-pc-bb",
+  "model": "openrouter/stealth/ox-alpha",
+  "packet": "BOUNDED-DESIGN",
+  "capsule": "read-only; no ports; port 6500 never used",
+  "base_commit": "d2423873c577d299b3b39c56024d1d840993c72b",
+  "claim_commit": "2cfe40cf",
+  "survey_head": "fca5b7c5495c1ba2a895fdf49c2030380b02e983",
+  "generated_at_utc": "2026-08-23T17:05:00Z",
+  "item_universes": [
+    {
+      "name": "core_simulation",
+      "world": "D-114 world-unit fixed-step combat sim",
+      "model": "verdigris::Item { id, name, attack_bonus, owner_id, use_count, equipped, relic_candidate, history }",
+      "header": "native/include/verdigris/core.hpp:124-133",
+      "identity_source": "seeded simulation RNG token (core.cpp:743); survives snapshot/restore via rng.state/serial (core.cpp:1229-1230)"
+    },
+    {
+      "name": "tile_space_parity",
+      "world": "N4/N5 browser-parity tile world (WorldSimulation + ProtocolSession)",
+      "model": "verdigris::GameItem { id, uuid, vessel block, grid slot/size, ratings, bound_to } + VesselItem { vessel, scars, patience, brands, epithet }",
+      "header": "native/include/verdigris/core.hpp:468-482,604-625",
+      "identity_source": "process-global counter uuid (core.cpp:2679-2688) + forge counter/rng gen_id (core.cpp:2289-2293); per-process only"
+    }
+  ],
+  "lifecycle_edges": [
+    { "id": "E01", "stage": "generation", "edge": "monster death mints weapon+trophy drop", "implementation": ["native/src/core.cpp:741-785", "native/src/core.cpp:833-834"], "events": ["ItemDropped", "TrophyDropped"], "tests": ["native/tests/core_tests.cpp:68-69", "native/tests/core_tests.cpp:1141-1144"], "coverage": "green" },
+    { "id": "E02", "stage": "generation_tile", "edge": "seeded vessel generation: material/vessel/patience/brands/epithet", "implementation": ["native/src/core.cpp:2358-2417", "native/src/core.cpp:2783-2847"], "events": [], "tests": ["native/tests/core_tests.cpp:1807-1871"], "coverage": "green" },
+    { "id": "E03", "stage": "drop_tile", "edge": "rarity gear roll + goods-found coins + floor treasure + loot-tile spiral", "implementation": ["native/src/core.cpp:3147-3180", "native/src/core.cpp:3182-3211", "native/src/core.cpp:3120-3145"], "tests": ["native/tests/core_tests.cpp:1988-2066", "native/tests/core_tests.cpp:2007-2024"], "coverage": "green" },
+    { "id": "E04", "stage": "pickup", "edge": "ground registry authority; owner_id set; history 'picked up'; stale pickups rejected", "implementation": ["native/src/core.cpp:470-511", "native/src/core.cpp:480-483"], "events": ["ItemPickedUp", "TrophyPickedUp"], "tests": ["native/tests/core_tests.cpp:979-1027", "native/tests/core_tests.cpp:695-697"], "coverage": "green" },
+    { "id": "E05", "stage": "pickup_tile", "edge": "take_ground_item -> PlayerInventory first-fit; gold auto-pickup nearby", "implementation": ["native/src/core.cpp:3109-3118", "native/include/verdigris/core.hpp:640-670", "native/src/networking.cpp:1645"], "tests": ["native/tests/session_tests.cpp:287-392", "native/tests/core_tests.cpp:1896-1942"], "coverage": "green" },
+    { "id": "E06", "stage": "equip", "edge": "single-seat equip changes damage via equipped_attack_bonus into resolve_damage", "implementation": ["native/src/core.cpp:513-524", "native/src/core.cpp:927-932", "native/src/core.cpp:410", "native/src/core.cpp:423-428"], "events": ["ItemEquipped"], "tests": ["native/tests/core_tests.cpp:1550-1555"], "coverage": "green" },
+    { "id": "E07", "stage": "equip_tile", "edge": "WearSet seats/swap/capped totals feed session combat mods", "implementation": ["native/include/verdigris/core.hpp:673-700", "native/src/networking.cpp:673-689", "native/src/networking.cpp:841"], "events": ["player:equippedAnItem"], "tests": ["native/tests/session_tests.cpp:333-350", "native/tests/core_tests.cpp:1944-1986"], "coverage": "green" },
+    { "id": "E08", "stage": "unequip", "edge": "clears flag + actor ref", "implementation": ["native/src/core.cpp:528-538"], "tests": ["native/tests/core_tests.cpp:1560-1563"], "coverage": "green" },
+    { "id": "E09", "stage": "use_history_state", "edge": "use_count++ and history append on interact-use and equipped attack use", "implementation": ["native/src/core.cpp:430-452", "native/src/core.cpp:420"], "tests": ["native/tests/core_tests.cpp:1557-1558"], "coverage": "green" },
+    { "id": "E10", "stage": "history_event", "edge": "ItemHistoryUpdated emission for use/equip/unequip", "implementation": ["native/src/core.cpp:436", "native/src/core.cpp:448", "native/src/core.cpp:523", "native/src/core.cpp:536"], "tests": [], "coverage": "red", "note": "negative control NC-1: zero test references to ItemHistoryUpdated under native/tests" },
+    { "id": "E11", "stage": "extraction", "edge": "at extraction point within kExtractionRange: carried -> house.stored_items/stored_trophies; relic_extracted legend", "implementation": ["native/src/core.cpp:901-920", "native/src/core.cpp:922-925"], "events": ["ItemExtracted", "TrophyExtracted", "HouseStoreChanged"], "tests": ["native/tests/core_tests.cpp:1398-1408"], "coverage": "green" },
+    { "id": "E12", "stage": "extract_tile", "edge": "session drains backpack AND worn seats into House store; JS has no player:extract", "implementation": ["native/src/networking.cpp:1012-1042"], "tests": ["native/tests/session_tests.cpp:366-392"], "coverage": "green" },
+    { "id": "E13", "stage": "death_recovery", "edge": "ALL carried items become relic candidates with route-aware history lines; trophies -> lost_trophies", "implementation": ["native/src/core.cpp:809-899"], "events": ["ActorDied", "ScionLost"], "tests": ["native/tests/core_tests.cpp:1441-1488", "native/tests/core_tests.cpp:1410-1439", "native/tests/core_tests.cpp:1336-1396", "native/tests/core_tests.cpp:1029-1048"], "coverage": "green" },
+    { "id": "E14", "stage": "succession", "edge": "successor starts empty core-side; wire admission clears wear/inventory and regrants purse", "implementation": ["native/src/core.cpp:939-951", "native/src/networking.cpp:2734-2738"], "tests": ["native/tests/session_tests.cpp:1860-1900"], "coverage": "green" },
+    { "id": "E15", "stage": "relic_candidacy", "edge": "relic_candidate flag survives pool/ground/carried/stored transitions; single-owner pops", "implementation": ["native/src/core.cpp:755-764", "native/src/core.cpp:563-605", "native/src/core.cpp:548-558"], "events": ["RelicResurfaced", "TrophyResurfaced"], "tests": ["native/tests/core_tests.cpp:661-753", "native/tests/core_tests.cpp:1490-1541", "native/tests/core_tests.cpp:707-727"], "coverage": "green" },
+    { "id": "E16", "stage": "relic_recovery_tile", "edge": "chronicle relic circulation: provenance ground items, crypt status flip, client toast", "implementation": ["native/src/core.cpp:3094-3107", "native/src/networking.cpp:474-486", "native/src/networking.cpp:1674-1692", "native/client/main.cpp:2667-2681"], "tests": ["native/tests/session_tests.cpp:550-555", "native/tests/session_tests.cpp:1415", "native/tests/session_tests.cpp:1860-1900"], "coverage": "green" },
+    { "id": "E17", "stage": "scars", "edge": "scar slot production", "implementation": [], "tests": [], "coverage": "red", "note": "VesselItem.scars read by sear capacity (core.cpp:2420-2422) and tooltip (core.cpp:2502-2506) but never incremented anywhere in native tree" },
+    { "id": "E18", "stage": "history_projection", "edge": "core Item.history / scars reach wire payloads or HUD", "implementation": [], "tests": [], "coverage": "amber", "note": "only VesselBlock JSON carries brand/scar copy (networking.cpp:311-341); Item.history never serialized" },
+    { "id": "E19", "stage": "persistence_core", "edge": "snapshot/restore of stored/relic/lost pools, carried items, surfaced->pending fold; version gate", "implementation": ["native/src/core.cpp:1226-1295", "native/src/core.cpp:1265-1291", "native/src/core.cpp:1297-1375", "native/persistence/adapter.hpp"], "tests": ["native/tests/core_tests.cpp:755-893", "native/tests/core_tests.cpp:847-878"], "coverage": "green", "note": "schemaVersion rejection path (core.cpp:1299-1301) itself untested = NC-2" },
+    { "id": "E20", "stage": "persistence_tile", "edge": "durable storage for GameItem inventory/wear/ground/forge stream", "implementation": [], "tests": [], "coverage": "red", "note": "sessions and WorldSimulation are in-memory only (networking.cpp:584-587, 2988, 604-641); adapter has no GameItem grammar and no production callers (TASK-0097)" },
+    { "id": "E21", "stage": "wire_payloads", "edge": "inventory/wear snapshots, refreshes, ground lists, relic provenance fields", "implementation": ["native/src/networking.cpp:967-969", "native/src/networking.cpp:656-661", "native/src/networking.cpp:986-1009", "native/src/networking.cpp:462-486"], "tests": ["native/tests/networking_tests.cpp:215-290", "native/tests/session_tests.cpp:686-697"], "coverage": "green" },
+    { "id": "E22", "stage": "presentation", "edge": "X pickup, Z loot labels, F contextual extract, gear pane, extraction marker/HUD, relic toast; authoritative mirror only", "implementation": ["native/client/main.cpp:942", "native/client/main.cpp:2119", "native/client/main.cpp:3523-3524", "native/client/main.cpp:3609-3625", "native/client/main.cpp:236", "native/client/main.cpp:3281-3285", "native/client/main.cpp:2273", "native/client/local_session.cpp:195-213"], "tests": ["native/tests/session_tests.cpp:287-392"], "coverage": "green" }
+  ],
+  "stable_identity_assessment": {
+    "core_simulation": "deterministic across save/load (rng state serialized); green",
+    "tile_space": "per-process uniqueness only; counters reset each launch (core.cpp:2679-2688); cannot support cross-session rediscovery required by VERDIGRIS_CONSTITUTION.md:55-57"
+  },
+  "ranked_gaps": [
+    { "rank": "R1", "id": "G-01", "severity": "red", "title": "Tile-space item world has no durability seam", "evidence": ["native/src/networking.cpp:584-587", "native/src/networking.cpp:604-641", "native/src/networking.cpp:2988", "native/include/verdigris/core.hpp:860-1015"], "neutral_fix_path": "extend deterministic field grammar (core.cpp:961-964) or route sessions through persistence/adapter.hpp" },
+    { "rank": "R2", "id": "G-02", "severity": "red", "title": "Scar lifecycle edge missing end-to-end (capacity/UI assume it)", "evidence": ["native/src/core.cpp:2420-2422", "native/src/core.cpp:2502-2506", "native/src/core.cpp:2457-2458"], "owner_boundary": "scar formula/balance stays owner-owned; missing piece is the neutral command/event seam" },
+    { "rank": "R3", "id": "G-03", "severity": "red", "title": "Tile-space identity not stable across sessions", "evidence": ["native/src/core.cpp:2679-2688", "native/src/core.cpp:2289-2293", "docs/product/VERDIGRIS_CONSTITUTION.md:55-57"] },
+    { "rank": "R4", "id": "G-04", "severity": "red_amber", "title": "Two disjoint item universes never converge on one House ledger/history spine", "evidence": ["native/src/core.cpp:904-911", "native/src/networking.cpp:1012-1042"], "note": "design decision flagged, not made" },
+    { "rank": "R5", "id": "G-05", "severity": "red", "title": "ItemHistoryUpdated emissions untested (NC-1)", "smallest_locking_test": "after equip->interact-use->unequip assert the three typed ItemHistoryUpdated events (actor/item ids + text) in sim.events()" },
+    { "rank": "R6", "id": "G-06", "severity": "amber", "title": "No history/scars projection to wire or HUD blocks memorable-item presentation", "evidence": ["native/src/networking.cpp:311-341"] },
+    { "rank": "R7", "id": "G-07", "severity": "amber", "title": "Snapshot schemaVersion rejection untested (NC-2, open carry-over from TASK-0097)", "evidence": ["native/src/core.cpp:1299-1301", "native/tests/core_tests.cpp:763"] },
+    { "rank": "R8", "id": "G-08", "severity": "amber", "title": "Re-equip appends duplicate 'equipped' history lines without guard", "evidence": ["native/src/core.cpp:513-523"] }
+  ],
+  "negative_control": {
+    "primary_id": "NC-1",
+    "kind": "history transition without automated test",
+    "transition": "equipped-item use / equip / unequip -> EventType::ItemHistoryUpdated emission",
+    "implementation_citations": ["native/src/core.cpp:436", "native/src/core.cpp:448", "native/src/core.cpp:523", "native/src/core.cpp:536"],
+    "proof_of_absence": "rg -n \"ItemHistoryUpdated\" native/tests returns no matches; state assertions exist at native/tests/core_tests.cpp:1557-1563 but no event assertions",
+    "secondary_id": "NC-2",
+    "kind": "recovery gate without automated test",
+    "transition": "restore() rejects unsupported/missing schemaVersion",
+    "implementation_citations": ["native/src/core.cpp:1299-1301"],
+    "proof_of_absence": "only positive header check exists at native/tests/core_tests.cpp:763"
+  },
+  "frozen_invariants": {
+    "D106_recoverability": "mapped green (edges E13/E15/E16)",
+    "house_ownership": "extraction and admission boundaries cited (E11/E12/E14)",
+    "significant_item_history": "mapped (A8/B3; gaps G-05/G-06 remain red/amber)",
+    "denylist_firewall": "no production file touched by this audit",
+    "content_freeze": "no affix math, economy, rates, or names proposed"
+  }
+}
