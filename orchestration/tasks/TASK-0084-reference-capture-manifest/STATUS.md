@@ -3,6 +3,7 @@
 - task: TASK-0084
 - title: Reference-capture integrity manifest
 - state: REVIEW_REQUESTED
+- reviewed_commit: c0f1f34ee6ae91424bb23d26eae8bec04e04f552
 - lane: ox-pc-bb
 - model: openrouter/stealth/ox-alpha
 - base_commit: d2423873c577d299b3b39c56024d1d840993c72b
@@ -50,10 +51,8 @@
   final code (all exit 0) and an authentic one-bad-hash negative on a
   disposable copied manifest exited 1 and was removed without touching any
   evidence. Transcripts in REPORT.md.
-- REVIEW_REQUESTED: REPORT.md carries literal acceptance transcripts;
-  frozen review head recorded in the follow-up record commit per house
-  pattern. Worker writes confined to owned paths (`reference-manifest.mjs`,
-  `reference-manifest.json`, this task folder); no forbidden path touched;
-  image evidence never rewritten or decoded; no binary dependency added; no
-  ports bound or probed (6500 untouched). No merge, no force-push, no
-  program-branch push.
+- REVIEW_REQUESTED: REPORT.md carries literal acceptance transcripts; frozen
+  review head `c0f1f34ee6ae91424bb23d26eae8bec04e04f552` (verifier + manifest
+  at `91630905` + REPORT + this STATUS flip), pushed to origin
+  worker/verdigris/pc/ox-pc-bb. No merge, no force-push, no program-branch
+  push.
