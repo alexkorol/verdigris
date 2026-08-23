@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { createHash } from 'node:crypto';
-import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -328,7 +328,9 @@ function main() {
         process.exitCode = 2;
         return;
       }
-      manifestPath = resolve(process.cwd(), args[++i]);
+      const raw = args[++i];
+      const cwdCandidate = resolve(process.cwd(), raw);
+      manifestPath = existsSync(cwdCandidate) ? cwdCandidate : join(TOOL_DIR, raw);
     } else {
       console.error(`unknown argument: ${args[i]}`);
       usage();
@@ -345,15 +347,20 @@ function main() {
     }
     return;
   }
-  const { errors } = verify(manifestPath);
-  if (errors.length > 0) {
-    for (const message of errors) console.error(`FAIL: ${message}`);
-    console.error(`verification FAILED with ${errors.length} error(s) against ${manifestPath}`);
+  try {
+    const { errors } = verify(manifestPath);
+    if (errors.length > 0) {
+      for (const message of errors) console.error(`FAIL: ${message}`);
+      console.error(`verification FAILED with ${errors.length} error(s) against ${manifestPath}`);
+      process.exitCode = 1;
+      return;
+    }
+    const manifest = readManifest(manifestPath);
+    printSummary(`verification OK (${manifestPath})`, manifest.entries);
+  } catch (error) {
+    console.error(`FAIL: ${error instanceof EvidenceError ? error.message : `internal error: ${error.message}`}`);
     process.exitCode = 1;
-    return;
   }
-  const manifest = readManifest(manifestPath);
-  printSummary(`verification OK (${manifestPath})`, manifest.entries);
 }
 
 main();
