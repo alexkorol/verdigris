@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <cstring>
 
 #ifdef _WIN32
@@ -97,23 +98,78 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
 // TASK-0156: mirror the authoritative `passiveTree` envelope (schemaVersion
 // 2: nodes / conduits / points.skill / earned) into plain model fields. Only
 // payload-borne values are copied; the client derives no rules, costs, or
-// effects. A malformed or missing envelope leaves the previous state intact.
-void apply_passive_tree(const JsonValue& tree, ClientModel& model) {
-  if (!tree.object()) return;
+// effects.
+//
+// TASK-0162 hardening: the mirror is fail-closed. It may only update when the
+// schema version, points.skill, earned, nodes, and conduits all carry their
+// expected wire types with sane nonnegative integral values; anything else
+// leaves the last valid snapshot untouched and surfaces one deterministic
+// ProtocolError diagnostic. Invalid payloads never silently become zero and
+// never become absurd counts through unchecked casts.
+//
+// The single cap below is a TRANSPORT BOUND, not a product rule. It exists
+// only so a hostile or corrupting frame cannot overflow an int cast or force
+// pathological parse/memory behavior; it encodes no tree design, cost,
+// budget, or balance opinion, and any well-typed value under it is mirrored
+// verbatim. 65536 sits orders of magnitude above any authored tree while
+// staying safely inside the 1 MiB reader frame ceiling in reader_loop().
+constexpr std::size_t kPassiveTreeTransportBound = 65536;
+
+bool sane_passive_tree_integer(const JsonValue* value) {
+  if (!value || !value->number()) return false;
+  const double raw = *value->number();
+  if (!(raw >= 0.0)) return false;           // rejects NaN and negatives alike
+  if (std::floor(raw) != raw) return false;  // fractional counts are malformed
+  return raw <= static_cast<double>(kPassiveTreeTransportBound);
+}
+
+void apply_passive_tree(const JsonValue& tree, ClientModel& model,
+                        std::vector<PresentationEvent>& events) {
+  const char* reason = nullptr;
+  const JsonValue* nodes = nullptr;
+  const JsonValue* conduits = nullptr;
+  if (!tree.object()) {
+    reason = "envelope must be an object";
+  } else {
+    const auto* schema = tree.get("schemaVersion");
+    const std::optional<double> schema_value =
+        schema ? schema->number() : std::nullopt;
+    if (!schema_value || std::floor(*schema_value) != *schema_value ||
+        *schema_value != 2.0) {
+      reason = "schemaVersion must be the number 2";
+    }
+    if (!reason) {
+      const auto* points = tree.get("points");
+      const auto* skill = points ? points->get("skill") : nullptr;
+      if (!sane_passive_tree_integer(skill))
+        reason = "points.skill must be a nonnegative integer";
+    }
+    if (!reason && !sane_passive_tree_integer(tree.get("earned")))
+      reason = "earned must be a nonnegative integer";
+    if (!reason) {
+      nodes = tree.get("nodes");
+      conduits = tree.get("conduits");
+      if (!nodes || !nodes->array()) reason = "nodes must be an array";
+      else if (!conduits || !conduits->array()) reason = "conduits must be an array";
+      else if (nodes->array()->size() > kPassiveTreeTransportBound)
+        reason = "nodes exceeds the passiveTree transport entry bound";
+      else if (conduits->array()->size() > kPassiveTreeTransportBound)
+        reason = "conduits exceeds the passiveTree transport entry bound";
+    }
+  }
+  if (reason != nullptr) {
+    events.push_back({PresentationEventType::ProtocolError, "", "",
+                      std::string("passiveTree rejected: ") + reason, 0});
+    return;
+  }
   model.progression = ClientPassiveProgression{};
   model.progression.present = true;
-  if (const auto* points = tree.get("points")) {
-    model.progression.unspent_points =
-        static_cast<int>(json_number(points->get("skill"), 0));
-  }
+  model.progression.unspent_points =
+      static_cast<int>(*tree.get("points")->get("skill")->number());
   model.progression.earned_points =
-      static_cast<int>(json_number(tree.get("earned"), 0));
-  if (const auto* nodes = tree.get("nodes"); nodes && nodes->array()) {
-    model.progression.node_count = static_cast<int>(nodes->array()->size());
-  }
-  if (const auto* conduits = tree.get("conduits"); conduits && conduits->array()) {
-    model.progression.conduit_count = static_cast<int>(conduits->array()->size());
-  }
+      static_cast<int>(*tree.get("earned")->number());
+  model.progression.node_count = static_cast<int>(nodes->array()->size());
+  model.progression.conduit_count = static_cast<int>(conduits->array()->size());
 }
 
 void apply_player_fields(ClientPlayer& player, const JsonValue& source) {
@@ -659,7 +715,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       // TASK-0156: the admission payload carries the authoritative
       // passiveTree envelope (player_payload puts it beside quests).
       if (const auto* tree = player->get("passiveTree"))
-        apply_passive_tree(*tree, model_);
+        apply_passive_tree(*tree, model_, pending_events_);
     }
     if (const auto* scene = envelope.data.get("scene")) apply_scene_fields(model_.scene, *scene);
     // A full player:login is a world admission on the Gate-B journey: the
@@ -858,8 +914,10 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     if (const auto* lifecycle = json_string(state->get("lifecycle")))
       model_.lifecycle = *lifecycle;
     // TASK-0156: the dev:state snapshot carries the same authoritative
-    // passiveTree envelope; keep the mirror current between logins.
-    if (const auto* tree = state->get("passiveTree")) apply_passive_tree(*tree, model_);
+    // passiveTree envelope; keep the mirror current between logins. TASK-0162:
+    // a malformed snapshot fails closed and surfaces its diagnostic.
+    if (const auto* tree = state->get("passiveTree"))
+      apply_passive_tree(*tree, model_, pending_events_);
     if (const auto* hp = state->get("hp")) {
       // Authoritative life keeps alive honest between combat envelopes.
       model_.player.life = static_cast<int>(json_number(hp->get("current"), model_.player.life));
@@ -912,9 +970,10 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   }
   if (envelope.event == "player:skilltree:update") {
     // TASK-0156: the server's reply to a committed tree snapshot carries the
-    // refreshed authoritative passiveTree envelope.
+    // refreshed authoritative passiveTree envelope. TASK-0162: malformed
+    // refreshes fail closed with a diagnostic instead of zeroing the pane.
     if (const auto* tree = envelope.data.get("passiveTree"))
-      apply_passive_tree(*tree, model_);
+      apply_passive_tree(*tree, model_, pending_events_);
     return;
   }
   if (envelope.event == "core:refresh:inventory") {
