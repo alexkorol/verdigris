@@ -1,0 +1,38 @@
+{
+  "generatorVersion": "task0147-gen-2",
+  "viewBox": {
+    "width": 64,
+    "height": 64
+  },
+  "roles": [
+    {
+      "role": "alpha",
+      "motifs": [
+        {
+          "motif": "default",
+          "symbol": "alpha_one",
+          "source": "native/client/assets/svg/alpha.svg",
+          "palette": [
+            "#00000040",
+            "#404040aa",
+            "#102030"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "beta",
+      "motifs": [
+        {
+          "motif": "mossy",
+          "symbol": "beta_two",
+          "source": "native/client/assets/svg/beta.svg",
+          "palette": [
+            "#4e9a8a",
+            "#ffd98a"
+          ]
+        }
+      ]
+    }
+  ]
+}
