@@ -1,7 +1,8 @@
 ---
 task: TASK-0096
 title: Campaign and zone-graph measurement audit
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head 1b2f9ebf, 2026-08-23)
 packet: MECHANICAL
 topology: INDEPENDENT
 job: MECHANICAL
