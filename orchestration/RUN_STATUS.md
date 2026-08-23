@@ -1,5 +1,21 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED 20 audits this session — 2026-08-23 23:10 UTC
+
+- **TASK-0136** (passive-tree contract validator CLI, bd) ACCEPTED + integrated
+  at `69962389`. Implemented a dependency-free Node validator (21/21 tests,
+  valid exit 0, counter-confusion exit 1 with COUNTER_CONFUSION), binding the
+  TASK-0112 contract with 9 error codes + counter-confusion detectors.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094, 0096, 0121, 0118, 0115, 0114, 0085 all
+  ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0084 (reference-capture manifest, launched); `ox-pc-bc`
+  -> TASK-0162 (passive-tree payload hardening, claimed `1486f0e0`,
+  implementing); `ox-pc-bd` -> TASK-0136 now integrated (lane freed).
+- Board nearly exhausted: READY backlog down to 0084 (bb), 0160, and the
+  claimed 0108/0162. A backlog refill (backlog-factory) is the next bottleneck.
+
 ## SHIPPED 19 audits this session — 2026-08-23 22:50 UTC
 
 - **TASK-0085** (denylist-exception evidence packet, bb) ACCEPTED + integrated
