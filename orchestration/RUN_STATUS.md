@@ -35,6 +35,9 @@
   audit base). All 25 effective-READY bases now resolve and are ancestors of
   the current head. Board sentinel healthy (25 READY, 0 claimed, 0
   collisions, exit 0).
+- Launch-readiness confirmed: no port-capsule collisions across the 25 READY
+  packets (most are read-only/no-ports; TASK-0108 holds the only explicit
+  loopback capsule 7280-7299, unique). Board is route-ready for the ox swarm.
 
 ## Ship for cloud/other harnesses — 2026-08-22 17:32 PDT
 
