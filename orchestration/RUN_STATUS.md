@@ -1,5 +1,35 @@
 # Run status — PC Verdigris overnight product wave
 
+## Lead appointment + TASK-0152 reconciled — 2026-08-23 05:00 PDT
+
+- Owner appointed **deepseek-v4-flash as fleet lead AND independent validator**
+  for the Verdigris orchestration: maintain the board/RUN_STATUS, watch for
+  `REVIEW_REQUESTED` flips and validate each at its exact frozen head, and keep
+  the ox-alpha fleet routing healthy. This replaces the retired PC supervisor
+  role; workers still push only their own branches; the lead pushes only
+  coordination commits (reviews, RUN_STATUS, releases).
+- **TASK-0152 independent re-validation: ACCEPTED** (REVIEW.md revision 3,
+  reviewer deepseek-v4-flash) at frozen worker head `d34097d9` in detached
+  worktree `Z:\Code\.worktrees\verdigris\review-task0152-d34097d9`. All
+  acceptance claims re-run independently: native gate GATE_EXIT=0
+  (denylist/core/networking/camera2d/session/presentation-events), fresh
+  MSVC `/W4` bench build COMPILE_EXIT=0/LINK_EXIT=0 zero warnings, validator
+  matrix 6/6 positives EXIT=0 and 12/12 negatives EXIT=1 (incl. seven tamper
+  controls), double-process determinism checksum
+  `fnv1a64:9f2964a4df5ac069` identical across fresh processes and the
+  committed capture, usage errors EXIT=2, owned-scope-only diff,
+  `git diff --check` clean. The worker head is byte-identical to the
+  integrated program commit `76837dec`.
+- **TASK-0152 STATUS reconciled** `REVIEW_REQUESTED -> INTEGRATED` (it was
+  stale: accepted at `d34097d9` and integrated at `76837dec`). Reconciliation
+  recorded in the task STATUS.md and pushed as coordination commit `8c71fac7`.
+- Board snapshot: program `codex/native-reconstitution` at `8c71fac7`
+  (clean/pushed); protected `master` `2d3e92a5` (PR #58). No
+  `REVIEW_REQUESTED` tasks. No active CLAIMED lanes (fleet idle awaiting the
+  ox swarm; historical superseded TASK-0056 claim preserved, never resumed).
+  Highest-priority READY product packet remains **TASK-0108** (base
+  `76368466`, ports 7280-7299).
+
 ## Ship for cloud/other harnesses — 2026-08-22 17:32 PDT
 
 - Owner is leaving the PC Ox launcher and will continue on cloud/other
