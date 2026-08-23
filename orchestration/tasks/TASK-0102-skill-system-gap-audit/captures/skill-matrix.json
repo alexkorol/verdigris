@@ -1,0 +1,300 @@
+{
+  "task": "TASK-0102",
+  "title": "Skill system and binding gap audit",
+  "lane": "ox-pc-bb",
+  "model": "openrouter/stealth/ox-alpha",
+  "base_commit": "d2423873c577d299b3b39c56024d1d840993c72b",
+  "captured_on_branch": "worker/verdigris/pc/ox-pc-bb",
+  "scope": "mechanical mapping only; no skill name, effect, cost, or balance invented; every value quoted from code with path:line citation",
+  "frozen_invariants": {
+    "D-007_controls": "orchestration/DECISIONS.md:30-40",
+    "constitution_control_reference": "docs/product/VERDIGRIS_CONSTITUTION.md:94-101",
+    "shared_actors_server_authority": "docs/product/VERDIGRIS_CONSTITUTION.md:87-92,157-168",
+    "OD-003_magic_owner_blocked": "docs/product/OPEN_DECISIONS.md:10",
+    "wizard_reference_evidence_only": "docs/product/WIZARD_ARCANE_LATTICE_REFERENCE.md:34-36"
+  },
+  "authority_paths": [
+    {
+      "id": "pathA_headless_core",
+      "entry": "Simulation::dispatch(Command::action_use) -> resolve_action -> resolve_actor_action",
+      "citations": ["native/src/core.cpp:299-302", "native/src/core.cpp:330", "native/src/core.cpp:336-421"],
+      "skill_variety": "Melee/Dash/Wait/Thrust/Sweep/WarCry",
+      "enum_citation": "native/include/verdigris/core.hpp:25-27",
+      "client_seam": "LocalCoreSession::submit maps names back to ActionType (TASK-0122 Phase A)",
+      "client_seam_citation": "native/client/local_session.cpp:125-136"
+    },
+    {
+      "id": "pathB_native_protocol_server",
+      "entry": "player:skill:trigger envelope -> ProtocolSession handler",
+      "citations": ["native/src/networking.cpp:2507"],
+      "resolution": "WorldSimulation::start_player_attack + advance_combat browser-parity swing loop",
+      "resolution_citations": ["native/src/core.cpp:1833-1883", "native/src/core.cpp:1885-2022"],
+      "skill_variety": "none; every trigger reduces to primary attack, hits stamped skill_id=primary-attack",
+      "hit_stamp_citation": "native/src/core.cpp:1967",
+      "client_seam": "RemoteProtocolSession sends player:skill:trigger {skill, direction}",
+      "client_seam_citation": "native/client/remote_session.cpp:440-445"
+    }
+  ],
+  "input_slots": [
+    {
+      "slot": "LMB",
+      "d007_contract": "primary attack",
+      "local_binding": "WM_LBUTTONDOWN -> ActionType::Melee",
+      "binding_citation": "native/client/main.cpp:4095-4103",
+      "protocol_behavior": "player:skill:trigger -> primary swing",
+      "end_to_end": true
+    },
+    {
+      "slot": "RMB",
+      "d007_contract": "weapon skill",
+      "local_binding": "WM_RBUTTONDOWN -> dispatch_dash (Dash)",
+      "binding_citation": "native/client/main.cpp:4104-4107",
+      "protocol_behavior": "dash is local-sim only; no distinct RMB weapon skill exists (no seventh ActionType)",
+      "end_to_end": false,
+      "deviation": "bound to Dash identical to Space instead of a D-007 weapon skill"
+    },
+    {
+      "slot": "Space",
+      "d007_contract": "dodge/dash",
+      "local_binding": "VK_SPACE -> dispatch_dash -> ActionType::Dash, kDashMovementTicks=10",
+      "binding_citations": ["native/client/main.cpp:4011", "native/client/main.cpp:3948-3957", "native/include/verdigris/core.hpp:76"],
+      "protocol_behavior": "no dash envelope on protocol path",
+      "end_to_end": false,
+      "note": "partial: resolves in local headless sim only"
+    },
+    {
+      "slot": "Q",
+      "d007_contract": "additional skill",
+      "local_binding": "kSkills Q->Thrust",
+      "binding_citations": ["native/client/main.cpp:909-913", "native/client/main.cpp:931-940"],
+      "protocol_behavior": "degrades to primary attack (see negative_control)",
+      "end_to_end_local": true,
+      "end_to_end_protocol": false
+    },
+    {
+      "slot": "E",
+      "d007_contract": "additional skill (SKILL slot, not equip)",
+      "local_binding": "kSkills E->Sweep",
+      "binding_citation": "native/client/main.cpp:911",
+      "protocol_behavior": "degrades to primary attack (see negative_control)",
+      "end_to_end_local": true,
+      "end_to_end_protocol": false
+    },
+    {
+      "slot": "R",
+      "d007_contract": "additional skill",
+      "local_binding": "kSkills R->WarCry",
+      "binding_citation": "native/client/main.cpp:912",
+      "protocol_behavior": "degrades to primary attack (see negative_control); no war-cry feedback on wire",
+      "end_to_end_local": true,
+      "end_to_end_protocol": false
+    }
+  ],
+  "authoritative_skills": {
+    "vocabulary": "ActionType { Melee, Dash, Wait, Thrust, Sweep, WarCry }",
+    "stability_rule": "values stable for recorded command streams; new skills extend the enum (core.hpp:25-27)",
+    "catalog_seam": {
+      "struct": "PresentationCatalog",
+      "citations": ["native/include/verdigris/core.hpp:92-104", "native/src/core.cpp:222-231"],
+      "consumer_example": "native/client/main.cpp:915-923",
+      "authority_test": "native/tests/core_tests.cpp:931 test_presentation_catalog_is_authoritative_and_stable (:946-948,:971-973)"
+    },
+    "skills": [
+      {
+        "name": "Thrust",
+        "action_type": "Thrust",
+        "resource_cost": 10,
+        "cost_citation": "native/include/verdigris/core.hpp:84 kThrustResourceCost",
+        "cooldown": "shares ordinary attack cooldown (stats.attack_speed_ticks, default 4)",
+        "cooldown_citations": ["native/src/core.cpp:398-400", "native/include/verdigris/core.hpp:118"],
+        "range": "kThrustRange = 1.5 x kMeleeRange, forward cone via is_forward on quantized 8-way facing",
+        "range_citations": ["native/include/verdigris/core.hpp:66,83", "native/src/core.cpp:374-381", "native/include/verdigris/core.hpp:158-160"],
+        "effect": "single nearest target, damage max(1, dmg*13/10)",
+        "effect_citations": ["native/src/core.cpp:22-23", "native/src/core.cpp:411-412"]
+      },
+      {
+        "name": "Sweep",
+        "action_type": "Sweep",
+        "resource_cost": 15,
+        "cost_citation": "native/include/verdigris/core.hpp:85 kSweepResourceCost",
+        "cooldown": "max(1, attack_speed_ticks * 3/2)",
+        "cooldown_citations": ["native/src/core.cpp:26-27", "native/src/core.cpp:394-397"],
+        "range": "all hostile actors within kMeleeRange",
+        "range_citation": "native/src/core.cpp:382-383",
+        "effect": "area damage max(1, dmg*3/4) per target",
+        "effect_citations": ["native/src/core.cpp:24-25", "native/src/core.cpp:413-414"]
+      },
+      {
+        "name": "WarCry",
+        "action_type": "WarCry",
+        "resource_cost": 20,
+        "cost_citation": "native/include/verdigris/core.hpp:86 kWarCryResourceCost",
+        "cooldown": "none in resolver; HUD gates on active buff state",
+        "cooldown_citation": "native/client/main.cpp:2446-2447",
+        "range": "self",
+        "effect": "+4 attack for 20 ticks; BuffApplied/BuffExpired events; expiry decremented per tick",
+        "effect_citations": ["native/include/verdigris/core.hpp:88-89", "native/src/core.cpp:348-353", "native/src/core.cpp:730-736"]
+      },
+      {
+        "name": "Melee",
+        "action_type": "Melee",
+        "resource_cost": 0,
+        "cooldown": "attack_speed_ticks",
+        "range": "nearest hostile within kMeleeRange",
+        "range_citations": ["native/src/core.cpp:374-375", "native/src/core.cpp:384-387", "native/src/core.cpp:398-401"],
+        "effect": "baseline damage"
+      },
+      {
+        "name": "Dash",
+        "action_type": "Dash",
+        "resource_cost": 0,
+        "cooldown": "none (movement burst of kDashMovementTicks=10)",
+        "range": "self-movement along facing",
+        "citation": "native/include/verdigris/core.hpp:76"
+      }
+    ],
+    "monster_elite_skills": {
+      "scheduling": "elites schedule telegraphed Thrust when kMeleeRange < d <= kThrustRange inside cone, else Sweep within melee range if affordable; windup kTelegraphTicks=3; re-gated at windup end",
+      "citations": ["native/src/core.cpp:649-720", "native/include/verdigris/core.hpp:32", "native/src/core.cpp:684-689"],
+      "non_elite": "plain melee cadence unchanged (core.cpp:705-718)",
+      "pathB_boss": "boss:ground-slam telegraph radius=2 window=1000ms damage=12",
+      "pathB_boss_citations": ["native/src/core.cpp:1468-1474", "native/src/core.cpp:1986-2011"]
+    }
+  },
+  "resource_economy": {
+    "actor_stats": "resource/resource_max = 50/50, attack_speed_ticks default 4",
+    "citation": "native/include/verdigris/core.hpp:106-122",
+    "regen_per_tick": 2,
+    "regen_citation": "native/include/verdigris/core.hpp:87 + native/src/core.cpp:725-728",
+    "gate_points": "checked before resolution (core.cpp:364) and again at scheduled-windup end (core.cpp:684-689 comment)",
+    "mana_status": "resource_mana/bonus_mana exist as item/stat vocabulary only (core.hpp:511,619); no consumption path in either combat authority"
+  },
+  "wire_events": {
+    "consumed": [
+      {
+        "event": "player:skill:trigger",
+        "handler_citation": "native/src/networking.cpp:2507",
+        "payload_keys_read": ["skillId", "direction"],
+        "behavior": "resets respawn ward, sets active_skill_id_, set_engaged_by, then start_player_attack + process_combat; requested action never dispatched to a resolver"
+      },
+      {
+        "event": "player:skilltree:save",
+        "handler": "ProtocolSession::handle_skilltree_save stores passive_tree_ snapshot, emits player:skilltree:update",
+        "citations": ["native/src/networking.cpp:1229-1238", "native/include/verdigris/networking.hpp:139"]
+      }
+    ],
+    "emitted": [
+      {
+        "event": "monster:telegraph",
+        "fields": ["attackerId", "attackerName", "skillId", "x", "y", "radius", "durationMs"],
+        "citation": "native/src/networking.cpp:2062-2067",
+        "producer": "N3 boss ground-slam (native/src/core.cpp:1986-1992)",
+        "remote_consumer": "native/client/remote_session.cpp:756-768"
+      },
+      {
+        "event": "combat:hit",
+        "fields": ["attackerId", "attackerName", "targetId", "targetName", "targetType", "skillId", "amount", "died", "health{current,max}", "baseAmount", "beastbaneAmount", "beastbanePercent", "beastbane", "critical", "attackStyle"],
+        "citation": "native/src/networking.cpp:2070-2077",
+        "remote_consumer": "copies parity fields verbatim, derives nothing (native/client/remote_session.cpp:770-814)"
+      },
+      {
+        "event": "player:skilltree:update",
+        "payload": "passiveTree schemaVersion 2 {nodes, conduits, points.skill, earned, selectedNodeId, classOrder}",
+        "citation": "native/src/networking.cpp:1192-1227"
+      }
+    ],
+    "active_skill_id_state": {
+      "default": "primary-attack",
+      "citations": ["native/include/verdigris/networking.hpp:207", "native/src/networking.cpp:643"],
+      "used_only_for": ["skillId label on outgoing hit events (networking.cpp:2071)", "browser-legacy ability* mana damage formula branch (networking.cpp:2086-2095)"],
+      "never_selects_action": true
+    }
+  },
+  "negative_control": {
+    "claim": "Q/E/R have end-to-end authority only on the local headless path; on the native protocol path the request degrades to a primary attack and no authoritative skill feedback returns",
+    "chain": [
+      {
+        "step": 1,
+        "fact": "remote client sends JSON key 'skill'",
+        "citation": "native/client/remote_session.cpp:440-445"
+      },
+      {
+        "step": 2,
+        "fact": "server reads payload key 'skillId', so native requests always fall back to 'primary-attack'; no test drives thrust/sweep/war-cry through ProtocolSession",
+        "citations": ["native/src/networking.cpp:2507", "native/tests/session_tests.cpp:1215-1220", "native/tests/networking_tests.cpp:315-327"]
+      },
+      {
+        "step": 3,
+        "fact": "even with the key fixed the handler never dispatches the action: start_player_attack discards power ((void)player_attack) and advance_combat stamps every hit skill_id='primary-attack'; no cost/cooldown/cone/area/buff on this path",
+        "citations": ["native/src/core.cpp:1881", "native/src/core.cpp:1967"]
+      },
+      {
+        "step": 4,
+        "fact": "no authoritative feedback: protocol snapshots carry no player resource/cooldown fields, client model hardcodes resource=50/50, ClientPlayer has no cooldown field, war-cry never mapped remotely so quickbar availability renders from defaults",
+        "citations": ["native/client/client_model.hpp:23-24", "native/client/main.cpp:2441-2447", "native/src/networking.cpp:373-377", "native/src/networking.cpp:448-451"]
+      }
+    ],
+    "related_deviation": "RMB contracted as D-007 weapon skill but bound to Dash identical to Space; no distinct RMB weapon skill exists (orchestration/DECISIONS.md:33 vs native/client/main.cpp:4104-4107)"
+  },
+  "client_model": {
+    "presentation_state_copy": "life/resource/cooldown/war-cry ticks copied into WorldActor each frame",
+    "citations": ["native/client/presentation_state.cpp:45-58", "native/client/presentation_state.hpp:72-73"],
+    "passive_tree_mirror": "verbatim wire copy with tri-state anchor; no node semantics/costs/effects derived",
+    "mirror_citations": ["native/client/client_model.hpp:70-81", "native/client/remote_session.cpp:97-117"]
+  },
+  "hud_presentation": {
+    "quickbar_slots": ["LMB Strike", "Q Thrust", "E Sweep", "R WarCry"],
+    "slot_def_citations": ["native/client/main.cpp:2390-2404", "native/client/main.cpp:261"],
+    "painter": "paint_quickbar uses catalog costs, availability, cooldown sweep (hardcoded max_ticks=30), WarCry active state",
+    "painter_citation": "native/client/main.cpp:2407-2484",
+    "render_ops": ["render_list.hpp:33 Hud", "render_list.hpp:34 Orb", "render_list.hpp:35 Quickbar"],
+    "scenario_assertions": ["native/client/main.cpp:4265", "native/client/main.cpp:4628"],
+    "controls_lines": ["native/client/main.cpp:3635", "native/client/main.cpp:3803"],
+    "checklist_status": "docs/product/VERDIGRIS_FEATURE_CHECKLIST.md:11,39 unchecked"
+  },
+  "persistence": {
+    "core_persistence_seam": "native/include/verdigris/persistence.hpp contains no skill/cooldown state; cooldown decays per tick and is deliberately transient",
+    "decay_citation": "native/src/core.cpp:729",
+    "persisted_today": "passive allocation only: player:skilltree:save snapshot stored in passive_tree_, mirrored into player snapshots and re-applied after login",
+    "citations": ["native/include/verdigris/networking.hpp:175-180", "native/src/networking.cpp:658", "native/src/networking.cpp:889", "native/src/networking.cpp:1169-1214"],
+    "relog_note": "live quest-point budget intentionally does not survive re-login (networking.hpp:175-177)"
+  },
+  "tests": {
+    "pathA_core": [
+      {"test": "test_skill_resource_gating_and_thrust", "at": "native/tests/core_tests.cpp:150", "proves": "gates consume nothing (:165); Thrust pays cost after one regen tick (:178); shares attack cooldown (:179-180); respects existing cooldown (:213-215)"},
+      {"test": "test_sweep_hits_multiple_targets_and_gates_resource", "at": "native/tests/core_tests.cpp:341", "proves": "named cost (:375) and 1.5x cooldown (:376-378)"},
+      {"test": "test_elite_thrust_telegraph_timing", "at": "native/tests/core_tests.cpp:395"},
+      {"test": "test_elite_skill_cone_gating", "at": "native/tests/core_tests.cpp:425"},
+      {"test": "test_elite_skill_fizzles_when_resolution_gates_fail", "at": "native/tests/core_tests.cpp:437", "proves": "shared Sweep cooldown (:472-473)"},
+      {"test": "test_elite_sweep_uses_shared_pipeline", "at": "native/tests/core_tests.cpp:454"},
+      {"test": "test_elite_telegraph_cancels_on_death", "at": "native/tests/core_tests.cpp:476", "proves": "telegraphed skill never damages dead target (:511)"},
+      {"test": "test_elite_skill_replay_is_deterministic", "at": "native/tests/core_tests.cpp:514", "proves": "byte-identical replay (:528)"},
+      {"test": "test_non_elite_melee_cadence_is_unchanged", "at": "native/tests/core_tests.cpp:536", "proves": ":552-553"},
+      {"test": "test_war_cry_buff_expiry_and_replay_determinism", "at": "native/tests/core_tests.cpp:556", "proves": "cost after regen tick (:575); deterministic expiry under replay (:594)"},
+      {"test": "test_presentation_catalog_is_authoritative_and_stable", "at": "native/tests/core_tests.cpp:931", "proves": "catalogued costs equal deductions (:946-948,:971-973)"}
+    ],
+    "pathB_protocol": [
+      {"test": "gateb_swing", "at": "native/tests/session_tests.cpp:1215-1220", "proves": "player:skill:trigger {skillId:'primary-attack', direction}"},
+      {"test": "N3 boss telegraph", "at": "native/tests/networking_tests.cpp:204-212", "proves": "monster:telegraph boss:ground-slam radius>=2 durationMs>=800"},
+      {"test": "kill-loot loop", "at": "native/tests/networking_tests.cpp:315-327", "proves": "bare player:skill:trigger {direction} drives swing loop"}
+    ],
+    "gap": "no test exercises a named skill request through ProtocolSession"
+  },
+  "can_proceed_content_neutral": [
+    "unify trigger contract to one key (skillId) and route named actions through a command seam into Simulation::resolve_actor_action on the protocol server, reusing frozen Thrust/Sweep/WarCry definitions",
+    "add authoritative resource/cooldown/war-cry fields to protocol snapshots and mirror into ClientPlayer",
+    "give RMB its D-007 slot as second physical binding (dash stays on Space); binding plumbing neutral, hosted skill is not",
+    "tests driving thrust/sweep/war-cry through ProtocolSession end to end; scenario for RMB binding"
+  ],
+  "owner_blocked_OD_003": [
+    "any new skill definition: names, effects, mana semantics, Arcane Lattice integration",
+    "Vessels-of-Life-&-Mana resource rules beyond orb presentation",
+    "extending resource_mana/bonus_mana vocabulary into a consumption system",
+    "any rebalance of the frozen constants cited above"
+  ],
+  "successor_rule": "required successors must restate: all new skill content paths stay owner-blocked under OD-003; only routing/feedback/binding infrastructure for the six existing ActionTypes is cleared",
+  "incidental_observations": [
+    "debug trace remains in production combat: fprintf(stderr,\"[swing]...\") at native/src/core.cpp:1942",
+    "quickbar cooldown sweep normalizes against hardcoded max_ticks=30 at native/client/main.cpp:2463 rather than a catalog value"
+  ]
+}
