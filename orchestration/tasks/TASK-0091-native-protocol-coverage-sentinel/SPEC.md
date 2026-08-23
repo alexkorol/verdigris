@@ -1,7 +1,8 @@
 ---
 task: TASK-0091
 title: Native client protocol coverage sentinel design
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head 98df3301, 2026-08-23)
 packet: MECHANICAL
 topology: INDEPENDENT
 job: MECHANICAL
