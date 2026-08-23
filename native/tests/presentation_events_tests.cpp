@@ -235,11 +235,14 @@ void seam_events_cannot_mutate_simulation() {
 
 // ── TASK-0108 W1: readable ranged beats ride the shipped vocabulary ───────
 // The beats below are constructed exactly as remote_session.cpp maps the
-// shipped envelopes: monster:telegraph becomes Telegraph(actor_id =
-// attackerId, value = durationMs); a combat:hit whose target is the player
-// becomes DamageApplied(actor_id = attackerId, text = "incoming",
-// value = amount). Locking the render contract over those mapped beats needs
-// no socket plumbing and no new render op.
+// shipped envelopes: a telegraph envelope becomes Telegraph(actor_id =
+// attackerId, value = durationMs) - the boss ground-slam rides
+// monster:telegraph and the W1 ranged shot rides monster:ranged-telegraph
+// with identical fields (networking.cpp emit_combat_event), mapped with the
+// same shape; a combat:hit whose target is the player becomes
+// DamageApplied(actor_id = attackerId, text = "incoming", value = amount).
+// Locking the render contract over those mapped beats needs no socket
+// plumbing and no new render op.
 
 struct RangedBeat {
   bool telegraph = false;

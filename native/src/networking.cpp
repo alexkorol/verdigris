@@ -2063,6 +2063,16 @@ void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std
   if (event.type == "telegraph") {
     JsonValue::Object data; put(data,"attackerId",event.attacker_id); put(data,"attackerName",event.attacker_name); put(data,"skillId",event.skill_id);
     put(data,"x",event.x); put(data,"y",event.y); put(data,"radius",event.radius); put(data,"durationMs",event.duration_ms);
+    // TASK-0108 W1: authored ranged warnings (core.cpp kN3RangedSkillId) ride
+    // their own envelope. The shipped monster:telegraph contract is THE elite
+    // ground-slam reveal every delve client reasons about (radius circle at
+    // x/y, one reveal per Warden - asserted verbatim by the TASK-0163 gate-b
+    // driver), so a trash-archetype warning must never masquerade as it.
+    // The ranged payload carries identical fields; the client seam maps it
+    // with the same Telegraph shape when that wave takes client ownership.
+    if (event.skill_id == "monster:ranged-shot") {
+      emit_world(Envelope{"monster:ranged-telegraph",JsonValue(std::move(data))},emit); return;
+    }
     emit_world(Envelope{"monster:telegraph",JsonValue(std::move(data))},emit); return;
   }
   // N4: kill rewards go through world_->drop_monster_loot inside
