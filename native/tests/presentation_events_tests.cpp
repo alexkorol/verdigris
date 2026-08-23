@@ -9,6 +9,7 @@
 
 #include <cstdio>
 #include <string>
+#include <unordered_map>
 
 #include "../client/local_session.hpp"
 #include "../client/presentation_state.hpp"
@@ -232,6 +233,145 @@ void seam_events_cannot_mutate_simulation() {
   session.shutdown();
 }
 
+// ── TASK-0108 W1: readable ranged beats ride the shipped vocabulary ───────
+// The beats below are constructed exactly as remote_session.cpp maps the
+// shipped envelopes: monster:telegraph becomes Telegraph(actor_id =
+// attackerId, value = durationMs); a combat:hit whose target is the player
+// becomes DamageApplied(actor_id = attackerId, text = "incoming",
+// value = amount). Locking the render contract over those mapped beats needs
+// no socket plumbing and no new render op.
+
+struct RangedBeat {
+  bool telegraph = false;
+  std::string actor;
+};
+
+// The W1 lock: every resolved ranged hit must be preceded by its own
+// shooter's telegraph. One warning arms exactly one hit.
+bool every_ranged_hit_is_telegraphed(const std::vector<RangedBeat>& stream) {
+  std::unordered_map<std::string, bool> armed;
+  for (const auto& beat : stream) {
+    if (beat.telegraph) {
+      armed[beat.actor] = true;
+      continue;
+    }
+    const auto it = armed.find(beat.actor);
+    if (it == armed.end() || !it->second) return false;
+    it->second = false;
+  }
+  return true;
+}
+
+void ranged_hit_beats_are_telegraphed_and_attributed() {
+  WorldView world;
+  world.player.id = "scion-w1";
+  world.player.position = {300, 300};
+  world.player.facing = verdigris::client::facing_vector("right");
+  world.player.alive = true;
+  WorldActor shooter;
+  shooter.id = "foe-ranged";
+  shooter.position = {300, 180};
+  shooter.alive = true;
+  world.monsters.push_back(shooter);
+
+  PresentationFx fx;
+  std::vector<RangedBeat> stream;
+  std::vector<render::List> frames;
+  bool saw_impact_fx = false;
+
+  const auto beat_frame = [&](const PresentationEvent& event) {
+    apply_presentation_event(fx, world, event, 0);
+    if (event.type == PresentationEventType::Telegraph)
+      stream.push_back({true, event.actor_id});
+    if (event.type == PresentationEventType::DamageApplied &&
+        event.text == "incoming") {
+      stream.push_back({false, event.actor_id});
+      saw_impact_fx = count_kind(fx, EffectFx::Kind::Impact) > 0;
+    }
+    render::List rl;
+    record_world_ops(rl, world, fx, camera2d::Camera{}, 960, 600);
+    frames.push_back(std::move(rl));
+    age_presentation_fx(fx);
+  };
+
+  // Frame 0 - the warning (the authored 1000 ms window on the wire).
+  beat_frame({PresentationEventType::Telegraph, "foe-ranged", "",
+              "Grove Lurker monster:ranged-shot", phase_a::kTickMs * 20, false, {}});
+  // Frame 1 - the resolution lands on the player.
+  beat_frame({PresentationEventType::DamageApplied, "foe-ranged", "", "incoming", 5,
+              false, {}});
+
+  check(every_ranged_hit_is_telegraphed(stream),
+        "w1: every resolved ranged hit is preceded by its own telegraph");
+  check(frames.size() == 2 && render::any(frames[0], render::Op::Telegraph),
+        "w1: the warning frame records the shipped Telegraph op");
+  const camera2d::Point expected_anchor =
+      camera2d::project(camera2d::Camera{}, camera2d::Screen{960, 600}, 300, 180);
+  const render::Item* warning_op = render::first(frames[0], render::Op::Telegraph);
+  check(warning_op != nullptr && warning_op->label == "thrust" &&
+            warning_op->x == static_cast<double>(expected_anchor.x) &&
+            warning_op->y == static_cast<double>(expected_anchor.y),
+        "w1: the Telegraph op anchors on the shooter through the shared camera");
+  const auto armed = fx.telegraphs.find("foe-ranged");
+  check(armed != fx.telegraphs.end() &&
+            armed->second.windup_ticks == phase_a::kTickMs * 20 / phase_a::kTickMs,
+        "w1: the authored wire window maps onto the readable windup");
+  bool damage_number = false;
+  bool player_flash = false;
+  for (const auto& item : frames[1]) {
+    if (item.op == render::Op::Damage && item.label == "player" && item.value == 5)
+      damage_number = true;
+    if (item.op == render::Op::TargetFlash && item.label == "player")
+      player_flash = true;
+  }
+  check(damage_number, "w1: the hit lands as an attributed player Damage number");
+  check(player_flash, "w1: the hit flash is attributed to the player");
+  check(saw_impact_fx, "w1: the resolution carries the Impact fx beat");
+
+  // Stream order across frames: the warning op precedes the damage op.
+  std::size_t warning_index = 0;
+  std::size_t damage_index = 0;
+  bool found_warning = false;
+  bool found_damage = false;
+  for (std::size_t frame = 0; frame < frames.size(); ++frame) {
+    for (std::size_t i = 0; i < frames[frame].size(); ++i) {
+      const auto& item = frames[frame][i];
+      if (item.op == render::Op::Telegraph && !found_warning) {
+        warning_index = frame * 10000 + i;
+        found_warning = true;
+      }
+      if (item.op == render::Op::Damage && item.label == "player" && !found_damage) {
+        damage_index = frame * 10000 + i;
+        found_damage = true;
+      }
+    }
+  }
+  check(found_warning && found_damage && warning_index < damage_index,
+        "w1: the Telegraph op precedes the attributed Damage op in stream order");
+
+  bool logged_warning = false;
+  bool logged_taken = false;
+  for (const auto& line : fx.event_log) {
+    if (line.rfind("Telegraph ", 0) == 0) logged_warning = true;
+    if (line == "Taken 5") logged_taken = true;
+  }
+  check(logged_warning && logged_taken,
+        "w1: both readable HUD lines log for the warned ranged beat");
+}
+
+void untelegraphed_ranged_hit_fails_the_lock() {
+  check(!every_ranged_hit_is_telegraphed({{false, "foe-x"}}),
+        "w1-negative: a ranged hit without any telegraph fails the lock");
+  check(!every_ranged_hit_is_telegraphed({{true, "foe-a"}, {false, "foe-b"}}),
+        "w1-negative: another shooter's warning never covers the hit");
+  check(!every_ranged_hit_is_telegraphed(
+            {{true, "foe-a"}, {false, "foe-a"}, {false, "foe-a"}}),
+        "w1-negative: every shot needs its own warning");
+  check(
+      every_ranged_hit_is_telegraphed({{true, "foe-a"}, {false, "foe-a"}}),
+      "w1-negative: the exact one-warning-one-hit pairing passes");
+}
+
 }  // namespace
 
 int main() {
@@ -243,6 +383,8 @@ int main() {
   spawn_detection_is_deterministic_and_once();
   monster_facing_is_no_longer_fabricated();
   seam_events_cannot_mutate_simulation();
+  ranged_hit_beats_are_telegraphed_and_attributed();
+  untelegraphed_ranged_hit_fails_the_lock();
   std::printf("%s\n", failures == 0 ? "presentation events tests: PASS"
                                     : "presentation events tests: FAIL");
   return failures == 0 ? 0 : 1;
