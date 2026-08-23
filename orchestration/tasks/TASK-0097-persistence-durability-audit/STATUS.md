@@ -1,6 +1,8 @@
 ---
 task: TASK-0097
-state: REVIEW_REQUESTED
+state: INTEGRATED
+reviewed_commit: 0c373d2ff2c921a1bfb02ec85d34ac5a380ea77a
+reviewed_at: 2026-08-23T17:10:00Z
 coordinator: codex
 worker: ox-pc-bc (worktree ox-pc-bc)
 root: Z:\Code\.worktrees\verdigris\ox-pc-bc
