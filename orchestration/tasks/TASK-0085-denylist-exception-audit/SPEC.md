@@ -1,7 +1,8 @@
 ---
 task: TASK-0085
 title: Live denylist-exception evidence packet
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head 4474b54e, 2026-08-23)
 packet: MECHANICAL
 topology: INDEPENDENT
 priority: medium (owner ruling prep)
