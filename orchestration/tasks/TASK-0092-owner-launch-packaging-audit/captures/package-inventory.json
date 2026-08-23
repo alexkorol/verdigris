@@ -1,0 +1,333 @@
+{
+  "schema": "verdigris-package-inventory/1",
+  "meta": {
+    "task": "TASK-0092-owner-launch-packaging-audit",
+    "title": "Owner launch and packaging readiness audit",
+    "lane": "ox-pc-bd",
+    "model": "openrouter/stealth/ox-alpha",
+    "base_commit": "d2423873c577d299b3b39c56024d1d840993c72b",
+    "branch_head_at_claim": "39fc7be0 (STATUS CLAIMED commit; full sha recorded in git log)",
+    "audited_at": "2026-08-23",
+    "machine": {
+      "host": "DESKTOP-TVU7OR7",
+      "os": "Windows 10 Pro 10.0.19045",
+      "powershell": "5.1 (Windows PowerShell)"
+    },
+    "resource_capsule_honored": [
+      "read-only audit: no launcher executed, no server started, no port bound or probed live, port 6500 untouched",
+      "no installer run, no PATH change, no signing, no distribution-channel decision"
+    ],
+    "method": "static read of launcher/build/CMake/client/server sources plus README and committed evidence; every claim carries a file:line citation; nothing was built or executed for this inventory"
+  },
+  "frozen_invariants": [
+    {
+      "invariant": "owner port 6500 reserved for the historical browser server",
+      "evidence": [
+        "native/tools/play-native.ps1:40-47 Assert-PortInCapsule fails any launch on 6500 by name",
+        "native/tools/play-native.ps1:17-18 owner-play capsule is 6520-6539",
+        "native/README.md:50 'a free **6520-6539** port (never 6500)'"
+      ]
+    },
+    {
+      "invariant": "loopback-only servers",
+      "evidence": ["native/src/networking.cpp:2811 WebSocketServer binds inet_addr(\"127.0.0.1\") only"]
+    },
+    {
+      "invariant": "forgiving persistence accepted today",
+      "evidence": [
+        "native/src/networking.cpp:216 chronicle roster is in-memory ('no database seam yet')",
+        "native/tools/play-native.ps1:410 finally-block stops the server when the client exits, ending session state by design"
+      ]
+    },
+    {
+      "invariant": "one-command owner path preserved",
+      "evidence": ["native/README.md:47-68 powershell -NoProfile -File native/tools/play-native.ps1 (+ documented desktop shortcut Target line at README.md:63)"]
+    }
+  ],
+  "launcher": {
+    "path": "native/tools/play-native.ps1",
+    "lines": 422,
+    "interpreter_assumed": "powershell.exe (Windows PowerShell 5.1); invoked as powershell.exe -NoProfile -File at native/tools/play-native.ps1:100 and native/README.md:63",
+    "flags": ["-Local", "-Rebuild", "-LifecycleSelfTest", "-ReadinessFaultControl", "-Port <int>"],
+    "behavior_sequence": [
+      "validate -Port inside capsule (play-native.ps1:104, 40-47)",
+      "mutual-exclusion guards for selftest/fault-control vs -Local/-Port (play-native.ps1:105-113)",
+      "check build.ps1 exists with actionable message (play-native.ps1:114)",
+      "rebuild if -Rebuild or either exe stale/missing (play-native.ps1:116-118, staleness probe 81-96)",
+      "post-build existence re-checks with remediation text (play-native.ps1:120-121)",
+      "pick first free port in 6520-6539 via loopback TcpListener bind-probe (play-native.ps1:74-79, 49-60)",
+      "report other capsule listeners, never kill them (play-native.ps1:376-387)",
+      "spawn hidden verdigris_server.exe <port> with stdout/stderr tee to native/build/logs/ (play-native.ps1:125-175, log dir 13)",
+      "12 s readiness deadline grepping stdout for 'listening on ws://127.0.0.1:<port>' plus exact-port match assertion (play-native.ps1:138-163)",
+      "orphan prevention on failed readiness: stop spawned pid before rethrow (play-native.ps1:164-172)",
+      "spawn windowed verdigris_client --remote 127.0.0.1 <port>, WaitForExit, print exit code (play-native.ps1:400-405)",
+      "finally: force-stop surviving server within 5 s (play-native.ps1:410)",
+      "post-session pid-based orphan assertion for client+server (play-native.ps1:249-260, 416-419)"
+    ],
+    "selftest_paths": {
+      "lifecycle": "-LifecycleSelfTest drives real remote sessions through WM_CLOSE graceful close (exit code 0 asserted) and forced kill, then asserts zero orphan pids (play-native.ps1:262-309, 352-357)",
+      "fault_control": "-ReadinessFaultControl proves the readiness watchdog against a live silent process and a live impostor printing a wrong-port listening line, asserting the spawned pid never leaks (play-native.ps1:311-343, 345-349)"
+    }
+  },
+  "executables": [
+    {
+      "name": "verdigris_server.exe",
+      "built_by": "native/build.ps1:140-151 into native/build/",
+      "cmake_target": "native/CMakeLists.txt:42-43 add_executable(verdigris_server src/server_main.cpp) linked to verdigris_networking",
+      "link_libs": ["ws2_32 (WIN32-only, CMakeLists.txt:19-21)", "MSVC CRT linkage flag not specified anywhere in build.ps1 (cl invoked without /MD or /MT, build.ps1:116); effective CRT choice is whatever cl defaults to on this toolchain and is unpinned"],
+      "cli": "argv[1] = port else VERDIGRIS_PORT env else DEFAULT 6500 (native/src/server_main.cpp:10-18)",
+      "stdout_contract": "'verdigris_server listening on ws://127.0.0.1:<port>' consumed by launcher readiness grep (server_main.cpp:26; play-native.ps1:144)",
+      "failure_messages": [
+        "start() errors to stderr as 'verdigris_server: <error>' exit 1 (server_main.cpp:22-25)",
+        "bind/listen failure surfaces as 'bind/listen failed' from networking.cpp:2811 error path"
+      ],
+      "shutdown_semantics": "'quit'/'stop' on stdin stops cleanly; EOF does NOT stop it (detached-child guard sleeps forever) so the owner path relies on the launcher's Stop-Process (server_main.cpp:29-38; play-native.ps1:177-185)"
+    },
+    {
+      "name": "verdigris_client.exe",
+      "built_by": "native/build.ps1:142-152 into native/build/, guarded /DVERDIGRIS_NATIVE_WINDOWS=1 (build.ps1:106-109,146)",
+      "cmake_target": "native/CMakeLists.txt:72-78 links verdigris_core + verdigris_client_session; WIN32 adds user32 gdi32 and the define",
+      "subsystem": "console subsystem retained deliberately so --headless output reaches stdout (main.cpp:6415-6417); a double-clicked exe therefore shows a console window beside the game window",
+      "cli": "--headless | --scenario <id> | --reference-scene <dir> | --remote [host] [port] [guest] [--quick]; --remote defaults host 127.0.0.1, port 6580, guest cursor-guest, opens Chronicles front door unless --quick (main.cpp:6418-6445)",
+      "window_identity": "class VerdigrisNativeClient, title 'Verdigris Core Testbed', 960x600 WS_OVERLAPPEDWINDOW (main.cpp:6457-6466); launcher finds the window by class name (play-native.ps1:196,232-235)",
+      "runtime_dll_dependencies": [
+        "system: user32, gdi32, ws2_32 (import-time)",
+        "delay-loaded dynamically with graceful degradation: msimg32!AlphaBlend and gdiplus.dll resolved via LoadLibraryA/GetProcAddress; missing them falls back to the embedded vector kit (main.cpp:569-595,649-655)",
+        "Add-Type inline C# in the LAUNCHER (not the exe) needs the .NET Framework compiler for window enumeration/selftests only (play-native.ps1:200-210)"
+      ],
+      "failure_messages_remote": [
+        "'verdigris_client --remote: <error>' on stderr (main.cpp:6361)",
+        "session-layer messages: 'socket() failed' (remote_session.cpp:251), 'connection refused at <host>:<port>' (261), 'upgrade request send failed' (272), 'login send failed' (314), 'reconnect failed after 3 attempts' (344,357,364), 'WSAStartup failed' (378), 'server closed the connection' (541)"
+      ]
+    },
+    {
+      "name": "test binaries (not owner-facing but part of build output)",
+      "list": [
+        "verdigris_core_tests.exe (build.ps1:97,149)",
+        "verdigris_networking_tests.exe (98,150)",
+        "verdigris_session_tests.exe (99,155)",
+        "verdigris_presentation_events_tests.exe (100,156)",
+        "verdigris_audio_mixer_tests.exe (101,157)",
+        "camera2d_tests.exe (102,154)"
+      ],
+      "note": "all land in native/build/ alongside the two shipping exes; a release layout must select which files ship (none are needed at runtime)"
+    }
+  ],
+  "generated_files": [
+    {"path": "native/build/*.obj", "producer": "build.ps1 compile steps (121-148)", "needed_at_runtime": false},
+    {"path": "native/build/verdigris_*.exe, camera2d_tests.exe", "producer": "build.ps1 links (149-157)", "needed_at_runtime": "only verdigris_client.exe and verdigris_server.exe"},
+    {"path": "native/build/logs/server-<port>-<timestamp>.log(.err.log)", "producer": "launcher tees per session (play-native.ps1:123,388-391)", "needed_at_runtime": false, "growth": "unbounded across sessions; no rotation or cap exists"},
+    {"path": "native/build/logs/selftest-* / faultctl-*", "producer": "selftest/fault-control paths (play-native.ps1:263-265,319-321)", "needed_at_runtime": false},
+    {"path": "orchestration/tasks/<task>/captures/** PNGs + JSONs", "producer": "client scenario/reference-scene dumps when VERDIGRIS_CAPTURE_ROOT set (main.cpp:2790-2814) or default capture dirs (main.cpp:4936,5052,5331,5366,5480,5493,6261-6331); build.ps1 -RunDensityBench writes TASK-0065 captures (188-201), -RunServerLifecycleSoak writes TASK-0129 captures (203-217)", "needed_at_runtime": false}
+  ],
+  "assets": {
+    "embedded_fallback": "header-generated procedural visual kit compiled into the client: native/client/assets/generated/visual_kit.h, version kKitVersion='task0147-gen-2' (visual_kit.h:8); HUD art status strings always derive from what actually loaded (main.cpp:631-646)",
+    "optional_png_kit": {
+      "files_expected": ["scion_str.png", "raider.png", "boss.png", "tree.png", "ruin.png", "dwelling.png", "shrine.png", "terrain1.png", "terrain4.png"],
+      "discovery_roots": "exe_dir\\assets; exe_dir walked up 6 levels for \\assets and \\prototypes\\founding-slice\\assets; cwd walked up 4 levels for prototypes\\founding-slice\\assets (main.cpp:599-626)",
+      "present_in_repo_at": "prototypes/founding-slice/assets/ (12 PNGs incl. unused scion_dex/scion_int/wagon)",
+      "manifest_present": true,
+      "citation": "native/client/assets/manifest.json"
+    },
+    "packaging_consequence": "TASK-0142 already supports an installed-style assets folder beside the exe, so a folder-layout packet can ship PNGs without code changes; without them the game still runs on the procedural kit with honest status text (main.cpp:656-699)"
+  },
+  "save_locations": {
+    "disk_saves_in_normal_play": "NONE. The native server keeps House/session state in memory only ('no database seam yet', networking.cpp:216-218); the persistence adapter (native/persistence/adapter.hpp write_atomic/read) is exercised by tests, not wired into the owner path.",
+    "session_logs": "native/build/logs/*.log (launcher tees, play-native.ps1:134-135)",
+    "capture_outputs": "repo-contained capture roots only (main.cpp:2806-2814 rejects outside-repo roots)",
+    "consequence_for_owner_build": "closing the window ends the launcher-managed server and all progression evaporates; acceptable under the frozen forgiving-persistence invariant today, but a double-clickable build must surface it (README says nothing about persistence loss at README.md:47-68)"
+  },
+  "clean_machine_assumptions": {
+    "proven_by_current_tooling": [
+      {"assumption": "MSVC Build Tools present", "proof": "vswhere query then deterministic hardcoded VS2017/2019/2022 x edition candidate walk; failure throws with the full probed list (build.ps1:43-86)"},
+      {"assumption": "exes exist/current", "proof": "staleness probe + explicit missing-exe Fail messages naming -Rebuild remediation (play-native.ps1:81-96,120-121)"},
+      {"assumption": "free capsule port available", "proof": "per-port holder identification with owning process names; explicit guidance message (play-native.ps1:62-79)"},
+      {"assumption": "server reaches readiness", "proof": "12 s deadline, stderr tail in failure text, port-match assertion, proven by -ReadinessFaultControl (play-native.ps1:138-175,311-349)"},
+      {"assumption": "gdiplus/msimg32 present", "proof": "graceful LoadLibraryA degradation to embedded kit with truthful HUD status (main.cpp:649-655,631-646)"}
+    ],
+    "unproven_missing_checks": [
+      {
+        "id": "NC-1",
+        "assumption": "`python` resolves to a working Python 3 on PATH",
+        "where_required": "native/build.ps1:159 runs `python tools/check_legacy_denylist.py` unconditionally on every build, including builds triggered by the owner one-command path",
+        "why_unproven": "no Get-Command/python preflight exists anywhere before line 159; the check runs AFTER ~30 compile/link steps, so a clean machine without Python (or with only the Microsoft Store alias stub) burns minutes of compiling then dies with 'python : The term ... is not recognized' or a silent stub exit",
+        "missing_check_example": "at the top of build.ps1 next to the vcvars probe: if (-not (Get-Command python -ErrorAction SilentlyContinue)) { throw \"Python 3 is required for the legacy denylist gate (native/tools/check_legacy_denylist.py). Install Python 3.x and re-run.\" }",
+        "severity": "blocks the entire owner build path on machines lacking Python"
+      },
+      {
+        "id": "NC-2",
+        "assumption": "script execution policy permits running play-native.ps1",
+        "why_unproven": "the documented shortcut Target must smuggle -ExecutionPolicy Bypass (README.md:63); nothing verifies policy, and an owner double-clicking the .ps1 directly gets the editor or a blocked-script dialog; no .cmd shim exists",
+        "severity": "first-run friction on locked-down machines"
+      },
+      {
+        "id": "NC-3",
+        "assumption": "Windows PowerShell 5.1 (`powershell.exe`) present",
+        "why_unproven": "launcher re-invokes build.ps1 via powershell.exe (play-native.ps1:100); fine on stock Win10/11, unverified on stripped SKUs; pwsh (PowerShell 7) compatibility of Add-Type interop path is untested",
+        "severity": "low today"
+      },
+      {
+        "id": "NC-4",
+        "assumption": ".NET Framework compiler available to Add-Type in the invoking session",
+        "why_unproven": "window-enumeration interop compiles inline C# at runtime (play-native.ps1:200-210); hardened AppLocker/policy machines can disable Add-Type; owner path itself only uses it for selftests/fault-control and the final window close is user-driven, so severity low"
+      },
+      {
+        "id": "NC-5",
+        "assumption": "staleness watcher sees every input that matters",
+        "why_unproven": "Test-ExeStale watches only src/, client/, include/ (.cpp/.hpp/.h/.ps1) plus build.ps1 (play-native.ps1:83-92); native/audio/ is compiled into the client (build.ps1:136-139) but is absent from the watch list, so audio source edits leave exes 'fresh' until a manual -Rebuild; config/legacy-denylist.json changes likewise never trigger rebuild",
+        "severity": "medium: owner plays stale binaries after audio source edits"
+      }
+    ]
+  },
+  "failure_message_inventory": {
+    "launcher_fail_messages": [
+      "port 6500 reservation violation (play-native.ps1:42)",
+      "port outside 6520-6539 (44)",
+      "occupied port with owning process names (70)",
+      "no free port in capsule (78)",
+      "-Local conflicts for selftest/fault-control (106,111)",
+      "-Port conflicts for selftest/fault-control (107,112)",
+      "missing build script (114)",
+      "missing client/server exe after build attempt (120-121)",
+      "server exited during startup with code + stderr tail (156)",
+      "no listening line within 12s (159)",
+      "reported port mismatch (162)",
+      "WM_CLOSE post failure (290)",
+      "client ignored normal close within 10s (293)",
+      "nonzero client exit on close (297)",
+      "orphan processes named by pid (256)",
+      "top-level catch prints 'play-native: FAILED - <reason>' exit 1 (407-408)"
+    ],
+    "build_throw_messages": [
+      "CaptureRoot empty/outside-repo refusals (build.ps1:21,33-36)",
+      "vcvars64.bat not found with probed list (85)",
+      "client compile command missing /DVERDIGRIS_NATIVE_WINDOWS=1 refusal (107-108)",
+      "MSVC command failed exit N (118)",
+      "legacy denylist failed (160)",
+      "session/presentation/audio test failures (164-166)",
+      "client scenarios failed exit N (179)",
+      "density bench / soak failures (199,216)"
+    ]
+  },
+  "version_metadata": {
+    "windows_version_resource": "ABSENT: no .rc, .manifest, or .ico files exist under native/ outside build/; rg finds no VERSIONINFO/FileVersion/ProductVersion anywhere in native sources",
+    "consequence": "both exes show unknown publisher, no file/product version in Explorer properties; no FixedVersionInfo for future signing workflows to bind",
+    "product_name_strings_today": [
+      "window title 'Verdigris Core Testbed' (developer-facing, main.cpp:6464)",
+      "window class VerdigrisNativeClient (main.cpp:6460; launcher couples to it at play-native.ps1:196)",
+      "embedded art kit version task0147-gen-2 (visual_kit.h:8)",
+      "no git SHA, build date, or build config is stamped into any binary"
+    ]
+  },
+  "platform_gaps": {
+    "windows": [
+      "no packaging artifact or layout definition exists: exes stay inside the repo tree among .obj files and logs; nothing defines what ships",
+      "console-subsystem client flashes a terminal window on double-click (main.cpp:6415-6417)",
+      "developer window title and no icon",
+      "verdigris_server.exe launched bare binds the FROZEN browser port 6500 (default at server_main.cpp:10); the launcher always passes an explicit capsule port so the owner path is safe, but a packaged folder invites double-clicking the server directly",
+      "shortcut creation is a manual README instruction (README.md:60-68); no .lnk generation, no single-file handoff",
+      "installed-style asset loading seam exists (main.cpp:605-617) but no end-to-end proof that a copied-out folder renders PNG billboards"
+    ],
+    "macos": [
+      "no windowed client off Windows: #else branch is a console demo main() (main.cpp:6477-6503); README admits 'console fallback is deliberately small' (README.md:80-82)",
+      "zero APPLE branches in CMakeLists.txt (only WIN32 at lines 19,56,75); no .app bundle, Info.plist, icon, or codesign seam",
+      "CMakePresets.json has no macOS preset; 'default' Ninja preset is Debug-only (CMakePresets.json:3-12)",
+      "acceptance sweep confirms no install/package targets anywhere: rg 'install|package' matches nothing in CMakeLists.txt/CMakePresets.json/build.ps1 (captures/acceptance-2-cmake-sweep.txt)",
+      "macOS socket path (BSD sockets instead of ws2_32) is assumed by the WIN32 guard but unproven by any committed macOS build evidence in this lane's scope"
+    ]
+  },
+  "separation": {
+    "build_portability": {
+      "state": "Windows MSVC-only in practice via build.ps1 (vswhere + candidate walk is solid, actionable); CMake path exists but presets pin Debug/NMake and nothing pins optimization (/O2 absent from cl args, build.ps1:116) or CRT linkage (/MD vs /MT unspecified)",
+      "gap_risk": "release-grade flags and CRT choice are undefined; a packaging packet must pin them explicitly rather than inherit cl defaults silently"
+    },
+    "packaging": {
+      "state": "ABSENT: no zip/installer/layout manifest; generated artifacts (obj/exes/logs) intermixed under native/build; no selection rule for what ships",
+      "smallest_successor": "a written layout contract (exe pair + optional assets/) plus a validator, mirroring the repo's existing validator pattern (TASK-0139 style)"
+    },
+    "signing_notarization": {
+      "state": "ABSENT and out of scope per SPEC (owner_input_dependency: signing remains owner-only); prerequisite gaps owned by this lane's successors: version resource absence and unstamped build provenance must precede any signing workflow",
+      "boundary": "this audit defines no certificates, accounts, or channels"
+    },
+    "installer": {
+      "state": "ABSENT: no MSI/NSIS/zip step, no CMake install(), no Start-menu/desktop integration beyond the manual shortcut instruction",
+      "sequencing_note": "an installer only makes sense after P1 layout contract and P2 identity metadata exist"
+    },
+    "launch_ux": {
+      "state": "strong core loop (one command, port capsule discipline, readiness watchdog, orphan guarantees, honest art status) with four frictions: ExecutionPolicy bypass requirement, console flash, developer window title, and undocumented persistence-loss-on-exit",
+      "frozen": "the one-command path itself must not change (SPEC frozen invariant)"
+    }
+  },
+  "packaging_packets": [
+    {
+      "id": "PK-0",
+      "title": "Build determinism + preflight hardening (mechanical, no behavior change to owner path)",
+      "contents": [
+        "add python availability preflight with actionable throw BEFORE any compile step (fixes NC-1)",
+        "pin Release flag policy (/O2) and CRT linkage (/MD or /MT decision) in build.ps1 or its successor; record the decision in a build-provenance stamp (git sha + config printed/written at build time)",
+        "extend Test-ExeStale watch roots to native/audio/ (fixes NC-5)"
+      ],
+      "size": "small; three localized edits, each independently revertible"
+    },
+    {
+      "id": "PK-1",
+      "title": "Release layout contract + validator (documentation-first)",
+      "contents": [
+        "define the minimal owner folder: verdigris_client.exe, verdigris_server.exe, optional assets/ PNG kit; exclude obj/logs/tests",
+        "validator proves: exe pair present, installed-style billboard load succeeds from <folder>/assets when kit included, honest-status fallback documented when not",
+        "leverages the existing TASK-0142 discovery seam; no product code change expected"
+      ],
+      "depends_on": "PK-0 (so validated exes carry pinned flags)"
+    },
+    {
+      "id": "PK-2",
+      "title": "Executable identity (version metadata)",
+      "contents": [
+        "add .rc VERSIONINFO (ProductName Verdigris, FileVersion/ProductVersion from git describe), icon, and decide the window-title successor to 'Verdigris Core Testbed'",
+        "keep window class stable or update the launcher's class constant in lockstep (play-native.ps1:196)",
+        "decide server default-port successor: require explicit port or default inside the capsule so a bare-launched server can never touch 6500 (frozen-invariant protection)"
+      ],
+      "depends_on": "PK-1"
+    },
+    {
+      "id": "PK-3",
+      "title": "Unsigned Windows handoff artifact",
+      "contents": [
+        "local command producing a zip of the PK-1 layout from PK-2-versioned binaries; SmartScreen expectations documented; NO signing performed (owner-only boundary respected)",
+        "persistence-loss-on-exit disclosed in the accompanying README fragment"
+      ],
+      "depends_on": "PK-2",
+      "stop_point": "distribution channel decision remains owner-only"
+    },
+    {
+      "id": "PK-4",
+      "title": "Launch UX polish",
+      "contents": [
+        ".cmd shim (or owner-signed script) removing -ExecutionPolicy Bypass friction (mitigates NC-2)",
+        "console-suppression decision: wWinMain with --headless logging switch, preserving scenario harness output paths",
+        "desktop shortcut generation stays manual/out-of-scope unless owner requests it"
+      ],
+      "depends_on": "PK-3"
+    },
+    {
+      "id": "PK-5",
+      "title": "macOS parity spike (blocked on renderer decision)",
+      "contents": [
+        "windowed renderer behind the platform seam (renderer ADR territory, TASK-0073/TASK-0088), .app bundle layout, codesign/notarization seam left as owner-only hooks",
+        "until then README's console-fallback statement stays the honest macOS story"
+      ],
+      "depends_on": "PK-3 + renderer backend decision (outside this lane)"
+    }
+  ],
+  "negative_control": {
+    "requirement": "identify one clean-machine assumption not proven by the current launcher and show the missing check",
+    "selection": "NC-1: `python` on PATH required by native/build.ps1:159 with zero preflight",
+    "detail": "the legacy denylist gate runs after every compile/link step; on a clean Windows box without Python the owner one-command path spends minutes building then aborts with an unactionable shell error (or trips the Microsoft Store python alias stub); the missing check is a Get-Command python probe with an install-and-retry message placed beside the existing vcvars probe (which already models the correct pattern at build.ps1:43-86)",
+    "mirrored_in_findings": "FINDINGS.md section 4"
+  },
+  "acceptance_artifacts": [
+    "captures/acceptance-1-launcher-sweep.txt (rg command 1 transcript, exit 0, 56 lines)",
+    "captures/acceptance-2-cmake-sweep.txt (rg command 2 transcript, exit 0, 15 lines)",
+    "REPORT.md sections 3-4 carry literal transcripts and exit codes for commands 1-5"
+  ]
+}
