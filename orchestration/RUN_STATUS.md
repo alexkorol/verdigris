@@ -1,5 +1,21 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED TASK-0100; 3 shipped this session — 2026-08-23 17:40 UTC
+
+- **TASK-0100 (deterministic replay coverage audit, ox-pc-bd) SHIPPED.**
+  Independent validator ACCEPTED at `74e5dc17`; merged + STATUS INTEGRATED
+  (reviews at `c7aeb400`). SPEC superseded. FINDINGS confirmed the primary
+  negative control: `WorldSimulation` live state has no capture path —
+  `world_random_state_` advances on every loot roll but appears in no snapshot;
+  and the session RNG is 32-bit truncated (`networking.cpp:579`).
+- Cumulative this session: **TASK-0097, TASK-0082, TASK-0100 shipped** (all
+  independent ACCEPTED + integrated).
+- Lanes re-pointed: `ox-pc-bd` -> **TASK-0103** (monster/encounter gap audit,
+  P1, read-only) after reset to program tip; launched. `ox-pc-bb` -> TASK-0104
+  (itemization lifecycle audit, P0, claimed `2cfe40cf`); `ox-pc-bc` -> TASK-0098
+  (wire parser robustness audit, P1); `ox-pc-ba` -> TASK-0108 (ranged combat,
+  mid-implementation).
+
 ## SHIPPED 2 audits; lanes re-pointed — 2026-08-23 17:25 UTC
 
 - **TASK-0097 (persistence durability audit, ox-pc-bc) SHIPPED.** Independent
