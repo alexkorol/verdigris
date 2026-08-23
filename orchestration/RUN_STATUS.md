@@ -1,5 +1,21 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED 19 audits this session — 2026-08-23 22:50 UTC
+
+- **TASK-0085** (denylist-exception evidence packet, bb) ACCEPTED + integrated
+  at `c851a2cc`. FINDINGS: `legacyRelicId` wire-only, `bronze-dagger` data+canon;
+  verified the exceptions were implemented by deleting terms from the denylist
+  `identifiers` (not the scoped allowlist), so `--self-test` is RED while CI
+  (scan-only) stays green.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094, 0096, 0121, 0118, 0115, 0114 all ACCEPTED +
+  integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0085 now integrated (lane freed); `ox-pc-bc` -> TASK-0162
+  (passive-tree payload hardening, claimed `1486f0e0`, implementing);
+  `ox-pc-bd` -> TASK-0136 (passive-tree contract validator CLI, claimed
+  `f1ffa64b`, implementing).
+
 ## SHIPPED 18 audits this session — 2026-08-23 22:30 UTC
 
 - **TASK-0114** (renderer backend evaluation, bb) ACCEPTED + integrated at
