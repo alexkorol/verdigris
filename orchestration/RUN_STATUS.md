@@ -29,6 +29,12 @@
   ox swarm; historical superseded TASK-0056 claim preserved, never resumed).
   Highest-priority READY product packet remains **TASK-0108** (base
   `76368466`, ports 7280-7299).
+- Route-readiness sweep (INC-016): three READY packets (TASK-0082/0084/0085)
+  pinned the garbage-collected base `1f82623d`; refreshed their SPEC
+  `base_commit` to `d2423873` (PR #50 merge, verified ancestor — the sibling
+  audit base). All 25 effective-READY bases now resolve and are ancestors of
+  the current head. Board sentinel healthy (25 READY, 0 claimed, 0
+  collisions, exit 0).
 
 ## Ship for cloud/other harnesses — 2026-08-22 17:32 PDT
 

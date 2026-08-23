@@ -6,7 +6,7 @@ packet: MECHANICAL
 topology: INDEPENDENT
 priority: medium (owner ruling prep)
 lane: luna-mac; Qwen may build tables from verified grep output
-base_commit: 1f82623d9a3936513327cc43362703443e14b02a
+base_commit: d2423873c577d299b3b39c56024d1d840993c72b
 owned_paths:
   - orchestration/tasks/TASK-0085-denylist-exception-audit/**
 forbidden_paths:
