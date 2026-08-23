@@ -1,5 +1,19 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED 18 audits this session — 2026-08-23 22:30 UTC
+
+- **TASK-0114** (renderer backend evaluation, bb) ACCEPTED + integrated at
+  `9b54f019`. EVALUATION compared 5 candidates (D3D11, GL 3.3 core, SDL2,
+  sokol_gfx, GDI null) across all criteria with 20 primary sources; negative
+  control verified (Apple macOS GL deprecation unverifiable, recorded as U1).
+  Recommended sokol_gfx + SDL2 (not a decision).
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094, 0096, 0121, 0118, 0115 all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0114 now integrated (lane freed); `ox-pc-bc` -> TASK-0162
+  (passive-tree payload hardening, surveying); `ox-pc-bd` -> TASK-0136
+  (passive-tree contract validator CLI, claimed `f1ffa64b`, producing).
+
 ## SHIPPED 17 audits this session — 2026-08-23 22:10 UTC
 
 - **TASK-0115** (browser panel/typography inventory, bc) ACCEPTED + integrated
