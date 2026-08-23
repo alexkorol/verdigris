@@ -1,7 +1,8 @@
 ---
 task: TASK-0103
 title: Monster, pack, rarity, and encounter gap audit
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head 1a3be2af, 2026-08-23)
 packet: BOUNDED-DESIGN
 topology: INDEPENDENT
 job: BOUNDED-DESIGN
