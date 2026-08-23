@@ -1,6 +1,8 @@
 ---
 task: TASK-0100
-state: REVIEW_REQUESTED
+state: INTEGRATED
+reviewed_commit: 74e5dc1730d3efa970e8935a534a9ad05dd8399d
+reviewed_at: 2026-08-23T17:35:00Z
 coordinator: codex
 lane: ox-pc-bd
 worker: ox-pc-bd (worktree ox-pc-bd)
