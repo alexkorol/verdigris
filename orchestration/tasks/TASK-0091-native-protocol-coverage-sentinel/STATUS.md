@@ -7,7 +7,9 @@ base_commit: d2423873c577d299b3b39c56024d1d840993c72b
 branch: worker/verdigris/pc/ox-pc-bc
 claimed_at: 2026-08-23 (commit 64fab114ded129c12c8d16e996240e39ef823414)
 surveyed_head: 6c7d48e7a00caf3254755129e157d1c69e729dde
-review_head: SET-BELOW-AFTER-DELIVERABLES-COMMIT
+review_head: bac82984 (complete deliverable tree: FINDINGS.md +
+captures/coverage.json + captures/acceptance-transcripts.txt + REPORT.md;
+the STATUS-fix commit on top of it is the pushed head)
 deliverables:
 - FINDINGS.md (23-row coverage map: 19 COVERED / 2 PARTIAL / 2 RED; negative controls;
   read-only sentinel interface proposal - design only, not implemented)
