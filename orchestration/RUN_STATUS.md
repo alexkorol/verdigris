@@ -1,5 +1,22 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED 16 audits this session — 2026-08-23 21:50 UTC
+
+- **TASK-0121** (owner content approval matrix, bb) ACCEPTED + integrated at
+  `40981411`. FINDINGS inventoried 15 owner-only gates (all UNRESOLVED_OWNER_ONLY);
+  negative control verified (G-04 magic parked noncritical with executable
+  fallback). No canon chosen.
+- **TASK-0118** (accessibility/options/input audit, bd) ACCEPTED + integrated
+  at `e5fb7a7f`. FINDINGS: native has no settings UI, no audio, no minimap
+  second mode; negative control verified (telegraph is color-only red cone, no
+  text/audio); input_focus + AudioMixer seams unwired.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094, 0096 all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0121 now integrated (lane freed); `ox-pc-bc` -> TASK-0115
+  (browser panel typography inventory, claimed `bd3bde95`, producing);
+  `ox-pc-bd` -> TASK-0118 now integrated (lane freed).
+
 ## SHIPPED 14 audits this session — 2026-08-23 21:15 UTC
 
 - **TASK-0096** (campaign/zone-graph measurement audit, bb) ACCEPTED +
