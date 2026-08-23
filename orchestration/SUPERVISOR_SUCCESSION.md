@@ -54,6 +54,39 @@ A failed handoff or missing acknowledgement is an owner-notification event. It
 does not authorize the outgoing supervisor to burn remaining credits by taking
 over implementation.
 
+### Delta — 2026-08-22 17:05 PDT — Cursor successor acknowledgement
+
+- State: `SUCCESSOR_ACKNOWLEDGED` then `PRIMARY_ACTIVE`. Replacement harness is
+  Cursor (Grok 4.6) on the architect checkout
+  `Z:\Code\Games\delaford\delaford_game`. Predecessor Codex Sol is retired.
+- Authority read: `AGENTS.md`, `ONBOARDING-SOL-ORCHESTRATOR.md`, PROTOCOL,
+  ORCHESTRATION, ACCEPTANCE, DECISIONS D-122–D-128, INC-011/INC-012,
+  RUN_STATUS, BACKLOG_FACTORY, CONTENT_SCALE_MATRIX, LEADER_POLICY, and this
+  file. Fetched `origin` before acting.
+- Exact checkout: branch `codex/native-reconstitution`, local = remote =
+  `2e2dece09433bb991b927305eadc52e7f5155556` (clean). The retirement packet's
+  "entrypoint" SHA `1a434371` is the TASK-0101 REVISE commit; live tip is the
+  retirement-handoff commit on top of it. Protected `master` remains
+  `a28ac92f`.
+- Standalone PC broadcast `codex/pc-overnight-game-wave` local = remote =
+  `3fa4f54c`; shared `origin/main` is Mac-owned at `d068012a` and will not be
+  written.
+- Claims/reviews: no live OpenCode CLI writer. ox-pc-ah/TASK-0161 frozen clean
+  pushed `9f004d2a` `REVIEW_REQUESTED`. ox-pc-ai/TASK-0101 revision 1 frozen
+  clean pushed `a742355d` `REVIEW_REQUESTED`. Desktop OpenCode PIDs from
+  2026-08-21 are Electron UI leftovers, not writers. Program-tree STATUS files
+  still say CLAIMED; worker trees are the review truth.
+- Board sentinel `--min-ready 24`: healthy, 24 effective READY, 16 DRAFT
+  successors, 0 collisions. Sentinel `claimed: 2` is STATUS lag; TASK-0152
+  `REVIEW_REQUESTED` on the program tree is stale (already integrated).
+- Automation: dashboard PID 9604 HTTP 200 at `http://127.0.0.1:4737/`; monitor
+  PID 7364 alive. Chat-spawning cron remains paused. No owner gate.
+- Exact next sweep: independently re-review TASK-0101 `a742355d`; rerun
+  TASK-0161's full SPEC gate in `Z:\Code\.worktrees\verdigris\review-task0161-9f004d2a`
+  (prior partial Gate-B is not acceptance); promote the readable combat
+  successor only after TASK-0101 acceptance **and** after TASK-0161 releases
+  `native/client/main.cpp`.
+
 ### Delta — 2026-08-22 16:53 PDT — owner-requested retirement
 
 - Replacement entrypoint is exact pushed program head

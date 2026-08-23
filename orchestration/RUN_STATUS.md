@@ -1,5 +1,27 @@
 # Run status — PC Verdigris overnight product wave
 
+## Cursor successor acknowledgement — 2026-08-22 17:05 PDT
+
+- Owner launched a Cursor successor after retiring Codex Sol. This is the
+  durable `SUCCESSOR_ACKNOWLEDGED` record required by
+  `SUPERVISOR_SUCCESSION.md`. The successor does not implement worker tasks.
+- Program: `Z:\Code\Games\delaford\delaford_game` on
+  `codex/native-reconstitution`, clean local/remote
+  `2e2dece09433bb991b927305eadc52e7f5155556`. Protected `master` `a28ac92f`.
+  Broadcast: `Z:\Code\.worktrees\orchestration\pc-overnight-game-wave`
+  `3fa4f54c`; Mac-owned `origin/main` `d068012a` untouched.
+- Frozen reviews, not capacity: TASK-0161 `9f004d2a` in
+  `Z:\Code\.worktrees\verdigris\ox-pc-ah`; TASK-0101 revision 1 `a742355d` in
+  `Z:\Code\.worktrees\verdigris\ox-pc-ai`. Detached 0161 review tree remains
+  `Z:\Code\.worktrees\verdigris\review-task0161-9f004d2a`.
+- Queue: board sentinel healthy, 24 READY, 16 sequenced DRAFT successors, zero
+  collisions. Runway hours remain UNKNOWN. Dashboard PID 9604 HTTP 200;
+  monitor PID 7364 live. No headless OpenCode writer.
+- Exact next action: re-review TASK-0101 `a742355d` (JSON, final-range diff,
+  citations, readable ranged contract); independently complete TASK-0161's
+  literal gate; integrate only ACCEPTED work; do not promote W1/TASK-0108
+  while TASK-0161 still owns `native/client/main.cpp`. Owner action: none.
+
 ## Supervisor retirement handoff — 2026-08-22 16:53 PDT
 
 - Owner explicitly retired this Codex supervisor for credit exhaustion and is
