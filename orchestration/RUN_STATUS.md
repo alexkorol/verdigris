@@ -1,5 +1,23 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED 21 audits this session — 2026-08-23 23:30 UTC
+
+- **TASK-0084** (reference-capture integrity manifest, bb) ACCEPTED + integrated
+  at `c0931f45`. Implemented a dependency-free Node verifier + 30-entry frozen
+  manifest (10 native/5 browser/15 composite); byte-idempotent `--write`,
+  `--verify` OK, negative (bad hash → exit 1) demonstrated.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094, 0096, 0121, 0118, 0115, 0114, 0085, 0136 all
+  ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0084 now integrated (lane freed); `ox-pc-bc` -> TASK-0162
+  (passive-tree payload hardening, claimed `1486f0e0`, implementing);
+  `ox-pc-bd` -> TASK-0160 (visual-kit packaging proof, claimed `f81a303b`,
+  implementing).
+- **Board EXHAUSTED**: all previously-READY tasks now claimed/integrated. The
+  READY backlog is empty of new work; a backlog-factory refill is the immediate
+  next bottleneck before the fleet can take new tasks.
+
 ## SHIPPED 20 audits this session — 2026-08-23 23:10 UTC
 
 - **TASK-0136** (passive-tree contract validator CLI, bd) ACCEPTED + integrated
