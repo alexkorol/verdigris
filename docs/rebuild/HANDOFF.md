@@ -1,12 +1,24 @@
 # Native reconstitution handoff
 
+## 2026-08-22 — shipped for cloud/other harnesses
+
+- Program tip `8a9b8a29` on `codex/native-reconstitution` is the Cursor
+  successor ship line. Protected merge target is `master` (was `a28ac92f`).
+- TASK-0101 and TASK-0161 are ACCEPTED/INTEGRATED. Combined native G6 with
+  `-CaptureRoot` passed (`COMBINED-EXIT=0`).
+- TASK-0108 is READY (readable ranged combat, ports 7280-7299). Exact base
+  `76368466`. Do not own `session_tests.cpp` (TASK-0162).
+- PC Codex Sol is retired. No OpenCode writer is assumed. Owner launches
+  workers on other harnesses from this tip. Standalone orchestration `main`
+  remains Mac-owned.
+
 ## 2026-08-22 — Cursor successor + TASK-0101/0161 accepted
 
 - Codex Sol retired; Cursor successor acknowledged at `5c62c904`.
 - TASK-0101 revision 1 (`a742355d`) ACCEPTED (`34ff3137`) and integrated
   (`bdecf037`).
 - TASK-0161 (`9f004d2a`) independently ACCEPTED and integrated (`76368466`).
-  Combined program re-gate is the remaining G6 proof on this tip.
+  Combined program G6 passed on that implementation tip.
 - TASK-0108 is READY from W1 with `session_tests.cpp` excluded (TASK-0162).
 
 ## 2026-08-21 — PC single-lane Ox Alpha surge runway

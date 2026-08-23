@@ -1,5 +1,15 @@
 # Run status — PC Verdigris overnight product wave
 
+## Ship for cloud/other harnesses — 2026-08-22 17:32 PDT
+
+- Owner is leaving the PC Ox launcher and will continue on cloud/other
+  harnesses. Program `codex/native-reconstitution` is clean/pushed at
+  `8a9b8a29`. Combined native G6 passed. Next protected action is PR+merge to
+  `master` so clones start from the shipped tip.
+- Claimable product packet: TASK-0108 READY, base `76368466`, ports 7280-7299.
+- Shared `alexkorol/orchestration` `main` remains Mac-owned. Owner action:
+  use the merged `master` / this program SHA as the cloud entrypoint.
+
 ## TASK-0161 accepted; readable combat successor READY — 2026-08-22 17:22 PDT
 
 - Independent detached TASK-0161 gate at `9f004d2a` passed (`GATE-EXIT=0`) with
