@@ -1472,6 +1472,16 @@ constexpr int kN3BossLife = 120;
 constexpr int kN3BossDamage = 12;
 constexpr int kN3BossTelegraphRadius = 2;
 constexpr int kN3BossTelegraphWindowMs = 1000;
+// TASK-0108 W1 GAP-RANGED-BEHAVIOUR geometry: authored ranged archetypes
+// press from beyond the two-tile melee contact ring but never past the
+// four-tile disengage horizon the swing loop below already tolerates. The
+// shot window, damage table, and reload cadence reuse the shipped N3
+// vocabulary (boss telegraph window, the kN3MonsterDamage family, the pack
+// cooldown); a marked-tile radius of 1 keeps the dodge readable without
+// inventing new balance. No projectile art, no cadence or damage retunes.
+constexpr int kN3RangedReachTiles = 4;
+constexpr int kN3RangedShotRadiusTiles = 1;
+constexpr const char* kN3RangedSkillId = "monster:ranged-shot";
 constexpr int kTownSize = 200;
 
 std::uint64_t fnv1a(const std::string& text, std::uint64_t seed) {
@@ -1882,6 +1892,27 @@ std::vector<WorldCombatEvent> WorldSimulation::start_player_attack(int player_le
   return {};
 }
 
+bool WorldSimulation::ranged_line_clear(int from_x, int from_y, int to_x, int to_y) const {
+  // Integer Bresenham over the tile grid: every intermediate cell must be
+  // walkable so wall ribs and thickets give real cover. The endpoints are the
+  // shooter's tile and the scion's occupied tile - both walkable by rule.
+  int x = from_x;
+  int y = from_y;
+  const int dx = std::abs(to_x - from_x);
+  const int dy = std::abs(to_y - from_y);
+  const int sx = from_x < to_x ? 1 : -1;
+  const int sy = from_y < to_y ? 1 : -1;
+  int err = dx - dy;
+  while (!(x == to_x && y == to_y)) {
+    const int e2 = 2 * err;
+    if (e2 > -dy) { err -= dy; x += sx; }
+    if (e2 < dx) { err += dx; y += sy; }
+    if (x == to_x && y == to_y) break;
+    if (!grid_.walkable_at(x, y)) return false;
+  }
+  return true;
+}
+
 std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
                                                               int player_attack,
                                                               int& player_life,
@@ -1908,6 +1939,59 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     const Vec2 here = tile_movement::occupied_tile(position_);
     for (auto& monster : monsters_) {
       if (!monster.alive || monster.boss) continue;
+      // TASK-0108 W1 GAP-RANGED-BEHAVIOUR: the authored ranged archetype
+      // presses from outside melee contact with the shipped readable
+      // telegraph contract - it marks the scion's current tile for the boss
+      // telegraph window (cover between shooter and scion is checked at
+      // cast), then resolves against the scion's CURRENT tile, so stepping
+      // out of the mark is a real dodge. Damage stays on the trash table.
+      if (monster.behaviour_type == "ranged") {
+        if (player_life == 0) break;
+        if (monster.telegraph_until_ms != 0 && now >= monster.telegraph_until_ms) {
+          const Vec2 p = tile_movement::occupied_tile(position_);
+          monster.telegraph_until_ms = 0;
+          monster.next_attack_ms = now + 1200;  // pack cooldown parity
+          if (std::abs(p.x - monster.shot_x) <= kN3RangedShotRadiusTiles &&
+              std::abs(p.y - monster.shot_y) <= kN3RangedShotRadiusTiles) {
+            const int damage = monster.empowered ? kN3MonsterDamage + 2 : kN3MonsterDamage;
+            player_life = std::max(0, player_life - damage);
+            WorldCombatEvent impact;
+            impact.type = "hit";
+            impact.attacker_id = monster.uuid;
+            impact.attacker_name = monster.name;
+            impact.target_id = player_uuid_;
+            impact.target_name = "Adventurer";
+            impact.skill_id = kN3RangedSkillId;
+            impact.amount = damage;
+            impact.health = player_life;
+            impact.health_max = player_life_max;
+            impact.died = player_life == 0;
+            events.push_back(impact);
+          }
+        } else if (monster.telegraph_until_ms == 0 && now >= monster.next_attack_ms) {
+          const Vec2 p = tile_movement::occupied_tile(position_);
+          if (std::abs(monster.x - p.x) <= kN3RangedReachTiles
+              && std::abs(monster.y - p.y) <= kN3RangedReachTiles
+              && ranged_line_clear(monster.x, monster.y,
+                                   static_cast<int>(p.x), static_cast<int>(p.y))) {
+            monster.shot_x = static_cast<int>(p.x);
+            monster.shot_y = static_cast<int>(p.y);
+            monster.telegraph_until_ms = now + kN3BossTelegraphWindowMs;
+            WorldCombatEvent warning;
+            warning.type = "telegraph";
+            warning.attacker_id = monster.uuid;
+            warning.attacker_name = monster.name;
+            warning.target_id = player_uuid_;
+            warning.skill_id = kN3RangedSkillId;
+            warning.radius = kN3RangedShotRadiusTiles;
+            warning.duration_ms = kN3BossTelegraphWindowMs;
+            warning.x = monster.shot_x;
+            warning.y = monster.shot_y;
+            events.push_back(warning);
+          }
+        }
+        continue;
+      }
       if (std::abs(monster.x - here.x) > 1 || std::abs(monster.y - here.y) > 1) continue;
       if (now < monster.next_attack_ms) continue;
       monster.next_attack_ms = now + 1200;
@@ -2009,7 +2093,8 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       // resolved dodge/hit rather than relying on a hidden wall-clock thread.
       next_boss_telegraph_ms_ = now;
     }
-  } else if (now >= target->next_attack_ms && std::abs(target->x - tile_movement::occupied_tile(position_).x) <= 2
+  } else if (target->behaviour_type != "ranged"  // W1: the ranged archetype only ever shoots (above)
+             && now >= target->next_attack_ms && std::abs(target->x - tile_movement::occupied_tile(position_).x) <= 2
              && std::abs(target->y - tile_movement::occupied_tile(position_).y) <= 2) {
     const int damage = target->empowered ? kN3MonsterDamage + 2 : kN3MonsterDamage;
     player_life = std::max(0, player_life - damage);

@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -2069,6 +2070,273 @@ void test_n4_depth_chaining_and_treasure() {
 
 }  // namespace
 
+// ── TASK-0108 W1: readable ranged behaviour locks ────────────────────────
+namespace {
+
+std::string w1_serialize_events(const std::vector<WorldCombatEvent>& events) {
+  std::string text;
+  for (const auto& event : events) {
+    text += event.type + "|" + event.attacker_id + ">" + event.target_id + "|" +
+            event.skill_id + "|amt=" + std::to_string(event.amount) +
+            "|xy=" + std::to_string(event.x) + "," + std::to_string(event.y) +
+            "|r=" + std::to_string(event.radius) +
+            "|ms=" + std::to_string(event.duration_ms) +
+            "|hp=" + std::to_string(event.health) + "/" +
+            std::to_string(event.health_max) + (event.died ? "|died" : "") + "\n";
+  }
+  return text;
+}
+
+const WorldMonster* w1_find_archetype(const WorldSimulation& world, const char* behaviour) {
+  for (const auto& monster : world.monsters())
+    if (monster.alive && !monster.boss && monster.behaviour_type == behaviour) return &monster;
+  return nullptr;
+}
+
+// First row-major walkable tile whose Chebyshev distance to `foe` sits inside
+// [min_reach, max_reach], with a cover-free shot line and every OTHER alive
+// monster parked beyond every attacker reach (`isolation`), so the probe
+// stream can only ever come from the archetype under test.
+std::optional<Vec2> w1_engagement_tile(const WorldSimulation& world, const WorldMonster& foe,
+                                       int min_reach, int max_reach, int isolation) {
+  const TileGrid& grid = world.grid();
+  for (int y = 0; y < grid.height; ++y) {
+    for (int x = 0; x < grid.width; ++x) {
+      if (!grid.walkable_at(x, y)) continue;
+      if (x == world.metadata().stairs_up.x && y == world.metadata().stairs_up.y) continue;
+      if (x == world.metadata().stairs_down.x && y == world.metadata().stairs_down.y) continue;
+      const int chebyshev = std::max(std::abs(x - foe.x), std::abs(y - foe.y));
+      if (chebyshev < min_reach || chebyshev > max_reach) continue;
+      bool crowded = false;
+      for (const auto& other : world.monsters()) {
+        if (!other.alive || other.uuid == foe.uuid) continue;
+        if (std::max(std::abs(other.x - x), std::abs(other.y - y)) < isolation) {
+          crowded = true;
+          break;
+        }
+      }
+      if (crowded) continue;
+      if (!world.ranged_line_clear(foe.x, foe.y, x, y)) continue;
+      return Vec2{x, y};
+    }
+  }
+  return std::nullopt;
+}
+
+// First walkable tile at least `min_from_mark` tiles (Chebyshev) from the
+// marked tile and strictly past every attacker reach of every living monster:
+// a dodging stance no archetype can pressure.
+std::optional<Vec2> w1_dodge_tile(const WorldSimulation& world, const Vec2& mark,
+                                  int min_from_mark) {
+  const TileGrid& grid = world.grid();
+  for (int y = 0; y < grid.height; ++y) {
+    for (int x = 0; x < grid.width; ++x) {
+      if (!grid.walkable_at(x, y)) continue;
+      if (std::max(std::abs(x - static_cast<int>(mark.x)),
+                   std::abs(y - static_cast<int>(mark.y))) < min_from_mark) continue;
+      bool crowded = false;
+      for (const auto& other : world.monsters()) {
+        if (!other.alive) continue;
+        if (std::max(std::abs(other.x - x), std::abs(other.y - y)) <= 4) {
+          crowded = true;
+          break;
+        }
+      }
+      if (!crowded) return Vec2{x, y};
+    }
+  }
+  return std::nullopt;
+}
+
+void test_w1_ranged_presses_beyond_melee_contact() {
+  // Authored ranged archetypes announce one marked tile on the shipped
+  // readable telegraph vocabulary, then resolve against the scion's CURRENT
+  // tile: standing in the mark takes the trash-table hit, stepping out is a
+  // dodge. No new render op, damage value, or cadence is invented.
+  WorldSimulation world(0x0108A1ULL, "guest-ranged");
+  world.enter_solo_instance("dungeon", "clearings");
+  const WorldMonster* ranged = w1_find_archetype(world, "ranged");
+  check(ranged != nullptr, "W1: the seeded floor fields a ranged archetype");
+  if (!ranged) return;
+
+  const auto spot = w1_engagement_tile(world, *ranged, 3, 4, 5);
+  check(spot.has_value(), "W1: an isolated tile beyond melee contact exists");
+  if (!spot) return;
+
+  int life = 100;
+  const std::int64_t t0 = 1000;
+  world.teleport(static_cast<int>(spot->x), static_cast<int>(spot->y), t0);
+  auto events = world.advance_combat(1, 0, life, 100, t0);
+  check(events.size() == 1 && events.front().type == "telegraph",
+        "W1: the ranged archetype opens with exactly one telegraph");
+  check(events.front().attacker_id == ranged->uuid &&
+            events.front().skill_id == "monster:ranged-shot",
+        "W1: the warning names the shooter and its skill");
+  check(events.front().x == static_cast<int>(spot->x) &&
+            events.front().y == static_cast<int>(spot->y),
+        "W1: the warning marks the scion's current tile");
+  check(events.front().radius == 1 && events.front().duration_ms == 1000,
+        "W1: the readable window reuses the shipped telegraph vocabulary");
+  check(life == 100, "W1: a telegraph never damages");
+
+  events = world.advance_combat(1, 0, life, 100, t0 + 999);
+  check(events.empty() && life == 100, "W1: the shot cannot land inside its window");
+
+  events = world.advance_combat(1, 0, life, 100, t0 + 1000);
+  check(events.size() == 1 && events.front().type == "hit",
+        "W1: standing in the mark takes exactly one resolved hit");
+  check(events.front().attacker_id == ranged->uuid &&
+            events.front().target_id == "guest-ranged" &&
+            events.front().target_name == "Adventurer",
+        "W1: the impact is attributed shooter -> scion");
+  check(events.front().amount == 5 && life == 95,
+        "W1: damage stays on the untouched kN3MonsterDamage table");
+
+  events = world.advance_combat(1, 0, life, 100, t0 + 1000);
+  check(events.empty(), "W1: reload gates an immediate follow-up shot");
+  events = world.advance_combat(1, 0, life, 100, t0 + 2200);
+  check(events.size() == 1 && events.front().type == "telegraph",
+        "W1: the next announcement follows the pack cooldown");
+
+  // Dodge control: leave the mark before resolution and the shot whiffs.
+  const auto dodge = w1_dodge_tile(world, *spot, 2);
+  check(dodge.has_value(), "W1: an unpressured dodging tile exists");
+  if (dodge) {
+    world.teleport(static_cast<int>(dodge->x), static_cast<int>(dodge->y), t0 + 2400);
+    events = world.advance_combat(1, 0, life, 100, t0 + 3200);
+    check(events.empty() && life == 95,
+          "W1: stepping out of the mark dodges the authored shot");
+  }
+}
+
+void test_w1_melee_twin_cannot_answer_beyond_contact() {
+  // The contrast lock: a melee twin held at the same out-of-contact geometry,
+  // even while engaged by the scion's own swing loop, can never deal damage.
+  WorldSimulation world(0x0108B2ULL, "guest-twin");
+  world.enter_solo_instance("dungeon", "clearings");
+  const WorldMonster* melee = w1_find_archetype(world, "melee");
+  check(melee != nullptr, "W1: the twin floor fields a melee archetype");
+  if (!melee) return;
+  const auto spot = w1_engagement_tile(world, *melee, 3, 4, 5);
+  check(spot.has_value(), "W1: an isolated out-of-contact tile exists for the twin");
+  if (!spot) return;
+
+  int life = 100;
+  world.teleport(static_cast<int>(spot->x), static_cast<int>(spot->y), 1000);
+  // Isolation guarantees the aimed target is the twin under test.
+  world.start_player_attack(1, 10, 1000, "down");
+  for (int beat = 0; beat <= 6; ++beat) {
+    const auto events = world.advance_combat(1, 10, life, 100, 1000 + 400 * beat);
+    for (const auto& event : events) {
+      check(event.attacker_id != melee->uuid,
+            "W1: the engaged melee twin never answers from beyond contact");
+      check(event.type != "telegraph",
+            "W1: no telegraph exists anywhere in the melee-twin stream");
+    }
+    check(life == 100, "W1: the scion leaves the out-of-contact duel untouched");
+  }
+}
+
+void test_w1_adjacent_melee_and_buffer_streams_are_unchanged() {
+  // Negative control for W1: existing N2/N3 content keeps its exact stream
+  // shape - adjacent pack members strike instantly on their cooldown with no
+  // telegraph (buffers included), and none of them grew ranged pressure.
+  // The probe needs BOTH archetypes isolated in one open floor, so it walks
+  // a fixed deterministic seed ladder until generation provides one.
+  std::optional<std::uint64_t> chosen;
+  for (std::uint64_t attempt = 0; attempt < 24 && !chosen; ++attempt) {
+    WorldSimulation probe(0x0108C3ULL + attempt, "guest-packs");
+    probe.enter_solo_instance("dungeon", "clearings");
+    const WorldMonster* melee = w1_find_archetype(probe, "melee");
+    const WorldMonster* buffer = w1_find_archetype(probe, "buffer");
+    if (!melee || !buffer) continue;
+    if (!w1_engagement_tile(probe, *melee, 1, 1, 5)) continue;
+    if (!w1_engagement_tile(probe, *buffer, 1, 1, 5)) continue;
+    chosen = 0x0108C3ULL + attempt;
+  }
+  check(chosen.has_value(), "W1: a seeded pack floor isolates both unchanged archetypes");
+  if (!chosen) return;
+
+  WorldSimulation world(*chosen, "guest-packs");
+  world.enter_solo_instance("dungeon", "clearings");
+  const WorldMonster* melee = w1_find_archetype(world, "melee");
+  const WorldMonster* buffer = w1_find_archetype(world, "buffer");
+  check(melee != nullptr && buffer != nullptr,
+        "W1: the chosen pack floor fields both unchanged archetypes");
+  if (!melee || !buffer) return;
+
+  for (const WorldMonster* archetype : {melee, buffer}) {
+    const auto spot = w1_engagement_tile(world, *archetype, 1, 1, 5);
+    check(spot.has_value(), "W1: an isolated adjacent tile exists for the pack probe");
+    if (!spot) return;
+    int life = 100;
+    world.teleport(static_cast<int>(spot->x), static_cast<int>(spot->y), 4000);
+    auto events = world.advance_combat(1, 0, life, 100, 4000);
+    check(events.size() == 1 && events.front().type == "hit" &&
+              events.front().attacker_id == archetype->uuid,
+          "W1: the adjacent archetype strikes instantly, exactly once");
+    check(events.front().amount == 4 + archetype->level * 2,
+          "W1: adjacent damage stays on the untouched pack formula");
+    check(w1_serialize_events(events).find("telegraph") == std::string::npos,
+          "W1: the adjacent stream carries no telegraph");
+    check(life == 100 - events.front().amount, "W1: the adjacent hit lands as before");
+    events = world.advance_combat(1, 0, life, 100, 5199);
+    check(events.empty(), "W1: the pack cooldown gates the repeat");
+    events = world.advance_combat(1, 0, life, 100, 5200);
+    check(events.size() == 1 && events.front().type == "hit" &&
+              events.front().attacker_id == archetype->uuid,
+          "W1: the repeat lands on the same cadence as before W1");
+  }
+}
+
+void test_w1_ranged_event_stream_replays_identically() {
+  // A scripted timed poll over a live ranged encounter must replay to the
+  // exact same event transcript: cast, resolve, reload, dodge whiff.
+  auto script = [](std::uint64_t seed) {
+    WorldSimulation world(seed, "guest-replay");
+    world.enter_solo_instance("marsh", "clearings");
+    const WorldMonster* ranged = w1_find_archetype(world, "ranged");
+    if (!ranged) return std::string();
+    const auto spot = w1_engagement_tile(world, *ranged, 3, 4, 5);
+    if (!spot) return std::string();
+    std::string transcript;
+    int life = 100;
+    world.teleport(static_cast<int>(spot->x), static_cast<int>(spot->y), 500);
+    bool dodged = false;
+    for (std::int64_t now = 500; now <= 9000; now += 250) {
+      if (!dodged && now >= 3000) {
+        const auto dodge = w1_dodge_tile(world, *spot, 2);
+        if (dodge) {
+          world.teleport(static_cast<int>(dodge->x), static_cast<int>(dodge->y), now);
+          dodged = true;
+        }
+      }
+      transcript += w1_serialize_events(world.advance_combat(1, 0, life, 100, now));
+    }
+    return transcript;
+  };
+  const std::string first_run = script(0x0108D4ULL);
+  const std::string second_run = script(0x0108D4ULL);
+  check(!first_run.empty(), "W1: the replay script exercised a live ranged encounter");
+  check(first_run == second_run,
+        "W1: identical seed and commands replay the ranged stream byte-identically");
+  int warnings = 0;
+  int impacts = 0;
+  for (std::size_t pos = 0; pos < first_run.size();) {
+    const std::size_t end = first_run.find('\n', pos);
+    const std::string line = first_run.substr(pos, end - pos);
+    if (line.rfind("telegraph|", 0) == 0) ++warnings;
+    if (line.rfind("hit|", 0) == 0) ++impacts;
+    if (end == std::string::npos) break;
+    pos = end + 1;
+  }
+  check(warnings >= 2, "W1: the transcript carries repeated readable warnings");
+  check(impacts >= 1, "W1: the transcript carries resolved attributed impacts");
+  check(warnings > impacts, "W1: the scripted dodge whiffs at least one warned shot");
+}
+
+}  // namespace
+
 int main() {
   test_persistence_round_trip_and_unknown_fields();
   test_persistence_d109_mid_instance_and_rng_continuation();
@@ -2126,6 +2394,10 @@ int main() {
   test_n4_ring_seats_and_wear_caps();
   test_n4_loot_math_and_depth_scaling();
   test_n4_depth_chaining_and_treasure();
+  test_w1_ranged_presses_beyond_melee_contact();
+  test_w1_melee_twin_cannot_answer_beyond_contact();
+  test_w1_adjacent_melee_and_buffer_streams_are_unchanged();
+  test_w1_ranged_event_stream_replays_identically();
   std::cout << "verdigris core tests: PASS\n";
   return 0;
 }

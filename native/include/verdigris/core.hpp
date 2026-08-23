@@ -792,6 +792,12 @@ struct WorldMonster {
   bool boss = false;
   std::uint64_t telegraph_until_ms = 0;
   std::uint64_t next_attack_ms = 0;
+  // TASK-0108 W1 ranged behaviour: an in-flight shot remembers the marked
+  // scion tile so its resolution stays a readable dodge beat (telegraph_until
+  // _ms doubles as the shot window; the boss keeps its own doorstep
+  // semantics and never sets these).
+  int shot_x = 0;
+  int shot_y = 0;
   // N4: loot/behaviour facts the wire snapshot carries (JS m.rewards.coins
   // and m.tags).
   std::vector<std::string> tags;
@@ -920,6 +926,11 @@ class WorldSimulation {
   std::vector<WorldCombatEvent> advance_combat(int player_level, int player_attack,
                                                int& player_life, int player_life_max,
                                                std::int64_t now_ms);
+  // TASK-0108 W1: cover check behind authored ranged shots - true when the
+  // straight tile line between the two tiles crosses no unwalkable cell.
+  // Pure and deterministic; exposed so locks can reason about engagement
+  // geometry without duplicating the walk.
+  bool ranged_line_clear(int from_x, int from_y, int to_x, int to_y) const;
   void set_level(int level);
   void heal_player(int& player_life, int player_life_max);
   // Display name for a template/layout pair (falls back to template-only,
