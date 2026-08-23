@@ -1,5 +1,19 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED 14 audits this session — 2026-08-23 21:15 UTC
+
+- **TASK-0096** (campaign/zone-graph measurement audit, bb) ACCEPTED +
+  integrated at `70f4af70`. FINDINGS measured the two graphs (core route table
+  + protocol world-web), verified negative control (8 MISSING campaign fields
+  preserved, not derived from route names). 18 nodes / 15 edges.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094 all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0096 now integrated (lane freed, re-point pending);
+  `ox-pc-bc` -> TASK-0115 (browser panel typography inventory, claimed
+  `bd3bde95`); `ox-pc-bd` -> TASK-0118 (accessibility/options audit,
+  surveying).
+
 ## SHIPPED 13 audits this session — 2026-08-23 20:55 UTC
 
 - **TASK-0094** (asset provenance manifest audit, bc) ACCEPTED + integrated at
