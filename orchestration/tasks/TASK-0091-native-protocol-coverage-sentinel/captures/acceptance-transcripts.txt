@@ -1,0 +1,349 @@
+TASK-0091 acceptance transcripts - repo root Z:\Code\.worktrees\verdigris\ox-pc-bc
+
+==============================================================================
+$ rg -n "Gate A|Gate B|Gate C|chronicles:|world:|player:" docs/rebuild/NATIVE_CLIENT_PROTOCOL_MATRIX.md
+------------------------------------------------------------------------------
+12:| Guest login | auto after connect | `player:login` {guestId, quickGuest} | handle_message login branch | `player:login` {player, scene} | uuid/x/y/facing/scene/inventory | SessionReady event | ✅ `native/tests/session_tests.cpp:123` — `remote: player:login acknowledged -> ready` |
+14:| Session replaced | second login same guest | — | session-replacement flush | `player:session-replaced` | Disconnected | ConnectionLost event | ✅ `native/tests/session_tests.cpp:405-406` — `replaced: first session is disconnected`; `replaced: ConnectionLost from player:session-replaced` |
+15:| Zone entry | E / route select | `world:zone:enter` {nodeId} | handler exists | `world:scene:transition` | scene + stairs_up | scene name / stairs pad | ✅ `native/tests/networking_tests.cpp:134-145` — `solo entry emits a scene transition`; `state reports instance`; `both stairs exist` |
+16:| Movement | WASD | `player:move` {direction} | handler exists | `player:movement` | x/y/facing | actor motion | ✅ `native/tests/networking_tests.cpp:111-114` — `applied sample broadcasts player:movement`; `right sample moves east` |
+18:| Primary action | click/space | `player:skill:trigger` | handler exists | combat events | last_outgoing_hit | swing/impact fx | ✅ `native/tests/session_tests.cpp:243` — `journey: outgoing combat:hit reached the client` |
+22:| Item drop | — | — | drop pipeline | `item:change`, `world:itemDropped` | ground item list | drop sparkle + log | ✅ `native/tests/networking_tests.cpp:262-266` — `floor treasure emits item:change and world:itemDropped`; `ground envelope has uuid, id, name, x, y` |
+23:| Pickup | X | `player:take:underfoot` | handler exists | `core:refresh:inventory` | inventory slots | pickup log + backpack | ✅ `native/tests/session_tests.cpp:259-260` — `journey: named item entered inventory (pickup)`; `journey: ItemPickedUp or inventory growth` |
+24:| Equip | 1-9 | `item:equip` {item.uuid} | handler exists | `player:equippedAnItem` | equipped slot + item stats | equipped HUD | ✅ `native/tests/networking_tests.cpp:402-412` — `item:equip emits player:equippedAnItem`; `equip response includes wear-slot state`; `snapshot wear matches the equip response` |
+25:| Extraction | walk stairs-up | `player:move` onto stairs | stair transition | `player:extract` / surface message | extracted + town scene | banked banner | ✅ `native/tests/session_tests.cpp:314-317` — `walking onto stairs-up returns to the surface (extract)`; `ExtractionCompleted from surface message` |
+30:## Gate B — Chronicles wire-contract freeze (TASK-0081)
+45:| House lifecycle | Found: `chronicles:house:found` {name} → `chronicles:state` {player.socket_id, chronicle{version,houses[{id,name,scions[],crypt[]}],activeHouseId,activeScionId}} (`ProtocolSession::handle` :2498-2508; builder `chronicles_state_payload` :2235-2241; `ensure_chronicle_house` :2242-2272). Alt existing mutate path: `player:chronicles:mutate` {type:"found-house", house.id, house.name} → `player:chronicles:update` {player.socket_id, chronicles, chroniclesRevision, chroniclesExists:true} (:2549-2572). Restore: `player:login` {guestId} → `chronicles:state`; `{awaitChronicles:true}` → `player:chronicles:ready` {player.socket_id, chroniclesAccountId, accountName, level, chronicles, chroniclesRevision, chroniclesExists} (:2655-2681; ready keys :2224-2234) | 🧩 | 🔴 RED: no native test label |
+46:| Scion lifecycle | Create: `chronicles:scion:create` {houseId, name} → `chronicles:state` + `createdScionId` (:2509-2518; scion entry id/name/level/mortal/deaths via `ensure_chronicle_scion` :2273-2301). Select/admission: `player:chronicles:select` {scionId, houseId, scionName, mortal} → `player:login` {player(…, player.chronicles{mortal,scionId,houseId} :582-591), scene, droppedItems[]} via `emit_login`/`login_payload` (:2632-2654, :2302, :593-595); resets commission chain + purse (:2643-2649). Set-out: `chronicles:scion:set-out` {scionId} → `player:login` (+ one-shot `game:send:message` daily road-purse notice :2530-2534; once-per-scion starter kit :2537-2543; wagon-pitch town reset :2544-2546) | 🧩 | 🔴 RED: no native test label |
+47:| Death | Server-initiated fatal fall (no client request): lethal wound with mortal oath armed (`process_combat` trigger :2111-2114) → `ProtocolSession::handle_final_death` :2128-2207 emits `chronicles:scion-fallen` {fallen{scionId|null,name,level}, relicCount, chronicle} (:2190); broadcasts `chronicles:scion-witnessed` {fallen.name, relicCount} (:2191-2198); direct `player:stats:update` {playerId, lifecycle{state:"permadead",mode:"hard"}} (:2199-2206). Fallen scion moves houses[].scions[] → houses[].crypt[] with relic{status:"lost",count} (:2147-2176); earned gear enters the circulation pool (:2133-2146) | 🧩 | 🔴 RED: no native test label |
+48:| Successor | No dedicated successor event: reuse `chronicles:scion:create` → `player:chronicles:select` (:2509-2518, :2632-2654). Return path: `player:chronicles:return` {} → `player:chronicles:ready` {player.socket_id, fallen{scionId,scionName}, + ready keys} and queues crypt heirloom relic{status:"queued", item|null} (:2586-2630). Recovery leg: elite kill surfaces circulating heirloom (`process_combat` :2083-2104; dev shortcut `dev:release-relic` :2411-2434); ground JSON carries chroniclesRelic{relicId,scionId,scionName} (:393-413); pickup `player:take:underfoot` → `core:refresh:inventory` + `world:itemDropped`/`item:change` and `mark_relic_recovered` flips crypt relic lost→recovered (:1659-1671, :1632-1658, :1602-1631, ground emit :919-927) | 🧩 | 🔴 RED: no native test label anywhere on the chain |
+exit code: 0
+
+==============================================================================
+$ rg -n "RemoteProtocolSession|ClientSnapshot|PresentationEvent|render_list" native/client native/tests
+------------------------------------------------------------------------------
+native/tests\session_tests.cpp:90:    if (event.type == verdigris::client::PresentationEventType::SessionReady) saw_ready = true;
+native/tests\session_tests.cpp:118:    auto* remote = dynamic_cast<verdigris::client::RemoteProtocolSession*>(&session);
+native/tests\session_tests.cpp:152:  verdigris::client::RemoteProtocolSession session("127.0.0.1", 7159, "negative-guest");
+native/tests\session_tests.cpp:169:    verdigris::client::RemoteProtocolSession session("127.0.0.1", port,
+native/tests\session_tests.cpp:181:      if (event.type == verdigris::client::PresentationEventType::SessionReady) saw_ready = true;
+native/tests\session_tests.cpp:220:    using T = verdigris::client::PresentationEventType;
+native/tests\session_tests.cpp:246:  verdigris::client::RemoteProtocolSession session("127.0.0.1", port, "cursor-guest-0061", true);
+native/tests\session_tests.cpp:257:    auto* remote = dynamic_cast<verdigris::client::RemoteProtocolSession*>(&session);
+native/tests\session_tests.cpp:316:      auto* remote = dynamic_cast<verdigris::client::RemoteProtocolSession*>(&session);
+native/tests\session_tests.cpp:407:  verdigris::client::RemoteProtocolSession session("127.0.0.1", port, "cursor-reconnect", true);
+native/tests\session_tests.cpp:423:      if (event.type == verdigris::client::PresentationEventType::ConnectionLost) lost = true;
+native/tests\session_tests.cpp:458:  verdigris::client::RemoteProtocolSession first("127.0.0.1", port, "cursor-replaced", true);
+native/tests\session_tests.cpp:464:  verdigris::client::RemoteProtocolSession second("127.0.0.1", port, "cursor-replaced", true);
+native/tests\session_tests.cpp:476:      if (event.type == verdigris::client::PresentationEventType::ConnectionLost) lost = true;
+native/tests\session_tests.cpp:491:void remote_render_list_ops() {
+native/tests\session_tests.cpp:497:  verdigris::client::RemoteProtocolSession session("127.0.0.1", port, "cursor-render-ops", true);
+native/tests\session_tests.cpp:507:    auto* remote = dynamic_cast<verdigris::client::RemoteProtocolSession*>(&session);
+native/tests\session_tests.cpp:558:// RFC6455 client because RemoteProtocolSession polls dev:state for its own
+native/tests\session_tests.cpp:2096:  remote_render_list_ops();
+native/tests\presentation_events_tests.cpp:26:using verdigris::client::PresentationEvent;
+native/tests\presentation_events_tests.cpp:27:using verdigris::client::PresentationEventType;
+native/tests\presentation_events_tests.cpp:75:  PresentationEvent plain{PresentationEventType::DamageApplied, "foe-1", "",
+native/tests\presentation_events_tests.cpp:82:  PresentationEvent crit{PresentationEventType::DamageApplied, "foe-1", "",
+native/tests\presentation_events_tests.cpp:107:  PresentationEvent lost{PresentationEventType::ScionLost, "scion-1", "", "Fable",
+native/tests\presentation_events_tests.cpp:125:  PresentationEvent expired{PresentationEventType::BuffExpired, "scion-1", "",
+native/tests\presentation_events_tests.cpp:132:  PresentationEvent unknown_buff{PresentationEventType::BuffExpired, "scion-1", "",
+native/tests\presentation_events_tests.cpp:151:    if (event.type == PresentationEventType::BuffExpired &&
+native/tests\audio_mixer_tests.cpp:33:using verdigris::client::PresentationEvent;
+native/tests\audio_mixer_tests.cpp:34:using verdigris::client::PresentationEventType;
+native/tests\audio_mixer_tests.cpp:36:PresentationEvent make_event(PresentationEventType type, bool critical,
+native/tests\audio_mixer_tests.cpp:38:  PresentationEvent event;
+native/tests\audio_mixer_tests.cpp:59:  check(mixer.ingest(make_event(PresentationEventType::DamageApplied, false,
+native/tests\audio_mixer_tests.cpp:63:  check(mixer.ingest(make_event(PresentationEventType::DamageApplied, true,
+native/tests\audio_mixer_tests.cpp:67:  check(mixer.ingest(make_event(PresentationEventType::ActorDied, false,
+native/tests\audio_mixer_tests.cpp:71:  check(mixer.ingest(make_event(PresentationEventType::ScionLost, false, ""),
+native/tests\audio_mixer_tests.cpp:75:            make_event(PresentationEventType::BuffExpired, false, "war-cry"),
+native/tests\audio_mixer_tests.cpp:86:    PresentationEventType type;
+native/tests\audio_mixer_tests.cpp:99:      {PresentationEventType::DamageApplied, false, "outgoing", "hit",
+native/tests\audio_mixer_tests.cpp:102:      {PresentationEventType::DamageApplied, true, "outgoing", "crit",
+native/tests\audio_mixer_tests.cpp:105:      {PresentationEventType::ActorDied, false, "monster", "kill", Bus::Sfx,
+native/tests\audio_mixer_tests.cpp:107:      {PresentationEventType::ScionLost, false, "", "scion-lost", Bus::Sfx,
+native/tests\audio_mixer_tests.cpp:109:      {PresentationEventType::BuffExpired, false, "war-cry", "warcry-expire",
+native/tests\audio_mixer_tests.cpp:142:      make_event(PresentationEventType::ActorDied, false, "monster"), &cue);
+native/tests\audio_mixer_tests.cpp:148:    PresentationEventType type;
+native/tests\audio_mixer_tests.cpp:153:      {PresentationEventType::ActorDied, false, "scion"},
+native/tests\audio_mixer_tests.cpp:154:      {PresentationEventType::ActorDied, false, ""},
+native/tests\audio_mixer_tests.cpp:155:      {PresentationEventType::ActorDied, false, "elite"},
+native/tests\audio_mixer_tests.cpp:156:      {PresentationEventType::ActorDied, false, "MONSTER"},
+native/tests\audio_mixer_tests.cpp:157:      {PresentationEventType::ActorDied, true, "scion"},
+native/tests\audio_mixer_tests.cpp:158:      {PresentationEventType::ActorDied, true, ""},
+native/tests\audio_mixer_tests.cpp:173:            make_event(PresentationEventType::ActorDied, false, "scion"), 5),
+native/tests\audio_mixer_tests.cpp:175:  check(mixer.ingest(make_event(PresentationEventType::ScionLost, false, ""),
+native/tests\audio_mixer_tests.cpp:186:  const PresentationEventType unknown[] = {
+native/tests\audio_mixer_tests.cpp:187:      PresentationEventType::ConnectionEstablished,
+native/tests\audio_mixer_tests.cpp:188:      PresentationEventType::ConnectionLost,
+native/tests\audio_mixer_tests.cpp:189:      PresentationEventType::SessionReady,
+native/tests\audio_mixer_tests.cpp:190:      PresentationEventType::AttackStarted,
+native/tests\audio_mixer_tests.cpp:191:      PresentationEventType::ItemDropped,
+native/tests\audio_mixer_tests.cpp:192:      PresentationEventType::ItemPickedUp,
+native/tests\audio_mixer_tests.cpp:193:      PresentationEventType::ItemEquipped,
+native/tests\audio_mixer_tests.cpp:194:      PresentationEventType::ExtractionCompleted,
+native/tests\audio_mixer_tests.cpp:195:      PresentationEventType::ScionDied,
+native/tests\audio_mixer_tests.cpp:196:      PresentationEventType::Telegraph,
+native/tests\audio_mixer_tests.cpp:197:      PresentationEventType::Message,
+native/tests\audio_mixer_tests.cpp:198:      PresentationEventType::ProtocolError,
+native/tests\audio_mixer_tests.cpp:201:  for (PresentationEventType type : unknown) {
+native/tests\audio_mixer_tests.cpp:206:      make_event(PresentationEventType::BuffExpired, false, "shield"), 1);
+native/tests\audio_mixer_tests.cpp:217:  mixer.ingest(make_event(PresentationEventType::DamageApplied, false, ""), 20);
+native/tests\audio_mixer_tests.cpp:219:      make_event(PresentationEventType::ActorDied, false, "monster"), 5);
+native/tests\audio_mixer_tests.cpp:220:  mixer.ingest(make_event(PresentationEventType::DamageApplied, true, ""), 20);
+native/tests\audio_mixer_tests.cpp:221:  mixer.ingest(make_event(PresentationEventType::ScionLost, false, ""), 5);
+native/tests\audio_mixer_tests.cpp:223:      make_event(PresentationEventType::BuffExpired, false, "war-cry"), 11);
+native/tests\audio_mixer_tests.cpp:267:    mixer.ingest(make_event(PresentationEventType::DamageApplied, false, ""),
+native/client\presentation_events.hpp:12:enum class PresentationEventType {
+native/client\presentation_events.hpp:31:struct PresentationEvent {
+native/client\presentation_events.hpp:32:  PresentationEventType type;
+native/client\main.cpp:23:#include "render_list.hpp"
+native/client\main.cpp:298:  // next to each draw (the same discipline as render_list ops) so the
+native/client\main.cpp:318:  render::List render_list;
+native/client\main.cpp:3274:    state.render_list = std::move(rl);
+native/client\main.cpp:3789:  state.render_list = std::move(rl);
+native/client\main.cpp:4231:  for (const auto& op : state.render_list)
+native/client\main.cpp:4239:  for (const auto& op : state.render_list) {
+native/client\main.cpp:4254:  scenario_check(render::any(state.render_list, render::Op::Floor),
+native/client\main.cpp:4258:        render::first(state.render_list, render::Op::Floor);
+native/client\main.cpp:4263:  scenario_check(render::count(state.render_list, render::Op::Orb) >= 2,
+native/client\main.cpp:4265:  scenario_check(render::count(state.render_list, render::Op::Quickbar) >= 4,
+native/client\main.cpp:4267:  scenario_check(render::any(state.render_list, render::Op::Minimap),
+native/client\main.cpp:4338:  for (const auto& item : state.render_list)
+native/client\main.cpp:4351:  for (const auto& item : state.render_list)
+native/client\main.cpp:4359:        render::first(state.render_list, render::Op::Extraction);
+native/client\main.cpp:4363:  scenario_check(render::any(state.render_list, render::Op::Player),
+native/client\main.cpp:4384:        render::first(state.render_list, render::Op::Floor);
+native/client\main.cpp:4387:    scenario_check(render::count(state.render_list, render::Op::Tile) > 8,
+native/client\main.cpp:4389:    scenario_check(render::any(state.render_list, render::Op::Scenery),
+native/client\main.cpp:4391:    scenario_check(render::any(state.render_list, render::Op::Player),
+native/client\main.cpp:4401:    saw_swing = saw_swing || render::any(state.render_list, render::Op::Swing);
+native/client\main.cpp:4402:    saw_damage = saw_damage || render::any(state.render_list, render::Op::Damage);
+native/client\main.cpp:4403:    saw_death = saw_death || render::any(state.render_list, render::Op::Death);
+native/client\main.cpp:4404:    saw_drop = saw_drop || render::any(state.render_list, render::Op::Drop);
+native/client\main.cpp:4410:  scenario_check(!render::any(state.render_list, render::Op::Monster),
+native/client\main.cpp:4422:  scenario_check(render::any(state.render_list, render::Op::Drop),
+native/client\main.cpp:4434:  scenario_check(render::any(state.render_list, render::Op::PaneItem),
+native/client\main.cpp:4436:  const render::Item* weapon = render::first(state.render_list, render::Op::PaneWeapon);
+native/client\main.cpp:4445:    weapon = render::first(state.render_list, render::Op::PaneWeapon);
+native/client\main.cpp:4448:    const render::Item* stat = render::first(state.render_list, render::Op::PaneStat);
+native/client\main.cpp:4462:    for (const auto& item : state.render_list)
+native/client\main.cpp:4481:  const render::Item* banked = render::first(state.render_list, render::Op::PaneBanked);
+native/client\main.cpp:4489:  for (const auto& item : state.render_list)
+native/client\main.cpp:4513:  scenario_check(render::any(state.render_list, render::Op::Telegraph),
+native/client\main.cpp:4515:  scenario_check(telegraph_avoids_hud(state.render_list, RECT{0, 0, 960, 600}),
+native/client\main.cpp:4540:    saw_target_flash = saw_target_flash || render::any(state.render_list, render::Op::TargetFlash);
+native/client\main.cpp:4541:    saw_damage = saw_damage || render::any(state.render_list, render::Op::Damage);
+native/client\main.cpp:4542:    saw_death = saw_death || render::any(state.render_list, render::Op::Death);
+native/client\main.cpp:4549:  bool present_early = render::any(state.render_list, render::Op::Damage);
+native/client\main.cpp:4553:    if (i == 5) present_mid = render::any(state.render_list, render::Op::Damage);
+native/client\main.cpp:4554:    if (i == 13) gone_late = !render::any(state.render_list, render::Op::Damage);
+native/client\main.cpp:4571:      saw_pulse = saw_pulse || render::any(state.render_list, render::Op::ScreenPulse);
+native/client\main.cpp:4572:      const render::Item* dmg = render::first(state.render_list, render::Op::Damage);
+native/client\main.cpp:4581:int scenario_remote_render_list() {
+native/client\main.cpp:4598:  state.session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+native/client\main.cpp:4622:  scenario_check(render::any(state.render_list, render::Op::Floor),
+native/client\main.cpp:4624:  scenario_check(render::any(state.render_list, render::Op::Tile),
+native/client\main.cpp:4626:  scenario_check(render::count(state.render_list, render::Op::Orb) >= 2,
+native/client\main.cpp:4628:  scenario_check(render::count(state.render_list, render::Op::Quickbar) >= 4,
+native/client\main.cpp:4630:  scenario_check(render::any(state.render_list, render::Op::Minimap),
+native/client\main.cpp:4632:  const render::Item* extract = render::first(state.render_list, render::Op::Extraction);
+native/client\main.cpp:4638:  for (const auto& item : state.render_list) {
+native/client\main.cpp:4660:    saw_monster = saw_monster || render::any(state.render_list, render::Op::Monster);
+native/client\main.cpp:4661:    saw_swing = saw_swing || render::any(state.render_list, render::Op::Swing);
+native/client\main.cpp:4662:    saw_drop = saw_drop || render::any(state.render_list, render::Op::Drop);
+native/client\main.cpp:4772:bool render_list_has(const ClientState& state, render::Op op,
+native/client\main.cpp:4774:  for (const auto& item : state.render_list) {
+native/client\main.cpp:4798:      static_cast<verdigris::client::RemoteProtocolSession*>(state.session.get());
+native/client\main.cpp:4831:  state.session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+native/client\main.cpp:4841:  scenario_check(render_list_has(state, render::Op::Chronicles, "title"),
+native/client\main.cpp:4843:  scenario_check(render_list_has(state, render::Op::Chronicles, "action:found-house"),
+native/client\main.cpp:4853:  scenario_check(render_list_has(state, render::Op::Chronicles, "house "),
+native/client\main.cpp:4855:  scenario_check(render_list_has(state, render::Op::Chronicles, "action:create-scion"),
+native/client\main.cpp:4866:  scenario_check(render_list_has(state, render::Op::Chronicles, "action:set-out:"),
+native/client\main.cpp:4868:  scenario_check(render_list_has(state, render::Op::Chronicles, "oath:off"),
+native/client\main.cpp:4874:  scenario_check(render_list_has(state, render::Op::Chronicles, "oath:on"),
+native/client\main.cpp:4888:  scenario_check(!render_list_has(state, render::Op::Chronicles, "title"),
+native/client\main.cpp:4890:  scenario_check(render_list_has(state, render::Op::HouseChip, "House "),
+native/client\main.cpp:4902:  scenario_check(render::any(state.render_list, render::Op::Floor),
+native/client\main.cpp:4929:  scenario_check(render_list_has(state, render::Op::Chronicles, "fallen:"),
+native/client\main.cpp:4931:  scenario_check(render_list_has(state, render::Op::Chronicles, "crypt " + first_scion_id),
+native/client\main.cpp:4933:  scenario_check(render_list_has(state, render::Op::Chronicles, "action:create-scion"),
+native/client\main.cpp:4955:      render_list_has(state, render::Op::Chronicles, "action:select-scion:" + successor_id),
+native/client\main.cpp:4983:    for (const auto& item : state.render_list)
+native/client\main.cpp:5010:  scenario_check(render_list_has(state, render::Op::Hud, "relic: "),
+native/client\main.cpp:5018:  state.session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+native/client\main.cpp:5035:  scenario_check(render_list_has(state, render::Op::Chronicles, "scion " + successor_id),
+native/client\main.cpp:5080:    for (const auto& item : s.render_list)
+native/client\main.cpp:5130:    scenario_check(render::any(state.render_list, render::Op::PaneWeapon),
+native/client\main.cpp:5136:    scenario_check(!render::any(state.render_list, render::Op::PaneWeapon) &&
+native/client\main.cpp:5137:                       !render::any(state.render_list, render::Op::PaneItem) &&
+native/client\main.cpp:5138:                       !render::any(state.render_list, render::Op::PaneStat),
+native/client\main.cpp:5165:    state.session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+native/client\main.cpp:5199:    for (const auto& item : state.render_list)
+native/client\main.cpp:5271:  state.session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+native/client\main.cpp:5286:      render_list_has(state, render::Op::PaneStat, "TREE no authoritative data"),
+native/client\main.cpp:5334:      render_list_has(state, render::Op::PaneStat,
+native/client\main.cpp:5338:  scenario_check(!render_list_has(state, render::Op::PaneStat,
+native/client\main.cpp:5368:  scenario_check(render_list_has(state, render::Op::PaneStat, "TREE pts 0/"),
+native/client\main.cpp:5370:  scenario_check(!render_list_has(state, render::Op::PaneStat,
+native/client\main.cpp:5497:    scenario_check(render::any(state.render_list, render::Op::PaneStat) &&
+native/client\main.cpp:5498:                       render::any(state.render_list, render::Op::PaneWeapon),
+native/client\main.cpp:5555:    scenario_check(render_list_has(state, render::Op::HouseChip, "House ") &&
+native/client\main.cpp:5556:                       !render_list_has(state, render::Op::HouseChip,
+native/client\main.cpp:5560:    scenario_check(render_list_has(state, render::Op::Hud, "controls:") &&
+native/client\main.cpp:5561:                       render::any(state.render_list, render::Op::Hud) &&
+native/client\main.cpp:5562:                       render_list_has(state, render::Op::PaneBanked, "Banked") &&
+native/client\main.cpp:5563:                       render_list_has(state, render::Op::PaneStat, "TREE"),
+native/client\main.cpp:5572:    scenario_check(!render::any(state.render_list, render::Op::PaneStat) &&
+native/client\main.cpp:5573:                       !render::any(state.render_list, render::Op::PaneItem),
+native/client\main.cpp:5618:      state.session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+native/client\main.cpp:5693:      {"remote-render-list", scenario_remote_render_list},
+native/client\main.cpp:5760:std::string dump_render_list_json(const std::string& scene, int width, int height,
+native/client\main.cpp:5876:      saw_swing = saw_swing || render::any(state.render_list, render::Op::Swing);
+native/client\main.cpp:5877:      monsters = render::count(state.render_list, render::Op::Monster);
+native/client\main.cpp:5891:    if (!render::any(state.render_list, render::Op::Telegraph)) {
+native/client\main.cpp:5917:    if (!render::any(state.render_list, render::Op::PaneItem) &&
+native/client\main.cpp:5918:        !render::any(state.render_list, render::Op::PaneWeapon)) {
+native/client\main.cpp:5922:    if (!render::any(state.render_list, render::Op::Drop) && state.world.carried.empty()) {
+native/client\main.cpp:5944:                         render::any(state.render_list, render::Op::ScreenPulse);
+native/client\main.cpp:5970:bool render_list_has_label(const render::List& list, render::Op op,
+native/client\main.cpp:5994:      render_list_has_label(state.render_list, render::Op::TargetFlash,
+native/client\main.cpp:6017:    const verdigris::client::PresentationEvent crit_hit{
+native/client\main.cpp:6018:        verdigris::client::PresentationEventType::DamageApplied, "", "",
+native/client\main.cpp:6020:    const verdigris::client::PresentationEvent plain_hit{
+native/client\main.cpp:6021:        verdigris::client::PresentationEventType::DamageApplied, "", "",
+native/client\main.cpp:6023:    const verdigris::client::PresentationEvent lost{
+native/client\main.cpp:6024:        verdigris::client::PresentationEventType::ScionLost, "", "", "", 0, false, {}};
+native/client\main.cpp:6025:    const verdigris::client::PresentationEvent expired{
+native/client\main.cpp:6026:        verdigris::client::PresentationEventType::BuffExpired, "", "", "war-cry", 0,
+native/client\main.cpp:6067:      saw_fade_op = render_list_has_label(state.render_list, render::Op::WarCry,
+native/client\main.cpp:6113:  scenario_check(render_list_has_label(state.render_list, render::Op::ScreenPulse,
+native/client\main.cpp:6236:    scenario_check(render_list_has_label(capture_state.render_list, render::Op::Damage,
+native/client\main.cpp:6238:                       render_list_has_label(capture_state.render_list, render::Op::Damage,
+native/client\main.cpp:6242:        render_list_has_label(capture_state.render_list, render::Op::Damage,
+native/client\main.cpp:6246:        render_list_has_label(capture_state.render_list, render::Op::WarCry,
+native/client\main.cpp:6252:        render_list_has_label(capture_state.render_list, render::Op::TargetFlash,
+native/client\main.cpp:6308:    const std::string json = dump_render_list_json(scene.name, 1920, 1080, first.render_list);
+native/client\main.cpp:6315:    const std::string json2 = dump_render_list_json(scene.name, 1920, 1080, second.render_list);
+native/client\main.cpp:6344:    std::printf("ok %s (%zu ops)\n", scene.name, first.render_list.size());
+native/client\main.cpp:6356:  state->session = std::make_unique<verdigris::client::RemoteProtocolSession>(
+native/client\client_model.hpp:5:// here. Both LocalCoreSession and RemoteProtocolSession publish this type;
+native/client\render_list.hpp:1:// render_list.hpp — D-119 presentation recording layer (TASK-0051).
+native/client\local_session.hpp:28:  std::vector<PresentationEvent> drain_events() override;
+native/client\local_session.hpp:44:  std::vector<PresentationEvent> pending_events_;
+native/client\presentation_state.cpp:183:                             const PresentationEvent& event, bool prefer_player) {
+native/client\presentation_state.cpp:194:                              const PresentationEvent& event, std::uint64_t now_tick) {
+native/client\presentation_state.cpp:195:  const bool to_player = event.text == "incoming" || event.type == PresentationEventType::ScionDied;
+native/client\presentation_state.cpp:200:    case PresentationEventType::AttackStarted:
+native/client\presentation_state.cpp:205:    case PresentationEventType::DamageApplied: {
+native/client\presentation_state.cpp:229:    case PresentationEventType::Telegraph: {
+native/client\presentation_state.cpp:243:    case PresentationEventType::ActorDied:
+native/client\presentation_state.cpp:244:    case PresentationEventType::ScionDied:
+native/client\presentation_state.cpp:246:      if (event.type == PresentationEventType::ScionDied) fx.telegraphs.clear();
+native/client\presentation_state.cpp:251:    case PresentationEventType::ScionLost:
+native/client\presentation_state.cpp:262:    case PresentationEventType::BuffExpired:
+native/client\presentation_state.cpp:270:    case PresentationEventType::ItemDropped: {
+native/client\presentation_state.cpp:283:    case PresentationEventType::ItemPickedUp:
+native/client\presentation_state.cpp:287:    case PresentationEventType::ExtractionCompleted:
+native/client\presentation_state.cpp:291:    case PresentationEventType::ConnectionLost:
+native/client\presentation_state.cpp:296:    case PresentationEventType::Message:
+native/client\presentation_state.cpp:297:    case PresentationEventType::SessionReady:
+native/client\presentation_state.cpp:298:    case PresentationEventType::ItemEquipped:
+native/client\presentation_state.cpp:299:    case PresentationEventType::ConnectionEstablished:
+native/client\presentation_state.cpp:300:    case PresentationEventType::ProtocolError:
+native/client\presentation_state.cpp:303:  if (event.type != PresentationEventType::ConnectionEstablished) {
+native/client\presentation_state.cpp:306:      case PresentationEventType::DamageApplied:
+native/client\presentation_state.cpp:309:      case PresentationEventType::ActorDied:
+native/client\presentation_state.cpp:312:      case PresentationEventType::Telegraph:
+native/client\presentation_state.cpp:315:      case PresentationEventType::ItemDropped:
+native/client\presentation_state.cpp:318:      case PresentationEventType::ItemPickedUp:
+native/client\presentation_state.cpp:321:      case PresentationEventType::ConnectionLost:
+native/client\presentation_state.cpp:325:      case PresentationEventType::ScionLost:
+native/client\presentation_state.cpp:328:      case PresentationEventType::BuffExpired:
+native/client\remote_session.hpp:3:// RemoteProtocolSession (D-122): the ONLY client code allowed to own a
+native/client\remote_session.hpp:23:class RemoteProtocolSession final : public IClientSession {
+native/client\remote_session.hpp:25:  RemoteProtocolSession(std::string host, std::uint16_t port,
+native/client\remote_session.hpp:27:  ~RemoteProtocolSession() override;
+native/client\remote_session.hpp:29:  RemoteProtocolSession(const RemoteProtocolSession&) = delete;
+native/client\remote_session.hpp:30:  RemoteProtocolSession& operator=(const RemoteProtocolSession&) = delete;
+native/client\remote_session.hpp:38:  std::vector<PresentationEvent> drain_events() override;
+native/client\remote_session.hpp:77:  std::vector<PresentationEvent> pending_events_;
+native/client\session.hpp:7:// RemoteProtocolSession is the single place allowed to know a socket exists.
+native/client\session.hpp:94:  virtual std::vector<PresentationEvent> drain_events() = 0;
+native/client\presentation_state.hpp:17:#include "render_list.hpp"
+native/client\presentation_state.hpp:151:                              const PresentationEvent& event, std::uint64_t now_tick);
+native/client\local_session.cpp:104:  pending_events_.push_back({PresentationEventType::SessionReady, "", "", "local", 0});
+native/client\local_session.cpp:168:std::vector<PresentationEvent> LocalCoreSession::drain_events() {
+native/client\local_session.cpp:169:  std::vector<PresentationEvent> drained;
+native/client\local_session.cpp:235:    PresentationEvent out;
+native/client\local_session.cpp:241:      case verdigris::EventType::AttackStarted: out.type = PresentationEventType::AttackStarted; break;
+native/client\local_session.cpp:242:      case verdigris::EventType::DamageApplied: out.type = PresentationEventType::DamageApplied; break;
+native/client\local_session.cpp:243:      case verdigris::EventType::ActorDied: out.type = PresentationEventType::ActorDied; break;
+native/client\local_session.cpp:244:      case verdigris::EventType::ItemDropped: out.type = PresentationEventType::ItemDropped; break;
+native/client\local_session.cpp:245:      case verdigris::EventType::ItemPickedUp: out.type = PresentationEventType::ItemPickedUp; break;
+native/client\local_session.cpp:246:      case verdigris::EventType::ItemEquipped: out.type = PresentationEventType::ItemEquipped; break;
+native/client\local_session.cpp:247:      case verdigris::EventType::ItemExtracted: out.type = PresentationEventType::ExtractionCompleted; break;
+native/client\local_session.cpp:249:      // the presentation seam so every renderer consumes PresentationEvents.
+native/client\local_session.cpp:250:      case verdigris::EventType::ScionLost: out.type = PresentationEventType::ScionLost; break;
+native/client\local_session.cpp:251:      case verdigris::EventType::BuffExpired: out.type = PresentationEventType::BuffExpired; break;
+native/client\remote_session.cpp:241:RemoteProtocolSession::RemoteProtocolSession(std::string host, std::uint16_t port,
+native/client\remote_session.cpp:246:RemoteProtocolSession::~RemoteProtocolSession() { shutdown(); }
+native/client\remote_session.cpp:248:bool RemoteProtocolSession::connect_transport(std::string* error) {
+native/client\remote_session.cpp:295:      {PresentationEventType::ConnectionEstablished, "", "", host_, port_});
+native/client\remote_session.cpp:297:  reader_ = std::make_unique<std::thread>(&RemoteProtocolSession::reader_loop, this);
+native/client\remote_session.cpp:322:void RemoteProtocolSession::close_transport() {
+native/client\remote_session.cpp:333:void RemoteProtocolSession::begin_retry(const std::string& reason) {
+native/client\remote_session.cpp:342:        {PresentationEventType::ConnectionLost, "", "", reason, 0});
+native/client\remote_session.cpp:354:void RemoteProtocolSession::pump_retry() {
+native/client\remote_session.cpp:373:bool RemoteProtocolSession::start(std::string* error) {
+native/client\remote_session.cpp:394:void RemoteProtocolSession::shutdown() {
+native/client\remote_session.cpp:410:void RemoteProtocolSession::submit(const ClientCommand& command) {
+native/client\remote_session.cpp:462:      pending_events_.push_back({PresentationEventType::Message, "", "",
+native/client\remote_session.cpp:510:void RemoteProtocolSession::poll() {
+native/client\remote_session.cpp:531:      pending_events_.push_back({PresentationEventType::ProtocolError, "", "", error, 0});
+native/client\remote_session.cpp:547:std::vector<PresentationEvent> RemoteProtocolSession::drain_events() {
+native/client\remote_session.cpp:548:  std::vector<PresentationEvent> drained;
+native/client\remote_session.cpp:553:bool RemoteProtocolSession::send_raw(const std::string& event, verdigris::networking::JsonValue data) {
+native/client\remote_session.cpp:558:bool RemoteProtocolSession::send_envelope(const Envelope& envelope) {
+native/client\remote_session.cpp:562:bool RemoteProtocolSession::send_frame(std::uint8_t opcode, const std::string& payload) {
+native/client\remote_session.cpp:592:void RemoteProtocolSession::reader_loop() {
+native/client\remote_session.cpp:636:void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
+native/client\remote_session.cpp:673:        {PresentationEventType::SessionReady, model_.player.uuid, "", "", 0});
+native/client\remote_session.cpp:714:        {PresentationEventType::ScionDied, model_.chronicle.fallen.scion_id, "",
+native/client\remote_session.cpp:717:        {PresentationEventType::Message, "", "",
+native/client\remote_session.cpp:730:      pending_events_.push_back({PresentationEventType::Message, "", "", model_.last_message, 0});
+native/client\remote_session.cpp:734:            {PresentationEventType::ExtractionCompleted, model_.player.uuid, "",
+native/client\remote_session.cpp:764:    pending_events_.push_back({PresentationEventType::Telegraph,
+native/client\remote_session.cpp:791:      pending_events_.push_back({PresentationEventType::DamageApplied,
+native/client\remote_session.cpp:795:            {PresentationEventType::ScionDied, model_.player.uuid, "", "", 0});
+native/client\remote_session.cpp:820:      pending_events_.push_back({PresentationEventType::AttackStarted,
+native/client\remote_session.cpp:823:      PresentationEvent outgoing;
+native/client\remote_session.cpp:824:      outgoing.type = PresentationEventType::DamageApplied;
+native/client\remote_session.cpp:835:        pending_events_.push_back({PresentationEventType::ActorDied,
+native/client\remote_session.cpp:846:        pending_events_.push_back({PresentationEventType::ItemDropped,
+native/client\remote_session.cpp:946:        pending_events_.push_back({PresentationEventType::ItemPickedUp, model_.player.uuid,
+native/client\remote_session.cpp:961:        pending_events_.push_back({PresentationEventType::ItemEquipped, model_.player.uuid,
+native/client\remote_session.cpp:971:void RemoteProtocolSession::fail(ConnectionState state, const std::string& error) {
+native/client\remote_session.cpp:974:  pending_events_.push_back({PresentationEventType::ConnectionLost, "", "", error, 0});
+exit code: 0
+
+==============================================================================
+$ node -e "JSON.parse(require('fs').readFileSync('orchestration/tasks/TASK-0091-native-protocol-coverage-sentinel/captures/coverage.json','utf8')); console.log('coverage JSON: PASS')"
+------------------------------------------------------------------------------
+coverage JSON: PASS
+exit code: 0
+
+==============================================================================
+$ git diff --check
+------------------------------------------------------------------------------
+exit code: 0
+
+==============================================================================
+$ git diff --name-only
+------------------------------------------------------------------------------
+orchestration/tasks/TASK-0091-native-protocol-coverage-sentinel/FINDINGS.md
+orchestration/tasks/TASK-0091-native-protocol-coverage-sentinel/captures/coverage.json
+exit code: 0
+
