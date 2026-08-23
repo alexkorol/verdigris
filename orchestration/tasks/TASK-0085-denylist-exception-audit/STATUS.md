@@ -2,7 +2,7 @@
 
 - task: TASK-0085
 - title: Live denylist-exception evidence packet
-- state: CLAIMED
+- state: REVIEW_REQUESTED
 - lane: ox-pc-bb
 - model: openrouter/stealth/ox-alpha
 - base_commit: d2423873c577d299b3b39c56024d1d840993c72b
@@ -39,5 +39,17 @@
 
 ## Transition log
 
-- CLAIMED: this commit (STATUS.md only), pushed to origin
+- CLAIMED: commit `224a0b7c` (STATUS.md only), pushed to origin
   worker/verdigris/pc/ox-pc-bb.
+- EVIDENCE COMPLETE: FINDINGS.md written (occurrence/contract/visibility tables
+  + three-disposition evidence for `legacyRelicId` and `bronze-dagger`, plus
+  live gate-mechanics findings); all five SPEC acceptance commands run literally
+  with transcripts and exit codes in REPORT.md (all exit 0; supplemental checker
+  self-test exit 1 / scan exit 0 documented). Worker writes confined to this
+  task folder; no forbidden path touched; no ports bound or probed (6500
+  untouched); no disposition chosen, nothing renamed, denylist unchanged.
+- REVIEW_REQUESTED: REPORT.md carries literal acceptance transcripts; frozen
+  review head is the commit carrying this STATUS flip (SHA recorded in the
+  follow-up record commit and in the pushed ref
+  `origin/worker/verdigris/pc/ox-pc-bb`). No merge, no force-push, no
+  program-branch push.
