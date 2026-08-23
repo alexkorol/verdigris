@@ -1,5 +1,22 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED 22 audits this session — 2026-08-23 23:50 UTC
+
+- **TASK-0162** (native passive-tree payload hardening, bc) ACCEPTED + integrated
+  at `ef2acd34`. Implemented fail-closed `apply_passive_tree` (schema v2,
+  nonnegative integrals, documented transport bound 65536, deterministic
+  single diagnostic, snapshot preservation); 507 new session-test lines (79
+  PASS), build + session tests green.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094, 0096, 0121, 0118, 0115, 0114, 0085, 0136, 0084
+  all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0084 integrated (freed); `ox-pc-bc` -> TASK-0162 now
+  integrated (freed); `ox-pc-bd` -> TASK-0160 (visual-kit packaging proof,
+  claimed `f81a303b`, implementing).
+- **Board EXHAUSTED**: no unclaimed READY work remains; backlog-factory refill
+  is the immediate next bottleneck for fleet capacity.
+
 ## SHIPPED 21 audits this session — 2026-08-23 23:30 UTC
 
 - **TASK-0084** (reference-capture integrity manifest, bb) ACCEPTED + integrated
