@@ -1,0 +1,210 @@
+{
+  "task": "TASK-0097-persistence-durability-audit",
+  "lane": "ox-pc-bg",
+  "model": "openrouter/stealth/ox-alpha",
+  "base_commit": "d2423873c577d299b3b39c56024d1d840993c72b",
+  "head_commit_note": "frozen head SHA recorded in STATUS.md (this evidence commit); branch worker/verdigris/pc/ox-pc-bg",
+  "audit_scope": "native/src, native/include, native/tests (read-only; no real saves touched)",
+  "frozen_invariants": {
+    "D-106": {
+      "ruling": "items are never destroyed by Scion death; everything carried returns to a recoverable pool",
+      "canon": "orchestration/DECISIONS.md:42-46",
+      "native_evidence": [
+        "native/src/core.cpp:798-823 (death registers every carried item into house.relic_candidates with history marker; trophies into house.lost_trophies)",
+        "native/src/core.cpp:543-553 + 1197-1223 (surfaced recovery candidates survive instance retirement via pending queues)",
+        "native/src/networking.cpp:2128-2144 (mortal final death moves carried gear to circulation pool, never destroys)",
+        "native/tests/core_tests.cpp:1117-1164 (test_d106_all_carried_value_is_recoverable)"
+      ]
+    },
+    "D-109": {
+      "ruling": "logout/disconnect/crash never loses items or progress; Scion returns to town; death is the only loss event",
+      "canon": "orchestration/DECISIONS.md:61-67; docs/rebuild/ADR-002-persistence-seam.md:3-15",
+      "native_evidence": [
+        "native/src/core.cpp:558-595 (retire_instance: surfaced relic/trophy candidates requeue; carried value stays carried)",
+        "native/src/core.cpp:1191-1227 + tests core_tests.cpp:752-771 (snapshot retires live instance, keeps carried items/trophies)",
+        "native/tests/session_tests.cpp:383-432 (mid-session disconnect -> Retrying -> authoritative login snapshot after restart)"
+      ]
+    }
+  },
+  "durability_layers": [
+    {
+      "layer": "core-snapshot-v1",
+      "status": "implemented, tested, NOT wired into any production caller",
+      "detail": "verdigris::snapshot(Simulation) -> bytes and restore(bytes) are pure free functions (native/include/verdigris/core.hpp:404-405). The only file I/O is native/persistence/adapter.hpp; its sole includer outside itself is native/tests/core_tests.cpp:9. native/src/server_main.cpp and native/src/networking.cpp never persist."
+    },
+    {
+      "layer": "protocol-session-memory",
+      "status": "in-memory only for the whole server process lifetime",
+      "detail": "WebSocketServer::sessions_ is an in-process map keyed by guest identity (native/include/verdigris/networking.hpp:275). Inventory, wear seats, bank, House store, treasury, quest chain, passive tree, chronicle document, lifecycle, cleared road nodes, and the global relic circulation pool (native/src/networking.cpp:749-750 function-local statics) all vanish on process exit."
+    }
+  ],
+  "save_triggers": {
+    "production": [],
+    "test_only": [
+      {
+        "trigger": "unit test writes snapshot bytes twice to a temp-dir file and reads them back",
+        "citation": "native/tests/core_tests.cpp:854-866"
+      }
+    ],
+    "recommended_for_successor": [
+      "after Simulation::resolve_extract commits House stores (native/src/core.cpp:833-852)",
+      "after handle_death finishes D-106 pool registration (native/src/core.cpp:764-831)",
+      "after create_successor mints a new Scion (native/src/core.cpp:871-883)",
+      "after clear_route_and_unlock_children changes route progress",
+      "on player:login / player:session-replaced / clean disconnect (checkpoint, not required by D-109 but bounds loss)",
+      "periodic fixed-tick checkpoint from the server tick thread"
+    ]
+  },
+  "serialization_seams": [
+    {
+      "name": "core durable snapshot v1",
+      "version_field": "schemaVersion",
+      "current_version": 1,
+      "format": "line-oriented text key=value\\n; strings lower-case hex; numbers decimal; booleans 0/1; collections carry .count plus stable numeric indexes; fixed emission order makes equivalent states byte-identical",
+      "writer_citation": "native/src/core.cpp:893-1009,1158-1227",
+      "reader_citation": "native/src/core.cpp:1011-1156,1229-1307",
+      "version_gate": "restore() throws 'unsupported or missing snapshot schemaVersion' unless exactly 1 (native/src/core.cpp:1230-1233)",
+      "unknown_key_policy": "ignored on restore; first occurrence of a duplicate key wins (native/src/core.cpp:1019-1022)",
+      "malformed_policy": "missing required fields, invalid numbers/booleans/hex, or counts > 1000000 throw (fail-closed) (native/src/core.cpp:1033-1079)"
+    },
+    {
+      "name": "passive tree wire payload",
+      "version_field": "schemaVersion",
+      "current_version": 2,
+      "note": "display/wire projection only; player:skilltree:save stores the client-supplied snapshot object verbatim into session memory (passive_tree_saved_=true) while the point budget stays server-derived (earned - spent)",
+      "citation": "native/src/networking.cpp:1120-1166"
+    },
+    {
+      "name": "chronicle document",
+      "version_field": "version",
+      "current_version": 3,
+      "note": "ensure_chronicle_house mints {version:3,houses:[...]}; player:chronicles:save REPLACES the whole chronicle with the client payload without validating version or shape, then bumps revision",
+      "citation": "native/src/networking.cpp:2242-2251,2574-2584"
+    }
+  ],
+  "persisted_fields_core_v1": {
+    "scalars": [
+      {"field": "schemaVersion", "kind": "number", "write": "native/src/core.cpp:1160", "read": "native/src/core.cpp:1231"},
+      {"field": "rng.state", "kind": "uint64 decimal", "write": "native/src/core.cpp:1161", "read": "native/src/core.cpp:1239"},
+      {"field": "rng.serial", "kind": "uint64 decimal", "write": "native/src/core.cpp:1162", "read": "native/src/core.cpp:1240"},
+      {"field": "tick", "kind": "uint64 decimal", "write": "native/src/core.cpp:1163", "read": "native/src/core.cpp:1241"},
+      {"field": "nextLegendOrdinal", "kind": "uint64 decimal", "write": "native/src/core.cpp:1164", "read": "native/src/core.cpp:1242"},
+      {"field": "house.id", "kind": "hex text", "write": "native/src/core.cpp:1166", "read": "native/src/core.cpp:1245"},
+      {"field": "house.name", "kind": "hex text", "write": "native/src/core.cpp:1167", "read": "native/src/core.cpp:1246"},
+      {"field": "house.campaignComplete", "kind": "bool", "write": "native/src/core.cpp:1189", "read": "native/src/core.cpp:1272"}
+    ],
+    "collections": [
+      {"field": "house.routes[] {id,parentId,optional,children[]}", "write": "native/src/core.cpp:1168-1176", "read": "native/src/core.cpp:1247-1257"},
+      {"field": "house.unlockedRoutes[]", "write": "native/src/core.cpp:1177", "read": "native/src/core.cpp:1258"},
+      {"field": "house.clearedRoutes[]", "write": "native/src/core.cpp:1178", "read": "native/src/core.cpp:1259"},
+      {"field": "house.specializations[]", "write": "native/src/core.cpp:1179", "read": "native/src/core.cpp:1260"},
+      {"field": "house.storedTrophies[] trophy{id,name}", "write": "native/src/core.cpp:1180", "read": "native/src/core.cpp:1261"},
+      {"field": "house.storedItems[] item{...}", "write": "native/src/core.cpp:1181", "read": "native/src/core.cpp:1262"},
+      {"field": "house.relicCandidates[] item{...} (D-106 pool)", "write": "native/src/core.cpp:1182", "read": "native/src/core.cpp:1263"},
+      {"field": "house.lostTrophies[] trophy{id,name} (D-106 pool)", "write": "native/src/core.cpp:1183", "read": "native/src/core.cpp:1264"},
+      {"field": "house.seasonalRewards[]", "write": "native/src/core.cpp:1184", "read": "native/src/core.cpp:1265"},
+      {"field": "house.legends[] legend{ordinal,tick,scionId,scionName,kind,subject,detail,killerId,routeId,founding} bounded at kLegendCapacity=64 with founding-entry protection", "write": "native/src/core.cpp:1185-1188; bound at 282-288; core.hpp:193", "read": "native/src/core.cpp:1266-1271"},
+      {"field": "scion {id,name,level,alive,actorId,carriedTrophies[],carriedItems[],deeds[]}", "write": "native/src/core.cpp:1191", "read": "native/src/core.cpp:1274"},
+      {"field": "fallenScions[] scion{...}", "write": "native/src/core.cpp:1192-1195", "read": "native/src/core.cpp:1275-1280"},
+      {"field": "pendingRelicItems[] item{...}", "write": "native/src/core.cpp:1200-1222", "read": "native/src/core.cpp:1281"},
+      {"field": "pendingRelicTrophies[] trophy{id,name}", "write": "native/src/core.cpp:1210-1223", "read": "native/src/core.cpp:1282"}
+    ],
+    "subrecord_schemas": [
+      {"name": "item", "fields": ["id","name","attackBonus","ownerId","useCount","equipped","relicCandidate","history[]"], "write": "native/src/core.cpp:955-964", "read": "native/src/core.cpp:1091-1102"},
+      {"name": "trophy", "fields": ["id","name"], "write": "native/src/core.cpp:974-977", "read": "native/src/core.cpp:1114-1116"},
+      {"name": "scion", "fields": ["id","name","level","alive","actorId","carriedTrophies[]","carriedItems[]","deeds[]"], "write": "native/src/core.cpp:987-996", "read": "native/src/core.cpp:1128-1139"},
+      {"name": "legend", "fields": ["ordinal","tick","scionId","scionName","kind","subject","detail","killerId","routeId","founding"], "write": "native/src/core.cpp:998-1009", "read": "native/src/core.cpp:1141-1154"}
+    ],
+    "deliberately_absent": [
+      {"state": "instance_ / ground_items_ / ground_trophies_ (live floor)", "reason": "D-109: active instance retired at snapshot boundary; surfaced relic/trophy candidates folded back into pendingRelic* pools exactly once", "citation": "native/src/core.cpp:1197-1223; native/persistence/README.md:20-28; locked by native/tests/core_tests.cpp:741-743,762-769,842-851"},
+      {"state": "resurfaced_trophy_ids_, events_, seasonal_mechanic_, actors_", "reason": "transient/live-only; restore clears them and rebuilds a single player actor from scion state", "citation": "native/src/core.cpp:1284-1305"}
+    ],
+    "session_memory_fields_not_durable_anywhere": [
+      "ProtocolSession: chronicle_ document, inventory_, wear_, bank_, house_store_, house_treasury_, quest chain (active_quest_,quest_objective_,quests_completed_), quest_points_/tree_quest_points_, passive_tree_, best_depth_, cleared_nodes_, combat_xp_, lifecycle_* , kitted_scions_, daily_purse_claimed_, home_pitch_index_, last_instance_theme_/layout_",
+      "citation: native/include/verdigris/networking.hpp:161-241",
+      "global statics: circulation_pool()/circulation_mutex() relic circulation (native/src/networking.cpp:749-750)"
+    ]
+  },
+  "file_layer": {
+    "location": "no production path exists; adapter is path-agnostic. Test target = std::filesystem::temp_directory_path()/'verdigris-task-0030.snapshot' (native/tests/core_tests.cpp:857-858)",
+    "atomic_write": "temp file '<target>.tmp' written+flushed, then MoveFileExW(MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH) on Windows / std::filesystem::rename elsewhere; failure removes the temp file and throws filesystem_error",
+    "citation": "native/persistence/adapter.hpp:23-57",
+    "read": "whole-file slurp; open/size/read failures throw runtime_error",
+    "citation": "native/persistence/adapter.hpp:59-73",
+    "known_gaps": [
+      "ofstream::flush() reaches the OS, not the platter: no fsync/FlushFileBuffers on the temp file before rename; MOVEFILE_WRITE_THROUGH covers rename metadata, not prior data blocks",
+      "no directory fsync after POSIX rename: crash can lose the rename even though the temp data landed",
+      "fixed '.tmp' suffix: two concurrent writers to one target collide on the same temp path; no unique-temp or lock protocol; no startup sweep of orphaned .tmp files",
+      "Windows replace fails when a reader holds the target open without FILE_SHARE_DELETE (sharing violation); no retry/backoff around read-vs-replace races",
+      "v1 bytes carry no checksum/trailer: same-length corruption inside a hex string or decimal number decodes silently into different values"
+    ]
+  },
+  "stale_data_compatibility": {
+    "forward_compat": "older reader tolerates unknown keys appended by newer writers; canonical required fields keep restoring (locked: native/tests/core_tests.cpp:745-749)",
+    "version_bump": "any schemaVersion != 1 fails restore hard; no migration path defined yet (acceptable pre-wiring; must be revisited before real saves exist)",
+    "rng_continuity": "restored rng.state/rng.serial reproduce identical subsequent drops (locked: native/tests/core_tests.cpp:773-792), preventing save/load rerolling per ADR-002 consequences",
+    "client_supplied_state": "passive-tree save and chronicle save accept stale/garbage payloads verbatim (budget recomputed server-side for the tree; chronicle has NO validation) - flagged red risk R3"
+  },
+  "reconnect_semantics": {
+    "identity": "player:login resolves identity from guestId (default 'default-guest', shared anonymous account; playtestGuestId overrides) and derives the simulation seed via FNV-1a over the identity string",
+    "citation": "native/src/networking.cpp:2886-2890,511-514",
+    "session_reuse_same_process": "existing ProtocolSession is adopted: socket id replaced, transient world reset to town, permadead lifecycle preserved (never resurrects a mortal Scion), old socket receives player:session-replaced then is closed/shutdown",
+    "citation": "native/src/networking.cpp:2886-2890,538-579,2697-2704",
+    "unexpected_drop_client": "RemoteProtocolSession enters Retrying, refuses to simulate offline (position frozen), resumes to Ready with an authoritative login snapshot once the server returns",
+    "citation": "native/tests/session_tests.cpp:383-432",
+    "same_socket_relogin": "plain player:login on a live session keeps world/instance state (instance re-login snapshot test)",
+    "citation": "native/tests/networking_tests.cpp:268-283; comment native/src/networking.cpp:2676-2679",
+    "process_restart_gap": "sessions_ map is memory-only: after a server restart the same guestId yields a brand-new ProtocolSession seeded fresh; inventory/House/quest/chronicle progress is lost. D-109 currently holds within a server lifetime only.",
+    "lifecycle_guard": "reset_world_for_new_socket resets soft lifecycle but deliberately preserves permadead so reconnect cannot undo a mortal final death (D-106 interaction)",
+    "citation": "native/src/networking.cpp:554-562"
+  },
+  "failure_modes": [
+    {"phase": "save.open", "error": "runtime_error 'unable to open snapshot temporary file'", "trigger": "missing/unwritable directory", "citation": "native/persistence/adapter.hpp:28"},
+    {"phase": "save.write", "error": "runtime_error 'unable to write snapshot temporary file'", "trigger": "disk full / stream failure detected by flush-state check", "citation": "native/persistence/adapter.hpp:34"},
+    {"phase": "save.rename", "error": "filesystem_error 'unable to atomically replace snapshot'", "trigger": "sharing violation on Windows, cross-device link, permissions; temp file removed first", "citation": "native/persistence/adapter.hpp:41-56"},
+    {"phase": "load.open/size/read", "error": "runtime_error 'unable to open/size/read snapshot file'", "trigger": "missing file, stat failure, short read", "citation": "native/persistence/adapter.hpp:59-72"},
+    {"phase": "restore.version", "error": "'unsupported or missing snapshot schemaVersion'", "trigger": "schemaVersion absent or != 1", "citation": "native/src/core.cpp:1230-1233"},
+    {"phase": "restore.field", "error": "'missing snapshot field: <key>'", "trigger": "truncated file or hand-edited save missing a required line", "citation": "native/src/core.cpp:1033-1037"},
+    {"phase": "restore.value", "error": "'invalid snapshot number/boolean/string'", "trigger": "corrupted decimal, non-01 boolean, odd-length or non-hex text", "citation": "native/src/core.cpp:1040-1064,911-928"},
+    {"phase": "restore.count", "error": "'snapshot collection is too large'", "trigger": "count > 1000000 (malloc-bomb guard)", "citation": "native/src/core.cpp:1075-1079"}
+  ],
+  "negative_control": {
+    "claim": "one realistic partial-write/stale-version case not covered by any current test",
+    "case": "TORN OR MANGLED SAVE: a cloud-sync client (OneDrive/Dropbox) or antivirus truncates/mangles the House file between sessions. write_atomic guarantees the target is never torn by OUR writer, but external mutation produces either (a) a truncated byte stream or (b) a same-length flip inside a hex string/decimal number. Case (a) must fail restore with 'missing snapshot field'; case (b) SILENTLY restores divergent state because v1 carries no digest. Neither behavior is asserted by any test today.",
+    "secondary_case": "STALE VERSION: restore(bytes starting schemaVersion=2) must throw; implemented at native/src/core.cpp:1230-1233 but zero tests exercise the rejection branch.",
+    "smallest_locking_tests": [
+      "L1: truncate canonical v1 bytes 10 lines early; assert restore throws (partial-write fail-closed)",
+      "L2: prepend/patch schemaVersion=2 onto otherwise valid v1 bytes; assert restore throws (stale-version fail-closed)",
+      "L3: append a duplicate conflicting known key line; assert restore honors the FIRST occurrence (documented duplicate policy)",
+      "L4: flip one hex digit inside scion.name; decide+assert policy: detect via digest (requires v2 trailer) or explicitly accept silent divergence until then",
+      "L5: force write_atomic rename failure (open the target without FILE_SHARE_DELETE on Windows); assert filesystem_error thrown AND <target>.tmp removed",
+      "L6: restart-documentation test: boot server, mutate inventory, destroy server, boot new server same port, re-login same playtestGuestId; assert current memory-only reset behavior as a pinned contract until disk wiring lands (then invert the assertion to prove D-109 across restarts)"
+    ]
+  },
+  "fault_matrix_disposable_profiles": {
+    "rules": "every scenario uses a throwaway playtestGuestId prefixed fault-matrix-* (identity pins the FNV seed deterministically), temp-dir files only, and never touches owner profiles or port 6500",
+    "cases": [
+      {"id": "F1", "inject": "kill process between snapshot(bytes) and write_atomic", "expected": "previous target intact; no partial target possible", "coverage_today": "guaranteed by adapter ordering (adapter.hpp:23-57)", "successor_action": "none beyond wiring"},
+      {"id": "F2", "inject": "kill process mid .tmp write", "expected": "target intact; orphaned .tmp remains", "coverage_today": "gap: no startup sweep deletes orphaned .tmp", "successor_action": "delete matching *.tmp older than process start during load path"},
+      {"id": "F3", "inject": "truncate save externally", "expected": "restore throws missing-field (fail-closed)", "coverage_today": "untested", "successor_action": "lock L1"},
+      {"id": "F4", "inject": "same-length byte flip in save", "expected": "currently UNDETECTED divergence", "coverage_today": "gap: no digest in v1", "successor_action": "add sha256/djb2 trailer in schemaVersion=2; refuse or quarantine mismatched files"},
+      {"id": "F5", "inject": "future build wrote schemaVersion=2", "expected": "restore throws (fail-closed, no migration invented)", "coverage_today": "implemented, untested", "successor_action": "lock L2; add migration story before shipping saves"},
+      {"id": "F6", "inject": "two threads/processes save one House concurrently", "expected": "shared '.tmp' collision interleaves bytes", "coverage_today": "latent gap (single-threaded callers today)", "successor_action": "unique temp name (pid+serial) or serialize saves behind one mutex"},
+      {"id": "F7", "inject": "client reads save during atomic replace (Windows)", "expected": "MoveFileExW sharing violation -> filesystem_error; save lost this cycle, old file intact", "coverage_today": "failure path exists; no retry", "successor_action": "bounded retry/backoff; document reader guidance"},
+      {"id": "F8", "inject": "server process restart with wired disk saves", "expected": "same guestId re-login restores House/scion/RNG exactly; rng.serial continuity prevents drop rerolls", "coverage_today": "NOT WIRED: today this loses everything (memory-only)", "successor_action": "wire recommended save triggers + L6 inversion"},
+      {"id": "F9", "inject": "disconnect mid-instance (process alive)", "expected": "D-109: carried value kept, instance abandoned, surfaced candidates requeued once", "coverage_today": "locked by core_tests.cpp:752-792,821-851 and retire_instance", "successor_action": "keep green"},
+      {"id": "F10", "inject": "reconnect after mortal final death", "expected": "permadead preserved across reset_world_for_new_socket; heirloom enters circulation exactly once", "coverage_today": "locked by networking.cpp:554-562,2128-2144 logic; add explicit session-level test if touched", "successor_action": "guard with regression test during any lifecycle refactor"}
+    ]
+  },
+  "red_risks_ranked": [
+    {"id": "R1", "risk": "production native server never persists: D-109 holds within a server lifetime only; crash/restart erases all account/House progress despite a proven snapshot seam", "severity": "P0", "evidence": "grep write_atomic -> only core_tests.cpp; sessions_ memory-only (networking.hpp:275)"},
+    {"id": "R2", "risk": "no integrity digest in v1 bytes: silent divergence on same-length corruption breaks the determinism-across-restarts guarantee", "severity": "P1", "evidence": "adapter.hpp format; parse accepts any well-formed values"},
+    {"id": "R3", "risk": "player:chronicles:save trusts the entire client payload without version/shape validation; a stale client overwrite becomes account truth under a bumped revision", "severity": "P1", "evidence": "networking.cpp:2574-2584"},
+    {"id": "R4", "risk": "fixed '<target>.tmp' path: concurrent writers collide; orphaned .tmp never swept", "severity": "P2", "evidence": "adapter.hpp:25"},
+    {"id": "R5", "risk": "flush()-not-fsync and missing POSIX dir fsync narrow (but do not void) power-loss durability; MOVEFILE_WRITE_THROUGH does not flush preceding data blocks", "severity": "P2", "evidence": "adapter.hpp:27-56"},
+    {"id": "R6", "risk": "Windows sharing-violation window between concurrent readers and the atomic replace; single failed save aborts that checkpoint with no retry", "severity": "P2", "evidence": "adapter.hpp:37-47"},
+    {"id": "R7", "risk": "stale-version rejection implemented but untested; future migration work could regress it unnoticed", "severity": "P3", "evidence": "core.cpp:1230-1233 vs test list in native/tests/core_tests.cpp:729-866"}
+  ],
+  "acceptance_commands_executed": "see STATUS.md (literal commands, exit codes, key output lines)",
+  "real_saves_touched": false
+}
