@@ -1,7 +1,9 @@
 # TASK-0092 status
 
 - task: TASK-0092-owner-launch-packaging-audit
-- state: REVIEW_REQUESTED
+- state: INTEGRATED
+- reviewed_commit: c84fc0d6
+- reviewed_at: 2026-08-23T19:20:00Z
 - lane: ox-pc-bd
 - model: openrouter/stealth/ox-alpha
 - base_commit: d2423873c577d299b3b39c56024d1d840993c72b
