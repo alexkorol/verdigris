@@ -1,5 +1,23 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED 23 audits this session — 2026-08-24 00:10 UTC
+
+- **TASK-0160** (visual-kit packaging proof, bd) ACCEPTED + integrated at
+  `2e1d9467`. Implemented `native/tools/verify_native_visual_kit.py` (stdlib,
+  `--check` proves byte-for-byte reproduction; `--regenerate`); negative suite
+  15/15 pass; `__pycache__` cleaned.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094, 0096, 0121, 0118, 0115, 0114, 0085, 0136, 0084,
+  0162 all ACCEPTED + integrated.
+- **BOARD EXHAUSTED**: every previously-READY task is now claimed or
+  integrated. `board-sentinel` reports `healthy: false` (effective_ready 1 <
+  min_ready 8). The fleet cannot take new work until the backlog-factory
+  regenerates READY packets.
+- Open items awaiting owner: TASK-0108 QUESTION (ranged telegraph collides
+  with frozen gate-b boss-slam); TASK-0098 PC-014/PC-015 crash-class findings;
+  TASK-0085 denylist-exception ruling; TASK-0121 G-13/G-14 packets + G-15 scale
+  tier; backlog refill.
+
 ## SHIPPED 22 audits this session — 2026-08-23 23:50 UTC
 
 - **TASK-0162** (native passive-tree payload hardening, bc) ACCEPTED + integrated
