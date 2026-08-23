@@ -1,5 +1,20 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED 10 audits this session — 2026-08-23 19:55 UTC
+
+- **TASK-0102** (skill system gap audit, bb) ACCEPTED + integrated at
+  `322bba24`. FINDINGS identified the two authority paths and verified the
+  negative control: client sends `{"skill": ...}` but the handler reads
+  `"skillId"` (networking.cpp:2507), and `start_player_attack` ignores the
+  argument (`(void)player_attack;`), so Q/E/R degrade to primary attack on the
+  protocol path with no cost/cooldown/cone/area/buff semantics.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092 all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0102 now integrated (lane freed, re-point pending);
+  `ox-pc-bc` -> TASK-0093 (typography audit, claimed `0a8aa40e`);
+  `ox-pc-bd` -> TASK-0095 (content schema audit, surveying).
+
 ## TASK-0108 QUESTION (P0 ranged combat, ba) — 2026-08-23 19:35 UTC
 
 - `ox-pc-ba` (TASK-0108, readable ranged combat) filed a QUESTION at
