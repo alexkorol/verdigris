@@ -1,5 +1,23 @@
 # Run status — PC Verdigris overnight product wave
 
+## Fleet launch attempt FAILED on provider auth — 2026-08-22 22:45 PDT
+
+- The owner launched the five provisioned lanes (ox-pc-ba..be) at 22:35-22:44
+  PDT. **No lane activated**: no STATUS claims pushed, worktrees still clean,
+  launcher-exits.txt records `FAIL rc=1` for ba/be, and the session logs carry
+  `{"error":{"name":"UnknownError","data":{"message":"Unexpected server
+  error"}}}` for bb/be/ba. The launch probe itself returned HTTP **401
+  "Missing Authentication header"** (`Z:\Code\.fleet\logs\probe.json`).
+- ROOT CAUSE: OpenRouter authentication is not reaching the OpenCode CLI
+  sessions — the `OPENROUTER_API_KEY` is missing/not exported for the launch
+  environment. This is a centralized launch/auth/provider failure (the launch
+  contract allows one restart for this category), NOT a worker or task defect.
+- LEAD ACTION: lanes remain PROVISIONED_UNCLAIMED and are NOT capacity.
+  Owner action required: fix the `OPENROUTER_API_KEY` export for the launcher
+  environment, then relaunch (one allowed restart per OX_CLI_SUBFLEET.md).
+  The board is otherwise healthy and the two valid routes (ba->0108,
+  be->0165) are unchanged; bb/bc/bd remain stale-to-integrated.
+
 ## Lead appointment + TASK-0152 reconciled — 2026-08-23 05:00 PDT
 
 - Owner appointed **deepseek-v4-flash as fleet lead AND independent validator**
