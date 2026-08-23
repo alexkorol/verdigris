@@ -43,12 +43,21 @@ throughput by full experimental unit and packet type is normalized.
 
 ## Current critical path
 
-The overnight owner-visible convergence wave's four disjoint implementation
-surfaces are accepted and integrated. TASK-0148 now closes the normal-envelope
-death/successor/relic/reconnect runtime gap, and TASK-0122 adds the first
-client-only readable animation/VFX wave. The next critical path is combined
-owner play and the still-open Gate C/presentation-quality work, not redoing
-these accepted packets:
+The overnight owner-visible convergence waves are accepted and integrated:
+0145-0148 (Chronicles owner journey, first-expedition encounters, procedural
+visual polish, reconnect-safe runtime), 0153 (first-session/Esc clarity),
+0155 (deterministic loot reliability), 0156 (progression visibility),
+0157 (audio scheduler), 0158 (pane model), 0159 (HUD pane readability),
+0161 (capture-output isolation), 0163 (Gate-B ordinary-play reliability),
+0164 (content cross-reference hardening), plus audits 0101/0152. Gate B's
+ordinary-play nondeterminism is closed by 0163, and the combat-depth audit
+(0101) selected the readable ranged wave.
+
+The next critical path is combined owner play and the still-open
+Gate C / presentation-quality work, led by the top READY product packet
+TASK-0108 (readable ranged combat: ranged pressure roles with a telegraph and
+attributed hit beat), then the still-open pane shell (0087), renderer ADR
+(0088), and surface density (0078):
 
 ```text
 TASK-0148 reconnect-safe Chronicles runtime --+
@@ -62,6 +71,10 @@ TASK-0141/0144 vector kit  -> TASK-0147 procedural visual polish
   -> full native build/scenarios
   -> real owner launch through native/tools/play-native.ps1
   -> morning play verdict and correction wave
+
+TASK-0101 combat-depth audit (ACCEPTED)
+  -> TASK-0108 readable ranged combat (READY, P0) --+-> owner-visible pressure mix
+TASK-0163 Gate-B reliability (ACCEPTED) ------------+
 ```
 
 The parallel branches are path-disjoint. Integration is sequenced runtime and
