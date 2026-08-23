@@ -4,12 +4,14 @@
 
 - Independent detached TASK-0161 gate at `9f004d2a` passed (`GATE-EXIT=0`) with
   clean tree and fail-closed capture-root negatives. Integrated at `76368466`.
+  Combined program G6 `-RunTests -RunClientScenarios -CaptureRoot` on that
+  implementation tip also exited 0; working tree stayed clean (no historical
+  capture rewrite).
 - TASK-0108 is READY from TASK-0101 W1 on base `76368466`. It owns the
   readable ranged seam but not `session_tests.cpp` (TASK-0162). Ports 7280-7299.
-- Combined program `-RunTests -RunClientScenarios -CaptureRoot` on this tip is
-  the remaining G6 proof before claiming 0161 fully settled. Owner action: none.
-  Next: finish that combined gate, restock if the board drops below 24 READY,
-  then route TASK-0108 when a worker is available (owner launches workers).
+  Owner launches workers; this successor does not implement the packet.
+- Board tables now list 0108 under effective READY and drop it from DRAFT
+  successors. Owner action: none.
 
 ## TASK-0101 accepted; 0161 independent gate next — 2026-08-22 17:12 PDT
 
@@ -715,6 +717,7 @@ wins after a fresh fetch.
 | P1 | TASK-0165 native input focus model foundation | INDEPENDENT / IMPLEMENTATION | future clean native-client seam lane | prevents future panes from reintroducing global-Esc exits or leaking gameplay input through focused UI |
 | P1 | TASK-0161 native scenario capture-output isolation | PIPELINED / IMPLEMENTATION | fresh native-client lane after TASK-0159 | prevents complete gates from rewriting historical visual evidence |
 | P1 | TASK-0162 native passive-tree payload hardening | INDEPENDENT / IMPLEMENTATION | future clean session-parser lane after TASK-0163 | rejects malformed progression mirrors without inventing balance |
+| P0 | TASK-0108 readable ranged combat successor | INDEPENDENT / IMPLEMENTATION | fresh native combat lane after 0101+0161; ports 7280-7299 | packs mix pressure roles with a telegraph and attributed hit beat |
 
 ## HOLD despite historical READY headers
 
@@ -725,7 +728,7 @@ wins after a fresh fetch.
 | TASK-0073 renderer backend evaluation | SUPERSEDED by TASK-0114 | surge replacement supplies exact evidence, acceptance, and stop contracts |
 | TASK-0079 browser panel inventory | SUPERSEDED by TASK-0115 | surge replacement supplies hard-fail capture and exact gate contracts |
 
-## Sequenced successors — 17 DRAFT
+## Sequenced successors — 16 DRAFT
 
 | Task | Dependency / release |
 |---|---|
@@ -735,7 +738,6 @@ wins after a fresh fetch.
 | TASK-0090 native progression panes | 0087 + authoritative payload audit |
 | TASK-0106 deterministic replay runner | 0100 accepted; record/divergence interfaces frozen |
 | TASK-0107 persistence fault matrix | 0097 accepted; disposable profile/fault contract frozen |
-| TASK-0108 combat-depth wave | 0101 accepted; scaffold and D-114 table ready |
 | TASK-0109 skill infrastructure | 0102 accepted; content-neutral interfaces frozen |
 | TASK-0110 encounter-system wave | 0103 accepted; deterministic pack/rarity seam frozen |
 | TASK-0111 item-history lifecycle | 0104 accepted; owner-independent lifecycle frozen |
