@@ -1,0 +1,109 @@
+{
+  "$contract": "verdigris.audit.parser-cases",
+  "version": 1,
+  "task": "TASK-0098-wire-parser-robustness-audit",
+  "lane": "ox-pc-bc",
+  "model": "openrouter/stealth/ox-alpha",
+  "base_commit": "d2423873c577d299b3b39c56024d1d840993c72b",
+  "audited_head": "5a369bc1",
+  "method": {
+    "mode": "static source-to-sink audit only; resource capsule honored",
+    "traffic": "none sent; no live fuzzing; no ports opened; port 6500 untouched",
+    "payload_policy": "input shapes described abstractly and redacted; no ready-to-run exploit payloads recorded",
+    "severity_policy": "conservative; every red candidate carries explicit preconditions and a reachable source-to-sink citation"
+  },
+  "status_vocabulary": {
+    "covered": "a current test exercises this boundary",
+    "gap": "expected-pass behavior implemented in source but not exercised by any test",
+    "red-candidate": "suspected defect or missing gate with a cited reachable path; needs owner-approved dynamic confirmation before any fix claim",
+    "negative-control": "required malformed case lacking a test, explicitly NOT marked safe"
+  },
+  "boundaries": [
+    {
+      "id": "B1",
+      "name": "envelope parsing",
+      "citation": "native/src/networking.cpp:94-201 (JsonParser), native/src/networking.cpp:566-572 (parse_json/parse_envelope)"
+    },
+    {
+      "id": "B2",
+      "name": "websocket framing and size checks",
+      "citation": "native/src/networking.cpp:2828 (handle_connection: handshake cap 8192, frame cap 16384, mandatory masking, opcode dispatch)"
+    },
+    {
+      "id": "B3",
+      "name": "authentication / identity gates",
+      "citation": "native/src/networking.cpp:2984-2988 (player:login identity admission, session replacement); loopback-only bind native/src/networking.cpp:2811"
+    },
+    {
+      "id": "B4",
+      "name": "rate / resource gates",
+      "citation": "absent by inspection: rg 'rate|throttle|flood|limit' over networking sources returns only a comment (native/src/networking.cpp:2777); tick thread ticks every session incl. disconnected native/src/networking.cpp:2811, sessions_ cleared only in stop() native/src/networking.cpp:2822"
+    },
+    {
+      "id": "B5",
+      "name": "type / range / size checks in handlers",
+      "citation": "native/src/networking.cpp:204-212 (as_int/as_string/as_bool fallbacks), 1063/1070 (dev:give qty+itemLevel), 2389 (dev:teleport), 2390 (dev:setlevel), 1317-1319 (house deposit), 1953-1954 (shop buy price), 1985-1999 (bank withdraw qty), 805-816 (parse_node_id)"
+    },
+    {
+      "id": "B6",
+      "name": "unknown events",
+      "citation": "native/src/networking.cpp:2379-2780 (handle() if-chain falls through without else; unknown events return silently), native/src/networking.cpp:2988 (no-session envelopes dropped silently)"
+    },
+    {
+      "id": "B7",
+      "name": "malformed JSON",
+      "citation": "native/src/networking.cpp:98-104 (parse failure + trailing data rejection), native/src/networking.cpp:2984 (handle_message returns without emitting on parse failure)"
+    },
+    {
+      "id": "B8",
+      "name": "disconnect cleanup",
+      "citation": "native/src/networking.cpp:2782-2803 (Connection close/shutdown_send), 2813-2826 (stop(): close sockets then join readers outside lock), 2990 (remove_connection), 2988 (session-replaced flow)"
+    },
+    {
+      "id": "B9",
+      "name": "deterministic error behavior",
+      "citation": "silent drops for malformed/unknown frames (native/src/networking.cpp:2984, 2379-2780); message envelopes for handled failures (e.g. 1116-1120 equip error, 1318 deposit reject); guarded stoi at 811-814 and 1177; pervasive null-safe JsonValue accessors 541-556"
+    }
+  ],
+  "cases": [
+    { "id": "PC-001", "boundary": "B1", "title": "valid envelope round-trips", "status": "covered", "test": "native/tests/networking_tests.cpp:21-31", "note": "event/data/meta survive emit+parse" },
+    { "id": "PC-002", "boundary": "B1", "title": "non-object data rejected", "status": "covered", "test": "native/tests/networking_tests.cpp:30 (array payload rejected)", "source": "native/src/networking.cpp:570" },
+    { "id": "PC-003", "boundary": "B1", "title": "missing or non-string or empty event rejected", "status": "gap", "source": "native/src/networking.cpp:569", "test": "none found", "note": "rejection path exists but no test pins it" },
+    { "id": "PC-004", "boundary": "B1", "title": "trailing data after top-level value rejected", "status": "gap", "source": "native/src/networking.cpp:100-103", "test": "none found" },
+    { "id": "PC-005", "boundary": "B7", "title": "malformed JSON drops frame silently, connection stays open", "status": "red-candidate", "severity": "low", "preconditions": "connected client on loopback", "path": "handle_message native/src/networking.cpp:2984 returns before session lookup; no error envelope, no counter, no log", "risk": "observability: hostile garbage is invisible to operators; deterministic silent drop is otherwise safe" },
+    { "id": "PC-006", "boundary": "B6", "title": "unknown event name ignored without response", "status": "red-candidate", "severity": "low", "preconditions": "established session", "path": "handle() if-chain fall-through native/src/networking.cpp:2379-2780; presentation-layer analogue tested only at native/tests/audio_mixer_tests.cpp:183-207", "risk": "silent acceptance of typos/unknown verbs; deterministic but unpinned by any wire-level test" },
+    { "id": "PC-007", "boundary": "B6", "title": "envelope before login dropped when event != player:login", "status": "gap", "source": "native/src/networking.cpp:2988 (session null-check return)", "test": "none found" },
+    { "id": "PC-008", "boundary": "B2", "title": "frame larger than 16384 bytes closes connection before allocation", "status": "gap", "source": "native/src/networking.cpp:2828 (length>16384 break precedes payload allocation)", "test": "none found (socket-level)" },
+    { "id": "PC-009", "boundary": "B2", "title": "unmasked client frame closes connection", "status": "gap", "source": "native/src/networking.cpp:2828 (!masked break)", "test": "none found" },
+    { "id": "PC-010", "boundary": "B2", "title": "binary/continuation opcodes consumed then discarded", "status": "gap", "source": "native/src/networking.cpp:2828 (only close=8, ping=9, text=1 handled)", "test": "none found", "note": "deterministic no-op" },
+    { "id": "PC-011", "boundary": "B2", "title": "ping payload above 125 bytes echoed in pong with single-byte length header", "status": "red-candidate", "severity": "low", "preconditions": "client sends masked ping with extended-length payload", "path": "pong header truncates length to uint8 while full payload is appended, native/src/networking.cpp:2828", "risk": "protocol desync on the offending connection only; server state unaffected" },
+    { "id": "PC-012", "boundary": "B2", "title": "handshake without Sec-WebSocket-Key or headers exceeding 8192 bytes closed", "status": "gap", "source": "native/src/networking.cpp:2828", "test": "none found" },
+    { "id": "PC-013", "boundary": "B3", "title": "identity takeover by replaying another guestId replaces that session", "status": "red-candidate", "severity": "medium", "preconditions": "attacker already has loopback reach to the bound socket (bind is 127.0.0.1, native/src/networking.cpp:2811); victim logged in with guessable guestId", "path": "identity taken verbatim from payload, prior session replaced and old socket closed with player:session-replaced, native/src/networking.cpp:2984-2988", "risk": "account/session hijack within the host; documented JS-parity anonymous-guest design, so treated as accepted-risk boundary needing an explicit policy decision, not a code change under this capsule" },
+    { "id": "PC-014", "boundary": "B1", "title": "deeply nested JSON text recurses JsonParser without depth limit up to the 16384-byte frame cap", "status": "negative-control", "marked_safe": false, "severity": "high-if-confirmed", "preconditions": "single masked text frame from any connected client; parse happens pre-auth on the reader thread", "path": "value/object/array mutual recursion native/src/networking.cpp:118-197 entered from handle_message->parse_envelope native/src/networking.cpp:2984->567; nesting count bounded only by frame cap 16384 native/src/networking.cpp:2828; MSVC default reader-thread stack ~1 MiB makes overflow plausible around tens of thousands of levels", "risk": "stack-exhaustion crash of the server process; NO test covers nesting depth anywhere in native/tests; dynamic confirmation intentionally NOT performed (capsule forbids live fuzzing) - escalate for an owner-approved harness", "remediation_sketch": "depth counter in JsonParser with hard cap plus iterative or depth-limited descent; add parser test for deep nesting" },
+    { "id": "PC-015", "boundary": "B5", "title": "road node id with oversized middle segment drives unbounded recursion via web_tier_width", "status": "red-candidate", "severity": "high-if-confirmed", "preconditions": "single valid-envelope frame after any login; tier must fit int but only needs >=~50k to exceed default stack", "path": "world:zone:enter handler native/src/networking.cpp:2386 -> parse_node_id validates only road prefix and tier>=1/index>=0 native/src/networking.cpp:805-816 -> enter_road_node native/src/networking.cpp:1517 calls web_road_nodes(house, road, tier+1) native/src/networking.cpp:1521 -> web_tier_width recursion depth equals tier native/src/networking.cpp:756-762; core dispatch leg is safe (unknown route rejected, native/src/core.cpp:540-541) so control reaches the web path directly", "risk": "same crash family as PC-014: stack exhaustion kills the whole server process from one frame; also the node-building loop iterates max_tier times (memory amplification); no test sends hostile node ids", "remediation_sketch": "clamp tier in parse_node_id to the chart frontier (or small constant); make web_tier_width iterative with memoization; add regression test" },
+    { "id": "PC-016", "boundary": "B5", "title": "non-finite and out-of-range numbers accepted by strtod then cast to int unchecked", "status": "red-candidate", "severity": "medium", "preconditions": "payload numeric field set to INF/NAN-style token or magnitude beyond int range", "path": "JsonParser::value uses strtod without range/finiteness checks native/src/networking.cpp:128-134 (MSVC strtod accepts inf/nan spellings); as_int static_cast<int>(double) native/src/networking.cpp:204-206 is undefined behavior outside int range; sinks include dev:setlevel native/src/networking.cpp:2390, dev:teleport 2389, dev:give itemLevel 1070", "risk": "undefined-value casts (in practice platform-defined saturation) flowing into level/life math; dev:setlevel also computes 100+level*10 which can overflow signed int; deterministic per-platform but not pinned by tests" },
+    { "id": "PC-017", "boundary": "B5", "title": "dev:give quantity upper bound unclamped drives long-running item minting loop", "status": "red-candidate", "severity": "medium", "preconditions": "any logged-in client; non-stackable itemId", "path": "quantity=(max)(1,as_int(qty,1)) native/src/networking.cpp:1063 then per-unit create/add loop 1079-1087 spilling overflow ground items into world_ each iteration", "risk": "single frame can drive minutes of CPU and unbounded ground-item memory growth inside the 16 KiB frame budget; no rate gate (B4) compounds it" },
+    { "id": "PC-018", "boundary": "B5", "title": "shop buy trusts client-echoed price including zero/negative values", "status": "red-candidate", "severity": "medium", "preconditions": "crafted player:context-menu:action payload; guest economy context", "path": "price read from payload item_ref as_int native/src/networking.cpp:1953; carried_gold()>=price passes for price<=0 and the deduction loop becomes a no-op while create_game_item still grants the item 1954-1969", "risk": "free/negative-cost purchases; contained to the local guest economy by design (JS menu echo parity) but violates server-authoritative pricing expectations; no test pins price authority" },
+    { "id": "PC-019", "boundary": "B5", "title": "bank withdraw/deposit accept negative quantities corrupting stack counts", "status": "red-candidate", "severity": "medium", "preconditions": "crafted action payload with negative qty against a stackable bank/inventory item", "path": "withdraw: out.qty=qty inserted into inventory and bank_[i].qty -= qty inflates the bank stack native/src/networking.cpp:1985-1999; deposit mirrors it 2002-2009; no lower-bound check anywhere on these paths", "risk": "item-count corruption (negative stacks, inflated banks) without crash; deterministic state corruption candidate lacking any test" },
+    { "id": "PC-020", "boundary": "B4", "title": "no per-connection message rate limit or flood control", "status": "red-candidate", "severity": "medium", "preconditions": "local process able to open loopback connections", "path": "handle_message processes every accepted frame synchronously native/src/networking.cpp:2984-2988; combat-driving events run process_combat inline 2507; tick thread additionally advances every session forever including disconnected ones because sessions_ entries are never evicted 2811/2822/2990", "risk": "CPU amplification and unbounded session/memory growth per unique identity (each ProtocolSession allocates two simulations, native/src/networking.cpp:577-580); mitigated by loopback bind and dev-server context" },
+    { "id": "PC-021", "boundary": "B5", "title": "movement with unknown direction is a no-op", "status": "covered", "test": "native/tests/networking_tests.cpp:116-121", "source": "tile delta table rejects unknown directions" },
+    { "id": "PC-022", "boundary": "B5", "title": "equip with unknown uuid emits error envelope and mutates nothing", "status": "covered", "test": "native/tests/networking_tests.cpp:414-430", "source": "native/src/networking.cpp:1116-1120" },
+    { "id": "PC-023", "boundary": "B5", "title": "house deposit rejects non-positive amounts and overdrafts", "status": "gap", "source": "native/src/networking.cpp:1317-1319", "test": "none found", "note": "correct gate present; unpinned" },
+    { "id": "PC-024", "boundary": "B5", "title": "ground-item take enforces binding and chebyshev<=1 reach", "status": "gap", "source": "native/src/networking.cpp:1709,1713", "test": "happy-path take flows exist in session_tests; hostile far-take/bind-bypass cases untested" },
+    { "id": "PC-025", "boundary": "B1", "title": "duplicate object keys keep first occurrence unlike JSON.parse last-wins", "status": "red-candidate", "severity": "low", "preconditions": "hostile duplicate-key frame targeting a handler that reads a twice-written key", "path": "object.emplace keeps first insertion native/src/networking.cpp:180 vs JS JSON.parse last-wins parity assumption elsewhere", "risk": "cross-build divergence on adversarial input only; benign for well-formed clients" },
+    { "id": "PC-026", "boundary": "B8", "title": "server stop closes sockets then joins reader threads outside the lock", "status": "covered", "test": "session_tests disconnect/reconnect legs (native/tests/session_tests.cpp:95,192-195,401-443) exercise shutdown/restart/re-login through WebSocketServer::stop/start", "source": "native/src/networking.cpp:2813-2826 (join-not-detach rationale documented at native/include/verdigris/networking.hpp:278-281)" },
+    { "id": "PC-027", "boundary": "B8", "title": "concurrent login replaces old socket with player:session-replaced then flush+close", "status": "covered", "test": "reconnect legs native/tests/session_tests.cpp:401-443 cover drop/retry/re-login; replacement envelope itself exercised indirectly", "source": "native/src/networking.cpp:2988 (old->shutdown_send/close after session-replaced)" },
+    { "id": "PC-028", "boundary": "B9", "title": "parse_node_id guards stoi with try/catch and validates road prefix", "status": "gap", "source": "native/src/networking.cpp:805-816", "test": "valid-id paths covered implicitly by zone tests (native/tests/networking_tests.cpp:44-47); malformed id shapes untested", "note": "graceful-reject path correct but unpinned; see PC-015 for the range gap that remains" },
+    { "id": "PC-029", "boundary": "B9", "title": "chronicles save accepts arbitrary JSON object wholesale", "status": "red-candidate", "severity": "low", "preconditions": "logged-in client sending crafted state object within frame cap", "path": "chronicle_=*state with zero schema validation native/src/networking.cpp:2660-2671; downstream readers are pervasively null-safe (.object()/.array()/.string() guards e.g. native/src/networking.cpp:220-278) so corruption stays contained", "risk": "client-defined account structure persists for the session; no crash sink found statically; integrity boundary worth a schema test" },
+    { "id": "PC-030", "boundary": "B5", "title": "skilltree snapshot must be object else ignored; tree ids parsed with guarded stoi", "status": "gap", "source": "native/src/networking.cpp:1230-1233,1177", "test": "save/update flows tested in session_tests happy paths; malformed snapshot shapes untested" }
+  ],
+  "summary": {
+    "total_cases": 30,
+    "covered": 6,
+    "gaps": 11,
+    "red_candidates": 12,
+    "negative_controls": 1,
+    "escalations": ["PC-014", "PC-015"],
+    "headline": "two crash-class candidates (JSON nesting depth, road-node tier recursion) share one root cause class - unbounded recursion driven by client-controlled counts inside the 16 KiB frame budget - and neither has any test coverage"
+  }
+}
