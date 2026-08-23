@@ -10,9 +10,9 @@ worktree: Z:\Code\.worktrees\verdigris\ox-pc-bc
 head_at_claim: 5059d485ad444abb924cad01aa7e33760b364043
 claim_commit: 5cdfed6e
 started_at: 2026-08-23T21:30:00-07:00
-implementation_commit: 0573e3976cca75168fd4d57f17f85ec6b2f2bb74
+implementation_commit: 8b5619630eef1f3d22494a084317bff4a39fc28a
 review_requested_at: 2026-08-23T22:40:00Z
-frozen_pushed_head: 0573e3976cca75168fd4d57f17f85ec6b2f2bb74
+frozen_pushed_head: 8b5619630eef1f3d22494a084317bff4a39fc28a
 scope: >
   Audit only. FINDINGS.md + captures/assets.json enumerate every asset consumed
   or proposed by native presentation with path/type/dimensions/bytes/sha256/
