@@ -1,0 +1,71 @@
+{
+  "task": "TASK-0093",
+  "title": "Native typography and text-rendering contract audit",
+  "lane": "ox-pc-bc",
+  "model": "openrouter/stealth/ox-alpha",
+  "base_commit": "d2423873c577d299b3b39c56024d1d840993c72b",
+  "head_at_audit": "0a8aa40e (claim commit on worker/verdigris/pc/ox-pc-bc)",
+  "frozen_invariants_respected": {
+    "render_list_determinism": "run_reference_scenes enforces byte-identical render-list JSON across two runs per scene (native/client/main.cpp:6308-6320); this audit proposes only additive role-tagging that preserves that property.",
+    "D-113_art_authority": "No font downloaded, generated, licensed, or selected. Font family/license/renderer remain owner choices; audit documents metrics and contract only. Source: orchestration/DECISIONS.md D-113."
+  },
+  "native_text_surface": {
+    "single_file": "native/client/main.cpp",
+    "apis": ["CreateFontA", "SelectObject(HFONT)", "TextOutA", "GetTextExtentPoint32A", "SetTextColor", "SetBkMode(TRANSPARENT)"],
+    "explicit_fonts": [
+      { "face": "Verdana", "weight": "FW_BOLD", "sizes": "clamp(kTileUnits*0.34*scale,13,22) normal / clamp(...0.44...,16,26) critical", "charset": "DEFAULT_CHARSET", "quality": "DEFAULT_QUALITY", "site": "damage numbers, native/client/main.cpp:1738-1753" },
+      { "face": "Verdana", "weight": "FW_BOLD", "sizes": "13 px fixed", "charset": "DEFAULT_CHARSET", "quality": "DEFAULT_QUALITY", "site": "capture-only beat-legend chips, native/client/main.cpp:3544-3553" },
+      { "face": "Georgia", "weight": "FW_BOLD", "sizes": "19 px body / 30 px accent", "charset": "ANSI_CHARSET", "quality": "CLEARTYPE_QUALITY", "site": "Chronicles front door lines, native/client/main.cpp:3002-3008" }
+    ],
+    "implicit_font": "All remaining HUD/pane/chip/toast/debug text draws with whatever stock font the memory DC carries (no HFONT selected). Sites: gear pane main.cpp:2150-2319, status chips 2094-2117, quickbar 2477-2482, connection chip 3027-3077, HUD planner rows 3720-3775, debug overlay 3790-3834.",
+    "render_list_text_ops": ["Hud", "PaneStat", "PaneWeapon", "PaneItem", "PaneBanked", "Chronicles", "HouseChip", "Quickbar", "Damage", "Drop", "Extraction"],
+    "op_definitions": "native/client/render_list.hpp:16-45"
+  },
+  "browser_text_roles": {
+    "font_faces": [
+      { "family": "GameFont", "file": "src/assets/fonts/pixelmix.ttf + pixelmix_bold.ttf", "declared": "src/assets/scss/typography/fonts.scss:14-18" },
+      { "family": "ChatFont", "file": "src/assets/fonts/PxPlus_IBM_VGA8.ttf", "declared": "src/assets/scss/typography/fonts.scss:8-11" },
+      { "family": "UIFont", "file": "src/assets/fonts/Px437_IBM_PS2thin2.ttf", "declared": "src/assets/scss/typography/fonts.scss:2-5", "note": "declared but unused by any component (rg UIFont finds no consumer)" }
+    ],
+    "canvas_world_text": [
+      "combat feedback numbers: src/core/rendering/perspective-renderer.js:964-1018 (600 weight, max(13,15*scale)px GameFont, textAlign center, black stroke rgba(0,0,0,.85) width>=3)",
+      "legacy flat-map variant: src/core/map.js:1715-1737 (600 12px GameFont, same stroke)",
+      "loot beam labels: src/core/rendering/perspective-renderer.js:704-716",
+      "FALLEN overlay: src/core/rendering/perspective-renderer.js:896-900"
+    ],
+    "css_tokens": "src/assets/scss/abstracts/_tokens.scss:30-32 --font-size-base/sm/lg clamp() fluid sizes",
+    "truncation": ["src/components/slots/Stats.vue:450,520,642,675", "src/components/passives/GeometricSkillTreePane.vue:1056", "src/components/layout/GameHUD.vue:142", "src/components/layout/GameContainer.vue:1333"],
+    "wrapping": ["src/components/Chatbox.vue:468 overflow-wrap:break-word; scrollback max-height 320px at 439-441"]
+  },
+  "resolution_dpi_evidence": {
+    "native_capture_sizes": ["960x600 (scenario_present native/client/main.cpp:4148-4159)", "1366x768 (main.cpp:5365-5367, 6338-6340)", "1920x1080 (main.cpp:6303, 6330-6336)"],
+    "dpi_awareness_calls_found": false,
+    "planner_guarantees": "plan_top_hud keeps regions clear of minimap/quickbar/orbs/gear-pane at any width incl. 960x600 and 1366x768 via measured extents + deterministic fallback ladder + two-line wrap (native/client/main.cpp:3080-3202, comment block 3080-3090)",
+    "browser_pins": ["orchestration/benchmarks/side-by-side-2026-08-20/browser-scenes.mjs:16 page.screenshot ...-1920x1080.png", "TASK-0079 SPEC asks panel anchor+size at 1920x1080 (orchestration/tasks/TASK-0079-browser-panel-inventory/SPEC.md:20)", "fluid clamp() tokens scale with viewport (_tokens.scss:30-32)"]
+  },
+  "contrast_measurements_wcag21": [
+    { "pair": "pane title RGB(230,235,220) on panel RGB(25,33,37) [main.cpp:2153,2138]", "ratio": 13.44 },
+    { "pair": "muted stats RGB(150,170,158) on panel [main.cpp:2180]", "ratio": 6.64 },
+    { "pair": "quickbar unavailable RGB(112,119,115) on RGB(29,33,34) [main.cpp:2481,2450]", "ratio": 3.54 },
+    { "pair": "quickbar available RGB(205,221,207) on RGB(35,42,44) [main.cpp:2481,2450]", "ratio": 10.31 },
+    { "pair": "connection ok RGB(120,214,168) on panel [main.cpp:3037]", "ratio": 9.32 },
+    { "pair": "gold accent RGB(239,208,116) on panel [main.cpp:2478]", "ratio": 10.85 },
+    { "pair": "seat label RGB(170,190,178) on seat RGB(32,40,42) [main.cpp:2215,2207]", "ratio": 7.66 },
+    { "pair": "item bonus RGB(150,165,152) on cell RGB(30,38,40) [main.cpp:2266,2247]", "ratio": 5.97 },
+    { "pair": "oath line RGB(185,198,188) on front-door bg RGB(16,22,24)", "ratio": 10.32 },
+    { "pair": "monster damage RGB(240,218,132) over dark soil sample RGB(42,38,32) [main.cpp:1724]", "ratio": 10.79 },
+    { "pair": "player damage RGB(255,118,104) over mid terrain sample RGB(74,74,58) [main.cpp:1724]", "ratio": 3.45 }
+  ],
+  "negative_control": {
+    "role": "persistent chat log (scrolling, wrapped, player/NPC/system channels)",
+    "browser": "src/components/Chatbox.vue:439-441,468,494-511 - ChatFont log, overflow-y scroll max-height 320px, overflow-wrap break-word",
+    "native": "no chat surface exists; render::Op enum (native/client/render_list.hpp:16-45) has no chat op; no chat input seam in ClientState",
+    "consequence": "any native pane-completion wave that assumes chat parity needs a new op + layout contract first"
+  },
+  "acceptance_command_results": "see REPORT.md literal transcripts",
+  "owner_pending_inputs": [
+    "final font family selection",
+    "font license approval (pixelmix, PxPlus_IBM_VGA8, Px437_IBM_PS2thin2 provenance/licensing)",
+    "renderer/backend choice (stay GDI vs DirectWrite/CoreText-backed implementation of the same contract)"
+  ]
+}
