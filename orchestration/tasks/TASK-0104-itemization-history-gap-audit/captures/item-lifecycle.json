@@ -1,0 +1,157 @@
+{
+  "task": "TASK-0104-itemization-history-gap-audit",
+  "worker": "ox-sw-g",
+  "generated_at": "2026-08-22T22:56:44-07:00",
+  "base_commit": "d2423873c577d299b3b39c56024d1d840993c72b",
+  "audited_at_head": "d2423873 (docs-only lane commits follow)",
+  "systems": {
+    "core_simulation_items": "verdigris::Simulation Item/Trophy/House/Scion model (headless, seed-stable ids, durable history vectors, snapshot/restore)",
+    "wire_gameitem_pipeline": "verdigris::GameItem + PlayerInventory + WearSet + GroundItem + VesselForge under WorldSimulation/ProtocolSession (browser-parity N4/N5)"
+  },
+  "lifecycle": {
+    "stable_ids": [
+      {"what": "core Item.id from seeded rng token", "cite": "native/include/verdigris/core.hpp:346", "also": ["native/src/core.cpp:698", "native/src/core.cpp:736"]},
+      {"what": "GameItem.uuid via process-global serial next_item_uuid()", "cite": "native/src/core.cpp:2608-2618", "gap_ref": "GAP-3"},
+      {"what": "VesselForge gen_id brand/vessel ids", "cite": "native/src/core.cpp:2317"}
+    ],
+    "generation": [
+      {"what": "drop_reward mints Ember-edged axe + Warden's ember trophy with history line 'forged by the expedition seed'", "cite": "native/src/core.cpp:696-740"},
+      {"what": "create_game_item (factory.js createById/createFromBase)", "cite": "native/src/core.cpp:2715-2779"},
+      {"what": "VesselForge::generate_item (ilvl, material roll, vessel slots, patience, initial brands, epithet)", "cite": "native/src/core.cpp:2290-2349"},
+      {"what": "gear_drop_pool (loot.js GEAR_DROP_POOL order)", "cite": "native/src/core.cpp:2680-2689"},
+      {"what": "instance_item_level_for_depth min(80, 10+(depth-1)*10)", "cite": "native/src/core.cpp:2993-2995"},
+      {"what": "catalogue kItemCatalogue incl. documented bronze-dagger exception", "cite": "native/src/core.cpp:2600"}
+    ],
+    "equipment_behavior_changes": [
+      {"what": "legacy single-slot equip/unequip + attack bonus read", "cite": "native/src/core.cpp:509-520, 522-534, 859-864"},
+      {"what": "equipped item use recording appends history 'used at tick N' + ItemHistoryUpdated", "cite": "native/src/core.cpp:426-435"},
+      {"what": "WearSet seats/totals (caps 75/75/100/100) feed combat mods", "cite": "native/src/core.cpp:2895-2979"},
+      {"what": "sync_combat_mods maps totals+attack style into PlayerCombatMods", "cite": "native/src/networking.cpp:973-987"},
+      {"what": "process_combat damage formula uses wear_attack*1.5 and attack style", "cite": "native/src/networking.cpp:2007-2023"}
+    ],
+    "drops": [
+      {"what": "monster loot: coins always (goods-found boosted) + rarity-gated gear roll; loot tile spiral", "cite": "native/src/core.cpp:3079-3112"},
+      {"what": "per-floor treasure scatter", "cite": "native/src/core.cpp:3114-3143"},
+      {"what": "overflow/dev spill lands at feet; town ground stashed across instance hops", "cite": "native/src/core.cpp:3017-3024, 1740, 1544-1545"},
+      {"what": "floor items retire on transition_floor (JS scene retirement parity)", "cite": "native/src/core.cpp:3145-3168"},
+      {"what": "dev:give / dev:drop / player:inventory:commit world-drop wire verbs", "cite": "native/src/networking.cpp:988-1037, 1976-1989"}
+    ],
+    "pickup": [
+      {"what": "core resolve_pickup gated by instance id registry (stale pickup rejection)", "cite": "native/src/core.cpp:466-507"},
+      {"what": "wire take by uuid with chebyshev<=1 + bind check + overflow stays on ground", "cite": "native/src/networking.cpp:1632-1658"},
+      {"what": "take-underfoot one-item own tile then 4-neighbors", "cite": "native/src/networking.cpp:1659-1671"},
+      {"what": "gold auto-pickup chebyshev<=1 coins only", "cite": "native/src/networking.cpp:1572-1591"}
+    ],
+    "inventory": [
+      {"what": "PlayerInventory 12x7 first-fit grid, stackable merge, coin spend", "cite": "native/src/core.cpp:2783-2893"},
+      {"what": "fresh admission purse = 100 coins only (starter blade retired)", "cite": "native/src/networking.cpp:511-523"},
+      {"what": "equip swap displaced-item spill simplification (documented)", "cite": "native/src/networking.cpp:1059-1064", "gap_ref": "GAP-10"}
+    ],
+    "extraction": [
+      {"what": "core resolve_extract requires at_extraction proximity; banks carried to House stores + events", "cite": "native/src/core.cpp:833-857"},
+      {"what": "wire finish_extraction drains backpack+wear into house_store_ (no position gate)", "cite": "native/src/networking.cpp:939-972, 2116-2127", "gap_ref": "GAP-5"},
+      {"what": "stairs-up / depth-return / teleport-return converge on extraction", "cite": "native/src/networking.cpp:2316-2317, 2124"}
+    ],
+    "death_recovery": [
+      {"what": "core handle_death: ALL carried items -> relic_candidates with history lines; trophies -> lost_trophies; floor value retired", "cite": "native/src/core.cpp:764-831"},
+      {"what": "successor starts empty; fallen scion archived", "cite": "native/src/core.cpp:871-883"},
+      {"what": "resurface rolls oldest-first 1-in-4 per reward stream for both pools", "cite": "native/src/core.cpp:710-734, 29"},
+      {"what": "wire soft death keeps inventory; hard/final death commits non-coins/non-bronze-dagger inventory+wear into circulation_pool", "cite": "native/src/networking.cpp:2383-2399, 2128-2143", "gap_ref": "GAP-2, GAP-6"},
+      {"what": "elite kill surfaces one circulating heirloom (own account preferred)", "cite": "native/src/networking.cpp:2083-2108"},
+      {"what": "dev:release-relic manual surfacing; cross-account surfaces unbound", "cite": "native/src/networking.cpp:2411-2430"}
+    ],
+    "relic_candidacy": [
+      {"what": "core relic_candidate flag + pool lifecycle (death->pool->ground->carried->stored or back)", "cite": "native/src/core.cpp:803-815, 558-595, 543-553"},
+      {"what": "GroundItem relic provenance fields (relic_record_id, source scion id/name)", "cite": "native/include/verdigris/core.hpp:676-686"},
+      {"what": "crypt relic record lost->recovered flip on pickup", "cite": "native/src/networking.cpp:1602-1631, 1643-1649"}
+    ],
+    "scars_history": [
+      {"what": "Item.history durable ordered lines: forged/picked up/equipped/used/death registration/resurfaced", "cite": "native/src/core.cpp:431, 443, 500, 515, 701, 713, 809-811"},
+      {"what": "unequip emits ItemHistoryUpdated WITHOUT appending a history line", "cite": "native/src/core.cpp:522-534", "gap_ref": "GAP-1", "negative_control": true},
+      {"what": "VesselItem.scars read-only (sear capacity + tooltip); no producer anywhere", "cite": "native/src/core.cpp:2353, 2434-2436", "owner_dependent": true},
+      {"what": "sear() adds brands, spends patience, epithet at >=3 marks", "cite": "native/src/core.cpp:2351-2366"},
+      {"what": "Trophy has no per-object history (id+name only)", "cite": "native/include/verdigris/core.hpp:135-138", "gap_ref": "GAP-9"}
+    ],
+    "crafting_storage": [
+      {"what": "town brand service add-brand 100 coins on live vessel item", "cite": "native/src/networking.cpp:1955-1974"},
+      {"what": "shop buy / wagon outfit buy mint unbound gear (inconsistent binding vs dev:give)", "cite": "native/src/networking.cpp:2343-2365, 2321-2333", "gap_ref": "GAP-8"},
+      {"what": "countinghouse bank UI uses separate bank_ vector vs extraction house_store_", "cite": "native/src/networking.cpp:1217-1243, 1714-1727, 1908-1944, 949-956", "gap_ref": "GAP-4"},
+      {"what": "house treasury coin deposit mutates chronicle", "cite": "native/src/networking.cpp:1245-1284"}
+    ],
+    "persistence": [
+      {"what": "core snapshot()/restore(): full item/history/relic pools round-trip; surfaced relics re-pended at boundary (D-109)", "cite": "native/src/core.cpp:1158-1227, 1229-1307"},
+      {"what": "atomic file adapter (write_atomic/read)", "cite": "native/persistence/adapter.hpp:23-84"},
+      {"what": "server_main never persists sessions/inventory/circulation pool; GameItems not persisted", "cite": "native/src/server_main.cpp (no snapshot calls)", "gap_ref": "GAP-2, GAP-3"}
+    ],
+    "wire_payloads": [
+      {"what": "item_identity_json (slot/id/uuid/boundTo/affixes{brand:null,bond:null}/vessel/stats; NO history field)", "cite": "native/src/networking.cpp:354-390", "gap_ref": "GAP-7"},
+      {"what": "snapshot_item_json + state.inventory/inventoryDetails/wear/wearDetails/wornItems/houseStoredItems/bank", "cite": "native/src/networking.cpp:337-351, 893-911"},
+      {"what": "ground_item_json with chroniclesRelic + legacyRelicId (denylist exception)", "cite": "native/src/networking.cpp:393-423"},
+      {"what": "core:refresh:inventory / world:itemDropped / item:change / player:equippedAnItem(+wearDetails+combat) / player:extract summary", "cite": "native/src/networking.cpp:914-972"}
+    ],
+    "presentation": [
+      {"what": "client model ClientItemSlot inventory/equipped/stored_items/extracted", "cite": "native/client/client_model.hpp:67-80"},
+      {"what": "local session maps core sim carried/ground/stored + events", "cite": "native/client/local_session.cpp:46-64, 150-178"},
+      {"what": "remote session parses login inventory, ground list, core:refresh:inventory diffs, equip/extract mapping", "cite": "native/client/remote_session.cpp:68, 369-380, 519-547, 676-728"},
+      {"what": "presentation loot fx keyed by event.item_id with drop-N fallback", "cite": "native/client/presentation_state.cpp:192-205, 104-116, 58-63"}
+    ]
+  },
+  "tests_covering_lifecycle": [
+    {"test": "test_relic_resurface_round_trip", "cite": "native/tests/core_tests.cpp:635-679", "covers": "death->pool->resurface->pickup->extract with stable identity + history"},
+    {"test": "test_relic_loss_again_returns_once", "cite": "native/tests/core_tests.cpp:681-701", "covers": "single re-registration, pack death history line"},
+    {"test": "test_relic_resurface_replay_is_deterministic", "cite": "native/tests/core_tests.cpp:703-727", "covers": "seed-stable identity replay"},
+    {"test": "test_persistence_recovery_pools", "cite": "native/tests/core_tests.cpp:795-819", "covers": "pools survive snapshot byte-stable"},
+    {"test": "test_persistence_surfaced_recovery_becomes_pending", "cite": "native/tests/core_tests.cpp:821-852", "covers": "surfaced->pending re-entry exactly once"},
+    {"test": "test_instance_lifecycle_rejects_stale_pickups", "cite": "native/tests/core_tests.cpp:953-1001", "covers": "retired floor ids unpickable"},
+    {"test": "test_death_retires_floor_without_double_registering_relics", "cite": "native/tests/core_tests.cpp:1003-1022", "covers": "floor-vs-carried ownership at death"},
+    {"test": "test_extraction / test_death_and_successor", "cite": "native/tests/core_tests.cpp:1074-1115", "covers": "extraction banking; successor empty; legends"},
+    {"test": "test_d106_all_carried_value_is_recoverable", "cite": "native/tests/core_tests.cpp:1117-1164", "covers": "every carried item/trophy recoverable exactly once with ordered history lines"},
+    {"test": "test_d106_recovery_is_ordered_and_deterministic", "cite": "native/tests/core_tests.cpp:1166-1210", "covers": "ordered oldest-first recovery, dedicated trophy event"},
+    {"test": "test_item_identity_and_branch", "cite": "native/tests/core_tests.cpp:1212-1237", "covers": "identity across pickup/equip/use/unequip (flags only; NO history content — negative control)"},
+    {"test": "test_gate_a_ground_login_and_kill_loot", "cite": "native/tests/networking_tests.cpp:244-331", "covers": "ground envelopes, kill loot"},
+    {"test": "test_gate_a_extract_and_stairs", "cite": "native/tests/networking_tests.cpp:333-386", "covers": "player:extract + stairs-up converge on houseStoredItems"},
+    {"test": "test_gate_a_equip_totals_and_unknown_uuid", "cite": "native/tests/networking_tests.cpp:388-431", "covers": "equip totals, JS error envelope, wear immutability"},
+    {"test": "session journey pickup/equip/extract", "cite": "native/tests/session_tests.cpp:199-374", "covers": "end-to-end client journey flags"}
+  ],
+  "content_neutral_gaps_ranked": [
+    {"rank": "GAP-1", "severity": "P0", "title": "Unequip emits ItemHistoryUpdated without a durable history line", "cite": "native/src/core.cpp:522-534", "uncovered": true},
+    {"rank": "GAP-2", "severity": "P0", "title": "Circulation pool volatile across restart (D-106 red risk); server never persists recovery state", "cite": "native/src/networking.cpp:748-750, 2133-2143; native/src/server_main.cpp", "uncovered": true},
+    {"rank": "GAP-3", "severity": "P1", "title": "Wire uuids process-scoped serial, not seed-stable nor persisted", "cite": "native/src/core.cpp:2608-2618"},
+    {"rank": "GAP-4", "severity": "P1", "title": "Two non-converged House stores (house_store_ vs bank_)", "cite": "native/src/networking.cpp:939-972, 1217-1243"},
+    {"rank": "GAP-5", "severity": "P1", "title": "Wire extraction has no position/risk gate (any in-instance point extracts)", "cite": "native/src/networking.cpp:2116-2127"},
+    {"rank": "GAP-6", "severity": "P2", "title": "Soft death keeps 100% carried value on the wire; divergent loss regimes", "cite": "native/src/networking.cpp:2383-2399, 2208-2223"},
+    {"rank": "GAP-7", "severity": "P2", "title": "Core item history/use_count never projected onto the wire", "cite": "native/src/networking.cpp:354-390"},
+    {"rank": "GAP-8", "severity": "P2", "title": "Binding admission inconsistent across give/shop/wagon/loot", "cite": "native/src/networking.cpp:1008, 2326-2358; native/src/core.cpp:2771-2777"},
+    {"rank": "GAP-9", "severity": "P2", "title": "Trophies carry no per-object durable history", "cite": "native/include/verdigris/core.hpp:135-138"},
+    {"rank": "GAP-10", "severity": "P2", "title": "Equip swap onto full grid spills instead of aborting (documented deviation)", "cite": "native/src/networking.cpp:1059-1064"}
+  ],
+  "owner_dependent_content_gaps_ranked": [
+    {"rank": 1, "title": "Scar producer/rules absent (scars never incremented)", "cite": "native/src/core.cpp:2353, 2434-2436", "owner_reference": "OD-002"},
+    {"rank": 2, "title": "Bonds absent (affixes.bond always null)", "cite": "native/src/networking.cpp:371", "owner_reference": "OD-002"},
+    {"rank": 3, "title": "'Notable gear' = everything except coins/bronze-dagger (heuristic pending ruling)", "cite": "native/src/networking.cpp:2133-2137"},
+    {"rank": 4, "title": "Relic recovery cadence constants (core 1-in-4; wire one-per-elite-kill) untuned", "cite": "native/src/core.cpp:29, 710-734; native/src/networking.cpp:2083-2108", "owner_reference": "OD-006"},
+    {"rank": 5, "title": "Legends recorded but do not influence loot/spawn pools yet", "cite": "native/src/core.cpp:267-293", "owner_reference": "OD-010"},
+    {"rank": 6, "title": "House crafting layer beyond brand service/purchases absent; economy rates hardcoded", "cite": "docs/product/VERDIGRIS_CONSTITUTION.md:62-66"}
+  ],
+  "red_risks": [
+    {"invariant": "D-106 recoverability", "status": "GREEN in-process / RED across restart", "detail": "circulation_pool is a process static; restart destroys unrecovered heirlooms", "cite": "native/src/networking.cpp:748-750"},
+    {"invariant": "House single ownership", "status": "GREEN", "detail": "exclusive pool moves, deduped re-entry/snapshot", "cite": "native/src/core.cpp:558-595, 1200-1223"},
+    {"invariant": "Significant-item history", "status": "GREEN core / RED wire", "detail": "history invisible to clients; unequip event/history split", "cite": "native/src/networking.cpp:354-390; native/src/core.cpp:522-534"},
+    {"invariant": "Denylist firewall", "status": "GREEN with documented exceptions", "detail": "bronze-dagger + legacyRelicId exceptions flagged for owner review", "cite": "config/legacy-denylist.json"}
+  ],
+  "negative_control": {
+    "transition": "item history across unequip",
+    "why_uncovered": "resolve_unequip emits ItemHistoryUpdated('unequip') but appends no item.history line; test_item_identity_and_branch asserts only flags/references after unequip",
+    "cite": ["native/src/core.cpp:522-534", "native/tests/core_tests.cpp:1228-1233"],
+    "secondary_uncovered": [
+      "restart survival of circulation_pool (networking.cpp:748-750)",
+      "crypt relic status lost->recovered flip via mark_relic_recovered (networking.cpp:1602-1631) has no native automated test"
+    ]
+  },
+  "proposed_locking_tests": [
+    {"locks": "GAP-1", "smallest_test": "assert history.back() is an unequip-class line OR the ItemHistoryUpdated('unequip') event is absent after Command::unequip"},
+    {"locks": "GAP-2", "smallest_test": "snapshot/restore preserves circulation pool contents oldest-first (or pin current volatility explicitly until seam exists)"},
+    {"locks": "GAP-4", "smallest_test": "after player:extract the bank screen payload lists the extracted uuid"},
+    {"locks": "GAP-3", "smallest_test": "two equal-seed WorldSimulations mint equal uuid sequences, or pin documented process-scope contract"}
+  ]
+}
