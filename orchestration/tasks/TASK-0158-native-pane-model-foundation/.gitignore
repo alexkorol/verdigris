@@ -1,0 +1,3 @@
+# Local MSVC harness outputs stay on-disk under this task folder only.
+pane_model_tests.exe
+*.obj

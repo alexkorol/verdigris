@@ -1,0 +1,8 @@
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+pane_model_tests.cpp
+pane_model tests: 381 checks, 0 failures
+pane_model tests: PASS
