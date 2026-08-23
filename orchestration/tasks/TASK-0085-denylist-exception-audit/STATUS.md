@@ -49,7 +49,6 @@
   task folder; no forbidden path touched; no ports bound or probed (6500
   untouched); no disposition chosen, nothing renamed, denylist unchanged.
 - REVIEW_REQUESTED: REPORT.md carries literal acceptance transcripts; frozen
-  review head is the commit carrying this STATUS flip (SHA recorded in the
-  follow-up record commit and in the pushed ref
-  `origin/worker/verdigris/pc/ox-pc-bb`). No merge, no force-push, no
-  program-branch push.
+  review head `576d325d41bcd8b5522779d23bbf21fb0bbb7c11` (FINDINGS + REPORT +
+  this STATUS flip), pushed to `origin/worker/verdigris/pc/ox-pc-bb`. No merge,
+  no force-push, no program-branch push.
