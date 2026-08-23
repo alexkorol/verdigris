@@ -1,6 +1,6 @@
 # STATUS — TASK-0152-native-density-benchmark-evidence
 
-state: REVIEW_REQUESTED
+state: INTEGRATED
 task: TASK-0152-native-density-benchmark-evidence
 worker (lane): ox-pc-ac
 coordinator: ox-alpha
@@ -70,3 +70,16 @@ revision_1:
     - usage errors exit 2 unchanged
     - git diff --check clean; scope limited to owned paths
   report: REPORT.md "Revision 1" section
+
+reconciled_by_validator:
+  at: 2026-08-23T04:55:00Z
+  note: >-
+    REVIEW.md Revision 3 (independent re-validation by a different model,
+    deepseek-v4-flash) confirms ACCEPTED at frozen head d34097d9 — native
+    gate GATE_EXIT=0, /W4-clean bench build, 6/6 positive + 12/12 negative
+    validator matrix, double-process determinism checksum
+    fnv1a64:9f2964a4df5ac069, usage exit 2, owned-scope-only diff,
+    git diff --check clean. The same TASK-0152 content is integrated on
+    origin/codex/native-reconstitution (commit 76837dec). This STATUS is
+    therefore reconciled from REVIEW_REQUESTED to INTEGRATED; no further
+    work is required.
