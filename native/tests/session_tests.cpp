@@ -2080,6 +2080,511 @@ void gate_b_chronicles_reconnect_journey() {
   check(true, "gate-b: journey server stopped cleanly");
 }
 
+// ── TASK-0162: passive-tree payload hardening (scripted loopback wire) ────
+// apply_envelope is deliberately private; the production path from bytes to
+// mirror is reader_loop -> parse_envelope -> apply_envelope ->
+// apply_passive_tree. To prove the fail-closed contract end to end this
+// suite binds a tiny TEST-ONLY scripted WebSocket server that answers the
+// client's upgrade and then replays raw `{event,data}` envelopes — including
+// payloads the real verdigris_server would never emit. No server or wire
+// authority changes: the production client parses exactly what a hostile or
+// corrupting peer puts on the loopback wire (TASK-0163 capsule only).
+
+#ifdef _WIN32
+using PtSocket = SOCKET;
+static constexpr PtSocket kPtInvalidSocket = INVALID_SOCKET;
+static void pt_close_socket(PtSocket socket) { ::closesocket(socket); }
+#else
+using PtSocket = int;
+static constexpr PtSocket kPtInvalidSocket = -1;
+static void pt_close_socket(PtSocket socket) { ::close(socket); }
+#endif
+
+bool pt_send_all(PtSocket socket, const char* data, std::size_t size) {
+  std::size_t sent_total = 0;
+  while (sent_total < size) {
+    const int sent =
+        ::send(socket, data + sent_total, static_cast<int>(size - sent_total), 0);
+    if (sent <= 0) return false;
+    sent_total += static_cast<std::size_t>(sent);
+  }
+  return true;
+}
+
+// Server->client text frames are unmasked (RFC6455 5.1).
+bool pt_send_text_frame(PtSocket socket, const std::string& payload) {
+  std::string frame;
+  frame.push_back(static_cast<char>(0x81));
+  const std::size_t size = payload.size();
+  if (size < 126) {
+    frame.push_back(static_cast<char>(size));
+  } else if (size <= 0xFFFF) {
+    frame.push_back(static_cast<char>(126));
+    frame.push_back(static_cast<char>((size >> 8) & 0xff));
+    frame.push_back(static_cast<char>(size & 0xff));
+  } else {
+    frame.push_back(static_cast<char>(127));
+    for (int i = 7; i >= 0; --i)
+      frame.push_back(static_cast<char>(
+          (static_cast<std::uint64_t>(size) >> (i * 8)) & 0xff));
+  }
+  frame += payload;
+  return pt_send_all(socket, frame.data(), frame.size());
+}
+
+// Single-connection scripted server: serves exactly one client with the
+// scripted envelope stream, then exits so a client retry can never replay
+// the script against a second connection.
+class ScriptedEnvelopeServer {
+ public:
+  ScriptedEnvelopeServer() = default;
+  ~ScriptedEnvelopeServer() { stop(); }
+
+  ScriptedEnvelopeServer(const ScriptedEnvelopeServer&) = delete;
+  ScriptedEnvelopeServer& operator=(const ScriptedEnvelopeServer&) = delete;
+
+  bool start(std::string* error) {
+#ifdef _WIN32
+    WSADATA wsa{};
+    wsa_started_ = ::WSAStartup(MAKEWORD(2, 2), &wsa) == 0;
+    if (!wsa_started_) {
+      if (error) *error = "WSAStartup failed";
+      return false;
+    }
+#endif
+    // This suite's TASK-0163 loopback capsule is 7160-7179; port 6500 is
+    // never touched.
+    for (std::uint16_t port = 7160; port <= 7179; ++port) {
+      listener_ = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+      if (listener_ == kPtInvalidSocket) break;
+      sockaddr_in address{};
+      address.sin_family = AF_INET;
+      address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);  // loopback only
+      address.sin_port = htons(port);
+      if (::bind(listener_, reinterpret_cast<sockaddr*>(&address),
+                 sizeof(address)) == 0 &&
+          ::listen(listener_, 1) == 0) {
+        port_ = port;
+        break;
+      }
+      pt_close_socket(listener_);
+      listener_ = kPtInvalidSocket;
+    }
+    if (listener_ == kPtInvalidSocket) {
+      if (error) *error = "no free port in the TASK-0163 capsule";
+#ifdef _WIN32
+      if (wsa_started_) {
+        ::WSACleanup();
+        wsa_started_ = false;
+      }
+#endif
+      return false;
+    }
+    running_.store(true);
+    worker_ = std::thread(&ScriptedEnvelopeServer::serve, this);
+    return true;
+  }
+
+  void stop() {
+    running_.store(false);
+    if (listener_ != kPtInvalidSocket) {
+      pt_close_socket(listener_);
+      listener_ = kPtInvalidSocket;
+    }
+    if (worker_.joinable()) worker_.join();
+#ifdef _WIN32
+    if (wsa_started_) {
+      ::WSACleanup();
+      wsa_started_ = false;
+    }
+#endif
+  }
+
+  std::uint16_t port() const { return port_; }
+
+  // Frame pacing: frame 0 goes out right after the upgrade; every later
+  // frame waits for an explicit grant so each assertion block observes its
+  // own frame deterministically.
+  void grant_next_frame() { credits_.fetch_add(1); }
+
+  std::vector<std::string> script;
+
+ private:
+  void serve() {
+    while (running_.load()) {
+      fd_set readfds;
+      FD_ZERO(&readfds);
+      FD_SET(listener_, &readfds);
+      timeval timeout{};
+      timeout.tv_sec = 0;
+      timeout.tv_usec = 100000;
+#ifdef _WIN32
+      const int ready = ::select(0, &readfds, nullptr, nullptr, &timeout);
+#else
+      const int ready =
+          ::select(static_cast<int>(listener_) + 1, &readfds, nullptr, nullptr,
+                   &timeout);
+#endif
+      if (!running_.load()) return;
+      if (ready <= 0) continue;
+      const PtSocket connection = ::accept(listener_, nullptr, nullptr);
+      if (connection == kPtInvalidSocket) return;
+      serve_connection(connection);
+      pt_close_socket(connection);
+    }
+  }
+
+  void serve_connection(PtSocket connection) {
+    std::string request;
+    char buffer[1024];
+    while (request.find("\r\n\r\n") == std::string::npos && request.size() < 8192) {
+      const int got = ::recv(connection, buffer, sizeof(buffer), 0);
+      if (got <= 0) return;
+      request.append(buffer, buffer + got);
+    }
+    // Accept header paired with the fixed loopback key in
+    // RemoteProtocolSession (the RFC6455 example pair).
+    static const char kUpgrade[] =
+        "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\n"
+        "Connection: Upgrade\r\nSec-WebSocket-Accept: "
+        "s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n\r\n";
+    if (!pt_send_all(connection, kUpgrade, sizeof(kUpgrade) - 1)) return;
+    for (std::size_t i = 0; i < script.size(); ++i) {
+      if (i > 0) {
+        const auto wait_deadline =
+            std::chrono::steady_clock::now() + std::chrono::seconds(10);
+        while (running_.load() && credits_.load() == 0 &&
+               std::chrono::steady_clock::now() < wait_deadline) {
+          std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        }
+        if (!running_.load() || credits_.load() == 0) return;
+        credits_.fetch_sub(1);
+      }
+      if (!pt_send_text_frame(connection, script[i])) return;
+      std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));  // drain window
+  }
+
+  PtSocket listener_ = kPtInvalidSocket;
+  std::atomic<bool> running_{false};
+  std::atomic<int> credits_{0};
+  std::thread worker_;
+  std::uint16_t port_ = 0;
+  bool wsa_started_ = false;
+};
+
+std::string pt_login_frame(const std::string& tree_json) {
+  std::string player =
+      "{\"uuid\":\"hardening-guest\",\"x\":10,\"y\":11,\"facing\":\"down\"";
+  if (!tree_json.empty()) player += ",\"passiveTree\":" + tree_json;
+  player += "}";
+  return "{\"event\":\"player:login\",\"data\":{\"player\":" + player +
+         ",\"scene\":{\"id\":\"town\",\"type\":\"town\",\"name\":"
+         "\"Verdigris Town\"}}}";
+}
+
+std::string pt_state_frame(const std::string& tree_json) {
+  return "{\"event\":\"dev:state\",\"data\":{\"state\":{\"lifecycle\":"
+         "\"alive\",\"passiveTree\":" +
+         tree_json + "}}}";
+}
+
+std::string pt_update_frame(const std::string& tree_json) {
+  return "{\"event\":\"player:skilltree:update\",\"data\":{\"passiveTree\":" +
+         tree_json + "}}";
+}
+
+bool progression_is(const verdigris::client::ClientModel& model, bool present,
+                    int unspent, int earned, int nodes, int conduits) {
+  const auto& p = model.progression;
+  return p.present == present && p.unspent_points == unspent &&
+         p.earned_points == earned && p.node_count == nodes &&
+         p.conduit_count == conduits;
+}
+
+template <typename Pred>
+bool pt_pump_until(verdigris::client::RemoteProtocolSession& session,
+                   std::vector<std::string>& errors, int timeout_ms, Pred done) {
+  const auto deadline =
+      std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+  for (;;) {
+    session.poll();
+    for (const auto& event : session.drain_events())
+      if (event.type == verdigris::client::PresentationEventType::ProtocolError)
+        errors.push_back(event.text);
+    if (done()) return true;
+    if (std::chrono::steady_clock::now() >= deadline) return false;
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+}
+
+void remote_passive_tree_absence_stays_absent() {
+  ScriptedEnvelopeServer server;
+  server.script.push_back(pt_login_frame(""));
+  std::string error;
+  check(server.start(&error), "ptree-absent: scripted loopback server bound in capsule");
+  if (server.port() == 0) return;
+
+  verdigris::client::RemoteProtocolSession session("127.0.0.1", server.port(),
+                                                   "pt-absent-guest", true);
+  check(session.start(&error), "ptree-absent: connect + upgrade + login sent");
+  check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
+        "ptree-absent: admission acknowledged");
+  std::vector<std::string> seen;
+  const auto deadline =
+      std::chrono::steady_clock::now() + std::chrono::milliseconds(400);
+  while (std::chrono::steady_clock::now() < deadline) {
+    session.poll();
+    for (const auto& event : session.drain_events())
+      if (event.type == verdigris::client::PresentationEventType::ProtocolError)
+        seen.push_back(event.text);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  check(progression_is(session.model(), false, 0, 0, 0, 0),
+        "ptree-absent: no payload -> mirror stays absent, never rendered as zero");
+  check(seen.empty(), "ptree-absent: absent payload raises no diagnostic");
+  session.shutdown();
+  server.stop();
+}
+
+void remote_passive_tree_payload_hardening() {
+  using verdigris::client::RemoteProtocolSession;
+
+  ScriptedEnvelopeServer server;
+  std::string error;
+  check(server.start(&error), "ptree: scripted loopback server bound in capsule");
+  if (server.port() == 0) return;
+
+  const char* kPointsReason = "points.skill must be a nonnegative integer";
+  const char* kEarnedReason = "earned must be a nonnegative integer";
+  const char* kSchemaReason = "schemaVersion must be the number 2";
+
+  // Frame plan. Frame 0 ships with the upgrade; every later frame waits for
+  // one grant per assertion block so ordering stays deterministic.
+  server.script.push_back(pt_login_frame(""));  // 0: valid ABSENT admission
+  server.script.push_back(pt_state_frame(       // 1: valid ZERO tree
+      "{\"schemaVersion\":2,\"points\":{\"skill\":0},\"earned\":0,"
+      "\"nodes\":[\"0,0\"],\"conduits\":[]}"));
+  server.script.push_back(pt_update_frame(      // 2: valid NONZERO refresh
+      "{\"schemaVersion\":2,\"points\":{\"skill\":7},\"earned\":12,"
+      "\"nodes\":[\"n0\",\"n1\",\"n2\",\"n3\"],"
+      "\"conduits\":[\"c0\",\"c1\",\"c2\"]}"));
+
+  // Invalid battery (frames 3+). Channels rotate across all three production
+  // call sites: player:login, dev:state, player:skilltree:update.
+  struct RejectCase {
+    std::string envelope;
+    std::string expected_text;
+    const char* label;
+  };
+  const std::string fractional_earned_frame =
+      pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                      "\"earned\":11.5,\"nodes\":[\"n0\"],\"conduits\":[]}");
+  std::vector<RejectCase> rejects = {
+      // Missing fields.
+      {pt_update_frame("{\"schemaVersion\":2}"),
+       std::string("passiveTree rejected: ") + kPointsReason, "missing points"},
+      {pt_state_frame("{\"schemaVersion\":2,\"points\":{\"skill\":0},"
+                      "\"nodes\":[\"0,0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kEarnedReason, "missing earned"},
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                       "\"earned\":12,\"nodes\":[\"n0\"]}"),
+       "passiveTree rejected: conduits must be an array", "missing conduits"},
+      // Wrong types.
+      {pt_update_frame("{\"schemaVersion\":\"2\",\"points\":{\"skill\":7},"
+                       "\"earned\":12,\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kSchemaReason,
+       "wrong-typed schemaVersion"},
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":[1],\"earned\":12,"
+                       "\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kPointsReason,
+       "wrong-typed points container"},
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":\"3\"},"
+                       "\"earned\":12,\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kPointsReason,
+       "wrong-typed points.skill"},
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                       "\"earned\":true,\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kEarnedReason,
+       "wrong-typed earned"},
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                       "\"earned\":12,\"nodes\":{},\"conduits\":[]}"),
+       "passiveTree rejected: nodes must be an array", "wrong-typed nodes"},
+      {pt_login_frame(
+           "{\"schemaVersion\":2,\"points\":{\"skill\":7},\"earned\":12,"
+           "\"nodes\":[\"n0\"],\"conduits\":\"none\"}"),
+       "passiveTree rejected: conduits must be an array",
+       "wrong-typed conduits on login"},
+      // Fractional values.
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":2.5},"
+                       "\"earned\":12,\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kPointsReason,
+       "fractional points.skill"},
+      {fractional_earned_frame,
+       std::string("passiveTree rejected: ") + kEarnedReason,
+       "fractional earned"},
+      // Negative values.
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":-1},"
+                       "\"earned\":12,\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kPointsReason,
+       "negative points.skill"},
+      {pt_state_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                      "\"earned\":-3,\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kEarnedReason,
+       "negative earned"},
+      // Non-finite / overflow-like values (strtod accepts these literals).
+      {pt_state_frame("{\"schemaVersion\":2,\"points\":{\"skill\":Infinity},"
+                      "\"earned\":12,\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kPointsReason,
+       "bare-Infinity points.skill"},
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                       "\"earned\":1e400,\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kEarnedReason,
+       "exponent-overflow earned (inf)"},
+      {pt_update_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                       "\"earned\":2147483648,\"nodes\":[\"n0\"],"
+                       "\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kEarnedReason,
+       "int-cast overflow earned"},
+      // Unsupported schema version arrives on the admission channel.
+      {pt_login_frame(
+           "{\"schemaVersion\":3,\"points\":{\"skill\":1},\"earned\":1,"
+           "\"nodes\":[\"n0\"],\"conduits\":[]}"),
+       std::string("passiveTree rejected: ") + kSchemaReason,
+       "future schemaVersion on login"},
+      // Top-level shape failure on the admission channel.
+      {pt_login_frame("[]"),
+       "passiveTree rejected: envelope must be an object",
+       "non-object passiveTree on login"},
+  };
+
+  // Oversized arrays: 65537 entries sits above the documented transport
+  // entry bound yet far below the 1 MiB reader frame ceiling, so rejection
+  // happens in the parser, not the transport (and each frame exercises the
+  // 64-bit length path).
+  {
+    std::string entries;
+    entries.reserve(65537 * 3);
+    for (int i = 0; i < 65537; ++i) {
+      if (i) entries += ",";
+      entries += "\"\"";
+    }
+    rejects.push_back({pt_update_frame(
+                           "{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                           "\"earned\":12,\"conduits\":[],\"nodes\":[" +
+                           entries + "]}"),
+                       "passiveTree rejected: nodes exceeds the passiveTree "
+                       "transport entry bound",
+                       "oversized nodes array"});
+    rejects.push_back(
+        {pt_state_frame("{\"schemaVersion\":2,\"points\":{\"skill\":7},"
+                        "\"earned\":12,\"nodes\":[\"0,0\"],\"conduits\":[" +
+                        entries + "]}"),
+         "passiveTree rejected: conduits exceeds the passiveTree transport "
+         "entry bound",
+         "oversized conduits array"});
+  }
+  const std::size_t kFractionalEarnedErrorIndex =
+      10;  // position of "fractional earned" in the table above
+  for (const auto& reject : rejects) server.script.push_back(reject.envelope);
+
+  // Stability probe: the exact fractional-earned payload repeats so the two
+  // diagnostics must be byte-identical.
+  server.script.push_back(rejects[kFractionalEarnedErrorIndex].envelope);
+
+  // Recovery: a valid refresh after the whole battery must still apply.
+  server.script.push_back(pt_update_frame(
+      "{\"schemaVersion\":2,\"points\":{\"skill\":5},\"earned\":11,"
+      "\"nodes\":[\"n0\",\"n1\",\"n2\"],\"conduits\":[\"c0\",\"c1\"]}"));
+
+  RemoteProtocolSession session("127.0.0.1", server.port(),
+                                "hardening-guest", true);
+  check(session.start(&error), "ptree: connect + upgrade + login sent");
+
+  std::vector<std::string> seen;
+  check(pt_pump_until(session, seen, 5000, [&] {
+          return session.connection_state() ==
+                 verdigris::client::ConnectionState::Ready;
+        }),
+        "ptree: valid absent login reaches Ready");
+  check(progression_is(session.model(), false, 0, 0, 0, 0),
+        "ptree: fresh admission starts absent (valid absent behavior)");
+
+  server.grant_next_frame();  // -> valid ZERO tree over dev:state
+  check(pt_pump_until(session, seen, 5000,
+                      [&] { return session.model().progression.present; }),
+        "ptree: VALID zero tree makes the mirror present");
+  check(progression_is(session.model(), true, 0, 0, 1, 0),
+        "ptree: zero tree mirrors verbatim zeros (valid zero behavior)");
+  check(seen.empty(), "ptree: valid payloads raise no diagnostic");
+
+  server.grant_next_frame();  // -> valid NONZERO refresh
+  check(pt_pump_until(session, seen, 5000, [&] {
+          return progression_is(session.model(), true, 7, 12, 4, 3);
+        }),
+        "ptree: VALID nonzero update mirrors verbatim (valid nonzero behavior)");
+  check(seen.empty(), "ptree: valid nonzero update raises no diagnostic");
+  const auto snapshot = session.model().progression;
+
+  for (std::size_t i = 0; i < rejects.size() + 2; ++i) {
+    const std::size_t baseline = seen.size();
+    server.grant_next_frame();
+    bool arrived = false;
+    if (i < rejects.size()) {
+      arrived = pt_pump_until(session, seen, 5000,
+                              [&] { return seen.size() > baseline; });
+      const std::string label = std::string("ptree: ") + rejects[i].label;
+      check(arrived, (label + ": diagnostic surfaced").c_str());
+      if (arrived)
+        check(seen[baseline] == rejects[i].expected_text,
+              (label + ": deterministic diagnostic text").c_str());
+    } else if (i == rejects.size()) {
+      arrived = pt_pump_until(session, seen, 5000,
+                              [&] { return seen.size() > baseline; });
+      check(arrived, "ptree: repeated invalid payload surfaces again");
+      if (arrived)
+        check(seen.back() == seen[kFractionalEarnedErrorIndex],
+              "ptree: diagnostic text is byte-stable across repeats");
+    } else {
+      arrived = pt_pump_until(
+          session, seen, 5000,
+          [&] { return progression_is(session.model(), true, 5, 11, 3, 2); });
+      check(arrived,
+            "ptree: valid refresh applies after rejects (session healthy)");
+    }
+    if (i != rejects.size() + 1) {
+      const auto& p = session.model().progression;
+      check(p.present == snapshot.present &&
+                p.unspent_points == snapshot.unspent_points &&
+                p.earned_points == snapshot.earned_points &&
+                p.node_count == snapshot.node_count &&
+                p.conduit_count == snapshot.conduit_count,
+            "ptree: invalid update left the last valid snapshot untouched");
+    }
+  }
+
+  const std::size_t quiet_baseline = seen.size();
+  const auto quiet_deadline =
+      std::chrono::steady_clock::now() + std::chrono::milliseconds(300);
+  bool quiet = true;
+  while (std::chrono::steady_clock::now() < quiet_deadline) {
+    session.poll();
+    for (const auto& event : session.drain_events())
+      if (event.type == verdigris::client::PresentationEventType::ProtocolError)
+        seen.push_back(event.text);
+    if (seen.size() != quiet_baseline) {
+      quiet = false;
+      break;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  check(quiet, "ptree: valid recovery raises no diagnostic");
+
+  session.shutdown();
+  server.stop();
+}
+
 }  // namespace
 
 int main() {
@@ -2094,6 +2599,8 @@ int main() {
   remote_mid_session_disconnect();
   remote_session_replaced();
   remote_render_list_ops();
+  remote_passive_tree_absence_stays_absent();
+  remote_passive_tree_payload_hardening();
   gateb_driver_state_machine_controls();
   gate_b_chronicles_reconnect_journey();
   if (failures == 0) {
