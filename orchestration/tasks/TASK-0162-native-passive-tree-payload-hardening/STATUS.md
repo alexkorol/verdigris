@@ -1,5 +1,7 @@
 task: TASK-0162
-state: REVIEW_REQUESTED
+state: INTEGRATED
+reviewed_commit: 98068dfc
+reviewed_at: 2026-08-23T23:45:00Z
 lane: ox-pc-bc
 model: openrouter/stealth/ox-alpha
 base_commit: dc8df4399da4c2a0b8b92a4ea395cba79cc6ff17
