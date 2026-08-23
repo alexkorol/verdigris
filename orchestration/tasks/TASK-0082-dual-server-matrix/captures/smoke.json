@@ -1,0 +1,140 @@
+{
+  "task": "TASK-0082-dual-server-matrix",
+  "generatedAt": "2026-08-23T16:55:12.886Z",
+  "revision": "9e92a4f65b57a1527342bc6c57e8c4a6aee22d03",
+  "requestedScenarios": [
+    "quickstart",
+    "movement",
+    "zones"
+  ],
+  "executionOrder": [
+    "movement",
+    "quickstart",
+    "zones"
+  ],
+  "parity": true,
+  "asymmetries": [],
+  "servers": {
+    "js": {
+      "label": "js",
+      "url": "ws://127.0.0.1:6541",
+      "command": {
+        "file": "C:\\Users\\Alex\\AppData\\Local\\hermes\\node\\node.exe",
+        "args": [
+          "server/index.js"
+        ],
+        "cwd": "Z:\\Code\\.worktrees\\verdigris\\ox-pc-bf"
+      },
+      "envDelta": {
+        "NODE_ENV": "development",
+        "PORT": "6541",
+        "PLAYER_SAVE_COOLDOWN_MS": "999999999",
+        "VERDIGRIS_BIND_HOST": "127.0.0.1",
+        "GUEST_SAVE_DIR": "C:\\Users\\Alex\\AppData\\Local\\Temp\\verdigris-matrix-js-1787504075341-25120",
+        "CHRONICLES_STORE_FILE": "C:\\Users\\Alex\\AppData\\Local\\Temp\\verdigris-matrix-chronicles-1787504075341-25120.json",
+        "CHRONICLES_DB_FILE": "C:\\Users\\Alex\\AppData\\Local\\Temp\\verdigris-matrix-1787504075341-25120.sqlite"
+      },
+      "executable": {
+        "path": "C:\\Users\\Alex\\AppData\\Local\\hermes\\node\\node.exe",
+        "sha256": "0d0f5e39f9f3d9587bc19f73eab3c2c9c4903fd02d6dbf9c853dd81b3d95fad4"
+      },
+      "isolatedSavePaths": {
+        "GUEST_SAVE_DIR": "C:\\Users\\Alex\\AppData\\Local\\Temp\\verdigris-matrix-js-1787504075341-25120",
+        "CHRONICLES_STORE_FILE": "C:\\Users\\Alex\\AppData\\Local\\Temp\\verdigris-matrix-chronicles-1787504075341-25120.json",
+        "CHRONICLES_DB_FILE": "C:\\Users\\Alex\\AppData\\Local\\Temp\\verdigris-matrix-1787504075341-25120.sqlite"
+      },
+      "runner": {
+        "command": {
+          "file": "C:\\Users\\Alex\\AppData\\Local\\hermes\\node\\node.exe",
+          "args": [
+            "playtest/run.mjs",
+            "--attach",
+            "movement",
+            "quickstart",
+            "zones"
+          ],
+          "cwd": "Z:\\Code\\.worktrees\\verdigris\\ox-pc-bf"
+        },
+        "envDelta": {
+          "PLAYTEST_WS_URL": "ws://127.0.0.1:6541"
+        },
+        "exitCode": 0,
+        "durationMs": 25327,
+        "summaryLine": "3/3 scenarios passed"
+      },
+      "scenarios": [
+        {
+          "name": "movement",
+          "ok": true,
+          "ms": 4584
+        },
+        {
+          "name": "quickstart",
+          "ok": true,
+          "ms": 159
+        },
+        {
+          "name": "zones",
+          "ok": true,
+          "ms": 18103
+        }
+      ],
+      "serverStdoutTail": "🚀  Starting game server...\n🏰  Creating a new map...\nundefined  Loading NPCs...\nENVIRONMENT: development and PORT 6541 on 127.0.0.1\n💻  A client (928d3...) connected.\n💻  A client (f2111...) connected.\n🔆  Player dev (lvl 1) logged in. (42, 115)\n💻  A client (4f154...) connected.\n🔴  Player dev left the game\n🔴  Player dev left the game\n🔆  Player dev (lvl 1) logged in. (42, 115)\n🔴  Player dev left the game\n🔴  Player dev left the game\n💻  A client (80b36...) connected.\n🔆  Player Wanderer 084381 (lvl 1) logged in. (29, 113)\n🔴  Player Wanderer 084381 left the game\n🔴  Player Wanderer 084381 left the game\n💻  A client (f31b6...) connected.\n🔆  Player dev (lvl 1) logged in. (43.666666, 116.333334)\n⏰  Scheduler cadence: avg 109.55ms/tick (9.13 Hz), max 158.28ms over 92 ticks.\n⏰  Scheduler cadence: avg 109.51ms/tick (9.13 Hz), max 125.15ms over 92 ticks.\n🔴  Player dev left the game\n🔴  Player dev left the game\n⏰  Scheduler cadence: avg 109.46ms/tick (9.14 Hz), max 125.33ms over 92 ticks.\n",
+      "serverStderrTail": "[server] Client bundle not found in dist/. Static assets will be skipped.\n[socket] Unable to emit game:send:message: socket f211106a-ba41-4e60-82f2-57315fafaadc not found.\n[socket] Unable to emit game:send:message: socket f211106a-ba41-4e60-82f2-57315fafaadc not found.\n[socket] Unable to emit game:send:message: socket 80b36f63-a251-40a4-85a1-79c923cc77f8 not found.\n[socket] Unable to emit game:send:message: socket 80b36f63-a251-40a4-85a1-79c923cc77f8 not found.\n"
+    },
+    "native": {
+      "label": "native",
+      "url": "ws://127.0.0.1:6542",
+      "command": {
+        "file": "Z:\\Code\\.worktrees\\verdigris\\ox-pc-bf\\native\\build\\verdigris_server.exe",
+        "args": [
+          "6542"
+        ],
+        "cwd": "Z:\\Code\\.worktrees\\verdigris\\ox-pc-bf"
+      },
+      "envDelta": {},
+      "executable": {
+        "path": "Z:\\Code\\.worktrees\\verdigris\\ox-pc-bf\\native\\build\\verdigris_server.exe",
+        "sha256": "efd2d1bda0c13240413bc47157196e320469a2d8bd8ba911137f2737411fe2a8"
+      },
+      "runner": {
+        "command": {
+          "file": "C:\\Users\\Alex\\AppData\\Local\\hermes\\node\\node.exe",
+          "args": [
+            "playtest/run.mjs",
+            "--attach",
+            "movement",
+            "quickstart",
+            "zones"
+          ],
+          "cwd": "Z:\\Code\\.worktrees\\verdigris\\ox-pc-bf"
+        },
+        "envDelta": {
+          "PLAYTEST_WS_URL": "ws://127.0.0.1:6542"
+        },
+        "exitCode": 0,
+        "durationMs": 8502,
+        "summaryLine": "3/3 scenarios passed"
+      },
+      "scenarios": [
+        {
+          "name": "movement",
+          "ok": true,
+          "ms": 4642
+        },
+        {
+          "name": "quickstart",
+          "ok": true,
+          "ms": 169
+        },
+        {
+          "name": "zones",
+          "ok": true,
+          "ms": 1211
+        }
+      ],
+      "serverStdoutTail": "verdigris_server listening on ws://127.0.0.1:6542\n",
+      "serverStderrTail": ""
+    }
+  }
+}
