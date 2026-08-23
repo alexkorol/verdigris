@@ -1,0 +1,644 @@
+{
+  "task": "TASK-0121",
+  "title": "Owner art, lore, naming, balance, economy, and content approval matrix",
+  "captured_at": "2026-08-23",
+  "generated_by": {
+    "lane": "ox-pc-bb",
+    "model": "openrouter/stealth/ox-alpha"
+  },
+  "base_commit": "9bd689b4cebac0fe1f79ba54edcc9967a1a8f0d4",
+  "branch": "worker/verdigris/pc/ox-pc-bb",
+  "resource_capsule": "read-only; no asset generation, external messages, or ports",
+  "invariants": [
+    "Every gate below is UNRESOLVED_OWNER_ONLY; no choice here is resolved, recommended into canon, or chosen by an agent.",
+    "packet_recommendation fields quote or summarize architect-documented recommendations from existing packets; they are NOT owner rulings.",
+    "No gate blocks unrelated work; each carries executable fallback work.",
+    "Negative control satisfied: G-04 (and G-07, G-09, G-10) are PARKED_NONCRITICAL with executable fallback."
+  ],
+  "source_documents": [
+    "docs/product/VERDIGRIS_CONSTITUTION.md",
+    "docs/product/OPEN_DECISIONS.md",
+    "docs/product/VERDIGRIS_FEATURE_CHECKLIST.md",
+    "orchestration/DECISIONS.md",
+    "orchestration/PROGRAM_GRAPH.md",
+    "orchestration/CONTENT_SCALE_MATRIX.md",
+    "orchestration/BACKLOG_FACTORY.md",
+    "orchestration/BOOTSTRAP.md",
+    "orchestration/owner-input/OI-001-denylist-dispositions.md",
+    "orchestration/owner-input/OI-003-asset-font-policy.md",
+    "orchestration/owner-input/OI-004-passive-tree-source.md",
+    "orchestration/owner-input/OI-005-magic-direction.md",
+    "orchestration/owner-input/OI-006-house-economy.md",
+    "orchestration/owner-input/OI-007-campaign-season-travel.md",
+    "orchestration/owner-input/OI-008-owner-content-approvals.md",
+    "orchestration/owner-input/OI-009-audio-music-direction.md",
+    "orchestration/owner-input/README.md"
+  ],
+  "domain_coverage": {
+    "art/assets": ["G-01"],
+    "lore": ["G-02", "G-03"],
+    "naming": ["G-02", "G-03"],
+    "magic": ["G-04"],
+    "balance": ["G-05", "G-06", "G-11"],
+    "economy": ["G-07"],
+    "campaign_content": ["G-08", "G-09", "G-10"],
+    "bosses_monsters_items_skills": ["G-11"],
+    "music": ["G-12"],
+    "season_rules": ["G-10"],
+    "distribution": ["G-13", "G-14"],
+    "irreversible_accounts": ["G-14"]
+  },
+  "gates": [
+    {
+      "id": "G-01",
+      "domains": ["art/assets"],
+      "title": "Production asset and font policy: provenance, generated assets, derivative maps, package inclusion",
+      "decision_state": "UNRESOLVED_OWNER_ONLY",
+      "status": "WAITING_EVIDENCE on TASK-0093/TASK-0094 (OI-003)",
+      "evidence_prerequisite": "Accepted TASK-0093 typography audit and TASK-0094 asset provenance inventory; a playable side-by-side comparison of procedural presentation versus candidate plates/fonts at supported resolutions (1920x1080, 1366x768).",
+      "critical_path_deadline": "Before any UNKNOWN/BLOCKED production asset or font promotion and before packaging (terminal gates T6 and T7). Procedural placeholders remain valid meanwhile.",
+      "recommended_evidence_gathering_step": "Accept the 0093/0094 inventories, then stage a capturable playable comparison of candidate plates/fonts with recorded source, license/rights, SHA-256, dimensions, derivative instructions, and named package consumer; unknown external plates stay reference-only.",
+      "packet_recommendation": "OI-003 recommends shipping only repository-tracked assets with recorded source, license/rights, SHA-256, dimensions, derivative instructions, and named package consumer. This is a documented packet recommendation, not an owner ruling.",
+      "viable_decision_classes": [
+        "Owner-created originals under the same manifest discipline (source, license, SHA-256, dimensions, derivatives recorded).",
+        "Licensed third-party pack/font with archived license and attribution terms.",
+        "Owner-generated asset executed only under an exact generation-packet protocol (prompt/instructions, pixel dimensions, color-space/alpha needs, lossless PNG source filename, target folder, collision/normal/mask/atlas derivatives, acceptance rubric) when such a packet exists.",
+        "Continue procedural/vector-first presentation per D-113 until a plate/font set is approved; reject undocumented copying and implicit AI-generation rights in every class."
+      ],
+      "acceptance_rubric": [
+        "Provenance, license/rights, SHA-256, dimensions, and derivative instructions recorded in the shippable asset manifest.",
+        "Stable IDs/versioning and named migration impact for every promoted asset.",
+        "Readability/play verdict at default path in both supported resolutions.",
+        "No undocumented copying; no implicit AI-generation rights assumed.",
+        "No legacy firewall regression (no Delaford-era assets return)."
+      ],
+      "dependent_tasks_gates": [
+        "TASK-0094 shippable asset manifest consumption",
+        "Packaging releases (stream 0092/0094/0099)",
+        "Stage-2 renderer asset needs (after renderer dependency ruling, see out-of-scope cross-reference OI-002)",
+        "Terminal gate T5 final presentation and T6 owner-approved content",
+        "T7 release hardening asset/runtime manifests"
+      ],
+      "fallback_work": [
+        "Procedural/vector presentation continues (D-113 near-term aesthetic stands).",
+        "TASK-0093/0094 audit and manifest work continues.",
+        "Backend-neutral text metrics continue."
+      ],
+      "sources": [
+        "orchestration/DECISIONS.md D-O2, D-113",
+        "orchestration/owner-input/OI-003-asset-font-policy.md",
+        "orchestration/owner-input/README.md",
+        "orchestration/PROGRAM_GRAPH.md presentation stream and owner-gates table",
+        "docs/product/VERDIGRIS_CONSTITUTION.md (asset licensing remains open)"
+      ]
+    },
+    {
+      "id": "G-02",
+      "domains": ["lore", "naming"],
+      "title": "Lore canon plus world/House/place/character naming approval",
+      "decision_state": "UNRESOLVED_OWNER_ONLY",
+      "status": "WAITING_EVIDENCE on TASK-0121 batch (OI-008); D-O4 names this owner-only",
+      "evidence_prerequisite": "Versioned content sets carrying exact artifact/source and a playable/capturable comparison per OI-008 process; no canon exists yet to approve, so evidence must precede any ruling.",
+      "critical_path_deadline": "Domain-specific: before production content breadth; every approval required before final release (T6/T8). No current task is stalled by this gate.",
+      "recommended_evidence_gathering_step": "Batch narrow alternatives with affected graph nodes and nonblocking work listed (CONTENT_SCALE_MATRIX batching rule); promote the OI packet to READY_FOR_OWNER only when its named evidence is accepted.",
+      "packet_recommendation": "None beyond process: approve content in coherent versioned waves; never accept a genre default or agent-invented irreversible canon choice.",
+      "viable_decision_classes": [
+        "Owner-authored source packs validated by the content tooling pipeline (stable IDs, versioning, validators).",
+        "Tightly scoped owner-approved placeholders for a vertical slice while final canon stays blocked.",
+        "Deferred breadth: content-neutral systems ship with visibly labeled placeholder copy outside the demonstrated loop (allowed by vertical-slice quality gate)."
+      ],
+      "acceptance_rubric": [
+        "Provenance recorded for every approved text set.",
+        "Stable IDs/versioning; migration impact named.",
+        "Readability/play verdict from played sessions.",
+        "No medieval/Delaford terminology crosses the firewall; Bronze Age/pre-iron voice holds.",
+        "No agent-invented irreversible canon choice anywhere in the wave."
+      ],
+      "dependent_tasks_gates": [
+        "Approved content waves by domain (PROGRAM_GRAPH owner-content row consumes this matrix)",
+        "Campaign authoring (terminal gate T3)",
+        "Onboarding copy (TASK-0125 stream)",
+        "Splash/title presentation text (constitution WIZARD components section)",
+        "Terminal gates T6 and T8"
+      ],
+      "fallback_work": [
+        "Content-neutral engines, schemas, validators, tools, tests continue.",
+        "Procedural placeholders continue.",
+        "Working labels stay explicitly provisional and never enter canon silently."
+      ],
+      "sources": [
+        "orchestration/DECISIONS.md D-O4",
+        "orchestration/owner-input/OI-008-owner-content-approvals.md",
+        "orchestration/CONTENT_SCALE_MATRIX.md owner-input batching section",
+        "docs/product/VERDIGRIS_CONSTITUTION.md product identity and Delaford firewall"
+      ]
+    },
+    {
+      "id": "G-03",
+      "domains": ["naming", "lore"],
+      "title": "Legacy token dispositions: wire key legacyRelicId and item id bronze-dagger (OI-001)",
+      "decision_state": "UNRESOLVED_OWNER_ONLY",
+      "status": "WAITING_EVIDENCE on TASK-0085 occurrence/breakage table",
+      "evidence_prerequisite": "Accepted TASK-0085 occurrence/breakage table proving which live consumers exist for each token across clients, saves, and harness scenarios.",
+      "critical_path_deadline": "Before denylist compatibility cleanup; explicitly NOT on the current Gate B/C critical path.",
+      "recommended_evidence_gathering_step": "Accept the TASK-0085 table, then choose per-token dispositions from the packet's alternative list; workers must not rename either token while pending.",
+      "packet_recommendation": "OI-001 recommends preserving legacyRelicId as a documented compatibility wire key until a versioned migration exists, and migrating bronze-dagger away from player-visible/canonical content while retaining only the minimum compatible read path proven necessary. Packet recommendation, not an owner ruling.",
+      "viable_decision_classes": [
+        "Split disposition per packet recommendation (compat key preserved; player-visible token migrated).",
+        "Keep both as explicit, documented exceptions.",
+        "Version and migrate both together in one compatibility wave accepting every named client/save/harness update.",
+        "Remove either immediately only if TASK-0085 proves no live consumer."
+      ],
+      "acceptance_rubric": [
+        "No save loss under any chosen disposition.",
+        "Unchanged-harness regression suite stays green.",
+        "No denied starter kit restored to canon (Delaford firewall intact).",
+        "Every surviving exception is wire/data-only and documented."
+      ],
+      "dependent_tasks_gates": [
+        "Final denylist compatibility cleanup wave",
+        "Itemization stable identities stream (0104/0111)",
+        "LEGACY_MATRIX enforcement and config/legacy-denylist.json dispositions"
+      ],
+      "fallback_work": [
+        "Workers do not rename either token.",
+        "All unrelated native, presentation, and tooling work continues."
+      ],
+      "sources": [
+        "orchestration/owner-input/OI-001-denylist-dispositions.md",
+        "orchestration/owner-input/README.md",
+        "config/legacy-denylist.json",
+        "docs/rebuild/LEGACY_MATRIX.md"
+      ]
+    },
+    {
+      "id": "G-04",
+      "domains": ["magic", "balance"],
+      "title": "Arcane Lattice production magic direction (D-O3 / OI-005 / OD-003) - NEGATIVE CONTROL: parked noncritical with executable fallback",
+      "decision_state": "UNRESOLVED_OWNER_ONLY",
+      "status": "PARKED_NONCRITICAL (OI-005)",
+      "negative_control": true,
+      "evidence_prerequisite": "Inspected WIZARD Spell/Arcane Lattice material (docs/product/WIZARD_ARCANE_LATTICE_REFERENCE.md) plus a proposed authoring/progression/runtime-effect boundary document produced by TASK-0102 audit and content-neutral TASK-0109 scaffolding; no spell list may be authored before boundaries are approved.",
+      "critical_path_deadline": "Before production skill/magic content. Nothing on the current critical path waits on it.",
+      "recommended_evidence_gathering_step": "Complete TASK-0102 skills audit and TASK-0109 content-neutral slot/action/effect infrastructure, then present the boundary proposal as narrow alternatives with affected graph nodes.",
+      "packet_recommendation": "OI-005 recommends retaining the lattice as reference and approving authoring/progression/runtime-effect boundaries before any spell list. Packet recommendation, not an owner ruling.",
+      "viable_decision_classes": [
+        "Smaller lattice-backed first slice approved for the first campaign.",
+        "Defer magic content while physical skill infrastructure ships.",
+        "Full lattice integration plan after boundary approval (retain lattice as reference until then)."
+      ],
+      "acceptance_rubric": [
+        "Spectacular magic remains possible (constitution: bright and spectacular magic in scope).",
+        "Shared actor/resource authority preserved; no separate magic stat universe.",
+        "No generic mana-wizard default invented.",
+        "No assets requested without an exact generation packet."
+      ],
+      "dependent_tasks_gates": [
+        "TASK-0102 skills audit and TASK-0109 scaffolding consume the boundary proposal",
+        "OD-003 resolution (production Spell/Arcane Lattice integration)",
+        "Skills/magic production content waves (skills stream 0102/0109)",
+        "Terminal gates T4 and T6"
+      ],
+      "fallback_work_executable": [
+        "TASK-0102 audit continues.",
+        "Content-neutral TASK-0109 scaffolding ships without content.",
+        "Physical skill infrastructure proceeds where already approved."
+      ],
+      "sources": [
+        "orchestration/DECISIONS.md D-O3",
+        "orchestration/owner-input/OI-005-magic-direction.md",
+        "orchestration/owner-input/README.md",
+        "docs/product/OPEN_DECISIONS.md OD-003",
+        "docs/product/VERDIGRIS_CONSTITUTION.md magic section"
+      ]
+    },
+    {
+      "id": "G-05",
+      "domains": ["balance", "bosses_monsters_items_skills"],
+      "title": "Combat and progression balance approvals: Brands/Bonds formula, relic recovery odds, successor loadouts, tuned encounter tables",
+      "decision_state": "UNRESOLVED_OWNER_ONLY",
+      "status": "WAITING_EVIDENCE on TASK-0121 batch (OI-008); OD-002, OD-006, OD-008 open",
+      "evidence_prerequisite": "Played sessions with seconds-to-contact metrics and D-114 feel-coherence tables; deterministic loot harness results (TASK-0155 stream); a demonstrated relic candidate with explicit loss (OD-006 boundary); playtest friction evidence per D-110.",
+      "critical_path_deadline": "Before production content breadth/final release; Brands/Bonds affix math intentionally not frozen until evidence exists (constitution).",
+      "recommended_evidence_gathering_step": "Run tuned encounters through deterministic replay plus owner-played sessions; present alternative balance tables as narrow alternatives with affected graph nodes and measured deltas.",
+      "packet_recommendation": "None stated; docs prescribe process only (tune predictable/uncertain recovery from playtests, OD-006; owner-controlled separate balance table pattern, OI-004).",
+      "viable_decision_classes": [
+        "Owner-tuned tables via versioned owner-controlled balance files consumed by the simulation.",
+        "Approved placeholder bands with a scheduled retune after N played sessions.",
+        "Architect-provisional measured bands, explicitly labeled provisional in DECISIONS.md, until an owner verdict lands (never silently canonical)."
+      ],
+      "acceptance_rubric": [
+        "D-114 coherence table present: all related distance/time constants re-derived together.",
+        "Deterministic replay of every tuned encounter.",
+        "One shared stat schema/damage pipeline; elite difficulty via level/build/equipment/support only.",
+        "Owner play verdict on the tuned build (D-115 play gate).",
+        "Affix/recovery math not frozen prematurely; stable item identity precedes formula work."
+      ],
+      "dependent_tasks_gates": [
+        "TASK-0108 readable ranged combat waves and follow-on combat depth",
+        "Itemization production stream (0111) incl. Brands/Bonds seam",
+        "Progression stream (0112) and monster rosters (0110)",
+        "OD-002, OD-006, OD-008 closure",
+        "Terminal gates T4, T6, T8"
+      ],
+      "fallback_work": [
+        "Content-neutral systems and measured audits (0101 combat-depth, 0155 deterministic loot) continue.",
+        "Prototype numbers stay quarantined in prototypes/founding-slice per D-006."
+      ],
+      "sources": [
+        "orchestration/owner-input/OI-008-owner-content-approvals.md",
+        "orchestration/DECISIONS.md D-114, D-115, D-O5 adjacent",
+        "docs/product/OPEN_DECISIONS.md OD-002, OD-006, OD-008",
+        "docs/product/VERDIGRIS_CONSTITUTION.md items/history and actors/combat sections",
+        "orchestration/PROGRAM_GRAPH.md deeper graph items 4, 7"
+      ]
+    },
+    {
+      "id": "G-06",
+      "domains": ["balance"],
+      "title": "Authoritative passive-tree topology and node-content source (OI-004)",
+      "decision_state": "UNRESOLVED_OWNER_ONLY",
+      "status": "WAITING_EVIDENCE on TASK-0105",
+      "evidence_prerequisite": "Accepted TASK-0105 audit of the current hex-axis/+2 approximation; candidate authored tree(s) available as machine-readable graphs comparable against the approximation.",
+      "critical_path_deadline": "Before TASK-0112 moves from schema/scaffold to node-content implementation.",
+      "recommended_evidence_gathering_step": "Compare approximation audit results against candidate authored trees using deterministic parse, connectedness checks, and migration dry-runs; present alternatives with affected graph nodes.",
+      "packet_recommendation": "OI-004 recommends a versioned machine-readable graph with stable node IDs, edges, start positions, attribute/effect references, migration version, and a separate owner-controlled balance table. Packet recommendation, not an owner ruling.",
+      "viable_decision_classes": [
+        "Approve a smaller authored production tree for the first campaign.",
+        "Approve the full versioned machine-readable graph source once supplied/validated.",
+        "Keep the approximation explicitly prototype-only while UI and persistence contracts are built; never silently promote it."
+      ],
+      "acceptance_rubric": [
+        "Deterministic parse and connectedness checks pass.",
+        "Stable node IDs; defined migration behavior.",
+        "Two-counter quest-point semantics preserved.",
+        "No balance embedded in renderer/UI code."
+      ],
+      "dependent_tasks_gates": [
+        "TASK-0112 passive progression implementation",
+        "TASK-0090 progression panes",
+        "Successor starting opportunities (OD-008) consume the same authoritative tree",
+        "Terminal gates T4 and T6"
+      ],
+      "fallback_work": [
+        "Audit, versioned schema, parser tests, persistence seams, and pane layout continue."
+      ],
+      "sources": [
+        "orchestration/owner-input/OI-004-passive-tree-source.md",
+        "orchestration/owner-input/README.md",
+        "orchestration/PROGRAM_GRAPH.md deeper graph item 8 and owner-gates table"
+      ]
+    },
+    {
+      "id": "G-07",
+      "domains": ["economy"],
+      "title": "House crafting/economy service boundary, rates, sinks, trade, passive income, currency exchange (D-O5 / OI-006 / OD-007 / OD-009)",
+      "decision_state": "UNRESOLVED_OWNER_ONLY",
+      "status": "PARKED_NONCRITICAL (OI-006)",
+      "evidence_prerequisite": "Stable item lifecycle, stores, and schema seams in place; a drafted abuse-and-sink model with deterministic/offline resolution design; sandbox prototype numbers behind seams.",
+      "critical_path_deadline": "Before rates, sinks, trade, passive income, or currency exchange are implemented.",
+      "recommended_evidence_gathering_step": "Prototype economy numbers behind schema seams with no production persistence; present caps/safety design as narrow alternatives with affected graph nodes.",
+      "packet_recommendation": "OI-006 recommends durable stores and material-driven crafting roles first, holding async trade, passive income, and exchange behind explicit caps/safety design. Packet recommendation, not an owner ruling.",
+      "viable_decision_classes": [
+        "Crafting-only boundary first.",
+        "Separately prototyped economy sandbox with no production persistence.",
+        "Staged boundary per packet recommendation: durable stores + crafting roles, then capped trade/passive income/exchange designs."
+      ],
+      "acceptance_rubric": [
+        "House ownership, not a generic hideout bench (constitution).",
+        "No genre-default rates.",
+        "Deterministic/offline resolution defined.",
+        "Abuse and sink model reviewed before any rate ships."
+      ],
+      "dependent_tasks_gates": [
+        "House services implementation waves",
+        "Currency/trade schema seams",
+        "OD-007 and OD-009 closure",
+        "Terminal gates T4 and T6"
+      ],
+      "fallback_work_executable": [
+        "Item lifecycle, extraction, history, and schema work continue."
+      ],
+      "sources": [
+        "orchestration/DECISIONS.md D-O5",
+        "orchestration/owner-input/OI-006-house-economy.md",
+        "docs/product/OPEN_DECISIONS.md OD-007, OD-009",
+        "docs/product/VERDIGRIS_FEATURE_CHECKLIST.md line 63-64 (economy decisions pending)"
+      ]
+    },
+    {
+      "id": "G-08",
+      "domains": ["campaign_content"],
+      "title": "Campaign branch density supporting the measured 6-30 hour range (OI-007 / OD-011 / T3)",
+      "decision_state": "UNRESOLVED_OWNER_ONLY",
+      "status": "PARKED_NONCRITICAL (OI-007)",
+      "evidence_prerequisite": "Accepted TASK-0096 campaign measurements: shortest route length and optional branch depth measured in a playable slice.",
+      "critical_path_deadline": "Before authored multi-act scale / production content breadth.",
+      "recommended_evidence_gathering_step": "Measure shortest route and optional depth in the playable campaign slice (TASK-0096 pattern), then present density alternatives against the measurement.",
+      "packet_recommendation": "OI-007 recommends waiting for TASK-0096 measurements, then choosing a minimum critical route plus optional branches. Packet recommendation, not an owner ruling.",
+      "viable_decision_classes": [
+        "Minimum critical route plus meaningful optional branches sized to measurement.",
+        "Campaign slice without seasons/travel first, density decided after more play evidence.",
+        "Counts derived from the owner-selected scale tier once G-15 is ruled (cross-link)."
+      ],
+      "acceptance_rubric": [
+        "House-owned completion once per House per season.",
+        "Optional branches matter (grant specializations/access/knowledge/routes).",
+        "No checklist campaign; concrete expedition goals remain the loop.",
+        "Measured 6-30 hour range achieved at the chosen density."
+      ],
+      "dependent_tasks_gates": [
+        "Multi-act expansion authoring",
+        "Endgame area/goal selection consuming the same validated graph",
+        "Content tooling stream (0095/0096 -> 0113)",
+        "Terminal gates T3 and T6"
+      ],
+      "fallback_work_executable": [
+        "Zone schemas, campaign graph validation, Gate C journey, and non-seasonal progression continue."
+      ],
+      "sources": [
+        "orchestration/owner-input/OI-007-campaign-season-travel.md",
+        "docs/product/OPEN_DECISIONS.md OD-011",
+        "docs/product/VERDIGRIS_CONSTITUTION.md campaign/endgame section",
+        "orchestration/PROGRAM_GRAPH.md terminal gate T3 and owner-gates table"
+      ]
+    },
+    {
+      "id": "G-09",
+      "domains": ["campaign_content"],
+      "title": "Fast-travel/town-portal risk model and destination rules (OI-007 / OD-012)",
+      "decision_state": "UNRESOLVED_OWNER_ONLY",
+      "status": "PARKED_NONCRITICAL (OI-007)",
+      "evidence_prerequisite": "Travel implemented as a command/presentation seam; encounter/extraction cost data gathered from playtests of the seam.",
+      "critical_path_deadline": "Before fast-travel implementation with production destinations.",
+      "recommended_evidence_gathering_step": "Ship the command/presentation seam, playtest risk/cost variants, then present risk-model alternatives with observed extraction/encounter data.",
+      "packet_recommendation": "OI-007 recommends making travel a visible risk-bearing command. Packet recommendation, not an owner ruling.",
+      "viable_decision_classes": [
+        "Risk-bearing visible command with explicit costs and encounter rules.",
+        "Travel seam kept with no production destinations until the risk model is approved."
+      ],
+      "acceptance_rubric": [
+        "Disconnect cannot become travel (D-109 interaction).",
+        "Extraction risk explicit and legible.",
+        "Cost rules derived from playtests, not genre defaults.",
+        "No free escape from danger."
+      ],
+      "dependent_tasks_gates": [
+        "Fast-travel implementation wave",
+        "Encounter design around travel nodes",
+        "Campaign pacing decisions (G-08 cross-link)"
+      ],
+      "fallback_work_executable": [
+        "Command/presentation seam work continues without production destinations."
+      ],
+      "sources": [
+        "orchestration/owner-input/OI-007-campaign-season-travel.md",
+        "docs/product/OPEN_DECISIONS.md OD-012",
+        "docs/product/VERDIGRIS_CONSTITUTION.md monsters/world paragraph (fast-travel risk model)"
+      ]
+    },
+    {
+      "id": "G-10",
+      "domains": ["season_rules", "campaign_content"],
+      "title": "Seasonal inheritance rule plus season/weather live-content direction (D-O1 / OD-001 / OI-007)",
+      "decision_state": "UNRESOLVED_OWNER_ONLY",
+      "status": "PARKED_NONCRITICAL (OI-007 seasonal component)",
+      "evidence_prerequisite": "One playable season prototype demonstrating the constitution's extension boundary (attaches to an instance, observes simulation events, owns state, alters risk, generates distinct rewards without rewriting combat/items/extraction/House systems); bounded versioned history record seam in place.",
+      "critical_path_deadline": "Before any season reset release.",
+      "recommended_evidence_gathering_step": "Build the tiny automated demonstration required by the constitution, capture its events/state, then present inheritance alternatives against the demonstration.",
+      "packet_recommendation": "OI-007 recommends keeping season history small and versioned until one playable season prototype exists. Packet recommendation, not an owner ruling.",
+      "viable_decision_classes": [
+        "Small versioned historical record survives reset.",
+        "Fresh start with cosmetic/legacy markers only.",
+        "Fuller continuity of House unlocks/routes across seasons.",
+        "Weather direction sub-choice: instance-attached weather as a seasonal mechanic family versus ambient presentation-only effect."
+      ],
+      "acceptance_rubric": [
+        "Reset/migration explicit and versioned.",
+        "No rewrite of combat, items, extraction, or House systems to support seasons.",
+        "Distinct rewards per season mechanics; simulation-event driven.",
+        "Historical record bounded (no unbounded background sim)."
+      ],
+      "dependent_tasks_gates": [
+        "Season reset release",
+        "Legends bounded records overlap (OD-010 adjacency)",
+        "Live-content packets in the backlog factory (season/live-content direction domain)",
+        "Terminal gates T3 and T6"
+      ],
+      "fallback_work_executable": [
+        "Bounded versioned record seam and non-seasonal systems continue."
+      ],
+      "sources": [
+        "orchestration/DECISIONS.md D-O1",
+        "orchestration/owner-input/OI-007-campaign-season-travel.md",
+        "docs/product/OPEN_DECISIONS.md OD-001",
+        "docs/product/VERDIGRIS_CONSTITUTION.md nested progression and magic/future-mechanics sections",
+        "orchestration/CONTENT_SCALE_MATRIX.md batching list (weather)"
+      ]
+    },
+    {
+      "id": "G-11",
+      "domains": ["bosses_monsters_items_skills", "balance"],
+      "title": "Owner-authored rosters: monsters, elites/uniques, bosses, item bases/affix families/uniques-relics, player skills (OI-008)",
+      "decision_state": "UNRESOLVED_OWNER_ONLY",
+      "status": "WAITING_EVIDENCE on TASK-0121 batch (this matrix)",
+      "evidence_prerequisite": "Deterministic pack/rarity infrastructure (monsters stream), stable item identities/extraction/history (itemization stream), content tooling validators (0095/0096 -> 0113), and one representative roster pack per family staged through the pipeline into a playable capture.",
+      "critical_path_deadline": "Before production content breadth; required before final release (T6).",
+      "recommended_evidence_gathering_step": "Stage one representative pack per family through the validated content pipeline into a playable, capturable build; compare alternatives side-by-side per OI-008 process.",
+      "packet_recommendation": "None beyond process: coherent versioned waves, two viable alternatives each, provenance and rubric required.",
+      "viable_decision_classes": [
+        "Owner-authored source packs validated by the content tooling.",
+        "Tightly scoped owner-approved placeholders for a vertical slice while final content remains blocked.",
+        "Deferred breadth with visibly labeled placeholders outside the demonstrated loop (vertical-slice quality gate allowance)."
+      ],
+      "acceptance_rubric": [
+        "Shared actor/stat and damage authority un-forked (constitution actors section).",
+        "Elite difficulty via level/build/equipment/support, not inflated stat universes.",
+        "Provenance, stable IDs/versioning, migration impact recorded.",
+        "Readability/play verdict from played sessions.",
+        "No legacy firewall regression."
+      ],
+      "dependent_tasks_gates": [
+        "Skills/magic production waves (0109 path, cross-link G-04)",
+        "Monsters/uniques/bosses waves (0110 path)",
+        "Itemization waves (0111 path)",
+        "Legends bounded records (storied items/monsters)",
+        "Terminal gates T4, T6, T8"
+      ],
+      "fallback_work": [
+        "Deterministic pack/rarity infrastructure, stable identity, history, and schema work continue.",
+        "Content-neutral tools/tests/procedural placeholders continue."
+      ],
+      "sources": [
+        "orchestration/owner-input/OI-008-owner-content-approvals.md",
+        "orchestration/PROGRAM_GRAPH.md streams table (Monsters, Itemization, Skills rows)",
+        "docs/product/VERDIGRIS_CONSTITUTION.md actors/combat and items sections",
+        "orchestration/CONTENT_SCALE_MATRIX.md family counts"
+      ]
+    },
+    {
+      "id": "G-12",
+      "domains": ["music"],
+      "title": "Sound and music direction: backend dependency, provenance policy, ambience/combat/UI direction, composition/licensing, mix targets, accessibility defaults (OI-009)",
+      "decision_state": "UNRESOLVED_OWNER_ONLY",
+      "status": "WAITING_EVIDENCE on TASK-0117",
+      "evidence_prerequisite": "Accepted TASK-0117 audio audit; backend-neutral procedural cue scheduler behavior captured in the client (TASK-0157 accepted on the critical path).",
+      "critical_path_deadline": "Before authored audio or music ships; backend-neutral runtime/test work may proceed first.",
+      "recommended_evidence_gathering_step": "Compare owner-approved authored sound/music sets in the playable client against licensed library candidates with archived rights; capture both supported resolutions plus listening samples.",
+      "packet_recommendation": "OI-009 recommends approving an event-driven cross-platform runtime with no-device tests, buses/voice limits, persisted controls, package provenance, and synthetic test assets first, then comparing authored sets. Packet recommendation, not an owner ruling.",
+      "viable_decision_classes": [
+        "Owner-commissioned/authored sets compared in the playable client (second stage of packet recommendation).",
+        "Licensed library/composer sources with archived rights and attribution.",
+        "Procedural/temporary non-production cues while music direction stays deferred."
+      ],
+      "acceptance_rubric": [
+        "Windows/macOS behavior verified; clean shutdown.",
+        "Readable combat priorities; independent volume/mute; captions where relevant.",
+        "License manifest complete with archived rights.",
+        "Owner listening/play verdict recorded.",
+        "No generation requested without exact instructions packet."
+      ],
+      "dependent_tasks_gates": [
+        "TASK-0123 owner-approved backend/device/listening wave",
+        "Music track counts per selected scale tier (G-15 cross-link)",
+        "Package provenance (T7)",
+        "Terminal gates T5 and T6"
+      ],
+      "fallback_work": [
+        "TASK-0117 audit and interface/test decomposition continue.",
+        "Accepted backend-neutral cue scheduling continues serving temporary cues."
+      ],
+      "sources": [
+        "orchestration/owner-input/OI-009-audio-music-direction.md",
+        "orchestration/owner-input/README.md",
+        "orchestration/PROGRAM_GRAPH.md audio/music stream and item 16",
+        "orchestration/CONTENT_SCALE_MATRIX.md music/sound family counts"
+      ]
+    },
+    {
+      "id": "G-13",
+      "domains": ["distribution"],
+      "title": "Monetization model, distribution channel, pricing, platform delivery (D-O4; PROGRAM_GRAPH deeper graph item 13)",
+      "decision_state": "UNRESOLVED_OWNER_ONLY",
+      "status": "TERMINAL_UNRESOLVED_OWNER_ONLY (no OI packet yet; inventoried here for the batch)",
+      "evidence_prerequisite": "Clean-machine builds with complete asset/runtime manifests (packaging streams green); a channel/pricing/accounting comparison brief prepared as narrow alternatives.",
+      "critical_path_deadline": "Before installer/signing/notarization and any public distribution; required at release convergence (T7/T8).",
+      "recommended_evidence_gathering_step": "Once packaging evidence is green, prepare the distribution brief enumerating per-channel account requirements, revenue terms, certification burden, and rollback limits; no action taken.",
+      "packet_recommendation": null,
+      "viable_decision_classes": [
+        "Direct distribution from an owned site/download with no external platform accounts.",
+        "Storefront distribution requiring platform accounts, certification, and revenue share.",
+        "Pricing sub-choices each needing separate rulings: premium one-time purchase; free core with paid expansions; episodic/chaptered release."
+      ],
+      "acceptance_rubric": [
+        "Signing certificates, notarization, and store setup executed by the owner only.",
+        "No agent performs account-level or irreversible actions (see G-14).",
+        "Manifests complete; clean-machine launch verified before any public artifact.",
+        "Support/upgrade plan stated for the chosen channel."
+      ],
+      "dependent_tasks_gates": [
+        "Packaging/launcher releases (streams 0092/0094/0099)",
+        "Release hardening terminal gate T7",
+        "Irreversible actions ledger G-14",
+        "Final release verdicts T8"
+      ],
+      "fallback_work": [
+        "Local builds and plain archive distribution for testing only; zero irreversible steps taken."
+      ],
+      "sources": [
+        "orchestration/DECISIONS.md D-O4",
+        "orchestration/PROGRAM_GRAPH.md deeper graph item 13",
+        "orchestration/BOOTSTRAP.md owner-only list"
+      ]
+    },
+    {
+      "id": "G-14",
+      "domains": ["irreversible_accounts", "distribution"],
+      "title": "All irreversible/account-level actions: certificates, notarization, publishing, store/GitHub settings, payments, legal identity",
+      "decision_state": "UNRESOLVED_OWNER_ONLY",
+      "status": "TERMINAL_STANDING_RULE (BOOTSTRAP owner-only list; PROGRAM_GRAPH item 13); no delegation possible",
+      "evidence_prerequisite": "An append-only handoff ledger naming, for each irreversible step: the exact action, the account it requires, cost, consequence, and rollback limit.",
+      "critical_path_deadline": "Whenever such an action becomes necessary (release convergence onward); never bypassable at any time.",
+      "recommended_evidence_gathering_step": "Maintain the handoff ledger continuously so the owner can execute each action in one sitting of context; agents stop at the evidence boundary and request execution.",
+      "packet_recommendation": null,
+      "viable_decision_classes": [
+        "Owner self-manages all accounts and executes each irreversible action personally.",
+        "Owner grants scoped, revocable access to a trusted service/person while retaining credential custody and executing consent steps personally.",
+        "Timing sub-choice per action: execute now versus defer until release candidate maturity."
+      ],
+      "acceptance_rubric": [
+        "No agent performs publishing, signing, notarization, account changes, or payment commitments.",
+        "Every requested action documented with rollback limits before execution.",
+        "Secrets and credentials never committed to the repository.",
+        "GitHub/repository settings changes remain owner-executed."
+      ],
+      "dependent_tasks_gates": [
+        "Distribution gate G-13",
+        "Terminal gates T7 and T8"
+      ],
+      "fallback_work": [
+        "All reversible work proceeds; staging/test credentials and dry-run modes used everywhere else."
+      ],
+      "sources": [
+        "orchestration/BOOTSTRAP.md owner-only list (irreversible/account actions, GitHub settings)",
+        "orchestration/PROGRAM_GRAPH.md deeper graph item 13",
+        "orchestration/PROTOCOL.md workspace isolation and push prohibitions"
+      ]
+    },
+    {
+      "id": "G-15",
+      "domains": ["campaign_content", "bosses_monsters_items_skills", "music", "balance"],
+      "title": "Content scale and quality tier selection (CONTENT_SCALE_MATRIX.md provisional envelope)",
+      "decision_state": "UNRESOLVED_OWNER_ONLY",
+      "status": "PROVISIONAL_ENVELOPE_ACTIVE (blockbuster planning envelope used for planning until the owner selects another tier)",
+      "evidence_prerequisite": "One accepted owner-playable vertical-slice journey plus throughput-normalized runway rates (D-128 normalization) so tier options carry real cost/runway implications.",
+      "critical_path_deadline": "Before committing large production content-breadth investment; family counts drive decomposition across the backlog factory.",
+      "recommended_evidence_gathering_step": "Present tier options with per-family counts and measured cost/runway implications immediately after the vertical slice passes its quality gate.",
+      "packet_recommendation": null,
+      "viable_decision_classes": [
+        "Confirm the blockbuster planning envelope as the standing target.",
+        "Select the complete-indie ARPG tier.",
+        "Custom/amended owner-defined tier.",
+        "Staged: indie tier at launch, blockbuster-scale expansion post-launch."
+      ],
+      "acceptance_rubric": [
+        "Explicit owner selection recorded in orchestration/DECISIONS.md.",
+        "Downstream packet decompositions re-derived from the selection.",
+        "Planning numbers never silently promoted into promises or specs."
+      ],
+      "dependent_tasks_gates": [
+        "Backlog factory decomposition floors (D-128)",
+        "Breadth of G-05/G-08/G-11/G-12 waves",
+        "Quantity/quality choices flagged owner-owned in CONTENT_SCALE_MATRIX batching section",
+        "Terminal gate T6"
+      ],
+      "fallback_work": [
+        "Content-neutral schemas/tools/validators/fixtures/test matrices unaffected.",
+        "Planning continues on the provisional envelope without claiming canon."
+      ],
+      "sources": [
+        "orchestration/CONTENT_SCALE_MATRIX.md header and batching section",
+        "orchestration/DECISIONS.md D-128",
+        "orchestration/BACKLOG_FACTORY.md"
+      ]
+    }
+  ],
+  "out_of_scope_cross_references": [
+    {
+      "item": "OI-002 renderer dependency ruling (production renderer dependency)",
+      "reason_excluded": "Technical infrastructure gate owned by the TASK-0114/TASK-0088 ADR path; blocks Stage-2 renderer backend implementation, not one of the twelve content domains this matrix maps. Listed here so the batch is visibly complete.",
+      "where_tracked": "orchestration/owner-input/OI-002-renderer-dependency.md; orchestration/owner-input/README.md"
+    },
+    {
+      "item": "D-111 day/night cycle default",
+      "reason_excluded": "Provisional architect call (defaults daytime, toggle off by default), cheap to reverse, flagged for owner attention but not in the owner-only register.",
+      "where_tracked": "orchestration/DECISIONS.md Provisional section"
+    },
+    {
+      "item": "OD-005 persistence/networking transport, OD-010 Legends scope, OD-013 pane/minimap persisted settings",
+      "reason_excluded": "OPEN_DECISIONS engineering/design unknowns resolvable on evidence by the normal task ladder unless the owner claims them; not owner-only canon decisions in the twelve mapped domains.",
+      "where_tracked": "docs/product/OPEN_DECISIONS.md"
+    }
+  ],
+  "negative_control_summary": "At least one parked noncritical gate with executable fallback is included as required: G-04 (magic direction, PARKED_NONCRITICAL) plus G-07 (economy), G-09 (fast travel), G-10 (season inheritance). Each lists executable fallback work; none interrupts noncritical decisions or blocks unrelated lanes."
+}
