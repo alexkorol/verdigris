@@ -47,6 +47,12 @@
   INTEGRATED tasks** (REVIEW=ACCEPTED, STATUS=INTEGRATED; only the SPEC
   frontmatter still says READY). Owner: do not launch bb/bc/bd as-is; the
   provisioned worktrees are preserved untouched.
+- Launch recommendation for the three stale lanes (all READY, bases valid,
+  disjoint owned paths): re-point ox-pc-bb -> TASK-0097 (P0 persistence
+  durability audit), ox-pc-bc -> TASK-0100 (P0 deterministic replay audit),
+  ox-pc-bd -> TASK-0104 (P0 itemization/history audit); TASK-0082 (dual-server
+  matrix, base refreshed in INC-016) is also route-ready. ba -> TASK-0108 and
+  be -> TASK-0165 stand as provisioned.
 
 ## Ship for cloud/other harnesses — 2026-08-22 17:32 PDT
 
