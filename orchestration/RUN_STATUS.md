@@ -1,5 +1,26 @@
 # Run status — PC Verdigris overnight product wave
 
+## Fleet LIVE — 3 claims pushed; one P0 MISROUTE — 2026-08-22 22:53 PDT
+
+- Owner fixed the launch auth and relaunched ~22:50 PDT. The fleet is now
+  **live**: fresh OpenCode processes (10:50-10:51) and three pushed worker
+  branches:
+  - `worker/verdigris/pc/ox-pc-ba` -> **TASK-0108** claim `d9396fb6`
+    (VALID: base 76368466 = SPEC base; lane ox-pc-ba, model ox-alpha).
+  - `worker/verdigris/pc/ox-pc-be` -> **TASK-0165** claim `7c439a27`
+    (VALID: base b949b3e4 = SPEC base).
+  - `worker/verdigris/pc/ox-pc-bb` -> **TASK-0148** claim `cb2d3f61`
+    (**P0 MISROUTED**: TASK-0148 is INTEGRATED / REVIEW ACCEPTED — the stale
+    route I flagged earlier was launched anyway, likely because the SPEC
+    frontmatter still says READY while the board/REVIEW say INTEGRATED).
+    Owner: stop/repoint ox-pc-bb; do not let it implement an integrated task.
+- bc/bd did not push claims (still auth-retry or launching).
+- Board sentinel remains healthy (25 effective READY, 0 program-branch
+  CLAIMED — claims live on worker branches per the worker-branch model).
+- VALIDATION WATCH: I will independently validate TASK-0108 (ox-pc-ba) and
+  TASK-0165 (ox-pc-be) at their frozen heads the moment each flips
+  `REVIEW_REQUESTED`.
+
 ## Fleet launch attempt FAILED on provider auth — 2026-08-22 22:45 PDT
 
 - The owner launched the five provisioned lanes (ox-pc-ba..be) at 22:35-22:44
