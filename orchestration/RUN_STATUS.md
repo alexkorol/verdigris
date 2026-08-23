@@ -1,5 +1,19 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED 11 audits this session — 2026-08-23 20:15 UTC
+
+- **TASK-0093** (typography/text-rendering contract audit, bc) ACCEPTED +
+  integrated at `c05b1a79`. FINDINGS: all native text via `TextOutA` (main.cpp
+  only), no DPI awareness, negative control verified (no native chat
+  equivalent), measured WCAG contrast (quickbar-unavailable 3.54:1 below AA).
+  Proposed backend-neutral text contract + locking tests T1-T8.
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102 all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0096 (campaign graph measurement, launched);
+  `ox-pc-bc` -> TASK-0093 now integrated (lane freed, re-point pending);
+  `ox-pc-bd` -> TASK-0095 (content schema audit, surveying).
+
 ## SHIPPED 10 audits this session — 2026-08-23 19:55 UTC
 
 - **TASK-0102** (skill system gap audit, bb) ACCEPTED + integrated at
