@@ -893,6 +893,13 @@ class WorldSimulation {
   }
   void kill_all_monsters() { for (auto& monster : monsters_) { monster.alive = false; monster.life = 0; } active_target_.clear(); }
   const TileGrid& grid() const { return grid_; }
+  // General deterministic content seam (mirrors Simulation::spawn_monster):
+  // place one explicit opponent on a walkable, unoccupied tile so comparison
+  // trials can seed behaviour twins without touching the combat
+  // implementation or the natural scatter. An empty uuid gets a
+  // deterministic one; returns the placed uuid, or empty when the tile is
+  // out of bounds, unwalkable, or occupied.
+  std::string seed_monster(WorldMonster monster);
   bool in_instance() const { return scene_type_ == "instance"; }
 
   // One player:move sample.  Returns true when the step was applied.

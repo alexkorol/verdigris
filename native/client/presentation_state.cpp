@@ -419,6 +419,13 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
         rl.push_back({render::Op::Death, static_cast<double>(base.x),
                       static_cast<double>(base.y)});
         break;
+      case EffectFx::Kind::Impact:
+        // TASK-0108: parity with paint_scene (main.cpp), which records
+        // Op::Impact for every hit flash so the headless render list carries
+        // the same attributed impact beat the GDI painter draws.
+        rl.push_back({render::Op::Impact, static_cast<double>(base.x),
+                      static_cast<double>(base.y)});
+        break;
       case EffectFx::Kind::TargetFlash:
         rl.push_back({render::Op::TargetFlash, static_cast<double>(base.x),
                       static_cast<double>(base.y), 0.0, 0,

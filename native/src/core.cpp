@@ -1473,6 +1473,13 @@ constexpr int kN3BossDamage = 12;
 constexpr int kN3BossTelegraphRadius = 2;
 constexpr int kN3BossTelegraphWindowMs = 1000;
 constexpr int kTownSize = 200;
+// Authored engagement envelope: the advance_combat disengage bound. Ranged
+// pressure resolves inside it while melee contact stays within 2 tiles; the
+// ranged wave introduces no new distance value.
+constexpr int kEngagementEnvelopeTiles = 4;
+// Authored non-boss strike cadence (the cooldown the melee active-target
+// rule already uses); the ranged cycle re-arms on the same cadence.
+constexpr int kN3MonsterAttackIntervalMs = 1500;
 
 std::uint64_t fnv1a(const std::string& text, std::uint64_t seed) {
   std::uint64_t hash = seed ? seed : 1469598103934665603ULL;
@@ -1785,6 +1792,20 @@ void WorldSimulation::generate_instance() {
   scatter_floor_treasure();
 }
 
+std::string WorldSimulation::seed_monster(WorldMonster monster) {
+  if (!grid_.walkable_at(monster.x, monster.y)) return {};
+  for (const auto& existing : monsters_) {
+    if (existing.x == monster.x && existing.y == monster.y) return {};
+  }
+  if (monster.uuid.empty()) {
+    monster.uuid =
+        "monster-" + std::to_string(serial_) + "-" + std::to_string(monsters_.size());
+  }
+  const std::string uuid = monster.uuid;
+  monsters_.push_back(std::move(monster));
+  return uuid;
+}
+
 void WorldSimulation::enter_solo_instance(const std::string& template_id, const std::string& layout) {
   const std::string theme = is_zone_template(template_id) ? template_id : "dungeon";
   const std::string applied_layout = is_zone_layout(layout) ? layout : "";
@@ -1908,7 +1929,56 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     const Vec2 here = tile_movement::occupied_tile(position_);
     for (auto& monster : monsters_) {
       if (!monster.alive || monster.boss) continue;
-      if (std::abs(monster.x - here.x) > 1 || std::abs(monster.y - here.y) > 1) continue;
+      const int dx = std::abs(monster.x - here.x);
+      const int dy = std::abs(monster.y - here.y);
+      // Authored ranged behaviour: a ranged monster never deals silent
+      // damage. Every shot is announced on the shipped telegraph contract
+      // (the boss warning window) and resolves only while the player stays
+      // inside the engagement envelope, so stepping out genuinely dodges.
+      // Damage and cadence reuse the authored kN3MonsterDamage family.
+      if (monster.behaviour_type == "ranged") {
+        const bool in_band =
+            dx <= kEngagementEnvelopeTiles && dy <= kEngagementEnvelopeTiles;
+        if (monster.telegraph_until_ms == 0) {
+          if (in_band && now >= monster.next_attack_ms) {
+            monster.telegraph_until_ms = now + kN3BossTelegraphWindowMs;
+            WorldCombatEvent warning;
+            warning.type = "telegraph";
+            warning.attacker_id = monster.uuid;
+            warning.attacker_name = monster.name;
+            warning.target_id = player_uuid_;
+            warning.skill_id = "monster:attack";
+            warning.radius = kEngagementEnvelopeTiles;
+            warning.duration_ms = kN3BossTelegraphWindowMs;
+            warning.x = monster.x;
+            warning.y = monster.y;
+            events.push_back(warning);
+          }
+          continue;
+        }
+        if (now >= monster.telegraph_until_ms) {
+          monster.telegraph_until_ms = 0;
+          monster.next_attack_ms = now + kN3MonsterAttackIntervalMs;
+          if (in_band) {
+            const int damage = monster.empowered ? kN3MonsterDamage + 2 : kN3MonsterDamage;
+            player_life = std::max(0, player_life - damage);
+            WorldCombatEvent impact;
+            impact.type = "hit";
+            impact.attacker_id = monster.uuid;
+            impact.attacker_name = monster.name;
+            impact.target_id = player_uuid_;
+            impact.skill_id = "monster:attack";
+            impact.amount = damage;
+            impact.health = player_life;
+            impact.health_max = player_life_max;
+            impact.died = player_life == 0;
+            events.push_back(impact);
+            if (player_life == 0) break;
+          }
+        }
+        continue;
+      }
+      if (dx > 1 || dy > 1) continue;
       if (now < monster.next_attack_ms) continue;
       monster.next_attack_ms = now + 1200;
       const int damage = 4 + monster.level * 2;
@@ -1933,7 +2003,8 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
   { // JS combat: walking out of melee reach disengages - the swing loop must
     // not chase a target across the map (build-comparison parking relies on it).
     const Vec2 here = tile_movement::occupied_tile(position_);
-    if (std::abs(target->x - here.x) > 4 || std::abs(target->y - here.y) > 4) {
+    if (std::abs(target->x - here.x) > kEngagementEnvelopeTiles ||
+        std::abs(target->y - here.y) > kEngagementEnvelopeTiles) {
       active_target_.clear();
       return events;
     }
@@ -2009,14 +2080,15 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       // resolved dodge/hit rather than relying on a hidden wall-clock thread.
       next_boss_telegraph_ms_ = now;
     }
-  } else if (now >= target->next_attack_ms && std::abs(target->x - tile_movement::occupied_tile(position_).x) <= 2
+  } else if (target->behaviour_type != "ranged" && now >= target->next_attack_ms
+             && std::abs(target->x - tile_movement::occupied_tile(position_).x) <= 2
              && std::abs(target->y - tile_movement::occupied_tile(position_).y) <= 2) {
     const int damage = target->empowered ? kN3MonsterDamage + 2 : kN3MonsterDamage;
     player_life = std::max(0, player_life - damage);
     WorldCombatEvent impact; impact.type = "hit"; impact.attacker_id = target->uuid; impact.attacker_name = target->name;
     impact.target_id = player_uuid_; impact.target_name = "Adventurer"; impact.skill_id = "monster:attack";
     impact.amount = damage; impact.health = player_life; impact.health_max = player_life_max; impact.died = player_life == 0;
-    events.push_back(impact); target->next_attack_ms = now + 1500;
+    events.push_back(impact); target->next_attack_ms = now + kN3MonsterAttackIntervalMs;
   }
   return events;
 }

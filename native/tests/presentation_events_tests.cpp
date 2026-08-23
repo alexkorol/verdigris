@@ -232,6 +232,148 @@ void seam_events_cannot_mutate_simulation() {
   session.shutdown();
 }
 
+// ── TASK-0108: ranged readability lock at the presentation seam ────────────
+// The core locks in core_tests.cpp prove the seeded ranged stream is
+// telegraph-then-hit. These locks prove the client-visible half: driven one
+// 50 ms frame at a time through the shipped seam mapping, every player-side
+// damage beat resolves as an attributed Impact/Damage op anchored on the
+// player and only after a Telegraph op announced by the shooter. The events
+// fed here are exactly the ones remote_session.cpp derives from the wire
+// pair monster:telegraph / combat:hit(incoming); nothing else is invented.
+
+struct RangedFrameBeat {
+  std::uint64_t frame = 0;
+  bool shooter_telegraph_live = false;
+  bool has_telegraph_op = false;
+  std::string telegraph_label;
+  double telegraph_x = 0.0;
+  double telegraph_y = 0.0;
+  int player_damage_ops = 0;
+  int damage_value = 0;
+  double damage_x = 0.0;
+  double damage_y = 0.0;
+  int impact_ops = 0;
+  int player_flash_ops = 0;
+};
+
+struct RangedTranscript {
+  std::vector<RangedFrameBeat> frames;
+  std::vector<std::string> event_log;
+};
+
+RangedTranscript drive_ranged_frames(bool announce) {
+  WorldView world = world_with_player_and_foe("right");
+  world.monsters.front().id = "twin-ranged";
+  PresentationFx fx;
+  RangedTranscript transcript;
+  auto record_frame = [&](std::uint64_t frame) {
+    RangedFrameBeat beat;
+    beat.frame = frame;
+    beat.shooter_telegraph_live = fx.telegraphs.count("twin-ranged") > 0;
+    render::List rl;
+    record_world_ops(rl, world, fx, camera2d::Camera{}, 960, 600);
+    for (const auto& item : rl) {
+      if (item.op == render::Op::Telegraph && !beat.has_telegraph_op) {
+        beat.has_telegraph_op = true;
+        beat.telegraph_label = item.label;
+        beat.telegraph_x = item.x;
+        beat.telegraph_y = item.y;
+      }
+      if (item.op == render::Op::Damage && item.label == "player") {
+        ++beat.player_damage_ops;
+        beat.damage_value = item.value;
+        beat.damage_x = item.x;
+        beat.damage_y = item.y;
+      }
+      if (item.op == render::Op::Impact) ++beat.impact_ops;
+      if (item.op == render::Op::TargetFlash && item.label == "player")
+        ++beat.player_flash_ops;
+    }
+    transcript.frames.push_back(beat);
+  };
+
+  // monster:telegraph wire parity: attackerId, name+skillId text, durationMs
+  // as value (the authored 1000 ms readable window).
+  const PresentationEvent warning{PresentationEventType::Telegraph, "twin-ranged", "",
+                                  "Pressure Twin monster:attack", 1000, false, {}};
+  // combat:hit incoming parity copy: attributed attackerId, "incoming",
+  // amount as value (the authored kN3MonsterDamage figure).
+  const PresentationEvent shot{PresentationEventType::DamageApplied, "twin-ranged", "",
+                               "incoming", 5, false, {}};
+  for (std::uint64_t frame = 0; frame <= 33; ++frame) {
+    if (frame == 0 && announce) apply_presentation_event(fx, world, warning, frame);
+    if (frame == 20) apply_presentation_event(fx, world, shot, frame);
+    record_frame(frame);
+    age_presentation_fx(fx);
+  }
+  transcript.event_log = fx.event_log;
+  return transcript;
+}
+
+bool every_player_hit_is_telegraphed(const RangedTranscript& transcript) {
+  bool telegraph_seen = false;
+  for (const auto& beat : transcript.frames) {
+    if (beat.player_damage_ops > 0 && !telegraph_seen) return false;
+    if (beat.shooter_telegraph_live) telegraph_seen = true;
+  }
+  return true;
+}
+
+void ranged_hit_beat_is_telegraphed_and_attributed() {
+  const RangedTranscript transcript = drive_ranged_frames(true);
+  check(transcript.frames.at(20).player_damage_ops == 1 &&
+            transcript.frames.at(20).damage_value == 5,
+        "ranged seam: the announced shot lands as a player-side damage beat");
+  check(every_player_hit_is_telegraphed(transcript),
+        "ranged seam: every player-side hit is preceded by a Telegraph op");
+  check(transcript.frames.front().has_telegraph_op &&
+            transcript.frames.front().telegraph_label == "thrust",
+        "ranged seam: the warning renders on the announcement frame");
+  check(transcript.frames.at(10).has_telegraph_op,
+        "ranged seam: the warning stays up across its readable window");
+  const camera2d::Screen screen{960, 600};
+  const camera2d::Point foe_at =
+      camera2d::project(camera2d::Camera{}, screen, 140.0, 100.0);
+  const camera2d::Point player_at =
+      camera2d::project(camera2d::Camera{}, screen, 100.0, 100.0);
+  check(transcript.frames.front().telegraph_x ==
+                static_cast<double>(foe_at.x) &&
+            transcript.frames.front().telegraph_y ==
+                static_cast<double>(foe_at.y),
+        "ranged seam: the warning anchors on the shooter, not on the player");
+  check(transcript.frames.at(20).damage_x == static_cast<double>(player_at.x) &&
+            transcript.frames.at(20).damage_y == static_cast<double>(player_at.y),
+        "ranged seam: the hit beat lands where the player stands");
+  check(transcript.frames.at(20).impact_ops >= 1 &&
+            transcript.frames.at(20).player_flash_ops >= 1,
+        "ranged seam: the hit resolves with the shipped Impact/flash beats");
+  bool saw_warning_line = false;
+  bool saw_taken_line = false;
+  for (const auto& line : transcript.event_log) {
+    if (line == "Telegraph Pressure Twin monster:attack") saw_warning_line = true;
+    if (line == "Taken 5") saw_taken_line = true;
+  }
+  check(saw_warning_line && saw_taken_line,
+        "ranged seam: the readable log names the warning and the taken hit");
+}
+
+void untelegraphed_hit_fails_the_readability_lock() {
+  const RangedTranscript transcript = drive_ranged_frames(false);
+  bool saw_silent_damage = false;
+  int telegraph_ops_total = 0;
+  for (const auto& beat : transcript.frames) {
+    if (beat.player_damage_ops > 0) saw_silent_damage = true;
+    if (beat.has_telegraph_op) ++telegraph_ops_total;
+  }
+  check(saw_silent_damage,
+        "ranged negative: the untelegraphed run still resolves player damage");
+  check(telegraph_ops_total == 0,
+        "ranged negative: no warning op was rendered on this path");
+  check(!every_player_hit_is_telegraphed(transcript),
+        "ranged negative: the lock FAILS any ranged resolution without a "
+        "preceding telegraph");
+}
+
 }  // namespace
 
 int main() {
@@ -243,6 +385,8 @@ int main() {
   spawn_detection_is_deterministic_and_once();
   monster_facing_is_no_longer_fabricated();
   seam_events_cannot_mutate_simulation();
+  ranged_hit_beat_is_telegraphed_and_attributed();
+  untelegraphed_hit_fails_the_readability_lock();
   std::printf("%s\n", failures == 0 ? "presentation events tests: PASS"
                                     : "presentation events tests: FAIL");
   return failures == 0 ? 0 : 1;

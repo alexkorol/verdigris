@@ -1784,6 +1784,219 @@ void test_n2_diagonal_blocking_rule() {
 
 }  // namespace
 
+// ── TASK-0108: readable ranged behaviour locks ─────────────────────────────
+namespace {
+
+bool beats_equal(const WorldCombatEvent& a, const WorldCombatEvent& b) {
+  return a.type == b.type && a.attacker_id == b.attacker_id &&
+         a.attacker_name == b.attacker_name && a.target_id == b.target_id &&
+         a.target_name == b.target_name && a.skill_id == b.skill_id &&
+         a.amount == b.amount && a.health == b.health &&
+         a.health_max == b.health_max && a.died == b.died &&
+         a.radius == b.radius && a.duration_ms == b.duration_ms &&
+         a.x == b.x && a.y == b.y && a.base_amount == b.base_amount &&
+         a.critical == b.critical && a.attack_style == b.attack_style;
+}
+
+// Seeded run with an explicit behaviour trio placed around the instance
+// spawn (6,20): a ranged twin and its melee twin both sit at Chebyshev
+// distance 4 - beyond the 2-tile melee contact band but inside the authored
+// engagement envelope - and a buffer twin sits beside them. Natural scatter
+// is suppressed so the transcript contains only these actors.
+struct TwinRun {
+  std::vector<WorldCombatEvent> stream;
+  int final_life = 100;
+};
+
+TwinRun drive_twin_run(std::uint64_t seed) {
+  WorldSimulation world(seed, "guest-ranged-twins");
+  world.set_spawn_suppressed(true);
+  world.enter_solo_instance("dungeon", "warren");
+
+  WorldMonster ranged;
+  ranged.uuid = "twin-ranged";
+  ranged.id = "dungeon-lurker";
+  ranged.name = "Pressure Twin";
+  ranged.x = 10;
+  ranged.y = 20;
+  ranged.behaviour_type = "ranged";
+  check(world.seed_monster(ranged) == "twin-ranged", "ranged lock: ranged twin seeded at Chebyshev 4");
+  WorldMonster melee = ranged;
+  melee.uuid = "twin-melee";
+  melee.name = "Contact Twin";
+  melee.x = 10;
+  melee.y = 21;
+  melee.behaviour_type = "melee";
+  check(world.seed_monster(melee) == "twin-melee", "ranged lock: melee twin seeded at Chebyshev 4");
+  WorldMonster buffer = ranged;
+  buffer.uuid = "twin-buffer";
+  buffer.name = "Support Twin";
+  buffer.x = 10;
+  buffer.y = 22;
+  buffer.behaviour_type = "buffer";
+  check(world.seed_monster(buffer) == "twin-buffer", "ranged lock: buffer twin seeded at Chebyshev 4");
+
+  TwinRun run;
+  int life = 100;
+  const int life_max = 100;
+  // Fixed-step heartbeat parity: 50 ms ticks across two full telegraph
+  // windows. No player swings are submitted; only monster pressure runs.
+  for (int step = 0; step <= 40; ++step) {
+    auto events = world.advance_combat(1, 1, life, life_max, step * 50);
+    run.stream.insert(run.stream.end(), events.begin(), events.end());
+  }
+  run.final_life = life;
+  return run;
+}
+
+void test_ranged_pressure_damages_beyond_contact_melee_twin_does_not() {
+  const TwinRun run = drive_twin_run(0x0108ULL);
+
+  std::size_t first_ranged_telegraph = run.stream.size();
+  std::size_t first_ranged_hit = run.stream.size();
+  int ranged_hits = 0;
+  for (std::size_t i = 0; i < run.stream.size(); ++i) {
+    const auto& event = run.stream[i];
+    if (event.attacker_id != "twin-ranged") continue;
+    if (event.type == "telegraph") {
+      if (first_ranged_telegraph == run.stream.size()) first_ranged_telegraph = i;
+      check(event.duration_ms > 0 && event.radius >= 2,
+            "ranged lock: the warning carries the shipped readable-window fields");
+      check(event.target_id == "guest-ranged-twins",
+            "ranged lock: the warning names the player it threatens");
+    } else if (event.type == "hit") {
+      if (first_ranged_hit == run.stream.size()) first_ranged_hit = i;
+      ++ranged_hits;
+      check(event.amount > 0, "ranged lock: the shot carries a damage amount");
+      check(event.health == std::max(0, 100 - event.amount),
+            "ranged lock: the hit reports the resolved player life");
+    }
+  }
+  check(first_ranged_telegraph < run.stream.size(),
+        "ranged lock: the ranged twin announces before it fires");
+  check(first_ranged_telegraph < first_ranged_hit,
+        "ranged lock: every ranged resolution is preceded by its telegraph");
+  check(ranged_hits > 0, "ranged lock: the ranged twin lands pressure from range");
+  check(run.final_life < 100,
+        "ranged lock: ranged damage lands from beyond 2-tile Chebyshev contact");
+
+  bool melee_twin_acted = false;
+  bool buffer_twin_acted = false;
+  for (const auto& event : run.stream) {
+    if (event.attacker_id == "twin-melee") melee_twin_acted = true;
+    if (event.attacker_id == "twin-buffer") buffer_twin_acted = true;
+  }
+  check(!melee_twin_acted,
+        "ranged lock: the melee twin at the same distance never reaches the player");
+  check(!buffer_twin_acted, "ranged lock: the buffer twin stays inert");
+}
+
+void test_ranged_shot_is_readable_and_dodgeable() {
+  WorldSimulation world(0x0109ULL, "guest-ranged-dodge");
+  world.set_spawn_suppressed(true);
+  world.enter_solo_instance("dungeon", "warren");
+  WorldMonster ranged;
+  ranged.uuid = "twin-ranged";
+  ranged.name = "Pressure Twin";
+  ranged.x = 10;
+  ranged.y = 20;
+  ranged.behaviour_type = "ranged";
+  check(world.seed_monster(ranged) == "twin-ranged", "dodge: ranged twin seeded");
+  int life = 100;
+  int telegraphs = 0;
+  int hits = 0;
+  int dodged_windows = 0;
+  bool outside = false;
+  for (int step = 0; step <= 90; ++step) {
+    const auto now = static_cast<std::int64_t>(step * 50);
+    if (step == 2) {
+      world.teleport(16, 20, now);  // step out of the envelope mid-window
+      outside = true;
+    }
+    if (step == 56) {
+      world.teleport(7, 20, now);  // step back inside: pressure may resume
+      outside = false;
+    }
+    auto events = world.advance_combat(1, 1, life, life, now);
+    for (const auto& event : events) {
+      if (event.attacker_id != "twin-ranged") continue;
+      if (event.type == "telegraph") {
+        ++telegraphs;
+        // A window only opens while the player is inside the envelope.
+        check(!outside || step < 2,
+              "dodge: no new shot is announced while the player stays out");
+      }
+      if (event.type == "hit") {
+        ++hits;
+        check(!outside, "dodge: a dodged window never resolves into damage");
+      }
+    }
+    // The first announced window resolves at t=1000 with the player gone:
+    // that resolution must be silent and consume the cycle.
+    if (step == 20) {
+      check(hits == 0, "dodge: the announced shot evaporates when the player leaves");
+      ++dodged_windows;
+    }
+  }
+  check(dodged_windows == 1, "dodge: exactly one window was vacated");
+  check(telegraphs >= 2,
+        "dodge: the cycle re-arms after a dodged window instead of stalling");
+  check(hits >= 1, "dodge: returning into the envelope resumes readable pressure");
+  check(life == 100 - hits * 5,
+        "dodge: every resolved hit is an authored kN3MonsterDamage beat");
+}
+
+void test_ranged_stream_replay_is_deterministic() {
+  const TwinRun first = drive_twin_run(0x0108ULL);
+  const TwinRun second = drive_twin_run(0x0108ULL);
+  check(first.stream.size() == second.stream.size(),
+        "ranged replay: identical seed produces an identical event count");
+  bool identical = true;
+  for (std::size_t i = 0; i < first.stream.size(); ++i) {
+    if (!beats_equal(first.stream[i], second.stream[i])) identical = false;
+  }
+  check(identical, "ranged replay: the ranged stream replays field-for-field");
+  check(first.final_life == second.final_life,
+        "ranged replay: resolved player life matches under replay");
+}
+
+void test_melee_twin_stream_stays_classic_and_untelegraphed() {
+  // Negative control: the melee contact vocabulary is untouched. An adjacent
+  // melee twin strikes silently on its authored cadence - no telegraph row
+  // ever appears in a melee-only stream.
+  WorldSimulation world(0x0110ULL, "guest-melee-classic");
+  world.set_spawn_suppressed(true);
+  world.enter_solo_instance("dungeon", "warren");
+  WorldMonster melee;
+  melee.uuid = "twin-melee";
+  melee.name = "Contact Twin";
+  melee.x = 7;
+  melee.y = 20;  // adjacent to the spawn (6,20)
+  melee.behaviour_type = "melee";
+  check(world.seed_monster(melee) == "twin-melee", "melee classic: adjacent twin seeded");
+  int life = 100;
+  std::vector<WorldCombatEvent> stream;
+  for (int step = 0; step <= 10; ++step) {
+    auto events = world.advance_combat(1, 1, life, life, step * 50);
+    stream.insert(stream.end(), events.begin(), events.end());
+  }
+  check(stream.size() == 1, "melee classic: one silent strike in the first window");
+  check(stream[0].type == "hit" && stream[0].attacker_id == "twin-melee",
+        "melee classic: the strike is the plain attributed hit");
+  check(stream[0].amount == 6, "melee classic: the authored 4 + level*2 contact damage");
+  life = 100;
+  int strikes = 0;
+  // The clock continues past the first window (loop 1 ended at t=500); the
+  // authored cadence then fires at 1200/2400/3600/4800 and not before.
+  for (int step = 0; step <= 96; ++step) {
+    auto events = world.advance_combat(1, 1, life, life, 500 + step * 50);
+    strikes += static_cast<int>(events.size());
+  }
+  check(strikes == 4, "melee classic: the 1200 ms cadence is unchanged");
+}
+
+}  // namespace
+
 // ── N4: items, inventory, Vesselforge ────────────────────────────────────
 namespace {
 
@@ -2116,6 +2329,10 @@ int main() {
   test_n2_movement_constants_mirror_browser();
   test_n2_world_simulation_rules();
   test_n2_diagonal_blocking_rule();
+  test_ranged_pressure_damages_beyond_contact_melee_twin_does_not();
+  test_ranged_shot_is_readable_and_dodgeable();
+  test_ranged_stream_replay_is_deterministic();
+  test_melee_twin_stream_stays_classic_and_untelegraphed();
   test_relic_resurface_round_trip();
   test_relic_loss_again_returns_once();
   test_relic_resurface_replay_is_deterministic();
