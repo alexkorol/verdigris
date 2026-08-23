@@ -38,6 +38,15 @@
 - Launch-readiness confirmed: no port-capsule collisions across the 25 READY
   packets (most are read-only/no-ports; TASK-0108 holds the only explicit
   loopback capsule 7280-7299, unique). Board is route-ready for the ox swarm.
+- Fleet provisioning observed (2026-08-22 ~22:19 PDT): five provisioned
+  worktree lanes `ox-pc-ba`..`ox-pc-be` with launch packets, branches
+  `worker/verdigris/pc/ox-pc-*`, all clean, no claims pushed, no worker
+  processes yet. Routes: ox-pc-ba -> TASK-0108 (VALID, P0 READY),
+  ox-pc-be -> TASK-0165 (VALID, READY), but ox-pc-bb -> TASK-0148,
+  ox-pc-bc -> TASK-0157, ox-pc-bd -> TASK-0158 are **STALE routes to
+  INTEGRATED tasks** (REVIEW=ACCEPTED, STATUS=INTEGRATED; only the SPEC
+  frontmatter still says READY). Owner: do not launch bb/bc/bd as-is; the
+  provisioned worktrees are preserved untouched.
 
 ## Ship for cloud/other harnesses — 2026-08-22 17:32 PDT
 
