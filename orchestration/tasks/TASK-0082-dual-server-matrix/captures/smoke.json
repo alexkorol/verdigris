@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "task": "TASK-0082-dual-server-matrix",
+  "generatedAt": "2026-08-23T16:13:11.410Z",
+  "completedAt": "2026-08-23T16:14:07.622Z",
+  "revision": {
+    "full": "4ede0d76df12a47479b45deaa1e83dc889036725",
+    "short": "4ede0d76d"
+  },
+  "environment": {
+    "node": "v22.23.2",
+    "platform": "win32 x64 10.0.19045"
+  },
+  "scenarios": [
+    "quickstart",
+    "movement",
+    "zones"
+  ],
+  "servers": {
+    "js": {
+      "kind": "js",
+      "url": "ws://127.0.0.1:6541",
+      "port": 6541,
+      "command": [
+        "C:\\Users\\Alex\\tools\\node-v22.23.2-win-x64\\node.exe",
+        "server/index.js"
+      ],
+      "commandLine": "C:\\Users\\Alex\\tools\\node-v22.23.2-win-x64\\node.exe server/index.js",
+      "pid": 20912,
+      "bootMs": 21240,
+      "savePaths": {
+        "guestSaveDir": "C:\\Users\\Alex\\AppData\\Local\\Temp\\verdigris-matrix-28524-1787501591411\\guest",
+        "chroniclesStoreFile": "C:\\Users\\Alex\\AppData\\Local\\Temp\\verdigris-matrix-28524-1787501591411\\chronicles-store.json",
+        "chroniclesDbFile": "C:\\Users\\Alex\\AppData\\Local\\Temp\\verdigris-matrix-28524-1787501591411\\chronicles.sqlite"
+      }
+    },
+    "native": {
+      "kind": "native",
+      "url": "ws://127.0.0.1:6542",
+      "port": 6542,
+      "command": [
+        "Z:\\Code\\.worktrees\\verdigris\\ox-pc-bb\\native\\build\\verdigris_server.exe",
+        "6542"
+      ],
+      "commandLine": "Z:\\Code\\.worktrees\\verdigris\\ox-pc-bb\\native\\build\\verdigris_server.exe 6542",
+      "pid": 27784,
+      "bootMs": 458,
+      "exe": {
+        "path": "native/build/verdigris_server.exe",
+        "absolutePath": "Z:\\Code\\.worktrees\\verdigris\\ox-pc-bb\\native\\build\\verdigris_server.exe",
+        "sha256": "6e051520eb057cb556ab72e74e00acd738fbd1a27172e54ecc55232656e211d1"
+      }
+    }
+  },
+  "saveRoot": "C:\\Users\\Alex\\AppData\\Local\\Temp\\verdigris-matrix-28524-1787501591411",
+  "runners": {
+    "js": {
+      "url": "ws://127.0.0.1:6541",
+      "commandLine": "C:\\Users\\Alex\\tools\\node-v22.23.2-win-x64\\node.exe playtest/run.mjs --attach quickstart movement zones",
+      "runnerExitCode": 0,
+      "runnerSignal": null
+    },
+    "native": {
+      "url": "ws://127.0.0.1:6542",
+      "commandLine": "C:\\Users\\Alex\\tools\\node-v22.23.2-win-x64\\node.exe playtest/run.mjs --attach quickstart movement zones",
+      "runnerExitCode": 0,
+      "runnerSignal": null
+    }
+  },
+  "runs": {
+    "js": {
+      "scenarios": [
+        {
+          "name": "quickstart",
+          "ok": true,
+          "durationMs": 159,
+          "missingFromOutput": false
+        },
+        {
+          "name": "movement",
+          "ok": true,
+          "durationMs": 4567,
+          "missingFromOutput": false
+        },
+        {
+          "name": "zones",
+          "ok": true,
+          "durationMs": 18236,
+          "missingFromOutput": false
+        }
+      ],
+      "passed": 3,
+      "failed": [],
+      "runnerExitCode": 0,
+      "runnerSignal": null,
+      "complete": true
+    },
+    "native": {
+      "scenarios": [
+        {
+          "name": "quickstart",
+          "ok": true,
+          "durationMs": 170,
+          "missingFromOutput": false
+        },
+        {
+          "name": "movement",
+          "ok": true,
+          "durationMs": 4627,
+          "missingFromOutput": false
+        },
+        {
+          "name": "zones",
+          "ok": true,
+          "durationMs": 1230,
+          "missingFromOutput": false
+        }
+      ],
+      "passed": 3,
+      "failed": [],
+      "runnerExitCode": 0,
+      "runnerSignal": null,
+      "complete": true
+    }
+  },
+  "asymmetric": [],
+  "parity": true
+}
