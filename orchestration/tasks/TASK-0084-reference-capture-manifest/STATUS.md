@@ -2,8 +2,9 @@
 
 - task: TASK-0084
 - title: Reference-capture integrity manifest
-- state: REVIEW_REQUESTED
-- reviewed_commit: c0f1f34ee6ae91424bb23d26eae8bec04e04f552
+- state: INTEGRATED
+- reviewed_commit: 3e84a878
+- reviewed_at: 2026-08-23T23:25:00Z
 - lane: ox-pc-bb
 - model: openrouter/stealth/ox-alpha
 - base_commit: d2423873c577d299b3b39c56024d1d840993c72b

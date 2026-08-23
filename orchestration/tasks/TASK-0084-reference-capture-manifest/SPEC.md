@@ -1,7 +1,8 @@
 ---
 task: TASK-0084
 title: Reference-capture integrity manifest
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head 3e84a878, 2026-08-23)
 packet: MECHANICAL
 topology: INDEPENDENT
 priority: medium-high (presentation regression evidence)
