@@ -1,6 +1,6 @@
 ---
 task: TASK-0165
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: ox-pc-be (worktree ox-pc-be)
 machine: DESKTOP-TVU7OR7
@@ -15,6 +15,8 @@ harness: OpenCode CLI
 started_at: 2026-08-23T05:51:27Z
 revision: 1
 implementation_commit: a77840f2
+reviewed_commit: b17d4610 (independent validator ACCEPTED 2026-08-23T15:53Z)
+integrated_at: 2026-08-23T15:54Z (merge 59e379c0)
 expected_verification: powershell -NoProfile -ExecutionPolicy Bypass -File orchestration/tasks/TASK-0165-native-input-focus-model-foundation/run-tests.ps1; python native/tools/check_legacy_denylist.py; git diff --check; git diff --name-only
 ---
 
