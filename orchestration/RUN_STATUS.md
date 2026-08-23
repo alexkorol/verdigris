@@ -1,5 +1,19 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED 17 audits this session — 2026-08-23 22:10 UTC
+
+- **TASK-0115** (browser panel/typography inventory, bc) ACCEPTED + integrated
+  at `c74b8b61`. FINDINGS captured 19 panels GREEN at 1920×1080 + 1366×768
+  (38 PNGs) with measured typography; negative control verified (injected false
+  assertion → exit 1); frozen the browser typography contract (GameFont/
+  ChatFont/UIFont roles, 5 deviations).
+- Prior this session: TASK-0097, 0082, 0100, 0104, 0103, 0098, 0099, 0091,
+  0092, 0102, 0093, 0095, 0094, 0096, 0121, 0118 all ACCEPTED + integrated.
+- Lanes: `ox-pc-ba` -> TASK-0108 (P0 ranged combat, QUESTION filed, parked);
+  `ox-pc-bb` -> TASK-0114 (renderer backend evaluation, claimed `84ede1a0`);
+  `ox-pc-bc` -> TASK-0115 now integrated (lane freed); `ox-pc-bd` -> TASK-0136
+  (passive-tree contract validator CLI, claimed `f1ffa64b`).
+
 ## SHIPPED 16 audits this session — 2026-08-23 21:50 UTC
 
 - **TASK-0121** (owner content approval matrix, bb) ACCEPTED + integrated at
