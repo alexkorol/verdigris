@@ -1,7 +1,9 @@
 # STATUS — TASK-0121-owner-content-approval-matrix
 
 ```yaml
-state: REVIEW_REQUESTED
+state: INTEGRATED
+reviewed_commit: 587ce281
+reviewed_at: 2026-08-23T21:30:00Z
 lane: ox-pc-bb
 model: openrouter/stealth/ox-alpha
 base_commit: 9bd689b4cebac0fe1f79ba54edcc9967a1a8f0d4
