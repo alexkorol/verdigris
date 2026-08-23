@@ -1,6 +1,8 @@
 ---
 task: TASK-0118
-state: REVIEW_REQUESTED
+state: INTEGRATED
+reviewed_commit: 6b87d49c
+reviewed_at: 2026-08-23T21:45:00Z
 lane: ox-pc-bd
 worker: ox-pc-bd
 model: openrouter/stealth/ox-alpha

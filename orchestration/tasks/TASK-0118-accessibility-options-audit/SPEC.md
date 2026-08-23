@@ -1,7 +1,8 @@
 ---
 task: TASK-0118
 title: Native accessibility, options, and input audit
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head 6b87d49c, 2026-08-23)
 packet: MECHANICAL
 topology: INDEPENDENT
 job: MECHANICAL
