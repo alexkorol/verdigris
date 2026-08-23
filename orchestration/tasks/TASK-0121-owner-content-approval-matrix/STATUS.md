@@ -1,20 +1,25 @@
 # STATUS — TASK-0121-owner-content-approval-matrix
 
 ```yaml
-state: CLAIMED
+state: REVIEW_REQUESTED
 lane: ox-pc-bb
 model: openrouter/stealth/ox-alpha
 base_commit: 9bd689b4cebac0fe1f79ba54edcc9967a1a8f0d4
 branch: worker/verdigris/pc/ox-pc-bb
 worktree: Z:/Code/.worktrees/verdigris/ox-pc-bb
 started_at: 2026-08-23
+review_requested_at: 2026-08-23
+frozen_head: 0dfd3995 (docs(TASK-0121): owner content approval matrix findings + gate captures)
 ```
 
-Claim notes:
+Completion notes:
 
-- No prior `STATUS.md` existed for this task (first-STATUS-write-wins verified).
-- Work confined to `orchestration/tasks/TASK-0121-owner-content-approval-matrix/**`.
-- Resource capsule honored: read-only research, no asset generation, no
-  external messages, no ports, port 6500 never touched.
-- Deliverables planned: `FINDINGS.md`, `captures/owner-gates.json`, `REPORT.md`,
-  then `state: REVIEW_REQUESTED` with a frozen pushed head.
+- Deliverables: `FINDINGS.md`, `captures/owner-gates.json` (15 gates, node-
+  validated `owner gates: PASS`), `REPORT.md` with literal acceptance
+  transcripts + exit codes.
+- All SPEC acceptance commands run literally; exit codes 0.
+- Only owned paths changed; no owner-only decision resolved or recommended
+  into canon; negative control present (G-04 parked noncritical, executable
+  fallback).
+- Resource capsule honored throughout: read-only research, no asset
+  generation, no external messages, no ports, 6500 untouched.
