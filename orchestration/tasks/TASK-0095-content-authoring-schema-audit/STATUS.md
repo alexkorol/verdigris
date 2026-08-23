@@ -1,5 +1,7 @@
 ---
-state: REVIEW_REQUESTED
+state: INTEGRATED
+reviewed_commit: d902c861
+reviewed_at: 2026-08-23T20:30:00Z
 task: TASK-0095-native-content-and-asset-authoring-schema-audit
 title: Native content and asset-authoring schema audit
 lane: ox-pc-bd
