@@ -1,5 +1,23 @@
 # Run status — PC Verdigris overnight product wave
 
+## SHIPPED TASK-0165 + fleet status — 2026-08-23 15:55 UTC
+
+- **TASK-0165 (input-focus model foundation, ox-pc-be) SHIPPED.** Independent
+  validator (deepseek-v4-flash) re-ran the full SPEC gate at frozen head
+  `b17d4610`: harness 847 checks PASS (exit 0), denylist PASS, `git diff
+  --check` clean, scope = `native/client/input_focus.hpp` + task folder only.
+  Verdict ACCEPTED (REVIEW.md); worker branch merged and STATUS -> INTEGRATED.
+  Post-integration gate re-ran green at the merged program head `71b3dd0d`.
+  This is the first overnight shipment.
+- **Fleet lanes:** ox-pc-ba -> TASK-0108 (VALID, impl in progress, dirty
+  worktree); ox-pc-be -> TASK-0165 (SHIPPED above); **ox-pc-bb -> TASK-0148,
+  ox-pc-bc -> TASK-0157, ox-pc-bd -> TASK-0158 are P0 MISROUTED** — all three
+  are INTEGRATED tasks (the stale routes flagged earlier were launched; bd
+  even re-implemented TASK-0158 as a duplicate). Owner: stop/repoint bb, bc,
+  bd; do not let them implement already-integrated work.
+- VALIDATION WATCH: TASK-0108 (ox-pc-ba) is the remaining valid claim; I will
+  validate at its frozen head when it flips REVIEW_REQUESTED.
+
 ## Fleet LIVE — 3 claims pushed; one P0 MISROUTE — 2026-08-22 22:53 PDT
 
 - Owner fixed the launch auth and relaunched ~22:50 PDT. The fleet is now
