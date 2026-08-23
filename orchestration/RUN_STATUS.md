@@ -1,5 +1,22 @@
 # Run status — PC Verdigris overnight product wave
 
+## TASK-0108 QUESTION (P0 ranged combat, ba) — 2026-08-23 19:35 UTC
+
+- `ox-pc-ba` (TASK-0108, readable ranged combat) filed a QUESTION at
+  `b73386c4`, STATUS `QUESTION` rev 2. Implementation is green on owned paths
+  (ranged `behaviour_type`, telegraph→envelope-gated hit, client-visible
+  Telegraph-op-before-Damage locks, core determinism + silent-stream negative
+  control). It fails only the frozen gate-b heirloom hunt
+  (`session_tests.cpp:1392`), which reads **every** `monster:telegraph` as the
+  elite boss ground-slam; the ranged shooter's telegraph reuses that wire event,
+  so gate-b re-aims at the shooter.
+- Fix needs either `session_tests.cpp` (owned by TASK-0162) or a
+  `networking.cpp` wire distinguisher — both outside TASK-0108's owned_paths.
+  The SPEC's STOP condition explicitly directs filing a question here.
+- **ACTION:** owner coordination decision required (add a wire distinguisher
+  e.g. skillId on `monster:telegraph`, or sequence a session_tests.cpp fix).
+  ba is parked on the question; implementation + evidence complete.
+
 ## SHIPPED 9 audits this session — 2026-08-23 19:25 UTC
 
 - **TASK-0092** (owner launch/packaging audit, bd) ACCEPTED + integrated at
