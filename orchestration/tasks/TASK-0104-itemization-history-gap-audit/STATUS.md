@@ -1,7 +1,9 @@
 ---
 task: TASK-0104
 title: Itemization, extraction, and item-history gap audit
-state: REVIEW_REQUESTED
+state: INTEGRATED
+reviewed_commit: 40c505ac9b05ecc6d14a17391f252d3ddd2e3246
+reviewed_at: 2026-08-23T17:50:00Z
 packet: BOUNDED-DESIGN
 topology: INDEPENDENT
 job: BOUNDED-DESIGN
