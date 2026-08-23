@@ -1,5 +1,24 @@
 # Run status — PC Verdigris overnight product wave
 
+## Fleet bootstrap corrections + re-pointed lanes claiming — 2026-08-23 16:05 UTC
+
+- Bootstrap review against `Z:\Code\orchestration\FLEET_BOOTSTRAP.md`:
+  - START_HERE launch contracts confirmed **gitignored** in the lane worktrees.
+  - Stale misrouted origin branches (`worker/verdigris/pc/ox-pc-bb|bc|bd`,
+    which pointed to invalid claims on integrated tasks 0148/0157/0158) were
+    **deleted** so the re-pointed workers can push fresh, protocol-valid claims
+    without a non-fast-forward conflict.
+  - Re-pointed lanes are activating: **ox-pc-bb has claimed TASK-0082** (staged
+    STATUS, dual-server matrix); ox-pc-bc (TASK-0097) and ox-pc-bd (TASK-0100)
+    are starting.
+- Open questions from the review (pre-existing, not introduced by the
+  re-point): the lane worktrees carry no local `opencode.json` permissions
+  config (ba also lacks one), and my relaunches emit to the session log rather
+  than `Z:\Code\.fleet\logs\<lane>.jsonl`. Both are noted for the owner; neither
+  blocks the running lanes (claims + worktree evidence remain authoritative).
+- VALIDATION WATCH unchanged: gate each `REVIEW_REQUESTED` at its exact frozen
+  head and ship ACCEPTED work (TASK-0165 pattern).
+
 ## Fleet re-pointed + running (4 valid lanes) — 2026-08-23 15:59 UTC
 
 - Lead re-pointed the three P0-misrouted lanes to valid READY tasks and
