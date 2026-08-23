@@ -1,5 +1,7 @@
 ---
-state: REVIEW_REQUESTED
+state: INTEGRATED
+reviewed_commit: 16816293
+reviewed_at: 2026-08-23T22:05:00Z
 task: TASK-0115-browser-panel-typography-inventory
 title: Browser panel and typography inventory
 lane: ox-pc-bc
