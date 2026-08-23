@@ -1,5 +1,16 @@
 # Run status — PC Verdigris overnight product wave
 
+## TASK-0161 accepted; readable combat successor READY — 2026-08-22 17:22 PDT
+
+- Independent detached TASK-0161 gate at `9f004d2a` passed (`GATE-EXIT=0`) with
+  clean tree and fail-closed capture-root negatives. Integrated at `76368466`.
+- TASK-0108 is READY from TASK-0101 W1 on base `76368466`. It owns the
+  readable ranged seam but not `session_tests.cpp` (TASK-0162). Ports 7280-7299.
+- Combined program `-RunTests -RunClientScenarios -CaptureRoot` on this tip is
+  the remaining G6 proof before claiming 0161 fully settled. Owner action: none.
+  Next: finish that combined gate, restock if the board drops below 24 READY,
+  then route TASK-0108 when a worker is available (owner launches workers).
+
 ## TASK-0101 accepted; 0161 independent gate next — 2026-08-22 17:12 PDT
 
 - Cursor successor acknowledgement is durable at `5c62c904`. TASK-0101

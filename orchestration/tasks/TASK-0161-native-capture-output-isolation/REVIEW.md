@@ -6,6 +6,7 @@
 - reviewed base: `610a240e1e4bdfacfd77bec49e36be945a1ced13`
 - reviewer: Cursor successor architect/orchestrator
 - reviewed_at: 2026-08-22T17:18:00-07:00
+- integrated_at: `76368466`
 
 Independent detached review in
 `Z:\Code\.worktrees\verdigris\review-task0161-9f004d2a` completed. The

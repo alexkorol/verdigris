@@ -1,6 +1,6 @@
 ---
 task: TASK-0161
-state: REVIEW_REQUESTED
+state: INTEGRATED
 coordinator: codex
 worker: ox-pc-ah
 machine: DESKTOP-TVU7OR7
@@ -15,6 +15,8 @@ harness: OpenCode CLI variant max
 started_at: 2026-08-22T23:26:21Z
 claim_commit: 7730e49a3a1d7743132438d23b13500f3106564b
 implementation_commit: c8cedf1730455d0fc62badc3c707dcbc96123254
+program_implementation_commit: 76368466
+integrated_at: 2026-08-22T17:20:00-07:00
 expected_verification: powershell -NoProfile -ExecutionPolicy Bypass -File native/build.ps1 -RunTests -RunClientScenarios -CaptureRoot orchestration/tasks/TASK-0161-native-capture-output-isolation/captures/review; git status --short; git diff --check; git diff --name-only; plus negative controls proving invalid/outside-repository capture roots fail before writing and default scenario behavior is preserved
 verification_outcome: literal acceptance command EXIT=0 twice (denylist PASS; core/networking/camera2d/session/presentation-events/audio suites green; all 12 client scenarios PASS); post-commit re-run left git status --short, git diff --check, and git diff --name-only all empty with no cleanup commands; client-seam and build-layer negative controls (outside-repo, ..-escaping, uncreatable-under-file) all fail loudly with exit 1 and zero filesystem writes; no-env scenario runs stay green on the unchanged historical ladder
 captures:

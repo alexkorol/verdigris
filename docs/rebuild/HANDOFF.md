@@ -1,15 +1,13 @@
 # Native reconstitution handoff
 
-## 2026-08-22 — Cursor successor + TASK-0101 accepted
+## 2026-08-22 — Cursor successor + TASK-0101/0161 accepted
 
-- Codex Sol retired; Cursor successor acknowledged at program
-  `5c62c904` on `codex/native-reconstitution`.
-- TASK-0101 revision 1 (`a742355d`) independently ACCEPTED (`34ff3137`) and
-  integrated (`bdecf037`). Immediate combat successor stays DRAFT until
-  TASK-0161 clears `native/client/main.cpp`.
-- Next independent gate: TASK-0161 frozen head `9f004d2a` in
-  `Z:\Code\.worktrees\verdigris\review-task0161-9f004d2a`. Prior partial
-  Gate-B is not acceptance.
+- Codex Sol retired; Cursor successor acknowledged at `5c62c904`.
+- TASK-0101 revision 1 (`a742355d`) ACCEPTED (`34ff3137`) and integrated
+  (`bdecf037`).
+- TASK-0161 (`9f004d2a`) independently ACCEPTED and integrated (`76368466`).
+  Combined program re-gate is the remaining G6 proof on this tip.
+- TASK-0108 is READY from W1 with `session_tests.cpp` excluded (TASK-0162).
 
 ## 2026-08-21 — PC single-lane Ox Alpha surge runway
 
