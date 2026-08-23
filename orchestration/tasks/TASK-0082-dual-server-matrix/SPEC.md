@@ -1,7 +1,8 @@
 ---
 task: TASK-0082
 title: Dual-server parity matrix runner
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head bf13efa7, 2026-08-23)
 packet: BOUNDED-DESIGN
 topology: INDEPENDENT
 priority: high (D-116 regression sweep layer 1)

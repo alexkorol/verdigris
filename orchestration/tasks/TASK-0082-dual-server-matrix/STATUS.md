@@ -1,7 +1,9 @@
 # TASK-0082 status
 
 ```yaml
-state: REVIEW_REQUESTED
+state: INTEGRATED
+reviewed_commit: bf13efa70b98d4dc77d672e06e0951a5a9d169fe
+reviewed_at: 2026-08-23T17:20:00Z
 task: TASK-0082-dual-server-matrix
 lane: ox-pc-bb
 model: openrouter/stealth/ox-alpha
