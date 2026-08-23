@@ -38,3 +38,11 @@ acceptance command literally; identify a negative control (a state or adapter
 input not captured by current replay proof); define a versioned replay record
 and divergence report contract for TASK-0106's successor without implementing
 it; write FINDINGS.md + REPORT.md with literal transcripts and exit codes.
+
+Branch reconciliation note: the remote worker branch carried stale
+previous-generation lane commits (7ed9e404..5cc7e2ee, old TASK-0158 work on an
+ancient base). TASK-0158 was independently re-landed on the program branch as
+14809519 and accepted via b63daf90, so nothing unique remained there. Local
+history reconciled via a strategic `git merge -s ours` (commit fd183f4b) so
+the push fast-forwarded; no force-push, no superseded content imported.
+Claim commit: a0bb6924.
