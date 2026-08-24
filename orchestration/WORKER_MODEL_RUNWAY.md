@@ -12,6 +12,8 @@ Branch tip: `codex/TASK-0190-town-runtime-layout-prep-cursor`.
 | 0188 prep | `gate_overlay_layout.hpp` |
 | 0189 prep | `instance_gate_bridge.hpp` |
 | 0190 prep | `town_runtime_layout.hpp` |
+| 0192 prep | `zone_runtime_bridge.hpp` |
+| 0194 prep | `skill_tree_layout.hpp` |
 
 ## REVIEW_REQUESTED packets (cursor)
 
@@ -37,7 +39,7 @@ Worktree tip: `npm run playtest` 32/32 exit 0 (port 6510). Evidence: `orchestrat
 
 ## Model lane status
 
-**Stocked** plus TASK-0183–0190 integrator prep headers. `main.cpp` integration blocked on ox-alpha-pc lease and dependency ACCEPTED wave.
+**Stocked** plus TASK-0183–0194 integrator prep headers (0192, 0194). `main.cpp` integration blocked on ox-alpha-pc lease and dependency ACCEPTED wave.
 
 ## Blocked integrator lanes
 
