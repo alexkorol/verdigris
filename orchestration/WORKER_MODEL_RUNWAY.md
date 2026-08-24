@@ -2,7 +2,7 @@
 
 Worker lane: header-only models and adapters (no `main.cpp` / integrator hotspots).
 
-Branch tip: `codex/TASK-0183-menu-input-bridge-prep-cursor` (pending commit).
+Branch tip: `codex/TASK-0183-menu-input-bridge-prep-cursor` (`11363ccf`).
 
 | 0183 prep | `owner_menu_input.hpp` (menu_scene + input_focus bridge) |
 
@@ -30,7 +30,7 @@ Worktree tip: `npm run playtest` 32/32 exit 0 (port 6510). Evidence: `orchestrat
 
 ## Model lane status
 
-**Stocked.** No further path-disjoint model packets identified without integrator lease.
+**Stocked** plus TASK-0183 bridge prep for integrator. `main.cpp` integration blocked on ox-alpha-pc lease and 0179/0180 ACCEPTED.
 
 ## Blocked integrator lanes
 
