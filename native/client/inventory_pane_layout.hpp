@@ -283,9 +283,9 @@ inline constexpr std::uint8_t kDollSlotGap = 4;
       clamp_i16(inner_left + static_cast<std::int32_t>(kDollColumnWidth) +
                 static_cast<std::int32_t>(kColumnGap));
   plan.grid_column.y = plan.doll_column.y;
-  plan.grid_column.width =
-      clamp_u16(max_u16(0, static_cast<std::uint16_t>(inner_right -
-                                                      plan.grid_column.x)));
+  plan.grid_column.width = clamp_u16(
+      static_cast<std::uint16_t>(
+          std::max(0, inner_right - static_cast<std::int32_t>(plan.grid_column.x))));
   plan.grid_column.height = plan.doll_column.height;
 
   plan.grid = plan_grid(plan.grid_column, grid.width, grid.height);

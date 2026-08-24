@@ -2,7 +2,7 @@
 
 Worker lane: header-only models and adapters (no `main.cpp` / integrator hotspots).
 
-Branch tip: `codex/TASK-0184-inventory-pane-layout-prep-cursor` (`035ac25d`).
+Branch tip: `codex/TASK-0184-inventory-pane-layout-prep-cursor` (`ea0c9e05`).
 
 | 0183 prep | `owner_menu_input.hpp`, `splash_menu_layout.hpp` |
 | 0184 prep | `inventory_pane_layout.hpp` |
