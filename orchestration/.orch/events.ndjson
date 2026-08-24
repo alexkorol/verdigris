@@ -26,3 +26,4 @@
 {"detail":"cursor worker: TASK-0196 spell_lattice_layout.hpp integrator prep; 15 layout tests PASS","type":"WORKER_HEARTBEAT","ts":"2026-08-24T04:15:00.0000000-07:00"}
 {"detail":"cursor worker: TASK-0201 house_investment_layout.hpp integrator prep; 15 layout tests PASS","type":"WORKER_HEARTBEAT","ts":"2026-08-24T04:15:00.0000000-07:00"}
 {"detail":"cursor worker: TASK-0201 durable claim verified @ f1e63660; run-tests 15 PASS + playtest 32/32 + denylist PASS; BRIDGE_PREP complete","type":"WORKER_HEARTBEAT","ts":"2026-08-24T07:30:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0201 goal audit @ 34574570; run-tests 15 PASS re-verified; evidence_commit durable; BRIDGE_PREP lane complete","type":"WORKER_HEARTBEAT","ts":"2026-08-24T07:35:00.0000000-07:00"}

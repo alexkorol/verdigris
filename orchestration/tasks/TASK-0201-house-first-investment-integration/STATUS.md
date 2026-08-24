@@ -5,8 +5,8 @@ worker: cursor (composer-2.5)
 worker_branch: codex/TASK-0201-house-investment-layout-prep-cursor
 worktree: Z:\Code\.worktrees\verdigris\owner-demo-runway
 routed_head: f1e636605cf9d1d8b466edde22b50dd6647a8988
-started_at: 2026-08-24T11:08:00Z
-heartbeat_at: 2026-08-24T14:30:00Z
+evidence_commit: 34574570dd3f1c3217d12163f561c4d2c5609f86
+heartbeat_at: 2026-08-24T14:35:00Z
 completed_at: 2026-08-24T14:30:00Z
 heartbeat_minutes: 15
 lease_minutes: 40

@@ -1,10 +1,11 @@
 # Cursor session heartbeat — owner-demo-runway
 
-- recorded: 2026-08-24 07:30 PDT
+- recorded: 2026-08-24 07:35 PDT (goal session verification)
 - lane: cursor worker (composer-2.5) on `owner-demo-runway` worktree
 - task: TASK-0201 (house investment layout prep / BRIDGE_PREP)
 - worktree: `Z:\Code\.worktrees\verdigris\owner-demo-runway`
 - branch: `codex/TASK-0201-house-investment-layout-prep-cursor`
+- HEAD: `34574570dd3f1c3217d12163f561c4d2c5609f86`
 - claim basis: durable STATUS.md for TASK-0201; path-disjoint integrator prep header
 - heartbeat_minutes: 15
 - lease_minutes: 40
