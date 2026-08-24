@@ -129,9 +129,10 @@ void hunt_step(verdigris::client::IClientSession& session) {
   session.submit(verdigris::client::ClientCommand::use_action("melee"));
 }
 std::uint16_t start_server(verdigris::networking::WebSocketServer*& out) {
-  // Architect capsule 6560-6579 (ORCHESTRATION.md); scan for a free port so
-  // parallel suites cannot collide.
-  for (std::uint16_t port = 6572; port <= 6579; ++port) {
+  // This lane's assigned loopback capsule is 7160-7179 (TASK-0163 SPEC);
+  // scan for a free port so parallel suites cannot collide and other
+  // lanes' capsules are never touched.
+  for (std::uint16_t port = 7160; port <= 7179; ++port) {
     auto* server = new verdigris::networking::WebSocketServer(port);
     std::string error;
     if (server->start(&error)) {
@@ -145,9 +146,9 @@ std::uint16_t start_server(verdigris::networking::WebSocketServer*& out) {
 }
 
 void remote_dead_endpoint_is_a_visible_failure() {
-  // Nothing listens on this port (start_server scans upward from 6572; 6571
+  // Nothing listens on this port (start_server scans upward from 7160; 7159
   // is reserved for this negative and never bound).
-  verdigris::client::RemoteProtocolSession session("127.0.0.1", 6571, "negative-guest");
+  verdigris::client::RemoteProtocolSession session("127.0.0.1", 7159, "negative-guest");
   std::string error;
   const bool started = session.start(&error);
   check(!started, "remote-negative: dead endpoint fails start()");
@@ -196,8 +197,8 @@ void remote_handshake_reaches_ready() {
 }
 
 std::uint16_t start_server_cursor(verdigris::networking::WebSocketServer*& out) {
-  // Cursor capsule 6580-6599 (ORCHESTRATION.md).
-  for (std::uint16_t port = 6580; port <= 6599; ++port) {
+  // Same lane capsule as start_server (TASK-0163 SPEC: 7160-7179 loopback).
+  for (std::uint16_t port = 7160; port <= 7179; ++port) {
     auto* server = new verdigris::networking::WebSocketServer(port);
     std::string error;
     if (server->start(&error)) {
@@ -989,9 +990,9 @@ class LoopbackClient {
 // ── Journey driving helpers ───────────────────────────────────────────────
 
 std::uint16_t start_server_worker_capsule(verdigris::networking::WebSocketServer*& out) {
-  // ox-pc-r worker capsule 6960-6979 (START_HERE_OX_PC_R.md): never 6500,
-  // never another lane's capsule.
-  for (std::uint16_t port = 6960; port <= 6979; ++port) {
+  // ox-pc-bh lane capsule 7160-7179 (TASK-0163 SPEC): never 6500, never
+  // another lane's capsule.
+  for (std::uint16_t port = 7160; port <= 7179; ++port) {
     auto* server = new verdigris::networking::WebSocketServer(port);
     std::string error;
     if (server->start(&error)) {
@@ -1071,6 +1072,43 @@ void gateb_swing(LoopbackClient& client, int heading) {
   trigger.emplace("skillId", JV("primary-attack"));
   trigger.emplace("direction", JV(gateb_dir(heading)));
   client.send("player:skill:trigger", JV(std::move(trigger)));
+}
+
+// Elite/slam knowledge the hunt driver holds: what a normal client knows
+// after seeing broadcast ground-slam telegraphs. clear_at starts "never"
+// (epoch + 24h), matching the pre-extraction driver initialization.
+struct GateBSlamKnowledge {
+  bool elite_known = false;
+  int elite_x = -1;
+  int elite_y = -1;
+  int slam_x = 0;
+  int slam_y = 0;
+  int slam_radius = 0;
+  std::chrono::steady_clock::time_point clear_at =
+      std::chrono::steady_clock::time_point{} + std::chrono::hours(24);
+};
+
+// Feed one wire line into the slam knowledge. ONLY the authored boss
+// signature (skillId "boss:ground-slam") reveals the elite and arms the
+// dodge window. Ranged trash monsters announce ordinary shots on the same
+// monster:telegraph event with skillId "monster:attack"; reading those as
+// THE elite re-aims the whole hunt at the shooter's tile and re-arms the
+// dodge against a warning circle - both recorded program-gate failures.
+void gateb_observe_slam(GateBSlamKnowledge& slam, const WBEnvelope& envelope,
+                        std::chrono::steady_clock::time_point arrival) {
+  if (envelope.event != "monster:telegraph") return;
+  if (gateb_str(envelope.data, "skillId") != "boss:ground-slam") return;
+  slam.elite_known = true;
+  slam.elite_x = static_cast<int>(gateb_num(envelope.data, "x"));
+  slam.elite_y = static_cast<int>(gateb_num(envelope.data, "y"));
+  slam.slam_x = slam.elite_x;
+  slam.slam_y = slam.elite_y;
+  slam.slam_radius = static_cast<int>(gateb_num(envelope.data, "radius", 2));
+  // Small clock-skew buffer so a re-entry never beats the resolve.
+  slam.clear_at =
+      arrival +
+      std::chrono::milliseconds(
+          static_cast<int>(gateb_num(envelope.data, "durationMs", 1000)) + 120);
 }
 
 // Sweep-walk (no swinging) until the scion falls in ordinary combat. This is
@@ -1181,11 +1219,9 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
   std::string last_counted_kill_id;
   // Client-visible elite knowledge: the ground-slam telegraph payload is
   // broadcast to every client, so the driver may aim at and dodge the elite
-  // with exactly what a normal player sees on screen.
-  bool elite_known = false;
-  int elite_x = -1, elite_y = -1;
-  auto slam_clear_at = never;
-  int slam_x = 0, slam_y = 0, slam_radius = 0;
+  // with exactly what a normal player sees on screen. Only the authored
+  // boss signature feeds it (gateb_observe_slam).
+  GateBSlamKnowledge slam;
   // Approach-phase state for the revealed-elite beeline.
   auto approach_phase_until = now();
   int approach_best_dist = 1 << 30;
@@ -1230,18 +1266,7 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
           }
         }
       }
-      if (line.env.event == "monster:telegraph") {
-        elite_known = true;
-        elite_x = static_cast<int>(gateb_num(line.env.data, "x"));
-        elite_y = static_cast<int>(gateb_num(line.env.data, "y"));
-        slam_x = elite_x;
-        slam_y = elite_y;
-        slam_radius = static_cast<int>(gateb_num(line.env.data, "radius", 2));
-        // Small clock-skew buffer so a re-entry never beats the resolve.
-        slam_clear_at = line.at +
-                        std::chrono::milliseconds(static_cast<int>(
-                            gateb_num(line.env.data, "durationMs", 1000)) + 120);
-      }
+      gateb_observe_slam(slam, line.env, line.at);
       if (line.env.event == "chronicles:scion-fallen") {
         std::printf("note: hunt aborted - successor fall observed\n");
         return false;
@@ -1263,8 +1288,7 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
         return false;
       }
       index = client.mark();
-      elite_known = false;
-      slam_clear_at = never;
+      slam = GateBSlamKnowledge{};  // fresh floor: forget the old room's slam
       approach_phase_until = now();
       approach_best_dist = 1 << 30;
       approach_escape = false;
@@ -1282,21 +1306,22 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
           "elite=(%d,%d) ground=%zu scene=%s\n",
           view.hp, static_cast<int>(std::floor(view.px)),
           static_cast<int>(std::floor(view.py)), *kills,
-          elite_known ? 1 : 0, elite_x, elite_y, view.ground.size(),
-          view.scene_type.c_str());
+          slam.elite_known ? 1 : 0, slam.elite_x, slam.elite_y,
+          view.ground.size(), view.scene_type.c_str());
     }
     const int tile_x = static_cast<int>(std::floor(view.px));
     const int tile_y = static_cast<int>(std::floor(view.py));
     bool acted = false;
-    if (now() < slam_clear_at && chebyshev(tile_x, tile_y, slam_x, slam_y) <= slam_radius) {
+    if (now() < slam.clear_at &&
+        chebyshev(tile_x, tile_y, slam.slam_x, slam.slam_y) <= slam.slam_radius) {
       // A normal player steps out of the marked circle before it resolves.
       int best_heading = -1;
-      int best_dist = chebyshev(tile_x, tile_y, slam_x, slam_y);
+      int best_dist = chebyshev(tile_x, tile_y, slam.slam_x, slam.slam_y);
       for (int candidate = 0; candidate < 4; ++candidate) {
         const int nx = tile_x + (candidate == 0 ? 1 : candidate == 2 ? -1 : 0);
         const int ny = tile_y + (candidate == 1 ? 1 : candidate == 3 ? -1 : 0);
         if (gateb_on_stairs(view, nx, ny)) continue;
-        const int dist = chebyshev(nx, ny, slam_x, slam_y);
+        const int dist = chebyshev(nx, ny, slam.slam_x, slam.slam_y);
         if (dist > best_dist) { best_dist = dist; best_heading = candidate; }
       }
       if (best_heading >= 0) {
@@ -1319,12 +1344,12 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
         // server aims at the nearest live monster, so direction only breaks
         // ties.
         gateb_swing(client, fight_heading);
-      } else if (elite_known) {
-        const int dx = elite_x - tile_x;
-        const int dy = elite_y - tile_y;
+      } else if (slam.elite_known) {
+        const int dx = slam.elite_x - tile_x;
+        const int dy = slam.elite_y - tile_y;
         fight_heading = gateb_heading_for(dx > 0 ? 1 : (dx < 0 ? -1 : 0),
                                           dy > 0 ? 1 : (dy < 0 ? -1 : 0));
-        if (chebyshev(tile_x, tile_y, elite_x, elite_y) <= 1) {
+        if (chebyshev(tile_x, tile_y, slam.elite_x, slam.elite_y) <= 1) {
           gateb_swing(client, gateb_heading_for(dx > 0 ? 1 : (dx < 0 ? -1 : 0), 0));
         } else {
           // Approach in bounded phases: greedy toward the wider axis for a
@@ -1333,7 +1358,8 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
           // bounded, and evidence-producing either way.
           const auto phase_len = std::chrono::seconds(8);
           if (now() >= approach_phase_until) {
-            const int dist = chebyshev(tile_x, tile_y, elite_x, elite_y);
+            const int dist =
+                chebyshev(tile_x, tile_y, slam.elite_x, slam.elite_y);
             if (dist < approach_best_dist) {
               approach_escape = false;  // progress: keep the greedy lane
             } else if (!approach_escape) {
@@ -1343,7 +1369,8 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
             approach_phase_until = now() + phase_len;
             std::printf(
                 "note: hunt approach dist=%d escape=%d at=(%d,%d) elite=(%d,%d)\n",
-                dist, approach_escape ? 1 : 0, tile_x, tile_y, elite_x, elite_y);
+                dist, approach_escape ? 1 : 0, tile_x, tile_y, slam.elite_x,
+                slam.elite_y);
           }
           const int primary =
               gateb_heading_for(dx > 0 ? 1 : (dx < 0 ? -1 : 0), 0);
@@ -1395,6 +1422,87 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
   std::printf("note: hunt diagnostics kills=%d ground=%zu message=%s\n",
               *kills, view.ground.size(), view.last_message.c_str());
   return false;
+}
+
+// Focused deterministic controls for the corrected telegraph state machine.
+// Socket-free: synthetic envelopes replay the exact wire shapes both monster
+// families emit, and the hunt's elite/slam knowledge is asserted directly.
+void gateb_driver_telegraph_controls() {
+  using Clock = std::chrono::steady_clock;
+  const Clock::time_point arrival =
+      Clock::time_point{} + std::chrono::seconds(1000);
+  const GateBSlamKnowledge untouched;
+
+  // Ranged trash warning (combined-program wire shape): same
+  // monster:telegraph event, authored skillId "monster:attack".
+  const WBEnvelope trash{
+      "monster:telegraph",
+      JV(JV::Object{{"skillId", JV("monster:attack")},
+                    {"attackerName", JV("lurker")},
+                    {"x", JV(7)},
+                    {"y", JV(15)},
+                    {"radius", JV(4)},
+                    {"durationMs", JV(1000)}}),
+      std::nullopt};
+
+  GateBSlamKnowledge slam;
+  gateb_observe_slam(slam, trash, arrival);
+  check(!slam.elite_known,
+        "gate-b-driver: ranged trash telegraph does not reveal an elite");
+  check(slam.clear_at == untouched.clear_at,
+        "gate-b-driver: ranged trash telegraph does not arm the dodge window");
+
+  // Boss ground-slam: the authored signature reveals the elite at its true
+  // tile and arms the dodge with the payload geometry plus skew buffer.
+  gateb_observe_slam(
+      slam,
+      WBEnvelope{"monster:telegraph",
+                 JV(JV::Object{{"skillId", JV("boss:ground-slam")},
+                               {"attackerName", JV("Warden of the Deep")},
+                               {"x", JV(25)},
+                               {"y", JV(18)},
+                               {"radius", JV(2)},
+                               {"durationMs", JV(1000)}}),
+                 std::nullopt},
+      arrival);
+  check(slam.elite_known && slam.elite_x == 25 && slam.elite_y == 18,
+        "gate-b-driver: boss slam reveals the elite at its true tile");
+  check(slam.slam_x == 25 && slam.slam_y == 18 && slam.slam_radius == 2,
+        "gate-b-driver: boss slam anchors the dodge circle on the payload");
+  check(slam.clear_at ==
+            arrival + std::chrono::milliseconds(1000 + 120),
+        "gate-b-driver: dodge window arms for durationMs plus skew buffer");
+
+  // A later trash warning must neither re-aim the known elite nor re-arm
+  // the already-armed window (the recorded seven-minute phantom-chase).
+  gateb_observe_slam(slam, trash, arrival + std::chrono::milliseconds(5000));
+  check(slam.elite_known && slam.elite_x == 25 && slam.elite_y == 18 &&
+            slam.slam_radius == 2 &&
+            slam.clear_at == arrival + std::chrono::milliseconds(1120),
+        "gate-b-driver: late trash warning neither re-aims nor re-arms");
+
+  // Unattributed telegraphs (missing skillId) are ignored.
+  GateBSlamKnowledge unattributed;
+  gateb_observe_slam(
+      unattributed,
+      WBEnvelope{"monster:telegraph",
+                 JV(JV::Object{{"x", JV(9)}, {"y", JV(9)}}), std::nullopt},
+      arrival);
+  check(!unattributed.elite_known,
+        "gate-b-driver: unattributed telegraph is ignored");
+
+  // The slam signature outside the telegraph event name never feeds the
+  // knowledge either; the event contract is part of the signature.
+  GateBSlamKnowledge wrong_event;
+  gateb_observe_slam(
+      wrong_event,
+      WBEnvelope{"combat:hit",
+                 JV(JV::Object{{"skillId", JV("boss:ground-slam")}}),
+                 std::nullopt},
+      arrival);
+  check(!wrong_event.elite_known &&
+            wrong_event.clear_at == untouched.clear_at,
+        "gate-b-driver: non-telegraph events never arm the machine");
 }
 
 // Wait for the surfaced relic's ground frame, walk to it (chebyshev ≤ 1)
@@ -1490,7 +1598,7 @@ bool gateb_take_relic(LoopbackClient& client, const std::string& relic_uuid,
 void gate_b_chronicles_reconnect_journey() {
   verdigris::networking::WebSocketServer* server = nullptr;
   const auto port = start_server_worker_capsule(server);
-  check(server != nullptr, "gate-b: worker-capsule server bound (6960-6979)");
+  check(server != nullptr, "gate-b: lane-capsule server bound (7160-7179)");
   if (!server) return;
 
   const std::string guest = "ox-pc-r-gateb";
@@ -1890,6 +1998,7 @@ int main() {
   remote_mid_session_disconnect();
   remote_session_replaced();
   remote_render_list_ops();
+  gateb_driver_telegraph_controls();
   gate_b_chronicles_reconnect_journey();
   if (failures == 0) {
     std::printf("session tests passed\n");
