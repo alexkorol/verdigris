@@ -5,3 +5,4 @@
 {"detail":"cursor worker: TASK-0181+0182 adapters REVIEW_REQUESTED at 0171e0a2; render adapter lane 0180-0182 complete","type":"WORKER_HEARTBEAT","ts":"2026-08-24T00:55:28.7370071-07:00"}
 {"detail":"cursor worker: TASK-0193+0200 models REVIEW_REQUESTED; geometric_skill_tree.hpp + house_progression.hpp; playtest 32/32","type":"WORKER_HEARTBEAT","ts":"2026-08-24T01:08:00.0000000-07:00"}
 {"detail":"cursor worker: TASK-0195 spell_lattice.hpp REVIEW_REQUESTED; Plane-tier elemental weave model","type":"WORKER_HEARTBEAT","ts":"2026-08-24T01:14:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0191 cartographer_adapter.hpp REVIEW_REQUESTED; MapGen plans + zone graph validation","type":"WORKER_HEARTBEAT","ts":"2026-08-24T01:20:00.0000000-07:00"}
