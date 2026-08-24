@@ -5,6 +5,9 @@
 `native/client/owner_menu_input.hpp` — composes `menu_scene` + `input_focus` so gear
 pane Esc closes before pause opens; bare Esc never requests quit.
 
+`native/client/splash_menu_layout.hpp` — WIZARD splash composition fractions +
+Framekit nine-slice panel plans for title and pause roots.
+
 ## Evidence
 
 - `orchestration/tasks/TASK-0183-native-splash-menu-integration/run-tests.ps1` — exit 0

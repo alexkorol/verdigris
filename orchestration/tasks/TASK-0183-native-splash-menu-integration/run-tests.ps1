@@ -35,5 +35,21 @@ $link = 'call "' + $vcvars + '" && cl /nologo "' + $testObject + '" /Fe"' + $tes
 if ($LASTEXITCODE -ne 0) { throw "link failed" }
 
 & $testExe
-if ($LASTEXITCODE -ne 0) { throw "tests failed" }
+if ($LASTEXITCODE -ne 0) { throw "owner_menu_input tests failed" }
 Write-Host "TASK-0183 owner_menu_input bridge: PASS"
+
+$layoutSource = Join-Path $taskDir "splash_menu_layout_tests.cpp"
+$layoutObject = Join-Path $buildDir "splash_menu_layout_tests.obj"
+$layoutExe = Join-Path $buildDir "splash_menu_layout_tests.exe"
+
+$compileLayout = 'call "' + $vcvars + '" && cl /nologo /std:c++20 /EHsc /W4 /I"' + $clientInclude + '" /c "' + $layoutSource + '" /Fo"' + $layoutObject + '"'
+& cmd.exe /d /s /c $compileLayout
+if ($LASTEXITCODE -ne 0) { throw "layout compile failed" }
+
+$linkLayout = 'call "' + $vcvars + '" && cl /nologo "' + $layoutObject + '" /Fe"' + $layoutExe + '"'
+& cmd.exe /d /s /c $linkLayout
+if ($LASTEXITCODE -ne 0) { throw "layout link failed" }
+
+& $layoutExe
+if ($LASTEXITCODE -ne 0) { throw "layout tests failed" }
+Write-Host "TASK-0183 splash_menu_layout planner: PASS"
