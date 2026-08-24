@@ -1,0 +1,4 @@
+TASK-0171: Diablo-style inventory grid model
+
+Pure 12x6 backpack grid with multi-cell footprints, move/swap rejection,
+stack metadata, hover, and stable serialization order. 92-check MSVC harness.
