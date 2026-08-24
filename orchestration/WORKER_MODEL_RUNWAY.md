@@ -2,9 +2,9 @@
 
 Worker lane: header-only models and adapters (no `main.cpp` / integrator hotspots).
 
-Branch tip: `codex/TASK-0183-menu-input-bridge-prep-cursor` (`11363ccf`).
+Branch tip: `codex/TASK-0183-menu-input-bridge-prep-cursor` (`5a12ac89`).
 
-| 0183 prep | `owner_menu_input.hpp` (menu_scene + input_focus bridge) |
+| 0183 prep | `owner_menu_input.hpp`, `splash_menu_layout.hpp` |
 
 ## REVIEW_REQUESTED packets (cursor)
 
