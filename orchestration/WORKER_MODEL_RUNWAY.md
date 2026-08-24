@@ -2,7 +2,9 @@
 
 Worker lane: header-only models and adapters (no `main.cpp` / integrator hotspots).
 
-Branch tip: `codex/TASK-0197-chronicles-pane-model-slice-cursor` (`642043fc`).
+Branch tip: `codex/TASK-0183-menu-input-bridge-prep-cursor` (pending commit).
+
+| 0183 prep | `owner_menu_input.hpp` (menu_scene + input_focus bridge) |
 
 ## REVIEW_REQUESTED packets (cursor)
 
@@ -24,7 +26,7 @@ Branch tip: `codex/TASK-0197-chronicles-pane-model-slice-cursor` (`642043fc`).
 
 ## Playtest
 
-Worktree tip: `npm run playtest` 32/32 exit 0 (port 6510). Evidence on TASK-0203 and TASK-0204 packets.
+Worktree tip: `npm run playtest` 32/32 exit 0 (port 6510). Evidence: `orchestration/tasks/TASK-0204-owner-demo-audio-beats/playtest-tip-evidence.txt`.
 
 ## Model lane status
 
