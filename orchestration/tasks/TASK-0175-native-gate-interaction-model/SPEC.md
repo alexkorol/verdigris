@@ -1,4 +1,4 @@
----
+﻿---
 task: TASK-0175
 title: Readable gate interaction model
 state: READY
@@ -6,7 +6,7 @@ packet: IMPLEMENTATION
 topology: INDEPENDENT
 job: IMPLEMENTATION
 priority: P0
-base_commit: 3d358812f86c02e5ad405566413108f97ac4e090
+base_commit: 3d3588126e3abc228721fbed0ff3f8d7cae66448
 owner_visible_contribution: Readable gate interaction model
 dependencies: []
 owner_input_dependency: none for this bounded packet
@@ -18,7 +18,7 @@ retry_limit: 2
 fallback: Deliver label/highlight/normal entry with explicit refresh intent.
 successor_rule: on ACCEPTED release gate integration
 generation_provenance: owner interview 2026-08-23 Owner Demo P0
-promotion_provenance: current-tip validation at 3d358812f86c02e5ad405566413108f97ac4e090
+promotion_provenance: current-tip validation at 3d3588126e3abc228721fbed0ff3f8d7cae66448
 ---
 
 # Outcome

@@ -1,13 +1,16 @@
----
+﻿---
 task: TASK-0171
-state: REVIEW_REQUESTED
+state: INTEGRATED
+frozen_head: 4d253c0c
+accepted_at: 2026-08-24T09:50:00-07:00
+accepted_by: coordinator-of-day claude-architect-pc (independent validation, see REVIEW.md)
 coordinator: openrouter
 worker: cursor (composer-2.5)
 machine: DESKTOP-TVU7OR7
 root: Z:\Code\.worktrees\verdigris\owner-demo-runway
 worker_branch: codex/TASK-0171-native-inventory-grid-model-cursor
-base_commit: 3d358812f86c02e5ad405566413108f97ac4e090
-spec_base_commit: 3d358812f86c02e5ad405566413108f97ac4e090
+base_commit: 3d3588126e3abc228721fbed0ff3f8d7cae66448
+spec_base_commit: 3d3588126e3abc228721fbed0ff3f8d7cae66448
 ports: 6580-6599 loopback capsule reserved; port 6500 never touched
 provider: cursor
 model: composer-2.5
