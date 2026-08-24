@@ -1747,17 +1747,55 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
     case EffectFx::Kind::Swing: {
       rl.push_back({render::Op::Swing, static_cast<double>(base.x),
                     static_cast<double>(base.y)});
-      // A readable melee arc sweeping toward the aim angle, drawn flat on the
-      // top-down ground plane.
-      const int radius = static_cast<int>(kTileUnits * 1.1 * base.scale);
-      const COLORREF color = fade_to_background(RGB(226, 220, 180), life);
+      // Owner Demo combat presentation: a filled arc fan sweeping toward the
+      // aim angle with a motion trail, replacing the three-line scratch.
+      // Deterministic: geometry derives only from fx.age/angle. Colors stay
+      // self-luminous through the lifetime so the sweep reads on dark ground.
+      const int radius = static_cast<int>(kTileUnits * 1.25 * base.scale);
       const double spread = kPi * 0.45;
-      const double sweep = fx.angle - spread * 0.5 + spread * grow;
-      for (int i = 0; i < 3; ++i) {
-        const double a = sweep - i * 0.12;
-        const int x1 = base.x + static_cast<int>(std::cos(a) * radius);
-        const int y1 = base.y + static_cast<int>(std::sin(a) * radius);
-        draw_line(dc, base.x, base.y, x1, y1, color, i == 0 ? 3 : 1);
+      const double arc_start = fx.angle - spread * 0.5;
+      const double arc_head = arc_start + spread * grow;
+      auto arc_polyline = [&](double a0, double a1, int r, COLORREF color,
+                              int width) {
+        const int steps =
+            std::max(2, static_cast<int>(std::fabs(a1 - a0) * 18.0));
+        double previous = a0;
+        for (int s = 1; s <= steps; ++s) {
+          const double a = a0 + (a1 - a0) * s / steps;
+          draw_line(dc,
+                    base.x + static_cast<int>(std::cos(previous) * r),
+                    base.y + static_cast<int>(std::sin(previous) * r),
+                    base.x + static_cast<int>(std::cos(a) * r),
+                    base.y + static_cast<int>(std::sin(a) * r), color, width);
+          previous = a;
+        }
+      };
+      // Trail: five warm arc bands behind the leading edge, drawn at three
+      // concentric radii so the sweep reads as a fan of steel. Dimming is by
+      // band index only; the whole fan vanishes at end of ttl.
+      for (int band = 5; band >= 1; --band) {
+        const double head_back = grow - 0.14 * band;
+        if (head_back <= 0.0) continue;
+        const double a0 = arc_start + spread * std::max(0.0, head_back - 0.14);
+        const double a1 = arc_start + spread * head_back;
+        const int band_width = std::max(1, 6 - band);
+        const int g = 210 - band * 26;
+        const COLORREF band_color = RGB(255, g, 120 + band * 14);
+        arc_polyline(a0, a1, radius, band_color, band_width);
+        if (radius > 10)
+          arc_polyline(a0, a1, radius - 5, band_color, std::max(1, band_width - 1));
+        if (radius > 18)
+          arc_polyline(a0, a1, radius - 9, band_color, std::max(1, band_width - 2));
+      }
+      // Leading edge: bright thick arc + hot inner edge + radial whoosh.
+      {
+        const double a0 = std::max(arc_start, arc_head - 0.22);
+        arc_polyline(a0, arc_head, radius, RGB(255, 242, 196), 4);
+        arc_polyline(std::max(arc_start, arc_head - 0.10), arc_head,
+                     radius + 3, RGB(255, 252, 232), 2);
+        const int tip_x = base.x + static_cast<int>(std::cos(arc_head) * radius);
+        const int tip_y = base.y + static_cast<int>(std::sin(arc_head) * radius);
+        draw_line(dc, base.x, base.y, tip_x, tip_y, RGB(214, 190, 140), 1);
       }
       break;
     }
@@ -1791,16 +1829,53 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
     case EffectFx::Kind::Impact: {
       rl.push_back({render::Op::Impact, static_cast<double>(base.x),
                     static_cast<double>(base.y)});
-      const int r = std::max(4, static_cast<int>(kTileUnits * 0.35 * base.scale));
-      fill_ellipse(dc, base.x, base.y, r, r, fade_to_background(RGB(255, 214, 120), life));
+      // Owner Demo combat presentation: flash core + deterministic eight-spark
+      // burst. Spark geometry derives only from fx.angle/age, so captures
+      // stay reproducible.
+      const int core = std::max(4, static_cast<int>(kTileUnits * 0.35 * base.scale));
+      fill_ellipse(dc, base.x, base.y, core, core,
+                   fade_to_background(RGB(255, 214, 120), life));
+      if (life > 0.35)
+        ring_ellipse(dc, base.x, base.y, core + 3, core + 3,
+                     fade_to_background(RGB(255, 244, 200), life), 1);
+      const double burst = 1.0 - life;  // 0..1 outward growth
+      for (int spark = 0; spark < 8; ++spark) {
+        const double a =
+            fx.angle + spark * (2.0 * kPi / 8.0) + (spark % 2 ? 0.22 : -0.14);
+        const double inner = kTileUnits * (0.12 + burst * 0.22) * base.scale;
+        const double outer = kTileUnits * (0.2 + burst * 0.62) * base.scale;
+        const COLORREF color =
+            spark % 2 ? RGB(255, 196, 96) : RGB(255, 238, 168);
+        draw_line(dc,
+                  base.x + static_cast<int>(std::cos(a) * inner),
+                  base.y + static_cast<int>(std::sin(a) * inner),
+                  base.x + static_cast<int>(std::cos(a) * outer),
+                  base.y + static_cast<int>(std::sin(a) * outer), color, 3);
+      }
       break;
     }
     case EffectFx::Kind::DeathRing: {
       rl.push_back({render::Op::Death, static_cast<double>(base.x),
                     static_cast<double>(base.y)});
+      // Owner Demo combat presentation: expanding ring plus a collapsing
+      // inner ring and falling motes so defeat reads as an event.
       const int rx = static_cast<int>(kTileUnits * (0.3 + grow * 1.5) * base.scale);
       ring_ellipse(dc, base.x, base.y, rx, rx,
                    fade_to_background(RGB(214, 118, 86), life), 2);
+      const int inner = static_cast<int>(rx * (1.0 - grow * 0.6));
+      if (inner > 3)
+        ring_ellipse(dc, base.x, base.y, inner, inner,
+                     fade_to_background(RGB(150, 70, 52), life), 1);
+      for (int mote = 0; mote < 6; ++mote) {
+        const double a = mote * (2.0 * kPi / 6.0) + 0.4;
+        const double drop = grow * kTileUnits * 0.9 * base.scale;
+        const int mote_x = base.x + static_cast<int>(std::cos(a) * rx * 0.7);
+        const int mote_y =
+            base.y + static_cast<int>(std::sin(a) * rx * 0.4) + static_cast<int>(drop);
+        const int r = std::max(1, static_cast<int>(kTileUnits * 0.07 * base.scale));
+        fill_ellipse(dc, mote_x, mote_y, r, r,
+                     fade_to_background(RGB(214, 118, 86), life));
+      }
       break;
     }
     case EffectFx::Kind::Dust: {
@@ -6437,6 +6512,24 @@ int scenario_animation_vfx_phase_a() {
       lost.wy = lost_wy;
       lost.ttl = phase_a::kScionLostRingTtlTicks;
       capture_state.effects.push_back(lost);
+      // Owner Demo combat presentation beats: a mid-sweep swing arc with its
+      // motion trail and an impact burst, staged at fixed ages so the capture
+      // proves the treatments. Presentation-only injections.
+      EffectFx staged_swing;
+      staged_swing.kind = EffectFx::Kind::Swing;
+      staged_swing.wx = static_cast<double>(base.x - 2 * reach);
+      staged_swing.wy = static_cast<double>(base.y + reach);
+      staged_swing.angle = 0.0;  // sweeping east
+      staged_swing.age = 4;
+      staged_swing.ttl = 8;
+      capture_state.effects.push_back(staged_swing);
+      EffectFx staged_impact;
+      staged_impact.kind = EffectFx::Kind::Impact;
+      staged_impact.wx = static_cast<double>(base.x + 3 * reach);
+      staged_impact.wy = static_cast<double>(base.y);
+      staged_impact.age = 2;
+      staged_impact.ttl = 8;
+      capture_state.effects.push_back(staged_impact);
     }
     // In-world legend so each treatment is identifiable without guessing.
     capture_state.beat_legend = {
@@ -6444,6 +6537,8 @@ int scenario_animation_vfx_phase_a() {
         {"ordinary hit", {base.x, base.y - reach}},
         {"CRITICAL 27", {base.x - 2 * reach, base.y - reach / 2}},
         {"buff end", {base.x, base.y}},
+        {"swing arc", {base.x - 2 * reach, base.y + reach}},
+        {"impact burst", {base.x + 3 * reach, base.y}},
         {"scion lost",
          {static_cast<int>(std::lround(lost_wx)),
           static_cast<int>(std::lround(lost_wy))}},
@@ -6452,6 +6547,10 @@ int scenario_animation_vfx_phase_a() {
     scenario_present(capture_state);
     scenario_check(count_kind(capture_state, EffectFx::Kind::Materialize) >= 1,
                    "animation-vfx-phase-a: capture frame holds a live materialization beat");
+    scenario_check(count_kind(capture_state, EffectFx::Kind::Swing) >= 1,
+                   "animation-vfx-phase-a: capture frame holds a mid-sweep swing arc");
+    scenario_check(count_kind(capture_state, EffectFx::Kind::Impact) >= 1,
+                   "animation-vfx-phase-a: capture frame holds an impact burst");
     scenario_check(render_list_has_label(capture_state.render_list, render::Op::Damage,
                                          "monster") ||
                        render_list_has_label(capture_state.render_list, render::Op::Damage,
