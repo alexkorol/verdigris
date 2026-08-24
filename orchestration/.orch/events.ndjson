@@ -2,3 +2,4 @@
 {"ts":"2026-08-24T00:17:46.8166237-07:00","type":"OBSERVATION","detail":"board-sentinel: effective READY 15, claimed 0, hold 4, draft 44, collisions 0, healthy; runway seed 491f8f84 verified clean"}
 {"detail":"cursor worker lane: P0 wave TASK-0170-0179 + TASK-0167-0169 delivered REVIEW_REQUESTED; integrated head 7fa1e7bd; branch codex/TASK-0169-rpg-inventory-item-art-pack-cursor","type":"WORKER_HEARTBEAT","ts":"2026-08-24T00:48:15.4275949-07:00"}
 {"detail":"cursor worker: TASK-0180 framekit adapter REVIEW_REQUESTED at a874b6c1; P0 wave 0167-0179 complete; awaiting coordinator ACCEPTED for integration","type":"WORKER_HEARTBEAT","ts":"2026-08-24T00:51:21.5347919-07:00"}
+{"detail":"cursor worker: TASK-0181+0182 adapters REVIEW_REQUESTED at 0171e0a2; render adapter lane 0180-0182 complete","type":"WORKER_HEARTBEAT","ts":"2026-08-24T00:55:28.7370071-07:00"}
