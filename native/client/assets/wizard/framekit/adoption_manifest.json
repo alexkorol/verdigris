@@ -1,0 +1,238 @@
+{
+  "schemaVersion": 1,
+  "task": "TASK-0167",
+  "generatedAt": "2026-08-24",
+  "sourceRoot": "Z:/Code/WIZARD",
+  "sourceCommit": "66a5d9ff6810e886c1bd08cbeaaf83cabf92aae9",
+  "artifacts": [
+    {
+      "file": "orb_essence.png",
+      "sourcePath": "tools/gui_framekit/assets/sprites/orb-essence.png",
+      "adoption": "verbatim",
+      "sha256": "a5a6366e7beebfca6a795c5693a8d66c7d1e148a7243464f0fb7311623eb28cb",
+      "bytes": 382,
+      "width": 16,
+      "height": 16,
+      "mode": "RGBA",
+      "sourceSha256": "a5a6366e7beebfca6a795c5693a8d66c7d1e148a7243464f0fb7311623eb28cb",
+      "role": "circular-frame"
+    },
+    {
+      "file": "orb_mana.png",
+      "sourcePath": "tools/gui_framekit/assets/sprites/orb-mana.png",
+      "adoption": "verbatim",
+      "sha256": "c2d958e987dd831fd1b231283db44b1bbc311df4f7913e171752bf2b25fffff4",
+      "bytes": 370,
+      "width": 16,
+      "height": 16,
+      "mode": "RGBA",
+      "sourceSha256": "c2d958e987dd831fd1b231283db44b1bbc311df4f7913e171752bf2b25fffff4",
+      "role": "circular-frame"
+    },
+    {
+      "file": "orb_vitality.png",
+      "sourcePath": "tools/gui_framekit/assets/sprites/orb-vitality.png",
+      "adoption": "verbatim",
+      "sha256": "d2b0f786a0e94114c0fc7b47f33518fd5556a64937ade97f7745a46b0dae3ebf",
+      "bytes": 397,
+      "width": 16,
+      "height": 16,
+      "mode": "RGBA",
+      "sourceSha256": "d2b0f786a0e94114c0fc7b47f33518fd5556a64937ade97f7745a46b0dae3ebf",
+      "role": "circular-frame"
+    },
+    {
+      "file": "panel_corner_bl.png",
+      "sourcePath": "tools/gui_framekit/assets/textures/panel.png",
+      "adoption": "derived-slice",
+      "sha256": "ded0727c26c042849a271f442d23e4c94a84567be5d8142001c3bd2a80ab07c9",
+      "bytes": 276,
+      "width": 12,
+      "height": 12,
+      "mode": "RGBA",
+      "sourceSha256": "d65f927650f009f65d0126047b4504ee4a201a853b9bd3af22d282f972bd3934",
+      "sliceRect": [
+        0,
+        36,
+        12,
+        12
+      ],
+      "parentWidth": 48,
+      "parentHeight": 48
+    },
+    {
+      "file": "panel_corner_br.png",
+      "sourcePath": "tools/gui_framekit/assets/textures/panel.png",
+      "adoption": "derived-slice",
+      "sha256": "11d052029832c39e3f335f4c54896cd3fd786044da082442e1029b8e68e9bb0c",
+      "bytes": 277,
+      "width": 12,
+      "height": 12,
+      "mode": "RGBA",
+      "sourceSha256": "d65f927650f009f65d0126047b4504ee4a201a853b9bd3af22d282f972bd3934",
+      "sliceRect": [
+        36,
+        36,
+        12,
+        12
+      ],
+      "parentWidth": 48,
+      "parentHeight": 48
+    },
+    {
+      "file": "panel_corner_tl.png",
+      "sourcePath": "tools/gui_framekit/assets/textures/panel.png",
+      "adoption": "derived-slice",
+      "sha256": "9b309d9067e7f397290e9244362260fac2be6025f95e377ef2b40f34be57fae1",
+      "bytes": 274,
+      "width": 12,
+      "height": 12,
+      "mode": "RGBA",
+      "sourceSha256": "d65f927650f009f65d0126047b4504ee4a201a853b9bd3af22d282f972bd3934",
+      "sliceRect": [
+        0,
+        0,
+        12,
+        12
+      ],
+      "parentWidth": 48,
+      "parentHeight": 48
+    },
+    {
+      "file": "panel_corner_tr.png",
+      "sourcePath": "tools/gui_framekit/assets/textures/panel.png",
+      "adoption": "derived-slice",
+      "sha256": "873b2e469a39e2c69730e43535caa07cad4218182abdb03a411286843ef40f11",
+      "bytes": 277,
+      "width": 12,
+      "height": 12,
+      "mode": "RGBA",
+      "sourceSha256": "d65f927650f009f65d0126047b4504ee4a201a853b9bd3af22d282f972bd3934",
+      "sliceRect": [
+        36,
+        0,
+        12,
+        12
+      ],
+      "parentWidth": 48,
+      "parentHeight": 48
+    },
+    {
+      "file": "panel_edge_bottom.png",
+      "sourcePath": "tools/gui_framekit/assets/textures/panel.png",
+      "adoption": "derived-slice",
+      "sha256": "8fde4c2780c994b30b29e6bed7fcb2192b4011ca92d57f82b598d4a2f7d9855f",
+      "bytes": 273,
+      "width": 24,
+      "height": 12,
+      "mode": "RGBA",
+      "sourceSha256": "d65f927650f009f65d0126047b4504ee4a201a853b9bd3af22d282f972bd3934",
+      "sliceRect": [
+        12,
+        36,
+        24,
+        12
+      ],
+      "parentWidth": 48,
+      "parentHeight": 48
+    },
+    {
+      "file": "panel_edge_left.png",
+      "sourcePath": "tools/gui_framekit/assets/textures/panel.png",
+      "adoption": "derived-slice",
+      "sha256": "59181a234148de4eb27573038a324b6733ad9f3976b34d0d74666b6354ec79f9",
+      "bytes": 326,
+      "width": 12,
+      "height": 24,
+      "mode": "RGBA",
+      "sourceSha256": "d65f927650f009f65d0126047b4504ee4a201a853b9bd3af22d282f972bd3934",
+      "sliceRect": [
+        0,
+        12,
+        12,
+        24
+      ],
+      "parentWidth": 48,
+      "parentHeight": 48
+    },
+    {
+      "file": "panel_edge_right.png",
+      "sourcePath": "tools/gui_framekit/assets/textures/panel.png",
+      "adoption": "derived-slice",
+      "sha256": "a307e24519382b42cd304abfbf7a759f9b4876d87d20fb29bec5524eabc8dc1e",
+      "bytes": 324,
+      "width": 12,
+      "height": 24,
+      "mode": "RGBA",
+      "sourceSha256": "d65f927650f009f65d0126047b4504ee4a201a853b9bd3af22d282f972bd3934",
+      "sliceRect": [
+        36,
+        12,
+        12,
+        24
+      ],
+      "parentWidth": 48,
+      "parentHeight": 48
+    },
+    {
+      "file": "panel_edge_top.png",
+      "sourcePath": "tools/gui_framekit/assets/textures/panel.png",
+      "adoption": "derived-slice",
+      "sha256": "cf402a0ab67c5a404cf20c6928b8c1e872d64d3fd762a9b12f4fe6f5e9fbd43d",
+      "bytes": 272,
+      "width": 24,
+      "height": 12,
+      "mode": "RGBA",
+      "sourceSha256": "d65f927650f009f65d0126047b4504ee4a201a853b9bd3af22d282f972bd3934",
+      "sliceRect": [
+        12,
+        0,
+        24,
+        12
+      ],
+      "parentWidth": 48,
+      "parentHeight": 48
+    },
+    {
+      "file": "panel_fill.png",
+      "sourcePath": "tools/gui_framekit/assets/textures/panel.png",
+      "adoption": "derived-slice",
+      "sha256": "3578f564339b86cdc2624fcabad8f947db225c607a3e9c43ace311e05f11d16f",
+      "bytes": 481,
+      "width": 24,
+      "height": 24,
+      "mode": "RGBA",
+      "sourceSha256": "d65f927650f009f65d0126047b4504ee4a201a853b9bd3af22d282f972bd3934",
+      "sliceRect": [
+        12,
+        12,
+        24,
+        24
+      ],
+      "parentWidth": 48,
+      "parentHeight": 48
+    },
+    {
+      "file": "panel_frame.png",
+      "sourcePath": "tools/gui_framekit/assets/textures/panel.png",
+      "adoption": "verbatim",
+      "sha256": "d65f927650f009f65d0126047b4504ee4a201a853b9bd3af22d282f972bd3934",
+      "bytes": 1457,
+      "width": 48,
+      "height": 48,
+      "mode": "RGBA",
+      "sourceSha256": "d65f927650f009f65d0126047b4504ee4a201a853b9bd3af22d282f972bd3934"
+    },
+    {
+      "file": "slot_frame.png",
+      "sourcePath": "tools/gui_framekit/assets/textures/slot.png",
+      "adoption": "verbatim",
+      "sha256": "ff7f9f6aedff79fc203f22985aae9ba7f62dfe64b8a17db9220c8bb9650e59e8",
+      "bytes": 639,
+      "width": 32,
+      "height": 32,
+      "mode": "RGBA",
+      "sourceSha256": "ff7f9f6aedff79fc203f22985aae9ba7f62dfe64b8a17db9220c8bb9650e59e8"
+    }
+  ]
+}

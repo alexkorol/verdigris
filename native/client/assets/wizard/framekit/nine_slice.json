@@ -1,0 +1,184 @@
+{
+  "dpiScale": 4,
+  "generatedAt": "2026-08-24",
+  "panels": {
+    "panel": {
+      "height": 48,
+      "margins": {
+        "bottom": 12,
+        "left": 12,
+        "right": 12,
+        "top": 12
+      },
+      "slices": {
+        "corner_bottom_left": {
+          "anchor": [
+            "left",
+            "bottom"
+          ],
+          "file": "panel_corner_bl.png",
+          "rect": [
+            0,
+            36,
+            12,
+            12
+          ],
+          "stretch": "none"
+        },
+        "corner_bottom_right": {
+          "anchor": [
+            "right",
+            "bottom"
+          ],
+          "file": "panel_corner_br.png",
+          "rect": [
+            36,
+            36,
+            12,
+            12
+          ],
+          "stretch": "none"
+        },
+        "corner_top_left": {
+          "anchor": [
+            "left",
+            "top"
+          ],
+          "file": "panel_corner_tl.png",
+          "rect": [
+            0,
+            0,
+            12,
+            12
+          ],
+          "stretch": "none"
+        },
+        "corner_top_right": {
+          "anchor": [
+            "right",
+            "top"
+          ],
+          "file": "panel_corner_tr.png",
+          "rect": [
+            36,
+            0,
+            12,
+            12
+          ],
+          "stretch": "none"
+        },
+        "edge_bottom": {
+          "anchor": [
+            "bottom"
+          ],
+          "file": "panel_edge_bottom.png",
+          "rect": [
+            12,
+            36,
+            24,
+            12
+          ],
+          "stretch": "horizontal"
+        },
+        "edge_left": {
+          "anchor": [
+            "left"
+          ],
+          "file": "panel_edge_left.png",
+          "rect": [
+            0,
+            12,
+            12,
+            24
+          ],
+          "stretch": "vertical"
+        },
+        "edge_right": {
+          "anchor": [
+            "right"
+          ],
+          "file": "panel_edge_right.png",
+          "rect": [
+            36,
+            12,
+            12,
+            24
+          ],
+          "stretch": "vertical"
+        },
+        "edge_top": {
+          "anchor": [
+            "top"
+          ],
+          "file": "panel_edge_top.png",
+          "rect": [
+            12,
+            0,
+            24,
+            12
+          ],
+          "stretch": "horizontal"
+        },
+        "fill": {
+          "anchor": [
+            "center"
+          ],
+          "file": "panel_fill.png",
+          "rect": [
+            12,
+            12,
+            24,
+            24
+          ],
+          "stretch": "both"
+        }
+      },
+      "texture": "panel_frame.png",
+      "width": 48
+    },
+    "slot": {
+      "height": 32,
+      "margins": {
+        "bottom": 12,
+        "left": 12,
+        "right": 12,
+        "top": 12
+      },
+      "slices": {},
+      "texture": "slot_frame.png",
+      "width": 32
+    }
+  },
+  "schemaVersion": 1,
+  "sourceFamily": "framekit",
+  "sprites": {
+    "orb_essence": {
+      "anchor": [
+        "center"
+      ],
+      "file": "orb_essence.png",
+      "height": 16,
+      "role": "circular-frame",
+      "width": 16
+    },
+    "orb_mana": {
+      "anchor": [
+        "center"
+      ],
+      "file": "orb_mana.png",
+      "height": 16,
+      "role": "circular-frame",
+      "width": 16
+    },
+    "orb_vitality": {
+      "anchor": [
+        "center"
+      ],
+      "file": "orb_vitality.png",
+      "height": 16,
+      "role": "circular-frame",
+      "width": 16
+    }
+  },
+  "task": "TASK-0167"
+}
