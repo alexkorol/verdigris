@@ -1,3 +1,0 @@
-TASK-0175: readable gate interaction model
-
-Hover, labels, range, normal entry and Ctrl fresh-instance commands.
