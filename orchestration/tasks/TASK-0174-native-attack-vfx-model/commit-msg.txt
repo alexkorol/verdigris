@@ -1,0 +1,3 @@
+TASK-0174: native attack arc and trail VFX model
+
+Presentation planner for swing/thrust/slam/trail/impact/hit primitives with deterministic lifetimes.
