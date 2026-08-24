@@ -3582,12 +3582,31 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     // TASK-0142: the pad must own its corner of the screen — a bright plate,
     // a slow tick-driven pulse, and gold chevrons pointing at the way out.
     const bool pulse_on = (world.tick / 9) % 2 == 0;
+    // Owner Demo gate presentation: the pad is a physical gate landmark —
+    // the raster shrine gate structure stands on the pad, the ground ring
+    // glows, and hover highlights the destination label. The render-list op,
+    // pad radius, and interaction radius are unchanged.
+    const POINT hover_pos{state.mouse.x, state.mouse.y};
+    const int hover_dx = hover_pos.x - pad.x;
+    const int hover_dy = hover_pos.y - pad.y;
+    const bool hovered = hover_dx * hover_dx + hover_dy * hover_dy <=
+                         (pad_r + 8) * (pad_r + 8);
     fill_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(30, 92, 64));
-    ring_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(120, 214, 168), 3);
-    if (pulse_on && pad_r > 6)
-      ring_ellipse(dc, pad.x, pad.y, pad_r + 5, pad_r + 5, RGB(160, 236, 190), 2);
+    ring_ellipse(dc, pad.x, pad.y, pad_r, pad_r,
+                 hovered ? RGB(239, 208, 116) : RGB(120, 214, 168), 3);
+    if ((pulse_on || hovered) && pad_r > 6)
+      ring_ellipse(dc, pad.x, pad.y, pad_r + 5, pad_r + 5,
+                   hovered ? RGB(255, 232, 150) : RGB(160, 236, 190), 2);
     const int inner = std::max(6, pad_r * 2 / 3);
     ring_ellipse(dc, pad.x, pad.y, inner, inner, RGB(239, 208, 116), 2);
+    // Standing gate structure: the real shrine raster, drawn tall behind the
+    // chevrons so the exit reads as architecture, not a ground sticker.
+    if (state.billboards.shrine.ready() && state.billboards.alpha_blend) {
+      const double gate_world_height = kTileUnits * 2.6;
+      const ScreenPoint gate_base{pad.x, pad.y + pad_r / 3, pad.scale};
+      draw_billboard_sprite(state.billboards, dc, state.billboards.shrine,
+                            gate_base, gate_world_height, 0);
+    }
     const int step = std::max(5, pad_r / 3);
     for (int i = 0; i < 3; ++i) {
       const int y = pad.y + pad_r / 4 - i * step;
@@ -3602,12 +3621,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                 tip_y, RGB(255, 232, 150), 2);
     }
     {
-      RECT label_backing{pad.x - 22, pad.y + pad_r + 2, pad.x + 22,
+      RECT label_backing{pad.x - 34, pad.y + pad_r + 2, pad.x + 34,
                          pad.y + pad_r + 18};
       HBRUSH label_bg = CreateSolidBrush(RGB(16, 22, 20));
       FillRect(dc, &label_backing, label_bg);
       DeleteObject(label_bg);
-      HPEN label_pen = CreatePen(PS_SOLID, 1, RGB(120, 214, 168));
+      HPEN label_pen = CreatePen(PS_SOLID, 1,
+                                 hovered ? RGB(239, 208, 116) : RGB(120, 214, 168));
       HGDIOBJ old_label_pen = SelectObject(dc, label_pen);
       HGDIOBJ old_label_brush =
           SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
@@ -3617,8 +3637,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       SelectObject(dc, old_label_pen);
       DeleteObject(label_pen);
       SetBkMode(dc, TRANSPARENT);
-      SetTextColor(dc, RGB(239, 208, 116));
-      TextOutA(dc, pad.x - 14, pad.y + pad_r + 4, "EXIT", 4);
+      SetTextColor(dc, hovered ? RGB(255, 232, 150) : RGB(239, 208, 116));
+      const char* gate_label = hovered ? "EXIT - Town" : "EXIT";
+      TextOutA(dc, pad.x - (hovered ? 30 : 14), pad.y + pad_r + 4, gate_label,
+               static_cast<int>(strlen(gate_label)));
     }
   }
 
