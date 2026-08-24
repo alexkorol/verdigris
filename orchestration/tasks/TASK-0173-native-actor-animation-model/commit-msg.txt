@@ -1,0 +1,3 @@
+TASK-0173: native actor animation-state model
+
+Presentation-only idle/move/attack/hit/death/recovery phases with deterministic timing.
