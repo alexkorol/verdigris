@@ -1,5 +1,15 @@
 # Verdigris whole-program dependency graph
 
+## Owner Demo P0 convergence wave — TASK-0166 through TASK-0208
+
+The 2026-08-23 owner interview is packetized in
+orchestration/OWNER_DEMO_RUNWAY.md: 14 path-disjoint READY foundations feed 28
+AUTO_RELEASE integrations and one release/correction DRAFT. The terminal chain
+is TASK-0205 journey -> TASK-0206 fidelity + TASK-0207 performance -> TASK-0208
+owner release verdict. This wave is the immediate routing priority until the
+integrated Owner Demo is captured; the 2,000-node graph remains the long-term
+factory behind it.
+
 Architect-owned surge map. `RUN_STATUS.md` is the current executable routing
 truth; this file exposes the deeper graph and does not make DRAFT work
 claimable. Product authority remains the constitution and owner-input gates.

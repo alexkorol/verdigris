@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "kind": "owner_demo_zone_graph",
+  "prologue_id": "owner-demo-prologue",
+  "town_id": "verdigris-crossroads",
+  "main_route": [
+    "owner-demo-prologue",
+    "verdigris-crossroads",
+    "owner-demo-thornward",
+    "owner-demo-rift-hollow"
+  ],
+  "optional_branches": [
+    {
+      "from": "owner-demo-thornward",
+      "to": "owner-demo-glimmer-cave",
+      "gate_label": "Glimmer Cave",
+      "dead_end": true
+    }
+  ],
+  "nodes": [
+    {
+      "id": "owner-demo-prologue",
+      "display_name": "Village Palisade",
+      "zone_kind": "prologue",
+      "classification": "village_defense",
+      "template_id": "wilds",
+      "layout": "clearings",
+      "theme": "forest",
+      "seed": 42001,
+      "encounter_family": "skirmish",
+      "boss": false,
+      "landmark": "palisade_rampart",
+      "allow_fresh": false,
+      "lifetime_ticks": 0,
+      "gates": [
+        {
+          "id": 1,
+          "label": "Crossroads Refuge",
+          "to": "verdigris-crossroads",
+          "position": { "x": 18, "y": 42 }
+        }
+      ]
+    },
+    {
+      "id": "verdigris-crossroads",
+      "display_name": "The Crossroads",
+      "zone_kind": "town",
+      "classification": "non_combat_settlement",
+      "template_id": "wilds",
+      "layout": "clearings",
+      "theme": "moor",
+      "seed": 0,
+      "boss": false,
+      "landmark": "house_wagon_pitch",
+      "allow_fresh": false,
+      "lifetime_ticks": 0,
+      "gates": [
+        {
+          "id": 10,
+          "label": "Thornward Approach",
+          "to": "owner-demo-thornward",
+          "position": { "x": 38, "y": 95 }
+        },
+        {
+          "id": 11,
+          "label": "Rift Hollow Trail",
+          "to": "owner-demo-rift-hollow",
+          "position": { "x": 52, "y": 110 }
+        }
+      ]
+    },
+    {
+      "id": "owner-demo-thornward",
+      "display_name": "Thornward Ridge",
+      "zone_kind": "combat",
+      "classification": "generated_combat",
+      "template_id": "wilds",
+      "layout": "gauntlet",
+      "theme": "forest",
+      "seed": 77821,
+      "encounter_family": "skirmish",
+      "boss": true,
+      "landmark": "ash_banner_camp",
+      "warden_name": "Warden of Thornward",
+      "allow_fresh": true,
+      "lifetime_ticks": 36000,
+      "gates": [
+        {
+          "id": 20,
+          "label": "Crossroads Return",
+          "to": "verdigris-crossroads",
+          "position": { "x": 4, "y": 8 }
+        },
+        {
+          "id": 21,
+          "label": "Glimmer Cave",
+          "to": "owner-demo-glimmer-cave",
+          "position": { "x": 68, "y": 12 },
+          "optional_branch": true
+        },
+        {
+          "id": 22,
+          "label": "Rift Hollow",
+          "to": "owner-demo-rift-hollow",
+          "position": { "x": 70, "y": 48 }
+        }
+      ]
+    },
+    {
+      "id": "owner-demo-rift-hollow",
+      "display_name": "Rift Hollow",
+      "zone_kind": "combat",
+      "classification": "generated_combat",
+      "template_id": "dungeon",
+      "layout": "warren",
+      "theme": "crypt",
+      "seed": 90217,
+      "encounter_family": "warden",
+      "boss": true,
+      "landmark": "rift_obelisk",
+      "warden_name": "Warden of the Rift",
+      "allow_fresh": true,
+      "lifetime_ticks": 48000,
+      "gates": [
+        {
+          "id": 30,
+          "label": "Thornward Return",
+          "to": "owner-demo-thornward",
+          "position": { "x": 6, "y": 10 }
+        },
+        {
+          "id": 31,
+          "label": "Crossroads",
+          "to": "verdigris-crossroads",
+          "position": { "x": 2, "y": 6 }
+        }
+      ]
+    },
+    {
+      "id": "owner-demo-glimmer-cave",
+      "display_name": "Glimmer Cave",
+      "zone_kind": "combat",
+      "classification": "optional_branch",
+      "template_id": "crypt",
+      "layout": "warren",
+      "theme": "crypt",
+      "seed": 55103,
+      "encounter_family": "elite",
+      "boss": false,
+      "landmark": "crystal_seam",
+      "allow_fresh": true,
+      "lifetime_ticks": 18000,
+      "dead_end": true,
+      "gates": [
+        {
+          "id": 40,
+          "label": "Thornward Return",
+          "to": "owner-demo-thornward",
+          "position": { "x": 8, "y": 14 }
+        }
+      ]
+    }
+  ]
+}

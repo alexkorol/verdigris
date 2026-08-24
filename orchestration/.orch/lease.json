@@ -1,0 +1,25 @@
+{
+  "role": "active-execution-coordinator",
+  "coordinator_id": "ox-alpha-pc",
+  "session": "overnight-owner-demo-20260824",
+  "authority_source": "Explicit user dispatch 2026-08-24: sole execution coordinator for the Verdigris native C++ Owner Demo overnight fleet. Task authority: Z:\\Code\\.worktrees\\verdigris\\owner-demo-runway branch codex/owner-demo-runway.",
+  "acquired_at": "2026-08-24T00:17:07-07:00",
+  "heartbeat_at": "2026-08-24T00:17:07-07:00",
+  "lease_minutes": 30,
+  "heartbeat_interval_minutes": 10,
+  "integrated_head": "491f8f842b18e4e3025d0bf52e22b318c12448b7",
+  "integration_lease": {
+    "holder": "ox-alpha-pc",
+    "branch": "codex/owner-demo-runway",
+    "head": "491f8f842b18e4e3025d0bf52e22b318c12448b7"
+  },
+  "rules": [
+    "Never push; local commits only.",
+    "Never mutate Z:\\Code\\Games\\delaford or delaford_game git state (architect checkout).",
+    "Implementation only in isolated clean worktrees under Z:\\Code\\.worktrees\\verdigris\\worker-*.",
+    "One integrator (this lease holder) for client hotspots, renderer/core, networking.",
+    "Heartbeat after every material transition and at least every 10 minutes into events.ndjson + this file.",
+    "If lease expires without heartbeat renewal, standby must publish takeover acknowledgement before coordinating."
+  ],
+  "recovery_action": "Standby: read orchestration/.orch/events.ndjson tail + orchestration/RUN_STATUS.md + board-sentinel output; verify integrated head with git log; write takeover ack event against exact head before assuming coordination. Reconstruct queue from SPEC frontmatter states via orchestration/tools/board-sentinel.mjs."
+}

@@ -1,0 +1,25 @@
+﻿{"ts":"2026-08-24T00:17:46.7010499-07:00","type":"LEASE_ACQUIRED","detail":"coordinator ox-alpha-pc acquired renewable 30min lease with explicit user dispatch; integrated head 491f8f84; baseline observation phase started"}
+{"ts":"2026-08-24T00:17:46.8166237-07:00","type":"OBSERVATION","detail":"board-sentinel: effective READY 15, claimed 0, hold 4, draft 44, collisions 0, healthy; runway seed 491f8f84 verified clean"}
+{"detail":"cursor worker lane: P0 wave TASK-0170-0179 + TASK-0167-0169 delivered REVIEW_REQUESTED; integrated head 7fa1e7bd; branch codex/TASK-0169-rpg-inventory-item-art-pack-cursor","type":"WORKER_HEARTBEAT","ts":"2026-08-24T00:48:15.4275949-07:00"}
+{"detail":"cursor worker: TASK-0180 framekit adapter REVIEW_REQUESTED at a874b6c1; P0 wave 0167-0179 complete; awaiting coordinator ACCEPTED for integration","type":"WORKER_HEARTBEAT","ts":"2026-08-24T00:51:21.5347919-07:00"}
+{"detail":"cursor worker: TASK-0181+0182 adapters REVIEW_REQUESTED at 0171e0a2; render adapter lane 0180-0182 complete","type":"WORKER_HEARTBEAT","ts":"2026-08-24T00:55:28.7370071-07:00"}
+{"detail":"cursor worker: TASK-0193+0200 models REVIEW_REQUESTED; geometric_skill_tree.hpp + house_progression.hpp; playtest 32/32","type":"WORKER_HEARTBEAT","ts":"2026-08-24T01:08:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0195 spell_lattice.hpp REVIEW_REQUESTED; Plane-tier elemental weave model","type":"WORKER_HEARTBEAT","ts":"2026-08-24T01:14:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0191 cartographer_adapter.hpp REVIEW_REQUESTED; MapGen plans + zone graph validation","type":"WORKER_HEARTBEAT","ts":"2026-08-24T01:20:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0202 relic_provenance.hpp model slice REVIEW_REQUESTED","type":"WORKER_HEARTBEAT","ts":"2026-08-24T01:24:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0203 village_defense.hpp model slice REVIEW_REQUESTED","type":"WORKER_HEARTBEAT","ts":"2026-08-24T01:30:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0199 bond_progress.hpp model slice REVIEW_REQUESTED","type":"WORKER_HEARTBEAT","ts":"2026-08-24T01:48:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0198 brand_crafting.hpp model slice REVIEW_REQUESTED","type":"WORKER_HEARTBEAT","ts":"2026-08-24T01:52:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0204 owner_demo_audio_beats.hpp + WORKER_MODEL_RUNWAY.md; model lane stocked","type":"WORKER_HEARTBEAT","ts":"2026-08-24T01:58:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0197 chronicles_owner_pane.hpp; model lane complete — handoff integrator","type":"WORKER_HEARTBEAT","ts":"2026-08-24T02:02:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0183 owner_menu_input.hpp bridge prep; integrator lane ox-alpha lease","type":"WORKER_HEARTBEAT","ts":"2026-08-24T02:12:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0183 splash_menu_layout.hpp layout planner prep","type":"WORKER_HEARTBEAT","ts":"2026-08-24T02:18:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0184 inventory_pane_layout.hpp integrator prep","type":"WORKER_HEARTBEAT","ts":"2026-08-24T02:24:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0185 orb_hud_layout.hpp integrator prep","type":"WORKER_HEARTBEAT","ts":"2026-08-24T02:44:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0186 actor_combat_bridge.hpp integrator prep; 13 bridge tests PASS","type":"WORKER_HEARTBEAT","ts":"2026-08-24T03:05:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0188 gate_overlay_layout.hpp integrator prep; 18 layout tests PASS","type":"WORKER_HEARTBEAT","ts":"2026-08-24T03:12:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0187 combat_vfx_layout.hpp integrator prep; 18 stroke tests PASS","type":"WORKER_HEARTBEAT","ts":"2026-08-24T03:20:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0189 instance_gate_bridge.hpp integrator prep; 14 bridge tests PASS","type":"WORKER_HEARTBEAT","ts":"2026-08-24T03:20:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0190 town_runtime_layout.hpp integrator prep; 24 layout tests + playtest 32/32","type":"WORKER_HEARTBEAT","ts":"2026-08-24T03:35:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0194 skill_tree_layout.hpp integrator prep; 18 layout tests PASS","type":"WORKER_HEARTBEAT","ts":"2026-08-24T03:55:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0192 zone_runtime_bridge.hpp integrator prep; 15 bridge tests PASS","type":"WORKER_HEARTBEAT","ts":"2026-08-24T03:55:00.0000000-07:00"}
