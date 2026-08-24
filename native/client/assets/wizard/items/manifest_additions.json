@@ -1,0 +1,60 @@
+{
+ "schema_version": 1,
+ "pack": "rpg_inventory_items",
+ "generated_by": "coordinator integration slice 3",
+ "provenance": {
+  "wizard_commit": "66a5d9ff6810e886c1bd08cbeaaf83cabf92aae9",
+  "source_root": "WIZARD/tools/rpg_inventory"
+ },
+ "items": [
+  {
+   "id": "greataxe_bronze",
+   "path": "greataxe_bronze.png",
+   "sha256": "7a2068531bfa37571f45dd1851a643fcaac78e77c051f775e21a5c81d464c3ff",
+   "bytes": 15271,
+   "source_path": "tools/rpg_inventory/assets/greataxe_bronze.png"
+  },
+  {
+   "id": "handaxe_flint",
+   "path": "handaxe_flint.png",
+   "sha256": "1621dfc47ea20bd17cf75d5f654b358f8f65f4da4262b064eb50b32091d6c834",
+   "bytes": 32911,
+   "source_path": "tools/rpg_inventory/assets/handaxe_flint.png"
+  },
+  {
+   "id": "macuahuitl_obsidian",
+   "path": "macuahuitl_obsidian.png",
+   "sha256": "73ecbf41b04af6334adecb764005973920a25cb2604a9d2f976fae4ade609c2b",
+   "bytes": 29466,
+   "source_path": "tools/rpg_inventory/assets/macuahuitl_obsidian.png"
+  },
+  {
+   "id": "spear_bone",
+   "path": "spear_bone.png",
+   "sha256": "d119bcc1960306c9fcd335f3636c4677fba6debae0184700cc3dd21b21b41b3e",
+   "bytes": 12300,
+   "source_path": "tools/rpg_inventory/assets/spear_bone.png"
+  },
+  {
+   "id": "sword_flint",
+   "path": "sword_flint.png",
+   "sha256": "94c0a1a99828f15f2e87d27c792d55f090be99354e4f2b68941b02c4e1e238d8",
+   "bytes": 42884,
+   "source_path": "tools/rpg_inventory/assets/sword_flint.png"
+  },
+  {
+   "id": "warclub_bone",
+   "path": "warclub_bone.png",
+   "sha256": "9863c95d3788b7fee5dd91a2f621e347571d7ce417de06117a9297e5755efb72",
+   "bytes": 34677,
+   "source_path": "tools/rpg_inventory/assets/warclub_bone.png"
+  },
+  {
+   "id": "war_axe",
+   "path": "war_axe.png",
+   "sha256": "b34171cc796088740efb8b3c124f9870b7f441c56c9b7216c1c496a62809d99d",
+   "bytes": 55373,
+   "source_path": "tools/rpg_inventory/assets/war_axe.png"
+  }
+ ]
+}

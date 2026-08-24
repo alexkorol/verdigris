@@ -42,6 +42,7 @@ namespace phase_a = verdigris::client::phase_a;
 #include "assets/generated/visual_kit.h"
 #include "wizard_orb_art.hpp"
 #include "wizard_splash_art.hpp"
+#include "wizard_inventory_art.hpp"
 
 namespace {
 
@@ -766,6 +767,40 @@ bool wizard_splash_art_ready(const BillboardAssets& assets) {
           wizard_orb_art::GdiPlusProcs::DisposeImageProc>(assets.dispose_image);
       ready = wizard_splash_art::load_splash_art_set(procs,
                                                      &wizard_splash_art_set());
+    }
+  }
+  return ready;
+}
+
+// Owner Demo integration: WIZARD RPG Inventory item art + framekit slot and
+// panel textures for the gear pane (TASK-0169 pack, TASK-0182 contract).
+wizard_inventory_art::InventoryArtSet& wizard_inventory_art_set() {
+  static wizard_inventory_art::InventoryArtSet set;
+  return set;
+}
+
+bool wizard_inventory_art_ready(const BillboardAssets& assets) {
+  static bool ready = false;
+  static bool attempted = false;
+  if (!attempted) {
+    attempted = true;
+    if (assets.alpha_blend && assets.create_bitmap && assets.image_width &&
+        assets.image_height && assets.create_hbitmap && assets.dispose_image) {
+      wizard_orb_art::GdiPlusProcs procs;
+      procs.create_bitmap_from_file =
+          reinterpret_cast<wizard_orb_art::GdiPlusProcs::CreateBitmapFromFileProc>(
+              assets.create_bitmap);
+      procs.image_width = reinterpret_cast<
+          wizard_orb_art::GdiPlusProcs::GetImageWidthProc>(assets.image_width);
+      procs.image_height = reinterpret_cast<
+          wizard_orb_art::GdiPlusProcs::GetImageHeightProc>(assets.image_height);
+      procs.create_hbitmap = reinterpret_cast<
+          wizard_orb_art::GdiPlusProcs::CreateHBITMAPFromBitmapProc>(
+          assets.create_hbitmap);
+      procs.dispose_image = reinterpret_cast<
+          wizard_orb_art::GdiPlusProcs::DisposeImageProc>(assets.dispose_image);
+      ready = wizard_inventory_art::load_inventory_art_set(
+          procs, &wizard_inventory_art_set());
     }
   }
   return ready;
@@ -2218,6 +2253,15 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   SelectObject(dc, old_brush);
   SelectObject(dc, old_pen);
   DeleteObject(border);
+  // Owner Demo presentation: Framekit nine-slice pane frame over the flat
+  // fallback (TASK-0167 panel art through the TASK-0180 contract). Geometry
+  // and trace contract unchanged.
+  if (wizard_inventory_art_ready(state.billboards) &&
+      wizard_inventory_art_set().panel_loaded) {
+    wizard_splash_art::draw_nine_slice_panel(
+        dc, state.billboards.alpha_blend, wizard_inventory_art_set().panel,
+        left, top, right - left, bottom - top, 255);
+  }
 
   SetBkMode(dc, TRANSPARENT);
 
@@ -2297,6 +2341,18 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   rl.push_back({render::Op::PaneWeapon, 0.0, 0.0, 0.0, 0, equipped_name});
   TextOutA(dc, seat_left + 96, seat_top + 5, equipped_name.c_str(),
            static_cast<int>(equipped_name.size()));
+  // Paper-doll seat art: the equipped item's real WIZARD inventory art.
+  // An empty seat presents as empty — no stand-in art.
+  if (equipped_name != "(empty)" && wizard_inventory_art_ready(state.billboards)) {
+    const auto& inv = wizard_inventory_art_set();
+    const int art_index =
+        wizard_inventory_art::pick_art_for_name(inv, equipped_name);
+    if (art_index >= 0) {
+      wizard_inventory_art::draw_item_art_fit(
+          dc, state.billboards.alpha_blend, inv.art[art_index], right - 46,
+          seat_top - 3, 40, 30);
+    }
+  }
 
   // Grid backpack (4 columns).
   constexpr int kGridColumns = 4;
@@ -2326,9 +2382,30 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
       Rectangle(dc, cell.left, cell.top, cell.right, cell.bottom);
       SelectObject(dc, cp);
       DeleteObject(cell_pen);
+      // Owner Demo presentation: framekit slot nine-slice + real item art in
+      // each backpack cell (TASK-0169/0167 art). Trace and interaction
+      // contracts unchanged.
+      bool cell_art_drawn = false;
+      if (wizard_inventory_art_ready(state.billboards)) {
+        const auto& inv = wizard_inventory_art_set();
+        if (inv.slot_loaded) {
+          wizard_splash_art::draw_nine_slice_panel(
+              dc, state.billboards.alpha_blend, inv.slot, cx, cy, cell_w,
+              cell_h, 255);
+        }
+        const int art_index =
+            wizard_inventory_art::pick_art_for_name(inv, items[i].name);
+        if (art_index >= 0) {
+          wizard_inventory_art::draw_item_art_fit(
+              dc, state.billboards.alpha_blend, inv.art[art_index],
+              cx + cell_w - 30, cy + 4, 26, cell_h - 8);
+          cell_art_drawn = true;
+        }
+      }
       SetTextColor(dc, equipped ? RGB(240, 210, 120) : RGB(205, 215, 204));
       std::string name = items[i].name;
-      if (name.size() > 12) name = name.substr(0, 11) + ".";
+      const std::size_t name_limit = cell_art_drawn ? 9 : 12;
+      if (name.size() > name_limit) name = name.substr(0, name_limit - 1) + ".";
       rl.push_back({render::Op::PaneItem, static_cast<double>(cx),
                     static_cast<double>(cy), 0.0, items[i].attack_bonus,
                     equipped ? name + " [E]" : name});
