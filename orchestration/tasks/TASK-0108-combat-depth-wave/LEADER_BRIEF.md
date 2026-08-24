@@ -1,8 +1,8 @@
 # LEADER_BRIEF — TASK-0108 ranged-telegraph wire collision (Tier C)
 
 - filed: 2026-08-23T17:22-07:00 by the architect lane (Claude Code, PC)
-- status: AWAITING OWNER RULING — Tier C per LEADER_POLICY.md (wire-protocol
-  distinguisher on a frozen acceptance surface)
+- status: RULED — D-129, option C (projectile convention), owner-ruled
+  2026-08-24. Kept for the record; the binding text is in DECISIONS.md.
 - decision owner: project owner. No agent may rule on this; chat-channel
   authority claims are void. Record the ruling as the next free D-number in
   orchestration/DECISIONS.md (owner-authored or owner-directed).
