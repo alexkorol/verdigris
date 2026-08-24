@@ -2,7 +2,7 @@
 
 Worker lane: header-only models and adapters (no `main.cpp` / integrator hotspots).
 
-Branch tip: `codex/TASK-0189-instance-gate-bridge-prep-cursor`.
+Branch tip: `codex/TASK-0190-town-runtime-layout-prep-cursor`.
 
 | 0183 prep | `owner_menu_input.hpp`, `splash_menu_layout.hpp` |
 | 0184 prep | `inventory_pane_layout.hpp` |
@@ -11,6 +11,7 @@ Branch tip: `codex/TASK-0189-instance-gate-bridge-prep-cursor`.
 | 0187 prep | `combat_vfx_layout.hpp` |
 | 0188 prep | `gate_overlay_layout.hpp` |
 | 0189 prep | `instance_gate_bridge.hpp` |
+| 0190 prep | `town_runtime_layout.hpp` |
 
 ## REVIEW_REQUESTED packets (cursor)
 
@@ -32,11 +33,11 @@ Branch tip: `codex/TASK-0189-instance-gate-bridge-prep-cursor`.
 
 ## Playtest
 
-Worktree tip: `npm run playtest` 32/32 exit 0 (port 6510). Evidence: `orchestration/tasks/TASK-0204-owner-demo-audio-beats/playtest-tip-evidence.txt`.
+Worktree tip: `npm run playtest` 32/32 exit 0 (port 6510). Evidence: `orchestration/tasks/TASK-0190-native-town-runtime-integration/playtest-tip-evidence.txt`.
 
 ## Model lane status
 
-**Stocked** plus TASK-0183–0189 integrator prep headers. `main.cpp` integration blocked on ox-alpha-pc lease and dependency ACCEPTED wave.
+**Stocked** plus TASK-0183–0190 integrator prep headers. `main.cpp` integration blocked on ox-alpha-pc lease and dependency ACCEPTED wave.
 
 ## Blocked integrator lanes
 

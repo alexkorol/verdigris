@@ -20,3 +20,4 @@
 {"detail":"cursor worker: TASK-0188 gate_overlay_layout.hpp integrator prep; 18 layout tests PASS","type":"WORKER_HEARTBEAT","ts":"2026-08-24T03:12:00.0000000-07:00"}
 {"detail":"cursor worker: TASK-0187 combat_vfx_layout.hpp integrator prep; 18 stroke tests PASS","type":"WORKER_HEARTBEAT","ts":"2026-08-24T03:20:00.0000000-07:00"}
 {"detail":"cursor worker: TASK-0189 instance_gate_bridge.hpp integrator prep; 14 bridge tests PASS","type":"WORKER_HEARTBEAT","ts":"2026-08-24T03:20:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0190 town_runtime_layout.hpp integrator prep; 24 layout tests + playtest 32/32","type":"WORKER_HEARTBEAT","ts":"2026-08-24T03:35:00.0000000-07:00"}
