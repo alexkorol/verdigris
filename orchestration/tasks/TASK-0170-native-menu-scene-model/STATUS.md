@@ -14,7 +14,7 @@ model: composer-2.5
 harness: Cursor agent
 started_at: 2026-08-24T07:15:00Z
 revision: 1
-implementation_commit: pending
+implementation_commit: 2d0233cc
 expected_verification: powershell -NoProfile -ExecutionPolicy Bypass -File orchestration/tasks/TASK-0170-native-menu-scene-model/run-tests.ps1; python native/tools/check_legacy_denylist.py; git diff --check; git diff --name-only
 ---
 
