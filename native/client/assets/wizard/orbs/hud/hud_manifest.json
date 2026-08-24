@@ -1,0 +1,78 @@
+{
+ "derived_from": "WIZARD tools/wizard_orbs states renders",
+ "note": "circular feathered alpha crop for native HUD orb compositing",
+ "artifacts": {
+  "life_full.png": {
+   "source": "states/full",
+   "crop": {
+    "cx": 422,
+    "cy": 338,
+    "r": 166
+   },
+   "bytes": 171837
+  },
+  "mana_full.png": {
+   "source": "states/full",
+   "crop": {
+    "cx": 834,
+    "cy": 338,
+    "r": 166
+   },
+   "bytes": 211794
+  },
+  "life_low.png": {
+   "source": "states/low",
+   "crop": {
+    "cx": 422,
+    "cy": 338,
+    "r": 166
+   },
+   "bytes": 121099
+  },
+  "mana_low.png": {
+   "source": "states/low",
+   "crop": {
+    "cx": 834,
+    "cy": 338,
+    "r": 166
+   },
+   "bytes": 145176
+  },
+  "life_empty.png": {
+   "source": "states/empty",
+   "crop": {
+    "cx": 422,
+    "cy": 338,
+    "r": 166
+   },
+   "bytes": 92567
+  },
+  "mana_empty.png": {
+   "source": "states/empty",
+   "crop": {
+    "cx": 834,
+    "cy": 338,
+    "r": 166
+   },
+   "bytes": 89880
+  },
+  "life_reserved.png": {
+   "source": "states/reserved",
+   "crop": {
+    "cx": 422,
+    "cy": 338,
+    "r": 166
+   },
+   "bytes": 179898
+  },
+  "mana_reserved.png": {
+   "source": "states/reserved",
+   "crop": {
+    "cx": 834,
+    "cy": 338,
+    "r": 166
+   },
+   "bytes": 237447
+  }
+ }
+}

@@ -40,6 +40,7 @@ namespace phase_a = verdigris::client::phase_a;
 // The generator emits standards-conforming literals ("22.f"), so no
 // reserved-suffix compatibility operators are needed here.
 #include "assets/generated/visual_kit.h"
+#include "wizard_orb_art.hpp"
 
 namespace {
 
@@ -697,6 +698,41 @@ void load_billboards(BillboardAssets& assets) {
     if (actors_loaded || scenery_loaded || terrain_loaded) return;
   }
   refresh_art_status(assets);
+}
+
+// Owner Demo integration: WIZARD raster vital orbs (TASK-0168 art through the
+// TASK-0181 adapter contract). Loaded lazily once; every entry path reaches
+// this through load_billboards, so no call site changes are needed. When the
+// derived HUD plates are missing the flat kit orb remains the honest fallback.
+wizard_orb_art::OrbArtSet& wizard_orb_art_set() {
+  static wizard_orb_art::OrbArtSet set;
+  return set;
+}
+
+bool wizard_orb_art_ready(const BillboardAssets& assets) {
+  static bool ready = false;
+  static bool attempted = false;
+  if (!attempted) {
+    attempted = true;
+    if (assets.alpha_blend && assets.create_bitmap && assets.image_width &&
+        assets.image_height && assets.create_hbitmap && assets.dispose_image) {
+      wizard_orb_art::GdiPlusProcs procs;
+      procs.create_bitmap_from_file =
+          reinterpret_cast<wizard_orb_art::GdiPlusProcs::CreateBitmapFromFileProc>(
+              assets.create_bitmap);
+      procs.image_width = reinterpret_cast<
+          wizard_orb_art::GdiPlusProcs::GetImageWidthProc>(assets.image_width);
+      procs.image_height = reinterpret_cast<
+          wizard_orb_art::GdiPlusProcs::GetImageHeightProc>(assets.image_height);
+      procs.create_hbitmap = reinterpret_cast<
+          wizard_orb_art::GdiPlusProcs::CreateHBITMAPFromBitmapProc>(
+          assets.create_hbitmap);
+      procs.dispose_image = reinterpret_cast<
+          wizard_orb_art::GdiPlusProcs::DisposeImageProc>(assets.dispose_image);
+      ready = wizard_orb_art::load_orb_art_set(procs, &wizard_orb_art_set());
+    }
+  }
+  return ready;
 }
 
 std::uint64_t scenery_seed(const std::string& route_id) {
@@ -2350,7 +2386,8 @@ void draw_orb(HDC dc, int cx, int cy, int radius, double ratio, COLORREF fill,
 
 void paint_vital_orbs(const WorldActor& player, std::uint64_t tick, int screen_pulse_ticks,
                       HDC dc, const RECT& bounds, render::List& rl,
-                      std::vector<std::pair<std::string, HudRect>>* trace) {
+                      std::vector<std::pair<std::string, HudRect>>* trace,
+                      const BillboardAssets& billboards) {
   if (!player.alive && player.life <= 0 && player.life_max <= 0) return;
   const int radius = kVitalOrbRadius;
   const int bottom = static_cast<int>(bounds.bottom) - 18;
@@ -2371,10 +2408,46 @@ void paint_vital_orbs(const WorldActor& player, std::uint64_t tick, int screen_p
       std::to_string(player.life) + "/" + std::to_string(player.life_max);
   const std::string resource_caption =
       std::to_string(player.resource) + "/" + std::to_string(player.resource_max);
-  draw_orb(dc, left_cx, cy, radius, life_ratio, RGB(177, 72, 62), RGB(214, 128, 96),
-           life_caption, pulse, rl, "life");
-  draw_orb(dc, right_cx, cy, radius, resource_ratio, RGB(58, 138, 168), RGB(120, 188, 214),
-           resource_caption, false, rl, "resource");
+  if (wizard_orb_art_ready(billboards)) {
+    // WIZARD raster orbs: keep the render-list op, pulse ring, and caption
+    // contract identical; only the plate painting changes.
+    const wizard_orb_art::OrbArtSet& art = wizard_orb_art_set();
+    rl.push_back({render::Op::Orb, static_cast<double>(left_cx),
+                  static_cast<double>(cy), static_cast<double>(radius),
+                  static_cast<int>(std::clamp(life_ratio, 0.0, 1.0) * 100.0),
+                  "life"});
+    rl.push_back({render::Op::Orb, static_cast<double>(right_cx),
+                  static_cast<double>(cy), static_cast<double>(radius),
+                  static_cast<int>(std::clamp(resource_ratio, 0.0, 1.0) * 100.0),
+                  "resource"});
+    wizard_orb_art::OrbPaint life_paint{left_cx, cy, radius, life_ratio, 0.0};
+    wizard_orb_art::OrbPaint resource_paint{right_cx, cy, radius,
+                                            resource_ratio, 0.0};
+    wizard_orb_art::draw_orb_plate(dc, billboards.alpha_blend, art.life_empty,
+                                   art.life_full, art.life_low,
+                                   art.life_reserved, life_paint);
+    wizard_orb_art::draw_orb_plate(dc, billboards.alpha_blend, art.mana_empty,
+                                   art.mana_full, art.mana_low,
+                                   art.mana_reserved, resource_paint);
+    const int pulse_r = pulse ? radius + 3 : radius;
+    ring_ellipse(dc, left_cx, cy, pulse_r, pulse_r,
+                 pulse ? RGB(220, 72, 58) : RGB(214, 128, 96), pulse ? 3 : 2);
+    ring_ellipse(dc, right_cx, cy, radius, radius, RGB(120, 188, 214), 2);
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, RGB(232, 223, 202));
+    const int life_text_x = left_cx - static_cast<int>(life_caption.size()) * 3;
+    TextOutA(dc, life_text_x, cy - 6, life_caption.c_str(),
+             static_cast<int>(life_caption.size()));
+    const int resource_text_x =
+        right_cx - static_cast<int>(resource_caption.size()) * 3;
+    TextOutA(dc, resource_text_x, cy - 6, resource_caption.c_str(),
+             static_cast<int>(resource_caption.size()));
+  } else {
+    draw_orb(dc, left_cx, cy, radius, life_ratio, RGB(177, 72, 62),
+             RGB(214, 128, 96), life_caption, pulse, rl, "life");
+    draw_orb(dc, right_cx, cy, radius, resource_ratio, RGB(58, 138, 168),
+             RGB(120, 188, 214), resource_caption, false, rl, "resource");
+  }
   // TASK-0159: record the exact painted orb extents (+pulse ring) so the
   // readability scenario can prove the pane never reaches into them.
   if (trace) {
@@ -3573,7 +3646,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
 
   paint_minimap(state, dc, bounds, rl);
   paint_vital_orbs(player, world.tick, state.screen_pulse_ticks, dc, bounds, rl,
-                   &state.hud_rect_trace);
+                   &state.hud_rect_trace, state.billboards);
   paint_quickbar(state, dc, bounds, rl);
   paint_gear_overlay(state, dc, bounds, rl);
 
