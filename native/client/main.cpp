@@ -41,6 +41,7 @@ namespace phase_a = verdigris::client::phase_a;
 // reserved-suffix compatibility operators are needed here.
 #include "assets/generated/visual_kit.h"
 #include "wizard_orb_art.hpp"
+#include "wizard_splash_art.hpp"
 
 namespace {
 
@@ -730,6 +731,41 @@ bool wizard_orb_art_ready(const BillboardAssets& assets) {
       procs.dispose_image = reinterpret_cast<
           wizard_orb_art::GdiPlusProcs::DisposeImageProc>(assets.dispose_image);
       ready = wizard_orb_art::load_orb_art_set(procs, &wizard_orb_art_set());
+    }
+  }
+  return ready;
+}
+
+// Owner Demo integration: WIZARD splash pack + Framekit panel for the
+// Chronicles front door (TASK-0179 art, TASK-0167 panel through the TASK-0180
+// contract). Loaded lazily once through the same GDI+ procs as the billboards.
+wizard_splash_art::SplashArtSet& wizard_splash_art_set() {
+  static wizard_splash_art::SplashArtSet set;
+  return set;
+}
+
+bool wizard_splash_art_ready(const BillboardAssets& assets) {
+  static bool ready = false;
+  static bool attempted = false;
+  if (!attempted) {
+    attempted = true;
+    if (assets.alpha_blend && assets.create_bitmap && assets.image_width &&
+        assets.image_height && assets.create_hbitmap && assets.dispose_image) {
+      wizard_orb_art::GdiPlusProcs procs;
+      procs.create_bitmap_from_file =
+          reinterpret_cast<wizard_orb_art::GdiPlusProcs::CreateBitmapFromFileProc>(
+              assets.create_bitmap);
+      procs.image_width = reinterpret_cast<
+          wizard_orb_art::GdiPlusProcs::GetImageWidthProc>(assets.image_width);
+      procs.image_height = reinterpret_cast<
+          wizard_orb_art::GdiPlusProcs::GetImageHeightProc>(assets.image_height);
+      procs.create_hbitmap = reinterpret_cast<
+          wizard_orb_art::GdiPlusProcs::CreateHBITMAPFromBitmapProc>(
+          assets.create_hbitmap);
+      procs.dispose_image = reinterpret_cast<
+          wizard_orb_art::GdiPlusProcs::DisposeImageProc>(assets.dispose_image);
+      ready = wizard_splash_art::load_splash_art_set(procs,
+                                                     &wizard_splash_art_set());
     }
   }
   return ready;
@@ -3065,6 +3101,39 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
                        (state.chronicles_oath ? "mortal - death is final"
                                               : "soft - wounds can be recovered"),
                    RGB(185, 198, 188), false});
+
+  // Owner Demo presentation: WIZARD splash backdrop + Framekit panel behind
+  // the chronicle text. Text layout, render-list ops, and input behavior are
+  // unchanged; only the backdrop and panel presentation are added.
+  const int window_w = static_cast<int>(bounds.right);
+  const int window_h = static_cast<int>(bounds.bottom);
+  if (wizard_splash_art_ready(state.billboards)) {
+    const wizard_splash_art::SplashArtSet& splash = wizard_splash_art_set();
+    wizard_splash_art::draw_milkyway_band(dc, state.billboards.alpha_blend,
+                                          splash.milkyway, window_w,
+                                          window_h / 8, window_h / 3);
+    wizard_splash_art::draw_planet_fit_height(dc, state.billboards.alpha_blend,
+                                              splash.planet, window_w,
+                                              window_h);
+    // Legibility veils: darker top band for the title, heavier floor for the
+    // menu actions.
+    wizard_splash_art::fill_rect_alpha(dc, state.billboards.alpha_blend, 0, 0,
+                                       window_w, window_h / 4, 110);
+    wizard_splash_art::fill_rect_alpha(dc, state.billboards.alpha_blend, 0,
+                                       window_h * 3 / 4, window_w,
+                                       window_h - window_h * 3 / 4, 150);
+    // Framekit nine-slice panel framing the text column. Extent matches the
+    // text block below (starts at y=64, same per-line advance).
+    int panel_bottom = 64;
+    for (const auto& line : lines) {
+      panel_bottom += line.accent ? 44 : 26;
+      if (panel_bottom > window_h - 40) break;
+    }
+    const int panel_left = std::max(24, (window_w - 620) / 2);
+    wizard_splash_art::draw_nine_slice_panel(
+        dc, state.billboards.alpha_blend, splash.panel, panel_left - 26, 34,
+        620 + 52, panel_bottom - 34 + 14, 205);
+  }
 
   SetBkMode(dc, TRANSPARENT);
   const int left = std::max(24, (static_cast<int>(bounds.right) - 620) / 2);
