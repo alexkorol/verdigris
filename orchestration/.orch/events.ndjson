@@ -14,3 +14,4 @@
 {"detail":"cursor worker: TASK-0197 chronicles_owner_pane.hpp; model lane complete — handoff integrator","type":"WORKER_HEARTBEAT","ts":"2026-08-24T02:02:00.0000000-07:00"}
 {"detail":"cursor worker: TASK-0183 owner_menu_input.hpp bridge prep; integrator lane ox-alpha lease","type":"WORKER_HEARTBEAT","ts":"2026-08-24T02:12:00.0000000-07:00"}
 {"detail":"cursor worker: TASK-0183 splash_menu_layout.hpp layout planner prep","type":"WORKER_HEARTBEAT","ts":"2026-08-24T02:18:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0184 inventory_pane_layout.hpp integrator prep","type":"WORKER_HEARTBEAT","ts":"2026-08-24T02:24:00.0000000-07:00"}
