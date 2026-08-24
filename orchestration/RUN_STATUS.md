@@ -1,5 +1,20 @@
 # Run status — PC Verdigris overnight product wave
 
+## HEARTBEAT / reviewer lane — 2026-08-24 01:00 UTC
+
+- lane: `verdigris/pc/reviewer` (independent validator, no task claim)
+- worktree: `Z:\Code\Games\delaford\delaford_game`; branch `codex/native-reconstitution`
+- last pushed commit: `19508efc` (program head == origin, 0 ahead / 0 behind; no uncommitted work of mine; the
+  untracked `orchestration/HEARTBEAT-cursor-session.md` is the owner's read-only self-record — left uncommitted)
+- task state: DONE (no in-flight claim); standing by to review any new REVIEW_REQUESTED flip
+- **review triage:** my managed lanes (bb/bc/bd) all shipped+integrated. `ox-pc-bf` (TASK-0082 @ `67fed855`) and
+  `ox-pc-bg` (TASK-0097 @ `524ad481`) are REVIEW_REQUESTED but are STALE DUPLICATES of tasks already integrated
+  under bb/bc — not new review work, flagged not re-reviewed. `ox-pc-bh` (owner lane) is ACTIVE on TASK-0163
+  (`59b299aa`), independent; will validate when it flips REVIEW_REQUESTED.
+- status: blocked/parked — no claimable task (board effective_ready = 1 = already-claimed TASK-0108); awaiting
+  backlog refill + TASK-0108 owner ruling
+- human decision needed: YES — backlog-factory refill to regenerate READY packets; TASK-0108 gate-b ruling.
+
 ## HEARTBEAT / triage (coordinator lane) — 2026-08-24 00:30 UTC
 
 - lane: `verdigris/pc/coordinator` (integration lease holder, SUPERVISION.md)
