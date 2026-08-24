@@ -1,5 +1,26 @@
 # Run status — PC Verdigris overnight product wave
 
+## HEARTBEAT / coordinator-of-day claim (architect lane, Claude Code PC) — 2026-08-24 ~08:00 PDT
+
+- coordinator-of-day: CLAIMED by claude-architect-pc per BUS.md (this pushed
+  heartbeat is the claim). Released when a newer heartbeat says so or
+  SUPERVISION thresholds lapse.
+- context: ox-alpha provider API is down (all ox-pc/ox-sw/worker-t lanes
+  stalled); Cursor is the live implementation harness. The review queue is
+  the bottleneck: 13 packets at REVIEW_REQUESTED (0180-0182, 0191, 0193,
+  0195, 0197-0200, 0202-0204).
+- in progress now: four independent validation passes running on
+  TASK-0200 (house line critical path per cursor residual) and
+  TASK-0180/0181/0182 (render adapters). Verdicts + integrations land as
+  they complete; remaining nine follow.
+- landed this morning: cursor prep wave merged (98c7361e lineage), BUS.md
+  binding, D-129 ruled (projectile convention; TASK-0108 SPEC rev 3 owed
+  by architect today), TASK-0201 cursor slice claim now bus-valid.
+- deterministic sentinel: live, Task Scheduler, 30-min cadence
+  (Z:\Code\.fleet\logs\sentinel.log is its liveness proof).
+- human decision needed: NO (board refilled; ruling recorded; next owner
+  touchpoint is the evening review of integrated work)
+
 ## Effective READY — Owner Demo P0 refill (14 packets)
 
 Generated from the 2026-08-23 owner interview and validated at program head
