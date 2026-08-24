@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "task": "TASK-0179",
+  "worker": "ox-alpha-pc-w6",
+  "generatedAt": "2026-08-24",
+  "source": {
+    "root": "Z:/Code/WIZARD",
+    "commit": "6c2f9e725761220c32bc08e81e7550f56f6d8fa0",
+    "module": "tools/verdigris_splash",
+    "moduleId": "wizard.verdigris-splash",
+    "moduleVersion": "2.6.0",
+    "provenanceRef": "Z:/Code/.worktrees/verdigris/owner-demo-runway/native/client/assets/wizard/source_manifest.json",
+    "provenanceRefNote": "TASK-0166 source_manifest.json carries no verdigris_splash family, so sha256/bytes/dimensions above were computed directly from the source files at adoption time against WIZARD commit 6c2f9e725761220c32bc08e81e7550f56f6d8fa0."
+  },
+  "selectionRule": "Minimal coherent branded-splash set, byte-identical at native resolution. Chosen per role: one night-lit disc-world hero (primary), one floating-disc side-profile render (menu backdrop variant), and seven true-alpha composition layers (sky band, corona, moon, planet top/underside discs, cloud puff, ember glow) spanning z 0..40. Excluded as near-duplicates or non-splash tooling artifacts: 16 illumination tiles + 36 tmp texture tiles (tiled derivatives of the same art), 16-bit height/depth maps, STL/GLB meshes, prompt/build reports, QA debug-marked render, and the 22 MB 4K detail texture (the 2048px topographic disc already carries the same read at splash scale). No title raster exists in the source module (HTML/CSS wordmark); none was fabricated.",
+  "files": [
+    {
+      "adopted": "background/hero_disc_night.png",
+      "sourcePath": "tools/verdigris_splash/assets/world/celestial_world_illumination_concept_image2.png",
+      "sha256": "45ce2ca860b1c839614770860072d8f2d3f0b1a1af1c3a293c2f9b21a7401b1b",
+      "bytes": 1613922,
+      "dimensions": {
+        "w": 1254,
+        "h": 1254,
+        "mode": "RGB"
+      },
+      "alpha": {
+        "channel": false,
+        "min": null,
+        "max": null
+      },
+      "role": "background",
+      "zOrder": 100,
+      "note": "Primary hero splash: night side of the disc world, teal coastline glow and orange settlement light."
+    },
+    {
+      "adopted": "background/menu_disc_side.png",
+      "sourcePath": "tools/verdigris_splash/assets/world/qa_detailed/detailed_side.png",
+      "sha256": "607be4167a298c4d919aa17433c2a0a0117383977c4f3cc1b0e85a394dd05509",
+      "bytes": 717622,
+      "dimensions": {
+        "w": 900,
+        "h": 700,
+        "mode": "RGBA"
+      },
+      "alpha": {
+        "channel": true,
+        "min": 255,
+        "max": 255
+      },
+      "role": "variant",
+      "zOrder": 101,
+      "note": "Alternate main-menu backdrop: floating disc-world side profile render (runtime model QA render); same plane as the hero, mutually exclusive full-frame choice."
+    },
+    {
+      "adopted": "layers/sky_milkyway_band.png",
+      "sourcePath": "tools/verdigris_splash/assets/textures/milkyway_band_2048x512.png",
+      "sha256": "da57f538f3d678d85ac3529d606c6b7350938bbe8a06afdc269c4b926374a1bb",
+      "bytes": 656822,
+      "dimensions": {
+        "w": 2048,
+        "h": 512,
+        "mode": "RGBA"
+      },
+      "alpha": {
+        "channel": true,
+        "min": 0,
+        "max": 150
+      },
+      "role": "layer",
+      "zOrder": 0,
+      "note": "Sky backdrop layer: soft milky-way band, premultiplied-look alpha (max 150) for additive sky."
+    },
+    {
+      "adopted": "layers/glow_eclipse_corona.png",
+      "sourcePath": "tools/verdigris_splash/assets/textures/eclipse_corona_1024.png",
+      "sha256": "1180891553a808c14d1b5828a987d81b6ca39036a89ff3a8506edffed793a88c",
+      "bytes": 194420,
+      "dimensions": {
+        "w": 1024,
+        "h": 1024,
+        "mode": "RGBA"
+      },
+      "alpha": {
+        "channel": true,
+        "min": 0,
+        "max": 255
+      },
+      "role": "layer",
+      "zOrder": 10,
+      "note": "Corona glow layer placed behind the planet disc."
+    },
+    {
+      "adopted": "layers/moon_blood_moon.png",
+      "sourcePath": "tools/verdigris_splash/assets/textures/blood_moon_256.png",
+      "sha256": "5079c8f33d76a33bd439f2d0eb7348836346329b04c7f07017667fd91e73e38d",
+      "bytes": 31434,
+      "dimensions": {
+        "w": 256,
+        "h": 256,
+        "mode": "RGBA"
+      },
+      "alpha": {
+        "channel": true,
+        "min": 0,
+        "max": 255
+      },
+      "role": "layer",
+      "zOrder": 15,
+      "note": "Accent moon layer."
+    },
+    {
+      "adopted": "layers/planet_top_disc.png",
+      "sourcePath": "tools/verdigris_splash/assets/world/celestial_world_topographic_reference.png",
+      "sha256": "8105d822b220278e3b0ed55dcc3a9826107ecbc8880220cdcfb4b09746efee36",
+      "bytes": 2205466,
+      "dimensions": {
+        "w": 2048,
+        "h": 2048,
+        "mode": "RGBA"
+      },
+      "alpha": {
+        "channel": true,
+        "min": 0,
+        "max": 255
+      },
+      "role": "layer",
+      "zOrder": 20,
+      "note": "Planet disc layer (day-side topography) with true alpha outside the disc rim."
+    },
+    {
+      "adopted": "layers/planet_underside_disc.png",
+      "sourcePath": "tools/verdigris_splash/assets/world/celestial_world_underside_topographic_reference.png",
+      "sha256": "6f7f6e129fbc01ed676a489f7921aa223058266e94fea2026d91913174c346f3",
+      "bytes": 3192691,
+      "dimensions": {
+        "w": 2048,
+        "h": 2048,
+        "mode": "RGBA"
+      },
+      "alpha": {
+        "channel": true,
+        "min": 0,
+        "max": 255
+      },
+      "role": "layer",
+      "zOrder": 21,
+      "note": "Underside disc layer (abyss-side topography) with true alpha, sits under the top disc."
+    },
+    {
+      "adopted": "layers/fx_cloud_puff.png",
+      "sourcePath": "tools/verdigris_splash/assets/textures/cloud_puff_512.png",
+      "sha256": "40dae4a0fc946fa214b839689fed7c84497b7739c32edf1a3d0e4584ec40392a",
+      "bytes": 30416,
+      "dimensions": {
+        "w": 512,
+        "h": 320,
+        "mode": "RGBA"
+      },
+      "alpha": {
+        "channel": true,
+        "min": 0,
+        "max": 255
+      },
+      "role": "layer",
+      "zOrder": 30,
+      "note": "Cloud puff layer for atmosphere drift."
+    },
+    {
+      "adopted": "layers/fx_ember_glow.png",
+      "sourcePath": "tools/verdigris_splash/assets/textures/ember_glow_256.png",
+      "sha256": "40c1b6c7e711a520ab74637a9ce67e906caadcc6105f1e93be0208f3724564b3",
+      "bytes": 15581,
+      "dimensions": {
+        "w": 256,
+        "h": 256,
+        "mode": "RGBA"
+      },
+      "alpha": {
+        "channel": true,
+        "min": 0,
+        "max": 249
+      },
+      "role": "layer",
+      "zOrder": 40,
+      "note": "Ember glow accent layer for foreground warmth."
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "task": "TASK-0179",
+  "canvas": {
+    "hintWidth": 1920,
+    "hintHeight": 1080,
+    "fit": "cover"
+  },
+  "title": {
+    "role": "title",
+    "present": false,
+    "note": "Source module renders the VERDIGRIS wordmark as HTML/CSS (index.html h1#title plus .wordmark-echo); no separate raster title art exists in WIZARD/tools/verdigris_splash. TASK-0183 should draw the wordmark in-engine; no placeholder title raster was fabricated."
+  },
+  "composition": [
+    {
+      "file": "background/hero_disc_night.png",
+      "role": "background",
+      "zOrder": 100,
+      "sourceSha256": "45ce2ca860b1c839614770860072d8f2d3f0b1a1af1c3a293c2f9b21a7401b1b"
+    },
+    {
+      "file": "background/menu_disc_side.png",
+      "role": "variant",
+      "zOrder": 101,
+      "sourceSha256": "607be4167a298c4d919aa17433c2a0a0117383977c4f3cc1b0e85a394dd05509"
+    },
+    {
+      "file": "layers/sky_milkyway_band.png",
+      "role": "layer",
+      "zOrder": 0,
+      "sourceSha256": "da57f538f3d678d85ac3529d606c6b7350938bbe8a06afdc269c4b926374a1bb"
+    },
+    {
+      "file": "layers/glow_eclipse_corona.png",
+      "role": "layer",
+      "zOrder": 10,
+      "sourceSha256": "1180891553a808c14d1b5828a987d81b6ca39036a89ff3a8506edffed793a88c"
+    },
+    {
+      "file": "layers/moon_blood_moon.png",
+      "role": "layer",
+      "zOrder": 15,
+      "sourceSha256": "5079c8f33d76a33bd439f2d0eb7348836346329b04c7f07017667fd91e73e38d"
+    },
+    {
+      "file": "layers/planet_top_disc.png",
+      "role": "layer",
+      "zOrder": 20,
+      "sourceSha256": "8105d822b220278e3b0ed55dcc3a9826107ecbc8880220cdcfb4b09746efee36"
+    },
+    {
+      "file": "layers/planet_underside_disc.png",
+      "role": "layer",
+      "zOrder": 21,
+      "sourceSha256": "6f7f6e129fbc01ed676a489f7921aa223058266e94fea2026d91913174c346f3"
+    },
+    {
+      "file": "layers/fx_cloud_puff.png",
+      "role": "layer",
+      "zOrder": 30,
+      "sourceSha256": "40dae4a0fc946fa214b839689fed7c84497b7739c32edf1a3d0e4584ec40392a"
+    },
+    {
+      "file": "layers/fx_ember_glow.png",
+      "role": "layer",
+      "zOrder": 40,
+      "sourceSha256": "40c1b6c7e711a520ab74637a9ce67e906caadcc6105f1e93be0208f3724564b3"
+    }
+  ]
+}
