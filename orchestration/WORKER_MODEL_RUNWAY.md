@@ -2,7 +2,7 @@
 
 Worker lane: header-only models and adapters (no `main.cpp` / integrator hotspots).
 
-Branch tip: `codex/TASK-0198-brand-crafting-model-slice-cursor` (stacked model commits).
+Branch tip: `codex/TASK-0204-owner-demo-audio-beats-model-slice-cursor` (`80599db6`).
 
 ## REVIEW_REQUESTED packets (cursor)
 
@@ -15,16 +15,21 @@ Branch tip: `codex/TASK-0198-brand-crafting-model-slice-cursor` (stacked model c
 | 0193 | `geometric_skill_tree.hpp` |
 | 0195 | `spell_lattice.hpp` |
 | 0200 | `house_progression.hpp` |
+| 0197 | `chronicles_owner_pane.hpp` (model slice) |
+| 0198 | `brand_crafting.hpp` (model slice) |
+| 0199 | `bond_progress.hpp` (model slice) |
 | 0202 | `relic_provenance.hpp` (model slice) |
 | 0203 | `village_defense.hpp` (model slice) |
-| 0199 | `bond_progress.hpp` (model slice) |
-| 0198 | `brand_crafting.hpp` (model slice) |
 | 0204 | `owner_demo_audio_beats.hpp` (model slice) |
 
 ## Playtest
 
-Worktree tip: `npm run playtest` 32/32 exit 0 (port 6510). Evidence on TASK-0203 packet.
+Worktree tip: `npm run playtest` 32/32 exit 0 (port 6510). Evidence on TASK-0203 and TASK-0204 packets.
+
+## Model lane status
+
+**Stocked.** No further path-disjoint model packets identified without integrator lease.
 
 ## Blocked integrator lanes
 
-0183–0189, 0190+, 0201, 0203–0205 integration require coordinator ACCEPTED on dependencies and `main.cpp` / `core.cpp` lease.
+0183–0189, 0190+, 0201–0205 full integration require coordinator ACCEPTED on dependencies and `main.cpp` / `core.cpp` / `event_cues.cpp` lease.
