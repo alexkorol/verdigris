@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "pack": "framekit",
+  "provenance": {
+    "wizard_commit": "66a5d9ff6810e886c1bd08cbeaaf83cabf92aae9",
+    "module_id": "wizard.gui-framekit",
+    "source_root": "WIZARD/tools/gui_framekit",
+    "generated_by": "TASK-0167"
+  },
+  "contact_sheet": "contact_sheet.png",
+  "slices": [
+    {
+      "id": "panel",
+      "role": "window_frame",
+      "path": "textures/panel.png",
+      "sidecar": "textures/panel.json",
+      "source_path": "tools/gui_framekit/assets/textures/panel.png",
+      "sha256": "d65f927650f009f65d0126047b4504ee4a201a853b9bd3af22d282f972bd3934",
+      "bytes": 1457,
+      "dimensions": { "w": 48, "h": 48, "mode": "RGBA" },
+      "slice": [12, 12, 12, 12]
+    },
+    {
+      "id": "slot",
+      "role": "inventory_slot",
+      "path": "textures/slot.png",
+      "sidecar": "textures/slot.json",
+      "source_path": "tools/gui_framekit/assets/textures/slot.png",
+      "sha256": "ff7f9f6aedff79fc203f22985aae9ba7f62dfe64b8a17db9220c8bb9650e59e8",
+      "bytes": 639,
+      "dimensions": { "w": 32, "h": 32, "mode": "RGBA" },
+      "slice": [12, 12, 12, 12]
+    }
+  ],
+  "sprites": [
+    {
+      "id": "orb-vitality",
+      "role": "circular_frame",
+      "path": "sprites/orb-vitality.png",
+      "sidecar": "sprites/orb-vitality.json",
+      "source_path": "tools/gui_framekit/assets/sprites/orb-vitality.png",
+      "sha256": "d2b0f786a0e94114c0fc7b47f33518fd5556a64937ade97f7745a46b0dae3ebf",
+      "bytes": 397,
+      "dimensions": { "w": 16, "h": 16, "mode": "RGBA" }
+    },
+    {
+      "id": "orb-mana",
+      "role": "circular_frame",
+      "path": "sprites/orb-mana.png",
+      "sidecar": "sprites/orb-mana.json",
+      "source_path": "tools/gui_framekit/assets/sprites/orb-mana.png",
+      "sha256": "c2d958e987dd831fd1b231283db44b1bbc311df4f7913e171752bf2b25fffff4",
+      "bytes": 370,
+      "dimensions": { "w": 16, "h": 16, "mode": "RGBA" }
+    },
+    {
+      "id": "orb-essence",
+      "role": "circular_frame",
+      "path": "sprites/orb-essence.png",
+      "sidecar": "sprites/orb-essence.json",
+      "source_path": "tools/gui_framekit/assets/sprites/orb-essence.png",
+      "sha256": "a5a6366e7beebfca6a795c5693a8d66c7d1e148a7243464f0fb7311623eb28cb",
+      "bytes": 382,
+      "dimensions": { "w": 16, "h": 16, "mode": "RGBA" }
+    }
+  ]
+}
