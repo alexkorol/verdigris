@@ -43,6 +43,7 @@ namespace phase_a = verdigris::client::phase_a;
 #include "wizard_orb_art.hpp"
 #include "wizard_splash_art.hpp"
 #include "wizard_inventory_art.hpp"
+#include "wizard_tree_pane.hpp"
 
 namespace {
 
@@ -329,6 +330,10 @@ struct ClientState {
   // TASK-0122 Phase A: optional world-anchored beat legend for the capture
   // proof composite. Empty in every normal play path.
   std::vector<std::pair<std::string, verdigris::Vec2>> beat_legend;
+  // Owner Demo: window size for pane planning and the level-up tree hint.
+  int window_w = 960;
+  int window_h = 600;
+  int last_player_level = 0;
 };
 
 std::string executable_directory() {
@@ -804,6 +809,25 @@ bool wizard_inventory_art_ready(const BillboardAssets& assets) {
     }
   }
   return ready;
+}
+
+// Owner Demo: geometric passive tree pane (TASK-0193 model via TASK-0194
+// layout). One pane per window; presentation + bounded client-side allocation.
+wizard_tree_pane::TreePane g_tree_pane;
+
+void toggle_tree_pane(ClientState& state) {
+  g_tree_pane.open = !g_tree_pane.open;
+  if (g_tree_pane.open) {
+    const bool authoritative = state.world.progression.present;
+    const std::uint16_t unspent =
+        authoritative
+            ? static_cast<std::uint16_t>(state.world.progression.unspent_points)
+            : 0;
+    wizard_tree_pane::ensure_seeded(g_tree_pane, state.world.player.level,
+                                    authoritative, unspent);
+    wizard_tree_pane::refresh_plan(g_tree_pane, state.window_w,
+                                   state.window_h);
+  }
 }
 
 std::uint64_t scenery_seed(const std::string& route_id) {
@@ -3893,6 +3917,19 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_quickbar(state, dc, bounds, rl);
   paint_gear_overlay(state, dc, bounds, rl);
 
+  // Owner Demo: the geometric passive tree pane paints topmost when open.
+  if (g_tree_pane.open) {
+    wizard_tree_pane::draw_pane(
+        dc, state.billboards.alpha_blend,
+        wizard_inventory_art_ready(state.billboards) &&
+                wizard_inventory_art_set().panel_loaded
+            ? &wizard_inventory_art_set().panel
+            : nullptr,
+        g_tree_pane, static_cast<int>(bounds.right),
+        static_cast<int>(bounds.bottom), state.world.progression.present);
+    rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0, "tree-pane"});
+  }
+
   if (state.screen_pulse_ticks > 0) {
     // TASK-0122 Phase A: while a ScionLost beat is live the edge pulse is the
     // loss treatment (deeper rust, heavier edge), not the player-damage red.
@@ -3949,7 +3986,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         (world.scion_name.empty() ? std::string("(unnamed)") : world.scion_name);
     static constexpr char kControls[] =
         "WASD move | mouse aim | LMB attack | RMB/Space dash | Q E R skills | "
-        "X take | Z names | I gear";
+        "X take | Z names | I gear | T tree";
     const std::string& art_text = state.billboards.status;
 
     // TASK-0159: pre-measure the controls hint and its deterministic
@@ -4214,6 +4251,8 @@ void paint(HWND window, HDC dc) {
 void timer_step(HWND window, ClientState& state) {
   RECT bounds;
   GetClientRect(window, &bounds);
+  state.window_w = bounds.right;
+  state.window_h = bounds.bottom;
 
   if (state.session) {
     state.session->poll();
@@ -4221,6 +4260,14 @@ void timer_step(HWND window, ClientState& state) {
     ingest_session_events(state);
     update_screen_for_model(state);
     watch_crypt_statuses(state);
+  }
+  // Owner Demo: the first-level moment — announce the tree when the Scion
+  // first reaches level 2 or the authoritative payload first shows points.
+  if (state.last_player_level == 0) state.last_player_level = state.world.player.level;
+  if (state.world.player.level > state.last_player_level) {
+    state.last_player_level = state.world.player.level;
+    if (state.world.player.level >= 2)
+      show_hint(state, "Level up - press T to open the passive tree");
   }
   if (state.relic_toast_ticks > 0) --state.relic_toast_ticks;
 
@@ -4286,6 +4333,10 @@ void toggle_gear_overlay(ClientState& state) {
 // with nothing open does Escape request exit via ClientState::quit_requested,
 // which the window procedure turns into PostQuitMessage.
 void handle_escape_key(ClientState& state) {
+  if (g_tree_pane.open) {
+    g_tree_pane.open = false;
+    return;
+  }
   if (state.gear_overlay) {
     toggle_gear_overlay(state);
     return;
@@ -4317,6 +4368,11 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       }
       if (state->screen == Screen::Chronicles && state->session) {
         handle_chronicles_key(*state, wparam);
+        InvalidateRect(window, nullptr, FALSE);
+        break;
+      }
+      if (wparam == 'T' && state->screen == Screen::Expedition) {
+        toggle_tree_pane(*state);
         InvalidateRect(window, nullptr, FALSE);
         break;
       }
@@ -4395,8 +4451,25 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         state->mouse.y = GET_Y_LPARAM(lparam);
         RECT bounds;
         GetClientRect(window, &bounds);
+        state->window_w = bounds.right;
+        state->window_h = bounds.bottom;
+        if (g_tree_pane.open) {
+          g_tree_pane.hover_seat =
+              wizard_tree_pane::seat_at(g_tree_pane, state->mouse.x,
+                                        state->mouse.y);
+        }
         dispatch_aim_if_changed(*state, bounds);
         InvalidateRect(window, nullptr, FALSE);
+      }
+      break;
+    case WM_SIZE:
+      if (state) {
+        state->window_w = LOWORD(lparam);
+        state->window_h = HIWORD(lparam);
+        if (g_tree_pane.open) {
+          wizard_tree_pane::refresh_plan(g_tree_pane, state->window_w,
+                                         state->window_h);
+        }
       }
       break;
     case WM_MOUSEWHEEL:
@@ -4410,7 +4483,14 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       break;
     case WM_LBUTTONDOWN:
       if (state) {
-        if (state->gear_overlay)
+        if (g_tree_pane.open) {
+          if (wizard_tree_pane::click(g_tree_pane, state->mouse.x,
+                                      state->mouse.y)) {
+            wizard_tree_pane::refresh_plan(g_tree_pane, state->window_w,
+                                           state->window_h);
+            show_hint(*state, "Seat allocated");
+          }
+        } else if (state->gear_overlay)
           equip_selected(*state);
         else
           submit_action(*state, verdigris::ActionType::Melee, "melee");
@@ -5554,6 +5634,85 @@ int scenario_animation_vfx_phase_a();
 // PNG evidence into this task's captures/ folder.
 int scenario_progression_surface();
 
+// Forward declaration used by the tree-pane scenario below.
+bool render_list_has_label(const render::List& list, render::Op op,
+                           const std::string& label);
+
+// ── Owner Demo: geometric passive tree pane ─────────────────────────────
+// Drives the production seam: T-toggle opens the pane, the layout planner
+// places the hex seats, a real click path allocates an adjacent seat, and
+// the pane reflects the spend. Deterministic; no servers required.
+int scenario_tree_pane() {
+  ClientState state;
+  scenario_begin(state);
+  state.window_w = 960;
+  state.window_h = 600;
+  scenario_check(!g_tree_pane.open, "tree-pane: closed by default");
+  toggle_tree_pane(state);
+  scenario_check(g_tree_pane.open, "tree-pane: T opens the pane");
+  // First-level moment: the authoritative payload path (level 2 Scion, one
+  // unspent point from the server) unlocks the tree. The re-seed models the
+  // payload arriving after the pane was first opened at level 1.
+  g_tree_pane.seeded = false;
+  wizard_tree_pane::ensure_seeded(g_tree_pane, 2, true, 1);
+  wizard_tree_pane::refresh_plan(g_tree_pane, state.window_w, state.window_h);
+  scenario_check(g_tree_pane.model.tree_unlocked,
+                 "tree-pane: authoritative first-level payload unlocks the tree");
+  scenario_present(state);
+  scenario_check(render::any(state.render_list, render::Op::PaneStat) &&
+                     render_list_has_label(state.render_list, render::Op::PaneStat,
+                                           "tree-pane"),
+                 "tree-pane: pane recorded in the render list");
+  const std::uint16_t points_before = g_tree_pane.model.skill_points;
+  bool allocated = false;
+  for (std::uint8_t i = 0; i < g_tree_pane.model.seat_count && !allocated; ++i) {
+    if (!skill_tree_layout::seat_clickable(g_tree_pane.model, i)) continue;
+    const skill_tree_layout::SeatLayout& seat = g_tree_pane.display.seats[i];
+    allocated = wizard_tree_pane::click(g_tree_pane, seat.center.x,
+                                        seat.center.y);
+  }
+  scenario_check(allocated, "tree-pane: a reachable seat allocated");
+  scenario_check(g_tree_pane.model.skill_points == points_before - 1,
+                 "tree-pane: allocation spent exactly one point");
+  wizard_tree_pane::refresh_plan(g_tree_pane, state.window_w, state.window_h);
+  scenario_present(state);
+  scenario_check(render_list_has_label(state.render_list, render::Op::PaneStat,
+                                       "tree-pane"),
+                 "tree-pane: pane still rendered after allocation");
+  {
+    // PNG evidence into the tree-integration task captures folder.
+    std::string tree_dir;
+    std::vector<std::string> bases{".", executable_directory()};
+    const char* marker =
+        "orchestration\\tasks\\TASK-0194-geometric-skill-tree-integration";
+    for (const auto& base : bases) {
+      std::string prefix = base;
+      for (int depth = 0; depth <= 6 && tree_dir.empty(); ++depth) {
+        const std::string folder =
+            prefix + (prefix.empty() ? "" : "\\") + marker;
+        if (directory_exists(folder)) tree_dir = folder + "\\captures";
+        prefix += "\\..";
+      }
+      if (!tree_dir.empty()) break;
+    }
+    if (!tree_dir.empty()) {
+      CreateDirectoryA(tree_dir.c_str(), nullptr);
+      scenario_check(reference_present(state, 960, 600,
+                                       tree_dir + "\\tree-pane-960x600.png"),
+                     "tree-pane: 960x600 PNG written");
+      scenario_check(reference_present(state, 1366, 768,
+                                       tree_dir + "\\tree-pane-1366x768.png"),
+                     "tree-pane: 1366x768 PNG written");
+    }
+  }
+  handle_escape_key(state);
+  scenario_check(!g_tree_pane.open,
+                 "tree-pane: Escape closes the pane before quitting");
+  scenario_check(!state.quit_requested,
+                 "tree-pane: Escape on an open pane never requests quit");
+  return 0;
+}
+
 // ── TASK-0156: progression-surface ──────────────────────────────────────
 // Proves the shipped gear overlay mirrors ONLY the authoritative passiveTree
 // payload: absent before any payload arrives, nonzero from a real quick-guest
@@ -6011,8 +6170,9 @@ int run_scenarios(const std::string& which) {
       {"chronicles-gate-b", scenario_chronicles_gate_b},
       {"first-session-clarity", scenario_first_session_clarity},
       {"animation-vfx-phase-a", scenario_animation_vfx_phase_a},
-      {"progression-surface", scenario_progression_surface},
-      {"hud-pane-readability", scenario_hud_pane_readability},
+  {"progression-surface", scenario_progression_surface},
+  {"tree-pane", scenario_tree_pane},
+  {"hud-pane-readability", scenario_hud_pane_readability},
   };
   int total_failures = 0;
   for (const auto& entry : entries) {
