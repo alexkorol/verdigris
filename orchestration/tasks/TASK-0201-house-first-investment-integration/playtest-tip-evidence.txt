@@ -1,0 +1,5 @@
+npm run playtest @ codex/TASK-0201-house-investment-layout-prep-cursor (cursor session 2026-08-24)
+32/32 scenarios passed, exit 0, port 6510
+Timing diagnostics: p99EventLoopLagMs=32.26 maxEventLoopLagMs=102.24
+python native/tools/check_legacy_denylist.py — PASS
+orchestration/tasks/TASK-0201-house-first-investment-integration/run-tests.ps1 — 15 checks PASS
