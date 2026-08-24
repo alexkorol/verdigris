@@ -1,5 +1,19 @@
 # Run status — PC Verdigris overnight product wave
 
+## HEARTBEAT / triage (coordinator lane) — 2026-08-24 00:30 UTC
+
+- lane: `verdigris/pc/coordinator` (integration lease holder, SUPERVISION.md)
+- worktree: `Z:\Code\Games\delaford\delaford_game`; branch `codex/native-reconstitution`
+- last pushed commit: `66f3b3ae` (program head == origin, 0 ahead / 0 behind; clean tree, no uncommitted work)
+- task state: DONE for all 23 packets shipped this session; no in-flight claim on my lane
+- **collision watch:** owner-launcher branches `ox-pc-bf` (TASK-0082 @ `67fed855`) and
+  `ox-pc-bg` (TASK-0097 @ `524ad481`) hold claims on tasks already integrated this session
+  under lanes bb/bc. These are stale duplicate branches from the separate owner launcher,
+  NOT my managed lanes; their content diverges from the integrated truth. Flagged, not
+  worked on. `ox-pc-bh` (TASK-0163 @ `a2bd0a12`) is independent, no overlap with shipped files.
+- status: active (coordinating), no human decision required for my lane right now
+- next bottleneck: backlog-factory refill (board effective_ready < min_ready 8)
+
 ## SHIPPED 23 audits this session — 2026-08-24 00:10 UTC
 
 - **TASK-0160** (visual-kit packaging proof, bd) ACCEPTED + integrated at
