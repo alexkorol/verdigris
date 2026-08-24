@@ -9,3 +9,4 @@
 {"detail":"cursor worker: TASK-0202 relic_provenance.hpp model slice REVIEW_REQUESTED","type":"WORKER_HEARTBEAT","ts":"2026-08-24T01:24:00.0000000-07:00"}
 {"detail":"cursor worker: TASK-0203 village_defense.hpp model slice REVIEW_REQUESTED","type":"WORKER_HEARTBEAT","ts":"2026-08-24T01:30:00.0000000-07:00"}
 {"detail":"cursor worker: TASK-0199 bond_progress.hpp model slice REVIEW_REQUESTED","type":"WORKER_HEARTBEAT","ts":"2026-08-24T01:48:00.0000000-07:00"}
+{"detail":"cursor worker: TASK-0198 brand_crafting.hpp model slice REVIEW_REQUESTED","type":"WORKER_HEARTBEAT","ts":"2026-08-24T01:52:00.0000000-07:00"}
