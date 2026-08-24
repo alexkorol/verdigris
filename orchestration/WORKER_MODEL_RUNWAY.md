@@ -2,12 +2,13 @@
 
 Worker lane: header-only models and adapters (no `main.cpp` / integrator hotspots).
 
-Branch tip: `codex/TASK-0186-actor-combat-bridge-prep-cursor`.
+Branch tip: `codex/TASK-0188-gate-overlay-layout-prep-cursor`.
 
 | 0183 prep | `owner_menu_input.hpp`, `splash_menu_layout.hpp` |
 | 0184 prep | `inventory_pane_layout.hpp` |
 | 0185 prep | `orb_hud_layout.hpp` |
 | 0186 prep | `actor_combat_bridge.hpp` |
+| 0188 prep | `gate_overlay_layout.hpp` |
 
 ## REVIEW_REQUESTED packets (cursor)
 
@@ -33,7 +34,7 @@ Worktree tip: `npm run playtest` 32/32 exit 0 (port 6510). Evidence: `orchestrat
 
 ## Model lane status
 
-**Stocked** plus TASK-0183–0186 integrator prep headers. `main.cpp` integration blocked on ox-alpha-pc lease and dependency ACCEPTED wave.
+**Stocked** plus TASK-0183–0186 and 0188 integrator prep headers. `main.cpp` integration blocked on ox-alpha-pc lease and dependency ACCEPTED wave.
 
 ## Blocked integrator lanes
 
