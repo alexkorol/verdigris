@@ -1,4 +1,22 @@
 task: TASK-0166
+state: CLAIMED
+revision: 2
+lane: claude-b
+worktree: Z:\Code\.worktrees\verdigris\claude-b (own worktree)
+branch: codex/TASK-0166-wizard-source-manifest-claude-r2
+base_frozen: d43bf1bfcc176e5cfad389b59a9c83bd37e0fa99 (origin/codex/native-reconstitution at claim)
+claimed_at: 2026-08-24T14:59Z
+heartbeat_minutes: 45
+notes: >
+  r2 revision claim per REVIEW.md (verdict REVISE, corrections 1-3;
+  hardening item 4 rides along). Scope: source_manifest.json,
+  verify_wizard_source_manifest.py, this task dir only. WIZARD repo is
+  read-only for this lane.
+
+# History
+
+## r1 (ox-alpha) — REVIEW_REQUESTED -> REVISE 2026-08-24 ~09:15 PDT
+
 state: REVIEW_REQUESTED
 worker: ox-alpha (OpenRouter execution coordinator subfleet)
 worktree: Z:\Code\.worktrees\verdigris\owner-demo-runway (SHARED — concurrent TASK-0171 cursor writer active)
