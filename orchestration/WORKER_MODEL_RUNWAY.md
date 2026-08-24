@@ -2,7 +2,7 @@
 
 Worker lane: header-only models and adapters (no `main.cpp` / integrator hotspots).
 
-Branch tip: `codex/TASK-0190-town-runtime-layout-prep-cursor`.
+Branch tip: `codex/TASK-0201-house-investment-layout-prep-cursor`.
 
 | 0183 prep | `owner_menu_input.hpp`, `splash_menu_layout.hpp` |
 | 0184 prep | `inventory_pane_layout.hpp` |
@@ -14,6 +14,8 @@ Branch tip: `codex/TASK-0190-town-runtime-layout-prep-cursor`.
 | 0190 prep | `town_runtime_layout.hpp` |
 | 0192 prep | `zone_runtime_bridge.hpp` |
 | 0194 prep | `skill_tree_layout.hpp` |
+| 0196 prep | `spell_lattice_layout.hpp` |
+| 0201 prep | `house_investment_layout.hpp` |
 
 ## REVIEW_REQUESTED packets (cursor)
 
