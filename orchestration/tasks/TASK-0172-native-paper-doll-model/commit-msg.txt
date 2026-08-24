@@ -1,4 +1,0 @@
-TASK-0172: native paper-doll equipment model
-
-WIZARD-aligned slot compatibility, two-handed conflicts, ring auto-equip.
-39-check MSVC harness.
