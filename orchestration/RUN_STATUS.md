@@ -1,5 +1,23 @@
 # Run status — PC Verdigris overnight product wave
 
+## HEARTBEAT / coordinator-of-day (claude-architect-pc) — 2026-08-24 ~09:15 PDT
+
+- review sweep tally: root wave COMPLETE. INTEGRATED today: TASK-0167,
+  0168, 0169, 0177, 0180, 0181, 0200 (7 packets; every harness
+  independently reproduced, every asset provenance re-hashed). REVISE:
+  TASK-0182 (invented id space; claude-a lane on r2) and TASK-0166
+  (provenance overclaim on 51 untracked WIZARD sources; claude-b lane on
+  r2). Verdicts + evidence in each task's REVIEW.md.
+- remaining review queue (18): models 0170-0176, content 0178-0179,
+  0191/0193/0195, loops 0197-0199, 0202-0204. Next validation wave
+  dispatching: 0170-0173.
+- TASK-0201 unblock progress: 0200 INTEGRATED (one of its two gates);
+  0190 remains BRIDGE_PREP — claimable per the day-wave broadcast.
+- owner evening items (not fleet-blocking): (1) commit the 51 untracked
+  WIZARD source files in Z:\Code\WIZARD per TASK-0166 REVIEW; (2) review
+  D-129 follow-through: TASK-0108 rev 3 is READY and claimable.
+- human decision needed: NO
+
 ## HEARTBEAT / coordinator-of-day claim (architect lane, Claude Code PC) — 2026-08-24 ~08:00 PDT
 
 - coordinator-of-day: CLAIMED by claude-architect-pc per BUS.md (this pushed
