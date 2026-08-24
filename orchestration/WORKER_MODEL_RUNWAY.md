@@ -2,7 +2,7 @@
 
 Worker lane: header-only models and adapters (no `main.cpp` / integrator hotspots).
 
-Branch tip: `codex/TASK-0204-owner-demo-audio-beats-model-slice-cursor` (`80599db6`).
+Branch tip: `codex/TASK-0197-chronicles-pane-model-slice-cursor` (`642043fc`).
 
 ## REVIEW_REQUESTED packets (cursor)
 
