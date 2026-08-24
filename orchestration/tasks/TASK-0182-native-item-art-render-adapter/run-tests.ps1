@@ -18,7 +18,10 @@ if ($LASTEXITCODE -ne 0) { throw "compile failed" }
 $link = 'call "' + $vcvars + '" && cl /nologo "' + $testObject + '" /Fe"' + $testExe + '"'
 & cmd.exe /d /s /c $link
 if ($LASTEXITCODE -ne 0) { throw "link failed" }
-& $testExe
+# The drift guard reads the ACTUAL shipped manifest at test time.
+$manifest = Join-Path $root "native\client\assets\wizard\items\manifest.json"
+if (-not (Test-Path $manifest)) { throw "items manifest not found: $manifest" }
+& $testExe $manifest
 if ($LASTEXITCODE -ne 0) { throw "tests failed" }
 python (Join-Path $root "native\tools\check_legacy_denylist.py")
 if ($LASTEXITCODE -ne 0) { throw "denylist failed" }
