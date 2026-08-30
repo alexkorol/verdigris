@@ -234,6 +234,70 @@ void seam_events_cannot_mutate_simulation() {
 
 }  // namespace
 
+void diagonal_facing_resolves_component_wise() {
+  using verdigris::client::facing_vector;
+  check(facing_vector("up-left").x == -1 && facing_vector("up-left").y == -1,
+        "facing: up-left resolves to (-1,-1)");
+  check(facing_vector("down-right").x == 1 && facing_vector("down-right").y == 1,
+        "facing: down-right resolves to (1,1)");
+  check(facing_vector("up-right").x == 1 && facing_vector("up-right").y == -1,
+        "facing: up-right resolves to (1,-1)");
+  check(facing_vector("left").x == -1 && facing_vector("left").y == 0,
+        "facing: plain left keeps its single axis");
+  check(facing_vector("").x == 0 && facing_vector("").y == 1,
+        "facing: unknown name falls back to down");
+}
+
+void server_messages_surface_as_toasts() {
+  WorldView world = world_with_player_and_foe("right");
+  PresentationFx fx;
+  PresentationEvent message{PresentationEventType::Message, "", "",
+                            "No road holds past a living Warden.", 0};
+  verdigris::client::apply_presentation_event(fx, world, message, 1);
+  check(fx.hint == "No road holds past a living Warden.",
+        "message: server text becomes the HUD toast");
+  check(fx.hint_ticks > 80, "message: toast outlives a key-echo hint");
+  PresentationEvent empty{PresentationEventType::Message, "", "", "", 0};
+  PresentationFx untouched;
+  verdigris::client::apply_presentation_event(untouched, world, empty, 1);
+  check(untouched.hint.empty(), "message: empty text never blanks a toast");
+}
+
+void npcs_ride_the_model_into_world_and_render_list() {
+  verdigris::client::ClientModel model;
+  model.player.x = 38.0;
+  model.player.y = 115.0;
+  model.player.alive = true;
+  verdigris::client::ClientNpc npc;
+  npc.id = 1;
+  npc.name = "Aldwyn the Guide";
+  npc.x = 34.0;
+  npc.y = 116.0;
+  npc.actions = {"talk", "examine"};
+  model.npcs.push_back(npc);
+  WorldView world;
+  verdigris::client::sync_world_from_model(world, model);
+  check(world.npcs.size() == 1, "npc: roster entry survives the sync");
+  check(world.npcs[0].name == "Aldwyn the Guide", "npc: name survives the sync");
+  const int expected_x = static_cast<int>(
+      std::lround(verdigris::client::protocol_to_world(34.0)));
+  check(world.npcs[0].position.x == expected_x,
+        "npc: tile position converts to world units");
+  check(world.npcs[0].actions.size() == 2 && world.npcs[0].actions[0] == "talk",
+        "npc: server verb list survives verbatim");
+  render::List rl;
+  camera2d::Camera camera;
+  camera.x = world.player.position.x;
+  camera.y = world.player.position.y;
+  PresentationFx fx;
+  verdigris::client::record_world_ops(rl, world, fx, camera, 960, 600);
+  bool saw_npc = false;
+  for (const auto& item : rl)
+    if (item.op == render::Op::Npc && item.label == "Aldwyn the Guide")
+      saw_npc = true;
+  check(saw_npc, "npc: render list carries a labeled Npc op");
+}
+
 int main() {
   constants_are_named_and_distinct();
   critical_damage_is_distinct();
@@ -243,6 +307,9 @@ int main() {
   spawn_detection_is_deterministic_and_once();
   monster_facing_is_no_longer_fabricated();
   seam_events_cannot_mutate_simulation();
+  diagonal_facing_resolves_component_wise();
+  server_messages_surface_as_toasts();
+  npcs_ride_the_model_into_world_and_render_list();
   std::printf("%s\n", failures == 0 ? "presentation events tests: PASS"
                                     : "presentation events tests: FAIL");
   return failures == 0 ? 0 : 1;

@@ -82,6 +82,15 @@ struct WorldCarriedItem {
   bool equipped = false;
 };
 
+// A town NPC as the presentation sees it: authoritative roster entry with a
+// world-unit position and the server-authored verb list.
+struct WorldNpc {
+  int id = 0;
+  std::string name;
+  verdigris::Vec2 position{};
+  std::vector<std::string> actions;
+};
+
 // TASK-0153: owner-facing expedition phase. The local path reads the core's
 // authoritative Simulation::instance().phase directly; the remote path
 // mirrors it from the already-authoritative session snapshot (living foes).
@@ -92,6 +101,7 @@ enum class ExpeditionPhaseView { Unknown, SlayWardens, ExtractCarriedValue };
 struct WorldView {
   WorldActor player;
   std::vector<WorldActor> monsters;
+  std::vector<WorldNpc> npcs;
   verdigris::Vec2 extraction{};
   bool has_extraction = false;
   std::string house_name = "House Verdigris";

@@ -91,6 +91,13 @@ ClientCommand ClientCommand::set_out(std::string scion_id) {
   command.target = std::move(scion_id);
   return command;
 }
+ClientCommand ClientCommand::npc_action(int npc_id, std::string action_id) {
+  ClientCommand command;
+  command.type = Type::NpcAction;
+  command.value = npc_id;
+  command.target = std::move(action_id);
+  return command;
+}
 
 LocalCoreSession::LocalCoreSession(std::uint64_t seed, std::string house_name)
     : seed_(seed), house_name_(std::move(house_name)) {}
@@ -153,8 +160,9 @@ void LocalCoreSession::submit(const ClientCommand& command) {
     case ClientCommand::Type::CreateScion:
     case ClientCommand::Type::SelectScion:
     case ClientCommand::Type::SetOut:
-      // The local simulation admits its single Scion at construction; these
-      // intents have no additional local authority to invoke.
+    case ClientCommand::Type::NpcAction:
+      // The local simulation admits its single Scion at construction and
+      // carries no town NPCs; these intents have no local authority to invoke.
       break;
   }
 }

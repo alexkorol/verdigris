@@ -6,10 +6,15 @@
 namespace verdigris::client {
 
 verdigris::Vec2 facing_vector(const std::string& facing) {
-  if (facing == "left" || facing == "west") return {-1, 0};
-  if (facing == "right" || facing == "east") return {1, 0};
-  if (facing == "up" || facing == "north") return {0, -1};
-  return {0, 1};
+  // Compound eight-way names ("up-left", ...) resolve component-wise so the
+  // rendered facing matches the diagonal the wire actually carried.
+  verdigris::Vec2 result{0, 0};
+  if (facing.find("left") != std::string::npos || facing == "west") result.x = -1;
+  else if (facing.find("right") != std::string::npos || facing == "east") result.x = 1;
+  if (facing.find("up") != std::string::npos || facing == "north") result.y = -1;
+  else if (facing.find("down") != std::string::npos || facing == "south") result.y = 1;
+  if (result.x == 0 && result.y == 0) result.y = 1;
+  return result;
 }
 
 double protocol_to_world(double protocol_units) {
@@ -153,6 +158,16 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     monster.elite = source.elite;
     world.monsters.push_back(std::move(monster));
   }
+  world.npcs.clear();
+  for (const auto& source : model.npcs) {
+    WorldNpc npc;
+    npc.id = source.id;
+    npc.name = source.name;
+    npc.position = {static_cast<int>(std::lround(protocol_to_world(source.x))),
+                    static_cast<int>(std::lround(protocol_to_world(source.y)))};
+    npc.actions = source.actions;
+    world.npcs.push_back(std::move(npc));
+  }
   world.carried.clear();
   for (const auto& item : model.inventory) {
     const std::string label = item.name.empty() ? item.id : item.name;
@@ -197,11 +212,17 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
   const double ex = static_cast<double>(at.x);
   const double ey = static_cast<double>(at.y);
   switch (event.type) {
-    case PresentationEventType::AttackStarted:
+    case PresentationEventType::AttackStarted: {
       fx.telegraphs.erase(event.actor_id);
+      // Orient the confirmed swing along the player's authoritative facing
+      // instead of a hardcoded eastward arc.
+      const double swing_angle =
+          std::atan2(static_cast<double>(world.player.facing.y),
+                     static_cast<double>(world.player.facing.x));
       fx.effects.push_back({EffectFx::Kind::Swing, static_cast<double>(world.player.position.x),
-                            static_cast<double>(world.player.position.y), 0.0, 0, 6});
+                            static_cast<double>(world.player.position.y), swing_angle, 0, 6});
       break;
+    }
     case PresentationEventType::DamageApplied: {
       fx.effects.push_back({EffectFx::Kind::Impact, ex, ey, 0.0, 0, 4});
       EffectFx flash;
@@ -294,6 +315,14 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       fx.screen_pulse_ticks = 8;
       break;
     case PresentationEventType::Message:
+      // Server messages carry the story: quest dialogue, trade receipts,
+      // extraction flavor. Surface them as a HUD toast — longer lines get
+      // longer to read — instead of dropping them on the floor.
+      if (!event.text.empty()) {
+        fx.hint = event.text;
+        fx.hint_ticks = std::min<int>(400, 100 + static_cast<int>(event.text.size()) * 2);
+      }
+      break;
     case PresentationEventType::SessionReady:
     case PresentationEventType::ItemEquipped:
     case PresentationEventType::ConnectionEstablished:
@@ -383,6 +412,11 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
     rl.push_back({render::Op::Monster, static_cast<double>(base.x),
                   static_cast<double>(base.y), 0.0, monster.life,
                   monster.elite ? "elite" : "monster"});
+  }
+  for (const auto& npc : world.npcs) {
+    const auto base = at(npc.position.x, npc.position.y);
+    rl.push_back({render::Op::Npc, static_cast<double>(base.x),
+                  static_cast<double>(base.y), 0.0, npc.id, npc.name});
   }
   for (const auto& loot : fx.loot_positions) {
     const auto base = at(loot.second.x, loot.second.y);

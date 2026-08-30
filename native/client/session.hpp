@@ -52,6 +52,8 @@ struct ClientCommand {
     CreateScion,    // `target` = Scion display name
     SelectScion,    // `target` = scion id; value!=0 => mortal oath
     SetOut,         // `target` = scion id (plain admission / road purse)
+    NpcAction,      // `target` = wire action id ("player:npc:talk", ...);
+                    // value = town NPC id
   };
 
   Type type = Type::Move;
@@ -72,6 +74,7 @@ struct ClientCommand {
   static ClientCommand create_scion(std::string scion_name);
   static ClientCommand select_scion(std::string scion_id, bool mortal_oath);
   static ClientCommand set_out(std::string scion_id);
+  static ClientCommand npc_action(int npc_id, std::string action_id);
 };
 
 class IClientSession {

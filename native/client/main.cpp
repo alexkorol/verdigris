@@ -936,7 +936,28 @@ void dispatch_skill(ClientState& state, const SkillInfo& skill) {
   else if (skill.action == verdigris::ActionType::Sweep) remote = "sweep";
   else if (skill.action == verdigris::ActionType::WarCry) remote = "war-cry";
   submit_action(state, skill.action, remote);
-  show_hint(state, std::string(skill.name) + " requested");
+  // Instant swing feedback on the remote path: the authoritative damage
+  // still round-trips, but the arc itself must not wait on the wire (a whiff
+  // that draws nothing reads as a dead input). Local play already gets its
+  // arc from the core's own events in the same frame.
+  if (is_remote(state) &&
+      (skill.action == verdigris::ActionType::Melee ||
+       skill.action == verdigris::ActionType::Thrust ||
+       skill.action == verdigris::ActionType::Sweep)) {
+    sync_world(state);
+    const auto& player = state.world.player;
+    if (player.alive) {
+      EffectFx arc;
+      arc.kind = skill.action == verdigris::ActionType::Sweep ? EffectFx::Kind::SweepArc
+                                                              : EffectFx::Kind::Swing;
+      arc.wx = static_cast<double>(player.position.x);
+      arc.wy = static_cast<double>(player.position.y);
+      arc.angle = std::atan2(static_cast<double>(player.facing.y),
+                             static_cast<double>(player.facing.x));
+      arc.ttl = 6;
+      state.effects.push_back(arc);
+    }
+  }
 }
 
 std::string nearest_pickup_id(const ClientState& state) {
@@ -2072,7 +2093,7 @@ void ingest_events(ClientState& state, const RECT& bounds) {
 struct DepthDraw {
   double depth = 0.0;
   int order = 0;
-  enum class What { Scenery, Player, Monster, Loot, Effect } what = What::Player;
+  enum class What { Scenery, Player, Monster, Npc, Loot, Effect } what = What::Player;
   std::size_t index = 0;
 };
 
@@ -2533,6 +2554,18 @@ void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List&
     if (!monster.alive) continue;
     const auto [mx, my] = to_map(monster.position.x, monster.position.y);
     fill_ellipse(dc, mx, my, 3, 3, RGB(196, 58, 48));
+    ++dots;
+  }
+
+  for (const auto& npc : world.npcs) {
+    // NPC blips clamp to the panel border so an off-map NPC still points
+    // the way — the town is far larger than the minimap window.
+    auto [mx, my] = to_map(npc.position.x, npc.position.y);
+    mx = std::clamp(mx, static_cast<int>(panel.left) + 3,
+                    static_cast<int>(panel.right) - 3);
+    my = std::clamp(my, static_cast<int>(panel.top) + 3,
+                    static_cast<int>(panel.bottom) - 3);
+    fill_ellipse(dc, mx, my, 3, 3, RGB(122, 168, 230));
     ++dots;
   }
 
@@ -3355,6 +3388,12 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                            static_cast<double>(world.monsters[i].position.x)),
                        2, DepthDraw::What::Monster, i});
   }
+  for (std::size_t i = 0; i < world.npcs.size(); ++i) {
+    order.push_back({camera2d::draw_order_key(
+                         static_cast<double>(world.npcs[i].position.y),
+                         static_cast<double>(world.npcs[i].position.x)),
+                     2, DepthDraw::What::Npc, i});
+  }
   std::vector<std::pair<std::string, verdigris::Vec2>> loot(
       state.loot_positions.begin(), state.loot_positions.end());
   std::sort(loot.begin(), loot.end(),
@@ -3495,6 +3534,58 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         }
         break;
       }
+      case DepthDraw::What::Npc: {
+        const auto& npc = world.npcs[entry.index];
+        const ScreenPoint base =
+            project(state.camera, bounds, npc.position.x, npc.position.y);
+        rl.push_back({render::Op::Npc, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, npc.id, npc.name});
+        draw_contact_shadow(dc, base, kTileUnits * 0.42);
+        // Friendly ring: a calm blue no hostile actor uses.
+        draw_team_ring(dc, base, kTileUnits * 0.55, RGB(122, 168, 230));
+        if (!draw_billboard_sprite(state.billboards, dc, state.billboards.player, base,
+                                   kTileUnits * 1.35, 0)) {
+          const int kit_height =
+              std::max(8, static_cast<int>(kTileUnits * 1.35 * base.scale));
+          if (const kit::Symbol* symbol = kit_symbol("player"))
+            draw_kit_symbol(dc, *symbol, base.x, base.y, kit_height, false);
+          else
+            draw_billboard(dc, base, kTileUnits * 0.62, kTileUnits * 1.35,
+                           RGB(96, 132, 178), RGB(150, 186, 226));
+        }
+        // Name plate: NPCs are the town's story surface; they stay labeled.
+        {
+          SetBkMode(dc, TRANSPARENT);
+          SetTextColor(dc, RGB(170, 202, 240));
+          SIZE extent{};
+          GetTextExtentPoint32A(dc, npc.name.c_str(),
+                                static_cast<int>(npc.name.size()), &extent);
+          const int name_y =
+              base.y - static_cast<int>(kTileUnits * 1.6 * base.scale) - 6;
+          TextOutA(dc, base.x - extent.cx / 2, name_y, npc.name.c_str(),
+                   static_cast<int>(npc.name.size()));
+          // Interaction prompt when the player is within hailing distance.
+          const int ddx = npc.position.x - world.player.position.x;
+          const int ddy = npc.position.y - world.player.position.y;
+          const double hail = kTileUnits * 1.9;
+          if (std::abs(ddx) <= hail && std::abs(ddy) <= hail) {
+            std::string verb = "Examine";
+            for (const auto& action : npc.actions) {
+              if (action == "talk") { verb = "Talk"; break; }
+              if (action == "trade") { verb = "Trade"; break; }
+              if (action == "bank") { verb = "Bank"; break; }
+            }
+            const std::string prompt = "[T] " + verb;
+            SIZE prompt_extent{};
+            GetTextExtentPoint32A(dc, prompt.c_str(),
+                                  static_cast<int>(prompt.size()), &prompt_extent);
+            SetTextColor(dc, RGB(239, 208, 116));
+            TextOutA(dc, base.x - prompt_extent.cx / 2, name_y - extent.cy - 2,
+                     prompt.c_str(), static_cast<int>(prompt.size()));
+          }
+        }
+        break;
+      }
       case DepthDraw::What::Loot: {
         const auto& entry_loot = loot[entry.index];
         const ScreenPoint base = project(state.camera, bounds, entry_loot.second.x,
@@ -3607,7 +3698,11 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     COLORREF accent = RGB(120, 214, 168);
     const bool carrying = !world.carried.empty() || world.carried_trophies > 0;
     if (!world.has_extraction) {
-      objective = "objective: explore the route";
+      // In town the NPC roster is the tell; guide toward the story loop
+      // instead of the placeholder explore line.
+      objective = !world.npcs.empty()
+                      ? "objective: hail an NPC with T - press N to take the tin road"
+                      : "objective: explore the route";
     } else if (world.expedition_phase == ExpeditionPhaseView::SlayWardens) {
       objective = "objective: slay the wardens (" +
                   std::to_string(world.monsters.size()) + " remain)";
@@ -3633,7 +3728,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         (world.scion_name.empty() ? std::string("(unnamed)") : world.scion_name);
     static constexpr char kControls[] =
         "WASD move | mouse aim | LMB attack | RMB/Space dash | Q E R skills | "
-        "X take | Z names | I gear";
+        "X take | Z names | I gear | T hail | N road";
     const std::string& art_text = state.billboards.status;
 
     // TASK-0159: pre-measure the controls hint and its deterministic
@@ -3812,25 +3907,78 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     SetTextColor(dc, RGB(150, 160, 150));
     char debug_line[256];
     std::snprintf(debug_line, sizeof(debug_line),
-                  "tick %llu | player %d,%d | zoom %.2f | effects %zu | telegraphs %zu",
+                  "tick %llu | player %d,%d | zoom %.2f | effects %zu | telegraphs %zu"
+                  " | monsters %zu | npcs %zu",
                   static_cast<unsigned long long>(world.tick),
                   player.position.x, player.position.y,
                   state.camera.zoom,
-                  state.effects.size(), state.telegraphs.size());
+                  state.effects.size(), state.telegraphs.size(),
+                  world.monsters.size(), world.npcs.size());
     TextOutA(dc, 18, 144, debug_line, static_cast<int>(strlen(debug_line)));
     char asset_line[256];
     std::snprintf(asset_line, sizeof(asset_line), "%s | %zu scenery | %s",
                   state.billboards.status.c_str(), state.scenery.size(),
                   state.billboards.scenery_status.c_str());
     TextOutA(dc, 18, 168, asset_line, static_cast<int>(strlen(asset_line)));
-    if (state.hint_ticks > 0 && !state.hint.empty()) {
-      SetTextColor(dc, RGB(239, 208, 116));
-      TextOutA(dc, 18, 192, state.hint.c_str(), static_cast<int>(state.hint.size()));
-    }
     int log_y = bounds.bottom - 24;
     for (auto it = state.event_log.rbegin(); it != state.event_log.rend(); ++it) {
       TextOutA(dc, 18, log_y, it->c_str(), static_cast<int>(it->size()));
       log_y -= 20;
+    }
+  }
+
+  // The hint/message toast is core play feedback — quest dialogue, trade
+  // receipts, pickup results — not debug telemetry. It renders on the
+  // normal HUD, centered above the quickbar, word-wrapped so long quest
+  // lines never run off the window, and never hides behind F3.
+  if (state.hint_ticks > 0 && !state.hint.empty()) {
+    SetBkMode(dc, TRANSPARENT);
+    const int max_width = std::max(160L, bounds.right - 48);
+    std::vector<std::string> lines;
+    std::string remaining = state.hint;
+    while (!remaining.empty() && lines.size() < 4) {
+      SIZE full{};
+      GetTextExtentPoint32A(dc, remaining.c_str(),
+                            static_cast<int>(remaining.size()), &full);
+      if (full.cx <= max_width) {
+        lines.push_back(remaining);
+        break;
+      }
+      // Longest prefix that fits, broken at the last space when one exists.
+      std::size_t fit = remaining.size();
+      while (fit > 1) {
+        SIZE part{};
+        GetTextExtentPoint32A(dc, remaining.c_str(), static_cast<int>(fit), &part);
+        if (part.cx <= max_width) break;
+        --fit;
+      }
+      std::size_t cut = remaining.rfind(' ', fit);
+      if (cut == std::string::npos || cut == 0) cut = fit;
+      lines.push_back(remaining.substr(0, cut));
+      remaining = remaining.substr(remaining[cut] == ' ' ? cut + 1 : cut);
+    }
+    int line_height = 18;
+    int widest = 0;
+    for (const auto& line : lines) {
+      SIZE extent{};
+      GetTextExtentPoint32A(dc, line.c_str(), static_cast<int>(line.size()),
+                            &extent);
+      widest = std::max(widest, static_cast<int>(extent.cx));
+      line_height = std::max(line_height, static_cast<int>(extent.cy));
+    }
+    const int block_height = line_height * static_cast<int>(lines.size());
+    const int toast_x =
+        std::max(12, static_cast<int>(bounds.right - widest) / 2);
+    const int toast_y = bounds.bottom - 96 - block_height;
+    RECT plate{toast_x - 8, toast_y - 4, toast_x + widest + 8,
+               toast_y + block_height + 4};
+    HBRUSH plate_brush = CreateSolidBrush(RGB(16, 22, 20));
+    FillRect(dc, &plate, plate_brush);
+    DeleteObject(plate_brush);
+    SetTextColor(dc, RGB(239, 208, 116));
+    for (std::size_t i = 0; i < lines.size(); ++i) {
+      TextOutA(dc, toast_x, toast_y + static_cast<int>(i) * line_height,
+               lines[i].c_str(), static_cast<int>(lines[i].size()));
     }
   }
 }
@@ -3984,7 +4132,10 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       auto* create = reinterpret_cast<CREATESTRUCT*>(lparam);
       SetWindowLongPtr(window, GWLP_USERDATA,
                        reinterpret_cast<LONG_PTR>(create->lpCreateParams));
-      return TRUE;
+      // DefWindowProc must still run WM_NCCREATE: it stores the window title
+      // passed to CreateWindowExA. Returning TRUE directly left every client
+      // window nameless in the taskbar and to other tools.
+      return DefWindowProc(window, message, wparam, lparam);
     }
     case WM_KEYDOWN:
       if (!state) break;
@@ -4029,6 +4180,37 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (wparam == 'Z') {
         state->loot_labels = !state->loot_labels;
         show_hint(*state, state->loot_labels ? "Loot names shown" : "Loot names hidden");
+      }
+      if (wparam == 'T' && state->session) {
+        sync_world(*state);
+        const verdigris::client::WorldNpc* nearest = nullptr;
+        double best = std::numeric_limits<double>::max();
+        for (const auto& npc : state->world.npcs) {
+          const double ddx = std::abs(static_cast<double>(
+              npc.position.x - state->world.player.position.x));
+          const double ddy = std::abs(static_cast<double>(
+              npc.position.y - state->world.player.position.y));
+          const double reach = std::max(ddx, ddy);
+          if (reach < best) { best = reach; nearest = &npc; }
+        }
+        if (nearest && best <= kTileUnits * 1.9) {
+          // Prefer the story verb, then commerce; mirror the server's
+          // action-id table so the request lands on the real handler.
+          std::string verb = nearest->actions.empty() ? "examine" : nearest->actions.front();
+          for (const char* preferred : {"talk", "trade", "bank"}) {
+            if (std::find(nearest->actions.begin(), nearest->actions.end(), preferred) !=
+                nearest->actions.end()) { verb = preferred; break; }
+          }
+          const char* action_id = verb == "talk" ? "player:npc:talk"
+                                : verb == "trade" ? "player:npc:trade"
+                                : verb == "bank" ? "player:screen:bank"
+                                : "player:npc:examine";
+          state->session->submit(
+              verdigris::client::ClientCommand::npc_action(nearest->id, action_id));
+          show_hint(*state, "You hail " + nearest->name);
+        } else if (!state->world.npcs.empty()) {
+          show_hint(*state, "No one is within hailing distance");
+        }
       }
       if (wparam == 'F') {
         submit_extract(*state);
@@ -5718,6 +5900,7 @@ const char* render_op_name(render::Op op) {
     case render::Op::Scenery: return "Scenery";
     case render::Op::Player: return "Player";
     case render::Op::Monster: return "Monster";
+    case render::Op::Npc: return "Npc";
     case render::Op::Telegraph: return "Telegraph";
     case render::Op::Swing: return "Swing";
     case render::Op::Sweep: return "Sweep";

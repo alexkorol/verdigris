@@ -47,6 +47,17 @@ struct ClientItemSlot {
   int attack_rating = 0;
 };
 
+// Town NPC roster entry, mirrored from the server's `npcs` snapshot array.
+// Positions are protocol tile units like monsters; `actions` carries the
+// server-authored verb list ("talk", "trade", "bank", "examine").
+struct ClientNpc {
+  int id = 0;
+  std::string name;
+  double x = 0.0;
+  double y = 0.0;
+  std::vector<std::string> actions;
+};
+
 struct ClientGroundItem {
   std::string uuid;
   std::string name;
@@ -133,6 +144,7 @@ struct ClientModel {
   std::vector<ClientItemSlot> inventory;
   std::vector<ClientGroundItem> ground;
   std::vector<ClientMonster> monsters;
+  std::vector<ClientNpc> npcs;
   ClientItemSlot equipped;
   ClientScene scene;
   std::string house_name;

@@ -61,6 +61,17 @@ const std::string* json_string(const JsonValue* value) {
   return value && value->string() ? value->string() : nullptr;
 }
 
+// Eight-way wire direction name for a quantized (dx, dy) input; matches the
+// server's direction table exactly. Empty for the zero vector.
+std::string direction_name(int dx, int dy) {
+  std::string name;
+  if (dy < 0) name = "up";
+  else if (dy > 0) name = "down";
+  if (dx < 0) name += name.empty() ? "left" : "-left";
+  else if (dx > 0) name += name.empty() ? "right" : "-right";
+  return name;
+}
+
 double json_number(const JsonValue* value, double fallback = 0.0) {
   if (!value || !value->number()) return fallback;
   return *value->number();
@@ -472,11 +483,11 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
                                         {"quickGuest", JsonValue(command.value != 0)}};
       break;
     case ClientCommand::Type::Move: {
-      const char* direction = "down";
-      if (command.dy < 0) direction = "up";
-      else if (command.dy > 0) direction = "down";
-      else if (command.dx < 0) direction = "left";
-      else if (command.dx > 0) direction = "right";
+      // Full eight-way serialization: the server's direction table accepts
+      // the compound names ("up-left", ...), so diagonals go on the wire
+      // instead of being collapsed to their vertical component.
+      const std::string direction = direction_name(command.dx, command.dy);
+      if (direction.empty()) return;
       last_facing_ = direction;
       model_.player.facing = direction;
       envelope.event = "player:move";
@@ -486,10 +497,9 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
     case ClientCommand::Type::Aim: {
       // Aim is presentation-local on this protocol: no envelope, facing
       // updates the model so the next skill trigger carries direction.
-      if (command.dy < 0) last_facing_ = "up";
-      else if (command.dy > 0) last_facing_ = "down";
-      else if (command.dx < 0) last_facing_ = "left";
-      else if (command.dx > 0) last_facing_ = "right";
+      const std::string direction = direction_name(command.dx, command.dy);
+      if (direction.empty()) return;
+      last_facing_ = direction;
       model_.player.facing = last_facing_;
       return;
     }
@@ -559,6 +569,17 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       envelope.event = "chronicles:scion:set-out";
       envelope.data = JsonValue::Object{{"scionId", JsonValue(command.target)}};
       break;
+    case ClientCommand::Type::NpcAction: {
+      // The server dispatches NPC verbs through the context-menu action
+      // surface: queueItem carries the actionId and the NPC item reference.
+      envelope.event = "player:context-menu:action";
+      envelope.data = JsonValue::Object{
+          {"queueItem",
+           JsonValue::Object{
+               {"action", JsonValue::Object{{"actionId", JsonValue(command.target)}}},
+               {"item", JsonValue::Object{{"id", JsonValue(command.value)}}}}}};
+      break;
+    }
   }
   if (!envelope.event.empty()) send_envelope(envelope);
 }
@@ -774,6 +795,51 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
          "The chronicle records the fall of " + model_.chronicle.fallen.name + ".", 0});
     return;
   }
+  if (envelope.event == "open:screen") {
+    // The client has no shop/bank panes yet; summarize the authoritative
+    // screen payload as a message so a trade/bank hail always answers.
+    const auto* data = envelope.data.get("data");
+    const auto* screen = json_string(data ? data->get("screen") : nullptr);
+    const auto* payload = data ? data->get("payload") : nullptr;
+    if (screen && payload) {
+      std::string summary;
+      if (*screen == "shop") {
+        if (const auto* name = json_string(payload->get("name"))) summary = *name + ":";
+        else summary = "Stall:";
+        if (const auto* items = payload->get("items"); items && items->array()) {
+          for (const auto& row : *items->array()) {
+            const auto* item_name = json_string(row.get("name"));
+            const int price = static_cast<int>(json_number(row.get("price"), 0.0));
+            if (item_name)
+              summary += " " + *item_name + " " + std::to_string(price) + "g,";
+          }
+          if (!summary.empty() && summary.back() == ',') summary.pop_back();
+        }
+        summary += " - carrying " +
+                   std::to_string(static_cast<int>(
+                       json_number(payload->get("carriedCoins"), 0.0))) +
+                   "g";
+      } else if (*screen == "bank") {
+        int treasury = 0;
+        if (const auto* house = payload->get("house"))
+          treasury = static_cast<int>(json_number(house->get("treasury"), 0.0));
+        int stored = 0;
+        if (const auto* items = payload->get("items"); items && items->array())
+          stored = static_cast<int>(items->array()->size());
+        summary = "Countinghouse: House treasury " + std::to_string(treasury) +
+                  "g, " + std::to_string(stored) + " items stored, carrying " +
+                  std::to_string(static_cast<int>(
+                      json_number(payload->get("carriedCoins"), 0.0))) +
+                  "g";
+      }
+      if (!summary.empty()) {
+        model_.last_message = summary;
+        pending_events_.push_back(
+            {PresentationEventType::Message, "", "", summary, 0});
+      }
+    }
+    return;
+  }
   if (envelope.event == "player:session-replaced") {
     suppress_retry_ = true;
     fail(ConnectionState::Disconnected, "session replaced by a newer connection");
@@ -806,6 +872,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     }
     if (!model_.scene.id.empty()) model_.player.scene_id = model_.scene.id;
     model_.monsters.clear();
+    model_.npcs.clear();
     model_.ground.clear();
     return;
   }
@@ -948,6 +1015,21 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         }
         monster.alive = monster.life > 0;
         model_.monsters.push_back(std::move(monster));
+      }
+    }
+    if (const auto* npcs = state->get("npcs"); npcs && npcs->array()) {
+      model_.npcs.clear();
+      for (const auto& entry : *npcs->array()) {
+        ClientNpc npc;
+        npc.id = static_cast<int>(json_number(entry.get("id"), 0.0));
+        if (const auto* name = json_string(entry.get("name"))) npc.name = *name;
+        npc.x = json_number(entry.get("x"), 0.0);
+        npc.y = json_number(entry.get("y"), 0.0);
+        if (const auto* actions = entry.get("actions"); actions && actions->array()) {
+          for (const auto& action : *actions->array())
+            if (action.string()) npc.actions.push_back(*action.string());
+        }
+        model_.npcs.push_back(std::move(npc));
       }
     }
     if (const auto* ground = state->get("groundItems"); ground && ground->array()) {
