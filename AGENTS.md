@@ -41,7 +41,40 @@ what may cross into native production code.
 The native workspace is `native/`. Keep simulation deterministic, fixed-step,
 headless, and independent of windowing, GPU, sockets, SQLite, DOM, and assets.
 Presentation requests commands; simulation resolves them and emits events.
-Build and test the core before polishing a client.
+
+The deterministic core is built and green. **The player-facing client is the
+product bottleneck now.** "Build the core before polishing a client" served
+its era and is retired: it taught a generation of lanes to ship provable
+geometry and skeleton chrome while the owner repeatedly reported an
+unplayable-feeling game. Do not use core priority to defer experience work.
+
+## Native presentation gate (binding, owner-ruled 2026-08-30)
+
+The repository's gates were all correctness-shaped (render-list ops,
+determinism, denylists) and none were experience-shaped, which is why "1 FPS
+under input", "invisible quest text", and "tiny window" each shipped behind a
+fully green suite. These rules close that hole:
+
+1. **See the game before claiming presentation work.** Launch it
+   (`native/tools/play-native.ps1`), capture the live window
+   (`native/tools/capture-window.ps1 -OutPath <png>`), and look at the
+   capture. Agent-harness desktop screenshots are typically masked; the
+   capture tool is the supported way for an agent to see pixels. A
+   presentation claim without a viewed capture is an unverified claim.
+2. **Frame budget is a machine gate.** `--scenario all` includes
+   `frame-budget` (20 real 32bpp frames at 3440x1440 through the production
+   paint path, <40 ms average). Never raise the bound to pass; find the
+   cost. The F3 overlay shows live paint milliseconds.
+3. **Input handlers must be trivial.** WM_MOUSEMOVE can arrive at 1000 Hz
+   and WM_PAINT/WM_TIMER are Windows' lowest-priority messages: per-event
+   simulation syncs or invalidations starve the frame loop into single-digit
+   FPS. Store input; let the fixed tick consume it.
+4. **All HUD chrome goes through `native/client/ui_skin.hpp`** (GDI+ panels,
+   orbs, slots, chips, type ramp). Raw-GDI rectangles for UI surfaces are a
+   regression to the skeleton era. Extend the skin; don't bypass it.
+5. **Unbounded presentation state is a defect.** Anything that grows per
+   input or per event (effects, logs, labels) needs a cap or rate limit at
+   the point of growth.
 
 ## Historical browser reference
 
