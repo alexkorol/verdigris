@@ -323,6 +323,11 @@ struct ClientState {
   bool loot_labels = false;
   bool gear_overlay = false;
   bool debug_overlay = false;
+  // Last full paint_scene duration in milliseconds (F3 overlay); the honest
+  // per-frame budget readout that catches presentation-cost regressions.
+  double last_paint_ms = 0.0;
+  // Tick stamp of the last client-predicted swing arc (rate limit).
+  std::uint64_t last_predicted_swing_tick = ~0ULL;
   // Borderless windowed-fullscreen is the default presentation; F11 drops
   // back to a movable window for side-by-side development.
   bool fullscreen_window = true;
@@ -966,7 +971,13 @@ void dispatch_skill(ClientState& state, const SkillInfo& skill) {
        skill.action == verdigris::ActionType::Sweep)) {
     sync_world(state);
     const auto& player = state.world.player;
-    if (player.alive) {
+    // One predicted arc per presentation tick: input can arrive far faster
+    // than frames (auto-clickers, synthetic floods), and an unbounded
+    // effects vector is a frame-time leak. The authoritative attack rate is
+    // enforced server-side either way.
+    if (player.alive && state.world.tick != state.last_predicted_swing_tick &&
+        state.effects.size() < 128) {
+      state.last_predicted_swing_tick = state.world.tick;
       EffectFx arc;
       arc.kind = skill.action == verdigris::ActionType::Sweep ? EffectFx::Kind::SweepArc
                                                               : EffectFx::Kind::Swing;
@@ -1456,10 +1467,22 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
 
   const double range = static_cast<double>(verdigris::world_scale::kArenaHalfExtent);
   const double tile = kTileUnits;
-  const int start_tx = static_cast<int>(std::floor((camera.x - range) / tile));
-  const int end_tx = static_cast<int>(std::ceil((camera.x + range) / tile));
-  const int start_ty = static_cast<int>(std::floor((camera.y - range) / tile));
-  const int end_ty = static_cast<int>(std::ceil((camera.y + range) / tile));
+  // Clip the tile loop to what the window can actually show (plus a one-tile
+  // margin), bounded by the historical +-arena envelope. At fullscreen zoom
+  // the arena box is far larger than the viewport, and unclipped StretchBlts
+  // for off-screen tiles were most of the frame cost.
+  const double half_w_units =
+      (static_cast<double>(bounds.right) * 0.5) / std::max(0.05, camera.zoom) +
+      tile;
+  const double half_h_units =
+      (static_cast<double>(bounds.bottom) * 0.5) / std::max(0.05, camera.zoom) +
+      tile;
+  const double span_x = std::min(range, half_w_units);
+  const double span_y = std::min(range, half_h_units);
+  const int start_tx = static_cast<int>(std::floor((camera.x - span_x) / tile));
+  const int end_tx = static_cast<int>(std::ceil((camera.x + span_x) / tile));
+  const int start_ty = static_cast<int>(std::floor((camera.y - span_y) / tile));
+  const int end_ty = static_cast<int>(std::ceil((camera.y + span_y) / tile));
   const bool theme_alt = terrain_theme_prefers_alt(route_id);
   const double half = tile * 0.5;
 
@@ -3898,11 +3921,11 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     SetTextColor(dc, RGB(150, 160, 150));
     char debug_line[256];
     std::snprintf(debug_line, sizeof(debug_line),
-                  "tick %llu | player %d,%d | zoom %.2f | effects %zu | telegraphs %zu"
-                  " | monsters %zu | npcs %zu",
+                  "tick %llu | player %d,%d | zoom %.2f | paint %.1fms | effects %zu"
+                  " | telegraphs %zu | monsters %zu | npcs %zu",
                   static_cast<unsigned long long>(world.tick),
                   player.position.x, player.position.y,
-                  state.camera.zoom,
+                  state.camera.zoom, state.last_paint_ms,
                   state.effects.size(), state.telegraphs.size(),
                   world.monsters.size(), world.npcs.size());
     TextOutA(dc, 18, 144, debug_line, static_cast<int>(strlen(debug_line)));
@@ -4027,7 +4050,15 @@ void paint(HWND window, HDC dc) {
   HDC memory_dc = CreateCompatibleDC(dc);
   HBITMAP bitmap = CreateCompatibleBitmap(dc, bounds.right, bounds.bottom);
   HGDIOBJ old_bitmap = SelectObject(memory_dc, bitmap);
+  LARGE_INTEGER paint_freq{}, paint_begin{}, paint_end{};
+  QueryPerformanceFrequency(&paint_freq);
+  QueryPerformanceCounter(&paint_begin);
   paint_scene(*state, memory_dc, bounds);
+  QueryPerformanceCounter(&paint_end);
+  if (paint_freq.QuadPart > 0)
+    state->last_paint_ms = 1000.0 *
+                           static_cast<double>(paint_end.QuadPart - paint_begin.QuadPart) /
+                           static_cast<double>(paint_freq.QuadPart);
   BitBlt(dc, 0, 0, bounds.right, bounds.bottom, memory_dc, 0, 0, SRCCOPY);
   SelectObject(memory_dc, old_bitmap);
   DeleteObject(bitmap);
@@ -4290,13 +4321,14 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (wparam == 'D') state->d = false;
       break;
     case WM_MOUSEMOVE:
+      // Store only. A gaming mouse delivers WM_MOUSEMOVE at up to 1000 Hz;
+      // any per-event simulation or invalidation work here floods the queue
+      // and starves WM_PAINT/WM_TIMER (both lowest-priority), which is how
+      // the client ground to a crawl under move+attack input. The 20 Hz tick
+      // dispatches aim from the stored position and repaints.
       if (state) {
         state->mouse.x = GET_X_LPARAM(lparam);
         state->mouse.y = GET_Y_LPARAM(lparam);
-        RECT bounds;
-        GetClientRect(window, &bounds);
-        dispatch_aim_if_changed(*state, bounds);
-        InvalidateRect(window, nullptr, FALSE);
       }
       break;
     case WM_MOUSEWHEEL:
@@ -5904,6 +5936,52 @@ int scenario_hud_pane_readability() {
   return 0;
 }
 
+// Machine-checkable presentation budget: paints real fullscreen-sized 32bpp
+// frames through the production paint_scene path and fails when the average
+// frame cost would visibly stutter the 20 Hz tick. The bound is deliberately
+// generous (regressions of the kind this gate exists for cost hundreds of
+// milliseconds); the measured value prints so drift is visible in every run.
+int scenario_frame_budget() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  const int width = 3440;
+  const int height = 1440;
+  state.camera.zoom = kCameraDefaultZoom * zoom_height_factor(height);
+  BITMAPINFO info{};
+  info.bmiHeader.biSize = sizeof(info.bmiHeader);
+  info.bmiHeader.biWidth = width;
+  info.bmiHeader.biHeight = -height;
+  info.bmiHeader.biPlanes = 1;
+  info.bmiHeader.biBitCount = 32;
+  info.bmiHeader.biCompression = BI_RGB;
+  void* bits = nullptr;
+  HDC dc = CreateCompatibleDC(nullptr);
+  HBITMAP bitmap = CreateDIBSection(dc, &info, DIB_RGB_COLORS, &bits, nullptr, 0);
+  scenario_check(bitmap != nullptr, "frame-budget: 32bpp surface allocated");
+  if (!bitmap) { DeleteDC(dc); return scenario_failures; }
+  HGDIOBJ old = SelectObject(dc, bitmap);
+  RECT bounds{0, 0, width, height};
+  paint_scene(state, dc, bounds);  // warm caches (fonts, GDI+ startup)
+  LARGE_INTEGER freq{}, begin{}, end{};
+  QueryPerformanceFrequency(&freq);
+  QueryPerformanceCounter(&begin);
+  constexpr int kFrames = 20;
+  for (int i = 0; i < kFrames; ++i) paint_scene(state, dc, bounds);
+  QueryPerformanceCounter(&end);
+  const double avg_ms = 1000.0 *
+                        static_cast<double>(end.QuadPart - begin.QuadPart) /
+                        static_cast<double>(freq.QuadPart) / kFrames;
+  std::printf("    frame-budget: %.1f ms average over %d frames at %dx%d\n",
+              avg_ms, kFrames, width, height);
+  scenario_check(avg_ms < 40.0,
+                 "frame-budget: fullscreen frame stays under 40 ms");
+  SelectObject(dc, old);
+  DeleteObject(bitmap);
+  DeleteDC(dc);
+  return scenario_failures;
+}
+
 int run_scenarios(const std::string& which) {
   struct Entry {
     const char* name;
@@ -5922,6 +6000,7 @@ int run_scenarios(const std::string& which) {
       {"animation-vfx-phase-a", scenario_animation_vfx_phase_a},
       {"progression-surface", scenario_progression_surface},
       {"hud-pane-readability", scenario_hud_pane_readability},
+      {"frame-budget", scenario_frame_budget},
   };
   int total_failures = 0;
   for (const auto& entry : entries) {
