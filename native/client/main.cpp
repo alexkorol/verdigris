@@ -40,6 +40,7 @@ namespace phase_a = verdigris::client::phase_a;
 // The generator emits standards-conforming literals ("22.f"), so no
 // reserved-suffix compatibility operators are needed here.
 #include "assets/generated/visual_kit.h"
+#include "ui_skin.hpp"
 
 namespace {
 
@@ -78,6 +79,12 @@ constexpr double kCameraDefaultZoom = 0.85;
 // is applied here rather than re-scaling the whole world.
 constexpr double kCameraMinZoom = kCameraDefaultZoom * 0.5;
 constexpr double kCameraMaxZoom = kCameraDefaultZoom * 2.0;
+// The zoom constants were tuned on a 600px-tall window. Fullscreen keeps the
+// same on-screen world scale by growing zoom with window height; the shipped
+// test resolutions (height 600) resolve to a factor of exactly 1.
+inline double zoom_height_factor(int height) {
+  return std::max(1.0, static_cast<double>(height) / 600.0);
+}
 // Adjustable top-down camera: zoom scales world units to pixels uniformly.
 struct Camera {
   double x = 0.0;
@@ -231,46 +238,56 @@ bool hud_rects_overlap(const HudRect& a, const HudRect& b) {
          b.y < a.y + a.h;
 }
 
+// Integer HUD scale by window height: the shipped 960x600/1366x768 layouts
+// keep their exact historical geometry (scale 1, so every readability
+// contract number is unchanged), while fullscreen 1440p+ doubles the chrome
+// instead of shrinking it to ant size.
+int hud_scale(int height) { return std::max(1, height / 700); }
+
 // The shipped gear pane. Identical numbers to the historical painter, now
 // shared with the planner so global HUD text can never be placed onto it.
 HudRect gear_pane_rect(int width, int height) {
-  constexpr int kPaneW = 380;
-  constexpr int kPaneTop = 64;
-  const int x = std::max(24, width - kPaneW - 24);
-  const int bottom = std::min(height - 28, kPaneTop + 430);
-  return {x, kPaneTop, std::min(kPaneW, std::max(0, width - x)),
-          std::max(0, bottom - kPaneTop)};
+  const int s = hud_scale(height);
+  const int pane_w = 380 * s;
+  const int pane_top = 64 * s;
+  const int x = std::max(24, width - pane_w - 24);
+  const int bottom = std::min(height - 28, pane_top + 430 * s);
+  return {x, pane_top, std::min(pane_w, std::max(0, width - x)),
+          std::max(0, bottom - pane_top)};
 }
 
-HudRect minimap_rect() {
-  constexpr int kSize = 108;
-  constexpr int kMargin = 12;
-  return {kMargin, kMargin, kSize, kSize};
+HudRect minimap_rect(int height) {
+  const int s = hud_scale(height);
+  const int size = 108 * s;
+  const int margin = 12 * s;
+  return {margin, margin, size, size};
 }
 
 constexpr int kVitalOrbRadius = 34;
 
 HudRect vital_orb_rect(int width, int height, bool resource) {
-  const int cx = resource ? width - 18 - kVitalOrbRadius : 18 + kVitalOrbRadius;
-  const int cy = height - 18 - kVitalOrbRadius;
+  const int radius = kVitalOrbRadius * hud_scale(height);
+  const int cx = resource ? width - 18 - radius : 18 + radius;
+  const int cy = height - 18 - radius;
   // +3 clears the low-life pulse ring, the widest the orb ever paints.
-  const int r = kVitalOrbRadius + 3;
+  const int r = radius + 3;
   return {cx - r, cy - r, r * 2, r * 2};
 }
 
 constexpr int kQuickbarSlotCount = 4;
 
 HudRect quickbar_strip_rect(int width, int height) {
-  constexpr int kSlotW = 58;
-  constexpr int kSlotH = 52;
-  constexpr int kGap = 8;
+  const int s = hud_scale(height);
+  const int slot_w = 58 * s;
+  const int slot_h = 52 * s;
+  const int gap = 8 * s;
   const int strip_w =
-      kQuickbarSlotCount * kSlotW + (kQuickbarSlotCount - 1) * kGap;
+      kQuickbarSlotCount * slot_w + (kQuickbarSlotCount - 1) * gap;
   const int bottom = height - 18;
-  const int top = bottom - kSlotH;
+  const int top = bottom - slot_h;
   const int left = (width - strip_w) / 2;
   // The painted plate extends 10 left/right of the slots and 8 above/4 below.
-  return {left - 10, top - 8, strip_w + 20, kSlotH + 12};
+  return {left - 10, top - 8, strip_w + 20, slot_h + 12};
 }
 
 struct ClientState {
@@ -306,6 +323,9 @@ struct ClientState {
   bool loot_labels = false;
   bool gear_overlay = false;
   bool debug_overlay = false;
+  // Borderless windowed-fullscreen is the default presentation; F11 drops
+  // back to a movable window for side-by-side development.
+  bool fullscreen_window = true;
   std::size_t selected_item = 0;
   std::string hint;
   int hint_ticks = 0;
@@ -2116,22 +2136,13 @@ int paint_status_chip(HDC dc, int x, int y, const std::string& text,
                       COLORREF accent, render::List& rl) {
   SIZE extent{};
   GetTextExtentPoint32A(dc, text.c_str(), static_cast<int>(text.size()), &extent);
-  const int width = extent.cx + 16;
-  const int height = extent.cy + 8;
+  const int width = extent.cx + 20;
+  const int height = extent.cy + 10;
   RECT rect{x, y, x + width, y + height};
-  HBRUSH bg = CreateSolidBrush(RGB(25, 33, 37));
-  FillRect(dc, &rect, bg);
-  DeleteObject(bg);
-  HPEN pen = CreatePen(PS_SOLID, 1, accent);
-  HGDIOBJ old_pen = SelectObject(dc, pen);
-  HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
-  Rectangle(dc, rect.left, rect.top, rect.right, rect.bottom);
-  SelectObject(dc, old_brush);
-  SelectObject(dc, old_pen);
-  DeleteObject(pen);
+  skin::chip(dc, rect, accent);
   SetBkMode(dc, TRANSPARENT);
   SetTextColor(dc, accent);
-  TextOutA(dc, x + 8, y + 4, text.c_str(), static_cast<int>(text.size()));
+  TextOutA(dc, x + 12, y + 5, text.c_str(), static_cast<int>(text.size()));
   rl.push_back({render::Op::Hud, static_cast<double>(x), static_cast<double>(y),
                 0.0, 0, text});
   return width;
@@ -2156,17 +2167,8 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   const int bottom = top + pane.h;
   state.hud_rect_trace.push_back({"pane-frame", pane});
 
-  HBRUSH panel = CreateSolidBrush(RGB(25, 33, 37));
   RECT panel_rect{left, top, right, bottom};
-  FillRect(dc, &panel_rect, panel);
-  DeleteObject(panel);
-  HPEN border = CreatePen(PS_SOLID, 2, RGB(104, 160, 137));
-  HGDIOBJ old_pen = SelectObject(dc, border);
-  HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
-  Rectangle(dc, left, top, right, bottom);
-  SelectObject(dc, old_brush);
-  SelectObject(dc, old_pen);
-  DeleteObject(border);
+  skin::panel(dc, panel_rect, skin::kVerdigris, 245, 8.0f);
 
   SetBkMode(dc, TRANSPARENT);
 
@@ -2346,34 +2348,26 @@ void draw_orb(HDC dc, int cx, int cy, int radius, double ratio, COLORREF fill,
   const int bounded = static_cast<int>(std::clamp(ratio, 0.0, 1.0) * 100.0);
   rl.push_back({render::Op::Orb, static_cast<double>(cx), static_cast<double>(cy),
                 static_cast<double>(radius), bounded, label});
-  fill_ellipse(dc, cx, cy, radius, radius, RGB(14, 18, 20));
-  if (ratio > 0.0) {
-    HRGN outer = CreateEllipticRgn(cx - radius, cy - radius, cx + radius, cy + radius);
-    const int fill_top =
-        cy + radius - static_cast<int>(static_cast<double>(radius) * 2.0 * ratio);
-    HRGN fill_rgn = CreateRectRgn(cx - radius, fill_top, cx + radius, cy + radius);
-    HRGN clip = CreateRectRgn(0, 0, 0, 0);
-    CombineRgn(clip, outer, fill_rgn, RGN_AND);
-    SelectClipRgn(dc, clip);
-    fill_ellipse(dc, cx, cy, radius - 2, radius - 2, fill);
-    SelectClipRgn(dc, nullptr);
-    DeleteObject(clip);
-    DeleteObject(fill_rgn);
-    DeleteObject(outer);
-  }
-  const int pulse_r = pulse ? radius + 3 : radius;
-  ring_ellipse(dc, cx, cy, pulse_r, pulse_r, pulse ? RGB(220, 72, 58) : rim, pulse ? 3 : 2);
+  // Skinned glass sphere: `fill` is the deep liquid tone, `rim` doubles as
+  // the bright gradient head so existing call sites keep their palette.
+  skin::orb(dc, cx, cy, radius, ratio, fill, rim, rim, pulse);
   SetBkMode(dc, TRANSPARENT);
-  SetTextColor(dc, RGB(232, 223, 202));
-  const int text_x = cx - static_cast<int>(caption.size()) * 3;
-  TextOutA(dc, text_x, cy - 6, caption.c_str(), static_cast<int>(caption.size()));
+  SetTextColor(dc, skin::kInk);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_body_bold());
+  SIZE caption_extent{};
+  GetTextExtentPoint32A(dc, caption.c_str(), static_cast<int>(caption.size()),
+                        &caption_extent);
+  TextOutA(dc, cx - caption_extent.cx / 2, cy - caption_extent.cy / 2,
+           caption.c_str(), static_cast<int>(caption.size()));
+  SelectObject(dc, old_font);
 }
 
 void paint_vital_orbs(const WorldActor& player, std::uint64_t tick, int screen_pulse_ticks,
                       HDC dc, const RECT& bounds, render::List& rl,
                       std::vector<std::pair<std::string, HudRect>>* trace) {
   if (!player.alive && player.life <= 0 && player.life_max <= 0) return;
-  const int radius = kVitalOrbRadius;
+  const int radius =
+      kVitalOrbRadius * hud_scale(static_cast<int>(bounds.bottom));
   const int bottom = static_cast<int>(bounds.bottom) - 18;
   const int left_cx = 18 + radius;
   const int right_cx = static_cast<int>(bounds.right) - 18 - radius;
@@ -2429,30 +2423,22 @@ void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List
   const WorldActor& player = state.world.player;
   const verdigris::PresentationCatalog catalog =
       verdigris::Simulation::presentation_catalog();
-  constexpr int slot_w = 58;
-  constexpr int slot_h = 52;
-  constexpr int gap = 8;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int slot_w = 58 * s;
+  const int slot_h = 52 * s;
+  const int gap = 8 * s;
   const int count = static_cast<int>(sizeof(kQuickbarSlots) / sizeof(kQuickbarSlots[0]));
   const int strip_w = count * slot_w + (count - 1) * gap;
   const int bottom = static_cast<int>(bounds.bottom) - 18;
   const int top = bottom - slot_h;
   const int left = (static_cast<int>(bounds.right) - strip_w) / 2;
 
-  HBRUSH strip_bg = CreateSolidBrush(RGB(18, 24, 26));
   RECT strip{left - 10, top - 8, left + strip_w + 10, bottom + 4};
   state.hud_rect_trace.push_back(
       {"quickbar-strip",
        {strip.left, strip.top, strip.right - strip.left,
         strip.bottom - strip.top}});
-  FillRect(dc, &strip, strip_bg);
-  DeleteObject(strip_bg);
-  HPEN strip_pen = CreatePen(PS_SOLID, 1, RGB(86, 116, 104));
-  HGDIOBJ old_strip_pen = SelectObject(dc, strip_pen);
-  HGDIOBJ old_strip_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
-  Rectangle(dc, strip.left, strip.top, strip.right, strip.bottom);
-  SelectObject(dc, old_strip_brush);
-  SelectObject(dc, old_strip_pen);
-  DeleteObject(strip_pen);
+  skin::panel(dc, strip);
 
   for (int i = 0; i < count; ++i) {
     const QuickbarSlotDef& slot = kQuickbarSlots[i];
@@ -2468,17 +2454,8 @@ void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List
         slot.action == verdigris::ActionType::WarCry && player.war_cry_ticks_remaining > 0;
 
     RECT box{slot_left, top, slot_left + slot_w, bottom};
-    HBRUSH fill = CreateSolidBrush(available ? RGB(35, 42, 44) : RGB(29, 33, 34));
-    FillRect(dc, &box, fill);
-    DeleteObject(fill);
-    HPEN border = CreatePen(PS_SOLID, 1,
-                            available ? RGB(120, 164, 142) : RGB(63, 70, 68));
-    HGDIOBJ old_pen = SelectObject(dc, border);
-    HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
-    Rectangle(dc, box.left, box.top, box.right, box.bottom);
-    SelectObject(dc, old_brush);
-    SelectObject(dc, old_pen);
-    DeleteObject(border);
+    skin::slot(dc, box, active ? skin::kGold : skin::kVerdigris,
+               available || active);
 
     if (cooldown && player.cooldown_ticks > 0) {
       const int max_ticks = 30;
@@ -2497,28 +2474,21 @@ void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List
 
     SetBkMode(dc, TRANSPARENT);
     SetTextColor(dc, RGB(239, 208, 116));
-    TextOutA(dc, box.left + 6, box.top + 4, slot.key_label,
+    TextOutA(dc, box.left + 6 * s, box.top + 4 * s, slot.key_label,
              static_cast<int>(strlen(slot.key_label)));
     SetTextColor(dc, available ? RGB(205, 221, 207) : RGB(112, 119, 115));
-    TextOutA(dc, box.left + 6, box.top + 22, slot.name, static_cast<int>(strlen(slot.name)));
+    TextOutA(dc, box.left + 6 * s, box.top + 22 * s, slot.name,
+             static_cast<int>(strlen(slot.name)));
   }
 }
 
 void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
-  const HudRect map = minimap_rect();
-  constexpr int kSize = 108;
+  const HudRect map = minimap_rect(static_cast<int>(bounds.bottom));
+  const int kSize = map.w;
+  const int s = std::max(1, map.w / 108);
   RECT panel{map.x, map.y, map.x + map.w, map.y + map.h};
   state.hud_rect_trace.push_back({"minimap", map});
-  HBRUSH panel_bg = CreateSolidBrush(RGB(16, 22, 24));
-  FillRect(dc, &panel, panel_bg);
-  DeleteObject(panel_bg);
-  HPEN panel_pen = CreatePen(PS_SOLID, 1, RGB(86, 116, 104));
-  HGDIOBJ old_pen = SelectObject(dc, panel_pen);
-  HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
-  Rectangle(dc, panel.left, panel.top, panel.right, panel.bottom);
-  SelectObject(dc, old_brush);
-  SelectObject(dc, old_pen);
-  DeleteObject(panel_pen);
+  skin::panel(dc, panel);
 
   const WorldView& world = state.world;
   const double arena = static_cast<double>(verdigris::world_scale::kArenaHalfExtent);
@@ -2540,20 +2510,20 @@ void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List&
     if (mx < panel.left + 2 || mx >= panel.right - 2 || my < panel.top + 2 ||
         my >= panel.bottom - 2)
       continue;
-    fill_ellipse(dc, mx, my, 2, 2, RGB(96, 112, 98));
+    fill_ellipse(dc, mx, my, 2 * s, 2 * s, RGB(96, 112, 98));
     ++dots;
   }
 
   if (world.has_extraction) {
     const auto [mx, my] = to_map(world.extraction.x, world.extraction.y);
-    fill_ellipse(dc, mx, my, 4, 4, RGB(239, 208, 116));
+    fill_ellipse(dc, mx, my, 4 * s, 4 * s, RGB(239, 208, 116));
     ++dots;
   }
 
   for (const auto& monster : world.monsters) {
     if (!monster.alive) continue;
     const auto [mx, my] = to_map(monster.position.x, monster.position.y);
-    fill_ellipse(dc, mx, my, 3, 3, RGB(196, 58, 48));
+    fill_ellipse(dc, mx, my, 3 * s, 3 * s, RGB(196, 58, 48));
     ++dots;
   }
 
@@ -2565,22 +2535,22 @@ void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List&
                     static_cast<int>(panel.right) - 3);
     my = std::clamp(my, static_cast<int>(panel.top) + 3,
                     static_cast<int>(panel.bottom) - 3);
-    fill_ellipse(dc, mx, my, 3, 3, RGB(122, 168, 230));
+    fill_ellipse(dc, mx, my, 3 * s, 3 * s, RGB(122, 168, 230));
     ++dots;
   }
 
   const auto [px, py] = to_map(origin_x, origin_y);
   const double facing_angle =
       std::atan2(world.player.facing.y, world.player.facing.x);
-  const int tip_x = px + static_cast<int>(std::cos(facing_angle) * 8.0);
-  const int tip_y = py + static_cast<int>(std::sin(facing_angle) * 8.0);
-  const int wing_x = px - static_cast<int>(std::cos(facing_angle) * 4.0);
-  const int wing_y = py - static_cast<int>(std::sin(facing_angle) * 4.0);
+  const int tip_x = px + static_cast<int>(std::cos(facing_angle) * 8.0 * s);
+  const int tip_y = py + static_cast<int>(std::sin(facing_angle) * 8.0 * s);
+  const int wing_x = px - static_cast<int>(std::cos(facing_angle) * 4.0 * s);
+  const int wing_y = py - static_cast<int>(std::sin(facing_angle) * 4.0 * s);
   const double wing = facing_angle + kPi * 0.75;
-  const int wing_a_x = wing_x + static_cast<int>(std::cos(wing) * 5.0);
-  const int wing_a_y = wing_y + static_cast<int>(std::sin(wing) * 5.0);
-  const int wing_b_x = wing_x + static_cast<int>(std::cos(wing + kPi * 0.5) * 5.0);
-  const int wing_b_y = wing_y + static_cast<int>(std::sin(wing + kPi * 0.5) * 5.0);
+  const int wing_a_x = wing_x + static_cast<int>(std::cos(wing) * 5.0 * s);
+  const int wing_a_y = wing_y + static_cast<int>(std::sin(wing) * 5.0 * s);
+  const int wing_b_x = wing_x + static_cast<int>(std::cos(wing + kPi * 0.5) * 5.0 * s);
+  const int wing_b_y = wing_y + static_cast<int>(std::sin(wing + kPi * 0.5) * 5.0 * s);
   POINT arrow[3] = {{tip_x, tip_y}, {wing_a_x, wing_a_y}, {wing_b_x, wing_b_y}};
   HBRUSH player_brush = CreateSolidBrush(RGB(168, 214, 188));
   HGDIOBJ old_arrow_brush = SelectObject(dc, player_brush);
@@ -3027,21 +2997,32 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
                    RGB(185, 198, 188), false});
 
   SetBkMode(dc, TRANSPARENT);
-  const int left = std::max(24, (static_cast<int>(bounds.right) - 620) / 2);
-  int y = 64;
+  const int door_scale = hud_scale(static_cast<int>(bounds.bottom));
+  skin::set_ui_scale(door_scale);
+  const int left =
+      std::max(24, (static_cast<int>(bounds.right) - 620 * door_scale) / 2);
+  int block_height = 24 * door_scale;
+  for (const auto& line : lines)
+    block_height += (line.accent ? 44 : 26) * door_scale;
+  // Vertically centred chronicle page: a framed panel behind the text block
+  // so the front door reads as a bound ledger, not text floating on black.
+  int y = std::max(64 * door_scale,
+                   (static_cast<int>(bounds.bottom) - block_height) / 2);
+  {
+    RECT page{left - 36 * door_scale, y - 28 * door_scale,
+              left + 656 * door_scale,
+              std::min(static_cast<int>(bounds.bottom) - 32, y + block_height)};
+    skin::panel(dc, page, skin::kPanelBorder, 250, 10.0f);
+  }
   for (const auto& line : lines) {
     rl.push_back({render::Op::Chronicles, static_cast<double>(left),
                   static_cast<double>(y), 0.0, 0, line.label});
-    HFONT font = CreateFontA(line.accent ? 30 : 19, 0, 0, 0, FW_BOLD, FALSE,
-                             FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS,
-                             CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY,
-                             DEFAULT_PITCH | FF_DONTCARE, "Georgia");
-    HGDIOBJ old_font = SelectObject(dc, font);
+    HGDIOBJ old_font = SelectObject(
+        dc, line.accent ? skin::font_title() : skin::font_heading());
     SetTextColor(dc, line.color);
     TextOutA(dc, left, y, line.text.c_str(), static_cast<int>(line.text.size()));
     SelectObject(dc, old_font);
-    DeleteObject(font);
-    y += line.accent ? 44 : 26;
+    y += (line.accent ? 44 : 26) * door_scale;
     if (y > bounds.bottom - 40) break;
   }
   if (state.relic_toast_ticks > 0 && !state.relic_toast.empty()) {
@@ -3055,8 +3036,8 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
 // Shared owner-facing chrome: the visible connection state lives on both
 // screens — a failed connection is always explicit, never a silent fallback.
 // TASK-0153 rev2: the chip draws where the measured top-HUD planner puts it.
-constexpr int kConnectionChipW = 168;
-constexpr int kConnectionChipH = 22;
+int connection_chip_w(int height) { return 168 * hud_scale(height); }
+int connection_chip_h(int height) { return 22 * hud_scale(height); }
 void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
                            render::List& rl, int chip_x, int chip_y) {
   if (!state.session) return;
@@ -3076,8 +3057,9 @@ void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
              conn == verdigris::client::ConnectionState::Rejected ||
              conn == verdigris::client::ConnectionState::ProtocolMismatch)
       chip_color = RGB(255, 80, 70);
-    RECT chip_rect{chip_x, chip_y, chip_x + kConnectionChipW,
-                   chip_y + kConnectionChipH};
+    RECT chip_rect{chip_x, chip_y,
+                   chip_x + connection_chip_w(static_cast<int>(bounds.bottom)),
+                   chip_y + connection_chip_h(static_cast<int>(bounds.bottom))};
     state.hud_rect_trace.push_back(
         {"connection",
          {chip_rect.left, chip_rect.top,
@@ -3104,7 +3086,7 @@ void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
       const char* banner = "CONNECTION LOST — not playing offline";
       // TASK-0159: the banner keeps the left column but starts below the
       // minimap panel instead of painting across it.
-      const HudRect map = minimap_rect();
+      const HudRect map = minimap_rect(static_cast<int>(bounds.bottom));
       const int banner_y = std::max(76, map.y + map.h + 8);
       TextOutA(dc, 18, banner_y, banner, static_cast<int>(strlen(banner)));
     }
@@ -3165,7 +3147,7 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open,
   const auto keep_out = [&](const HudRect& r) {
     blocked.push_back(TopHudRect{r.x, r.y, r.w, r.h});
   };
-  keep_out(minimap_rect());
+  keep_out(minimap_rect(height));
   keep_out(quickbar_strip_rect(width, height));
   keep_out(vital_orb_rect(width, height, false));
   keep_out(vital_orb_rect(width, height, true));
@@ -3182,7 +3164,7 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open,
       if (!top_hud_clear(cand, keep_out_zone, kTopHudGap)) return false;
     return true;
   };
-  const HudRect map = minimap_rect();
+  const HudRect map = minimap_rect(height);
   // The left lane beside the minimap: the deterministic second anchor for
   // every region whose preferred pin is crowded or pane-blocked.
   const int lane_x = map.x + map.w + kTopHudGap;
@@ -3246,7 +3228,8 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open,
   }
   if (session)
     layout.connection =
-        place_right(TopHudRect{0, 0, kConnectionChipW, kConnectionChipH});
+        place_right(TopHudRect{0, 0, connection_chip_w(height),
+                                connection_chip_h(height)});
   // Art keeps its historical rows: beside the identity locally, under the
   // connection chip on the remote owner path (row 0 is taken there); the left
   // lane catches it when an open gear pane owns the right side.
@@ -3292,6 +3275,12 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   render::List rl;
   // TASK-0159: one fresh rectangle trace per presented frame.
   state.hud_rect_trace.clear();
+  // Skin type ramp: every HUD measure and draw this frame uses the real UI
+  // face instead of the stock bitmap font, scaled to the window height.
+  // Selected once per frame so the planner's extents and the painted glyphs
+  // can never disagree.
+  skin::set_ui_scale(hud_scale(static_cast<int>(bounds.bottom)));
+  SelectObject(dc, skin::font_body());
 
   // TASK-0145: the Chronicles front door replaces the abrupt game-window
   // entry for the remote owner path. Expedition painting is skipped
@@ -3300,10 +3289,11 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     paint_chronicles_front_door(state, dc, bounds, rl);
     // The front door owns its whole canvas, so the shared chip keeps its
     // historical edge-pin position here; the planner governs the expedition.
-    paint_connection_chip(state, dc, bounds, rl,
-                          std::max(18, static_cast<int>(bounds.right) -
-                                           kConnectionChipW - 18),
-                          12);
+    paint_connection_chip(
+        state, dc, bounds, rl,
+        std::max(18, static_cast<int>(bounds.right) -
+                         connection_chip_w(static_cast<int>(bounds.bottom)) - 18),
+        12);
     state.render_list = std::move(rl);
     return;
   }
@@ -3804,7 +3794,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         std::max(12, (width - objective_size.w) / 2), kTopHudRow0Y);
     const TopHudRect connection_at = placed_or(
         layout.connection,
-        std::max(18, width - kConnectionChipW - 18), kTopHudRow0Y);
+        std::max(18, width - connection_chip_w(static_cast<int>(bounds.bottom)) - 18),
+        kTopHudRow0Y);
     const TopHudRect art_at = placed_or(
         layout.art, std::max(12, width - art_size.w - 18),
         state.session ? 38 : 12);
@@ -3969,13 +3960,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     const int block_height = line_height * static_cast<int>(lines.size());
     const int toast_x =
         std::max(12, static_cast<int>(bounds.right - widest) / 2);
-    const int toast_y = bounds.bottom - 96 - block_height;
-    RECT plate{toast_x - 8, toast_y - 4, toast_x + widest + 8,
-               toast_y + block_height + 4};
-    HBRUSH plate_brush = CreateSolidBrush(RGB(16, 22, 20));
-    FillRect(dc, &plate, plate_brush);
-    DeleteObject(plate_brush);
-    SetTextColor(dc, RGB(239, 208, 116));
+    const HudRect quickbar = quickbar_strip_rect(static_cast<int>(bounds.right),
+                                                 static_cast<int>(bounds.bottom));
+    const int toast_y = quickbar.y - 16 - block_height;
+    RECT plate{toast_x - 14, toast_y - 8, toast_x + widest + 14,
+               toast_y + block_height + 8};
+    skin::panel(dc, plate, skin::kGold, 240, 7.0f);
+    SetTextColor(dc, skin::kGold);
     for (std::size_t i = 0; i < lines.size(); ++i) {
       TextOutA(dc, toast_x, toast_y + static_cast<int>(i) * line_height,
                lines[i].c_str(), static_cast<int>(lines[i].size()));
@@ -4089,8 +4080,22 @@ void timer_step(HWND window, ClientState& state) {
   if (state.screen_pulse_ticks > 0) --state.screen_pulse_ticks;
 
   sync_world(state);
-  state.camera.x += (state.world.player.position.x - state.camera.x) * 0.2;
-  state.camera.y += (state.world.player.position.y - state.camera.y) * 0.2;
+  {
+    // The follow lerp is for in-play smoothing only. Across a scene load or
+    // admission the camera starts continents away — snap instead of panning
+    // the whole map past the player for a second.
+    const double gap_x = state.world.player.position.x - state.camera.x;
+    const double gap_y = state.world.player.position.y - state.camera.y;
+    const double snap_gap =
+        static_cast<double>(verdigris::world_scale::kArenaHalfExtent);
+    if (std::abs(gap_x) > snap_gap || std::abs(gap_y) > snap_gap) {
+      state.camera.x = static_cast<double>(state.world.player.position.x);
+      state.camera.y = static_cast<double>(state.world.player.position.y);
+    } else {
+      state.camera.x += gap_x * 0.2;
+      state.camera.y += gap_y * 0.2;
+    }
+  }
 }
 
 void dispatch_dash(ClientState& state) {
@@ -4125,6 +4130,20 @@ void handle_escape_key(ClientState& state) {
   state.quit_requested = true;
 }
 
+// Apply the current window mode: borderless fullscreen on the primary
+// monitor, or a movable 1280x800 window. F11 toggles between them.
+void apply_window_mode(HWND window, const ClientState& state) {
+  if (state.fullscreen_window) {
+    SetWindowLongPtr(window, GWL_STYLE, WS_POPUP | WS_VISIBLE);
+    SetWindowPos(window, HWND_TOP, 0, 0, GetSystemMetrics(SM_CXSCREEN),
+                 GetSystemMetrics(SM_CYSCREEN), SWP_FRAMECHANGED);
+  } else {
+    SetWindowLongPtr(window, GWL_STYLE, WS_OVERLAPPEDWINDOW | WS_VISIBLE);
+    SetWindowPos(window, nullptr, 120, 120, 1280, 800,
+                 SWP_FRAMECHANGED | SWP_NOZORDER);
+  }
+}
+
 LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam) {
   ClientState* state = state_from(window);
   switch (message) {
@@ -4141,6 +4160,17 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (!state) break;
       if (wparam == VK_F3) {
         state->debug_overlay = !state->debug_overlay;
+        InvalidateRect(window, nullptr, FALSE);
+        break;
+      }
+      if (wparam == VK_F11) {
+        state->fullscreen_window = !state->fullscreen_window;
+        apply_window_mode(window, *state);
+        RECT mode_bounds;
+        GetClientRect(window, &mode_bounds);
+        state->camera.zoom =
+            kCameraDefaultZoom *
+            zoom_height_factor(static_cast<int>(mode_bounds.bottom));
         InvalidateRect(window, nullptr, FALSE);
         break;
       }
@@ -4244,7 +4274,11 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
           submit_equip(*state, state->world.carried[index].id);
       }
       if (wparam == VK_HOME) {
-        state->camera.zoom = kCameraDefaultZoom;
+        RECT home_bounds;
+        GetClientRect(window, &home_bounds);
+        state->camera.zoom =
+            kCameraDefaultZoom *
+            zoom_height_factor(static_cast<int>(home_bounds.bottom));
       }
       InvalidateRect(window, nullptr, FALSE);
       break;
@@ -4269,17 +4303,26 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (state) {
         const int delta = GET_WHEEL_DELTA_WPARAM(wparam);
         const double factor = delta > 0 ? 1.1 : 1.0 / 1.1;
+        RECT zoom_bounds;
+        GetClientRect(window, &zoom_bounds);
+        const double zf = zoom_height_factor(static_cast<int>(zoom_bounds.bottom));
         state->camera.zoom = std::clamp(state->camera.zoom * factor,
-                                        kCameraMinZoom, kCameraMaxZoom);
+                                        kCameraMinZoom * zf, kCameraMaxZoom * zf);
         InvalidateRect(window, nullptr, FALSE);
       }
       break;
     case WM_LBUTTONDOWN:
       if (state) {
-        if (state->gear_overlay)
+        if (state->gear_overlay) {
           equip_selected(*state);
-        else
-          submit_action(*state, verdigris::ActionType::Melee, "melee");
+        } else {
+          // Route through dispatch_skill so LMB gets the same instant
+          // swing-arc feedback as the Q/E/R keys — the primary attack was
+          // the one input with no animation at all.
+          static constexpr SkillInfo kPrimaryStrike{'\0', "Strike",
+                                                    verdigris::ActionType::Melee};
+          dispatch_skill(*state, kPrimaryStrike);
+        }
       }
       InvalidateRect(window, nullptr, FALSE);
       break;
@@ -6555,11 +6598,13 @@ int run_remote_native_client(const char* host, unsigned short port, const char* 
   window_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
   RegisterClassA(&window_class);
 
+  state->camera.zoom =
+      kCameraDefaultZoom * zoom_height_factor(GetSystemMetrics(SM_CYSCREEN));
   HWND window = CreateWindowExA(
       0, window_class.lpszClassName,
       chronicles_mode ? "Verdigris Chronicles" : "Verdigris Remote Guest",
-      WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 960, 600, nullptr, nullptr,
-      instance, state.get());
+      WS_POPUP, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
+      nullptr, nullptr, instance, state.get());
   ShowWindow(window, SW_SHOW);
   SetTimer(window, 1, 50, nullptr);
 
@@ -6644,8 +6689,11 @@ int main(int argc, char** argv) {
   window_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
   RegisterClassA(&window_class);
 
+  state->camera.zoom =
+      kCameraDefaultZoom * zoom_height_factor(GetSystemMetrics(SM_CYSCREEN));
   HWND window = CreateWindowExA(0, window_class.lpszClassName, "Verdigris Core Testbed",
-                                WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 960, 600,
+                                WS_POPUP, 0, 0, GetSystemMetrics(SM_CXSCREEN),
+                                GetSystemMetrics(SM_CYSCREEN),
                                 nullptr, nullptr, instance, state.get());
   ShowWindow(window, SW_SHOW);
   SetTimer(window, 1, 50, nullptr);

@@ -1,5 +1,24 @@
 # Native reconstitution handoff
 
+## 2026-08-30 — owner-feedback pass 2: presentation leaves the skeleton
+
+- LMB now routes through `dispatch_skill`, so the primary attack draws the
+  same instant facing-oriented swing arc as Q/E/R (it previously had no
+  animation at all).
+- Camera snaps instead of panning the whole map on scene loads (follow lerp
+  is unchanged in play; a gap over one arena half-extent snaps).
+- The client starts borderless windowed-fullscreen (WS_POPUP at the primary
+  monitor size); F11 toggles back to a 1280x800 movable window.
+- New `native/client/ui_skin.hpp`: GDI+ skin layer (rounded gradient panels
+  with shadows, glass vital orbs, sunken quickbar slots, chips, Segoe/Georgia
+  type ramp). All HUD chrome + the Chronicles front door render through it.
+- Resolution scaling: `hud_scale(height)` (integer; 1 at the shipped test
+  resolutions, 2 at 1440p) sizes the shared HUD geometry, fonts, minimap,
+  orbs, quickbar, connection chip; camera zoom grows with window height so
+  the world keeps its on-screen scale. Toast anchors above the quickbar.
+- All suites green (`native/build.ps1 -RunTests`, `--scenario all`,
+  denylist). Verified live at 3440x1440 via window captures.
+
 ## 2026-08-22 — shipped for cloud/other harnesses
 
 - Program tip `bb454c3c` on `codex/native-reconstitution` shipped via PR #58.
