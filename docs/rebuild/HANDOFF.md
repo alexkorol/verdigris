@@ -1,5 +1,26 @@
 # Native reconstitution handoff
 
+## 2026-08-31 — perf fix + panes: loot, inventory, character, tree
+
+- Move+attack stutter fixed (`a9944523`): trivial input handlers (the
+  WM_MOUSEMOVE per-event sync/invalidate starved lowest-priority
+  WM_PAINT/WM_TIMER), viewport-clipped floor tiling, capped predicted
+  swing effects. Reproduced as a 198k-event/3s message flood: 164 ms
+  frames -> 21.7 ms. `--scenario all` now carries a `frame-budget` gate
+  (20 real 32bpp frames at 3440x1440, <40 ms average); F3 shows live
+  paint ms.
+- `883d642e`: loot draws at authoritative groundItems positions (per-uuid
+  fan for same-tile stacks) and X picks up the nearest real uuid (the
+  server ignores empty uuids — pickup previously did nothing). The
+  vendored WIZARD framekit pack is finally consumed: nine-slice
+  panel/slot chrome + item art in the inventory pane (I); new character
+  sheet (C) with server-derived attributes; clickable passive-tree pane
+  (P) over the authoritative passiveTree mirror (allocation -> 
+  player:skilltree:save; verified live, +2 INT round-trip); trade/bank
+  panes over open:screen. Pane interiors scale with hud_scale.
+- AGENTS.md now carries the binding native presentation gate; agents
+  capture the live window with `native/tools/capture-window.ps1`.
+
 ## 2026-08-30 — owner-feedback pass 2: presentation leaves the skeleton
 
 - LMB now routes through `dispatch_skill`, so the primary attack draws the
