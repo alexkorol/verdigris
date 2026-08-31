@@ -54,6 +54,10 @@ struct ClientCommand {
     SetOut,         // `target` = scion id (plain admission / road purse)
     NpcAction,      // `target` = wire action id ("player:npc:talk", ...);
                     // value = town NPC id
+    MenuAction,     // `target` = wire action id; `extra` = item id/uuid;
+                    // value = price or quantity (server reads what it needs)
+    CloseScreen,    // dismiss the open shop/bank pane (client-local)
+    AllocateNode,   // `target` = passive-tree axial node id ("q,r")
   };
 
   Type type = Type::Move;
@@ -61,6 +65,7 @@ struct ClientCommand {
   int dy = 0;
   int value = 0;
   std::string target;
+  std::string extra;  // MenuAction: the item id/uuid riding queueItem.item
 
   static ClientCommand login(std::string guest_id, bool quick_guest);
   static ClientCommand move(int dx, int dy);
@@ -75,6 +80,10 @@ struct ClientCommand {
   static ClientCommand select_scion(std::string scion_id, bool mortal_oath);
   static ClientCommand set_out(std::string scion_id);
   static ClientCommand npc_action(int npc_id, std::string action_id);
+  static ClientCommand menu_action(std::string action_id, std::string item_ref,
+                                   int value);
+  static ClientCommand close_screen();
+  static ClientCommand allocate_node(std::string node_id);
 };
 
 class IClientSession {

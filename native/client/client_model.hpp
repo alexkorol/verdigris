@@ -47,6 +47,38 @@ struct ClientItemSlot {
   int attack_rating = 0;
 };
 
+// One purchasable row of a trader's stock (open:screen shop payload).
+struct ClientShopRow {
+  std::string id;
+  std::string name;
+  int price = 0;
+  int qty = 0;
+};
+
+// The trader screen as the server last published it. `open` flips true on
+// every open:screen and is cleared client-side by the CloseScreen command;
+// rows and coins are authoritative payload mirrors only.
+struct ClientShopScreen {
+  bool open = false;
+  std::string name;
+  std::vector<ClientShopRow> rows;
+  int carried_coins = 0;
+};
+
+// One stored item in the countinghouse (open:screen bank payload).
+struct ClientBankItem {
+  std::string uuid;
+  std::string name;
+  int qty = 0;
+};
+
+struct ClientBankScreen {
+  bool open = false;
+  int treasury = 0;
+  int carried_coins = 0;
+  std::vector<ClientBankItem> items;
+};
+
 // Town NPC roster entry, mirrored from the server's `npcs` snapshot array.
 // Positions are protocol tile units like monsters; `actions` carries the
 // server-authored verb list ("talk", "trade", "bank", "examine").
@@ -89,6 +121,11 @@ struct ClientPassiveProgression {
   int earned_points = 0;   // passiveTree.earned
   int node_count = 0;      // passiveTree.nodes entries
   int conduit_count = 0;   // passiveTree.conduits entries
+  // Verbatim string mirrors so the tree pane can render and extend the
+  // authoritative allocation ("q,r" axial ids; root is "0,0").
+  std::vector<std::string> nodes;
+  std::vector<std::string> conduits;
+  std::string selected_node;
 };
 
 // TASK-0145 Gate-B chronicle state, exactly as carried by the accepted wire
@@ -145,6 +182,12 @@ struct ClientModel {
   std::vector<ClientGroundItem> ground;
   std::vector<ClientMonster> monsters;
   std::vector<ClientNpc> npcs;
+  ClientShopScreen shop;
+  ClientBankScreen bank;
+  // stats-manager attributes from the dev:state snapshot.
+  int attr_strength = 10;
+  int attr_dexterity = 10;
+  int attr_intelligence = 10;
   ClientItemSlot equipped;
   ClientScene scene;
   std::string house_name;

@@ -41,6 +41,8 @@ namespace phase_a = verdigris::client::phase_a;
 // reserved-suffix compatibility operators are needed here.
 #include "assets/generated/visual_kit.h"
 #include "ui_skin.hpp"
+#include "framekit_renderer.hpp"
+#include "geometric_skill_tree.hpp"
 
 namespace {
 
@@ -171,6 +173,11 @@ struct BillboardAssets {
   SpriteBitmap shrine;
   SpriteBitmap terrain1;
   SpriteBitmap terrain4;
+  // WIZARD Framekit chrome (TASK-0180 assets, finally consumed): nine-slice
+  // panel/slot plates and the item-art sprites for inventory cells.
+  SpriteBitmap fk_panel;
+  SpriteBitmap fk_slot;
+  std::unordered_map<std::string, SpriteBitmap> item_art;
   std::string root;
   std::string status = "art: loading";
   std::string scenery_status = "scenery: loading";
@@ -186,6 +193,9 @@ struct BillboardAssets {
     shrine.reset();
     terrain1.reset();
     terrain4.reset();
+    fk_panel.reset();
+    fk_slot.reset();
+    for (auto& entry : item_art) entry.second.reset();
     if (gdiplus_shutdown && gdiplus_token) gdiplus_shutdown(gdiplus_token);
     if (gdiplus_module) FreeLibrary(gdiplus_module);
     if (msimg32_module) FreeLibrary(msimg32_module);
@@ -328,6 +338,28 @@ struct ClientState {
   double last_paint_ms = 0.0;
   // Tick stamp of the last client-predicted swing arc (rate limit).
   std::uint64_t last_predicted_swing_tick = ~0ULL;
+  // Trade/countinghouse pane interaction: keyboard cursor plus the exact
+  // painted row rectangles for mouse hit-testing (rebuilt every frame).
+  struct TradeRowHit {
+    RECT rect{};
+    int kind = 0;  // 0 = shop buy, 1 = bank withdraw, 2 = bank deposit
+    std::size_t index = 0;
+    std::string ref;   // item id (shop) or uuid (bank/deposit)
+    int value = 0;     // price or qty
+  };
+  std::size_t trade_selected = 0;
+  std::vector<TradeRowHit> trade_row_hits;
+  // Character sheet (C) and passive-tree (P) panes.
+  bool character_pane = false;
+  bool tree_pane = false;
+  struct TreeSeatHit {
+    int x = 0;
+    int y = 0;
+    int radius = 0;
+    std::string node_id;
+    bool frontier = false;
+  };
+  std::vector<TreeSeatHit> tree_seat_hits;
   // Borderless windowed-fullscreen is the default presentation; F11 drops
   // back to a movable window for side-by-side development.
   bool fullscreen_window = true;
@@ -670,6 +702,97 @@ void refresh_art_status(BillboardAssets& assets) {
     assets.terrain_status = "terrain: embedded vector kit tiles (procedural placeholder)";
 }
 
+// Resolve and load the vendored WIZARD framekit chrome and item art. The
+// wizard pack lives under native/client/assets/wizard; candidates cover the
+// repo-root working directory and the build-directory executable.
+void load_framekit_assets(BillboardAssets& assets) {
+  std::vector<std::string> candidates;
+  candidates.push_back("native\client\assets\wizard");
+  const std::string executable = executable_directory();
+  if (!executable.empty()) {
+    candidates.push_back(executable + "\..\client\assets\wizard");
+    candidates.push_back(executable +
+                         "\..\..\client\assets\wizard");
+    candidates.push_back(executable + "\assets\wizard");
+  }
+  for (const auto& root : candidates) {
+    if (!directory_exists(root)) continue;
+    const bool chrome_loaded =
+        load_sprite(assets, root + "\framekit\textures\panel.png",
+                    assets.fk_panel) &&
+        load_sprite(assets, root + "\framekit\textures\slot.png",
+                    assets.fk_slot);
+    if (!chrome_loaded) {
+      assets.fk_panel.reset();
+      assets.fk_slot.reset();
+      continue;
+    }
+    // Item art: server item id -> WIZARD sprite. Unmapped ids fall back to
+    // the drawn cell; never map art that misrepresents the item.
+    static constexpr struct { const char* item_id; const char* file; } kItemArt[] = {
+        {"bronze-dagger", "dagger_bronze.png"},
+        {"knife", "cur_knife.png"},
+        {"bronze-sword", "boar_pike.png"},
+        {"trophy", "bird_omen.png"},
+    };
+    for (const auto& entry : kItemArt) {
+      SpriteBitmap& sprite = assets.item_art[entry.item_id];
+      if (!load_sprite(assets, root + "\items\\" + entry.file, sprite))
+        sprite.reset();
+    }
+    return;
+  }
+}
+
+// Nine-slice framekit blit through the TASK-0180 planner. Returns false when
+// the plate is not loaded so callers can fall back to the vector skin.
+bool draw_framekit_nine(const BillboardAssets& assets, HDC dc,
+                        const SpriteBitmap& plate, const RECT& rect) {
+  if (!plate.ready() || !assets.alpha_blend) return false;
+  framekit_renderer::NineSliceAsset asset =
+      &plate == &assets.fk_slot ? framekit_renderer::default_slot_asset()
+                                : framekit_renderer::default_panel_asset();
+  asset.source = {static_cast<std::uint16_t>(plate.width),
+                  static_cast<std::uint16_t>(plate.height)};
+  const framekit_renderer::Rect dest{
+      static_cast<std::int16_t>(rect.left), static_cast<std::int16_t>(rect.top),
+      static_cast<std::uint16_t>(rect.right - rect.left),
+      static_cast<std::uint16_t>(rect.bottom - rect.top)};
+  const framekit_renderer::NineSlicePlan plan =
+      framekit_renderer::plan_nine_slice(dest, asset);
+  if (!plan.valid) return false;
+  const BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+  for (const auto& region : plan.regions) {
+    if (region.dst_w == 0 || region.dst_h == 0) continue;
+    assets.alpha_blend(dc, region.dst_x, region.dst_y, region.dst_w,
+                       region.dst_h, plate.dc, region.src_x, region.src_y,
+                       region.src_w, region.src_h, blend);
+  }
+  return true;
+}
+
+// Aspect-fit alpha blit of an item sprite into a cell; false when unmapped.
+bool draw_item_art(const BillboardAssets& assets, HDC dc, const std::string& id,
+                   const RECT& cell) {
+  const auto found = assets.item_art.find(id);
+  if (found == assets.item_art.end() || !found->second.ready() ||
+      !assets.alpha_blend)
+    return false;
+  const SpriteBitmap& sprite = found->second;
+  const int cell_w = cell.right - cell.left;
+  const int cell_h = cell.bottom - cell.top;
+  const double scale =
+      std::min(static_cast<double>(cell_w - 6) / sprite.width,
+               static_cast<double>(cell_h - 6) / sprite.height);
+  const int dest_w = std::max(1, static_cast<int>(sprite.width * scale));
+  const int dest_h = std::max(1, static_cast<int>(sprite.height * scale));
+  const BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+  assets.alpha_blend(dc, cell.left + (cell_w - dest_w) / 2,
+                     cell.top + (cell_h - dest_h) / 2, dest_w, dest_h,
+                     sprite.dc, 0, 0, sprite.width, sprite.height, blend);
+  return true;
+}
+
 void load_billboards(BillboardAssets& assets) {
   assets.msimg32_module = LoadLibraryA("msimg32.dll");
   assets.alpha_blend = reinterpret_cast<AlphaBlendProc>(
@@ -678,6 +801,7 @@ void load_billboards(BillboardAssets& assets) {
     refresh_art_status(assets);
     return;
   }
+  load_framekit_assets(assets);
   for (const auto& root : billboard_roots()) {
     if (!directory_exists(root)) continue;
     const bool actors_loaded =
@@ -834,10 +958,32 @@ ClientState* state_from(HWND window) {
 bool is_remote(const ClientState& state) { return static_cast<bool>(state.session); }
 
 void sync_world(ClientState& state) {
-  if (state.simulation)
+  if (state.simulation) {
     verdigris::client::sync_world_from_simulation(state.world, *state.simulation);
-  else if (state.session)
-    verdigris::client::sync_world_from_model(state.world, state.session->model());
+    return;
+  }
+  if (!state.session) return;
+  const auto& model = state.session->model();
+  verdigris::client::sync_world_from_model(state.world, model);
+  // Authoritative loot placement: the server snapshot carries every ground
+  // item's real position; the event-scatter heuristic anchored on the last
+  // death and piled every drop onto one spot. A small deterministic per-uuid
+  // fan keeps same-tile stacks readable without moving the real item.
+  state.loot_positions.clear();
+  for (const auto& item : model.ground) {
+    std::uint32_t hash = 2166136261u;
+    for (const char c : item.uuid)
+      hash = (hash ^ static_cast<std::uint8_t>(c)) * 16777619u;
+    const double jitter_x =
+        (static_cast<double>(hash % 100u) / 100.0 - 0.5) * 0.6;
+    const double jitter_y =
+        (static_cast<double>((hash / 100u) % 100u) / 100.0 - 0.5) * 0.6;
+    state.loot_positions[item.uuid] = {
+        static_cast<int>(std::lround(
+            verdigris::client::protocol_to_world(item.x + jitter_x))),
+        static_cast<int>(std::lround(
+            verdigris::client::protocol_to_world(item.y + jitter_y)))};
+  }
 }
 
 void ingest_session_events(ClientState& state) {
@@ -2191,7 +2337,13 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   state.hud_rect_trace.push_back({"pane-frame", pane});
 
   RECT panel_rect{left, top, right, bottom};
-  skin::panel(dc, panel_rect, skin::kVerdigris, 245, 8.0f);
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel,
+                          panel_rect))
+    skin::panel(dc, panel_rect, skin::kVerdigris, 245, 8.0f);
+
+  // Interior layout scale: the pane rect scales with window height, so every
+  // hand-authored 1x offset inside must scale with it or rows collide.
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
 
   SetBkMode(dc, TRANSPARENT);
 
@@ -2204,9 +2356,10 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     GetTextExtentPoint32A(dc, title.c_str(), static_cast<int>(title.size()),
                           &extent);
     state.hud_rect_trace.push_back(
-        {"pane-title", {left + 14, top + 12, extent.cx, extent.cy}});
+        {"pane-title", {left + 14 * s, top + 12 * s, extent.cx, extent.cy}});
   }
-  TextOutA(dc, left + 14, top + 12, title.c_str(), static_cast<int>(title.size()));
+  TextOutA(dc, left + 14 * s, top + 12 * s, title.c_str(),
+           static_cast<int>(title.size()));
 
   // Authoritative stats readout. The base attack is the actor's stat; the
   // equipped item's attack bonus (authoritative item data) is added on top,
@@ -2238,18 +2391,18 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     GetTextExtentPoint32A(dc, stats_line.c_str(),
                           static_cast<int>(stats_line.size()), &extent);
     state.hud_rect_trace.push_back(
-        {"pane-stats", {left + 14, top + 36, extent.cx, extent.cy}});
+        {"pane-stats", {left + 14 * s, top + 38 * s, extent.cx, extent.cy}});
   }
-  TextOutA(dc, left + 14, top + 36, stats_line.c_str(),
+  TextOutA(dc, left + 14 * s, top + 38 * s, stats_line.c_str(),
            static_cast<int>(stats_line.size()));
 
   // Weapon (paperdoll) seat.
-  const int seat_top = top + 58;
-  const int seat_left = left + 14;
-  const int seat_w = right - left - 28;
-  RECT seat{seat_left, seat_top, seat_left + seat_w, seat_top + 24};
+  const int seat_top = top + 62 * s;
+  const int seat_left = left + 14 * s;
+  const int seat_w = right - left - 28 * s;
+  RECT seat{seat_left, seat_top, seat_left + seat_w, seat_top + 24 * s};
   state.hud_rect_trace.push_back(
-      {"pane-seat", {seat.left, seat.top, seat_w, 24}});
+      {"pane-seat", {seat.left, seat.top, seat_w, 24 * s}});
   HBRUSH seat_bg = CreateSolidBrush(RGB(32, 40, 42));
   FillRect(dc, &seat, seat_bg);
   DeleteObject(seat_bg);
@@ -2260,7 +2413,8 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   DeleteObject(seat_pen);
   SetTextColor(dc, RGB(170, 190, 178));
   const char* seat_label = "Weapon";
-  TextOutA(dc, seat_left + 6, seat_top + 5, seat_label, static_cast<int>(strlen(seat_label)));
+  TextOutA(dc, seat_left + 6 * s, seat_top + 4 * s, seat_label,
+           static_cast<int>(strlen(seat_label)));
   std::string equipped_name = "(empty)";
   for (const auto& item : items)
     if (item.equipped) {
@@ -2269,37 +2423,54 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     }
   SetTextColor(dc, RGB(230, 220, 180));
   rl.push_back({render::Op::PaneWeapon, 0.0, 0.0, 0.0, 0, equipped_name});
-  TextOutA(dc, seat_left + 96, seat_top + 5, equipped_name.c_str(),
+  TextOutA(dc, seat_left + 96 * s, seat_top + 4 * s, equipped_name.c_str(),
            static_cast<int>(equipped_name.size()));
 
-  // Grid backpack (4 columns).
+  // Grid backpack (4 columns), framekit slot chrome with item art.
   constexpr int kGridColumns = 4;
-  const int cell_w = (right - left - 28 - (kGridColumns - 1) * 6) / kGridColumns;
-  const int cell_h = 40;
-  const int grid_top = seat_top + 34;
+  const int cell_w =
+      (right - left - (28 + (kGridColumns - 1) * 6) * s) / kGridColumns;
+  const int cell_h = 56 * s;
+  const int grid_top = seat_top + 38 * s;
+  // On the remote path carried ids are uuids; the model's inventory rows
+  // carry the stable item id the art catalog is keyed by.
+  const auto art_key = [&](std::size_t index) -> std::string {
+    if (!state.session) return items[index].id;
+    for (const auto& slot_item : state.session->model().inventory)
+      if (slot_item.uuid == items[index].id) return slot_item.id;
+    return items[index].id;
+  };
   if (items.empty()) {
     SetTextColor(dc, RGB(150, 160, 150));
     const char* empty = "Backpack empty. X picks up the nearest drop.";
-    TextOutA(dc, left + 14, grid_top + 6, empty, static_cast<int>(strlen(empty)));
+    TextOutA(dc, left + 14 * s, grid_top + 6 * s, empty,
+             static_cast<int>(strlen(empty)));
   } else {
     for (std::size_t i = 0; i < items.size(); ++i) {
       const int col = static_cast<int>(i % kGridColumns);
       const int row = static_cast<int>(i / kGridColumns);
-      const int cx = left + 14 + col * (cell_w + 6);
-      const int cy = grid_top + row * (cell_h + 6);
+      const int cx = left + 14 * s + col * (cell_w + 6 * s);
+      const int cy = grid_top + row * (cell_h + 6 * s);
       const bool selected = i == std::min(state.selected_item, items.size() - 1);
       const bool equipped = items[i].equipped;
       RECT cell{cx, cy, cx + cell_w, cy + cell_h};
-      HBRUSH cell_bg = CreateSolidBrush(selected ? RGB(52, 74, 66) : RGB(30, 38, 40));
-      FillRect(dc, &cell, cell_bg);
-      DeleteObject(cell_bg);
-      HPEN cell_pen = CreatePen(
-          PS_SOLID, 1,
-          equipped ? RGB(210, 180, 90) : (selected ? RGB(104, 160, 137) : RGB(56, 66, 64)));
-      HGDIOBJ cp = SelectObject(dc, cell_pen);
-      Rectangle(dc, cell.left, cell.top, cell.right, cell.bottom);
-      SelectObject(dc, cp);
-      DeleteObject(cell_pen);
+      if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot,
+                              cell))
+        skin::slot(dc, cell, equipped ? skin::kGold : skin::kVerdigris,
+                   selected);
+      if (selected || equipped) {
+        // Selection/equip read on top of the raster chrome.
+        HPEN cell_pen = CreatePen(PS_SOLID, 2,
+                                  equipped ? RGB(210, 180, 90) : RGB(120, 214, 168));
+        HGDIOBJ cp = SelectObject(dc, cell_pen);
+        HGDIOBJ cb = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+        Rectangle(dc, cell.left, cell.top, cell.right, cell.bottom);
+        SelectObject(dc, cb);
+        SelectObject(dc, cp);
+        DeleteObject(cell_pen);
+      }
+      RECT art_cell{cell.left, cell.top, cell.right, cell.bottom - 18 * s};
+      draw_item_art(state.billboards, dc, art_key(i), art_cell);
       SetTextColor(dc, equipped ? RGB(240, 210, 120) : RGB(205, 215, 204));
       std::string name = items[i].name;
       if (name.size() > 12) name = name.substr(0, 11) + ".";
@@ -2308,11 +2479,18 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
                     equipped ? name + " [E]" : name});
       state.hud_rect_trace.push_back(
           {"pane-cell", {cx, cy, cell_w, cell_h}});
-      TextOutA(dc, cx + 4, cy + 4, name.c_str(), static_cast<int>(name.size()));
-      SetTextColor(dc, RGB(150, 165, 152));
-      std::string bonus = "+" + std::to_string(items[i].attack_bonus) + " ATK" +
-                          (equipped ? "  [E]" : "");
-      TextOutA(dc, cx + 4, cy + 21, bonus.c_str(), static_cast<int>(bonus.size()));
+      HGDIOBJ cell_font = SelectObject(dc, skin::font_small());
+      TextOutA(dc, cx + 4 * s, cell.bottom - 17 * s, name.c_str(),
+               static_cast<int>(name.size()));
+      SetTextColor(dc, RGB(170, 185, 172));
+      std::string bonus = "+" + std::to_string(items[i].attack_bonus) +
+                          (equipped ? " [E]" : "");
+      SIZE bonus_extent{};
+      GetTextExtentPoint32A(dc, bonus.c_str(), static_cast<int>(bonus.size()),
+                            &bonus_extent);
+      TextOutA(dc, cell.right - bonus_extent.cx - 4 * s, cell.top + 2 * s,
+               bonus.c_str(), static_cast<int>(bonus.size()));
+      SelectObject(dc, cell_font);
     }
   }
 
@@ -2327,9 +2505,10 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     GetTextExtentPoint32A(dc, banked.c_str(), static_cast<int>(banked.size()),
                           &extent);
     state.hud_rect_trace.push_back(
-        {"pane-banked", {left + 14, bottom - 46, extent.cx, extent.cy}});
+        {"pane-banked", {left + 14 * s, bottom - 50 * s, extent.cx, extent.cy}});
   }
-  TextOutA(dc, left + 14, bottom - 46, banked.c_str(), static_cast<int>(banked.size()));
+  TextOutA(dc, left + 14 * s, bottom - 50 * s, banked.c_str(),
+           static_cast<int>(banked.size()));
   // TASK-0156: compact authoritative progression summary, mirrored from the
   // passiveTree payload. Absence is stated as absence — never rendered as
   // zero — and no node ids, allocation actions, or invented copy appear.
@@ -2350,9 +2529,9 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     GetTextExtentPoint32A(dc, progression.c_str(),
                           static_cast<int>(progression.size()), &extent);
     state.hud_rect_trace.push_back(
-        {"pane-progression", {left + 14, bottom - 70, extent.cx, extent.cy}});
+        {"pane-progression", {left + 14 * s, bottom - 74 * s, extent.cx, extent.cy}});
   }
-  TextOutA(dc, left + 14, bottom - 70, progression.c_str(),
+  TextOutA(dc, left + 14 * s, bottom - 74 * s, progression.c_str(),
            static_cast<int>(progression.size()));
   const char* controls = "Arrows select | Enter equip | U unequip | I close";
   {
@@ -2360,9 +2539,10 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     GetTextExtentPoint32A(dc, controls, static_cast<int>(strlen(controls)),
                           &extent);
     state.hud_rect_trace.push_back(
-        {"pane-footer", {left + 14, bottom - 24, extent.cx, extent.cy}});
+        {"pane-footer", {left + 14 * s, bottom - 26 * s, extent.cx, extent.cy}});
   }
-  TextOutA(dc, left + 14, bottom - 24, controls, static_cast<int>(strlen(controls)));
+  TextOutA(dc, left + 14 * s, bottom - 26 * s, controls,
+           static_cast<int>(strlen(controls)));
 }
 
 void draw_orb(HDC dc, int cx, int cy, int radius, double ratio, COLORREF fill,
@@ -3292,6 +3472,374 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open,
   return layout;
 }
 
+// -- Character sheet pane ------------------------------------------------
+// Authoritative Scion sheet: identity, vitals, combat totals, attributes.
+void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
+                          render::List& rl) {
+  if (!state.character_pane) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  // Content-derived height: header, portrait, nine stat rows, footer. A
+  // fixed height under a scaled type ramp is exactly how rows clip out.
+  const int row_h = 26 * s;
+  const int pane_h = (56 + 150 + 14) * s + 9 * row_h + 40 * s;
+  const int left = 24 * s;
+  const int top =
+      std::max(48 * s, (static_cast<int>(bounds.bottom) - pane_h) / 2 - 20 * s);
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 245, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 0, "character-pane"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_heading());
+  SetTextColor(dc, skin::kVerdigris);
+  const std::string title = state.world.scion_name.empty()
+                                ? std::string("The Scion")
+                                : state.world.scion_name;
+  TextOutA(dc, left + 16 * s, top + 10 * s, title.c_str(),
+           static_cast<int>(title.size()));
+  SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kInkDim);
+  TextOutA(dc, left + 16 * s, top + 34 * s, state.world.house_name.c_str(),
+           static_cast<int>(state.world.house_name.size()));
+
+  // Portrait: the player plate, drawn tall on the left of the sheet.
+  const int portrait_h = 150 * s;
+  if (state.billboards.player.ready() && state.billboards.alpha_blend) {
+    const SpriteBitmap& sprite = state.billboards.player;
+    const int dest_h = portrait_h;
+    const int dest_w = dest_h * sprite.width / std::max(1, sprite.height);
+    const BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+    state.billboards.alpha_blend(dc, left + 20 * s, top + 56 * s, dest_w,
+                                 dest_h, sprite.dc, 0, 0, sprite.width,
+                                 sprite.height, blend);
+  }
+
+  const WorldActor& player = state.world.player;
+  int equipped_bonus = 0;
+  std::string weapon = "(unarmed)";
+  for (const auto& item : state.world.carried)
+    if (item.equipped) {
+      equipped_bonus = item.attack_bonus;
+      weapon = item.name;
+      break;
+    }
+  int attr_str = 10, attr_dex = 10, attr_int = 10;
+  if (state.session) {
+    const auto& model = state.session->model();
+    attr_str = model.attr_strength;
+    attr_dex = model.attr_dexterity;
+    attr_int = model.attr_intelligence;
+  }
+  struct StatRow {
+    std::string label;
+    std::string value;
+  };
+  const StatRow rows[] = {
+      {"Level", std::to_string(player.level)},
+      {"Life", std::to_string(player.life) + " / " + std::to_string(player.life_max)},
+      {"Resource", std::to_string(player.resource) + " / " +
+                       std::to_string(player.resource_max)},
+      {"Attack", std::to_string(player.attack + equipped_bonus) +
+                     (equipped_bonus ? " (+" + std::to_string(equipped_bonus) + ")"
+                                     : "")},
+      {"Defense", std::to_string(player.defense)},
+      {"Weapon", weapon},
+      {"Strength", std::to_string(attr_str)},
+      {"Dexterity", std::to_string(attr_dex)},
+      {"Intelligence", std::to_string(attr_int)},
+  };
+  int y = top + 56 * s + portrait_h + 14 * s;
+  SelectObject(dc, skin::font_body());
+  for (const auto& row : rows) {
+    SetTextColor(dc, skin::kInkDim);
+    TextOutA(dc, left + 20 * s, y, row.label.c_str(),
+             static_cast<int>(row.label.size()));
+    SIZE extent{};
+    GetTextExtentPoint32A(dc, row.value.c_str(),
+                          static_cast<int>(row.value.size()), &extent);
+    SetTextColor(dc, skin::kInk);
+    TextOutA(dc, left + pane_w - 20 * s - extent.cx, y, row.value.c_str(),
+             static_cast<int>(row.value.size()));
+    rl.push_back({render::Op::Hud, static_cast<double>(left),
+                  static_cast<double>(y), 0.0, 0,
+                  "char:" + row.label + ":" + row.value});
+    y += row_h;
+  }
+  SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kInkDim);
+  const char* footer = "C or Esc closes";
+  TextOutA(dc, left + 20 * s, y + 8 * s, footer,
+           static_cast<int>(strlen(footer)));
+  SelectObject(dc, old_font);
+}
+
+// -- Passive tree pane ---------------------------------------------------
+// The geometric first-level slice over the authoritative allocation. Click
+// (or Enter on) a frontier seat to spend a point; the server owns budget.
+void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
+                     render::List& rl) {
+  state.tree_seat_hits.clear();
+  if (!state.tree_pane) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 460 * s;
+  const int pane_h = 420 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top =
+      std::max(48 * s, (static_cast<int>(bounds.bottom) - pane_h) / 2 - 20 * s);
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 245, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 0, "tree-pane"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_heading());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = "Geometric Passives";
+  TextOutA(dc, left + 16 * s, top + 10 * s, title,
+           static_cast<int>(strlen(title)));
+
+  const bool remote = state.session != nullptr;
+  const auto* progression =
+      remote ? &state.session->model().progression : nullptr;
+  const bool present = progression && progression->present;
+  SelectObject(dc, skin::font_body());
+  std::string points_line = present
+      ? std::to_string(progression->unspent_points) + " point(s) to spend of " +
+            std::to_string(progression->earned_points) + " earned"
+      : std::string("No authoritative tree data on this session.");
+  SetTextColor(dc, present && progression->unspent_points > 0 ? skin::kGold
+                                                              : skin::kInkDim);
+  TextOutA(dc, left + 16 * s, top + 38 * s, points_line.c_str(),
+           static_cast<int>(points_line.size()));
+
+  const auto slice = geometric_skill_tree::make_owner_demo_first_level_slice();
+  const auto node_id_of = [](geometric_skill_tree::Axial pos) {
+    return std::to_string(pos.q) + "," + std::to_string(pos.r);
+  };
+  const auto allocated = [&](const std::string& id) {
+    if (!present) return id == std::string("0,0");
+    for (const auto& node : progression->nodes)
+      if (node == id) return true;
+    return false;
+  };
+  const int center_x = left + pane_w / 2;
+  const int center_y = top + pane_h / 2 + 20 * s;
+  const double hex = 62.0 * s;
+  const int seat_r = 24 * s;
+  for (std::uint8_t i = 0; i < slice.seat_count; ++i) {
+    const auto& seat = slice.seats[i];
+    const std::string id = node_id_of(seat.pos);
+    const bool active = allocated(id);
+    bool frontier = false;
+    if (!active && present && progression->unspent_points > 0) {
+      for (std::uint8_t j = 0; j < slice.seat_count; ++j) {
+        const std::string other = node_id_of(slice.seats[j].pos);
+        if (allocated(other) &&
+            geometric_skill_tree::hex_distance(seat.pos, slice.seats[j].pos) == 1) {
+          frontier = true;
+          break;
+        }
+      }
+    }
+    const int sx = center_x + static_cast<int>(hex * 1.5 * seat.pos.q);
+    const int sy = center_y +
+                   static_cast<int>(hex * 0.8660254 *
+                                    (2.0 * seat.pos.r + seat.pos.q));
+    const COLORREF fill = active ? RGB(52, 112, 86)
+                          : frontier ? RGB(64, 58, 30)
+                                     : RGB(26, 32, 31);
+    const COLORREF ring = active ? skin::kVerdigris
+                          : frontier ? skin::kGold
+                                     : RGB(64, 74, 70);
+    fill_ellipse(dc, sx, sy, seat_r, seat_r, fill);
+    ring_ellipse(dc, sx, sy, seat_r, seat_r, ring, active || frontier ? 3 : 1);
+    const char* type_label = geometric_skill_tree::seat_type_name(seat.type);
+    SIZE extent{};
+    HGDIOBJ seat_font = SelectObject(dc, skin::font_small());
+    GetTextExtentPoint32A(dc, type_label, static_cast<int>(strlen(type_label)),
+                          &extent);
+    SetTextColor(dc, active ? skin::kInk : skin::kInkDim);
+    TextOutA(dc, sx - extent.cx / 2, sy - extent.cy / 2, type_label,
+             static_cast<int>(strlen(type_label)));
+    SelectObject(dc, seat_font);
+    rl.push_back({render::Op::Hud, static_cast<double>(sx),
+                  static_cast<double>(sy), 0.0, active ? 1 : 0,
+                  "tree-seat:" + id + (active ? std::string(":active")
+                                     : frontier ? std::string(":frontier")
+                                                : std::string(":locked"))});
+    state.tree_seat_hits.push_back({sx, sy, seat_r, id, frontier});
+  }
+  SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kInkDim);
+  const char* footer = "Click a gold seat to allocate | P or Esc closes";
+  TextOutA(dc, left + 16 * s, top + pane_h - 24 * s, footer,
+           static_cast<int>(strlen(footer)));
+  SelectObject(dc, old_font);
+}
+
+// -- Trader / countinghouse panes ----------------------------------------
+// Mouse-and-keyboard modal panes over the authoritative open:screen model.
+// Rows rebuild their hit rectangles every frame; activation submits the
+// exact context-menu action the server owns and the refreshed screen
+// arrives on the same wire that opened the pane.
+
+void activate_trade_row(ClientState& state, const ClientState::TradeRowHit& hit) {
+  if (!state.session) return;
+  const char* action = hit.kind == 0   ? "player:shop:buy"
+                       : hit.kind == 1 ? "player:bank:withdraw"
+                                       : "player:bank:deposit";
+  state.session->submit(
+      verdigris::client::ClientCommand::menu_action(action, hit.ref, hit.value));
+}
+
+void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
+                      render::List& rl) {
+  state.trade_row_hits.clear();
+  if (!state.session) return;
+  const auto& model = state.session->model();
+  if (!model.shop.open && !model.bank.open) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const bool shop = model.shop.open;
+  const int pane_w = (shop ? 460 : 560) * s;
+  const int row_h = 30 * s;
+
+  // Build the row list first so the pane height fits the content.
+  struct Row {
+    std::string left;
+    std::string right;
+    ClientState::TradeRowHit hit;
+    bool header = false;
+  };
+  std::vector<Row> rows;
+  if (shop) {
+    for (std::size_t i = 0; i < model.shop.rows.size(); ++i) {
+      const auto& stock = model.shop.rows[i];
+      Row row;
+      row.left = stock.name;
+      row.right = std::to_string(stock.price) + "g  x" + std::to_string(stock.qty);
+      row.hit.kind = 0;
+      row.hit.ref = stock.id;
+      row.hit.value = stock.price;
+      rows.push_back(std::move(row));
+    }
+  } else {
+    if (!model.bank.items.empty()) {
+      Row header;
+      header.left = "Stored with the House";
+      header.header = true;
+      rows.push_back(std::move(header));
+    }
+    for (const auto& item : model.bank.items) {
+      Row row;
+      row.left = item.name;
+      row.right = "x" + std::to_string(item.qty) + "  withdraw";
+      row.hit.kind = 1;
+      row.hit.ref = item.uuid;
+      row.hit.value = 1;
+      rows.push_back(std::move(row));
+    }
+    if (!model.inventory.empty()) {
+      Row header;
+      header.left = "Carried (click to deposit)";
+      header.header = true;
+      rows.push_back(std::move(header));
+    }
+    for (const auto& item : model.inventory) {
+      Row row;
+      row.left = item.name.empty() ? item.id : item.name;
+      row.right = "deposit";
+      row.hit.kind = 2;
+      row.hit.ref = item.uuid;
+      row.hit.value = 1;
+      rows.push_back(std::move(row));
+    }
+    if (rows.empty()) {
+      Row row;
+      row.left = "Nothing stored and nothing carried.";
+      row.header = true;
+      rows.push_back(std::move(row));
+    }
+  }
+
+  const int title_h = 34 * s;
+  const int footer_h = 26 * s;
+  const int pane_h = title_h + static_cast<int>(rows.size()) * row_h +
+                     footer_h + 20 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = std::max(
+      24 * s, (static_cast<int>(bounds.bottom) - pane_h) / 2 - 20 * s);
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  skin::panel(dc, pane, shop ? skin::kGold : skin::kVerdigris, 250, 9.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 0,
+                shop ? "shop-pane" : "bank-pane"});
+
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_heading());
+  SetTextColor(dc, shop ? skin::kGold : skin::kVerdigris);
+  const std::string title = shop ? model.shop.name : "Rhea's Countinghouse";
+  TextOutA(dc, left + 16 * s, top + 8 * s, title.c_str(),
+           static_cast<int>(title.size()));
+  SelectObject(dc, skin::font_body());
+
+  // Clamp the keyboard cursor to the activatable rows.
+  std::size_t activatable = 0;
+  for (const auto& row : rows)
+    if (!row.header) ++activatable;
+  if (activatable == 0) state.trade_selected = 0;
+  else if (state.trade_selected >= activatable)
+    state.trade_selected = activatable - 1;
+
+  int y = top + title_h;
+  std::size_t active_index = 0;
+  for (const auto& row : rows) {
+    RECT line{left + 10 * s, y, left + pane_w - 10 * s, y + row_h};
+    if (row.header) {
+      SelectObject(dc, skin::font_body_bold());
+      SetTextColor(dc, skin::kInkDim);
+      TextOutA(dc, line.left + 6 * s, y + 6 * s, row.left.c_str(),
+               static_cast<int>(row.left.size()));
+      SelectObject(dc, skin::font_body());
+    } else {
+      const bool selected = active_index == state.trade_selected;
+      skin::slot(dc, line, shop ? skin::kGold : skin::kVerdigris, selected);
+      SetTextColor(dc, selected ? skin::kInk : skin::kInkDim);
+      TextOutA(dc, line.left + 8 * s, y + 6 * s, row.left.c_str(),
+               static_cast<int>(row.left.size()));
+      SIZE extent{};
+      GetTextExtentPoint32A(dc, row.right.c_str(),
+                            static_cast<int>(row.right.size()), &extent);
+      SetTextColor(dc, shop ? skin::kGold : skin::kVerdigris);
+      TextOutA(dc, line.right - extent.cx - 8 * s, y + 6 * s, row.right.c_str(),
+               static_cast<int>(row.right.size()));
+      ClientState::TradeRowHit hit = row.hit;
+      hit.rect = line;
+      hit.index = active_index;
+      state.trade_row_hits.push_back(std::move(hit));
+      rl.push_back({render::Op::Hud, static_cast<double>(line.left),
+                    static_cast<double>(y), 0.0, static_cast<int>(active_index),
+                    (shop ? std::string("shop-row:") : std::string("bank-row:")) +
+                        row.left});
+      ++active_index;
+    }
+    y += row_h;
+  }
+
+  SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kInkDim);
+  const std::string footer =
+      (shop ? "carrying " + std::to_string(model.shop.carried_coins) + "g"
+            : "House treasury " + std::to_string(model.bank.treasury) +
+                  "g - carrying " + std::to_string(model.bank.carried_coins) +
+                  "g") +
+      "  |  click or Enter - Esc closes";
+  TextOutA(dc, left + 16 * s, top + pane_h - footer_h, footer.c_str(),
+           static_cast<int>(footer.size()));
+  SelectObject(dc, old_font);
+}
+
 void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   sync_world(state);
   const WorldView& world = state.world;
@@ -3680,6 +4228,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                    &state.hud_rect_trace);
   paint_quickbar(state, dc, bounds, rl);
   paint_gear_overlay(state, dc, bounds, rl);
+  paint_character_pane(state, dc, bounds, rl);
+  paint_tree_pane(state, dc, bounds, rl);
+  paint_trade_pane(state, dc, bounds, rl);
 
   if (state.screen_pulse_ticks > 0) {
     // TASK-0122 Phase A: while a ScionLost beat is live the edge pulse is the
@@ -4153,7 +4704,26 @@ void toggle_gear_overlay(ClientState& state) {
 // (gear/inventory) consumes the first press and stays in the session; only
 // with nothing open does Escape request exit via ClientState::quit_requested,
 // which the window procedure turns into PostQuitMessage.
+bool trade_pane_open(const ClientState& state) {
+  if (!state.session) return false;
+  const auto& model = state.session->model();
+  return model.shop.open || model.bank.open;
+}
+
 void handle_escape_key(ClientState& state) {
+  if (trade_pane_open(state)) {
+    state.session->submit(verdigris::client::ClientCommand::close_screen());
+    state.trade_selected = 0;
+    return;
+  }
+  if (state.tree_pane) {
+    state.tree_pane = false;
+    return;
+  }
+  if (state.character_pane) {
+    state.character_pane = false;
+    return;
+  }
   if (state.gear_overlay) {
     toggle_gear_overlay(state);
     return;
@@ -4216,6 +4786,22 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         InvalidateRect(window, nullptr, FALSE);
         break;
       }
+      if (trade_pane_open(*state)) {
+        if (wparam == VK_UP && state->trade_selected > 0) --state->trade_selected;
+        if (wparam == VK_DOWN) ++state->trade_selected;  // painter clamps
+        if (wparam == VK_RETURN) {
+          for (const auto& hit : state->trade_row_hits) {
+            if (hit.index == state->trade_selected) {
+              activate_trade_row(*state, hit);
+              break;
+            }
+          }
+        }
+        if (wparam == VK_UP || wparam == VK_DOWN || wparam == VK_RETURN) {
+          InvalidateRect(window, nullptr, FALSE);
+          break;
+        }
+      }
       if (wparam == 'W') state->w = true;
       if (wparam == 'A') state->a = true;
       if (wparam == 'S') state->s = true;
@@ -4226,8 +4812,26 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         state->session->submit(verdigris::client::ClientCommand::enter_zone("tin:1:0"));
       if (wparam == 'X') {
         if (is_remote(*state)) {
-          submit_pick_up(*state, "");
-          show_hint(*state, "Take underfoot requested");
+          // The server's Take requires a real uuid and chebyshev<=1 reach;
+          // an empty uuid was silently ignored, which read as 'cannot pick
+          // up loot'. Choose the nearest authoritative ground item in reach.
+          const auto& model = state->session->model();
+          const double px = model.player.x;
+          const double py = model.player.y;
+          const verdigris::client::ClientGroundItem* nearest = nullptr;
+          double best = 1.6;  // tiles; server allows chebyshev<=1 from tile
+          for (const auto& item : model.ground) {
+            const double reach = std::max(std::abs(item.x - px),
+                                          std::abs(item.y - py));
+            if (reach < best) { best = reach; nearest = &item; }
+          }
+          if (nearest) {
+            submit_pick_up(*state, nearest->uuid);
+          } else if (!model.ground.empty()) {
+            show_hint(*state, "No drop within reach");
+          } else {
+            show_hint(*state, "Nothing on the ground here");
+          }
         } else {
           const std::string target = nearest_pickup_id(*state);
           if (target.empty()) {
@@ -4279,6 +4883,12 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       }
       if (wparam == 'I') {
         toggle_gear_overlay(*state);
+      }
+      if (wparam == 'C') {
+        state->character_pane = !state->character_pane;
+      }
+      if (wparam == 'P') {
+        state->tree_pane = !state->tree_pane;
       }
       sync_world(*state);
       if (state->gear_overlay && !state->world.carried.empty()) {
@@ -4345,7 +4955,34 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       break;
     case WM_LBUTTONDOWN:
       if (state) {
-        if (state->gear_overlay) {
+        if (trade_pane_open(*state)) {
+          const int mx = GET_X_LPARAM(lparam);
+          const int my = GET_Y_LPARAM(lparam);
+          for (const auto& hit : state->trade_row_hits) {
+            if (mx >= hit.rect.left && mx < hit.rect.right &&
+                my >= hit.rect.top && my < hit.rect.bottom) {
+              state->trade_selected = hit.index;
+              activate_trade_row(*state, hit);
+              break;
+            }
+          }
+        } else if (state->tree_pane) {
+          const int mx = GET_X_LPARAM(lparam);
+          const int my = GET_Y_LPARAM(lparam);
+          for (const auto& hit : state->tree_seat_hits) {
+            const long long dx = mx - hit.x;
+            const long long dy = my - hit.y;
+            if (dx * dx + dy * dy >
+                static_cast<long long>(hit.radius) * hit.radius)
+              continue;
+            if (hit.frontier && state->session) {
+              state->session->submit(
+                  verdigris::client::ClientCommand::allocate_node(hit.node_id));
+              show_hint(*state, "The lattice takes the point");
+            }
+            break;
+          }
+        } else if (state->gear_overlay) {
           equip_selected(*state);
         } else {
           // Route through dispatch_skill so LMB gets the same instant

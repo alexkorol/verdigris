@@ -181,6 +181,13 @@ void apply_passive_tree(const JsonValue& tree, ClientModel& model,
       static_cast<int>(*tree.get("earned")->number());
   model.progression.node_count = static_cast<int>(nodes->array()->size());
   model.progression.conduit_count = static_cast<int>(conduits->array()->size());
+  for (const auto& node : *nodes->array())
+    if (node.string()) model.progression.nodes.push_back(*node.string());
+  for (const auto& conduit : *conduits->array())
+    if (conduit.string()) model.progression.conduits.push_back(*conduit.string());
+  if (const auto* selected = tree.get("selectedNodeId");
+      selected && selected->string())
+    model.progression.selected_node = *selected->string();
 }
 
 void apply_player_fields(ClientPlayer& player, const JsonValue& source) {
@@ -580,6 +587,56 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
                {"item", JsonValue::Object{{"id", JsonValue(command.value)}}}}}};
       break;
     }
+    case ClientCommand::Type::MenuAction: {
+      // Generic context-menu action with an item reference. The item object
+      // carries the ref under both keys the server reads ("id" for shop buy,
+      // "uuid" for sell/withdraw/deposit) plus the numeric field under both
+      // of its spellings; handlers pick the fields they own.
+      envelope.event = "player:context-menu:action";
+      envelope.data = JsonValue::Object{
+          {"queueItem",
+           JsonValue::Object{
+               {"action", JsonValue::Object{{"actionId", JsonValue(command.target)}}},
+               {"item", JsonValue::Object{{"id", JsonValue(command.extra)},
+                                          {"uuid", JsonValue(command.extra)},
+                                          {"price", JsonValue(command.value)},
+                                          {"qty", JsonValue(command.value)}}}}}};
+      break;
+    }
+    case ClientCommand::Type::CloseScreen:
+      // Pane dismissal is presentation-local; the server keeps no modal.
+      model_.shop.open = false;
+      model_.bank.open = false;
+      return;
+    case ClientCommand::Type::AllocateNode: {
+      // Extend the authoritative allocation by one node and save the whole
+      // snapshot (the wire's unit of tree persistence). The server owns the
+      // point budget; the client only proposes.
+      if (!model_.progression.present) return;
+      JsonValue::Array nodes;
+      bool already = false;
+      for (const auto& node : model_.progression.nodes) {
+        if (node == command.target) already = true;
+        nodes.emplace_back(node);
+      }
+      if (already) return;
+      nodes.emplace_back(command.target);
+      JsonValue::Array conduits;
+      for (const auto& conduit : model_.progression.conduits)
+        conduits.emplace_back(conduit);
+      JsonValue::Object snapshot;
+      snapshot.emplace("schemaVersion", JsonValue(2));
+      snapshot.emplace("nodes", JsonValue(std::move(nodes)));
+      snapshot.emplace("conduits", JsonValue(std::move(conduits)));
+      snapshot.emplace(
+          "selectedNodeId",
+          JsonValue(model_.progression.selected_node.empty()
+                        ? std::string("0,0")
+                        : model_.progression.selected_node));
+      envelope.event = "player:skilltree:save";
+      envelope.data = JsonValue::Object{{"snapshot", JsonValue(std::move(snapshot))}};
+      break;
+    }
   }
   if (!envelope.event.empty()) send_envelope(envelope);
 }
@@ -796,46 +853,53 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     return;
   }
   if (envelope.event == "open:screen") {
-    // The client has no shop/bank panes yet; summarize the authoritative
-    // screen payload as a message so a trade/bank hail always answers.
+    // Authoritative trader/countinghouse screens: mirrored into the model
+    // verbatim for the pane painters. `open` clears only via CloseScreen.
     const auto* data = envelope.data.get("data");
     const auto* screen = json_string(data ? data->get("screen") : nullptr);
     const auto* payload = data ? data->get("payload") : nullptr;
     if (screen && payload) {
-      std::string summary;
       if (*screen == "shop") {
-        if (const auto* name = json_string(payload->get("name"))) summary = *name + ":";
-        else summary = "Stall:";
+        ClientShopScreen shop;
+        shop.open = true;
+        if (const auto* name = json_string(payload->get("name"))) shop.name = *name;
+        shop.carried_coins =
+            static_cast<int>(json_number(payload->get("carriedCoins"), 0.0));
         if (const auto* items = payload->get("items"); items && items->array()) {
           for (const auto& row : *items->array()) {
-            const auto* item_name = json_string(row.get("name"));
-            const int price = static_cast<int>(json_number(row.get("price"), 0.0));
-            if (item_name)
-              summary += " " + *item_name + " " + std::to_string(price) + "g,";
+            ClientShopRow entry;
+            if (const auto* id = json_string(row.get("id"))) entry.id = *id;
+            if (const auto* row_name = json_string(row.get("name")))
+              entry.name = *row_name;
+            entry.price = static_cast<int>(json_number(row.get("price"), 0.0));
+            entry.qty = static_cast<int>(json_number(row.get("qty"), 0.0));
+            shop.rows.push_back(std::move(entry));
           }
-          if (!summary.empty() && summary.back() == ',') summary.pop_back();
         }
-        summary += " - carrying " +
-                   std::to_string(static_cast<int>(
-                       json_number(payload->get("carriedCoins"), 0.0))) +
-                   "g";
+        model_.shop = std::move(shop);
+        model_.bank.open = false;
       } else if (*screen == "bank") {
-        int treasury = 0;
+        ClientBankScreen bank;
+        bank.open = true;
+        bank.carried_coins =
+            static_cast<int>(json_number(payload->get("carriedCoins"), 0.0));
         if (const auto* house = payload->get("house"))
-          treasury = static_cast<int>(json_number(house->get("treasury"), 0.0));
-        int stored = 0;
-        if (const auto* items = payload->get("items"); items && items->array())
-          stored = static_cast<int>(items->array()->size());
-        summary = "Countinghouse: House treasury " + std::to_string(treasury) +
-                  "g, " + std::to_string(stored) + " items stored, carrying " +
-                  std::to_string(static_cast<int>(
-                      json_number(payload->get("carriedCoins"), 0.0))) +
-                  "g";
-      }
-      if (!summary.empty()) {
-        model_.last_message = summary;
-        pending_events_.push_back(
-            {PresentationEventType::Message, "", "", summary, 0});
+          bank.treasury =
+              static_cast<int>(json_number(house->get("treasury"), 0.0));
+        if (const auto* items = payload->get("items"); items && items->array()) {
+          for (const auto& row : *items->array()) {
+            ClientBankItem entry;
+            if (const auto* uuid = json_string(row.get("uuid"))) entry.uuid = *uuid;
+            if (const auto* row_name = json_string(row.get("name")))
+              entry.name = *row_name;
+            if (entry.name.empty())
+              if (const auto* id = json_string(row.get("id"))) entry.name = *id;
+            entry.qty = static_cast<int>(json_number(row.get("qty"), 0.0));
+            bank.items.push_back(std::move(entry));
+          }
+        }
+        model_.bank = std::move(bank);
+        model_.shop.open = false;
       }
     }
     return;
@@ -991,6 +1055,14 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       model_.player.life_max =
           static_cast<int>(json_number(hp->get("max"), model_.player.life_max));
       model_.player.alive = model_.player.life > 0;
+    }
+    if (const auto* attributes = state->get("attributes")) {
+      model_.attr_strength = static_cast<int>(
+          json_number(attributes->get("strength"), model_.attr_strength));
+      model_.attr_dexterity = static_cast<int>(
+          json_number(attributes->get("dexterity"), model_.attr_dexterity));
+      model_.attr_intelligence = static_cast<int>(
+          json_number(attributes->get("intelligence"), model_.attr_intelligence));
     }
     if (const auto* record = state->get("chroniclesRecord")) {
       if (json_number(record->get("revision"), 0) > 0.0) {
