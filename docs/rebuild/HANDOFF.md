@@ -1,5 +1,23 @@
 # Native reconstitution handoff
 
+## 2026-09-01 — vector art era + four playable themed roads
+
+- vector_art.hpp: procedural animated art replaces the raster world set.
+  Humanoid rig (walk/breathe/attack, held tools), lurker/wight/beast/
+  ghast/totem monster rigs dispatched by theme+role, swaying trees,
+  fountain, stalls, wagon, gate arches, per-theme terrain tiles painted
+  into the floor cache, themed masonry walls. Framekit pane chrome and
+  item art remain raster (WIZARD deliverables). frame-budget ~10-13 ms.
+- Server: per-theme named monster roster (melee/ranged/buffer ids), and
+  'theme' rides dev:state.
+- Chart pane over open:screen 'chart': town gate tiles open road charts;
+  Enter/click sets out via world:zone:enter. Salt/chalk/copper roads and
+  the marsh/grove/crypt/wilds themes are reachable in play for the first
+  time. Fixed the open:screen parser (payload is top-level, not nested -
+  shop/bank panes were silently dead too).
+- Live-verified: salt gate -> Rushweir marsh (murk tiles, pools, Mire
+  Ghast in elite gold). Owner should feel-check walk/attack animation.
+
 ## 2026-08-31 (night) — 55 fps, monsters fight back visibly, first-floor balance
 
 - Perf: floor cache (BitBlt except on tile-boundary crossings), persistent
