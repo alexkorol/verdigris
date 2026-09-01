@@ -368,6 +368,8 @@ struct ClientState {
     bool frontier = false;
   };
   std::vector<TreeSeatHit> tree_seat_hits;
+  // Scene the current scenery set was generated for (remote path).
+  std::string scenery_scene;
   // Borderless windowed-fullscreen is the default presentation; F11 drops
   // back to a movable window for side-by-side development.
   bool fullscreen_window = true;
@@ -715,20 +717,19 @@ void refresh_art_status(BillboardAssets& assets) {
 // repo-root working directory and the build-directory executable.
 void load_framekit_assets(BillboardAssets& assets) {
   std::vector<std::string> candidates;
-  candidates.push_back("native\client\assets\wizard");
+  candidates.push_back("native/client/assets/wizard");
   const std::string executable = executable_directory();
   if (!executable.empty()) {
-    candidates.push_back(executable + "\..\client\assets\wizard");
-    candidates.push_back(executable +
-                         "\..\..\client\assets\wizard");
-    candidates.push_back(executable + "\assets\wizard");
+    candidates.push_back(executable + "/../client/assets/wizard");
+    candidates.push_back(executable + "/../../client/assets/wizard");
+    candidates.push_back(executable + "/assets/wizard");
   }
   for (const auto& root : candidates) {
     if (!directory_exists(root)) continue;
     const bool chrome_loaded =
-        load_sprite(assets, root + "\framekit\textures\panel.png",
+        load_sprite(assets, root + "/framekit/textures/panel.png",
                     assets.fk_panel) &&
-        load_sprite(assets, root + "\framekit\textures\slot.png",
+        load_sprite(assets, root + "/framekit/textures/slot.png",
                     assets.fk_slot);
     if (!chrome_loaded) {
       assets.fk_panel.reset();
@@ -745,7 +746,7 @@ void load_framekit_assets(BillboardAssets& assets) {
     };
     for (const auto& entry : kItemArt) {
       SpriteBitmap& sprite = assets.item_art[entry.item_id];
-      if (!load_sprite(assets, root + "\items\\" + entry.file, sprite))
+      if (!load_sprite(assets, root + "/items/" + entry.file, sprite))
         sprite.reset();
     }
     return;
@@ -902,10 +903,47 @@ void generate_scenery(ClientState& state) {
   state.scenery.clear();
   std::string route_id = state.world.route_id;
   if (state.simulation) route_id = state.simulation->instance().route_id;
-  else if (state.session) route_id = state.session->model().scene.id;
+  else if (state.session) {
+    // scene.id only updates on transition envelopes; player.scene_id is
+    // stamped by login and every snapshot, so it also covers the initial
+    // town where no transition ever fires.
+    route_id = state.session->model().player.scene_id;
+    if (route_id.empty()) route_id = state.session->model().scene.id;
+  }
   if (route_id.empty()) return;
 
   SceneryRng rng(scenery_seed(route_id));
+  if (route_id.rfind("town:", 0) == 0) {
+    // The Crossroads: landmarks anchored on the server's own contract
+    // positions (fountain 38,115; Mara 49,103; Ludovicus 19,113; Rhea
+    // 31,121; the spawn wagon 47,119) so every interaction point is a
+    // visible thing. Non-solid: town collision is authoritatively open.
+    const double t = kTileUnits;
+    const double landmark_radius =
+        static_cast<double>(verdigris::world_scale::kSceneryColliderRadius);
+    add_scenery(state.scenery, SceneryKind::Shrine, 38.0 * t, 115.0 * t,
+                landmark_radius * 1.4, false, 1.1);  // the fountain
+    add_scenery(state.scenery, SceneryKind::Dwelling, 49.0 * t, 102.0 * t,
+                landmark_radius * 1.6, false, 0.95);  // Mara's general stall
+    add_scenery(state.scenery, SceneryKind::Dwelling, 19.0 * t, 112.0 * t,
+                landmark_radius * 1.6, false, 0.95);  // Ludovicus' boards
+    add_scenery(state.scenery, SceneryKind::Dwelling, 31.0 * t, 122.0 * t,
+                landmark_radius * 1.6, false, 0.95);  // Rhea's countinghouse
+    add_scenery(state.scenery, SceneryKind::Ruin, 48.0 * t, 120.0 * t,
+                landmark_radius * 1.4, false, 0.9);  // the House wagon
+    // A loose ring of trees frames the market square without crowding it.
+    add_scenery(state.scenery, SceneryKind::Tree, 26.0 * t, 108.0 * t,
+                landmark_radius, false, 1.1);
+    add_scenery(state.scenery, SceneryKind::Tree, 44.0 * t, 111.0 * t,
+                landmark_radius, false, 0.9);
+    add_scenery(state.scenery, SceneryKind::Tree, 35.0 * t, 124.0 * t,
+                landmark_radius, false, 1.0);
+    add_scenery(state.scenery, SceneryKind::Tree, 52.0 * t, 116.0 * t,
+                landmark_radius, false, 1.05);
+    add_scenery(state.scenery, SceneryKind::Tree, 22.0 * t, 119.0 * t,
+                landmark_radius, false, 0.85);
+    return;
+  }
   const bool village = route_id.find(":1:") != std::string::npos;
   const bool fields = route_id.find(":2:") != std::string::npos;
   const double tree_radius =
@@ -1178,6 +1216,21 @@ std::string nearest_pickup_id(const ClientState& state) {
 }
 
 void equip_selected(ClientState& state) {
+  {
+    sync_world(state);
+    const auto& items = state.world.carried;
+    if (!items.empty()) {
+      const std::size_t pick = std::min(state.selected_item, items.size() - 1);
+      std::string lowered = items[pick].name;
+      for (auto& ch : lowered)
+        ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+      if (lowered.find("coin") != std::string::npos) {
+        show_hint(state, "Coins spend; they do not equip");
+        return;
+      }
+    }
+  }
+
   if (state.world.carried.empty()) {
     show_hint(state, "Gear empty: pick up an item first");
     return;
@@ -2478,6 +2531,15 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
         DeleteObject(cell_pen);
       }
       RECT art_cell{cell.left, cell.top, cell.right, cell.bottom - 18 * s};
+      {
+        // Parchment backing: bronze-age sprites are dark; without a light
+        // ground they vanish into the slot texture.
+        RECT backing{art_cell.left + 4 * s, art_cell.top + 4 * s,
+                     art_cell.right - 4 * s, art_cell.bottom};
+        HBRUSH backing_brush = CreateSolidBrush(RGB(74, 82, 78));
+        FillRect(dc, &backing, backing_brush);
+        DeleteObject(backing_brush);
+      }
       draw_item_art(state.billboards, dc, art_key(i), art_cell);
       SetTextColor(dc, equipped ? RGB(240, 210, 120) : RGB(205, 215, 204));
       std::string name = items[i].name;
@@ -3517,27 +3579,27 @@ void draw_wall_tiles(const WorldView& world, HDC dc, const Camera& camera,
       const ScreenPoint c1 = project(camera, bounds, wx + tile, wy + tile);
       if (c1.x < 0 || c1.y < 0 || c0.x > bounds.right || c0.y > bounds.bottom)
         continue;
-      const int lift = std::max(3, static_cast<int>((c1.y - c0.y) * 0.30));
-      // Face (lower part) in deep shadowed stone.
-      RECT face{c0.x, c0.y - lift, c1.x, c1.y};
-      HBRUSH face_brush = CreateSolidBrush(RGB(37, 33, 29));
+      const int lift = std::max(4, static_cast<int>((c1.y - c0.y) * 0.45));
+      // Shadow face below the slab.
+      RECT face{c0.x, c1.y - lift, c1.x, c1.y};
+      HBRUSH face_brush = CreateSolidBrush(RGB(16, 14, 12));
       FillRect(dc, &face, face_brush);
       DeleteObject(face_brush);
-      // Raised top slab, lit from above.
-      RECT top{c0.x, c0.y - lift, c1.x, c1.y - lift / 2 - (c1.y - c0.y) / 2};
-      top.bottom = std::max(static_cast<int>(top.top) + 2,
-                            static_cast<int>(c0.y + (c1.y - c0.y) / 2 - lift));
-      HBRUSH top_brush = CreateSolidBrush(RGB(64, 58, 50));
+      // Raised top slab, clearly lighter than any floor plate.
+      RECT top{c0.x, c0.y - lift, c1.x, c1.y - lift};
+      HBRUSH top_brush = CreateSolidBrush(RGB(88, 78, 66));
       FillRect(dc, &top, top_brush);
       DeleteObject(top_brush);
-      // Patina rim on the lit edge + seam lines for the brick read.
-      draw_line(dc, c0.x, top.top, c1.x, top.top, RGB(96, 108, 92), 1);
-      draw_line(dc, c0.x, top.bottom, c1.x, top.bottom, RGB(20, 18, 16), 1);
-      const int seam_y = (top.bottom + c1.y) / 2;
-      draw_line(dc, c0.x + (c1.x - c0.x) / 3, top.bottom,
-                c0.x + (c1.x - c0.x) / 3, seam_y, RGB(24, 22, 20), 1);
-      draw_line(dc, c0.x + 2 * (c1.x - c0.x) / 3, seam_y,
-                c0.x + 2 * (c1.x - c0.x) / 3, c1.y, RGB(24, 22, 20), 1);
+      // Lit rim + seams for the cut-stone read.
+      draw_line(dc, c0.x, top.top, c1.x, top.top, RGB(146, 132, 108), 2);
+      draw_line(dc, c0.x, top.top, c0.x, top.bottom, RGB(118, 106, 88), 1);
+      draw_line(dc, c1.x - 1, top.top, c1.x - 1, top.bottom, RGB(30, 26, 22), 1);
+      const int mid_y = (top.top + top.bottom) / 2;
+      draw_line(dc, c0.x, mid_y, c1.x, mid_y, RGB(52, 46, 38), 1);
+      draw_line(dc, c0.x + (c1.x - c0.x) / 2, top.top,
+                c0.x + (c1.x - c0.x) / 2, mid_y, RGB(52, 46, 38), 1);
+      draw_line(dc, c0.x + (c1.x - c0.x) / 4, mid_y,
+                c0.x + (c1.x - c0.x) / 4, top.bottom, RGB(52, 46, 38), 1);
     }
   }
 }
@@ -4624,9 +4686,15 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                   world.monsters.size(), world.npcs.size());
     TextOutA(dc, 18, 144, debug_line, static_cast<int>(strlen(debug_line)));
     char asset_line[256];
-    std::snprintf(asset_line, sizeof(asset_line), "%s | %zu scenery | %s",
+    int art_loaded = 0;
+    for (const auto& art : state.billboards.item_art)
+      if (art.second.ready()) ++art_loaded;
+    std::snprintf(asset_line, sizeof(asset_line),
+                  "%s | %zu scenery | %s | framekit %s | item art %d",
                   state.billboards.status.c_str(), state.scenery.size(),
-                  state.billboards.scenery_status.c_str());
+                  state.billboards.scenery_status.c_str(),
+                  state.billboards.fk_panel.ready() ? "loaded" : "MISSING",
+                  art_loaded);
     TextOutA(dc, 18, 168, asset_line, static_cast<int>(strlen(asset_line)));
     int log_y = bounds.bottom - 24;
     for (auto it = state.event_log.rbegin(); it != state.event_log.rend(); ++it) {
@@ -4778,6 +4846,13 @@ void fixed_game_tick(ClientState& state, const RECT& bounds) {
     ingest_session_events(state);
     update_screen_for_model(state);
     watch_crypt_statuses(state);
+    // Regenerate landmark scenery whenever the authoritative scene changes
+    // (login included - transition envelopes never fire for the first town).
+    const std::string& scene = state.session->model().player.scene_id;
+    if (!scene.empty() && scene != state.scenery_scene) {
+      state.scenery_scene = scene;
+      generate_scenery(state);
+    }
   }
   if (state.relic_toast_ticks > 0) --state.relic_toast_ticks;
 
