@@ -41,6 +41,8 @@ namespace phase_a = verdigris::client::phase_a;
 // reserved-suffix compatibility operators are needed here.
 #include "assets/generated/visual_kit.h"
 #include "ui_skin.hpp"
+#include "../audio/audio_mixer.hpp"
+#include "audio_out.hpp"
 #include "framekit_renderer.hpp"
 #include "geometric_skill_tree.hpp"
 
@@ -370,6 +372,10 @@ struct ClientState {
   std::vector<TreeSeatHit> tree_seat_hits;
   // Scene the current scenery set was generated for (remote path).
   std::string scenery_scene;
+  // TASK-0157 audio, finally voiced: the deterministic mixer drains into a
+  // waveOut synth sink each fixed tick. M toggles mute.
+  std::unique_ptr<verdigris::audio::WaveOutSink> audio_sink;
+  std::unique_ptr<verdigris::audio::AudioMixer> audio_mixer;
   // Borderless windowed-fullscreen is the default presentation; F11 drops
   // back to a movable window for side-by-side development.
   bool fullscreen_window = true;
@@ -1046,14 +1052,21 @@ void ingest_session_events(ClientState& state) {
   fx.hint_ticks = state.hint_ticks;
   fx.known_monsters = std::move(state.known_monsters);
   ++state.world.tick;
+  if (!state.audio_mixer) {
+    state.audio_sink = std::make_unique<verdigris::audio::WaveOutSink>();
+    state.audio_mixer =
+        std::make_unique<verdigris::audio::AudioMixer>(*state.audio_sink);
+  }
   const std::string route_before = state.world.route_id;
   for (const auto& event : state.session->drain_events()) {
     verdigris::client::apply_presentation_event(fx, state.world, event, state.world.tick);
+    state.audio_mixer->ingest(event, state.world.tick);
     if (!fx.hint.empty()) {
       state.hint = fx.hint;
       state.hint_ticks = fx.hint_ticks;
     }
   }
+  state.audio_mixer->drain_scheduled();
   sync_world(state);
   if (state.world.route_id != route_before) generate_scenery(state);
   // TASK-0122 Phase A: deterministic first-sighting spawn beats on the
@@ -5155,6 +5168,11 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       }
       if (wparam == 'C') {
         state->character_pane = !state->character_pane;
+      }
+      if (wparam == 'M' && state->audio_sink) {
+        state->audio_sink->set_muted(!state->audio_sink->muted());
+        show_hint(*state, state->audio_sink->muted() ? "Sound muted"
+                                                     : "Sound on");
       }
       if (wparam == 'P') {
         state->tree_pane = !state->tree_pane;
