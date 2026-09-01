@@ -289,7 +289,33 @@ void remote_guest_journey() {
   bool lost = false;
 
   for (int step = 0; step < 480; ++step) {
-    hunt_step(session);
+    if (!incoming) {
+      // Take the first hit before the slaughter: pack contact carries a
+      // staggered first-strike windup now, so a swinging hunter kills each
+      // camped foe before it ever lands one. Close distance and stand.
+      const auto& camp_model = session.model();
+      const verdigris::client::ClientMonster* camp_target = nullptr;
+      double camp_best = 1e9;
+      for (const auto& monster : camp_model.monsters) {
+        if (!monster.alive) continue;
+        const double reach =
+            (std::max)(std::abs(monster.x - camp_model.player.x),
+                       std::abs(monster.y - camp_model.player.y));
+        if (reach < camp_best) { camp_best = reach; camp_target = &monster; }
+      }
+      if (camp_target && camp_best > 0.8) {
+        const int dx = camp_target->x > camp_model.player.x + 0.3   ? 1
+                       : camp_target->x < camp_model.player.x - 0.3 ? -1
+                                                                    : 0;
+        const int dy = camp_target->y > camp_model.player.y + 0.3   ? 1
+                       : camp_target->y < camp_model.player.y - 0.3 ? -1
+                                                                    : 0;
+        if (dx != 0 || dy != 0)
+          session.submit(verdigris::client::ClientCommand::move(dx, dy));
+      }
+    } else {
+      hunt_step(session);
+    }
     if (step % 3 == 0) session.submit(verdigris::client::ClientCommand::pick_up(""));
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
     session.poll();
@@ -353,18 +379,53 @@ void remote_guest_journey() {
   // Incoming hit and telegraph need adjacency to a live foe / boss. Keep
   // striking while easing east, then turn back for extract.
   for (int step = 0; step < 720 && !(incoming && telegraph); ++step) {
-    session.submit(verdigris::client::ClientCommand::use_action("melee"));
-    int dx = 1;
-    int dy = 0;
-    if (session.model().player.x > 26.0) dx = -1;
-    if (session.model().player.x < 10.0) dx = 1;
-    if (step % 14 == 0) dy = 1;
-    if (step % 14 == 7) dy = -1;
-    session.submit(verdigris::client::ClientCommand::move(dx, dy));
+    // Hold the blade until the first incoming hit lands: swinging kills a
+    // camped foe faster than its first-strike windup resolves, and this
+    // leg exists to prove the incoming path, not the outgoing one.
+    if (incoming)
+      session.submit(verdigris::client::ClientCommand::use_action("melee"));
+    // Pack contact now has a per-monster first-strike windup (staggered
+    // 400-1300 ms), so grazing past a foe no longer eats an instant hit.
+    // Seek the nearest living foe and CAMP inside its reach - the dwell a
+    // real fight has - instead of wandering a fixed band.
+    {
+      const auto& monsters = session.model().monsters;
+      const double px = session.model().player.x;
+      const double py = session.model().player.y;
+      const verdigris::client::ClientMonster* nearest = nullptr;
+      double best = 1e9;
+      for (const auto& monster : monsters) {
+        if (!monster.alive) continue;
+        const double reach =
+            (std::max)(std::abs(monster.x - px), std::abs(monster.y - py));
+        if (reach < best) { best = reach; nearest = &monster; }
+      }
+      if (nearest && best > 0.8) {
+        const int dx = nearest->x > px + 0.3 ? 1 : nearest->x < px - 0.3 ? -1 : 0;
+        const int dy = nearest->y > py + 0.3 ? 1 : nearest->y < py - 0.3 ? -1 : 0;
+        if (dx != 0 || dy != 0)
+          session.submit(verdigris::client::ClientCommand::move(dx, dy));
+      }
+      // Within reach: hold ground so the windup resolves into a hit.
+    }
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
     session.poll();
     collect_flags(session, outgoing, incoming, telegraph, kill, pickup, equipped, extracted,
                   lost);
+  }
+  if (!incoming) {
+    const auto& diag = session.model();
+    std::printf("    diag: player %.1f,%.1f life %d | monsters %zu\n",
+                diag.player.x, diag.player.y, diag.player.life,
+                diag.monsters.size());
+    double best = 1e9;
+    for (const auto& monster : diag.monsters) {
+      if (!monster.alive) continue;
+      const double reach = (std::max)(std::abs(monster.x - diag.player.x),
+                                      std::abs(monster.y - diag.player.y));
+      if (reach < best) best = reach;
+    }
+    std::printf("    diag: nearest living foe chebyshev %.2f\n", best);
   }
   check(incoming, "journey: incoming combat:hit reached the client");
   check(telegraph, "journey: monster:telegraph reached the client");

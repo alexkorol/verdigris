@@ -1909,9 +1909,24 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     for (auto& monster : monsters_) {
       if (!monster.alive || monster.boss) continue;
       if (std::abs(monster.x - here.x) > 1 || std::abs(monster.y - here.y) > 1) continue;
+      if (monster.next_attack_ms == 0) {
+        // First contact: a short, per-monster staggered windup instead of
+        // the whole adjacent pack landing its opening hit on the same
+        // millisecond. The synchronised burst deleted a level-1 scion
+        // before the first telegraph could even read (owner ruling: the
+        // first stretch must be survivable and readable).
+        std::uint32_t stagger_hash = 2166136261u;
+        for (const char c : monster.uuid)
+          stagger_hash = (stagger_hash ^ static_cast<std::uint8_t>(c)) * 16777619u;
+        monster.next_attack_ms = now + 400 + stagger_hash % 900;
+        continue;
+      }
       if (now < monster.next_attack_ms) continue;
       monster.next_attack_ms = now + 1200;
-      const int damage = 4 + monster.level * 2;
+      // Owner balance ruling 2026-08-31: 4 + level*2 outpaced level-1 life
+      // by the third simultaneous attacker; contact pressure now scales at
+      // half the slope so early floors threaten without deleting.
+      const int damage = 2 + monster.level;
       player_life = std::max(0, player_life - damage);
       WorldCombatEvent impact;
       impact.type = "hit";
