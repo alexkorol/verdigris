@@ -526,6 +526,7 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
           {"item", JsonValue::Object{{"uuid", JsonValue(command.target)}}}};
       break;
     case ClientCommand::Type::EnterZone:
+      model_.chart.open = false;
       envelope.event = "world:zone:enter";
       envelope.data = JsonValue::Object{{"nodeId", JsonValue(command.target)}};
       break;
@@ -607,6 +608,7 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       // Pane dismissal is presentation-local; the server keeps no modal.
       model_.shop.open = false;
       model_.bank.open = false;
+      model_.chart.open = false;
       return;
     case ClientCommand::Type::AllocateNode: {
       // Extend the authoritative allocation by one node and save the whole
@@ -862,7 +864,10 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   if (envelope.event == "open:screen") {
     // Authoritative trader/countinghouse screens: mirrored into the model
     // verbatim for the pane painters. `open` clears only via CloseScreen.
-    const auto* data = envelope.data.get("data");
+    // The server emits {player, screen, payload} at the envelope's top
+    // level; tolerate a nested data wrapper for forward compatibility.
+    const auto* data = envelope.data.get("screen") ? &envelope.data
+                                                   : envelope.data.get("data");
     const auto* screen = json_string(data ? data->get("screen") : nullptr);
     const auto* payload = data ? data->get("payload") : nullptr;
     if (screen && payload) {
@@ -884,6 +889,32 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
           }
         }
         model_.shop = std::move(shop);
+        model_.bank.open = false;
+      } else if (*screen == "chart") {
+        ClientChartScreen chart;
+        chart.open = true;
+        if (const auto* road = json_string(payload->get("roadId")))
+          chart.road_id = *road;
+        if (const auto* name = json_string(payload->get("roadName")))
+          chart.road_name = *name;
+        if (const auto* blurb = json_string(payload->get("blurb")))
+          chart.blurb = *blurb;
+        if (const auto* nodes = payload->get("nodes"); nodes && nodes->array()) {
+          for (const auto& row : *nodes->array()) {
+            ClientChartNode node;
+            if (const auto* id = json_string(row.get("id"))) node.id = *id;
+            if (const auto* node_name = json_string(row.get("name")))
+              node.name = *node_name;
+            if (const auto* warden = json_string(row.get("wardenName")))
+              node.warden = *warden;
+            if (const auto* status = json_string(row.get("status")))
+              node.status = *status;
+            node.tier = static_cast<int>(json_number(row.get("tier"), 1.0));
+            chart.nodes.push_back(std::move(node));
+          }
+        }
+        model_.chart = std::move(chart);
+        model_.shop.open = false;
         model_.bank.open = false;
       } else if (*screen == "bank") {
         ClientBankScreen bank;

@@ -1731,6 +1731,17 @@ void WorldSimulation::generate_instance() {
     monster.uuid = "monster-" + std::to_string(serial_) + "-" + std::to_string(placed);
     monster.id = metadata_.theme + "-lurker";
     monster.name = zone_display_name(metadata_.theme, "", 1) + " Lurker";
+    // Named per-theme roster (owner content ruling 2026-08-31): each road
+    // fields melee/ranged/buffer kinds with their own names and ids so the
+    // bestiary reads as fauna, not one renamed lurker. Ids are stable
+    // (theme-role); rigs and future drops key off them.
+    struct RosterRow { const char* melee; const char* ranged; const char* buffer; };
+    const RosterRow roster =
+        metadata_.theme == "grove" ? RosterRow{"Thorn Stalker", "Sling Poacher", "Sapbinder"}
+        : metadata_.theme == "crypt" ? RosterRow{"Barrow Wight", "Grave Archer", "Candle Priest"}
+        : metadata_.theme == "wilds" ? RosterRow{"Ridge Wolf", "Crag Slinger", "Herd Caller"}
+        : metadata_.theme == "marsh" ? RosterRow{"Mire Ghast", "Bog Spitter", "Rot Shaman"}
+                                     : RosterRow{"Stone Lurker", "Flint Slinger", "Warden Caller"};
     monster.x = x;
     monster.y = y;
     // map.js: level = max(1, floor(1 + index*0.14)) + (depth-1)*2 + theme
@@ -1748,6 +1759,20 @@ void WorldSimulation::generate_instance() {
       monster.behaviour_type = (role_index == 5) ? "buffer" : (role_index % 2 ? "ranged" : "melee");
     } else {
       monster.behaviour_type = (role_index == 5) ? "buffer" : (role_index % 3 ? "melee" : "ranged");
+    }
+    if (monster.behaviour_type == "ranged") {
+      monster.id = metadata_.theme + "-ranged";
+      monster.name = roster.ranged;
+      monster.life = (std::max)(6, monster.life * 8 / 10);
+      monster.life_max = monster.life;
+    } else if (monster.behaviour_type == "buffer") {
+      monster.id = metadata_.theme + "-buffer";
+      monster.name = roster.buffer;
+      monster.life = (std::max)(6, monster.life * 9 / 10);
+      monster.life_max = monster.life;
+    } else {
+      monster.id = metadata_.theme + "-melee";
+      monster.name = roster.melee;
     }
     if (placed == 0 && metadata_.theme == "marsh") {
       monster.rarity = "rare";

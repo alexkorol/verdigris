@@ -4008,6 +4008,13 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
 
 void activate_trade_row(ClientState& state, const ClientState::TradeRowHit& hit) {
   if (!state.session) return;
+  if (hit.kind == 3) {
+    // A chart node: set out on that stretch of road.
+    state.session->submit(
+        verdigris::client::ClientCommand::enter_zone(hit.ref));
+    show_hint(state, "The road takes you");
+    return;
+  }
   const char* action = hit.kind == 0   ? "player:shop:buy"
                        : hit.kind == 1 ? "player:bank:withdraw"
                                        : "player:bank:deposit";
@@ -4020,9 +4027,10 @@ void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
   state.trade_row_hits.clear();
   if (!state.session) return;
   const auto& model = state.session->model();
-  if (!model.shop.open && !model.bank.open) return;
+  if (!model.shop.open && !model.bank.open && !model.chart.open) return;
   const int s = hud_scale(static_cast<int>(bounds.bottom));
-  const bool shop = model.shop.open;
+  const bool chart = model.chart.open;
+  const bool shop = !chart && model.shop.open;
   const int pane_w = (shop ? 460 : 560) * s;
   const int row_h = 30 * s;
 
@@ -4034,7 +4042,27 @@ void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
     bool header = false;
   };
   std::vector<Row> rows;
-  if (shop) {
+  if (chart) {
+    for (const auto& node : model.chart.nodes) {
+      Row row;
+      row.left = "T" + std::to_string(node.tier) + "  " + node.name +
+                 (node.warden.empty() ? "" : "  -  " + node.warden);
+      row.right = node.status;
+      if (node.status == "open") {
+        row.hit.kind = 3;
+        row.hit.ref = node.id;
+      } else {
+        row.header = true;  // barred/cleared rows render but do not activate
+      }
+      rows.push_back(std::move(row));
+    }
+    if (rows.empty()) {
+      Row row;
+      row.left = "No stretch of this road is charted yet.";
+      row.header = true;
+      rows.push_back(std::move(row));
+    }
+  } else if (shop) {
     for (std::size_t i = 0; i < model.shop.rows.size(); ++i) {
       const auto& stock = model.shop.rows[i];
       Row row;
@@ -4095,12 +4123,14 @@ void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
   skin::panel(dc, pane, shop ? skin::kGold : skin::kVerdigris, 250, 9.0f);
   rl.push_back({render::Op::Hud, static_cast<double>(left),
                 static_cast<double>(top), 0.0, 0,
-                shop ? "shop-pane" : "bank-pane"});
+                chart ? "chart-pane" : shop ? "shop-pane" : "bank-pane"});
 
   SetBkMode(dc, TRANSPARENT);
   HGDIOBJ old_font = SelectObject(dc, skin::font_heading());
   SetTextColor(dc, shop ? skin::kGold : skin::kVerdigris);
-  const std::string title = shop ? model.shop.name : "Rhea's Countinghouse";
+  const std::string title = chart ? model.chart.road_name
+                            : shop  ? model.shop.name
+                                    : "Rhea's Countinghouse";
   TextOutA(dc, left + 16 * s, top + 8 * s, title.c_str(),
            static_cast<int>(title.size()));
   SelectObject(dc, skin::font_body());
@@ -4151,10 +4181,11 @@ void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
   SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kInkDim);
   const std::string footer =
-      (shop ? "carrying " + std::to_string(model.shop.carried_coins) + "g"
-            : "House treasury " + std::to_string(model.bank.treasury) +
-                  "g - carrying " + std::to_string(model.bank.carried_coins) +
-                  "g") +
+      (chart ? model.chart.blurb
+       : shop ? "carrying " + std::to_string(model.shop.carried_coins) + "g"
+              : "House treasury " + std::to_string(model.bank.treasury) +
+                    "g - carrying " + std::to_string(model.bank.carried_coins) +
+                    "g") +
       "  |  click or Enter - Esc closes";
   TextOutA(dc, left + 16 * s, top + pane_h - footer_h, footer.c_str(),
            static_cast<int>(footer.size()));
@@ -5294,7 +5325,7 @@ void toggle_gear_overlay(ClientState& state) {
 bool trade_pane_open(const ClientState& state) {
   if (!state.session) return false;
   const auto& model = state.session->model();
-  return model.shop.open || model.bank.open;
+  return model.shop.open || model.bank.open || model.chart.open;
 }
 
 void handle_escape_key(ClientState& state) {

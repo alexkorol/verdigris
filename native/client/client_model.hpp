@@ -82,6 +82,23 @@ struct ClientBankScreen {
   std::vector<ClientBankItem> items;
 };
 
+// One node row of a road chart (open:screen chart payload).
+struct ClientChartNode {
+  std::string id;      // "tin:1:0" - feeds world:zone:enter verbatim
+  std::string name;
+  std::string warden;
+  std::string status;  // "open" | "cleared" | "barred"
+  int tier = 1;
+};
+
+struct ClientChartScreen {
+  bool open = false;
+  std::string road_id;
+  std::string road_name;
+  std::string blurb;
+  std::vector<ClientChartNode> nodes;
+};
+
 // Town NPC roster entry, mirrored from the server's `npcs` snapshot array.
 // Positions are protocol tile units like monsters; `actions` carries the
 // server-authored verb list ("talk", "trade", "bank", "examine").
@@ -187,6 +204,7 @@ struct ClientModel {
   std::vector<ClientNpc> npcs;
   ClientShopScreen shop;
   ClientBankScreen bank;
+  ClientChartScreen chart;
   // stats-manager attributes from the dev:state snapshot.
   int attr_strength = 10;
   int attr_dexterity = 10;
