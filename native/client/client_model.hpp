@@ -5,6 +5,7 @@
 // here. Both LocalCoreSession and RemoteProtocolSession publish this type;
 // renderers and HUD read it and nothing else.
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -188,6 +189,12 @@ struct ClientModel {
   int attr_strength = 10;
   int attr_dexterity = 10;
   int attr_intelligence = 10;
+  // Walkable grid for the current scene (requested once per scene change).
+  // Row-major, 1 = walkable; empty until the first map payload arrives.
+  int map_width = 0;
+  int map_height = 0;
+  std::string map_scene_id;
+  std::vector<std::uint8_t> map_walkable;
   ClientItemSlot equipped;
   ClientScene scene;
   std::string house_name;

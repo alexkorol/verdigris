@@ -102,6 +102,12 @@ struct WorldView {
   WorldActor player;
   std::vector<WorldActor> monsters;
   std::vector<WorldNpc> npcs;
+  // Authoritative walkable grid for the current scene (protocol tiles,
+  // row-major, 1 = walkable). Empty until the map payload arrives; the
+  // renderer draws blocked tiles as visible walls instead of open floor.
+  int map_width = 0;
+  int map_height = 0;
+  std::vector<std::uint8_t> map_walkable;
   verdigris::Vec2 extraction{};
   bool has_extraction = false;
   std::string house_name = "House Verdigris";

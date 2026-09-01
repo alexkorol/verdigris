@@ -85,7 +85,8 @@ class ProtocolSession {
   }
   const std::string& socket_id() const { return socket_id_; }
   std::string login_payload() const;
-  std::string state_payload(const std::string& request_id) const;
+  std::string state_payload(const std::string& request_id,
+                            bool include_map = false) const;
   void handle(const Envelope& envelope, const std::function<void(const Envelope&)>& emit);
   void replace_socket(std::string socket_id);
   void reset_world_for_new_socket();

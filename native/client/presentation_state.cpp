@@ -158,6 +158,9 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     monster.elite = source.elite;
     world.monsters.push_back(std::move(monster));
   }
+  world.map_width = model.map_width;
+  world.map_height = model.map_height;
+  world.map_walkable = model.map_walkable;
   world.npcs.clear();
   for (const auto& source : model.npcs) {
     WorldNpc npc;

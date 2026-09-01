@@ -649,7 +649,14 @@ void RemoteProtocolSession::poll() {
     const auto now = std::chrono::steady_clock::now();
     if (now - last_state_request_ > std::chrono::milliseconds(250)) {
       last_state_request_ = now;
-      Envelope request{"dev:state", JsonValue::Object{{"requestId", JsonValue("model-sync")}}};
+      // Ask for the walkable grid whenever the scene we hold a map for is
+      // not the scene the player is in (including the empty initial state).
+      const bool need_map =
+          model_.map_scene_id.empty() ||
+          model_.map_scene_id != model_.player.scene_id;
+      Envelope request{"dev:state",
+                       JsonValue::Object{{"requestId", JsonValue("model-sync")},
+                                         {"includeMap", JsonValue(need_map)}}};
       send_envelope(request);
     }
   }
@@ -1087,6 +1094,28 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         }
         monster.alive = monster.life > 0;
         model_.monsters.push_back(std::move(monster));
+      }
+    }
+    if (const auto* map = state->get("map"); map && map->object()) {
+      const int width = static_cast<int>(json_number(map->get("width"), 0.0));
+      const int height = static_cast<int>(json_number(map->get("height"), 0.0));
+      const auto* rows = map->get("rows");
+      if (width > 0 && height > 0 && rows && rows->array() &&
+          static_cast<int>(rows->array()->size()) == height) {
+        model_.map_width = width;
+        model_.map_height = height;
+        if (const auto* scene = json_string(map->get("sceneId")))
+          model_.map_scene_id = *scene;
+        model_.map_walkable.assign(
+            static_cast<std::size_t>(width) * static_cast<std::size_t>(height),
+            1);
+        for (int y = 0; y < height; ++y) {
+          const auto* row = (*rows->array())[static_cast<std::size_t>(y)].string();
+          if (!row || static_cast<int>(row->size()) != width) continue;
+          for (int x = 0; x < width; ++x)
+            if ((*row)[static_cast<std::size_t>(x)] == '0')
+              model_.map_walkable[static_cast<std::size_t>(y) * width + x] = 0;
+        }
       }
     }
     if (const auto* npcs = state->get("npcs"); npcs && npcs->array()) {

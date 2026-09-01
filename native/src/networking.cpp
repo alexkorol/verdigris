@@ -982,7 +982,36 @@ JsonValue ProtocolSession::snapshot() const {
   JsonValue::Array stored; for (const auto& item:house_store_) stored.emplace_back(item_identity_json(item)); put(state,"houseStoredItems",std::move(stored));
   put(state,"groundTrophies",JsonValue::Array{}); return JsonValue(std::move(state));
 }
-std::string ProtocolSession::state_payload(const std::string& request_id) const { std::lock_guard<std::recursive_mutex> lock(mutex_); JsonValue::Object data; put(data,"player",JsonValue::Object{{"socket_id",socket_id_}}); put(data,"state",snapshot()); put(data,"requestId",request_id); return JsonValue(std::move(data)).stringify(); }
+std::string ProtocolSession::state_payload(const std::string& request_id, bool include_map) const {
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  JsonValue::Object data;
+  put(data,"player",JsonValue::Object{{"socket_id",socket_id_}});
+  JsonValue state_value = snapshot();
+  if (include_map) {
+    // The walkable grid the world already resolves movement against. Sent
+    // only on request (the client asks once per scene) so the 4 Hz snapshot
+    // stays light; without it walls are invisible and read as ghost
+    // collisions on the client.
+    const auto& grid = world_->grid();
+    JsonValue::Object map;
+    put(map, "sceneId", world_->scene_id());
+    put(map, "width", grid.width);
+    put(map, "height", grid.height);
+    JsonValue::Array rows;
+    for (int y = 0; y < grid.height; ++y) {
+      std::string row(static_cast<std::size_t>(grid.width), '1');
+      for (int x = 0; x < grid.width; ++x)
+        if (!grid.walkable_at(x, y)) row[static_cast<std::size_t>(x)] = '0';
+      rows.emplace_back(std::move(row));
+    }
+    put(map, "rows", std::move(rows));
+    if (auto* state_object = state_value.object())
+      (*state_object)["map"] = JsonValue(std::move(map));
+  }
+  put(data,"state",std::move(state_value));
+  put(data,"requestId",request_id);
+  return JsonValue(std::move(data)).stringify();
+}
 void ProtocolSession::emit_inventory_refresh(const std::function<void(const Envelope&)>& emit) const {
   // dev.js: core:refresh:inventory carries the full slot list.
   JsonValue::Array slots; for (const auto& item:inventory_.items()) slots.emplace_back(item_identity_json(item));
@@ -2565,7 +2594,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   if (envelope.event=="player:context-menu:build") { if (payload) handle_menu_build(*payload,emit); return; }
   if (envelope.event=="player:context-menu:action") { if (payload) handle_menu_action(*payload,emit); return; }
   if (envelope.event=="player:inventory:commit") { if (payload) handle_inventory_commit(*payload,emit); return; }
-  if (envelope.event=="dev:state") { maybe_respawn(now_ms()); if (world_->in_instance()) best_depth_=(std::max)(best_depth_,world_->metadata().depth); process_combat(now_ms(),emit); const auto id=as_string(payload?payload->get("requestId"):nullptr); JsonValue data; parse_json(state_payload(id),data); emit(Envelope{"dev:state",std::move(data)}); return; }
+  if (envelope.event=="dev:state") { maybe_respawn(now_ms()); if (world_->in_instance()) best_depth_=(std::max)(best_depth_,world_->metadata().depth); process_combat(now_ms(),emit); const auto id=as_string(payload?payload->get("requestId"):nullptr); const auto* want_map=payload?payload->get("includeMap"):nullptr; const bool include_map=want_map&&((want_map->boolean()&&*want_map->boolean())||(want_map->number()&&*want_map->number()!=0.0)); JsonValue data; parse_json(state_payload(id,include_map),data); emit(Envelope{"dev:state",std::move(data)}); return; }
   // ── N5 Chronicles admission (server/player/handlers/chronicles.js) ──────
   if (envelope.event=="chronicles:house:found") {
     static std::atomic<std::uint64_t> house_serial{1};

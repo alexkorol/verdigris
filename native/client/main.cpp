@@ -336,6 +336,14 @@ struct ClientState {
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
   double last_paint_ms = 0.0;
+  // Frame pacing: the timer fires ~66x/s for smooth rendering while the
+  // simulation-facing logic keeps its exact 50 ms cadence via accumulator.
+  long long last_frame_qpc = 0;
+  double tick_accum_ms = 0.0;
+  // Honest on-screen frame counter (painted frames per wall second).
+  int fps_frames = 0;
+  long long fps_window_qpc = 0;
+  int fps = 0;
   // Tick stamp of the last client-predicted swing arc (rate limit).
   std::uint64_t last_predicted_swing_tick = ~0ULL;
   // Trade/countinghouse pane interaction: keyboard cursor plus the exact
@@ -3472,6 +3480,68 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open,
   return layout;
 }
 
+// -- Wall tiles -----------------------------------------------------------
+// Blocked cells of the authoritative walkable grid, drawn as chunky raised
+// stone so collision is always visible. Vector-only: no assets required.
+void draw_wall_tiles(const WorldView& world, HDC dc, const Camera& camera,
+                     const RECT& bounds) {
+  if (world.map_width <= 0 || world.map_height <= 0 ||
+      world.map_walkable.size() !=
+          static_cast<std::size_t>(world.map_width) * world.map_height)
+    return;
+  const double tile = kTileUnits;
+  const double half_w_units =
+      (static_cast<double>(bounds.right) * 0.5) / std::max(0.05, camera.zoom) +
+      tile;
+  const double half_h_units =
+      (static_cast<double>(bounds.bottom) * 0.5) / std::max(0.05, camera.zoom) +
+      tile;
+  int start_tx = static_cast<int>(std::floor((camera.x - half_w_units) / tile));
+  int end_tx = static_cast<int>(std::ceil((camera.x + half_w_units) / tile));
+  int start_ty = static_cast<int>(std::floor((camera.y - half_h_units) / tile));
+  int end_ty = static_cast<int>(std::ceil((camera.y + half_h_units) / tile));
+  start_tx = std::max(start_tx, 0);
+  start_ty = std::max(start_ty, 0);
+  end_tx = std::min(end_tx, world.map_width - 1);
+  end_ty = std::min(end_ty, world.map_height - 1);
+  for (int ty = start_ty; ty <= end_ty; ++ty) {
+    for (int tx = start_tx; tx <= end_tx; ++tx) {
+      if (world.map_walkable[static_cast<std::size_t>(ty) * world.map_width +
+                             tx])
+        continue;
+      // The tile occupies [tx-0.5, tx+0.5) in protocol space (positions round
+      // to the nearest tile), so the block is centred on the tile coordinate.
+      const double wx = (static_cast<double>(tx) - 0.5) * tile;
+      const double wy = (static_cast<double>(ty) - 0.5) * tile;
+      const ScreenPoint c0 = project(camera, bounds, wx, wy);
+      const ScreenPoint c1 = project(camera, bounds, wx + tile, wy + tile);
+      if (c1.x < 0 || c1.y < 0 || c0.x > bounds.right || c0.y > bounds.bottom)
+        continue;
+      const int lift = std::max(3, static_cast<int>((c1.y - c0.y) * 0.30));
+      // Face (lower part) in deep shadowed stone.
+      RECT face{c0.x, c0.y - lift, c1.x, c1.y};
+      HBRUSH face_brush = CreateSolidBrush(RGB(37, 33, 29));
+      FillRect(dc, &face, face_brush);
+      DeleteObject(face_brush);
+      // Raised top slab, lit from above.
+      RECT top{c0.x, c0.y - lift, c1.x, c1.y - lift / 2 - (c1.y - c0.y) / 2};
+      top.bottom = std::max(static_cast<int>(top.top) + 2,
+                            static_cast<int>(c0.y + (c1.y - c0.y) / 2 - lift));
+      HBRUSH top_brush = CreateSolidBrush(RGB(64, 58, 50));
+      FillRect(dc, &top, top_brush);
+      DeleteObject(top_brush);
+      // Patina rim on the lit edge + seam lines for the brick read.
+      draw_line(dc, c0.x, top.top, c1.x, top.top, RGB(96, 108, 92), 1);
+      draw_line(dc, c0.x, top.bottom, c1.x, top.bottom, RGB(20, 18, 16), 1);
+      const int seam_y = (top.bottom + c1.y) / 2;
+      draw_line(dc, c0.x + (c1.x - c0.x) / 3, top.bottom,
+                c0.x + (c1.x - c0.x) / 3, seam_y, RGB(24, 22, 20), 1);
+      draw_line(dc, c0.x + 2 * (c1.x - c0.x) / 3, seam_y,
+                c0.x + 2 * (c1.x - c0.x) / 3, c1.y, RGB(24, 22, 20), 1);
+    }
+  }
+}
+
 // -- Character sheet pane ------------------------------------------------
 // Authoritative Scion sheet: identity, vitals, combat totals, attributes.
 void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
@@ -3870,6 +3940,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   }
 
   draw_floor(state.billboards, dc, state.camera, bounds, world.route_id, rl);
+  draw_wall_tiles(world, dc, state.camera, bounds);
 
   // Ground decals render before anything that stands on the plane.
   if (world.has_extraction) {
@@ -4102,10 +4173,22 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         rl.push_back({render::Op::Npc, static_cast<double>(base.x),
                       static_cast<double>(base.y), 0.0, npc.id, npc.name});
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
-        // Friendly ring: a calm blue no hostile actor uses.
-        draw_team_ring(dc, base, kTileUnits * 0.55, RGB(122, 168, 230));
-        if (!draw_billboard_sprite(state.billboards, dc, state.billboards.player, base,
-                                   kTileUnits * 1.35, 0)) {
+        // Role-coloured ring, and always the vector silhouette so townsfolk
+        // never read as copies of the raster player plate.
+        COLORREF ring = RGB(122, 168, 230);  // guide/talk
+        if (!npc.actions.empty()) {
+          const std::string& lead = npc.actions.front();
+          if (lead == "trade") ring = RGB(239, 208, 116);
+          else if (lead == "bank") ring = RGB(120, 214, 168);
+          else if (std::find(npc.actions.begin(), npc.actions.end(),
+                             std::string("trade")) != npc.actions.end())
+            ring = RGB(239, 208, 116);
+          else if (std::find(npc.actions.begin(), npc.actions.end(),
+                             std::string("bank")) != npc.actions.end())
+            ring = RGB(120, 214, 168);
+        }
+        draw_team_ring(dc, base, kTileUnits * 0.55, ring);
+        {
           const int kit_height =
               std::max(8, static_cast<int>(kTileUnits * 1.35 * base.scale));
           if (const kit::Symbol* symbol = kit_symbol("player"))
@@ -4154,20 +4237,80 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         rl.push_back({render::Op::Drop, static_cast<double>(base.x),
                       static_cast<double>(base.y), 0.0, 0, entry_loot.first});
         draw_contact_shadow(dc, base, kTileUnits * 0.2);
-        const int r = std::max(3, static_cast<int>(kTileUnits * 0.16 * base.scale));
+        const int r = std::max(4, static_cast<int>(kTileUnits * 0.20 * base.scale));
         const int lift = static_cast<int>(kTileUnits * 0.28 * base.scale);
-        const bool is_trophy = entry_loot.first.rfind("trophy", 0) == 0;
-        const COLORREF color =
-            is_trophy ? RGB(196, 148, 220) : RGB(230, 181, 74);
-        POINT diamond[4] = {{base.x, base.y - lift - r},
-                            {base.x + r, base.y - lift},
-                            {base.x, base.y - lift + r},
-                            {base.x - r, base.y - lift}};
+        const int gx = base.x;
+        const int gy = base.y - lift;
+        // Category glyph from the item's name: every drop reads as a thing,
+        // not an abstract marker. Vector-only placeholders by design.
+        std::string kind_name = loot_label(state, entry_loot.first);
+        for (auto& ch : kind_name)
+          ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+        const bool is_trophy = entry_loot.first.rfind("trophy", 0) == 0 ||
+                               kind_name.find("omen") != std::string::npos ||
+                               kind_name.find("trophy") != std::string::npos;
+        const bool is_coins = kind_name.find("coin") != std::string::npos ||
+                              kind_name.find("gold") != std::string::npos;
+        const bool is_weapon = kind_name.find("sword") != std::string::npos ||
+                               kind_name.find("dagger") != std::string::npos ||
+                               kind_name.find("knife") != std::string::npos ||
+                               kind_name.find("axe") != std::string::npos ||
+                               kind_name.find("pike") != std::string::npos ||
+                               kind_name.find("spear") != std::string::npos;
+        const bool is_shield = kind_name.find("shield") != std::string::npos;
+        const bool is_vessel = kind_name.find("vessel") != std::string::npos ||
+                               kind_name.find("draught") != std::string::npos ||
+                               kind_name.find("orb") != std::string::npos ||
+                               kind_name.find("bowl") != std::string::npos;
+        const COLORREF color = is_trophy ? RGB(196, 148, 220)
+                               : is_coins ? RGB(240, 198, 80)
+                               : is_weapon ? RGB(200, 206, 214)
+                               : is_shield ? RGB(168, 128, 84)
+                               : is_vessel ? RGB(120, 190, 214)
+                                           : RGB(230, 181, 74);
         HBRUSH brush = CreateSolidBrush(color);
-        HPEN pen = CreatePen(PS_SOLID, 1, color);
+        HPEN pen = CreatePen(PS_SOLID, 2, RGB(18, 16, 14));
         HGDIOBJ old_brush = SelectObject(dc, brush);
         HGDIOBJ old_pen = SelectObject(dc, pen);
-        Polygon(dc, diamond, 4);
+        if (is_coins) {
+          // A short stack of coins.
+          for (int c = 0; c < 3; ++c) {
+            Ellipse(dc, gx - r, gy - c * (r / 2) - r / 3,
+                    gx + r, gy - c * (r / 2) + r / 3);
+          }
+        } else if (is_weapon) {
+          // An angled blade with a crossguard.
+          POINT blade[4] = {{gx - r, gy + r}, {gx - r + r / 3, gy + r},
+                           {gx + r, gy - r + r / 3}, {gx + r - r / 3, gy - r}};
+          Polygon(dc, blade, 4);
+          POINT guard[4] = {{gx - r / 2 - r / 4, gy + r / 4},
+                           {gx - r / 4, gy + r / 2 + r / 4},
+                           {gx - r / 8, gy + r / 2},
+                           {gx - r / 2, gy + r / 8}};
+          Polygon(dc, guard, 4);
+        } else if (is_shield) {
+          POINT shield[5] = {{gx - r, gy - r / 2}, {gx + r, gy - r / 2},
+                            {gx + r, gy + r / 4}, {gx, gy + r},
+                            {gx - r, gy + r / 4}};
+          Polygon(dc, shield, 5);
+        } else if (is_trophy) {
+          // A curved horn.
+          POINT horn[6] = {{gx - r, gy + r / 2}, {gx - r / 3, gy + r / 4},
+                          {gx + r / 4, gy - r / 4}, {gx + r, gy - r},
+                          {gx + r / 2, gy + r / 6}, {gx - r / 2, gy + r}};
+          Polygon(dc, horn, 6);
+        } else if (is_vessel) {
+          // An amphora: body plus neck.
+          Ellipse(dc, gx - r + r / 4, gy - r / 3, gx + r - r / 4, gy + r);
+          RECT neck{gx - r / 4, gy - r, gx + r / 4, gy - r / 4};
+          FillRect(dc, &neck, brush);
+        } else {
+          // Default: a tied pouch.
+          Ellipse(dc, gx - r, gy - r / 3, gx + r, gy + r);
+          POINT tie[3] = {{gx - r / 3, gy - r / 3}, {gx + r / 3, gy - r / 3},
+                         {gx, gy - r}};
+          Polygon(dc, tie, 3);
+        }
         SelectObject(dc, old_brush);
         SelectObject(dc, old_pen);
         DeleteObject(brush);
@@ -4472,11 +4615,11 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     SetTextColor(dc, RGB(150, 160, 150));
     char debug_line[256];
     std::snprintf(debug_line, sizeof(debug_line),
-                  "tick %llu | player %d,%d | zoom %.2f | paint %.1fms | effects %zu"
+                  "tick %llu | player %d,%d | zoom %.2f | fps %d | paint %.1fms | effects %zu"
                   " | telegraphs %zu | monsters %zu | npcs %zu",
                   static_cast<unsigned long long>(world.tick),
                   player.position.x, player.position.y,
-                  state.camera.zoom, state.last_paint_ms,
+                  state.camera.zoom, state.fps, state.last_paint_ms,
                   state.effects.size(), state.telegraphs.size(),
                   world.monsters.size(), world.npcs.size());
     TextOutA(dc, 18, 144, debug_line, static_cast<int>(strlen(debug_line)));
@@ -4610,18 +4753,27 @@ void paint(HWND window, HDC dc) {
     state->last_paint_ms = 1000.0 *
                            static_cast<double>(paint_end.QuadPart - paint_begin.QuadPart) /
                            static_cast<double>(paint_freq.QuadPart);
+  ++state->fps_frames;
+  if (state->fps_window_qpc == 0) {
+    state->fps_window_qpc = paint_end.QuadPart;
+  } else if (paint_end.QuadPart - state->fps_window_qpc >=
+             paint_freq.QuadPart) {
+    state->fps = state->fps_frames;
+    state->fps_frames = 0;
+    state->fps_window_qpc = paint_end.QuadPart;
+  }
   BitBlt(dc, 0, 0, bounds.right, bounds.bottom, memory_dc, 0, 0, SRCCOPY);
   SelectObject(memory_dc, old_bitmap);
   DeleteObject(bitmap);
   DeleteDC(memory_dc);
 }
 
-void timer_step(HWND window, ClientState& state) {
-  RECT bounds;
-  GetClientRect(window, &bounds);
-
+// The fixed 50 ms game tick: movement/aim sampling at the server's exact
+// cadence, event ingestion, and tick-denominated presentation aging. This
+// must never run faster than 20 Hz — the wire's movement sampling contract
+// and every ttl/tick constant depend on it.
+void fixed_game_tick(ClientState& state, const RECT& bounds) {
   if (state.session) {
-    state.session->poll();
     sync_world(state);
     ingest_session_events(state);
     update_screen_for_model(state);
@@ -4660,12 +4812,40 @@ void timer_step(HWND window, ClientState& state) {
                       state.effects.end());
   if (state.hint_ticks > 0) --state.hint_ticks;
   if (state.screen_pulse_ticks > 0) --state.screen_pulse_ticks;
+}
+
+// Per-frame pump (~66 Hz timer): drain the socket, run as many fixed ticks
+// as wall time owes, then smooth the camera with a dt-correct factor. The
+// 20 FPS presentation came from one 50 ms timer driving both simulation
+// cadence AND rendering; they are now decoupled.
+void timer_step(HWND window, ClientState& state) {
+  RECT bounds;
+  GetClientRect(window, &bounds);
+
+  LARGE_INTEGER freq{}, now{};
+  QueryPerformanceFrequency(&freq);
+  QueryPerformanceCounter(&now);
+  double dt_ms = 15.0;
+  if (state.last_frame_qpc != 0 && freq.QuadPart > 0) {
+    dt_ms = 1000.0 *
+            static_cast<double>(now.QuadPart - state.last_frame_qpc) /
+            static_cast<double>(freq.QuadPart);
+    dt_ms = std::clamp(dt_ms, 0.0, 250.0);
+  }
+  state.last_frame_qpc = now.QuadPart;
+
+  if (state.session) state.session->poll();
+  state.tick_accum_ms += dt_ms;
+  while (state.tick_accum_ms >= 50.0) {
+    state.tick_accum_ms -= 50.0;
+    fixed_game_tick(state, bounds);
+  }
 
   sync_world(state);
   {
-    // The follow lerp is for in-play smoothing only. Across a scene load or
-    // admission the camera starts continents away — snap instead of panning
-    // the whole map past the player for a second.
+    // Follow smoothing (dt-correct exponential, equal to the historical 0.2
+    // per 50 ms). Across a scene load the camera starts continents away —
+    // snap instead of panning the whole map past the player.
     const double gap_x = state.world.player.position.x - state.camera.x;
     const double gap_y = state.world.player.position.y - state.camera.y;
     const double snap_gap =
@@ -4674,8 +4854,9 @@ void timer_step(HWND window, ClientState& state) {
       state.camera.x = static_cast<double>(state.world.player.position.x);
       state.camera.y = static_cast<double>(state.world.player.position.y);
     } else {
-      state.camera.x += gap_x * 0.2;
-      state.camera.y += gap_y * 0.2;
+      const double keep = std::pow(0.8, dt_ms / 50.0);
+      state.camera.x += gap_x * (1.0 - keep);
+      state.camera.y += gap_y * (1.0 - keep);
     }
   }
 }
@@ -4761,7 +4942,6 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (!state) break;
       if (wparam == VK_F3) {
         state->debug_overlay = !state->debug_overlay;
-        InvalidateRect(window, nullptr, FALSE);
         break;
       }
       if (wparam == VK_F11) {
@@ -4772,7 +4952,6 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         state->camera.zoom =
             kCameraDefaultZoom *
             zoom_height_factor(static_cast<int>(mode_bounds.bottom));
-        InvalidateRect(window, nullptr, FALSE);
         break;
       }
       if (wparam == VK_ESCAPE) {
@@ -4783,7 +4962,6 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       }
       if (state->screen == Screen::Chronicles && state->session) {
         handle_chronicles_key(*state, wparam);
-        InvalidateRect(window, nullptr, FALSE);
         break;
       }
       if (trade_pane_open(*state)) {
@@ -4798,7 +4976,6 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
           }
         }
         if (wparam == VK_UP || wparam == VK_DOWN || wparam == VK_RETURN) {
-          InvalidateRect(window, nullptr, FALSE);
           break;
         }
       }
@@ -4890,7 +5067,10 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (wparam == 'P') {
         state->tree_pane = !state->tree_pane;
       }
-      sync_world(*state);
+      // Only the open gear pane needs a fresh view here; a bare sync on
+      // every auto-repeating WASD keydown is per-input work the frame loop
+      // pays for.
+      if (state->gear_overlay) sync_world(*state);
       if (state->gear_overlay && !state->world.carried.empty()) {
         const std::size_t count = state->world.carried.size();
         constexpr int kGridColumns = 4;
@@ -4921,7 +5101,6 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
             kCameraDefaultZoom *
             zoom_height_factor(static_cast<int>(home_bounds.bottom));
       }
-      InvalidateRect(window, nullptr, FALSE);
       break;
     case WM_KEYUP:
       if (!state) break;
@@ -4950,7 +5129,6 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         const double zf = zoom_height_factor(static_cast<int>(zoom_bounds.bottom));
         state->camera.zoom = std::clamp(state->camera.zoom * factor,
                                         kCameraMinZoom * zf, kCameraMaxZoom * zf);
-        InvalidateRect(window, nullptr, FALSE);
       }
       break;
     case WM_LBUTTONDOWN:
@@ -4993,11 +5171,9 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
           dispatch_skill(*state, kPrimaryStrike);
         }
       }
-      InvalidateRect(window, nullptr, FALSE);
       break;
     case WM_RBUTTONDOWN:
       if (state) dispatch_dash(*state);
-      InvalidateRect(window, nullptr, FALSE);
       break;
     case WM_TIMER:
       if (state) {
@@ -7322,7 +7498,7 @@ int run_remote_native_client(const char* host, unsigned short port, const char* 
       WS_POPUP, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
       nullptr, nullptr, instance, state.get());
   ShowWindow(window, SW_SHOW);
-  SetTimer(window, 1, 50, nullptr);
+  SetTimer(window, 1, 15, nullptr);
 
   MSG message{};
   while (GetMessage(&message, nullptr, 0, 0) > 0) {
@@ -7412,7 +7588,7 @@ int main(int argc, char** argv) {
                                 GetSystemMetrics(SM_CYSCREEN),
                                 nullptr, nullptr, instance, state.get());
   ShowWindow(window, SW_SHOW);
-  SetTimer(window, 1, 50, nullptr);
+  SetTimer(window, 1, 15, nullptr);
 
   MSG message{};
   while (GetMessage(&message, nullptr, 0, 0) > 0) {
