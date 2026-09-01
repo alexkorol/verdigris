@@ -365,6 +365,7 @@ struct ClientState {
   // TASK-0122 Phase A: presentation-side memory of already-materialized foes
   // so the spawn beat fires exactly once per monster.
   std::unordered_set<std::string> known_monsters;
+  std::unordered_map<std::string, std::uint64_t> monster_strikes;
   bool loot_labels = false;
   bool gear_overlay = false;
   bool debug_overlay = false;
@@ -1096,6 +1097,7 @@ void ingest_session_events(ClientState& state) {
   fx.hint = state.hint;
   fx.hint_ticks = state.hint_ticks;
   fx.known_monsters = std::move(state.known_monsters);
+  fx.monster_strikes = std::move(state.monster_strikes);
   ++state.world.tick;
   if (!state.audio_mixer) {
     state.audio_sink = std::make_unique<verdigris::audio::WaveOutSink>();
@@ -1125,6 +1127,7 @@ void ingest_session_events(ClientState& state) {
   state.screen_pulse_ticks = fx.screen_pulse_ticks;
   state.event_log = std::move(fx.event_log);
   state.known_monsters = std::move(fx.known_monsters);
+  state.monster_strikes = std::move(fx.monster_strikes);
 }
 
 void submit_move(ClientState& state, int dx, int dy) {
@@ -4329,8 +4332,50 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       }
       case DepthDraw::What::Monster: {
         const auto& monster = world.monsters[entry.index];
-        const ScreenPoint base =
+        ScreenPoint base =
             project(state.camera, bounds, monster.position.x, monster.position.y);
+        // Presentation-only combat body language, derived entirely from
+        // authoritative positions and events: a windup lean away from the
+        // player while its telegraph runs, a lunge into the player when a
+        // strike lands, and sprite mirroring toward the player.
+        const double to_player_x =
+            static_cast<double>(world.player.position.x - monster.position.x);
+        const double to_player_y =
+            static_cast<double>(world.player.position.y - monster.position.y);
+        const double to_player_len = std::max(
+            1.0, std::sqrt(to_player_x * to_player_x + to_player_y * to_player_y));
+        const int mirror_x = to_player_x < 0.0 ? -1 : 1;
+        {
+          const auto telegraph = state.telegraphs.find(monster.id);
+          if (telegraph != state.telegraphs.end()) {
+            const double windup = std::clamp(
+                (static_cast<double>(world.tick - telegraph->second.start_tick) +
+                 state.tick_accum_ms / 50.0) /
+                    std::max(1, telegraph->second.windup_ticks),
+                0.0, 1.0);
+            const double lean = windup * kTileUnits * 0.14;
+            base.x -= static_cast<int>(to_player_x / to_player_len * lean *
+                                       base.scale);
+            base.y -= static_cast<int>(to_player_y / to_player_len * lean *
+                                       base.scale);
+          }
+          const auto strike = state.monster_strikes.find(monster.id);
+          if (strike != state.monster_strikes.end() &&
+              world.tick >= strike->second) {
+            const double phase = std::clamp(
+                (static_cast<double>(world.tick - strike->second) +
+                 state.tick_accum_ms / 50.0) /
+                    4.0,
+                0.0, 1.0);
+            if (phase < 1.0) {
+              const double push = std::sin(phase * kPi) * kTileUnits * 0.4;
+              base.x += static_cast<int>(to_player_x / to_player_len * push *
+                                         base.scale);
+              base.y += static_cast<int>(to_player_y / to_player_len * push *
+                                         base.scale);
+            }
+          }
+        }
         rl.push_back({render::Op::Monster, static_cast<double>(base.x),
                       static_cast<double>(base.y), 0.0, monster.life,
                       monster.elite ? "elite" : "monster"});
@@ -4348,7 +4393,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                        RGB(72, 22, 20));
         }
         if (!draw_billboard_sprite(state.billboards, dc, monster_sprite, base, foe_height,
-                                   monster.facing.x)) {
+                                   mirror_x)) {
           // TASK-0142: generated vector silhouettes (horned raider / caped
           // elite) before the capsule.
           const int kit_height =
@@ -4357,7 +4402,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
               kit_symbol(monster.elite ? "elite" : "raider");
           if (symbol)
             draw_kit_symbol(dc, *symbol, base.x, base.y, kit_height,
-                            monster.facing.x < 0);
+                            mirror_x < 0);
           else
             draw_billboard(dc, base, kTileUnits * 0.88, kTileUnits * 1.12,
                            RGB(186, 58, 44), RGB(42, 18, 16));

@@ -247,7 +247,11 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       number.critical = event.critical;
       number.style = event.style;
       fx.effects.push_back(number);
-      if (to_player) fx.screen_pulse_ticks = 3;
+      if (to_player) {
+        fx.screen_pulse_ticks = 3;
+        if (!event.actor_id.empty())
+          fx.monster_strikes[event.actor_id] = now_tick;
+      }
       break;
     }
     case PresentationEventType::Telegraph: {
@@ -267,6 +271,7 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
     case PresentationEventType::ActorDied:
     case PresentationEventType::ScionDied:
       fx.telegraphs.erase(event.actor_id);
+      fx.monster_strikes.erase(event.actor_id);
       if (event.type == PresentationEventType::ScionDied) fx.telegraphs.clear();
       fx.last_death_pos = at;
       fx.effects.push_back({EffectFx::Kind::DeathRing, ex, ey, 0.0, 0, 12});

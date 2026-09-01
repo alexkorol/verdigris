@@ -140,6 +140,9 @@ struct PresentationFx {
   // spawn/materialization beat fires exactly once per foe. Presentation
   // bookkeeping only — it never creates, moves, or damages an actor.
   std::unordered_set<std::string> known_monsters;
+  // Tick of each monster's most recent landed strike, driving the
+  // presentation-only attack lunge. Derived from authoritative hit events.
+  std::unordered_map<std::string, std::uint64_t> monster_strikes;
 };
 
 verdigris::Vec2 facing_vector(const std::string& facing);
