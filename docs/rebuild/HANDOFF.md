@@ -1,5 +1,17 @@
 # Native reconstitution handoff
 
+## 2026-08-31 (night) — 55 fps, monsters fight back visibly, first-floor balance
+
+- Perf: floor cache (BitBlt except on tile-boundary crossings), persistent
+  back buffer (was a 19 MB alloc/free per frame), cached GDI+ HUD chrome
+  (premultiplied layers; orb liquid at 21 levels). Live: paint 21.4 ->
+  13.1 ms, fps 43 -> 55 at 3440x1440. F3 shows floor/world/hud section ms.
+- Monster body language (presentation-only, event/position-derived):
+  telegraph windup lean, landed-strike lunge, mirror toward the player.
+- Core balance (owner ruling): pack first strikes arm a staggered
+  400-1300 ms windup instead of a same-millisecond burst; contact damage
+  2 + level (was 4 + level*2). Journey harness camps for its first hit.
+
 ## 2026-08-31 (later) — pacing rework, assets everywhere, audio voiced
 
 - 20 FPS was structural: one 50 ms timer drove simulation AND rendering.
