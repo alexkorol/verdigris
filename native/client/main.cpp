@@ -4112,12 +4112,29 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                           state.scenery[entry.index], rl);
         break;
       case DepthDraw::What::Player: {
-        const ScreenPoint base =
+        ScreenPoint base =
             project(state.camera, bounds, player.position.x, player.position.y);
         rl.push_back({render::Op::Player, static_cast<double>(base.x),
                       static_cast<double>(base.y)});
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
         draw_team_ring(dc, base, kTileUnits * 0.55, RGB(120, 214, 168));
+        // Strike lunge: while a swing effect is alive the body steps into
+        // the blow along the facing and recovers - a half-sine over the
+        // arc's lifetime, sub-tick smoothed so 60 fps rendering reads it
+        // as motion rather than three poses.
+        for (const auto& fx : state.effects) {
+          if (fx.kind != EffectFx::Kind::Swing &&
+              fx.kind != EffectFx::Kind::SweepArc)
+            continue;
+          const double phase = std::clamp(
+              (static_cast<double>(fx.age) + state.tick_accum_ms / 50.0) /
+                  std::max(1, fx.ttl),
+              0.0, 1.0);
+          const double push = std::sin(phase * kPi) * kTileUnits * 0.28;
+          base.x += static_cast<int>(std::cos(fx.angle) * push * base.scale);
+          base.y += static_cast<int>(std::sin(fx.angle) * push * base.scale);
+          break;
+        }
         if (!draw_billboard_sprite(state.billboards, dc, state.billboards.player, base,
                                    kTileUnits * 1.35, player.facing.x)) {
           // TASK-0142: generated vector silhouette before the capsule.
