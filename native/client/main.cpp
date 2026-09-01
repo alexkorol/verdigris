@@ -302,6 +302,39 @@ HudRect quickbar_strip_rect(int width, int height) {
   return {left - 10, top - 8, strip_w + 20, slot_h + 12};
 }
 
+// Offscreen floor cache: the tiled ground re-renders only when the camera
+// crosses a tile boundary, the zoom or scene changes, or the window is
+// resized; every other frame is one BitBlt. Cuts the largest per-frame GDI
+// cost (a StretchBlt per visible tile) to near zero when standing still and
+// to a couple of refreshes per second while walking.
+struct FloorCache {
+  HDC dc = nullptr;
+  HBITMAP bitmap = nullptr;
+  HGDIOBJ old_bitmap = nullptr;
+  int width = 0;
+  int height = 0;
+  int tx0 = 0, ty0 = 0, tx1 = 0, ty1 = 0;
+  double zoom = 0.0;
+  int view_w = 0, view_h = 0;
+  std::string route;
+  bool valid = false;
+
+  void release() {
+    if (dc) {
+      SelectObject(dc, old_bitmap);
+      DeleteDC(dc);
+      dc = nullptr;
+    }
+    if (bitmap) {
+      DeleteObject(bitmap);
+      bitmap = nullptr;
+    }
+    valid = false;
+  }
+
+  ~FloorCache() { release(); }
+};
+
 struct ClientState {
   std::unique_ptr<verdigris::Simulation> simulation;
   std::unique_ptr<verdigris::client::IClientSession> session;
@@ -338,6 +371,10 @@ struct ClientState {
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
   double last_paint_ms = 0.0;
+  // Section breakdown of the last frame (floor+walls, world pass, HUD).
+  double paint_ms_floor = 0.0;
+  double paint_ms_world = 0.0;
+  double paint_ms_hud = 0.0;
   // Frame pacing: the timer fires ~66x/s for smooth rendering while the
   // simulation-facing logic keeps its exact 50 ms cadence via accumulator.
   long long last_frame_qpc = 0;
@@ -372,6 +409,14 @@ struct ClientState {
   std::vector<TreeSeatHit> tree_seat_hits;
   // Scene the current scenery set was generated for (remote path).
   std::string scenery_scene;
+  FloorCache floor_cache;
+  // Persistent double buffer: allocating a full-screen DIB every WM_PAINT
+  // was a hidden ~19 MB alloc/free per frame at 3440x1440.
+  HDC back_dc = nullptr;
+  HBITMAP back_bitmap = nullptr;
+  HGDIOBJ back_old = nullptr;
+  int back_w = 0;
+  int back_h = 0;
   // TASK-0157 audio, finally voiced: the deterministic mixer drains into a
   // waveOut synth sink each fixed tick. M toggles mute.
   std::unique_ptr<verdigris::audio::WaveOutSink> audio_sink;
@@ -1662,7 +1707,8 @@ bool draw_terrain_tile(HDC dc, const SpriteBitmap& sprite, int dest_x, int dest_
 }
 
 void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
-                const RECT& bounds, const std::string& route_id, render::List& rl) {
+                const RECT& bounds, const std::string& route_id, render::List& rl,
+                FloorCache* cache = nullptr) {
   const bool tiled = assets.terrain1.ready() && assets.terrain4.ready();
   // TASK-0142: with the embedded vector kit the floor stays textured even
   // when PNG plates are missing — the "tiled" contract is honest in both
@@ -1706,14 +1752,12 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
   const bool theme_alt = terrain_theme_prefers_alt(route_id);
   const double half = tile * 0.5;
 
+  // Semantic ops are recorded per frame regardless of the pixel path so the
+  // scenario harness sees the identical vocabulary either way.
   for (int ty = start_ty; ty <= end_ty; ++ty) {
     for (int tx = start_tx; tx <= end_tx; ++tx) {
       const double wx = static_cast<double>(tx) * tile;
       const double wy = static_cast<double>(ty) * tile;
-      // 0075 rev2: seam-free tiling — adjacent tiles share projected corner
-      // coordinates exactly, so no background grid bleeds through.
-      const ScreenPoint corner0 = project(camera, bounds, wx, wy);
-      const ScreenPoint corner1 = project(camera, bounds, wx + tile, wy + tile);
       const ScreenPoint center = project(camera, bounds, wx + half, wy + half);
       const bool use_alt = terrain_tile_uses_alt(tx, ty, theme_alt);
       const std::string label =
@@ -1721,28 +1765,127 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
           std::to_string(ty);
       rl.push_back({render::Op::Tile, static_cast<double>(center.x),
                     static_cast<double>(center.y), half * center.scale, 0, label});
-      if (tiled) {
-        const SpriteBitmap& sprite = use_alt ? assets.terrain4 : assets.terrain1;
-        draw_terrain_tile(dc, sprite, corner0.x, corner0.y, corner1.x - corner0.x,
-                          corner1.y - corner0.y, terrain_tile_hash(tx, ty) >> 8);
-      } else if (vector_tiled) {
-        // Deterministic vector motif tile: same hashed dominant/variant mix
-        // as the PNG path (marsh/barrow/circle themes favor mossy stone).
-        const kit::Symbol& motif = use_alt ? *motif_alt : *motif_primary;
-        const int dest_w = corner1.x - corner0.x;
-        const int dest_h = corner1.y - corner0.y;
-        if (dest_w > 0 && dest_h > 0 && corner0.x < bounds.right &&
-            corner0.y < bounds.bottom && corner1.x > 0 && corner1.y > 0) {
-          const double scale = static_cast<double>(dest_w) /
-                               static_cast<double>(motif.width);
-          KitPlacement placement{dc, static_cast<double>(corner0.x),
-                                 static_cast<double>(corner0.y), scale,
-                                 static_cast<double>(motif.width), false};
-          for (int i = motif.shape_begin; i < motif.shape_end; ++i)
-            draw_kit_shape(placement, kit::kShapes[i]);
+    }
+  }
+
+  // The per-tile pixel painter, shared by the direct and cached paths. The
+  // target camera/bounds pair defines the affine frame tiles project into;
+  // adjacent tiles share projected corners exactly (0075 rev2), so seams
+  // never open in either frame.
+  const auto paint_tiles = [&](HDC target, const Camera& cam, const RECT& frame,
+                               int a_tx, int a_ty, int b_tx, int b_ty) {
+    for (int ty = a_ty; ty <= b_ty; ++ty) {
+      for (int tx = a_tx; tx <= b_tx; ++tx) {
+        const double wx = static_cast<double>(tx) * tile;
+        const double wy = static_cast<double>(ty) * tile;
+        const ScreenPoint corner0 = project(cam, frame, wx, wy);
+        const ScreenPoint corner1 = project(cam, frame, wx + tile, wy + tile);
+        const bool use_alt = terrain_tile_uses_alt(tx, ty, theme_alt);
+        if (tiled) {
+          const SpriteBitmap& sprite = use_alt ? assets.terrain4 : assets.terrain1;
+          draw_terrain_tile(target, sprite, corner0.x, corner0.y,
+                            corner1.x - corner0.x, corner1.y - corner0.y,
+                            terrain_tile_hash(tx, ty) >> 8);
+        } else if (vector_tiled) {
+          const kit::Symbol& motif = use_alt ? *motif_alt : *motif_primary;
+          const int dest_w = corner1.x - corner0.x;
+          const int dest_h = corner1.y - corner0.y;
+          if (dest_w > 0 && dest_h > 0) {
+            const double scale = static_cast<double>(dest_w) /
+                                 static_cast<double>(motif.width);
+            KitPlacement placement{target, static_cast<double>(corner0.x),
+                                   static_cast<double>(corner0.y), scale,
+                                   static_cast<double>(motif.width), false};
+            for (int i = motif.shape_begin; i < motif.shape_end; ++i)
+              draw_kit_shape(placement, kit::kShapes[i]);
+          }
         }
       }
     }
+  };
+
+  if (!cache) {
+    paint_tiles(dc, camera, bounds, start_tx, start_ty, end_tx, end_ty);
+    return;
+  }
+
+  const bool range_covered = cache->valid && start_tx >= cache->tx0 &&
+                             end_tx <= cache->tx1 && start_ty >= cache->ty0 &&
+                             end_ty <= cache->ty1;
+  if (!range_covered || cache->zoom != camera.zoom ||
+      cache->route != route_id ||
+      cache->view_w != static_cast<int>(bounds.right) ||
+      cache->view_h != static_cast<int>(bounds.bottom)) {
+    // Rebuild around the current view with a one-tile skirt so small camera
+    // moves stay inside the cached region.
+    const int margin = 1;
+    const int c_tx0 = start_tx - margin;
+    const int c_ty0 = start_ty - margin;
+    const int c_tx1 = end_tx + margin;
+    const int c_ty1 = end_ty + margin;
+    const int need_w = static_cast<int>(
+        std::ceil((c_tx1 - c_tx0 + 1) * tile * camera.zoom)) + 4;
+    const int need_h = static_cast<int>(
+        std::ceil((c_ty1 - c_ty0 + 1) * tile * camera.zoom)) + 4;
+    if (!cache->dc || cache->width < need_w || cache->height < need_h) {
+      cache->release();
+      HDC screen_dc = GetDC(nullptr);
+      cache->dc = CreateCompatibleDC(screen_dc);
+      cache->bitmap = CreateCompatibleBitmap(screen_dc, need_w, need_h);
+      ReleaseDC(nullptr, screen_dc);
+      if (!cache->dc || !cache->bitmap) {
+        cache->release();
+        paint_tiles(dc, camera, bounds, start_tx, start_ty, end_tx, end_ty);
+        return;
+      }
+      cache->old_bitmap = SelectObject(cache->dc, cache->bitmap);
+      cache->width = need_w;
+      cache->height = need_h;
+    }
+    // Cache frame: same zoom, camera centred on the cached world region.
+    Camera cache_cam = camera;
+    cache_cam.x = (static_cast<double>(c_tx0) + (c_tx1 - c_tx0 + 1) * 0.5) * tile;
+    cache_cam.y = (static_cast<double>(c_ty0) + (c_ty1 - c_ty0 + 1) * 0.5) * tile;
+    RECT cache_frame{0, 0, cache->width, cache->height};
+    HBRUSH backing = CreateSolidBrush(RGB(23, 29, 32));
+    FillRect(cache->dc, &cache_frame, backing);
+    DeleteObject(backing);
+    paint_tiles(cache->dc, cache_cam, cache_frame, c_tx0, c_ty0, c_tx1, c_ty1);
+    cache->tx0 = c_tx0;
+    cache->ty0 = c_ty0;
+    cache->tx1 = c_tx1;
+    cache->ty1 = c_ty1;
+    cache->zoom = camera.zoom;
+    cache->route = route_id;
+    cache->view_w = static_cast<int>(bounds.right);
+    cache->view_h = static_cast<int>(bounds.bottom);
+    cache->valid = true;
+  }
+
+  // Blit alignment: both frames share the zoom, so aligning any one world
+  // point aligns every tile. Anchor on the cached region's north-west tile
+  // corner, computed in doubles and rounded once.
+  {
+    const double anchor_wx = static_cast<double>(cache->tx0) * tile;
+    const double anchor_wy = static_cast<double>(cache->ty0) * tile;
+    // Integer half-extents to match camera2d::project exactly.
+    const double sx = (anchor_wx - camera.x) * camera.zoom +
+                      static_cast<double>(bounds.right / 2);
+    const double sy = (anchor_wy - camera.y) * camera.zoom +
+                      static_cast<double>(bounds.bottom / 2);
+    Camera cache_cam = camera;
+    cache_cam.x = (static_cast<double>(cache->tx0) +
+                   (cache->tx1 - cache->tx0 + 1) * 0.5) * tile;
+    cache_cam.y = (static_cast<double>(cache->ty0) +
+                   (cache->ty1 - cache->ty0 + 1) * 0.5) * tile;
+    const double cx = (anchor_wx - cache_cam.x) * camera.zoom +
+                      static_cast<double>(cache->width / 2);
+    const double cy = (anchor_wy - cache_cam.y) * camera.zoom +
+                      static_cast<double>(cache->height / 2);
+    const int dest_x = static_cast<int>(std::lround(sx - cx));
+    const int dest_y = static_cast<int>(std::lround(sy - cy));
+    BitBlt(dc, dest_x, dest_y, cache->width, cache->height, cache->dc, 0, 0,
+           SRCCOPY);
   }
 }
 
@@ -3997,6 +4140,15 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   // can never disagree.
   skin::set_ui_scale(hud_scale(static_cast<int>(bounds.bottom)));
   SelectObject(dc, skin::font_body());
+  LARGE_INTEGER section_freq{}, section_t0{}, section_t1{}, section_t2{};
+  QueryPerformanceFrequency(&section_freq);
+  QueryPerformanceCounter(&section_t0);
+  const auto section_ms = [&](const LARGE_INTEGER& a, const LARGE_INTEGER& b) {
+    return section_freq.QuadPart > 0
+               ? 1000.0 * static_cast<double>(b.QuadPart - a.QuadPart) /
+                     static_cast<double>(section_freq.QuadPart)
+               : 0.0;
+  };
 
   // TASK-0145: the Chronicles front door replaces the abrupt game-window
   // entry for the remote owner path. Expedition painting is skipped
@@ -4014,8 +4166,11 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     return;
   }
 
-  draw_floor(state.billboards, dc, state.camera, bounds, world.route_id, rl);
+  draw_floor(state.billboards, dc, state.camera, bounds, world.route_id, rl,
+             &state.floor_cache);
   draw_wall_tiles(world, dc, state.camera, bounds);
+  QueryPerformanceCounter(&section_t1);
+  state.paint_ms_floor = section_ms(section_t0, section_t1);
 
   // Ground decals render before anything that stands on the plane.
   if (world.has_extraction) {
@@ -4458,6 +4613,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                   static_cast<double>(chip.top), 0.0, 0, "beat:" + entry.first});
   }
 
+  QueryPerformanceCounter(&section_t2);
+  state.paint_ms_world = section_ms(section_t1, section_t2);
   paint_minimap(state, dc, bounds, rl);
   paint_vital_orbs(player, world.tick, state.screen_pulse_ticks, dc, bounds, rl,
                    &state.hud_rect_trace);
@@ -4707,11 +4864,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     SetTextColor(dc, RGB(150, 160, 150));
     char debug_line[256];
     std::snprintf(debug_line, sizeof(debug_line),
-                  "tick %llu | player %d,%d | zoom %.2f | fps %d | paint %.1fms | effects %zu"
+                  "tick %llu | player %d,%d | zoom %.2f | fps %d | paint %.1fms"
+                  " (floor %.1f world %.1f hud %.1f) | effects %zu"
                   " | telegraphs %zu | monsters %zu | npcs %zu",
                   static_cast<unsigned long long>(world.tick),
                   player.position.x, player.position.y,
                   state.camera.zoom, state.fps, state.last_paint_ms,
+                  state.paint_ms_floor, state.paint_ms_world, state.paint_ms_hud,
                   state.effects.size(), state.telegraphs.size(),
                   world.monsters.size(), world.npcs.size());
     TextOutA(dc, 18, 144, debug_line, static_cast<int>(strlen(debug_line)));
@@ -4838,10 +4997,26 @@ void paint(HWND window, HDC dc) {
   GetClientRect(window, &bounds);
   if (bounds.right <= 0 || bounds.bottom <= 0) return;
 
-  // Double buffer: draw into a memory bitmap, then blit once.
-  HDC memory_dc = CreateCompatibleDC(dc);
-  HBITMAP bitmap = CreateCompatibleBitmap(dc, bounds.right, bounds.bottom);
-  HGDIOBJ old_bitmap = SelectObject(memory_dc, bitmap);
+  // Double buffer: draw into a persistent memory bitmap, then blit once.
+  if (!state->back_dc || state->back_w != bounds.right ||
+      state->back_h != bounds.bottom) {
+    if (state->back_dc) {
+      SelectObject(state->back_dc, state->back_old);
+      DeleteDC(state->back_dc);
+      state->back_dc = nullptr;
+    }
+    if (state->back_bitmap) {
+      DeleteObject(state->back_bitmap);
+      state->back_bitmap = nullptr;
+    }
+    state->back_dc = CreateCompatibleDC(dc);
+    state->back_bitmap = CreateCompatibleBitmap(dc, bounds.right, bounds.bottom);
+    if (!state->back_dc || !state->back_bitmap) return;
+    state->back_old = SelectObject(state->back_dc, state->back_bitmap);
+    state->back_w = bounds.right;
+    state->back_h = bounds.bottom;
+  }
+  HDC memory_dc = state->back_dc;
   LARGE_INTEGER paint_freq{}, paint_begin{}, paint_end{};
   QueryPerformanceFrequency(&paint_freq);
   QueryPerformanceCounter(&paint_begin);
@@ -4851,6 +5026,8 @@ void paint(HWND window, HDC dc) {
     state->last_paint_ms = 1000.0 *
                            static_cast<double>(paint_end.QuadPart - paint_begin.QuadPart) /
                            static_cast<double>(paint_freq.QuadPart);
+  state->paint_ms_hud = state->last_paint_ms - state->paint_ms_floor -
+                        state->paint_ms_world;
   ++state->fps_frames;
   if (state->fps_window_qpc == 0) {
     state->fps_window_qpc = paint_end.QuadPart;
@@ -4861,9 +5038,6 @@ void paint(HWND window, HDC dc) {
     state->fps_window_qpc = paint_end.QuadPart;
   }
   BitBlt(dc, 0, 0, bounds.right, bounds.bottom, memory_dc, 0, 0, SRCCOPY);
-  SelectObject(memory_dc, old_bitmap);
-  DeleteObject(bitmap);
-  DeleteDC(memory_dc);
 }
 
 // The fixed 50 ms game tick: movement/aim sampling at the server's exact

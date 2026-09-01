@@ -17,6 +17,8 @@
 #include <algorithm>
 #include <string>
 
+#include <map>
+
 #include <objidl.h>
 namespace Gdiplus {
 using std::max;
@@ -24,6 +26,7 @@ using std::min;
 }  // namespace Gdiplus
 #include <gdiplus.h>
 #pragma comment(lib, "gdiplus.lib")
+#pragma comment(lib, "msimg32.lib")
 
 namespace skin {
 
@@ -104,6 +107,72 @@ inline HFONT font_heading() {
   return cached_font(cache, -19, FW_BOLD, "Georgia");
 }
 
+// ── cached layers ──────────────────────────────────────────────────────
+// GDI+ antialiased chrome is expensive to re-render 60x/s (measured 13+ ms
+// of a fullscreen frame). Static elements render ONCE into premultiplied
+// 32bpp bitmaps keyed by their parameters and AlphaBlend per frame.
+struct CachedLayer {
+  HDC dc = nullptr;
+  HBITMAP bitmap = nullptr;
+  HGDIOBJ old_bitmap = nullptr;
+  int w = 0;
+  int h = 0;
+};
+
+inline std::map<unsigned long long, CachedLayer>& layer_cache() {
+  static std::map<unsigned long long, CachedLayer> cache;
+  return cache;
+}
+
+// Renders via `painter(Graphics&, w, h)` into a PARGB surface and caches the
+// resulting HBITMAP. Returns nullptr on failure (caller falls back to the
+// direct draw path).
+template <typename Painter>
+inline const CachedLayer* cached_layer(unsigned long long key, int w, int h,
+                                       Painter painter) {
+  auto& cache = layer_cache();
+  auto found = cache.find(key);
+  if (found != cache.end()) return &found->second;
+  if (cache.size() > 256) return nullptr;  // runaway-key safety valve
+  ensure_started();
+  Gdiplus::Bitmap canvas(w, h, PixelFormat32bppPARGB);
+  {
+    Gdiplus::Graphics g(&canvas);
+    g.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+    painter(g, w, h);
+  }
+  HBITMAP hbm = nullptr;
+  if (canvas.GetHBITMAP(Gdiplus::Color(0, 0, 0, 0), &hbm) != Gdiplus::Ok ||
+      !hbm)
+    return nullptr;
+  CachedLayer layer;
+  layer.dc = CreateCompatibleDC(nullptr);
+  if (!layer.dc) {
+    DeleteObject(hbm);
+    return nullptr;
+  }
+  layer.bitmap = hbm;
+  layer.old_bitmap = SelectObject(layer.dc, hbm);
+  layer.w = w;
+  layer.h = h;
+  return &cache.emplace(key, layer).first->second;
+}
+
+inline void blend_layer(HDC dc, const CachedLayer& layer, int x, int y) {
+  const BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+  ::AlphaBlend(dc, x, y, layer.w, layer.h, layer.dc, 0, 0, layer.w, layer.h,
+               blend);
+}
+
+inline unsigned long long layer_key(int kind, int w, int h, COLORREF accent,
+                                    int extra) {
+  return (static_cast<unsigned long long>(kind) << 58) ^
+         (static_cast<unsigned long long>(w & 0xFFFF) << 40) ^
+         (static_cast<unsigned long long>(h & 0xFFFF) << 24) ^
+         (static_cast<unsigned long long>(accent & 0xFFFFFF)) ^
+         (static_cast<unsigned long long>(extra & 0xFF) << 16);
+}
+
 // ── primitives ─────────────────────────────────────────────────────────
 
 inline void rounded_path(Gdiplus::GraphicsPath& path, const Gdiplus::RectF& r,
@@ -116,16 +185,10 @@ inline void rounded_path(Gdiplus::GraphicsPath& path, const Gdiplus::RectF& r,
   path.CloseFigure();
 }
 
-// A layered panel: soft drop shadow, vertical bronze gradient body, patina
-// border, and a one-pixel top highlight that sells the bevel.
-inline void panel(HDC dc, const RECT& rect, COLORREF accent = kPanelBorder,
-                  BYTE body_alpha = 235, float radius = 6.0f) {
-  ensure_started();
-  Gdiplus::Graphics g(dc);
-  g.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-  const Gdiplus::RectF r(static_cast<float>(rect.left), static_cast<float>(rect.top),
-                         static_cast<float>(rect.right - rect.left),
-                         static_cast<float>(rect.bottom - rect.top));
+// Shared panel painter at an arbitrary origin: soft drop shadow, vertical
+// bronze gradient body, patina border, one-pixel top-highlight bevel.
+inline void paint_panel_into(Gdiplus::Graphics& g, const Gdiplus::RectF& r,
+                             COLORREF accent, BYTE body_alpha, float radius) {
   {  // shadow
     Gdiplus::RectF s = r;
     s.Offset(0.0f, 2.0f);
@@ -149,86 +212,210 @@ inline void panel(HDC dc, const RECT& rect, COLORREF accent = kPanelBorder,
   }
 }
 
-// Status chip: a compact panel with an accent-tinted left tick so scanned
-// rows key by colour before text.
-inline void chip(HDC dc, const RECT& rect, COLORREF accent) {
-  panel(dc, rect, accent, 225, 5.0f);
+// A layered panel. Rendered once per (size, accent, alpha, radius) into a
+// premultiplied layer and blended per frame; identical direct draw fallback.
+inline void panel(HDC dc, const RECT& rect, COLORREF accent = kPanelBorder,
+                  BYTE body_alpha = 235, float radius = 6.0f) {
   ensure_started();
+  const int w = rect.right - rect.left;
+  const int h = rect.bottom - rect.top;
+  if (w <= 0 || h <= 0) return;
+  const unsigned long long key =
+      layer_key(10 + static_cast<int>(radius), w, h, accent, body_alpha);
+  const CachedLayer* layer =
+      cached_layer(key, w, h + 3, [&](Gdiplus::Graphics& g, int lw, int lh) {
+        (void)lh;
+        paint_panel_into(g,
+                         Gdiplus::RectF(0.0f, 0.0f, static_cast<float>(lw),
+                                        static_cast<float>(h)),
+                         accent, body_alpha, radius);
+      });
+  if (layer) {
+    blend_layer(dc, *layer, rect.left, rect.top);
+    return;
+  }
   Gdiplus::Graphics g(dc);
   g.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-  Gdiplus::SolidBrush tick(gp(accent, 220));
-  g.FillRectangle(&tick, static_cast<float>(rect.left) + 3.0f,
-                  static_cast<float>(rect.top) + 4.0f, 2.5f,
-                  static_cast<float>(rect.bottom - rect.top) - 8.0f);
+  paint_panel_into(g,
+                   Gdiplus::RectF(static_cast<float>(rect.left),
+                                  static_cast<float>(rect.top),
+                                  static_cast<float>(w), static_cast<float>(h)),
+                   accent, body_alpha, radius);
 }
 
-// Vital orb: dark glass sphere, gradient liquid fill clipped to the level,
-// specular highlight, and a rim that carries the pulse state.
+// Status chip: a compact panel with an accent-tinted left tick so scanned
+// rows key by colour before text. Fully cached per (size, accent).
+inline void chip(HDC dc, const RECT& rect, COLORREF accent) {
+  ensure_started();
+  const int w = rect.right - rect.left;
+  const int h = rect.bottom - rect.top;
+  if (w <= 0 || h <= 0) return;
+  const auto paint_chip = [&](Gdiplus::Graphics& g, int lw, int lh) {
+    (void)lh;
+    paint_panel_into(g,
+                     Gdiplus::RectF(0.0f, 0.0f, static_cast<float>(lw),
+                                    static_cast<float>(h)),
+                     accent, 225, 5.0f);
+    Gdiplus::SolidBrush tick(gp(accent, 220));
+    g.FillRectangle(&tick, 3.0f, 4.0f, 2.5f, static_cast<float>(h) - 8.0f);
+  };
+  const CachedLayer* layer =
+      cached_layer(layer_key(40, w, h, accent, 0), w, h + 3, paint_chip);
+  if (layer) {
+    blend_layer(dc, *layer, rect.left, rect.top);
+    return;
+  }
+  Gdiplus::Graphics g(dc);
+  g.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+  g.TranslateTransform(static_cast<float>(rect.left),
+                       static_cast<float>(rect.top));
+  paint_chip(g, w, h + 3);
+}
+
+// Vital orb: dark glass sphere, gradient liquid clipped to the level,
+// specular highlight, and a rim that carries the pulse state. Every layer
+// is cached (the liquid at 21 quantized levels), so a per-frame orb is a
+// handful of AlphaBlends instead of PathGradient re-renders.
 inline void orb(HDC dc, int cx, int cy, int radius, double ratio, COLORREF deep,
                 COLORREF bright, COLORREF rim, bool pulse) {
   ensure_started();
+  const int pad = 6;
+  const int box = radius * 2 + pad * 2;
+  const float fx = static_cast<float>(pad);
+  const float fy = static_cast<float>(pad);
+  const float size = static_cast<float>(radius * 2);
+  const int origin_x = cx - radius - pad;
+  const int origin_y = cy - radius - pad;
+
+  const CachedLayer* backing = cached_layer(
+      layer_key(20, box, box, 0, 0), box, box,
+      [&](Gdiplus::Graphics& g, int, int) {
+        Gdiplus::GraphicsPath sphere;
+        sphere.AddEllipse(fx, fy, size, size);
+        Gdiplus::PathGradientBrush brush(&sphere);
+        brush.SetCenterColor(Gdiplus::Color(255, 26, 32, 33));
+        Gdiplus::Color edge(255, 8, 11, 12);
+        INT count = 1;
+        brush.SetSurroundColors(&edge, &count);
+        g.FillEllipse(&brush, fx, fy, size, size);
+      });
+
+  const double bounded = std::clamp(ratio, 0.0, 1.0);
+  const int bucket = static_cast<int>(std::lround(bounded * 20.0));
+  const CachedLayer* liquid =
+      bucket <= 0 ? nullptr
+                  : cached_layer(
+                        layer_key(22, box, box, deep, bucket), box, box,
+                        [&](Gdiplus::Graphics& g, int, int) {
+                          const float level =
+                              size * (1.0f - static_cast<float>(bucket) / 20.0f);
+                          Gdiplus::Region keep(Gdiplus::RectF(
+                              fx, fy + level, size, size - level));
+                          g.SetClip(&keep);
+                          Gdiplus::RectF body(fx + 2.0f, fy + 2.0f, size - 4.0f,
+                                              size - 4.0f);
+                          Gdiplus::LinearGradientBrush fill(
+                              body, gp(bright, 235), gp(deep, 245),
+                              Gdiplus::LinearGradientModeVertical);
+                          g.FillEllipse(&fill, body);
+                          g.ResetClip();
+                        });
+
+  const CachedLayer* gleam = cached_layer(
+      layer_key(21, box, box, 0, 0), box, box,
+      [&](Gdiplus::Graphics& g, int, int) {
+        Gdiplus::RectF shine_rect(fx + size * 0.22f, fy + size * 0.10f,
+                                  size * 0.42f, size * 0.26f);
+        Gdiplus::LinearGradientBrush shine(
+            shine_rect, Gdiplus::Color(90, 255, 255, 255),
+            Gdiplus::Color(0, 255, 255, 255),
+            Gdiplus::LinearGradientModeVertical);
+        g.FillEllipse(&shine, shine_rect);
+      });
+
+  const COLORREF ring_color = pulse ? kEmber : rim;
+  const CachedLayer* ring = cached_layer(
+      layer_key(23, box, box, ring_color, pulse ? 1 : 0), box, box,
+      [&](Gdiplus::Graphics& g, int, int) {
+        const float grow = pulse ? 3.0f : 0.0f;
+        Gdiplus::Pen pen(gp(ring_color, 235), pulse ? 3.0f : 2.0f);
+        g.DrawEllipse(&pen, fx - grow, fy - grow, size + grow * 2.0f,
+                      size + grow * 2.0f);
+      });
+
+  if (backing && gleam && ring) {
+    blend_layer(dc, *backing, origin_x, origin_y);
+    if (liquid) blend_layer(dc, *liquid, origin_x, origin_y);
+    blend_layer(dc, *gleam, origin_x, origin_y);
+    blend_layer(dc, *ring, origin_x, origin_y);
+    return;
+  }
+
+  // Fallback: direct draw (rare - layer allocation failure only).
   Gdiplus::Graphics g(dc);
   g.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-  const float fx = static_cast<float>(cx - radius);
-  const float fy = static_cast<float>(cy - radius);
-  const float size = static_cast<float>(radius * 2);
-  {  // glass backing
-    Gdiplus::GraphicsPath sphere;
-    sphere.AddEllipse(fx, fy, size, size);
-    Gdiplus::PathGradientBrush backing(&sphere);
-    backing.SetCenterColor(Gdiplus::Color(255, 26, 32, 33));
-    Gdiplus::Color edge(255, 8, 11, 12);
-    INT count = 1;
-    backing.SetSurroundColors(&edge, &count);
-    g.FillEllipse(&backing, fx, fy, size, size);
-  }
-  const double bounded = std::clamp(ratio, 0.0, 1.0);
-  if (bounded > 0.0) {  // liquid fill, clipped to the level line
+  g.TranslateTransform(static_cast<float>(origin_x),
+                       static_cast<float>(origin_y));
+  Gdiplus::GraphicsPath sphere;
+  sphere.AddEllipse(fx, fy, size, size);
+  Gdiplus::PathGradientBrush brush(&sphere);
+  brush.SetCenterColor(Gdiplus::Color(255, 26, 32, 33));
+  Gdiplus::Color edge(255, 8, 11, 12);
+  INT count = 1;
+  brush.SetSurroundColors(&edge, &count);
+  g.FillEllipse(&brush, fx, fy, size, size);
+  if (bounded > 0.0) {
     const float level = static_cast<float>(size * (1.0 - bounded));
     Gdiplus::Region keep(Gdiplus::RectF(fx, fy + level, size, size - level));
-    Gdiplus::GraphicsContainer saved = g.BeginContainer();
-    g.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
     g.SetClip(&keep);
     Gdiplus::RectF body(fx + 2.0f, fy + 2.0f, size - 4.0f, size - 4.0f);
-    Gdiplus::LinearGradientBrush liquid(body, gp(bright, 235), gp(deep, 245),
-                                        Gdiplus::LinearGradientModeVertical);
-    g.FillEllipse(&liquid, body);
-    g.EndContainer(saved);
+    Gdiplus::LinearGradientBrush fill(body, gp(bright, 235), gp(deep, 245),
+                                      Gdiplus::LinearGradientModeVertical);
+    g.FillEllipse(&fill, body);
+    g.ResetClip();
   }
-  {  // specular highlight
-    Gdiplus::RectF gleam(fx + size * 0.22f, fy + size * 0.10f, size * 0.42f,
-                         size * 0.26f);
-    Gdiplus::LinearGradientBrush shine(gleam, Gdiplus::Color(90, 255, 255, 255),
-                                       Gdiplus::Color(0, 255, 255, 255),
-                                       Gdiplus::LinearGradientModeVertical);
-    g.FillEllipse(&shine, gleam);
-  }
-  const float ring_grow = pulse ? 3.0f : 0.0f;
-  Gdiplus::Pen ring(gp(pulse ? kEmber : rim, 235), pulse ? 3.0f : 2.0f);
-  g.DrawEllipse(&ring, fx - ring_grow, fy - ring_grow, size + ring_grow * 2.0f,
-                size + ring_grow * 2.0f);
+  const float grow = pulse ? 3.0f : 0.0f;
+  Gdiplus::Pen pen(gp(ring_color, 235), pulse ? 3.0f : 2.0f);
+  g.DrawEllipse(&pen, fx - grow, fy - grow, size + grow * 2.0f,
+                size + grow * 2.0f);
 }
 
-// Quickbar cell: sunken slot with an accent underline when armed.
+// Quickbar cell: sunken slot with an accent underline when armed. Cached
+// per (size, accent, armed).
 inline void slot(HDC dc, const RECT& rect, COLORREF accent, bool armed) {
   ensure_started();
+  const int w = rect.right - rect.left;
+  const int h = rect.bottom - rect.top;
+  if (w <= 0 || h <= 0) return;
+  const auto paint_slot = [&](Gdiplus::Graphics& g, int lw, int lh) {
+    const Gdiplus::RectF r(0.0f, 0.0f, static_cast<float>(lw),
+                           static_cast<float>(lh));
+    Gdiplus::GraphicsPath body;
+    rounded_path(body, r, 4.0f);
+    Gdiplus::LinearGradientBrush fill(r, gp(kPanelBottom, 240),
+                                      gp(kPanelTop, 240),
+                                      Gdiplus::LinearGradientModeVertical);
+    g.FillPath(&fill, &body);
+    Gdiplus::Pen border(gp(armed ? accent : kPanelBorder, armed ? 235 : 150),
+                        1.0f);
+    g.DrawPath(&border, &body);
+    if (armed) {
+      Gdiplus::Pen underline(gp(accent, 220), 2.0f);
+      g.DrawLine(&underline, r.X + 5.0f, r.Y + r.Height - 3.0f,
+                 r.X + r.Width - 5.0f, r.Y + r.Height - 3.0f);
+    }
+  };
+  const CachedLayer* layer = cached_layer(
+      layer_key(30, w, h, accent, armed ? 1 : 0), w, h, paint_slot);
+  if (layer) {
+    blend_layer(dc, *layer, rect.left, rect.top);
+    return;
+  }
   Gdiplus::Graphics g(dc);
   g.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-  const Gdiplus::RectF r(static_cast<float>(rect.left), static_cast<float>(rect.top),
-                         static_cast<float>(rect.right - rect.left),
-                         static_cast<float>(rect.bottom - rect.top));
-  Gdiplus::GraphicsPath body;
-  rounded_path(body, r, 4.0f);
-  Gdiplus::LinearGradientBrush fill(r, gp(kPanelBottom, 240), gp(kPanelTop, 240),
-                                    Gdiplus::LinearGradientModeVertical);
-  g.FillPath(&fill, &body);
-  Gdiplus::Pen border(gp(armed ? accent : kPanelBorder, armed ? 235 : 150), 1.0f);
-  g.DrawPath(&border, &body);
-  if (armed) {
-    Gdiplus::Pen underline(gp(accent, 220), 2.0f);
-    g.DrawLine(&underline, r.X + 5.0f, r.Y + r.Height - 3.0f,
-               r.X + r.Width - 5.0f, r.Y + r.Height - 3.0f);
-  }
+  g.TranslateTransform(static_cast<float>(rect.left),
+                       static_cast<float>(rect.top));
+  paint_slot(g, w, h);
 }
 
 }  // namespace skin
