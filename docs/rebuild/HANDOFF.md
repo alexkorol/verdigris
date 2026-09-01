@@ -1,5 +1,21 @@
 # Native reconstitution handoff
 
+## 2026-08-31 (later) — pacing rework, assets everywhere, audio voiced
+
+- 20 FPS was structural: one 50 ms timer drove simulation AND rendering.
+  Now a 15 ms frame timer with a 50 ms fixed-tick accumulator (wire
+  cadence preserved), dt-correct camera smoothing, no input-driven
+  repaints. Live F3 fps counter; ~30-50 fps at 3440x1440 measured.
+- Walls ride the wire (dev:state includeMap, fetched once per scene) and
+  draw as raised cut stone. Loot renders as category glyphs; NPCs are
+  vector silhouettes with role rings; strike lunge animates the body.
+- Asset-path escaping bug had silently disabled the whole WIZARD pack;
+  fixed (forward slashes), F3 now reports framekit/item-art/scenery
+  state. Town landmarks anchored on server contract positions.
+- TASK-0157 audio finally has a device: waveOut synth sink (six-handle
+  pool, fail-closed without a device), fed from the remote event stream
+  at the fixed tick. M mutes. Owner has not yet confirmed feel/sound.
+
 ## 2026-08-31 — perf fix + panes: loot, inventory, character, tree
 
 - Move+attack stutter fixed (`a9944523`): trivial input handlers (the
