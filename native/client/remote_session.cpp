@@ -1077,12 +1077,18 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
           apply_chronicle_object(model_.chronicle, *chronicle);
       }
     }
+    if (const auto* theme = json_string(state->get("theme")))
+      model_.theme = *theme;
     if (const auto* monsters = state->get("monsters"); monsters && monsters->array()) {
       model_.monsters.clear();
       for (const auto& entry : *monsters->array()) {
         ClientMonster monster;
         if (const auto* uuid = json_string(entry.get("uuid"))) monster.id = *uuid;
         if (const auto* name = json_string(entry.get("name"))) monster.name = *name;
+        if (const auto* kind = json_string(entry.get("id"))) monster.kind = *kind;
+        if (const auto* behaviour = entry.get("behaviour"))
+          if (const auto* type = json_string(behaviour->get("type")))
+            monster.behaviour = *type;
         monster.x = json_number(entry.get("x"), 0.0);
         monster.y = json_number(entry.get("y"), 0.0);
         if (const auto* hp = entry.get("hp")) {

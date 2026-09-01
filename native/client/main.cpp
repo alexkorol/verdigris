@@ -43,6 +43,7 @@ namespace phase_a = verdigris::client::phase_a;
 #include "ui_skin.hpp"
 #include "../audio/audio_mixer.hpp"
 #include "audio_out.hpp"
+#include "vector_art.hpp"
 #include "framekit_renderer.hpp"
 #include "geometric_skill_tree.hpp"
 
@@ -207,7 +208,7 @@ struct BillboardAssets {
   BillboardAssets& operator=(const BillboardAssets&) = delete;
 };
 
-enum class SceneryKind { Tree, Ruin, Dwelling, Shrine };
+enum class SceneryKind { Tree, Ruin, Dwelling, Shrine, Gate };
 
 struct SceneryItem {
   SceneryKind kind = SceneryKind::Tree;
@@ -411,6 +412,16 @@ struct ClientState {
   // Scene the current scenery set was generated for (remote path).
   std::string scenery_scene;
   FloorCache floor_cache;
+  // Vector-actor animation state: walk cycles accumulate from authoritative
+  // position deltas per rendered frame; breathe is a shared idle clock.
+  struct ActorMotion {
+    verdigris::Vec2 last_pos{};
+    bool has_last = false;
+    double walk_phase = 0.0;
+    double moving = 0.0;
+  };
+  std::unordered_map<std::string, ActorMotion> motions;
+  double breathe_phase = 0.0;
   // Persistent double buffer: allocating a full-screen DIB every WM_PAINT
   // was a hidden ~19 MB alloc/free per frame at 3440x1440.
   HDC back_dc = nullptr;
@@ -983,6 +994,16 @@ void generate_scenery(ClientState& state) {
                 landmark_radius * 1.6, false, 0.95);  // Rhea's countinghouse
     add_scenery(state.scenery, SceneryKind::Ruin, 48.0 * t, 120.0 * t,
                 landmark_radius * 1.4, false, 0.9);  // the House wagon
+    // The four road gates (server kRoadGates): tin N, salt E, chalk S,
+    // copper W. Standing on the gate tile opens that road's chart.
+    add_scenery(state.scenery, SceneryKind::Gate, 37.0 * t, 94.0 * t,
+                landmark_radius * 1.5, false, 1.0);
+    add_scenery(state.scenery, SceneryKind::Gate, 64.0 * t, 114.0 * t,
+                landmark_radius * 1.5, false, 1.0);
+    add_scenery(state.scenery, SceneryKind::Gate, 37.0 * t, 138.0 * t,
+                landmark_radius * 1.5, false, 1.0);
+    add_scenery(state.scenery, SceneryKind::Gate, 12.0 * t, 115.0 * t,
+                landmark_radius * 1.5, false, 1.0);
     // A loose ring of trees frames the market square without crowding it.
     add_scenery(state.scenery, SceneryKind::Tree, 26.0 * t, 108.0 * t,
                 landmark_radius, false, 1.1);
@@ -1509,9 +1530,11 @@ void draw_kit_symbol(HDC dc, const kit::Symbol& symbol, int base_x, int base_y,
 }
 
 void draw_contact_shadow(HDC dc, const ScreenPoint& base, double world_radius) {
+  // Flat warm shadow pool; vector figures no longer hide a tall ellipse the
+  // way full sprite plates did.
   const int rx = std::max(3, static_cast<int>(world_radius * base.scale));
-  const int ry = std::max(2, static_cast<int>(world_radius * base.scale * 0.8));
-  fill_ellipse(dc, base.x, base.y, rx, ry, RGB(14, 18, 20));
+  const int ry = std::max(2, static_cast<int>(world_radius * base.scale * 0.45));
+  fill_ellipse(dc, base.x, base.y, rx, ry, RGB(34, 28, 22));
 }
 
 // TASK-0142: a squashed ground ring in team colors so friend/foe reads at a
@@ -1583,6 +1606,7 @@ double scenery_height(SceneryKind kind) {
     case SceneryKind::Ruin: return kTileUnits * 2.6;
     case SceneryKind::Dwelling: return kTileUnits * 2.3;
     case SceneryKind::Shrine: return kTileUnits * 2.0;
+    case SceneryKind::Gate: return kTileUnits * 2.6;
   }
   return kTileUnits * 2.0;
 }
@@ -1633,7 +1657,8 @@ void draw_scenery_fallback(HDC dc, const ScreenPoint& base, const SceneryItem& i
 
 void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& camera,
                        const RECT& bounds, const SceneryItem& item,
-                       render::List& rl) {
+                       render::List& rl, bool town, double sway_clock) {
+  (void)assets;
   const ScreenPoint base =
       project(camera, bounds, item.position.x, item.position.y);
   rl.push_back({render::Op::Scenery, static_cast<double>(base.x),
@@ -1641,20 +1666,45 @@ void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& came
                 static_cast<int>(item.kind) == 0   ? "tree"
                 : static_cast<int>(item.kind) == 1 ? "ruin"
                 : static_cast<int>(item.kind) == 2 ? "dwelling"
-                                                   : "shrine"});
-  draw_contact_shadow(dc, base, item.radius * 0.9);
-  const SpriteBitmap& sprite = scenery_sprite(assets, item.kind);
-  if (!draw_billboard_sprite(assets, dc, sprite, base,
-                             scenery_height(item.kind) * item.scale, 1)) {
-    // TASK-0142: deterministic vector-kit silhouette before the geometric
-    // last resort, so a machine without PNG plates still reads as a game.
-    const int kit_height =
-        std::max(8, static_cast<int>(scenery_height(item.kind) * item.scale *
-                                     base.scale));
-    if (const kit::Symbol* symbol = kit_symbol(scenery_kit_role(item.kind)))
-      draw_kit_symbol(dc, *symbol, base.x, base.y, kit_height, false);
-    else
-      draw_scenery_fallback(dc, base, item, camera);
+                : static_cast<int>(item.kind) == 3 ? "shrine"
+                                                   : "gate"});
+  draw_contact_shadow(dc, base, item.radius * 0.5);
+  const int h = std::max(
+      10, static_cast<int>(scenery_height(item.kind) * item.scale * base.scale));
+  // Deterministic per-item phase offset so a stand of trees never sways in
+  // lockstep.
+  const double phase_seed =
+      static_cast<double>((item.position.x * 31 + item.position.y * 17) % 628) /
+      100.0;
+  switch (item.kind) {
+    case SceneryKind::Tree:
+      vector_art::tree(dc, base.x, base.y, h, sway_clock + phase_seed,
+                       town ? RGB(96, 138, 84) : RGB(78, 112, 74),
+                       RGB(92, 70, 48));
+      break;
+    case SceneryKind::Ruin:
+      if (town)
+        vector_art::wagon(dc, base.x, base.y, h, RGB(118, 92, 60),
+                          RGB(196, 182, 150));
+      else
+        vector_art::standing_stones(dc, base.x, base.y, h, RGB(118, 112, 104));
+      break;
+    case SceneryKind::Dwelling:
+      vector_art::market_stall(dc, base.x, base.y, h, RGB(158, 96, 70),
+                               RGB(112, 86, 56));
+      break;
+    case SceneryKind::Shrine:
+      if (town)
+        vector_art::fountain(dc, base.x, base.y, h,
+                             std::fmod(sway_clock * 0.35, 1.0),
+                             RGB(132, 126, 116), RGB(88, 148, 168));
+      else
+        vector_art::standing_stones(dc, base.x, base.y, h, RGB(126, 120, 110));
+      break;
+    case SceneryKind::Gate:
+      vector_art::road_gate(dc, base.x, base.y, h, RGB(128, 120, 108),
+                            RGB(120, 214, 168));
+      break;
   }
 }
 
@@ -1711,28 +1761,16 @@ bool draw_terrain_tile(HDC dc, const SpriteBitmap& sprite, int dest_x, int dest_
 
 void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
                 const RECT& bounds, const std::string& route_id, render::List& rl,
-                FloorCache* cache = nullptr) {
-  const bool tiled = assets.terrain1.ready() && assets.terrain4.ready();
-  // TASK-0142: with the embedded vector kit the floor stays textured even
-  // when PNG plates are missing — the "tiled" contract is honest in both
-  // paths because real tiles are drawn.
-  const kit::Symbol* motif_primary =
-      tiled ? nullptr : kit_symbol("terrain", "grass-court");
-  const kit::Symbol* motif_alt =
-      tiled ? nullptr : kit_symbol("terrain", "mossy-stone");
-  const bool vector_tiled = motif_primary && motif_alt;
-  rl.push_back({render::Op::Floor, 0.0, 0.0, 0.0,
-                (tiled || vector_tiled) ? 1 : 0,
-                (tiled || vector_tiled) ? "tiled" : "flat"});
+                FloorCache* cache = nullptr,
+                const std::string& theme = std::string("town")) {
+  (void)assets;
+  // Fully procedural themed ground (vector_art::terrain_tile): the tiled
+  // contract is always honest because real tiles are always drawn.
+  rl.push_back({render::Op::Floor, 0.0, 0.0, 0.0, 1, "tiled"});
 
   HBRUSH background = CreateSolidBrush(RGB(23, 29, 32));
   FillRect(dc, &bounds, background);
   DeleteObject(background);
-
-  if (!tiled && !vector_tiled) {
-    draw_ground_grid(dc, camera, bounds);
-    return;
-  }
 
   const double range = static_cast<double>(verdigris::world_scale::kArenaHalfExtent);
   const double tile = kTileUnits;
@@ -1752,7 +1790,6 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
   const int end_tx = static_cast<int>(std::ceil((camera.x + span_x) / tile));
   const int start_ty = static_cast<int>(std::floor((camera.y - span_y) / tile));
   const int end_ty = static_cast<int>(std::ceil((camera.y + span_y) / tile));
-  const bool theme_alt = terrain_theme_prefers_alt(route_id);
   const double half = tile * 0.5;
 
   // Semantic ops are recorded per frame regardless of the pixel path so the
@@ -1762,7 +1799,8 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
       const double wx = static_cast<double>(tx) * tile;
       const double wy = static_cast<double>(ty) * tile;
       const ScreenPoint center = project(camera, bounds, wx + half, wy + half);
-      const bool use_alt = terrain_tile_uses_alt(tx, ty, theme_alt);
+      const bool use_alt =
+          terrain_tile_uses_alt(tx, ty, terrain_theme_prefers_alt(route_id));
       const std::string label =
           std::string(use_alt ? "terrain4" : "terrain1") + ":" + std::to_string(tx) + ":" +
           std::to_string(ty);
@@ -1783,26 +1821,8 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
         const double wy = static_cast<double>(ty) * tile;
         const ScreenPoint corner0 = project(cam, frame, wx, wy);
         const ScreenPoint corner1 = project(cam, frame, wx + tile, wy + tile);
-        const bool use_alt = terrain_tile_uses_alt(tx, ty, theme_alt);
-        if (tiled) {
-          const SpriteBitmap& sprite = use_alt ? assets.terrain4 : assets.terrain1;
-          draw_terrain_tile(target, sprite, corner0.x, corner0.y,
-                            corner1.x - corner0.x, corner1.y - corner0.y,
-                            terrain_tile_hash(tx, ty) >> 8);
-        } else if (vector_tiled) {
-          const kit::Symbol& motif = use_alt ? *motif_alt : *motif_primary;
-          const int dest_w = corner1.x - corner0.x;
-          const int dest_h = corner1.y - corner0.y;
-          if (dest_w > 0 && dest_h > 0) {
-            const double scale = static_cast<double>(dest_w) /
-                                 static_cast<double>(motif.width);
-            KitPlacement placement{target, static_cast<double>(corner0.x),
-                                   static_cast<double>(corner0.y), scale,
-                                   static_cast<double>(motif.width), false};
-            for (int i = motif.shape_begin; i < motif.shape_end; ++i)
-              draw_kit_shape(placement, kit::kShapes[i]);
-          }
-        }
+        const RECT cell{corner0.x, corner0.y, corner1.x, corner1.y};
+        vector_art::terrain_tile(target, cell, theme, terrain_tile_hash(tx, ty));
       }
     }
   };
@@ -1816,7 +1836,7 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
                              end_tx <= cache->tx1 && start_ty >= cache->ty0 &&
                              end_ty <= cache->ty1;
   if (!range_covered || cache->zoom != camera.zoom ||
-      cache->route != route_id ||
+      cache->route != route_id + "|" + theme ||
       cache->view_w != static_cast<int>(bounds.right) ||
       cache->view_h != static_cast<int>(bounds.bottom)) {
     // Rebuild around the current view with a one-tile skirt so small camera
@@ -1859,7 +1879,7 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
     cache->tx1 = c_tx1;
     cache->ty1 = c_ty1;
     cache->zoom = camera.zoom;
-    cache->route = route_id;
+    cache->route = route_id + "|" + theme;
     cache->view_w = static_cast<int>(bounds.right);
     cache->view_h = static_cast<int>(bounds.bottom);
     cache->valid = true;
@@ -3738,15 +3758,25 @@ void draw_wall_tiles(const WorldView& world, HDC dc, const Camera& camera,
       const ScreenPoint c1 = project(camera, bounds, wx + tile, wy + tile);
       if (c1.x < 0 || c1.y < 0 || c0.x > bounds.right || c0.y > bounds.bottom)
         continue;
-      const int lift = std::max(4, static_cast<int>((c1.y - c0.y) * 0.45));
-      // Shadow face below the slab.
+      const int lift = std::max(4, static_cast<int>((c1.y - c0.y) * 0.30));
+      // Theme-tinted stone so each road's walls belong to its palette.
+      COLORREF slab = RGB(88, 78, 66);
+      if (world.theme == "crypt") slab = RGB(78, 82, 96);
+      else if (world.theme == "marsh") slab = RGB(72, 88, 64);
+      else if (world.theme == "wilds") slab = RGB(96, 80, 58);
+      else if (world.theme == "grove") slab = RGB(76, 96, 70);
+      // Shadowed face below the slab: a dark shade of the same stone, with
+      // mortar seams, so wall rows read as masonry instead of a void band.
       RECT face{c0.x, c1.y - lift, c1.x, c1.y};
-      HBRUSH face_brush = CreateSolidBrush(RGB(16, 14, 12));
+      HBRUSH face_brush = CreateSolidBrush(RGB(
+          GetRValue(slab) / 3, GetGValue(slab) / 3, GetBValue(slab) / 3));
       FillRect(dc, &face, face_brush);
       DeleteObject(face_brush);
+      draw_line(dc, c0.x + (c1.x - c0.x) / 2, c1.y - lift,
+                c0.x + (c1.x - c0.x) / 2, c1.y, RGB(14, 12, 10), 1);
       // Raised top slab, clearly lighter than any floor plate.
       RECT top{c0.x, c0.y - lift, c1.x, c1.y - lift};
-      HBRUSH top_brush = CreateSolidBrush(RGB(88, 78, 66));
+      HBRUSH top_brush = CreateSolidBrush(slab);
       FillRect(dc, &top, top_brush);
       DeleteObject(top_brush);
       // Lit rim + seams for the cut-stone read.
@@ -4170,7 +4200,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   }
 
   draw_floor(state.billboards, dc, state.camera, bounds, world.route_id, rl,
-             &state.floor_cache);
+             &state.floor_cache, world.theme);
   draw_wall_tiles(world, dc, state.camera, bounds);
   QueryPerformanceCounter(&section_t1);
   state.paint_ms_floor = section_ms(section_t0, section_t1);
@@ -4280,7 +4310,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     switch (entry.what) {
       case DepthDraw::What::Scenery:
         draw_scenery_item(state.billboards, dc, state.camera, bounds,
-                          state.scenery[entry.index], rl);
+                          state.scenery[entry.index], rl,
+                          world.theme == "town",
+                          state.breathe_phase * 2.0 * kPi);
         break;
       case DepthDraw::What::Player: {
         ScreenPoint base =
@@ -4292,7 +4324,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         // Strike lunge: while a swing effect is alive the body steps into
         // the blow along the facing and recovers - a half-sine over the
         // arc's lifetime, sub-tick smoothed so 60 fps rendering reads it
-        // as motion rather than three poses.
+        // as motion rather than three poses. The same phase drives the
+        // rig's arm swing.
+        double attack_phase = 0.0;
         for (const auto& fx : state.effects) {
           if (fx.kind != EffectFx::Kind::Swing &&
               fx.kind != EffectFx::Kind::SweepArc)
@@ -4301,23 +4335,25 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
               (static_cast<double>(fx.age) + state.tick_accum_ms / 50.0) /
                   std::max(1, fx.ttl),
               0.0, 1.0);
+          attack_phase = phase;
           const double push = std::sin(phase * kPi) * kTileUnits * 0.28;
           base.x += static_cast<int>(std::cos(fx.angle) * push * base.scale);
           base.y += static_cast<int>(std::sin(fx.angle) * push * base.scale);
           break;
         }
-        if (!draw_billboard_sprite(state.billboards, dc, state.billboards.player, base,
-                                   kTileUnits * 1.35, player.facing.x)) {
-          // TASK-0142: generated vector silhouette before the capsule.
-          const int kit_height =
-              std::max(8, static_cast<int>(kTileUnits * 1.35 * base.scale));
-          const kit::Symbol* symbol = kit_symbol("player");
-          if (symbol)
-            draw_kit_symbol(dc, *symbol, base.x, base.y, kit_height,
-                            player.facing.x < 0);
-          else
-            draw_billboard(dc, base, kTileUnits * 0.62, kTileUnits * 1.35,
-                           RGB(84, 158, 128), RGB(140, 208, 172));
+        {
+          const auto& motion = state.motions["player"];
+          vector_art::Pose pose;
+          pose.walk = motion.walk_phase;
+          pose.moving = motion.moving;
+          pose.breathe = state.breathe_phase;
+          pose.attack = attack_phase;
+          pose.mirror = player.facing.x < 0;
+          vector_art::humanoid(dc, base.x, base.y,
+                               std::max(10, static_cast<int>(kTileUnits * 1.5 *
+                                                             base.scale)),
+                               vector_art::player_style(), pose,
+                               vector_art::Held::Axe);
         }
         // Draw the authoritative facing, rather than a client-only mouse hint.
         const double angle =
@@ -4345,6 +4381,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         const double to_player_len = std::max(
             1.0, std::sqrt(to_player_x * to_player_x + to_player_y * to_player_y));
         const int mirror_x = to_player_x < 0.0 ? -1 : 1;
+        double monster_attack_phase = 0.0;
         {
           const auto telegraph = state.telegraphs.find(monster.id);
           if (telegraph != state.telegraphs.end()) {
@@ -4368,6 +4405,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                     4.0,
                 0.0, 1.0);
             if (phase < 1.0) {
+              monster_attack_phase = phase;
               const double push = std::sin(phase * kPi) * kTileUnits * 0.4;
               base.x += static_cast<int>(to_player_x / to_player_len * push *
                                          base.scale);
@@ -4382,30 +4420,39 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
         draw_team_ring(dc, base, kTileUnits * 0.58,
                        monster.elite ? RGB(239, 208, 116) : RGB(214, 92, 72));
-        const SpriteBitmap& monster_sprite = monster.elite ? state.billboards.boss
-                                                            : state.billboards.raider;
         const double foe_height =
-            monster.elite ? kTileUnits * 1.85 : kTileUnits * 1.58;
+            monster.elite ? kTileUnits * 1.9 : kTileUnits * 1.5;
         {
-          const int halo_h = std::max(6, static_cast<int>(foe_height * base.scale));
-          const int halo_w = std::max(5, static_cast<int>(halo_h * 0.42));
-          fill_ellipse(dc, base.x, base.y - halo_h / 3, halo_w, halo_h / 2,
-                       RGB(72, 22, 20));
-        }
-        if (!draw_billboard_sprite(state.billboards, dc, monster_sprite, base, foe_height,
-                                   mirror_x)) {
-          // TASK-0142: generated vector silhouettes (horned raider / caped
-          // elite) before the capsule.
-          const int kit_height =
-              std::max(8, static_cast<int>(foe_height * base.scale));
-          const kit::Symbol* symbol =
-              kit_symbol(monster.elite ? "elite" : "raider");
-          if (symbol)
-            draw_kit_symbol(dc, *symbol, base.x, base.y, kit_height,
-                            mirror_x < 0);
-          else
-            draw_billboard(dc, base, kTileUnits * 0.88, kTileUnits * 1.12,
-                           RGB(186, 58, 44), RGB(42, 18, 16));
+          // Animated vector rig, chosen by theme and combat role so every
+          // road fields a visually distinct bestiary.
+          const auto& motion_it = state.motions[monster.id];
+          vector_art::Pose pose;
+          pose.walk = motion_it.walk_phase;
+          pose.moving = motion_it.moving;
+          pose.breathe = std::fmod(
+              state.breathe_phase +
+                  static_cast<double>(monster.position.x % 97) / 97.0,
+              1.0);
+          pose.attack = monster_attack_phase;
+          pose.mirror = mirror_x < 0;
+          const vector_art::Style style =
+              vector_art::monster_style(world.theme, monster.elite);
+          const int rig_h =
+              std::max(10, static_cast<int>(foe_height * base.scale));
+          if (monster.behaviour == "buffer") {
+            vector_art::totem(dc, base.x, base.y, rig_h, style, pose);
+          } else if (monster.behaviour == "ranged") {
+            vector_art::humanoid(dc, base.x, base.y, rig_h, style, pose,
+                                 vector_art::Held::Bow);
+          } else if (world.theme == "crypt") {
+            vector_art::wight(dc, base.x, base.y, rig_h, style, pose);
+          } else if (world.theme == "wilds") {
+            vector_art::beast(dc, base.x, base.y, rig_h, style, pose);
+          } else if (world.theme == "marsh") {
+            vector_art::ghast(dc, base.x, base.y, rig_h, style, pose);
+          } else {
+            vector_art::lurker(dc, base.x, base.y, rig_h, style, pose);
+          }
         }
         // TASK-0142: bordered life bar with a dark backing so the remaining
         // fraction stays readable against any floor.
@@ -4481,13 +4528,23 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         }
         draw_team_ring(dc, base, kTileUnits * 0.55, ring);
         {
-          const int kit_height =
-              std::max(8, static_cast<int>(kTileUnits * 1.35 * base.scale));
-          if (const kit::Symbol* symbol = kit_symbol("player"))
-            draw_kit_symbol(dc, *symbol, base.x, base.y, kit_height, false);
-          else
-            draw_billboard(dc, base, kTileUnits * 0.62, kTileUnits * 1.35,
-                           RGB(96, 132, 178), RGB(150, 186, 226));
+          vector_art::Pose pose;
+          pose.breathe = std::fmod(state.breathe_phase + npc.id * 0.23, 1.0);
+          pose.mirror = world.player.position.x < npc.position.x;
+          vector_art::Held prop = vector_art::Held::None;
+          if (!npc.actions.empty()) {
+            const std::string& lead = npc.actions.front();
+            if (lead == "talk") prop = vector_art::Held::Staff;
+            else if (lead == "trade") prop = vector_art::Held::Scales;
+            else if (lead == "bank") prop = vector_art::Held::Ledger;
+            else if (std::find(npc.actions.begin(), npc.actions.end(),
+                               std::string("trade")) != npc.actions.end())
+              prop = vector_art::Held::Sword;  // the weapons trader
+          }
+          vector_art::humanoid(
+              dc, base.x, base.y,
+              std::max(10, static_cast<int>(kTileUnits * 1.45 * base.scale)),
+              vector_art::npc_style(npc.id), pose, prop);
         }
         // Name plate: NPCs are the town's story surface; they stay labeled.
         {
@@ -5166,6 +5223,31 @@ void timer_step(HWND window, ClientState& state) {
   }
 
   sync_world(state);
+  {
+    // Advance the vector-art animation clocks: a shared breathe cycle plus
+    // per-actor walk phase driven by how far each authoritative position
+    // moved this frame (one full cycle per ~0.9 tile).
+    state.breathe_phase = std::fmod(state.breathe_phase + dt_ms / 2400.0, 1.0);
+    const auto advance = [&](const std::string& id, const verdigris::Vec2& pos) {
+      auto& motion = state.motions[id];
+      if (motion.has_last) {
+        const double dx = static_cast<double>(pos.x - motion.last_pos.x);
+        const double dy = static_cast<double>(pos.y - motion.last_pos.y);
+        const double moved = std::sqrt(dx * dx + dy * dy);
+        motion.walk_phase =
+            std::fmod(motion.walk_phase + moved / (kTileUnits * 0.9), 1.0);
+        const double target = moved > 0.5 ? 1.0 : 0.0;
+        motion.moving += (target - motion.moving) *
+                         std::min(1.0, dt_ms / 120.0);
+      }
+      motion.last_pos = pos;
+      motion.has_last = true;
+    };
+    advance("player", state.world.player.position);
+    for (const auto& monster : state.world.monsters)
+      advance(monster.id, monster.position);
+    if (state.motions.size() > 256) state.motions.clear();  // scene-change purge
+  }
   {
     // Follow smoothing (dt-correct exponential, equal to the historical 0.2
     // per 50 ms). Across a scene load the camera starts continents away —

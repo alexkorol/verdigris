@@ -881,6 +881,7 @@ JsonValue ProtocolSession::snapshot() const {
   put(state,"uuid",identity_); put(state,"x",position.x); put(state,"y",position.y); put(state,"sceneId",world_->scene_id()); put(state,"sceneType",world_->scene_type()); put(state,"sceneName",world_->scene_name());
   put(state,"lifecycle",lifecycle_);
   put(state,"lifecycleMode",lifecycle_mode_);
+  put(state,"theme",world_->in_instance()?world_->metadata().theme:std::string("town"));
   JsonValue::Object chronicles; put(chronicles,"mortal",mortal_oath_); put(chronicles,"scionId",active_scion_id_.empty()?JsonValue(nullptr):JsonValue(active_scion_id_)); put(chronicles,"houseId",active_house_id_.empty()?JsonValue(nullptr):JsonValue(active_house_id_)); put(state,"chronicles",std::move(chronicles));
   put(state,"bestDepth",best_depth_);
   put(state,"quests",quests_json());

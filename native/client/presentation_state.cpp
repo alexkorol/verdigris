@@ -152,12 +152,15 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     // is removed. Monsters keep the neutral default until the wire ships an
     // authoritative facing; the presentation never invents one from the
     // player's aim.
+    monster.kind = source.kind;
+    monster.behaviour = source.behaviour;
     monster.life = source.life;
     monster.life_max = source.life_max;
     monster.alive = source.alive;
     monster.elite = source.elite;
     world.monsters.push_back(std::move(monster));
   }
+  world.theme = model.theme;
   world.map_width = model.map_width;
   world.map_height = model.map_height;
   world.map_walkable = model.map_walkable;

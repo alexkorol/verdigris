@@ -190,7 +190,13 @@ void spawn_detection_is_deterministic_and_once() {
 void monster_facing_is_no_longer_fabricated() {
   verdigris::client::ClientModel model;
   model.player.facing = "right";
-  model.monsters.push_back({"foe-1", "monster", 20.0, 0.0, 3, 3, false, true});
+  verdigris::client::ClientMonster foe;
+  foe.id = "foe-1";
+  foe.name = "monster";
+  foe.x = 20.0;
+  foe.life = 3;
+  foe.life_max = 3;
+  model.monsters.push_back(foe);
   // The proved inversion took facing_vector(player) and negated it: with the
   // player facing right the old code produced { -1, 0 }. The correction must
   // never derive monster facing from the player again.

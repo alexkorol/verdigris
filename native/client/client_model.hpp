@@ -30,6 +30,8 @@ struct ClientPlayer {
 struct ClientMonster {
   std::string id;
   std::string name;
+  std::string kind;       // stable monster kind id ("crypt-lurker", ...)
+  std::string behaviour;  // "melee" / "ranged" / "buffer"
   double x = 0.0;
   double y = 0.0;
   int life = 1;
@@ -195,6 +197,9 @@ struct ClientModel {
   int map_height = 0;
   std::string map_scene_id;
   std::vector<std::uint8_t> map_walkable;
+  // Authoritative scene theme ("town", "dungeon", "crypt", "wilds",
+  // "marsh", "grove") from the dev:state snapshot.
+  std::string theme = "town";
   ClientItemSlot equipped;
   ClientScene scene;
   std::string house_name;

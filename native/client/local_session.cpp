@@ -237,10 +237,16 @@ void LocalCoreSession::refresh_model() {
   model_.monsters.clear();
   for (const auto& actor : simulation_->actors()) {
     if (actor.kind != verdigris::ActorKind::Monster || !actor.alive) continue;
-    model_.monsters.push_back({actor.id, actor.elite ? "elite" : "monster",
-                               static_cast<double>(actor.position.x),
-                               static_cast<double>(actor.position.y), actor.stats.life,
-                               actor.stats.life_max, actor.elite, actor.alive});
+    ClientMonster monster;
+    monster.id = actor.id;
+    monster.name = actor.elite ? "elite" : "monster";
+    monster.x = static_cast<double>(actor.position.x);
+    monster.y = static_cast<double>(actor.position.y);
+    monster.life = actor.stats.life;
+    monster.life_max = actor.stats.life_max;
+    monster.elite = actor.elite;
+    monster.alive = actor.alive;
+    model_.monsters.push_back(std::move(monster));
   }
   model_.stored_items = static_cast<int>(simulation_->house().stored_items.size());
   model_.stored_trophies = static_cast<int>(simulation_->house().stored_trophies.size());

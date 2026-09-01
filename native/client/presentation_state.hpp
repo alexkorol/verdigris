@@ -60,6 +60,8 @@ struct ActiveTelegraph {
 
 struct WorldActor {
   std::string id;
+  std::string kind;       // monster kind id; empty for the player
+  std::string behaviour;  // monster combat role; empty for the player
   verdigris::Vec2 position{};
   verdigris::Vec2 facing{1, 0};
   int life = 0;
@@ -108,6 +110,7 @@ struct WorldView {
   int map_width = 0;
   int map_height = 0;
   std::vector<std::uint8_t> map_walkable;
+  std::string theme = "town";
   verdigris::Vec2 extraction{};
   bool has_extraction = false;
   std::string house_name = "House Verdigris";
