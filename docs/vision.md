@@ -29,9 +29,12 @@ Chronicles account creator):
   resource bonuses, and rarity-colored keyboard-reachable card. Supported
   damage, ward, attributes, life, spirit, and selected Brands affect live
   combat stats. Bloodgroove/Macuahuitl bleed, Long Reach, Surefoot/Sandals
-  movement, and Riverblessed/Emberward resistance now drive authoritative
-  combat and travel; future mechanics remain labelled Dormant instead of
-  promising an effect that is not wired yet. Existing catalogue items remain legacy gear.
+  movement, Riverblessed/Emberward resistance, Atlatl projectile range, Sling
+  armour penetration, and Grips attack speed now drive authoritative combat
+  and travel. Every mechanics-bearing line in the shipped form and Brand
+  catalogue is active; the Spear's narrative-only reach line remains labelled
+  Dormant rather than promising an effect it does not own. Existing catalogue
+  items remain legacy gear.
   Each native form also has distinct reference-driven item art in its own
   reproducible atlas. Equip/Unequip preserves the generated UUID through the
   server-backed flow. Generated rewards bind after real world admission, merge
@@ -133,9 +136,9 @@ original prototype roadmap:
 1. **Campaign breadth:** extend the authoritative twelve-commission campaign
    toward the 23 quest points reserved by the passive tree, with named zones,
    bosses, rewards, persistence, and playtest coverage for each arc.
-2. **Vesselforge progression:** wire the remaining visibly Dormant effects into
-   authoritative combat before exposing player-facing crafting, attunement, or
-   awakening loops.
+2. **Vesselforge progression:** expose the existing server-owned crafting,
+   attunement, and awakening loops through an inspectable player-facing town
+   service now that every mechanics-bearing form and Brand line is authoritative.
 3. **Inventory depth and access:** implement real nested containers and finish
    keyboard-first grid/equipment navigation; pointer equip/unequip, rotation,
    spatial placement, overflow, and tooltips are already live.
@@ -206,14 +209,16 @@ release-safe baseline.
 - Localization scaffolding.
 - Expand the authoritative campaign beyond its first three commissions toward
   the 23-point quest budget reserved by the passive tree.
-- Continue wiring the remaining Dormant Vesselforge effects into authoritative
-  combat before exposing crafting and awakening as player-facing progression.
+- Expose Vesselforge crafting, attunement, and awakening as player-facing town
+  progression now that all mechanics-bearing form and Brand lines are live.
   Shield block, Keen Eye critical chance, Wealthy loot bonuses, and Beastbane
   damage against explicitly tagged creatures are now live and persisted, with
   explicit `BLOCK`, `CRIT`, and `BANE` combat feedback. Bloodgroove bleed,
   Long Reach, Surefoot movement, and River/Ember resistance are likewise live
   across item derivation, worn totals, combat/movement, protocol snapshots,
-  and Framekit presentation.
+  and Framekit presentation. Atlatl projectile range, Sling armour penetration,
+  and Grips attack speed complete the same authoritative chain, with `PIERCE`
+  feedback and a two-row loadout summary.
 
 ## Open Questions
 - How to host/secure LLM name validation (local vs remote)?

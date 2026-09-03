@@ -51,6 +51,7 @@ struct EffectFx {
   bool critical = false;
   bool finisher = false;
   bool healing = false;
+  bool piercing = false;
   std::string style;
 };
 
@@ -73,6 +74,7 @@ struct WorldActor {
   verdigris::Vec2 facing{1, 0};
   int life = 0;
   int life_max = 0;
+  int armour = 0;
   int resource = 0;
   int resource_max = 0;
   int attack = 0;
@@ -88,7 +90,10 @@ struct WorldActor {
   bool bleeding = false;
   std::string damage_channel = "physical";
   int bleed_chance = 0;
+  int attack_speed_percent = 0;
   int reach_percent = 0;
+  int projectile_range_percent = 0;
+  int armour_penetration_percent = 0;
   int movement_speed_percent = 0;
   int ember_resistance = 0;
   int river_resistance = 0;

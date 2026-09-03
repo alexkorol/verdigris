@@ -200,7 +200,10 @@ void forge_status_feedback_is_authoritative_and_distinct() {
   model.player.uuid = "forge-scion";
   model.player.alive = true;
   model.bleed_chance = 100;
+  model.attack_speed_percent = 8;
   model.reach_percent = 16;
+  model.projectile_range_percent = 20;
+  model.armour_penetration_percent = 50;
   model.movement_speed_percent = 25;
   model.ember_resistance = 25;
   model.river_resistance = 25;
@@ -210,6 +213,7 @@ void forge_status_feedback_is_authoritative_and_distinct() {
   monster.x = 12.0;
   monster.y = 10.0;
   monster.damage_channel = "river";
+  monster.armour = 100;
   monster.bleeding = true;
   model.monsters.push_back(monster);
   verdigris::client::ClientItemSlot item;
@@ -220,12 +224,17 @@ void forge_status_feedback_is_authoritative_and_distinct() {
 
   WorldView world;
   verdigris::client::sync_world_from_model(world, model);
-  check(world.player.bleed_chance == 100 && world.player.reach_percent == 16 &&
+  check(world.player.bleed_chance == 100 &&
+            world.player.attack_speed_percent == 8 &&
+            world.player.reach_percent == 16 &&
+            world.player.projectile_range_percent == 20 &&
+            world.player.armour_penetration_percent == 50 &&
             world.player.movement_speed_percent == 25 &&
             world.player.ember_resistance == 25 &&
             world.player.river_resistance == 25,
         "forge feedback: worn totals survive the model-to-world sync");
   check(world.monsters.size() == 1 && world.monsters[0].bleeding &&
+            world.monsters[0].armour == 100 &&
             world.monsters[0].damage_channel == "river" &&
             world.carried.size() == 1 && world.carried[0].forge_lines.size() == 2,
         "forge feedback: status, damage channel, and item lines survive presentation sync");
@@ -263,6 +272,29 @@ void forge_status_feedback_is_authoritative_and_distinct() {
   }
   check(saw_apply && saw_tick,
         "forge feedback: render list distinguishes bleed application and tick damage");
+
+  PresentationFx piercing_fx;
+  PresentationEvent piercing;
+  piercing.type = PresentationEventType::DamageApplied;
+  piercing.actor_id = "forge-foe";
+  piercing.text = "outgoing";
+  piercing.value = 15;
+  piercing.style = "range";
+  piercing.armour_rating = 100;
+  piercing.armour_prevented = 5;
+  piercing.armour_penetration_percent = 50;
+  verdigris::client::apply_presentation_event(
+      piercing_fx, world, piercing, 3);
+  render::List piercing_ops;
+  verdigris::client::record_world_ops(
+      piercing_ops, world, piercing_fx, camera2d::Camera{}, 960, 600);
+  bool saw_piercing = false;
+  for (const auto& op : piercing_ops)
+    if (op.op == render::Op::Damage && op.label == "piercing:range" &&
+        op.value == 15)
+      saw_piercing = true;
+  check(saw_piercing,
+        "forge feedback: armour bypass has a distinct piercing damage beat");
 }
 
 void scion_lost_beat_contract() {

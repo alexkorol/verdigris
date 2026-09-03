@@ -2429,6 +2429,9 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
           : fx.style == "bleed" ? RGB(phase_a::kBleedColor.r,
                                       phase_a::kBleedColor.g,
                                       phase_a::kBleedColor.b)
+          : fx.piercing && !fx.critical && !fx.finisher
+              ? RGB(phase_a::kPiercingColor.r, phase_a::kPiercingColor.g,
+                    phase_a::kPiercingColor.b)
           : fx.finisher ? RGB(phase_a::kComboFinisherColor.r,
                             phase_a::kComboFinisherColor.g,
                             phase_a::kComboFinisherColor.b)
@@ -2437,6 +2440,9 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
                       : (fx.damage_to_player ? RGB(255, 118, 104) : RGB(240, 218, 132));
       if (fx.style == "bleed")
         damage_label = phase_a::kBleedDamageLabel;
+      else if (fx.piercing && !fx.critical && !fx.finisher)
+        damage_label = std::string(phase_a::kPiercingDamageLabel) + ":" +
+                       (fx.style.empty() ? "range" : fx.style);
       else if (fx.damage_to_player &&
                (fx.style == "river" || fx.style == "ember"))
         damage_label = "player:" + fx.style;
@@ -2472,6 +2478,11 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
                                           : std::to_string(fx.value);
       TextOutA(dc, base.x - 9, base.y - lift, text.c_str(),
                static_cast<int>(text.size()));
+      if (fx.piercing && !fx.critical && !fx.finisher) {
+        HGDIOBJ pierce_font = SelectObject(dc, skin::font_small());
+        TextOutA(dc, base.x - 18, base.y - lift + font_h, "PIERCE", 6);
+        SelectObject(dc, pierce_font);
+      }
       SelectObject(dc, old_number_font);
       DeleteObject(number_font);
       if (fx.critical) {
@@ -3067,6 +3078,7 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
                                          : &items[std::min(state.selected_item,
                                                            items.size() - 1)];
   std::string progression;
+  std::string progression_detail;
   if (selected && selected->expedition_map) {
     const bool mastered = !selected->map_objective_key.empty() &&
         std::find(state.world.endgame.mastery_keys.begin(),
@@ -3093,10 +3105,18 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     }
     SelectObject(dc, mod_font);
   } else if (selected && !selected->forge_lines.empty()) {
-    progression = "FORGE  bleed " + std::to_string(player.bleed_chance) +
-                  "%  reach +" + std::to_string(player.reach_percent) +
-                  "%  move +" + std::to_string(player.movement_speed_percent) +
-                  "%  E" + std::to_string(player.ember_resistance) + " R" +
+    progression = "FORGE  SPD +" +
+                  std::to_string(player.attack_speed_percent) +
+                  "%  REACH +" + std::to_string(player.reach_percent) +
+                  "%  SHOT +" +
+                  std::to_string(player.projectile_range_percent) + "%";
+    progression_detail = "PEN " +
+                  std::to_string(player.armour_penetration_percent) +
+                  "%  BLEED " + std::to_string(player.bleed_chance) +
+                  "%  MOVE +" +
+                  std::to_string(player.movement_speed_percent) +
+                  "%  WARDS E" +
+                  std::to_string(player.ember_resistance) + " R" +
                   std::to_string(player.river_resistance);
     int line_y = bottom - 112 * s;
     HGDIOBJ line_font = SelectObject(dc, skin::font_small());
@@ -3121,15 +3141,30 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     progression = "TREE no authoritative data";
   }
   rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0, progression});
+  const int progression_y =
+      bottom - (progression_detail.empty() ? 74 : 82) * s;
   {
     SIZE extent{};
     GetTextExtentPoint32A(dc, progression.c_str(),
                           static_cast<int>(progression.size()), &extent);
     state.hud_rect_trace.push_back(
-        {"pane-progression", {left + 14 * s, bottom - 74 * s, extent.cx, extent.cy}});
+        {"pane-progression", {left + 14 * s, progression_y, extent.cx, extent.cy}});
   }
-  TextOutA(dc, left + 14 * s, bottom - 74 * s, progression.c_str(),
+  TextOutA(dc, left + 14 * s, progression_y, progression.c_str(),
            static_cast<int>(progression.size()));
+  if (!progression_detail.empty()) {
+    rl.push_back(
+        {render::Op::PaneStat, 0.0, 0.0, 0.0, 0, progression_detail});
+    SIZE extent{};
+    GetTextExtentPoint32A(dc, progression_detail.c_str(),
+                          static_cast<int>(progression_detail.size()), &extent);
+    const int detail_y = bottom - 66 * s;
+    state.hud_rect_trace.push_back(
+        {"pane-progression-detail",
+         {left + 14 * s, detail_y, extent.cx, extent.cy}});
+    TextOutA(dc, left + 14 * s, detail_y, progression_detail.c_str(),
+             static_cast<int>(progression_detail.size()));
+  }
   const std::string controls =
       selected && selected->expedition_map
           ? "Arrows select | Enter open map | I close"
@@ -3599,6 +3634,8 @@ void paint_hover_tooltip(ClientState& state, HDC dc, const RECT& bounds,
     std::vector<std::string> monster_facts{
         "Life " + std::to_string(monster.life) + " / " +
         std::to_string(monster.life_max)};
+    if (monster.armour > 0)
+      monster_facts.push_back("Armour " + std::to_string(monster.armour));
     if (!monster.behaviour.empty())
       monster_facts.push_back("Role " + monster.behaviour);
     if (monster.damage_channel == "river" || monster.damage_channel == "ember")
@@ -9185,7 +9222,8 @@ int scenario_vesselforge_active_properties() {
   std::printf("    capture: %s\n", capture_path.c_str());
 
   int forge_lines = 0;
-  bool totals = false;
+  bool forge_totals = false;
+  bool forge_detail = false;
   bool bleed_apply = false;
   bool bleed_tick = false;
   bool persistent_bleed = false;
@@ -9196,9 +9234,13 @@ int scenario_vesselforge_active_properties() {
       ++forge_lines;
       if (item.label.find("Dormant") != std::string::npos) dormant_claim = true;
     }
-    if (item.op == render::Op::PaneStat && item.label.rfind("FORGE  bleed 100%", 0) == 0 &&
-        item.label.find("E25 R50") != std::string::npos)
-      totals = true;
+    if (item.op == render::Op::PaneStat &&
+        item.label.rfind("FORGE  SPD +0%", 0) == 0)
+      forge_totals = true;
+    if (item.op == render::Op::PaneStat &&
+        item.label.find("BLEED 100%") != std::string::npos &&
+        item.label.find("WARDS E25 R50") != std::string::npos)
+      forge_detail = true;
     if (item.op == render::Op::Impact && item.label == phase_a::kBleedApplyLabel)
       bleed_apply = true;
     if (item.op == render::Op::Damage && item.label == phase_a::kBleedDamageLabel)
@@ -9206,10 +9248,153 @@ int scenario_vesselforge_active_properties() {
     if (item.op == render::Op::TargetFlash && item.label == "bleeding")
       persistent_bleed = true;
   }
-  scenario_check(forge_lines == 2 && totals && !dormant_claim,
+  scenario_check(forge_lines == 2 && forge_totals && forge_detail &&
+                     !dormant_claim,
                  "vesselforge-active: pane explains active item lines and worn totals");
   scenario_check(bleed_apply && bleed_tick && persistent_bleed,
                  "vesselforge-active: apply, tick, and persistent bleed remain distinct");
+  return 0;
+}
+
+int scenario_vesselforge_final_implicits() {
+  ClientState state;
+  load_billboards(state.billboards);
+  state.world.route_id = "instance:dungeon:clearings";
+  state.world.theme = "dungeon";
+  state.world.house_name = "House Emberwake";
+  state.world.scion_name = "Ilyra";
+  state.world.player.id = "implicit-scion";
+  state.world.player.position = {20 * static_cast<int>(kTileUnits),
+                                 20 * static_cast<int>(kTileUnits)};
+  state.world.player.facing = {1, 0};
+  state.world.player.life = 112;
+  state.world.player.life_max = 120;
+  state.world.player.resource = 44;
+  state.world.player.resource_max = 55;
+  state.world.player.attack = 20;
+  state.world.player.defense = 8;
+  state.world.player.level = 14;
+  state.world.player.alive = true;
+  state.world.player.attack_speed_percent = 8;
+
+  WorldActor foe;
+  foe.id = "implicit-warden";
+  foe.name = "Copper Bulwark";
+  foe.kind = "dungeon-melee";
+  foe.behaviour = "melee";
+  foe.position = {25 * static_cast<int>(kTileUnits),
+                  20 * static_cast<int>(kTileUnits)};
+  foe.life = 78;
+  foe.life_max = 100;
+  foe.armour = 100;
+  foe.alive = true;
+  state.world.monsters = {foe};
+  state.world.stored_items = 11;
+  state.world.stored_trophies = 4;
+  state.gear_overlay = true;
+  state.selected_item = 0;
+  state.camera.x = static_cast<double>(state.world.player.position.x);
+  state.camera.y = static_cast<double>(state.world.player.position.y);
+  state.camera.zoom = kCameraDefaultZoom * zoom_height_factor(768);
+
+  std::string capture_dir;
+  const int capture_override = capture_root_override(&capture_dir);
+  if (capture_override < 0) {
+    scenario_check(false,
+                   "vesselforge-implicits: capture root rejected before any write");
+    return 0;
+  }
+  if (capture_override == 0) {
+    CreateDirectoryA("captures", nullptr);
+    capture_dir = "captures";
+  }
+
+  WorldCarriedItem atlatl;
+  atlatl.id = "vessel-atlatl";
+  atlatl.name = "Bronze Atlatl";
+  atlatl.attack_bonus = 14;
+  atlatl.equipped = true;
+  atlatl.forge_lines = {"+20% Projectile Range"};
+  state.world.carried = {atlatl};
+  state.world.player.projectile_range_percent = 20;
+  state.world.player.armour_penetration_percent = 0;
+  const std::string atlatl_capture =
+      capture_dir + "\\vesselforge-atlatl-range-1366x768.png";
+  scenario_check(reference_present(state, 1366, 768, atlatl_capture),
+                 "vesselforge-implicits: Atlatl and Grips Framekit evidence captured");
+  std::printf("    capture: %s\n", atlatl_capture.c_str());
+  bool atlatl_line = false;
+  bool ranged_totals = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::PaneStat &&
+        item.label == "forge-line:+20% Projectile Range")
+      atlatl_line = true;
+    if (item.op == render::Op::PaneStat &&
+        item.label.rfind("FORGE  SPD +8%", 0) == 0 &&
+        item.label.find("SHOT +20%") != std::string::npos)
+      ranged_totals = true;
+  }
+  scenario_check(atlatl_line && ranged_totals,
+                 "vesselforge-implicits: range and speed read as active loadout facts");
+
+  WorldCarriedItem sling;
+  sling.id = "vessel-sling";
+  sling.name = "Quilted Sling";
+  sling.attack_bonus = 11;
+  sling.equipped = true;
+  sling.forge_lines = {"Ignores half of Armour"};
+  state.world.carried = {sling};
+  state.world.player.projectile_range_percent = 0;
+  state.world.player.armour_penetration_percent = 50;
+  state.world.player.facing = {-1, 0};
+  state.world.monsters[0].position = {
+      17 * static_cast<int>(kTileUnits),
+      20 * static_cast<int>(kTileUnits)};
+  verdigris::client::PresentationFx fx;
+  verdigris::client::PresentationEvent hit;
+  hit.type = verdigris::client::PresentationEventType::DamageApplied;
+  hit.actor_id = foe.id;
+  hit.text = "outgoing";
+  hit.value = 15;
+  hit.style = "range";
+  hit.base_amount = 20;
+  hit.armour_rating = 100;
+  hit.armour_prevented = 5;
+  hit.armour_penetration_percent = 50;
+  verdigris::client::apply_presentation_event(fx, state.world, hit, 1);
+  state.effects = std::move(fx.effects);
+  const std::string sling_capture =
+      capture_dir + "\\vesselforge-sling-pierce-1366x768.png";
+  scenario_check(reference_present(state, 1366, 768, sling_capture),
+                 "vesselforge-implicits: Sling piercing frame captured");
+  std::printf("    capture: %s\n", sling_capture.c_str());
+  bool sling_line = false;
+  bool penetration_totals = false;
+  bool piercing_number = false;
+  const HudRect expected = gear_pane_rect(1366, 768);
+  bool inside = true;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::PaneStat &&
+        item.label == "forge-line:Ignores half of Armour")
+      sling_line = true;
+    if (item.op == render::Op::PaneStat &&
+        item.label.find("PEN 50%") != std::string::npos)
+      penetration_totals = true;
+    if (item.op == render::Op::Damage && item.label == "piercing:range")
+      piercing_number = true;
+  }
+  int forge_rows_inside = 0;
+  for (const auto& trace : state.hud_rect_trace)
+    if (trace.first == "pane-progression" ||
+        trace.first == "pane-progression-detail") {
+      inside = inside && trace.second.x >= expected.x &&
+               trace.second.x + trace.second.w <= expected.x + expected.w;
+      ++forge_rows_inside;
+    }
+  scenario_check(sling_line && penetration_totals && piercing_number,
+                 "vesselforge-implicits: Sling line, worn total, and PIERCE beat agree");
+  scenario_check(inside && forge_rows_inside == 2,
+                 "vesselforge-implicits: two-row forge totals remain inside Framekit");
   return 0;
 }
 
@@ -9790,6 +9975,7 @@ int run_scenarios(const std::string& which) {
       {"hud-information", scenario_hud_information},
       {"endgame-tablet-ui", scenario_endgame_tablet_ui},
       {"vesselforge-active-properties", scenario_vesselforge_active_properties},
+      {"vesselforge-final-implicits", scenario_vesselforge_final_implicits},
       {"town-social-hub", scenario_town_social_hub},
       {"campaign-journal", scenario_campaign_journal},
       {"deep-roads-campaign", scenario_deep_roads_campaign},

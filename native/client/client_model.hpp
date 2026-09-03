@@ -40,6 +40,7 @@ struct ClientMonster {
   double y = 0.0;
   int life = 1;
   int life_max = 1;
+  int armour = 0;
   int move_duration_ms = 0;
   std::string damage_channel = "physical";
   bool bleeding = false;
@@ -309,7 +310,10 @@ struct ClientModel {
   int attr_dexterity = 10;
   int attr_intelligence = 10;
   int bleed_chance = 0;
+  int attack_speed_percent = 0;
   int reach_percent = 0;
+  int projectile_range_percent = 0;
+  int armour_penetration_percent = 0;
   int movement_speed_percent = 0;
   int ember_resistance = 0;
   int river_resistance = 0;

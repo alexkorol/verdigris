@@ -17,7 +17,13 @@
 - Compare a River or Ember volley before and after resistance gear. The damage
   number must match server mitigation, and reconnect must restore both worn
   totals and any still-active bleed state.
-- At 1366x768 and 960x600, confirm both forge lines, the summary, banked row,
+- Equip an Atlatl and confirm `+20% Projectile Range` admits a target exactly
+  one tile beyond the ordinary ranged edge. Equip Grips and confirm held primary
+  attacks visibly recover faster while the summary reports the exact speed.
+- Equip a Sling against an armoured foe. Its card must say `Ignores half of
+  Armour`, the foe hover must show its Armour value, and the improved hit must
+  carry a cyan `PIERCE` number matching the server's mitigation facts.
+- At 1366x768 and 960x600, confirm both forge lines, both summary rows, banked row,
   and footer stay inside the Framekit gear pane while bleed feedback remains
   visible in the world.
 

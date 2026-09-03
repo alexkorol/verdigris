@@ -142,8 +142,14 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
 void apply_combat_totals(ClientModel& model, const JsonValue& combat) {
   model.bleed_chance = std::clamp(
       static_cast<int>(json_number(combat.get("bleedChance"), 0.0)), 0, 100);
+  model.attack_speed_percent = std::clamp(
+      static_cast<int>(json_number(combat.get("attackSpeedPercent"), 0.0)), 0, 100);
   model.reach_percent = std::clamp(
       static_cast<int>(json_number(combat.get("reachPercent"), 0.0)), 0, 100);
+  model.projectile_range_percent = std::clamp(
+      static_cast<int>(json_number(combat.get("projectileRangePercent"), 0.0)), 0, 100);
+  model.armour_penetration_percent = std::clamp(
+      static_cast<int>(json_number(combat.get("armourPenetrationPercent"), 0.0)), 0, 100);
   model.movement_speed_percent = std::clamp(
       static_cast<int>(json_number(combat.get("movementSpeedPercent"), 0.0)), 0, 100);
   model.ember_resistance = std::clamp(
@@ -1452,6 +1458,13 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       outgoing.resistance_percent = std::clamp(
           static_cast<int>(json_number(envelope.data.get("resistancePercent"), 0.0)),
           0, 75);
+      outgoing.armour_rating = (std::max)(0, static_cast<int>(
+          json_number(envelope.data.get("armourRating"), 0.0)));
+      outgoing.armour_prevented = (std::max)(0, static_cast<int>(
+          json_number(envelope.data.get("armourPrevented"), 0.0)));
+      outgoing.armour_penetration_percent = std::clamp(
+          static_cast<int>(json_number(
+              envelope.data.get("armourPenetrationPercent"), 0.0)), 0, 100);
       pending_events_.push_back(std::move(outgoing));
       if (died) {
         ++model_.kills;
@@ -1618,6 +1631,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
           monster.damage_channel = *channel;
         monster.x = json_number(entry.get("x"), 0.0);
         monster.y = json_number(entry.get("y"), 0.0);
+        monster.armour = (std::max)(0, static_cast<int>(
+            json_number(entry.get("armour"), 0.0)));
         if (const auto* hp = entry.get("hp")) {
           monster.life = static_cast<int>(json_number(hp->get("current"), monster.life));
           monster.life_max = static_cast<int>(json_number(hp->get("max"), monster.life_max));

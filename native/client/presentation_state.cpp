@@ -122,7 +122,11 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
   world.player.war_cry_ticks_remaining = model.player.war_cry_ticks_remaining;
   world.player.alive = model.player.alive;
   world.player.bleed_chance = model.bleed_chance;
+  world.player.attack_speed_percent = model.attack_speed_percent;
   world.player.reach_percent = model.reach_percent;
+  world.player.projectile_range_percent = model.projectile_range_percent;
+  world.player.armour_penetration_percent =
+      model.armour_penetration_percent;
   world.player.movement_speed_percent = model.movement_speed_percent;
   world.player.ember_resistance = model.ember_resistance;
   world.player.river_resistance = model.river_resistance;
@@ -169,6 +173,7 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     monster.bleeding = source.bleeding;
     monster.life = source.life;
     monster.life_max = source.life_max;
+    monster.armour = source.armour;
     monster.move_duration_ms = source.move_duration_ms;
     monster.alive = source.alive;
     monster.elite = source.elite;
@@ -319,6 +324,8 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       number.damage_to_player = to_player;
       number.critical = event.critical;
       number.finisher = event.combo_step == 3;
+      number.piercing = !to_player && event.armour_rating > 0 &&
+                         event.armour_penetration_percent > 0;
       number.style = event.style;
       fx.effects.push_back(number);
       if (to_player) {
@@ -577,6 +584,9 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
             effect.healing ? "healing" :
                 (effect.damage_to_player ? "player" : "monster");
         if (effect.style == "bleed") damage_label = phase_a::kBleedDamageLabel;
+        else if (effect.piercing && !effect.critical && !effect.finisher)
+          damage_label = std::string(phase_a::kPiercingDamageLabel) + ":" +
+                         (effect.style.empty() ? "range" : effect.style);
         if (effect.finisher)
           damage_label = std::string(effect.critical ? "critical-finisher:" : "finisher:") +
                          (effect.style.empty() ? "slash" : effect.style);

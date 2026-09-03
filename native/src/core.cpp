@@ -1476,6 +1476,7 @@ constexpr int kN3ComboFinisherStaggerMs = 700;
 constexpr int kN3MeleeRangeTiles = 3;
 constexpr int kN3ThrustRangeTiles = 5;
 constexpr int kN3SweepRangeTiles = 3;
+constexpr int kN3ProjectileRangeTiles = 5;
 constexpr int kN3MonsterDamage = 5;
 constexpr int kN3RangedRangeTiles = 6;
 constexpr int kN3RangedVolleyRadius = 1;
@@ -1499,11 +1500,20 @@ constexpr int kN3BleedTickMs = 1000;
 
 double player_skill_range_tiles(const std::string& skill,
                                 const PlayerCombatMods& mods) {
-  const int base = skill == "thrust" ? kN3ThrustRangeTiles
-                   : skill == "sweep" ? kN3SweepRangeTiles
+  const int base = skill == "sweep" ? kN3SweepRangeTiles
+                   : mods.attack_style == "range" ? kN3ProjectileRangeTiles
+                   : skill == "thrust" ? kN3ThrustRangeTiles
                                         : kN3MeleeRangeTiles;
   const int reach = std::max(0, std::min(100, mods.reach_percent));
-  return base * (1.0 + reach / 100.0);
+  const int projectile = mods.attack_style == "range"
+      ? std::max(0, std::min(100, mods.projectile_range_percent)) : 0;
+  return base * (1.0 + std::min(200, reach + projectile) / 100.0);
+}
+
+int player_attack_interval_ms(int base, const PlayerCombatMods& mods) {
+  const int increased = std::max(0, std::min(100, mods.attack_speed_percent));
+  return std::max(100, static_cast<int>(std::lround(
+      base * 100.0 / (100.0 + increased))));
 }
 
 double player_range_distance(const WorldPosition& position,
@@ -1879,6 +1889,14 @@ void WorldSimulation::generate_instance() {
     if (metadata_.theme == "grove" && !monster.boss) {
       monster.tags = {"beast"};
     }
+    // Monsters use the same small-number defensive vocabulary as Scions.
+    // Casters wear little, close-pressure bodies carry more, and a Warden's
+    // visible armour makes penetration a real weapon choice without turning
+    // ordinary early-floor foes into damage sponges.
+    monster.armour = monster.boss ? monster.level * 6
+                     : monster.behaviour_type == "melee" ? monster.level * 3
+                     : monster.behaviour_type == "buffer" ? monster.level * 2
+                                                          : monster.level;
     monster.coins = 10 + monster.level * 5;
     if (monster.rarity == "elite") monster.coins *= 3;
     monsters_.push_back(std::move(monster));
@@ -1995,11 +2013,12 @@ bool WorldSimulation::start_player_attack(int player_level, int player_attack,
   // abilities are discrete casts. The cooldown timestamp is never moved by
   // rejected repeat input, preserving both responsive play and anti-spam.
   auto_player_melee_ = skill == "melee";
+  const int base_interval = skill == "sweep" ? kN3SweepAttackIntervalMs
+                            : pending_player_combo_step_ == 3
+                                ? kN3ComboFinisherRecoveryMs
+                                : kN3PlayerAttackIntervalMs;
   next_player_attack_ms_ = now +
-      (skill == "sweep" ? kN3SweepAttackIntervalMs
-                         : pending_player_combo_step_ == 3
-                               ? kN3ComboFinisherRecoveryMs
-                               : kN3PlayerAttackIntervalMs);
+      player_attack_interval_ms(base_interval, player_mods_);
   (void)player_attack;
   return true;
 }
@@ -2422,9 +2441,10 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       pending_player_skill_ = "melee";
       if (now >= player_combo_expires_ms_) player_combo_step_ = 0;
       pending_player_combo_step_ = player_combo_step_ % 3 + 1;
+      const int base_interval = pending_player_combo_step_ == 3
+          ? kN3ComboFinisherRecoveryMs : kN3PlayerAttackIntervalMs;
       next_player_attack_ms_ = now +
-          (pending_player_combo_step_ == 3 ? kN3ComboFinisherRecoveryMs
-                                           : kN3PlayerAttackIntervalMs);
+          player_attack_interval_ms(base_interval, player_mods_);
     }
   }
   if (player_attack > 0 && !pending_player_skill_.empty()) {
@@ -2449,21 +2469,27 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     bool active_target_died = false;
     for (WorldMonster* struck_target : struck) {
       // N4 hit pipeline (server/core/combat/index.js applyHitToMonster):
-      // skill coefficient -> Beastbane -> critical multiplier. Sweep rolls
-      // each target independently; a forced critical is consumed by the
-      // first body hit, matching the single-use modifier contract.
+      // skill coefficient -> armour/penetration -> Beastbane -> critical.
+      // Sweep rolls each target independently; a forced critical is consumed
+      // by the first body hit, matching the single-use modifier contract.
       int base = std::max(1, player_attack > 0 ? player_attack : kN3PlayerDamage);
       if (skill == "thrust") base = std::max(1, base * 13 / 10);
       else if (skill == "sweep") base = std::max(1, base * 3 / 4);
       else if (combo_step == 2) base = std::max(1, base * 115 / 100);
       else if (combo_step == 3) base = std::max(1, base * 160 / 100);
+      const int penetration = std::max(
+          0, std::min(100, player_mods_.armour_penetration_percent));
+      const int effective_armour = std::max(
+          0, struck_target->armour * (100 - penetration) / 100);
+      const int armour_prevented = std::min(base - 1, effective_armour / 10);
+      const int armoured_base = std::max(1, base - armour_prevented);
       const bool beast = std::find(struck_target->tags.begin(),
                                    struck_target->tags.end(), "beast") !=
                          struck_target->tags.end();
       const int beastbane_percent = beast
           ? std::max(0, std::min(100, player_mods_.damage_against_beasts)) : 0;
       const int beastbane_damage = static_cast<int>(std::lround(
-          base * (1.0 + beastbane_percent / 100.0)));
+          armoured_base * (1.0 + beastbane_percent / 100.0)));
       bool critical = false;
       if (player_mods_.force_critical) {
         player_mods_.force_critical = false;
@@ -2491,6 +2517,9 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       hit.combo_step = skill == "melee" ? combo_step : 0;
       hit.combo_window_ms = skill == "melee" ? kN3ComboWindowMs : 0;
       hit.damage_channel = "physical";
+      hit.armour_rating = struck_target->armour;
+      hit.armour_prevented = armour_prevented;
+      hit.armour_penetration_percent = penetration;
       bool interrupted_cast = false;
       std::string interrupted_skill;
       if (skill == "melee" && combo_step == 3 && !struck_target->boss) {
@@ -2703,13 +2732,13 @@ const std::vector<PackForm>& pack_forms() {
        {"Hits cause Bleeding", "bleed", 100}},
       {"atlatl", "Atlatl", "weapon", "Dart-thrower", 1, 3, true, 8, 18, 1.1, 0, false,
        {"reach", "swift"}, {{"swift", 1.4}}, {"bone", "copper", "bronze"},
-       {"+20% Projectile Range", nullptr, 0}},
+       {"+20% Projectile Range", "projectile_range", 20}},
       {"khopesh", "Khopesh", "weapon", "Sickle-sword", 1, 3, true, 11, 20, 1.2, 0, false,
        {"blade"}, {{"blade", 1.2}, {"fortune", 1.2}}, {"flint", "copper", "bronze", "skymetal"},
        {"+10% Attack Speed", "atk_speed", 10}},
       {"sling", "Sling", "weapon", "Sling", 1, 2, true, 5, 16, 1.15, 0, false,
        {"reach", "swift"}, {{"swift", 1.3}}, {"hide", "quilted"},
-       {"Ignores half of Armour", nullptr, 0}},
+       {"Ignores half of Armour", "armour_penetration", 50}},
       {"hideshield", "Shield", "shield", "Shield", 2, 3, false, 0, 0, 0, 45, true,
        {"ward"}, {{"ward", 1.5}}, {"hide", "bronze", "bronzescale", "rivetmail"},
        {"+4% Chance to Block", "block", 4}},
@@ -3151,12 +3180,18 @@ VesselCombat VesselForge::derive_combat(const VesselItem& item) const {
 
   combat.modifiers.block_chance = std::max(0, std::min(75, static_cast<int>(sum("block"))));
   combat.modifiers.critical_chance = std::max(0, std::min(75, static_cast<int>(sum("keen_eye"))));
+  combat.modifiers.attack_speed_percent = f->weapon ? 0 : std::max(
+      0, std::min(100, static_cast<int>(sum("atk_speed"))));
   combat.modifiers.goods_found = std::max(0, std::min(100, static_cast<int>(sum("wealthy"))));
   combat.modifiers.damage_against_beasts = std::max(0, std::min(100, static_cast<int>(sum("beastbane"))));
   combat.modifiers.bleed_chance = std::max(
       0, std::min(100, static_cast<int>(sum("bleed") + sum("bloodgroove"))));
   combat.modifiers.reach_percent = std::max(
       0, std::min(100, static_cast<int>(sum("long_reach"))));
+  combat.modifiers.projectile_range_percent = std::max(
+      0, std::min(100, static_cast<int>(sum("projectile_range"))));
+  combat.modifiers.armour_penetration_percent = std::max(
+      0, std::min(100, static_cast<int>(sum("armour_penetration"))));
   combat.modifiers.movement_speed_percent = std::max(
       0, std::min(100, static_cast<int>(sum("move") + sum("surefoot"))));
   combat.modifiers.ember_resistance = std::max(
@@ -3185,8 +3220,10 @@ VesselBlock VesselForge::make_block(const VesselItem& item) const {
       const bool active = stat_id == std::string("life") || stat_id == std::string("spirit") ||
                           stat_id == std::string("attrs") || stat_id == std::string("block") ||
                           stat_id == std::string("bleed") || stat_id == std::string("move") ||
-                          (f->weapon && (stat_id == std::string("phys_pct") ||
-                                         stat_id == std::string("atk_speed")));
+                          stat_id == std::string("atk_speed") ||
+                          stat_id == std::string("projectile_range") ||
+                          stat_id == std::string("armour_penetration") ||
+                          (f->weapon && stat_id == std::string("phys_pct"));
       if (!active) {
         line.section = "dormant";
         line.text = "Dormant · " + line.text;
@@ -3708,10 +3745,16 @@ WearSet::Totals WearSet::totals() const {
     out.defense.range += item.defense.range;
     out.modifiers.block_chance += item.combat_bonuses.block_chance;
     out.modifiers.critical_chance += item.combat_bonuses.critical_chance;
+    out.modifiers.attack_speed_percent +=
+        item.combat_bonuses.attack_speed_percent;
     out.modifiers.goods_found += item.combat_bonuses.goods_found;
     out.modifiers.damage_against_beasts += item.combat_bonuses.damage_against_beasts;
     out.modifiers.bleed_chance += item.combat_bonuses.bleed_chance;
     out.modifiers.reach_percent += item.combat_bonuses.reach_percent;
+    out.modifiers.projectile_range_percent +=
+        item.combat_bonuses.projectile_range_percent;
+    out.modifiers.armour_penetration_percent +=
+        item.combat_bonuses.armour_penetration_percent;
     out.modifiers.movement_speed_percent +=
         item.combat_bonuses.movement_speed_percent;
     out.modifiers.ember_resistance += item.combat_bonuses.ember_resistance;
@@ -3719,10 +3762,16 @@ WearSet::Totals WearSet::totals() const {
   }
   out.modifiers.block_chance = clamp(out.modifiers.block_chance, 75);
   out.modifiers.critical_chance = clamp(out.modifiers.critical_chance, 75);
+  out.modifiers.attack_speed_percent =
+      clamp(out.modifiers.attack_speed_percent, 100);
   out.modifiers.goods_found = clamp(out.modifiers.goods_found, 100);
   out.modifiers.damage_against_beasts = clamp(out.modifiers.damage_against_beasts, 100);
   out.modifiers.bleed_chance = clamp(out.modifiers.bleed_chance, 100);
   out.modifiers.reach_percent = clamp(out.modifiers.reach_percent, 100);
+  out.modifiers.projectile_range_percent =
+      clamp(out.modifiers.projectile_range_percent, 100);
+  out.modifiers.armour_penetration_percent =
+      clamp(out.modifiers.armour_penetration_percent, 100);
   out.modifiers.movement_speed_percent =
       clamp(out.modifiers.movement_speed_percent, 100);
   out.modifiers.ember_resistance = clamp(out.modifiers.ember_resistance, 75);

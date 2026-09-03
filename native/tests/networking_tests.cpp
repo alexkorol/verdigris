@@ -806,6 +806,138 @@ void test_active_forge_properties_cross_the_protocol() {
   session.tick(action_clock + 1200);
   check(tick_wire,
         "forge wire: periodic bleed damage remains a named physical hit");
+
+  ProtocolSession ranged("guest-forge-ranged", "socket-forge-ranged",
+                         0xA71A7, false);
+  for (const char* item_id : {"vessel-atlatl", "vessel-grips"})
+    ranged.handle(Envelope{"dev:give", JsonValue::Object{
+        {"itemId", item_id}, {"qty", 1}, {"itemLevel", 40}, {"seed", 23}}},
+        [](const Envelope&) {});
+  auto ranged_state = request_state(ranged, "forge-ranged-granted");
+  const std::string atlatl_uuid =
+      inventory_uuid_for(ranged_state, "vessel-atlatl");
+  const std::string grips_uuid =
+      inventory_uuid_for(ranged_state, "vessel-grips");
+  bool atlatl_line_active = false;
+  bool grips_line_active = false;
+  if (const auto* inventory = ranged_state["state"]["inventoryDetails"].array())
+    for (const auto& item : *inventory) {
+      if (!item["uuid"].string() || !item["vessel"]["lines"].array()) continue;
+      for (const auto& line : *item["vessel"]["lines"].array()) {
+        if (!line["text"].string() || !line["section"].string()) continue;
+        const bool active = *line["section"].string() == "implicit";
+        if (*item["uuid"].string() == atlatl_uuid &&
+            *line["text"].string() == "+20% Projectile Range")
+          atlatl_line_active = active;
+        if (*item["uuid"].string() == grips_uuid &&
+            *line["text"].string() == "+8% Attack Speed")
+          grips_line_active = active;
+      }
+    }
+  check(atlatl_line_active && grips_line_active,
+        "forge wire: Atlatl range and Grips speed ship as active implicits");
+  for (const auto& uuid : {atlatl_uuid, grips_uuid})
+    ranged.handle(Envelope{"item:equip", JsonValue::Object{{
+        "item", JsonValue::Object{{"uuid", uuid}}}}}, [](const Envelope&) {});
+  ranged_state = request_state(ranged, "forge-ranged-worn");
+  check(ranged_state["state"]["combat"]["projectileRangePercent"]
+                .number().value_or(0) == 20 &&
+            ranged_state["state"]["combat"]["attackSpeedPercent"]
+                .number().value_or(0) == 8,
+        "forge wire: equipped Atlatl and Grips publish their worn totals");
+  ranged.handle(Envelope{"instance:enterSolo", JsonValue::Object{
+      {"template", "dungeon"}, {"layout", "clearings"}}},
+      [](const Envelope&) {});
+  ranged_state = request_state(ranged, "forge-ranged-target");
+  const auto& ranged_target = ranged_state["state"]["monsters"].array()->front();
+  const std::string ranged_target_uuid = *ranged_target["uuid"].string();
+  const int ranged_tx = static_cast<int>(ranged_target["x"].number().value_or(0));
+  const int ranged_ty = static_cast<int>(ranged_target["y"].number().value_or(0));
+  const int ranged_px = ranged_tx + 6 < 39 ? ranged_tx + 6 : ranged_tx - 6;
+  const std::string ranged_aim = ranged_px < ranged_tx ? "right" : "left";
+  ranged.handle(Envelope{"dev:clear-floor", JsonValue::Object{}},
+                [](const Envelope&) {});
+  ranged.handle(Envelope{"dev:monster:reset", JsonValue::Object{
+      {"monsterUuid", ranged_target_uuid}, {"maxHealth", 1000}}},
+      [](const Envelope&) {});
+  ranged.handle(Envelope{"dev:teleport", JsonValue::Object{
+      {"x", ranged_px}, {"y", ranged_ty}}}, [](const Envelope&) {});
+  bool sixth_tile_hit = false;
+  int fast_cooldown_ticks = 0;
+  ranged.handle(Envelope{"player:skill:trigger", JsonValue::Object{
+      {"skill", "melee"}, {"direction", ranged_aim}}},
+      [&](const Envelope& event) {
+        if (event.event == "combat:hit" && event.data["targetId"].string() &&
+            *event.data["targetId"].string() == ranged_target_uuid)
+          sixth_tile_hit = true;
+        if (event.event == "player:combat-state")
+          fast_cooldown_ticks = static_cast<int>(
+              event.data["cooldownTicks"].number().value_or(0));
+      });
+  check(sixth_tile_hit && fast_cooldown_ticks == 7,
+        "forge wire: Atlatl reaches six tiles while Grips shorten recovery");
+
+  ProtocolSession piercing("guest-forge-piercing", "socket-forge-piercing",
+                           0x511A6, false);
+  piercing.handle(Envelope{"dev:give", JsonValue::Object{
+      {"itemId", "vessel-sling"}, {"qty", 1},
+      {"itemLevel", 40}, {"seed", 29}}}, [](const Envelope&) {});
+  auto piercing_state = request_state(piercing, "forge-piercing-granted");
+  const std::string sling_uuid =
+      inventory_uuid_for(piercing_state, "vessel-sling");
+  bool sling_line_active = false;
+  if (const auto* inventory = piercing_state["state"]["inventoryDetails"].array())
+    for (const auto& item : *inventory)
+      if (item["uuid"].string() && *item["uuid"].string() == sling_uuid &&
+          item["vessel"]["lines"].array())
+        for (const auto& line : *item["vessel"]["lines"].array())
+          if (line["text"].string() &&
+              *line["text"].string() == "Ignores half of Armour" &&
+              line["section"].string() &&
+              *line["section"].string() == "implicit")
+            sling_line_active = true;
+  check(sling_line_active,
+        "forge wire: Sling armour bypass ships as an active implicit");
+  piercing.handle(Envelope{"item:equip", JsonValue::Object{{
+      "item", JsonValue::Object{{"uuid", sling_uuid}}}}},
+      [](const Envelope&) {});
+  piercing.handle(Envelope{"instance:enterSolo", JsonValue::Object{
+      {"template", "dungeon"}, {"layout", "clearings"}}},
+      [](const Envelope&) {});
+  piercing_state = request_state(piercing, "forge-piercing-target");
+  const auto& piercing_target =
+      piercing_state["state"]["monsters"].array()->front();
+  const std::string piercing_target_uuid = *piercing_target["uuid"].string();
+  const int piercing_tx =
+      static_cast<int>(piercing_target["x"].number().value_or(0));
+  const int piercing_ty =
+      static_cast<int>(piercing_target["y"].number().value_or(0));
+  const int piercing_px = piercing_tx + 1 < 39 ? piercing_tx + 1
+                                               : piercing_tx - 1;
+  piercing.handle(Envelope{"dev:clear-floor", JsonValue::Object{}},
+                  [](const Envelope&) {});
+  piercing.handle(Envelope{"dev:monster:reset", JsonValue::Object{
+      {"monsterUuid", piercing_target_uuid}, {"maxHealth", 1000},
+      {"armour", 100}}}, [](const Envelope&) {});
+  piercing.handle(Envelope{"dev:teleport", JsonValue::Object{
+      {"x", piercing_px}, {"y", piercing_ty}}}, [](const Envelope&) {});
+  bool penetration_wire = false;
+  piercing.handle(Envelope{"player:skill:trigger", JsonValue::Object{
+      {"skill", "melee"},
+      {"direction", piercing_px < piercing_tx ? "right" : "left"}}},
+      [&](const Envelope& event) {
+        if (event.event != "combat:hit" || !event.data["targetId"].string() ||
+            *event.data["targetId"].string() != piercing_target_uuid)
+          return;
+        penetration_wire =
+            event.data["attackStyle"].string() &&
+            *event.data["attackStyle"].string() == "range" &&
+            event.data["armourRating"].number().value_or(0) == 100 &&
+            event.data["armourPenetrationPercent"].number().value_or(0) == 50 &&
+            event.data["armourPrevented"].number().value_or(0) > 0;
+      });
+  check(penetration_wire,
+        "forge wire: Sling hit publishes exact Armour and penetration facts");
 }
 
 void test_crossroads_social_hub_and_house_investment() {

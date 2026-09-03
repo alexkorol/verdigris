@@ -1645,10 +1645,58 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
 bool gateb_take_relic(LoopbackClient& client, const std::string& relic_uuid,
                       int timeout_ms) {
   GateBView& view = client.view();
-  int heading = 0;
-  int best_distance = 1 << 30;
   const auto deadline =
       std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+  // The relic can surface on the far side of a warren rib. Recompute a route
+  // from the latest authoritative position after every accepted sub-tile step;
+  // the older sticky greedy heading could circle a rib until timeout.
+  const auto route_heading = [&](int start_x, int start_y, int target_x,
+                                 int target_y) {
+    constexpr int width = 40;
+    constexpr int height = 40;
+    const auto walkable = [&](int x, int y) {
+      if (x <= 0 || x >= width - 1 || y <= 0 || y >= height - 1)
+        return false;
+      if (gateb_on_stairs(view, x, y)) return false;
+      const bool rib = x == 12 || x == 18 || x == 24 || x == 30;
+      const bool gap = (y >= 10 && y <= 12) ||
+                       (y >= 19 && y <= 21) ||
+                       (y >= 26 && y <= 28);
+      return !rib || y < 3 || y >= height - 3 || gap;
+    };
+    const auto index = [](int x, int y) { return y * width + x; };
+    if (!walkable(start_x, start_y)) return -1;
+    std::vector<int> parent(width * height, -1);
+    std::vector<int> entered_by(width * height, -1);
+    std::deque<int> frontier;
+    const int start = index(start_x, start_y);
+    parent[start] = start;
+    frontier.push_back(start);
+    int found = -1;
+    while (!frontier.empty()) {
+      const int current = frontier.front();
+      frontier.pop_front();
+      const int x = current % width;
+      const int y = current / width;
+      if (std::abs(x - target_x) <= 1 && std::abs(y - target_y) <= 1) {
+        found = current;
+        break;
+      }
+      for (int direction = 0; direction < 4; ++direction) {
+        const int nx = x + (direction == 0 ? 1 : direction == 2 ? -1 : 0);
+        const int ny = y + (direction == 1 ? 1 : direction == 3 ? -1 : 0);
+        if (!walkable(nx, ny)) continue;
+        const int next = index(nx, ny);
+        if (parent[next] != -1) continue;
+        parent[next] = current;
+        entered_by[next] = direction;
+        frontier.push_back(next);
+      }
+    }
+    if (found < 0 || found == start) return -1;
+    while (parent[found] != start) found = parent[found];
+    return entered_by[found];
+  };
   // The surfacing message can beat the ground-change frame across the wire;
   // a normal client simply sees the item appear on the ground shortly after.
   size_t ground_mark = client.mark();
@@ -1688,7 +1736,10 @@ bool gateb_take_relic(LoopbackClient& client, const std::string& relic_uuid,
     const int dx = gateb_tile_of(relic->x) - gateb_tile_of(view.px);
     const int dy = gateb_tile_of(relic->y) - gateb_tile_of(view.py);
     if (std::chrono::steady_clock::now() >= deadline) {
-      std::printf("note: take-relic: never reached the relic tile\n");
+      std::printf(
+          "note: take-relic: never reached target=(%d,%d) from=(%d,%d)\n",
+          gateb_tile_of(relic->x), gateb_tile_of(relic->y),
+          gateb_tile_of(view.px), gateb_tile_of(view.py));
       return false;
     }
     if (std::abs(dx) <= 1 && std::abs(dy) <= 1) {
@@ -1715,17 +1766,13 @@ bool gateb_take_relic(LoopbackClient& client, const std::string& relic_uuid,
           });
       return took;
     }
-    // Reset toward the larger axis whenever a new best distance is reached.
-    // Otherwise preserve gateb_step's rotated heading long enough to follow a
-    // wall instead of recomputing the blocked greedy step and oscillating.
-    const int distance = std::abs(dx) + std::abs(dy);
-    if (distance < best_distance) {
-      best_distance = distance;
-      const int primary =
-          gateb_heading_for(dx > 0 ? 1 : (dx < 0 ? -1 : 0), 0);
-      const int secondary =
-          gateb_heading_for(0, dy > 0 ? 1 : (dy < 0 ? -1 : 0));
-      heading = std::abs(dx) >= std::abs(dy) ? primary : secondary;
+    int heading = route_heading(gateb_tile_of(view.px),
+                                gateb_tile_of(view.py),
+                                gateb_tile_of(relic->x),
+                                gateb_tile_of(relic->y));
+    if (heading < 0) {
+      std::printf("note: take-relic: no warren route to surfaced relic\n");
+      return false;
     }
     gateb_step(client, heading);
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -2624,10 +2671,12 @@ void remote_forge_properties_and_status_mirror_to_presentation() {
   server.script.push_back(
       "{\"event\":\"dev:state\",\"data\":{\"state\":{"
       "\"lifecycle\":\"alive\",\"combat\":{\"bleedChance\":100,"
-      "\"reachPercent\":16,\"movementSpeedPercent\":25,"
+      "\"attackSpeedPercent\":8,\"reachPercent\":16,"
+      "\"projectileRangePercent\":20,\"armourPenetrationPercent\":50,"
+      "\"movementSpeedPercent\":25,"
       "\"emberResistance\":25,\"riverResistance\":50},"
       "\"monsters\":[{\"uuid\":\"spitter-1\",\"name\":\"Bog Spitter\","
-      "\"x\":14,\"y\":11,\"damageChannel\":\"river\","
+      "\"x\":14,\"y\":11,\"armour\":100,\"damageChannel\":\"river\","
       "\"behaviour\":{\"type\":\"ranged\"},"
       "\"hp\":{\"current\":80,\"max\":100},"
       "\"state\":{\"effects\":{\"bleed\":{\"id\":\"status:bleed\","
@@ -2644,6 +2693,14 @@ void remote_forge_properties_and_status_mirror_to_presentation() {
       "\"amount\":6,\"baseAmount\":12,\"damageChannel\":\"river\","
       "\"resistancePercent\":50,\"died\":false,"
       "\"health\":{\"current\":94,\"max\":100}}}");
+  server.script.push_back(
+      "{\"event\":\"combat:hit\",\"data\":{"
+      "\"attackerId\":\"forge-guest\",\"targetId\":\"spitter-1\","
+      "\"targetType\":\"monster\",\"skillId\":\"melee\","
+      "\"amount\":15,\"baseAmount\":20,\"attackStyle\":\"range\","
+      "\"armourRating\":100,\"armourPrevented\":5,"
+      "\"armourPenetrationPercent\":50,\"critical\":false,"
+      "\"died\":false,\"health\":{\"current\":65,\"max\":100}}}");
   std::string error;
   check(server.start(&error),
         "forge-mirror: scripted loopback server bound in capsule");
@@ -2667,10 +2724,14 @@ void remote_forge_properties_and_status_mirror_to_presentation() {
         }),
         "forge-mirror: combat totals and monster snapshot arrive");
   check(session.model().reach_percent == 16 &&
+            session.model().attack_speed_percent == 8 &&
+            session.model().projectile_range_percent == 20 &&
+            session.model().armour_penetration_percent == 50 &&
             session.model().movement_speed_percent == 25 &&
             session.model().ember_resistance == 25 &&
             session.model().river_resistance == 50 &&
             session.model().monsters[0].damage_channel == "river" &&
+            session.model().monsters[0].armour == 100 &&
             session.model().monsters[0].bleeding,
         "forge-mirror: worn totals, channel, and live bleed state remain authoritative");
 
@@ -2718,12 +2779,51 @@ void remote_forge_properties_and_status_mirror_to_presentation() {
             incoming.resistance_percent == 50,
         "forge-mirror: mitigated River hit keeps its channel and resistance facts");
 
+  server.grant_next_frame();
+  verdigris::client::PresentationEvent piercing;
+  bool saw_piercing = false;
+  const auto piercing_deadline =
+      std::chrono::steady_clock::now() + std::chrono::milliseconds(5000);
+  while (!saw_piercing && std::chrono::steady_clock::now() < piercing_deadline) {
+    session.poll();
+    for (const auto& event : session.drain_events()) {
+      if (event.type == verdigris::client::PresentationEventType::ProtocolError)
+        errors.push_back(event.text);
+      if (event.type == verdigris::client::PresentationEventType::DamageApplied &&
+          event.text == "outgoing") {
+        piercing = event;
+        saw_piercing = true;
+      }
+    }
+    if (!saw_piercing)
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  check(saw_piercing && piercing.value == 15 &&
+            piercing.armour_rating == 100 &&
+            piercing.armour_prevented == 5 &&
+            piercing.armour_penetration_percent == 50,
+        "forge-mirror: Sling penetration facts survive wire parsing");
+
   verdigris::client::WorldView world;
   verdigris::client::sync_world_from_model(world, session.model());
-  check(world.player.bleed_chance == 100 && world.player.river_resistance == 50 &&
+  check(world.player.bleed_chance == 100 &&
+            world.player.attack_speed_percent == 8 &&
+            world.player.projectile_range_percent == 20 &&
+            world.player.armour_penetration_percent == 50 &&
+            world.player.river_resistance == 50 &&
             world.carried.size() == 1 && world.carried[0].forge_lines.size() == 2 &&
-            world.monsters.size() == 1 && world.monsters[0].bleeding,
+            world.monsters.size() == 1 && world.monsters[0].armour == 100 &&
+            world.monsters[0].bleeding,
         "forge-mirror: forge contract survives model-to-presentation sync");
+  verdigris::client::PresentationFx piercing_fx;
+  verdigris::client::apply_presentation_event(piercing_fx, world, piercing, 1);
+  bool piercing_number = false;
+  for (const auto& effect : piercing_fx.effects)
+    if (effect.kind == verdigris::client::EffectFx::Kind::DamageNumber &&
+        effect.piercing)
+      piercing_number = true;
+  check(piercing_number,
+        "forge-mirror: authoritative penetration drives the piercing hit treatment");
   check(errors.empty(), "forge-mirror: valid payload raises no protocol error");
   session.shutdown();
   server.stop();

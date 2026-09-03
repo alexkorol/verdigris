@@ -497,10 +497,13 @@ struct ChannelRatings {
 struct CombatModifiers {
   int block_chance = 0;
   int critical_chance = 0;
+  int attack_speed_percent = 0;
   int goods_found = 0;
   int damage_against_beasts = 0;
   int bleed_chance = 0;
   int reach_percent = 0;
+  int projectile_range_percent = 0;
+  int armour_penetration_percent = 0;
   int movement_speed_percent = 0;
   int ember_resistance = 0;
   int river_resistance = 0;
@@ -743,10 +746,13 @@ struct GroundItem {
 // Player combat modifiers the equip pipeline feeds into tile-space combat.
 struct PlayerCombatMods {
   int critical_chance = 0;
+  int attack_speed_percent = 0;
   int goods_found = 0;
   int damage_against_beasts = 0;
   int bleed_chance = 0;
   int reach_percent = 0;
+  int projectile_range_percent = 0;
+  int armour_penetration_percent = 0;
   int movement_speed_percent = 0;
   int ember_resistance = 0;
   int river_resistance = 0;
@@ -815,6 +821,7 @@ struct WorldMonster {
   int level = 1;
   int life = 30;
   int life_max = 30;
+  int armour = 0;
   bool alive = true;
   std::string behaviour_type = "melee";
   std::string rarity = "common";
@@ -870,6 +877,9 @@ struct WorldCombatEvent {
   int stagger_ms = 0;
   std::string damage_channel = "physical";
   int resistance_percent = 0;
+  int armour_rating = 0;
+  int armour_prevented = 0;
+  int armour_penetration_percent = 0;
 };
 
 struct InstanceMetadata {
@@ -945,12 +955,14 @@ class WorldSimulation {
   void set_scene_id(const std::string& id) { scene_id_ = id; }
   // dev:monster:reset - revive one monster at a chosen max health for
   // deterministic comparison trials.
-  bool reset_monster(const std::string& uuid, int max_health) {
+  bool reset_monster(const std::string& uuid, int max_health,
+                     int armour = -1) {
     for (auto& monster : monsters_) {
       if (monster.uuid != uuid) continue;
       monster.alive = true;
       if (max_health > 0) monster.life_max = max_health;
       monster.life = monster.life_max;
+      if (armour >= 0) monster.armour = armour;
       monster.telegraph_until_ms = 0;
       monster.next_attack_ms = 0;
       monster.next_move_ms = 0;

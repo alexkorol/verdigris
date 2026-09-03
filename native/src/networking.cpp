@@ -319,10 +319,16 @@ JsonValue modifiers_json(const CombatModifiers& mods) {
   JsonValue::Object out;
   if (mods.block_chance > 0) put(out, "blockChance", mods.block_chance);
   if (mods.critical_chance > 0) put(out, "criticalChance", mods.critical_chance);
+  if (mods.attack_speed_percent > 0)
+    put(out, "attackSpeedPercent", mods.attack_speed_percent);
   if (mods.goods_found > 0) put(out, "goodsFound", mods.goods_found);
   if (mods.damage_against_beasts > 0) put(out, "damageAgainstBeasts", mods.damage_against_beasts);
   if (mods.bleed_chance > 0) put(out, "bleedChance", mods.bleed_chance);
   if (mods.reach_percent > 0) put(out, "reachPercent", mods.reach_percent);
+  if (mods.projectile_range_percent > 0)
+    put(out, "projectileRangePercent", mods.projectile_range_percent);
+  if (mods.armour_penetration_percent > 0)
+    put(out, "armourPenetrationPercent", mods.armour_penetration_percent);
   if (mods.movement_speed_percent > 0)
     put(out, "movementSpeedPercent", mods.movement_speed_percent);
   if (mods.ember_resistance > 0)
@@ -1082,10 +1088,15 @@ JsonValue ProtocolSession::combat_totals_json() const {
   put(combat, "defense", ratings_json(totals.defense));
   put(combat, "blockChance", totals.modifiers.block_chance);
   put(combat, "criticalChance", totals.modifiers.critical_chance);
+  put(combat, "attackSpeedPercent", totals.modifiers.attack_speed_percent);
   put(combat, "goodsFound", totals.modifiers.goods_found);
   put(combat, "damageAgainstBeasts", totals.modifiers.damage_against_beasts);
   put(combat, "bleedChance", totals.modifiers.bleed_chance);
   put(combat, "reachPercent", totals.modifiers.reach_percent);
+  put(combat, "projectileRangePercent",
+      totals.modifiers.projectile_range_percent);
+  put(combat, "armourPenetrationPercent",
+      totals.modifiers.armour_penetration_percent);
   put(combat, "movementSpeedPercent", totals.modifiers.movement_speed_percent);
   put(combat, "emberResistance", totals.modifiers.ember_resistance);
   put(combat, "riverResistance", totals.modifiers.river_resistance);
@@ -1259,7 +1270,7 @@ JsonValue ProtocolSession::snapshot() const {
       {"windowTicks",(combo_window_snapshot_ms+kSimulationTickMs-1)/kSimulationTickMs}});
   JsonValue::Array monsters; for (const auto& candidate:world_->monsters()) if (candidate.alive) {
     JsonValue::Object monster; put(monster,"uuid",candidate.uuid); put(monster,"id",candidate.id); put(monster,"name",candidate.name);
-    put(monster,"x",candidate.x); put(monster,"y",candidate.y); put(monster,"level",candidate.level); put(monster,"rarity",candidate.rarity); put(monster,"boss",candidate.boss);
+    put(monster,"x",candidate.x); put(monster,"y",candidate.y); put(monster,"level",candidate.level); put(monster,"armour",candidate.armour); put(monster,"rarity",candidate.rarity); put(monster,"boss",candidate.boss);
     JsonValue::Array tags; for (const auto& tag:candidate.tags) tags.emplace_back(tag); put(monster,"tags",std::move(tags));
     put(monster,"coins",candidate.coins);
     put(monster,"damageChannel",candidate.damage_channel);
@@ -1440,10 +1451,14 @@ void ProtocolSession::sync_combat_mods() {
   const auto totals=wear_.totals();
   PlayerCombatMods mods=world_->player_combat_mods();  // preserves force_critical
   mods.critical_chance=totals.modifiers.critical_chance;
+  mods.attack_speed_percent=totals.modifiers.attack_speed_percent;
   mods.goods_found=totals.modifiers.goods_found;
   mods.damage_against_beasts=totals.modifiers.damage_against_beasts;
   mods.bleed_chance=totals.modifiers.bleed_chance;
   mods.reach_percent=totals.modifiers.reach_percent;
+  mods.projectile_range_percent=totals.modifiers.projectile_range_percent;
+  mods.armour_penetration_percent=
+      totals.modifiers.armour_penetration_percent;
   mods.movement_speed_percent=totals.modifiers.movement_speed_percent;
   mods.ember_resistance=totals.modifiers.ember_resistance;
   mods.river_resistance=totals.modifiers.river_resistance;
@@ -3073,6 +3088,9 @@ void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std
   put(data,"staggerMs",event.stagger_ms);
   put(data,"damageChannel",event.damage_channel);
   put(data,"resistancePercent",event.resistance_percent);
+  put(data,"armourRating",event.armour_rating);
+  put(data,"armourPrevented",event.armour_prevented);
+  put(data,"armourPenetrationPercent",event.armour_penetration_percent);
   emit_world(Envelope{"combat:hit",JsonValue(std::move(data))},emit);
 }
 
@@ -3753,7 +3771,10 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   if (envelope.event=="dev:monster:reset") {
     const std::string monster_uuid = as_string(payload ? payload->get("monsterUuid") : nullptr);
     const int max_health = as_int(payload ? payload->get("maxHealth") : nullptr, 0);
-    if (world_->in_instance() && world_->reset_monster(monster_uuid, max_health)) {
+    const int armour = payload && payload->get("armour")
+        ? as_int(payload->get("armour"), -1) : -1;
+    if (world_->in_instance() &&
+        world_->reset_monster(monster_uuid, max_health, armour)) {
       emit_message(emit, "Reset the monster for a comparison trial.");
     }
     return;

@@ -55,6 +55,9 @@ struct PresentationEvent {
   std::string damage_channel = "physical";
   int base_amount = 0;
   int resistance_percent = 0;
+  int armour_rating = 0;
+  int armour_prevented = 0;
+  int armour_penetration_percent = 0;
   int duration_ms = 0;
 };
 
@@ -94,6 +97,11 @@ inline constexpr int kBleedApplyTtlTicks = 14;
 inline constexpr Rgb kBleedColor{220, 72, 68};
 inline constexpr const char* kBleedApplyLabel = "bleed-applied";
 inline constexpr const char* kBleedDamageLabel = "bleed";
+
+// Sling strikes advertise their authoritative armour bypass. The cyan beat
+// is reserved for a hit where penetration actually reduced mitigation.
+inline constexpr Rgb kPiercingColor{96, 220, 224};
+inline constexpr const char* kPiercingDamageLabel = "piercing";
 
 // Deterministic spawn/materialization beat (first client sighting of a foe).
 inline constexpr int kMaterializeTtlTicks = 8;             // 400 ms

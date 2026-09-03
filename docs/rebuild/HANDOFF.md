@@ -1,5 +1,33 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - final Vesselforge implicits
+
+- The last mechanics-bearing WIZARD form lines are authoritative in native:
+  Atlatl grants 20% projectile range, Sling ignores half of monster Armour,
+  and non-weapon Grips grant 8% increased attack speed. Projectile range
+  extends the ranged targeting boundary; attack speed shortens primary recovery
+  with bounded increased-speed scaling; armour penetration reduces the target's
+  flat mitigation before later offensive multipliers resolve.
+- Generated monsters now own level- and role-scaled Armour. Exact Armour,
+  prevented damage, and penetration facts cross combat events, protocol
+  snapshots, the remote client model, and shared presentation. Hover identifies
+  Armour, while a successful bypass gets a distinct cyan `PIERCE` number.
+- The gear pane reports speed, reach, projectile range, penetration, bleed,
+  movement, and both wards in two fitted Framekit rows. Regression geometry
+  proves both rows remain inside the 1366x768 pane without shrinking the type.
+- Core comparisons prove the sixth-tile Atlatl shot, 350-to-324 ms Grips
+  recovery, and a controlled 20 damage / 100 Armour Sling result improving from
+  10 to 15. Protocol, scripted-session, shared-presentation, and production-
+  client coverage carry those same facts end to end.
+- The long Chronicle Gate-B driver's relic-recovery leg now recomputes a route
+  through the known warren ribs from every authoritative position echo, removing
+  the sticky-heading timeout exposed by the release gate.
+- Verification: the full native test gate, complete Chronicle succession and
+  relic-recovery journey, and every client scenario pass. Evidence is in
+  `native/build/goal-captures-final-implicits-b/vesselforge-atlatl-range-1366x768.png`
+  and `native/build/goal-captures-final-implicits-b/vesselforge-sling-pierce-1366x768.png`;
+  `frame-budget` measured 9.8 ms average at 3440x1440 against the 40 ms ceiling.
+
 ## 2026-09-03 - Act III: The Deep Roads
 
 - The authoritative native campaign now contains twelve commissions. The

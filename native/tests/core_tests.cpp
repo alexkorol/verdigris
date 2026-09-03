@@ -2313,10 +2313,13 @@ void test_n4_ring_seats_and_wear_caps() {
   CombatModifiers big;
   big.block_chance = 40;
   big.critical_chance = 40;
+  big.attack_speed_percent = 60;
   big.goods_found = 60;
   big.damage_against_beasts = 60;
   big.bleed_chance = 60;
   big.reach_percent = 60;
+  big.projectile_range_percent = 60;
+  big.armour_penetration_percent = 60;
   big.movement_speed_percent = 60;
   big.ember_resistance = 60;
   big.river_resistance = 60;
@@ -2329,8 +2332,11 @@ void test_n4_ring_seats_and_wear_caps() {
         "N4 wear caps find/beasts at 100");
   check(totals.modifiers.bleed_chance == 100 &&
             totals.modifiers.reach_percent == 100 &&
+            totals.modifiers.attack_speed_percent == 100 &&
+            totals.modifiers.projectile_range_percent == 100 &&
+            totals.modifiers.armour_penetration_percent == 100 &&
             totals.modifiers.movement_speed_percent == 100,
-        "N4 wear caps bleed/reach/movement at 100");
+        "N4 wear caps speed/bleed/reach/projectile/penetration/movement at 100");
   check(totals.modifiers.ember_resistance == 75 &&
             totals.modifiers.river_resistance == 75,
         "N4 wear caps Ember/River resistance at 75");
@@ -2387,6 +2393,34 @@ void test_n4_active_forge_properties_drive_their_authoritative_systems() {
             wards.combat.modifiers.ember_resistance == 25,
         "forge properties: Riverblessed and Emberward derive named resistances");
 
+  auto unbranded = [](const char* id, const char* form, const char* material,
+                      const char* kind) {
+    VesselItem item;
+    item.id = id;
+    item.form_id = form;
+    item.material_id = material;
+    item.kind = kind;
+    item.ilvl = 40;
+    item.vessel = 2;
+    return item;
+  };
+  const VesselBlock atlatl = forge.make_block(
+      unbranded("vf-atlatl", "atlatl", "bronze", "weapon"));
+  const VesselBlock sling = forge.make_block(
+      unbranded("vf-sling", "sling", "hide", "weapon"));
+  const VesselBlock grips = forge.make_block(
+      unbranded("vf-grips", "grips", "quilted", "gloves"));
+  check(atlatl.combat.modifiers.projectile_range_percent == 20 &&
+            sling.combat.modifiers.armour_penetration_percent == 50 &&
+            grips.combat.modifiers.attack_speed_percent == 8,
+        "forge properties: final three implicits derive live combat modifiers");
+  bool final_implicit_dormant = false;
+  for (const VesselBlock* block : {&atlatl, &sling, &grips})
+    for (const auto& line : block->lines)
+      if (line.section == "dormant") final_implicit_dormant = true;
+  check(!final_implicit_dormant,
+        "forge properties: projectile, penetration, and glove speed are honestly active");
+
   WorldSimulation swift(42, "swift-scion");
   PlayerCombatMods swift_mods;
   swift_mods.movement_speed_percent = 25;
@@ -2420,6 +2454,81 @@ void test_n4_active_forge_properties_drive_their_authoritative_systems() {
   check(!baseline_reach.start_player_attack(1, 20, 1000, approach, "melee") &&
             forged_reach.start_player_attack(1, 20, 1000, approach, "melee"),
         "forge properties: increased reach admits a target beyond base melee range");
+
+  WorldSimulation baseline_shot(0xA71A7ULL, "baseline-shot");
+  WorldSimulation ranged_shot(0xA71A7ULL, "ranged-shot");
+  baseline_shot.enter_solo_instance("dungeon", "clearings");
+  ranged_shot.enter_solo_instance("dungeon", "clearings");
+  const WorldMonster shot_target = baseline_shot.monsters().front();
+  baseline_shot.kill_all_monsters();
+  ranged_shot.kill_all_monsters();
+  baseline_shot.reset_monster(shot_target.uuid, 1000);
+  ranged_shot.reset_monster(shot_target.uuid, 1000);
+  const int shot_x = shot_target.x + 6 < 39 ? shot_target.x + 6
+                                            : shot_target.x - 6;
+  const std::string shot_aim = shot_x < shot_target.x ? "right" : "left";
+  baseline_shot.teleport(shot_x, shot_target.y, 900);
+  ranged_shot.teleport(shot_x, shot_target.y, 900);
+  PlayerCombatMods ranged_base;
+  ranged_base.attack_style = "range";
+  baseline_shot.set_player_combat_mods(ranged_base);
+  ranged_base.projectile_range_percent = 20;
+  ranged_shot.set_player_combat_mods(ranged_base);
+  check(!baseline_shot.start_player_attack(1, 20, 1000, shot_aim, "melee") &&
+            ranged_shot.start_player_attack(1, 20, 1000, shot_aim, "melee"),
+        "forge properties: Atlatl projectile range reaches a sixth tile");
+
+  WorldSimulation baseline_speed(0x5EE0ULL, "baseline-speed");
+  WorldSimulation forged_speed(0x5EE0ULL, "forged-speed");
+  baseline_speed.enter_solo_instance("dungeon", "clearings");
+  forged_speed.enter_solo_instance("dungeon", "clearings");
+  const WorldMonster speed_target = baseline_speed.monsters().front();
+  baseline_speed.kill_all_monsters();
+  forged_speed.kill_all_monsters();
+  baseline_speed.reset_monster(speed_target.uuid, 1000);
+  forged_speed.reset_monster(speed_target.uuid, 1000);
+  const int speed_x = speed_target.x + 1 < 39 ? speed_target.x + 1
+                                              : speed_target.x - 1;
+  const std::string speed_aim = speed_x < speed_target.x ? "right" : "left";
+  baseline_speed.teleport(speed_x, speed_target.y, 900);
+  forged_speed.teleport(speed_x, speed_target.y, 900);
+  PlayerCombatMods speed_mods;
+  speed_mods.attack_speed_percent = 8;
+  forged_speed.set_player_combat_mods(speed_mods);
+  check(baseline_speed.start_player_attack(1, 20, 1000, speed_aim, "melee") &&
+            forged_speed.start_player_attack(1, 20, 1000, speed_aim, "melee") &&
+            baseline_speed.player_cooldown_remaining_ms(1000) == 350 &&
+            forged_speed.player_cooldown_remaining_ms(1000) == 324,
+        "forge properties: Grips shorten the authoritative attack recovery");
+
+  const auto run_armour_trial = [](int penetration) {
+    WorldSimulation world(0x511A6ULL, "armour-trial");
+    world.enter_solo_instance("dungeon", "clearings");
+    const WorldMonster target = world.monsters().front();
+    world.kill_all_monsters();
+    world.reset_monster(target.uuid, 1000, 100);
+    const int px = target.x + 1 < 39 ? target.x + 1 : target.x - 1;
+    world.teleport(px, target.y, 900);
+    PlayerCombatMods mods;
+    mods.attack_style = "range";
+    mods.armour_penetration_percent = penetration;
+    world.set_player_combat_mods(mods);
+    const std::string aim = px < target.x ? "right" : "left";
+    int life = 1000;
+    WorldCombatEvent result;
+    world.start_player_attack(1, 20, 1000, aim, "melee");
+    for (const auto& event : world.advance_combat(1, 20, life, 1000, 1000))
+      if (event.type == "hit" && event.attacker_id == "armour-trial")
+        result = event;
+    return result;
+  };
+  const WorldCombatEvent armoured = run_armour_trial(0);
+  const WorldCombatEvent pierced = run_armour_trial(50);
+  check(armoured.base_amount == 20 && armoured.armour_rating == 100 &&
+            armoured.armour_prevented == 10 && armoured.amount == 10 &&
+            pierced.armour_penetration_percent == 50 &&
+            pierced.armour_prevented == 5 && pierced.amount == 15,
+        "forge properties: Sling bypasses half of authoritative monster Armour");
 
   WorldSimulation bleeding(0xB1EEDULL, "bleed-scion");
   bleeding.enter_solo_instance("dungeon", "clearings");
