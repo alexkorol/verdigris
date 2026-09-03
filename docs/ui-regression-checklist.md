@@ -1,5 +1,26 @@
 # UI Regression Checklist
 
+## Native Vesselforge Active Properties
+
+- Equip an Obsidian Macuahuitl and confirm its card says `Hits cause Bleeding`
+  without a Dormant prefix. A Long Reach brand must appear as a second active
+  line, and the compact forge summary must match the authoritative worn totals.
+- Strike a durable foe and confirm bleed application has a crimson ring/slash
+  treatment and `BLEED` label. Later ticks must use crimson numbers without
+  replaying the weapon swing or producing the generic gold impact burst.
+- While bleed remains active, confirm the foe keeps a restrained crimson
+  status ring. Hovering it should say `Bleeding`; ranged marsh/grove and
+  dungeon foes should identify River or Ember damage respectively.
+- Equip Sandals/Surefoot gear and confirm held movement covers the increased
+  authoritative distance without changing the 50 ms input cadence or moving
+  through walls. Long Reach should admit targets beyond the unmodified edge.
+- Compare a River or Ember volley before and after resistance gear. The damage
+  number must match server mitigation, and reconnect must restore both worn
+  totals and any still-active bleed state.
+- At 1366x768 and 960x600, confirm both forge lines, the summary, banked row,
+  and footer stay inside the Framekit gear pane while bleed feedback remains
+  visible in the world.
+
 ## Native Monster Pressure Roles
 
 - Approach a ranged foe from four to six tiles. Confirm a violet circular

@@ -121,6 +121,11 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
   world.player.combo_window_ticks = model.player.combo_window_ticks;
   world.player.war_cry_ticks_remaining = model.player.war_cry_ticks_remaining;
   world.player.alive = model.player.alive;
+  world.player.bleed_chance = model.bleed_chance;
+  world.player.reach_percent = model.reach_percent;
+  world.player.movement_speed_percent = model.movement_speed_percent;
+  world.player.ember_resistance = model.ember_resistance;
+  world.player.river_resistance = model.river_resistance;
   world.has_extraction = model.scene.has_stairs_up;
   // TASK-0153 remote phase view: this wire carries no dedicated phase event,
   // so the strip mirrors the equivalent already-authoritative session state —
@@ -160,6 +165,8 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     // player's aim.
     monster.kind = source.kind;
     monster.behaviour = source.behaviour;
+    monster.damage_channel = source.damage_channel;
+    monster.bleeding = source.bleeding;
     monster.life = source.life;
     monster.life_max = source.life_max;
     monster.move_duration_ms = source.move_duration_ms;
@@ -202,13 +209,16 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     carried.map_family = item.map_family;
     carried.map_objective_key = item.map_objective_key;
     carried.map_modifiers = item.map_modifiers;
+    carried.forge_lines = item.forge_lines;
     world.carried.push_back(std::move(carried));
   }
   if (!model.equipped.uuid.empty()) {
     const std::string label =
         model.equipped.name.empty() ? model.equipped.id : model.equipped.name;
-    world.carried.push_back(
-        {model.equipped.uuid, label, model.equipped.attack_rating, true});
+    WorldCarriedItem equipped{model.equipped.uuid, label,
+                              model.equipped.attack_rating, true};
+    equipped.forge_lines = model.equipped.forge_lines;
+    world.carried.push_back(std::move(equipped));
   }
   world.endgame.present = model.endgame.present;
   world.endgame.unlocked = model.endgame.unlocked;
@@ -279,7 +289,8 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       break;
     }
     case PresentationEventType::DamageApplied: {
-      fx.effects.push_back({EffectFx::Kind::Impact, ex, ey, 0.0, 0, 4});
+      if (event.style != "bleed")
+        fx.effects.push_back({EffectFx::Kind::Impact, ex, ey, 0.0, 0, 4});
       if (!to_player && event.combo_step == 3) {
         EffectFx finisher;
         finisher.kind = EffectFx::Kind::ComboFinisher;
@@ -329,6 +340,19 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       EffectFx number = pulse;
       number.kind = EffectFx::Kind::DamageNumber;
       fx.effects.push_back(number);
+      break;
+    }
+    case PresentationEventType::DebuffApplied: {
+      if (event.text == "bleed") {
+        EffectFx pulse;
+        pulse.kind = EffectFx::Kind::BleedApplied;
+        pulse.wx = ex;
+        pulse.wy = ey;
+        pulse.ttl = phase_a::kBleedApplyTtlTicks;
+        pulse.value = event.value;
+        pulse.style = "bleed";
+        fx.effects.push_back(std::move(pulse));
+      }
       break;
     }
     case PresentationEventType::Telegraph: {
@@ -436,6 +460,10 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
         break;
       case PresentationEventType::HealingApplied:
         line = "Mended " + std::to_string(event.value);
+        break;
+      case PresentationEventType::DebuffApplied:
+        line = event.text == "bleed" ? "Bleeding " + std::to_string(event.value) + "/s"
+                                      : event.text;
         break;
       case PresentationEventType::ActorDied:
         line = "Kill " + event.text;
@@ -548,6 +576,7 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
         std::string damage_label =
             effect.healing ? "healing" :
                 (effect.damage_to_player ? "player" : "monster");
+        if (effect.style == "bleed") damage_label = phase_a::kBleedDamageLabel;
         if (effect.finisher)
           damage_label = std::string(effect.critical ? "critical-finisher:" : "finisher:") +
                          (effect.style.empty() ? "slash" : effect.style);
@@ -563,6 +592,11 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
                       static_cast<double>(base.y), 0.0, effect.value,
                       phase_a::kSupportMendLabel});
         break;
+      case EffectFx::Kind::BleedApplied:
+        rl.push_back({render::Op::Impact, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, effect.value,
+                      phase_a::kBleedApplyLabel});
+        break;
       case EffectFx::Kind::DeathRing:
         rl.push_back({render::Op::Death, static_cast<double>(base.x),
                       static_cast<double>(base.y)});
@@ -570,7 +604,8 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
       case EffectFx::Kind::TargetFlash:
         rl.push_back({render::Op::TargetFlash, static_cast<double>(base.x),
                       static_cast<double>(base.y), 0.0, 0,
-                      effect.finisher ? "finisher" :
+                      effect.style == "bleed" ? phase_a::kBleedDamageLabel :
+                          effect.finisher ? "finisher" :
                           (effect.damage_to_player ? "player" : "monster")});
         break;
       case EffectFx::Kind::ComboFinisher:

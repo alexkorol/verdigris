@@ -37,7 +37,8 @@ The client window is interactive: WASD moves, the mouse aims, left mouse
 attacks, right mouse/Space dashes (the answer to an enemy telegraph), Q/E/R
 cast Thrust/Sweep/WarCry, X takes the nearest/underfoot drop, Z toggles loot
 name labels, I opens the gear pane (Enter or click equips; 1-9 equips from
-the backpack), N enters the charted road from the remote flow, the wheel
+the backpack; selected Vesselforge gear shows its active properties and worn
+totals), N enters the charted road from the remote flow, the wheel
 zooms and Home resets zoom, and F3 toggles the debug overlay. The objective
 strip is mode-aware about extraction: in local play F extracts at the EXIT;
 on the remote owner path you extract by walking onto the EXIT stairs. A
@@ -124,4 +125,3 @@ Every future client wave must add its own scenario. To add one:
    is caught by the scenario).
 
 The runner exits non-zero on any `scenario_check` failure.
-

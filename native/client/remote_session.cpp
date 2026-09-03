@@ -124,7 +124,32 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
         if (modifier.string()) slot.map_modifiers.push_back(*modifier.string());
     }
   }
+  if (const auto* vessel = entry.get("vessel"); vessel && vessel->object()) {
+    if (const auto* lines = vessel->get("lines"); lines && lines->array()) {
+      for (const auto& line : *lines->array()) {
+        const auto* section = json_string(line.get("section"));
+        const auto* copy = json_string(line.get("text"));
+        if (!section || !copy || copy->empty()) continue;
+        if (*section == "implicit" || *section == "brand" ||
+            *section == "scar" || *section == "vessel")
+          slot.forge_lines.push_back(*copy);
+      }
+    }
+  }
   return slot;
+}
+
+void apply_combat_totals(ClientModel& model, const JsonValue& combat) {
+  model.bleed_chance = std::clamp(
+      static_cast<int>(json_number(combat.get("bleedChance"), 0.0)), 0, 100);
+  model.reach_percent = std::clamp(
+      static_cast<int>(json_number(combat.get("reachPercent"), 0.0)), 0, 100);
+  model.movement_speed_percent = std::clamp(
+      static_cast<int>(json_number(combat.get("movementSpeedPercent"), 0.0)), 0, 100);
+  model.ember_resistance = std::clamp(
+      static_cast<int>(json_number(combat.get("emberResistance"), 0.0)), 0, 75);
+  model.river_resistance = std::clamp(
+      static_cast<int>(json_number(combat.get("riverResistance"), 0.0)), 0, 75);
 }
 
 bool quest_integer(const JsonValue* value, int maximum) {
@@ -1280,6 +1305,29 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     pending_events_.push_back(std::move(mend));
     return;
   }
+  if (envelope.event == "monster:status") {
+    const auto* target = json_string(envelope.data.get("targetId"));
+    const auto* target_name = json_string(envelope.data.get("targetName"));
+    const auto* status = json_string(envelope.data.get("statusId"));
+    const bool active = json_bool(envelope.data.get("active"));
+    ClientMonster& foe = upsert_monster(model_, target ? *target : "",
+                                        target_name ? *target_name : "", false);
+    if (status && *status == "bleed") {
+      foe.bleeding = active;
+      if (active) {
+        PresentationEvent applied;
+        applied.type = PresentationEventType::DebuffApplied;
+        applied.actor_id = foe.id;
+        applied.text = "bleed";
+        applied.value = (std::max)(0, static_cast<int>(
+            json_number(envelope.data.get("damagePerTick"), 0.0)));
+        applied.duration_ms = (std::max)(0, static_cast<int>(
+            json_number(envelope.data.get("durationMs"), 0.0)));
+        pending_events_.push_back(std::move(applied));
+      }
+    }
+    return;
+  }
   if (envelope.event == "combat:hit") {
     const auto* attacker = json_string(envelope.data.get("attackerId"));
     const auto* target = json_string(envelope.data.get("targetId"));
@@ -1303,8 +1351,20 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       // carry that distinction; ranged pressure must not promote common foes.
       if (attacker) upsert_monster(model_, *attacker, "", false);
       model_.last_incoming_hit = amount;
-      pending_events_.push_back({PresentationEventType::DamageApplied,
-                                 attacker ? *attacker : "", "", "incoming", amount});
+      PresentationEvent incoming;
+      incoming.type = PresentationEventType::DamageApplied;
+      incoming.actor_id = attacker ? *attacker : "";
+      incoming.text = "incoming";
+      incoming.value = amount;
+      if (const auto* channel = json_string(envelope.data.get("damageChannel")))
+        incoming.damage_channel = *channel;
+      incoming.style = incoming.damage_channel;
+      incoming.base_amount = static_cast<int>(
+          json_number(envelope.data.get("baseAmount"), amount));
+      incoming.resistance_percent = std::clamp(
+          static_cast<int>(json_number(envelope.data.get("resistancePercent"), 0.0)),
+          0, 75);
+      pending_events_.push_back(std::move(incoming));
       if (died) {
         pending_events_.push_back(
             {PresentationEventType::ScionDied, model_.player.uuid, "", "", 0});
@@ -1345,9 +1405,10 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       } else {
         foe.life = (std::max)(0, foe.life - amount);
       }
-      pending_events_.push_back({PresentationEventType::AttackStarted,
-                                 attacker ? *attacker : model_.player.uuid, "",
-                                 skill_id, amount});
+      if (skill_id != "status:bleed")
+        pending_events_.push_back({PresentationEventType::AttackStarted,
+                                   attacker ? *attacker : model_.player.uuid, "",
+                                   skill_id, amount});
       PresentationEvent outgoing;
       outgoing.type = PresentationEventType::DamageApplied;
       outgoing.actor_id = target ? *target : "";
@@ -1358,6 +1419,13 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       outgoing.combo_step = combo_step;
       outgoing.combo_window_ms = combo_window_ms;
       outgoing.stagger_ms = stagger_ms;
+      if (const auto* channel = json_string(envelope.data.get("damageChannel")))
+        outgoing.damage_channel = *channel;
+      outgoing.base_amount = static_cast<int>(
+          json_number(envelope.data.get("baseAmount"), amount));
+      outgoing.resistance_percent = std::clamp(
+          static_cast<int>(json_number(envelope.data.get("resistancePercent"), 0.0)),
+          0, 75);
       pending_events_.push_back(std::move(outgoing));
       if (died) {
         ++model_.kills;
@@ -1410,6 +1478,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       model_.player.resource_max = static_cast<int>(
           json_number(resource->get("max"), model_.player.resource_max));
     }
+    if (const auto* combat = state->get("combat"))
+      apply_combat_totals(model_, *combat);
     model_.player.cooldown_ticks = static_cast<int>(json_number(
         state->get("cooldownTicks"), model_.player.cooldown_ticks));
     model_.player.war_cry_ticks_remaining = static_cast<int>(json_number(
@@ -1518,6 +1588,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         if (const auto* behaviour = entry.get("behaviour"))
           if (const auto* type = json_string(behaviour->get("type")))
             monster.behaviour = *type;
+        if (const auto* channel = json_string(entry.get("damageChannel")))
+          monster.damage_channel = *channel;
         monster.x = json_number(entry.get("x"), 0.0);
         monster.y = json_number(entry.get("y"), 0.0);
         if (const auto* hp = entry.get("hp")) {
@@ -1528,6 +1600,11 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
           monster.elite = (*rarity != "normal" && !rarity->empty());
         }
         monster.alive = monster.life > 0;
+        if (const auto* monster_state = entry.get("state")) {
+          if (const auto* effects = monster_state->get("effects"))
+            monster.bleeding = effects->get("bleed") &&
+                               effects->get("bleed")->object();
+        }
         model_.monsters.push_back(std::move(monster));
       }
     }
@@ -1623,6 +1700,11 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       apply_quests(*quests, model_, pending_events_);
     if (const auto* tree = envelope.data.get("passiveTree"))
       apply_passive_tree(*tree, model_, pending_events_);
+    return;
+  }
+  if (envelope.event == "player:equippedAnItem") {
+    if (const auto* combat = envelope.data.get("combat"))
+      apply_combat_totals(model_, *combat);
     return;
   }
   if (envelope.event == "core:refresh:inventory") {

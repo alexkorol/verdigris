@@ -16,6 +16,7 @@ enum class PresentationEventType {
   AttackStarted,
   DamageApplied,
   HealingApplied,
+  DebuffApplied,       // authoritative monster status began
   ActorDied,
   ItemDropped,
   ItemPickedUp,
@@ -49,6 +50,12 @@ struct PresentationEvent {
   double x = 0.0;
   double y = 0.0;
   int radius = 0;
+  // Authoritative damage/status metadata. These are presentation-only
+  // mirrors; mitigation and duration have already been resolved server-side.
+  std::string damage_channel = "physical";
+  int base_amount = 0;
+  int resistance_percent = 0;
+  int duration_ms = 0;
 };
 
 // TASK-0122 Phase A: the single named table for every new animation/VFX TTL,
@@ -81,6 +88,12 @@ inline constexpr const char* kComboFinisherLabel = "combo-finisher";
 inline constexpr int kSupportMendTtlTicks = 14;
 inline constexpr Rgb kSupportMendColor{92, 218, 146};
 inline constexpr const char* kSupportMendLabel = "support-mend";
+
+// Bloodgroove / Macuahuitl bleed application and periodic damage treatment.
+inline constexpr int kBleedApplyTtlTicks = 14;
+inline constexpr Rgb kBleedColor{220, 72, 68};
+inline constexpr const char* kBleedApplyLabel = "bleed-applied";
+inline constexpr const char* kBleedDamageLabel = "bleed";
 
 // Deterministic spawn/materialization beat (first client sighting of a foe).
 inline constexpr int kMaterializeTtlTicks = 8;             // 400 ms

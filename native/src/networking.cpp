@@ -321,6 +321,14 @@ JsonValue modifiers_json(const CombatModifiers& mods) {
   if (mods.critical_chance > 0) put(out, "criticalChance", mods.critical_chance);
   if (mods.goods_found > 0) put(out, "goodsFound", mods.goods_found);
   if (mods.damage_against_beasts > 0) put(out, "damageAgainstBeasts", mods.damage_against_beasts);
+  if (mods.bleed_chance > 0) put(out, "bleedChance", mods.bleed_chance);
+  if (mods.reach_percent > 0) put(out, "reachPercent", mods.reach_percent);
+  if (mods.movement_speed_percent > 0)
+    put(out, "movementSpeedPercent", mods.movement_speed_percent);
+  if (mods.ember_resistance > 0)
+    put(out, "emberResistance", mods.ember_resistance);
+  if (mods.river_resistance > 0)
+    put(out, "riverResistance", mods.river_resistance);
   if (out.empty()) return JsonValue(nullptr);
   return JsonValue(std::move(out));
 }
@@ -1028,6 +1036,11 @@ JsonValue ProtocolSession::combat_totals_json() const {
   put(combat, "criticalChance", totals.modifiers.critical_chance);
   put(combat, "goodsFound", totals.modifiers.goods_found);
   put(combat, "damageAgainstBeasts", totals.modifiers.damage_against_beasts);
+  put(combat, "bleedChance", totals.modifiers.bleed_chance);
+  put(combat, "reachPercent", totals.modifiers.reach_percent);
+  put(combat, "movementSpeedPercent", totals.modifiers.movement_speed_percent);
+  put(combat, "emberResistance", totals.modifiers.ember_resistance);
+  put(combat, "riverResistance", totals.modifiers.river_resistance);
   put(combat, "respawnProtectionUntil", static_cast<double>(respawn_protection_until_ms_));
   return JsonValue(std::move(combat));
 }
@@ -1201,10 +1214,20 @@ JsonValue ProtocolSession::snapshot() const {
     put(monster,"x",candidate.x); put(monster,"y",candidate.y); put(monster,"level",candidate.level); put(monster,"rarity",candidate.rarity);
     JsonValue::Array tags; for (const auto& tag:candidate.tags) tags.emplace_back(tag); put(monster,"tags",std::move(tags));
     put(monster,"coins",candidate.coins);
+    put(monster,"damageChannel",candidate.damage_channel);
     JsonValue::Object behaviour; put(behaviour,"type",candidate.behaviour_type); put(monster,"behaviour",std::move(behaviour));
     JsonValue::Object mhp; put(mhp,"current",candidate.life); put(mhp,"max",candidate.life_max); put(monster,"hp",std::move(mhp));
     JsonValue::Array modifiers; for (const auto& modifier:candidate.modifiers) { JsonValue::Object value; put(value,"id",modifier); put(value,"label",modifier=="empowered"?"Empowered":modifier); modifiers.emplace_back(std::move(value)); } put(monster,"modifiers",std::move(modifiers));
-    JsonValue::Object effects; if (candidate.empowered) { JsonValue::Object effect; put(effect,"label","Empowered"); put(effect,"id","aura:damage"); put(effects,"aura",std::move(effect)); } put(monster,"state",JsonValue::Object{{"effects",std::move(effects)}});
+    JsonValue::Object effects; if (candidate.empowered) { JsonValue::Object effect; put(effect,"label","Empowered"); put(effect,"id","aura:damage"); put(effects,"aura",std::move(effect)); }
+    if (candidate.bleed_until_ms > static_cast<std::uint64_t>(combat_clock_ms_)) {
+      JsonValue::Object bleed;
+      put(bleed,"label","Bleeding"); put(bleed,"id","status:bleed");
+      put(bleed,"damagePerTick",candidate.bleed_damage);
+      put(bleed,"remainingMs",static_cast<double>(
+          candidate.bleed_until_ms - static_cast<std::uint64_t>(combat_clock_ms_)));
+      put(effects,"bleed",std::move(bleed));
+    }
+    put(monster,"state",JsonValue::Object{{"effects",std::move(effects)}});
     monsters.emplace_back(std::move(monster));
   } put(state,"monsters",std::move(monsters));
   if (world_->in_instance()) { const auto& meta=world_->metadata(); JsonValue::Object metadata; put(metadata,"seed",static_cast<double>(meta.seed)); put(metadata,"theme",meta.theme); if(meta.layout.empty()) put(metadata,"layout",nullptr); else put(metadata,"layout",meta.layout); put(metadata,"depth",meta.depth);
@@ -1371,6 +1394,11 @@ void ProtocolSession::sync_combat_mods() {
   mods.critical_chance=totals.modifiers.critical_chance;
   mods.goods_found=totals.modifiers.goods_found;
   mods.damage_against_beasts=totals.modifiers.damage_against_beasts;
+  mods.bleed_chance=totals.modifiers.bleed_chance;
+  mods.reach_percent=totals.modifiers.reach_percent;
+  mods.movement_speed_percent=totals.modifiers.movement_speed_percent;
+  mods.ember_resistance=totals.modifiers.ember_resistance;
+  mods.river_resistance=totals.modifiers.river_resistance;
   // combat/index.js attackStyle: the dominant trained channel, stab first on ties.
   const ChannelRatings& a=totals.attack;
   int best=a.stab; std::string style="stab";
@@ -2960,6 +2988,14 @@ void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std
     put(data,"health",JsonValue::Object{{"current",event.health},{"max",event.health_max}});
     emit_world(Envelope{"monster:healed",JsonValue(std::move(data))},emit); return;
   }
+  if (event.type == "status" || event.type == "status-end") {
+    JsonValue::Object data;
+    put(data,"sourceId",event.attacker_id);
+    put(data,"targetId",event.target_id); put(data,"targetName",event.target_name);
+    put(data,"statusId",event.skill_id); put(data,"active",event.type == "status");
+    put(data,"damagePerTick",event.amount); put(data,"durationMs",event.duration_ms);
+    emit_world(Envelope{"monster:status",JsonValue(std::move(data))},emit); return;
+  }
   // N4: kill rewards go through world_->drop_monster_loot inside
   // advance_combat; the legacy synthetic 'drop' trophy event is retired.
   JsonValue::Object data; put(data,"attackerId",event.attacker_id); put(data,"attackerName",event.attacker_name); put(data,"targetId",event.target_id);
@@ -2971,6 +3007,8 @@ void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std
   put(data,"critical",event.critical); put(data,"attackStyle",event.attack_style);
   put(data,"comboStep",event.combo_step); put(data,"comboWindowMs",event.combo_window_ms);
   put(data,"staggerMs",event.stagger_ms);
+  put(data,"damageChannel",event.damage_channel);
+  put(data,"resistancePercent",event.resistance_percent);
   emit_world(Envelope{"combat:hit",JsonValue(std::move(data))},emit);
 }
 

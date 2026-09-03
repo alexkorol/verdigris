@@ -41,6 +41,8 @@ struct ClientMonster {
   int life = 1;
   int life_max = 1;
   int move_duration_ms = 0;
+  std::string damage_channel = "physical";
+  bool bleeding = false;
   bool elite = false;
   bool alive = true;
 };
@@ -59,6 +61,7 @@ struct ClientItemSlot {
   std::string map_family;
   std::string map_objective_key;
   std::vector<std::string> map_modifiers;
+  std::vector<std::string> forge_lines;
 };
 
 // One purchasable row of a trader's stock (open:screen shop payload).
@@ -300,6 +303,11 @@ struct ClientModel {
   int attr_strength = 10;
   int attr_dexterity = 10;
   int attr_intelligence = 10;
+  int bleed_chance = 0;
+  int reach_percent = 0;
+  int movement_speed_percent = 0;
+  int ember_resistance = 0;
+  int river_resistance = 0;
   // Walkable grid for the current scene (requested once per scene change).
   // Row-major, 1 = walkable; empty until the first map payload arrives.
   int map_width = 0;

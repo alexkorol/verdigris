@@ -32,6 +32,7 @@ struct EffectFx {
     TargetFlash,
     ComboFinisher,
     SupportMend,
+    BleedApplied,
     // TASK-0122 Phase A beats. All lifetimes come from the phase_a constants
     // table in presentation_events.hpp; none of them touch simulation state.
     Materialize,    // deterministic first-sighting spawn beat
@@ -84,6 +85,13 @@ struct WorldActor {
   int move_duration_ms = 0;
   bool alive = true;
   bool elite = false;
+  bool bleeding = false;
+  std::string damage_channel = "physical";
+  int bleed_chance = 0;
+  int reach_percent = 0;
+  int movement_speed_percent = 0;
+  int ember_resistance = 0;
+  int river_resistance = 0;
 };
 
 struct WorldCarriedItem {
@@ -97,6 +105,7 @@ struct WorldCarriedItem {
   std::string map_family;
   std::string map_objective_key;
   std::vector<std::string> map_modifiers;
+  std::vector<std::string> forge_lines;
 };
 
 struct EndgameView {

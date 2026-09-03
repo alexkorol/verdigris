@@ -28,8 +28,10 @@ Chronicles account creator):
   catalogue; one roll owns each item's name, material, footprint, ratings,
   resource bonuses, and rarity-colored keyboard-reachable card. Supported
   damage, ward, attributes, life, spirit, and selected Brands affect live
-  combat stats; future mechanics are labelled Dormant instead of promising an
-  effect that is not wired yet. Existing catalogue items remain legacy gear.
+  combat stats. Bloodgroove/Macuahuitl bleed, Long Reach, Surefoot/Sandals
+  movement, and Riverblessed/Emberward resistance now drive authoritative
+  combat and travel; future mechanics remain labelled Dormant instead of
+  promising an effect that is not wired yet. Existing catalogue items remain legacy gear.
   Each native form also has distinct reference-driven item art in its own
   reproducible atlas. Equip/Unequip preserves the generated UUID through the
   server-backed flow. Generated rewards bind after real world admission, merge
@@ -205,7 +207,10 @@ release-safe baseline.
   combat before exposing crafting and awakening as player-facing progression.
   Shield block, Keen Eye critical chance, Wealthy loot bonuses, and Beastbane
   damage against explicitly tagged creatures are now live and persisted, with
-  explicit `BLOCK`, `CRIT`, and `BANE` combat feedback.
+  explicit `BLOCK`, `CRIT`, and `BANE` combat feedback. Bloodgroove bleed,
+  Long Reach, Surefoot movement, and River/Ember resistance are likewise live
+  across item derivation, worn totals, combat/movement, protocol snapshots,
+  and Framekit presentation.
 
 ## Open Questions
 - How to host/secure LLM name validation (local vs remote)?

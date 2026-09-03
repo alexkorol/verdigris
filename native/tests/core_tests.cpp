@@ -2315,6 +2315,11 @@ void test_n4_ring_seats_and_wear_caps() {
   big.critical_chance = 40;
   big.goods_found = 60;
   big.damage_against_beasts = 60;
+  big.bleed_chance = 60;
+  big.reach_percent = 60;
+  big.movement_speed_percent = 60;
+  big.ember_resistance = 60;
+  big.river_resistance = 60;
   loaded.equip(make_mod_item(big, "head"), "head");
   loaded.equip(make_mod_item(big, "feet"), "feet");
   const auto totals = loaded.totals();
@@ -2322,6 +2327,172 @@ void test_n4_ring_seats_and_wear_caps() {
         "N4 wear caps block/crit at 75");
   check(totals.modifiers.goods_found == 100 && totals.modifiers.damage_against_beasts == 100,
         "N4 wear caps find/beasts at 100");
+  check(totals.modifiers.bleed_chance == 100 &&
+            totals.modifiers.reach_percent == 100 &&
+            totals.modifiers.movement_speed_percent == 100,
+        "N4 wear caps bleed/reach/movement at 100");
+  check(totals.modifiers.ember_resistance == 75 &&
+            totals.modifiers.river_resistance == 75,
+        "N4 wear caps Ember/River resistance at 75");
+}
+
+void test_n4_active_forge_properties_drive_their_authoritative_systems() {
+  VesselForge forge;
+
+  VesselItem macuahuitl;
+  macuahuitl.id = "vf-active-weapon";
+  macuahuitl.form_id = "macuahuitl";
+  macuahuitl.material_id = "obsidian";
+  macuahuitl.kind = "weapon";
+  macuahuitl.ilvl = 40;
+  macuahuitl.vessel = 4;
+  macuahuitl.brands = {{"brand-blood", "bloodgroove", 2, 25},
+                       {"brand-reach", "long_reach", 2, 16}};
+  const VesselBlock weapon = forge.make_block(macuahuitl);
+  check(weapon.combat.modifiers.bleed_chance == 100 &&
+            weapon.combat.modifiers.reach_percent == 16,
+        "forge properties: Macuahuitl implicit and brands derive bleed/reach");
+  bool weapon_line_dormant = false;
+  for (const auto& line : weapon.lines)
+    if ((line.text.find("Bleed") != std::string::npos ||
+         line.text.find("Reach") != std::string::npos) &&
+        line.section == "dormant")
+      weapon_line_dormant = true;
+  check(!weapon_line_dormant,
+        "forge properties: bleed and reach tooltip lines are honestly active");
+
+  VesselItem sandals;
+  sandals.id = "vf-active-boots";
+  sandals.form_id = "sandals";
+  sandals.material_id = "hide";
+  sandals.kind = "boots";
+  sandals.ilvl = 40;
+  sandals.vessel = 2;
+  sandals.brands = {{"brand-step", "surefoot", 2, 15}};
+  const VesselBlock boots = forge.make_block(sandals);
+  check(boots.combat.modifiers.movement_speed_percent == 25,
+        "forge properties: Sandals implicit and Surefoot stack into movement speed");
+
+  VesselItem ring;
+  ring.id = "vf-active-ring";
+  ring.form_id = "ring";
+  ring.material_id = "copper";
+  ring.kind = "ring";
+  ring.ilvl = 40;
+  ring.vessel = 2;
+  ring.brands = {{"brand-river", "riverblessed", 2, 25},
+                 {"brand-ember", "emberward", 2, 25}};
+  const VesselBlock wards = forge.make_block(ring);
+  check(wards.combat.modifiers.river_resistance == 25 &&
+            wards.combat.modifiers.ember_resistance == 25,
+        "forge properties: Riverblessed and Emberward derive named resistances");
+
+  WorldSimulation swift(42, "swift-scion");
+  PlayerCombatMods swift_mods;
+  swift_mods.movement_speed_percent = 25;
+  swift.set_player_combat_mods(swift_mods);
+  const double start_y = swift.position().y;
+  check(swift.apply_movement_sample("down", 1000) &&
+            std::abs(swift.position().y -
+                     (start_y + tile_movement::kMoveDistance * 1.25)) < 1e-5,
+        "forge properties: movement speed changes authoritative travel distance");
+
+  WorldSimulation baseline_reach(0xFA11ULL, "baseline-reach");
+  WorldSimulation forged_reach(0xFA11ULL, "forged-reach");
+  baseline_reach.enter_solo_instance("dungeon", "clearings");
+  forged_reach.enter_solo_instance("dungeon", "clearings");
+  const WorldMonster target = baseline_reach.monsters().front();
+  baseline_reach.kill_all_monsters();
+  forged_reach.kill_all_monsters();
+  baseline_reach.reset_monster(target.uuid, 1000);
+  forged_reach.reset_monster(target.uuid, 1000);
+  const int player_x = target.x + 4 < 39 ? target.x + 4 : target.x - 4;
+  const std::string approach = player_x < target.x ? "right" : "left";
+  baseline_reach.teleport(player_x, target.y, 800);
+  forged_reach.teleport(player_x, target.y, 800);
+  baseline_reach.apply_movement_sample(approach, 850);
+  baseline_reach.apply_movement_sample(approach, 900);
+  forged_reach.apply_movement_sample(approach, 850);
+  forged_reach.apply_movement_sample(approach, 900);
+  PlayerCombatMods reach_mods;
+  reach_mods.reach_percent = 16;
+  forged_reach.set_player_combat_mods(reach_mods);
+  check(!baseline_reach.start_player_attack(1, 20, 1000, approach, "melee") &&
+            forged_reach.start_player_attack(1, 20, 1000, approach, "melee"),
+        "forge properties: increased reach admits a target beyond base melee range");
+
+  WorldSimulation bleeding(0xB1EEDULL, "bleed-scion");
+  bleeding.enter_solo_instance("dungeon", "clearings");
+  const WorldMonster bleed_target = bleeding.monsters().front();
+  bleeding.kill_all_monsters();
+  bleeding.reset_monster(bleed_target.uuid, 1000);
+  const int bleed_x = bleed_target.x + 1 < 39 ? bleed_target.x + 1 : bleed_target.x - 1;
+  bleeding.teleport(bleed_x, bleed_target.y, 900);
+  PlayerCombatMods bleed_mods;
+  bleed_mods.bleed_chance = 100;
+  bleeding.set_player_combat_mods(bleed_mods);
+  int bleed_trial_life = 1000;
+  const std::string bleed_aim = bleed_x < bleed_target.x ? "right" : "left";
+  check(bleeding.start_player_attack(1, 20, 1000, bleed_aim, "thrust"),
+        "forge properties: bleed trial accepts its named strike");
+  const auto struck = bleeding.advance_combat(1, 20, bleed_trial_life, 1000, 1000);
+  int tick_damage = 0;
+  bool status_applied = false;
+  for (const auto& event : struck)
+    if (event.type == "status" && event.skill_id == "bleed") {
+      status_applied = event.duration_ms == 3000 && event.amount > 0;
+      tick_damage = event.amount;
+    }
+  const auto first_tick = bleeding.advance_combat(1, 20, bleed_trial_life, 1000, 2000);
+  bool ticked = false;
+  for (const auto& event : first_tick)
+    if (event.type == "hit" && event.skill_id == "status:bleed")
+      ticked = event.amount == tick_damage && event.damage_channel == "physical";
+  const auto expired = bleeding.advance_combat(1, 20, bleed_trial_life, 1000, 4000);
+  bool status_ended = false;
+  for (const auto& event : expired)
+    if (event.type == "status-end" && event.skill_id == "bleed")
+      status_ended = true;
+  check(status_applied && ticked && status_ended,
+        "forge properties: bleed applies, ticks, and expires on authoritative time");
+
+  const auto run_river_trial = [](int resistance) {
+    WorldSimulation world(0xA11CEULL, "river-trial");
+    world.enter_solo_instance("marsh", "clearings");
+    const WorldMonster* ranged = nullptr;
+    for (const auto& monster : world.monsters())
+      if (!monster.boss && monster.behaviour_type == "ranged") {
+        ranged = &monster;
+        break;
+      }
+    WorldCombatEvent result;
+    if (!ranged) return result;
+    const std::string id = ranged->uuid;
+    const int rx = ranged->x;
+    const int ry = ranged->y;
+    const int px = rx + 4 < 39 ? rx + 4 : rx - 4;
+    world.kill_all_monsters();
+    world.reset_monster(id, 1000);
+    world.teleport(px, ry, 900);
+    PlayerCombatMods mods;
+    mods.river_resistance = resistance;
+    world.set_player_combat_mods(mods);
+    int life = 1000;
+    world.advance_combat(1, 20, life, 1000, 1000);
+    world.advance_combat(1, 20, life, 1000, 3000);
+    for (const auto& event : world.advance_combat(1, 20, life, 1000, 3900))
+      if (event.type == "hit" && event.attacker_id == id) result = event;
+    return result;
+  };
+  const WorldCombatEvent river_raw = run_river_trial(0);
+  const WorldCombatEvent river_warded = run_river_trial(50);
+  check(river_raw.damage_channel == "river" && river_raw.amount > 0 &&
+            river_warded.damage_channel == "river" &&
+            river_warded.base_amount == river_raw.base_amount &&
+            river_warded.resistance_percent == 50 &&
+            river_warded.amount == std::max(1, static_cast<int>(
+                std::lround(river_raw.base_amount * 0.5))),
+        "forge properties: River resistance mitigates the authoritative volley");
 }
 
 void test_n4_loot_math_and_depth_scaling() {
@@ -2504,6 +2675,7 @@ int main() {
   test_n4_sear_rules_and_brand_pool_exclusion();
   test_n4_inventory_first_fit_overflow_and_currency();
   test_n4_ring_seats_and_wear_caps();
+  test_n4_active_forge_properties_drive_their_authoritative_systems();
   test_n4_loot_math_and_depth_scaling();
   test_n4_depth_chaining_and_treasure();
   test_endgame_tablet_roll_and_instance_tuning();

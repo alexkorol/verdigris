@@ -195,6 +195,76 @@ void monster_role_feedback_is_authoritative_and_distinct() {
         "roles: authoritative interruption removes the warning immediately");
 }
 
+void forge_status_feedback_is_authoritative_and_distinct() {
+  verdigris::client::ClientModel model;
+  model.player.uuid = "forge-scion";
+  model.player.alive = true;
+  model.bleed_chance = 100;
+  model.reach_percent = 16;
+  model.movement_speed_percent = 25;
+  model.ember_resistance = 25;
+  model.river_resistance = 25;
+  verdigris::client::ClientMonster monster;
+  monster.id = "forge-foe";
+  monster.name = "Mire Warden";
+  monster.x = 12.0;
+  monster.y = 10.0;
+  monster.damage_channel = "river";
+  monster.bleeding = true;
+  model.monsters.push_back(monster);
+  verdigris::client::ClientItemSlot item;
+  item.uuid = "forged-blade";
+  item.name = "Obsidian Macuahuitl";
+  item.forge_lines = {"Hits cause Bleeding", "+16% increased Reach"};
+  model.inventory.push_back(item);
+
+  WorldView world;
+  verdigris::client::sync_world_from_model(world, model);
+  check(world.player.bleed_chance == 100 && world.player.reach_percent == 16 &&
+            world.player.movement_speed_percent == 25 &&
+            world.player.ember_resistance == 25 &&
+            world.player.river_resistance == 25,
+        "forge feedback: worn totals survive the model-to-world sync");
+  check(world.monsters.size() == 1 && world.monsters[0].bleeding &&
+            world.monsters[0].damage_channel == "river" &&
+            world.carried.size() == 1 && world.carried[0].forge_lines.size() == 2,
+        "forge feedback: status, damage channel, and item lines survive presentation sync");
+
+  PresentationFx fx;
+  PresentationEvent applied;
+  applied.type = PresentationEventType::DebuffApplied;
+  applied.actor_id = "forge-foe";
+  applied.text = "bleed";
+  applied.value = 4;
+  applied.duration_ms = 3000;
+  verdigris::client::apply_presentation_event(fx, world, applied, 1);
+  const EffectFx* pulse = first_kind(fx, EffectFx::Kind::BleedApplied);
+  check(pulse && pulse->ttl == phase_a::kBleedApplyTtlTicks &&
+            pulse->value == 4 && pulse->style == "bleed",
+        "forge feedback: bleed application creates the named crimson treatment");
+
+  PresentationEvent tick;
+  tick.type = PresentationEventType::DamageApplied;
+  tick.actor_id = "forge-foe";
+  tick.text = "outgoing";
+  tick.value = 4;
+  tick.style = "bleed";
+  verdigris::client::apply_presentation_event(fx, world, tick, 2);
+  render::List rl;
+  verdigris::client::record_world_ops(rl, world, fx, camera2d::Camera{}, 960, 600);
+  bool saw_apply = false;
+  bool saw_tick = false;
+  for (const auto& op : rl) {
+    if (op.op == render::Op::Impact && op.label == phase_a::kBleedApplyLabel)
+      saw_apply = true;
+    if (op.op == render::Op::Damage && op.label == phase_a::kBleedDamageLabel &&
+        op.value == 4)
+      saw_tick = true;
+  }
+  check(saw_apply && saw_tick,
+        "forge feedback: render list distinguishes bleed application and tick damage");
+}
+
 void scion_lost_beat_contract() {
   WorldView world = world_with_player_and_foe("right");
   PresentationFx fx;
@@ -444,6 +514,7 @@ int main() {
   critical_damage_is_distinct();
   combo_finisher_is_distinct();
   monster_role_feedback_is_authoritative_and_distinct();
+  forge_status_feedback_is_authoritative_and_distinct();
   scion_lost_beat_contract();
   buff_expired_beat_contract();
   local_seam_maps_lifecycle_events();

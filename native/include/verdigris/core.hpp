@@ -499,6 +499,11 @@ struct CombatModifiers {
   int critical_chance = 0;
   int goods_found = 0;
   int damage_against_beasts = 0;
+  int bleed_chance = 0;
+  int reach_percent = 0;
+  int movement_speed_percent = 0;
+  int ember_resistance = 0;
+  int river_resistance = 0;
 };
 
 struct VesselCombat {
@@ -712,7 +717,7 @@ class WearSet {
   struct Totals {
     ChannelRatings attack;
     ChannelRatings defense;
-    CombatModifiers modifiers;  // capped 75/75/100/100
+    CombatModifiers modifiers;  // defensive caps 75; offensive/utility caps 100
   };
   Totals totals() const;
 
@@ -740,6 +745,11 @@ struct PlayerCombatMods {
   int critical_chance = 0;
   int goods_found = 0;
   int damage_against_beasts = 0;
+  int bleed_chance = 0;
+  int reach_percent = 0;
+  int movement_speed_percent = 0;
+  int ember_resistance = 0;
+  int river_resistance = 0;
   bool force_critical = false;
   std::string attack_style = "slash";
 };
@@ -820,6 +830,10 @@ struct WorldMonster {
   std::string pending_attack_skill;
   int pending_target_x = 0;
   int pending_target_y = 0;
+  std::string damage_channel = "physical";
+  std::uint64_t bleed_until_ms = 0;
+  std::uint64_t next_bleed_tick_ms = 0;
+  int bleed_damage = 0;
   // N4: loot/behaviour facts the wire snapshot carries (JS m.rewards.coins
   // and m.tags).
   std::vector<std::string> tags;
@@ -854,6 +868,8 @@ struct WorldCombatEvent {
   int combo_step = 0;
   int combo_window_ms = 0;
   int stagger_ms = 0;
+  std::string damage_channel = "physical";
+  int resistance_percent = 0;
 };
 
 struct InstanceMetadata {
@@ -939,6 +955,9 @@ class WorldSimulation {
       monster.next_attack_ms = 0;
       monster.next_move_ms = 0;
       monster.pending_attack_skill.clear();
+      monster.bleed_until_ms = 0;
+      monster.next_bleed_tick_ms = 0;
+      monster.bleed_damage = 0;
       return true;
     }
     return false;

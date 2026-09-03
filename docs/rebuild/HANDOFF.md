@@ -1,5 +1,35 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - active Vesselforge combat properties
+
+- Five previously display-only WIZARD properties now resolve through the
+  authoritative native game: Macuahuitl/Bloodgroove bleeding, Long Reach,
+  Sandals/Surefoot movement speed, Riverblessed resistance, and Emberward
+  resistance. Defensive resistances cap at 75%; offensive and utility totals
+  retain the existing 100% cap.
+- Bleeding is a non-stacking three-second wound with one-second physical ticks.
+  Reapplication refreshes it and keeps the stronger wound. Macuahuitl's
+  implicit grants guaranteed application, while Bloodgroove supplies the same
+  chance through a rolled brand.
+- Reach expands every authoritative skill, sweep, thrust, held-primary, and
+  leash range check. Movement bonuses accelerate the server's sampled steps
+  without bypassing collision. Generated dungeon ranged attackers deal Ember
+  damage; marsh and grove attackers deal River damage, with mitigation facts
+  carried on each hit.
+- The complete item-derived chain is live: item and wear aggregation, movement
+  and combat resolution, protocol totals and monster snapshots, remote model,
+  shared presentation, and Framekit. Selected gear shows active forge lines and
+  a compact worn-total summary instead of calling these properties dormant.
+- Bleed application, periodic damage, and persistent wound state have separate
+  crimson treatments. Monster hover identifies live bleeding and River/Ember
+  attack channels so resistance choices remain inspectable during play.
+- Core, protocol, scripted-session, shared-presentation, and production-client
+  coverage prove the full path. Evidence is in
+  `native/build/goal-captures-forge-affixes-b/vesselforge-active-properties-1366x768.png`.
+- Verification: the full native test gate, complete Chronicle succession and
+  relic-recovery journey, and every client scenario pass. `frame-budget`
+  measured 9.7 ms average at 3440x1440 against the 40 ms ceiling.
+
 ## 2026-09-03 - obstacle-aware monster locomotion
 
 - The production server tick now moves nearby monsters instead of leaving the

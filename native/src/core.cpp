@@ -1494,6 +1494,23 @@ constexpr int kN3BossDamage = 12;
 constexpr int kN3BossTelegraphRadius = 2;
 constexpr int kN3BossTelegraphWindowMs = 1000;
 constexpr int kTownSize = 200;
+constexpr int kN3BleedDurationMs = 3000;
+constexpr int kN3BleedTickMs = 1000;
+
+double player_skill_range_tiles(const std::string& skill,
+                                const PlayerCombatMods& mods) {
+  const int base = skill == "thrust" ? kN3ThrustRangeTiles
+                   : skill == "sweep" ? kN3SweepRangeTiles
+                                        : kN3MeleeRangeTiles;
+  const int reach = std::max(0, std::min(100, mods.reach_percent));
+  return base * (1.0 + reach / 100.0);
+}
+
+double player_range_distance(const WorldPosition& position,
+                             const WorldMonster& monster) {
+  return std::abs(static_cast<double>(monster.x) - position.x) +
+         std::abs(static_cast<double>(monster.y) - position.y);
+}
 
 std::uint64_t fnv1a(const std::string& text, std::uint64_t seed) {
   std::uint64_t hash = seed ? seed : 1469598103934665603ULL;
@@ -1556,6 +1573,12 @@ void WorldSimulation::register_step(const std::string& direction, int duration_m
 bool WorldSimulation::apply_movement_sample(const std::string& direction, std::int64_t now_ms) {
   const auto delta = tile_movement::movement_delta(direction);
   if (!delta) return false;
+  WorldPosition resolved_delta = *delta;
+  const int speed_percent = std::max(
+      0, std::min(100, player_mods_.movement_speed_percent));
+  const double speed_scale = 1.0 + speed_percent / 100.0;
+  resolved_delta.x *= speed_scale;
+  resolved_delta.y *= speed_scale;
 
   // movement-handler.js setFacing: diagonals collapse onto their horizontal
   // component so the run animation has a stable left/right read.
@@ -1563,14 +1586,14 @@ bool WorldSimulation::apply_movement_sample(const std::string& direction, std::i
   else if (direction.find("right") != std::string::npos) facing_ = "right";
   else facing_ = direction;
 
-  if (is_blocked(position_, *delta)) {
+  if (is_blocked(position_, resolved_delta)) {
     register_step(direction, 0, true, now_ms);
     return false;
   }
 
   const Vec2 previous_tile = tile_movement::occupied_tile(position_);
-  position_.x = tile_movement::round_position(position_.x + delta->x);
-  position_.y = tile_movement::round_position(position_.y + delta->y);
+  position_.x = tile_movement::round_position(position_.x + resolved_delta.x);
+  position_.y = tile_movement::round_position(position_.y + resolved_delta.y);
   register_step(direction, static_cast<int>(tile_movement::kSampleMs), false, now_ms);
 
   const Vec2 current_tile = tile_movement::occupied_tile(position_);
@@ -1809,6 +1832,13 @@ void WorldSimulation::generate_instance() {
     if (monster.behaviour_type == "ranged") {
       monster.id = metadata_.theme + "-ranged";
       monster.name = roster.ranged;
+      // The WIZARD stat vocabulary becomes a real defensive decision here:
+      // forge-country missiles carry Ember, while fen and grove missiles
+      // carry River. Other ranged families stay physical until their own
+      // authored channel exists.
+      if (metadata_.theme == "dungeon") monster.damage_channel = "ember";
+      else if (metadata_.theme == "marsh" || metadata_.theme == "grove")
+        monster.damage_channel = "river";
       monster.life = (std::max)(6, monster.life * 8 / 10);
       monster.life_max = monster.life;
     } else if (monster.behaviour_type == "buffer") {
@@ -1925,18 +1955,16 @@ bool WorldSimulation::start_player_attack(int player_level, int player_attack,
   if (direction.find("right") != std::string::npos) aim_dx = 1;
   if (direction.find("up") != std::string::npos) aim_dy = -1;
   if (direction.find("down") != std::string::npos) aim_dy = 1;
-  const int range = skill == "thrust" ? kN3ThrustRangeTiles
-                                       : skill == "sweep" ? kN3SweepRangeTiles
-                                                          : kN3MeleeRangeTiles;
+  const double range = player_skill_range_tiles(skill, player_mods_);
   WorldMonster* chosen = nullptr;
-  int best = std::numeric_limits<int>::max();
+  double best = std::numeric_limits<double>::max();
   int best_priority = -1;
   int best_aim = std::numeric_limits<int>::min();
   for (auto& monster : monsters_) {
     if (!monster.alive) continue;
     const int dx = monster.x - here.x;
     const int dy = monster.y - here.y;
-    const int distance = std::abs(dx) + std::abs(dy);
+    const double distance = player_range_distance(position_, monster);
     if (distance > range) continue;
     const int aim = aim_dx * dx + aim_dy * dy;
     if (skill == "thrust" && aim <= 0) continue;
@@ -1999,6 +2027,64 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
   std::vector<WorldCombatEvent> events;
   (void)player_level;
   const auto now = static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms));
+  // Persistent physical ailment resolution happens before AI movement. A
+  // delayed server tick catches up every authored one-second beat, so frame
+  // rate and packet cadence cannot change total damage. Reapplication below
+  // refreshes one non-stacking wound, matching the WIZARD combat reference.
+  for (auto& monster : monsters_) {
+    if (!monster.alive || monster.bleed_until_ms == 0) continue;
+    const std::uint64_t through = std::min(now, monster.bleed_until_ms);
+    while (monster.next_bleed_tick_ms != 0 &&
+           monster.next_bleed_tick_ms <= through && monster.alive) {
+      const int damage = std::max(1, monster.bleed_damage);
+      monster.life = std::max(0, monster.life - damage);
+      WorldCombatEvent tick;
+      tick.type = "hit";
+      tick.attacker_id = player_uuid_;
+      tick.attacker_name = "Adventurer";
+      tick.target_id = monster.uuid;
+      tick.target_name = monster.name;
+      tick.skill_id = "status:bleed";
+      tick.amount = damage;
+      tick.base_amount = damage;
+      tick.health = monster.life;
+      tick.health_max = monster.life_max;
+      tick.died = monster.life == 0;
+      tick.attack_style = "bleed";
+      tick.damage_channel = "physical";
+      events.push_back(tick);
+      monster.next_bleed_tick_ms += kN3BleedTickMs;
+      if (monster.life == 0) {
+        monster.alive = false;
+        WorldCombatEvent death = tick;
+        death.type = "death";
+        events.push_back(death);
+        drop_monster_loot(monster, player_mods_.goods_found);
+        if (monster.uuid == active_target_) {
+          active_target_.clear();
+          pending_player_skill_.clear();
+          pending_player_combo_step_ = 0;
+          auto_player_melee_ = false;
+        }
+      }
+    }
+    if (!monster.alive) {
+      monster.bleed_until_ms = 0;
+      monster.next_bleed_tick_ms = 0;
+      monster.bleed_damage = 0;
+      continue;
+    }
+    if (now < monster.bleed_until_ms) continue;
+    WorldCombatEvent ended;
+    ended.type = "status-end";
+    ended.target_id = monster.uuid;
+    ended.target_name = monster.name;
+    ended.skill_id = "bleed";
+    events.push_back(std::move(ended));
+    monster.bleed_until_ms = 0;
+    monster.next_bleed_tick_ms = 0;
+    monster.bleed_damage = 0;
+  }
   if (active_target_.empty()) {
     const Vec2 here = tile_movement::occupied_tile(position_);
     // N5: a scion standing beside a pack member is engaged even without
@@ -2165,8 +2251,16 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
           monster.telegraph_until_ms = 0;
           monster.next_attack_ms = now + kN3RangedVolleyCooldownMs;
           if (!caught) continue;
-          const int damage = std::max(
+          const int raw_damage = std::max(
               1, (2 + monster.level) * (100 + expedition_damage_percent_) / 100);
+          const int resistance = monster.damage_channel == "ember"
+              ? std::max(0, std::min(75, player_mods_.ember_resistance))
+              : monster.damage_channel == "river"
+                    ? std::max(0, std::min(75, player_mods_.river_resistance))
+                    : 0;
+          const int damage = std::max(
+              1, static_cast<int>(std::lround(
+                     raw_damage * (1.0 - resistance / 100.0))));
           player_life = std::max(0, player_life - damage);
           WorldCombatEvent impact;
           impact.type = "hit";
@@ -2176,6 +2270,9 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
           impact.target_name = "Adventurer";
           impact.skill_id = "ranged:volley";
           impact.amount = damage;
+          impact.base_amount = raw_damage;
+          impact.damage_channel = monster.damage_channel;
+          impact.resistance_percent = resistance;
           impact.health = player_life;
           impact.health_max = player_life_max;
           impact.died = player_life == 0;
@@ -2286,6 +2383,8 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       impact.attacker_name = monster.name;
       impact.target_id = player_uuid_;
       impact.amount = damage;
+      impact.base_amount = damage;
+      impact.damage_channel = "physical";
       impact.health = player_life;
       impact.health_max = player_life_max;
       impact.died = player_life == 0;
@@ -2304,9 +2403,9 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
   if (!target) { active_target_.clear(); pending_player_skill_.clear(); pending_player_combo_step_ = 0; auto_player_melee_ = false; return events; }
   { // JS combat: walking out of melee reach disengages - the swing loop must
     // not chase a target across the map (build-comparison parking relies on it).
-    const Vec2 here = tile_movement::occupied_tile(position_);
-    if (std::abs(target->x - here.x) > kN3ThrustRangeTiles ||
-        std::abs(target->y - here.y) > kN3ThrustRangeTiles) {
+    const double leash = player_skill_range_tiles("thrust", player_mods_);
+    if (std::abs(static_cast<double>(target->x) - position_.x) > leash ||
+        std::abs(static_cast<double>(target->y) - position_.y) > leash) {
       active_target_.clear();
       pending_player_skill_.clear();
       pending_player_combo_step_ = 0;
@@ -2316,10 +2415,8 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
   }
   if (pending_player_skill_.empty() && auto_player_melee_ &&
       now >= next_player_attack_ms_) {
-    const Vec2 here = tile_movement::occupied_tile(position_);
-    const int distance = std::abs(target->x - here.x) +
-                         std::abs(target->y - here.y);
-    if (distance <= kN3MeleeRangeTiles) {
+    const double distance = player_range_distance(position_, *target);
+    if (distance <= player_skill_range_tiles("melee", player_mods_)) {
       pending_player_skill_ = "melee";
       if (now >= player_combo_expires_ms_) player_combo_step_ = 0;
       pending_player_combo_step_ = player_combo_step_ % 3 + 1;
@@ -2333,20 +2430,17 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     const int combo_step = pending_player_combo_step_;
     pending_player_skill_.clear();  // one accepted request resolves once
     pending_player_combo_step_ = 0;
-    const Vec2 here = tile_movement::occupied_tile(position_);
     std::vector<WorldMonster*> struck;
     if (skill == "sweep") {
       for (auto& monster : monsters_) {
         if (!monster.alive) continue;
-        const int distance = std::abs(monster.x - here.x) +
-                             std::abs(monster.y - here.y);
-        if (distance <= kN3SweepRangeTiles) struck.push_back(&monster);
+        const double distance = player_range_distance(position_, monster);
+        if (distance <= player_skill_range_tiles("sweep", player_mods_))
+          struck.push_back(&monster);
       }
     } else {
-      const int range = skill == "thrust" ? kN3ThrustRangeTiles
-                                           : kN3MeleeRangeTiles;
-      const int distance = std::abs(target->x - here.x) +
-                           std::abs(target->y - here.y);
+      const double range = player_skill_range_tiles(skill, player_mods_);
+      const double distance = player_range_distance(position_, *target);
       if (distance <= range) struck.push_back(target);
     }
 
@@ -2394,6 +2488,7 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       hit.critical = critical; hit.attack_style = player_mods_.attack_style;
       hit.combo_step = skill == "melee" ? combo_step : 0;
       hit.combo_window_ms = skill == "melee" ? kN3ComboWindowMs : 0;
+      hit.damage_channel = "physical";
       bool interrupted_cast = false;
       std::string interrupted_skill;
       if (skill == "melee" && combo_step == 3 && !struck_target->boss) {
@@ -2409,6 +2504,27 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
         hit.stagger_ms = kN3ComboFinisherStaggerMs;
       }
       events.push_back(hit);
+      const int bleed_chance = std::max(
+          0, std::min(100, player_mods_.bleed_chance));
+      if (struck_target->life > 0 && bleed_chance > 0 &&
+          1 + static_cast<int>(next_world_random() % 100) <= bleed_chance) {
+        struck_target->bleed_damage = std::max(
+            struck_target->bleed_damage,
+            std::max(1, static_cast<int>(std::lround(damage * 0.15))));
+        struck_target->bleed_until_ms = now + kN3BleedDurationMs;
+        struck_target->next_bleed_tick_ms = now + kN3BleedTickMs;
+        WorldCombatEvent applied;
+        applied.type = "status";
+        applied.attacker_id = player_uuid_;
+        applied.attacker_name = "Adventurer";
+        applied.target_id = struck_target->uuid;
+        applied.target_name = struck_target->name;
+        applied.skill_id = "bleed";
+        applied.amount = struck_target->bleed_damage;
+        applied.duration_ms = kN3BleedDurationMs;
+        applied.damage_channel = "physical";
+        events.push_back(std::move(applied));
+      }
       if (interrupted_cast) {
         WorldCombatEvent interrupted;
         interrupted.type = "interrupt";
@@ -2455,6 +2571,7 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
         WorldCombatEvent impact; impact.type = "hit"; impact.attacker_id = target->uuid; impact.attacker_name = target->name;
         impact.target_id = player_uuid_; impact.target_name = "Adventurer"; impact.skill_id = "boss:ground-slam";
         impact.amount = kN3BossDamage; impact.health = player_life; impact.health_max = player_life_max; impact.died = player_life == 0;
+        impact.base_amount = kN3BossDamage; impact.damage_channel = "physical";
         events.push_back(impact);
       }
       target->telegraph_until_ms = 0;
@@ -2470,6 +2587,7 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     WorldCombatEvent impact; impact.type = "hit"; impact.attacker_id = target->uuid; impact.attacker_name = target->name;
     impact.target_id = player_uuid_; impact.target_name = "Adventurer"; impact.skill_id = "monster:attack";
     impact.amount = damage; impact.health = player_life; impact.health_max = player_life_max; impact.died = player_life == 0;
+    impact.base_amount = damage; impact.damage_channel = "physical";
     events.push_back(impact); target->next_attack_ms = now + 1500;
   }
   return events;
@@ -2580,7 +2698,7 @@ const std::vector<PackForm>& pack_forms() {
        {"Strikes keep foes at reach", nullptr, 0}},
       {"macuahuitl", "Macuahuitl", "weapon", "Edged club", 2, 3, true, 14, 30, 0.85, 0, false,
        {"blade", "blunt", "blood"}, {{"blood", 1.6}}, {"obsidian", "flint", "bone"},
-       {"Hits cause Bleeding", nullptr, 0}},
+       {"Hits cause Bleeding", "bleed", 100}},
       {"atlatl", "Atlatl", "weapon", "Dart-thrower", 1, 3, true, 8, 18, 1.1, 0, false,
        {"reach", "swift"}, {{"swift", 1.4}}, {"bone", "copper", "bronze"},
        {"+20% Projectile Range", nullptr, 0}},
@@ -2643,10 +2761,10 @@ const std::vector<PackBrandMod>& pack_brand_mods() {
        {{8, 15}, {16, 26, 25}, {27, 40, 55}}},
       {"emberkiss", "Adds {v} Fire Damage", "flat", {"ember"}, {"weapon", "amulet"}, 6,
        {{3, 7}, {8, 14, 30}, {15, 22, 60}}},
-      {"riverblessed", "+{v}% to Cold Resistance", "scalar", {"river", "ward"},
+      {"riverblessed", "+{v}% to River Resistance", "scalar", {"river", "ward"},
        {"shield", "body", "helmet", "belt", "amulet", "ring"}, 8,
        {{8, 15}, {16, 25, 25}}},
-      {"emberward", "+{v}% to Fire Resistance", "scalar", {"ember", "ward"},
+      {"emberward", "+{v}% to Ember Resistance", "scalar", {"ember", "ward"},
        {"shield", "body", "helmet", "belt", "amulet", "ring"}, 8,
        {{8, 15}, {16, 25, 25}}},
       {"surefoot", "+{v}% Movement Speed", "scalar", {"swift"}, {"boots"}, 9,
@@ -2731,7 +2849,8 @@ std::string format_label(const std::string& templ, int value) {
 bool is_active_brand_mod(const std::string& mod_id) {
   static const char* kActive[] = {"keen", "heavy", "swift_haft", "warded", "hale",
                                   "spirited", "emberkiss", "strongback", "keen_eye",
-                                  "wealthy", "beastbane"};
+                                  "wealthy", "beastbane", "bloodgroove", "long_reach",
+                                  "riverblessed", "emberward", "surefoot"};
   for (const auto* id : kActive) if (mod_id == id) return true;
   return false;
 }
@@ -3032,6 +3151,16 @@ VesselCombat VesselForge::derive_combat(const VesselItem& item) const {
   combat.modifiers.critical_chance = std::max(0, std::min(75, static_cast<int>(sum("keen_eye"))));
   combat.modifiers.goods_found = std::max(0, std::min(100, static_cast<int>(sum("wealthy"))));
   combat.modifiers.damage_against_beasts = std::max(0, std::min(100, static_cast<int>(sum("beastbane"))));
+  combat.modifiers.bleed_chance = std::max(
+      0, std::min(100, static_cast<int>(sum("bleed") + sum("bloodgroove"))));
+  combat.modifiers.reach_percent = std::max(
+      0, std::min(100, static_cast<int>(sum("long_reach"))));
+  combat.modifiers.movement_speed_percent = std::max(
+      0, std::min(100, static_cast<int>(sum("move") + sum("surefoot"))));
+  combat.modifiers.ember_resistance = std::max(
+      0, std::min(75, static_cast<int>(sum("emberward"))));
+  combat.modifiers.river_resistance = std::max(
+      0, std::min(75, static_cast<int>(sum("riverblessed"))));
   return combat;
 }
 
@@ -3053,6 +3182,7 @@ VesselBlock VesselForge::make_block(const VesselItem& item) const {
       const char* stat_id = f->implicit.stat_id ? f->implicit.stat_id : "";
       const bool active = stat_id == std::string("life") || stat_id == std::string("spirit") ||
                           stat_id == std::string("attrs") || stat_id == std::string("block") ||
+                          stat_id == std::string("bleed") || stat_id == std::string("move") ||
                           (f->weapon && (stat_id == std::string("phys_pct") ||
                                          stat_id == std::string("atk_speed")));
       if (!active) {
@@ -3578,11 +3708,23 @@ WearSet::Totals WearSet::totals() const {
     out.modifiers.critical_chance += item.combat_bonuses.critical_chance;
     out.modifiers.goods_found += item.combat_bonuses.goods_found;
     out.modifiers.damage_against_beasts += item.combat_bonuses.damage_against_beasts;
+    out.modifiers.bleed_chance += item.combat_bonuses.bleed_chance;
+    out.modifiers.reach_percent += item.combat_bonuses.reach_percent;
+    out.modifiers.movement_speed_percent +=
+        item.combat_bonuses.movement_speed_percent;
+    out.modifiers.ember_resistance += item.combat_bonuses.ember_resistance;
+    out.modifiers.river_resistance += item.combat_bonuses.river_resistance;
   }
   out.modifiers.block_chance = clamp(out.modifiers.block_chance, 75);
   out.modifiers.critical_chance = clamp(out.modifiers.critical_chance, 75);
   out.modifiers.goods_found = clamp(out.modifiers.goods_found, 100);
   out.modifiers.damage_against_beasts = clamp(out.modifiers.damage_against_beasts, 100);
+  out.modifiers.bleed_chance = clamp(out.modifiers.bleed_chance, 100);
+  out.modifiers.reach_percent = clamp(out.modifiers.reach_percent, 100);
+  out.modifiers.movement_speed_percent =
+      clamp(out.modifiers.movement_speed_percent, 100);
+  out.modifiers.ember_resistance = clamp(out.modifiers.ember_resistance, 75);
+  out.modifiers.river_resistance = clamp(out.modifiers.river_resistance, 75);
   return out;
 }
 

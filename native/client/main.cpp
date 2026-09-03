@@ -2397,6 +2397,28 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       draw_line(dc, base.x, base.y - arm, base.x, base.y + arm, color, 3);
       break;
     }
+    case EffectFx::Kind::BleedApplied: {
+      rl.push_back({render::Op::Impact, static_cast<double>(base.x),
+                    static_cast<double>(base.y), 0.0, fx.value,
+                    phase_a::kBleedApplyLabel});
+      const COLORREF color = fade_to_background(
+          RGB(phase_a::kBleedColor.r, phase_a::kBleedColor.g,
+              phase_a::kBleedColor.b), life);
+      const int radius = std::max(
+          8, static_cast<int>(kTileUnits * (0.38 + grow * 0.72) * base.scale));
+      ring_ellipse(dc, base.x, base.y, radius, radius, color, 3);
+      for (int i = -1; i <= 1; ++i) {
+        const int x = base.x + i * std::max(4, radius / 3);
+        draw_line(dc, x - 3, base.y - radius / 2, x + 3,
+                  base.y + radius / 3, color, 2);
+      }
+      SetBkMode(dc, TRANSPARENT);
+      SetTextColor(dc, color);
+      HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+      TextOutA(dc, base.x - 20, base.y - radius - 15, "BLEED", 5);
+      SelectObject(dc, old_font);
+      break;
+    }
     case EffectFx::Kind::DamageNumber: {
       std::string damage_label = fx.healing ? "healing" :
           (fx.damage_to_player ? "player" : "monster");
@@ -2404,13 +2426,21 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
           fx.healing ? RGB(phase_a::kSupportMendColor.r,
                            phase_a::kSupportMendColor.g,
                            phase_a::kSupportMendColor.b)
+          : fx.style == "bleed" ? RGB(phase_a::kBleedColor.r,
+                                      phase_a::kBleedColor.g,
+                                      phase_a::kBleedColor.b)
           : fx.finisher ? RGB(phase_a::kComboFinisherColor.r,
                             phase_a::kComboFinisherColor.g,
                             phase_a::kComboFinisherColor.b)
                       : fx.critical ? RGB(phase_a::kCriticalNumberColor.r, phase_a::kCriticalNumberColor.g,
                                          phase_a::kCriticalNumberColor.b)
                       : (fx.damage_to_player ? RGB(255, 118, 104) : RGB(240, 218, 132));
-      if (fx.finisher)
+      if (fx.style == "bleed")
+        damage_label = phase_a::kBleedDamageLabel;
+      else if (fx.damage_to_player &&
+               (fx.style == "river" || fx.style == "ember"))
+        damage_label = "player:" + fx.style;
+      else if (fx.finisher)
         damage_label = std::string(fx.critical ? "critical-finisher:" : "finisher:") +
                        (fx.style.empty() ? "slash" : fx.style);
       else if (fx.critical)
@@ -2460,18 +2490,27 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
     case EffectFx::Kind::TargetFlash: {
       rl.push_back({render::Op::TargetFlash, static_cast<double>(base.x),
                     static_cast<double>(base.y), 0.0, 0,
-                    fx.finisher ? "finisher" :
+                    fx.style == "bleed" ? phase_a::kBleedDamageLabel :
+                        fx.finisher ? "finisher" :
                         (fx.damage_to_player ? "player" : "monster")});
       // A brief bright ring over the hit target reads as a tint on the sprite.
       const int r = std::max(6, static_cast<int>(kTileUnits * 0.5 * base.scale));
-      const COLORREF flash_color = fx.finisher
+      const COLORREF flash_color = fx.style == "bleed"
+          ? RGB(phase_a::kBleedColor.r, phase_a::kBleedColor.g,
+                phase_a::kBleedColor.b)
+          : fx.finisher
           ? RGB(phase_a::kComboFinisherColor.r, phase_a::kComboFinisherColor.g,
                 phase_a::kComboFinisherColor.b)
           : RGB(255, 244, 190);
       ring_ellipse(dc, base.x, base.y, r, r,
                    fade_to_background(flash_color, life), 3);
       fill_ellipse(dc, base.x, base.y, r / 2, r / 2,
-                   fade_to_background(RGB(255, 238, 160), life));
+                   fade_to_background(
+                       fx.style == "bleed"
+                           ? RGB(phase_a::kBleedColor.r, phase_a::kBleedColor.g,
+                                 phase_a::kBleedColor.b)
+                           : RGB(255, 238, 160),
+                       life));
       break;
     }
     case EffectFx::Kind::Materialize: {
@@ -3053,6 +3092,24 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
       mod_y += 16 * s;
     }
     SelectObject(dc, mod_font);
+  } else if (selected && !selected->forge_lines.empty()) {
+    progression = "FORGE  bleed " + std::to_string(player.bleed_chance) +
+                  "%  reach +" + std::to_string(player.reach_percent) +
+                  "%  move +" + std::to_string(player.movement_speed_percent) +
+                  "%  E" + std::to_string(player.ember_resistance) + " R" +
+                  std::to_string(player.river_resistance);
+    int line_y = bottom - 112 * s;
+    HGDIOBJ line_font = SelectObject(dc, skin::font_small());
+    SetTextColor(dc, RGB(130, 220, 180));
+    for (std::size_t i = 0; i < selected->forge_lines.size() && i < 2; ++i) {
+      const std::string& line = selected->forge_lines[i];
+      TextOutA(dc, left + 14 * s, line_y, line.c_str(),
+               static_cast<int>(line.size()));
+      rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0,
+                    "forge-line:" + line});
+      line_y += 16 * s;
+    }
+    SelectObject(dc, line_font);
   } else if (state.world.progression.present) {
     progression = "TREE pts " +
                   std::to_string(state.world.progression.unspent_points) + "/" +
@@ -3517,6 +3574,9 @@ void paint_hover_tooltip(ClientState& state, HDC dc, const RECT& bounds,
         std::to_string(monster.life_max)};
     if (!monster.behaviour.empty())
       monster_facts.push_back("Role " + monster.behaviour);
+    if (monster.damage_channel == "river" || monster.damage_channel == "ember")
+      monster_facts.push_back("Damage " + monster.damage_channel);
+    if (monster.bleeding) monster_facts.push_back("Bleeding");
     consider(base.x, body_y, kTileUnits * 0.9 * base.scale,
              monster.name.empty() ? std::string("Unknown foe") : monster.name,
              monster.elite ? skin::kGold : skin::kEmber,
@@ -5605,6 +5665,15 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
         draw_team_ring(dc, base, kTileUnits * 0.58,
                        monster.elite ? RGB(239, 208, 116) : RGB(214, 92, 72));
+        if (monster.bleeding) {
+          const int bleed_r = std::max(
+              7, static_cast<int>(kTileUnits * 0.48 * base.scale));
+          ring_ellipse(dc, base.x, base.y, bleed_r, bleed_r,
+                       RGB(phase_a::kBleedColor.r, phase_a::kBleedColor.g,
+                           phase_a::kBleedColor.b), 2);
+          rl.push_back({render::Op::TargetFlash, static_cast<double>(base.x),
+                        static_cast<double>(base.y), 0.0, 0, "bleeding"});
+        }
         const double foe_height =
             monster.elite ? kTileUnits * 1.9 : kTileUnits * 1.5;
         {
@@ -9000,6 +9069,123 @@ int scenario_endgame_tablet_ui() {
   return 0;
 }
 
+int scenario_vesselforge_active_properties() {
+  ClientState state;
+  load_billboards(state.billboards);
+  state.world.route_id = "instance:marsh:clearings";
+  state.world.theme = "marsh";
+  state.world.house_name = "House Verdigris";
+  state.world.scion_name = "Mara";
+  state.world.player.id = "forge-scion";
+  state.world.player.position = {20 * static_cast<int>(kTileUnits),
+                                 20 * static_cast<int>(kTileUnits)};
+  state.world.player.facing = {-1, 0};
+  state.world.player.life = 94;
+  state.world.player.life_max = 118;
+  state.world.player.resource = 38;
+  state.world.player.resource_max = 50;
+  state.world.player.attack = 18;
+  state.world.player.defense = 7;
+  state.world.player.level = 12;
+  state.world.player.alive = true;
+  state.world.player.bleed_chance = 100;
+  state.world.player.reach_percent = 16;
+  state.world.player.movement_speed_percent = 25;
+  state.world.player.ember_resistance = 25;
+  state.world.player.river_resistance = 50;
+
+  WorldActor foe;
+  foe.id = "forge-foe";
+  foe.name = "Bog Spitter";
+  foe.kind = "marsh-ranged";
+  foe.behaviour = "ranged";
+  foe.damage_channel = "river";
+  foe.position = {16 * static_cast<int>(kTileUnits),
+                  20 * static_cast<int>(kTileUnits)};
+  foe.life = 54;
+  foe.life_max = 80;
+  foe.alive = true;
+  foe.bleeding = true;
+  state.world.monsters = {foe};
+
+  WorldCarriedItem blade;
+  blade.id = "vessel-macuahuitl";
+  blade.name = "Obsidian Macuahuitl";
+  blade.attack_bonus = 19;
+  blade.equipped = true;
+  blade.forge_lines = {"Hits cause Bleeding", "+16% increased Reach"};
+  state.world.carried = {blade};
+  state.world.stored_items = 7;
+  state.world.stored_trophies = 3;
+  state.gear_overlay = true;
+  state.selected_item = 0;
+  state.camera.x = static_cast<double>(state.world.player.position.x);
+  state.camera.y = static_cast<double>(state.world.player.position.y);
+  state.camera.zoom = kCameraDefaultZoom * zoom_height_factor(768);
+
+  verdigris::client::PresentationFx fx;
+  verdigris::client::PresentationEvent applied;
+  applied.type = verdigris::client::PresentationEventType::DebuffApplied;
+  applied.actor_id = foe.id;
+  applied.text = "bleed";
+  applied.value = 4;
+  applied.duration_ms = 3000;
+  verdigris::client::apply_presentation_event(fx, state.world, applied, 1);
+  verdigris::client::PresentationEvent tick;
+  tick.type = verdigris::client::PresentationEventType::DamageApplied;
+  tick.actor_id = foe.id;
+  tick.text = "outgoing";
+  tick.value = 4;
+  tick.style = "bleed";
+  verdigris::client::apply_presentation_event(fx, state.world, tick, 2);
+  state.effects = std::move(fx.effects);
+
+  std::string capture_dir;
+  const int capture_override = capture_root_override(&capture_dir);
+  if (capture_override < 0) {
+    scenario_check(false,
+                   "vesselforge-active: capture root rejected before any write");
+    return 0;
+  }
+  if (capture_override == 0) {
+    CreateDirectoryA("captures", nullptr);
+    capture_dir = "captures";
+  }
+  const std::string capture_path =
+      capture_dir + "\\vesselforge-active-properties-1366x768.png";
+  scenario_check(reference_present(state, 1366, 768, capture_path),
+                 "vesselforge-active: Framekit gear and bleed frame captured");
+  std::printf("    capture: %s\n", capture_path.c_str());
+
+  int forge_lines = 0;
+  bool totals = false;
+  bool bleed_apply = false;
+  bool bleed_tick = false;
+  bool persistent_bleed = false;
+  bool dormant_claim = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::PaneStat &&
+        item.label.rfind("forge-line:", 0) == 0) {
+      ++forge_lines;
+      if (item.label.find("Dormant") != std::string::npos) dormant_claim = true;
+    }
+    if (item.op == render::Op::PaneStat && item.label.rfind("FORGE  bleed 100%", 0) == 0 &&
+        item.label.find("E25 R50") != std::string::npos)
+      totals = true;
+    if (item.op == render::Op::Impact && item.label == phase_a::kBleedApplyLabel)
+      bleed_apply = true;
+    if (item.op == render::Op::Damage && item.label == phase_a::kBleedDamageLabel)
+      bleed_tick = true;
+    if (item.op == render::Op::TargetFlash && item.label == "bleeding")
+      persistent_bleed = true;
+  }
+  scenario_check(forge_lines == 2 && totals && !dormant_claim,
+                 "vesselforge-active: pane explains active item lines and worn totals");
+  scenario_check(bleed_apply && bleed_tick && persistent_bleed,
+                 "vesselforge-active: apply, tick, and persistent bleed remain distinct");
+  return 0;
+}
+
 class ScenarioDialogueSession final
     : public verdigris::client::IClientSession {
  public:
@@ -9480,6 +9666,7 @@ int run_scenarios(const std::string& which) {
       {"hud-pane-readability", scenario_hud_pane_readability},
       {"hud-information", scenario_hud_information},
       {"endgame-tablet-ui", scenario_endgame_tablet_ui},
+      {"vesselforge-active-properties", scenario_vesselforge_active_properties},
       {"town-social-hub", scenario_town_social_hub},
       {"campaign-journal", scenario_campaign_journal},
       {"tactical-map", scenario_tactical_map_overlay},

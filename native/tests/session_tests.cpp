@@ -2577,6 +2577,126 @@ void remote_combat_cadence_mirrors_to_presentation() {
   server.stop();
 }
 
+void remote_forge_properties_and_status_mirror_to_presentation() {
+  ScriptedEnvelopeServer server;
+  server.script.push_back(
+      "{\"event\":\"player:login\",\"data\":{\"player\":{"
+      "\"uuid\":\"forge-guest\",\"x\":10,\"y\":11,\"facing\":\"right\","
+      "\"inventory\":{\"slots\":[{\"id\":\"vessel-macuahuitl\","
+      "\"uuid\":\"blade-1\",\"displayName\":\"Obsidian Macuahuitl\","
+      "\"vessel\":{\"lines\":[{\"section\":\"implicit\","
+      "\"text\":\"Hits cause Bleeding\"},{\"section\":\"brand\","
+      "\"text\":\"+16% increased Reach\"}]}}]}},"
+      "\"scene\":{\"id\":\"instance:marsh:clearings\","
+      "\"type\":\"instance\",\"name\":\"Mire of Echoes\"}}}");
+  server.script.push_back(
+      "{\"event\":\"dev:state\",\"data\":{\"state\":{"
+      "\"lifecycle\":\"alive\",\"combat\":{\"bleedChance\":100,"
+      "\"reachPercent\":16,\"movementSpeedPercent\":25,"
+      "\"emberResistance\":25,\"riverResistance\":50},"
+      "\"monsters\":[{\"uuid\":\"spitter-1\",\"name\":\"Bog Spitter\","
+      "\"x\":14,\"y\":11,\"damageChannel\":\"river\","
+      "\"behaviour\":{\"type\":\"ranged\"},"
+      "\"hp\":{\"current\":80,\"max\":100},"
+      "\"state\":{\"effects\":{\"bleed\":{\"id\":\"status:bleed\","
+      "\"damagePerTick\":4,\"remainingMs\":2800}}}}]}}}");
+  server.script.push_back(
+      "{\"event\":\"monster:status\",\"data\":{"
+      "\"sourceId\":\"forge-guest\",\"targetId\":\"spitter-1\","
+      "\"targetName\":\"Bog Spitter\",\"statusId\":\"bleed\","
+      "\"active\":true,\"damagePerTick\":4,\"durationMs\":3000}}");
+  server.script.push_back(
+      "{\"event\":\"combat:hit\",\"data\":{"
+      "\"attackerId\":\"spitter-1\",\"targetId\":\"forge-guest\","
+      "\"targetType\":\"player\",\"skillId\":\"ranged:volley\","
+      "\"amount\":6,\"baseAmount\":12,\"damageChannel\":\"river\","
+      "\"resistancePercent\":50,\"died\":false,"
+      "\"health\":{\"current\":94,\"max\":100}}}");
+  std::string error;
+  check(server.start(&error),
+        "forge-mirror: scripted loopback server bound in capsule");
+  if (server.port() == 0) return;
+
+  verdigris::client::RemoteProtocolSession session(
+      "127.0.0.1", server.port(), "forge-mirror-guest", true);
+  check(session.start(&error), "forge-mirror: connect + upgrade + login sent");
+  check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
+        "forge-mirror: admission acknowledged");
+  check(session.model().inventory.size() == 1 &&
+            session.model().inventory[0].forge_lines.size() == 2 &&
+            session.model().inventory[0].forge_lines[0] == "Hits cause Bleeding",
+        "forge-mirror: active tooltip lines survive wire-to-model parsing");
+
+  std::vector<std::string> errors;
+  server.grant_next_frame();
+  check(pt_pump_until(session, errors, 5000, [&] {
+          return session.model().bleed_chance == 100 &&
+                 !session.model().monsters.empty();
+        }),
+        "forge-mirror: combat totals and monster snapshot arrive");
+  check(session.model().reach_percent == 16 &&
+            session.model().movement_speed_percent == 25 &&
+            session.model().ember_resistance == 25 &&
+            session.model().river_resistance == 50 &&
+            session.model().monsters[0].damage_channel == "river" &&
+            session.model().monsters[0].bleeding,
+        "forge-mirror: worn totals, channel, and live bleed state remain authoritative");
+
+  server.grant_next_frame();
+  verdigris::client::PresentationEvent debuff;
+  bool saw_debuff = false;
+  const auto status_deadline =
+      std::chrono::steady_clock::now() + std::chrono::milliseconds(5000);
+  while (!saw_debuff && std::chrono::steady_clock::now() < status_deadline) {
+    session.poll();
+    for (const auto& event : session.drain_events()) {
+      if (event.type == verdigris::client::PresentationEventType::ProtocolError)
+        errors.push_back(event.text);
+      if (event.type == verdigris::client::PresentationEventType::DebuffApplied) {
+        debuff = event;
+        saw_debuff = true;
+      }
+    }
+    if (!saw_debuff) std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  check(saw_debuff && debuff.text == "bleed" && debuff.value == 4 &&
+            debuff.duration_ms == 3000,
+        "forge-mirror: bleed application becomes a typed presentation event");
+
+  server.grant_next_frame();
+  verdigris::client::PresentationEvent incoming;
+  bool saw_incoming = false;
+  const auto hit_deadline =
+      std::chrono::steady_clock::now() + std::chrono::milliseconds(5000);
+  while (!saw_incoming && std::chrono::steady_clock::now() < hit_deadline) {
+    session.poll();
+    for (const auto& event : session.drain_events()) {
+      if (event.type == verdigris::client::PresentationEventType::ProtocolError)
+        errors.push_back(event.text);
+      if (event.type == verdigris::client::PresentationEventType::DamageApplied &&
+          event.text == "incoming") {
+        incoming = event;
+        saw_incoming = true;
+      }
+    }
+    if (!saw_incoming) std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  check(saw_incoming && incoming.value == 6 && incoming.base_amount == 12 &&
+            incoming.damage_channel == "river" && incoming.style == "river" &&
+            incoming.resistance_percent == 50,
+        "forge-mirror: mitigated River hit keeps its channel and resistance facts");
+
+  verdigris::client::WorldView world;
+  verdigris::client::sync_world_from_model(world, session.model());
+  check(world.player.bleed_chance == 100 && world.player.river_resistance == 50 &&
+            world.carried.size() == 1 && world.carried[0].forge_lines.size() == 2 &&
+            world.monsters.size() == 1 && world.monsters[0].bleeding,
+        "forge-mirror: forge contract survives model-to-presentation sync");
+  check(errors.empty(), "forge-mirror: valid payload raises no protocol error");
+  session.shutdown();
+  server.stop();
+}
+
 void remote_monster_roles_mirror_to_presentation() {
   ScriptedEnvelopeServer server;
   server.script.push_back(
@@ -3049,6 +3169,7 @@ int main() {
   remote_passive_tree_absence_stays_absent();
   remote_endgame_payload_mirrors_to_presentation();
   remote_combat_cadence_mirrors_to_presentation();
+  remote_forge_properties_and_status_mirror_to_presentation();
   remote_monster_roles_mirror_to_presentation();
   remote_crossroads_dialogue_mirrors_to_presentation();
   remote_passive_tree_payload_hardening();

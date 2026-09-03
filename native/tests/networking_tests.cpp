@@ -1,6 +1,7 @@
 #include "verdigris/networking.hpp"
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <memory>
@@ -703,6 +704,110 @@ void test_gate_a_equip_totals_and_unknown_uuid() {
   check(inventory_count(after) == inventory_count(worn), "unknown uuid does not change inventory");
 }
 
+void test_active_forge_properties_cross_the_protocol() {
+  ProtocolSession session("guest-forge-active", "socket-forge-active", 0xB1EED,
+                          false);
+  session.handle(Envelope{"dev:give", JsonValue::Object{
+      {"itemId", "vessel-macuahuitl"}, {"qty", 1},
+      {"itemLevel", 40}, {"seed", 17}}}, [](const Envelope&) {});
+  const auto granted = request_state(session, "forge-granted");
+  const std::string uuid = inventory_uuid_for(granted, "vessel-macuahuitl");
+  check(!uuid.empty(), "forge wire: granted Macuahuitl has a stable uuid");
+  const JsonValue* details = nullptr;
+  if (const auto* inventory = granted["state"]["inventoryDetails"].array())
+    for (const auto& item : *inventory)
+      if (item["uuid"].string() && *item["uuid"].string() == uuid)
+        details = &item;
+  check(details &&
+            (*details)["combatBonuses"]["bleedChance"].number().value_or(0) == 100,
+        "forge wire: item projection carries the active bleeding implicit");
+  bool active_bleed_line = false;
+  if (details) {
+    if (const auto* lines = (*details)["vessel"]["lines"].array())
+      for (const auto& line : *lines)
+        if (line["text"].string() &&
+            *line["text"].string() == "Hits cause Bleeding" &&
+            line["section"].string() && *line["section"].string() == "implicit")
+          active_bleed_line = true;
+  }
+  check(active_bleed_line,
+        "forge wire: active bleed tooltip is not mislabeled Dormant");
+
+  std::optional<Envelope> equipped;
+  session.handle(Envelope{"item:equip", JsonValue::Object{{
+                     "item", JsonValue::Object{{"uuid", uuid}}}}},
+                 [&](const Envelope& event) {
+                   if (event.event == "player:equippedAnItem") equipped = event;
+                 });
+  check(equipped &&
+            equipped->data["combat"]["bleedChance"].number().value_or(0) == 100,
+        "forge wire: equip response publishes worn bleed chance");
+  const auto worn = request_state(session, "forge-worn");
+  check(worn["state"]["combat"]["bleedChance"].number().value_or(0) == 100 &&
+            worn["state"]["combat"]["reachPercent"].number().has_value() &&
+            worn["state"]["combat"]["movementSpeedPercent"].number().has_value() &&
+            worn["state"]["combat"]["emberResistance"].number().has_value() &&
+            worn["state"]["combat"]["riverResistance"].number().has_value(),
+        "forge wire: snapshots publish the complete active-property totals contract");
+
+  session.handle(Envelope{"instance:enterSolo", JsonValue::Object{
+      {"template", "dungeon"}, {"layout", "clearings"}}}, [](const Envelope&) {});
+  const auto in_zone = request_state(session, "forge-target");
+  const auto* monsters = in_zone["state"]["monsters"].array();
+  check(monsters && !monsters->empty(), "forge wire: bleed trial has a target");
+  if (!monsters || monsters->empty()) return;
+  const auto& target = monsters->front();
+  const std::string target_uuid = target["uuid"].string()
+      ? *target["uuid"].string() : std::string();
+  const int tx = static_cast<int>(target["x"].number().value_or(0));
+  const int ty = static_cast<int>(target["y"].number().value_or(0));
+  const int px = tx + 1 < 39 ? tx + 1 : tx - 1;
+  const std::string aim = px < tx ? "right" : "left";
+  session.handle(Envelope{"dev:clear-floor", JsonValue::Object{}},
+                 [](const Envelope&) {});
+  session.handle(Envelope{"dev:monster:reset", JsonValue::Object{
+      {"monsterUuid", target_uuid}, {"maxHealth", 1000}}}, [](const Envelope&) {});
+  session.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", px}, {"y", ty}}},
+                 [](const Envelope&) {});
+
+  bool status_wire = false;
+  const auto action_clock = std::chrono::duration_cast<std::chrono::milliseconds>(
+      std::chrono::system_clock::now().time_since_epoch()).count();
+  auto collect = [&](const Envelope& event) {
+    if (event.event == "monster:status" &&
+        event.data["statusId"].string() && *event.data["statusId"].string() == "bleed" &&
+        event.data["active"].boolean().value_or(false))
+      status_wire = event.data["damagePerTick"].number().value_or(0) > 0 &&
+                    event.data["durationMs"].number().value_or(0) == 3000;
+  };
+  session.handle(Envelope{"player:skill:trigger", JsonValue::Object{
+      {"skill", "thrust"}, {"direction", aim}}}, collect);
+  check(status_wire, "forge wire: guaranteed bleed emits a typed status packet");
+  const auto bleeding = request_state(session, "forge-bleeding");
+  bool effect_snapshot = false;
+  if (const auto* current = bleeding["state"]["monsters"].array())
+    for (const auto& monster : *current)
+      if (monster["uuid"].string() && *monster["uuid"].string() == target_uuid &&
+          monster["state"]["effects"]["bleed"].object())
+        effect_snapshot = monster["state"]["effects"]["bleed"]["remainingMs"]
+                              .number().value_or(0) > 0;
+  check(effect_snapshot,
+        "forge wire: reconnect snapshot carries the live bleed effect");
+
+  bool tick_wire = false;
+  session.set_direct_emit([&](const Envelope& event) {
+    collect(event);
+    if (event.event == "combat:hit" && event.data["skillId"].string() &&
+        *event.data["skillId"].string() == "status:bleed")
+      tick_wire = event.data["amount"].number().value_or(0) > 0 &&
+                  event.data["damageChannel"].string() &&
+                  *event.data["damageChannel"].string() == "physical";
+  });
+  session.tick(action_clock + 1200);
+  check(tick_wire,
+        "forge wire: periodic bleed damage remains a named physical hit");
+}
+
 void test_crossroads_social_hub_and_house_investment() {
   ProtocolSession session("guest-crossroads", "socket-crossroads", 0xc055u, false);
 
@@ -1337,6 +1442,7 @@ int main() {
     test_gate_a_ground_login_and_kill_loot();
     test_gate_a_extract_and_stairs();
     test_gate_a_equip_totals_and_unknown_uuid();
+    test_active_forge_properties_cross_the_protocol();
     test_crossroads_social_hub_and_house_investment();
     test_campaign_contract_and_scion_checkpoint();
     test_four_roads_campaign_act_and_persistence();
