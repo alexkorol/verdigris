@@ -2960,9 +2960,17 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
                                                            items.size() - 1)];
   std::string progression;
   if (selected && selected->expedition_map) {
+    const bool mastered = !selected->map_objective_key.empty() &&
+        std::find(state.world.endgame.mastery_keys.begin(),
+                  state.world.endgame.mastery_keys.end(),
+                  selected->map_objective_key) !=
+            state.world.endgame.mastery_keys.end();
     progression = "MAP T" + std::to_string(selected->map_tier) + "  +" +
                   std::to_string(selected->map_goods_found_percent) +
-                  "% goods  Enter opens once";
+                  "% goods  | " + (mastered ? "MASTERED" : "NEW MASTERY") +
+                  "  | ascent " +
+                  std::to_string(state.world.endgame.ascent_chance_percent) +
+                  "%";
     int mod_y = bottom - 112 * s;
     HGDIOBJ mod_font = SelectObject(dc, skin::font_small());
     SetTextColor(dc, skin::kGold);
@@ -3039,7 +3047,11 @@ void paint_quest_journal(ClientState& state, HDC dc, const RECT& bounds,
   const std::string ledger = quests.present
       ? std::to_string(quests.quest_points) + " QUEST POINTS   /   " +
             std::to_string(quests.house_renown) + " HOUSE RENOWN"
-      : "AWAITING AN AUTHORITATIVE CAMPAIGN RECORD";
+      : state.world.endgame.unlocked
+          ? "WAYFINDER MASTERY  " +
+                std::to_string(state.world.endgame.mastered) + " / " +
+                std::to_string(state.world.endgame.mastery_total)
+          : "AWAITING AN AUTHORITATIVE CAMPAIGN RECORD";
   TextOutA(dc, frame.left + 22 * s, frame.top + 46 * s, ledger.c_str(),
            static_cast<int>(ledger.size()));
 
@@ -3073,7 +3085,7 @@ void paint_quest_journal(ClientState& state, HDC dc, const RECT& bounds,
               DT_LEFT | DT_WORDBREAK | DT_NOPREFIX);
     rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, seal,
                   "quest-active:" + quests.active_id});
-  } else if (quests.campaign_complete) {
+  } else if (quests.campaign_complete || state.world.endgame.unlocked) {
     SetTextColor(dc, RGB(239, 208, 116));
     const char* complete = "[x] CAMPAIGN SEALED";
     TextOutA(dc, rail.left + 12 * s, row_y, complete,
@@ -3082,26 +3094,73 @@ void paint_quest_journal(ClientState& state, HDC dc, const RECT& bounds,
 
   const int detail_left = rail.right + 22 * s;
   const int detail_right = frame.right - 22 * s;
-  if (!quests.present) {
+  if (state.world.endgame.unlocked &&
+      (!quests.present ||
+       (quests.campaign_complete && quests.active_id.empty()))) {
+    SelectObject(dc, skin::font_title());
+    SetTextColor(dc, RGB(239, 208, 116));
+    const char* title = "WAYFINDER'S LEDGER";
+    TextOutA(dc, detail_left, rail.top + 10 * s, title,
+             static_cast<int>(std::strlen(title)));
+    SelectObject(dc, skin::font_small());
+    SetTextColor(dc, RGB(164, 183, 169));
+    const std::string summary =
+        std::to_string(state.world.endgame.mastered) + " / " +
+        std::to_string(state.world.endgame.mastery_total) +
+        " OBJECTIVES   |   HIGHEST T" +
+        std::to_string(state.world.endgame.highest_tier) +
+        "   |   ASCENT " +
+        std::to_string(state.world.endgame.ascent_chance_percent) + "%";
+    TextOutA(dc, detail_left, rail.top + 50 * s, summary.c_str(),
+             static_cast<int>(summary.size()));
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0,
+                  state.world.endgame.mastered,
+                  "endgame-mastery:" +
+                      std::to_string(state.world.endgame.mastered) + "/" +
+                      std::to_string(state.world.endgame.mastery_total)});
+
+    const struct { const char* key; const char* label; } families[] = {
+        {"barrow", "BARROW"}, {"reeds", "REEDS"},
+        {"crown", "CROWN"}, {"thorns", "THORNS"}};
+    int family_y = rail.top + 92 * s;
+    for (const auto& family : families) {
+      SetTextColor(dc, RGB(196, 208, 196));
+      TextOutA(dc, detail_left, family_y + 2 * s, family.label,
+               static_cast<int>(std::strlen(family.label)));
+      int family_mastered = 0;
+      for (int tier = 1; tier <= 16; ++tier) {
+        const std::string key = std::string(family.key) + ":" +
+                                std::to_string(tier);
+        const bool mastered =
+            std::find(state.world.endgame.mastery_keys.begin(),
+                      state.world.endgame.mastery_keys.end(), key) !=
+            state.world.endgame.mastery_keys.end();
+        if (mastered) ++family_mastered;
+        const int x = detail_left + (82 + (tier - 1) * 18) * s;
+        RECT pip{x, family_y, x + 13 * s, family_y + 13 * s};
+        HBRUSH brush = CreateSolidBrush(mastered ? RGB(202, 176, 104)
+                                                  : RGB(39, 52, 47));
+        FillRect(dc, &pip, brush);
+        DeleteObject(brush);
+      }
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, family_mastered,
+                    std::string("endgame-family:") + family.key + ":" +
+                        std::to_string(family_mastered)});
+      family_y += 34 * s;
+    }
+    SetTextColor(dc, RGB(156, 174, 161));
+    RECT copy{detail_left, family_y + 10 * s, detail_right,
+              frame.bottom - 58 * s};
+    const char* text = "Each first family-and-tier Warden clear seals one objective, grants House renown, and improves the chance that the next tablet ascends a tier.";
+    DrawTextA(dc, text, static_cast<int>(std::strlen(text)), &copy,
+              DT_LEFT | DT_WORDBREAK | DT_NOPREFIX);
+  } else if (!quests.present) {
     SelectObject(dc, skin::font_body());
     SetTextColor(dc, RGB(170, 184, 174));
     RECT absent{detail_left, rail.top + 8 * s, detail_right,
                 frame.bottom - 70 * s};
     const char* copy = "No campaign state has arrived from the realm server. The journal will never substitute local objectives or fabricated rewards.";
     DrawTextA(dc, copy, static_cast<int>(std::strlen(copy)), &absent,
-              DT_LEFT | DT_WORDBREAK | DT_NOPREFIX);
-  } else if (quests.campaign_complete && quests.active_id.empty()) {
-    SelectObject(dc, skin::font_title());
-    SetTextColor(dc, RGB(239, 208, 116));
-    const char* title = "THE ROAD ENDURES";
-    TextOutA(dc, detail_left, rail.top + 10 * s, title,
-             static_cast<int>(std::strlen(title)));
-    SelectObject(dc, skin::font_body());
-    SetTextColor(dc, RGB(190, 204, 192));
-    RECT copy{detail_left, rail.top + 50 * s, detail_right,
-              rail.top + 150 * s};
-    const char* text = "This House has sealed the campaign. Charted tablets may now be consumed at the Crossroads to open one-use expeditions.";
-    DrawTextA(dc, text, static_cast<int>(std::strlen(text)), &copy,
               DT_LEFT | DT_WORDBREAK | DT_NOPREFIX);
   } else {
     SelectObject(dc, skin::font_title());
@@ -4224,7 +4283,9 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
       if (house.campaign_complete) {
         house_line += " - charted roads open, " +
                       std::to_string(house.endgame_maps_completed) +
-                      " expeditions cleared";
+                      " clears, " +
+                      std::to_string(house.endgame_masteries) +
+                      "/64 mastery";
       }
       lines.push_back({"house " + house.name, house_line,
                        RGB(239, 208, 116), false});
@@ -5794,7 +5855,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       // instead of the placeholder explore line.
       if (world.endgame.unlocked) {
         objective = "endgame: " + std::to_string(world.endgame.completed) +
-                    " expeditions cleared - I selects a charted tablet";
+                    " clears | mastery " +
+                    std::to_string(world.endgame.mastered) + "/" +
+                    std::to_string(world.endgame.mastery_total) +
+                    " - J ledger, I tablet";
         accent = skin::kGold;
       } else if (state.session && state.session->model().quests.present &&
                  !state.session->model().quests.active_id.empty()) {
@@ -5811,6 +5875,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     } else if (world.expedition_phase == ExpeditionPhaseView::SlayWardens) {
       if (world.endgame.active) {
         objective = "charted T" + std::to_string(world.endgame.tier) +
+                    (world.endgame.first_clear ? " [new mastery]" : "") +
                     ": slay the Seal-Bound Warden (" +
                     std::to_string(world.monsters.size()) + " remain, +" +
                     std::to_string(world.endgame.goods_found_percent) +
@@ -8490,12 +8555,22 @@ int scenario_endgame_tablet_ui() {
   state.world.endgame.present = true;
   state.world.endgame.unlocked = true;
   state.world.endgame.completed = 4;
+  state.world.endgame.mastered = 11;
+  state.world.endgame.mastery_total = 64;
+  state.world.endgame.highest_tier = 6;
+  state.world.endgame.ascent_chance_percent = 40;
+  state.world.endgame.mastery_keys = {
+      "barrow:1", "barrow:2", "barrow:3", "barrow:4",
+      "reeds:1", "reeds:2", "reeds:3", "crown:1", "crown:2",
+      "thorns:1", "thorns:2"};
   WorldCarriedItem tablet;
   tablet.id = "tablet-ui-1";
   tablet.name = "Tier 6 Crown Charted Tablet";
   tablet.expedition_map = true;
   tablet.map_tier = 6;
   tablet.map_goods_found_percent = 88;
+  tablet.map_family = "Crown";
+  tablet.map_objective_key = "crown:6";
   tablet.map_modifiers = {"Furious: monsters deal 33% more damage",
                           "Teeming: 5 additional foes"};
   state.world.carried = {std::move(tablet)};
@@ -8520,6 +8595,7 @@ int scenario_endgame_tablet_ui() {
 
   bool objective = false;
   bool map_row = false;
+  bool mastery_preview = false;
   int modifiers = 0;
   for (const auto& item : state.render_list) {
     if (item.op == render::Op::Hud && item.label.rfind("endgame: 4", 0) == 0)
@@ -8530,6 +8606,10 @@ int scenario_endgame_tablet_ui() {
     if (item.op == render::Op::PaneStat &&
         item.label.rfind("map-modifier:", 0) == 0)
       ++modifiers;
+    if (item.op == render::Op::PaneStat &&
+        item.label.find("NEW MASTERY") != std::string::npos &&
+        item.label.find("ascent 40%") != std::string::npos)
+      mastery_preview = true;
   }
   scenario_check(objective,
                  "endgame-tablet-ui: town objective exposes the unlocked loop");
@@ -8537,6 +8617,8 @@ int scenario_endgame_tablet_ui() {
                  "endgame-tablet-ui: selected charted tablet renders as an item");
   scenario_check(modifiers == 2,
                  "endgame-tablet-ui: both authoritative risk clauses are inspectable");
+  scenario_check(mastery_preview,
+                 "endgame-tablet-ui: selection previews mastery and ascent sustain");
   const HudRect* pane = nullptr;
   const HudRect* footer = nullptr;
   for (const auto& entry : state.hud_rect_trace) {
@@ -8546,6 +8628,25 @@ int scenario_endgame_tablet_ui() {
   scenario_check(pane && footer &&
                      footer->x + footer->w <= pane->x + pane->w - 8,
                  "endgame-tablet-ui: contextual controls stay inside the pane");
+
+  state.gear_overlay = false;
+  state.quest_journal = true;
+  const std::string mastery_capture_path =
+      capture_dir + "\\endgame-mastery-board-1366x768.png";
+  scenario_check(reference_present(state, 1366, 768, mastery_capture_path),
+                 "endgame-tablet-ui: Wayfinder Mastery board captured");
+  std::printf("    capture: %s\n", mastery_capture_path.c_str());
+  int family_rows = 0;
+  bool mastery_board = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Hud &&
+        item.label.rfind("endgame-family:", 0) == 0)
+      ++family_rows;
+    if (item.op == render::Op::Hud && item.label == "endgame-mastery:11/64")
+      mastery_board = true;
+  }
+  scenario_check(mastery_board && family_rows == 4,
+                 "endgame-tablet-ui: ledger renders all 64 family-tier objectives");
   return 0;
 }
 

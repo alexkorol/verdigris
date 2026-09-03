@@ -72,6 +72,22 @@ admissions, and a server-side parent check rejects direct requests for barred
 deeper holdings. Re-entering an already-cleared node satisfies the clear rite
 without inventing another Warden, so a resumed campaign cannot deadlock.
 
+## Wayfinder Mastery
+
+Campaign completion opens a House-wide endgame ledger containing 64 distinct
+objectives: four charted-tablet families across tiers 1-16. The exact family,
+tier, modifiers, and objective key travel with the consumable tablet. Killing
+its Seal-Bound Warden records the objective only on its first clear, grants
+three House renown per map tier, and continues to count repeat expeditions
+without duplicating mastery rewards.
+
+The mastery set is validated and persisted on the House Chronicle, so every
+later Scion inherits it. The next-tablet tier-ascent chance starts at 35% and
+rises by one percentage point per two mastered objectives, capped at 65%.
+This makes family breadth a real sustain strategy rather than a cosmetic
+checklist. The authoritative client snapshot identifies new versus mastered
+tablets before the owner consumes them.
+
 Guest saves include the quest state. Account saves send it as `questsData`.
 Malformed or unknown persisted quest entries are discarded and quest points
 are clamped to the reserved 23-point quest budget.

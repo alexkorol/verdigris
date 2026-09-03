@@ -1,5 +1,30 @@
 # Native reconstitution handoff
 
+## 2026-09-02 - House-wide Wayfinder Mastery endgame
+
+- The consumable tablet loop now feeds a finite 64-objective mastery board:
+  Barrow, Reeds, Crown, and Thorns each have one first-clear objective at
+  tiers 1-16. Tablet payloads carry their canonical family and objective key.
+- Seal-Bound Warden kills still count every completed expedition, but only a
+  first family-and-tier clear grants mastery and tier-scaled House renown.
+  Repeat clears cannot duplicate either reward.
+- Mastery is House-persistent, validates imported Chronicle keys against the
+  64 canonical objectives, and restores for later Scions. Every two mastery
+  objectives add one percentage point to the next-tablet ascent chance, from
+  35% to a bounded 65%, giving broad completion a durable sustain reward.
+- The authoritative endgame snapshot exposes mastery, highest tier, ascent
+  chance, active first-clear status, and the mastered objective keys. The
+  Framekit Chronicle journal becomes a Wayfinder's Ledger after campaign
+  completion, with four readable 16-tier rows; the tablet pane previews
+  `NEW MASTERY` versus `MASTERED` before consumption.
+- Coverage proves invalid/duplicate Chronicle keys are discarded, first
+  clears persist, repeat clears do not duplicate rewards, and the entire
+  server-to-client-to-presentation mirror carries the new contract.
+- Verification: full native tests and all client scenarios pass; `frame-budget`
+  measured 9.7 ms average at 3440x1440. Evidence:
+  `native/build/goal-captures-mastery-b/endgame-mastery-board-1366x768.png`
+  and `native/build/goal-captures-mastery-b/endgame-tablet-ui-1366x768.png`.
+
 ## 2026-09-02 — four-road campaign act + persistent world web
 
 - The native campaign now has eight commissions. Oath of Tin, The Salt

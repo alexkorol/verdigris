@@ -22,6 +22,21 @@
   marks it cleared and opens its tier-two children. A direct request for a
   barred child must leave the player in town.
 
+## Native Wayfinder Mastery
+
+- After sealing the campaign, press `J` in town. Confirm the Chronicle panel
+  becomes the Wayfinder's Ledger and shows Barrow, Reeds, Crown, and Thorns as
+  four rows of sixteen tier objectives, plus total mastery, highest tier, and
+  the current ascent chance.
+- Select an unmastered charted tablet in gear and confirm the footer says
+  `NEW MASTERY`; a previously cleared family/tier must say `MASTERED`.
+- Clear the Seal-Bound Warden and confirm the first clear adds one mastery,
+  grants tier-scaled House renown, and updates ascent chance immediately.
+  Repeating the exact family/tier should increase only the expedition count.
+- Re-admit another Scion from the same House and confirm the mastery pips and
+  counts persist. Malformed, duplicate, or out-of-range Chronicle keys must
+  never create extra pips.
+
 ## Native Tactical Map
 
 - Press `Tab` in town and on a road; confirm the translucent Framekit chart

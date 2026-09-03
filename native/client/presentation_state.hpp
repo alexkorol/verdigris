@@ -86,6 +86,8 @@ struct WorldCarriedItem {
   bool expedition_map = false;
   int map_tier = 0;
   int map_goods_found_percent = 0;
+  std::string map_family;
+  std::string map_objective_key;
   std::vector<std::string> map_modifiers;
 };
 
@@ -95,9 +97,17 @@ struct EndgameView {
   bool active = false;
   bool cleared = false;
   int completed = 0;
+  int mastered = 0;
+  int mastery_total = 64;
+  int highest_tier = 0;
+  int ascent_chance_percent = 35;
   int tier = 0;
   int goods_found_percent = 0;
+  bool first_clear = false;
   std::string name;
+  std::string family;
+  std::string objective_key;
+  std::vector<std::string> mastery_keys;
   std::vector<std::string> modifiers;
 };
 

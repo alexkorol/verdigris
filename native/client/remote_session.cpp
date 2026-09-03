@@ -114,6 +114,10 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
     slot.map_tier = static_cast<int>(json_number(map->get("tier"), 1.0));
     slot.map_goods_found_percent =
         static_cast<int>(json_number(map->get("goodsFoundPercent"), 0.0));
+    if (const auto* family = json_string(map->get("family")))
+      slot.map_family = *family;
+    if (const auto* key = json_string(map->get("objectiveKey")))
+      slot.map_objective_key = *key;
     if (const auto* modifiers = map->get("modifiers");
         modifiers && modifiers->array()) {
       for (const auto& modifier : *modifiers->array())
@@ -127,6 +131,16 @@ bool quest_integer(const JsonValue* value, int maximum) {
   if (!value || !value->number()) return false;
   const double raw = *value->number();
   return raw >= 0.0 && raw <= maximum && std::floor(raw) == raw;
+}
+
+bool valid_endgame_mastery_key(const std::string& key) {
+  static constexpr const char* kFamilies[] = {
+      "barrow", "reeds", "crown", "thorns"};
+  for (const char* family : kFamilies)
+    for (int tier = 1; tier <= 16; ++tier)
+      if (key == std::string(family) + ":" + std::to_string(tier))
+        return true;
+  return false;
 }
 
 void apply_quests(const JsonValue& source, ClientModel& model,
@@ -400,6 +414,20 @@ void apply_chronicle_object(ClientChronicle& chronicle, const JsonValue& source)
           complete->boolean() && *complete->boolean();
     parsed_house.endgame_maps_completed = static_cast<int>(
         json_number(entry.get("endgameMapsCompleted"), 0.0));
+    if (const auto* masteries = entry.get("endgameMasteries");
+        masteries && masteries->array()) {
+      std::vector<std::string> unique;
+      for (const auto& mastery : *masteries->array()) {
+        if (!mastery.string() ||
+            !valid_endgame_mastery_key(*mastery.string()) ||
+            std::find(unique.begin(), unique.end(), *mastery.string()) !=
+                unique.end())
+          continue;
+        unique.push_back(*mastery.string());
+        if (unique.size() == 64) break;
+      }
+      parsed_house.endgame_masteries = static_cast<int>(unique.size());
+    }
     if (const auto* scions = entry.get("scions"); scions && scions->array()) {
       for (const auto& scion_entry : *scions->array()) {
         ClientScionEntry parsed_scion;
@@ -1350,11 +1378,41 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         parsed.cleared = cleared->boolean() && *cleared->boolean();
       parsed.completed =
           static_cast<int>(json_number(endgame->get("completed"), 0.0));
+      parsed.mastered = std::clamp(
+          static_cast<int>(json_number(endgame->get("mastered"), 0.0)), 0, 64);
+      parsed.mastery_total = std::clamp(
+          static_cast<int>(json_number(endgame->get("masteryTotal"), 64.0)),
+          1, 64);
+      parsed.highest_tier = std::clamp(
+          static_cast<int>(json_number(endgame->get("highestTier"), 0.0)),
+          0, 16);
+      parsed.ascent_chance_percent = std::clamp(
+          static_cast<int>(
+              json_number(endgame->get("ascentChancePercent"), 35.0)),
+          0, 100);
       parsed.tier = static_cast<int>(json_number(endgame->get("tier"), 0.0));
       parsed.goods_found_percent = static_cast<int>(
           json_number(endgame->get("goodsFoundPercent"), 0.0));
       if (const auto* name = json_string(endgame->get("name")))
         parsed.name = *name;
+      if (const auto* family = json_string(endgame->get("family")))
+        parsed.family = *family;
+      if (const auto* key = json_string(endgame->get("objectiveKey")))
+        parsed.objective_key = *key;
+      if (const auto* keys = endgame->get("masteryKeys");
+          keys && keys->array()) {
+        for (const auto& key : *keys->array()) {
+          if (parsed.mastery_keys.size() >= 64) break;
+          if (key.string() && valid_endgame_mastery_key(*key.string()) &&
+              std::find(parsed.mastery_keys.begin(),
+                        parsed.mastery_keys.end(), *key.string()) ==
+                  parsed.mastery_keys.end())
+            parsed.mastery_keys.push_back(*key.string());
+        }
+      }
+      if (const auto* first_clear = endgame->get("firstClear"))
+        parsed.first_clear =
+            first_clear->boolean() && *first_clear->boolean();
       if (const auto* modifiers = endgame->get("modifiers");
           modifiers && modifiers->array()) {
         for (const auto& modifier : *modifiers->array())

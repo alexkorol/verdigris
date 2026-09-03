@@ -2080,6 +2080,8 @@ void test_endgame_tablet_roll_and_instance_tuning() {
         "endgame: tablet carries its tier and compact footprint");
   check(tablet && tablet->expedition_map->theme == "crypt" &&
             tablet->expedition_map->layout == "gauntlet" &&
+            tablet->expedition_map->family == "Crown" &&
+            tablet->expedition_map->objective_key == "crown:7" &&
             tablet->expedition_map->monster_level_bonus >= 7 &&
             tablet->expedition_map->modifiers.size() == 2 &&
             tablet->expedition_map->goods_found_percent > 0,

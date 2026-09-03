@@ -68,6 +68,14 @@ to eight quest points and unlocks the first consumable endgame tablet. Road
 clears are House-persistent, and deeper node requests are rejected until their
 actual parent Warden is recorded dead.
 
+The charted endgame now has an atlas-like Wayfinder Mastery layer rather than
+only a lifetime clear counter. Barrow, Reeds, Crown, and Thorns tablets each
+contribute tier 1-16 first-clear objectives. Mastery belongs to the House,
+awards tier-scaled renown once, and raises a bounded next-tier ascent chance;
+repeat clears remain valid runs without minting the first-clear reward again.
+The post-campaign Framekit journal renders the complete 64-objective ledger and
+the selected tablet identifies whether it offers new mastery.
+
 The character sheet now reuses the generated player sprite for its portrait
 and each equipped item's real atlas frame; generic slot glyphs remain only for
 empty equipment positions.

@@ -2939,18 +2939,28 @@ std::optional<GameItem> create_game_item(const std::string& item_id,
     ExpeditionMapBlock map;
     map.tier = std::clamp(options.item_level > 0 ? options.item_level : 1, 1, 16);
     if (item_id == "charted-tablet-reeds") {
+      map.family = "Reeds";
       map.theme = "marsh";
       map.layout = "clearings";
     } else if (item_id == "charted-tablet-crown") {
+      map.family = "Crown";
       map.theme = "crypt";
       map.layout = "gauntlet";
     } else if (item_id == "charted-tablet-thorns") {
+      map.family = "Thorns";
       map.theme = "grove";
       map.layout = "clearings";
     } else {
+      map.family = "Barrow";
       map.theme = "dungeon";
       map.layout = "warren";
     }
+    std::string family_key = map.family;
+    std::transform(family_key.begin(), family_key.end(), family_key.begin(),
+                   [](unsigned char ch) {
+                     return static_cast<char>(std::tolower(ch));
+                   });
+    map.objective_key = family_key + ":" + std::to_string(map.tier);
 
     // Tier is the dependable difficulty ladder; rolled clauses add variance
     // on top of it. A higher-tier tablet must never be merely a richer copy

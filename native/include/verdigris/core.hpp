@@ -601,6 +601,8 @@ struct ItemSize {
 // neither the transport nor presentation layer reconstructs its rules.
 struct ExpeditionMapBlock {
   int tier = 1;
+  std::string family;
+  std::string objective_key;
   std::string theme;
   std::string layout;
   int monster_level_bonus = 0;

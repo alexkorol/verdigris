@@ -1021,6 +1021,9 @@ void test_consumable_endgame_tablet_loop() {
   house["name"] = JsonValue("House Emberwake");
   house["campaignComplete"] = JsonValue(true);
   house["endgameMapsCompleted"] = JsonValue(2);
+  house["endgameMasteries"] = JsonValue(JsonValue::Array{
+      JsonValue("barrow:1"), JsonValue("barrow:1"),
+      JsonValue("crown:4"), JsonValue("counterfeit:99")});
   house["scions"] = JsonValue(JsonValue::Array{
       JsonValue(JsonValue::Object{{"id", "scion-cartographer"},
                                   {"name", "Ilyra"}, {"level", 12},
@@ -1042,8 +1045,10 @@ void test_consumable_endgame_tablet_loop() {
                  [](const Envelope&) {});
   auto inherited = request_state(session, "map-inherited");
   check(inherited["state"]["endgame"]["unlocked"].boolean().value_or(false) &&
-            inherited["state"]["endgame"]["completed"].number().value_or(0) == 2,
-        "endgame: campaign unlock and clears belong to the House, not one Scion");
+            inherited["state"]["endgame"]["completed"].number().value_or(0) == 2 &&
+            inherited["state"]["endgame"]["mastered"].number().value_or(0) == 2 &&
+            inherited["state"]["endgame"]["highestTier"].number().value_or(0) == 4,
+        "endgame: valid unique mastery objectives belong to the House, not one Scion");
 
   session.handle(Envelope{"dev:give", JsonValue::Object{
                                           {"itemId", "charted-tablet-crown"},
@@ -1057,6 +1062,10 @@ void test_consumable_endgame_tablet_loop() {
     if (entry["uuid"].string() && *entry["uuid"].string() == uuid)
       tablet = &entry;
   check(tablet && (*tablet)["expeditionMap"]["tier"].number().value_or(0) == 5 &&
+            (*tablet)["expeditionMap"]["family"].string() &&
+            *(*tablet)["expeditionMap"]["family"].string() == "Crown" &&
+            (*tablet)["expeditionMap"]["objectiveKey"].string() &&
+            *(*tablet)["expeditionMap"]["objectiveKey"].string() == "crown:5" &&
             (*tablet)["expeditionMap"]["modifiers"].array() &&
             (*tablet)["expeditionMap"]["modifiers"].array()->size() == 2,
         "endgame: tier and rolled clauses serialize with the exact tablet");
@@ -1082,7 +1091,10 @@ void test_consumable_endgame_tablet_loop() {
   const auto opened = request_state(session, "map-opened");
   check(transitioned && *opened["state"]["sceneType"].string() == "instance" &&
             opened["state"]["endgame"]["active"].boolean().value_or(false) &&
-            opened["state"]["endgame"]["tier"].number().value_or(0) == 5,
+            opened["state"]["endgame"]["tier"].number().value_or(0) == 5 &&
+            opened["state"]["endgame"]["firstClear"].boolean().value_or(false) &&
+            opened["state"]["endgame"]["objectiveKey"].string() &&
+            *opened["state"]["endgame"]["objectiveKey"].string() == "crown:5",
         "endgame: consuming the tablet opens its one authoritative expedition");
   check(inventory_uuid_for(opened, "charted-tablet-crown").empty(),
         "endgame: opening consumes the exact tablet once");
@@ -1116,8 +1128,12 @@ void test_consumable_endgame_tablet_loop() {
   session.tick(5000000000000LL);
   const auto cleared = request_state(session, "map-cleared");
   check(cleared["state"]["endgame"]["cleared"].boolean().value_or(false) &&
-            cleared["state"]["endgame"]["completed"].number().value_or(0) == 3,
-        "endgame: Warden death advances the House clear count exactly once");
+            cleared["state"]["endgame"]["completed"].number().value_or(0) == 3 &&
+            cleared["state"]["endgame"]["mastered"].number().value_or(0) == 3 &&
+            cleared["state"]["endgame"]["highestTier"].number().value_or(0) == 5 &&
+            cleared["state"]["endgame"]["ascentChancePercent"].number().value_or(0) == 36 &&
+            cleared["state"]["quests"]["houseRenown"].number().value_or(0) == 15,
+        "endgame: first Warden clear advances mastery, renown, and ascent sustain once");
   bool next_tablet = false;
   double next_tablet_x = 0;
   double next_tablet_y = 0;
@@ -1156,6 +1172,56 @@ void test_consumable_endgame_tablet_loop() {
         "endgame: the entry waymark closes the one-use expedition");
   check(inventory_map_uuid(returned) == next_uuid,
         "endgame: extraction banks loot but keeps the next tablet usable in town");
+
+  session.handle(Envelope{"player:chronicles:select",
+                          JsonValue::Object{{"scionId", "scion-cartographer"},
+                                            {"houseId", "house-endgame"},
+                                            {"scionName", "Ilyra"},
+                                            {"mortal", false}}},
+                 [](const Envelope&) {});
+  const auto restored = request_state(session, "map-mastery-restored");
+  check(restored["state"]["endgame"]["completed"].number().value_or(0) == 3 &&
+            restored["state"]["endgame"]["mastered"].number().value_or(0) == 3 &&
+            restored["state"]["endgame"]["highestTier"].number().value_or(0) == 5 &&
+            restored["state"]["quests"]["houseRenown"].number().value_or(0) == 15,
+        "endgame: mastery board and first-clear renown survive House re-admission");
+
+  session.handle(Envelope{"dev:give", JsonValue::Object{
+                                          {"itemId", "charted-tablet-crown"},
+                                          {"qty", 1}, {"itemLevel", 5},
+                                          {"seed", 91}}},
+                 [](const Envelope&) {});
+  auto repeat_ready = request_state(session, "map-repeat-ready");
+  open_tablet(inventory_uuid_for(repeat_ready, "charted-tablet-crown"),
+              [](const Envelope&) {});
+  auto repeat_opened = request_state(session, "map-repeat-opened");
+  check(!repeat_opened["state"]["endgame"]["firstClear"].boolean().value_or(true),
+        "endgame: an already-mastered family and tier is marked as a repeat");
+  const JsonValue* repeat_boss = nullptr;
+  for (const auto& monster : *repeat_opened["state"]["monsters"].array())
+    if (monster["name"].string() &&
+        *monster["name"].string() == "The Seal-Bound Warden")
+      repeat_boss = &monster;
+  session.handle(Envelope{"dev:teleport",
+                          JsonValue::Object{{"x", repeat_boss ? repeat_boss->operator[]("x").number().value_or(0) + 1 : 0},
+                                            {"y", repeat_boss ? repeat_boss->operator[]("y").number().value_or(0) : 0}}},
+                 [](const Envelope&) {});
+  session.handle(Envelope{"dev:monster:reset",
+                          JsonValue::Object{{"monsterUuid", repeat_boss && repeat_boss->operator[]("uuid").string()
+                                                ? *repeat_boss->operator[]("uuid").string()
+                                                : std::string()},
+                                            {"maxHealth", 1}}},
+                 [](const Envelope&) {});
+  session.handle(Envelope{"player:skill:trigger",
+                          JsonValue::Object{{"skillId", "primary-attack"},
+                                            {"direction", "left"}}},
+                 [](const Envelope&) {});
+  session.tick(5000000100000LL);
+  const auto repeated = request_state(session, "map-repeat-cleared");
+  check(repeated["state"]["endgame"]["completed"].number().value_or(0) == 4 &&
+            repeated["state"]["endgame"]["mastered"].number().value_or(0) == 3 &&
+            repeated["state"]["quests"]["houseRenown"].number().value_or(0) == 15,
+        "endgame: repeat clears count as runs without duplicating mastery or renown");
 }
 }  // namespace
 

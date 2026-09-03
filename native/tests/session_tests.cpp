@@ -2437,13 +2437,18 @@ void remote_endgame_payload_mirrors_to_presentation() {
       "\"inventory\":{\"slots\":[{\"id\":\"charted-tablet-crown\","
       "\"uuid\":\"tablet-1\",\"displayName\":\"Tier 6 Crown Charted Tablet\","
       "\"slot\":0,\"expeditionMap\":{\"tier\":6,"
+      "\"family\":\"Crown\",\"objectiveKey\":\"crown:6\","
       "\"goodsFoundPercent\":88,\"modifiers\":[\"Furious\",\"Teeming\"]}}]}},"
       "\"scene\":{\"id\":\"town\",\"type\":\"town\","
       "\"name\":\"Verdigris Town\"}}}");
   server.script.push_back(
       "{\"event\":\"dev:state\",\"data\":{\"state\":{"
       "\"lifecycle\":\"alive\",\"endgame\":{\"unlocked\":true,"
-      "\"active\":true,\"cleared\":false,\"completed\":4,\"tier\":6,"
+      "\"active\":true,\"cleared\":false,\"completed\":4,"
+      "\"mastered\":11,\"masteryTotal\":64,\"highestTier\":5,"
+      "\"ascentChancePercent\":40,\"masteryKeys\":[\"barrow:1\",\"crown:5\"],"
+      "\"tier\":6,\"family\":\"Crown\",\"objectiveKey\":\"crown:6\","
+      "\"firstClear\":true,"
       "\"name\":\"Tier 6 Crown Charted Tablet\","
       "\"goodsFoundPercent\":88,\"modifiers\":[\"Furious\",\"Teeming\"]}}}}");
   std::string error;
@@ -2459,6 +2464,8 @@ void remote_endgame_payload_mirrors_to_presentation() {
   check(session.model().inventory.size() == 1 &&
             session.model().inventory.front().expedition_map &&
             session.model().inventory.front().map_tier == 6 &&
+            session.model().inventory.front().map_family == "Crown" &&
+            session.model().inventory.front().map_objective_key == "crown:6" &&
             session.model().inventory.front().map_modifiers.size() == 2,
         "endgame-mirror: rolled tablet survives wire-to-model parsing");
 
@@ -2470,13 +2477,19 @@ void remote_endgame_payload_mirrors_to_presentation() {
                    session.model().endgame.active; });
   check(arrived && session.model().endgame.unlocked &&
             session.model().endgame.completed == 4 &&
+            session.model().endgame.mastered == 11 &&
+            session.model().endgame.mastery_total == 64 &&
+            session.model().endgame.highest_tier == 5 &&
+            session.model().endgame.ascent_chance_percent == 40 &&
+            session.model().endgame.first_clear &&
             session.model().endgame.goods_found_percent == 88,
         "endgame-mirror: active expedition state survives wire-to-model parsing");
   verdigris::client::WorldView world;
   verdigris::client::sync_world_from_model(world, session.model());
   check(world.carried.size() == 1 && world.carried.front().expedition_map &&
             world.carried.front().map_tier == 6 && world.endgame.active &&
-            world.endgame.tier == 6,
+            world.endgame.tier == 6 && world.endgame.mastered == 11 &&
+            world.endgame.mastery_keys.size() == 2,
         "endgame-mirror: map item and active run survive model-to-presentation sync");
   check(errors.empty(), "endgame-mirror: valid payload raises no protocol error");
   session.shutdown();

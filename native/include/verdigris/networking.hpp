@@ -145,6 +145,9 @@ class ProtocolSession {
   void restore_quest_progression();
   void persist_world_web_progression();
   void restore_world_web_progression();
+  void persist_endgame_progression();
+  void restore_endgame_progression();
+  int endgame_ascent_chance_percent() const;
   void emit_quest_update(const std::function<void(const Envelope&)>& emit) const;
   void maybe_complete_first_goal(const std::function<void(const Envelope&)>& emit);
   void notify_surface_return(const std::function<void(const Envelope&)>& emit);
@@ -234,7 +237,13 @@ class ProtocolSession {
   int endgame_map_tier_ = 0;
   int endgame_goods_found_percent_ = 0;
   std::string endgame_map_name_;
+  std::string endgame_map_family_;
+  std::string endgame_map_objective_key_;
   std::vector<std::string> endgame_map_modifiers_;
+  // House-wide atlas-like completion board: four tablet families x sixteen
+  // tiers. Repeating a mastered objective remains rewarding, but only the
+  // first Warden clear grows mastery and its ascent/sustain bonus.
+  std::set<std::string> endgame_masteries_;
   std::set<std::string> kitted_scions_;
   std::string active_skill_id_ = "primary-attack";
   std::int64_t combat_clock_ms_ = 0;

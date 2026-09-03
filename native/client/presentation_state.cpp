@@ -196,6 +196,8 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     carried.expedition_map = item.expedition_map;
     carried.map_tier = item.map_tier;
     carried.map_goods_found_percent = item.map_goods_found_percent;
+    carried.map_family = item.map_family;
+    carried.map_objective_key = item.map_objective_key;
     carried.map_modifiers = item.map_modifiers;
     world.carried.push_back(std::move(carried));
   }
@@ -210,9 +212,18 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
   world.endgame.active = model.endgame.active;
   world.endgame.cleared = model.endgame.cleared;
   world.endgame.completed = model.endgame.completed;
+  world.endgame.mastered = model.endgame.mastered;
+  world.endgame.mastery_total = model.endgame.mastery_total;
+  world.endgame.highest_tier = model.endgame.highest_tier;
+  world.endgame.ascent_chance_percent =
+      model.endgame.ascent_chance_percent;
   world.endgame.tier = model.endgame.tier;
   world.endgame.goods_found_percent = model.endgame.goods_found_percent;
+  world.endgame.first_clear = model.endgame.first_clear;
   world.endgame.name = model.endgame.name;
+  world.endgame.family = model.endgame.family;
+  world.endgame.objective_key = model.endgame.objective_key;
+  world.endgame.mastery_keys = model.endgame.mastery_keys;
   world.endgame.modifiers = model.endgame.modifiers;
   world.loot_names.clear();
   for (const auto& item : model.ground)

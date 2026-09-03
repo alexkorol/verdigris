@@ -422,6 +422,8 @@ JsonValue expedition_map_or_null(const GameItem& item) {
   for (const auto& modifier : map.modifiers) modifiers.emplace_back(modifier);
   JsonValue::Object out;
   put(out, "tier", map.tier);
+  put(out, "family", map.family);
+  put(out, "objectiveKey", map.objective_key);
   put(out, "theme", map.theme);
   put(out, "layout", map.layout);
   put(out, "monsterLevelBonus", map.monster_level_bonus);
@@ -692,6 +694,8 @@ void ProtocolSession::reset_world_for_new_socket() {
   endgame_map_tier_ = 0;
   endgame_goods_found_percent_ = 0;
   endgame_map_name_.clear();
+  endgame_map_family_.clear();
+  endgame_map_objective_key_.clear();
   endgame_map_modifiers_.clear();
   if (auto* actor = simulation_->actor(simulation_->scion().actor_id)) {
     actor->stats.life = actor->stats.life_max;  // fresh Player logs in healthy
@@ -817,6 +821,43 @@ const QuestDef kQuestChain[] = {
 };
 const int kQuestChainSize =
     static_cast<int>(sizeof(kQuestChain) / sizeof(kQuestChain[0]));
+
+// The Wayfinder Mastery board is deliberately finite and inspectable: every
+// tablet family has one objective at each supported tier. Chronicle imports
+// are accepted only when they name one of these 64 canonical objectives.
+struct TabletFamily {
+  const char* item_id;
+  const char* key;
+  const char* name;
+};
+constexpr TabletFamily kTabletFamilies[] = {
+    {"charted-tablet-barrow", "barrow", "Barrow"},
+    {"charted-tablet-reeds", "reeds", "Reeds"},
+    {"charted-tablet-crown", "crown", "Crown"},
+    {"charted-tablet-thorns", "thorns", "Thorns"},
+};
+constexpr int kEndgameTierCount = 16;
+constexpr int kEndgameMasteryTotal =
+    static_cast<int>(sizeof(kTabletFamilies) / sizeof(kTabletFamilies[0])) *
+    kEndgameTierCount;
+
+const TabletFamily* tablet_family_for_item(const std::string& item_id) {
+  for (const auto& family : kTabletFamilies)
+    if (item_id == family.item_id) return &family;
+  return nullptr;
+}
+
+std::string tablet_mastery_key(const TabletFamily& family, int tier) {
+  return std::string(family.key) + ":" + std::to_string(tier);
+}
+
+bool valid_tablet_mastery_key(const std::string& key) {
+  for (const auto& family : kTabletFamilies)
+    for (int tier = 1; tier <= kEndgameTierCount; ++tier)
+      if (key == tablet_mastery_key(family, tier)) return true;
+  return false;
+}
+
 std::string zone_id_for_instance(const std::string& theme, const std::string& layout) {
   // party.js ADVENTURE_ZONES: identity is theme+layout, not theme alone.
   for (const auto& zone : adventure_zones()) {
@@ -1043,18 +1084,37 @@ JsonValue ProtocolSession::snapshot() const {
     JsonValue::Array modifiers;
     for (const auto& modifier : endgame_map_modifiers_)
       modifiers.emplace_back(modifier);
+    JsonValue::Array mastery_keys;
+    for (const auto& key : endgame_masteries_) mastery_keys.emplace_back(key);
+    int highest_mastered_tier = 0;
+    for (const auto& family : kTabletFamilies)
+      for (int tier = 1; tier <= kEndgameTierCount; ++tier)
+        if (endgame_masteries_.count(tablet_mastery_key(family, tier)) > 0)
+          highest_mastered_tier = (std::max)(highest_mastered_tier, tier);
     JsonValue::Object endgame;
     put(endgame, "unlocked", campaign_complete_);
     put(endgame, "active", endgame_active_);
     put(endgame, "cleared", endgame_completed_);
     put(endgame, "completed", endgame_maps_completed_);
+    put(endgame, "mastered", static_cast<int>(endgame_masteries_.size()));
+    put(endgame, "masteryTotal", kEndgameMasteryTotal);
+    put(endgame, "masteryKeys", std::move(mastery_keys));
+    put(endgame, "highestTier", highest_mastered_tier);
+    put(endgame, "ascentChancePercent", endgame_ascent_chance_percent());
     if (endgame_active_) {
       put(endgame, "name", endgame_map_name_);
+      put(endgame, "family", endgame_map_family_);
+      put(endgame, "objectiveKey", endgame_map_objective_key_);
+      put(endgame, "firstClear",
+          endgame_masteries_.count(endgame_map_objective_key_) == 0);
       put(endgame, "tier", endgame_map_tier_);
       put(endgame, "goodsFoundPercent", endgame_goods_found_percent_);
       put(endgame, "modifiers", std::move(modifiers));
     } else {
       put(endgame, "name", nullptr);
+      put(endgame, "family", nullptr);
+      put(endgame, "objectiveKey", nullptr);
+      put(endgame, "firstClear", false);
       put(endgame, "tier", nullptr);
       put(endgame, "goodsFoundPercent", nullptr);
       put(endgame, "modifiers", JsonValue::Array{});
@@ -1296,6 +1356,8 @@ void ProtocolSession::finish_extraction(const std::function<void(const Envelope&
   endgame_map_tier_ = 0;
   endgame_goods_found_percent_ = 0;
   endgame_map_name_.clear();
+  endgame_map_family_.clear();
+  endgame_map_objective_key_.clear();
   endgame_map_modifiers_.clear();
 }
 void ProtocolSession::sync_combat_mods() {
@@ -1891,15 +1953,15 @@ void ProtocolSession::enter_road_node(const std::string& node_id, const std::fun
 void ProtocolSession::award_expedition_map(
     int tier, double x, double y,
     const std::function<void(const Envelope&)>& emit, bool to_backpack) {
-  static constexpr const char* kTabletIds[] = {
-      "charted-tablet-barrow", "charted-tablet-reeds",
-      "charted-tablet-crown", "charted-tablet-thorns"};
   const int bounded_tier = std::clamp(tier, 1, 16);
-  const int pick = static_cast<int>(std::floor(session_rng_.next() * 4.0)) % 4;
+  const int family_count =
+      static_cast<int>(sizeof(kTabletFamilies) / sizeof(kTabletFamilies[0]));
+  const int pick = static_cast<int>(
+      std::floor(session_rng_.next() * family_count)) % family_count;
   CreateItemOptions options;
   options.rng = &session_rng_;
   options.item_level = bounded_tier;
-  auto tablet = create_game_item(kTabletIds[pick], options);
+  auto tablet = create_game_item(kTabletFamilies[pick].item_id, options);
   if (!tablet) return;
   const std::string name = tablet->display_name;
   if (to_backpack) {
@@ -1933,6 +1995,11 @@ void ProtocolSession::open_expedition_map(
     emit_inventory_refresh(emit);
     return;
   }
+  const TabletFamily* family = tablet_family_for_item(carried->id);
+  if (!family) {
+    emit_message(emit, "That tablet bears no chart the Wayfinder can open.");
+    return;
+  }
 
   GameItem consumed;
   if (!inventory_.remove_by_uuid(uuid, &consumed) || !consumed.expedition_map)
@@ -1945,6 +2012,8 @@ void ProtocolSession::open_expedition_map(
   endgame_map_tier_ = map.tier;
   endgame_goods_found_percent_ = map.goods_found_percent;
   endgame_map_name_ = consumed.display_name;
+  endgame_map_family_ = family->name;
+  endgame_map_objective_key_ = tablet_mastery_key(*family, map.tier);
   endgame_map_modifiers_ = map.modifiers;
   world_->set_expedition_tuning(map.monster_level_bonus,
                                 map.monster_life_percent,
@@ -2291,6 +2360,40 @@ void ProtocolSession::restore_world_web_progression() {
          cleared_nodes_.count(authored->parent_id) == 0))
       continue;
     cleared_nodes_.insert(authored->id);
+  }
+}
+
+int ProtocolSession::endgame_ascent_chance_percent() const {
+  // A fresh House starts at the original 35% next-tier chance. Broadening
+  // the board steadily improves sustain without ever making ascent certain.
+  return 35 + (std::min)(30, static_cast<int>(endgame_masteries_.size()) / 2);
+}
+
+void ProtocolSession::persist_endgame_progression() {
+  JsonValue::Object* house =
+      find_chronicle_house_object(chronicle_, active_house_id_);
+  if (!house) return;
+  JsonValue::Array mastered;
+  for (const auto& key : endgame_masteries_) mastered.emplace_back(key);
+  (*house)["endgameMasteries"] = JsonValue(std::move(mastered));
+  (*house)["endgameMapsCompleted"] = JsonValue(endgame_maps_completed_);
+  (*house)["renown"] = JsonValue(house_renown_);
+  chronicles_revision_ += 1;
+}
+
+void ProtocolSession::restore_endgame_progression() {
+  endgame_masteries_.clear();
+  JsonValue::Object* house =
+      find_chronicle_house_object(chronicle_, active_house_id_);
+  if (!house) return;
+  auto saved_it = house->find("endgameMasteries");
+  if (saved_it == house->end() || !saved_it->second.array()) return;
+  for (const auto& entry : *saved_it->second.array()) {
+    if (endgame_masteries_.size() >=
+        static_cast<std::size_t>(kEndgameMasteryTotal))
+      break;
+    if (entry.string() && valid_tablet_mastery_key(*entry.string()))
+      endgame_masteries_.insert(*entry.string());
   }
 }
 
@@ -2974,13 +3077,26 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
           if (monster.uuid != event.target_id || !monster.boss) continue;
           endgame_completed_ = true;
           endgame_maps_completed_ += 1;
-          if (JsonValue::Object* house =
-                  find_chronicle_house_object(chronicle_, active_house_id_)) {
-            (*house)["endgameMapsCompleted"] = JsonValue(endgame_maps_completed_);
-            chronicles_revision_ += 1;
+          const bool first_mastery =
+              !endgame_map_objective_key_.empty() &&
+              endgame_masteries_.insert(endgame_map_objective_key_).second;
+          if (first_mastery) {
+            const int renown_reward = endgame_map_tier_ * 3;
+            house_renown_ += renown_reward;
+            emit_message(emit, "Wayfinder Mastery sealed: " +
+                                   endgame_map_family_ + " tier " +
+                                   std::to_string(endgame_map_tier_) +
+                                   ". The House earns " +
+                                   std::to_string(renown_reward) + " renown.");
           }
+          persist_endgame_progression();
+          emit_quest_update(emit);
           const int next_tier = (std::min)(
-              16, endgame_map_tier_ + (session_rng_.next() < 0.35 ? 1 : 0));
+              16, endgame_map_tier_ +
+                      (session_rng_.next() <
+                               endgame_ascent_chance_percent() / 100.0
+                           ? 1
+                           : 0));
           award_expedition_map(next_tier, monster.x, monster.y, emit, false);
           emit_message(emit,
                        "The Seal-Bound Warden is broken. Claim the next "
@@ -3188,6 +3304,7 @@ void ProtocolSession::ensure_chronicle_house(const std::string& id, const std::s
   put(house, "crypt", JsonValue::Array{});
   put(house, "campaignComplete", false);
   put(house, "endgameMapsCompleted", 0);
+  put(house, "endgameMasteries", JsonValue::Array{});
   put(house, "treasury", 0);
   put(house, "renown", 0);
   put(house, "clearedRoadNodes", JsonValue::Array{});
@@ -3555,6 +3672,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     active_house_name_=name;
     campaign_complete_=false;
     endgame_maps_completed_=0;
+    endgame_masteries_.clear();
     cleared_nodes_.clear();
     house_treasury_=0;
     house_progression_={};
@@ -3594,6 +3712,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     restore_house_progression();
     restore_quest_progression();
     restore_world_web_progression();
+    restore_endgame_progression();
     // JS beginScionSession parity (server/core/services/chronicles.js:210-219):
     // EVERY Chronicles set-out admits the scion under the hard lifecycle -
     // the mortal oath is the Chronicles admission contract, not a dev-only
@@ -3743,6 +3862,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     }
     restore_house_progression();
     restore_world_web_progression();
+    restore_endgame_progression();
     // Persist the sworn oath on the living roster so relogins restore the
     // same lifecycle (see reset_world_for_new_socket).
     set_scion_record_mortal(chronicle_, active_house_id_, active_scion_id_, mortal_oath_);
