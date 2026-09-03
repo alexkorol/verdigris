@@ -2416,6 +2416,60 @@ void remote_passive_tree_absence_stays_absent() {
   server.stop();
 }
 
+void remote_endgame_payload_mirrors_to_presentation() {
+  ScriptedEnvelopeServer server;
+  server.script.push_back(
+      "{\"event\":\"player:login\",\"data\":{\"player\":{"
+      "\"uuid\":\"map-guest\",\"x\":10,\"y\":11,\"facing\":\"down\","
+      "\"inventory\":{\"slots\":[{\"id\":\"charted-tablet-crown\","
+      "\"uuid\":\"tablet-1\",\"displayName\":\"Tier 6 Crown Charted Tablet\","
+      "\"slot\":0,\"expeditionMap\":{\"tier\":6,"
+      "\"goodsFoundPercent\":88,\"modifiers\":[\"Furious\",\"Teeming\"]}}]}},"
+      "\"scene\":{\"id\":\"town\",\"type\":\"town\","
+      "\"name\":\"Verdigris Town\"}}}");
+  server.script.push_back(
+      "{\"event\":\"dev:state\",\"data\":{\"state\":{"
+      "\"lifecycle\":\"alive\",\"endgame\":{\"unlocked\":true,"
+      "\"active\":true,\"cleared\":false,\"completed\":4,\"tier\":6,"
+      "\"name\":\"Tier 6 Crown Charted Tablet\","
+      "\"goodsFoundPercent\":88,\"modifiers\":[\"Furious\",\"Teeming\"]}}}}");
+  std::string error;
+  check(server.start(&error),
+        "endgame-mirror: scripted loopback server bound in capsule");
+  if (server.port() == 0) return;
+
+  verdigris::client::RemoteProtocolSession session(
+      "127.0.0.1", server.port(), "map-mirror-guest", true);
+  check(session.start(&error), "endgame-mirror: connect + upgrade + login sent");
+  check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
+        "endgame-mirror: admission acknowledged");
+  check(session.model().inventory.size() == 1 &&
+            session.model().inventory.front().expedition_map &&
+            session.model().inventory.front().map_tier == 6 &&
+            session.model().inventory.front().map_modifiers.size() == 2,
+        "endgame-mirror: rolled tablet survives wire-to-model parsing");
+
+  server.grant_next_frame();
+  std::vector<std::string> errors;
+  const bool arrived = pt_pump_until(
+      session, errors, 5000,
+      [&] { return session.model().endgame.present &&
+                   session.model().endgame.active; });
+  check(arrived && session.model().endgame.unlocked &&
+            session.model().endgame.completed == 4 &&
+            session.model().endgame.goods_found_percent == 88,
+        "endgame-mirror: active expedition state survives wire-to-model parsing");
+  verdigris::client::WorldView world;
+  verdigris::client::sync_world_from_model(world, session.model());
+  check(world.carried.size() == 1 && world.carried.front().expedition_map &&
+            world.carried.front().map_tier == 6 && world.endgame.active &&
+            world.endgame.tier == 6,
+        "endgame-mirror: map item and active run survive model-to-presentation sync");
+  check(errors.empty(), "endgame-mirror: valid payload raises no protocol error");
+  session.shutdown();
+  server.stop();
+}
+
 void remote_passive_tree_payload_hardening() {
   using verdigris::client::RemoteProtocolSession;
 
@@ -2668,6 +2722,7 @@ int main() {
   remote_session_replaced();
   remote_render_list_ops();
   remote_passive_tree_absence_stays_absent();
+  remote_endgame_payload_mirrors_to_presentation();
   remote_passive_tree_payload_hardening();
   gateb_driver_state_machine_controls();
   gate_b_chronicles_reconnect_journey();

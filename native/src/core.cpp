@@ -1623,6 +1623,7 @@ void WorldSimulation::return_to_town() {
   }
   has_pre_instance_ = false;
   pre_instance_scene_id_.clear();
+  clear_expedition_tuning();
 }
 
 std::string WorldSimulation::zone_display_name(const std::string& template_id,
@@ -1709,13 +1710,15 @@ void WorldSimulation::generate_instance() {
     state ^= state << 17;
     return state;
   };
-  const int level = metadata_.theme == "crypt" ? 4
-                  : metadata_.theme == "wilds" ? 6
-                  : metadata_.theme == "marsh" ? 8
-                  : 2;
+  const int level = (metadata_.theme == "crypt" ? 4
+                   : metadata_.theme == "wilds" ? 6
+                   : metadata_.theme == "marsh" ? 8
+                   : 2) + expedition_level_bonus_;
+  const int monster_count =
+      kInstanceMonsterCount + std::min(12, expedition_extra_monsters_);
   int placed = 0;
   int attempts = 0;
-  while (!spawn_suppressed_ && placed < kInstanceMonsterCount && attempts < 4000) {
+  while (!spawn_suppressed_ && placed < monster_count && attempts < 4000) {
     ++attempts;
     const int x = static_cast<int>(next() % kInstanceWidth);
     const int y = static_cast<int>(next() % kInstanceHeight);
@@ -1747,7 +1750,8 @@ void WorldSimulation::generate_instance() {
     // map.js: level = max(1, floor(1 + index*0.14)) + (depth-1)*2 + theme
     // bonus. Deeper floors are the authoritative difficulty wall.
     monster.level = level + (metadata_.depth - 1) * 2 + placed / 7;
-    monster.life = kN3TrashLife + (level - 2) * 5;
+    monster.life = (kN3TrashLife + (level - 2) * 5) *
+                   (100 + expedition_life_percent_) / 100;
     monster.life_max = monster.life;
     // Authored pack recipes mirror map.js: crypt is melee-heavy, marsh adds
     // ranged pressure, and every biome has one support buffer. The final
@@ -1781,7 +1785,7 @@ void WorldSimulation::generate_instance() {
     if (metadata_.theme == "marsh" && monster.behaviour_type != "buffer" && placed % 4 == 1) {
       monster.empowered = true;
     }
-    if (placed == kInstanceMonsterCount - 1) {
+    if (placed == monster_count - 1) {
       // Every theme fields its boss (server/core/map.js THEME_MONSTERS);
       // native "dungeon" mirrors the JS "stone" theme.
       monster.boss = true;
@@ -1792,7 +1796,8 @@ void WorldSimulation::generate_instance() {
       else if (metadata_.theme == "wilds") monster.name = "Alpha of the Wilds";
       else if (metadata_.theme == "marsh") monster.name = "The Rotfather";
       else monster.name = "Warden of the Deep";
-      monster.life = kN3BossLife;
+      monster.life = (kN3BossLife + expedition_level_bonus_ * 12) *
+                     (100 + expedition_life_percent_) / 100;
       monster.life_max = monster.life;
       monster.behaviour_type = "melee";
     }
@@ -1951,7 +1956,8 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       // Owner balance ruling 2026-08-31: 4 + level*2 outpaced level-1 life
       // by the third simultaneous attacker; contact pressure now scales at
       // half the slope so early floors threaten without deleting.
-      const int damage = 2 + monster.level;
+      const int damage = std::max(
+          1, (2 + monster.level) * (100 + expedition_damage_percent_) / 100);
       player_life = std::max(0, player_life - damage);
       WorldCombatEvent impact;
       impact.type = "hit";
@@ -2711,6 +2717,13 @@ const ItemDef kItemCatalogue[] = {
     {"bronze-boots", "Bronze Boots", "armor", "feet", false, false, {0, 0, 0, 0}, {1, 2, 2, 0}, 0, 0, "", ""},
     {"knife", "Knife", "sharp", "", false, false, {0, 0, 0, 0}, {0, 0, 0, 0}, 0, 0, "", ""},
     {"wooden-shield", "Wooden Shield", "armor", "left_hand", false, false, {0, 0, 0, 0}, {2, 1, 3, 0}, 0, 0, "", ""},
+    // Endgame charted tablets: one compact inventory item is consumed to
+    // open one rolled expedition. Theme/layout are authored by the base;
+    // tier and modifiers are rolled into the live GameItem below.
+    {"charted-tablet-barrow", "Barrow Charted Tablet", "map", "", false, false, {}, {}, 1, 1, "", ""},
+    {"charted-tablet-reeds", "Reeds Charted Tablet", "map", "", false, false, {}, {}, 1, 1, "", ""},
+    {"charted-tablet-crown", "Crown Charted Tablet", "map", "", false, false, {}, {}, 1, 1, "", ""},
+    {"charted-tablet-thorns", "Thorns Charted Tablet", "map", "", false, false, {}, {}, 1, 1, "", ""},
 };
 
 // Process-wide instance identity source (factory.js uuid v4): uniqueness is
@@ -2836,6 +2849,75 @@ std::optional<GameItem> create_game_item(const std::string& item_id,
   item.equip_slot = def->slot;
   item.attack = def->attack;
   item.defense = def->defense;
+
+  if (def->type == "map") {
+    ExpeditionMapBlock map;
+    map.tier = std::clamp(options.item_level > 0 ? options.item_level : 1, 1, 16);
+    if (item_id == "charted-tablet-reeds") {
+      map.theme = "marsh";
+      map.layout = "clearings";
+    } else if (item_id == "charted-tablet-crown") {
+      map.theme = "crypt";
+      map.layout = "gauntlet";
+    } else if (item_id == "charted-tablet-thorns") {
+      map.theme = "grove";
+      map.layout = "clearings";
+    } else {
+      map.theme = "dungeon";
+      map.layout = "warren";
+    }
+
+    // Tier is the dependable difficulty ladder; rolled clauses add variance
+    // on top of it. A higher-tier tablet must never be merely a richer copy
+    // of the same low-level floor.
+    map.monster_level_bonus = map.tier;
+
+    // Every tablet carries two distinct, inspectable risk/reward clauses.
+    // A supplied RNG makes drops reproducible; factory callers without one
+    // still receive a stable roll derived from the already-unique uuid.
+    std::uint32_t fallback_seed = 2166136261u;
+    for (unsigned char ch : item.uuid)
+      fallback_seed = (fallback_seed ^ ch) * 16777619u;
+    Mulberry32 fallback(fallback_seed);
+    Mulberry32& rng = options.rng ? *options.rng : fallback;
+    const int first = static_cast<int>(std::floor(rng.next() * 4.0)) % 4;
+    const int second = (first + 1 +
+                        static_cast<int>(std::floor(rng.next() * 3.0)) % 3) % 4;
+    map.goods_found_percent = 15 + map.tier * 5;
+    const auto apply_modifier = [&](int index) {
+      if (index == 0) {
+        const int value = 15 + map.tier * 3;
+        map.monster_damage_percent += value;
+        map.goods_found_percent += value;
+        map.modifiers.push_back("Furious: monsters deal " +
+                                std::to_string(value) + "% more damage");
+      } else if (index == 1) {
+        const int value = 3 + map.tier / 3;
+        map.extra_monsters += value;
+        map.goods_found_percent += 18 + value * 3;
+        map.modifiers.push_back("Teeming: " + std::to_string(value) +
+                                " additional foes");
+      } else if (index == 2) {
+        const int value = 24 + map.tier * 4;
+        map.monster_life_percent += value;
+        map.goods_found_percent += value / 2;
+        map.modifiers.push_back("Ironbound: monsters have " +
+                                std::to_string(value) + "% more life");
+      } else {
+        const int value = 1 + map.tier / 4;
+        map.monster_level_bonus += value;
+        map.goods_found_percent += 20 + value * 8;
+        map.modifiers.push_back("Highborn: monsters gain " +
+                                std::to_string(value) + " level" +
+                                (value == 1 ? "" : "s"));
+      }
+    };
+    apply_modifier(first);
+    apply_modifier(second);
+    item.name = "Tier " + std::to_string(map.tier) + " " + def->name;
+    item.display_name = item.name;
+    item.expedition_map = std::move(map);
+  }
 
   if (!def->vessel_form.empty() && options.forge) {
     // adapter.js createVesselBlock: one rng draw reseeds the forge, then the

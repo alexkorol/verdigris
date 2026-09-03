@@ -83,6 +83,22 @@ struct WorldCarriedItem {
   std::string name;
   int attack_bonus = 0;
   bool equipped = false;
+  bool expedition_map = false;
+  int map_tier = 0;
+  int map_goods_found_percent = 0;
+  std::vector<std::string> map_modifiers;
+};
+
+struct EndgameView {
+  bool present = false;
+  bool unlocked = false;
+  bool active = false;
+  bool cleared = false;
+  int completed = 0;
+  int tier = 0;
+  int goods_found_percent = 0;
+  std::string name;
+  std::vector<std::string> modifiers;
 };
 
 // A town NPC as the presentation sees it: authoritative roster entry with a
@@ -122,6 +138,7 @@ struct WorldView {
   std::string scion_name;
   std::uint64_t tick = 0;
   std::vector<WorldCarriedItem> carried;
+  EndgameView endgame;
   std::size_t stored_items = 0;
   std::size_t stored_trophies = 0;
   std::size_t carried_trophies = 0;

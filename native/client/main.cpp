@@ -1303,6 +1303,16 @@ void equip_selected(ClientState& state) {
     const auto& items = state.world.carried;
     if (!items.empty()) {
       const std::size_t pick = std::min(state.selected_item, items.size() - 1);
+      if (items[pick].expedition_map) {
+        if (!state.session) {
+          show_hint(state, "Charted tablets require an authoritative session");
+          return;
+        }
+        state.session->submit(verdigris::client::ClientCommand::menu_action(
+            "player:endgame:open-map", items[pick].id, 0));
+        show_hint(state, "Breaking " + items[pick].name);
+        return;
+      }
       std::string lowered = items[pick].name;
       for (auto& ch : lowered)
         ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
@@ -2719,7 +2729,19 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
         FillRect(dc, &backing, backing_brush);
         DeleteObject(backing_brush);
       }
-      draw_item_art(state.billboards, dc, art_key(i), art_cell);
+      const bool drew_art = draw_item_art(state.billboards, dc, art_key(i), art_cell);
+      if (!drew_art && items[i].expedition_map) {
+        const std::string seal = "T" + std::to_string(items[i].map_tier);
+        HGDIOBJ seal_font = SelectObject(dc, skin::font_title());
+        SIZE seal_extent{};
+        GetTextExtentPoint32A(dc, seal.c_str(), static_cast<int>(seal.size()),
+                              &seal_extent);
+        SetTextColor(dc, skin::kGold);
+        TextOutA(dc, (art_cell.left + art_cell.right - seal_extent.cx) / 2,
+                 (art_cell.top + art_cell.bottom - seal_extent.cy) / 2,
+                 seal.c_str(), static_cast<int>(seal.size()));
+        SelectObject(dc, seal_font);
+      }
       SetTextColor(dc, equipped ? RGB(240, 210, 120) : RGB(205, 215, 204));
       std::string name = items[i].name;
       if (name.size() > 12) name = name.substr(0, 11) + ".";
@@ -2732,8 +2754,10 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
       TextOutA(dc, cx + 4 * s, cell.bottom - 17 * s, name.c_str(),
                static_cast<int>(name.size()));
       SetTextColor(dc, RGB(170, 185, 172));
-      std::string bonus = "+" + std::to_string(items[i].attack_bonus) +
-                          (equipped ? " [E]" : "");
+      std::string bonus = items[i].expedition_map
+                              ? "T" + std::to_string(items[i].map_tier)
+                              : "+" + std::to_string(items[i].attack_bonus) +
+                                    (equipped ? " [E]" : "");
       SIZE bonus_extent{};
       GetTextExtentPoint32A(dc, bonus.c_str(), static_cast<int>(bonus.size()),
                             &bonus_extent);
@@ -2761,8 +2785,29 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   // TASK-0156: compact authoritative progression summary, mirrored from the
   // passiveTree payload. Absence is stated as absence — never rendered as
   // zero — and no node ids, allocation actions, or invented copy appear.
+  const WorldCarriedItem* selected = items.empty()
+                                         ? nullptr
+                                         : &items[std::min(state.selected_item,
+                                                           items.size() - 1)];
   std::string progression;
-  if (state.world.progression.present) {
+  if (selected && selected->expedition_map) {
+    progression = "MAP T" + std::to_string(selected->map_tier) + "  +" +
+                  std::to_string(selected->map_goods_found_percent) +
+                  "% goods  Enter opens once";
+    int mod_y = bottom - 112 * s;
+    HGDIOBJ mod_font = SelectObject(dc, skin::font_small());
+    SetTextColor(dc, skin::kGold);
+    for (std::size_t i = 0;
+         i < selected->map_modifiers.size() && i < 2; ++i) {
+      const std::string& modifier = selected->map_modifiers[i];
+      TextOutA(dc, left + 14 * s, mod_y, modifier.c_str(),
+               static_cast<int>(modifier.size()));
+      rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0,
+                    "map-modifier:" + modifier});
+      mod_y += 16 * s;
+    }
+    SelectObject(dc, mod_font);
+  } else if (state.world.progression.present) {
     progression = "TREE pts " +
                   std::to_string(state.world.progression.unspent_points) + "/" +
                   std::to_string(state.world.progression.earned_points) +
@@ -2782,16 +2827,19 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   }
   TextOutA(dc, left + 14 * s, bottom - 74 * s, progression.c_str(),
            static_cast<int>(progression.size()));
-  const char* controls = "Arrows select | Enter equip | U unequip | I close";
+  const std::string controls =
+      selected && selected->expedition_map
+          ? "Arrows select | Enter open map | I close"
+          : "Arrows select | Enter equip | U unequip | I close";
   {
     SIZE extent{};
-    GetTextExtentPoint32A(dc, controls, static_cast<int>(strlen(controls)),
+    GetTextExtentPoint32A(dc, controls.c_str(), static_cast<int>(controls.size()),
                           &extent);
     state.hud_rect_trace.push_back(
         {"pane-footer", {left + 14 * s, bottom - 26 * s, extent.cx, extent.cy}});
   }
-  TextOutA(dc, left + 14 * s, bottom - 26 * s, controls,
-           static_cast<int>(strlen(controls)));
+  TextOutA(dc, left + 14 * s, bottom - 26 * s, controls.c_str(),
+           static_cast<int>(controls.size()));
 }
 
 void draw_orb(HDC dc, int cx, int cy, int radius, double ratio, COLORREF fill,
@@ -4920,13 +4968,28 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     if (!world.has_extraction) {
       // In town the NPC roster is the tell; guide toward the story loop
       // instead of the placeholder explore line.
-      objective = !world.npcs.empty()
-                      ? "objective: hail an NPC with T - press N to take the tin road"
-                      : "objective: explore the route";
+      if (world.endgame.unlocked) {
+        objective = "endgame: " + std::to_string(world.endgame.completed) +
+                    " expeditions cleared - I selects a charted tablet";
+        accent = skin::kGold;
+      } else {
+        objective = !world.npcs.empty()
+                        ? "objective: hail an NPC with T - press N to take the tin road"
+                        : "objective: explore the route";
+      }
     } else if (world.expedition_phase == ExpeditionPhaseView::SlayWardens) {
-      objective = "objective: slay the wardens (" +
-                  std::to_string(world.monsters.size()) + " remain)";
-      accent = RGB(214, 92, 72);
+      if (world.endgame.active) {
+        objective = "charted T" + std::to_string(world.endgame.tier) +
+                    ": slay the Seal-Bound Warden (" +
+                    std::to_string(world.monsters.size()) + " remain, +" +
+                    std::to_string(world.endgame.goods_found_percent) +
+                    "% goods)";
+        accent = skin::kGold;
+      } else {
+        objective = "objective: slay the wardens (" +
+                    std::to_string(world.monsters.size()) + " remain)";
+        accent = skin::kEmber;
+      }
     } else {
       const int ddx = world.extraction.x - player.position.x;
       const int ddy = world.extraction.y - player.position.y;
@@ -7390,6 +7453,76 @@ int scenario_hud_information() {
   return 0;
 }
 
+int scenario_endgame_tablet_ui() {
+  ClientState state;
+  scenario_begin(state);
+  load_billboards(state.billboards);
+  scenario_follow_camera(state);
+  state.simulation.reset();  // freeze the authored presentation fixture
+  state.world.has_extraction = false;
+  state.world.monsters.clear();
+  state.world.endgame.present = true;
+  state.world.endgame.unlocked = true;
+  state.world.endgame.completed = 4;
+  WorldCarriedItem tablet;
+  tablet.id = "tablet-ui-1";
+  tablet.name = "Tier 6 Crown Charted Tablet";
+  tablet.expedition_map = true;
+  tablet.map_tier = 6;
+  tablet.map_goods_found_percent = 88;
+  tablet.map_modifiers = {"Furious: monsters deal 33% more damage",
+                          "Teeming: 5 additional foes"};
+  state.world.carried = {std::move(tablet)};
+  state.gear_overlay = true;
+  state.selected_item = 0;
+  std::string capture_dir;
+  const int capture_override = capture_root_override(&capture_dir);
+  if (capture_override < 0) {
+    scenario_check(false,
+                   "endgame-tablet-ui: capture root rejected before any write");
+    return 0;
+  }
+  if (capture_override == 0) {
+    CreateDirectoryA("captures", nullptr);
+    capture_dir = "captures";
+  }
+  const std::string capture_path =
+      capture_dir + "\\endgame-tablet-ui-1366x768.png";
+  scenario_check(reference_present(state, 1366, 768, capture_path),
+                 "endgame-tablet-ui: readable UI evidence captured");
+  std::printf("    capture: %s\n", capture_path.c_str());
+
+  bool objective = false;
+  bool map_row = false;
+  int modifiers = 0;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Hud && item.label.rfind("endgame: 4", 0) == 0)
+      objective = true;
+    if (item.op == render::Op::PaneItem &&
+        item.label.find("Tier 6") != std::string::npos)
+      map_row = true;
+    if (item.op == render::Op::PaneStat &&
+        item.label.rfind("map-modifier:", 0) == 0)
+      ++modifiers;
+  }
+  scenario_check(objective,
+                 "endgame-tablet-ui: town objective exposes the unlocked loop");
+  scenario_check(map_row,
+                 "endgame-tablet-ui: selected charted tablet renders as an item");
+  scenario_check(modifiers == 2,
+                 "endgame-tablet-ui: both authoritative risk clauses are inspectable");
+  const HudRect* pane = nullptr;
+  const HudRect* footer = nullptr;
+  for (const auto& entry : state.hud_rect_trace) {
+    if (entry.first == "pane-frame") pane = &entry.second;
+    if (entry.first == "pane-footer") footer = &entry.second;
+  }
+  scenario_check(pane && footer &&
+                     footer->x + footer->w <= pane->x + pane->w - 8,
+                 "endgame-tablet-ui: contextual controls stay inside the pane");
+  return 0;
+}
+
 // Machine-checkable presentation budget: paints real fullscreen-sized 32bpp
 // frames through the production paint_scene path and fails when the average
 // frame cost would visibly stutter the 20 Hz tick. The bound is deliberately
@@ -7455,6 +7588,7 @@ int run_scenarios(const std::string& which) {
       {"progression-surface", scenario_progression_surface},
       {"hud-pane-readability", scenario_hud_pane_readability},
       {"hud-information", scenario_hud_information},
+      {"endgame-tablet-ui", scenario_endgame_tablet_ui},
       {"frame-budget", scenario_frame_budget},
   };
   int total_failures = 0;

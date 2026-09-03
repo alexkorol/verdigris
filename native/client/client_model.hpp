@@ -48,6 +48,10 @@ struct ClientItemSlot {
   int bonus_health = 0;
   int critical_chance = 0;
   int attack_rating = 0;
+  bool expedition_map = false;
+  int map_tier = 0;
+  int map_goods_found_percent = 0;
+  std::vector<std::string> map_modifiers;
 };
 
 // One purchasable row of a trader's stock (open:screen shop payload).
@@ -171,8 +175,22 @@ struct ClientCryptEntry {
 struct ClientHouseEntry {
   std::string id;
   std::string name;
+  bool campaign_complete = false;
+  int endgame_maps_completed = 0;
   std::vector<ClientScionEntry> scions;
   std::vector<ClientCryptEntry> crypt;
+};
+
+struct ClientEndgameState {
+  bool present = false;
+  bool unlocked = false;
+  bool active = false;
+  bool cleared = false;
+  int completed = 0;
+  int tier = 0;
+  int goods_found_percent = 0;
+  std::string name;
+  std::vector<std::string> modifiers;
 };
 
 struct ClientFallenScion {
@@ -225,6 +243,7 @@ struct ClientModel {
   double xp_current = 0.0;
   double xp_floor = 0.0;
   double xp_next = 0.0;
+  ClientEndgameState endgame;
   ClientItemSlot equipped;
   ClientScene scene;
   std::string house_name;

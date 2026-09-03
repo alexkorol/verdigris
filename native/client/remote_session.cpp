@@ -104,6 +104,17 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
       slot.attack_rating = (std::max)(slash, (std::max)(stab, (std::max)(crush, range)));
     }
   }
+  if (const auto* map = entry.get("expeditionMap"); map && map->object()) {
+    slot.expedition_map = true;
+    slot.map_tier = static_cast<int>(json_number(map->get("tier"), 1.0));
+    slot.map_goods_found_percent =
+        static_cast<int>(json_number(map->get("goodsFoundPercent"), 0.0));
+    if (const auto* modifiers = map->get("modifiers");
+        modifiers && modifiers->array()) {
+      for (const auto& modifier : *modifiers->array())
+        if (modifier.string()) slot.map_modifiers.push_back(*modifier.string());
+    }
+  }
   return slot;
 }
 
@@ -276,6 +287,11 @@ void apply_chronicle_object(ClientChronicle& chronicle, const JsonValue& source)
     ClientHouseEntry parsed_house;
     if (const auto* id = json_string(entry.get("id"))) parsed_house.id = *id;
     if (const auto* name = json_string(entry.get("name"))) parsed_house.name = *name;
+    if (const auto* complete = entry.get("campaignComplete"))
+      parsed_house.campaign_complete =
+          complete->boolean() && *complete->boolean();
+    parsed_house.endgame_maps_completed = static_cast<int>(
+        json_number(entry.get("endgameMapsCompleted"), 0.0));
     if (const auto* scions = entry.get("scions"); scions && scions->array()) {
       for (const auto& scion_entry : *scions->array()) {
         ClientScionEntry parsed_scion;
@@ -1126,6 +1142,30 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         model_.xp_floor = floor;
         model_.xp_next = next;
       }
+    }
+    if (const auto* endgame = state->get("endgame");
+        endgame && endgame->object()) {
+      ClientEndgameState parsed;
+      parsed.present = true;
+      if (const auto* unlocked = endgame->get("unlocked"))
+        parsed.unlocked = unlocked->boolean() && *unlocked->boolean();
+      if (const auto* active = endgame->get("active"))
+        parsed.active = active->boolean() && *active->boolean();
+      if (const auto* cleared = endgame->get("cleared"))
+        parsed.cleared = cleared->boolean() && *cleared->boolean();
+      parsed.completed =
+          static_cast<int>(json_number(endgame->get("completed"), 0.0));
+      parsed.tier = static_cast<int>(json_number(endgame->get("tier"), 0.0));
+      parsed.goods_found_percent = static_cast<int>(
+          json_number(endgame->get("goodsFoundPercent"), 0.0));
+      if (const auto* name = json_string(endgame->get("name")))
+        parsed.name = *name;
+      if (const auto* modifiers = endgame->get("modifiers");
+          modifiers && modifiers->array()) {
+        for (const auto& modifier : *modifiers->array())
+          if (modifier.string()) parsed.modifiers.push_back(*modifier.string());
+      }
+      model_.endgame = std::move(parsed);
     }
     if (const auto* monsters = state->get("monsters"); monsters && monsters->array()) {
       model_.monsters.clear();

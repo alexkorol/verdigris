@@ -235,6 +235,15 @@ std::string inventory_uuid_for(const JsonValue& state, const char* item_id) {
   return {};
 }
 
+std::string inventory_map_uuid(const JsonValue& state) {
+  if (const auto* inventory = state["state"]["inventory"].array()) {
+    for (const auto& entry : *inventory)
+      if (entry["expeditionMap"].object() && entry["uuid"].string())
+        return *entry["uuid"].string();
+  }
+  return {};
+}
+
 int inventory_count(const JsonValue& state) {
   if (const auto* inventory = state["state"]["inventory"].array()) {
     return static_cast<int>(inventory->size());
@@ -434,6 +443,175 @@ void test_gate_a_equip_totals_and_unknown_uuid() {
         "unknown uuid does not change wear");
   check(inventory_count(after) == inventory_count(worn), "unknown uuid does not change inventory");
 }
+
+void test_consumable_endgame_tablet_loop() {
+  ProtocolSession session("guest-endgame", "socket-endgame", 0x51ea1u, false);
+  auto open_tablet = [&](const std::string& uuid,
+                         const std::function<void(const Envelope&)>& emit) {
+    session.handle(
+        Envelope{"player:context-menu:action",
+                 JsonValue::Object{{
+                     "queueItem",
+                     JsonValue::Object{
+                         {"action", JsonValue::Object{{
+                                        "actionId", "player:endgame:open-map"}}},
+                         {"item", JsonValue::Object{{"uuid", uuid}}}}}}},
+        emit);
+  };
+
+  session.handle(Envelope{"dev:give", JsonValue::Object{
+                                          {"itemId", "charted-tablet-crown"},
+                                          {"qty", 1}, {"itemLevel", 5},
+                                          {"seed", 77}}},
+                 [](const Envelope&) {});
+  auto locked = request_state(session, "map-locked");
+  const std::string locked_uuid =
+      inventory_uuid_for(locked, "charted-tablet-crown");
+  check(!locked_uuid.empty() &&
+            !locked["state"]["endgame"]["unlocked"].boolean().value_or(true),
+        "endgame: a tablet is an inventory item before the campaign unlock");
+  open_tablet(locked_uuid, [](const Envelope&) {});
+  locked = request_state(session, "map-still-locked");
+  check(*locked["state"]["sceneType"].string() == "town" &&
+            !inventory_uuid_for(locked, "charted-tablet-crown").empty(),
+        "endgame: a locked or out-of-place use consumes nothing");
+
+  JsonValue::Object house;
+  house["id"] = JsonValue("house-endgame");
+  house["name"] = JsonValue("House Emberwake");
+  house["campaignComplete"] = JsonValue(true);
+  house["endgameMapsCompleted"] = JsonValue(2);
+  house["scions"] = JsonValue(JsonValue::Array{
+      JsonValue(JsonValue::Object{{"id", "scion-cartographer"},
+                                  {"name", "Ilyra"}, {"level", 12},
+                                  {"mortal", false}})});
+  house["crypt"] = JsonValue(JsonValue::Array{});
+  JsonValue::Object chronicle;
+  chronicle["version"] = JsonValue(3);
+  chronicle["houses"] = JsonValue(JsonValue::Array{JsonValue(house)});
+  chronicle["activeHouseId"] = JsonValue("house-endgame");
+  chronicle["activeScionId"] = JsonValue("scion-cartographer");
+  session.handle(Envelope{"player:chronicles:save",
+                          JsonValue::Object{{"state", JsonValue(chronicle)}}},
+                 [](const Envelope&) {});
+  session.handle(Envelope{"player:chronicles:select",
+                          JsonValue::Object{{"scionId", "scion-cartographer"},
+                                            {"houseId", "house-endgame"},
+                                            {"scionName", "Ilyra"},
+                                            {"mortal", false}}},
+                 [](const Envelope&) {});
+  auto inherited = request_state(session, "map-inherited");
+  check(inherited["state"]["endgame"]["unlocked"].boolean().value_or(false) &&
+            inherited["state"]["endgame"]["completed"].number().value_or(0) == 2,
+        "endgame: campaign unlock and clears belong to the House, not one Scion");
+
+  session.handle(Envelope{"dev:give", JsonValue::Object{
+                                          {"itemId", "charted-tablet-crown"},
+                                          {"qty", 1}, {"itemLevel", 5},
+                                          {"seed", 77}}},
+                 [](const Envelope&) {});
+  const auto carried = request_state(session, "map-carried");
+  const std::string uuid = inventory_uuid_for(carried, "charted-tablet-crown");
+  const JsonValue* tablet = nullptr;
+  for (const auto& entry : *carried["state"]["inventory"].array())
+    if (entry["uuid"].string() && *entry["uuid"].string() == uuid)
+      tablet = &entry;
+  check(tablet && (*tablet)["expeditionMap"]["tier"].number().value_or(0) == 5 &&
+            (*tablet)["expeditionMap"]["modifiers"].array() &&
+            (*tablet)["expeditionMap"]["modifiers"].array()->size() == 2,
+        "endgame: tier and rolled clauses serialize with the exact tablet");
+  JsonValue reconnect_player;
+  check(parse_json(session.login_payload(), reconnect_player) &&
+            reconnect_player["player"]["inventory"]["slots"].array(),
+        "endgame: reconnect player payload remains valid JSON");
+  const JsonValue* reconnect_tablet = nullptr;
+  for (const auto& entry :
+       *reconnect_player["player"]["inventory"]["slots"].array())
+    if (entry["uuid"].string() && *entry["uuid"].string() == uuid)
+      reconnect_tablet = &entry;
+  check(reconnect_tablet &&
+            (*reconnect_tablet)["expeditionMap"]["tier"].number().value_or(0) == 5 &&
+            (*reconnect_tablet)["expeditionMap"]["modifiers"].array() &&
+            (*reconnect_tablet)["expeditionMap"]["modifiers"].array()->size() == 2,
+        "endgame: reconnect retains the tablet tier and rolled clauses");
+
+  bool transitioned = false;
+  open_tablet(uuid, [&](const Envelope& event) {
+    if (event.event == "world:scene:transition") transitioned = true;
+  });
+  const auto opened = request_state(session, "map-opened");
+  check(transitioned && *opened["state"]["sceneType"].string() == "instance" &&
+            opened["state"]["endgame"]["active"].boolean().value_or(false) &&
+            opened["state"]["endgame"]["tier"].number().value_or(0) == 5,
+        "endgame: consuming the tablet opens its one authoritative expedition");
+  check(inventory_uuid_for(opened, "charted-tablet-crown").empty(),
+        "endgame: opening consumes the exact tablet once");
+
+  const auto* monsters = opened["state"]["monsters"].array();
+  const JsonValue* boss = nullptr;
+  if (monsters) {
+    for (const auto& monster : *monsters)
+      if (monster["name"].string() &&
+          *monster["name"].string() == "The Seal-Bound Warden")
+        boss = &monster;
+  }
+  check(boss != nullptr, "endgame: the rolled expedition has a named terminal Warden");
+  session.handle(Envelope{"dev:setlevel", JsonValue::Object{{"level", 50}}},
+                 [](const Envelope&) {});
+  session.handle(Envelope{"dev:teleport",
+                          JsonValue::Object{{"x", boss ? boss->operator[]("x").number().value_or(0) + 1 : 0},
+                                            {"y", boss ? boss->operator[]("y").number().value_or(0) : 0}}},
+                 [](const Envelope&) {});
+  session.set_direct_emit([](const Envelope&) {});
+  session.handle(Envelope{"player:skill:trigger",
+                          JsonValue::Object{{"skillId", "primary-attack"},
+                                            {"direction", "left"}}},
+                 [](const Envelope&) {});
+  for (int strike = 0; strike < 120; ++strike)
+    session.tick(5000000000000LL + static_cast<long long>(strike) * 1300LL);
+  const auto cleared = request_state(session, "map-cleared");
+  check(cleared["state"]["endgame"]["cleared"].boolean().value_or(false) &&
+            cleared["state"]["endgame"]["completed"].number().value_or(0) == 3,
+        "endgame: Warden death advances the House clear count exactly once");
+  bool next_tablet = false;
+  double next_tablet_x = 0;
+  double next_tablet_y = 0;
+  for (const auto& ground : *cleared["state"]["groundItems"].array())
+    if (ground["expeditionMap"].object()) {
+      next_tablet = true;
+      next_tablet_x = ground["x"].number().value_or(0);
+      next_tablet_y = ground["y"].number().value_or(0);
+    }
+  check(next_tablet,
+        "endgame: a cleared expedition drops the next rolled tablet for sustain");
+  session.handle(Envelope{"dev:teleport", JsonValue::Object{
+                                                {"x", next_tablet_x},
+                                                {"y", next_tablet_y}}},
+                 [](const Envelope&) {});
+  JsonValue claimed;
+  for (int pickup = 0; pickup < 6; ++pickup) {
+    session.handle(Envelope{"player:take:underfoot", JsonValue::Object{}},
+                   [](const Envelope&) {});
+    claimed = request_state(session, "map-claimed-" + std::to_string(pickup));
+    if (!inventory_map_uuid(claimed).empty()) break;
+  }
+  const std::string next_uuid = inventory_map_uuid(claimed);
+  check(!next_uuid.empty(),
+        "endgame: the next tablet can be claimed through the ordinary pickup path");
+  const double stairs_x =
+      claimed["state"]["sceneMetadata"]["stairsUp"]["x"].number().value_or(0);
+  const double stairs_y =
+      claimed["state"]["sceneMetadata"]["stairsUp"]["y"].number().value_or(0);
+  session.handle(Envelope{"dev:teleport",
+                          JsonValue::Object{{"x", stairs_x}, {"y", stairs_y}}},
+                 [](const Envelope&) {});
+  const auto returned = request_state(session, "map-returned");
+  check(*returned["state"]["sceneType"].string() == "town" &&
+            !returned["state"]["endgame"]["active"].boolean().value_or(true),
+        "endgame: the entry waymark closes the one-use expedition");
+  check(inventory_map_uuid(returned) == next_uuid,
+        "endgame: extraction banks loot but keeps the next tablet usable in town");
+}
 }  // namespace
 
 int main() {
@@ -446,6 +624,7 @@ int main() {
     test_gate_a_ground_login_and_kill_loot();
     test_gate_a_extract_and_stairs();
     test_gate_a_equip_totals_and_unknown_uuid();
+    test_consumable_endgame_tablet_loop();
     std::cout << "verdigris networking tests: PASS\n";
     return 0;
   } catch (const std::exception& error) {

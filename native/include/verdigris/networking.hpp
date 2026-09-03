@@ -148,6 +148,11 @@ class ProtocolSession {
   JsonValue bank_items_json() const;
   void emit_chart_screen(const std::string& road_id, const std::function<void(const Envelope&)>& emit) const;
   void enter_road_node(const std::string& node_id, const std::function<void(const Envelope&)>& emit);
+  void open_expedition_map(const std::string& uuid,
+                           const std::function<void(const Envelope&)>& emit);
+  void award_expedition_map(int tier, double x, double y,
+                            const std::function<void(const Envelope&)>& emit,
+                            bool to_backpack);
 
   void check_road_gates(const std::function<void(const Envelope&)>& emit);
   void quest_trigger(const char* trigger, const std::function<void(const Envelope&)>& emit,
@@ -188,6 +193,7 @@ class ProtocolSession {
   int active_quest_ = 0;      // index into kQuestChain; >= chain size = done
   int quest_objective_ = 0;   // objectiveIndex within the active quest
   std::vector<std::string> quests_completed_;
+  bool campaign_complete_ = false;  // House-wide; inherited by successor Scions
   int house_renown_ = 0;
   std::string last_instance_theme_;
   std::string last_instance_layout_;
@@ -204,6 +210,15 @@ class ProtocolSession {
   std::string current_child_id_;
   std::string current_child_name_;
   bool node_warden_dead_on_entry_ = false;
+  // Consumable charted-tablet endgame. Unlock is the completed campaign
+  // commission chain; the active roll is copied before its item is consumed.
+  bool endgame_active_ = false;
+  bool endgame_completed_ = false;
+  int endgame_maps_completed_ = 0;
+  int endgame_map_tier_ = 0;
+  int endgame_goods_found_percent_ = 0;
+  std::string endgame_map_name_;
+  std::vector<std::string> endgame_map_modifiers_;
   std::set<std::string> kitted_scions_;
   std::string active_skill_id_ = "primary-attack";
   // N6 combat experience (experience.js / shared/ui.js curve).

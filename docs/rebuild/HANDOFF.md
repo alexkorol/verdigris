@@ -1,5 +1,29 @@
 # Native reconstitution handoff
 
+## 2026-09-02 — consumable charted-tablet endgame loop
+
+- Campaign completion now unlocks a server-authoritative House endgame and
+  awards its first charted tablet. Four tablet families roll tiers 1-16 plus
+  two distinct risk/reward clauses that alter monster level, population,
+  life, damage, and goods found; the exact roll survives inventory refresh
+  and reconnect payloads.
+- Breaking a tablet in town consumes that exact UUID and opens its one-use
+  themed expedition. Invalid or pre-unlock attempts consume nothing. The
+  Seal-Bound Warden closes the run, advances the House clear count once, and
+  drops a same-tier or next-tier tablet through the ordinary loot/pickup path.
+  Extraction keeps that next tablet usable while banking ordinary spoils.
+- Chronicle Houses persist campaign unlock and completed-map count, so later
+  Scions inherit the endgame state. Active expedition tuning is explicitly
+  cleared on return and cannot leak into campaign roads.
+- The native gear pane now renders a tier seal, goods bonus, both rolled
+  clauses, and concise map-specific controls; the town/expedition objective
+  strip mirrors unlocked, active, and cleared state. The
+  `endgame-tablet-ui` scenario emits a 1366x768 capture and asserts its footer
+  remains inside the pane.
+- Full native gate passed: denylist, core/networking/camera/session/
+  presentation/audio suites and every client scenario. The 3440x1440
+  frame-budget result was 9.8 ms average against the 40 ms ceiling.
+
 ## 2026-09-02 — authoritative HUD information + shared dark-metal skin
 
 - Server snapshots now publish the authoritative current-level combat XP

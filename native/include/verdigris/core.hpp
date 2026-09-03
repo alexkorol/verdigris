@@ -596,6 +596,21 @@ struct ItemSize {
   int height = 1;
 };
 
+// A consumable endgame chart. The complete roll travels with the item so a
+// tablet shown in the backpack is the exact expedition the server opens;
+// neither the transport nor presentation layer reconstructs its rules.
+struct ExpeditionMapBlock {
+  int tier = 1;
+  std::string theme;
+  std::string layout;
+  int monster_level_bonus = 0;
+  int monster_life_percent = 0;
+  int monster_damage_percent = 0;
+  int extra_monsters = 0;
+  int goods_found_percent = 0;
+  std::vector<std::string> modifiers;
+};
+
 // inventory-footprints.js resolveItemSize (explicit size first, then the
 // weapon/armour id rules, then equipment-slot defaults).
 ItemSize resolve_item_size(const ItemDef& def, const VesselBlock* vessel);
@@ -619,9 +634,13 @@ struct GameItem {
   int bonus_mana = 0;
   int bonus_attributes = 0;
   std::optional<VesselBlock> vessel;
+  std::optional<ExpeditionMapBlock> expedition_map;
   std::string bound_to;
 
-  int item_level() const { return vessel ? vessel->item.ilvl : 0; }
+  int item_level() const {
+    if (vessel) return vessel->item.ilvl;
+    return expedition_map ? expedition_map->tier : 0;
+  }
 };
 
 struct CreateItemOptions {
@@ -877,6 +896,21 @@ class WorldSimulation {
   // cleared node spawns no monsters at all (dead stays dead).
   void set_boss_name_override(const std::string& name) { boss_name_override_ = name; }
   void set_spawn_suppressed(bool value) { spawn_suppressed_ = value; }
+  // Applied before enter_solo_instance for a consumed charted tablet. These
+  // values affect only the generated instance and are reset on return.
+  void set_expedition_tuning(int level_bonus, int life_percent,
+                             int damage_percent, int extra_monsters) {
+    expedition_level_bonus_ = std::max(0, level_bonus);
+    expedition_life_percent_ = std::max(0, life_percent);
+    expedition_damage_percent_ = std::max(0, damage_percent);
+    expedition_extra_monsters_ = std::max(0, extra_monsters);
+  }
+  void clear_expedition_tuning() {
+    expedition_level_bonus_ = 0;
+    expedition_life_percent_ = 0;
+    expedition_damage_percent_ = 0;
+    expedition_extra_monsters_ = 0;
+  }
   void set_scene_name(const std::string& name) { scene_name_ = name; }
   void set_scene_id(const std::string& id) { scene_id_ = id; }
   // dev:monster:reset - revive one monster at a chosen max health for
@@ -988,6 +1022,10 @@ class WorldSimulation {
   bool spawn_suppressed_ = false;
   bool block_stairs_down_ = false;
   bool stairs_up_returns_to_town_ = false;
+  int expedition_level_bonus_ = 0;
+  int expedition_life_percent_ = 0;
+  int expedition_damage_percent_ = 0;
+  int expedition_extra_monsters_ = 0;
   std::string engaged_by_;
 public:
   void set_block_stairs_down(bool value) { block_stairs_down_ = value; }

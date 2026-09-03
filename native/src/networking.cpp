@@ -397,6 +397,24 @@ JsonValue vessel_or_null(const GameItem& item) {
   return vessel_json(*item.vessel);
 }
 
+JsonValue expedition_map_or_null(const GameItem& item) {
+  if (!item.expedition_map) return JsonValue(nullptr);
+  const ExpeditionMapBlock& map = *item.expedition_map;
+  JsonValue::Array modifiers;
+  for (const auto& modifier : map.modifiers) modifiers.emplace_back(modifier);
+  JsonValue::Object out;
+  put(out, "tier", map.tier);
+  put(out, "theme", map.theme);
+  put(out, "layout", map.layout);
+  put(out, "monsterLevelBonus", map.monster_level_bonus);
+  put(out, "monsterLifePercent", map.monster_life_percent);
+  put(out, "monsterDamagePercent", map.monster_damage_percent);
+  put(out, "extraMonsters", map.extra_monsters);
+  put(out, "goodsFoundPercent", map.goods_found_percent);
+  put(out, "modifiers", std::move(modifiers));
+  return JsonValue(std::move(out));
+}
+
 int item_level_of(const GameItem& item) { return item.item_level(); }
 
 // dev.js snapshotItem.
@@ -413,6 +431,7 @@ JsonValue snapshot_item_json(const GameItem& item) {
   else put(out, "itemLevel", nullptr);
   put(out, "stats", stats_json(item));
   put(out, "vessel", vessel_or_null(item));
+  put(out, "expeditionMap", expedition_map_or_null(item));
   return JsonValue(std::move(out));
 }
 
@@ -436,6 +455,7 @@ JsonValue item_identity_json(const GameItem& item) {
   else put(out, "boundTo", item.bound_to);
   put(out, "affixes", JsonValue::Object{{"brand", nullptr}, {"bond", nullptr}});
   put(out, "vessel", vessel_or_null(item));
+  put(out, "expeditionMap", expedition_map_or_null(item));
   put(out, "stats", stats_json(item));
   if (item.bonus_attributes > 0) {
     put(out, "attributes", JsonValue::Object{{"strength", item.bonus_attributes},
@@ -471,6 +491,7 @@ JsonValue ground_item_json(const GroundItem& ground) {
   else put(out, "itemLevel", nullptr);
   put(out, "stats", stats_json(ground.item));
   put(out, "vessel", vessel_or_null(ground.item));
+  put(out, "expeditionMap", expedition_map_or_null(ground.item));
   if (!ground.relic_record_id.empty()) {
     JsonValue::Object relic;
     put(relic, "relicId", ground.relic_record_id);
@@ -644,6 +665,12 @@ void ProtocolSession::reset_world_for_new_socket() {
   pending_chronicles_ = false;
   current_node_id_.clear();
   current_child_id_.clear();
+  endgame_active_ = false;
+  endgame_completed_ = false;
+  endgame_map_tier_ = 0;
+  endgame_goods_found_percent_ = 0;
+  endgame_map_name_.clear();
+  endgame_map_modifiers_.clear();
   if (auto* actor = simulation_->actor(simulation_->scion().actor_id)) {
     actor->stats.life = actor->stats.life_max;  // fresh Player logs in healthy
   }
@@ -657,7 +684,8 @@ std::string ProtocolSession::player_payload() const {
   { const auto* actor=simulation_->actor(simulation_->scion().actor_id); put(player,"level",actor?actor->stats.level:1); }
   put(player,"passiveTree",passive_tree_json());
   put(player,"quests",quests_json());
-  JsonValue::Array slots; for (const auto& item:inventory_.items()) { JsonValue::Object value; put(value,"id",item.id); put(value,"uuid",item.uuid); put(value,"name",item.name); if(item.slot>=0) put(value,"slot",item.slot); else put(value,"slot",nullptr); slots.emplace_back(std::move(value)); }
+  JsonValue::Array slots;
+  for (const auto& item : inventory_.items()) slots.emplace_back(item_identity_json(item));
   JsonValue::Object inventory; put(inventory,"slots",std::move(slots)); put(player,"inventory",std::move(inventory));
   JsonValue::Object chronicles; put(chronicles,"mortal",mortal_oath_); put(chronicles,"scionId",active_scion_id_.empty()?JsonValue(nullptr):JsonValue(active_scion_id_)); put(chronicles,"houseId",active_house_id_.empty()?JsonValue(nullptr):JsonValue(active_house_id_)); put(player,"chronicles",std::move(chronicles));
   return JsonValue(std::move(player)).stringify();
@@ -898,6 +926,28 @@ JsonValue ProtocolSession::snapshot() const {
     put(xp, "next", static_cast<double>(xp_for_level(xp_level + 1)));
     put(state, "xp", std::move(xp));
   }
+  {
+    JsonValue::Array modifiers;
+    for (const auto& modifier : endgame_map_modifiers_)
+      modifiers.emplace_back(modifier);
+    JsonValue::Object endgame;
+    put(endgame, "unlocked", campaign_complete_);
+    put(endgame, "active", endgame_active_);
+    put(endgame, "cleared", endgame_completed_);
+    put(endgame, "completed", endgame_maps_completed_);
+    if (endgame_active_) {
+      put(endgame, "name", endgame_map_name_);
+      put(endgame, "tier", endgame_map_tier_);
+      put(endgame, "goodsFoundPercent", endgame_goods_found_percent_);
+      put(endgame, "modifiers", std::move(modifiers));
+    } else {
+      put(endgame, "name", nullptr);
+      put(endgame, "tier", nullptr);
+      put(endgame, "goodsFoundPercent", nullptr);
+      put(endgame, "modifiers", JsonValue::Array{});
+    }
+    put(state, "endgame", std::move(endgame));
+  }
   JsonValue::Object chronicles; put(chronicles,"mortal",mortal_oath_); put(chronicles,"scionId",active_scion_id_.empty()?JsonValue(nullptr):JsonValue(active_scion_id_)); put(chronicles,"houseId",active_house_id_.empty()?JsonValue(nullptr):JsonValue(active_house_id_)); put(state,"chronicles",std::move(chronicles));
   put(state,"bestDepth",best_depth_);
   put(state,"quests",quests_json());
@@ -1058,9 +1108,16 @@ void ProtocolSession::finish_extraction(const std::function<void(const Envelope&
   // Drain backpack + wear into the House store. JS has no player:extract;
   // the response envelope reuses that name (see REPORT).
   int banked_items = 0;
+  int retained_maps = 0;
   std::vector<std::string> uuids;
   uuids.reserve(inventory_.items().size());
-  for (const auto& item : inventory_.items()) uuids.push_back(item.uuid);
+  for (const auto& item : inventory_.items()) {
+    if (item.expedition_map) {
+      ++retained_maps;
+      continue;
+    }
+    uuids.push_back(item.uuid);
+  }
   for (const auto& uuid : uuids) {
     GameItem item;
     if (inventory_.remove_by_uuid(uuid, &item)) {
@@ -1085,8 +1142,19 @@ void ProtocolSession::finish_extraction(const std::function<void(const Envelope&
   put(summary, "storedTrophies", JsonValue::Array{});
   emit(Envelope{"player:extract", JsonValue(std::move(summary))});
   emit_message(emit, "Banked " + std::to_string(banked_items) + " items into the House store.");
+  if (retained_maps > 0)
+    emit_message(emit, std::to_string(retained_maps) +
+                           " charted tablet" +
+                           (retained_maps == 1 ? " remains" : "s remain") +
+                           " in the House map case.");
   emit_inventory_refresh(emit);
   emit_equip_state(emit);
+  endgame_active_ = false;
+  endgame_completed_ = false;
+  endgame_map_tier_ = 0;
+  endgame_goods_found_percent_ = 0;
+  endgame_map_name_.clear();
+  endgame_map_modifiers_.clear();
 }
 void ProtocolSession::sync_combat_mods() {
   const auto totals=wear_.totals();
@@ -1522,6 +1590,20 @@ void ProtocolSession::quest_trigger(const char* trigger, const std::function<voi
     active_quest_ += 1;
     quest_objective_ = 0;
     emit_message(emit, std::string("Commission complete: ") + quest.id + ".");
+    if (active_quest_ == kQuestChainSize && !campaign_complete_) {
+      campaign_complete_ = true;
+      if (JsonValue::Object* house =
+              find_chronicle_house_object(chronicle_, active_house_id_)) {
+        (*house)["campaignComplete"] = JsonValue(true);
+        (*house)["endgameMapsCompleted"] = JsonValue(endgame_maps_completed_);
+        chronicles_revision_ += 1;
+      }
+      const auto position = world_->position();
+      award_expedition_map(1, position.x, position.y, emit, true);
+      emit_message(emit,
+                   "Campaign complete. Charted tablets now open one-use "
+                   "endgame expeditions from the Crossroads.");
+    }
   }
   emit_quest_update(emit);
 }
@@ -1568,6 +1650,9 @@ void ProtocolSession::enter_road_node(const std::string& node_id, const std::fun
   const RoadNode* node = nullptr;
   for (const auto& candidate : nodes) if (candidate.id == node_id) { node = &candidate; break; }
   if (!node) return;
+  endgame_active_ = false;
+  endgame_completed_ = false;
+  world_->clear_expedition_tuning();
   current_node_id_ = node->id;
   current_node_tier_ = node->tier;
   current_node_name_ = node->name;
@@ -1592,9 +1677,89 @@ void ProtocolSession::enter_road_node(const std::string& node_id, const std::fun
   quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth);
 }
 
+void ProtocolSession::award_expedition_map(
+    int tier, double x, double y,
+    const std::function<void(const Envelope&)>& emit, bool to_backpack) {
+  static constexpr const char* kTabletIds[] = {
+      "charted-tablet-barrow", "charted-tablet-reeds",
+      "charted-tablet-crown", "charted-tablet-thorns"};
+  const int bounded_tier = std::clamp(tier, 1, 16);
+  const int pick = static_cast<int>(std::floor(session_rng_.next() * 4.0)) % 4;
+  CreateItemOptions options;
+  options.rng = &session_rng_;
+  options.item_level = bounded_tier;
+  auto tablet = create_game_item(kTabletIds[pick], options);
+  if (!tablet) return;
+  const std::string name = tablet->display_name;
+  if (to_backpack) {
+    auto result = inventory_.add(std::move(*tablet));
+    for (auto& spill : result.overflow)
+      world_->add_ground_item(std::move(spill), x, y);
+    emit_inventory_refresh(emit);
+    if (!result.overflow.empty()) emit_ground_change(emit);
+  } else {
+    world_->add_ground_item(std::move(*tablet), x, y);
+    emit_ground_change(emit);
+  }
+  emit_message(emit, name + (to_backpack ? " was entered in your ledger."
+                                             : " fell from the Warden."));
+}
+
+void ProtocolSession::open_expedition_map(
+    const std::string& uuid,
+    const std::function<void(const Envelope&)>& emit) {
+  if (!campaign_complete_) {
+    emit_message(emit, "The charted roads open after the campaign commissions.");
+    return;
+  }
+  if (world_->in_instance()) {
+    emit_message(emit, "A charted tablet can only be broken at the Crossroads.");
+    return;
+  }
+  const GameItem* carried = inventory_.find_by_uuid(uuid);
+  if (!carried || !carried->expedition_map) {
+    emit_message(emit, "That charted tablet is no longer in your backpack.");
+    emit_inventory_refresh(emit);
+    return;
+  }
+
+  GameItem consumed;
+  if (!inventory_.remove_by_uuid(uuid, &consumed) || !consumed.expedition_map)
+    return;
+  const ExpeditionMapBlock map = *consumed.expedition_map;
+  current_node_id_.clear();
+  current_child_id_.clear();
+  endgame_active_ = true;
+  endgame_completed_ = false;
+  endgame_map_tier_ = map.tier;
+  endgame_goods_found_percent_ = map.goods_found_percent;
+  endgame_map_name_ = consumed.display_name;
+  endgame_map_modifiers_ = map.modifiers;
+  world_->set_expedition_tuning(map.monster_level_bonus,
+                                map.monster_life_percent,
+                                map.monster_damage_percent,
+                                map.extra_monsters);
+  world_->set_boss_name_override("The Seal-Bound Warden");
+  world_->enter_solo_instance(map.theme, map.layout);
+  world_->set_boss_name_override(std::string());
+  world_->set_block_stairs_down(true);
+  world_->set_stairs_up_returns_to_town(true);
+  world_->set_scene_name(consumed.display_name);
+  last_instance_theme_ = world_->metadata().theme;
+  last_instance_layout_ = world_->metadata().layout;
+  emit_inventory_refresh(emit);
+  emit_transition(emit, "world:scene:transition");
+  emit_ground_change(emit);
+  emit_message(emit, "The tablet breaks. " + consumed.display_name +
+                         " opens for one expedition.");
+}
+
 void ProtocolSession::enter_shared_instance(const std::string& scene_id, const std::function<void(const Envelope&)>& emit) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   current_node_id_.clear();
+  endgame_active_ = false;
+  endgame_completed_ = false;
+  world_->clear_expedition_tuning();
   world_->set_block_stairs_down(false);
   world_->set_stairs_up_returns_to_town(false);
   world_->enter_solo_instance("dungeon", "warren");
@@ -1954,10 +2119,26 @@ void ProtocolSession::handle_menu_build(const JsonValue& payload, const std::fun
     put(walk,"at",JsonValue::Object{{"x",wx},{"y",wy}});
     entries.emplace_back(std::move(walk));
   } else if (clicked_has("inventorySlot")) {
-    // Inventory variant: the brand service entry for eligible vessel items.
+    // Inventory variant: charted tablets are one-use expedition keys; vessel
+    // items retain the existing brand-service entry.
     const int slot=as_int(misc?misc->get("slot"):nullptr,-1);
     const GameItem* item=nullptr;
     for (const auto& candidate:inventory_.items()) { if (candidate.slot==slot) { item=&candidate; break; } }
+    if (item && item->expedition_map) {
+      JsonValue::Object entry;
+      put(entry, "label", campaign_complete_
+                              ? "Break tablet and open expedition"
+                              : "Campaign completion required");
+      put(entry, "action", JsonValue::Object{
+          {"name", "Open expedition"},
+          {"actionId", "player:endgame:open-map"},
+          {"context", JsonValue::Array{JsonValue("inventorySlot")}},
+          {"nearby", false}, {"weight", 1}});
+      put(entry, "type", "map");
+      put(entry, "uuid", item->uuid);
+      put(entry, "id", item->id);
+      entries.emplace_back(std::move(entry));
+    }
     if (item&&item->vessel&&world_->scene_id()=="town:verdigris") {
       const VesselItem& vi=item->vessel->item;
       const bool room=vi.vessel-static_cast<int>(vi.brands.size())-vi.scars>0;
@@ -1993,6 +2174,10 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
   const auto* item_ref=entry_item?entry_item:(queue_item?queue_item->get("item"):nullptr);
   const std::string uuid=as_string(item_ref?item_ref->get("uuid"):nullptr);
   if (action_id=="player:take") { handle_take_ground(uuid,emit); return; }
+  if (action_id=="player:endgame:open-map") {
+    open_expedition_map(uuid, emit);
+    return;
+  }
   if (action_id=="player:screen:bank") { bank_open_ = true; shop_open_ = false; emit_bank_screen(emit); return; }
   if (action_id=="player:shop:buy") {
     const std::string item_id = as_string(item_ref ? item_ref->get("id") : nullptr);
@@ -2127,6 +2312,12 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
   const int life_before = actor->stats.life;
   world_->set_guaranteed_elite_gear(active_quest_ == 1 && quest_objective_ == 0);
   const auto combat_totals = wear_.totals();
+  {
+    PlayerCombatMods active_mods = world_->player_combat_mods();
+    active_mods.goods_found = combat_totals.modifiers.goods_found +
+                              (endgame_active_ ? endgame_goods_found_percent_ : 0);
+    world_->set_player_combat_mods(active_mods);
+  }
   const int wear_attack = (std::max)(0, (std::max)((std::max)(combat_totals.attack.stab, combat_totals.attack.slash),
                                                    (std::max)(combat_totals.attack.crush, combat_totals.attack.range)));
   // combat/index.js rollPlayerDamage: melee = 2 + STR*0.45 + weapon*1.5;
@@ -2184,6 +2375,25 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
           cleared_nodes_.insert(current_node_id_);
           world_->set_block_stairs_down(false);
           emit_message(emit, "The " + std::string("Warden of ") + current_node_name_ + " is down. The road runs on.");
+          break;
+        }
+      }
+      if (endgame_active_ && !endgame_completed_) {
+        for (const auto& monster : world_->monsters()) {
+          if (monster.uuid != event.target_id || !monster.boss) continue;
+          endgame_completed_ = true;
+          endgame_maps_completed_ += 1;
+          if (JsonValue::Object* house =
+                  find_chronicle_house_object(chronicle_, active_house_id_)) {
+            (*house)["endgameMapsCompleted"] = JsonValue(endgame_maps_completed_);
+            chronicles_revision_ += 1;
+          }
+          const int next_tier = (std::min)(
+              16, endgame_map_tier_ + (session_rng_.next() < 0.35 ? 1 : 0));
+          award_expedition_map(next_tier, monster.x, monster.y, emit, false);
+          emit_message(emit,
+                       "The Seal-Bound Warden is broken. Claim the next "
+                       "tablet and return by the entry waymark.");
           break;
         }
       }
@@ -2385,6 +2595,8 @@ void ProtocolSession::ensure_chronicle_house(const std::string& id, const std::s
   put(house, "name", name);
   put(house, "scions", JsonValue::Array{});
   put(house, "crypt", JsonValue::Array{});
+  put(house, "campaignComplete", false);
+  put(house, "endgameMapsCompleted", 0);
   houses->emplace_back(std::move(house));
   (*root)["activeHouseId"] = JsonValue(id);
 }
@@ -2620,6 +2832,8 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     ensure_chronicle_house(house_id,name);
     active_house_id_=house_id;
     active_house_name_=name;
+    campaign_complete_=false;
+    endgame_maps_completed_=0;
     chronicles_revision_+=1;
     emit(Envelope{"chronicles:state",chronicles_state_payload("")});
     return;
@@ -2638,6 +2852,17 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   if (envelope.event=="chronicles:scion:set-out") {
     active_scion_id_=as_string(payload?payload->get("scionId"):nullptr);
     pending_chronicles_=false;
+    if (JsonValue::Object* house =
+            find_chronicle_house_object(chronicle_, active_house_id_)) {
+      auto campaign = house->find("campaignComplete");
+      campaign_complete_ = campaign != house->end() &&
+                           as_bool(&campaign->second, false);
+      auto completed = house->find("endgameMapsCompleted");
+      endgame_maps_completed_ = completed == house->end()
+                                    ? 0
+                                    : as_int(&completed->second, 0);
+      if (campaign_complete_) active_quest_ = kQuestChainSize;
+    }
     // JS beginScionSession parity (server/core/services/chronicles.js:210-219):
     // EVERY Chronicles set-out admits the scion under the hard lifecycle -
     // the mortal oath is the Chronicles admission contract, not a dev-only
@@ -2769,6 +2994,17 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     lifecycle_mode_=mortal_oath_?"hard":"soft";
     lifecycle_="alive"; lifecycle_deaths_=0; respawn_at_ms_=0; respawn_protection_until_ms_=0; prepare_final_death_=false;
     pending_chronicles_=false;
+    campaign_complete_=false;
+    endgame_maps_completed_=0;
+    if (JsonValue::Object* house =
+            find_chronicle_house_object(chronicle_, active_house_id_)) {
+      auto campaign = house->find("campaignComplete");
+      if (campaign != house->end())
+        campaign_complete_ = as_bool(&campaign->second, false);
+      auto completed = house->find("endgameMapsCompleted");
+      if (completed != house->end())
+        endgame_maps_completed_ = as_int(&completed->second, 0);
+    }
     // Persist the sworn oath on the living roster so relogins restore the
     // same lifecycle (see reset_world_for_new_socket).
     set_scion_record_mortal(chronicle_, active_house_id_, active_scion_id_, mortal_oath_);
@@ -2776,7 +3012,8 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     // "authoritatively on world admission"); a plain re-login keeps the
     // chain, so points survive relogging on the same account.
     first_goal_stage_="available"; first_goal_started_ms_=0; first_goal_completed_ms_=0;
-    active_quest_=0; quest_objective_=0; quests_completed_.clear(); quest_points_=0; tree_quest_points_=0;
+    active_quest_=campaign_complete_ ? kQuestChainSize : 0;
+    quest_objective_=0; quests_completed_.clear(); quest_points_=0; tree_quest_points_=0;
     // A new scion starts with the fresh-scion profile (purse only), never a
     // duplicate of the previous scion's equipment.
     wear_.clear(); inventory_.clear();

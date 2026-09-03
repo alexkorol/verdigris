@@ -30,6 +30,7 @@ const char* extraction_action_hint(bool remote_session) {
 }
 
 void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& sim) {
+  world.endgame = EndgameView{};
   world = WorldView{};
   world.house_name = sim.house().name;
   world.scion_name = sim.scion().name;
@@ -185,7 +186,12 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
   world.carried.clear();
   for (const auto& item : model.inventory) {
     const std::string label = item.name.empty() ? item.id : item.name;
-    world.carried.push_back({item.uuid, label, item.attack_rating, false});
+    WorldCarriedItem carried{item.uuid, label, item.attack_rating, false};
+    carried.expedition_map = item.expedition_map;
+    carried.map_tier = item.map_tier;
+    carried.map_goods_found_percent = item.map_goods_found_percent;
+    carried.map_modifiers = item.map_modifiers;
+    world.carried.push_back(std::move(carried));
   }
   if (!model.equipped.uuid.empty()) {
     const std::string label =
@@ -193,6 +199,15 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     world.carried.push_back(
         {model.equipped.uuid, label, model.equipped.attack_rating, true});
   }
+  world.endgame.present = model.endgame.present;
+  world.endgame.unlocked = model.endgame.unlocked;
+  world.endgame.active = model.endgame.active;
+  world.endgame.cleared = model.endgame.cleared;
+  world.endgame.completed = model.endgame.completed;
+  world.endgame.tier = model.endgame.tier;
+  world.endgame.goods_found_percent = model.endgame.goods_found_percent;
+  world.endgame.name = model.endgame.name;
+  world.endgame.modifiers = model.endgame.modifiers;
   world.loot_names.clear();
   for (const auto& item : model.ground)
     world.loot_names[item.uuid] = item.name.empty() ? item.uuid : item.name;

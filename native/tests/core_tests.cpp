@@ -2067,6 +2067,42 @@ void test_n4_depth_chaining_and_treasure() {
         "N4 the town ground list returns exactly as left");
 }
 
+void test_endgame_tablet_roll_and_instance_tuning() {
+  Mulberry32 rng(0x5ea1u);
+  CreateItemOptions options;
+  options.rng = &rng;
+  options.item_level = 7;
+  auto tablet = create_game_item("charted-tablet-crown", options);
+  check(tablet && tablet->expedition_map,
+        "endgame: charted tablet creates as a consumable map item");
+  check(tablet && tablet->item_level() == 7 && tablet->size.width == 1 &&
+            tablet->size.height == 1,
+        "endgame: tablet carries its tier and compact footprint");
+  check(tablet && tablet->expedition_map->theme == "crypt" &&
+            tablet->expedition_map->layout == "gauntlet" &&
+            tablet->expedition_map->monster_level_bonus >= 7 &&
+            tablet->expedition_map->modifiers.size() == 2 &&
+            tablet->expedition_map->goods_found_percent > 0,
+        "endgame: tier difficulty, biome, layout, and two rolls travel with the item");
+
+  WorldSimulation baseline(77, "map-baseline");
+  baseline.enter_solo_instance("crypt", "gauntlet");
+  WorldSimulation tuned(77, "map-tuned");
+  tuned.set_expedition_tuning(3, 50, 40, 5);
+  tuned.enter_solo_instance("crypt", "gauntlet");
+  check(tuned.monsters().size() == baseline.monsters().size() + 5,
+        "endgame: Teeming changes authoritative population");
+  check(!tuned.monsters().empty() && !baseline.monsters().empty() &&
+            tuned.monsters().front().level == baseline.monsters().front().level + 3 &&
+            tuned.monsters().front().life_max > baseline.monsters().front().life_max,
+        "endgame: Highborn and Ironbound change authoritative monsters");
+  tuned.return_to_surface();
+  tuned.enter_solo_instance("crypt", "gauntlet");
+  check(tuned.monsters().size() == baseline.monsters().size() &&
+            tuned.monsters().front().level == baseline.monsters().front().level,
+        "endgame: expedition tuning cannot leak into the next ordinary road");
+}
+
 }  // namespace
 
 int main() {
@@ -2126,6 +2162,7 @@ int main() {
   test_n4_ring_seats_and_wear_caps();
   test_n4_loot_math_and_depth_scaling();
   test_n4_depth_chaining_and_treasure();
+  test_endgame_tablet_roll_and_instance_tuning();
   std::cout << "verdigris core tests: PASS\n";
   return 0;
 }
