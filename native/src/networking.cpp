@@ -233,6 +233,24 @@ JsonValue::Object* find_chronicle_house_object(JsonValue& chronicle, const std::
   return nullptr;
 }
 
+JsonValue::Object* find_chronicle_scion_object(JsonValue& chronicle,
+                                                const std::string& house_id,
+                                                const std::string& scion_id) {
+  JsonValue::Object* house = find_chronicle_house_object(chronicle, house_id);
+  if (!house) return nullptr;
+  auto scions_it = house->find("scions");
+  if (scions_it == house->end() || !scions_it->second.array()) return nullptr;
+  for (auto& entry : *scions_it->second.array()) {
+    auto* scion = entry.object();
+    if (!scion) continue;
+    auto id_it = scion->find("id");
+    if (id_it != scion->end() && id_it->second.string() &&
+        *id_it->second.string() == scion_id)
+      return scion;
+  }
+  return nullptr;
+}
+
 void set_scion_record_mortal(JsonValue& chronicle, const std::string& house_id,
                              const std::string& scion_id, bool mortal) {
   JsonValue::Object* house = find_chronicle_house_object(chronicle, house_id);
@@ -727,17 +745,51 @@ JsonValue ProtocolSession::wear_details_json() const {
 }
 namespace {
 // server/shared/quests.js QUEST_DEFINITIONS - ordered objective chain.
-struct QuestObjective { const char* trigger; const char* crit_a; const char* crit_b; int min_depth; };
-struct QuestDef { const char* id; const char* deed; int renown; int objective_count; QuestObjective objectives[5]; };
+struct QuestObjective {
+  const char* trigger;
+  const char* text;
+  const char* crit_a;
+  const char* crit_b;
+  int min_depth;
+};
+struct QuestDef {
+  const char* id;
+  const char* title;
+  const char* giver;
+  const char* summary;
+  const char* deed;
+  const char* reward;
+  int renown;
+  int objective_count;
+  QuestObjective objectives[5];
+};
 const QuestDef kQuestChain[] = {
-    {"aldwyns-charge", "Answered Aldwyn's Charge", 5, 5, {
-        {"move", "", "", 0}, {"attack", "", "", 0}, {"slay", "", "", 0}, {"loot", "", "", 0}, {"delve", "", "", 0}}},
-    {"proof-of-temper", "Proved their temper in the old realms", 10, 3, {
-        {"slay-elite", "", "", 0}, {"loot-vessel", "", "", 0}, {"equip-vessel", "", "", 0}, {}, {}}},
-    {"the-pale-crown", "Broke the Pale Sovereign's seal", 15, 3, {
-        {"delve", "weir-crypt", "", 1}, {"slay-elite", "The Pale Sovereign", "crypt", 0}, {"delve", "", "crypt", 2}, {}, {}}},
-    {"rot-in-the-reeds", "Ended the rot beneath the reeds", 20, 3, {
-        {"delve", "marsh-of-reeds", "", 1}, {"slay-elite", "The Rotfather", "marsh", 0}, {"return-surface", "marsh-of-reeds", "", 0}, {}, {}}},
+    {"aldwyns-charge", "Aldwyn's Charge", "Aldwyn the Guide",
+     "Learn the road rites every Verdigris Scion must survive.",
+     "Answered Aldwyn's Charge", "+1 quest point / +5 House renown", 5, 5, {
+        {"move", "Take your first steps beyond the wagon circle.", "", "", 0},
+        {"attack", "Strike with your equipped weapon.", "", "", 0},
+        {"slay", "Slay a creature of the old realms.", "", "", 0},
+        {"loot", "Claim an item from the fallen.", "", "", 0},
+        {"delve", "Enter your first expedition.", "", "", 0}}},
+    {"proof-of-temper", "Proof of Temper", "Ludovicus",
+     "Forge a weapon worthy of a named Scion.",
+     "Proved their temper in the old realms", "+1 quest point / +10 House renown", 10, 3, {
+        {"slay-elite", "Bring down an elite foe.", "", "", 0},
+        {"loot-vessel", "Recover the vessel it guarded.", "", "", 0},
+        {"equip-vessel", "Equip the vessel and bind it to your hand.", "", "", 0}, {}, {}}},
+    {"the-pale-crown", "The Pale Crown", "Selene of the Rite",
+     "Break the sovereign seal beneath the Weir Crypt.",
+     "Broke the Pale Sovereign's seal", "+1 quest point / +15 House renown", 15, 3, {
+        {"delve", "Enter the Weir Crypt.", "weir-crypt", "", 1},
+        {"slay-elite", "Defeat the Pale Sovereign.", "The Pale Sovereign", "crypt", 0},
+        {"delve", "Descend to the crypt's second floor.", "", "crypt", 2}, {}, {}}},
+    {"rot-in-the-reeds", "Rot in the Reeds", "Aldwyn the Guide",
+     "Cut the marsh blight out at its buried root.",
+     "Ended the rot beneath the reeds", "+1 quest point / +20 House renown", 20, 3, {
+        {"delve", "Enter the Marsh of Reeds.", "marsh-of-reeds", "", 1},
+        {"slay-elite", "Defeat the Rotfather.", "The Rotfather", "marsh", 0},
+        {"return-surface", "Return alive to the surface.", "marsh-of-reeds", "", 0}, {}, {}}},
 };
 const int kQuestChainSize = 4;
 std::string zone_id_for_instance(const std::string& theme, const std::string& layout) {
@@ -1331,9 +1383,37 @@ JsonValue ProtocolSession::quests_json() const {
   put(quests, "activeQuestId", active_quest_ < kQuestChainSize ? JsonValue(kQuestChain[active_quest_].id) : JsonValue(nullptr));
   put(quests, "objectiveIndex", quest_objective_);
   put(quests, "questPoints", quest_points_);
+  put(quests, "houseRenown", house_renown_);
+  put(quests, "campaignComplete", campaign_complete_);
+  if (active_quest_ < kQuestChainSize) {
+    const QuestDef& active = kQuestChain[active_quest_];
+    JsonValue::Object quest;
+    put(quest, "id", active.id);
+    put(quest, "title", active.title);
+    put(quest, "giver", active.giver);
+    put(quest, "summary", active.summary);
+    put(quest, "objectiveIndex", quest_objective_);
+    put(quest, "objectiveCount", active.objective_count);
+    put(quest, "reward", active.reward);
+    JsonValue::Object objective;
+    if (quest_objective_ >= 0 && quest_objective_ < active.objective_count)
+      put(objective, "text", active.objectives[quest_objective_].text);
+    else
+      put(objective, "text", "Commission complete.");
+    put(quest, "objective", std::move(objective));
+    put(quests, "activeQuest", std::move(quest));
+  } else {
+    put(quests, "activeQuest", nullptr);
+  }
   JsonValue::Array completed;
   for (const auto& done : quests_completed_) {
     JsonValue::Object entry; put(entry, "id", done);
+    for (const auto& definition : kQuestChain) {
+      if (done != definition.id) continue;
+      put(entry, "title", definition.title);
+      put(entry, "deed", definition.deed);
+      break;
+    }
     completed.emplace_back(std::move(entry));
   }
   put(quests, "completed", std::move(completed));
@@ -1690,6 +1770,7 @@ void ProtocolSession::quest_trigger(const char* trigger, const std::function<voi
                    "endgame expeditions from the Crossroads.");
     }
   }
+  persist_quest_progression();
   emit_quest_update(emit);
 }
 void ProtocolSession::emit_chart_screen(const std::string& road_id, const std::function<void(const Envelope&)>& emit) const {
@@ -2041,6 +2122,61 @@ void ProtocolSession::restore_house_progression() {
     house_progression_.choice = FirstInvestmentChoice::ScionGear;
   else if (choice == "house_production")
     house_progression_.choice = FirstInvestmentChoice::HouseProduction;
+}
+
+void ProtocolSession::persist_quest_progression() {
+  JsonValue::Object* scion = find_chronicle_scion_object(
+      chronicle_, active_house_id_, active_scion_id_);
+  if (!scion) return;
+  JsonValue::Object campaign;
+  put(campaign, "activeQuestIndex", active_quest_);
+  put(campaign, "objectiveIndex", quest_objective_);
+  put(campaign, "questPoints", quest_points_);
+  JsonValue::Array completed;
+  for (const auto& id : quests_completed_) completed.emplace_back(id);
+  put(campaign, "completed", std::move(completed));
+  (*scion)["campaignQuests"] = JsonValue(std::move(campaign));
+  chronicles_revision_ += 1;
+}
+
+void ProtocolSession::restore_quest_progression() {
+  active_quest_ = campaign_complete_ ? kQuestChainSize : 0;
+  quest_objective_ = 0;
+  quests_completed_.clear();
+  quest_points_ = 0;
+  tree_quest_points_ = 0;
+  JsonValue::Object* scion = find_chronicle_scion_object(
+      chronicle_, active_house_id_, active_scion_id_);
+  if (!scion) return;
+  auto saved_it = scion->find("campaignQuests");
+  if (saved_it == scion->end() || !saved_it->second.object()) return;
+  const JsonValue& saved = saved_it->second;
+  const int saved_active = std::clamp(
+      as_int(saved.get("activeQuestIndex"), active_quest_), 0,
+      kQuestChainSize);
+  active_quest_ = campaign_complete_ ? kQuestChainSize : saved_active;
+  const int objective_limit = active_quest_ < kQuestChainSize
+                                  ? kQuestChain[active_quest_].objective_count - 1
+                                  : 0;
+  quest_objective_ = std::clamp(
+      as_int(saved.get("objectiveIndex"), 0), 0,
+      (std::max)(0, objective_limit));
+  quest_points_ = std::clamp(as_int(saved.get("questPoints"), 0), 0, 23);
+  tree_quest_points_ = quest_points_;
+  if (const auto* completed = saved.get("completed");
+      completed && completed->array()) {
+    for (const auto& entry : *completed->array()) {
+      if (!entry.string()) continue;
+      for (const auto& definition : kQuestChain) {
+        if (*entry.string() == definition.id &&
+            std::find(quests_completed_.begin(), quests_completed_.end(),
+                      definition.id) == quests_completed_.end()) {
+          quests_completed_.push_back(definition.id);
+          break;
+        }
+      }
+    }
+  }
 }
 
 void ProtocolSession::handle_house_investment(
@@ -3282,6 +3418,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   if (envelope.event=="chronicles:scion:set-out") {
     active_scion_id_=as_string(payload?payload->get("scionId"):nullptr);
     pending_chronicles_=false;
+    house_renown_=0;
     if (JsonValue::Object* house =
             find_chronicle_house_object(chronicle_, active_house_id_)) {
       auto campaign = house->find("campaignComplete");
@@ -3291,9 +3428,13 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
       endgame_maps_completed_ = completed == house->end()
                                     ? 0
                                     : as_int(&completed->second, 0);
-      if (campaign_complete_) active_quest_ = kQuestChainSize;
+      auto renown = house->find("renown");
+      house_renown_ = renown == house->end()
+                          ? 0
+                          : as_int(&renown->second, 0);
     }
     restore_house_progression();
+    restore_quest_progression();
     // JS beginScionSession parity (server/core/services/chronicles.js:210-219):
     // EVERY Chronicles set-out admits the scion under the hard lifecycle -
     // the mortal oath is the Chronicles admission contract, not a dev-only
@@ -3428,6 +3569,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     pending_chronicles_=false;
     campaign_complete_=false;
     endgame_maps_completed_=0;
+    house_renown_=0;
     if (JsonValue::Object* house =
             find_chronicle_house_object(chronicle_, active_house_id_)) {
       auto campaign = house->find("campaignComplete");
@@ -3436,17 +3578,18 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
       auto completed = house->find("endgameMapsCompleted");
       if (completed != house->end())
         endgame_maps_completed_ = as_int(&completed->second, 0);
+      auto renown = house->find("renown");
+      if (renown != house->end())
+        house_renown_ = as_int(&renown->second, 0);
     }
     restore_house_progression();
     // Persist the sworn oath on the living roster so relogins restore the
     // same lifecycle (see reset_world_for_new_socket).
     set_scion_record_mortal(chronicle_, active_house_id_, active_scion_id_, mortal_oath_);
-    // Scion admission starts the commission chain fresh (JS: quests begin
-    // "authoritatively on world admission"); a plain re-login keeps the
-    // chain, so points survive relogging on the same account.
+    // A first admission starts fresh; selecting an existing living Scion
+    // restores that Scion's Chronicle-backed campaign checkpoint.
     first_goal_stage_="available"; first_goal_started_ms_=0; first_goal_completed_ms_=0;
-    active_quest_=campaign_complete_ ? kQuestChainSize : 0;
-    quest_objective_=0; quests_completed_.clear(); quest_points_=0; tree_quest_points_=0;
+    restore_quest_progression();
     // A new scion starts with the fresh-scion profile (purse only), never a
     // duplicate of the previous scion's equipment.
     wear_.clear(); inventory_.clear();

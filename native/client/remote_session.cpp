@@ -123,6 +123,99 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
   return slot;
 }
 
+bool quest_integer(const JsonValue* value, int maximum) {
+  if (!value || !value->number()) return false;
+  const double raw = *value->number();
+  return raw >= 0.0 && raw <= maximum && std::floor(raw) == raw;
+}
+
+void apply_quests(const JsonValue& source, ClientModel& model,
+                  std::vector<PresentationEvent>& events) {
+  const char* reason = nullptr;
+  const JsonValue* active = nullptr;
+  const JsonValue* completed = nullptr;
+  if (!source.object()) {
+    reason = "envelope must be an object";
+  } else if (!quest_integer(source.get("questPoints"), 23)) {
+    reason = "questPoints must be an integer from 0 to 23";
+  } else if (!quest_integer(source.get("houseRenown"), 1000000)) {
+    reason = "houseRenown must be a nonnegative integer";
+  } else if (!source.get("campaignComplete") ||
+             !source.get("campaignComplete")->boolean()) {
+    reason = "campaignComplete must be a boolean";
+  } else {
+    completed = source.get("completed");
+    if (!completed || !completed->array()) {
+      reason = "completed must be an array";
+    } else {
+      active = source.get("activeQuest");
+      if (!active) {
+        reason = "activeQuest is required";
+      } else if (!active->is_null()) {
+        const auto text = [&](const char* key) {
+          return active->get(key) && active->get(key)->string();
+        };
+        const auto* objective = active->get("objective");
+        if (!active->object() || !text("id") || !text("title") ||
+            !text("giver") || !text("summary") || !text("reward") ||
+            !quest_integer(active->get("objectiveIndex"), 100) ||
+            !quest_integer(active->get("objectiveCount"), 100) ||
+            !objective || !objective->object() ||
+            !objective->get("text") || !objective->get("text")->string())
+          reason = "activeQuest has an invalid presentation contract";
+        else if (*active->get("objectiveCount")->number() < 1.0 ||
+                 *active->get("objectiveIndex")->number() >=
+                     *active->get("objectiveCount")->number())
+          reason = "activeQuest objective cursor is out of range";
+      } else if (!*source.get("campaignComplete")->boolean()) {
+        reason = "an incomplete campaign requires activeQuest";
+      }
+      if (!reason) {
+        for (const auto& entry : *completed->array()) {
+          if (!entry.object() || !entry.get("id") || !entry.get("id")->string() ||
+              !entry.get("title") || !entry.get("title")->string() ||
+              !entry.get("deed") || !entry.get("deed")->string()) {
+            reason = "completed contains an invalid quest record";
+            break;
+          }
+        }
+      }
+    }
+  }
+  if (reason) {
+    events.push_back({PresentationEventType::ProtocolError, "", "",
+                      std::string("quests rejected: ") + reason, 0});
+    return;
+  }
+
+  ClientQuestState parsed;
+  parsed.present = true;
+  parsed.quest_points = static_cast<int>(*source.get("questPoints")->number());
+  parsed.house_renown = static_cast<int>(*source.get("houseRenown")->number());
+  parsed.campaign_complete = *source.get("campaignComplete")->boolean();
+  if (!active->is_null()) {
+    parsed.active_id = *active->get("id")->string();
+    parsed.title = *active->get("title")->string();
+    parsed.giver = *active->get("giver")->string();
+    parsed.summary = *active->get("summary")->string();
+    parsed.reward = *active->get("reward")->string();
+    parsed.objective_index =
+        static_cast<int>(*active->get("objectiveIndex")->number());
+    parsed.objective_count =
+        static_cast<int>(*active->get("objectiveCount")->number());
+    parsed.objective = *active->get("objective")->get("text")->string();
+  }
+  for (const auto& entry : *completed->array()) {
+    if (!entry.object()) continue;
+    ClientCompletedQuest done;
+    if (const auto* id = json_string(entry.get("id"))) done.id = *id;
+    if (const auto* title = json_string(entry.get("title"))) done.title = *title;
+    if (const auto* deed = json_string(entry.get("deed"))) done.deed = *deed;
+    if (!done.id.empty()) parsed.completed.push_back(std::move(done));
+  }
+  model.quests = std::move(parsed);
+}
+
 // TASK-0156: mirror the authoritative `passiveTree` envelope (schemaVersion
 // 2: nodes / conduits / points.skill / earned) into plain model fields. Only
 // payload-borne values are copied; the client derives no rules, costs, or
@@ -836,6 +929,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       // passiveTree envelope (player_payload puts it beside quests).
       if (const auto* tree = player->get("passiveTree"))
         apply_passive_tree(*tree, model_, pending_events_);
+      if (const auto* quests = player->get("quests"))
+        apply_quests(*quests, model_, pending_events_);
     }
     if (const auto* scene = envelope.data.get("scene")) apply_scene_fields(model_.scene, *scene);
     // A full player:login is a world admission on the Gate-B journey: the
@@ -1191,6 +1286,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     // a malformed snapshot fails closed and surfaces its diagnostic.
     if (const auto* tree = state->get("passiveTree"))
       apply_passive_tree(*tree, model_, pending_events_);
+    if (const auto* quests = state->get("quests"))
+      apply_quests(*quests, model_, pending_events_);
     if (const auto* hp = state->get("hp")) {
       // Authoritative life keeps alive honest between combat envelopes.
       model_.player.life = static_cast<int>(json_number(hp->get("current"), model_.player.life));
@@ -1371,6 +1468,13 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     // TASK-0156: the server's reply to a committed tree snapshot carries the
     // refreshed authoritative passiveTree envelope. TASK-0162: malformed
     // refreshes fail closed with a diagnostic instead of zeroing the pane.
+    if (const auto* tree = envelope.data.get("passiveTree"))
+      apply_passive_tree(*tree, model_, pending_events_);
+    return;
+  }
+  if (envelope.event == "quest:update") {
+    if (const auto* quests = envelope.data.get("quests"))
+      apply_quests(*quests, model_, pending_events_);
     if (const auto* tree = envelope.data.get("passiveTree"))
       apply_passive_tree(*tree, model_, pending_events_);
     return;

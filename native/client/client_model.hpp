@@ -185,6 +185,30 @@ struct ClientPassiveProgression {
   std::string selected_node;
 };
 
+struct ClientCompletedQuest {
+  std::string id;
+  std::string title;
+  std::string deed;
+};
+
+// Authoritative campaign journal. All player-facing copy arrives from the
+// server alongside the exact objective cursor; the client only lays it out.
+struct ClientQuestState {
+  bool present = false;
+  bool campaign_complete = false;
+  int quest_points = 0;
+  int house_renown = 0;
+  std::string active_id;
+  std::string title;
+  std::string giver;
+  std::string summary;
+  std::string objective;
+  std::string reward;
+  int objective_index = 0;
+  int objective_count = 0;
+  std::vector<ClientCompletedQuest> completed;
+};
+
 // TASK-0145 Gate-B chronicle state, exactly as carried by the accepted wire
 // contract (chronicles:state / player:chronicles:ready / scion-fallen /
 // dev:state chroniclesRecord). Presentation renders this; it never invents
@@ -299,6 +323,7 @@ struct ClientModel {
   // TASK-0156: mirrored passive-tree progression (absent until a payload
   // arrives on the wire).
   ClientPassiveProgression progression;
+  ClientQuestState quests;
 };
 
 inline const ClientHouseEntry* find_chronicle_house(const ClientChronicle& chronicle,

@@ -141,6 +141,8 @@ class ProtocolSession {
                                const std::function<void(const Envelope&)>& emit);
   void persist_house_progression();
   void restore_house_progression();
+  void persist_quest_progression();
+  void restore_quest_progression();
   void emit_quest_update(const std::function<void(const Envelope&)>& emit) const;
   void maybe_complete_first_goal(const std::function<void(const Envelope&)>& emit);
   JsonValue quests_json() const;

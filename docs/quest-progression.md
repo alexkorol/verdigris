@@ -51,3 +51,16 @@ point, 20 House renown, and the deed `Ended the rot beneath the reeds`.
 Guest saves include the quest state. Account saves send it as `questsData`.
 Malformed or unknown persisted quest entries are discarded and quest points
 are clamped to the reserved 23-point quest budget.
+
+## Native client contract
+
+The native protocol publishes only presentation-safe quest metadata; trigger
+names, zone criteria, boss matching, and depth requirements remain server-only.
+The remote client mirrors admission, snapshot, and live update envelopes into
+the `ClientQuestState` journal model. `J` opens Chronicle Commissions, while
+the compact town tracker shows the same current objective.
+
+For named Chronicles characters, the current quest index, objective cursor,
+completed IDs, and awarded quest points are checkpointed on the living Scion.
+Re-admitting that Scion restores the exact checkpoint. House renown and the
+campaign-complete/endgame unlock remain House-wide.

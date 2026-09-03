@@ -309,6 +309,12 @@ HudRect gear_pane_rect(int width, int height) {
           std::max(0, bottom - pane_top)};
 }
 
+HudRect quest_journal_rect(int width, int height) {
+  const int w = (std::min)(760, width - 48);
+  const int h = (std::min)(520, height - 128);
+  return {(width - w) / 2, (height - h) / 2 - 12, w, h};
+}
+
 HudRect minimap_rect(int width, int height, MinimapSide side) {
   const int s = hud_scale(height);
   const int size = 108 * s;
@@ -427,6 +433,7 @@ struct ClientState {
   std::unordered_map<std::string, std::uint64_t> monster_strikes;
   bool loot_labels = false;
   bool gear_overlay = false;
+  bool quest_journal = false;
   bool debug_overlay = false;
   MinimapMode minimap_mode = MinimapMode::Corner;
   MinimapSide minimap_side = MinimapSide::Left;
@@ -3004,6 +3011,170 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
            static_cast<int>(controls.size()));
 }
 
+void paint_quest_journal(ClientState& state, HDC dc, const RECT& bounds,
+                         render::List& rl) {
+  if (!state.quest_journal) return;
+  const HudRect pane = quest_journal_rect(static_cast<int>(bounds.right),
+                                          static_cast<int>(bounds.bottom));
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  RECT frame{pane.x, pane.y, pane.x + pane.w, pane.y + pane.h};
+  state.hud_rect_trace.push_back({"quest-pane-frame", pane});
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel,
+                          frame))
+    skin::panel(dc, frame, skin::kVerdigris, 248, 10.0f);
+
+  const verdigris::client::ClientQuestState empty;
+  const auto& quests = state.session ? state.session->model().quests : empty;
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_heading());
+  SetTextColor(dc, RGB(230, 235, 220));
+  const char* heading = "CHRONICLE COMMISSIONS";
+  TextOutA(dc, frame.left + 22 * s, frame.top + 17 * s, heading,
+           static_cast<int>(std::strlen(heading)));
+  rl.push_back({render::Op::Hud, static_cast<double>(frame.left),
+                static_cast<double>(frame.top), 0.0, 0, "quest-journal"});
+
+  SelectObject(dc, skin::font_small());
+  SetTextColor(dc, RGB(145, 170, 156));
+  const std::string ledger = quests.present
+      ? std::to_string(quests.quest_points) + " QUEST POINTS   /   " +
+            std::to_string(quests.house_renown) + " HOUSE RENOWN"
+      : "AWAITING AN AUTHORITATIVE CAMPAIGN RECORD";
+  TextOutA(dc, frame.left + 22 * s, frame.top + 46 * s, ledger.c_str(),
+           static_cast<int>(ledger.size()));
+
+  const int rail_w = 214 * s;
+  RECT rail{frame.left + 18 * s, frame.top + 72 * s,
+            frame.left + 18 * s + rail_w, frame.bottom - 46 * s};
+  skin::panel(dc, rail, RGB(58, 78, 70), 225, 5.0f);
+  SelectObject(dc, skin::font_body_bold());
+  SetTextColor(dc, RGB(196, 208, 196));
+  const char* record = "HOUSE RECORD";
+  TextOutA(dc, rail.left + 12 * s, rail.top + 11 * s, record,
+           static_cast<int>(std::strlen(record)));
+  SelectObject(dc, skin::font_small());
+  int row_y = rail.top + 39 * s;
+  int seal = 1;
+  for (const auto& done : quests.completed) {
+    SetTextColor(dc, RGB(202, 176, 104));
+    const std::string row = "[x] " + (done.title.empty() ? done.id : done.title);
+    TextOutA(dc, rail.left + 12 * s, row_y, row.c_str(),
+             static_cast<int>(row.size()));
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, seal++,
+                  "quest-complete:" + done.id});
+    row_y += 29 * s;
+  }
+  if (!quests.active_id.empty()) {
+    SetTextColor(dc, RGB(124, 220, 172));
+    const std::string row = "[>] " + quests.title;
+    RECT active_row{rail.left + 12 * s, row_y, rail.right - 10 * s,
+                    row_y + 38 * s};
+    DrawTextA(dc, row.c_str(), static_cast<int>(row.size()), &active_row,
+              DT_LEFT | DT_WORDBREAK | DT_NOPREFIX);
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, seal,
+                  "quest-active:" + quests.active_id});
+  } else if (quests.campaign_complete) {
+    SetTextColor(dc, RGB(239, 208, 116));
+    const char* complete = "[x] CAMPAIGN SEALED";
+    TextOutA(dc, rail.left + 12 * s, row_y, complete,
+             static_cast<int>(std::strlen(complete)));
+  }
+
+  const int detail_left = rail.right + 22 * s;
+  const int detail_right = frame.right - 22 * s;
+  if (!quests.present) {
+    SelectObject(dc, skin::font_body());
+    SetTextColor(dc, RGB(170, 184, 174));
+    RECT absent{detail_left, rail.top + 8 * s, detail_right,
+                frame.bottom - 70 * s};
+    const char* copy = "No campaign state has arrived from the realm server. The journal will never substitute local objectives or fabricated rewards.";
+    DrawTextA(dc, copy, static_cast<int>(std::strlen(copy)), &absent,
+              DT_LEFT | DT_WORDBREAK | DT_NOPREFIX);
+  } else if (quests.campaign_complete && quests.active_id.empty()) {
+    SelectObject(dc, skin::font_title());
+    SetTextColor(dc, RGB(239, 208, 116));
+    const char* title = "THE ROAD ENDURES";
+    TextOutA(dc, detail_left, rail.top + 10 * s, title,
+             static_cast<int>(std::strlen(title)));
+    SelectObject(dc, skin::font_body());
+    SetTextColor(dc, RGB(190, 204, 192));
+    RECT copy{detail_left, rail.top + 50 * s, detail_right,
+              rail.top + 150 * s};
+    const char* text = "This House has sealed the campaign. Charted tablets may now be consumed at the Crossroads to open one-use expeditions.";
+    DrawTextA(dc, text, static_cast<int>(std::strlen(text)), &copy,
+              DT_LEFT | DT_WORDBREAK | DT_NOPREFIX);
+  } else {
+    SelectObject(dc, skin::font_title());
+    SetTextColor(dc, RGB(235, 224, 188));
+    TextOutA(dc, detail_left, rail.top + 4 * s, quests.title.c_str(),
+             static_cast<int>(quests.title.size()));
+    SelectObject(dc, skin::font_small());
+    SetTextColor(dc, RGB(130, 176, 151));
+    const std::string giver = "COMMISSIONED BY " + quests.giver;
+    TextOutA(dc, detail_left, rail.top + 37 * s, giver.c_str(),
+             static_cast<int>(giver.size()));
+    SelectObject(dc, skin::font_body());
+    SetTextColor(dc, RGB(178, 192, 181));
+    RECT summary{detail_left, rail.top + 67 * s, detail_right,
+                 rail.top + 122 * s};
+    DrawTextA(dc, quests.summary.c_str(), static_cast<int>(quests.summary.size()),
+              &summary, DT_LEFT | DT_WORDBREAK | DT_NOPREFIX);
+
+    const int progress_top = rail.top + 136 * s;
+    const int progress_w = detail_right - detail_left;
+    RECT track{detail_left, progress_top, detail_right, progress_top + 7 * s};
+    HBRUSH track_brush = CreateSolidBrush(RGB(30, 39, 37));
+    FillRect(dc, &track, track_brush);
+    DeleteObject(track_brush);
+    const double ratio = quests.objective_count > 0
+        ? static_cast<double>(quests.objective_index + 1) / quests.objective_count
+        : 0.0;
+    RECT fill = track;
+    fill.right = fill.left + static_cast<int>(progress_w * std::clamp(ratio, 0.0, 1.0));
+    HBRUSH fill_brush = CreateSolidBrush(RGB(104, 180, 139));
+    FillRect(dc, &fill, fill_brush);
+    DeleteObject(fill_brush);
+
+    SelectObject(dc, skin::font_small());
+    SetTextColor(dc, RGB(142, 161, 149));
+    const std::string count = "CURRENT RITE  " +
+        std::to_string(quests.objective_index + 1) + " / " +
+        std::to_string(quests.objective_count);
+    TextOutA(dc, detail_left, progress_top + 17 * s, count.c_str(),
+             static_cast<int>(count.size()));
+    RECT objective_box{detail_left, progress_top + 44 * s, detail_right,
+                       progress_top + 117 * s};
+    skin::panel(dc, objective_box, RGB(72, 104, 88), 235, 5.0f);
+    SelectObject(dc, skin::font_body_bold());
+    SetTextColor(dc, RGB(222, 232, 218));
+    RECT objective_text{objective_box.left + 13 * s,
+                        objective_box.top + 13 * s,
+                        objective_box.right - 13 * s,
+                        objective_box.bottom - 10 * s};
+    DrawTextA(dc, quests.objective.c_str(),
+              static_cast<int>(quests.objective.size()), &objective_text,
+              DT_LEFT | DT_WORDBREAK | DT_NOPREFIX);
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0,
+                  quests.objective_index, "quest-objective:" + quests.objective});
+
+    SelectObject(dc, skin::font_small());
+    SetTextColor(dc, RGB(202, 176, 104));
+    const std::string reward = "REWARD  " + quests.reward;
+    TextOutA(dc, detail_left, progress_top + 138 * s, reward.c_str(),
+             static_cast<int>(reward.size()));
+  }
+
+  SelectObject(dc, skin::font_small());
+  SetTextColor(dc, RGB(135, 151, 141));
+  const char* controls = "J / ESC close journal";
+  TextOutA(dc, frame.right - 154 * s, frame.bottom - 27 * s, controls,
+           static_cast<int>(std::strlen(controls)));
+  state.hud_rect_trace.push_back(
+      {"quest-pane-footer", {frame.right - 154 * s, frame.bottom - 27 * s,
+                              142 * s, 16 * s}});
+  SelectObject(dc, old_font);
+}
+
 void draw_orb(HDC dc, int cx, int cy, int radius, double ratio, COLORREF fill,
               COLORREF rim, const std::string& caption, bool pulse, render::List& rl,
               const char* label) {
@@ -3151,7 +3322,7 @@ bool trade_pane_open(const ClientState& state);
 // field stays clean at rest. Every fact comes from the authoritative model.
 void paint_hover_tooltip(ClientState& state, HDC dc, const RECT& bounds,
                          render::List& rl) {
-  if (trade_pane_open(state) || state.gear_overlay || state.tree_pane ||
+  if (trade_pane_open(state) || state.gear_overlay || state.quest_journal || state.tree_pane ||
       state.character_pane || state.minimap_mode == MinimapMode::Overlay)
     return;
 
@@ -5587,6 +5758,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_character_pane(state, dc, bounds, rl);
   paint_tree_pane(state, dc, bounds, rl);
   paint_trade_pane(state, dc, bounds, rl);
+  paint_quest_journal(state, dc, bounds, rl);
 
   if (state.screen_pulse_ticks > 0) {
     // TASK-0122 Phase A: while a ScionLost beat is live the edge pulse is the
@@ -5624,6 +5796,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         objective = "endgame: " + std::to_string(world.endgame.completed) +
                     " expeditions cleared - I selects a charted tablet";
         accent = skin::kGold;
+      } else if (state.session && state.session->model().quests.present &&
+                 !state.session->model().quests.active_id.empty()) {
+        const auto& quest = state.session->model().quests;
+        objective = "quest: " + quest.objective + " (" +
+                    std::to_string(quest.objective_index + 1) + "/" +
+                    std::to_string(quest.objective_count) + ") - J journal";
+        accent = RGB(124, 220, 172);
       } else {
         objective = !world.npcs.empty()
                         ? "objective: hail an NPC with T - press N to take the tin road"
@@ -5663,7 +5842,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         (world.scion_name.empty() ? std::string("(unnamed)") : world.scion_name);
     static constexpr char kControls[] =
         "WASD move | mouse aim | LMB attack | RMB/Space dash | Q E R skills | "
-        "X take | Z names | I gear | T hail | TAB map | N road";
+        "X take | Z names | I gear | J journal | T hail | TAB map | N road";
     const std::string& art_text = state.billboards.status;
 
     // TASK-0159: pre-measure the controls hint and its deterministic
@@ -6163,8 +6342,25 @@ void toggle_gear_overlay(ClientState& state) {
   state.gear_overlay = !state.gear_overlay;
   state.selected_item = 0;
   if (state.gear_overlay) {
+    state.quest_journal = false;
     state.minimap_mode = MinimapMode::Corner;
     show_hint(state, "Gear opened");
+  }
+}
+
+void toggle_quest_journal(ClientState& state) {
+  state.quest_journal = !state.quest_journal;
+  if (state.quest_journal) {
+    state.gear_overlay = false;
+    state.character_pane = false;
+    state.tree_pane = false;
+    state.minimap_mode = MinimapMode::Corner;
+    if (trade_pane_open(state) && state.session)
+      state.session->submit(
+          verdigris::client::ClientCommand::close_screen());
+    show_hint(state, "Campaign journal opened");
+  } else {
+    show_hint(state, "Campaign journal closed");
   }
 }
 
@@ -6186,6 +6382,7 @@ void toggle_minimap_overlay(ClientState& state) {
     // Tactical charting is the one broad world overlay. Dismiss narrower
     // inventory/dialogue surfaces so stacking never hides either contract.
     state.gear_overlay = false;
+    state.quest_journal = false;
     state.character_pane = false;
     state.tree_pane = false;
     if (trade_pane_open(state) && state.session)
@@ -6254,6 +6451,10 @@ void handle_escape_key(ClientState& state) {
   if (state.minimap_mode == MinimapMode::Overlay) {
     state.minimap_mode = MinimapMode::Corner;
     show_hint(state, "Tactical chart closed");
+    return;
+  }
+  if (state.quest_journal) {
+    state.quest_journal = false;
     return;
   }
   if (state.tree_pane) {
@@ -6335,6 +6536,11 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         toggle_minimap_overlay(*state);
         break;
       }
+      if (wparam == 'J') {
+        toggle_quest_journal(*state);
+        break;
+      }
+      if (state->quest_journal) break;
       if (wparam == 'M' && (GetKeyState(VK_SHIFT) & 0x8000)) {
         swap_minimap_side(*state);
         break;
@@ -6462,6 +6668,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       }
       if (wparam == 'C') {
         state->minimap_mode = MinimapMode::Corner;
+        state->quest_journal = false;
         state->character_pane = !state->character_pane;
       }
       if (wparam == 'M' && !(GetKeyState(VK_SHIFT) & 0x8000) &&
@@ -6472,6 +6679,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       }
       if (wparam == 'P') {
         state->minimap_mode = MinimapMode::Corner;
+        state->quest_journal = false;
         state->tree_pane = !state->tree_pane;
       }
       // Only the open gear pane needs a fresh view here; a bare sync on
@@ -8409,6 +8617,58 @@ class ScenarioDialogueSession final
   std::string error_;
 };
 
+class ScenarioCampaignSession final
+    : public verdigris::client::IClientSession {
+ public:
+  ScenarioCampaignSession() {
+    model_.player.uuid = "scenario-campaign-scion";
+    model_.player.display_name = "Ilyra";
+    model_.player.scene_id = "town:verdigris";
+    model_.player.x = 31.0;
+    model_.player.y = 121.0;
+    model_.player.life = model_.player.life_max = 120;
+    model_.player.resource = model_.player.resource_max = 55;
+    model_.scene.id = "town:verdigris";
+    model_.scene.type = "town";
+    model_.scene.name = "The Crossroads";
+    model_.theme = "town";
+    model_.house_name = "House Emberwake";
+    model_.quests.present = true;
+    model_.quests.quest_points = 2;
+    model_.quests.house_renown = 15;
+    model_.quests.active_id = "the-pale-crown";
+    model_.quests.title = "The Pale Crown";
+    model_.quests.giver = "Selene of the Rite";
+    model_.quests.summary =
+        "Break the sovereign seal beneath the Weir Crypt.";
+    model_.quests.objective = "Defeat the Pale Sovereign.";
+    model_.quests.reward = "+1 quest point / +15 House renown";
+    model_.quests.objective_index = 1;
+    model_.quests.objective_count = 3;
+    model_.quests.completed = {
+        {"aldwyns-charge", "Aldwyn's Charge", "Answered Aldwyn's Charge"},
+        {"proof-of-temper", "Proof of Temper",
+         "Proved their temper in the old realms"},
+    };
+  }
+  bool start(std::string*) override { return true; }
+  void shutdown() override {}
+  void submit(const verdigris::client::ClientCommand&) override {}
+  void poll() override {}
+  verdigris::client::ConnectionState connection_state() const override {
+    return verdigris::client::ConnectionState::Ready;
+  }
+  const verdigris::client::ClientModel& model() const override { return model_; }
+  std::vector<verdigris::client::PresentationEvent> drain_events() override {
+    return {};
+  }
+  const std::string& last_error() const override { return error_; }
+
+ private:
+  verdigris::client::ClientModel model_;
+  std::string error_;
+};
+
 int scenario_town_social_hub() {
   ClientState state;
   state.session = std::make_unique<ScenarioDialogueSession>();
@@ -8451,6 +8711,71 @@ int scenario_town_social_hub() {
              hit.rect.right <= 1366 && hit.rect.bottom <= 768;
   scenario_check(inside,
                  "town-social-hub: every choice remains inside the compact viewport");
+  return 0;
+}
+
+int scenario_campaign_journal() {
+  ClientState state;
+  state.session = std::make_unique<ScenarioCampaignSession>();
+  load_billboards(state.billboards);
+  sync_world(state);
+  generate_scenery(state);
+  scenario_follow_camera(state);
+  state.gear_overlay = true;
+  state.character_pane = true;
+  state.tree_pane = true;
+  toggle_quest_journal(state);
+  scenario_check(state.quest_journal && !state.gear_overlay &&
+                     !state.character_pane && !state.tree_pane,
+                 "campaign-journal: opening dismisses narrower character panes");
+
+  std::string capture_dir;
+  const int capture_override = capture_root_override(&capture_dir);
+  if (capture_override < 0) {
+    scenario_check(false,
+                   "campaign-journal: capture root rejected before any write");
+    return 0;
+  }
+  if (capture_override == 0) {
+    CreateDirectoryA("captures", nullptr);
+    capture_dir = "captures";
+  }
+  const std::string capture_path =
+      capture_dir + "\\campaign-journal-1366x768.png";
+  scenario_check(reference_present(state, 1366, 768, capture_path),
+                 "campaign-journal: Framekit campaign evidence captured");
+  std::printf("    capture: %s\n", capture_path.c_str());
+
+  bool pane = false;
+  bool active = false;
+  bool objective = false;
+  int completed = 0;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Hud && item.label == "quest-journal") pane = true;
+    if (item.op == render::Op::Hud &&
+        item.label == "quest-active:the-pale-crown") active = true;
+    if (item.op == render::Op::Hud &&
+        item.label == "quest-objective:Defeat the Pale Sovereign.")
+      objective = true;
+    if (item.op == render::Op::Hud &&
+        item.label.rfind("quest-complete:", 0) == 0)
+      ++completed;
+  }
+  scenario_check(pane && active && objective && completed == 2,
+                 "campaign-journal: active rite and completed deeds use authoritative copy");
+  const HudRect expected = quest_journal_rect(1366, 768);
+  const HudRect* footer = nullptr;
+  for (const auto& entry : state.hud_rect_trace)
+    if (entry.first == "quest-pane-footer") footer = &entry.second;
+  scenario_check(expected.x >= 0 && expected.y >= 0 &&
+                     expected.x + expected.w <= 1366 &&
+                     expected.y + expected.h <= 768 && footer &&
+                     footer->x + footer->w <= expected.x + expected.w,
+                 "campaign-journal: journal and controls fit the compact viewport");
+  state.quit_requested = false;
+  handle_escape_key(state);
+  scenario_check(!state.quest_journal && !state.quit_requested,
+                 "campaign-journal: Escape closes journal before exiting");
   return 0;
 }
 
@@ -8698,6 +9023,7 @@ int run_scenarios(const std::string& which) {
       {"hud-information", scenario_hud_information},
       {"endgame-tablet-ui", scenario_endgame_tablet_ui},
       {"town-social-hub", scenario_town_social_hub},
+      {"campaign-journal", scenario_campaign_journal},
       {"tactical-map", scenario_tactical_map_overlay},
       {"frame-budget", scenario_frame_budget},
   };

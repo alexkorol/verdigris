@@ -1,5 +1,24 @@
 # Native reconstitution handoff
 
+## 2026-09-02 — authoritative native campaign journal + Scion checkpoints
+
+- Native quest snapshots now publish presentation-safe titles, commissioners,
+  summaries, objective copy/progress, rewards, completed deeds, quest points,
+  House renown, and campaign completion. Server-only objective criteria remain
+  private.
+- The remote client fail-closes malformed campaign snapshots and mirrors valid
+  state from admission, `dev:state`, and live `quest:update` envelopes.
+- `J` opens a centered Framekit Chronicle Commissions journal. It shows the
+  current rite, prior deeds, reward, points, and renown; town HUD tracking uses
+  the same authoritative objective. Escape closes the journal before exiting.
+- Partial campaign progress is stored on the living Scion's Chronicle record
+  and restored on later admission. House renown and House-wide campaign
+  completion restore with it; a new Scion begins a fresh personal checkpoint
+  unless the House has already completed the campaign.
+- Verification: full native tests and all client scenarios pass; `frame-budget`
+  measured 9.9 ms average at 3440x1440. Evidence:
+  `native/build/goal-captures-campaign-b/campaign-journal-1366x768.png`.
+
 ## 2026-09-02 — tactical map modes and persistent navigation preferences
 
 - The native HUD now has two production map reads: the existing compact

@@ -175,6 +175,11 @@ void remote_handshake_reaches_ready() {
     check(session.model().player.uuid == "seam-test-guest",
           "remote: authoritative identity mirrored into the client model");
     check(!session.model().scene.id.empty(), "remote: scene snapshot mirrored");
+    check(session.model().quests.present &&
+              session.model().quests.title == "Aldwyn's Charge" &&
+              session.model().quests.objective_count == 5 &&
+              !session.model().quests.objective.empty(),
+          "remote: authoritative campaign journal mirrors on admission");
 
     bool saw_ready = false;
     for (const auto& event : session.drain_events()) {
@@ -191,6 +196,10 @@ void remote_handshake_reaches_ready() {
     check(session.model().xp_present &&
               session.model().xp_next > session.model().xp_floor,
           "remote: dev-state combat XP mirrored into the client model");
+    check(session.model().quests.objective_index == 1 &&
+              session.model().quests.objective ==
+                  "Strike with your equipped weapon.",
+          "remote: quest:update advances the mirrored journal objective");
     session.poll();  // movement echo handling lands in 0061; must not wedge
     check(session.connection_state() == verdigris::client::ConnectionState::Ready,
           "remote: session survives a submitted command");

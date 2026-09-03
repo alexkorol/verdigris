@@ -778,6 +778,61 @@ void test_crossroads_social_hub_and_house_investment() {
         "investment: Scion path grants real Vesselforge-native named gear");
 }
 
+void test_campaign_contract_and_scion_checkpoint() {
+  ProtocolSession session("guest-campaign", "socket-campaign", 0xca11u, false);
+  JsonValue::Object house;
+  house["id"] = JsonValue("house-campaign");
+  house["name"] = JsonValue("House Emberwake");
+  house["renown"] = JsonValue(17);
+  house["campaignComplete"] = JsonValue(false);
+  house["scions"] = JsonValue(JsonValue::Array{
+      JsonValue(JsonValue::Object{{"id", "scion-campaign"},
+                                  {"name", "Ilyra"}, {"level", 1},
+                                  {"mortal", false}})});
+  house["crypt"] = JsonValue(JsonValue::Array{});
+  JsonValue::Object chronicle;
+  chronicle["version"] = JsonValue(3);
+  chronicle["houses"] = JsonValue(JsonValue::Array{JsonValue(house)});
+  session.handle(Envelope{"player:chronicles:save",
+                          JsonValue::Object{{"state", JsonValue(chronicle)}}},
+                 [](const Envelope&) {});
+  const auto admit = [&] {
+    session.handle(Envelope{"player:chronicles:select",
+                            JsonValue::Object{{"scionId", "scion-campaign"},
+                                              {"houseId", "house-campaign"},
+                                              {"scionName", "Ilyra"},
+                                              {"mortal", false}}},
+                   [](const Envelope&) {});
+  };
+  admit();
+
+  auto state = request_state(session, "campaign-contract");
+  const JsonValue& quests = state["state"]["quests"];
+  check(quests["activeQuest"]["title"].string() &&
+            *quests["activeQuest"]["title"].string() == "Aldwyn's Charge" &&
+            quests["activeQuest"]["objective"]["text"].string() &&
+            quests["activeQuest"]["reward"].string(),
+        "campaign: snapshot publishes title, objective copy, and reward");
+  check(quests["houseRenown"].number().value_or(0) == 17 &&
+            !quests["campaignComplete"].boolean().value_or(true),
+        "campaign: House renown and completion are authoritative journal fields");
+
+  session.handle(Envelope{"player:move",
+                          JsonValue::Object{{"direction", "right"}}},
+                 [](const Envelope&) {});
+  state = request_state(session, "campaign-after-move");
+  check(state["state"]["quests"]["objectiveIndex"].number().value_or(0) == 1,
+        "campaign: accepted movement advances the first objective");
+
+  admit();
+  state = request_state(session, "campaign-restored");
+  check(state["state"]["quests"]["objectiveIndex"].number().value_or(0) == 1 &&
+            state["state"]["quests"]["activeQuest"]["objective"]["text"].string() &&
+            *state["state"]["quests"]["activeQuest"]["objective"]["text"].string() ==
+                "Strike with your equipped weapon.",
+        "campaign: selecting the same Scion restores the exact objective checkpoint");
+}
+
 void test_consumable_endgame_tablet_loop() {
   ProtocolSession session("guest-endgame", "socket-endgame", 0x51ea1u, false);
   auto open_tablet = [&](const std::string& uuid,
@@ -965,6 +1020,7 @@ int main() {
     test_gate_a_extract_and_stairs();
     test_gate_a_equip_totals_and_unknown_uuid();
     test_crossroads_social_hub_and_house_investment();
+    test_campaign_contract_and_scion_checkpoint();
     test_consumable_endgame_tablet_loop();
     std::cout << "verdigris networking tests: PASS\n";
     return 0;

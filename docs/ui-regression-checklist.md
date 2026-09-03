@@ -1,5 +1,20 @@
 # UI Regression Checklist
 
+## Native Campaign Journal
+
+- Enter the world as a named Scion and press `J`; confirm Chronicle
+  Commissions opens with the server-authored quest title, commissioner,
+  current rite, reward, quest points, House renown, and completed deeds.
+- Advance one quest objective and confirm both the town tracker and open
+  journal move to the next rite without reconnecting.
+- Re-admit the same living Scion and confirm the exact objective checkpoint
+  returns. A new Scion should start fresh unless the House campaign is sealed.
+- Open gear, character, or tree first, then press `J`; the narrower pane must
+  close. `Esc` closes the journal without exiting, and a second bare `Esc`
+  exits normally.
+- At 1366x768, confirm all journal copy and the `J / ESC` footer stay inside
+  the Framekit panel and no world hover tooltip draws through it.
+
 ## Native Tactical Map
 
 - Press `Tab` in town and on a road; confirm the translucent Framekit chart
