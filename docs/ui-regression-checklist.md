@@ -1,5 +1,23 @@
 # UI Regression Checklist
 
+## WIZARD Framekit Raster Contract
+
+- Build from the repository root and confirm the Framekit verifier reports 99
+  flagship rasters and 11/11 required runtime assets. Removing or changing any
+  frozen file must fail the build before gameplay checks begin.
+- In town and on a road, confirm the normal HUD reports `WIZARD Framekit 11/11`.
+  The life/resource orbs must carry the asymmetric statue chrome, all four
+  action wells must show their authored medallions, and the bottom XP fill must
+  sit inside the long brass rail without overlapping either orb.
+- Open Gear, Character, Journal, Vesselforge, dialogue, and the tactical map.
+  Their production panes must use the marble-and-brass raster border and dark
+  stone center at both 960x600 and 1366x768; text, hit targets, and backpack
+  footprints must remain inside the usable center rather than the decoration.
+- Hover a foe, townsfolk, or drop with all modal panes closed. Confirm the
+  tooltip uses WIZARD's authored frame. Opening a modal must still suppress the
+  tooltip. If decoding fails, the on-screen status must name the fallback and
+  the client must remain usable rather than drawing an empty pane.
+
 ## Native Town Vesselforge
 
 - Stand beside Tamar the Vesselwright and press `T`. Confirm her authored

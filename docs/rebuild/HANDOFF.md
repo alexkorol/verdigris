@@ -1,5 +1,30 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - complete WIZARD Framekit raster runtime
+
+- Froze WIZARD Framekit 2.0's complete 99-image, 7.9 MB flagship `game/assets`
+  pack plus its generated layout at source commit
+  `00be6a0fe4ecfbd0b7862249012308268f92f0d7`. The native manifest owns an
+  aggregate content hash, exact count/bytes, layout hash, and the dimensions of
+  eleven production-critical runtime images.
+- The binding Windows build now verifies that complete pack before running any
+  test. A corrupt foundational slice, missing flagship raster, aggregate drift,
+  bad layout, or missing/wrong-sized runtime component fails closed.
+- Native panes replace the tiny procedural Framekit panel with the authored
+  marble-and-brass crop while retaining true nine-slice geometry. The live HUD
+  draws WIZARD's asymmetric statue orb chrome, four skill medallions, XP rail,
+  winged objective backing, status control, and hover frame; every call keeps
+  the prior vector treatment as an explicit decoder fallback.
+- Scenario evidence is fail-visible rather than inferred from a load attempt:
+  `character-inventory-diptych` requires all 11 decodes and proves the panel,
+  both orbs, rail, controls, and four medallions actually drew at 960x600 and
+  1366x768; `hud-information` separately proves the raster tooltip path.
+- The exact binding native gate passes the asset verifier, every unit/session
+  suite, the mortal succession and heirloom-recovery journey, and all 29 client
+  scenarios. Inspected evidence is isolated under
+  `native/build/goal-captures-framekit-final-2/`; the 3440x1440 frame budget is
+  10.4 ms average against the 40 ms ceiling.
+
 ## 2026-09-03 - charted-tablet recharting
 
 - Added a town-only, sealed-House rechart action to the consumable endgame

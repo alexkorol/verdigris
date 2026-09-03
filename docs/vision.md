@@ -16,6 +16,13 @@ work. One rule holds: walked ground holds; forsaken ground weathers.
 Landed from the WIZARD prototypes (skill tree, Vesselforge inventory engine,
 Chronicles account creator):
 
+- **Framekit 2.0 raster UI** — the complete 99-image flagship game pack is
+  frozen from WIZARD commit `00be6a0fe4ecfbd0b7862249012308268f92f0d7`
+  with aggregate integrity, layout, and runtime decode checks in the binding
+  native build. Authored marble-and-brass panels, statue resource orbs, action
+  medallions, objective/status controls, hover frames, and the XP rail now draw
+  in production; the vector kit is an explicit failure fallback rather than
+  the normal visual path.
 - **Skill tree** — nine-ring Verdigris geometric lattice (271 nodes + 34
   subtree nodes behind six gateway annexes), unified 123-point economy
   (100 from levels, 23 from quests; 1 point per node, 1 per path), ring-8

@@ -158,6 +158,8 @@ Invoke-Msvc ('"' + $buildRoot + '\audio_mixer_tests.obj" "' + $buildRoot + '\aud
 
 python (Join-Path $nativeRoot "tools\check_legacy_denylist.py")
 if ($LASTEXITCODE -ne 0) { throw "legacy denylist failed" }
+python (Join-Path $nativeRoot "tools\verify_framekit_assets.py")
+if ($LASTEXITCODE -ne 0) { throw "WIZARD Framekit asset verification failed" }
 if ($RunTests) { & $testExe }
 if ($RunTests) { & $networkingTestExe }
 if ($RunTests) { & $camera2dTestExe }

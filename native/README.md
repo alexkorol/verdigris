@@ -51,6 +51,16 @@ a gold `V rechart 50g` keyboard-and-pointer action. The server spends the gold a
 without changing the tablet's UUID, family, tier, or Wayfinder mastery target;
 Enter still breaks the exact selected tablet to open its one-use expedition.
 
+The native client ships a frozen copy of WIZARD Framekit 2.0's complete
+99-raster game pack under `native/client/assets/wizard/framekit/game/`.
+Production panes use the authored marble-and-brass panel, the combat HUD uses
+the statue orb chrome and XP rail, objective/status chips use cropped controls,
+hover information uses the tooltip frame, and all four native actions use
+WIZARD medallions. `native/build.ps1` verifies the frozen aggregate hash,
+byte count, layout sidecar, foundational slices, and every required runtime
+asset before tests or scenarios can run; missing art remains fail-visible and
+falls back to the vector skin.
+
 In the Crossroads, `T` hails the nearest townsfolk. Tamar the Vesselwright
 opens a dedicated Framekit forge: Up/Down selects carried vessel gear and
 Enter or a click sears an eligible Brand for 100 gold. Capacity, patience,

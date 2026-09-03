@@ -43,3 +43,4 @@ server/logs/
 # Browser test artifacts
 test-results/
 playwright-report/
+__pycache__/

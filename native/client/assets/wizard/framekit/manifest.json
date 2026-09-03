@@ -2,10 +2,10 @@
   "schema_version": 1,
   "pack": "framekit",
   "provenance": {
-    "wizard_commit": "66a5d9ff6810e886c1bd08cbeaaf83cabf92aae9",
-    "module_id": "wizard.gui-framekit",
+    "wizard_commit": "00be6a0fe4ecfbd0b7862249012308268f92f0d7",
+    "module_id": "wizard.framekit",
     "source_root": "WIZARD/tools/gui_framekit",
-    "generated_by": "TASK-0167"
+    "generated_by": "Verdigris AAA systems goal, 2026-09-03"
   },
   "contact_sheet": "contact_sheet.png",
   "slices": [
@@ -63,5 +63,30 @@
       "bytes": 382,
       "dimensions": { "w": 16, "h": 16, "mode": "RGBA" }
     }
-  ]
+  ],
+  "game_pack": {
+    "source_path": "tools/gui_framekit/game/assets",
+    "path": "game",
+    "raster_count": 99,
+    "raster_bytes": 7927782,
+    "inventory_sha256": "7afcd7e40b1ff202054e5957395b4dcbceac96d3aaeb943bfbb40e532daa7de8",
+    "layout": {
+      "path": "game/layout.json",
+      "bytes": 9789,
+      "sha256": "8f215fa28cd580f7f3571c732f9c5146e2cd9a3efd29ce2eb5127a7aad0ea74d"
+    },
+    "runtime_assets": [
+      { "id": "panel-plain", "path": "game/panel_plain.png", "dimensions": { "w": 251, "h": 250 } },
+      { "id": "banner-winged", "path": "game/banner_winged.png", "dimensions": { "w": 415, "h": 119 } },
+      { "id": "tooltip-frame", "path": "game/tooltip_frame.png", "dimensions": { "w": 153, "h": 94 } },
+      { "id": "rack-thin", "path": "game/rack_thin.png", "dimensions": { "w": 678, "h": 58 } },
+      { "id": "orb-chrome-life", "path": "game/orb_chrome_l.png", "dimensions": { "w": 800, "h": 811 } },
+      { "id": "orb-chrome-resource", "path": "game/orb_chrome_r.png", "dimensions": { "w": 800, "h": 811 } },
+      { "id": "skill-strike", "path": "game/med_sun.png", "dimensions": { "w": 129, "h": 129 } },
+      { "id": "skill-thrust", "path": "game/chev_single.png", "dimensions": { "w": 103, "h": 112 } },
+      { "id": "skill-sweep", "path": "game/med_star.png", "dimensions": { "w": 129, "h": 128 } },
+      { "id": "skill-warcry", "path": "game/med_bull.png", "dimensions": { "w": 146, "h": 151 } },
+      { "id": "button-primary", "path": "game/btn_primary.png", "dimensions": { "w": 138, "h": 55 } }
+    ]
+  }
 }

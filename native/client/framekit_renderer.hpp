@@ -142,66 +142,82 @@ struct NineSlicePlan {
   return region;
 }
 
-[[nodiscard]] constexpr NineSlicePlan plan_nine_slice(const Rect& dest,
-                                                    const NineSliceAsset& asset) {
+[[nodiscard]] constexpr NineSlicePlan plan_nine_slice(
+    const Rect& dest, const NineSliceAsset& asset,
+    const SliceInsets& destination_insets) {
   NineSlicePlan plan;
-  if (!dest.valid() || !asset.valid()) return plan;
+  if (!dest.valid() || !asset.valid() || !destination_insets.valid()) return plan;
 
   const std::uint16_t min_w =
-      static_cast<std::uint16_t>(asset.insets.left + asset.insets.right);
+      static_cast<std::uint16_t>(destination_insets.left +
+                                 destination_insets.right);
   const std::uint16_t min_h =
-      static_cast<std::uint16_t>(asset.insets.top + asset.insets.bottom);
+      static_cast<std::uint16_t>(destination_insets.top +
+                                 destination_insets.bottom);
   if (dest.width < min_w || dest.height < min_h) return plan;
 
   const TextureId tex = asset.id;
-  const std::uint16_t l = asset.insets.left;
-  const std::uint16_t r = asset.insets.right;
-  const std::uint16_t t = asset.insets.top;
-  const std::uint16_t b = asset.insets.bottom;
+  const std::uint16_t sl = asset.insets.left;
+  const std::uint16_t sr = asset.insets.right;
+  const std::uint16_t st = asset.insets.top;
+  const std::uint16_t sb = asset.insets.bottom;
+  const std::uint16_t dl = destination_insets.left;
+  const std::uint16_t dr = destination_insets.right;
+  const std::uint16_t dt = destination_insets.top;
+  const std::uint16_t db = destination_insets.bottom;
   const std::uint16_t sw = asset.source.width;
   const std::uint16_t sh = asset.source.height;
 
-  const std::uint16_t center_w = dest.width - l - r;
-  const std::uint16_t center_h = dest.height - t - b;
-  const std::uint16_t src_center_w = sw - l - r;
-  const std::uint16_t src_center_h = sh - t - b;
+  const std::uint16_t center_w = dest.width - dl - dr;
+  const std::uint16_t center_h = dest.height - dt - db;
+  const std::uint16_t src_center_w = sw - sl - sr;
+  const std::uint16_t src_center_h = sh - st - sb;
 
   const std::int16_t x = dest.x;
   const std::int16_t y = dest.y;
 
   plan.regions[static_cast<std::size_t>(Piece::TopLeft)] =
-      make_region(tex, Piece::TopLeft, x, y, l, t, 0, 0, l, t);
+      make_region(tex, Piece::TopLeft, x, y, dl, dt, 0, 0, sl, st);
   plan.regions[static_cast<std::size_t>(Piece::Top)] =
-      make_region(tex, Piece::Top, x + static_cast<std::int16_t>(l), y, center_w,
-                  t, l, 0, src_center_w, t);
+      make_region(tex, Piece::Top, x + static_cast<std::int16_t>(dl), y,
+                  center_w, dt, sl, 0, src_center_w, st);
   plan.regions[static_cast<std::size_t>(Piece::TopRight)] =
-      make_region(tex, Piece::TopRight, x + static_cast<std::int16_t>(l + center_w),
-                  y, r, t, sw - r, 0, r, t);
+      make_region(tex, Piece::TopRight,
+                  x + static_cast<std::int16_t>(dl + center_w), y, dr, dt,
+                  sw - sr, 0, sr, st);
   plan.regions[static_cast<std::size_t>(Piece::Left)] =
-      make_region(tex, Piece::Left, x, y + static_cast<std::int16_t>(t), l, center_h,
-                  0, t, l, src_center_h);
+      make_region(tex, Piece::Left, x, y + static_cast<std::int16_t>(dt), dl,
+                  center_h, 0, st, sl, src_center_h);
   plan.regions[static_cast<std::size_t>(Piece::Center)] =
-      make_region(tex, Piece::Center, x + static_cast<std::int16_t>(l),
-                  y + static_cast<std::int16_t>(t), center_w, center_h, l, t,
+      make_region(tex, Piece::Center, x + static_cast<std::int16_t>(dl),
+                  y + static_cast<std::int16_t>(dt), center_w, center_h, sl, st,
                   src_center_w, src_center_h);
   plan.regions[static_cast<std::size_t>(Piece::Right)] =
-      make_region(tex, Piece::Right, x + static_cast<std::int16_t>(l + center_w),
-                  y + static_cast<std::int16_t>(t), r, center_h, sw - r, t, r,
-                  src_center_h);
+      make_region(tex, Piece::Right,
+                  x + static_cast<std::int16_t>(dl + center_w),
+                  y + static_cast<std::int16_t>(dt), dr, center_h, sw - sr,
+                  st, sr, src_center_h);
   plan.regions[static_cast<std::size_t>(Piece::BottomLeft)] =
-      make_region(tex, Piece::BottomLeft, x, y + static_cast<std::int16_t>(t + center_h),
-                  l, b, 0, sh - b, l, b);
+      make_region(tex, Piece::BottomLeft, x,
+                  y + static_cast<std::int16_t>(dt + center_h), dl, db, 0,
+                  sh - sb, sl, sb);
   plan.regions[static_cast<std::size_t>(Piece::Bottom)] =
-      make_region(tex, Piece::Bottom, x + static_cast<std::int16_t>(l),
-                  y + static_cast<std::int16_t>(t + center_h), center_w, b, l,
-                  sh - b, src_center_w, b);
+      make_region(tex, Piece::Bottom, x + static_cast<std::int16_t>(dl),
+                  y + static_cast<std::int16_t>(dt + center_h), center_w, db,
+                  sl, sh - sb, src_center_w, sb);
   plan.regions[static_cast<std::size_t>(Piece::BottomRight)] =
-      make_region(tex, Piece::BottomRight, x + static_cast<std::int16_t>(l + center_w),
-                  y + static_cast<std::int16_t>(t + center_h), r, b, sw - r, sh - b,
-                  r, b);
+      make_region(tex, Piece::BottomRight,
+                  x + static_cast<std::int16_t>(dl + center_w),
+                  y + static_cast<std::int16_t>(dt + center_h), dr, db,
+                  sw - sr, sh - sb, sr, sb);
 
   plan.valid = true;
   return plan;
+}
+
+[[nodiscard]] constexpr NineSlicePlan plan_nine_slice(
+    const Rect& dest, const NineSliceAsset& asset) {
+  return plan_nine_slice(dest, asset, asset.insets);
 }
 
 [[nodiscard]] constexpr BlitRegion plan_sprite(const Rect& dest, TextureId texture,

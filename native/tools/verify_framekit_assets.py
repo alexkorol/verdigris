@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""TASK-0167 verifier for native WIZARD Framekit raster pack."""
+"""Verify the complete native copy of WIZARD's Framekit raster pack."""
 
 from __future__ import annotations
 
@@ -68,6 +68,29 @@ def slice_bounds_ok(width: int, height: int, slice_vals: list[int]) -> bool:
     return True
 
 
+def raster_inventory(pack_dir: str) -> tuple[int, int, str]:
+    """Hash the complete flagship game pack, including names and bytes."""
+    root = os.path.join(pack_dir, "game")
+    raster_extensions = {".png", ".jpg", ".jpeg", ".webp"}
+    paths = sorted(
+        (name for name in os.listdir(root)
+         if os.path.splitext(name)[1].lower() in raster_extensions),
+        key=lambda name: name,
+    ) if os.path.isdir(root) else []
+    digest = hashlib.sha256()
+    total = 0
+    for name in paths:
+        path = os.path.join(root, name)
+        with open(path, "rb") as handle:
+            data = handle.read()
+        total += len(data)
+        digest.update(name.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(data)
+        digest.update(b"\0")
+    return len(paths), total, digest.hexdigest()
+
+
 def check_entry(diags, pack_dir: str, entry: dict, corrupt: bool, checked: int) -> int:
     rel = entry.get("path")
     if not rel:
@@ -134,6 +157,43 @@ def main() -> int:
     for entry in manifest.get("sprites", []):
         checked = check_entry(diags, PACK_DIR, entry, args.corrupt, checked)
 
+    game_pack = manifest.get("game_pack", {})
+    count, total, inventory_hash = raster_inventory(PACK_DIR)
+    if count != game_pack.get("raster_count"):
+        diags.append("game pack raster count mismatch")
+    if total != game_pack.get("raster_bytes"):
+        diags.append("game pack byte count mismatch")
+    if inventory_hash != game_pack.get("inventory_sha256"):
+        diags.append("game pack inventory hash mismatch")
+
+    layout = game_pack.get("layout", {})
+    layout_rel = layout.get("path", "")
+    layout_path = os.path.join(PACK_DIR, layout_rel.replace("/", os.sep))
+    if not layout_rel or not os.path.isfile(layout_path):
+        diags.append("game pack layout missing")
+    else:
+        if os.path.getsize(layout_path) != layout.get("bytes"):
+            diags.append("game pack layout size mismatch")
+        if sha256(layout_path) != layout.get("sha256"):
+            diags.append("game pack layout hash mismatch")
+
+    runtime_assets = game_pack.get("runtime_assets", [])
+    if len(runtime_assets) < 10:
+        diags.append("game pack runtime set is incomplete")
+    for entry in runtime_assets:
+        rel = entry.get("path", "")
+        path = os.path.join(PACK_DIR, rel.replace("/", os.sep))
+        if not rel or not os.path.isfile(path):
+            diags.append(f"missing runtime asset: {rel or '<unnamed>'}")
+            continue
+        try:
+            width, height, _ = png_info(path)
+            dims = entry.get("dimensions", {})
+            if width != dims.get("w") or height != dims.get("h"):
+                diags.append(f"runtime dimension mismatch: {rel}")
+        except ValueError as exc:
+            diags.append(f"runtime PNG invalid {rel}: {exc}")
+
     contact = manifest.get("contact_sheet")
     if not contact:
         diags.append("contact_sheet required")
@@ -151,7 +211,10 @@ def main() -> int:
             print("  -", item)
         return 1
 
-    print(f"VERIFY OK: {checked} framekit entries, contact_sheet={contact}")
+    print(
+        f"VERIFY OK: {checked} base entries, {count} flagship rasters, "
+        f"{len(runtime_assets)} runtime assets, contact_sheet={contact}"
+    )
     return 0
 
 

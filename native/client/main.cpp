@@ -180,9 +180,23 @@ struct BillboardAssets {
   // panel/slot plates and the item-art sprites for inventory cells.
   SpriteBitmap fk_panel;
   SpriteBitmap fk_slot;
+  // Authored WIZARD Framekit 2.0 game pack. These are the actual cropped
+  // marble/brass sheets used by the flagship module, not procedural stand-ins.
+  SpriteBitmap fk_panel_ornate;
+  SpriteBitmap fk_banner;
+  SpriteBitmap fk_tooltip;
+  SpriteBitmap fk_xp_rail;
+  SpriteBitmap fk_orb_life;
+  SpriteBitmap fk_orb_resource;
+  SpriteBitmap fk_skill_strike;
+  SpriteBitmap fk_skill_thrust;
+  SpriteBitmap fk_skill_sweep;
+  SpriteBitmap fk_skill_warcry;
+  SpriteBitmap fk_button;
   std::unordered_map<std::string, SpriteBitmap> item_art;
   std::string root;
   std::string status = "art: loading";
+  std::string framekit_status = "art: WIZARD Framekit loading";
   std::string scenery_status = "scenery: loading";
   std::string terrain_status = "terrain: loading";
 
@@ -198,6 +212,17 @@ struct BillboardAssets {
     terrain4.reset();
     fk_panel.reset();
     fk_slot.reset();
+    fk_panel_ornate.reset();
+    fk_banner.reset();
+    fk_tooltip.reset();
+    fk_xp_rail.reset();
+    fk_orb_life.reset();
+    fk_orb_resource.reset();
+    fk_skill_strike.reset();
+    fk_skill_thrust.reset();
+    fk_skill_sweep.reset();
+    fk_skill_warcry.reset();
+    fk_button.reset();
     for (auto& entry : item_art) entry.second.reset();
     if (gdiplus_shutdown && gdiplus_token) gdiplus_shutdown(gdiplus_token);
     if (gdiplus_module) FreeLibrary(gdiplus_module);
@@ -358,12 +383,24 @@ HudRect minimap_overlay_rect(int width, int height) {
 constexpr int kVitalOrbRadius = 34;
 
 HudRect vital_orb_rect(int width, int height, bool resource) {
+  const int s = hud_scale(height);
   const int radius = kVitalOrbRadius * hud_scale(height);
-  const int cx = resource ? width - 18 - radius : 18 + radius;
+  const int cx = resource ? width - 36 * s - radius : 36 * s + radius;
   const int cy = height - 18 - radius;
-  // +3 clears the low-life pulse ring, the widest the orb ever paints.
-  const int r = radius + 3;
-  return {cx - r, cy - r, r * 2, r * 2};
+  // Match the flagship Framekit's 247x250 display geometry around a 155px
+  // circular well. The asymmetrical statue chrome is part of the HUD reserve.
+  const int cluster_w = (radius * 2 * 247 + 154) / 155;
+  const int cluster_h = (cluster_w * 811 + 799) / 800;
+  const int well_x = resource ? cluster_w * 10 / 247
+                              : cluster_w * 81 / 247;
+  const int well_y = cluster_h * 23 / 250;
+  const int cluster_x = cx - radius - well_x;
+  const int cluster_y = cy - radius - well_y;
+  const int left = std::max(0, cluster_x);
+  const int top = std::max(0, cluster_y);
+  const int right = std::min(width, cluster_x + cluster_w);
+  const int bottom = std::min(height, cluster_y + cluster_h);
+  return {left, top, std::max(0, right - left), std::max(0, bottom - top)};
 }
 
 constexpr int kQuickbarSlotCount = 4;
@@ -998,6 +1035,32 @@ void load_framekit_assets(BillboardAssets& assets) {
       assets.fk_slot.reset();
       continue;
     }
+    const std::string game = root + "/framekit/game/";
+    load_sprite(assets, game + "panel_plain.png", assets.fk_panel_ornate);
+    load_sprite(assets, game + "banner_winged.png", assets.fk_banner);
+    load_sprite(assets, game + "tooltip_frame.png", assets.fk_tooltip);
+    load_sprite(assets, game + "rack_thin.png", assets.fk_xp_rail);
+    load_sprite(assets, game + "orb_chrome_l.png", assets.fk_orb_life);
+    load_sprite(assets, game + "orb_chrome_r.png", assets.fk_orb_resource);
+    load_sprite(assets, game + "med_sun.png", assets.fk_skill_strike);
+    load_sprite(assets, game + "chev_single.png", assets.fk_skill_thrust);
+    load_sprite(assets, game + "med_star.png", assets.fk_skill_sweep);
+    load_sprite(assets, game + "med_bull.png", assets.fk_skill_warcry);
+    load_sprite(assets, game + "btn_primary.png", assets.fk_button);
+    const SpriteBitmap* runtime[] = {
+        &assets.fk_panel_ornate, &assets.fk_banner,
+        &assets.fk_tooltip,      &assets.fk_xp_rail,
+        &assets.fk_orb_life,     &assets.fk_orb_resource,
+        &assets.fk_skill_strike, &assets.fk_skill_thrust,
+        &assets.fk_skill_sweep,  &assets.fk_skill_warcry,
+        &assets.fk_button,
+    };
+    int ready = 0;
+    for (const SpriteBitmap* sprite : runtime)
+      if (sprite->ready()) ++ready;
+    assets.framekit_status = "art: WIZARD Framekit " +
+                             std::to_string(ready) + "/11";
+    if (ready != 11) assets.framekit_status += " (vector fallback active)";
     // Item art: server item id -> WIZARD sprite. Unmapped ids fall back to
     // the drawn cell; never map art that misrepresents the item.
     static constexpr struct { const char* item_id; const char* file; } kItemArt[] = {
@@ -1013,6 +1076,7 @@ void load_framekit_assets(BillboardAssets& assets) {
     }
     return;
   }
+  assets.framekit_status = "art: WIZARD Framekit MISSING (vector fallback active)";
 }
 
 // Nine-slice framekit blit through the TASK-0180 planner. Returns false when
@@ -1020,25 +1084,74 @@ void load_framekit_assets(BillboardAssets& assets) {
 bool draw_framekit_nine(const BillboardAssets& assets, HDC dc,
                         const SpriteBitmap& plate, const RECT& rect,
                         BYTE constant_alpha = 255) {
-  if (!plate.ready() || !assets.alpha_blend) return false;
+  const bool panel = &plate == &assets.fk_panel;
+  const SpriteBitmap& source =
+      panel && assets.fk_panel_ornate.ready() ? assets.fk_panel_ornate : plate;
+  if (!source.ready() || !assets.alpha_blend) return false;
   framekit_renderer::NineSliceAsset asset =
       &plate == &assets.fk_slot ? framekit_renderer::default_slot_asset()
                                 : framekit_renderer::default_panel_asset();
-  asset.source = {static_cast<std::uint16_t>(plate.width),
-                  static_cast<std::uint16_t>(plate.height)};
+  framekit_renderer::SliceInsets destination_insets = asset.insets;
+  if (panel && &source == &assets.fk_panel_ornate) {
+    // WIZARD's panel_plain.png is authored as a 60px border-image. Native
+    // panes keep that source crop while presenting an 18px readable border.
+    asset.insets = {60, 60, 60, 60};
+    destination_insets = {18, 18, 18, 18};
+  }
+  asset.source = {static_cast<std::uint16_t>(source.width),
+                  static_cast<std::uint16_t>(source.height)};
   const framekit_renderer::Rect dest{
       static_cast<std::int16_t>(rect.left), static_cast<std::int16_t>(rect.top),
       static_cast<std::uint16_t>(rect.right - rect.left),
       static_cast<std::uint16_t>(rect.bottom - rect.top)};
   const framekit_renderer::NineSlicePlan plan =
-      framekit_renderer::plan_nine_slice(dest, asset);
+      framekit_renderer::plan_nine_slice(dest, asset, destination_insets);
   if (!plan.valid) return false;
   const BLENDFUNCTION blend{AC_SRC_OVER, 0, constant_alpha, AC_SRC_ALPHA};
   for (const auto& region : plan.regions) {
     if (region.dst_w == 0 || region.dst_h == 0) continue;
     assets.alpha_blend(dc, region.dst_x, region.dst_y, region.dst_w,
-                       region.dst_h, plate.dc, region.src_x, region.src_y,
+                       region.dst_h, source.dc, region.src_x, region.src_y,
                        region.src_w, region.src_h, blend);
+  }
+  return true;
+}
+
+// Whole-sheet Framekit blit for authored chrome whose geometry is already a
+// complete component (banners, orb statues, ability medallions, and rails).
+bool draw_framekit_sprite(const BillboardAssets& assets, HDC dc,
+                          const SpriteBitmap& sprite, const RECT& rect,
+                          BYTE constant_alpha = 255) {
+  if (!sprite.ready() || !assets.alpha_blend || rect.right <= rect.left ||
+      rect.bottom <= rect.top)
+    return false;
+  const BLENDFUNCTION blend{AC_SRC_OVER, 0, constant_alpha, AC_SRC_ALPHA};
+  return assets.alpha_blend(dc, rect.left, rect.top, rect.right - rect.left,
+                            rect.bottom - rect.top, sprite.dc, 0, 0,
+                            sprite.width, sprite.height, blend) != FALSE;
+}
+
+bool draw_framekit_tooltip(const BillboardAssets& assets, HDC dc,
+                           const RECT& rect) {
+  if (!assets.fk_tooltip.ready() || !assets.alpha_blend) return false;
+  framekit_renderer::NineSliceAsset asset;
+  asset.id = framekit_renderer::TextureId::Panel;
+  asset.insets = {34, 34, 34, 34};
+  asset.source = {static_cast<std::uint16_t>(assets.fk_tooltip.width),
+                  static_cast<std::uint16_t>(assets.fk_tooltip.height)};
+  const framekit_renderer::Rect dest{
+      static_cast<std::int16_t>(rect.left), static_cast<std::int16_t>(rect.top),
+      static_cast<std::uint16_t>(rect.right - rect.left),
+      static_cast<std::uint16_t>(rect.bottom - rect.top)};
+  const framekit_renderer::NineSlicePlan plan =
+      framekit_renderer::plan_nine_slice(dest, asset, {12, 12, 12, 12});
+  if (!plan.valid) return false;
+  const BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+  for (const auto& region : plan.regions) {
+    if (region.dst_w == 0 || region.dst_h == 0) continue;
+    assets.alpha_blend(dc, region.dst_x, region.dst_y, region.dst_w,
+                       region.dst_h, assets.fk_tooltip.dc, region.src_x,
+                       region.src_y, region.src_w, region.src_h, blend);
   }
   return true;
 }
@@ -1070,6 +1183,8 @@ void load_billboards(BillboardAssets& assets) {
   assets.alpha_blend = reinterpret_cast<AlphaBlendProc>(
       assets.msimg32_module ? GetProcAddress(assets.msimg32_module, "AlphaBlend") : nullptr);
   if (!assets.alpha_blend || !initialize_gdiplus(assets)) {
+    assets.framekit_status =
+        "art: WIZARD Framekit MISSING (vector fallback active)";
     refresh_art_status(assets);
     return;
   }
@@ -3000,14 +3115,28 @@ const char* compass_step(int dx, int dy) {
 
 // Draws one owner-facing status chip and records it as a Hud op. Returns the
 // chip width so callers can lay out stacked chips deterministically.
-int paint_status_chip(HDC dc, int x, int y, const std::string& text,
-                      COLORREF accent, render::List& rl) {
+int paint_status_chip(const BillboardAssets* assets,
+                      const SpriteBitmap* raster_frame, HDC dc, int x, int y,
+                      const std::string& text, COLORREF accent,
+                      render::List& rl) {
   SIZE extent{};
   GetTextExtentPoint32A(dc, text.c_str(), static_cast<int>(text.size()), &extent);
   const int width = extent.cx + 20;
   const int height = extent.cy + 10;
   RECT rect{x, y, x + width, y + height};
-  skin::chip(dc, rect, accent);
+  const BYTE raster_alpha =
+      assets && raster_frame == &assets->fk_banner ? 96 : 255;
+  const bool raster_drawn =
+      assets && raster_frame &&
+      draw_framekit_sprite(*assets, dc, *raster_frame, rect, raster_alpha);
+  if (!raster_drawn)
+    skin::chip(dc, rect, accent);
+  else
+    rl.push_back({render::Op::Hud, static_cast<double>(x),
+                  static_cast<double>(y), 0.0, 0,
+                  raster_frame == &assets->fk_banner
+                      ? "framekit-raster:banner-winged"
+                      : "framekit-raster:button-primary"});
   SetBkMode(dc, TRANSPARENT);
   SetTextColor(dc, accent);
   TextOutA(dc, x + 12, y + 5, text.c_str(), static_cast<int>(text.size()));
@@ -3037,9 +3166,13 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   state.hud_rect_trace.push_back({"pane-frame", pane});
 
   RECT panel_rect{left, top, right, bottom};
-  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel,
-                          panel_rect))
+  const bool raster_panel = draw_framekit_nine(
+      state.billboards, dc, state.billboards.fk_panel, panel_rect);
+  if (!raster_panel)
     skin::panel(dc, panel_rect, skin::kVerdigris, 245, 8.0f);
+  else
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                  "framekit-raster:panel-plain"});
 
   // Interior layout scale: the pane rect scales with window height, so every
   // hand-authored 1x offset inside must scale with it or rows collide.
@@ -3751,15 +3884,17 @@ void draw_orb(HDC dc, int cx, int cy, int radius, double ratio, COLORREF fill,
   SelectObject(dc, old_font);
 }
 
-void paint_vital_orbs(const WorldActor& player, std::uint64_t tick, int screen_pulse_ticks,
-                      HDC dc, const RECT& bounds, render::List& rl,
+void paint_vital_orbs(const BillboardAssets& assets, const WorldActor& player,
+                      std::uint64_t tick, int screen_pulse_ticks, HDC dc,
+                      const RECT& bounds, render::List& rl,
                       std::vector<std::pair<std::string, HudRect>>* trace) {
   if (!player.alive && player.life <= 0 && player.life_max <= 0) return;
   const int radius =
       kVitalOrbRadius * hud_scale(static_cast<int>(bounds.bottom));
   const int bottom = static_cast<int>(bounds.bottom) - 18;
-  const int left_cx = 18 + radius;
-  const int right_cx = static_cast<int>(bounds.right) - 18 - radius;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int left_cx = 36 * s + radius;
+  const int right_cx = static_cast<int>(bounds.right) - 36 * s - radius;
   const int cy = bottom - radius;
 
   const int life_max = std::max(1, player.life_max);
@@ -3779,6 +3914,27 @@ void paint_vital_orbs(const WorldActor& player, std::uint64_t tick, int screen_p
            life_caption, pulse, rl, "life");
   draw_orb(dc, right_cx, cy, radius, resource_ratio, RGB(58, 138, 168), RGB(120, 188, 214),
            resource_caption, false, rl, "resource");
+  const HudRect life_chrome = vital_orb_rect(static_cast<int>(bounds.right),
+                                             static_cast<int>(bounds.bottom), false);
+  const HudRect resource_chrome = vital_orb_rect(
+      static_cast<int>(bounds.right), static_cast<int>(bounds.bottom), true);
+  const bool life_raster = draw_framekit_sprite(
+      assets, dc, assets.fk_orb_life,
+      RECT{life_chrome.x, life_chrome.y, life_chrome.x + life_chrome.w,
+           life_chrome.y + life_chrome.h});
+  const bool resource_raster = draw_framekit_sprite(
+      assets, dc, assets.fk_orb_resource,
+      RECT{resource_chrome.x, resource_chrome.y,
+           resource_chrome.x + resource_chrome.w,
+           resource_chrome.y + resource_chrome.h});
+  if (life_raster)
+    rl.push_back({render::Op::Hud, static_cast<double>(left_cx),
+                  static_cast<double>(cy), 0.0, 0,
+                  "framekit-raster:orb-life"});
+  if (resource_raster)
+    rl.push_back({render::Op::Hud, static_cast<double>(right_cx),
+                  static_cast<double>(cy), 0.0, 0,
+                  "framekit-raster:orb-resource"});
   // TASK-0159: record the exact painted orb extents (+pulse ring) so the
   // readability scenario can prove the pane never reaches into them.
   if (trace) {
@@ -3851,6 +4007,21 @@ void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List
     RECT box{slot_left, top, slot_left + slot_w, bottom};
     skin::slot(dc, box, active ? skin::kGold : skin::kVerdigris,
                available || active);
+    const SpriteBitmap* skill_art = nullptr;
+    switch (i) {
+      case 0: skill_art = &state.billboards.fk_skill_strike; break;
+      case 1: skill_art = &state.billboards.fk_skill_thrust; break;
+      case 2: skill_art = &state.billboards.fk_skill_sweep; break;
+      case 3: skill_art = &state.billboards.fk_skill_warcry; break;
+    }
+    if (skill_art) {
+      RECT icon{box.left + 4 * s, box.top + 3 * s,
+                box.right - 4 * s, box.bottom - 3 * s};
+      if (draw_framekit_sprite(state.billboards, dc, *skill_art, icon, 178))
+        rl.push_back({render::Op::Hud, static_cast<double>(cx),
+                      static_cast<double>(cy), static_cast<double>(slot_w), i,
+                      std::string("framekit-skill:") + slot.name});
+    }
 
     if (cooldown && player.cooldown_ticks > 0) {
       const int max_ticks = 30;
@@ -4044,7 +4215,14 @@ void paint_hover_tooltip(ClientState& state, HDC dc, const RECT& bounds,
                          std::max(8, static_cast<int>(bounds.right) - box_w - 8));
   const int box_y = std::max(8, my - box_h - 10);
   RECT plate{box_x, box_y, box_x + box_w, box_y + box_h};
-  skin::panel(dc, plate, title_color, 245, 3.0f);
+  const bool raster_tooltip =
+      draw_framekit_tooltip(state.billboards, dc, plate);
+  if (!raster_tooltip)
+    skin::panel(dc, plate, title_color, 245, 3.0f);
+  else
+    rl.push_back({render::Op::Hud, static_cast<double>(box_x),
+                  static_cast<double>(box_y), 0.0, 0,
+                  "framekit-raster:tooltip-frame"});
   SetBkMode(dc, TRANSPARENT);
   SelectObject(dc, skin::font_body_bold());
   SetTextColor(dc, title_color);
@@ -4070,13 +4248,20 @@ void paint_xp_bar(ClientState& state, HDC dc, const RECT& bounds,
                   render::List& rl) {
   if (!state.world.xp_present) return;
   const int s = hud_scale(static_cast<int>(bounds.bottom));
-  const int orb_reach = (18 + kVitalOrbRadius * 2 + 24) * s;
+  const int orb_reach = (36 + kVitalOrbRadius * 2 + 24) * s;
   const int left = orb_reach;
   const int right = static_cast<int>(bounds.right) - orb_reach;
   if (right - left < 60) return;
   const int height = 6 * s;
   const int top = static_cast<int>(bounds.bottom) - height - 4;
   const double fraction = std::clamp(state.world.xp_fraction, 0.0, 1.0);
+  const RECT rail{left - 12 * s, top - 6 * s, right + 12 * s,
+                  top + height + 6 * s};
+  if (draw_framekit_sprite(state.billboards, dc,
+                           state.billboards.fk_xp_rail, rail))
+    rl.push_back({render::Op::Hud, static_cast<double>(left),
+                  static_cast<double>(top), 0.0, 0,
+                  "framekit-raster:xp-rail"});
   skin::progress_bar(dc, RECT{left, top, right, top + height}, fraction,
                      skin::kGold, 10);
   rl.push_back({render::Op::Hud, static_cast<double>(left),
@@ -6997,7 +7182,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   state.paint_ms_world = section_ms(section_t1, section_t2);
   if (!(state.gear_overlay && state.character_pane))
     paint_minimap(state, dc, bounds, rl);
-  paint_vital_orbs(player, world.tick, state.screen_pulse_ticks, dc, bounds, rl,
+  paint_vital_orbs(state.billboards, player, world.tick,
+                   state.screen_pulse_ticks, dc, bounds, rl,
                    &state.hud_rect_trace);
   paint_quickbar(state, dc, bounds, rl);
   paint_xp_bar(state, dc, bounds, rl);
@@ -7102,7 +7288,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     static constexpr char kControls[] =
         "WASD move | mouse aim | LMB attack | RMB/Space dash | Q E R skills | "
         "X take | Z names | I gear | J journal | T hail | TAB map | N road";
-    const std::string& art_text = state.billboards.status;
+    const std::string& art_text = state.billboards.framekit_status;
 
     // TASK-0159: pre-measure the controls hint and its deterministic
     // mid-separator wrap (the " | " boundary nearest the middle) so the
@@ -7193,7 +7379,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       paint_connection_chip(state, dc, bounds, rl, connection_at.x,
                             connection_at.y);
 
-    paint_status_chip(dc, objective_at.x, objective_at.y, objective, accent, rl);
+    paint_status_chip(&state.billboards, &state.billboards.fk_banner, dc,
+                      objective_at.x, objective_at.y, objective, accent, rl);
     state.hud_rect_trace.push_back(
         {"objective",
          {objective_at.x, objective_at.y, objective_size.w, objective_size.h}});
@@ -7234,13 +7421,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                   static_cast<double>(controls_at.y), 0.0, 0,
                   std::string("controls: ") + controls_full});
 
-    const bool plates =
-        state.billboards.player.ready() && state.billboards.raider.ready() &&
-        state.billboards.boss.ready();
+    const bool plates = state.billboards.fk_panel_ornate.ready() &&
+                        state.billboards.fk_orb_life.ready() &&
+                        state.billboards.fk_orb_resource.ready();
     const COLORREF art_accent =
         plates ? RGB(120, 214, 168) : RGB(239, 190, 78);
-    paint_status_chip(dc, art_at.x, art_at.y, state.billboards.status,
-                      art_accent, rl);
+    paint_status_chip(&state.billboards, &state.billboards.fk_button, dc,
+                      art_at.x, art_at.y, art_text, art_accent, rl);
     state.hud_rect_trace.push_back(
         {"art", {art_at.x, art_at.y, art_size.w, art_size.h}});
   }
@@ -10074,10 +10261,16 @@ int scenario_hud_information() {
   paint_xp_bar(state, dc, bounds, hud_ops);
 
   const render::Item* xp = nullptr;
+  bool raster_xp = false;
   for (const auto& item : hud_ops)
-    if (item.op == render::Op::Hud && item.label == "xp-bar") xp = &item;
+    if (item.op == render::Op::Hud && item.label == "xp-bar")
+      xp = &item;
+    else if (item.label == "framekit-raster:xp-rail")
+      raster_xp = true;
   scenario_check(xp && xp->value == 42,
                  "hud-information: XP strip records authoritative progress");
+  scenario_check(raster_xp,
+                 "hud-information: XP progress uses the authored WIZARD rail");
 
   scenario_check(!state.world.monsters.empty(),
                  "hud-information: seeded route supplies a hover target");
@@ -10091,11 +10284,16 @@ int scenario_hud_information() {
     paint_hover_tooltip(state, dc, bounds, hud_ops);
   }
   bool saw_tooltip = false;
+  bool raster_tooltip = false;
   for (const auto& item : hud_ops)
     if (item.op == render::Op::Hud && item.label.rfind("tooltip:", 0) == 0)
       saw_tooltip = true;
+    else if (item.label == "framekit-raster:tooltip-frame")
+      raster_tooltip = true;
   scenario_check(saw_tooltip,
                  "hud-information: world hover emits a readable tooltip");
+  scenario_check(raster_tooltip,
+                 "hud-information: hover uses the authored WIZARD tooltip frame");
 
   state.gear_overlay = true;
   render::List modal_rl;
@@ -10277,6 +10475,8 @@ int scenario_character_inventory_diptych() {
   state.world.player.ember_resistance = 25;
   state.world.player.river_resistance = 40;
   state.world.player.alive = true;
+  state.world.xp_present = true;
+  state.world.xp_fraction = 0.63;
   state.world.stored_items = 28;
   state.world.stored_trophies = 9;
 
@@ -10337,9 +10537,36 @@ int scenario_character_inventory_diptych() {
   state.world.endgame.unlocked = true;
   state.world.endgame.mastery_total = 64;
   state.world.endgame.ascent_chance_percent = 38;
+  state.selected_item = 3;
+
+  const SpriteBitmap* runtime_framekit[] = {
+      &state.billboards.fk_panel_ornate, &state.billboards.fk_banner,
+      &state.billboards.fk_tooltip,      &state.billboards.fk_xp_rail,
+      &state.billboards.fk_orb_life,     &state.billboards.fk_orb_resource,
+      &state.billboards.fk_skill_strike, &state.billboards.fk_skill_thrust,
+      &state.billboards.fk_skill_sweep,  &state.billboards.fk_skill_warcry,
+      &state.billboards.fk_button,
+  };
+  int runtime_ready = 0;
+  for (const SpriteBitmap* sprite : runtime_framekit)
+    if (sprite->ready()) ++runtime_ready;
+  scenario_check(runtime_ready == 11 &&
+                     state.billboards.framekit_status ==
+                         "art: WIZARD Framekit 11/11",
+                 "character-inventory: all authored WIZARD runtime rasters decoded");
+  reference_present(state, 1366, 768, "");
+  bool objective_banner_drawn = false;
+  bool status_button_drawn = false;
+  for (const auto& item : state.render_list) {
+    if (item.label == "framekit-raster:banner-winged")
+      objective_banner_drawn = true;
+    if (item.label == "framekit-raster:button-primary")
+      status_button_drawn = true;
+  }
+  scenario_check(objective_banner_drawn && status_button_drawn,
+                 "character-inventory: authored objective and status frames were drawn");
   state.gear_overlay = true;
   state.character_pane = true;
-  state.selected_item = 3;
 
   std::string capture_dir;
   const int capture_override = capture_root_override(&capture_dir);
@@ -10366,6 +10593,11 @@ int scenario_character_inventory_diptych() {
     int seats = 0;
     int filled = 0;
     int footprints = 0;
+    int skill_rasters = 0;
+    bool ornate_panel = false;
+    bool life_orb = false;
+    bool resource_orb = false;
+    bool xp_rail = false;
     bool bounded = true;
     const HudRect* grid = nullptr;
     for (const auto& trace : state.hud_rect_trace) {
@@ -10383,8 +10615,19 @@ int scenario_character_inventory_diptych() {
     }
     for (const auto& item : state.render_list)
       if (item.op == render::Op::Hud &&
-          item.label.rfind("paperdoll:", 0) == 0 && item.value == 1)
+          item.label.rfind("paperdoll:", 0) == 0 && item.value == 1) {
         ++filled;
+      } else if (item.label.rfind("framekit-skill:", 0) == 0) {
+        ++skill_rasters;
+      } else if (item.label == "framekit-raster:panel-plain") {
+        ornate_panel = true;
+      } else if (item.label == "framekit-raster:orb-life") {
+        life_orb = true;
+      } else if (item.label == "framekit-raster:orb-resource") {
+        resource_orb = true;
+      } else if (item.label == "framekit-raster:xp-rail") {
+        xp_rail = true;
+      }
     if (grid) {
       for (const auto& trace : state.hud_rect_trace)
         if (trace.first == "pane-item-footprint")
@@ -10399,6 +10642,9 @@ int scenario_character_inventory_diptych() {
                    "character-inventory: all WearSet seats and fills are explicit");
     scenario_check(footprints == 6 && bounded,
                    "character-inventory: all spatial footprints remain bounded");
+    scenario_check(ornate_panel && life_orb && resource_orb && xp_rail &&
+                       skill_rasters == 4,
+                   "character-inventory: authored panel, HUD, orb, rail, and skill rasters were drawn");
   }
   for (const auto& trace : state.hud_rect_trace) {
     if (trace.first != "pane-item-footprint") continue;
