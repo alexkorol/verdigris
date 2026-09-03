@@ -1191,6 +1191,11 @@ JsonValue ProtocolSession::snapshot() const {
   put(state,"warCryTicksRemaining",war_cry_until_ms_>combat_clock_ms_
       ? static_cast<int>((war_cry_until_ms_-combat_clock_ms_+kSimulationTickMs-1)/kSimulationTickMs)
       : 0);
+  const int combo_window_snapshot_ms =
+      world_->player_combo_window_remaining_ms(combat_clock_ms_);
+  put(state,"combatCadence",JsonValue::Object{
+      {"step",world_->player_combo_step(combat_clock_ms_)},
+      {"windowTicks",(combo_window_snapshot_ms+kSimulationTickMs-1)/kSimulationTickMs}});
   JsonValue::Array monsters; for (const auto& candidate:world_->monsters()) if (candidate.alive) {
     JsonValue::Object monster; put(monster,"uuid",candidate.uuid); put(monster,"id",candidate.id); put(monster,"name",candidate.name);
     put(monster,"x",candidate.x); put(monster,"y",candidate.y); put(monster,"level",candidate.level); put(monster,"rarity",candidate.rarity);
@@ -2943,6 +2948,8 @@ void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std
   put(data,"baseAmount",event.base_amount); put(data,"beastbaneAmount",event.beastbane_amount);
   put(data,"beastbanePercent",event.beastbane_percent); put(data,"beastbane",event.beastbane);
   put(data,"critical",event.critical); put(data,"attackStyle",event.attack_style);
+  put(data,"comboStep",event.combo_step); put(data,"comboWindowMs",event.combo_window_ms);
+  put(data,"staggerMs",event.stagger_ms);
   emit_world(Envelope{"combat:hit",JsonValue(std::move(data))},emit);
 }
 
@@ -2961,6 +2968,11 @@ void ProtocolSession::emit_combat_state(
   put(data, "resourceMax", actor ? actor->stats.resource_max : 0);
   put(data, "cooldownTicks", cooldown_ticks);
   put(data, "warCryTicksRemaining", war_cry_ticks);
+  put(data, "comboStep", world_->player_combo_step(combat_clock_ms_));
+  const int combo_window_ms =
+      world_->player_combo_window_remaining_ms(combat_clock_ms_);
+  put(data, "comboWindowTicks",
+      (combo_window_ms + kSimulationTickMs - 1) / kSimulationTickMs);
   emit(Envelope{"player:combat-state", JsonValue(std::move(data))});
 }
 
@@ -3023,8 +3035,11 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
     actor->stats.life = life_before;
   }
   bool loot = false;
+  bool player_hit = false;
   for (const auto& event : events) {
     emit_combat_event(event, emit);
+    if (event.type == "hit" && event.attacker_id == identity_)
+      player_hit = true;
     if (event.died && event.target_id != identity_) loot = true;
     if (event.type == "hit" && event.target_id != identity_) quest_trigger("attack", emit);
     if (event.type == "death" && event.target_id != identity_) {
@@ -3142,6 +3157,10 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
     }
   }
   if (loot) emit_ground_change(emit);
+  // Held-primary cadence advances on the server tick without a fresh input
+  // envelope. Publish its new step immediately so the HUD never trails the
+  // hit that just resolved.
+  if (player_hit) emit_combat_state(emit);
   maybe_floor_cleared(emit);
   // A mortal scion's lethal wound is final: commit to the crypt (D-106).
   if (actor->stats.life <= 0 && (prepare_final_death_ || mortal_oath_) && lifecycle_ != "permadead") {

@@ -1,5 +1,25 @@
 # UI Regression Checklist
 
+## Native Combat Cadence
+
+- Hold primary attack against a durable non-boss. Confirm the quickbar pips
+  advance one, two, three and the caption reads `Strike II`, `FINISH`, then
+  `Strike I` without waiting for another input.
+- Confirm the third hit is visibly distinct: verdigris double ring and cross,
+  verdigris target flash, and a larger `finisher` damage number. A non-critical
+  finisher must still receive this treatment; a critical finisher must retain
+  both identities.
+- Confirm the first two hits use the normal recovery, the finisher has a
+  slightly longer recovery, and a non-boss cannot retaliate during the brief
+  stagger. Boss damage should increase on beat three without boss stagger.
+- Pause longer than the continuation window or use Thrust/Sweep, then attack
+  again. The first primary hit and one lit pip must restart the sequence.
+- Reconnect while a chain is active and confirm the same step/window return
+  from the snapshot rather than flashing an invented local step.
+- At 1366x768 and 960x600, confirm all three pips fit inside the LMB Framekit
+  slot, the caption remains legible, and the finisher flare does not overlap
+  the minimap or bottom HUD safe zones.
+
 ## Native Campaign Journal
 
 - Enter the world as a named Scion and press `J`; confirm Chronicle

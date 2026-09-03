@@ -30,6 +30,7 @@ struct EffectFx {
     Sparkle,
     DamageNumber,
     TargetFlash,
+    ComboFinisher,
     // TASK-0122 Phase A beats. All lifetimes come from the phase_a constants
     // table in presentation_events.hpp; none of them touch simulation state.
     Materialize,    // deterministic first-sighting spawn beat
@@ -46,6 +47,7 @@ struct EffectFx {
   bool damage_to_player = false;
   // TASK-0122 Phase A: critical/style parity data copied from the event.
   bool critical = false;
+  bool finisher = false;
   std::string style;
 };
 
@@ -73,6 +75,8 @@ struct WorldActor {
   int defense = 0;
   int level = 1;
   int cooldown_ticks = 0;
+  int combo_step = 0;
+  int combo_window_ticks = 0;
   int war_cry_ticks_remaining = 0;
   bool alive = true;
   bool elite = false;

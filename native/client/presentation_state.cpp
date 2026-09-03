@@ -117,6 +117,8 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
   world.player.attack = model.player.attack;
   world.player.level = model.player.level;
   world.player.cooldown_ticks = model.player.cooldown_ticks;
+  world.player.combo_step = model.player.combo_step;
+  world.player.combo_window_ticks = model.player.combo_window_ticks;
   world.player.war_cry_ticks_remaining = model.player.war_cry_ticks_remaining;
   world.player.alive = model.player.alive;
   world.has_extraction = model.scene.has_stairs_up;
@@ -277,6 +279,15 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
     }
     case PresentationEventType::DamageApplied: {
       fx.effects.push_back({EffectFx::Kind::Impact, ex, ey, 0.0, 0, 4});
+      if (!to_player && event.combo_step == 3) {
+        EffectFx finisher;
+        finisher.kind = EffectFx::Kind::ComboFinisher;
+        finisher.wx = ex;
+        finisher.wy = ey;
+        finisher.ttl = phase_a::kComboFinisherTtlTicks;
+        finisher.finisher = true;
+        fx.effects.push_back(finisher);
+      }
       EffectFx flash;
       flash.kind = EffectFx::Kind::TargetFlash;
       flash.wx = ex;
@@ -284,6 +295,7 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       flash.ttl = event.critical ? phase_a::kCriticalFlashTtlTicks : 4;
       flash.damage_to_player = to_player;
       flash.critical = event.critical;
+      flash.finisher = event.combo_step == 3;
       flash.style = event.style;
       fx.effects.push_back(flash);
       EffectFx number;
@@ -294,6 +306,7 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       number.value = event.value;
       number.damage_to_player = to_player;
       number.critical = event.critical;
+      number.finisher = event.combo_step == 3;
       number.style = event.style;
       fx.effects.push_back(number);
       if (to_player) {
@@ -503,7 +516,10 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
       case EffectFx::Kind::DamageNumber: {
         std::string damage_label =
             effect.damage_to_player ? "player" : "monster";
-        if (effect.critical)
+        if (effect.finisher)
+          damage_label = std::string(effect.critical ? "critical-finisher:" : "finisher:") +
+                         (effect.style.empty() ? "slash" : effect.style);
+        else if (effect.critical)
           damage_label = std::string(phase_a::kCriticalDamageLabel) + ":" +
                          (effect.style.empty() ? "slash" : effect.style);
         rl.push_back({render::Op::Damage, static_cast<double>(base.x),
@@ -517,7 +533,13 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
       case EffectFx::Kind::TargetFlash:
         rl.push_back({render::Op::TargetFlash, static_cast<double>(base.x),
                       static_cast<double>(base.y), 0.0, 0,
-                      effect.damage_to_player ? "player" : "monster"});
+                      effect.finisher ? "finisher" :
+                          (effect.damage_to_player ? "player" : "monster")});
+        break;
+      case EffectFx::Kind::ComboFinisher:
+        rl.push_back({render::Op::Impact, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, 0,
+                      phase_a::kComboFinisherLabel});
         break;
       case EffectFx::Kind::Materialize:
         // TASK-0122 Phase A: recorded on the existing vocabulary with a

@@ -43,7 +43,8 @@ Troubleshooting tips and platform-specific notes live in [`docs/development-setu
 - [x] UI/UX — PoE-inspired panes, closable chat, responsive 2.5D rendering,
   context menus, minimap, HUD orbs, and quickbar are browser-proven.
 - [x] Monsters & Combat — shared stat scaling, role AI, support healing,
-  generated bosses, feedback, loot, and interpolated movement are playable.
+  generated bosses, authoritative three-beat melee finishers, feedback, loot,
+  and interpolated movement are playable.
 - [x] Networking & World — persistent town, solo and party instances,
   procedural layouts, depth transitions, and two-client party flow are live.
 

@@ -265,6 +265,54 @@ void test_authoritative_remote_skill_actions() {
   check(thrust_hits==1&&resource_after_thrust==40,
         "skills: input spam cannot reset cooldown or double-spend resource");
 
+  // Primary attacks are a server-owned three-beat cadence. The held attack
+  // loop must advance it without fresh client guesses, and every resolved
+  // hit carries the exact presentation contract.
+  ProtocolSession combo("guest-skills-combo","socket-skills-combo",219,false);
+  combo.handle(Envelope{"instance:enterSolo",JsonValue::Object{{"template","dungeon"},{"layout","clearings"}}},[](const Envelope&){});
+  const auto combo_state=request_state(combo,"skills-combo-target");
+  const auto& combo_target=combo_state["state"]["monsters"].array()->front();
+  const int combo_tx=static_cast<int>(combo_target["x"].number().value_or(0));
+  const int combo_ty=static_cast<int>(combo_target["y"].number().value_or(0));
+  const int combo_px=combo_tx+1<39?combo_tx+1:combo_tx-1;
+  const std::string combo_aim=direction_toward(combo_px,combo_ty,combo_tx,combo_ty);
+  const std::string combo_uuid=combo_target["uuid"].string()?*combo_target["uuid"].string():std::string();
+  combo.handle(Envelope{"dev:teleport",JsonValue::Object{{"x",combo_px},{"y",combo_ty}}},[](const Envelope&){});
+  combo.handle(Envelope{"dev:monster:reset",JsonValue::Object{{"monsterUuid",combo_uuid},{"maxHealth",1000}}},[](const Envelope&){});
+  std::vector<int> combo_steps;
+  std::vector<int> combo_damage;
+  int combo_stagger=0;
+  int combat_state_step=0;
+  int combat_state_window=0;
+  auto collect_combo=[&](const Envelope& event){
+    if(event.event=="combat:hit"&&event.data["targetType"].string()&&
+       *event.data["targetType"].string()=="monster") {
+      combo_steps.push_back(static_cast<int>(event.data["comboStep"].number().value_or(0)));
+      combo_damage.push_back(static_cast<int>(event.data["amount"].number().value_or(0)));
+      combo_stagger=static_cast<int>(event.data["staggerMs"].number().value_or(0));
+    }
+    if(event.event=="player:combat-state") {
+      combat_state_step=static_cast<int>(event.data["comboStep"].number().value_or(0));
+      combat_state_window=static_cast<int>(event.data["comboWindowTicks"].number().value_or(0));
+    }
+  };
+  combo.handle(Envelope{"player:skill:trigger",JsonValue::Object{{"skill","melee"},{"direction",combo_aim}}},collect_combo);
+  combo.set_direct_emit(collect_combo);
+  const auto combo_clock = std::chrono::duration_cast<std::chrono::milliseconds>(
+      std::chrono::system_clock::now().time_since_epoch()).count();
+  combo.tick(combo_clock+350);
+  combo.tick(combo_clock+700);
+  check(combo_steps==std::vector<int>({1,2,3})&&combo_damage.size()==3&&
+            combo_damage[1]==combo_damage[0]*115/100&&
+            combo_damage[2]==combo_damage[0]*160/100,
+        "skills: wire carries the server's exact three-beat damage cadence");
+  check(combo_stagger==700&&combat_state_step==3&&combat_state_window==18,
+        "skills: finisher stagger and active cadence reach combat-state");
+  const auto combo_after=request_state(combo,"skills-combo-after");
+  check(combo_after["state"]["combatCadence"]["step"].number().value_or(0)==3&&
+            combo_after["state"]["combatCadence"]["windowTicks"].number().value_or(0)==18,
+        "skills: snapshots preserve authoritative cadence for reconnects");
+
   // Find a deterministic generated pack with two bodies in one radius and
   // prove Sweep produces separate authoritative hit events for both.
   std::unique_ptr<ProtocolSession> sweep;

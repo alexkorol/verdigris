@@ -1782,6 +1782,108 @@ void test_n2_diagonal_blocking_rule() {
   check(tile_movement::occupied_tile(at_edge).x == 1, "N2 teleport floors onto the target tile");
 }
 
+void test_world_melee_combo_is_authoritative() {
+  WorldSimulation world(0xC0B0ULL, "combo-scion");
+  world.enter_solo_instance("dungeon", "clearings");
+  const WorldMonster* target = nullptr;
+  for (const auto& monster : world.monsters()) {
+    if (!monster.boss) {
+      target = &monster;
+      break;
+    }
+  }
+  check(target != nullptr, "combo: generated floor has a non-boss target");
+  if (!target) return;
+  const std::string target_id = target->uuid;
+  const int target_x = target->x;
+  const int target_y = target->y;
+  world.reset_monster(target_id, 1000);
+  const int player_x = target_x + 1 < 39 ? target_x + 1 : target_x - 1;
+  world.teleport(player_x, target_y, 900);
+  const std::string direction = player_x < target_x ? "right" : "left";
+  int player_life = 1000;
+  std::vector<int> damage;
+  std::vector<int> steps;
+  int finisher_stagger = 0;
+  const auto resolve = [&](std::int64_t at) {
+    for (const auto& event :
+         world.advance_combat(1, 20, player_life, 1000, at)) {
+      if (event.type == "hit" && event.attacker_id == "combo-scion") {
+        damage.push_back(event.amount);
+        steps.push_back(event.combo_step);
+        finisher_stagger = event.stagger_ms;
+      }
+    }
+  };
+  check(world.start_player_attack(1, 20, 1000, direction, "melee"),
+        "combo: first primary input is accepted");
+  resolve(1000);
+  resolve(1350);
+  resolve(1700);
+  check(damage == std::vector<int>({20, 23, 32}) &&
+            steps == std::vector<int>({1, 2, 3}),
+        "combo: server resolves the exact 100/115/160 cadence");
+  check(finisher_stagger == 700 &&
+            world.player_cooldown_remaining_ms(1700) == 520 &&
+            world.player_combo_step(1700) == 3 &&
+            world.player_combo_window_remaining_ms(1700) == 900,
+        "combo: finisher owns its stagger, recovery, step, and window");
+  const WorldMonster* staggered = nullptr;
+  for (const auto& monster : world.monsters())
+    if (monster.uuid == target_id) staggered = &monster;
+  check(staggered && staggered->next_attack_ms >= 2400,
+        "combo: finisher delays the non-boss retaliation clock");
+
+  check(world.start_player_attack(1, 20, 2220, direction, "thrust"),
+        "combo: named skill is accepted after finisher recovery");
+  const auto thrust_events =
+      world.advance_combat(1, 20, player_life, 1000, 2220);
+  bool thrust_is_outside_combo = false;
+  for (const auto& event : thrust_events)
+    if (event.attacker_id == "combo-scion" && event.skill_id == "thrust")
+      thrust_is_outside_combo = event.combo_step == 0;
+  check(thrust_is_outside_combo && world.player_combo_step(2220) == 0,
+        "combo: named skills reset and never masquerade as cadence hits");
+
+  check(world.start_player_attack(1, 20, 2570, direction, "melee"),
+        "combo: primary restarts after named skill");
+  resolve(2570);
+  check(steps.back() == 1, "combo: named skill restarts primary at beat one");
+  check(world.start_player_attack(1, 20, 3471, direction, "melee"),
+        "combo: primary is accepted after the cadence window expires");
+  resolve(3471);
+  check(steps.back() == 1,
+        "combo: an expired cadence window restarts at beat one");
+
+  WorldSimulation boss_world(0xC0B1ULL, "boss-combo-scion");
+  boss_world.enter_solo_instance("dungeon", "gauntlet");
+  const WorldMonster* boss = nullptr;
+  for (const auto& monster : boss_world.monsters())
+    if (monster.boss) boss = &monster;
+  check(boss != nullptr, "combo: generated floor has a boss control target");
+  if (boss) {
+    const std::string boss_id = boss->uuid;
+    const int bx = boss->x;
+    const int by = boss->y;
+    boss_world.reset_monster(boss_id, 1000);
+    const int bpx = bx + 1 < 39 ? bx + 1 : bx - 1;
+    boss_world.teleport(bpx, by, 4900);
+    const std::string baim = bpx < bx ? "right" : "left";
+    int boss_trial_life = 1000;
+    int boss_finisher_stagger = -1;
+    boss_world.start_player_attack(1, 20, 5000, baim, "melee");
+    for (const auto at : {5000LL, 5350LL, 5700LL}) {
+      for (const auto& event : boss_world.advance_combat(
+               1, 20, boss_trial_life, 1000, at))
+        if (event.type == "hit" && event.attacker_id == "boss-combo-scion" &&
+            event.combo_step == 3)
+          boss_finisher_stagger = event.stagger_ms;
+    }
+    check(boss_finisher_stagger == 0,
+          "combo: bosses take finisher damage without receiving trash stagger");
+  }
+}
+
 }  // namespace
 
 // ── N4: items, inventory, Vesselforge ────────────────────────────────────
@@ -2154,6 +2256,7 @@ int main() {
   test_n2_movement_constants_mirror_browser();
   test_n2_world_simulation_rules();
   test_n2_diagonal_blocking_rule();
+  test_world_melee_combo_is_authoritative();
   test_relic_resurface_round_trip();
   test_relic_loss_again_returns_once();
   test_relic_resurface_replay_is_deterministic();

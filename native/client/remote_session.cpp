@@ -1167,6 +1167,12 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         json_number(envelope.data.get("resourceMax"), model_.player.resource_max));
     model_.player.cooldown_ticks = static_cast<int>(
         json_number(envelope.data.get("cooldownTicks"), model_.player.cooldown_ticks));
+    model_.player.combo_step = std::clamp(
+        static_cast<int>(json_number(envelope.data.get("comboStep"),
+                                     model_.player.combo_step)), 0, 3);
+    model_.player.combo_window_ticks = (std::max)(0, static_cast<int>(
+        json_number(envelope.data.get("comboWindowTicks"),
+                    model_.player.combo_window_ticks)));
     model_.player.war_cry_ticks_remaining = static_cast<int>(json_number(
         envelope.data.get("warCryTicksRemaining"),
         model_.player.war_cry_ticks_remaining));
@@ -1195,6 +1201,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       apply_player_fields(model_.player, *player_state);
     }
     if (!model_.scene.id.empty()) model_.player.scene_id = model_.scene.id;
+    model_.player.combo_step = 0;
+    model_.player.combo_window_ticks = 0;
     model_.monsters.clear();
     model_.npcs.clear();
     model_.ground.clear();
@@ -1256,6 +1264,16 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       std::string skill_id = "melee";
       if (const auto* skill_value = json_string(envelope.data.get("skillId")))
         skill_id = *skill_value;
+      const int combo_step = std::clamp(
+          static_cast<int>(json_number(envelope.data.get("comboStep"), 0.0)), 0, 3);
+      const int combo_window_ms = (std::max)(0, static_cast<int>(
+          json_number(envelope.data.get("comboWindowMs"), 0.0)));
+      const int stagger_ms = (std::max)(0, static_cast<int>(
+          json_number(envelope.data.get("staggerMs"), 0.0)));
+      if (combo_step > 0) {
+        model_.player.combo_step = combo_step;
+        model_.player.combo_window_ticks = (combo_window_ms + 49) / 50;
+      }
       ClientMonster& foe = upsert_monster(model_, target ? *target : "",
                                           json_string(envelope.data.get("targetName"))
                                               ? *json_string(envelope.data.get("targetName"))
@@ -1277,6 +1295,9 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       outgoing.value = amount;
       outgoing.critical = critical;
       outgoing.style = style;
+      outgoing.combo_step = combo_step;
+      outgoing.combo_window_ms = combo_window_ms;
+      outgoing.stagger_ms = stagger_ms;
       pending_events_.push_back(std::move(outgoing));
       if (died) {
         ++model_.kills;
@@ -1334,6 +1355,13 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     model_.player.war_cry_ticks_remaining = static_cast<int>(json_number(
         state->get("warCryTicksRemaining"),
         model_.player.war_cry_ticks_remaining));
+    if (const auto* cadence = state->get("combatCadence");
+        cadence && cadence->object()) {
+      model_.player.combo_step = std::clamp(
+          static_cast<int>(json_number(cadence->get("step"), 0.0)), 0, 3);
+      model_.player.combo_window_ticks = (std::max)(0, static_cast<int>(
+          json_number(cadence->get("windowTicks"), 0.0)));
+    }
     if (const auto* attributes = state->get("attributes")) {
       model_.attr_strength = static_cast<int>(
           json_number(attributes->get("strength"), model_.attr_strength));

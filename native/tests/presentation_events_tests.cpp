@@ -101,6 +101,39 @@ void critical_damage_is_distinct() {
   check(saw_crit_label, "phase-a: render list labels critical hits with style");
 }
 
+void combo_finisher_is_distinct() {
+  WorldView world = world_with_player_and_foe("right");
+  PresentationFx fx;
+  PresentationEvent finisher;
+  finisher.type = PresentationEventType::DamageApplied;
+  finisher.actor_id = "foe-1";
+  finisher.text = "outgoing";
+  finisher.value = 32;
+  finisher.style = "slash";
+  finisher.combo_step = 3;
+  finisher.combo_window_ms = 900;
+  finisher.stagger_ms = 700;
+  apply_presentation_event(fx, world, finisher, 0);
+  const EffectFx* ring = first_kind(fx, EffectFx::Kind::ComboFinisher);
+  const EffectFx* number = first_kind(fx, EffectFx::Kind::DamageNumber);
+  check(ring && ring->ttl == phase_a::kComboFinisherTtlTicks,
+        "combo: third beat produces the named finisher treatment");
+  check(number && number->finisher && !number->critical,
+        "combo: finisher emphasis is independent from critical chance");
+  render::List rl;
+  record_world_ops(rl, world, fx, camera2d::Camera{}, 960, 600);
+  bool saw_ring = false;
+  bool saw_number = false;
+  for (const auto& item : rl) {
+    if (item.op == render::Op::Impact &&
+        item.label == phase_a::kComboFinisherLabel) saw_ring = true;
+    if (item.op == render::Op::Damage && item.label == "finisher:slash")
+      saw_number = true;
+  }
+  check(saw_ring && saw_number,
+        "combo: shared render list labels the finisher ring and damage");
+}
+
 void scion_lost_beat_contract() {
   WorldView world = world_with_player_and_foe("right");
   PresentationFx fx;
@@ -348,6 +381,7 @@ void npcs_ride_the_model_into_world_and_render_list() {
 int main() {
   constants_are_named_and_distinct();
   critical_damage_is_distinct();
+  combo_finisher_is_distinct();
   scion_lost_beat_contract();
   buff_expired_beat_contract();
   local_seam_maps_lifecycle_events();

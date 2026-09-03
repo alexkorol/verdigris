@@ -2496,6 +2496,86 @@ void remote_endgame_payload_mirrors_to_presentation() {
   server.stop();
 }
 
+void remote_combat_cadence_mirrors_to_presentation() {
+  ScriptedEnvelopeServer server;
+  server.script.push_back(
+      "{\"event\":\"player:login\",\"data\":{\"player\":{"
+      "\"uuid\":\"combo-guest\",\"x\":10,\"y\":11,\"facing\":\"right\"},"
+      "\"scene\":{\"id\":\"instance:dungeon:clearings\","
+      "\"type\":\"instance\",\"name\":\"Ashen Verge\"}}}");
+  server.script.push_back(
+      "{\"event\":\"dev:state\",\"data\":{\"state\":{"
+      "\"lifecycle\":\"alive\",\"combatCadence\":{\"step\":2,"
+      "\"windowTicks\":11},\"monsters\":[{\"uuid\":\"foe-1\","
+      "\"name\":\"Ashen Guard\",\"x\":11,\"y\":11,"
+      "\"hp\":{\"current\":100,\"max\":100}}]}}}");
+  server.script.push_back(
+      "{\"event\":\"combat:hit\",\"data\":{"
+      "\"attackerId\":\"combo-guest\",\"targetId\":\"foe-1\","
+      "\"targetName\":\"Ashen Guard\",\"targetType\":\"monster\","
+      "\"skillId\":\"melee\",\"amount\":32,\"died\":false,"
+      "\"health\":{\"current\":68,\"max\":100},\"critical\":false,"
+      "\"attackStyle\":\"slash\",\"comboStep\":3,"
+      "\"comboWindowMs\":900,\"staggerMs\":700}}");
+  std::string error;
+  check(server.start(&error),
+        "combo-mirror: scripted loopback server bound in capsule");
+  if (server.port() == 0) return;
+
+  verdigris::client::RemoteProtocolSession session(
+      "127.0.0.1", server.port(), "combo-mirror-guest", true);
+  check(session.start(&error), "combo-mirror: connect + upgrade + login sent");
+  check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
+        "combo-mirror: admission acknowledged");
+
+  server.grant_next_frame();
+  std::vector<std::string> errors;
+  check(pt_pump_until(session, errors, 5000, [&] {
+          return session.model().player.combo_step == 2 &&
+                 session.model().player.combo_window_ticks == 11;
+        }),
+        "combo-mirror: snapshot cadence reaches the model verbatim");
+  verdigris::client::WorldView world;
+  verdigris::client::sync_world_from_model(world, session.model());
+  check(world.player.combo_step == 2 && world.player.combo_window_ticks == 11,
+        "combo-mirror: cadence reaches shared presentation state");
+
+  server.grant_next_frame();
+  verdigris::client::PresentationEvent finisher;
+  bool saw_finisher = false;
+  const auto deadline =
+      std::chrono::steady_clock::now() + std::chrono::milliseconds(5000);
+  while (!saw_finisher && std::chrono::steady_clock::now() < deadline) {
+    session.poll();
+    for (const auto& event : session.drain_events()) {
+      if (event.type == verdigris::client::PresentationEventType::ProtocolError)
+        errors.push_back(event.text);
+      if (event.type == verdigris::client::PresentationEventType::DamageApplied &&
+          event.text == "outgoing" && event.combo_step == 3) {
+        finisher = event;
+        saw_finisher = true;
+      }
+    }
+    if (!saw_finisher) std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  check(saw_finisher && finisher.combo_window_ms == 900 &&
+            finisher.stagger_ms == 700 &&
+            session.model().player.combo_step == 3 &&
+            session.model().player.combo_window_ticks == 18,
+        "combo-mirror: hit cadence, window, and stagger survive wire parsing");
+  verdigris::client::sync_world_from_model(world, session.model());
+  verdigris::client::PresentationFx fx;
+  verdigris::client::apply_presentation_event(fx, world, finisher, 1);
+  bool finisher_fx = false;
+  for (const auto& effect : fx.effects)
+    if (effect.kind == verdigris::client::EffectFx::Kind::ComboFinisher)
+      finisher_fx = true;
+  check(finisher_fx, "combo-mirror: authoritative third beat drives finisher VFX");
+  check(errors.empty(), "combo-mirror: valid cadence payload raises no protocol error");
+  session.shutdown();
+  server.stop();
+}
+
 void remote_crossroads_dialogue_mirrors_to_presentation() {
   ScriptedEnvelopeServer server;
   server.script.push_back(
@@ -2821,6 +2901,7 @@ int main() {
   remote_render_list_ops();
   remote_passive_tree_absence_stays_absent();
   remote_endgame_payload_mirrors_to_presentation();
+  remote_combat_cadence_mirrors_to_presentation();
   remote_crossroads_dialogue_mirrors_to_presentation();
   remote_passive_tree_payload_hardening();
   gateb_driver_state_machine_controls();

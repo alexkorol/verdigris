@@ -1,6 +1,6 @@
 # Vision
 
-## Status (updated 2026-08-13)
+## Status (updated 2026-09-02)
 
 **The world web at the village gates** (docs/crossroads-world-web.md): the
 rebuilt 2.5D Delaford Village remains the campaign's town, and the
@@ -75,6 +75,14 @@ awards tier-scaled renown once, and raises a bounded next-tier ascent chance;
 repeat clears remain valid runs without minting the first-clear reward again.
 The post-campaign Framekit journal renders the complete 64-objective ledger and
 the selected tablet identifies whether it offers new mastery.
+
+Primary melee combat now has an authoritative three-beat rhythm instead of an
+endless identical swing. Cut and Return build into a slower, 160% Finisher
+that briefly staggers non-boss enemies; the chain expires after a short pause
+or resets when a named skill is used. Exact cadence state travels through the
+server protocol and reconnect snapshot. The Framekit quickbar shows the live
+step, while the finisher's verdigris flare and larger damage number remain
+presentation-only reactions to the resolved server hit.
 
 The character sheet now reuses the generated player sprite for its portrait
 and each equipped item's real atlas frame; generic slot glyphs remain only for
@@ -164,7 +172,8 @@ release-safe baseline.
 
 ### Monsters & Combat
 - Shared stat pipeline, monster categories, rarity tiers.
-- Balanced combat loop with interpolated movement and responsive skills.
+- Balanced combat loop with interpolated movement, responsive named skills,
+  and an authoritative three-beat primary cadence with a readable finisher.
 - AI behaviors for different archetypes.
 
 ### Networking & World

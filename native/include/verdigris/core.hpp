@@ -842,6 +842,11 @@ struct WorldCombatEvent {
   bool beastbane = false;
   bool critical = false;
   std::string attack_style = "slash";
+  // Server-resolved primary-attack cadence. Named skills carry step 0.
+  // The third step is the finisher and may stagger a non-boss target.
+  int combo_step = 0;
+  int combo_window_ms = 0;
+  int stagger_ms = 0;
 };
 
 struct InstanceMetadata {
@@ -927,7 +932,7 @@ class WorldSimulation {
     }
     return false;
   }
-  void kill_all_monsters() { for (auto& monster : monsters_) { monster.alive = false; monster.life = 0; } active_target_.clear(); pending_player_skill_.clear(); auto_player_melee_ = false; }
+  void kill_all_monsters() { for (auto& monster : monsters_) { monster.alive = false; monster.life = 0; } active_target_.clear(); pending_player_skill_.clear(); pending_player_combo_step_ = 0; player_combo_step_ = 0; player_combo_expires_ms_ = 0; auto_player_melee_ = false; }
   const TileGrid& grid() const { return grid_; }
   bool in_instance() const { return scene_type_ == "instance"; }
 
@@ -965,6 +970,8 @@ class WorldSimulation {
                                                int& player_life, int player_life_max,
                                                std::int64_t now_ms);
   int player_cooldown_remaining_ms(std::int64_t now_ms) const;
+  int player_combo_step(std::int64_t now_ms) const;
+  int player_combo_window_remaining_ms(std::int64_t now_ms) const;
   void set_level(int level);
   void heal_player(int& player_life, int player_life_max);
   // Display name for a template/layout pair (falls back to template-only,
@@ -1047,6 +1054,9 @@ public:
 private:
   std::uint64_t next_player_attack_ms_ = 0;
   std::string pending_player_skill_;
+  int pending_player_combo_step_ = 0;
+  int player_combo_step_ = 0;
+  std::uint64_t player_combo_expires_ms_ = 0;
   bool auto_player_melee_ = false;
   std::uint64_t next_boss_telegraph_ms_ = 0;
   bool boss_warning_seen_ = false;

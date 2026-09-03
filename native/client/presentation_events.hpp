@@ -39,6 +39,9 @@ struct PresentationEvent {
   // remote session copies these from the envelope; it never computes them.
   bool critical = false;
   std::string style;
+  int combo_step = 0;
+  int combo_window_ms = 0;
+  int stagger_ms = 0;
 };
 
 // TASK-0122 Phase A: the single named table for every new animation/VFX TTL,
@@ -60,6 +63,11 @@ struct Rgb {
 inline constexpr Rgb kCriticalNumberColor{255, 176, 64};   // white-hot orange
 inline constexpr Rgb kCriticalFlashColor{255, 246, 214};   // near-white burst
 inline constexpr const char* kCriticalDamageLabel = "critical";  // + ":" + style
+
+// Authoritative third-beat melee finisher treatment.
+inline constexpr int kComboFinisherTtlTicks = 10;          // 500 ms
+inline constexpr Rgb kComboFinisherColor{104, 232, 204};   // verdigris flare
+inline constexpr const char* kComboFinisherLabel = "combo-finisher";
 
 // Deterministic spawn/materialization beat (first client sighting of a foe).
 inline constexpr int kMaterializeTtlTicks = 8;             // 400 ms

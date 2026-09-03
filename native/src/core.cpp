@@ -1468,6 +1468,9 @@ constexpr int kN3TrashLife = 30;
 constexpr int kN3PlayerDamage = 18;
 constexpr int kN3PlayerAttackIntervalMs = 350;
 constexpr int kN3SweepAttackIntervalMs = 525;
+constexpr int kN3ComboWindowMs = 900;
+constexpr int kN3ComboFinisherRecoveryMs = 520;
+constexpr int kN3ComboFinisherStaggerMs = 700;
 // The local presentation's 143-unit melee reach spans roughly three 48-unit
 // protocol tiles; thrust keeps its authored 1.5x reach rounded outward.
 constexpr int kN3MeleeRangeTiles = 3;
@@ -1635,6 +1638,9 @@ void WorldSimulation::return_to_town() {
   town_ground_items_.clear();
   active_target_.clear();
   pending_player_skill_.clear();
+  pending_player_combo_step_ = 0;
+  player_combo_step_ = 0;
+  player_combo_expires_ms_ = 0;
   auto_player_melee_ = false;
   grid_.width = kTownSize;
   grid_.height = kTownSize;
@@ -1866,6 +1872,9 @@ void WorldSimulation::enter_solo_instance(const std::string& template_id, const 
   }
   active_target_.clear();
   pending_player_skill_.clear();
+  pending_player_combo_step_ = 0;
+  player_combo_step_ = 0;
+  player_combo_expires_ms_ = 0;
   auto_player_melee_ = false;
   boss_warning_seen_ = false;
   next_boss_telegraph_ms_ = 0;
@@ -1932,12 +1941,23 @@ bool WorldSimulation::start_player_attack(int player_level, int player_attack,
   if (!chosen) return false;
   active_target_ = chosen->uuid;
   pending_player_skill_ = skill;
+  if (skill == "melee") {
+    if (now >= player_combo_expires_ms_) player_combo_step_ = 0;
+    pending_player_combo_step_ = player_combo_step_ % 3 + 1;
+  } else {
+    pending_player_combo_step_ = 0;
+    player_combo_step_ = 0;
+    player_combo_expires_ms_ = 0;
+  }
   // Primary click-to-attack keeps swinging at its chosen target; named
   // abilities are discrete casts. The cooldown timestamp is never moved by
   // rejected repeat input, preserving both responsive play and anti-spam.
   auto_player_melee_ = skill == "melee";
   next_player_attack_ms_ = now +
-      (skill == "sweep" ? kN3SweepAttackIntervalMs : kN3PlayerAttackIntervalMs);
+      (skill == "sweep" ? kN3SweepAttackIntervalMs
+                         : pending_player_combo_step_ == 3
+                               ? kN3ComboFinisherRecoveryMs
+                               : kN3PlayerAttackIntervalMs);
   (void)player_attack;
   return true;
 }
@@ -1946,6 +1966,17 @@ int WorldSimulation::player_cooldown_remaining_ms(std::int64_t now_ms) const {
   const auto now = static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms));
   if (now >= next_player_attack_ms_) return 0;
   return static_cast<int>(next_player_attack_ms_ - now);
+}
+
+int WorldSimulation::player_combo_step(std::int64_t now_ms) const {
+  const auto now = static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms));
+  return now < player_combo_expires_ms_ ? player_combo_step_ : 0;
+}
+
+int WorldSimulation::player_combo_window_remaining_ms(std::int64_t now_ms) const {
+  const auto now = static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms));
+  if (now >= player_combo_expires_ms_) return 0;
+  return static_cast<int>(player_combo_expires_ms_ - now);
 }
 
 std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
@@ -2011,12 +2042,13 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
   }
   if (active_target_.empty()) {
     pending_player_skill_.clear();
+    pending_player_combo_step_ = 0;
     auto_player_melee_ = false;
     return events;
   }
   WorldMonster* target = nullptr;
   for (auto& monster : monsters_) if (monster.uuid == active_target_ && monster.alive) { target = &monster; break; }
-  if (!target) { active_target_.clear(); pending_player_skill_.clear(); auto_player_melee_ = false; return events; }
+  if (!target) { active_target_.clear(); pending_player_skill_.clear(); pending_player_combo_step_ = 0; auto_player_melee_ = false; return events; }
   { // JS combat: walking out of melee reach disengages - the swing loop must
     // not chase a target across the map (build-comparison parking relies on it).
     const Vec2 here = tile_movement::occupied_tile(position_);
@@ -2024,6 +2056,7 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
         std::abs(target->y - here.y) > kN3ThrustRangeTiles) {
       active_target_.clear();
       pending_player_skill_.clear();
+      pending_player_combo_step_ = 0;
       auto_player_melee_ = false;
       return events;
     }
@@ -2035,12 +2068,18 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
                          std::abs(target->y - here.y);
     if (distance <= kN3MeleeRangeTiles) {
       pending_player_skill_ = "melee";
-      next_player_attack_ms_ = now + kN3PlayerAttackIntervalMs;
+      if (now >= player_combo_expires_ms_) player_combo_step_ = 0;
+      pending_player_combo_step_ = player_combo_step_ % 3 + 1;
+      next_player_attack_ms_ = now +
+          (pending_player_combo_step_ == 3 ? kN3ComboFinisherRecoveryMs
+                                           : kN3PlayerAttackIntervalMs);
     }
   }
   if (player_attack > 0 && !pending_player_skill_.empty()) {
     const std::string skill = pending_player_skill_;
+    const int combo_step = pending_player_combo_step_;
     pending_player_skill_.clear();  // one accepted request resolves once
+    pending_player_combo_step_ = 0;
     const Vec2 here = tile_movement::occupied_tile(position_);
     std::vector<WorldMonster*> struck;
     if (skill == "sweep") {
@@ -2067,6 +2106,8 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       int base = std::max(1, player_attack > 0 ? player_attack : kN3PlayerDamage);
       if (skill == "thrust") base = std::max(1, base * 13 / 10);
       else if (skill == "sweep") base = std::max(1, base * 3 / 4);
+      else if (combo_step == 2) base = std::max(1, base * 115 / 100);
+      else if (combo_step == 3) base = std::max(1, base * 160 / 100);
       const bool beast = std::find(struck_target->tags.begin(),
                                    struck_target->tags.end(), "beast") !=
                          struck_target->tags.end();
@@ -2098,6 +2139,14 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       hit.beastbane_percent = beastbane_percent;
       hit.beastbane = beastbane_percent > 0;
       hit.critical = critical; hit.attack_style = player_mods_.attack_style;
+      hit.combo_step = skill == "melee" ? combo_step : 0;
+      hit.combo_window_ms = skill == "melee" ? kN3ComboWindowMs : 0;
+      if (skill == "melee" && combo_step == 3 && !struck_target->boss) {
+        struck_target->next_attack_ms =
+            std::max(struck_target->next_attack_ms,
+                     now + static_cast<std::uint64_t>(kN3ComboFinisherStaggerMs));
+        hit.stagger_ms = kN3ComboFinisherStaggerMs;
+      }
       events.push_back(hit);
       if (struck_target->life == 0) {
         struck_target->alive = false;
@@ -2105,6 +2154,10 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
         drop_monster_loot(*struck_target, player_mods_.goods_found);
         if (struck_target->uuid == active_target_) active_target_died = true;
       }
+    }
+    if (skill == "melee" && !struck.empty()) {
+      player_combo_step_ = combo_step;
+      player_combo_expires_ms_ = now + kN3ComboWindowMs;
     }
     if (active_target_died) {
       active_target_.clear();
@@ -3442,6 +3495,11 @@ void WorldSimulation::transition_floor(int depth) {
   metadata_.depth = clamped_depth;
   ground_items_.clear();
   active_target_.clear();
+  pending_player_skill_.clear();
+  pending_player_combo_step_ = 0;
+  player_combo_step_ = 0;
+  player_combo_expires_ms_ = 0;
+  auto_player_melee_ = false;
   boss_warning_seen_ = false;
   next_boss_telegraph_ms_ = 0;
   generate_instance();

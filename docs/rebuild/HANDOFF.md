@@ -1,5 +1,29 @@
 # Native reconstitution handoff
 
+## 2026-09-02 - authoritative three-beat melee cadence
+
+- The production remote combat path now resolves primary attacks as a
+  server-owned three-beat cadence: Cut at 100% damage, Return at 115%, and a
+  160% Finisher. The first two beats recover in 350 ms; the finisher recovers
+  in 520 ms and staggers non-boss retaliation for 700 ms.
+- A 900 ms continuation window permits pack-to-pack chaining. Letting it
+  expire or using a named skill restarts the primary sequence at beat one.
+  Bosses receive the finisher damage but remain immune to its stagger.
+- `combat:hit`, `player:combat-state`, and reconnect snapshots carry the
+  resolved step/window/stagger. Held-primary server ticks publish combat state
+  immediately, so the remote HUD never has to predict the next beat.
+- The Framekit quickbar mirrors the active step with three pips and changes
+  its primary caption for Return, Finisher, and restart. A third-beat hit has
+  a distinct verdigris impact ring, cross flare, target flash, and enlarged
+  damage number independent of critical-hit styling.
+- Core, protocol, scripted-session, shared-presentation, and production-GDI
+  scenario coverage prove damage coefficients, recovery, non-boss stagger,
+  reset rules, wire/model parity, and the unique finisher treatment. Evidence:
+  `native/build/goal-captures-combo-b/combat-cadence-finisher-1366x768.png`.
+- Verification: the full native test gate, complete Chronicle succession and
+  relic-recovery journey, and every client scenario pass. `frame-budget`
+  measured 9.8 ms average at 3440x1440 against the 40 ms ceiling.
+
 ## 2026-09-02 - House-wide Wayfinder Mastery endgame
 
 - The consumable tablet loop now feeds a finite 64-objective mastery board:

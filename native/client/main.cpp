@@ -2345,13 +2345,36 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       draw_line(dc, base.x, base.y - r, base.x, base.y + r, color, 1);
       break;
     }
+    case EffectFx::Kind::ComboFinisher: {
+      rl.push_back({render::Op::Impact, static_cast<double>(base.x),
+                    static_cast<double>(base.y), 0.0, 0,
+                    phase_a::kComboFinisherLabel});
+      const COLORREF color = fade_to_background(
+          RGB(phase_a::kComboFinisherColor.r, phase_a::kComboFinisherColor.g,
+              phase_a::kComboFinisherColor.b), life);
+      const int outer = std::max(
+          10, static_cast<int>(kTileUnits * (0.48 + grow * 0.92) * base.scale));
+      const int inner = std::max(5, outer / 2);
+      ring_ellipse(dc, base.x, base.y, outer, outer, color, 3);
+      ring_ellipse(dc, base.x, base.y, inner, inner, color, 1);
+      const int arm = std::max(8, static_cast<int>(kTileUnits * 0.7 * base.scale));
+      draw_line(dc, base.x - arm, base.y, base.x + arm, base.y, color, 3);
+      draw_line(dc, base.x, base.y - arm, base.x, base.y + arm, color, 3);
+      break;
+    }
     case EffectFx::Kind::DamageNumber: {
       std::string damage_label = fx.damage_to_player ? "player" : "monster";
       const COLORREF base_color =
-          fx.critical ? RGB(phase_a::kCriticalNumberColor.r, phase_a::kCriticalNumberColor.g,
-                            phase_a::kCriticalNumberColor.b)
+          fx.finisher ? RGB(phase_a::kComboFinisherColor.r,
+                            phase_a::kComboFinisherColor.g,
+                            phase_a::kComboFinisherColor.b)
+                      : fx.critical ? RGB(phase_a::kCriticalNumberColor.r, phase_a::kCriticalNumberColor.g,
+                                         phase_a::kCriticalNumberColor.b)
                       : (fx.damage_to_player ? RGB(255, 118, 104) : RGB(240, 218, 132));
-      if (fx.critical)
+      if (fx.finisher)
+        damage_label = std::string(fx.critical ? "critical-finisher:" : "finisher:") +
+                       (fx.style.empty() ? "slash" : fx.style);
+      else if (fx.critical)
         damage_label = std::string(phase_a::kCriticalDamageLabel) + ":" +
                        (fx.style.empty() ? "slash" : fx.style);
       rl.push_back({render::Op::Damage, static_cast<double>(base.x),
@@ -2359,14 +2382,15 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       // Critical hits rise higher and read larger for their longer lifetime;
       // ordinary hits keep the accepted TASK-0142 treatment.
       const int lift = static_cast<int>(kTileUnits *
-                                        (0.35 + grow * (fx.critical ? 1.05 : 0.75)) *
+                                        (0.35 + grow * ((fx.critical || fx.finisher) ? 1.05 : 0.75)) *
                                         base.scale);
       const COLORREF color = base_color;
       SetBkMode(dc, TRANSPARENT);
       // TASK-0142: bold numerals so the resolved damage reads instantly.
       const int font_h = std::clamp(
-          static_cast<int>(kTileUnits * (fx.critical ? 0.44 : 0.34) * base.scale),
-          fx.critical ? 16 : 13, fx.critical ? 26 : 22);
+          static_cast<int>(kTileUnits * ((fx.critical || fx.finisher) ? 0.44 : 0.34) * base.scale),
+          (fx.critical || fx.finisher) ? 16 : 13,
+          (fx.critical || fx.finisher) ? 26 : 22);
       HFONT number_font = CreateFontA(font_h, 0, 0, 0, FW_BOLD, FALSE, FALSE,
                                       FALSE, DEFAULT_CHARSET,
                                       OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
@@ -2396,11 +2420,16 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
     case EffectFx::Kind::TargetFlash: {
       rl.push_back({render::Op::TargetFlash, static_cast<double>(base.x),
                     static_cast<double>(base.y), 0.0, 0,
-                    fx.damage_to_player ? "player" : "monster"});
+                    fx.finisher ? "finisher" :
+                        (fx.damage_to_player ? "player" : "monster")});
       // A brief bright ring over the hit target reads as a tint on the sprite.
       const int r = std::max(6, static_cast<int>(kTileUnits * 0.5 * base.scale));
+      const COLORREF flash_color = fx.finisher
+          ? RGB(phase_a::kComboFinisherColor.r, phase_a::kComboFinisherColor.g,
+                phase_a::kComboFinisherColor.b)
+          : RGB(255, 244, 190);
       ring_ellipse(dc, base.x, base.y, r, r,
-                   fade_to_background(RGB(255, 244, 190), life), 3);
+                   fade_to_background(flash_color, life), 3);
       fill_ellipse(dc, base.x, base.y, r / 2, r / 2,
                    fade_to_background(RGB(255, 238, 160), life));
       break;
@@ -3334,6 +3363,12 @@ void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List
 
   for (int i = 0; i < count; ++i) {
     const QuickbarSlotDef& slot = kQuickbarSlots[i];
+    std::string slot_name = slot.name;
+    if (i == 0 && player.combo_window_ticks > 0) {
+      if (player.combo_step == 1) slot_name = "Strike II";
+      else if (player.combo_step == 2) slot_name = "FINISH";
+      else if (player.combo_step == 3) slot_name = "Strike I";
+    }
     const int slot_left = left + i * (slot_w + gap);
     const int cx = slot_left + slot_w / 2;
     const int cy = top + slot_h / 2;
@@ -3362,15 +3397,38 @@ void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List
 
     rl.push_back({render::Op::Quickbar, static_cast<double>(cx), static_cast<double>(cy),
                   static_cast<double>(slot_w), active ? 1 : 0,
-                  std::string(slot.key_label) + ":" + slot.name});
+                  std::string(slot.key_label) + ":" + slot_name});
 
     SetBkMode(dc, TRANSPARENT);
     SetTextColor(dc, RGB(239, 208, 116));
     TextOutA(dc, box.left + 6 * s, box.top + 4 * s, slot.key_label,
              static_cast<int>(strlen(slot.key_label)));
     SetTextColor(dc, available ? RGB(205, 221, 207) : RGB(112, 119, 115));
-    TextOutA(dc, box.left + 6 * s, box.top + 22 * s, slot.name,
-             static_cast<int>(strlen(slot.name)));
+    TextOutA(dc, box.left + 6 * s, box.top + 20 * s, slot_name.c_str(),
+             static_cast<int>(slot_name.size()));
+    if (i == 0) {
+      const int lit = player.combo_window_ticks > 0
+                          ? std::clamp(player.combo_step, 0, 3)
+                          : 0;
+      const int pip_w = 10 * s;
+      const int pip_gap = 3 * s;
+      const int pips_w = 3 * pip_w + 2 * pip_gap;
+      const int pip_left = cx - pips_w / 2;
+      for (int pip = 0; pip < 3; ++pip) {
+        RECT pip_rect{pip_left + pip * (pip_w + pip_gap), box.bottom - 9 * s,
+                      pip_left + pip * (pip_w + pip_gap) + pip_w,
+                      box.bottom - 5 * s};
+        HBRUSH pip_brush = CreateSolidBrush(
+            pip < lit ? RGB(104, 232, 204) : RGB(54, 66, 64));
+        FillRect(dc, &pip_rect, pip_brush);
+        DeleteObject(pip_brush);
+      }
+      rl.push_back({render::Op::Quickbar, static_cast<double>(cx),
+                    static_cast<double>(box.bottom - 7 * s),
+                    static_cast<double>(pips_w), lit,
+                    "combo-cadence:" + std::to_string(lit) + ":" +
+                        std::to_string(player.combo_window_ticks)});
+    }
   }
 }
 
@@ -6891,6 +6949,9 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
 
 int scenario_failures = 0;
 
+bool reference_present(ClientState& state, int width, int height,
+                       const std::string& png_path);
+
 void scenario_check(bool ok, const char* label) {
   if (ok) {
     std::printf("    ok: %s\n", label);
@@ -7330,6 +7391,88 @@ int scenario_combat_juice() {
     scenario_check(saw_pulse, "combat-juice: screen-edge red pulse on player damage");
     scenario_check(saw_player_dmg, "combat-juice: player damage number is player-tagged");
   }
+  return 0;
+}
+
+int scenario_combat_cadence() {
+  ClientState state;
+  load_billboards(state.billboards);
+  state.world.route_id = "instance:dungeon:clearings";
+  state.world.theme = "dungeon";
+  state.world.house_name = "House Verdigris";
+  state.world.scion_name = "Mara";
+  state.world.player.id = "combo-scion";
+  state.world.player.position = {20 * static_cast<int>(kTileUnits),
+                                 20 * static_cast<int>(kTileUnits)};
+  state.world.player.facing = {1, 0};
+  state.world.player.life = 92;
+  state.world.player.life_max = 100;
+  state.world.player.resource = 42;
+  state.world.player.resource_max = 50;
+  state.world.player.level = 7;
+  state.world.player.alive = true;
+  state.world.player.cooldown_ticks = 10;
+  state.world.player.combo_step = 3;
+  state.world.player.combo_window_ticks = 18;
+  WorldActor foe;
+  foe.id = "combo-foe";
+  foe.name = "Ashen Guard";
+  foe.kind = "ashen-guard";
+  foe.position = {state.world.player.position.x +
+                      verdigris::world_scale::kMeleeRange,
+                  state.world.player.position.y};
+  foe.life = 68;
+  foe.life_max = 100;
+  foe.alive = true;
+  state.world.monsters.push_back(foe);
+  state.camera.x = static_cast<double>(state.world.player.position.x);
+  state.camera.y = static_cast<double>(state.world.player.position.y);
+  state.camera.zoom = kCameraDefaultZoom * zoom_height_factor(768);
+
+  verdigris::client::PresentationFx fx;
+  verdigris::client::PresentationEvent hit;
+  hit.type = verdigris::client::PresentationEventType::DamageApplied;
+  hit.actor_id = foe.id;
+  hit.text = "outgoing";
+  hit.value = 32;
+  hit.style = "slash";
+  hit.combo_step = 3;
+  hit.combo_window_ms = 900;
+  hit.stagger_ms = 700;
+  verdigris::client::apply_presentation_event(fx, state.world, hit, 1);
+  state.effects = std::move(fx.effects);
+
+  std::string capture_dir;
+  const int capture_override = capture_root_override(&capture_dir);
+  if (capture_override < 0) {
+    scenario_check(false, "combat-cadence: capture root rejected before any write");
+    return 0;
+  }
+  if (capture_override == 0) {
+    CreateDirectoryA("captures", nullptr);
+    capture_dir = "captures";
+  }
+  const std::string capture_path =
+      capture_dir + "\\combat-cadence-finisher-1366x768.png";
+  scenario_check(reference_present(state, 1366, 768, capture_path),
+                 "combat-cadence: authoritative finisher frame captured");
+  std::printf("    capture: %s\n", capture_path.c_str());
+
+  bool finisher_ring = false;
+  bool finisher_damage = false;
+  bool cadence_hud = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Impact &&
+        item.label == phase_a::kComboFinisherLabel) finisher_ring = true;
+    if (item.op == render::Op::Damage && item.label == "finisher:slash")
+      finisher_damage = true;
+    if (item.op == render::Op::Quickbar &&
+        item.label == "combo-cadence:3:18") cadence_hud = true;
+  }
+  scenario_check(finisher_ring && finisher_damage,
+                 "combat-cadence: third beat has a distinct ring and number");
+  scenario_check(cadence_hud,
+                 "combat-cadence: quickbar mirrors all three authoritative pips");
   return 0;
 }
 
@@ -9119,6 +9262,7 @@ int run_scenarios(const std::string& which) {
       {"loot-to-bank", scenario_loot_to_bank},
       {"telegraph-dodge", scenario_telegraph_dodge},
       {"combat-juice", scenario_combat_juice},
+      {"combat-cadence", scenario_combat_cadence},
       {"remote-render-list", scenario_remote_render_list},
       {"zoom-invariance", scenario_zoom_invariance},
       {"chronicles-gate-b", scenario_chronicles_gate_b},
