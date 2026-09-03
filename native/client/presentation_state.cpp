@@ -179,9 +179,13 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
   for (const auto& source : model.npcs) {
     WorldNpc npc;
     npc.id = source.id;
+    npc.key = source.key;
     npc.name = source.name;
+    npc.role = source.role;
+    npc.examine = source.examine;
     npc.position = {static_cast<int>(std::lround(protocol_to_world(source.x))),
                     static_cast<int>(std::lround(protocol_to_world(source.y)))};
+    npc.services = source.services;
     npc.actions = source.actions;
     world.npcs.push_back(std::move(npc));
   }

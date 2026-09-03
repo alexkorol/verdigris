@@ -602,6 +602,182 @@ void test_gate_a_equip_totals_and_unknown_uuid() {
   check(inventory_count(after) == inventory_count(worn), "unknown uuid does not change inventory");
 }
 
+void test_crossroads_social_hub_and_house_investment() {
+  ProtocolSession session("guest-crossroads", "socket-crossroads", 0xc055u, false);
+
+  JsonValue::Object house;
+  house["id"] = JsonValue("house-crossroads");
+  house["name"] = JsonValue("House Ashwake");
+  house["treasury"] = JsonValue(0);
+  house["scions"] = JsonValue(JsonValue::Array{
+      JsonValue(JsonValue::Object{{"id", "scion-roadborn"},
+                                  {"name", "Edda"}, {"level", 1},
+                                  {"mortal", false}})});
+  house["crypt"] = JsonValue(JsonValue::Array{});
+  JsonValue::Object chronicle;
+  chronicle["version"] = JsonValue(3);
+  chronicle["houses"] = JsonValue(JsonValue::Array{JsonValue(house)});
+  chronicle["activeHouseId"] = JsonValue("house-crossroads");
+  chronicle["activeScionId"] = JsonValue("scion-roadborn");
+  session.handle(Envelope{"player:chronicles:save",
+                          JsonValue::Object{{"state", JsonValue(chronicle)}}},
+                 [](const Envelope&) {});
+  session.handle(Envelope{"player:chronicles:select",
+                          JsonValue::Object{{"scionId", "scion-roadborn"},
+                                            {"houseId", "house-crossroads"},
+                                            {"scionName", "Edda"},
+                                            {"mortal", false}}},
+                 [](const Envelope&) {});
+
+  auto state = request_state(session, "town-roster");
+  const auto* npcs = state["state"]["npcs"].array();
+  check(npcs && npcs->size() == 4,
+        "crossroads: accepted owner-demo roster has exactly four townsfolk");
+  bool saw_ludovicus = false;
+  bool saw_selene = false;
+  bool saw_rhea_services = false;
+  bool saw_retired_mara = false;
+  if (npcs) {
+    for (const auto& npc : *npcs) {
+      const std::string key = npc["key"].string() ? *npc["key"].string() : "";
+      if (key == "ludovicus-weapons" && npc["role"].string() &&
+          *npc["role"].string() == "weapons_tools_trainer")
+        saw_ludovicus = true;
+      if (key == "selene-rite" && npc["x"].number().value_or(0) == 45 &&
+          npc["y"].number().value_or(0) == 108)
+        saw_selene = true;
+      if (key == "rhea-countinghouse" && npc["services"].array() &&
+          npc["services"].array()->size() == 2)
+        saw_rhea_services = true;
+      if (npc["name"].string() && npc["name"].string()->find("Mara") != std::string::npos)
+        saw_retired_mara = true;
+    }
+  }
+  check(saw_ludovicus && saw_selene && saw_rhea_services && !saw_retired_mara,
+        "crossroads: stable ids, roles, services, and seed positions reach the wire");
+  check(!state["state"]["houseInvestment"]["eligible"].boolean().value_or(true),
+        "investment: coffer is locked before the first clear");
+
+  bool forged_chart = false;
+  session.handle(
+      Envelope{"player:context-menu:action",
+               JsonValue::Object{{"queueItem",
+                  JsonValue::Object{{"action", JsonValue::Object{{"actionId", "world:road:chart"}}},
+                                    {"item", JsonValue::Object{{"id", "tin"}}}}}}},
+      [&](const Envelope& event) {
+        if (event.event == "open:screen") forged_chart = true;
+      });
+  check(!forged_chart,
+        "crossroads: a forged road-chart option cannot bypass Aldwyn's reach");
+
+  // A forged action cannot choose from across town.
+  session.handle(Envelope{"house:investment:choose",
+                          JsonValue::Object{{"choice", "house_production"}}},
+                 [](const Envelope&) {});
+  state = request_state(session, "investment-far");
+  check(*state["state"]["houseInvestment"]["choice"].string() == "unchosen",
+        "investment: choice requires authoritative proximity to Rhea");
+
+  session.handle(Envelope{"world:zone:enter",
+                          JsonValue::Object{{"nodeId", "tin:1:0"}}},
+                 [](const Envelope&) {});
+  session.handle(Envelope{"dev:clear-floor", JsonValue::Object{}},
+                 [](const Envelope&) {});
+  state = request_state(session, "investment-earned");
+  check(state["state"]["houseInvestment"]["firstClearCompleted"].boolean().value_or(false) &&
+            state["state"]["houseInvestment"]["eligible"].boolean().value_or(false),
+        "investment: first authoritative floor clear opens one House choice");
+
+  session.handle(Envelope{"party:returnToTown", JsonValue::Object{}},
+                 [](const Envelope&) {});
+  session.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", 31}, {"y", 121}}},
+                 [](const Envelope&) {});
+  std::optional<Envelope> dialogue;
+  session.handle(
+      Envelope{"player:context-menu:action",
+               JsonValue::Object{{"queueItem",
+                  JsonValue::Object{{"action", JsonValue::Object{{"actionId", "player:npc:examine"}}},
+                                    {"item", JsonValue::Object{{"id", 4}}}}}}},
+      [&](const Envelope& event) {
+        if (event.event == "open:screen" && event.data["screen"].string() &&
+            *event.data["screen"].string() == "dialogue") dialogue = event;
+      });
+  check(dialogue && dialogue->data["payload"]["npcKey"].string() &&
+            *dialogue->data["payload"]["npcKey"].string() == "rhea-countinghouse" &&
+            dialogue->data["payload"]["options"].array() &&
+            dialogue->data["payload"]["options"].array()->size() == 3,
+        "crossroads: Rhea opens a state-aware dialogue with bank and two investments");
+
+  session.handle(
+      Envelope{"player:context-menu:action",
+               JsonValue::Object{{"queueItem",
+                  JsonValue::Object{{"action", JsonValue::Object{{"actionId", "house:investment:choose"}}},
+                                    {"item", JsonValue::Object{{"id", "house_production"}}}}}}},
+      [](const Envelope&) {});
+  state = request_state(session, "investment-chosen");
+  check(*state["state"]["houseInvestment"]["choice"].string() == "house_production" &&
+            state["state"]["houseInvestment"]["rewardClaimed"].boolean().value_or(false) &&
+            state["state"]["houseInvestment"]["houseIncomePerClear"].number().value_or(0) == 5,
+        "investment: production choice seals once with its exact yield");
+
+  session.handle(Envelope{"player:chronicles:select",
+                          JsonValue::Object{{"scionId", "scion-roadborn"},
+                                            {"houseId", "house-crossroads"},
+                                            {"scionName", "Edda"},
+                                            {"mortal", false}}},
+                 [](const Envelope&) {});
+  state = request_state(session, "investment-restored");
+  check(*state["state"]["houseInvestment"]["choice"].string() == "house_production",
+        "investment: the sealed choice restores on a later Scion admission");
+  session.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", 31}, {"y", 121}}},
+                 [](const Envelope&) {});
+  session.handle(Envelope{"house:investment:choose",
+                          JsonValue::Object{{"choice", "scion_gear"}}},
+                 [](const Envelope&) {});
+  state = request_state(session, "investment-immutable");
+  check(*state["state"]["houseInvestment"]["choice"].string() == "house_production",
+        "investment: a later Scion cannot replace the House's founding choice");
+
+  session.handle(Envelope{"world:zone:enter",
+                          JsonValue::Object{{"nodeId", "salt:1:0"}}},
+                 [](const Envelope&) {});
+  session.handle(Envelope{"dev:clear-floor", JsonValue::Object{}},
+                 [](const Envelope&) {});
+  state = request_state(session, "investment-yield");
+  check(state["state"]["houseInvestment"]["choice"].string() &&
+            *state["state"]["houseInvestment"]["choice"].string() == "house_production" &&
+            state["state"]["houseInvestment"]["houseIncomePerClear"].number().value_or(0) == 5,
+        "investment: House choice survives the next expedition");
+  const JsonValue* saved_house = nullptr;
+  if (const auto* houses = state["state"]["chroniclesRecord"]["state"]["houses"].array())
+    if (!houses->empty()) saved_house = &houses->front();
+  check(saved_house && (*saved_house)["treasury"].number().value_or(0) == 5 &&
+            (*saved_house)["firstInvestment"]["choice"].string() &&
+            *(*saved_house)["firstInvestment"]["choice"].string() == "house_production",
+        "investment: subsequent clears persist yield and choice in the Chronicle House");
+
+  ProtocolSession gear("guest-coffer-gear", "socket-coffer-gear", 0x9ea1u, true);
+  gear.handle(Envelope{"world:zone:enter", JsonValue::Object{{"nodeId", "tin:1:0"}}},
+              [](const Envelope&) {});
+  gear.handle(Envelope{"dev:clear-floor", JsonValue::Object{}}, [](const Envelope&) {});
+  gear.handle(Envelope{"party:returnToTown", JsonValue::Object{}}, [](const Envelope&) {});
+  gear.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", 31}, {"y", 121}}},
+              [](const Envelope&) {});
+  gear.handle(Envelope{"house:investment:choose",
+                       JsonValue::Object{{"choice", "scion_gear"}}},
+              [](const Envelope&) {});
+  const auto gear_state = request_state(gear, "investment-gear");
+  bool named_vessel = false;
+  if (const auto* items = gear_state["state"]["inventory"].array()) {
+    for (const auto& item : *items)
+      if (item["id"].string() && *item["id"].string() == "vessel-handaxe" &&
+          item["vessel"].object()) named_vessel = true;
+  }
+  check(named_vessel &&
+            *gear_state["state"]["houseInvestment"]["choice"].string() == "scion_gear",
+        "investment: Scion path grants real Vesselforge-native named gear");
+}
+
 void test_consumable_endgame_tablet_loop() {
   ProtocolSession session("guest-endgame", "socket-endgame", 0x51ea1u, false);
   auto open_tablet = [&](const std::string& uuid,
@@ -788,6 +964,7 @@ int main() {
     test_gate_a_ground_login_and_kill_loot();
     test_gate_a_extract_and_stairs();
     test_gate_a_equip_totals_and_unknown_uuid();
+    test_crossroads_social_hub_and_house_investment();
     test_consumable_endgame_tablet_loop();
     std::cout << "verdigris networking tests: PASS\n";
     return 0;

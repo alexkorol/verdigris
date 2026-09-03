@@ -1,5 +1,37 @@
 # Native reconstitution handoff
 
+## 2026-09-02 — Crossroads social hub + first House investment
+
+- The production native town now uses the accepted owner-demo Crossroads
+  roster: Aldwyn, Ludovicus, Selene, and Rhea at their seed-authored
+  positions. Stable NPC keys, roles, services, actions, and examine copy
+  cross the server snapshot into the presentation model; the retired Mara
+  placeholder is gone. Ludovicus' Road Iron Yard and Selene's Rite Vault
+  open distinct authoritative merchant fronts.
+- Every townsfolk interaction can now open an authoritative dialogue screen.
+  The server owns reach checks, quest-aware copy, service options, and House
+  eligibility; the client mirrors those values into a keyboard/mouse
+  Framekit modal with wrapped conversation text and the shared Escape
+  contract. Rhea is surfaced as a conversation first, with banking inside
+  her service pane rather than hiding the coffer behind the bank shortcut.
+- Clearing the first floor opens one irreversible House founding choice at
+  Rhea. `scion_gear` creates real tier-one Vesselforge-native named gear for
+  the current Scion; `house_production` returns 5 gold to the House treasury
+  after every later floor clear. Choice, eligibility, reward state, tier,
+  yield, and treasury persist on the Chronicle House and restore on later
+  Scion admissions. The existing dawn purse and wagon spending now persist
+  through that same ledger boundary.
+- Forged remote actions cannot choose from outside Rhea's reach, select
+  before the first clear, or replace a sealed choice. Protocol, loopback
+  mirror, and presentation tests cover the roster, dialogue verbs, both
+  rewards, House persistence, successor restoration, and close behavior.
+  `town-social-hub` emits a dedicated 1366x768 Framekit capture and verifies
+  all three actions remain within the compact viewport.
+- Full native gate passed: denylist, all core/networking/camera/session/
+  presentation/audio suites, the long Chronicle succession/relic journey,
+  and every client scenario. The 3440x1440 frame-budget result was 9.6 ms
+  average against the 40 ms ceiling.
+
 ## 2026-09-02 — authoritative remote combat actions
 
 - The native client's `skill` payload and the legacy/browser `skillId`

@@ -397,9 +397,10 @@ struct ClientState {
   // painted row rectangles for mouse hit-testing (rebuilt every frame).
   struct TradeRowHit {
     RECT rect{};
-    int kind = 0;  // 0 = shop buy, 1 = bank withdraw, 2 = bank deposit
+    int kind = 0;  // 0 buy, 1 withdraw, 2 deposit, 3 chart, 4 dialogue
     std::size_t index = 0;
     std::string ref;   // item id (shop) or uuid (bank/deposit)
+    std::string extra; // dialogue option id
     int value = 0;     // price or qty
   };
   std::size_t trade_selected = 0;
@@ -3053,8 +3054,13 @@ void paint_hover_tooltip(ClientState& state, HDC dc, const RECT& bounds,
     const ScreenPoint base =
         project(state.camera, bounds, npc.position.x, npc.position.y);
     const int body_y = base.y - static_cast<int>(kTileUnits * 0.7 * base.scale);
-    const std::string verb =
-        npc.actions.empty() ? std::string("examine") : npc.actions.front();
+    const bool house_steward =
+        std::find(npc.services.begin(), npc.services.end(),
+                  std::string("house_investment")) != npc.services.end();
+    const std::string verb = house_steward
+                                 ? "talk"
+                                 : npc.actions.empty() ? std::string("examine")
+                                                       : npc.actions.front();
     consider(base.x, body_y, kTileUnits * 0.9 * base.scale, npc.name,
              RGB(150, 190, 240), {"T to " + verb});
   }
@@ -4383,6 +4389,11 @@ void activate_trade_row(ClientState& state, const ClientState::TradeRowHit& hit)
     show_hint(state, "The road takes you");
     return;
   }
+  if (hit.kind == 4) {
+    state.session->submit(verdigris::client::ClientCommand::menu_action(
+        hit.ref, hit.extra, 0));
+    return;
+  }
   const char* action = hit.kind == 0   ? "player:shop:buy"
                        : hit.kind == 1 ? "player:bank:withdraw"
                                        : "player:bank:deposit";
@@ -4390,11 +4401,106 @@ void activate_trade_row(ClientState& state, const ClientState::TradeRowHit& hit)
       verdigris::client::ClientCommand::menu_action(action, hit.ref, hit.value));
 }
 
+void paint_dialogue_pane(ClientState& state, HDC dc, const RECT& bounds,
+                         render::List& rl) {
+  const auto& dialogue = state.session->model().dialogue;
+  if (!dialogue.open) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 620 * s;
+  const int title_h = 52 * s;
+  const int body_h = 94 * s;
+  const int row_h = 58 * s;
+  const int footer_h = 30 * s;
+  const int option_count = static_cast<int>(dialogue.options.size());
+  const int pane_h = title_h + body_h + option_count * row_h + footer_h + 18 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = std::max(20 * s,
+      (static_cast<int>(bounds.bottom) - pane_h) / 2 - 12 * s);
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 250, 9.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 0, "dialogue-pane"});
+
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_heading());
+  SetTextColor(dc, skin::kGold);
+  TextOutA(dc, left + 18 * s, top + 10 * s, dialogue.name.c_str(),
+           static_cast<int>(dialogue.name.size()));
+  std::string role = dialogue.role;
+  std::replace(role.begin(), role.end(), '_', ' ');
+  std::transform(role.begin(), role.end(), role.begin(),
+                 [](unsigned char ch) { return static_cast<char>(std::toupper(ch)); });
+  SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  TextOutA(dc, left + 19 * s, top + 34 * s, role.c_str(),
+           static_cast<int>(role.size()));
+
+  SelectObject(dc, skin::font_body());
+  SetTextColor(dc, skin::kInk);
+  RECT body{left + 18 * s, top + title_h, left + pane_w - 18 * s,
+            top + title_h + body_h};
+  DrawTextA(dc, dialogue.body.c_str(), static_cast<int>(dialogue.body.size()),
+            &body, DT_LEFT | DT_TOP | DT_WORDBREAK | DT_NOPREFIX);
+
+  std::size_t activatable = 0;
+  for (const auto& option : dialogue.options)
+    if (option.enabled) ++activatable;
+  if (activatable == 0) state.trade_selected = 0;
+  else if (state.trade_selected >= activatable)
+    state.trade_selected = activatable - 1;
+
+  int y = top + title_h + body_h;
+  std::size_t active_index = 0;
+  for (const auto& option : dialogue.options) {
+    RECT line{left + 12 * s, y, left + pane_w - 12 * s, y + row_h - 4 * s};
+    const bool selected = option.enabled && active_index == state.trade_selected;
+    if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot, line))
+      skin::slot(dc, line, skin::kVerdigris, selected);
+    if (selected) {
+      HPEN pen = CreatePen(PS_SOLID, 2, skin::kGold);
+      HGDIOBJ old_pen = SelectObject(dc, pen);
+      HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+      Rectangle(dc, line.left, line.top, line.right, line.bottom);
+      SelectObject(dc, old_brush); SelectObject(dc, old_pen); DeleteObject(pen);
+    }
+    SelectObject(dc, skin::font_body_bold());
+    SetTextColor(dc, option.enabled ? skin::kInk : skin::kInkDim);
+    TextOutA(dc, line.left + 10 * s, line.top + 7 * s, option.label.c_str(),
+             static_cast<int>(option.label.size()));
+    SelectObject(dc, skin::font_small());
+    SetTextColor(dc, skin::kInkDim);
+    TextOutA(dc, line.left + 10 * s, line.top + 30 * s, option.hint.c_str(),
+             static_cast<int>(option.hint.size()));
+    if (option.enabled) {
+      ClientState::TradeRowHit hit;
+      hit.rect = line; hit.kind = 4; hit.index = active_index;
+      hit.ref = option.action; hit.extra = option.id;
+      state.trade_row_hits.push_back(std::move(hit));
+      ++active_index;
+    }
+    rl.push_back({render::Op::Hud, static_cast<double>(line.left),
+                  static_cast<double>(line.top), 0.0, 0,
+                  "dialogue-option:" + option.id});
+    y += row_h;
+  }
+  SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kInkDim);
+  const char* footer = "Click or Enter to choose  |  Esc closes";
+  TextOutA(dc, left + 18 * s, top + pane_h - footer_h, footer,
+           static_cast<int>(strlen(footer)));
+  SelectObject(dc, old_font);
+}
+
 void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
                       render::List& rl) {
   state.trade_row_hits.clear();
   if (!state.session) return;
   const auto& model = state.session->model();
+  if (model.dialogue.open) {
+    paint_dialogue_pane(state, dc, bounds, rl);
+    return;
+  }
   if (!model.shop.open && !model.bank.open && !model.chart.open) return;
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const bool chart = model.chart.open;
@@ -4962,10 +5068,15 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
           const double hail = kTileUnits * 1.9;
           if (std::abs(ddx) <= hail && std::abs(ddy) <= hail) {
             std::string verb = "Examine";
-            for (const auto& action : npc.actions) {
-              if (action == "talk") { verb = "Talk"; break; }
-              if (action == "trade") { verb = "Trade"; break; }
-              if (action == "bank") { verb = "Bank"; break; }
+            if (std::find(npc.services.begin(), npc.services.end(),
+                          std::string("house_investment")) != npc.services.end()) {
+              verb = "Talk";
+            } else {
+              for (const auto& action : npc.actions) {
+                if (action == "talk") { verb = "Talk"; break; }
+                if (action == "trade") { verb = "Trade"; break; }
+                if (action == "bank") { verb = "Bank"; break; }
+              }
             }
             const std::string prompt = "[T] " + verb;
             SIZE prompt_extent{};
@@ -5710,7 +5821,8 @@ void toggle_gear_overlay(ClientState& state) {
 bool trade_pane_open(const ClientState& state) {
   if (!state.session) return false;
   const auto& model = state.session->model();
-  return model.shop.open || model.bank.open || model.chart.open;
+  return model.shop.open || model.bank.open || model.chart.open ||
+         model.dialogue.open;
 }
 
 void handle_escape_key(ClientState& state) {
@@ -5872,10 +5984,18 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         if (nearest && best <= kTileUnits * 1.9) {
           // Prefer the story verb, then commerce; mirror the server's
           // action-id table so the request lands on the real handler.
-          std::string verb = nearest->actions.empty() ? "examine" : nearest->actions.front();
-          for (const char* preferred : {"talk", "trade", "bank"}) {
-            if (std::find(nearest->actions.begin(), nearest->actions.end(), preferred) !=
-                nearest->actions.end()) { verb = preferred; break; }
+          const bool house_steward =
+              std::find(nearest->services.begin(), nearest->services.end(),
+                        std::string("house_investment")) != nearest->services.end();
+          std::string verb = house_steward
+                                 ? "examine"
+                                 : nearest->actions.empty() ? "examine"
+                                                            : nearest->actions.front();
+          if (!house_steward) {
+            for (const char* preferred : {"talk", "trade", "bank"}) {
+              if (std::find(nearest->actions.begin(), nearest->actions.end(), preferred) !=
+                  nearest->actions.end()) { verb = preferred; break; }
+            }
           }
           const char* action_id = verb == "talk" ? "player:npc:talk"
                                 : verb == "trade" ? "player:npc:trade"
@@ -7768,6 +7888,119 @@ int scenario_endgame_tablet_ui() {
   return 0;
 }
 
+class ScenarioDialogueSession final
+    : public verdigris::client::IClientSession {
+ public:
+  ScenarioDialogueSession() {
+    model_.player.uuid = "scenario-scion";
+    model_.player.display_name = "Edda";
+    model_.player.scene_id = "town:verdigris";
+    model_.player.x = 31.0;
+    model_.player.y = 121.0;
+    model_.player.life = model_.player.life_max = 110;
+    model_.player.resource = model_.player.resource_max = 50;
+    model_.scene.id = "town:verdigris";
+    model_.scene.type = "town";
+    model_.scene.name = "The Crossroads";
+    model_.theme = "town";
+    model_.house_name = "House Ashwake";
+    model_.npcs = {
+        {1, "aldwyn-guide", "Aldwyn the Guide", "elder", "Wayfinder.",
+         34.0, 116.0, {"guidance", "expedition_access"}, {"talk", "examine"}},
+        {2, "ludovicus-weapons", "Ludovicus, Weapons Trader",
+         "weapons_tools_trainer", "Road iron.", 19.0, 113.0, {"shop"},
+         {"trade", "examine"}},
+        {3, "selene-rite", "Selene of the Rite", "armor_ritual_merchant",
+         "Ritual armor.", 45.0, 108.0, {"shop"}, {"trade", "examine"}},
+        {4, "rhea-countinghouse", "Rhea of the Countinghouse", "steward",
+         "House ledger.", 31.0, 121.0, {"storage", "house_investment"},
+         {"bank", "examine"}},
+    };
+    model_.dialogue.open = true;
+    model_.dialogue.npc_id = 4;
+    model_.dialogue.npc_key = "rhea-countinghouse";
+    model_.dialogue.name = "Rhea of the Countinghouse";
+    model_.dialogue.role = "steward";
+    model_.dialogue.body =
+        "Your first cleared road has earned one founding investment. Choose for this Scion now, or build a yield every future clear returns to the House.";
+    model_.dialogue.options = {
+        {"bank", "Open the Countinghouse",
+         "Move carried goods and gold into House keeping.",
+         "player:screen:bank", true},
+        {"scion_gear", "Commission named Scion gear",
+         "Immediate tier-one Vesselforge gear, bound to this Scion.",
+         "house:investment:choose", true},
+        {"house_production", "Build House road production",
+         "+5 House treasury after every future floor clear.",
+         "house:investment:choose", true},
+    };
+  }
+  bool start(std::string*) override { return true; }
+  void shutdown() override {}
+  void submit(const verdigris::client::ClientCommand& command) override {
+    if (command.type == verdigris::client::ClientCommand::Type::CloseScreen)
+      model_.dialogue.open = false;
+  }
+  void poll() override {}
+  verdigris::client::ConnectionState connection_state() const override {
+    return verdigris::client::ConnectionState::Ready;
+  }
+  const verdigris::client::ClientModel& model() const override { return model_; }
+  std::vector<verdigris::client::PresentationEvent> drain_events() override {
+    return {};
+  }
+  const std::string& last_error() const override { return error_; }
+
+ private:
+  verdigris::client::ClientModel model_;
+  std::string error_;
+};
+
+int scenario_town_social_hub() {
+  ClientState state;
+  state.session = std::make_unique<ScenarioDialogueSession>();
+  load_billboards(state.billboards);
+  sync_world(state);
+  generate_scenery(state);
+  scenario_follow_camera(state);
+
+  std::string capture_dir;
+  const int capture_override = capture_root_override(&capture_dir);
+  if (capture_override < 0) {
+    scenario_check(false,
+                   "town-social-hub: capture root rejected before any write");
+    return 0;
+  }
+  if (capture_override == 0) {
+    CreateDirectoryA("captures", nullptr);
+    capture_dir = "captures";
+  }
+  const std::string capture_path =
+      capture_dir + "\\town-social-hub-1366x768.png";
+  scenario_check(reference_present(state, 1366, 768, capture_path),
+                 "town-social-hub: Framekit dialogue evidence captured");
+  std::printf("    capture: %s\n", capture_path.c_str());
+
+  bool pane = false;
+  int options = 0;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Hud && item.label == "dialogue-pane") pane = true;
+    if (item.op == render::Op::Hud &&
+        item.label.rfind("dialogue-option:", 0) == 0)
+      ++options;
+  }
+  scenario_check(pane, "town-social-hub: authoritative dialogue pane is visible");
+  scenario_check(options == 3 && state.trade_row_hits.size() == 3,
+                 "town-social-hub: bank and both founding choices are actionable");
+  bool inside = true;
+  for (const auto& hit : state.trade_row_hits)
+    inside = inside && hit.rect.left >= 0 && hit.rect.top >= 0 &&
+             hit.rect.right <= 1366 && hit.rect.bottom <= 768;
+  scenario_check(inside,
+                 "town-social-hub: every choice remains inside the compact viewport");
+  return 0;
+}
+
 // Machine-checkable presentation budget: paints real fullscreen-sized 32bpp
 // frames through the production paint_scene path and fails when the average
 // frame cost would visibly stutter the 20 Hz tick. The bound is deliberately
@@ -7834,6 +8067,7 @@ int run_scenarios(const std::string& which) {
       {"hud-pane-readability", scenario_hud_pane_readability},
       {"hud-information", scenario_hud_information},
       {"endgame-tablet-ui", scenario_endgame_tablet_ui},
+      {"town-social-hub", scenario_town_social_hub},
       {"frame-budget", scenario_frame_budget},
   };
   int total_failures = 0;

@@ -105,8 +105,12 @@ struct EndgameView {
 // world-unit position and the server-authored verb list.
 struct WorldNpc {
   int id = 0;
+  std::string key;
   std::string name;
+  std::string role;
+  std::string examine;
   verdigris::Vec2 position{};
+  std::vector<std::string> services;
   std::vector<std::string> actions;
 };
 

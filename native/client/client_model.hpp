@@ -105,14 +105,45 @@ struct ClientChartScreen {
   std::vector<ClientChartNode> nodes;
 };
 
+struct ClientDialogueOption {
+  std::string id;
+  std::string label;
+  std::string hint;
+  std::string action;
+  bool enabled = true;
+};
+
+struct ClientDialogueScreen {
+  bool open = false;
+  int npc_id = 0;
+  std::string npc_key;
+  std::string name;
+  std::string role;
+  std::string body;
+  std::vector<ClientDialogueOption> options;
+};
+
+struct ClientHouseInvestment {
+  bool first_clear_completed = false;
+  bool eligible = false;
+  std::string choice = "unchosen";
+  bool reward_claimed = false;
+  int scion_gear_tier = 0;
+  int house_income_per_clear = 0;
+};
+
 // Town NPC roster entry, mirrored from the server's `npcs` snapshot array.
 // Positions are protocol tile units like monsters; `actions` carries the
 // server-authored verb list ("talk", "trade", "bank", "examine").
 struct ClientNpc {
   int id = 0;
+  std::string key;
   std::string name;
+  std::string role;
+  std::string examine;
   double x = 0.0;
   double y = 0.0;
+  std::vector<std::string> services;
   std::vector<std::string> actions;
 };
 
@@ -225,6 +256,8 @@ struct ClientModel {
   ClientShopScreen shop;
   ClientBankScreen bank;
   ClientChartScreen chart;
+  ClientDialogueScreen dialogue;
+  ClientHouseInvestment house_investment;
   // stats-manager attributes from the dev:state snapshot.
   int attr_strength = 10;
   int attr_dexterity = 10;

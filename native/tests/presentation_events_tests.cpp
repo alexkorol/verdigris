@@ -309,15 +309,23 @@ void npcs_ride_the_model_into_world_and_render_list() {
   model.player.alive = true;
   verdigris::client::ClientNpc npc;
   npc.id = 1;
+  npc.key = "aldwyn-guide";
   npc.name = "Aldwyn the Guide";
+  npc.role = "elder";
+  npc.examine = "A weathered wayfinder.";
   npc.x = 34.0;
   npc.y = 116.0;
+  npc.services = {"guidance", "expedition_access"};
   npc.actions = {"talk", "examine"};
   model.npcs.push_back(npc);
   WorldView world;
   verdigris::client::sync_world_from_model(world, model);
   check(world.npcs.size() == 1, "npc: roster entry survives the sync");
   check(world.npcs[0].name == "Aldwyn the Guide", "npc: name survives the sync");
+  check(world.npcs[0].key == "aldwyn-guide" &&
+            world.npcs[0].role == "elder" &&
+            world.npcs[0].services.size() == 2,
+        "npc: stable identity, role, and services survive the sync");
   const int expected_x = static_cast<int>(
       std::lround(verdigris::client::protocol_to_world(34.0)));
   check(world.npcs[0].position.x == expected_x,

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "verdigris/core.hpp"
+#include "verdigris/house_progression.hpp"
 
 namespace verdigris::networking {
 
@@ -135,6 +136,11 @@ class ProtocolSession {
   void handle_extract(const std::function<void(const Envelope&)>& emit);
   void mark_relic_recovered(const std::string& scion_id);
   void handle_npc_talk(const JsonValue& payload, const std::function<void(const Envelope&)>& emit);
+  void emit_npc_dialogue(int npc_id, const std::function<void(const Envelope&)>& emit) const;
+  void handle_house_investment(const JsonValue& payload,
+                               const std::function<void(const Envelope&)>& emit);
+  void persist_house_progression();
+  void restore_house_progression();
   void emit_quest_update(const std::function<void(const Envelope&)>& emit) const;
   void maybe_complete_first_goal(const std::function<void(const Envelope&)>& emit);
   JsonValue quests_json() const;
@@ -189,6 +195,7 @@ class ProtocolSession {
   bool passive_tree_saved_ = false;
   // N6 house treasury + floor-clear tracking.
   int house_treasury_ = 0;
+  HouseProgressionState house_progression_;
   std::uint64_t last_cleared_floor_key_ = 0;
   bool daily_purse_claimed_ = false;
   int home_pitch_index_ = 0;
@@ -203,6 +210,7 @@ class ProtocolSession {
   // N6 economy: personal bank + shop session state.
   std::vector<GameItem> bank_;
   bool shop_open_ = false;
+  int shop_npc_id_ = 2;
   bool bank_open_ = false;
   // N6 world-web (server/core/world-web.js): per-house deterministic road
   // chart; cleared wardens persist for the session (dead stays dead).

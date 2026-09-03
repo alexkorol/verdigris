@@ -78,6 +78,11 @@ double json_number(const JsonValue* value, double fallback = 0.0) {
   return *value->number();
 }
 
+bool json_bool(const JsonValue* value, bool fallback = false) {
+  if (!value || !value->boolean()) return fallback;
+  return *value->boolean();
+}
+
 ClientItemSlot parse_item_slot(const JsonValue& entry) {
   ClientItemSlot slot;
   if (const auto* id = json_string(entry.get("id"))) slot.id = *id;
@@ -636,6 +641,7 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       model_.shop.open = false;
       model_.bank.open = false;
       model_.chart.open = false;
+      model_.dialogue.open = false;
       return;
     case ClientCommand::Type::AllocateNode: {
       // Extend the authoritative allocation by one node and save the whole
@@ -917,6 +923,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         }
         model_.shop = std::move(shop);
         model_.bank.open = false;
+        model_.chart.open = false;
+        model_.dialogue.open = false;
       } else if (*screen == "chart") {
         ClientChartScreen chart;
         chart.open = true;
@@ -943,6 +951,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         model_.chart = std::move(chart);
         model_.shop.open = false;
         model_.bank.open = false;
+        model_.dialogue.open = false;
       } else if (*screen == "bank") {
         ClientBankScreen bank;
         bank.open = true;
@@ -965,6 +974,41 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         }
         model_.bank = std::move(bank);
         model_.shop.open = false;
+        model_.chart.open = false;
+        model_.dialogue.open = false;
+      } else if (*screen == "dialogue") {
+        ClientDialogueScreen dialogue;
+        dialogue.open = true;
+        dialogue.npc_id = static_cast<int>(
+            json_number(payload->get("npcId"), 0.0));
+        if (const auto* key = json_string(payload->get("npcKey")))
+          dialogue.npc_key = *key;
+        if (const auto* name = json_string(payload->get("name")))
+          dialogue.name = *name;
+        if (const auto* role = json_string(payload->get("role")))
+          dialogue.role = *role;
+        if (const auto* body = json_string(payload->get("body")))
+          dialogue.body = *body;
+        if (const auto* options = payload->get("options");
+            options && options->array()) {
+          for (const auto& row : *options->array()) {
+            ClientDialogueOption option;
+            if (const auto* id = json_string(row.get("id"))) option.id = *id;
+            if (const auto* label = json_string(row.get("label")))
+              option.label = *label;
+            if (const auto* hint = json_string(row.get("hint")))
+              option.hint = *hint;
+            if (const auto* action = json_string(row.get("action")))
+              option.action = *action;
+            if (const auto enabled = row.get("enabled"); enabled && enabled->boolean())
+              option.enabled = *enabled->boolean();
+            dialogue.options.push_back(std::move(option));
+          }
+        }
+        model_.dialogue = std::move(dialogue);
+        model_.shop.open = false;
+        model_.bank.open = false;
+        model_.chart.open = false;
       }
     }
     return;
@@ -1266,14 +1310,38 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         }
       }
     }
+    if (const auto* investment = state->get("houseInvestment");
+        investment && investment->object()) {
+      model_.house_investment.first_clear_completed =
+          json_bool(investment->get("firstClearCompleted"), false);
+      model_.house_investment.eligible =
+          json_bool(investment->get("eligible"), false);
+      if (const auto* choice = json_string(investment->get("choice")))
+        model_.house_investment.choice = *choice;
+      model_.house_investment.reward_claimed =
+          json_bool(investment->get("rewardClaimed"), false);
+      model_.house_investment.scion_gear_tier = static_cast<int>(
+          json_number(investment->get("scionGearTier"), 0.0));
+      model_.house_investment.house_income_per_clear = static_cast<int>(
+          json_number(investment->get("houseIncomePerClear"), 0.0));
+    }
     if (const auto* npcs = state->get("npcs"); npcs && npcs->array()) {
       model_.npcs.clear();
       for (const auto& entry : *npcs->array()) {
         ClientNpc npc;
         npc.id = static_cast<int>(json_number(entry.get("id"), 0.0));
+        if (const auto* key = json_string(entry.get("key"))) npc.key = *key;
         if (const auto* name = json_string(entry.get("name"))) npc.name = *name;
+        if (const auto* role = json_string(entry.get("role"))) npc.role = *role;
+        if (const auto* examine = json_string(entry.get("examine")))
+          npc.examine = *examine;
         npc.x = json_number(entry.get("x"), 0.0);
         npc.y = json_number(entry.get("y"), 0.0);
+        if (const auto* services = entry.get("services");
+            services && services->array()) {
+          for (const auto& service : *services->array())
+            if (service.string()) npc.services.push_back(*service.string());
+        }
         if (const auto* actions = entry.get("actions"); actions && actions->array()) {
           for (const auto& action : *actions->array())
             if (action.string()) npc.actions.push_back(*action.string());

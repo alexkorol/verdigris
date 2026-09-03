@@ -2474,6 +2474,78 @@ void remote_endgame_payload_mirrors_to_presentation() {
   server.stop();
 }
 
+void remote_crossroads_dialogue_mirrors_to_presentation() {
+  ScriptedEnvelopeServer server;
+  server.script.push_back(
+      "{\"event\":\"player:login\",\"data\":{\"player\":{"
+      "\"uuid\":\"social-guest\",\"x\":31,\"y\":121,\"facing\":\"down\"},"
+      "\"scene\":{\"id\":\"town:verdigris\",\"type\":\"town\","
+      "\"name\":\"The Crossroads\"}}}");
+  server.script.push_back(
+      "{\"event\":\"dev:state\",\"data\":{\"state\":{"
+      "\"lifecycle\":\"alive\",\"houseInvestment\":{"
+      "\"firstClearCompleted\":true,\"eligible\":true,"
+      "\"choice\":\"unchosen\",\"rewardClaimed\":false,"
+      "\"scionGearTier\":0,\"houseIncomePerClear\":0},"
+      "\"npcs\":[{\"id\":4,\"key\":\"rhea-countinghouse\","
+      "\"name\":\"Rhea of the Countinghouse\",\"role\":\"steward\","
+      "\"examine\":\"Keeps the House ledger.\",\"x\":31,\"y\":121,"
+      "\"services\":[\"storage\",\"house_investment\"],"
+      "\"actions\":[\"bank\",\"examine\"]}]}}}");
+  server.script.push_back(
+      "{\"event\":\"open:screen\",\"data\":{\"screen\":\"dialogue\","
+      "\"payload\":{\"npcId\":4,\"npcKey\":\"rhea-countinghouse\","
+      "\"name\":\"Rhea of the Countinghouse\",\"role\":\"steward\","
+      "\"body\":\"Choose what the first clear builds.\",\"options\":["
+      "{\"id\":\"bank\",\"label\":\"Open the Countinghouse\","
+      "\"hint\":\"House storage.\",\"action\":\"player:screen:bank\",\"enabled\":true},"
+      "{\"id\":\"scion_gear\",\"label\":\"Commission named Scion gear\","
+      "\"hint\":\"Immediate gear.\",\"action\":\"house:investment:choose\",\"enabled\":true},"
+      "{\"id\":\"house_production\",\"label\":\"Build House road production\","
+      "\"hint\":\"Future income.\",\"action\":\"house:investment:choose\",\"enabled\":true}]}}}");
+  std::string error;
+  check(server.start(&error),
+        "social-mirror: scripted loopback server bound in capsule");
+  if (server.port() == 0) return;
+
+  verdigris::client::RemoteProtocolSession session(
+      "127.0.0.1", server.port(), "social-mirror-guest", true);
+  check(session.start(&error), "social-mirror: connect + upgrade + login sent");
+  check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
+        "social-mirror: admission acknowledged");
+
+  server.grant_next_frame();
+  std::vector<std::string> errors;
+  const bool town_arrived = pt_pump_until(
+      session, errors, 5000,
+      [&] { return session.model().npcs.size() == 1 &&
+                   session.model().house_investment.eligible; });
+  check(town_arrived && session.model().npcs.front().key == "rhea-countinghouse" &&
+            session.model().npcs.front().role == "steward" &&
+            session.model().npcs.front().services.size() == 2,
+        "social-mirror: NPC identity, role, services, and coffer state reach the model");
+  verdigris::client::WorldView world;
+  verdigris::client::sync_world_from_model(world, session.model());
+  check(world.npcs.size() == 1 && world.npcs.front().key == "rhea-countinghouse" &&
+            world.npcs.front().services.size() == 2,
+        "social-mirror: town service identity reaches presentation");
+
+  server.grant_next_frame();
+  const bool dialogue_arrived = pt_pump_until(
+      session, errors, 5000,
+      [&] { return session.model().dialogue.open; });
+  check(dialogue_arrived && session.model().dialogue.npc_id == 4 &&
+            session.model().dialogue.options.size() == 3 &&
+            session.model().dialogue.options[1].action == "house:investment:choose",
+        "social-mirror: authoritative dialogue and investment verbs reach the pane model");
+  session.submit(verdigris::client::ClientCommand::close_screen());
+  check(!session.model().dialogue.open,
+        "social-mirror: the shared Escape/close contract dismisses dialogue");
+  check(errors.empty(), "social-mirror: valid payload raises no protocol error");
+  session.shutdown();
+  server.stop();
+}
+
 void remote_passive_tree_payload_hardening() {
   using verdigris::client::RemoteProtocolSession;
 
@@ -2727,6 +2799,7 @@ int main() {
   remote_render_list_ops();
   remote_passive_tree_absence_stays_absent();
   remote_endgame_payload_mirrors_to_presentation();
+  remote_crossroads_dialogue_mirrors_to_presentation();
   remote_passive_tree_payload_hardening();
   gateb_driver_state_machine_controls();
   gate_b_chronicles_reconnect_journey();

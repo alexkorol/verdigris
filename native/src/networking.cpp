@@ -864,14 +864,41 @@ const RoadGateTile kRoadGates[4] = {{37, 94, "tin"}, {64, 114, "salt"}, {37, 138
 const int kWagonPitches[8][2] = {{47,112},{42,109},{34,109},{29,112},{29,118},{34,121},{42,121},{47,118}};
 }  // namespace
 namespace {
-struct TownNpc { int id; const char* name; const char* examine; int x; int y; const char* actions[2]; int action_count; };
-// server/core/data/npcs.js - the Crossroads roster.
-const TownNpc kTownNpcs[] = {
-    {1, "Aldwyn the Guide", "A weathered wayfinder who watches over the Crossroads' newest scions.", 34, 116, {"talk", "examine"}, 2},
-    {2, "Mara, General Trader", "Keeps the general stall at the Crossroads bazaar. Buys most things, sells the rest.", 49, 103, {"trade", "examine"}, 2},
-    {3, "Ludovicus, Weapons Trader", "Sells iron for the road. Claims every axe on his boards outlived its first three owners.", 19, 113, {"examine", "trade"}, 2},
-    {4, "Rhea of the Countinghouse", "Keeps the countinghouse tent: personal storage, honest scales, no questions.", 31, 121, {"examine", "bank"}, 2},
+struct TownNpc {
+  int id;
+  const char* key;
+  const char* name;
+  const char* role;
+  const char* examine;
+  int x;
+  int y;
+  const char* services[2];
+  int service_count;
+  const char* actions[2];
+  int action_count;
 };
+// content/seeds/owner_demo_town.json - the accepted Crossroads owner roster.
+const TownNpc kTownNpcs[] = {
+    {1, "aldwyn-guide", "Aldwyn the Guide", "elder",
+     "A weathered wayfinder watching the ash banners gather beyond Thornward.",
+     34, 116, {"guidance", "expedition_access"}, 2, {"talk", "examine"}, 2},
+    {2, "ludovicus-weapons", "Ludovicus, Weapons Trader",
+     "weapons_tools_trainer",
+     "Road iron, whetstones, and hard lessons hang from Ludovicus' boards.",
+     19, 113, {"shop", ""}, 1, {"trade", "examine"}, 2},
+    {3, "selene-rite", "Selene of the Rite", "armor_ritual_merchant",
+     "Wax-sealed armor and ritual fittings line Selene's quiet vault.",
+     45, 108, {"shop", ""}, 1, {"trade", "examine"}, 2},
+    {4, "rhea-countinghouse", "Rhea of the Countinghouse", "steward",
+     "The House ledgers, shared stores, and first investments pass through Rhea's hands.",
+     31, 121, {"storage", "house_investment"}, 2, {"bank", "examine"}, 2},
+};
+
+const TownNpc* town_npc(int id) {
+  for (const auto& npc : kTownNpcs)
+    if (npc.id == id) return &npc;
+  return nullptr;
+}
 }  // namespace
 
 JsonValue ProtocolSession::combat_totals_json() const {
@@ -963,6 +990,20 @@ JsonValue ProtocolSession::snapshot() const {
   put(state,"questPoints",tree_quest_points_);
   put(state,"bank",bank_items_json());
   put(state,"passiveTree",passive_tree_json());
+  {
+    JsonValue::Object investment;
+    put(investment, "firstClearCompleted", house_progression_.first_clear_completed);
+    put(investment, "eligible", first_clear_eligible(house_progression_));
+    put(investment, "choice", choice_name(house_progression_.choice));
+    put(investment, "rewardClaimed", house_progression_.reward_claimed);
+    put(investment, "scionGearTier", house_progression_.scion_gear_tier);
+    // The underlying accepted model calls this per-tick income. Production
+    // awards it once per cleared floor so a 20 Hz simulation tick cannot
+    // inflate the House economy.
+    put(investment, "houseIncomePerClear",
+        house_progression_.house_income_per_tick);
+    put(state, "houseInvestment", std::move(investment));
+  }
   { // stats-manager attributes: base 10s plus the tree path. STUB NOTE:
     // per-node attribute identity from the 271-node graph is approximated
     // as +2/attr per allocated node beyond the root until the geometric
@@ -979,9 +1020,15 @@ JsonValue ProtocolSession::snapshot() const {
   if (!world_->in_instance()) {
     for (const auto& npc : kTownNpcs) {
       JsonValue::Object entry;
-      put(entry, "id", npc.id); put(entry, "name", npc.name);
+      put(entry, "id", npc.id); put(entry, "key", npc.key);
+      put(entry, "name", npc.name); put(entry, "role", npc.role);
+      put(entry, "examine", npc.examine);
       put(entry, "x", npc.x); put(entry, "y", npc.y);
       put(entry, "tileX", npc.x); put(entry, "tileY", npc.y);
+      JsonValue::Array services;
+      for (int i = 0; i < npc.service_count; ++i)
+        services.emplace_back(npc.services[i]);
+      put(entry, "services", std::move(services));
       JsonValue::Array actions;
       for (int i = 0; i < npc.action_count; ++i) actions.emplace_back(npc.actions[i]);
       put(entry, "actions", std::move(actions));
@@ -1395,9 +1442,17 @@ int ProtocolSession::carried_gold() const {
 }
 
 void ProtocolSession::emit_shop_screen(const std::function<void(const Envelope&)>& emit) const {
-  // shops.js General Store: fixed stock rows with pane slot indices.
+  // The two accepted owner-demo merchants have distinct identities and
+  // stock. Selection is captured when the authoritative nearby action opens
+  // the pane; purchases continue to refresh that same merchant.
   struct StockRow { const char* id; const char* name; int price; };
-  const StockRow rows[3] = {{"knife", "Knife", 5}, {"bronze-sword", "Bronze Sword", 15}, {"wooden-shield", "Wooden Shield", 8}};
+  const StockRow weapons[3] = {{"knife", "Knife", 5},
+                               {"bronze-sword", "Bronze Sword", 15},
+                               {"bronze-dagger", "Bronze Dagger", 10}};
+  const StockRow rites[3] = {{"wooden-shield", "Wooden Shield", 8},
+                             {"bronze-shield", "Bronze Shield", 45},
+                             {"garnet-amulet", "Garnet Amulet", 60}};
+  const StockRow* rows = shop_npc_id_ == 3 ? rites : weapons;
   JsonValue::Array stock;
   for (int i = 0; i < 3; ++i) {
     JsonValue::Object row;
@@ -1406,8 +1461,9 @@ void ProtocolSession::emit_shop_screen(const std::function<void(const Envelope&)
     stock.emplace_back(std::move(row));
   }
   JsonValue::Object payload;
-  put(payload, "name", "General Store");
-  put(payload, "npcId", 2);
+  put(payload, "name", shop_npc_id_ == 3 ? "Selene's Rite Vault"
+                                          : "Road Iron Yard");
+  put(payload, "npcId", shop_npc_id_);
   { JsonValue::Array copy = stock; put(payload, "items", std::move(copy)); }
   put(payload, "inventory", std::move(stock));
   put(payload, "carriedCoins", carried_gold());
@@ -1506,6 +1562,17 @@ void ProtocolSession::maybe_floor_cleared(const std::function<void(const Envelop
   }
   emit_message(emit, "Floor " + std::to_string(meta.depth) +
       " cleared! Rewards distributed - find the stairs to descend, or take the entry stairs to leave.");
+  if (!house_progression_.first_clear_completed) {
+    (void)mark_first_clear(house_progression_);
+    persist_house_progression();
+    emit_message(emit, "Your first clear has opened a founding choice. Rhea is waiting at the House Coffer in the Crossroads.");
+  } else if (grants_house_income(house_progression_)) {
+    const int income = house_progression_.house_income_per_tick;
+    house_treasury_ += income;
+    persist_house_progression();
+    emit_message(emit, "House production returns " + std::to_string(income) +
+                           " gold to the treasury from this clear.");
+  }
   if (first_goal_stage_ == "clear-floor" && meta.theme == "dungeon" && meta.layout == "warren" && meta.depth == 1) {
     first_goal_stage_ = "return-to-town";
     emit_message(emit, "The floor is cleared. Return to Aldwyn at the Crossroads for your reward.");
@@ -1846,28 +1913,183 @@ void ProtocolSession::emit_quest_update(const std::function<void(const Envelope&
 }
 
 void ProtocolSession::handle_npc_talk(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) {
-  // actions/index.js player:npc:talk - Aldwyn only, town only, chebyshev<=1.
+  // Town conversation is server-authoritative: identity, reach, quest
+  // mutation, available services, and investment eligibility all come from
+  // this session. The client only paints the resulting dialogue payload.
   const auto* item = payload.get("item");
   const int npc_id = as_int(item ? item->get("id") : nullptr, -1);
-  if (npc_id != 1 || world_->in_instance()) return;
+  const TownNpc* npc = town_npc(npc_id);
+  if (!npc || world_->in_instance()) return;
   const Vec2 tile = tile_movement::occupied_tile(world_->position());
-  if ((std::max)(std::abs(tile.x - 34), std::abs(tile.y - 116)) > 1) return;
-  if (first_goal_stage_ == "available") {
+  if ((std::max)(std::abs(tile.x - npc->x), std::abs(tile.y - npc->y)) > 1)
+    return;
+  if (npc_id == 1 && first_goal_stage_ == "available") {
     first_goal_stage_ = "clear-floor";
     first_goal_started_ms_ = now_ms();
-    emit_message(emit, "No road holds past a living Warden. Take any gate out - the first stretch of every road is on your House's chart - put its Warden down, and come back to me.");
     emit_quest_update(emit);
+  }
+  emit_npc_dialogue(npc_id, emit);
+}
+
+void ProtocolSession::emit_npc_dialogue(
+    int npc_id, const std::function<void(const Envelope&)>& emit) const {
+  const TownNpc* npc = town_npc(npc_id);
+  if (!npc || world_->in_instance()) return;
+  const Vec2 tile = tile_movement::occupied_tile(world_->position());
+  if ((std::max)(std::abs(tile.x - npc->x), std::abs(tile.y - npc->y)) > 1)
+    return;
+
+  std::string body = npc->examine;
+  JsonValue::Array options;
+  const auto add_option = [&](const char* id, const char* label,
+                              const char* hint, const char* action,
+                              bool enabled = true) {
+    JsonValue::Object option;
+    put(option, "id", id); put(option, "label", label);
+    put(option, "hint", hint); put(option, "action", action);
+    put(option, "enabled", enabled);
+    options.emplace_back(std::move(option));
+  };
+  if (npc_id == 1) {
+    if (first_goal_stage_ == "clear-floor")
+      body = "No road holds past a living Warden. Ash banners crowd the Thornward ridge. Take a first stretch, put its Warden down, and bring your House home.";
+    else if (first_goal_stage_ == "return-to-town")
+      body = "The road has carried word ahead of you. Return through the gate and I will mark the deed in Verdigris.";
+    else if (first_goal_stage_ == "complete")
+      body = "The chart remembers your first Warden. The deeper roads will ask more of every Scion who follows.";
+    add_option("tin", "Review the Tin Road chart",
+               "Choose an open stretch and set out.", "world:road:chart");
+  } else if (npc_id == 2) {
+    body = "An edge is a promise you keep with a stone. Choose road iron that can keep yours.";
+    add_option("weapons", "Browse the Road Iron Yard",
+               "Weapons and practical tools for the next patrol.",
+               "player:npc:trade");
+  } else if (npc_id == 3) {
+    body = "Steel remembers the hand that consecrates it. My vault carries armor and fittings for those willing to be remembered in turn.";
+    add_option("rite-vault", "Browse the Rite Vault",
+               "Armor and ritual fittings selected by Selene.",
+               "player:npc:trade");
+  } else if (npc_id == 4) {
+    if (first_clear_eligible(house_progression_)) {
+      body = "Your first cleared road has earned one founding investment. Choose for this Scion now, or build a yield every future clear returns to the House.";
+    } else if (house_progression_.choice == FirstInvestmentChoice::ScionGear) {
+      body = "The first investment armed a Scion. The entry is sealed; what they make of that iron belongs to the Chronicle.";
+    } else if (house_progression_.choice == FirstInvestmentChoice::HouseProduction) {
+      body = "The first investment went into House production. Every cleared floor now returns five gold to the shared ledger.";
+    } else {
+      body = "The coffer opens its first true choice after your House clears a floor. Until then, I can keep what you cannot carry.";
+    }
+    add_option("bank", "Open the Countinghouse",
+               "Move carried goods and gold into House keeping.",
+               "player:screen:bank");
+    if (first_clear_eligible(house_progression_)) {
+      add_option("scion_gear", "Commission named Scion gear",
+                 "Immediate tier-one Vesselforge gear, bound to this Scion.",
+                 "house:investment:choose");
+      add_option("house_production", "Build House road production",
+                 "+5 House treasury after every future floor clear.",
+                 "house:investment:choose");
+    }
+  }
+
+  JsonValue::Object payload;
+  put(payload, "npcId", npc->id); put(payload, "npcKey", npc->key);
+  put(payload, "name", npc->name); put(payload, "role", npc->role);
+  put(payload, "body", body); put(payload, "options", std::move(options));
+  JsonValue::Object data;
+  put(data, "player", JsonValue::Object{{"socket_id", socket_id_}});
+  put(data, "screen", "dialogue"); put(data, "payload", std::move(payload));
+  emit(Envelope{"open:screen", JsonValue(std::move(data))});
+}
+
+void ProtocolSession::persist_house_progression() {
+  JsonValue::Object* house =
+      find_chronicle_house_object(chronicle_, active_house_id_);
+  if (!house) return;
+  JsonValue::Object investment;
+  put(investment, "firstClearCompleted", house_progression_.first_clear_completed);
+  put(investment, "choice", choice_name(house_progression_.choice));
+  put(investment, "rewardClaimed", house_progression_.reward_claimed);
+  put(investment, "scionGearTier", house_progression_.scion_gear_tier);
+  put(investment, "houseIncomePerClear", house_progression_.house_income_per_tick);
+  (*house)["firstInvestment"] = JsonValue(std::move(investment));
+  (*house)["treasury"] = JsonValue(house_treasury_);
+  chronicles_revision_ += 1;
+}
+
+void ProtocolSession::restore_house_progression() {
+  house_progression_ = {};
+  JsonValue::Object* house =
+      find_chronicle_house_object(chronicle_, active_house_id_);
+  if (!house) return;
+  house_treasury_ = as_int(house->find("treasury") == house->end()
+                               ? nullptr : &house->find("treasury")->second,
+                           0);
+  const auto it = house->find("firstInvestment");
+  if (it == house->end() || !it->second.object()) return;
+  const JsonValue& investment = it->second;
+  house_progression_.first_clear_completed =
+      as_bool(investment.get("firstClearCompleted"), false);
+  house_progression_.reward_claimed =
+      as_bool(investment.get("rewardClaimed"), false);
+  house_progression_.scion_gear_tier = static_cast<std::uint16_t>(
+      (std::max)(0, as_int(investment.get("scionGearTier"), 0)));
+  house_progression_.house_income_per_tick = static_cast<std::uint16_t>(
+      (std::max)(0, as_int(investment.get("houseIncomePerClear"), 0)));
+  const std::string choice = as_string(investment.get("choice"));
+  if (choice == "scion_gear")
+    house_progression_.choice = FirstInvestmentChoice::ScionGear;
+  else if (choice == "house_production")
+    house_progression_.choice = FirstInvestmentChoice::HouseProduction;
+}
+
+void ProtocolSession::handle_house_investment(
+    const JsonValue& payload, const std::function<void(const Envelope&)>& emit) {
+  const Vec2 tile = tile_movement::occupied_tile(world_->position());
+  const TownNpc* rhea = town_npc(4);
+  if (!rhea || world_->in_instance() ||
+      (std::max)(std::abs(tile.x - rhea->x), std::abs(tile.y - rhea->y)) > 1)
+    return;
+  const std::string requested = as_string(payload.get("choice"));
+  FirstInvestmentChoice choice = FirstInvestmentChoice::Unchosen;
+  if (requested == "scion_gear") choice = FirstInvestmentChoice::ScionGear;
+  if (requested == "house_production")
+    choice = FirstInvestmentChoice::HouseProduction;
+  const InvestmentStatus status = apply_first_investment(house_progression_, choice);
+  if (status != InvestmentStatus::Ok) {
+    emit_message(emit, status == InvestmentStatus::NotEligible
+                           ? "The House Coffer opens after your first cleared floor."
+                           : status == InvestmentStatus::AlreadyChosen
+                                 ? "The first House investment is already sealed."
+                                 : "Rhea cannot enter that choice in the ledger.");
+    emit_npc_dialogue(4, emit);
     return;
   }
-  if (first_goal_stage_ == "clear-floor") {
-    emit_message(emit, "Your task remains: put down the Warden of any first stretch on your chart, then return to me.");
-    return;
+
+  if (choice == FirstInvestmentChoice::ScionGear) {
+    CreateItemOptions options;
+    options.rng = &session_rng_;
+    if (const auto* actor = simulation_->actor(simulation_->scion().actor_id))
+      options.item_level = (std::max)(1, actor->stats.level);
+    options.bind_to = identity_;
+    options.forge = &world_->forge();
+    auto reward = create_game_item(gear_drop_pool().front(), options);
+    if (reward) {
+      const std::string reward_name = reward->display_name;
+      auto added = inventory_.add(std::move(*reward));
+      const auto position = world_->position();
+      for (auto& overflow : added.overflow)
+        world_->add_ground_item(std::move(overflow), position.x, position.y);
+      emit_message(emit, "Rhea breaks the coffer seal. " + reward_name +
+                             " is entered against this Scion's name.");
+      emit_inventory_refresh(emit);
+      if (!added.overflow.empty()) emit_ground_change(emit);
+    }
+  } else {
+    emit_message(emit, "Rhea seals the order: every future floor clear returns 5 gold to the House treasury.");
   }
-  if (first_goal_stage_ == "return-to-town") {
-    emit_message(emit, "The country lies still. Walk back through the gate and I will mark the deed.");
-    return;
-  }
-  emit_message(emit, "The chart remembers your first Warden. Spend your Verdigris point wisely.");
+  persist_house_progression();
+  emit_npc_dialogue(4, emit);
 }
 
 void ProtocolSession::auto_pickup_gold(const std::function<void(const Envelope&)>& emit) {
@@ -2196,7 +2418,32 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
     open_expedition_map(uuid, emit);
     return;
   }
-  if (action_id=="player:screen:bank") { bank_open_ = true; shop_open_ = false; emit_bank_screen(emit); return; }
+  if (action_id=="player:screen:bank") {
+    int npc_id = as_int(item_ref ? item_ref->get("id") : nullptr, 0);
+    if (as_string(item_ref ? item_ref->get("id") : nullptr) == "bank") npc_id = 4;
+    const TownNpc* npc = town_npc(npc_id);
+    const Vec2 tile = tile_movement::occupied_tile(world_->position());
+    if (!npc || npc_id != 4 || world_->in_instance() ||
+        (std::max)(std::abs(tile.x - npc->x), std::abs(tile.y - npc->y)) > 1)
+      return;
+    bank_open_ = true; shop_open_ = false; emit_bank_screen(emit); return;
+  }
+  if (action_id=="world:road:chart") {
+    const TownNpc* guide = town_npc(1);
+    const Vec2 tile = tile_movement::occupied_tile(world_->position());
+    if (!guide || world_->in_instance() ||
+        (std::max)(std::abs(tile.x - guide->x), std::abs(tile.y - guide->y)) > 1)
+      return;
+    emit_chart_screen(as_string(item_ref ? item_ref->get("id") : nullptr,
+                                "tin"), emit);
+    return;
+  }
+  if (action_id=="house:investment:choose") {
+    JsonValue::Object choice;
+    put(choice, "choice", as_string(item_ref ? item_ref->get("id") : nullptr));
+    handle_house_investment(JsonValue(std::move(choice)), emit);
+    return;
+  }
   if (action_id=="player:shop:buy") {
     const std::string item_id = as_string(item_ref ? item_ref->get("id") : nullptr);
     const int price = as_int(item_ref ? item_ref->get("price") : nullptr, item_id == "knife" ? 5 : 15);
@@ -2266,13 +2513,32 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
     }
     return;
   }  if (action_id=="player:screen:wagon") { emit_wagon_screen(emit); return; }
-  if (action_id=="player:screen:shop-display" || action_id=="player:npc:trade" ||
+  if (action_id=="player:npc:trade") {
+    int npc_id = as_int(item_ref ? item_ref->get("id") : nullptr, 0);
+    const std::string service = as_string(item_ref ? item_ref->get("id") : nullptr);
+    if (service == "weapons") npc_id = 2;
+    if (service == "rite-vault") npc_id = 3;
+    const TownNpc* npc = town_npc(npc_id);
+    const Vec2 tile = tile_movement::occupied_tile(world_->position());
+    if (!npc || world_->in_instance() ||
+        (std::max)(std::abs(tile.x - npc->x), std::abs(tile.y - npc->y)) > 1)
+      return;
+    shop_npc_id_ = npc_id;
+    shop_open_ = true; bank_open_ = false;
+    emit_shop_screen(emit);
+    return;
+  }
+  if (action_id=="player:screen:shop-display" ||
       action_id=="player:shop-display:buy" || action_id=="player:shop-display:appraise") {
     Envelope forwarded{action_id, payload};
     handle(forwarded, emit);
     return;
   }
   if (action_id=="player:npc:talk") { if (queue_item) handle_npc_talk(*queue_item, emit); return; }
+  if (action_id=="player:npc:examine") {
+    emit_npc_dialogue(as_int(item_ref ? item_ref->get("id") : nullptr, -1), emit);
+    return;
+  }
   if (action_id=="player:vesselforge:add-brand") {
     // vesselforge-brand.js: town service, 100 coins, sear on the live item;
     // a failed roll spends nothing (engine rolls on a clone internally).
@@ -2663,6 +2929,15 @@ void ProtocolSession::ensure_chronicle_house(const std::string& id, const std::s
   put(house, "crypt", JsonValue::Array{});
   put(house, "campaignComplete", false);
   put(house, "endgameMapsCompleted", 0);
+  put(house, "treasury", 0);
+  put(house, "renown", 0);
+  JsonValue::Object investment;
+  put(investment, "firstClearCompleted", false);
+  put(investment, "choice", "unchosen");
+  put(investment, "rewardClaimed", false);
+  put(investment, "scionGearTier", 0);
+  put(investment, "houseIncomePerClear", 0);
+  put(house, "firstInvestment", std::move(investment));
   houses->emplace_back(std::move(house));
   (*root)["activeHouseId"] = JsonValue(id);
 }
@@ -2719,6 +2994,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     int price = item_id == "bronze-sword" ? 15 : item_id == "bronze-dagger" ? 10 : item_id == "wooden-shield" ? 8 : -1;
     if (price > 0 && house_treasury_ >= price) {
       house_treasury_ -= price;
+      persist_house_progression();
       CreateItemOptions o;
       auto bought = create_game_item(item_id, o);
       if (bought) inventory_.add(std::move(*bought));
@@ -2727,9 +3003,22 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
       emit_wagon_screen(emit);
     }
     return;
-  }  if (envelope.event=="player:screen:shop-display" || envelope.event=="player:npc:trade") {
+  }  if (envelope.event=="player:screen:shop-display") {
     shop_open_ = true; bank_open_ = false;
     emit_shop_screen(emit);
+    return;
+  }
+  if (envelope.event=="player:npc:trade") {
+    const auto* item = payload ? payload->get("item") : nullptr;
+    const int npc_id = as_int(item ? item->get("id") : nullptr, -1);
+    const TownNpc* npc = town_npc(npc_id);
+    const Vec2 tile = tile_movement::occupied_tile(world_->position());
+    if (npc && !world_->in_instance() &&
+        (std::max)(std::abs(tile.x - npc->x), std::abs(tile.y - npc->y)) <= 1) {
+      shop_npc_id_ = npc_id;
+      shop_open_ = true; bank_open_ = false;
+      emit_shop_screen(emit);
+    }
     return;
   }
   if (envelope.event=="player:shop-display:appraise") {
@@ -2910,6 +3199,15 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   if (envelope.event=="item:equip") { if (payload) handle_equip(*payload,emit); return; }
   if (envelope.event=="player:extract") { handle_extract(emit); return; }
   if (envelope.event=="player:npc:talk") { if (payload) handle_npc_talk(*payload, emit); return; }
+  if (envelope.event=="player:npc:examine") {
+    const auto* item = payload ? payload->get("item") : nullptr;
+    emit_npc_dialogue(as_int(item ? item->get("id") : nullptr, -1), emit);
+    return;
+  }
+  if (envelope.event=="house:investment:choose") {
+    if (payload) handle_house_investment(*payload, emit);
+    return;
+  }
   if (envelope.event=="player:skilltree:save") { if (payload) handle_skilltree_save(*payload, emit); return; }
   if (envelope.event=="chronicles:house:deposit") { if (payload) handle_house_deposit(*payload, emit); return; }
   if (envelope.event=="dev:monster:reset") {
@@ -2964,6 +3262,8 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     active_house_name_=name;
     campaign_complete_=false;
     endgame_maps_completed_=0;
+    house_treasury_=0;
+    house_progression_={};
     chronicles_revision_+=1;
     emit(Envelope{"chronicles:state",chronicles_state_payload("")});
     return;
@@ -2993,6 +3293,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
                                     : as_int(&completed->second, 0);
       if (campaign_complete_) active_quest_ = kQuestChainSize;
     }
+    restore_house_progression();
     // JS beginScionSession parity (server/core/services/chronicles.js:210-219):
     // EVERY Chronicles set-out admits the scion under the hard lifecycle -
     // the mortal oath is the Chronicles admission contract, not a dev-only
@@ -3017,6 +3318,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     if (!daily_purse_claimed_) {
       daily_purse_claimed_ = true;
       house_treasury_ += 100;
+      persist_house_progression();
       emit_message(emit, "Your House's wagon rolls in with the dawn market. The quartermaster counts 100 gold into the ledger - the day's road purse.");
     }
     // chronicles.js starter kit: granted once per scion - a re-set-out must
@@ -3135,6 +3437,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
       if (completed != house->end())
         endgame_maps_completed_ = as_int(&completed->second, 0);
     }
+    restore_house_progression();
     // Persist the sworn oath on the living roster so relogins restore the
     // same lifecycle (see reset_world_for_new_socket).
     set_scion_record_mortal(chronicle_, active_house_id_, active_scion_id_, mortal_oath_);
