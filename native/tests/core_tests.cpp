@@ -1951,8 +1951,11 @@ void test_world_monster_pressure_roles_are_authoritative() {
     const std::string caster_id = caster->uuid;
     const int cx = caster->x;
     const int cy = caster->y;
-    const int px = cx + 1 < 39 ? cx + 1 : cx - 1;
+    // Three cardinal tiles is the intentional counterplay overlap: inside
+    // primary melee reach but outside the ranged unit's retreat threshold.
+    const int px = cx + 3 < 39 ? cx + 3 : cx - 3;
     const std::string aim = px < cx ? "right" : "left";
+    interrupt_world.kill_all_monsters();
     interrupt_world.reset_monster(caster_id, 1000);
     interrupt_world.teleport(px, cy, 900);
     int life = 1000;
@@ -1964,10 +1967,14 @@ void test_world_monster_pressure_roles_are_authoritative() {
     const auto finisher =
         interrupt_world.advance_combat(1, 20, life, 1000, 3700);
     bool staggered = false;
+    bool cancellation_published = false;
     for (const auto& event : finisher)
       if (event.type == "hit" && event.target_id == caster_id &&
           event.combo_step == 3 && event.stagger_ms == 700)
         staggered = true;
+      else if (event.type == "interrupt" && event.attacker_id == caster_id &&
+               event.skill_id == "ranged:volley")
+        cancellation_published = event.duration_ms == 700;
     const int before_resolution = life;
     const auto interrupted =
         interrupt_world.advance_combat(1, 0, life, 1000, 3900);
@@ -1975,7 +1982,8 @@ void test_world_monster_pressure_roles_are_authoritative() {
     for (const auto& event : interrupted)
       if (event.type == "hit" && event.attacker_id == caster_id)
         interrupted_hit = true;
-    check(staggered && !interrupted_hit && life == before_resolution,
+    check(staggered && cancellation_published && !interrupted_hit &&
+              life == before_resolution,
           "roles: melee finisher interrupts an in-flight ranged volley");
   } else {
     check(false, "roles: interruption trial has a ranged caster");
@@ -2025,6 +2033,92 @@ void test_world_monster_pressure_roles_are_authoritative() {
   }
   check(support_trial_ran,
         "roles: deterministic generated packs contain a support-and-ally trial");
+}
+
+void test_world_monster_locomotion_is_authoritative_and_deterministic() {
+  auto run_pursuit = [](WorldSimulation& world, const std::string& target_id,
+                        int& player_life) {
+    std::vector<std::string> trace;
+    for (const auto at : {1000LL, 1400LL, 1800LL, 2200LL}) {
+      for (const auto& event :
+           world.advance_combat(1, 20, player_life, 10000, at)) {
+        if (event.type != "move") continue;
+        trace.push_back(event.attacker_id + ":" + std::to_string(event.x) +
+                        "," + std::to_string(event.y) + ":" +
+                        std::to_string(event.duration_ms));
+        check(world.grid().walkable_at(event.x, event.y),
+              "locomotion: every accepted monster step is walkable");
+      }
+    }
+    bool target_moved = false;
+    for (const auto& line : trace)
+      if (line.rfind(target_id + ":", 0) == 0) target_moved = true;
+    check(target_moved,
+          "locomotion: an aggroed melee foe pursues through authoritative steps");
+    return trace;
+  };
+
+  WorldSimulation first(0xBEEF11ULL, "moving-scion");
+  WorldSimulation replay(0xBEEF11ULL, "moving-scion");
+  first.enter_solo_instance("dungeon", "clearings");
+  replay.enter_solo_instance("dungeon", "clearings");
+  const WorldMonster* melee = nullptr;
+  for (const auto& monster : first.monsters())
+    if (!monster.boss && monster.behaviour_type == "melee") {
+      melee = &monster;
+      break;
+    }
+  check(melee != nullptr, "locomotion: generated floor has a melee pursuer");
+  if (melee) {
+    const std::string id = melee->uuid;
+    const int start_x = melee->x;
+    const int start_y = melee->y;
+    const int px = start_x + 6 < 39 ? start_x + 6 : start_x - 6;
+    first.teleport(px, start_y, 900);
+    replay.teleport(px, start_y, 900);
+    int first_life = 10000;
+    int replay_life = 10000;
+    const auto first_trace = run_pursuit(first, id, first_life);
+    const auto replay_trace = run_pursuit(replay, id, replay_life);
+    check(first_trace == replay_trace,
+          "locomotion: identical seeds and ticks produce identical move events");
+    const WorldMonster* moved = nullptr;
+    for (const auto& monster : first.monsters())
+      if (monster.uuid == id) moved = &monster;
+    check(moved && std::max(std::abs(moved->x - px), std::abs(moved->y - start_y)) <
+                       std::max(std::abs(start_x - px), 0),
+          "locomotion: melee pursuit closes distance to the Scion");
+  }
+
+  WorldSimulation ranged_world(0xBEEF22ULL, "spacing-scion");
+  ranged_world.enter_solo_instance("marsh", "clearings");
+  const WorldMonster* ranged = nullptr;
+  for (const auto& monster : ranged_world.monsters())
+    if (!monster.boss && monster.behaviour_type == "ranged") {
+      ranged = &monster;
+      break;
+    }
+  check(ranged != nullptr, "locomotion: generated floor has a ranged spacer");
+  if (ranged) {
+    const std::string id = ranged->uuid;
+    const int rx = ranged->x;
+    const int ry = ranged->y;
+    const int px = rx + 1 < 39 ? rx + 1 : rx - 1;
+    ranged_world.teleport(px, ry, 900);
+    int life = 10000;
+    bool moved = false;
+    for (const auto at : {1000LL, 1400LL, 1800LL, 2200LL})
+      for (const auto& event :
+           ranged_world.advance_combat(1, 20, life, 10000, at))
+        if (event.type == "move" && event.attacker_id == id) moved = true;
+    const WorldMonster* spaced = nullptr;
+    for (const auto& monster : ranged_world.monsters())
+      if (monster.uuid == id) spaced = &monster;
+    check(moved && spaced &&
+              std::max(std::abs(spaced->x - px),
+                       std::abs(spaced->y - ry)) >= 3,
+          "locomotion: ranged pressure opens space before its next volley");
+  }
 }
 
 }  // namespace
@@ -2401,6 +2495,7 @@ int main() {
   test_n2_diagonal_blocking_rule();
   test_world_melee_combo_is_authoritative();
   test_world_monster_pressure_roles_are_authoritative();
+  test_world_monster_locomotion_is_authoritative_and_deterministic();
   test_relic_resurface_round_trip();
   test_relic_loss_again_returns_once();
   test_relic_resurface_replay_is_deterministic();

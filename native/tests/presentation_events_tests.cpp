@@ -185,6 +185,14 @@ void monster_role_feedback_is_authoritative_and_distinct() {
   }
   check(saw_mend && saw_healing && saw_volley,
         "roles: shared render list preserves volley and mend semantics");
+  PresentationEvent cancelled;
+  cancelled.type = PresentationEventType::TelegraphCancelled;
+  cancelled.actor_id = "foe-1";
+  cancelled.text = "ranged:volley";
+  cancelled.value = 700;
+  apply_presentation_event(fx, world, cancelled, 13);
+  check(fx.telegraphs.count("foe-1") == 0,
+        "roles: authoritative interruption removes the warning immediately");
 }
 
 void scion_lost_beat_contract() {

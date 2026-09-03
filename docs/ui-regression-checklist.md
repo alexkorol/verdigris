@@ -8,10 +8,13 @@
 - Leave the entire marked area before it resolves and confirm no damage lands.
   Stay inside the next warning and confirm exactly one named volley lands.
 - Land the third melee cadence beat during a volley warning and confirm the
-  finisher interrupts it. The stale warning may finish fading, but no volley
+  finisher interrupts it. The warning must disappear immediately and no volley
   damage may resolve from it.
 - Wound a pack member near a buffer and confirm the most-wounded ally receives
   a green double ring, cross, and `+N` number matching the authoritative heal.
+- Approach a mixed pack and confirm melee/Warden actors route around walls,
+  ranged actors retreat before casting when crowded, and supports close on a
+  wounded ally. Steps should glide for their authored 400 ms rather than snap.
 - At 1366x768 and 960x600, confirm circular warnings are clipped away from the
   minimap and bottom HUD while the support treatment remains visible in-world.
 

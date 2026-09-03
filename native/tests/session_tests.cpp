@@ -2592,6 +2592,10 @@ void remote_monster_roles_mirror_to_presentation() {
       "{\"uuid\":\"ghast-1\",\"name\":\"Mire Ghast\",\"x\":12,\"y\":12,"
       "\"behaviour\":{\"type\":\"melee\"},\"hp\":{\"current\":12,\"max\":30}}]}}}");
   server.script.push_back(
+      "{\"event\":\"monster:moved\",\"data\":{"
+      "\"monsterId\":\"spitter-1\",\"monsterName\":\"Bog Spitter\","
+      "\"x\":13,\"y\":11,\"durationMs\":400,\"behaviour\":\"ranged\"}}");
+  server.script.push_back(
       "{\"event\":\"monster:telegraph\",\"data\":{"
       "\"attackerId\":\"spitter-1\",\"attackerName\":\"Bog Spitter\","
       "\"skillId\":\"ranged:volley\",\"x\":10,\"y\":11,"
@@ -2602,6 +2606,10 @@ void remote_monster_roles_mirror_to_presentation() {
       "\"targetId\":\"ghast-1\",\"targetName\":\"Mire Ghast\","
       "\"skillId\":\"support:mend\",\"amount\":7,"
       "\"health\":{\"current\":19,\"max\":30}}}");
+  server.script.push_back(
+      "{\"event\":\"monster:interrupted\",\"data\":{"
+      "\"monsterId\":\"spitter-1\",\"monsterName\":\"Bog Spitter\","
+      "\"skillId\":\"ranged:volley\",\"staggerMs\":700}}");
   std::string error;
   check(server.start(&error),
         "role-mirror: scripted loopback server bound in capsule");
@@ -2618,6 +2626,16 @@ void remote_monster_roles_mirror_to_presentation() {
           return session.model().monsters.size() == 2;
         }),
         "role-mirror: authored role roster reaches the mirror");
+  server.grant_next_frame();
+  check(pt_pump_until(session, errors, 5000, [&] {
+          for (const auto& monster : session.model().monsters)
+            if (monster.id == "spitter-1")
+              return monster.x == 13.0 && monster.y == 11.0 &&
+                     monster.move_duration_ms == 400 &&
+                     monster.behaviour == "ranged";
+          return false;
+        }),
+        "role-mirror: accepted movement reaches the model with duration");
   server.grant_next_frame();
   verdigris::client::PresentationEvent volley;
   bool saw_volley = false;
@@ -2664,6 +2682,27 @@ void remote_monster_roles_mirror_to_presentation() {
   check(saw_mend && mend.actor_id == "ghast-1" && mend.value == 7 &&
             health_updated,
         "role-mirror: support mend updates health and emits presentation fact");
+  server.grant_next_frame();
+  verdigris::client::PresentationEvent cancelled;
+  bool saw_cancel = false;
+  const auto cancel_deadline =
+      std::chrono::steady_clock::now() + std::chrono::milliseconds(5000);
+  while (!saw_cancel && std::chrono::steady_clock::now() < cancel_deadline) {
+    session.poll();
+    for (const auto& event : session.drain_events()) {
+      if (event.type == verdigris::client::PresentationEventType::ProtocolError)
+        errors.push_back(event.text);
+      if (event.type ==
+          verdigris::client::PresentationEventType::TelegraphCancelled) {
+        cancelled = event;
+        saw_cancel = true;
+      }
+    }
+    if (!saw_cancel) std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  check(saw_cancel && cancelled.actor_id == "spitter-1" &&
+            cancelled.text == "ranged:volley" && cancelled.value == 700,
+        "role-mirror: interruption identity and stagger survive wire parsing");
   verdigris::client::WorldView world;
   verdigris::client::sync_world_from_model(world, model);
   verdigris::client::PresentationFx fx;
@@ -2676,6 +2715,9 @@ void remote_monster_roles_mirror_to_presentation() {
       mend_fx = true;
   check(volley_fx && mend_fx,
         "role-mirror: authoritative role events drive shared VFX");
+  verdigris::client::apply_presentation_event(fx, world, cancelled, 2);
+  check(fx.telegraphs.count("spitter-1") == 0,
+        "role-mirror: interruption clears the live warning immediately");
   check(errors.empty(), "role-mirror: valid role payloads raise no protocol error");
   session.shutdown();
   server.stop();

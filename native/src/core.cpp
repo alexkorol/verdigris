@@ -1484,6 +1484,11 @@ constexpr int kN3RangedVolleyCooldownMs = 1800;
 constexpr int kN3BufferMendRangeTiles = 5;
 constexpr int kN3BufferMendCooldownMs = 2200;
 constexpr int kN3BufferRetryMs = 700;
+constexpr int kN3MonsterMoveIntervalMs = 400;
+constexpr int kN3MonsterAggroRangeTiles = 10;
+constexpr int kN3RangedComfortTiles = 5;
+constexpr int kN3RangedRetreatBelowTiles = 3;
+constexpr int kN3BufferFormationTiles = 4;
 constexpr int kN3BossLife = 120;
 constexpr int kN3BossDamage = 12;
 constexpr int kN3BossTelegraphRadius = 2;
@@ -2006,6 +2011,141 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     // swing unprompted, which breaks deterministic comparison trials. JS
     // parity: monsters engage the player; the player's swings are inputs.)
   }
+  // Deterministic role locomotion. A bounded breadth-first search chooses one
+  // cardinal tile around authored obstacles and occupied cells; this avoids
+  // wall-pocket stalls without giving monsters diagonal corner clipping.
+  // Every accepted step becomes a wire fact below, while interpolation stays
+  // entirely presentation-side.
+  {
+    const Vec2 here = tile_movement::occupied_tile(position_);
+    auto open_for = [&](const WorldMonster& self, int x, int y) {
+      if (!grid_.walkable_at(x, y) || (x == here.x && y == here.y)) return false;
+      if ((x == metadata_.stairs_up.x && y == metadata_.stairs_up.y) ||
+          (x == metadata_.stairs_down.x && y == metadata_.stairs_down.y))
+        return false;
+      for (const auto& other : monsters_)
+        if (other.alive && other.uuid != self.uuid && other.x == x && other.y == y)
+          return false;
+      return true;
+    };
+    auto next_step = [&](const WorldMonster& self, int goal_x, int goal_y,
+                         int desired_distance, bool retreat) -> std::optional<Vec2> {
+      struct SearchNode { int x, y, first_x, first_y, depth; };
+      std::vector<SearchNode> queue;
+      queue.reserve(static_cast<std::size_t>(grid_.width * grid_.height));
+      std::vector<std::uint8_t> visited(
+          static_cast<std::size_t>(grid_.width * grid_.height), 0);
+      const auto mark = [&](int x, int y) {
+        return static_cast<std::size_t>(y * grid_.width + x);
+      };
+      queue.push_back({self.x, self.y, self.x, self.y, 0});
+      visited[mark(self.x, self.y)] = 1;
+      constexpr int kDirections[4][2] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+      for (std::size_t cursor = 0; cursor < queue.size(); ++cursor) {
+        const SearchNode node = queue[cursor];
+        const int distance = std::max(std::abs(node.x - goal_x),
+                                      std::abs(node.y - goal_y));
+        if (node.depth > 0 &&
+            (retreat ? distance >= desired_distance
+                     : distance <= desired_distance))
+          return Vec2{node.first_x, node.first_y};
+        if (node.depth >= kN3MonsterAggroRangeTiles) continue;
+        for (const auto& direction : kDirections) {
+          const int nx = node.x + direction[0];
+          const int ny = node.y + direction[1];
+          if (!grid_.in_bounds(nx, ny) || visited[mark(nx, ny)] ||
+              !open_for(self, nx, ny))
+            continue;
+          visited[mark(nx, ny)] = 1;
+          queue.push_back({nx, ny,
+                           node.depth == 0 ? nx : node.first_x,
+                           node.depth == 0 ? ny : node.first_y,
+                           node.depth + 1});
+        }
+      }
+      return std::nullopt;
+    };
+
+    for (auto& monster : monsters_) {
+      if (!monster.alive || !monster.pending_attack_skill.empty() ||
+          monster.telegraph_until_ms != 0)
+        continue;
+      int goal_x = here.x;
+      int goal_y = here.y;
+      int desired = monster.boss ? 2 : 1;
+      bool retreat = false;
+      bool wants_move = false;
+      const int player_distance = std::max(std::abs(monster.x - here.x),
+                                           std::abs(monster.y - here.y));
+      if (monster.behaviour_type == "ranged") {
+        if (player_distance < kN3RangedRetreatBelowTiles) {
+          desired = kN3RangedComfortTiles;
+          retreat = true;
+          wants_move = true;
+        } else if (player_distance > kN3RangedComfortTiles &&
+                   player_distance <= kN3MonsterAggroRangeTiles) {
+          desired = kN3RangedComfortTiles;
+          wants_move = true;
+        }
+      } else if (monster.behaviour_type == "buffer") {
+        const WorldMonster* formation_target = nullptr;
+        for (const auto& ally : monsters_) {
+          if (!ally.alive || ally.boss || ally.uuid == monster.uuid) continue;
+          const int distance = std::max(std::abs(ally.x - monster.x),
+                                        std::abs(ally.y - monster.y));
+          if (distance > kN3MonsterAggroRangeTiles) continue;
+          const bool ally_wounded = ally.life < ally.life_max;
+          const bool target_wounded = formation_target &&
+                                      formation_target->life < formation_target->life_max;
+          if (!formation_target || (ally_wounded && !target_wounded) ||
+              (ally_wounded == target_wounded && distance <
+                   std::max(std::abs(formation_target->x - monster.x),
+                            std::abs(formation_target->y - monster.y))) ||
+              (ally_wounded == target_wounded && distance ==
+                   std::max(std::abs(formation_target->x - monster.x),
+                            std::abs(formation_target->y - monster.y)) &&
+               ally.uuid < formation_target->uuid))
+            formation_target = &ally;
+        }
+        if (formation_target) {
+          const int distance = std::max(std::abs(formation_target->x - monster.x),
+                                        std::abs(formation_target->y - monster.y));
+          if (distance > kN3BufferFormationTiles) {
+            goal_x = formation_target->x;
+            goal_y = formation_target->y;
+            desired = kN3BufferFormationTiles;
+            wants_move = true;
+          }
+        }
+      } else if (player_distance > desired &&
+                 player_distance <= kN3MonsterAggroRangeTiles) {
+        wants_move = true;
+      }
+      if (!wants_move) continue;
+      if (monster.next_move_ms == 0) {
+        std::uint32_t move_hash = 2166136261u;
+        for (const char c : monster.uuid)
+          move_hash = (move_hash ^ static_cast<std::uint8_t>(c)) * 16777619u;
+        monster.next_move_ms = now + 100 + move_hash % 200;
+        continue;
+      }
+      if (now < monster.next_move_ms) continue;
+      monster.next_move_ms = now + kN3MonsterMoveIntervalMs;
+      const auto step = next_step(monster, goal_x, goal_y, desired, retreat);
+      if (!step) continue;
+      monster.x = step->x;
+      monster.y = step->y;
+      WorldCombatEvent moved;
+      moved.type = "move";
+      moved.attacker_id = monster.uuid;
+      moved.attacker_name = monster.name;
+      moved.skill_id = monster.behaviour_type;
+      moved.x = monster.x;
+      moved.y = monster.y;
+      moved.duration_ms = kN3MonsterMoveIntervalMs;
+      events.push_back(std::move(moved));
+    }
+  }
   // Monster pressure roles are server owned. Melee pack members punish close
   // contact, ranged foes paint a dodgeable destination before resolving, and
   // buffers sustain the most-injured nearby ally. The client only presents
@@ -2045,7 +2185,9 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
         }
         const int distance = std::max(std::abs(monster.x - here.x),
                                       std::abs(monster.y - here.y));
-        if (distance > kN3RangedRangeTiles) continue;
+        if (distance > kN3RangedRangeTiles ||
+            distance < kN3RangedRetreatBelowTiles)
+          continue;
         if (monster.next_attack_ms == 0) {
           std::uint32_t stagger_hash = 2166136261u;
           for (const char c : monster.uuid)
@@ -2252,17 +2394,30 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       hit.critical = critical; hit.attack_style = player_mods_.attack_style;
       hit.combo_step = skill == "melee" ? combo_step : 0;
       hit.combo_window_ms = skill == "melee" ? kN3ComboWindowMs : 0;
+      bool interrupted_cast = false;
+      std::string interrupted_skill;
       if (skill == "melee" && combo_step == 3 && !struck_target->boss) {
         struck_target->next_attack_ms =
             std::max(struck_target->next_attack_ms,
                      now + static_cast<std::uint64_t>(kN3ComboFinisherStaggerMs));
-        // A finisher interrupts an in-flight ranged warning. Its visual will
-        // expire at the already-authored window, but it can no longer land.
+        // A finisher interrupts an in-flight ranged warning. Publish the
+        // cancellation below so presentation can remove the reticle at once.
+        interrupted_cast = !struck_target->pending_attack_skill.empty();
+        interrupted_skill = struck_target->pending_attack_skill;
         struck_target->pending_attack_skill.clear();
         struck_target->telegraph_until_ms = 0;
         hit.stagger_ms = kN3ComboFinisherStaggerMs;
       }
       events.push_back(hit);
+      if (interrupted_cast) {
+        WorldCombatEvent interrupted;
+        interrupted.type = "interrupt";
+        interrupted.attacker_id = struck_target->uuid;
+        interrupted.attacker_name = struck_target->name;
+        interrupted.skill_id = interrupted_skill;
+        interrupted.duration_ms = kN3ComboFinisherStaggerMs;
+        events.push_back(std::move(interrupted));
+      }
       if (struck_target->life == 0) {
         struck_target->alive = false;
         WorldCombatEvent death = hit; death.type = "death"; events.push_back(death);

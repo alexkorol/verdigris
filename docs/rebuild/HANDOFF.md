@@ -1,5 +1,30 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - obstacle-aware monster locomotion
+
+- The production server tick now moves nearby monsters instead of leaving the
+  generated roster rooted at spawn. A deterministic bounded breadth-first
+  search routes cardinal steps around authored walls, other living actors,
+  the Scion, and both stair tiles.
+- Melee foes and Wardens close to their attack bands, ranged foes advance to
+  casting distance or retreat when crowded, and support foes reform within
+  mend range of the nearest wounded ally. Ranged units must finish opening
+  minimum space before beginning a volley.
+- Every accepted step is published as `monster:moved` with exact destination,
+  role, and 400 ms duration. The remote client mirrors those facts and applies
+  smoothstep interpolation only while painting; reconnect and scene-scale
+  jumps snap safely to the latest authoritative location.
+- A finisher-cancelled volley now also emits `monster:interrupted`, clearing
+  its warning immediately instead of leaving a harmless stale reticle.
+- Core replay coverage proves deterministic movement, walkability, melee
+  pursuit, and ranged spacing. Protocol, scripted-session, and production GDI
+  coverage prove movement/cancellation wire parity and mid-step rendering.
+- Verification: the full native test gate, complete Chronicle succession and
+  relic-recovery journey, and every client scenario pass. Production evidence
+  is in
+  `native/build/goal-captures-locomotion-b/monster-pressure-roles-1366x768.png`;
+  `frame-budget` measured 9.8 ms average at 3440x1440 against the 40 ms ceiling.
+
 ## 2026-09-03 - authoritative monster pressure roles
 
 - Generated melee, ranged, and buffer identities now have distinct production

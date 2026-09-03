@@ -235,9 +235,21 @@ void test_n3_combat_rules_and_wire_events() {
   if (ranged) {
     const int rx = static_cast<int>((*ranged)["x"].number().value_or(0));
     const int ry = static_cast<int>((*ranged)["y"].number().value_or(0));
-    const int px = rx + 4 < 39 ? rx + 4 : rx - 4;
+    const std::string ranged_id = (*ranged)["uuid"].string()
+        ? *(*ranged)["uuid"].string() : std::string();
+    const int px = rx + 1 < 39 ? rx + 1 : rx - 1;
     bool volley_wire = false;
+    bool movement_wire = false;
     auto collect_role = [&](const Envelope& event) {
+      if (event.event == "monster:moved" &&
+          event.data["monsterId"].string() &&
+          *event.data["monsterId"].string() == ranged_id) {
+        movement_wire = event.data["durationMs"].number().value_or(0) == 400 &&
+                        event.data["behaviour"].string() &&
+                        *event.data["behaviour"].string() == "ranged" &&
+                        (event.data["x"].number().value_or(rx) != rx ||
+                         event.data["y"].number().value_or(ry) != ry);
+      }
       if (event.event == "monster:telegraph" &&
           event.data["skillId"].string() &&
           *event.data["skillId"].string() == "ranged:volley") {
@@ -250,7 +262,11 @@ void test_n3_combat_rules_and_wire_events() {
     roles.set_direct_emit(collect_role);
     roles.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", px}, {"y", ry}}},
                  collect_role);
-    roles.tick(5000000000000LL);
+    for (const auto at : {5000000000000LL, 5000000000400LL,
+                          5000000000800LL, 5000000001200LL})
+      roles.tick(at);
+    check(movement_wire,
+          "roles wire: accepted ranged spacing emits an exact movement fact");
     check(volley_wire,
           "roles wire: ranged volley emits exact target, radius, and windup");
   }

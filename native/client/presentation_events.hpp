@@ -26,6 +26,7 @@ enum class PresentationEventType {
   BuffApplied,         // authoritative temporary player effect began
   BuffExpired,         // TASK-0122 Phase A: authoritative buff end (war cry)
   Telegraph,
+  TelegraphCancelled,
   Message,             // human-readable server/system line in `text`
   ProtocolError,       // malformed or unexpected envelope in `text`
 };

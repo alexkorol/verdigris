@@ -490,6 +490,17 @@ struct ClientState {
     bool has_last = false;
     double walk_phase = 0.0;
     double moving = 0.0;
+    // Remote actors render between accepted server tiles. The target remains
+    // authoritative; these doubles are presentation-only and are discarded
+    // when an actor leaves the scene.
+    bool has_display = false;
+    double display_x = 0.0;
+    double display_y = 0.0;
+    double from_x = 0.0;
+    double from_y = 0.0;
+    verdigris::Vec2 target_pos{};
+    double move_elapsed_ms = 0.0;
+    double move_duration_ms = 400.0;
   };
   std::unordered_map<std::string, ActorMotion> motions;
   double breathe_phase = 0.0;
@@ -6404,6 +6415,54 @@ void fixed_game_tick(ClientState& state, const RECT& bounds) {
   if (state.screen_pulse_ticks > 0) --state.screen_pulse_ticks;
 }
 
+void smooth_remote_monster_positions(ClientState& state, double dt_ms,
+                                     bool enabled) {
+  if (!enabled) return;
+  for (auto& monster : state.world.monsters) {
+    auto& motion = state.motions[monster.id];
+    const verdigris::Vec2 authoritative = monster.position;
+    if (!motion.has_display) {
+      motion.has_display = true;
+      motion.display_x = static_cast<double>(authoritative.x);
+      motion.display_y = static_cast<double>(authoritative.y);
+      motion.from_x = motion.display_x;
+      motion.from_y = motion.display_y;
+      motion.target_pos = authoritative;
+    } else if (authoritative.x != motion.target_pos.x ||
+               authoritative.y != motion.target_pos.y) {
+      const double jump_x = authoritative.x - motion.display_x;
+      const double jump_y = authoritative.y - motion.display_y;
+      const double jump = std::sqrt(jump_x * jump_x + jump_y * jump_y);
+      motion.from_x = motion.display_x;
+      motion.from_y = motion.display_y;
+      motion.target_pos = authoritative;
+      motion.move_elapsed_ms = 0.0;
+      motion.move_duration_ms = std::clamp(
+          static_cast<double>(monster.move_duration_ms), 50.0, 1000.0);
+      if (jump > kTileUnits * 3.0) {
+        // Admission/reconnect/scene replacement: snap instead of gliding a
+        // newly authoritative actor across unrelated terrain.
+        motion.display_x = static_cast<double>(authoritative.x);
+        motion.display_y = static_cast<double>(authoritative.y);
+        motion.from_x = motion.display_x;
+        motion.from_y = motion.display_y;
+        motion.move_elapsed_ms = motion.move_duration_ms;
+      }
+    }
+    motion.move_elapsed_ms = std::min(
+        motion.move_duration_ms, motion.move_elapsed_ms + std::max(0.0, dt_ms));
+    const double linear = motion.move_duration_ms > 0.0
+        ? motion.move_elapsed_ms / motion.move_duration_ms : 1.0;
+    const double eased = linear * linear * (3.0 - 2.0 * linear);
+    motion.display_x = motion.from_x +
+        (motion.target_pos.x - motion.from_x) * eased;
+    motion.display_y = motion.from_y +
+        (motion.target_pos.y - motion.from_y) * eased;
+    monster.position.x = static_cast<int>(std::lround(motion.display_x));
+    monster.position.y = static_cast<int>(std::lround(motion.display_y));
+  }
+}
+
 // Per-frame pump (~66 Hz timer): drain the socket, run as many fixed ticks
 // as wall time owes, then smooth the camera with a dt-correct factor. The
 // 20 FPS presentation came from one 50 ms timer driving both simulation
@@ -6432,6 +6491,7 @@ void timer_step(HWND window, ClientState& state) {
   }
 
   sync_world(state);
+  smooth_remote_monster_positions(state, dt_ms, state.session != nullptr);
   {
     // Advance the vector-art animation clocks: a shared breathe cycle plus
     // per-actor walk phase driven by how far each authoritative position
@@ -7559,6 +7619,15 @@ int scenario_monster_pressure_roles() {
   state.camera.y = static_cast<double>(state.world.player.position.y);
   state.camera.zoom = kCameraDefaultZoom * zoom_height_factor(768);
 
+  const int move_from_x = state.world.monsters.front().position.x;
+  smooth_remote_monster_positions(state, 0.0, true);
+  state.world.monsters.front().position.x += static_cast<int>(kTileUnits);
+  state.world.monsters.front().move_duration_ms = 400;
+  smooth_remote_monster_positions(state, 200.0, true);
+  const int interpolated_x = state.world.monsters.front().position.x;
+  const bool movement_smoothed = interpolated_x > move_from_x &&
+      interpolated_x < move_from_x + static_cast<int>(kTileUnits);
+
   verdigris::client::PresentationFx fx;
   verdigris::client::PresentationEvent warning;
   warning.type = verdigris::client::PresentationEventType::Telegraph;
@@ -7607,6 +7676,8 @@ int scenario_monster_pressure_roles() {
   }
   scenario_check(volley && support && healing,
                  "monster-pressure-roles: volley reticle and mend feedback render");
+  scenario_check(movement_smoothed,
+                 "monster-pressure-roles: accepted monster step renders between tiles");
   scenario_check(telegraph_avoids_hud(state.render_list, RECT{0, 0, 1366, 768}),
                  "monster-pressure-roles: warning respects HUD safe zones");
   return 0;

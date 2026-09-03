@@ -1232,6 +1232,32 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     pending_events_.push_back(std::move(warning));
     return;
   }
+  if (envelope.event == "monster:moved") {
+    const auto* id = json_string(envelope.data.get("monsterId"));
+    const auto* name = json_string(envelope.data.get("monsterName"));
+    ClientMonster& foe = upsert_monster(model_, id ? *id : "",
+                                        name ? *name : "", false);
+    foe.x = json_number(envelope.data.get("x"), foe.x);
+    foe.y = json_number(envelope.data.get("y"), foe.y);
+    foe.move_duration_ms = std::clamp(
+        static_cast<int>(json_number(envelope.data.get("durationMs"), 400.0)),
+        50, 1000);
+    if (const auto* behaviour = json_string(envelope.data.get("behaviour")))
+      foe.behaviour = *behaviour;
+    return;
+  }
+  if (envelope.event == "monster:interrupted") {
+    PresentationEvent interrupted;
+    interrupted.type = PresentationEventType::TelegraphCancelled;
+    if (const auto* id = json_string(envelope.data.get("monsterId")))
+      interrupted.actor_id = *id;
+    if (const auto* skill = json_string(envelope.data.get("skillId")))
+      interrupted.text = *skill;
+    interrupted.value = (std::max)(0, static_cast<int>(
+        json_number(envelope.data.get("staggerMs"), 0.0)));
+    pending_events_.push_back(std::move(interrupted));
+    return;
+  }
   if (envelope.event == "monster:healed") {
     const auto* target = json_string(envelope.data.get("targetId"));
     const auto* target_name = json_string(envelope.data.get("targetName"));

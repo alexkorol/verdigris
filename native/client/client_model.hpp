@@ -40,6 +40,7 @@ struct ClientMonster {
   double y = 0.0;
   int life = 1;
   int life_max = 1;
+  int move_duration_ms = 0;
   bool elite = false;
   bool alive = true;
 };

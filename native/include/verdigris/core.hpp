@@ -813,6 +813,7 @@ struct WorldMonster {
   bool boss = false;
   std::uint64_t telegraph_until_ms = 0;
   std::uint64_t next_attack_ms = 0;
+  std::uint64_t next_move_ms = 0;
   // Authoritative role action state. Ranged foes sample a destination tile
   // when their warning begins; resolution checks that tile rather than the
   // player's old position so movement can genuinely dodge the volley.
@@ -826,7 +827,7 @@ struct WorldMonster {
 };
 
 struct WorldCombatEvent {
-  std::string type; // hit, heal, death, telegraph, drop
+  std::string type; // move, hit, heal, death, telegraph, interrupt, drop
   std::string attacker_id;
   std::string attacker_name;
   std::string target_id;
@@ -936,6 +937,7 @@ class WorldSimulation {
       monster.life = monster.life_max;
       monster.telegraph_until_ms = 0;
       monster.next_attack_ms = 0;
+      monster.next_move_ms = 0;
       monster.pending_attack_skill.clear();
       return true;
     }

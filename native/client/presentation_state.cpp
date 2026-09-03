@@ -162,6 +162,7 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     monster.behaviour = source.behaviour;
     monster.life = source.life;
     monster.life_max = source.life_max;
+    monster.move_duration_ms = source.move_duration_ms;
     monster.alive = source.alive;
     monster.elite = source.elite;
     world.monsters.push_back(std::move(monster));
@@ -351,6 +352,9 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       fx.telegraphs[event.actor_id.empty() ? "foe" : event.actor_id] = std::move(telegraph);
       break;
     }
+    case PresentationEventType::TelegraphCancelled:
+      fx.telegraphs.erase(event.actor_id);
+      break;
     case PresentationEventType::ActorDied:
     case PresentationEventType::ScionDied:
       fx.telegraphs.erase(event.actor_id);
@@ -438,6 +442,9 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
         break;
       case PresentationEventType::Telegraph:
         line = "Telegraph " + event.text;
+        break;
+      case PresentationEventType::TelegraphCancelled:
+        line = "Interrupted " + event.text;
         break;
       case PresentationEventType::ItemDropped:
         line = "Loot";

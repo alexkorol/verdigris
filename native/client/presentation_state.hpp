@@ -81,6 +81,7 @@ struct WorldActor {
   int combo_step = 0;
   int combo_window_ticks = 0;
   int war_cry_ticks_remaining = 0;
+  int move_duration_ms = 0;
   bool alive = true;
   bool elite = false;
 };

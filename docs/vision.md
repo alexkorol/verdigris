@@ -90,6 +90,11 @@ and only hit a Scion who remains inside it. Support foes choose the most-wounded
 nearby non-boss ally and publish the exact mend and resulting health. The melee
 finisher can interrupt a pending volley, making cadence and positioning work
 together; the client merely renders the server's target and heal facts.
+Nearby packs also move through an obstacle-aware authoritative search: melee
+and Wardens pursue, ranged enemies create space before casting, and supports
+reform around wounded allies. Accepted 400 ms tile steps travel over the wire
+and are interpolated only at paint time, while finisher interruptions now
+remove cancelled warnings immediately.
 
 The character sheet now reuses the generated player sprite for its portrait
 and each equipped item's real atlas frame; generic slot glyphs remain only for

@@ -2934,10 +2934,23 @@ void ProtocolSession::handle_inventory_commit(const JsonValue& payload, const st
   emit_ground_change(emit);
 }
 void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std::function<void(const Envelope&)>& emit) {
+  if (event.type == "move") {
+    JsonValue::Object data;
+    put(data,"monsterId",event.attacker_id); put(data,"monsterName",event.attacker_name);
+    put(data,"x",event.x); put(data,"y",event.y);
+    put(data,"durationMs",event.duration_ms); put(data,"behaviour",event.skill_id);
+    emit_world(Envelope{"monster:moved",JsonValue(std::move(data))},emit); return;
+  }
   if (event.type == "telegraph") {
     JsonValue::Object data; put(data,"attackerId",event.attacker_id); put(data,"attackerName",event.attacker_name); put(data,"skillId",event.skill_id);
     put(data,"x",event.x); put(data,"y",event.y); put(data,"radius",event.radius); put(data,"durationMs",event.duration_ms);
     emit_world(Envelope{"monster:telegraph",JsonValue(std::move(data))},emit); return;
+  }
+  if (event.type == "interrupt") {
+    JsonValue::Object data;
+    put(data,"monsterId",event.attacker_id); put(data,"monsterName",event.attacker_name);
+    put(data,"skillId",event.skill_id); put(data,"staggerMs",event.duration_ms);
+    emit_world(Envelope{"monster:interrupted",JsonValue(std::move(data))},emit); return;
   }
   if (event.type == "heal") {
     JsonValue::Object data;
