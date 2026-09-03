@@ -2592,6 +2592,91 @@ void remote_endgame_payload_mirrors_to_presentation() {
   server.stop();
 }
 
+void remote_spatial_inventory_and_wearset_mirror_to_presentation() {
+  ScriptedEnvelopeServer server;
+  server.script.push_back(
+      "{\"event\":\"player:login\",\"data\":{\"player\":{"
+      "\"uuid\":\"loadout-guest\",\"x\":10,\"y\":11,\"facing\":\"down\"},"
+      "\"scene\":{\"id\":\"town\",\"type\":\"town\"}}}");
+  server.script.push_back(
+      "{\"event\":\"dev:state\",\"data\":{\"state\":{"
+      "\"lifecycle\":\"alive\",\"inventoryDetails\":["
+      "{\"id\":\"bronze-pike\",\"uuid\":\"pike-pack\","
+      "\"displayName\":\"Bronze Pike\",\"qty\":1,\"slot\":14,"
+      "\"size\":{\"width\":2,\"height\":4},"
+      "\"equipSlot\":\"right_hand\",\"twoHanded\":true},"
+      "{\"id\":\"coins\",\"uuid\":\"coin-stack\","
+      "\"displayName\":\"Coins\",\"qty\":37,\"slot\":70,"
+      "\"size\":{\"width\":1,\"height\":1},"
+      "\"equipSlot\":null,\"twoHanded\":false}],"
+      "\"wearDetails\":{"
+      "\"right_hand\":{\"id\":\"bronze-dagger\",\"uuid\":\"worn-blade\","
+      "\"displayName\":\"Bronze Dagger\",\"qty\":1,"
+      "\"size\":{\"width\":1,\"height\":3},"
+      "\"equipSlot\":\"right_hand\",\"twoHanded\":false},"
+      "\"head\":{\"id\":\"bronze-med-helm\",\"uuid\":\"worn-helm\","
+      "\"displayName\":\"Bronze Med Helm\",\"qty\":1,"
+      "\"size\":{\"width\":2,\"height\":2},"
+      "\"equipSlot\":\"head\",\"twoHanded\":false}}}}}");
+  server.script.push_back(
+      "{\"event\":\"player:equippedAnItem\",\"data\":{"
+      "\"wearDetails\":{\"right_hand\":{\"id\":\"bronze-pike\","
+      "\"uuid\":\"worn-pike\",\"displayName\":\"Bronze Pike\","
+      "\"qty\":1,\"size\":{\"width\":2,\"height\":4},"
+      "\"equipSlot\":\"right_hand\",\"twoHanded\":true}},"
+      "\"combat\":{\"bleedChance\":0}}}");
+  std::string error;
+  check(server.start(&error),
+        "loadout-mirror: scripted loopback server bound in capsule");
+  if (server.port() == 0) return;
+  verdigris::client::RemoteProtocolSession session(
+      "127.0.0.1", server.port(), "loadout-mirror-guest", true);
+  check(session.start(&error),
+        "loadout-mirror: connect + upgrade + login sent");
+  check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
+        "loadout-mirror: admission acknowledged");
+
+  std::vector<std::string> errors;
+  server.grant_next_frame();
+  check(pt_pump_until(session, errors, 5000, [&] {
+          return session.model().inventory.size() == 2 &&
+                 session.model().worn.size() == 2;
+        }),
+        "loadout-mirror: spatial backpack and two wear seats arrive");
+  const auto& backpack = session.model().inventory;
+  check(backpack[0].slot == 14 && backpack[0].width == 2 &&
+            backpack[0].height == 4 && backpack[0].equip_slot == "right_hand" &&
+            backpack[0].two_handed && backpack[1].quantity == 37 &&
+            backpack[1].slot == 70,
+        "loadout-mirror: slot, footprint, stack, and equip metadata stay exact");
+  check(session.model().worn[0].seat == "right_hand" &&
+            session.model().worn[0].item.uuid == "worn-blade" &&
+            session.model().worn[1].seat == "head" &&
+            session.model().equipped.uuid == "worn-blade",
+        "loadout-mirror: ordered WearSet seats replace inferred equipment");
+  verdigris::client::WorldView world;
+  verdigris::client::sync_world_from_model(world, session.model());
+  check(world.carried.size() == 2 && world.worn.size() == 2 &&
+            world.carried[0].inventory_slot == 14 &&
+            world.carried[0].width == 2 && world.carried[0].height == 4 &&
+            world.worn[0].equip_seat == "right_hand" &&
+            world.worn[1].equip_seat == "head",
+        "loadout-mirror: backpack and paper doll remain separate in presentation");
+
+  server.grant_next_frame();
+  check(pt_pump_until(session, errors, 5000, [&] {
+          return session.model().worn.size() == 1 &&
+                 session.model().worn[0].item.uuid == "worn-pike";
+        }),
+        "loadout-mirror: equip event refreshes the complete WearSet immediately");
+  check(session.model().equipped.two_handed &&
+            session.model().equipped.equip_slot == "right_hand" &&
+            errors.empty(),
+        "loadout-mirror: two-handed truth survives with no protocol error");
+  session.shutdown();
+  server.stop();
+}
+
 void remote_combat_cadence_mirrors_to_presentation() {
   ScriptedEnvelopeServer server;
   server.script.push_back(
@@ -3445,6 +3530,7 @@ int main() {
   remote_render_list_ops();
   remote_passive_tree_absence_stays_absent();
   remote_endgame_payload_mirrors_to_presentation();
+  remote_spatial_inventory_and_wearset_mirror_to_presentation();
   remote_combat_cadence_mirrors_to_presentation();
   remote_forge_properties_and_status_mirror_to_presentation();
   remote_living_bond_state_and_trigger_mirror_to_presentation();

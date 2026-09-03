@@ -533,6 +533,9 @@ JsonValue item_identity_json(const GameItem& item) {
   put(out, "name", item.name);
   put(out, "displayName", item.display_name);
   put(out, "qty", item.qty);
+  put(out, "equipSlot", item.equip_slot.empty() ? JsonValue(nullptr)
+                                                   : JsonValue(item.equip_slot));
+  put(out, "twoHanded", item.two_handed);
   if (item.slot >= 0) {
     put(out, "slot", item.slot);
     put(out, "position", JsonValue::Object{{"x", item.slot % 12}, {"y", item.slot / 12}});

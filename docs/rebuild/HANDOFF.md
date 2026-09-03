@@ -1,5 +1,37 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - authoritative Framekit loadout and spatial backpack
+
+- Replaced the native client's inferred single-weapon equipment view with an
+  ordered mirror of all eleven authoritative `WearSet` seats. `dev:state` and
+  `player:equippedAnItem` now refresh exact per-seat uuid, catalog id, name,
+  footprint, equip slot, two-handed state, and living-Vessel detail; equipped
+  goods no longer masquerade as backpack rows.
+- Extended the shared item identity projection with `equipSlot` and
+  `twoHanded`. The existing `size`, `slot`, and `qty` fields now survive the
+  complete server-to-model-to-presentation path instead of being discarded by
+  the remote client.
+- Rebuilt the I pane as the real 12x7 spatial backpack used by native rules.
+  WIZARD Framekit chrome draws every cell and each multi-cell footprint;
+  stack counts, mapped item art, charted-tablet seals, selected-item detail,
+  mouse hover, and directional nearest-neighbor keyboard navigation share the
+  same authoritative geometry.
+- Rebuilt the C pane as a responsive paper doll around the live Scion plate.
+  Head, armor, back, gloves, belt, feet, both hands, necklace, and both rings
+  expose filled and empty state explicitly, with a grouped vitals, attributes,
+  combat, mobility, and ward readout below. Opening C and I together produces
+  a focused, non-overlapping loadout diptych at both 960x600 and 1366x768.
+- Added protocol regression coverage for full snapshot/equip-event WearSet
+  refresh and for backpack slot/footprint/stack/equipment metadata. The
+  `character-inventory-diptych` production scenario asserts all eleven seats,
+  six bounded multi-cell footprints, hover identity, spatial arrow movement,
+  and captures both supported reference sizes.
+- Verification: the binding native build, complete test set, and full client
+  scenario suite pass. Inspected evidence is in
+  `native/build/goal-captures-character-inventory-final2/character-inventory-diptych-960x600.png`
+  and `character-inventory-diptych-1366x768.png`; the 3440x1440 frame budget
+  is 12.4 ms average against the 40 ms ceiling.
+
 ## 2026-09-03 - living Vessel powers in combat
 
 - Learned Vessel properties now travel from the exact worn item through wear

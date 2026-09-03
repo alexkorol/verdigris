@@ -75,8 +75,18 @@ void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& s
     monster.elite = actor.elite;
     world.monsters.push_back(std::move(monster));
   }
+  int carried_slot = 0;
   for (const auto& item : sim.scion().carried_items) {
-    world.carried.push_back({item.id, item.name, item.attack_bonus, item.equipped});
+    WorldCarriedItem view{item.id, item.name, item.attack_bonus, item.equipped};
+    view.art_id = item.id;
+    view.inventory_slot = carried_slot++;
+    view.equip_slot = "right_hand";
+    if (item.equipped) {
+      view.equip_seat = "right_hand";
+      world.worn.push_back(std::move(view));
+    } else {
+      world.carried.push_back(std::move(view));
+    }
   }
   for (const auto& item : sim.ground_items()) world.loot_names[item.id] = item.name;
   for (const auto& trophy : sim.ground_trophies())
@@ -220,15 +230,42 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     carried.map_objective_key = item.map_objective_key;
     carried.map_modifiers = item.map_modifiers;
     carried.forge_lines = item.forge_lines;
+    carried.art_id = item.id;
+    carried.inventory_slot = item.slot;
+    carried.width = item.width;
+    carried.height = item.height;
+    carried.quantity = item.quantity;
+    carried.equip_slot = item.equip_slot;
+    carried.two_handed = item.two_handed;
     world.carried.push_back(std::move(carried));
   }
-  if (!model.equipped.uuid.empty()) {
-    const std::string label =
-        model.equipped.name.empty() ? model.equipped.id : model.equipped.name;
-    WorldCarriedItem equipped{model.equipped.uuid, label,
-                              model.equipped.attack_rating, true};
-    equipped.forge_lines = model.equipped.forge_lines;
-    world.carried.push_back(std::move(equipped));
+  world.worn.clear();
+  for (const auto& source : model.worn) {
+    const auto& item = source.item;
+    const std::string label = item.name.empty() ? item.id : item.name;
+    WorldCarriedItem worn{item.uuid, label, item.attack_rating, true};
+    worn.forge_lines = item.forge_lines;
+    worn.art_id = item.id;
+    worn.width = item.width;
+    worn.height = item.height;
+    worn.quantity = item.quantity;
+    worn.equip_slot = item.equip_slot;
+    worn.equip_seat = source.seat;
+    worn.two_handed = item.two_handed;
+    world.worn.push_back(std::move(worn));
+  }
+  // Compatibility with an older server/client fixture that only supplies
+  // the historical single equipped field. Never duplicate a real WearSet.
+  if (world.worn.empty() && !model.equipped.uuid.empty()) {
+    const auto& item = model.equipped;
+    const std::string label = item.name.empty() ? item.id : item.name;
+    WorldCarriedItem worn{item.uuid, label, item.attack_rating, true};
+    worn.forge_lines = item.forge_lines;
+    worn.art_id = item.id;
+    worn.equip_slot = item.equip_slot;
+    worn.equip_seat = item.equip_slot.empty() ? "right_hand" : item.equip_slot;
+    worn.two_handed = item.two_handed;
+    world.worn.push_back(std::move(worn));
   }
   world.endgame.present = model.endgame.present;
   world.endgame.unlocked = model.endgame.unlocked;

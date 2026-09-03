@@ -225,11 +225,19 @@ void LocalCoreSession::refresh_model() {
   }
   model_.scene.id = simulation_->instance().active ? simulation_->instance().route_id : "surface";
   model_.inventory.clear();
+  model_.worn.clear();
   model_.equipped = {};
+  int carried_slot = 0;
   for (const auto& item : scion.carried_items) {
     ClientItemSlot slot{item.id, item.id, item.name, -1, 0, 0, item.attack_bonus};
-    model_.inventory.push_back(slot);
-    if (item.equipped) model_.equipped = slot;
+    slot.slot = carried_slot++;
+    slot.equip_slot = "right_hand";
+    if (item.equipped) {
+      model_.equipped = slot;
+      model_.worn.push_back({"right_hand", slot});
+    } else {
+      model_.inventory.push_back(slot);
+    }
   }
   model_.ground.clear();
   for (const auto& item : simulation_->ground_items())

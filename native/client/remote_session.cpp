@@ -92,6 +92,17 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
   if (const auto* index = entry.get("slot"); index && index->number()) {
     slot.slot = static_cast<int>(*index->number());
   }
+  slot.quantity =
+      (std::max)(1, static_cast<int>(json_number(entry.get("qty"), 1.0)));
+  if (const auto* size = entry.get("size"); size && size->object()) {
+    slot.width = std::clamp(
+        static_cast<int>(json_number(size->get("width"), 1.0)), 1, 12);
+    slot.height = std::clamp(
+        static_cast<int>(json_number(size->get("height"), 1.0)), 1, 7);
+  }
+  if (const auto* equip_slot = json_string(entry.get("equipSlot")))
+    slot.equip_slot = *equip_slot;
+  slot.two_handed = json_bool(entry.get("twoHanded"), false);
   if (const auto* health = entry.get("resourceBonuses")) {
     slot.bonus_health = static_cast<int>(json_number(health->get("health")));
   }
@@ -139,6 +150,30 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
     }
   }
   return slot;
+}
+
+void apply_wear_details(const JsonValue& wear_details, ClientModel& model) {
+  if (!wear_details.object()) return;
+  static constexpr const char* kPhysicalSeats[] = {
+      "right_hand", "left_hand", "armor", "head", "back", "belt",
+      "gloves", "feet", "ring", "ring2", "necklace",
+  };
+  model.worn.clear();
+  model.equipped = {};
+  for (const char* seat : kPhysicalSeats) {
+    const JsonValue* entry = wear_details.get(seat);
+    if (!entry || !entry->object()) continue;
+    ClientWornItem worn;
+    worn.seat = seat;
+    worn.item = parse_item_slot(*entry);
+    if (worn.item.uuid.empty() && worn.item.id.empty()) continue;
+    if (worn.seat == "right_hand") model.equipped = worn.item;
+    model.worn.push_back(std::move(worn));
+  }
+  // Compatibility for consumers that still ask for one equipped item:
+  // prefer the main hand, otherwise expose the first real worn seat.
+  if (model.equipped.uuid.empty() && !model.worn.empty())
+    model.equipped = model.worn.front().item;
 }
 
 void apply_combat_totals(ClientModel& model, const JsonValue& combat) {
@@ -1608,6 +1643,15 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       model_.lifecycle = *lifecycle;
     model_.player.level = static_cast<int>(
         json_number(state->get("level"), model_.player.level));
+    const JsonValue* inventory = state->get("inventoryDetails");
+    if (!inventory || !inventory->array()) inventory = state->get("inventory");
+    if (inventory && inventory->array()) {
+      model_.inventory.clear();
+      for (const auto& entry : *inventory->array())
+        model_.inventory.push_back(parse_item_slot(entry));
+    }
+    if (const auto* wear = state->get("wearDetails"))
+      apply_wear_details(*wear, model_);
     // TASK-0156: the dev:state snapshot carries the same authoritative
     // passiveTree envelope; keep the mirror current between logins. TASK-0162:
     // a malformed snapshot fails closed and surfaces its diagnostic.
@@ -1869,6 +1913,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   if (envelope.event == "player:equippedAnItem") {
     if (const auto* combat = envelope.data.get("combat"))
       apply_combat_totals(model_, *combat);
+    if (const auto* wear = envelope.data.get("wearDetails"))
+      apply_wear_details(*wear, model_);
     return;
   }
   if (envelope.event == "core:refresh:inventory") {

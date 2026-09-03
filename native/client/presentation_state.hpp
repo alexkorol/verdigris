@@ -117,6 +117,14 @@ struct WorldCarriedItem {
   std::string map_objective_key;
   std::vector<std::string> map_modifiers;
   std::vector<std::string> forge_lines;
+  std::string art_id;
+  int inventory_slot = -1;
+  int width = 1;
+  int height = 1;
+  int quantity = 1;
+  std::string equip_slot;
+  std::string equip_seat;
+  bool two_handed = false;
 };
 
 struct EndgameView {
@@ -180,6 +188,7 @@ struct WorldView {
   std::string scion_name;
   std::uint64_t tick = 0;
   std::vector<WorldCarriedItem> carried;
+  std::vector<WorldCarriedItem> worn;
   EndgameView endgame;
   std::size_t stored_items = 0;
   std::size_t stored_trophies = 0;

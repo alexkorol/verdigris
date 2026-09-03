@@ -721,6 +721,12 @@ void test_active_forge_properties_cross_the_protocol() {
   check(details &&
             (*details)["combatBonuses"]["bleedChance"].number().value_or(0) == 100,
         "forge wire: item projection carries the active bleeding implicit");
+  check(details && (*details)["size"]["width"].number().value_or(0) > 0 &&
+            (*details)["size"]["height"].number().value_or(0) > 0 &&
+            (*details)["equipSlot"].string() &&
+            *(*details)["equipSlot"].string() == "right_hand" &&
+            (*details)["twoHanded"].boolean().has_value(),
+        "forge wire: item identity publishes footprint and equip metadata");
   bool active_bleed_line = false;
   if (details) {
     if (const auto* lines = (*details)["vessel"]["lines"].array())

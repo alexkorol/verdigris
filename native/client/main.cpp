@@ -313,6 +313,17 @@ HudRect gear_pane_rect(int width, int height) {
           std::max(0, bottom - pane_top)};
 }
 
+HudRect character_pane_rect(int width, int height) {
+  const int s = hud_scale(height);
+  const int pane_w = std::min(500 * s, std::max(0, width - 48));
+  const int pane_top = 64 * s;
+  const int historical_bottom = pane_top + 430 * s;
+  const int expanded_bottom = height - 120 * s;
+  const int bottom = std::min(height - 28,
+                              std::max(historical_bottom, expanded_bottom));
+  return {24 * s, pane_top, pane_w, std::max(0, bottom - pane_top)};
+}
+
 HudRect quest_journal_rect(int width, int height) {
   const int w = (std::min)(760, width - 48);
   const int h = (std::min)(520, height - 128);
@@ -1507,6 +1518,37 @@ void equip_selected(ClientState& state) {
   state.selected_item = std::min(state.selected_item, state.world.carried.size() - 1);
   submit_equip(state, state.world.carried[state.selected_item].id);
   show_hint(state, "Equipped " + state.world.carried[state.selected_item].name);
+}
+
+void move_inventory_selection(ClientState& state, int dx, int dy) {
+  const auto& items = state.world.carried;
+  if (items.empty() || (dx == 0 && dy == 0)) return;
+  state.selected_item = std::min(state.selected_item, items.size() - 1);
+  const auto center = [&](std::size_t index) {
+    const WorldCarriedItem& item = items[index];
+    const int slot = item.inventory_slot >= 0 && item.inventory_slot < 84
+                         ? item.inventory_slot
+                         : static_cast<int>(index % 84);
+    return POINT{2 * (slot % 12) + std::max(1, item.width),
+                 2 * (slot / 12) + std::max(1, item.height)};
+  };
+  const POINT from = center(state.selected_item);
+  std::size_t best = state.selected_item;
+  int best_score = std::numeric_limits<int>::max();
+  for (std::size_t i = 0; i < items.size(); ++i) {
+    if (i == state.selected_item || items[i].equipped) continue;
+    const POINT to = center(i);
+    const int along = (to.x - from.x) * dx + (to.y - from.y) * dy;
+    if (along <= 0) continue;
+    const int across = std::abs((to.x - from.x) * dy -
+                                (to.y - from.y) * dx);
+    const int score = along * 100 + across * 10 + static_cast<int>(i);
+    if (score < best_score) {
+      best_score = score;
+      best = i;
+    }
+  }
+  state.selected_item = best;
 }
 
 COLORREF fade_to_background(COLORREF color, double remaining) {
@@ -2941,17 +2983,25 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   TextOutA(dc, left + 14 * s, top + 12 * s, title.c_str(),
            static_cast<int>(title.size()));
 
-  // Authoritative stats readout. The base attack is the actor's stat; the
-  // equipped item's attack bonus (authoritative item data) is added on top,
-  // matching how the core folds it into damage resolution.
+  // Authoritative stats readout. Worn items live outside the backpack on the
+  // production wire; the carried-item fallback keeps old/local fixtures
+  // honest without making disappearance-from-inventory our source of truth.
   const WorldActor& player = state.world.player;
   const auto& items = state.world.carried;
-  int equipped_bonus = 0;
-  for (const auto& item : items)
-    if (item.equipped) {
-      equipped_bonus = item.attack_bonus;
+  const WorldCarriedItem* main_hand = nullptr;
+  for (const auto& item : state.world.worn)
+    if (item.equip_seat == "right_hand") {
+      main_hand = &item;
       break;
     }
+  if (!main_hand)
+    for (const auto& item : items)
+      if (item.equipped) {
+        main_hand = &item;
+        break;
+      }
+  int equipped_bonus = 0;
+  if (main_hand) equipped_bonus = main_hand->attack_bonus;
   const int base_attack = player.attack;
   std::string attack_text = std::to_string(base_attack + equipped_bonus);
   if (equipped_bonus != 0)
@@ -2976,72 +3026,108 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   TextOutA(dc, left + 14 * s, top + 38 * s, stats_line.c_str(),
            static_cast<int>(stats_line.size()));
 
-  // Weapon (paperdoll) seat.
+  // Compact loadout ribbon. The full eleven-seat paper doll lives on C; this
+  // ribbon makes the I-only view useful without pretending one weapon is the
+  // whole equipment model.
   const int seat_top = top + 62 * s;
-  const int seat_left = left + 14 * s;
-  const int seat_w = right - left - 28 * s;
-  RECT seat{seat_left, seat_top, seat_left + seat_w, seat_top + 24 * s};
+  RECT seat{left + 14 * s, seat_top, right - 14 * s, seat_top + 24 * s};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot, seat))
+    skin::slot(dc, seat, skin::kVerdigris, false);
   state.hud_rect_trace.push_back(
-      {"pane-seat", {seat.left, seat.top, seat_w, 24 * s}});
-  HBRUSH seat_bg = CreateSolidBrush(RGB(32, 40, 42));
-  FillRect(dc, &seat, seat_bg);
-  DeleteObject(seat_bg);
-  HPEN seat_pen = CreatePen(PS_SOLID, 1, RGB(104, 160, 137));
-  HGDIOBJ sp = SelectObject(dc, seat_pen);
-  Rectangle(dc, seat.left, seat.top, seat.right, seat.bottom);
-  SelectObject(dc, sp);
-  DeleteObject(seat_pen);
+      {"pane-seat", {seat.left, seat.top, seat.right - seat.left,
+                      seat.bottom - seat.top}});
   SetTextColor(dc, RGB(170, 190, 178));
-  const char* seat_label = "Weapon";
-  TextOutA(dc, seat_left + 6 * s, seat_top + 4 * s, seat_label,
+  const char* seat_label = "WORN";
+  TextOutA(dc, seat.left + 6 * s, seat_top + 4 * s, seat_label,
            static_cast<int>(strlen(seat_label)));
-  std::string equipped_name = "(empty)";
-  for (const auto& item : items)
-    if (item.equipped) {
-      equipped_name = item.name;
-      break;
-    }
+  std::string equipped_name = main_hand ? main_hand->name : "(unarmed)";
+  std::string loadout_value = equipped_name + "  |  " +
+      std::to_string(state.world.worn.size()) + "/11 seats";
   SetTextColor(dc, RGB(230, 220, 180));
   rl.push_back({render::Op::PaneWeapon, 0.0, 0.0, 0.0, 0, equipped_name});
-  TextOutA(dc, seat_left + 96 * s, seat_top + 4 * s, equipped_name.c_str(),
-           static_cast<int>(equipped_name.size()));
+  TextOutA(dc, seat.left + 55 * s, seat_top + 4 * s, loadout_value.c_str(),
+           static_cast<int>(loadout_value.size()));
 
-  // Grid backpack (4 columns), framekit slot chrome with item art.
-  constexpr int kGridColumns = 4;
+  // WIZARD-derived spatial backpack, now driven by the server's real 12x7
+  // cell index and item footprint. Every empty cell uses Framekit slot chrome;
+  // multi-cell items span the exact occupied rectangle and mouse hover selects
+  // the same item that keyboard traversal targets.
+  constexpr int kGridColumns = 12;
+  constexpr int kGridRows = 7;
+  const int grid_left = left + 14 * s;
+  const int grid_top = top + 102 * s;
+  const int grid_gap = s;
+  const int grid_available_w = right - left - 28 * s;
   const int cell_w =
-      (right - left - (28 + (kGridColumns - 1) * 6) * s) / kGridColumns;
-  const int cell_h = 56 * s;
-  const int grid_top = seat_top + 38 * s;
-  // On the remote path carried ids are uuids; the model's inventory rows
-  // carry the stable item id the art catalog is keyed by.
-  const auto art_key = [&](std::size_t index) -> std::string {
-    if (!state.session) return items[index].id;
-    for (const auto& slot_item : state.session->model().inventory)
-      if (slot_item.uuid == items[index].id) return slot_item.id;
-    return items[index].id;
+      (grid_available_w - (kGridColumns - 1) * grid_gap) / kGridColumns;
+  const int grid_vertical_budget =
+      std::max(7 * 18 * s, bottom - grid_top - 150 * s);
+  const int cell_h = std::min(
+      cell_w, (grid_vertical_budget - (kGridRows - 1) * grid_gap) / kGridRows);
+  const int grid_w = kGridColumns * cell_w + (kGridColumns - 1) * grid_gap;
+  const int grid_h = kGridRows * cell_h + (kGridRows - 1) * grid_gap;
+  SetTextColor(dc, RGB(150, 170, 158));
+  HGDIOBJ grid_font = SelectObject(dc, skin::font_small());
+  const char* backpack_label = "BACKPACK  12 x 7";
+  TextOutA(dc, grid_left, grid_top - 15 * s, backpack_label,
+           static_cast<int>(std::strlen(backpack_label)));
+  SelectObject(dc, grid_font);
+  for (int row = 0; row < kGridRows; ++row) {
+    for (int col = 0; col < kGridColumns; ++col) {
+      RECT grid_cell{grid_left + col * (cell_w + grid_gap),
+                     grid_top + row * (cell_h + grid_gap),
+                     grid_left + col * (cell_w + grid_gap) + cell_w,
+                     grid_top + row * (cell_h + grid_gap) + cell_h};
+      if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot,
+                              grid_cell))
+        skin::slot(dc, grid_cell, RGB(58, 78, 70), false);
+    }
+  }
+  state.hud_rect_trace.push_back(
+      {"pane-grid", {grid_left, grid_top, grid_w, grid_h}});
+
+  struct BackpackDraw {
+    std::size_t item_index = 0;
+    RECT rect{};
   };
+  std::vector<BackpackDraw> backpack_draws;
+  backpack_draws.reserve(items.size());
+  for (std::size_t i = 0; i < items.size(); ++i) {
+    if (items[i].equipped) continue;
+    int slot = items[i].inventory_slot;
+    if (slot < 0 || slot >= kGridColumns * kGridRows)
+      slot = static_cast<int>(i % (kGridColumns * kGridRows));
+    const int col = slot % kGridColumns;
+    const int row = slot / kGridColumns;
+    const int span_w = std::clamp(items[i].width, 1, kGridColumns - col);
+    const int span_h = std::clamp(items[i].height, 1, kGridRows - row);
+    RECT footprint{
+        grid_left + col * (cell_w + grid_gap),
+        grid_top + row * (cell_h + grid_gap),
+        grid_left + col * (cell_w + grid_gap) + span_w * cell_w +
+            (span_w - 1) * grid_gap,
+        grid_top + row * (cell_h + grid_gap) + span_h * cell_h +
+            (span_h - 1) * grid_gap};
+    backpack_draws.push_back({i, footprint});
+    if (state.mouse.x >= footprint.left && state.mouse.x < footprint.right &&
+        state.mouse.y >= footprint.top && state.mouse.y < footprint.bottom)
+      state.selected_item = i;
+  }
   if (items.empty()) {
     SetTextColor(dc, RGB(150, 160, 150));
     const char* empty = "Backpack empty. X picks up the nearest drop.";
-    TextOutA(dc, left + 14 * s, grid_top + 6 * s, empty,
+    TextOutA(dc, grid_left, grid_top + grid_h + 6 * s, empty,
              static_cast<int>(strlen(empty)));
   } else {
-    for (std::size_t i = 0; i < items.size(); ++i) {
-      const int col = static_cast<int>(i % kGridColumns);
-      const int row = static_cast<int>(i / kGridColumns);
-      const int cx = left + 14 * s + col * (cell_w + 6 * s);
-      const int cy = grid_top + row * (cell_h + 6 * s);
+    for (const auto& draw : backpack_draws) {
+      const std::size_t i = draw.item_index;
+      const RECT cell = draw.rect;
       const bool selected = i == std::min(state.selected_item, items.size() - 1);
-      const bool equipped = items[i].equipped;
-      RECT cell{cx, cy, cx + cell_w, cy + cell_h};
       if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot,
                               cell))
-        skin::slot(dc, cell, equipped ? skin::kGold : skin::kVerdigris,
-                   selected);
-      if (selected || equipped) {
-        // Selection/equip read on top of the raster chrome.
-        HPEN cell_pen = CreatePen(PS_SOLID, 2,
-                                  equipped ? RGB(210, 180, 90) : RGB(120, 214, 168));
+        skin::slot(dc, cell, skin::kVerdigris, selected);
+      if (selected) {
+        HPEN cell_pen = CreatePen(PS_SOLID, 2, RGB(120, 214, 168));
         HGDIOBJ cp = SelectObject(dc, cell_pen);
         HGDIOBJ cb = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
         Rectangle(dc, cell.left, cell.top, cell.right, cell.bottom);
@@ -3049,17 +3135,11 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
         SelectObject(dc, cp);
         DeleteObject(cell_pen);
       }
-      RECT art_cell{cell.left, cell.top, cell.right, cell.bottom - 18 * s};
-      {
-        // Parchment backing: bronze-age sprites are dark; without a light
-        // ground they vanish into the slot texture.
-        RECT backing{art_cell.left + 4 * s, art_cell.top + 4 * s,
-                     art_cell.right - 4 * s, art_cell.bottom};
-        HBRUSH backing_brush = CreateSolidBrush(RGB(74, 82, 78));
-        FillRect(dc, &backing, backing_brush);
-        DeleteObject(backing_brush);
-      }
-      const bool drew_art = draw_item_art(state.billboards, dc, art_key(i), art_cell);
+      RECT art_cell{cell.left + 2 * s, cell.top + 2 * s,
+                    cell.right - 2 * s, cell.bottom - 2 * s};
+      const std::string art_key = items[i].art_id.empty() ? items[i].id
+                                                          : items[i].art_id;
+      const bool drew_art = draw_item_art(state.billboards, dc, art_key, art_cell);
       if (!drew_art && items[i].expedition_map) {
         const std::string seal = "T" + std::to_string(items[i].map_tier);
         HGDIOBJ seal_font = SelectObject(dc, skin::font_title());
@@ -3072,28 +3152,25 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
                  seal.c_str(), static_cast<int>(seal.size()));
         SelectObject(dc, seal_font);
       }
-      SetTextColor(dc, equipped ? RGB(240, 210, 120) : RGB(205, 215, 204));
-      std::string name = items[i].name;
-      if (name.size() > 12) name = name.substr(0, 11) + ".";
-      rl.push_back({render::Op::PaneItem, static_cast<double>(cx),
-                    static_cast<double>(cy), 0.0, items[i].attack_bonus,
-                    equipped ? name + " [E]" : name});
+      rl.push_back({render::Op::PaneItem, static_cast<double>(cell.left),
+                    static_cast<double>(cell.top), 0.0, items[i].attack_bonus,
+                    items[i].name});
       state.hud_rect_trace.push_back(
-          {"pane-cell", {cx, cy, cell_w, cell_h}});
-      HGDIOBJ cell_font = SelectObject(dc, skin::font_small());
-      TextOutA(dc, cx + 4 * s, cell.bottom - 17 * s, name.c_str(),
-               static_cast<int>(name.size()));
-      SetTextColor(dc, RGB(170, 185, 172));
-      std::string bonus = items[i].expedition_map
-                              ? "T" + std::to_string(items[i].map_tier)
-                              : "+" + std::to_string(items[i].attack_bonus) +
-                                    (equipped ? " [E]" : "");
-      SIZE bonus_extent{};
-      GetTextExtentPoint32A(dc, bonus.c_str(), static_cast<int>(bonus.size()),
-                            &bonus_extent);
-      TextOutA(dc, cell.right - bonus_extent.cx - 4 * s, cell.top + 2 * s,
-               bonus.c_str(), static_cast<int>(bonus.size()));
-      SelectObject(dc, cell_font);
+          {"pane-item-footprint",
+           {cell.left, cell.top, cell.right - cell.left,
+            cell.bottom - cell.top}});
+      if (items[i].quantity > 1) {
+        const std::string count = std::to_string(items[i].quantity);
+        HGDIOBJ count_font = SelectObject(dc, skin::font_small());
+        SIZE count_extent{};
+        GetTextExtentPoint32A(dc, count.c_str(), static_cast<int>(count.size()),
+                              &count_extent);
+        SetTextColor(dc, skin::kGold);
+        TextOutA(dc, cell.right - count_extent.cx - 3 * s,
+                 cell.bottom - count_extent.cy - 2 * s, count.c_str(),
+                 static_cast<int>(count.size()));
+        SelectObject(dc, count_font);
+      }
     }
   }
 
@@ -3119,6 +3196,22 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
                                          ? nullptr
                                          : &items[std::min(state.selected_item,
                                                            items.size() - 1)];
+  const int detail_top = grid_top + grid_h + 8 * s;
+  if (selected) {
+    const std::string selected_line = "SELECTED  " + selected->name +
+        "   " + std::to_string(selected->width) + "x" +
+        std::to_string(selected->height) +
+        (selected->quantity > 1
+             ? "   x" + std::to_string(selected->quantity)
+             : std::string());
+    HGDIOBJ selected_font = SelectObject(dc, skin::font_small());
+    SetTextColor(dc, RGB(220, 230, 218));
+    TextOutA(dc, left + 14 * s, detail_top, selected_line.c_str(),
+             static_cast<int>(selected_line.size()));
+    SelectObject(dc, selected_font);
+    rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0,
+                  "selected:" + selected->name});
+  }
   std::string progression;
   std::string progression_detail;
   if (selected && selected->expedition_map) {
@@ -3133,7 +3226,17 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
                   "  | ascent " +
                   std::to_string(state.world.endgame.ascent_chance_percent) +
                   "%";
-    int mod_y = bottom - 112 * s;
+    RECT map_card{left + 10 * s, detail_top + 16 * s, right - 10 * s,
+                  bottom - 78 * s};
+    if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot,
+                            map_card))
+      skin::slot(dc, map_card, skin::kGold, false);
+    HGDIOBJ map_font = SelectObject(dc, skin::font_small());
+    const std::string map_heading = "CHARTED TABLET  " + selected->map_family;
+    SetTextColor(dc, skin::kGold);
+    TextOutA(dc, map_card.left + 8 * s, map_card.top + 5 * s,
+             map_heading.c_str(), static_cast<int>(map_heading.size()));
+    int mod_y = map_card.top + 22 * s;
     HGDIOBJ mod_font = SelectObject(dc, skin::font_small());
     SetTextColor(dc, skin::kGold);
     for (std::size_t i = 0;
@@ -3146,6 +3249,27 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
       mod_y += 16 * s;
     }
     SelectObject(dc, mod_font);
+    if (map_card.bottom - map_card.top >= 76 * s) {
+      const std::string tier_seal = "T" + std::to_string(selected->map_tier);
+      HGDIOBJ tier_font = SelectObject(dc, skin::font_heading());
+      SIZE tier_extent{};
+      GetTextExtentPoint32A(dc, tier_seal.c_str(),
+                            static_cast<int>(tier_seal.size()), &tier_extent);
+      const int tier_x = map_card.right - 56 * s - tier_extent.cx / 2;
+      SetTextColor(dc, RGB(238, 205, 108));
+      TextOutA(dc, tier_x, map_card.top + 30 * s, tier_seal.c_str(),
+               static_cast<int>(tier_seal.size()));
+      SelectObject(dc, tier_font);
+      const std::string goods = "+" +
+          std::to_string(selected->map_goods_found_percent) + "% GOODS";
+      SIZE goods_extent{};
+      GetTextExtentPoint32A(dc, goods.c_str(), static_cast<int>(goods.size()),
+                            &goods_extent);
+      TextOutA(dc, map_card.right - 56 * s - goods_extent.cx / 2,
+               map_card.top + 55 * s, goods.c_str(),
+               static_cast<int>(goods.size()));
+    }
+    SelectObject(dc, map_font);
   } else if (selected && !selected->forge_lines.empty()) {
     progression = "FORGE  SPD +" +
                   std::to_string(player.attack_speed_percent) +
@@ -3163,25 +3287,17 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     // A living Vessel can carry Brands, Bonds, and an awakening together.
     // Give the selected item a real detail card rather than silently clipping
     // its identity to the historical two-line footer.
-    RECT vessel_card{left + 10 * s, bottom - 224 * s, right - 10 * s,
+    RECT vessel_card{left + 10 * s, detail_top + 16 * s, right - 10 * s,
                      bottom - 92 * s};
-    HBRUSH card_brush = CreateSolidBrush(RGB(14, 22, 21));
-    FillRect(dc, &vessel_card, card_brush);
-    DeleteObject(card_brush);
-    HPEN card_pen = CreatePen(PS_SOLID, 1, RGB(68, 124, 102));
-    HGDIOBJ old_pen = SelectObject(dc, card_pen);
-    HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
-    Rectangle(dc, vessel_card.left, vessel_card.top, vessel_card.right,
-              vessel_card.bottom);
-    SelectObject(dc, old_brush);
-    SelectObject(dc, old_pen);
-    DeleteObject(card_pen);
+    if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot,
+                            vessel_card))
+      skin::slot(dc, vessel_card, skin::kVerdigris, false);
 
     HGDIOBJ line_font = SelectObject(dc, skin::font_small());
     SetTextColor(dc, skin::kGold);
-    const char* vessel_heading = "LIVING VESSEL";
+    const std::string vessel_heading = "LIVING VESSEL  " + selected->name;
     TextOutA(dc, vessel_card.left + 8 * s, vessel_card.top + 5 * s,
-             vessel_heading, static_cast<int>(std::strlen(vessel_heading)));
+             vessel_heading.c_str(), static_cast<int>(vessel_heading.size()));
     int line_y = vessel_card.top + 23 * s;
     const int lines_bottom = vessel_card.bottom - 5 * s;
     for (std::size_t i = 0; i < selected->forge_lines.size(); ++i) {
@@ -5102,17 +5218,16 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
                           render::List& rl) {
   if (!state.character_pane) return;
   const int s = hud_scale(static_cast<int>(bounds.bottom));
-  const int pane_w = 360 * s;
-  // Content-derived height: header, portrait, nine stat rows, footer. A
-  // fixed height under a scaled type ramp is exactly how rows clip out.
-  const int row_h = 26 * s;
-  const int pane_h = (56 + 150 + 14) * s + 9 * row_h + 40 * s;
-  const int left = 24 * s;
-  const int top =
-      std::max(48 * s, (static_cast<int>(bounds.bottom) - pane_h) / 2 - 20 * s);
-  RECT pane{left, top, left + pane_w, top + pane_h};
+  const HudRect geometry = character_pane_rect(
+      static_cast<int>(bounds.right), static_cast<int>(bounds.bottom));
+  const int left = geometry.x;
+  const int top = geometry.y;
+  const int pane_w = geometry.w;
+  const int bottom = geometry.y + geometry.h;
+  RECT pane{left, top, left + pane_w, bottom};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 245, 8.0f);
+  state.hud_rect_trace.push_back({"character-pane-frame", geometry});
   rl.push_back({render::Op::Hud, static_cast<double>(left),
                 static_cast<double>(top), 0.0, 0, "character-pane"});
   SetBkMode(dc, TRANSPARENT);
@@ -5128,27 +5243,106 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
   TextOutA(dc, left + 16 * s, top + 34 * s, state.world.house_name.c_str(),
            static_cast<int>(state.world.house_name.size()));
 
-  // Portrait: the player plate, drawn tall on the left of the sheet.
-  const int portrait_h = 150 * s;
-  if (state.billboards.player.ready() && state.billboards.alpha_blend) {
-    const SpriteBitmap& sprite = state.billboards.player;
-    const int dest_h = portrait_h;
-    const int dest_w = dest_h * sprite.width / std::max(1, sprite.height);
-    const BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
-    state.billboards.alpha_blend(dc, left + 20 * s, top + 56 * s, dest_w,
-                                 dest_h, sprite.dc, 0, 0, sprite.width,
-                                 sprite.height, blend);
+  // Eleven authoritative server WearSet seats arranged around the Scion.
+  struct DollSeat {
+    const char* wire;
+    const char* label;
+    bool left_column;
+    int row;
+  };
+  static constexpr DollSeat kDollSeats[] = {
+      {"head", "HEAD", true, 0},
+      {"armor", "ARMOR", true, 1},
+      {"back", "BACK", true, 2},
+      {"gloves", "GLOVES", true, 3},
+      {"belt", "BELT", true, 4},
+      {"feet", "FEET", true, 5},
+      {"right_hand", "MAIN HAND", false, 0},
+      {"left_hand", "OFF HAND", false, 1},
+      {"necklace", "NECKLACE", false, 2},
+      {"ring", "RING I", false, 3},
+      {"ring2", "RING II", false, 4},
+  };
+  const int doll_top = top + 60 * s;
+  const int slot_w = 142 * s;
+  const int slot_h = 38 * s;
+  const int slot_gap = 5 * s;
+  const int left_slot_x = left + 14 * s;
+  const int right_slot_x = pane.right - 14 * s - slot_w;
+  const auto worn_in = [&](const char* seat) -> const WorldCarriedItem* {
+    for (const auto& item : state.world.worn)
+      if (item.equip_seat == seat) return &item;
+    if (std::strcmp(seat, "right_hand") == 0)
+      for (const auto& item : state.world.carried)
+        if (item.equipped) return &item;
+    return nullptr;
+  };
+  for (const auto& seat : kDollSeats) {
+    const int sx = seat.left_column ? left_slot_x : right_slot_x;
+    const int sy = doll_top + seat.row * (slot_h + slot_gap);
+    RECT slot_rect{sx, sy, sx + slot_w, sy + slot_h};
+    const WorldCarriedItem* worn = worn_in(seat.wire);
+    if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot,
+                            slot_rect))
+      skin::slot(dc, slot_rect, worn ? skin::kGold : skin::kVerdigris, false);
+    if (worn) {
+      RECT art_rect{slot_rect.left + 3 * s, slot_rect.top + 3 * s,
+                    slot_rect.left + 34 * s, slot_rect.bottom - 3 * s};
+      const std::string art_key = worn->art_id.empty() ? worn->id : worn->art_id;
+      draw_item_art(state.billboards, dc, art_key, art_rect);
+    }
+    HGDIOBJ slot_font = SelectObject(dc, skin::font_small());
+    SetTextColor(dc, worn ? skin::kGold : RGB(112, 132, 122));
+    const int text_x = slot_rect.left + (worn ? 39 : 7) * s;
+    TextOutA(dc, text_x, slot_rect.top + 3 * s, seat.label,
+             static_cast<int>(std::strlen(seat.label)));
+    std::string item_name = worn ? worn->name : "empty";
+    if (item_name.size() > 15) item_name = item_name.substr(0, 14) + ".";
+    SetTextColor(dc, worn ? RGB(222, 232, 220) : RGB(92, 108, 101));
+    TextOutA(dc, text_x, slot_rect.top + 19 * s, item_name.c_str(),
+             static_cast<int>(item_name.size()));
+    SelectObject(dc, slot_font);
+    state.hud_rect_trace.push_back(
+        {"paperdoll-seat",
+         {slot_rect.left, slot_rect.top, slot_rect.right - slot_rect.left,
+          slot_rect.bottom - slot_rect.top}});
+    rl.push_back({render::Op::Hud, static_cast<double>(slot_rect.left),
+                  static_cast<double>(slot_rect.top), 0.0, worn ? 1 : 0,
+                  std::string("paperdoll:") + seat.wire + ":" +
+                      (worn ? worn->name : "empty")});
   }
 
+  // Portrait plate between the equipment columns.
+  RECT portrait{left + 165 * s, doll_top, pane.right - 165 * s,
+                doll_top + 6 * slot_h + 5 * slot_gap};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot,
+                          portrait))
+    skin::slot(dc, portrait, skin::kVerdigris, false);
+  if (state.billboards.player.ready() && state.billboards.alpha_blend) {
+    const SpriteBitmap& sprite = state.billboards.player;
+    const int available_h = portrait.bottom - portrait.top - 16 * s;
+    const int dest_h = std::min(190 * s, available_h);
+    const int dest_w = dest_h * sprite.width / std::max(1, sprite.height);
+    const BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+    state.billboards.alpha_blend(
+        dc, (portrait.left + portrait.right - dest_w) / 2,
+        portrait.bottom - dest_h - 8 * s, dest_w, dest_h, sprite.dc, 0, 0,
+        sprite.width, sprite.height, blend);
+  }
+  HGDIOBJ caption_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, RGB(116, 174, 149));
+  const char* caption = "SCION LOADOUT";
+  SIZE caption_extent{};
+  GetTextExtentPoint32A(dc, caption, static_cast<int>(std::strlen(caption)),
+                        &caption_extent);
+  TextOutA(dc, (portrait.left + portrait.right - caption_extent.cx) / 2,
+           portrait.top + 7 * s, caption,
+           static_cast<int>(std::strlen(caption)));
+  SelectObject(dc, caption_font);
+
   const WorldActor& player = state.world.player;
-  int equipped_bonus = 0;
-  std::string weapon = "(unarmed)";
-  for (const auto& item : state.world.carried)
-    if (item.equipped) {
-      equipped_bonus = item.attack_bonus;
-      weapon = item.name;
-      break;
-    }
+  const WorldCarriedItem* main_hand = worn_in("right_hand");
+  const int equipped_bonus = main_hand ? main_hand->attack_bonus : 0;
   int attr_str = 10, attr_dex = 10, attr_int = 10;
   if (state.session) {
     const auto& model = state.session->model();
@@ -5156,45 +5350,49 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
     attr_dex = model.attr_dexterity;
     attr_int = model.attr_intelligence;
   }
-  struct StatRow {
-    std::string label;
-    std::string value;
+  const int stats_top = portrait.bottom + 8 * s;
+  RECT stats_card{left + 14 * s, stats_top, pane.right - 14 * s,
+                  bottom - 28 * s};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot,
+                          stats_card))
+    skin::slot(dc, stats_card, skin::kVerdigris, false);
+  const std::string stat_lines[] = {
+      "VITALS  LVL " + std::to_string(player.level) + "   LIFE " +
+          std::to_string(player.life) + "/" + std::to_string(player.life_max) +
+          "   RES " + std::to_string(player.resource) + "/" +
+          std::to_string(player.resource_max),
+      "ATTRIBUTES  STR " + std::to_string(attr_str) + "   DEX " +
+          std::to_string(attr_dex) + "   INT " + std::to_string(attr_int),
+      "COMBAT  ATK " + std::to_string(player.attack + equipped_bonus) +
+          "   DEF " + std::to_string(player.defense) + "   BLEED " +
+          std::to_string(player.bleed_chance) + "%",
+      "MOBILITY  SPEED +" + std::to_string(player.movement_speed_percent) +
+          "%   REACH +" + std::to_string(player.reach_percent) + "%",
+      "WARDS  EMBER " + std::to_string(player.ember_resistance) +
+          "   RIVER " + std::to_string(player.river_resistance),
   };
-  const StatRow rows[] = {
-      {"Level", std::to_string(player.level)},
-      {"Life", std::to_string(player.life) + " / " + std::to_string(player.life_max)},
-      {"Resource", std::to_string(player.resource) + " / " +
-                       std::to_string(player.resource_max)},
-      {"Attack", std::to_string(player.attack + equipped_bonus) +
-                     (equipped_bonus ? " (+" + std::to_string(equipped_bonus) + ")"
-                                     : "")},
-      {"Defense", std::to_string(player.defense)},
-      {"Weapon", weapon},
-      {"Strength", std::to_string(attr_str)},
-      {"Dexterity", std::to_string(attr_dex)},
-      {"Intelligence", std::to_string(attr_int)},
-  };
-  int y = top + 56 * s + portrait_h + 14 * s;
-  SelectObject(dc, skin::font_body());
-  for (const auto& row : rows) {
-    SetTextColor(dc, skin::kInkDim);
-    TextOutA(dc, left + 20 * s, y, row.label.c_str(),
-             static_cast<int>(row.label.size()));
-    SIZE extent{};
-    GetTextExtentPoint32A(dc, row.value.c_str(),
-                          static_cast<int>(row.value.size()), &extent);
-    SetTextColor(dc, skin::kInk);
-    TextOutA(dc, left + pane_w - 20 * s - extent.cx, y, row.value.c_str(),
-             static_cast<int>(row.value.size()));
-    rl.push_back({render::Op::Hud, static_cast<double>(left),
-                  static_cast<double>(y), 0.0, 0,
-                  "char:" + row.label + ":" + row.value});
-    y += row_h;
+  HGDIOBJ stat_font = SelectObject(dc, skin::font_small());
+  const int available_stat_height = static_cast<int>(
+      stats_card.bottom - stats_card.top - 10 * s);
+  const int stat_row_h = std::clamp(
+      available_stat_height / static_cast<int>(std::size(stat_lines)),
+      15 * s, 30 * s);
+  int stat_y = stats_card.top + 5 * s;
+  for (const auto& line : stat_lines) {
+    if (stat_y + stat_row_h > stats_card.bottom) break;
+    SetTextColor(dc, line.rfind("VITALS", 0) == 0 ? skin::kGold
+                                                    : RGB(178, 198, 186));
+    TextOutA(dc, stats_card.left + 8 * s, stat_y, line.c_str(),
+             static_cast<int>(line.size()));
+    rl.push_back({render::Op::Hud, static_cast<double>(stats_card.left),
+                  static_cast<double>(stat_y), 0.0, 0, "char:" + line});
+    stat_y += stat_row_h;
   }
+  SelectObject(dc, stat_font);
   SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kInkDim);
-  const char* footer = "C or Esc closes";
-  TextOutA(dc, left + 20 * s, y + 8 * s, footer,
+  const char* footer = "C / Esc closes   |   I toggles backpack";
+  TextOutA(dc, left + 20 * s, bottom - 21 * s, footer,
            static_cast<int>(strlen(footer)));
   SelectObject(dc, old_font);
 }
@@ -6389,7 +6587,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
 
   QueryPerformanceCounter(&section_t2);
   state.paint_ms_world = section_ms(section_t1, section_t2);
-  paint_minimap(state, dc, bounds, rl);
+  if (!(state.gear_overlay && state.character_pane))
+    paint_minimap(state, dc, bounds, rl);
   paint_vital_orbs(player, world.tick, state.screen_pulse_ticks, dc, bounds, rl,
                    &state.hud_rect_trace);
   paint_quickbar(state, dc, bounds, rl);
@@ -6426,7 +6625,11 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
 
   // TASK-0153 rev2: every normal-HUD top region is measured, then placed by
   // the single pure planner pass, then drawn exactly where it was placed.
-  if (!trade_pane_open(state)) {
+  // C+I is a focused loadout view. The panes already repeat identity,
+  // objective context, and controls; suppressing the world HUD prevents its
+  // long instruction rail from painting across paper-doll seats at 960x600.
+  if (!trade_pane_open(state) &&
+      !(state.gear_overlay && state.character_pane)) {
     std::string objective;
     COLORREF accent = RGB(120, 214, 168);
     const bool carrying = !world.carried.empty() || world.carried_trophies > 0;
@@ -7381,16 +7584,10 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       // pays for.
       if (state->gear_overlay) sync_world(*state);
       if (state->gear_overlay && !state->world.carried.empty()) {
-        const std::size_t count = state->world.carried.size();
-        constexpr int kGridColumns = 4;
-        if (wparam == VK_UP && state->selected_item >= kGridColumns)
-          state->selected_item -= kGridColumns;
-        if (wparam == VK_DOWN)
-          state->selected_item =
-              std::min(count - 1, state->selected_item + kGridColumns);
-        if (wparam == VK_LEFT && state->selected_item > 0) --state->selected_item;
-        if (wparam == VK_RIGHT)
-          state->selected_item = std::min(count - 1, state->selected_item + 1);
+        if (wparam == VK_UP) move_inventory_selection(*state, 0, -1);
+        if (wparam == VK_DOWN) move_inventory_selection(*state, 0, 1);
+        if (wparam == VK_LEFT) move_inventory_selection(*state, -1, 0);
+        if (wparam == VK_RIGHT) move_inventory_selection(*state, 1, 0);
         if (wparam == VK_RETURN) equip_selected(*state);
         if (wparam == 'U' && state->simulation) {
           state->simulation->dispatch(verdigris::Command::unequip());
@@ -7821,8 +8018,8 @@ int scenario_loot_to_bank() {
   scenario_check(render::any(state.render_list, render::Op::PaneItem),
                  "loot-to-bank: grid cell rendered in the pane");
   const render::Item* weapon = render::first(state.render_list, render::Op::PaneWeapon);
-  scenario_check(weapon && weapon->label == "(empty)",
-                 "loot-to-bank: weapon seat empty before equip");
+  scenario_check(weapon && weapon->label == "(unarmed)",
+                 "loot-to-bank: loadout reports unarmed before equip");
 
   if (has_item) {
     scenario_step(state, verdigris::Command::equip(
@@ -9482,6 +9679,167 @@ int scenario_endgame_tablet_ui() {
   return 0;
 }
 
+int scenario_character_inventory_diptych() {
+  ClientState state;
+  load_billboards(state.billboards);
+  state.world.route_id = "town:verdigris";
+  state.world.theme = "town";
+  state.world.house_name = "House Ashwake";
+  state.world.scion_name = "Ilyra";
+  state.world.player.id = "scion-ilyra";
+  state.world.player.position = {20 * static_cast<int>(kTileUnits),
+                                 20 * static_cast<int>(kTileUnits)};
+  state.world.player.life = 112;
+  state.world.player.life_max = 128;
+  state.world.player.resource = 41;
+  state.world.player.resource_max = 55;
+  state.world.player.attack = 21;
+  state.world.player.defense = 18;
+  state.world.player.level = 17;
+  state.world.player.bleed_chance = 24;
+  state.world.player.reach_percent = 16;
+  state.world.player.movement_speed_percent = 12;
+  state.world.player.ember_resistance = 25;
+  state.world.player.river_resistance = 40;
+  state.world.player.alive = true;
+  state.world.stored_items = 28;
+  state.world.stored_trophies = 9;
+
+  const auto worn = [](const char* uuid, const char* art, const char* name,
+                       const char* seat, int attack = 0) {
+    WorldCarriedItem item;
+    item.id = uuid;
+    item.art_id = art;
+    item.name = name;
+    item.attack_bonus = attack;
+    item.equipped = true;
+    item.equip_seat = seat;
+    item.equip_slot = seat;
+    return item;
+  };
+  state.world.worn = {
+      worn("wear-main", "bronze-dagger", "Oath-Cut Dagger", "right_hand", 9),
+      worn("wear-head", "bronze-med-helm", "Bronze Warcrest", "head"),
+      worn("wear-armor", "vessel-wrap", "Ashwake Wrap", "armor"),
+      worn("wear-back", "hide-cape", "Roadworn Mantle", "back"),
+      worn("wear-gloves", "bronze-gloves", "Riveted Grips", "gloves"),
+      worn("wear-feet", "bronze-boots", "Wayfarer Boots", "feet"),
+      worn("wear-belt", "hide-girdle", "Relic Girdle", "belt"),
+      worn("wear-ring", "gold-ring", "House Signet", "ring"),
+      worn("wear-neck", "garnet-amulet", "Garnet Oathstone", "necklace"),
+  };
+
+  const auto carried = [](const char* uuid, const char* art, const char* name,
+                          int slot, int width, int height, int qty = 1) {
+    WorldCarriedItem item;
+    item.id = uuid;
+    item.art_id = art;
+    item.name = name;
+    item.inventory_slot = slot;
+    item.width = width;
+    item.height = height;
+    item.quantity = qty;
+    return item;
+  };
+  WorldCarriedItem map = carried("tablet-7", "charted-tablet-crown",
+                                 "Tier 7 Crown Tablet", 6, 2, 2);
+  map.expedition_map = true;
+  map.map_tier = 7;
+  map.map_goods_found_percent = 74;
+  map.map_family = "Crown";
+  map.map_objective_key = "crown:7";
+  map.map_modifiers = {"Furious: monsters deal 33% more damage",
+                       "Teeming: 5 additional foes"};
+  state.world.carried = {
+      carried("pack-pike", "bronze-sword", "Bronze Boar Pike", 0, 2, 4),
+      carried("pack-coins", "coins", "House Coins", 2, 1, 1, 86),
+      carried("pack-knife", "bronze-dagger", "Curator Knife", 4, 1, 3),
+      std::move(map),
+      carried("pack-amulet", "garnet-amulet", "Loose Garnet", 10, 1, 1),
+      carried("pack-shield", "wooden-shield", "Reed Shield", 31, 2, 2),
+  };
+  state.world.endgame.present = true;
+  state.world.endgame.unlocked = true;
+  state.world.endgame.mastery_total = 64;
+  state.world.endgame.ascent_chance_percent = 38;
+  state.gear_overlay = true;
+  state.character_pane = true;
+  state.selected_item = 3;
+
+  std::string capture_dir;
+  const int capture_override = capture_root_override(&capture_dir);
+  if (capture_override < 0) {
+    scenario_check(false,
+                   "character-inventory: capture root rejected before any write");
+    return 0;
+  }
+  if (capture_override == 0) {
+    CreateDirectoryA("captures", nullptr);
+    capture_dir = "captures";
+  }
+  for (const auto size : {POINT{960, 600}, POINT{1366, 768}}) {
+    const std::string capture_path =
+        capture_dir + "\\character-inventory-diptych-" +
+        std::to_string(size.x) + "x" + std::to_string(size.y) + ".png";
+    scenario_check(reference_present(state, size.x, size.y, capture_path),
+                   "character-inventory: Framekit diptych captured");
+    std::printf("    capture: %s\n", capture_path.c_str());
+    const HudRect expected_character = character_pane_rect(size.x, size.y);
+    const HudRect expected_gear = gear_pane_rect(size.x, size.y);
+    scenario_check(!hud_rects_overlap(expected_character, expected_gear),
+                   "character-inventory: paper doll and backpack do not overlap");
+    int seats = 0;
+    int filled = 0;
+    int footprints = 0;
+    bool bounded = true;
+    const HudRect* grid = nullptr;
+    for (const auto& trace : state.hud_rect_trace) {
+      if (trace.first == "paperdoll-seat") {
+        ++seats;
+        bounded = bounded && trace.second.x >= expected_character.x &&
+                  trace.second.y >= expected_character.y &&
+                  trace.second.x + trace.second.w <=
+                      expected_character.x + expected_character.w &&
+                  trace.second.y + trace.second.h <=
+                      expected_character.y + expected_character.h;
+      }
+      if (trace.first == "pane-grid") grid = &trace.second;
+      if (trace.first == "pane-item-footprint") ++footprints;
+    }
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud &&
+          item.label.rfind("paperdoll:", 0) == 0 && item.value == 1)
+        ++filled;
+    if (grid) {
+      for (const auto& trace : state.hud_rect_trace)
+        if (trace.first == "pane-item-footprint")
+          bounded = bounded && trace.second.x >= grid->x &&
+                    trace.second.y >= grid->y &&
+                    trace.second.x + trace.second.w <= grid->x + grid->w &&
+                    trace.second.y + trace.second.h <= grid->y + grid->h;
+    } else {
+      bounded = false;
+    }
+    scenario_check(seats == 11 && filled == 9,
+                   "character-inventory: all WearSet seats and fills are explicit");
+    scenario_check(footprints == 6 && bounded,
+                   "character-inventory: all spatial footprints remain bounded");
+  }
+  for (const auto& trace : state.hud_rect_trace) {
+    if (trace.first != "pane-item-footprint") continue;
+    state.mouse.x = trace.second.x + trace.second.w / 2;
+    state.mouse.y = trace.second.y + trace.second.h / 2;
+    break;
+  }
+  reference_present(state, 1366, 768, "");
+  scenario_check(state.selected_item == 0,
+                 "character-inventory: footprint hover selects the exact item");
+  move_inventory_selection(state, 1, 0);
+  scenario_check(state.selected_item == 1,
+                 "character-inventory: arrow navigation follows spatial neighbors");
+  return 0;
+}
+
 int scenario_vesselforge_active_properties() {
   ClientState state;
   load_billboards(state.billboards);
@@ -10512,6 +10870,7 @@ int run_scenarios(const std::string& which) {
       {"hud-pane-readability", scenario_hud_pane_readability},
       {"hud-information", scenario_hud_information},
       {"endgame-tablet-ui", scenario_endgame_tablet_ui},
+      {"character-inventory-diptych", scenario_character_inventory_diptych},
       {"vesselforge-active-properties", scenario_vesselforge_active_properties},
       {"vesselforge-final-implicits", scenario_vesselforge_final_implicits},
       {"town-social-hub", scenario_town_social_hub},

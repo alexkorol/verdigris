@@ -68,6 +68,20 @@ struct ClientItemSlot {
   std::string map_objective_key;
   std::vector<std::string> map_modifiers;
   std::vector<std::string> forge_lines;
+  int quantity = 1;
+  int width = 1;
+  int height = 1;
+  std::string equip_slot;
+  bool two_handed = false;
+};
+
+// One authoritative physical WearSet seat. `seat` is the server vocabulary
+// (right_hand, armor, ring2, ...); the item retains its stable catalog id for
+// art and its uuid for commands/identity. Keeping this separate from the
+// backpack prevents equipped goods from masquerading as carried grid rows.
+struct ClientWornItem {
+  std::string seat;
+  ClientItemSlot item;
 };
 
 // One purchasable row of a trader's stock (open:screen shop payload).
@@ -340,6 +354,7 @@ const ClientScionEntry* find_chronicle_scion(const ClientChronicle& chronicle,
 struct ClientModel {
   ClientPlayer player;
   std::vector<ClientItemSlot> inventory;
+  std::vector<ClientWornItem> worn;
   std::vector<ClientGroundItem> ground;
   std::vector<ClientMonster> monsters;
   std::vector<ClientNpc> npcs;
