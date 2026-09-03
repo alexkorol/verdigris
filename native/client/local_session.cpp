@@ -99,12 +99,14 @@ ClientCommand ClientCommand::npc_action(int npc_id, std::string action_id) {
   return command;
 }
 ClientCommand ClientCommand::menu_action(std::string action_id,
-                                         std::string item_ref, int value) {
+                                         std::string item_ref, int value,
+                                         std::string auxiliary) {
   ClientCommand command;
   command.type = Type::MenuAction;
   command.target = std::move(action_id);
   command.extra = std::move(item_ref);
   command.value = value;
+  command.auxiliary = std::move(auxiliary);
   return command;
 }
 ClientCommand ClientCommand::close_screen() {

@@ -164,6 +164,16 @@ combat projection immediately. The same pane now shows live Attunement,
 Bond count, evolution count, tiered Bond copy, and awakened state; manual
 searing cannot consume a slot already occupied by a Bond.
 
+WIZARD trophy socketing is now part of that same authoritative loop. Each
+Warden yields a road-specific fragment to the House ledger; completed Boar
+Tusk, Wolf Fang, River Pearl, Beetle Shell, and Knucklebone patterns bind only
+to their authored equipment forms. A trophy consumes one Vessel slot but no
+Patience or gold, persists across Scion re-admission, and immediately feeds its
+physical damage, attack speed, Spirit, Ember resistance, or goods-found scalar
+into real combat and reward derivation. The Framekit pane shows exact fragment
+counts and disabled reasons, while the prototype's unimplemented completion
+rites remain explicitly Dormant rather than masquerading as live powers.
+
 The live bestiary and townsfolk are now reference-driven 64px actors as well.
 All 15 surface-campaign monsters have named silhouettes, and the 28 Adventure
 identities are mapped by seven themes × four combat roles instead of every
@@ -189,9 +199,9 @@ original prototype roadmap:
    23-commission arc with more bespoke road scenery, dialogue beats, and boss
    mechanics while preserving its named zones, Wardens, rewards, persistence,
    and end-to-end playtest coverage.
-2. **Vesselforge depth:** make the remaining trophy socketing, resonance,
-   severing, and scar systems part of Tamar's already-live progression surface;
-   conditional Bond and awakened powers are already authoritative in combat.
+2. **Vesselforge depth:** make the remaining resonance, severing, and scar
+   systems part of Tamar's already-live progression surface; trophy socketing
+   and conditional Bond/awakened powers are already authoritative in combat.
 3. **Inventory depth and access:** implement real nested containers and finish
    keyboard-first grid/equipment navigation; pointer equip/unequip, rotation,
    spatial placement, overflow, and tooltips are already live.

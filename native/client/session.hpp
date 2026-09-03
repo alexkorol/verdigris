@@ -66,6 +66,7 @@ struct ClientCommand {
   int value = 0;
   std::string target;
   std::string extra;  // MenuAction: the item id/uuid riding queueItem.item
+  std::string auxiliary;  // MenuAction: optional authored sub-choice (trophy id)
 
   static ClientCommand login(std::string guest_id, bool quick_guest);
   static ClientCommand move(int dx, int dy);
@@ -81,7 +82,8 @@ struct ClientCommand {
   static ClientCommand set_out(std::string scion_id);
   static ClientCommand npc_action(int npc_id, std::string action_id);
   static ClientCommand menu_action(std::string action_id, std::string item_ref,
-                                   int value);
+                                   int value,
+                                   std::string auxiliary = std::string());
   static ClientCommand close_screen();
   static ClientCommand allocate_node(std::string node_id);
 };

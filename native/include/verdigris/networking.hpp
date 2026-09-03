@@ -147,6 +147,10 @@ class ProtocolSession {
   void restore_world_web_progression();
   void persist_endgame_progression();
   void restore_endgame_progression();
+  void persist_vesselforge_progression();
+  void restore_vesselforge_progression();
+  void award_warden_trophy(const std::string& theme,
+                           const std::function<void(const Envelope&)>& emit);
   int endgame_ascent_chance_percent() const;
   void emit_quest_update(const std::function<void(const Envelope&)>& emit) const;
   void maybe_complete_first_goal(const std::function<void(const Envelope&)>& emit);
@@ -220,6 +224,9 @@ class ProtocolSession {
   std::string last_instance_layout_;
   // N6 economy: personal bank + shop session state.
   std::vector<GameItem> bank_;
+  // Complete and incomplete hunted trophies belong to the House rather than
+  // one mortal Scion. Values are fragment counts keyed by WIZARD trophy id.
+  std::map<std::string, int> trophy_fragments_;
   bool shop_open_ = false;
   int shop_npc_id_ = 2;
   bool bank_open_ = false;

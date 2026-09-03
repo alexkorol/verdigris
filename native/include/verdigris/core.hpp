@@ -473,6 +473,25 @@ struct VesselBond {
   int tier = 1;
 };
 
+struct VesselTrophy {
+  std::string id;
+  std::string trophy_id;
+};
+
+struct VesselTrophyDefinition {
+  std::string id;
+  std::string name;
+  int fragments = 0;
+  std::vector<std::string> kinds;
+  std::string stat_id;
+  int value = 0;
+  std::string label;
+  std::string completion_bonus;
+};
+
+// WIZARD verdigris-pack trophy data in its authored declaration order.
+const std::vector<VesselTrophyDefinition>& vessel_trophy_definitions();
+
 struct VesselAttunement {
   int xp = 0;
   int next = 80;
@@ -505,6 +524,7 @@ struct VesselItem {
   int patience_max = 0;
   std::vector<VesselBrand> brands;
   std::vector<VesselBond> bonds;
+  std::vector<VesselTrophy> trophies;
   VesselAttunement attunement;
   int evolutions = 0;
   std::string epithet_name;
@@ -603,6 +623,11 @@ class VesselForge {
   // engine.js sear: spend 1 patience, roll + append a brand. False when the
   // vessel cannot take another brand.
   bool sear(VesselItem& item);
+  // engine.js socketTrophy: spend one complete House fragment set, consume
+  // one compatible Vessel slot, and keep both inputs untouched on failure.
+  bool socket_trophy(VesselItem& item, const std::string& trophy_id,
+                     std::map<std::string, int>& fragment_stash,
+                     std::string* error = nullptr);
   // WIZARD living-item progression adapted to classless Scions: completed
   // expeditions contribute theme memory, cross 80 + 55*evolution thresholds,
   // form/deepen Bonds, and eventually awaken a sufficiently capacious item.

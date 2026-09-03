@@ -2883,6 +2883,28 @@ double Mulberry32::next() {
   return static_cast<double>(t ^ (t >> 14)) / 4294967296.0;
 }
 
+const std::vector<VesselTrophyDefinition>& vessel_trophy_definitions() {
+  // verdigris-pack.js trophies. Order is intentional: presentation uses it
+  // as a stable, deterministic priority when several patterns fit one item.
+  static const std::vector<VesselTrophyDefinition> data = {
+      {"boar_tusk", "Boar Tusk", 5, {"weapon", "belt"}, "phys_pct", 10,
+       "+10% increased Physical Damage",
+       "Charge - your first strike each battle cannot be blocked"},
+      {"wolf_fang", "Wolf Fang", 5, {"weapon", "gloves"}, "atk_speed", 6,
+       "+6% Attack Speed", "Pack Sense - you cannot be surprised"},
+      {"river_pearl", "River Pearl", 3,
+       {"amulet", "ring", "helmet", "focus"}, "spirit", 12,
+       "+12 to Maximum Spirit", "Undertow - your rites chill their targets"},
+      {"ember_shell", "Beetle Shell", 3, {"shield", "body"}, "ember_res", 15,
+       "+15% to Ember Resistance", "Cinder Skin - attackers are singed"},
+      {"knucklebone", "Knucklebone", 3,
+       {"amulet", "ring", "belt", "focus"}, "fortune", 10,
+       "+10% Goods Found",
+       "Grandmother's Rite - once a day, reroll one omen"},
+  };
+  return data;
+}
+
 namespace {
 
 // verdigris-pack.js data tables.  Iteration order is load-bearing for the
@@ -3145,6 +3167,12 @@ const PackBondMod* pack_bond_mod(const std::string& theme_id,
   return nullptr;
 }
 
+const VesselTrophyDefinition* pack_trophy(const std::string& id) {
+  for (const auto& trophy : vessel_trophy_definitions())
+    if (trophy.id == id) return &trophy;
+  return nullptr;
+}
+
 double weight_for(const std::vector<std::pair<const char*, double>>& weights, const char* tag) {
   for (const auto& [key, value] : weights) if (std::string(tag) == key) return value;
   return 0.0;  // JS `if (mat.weights[tag])` — absent means unchanged
@@ -3375,7 +3403,7 @@ std::string vessel_display_name(const VesselItem& item) {
 
 void maybe_name_vessel(VesselItem& item, Mulberry32& rand) {
   if (!item.epithet_name.empty() || item.awakened ||
-      item.brands.size() + item.bonds.size() < 3)
+      item.brands.size() + item.bonds.size() + item.trophies.size() < 3)
     return;
   const auto& pre = pack_name_pre();
   const auto& post = pack_name_post();
@@ -3391,8 +3419,43 @@ std::string format_aps(double aps) {
 }
 }  // namespace
 
+bool VesselForge::socket_trophy(VesselItem& item,
+                                const std::string& trophy_id,
+                                std::map<std::string, int>& fragment_stash,
+                                std::string* error) {
+  const auto fail = [&](const char* message) {
+    if (error) *error = message;
+    return false;
+  };
+  const VesselTrophyDefinition* trophy = pack_trophy(trophy_id);
+  if (!trophy) return fail("Unknown trophy.");
+  const auto stash_it = fragment_stash.find(trophy_id);
+  const int available = stash_it == fragment_stash.end() ? 0 : stash_it->second;
+  if (available < trophy->fragments)
+    return fail("The House lacks a complete trophy.");
+  if (!item.vessel) return fail("This holds no vessel.");
+  if (std::find(trophy->kinds.begin(), trophy->kinds.end(), item.kind) ==
+      trophy->kinds.end())
+    return fail("That trophy will not bind to this form.");
+  if (std::any_of(item.trophies.begin(), item.trophies.end(),
+                  [&](const VesselTrophy& socketed) {
+                    return socketed.trophy_id == trophy_id;
+                  }))
+    return fail("This vessel already bears that trophy.");
+  if (item.vessel - used_slots(item) <= 0)
+    return fail("No free vessel slot.");
+
+  item.trophies.push_back(VesselTrophy{gen_id(), trophy_id});
+  fragment_stash[trophy_id] = available - trophy->fragments;
+  maybe_name_vessel(item, rand_);
+  if (error) error->clear();
+  return true;
+}
+
 int VesselForge::used_slots(const VesselItem& item) const {
-  return static_cast<int>(item.brands.size() + item.bonds.size()) + item.scars;
+  return static_cast<int>(item.brands.size() + item.bonds.size() +
+                          item.trophies.size()) +
+         item.scars;
 }
 
 bool VesselForge::is_sated(const VesselItem& item) const {
@@ -3622,6 +3685,16 @@ std::vector<TooltipLine> VesselForge::tooltip(const VesselItem& item) const {
                          kRoman[bounded_tier - 1] + "]",
                      active ? "bonded" : "inactive"});
   }
+  for (const auto& socketed : item.trophies) {
+    const VesselTrophyDefinition* trophy = pack_trophy(socketed.trophy_id);
+    if (!trophy) continue;
+    lines.push_back({"trophy", "TROPHY: " + trophy->name + " - " +
+                                   trophy->label,
+                     "trophy"});
+    lines.push_back({"dormant", "Dormant trophy rite - " +
+                                    trophy->completion_bonus,
+                     "inactive"});
+  }
   if (item.scars) {
     lines.push_back({"scar", "✕ " + std::to_string(item.scars) + " scarred slot" +
                                  (item.scars > 1 ? "s" : ""),
@@ -3660,6 +3733,10 @@ VesselCombat VesselForge::derive_combat(const VesselItem& item) const {
     if (std::string(mod->shape) == "flat" || std::string(mod->shape) == "scalar") {
       sums[brand.mod_id] += brand.value;
     }
+  }
+  for (const auto& socketed : item.trophies) {
+    const VesselTrophyDefinition* trophy = pack_trophy(socketed.trophy_id);
+    if (trophy) sums[trophy->stat_id] += trophy->value;
   }
   std::map<std::string, double> bond_sums;
   for (const auto& bond : item.bonds) {
@@ -3722,7 +3799,8 @@ VesselCombat VesselForge::derive_combat(const VesselItem& item) const {
   combat.modifiers.critical_chance = std::max(0, std::min(75, static_cast<int>(sum("keen_eye"))));
   combat.modifiers.attack_speed_percent = f->weapon ? 0 : std::max(
       0, std::min(100, static_cast<int>(sum("atk_speed"))));
-  combat.modifiers.goods_found = std::max(0, std::min(100, static_cast<int>(sum("wealthy"))));
+  combat.modifiers.goods_found = std::max(
+      0, std::min(100, static_cast<int>(sum("wealthy") + sum("fortune"))));
   combat.modifiers.damage_against_beasts = std::max(0, std::min(100, static_cast<int>(sum("beastbane"))));
   combat.modifiers.bleed_chance = std::max(
       0, std::min(100, static_cast<int>(sum("bleed") + sum("bloodgroove"))));
@@ -3735,7 +3813,7 @@ VesselCombat VesselForge::derive_combat(const VesselItem& item) const {
   combat.modifiers.movement_speed_percent = std::max(
       0, std::min(100, static_cast<int>(sum("move") + sum("surefoot"))));
   combat.modifiers.ember_resistance = std::max(
-      0, std::min(75, static_cast<int>(sum("emberward"))));
+      0, std::min(75, static_cast<int>(sum("emberward") + sum("ember_res"))));
   combat.modifiers.river_resistance = std::max(
       0, std::min(75, static_cast<int>(sum("riverblessed"))));
   combat.modifiers.health_on_kill_percent = std::clamp(

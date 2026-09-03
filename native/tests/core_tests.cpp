@@ -2352,6 +2352,82 @@ void test_n4_sear_rules_and_brand_pool_exclusion() {
   check(item.brands.size() == 4 && item.patience == 3, "N4 sear: a failed roll leaves the item untouched");
 }
 
+void test_n4_trophy_socketing_matches_wizard_contract() {
+  VesselForge forge;
+  VesselItem weapon;
+  weapon.id = "vf-trophy-weapon";
+  weapon.form_id = "handaxe";
+  weapon.material_id = "bronze";
+  weapon.kind = "weapon";
+  weapon.ilvl = 40;
+  weapon.vessel = 2;
+  weapon.patience = weapon.patience_max = 4;
+  std::map<std::string, int> stash{{"boar_tusk", 4}};
+  std::string error;
+  check(!forge.socket_trophy(weapon, "boar_tusk", stash, &error) &&
+            weapon.trophies.empty() && stash["boar_tusk"] == 4,
+        "N4 trophies: an incomplete fragment set mutates nothing");
+  stash["boar_tusk"] = 5;
+  const VesselBlock plain = forge.make_block(weapon);
+  check(forge.socket_trophy(weapon, "boar_tusk", stash, &error) &&
+            weapon.trophies.size() == 1 && stash["boar_tusk"] == 0 &&
+            weapon.patience == 4 && forge.used_slots(weapon) == 1,
+        "N4 trophies: a complete compatible set consumes one slot but no Patience");
+  const VesselBlock tusked = forge.make_block(weapon);
+  check(tusked.combat.damage_min > plain.combat.damage_min &&
+            tusked.combat.damage_max > plain.combat.damage_max,
+        "N4 trophies: Boar Tusk raises real weapon damage");
+  bool active_trophy = false;
+  bool dormant_rite = false;
+  for (const auto& line : tusked.lines) {
+    if (line.section == "trophy" &&
+        line.text.find("Boar Tusk") != std::string::npos)
+      active_trophy = true;
+    if (line.section == "dormant" &&
+        line.text.find("Charge") != std::string::npos)
+      dormant_rite = true;
+  }
+  check(active_trophy && dormant_rite,
+        "N4 trophies: active scalar and unimplemented rite are distinguished");
+  stash["boar_tusk"] = 5;
+  check(!forge.socket_trophy(weapon, "boar_tusk", stash, &error) &&
+            weapon.trophies.size() == 1 && stash["boar_tusk"] == 5,
+        "N4 trophies: duplicate binding fails without consuming fragments");
+  stash["river_pearl"] = 3;
+  check(!forge.socket_trophy(weapon, "river_pearl", stash, &error) &&
+            stash["river_pearl"] == 3,
+        "N4 trophies: incompatible forms fail without consuming fragments");
+
+  const auto socket_and_block = [&](const char* form, const char* material,
+                                    const char* kind, const char* trophy_id,
+                                    int fragments) {
+    VesselItem item;
+    item.id = std::string("vf-") + trophy_id;
+    item.form_id = form;
+    item.material_id = material;
+    item.kind = kind;
+    item.ilvl = 40;
+    item.vessel = 2;
+    std::map<std::string, int> materials{{trophy_id, fragments}};
+    check(forge.socket_trophy(item, trophy_id, materials),
+          std::string("N4 trophies: socket ") + trophy_id);
+    return forge.make_block(item);
+  };
+  const VesselBlock fang =
+      socket_and_block("grips", "hide", "gloves", "wolf_fang", 5);
+  const VesselBlock pearl =
+      socket_and_block("ring", "copper", "ring", "river_pearl", 3);
+  const VesselBlock shell = socket_and_block(
+      "hideshield", "bronze", "shield", "ember_shell", 3);
+  const VesselBlock bone =
+      socket_and_block("ring", "bone", "ring", "knucklebone", 3);
+  check(fang.combat.modifiers.attack_speed_percent == 14 &&
+            pearl.combat.resource_mana == 12 &&
+            shell.combat.modifiers.ember_resistance == 15 &&
+            bone.combat.modifiers.goods_found == 10,
+        "N4 trophies: all WIZARD scalar families reach authoritative combat");
+}
+
 void test_n4_inventory_first_fit_overflow_and_currency() {
   PlayerInventory inventory;
   CreateItemOptions coin_opts;
@@ -3211,6 +3287,7 @@ int main() {
   test_n4_mulberry32_matches_js();
   test_n4_ground_truth_rolls();
   test_n4_sear_rules_and_brand_pool_exclusion();
+  test_n4_trophy_socketing_matches_wizard_contract();
   test_n4_inventory_first_fit_overflow_and_currency();
   test_n4_ring_seats_and_wear_caps();
   test_n4_active_forge_properties_drive_their_authoritative_systems();

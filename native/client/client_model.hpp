@@ -157,6 +157,16 @@ struct ClientForgeLine {
   std::string tone;
 };
 
+struct ClientForgeTrophyOption {
+  std::string id;
+  std::string name;
+  std::string effect;
+  std::string reason;
+  int fragments = 0;
+  int required = 0;
+  bool eligible = false;
+};
+
 struct ClientForgeRow {
   std::string uuid;
   std::string name;
@@ -171,6 +181,7 @@ struct ClientForgeRow {
   int patience_max = 0;
   int brand_count = 0;
   int bond_count = 0;
+  int trophy_count = 0;
   int attunement = 0;
   int attunement_next = 80;
   int evolutions = 0;
@@ -179,6 +190,7 @@ struct ClientForgeRow {
   bool awakened = false;
   std::string awakened_name;
   std::vector<ClientForgeLine> lines;
+  std::vector<ClientForgeTrophyOption> trophy_options;
 };
 
 struct ClientForgeScreen {

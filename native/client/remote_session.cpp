@@ -142,6 +142,7 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
         const auto* copy = json_string(line.get("text"));
         if (!section || !copy || copy->empty()) continue;
         if (*section == "implicit" || *section == "brand" ||
+            *section == "trophy" ||
             *section == "scar" || *section == "vessel" ||
             *section == "dormant" || *section == "attune" ||
             *section == "power" || *section == "flavor")
@@ -847,6 +848,7 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
                {"action", JsonValue::Object{{"actionId", JsonValue(command.target)}}},
                {"item", JsonValue::Object{{"id", JsonValue(command.extra)},
                                           {"uuid", JsonValue(command.extra)},
+                                          {"trophyId", JsonValue(command.auxiliary)},
                                           {"price", JsonValue(command.value)},
                                           {"qty", JsonValue(command.value)}}}}}};
       break;
@@ -1255,6 +1257,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
             row.patience_max = static_cast<int>(json_number(item.get("patienceMax"), 0.0));
             row.brand_count = static_cast<int>(json_number(item.get("brandCount"), 0.0));
             row.bond_count = static_cast<int>(json_number(item.get("bondCount"), 0.0));
+            row.trophy_count = static_cast<int>(
+                json_number(item.get("trophyCount"), 0.0));
             row.attunement = static_cast<int>(json_number(item.get("attunement"), 0.0));
             row.attunement_next = static_cast<int>(json_number(item.get("attunementNext"), 80.0));
             row.evolutions = static_cast<int>(json_number(item.get("evolutions"), 0.0));
@@ -1277,6 +1281,28 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
                 if (const auto* value = json_string(line.get("tone")))
                   parsed.tone = *value;
                 row.lines.push_back(std::move(parsed));
+              }
+            }
+            if (const auto* trophies = item.get("trophyOptions");
+                trophies && trophies->array()) {
+              for (const auto& option : *trophies->array()) {
+                ClientForgeTrophyOption parsed;
+                if (const auto* value = json_string(option.get("id")))
+                  parsed.id = *value;
+                if (const auto* value = json_string(option.get("name")))
+                  parsed.name = *value;
+                if (const auto* value = json_string(option.get("effect")))
+                  parsed.effect = *value;
+                if (const auto* value = json_string(option.get("reason")))
+                  parsed.reason = *value;
+                parsed.fragments = static_cast<int>(
+                    json_number(option.get("fragments"), 0.0));
+                parsed.required = static_cast<int>(
+                    json_number(option.get("required"), 0.0));
+                if (const auto* value = option.get("eligible");
+                    value && value->boolean())
+                  parsed.eligible = *value->boolean();
+                row.trophy_options.push_back(std::move(parsed));
               }
             }
             forge.rows.push_back(std::move(row));

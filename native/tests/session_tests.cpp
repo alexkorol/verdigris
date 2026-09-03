@@ -2781,7 +2781,8 @@ void remote_forge_properties_and_status_mirror_to_presentation() {
       "\"uuid\":\"blade-1\",\"displayName\":\"Obsidian Macuahuitl\","
       "\"vessel\":{\"lines\":[{\"section\":\"implicit\","
       "\"text\":\"Hits cause Bleeding\"},{\"section\":\"brand\","
-      "\"text\":\"+16% increased Reach\"}]}}]}},"
+      "\"text\":\"+16% increased Reach\"},{\"section\":\"trophy\","
+      "\"text\":\"TROPHY: Boar Tusk - +10% increased Physical Damage\"}]}}]}},"
       "\"scene\":{\"id\":\"instance:marsh:clearings\","
       "\"type\":\"instance\",\"name\":\"Mire of Echoes\"}}}");
   server.script.push_back(
@@ -2828,9 +2829,11 @@ void remote_forge_properties_and_status_mirror_to_presentation() {
   check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
         "forge-mirror: admission acknowledged");
   check(session.model().inventory.size() == 1 &&
-            session.model().inventory[0].forge_lines.size() == 2 &&
-            session.model().inventory[0].forge_lines[0] == "Hits cause Bleeding",
-        "forge-mirror: active tooltip lines survive wire-to-model parsing");
+            session.model().inventory[0].forge_lines.size() == 3 &&
+            session.model().inventory[0].forge_lines[0] == "Hits cause Bleeding" &&
+            session.model().inventory[0].forge_lines[2].find("Boar Tusk") !=
+                std::string::npos,
+        "forge-mirror: active implicit, Brand, and trophy lines survive wire-to-model parsing");
 
   std::vector<std::string> errors;
   server.grant_next_frame();
@@ -2927,7 +2930,7 @@ void remote_forge_properties_and_status_mirror_to_presentation() {
             world.player.projectile_range_percent == 20 &&
             world.player.armour_penetration_percent == 50 &&
             world.player.river_resistance == 50 &&
-            world.carried.size() == 1 && world.carried[0].forge_lines.size() == 2 &&
+            world.carried.size() == 1 && world.carried[0].forge_lines.size() == 3 &&
             world.monsters.size() == 1 && world.monsters[0].armour == 100 &&
             world.monsters[0].bleeding,
         "forge-mirror: forge contract survives model-to-presentation sync");
@@ -3255,14 +3258,17 @@ void remote_vesselforge_screen_mirrors_to_presentation() {
       "\"name\":\"Bronze Handaxe\",\"material\":\"Bronze\","
       "\"form\":\"Handaxe\",\"itemLevel\":40,\"vessel\":4,\"used\":2,"
       "\"freeSlots\":2,\"patience\":3,\"patienceMax\":5,\"brandCount\":1,"
-      "\"bondCount\":1,\"attunement\":42,\"attunementNext\":135,"
+      "\"bondCount\":1,\"trophyCount\":1,\"attunement\":42,\"attunementNext\":135,"
       "\"evolutions\":1,\"awakened\":false,\"awakenedName\":null,"
       "\"cost\":100,\"eligible\":true,\"reason\":\"\",\"lines\":["
       "{\"section\":\"implicit\",\"text\":\"+12% Physical Damage\","
       "\"tone\":\"normal\"},{\"section\":\"brand\","
       "\"text\":\"+9% Chance to Bleed\",\"tone\":\"normal\"},"
       "{\"section\":\"dormant\",\"text\":\"Dormant - BOND: The Shieldwall\","
-      "\"tone\":\"inactive\"}]}]}}}");
+      "\"tone\":\"inactive\"}],\"trophyOptions\":[{"
+      "\"id\":\"boar_tusk\",\"name\":\"Boar Tusk\","
+      "\"effect\":\"+10% increased Physical Damage\",\"reason\":\"\","
+      "\"fragments\":5,\"required\":5,\"eligible\":true}]}]}}}");
   std::string error;
   check(server.start(&error),
         "forge-mirror: scripted loopback server bound in capsule");
@@ -3282,12 +3288,18 @@ void remote_vesselforge_screen_mirrors_to_presentation() {
             forge.rows.size() == 1 && forge.rows.front().uuid == "vf-handaxe" &&
             forge.rows.front().eligible && forge.rows.front().free_slots == 2 &&
             forge.rows.front().patience == 3 && forge.rows.front().bond_count == 1 &&
+            forge.rows.front().trophy_count == 1 &&
             forge.rows.front().attunement == 42 &&
             forge.rows.front().attunement_next == 135 &&
             forge.rows.front().evolutions == 1 && !forge.rows.front().awakened &&
             forge.rows.front().lines.size() == 3 &&
-            forge.rows.front().lines.back().tone == "inactive",
-        "forge-mirror: identity, capacity, Bonds, attunement, and dormant truth reach the pane model");
+            forge.rows.front().lines.back().tone == "inactive" &&
+            forge.rows.front().trophy_options.size() == 1 &&
+            forge.rows.front().trophy_options.front().id == "boar_tusk" &&
+            forge.rows.front().trophy_options.front().fragments == 5 &&
+            forge.rows.front().trophy_options.front().required == 5 &&
+            forge.rows.front().trophy_options.front().eligible,
+        "forge-mirror: identity, capacity, Bonds, trophies, attunement, and dormant truth reach the pane model");
   session.submit(verdigris::client::ClientCommand::close_screen());
   check(!session.model().forge.open,
         "forge-mirror: the shared Escape/close contract dismisses the service");

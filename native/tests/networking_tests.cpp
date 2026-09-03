@@ -1063,6 +1063,154 @@ void test_tamar_vesselforge_service() {
         "vesselforge service: refreshed identity and combat projection agree");
 }
 
+void test_tamar_trophy_socketing_service() {
+  ProtocolSession session("guest-tamar-trophy", "socket-tamar-trophy",
+                          0x7A0F1u, false);
+  JsonValue::Object house;
+  house["id"] = JsonValue("house-trophy");
+  house["name"] = JsonValue("House Antlerwake");
+  house["treasury"] = JsonValue(0);
+  house["scions"] = JsonValue(JsonValue::Array{
+      JsonValue(JsonValue::Object{{"id", "scion-hunter"},
+                                  {"name", "Iven"}, {"level", 1},
+                                  {"mortal", false}})});
+  house["crypt"] = JsonValue(JsonValue::Array{});
+  JsonValue::Object chronicle;
+  chronicle["version"] = JsonValue(3);
+  chronicle["houses"] = JsonValue(JsonValue::Array{JsonValue(house)});
+  chronicle["activeHouseId"] = JsonValue("house-trophy");
+  chronicle["activeScionId"] = JsonValue("scion-hunter");
+  session.handle(Envelope{"player:chronicles:save",
+                          JsonValue::Object{{"state", JsonValue(chronicle)}}},
+                 [](const Envelope&) {});
+  const auto select_hunter = [&] {
+    session.handle(Envelope{"player:chronicles:select",
+                            JsonValue::Object{{"scionId", "scion-hunter"},
+                                              {"houseId", "house-trophy"},
+                                              {"scionName", "Iven"},
+                                              {"mortal", false}}},
+                   [](const Envelope&) {});
+  };
+  select_hunter();
+  int fragment_messages = 0;
+  for (int hunt = 0; hunt < 5; ++hunt) {
+    session.handle(Envelope{"instance:enterSolo", JsonValue::Object{
+        {"template", "dungeon"}, {"layout", "warren"}}},
+        [](const Envelope&) {});
+    session.handle(Envelope{"dev:clear-floor", JsonValue::Object{}},
+        [&](const Envelope& event) {
+          if (event.event == "game:send:message" &&
+              event.data["text"].string() &&
+              event.data["text"].string()->find("Boar Tusk") !=
+                  std::string::npos)
+            ++fragment_messages;
+        });
+  }
+  session.handle(Envelope{"party:returnToTown", JsonValue::Object{}},
+                 [](const Envelope&) {});
+  // Re-admitting the Scion clears the transient cache and restores the
+  // House-owned fragment ledger from the Chronicle.
+  select_hunter();
+  session.handle(Envelope{"dev:teleport", JsonValue::Object{
+      {"x", 42}, {"y", 121}}}, [](const Envelope&) {});
+  session.handle(Envelope{"dev:give", JsonValue::Object{
+      {"itemId", "vessel-handaxe"}, {"qty", 1},
+      {"itemLevel", 40}, {"seed", 37}}}, [](const Envelope&) {});
+  const auto before = request_state(session, "trophy-before");
+  const std::string uuid = inventory_uuid_for(before, "vessel-handaxe");
+  const JsonValue* before_item = nullptr;
+  if (const auto* items = before["state"]["inventoryDetails"].array())
+    for (const auto& item : *items)
+      if (item["uuid"].string() && *item["uuid"].string() == uuid)
+        before_item = &item;
+  const double damage_before = before_item
+      ? (*before_item)["vessel"]["combat"]["damage"]["maximum"]
+            .number().value_or(0)
+      : 0;
+  check(before_item && !uuid.empty(),
+        "trophy service: a carried Vessel has stable identity");
+
+  const auto menu_action = [&](const std::string& action_id,
+                               const std::string& item_uuid,
+                               const std::string& trophy_id,
+                               const std::function<void(const Envelope&)>& emit) {
+    session.handle(
+        Envelope{"player:context-menu:action",
+                 JsonValue::Object{{"queueItem", JsonValue::Object{
+                     {"action", JsonValue::Object{{"actionId", action_id}}},
+                     {"item", JsonValue::Object{{"id", item_uuid},
+                                                  {"uuid", item_uuid},
+                                                  {"trophyId", trophy_id}}}}}}},
+        emit);
+  };
+  std::optional<Envelope> opened;
+  menu_action("player:screen:vesselforge", "vesselforge", "",
+              [&](const Envelope& event) {
+                if (event.event == "open:screen") opened = event;
+              });
+  const JsonValue* row = nullptr;
+  const JsonValue* tusk = nullptr;
+  if (opened && opened->data["payload"]["items"].array())
+    for (const auto& candidate : *opened->data["payload"]["items"].array())
+      if (candidate["uuid"].string() && *candidate["uuid"].string() == uuid) {
+        row = &candidate;
+        if (const auto* options = candidate["trophyOptions"].array())
+          for (const auto& option : *options)
+            if (option["id"].string() &&
+                *option["id"].string() == "boar_tusk")
+              tusk = &option;
+      }
+  const int coins_before = opened
+      ? static_cast<int>(opened->data["payload"]["carriedCoins"]
+                             .number().value_or(0))
+      : -1;
+  check(fragment_messages == 5,
+        "trophy service: each Warden hunt emits one material result");
+  check(row && tusk,
+        "trophy service: Tamar publishes the compatible Boar Tusk pattern");
+  check(tusk && (*tusk)["fragments"].number().value_or(0) == 5 &&
+            (*tusk)["required"].number().value_or(0) == 5 &&
+            (*tusk)["eligible"].boolean().value_or(false),
+        "trophy service: five Warden hunts complete the authored fragment set");
+
+  bool inventory_refreshed = false;
+  bool bind_message = false;
+  std::optional<Envelope> refreshed;
+  menu_action("player:vesselforge:socket-trophy", uuid, "boar_tusk",
+              [&](const Envelope& event) {
+                if (event.event == "core:refresh:inventory")
+                  inventory_refreshed = true;
+                if (event.event == "game:send:message" &&
+                    event.data["text"].string() &&
+                    event.data["text"].string()->find("binds") !=
+                        std::string::npos)
+                  bind_message = true;
+                if (event.event == "open:screen") refreshed = event;
+              });
+  const auto after = request_state(session, "trophy-after");
+  const JsonValue* after_item = nullptr;
+  if (const auto* items = after["state"]["inventoryDetails"].array())
+    for (const auto& item : *items)
+      if (item["uuid"].string() && *item["uuid"].string() == uuid)
+        after_item = &item;
+  const double damage_after = after_item
+      ? (*after_item)["vessel"]["combat"]["damage"]["maximum"]
+            .number().value_or(0)
+      : 0;
+  const auto* socketed = after_item
+      ? (*after_item)["vessel"]["item"]["trophies"].array()
+      : nullptr;
+  check(after_item && socketed && socketed->size() == 1 &&
+            socketed->front()["trophyId"].string() &&
+            *socketed->front()["trophyId"].string() == "boar_tusk" &&
+            damage_after > damage_before,
+        "trophy service: binding preserves identity and raises real damage");
+  check(inventory_refreshed && bind_message && refreshed &&
+            static_cast<int>(refreshed->data["payload"]["carriedCoins"]
+                                 .number().value_or(-1)) == coins_before,
+        "trophy service: binding refreshes the live service and spends no gold");
+}
+
 void test_worn_vessel_learns_from_cleared_expeditions() {
   ProtocolSession session("guest-living-vessel", "socket-living-vessel",
                           0xB04Du, false);
@@ -1186,7 +1334,9 @@ void test_crossroads_social_hub_and_house_investment() {
           npc["services"].array()->size() == 2)
         saw_rhea_services = true;
       if (key == "tamar-vesselwright" && npc["services"].array() &&
-          npc["services"].array()->size() == 2 &&
+          npc["services"].array()->size() == 3 &&
+          (*npc["services"].array())[2].string() &&
+          *(*npc["services"].array())[2].string() == "trophy_socketing" &&
           npc["x"].number().value_or(0) == 42 &&
           npc["y"].number().value_or(0) == 121)
         saw_tamar_services = true;
@@ -2186,6 +2336,7 @@ int main() {
     test_gate_a_equip_totals_and_unknown_uuid();
     test_active_forge_properties_cross_the_protocol();
     test_tamar_vesselforge_service();
+    test_tamar_trophy_socketing_service();
     test_worn_vessel_learns_from_cleared_expeditions();
     test_crossroads_social_hub_and_house_investment();
     test_campaign_contract_and_scion_checkpoint();

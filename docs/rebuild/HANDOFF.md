@@ -1,5 +1,29 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - WIZARD Warden trophies and Tamar socketing
+
+- Ported WIZARD's five authored Vesselforge trophies into the native core:
+  Boar Tusk, Wolf Fang, River Pearl, Beetle Shell, and Knucklebone retain their
+  exact fragment requirements, compatible item families, scalar effects, and
+  completion-rite copy. Socketing consumes one Vessel slot and a complete
+  fragment set, but no Patience or gold; every rejected operation is atomic.
+- Wardens now award a deterministic road-specific fragment to a House-owned
+  Chronicle ledger. That ledger restores on Scion admission, so hunted value
+  survives the mortal character boundary. Socketed scalar effects participate
+  in authoritative item, combat, resource, resistance, and goods-found
+  derivation; unimplemented special rites are presented honestly as Dormant.
+- Tamar advertises trophy socketing and publishes exact compatible patterns,
+  counts, requirements, effects, and disabled reasons for every carried
+  Vessel. The native Framekit pane shows trophy memory and a distinct
+  keyboard/pointer-complete `T BIND` action. The selected item UUID and authored
+  trophy id survive the complete client-command and WebSocket path.
+- The exact binding native gate passes the 99-raster/15-runtime verifier, every
+  core/network/session/presentation/audio suite, the mortal succession and
+  heirloom-recovery journey, all 29 client scenarios, and density determinism.
+  Inspected 960x600 and 1366x768 forge evidence is isolated under
+  `native/build/goal-captures-trophy-socket-release/`; the 3440x1440 production
+  frame averages 10.3 ms against the 40 ms ceiling.
+
 ## 2026-09-03 - WIZARD Chronicle seals and naming field
 
 - Extended the production Framekit contract from 11 to 15 decoded rasters.

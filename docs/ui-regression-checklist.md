@@ -44,6 +44,15 @@
 - Continue clearing dungeon roads until the first 80-point threshold. Tamar's
   pane must report one evolution and one Warding Bond, with the full tier-I
   effect labelled `Dormant - BOND` rather than presented as a live combat stat.
+- Defeat Wardens and confirm each kill adds exactly one road-specific trophy
+  fragment to the House. Re-admit the Scion, return to Tamar, and verify the
+  same count remains. A completed compatible pattern must expose `T BIND`;
+  incomplete, duplicate, full-Vessel, and incompatible attempts must preserve
+  the item and fragment ledger exactly.
+- Bind a completed Boar Tusk into a weapon. Confirm one Vessel slot is consumed,
+  gold and Patience are unchanged, the active trophy line appears in item
+  details, and physical damage rises. Its Charge rite must remain labelled
+  Dormant until that special behavior is actually implemented.
 - On a three-slot unbranded test Vessel, continue through three Bonds, tier III,
   and awakening. Confirm the awakened name begins with the current Scion's
   name, the power stays visibly Dormant, and the pane remains bounded at both

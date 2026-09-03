@@ -406,7 +406,14 @@ JsonValue vessel_json(const VesselBlock& block) {
     bonds.emplace_back(std::move(entry));
   }
   put(item, "bonds", std::move(bonds));
-  put(item, "trophies", JsonValue::Array{});
+  JsonValue::Array trophies;
+  for (const auto& trophy : block.item.trophies) {
+    JsonValue::Object entry;
+    put(entry, "id", trophy.id);
+    put(entry, "trophyId", trophy.trophy_id);
+    trophies.emplace_back(std::move(entry));
+  }
+  put(item, "trophies", std::move(trophies));
   JsonValue::Object theme_counts;
   for (const auto& [theme, count] : block.item.attunement.theme_counts)
     put(theme_counts, theme, count);
@@ -1236,7 +1243,7 @@ struct TownNpc {
   const char* examine;
   int x;
   int y;
-  const char* services[2];
+  const char* services[3];
   int service_count;
   const char* actions[2];
   int action_count;
@@ -1258,7 +1265,8 @@ const TownNpc kTownNpcs[] = {
      31, 121, {"storage", "house_investment"}, 2, {"bank", "examine"}, 2},
     {5, "tamar-vesselwright", "Tamar the Vesselwright", "vesselwright",
      "A low forge burns beneath Tamar's copper tools, ready to teach worthy vessels a new name.",
-     42, 121, {"vesselforge", "brand_searing"}, 2, {"talk", "examine"}, 2},
+     42, 121, {"vesselforge", "brand_searing", "trophy_socketing"}, 3,
+     {"talk", "examine"}, 2},
 };
 
 const TownNpc* town_npc(int id) {
@@ -2038,6 +2046,42 @@ void ProtocolSession::emit_vesselforge_screen(
     put(row, "patienceMax", block.item.patience_max);
     put(row, "brandCount", static_cast<int>(block.item.brands.size()));
     put(row, "bondCount", static_cast<int>(block.item.bonds.size()));
+    put(row, "trophyCount", static_cast<int>(block.item.trophies.size()));
+    JsonValue::Array trophy_options;
+    for (const auto& definition : vessel_trophy_definitions()) {
+      if (std::find(definition.kinds.begin(), definition.kinds.end(),
+                    block.item.kind) == definition.kinds.end())
+        continue;
+      const auto fragment_it = trophy_fragments_.find(definition.id);
+      const int fragments = fragment_it == trophy_fragments_.end()
+                                ? 0
+                                : fragment_it->second;
+      const bool socketed = std::any_of(
+          block.item.trophies.begin(), block.item.trophies.end(),
+          [&](const VesselTrophy& trophy) {
+            return trophy.trophy_id == definition.id;
+          });
+      std::string trophy_reason;
+      if (socketed)
+        trophy_reason = "Already bound.";
+      else if (free_slots <= 0)
+        trophy_reason = "No free vessel slot.";
+      else if (fragments < definition.fragments)
+        trophy_reason = "Needs " +
+            std::to_string(definition.fragments - fragments) +
+            " more fragment" +
+            (definition.fragments - fragments == 1 ? "." : "s.");
+      JsonValue::Object option;
+      put(option, "id", definition.id);
+      put(option, "name", definition.name);
+      put(option, "fragments", fragments);
+      put(option, "required", definition.fragments);
+      put(option, "effect", definition.label);
+      put(option, "eligible", trophy_reason.empty());
+      put(option, "reason", trophy_reason);
+      trophy_options.emplace_back(std::move(option));
+    }
+    put(row, "trophyOptions", std::move(trophy_options));
     put(row, "attunement", block.item.attunement.xp);
     put(row, "attunementNext", block.item.attunement.next);
     put(row, "evolutions", block.item.evolutions);
@@ -2056,6 +2100,18 @@ void ProtocolSession::emit_vesselforge_screen(
   put(payload, "name", "Tamar's Vesselforge");
   put(payload, "npcId", 5);
   put(payload, "carriedCoins", carried_gold());
+  JsonValue::Array trophy_stash;
+  for (const auto& definition : vessel_trophy_definitions()) {
+    const auto found = trophy_fragments_.find(definition.id);
+    const int count = found == trophy_fragments_.end() ? 0 : found->second;
+    JsonValue::Object entry;
+    put(entry, "id", definition.id);
+    put(entry, "name", definition.name);
+    put(entry, "fragments", count);
+    put(entry, "required", definition.fragments);
+    trophy_stash.emplace_back(std::move(entry));
+  }
+  put(payload, "trophies", std::move(trophy_stash));
   put(payload, "items", std::move(vessels));
   JsonValue::Object data;
   put(data, "player", JsonValue::Object{{"socket_id", socket_id_}});
@@ -2735,9 +2791,9 @@ void ProtocolSession::emit_npc_dialogue(
                  "house:investment:choose");
     }
   } else if (npc_id == 5) {
-    body = "Every vessel has room for a history, but iron remembers the cost. I can sear one new Brand for 100 gold while its vessel and patience endure.";
+    body = "Every vessel has room for a history. I can sear a Brand for 100 gold, or bind a completed Warden trophy without spending its Patience.";
     add_option("vesselforge", "Open the Vesselforge",
-               "Sear a new Brand into carried vessel gear.",
+               "Sear Brands or bind House trophies into carried vessel gear.",
                "player:screen:vesselforge");
   }
 
@@ -2934,6 +2990,61 @@ void ProtocolSession::restore_endgame_progression() {
       break;
     if (entry.string() && valid_tablet_mastery_key(*entry.string()))
       endgame_masteries_.insert(*entry.string());
+  }
+}
+
+void ProtocolSession::persist_vesselforge_progression() {
+  JsonValue::Object* house =
+      find_chronicle_house_object(chronicle_, active_house_id_);
+  if (!house) return;
+  JsonValue::Object fragments;
+  for (const auto& definition : vessel_trophy_definitions()) {
+    const auto found = trophy_fragments_.find(definition.id);
+    const int count = found == trophy_fragments_.end() ? 0 : found->second;
+    if (count > 0) put(fragments, definition.id, count);
+  }
+  (*house)["vesselforgeTrophies"] = JsonValue(std::move(fragments));
+  chronicles_revision_ += 1;
+}
+
+void ProtocolSession::restore_vesselforge_progression() {
+  trophy_fragments_.clear();
+  JsonValue::Object* house =
+      find_chronicle_house_object(chronicle_, active_house_id_);
+  if (!house) return;
+  const auto saved_it = house->find("vesselforgeTrophies");
+  if (saved_it == house->end() || !saved_it->second.object()) return;
+  for (const auto& definition : vessel_trophy_definitions()) {
+    const JsonValue* count = saved_it->second.get(definition.id);
+    trophy_fragments_[definition.id] =
+        std::clamp(as_int(count, 0), 0, 999);
+  }
+}
+
+void ProtocolSession::award_warden_trophy(
+    const std::string& theme,
+    const std::function<void(const Envelope&)>& emit) {
+  const char* trophy_id = theme == "wilds" ? "wolf_fang"
+                          : theme == "marsh" ? "river_pearl"
+                          : theme == "grove" ? "ember_shell"
+                          : theme == "crypt" ? "knucklebone"
+                                                : "boar_tusk";
+  const VesselTrophyDefinition* definition = nullptr;
+  for (const auto& candidate : vessel_trophy_definitions())
+    if (candidate.id == trophy_id) { definition = &candidate; break; }
+  if (!definition) return;
+  int& count = trophy_fragments_[definition->id];
+  count = (std::min)(999, count + 1);
+  persist_vesselforge_progression();
+  if (count >= definition->fragments) {
+    emit_message(emit, definition->name + " complete (" +
+                           std::to_string(count) + "/" +
+                           std::to_string(definition->fragments) +
+                           "). Tamar can bind it into a fitting Vessel.");
+  } else {
+    emit_message(emit, definition->name + " fragment (" +
+                           std::to_string(count) + "/" +
+                           std::to_string(definition->fragments) + ").");
   }
 }
 
@@ -3482,6 +3593,34 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
     emit_vesselforge_screen(emit);
     return;
   }
+  if (action_id=="player:vesselforge:socket-trophy") {
+    const TownNpc* npc = town_npc(5);
+    const Vec2 tile = tile_movement::occupied_tile(world_->position());
+    const std::string trophy_id =
+        as_string(item_ref ? item_ref->get("trophyId") : nullptr);
+    if (!npc || world_->in_instance() || uuid.empty() || trophy_id.empty() ||
+        (std::max)(std::abs(tile.x - npc->x), std::abs(tile.y - npc->y)) > 1)
+      return;
+    GameItem* item = inventory_.find_by_uuid(uuid);
+    if (!item || !item->vessel) return;
+    VesselItem socketed = item->vessel->item;
+    std::map<std::string, int> next_stash = trophy_fragments_;
+    std::string error;
+    if (!world_->forge().socket_trophy(socketed, trophy_id, next_stash,
+                                       &error)) {
+      if (!error.empty()) emit_message(emit, error);
+      emit_vesselforge_screen(emit);
+      return;
+    }
+    trophy_fragments_ = std::move(next_stash);
+    apply_vessel_block(*item, world_->forge().make_block(socketed));
+    persist_vesselforge_progression();
+    emit_inventory_refresh(emit);
+    emit_message(emit, "Tamar binds the completed trophy into " +
+                           item->display_name + ".");
+    emit_vesselforge_screen(emit);
+    return;
+  }
 }
 void ProtocolSession::handle_inventory_commit(const JsonValue& payload, const std::function<void(const Envelope&)>& emit) {
   // player:inventory:commit world-drop: the production inventory drop verb.
@@ -3683,6 +3822,12 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
     }
     if (event.type == "death" && event.target_id != identity_) {
       emit_message(emit, "You have slain " + event.target_name + ".");
+      for (const auto& monster : world_->monsters()) {
+        if (monster.uuid == event.target_id && monster.boss) {
+          award_warden_trophy(world_->metadata().theme, emit);
+          break;
+        }
+      }
       // experience.js: kills grant combat XP; the character level derives
       // from the shared curve. Level-ups refresh and refill resources.
       {
@@ -4281,6 +4426,8 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
       bool warden_was_alive = false;
       for (const auto& monster : world_->monsters()) if (monster.alive && monster.boss) { warden_was_alive = true; break; }
       world_->kill_all_monsters();
+      if (warden_was_alive)
+        award_warden_trophy(world_->metadata().theme, emit);
       if (warden_was_alive && !current_node_id_.empty()) {
         cleared_nodes_.insert(current_node_id_);
         persist_world_web_progression();
@@ -4374,6 +4521,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     restore_quest_progression();
     restore_world_web_progression();
     restore_endgame_progression();
+    restore_vesselforge_progression();
     // JS beginScionSession parity (server/core/services/chronicles.js:210-219):
     // EVERY Chronicles set-out admits the scion under the hard lifecycle -
     // the mortal oath is the Chronicles admission contract, not a dev-only
@@ -4524,6 +4672,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     restore_house_progression();
     restore_world_web_progression();
     restore_endgame_progression();
+    restore_vesselforge_progression();
     // Persist the sworn oath on the living roster so relogins restore the
     // same lifecycle (see reset_world_for_new_socket).
     set_scion_record_mortal(chronicle_, active_house_id_, active_scion_id_, mortal_oath_);

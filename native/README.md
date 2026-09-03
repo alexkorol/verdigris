@@ -65,10 +65,15 @@ falls back to the vector skin.
 
 In the Crossroads, `T` hails the nearest townsfolk. Tamar the Vesselwright
 opens a dedicated Framekit forge: Up/Down selects carried vessel gear and
-Enter or a click sears an eligible Brand for 100 gold. Capacity, patience,
-existing lines, purse, and disabled reasons come from the server; the service
-cannot be invoked away from Tamar. Vessel gear worn through a cleared floor
-earns 16–30 Attunement and remembers that road's themes. At 80 Attunement,
+Enter or a click sears an eligible Brand for 100 gold. Wardens also leave one
+road-specific trophy fragment for the House: five Boar Tusks or Wolf Fangs,
+or three River Pearls, Beetle Shells, or Knucklebones, complete a pattern.
+Beside Tamar, `T` or the trophy action binds a completed compatible set into
+the exact selected Vessel without spending gold or Patience. Capacity,
+patience, fragments, existing lines, purse, and disabled reasons come from the
+server; neither forge action can be invoked away from Tamar. Vessel gear worn
+through a cleared floor earns 16–30 Attunement and remembers that road's
+themes. At 80 Attunement,
 then 55 more per evolution, it forms and deepens Bonds toward tier III and can
 eventually awaken into its Scion's name. Tamar's detail pane shows the exact
 progress and evolution count. Conditional Bond and awakened powers resolve in

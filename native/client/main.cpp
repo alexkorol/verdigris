@@ -521,10 +521,12 @@ struct ClientState {
   // painted row rectangles for mouse hit-testing (rebuilt every frame).
   struct TradeRowHit {
     RECT rect{};
-    int kind = 0;  // 0 buy, 1 withdraw, 2 deposit, 3 chart, 4 dialogue, 5 forge
+    int kind = 0;  // 0 buy, 1 withdraw, 2 deposit, 3 chart, 4 dialogue,
+                   // 5 brand, 6 trophy
     std::size_t index = 0;
     std::string ref;   // item id (shop) or uuid (bank/deposit)
     std::string extra; // dialogue option id
+    std::string choice;  // optional forge sub-choice (WIZARD trophy id)
     int value = 0;     // price or qty
   };
   std::size_t trade_selected = 0;
@@ -6169,6 +6171,17 @@ void activate_trade_row(ClientState& state, const ClientState::TradeRowHit& hit)
     show_hint(state, "Tamar raises the searing iron");
     return;
   }
+  if (hit.kind == 6) {
+    if (hit.value <= 0) {
+      show_hint(state, hit.extra.empty() ? "That trophy is not ready"
+                                         : hit.extra);
+      return;
+    }
+    state.session->submit(verdigris::client::ClientCommand::menu_action(
+        "player:vesselforge:socket-trophy", hit.ref, 0, hit.choice));
+    show_hint(state, "Tamar sets the trophy in bronze");
+    return;
+  }
   const char* action = hit.kind == 0   ? "player:shop:buy"
                        : hit.kind == 1 ? "player:bank:withdraw"
                                        : "player:bank:deposit";
@@ -6398,6 +6411,7 @@ void paint_vesselforge_pane(ClientState& state, HDC dc, const RECT& bounds,
         : "ATTUNEMENT  " + std::to_string(row.attunement) + "/" +
               std::to_string(row.attunement_next) + "  |  " +
               std::to_string(row.bond_count) + " BONDS  |  " +
+              std::to_string(row.trophy_count) + " TROPHIES  |  " +
               std::to_string(row.evolutions) + " EVOLUTIONS";
     TextOutA(dc, detail.left + 14 * s, dy, memory.c_str(),
              static_cast<int>(memory.size()));
@@ -6451,15 +6465,53 @@ void paint_vesselforge_pane(ClientState& state, HDC dc, const RECT& bounds,
         : row.reason;
     TextOutA(dc, detail.left + 14 * s, action_y, action.c_str(),
              static_cast<int>(action.size()));
+    const verdigris::client::ClientForgeTrophyOption* trophy_action = nullptr;
+    for (const auto& option : row.trophy_options) {
+      if (!trophy_action || option.eligible) trophy_action = &option;
+      if (option.eligible) break;
+    }
+    if (trophy_action) {
+      const std::string trophy_copy = trophy_action->eligible
+          ? "T  BIND " + trophy_action->name + "  -  " +
+                std::to_string(trophy_action->fragments) + "/" +
+                std::to_string(trophy_action->required) + " FRAGMENTS"
+          : "TROPHY  " + trophy_action->name + "  " +
+                std::to_string(trophy_action->fragments) + "/" +
+                std::to_string(trophy_action->required) + "  -  " +
+                trophy_action->reason;
+      SelectObject(dc, skin::font_small());
+      SetTextColor(dc, trophy_action->eligible ? skin::kVerdigris
+                                                : skin::kInkDim);
+      const int trophy_y = action_y + 22 * s;
+      RECT trophy_rect{detail.left + 10 * s, trophy_y - 3 * s,
+                       detail.right - 10 * s, trophy_y + 17 * s};
+      DrawTextA(dc, trophy_copy.c_str(), static_cast<int>(trophy_copy.size()),
+                &trophy_rect, DT_LEFT | DT_TOP | DT_SINGLELINE |
+                                  DT_END_ELLIPSIS | DT_NOPREFIX);
+      ClientState::TradeRowHit hit;
+      hit.rect = trophy_rect;
+      hit.kind = 6;
+      hit.index = state.trade_selected;
+      hit.ref = row.uuid;
+      hit.extra = trophy_action->reason;
+      hit.choice = trophy_action->id;
+      hit.value = trophy_action->eligible ? 1 : -1;
+      state.trade_row_hits.push_back(std::move(hit));
+      rl.push_back({render::Op::PaneStat,
+                    static_cast<double>(trophy_rect.left),
+                    static_cast<double>(trophy_rect.top), 0.0,
+                    trophy_action->eligible ? 1 : 0,
+                    "vesselforge-trophy:" + trophy_action->id});
+    }
   }
 
   SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kInkDim);
   const std::string footer = forge.rows.size() > kVisibleRows
-      ? "Up/Down changes vessel  |  Click or Enter sears  |  Esc closes  |  " +
+      ? "Up/Down vessel  |  Enter sears  |  T binds trophy  |  Esc  |  " +
             std::to_string(state.trade_selected + 1) + "/" +
             std::to_string(forge.rows.size())
-      : "Up/Down changes vessel  |  Click or Enter sears  |  Esc closes";
+      : "Up/Down vessel  |  Enter sears  |  T binds trophy  |  Esc closes";
   TextOutA(dc, left + 18 * s, top + pane_h - 30 * s, footer.c_str(),
            static_cast<int>(footer.size()));
   SelectObject(dc, old_font);
@@ -8111,7 +8163,16 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
             }
           }
         }
-        if (wparam == VK_UP || wparam == VK_DOWN || wparam == VK_RETURN) {
+        if (wparam == 'T' && state->session->model().forge.open) {
+          for (const auto& hit : state->trade_row_hits) {
+            if (hit.kind == 6 && hit.index == state->trade_selected) {
+              activate_trade_row(*state, hit);
+              break;
+            }
+          }
+        }
+        if (wparam == VK_UP || wparam == VK_DOWN || wparam == VK_RETURN ||
+            (wparam == 'T' && state->session->model().forge.open)) {
           break;
         }
       }
@@ -11201,7 +11262,8 @@ class ScenarioForgeSession final
     model_.npcs = {
         {5, "tamar-vesselwright", "Tamar the Vesselwright", "vesselwright",
          "A low forge and copper tools.", 42.0, 121.0,
-         {"vesselforge", "brand_searing"}, {"talk", "examine"}},
+         {"vesselforge", "brand_searing", "trophy_socketing"},
+         {"talk", "examine"}},
     };
     model_.forge.open = true;
     model_.forge.name = "Tamar's Vesselforge";
@@ -11224,6 +11286,12 @@ class ScenarioForgeSession final
         true, "", {{"implicit", "+12% Physical Damage", "normal"},
                     {"brand", "+9% Chance to Bleed", "normal"},
                     {"vessel", "Vessel 4 - Patience 3/5", "normal"}});
+    model_.forge.rows.back().trophy_options = {
+        {"boar_tusk", "Boar Tusk", "+10% increased Physical Damage", "",
+         5, 5, true},
+        {"wolf_fang", "Wolf Fang", "+6% Attack Speed",
+         "Needs 3 more fragments.", 2, 5, false},
+    };
     add("vf-atlatl", "Copper Atlatl", "Copper", "Atlatl", 3, 3, 2, 4,
         false, "Its vessel is full.",
         {{"implicit", "+20% Projectile Range", "normal"}});
@@ -11238,6 +11306,12 @@ class ScenarioForgeSession final
     model_.forge.rows.back().attunement = 42;
     model_.forge.rows.back().attunement_next = 135;
     model_.forge.rows.back().evolutions = 1;
+    model_.forge.rows.back().trophy_options = {
+        {"boar_tusk", "Boar Tusk", "+10% increased Physical Damage", "",
+         5, 5, true},
+        {"wolf_fang", "Wolf Fang", "+6% Attack Speed",
+         "Needs 3 more fragments.", 2, 5, false},
+    };
     add("vf-crest", "Jade Crest", "Jade", "Crest", 5, 1, 4, 6,
         true, "", {{"implicit", "+10 to all Attributes", "normal"}});
     add("vf-gorget", "Amber Gorget", "Amber", "Gorget", 5, 2, 4, 6,
@@ -11249,6 +11323,7 @@ class ScenarioForgeSession final
     last_type = command.type;
     last_target = command.target;
     last_extra = command.extra;
+    last_auxiliary = command.auxiliary;
     last_value = command.value;
     if (command.type == verdigris::client::ClientCommand::Type::CloseScreen)
       model_.forge.open = false;
@@ -11267,6 +11342,7 @@ class ScenarioForgeSession final
       verdigris::client::ClientCommand::Type::Move;
   std::string last_target;
   std::string last_extra;
+  std::string last_auxiliary;
   int last_value = 0;
 
  private:
@@ -11302,7 +11378,8 @@ class ScenarioDialogueSession final
          "House ledger.", 31.0, 121.0, {"storage", "house_investment"},
          {"bank", "examine"}},
         {5, "tamar-vesselwright", "Tamar the Vesselwright", "vesselwright",
-         "The town forge.", 42.0, 121.0, {"vesselforge", "brand_searing"},
+         "The town forge.", 42.0, 121.0,
+         {"vesselforge", "brand_searing", "trophy_socketing"},
          {"talk", "examine"}},
     };
     model_.dialogue.open = true;
@@ -11561,7 +11638,7 @@ int scenario_town_vesselforge() {
   scenario_check(reference_present(state, 960, 600, compact),
                  "town-vesselforge: compact Framekit service captured");
   std::printf("    capture: %s\n", compact.c_str());
-  bool compact_inside = state.trade_row_hits.size() == 5;
+  bool compact_inside = state.trade_row_hits.size() == 6;
   for (const auto& hit : state.trade_row_hits)
     compact_inside = compact_inside && hit.rect.left >= 0 && hit.rect.top >= 0 &&
                      hit.rect.right <= 960 && hit.rect.bottom <= 600;
@@ -11578,6 +11655,7 @@ int scenario_town_vesselforge() {
   bool active_line = false;
   bool memory = false;
   bool dormant_bond = false;
+  bool trophy_action = false;
   for (const auto& item : state.render_list) {
     if (item.op == render::Op::Hud && item.label == "vesselforge-pane") pane = true;
     if (item.op == render::Op::PaneStat &&
@@ -11589,10 +11667,13 @@ int scenario_town_vesselforge() {
     if (item.op == render::Op::PaneStat &&
         item.label.rfind("vesselforge-line:Dormant - BOND:", 0) == 0)
       dormant_bond = true;
+    if (item.op == render::Op::PaneStat &&
+        item.label == "vesselforge-trophy:boar_tusk")
+      trophy_action = true;
   }
   scenario_check(pane && active_line && memory && dormant_bond &&
-                     state.trade_row_hits.size() == 5,
-                 "town-vesselforge: Framekit list, progress, dormant Bond, and paging evidence agree");
+                     trophy_action && state.trade_row_hits.size() == 6,
+                 "town-vesselforge: Framekit list, progress, Bond, trophy, and paging evidence agree");
   for (const auto& hit : state.trade_row_hits) {
     if (hit.index == state.trade_selected) {
       activate_trade_row(state, hit);
@@ -11604,6 +11685,18 @@ int scenario_town_vesselforge() {
           scenario->last_target == "player:vesselforge:add-brand" &&
           scenario->last_extra == "vf-sling" && scenario->last_value == 100,
       "town-vesselforge: Enter/click routes the exact authoritative item and cost");
+  for (const auto& hit : state.trade_row_hits) {
+    if (hit.kind == 6 && hit.index == state.trade_selected) {
+      activate_trade_row(state, hit);
+      break;
+    }
+  }
+  scenario_check(
+      scenario->last_type == verdigris::client::ClientCommand::Type::MenuAction &&
+          scenario->last_target == "player:vesselforge:socket-trophy" &&
+          scenario->last_extra == "vf-sling" &&
+          scenario->last_auxiliary == "boar_tusk",
+      "town-vesselforge: T/click routes the exact vessel and trophy identities");
   return 0;
 }
 
