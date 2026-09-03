@@ -3047,6 +3047,52 @@ void remote_crossroads_dialogue_mirrors_to_presentation() {
   server.stop();
 }
 
+void remote_vesselforge_screen_mirrors_to_presentation() {
+  ScriptedEnvelopeServer server;
+  server.script.push_back(
+      "{\"event\":\"player:login\",\"data\":{\"player\":{"
+      "\"uuid\":\"forge-guest\",\"x\":42,\"y\":121,\"facing\":\"down\"},"
+      "\"scene\":{\"id\":\"town:verdigris\",\"type\":\"town\","
+      "\"name\":\"The Crossroads\"}}}");
+  server.script.push_back(
+      "{\"event\":\"open:screen\",\"data\":{\"screen\":\"vesselforge\","
+      "\"payload\":{\"name\":\"Tamar's Vesselforge\",\"npcId\":5,"
+      "\"carriedCoins\":145,\"items\":[{\"uuid\":\"vf-handaxe\","
+      "\"name\":\"Bronze Handaxe\",\"material\":\"Bronze\","
+      "\"form\":\"Handaxe\",\"itemLevel\":40,\"vessel\":4,\"used\":2,"
+      "\"freeSlots\":2,\"patience\":3,\"patienceMax\":5,\"brandCount\":1,"
+      "\"cost\":100,\"eligible\":true,\"reason\":\"\",\"lines\":["
+      "{\"section\":\"implicit\",\"text\":\"+12% Physical Damage\","
+      "\"tone\":\"normal\"},{\"section\":\"brand\","
+      "\"text\":\"+9% Chance to Bleed\",\"tone\":\"normal\"}]}]}}}");
+  std::string error;
+  check(server.start(&error),
+        "forge-mirror: scripted loopback server bound in capsule");
+  if (server.port() == 0) return;
+
+  verdigris::client::RemoteProtocolSession session(
+      "127.0.0.1", server.port(), "forge-mirror-guest", true);
+  check(session.start(&error), "forge-mirror: connect + upgrade + login sent");
+  check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
+        "forge-mirror: admission acknowledged");
+  server.grant_next_frame();
+  std::vector<std::string> errors;
+  const bool arrived = pt_pump_until(
+      session, errors, 5000, [&] { return session.model().forge.open; });
+  const auto& forge = session.model().forge;
+  check(arrived && forge.npc_id == 5 && forge.carried_coins == 145 &&
+            forge.rows.size() == 1 && forge.rows.front().uuid == "vf-handaxe" &&
+            forge.rows.front().eligible && forge.rows.front().free_slots == 2 &&
+            forge.rows.front().patience == 3 && forge.rows.front().lines.size() == 2,
+        "forge-mirror: exact identity, capacity, patience, cost, and lines reach the pane model");
+  session.submit(verdigris::client::ClientCommand::close_screen());
+  check(!session.model().forge.open,
+        "forge-mirror: the shared Escape/close contract dismisses the service");
+  check(errors.empty(), "forge-mirror: valid payload raises no protocol error");
+  session.shutdown();
+  server.stop();
+}
+
 void remote_passive_tree_payload_hardening() {
   using verdigris::client::RemoteProtocolSession;
 
@@ -3304,6 +3350,7 @@ int main() {
   remote_forge_properties_and_status_mirror_to_presentation();
   remote_monster_roles_mirror_to_presentation();
   remote_crossroads_dialogue_mirrors_to_presentation();
+  remote_vesselforge_screen_mirrors_to_presentation();
   remote_passive_tree_payload_hardening();
   gateb_driver_state_machine_controls();
   gate_b_chronicles_reconnect_journey();

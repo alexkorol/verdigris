@@ -1,5 +1,34 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - Tamar's authoritative town Vesselforge
+
+- Added Tamar the Vesselwright as the Crossroads' fifth authored townsfolk,
+  with stable identity, plaza position, forge services, conversation copy, and
+  a server-owned `Open the Vesselforge` option.
+- Brand-searing is now a real social service: both opening and mutating require
+  the Scion to stand within one tile of Tamar. Forged remote actions spend and
+  mutate nothing.
+- The server publishes exact carried vessel UUIDs, material/form, level,
+  Vessel use/free capacity, Patience, existing active/Dormant lines, purse,
+  100-gold cost, eligibility, and disabled reason. A successful sear refreshes
+  the complete item block—name, ratings, modifiers, attributes, resources, and
+  tooltip—then republishes inventory and the still-open forge.
+- The production client mirrors that payload into a dedicated two-column
+  Framekit service. Up/Down and Enter plus pointer rows route the exact UUID;
+  five-row paging keeps compact windows bounded, and modal presentation now
+  suppresses the normal top HUD rather than allowing text to bleed through.
+- Coverage spans direct protocol authority, forged-distance rejection, full
+  item refresh, remote wire-to-model parsing, shared close behavior, and the
+  production `town-vesselforge` scenario at 960x600 and 1366x768.
+- Verification: the full native test and client-scenario gate passes. Final
+  evidence is in
+  `native/build/goal-captures-town-vesselforge-final/town-vesselforge-960x600.png`
+  and `town-vesselforge-1366x768.png`; `frame-budget` remains 9.8 ms average at
+  3440x1440 against the 40 ms ceiling.
+- Remaining Vesselforge progression is deliberately honest: Bonds,
+  attunement/evolution, and awakening are not claimed by this milestone and
+  remain the next expansion of Tamar's service.
+
 ## 2026-09-03 - final Vesselforge implicits
 
 - The last mechanics-bearing WIZARD form lines are authoritative in native:

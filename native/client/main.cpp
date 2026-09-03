@@ -461,7 +461,7 @@ struct ClientState {
   // painted row rectangles for mouse hit-testing (rebuilt every frame).
   struct TradeRowHit {
     RECT rect{};
-    int kind = 0;  // 0 buy, 1 withdraw, 2 deposit, 3 chart, 4 dialogue
+    int kind = 0;  // 0 buy, 1 withdraw, 2 deposit, 3 chart, 4 dialogue, 5 forge
     std::size_t index = 0;
     std::string ref;   // item id (shop) or uuid (bank/deposit)
     std::string extra; // dialogue option id
@@ -5194,6 +5194,17 @@ void activate_trade_row(ClientState& state, const ClientState::TradeRowHit& hit)
         hit.ref, hit.extra, 0));
     return;
   }
+  if (hit.kind == 5) {
+    if (hit.value <= 0) {
+      show_hint(state, hit.extra.empty() ? "This vessel cannot take a Brand"
+                                         : hit.extra);
+      return;
+    }
+    state.session->submit(verdigris::client::ClientCommand::menu_action(
+        "player:vesselforge:add-brand", hit.ref, hit.value));
+    show_hint(state, "Tamar raises the searing iron");
+    return;
+  }
   const char* action = hit.kind == 0   ? "player:shop:buy"
                        : hit.kind == 1 ? "player:bank:withdraw"
                                        : "player:bank:deposit";
@@ -5292,6 +5303,170 @@ void paint_dialogue_pane(ClientState& state, HDC dc, const RECT& bounds,
   SelectObject(dc, old_font);
 }
 
+void paint_vesselforge_pane(ClientState& state, HDC dc, const RECT& bounds,
+                            render::List& rl) {
+  const auto& forge = state.session->model().forge;
+  if (!forge.open) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 820 * s;
+  const int pane_h = 500 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = (static_cast<int>(bounds.bottom) - pane_h) / 2;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kGold, 250, 10.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 0, "vesselforge-pane"});
+
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_heading());
+  SetTextColor(dc, skin::kGold);
+  const std::string title = forge.name.empty() ? "Tamar's Vesselforge" : forge.name;
+  TextOutA(dc, left + 18 * s, top + 12 * s, title.c_str(),
+           static_cast<int>(title.size()));
+  SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kInkDim);
+  const std::string purse = "CARRYING  " + std::to_string(forge.carried_coins) + " GOLD";
+  SIZE purse_extent{};
+  GetTextExtentPoint32A(dc, purse.c_str(), static_cast<int>(purse.size()),
+                        &purse_extent);
+  TextOutA(dc, left + pane_w - purse_extent.cx - 18 * s, top + 19 * s,
+           purse.c_str(), static_cast<int>(purse.size()));
+
+  const int content_top = top + 52 * s;
+  const int list_w = 350 * s;
+  const int row_h = 70 * s;
+  constexpr std::size_t kVisibleRows = 5;
+  if (forge.rows.empty()) state.trade_selected = 0;
+  else if (state.trade_selected >= forge.rows.size())
+    state.trade_selected = forge.rows.size() - 1;
+  const std::size_t page_start = forge.rows.empty()
+      ? 0
+      : (state.trade_selected / kVisibleRows) * kVisibleRows;
+  const std::size_t page_end =
+      (std::min)(forge.rows.size(), page_start + kVisibleRows);
+
+  if (forge.rows.empty()) {
+    RECT empty{left + 18 * s, content_top + 18 * s,
+               left + list_w - 10 * s, content_top + 90 * s};
+    SelectObject(dc, skin::font_body());
+    SetTextColor(dc, skin::kInkDim);
+    const char* copy = "Bring carried vessel gear to Tamar. Equipped gear must be returned to your pack first.";
+    DrawTextA(dc, copy, static_cast<int>(std::strlen(copy)), &empty,
+              DT_LEFT | DT_TOP | DT_WORDBREAK | DT_NOPREFIX);
+  }
+
+  int y = content_top;
+  for (std::size_t i = page_start; i < page_end; ++i) {
+    const auto& row = forge.rows[i];
+    RECT line{left + 14 * s, y, left + list_w - 4 * s, y + row_h - 6 * s};
+    const bool selected = i == state.trade_selected;
+    if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot, line))
+      skin::slot(dc, line, skin::kGold, selected);
+    if (selected) {
+      HPEN pen = CreatePen(PS_SOLID, 2, skin::kGold);
+      HGDIOBJ old_pen = SelectObject(dc, pen);
+      HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+      Rectangle(dc, line.left, line.top, line.right, line.bottom);
+      SelectObject(dc, old_brush); SelectObject(dc, old_pen); DeleteObject(pen);
+    }
+    SelectObject(dc, skin::font_body_bold());
+    SetTextColor(dc, row.eligible ? skin::kInk : skin::kInkDim);
+    RECT name{line.left + 10 * s, line.top + 7 * s,
+              line.right - 10 * s, line.top + 27 * s};
+    DrawTextA(dc, row.name.c_str(), static_cast<int>(row.name.size()), &name,
+              DT_LEFT | DT_TOP | DT_SINGLELINE | DT_END_ELLIPSIS | DT_NOPREFIX);
+    SelectObject(dc, skin::font_small());
+    SetTextColor(dc, row.eligible ? skin::kVerdigris : skin::kEmber);
+    const std::string status = row.eligible
+        ? "READY  |  " + std::to_string(row.cost) + " GOLD"
+        : row.reason;
+    RECT status_rect{line.left + 10 * s, line.top + 36 * s,
+                     line.right - 10 * s, line.bottom - 4 * s};
+    DrawTextA(dc, status.c_str(), static_cast<int>(status.size()), &status_rect,
+              DT_LEFT | DT_TOP | DT_SINGLELINE | DT_END_ELLIPSIS | DT_NOPREFIX);
+    ClientState::TradeRowHit hit;
+    hit.rect = line; hit.kind = 5; hit.index = i; hit.ref = row.uuid;
+    hit.extra = row.reason; hit.value = row.eligible ? row.cost : -1;
+    state.trade_row_hits.push_back(std::move(hit));
+    rl.push_back({render::Op::Hud, static_cast<double>(line.left),
+                  static_cast<double>(line.top), 0.0, static_cast<int>(i),
+                  "vesselforge-row:" + row.uuid});
+    y += row_h;
+  }
+
+  const int detail_left = left + list_w + 18 * s;
+  const int detail_right = left + pane_w - 18 * s;
+  RECT detail{detail_left, content_top, detail_right, top + pane_h - 48 * s};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot, detail))
+    skin::slot(dc, detail, skin::kVerdigris, false);
+  if (!forge.rows.empty()) {
+    const auto& row = forge.rows[state.trade_selected];
+    int dy = detail.top + 14 * s;
+    SelectObject(dc, skin::font_heading());
+    SetTextColor(dc, skin::kInk);
+    RECT detail_name{detail.left + 14 * s, dy, detail.right - 14 * s,
+                     dy + 28 * s};
+    DrawTextA(dc, row.name.c_str(), static_cast<int>(row.name.size()),
+              &detail_name, DT_LEFT | DT_TOP | DT_SINGLELINE |
+                            DT_END_ELLIPSIS | DT_NOPREFIX);
+    dy += 34 * s;
+    SelectObject(dc, skin::font_small());
+    SetTextColor(dc, skin::kGold);
+    const std::string identity = "LEVEL " + std::to_string(row.item_level) +
+        "  |  " + row.material + " " + row.form;
+    TextOutA(dc, detail.left + 14 * s, dy, identity.c_str(),
+             static_cast<int>(identity.size()));
+    dy += 28 * s;
+    SelectObject(dc, skin::font_body_bold());
+    SetTextColor(dc, skin::kVerdigris);
+    const std::string vessel = "VESSEL  " + std::to_string(row.used) + "/" +
+        std::to_string(row.vessel) + "     PATIENCE  " +
+        std::to_string(row.patience) + "/" +
+        std::to_string(row.patience_max);
+    TextOutA(dc, detail.left + 14 * s, dy, vessel.c_str(),
+             static_cast<int>(vessel.size()));
+    dy += 31 * s;
+    SelectObject(dc, skin::font_small());
+    std::size_t painted_lines = 0;
+    for (const auto& forge_line : row.lines) {
+      if (painted_lines >= 8) break;
+      SetTextColor(dc, forge_line.tone == "inactive" ? skin::kInkDim
+                                                       : skin::kInk);
+      RECT text_rect{detail.left + 14 * s, dy, detail.right - 14 * s,
+                     dy + 24 * s};
+      DrawTextA(dc, forge_line.text.c_str(),
+                static_cast<int>(forge_line.text.size()), &text_rect,
+                DT_LEFT | DT_TOP | DT_SINGLELINE | DT_END_ELLIPSIS |
+                    DT_NOPREFIX);
+      rl.push_back({render::Op::PaneStat, static_cast<double>(text_rect.left),
+                    static_cast<double>(text_rect.top), 0.0, 0,
+                    "vesselforge-line:" + forge_line.text});
+      dy += 23 * s;
+      ++painted_lines;
+    }
+    const int action_y = detail.bottom - 52 * s;
+    SelectObject(dc, skin::font_body_bold());
+    SetTextColor(dc, row.eligible ? skin::kGold : skin::kEmber);
+    const std::string action = row.eligible
+        ? "SEAR A NEW BRAND  -  " + std::to_string(row.cost) + " GOLD"
+        : row.reason;
+    TextOutA(dc, detail.left + 14 * s, action_y, action.c_str(),
+             static_cast<int>(action.size()));
+  }
+
+  SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kInkDim);
+  const std::string footer = forge.rows.size() > kVisibleRows
+      ? "Up/Down changes vessel  |  Click or Enter sears  |  Esc closes  |  " +
+            std::to_string(state.trade_selected + 1) + "/" +
+            std::to_string(forge.rows.size())
+      : "Up/Down changes vessel  |  Click or Enter sears  |  Esc closes";
+  TextOutA(dc, left + 18 * s, top + pane_h - 30 * s, footer.c_str(),
+           static_cast<int>(footer.size()));
+  SelectObject(dc, old_font);
+}
+
 void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
                       render::List& rl) {
   state.trade_row_hits.clear();
@@ -5303,6 +5478,10 @@ void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
   const auto& model = state.session->model();
   if (model.dialogue.open) {
     paint_dialogue_pane(state, dc, bounds, rl);
+    return;
+  }
+  if (model.forge.open) {
+    paint_vesselforge_pane(state, dc, bounds, rl);
     return;
   }
   if (!model.shop.open && !model.bank.open && !model.chart.open) return;
@@ -5833,7 +6012,12 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         // Role-coloured ring, and always the vector silhouette so townsfolk
         // never read as copies of the raster player plate.
         COLORREF ring = RGB(122, 168, 230);  // guide/talk
-        if (!npc.actions.empty()) {
+        const bool vesselwright =
+            std::find(npc.services.begin(), npc.services.end(),
+                      std::string("vesselforge")) != npc.services.end();
+        if (vesselwright) {
+          ring = RGB(215, 138, 71);
+        } else if (!npc.actions.empty()) {
           const std::string& lead = npc.actions.front();
           if (lead == "trade") ring = RGB(239, 208, 116);
           else if (lead == "bank") ring = RGB(120, 214, 168);
@@ -5850,7 +6034,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
           pose.breathe = std::fmod(state.breathe_phase + npc.id * 0.23, 1.0);
           pose.mirror = world.player.position.x < npc.position.x;
           vector_art::Held prop = vector_art::Held::None;
-          if (!npc.actions.empty()) {
+          if (vesselwright) {
+            prop = vector_art::Held::Club;  // Tamar's heavy searing tool
+          } else if (!npc.actions.empty()) {
             const std::string& lead = npc.actions.front();
             if (lead == "talk") prop = vector_art::Held::Staff;
             else if (lead == "trade") prop = vector_art::Held::Scales;
@@ -6077,7 +6263,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
 
   // TASK-0153 rev2: every normal-HUD top region is measured, then placed by
   // the single pure planner pass, then drawn exactly where it was placed.
-  {
+  if (!trade_pane_open(state)) {
     std::string objective;
     COLORREF accent = RGB(120, 214, 168);
     const bool carrying = !world.carried.empty() || world.carried_trophies > 0;
@@ -6717,7 +6903,7 @@ bool trade_pane_open(const ClientState& state) {
   if (!state.session) return false;
   const auto& model = state.session->model();
   return model.shop.open || model.bank.open || model.chart.open ||
-         model.dialogue.open;
+         model.dialogue.open || model.forge.open;
 }
 
 void toggle_minimap_overlay(ClientState& state) {
@@ -9398,6 +9584,93 @@ int scenario_vesselforge_final_implicits() {
   return 0;
 }
 
+class ScenarioForgeSession final
+    : public verdigris::client::IClientSession {
+ public:
+  ScenarioForgeSession() {
+    model_.player.uuid = "scenario-forge-scion";
+    model_.player.display_name = "Ilyra";
+    model_.player.scene_id = "town:verdigris";
+    model_.player.x = 42.0;
+    model_.player.y = 121.0;
+    model_.player.life = model_.player.life_max = 120;
+    model_.player.resource = model_.player.resource_max = 55;
+    model_.scene.id = "town:verdigris";
+    model_.scene.type = "town";
+    model_.scene.name = "The Crossroads";
+    model_.theme = "town";
+    model_.house_name = "House Emberwake";
+    model_.npcs = {
+        {5, "tamar-vesselwright", "Tamar the Vesselwright", "vesselwright",
+         "A low forge and copper tools.", 42.0, 121.0,
+         {"vesselforge", "brand_searing"}, {"talk", "examine"}},
+    };
+    model_.forge.open = true;
+    model_.forge.name = "Tamar's Vesselforge";
+    model_.forge.npc_id = 5;
+    model_.forge.carried_coins = 145;
+    const auto add = [&](const char* uuid, const char* name, const char* material,
+                         const char* form, int vessel, int used, int patience,
+                         int patience_max, bool eligible, const char* reason,
+                         std::vector<verdigris::client::ClientForgeLine> lines) {
+      verdigris::client::ClientForgeRow row;
+      row.uuid = uuid; row.name = name; row.material = material; row.form = form;
+      row.item_level = 40; row.vessel = vessel; row.used = used;
+      row.free_slots = (std::max)(0, vessel - used);
+      row.patience = patience; row.patience_max = patience_max;
+      row.brand_count = (std::max)(0, used); row.cost = 100;
+      row.eligible = eligible; row.reason = reason; row.lines = std::move(lines);
+      model_.forge.rows.push_back(std::move(row));
+    };
+    add("vf-handaxe", "Bronze Handaxe", "Bronze", "Handaxe", 4, 2, 3, 5,
+        true, "", {{"implicit", "+12% Physical Damage", "normal"},
+                    {"brand", "+9% Chance to Bleed", "normal"},
+                    {"vessel", "Vessel 4 - Patience 3/5", "normal"}});
+    add("vf-atlatl", "Copper Atlatl", "Copper", "Atlatl", 3, 3, 2, 4,
+        false, "Its vessel is full.",
+        {{"implicit", "+20% Projectile Range", "normal"}});
+    add("vf-wrap", "Quilted Wrap", "Quilted", "Wrap", 4, 1, 0, 4,
+        false, "Its patience is spent.",
+        {{"implicit", "+18 Maximum Health", "normal"}});
+    add("vf-sling", "Obsidian Sling", "Obsidian", "Sling", 5, 2, 2, 3,
+        true, "", {{"implicit", "Ignores half of Armour", "normal"},
+                    {"dormant", "Dormant - +8% Ward", "inactive"}});
+    add("vf-crest", "Jade Crest", "Jade", "Crest", 5, 1, 4, 6,
+        true, "", {{"implicit", "+10 to all Attributes", "normal"}});
+    add("vf-gorget", "Amber Gorget", "Amber", "Gorget", 5, 2, 4, 6,
+        true, "", {{"brand", "+14% Goods Found", "normal"}});
+  }
+  bool start(std::string*) override { return true; }
+  void shutdown() override {}
+  void submit(const verdigris::client::ClientCommand& command) override {
+    last_type = command.type;
+    last_target = command.target;
+    last_extra = command.extra;
+    last_value = command.value;
+    if (command.type == verdigris::client::ClientCommand::Type::CloseScreen)
+      model_.forge.open = false;
+  }
+  void poll() override {}
+  verdigris::client::ConnectionState connection_state() const override {
+    return verdigris::client::ConnectionState::Ready;
+  }
+  const verdigris::client::ClientModel& model() const override { return model_; }
+  std::vector<verdigris::client::PresentationEvent> drain_events() override {
+    return {};
+  }
+  const std::string& last_error() const override { return error_; }
+
+  verdigris::client::ClientCommand::Type last_type =
+      verdigris::client::ClientCommand::Type::Move;
+  std::string last_target;
+  std::string last_extra;
+  int last_value = 0;
+
+ private:
+  verdigris::client::ClientModel model_;
+  std::string error_;
+};
+
 class ScenarioDialogueSession final
     : public verdigris::client::IClientSession {
  public:
@@ -9425,6 +9698,9 @@ class ScenarioDialogueSession final
         {4, "rhea-countinghouse", "Rhea of the Countinghouse", "steward",
          "House ledger.", 31.0, 121.0, {"storage", "house_investment"},
          {"bank", "examine"}},
+        {5, "tamar-vesselwright", "Tamar the Vesselwright", "vesselwright",
+         "The town forge.", 42.0, 121.0, {"vesselforge", "brand_searing"},
+         {"talk", "examine"}},
     };
     model_.dialogue.open = true;
     model_.dialogue.npc_id = 4;
@@ -9595,6 +9871,69 @@ int scenario_town_social_hub() {
              hit.rect.right <= 1366 && hit.rect.bottom <= 768;
   scenario_check(inside,
                  "town-social-hub: every choice remains inside the compact viewport");
+  return 0;
+}
+
+int scenario_town_vesselforge() {
+  ClientState state;
+  auto owned = std::make_unique<ScenarioForgeSession>();
+  ScenarioForgeSession* scenario = owned.get();
+  state.session = std::move(owned);
+  load_billboards(state.billboards);
+  sync_world(state);
+  generate_scenery(state);
+  scenario_follow_camera(state);
+
+  std::string capture_dir;
+  const int capture_override = capture_root_override(&capture_dir);
+  if (capture_override < 0) {
+    scenario_check(false,
+                   "town-vesselforge: capture root rejected before any write");
+    return 0;
+  }
+  if (capture_override == 0) {
+    CreateDirectoryA("captures", nullptr);
+    capture_dir = "captures";
+  }
+  const std::string compact =
+      capture_dir + "\\town-vesselforge-960x600.png";
+  scenario_check(reference_present(state, 960, 600, compact),
+                 "town-vesselforge: compact Framekit service captured");
+  std::printf("    capture: %s\n", compact.c_str());
+  bool compact_inside = state.trade_row_hits.size() == 5;
+  for (const auto& hit : state.trade_row_hits)
+    compact_inside = compact_inside && hit.rect.left >= 0 && hit.rect.top >= 0 &&
+                     hit.rect.right <= 960 && hit.rect.bottom <= 600;
+  scenario_check(compact_inside,
+                 "town-vesselforge: five-row page stays inside 960x600");
+
+  state.trade_selected = 3;
+  const std::string large =
+      capture_dir + "\\town-vesselforge-1366x768.png";
+  scenario_check(reference_present(state, 1366, 768, large),
+                 "town-vesselforge: selected vessel detail captured");
+  std::printf("    capture: %s\n", large.c_str());
+  bool pane = false;
+  bool active_line = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Hud && item.label == "vesselforge-pane") pane = true;
+    if (item.op == render::Op::PaneStat &&
+        item.label == "vesselforge-line:Ignores half of Armour")
+      active_line = true;
+  }
+  scenario_check(pane && active_line && state.trade_row_hits.size() == 5,
+                 "town-vesselforge: Framekit list, detail, and paging evidence agree");
+  for (const auto& hit : state.trade_row_hits) {
+    if (hit.index == state.trade_selected) {
+      activate_trade_row(state, hit);
+      break;
+    }
+  }
+  scenario_check(
+      scenario->last_type == verdigris::client::ClientCommand::Type::MenuAction &&
+          scenario->last_target == "player:vesselforge:add-brand" &&
+          scenario->last_extra == "vf-sling" && scenario->last_value == 100,
+      "town-vesselforge: Enter/click routes the exact authoritative item and cost");
   return 0;
 }
 
@@ -9977,6 +10316,7 @@ int run_scenarios(const std::string& which) {
       {"vesselforge-active-properties", scenario_vesselforge_active_properties},
       {"vesselforge-final-implicits", scenario_vesselforge_final_implicits},
       {"town-social-hub", scenario_town_social_hub},
+      {"town-vesselforge", scenario_town_vesselforge},
       {"campaign-journal", scenario_campaign_journal},
       {"deep-roads-campaign", scenario_deep_roads_campaign},
       {"tactical-map", scenario_tactical_map_overlay},

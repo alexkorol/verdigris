@@ -162,6 +162,7 @@ class ProtocolSession {
   void auto_pickup_gold(const std::function<void(const Envelope&)>& emit);
   void emit_wagon_screen(const std::function<void(const Envelope&)>& emit) const;
   void emit_shop_screen(const std::function<void(const Envelope&)>& emit) const;
+  void emit_vesselforge_screen(const std::function<void(const Envelope&)>& emit) const;
   JsonValue bank_items_json() const;
   void emit_chart_screen(const std::string& road_id, const std::function<void(const Envelope&)>& emit) const;
   void enter_road_node(const std::string& node_id, const std::function<void(const Envelope&)>& emit);

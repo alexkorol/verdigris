@@ -1,5 +1,25 @@
 # UI Regression Checklist
 
+## Native Town Vesselforge
+
+- Stand beside Tamar the Vesselwright and press `T`. Confirm her authored
+  conversation opens and `Open the Vesselforge` leads to a centered Framekit
+  list/detail surface. The normal objective and controls HUD must not draw
+  through the modal.
+- Confirm every carried vessel row shows its current name and either `READY | 100
+  GOLD` or a precise full-vessel, spent-patience, or insufficient-gold reason.
+  The detail side must agree on item level, material/form, Vessel use, Patience,
+  and active versus Dormant lines.
+- Use Up/Down and Enter, then repeat with a pointer click. Exactly the selected
+  UUID must gain one Brand, lose one Patience and 100 gold, and refresh in the
+  still-open pane without stale name or combat values.
+- Attempt the same action from across town and after leaving the town. Neither
+  the vessel nor the purse may change. Equipped gear must not be offered as if
+  it were carried.
+- At 960x600 and 1366x768, confirm five rows, the item detail, action line,
+  paging count, and footer stay inside the Framekit panel. Moving beyond the
+  fifth row must page the list while retaining keyboard focus.
+
 ## Native Vesselforge Active Properties
 
 - Equip an Obsidian Macuahuitl and confirm its card says `Hits cause Bleeding`

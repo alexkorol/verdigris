@@ -132,6 +132,38 @@ struct ClientDialogueScreen {
   std::vector<ClientDialogueOption> options;
 };
 
+struct ClientForgeLine {
+  std::string section;
+  std::string text;
+  std::string tone;
+};
+
+struct ClientForgeRow {
+  std::string uuid;
+  std::string name;
+  std::string material;
+  std::string form;
+  std::string reason;
+  int item_level = 0;
+  int vessel = 0;
+  int used = 0;
+  int free_slots = 0;
+  int patience = 0;
+  int patience_max = 0;
+  int brand_count = 0;
+  int cost = 100;
+  bool eligible = false;
+  std::vector<ClientForgeLine> lines;
+};
+
+struct ClientForgeScreen {
+  bool open = false;
+  std::string name;
+  int npc_id = 0;
+  int carried_coins = 0;
+  std::vector<ClientForgeRow> rows;
+};
+
 struct ClientHouseInvestment {
   bool first_clear_completed = false;
   bool eligible = false;
@@ -304,6 +336,7 @@ struct ClientModel {
   ClientBankScreen bank;
   ClientChartScreen chart;
   ClientDialogueScreen dialogue;
+  ClientForgeScreen forge;
   ClientHouseInvestment house_investment;
   // stats-manager attributes from the dev:state snapshot.
   int attr_strength = 10;

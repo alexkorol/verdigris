@@ -940,6 +940,118 @@ void test_active_forge_properties_cross_the_protocol() {
         "forge wire: Sling hit publishes exact Armour and penetration facts");
 }
 
+void test_tamar_vesselforge_service() {
+  ProtocolSession session("guest-tamar-forge", "socket-tamar-forge", 0x5ea2u,
+                          false);
+  session.handle(Envelope{"dev:give", JsonValue::Object{
+      {"itemId", "vessel-handaxe"}, {"qty", 1},
+      {"itemLevel", 40}, {"seed", 37}}}, [](const Envelope&) {});
+  auto before = request_state(session, "tamar-before");
+  const std::string uuid = inventory_uuid_for(before, "vessel-handaxe");
+  check(!uuid.empty(), "vesselforge service: carried vessel has an exact uuid");
+
+  const auto find_detail = [&](const JsonValue& state) -> const JsonValue* {
+    if (const auto* items = state["state"]["inventoryDetails"].array())
+      for (const auto& item : *items)
+        if (item["uuid"].string() && *item["uuid"].string() == uuid)
+          return &item;
+    return nullptr;
+  };
+  const JsonValue* before_item = find_detail(before);
+  check(before_item && (*before_item)["vessel"]["item"]["brands"].array(),
+        "vesselforge service: vessel identity is published before searing");
+  const std::size_t brands_before =
+      (*before_item)["vessel"]["item"]["brands"].array()->size();
+  const int patience_before = static_cast<int>(
+      (*before_item)["vessel"]["item"]["patience"].number().value_or(0));
+
+  const auto action = [&](const std::string& action_id,
+                          const std::string& ref,
+                          const std::function<void(const Envelope&)>& emit) {
+    session.handle(
+        Envelope{"player:context-menu:action",
+                 JsonValue::Object{{"queueItem",
+                    JsonValue::Object{{"action", JsonValue::Object{{"actionId", action_id}}},
+                                      {"item", JsonValue::Object{{"id", ref}, {"uuid", ref},
+                                                                  {"price", 100}}}}}}},
+        emit);
+  };
+
+  bool forged_from_afar = false;
+  action("player:vesselforge:add-brand", uuid,
+         [&](const Envelope&) { forged_from_afar = true; });
+  auto after_far = request_state(session, "tamar-far");
+  const JsonValue* far_item = find_detail(after_far);
+  check(!forged_from_afar && far_item &&
+            (*far_item)["vessel"]["item"]["brands"].array()->size() == brands_before &&
+            (*far_item)["vessel"]["item"]["patience"].number().value_or(0) == patience_before,
+        "vesselforge service: forged remote actions cannot mutate a vessel");
+
+  session.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", 42}, {"y", 121}}},
+                 [](const Envelope&) {});
+  std::optional<Envelope> dialogue;
+  session.handle(
+      Envelope{"player:context-menu:action",
+               JsonValue::Object{{"queueItem",
+                  JsonValue::Object{{"action", JsonValue::Object{{"actionId", "player:npc:talk"}}},
+                                    {"item", JsonValue::Object{{"id", 5}}}}}}},
+      [&](const Envelope& event) {
+        if (event.event == "open:screen") dialogue = event;
+      });
+  check(dialogue && dialogue->data["screen"].string() &&
+            *dialogue->data["screen"].string() == "dialogue" &&
+            dialogue->data["payload"]["npcKey"].string() &&
+            *dialogue->data["payload"]["npcKey"].string() == "tamar-vesselwright" &&
+            dialogue->data["payload"]["options"].array() &&
+            dialogue->data["payload"]["options"].array()->size() == 1,
+        "vesselforge service: Tamar opens a dedicated service conversation");
+
+  std::optional<Envelope> opened;
+  action("player:screen:vesselforge", "vesselforge",
+         [&](const Envelope& event) {
+           if (event.event == "open:screen") opened = event;
+         });
+  const JsonValue* open_row = nullptr;
+  if (opened && opened->data["payload"]["items"].array())
+    for (const auto& row : *opened->data["payload"]["items"].array())
+      if (row["uuid"].string() && *row["uuid"].string() == uuid)
+        open_row = &row;
+  const int coins_before = opened
+      ? static_cast<int>(opened->data["payload"]["carriedCoins"].number().value_or(0))
+      : 0;
+  check(opened && opened->data["screen"].string() &&
+            *opened->data["screen"].string() == "vesselforge" && open_row &&
+            (*open_row)["eligible"].boolean().value_or(false) &&
+            (*open_row)["cost"].number().value_or(0) == 100 && coins_before >= 100,
+        "vesselforge service: screen publishes exact eligible item, cost, and purse");
+
+  bool saw_inventory = false;
+  bool saw_message = false;
+  std::optional<Envelope> refreshed_screen;
+  action("player:vesselforge:add-brand", uuid,
+         [&](const Envelope& event) {
+           if (event.event == "core:refresh:inventory") saw_inventory = true;
+           if (event.event == "game:send:message") saw_message = true;
+           if (event.event == "open:screen" && event.data["screen"].string() &&
+               *event.data["screen"].string() == "vesselforge")
+             refreshed_screen = event;
+         });
+  const auto after = request_state(session, "tamar-after");
+  const JsonValue* after_item = find_detail(after);
+  check(after_item && saw_inventory && saw_message && refreshed_screen &&
+            (*after_item)["vessel"]["item"]["brands"].array()->size() == brands_before + 1 &&
+            (*after_item)["vessel"]["item"]["patience"].number().value_or(0) == patience_before - 1 &&
+            refreshed_screen->data["payload"]["carriedCoins"].number().value_or(0) == coins_before - 100,
+        "vesselforge service: one sear spends exact resources and refreshes the open service");
+  check(after_item && (*after_item)["displayName"].string() &&
+            (*after_item)["vessel"]["displayName"].string() &&
+            *(*after_item)["displayName"].string() ==
+                *(*after_item)["vessel"]["displayName"].string() &&
+            (*after_item)["stats"]["attack"]["slash"].number().value_or(-1) ==
+                (*after_item)["vessel"]["combat"]["ratings"]["attack"]["slash"].number().value_or(-2),
+        "vesselforge service: refreshed identity and combat projection agree");
+}
+
 void test_crossroads_social_hub_and_house_investment() {
   ProtocolSession session("guest-crossroads", "socket-crossroads", 0xc055u, false);
 
@@ -969,11 +1081,12 @@ void test_crossroads_social_hub_and_house_investment() {
 
   auto state = request_state(session, "town-roster");
   const auto* npcs = state["state"]["npcs"].array();
-  check(npcs && npcs->size() == 4,
-        "crossroads: accepted owner-demo roster has exactly four townsfolk");
+  check(npcs && npcs->size() == 5,
+        "crossroads: the accepted roster includes five authored townsfolk");
   bool saw_ludovicus = false;
   bool saw_selene = false;
   bool saw_rhea_services = false;
+  bool saw_tamar_services = false;
   bool saw_retired_mara = false;
   if (npcs) {
     for (const auto& npc : *npcs) {
@@ -987,11 +1100,17 @@ void test_crossroads_social_hub_and_house_investment() {
       if (key == "rhea-countinghouse" && npc["services"].array() &&
           npc["services"].array()->size() == 2)
         saw_rhea_services = true;
+      if (key == "tamar-vesselwright" && npc["services"].array() &&
+          npc["services"].array()->size() == 2 &&
+          npc["x"].number().value_or(0) == 42 &&
+          npc["y"].number().value_or(0) == 121)
+        saw_tamar_services = true;
       if (npc["name"].string() && npc["name"].string()->find("Mara") != std::string::npos)
         saw_retired_mara = true;
     }
   }
-  check(saw_ludovicus && saw_selene && saw_rhea_services && !saw_retired_mara,
+  check(saw_ludovicus && saw_selene && saw_rhea_services && saw_tamar_services &&
+            !saw_retired_mara,
         "crossroads: stable ids, roles, services, and seed positions reach the wire");
   check(!state["state"]["houseInvestment"]["eligible"].boolean().value_or(true),
         "investment: coffer is locked before the first clear");
@@ -1677,6 +1796,7 @@ int main() {
     test_gate_a_extract_and_stairs();
     test_gate_a_equip_totals_and_unknown_uuid();
     test_active_forge_properties_cross_the_protocol();
+    test_tamar_vesselforge_service();
     test_crossroads_social_hub_and_house_investment();
     test_campaign_contract_and_scion_checkpoint();
     test_four_roads_campaign_act_and_persistence();

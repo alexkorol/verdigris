@@ -820,6 +820,7 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       model_.bank.open = false;
       model_.chart.open = false;
       model_.dialogue.open = false;
+      model_.forge.open = false;
       return;
     case ClientCommand::Type::AllocateNode: {
       // Extend the authoritative allocation by one node and save the whole
@@ -1105,6 +1106,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         model_.bank.open = false;
         model_.chart.open = false;
         model_.dialogue.open = false;
+        model_.forge.open = false;
       } else if (*screen == "chart") {
         ClientChartScreen chart;
         chart.open = true;
@@ -1132,6 +1134,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         model_.shop.open = false;
         model_.bank.open = false;
         model_.dialogue.open = false;
+        model_.forge.open = false;
       } else if (*screen == "bank") {
         ClientBankScreen bank;
         bank.open = true;
@@ -1156,6 +1159,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         model_.shop.open = false;
         model_.chart.open = false;
         model_.dialogue.open = false;
+        model_.forge.open = false;
       } else if (*screen == "dialogue") {
         ClientDialogueScreen dialogue;
         dialogue.open = true;
@@ -1189,6 +1193,54 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         model_.shop.open = false;
         model_.bank.open = false;
         model_.chart.open = false;
+        model_.forge.open = false;
+      } else if (*screen == "vesselforge") {
+        ClientForgeScreen forge;
+        forge.open = true;
+        forge.npc_id = static_cast<int>(json_number(payload->get("npcId"), 0.0));
+        forge.carried_coins =
+            static_cast<int>(json_number(payload->get("carriedCoins"), 0.0));
+        if (const auto* name = json_string(payload->get("name")))
+          forge.name = *name;
+        if (const auto* items = payload->get("items"); items && items->array()) {
+          for (const auto& item : *items->array()) {
+            ClientForgeRow row;
+            if (const auto* value = json_string(item.get("uuid"))) row.uuid = *value;
+            if (const auto* value = json_string(item.get("name"))) row.name = *value;
+            if (const auto* value = json_string(item.get("material"))) row.material = *value;
+            if (const auto* value = json_string(item.get("form"))) row.form = *value;
+            if (const auto* value = json_string(item.get("reason"))) row.reason = *value;
+            row.item_level = static_cast<int>(json_number(item.get("itemLevel"), 0.0));
+            row.vessel = static_cast<int>(json_number(item.get("vessel"), 0.0));
+            row.used = static_cast<int>(json_number(item.get("used"), 0.0));
+            row.free_slots = static_cast<int>(json_number(item.get("freeSlots"), 0.0));
+            row.patience = static_cast<int>(json_number(item.get("patience"), 0.0));
+            row.patience_max = static_cast<int>(json_number(item.get("patienceMax"), 0.0));
+            row.brand_count = static_cast<int>(json_number(item.get("brandCount"), 0.0));
+            row.cost = static_cast<int>(json_number(item.get("cost"), 100.0));
+            if (const auto* eligible = item.get("eligible");
+                eligible && eligible->boolean())
+              row.eligible = *eligible->boolean();
+            if (const auto* lines = item.get("lines"); lines && lines->array()) {
+              for (const auto& line : *lines->array()) {
+                ClientForgeLine parsed;
+                if (const auto* value = json_string(line.get("section")))
+                  parsed.section = *value;
+                if (const auto* value = json_string(line.get("text")))
+                  parsed.text = *value;
+                if (const auto* value = json_string(line.get("tone")))
+                  parsed.tone = *value;
+                row.lines.push_back(std::move(parsed));
+              }
+            }
+            forge.rows.push_back(std::move(row));
+          }
+        }
+        model_.forge = std::move(forge);
+        model_.shop.open = false;
+        model_.bank.open = false;
+        model_.chart.open = false;
+        model_.dialogue.open = false;
       }
     }
     return;

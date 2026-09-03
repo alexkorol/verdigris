@@ -7,11 +7,11 @@ rebuilt 2.5D Delaford Village remains the campaign's town, and the
 House-charted world web now hangs off four road gates beside its portals — a
 procedurally generated web of zones (four roads, branching tiers, a Warden
 per zone gating the next, ~15-minute zone persistence, zones private to a
-player/party), plus wagon pitches, the daily road purse, deposits, and House
-outfitting on the plaza. The full Crossroads conversion (trading-hub town,
-sanctuary truce-ground, wagon pane UI in the client shell) is the planned
-follow-up; the server systems and playtests for it are already live. One
-rule holds: walked ground holds; forsaken ground weathers.
+player/party), plus wagon pitches, the daily road purse, deposits, House
+outfitting, and Tamar's Vesselforge on the plaza. The Crossroads now acts as a
+trading and crafting hub with server-owned conversations and Framekit service
+panes; deeper social features and player-modified structures remain future
+work. One rule holds: walked ground holds; forsaken ground weathers.
 
 Landed from the WIZARD prototypes (skill tree, Vesselforge inventory engine,
 Chronicles account creator):
@@ -110,7 +110,11 @@ empty equipment positions.
 
 The delaford-era resource loops (ore mining, furnace/anvil smithing) are
 retired: Verdigris is an ARPG, and crafting arrives through the Houses meta
-systems instead (Vesselforge brand-searing in town is already live).
+systems instead. Tamar now provides the first dedicated Vesselforge service:
+carried vessel gear, capacity, patience, existing lines, eligibility, purse,
+and the 100-gold Brand cost are all server-authored and presented in Framekit.
+Searing requires standing at Tamar and refreshes the item's full identity and
+combat projection immediately.
 
 The live bestiary and townsfolk are now reference-driven 64px actors as well.
 All 15 surface-campaign monsters have named silhouettes, and the 28 Adventure
@@ -136,9 +140,9 @@ original prototype roadmap:
 1. **Campaign breadth:** extend the authoritative twelve-commission campaign
    toward the 23 quest points reserved by the passive tree, with named zones,
    bosses, rewards, persistence, and playtest coverage for each arc.
-2. **Vesselforge progression:** expose the existing server-owned crafting,
-   attunement, and awakening loops through an inspectable player-facing town
-   service now that every mechanics-bearing form and Brand line is authoritative.
+2. **Vesselforge progression:** extend Tamar's inspectable Brand-searing town
+   service with Bonds, attunement, evolution, and awakening now that every
+   mechanics-bearing form and Brand line is authoritative.
 3. **Inventory depth and access:** implement real nested containers and finish
    keyboard-first grid/equipment navigation; pointer equip/unequip, rotation,
    spatial placement, overflow, and tooltips are already live.
@@ -154,7 +158,8 @@ release-safe baseline.
 
 ## Pillars
 
-- **WASD-first ARPG**: keyboard movement/combat with optional mouse context menus.
+- **WASD-first ARPG**: keyboard movement/combat with pointer-accessible,
+  keyboard-complete Framekit surfaces.
 - **Character Identity**: permadeath, name validation, player-tied loot.
 - **Rich Itemisation**: spatial inventory, nested containers, brands & bonds.
 - **Shared Stat Ecosystem**: players and monsters use the same attribute pipeline.
@@ -209,8 +214,8 @@ release-safe baseline.
 - Localization scaffolding.
 - Expand the authoritative campaign beyond its first three commissions toward
   the 23-point quest budget reserved by the passive tree.
-- Expose Vesselforge crafting, attunement, and awakening as player-facing town
-  progression now that all mechanics-bearing form and Brand lines are live.
+- Extend the live Tamar Brand-searing service with Bonds, attunement, and
+  awakening as player-facing town progression.
   Shield block, Keen Eye critical chance, Wealthy loot bonuses, and Beastbane
   damage against explicitly tagged creatures are now live and persisted, with
   explicit `BLOCK`, `CRIT`, and `BANE` combat feedback. Bloodgroove bleed,

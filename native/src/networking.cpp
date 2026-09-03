@@ -1072,6 +1072,9 @@ const TownNpc kTownNpcs[] = {
     {4, "rhea-countinghouse", "Rhea of the Countinghouse", "steward",
      "The House ledgers, shared stores, and first investments pass through Rhea's hands.",
      31, 121, {"storage", "house_investment"}, 2, {"bank", "examine"}, 2},
+    {5, "tamar-vesselwright", "Tamar the Vesselwright", "vesselwright",
+     "A low forge burns beneath Tamar's copper tools, ready to teach worthy vessels a new name.",
+     42, 121, {"vesselforge", "brand_searing"}, 2, {"talk", "examine"}, 2},
 };
 
 const TownNpc* town_npc(int id) {
@@ -1748,6 +1751,64 @@ void ProtocolSession::emit_shop_screen(const std::function<void(const Envelope&)
   emit(Envelope{"open:screen", JsonValue(std::move(data))});
 }
 
+void ProtocolSession::emit_vesselforge_screen(
+    const std::function<void(const Envelope&)>& emit) const {
+  constexpr int kBrandCost = 100;
+  JsonValue::Array vessels;
+  for (const auto& carried : inventory_.items()) {
+    if (!carried.vessel) continue;
+    const VesselBlock& block = *carried.vessel;
+    const int used = block.item.scars +
+                     static_cast<int>(block.item.brands.size());
+    const int free_slots = (std::max)(0, block.item.vessel - used);
+    std::string reason;
+    if (free_slots <= 0)
+      reason = "Its vessel is full.";
+    else if (block.item.patience <= 0)
+      reason = "Its patience is spent.";
+    else if (carried_gold() < kBrandCost)
+      reason = "You need 100 gold.";
+
+    JsonValue::Array lines;
+    for (const auto& line : block.lines) {
+      if (line.section == "name") continue;
+      JsonValue::Object entry;
+      put(entry, "section", line.section);
+      put(entry, "text", line.text);
+      put(entry, "tone", line.tone);
+      lines.emplace_back(std::move(entry));
+    }
+    JsonValue::Object row;
+    put(row, "uuid", carried.uuid);
+    put(row, "name", carried.display_name);
+    put(row, "material", block.material);
+    put(row, "form", block.form);
+    put(row, "itemLevel", block.item.ilvl);
+    put(row, "vessel", block.item.vessel);
+    put(row, "used", used);
+    put(row, "freeSlots", free_slots);
+    put(row, "patience", block.item.patience);
+    put(row, "patienceMax", block.item.patience_max);
+    put(row, "brandCount", static_cast<int>(block.item.brands.size()));
+    put(row, "cost", kBrandCost);
+    put(row, "eligible", reason.empty());
+    put(row, "reason", reason);
+    put(row, "lines", std::move(lines));
+    vessels.emplace_back(std::move(row));
+  }
+
+  JsonValue::Object payload;
+  put(payload, "name", "Tamar's Vesselforge");
+  put(payload, "npcId", 5);
+  put(payload, "carriedCoins", carried_gold());
+  put(payload, "items", std::move(vessels));
+  JsonValue::Object data;
+  put(data, "player", JsonValue::Object{{"socket_id", socket_id_}});
+  put(data, "screen", "vesselforge");
+  put(data, "payload", std::move(payload));
+  emit(Envelope{"open:screen", JsonValue(std::move(data))});
+}
+
 JsonValue ProtocolSession::bank_items_json() const {
   JsonValue::Array items;
   int index = 0;
@@ -2311,6 +2372,11 @@ void ProtocolSession::emit_npc_dialogue(
                  "+5 House treasury after every future floor clear.",
                  "house:investment:choose");
     }
+  } else if (npc_id == 5) {
+    body = "Every vessel has room for a history, but iron remembers the cost. I can sear one new Brand for 100 gold while its vessel and patience endure.";
+    add_option("vesselforge", "Open the Vesselforge",
+               "Sear a new Brand into carried vessel gear.",
+               "player:screen:vesselforge");
   }
 
   JsonValue::Object payload;
@@ -3005,10 +3071,23 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
     emit_npc_dialogue(as_int(item_ref ? item_ref->get("id") : nullptr, -1), emit);
     return;
   }
+  if (action_id=="player:screen:vesselforge") {
+    const TownNpc* npc = town_npc(5);
+    const Vec2 tile = tile_movement::occupied_tile(world_->position());
+    if (!npc || world_->in_instance() ||
+        (std::max)(std::abs(tile.x - npc->x), std::abs(tile.y - npc->y)) > 1)
+      return;
+    emit_vesselforge_screen(emit);
+    return;
+  }
   if (action_id=="player:vesselforge:add-brand") {
     // vesselforge-brand.js: town service, 100 coins, sear on the live item;
     // a failed roll spends nothing (engine rolls on a clone internally).
-    if (world_->scene_id()!="town:verdigris"||uuid.empty()) return;
+    const TownNpc* npc = town_npc(5);
+    const Vec2 tile = tile_movement::occupied_tile(world_->position());
+    if (!npc || world_->in_instance() || uuid.empty() ||
+        (std::max)(std::abs(tile.x - npc->x), std::abs(tile.y - npc->y)) > 1)
+      return;
     GameItem* item=inventory_.find_by_uuid(uuid);
     if (!item||!item->vessel) return;
     VesselItem rolled=item->vessel->item;
@@ -3017,12 +3096,20 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
     // spend_coins may rebuild the items vector; re-resolve the pointer.
     item=inventory_.find_by_uuid(uuid);
     if (!item||!item->vessel) return;
-    item->vessel->item=rolled;
-    // The JS handler refreshes the raw tooltip lines only; combat stats and
-    // the display name stay stale until the next full refresh.
-    item->vessel->lines=world_->forge().tooltip(rolled);
+    VesselBlock refreshed = world_->forge().make_block(rolled);
+    item->name = refreshed.display_name;
+    item->display_name = refreshed.display_name;
+    item->attack = refreshed.combat.attack;
+    item->defense = refreshed.combat.defense;
+    item->combat_bonuses = refreshed.combat.modifiers;
+    item->bonus_attributes =
+        refreshed.combat.has_attributes ? refreshed.combat.attributes : 0;
+    item->bonus_health = refreshed.combat.resource_health;
+    item->bonus_mana = refreshed.combat.resource_mana;
+    item->vessel = std::move(refreshed);
     emit_inventory_refresh(emit);
     emit_message(emit,"The forge sears a new brand into "+item->display_name+".");
+    emit_vesselforge_screen(emit);
     return;
   }
 }

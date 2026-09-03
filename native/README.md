@@ -46,6 +46,12 @@ on the remote owner path you extract by walking onto the EXIT stairs. A
 compact controls line is always on the HUD (no F3 needed). Esc closes an
 open gear pane first; a bare Esc requests quit.
 
+In the Crossroads, `T` hails the nearest townsfolk. Tamar the Vesselwright
+opens a dedicated Framekit forge: Up/Down selects carried vessel gear and
+Enter or a click sears an eligible Brand for 100 gold. Capacity, patience,
+existing lines, purse, and disabled reasons come from the server; the service
+cannot be invoked away from Tamar.
+
 ## Owner play (one command)
 
 `native/tools/play-native.ps1` builds if the exes are missing or stale, starts
@@ -109,6 +115,7 @@ native/build/verdigris_client.exe --scenario first-fight   # one scenario
 native/build/verdigris_client.exe --scenario first-session-clarity   # TASK-0153 contracts
 native/build/verdigris_client.exe --scenario deep-roads-campaign     # Act III Framekit evidence
 native/build/verdigris_client.exe --scenario vesselforge-final-implicits # range/speed/pierce evidence
+native/build/verdigris_client.exe --scenario town-vesselforge          # 960x600 + 1366x768 service evidence
 ~~~
 
 Every future client wave must add its own scenario. To add one:
