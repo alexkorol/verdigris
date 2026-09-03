@@ -2604,6 +2604,105 @@ void test_n4_active_forge_properties_drive_their_authoritative_systems() {
         "forge properties: River resistance mitigates the authoritative volley");
 }
 
+void test_n4_vessel_attunement_bonds_and_awakening() {
+  auto blank_shield = [] {
+    VesselItem item;
+    item.id = "vf-living-shield";
+    item.form_id = "hideshield";
+    item.material_id = "bronze";
+    item.kind = "shield";
+    item.ilvl = 40;
+    item.vessel = 3;
+    item.patience = 4;
+    item.patience_max = 4;
+    return item;
+  };
+
+  VesselForge first;
+  VesselForge replay;
+  first.reseed(0xB04Du);
+  replay.reseed(0xB04Du);
+  VesselItem item = blank_shield();
+  VesselItem replay_item = blank_shield();
+  std::vector<VesselEvolutionEvent> history;
+  std::vector<VesselEvolutionEvent> replay_history;
+  for (int clear = 0; clear < 60 && !item.awakened; ++clear) {
+    const auto events = first.attune(item, 200, {{"warding", 2}}, "Edda");
+    history.insert(history.end(), events.begin(), events.end());
+  }
+  for (int clear = 0; clear < 60 && !replay_item.awakened; ++clear) {
+    const auto events = replay.attune(
+        replay_item, 200, {{"warding", 2}}, "Edda");
+    replay_history.insert(replay_history.end(), events.begin(), events.end());
+  }
+
+  check(item.bonds.size() == 3 && item.evolutions == 10,
+        "living vessel: three slots form Bonds and deepen through ten evolutions");
+  bool every_warding_tier_three = item.bonds.size() == 3;
+  for (const auto& bond : item.bonds)
+    every_warding_tier_three = every_warding_tier_three &&
+        bond.theme_id == "warding" && bond.tier == 3;
+  check(every_warding_tier_three,
+        "living vessel: expedition memory controls theme and every Bond reaches tier III");
+  check(item.awakened && item.awakened->theme_id == "warding" &&
+            item.awakened->name.rfind("Edda's ", 0) == 0 && first.is_sated(item),
+        "living vessel: a fully lived item awakens into its Scion-bound identity");
+  check(item.bonds.size() == replay_item.bonds.size() &&
+            item.awakened && replay_item.awakened &&
+            item.awakened->name == replay_item.awakened->name &&
+            history.size() == replay_history.size(),
+        "living vessel: the complete Bond and awakening path replays deterministically");
+  if (item.bonds.size() == replay_item.bonds.size()) {
+    for (std::size_t i = 0; i < item.bonds.size(); ++i) {
+      check(item.bonds[i].id == replay_item.bonds[i].id &&
+                item.bonds[i].mod_id == replay_item.bonds[i].mod_id &&
+                item.bonds[i].base == replay_item.bonds[i].base &&
+                item.bonds[i].tier == replay_item.bonds[i].tier,
+            "living vessel: seeded Bond identity and values are byte-stable");
+    }
+  }
+
+  const VesselBlock awakened = first.make_block(item);
+  int dormant_bonds = 0;
+  bool dormant_power = false;
+  for (const auto& line : awakened.lines) {
+    if (line.section == "dormant" &&
+        line.text.find("Dormant - BOND:") == 0)
+      ++dormant_bonds;
+    if (line.section == "dormant" &&
+        line.text.find("Dormant awakened power") == 0)
+      dormant_power = true;
+  }
+  check(dormant_bonds == 3 && dormant_power,
+        "living vessel: conditional effects are visibly Dormant until combat owns them");
+
+  VesselItem learning = blank_shield();
+  const auto no_evolution = first.attune(
+      learning, 31, {{"spiritwork", 2}, {"wayfaring", 1}}, "Edda");
+  const VesselBlock learning_block = first.make_block(learning);
+  bool live_progress = false;
+  for (const auto& line : learning_block.lines)
+    if (line.section == "attune" && line.text == "Attunement 31/80")
+      live_progress = true;
+  check(no_evolution.empty() && learning.attunement.theme_counts["spiritwork"] == 2 &&
+            learning.attunement.theme_counts["wayfaring"] == 1 && live_progress,
+        "living vessel: sub-threshold road memory and progress remain visible");
+
+  GameItem projected;
+  projected.id = "vessel-shield";
+  projected.display_name = "stale";
+  apply_vessel_block(projected, awakened);
+  check(projected.vessel && projected.display_name == item.awakened->name &&
+            projected.vessel->item.evolutions == 10,
+        "living vessel: refreshed identity is applied atomically to worn gear");
+
+  VesselItem occupied = blank_shield();
+  occupied.vessel = 1;
+  occupied.bonds.push_back({"bond-occupied", "shieldwall", "warding", 10, 1});
+  check(!first.sear(occupied) && occupied.brands.empty(),
+        "living vessel: Tamar cannot sear over capacity claimed by a Bond");
+}
+
 void test_n4_loot_math_and_depth_scaling() {
   check(apply_goods_found_to_coins(20, 10) == 22, "N4 wealthy coin boost floors");
   check(apply_goods_found_to_coins(20, 0) == 20, "N4 zero find leaves coins untouched");
@@ -2785,6 +2884,7 @@ int main() {
   test_n4_inventory_first_fit_overflow_and_currency();
   test_n4_ring_seats_and_wear_caps();
   test_n4_active_forge_properties_drive_their_authoritative_systems();
+  test_n4_vessel_attunement_bonds_and_awakening();
   test_n4_loot_math_and_depth_scaling();
   test_n4_depth_chaining_and_treasure();
   test_endgame_tablet_roll_and_instance_tuning();

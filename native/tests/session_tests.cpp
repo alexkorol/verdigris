@@ -3061,10 +3061,14 @@ void remote_vesselforge_screen_mirrors_to_presentation() {
       "\"name\":\"Bronze Handaxe\",\"material\":\"Bronze\","
       "\"form\":\"Handaxe\",\"itemLevel\":40,\"vessel\":4,\"used\":2,"
       "\"freeSlots\":2,\"patience\":3,\"patienceMax\":5,\"brandCount\":1,"
+      "\"bondCount\":1,\"attunement\":42,\"attunementNext\":135,"
+      "\"evolutions\":1,\"awakened\":false,\"awakenedName\":null,"
       "\"cost\":100,\"eligible\":true,\"reason\":\"\",\"lines\":["
       "{\"section\":\"implicit\",\"text\":\"+12% Physical Damage\","
       "\"tone\":\"normal\"},{\"section\":\"brand\","
-      "\"text\":\"+9% Chance to Bleed\",\"tone\":\"normal\"}]}]}}}");
+      "\"text\":\"+9% Chance to Bleed\",\"tone\":\"normal\"},"
+      "{\"section\":\"dormant\",\"text\":\"Dormant - BOND: The Shieldwall\","
+      "\"tone\":\"inactive\"}]}]}}}");
   std::string error;
   check(server.start(&error),
         "forge-mirror: scripted loopback server bound in capsule");
@@ -3083,8 +3087,13 @@ void remote_vesselforge_screen_mirrors_to_presentation() {
   check(arrived && forge.npc_id == 5 && forge.carried_coins == 145 &&
             forge.rows.size() == 1 && forge.rows.front().uuid == "vf-handaxe" &&
             forge.rows.front().eligible && forge.rows.front().free_slots == 2 &&
-            forge.rows.front().patience == 3 && forge.rows.front().lines.size() == 2,
-        "forge-mirror: exact identity, capacity, patience, cost, and lines reach the pane model");
+            forge.rows.front().patience == 3 && forge.rows.front().bond_count == 1 &&
+            forge.rows.front().attunement == 42 &&
+            forge.rows.front().attunement_next == 135 &&
+            forge.rows.front().evolutions == 1 && !forge.rows.front().awakened &&
+            forge.rows.front().lines.size() == 3 &&
+            forge.rows.front().lines.back().tone == "inactive",
+        "forge-mirror: identity, capacity, Bonds, attunement, and dormant truth reach the pane model");
   session.submit(verdigris::client::ClientCommand::close_screen());
   check(!session.model().forge.open,
         "forge-mirror: the shared Escape/close contract dismisses the service");

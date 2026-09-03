@@ -5426,26 +5426,60 @@ void paint_vesselforge_pane(ClientState& state, HDC dc, const RECT& bounds,
         std::to_string(row.patience_max);
     TextOutA(dc, detail.left + 14 * s, dy, vessel.c_str(),
              static_cast<int>(vessel.size()));
-    dy += 31 * s;
+    dy += 27 * s;
     SelectObject(dc, skin::font_small());
+    SetTextColor(dc, row.awakened ? skin::kGold : skin::kVerdigris);
+    const std::string memory = row.awakened
+        ? "AWAKENED  |  " + std::to_string(row.evolutions) + " EVOLUTIONS"
+        : "ATTUNEMENT  " + std::to_string(row.attunement) + "/" +
+              std::to_string(row.attunement_next) + "  |  " +
+              std::to_string(row.bond_count) + " BONDS  |  " +
+              std::to_string(row.evolutions) + " EVOLUTIONS";
+    TextOutA(dc, detail.left + 14 * s, dy, memory.c_str(),
+             static_cast<int>(memory.size()));
+    rl.push_back({render::Op::PaneStat, static_cast<double>(detail.left + 14 * s),
+                  static_cast<double>(dy), 0.0, row.evolutions,
+                  "vesselforge-memory:" + memory});
+    dy += 25 * s;
+    SelectObject(dc, skin::font_small());
+    const int action_y = detail.bottom - 52 * s;
+    const int lines_bottom = action_y - 12 * s;
     std::size_t painted_lines = 0;
     for (const auto& forge_line : row.lines) {
-      if (painted_lines >= 8) break;
+      if (painted_lines >= 7 || dy >= lines_bottom) break;
       SetTextColor(dc, forge_line.tone == "inactive" ? skin::kInkDim
                                                        : skin::kInk);
+      std::string display_line = forge_line.text;
+      if (display_line.rfind("Dormant - BOND:", 0) == 0) {
+        const std::size_t effect_break = display_line.find(" - ", 16);
+        if (effect_break != std::string::npos)
+          display_line.replace(effect_break, 3, "\n");
+      }
+      RECT measured{detail.left + 14 * s, 0, detail.right - 14 * s, 0};
+      DrawTextA(dc, display_line.c_str(),
+                static_cast<int>(display_line.size()), &measured,
+                DT_LEFT | DT_TOP | DT_WORDBREAK | DT_CALCRECT | DT_NOPREFIX);
+      const int line_height = std::clamp(
+          static_cast<int>(measured.bottom - measured.top), 16 * s, 38 * s);
+      if (dy + line_height > lines_bottom) break;
       RECT text_rect{detail.left + 14 * s, dy, detail.right - 14 * s,
-                     dy + 24 * s};
-      DrawTextA(dc, forge_line.text.c_str(),
-                static_cast<int>(forge_line.text.size()), &text_rect,
-                DT_LEFT | DT_TOP | DT_SINGLELINE | DT_END_ELLIPSIS |
-                    DT_NOPREFIX);
+                     dy + line_height};
+      DrawTextA(dc, display_line.c_str(),
+                static_cast<int>(display_line.size()), &text_rect,
+                DT_LEFT | DT_TOP | DT_WORDBREAK | DT_NOPREFIX);
       rl.push_back({render::Op::PaneStat, static_cast<double>(text_rect.left),
                     static_cast<double>(text_rect.top), 0.0, 0,
                     "vesselforge-line:" + forge_line.text});
-      dy += 23 * s;
+      dy += line_height + 4 * s;
       ++painted_lines;
     }
-    const int action_y = detail.bottom - 52 * s;
+    if (row.lines.size() > painted_lines && dy + 18 * s <= lines_bottom) {
+      const std::string more = "+" +
+          std::to_string(row.lines.size() - painted_lines) + " more properties";
+      SetTextColor(dc, skin::kInkDim);
+      TextOutA(dc, detail.left + 14 * s, dy, more.c_str(),
+               static_cast<int>(more.size()));
+    }
     SelectObject(dc, skin::font_body_bold());
     SetTextColor(dc, row.eligible ? skin::kGold : skin::kEmber);
     const std::string action = row.eligible
@@ -9634,7 +9668,12 @@ class ScenarioForgeSession final
         {{"implicit", "+18 Maximum Health", "normal"}});
     add("vf-sling", "Obsidian Sling", "Obsidian", "Sling", 5, 2, 2, 3,
         true, "", {{"implicit", "Ignores half of Armour", "normal"},
-                    {"dormant", "Dormant - +8% Ward", "inactive"}});
+                    {"dormant", "Dormant - BOND: Battle Rhythm - +14% Attack Speed after a Kill [Slaughter I]", "inactive"}});
+    model_.forge.rows.back().brand_count = 1;
+    model_.forge.rows.back().bond_count = 1;
+    model_.forge.rows.back().attunement = 42;
+    model_.forge.rows.back().attunement_next = 135;
+    model_.forge.rows.back().evolutions = 1;
     add("vf-crest", "Jade Crest", "Jade", "Crest", 5, 1, 4, 6,
         true, "", {{"implicit", "+10 to all Attributes", "normal"}});
     add("vf-gorget", "Amber Gorget", "Amber", "Gorget", 5, 2, 4, 6,
@@ -9915,14 +9954,23 @@ int scenario_town_vesselforge() {
   std::printf("    capture: %s\n", large.c_str());
   bool pane = false;
   bool active_line = false;
+  bool memory = false;
+  bool dormant_bond = false;
   for (const auto& item : state.render_list) {
     if (item.op == render::Op::Hud && item.label == "vesselforge-pane") pane = true;
     if (item.op == render::Op::PaneStat &&
         item.label == "vesselforge-line:Ignores half of Armour")
       active_line = true;
+    if (item.op == render::Op::PaneStat &&
+        item.label.rfind("vesselforge-memory:ATTUNEMENT  42/135", 0) == 0)
+      memory = true;
+    if (item.op == render::Op::PaneStat &&
+        item.label.rfind("vesselforge-line:Dormant - BOND:", 0) == 0)
+      dormant_bond = true;
   }
-  scenario_check(pane && active_line && state.trade_row_hits.size() == 5,
-                 "town-vesselforge: Framekit list, detail, and paging evidence agree");
+  scenario_check(pane && active_line && memory && dormant_bond &&
+                     state.trade_row_hits.size() == 5,
+                 "town-vesselforge: Framekit list, progress, dormant Bond, and paging evidence agree");
   for (const auto& hit : state.trade_row_hits) {
     if (hit.index == state.trade_selected) {
       activate_trade_row(state, hit);

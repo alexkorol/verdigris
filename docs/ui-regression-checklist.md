@@ -19,6 +19,18 @@
 - At 960x600 and 1366x768, confirm five rows, the item detail, action line,
   paging count, and footer stay inside the Framekit panel. Moving beyond the
   fifth row must page the list while retaining keyboard focus.
+- Clear a floor while wearing unsated Vessel gear. Confirm the completion feed
+  names that exact item and awards 16–30 Attunement; carried and stored items
+  must not learn. Reconnect and confirm the worn item's progress and road-theme
+  memory are unchanged.
+- Continue clearing dungeon roads until the first 80-point threshold. Tamar's
+  pane must report one evolution and one Warding Bond, with the full tier-I
+  effect labelled `Dormant - BOND` rather than presented as a live combat stat.
+- On a three-slot unbranded test Vessel, continue through three Bonds, tier III,
+  and awakening. Confirm the awakened name begins with the current Scion's
+  name, the power stays visibly Dormant, and the pane remains bounded at both
+  reference resolutions. Attempting to sear a full bonded Vessel must change
+  neither item nor purse.
 
 ## Native Vesselforge Active Properties
 

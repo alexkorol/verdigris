@@ -2701,6 +2701,24 @@ struct PackBrandMod {
   std::vector<BrandTier> tiers;
 };
 
+struct PackBondMod {
+  const char* id;
+  const char* name;
+  const char* label;
+  int roll_lo;
+  int roll_hi;
+};
+
+struct PackBondTheme {
+  const char* id;
+  const char* name;
+  std::vector<PackBondMod> mods;
+  std::vector<const char*> adjectives;
+  std::vector<const char*> epithets;
+  const char* power;
+  const char* memory;
+};
+
 const std::vector<PackMaterial>& pack_materials() {
   static const std::vector<PackMaterial> data = {
       {"flint", "Flint", 1, 1.0, 2, 3, 2, 3, 30, {{"blade", 1.4}, {"blood", 1.2}, {"ward", 0.6}}},
@@ -2814,6 +2832,40 @@ const std::vector<PackBrandMod>& pack_brand_mods() {
   return data;
 }
 
+const std::vector<PackBondTheme>& pack_bond_themes() {
+  static const std::vector<PackBondTheme> data = {
+      {"slaughter", "Slaughter",
+       {{"blood_price", "The Blood Price", "Recover {v}% of Health on Kill", 2, 3},
+        {"battle_rhythm", "Battle Rhythm", "+{v}% Attack Speed for 4s after a Kill", 12, 18},
+        {"read_wound", "Read the Wound", "+{v}% Critical Chance against Bleeding foes", 15, 25}},
+       {"Red", "Grim", "Howling"}, {"Hunger", "Fang", "Reckoning"},
+       "Echoing Kill - slain foes have 15% chance to die twice, doubling their spoils.",
+       "It has learned to hunger."},
+      {"warding", "Warding",
+       {{"shieldwall", "The Shieldwall", "Regain {v} Health when you Block", 8, 14},
+        {"stand_ground", "Stand Your Ground", "+{v}% Chance to Block while stationary", 3, 5},
+        {"old_grudge", "Old Grudge", "+{v}% Armour for 2s when Hit", 20, 30}},
+       {"Unbroken", "Stone", "Dawnlit"}, {"Oath", "Bulwark", "Vigil"},
+       "Last Stand - a killing blow instead leaves you at 1 Life, once per battle.",
+       "It has learned to endure."},
+      {"spiritwork", "Spiritwork",
+       {{"clear_mind", "Clear Mind", "+{v}% Ability Power while Mana is above three-quarters", 12, 20},
+        {"ember_tithe", "Harvest", "Recover {v}% of Mana on Kill", 3, 5},
+        {"veil_wise", "Superstition", "{v}% chance to shrug off Curses", 10, 18}},
+       {"Silent", "Ashen", "Nine-Veiled"}, {"Whisper", "Cinder", "Riddle"},
+       "Twinned Voice - rites have 12% chance to speak twice, free.",
+       "It has learned to listen."},
+      {"wayfaring", "Wayfaring",
+       {{"dead_sprint", "Dead Sprint", "+{v}% Movement Speed for 3s on Kill", 10, 16},
+        {"sidestep", "Sidestep", "{v}% chance to Avoid thrown weapons while moving", 10, 16},
+        {"road_lore", "Second Wind", "Regain {v} Health per second while moving", 2, 4}},
+       {"Fleet", "Pale", "Far"}, {"Stride", "Wind", "Lantern"},
+       "Untraceable - the first strike against you in every battle misses.",
+       "It has learned the roads."},
+  };
+  return data;
+}
+
 const std::vector<const char*>& pack_name_pre() {
   static const std::vector<const char*> data = {
       "Grim", "Sable", "Ashen", "Reed", "Ember", "Frost", "Dusk", "Copper", "Thorn", "Vesper"};
@@ -2830,6 +2882,8 @@ constexpr int kMaxVessel = 6;
 constexpr double kBrandTierWeights[] = {10, 5, 2};
 constexpr double kBrandCountWeights[] = {30, 25, 25, 15, 5};
 constexpr int kAttuneBase = 80;
+constexpr int kAttuneStep = 55;
+constexpr double kBondTierMultipliers[] = {1.0, 1.6, 2.2};
 
 const PackMaterial* pack_material(const std::string& id) {
   for (const auto& m : pack_materials()) if (id == m.id) return &m;
@@ -2841,6 +2895,17 @@ const PackForm* pack_form(const std::string& id) {
 }
 const PackBrandMod* pack_brand_mod(const std::string& id) {
   for (const auto& b : pack_brand_mods()) if (id == b.id) return &b;
+  return nullptr;
+}
+const PackBondTheme* pack_bond_theme(const std::string& id) {
+  for (const auto& theme : pack_bond_themes()) if (id == theme.id) return &theme;
+  return nullptr;
+}
+const PackBondMod* pack_bond_mod(const std::string& theme_id,
+                                 const std::string& mod_id) {
+  const PackBondTheme* theme = pack_bond_theme(theme_id);
+  if (!theme) return nullptr;
+  for (const auto& mod : theme->mods) if (mod_id == mod.id) return &mod;
   return nullptr;
 }
 
@@ -2868,6 +2933,27 @@ std::string to_base36(std::uint64_t value) {
 std::string format_label(const std::string& templ, int value) {
   std::string out = templ;
   const std::string replacement = std::to_string(value);
+  std::string::size_type at = 0;
+  while ((at = out.find("{v}", at)) != std::string::npos) {
+    out.replace(at, 3, replacement);
+    at += replacement.size();
+  }
+  return out;
+}
+
+std::string format_bond_value(double value) {
+  std::ostringstream out;
+  if (value < 4.0 && std::abs(value - std::round(value)) > 0.001) {
+    out << std::fixed << std::setprecision(1) << value;
+  } else {
+    out << static_cast<int>(std::lround(value));
+  }
+  return out.str();
+}
+
+std::string format_bond_label(const std::string& templ, double value) {
+  std::string out = templ;
+  const std::string replacement = format_bond_value(value);
   std::string::size_type at = 0;
   while ((at = out.find("{v}", at)) != std::string::npos) {
     out.replace(at, 3, replacement);
@@ -3022,7 +3108,7 @@ VesselItem VesselForge::generate_item(int ilvl, const std::string& form_id,
 
 bool VesselForge::sear(VesselItem& item) {
   if (!item.vessel) return false;
-  const int used = static_cast<int>(item.brands.size()) + item.scars;
+  const int used = used_slots(item);
   if (item.vessel - used <= 0) return false;
   if (item.patience < 1) return false;
   // engine.js sear rolls on a clone: a failed roll leaves the item untouched.
@@ -3044,10 +3130,22 @@ bool VesselForge::sear(VesselItem& item) {
 
 namespace {
 std::string vessel_display_name(const VesselItem& item) {
+  if (item.awakened) return item.awakened->name;
   if (!item.epithet_name.empty()) return item.epithet_name;
   const PackMaterial* mat = pack_material(item.material_id);
   const PackForm* f = pack_form(item.form_id);
   return std::string(mat ? mat->name : "?") + " " + (f ? f->name : "?");
+}
+
+void maybe_name_vessel(VesselItem& item, Mulberry32& rand) {
+  if (!item.epithet_name.empty() || item.awakened ||
+      item.brands.size() + item.bonds.size() < 3)
+    return;
+  const auto& pre = pack_name_pre();
+  const auto& post = pack_name_post();
+  item.epithet_name =
+      std::string(pre[static_cast<std::size_t>(rand.rint(0, static_cast<int>(pre.size()) - 1))]) +
+      " " + post[static_cast<std::size_t>(rand.rint(0, static_cast<int>(post.size()) - 1))];
 }
 
 std::string format_aps(double aps) {
@@ -3057,17 +3155,185 @@ std::string format_aps(double aps) {
 }
 }  // namespace
 
+int VesselForge::used_slots(const VesselItem& item) const {
+  return static_cast<int>(item.brands.size() + item.bonds.size()) + item.scars;
+}
+
+bool VesselForge::is_sated(const VesselItem& item) const {
+  if (!item.vessel) return true;
+  if (item.vessel - used_slots(item) > 0) return false;
+  for (const auto& bond : item.bonds)
+    if (bond.tier < 3) return false;
+  if (!item.awakened && item.bonds.size() >= 3) return false;
+  return true;
+}
+
+std::string VesselForge::dominant_bond_theme(const VesselItem& item) const {
+  std::map<std::string, int> totals;
+  for (const auto& bond : item.bonds) totals[bond.theme_id] += bond.tier;
+  std::string best;
+  int best_value = -1;
+  for (const auto& theme : pack_bond_themes()) {
+    const int value = totals[theme.id];
+    if (value > best_value) {
+      best = theme.id;
+      best_value = value;
+    }
+  }
+  return best;
+}
+
+bool VesselForge::roll_bond(VesselItem& item, VesselBond* out) {
+  std::vector<const PackBondTheme*> order;
+  for (const auto& theme : pack_bond_themes()) order.push_back(&theme);
+  const auto count_for = [&](const PackBondTheme* theme) {
+    const auto found = item.attunement.theme_counts.find(theme->id);
+    return found == item.attunement.theme_counts.end() ? 0 : found->second;
+  };
+  const bool has_memory = std::any_of(
+      order.begin(), order.end(), [&](const PackBondTheme* theme) {
+        return count_for(theme) > 0;
+      });
+  if (has_memory) {
+    std::stable_sort(order.begin(), order.end(),
+                     [&](const PackBondTheme* a, const PackBondTheme* b) {
+                       return count_for(a) > count_for(b);
+                     });
+  } else if (!order.empty()) {
+    const std::size_t chosen = static_cast<std::size_t>(
+        rand_.rint(0, static_cast<int>(order.size()) - 1));
+    std::rotate(order.begin(), order.begin() + chosen, order.end());
+  }
+
+  for (const PackBondTheme* theme : order) {
+    std::vector<const PackBondMod*> pool;
+    for (const auto& mod : theme->mods) {
+      const bool used = std::any_of(
+          item.bonds.begin(), item.bonds.end(), [&](const VesselBond& bond) {
+            return bond.mod_id == mod.id;
+          });
+      if (!used) pool.push_back(&mod);
+    }
+    if (pool.empty()) continue;
+    const PackBondMod* mod = pool[static_cast<std::size_t>(
+        rand_.rint(0, static_cast<int>(pool.size()) - 1))];
+    VesselBond bond;
+    bond.id = gen_id();
+    bond.mod_id = mod->id;
+    bond.theme_id = theme->id;
+    bond.base = rand_.rint(mod->roll_lo, mod->roll_hi);
+    bond.tier = 1;
+    if (out) *out = std::move(bond);
+    return true;
+  }
+  return false;
+}
+
+std::optional<VesselEvolutionEvent> VesselForge::evolve(
+    VesselItem& item, const std::string& scion_name) {
+  if (item.vessel - used_slots(item) > 0) {
+    VesselBond bond;
+    if (roll_bond(item, &bond)) {
+      const PackBondTheme* theme = pack_bond_theme(bond.theme_id);
+      const PackBondMod* mod = pack_bond_mod(bond.theme_id, bond.mod_id);
+      item.bonds.push_back(bond);
+      item.evolutions += 1;
+      maybe_name_vessel(item, rand_);
+      const std::string effect = mod
+          ? format_bond_label(mod->label, bond.base)
+          : std::string("A memory takes hold");
+      return VesselEvolutionEvent{
+          "bond", "Bond formed on " + vessel_display_name(item) + ": " +
+                      (mod ? std::string(mod->name) : std::string("Unknown")) +
+                      " - " + effect +
+                      (theme ? " [" + std::string(theme->name) + "]" : "")};
+    }
+  }
+
+  auto weakest = item.bonds.end();
+  for (auto it = item.bonds.begin(); it != item.bonds.end(); ++it) {
+    if (it->tier >= 3) continue;
+    if (weakest == item.bonds.end() || it->tier < weakest->tier) weakest = it;
+  }
+  if (weakest != item.bonds.end()) {
+    weakest->tier += 1;
+    item.evolutions += 1;
+    const PackBondMod* mod = pack_bond_mod(weakest->theme_id, weakest->mod_id);
+    static const char* kRoman[] = {"I", "II", "III"};
+    return VesselEvolutionEvent{
+        "bond", "Bond deepened on " + vessel_display_name(item) + ": " +
+                    (mod ? std::string(mod->name) : std::string("Unknown")) +
+                    " -> " + kRoman[std::clamp(weakest->tier, 1, 3) - 1]};
+  }
+
+  const bool can_awaken = !item.awakened && item.bonds.size() >= 3 &&
+      std::all_of(item.bonds.begin(), item.bonds.end(),
+                  [](const VesselBond& bond) { return bond.tier == 3; });
+  if (can_awaken) {
+    const std::string theme_id = dominant_bond_theme(item);
+    const PackBondTheme* theme = pack_bond_theme(theme_id);
+    if (!theme) return std::nullopt;
+    VesselAwakened awakened;
+    const std::string owner = scion_name.empty() ? "Nameless" : scion_name;
+    awakened.name = owner + "'s " +
+        theme->adjectives[static_cast<std::size_t>(
+            rand_.rint(0, static_cast<int>(theme->adjectives.size()) - 1))] +
+        " " + theme->epithets[static_cast<std::size_t>(
+            rand_.rint(0, static_cast<int>(theme->epithets.size()) - 1))];
+    awakened.theme_id = theme_id;
+    awakened.power = theme->power;
+    awakened.flavor = "Bound to " + owner + " through " +
+        std::to_string(item.evolutions) + " trials. " + theme->memory;
+    item.awakened = std::move(awakened);
+    item.evolutions += 1;
+    return VesselEvolutionEvent{
+        "awake", vessel_display_name(item) + " has AWAKENED as \"" +
+                     item.awakened->name + "\"."};
+  }
+  return std::nullopt;
+}
+
+std::vector<VesselEvolutionEvent> VesselForge::attune(
+    VesselItem& item, int xp,
+    const std::map<std::string, int>& theme_weights,
+    const std::string& scion_name) {
+  std::vector<VesselEvolutionEvent> events;
+  if (xp <= 0 || is_sated(item)) return events;
+  for (const auto& [theme_id, weight] : theme_weights) {
+    if (weight > 0 && pack_bond_theme(theme_id))
+      item.attunement.theme_counts[theme_id] += weight;
+  }
+  item.attunement.next = (std::max)(kAttuneBase, item.attunement.next);
+  item.attunement.xp = static_cast<int>((std::min)(
+      static_cast<long long>(std::numeric_limits<int>::max()),
+      static_cast<long long>(item.attunement.xp) + xp));
+  int guard = 0;
+  while (item.attunement.xp >= item.attunement.next && guard < 8) {
+    ++guard;
+    item.attunement.xp -= item.attunement.next;
+    if (auto event = evolve(item, scion_name)) events.push_back(*event);
+    item.attunement.next = kAttuneBase + kAttuneStep * item.evolutions;
+    if (is_sated(item)) {
+      item.attunement.xp = 0;
+      break;
+    }
+  }
+  return events;
+}
+
 std::vector<TooltipLine> VesselForge::tooltip(const VesselItem& item) const {
-  // engine.js tooltip — bonds/trophies/awakening are out of N4's scope (no
-  // flow produces them), so their sections never appear here.
+  // Conditional Bond and awakened powers remain visibly dormant until their
+  // combat triggers are wired; identity/progression itself is authoritative.
   std::vector<TooltipLine> lines;
   const PackMaterial* mat = pack_material(item.material_id);
   const PackForm* f = pack_form(item.form_id);
   if (!mat || !f) return lines;
 
   lines.push_back({"name", vessel_display_name(item),
-                   item.brands.empty() ? "plain" : "branded"});
-  if (!item.epithet_name.empty()) {
+                   item.awakened ? "awakened"
+                                 : (!item.bonds.empty() ? "bonded"
+                                                        : item.brands.empty() ? "plain" : "branded")});
+  if (!item.epithet_name.empty() || item.awakened) {
     lines.push_back({"base", std::string(mat->name) + " " + f->name, "normal"});
   }
   lines.push_back({"kind", std::string(f->kind_label) + " · " + mat->name +
@@ -3103,14 +3369,34 @@ std::vector<TooltipLine> VesselForge::tooltip(const VesselItem& item) const {
                                   " (T" + std::to_string(brand.tier) + ")",
                      "normal"});
   }
+  static const char* kRoman[] = {"I", "II", "III"};
+  for (const auto& bond : item.bonds) {
+    const PackBondTheme* theme = pack_bond_theme(bond.theme_id);
+    const PackBondMod* mod = pack_bond_mod(bond.theme_id, bond.mod_id);
+    if (!theme || !mod) continue;
+    const int bounded_tier = std::clamp(bond.tier, 1, 3);
+    const double value = bond.base * kBondTierMultipliers[bounded_tier - 1];
+    lines.push_back({"dormant",
+                     "Dormant - BOND: " + std::string(mod->name) + " - " +
+                         format_bond_label(mod->label, value) + " [" +
+                         theme->name + " " + kRoman[bounded_tier - 1] + "]",
+                     "inactive"});
+  }
   if (item.scars) {
     lines.push_back({"scar", "✕ " + std::to_string(item.scars) + " scarred slot" +
                                  (item.scars > 1 ? "s" : ""),
                      "normal"});
   }
-  const int used = static_cast<int>(item.brands.size()) + item.scars;
-  if (item.vessel && item.vessel - used > 0) {
-    lines.push_back({"attune", "Attunement 0/" + std::to_string(kAttuneBase), "normal"});
+  if (item.awakened) {
+    lines.push_back({"dormant", "Dormant awakened power - " + item.awakened->power,
+                     "inactive"});
+    lines.push_back({"flavor", item.awakened->flavor, "normal"});
+  }
+  if (item.vessel && !is_sated(item)) {
+    lines.push_back({"attune", "Attunement " +
+                                  std::to_string(item.attunement.xp) + "/" +
+                                  std::to_string(item.attunement.next),
+                     "normal"});
   }
   return lines;
 }
@@ -3386,6 +3672,19 @@ const std::vector<std::string>& gear_drop_pool() {
   return pool;
 }
 
+void apply_vessel_block(GameItem& item, VesselBlock block) {
+  item.name = block.display_name;
+  item.display_name = block.display_name;
+  item.attack = block.combat.attack;
+  item.defense = block.combat.defense;
+  item.combat_bonuses = block.combat.modifiers;
+  item.bonus_attributes =
+      block.combat.has_attributes ? block.combat.attributes : 0;
+  item.bonus_health = block.combat.resource_health;
+  item.bonus_mana = block.combat.resource_mana;
+  item.vessel = std::move(block);
+}
+
 ItemSize resolve_item_size(const ItemDef& def, const VesselBlock* vessel) {
   // inventory-footprints.js resolveItemSize. Two JS branches are omitted as
   // unreachable for this catalogue (and retired-vocabulary): the loose
@@ -3528,18 +3827,8 @@ std::optional<GameItem> create_game_item(const std::string& item_id,
     }
     VesselItem vessel_item = options.forge->generate_item(ilvl, def->vessel_form, material_hint);
     VesselBlock block = options.forge->make_block(vessel_item);
-    if (!block.display_name.empty()) {
-      item.name = block.display_name;
-      item.display_name = block.display_name;
-    }
     // factory.js: vessel combat replaces the base stat sheet.
-    item.attack = block.combat.attack;
-    item.defense = block.combat.defense;
-    item.combat_bonuses = block.combat.modifiers;
-    if (block.combat.has_attributes) item.bonus_attributes = block.combat.attributes;
-    item.bonus_health = block.combat.resource_health;
-    item.bonus_mana = block.combat.resource_mana;
-    item.vessel = std::move(block);
+    apply_vessel_block(item, std::move(block));
   }
 
   item.size = resolve_item_size(*def, item.vessel ? &*item.vessel : nullptr);

@@ -1,5 +1,35 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - living Vessel Bonds and awakening
+
+- Ported the WIZARD living-item progression into native without importing its
+  class archetypes. Only Vessel gear worn through an authoritative floor clear
+  gains 16–30 Attunement; crypt/dungeon, marsh, grove, and other roads write
+  stable classless theme memory into the item.
+- Original thresholds are preserved: 80 for the first evolution and +55 for
+  each later one. Free Vessel slots form unique themed Bonds, later evolutions
+  deepen the weakest Bond through tier III, and three mature Bonds can awaken
+  the item into a deterministic name bound to the Scion who lived those roads.
+- The complete item block is refreshed atomically after a clear and crosses
+  inventory/wear snapshots and reconnects: Bonds, bases, tiers, theme memory,
+  XP/next threshold, evolution count, awakened name, power, and flavor.
+- Tamar's Framekit detail now exposes Attunement, Bond/evolution counts, tiered
+  Bond lines, and awakened state. Conditional Bond and awakened combat powers
+  are deliberately labelled Dormant until their triggers are server-owned;
+  the milestone does not claim their effects. Brand searing now counts Bonds
+  against capacity, closing the possibility of overwriting a learned slot.
+- Deterministic core coverage runs an item through its full three-Bond,
+  tier-III, awakening life and replays the exact rolls. Protocol coverage wears
+  one exact UUID through five real dungeon floors, verifies its Warding memory,
+  dormant wire truth, and reconnect identity. The production Tamar scenario
+  asserts its live progress and dormant Bond presentation at 960x600 and
+  1366x768.
+- Verification: the binding native build, full test set, and complete client
+  scenario suite pass. Inspected Framekit evidence is in
+  `native/build/goal-captures-vessel-bonds-final/town-vesselforge-960x600.png`
+  and `town-vesselforge-1366x768.png`; the 3440x1440 frame budget remains
+  9.7 ms average against the 40 ms ceiling.
+
 ## 2026-09-03 - Tamar's authoritative town Vesselforge
 
 - Added Tamar the Vesselwright as the Crossroads' fifth authored townsfolk,

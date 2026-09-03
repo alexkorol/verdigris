@@ -34,7 +34,13 @@ Chronicles account creator):
   and travel. Every mechanics-bearing line in the shipped form and Brand
   catalogue is active; the Spear's narrative-only reach line remains labelled
   Dormant rather than promising an effect it does not own. Existing catalogue
-  items remain legacy gear.
+  items remain legacy gear. Worn native Vessel gear now also learns from each
+  cleared expedition: biome-weighted classless memory crosses the original
+  80 + 55-per-evolution thresholds, forms unique Bonds, deepens them through
+  tier III, and awakens a sufficiently capacious item into a name bound to the
+  Scion who lived those roads. These identities and exact progress survive the
+  protocol/reconnect path. Bond and awakened combat powers remain explicitly
+  Dormant until their conditional triggers are authoritative.
   Each native form also has distinct reference-driven item art in its own
   reproducible atlas. Equip/Unequip preserves the generated UUID through the
   server-backed flow. Generated rewards bind after real world admission, merge
@@ -114,7 +120,9 @@ systems instead. Tamar now provides the first dedicated Vesselforge service:
 carried vessel gear, capacity, patience, existing lines, eligibility, purse,
 and the 100-gold Brand cost are all server-authored and presented in Framekit.
 Searing requires standing at Tamar and refreshes the item's full identity and
-combat projection immediately.
+combat projection immediately. The same pane now shows live Attunement,
+Bond count, evolution count, tiered Bond copy, and awakened state; manual
+searing cannot consume a slot already occupied by a Bond.
 
 The live bestiary and townsfolk are now reference-driven 64px actors as well.
 All 15 surface-campaign monsters have named silhouettes, and the 28 Adventure
@@ -140,9 +148,9 @@ original prototype roadmap:
 1. **Campaign breadth:** extend the authoritative twelve-commission campaign
    toward the 23 quest points reserved by the passive tree, with named zones,
    bosses, rewards, persistence, and playtest coverage for each arc.
-2. **Vesselforge progression:** extend Tamar's inspectable Brand-searing town
-   service with Bonds, attunement, evolution, and awakening now that every
-   mechanics-bearing form and Brand line is authoritative.
+2. **Vesselforge depth:** make the shipped conditional Bond and awakened powers
+   authoritative in combat, then bring trophy socketing, resonance, severing,
+   and scars into Tamar's already-live progression surface.
 3. **Inventory depth and access:** implement real nested containers and finish
    keyboard-first grid/equipment navigation; pointer equip/unequip, rotation,
    spatial placement, overflow, and tooltips are already live.
@@ -186,8 +194,9 @@ release-safe baseline.
 - Support nested containers (bags, cube) with recursive grids.
 - ~~Introduce brands/bonds (prefix/suffix) affix system.~~ ✅ legacy affix
   engine plus the full Vesselforge brand/bond/trophy model.
-- ~~Bind items to player identity.~~ ✅ bind-on-pickup plus Vesselforge bond
-  kinship (bonds estrange when worn by another archetype).
+- ~~Bind items to player identity.~~ ✅ bind-on-pickup plus living-item Bond
+  identity. The browser prototype's archetype kinship/estrangement is not
+  imported into the native game's classless Scions.
 
 ### UI/UX
 - Left stats pane, right inventory pane inspired by PoE.
@@ -214,8 +223,10 @@ release-safe baseline.
 - Localization scaffolding.
 - Expand the authoritative campaign beyond its first three commissions toward
   the 23-point quest budget reserved by the passive tree.
-- Extend the live Tamar Brand-searing service with Bonds, attunement, and
-  awakening as player-facing town progression.
+- ~~Extend the live Tamar Brand-searing service with Bonds, attunement, and
+  awakening as player-facing town progression.~~ ✅ worn gear learns from
+  expedition clears, evolves deterministically, and exposes honest progress
+  through Tamar's Framekit service.
   Shield block, Keen Eye critical chance, Wealthy loot bonuses, and Beastbane
   damage against explicitly tagged creatures are now live and persisted, with
   explicit `BLOCK`, `CRIT`, and `BANE` combat feedback. Bloodgroove bleed,

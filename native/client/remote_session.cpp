@@ -131,7 +131,9 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
         const auto* copy = json_string(line.get("text"));
         if (!section || !copy || copy->empty()) continue;
         if (*section == "implicit" || *section == "brand" ||
-            *section == "scar" || *section == "vessel")
+            *section == "scar" || *section == "vessel" ||
+            *section == "dormant" || *section == "attune" ||
+            *section == "power" || *section == "flavor")
           slot.forge_lines.push_back(*copy);
       }
     }
@@ -1217,10 +1219,19 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
             row.patience = static_cast<int>(json_number(item.get("patience"), 0.0));
             row.patience_max = static_cast<int>(json_number(item.get("patienceMax"), 0.0));
             row.brand_count = static_cast<int>(json_number(item.get("brandCount"), 0.0));
+            row.bond_count = static_cast<int>(json_number(item.get("bondCount"), 0.0));
+            row.attunement = static_cast<int>(json_number(item.get("attunement"), 0.0));
+            row.attunement_next = static_cast<int>(json_number(item.get("attunementNext"), 80.0));
+            row.evolutions = static_cast<int>(json_number(item.get("evolutions"), 0.0));
             row.cost = static_cast<int>(json_number(item.get("cost"), 100.0));
             if (const auto* eligible = item.get("eligible");
                 eligible && eligible->boolean())
               row.eligible = *eligible->boolean();
+            if (const auto* awakened = item.get("awakened");
+                awakened && awakened->boolean())
+              row.awakened = *awakened->boolean();
+            if (const auto* value = json_string(item.get("awakenedName")))
+              row.awakened_name = *value;
             if (const auto* lines = item.get("lines"); lines && lines->array()) {
               for (const auto& line : *lines->array()) {
                 ClientForgeLine parsed;

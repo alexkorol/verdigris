@@ -465,6 +465,32 @@ struct VesselBrand {
   int value = 0;
 };
 
+struct VesselBond {
+  std::string id;
+  std::string mod_id;
+  std::string theme_id;
+  int base = 0;
+  int tier = 1;
+};
+
+struct VesselAttunement {
+  int xp = 0;
+  int next = 80;
+  std::map<std::string, int> theme_counts;
+};
+
+struct VesselAwakened {
+  std::string name;
+  std::string theme_id;
+  std::string power;
+  std::string flavor;
+};
+
+struct VesselEvolutionEvent {
+  std::string kind;  // bond | awake
+  std::string text;
+};
+
 struct VesselItem {
   std::string id;
   std::string form_id;
@@ -478,7 +504,11 @@ struct VesselItem {
   int patience = 0;
   int patience_max = 0;
   std::vector<VesselBrand> brands;
+  std::vector<VesselBond> bonds;
+  VesselAttunement attunement;
+  int evolutions = 0;
   std::string epithet_name;
+  std::optional<VesselAwakened> awakened;
 };
 
 struct TooltipLine {
@@ -555,6 +585,15 @@ class VesselForge {
   // engine.js sear: spend 1 patience, roll + append a brand. False when the
   // vessel cannot take another brand.
   bool sear(VesselItem& item);
+  // WIZARD living-item progression adapted to classless Scions: completed
+  // expeditions contribute theme memory, cross 80 + 55*evolution thresholds,
+  // form/deepen Bonds, and eventually awaken a sufficiently capacious item.
+  std::vector<VesselEvolutionEvent> attune(
+      VesselItem& item, int xp,
+      const std::map<std::string, int>& theme_weights,
+      const std::string& scion_name);
+  int used_slots(const VesselItem& item) const;
+  bool is_sated(const VesselItem& item) const;
   // adapter.js honest tooltip (dormant marking for inactive lines).
   std::vector<TooltipLine> tooltip(const VesselItem& item) const;
   // adapter.js deriveVesselCombat.
@@ -573,6 +612,10 @@ class VesselForge {
   std::string gen_id();
   std::vector<WeightedEntry> brand_pool(const VesselItem& item) const;
   bool roll_brand(VesselItem& item, VesselBrand* out);
+  bool roll_bond(VesselItem& item, VesselBond* out);
+  std::string dominant_bond_theme(const VesselItem& item) const;
+  std::optional<VesselEvolutionEvent> evolve(
+      VesselItem& item, const std::string& scion_name);
 
   Mulberry32 rand_;
   std::uint64_t id_counter_ = 0;
@@ -664,6 +707,9 @@ struct CreateItemOptions {
 // factory.js createById/createFromBase. Returns nullopt for unknown ids.
 std::optional<GameItem> create_game_item(const std::string& item_id,
                                          const CreateItemOptions& options);
+// Replaces every projection derived from one vessel roll as an atomic model
+// update. Crafting/attunement callers must not refresh only tooltip text.
+void apply_vessel_block(GameItem& item, VesselBlock block);
 
 // The 12x7 spatial backpack (inventory-footprints.js + inventory.js add()).
 class PlayerInventory {
@@ -711,6 +757,7 @@ class WearSet {
                            const std::string& preferred = "") const;
 
   const std::map<std::string, GameItem>& slots() const { return slots_; }
+  std::map<std::string, GameItem>& mutable_slots() { return slots_; }
   void clear() { slots_.clear(); }
   const GameItem* in_seat(const std::string& seat) const;
   // Place an item into a seat; returns the displaced item when swapping.

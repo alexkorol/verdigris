@@ -363,14 +363,38 @@ JsonValue vessel_json(const VesselBlock& block) {
     brands.emplace_back(std::move(entry));
   }
   put(item, "brands", std::move(brands));
-  put(item, "bonds", JsonValue::Array{});
+  JsonValue::Array bonds;
+  for (const auto& bond : block.item.bonds) {
+    JsonValue::Object entry;
+    put(entry, "id", bond.id);
+    put(entry, "modId", bond.mod_id);
+    put(entry, "themeId", bond.theme_id);
+    put(entry, "base", bond.base);
+    put(entry, "tier", bond.tier);
+    put(entry, "kinship", nullptr);
+    bonds.emplace_back(std::move(entry));
+  }
+  put(item, "bonds", std::move(bonds));
   put(item, "trophies", JsonValue::Array{});
-  put(item, "att", JsonValue::Object{{"xp", 0}, {"next", 80}, {"tc", JsonValue::Object{}}});
-  put(item, "evolutions", 0);
+  JsonValue::Object theme_counts;
+  for (const auto& [theme, count] : block.item.attunement.theme_counts)
+    put(theme_counts, theme, count);
+  put(item, "att", JsonValue::Object{{"xp", block.item.attunement.xp},
+                                      {"next", block.item.attunement.next},
+                                      {"tc", JsonValue(std::move(theme_counts))}});
+  put(item, "evolutions", block.item.evolutions);
   put(item, "fired", 0);
   if (block.item.epithet_name.empty()) put(item, "epithetName", nullptr);
   else put(item, "epithetName", block.item.epithet_name);
-  put(item, "awakened", nullptr);
+  if (block.item.awakened) {
+    put(item, "awakened",
+        JsonValue::Object{{"name", block.item.awakened->name},
+                          {"themeId", block.item.awakened->theme_id},
+                          {"power", block.item.awakened->power},
+                          {"flavor", block.item.awakened->flavor}});
+  } else {
+    put(item, "awakened", nullptr);
+  }
 
   JsonValue::Array lines;
   for (const auto& line : block.lines) {
@@ -1758,8 +1782,7 @@ void ProtocolSession::emit_vesselforge_screen(
   for (const auto& carried : inventory_.items()) {
     if (!carried.vessel) continue;
     const VesselBlock& block = *carried.vessel;
-    const int used = block.item.scars +
-                     static_cast<int>(block.item.brands.size());
+    const int used = world_->forge().used_slots(block.item);
     const int free_slots = (std::max)(0, block.item.vessel - used);
     std::string reason;
     if (free_slots <= 0)
@@ -1790,6 +1813,14 @@ void ProtocolSession::emit_vesselforge_screen(
     put(row, "patience", block.item.patience);
     put(row, "patienceMax", block.item.patience_max);
     put(row, "brandCount", static_cast<int>(block.item.brands.size()));
+    put(row, "bondCount", static_cast<int>(block.item.bonds.size()));
+    put(row, "attunement", block.item.attunement.xp);
+    put(row, "attunementNext", block.item.attunement.next);
+    put(row, "evolutions", block.item.evolutions);
+    put(row, "awakened", static_cast<bool>(block.item.awakened));
+    put(row, "awakenedName", block.item.awakened
+                                  ? JsonValue(block.item.awakened->name)
+                                  : JsonValue(nullptr));
     put(row, "cost", kBrandCost);
     put(row, "eligible", reason.empty());
     put(row, "reason", reason);
@@ -1897,6 +1928,44 @@ void ProtocolSession::maybe_floor_cleared(const std::function<void(const Envelop
   }
   emit_message(emit, "Floor " + std::to_string(meta.depth) +
       " cleared! Rewards distributed - find the stairs to descend, or take the entry stairs to leave.");
+  // WIZARD venture attunement, adapted to Verdigris's classless Scions: the
+  // holding itself supplies memory themes. Only gear that survived the clear
+  // while worn learns from it.
+  std::map<std::string, int> memory;
+  if (meta.theme == "crypt" || meta.theme == "dungeon") {
+    memory["warding"] = 2;
+    memory["slaughter"] = 1;
+  } else if (meta.theme == "marsh") {
+    memory["spiritwork"] = 2;
+    memory["wayfaring"] = 1;
+  } else if (meta.theme == "grove") {
+    memory["spiritwork"] = 2;
+    memory["warding"] = 1;
+  } else {
+    memory["wayfaring"] = 2;
+    memory["slaughter"] = 1;
+  }
+  bool attuned_wear = false;
+  for (auto& [seat, worn] : wear_.mutable_slots()) {
+    (void)seat;
+    if (!worn.vessel || world_->forge().is_sated(worn.vessel->item)) continue;
+    // Attunement belongs to the forge's persistent seeded stream. Keeping it
+    // out of session_rng_ preserves established world, loot, and route replays.
+    const int gained = world_->forge().rand().rint(16, 30);
+    VesselItem evolved = worn.vessel->item;
+    const auto events = world_->forge().attune(
+        evolved, gained, memory,
+        active_scion_name_.empty() ? identity_ : active_scion_name_);
+    apply_vessel_block(worn, world_->forge().make_block(evolved));
+    attuned_wear = true;
+    emit_message(emit, worn.display_name + " remembers this road (+" +
+                           std::to_string(gained) + " Attunement).");
+    for (const auto& event : events) emit_message(emit, event.text);
+  }
+  if (attuned_wear) {
+    sync_combat_mods();
+    emit_equip_state(emit);
+  }
   if (!house_progression_.first_clear_completed) {
     (void)mark_first_clear(house_progression_);
     persist_house_progression();
@@ -2913,7 +2982,7 @@ void ProtocolSession::handle_menu_build(const JsonValue& payload, const std::fun
     }
     if (item&&item->vessel&&world_->scene_id()=="town:verdigris") {
       const VesselItem& vi=item->vessel->item;
-      const bool room=vi.vessel-static_cast<int>(vi.brands.size())-vi.scars>0;
+      const bool room=vi.vessel-world_->forge().used_slots(vi)>0;
       if (room&&vi.patience>=1) {
         JsonValue::Object entry;
         put(entry,"label","Add a random brand (100 coins)");
@@ -3096,17 +3165,7 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
     // spend_coins may rebuild the items vector; re-resolve the pointer.
     item=inventory_.find_by_uuid(uuid);
     if (!item||!item->vessel) return;
-    VesselBlock refreshed = world_->forge().make_block(rolled);
-    item->name = refreshed.display_name;
-    item->display_name = refreshed.display_name;
-    item->attack = refreshed.combat.attack;
-    item->defense = refreshed.combat.defense;
-    item->combat_bonuses = refreshed.combat.modifiers;
-    item->bonus_attributes =
-        refreshed.combat.has_attributes ? refreshed.combat.attributes : 0;
-    item->bonus_health = refreshed.combat.resource_health;
-    item->bonus_mana = refreshed.combat.resource_mana;
-    item->vessel = std::move(refreshed);
+    apply_vessel_block(*item, world_->forge().make_block(rolled));
     emit_inventory_refresh(emit);
     emit_message(emit,"The forge sears a new brand into "+item->display_name+".");
     emit_vesselforge_screen(emit);

@@ -151,8 +151,14 @@ struct ClientForgeRow {
   int patience = 0;
   int patience_max = 0;
   int brand_count = 0;
+  int bond_count = 0;
+  int attunement = 0;
+  int attunement_next = 80;
+  int evolutions = 0;
   int cost = 100;
   bool eligible = false;
+  bool awakened = false;
+  std::string awakened_name;
   std::vector<ClientForgeLine> lines;
 };
 

@@ -1022,8 +1022,13 @@ void test_tamar_vesselforge_service() {
   check(opened && opened->data["screen"].string() &&
             *opened->data["screen"].string() == "vesselforge" && open_row &&
             (*open_row)["eligible"].boolean().value_or(false) &&
-            (*open_row)["cost"].number().value_or(0) == 100 && coins_before >= 100,
-        "vesselforge service: screen publishes exact eligible item, cost, and purse");
+            (*open_row)["cost"].number().value_or(0) == 100 && coins_before >= 100 &&
+            (*open_row)["bondCount"].number().value_or(-1) == 0 &&
+            (*open_row)["attunement"].number().value_or(-1) == 0 &&
+            (*open_row)["attunementNext"].number().value_or(0) == 80 &&
+            (*open_row)["evolutions"].number().value_or(-1) == 0 &&
+            !(*open_row)["awakened"].boolean().value_or(true),
+        "vesselforge service: screen publishes capacity, purse, and living-item progress");
 
   bool saw_inventory = false;
   bool saw_message = false;
@@ -1050,6 +1055,80 @@ void test_tamar_vesselforge_service() {
             (*after_item)["stats"]["attack"]["slash"].number().value_or(-1) ==
                 (*after_item)["vessel"]["combat"]["ratings"]["attack"]["slash"].number().value_or(-2),
         "vesselforge service: refreshed identity and combat projection agree");
+}
+
+void test_worn_vessel_learns_from_cleared_expeditions() {
+  ProtocolSession session("guest-living-vessel", "socket-living-vessel",
+                          0xB04Du, false);
+  session.handle(Envelope{"dev:give", JsonValue::Object{
+      {"itemId", "vessel-handaxe"}, {"qty", 1},
+      {"itemLevel", 40}, {"seed", 37}}}, [](const Envelope&) {});
+  const auto granted = request_state(session, "living-vessel-granted");
+  const std::string uuid = inventory_uuid_for(granted, "vessel-handaxe");
+  check(!uuid.empty(), "living vessel wire: expedition gear has an exact uuid");
+  session.handle(Envelope{"item:equip", JsonValue::Object{{
+                     "item", JsonValue::Object{{"uuid", uuid}}}}},
+                 [](const Envelope&) {});
+
+  bool remembered = false;
+  bool refreshed_wear = false;
+  session.handle(Envelope{"instance:enterSolo", JsonValue::Object{
+      {"template", "dungeon"}, {"layout", "warren"}}},
+      [](const Envelope&) {});
+  for (int clear = 0; clear < 5; ++clear) {
+    session.handle(Envelope{"dev:clear-floor", JsonValue::Object{}},
+                   [&](const Envelope& event) {
+                     if (event.event == "game:send:message" &&
+                         event.data["text"].string() &&
+                         event.data["text"].string()->find("remembers this road") !=
+                             std::string::npos)
+                       remembered = true;
+                     if (event.event == "player:equippedAnItem")
+                       refreshed_wear = true;
+                   });
+    if (clear != 4) {
+      const auto floor = request_state(
+          session, "living-vessel-floor-" + std::to_string(clear));
+      const double down_x = floor["state"]["sceneMetadata"]["stairsDown"]["x"]
+                                .number().value_or(0);
+      const double down_y = floor["state"]["sceneMetadata"]["stairsDown"]["y"]
+                                .number().value_or(0);
+      session.handle(Envelope{"dev:teleport", JsonValue::Object{
+                         {"x", down_x}, {"y", down_y}}},
+                     [](const Envelope&) {});
+    }
+  }
+
+  auto learned = request_state(session, "living-vessel-learned");
+  const JsonValue& worn = learned["state"]["wearDetails"]["right_hand"];
+  const auto* bonds = worn["vessel"]["item"]["bonds"].array();
+  check(remembered && refreshed_wear && worn["uuid"].string() &&
+            *worn["uuid"].string() == uuid,
+        "living vessel wire: a floor clear refreshes the exact worn item");
+  check(bonds && !bonds->empty() &&
+            (*bonds)[0]["themeId"].string() &&
+            *(*bonds)[0]["themeId"].string() == "warding" &&
+            worn["vessel"]["item"]["evolutions"].number().value_or(0) >= 1,
+        "living vessel wire: five real dungeon clears form a Warding Bond");
+  check(worn["vessel"]["item"]["att"]["tc"]["warding"].number().value_or(0) == 10 &&
+            worn["vessel"]["item"]["att"]["tc"]["slaughter"].number().value_or(0) == 5,
+        "living vessel wire: classless road themes accumulate on the authoritative item");
+  bool dormant_bond = false;
+  if (const auto* lines = worn["vessel"]["lines"].array())
+    for (const auto& line : *lines)
+      if (line["section"].string() && *line["section"].string() == "dormant" &&
+          line["text"].string() &&
+          line["text"].string()->find("Dormant - BOND:") == 0)
+        dormant_bond = true;
+  check(dormant_bond,
+        "living vessel wire: the protocol never presents an unwired Bond as active");
+
+  session.replace_socket("socket-living-vessel-returned");
+  learned = request_state(session, "living-vessel-reconnected");
+  const JsonValue& returned = learned["state"]["wearDetails"]["right_hand"];
+  check(returned["vessel"]["item"]["bonds"].array() &&
+            !returned["vessel"]["item"]["bonds"].array()->empty(),
+        "living vessel wire: Bond identity survives a reconnect to the same session");
 }
 
 void test_crossroads_social_hub_and_house_investment() {
@@ -1797,6 +1876,7 @@ int main() {
     test_gate_a_equip_totals_and_unknown_uuid();
     test_active_forge_properties_cross_the_protocol();
     test_tamar_vesselforge_service();
+    test_worn_vessel_learns_from_cleared_expeditions();
     test_crossroads_social_hub_and_house_investment();
     test_campaign_contract_and_scion_checkpoint();
     test_four_roads_campaign_act_and_persistence();
