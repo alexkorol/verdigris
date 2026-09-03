@@ -1216,10 +1216,42 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     const bool elite = skill_id.find("sweep") != std::string::npos ||
                        skill_id.find("boss") != std::string::npos;
     upsert_monster(model_, attacker ? *attacker : "", name ? *name : "", elite);
-    pending_events_.push_back({PresentationEventType::Telegraph,
-                               attacker ? *attacker : "", "",
-                               std::string(name ? *name : "") + " " + skill_id,
-                               static_cast<int>(json_number(envelope.data.get("durationMs")))});
+    PresentationEvent warning;
+    warning.type = PresentationEventType::Telegraph;
+    warning.actor_id = attacker ? *attacker : "";
+    warning.text = std::string(name ? *name : "") + " " + skill_id;
+    warning.value = static_cast<int>(json_number(envelope.data.get("durationMs")));
+    if (envelope.data.get("x") && envelope.data.get("x")->number() &&
+        envelope.data.get("y") && envelope.data.get("y")->number()) {
+      warning.has_position = true;
+      warning.x = *envelope.data.get("x")->number();
+      warning.y = *envelope.data.get("y")->number();
+    }
+    warning.radius = (std::max)(1, static_cast<int>(
+        json_number(envelope.data.get("radius"), 1.0)));
+    pending_events_.push_back(std::move(warning));
+    return;
+  }
+  if (envelope.event == "monster:healed") {
+    const auto* target = json_string(envelope.data.get("targetId"));
+    const auto* target_name = json_string(envelope.data.get("targetName"));
+    const int amount = (std::max)(0, static_cast<int>(
+        json_number(envelope.data.get("amount"), 0.0)));
+    ClientMonster& foe = upsert_monster(model_, target ? *target : "",
+                                        target_name ? *target_name : "", false);
+    if (const auto* health = envelope.data.get("health")) {
+      foe.life = static_cast<int>(json_number(health->get("current"), foe.life));
+      foe.life_max = static_cast<int>(json_number(health->get("max"), foe.life_max));
+    } else {
+      foe.life = (std::min)(foe.life_max, foe.life + amount);
+    }
+    PresentationEvent mend;
+    mend.type = PresentationEventType::HealingApplied;
+    mend.actor_id = foe.id;
+    mend.text = json_string(envelope.data.get("sourceName"))
+        ? *json_string(envelope.data.get("sourceName")) : "support";
+    mend.value = amount;
+    pending_events_.push_back(std::move(mend));
     return;
   }
   if (envelope.event == "combat:hit") {
@@ -1241,7 +1273,9 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       }
     }
     if (hits_player) {
-      if (attacker) upsert_monster(model_, *attacker, "", true);
+      // A hit does not imply elite rarity. Snapshot/telegraph facts already
+      // carry that distinction; ranged pressure must not promote common foes.
+      if (attacker) upsert_monster(model_, *attacker, "", false);
       model_.last_incoming_hit = amount;
       pending_events_.push_back({PresentationEventType::DamageApplied,
                                  attacker ? *attacker : "", "", "incoming", amount});

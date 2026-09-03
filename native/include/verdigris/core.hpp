@@ -813,6 +813,12 @@ struct WorldMonster {
   bool boss = false;
   std::uint64_t telegraph_until_ms = 0;
   std::uint64_t next_attack_ms = 0;
+  // Authoritative role action state. Ranged foes sample a destination tile
+  // when their warning begins; resolution checks that tile rather than the
+  // player's old position so movement can genuinely dodge the volley.
+  std::string pending_attack_skill;
+  int pending_target_x = 0;
+  int pending_target_y = 0;
   // N4: loot/behaviour facts the wire snapshot carries (JS m.rewards.coins
   // and m.tags).
   std::vector<std::string> tags;
@@ -820,7 +826,7 @@ struct WorldMonster {
 };
 
 struct WorldCombatEvent {
-  std::string type; // hit, death, telegraph, drop
+  std::string type; // hit, heal, death, telegraph, drop
   std::string attacker_id;
   std::string attacker_name;
   std::string target_id;
@@ -928,6 +934,9 @@ class WorldSimulation {
       monster.alive = true;
       if (max_health > 0) monster.life_max = max_health;
       monster.life = monster.life_max;
+      monster.telegraph_until_ms = 0;
+      monster.next_attack_ms = 0;
+      monster.pending_attack_skill.clear();
       return true;
     }
     return false;

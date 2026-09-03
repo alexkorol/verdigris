@@ -2939,6 +2939,14 @@ void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std
     put(data,"x",event.x); put(data,"y",event.y); put(data,"radius",event.radius); put(data,"durationMs",event.duration_ms);
     emit_world(Envelope{"monster:telegraph",JsonValue(std::move(data))},emit); return;
   }
+  if (event.type == "heal") {
+    JsonValue::Object data;
+    put(data,"sourceId",event.attacker_id); put(data,"sourceName",event.attacker_name);
+    put(data,"targetId",event.target_id); put(data,"targetName",event.target_name);
+    put(data,"skillId",event.skill_id); put(data,"amount",event.amount);
+    put(data,"health",JsonValue::Object{{"current",event.health},{"max",event.health_max}});
+    emit_world(Envelope{"monster:healed",JsonValue(std::move(data))},emit); return;
+  }
   // N4: kill rewards go through world_->drop_monster_loot inside
   // advance_combat; the legacy synthetic 'drop' trophy event is retired.
   JsonValue::Object data; put(data,"attackerId",event.attacker_id); put(data,"attackerName",event.attacker_name); put(data,"targetId",event.target_id);

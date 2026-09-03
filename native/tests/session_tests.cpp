@@ -1466,7 +1466,8 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
           }
         }
       }
-      if (line.env.event == "monster:telegraph") {
+      if (line.env.event == "monster:telegraph" &&
+          gateb_str(line.env.data, "skillId") == "boss:ground-slam") {
         elite_known = true;
         elite_x = static_cast<int>(gateb_num(line.env.data, "x"));
         elite_y = static_cast<int>(gateb_num(line.env.data, "y"));
@@ -2576,6 +2577,110 @@ void remote_combat_cadence_mirrors_to_presentation() {
   server.stop();
 }
 
+void remote_monster_roles_mirror_to_presentation() {
+  ScriptedEnvelopeServer server;
+  server.script.push_back(
+      "{\"event\":\"player:login\",\"data\":{\"player\":{"
+      "\"uuid\":\"role-guest\",\"x\":10,\"y\":11,\"facing\":\"right\"},"
+      "\"scene\":{\"id\":\"instance:marsh:clearings\","
+      "\"type\":\"instance\",\"name\":\"Mire of Echoes\"}}}");
+  server.script.push_back(
+      "{\"event\":\"dev:state\",\"data\":{\"state\":{"
+      "\"lifecycle\":\"alive\",\"monsters\":["
+      "{\"uuid\":\"spitter-1\",\"name\":\"Bog Spitter\",\"x\":14,\"y\":11,"
+      "\"behaviour\":{\"type\":\"ranged\"},\"hp\":{\"current\":30,\"max\":30}},"
+      "{\"uuid\":\"ghast-1\",\"name\":\"Mire Ghast\",\"x\":12,\"y\":12,"
+      "\"behaviour\":{\"type\":\"melee\"},\"hp\":{\"current\":12,\"max\":30}}]}}}");
+  server.script.push_back(
+      "{\"event\":\"monster:telegraph\",\"data\":{"
+      "\"attackerId\":\"spitter-1\",\"attackerName\":\"Bog Spitter\","
+      "\"skillId\":\"ranged:volley\",\"x\":10,\"y\":11,"
+      "\"radius\":1,\"durationMs\":800}}");
+  server.script.push_back(
+      "{\"event\":\"monster:healed\",\"data\":{"
+      "\"sourceId\":\"shaman-1\",\"sourceName\":\"Rot Shaman\","
+      "\"targetId\":\"ghast-1\",\"targetName\":\"Mire Ghast\","
+      "\"skillId\":\"support:mend\",\"amount\":7,"
+      "\"health\":{\"current\":19,\"max\":30}}}");
+  std::string error;
+  check(server.start(&error),
+        "role-mirror: scripted loopback server bound in capsule");
+  if (server.port() == 0) return;
+  verdigris::client::RemoteProtocolSession session(
+      "127.0.0.1", server.port(), "role-mirror-guest", true);
+  check(session.start(&error), "role-mirror: connect + upgrade + login sent");
+  check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
+        "role-mirror: admission acknowledged");
+
+  server.grant_next_frame();
+  std::vector<std::string> errors;
+  check(pt_pump_until(session, errors, 5000, [&] {
+          return session.model().monsters.size() == 2;
+        }),
+        "role-mirror: authored role roster reaches the mirror");
+  server.grant_next_frame();
+  verdigris::client::PresentationEvent volley;
+  bool saw_volley = false;
+  const auto volley_deadline =
+      std::chrono::steady_clock::now() + std::chrono::milliseconds(5000);
+  while (!saw_volley && std::chrono::steady_clock::now() < volley_deadline) {
+    session.poll();
+    for (const auto& event : session.drain_events()) {
+      if (event.type == verdigris::client::PresentationEventType::ProtocolError)
+        errors.push_back(event.text);
+      if (event.type == verdigris::client::PresentationEventType::Telegraph) {
+        volley = event;
+        saw_volley = true;
+      }
+    }
+    if (!saw_volley) std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  check(saw_volley && volley.has_position && volley.x == 10.0 &&
+            volley.y == 11.0 && volley.radius == 1 && volley.value == 800,
+        "role-mirror: volley destination and timing survive wire parsing");
+
+  server.grant_next_frame();
+  verdigris::client::PresentationEvent mend;
+  bool saw_mend = false;
+  const auto mend_deadline =
+      std::chrono::steady_clock::now() + std::chrono::milliseconds(5000);
+  while (!saw_mend && std::chrono::steady_clock::now() < mend_deadline) {
+    session.poll();
+    for (const auto& event : session.drain_events()) {
+      if (event.type == verdigris::client::PresentationEventType::ProtocolError)
+        errors.push_back(event.text);
+      if (event.type == verdigris::client::PresentationEventType::HealingApplied) {
+        mend = event;
+        saw_mend = true;
+      }
+    }
+    if (!saw_mend) std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  const auto& model = session.model();
+  bool health_updated = false;
+  for (const auto& monster : model.monsters)
+    if (monster.id == "ghast-1" && monster.life == 19 && monster.life_max == 30)
+      health_updated = true;
+  check(saw_mend && mend.actor_id == "ghast-1" && mend.value == 7 &&
+            health_updated,
+        "role-mirror: support mend updates health and emits presentation fact");
+  verdigris::client::WorldView world;
+  verdigris::client::sync_world_from_model(world, model);
+  verdigris::client::PresentationFx fx;
+  verdigris::client::apply_presentation_event(fx, world, volley, 1);
+  verdigris::client::apply_presentation_event(fx, world, mend, 1);
+  const bool volley_fx = fx.telegraphs.count("spitter-1") == 1;
+  bool mend_fx = false;
+  for (const auto& effect : fx.effects)
+    if (effect.kind == verdigris::client::EffectFx::Kind::SupportMend)
+      mend_fx = true;
+  check(volley_fx && mend_fx,
+        "role-mirror: authoritative role events drive shared VFX");
+  check(errors.empty(), "role-mirror: valid role payloads raise no protocol error");
+  session.shutdown();
+  server.stop();
+}
+
 void remote_crossroads_dialogue_mirrors_to_presentation() {
   ScriptedEnvelopeServer server;
   server.script.push_back(
@@ -2902,6 +3007,7 @@ int main() {
   remote_passive_tree_absence_stays_absent();
   remote_endgame_payload_mirrors_to_presentation();
   remote_combat_cadence_mirrors_to_presentation();
+  remote_monster_roles_mirror_to_presentation();
   remote_crossroads_dialogue_mirrors_to_presentation();
   remote_passive_tree_payload_hardening();
   gateb_driver_state_machine_controls();

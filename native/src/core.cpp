@@ -1477,6 +1477,13 @@ constexpr int kN3MeleeRangeTiles = 3;
 constexpr int kN3ThrustRangeTiles = 5;
 constexpr int kN3SweepRangeTiles = 3;
 constexpr int kN3MonsterDamage = 5;
+constexpr int kN3RangedRangeTiles = 6;
+constexpr int kN3RangedVolleyRadius = 1;
+constexpr int kN3RangedVolleyWindupMs = 800;
+constexpr int kN3RangedVolleyCooldownMs = 1800;
+constexpr int kN3BufferMendRangeTiles = 5;
+constexpr int kN3BufferMendCooldownMs = 2200;
+constexpr int kN3BufferRetryMs = 700;
 constexpr int kN3BossLife = 120;
 constexpr int kN3BossDamage = 12;
 constexpr int kN3BossTelegraphRadius = 2;
@@ -1999,13 +2006,117 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     // swing unprompted, which breaks deterministic comparison trials. JS
     // parity: monsters engage the player; the player's swings are inputs.)
   }
-  // JS monster AI: pack members adjacent to the player strike on their own
-  // cooldown whether or not the player is fighting back. This is what makes
-  // standing in a pack lethal (mortality / final-death flows).
+  // Monster pressure roles are server owned. Melee pack members punish close
+  // contact, ranged foes paint a dodgeable destination before resolving, and
+  // buffers sustain the most-injured nearby ally. The client only presents
+  // the resulting events.
   {
     const Vec2 here = tile_movement::occupied_tile(position_);
     for (auto& monster : monsters_) {
       if (!monster.alive || monster.boss) continue;
+
+      if (monster.behaviour_type == "ranged") {
+        if (!monster.pending_attack_skill.empty()) {
+          if (now < monster.telegraph_until_ms) continue;
+          const bool caught =
+              std::abs(here.x - monster.pending_target_x) <= kN3RangedVolleyRadius &&
+              std::abs(here.y - monster.pending_target_y) <= kN3RangedVolleyRadius;
+          monster.pending_attack_skill.clear();
+          monster.telegraph_until_ms = 0;
+          monster.next_attack_ms = now + kN3RangedVolleyCooldownMs;
+          if (!caught) continue;
+          const int damage = std::max(
+              1, (2 + monster.level) * (100 + expedition_damage_percent_) / 100);
+          player_life = std::max(0, player_life - damage);
+          WorldCombatEvent impact;
+          impact.type = "hit";
+          impact.attacker_id = monster.uuid;
+          impact.attacker_name = monster.name;
+          impact.target_id = player_uuid_;
+          impact.target_name = "Adventurer";
+          impact.skill_id = "ranged:volley";
+          impact.amount = damage;
+          impact.health = player_life;
+          impact.health_max = player_life_max;
+          impact.died = player_life == 0;
+          events.push_back(impact);
+          if (player_life == 0) break;
+          continue;
+        }
+        const int distance = std::max(std::abs(monster.x - here.x),
+                                      std::abs(monster.y - here.y));
+        if (distance > kN3RangedRangeTiles) continue;
+        if (monster.next_attack_ms == 0) {
+          std::uint32_t stagger_hash = 2166136261u;
+          for (const char c : monster.uuid)
+            stagger_hash = (stagger_hash ^ static_cast<std::uint8_t>(c)) * 16777619u;
+          monster.next_attack_ms = now + 400 + stagger_hash % 900;
+          continue;
+        }
+        if (now < monster.next_attack_ms) continue;
+        monster.pending_attack_skill = "ranged:volley";
+        monster.pending_target_x = here.x;
+        monster.pending_target_y = here.y;
+        monster.telegraph_until_ms = now + kN3RangedVolleyWindupMs;
+        WorldCombatEvent warning;
+        warning.type = "telegraph";
+        warning.attacker_id = monster.uuid;
+        warning.attacker_name = monster.name;
+        warning.target_id = player_uuid_;
+        warning.target_name = "Adventurer";
+        warning.skill_id = monster.pending_attack_skill;
+        warning.radius = kN3RangedVolleyRadius;
+        warning.duration_ms = kN3RangedVolleyWindupMs;
+        warning.x = here.x;
+        warning.y = here.y;
+        events.push_back(warning);
+        continue;
+      }
+
+      if (monster.behaviour_type == "buffer") {
+        if (monster.next_attack_ms == 0) {
+          monster.next_attack_ms = now + kN3BufferRetryMs;
+          continue;
+        }
+        if (now < monster.next_attack_ms) continue;
+        WorldMonster* recipient = nullptr;
+        for (auto& ally : monsters_) {
+          if (!ally.alive || ally.boss || ally.uuid == monster.uuid ||
+              ally.life >= ally.life_max) continue;
+          const int distance = std::max(std::abs(ally.x - monster.x),
+                                        std::abs(ally.y - monster.y));
+          if (distance > kN3BufferMendRangeTiles) continue;
+          if (!recipient ||
+              static_cast<long long>(ally.life) * recipient->life_max <
+                  static_cast<long long>(recipient->life) * ally.life_max ||
+              (static_cast<long long>(ally.life) * recipient->life_max ==
+                   static_cast<long long>(recipient->life) * ally.life_max &&
+               ally.uuid < recipient->uuid)) {
+            recipient = &ally;
+          }
+        }
+        if (recipient) {
+          const int before = recipient->life;
+          recipient->life = std::min(recipient->life_max,
+                                     recipient->life + 4 + monster.level);
+          WorldCombatEvent mend;
+          mend.type = "heal";
+          mend.attacker_id = monster.uuid;
+          mend.attacker_name = monster.name;
+          mend.target_id = recipient->uuid;
+          mend.target_name = recipient->name;
+          mend.skill_id = "support:mend";
+          mend.amount = recipient->life - before;
+          mend.health = recipient->life;
+          mend.health_max = recipient->life_max;
+          events.push_back(mend);
+          monster.next_attack_ms = now + kN3BufferMendCooldownMs;
+        } else {
+          monster.next_attack_ms = now + kN3BufferRetryMs;
+        }
+        continue;
+      }
+
       if (std::abs(monster.x - here.x) > 1 || std::abs(monster.y - here.y) > 1) continue;
       if (monster.next_attack_ms == 0) {
         // First contact: a short, per-monster staggered windup instead of
@@ -2145,6 +2256,10 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
         struck_target->next_attack_ms =
             std::max(struck_target->next_attack_ms,
                      now + static_cast<std::uint64_t>(kN3ComboFinisherStaggerMs));
+        // A finisher interrupts an in-flight ranged warning. Its visual will
+        // expire at the already-authored window, but it can no longer land.
+        struck_target->pending_attack_skill.clear();
+        struck_target->telegraph_until_ms = 0;
         hit.stagger_ms = kN3ComboFinisherStaggerMs;
       }
       events.push_back(hit);
@@ -2193,7 +2308,7 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       // resolved dodge/hit rather than relying on a hidden wall-clock thread.
       next_boss_telegraph_ms_ = now;
     }
-  } else if (now >= target->next_attack_ms && std::abs(target->x - tile_movement::occupied_tile(position_).x) <= 2
+  } else if (target->behaviour_type == "melee" && now >= target->next_attack_ms && std::abs(target->x - tile_movement::occupied_tile(position_).x) <= 2
              && std::abs(target->y - tile_movement::occupied_tile(position_).y) <= 2) {
     const int damage = target->empowered ? kN3MonsterDamage + 2 : kN3MonsterDamage;
     player_life = std::max(0, player_life - damage);

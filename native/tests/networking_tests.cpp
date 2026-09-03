@@ -217,6 +217,43 @@ void test_n3_combat_rules_and_wire_events() {
     }
   });
   check(telegraphed, "N3 boss emits a readable ground-slam telegraph");
+
+  ProtocolSession roles("guest-n3-roles", "socket-roles", 0xA11CE, false);
+  roles.handle(Envelope{"instance:enterSolo", JsonValue::Object{
+      {"template", "marsh"}, {"layout", "clearings"}}}, [](const Envelope&) {});
+  const auto role_state = request_state(roles, "n3-roles");
+  const auto* role_monsters = role_state["state"]["monsters"].array();
+  const JsonValue* ranged = nullptr;
+  for (const auto& value : *role_monsters)
+    if (value["behaviour"]["type"].string() &&
+        *value["behaviour"]["type"].string() == "ranged" &&
+        value["rarity"].string() && *value["rarity"].string() != "elite") {
+      ranged = &value;
+      break;
+    }
+  check(ranged != nullptr, "roles wire: marsh snapshot identifies a ranged foe");
+  if (ranged) {
+    const int rx = static_cast<int>((*ranged)["x"].number().value_or(0));
+    const int ry = static_cast<int>((*ranged)["y"].number().value_or(0));
+    const int px = rx + 4 < 39 ? rx + 4 : rx - 4;
+    bool volley_wire = false;
+    auto collect_role = [&](const Envelope& event) {
+      if (event.event == "monster:telegraph" &&
+          event.data["skillId"].string() &&
+          *event.data["skillId"].string() == "ranged:volley") {
+        volley_wire = event.data["x"].number().value_or(-1) == px &&
+                      event.data["y"].number().value_or(-1) == ry &&
+                      event.data["radius"].number().value_or(0) == 1 &&
+                      event.data["durationMs"].number().value_or(0) == 800;
+      }
+    };
+    roles.set_direct_emit(collect_role);
+    roles.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", px}, {"y", ry}}},
+                 collect_role);
+    roles.tick(5000000000000LL);
+    check(volley_wire,
+          "roles wire: ranged volley emits exact target, radius, and windup");
+  }
 }
 
 std::string direction_toward(int player_x, int player_y, int target_x, int target_y) {

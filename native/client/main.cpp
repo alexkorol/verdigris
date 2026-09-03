@@ -2208,15 +2208,19 @@ void draw_sweep_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
                             static_cast<double>(radius), bounds, minimap_side);
   if (clamped <= 0.0) return;
   rl.push_back({render::Op::Telegraph, static_cast<double>(base.x),
-                static_cast<double>(base.y), clamped, 0, "sweep"});
-  const COLORREF fill = telegraph_color(visibility * 0.28, RGB(214, 52, 52));
-  const COLORREF edge = telegraph_color(visibility, RGB(238, 72, 64));
+                static_cast<double>(base.y), clamped, 0, telegraph.action});
+  const bool volley = telegraph.action == "volley";
+  const COLORREF fill = telegraph_color(
+      visibility * 0.28, volley ? RGB(112, 48, 178) : RGB(214, 52, 52));
+  const COLORREF edge = telegraph_color(
+      visibility, volley ? RGB(210, 104, 246) : RGB(238, 72, 64));
   const int draw_r = static_cast<int>(clamped);
   fill_ellipse(dc, base.x, base.y, draw_r, draw_r, fill);
   ring_ellipse(dc, base.x, base.y, draw_r, draw_r, edge, 3);
   if (draw_r > 12)
     ring_ellipse(dc, base.x, base.y, draw_r - 10, draw_r - 10,
-                 telegraph_color(visibility * 0.82, RGB(255, 112, 82)), 1);
+                 telegraph_color(visibility * 0.82,
+                                 volley ? RGB(236, 156, 255) : RGB(255, 112, 82)), 1);
 }
 
 double telegraph_visibility(const ClientState& state,
@@ -2250,9 +2254,12 @@ void paint_telegraphs(const ClientState& state, HDC dc, const RECT& bounds,
   for (const auto& entry : state.telegraphs) {
     const ActiveTelegraph& telegraph = entry.second;
     const double visibility = telegraph_visibility(state, telegraph);
-    if (telegraph.action == "sweep")
+    if (telegraph.action == "sweep" || telegraph.action == "volley")
       draw_sweep_telegraph(dc, state.camera, bounds, telegraph, visibility,
-                           catalog.melee_range, minimap_side, rl);
+                           telegraph.action == "volley"
+                               ? kTileUnits * telegraph.radius_tiles
+                               : catalog.melee_range,
+                           minimap_side, rl);
     else
       draw_thrust_telegraph(dc, state.camera, bounds, telegraph, visibility,
                             catalog.thrust_range, minimap_side, rl);
@@ -2362,10 +2369,31 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       draw_line(dc, base.x, base.y - arm, base.x, base.y + arm, color, 3);
       break;
     }
+    case EffectFx::Kind::SupportMend: {
+      rl.push_back({render::Op::WarCry, static_cast<double>(base.x),
+                    static_cast<double>(base.y), 0.0, fx.value,
+                    phase_a::kSupportMendLabel});
+      const COLORREF color = fade_to_background(
+          RGB(phase_a::kSupportMendColor.r, phase_a::kSupportMendColor.g,
+              phase_a::kSupportMendColor.b), life);
+      const int outer = std::max(
+          7, static_cast<int>(kTileUnits * (0.35 + grow * 0.95) * base.scale));
+      ring_ellipse(dc, base.x, base.y, outer, outer, color, 3);
+      if (outer > 10)
+        ring_ellipse(dc, base.x, base.y, outer - 8, outer - 8, color, 1);
+      const int arm = std::max(5, outer / 3);
+      draw_line(dc, base.x - arm, base.y, base.x + arm, base.y, color, 3);
+      draw_line(dc, base.x, base.y - arm, base.x, base.y + arm, color, 3);
+      break;
+    }
     case EffectFx::Kind::DamageNumber: {
-      std::string damage_label = fx.damage_to_player ? "player" : "monster";
+      std::string damage_label = fx.healing ? "healing" :
+          (fx.damage_to_player ? "player" : "monster");
       const COLORREF base_color =
-          fx.finisher ? RGB(phase_a::kComboFinisherColor.r,
+          fx.healing ? RGB(phase_a::kSupportMendColor.r,
+                           phase_a::kSupportMendColor.g,
+                           phase_a::kSupportMendColor.b)
+          : fx.finisher ? RGB(phase_a::kComboFinisherColor.r,
                             phase_a::kComboFinisherColor.g,
                             phase_a::kComboFinisherColor.b)
                       : fx.critical ? RGB(phase_a::kCriticalNumberColor.r, phase_a::kCriticalNumberColor.g,
@@ -2399,7 +2427,8 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       HGDIOBJ old_number_font = SelectObject(dc, number_font);
       // Rise AND fade toward the background over the effect lifetime.
       SetTextColor(dc, fade_to_background(color, life));
-      const std::string text = std::to_string(fx.value);
+      const std::string text = fx.healing ? "+" + std::to_string(fx.value)
+                                          : std::to_string(fx.value);
       TextOutA(dc, base.x - 9, base.y - lift, text.c_str(),
                static_cast<int>(text.size()));
       SelectObject(dc, old_number_font);
@@ -7476,6 +7505,113 @@ int scenario_combat_cadence() {
   return 0;
 }
 
+int scenario_monster_pressure_roles() {
+  ClientState state;
+  load_billboards(state.billboards);
+  state.world.route_id = "instance:marsh:clearings";
+  state.world.theme = "marsh";
+  state.world.house_name = "House Verdigris";
+  state.world.scion_name = "Mara";
+  state.world.player.id = "role-scion";
+  state.world.player.position = {20 * static_cast<int>(kTileUnits),
+                                 20 * static_cast<int>(kTileUnits)};
+  state.world.player.facing = {1, 0};
+  state.world.player.life = 78;
+  state.world.player.life_max = 100;
+  state.world.player.resource = 36;
+  state.world.player.resource_max = 50;
+  state.world.player.level = 8;
+  state.world.player.alive = true;
+  WorldActor spitter;
+  spitter.id = "role-spitter";
+  spitter.name = "Bog Spitter";
+  spitter.kind = "marsh-ranged";
+  spitter.behaviour = "ranged";
+  spitter.position = {16 * static_cast<int>(kTileUnits),
+                      19 * static_cast<int>(kTileUnits)};
+  spitter.life = 28;
+  spitter.life_max = 36;
+  spitter.alive = true;
+  state.world.monsters.push_back(spitter);
+  WorldActor ghast;
+  ghast.id = "role-ghast";
+  ghast.name = "Mire Ghast";
+  ghast.kind = "marsh-melee";
+  ghast.behaviour = "melee";
+  ghast.position = {22 * static_cast<int>(kTileUnits),
+                    19 * static_cast<int>(kTileUnits)};
+  ghast.life = 19;
+  ghast.life_max = 42;
+  ghast.alive = true;
+  state.world.monsters.push_back(ghast);
+  WorldActor shaman;
+  shaman.id = "role-shaman";
+  shaman.name = "Rot Shaman";
+  shaman.kind = "marsh-buffer";
+  shaman.behaviour = "buffer";
+  shaman.position = {24 * static_cast<int>(kTileUnits),
+                     21 * static_cast<int>(kTileUnits)};
+  shaman.life = 30;
+  shaman.life_max = 30;
+  shaman.alive = true;
+  state.world.monsters.push_back(shaman);
+  state.camera.x = static_cast<double>(state.world.player.position.x);
+  state.camera.y = static_cast<double>(state.world.player.position.y);
+  state.camera.zoom = kCameraDefaultZoom * zoom_height_factor(768);
+
+  verdigris::client::PresentationFx fx;
+  verdigris::client::PresentationEvent warning;
+  warning.type = verdigris::client::PresentationEventType::Telegraph;
+  warning.actor_id = spitter.id;
+  warning.text = spitter.name + " ranged:volley";
+  warning.value = 800;
+  warning.has_position = true;
+  warning.x = 20.0;
+  warning.y = 20.0;
+  warning.radius = 1;
+  verdigris::client::apply_presentation_event(fx, state.world, warning, 1);
+  verdigris::client::PresentationEvent mend;
+  mend.type = verdigris::client::PresentationEventType::HealingApplied;
+  mend.actor_id = ghast.id;
+  mend.text = shaman.name;
+  mend.value = 7;
+  verdigris::client::apply_presentation_event(fx, state.world, mend, 1);
+  state.effects = std::move(fx.effects);
+  state.telegraphs = std::move(fx.telegraphs);
+
+  std::string capture_dir;
+  const int capture_override = capture_root_override(&capture_dir);
+  if (capture_override < 0) {
+    scenario_check(false,
+                   "monster-pressure-roles: capture root rejected before any write");
+    return 0;
+  }
+  if (capture_override == 0) {
+    CreateDirectoryA("captures", nullptr);
+    capture_dir = "captures";
+  }
+  const std::string capture_path =
+      capture_dir + "\\monster-pressure-roles-1366x768.png";
+  scenario_check(reference_present(state, 1366, 768, capture_path),
+                 "monster-pressure-roles: production role frame captured");
+  std::printf("    capture: %s\n", capture_path.c_str());
+  bool volley = false;
+  bool support = false;
+  bool healing = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Telegraph && item.label == "volley") volley = true;
+    if (item.op == render::Op::WarCry &&
+        item.label == phase_a::kSupportMendLabel) support = true;
+    if (item.op == render::Op::Damage && item.label == "healing" &&
+        item.value == 7) healing = true;
+  }
+  scenario_check(volley && support && healing,
+                 "monster-pressure-roles: volley reticle and mend feedback render");
+  scenario_check(telegraph_avoids_hud(state.render_list, RECT{0, 0, 1366, 768}),
+                 "monster-pressure-roles: warning respects HUD safe zones");
+  return 0;
+}
+
 int scenario_remote_render_list() {
   verdigris::networking::WebSocketServer* server = nullptr;
   std::uint16_t port = 0;
@@ -9263,6 +9399,7 @@ int run_scenarios(const std::string& which) {
       {"telegraph-dodge", scenario_telegraph_dodge},
       {"combat-juice", scenario_combat_juice},
       {"combat-cadence", scenario_combat_cadence},
+      {"monster-pressure-roles", scenario_monster_pressure_roles},
       {"remote-render-list", scenario_remote_render_list},
       {"zoom-invariance", scenario_zoom_invariance},
       {"chronicles-gate-b", scenario_chronicles_gate_b},

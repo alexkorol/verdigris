@@ -1,5 +1,20 @@
 # UI Regression Checklist
 
+## Native Monster Pressure Roles
+
+- Approach a ranged foe from four to six tiles. Confirm a violet circular
+  reticle appears on the Scion's sampled tile for roughly 800 ms and does not
+  falsely originate beneath the caster.
+- Leave the entire marked area before it resolves and confirm no damage lands.
+  Stay inside the next warning and confirm exactly one named volley lands.
+- Land the third melee cadence beat during a volley warning and confirm the
+  finisher interrupts it. The stale warning may finish fading, but no volley
+  damage may resolve from it.
+- Wound a pack member near a buffer and confirm the most-wounded ally receives
+  a green double ring, cross, and `+N` number matching the authoritative heal.
+- At 1366x768 and 960x600, confirm circular warnings are clipped away from the
+  minimap and bottom HUD while the support treatment remains visible in-world.
+
 ## Native Combat Cadence
 
 - Hold primary attack against a durable non-boss. Confirm the quickbar pips

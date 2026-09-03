@@ -1,6 +1,6 @@
 # Vision
 
-## Status (updated 2026-09-02)
+## Status (updated 2026-09-03)
 
 **The world web at the village gates** (docs/crossroads-world-web.md): the
 rebuilt 2.5D Delaford Village remains the campaign's town, and the
@@ -83,6 +83,13 @@ or resets when a named skill is used. Exact cadence state travels through the
 server protocol and reconnect snapshot. The Framekit quickbar shows the live
 step, while the finisher's verdigris flare and larger damage number remain
 presentation-only reactions to the resolved server hit.
+
+Monster pack roles now create different decisions in the same authoritative
+combat loop. Ranged foes paint a violet one-tile volley destination for 800 ms
+and only hit a Scion who remains inside it. Support foes choose the most-wounded
+nearby non-boss ally and publish the exact mend and resulting health. The melee
+finisher can interrupt a pending volley, making cadence and positioning work
+together; the client merely renders the server's target and heal facts.
 
 The character sheet now reuses the generated player sprite for its portrait
 and each equipped item's real atlas frame; generic slot glyphs remain only for
@@ -174,7 +181,8 @@ release-safe baseline.
 - Shared stat pipeline, monster categories, rarity tiers.
 - Balanced combat loop with interpolated movement, responsive named skills,
   and an authoritative three-beat primary cadence with a readable finisher.
-- AI behaviors for different archetypes.
+- ~~AI behaviors for different archetypes.~~ ✅ close-pressure melee,
+  dodgeable ranged volleys, and ally-targeted support mends.
 
 ### Networking & World
 - Persistent towns with social features.

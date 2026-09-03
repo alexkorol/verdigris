@@ -1884,6 +1884,149 @@ void test_world_melee_combo_is_authoritative() {
   }
 }
 
+void test_world_monster_pressure_roles_are_authoritative() {
+  WorldSimulation ranged_world(0xA11CEULL, "role-scion");
+  ranged_world.enter_solo_instance("marsh", "clearings");
+  const WorldMonster* ranged = nullptr;
+  for (const auto& monster : ranged_world.monsters())
+    if (!monster.boss && monster.behaviour_type == "ranged") {
+      ranged = &monster;
+      break;
+    }
+  check(ranged != nullptr, "roles: marsh fields a ranged pressure unit");
+  if (ranged) {
+    const std::string ranged_id = ranged->uuid;
+    const int rx = ranged->x;
+    const int ry = ranged->y;
+    const int px = rx + 4 < 39 ? rx + 4 : rx - 4;
+    ranged_world.reset_monster(ranged_id, 1000);
+    ranged_world.teleport(px, ry, 900);
+    int life = 1000;
+    ranged_world.advance_combat(1, 20, life, 1000, 1000);
+    const auto warning_events =
+        ranged_world.advance_combat(1, 20, life, 1000, 3000);
+    const WorldCombatEvent* warning = nullptr;
+    for (const auto& event : warning_events)
+      if (event.type == "telegraph" && event.attacker_id == ranged_id)
+        warning = &event;
+    check(warning && warning->skill_id == "ranged:volley" &&
+              warning->x == px && warning->y == ry && warning->radius == 1 &&
+              warning->duration_ms == 800,
+          "roles: ranged volley publishes its sampled tile, radius, and windup");
+    const int dodge_x = px + 3 < 39 ? px + 3 : px - 3;
+    ranged_world.teleport(dodge_x, ry, 3400);
+    const auto dodge_events =
+        ranged_world.advance_combat(1, 20, life, 1000, 3900);
+    bool dodged_hit = false;
+    for (const auto& event : dodge_events)
+      if (event.type == "hit" && event.attacker_id == ranged_id)
+        dodged_hit = true;
+    check(!dodged_hit && life == 1000,
+          "roles: leaving the painted tile dodges the authoritative volley");
+
+    ranged_world.teleport(px, ry, 5000);
+    ranged_world.advance_combat(1, 20, life, 1000, 5800);
+    const auto impact_events =
+        ranged_world.advance_combat(1, 20, life, 1000, 6700);
+    bool volley_hit = false;
+    for (const auto& event : impact_events)
+      if (event.type == "hit" && event.attacker_id == ranged_id &&
+          event.skill_id == "ranged:volley")
+        volley_hit = event.amount > 0;
+    check(volley_hit && life < 1000,
+          "roles: staying inside the painted tile resolves one named volley");
+  }
+
+  // A third cadence beat lands before the 800ms volley and cancels its
+  // pending resolution; this makes stagger tactically useful, not cosmetic.
+  WorldSimulation interrupt_world(0xA11CEULL, "interrupt-scion");
+  interrupt_world.enter_solo_instance("marsh", "clearings");
+  const WorldMonster* caster = nullptr;
+  for (const auto& monster : interrupt_world.monsters())
+    if (!monster.boss && monster.behaviour_type == "ranged") {
+      caster = &monster;
+      break;
+    }
+  if (caster) {
+    const std::string caster_id = caster->uuid;
+    const int cx = caster->x;
+    const int cy = caster->y;
+    const int px = cx + 1 < 39 ? cx + 1 : cx - 1;
+    const std::string aim = px < cx ? "right" : "left";
+    interrupt_world.reset_monster(caster_id, 1000);
+    interrupt_world.teleport(px, cy, 900);
+    int life = 1000;
+    interrupt_world.advance_combat(1, 20, life, 1000, 1000);
+    interrupt_world.advance_combat(1, 20, life, 1000, 3000);
+    interrupt_world.start_player_attack(1, 20, 3000, aim, "melee");
+    interrupt_world.advance_combat(1, 20, life, 1000, 3000);
+    interrupt_world.advance_combat(1, 20, life, 1000, 3350);
+    const auto finisher =
+        interrupt_world.advance_combat(1, 20, life, 1000, 3700);
+    bool staggered = false;
+    for (const auto& event : finisher)
+      if (event.type == "hit" && event.target_id == caster_id &&
+          event.combo_step == 3 && event.stagger_ms == 700)
+        staggered = true;
+    const int before_resolution = life;
+    const auto interrupted =
+        interrupt_world.advance_combat(1, 0, life, 1000, 3900);
+    bool interrupted_hit = false;
+    for (const auto& event : interrupted)
+      if (event.type == "hit" && event.attacker_id == caster_id)
+        interrupted_hit = true;
+    check(staggered && !interrupted_hit && life == before_resolution,
+          "roles: melee finisher interrupts an in-flight ranged volley");
+  } else {
+    check(false, "roles: interruption trial has a ranged caster");
+  }
+
+  bool support_trial_ran = false;
+  for (std::uint64_t seed = 1; seed <= 200 && !support_trial_ran; ++seed) {
+    WorldSimulation support_world(seed, "support-scion");
+    support_world.enter_solo_instance("dungeon", "clearings");
+    const WorldMonster* buffer = nullptr;
+    const WorldMonster* ally = nullptr;
+    for (const auto& candidate : support_world.monsters()) {
+      if (candidate.boss || candidate.behaviour_type != "buffer") continue;
+      for (const auto& possible : support_world.monsters()) {
+        if (possible.boss || possible.uuid == candidate.uuid) continue;
+        if (std::max(std::abs(possible.x - candidate.x),
+                     std::abs(possible.y - candidate.y)) <= 5) {
+          buffer = &candidate;
+          ally = &possible;
+          break;
+        }
+      }
+      if (buffer) break;
+    }
+    if (!buffer || !ally) continue;
+    support_trial_ran = true;
+    const std::string buffer_id = buffer->uuid;
+    const std::string ally_id = ally->uuid;
+    const int ax = ally->x;
+    const int ay = ally->y;
+    const int px = ax + 1 < 39 ? ax + 1 : ax - 1;
+    const std::string aim = px < ax ? "right" : "left";
+    support_world.reset_monster(ally_id, 1000);
+    support_world.teleport(px, ay, 900);
+    int life = 1000;
+    support_world.start_player_attack(1, 20, 1000, aim, "melee");
+    support_world.advance_combat(1, 20, life, 1000, 1000);
+    const auto mend_events =
+        support_world.advance_combat(1, 0, life, 1000, 1800);
+    bool mended = false;
+    for (const auto& event : mend_events)
+      if (event.type == "heal" && event.attacker_id == buffer_id &&
+          event.target_id == ally_id && event.skill_id == "support:mend")
+        mended = event.amount > 0 && event.health <= event.health_max;
+    check(mended,
+          "roles: support unit mends the most-injured nearby ally authoritatively");
+  }
+  check(support_trial_ran,
+        "roles: deterministic generated packs contain a support-and-ally trial");
+}
+
 }  // namespace
 
 // ── N4: items, inventory, Vesselforge ────────────────────────────────────
@@ -2257,6 +2400,7 @@ int main() {
   test_n2_world_simulation_rules();
   test_n2_diagonal_blocking_rule();
   test_world_melee_combo_is_authoritative();
+  test_world_monster_pressure_roles_are_authoritative();
   test_relic_resurface_round_trip();
   test_relic_loss_again_returns_once();
   test_relic_resurface_replay_is_deterministic();

@@ -31,6 +31,7 @@ struct EffectFx {
     DamageNumber,
     TargetFlash,
     ComboFinisher,
+    SupportMend,
     // TASK-0122 Phase A beats. All lifetimes come from the phase_a constants
     // table in presentation_events.hpp; none of them touch simulation state.
     Materialize,    // deterministic first-sighting spawn beat
@@ -48,6 +49,7 @@ struct EffectFx {
   // TASK-0122 Phase A: critical/style parity data copied from the event.
   bool critical = false;
   bool finisher = false;
+  bool healing = false;
   std::string style;
 };
 
@@ -58,6 +60,7 @@ struct ActiveTelegraph {
   verdigris::Vec2 facing{1, 0};
   std::uint64_t start_tick = 0;
   int windup_ticks = 1;
+  int radius_tiles = 1;
 };
 
 struct WorldActor {

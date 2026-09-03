@@ -316,17 +316,38 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       }
       break;
     }
+    case PresentationEventType::HealingApplied: {
+      EffectFx pulse;
+      pulse.kind = EffectFx::Kind::SupportMend;
+      pulse.wx = ex;
+      pulse.wy = ey;
+      pulse.ttl = phase_a::kSupportMendTtlTicks;
+      pulse.value = event.value;
+      pulse.healing = true;
+      fx.effects.push_back(pulse);
+      EffectFx number = pulse;
+      number.kind = EffectFx::Kind::DamageNumber;
+      fx.effects.push_back(number);
+      break;
+    }
     case PresentationEventType::Telegraph: {
       ActiveTelegraph telegraph;
       telegraph.actor_id = event.actor_id;
-      telegraph.action = event.text.find("sweep") != std::string::npos ? "sweep" : "thrust";
-      telegraph.position = event_anchor(world, fx, event, false);
+      telegraph.action = event.text.find("volley") != std::string::npos
+                             ? "volley"
+                             : event.text.find("sweep") != std::string::npos
+                                   ? "sweep" : "thrust";
+      telegraph.position = event.has_position
+          ? verdigris::Vec2{static_cast<int>(std::lround(protocol_to_world(event.x))),
+                            static_cast<int>(std::lround(protocol_to_world(event.y)))}
+          : event_anchor(world, fx, event, false);
       // TASK-0122 Phase A: same inversion removal as monster sync. Without an
       // authoritative telegraph facing on the wire (radius/position wire work
       // is deferred), the warning keeps its neutral default instead of a
       // client-only inverted copy of the player's aim.
       telegraph.start_tick = now_tick;
       telegraph.windup_ticks = std::max(1, event.value > 20 ? event.value / 50 : event.value);
+      telegraph.radius_tiles = std::max(1, event.radius);
       fx.telegraphs[event.actor_id.empty() ? "foe" : event.actor_id] = std::move(telegraph);
       break;
     }
@@ -408,6 +429,9 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
     switch (event.type) {
       case PresentationEventType::DamageApplied:
         line = (to_player ? "Taken " : "Hit ") + std::to_string(event.value);
+        break;
+      case PresentationEventType::HealingApplied:
+        line = "Mended " + std::to_string(event.value);
         break;
       case PresentationEventType::ActorDied:
         line = "Kill " + event.text;
@@ -515,7 +539,8 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
         break;
       case EffectFx::Kind::DamageNumber: {
         std::string damage_label =
-            effect.damage_to_player ? "player" : "monster";
+            effect.healing ? "healing" :
+                (effect.damage_to_player ? "player" : "monster");
         if (effect.finisher)
           damage_label = std::string(effect.critical ? "critical-finisher:" : "finisher:") +
                          (effect.style.empty() ? "slash" : effect.style);
@@ -526,6 +551,11 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
                       static_cast<double>(base.y), 0.0, effect.value, damage_label});
         break;
       }
+      case EffectFx::Kind::SupportMend:
+        rl.push_back({render::Op::WarCry, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, effect.value,
+                      phase_a::kSupportMendLabel});
+        break;
       case EffectFx::Kind::DeathRing:
         rl.push_back({render::Op::Death, static_cast<double>(base.x),
                       static_cast<double>(base.y)});

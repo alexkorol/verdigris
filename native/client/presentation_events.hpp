@@ -15,6 +15,7 @@ enum class PresentationEventType {
   SessionReady,        // login accepted; model.player is authoritative
   AttackStarted,
   DamageApplied,
+  HealingApplied,
   ActorDied,
   ItemDropped,
   ItemPickedUp,
@@ -42,6 +43,11 @@ struct PresentationEvent {
   int combo_step = 0;
   int combo_window_ms = 0;
   int stagger_ms = 0;
+  // Optional authoritative ground target carried by telegraph envelopes.
+  bool has_position = false;
+  double x = 0.0;
+  double y = 0.0;
+  int radius = 0;
 };
 
 // TASK-0122 Phase A: the single named table for every new animation/VFX TTL,
@@ -68,6 +74,12 @@ inline constexpr const char* kCriticalDamageLabel = "critical";  // + ":" + styl
 inline constexpr int kComboFinisherTtlTicks = 10;          // 500 ms
 inline constexpr Rgb kComboFinisherColor{104, 232, 204};   // verdigris flare
 inline constexpr const char* kComboFinisherLabel = "combo-finisher";
+
+// Monster role feedback: a support mend is verdigris-green and remains
+// visually distinct from player damage, criticals, and war-cry gold.
+inline constexpr int kSupportMendTtlTicks = 14;
+inline constexpr Rgb kSupportMendColor{92, 218, 146};
+inline constexpr const char* kSupportMendLabel = "support-mend";
 
 // Deterministic spawn/materialization beat (first client sighting of a foe).
 inline constexpr int kMaterializeTtlTicks = 8;             // 400 ms

@@ -134,6 +134,59 @@ void combo_finisher_is_distinct() {
         "combo: shared render list labels the finisher ring and damage");
 }
 
+void monster_role_feedback_is_authoritative_and_distinct() {
+  WorldView world = world_with_player_and_foe("right");
+  PresentationFx fx;
+  PresentationEvent volley;
+  volley.type = PresentationEventType::Telegraph;
+  volley.actor_id = "foe-1";
+  volley.text = "Bog Spitter ranged:volley";
+  volley.value = 800;
+  volley.has_position = true;
+  volley.x = 7.0;
+  volley.y = 9.0;
+  volley.radius = 1;
+  apply_presentation_event(fx, world, volley, 12);
+  const auto found = fx.telegraphs.find("foe-1");
+  check(found != fx.telegraphs.end() && found->second.action == "volley" &&
+            found->second.position.x == static_cast<int>(std::lround(
+                verdigris::client::protocol_to_world(7.0))) &&
+            found->second.position.y == static_cast<int>(std::lround(
+                verdigris::client::protocol_to_world(9.0))) &&
+            found->second.windup_ticks == 16 && found->second.radius_tiles == 1,
+        "roles: volley uses the authoritative destination, radius, and windup");
+
+  PresentationEvent mend;
+  mend.type = PresentationEventType::HealingApplied;
+  mend.actor_id = "foe-1";
+  mend.text = "Rot Shaman";
+  mend.value = 7;
+  apply_presentation_event(fx, world, mend, 12);
+  const EffectFx* pulse = first_kind(fx, EffectFx::Kind::SupportMend);
+  const EffectFx* number = nullptr;
+  for (const auto& effect : fx.effects)
+    if (effect.kind == EffectFx::Kind::DamageNumber && effect.healing)
+      number = &effect;
+  check(pulse && pulse->ttl == phase_a::kSupportMendTtlTicks &&
+            pulse->value == 7 && number && number->value == 7,
+        "roles: support mend creates a green pulse and positive number");
+  render::List rl;
+  record_world_ops(rl, world, fx, camera2d::Camera{}, 960, 600);
+  bool saw_mend = false;
+  bool saw_healing = false;
+  bool saw_volley = false;
+  for (const auto& item : rl) {
+    if (item.op == render::Op::WarCry &&
+        item.label == phase_a::kSupportMendLabel) saw_mend = true;
+    if (item.op == render::Op::Damage && item.label == "healing" && item.value == 7)
+      saw_healing = true;
+    if (item.op == render::Op::Telegraph && item.label == "volley")
+      saw_volley = true;
+  }
+  check(saw_mend && saw_healing && saw_volley,
+        "roles: shared render list preserves volley and mend semantics");
+}
+
 void scion_lost_beat_contract() {
   WorldView world = world_with_player_and_foe("right");
   PresentationFx fx;
@@ -382,6 +435,7 @@ int main() {
   constants_are_named_and_distinct();
   critical_damage_is_distinct();
   combo_finisher_is_distinct();
+  monster_role_feedback_is_authoritative_and_distinct();
   scion_lost_beat_contract();
   buff_expired_beat_contract();
   local_seam_maps_lifecycle_events();

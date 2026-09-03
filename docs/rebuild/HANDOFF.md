@@ -1,5 +1,29 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - authoritative monster pressure roles
+
+- Generated melee, ranged, and buffer identities now have distinct production
+  behavior instead of cosmetic role labels. Melee units retain close-contact
+  pressure; ranged units engage from six tiles and sample a target area for an
+  800 ms volley; buffers mend the most-injured non-boss ally within five tiles.
+- Ranged resolution checks the sampled destination, so leaving its one-tile
+  area is a real server-side dodge. A third-beat melee finisher interrupts an
+  in-flight volley, while the existing boss stagger immunity remains intact.
+- `monster:telegraph` now reaches the remote presentation with its exact tile,
+  radius, and duration. `monster:healed` carries source, recipient, amount, and
+  resulting health; clients mirror those facts without computing a heal.
+- The production GDI presentation distinguishes violet volley reticles from
+  red boss/melee warnings and renders support mends as green rings, a cross,
+  and a positive number. Common ranged attackers no longer become visually
+  elite merely because their hit reached the player.
+- Core, protocol, scripted-session, shared-presentation, and production-client
+  scenarios cover dodges, hits, support targeting, finisher interruption, and
+  exact wire-to-VFX parity. Evidence is written as
+  `native/build/goal-captures-roles-b/monster-pressure-roles-1366x768.png`.
+- Verification: the full native test gate, complete Chronicle succession and
+  relic-recovery journey, and every client scenario pass. `frame-budget`
+  measured 10.4 ms average at 3440x1440 against the 40 ms ceiling.
+
 ## 2026-09-02 - authoritative three-beat melee cadence
 
 - The production remote combat path now resolves primary attacks as a
