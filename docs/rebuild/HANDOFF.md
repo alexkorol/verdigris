@@ -1,5 +1,31 @@
 # Native reconstitution handoff
 
+## 2026-09-02 — tactical map modes and persistent navigation preferences
+
+- The native HUD now has two production map reads: the existing compact
+  corner compass and a translucent `Tab` tactical chart. The expanded chart
+  uses the authoritative scene walkability grid to draw route topology under
+  the live Scion, foe/elite, townsfolk, scenery, and extraction markers; it is
+  not a client-authored destination or a scaled screenshot of the world.
+- The large chart uses the WIZARD Framekit nine-slice plate with opacity-aware
+  compositing and the shared Verdigris fallback skin. It has a route-aware
+  heading, an on-plate legend, and discoverable controls. Five zoom levels are
+  available through the wheel or brackets, five transparency levels through
+  minus/equal, and `Shift+M` moves the compact map between the left and right
+  rails. Those three preferences persist in the user's local client settings;
+  the broad overlay itself always starts closed.
+- Opening the chart dismisses narrower gear/character/tree/dialogue panes,
+  world hover cards stay suppressed beneath it, and Escape closes the chart
+  before requesting application exit. Right-rail placement participates in
+  the top-HUD and telegraph safe-zone planners; when gear needs that rail, the
+  compact map temporarily yields left without changing the saved preference.
+- The new `tactical-map` production scenario proves topology, controls,
+  clamping, pane dismissal, right-side placement, and Escape ordering, and
+  emits `tactical-map-overlay-1366x768.png`. The full native gate passed:
+  denylist, every core/networking/camera/session/presentation/audio suite, the
+  complete Chronicle succession/relic journey, and all client scenarios. The
+  3440x1440 frame-budget result was 9.9 ms average against the 40 ms ceiling.
+
 ## 2026-09-02 — Crossroads social hub + first House investment
 
 - The production native town now uses the accepted owner-demo Crossroads

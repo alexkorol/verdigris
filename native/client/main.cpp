@@ -252,6 +252,40 @@ struct HudRect {
   int h = 0;
 };
 
+// The tactical map has two deliberately different reads. Corner mode is the
+// quiet moment-to-moment compass; Overlay mode is the PoE-style translucent
+// route plan that leaves the live world visible underneath. Preferences are
+// presentation-only: topology and markers still come exclusively from the
+// authoritative WorldView.
+enum class MinimapMode { Corner, Overlay };
+enum class MinimapSide { Left, Right };
+
+constexpr int kMinimapSettingSteps = 5;
+constexpr int kDefaultMinimapZoomStep = 2;
+constexpr int kDefaultMinimapOpacityStep = 2;
+
+double minimap_zoom_factor(int step) {
+  static constexpr double kSteps[kMinimapSettingSteps] = {0.65, 0.82, 1.0,
+                                                           1.22, 1.48};
+  return kSteps[std::clamp(step, 0, kMinimapSettingSteps - 1)];
+}
+
+int minimap_zoom_percent(int step) {
+  return static_cast<int>(
+      std::lround(minimap_zoom_factor(step) * 100.0));
+}
+
+BYTE minimap_body_alpha(int step) {
+  static constexpr BYTE kSteps[kMinimapSettingSteps] = {105, 135, 170, 205,
+                                                         235};
+  return kSteps[std::clamp(step, 0, kMinimapSettingSteps - 1)];
+}
+
+int minimap_opacity_percent(int step) {
+  return static_cast<int>(std::lround(
+      static_cast<double>(minimap_body_alpha(step)) * 100.0 / 255.0));
+}
+
 bool hud_rects_overlap(const HudRect& a, const HudRect& b) {
   return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h &&
          b.y < a.y + a.h;
@@ -275,11 +309,29 @@ HudRect gear_pane_rect(int width, int height) {
           std::max(0, bottom - pane_top)};
 }
 
-HudRect minimap_rect(int height) {
+HudRect minimap_rect(int width, int height, MinimapSide side) {
   const int s = hud_scale(height);
   const int size = 108 * s;
   const int margin = 12 * s;
-  return {margin, margin, size, size};
+  const int x = side == MinimapSide::Right
+                    ? std::max(margin, width - margin - size)
+                    : margin;
+  return {x, margin, size, size};
+}
+
+HudRect minimap_overlay_rect(int width, int height) {
+  // Keep the tactical plate clear of the top information rows and bottom
+  // combat HUD at every supported aspect ratio. It is intentionally broad,
+  // but never a fully opaque pause screen.
+  const int min_w = std::min(440, std::max(240, width - 32));
+  const int max_w = std::max(min_w, width - 48);
+  const int min_h = std::min(360, std::max(240, height - 180));
+  const int max_h = std::max(min_h, height - 200);
+  const int w =
+      std::clamp(static_cast<int>(width * 0.68), min_w, max_w);
+  const int h =
+      std::clamp(static_cast<int>(height * 0.72), min_h, max_h);
+  return {(width - w) / 2, std::max(70, (height - h) / 2), w, h};
 }
 
 constexpr int kVitalOrbRadius = 34;
@@ -376,6 +428,11 @@ struct ClientState {
   bool loot_labels = false;
   bool gear_overlay = false;
   bool debug_overlay = false;
+  MinimapMode minimap_mode = MinimapMode::Corner;
+  MinimapSide minimap_side = MinimapSide::Left;
+  int minimap_zoom_step = kDefaultMinimapZoomStep;
+  int minimap_opacity_step = kDefaultMinimapOpacityStep;
+  bool persist_minimap_preferences = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
   double last_paint_ms = 0.0;
@@ -468,6 +525,92 @@ struct ClientState {
   // proof composite. Empty in every normal play path.
   std::vector<std::pair<std::string, verdigris::Vec2>> beat_legend;
 };
+
+MinimapSide active_minimap_side(const ClientState& state) {
+  // Preserve the player's side preference, but temporarily yield the right
+  // rail to the inventory diptych. Closing gear restores the chosen side.
+  if (state.minimap_mode == MinimapMode::Corner && state.gear_overlay &&
+      state.minimap_side == MinimapSide::Right)
+    return MinimapSide::Left;
+  return state.minimap_side;
+}
+
+std::string minimap_preferences_path() {
+  char local_data[MAX_PATH]{};
+  const DWORD length =
+      GetEnvironmentVariableA("LOCALAPPDATA", local_data, MAX_PATH);
+  if (length == 0 || length >= MAX_PATH) return {};
+  const std::string directory = std::string(local_data) + "\\Verdigris";
+  if (!CreateDirectoryA(directory.c_str(), nullptr) &&
+      GetLastError() != ERROR_ALREADY_EXISTS)
+    return {};
+  return directory + "\\client-map.ini";
+}
+
+bool write_minimap_preferences(const ClientState& state,
+                               const std::string& path) {
+  const std::string temporary = path + ".tmp";
+  std::ofstream out(temporary, std::ios::binary | std::ios::trunc);
+  if (!out) return false;
+  out << "side="
+      << (state.minimap_side == MinimapSide::Right ? "right" : "left")
+      << "\nzoom=" << state.minimap_zoom_step
+      << "\nopacity=" << state.minimap_opacity_step << "\n";
+  out.flush();
+  const bool complete = static_cast<bool>(out);
+  out.close();
+  if (!complete ||
+      !MoveFileExA(temporary.c_str(), path.c_str(),
+                   MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH)) {
+    (void)DeleteFileA(temporary.c_str());
+    return false;
+  }
+  return true;
+}
+
+bool read_minimap_preferences(ClientState& state, const std::string& path) {
+  std::ifstream in(path, std::ios::binary);
+  if (!in) return false;
+  std::string line;
+  const auto read_step = [](const std::string& value, int current) {
+    char* end = nullptr;
+    const long parsed = std::strtol(value.c_str(), &end, 10);
+    if (end == value.c_str() || !end || *end != '\0') return current;
+    if (parsed < 0) return 0;
+    if (parsed >= kMinimapSettingSteps) return kMinimapSettingSteps - 1;
+    return static_cast<int>(parsed);
+  };
+  while (std::getline(in, line)) {
+    const std::size_t split = line.find('=');
+    if (split == std::string::npos) continue;
+    const std::string key = line.substr(0, split);
+    const std::string value = line.substr(split + 1);
+    if (key == "side") {
+      if (value == "right") state.minimap_side = MinimapSide::Right;
+      if (value == "left") state.minimap_side = MinimapSide::Left;
+    } else if (key == "zoom") {
+      state.minimap_zoom_step = read_step(value, state.minimap_zoom_step);
+    } else if (key == "opacity") {
+      state.minimap_opacity_step =
+          read_step(value, state.minimap_opacity_step);
+    }
+  }
+  return true;
+}
+
+void save_minimap_preferences(const ClientState& state) {
+  if (!state.persist_minimap_preferences) return;
+  const std::string path = minimap_preferences_path();
+  if (!path.empty()) (void)write_minimap_preferences(state, path);
+}
+
+void load_minimap_preferences(ClientState& state) {
+  const std::string path = minimap_preferences_path();
+  if (!path.empty()) (void)read_minimap_preferences(state, path);
+  // Only real interactive clients persist subsequent changes. Scenario
+  // states never call this loader and therefore cannot touch user settings.
+  state.persist_minimap_preferences = true;
+}
 
 std::string executable_directory() {
   char path[MAX_PATH]{};
@@ -830,7 +973,8 @@ void load_framekit_assets(BillboardAssets& assets) {
 // Nine-slice framekit blit through the TASK-0180 planner. Returns false when
 // the plate is not loaded so callers can fall back to the vector skin.
 bool draw_framekit_nine(const BillboardAssets& assets, HDC dc,
-                        const SpriteBitmap& plate, const RECT& rect) {
+                        const SpriteBitmap& plate, const RECT& rect,
+                        BYTE constant_alpha = 255) {
   if (!plate.ready() || !assets.alpha_blend) return false;
   framekit_renderer::NineSliceAsset asset =
       &plate == &assets.fk_slot ? framekit_renderer::default_slot_asset()
@@ -844,7 +988,7 @@ bool draw_framekit_nine(const BillboardAssets& assets, HDC dc,
   const framekit_renderer::NineSlicePlan plan =
       framekit_renderer::plan_nine_slice(dest, asset);
   if (!plan.valid) return false;
-  const BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+  const BLENDFUNCTION blend{AC_SRC_OVER, 0, constant_alpha, AC_SRC_ALPHA};
   for (const auto& region : plan.regions) {
     if (region.dst_w == 0 || region.dst_h == 0) continue;
     assets.alpha_blend(dc, region.dst_x, region.dst_y, region.dst_w,
@@ -1940,11 +2084,13 @@ struct HudSafeZones {
   RECT bottom_hud{};
 };
 
-HudSafeZones hud_safe_zones(const RECT& bounds) {
+HudSafeZones hud_safe_zones(const RECT& bounds,
+                            MinimapSide side = MinimapSide::Left) {
   HudSafeZones zones;
-  zones.minimap = {0, 0, 132, 132};
   const int bottom = static_cast<int>(bounds.bottom);
   const int right = static_cast<int>(bounds.right);
+  const HudRect map = minimap_rect(right, bottom, side);
+  zones.minimap = {map.x, map.y, map.x + map.w, map.y + map.h};
   zones.bottom_hud = {0, std::max(0, bottom - 96), right, bottom};
   return zones;
 }
@@ -1959,8 +2105,9 @@ bool circle_hits_rect(double x, double y, double radius, const RECT& rc) {
   return dx * dx + dy * dy <= radius * radius;
 }
 
-double clamp_radius_from_hud(double x, double y, double radius, const RECT& bounds) {
-  const HudSafeZones zones = hud_safe_zones(bounds);
+double clamp_radius_from_hud(double x, double y, double radius,
+                             const RECT& bounds, MinimapSide side) {
+  const HudSafeZones zones = hud_safe_zones(bounds, side);
   double r = radius;
   while (r > 4.0 && (circle_hits_rect(x, y, r, zones.minimap) ||
                      circle_hits_rect(x, y, r, zones.bottom_hud)))
@@ -1971,8 +2118,9 @@ double clamp_radius_from_hud(double x, double y, double radius, const RECT& boun
   return r;
 }
 
-bool telegraph_avoids_hud(const render::List& list, const RECT& bounds) {
-  const HudSafeZones zones = hud_safe_zones(bounds);
+bool telegraph_avoids_hud(const render::List& list, const RECT& bounds,
+                          MinimapSide side = MinimapSide::Left) {
+  const HudSafeZones zones = hud_safe_zones(bounds, side);
   for (const auto& item : list) {
     if (item.op != render::Op::Telegraph) continue;
     const double radius = std::max(item.radius, 4.0);
@@ -1989,7 +2137,8 @@ COLORREF telegraph_color(double visibility, COLORREF source) {
 
 void draw_thrust_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
                            const ActiveTelegraph& telegraph, double visibility,
-                           double length, render::List& rl) {
+                           double length, MinimapSide minimap_side,
+                           render::List& rl) {
   const double facing_x = static_cast<double>(telegraph.facing.x);
   const double facing_y = static_cast<double>(telegraph.facing.y);
   const double angle = std::atan2(facing_y, facing_x);
@@ -2030,7 +2179,7 @@ void draw_thrust_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
   const int origin_r = std::max(4, static_cast<int>(kTileUnits * 0.18 * base.scale));
   const double clamped =
       clamp_radius_from_hud(static_cast<double>(base.x), static_cast<double>(base.y),
-                            static_cast<double>(origin_r), bounds);
+                            static_cast<double>(origin_r), bounds, minimap_side);
   rl.back().radius = clamped;
   if (clamped <= 0.0) {
     rl.pop_back();
@@ -2042,13 +2191,14 @@ void draw_thrust_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
 
 void draw_sweep_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
                           const ActiveTelegraph& telegraph, double visibility,
-                          double radius_world, render::List& rl) {
+                          double radius_world, MinimapSide minimap_side,
+                          render::List& rl) {
   const ScreenPoint base = project(camera, bounds, telegraph.position.x,
                                    telegraph.position.y);
   const int radius = std::max(4, static_cast<int>(radius_world * base.scale));
   const double clamped =
       clamp_radius_from_hud(static_cast<double>(base.x), static_cast<double>(base.y),
-                            static_cast<double>(radius), bounds);
+                            static_cast<double>(radius), bounds, minimap_side);
   if (clamped <= 0.0) return;
   rl.push_back({render::Op::Telegraph, static_cast<double>(base.x),
                 static_cast<double>(base.y), clamped, 0, "sweep"});
@@ -2084,7 +2234,8 @@ void paint_telegraphs(const ClientState& state, HDC dc, const RECT& bounds,
   const verdigris::PresentationCatalog catalog =
       verdigris::Simulation::presentation_catalog();
   const int saved = SaveDC(dc);
-  const HudSafeZones zones = hud_safe_zones(bounds);
+  const MinimapSide minimap_side = active_minimap_side(state);
+  const HudSafeZones zones = hud_safe_zones(bounds, minimap_side);
   ExcludeClipRect(dc, zones.minimap.left, zones.minimap.top, zones.minimap.right,
                   zones.minimap.bottom);
   ExcludeClipRect(dc, zones.bottom_hud.left, zones.bottom_hud.top, zones.bottom_hud.right,
@@ -2094,10 +2245,10 @@ void paint_telegraphs(const ClientState& state, HDC dc, const RECT& bounds,
     const double visibility = telegraph_visibility(state, telegraph);
     if (telegraph.action == "sweep")
       draw_sweep_telegraph(dc, state.camera, bounds, telegraph, visibility,
-                           catalog.melee_range, rl);
+                           catalog.melee_range, minimap_side, rl);
     else
       draw_thrust_telegraph(dc, state.camera, bounds, telegraph, visibility,
-                            catalog.thrust_range, rl);
+                            catalog.thrust_range, minimap_side, rl);
   }
   RestoreDC(dc, saved);
 }
@@ -3001,7 +3152,7 @@ bool trade_pane_open(const ClientState& state);
 void paint_hover_tooltip(ClientState& state, HDC dc, const RECT& bounds,
                          render::List& rl) {
   if (trade_pane_open(state) || state.gear_overlay || state.tree_pane ||
-      state.character_pane)
+      state.character_pane || state.minimap_mode == MinimapMode::Overlay)
     return;
 
   const WorldView& world = state.world;
@@ -3127,84 +3278,273 @@ void paint_xp_bar(ClientState& state, HDC dc, const RECT& bounds,
                 static_cast<int>(std::lround(fraction * 100.0)), "xp-bar"});
 }
 
-void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
-  const HudRect map = minimap_rect(static_cast<int>(bounds.bottom));
-  const int kSize = map.w;
-  const int s = std::max(1, map.w / 108);
+void paint_minimap(ClientState& state, HDC dc, const RECT& bounds,
+                   render::List& rl) {
+  const int width = static_cast<int>(bounds.right);
+  const int height = static_cast<int>(bounds.bottom);
+  const bool overlay = state.minimap_mode == MinimapMode::Overlay;
+  const MinimapSide minimap_side = active_minimap_side(state);
+  const HudRect map = overlay
+                          ? minimap_overlay_rect(width, height)
+                          : minimap_rect(width, height, minimap_side);
+  const int s = hud_scale(height);
   RECT panel{map.x, map.y, map.x + map.w, map.y + map.h};
-  state.hud_rect_trace.push_back({"minimap", map});
-  skin::panel(dc, panel);
+  state.hud_rect_trace.push_back(
+      {overlay ? "minimap-overlay" : "minimap", map});
+
+  const BYTE body_alpha = minimap_body_alpha(state.minimap_opacity_step);
+  if (overlay) {
+    // The WIZARD nine-slice is opacity-controlled as one composited plate so
+    // the world remains readable beneath it. The shared vector skin remains
+    // the fail-closed presentation when assets are unavailable.
+    if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel,
+                            panel, body_alpha))
+      skin::panel(dc, panel, skin::kVerdigris, body_alpha, 8.0f);
+  } else {
+    skin::panel(dc, panel, skin::kPanelBorder, 228, 6.0f);
+  }
+
+  const int header_h = overlay ? 50 * s : 5 * s;
+  const int footer_h = overlay ? 42 * s : 5 * s;
+  RECT plot{panel.left + 7 * s, panel.top + header_h,
+            panel.right - 7 * s, panel.bottom - footer_h};
+  if (plot.right <= plot.left || plot.bottom <= plot.top) return;
+  state.hud_rect_trace.push_back(
+      {overlay ? "minimap-overlay-plot" : "minimap-plot",
+       {plot.left, plot.top, plot.right - plot.left, plot.bottom - plot.top}});
 
   const WorldView& world = state.world;
-  const double arena = static_cast<double>(verdigris::world_scale::kArenaHalfExtent);
-  const double map_scale = static_cast<double>(kSize) / (arena * 2.2);
-  const int center_x = (panel.left + panel.right) / 2;
-  const int center_y = (panel.top + panel.bottom) / 2;
+  const double arena =
+      static_cast<double>(verdigris::world_scale::kArenaHalfExtent);
+  const int plot_span = std::min(plot.right - plot.left, plot.bottom - plot.top);
+  const double map_scale =
+      static_cast<double>(plot_span) / (arena * 2.2) *
+      minimap_zoom_factor(state.minimap_zoom_step);
+  const int center_x = (plot.left + plot.right) / 2;
+  const int center_y = (plot.top + plot.bottom) / 2;
   const double origin_x = static_cast<double>(world.player.position.x);
   const double origin_y = static_cast<double>(world.player.position.y);
-
   auto to_map = [&](double wx, double wy) {
-    const int mx = center_x + static_cast<int>((wx - origin_x) * map_scale);
-    const int my = center_y + static_cast<int>((wy - origin_y) * map_scale);
+    const int mx = center_x +
+                   static_cast<int>(std::lround((wx - origin_x) * map_scale));
+    const int my = center_y +
+                   static_cast<int>(std::lround((wy - origin_y) * map_scale));
     return std::pair<int, int>{mx, my};
   };
+  const auto inside_plot = [&](int x, int y, int pad = 0) {
+    return x >= plot.left + pad && x < plot.right - pad &&
+           y >= plot.top + pad && y < plot.bottom - pad;
+  };
 
+  const int saved = SaveDC(dc);
+  IntersectClipRect(dc, plot.left, plot.top, plot.right, plot.bottom);
+
+  // Draw the authoritative walkability topology first. Only the visible tile
+  // envelope is visited, keeping both the small map and a live overlay cheap
+  // even when a future act supplies a much larger grid.
+  int topology_cells = 0;
+  const bool valid_grid =
+      world.map_width > 0 && world.map_height > 0 &&
+      world.map_walkable.size() ==
+          static_cast<std::size_t>(world.map_width) * world.map_height;
+  if (valid_grid) {
+    const double half_world_x =
+        static_cast<double>(plot.right - plot.left) * 0.5 / map_scale;
+    const double half_world_y =
+        static_cast<double>(plot.bottom - plot.top) * 0.5 / map_scale;
+    const int tx0 = std::clamp(
+        static_cast<int>(std::floor((origin_x - half_world_x) / kTileUnits)) - 1,
+        0, world.map_width - 1);
+    const int tx1 = std::clamp(
+        static_cast<int>(std::ceil((origin_x + half_world_x) / kTileUnits)) + 1,
+        0, world.map_width - 1);
+    const int ty0 = std::clamp(
+        static_cast<int>(std::floor((origin_y - half_world_y) / kTileUnits)) - 1,
+        0, world.map_height - 1);
+    const int ty1 = std::clamp(
+        static_cast<int>(std::ceil((origin_y + half_world_y) / kTileUnits)) + 1,
+        0, world.map_height - 1);
+    HBRUSH floor_brush = CreateSolidBrush(
+        overlay ? RGB(48, 76, 66) : RGB(43, 61, 54));
+    HPEN grid_pen = CreatePen(PS_SOLID, 1,
+                              overlay ? RGB(80, 116, 100)
+                                      : RGB(57, 78, 69));
+    HGDIOBJ old_pen = SelectObject(dc, grid_pen);
+    for (int ty = ty0; ty <= ty1; ++ty) {
+      for (int tx = tx0; tx <= tx1; ++tx) {
+        const std::size_t index =
+            static_cast<std::size_t>(ty) * world.map_width + tx;
+        if (!world.map_walkable[index]) continue;
+        const auto [x0, y0] = to_map((tx - 0.46) * kTileUnits,
+                                     (ty - 0.46) * kTileUnits);
+        const auto [x1, y1] = to_map((tx + 0.46) * kTileUnits,
+                                     (ty + 0.46) * kTileUnits);
+        RECT cell{std::min(x0, x1), std::min(y0, y1),
+                  std::max(x0, x1) + 1, std::max(y0, y1) + 1};
+        FillRect(dc, &cell, floor_brush);
+        if (overlay && cell.right - cell.left >= 5 &&
+            cell.bottom - cell.top >= 5) {
+          HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+          Rectangle(dc, cell.left, cell.top, cell.right, cell.bottom);
+          SelectObject(dc, old_brush);
+        }
+        ++topology_cells;
+      }
+    }
+    SelectObject(dc, old_pen);
+    DeleteObject(grid_pen);
+    DeleteObject(floor_brush);
+  }
+
+  const int marker_scale = overlay ? std::max(2, plot_span / 240)
+                                   : std::max(1, map.w / 108);
   int dots = 0;
   for (const auto& item : state.scenery) {
     const auto [mx, my] = to_map(item.position.x, item.position.y);
-    if (mx < panel.left + 2 || mx >= panel.right - 2 || my < panel.top + 2 ||
-        my >= panel.bottom - 2)
-      continue;
-    fill_ellipse(dc, mx, my, 2 * s, 2 * s, RGB(96, 112, 98));
+    if (!inside_plot(mx, my, 2)) continue;
+    fill_ellipse(dc, mx, my, 2 * marker_scale, 2 * marker_scale,
+                 RGB(96, 112, 98));
     ++dots;
   }
 
   if (world.has_extraction) {
     const auto [mx, my] = to_map(world.extraction.x, world.extraction.y);
-    fill_ellipse(dc, mx, my, 4 * s, 4 * s, RGB(239, 208, 116));
-    ++dots;
+    if (inside_plot(mx, my)) {
+      fill_ellipse(dc, mx, my, 4 * marker_scale, 4 * marker_scale,
+                   RGB(239, 208, 116));
+      ring_ellipse(dc, mx, my, 6 * marker_scale, 6 * marker_scale,
+                   RGB(128, 216, 184), std::max(1, marker_scale));
+      ++dots;
+    }
   }
 
   for (const auto& monster : world.monsters) {
     if (!monster.alive) continue;
     const auto [mx, my] = to_map(monster.position.x, monster.position.y);
-    fill_ellipse(dc, mx, my, 3 * s, 3 * s, RGB(196, 58, 48));
+    if (!inside_plot(mx, my)) continue;
+    fill_ellipse(dc, mx, my,
+                 (monster.elite ? 4 : 3) * marker_scale,
+                 (monster.elite ? 4 : 3) * marker_scale,
+                 monster.elite ? RGB(229, 164, 73) : RGB(196, 58, 48));
     ++dots;
   }
 
   for (const auto& npc : world.npcs) {
-    // NPC blips clamp to the panel border so an off-map NPC still points
-    // the way — the town is far larger than the minimap window.
     auto [mx, my] = to_map(npc.position.x, npc.position.y);
-    mx = std::clamp(mx, static_cast<int>(panel.left) + 3,
-                    static_cast<int>(panel.right) - 3);
-    my = std::clamp(my, static_cast<int>(panel.top) + 3,
-                    static_cast<int>(panel.bottom) - 3);
-    fill_ellipse(dc, mx, my, 3 * s, 3 * s, RGB(122, 168, 230));
+    if (!overlay) {
+      // Corner-map NPCs clamp to the border as a directional cue. The large
+      // overlay is spacious enough to hide truly off-map figures instead.
+      mx = std::clamp(mx, static_cast<int>(plot.left) + 3,
+                      static_cast<int>(plot.right) - 3);
+      my = std::clamp(my, static_cast<int>(plot.top) + 3,
+                      static_cast<int>(plot.bottom) - 3);
+    }
+    if (!inside_plot(mx, my)) continue;
+    fill_ellipse(dc, mx, my, 3 * marker_scale, 3 * marker_scale,
+                 RGB(122, 168, 230));
     ++dots;
   }
 
   const auto [px, py] = to_map(origin_x, origin_y);
   const double facing_angle =
       std::atan2(world.player.facing.y, world.player.facing.x);
-  const int tip_x = px + static_cast<int>(std::cos(facing_angle) * 8.0 * s);
-  const int tip_y = py + static_cast<int>(std::sin(facing_angle) * 8.0 * s);
-  const int wing_x = px - static_cast<int>(std::cos(facing_angle) * 4.0 * s);
-  const int wing_y = py - static_cast<int>(std::sin(facing_angle) * 4.0 * s);
+  const int arrow_scale = overlay ? std::max(2, marker_scale) : marker_scale;
+  const int tip_x = px +
+                    static_cast<int>(std::cos(facing_angle) * 8.0 * arrow_scale);
+  const int tip_y = py +
+                    static_cast<int>(std::sin(facing_angle) * 8.0 * arrow_scale);
+  const int wing_x = px -
+                     static_cast<int>(std::cos(facing_angle) * 4.0 * arrow_scale);
+  const int wing_y = py -
+                     static_cast<int>(std::sin(facing_angle) * 4.0 * arrow_scale);
   const double wing = facing_angle + kPi * 0.75;
-  const int wing_a_x = wing_x + static_cast<int>(std::cos(wing) * 5.0 * s);
-  const int wing_a_y = wing_y + static_cast<int>(std::sin(wing) * 5.0 * s);
-  const int wing_b_x = wing_x + static_cast<int>(std::cos(wing + kPi * 0.5) * 5.0 * s);
-  const int wing_b_y = wing_y + static_cast<int>(std::sin(wing + kPi * 0.5) * 5.0 * s);
-  POINT arrow[3] = {{tip_x, tip_y}, {wing_a_x, wing_a_y}, {wing_b_x, wing_b_y}};
+  const int wing_a_x = wing_x +
+                       static_cast<int>(std::cos(wing) * 5.0 * arrow_scale);
+  const int wing_a_y = wing_y +
+                       static_cast<int>(std::sin(wing) * 5.0 * arrow_scale);
+  const int wing_b_x = wing_x + static_cast<int>(
+                                    std::cos(wing + kPi * 0.5) * 5.0 * arrow_scale);
+  const int wing_b_y = wing_y + static_cast<int>(
+                                    std::sin(wing + kPi * 0.5) * 5.0 * arrow_scale);
+  POINT arrow[3] = {{tip_x, tip_y}, {wing_a_x, wing_a_y},
+                    {wing_b_x, wing_b_y}};
   HBRUSH player_brush = CreateSolidBrush(RGB(168, 214, 188));
   HGDIOBJ old_arrow_brush = SelectObject(dc, player_brush);
   Polygon(dc, arrow, 3);
   SelectObject(dc, old_arrow_brush);
   DeleteObject(player_brush);
+  RestoreDC(dc, saved);
 
+  std::string label = overlay ? "overlay" : "corner";
+  label += minimap_side == MinimapSide::Right ? ":right" : ":left";
+  label += ":zoom=" + std::to_string(minimap_zoom_percent(
+                            state.minimap_zoom_step));
+  label += ":opacity=" + std::to_string(minimap_opacity_percent(
+                               state.minimap_opacity_step));
+  label += ":cells=" + std::to_string(topology_cells);
   rl.push_back({render::Op::Minimap, static_cast<double>(panel.left),
-                static_cast<double>(panel.top), static_cast<double>(kSize), dots, "panel"});
+                static_cast<double>(panel.top), static_cast<double>(map.w),
+                dots, label});
+
+  if (overlay) {
+    SetBkMode(dc, TRANSPARENT);
+    HGDIOBJ old_font = SelectObject(dc, skin::font_heading());
+    SetTextColor(dc, skin::kGold);
+    std::string title = world.has_extraction ? "ROAD TACTICAL CHART"
+                                             : "THE CROSSROADS";
+    if (world.has_extraction && world.route_id.rfind("route:", 0) == 0) {
+      std::string route = world.route_id.substr(6);
+      const std::size_t split = route.find(':');
+      std::string road = split == std::string::npos ? route
+                                                     : route.substr(0, split);
+      std::transform(road.begin(), road.end(), road.begin(),
+                     [](unsigned char ch) {
+                       return static_cast<char>(std::toupper(ch));
+                     });
+      std::string depth = split == std::string::npos
+                              ? std::string{}
+                              : route.substr(split + 1);
+      std::replace(depth.begin(), depth.end(), ':', '.');
+      title = road + " ROAD" +
+              (depth.empty() ? std::string{} : " - CHART " + depth);
+    }
+    if (world.endgame.active && !world.endgame.name.empty())
+      title = "CHARTED EXPEDITION - " + world.endgame.name;
+    TextOutA(dc, panel.left + 22 * s, panel.top + 16 * s, title.c_str(),
+             static_cast<int>(title.size()));
+    SelectObject(dc, skin::font_small());
+    SetTextColor(dc, skin::kInkDim);
+    const std::string settings =
+        "TAB close | wheel / [ ] zoom | - / = opacity | SHIFT+M corner side";
+    TextOutA(dc, panel.left + 22 * s, panel.bottom - 25 * s,
+             settings.c_str(), static_cast<int>(settings.size()));
+
+    const int legend_y = panel.top + 20 * s;
+    int legend_x = std::max(panel.left + 260 * s, panel.right - 310 * s);
+    const struct {
+      COLORREF color;
+      const char* text;
+    } legend[] = {{RGB(168, 214, 188), "Scion"},
+                  {RGB(196, 58, 48), "foe"},
+                  {RGB(229, 164, 73), "elite"},
+                  {RGB(122, 168, 230), "townsfolk"},
+                  {RGB(239, 208, 116), "exit"}};
+    for (const auto& entry : legend) {
+      fill_ellipse(dc, legend_x, legend_y + 4 * s, 3 * s, 3 * s,
+                   entry.color);
+      SetTextColor(dc, skin::kInkDim);
+      TextOutA(dc, legend_x + 7 * s, legend_y - 3 * s, entry.text,
+               static_cast<int>(std::strlen(entry.text)));
+      SIZE extent{};
+      GetTextExtentPoint32A(dc, entry.text,
+                            static_cast<int>(std::strlen(entry.text)), &extent);
+      legend_x += extent.cx + 19 * s;
+    }
+    SelectObject(dc, old_font);
+    rl.push_back({render::Op::Hud, static_cast<double>(panel.left),
+                  static_cast<double>(panel.bottom - 25 * s), 0.0, 0,
+                  "map-control:tab-wheel-brackets-opacity-side"});
+  }
 }
 
 // ── TASK-0145: Chronicles owner journey ─────────────────────────────────
@@ -3912,7 +4252,9 @@ void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
       const char* banner = "CONNECTION LOST — not playing offline";
       // TASK-0159: the banner keeps the left column but starts below the
       // minimap panel instead of painting across it.
-      const HudRect map = minimap_rect(static_cast<int>(bounds.bottom));
+      const HudRect map = minimap_rect(
+          static_cast<int>(bounds.right), static_cast<int>(bounds.bottom),
+          active_minimap_side(state));
       const int banner_y = std::max(76, map.y + map.h + 8);
       TextOutA(dc, 18, banner_y, banner, static_cast<int>(strlen(banner)));
     }
@@ -3962,6 +4304,7 @@ bool top_hud_clear(const TopHudRect& a, const TopHudRect& b, int gap) {
 }
 
 TopHudLayout plan_top_hud(int width, int height, bool gear_open,
+                          MinimapSide minimap_side,
                           const TopHudRect& identity_size,
                           const TopHudRect& objective_size,
                           const TopHudRect& art_size,
@@ -3973,7 +4316,7 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open,
   const auto keep_out = [&](const HudRect& r) {
     blocked.push_back(TopHudRect{r.x, r.y, r.w, r.h});
   };
-  keep_out(minimap_rect(height));
+  keep_out(minimap_rect(width, height, minimap_side));
   keep_out(quickbar_strip_rect(width, height));
   keep_out(vital_orb_rect(width, height, false));
   keep_out(vital_orb_rect(width, height, true));
@@ -3990,10 +4333,13 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open,
       if (!top_hud_clear(cand, keep_out_zone, kTopHudGap)) return false;
     return true;
   };
-  const HudRect map = minimap_rect(height);
-  // The left lane beside the minimap: the deterministic second anchor for
-  // every region whose preferred pin is crowded or pane-blocked.
-  const int lane_x = map.x + map.w + kTopHudGap;
+  const HudRect map = minimap_rect(width, height, minimap_side);
+  // The lane opposite/inside the selected map edge is the deterministic
+  // second anchor for every region whose preferred pin is crowded. A right
+  // corner map therefore never gets covered by a right-aligned status chip.
+  const int lane_x = minimap_side == MinimapSide::Left
+                         ? map.x + map.w + kTopHudGap
+                         : kTopHudGutter + 6;
   const auto try_rows_left = [&](const TopHudRect& size,
                                  int x) -> TopHudRect {
     for (int row = 0; row < kTopHudRowCount; ++row) {
@@ -4495,6 +4841,10 @@ void paint_dialogue_pane(ClientState& state, HDC dc, const RECT& bounds,
 void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
                       render::List& rl) {
   state.trade_row_hits.clear();
+  // The server may take one network round trip to acknowledge CloseScreen.
+  // Once the tactical chart is locally open, never paint or hit-test a stale
+  // commerce/dialogue pane over it during that acknowledgement window.
+  if (state.minimap_mode == MinimapMode::Overlay) return;
   if (!state.session) return;
   const auto& model = state.session->model();
   if (model.dialogue.open) {
@@ -5313,7 +5663,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         (world.scion_name.empty() ? std::string("(unnamed)") : world.scion_name);
     static constexpr char kControls[] =
         "WASD move | mouse aim | LMB attack | RMB/Space dash | Q E R skills | "
-        "X take | Z names | I gear | T hail | N road";
+        "X take | Z names | I gear | T hail | TAB map | N road";
     const std::string& art_text = state.billboards.status;
 
     // TASK-0159: pre-measure the controls hint and its deterministic
@@ -5376,6 +5726,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         controls_line_b.empty() ? 0 : controls_b_extent.cy + 6};
     const TopHudLayout layout = plan_top_hud(
         width, static_cast<int>(bounds.bottom), state.gear_overlay,
+        active_minimap_side(state),
         identity_size, objective_size, art_size, controls_size,
         controls_size_a, controls_size_b, static_cast<bool>(state.session));
 
@@ -5811,7 +6162,10 @@ void toggle_gear_overlay(ClientState& state) {
   sync_world(state);
   state.gear_overlay = !state.gear_overlay;
   state.selected_item = 0;
-  if (state.gear_overlay) show_hint(state, "Gear opened");
+  if (state.gear_overlay) {
+    state.minimap_mode = MinimapMode::Corner;
+    show_hint(state, "Gear opened");
+  }
 }
 
 // TASK-0153: the one Escape contract for every screen. A dismissible pane
@@ -5825,6 +6179,68 @@ bool trade_pane_open(const ClientState& state) {
          model.dialogue.open;
 }
 
+void toggle_minimap_overlay(ClientState& state) {
+  const bool opening = state.minimap_mode != MinimapMode::Overlay;
+  state.minimap_mode = opening ? MinimapMode::Overlay : MinimapMode::Corner;
+  if (opening) {
+    // Tactical charting is the one broad world overlay. Dismiss narrower
+    // inventory/dialogue surfaces so stacking never hides either contract.
+    state.gear_overlay = false;
+    state.character_pane = false;
+    state.tree_pane = false;
+    if (trade_pane_open(state) && state.session)
+      state.session->submit(
+          verdigris::client::ClientCommand::close_screen());
+    show_hint(state, "Tactical chart opened");
+  } else {
+    show_hint(state, "Tactical chart closed");
+  }
+}
+
+void adjust_minimap_zoom(ClientState& state, int direction) {
+  const int before = state.minimap_zoom_step;
+  state.minimap_zoom_step =
+      std::clamp(state.minimap_zoom_step + direction, 0,
+                 kMinimapSettingSteps - 1);
+  if (state.minimap_zoom_step == before && direction != 0) {
+    show_hint(state, direction > 0 ? "Map zoom is at maximum"
+                                   : "Map zoom is at minimum");
+    return;
+  }
+  save_minimap_preferences(state);
+  show_hint(state, "Map zoom " +
+                       std::to_string(
+                           minimap_zoom_percent(state.minimap_zoom_step)) +
+                       "%");
+}
+
+void adjust_minimap_opacity(ClientState& state, int direction) {
+  const int before = state.minimap_opacity_step;
+  state.minimap_opacity_step =
+      std::clamp(state.minimap_opacity_step + direction, 0,
+                 kMinimapSettingSteps - 1);
+  if (state.minimap_opacity_step == before && direction != 0) {
+    show_hint(state, direction > 0 ? "Map opacity is at maximum"
+                                   : "Map opacity is at minimum");
+    return;
+  }
+  save_minimap_preferences(state);
+  show_hint(state, "Map opacity " +
+                       std::to_string(minimap_opacity_percent(
+                           state.minimap_opacity_step)) +
+                       "%");
+}
+
+void swap_minimap_side(ClientState& state) {
+  state.minimap_side = state.minimap_side == MinimapSide::Left
+                           ? MinimapSide::Right
+                           : MinimapSide::Left;
+  save_minimap_preferences(state);
+  show_hint(state, state.minimap_side == MinimapSide::Left
+                       ? "Corner map moved left"
+                       : "Corner map moved right");
+}
+
 void handle_escape_key(ClientState& state) {
   if (state.chronicles_naming != ChronicleNamingMode::None) {
     cancel_chronicle_naming(state);
@@ -5833,6 +6249,11 @@ void handle_escape_key(ClientState& state) {
   if (trade_pane_open(state)) {
     state.session->submit(verdigris::client::ClientCommand::close_screen());
     state.trade_selected = 0;
+    return;
+  }
+  if (state.minimap_mode == MinimapMode::Overlay) {
+    state.minimap_mode = MinimapMode::Corner;
+    show_hint(state, "Tactical chart closed");
     return;
   }
   if (state.tree_pane) {
@@ -5908,6 +6329,30 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       }
       if (state->screen == Screen::Chronicles && state->session) {
         handle_chronicles_key(*state, wparam);
+        break;
+      }
+      if (wparam == VK_TAB) {
+        toggle_minimap_overlay(*state);
+        break;
+      }
+      if (wparam == 'M' && (GetKeyState(VK_SHIFT) & 0x8000)) {
+        swap_minimap_side(*state);
+        break;
+      }
+      if (wparam == VK_OEM_4) {
+        adjust_minimap_zoom(*state, -1);
+        break;
+      }
+      if (wparam == VK_OEM_6) {
+        adjust_minimap_zoom(*state, 1);
+        break;
+      }
+      if (wparam == VK_OEM_MINUS || wparam == VK_SUBTRACT) {
+        adjust_minimap_opacity(*state, -1);
+        break;
+      }
+      if (wparam == VK_OEM_PLUS || wparam == VK_ADD) {
+        adjust_minimap_opacity(*state, 1);
         break;
       }
       if (trade_pane_open(*state)) {
@@ -6016,14 +6461,17 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         toggle_gear_overlay(*state);
       }
       if (wparam == 'C') {
+        state->minimap_mode = MinimapMode::Corner;
         state->character_pane = !state->character_pane;
       }
-      if (wparam == 'M' && state->audio_sink) {
+      if (wparam == 'M' && !(GetKeyState(VK_SHIFT) & 0x8000) &&
+          state->audio_sink) {
         state->audio_sink->set_muted(!state->audio_sink->muted());
         show_hint(*state, state->audio_sink->muted() ? "Sound muted"
                                                      : "Sound on");
       }
       if (wparam == 'P') {
+        state->minimap_mode = MinimapMode::Corner;
         state->tree_pane = !state->tree_pane;
       }
       // Only the open gear pane needs a fresh view here; a bare sync on
@@ -6082,12 +6530,17 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
     case WM_MOUSEWHEEL:
       if (state) {
         const int delta = GET_WHEEL_DELTA_WPARAM(wparam);
-        const double factor = delta > 0 ? 1.1 : 1.0 / 1.1;
-        RECT zoom_bounds;
-        GetClientRect(window, &zoom_bounds);
-        const double zf = zoom_height_factor(static_cast<int>(zoom_bounds.bottom));
-        state->camera.zoom = std::clamp(state->camera.zoom * factor,
-                                        kCameraMinZoom * zf, kCameraMaxZoom * zf);
+        if (state->minimap_mode == MinimapMode::Overlay) {
+          adjust_minimap_zoom(*state, delta > 0 ? 1 : -1);
+        } else {
+          const double factor = delta > 0 ? 1.1 : 1.0 / 1.1;
+          RECT zoom_bounds;
+          GetClientRect(window, &zoom_bounds);
+          const double zf = zoom_height_factor(static_cast<int>(zoom_bounds.bottom));
+          state->camera.zoom =
+              std::clamp(state->camera.zoom * factor, kCameraMinZoom * zf,
+                         kCameraMaxZoom * zf);
+        }
       }
       break;
     case WM_LBUTTONDOWN:
@@ -8001,6 +8454,183 @@ int scenario_town_social_hub() {
   return 0;
 }
 
+int scenario_tactical_map_overlay() {
+  ClientState state;
+  scenario_begin(state);
+  load_billboards(state.billboards);
+  state.simulation.reset();  // hold the authored navigation fixture still
+
+  constexpr int kWidth = 1366;
+  constexpr int kHeight = 768;
+  constexpr int kMapSize = 64;
+  state.world.player.position = {32 * static_cast<int>(kTileUnits),
+                                 32 * static_cast<int>(kTileUnits)};
+  state.world.player.facing = {1, -1};
+  state.world.player.life = 94;
+  state.world.player.life_max = 110;
+  state.world.player.resource = 37;
+  state.world.player.resource_max = 50;
+  state.world.house_name = "House Emberwake";
+  state.world.scion_name = "Ilyra";
+  state.world.route_id = "route:copper:3:2";
+  state.world.theme = "crypt";
+  state.world.map_width = kMapSize;
+  state.world.map_height = kMapSize;
+  state.world.map_walkable.assign(kMapSize * kMapSize, 0);
+  const auto open = [&](int x, int y) {
+    if (x >= 0 && x < kMapSize && y >= 0 && y < kMapSize)
+      state.world.map_walkable[static_cast<std::size_t>(y) * kMapSize + x] = 1;
+  };
+  // Crossroads, side chambers, and a loop produce recognizable topology
+  // rather than a capture-only rectangle.
+  for (int x = 18; x <= 48; ++x)
+    for (int y = 30; y <= 34; ++y) open(x, y);
+  for (int y = 14; y <= 50; ++y)
+    for (int x = 30; x <= 34; ++x) open(x, y);
+  for (int x = 20; x <= 27; ++x)
+    for (int y = 22; y <= 27; ++y) open(x, y);
+  for (int x = 39; x <= 46; ++x)
+    for (int y = 38; y <= 45; ++y) open(x, y);
+  for (int x = 23; x <= 43; ++x) {
+    open(x, 18);
+    open(x, 19);
+    open(x, 47);
+    open(x, 48);
+  }
+  for (int y = 18; y <= 48; ++y) {
+    open(23, y);
+    open(24, y);
+    open(42, y);
+    open(43, y);
+  }
+  state.world.has_extraction = true;
+  state.world.extraction = {43 * static_cast<int>(kTileUnits),
+                            43 * static_cast<int>(kTileUnits)};
+  state.world.monsters.clear();
+  WorldActor foe;
+  foe.id = "map-foe";
+  foe.name = "Ossuary Wight";
+  foe.position = {36 * static_cast<int>(kTileUnits),
+                  32 * static_cast<int>(kTileUnits)};
+  foe.life = foe.life_max = 80;
+  state.world.monsters.push_back(foe);
+  WorldActor elite = foe;
+  elite.id = "map-elite";
+  elite.name = "Sepulchral Keeper";
+  elite.position = {42 * static_cast<int>(kTileUnits),
+                    39 * static_cast<int>(kTileUnits)};
+  elite.elite = true;
+  state.world.monsters.push_back(elite);
+  state.scenery = {
+      {SceneryKind::Shrine,
+       {24 * static_cast<int>(kTileUnits),
+        24 * static_cast<int>(kTileUnits)},
+       kTileUnits * 0.3, 1.0, false},
+      {SceneryKind::Ruin,
+       {32 * static_cast<int>(kTileUnits),
+        18 * static_cast<int>(kTileUnits)},
+       kTileUnits * 0.3, 1.0, false},
+  };
+
+  state.gear_overlay = true;
+  state.character_pane = true;
+  state.tree_pane = true;
+  toggle_minimap_overlay(state);
+  scenario_check(state.minimap_mode == MinimapMode::Overlay &&
+                     !state.gear_overlay && !state.character_pane &&
+                     !state.tree_pane,
+                 "tactical-map: opening the broad chart dismisses narrower panes");
+
+  const int zoom_before = state.minimap_zoom_step;
+  adjust_minimap_zoom(state, 1);
+  scenario_check(state.minimap_zoom_step == zoom_before + 1,
+                 "tactical-map: zoom setting advances through production control");
+  adjust_minimap_zoom(state, -1);
+  const int opacity_before = state.minimap_opacity_step;
+  adjust_minimap_opacity(state, -1);
+  scenario_check(state.minimap_opacity_step == opacity_before - 1,
+                 "tactical-map: opacity setting advances through production control");
+  adjust_minimap_opacity(state, 1);
+  for (int i = 0; i < 12; ++i) adjust_minimap_zoom(state, 1);
+  scenario_check(state.minimap_zoom_step == kMinimapSettingSteps - 1,
+                 "tactical-map: zoom clamps at the supported maximum");
+  state.minimap_zoom_step = kDefaultMinimapZoomStep;
+  state.hint.clear();
+  state.hint_ticks = 0;
+
+  std::string capture_dir;
+  const int capture_override = capture_root_override(&capture_dir);
+  if (capture_override < 0) {
+    scenario_check(false,
+                   "tactical-map: capture root rejected before any write");
+    return 0;
+  }
+  if (capture_override == 0) {
+    CreateDirectoryA("captures", nullptr);
+    capture_dir = "captures";
+  }
+  const std::string settings_path =
+      capture_dir + "\\tactical-map-preferences.ini";
+  state.minimap_side = MinimapSide::Right;
+  state.minimap_zoom_step = 3;
+  state.minimap_opacity_step = 1;
+  const bool settings_written =
+      write_minimap_preferences(state, settings_path);
+  ClientState restored;
+  const bool settings_read =
+      read_minimap_preferences(restored, settings_path);
+  scenario_check(settings_written && settings_read &&
+                     restored.minimap_side == MinimapSide::Right &&
+                     restored.minimap_zoom_step == 3 &&
+                     restored.minimap_opacity_step == 1,
+                 "tactical-map: side, zoom, and opacity survive a client restart");
+  (void)DeleteFileA(settings_path.c_str());
+  state.minimap_side = MinimapSide::Left;
+  state.minimap_zoom_step = kDefaultMinimapZoomStep;
+  state.minimap_opacity_step = kDefaultMinimapOpacityStep;
+  const std::string capture_path =
+      capture_dir + "\\tactical-map-overlay-1366x768.png";
+  scenario_check(reference_present(state, kWidth, kHeight, capture_path),
+                 "tactical-map: translucent Framekit overlay captured");
+  std::printf("    capture: %s\n", capture_path.c_str());
+
+  const render::Item* overlay_op = nullptr;
+  bool controls = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Minimap &&
+        item.label.rfind("overlay:", 0) == 0)
+      overlay_op = &item;
+    if (item.op == render::Op::Hud && item.label.rfind("map-control:", 0) == 0)
+      controls = true;
+  }
+  scenario_check(overlay_op &&
+                     overlay_op->label.find(":cells=0") == std::string::npos,
+                 "tactical-map: overlay renders authoritative walkability topology");
+  scenario_check(controls,
+                 "tactical-map: zoom, opacity, side, and close controls are discoverable");
+  const HudRect expected = minimap_overlay_rect(kWidth, kHeight);
+  scenario_check(expected.x >= 0 && expected.y >= 0 &&
+                     expected.x + expected.w <= kWidth &&
+                     expected.y + expected.h <= kHeight - 96,
+                 "tactical-map: overlay clears the viewport and combat HUD");
+
+  toggle_minimap_overlay(state);
+  swap_minimap_side(state);
+  reference_present(state, kWidth, kHeight, "");
+  const render::Item* corner = render::first(state.render_list, render::Op::Minimap);
+  scenario_check(corner && corner->x > kWidth / 2 &&
+                     corner->label.rfind("corner:right", 0) == 0,
+                 "tactical-map: compact map honors right-side placement");
+
+  toggle_minimap_overlay(state);
+  state.quit_requested = false;
+  handle_escape_key(state);
+  scenario_check(state.minimap_mode == MinimapMode::Corner &&
+                     !state.quit_requested,
+                 "tactical-map: Escape closes the chart before requesting exit");
+  return 0;
+}
+
 // Machine-checkable presentation budget: paints real fullscreen-sized 32bpp
 // frames through the production paint_scene path and fails when the average
 // frame cost would visibly stutter the 20 Hz tick. The bound is deliberately
@@ -8068,6 +8698,7 @@ int run_scenarios(const std::string& which) {
       {"hud-information", scenario_hud_information},
       {"endgame-tablet-ui", scenario_endgame_tablet_ui},
       {"town-social-hub", scenario_town_social_hub},
+      {"tactical-map", scenario_tactical_map_overlay},
       {"frame-budget", scenario_frame_budget},
   };
   int total_failures = 0;
@@ -8736,6 +9367,7 @@ int run_remote_native_client(const char* host, unsigned short port, const char* 
     state->hint_ticks = 200;
   }
   load_billboards(state->billboards);
+  load_minimap_preferences(*state);
 
   HINSTANCE instance = GetModuleHandle(nullptr);
   WNDCLASSA window_class{};
@@ -8828,6 +9460,7 @@ int main(int argc, char** argv) {
   state->simulation->dispatch(verdigris::Command::enter("route:tin:1:0"));
   generate_scenery(*state);
   load_billboards(state->billboards);
+  load_minimap_preferences(*state);
 
   WNDCLASSA window_class{};
   window_class.hInstance = instance;

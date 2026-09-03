@@ -1,5 +1,19 @@
 # UI Regression Checklist
 
+## Native Tactical Map
+
+- Press `Tab` in town and on a road; confirm the translucent Framekit chart
+  opens over the live world and renders the authoritative walkable topology,
+  Scion, foe/elite, townsfolk, and exit markers.
+- Use the mouse wheel or `[` / `]` while the chart is open and confirm map zoom
+  changes without changing the world camera. Use `-` / `=` to step opacity.
+- Press `Shift+M`, close the chart, and confirm the compact map changes sides.
+  Open gear while the right side is selected; the compact map should yield to
+  the left rail and return right when gear closes.
+- Restart the client and confirm zoom, opacity, and compact-map side persist,
+  while the large chart starts closed. Escape must close the chart before it
+  exits the client.
+
 ## Movement Smoothing
 - Log into a world, hold `W` then change direction diagonally and confirm transitions stay eased with no snapping.
 - Compare the move duration to `DEFAULT_MOVE_DURATION_MS` by counting tiles travelled; ensure long strides remain proportional.
