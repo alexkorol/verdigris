@@ -223,6 +223,12 @@ struct SceneryItem {
 // (House/Scion/oath/admission) plus the post-fall succession view.
 enum class Screen { Expedition, Chronicles };
 
+// The Chronicles front door owns a small text-entry modal instead of silently
+// naming a player's lineage from their account id. The existing derived names
+// remain as placeholders/fallbacks, so controller-less keyboard play can still
+// accept a sensible default with Enter.
+enum class ChronicleNamingMode { None, House, Scion };
+
 // One actionable front-door control, rebuilt deterministically from the
 // authoritative chronicle model every frame. `key` is the keyboard binding
 // shown to the owner; `command`/`arg` feed IClientSession::submit.
@@ -449,6 +455,10 @@ struct ClientState {
   Screen screen = Screen::Expedition;
   bool chronicles_mode = false;  // remote owner path launched at the front door
   bool chronicles_oath = false;  // mortal-oath choice applied to the next admission
+  ChronicleNamingMode chronicles_naming = ChronicleNamingMode::None;
+  std::string chronicles_name_input;
+  std::string chronicles_name_error;
+  bool chronicles_ignore_next_char = false;
   std::vector<ChronicleAction> chronicles_menu;
   std::string relic_toast;
   int relic_toast_ticks = 0;
@@ -3202,8 +3212,8 @@ std::string chronicle_account_root(const ClientState& state) {
   return state.session->model().chronicle.account_name;
 }
 
-// Deterministic founder naming without any text-input console: derive the
-// House name from the guest identity once the account payload arrives.
+// Deterministic fallback for the naming ceremony: Enter on an empty field
+// derives a usable House name from the admitted account identity.
 std::string house_display_name(const ClientState& state) {
   const std::string account = chronicle_account_root(state);
   if (account.empty()) return "New House";
@@ -3215,6 +3225,23 @@ std::string house_display_name(const ClientState& state) {
   return "House of " + root;
 }
 
+std::string house_prefixed_name(const std::string& name) {
+  if (name.empty()) return "House Verdigris";
+  if (name == "House" || name.rfind("House ", 0) == 0) return name;
+  return "House " + name;
+}
+
+std::string active_house_display_name(const ClientState& state) {
+  if (state.session) {
+    const auto& chronicle = state.session->model().chronicle;
+    if (const auto* house = verdigris::client::find_chronicle_house(
+            chronicle, chronicle.active_house_id))
+      return house->name;
+    if (!chronicle.houses.empty()) return chronicle.houses.front().name;
+  }
+  return house_display_name(state);
+}
+
 std::string next_scion_name(const ClientState& state) {
   static const char* kOrdinals[] = {"Firstborn", "Secondborn", "Thirdborn",
                                     "Fourthborn", "Fifthborn"};
@@ -3223,7 +3250,11 @@ std::string next_scion_name(const ClientState& state) {
     for (const auto& house : state.session->model().chronicle.houses)
       total += house.scions.size() + house.crypt.size();
   }
-  const std::string house_name = house_display_name(state);
+  std::string house_name = active_house_display_name(state);
+  if (house_name.rfind("House of ", 0) == 0)
+    house_name = house_name.substr(9);
+  else if (house_name.rfind("House ", 0) == 0)
+    house_name = house_name.substr(6);
   if (total < sizeof(kOrdinals) / sizeof(kOrdinals[0]))
     return house_name + " " + kOrdinals[total];
   return house_name + " Heir " + std::to_string(total + 1);
@@ -3317,14 +3348,99 @@ void watch_crypt_statuses(ClientState& state) {
   state.known_crypt_status = std::move(current);
 }
 
+std::string normalize_chronicle_name(const std::string& raw) {
+  std::string out;
+  out.reserve(raw.size());
+  bool pending_space = false;
+  for (unsigned char ch : raw) {
+    if (std::isspace(ch)) {
+      pending_space = !out.empty();
+      continue;
+    }
+    if (!(std::isalnum(ch) || ch == '-' || ch == '\'')) continue;
+    if (pending_space && !out.empty()) out.push_back(' ');
+    pending_space = false;
+    out.push_back(static_cast<char>(ch));
+  }
+  return out;
+}
+
+void begin_chronicle_naming(ClientState& state, ChronicleNamingMode mode) {
+  state.chronicles_naming = mode;
+  state.chronicles_name_input.clear();
+  state.chronicles_name_error.clear();
+}
+
+void cancel_chronicle_naming(ClientState& state) {
+  state.chronicles_naming = ChronicleNamingMode::None;
+  state.chronicles_name_input.clear();
+  state.chronicles_name_error.clear();
+  state.chronicles_ignore_next_char = false;
+}
+
+void confirm_chronicle_naming(ClientState& state) {
+  if (!state.session || state.chronicles_naming == ChronicleNamingMode::None)
+    return;
+  std::string name = normalize_chronicle_name(state.chronicles_name_input);
+  if (name.empty()) {
+    name = state.chronicles_naming == ChronicleNamingMode::House
+               ? house_display_name(state)
+               : next_scion_name(state);
+  }
+  if (name.size() < 2) {
+    state.chronicles_name_error = "Use at least two letters.";
+    return;
+  }
+  if (name.size() > 28) {
+    state.chronicles_name_error = "Keep the name to 28 characters.";
+    return;
+  }
+
+  using verdigris::client::ClientCommand;
+  const ChronicleNamingMode mode = state.chronicles_naming;
+  cancel_chronicle_naming(state);
+  if (mode == ChronicleNamingMode::House) {
+    state.session->submit(ClientCommand::found_house(name));
+    show_hint(state, "Your House enters the chronicles");
+  } else {
+    state.session->submit(ClientCommand::create_scion(name));
+    show_hint(state, "A new Scion joins the lineage");
+  }
+}
+
+void handle_chronicle_character(ClientState& state, unsigned int codepoint) {
+  if (state.chronicles_naming == ChronicleNamingMode::None) return;
+  if (state.chronicles_ignore_next_char) {
+    state.chronicles_ignore_next_char = false;
+    return;
+  }
+  if (codepoint == '\r') {
+    confirm_chronicle_naming(state);
+    return;
+  }
+  if (codepoint == '\b') {
+    if (!state.chronicles_name_input.empty())
+      state.chronicles_name_input.pop_back();
+    state.chronicles_name_error.clear();
+    return;
+  }
+  if (codepoint < 32 || codepoint > 126) return;
+  const unsigned char ch = static_cast<unsigned char>(codepoint);
+  if (!(std::isalnum(ch) || ch == ' ' || ch == '-' || ch == '\'')) return;
+  if (state.chronicles_name_input.size() >= 28) {
+    state.chronicles_name_error = "Keep the name to 28 characters.";
+    return;
+  }
+  state.chronicles_name_input.push_back(static_cast<char>(ch));
+  state.chronicles_name_error.clear();
+}
+
 void submit_chronicle_action(ClientState& state, const ChronicleAction& action) {
   using verdigris::client::ClientCommand;
   if (action.command == "found-house") {
-    state.session->submit(ClientCommand::found_house(house_display_name(state)));
-    show_hint(state, "Your House enters the chronicles");
+    begin_chronicle_naming(state, ChronicleNamingMode::House);
   } else if (action.command == "create-scion") {
-    state.session->submit(ClientCommand::create_scion(next_scion_name(state)));
-    show_hint(state, "A new Scion joins the lineage");
+    begin_chronicle_naming(state, ChronicleNamingMode::Scion);
   } else if (action.command == "select-scion") {
     state.session->submit(
         ClientCommand::select_scion(action.arg, state.chronicles_oath));
@@ -3339,10 +3455,13 @@ void submit_chronicle_action(ClientState& state, const ChronicleAction& action) 
 }
 
 void handle_chronicles_key(ClientState& state, WPARAM wparam) {
+  if (state.chronicles_naming != ChronicleNamingMode::None) return;
   state.chronicles_menu = chronicle_actions(state);
   for (const auto& action : state.chronicles_menu) {
     if (action.key.size() == 1 && wparam == static_cast<WPARAM>(action.key[0])) {
       submit_chronicle_action(state, action);
+      if (state.chronicles_naming != ChronicleNamingMode::None)
+        state.chronicles_ignore_next_char = true;
       return;
     }
   }
@@ -3584,8 +3703,14 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
                      RGB(230, 235, 220), false});
   } else {
     for (const auto& house : model.chronicle.houses) {
-      lines.push_back({"house " + house.name,
-                       "House " + house.name, RGB(239, 208, 116), false});
+      std::string house_line = house_prefixed_name(house.name);
+      if (house.campaign_complete) {
+        house_line += " - charted roads open, " +
+                      std::to_string(house.endgame_maps_completed) +
+                      " expeditions cleared";
+      }
+      lines.push_back({"house " + house.name, house_line,
+                       RGB(239, 208, 116), false});
       for (const auto& scion : house.scions) {
         std::string row = "  Scion " + scion.name + " - level " +
                           std::to_string(scion.level) +
@@ -3653,6 +3778,72 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
     SelectObject(dc, old_font);
     y += (line.accent ? 44 : 26) * door_scale;
     if (y > bounds.bottom - 40) break;
+  }
+  if (state.chronicles_naming != ChronicleNamingMode::None) {
+    const int modal_w = 520 * door_scale;
+    const int modal_h = 190 * door_scale;
+    RECT modal{(bounds.right - modal_w) / 2,
+               (bounds.bottom - modal_h) / 2,
+               (bounds.right + modal_w) / 2,
+               (bounds.bottom + modal_h) / 2};
+    if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel,
+                            modal))
+      skin::panel(dc, modal, skin::kGold, 252, 12.0f);
+    state.hud_rect_trace.push_back(
+        {"chronicles-name-modal",
+         {modal.left, modal.top, modal.right - modal.left,
+          modal.bottom - modal.top}});
+    const bool house =
+        state.chronicles_naming == ChronicleNamingMode::House;
+    const std::string title = house ? "FOUND A HOUSE" : "NAME A SCION";
+    const std::string fallback =
+        house ? house_display_name(state) : next_scion_name(state);
+    HGDIOBJ old_font = SelectObject(dc, skin::font_title());
+    SetTextColor(dc, skin::kGold);
+    TextOutA(dc, modal.left + 24 * door_scale,
+             modal.top + 22 * door_scale, title.c_str(),
+             static_cast<int>(title.size()));
+    SelectObject(dc, old_font);
+
+    RECT input{modal.left + 24 * door_scale, modal.top + 72 * door_scale,
+               modal.right - 24 * door_scale, modal.top + 112 * door_scale};
+    skin::slot(dc, input, skin::kVerdigris, true);
+    state.hud_rect_trace.push_back(
+        {"chronicles-name-input",
+         {input.left, input.top, input.right - input.left,
+          input.bottom - input.top}});
+    const bool placeholder = state.chronicles_name_input.empty();
+    const std::string shown =
+        placeholder ? fallback : state.chronicles_name_input + "|";
+    old_font = SelectObject(dc, skin::font_heading());
+    SetTextColor(dc, placeholder ? RGB(132, 147, 138) : RGB(226, 234, 222));
+    TextOutA(dc, input.left + 12 * door_scale,
+             input.top + 9 * door_scale, shown.c_str(),
+             static_cast<int>(shown.size()));
+    SelectObject(dc, old_font);
+    rl.push_back({render::Op::Chronicles, static_cast<double>(input.left),
+                  static_cast<double>(input.top), 0.0, 0,
+                  house ? "naming:house" : "naming:scion"});
+    rl.push_back({render::Op::Chronicles, 0.0, 0.0, 0.0, 0,
+                  "naming:value:" + shown});
+
+    const std::string controls =
+        "Type a name  |  Enter confirm  |  Esc cancel  |  Backspace edit";
+    old_font = SelectObject(dc, skin::font_small());
+    SetTextColor(dc, RGB(176, 192, 180));
+    TextOutA(dc, modal.left + 24 * door_scale,
+             modal.bottom - 42 * door_scale, controls.c_str(),
+             static_cast<int>(controls.size()));
+    if (!state.chronicles_name_error.empty()) {
+      SetTextColor(dc, skin::kEmber);
+      TextOutA(dc, modal.left + 24 * door_scale,
+               modal.bottom - 66 * door_scale,
+               state.chronicles_name_error.c_str(),
+               static_cast<int>(state.chronicles_name_error.size()));
+      rl.push_back({render::Op::Chronicles, 0.0, 0.0, 0.0, 0,
+                    "naming:error:" + state.chronicles_name_error});
+    }
+    SelectObject(dc, old_font);
   }
   if (state.relic_toast_ticks > 0 && !state.relic_toast.empty()) {
     rl.push_back({render::Op::Chronicles, 0.0, 0.0, 0.0, 0, "relic-toast"});
@@ -5007,7 +5198,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     // TASK-0159: house().name is already prefixed ("House Verdigris") — the
     // leading literal here painted "House House Verdigris" on the shipped HUD.
     const std::string identity =
-        world.house_name + " - Scion " +
+        house_prefixed_name(world.house_name) + " - Scion " +
         (world.scion_name.empty() ? std::string("(unnamed)") : world.scion_name);
     static constexpr char kControls[] =
         "WASD move | mouse aim | LMB attack | RMB/Space dash | Q E R skills | "
@@ -5523,6 +5714,10 @@ bool trade_pane_open(const ClientState& state) {
 }
 
 void handle_escape_key(ClientState& state) {
+  if (state.chronicles_naming != ChronicleNamingMode::None) {
+    cancel_chronicle_naming(state);
+    return;
+  }
   if (trade_pane_open(state)) {
     state.session->submit(verdigris::client::ClientCommand::close_screen());
     state.trade_selected = 0;
@@ -5569,6 +5764,14 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       // window nameless in the taskbar and to other tools.
       return DefWindowProc(window, message, wparam, lparam);
     }
+    case WM_CHAR:
+      if (state && state->screen == Screen::Chronicles &&
+          state->chronicles_naming != ChronicleNamingMode::None) {
+        handle_chronicle_character(*state, static_cast<unsigned int>(wparam));
+        InvalidateRect(window, nullptr, FALSE);
+        return 0;
+      }
+      break;
     case WM_KEYDOWN:
       if (!state) break;
       if (wparam == VK_F3) {
@@ -6491,8 +6694,15 @@ void fire_chronicle_action(ClientState& state, const std::string& command,
     if (action.command != command) continue;
     if (!arg.empty() && action.arg != arg) continue;
     submit_chronicle_action(state, action);
+    if (state.chronicles_naming != ChronicleNamingMode::None)
+      confirm_chronicle_naming(state);
     return;
   }
+}
+
+void scenario_type_chronicle_name(ClientState& state,
+                                  const std::string& name) {
+  for (unsigned char ch : name) handle_chronicle_character(state, ch);
 }
 
 // Test-harness escape hatch: dev:* control-surface envelopes through the real
@@ -6549,25 +6759,60 @@ int scenario_chronicles_gate_b() {
   scenario_check(render_list_has(state, render::Op::Chronicles, "action:found-house"),
                  "front door: founding a House is an actionable control");
 
-  // 2) Found the House.
-  fire_chronicle_action(state, "found-house");
+  // 2) Found the House through the real text-entry seam. A too-short name
+  // stays modal, then the corrected owner-authored name crosses the wire.
+  handle_chronicles_key(state, 'F');
+  scenario_check(state.chronicles_naming == ChronicleNamingMode::House,
+                 "founding: F opens the House naming ceremony");
+  handle_chronicle_character(state, 'f');
+  scenario_check(state.chronicles_name_input.empty(),
+                 "founding: the F shortcut never leaks into the name field");
+  handle_escape_key(state);
+  scenario_check(state.chronicles_naming == ChronicleNamingMode::None &&
+                     !state.quit_requested,
+                 "founding: Escape cancels naming without quitting");
+  handle_chronicles_key(state, 'F');
+  handle_chronicle_character(state, 'f');
+  scenario_type_chronicle_name(state, "A");
+  handle_chronicle_character(state, '\r');
+  scenario_present(state);
+  scenario_check(
+      render_list_has(state, render::Op::Chronicles, "naming:error:"),
+      "founding: invalid House name stays visible and actionable");
+  handle_chronicle_character(state, '\b');
+  scenario_type_chronicle_name(state, "Emberwake");
+  const std::string founding_png =
+      capture_dir + "\\founding-house-name-960x600.png";
+  scenario_check(reference_present(state, 960, 600, founding_png),
+                 "founding: Framekit naming ceremony capture written");
+  handle_chronicle_character(state, '\r');
   const bool house_ok = chronicles_pump(state, 250, [&] {
-    return state.session->model().chronicle.houses.size() == 1;
+    const auto& houses = state.session->model().chronicle.houses;
+    return houses.size() == 1 && houses.front().name == "Emberwake";
   });
-  scenario_check(house_ok, "front door: founding renders the House roster");
+  scenario_check(house_ok,
+                 "front door: owner-authored House name renders in the roster");
   scenario_present(state);
   scenario_check(render_list_has(state, render::Op::Chronicles, "house "),
                  "front door: the new House is named on screen");
   scenario_check(render_list_has(state, render::Op::Chronicles, "action:create-scion"),
                  "front door: naming a Scion is offered");
 
-  // 3) Create the first Scion; the oath field starts soft.
-  fire_chronicle_action(state, "create-scion");
+  // 3) Name the first Scion through the same production character handler;
+  // the oath field starts soft.
+  handle_chronicles_key(state, 'C');
+  scenario_check(state.chronicles_naming == ChronicleNamingMode::Scion,
+                 "founding: C opens the Scion naming ceremony");
+  handle_chronicle_character(state, 'c');
+  scenario_type_chronicle_name(state, "Ilyra");
+  handle_chronicle_character(state, '\r');
   const bool scion_ok = chronicles_pump(state, 250, [&] {
     const auto& houses = state.session->model().chronicle.houses;
-    return !houses.empty() && houses.front().scions.size() == 1;
+    return !houses.empty() && houses.front().scions.size() == 1 &&
+           houses.front().scions.front().name == "Ilyra";
   });
-  scenario_check(scion_ok, "front door: the first Scion joins the roster");
+  scenario_check(scion_ok,
+                 "front door: owner-authored Scion name joins the roster");
   scenario_present(state);
   scenario_check(render_list_has(state, render::Op::Chronicles, "action:set-out:"),
                  "front door: set-out is actionable for the new Scion");

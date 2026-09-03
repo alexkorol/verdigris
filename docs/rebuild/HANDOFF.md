@@ -1,5 +1,30 @@
 # Native reconstitution handoff
 
+## 2026-09-02 — owner-authored House and Scion founding
+
+- The Chronicles front door no longer silently derives permanent lineage
+  names. `F` and `C` open a Framekit-backed naming ceremony with real Win32
+  character input, a visible caret, Backspace editing, Enter confirmation,
+  and Escape cancellation that never exits the game.
+- Empty confirmation preserves the existing deterministic account/ordinal
+  fallback. Typed names are normalized, limited to 28 characters, and a
+  too-short name remains in the modal with an actionable error. The shortcut
+  character that opened the ceremony is explicitly swallowed rather than
+  leaking into the field.
+- House names now receive exactly one presentation prefix across the
+  Chronicle roster and expedition identity chip. A completed House also
+  exposes its charted-road unlock and authoritative clear count on the front
+  door.
+- `chronicles-gate-b` now drives the production key/character path, names
+  House Emberwake and Scion Ilyra across the real network session, checks
+  cancel and invalid-input behavior, and continues through oath, death,
+  succession, relic recovery, and reconnect. It emits a dedicated 960x600
+  founding capture through the isolated capture root.
+- Full native gate passed: denylist, all core/network/session/presentation/
+  audio suites, the expanded Chronicle journey, and every client scenario.
+  The 3440x1440 frame-budget result remained 9.8 ms average against the
+  40 ms ceiling.
+
 ## 2026-09-02 — consumable charted-tablet endgame loop
 
 - Campaign completion now unlocks a server-authoritative House endgame and
