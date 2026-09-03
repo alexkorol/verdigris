@@ -31,14 +31,21 @@ using std::min;
 namespace skin {
 
 // ── palette ────────────────────────────────────────────────────────────
-inline constexpr COLORREF kPanelTop = RGB(31, 38, 36);      // smoked bronze-green
-inline constexpr COLORREF kPanelBottom = RGB(16, 20, 19);   // pit shadow
-inline constexpr COLORREF kPanelBorder = RGB(74, 108, 94);  // patina edge
-inline constexpr COLORREF kVerdigris = RGB(120, 214, 168);  // accent
-inline constexpr COLORREF kGold = RGB(239, 208, 116);       // ledger gold
-inline constexpr COLORREF kEmber = RGB(214, 92, 72);        // danger
-inline constexpr COLORREF kInk = RGB(226, 232, 222);        // body text
-inline constexpr COLORREF kInkDim = RGB(150, 164, 152);     // secondary text
+// Shared with the browser client's dark bronze, ruby, sapphire, and ledger
+// gold language so the native HUD reads as the same game rather than a debug
+// shell wrapped around the WIZARD plates.
+inline constexpr COLORREF kPanelTop = RGB(30, 28, 25);
+inline constexpr COLORREF kPanelMid = RGB(17, 18, 20);
+inline constexpr COLORREF kPanelBottom = RGB(10, 11, 12);
+inline constexpr COLORREF kPanelBorder = RGB(177, 143, 80);
+inline constexpr COLORREF kVerdigris = RGB(95, 168, 147);
+inline constexpr COLORREF kGold = RGB(225, 193, 116);
+inline constexpr COLORREF kAccent = RGB(183, 146, 79);
+inline constexpr COLORREF kEmber = RGB(185, 72, 69);
+inline constexpr COLORREF kRuby = RGB(139, 48, 52);
+inline constexpr COLORREF kSapphire = RGB(49, 91, 122);
+inline constexpr COLORREF kInk = RGB(238, 226, 197);
+inline constexpr COLORREF kInkDim = RGB(182, 169, 141);
 
 inline Gdiplus::Color gp(COLORREF c, BYTE alpha = 255) {
   return Gdiplus::Color(alpha, GetRValue(c), GetGValue(c), GetBValue(c));
@@ -189,26 +196,45 @@ inline void rounded_path(Gdiplus::GraphicsPath& path, const Gdiplus::RectF& r,
 // bronze gradient body, patina border, one-pixel top-highlight bevel.
 inline void paint_panel_into(Gdiplus::Graphics& g, const Gdiplus::RectF& r,
                              COLORREF accent, BYTE body_alpha, float radius) {
+  const float hard_radius = std::min(radius, 3.0f);
   {  // shadow
     Gdiplus::RectF s = r;
     s.Offset(0.0f, 2.0f);
     Gdiplus::GraphicsPath shadow;
-    rounded_path(shadow, s, radius);
-    Gdiplus::SolidBrush brush(Gdiplus::Color(90, 0, 0, 0));
+    rounded_path(shadow, s, hard_radius);
+    Gdiplus::SolidBrush brush(Gdiplus::Color(110, 0, 0, 0));
     g.FillPath(&brush, &shadow);
   }
   Gdiplus::GraphicsPath body;
-  rounded_path(body, r, radius);
+  rounded_path(body, r, hard_radius);
   Gdiplus::LinearGradientBrush fill(r, gp(kPanelTop, body_alpha),
                                     gp(kPanelBottom, body_alpha),
                                     Gdiplus::LinearGradientModeVertical);
   g.FillPath(&fill, &body);
-  Gdiplus::Pen border(gp(accent, 200), 1.0f);
+  {
+    Gdiplus::RectF left_wash(r.X, r.Y, r.Width * 0.34f, r.Height * 0.6f);
+    Gdiplus::LinearGradientBrush ruby(left_wash, gp(kRuby, 26),
+                                      Gdiplus::Color(0, 0, 0, 0),
+                                      Gdiplus::LinearGradientModeHorizontal);
+    g.FillRectangle(&ruby, left_wash);
+    Gdiplus::RectF right_wash(r.X + r.Width * 0.66f, r.Y,
+                              r.Width * 0.34f, r.Height * 0.6f);
+    Gdiplus::LinearGradientBrush sapphire(
+        right_wash, Gdiplus::Color(0, 0, 0, 0), gp(kSapphire, 24),
+        Gdiplus::LinearGradientModeHorizontal);
+    g.FillRectangle(&sapphire, right_wash);
+  }
+  Gdiplus::Pen border(gp(accent, 210), 1.0f);
   g.DrawPath(&border, &body);
-  {  // top highlight
-    Gdiplus::Pen highlight(Gdiplus::Color(46, 255, 255, 255), 1.0f);
-    g.DrawLine(&highlight, r.X + radius, r.Y + 1.0f, r.X + r.Width - radius,
-               r.Y + 1.0f);
+  if (r.Width > 24.0f && r.Height > 24.0f) {
+    Gdiplus::Pen inner(Gdiplus::Color(230, 8, 7, 6), 1.0f);
+    g.DrawRectangle(&inner, r.X + 4.0f, r.Y + 4.0f, r.Width - 8.0f,
+                    r.Height - 8.0f);
+  }
+  {  // warm bevel across the top edge
+    Gdiplus::Pen highlight(Gdiplus::Color(52, 218, 184, 112), 1.0f);
+    g.DrawLine(&highlight, r.X + hard_radius, r.Y + 1.0f,
+               r.X + r.Width - hard_radius, r.Y + 1.0f);
   }
 }
 
@@ -416,6 +442,46 @@ inline void slot(HDC dc, const RECT& rect, COLORREF accent, bool armed) {
   g.TranslateTransform(static_cast<float>(rect.left),
                        static_cast<float>(rect.top));
   paint_slot(g, w, h);
+}
+
+// Thin segmented progression meter used by the bottom-edge XP strip. Keeping
+// the body, fill, gleam, border, and notches here preserves the binding rule
+// that HUD chrome goes through the shared skin instead of raw rectangles in
+// presentation code.
+inline void progress_bar(HDC dc, const RECT& rect, double ratio,
+                         COLORREF fill = kGold, int segments = 10) {
+  ensure_started();
+  const int w = rect.right - rect.left;
+  const int h = rect.bottom - rect.top;
+  if (w <= 2 || h <= 2) return;
+  Gdiplus::Graphics g(dc);
+  g.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+  const Gdiplus::RectF frame(static_cast<float>(rect.left),
+                             static_cast<float>(rect.top),
+                             static_cast<float>(w - 1),
+                             static_cast<float>(h - 1));
+  Gdiplus::SolidBrush backing(gp(kPanelBottom, 248));
+  g.FillRectangle(&backing, frame);
+  const double bounded = std::clamp(ratio, 0.0, 1.0);
+  const float fill_w = static_cast<float>((w - 2) * bounded);
+  if (fill_w > 0.0f) {
+    const Gdiplus::RectF fill_rect(static_cast<float>(rect.left + 1),
+                                   static_cast<float>(rect.top + 1), fill_w,
+                                   static_cast<float>(h - 2));
+    Gdiplus::LinearGradientBrush liquid(fill_rect, gp(kInk, 245), gp(fill, 245),
+                                        Gdiplus::LinearGradientModeVertical);
+    g.FillRectangle(&liquid, fill_rect);
+  }
+  Gdiplus::Pen border(gp(kPanelBorder, 220), 1.0f);
+  g.DrawRectangle(&border, frame);
+  Gdiplus::Pen notch(gp(kPanelBottom, 230), 1.0f);
+  for (int index = 1; index < std::max(1, segments); ++index) {
+    const float x = static_cast<float>(rect.left) +
+                    static_cast<float>(w * index) /
+                        static_cast<float>(segments);
+    g.DrawLine(&notch, x, static_cast<float>(rect.top + 1), x,
+               static_cast<float>(rect.bottom - 2));
+  }
 }
 
 }  // namespace skin

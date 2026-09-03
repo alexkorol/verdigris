@@ -60,6 +60,7 @@ struct ActiveTelegraph {
 
 struct WorldActor {
   std::string id;
+  std::string name;       // authoritative display name; empty when unavailable
   std::string kind;       // monster kind id; empty for the player
   std::string behaviour;  // monster combat role; empty for the player
   verdigris::Vec2 position{};
@@ -111,6 +112,10 @@ struct WorldView {
   int map_height = 0;
   std::vector<std::uint8_t> map_walkable;
   std::string theme = "town";
+  // Current-level combat XP progress. Absent remains absent when an older
+  // session does not publish the XP block.
+  double xp_fraction = 0.0;
+  bool xp_present = false;
   verdigris::Vec2 extraction{};
   bool has_extraction = false;
   std::string house_name = "House Verdigris";

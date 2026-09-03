@@ -876,12 +876,28 @@ JsonValue ProtocolSession::scene_payload() const {
 JsonValue ProtocolSession::movement_step_payload() const {
   const auto& step=world_->last_step(); JsonValue::Object value; put(value,"sequence",static_cast<double>(step.sequence)); put(value,"startedAt",static_cast<double>(step.started_at_ms)); put(value,"duration",step.duration_ms); if(step.direction.empty()) put(value,"direction",nullptr); else put(value,"direction",step.direction); put(value,"blocked",step.blocked); return JsonValue(std::move(value));
 }
+namespace {
+long long xp_for_level(int level);
+int level_from_xp(long long exp);
+}  // namespace
+
 JsonValue ProtocolSession::snapshot() const {
   JsonValue::Object state; const auto& scion=simulation_->scion(); const auto* actor=simulation_->actor(scion.actor_id); const auto position=world_->position();
   put(state,"uuid",identity_); put(state,"x",position.x); put(state,"y",position.y); put(state,"sceneId",world_->scene_id()); put(state,"sceneType",world_->scene_type()); put(state,"sceneName",world_->scene_name());
   put(state,"lifecycle",lifecycle_);
   put(state,"lifecycleMode",lifecycle_mode_);
   put(state,"theme",world_->in_instance()?world_->metadata().theme:std::string("town"));
+  {
+    // The client renders only this authoritative current-level span; it never
+    // reimplements the experience curve or guesses progress from player level.
+    const int xp_level = level_from_xp(combat_xp_);
+    JsonValue::Object xp;
+    put(xp, "current", static_cast<double>(combat_xp_));
+    put(xp, "level", xp_level);
+    put(xp, "floor", static_cast<double>(xp_for_level(xp_level)));
+    put(xp, "next", static_cast<double>(xp_for_level(xp_level + 1)));
+    put(state, "xp", std::move(xp));
+  }
   JsonValue::Object chronicles; put(chronicles,"mortal",mortal_oath_); put(chronicles,"scionId",active_scion_id_.empty()?JsonValue(nullptr):JsonValue(active_scion_id_)); put(chronicles,"houseId",active_house_id_.empty()?JsonValue(nullptr):JsonValue(active_house_id_)); put(state,"chronicles",std::move(chronicles));
   put(state,"bestDepth",best_depth_);
   put(state,"quests",quests_json());

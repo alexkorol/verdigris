@@ -1,5 +1,27 @@
 # Native reconstitution handoff
 
+## 2026-09-02 — authoritative HUD information + shared dark-metal skin
+
+- Server snapshots now publish the authoritative current-level combat XP
+  span. The client preserves explicit absence for older sessions, normalizes
+  only that supplied span, and renders a thin segmented XP strip between the
+  vital orbs without reimplementing the progression curve.
+- Monster display names now survive model-to-presentation sync. Pointer hover
+  exposes compact monster life/role, loot pickup, and NPC interaction cards;
+  trade, gear, character, and passive-tree panes suppress world tooltips.
+- `ui_skin.hpp` now carries the shared dark bronze, ruby, sapphire, and ledger
+  gold panel language plus the reusable progress-bar primitive. A live
+  3440x1440 expedition capture confirmed the bottom strip stays clear of the
+  quickbar and orbs.
+- Full native gate passed: denylist, core/networking/camera/session/
+  presentation/audio suites and every client scenario, including the new
+  `hud-information` contract. The 3440x1440 frame-budget result was 9.6 ms
+  average against the 40 ms ceiling.
+- Work is local on `codex/goal-aaa-systems` in
+  `C:\Users\Alex\Documents\ChatGPT\verdigris-goal`; it includes the twenty
+  coherent native commits recovered read-only from Claude's architect
+  checkout. Nothing has been pushed.
+
 ## 2026-09-01 — vector art era + four playable themed roads
 
 - vector_art.hpp: procedural animated art replaces the raster world set.

@@ -183,7 +183,14 @@ void remote_handshake_reaches_ready() {
     check(saw_ready, "remote: SessionReady presentation event emitted");
 
     session.submit(verdigris::client::ClientCommand::move(1, 0));
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    for (int attempt = 0;
+         attempt < 100 && !session.model().xp_present; ++attempt) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(20));
+      session.poll();
+    }
+    check(session.model().xp_present &&
+              session.model().xp_next > session.model().xp_floor,
+          "remote: dev-state combat XP mirrored into the client model");
     session.poll();  // movement echo handling lands in 0061; must not wedge
     check(session.connection_state() == verdigris::client::ConnectionState::Ready,
           "remote: session survives a submitted command");

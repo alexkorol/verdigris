@@ -4,6 +4,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstring>
+#include <limits>
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -1110,6 +1111,22 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     }
     if (const auto* theme = json_string(state->get("theme")))
       model_.theme = *theme;
+    if (const auto* xp = state->get("xp"); xp && xp->object()) {
+      const double current =
+          json_number(xp->get("current"), std::numeric_limits<double>::quiet_NaN());
+      const double floor =
+          json_number(xp->get("floor"), std::numeric_limits<double>::quiet_NaN());
+      const double next =
+          json_number(xp->get("next"), std::numeric_limits<double>::quiet_NaN());
+      if (std::isfinite(current) && std::isfinite(floor) &&
+          std::isfinite(next) && current >= 0.0 && floor >= 0.0 &&
+          next > floor) {
+        model_.xp_present = true;
+        model_.xp_current = current;
+        model_.xp_floor = floor;
+        model_.xp_next = next;
+      }
+    }
     if (const auto* monsters = state->get("monsters"); monsters && monsters->array()) {
       model_.monsters.clear();
       for (const auto& entry : *monsters->array()) {

@@ -218,6 +218,13 @@ struct ClientModel {
   // Authoritative scene theme ("town", "dungeon", "crypt", "wilds",
   // "marsh", "grove") from the dev:state snapshot.
   std::string theme = "town";
+  // Combat experience from the authoritative snapshot. Older servers may
+  // omit this block, so presence is explicit instead of fabricating a zero
+  // progress bar from defaults.
+  bool xp_present = false;
+  double xp_current = 0.0;
+  double xp_floor = 0.0;
+  double xp_next = 0.0;
   ClientItemSlot equipped;
   ClientScene scene;
   std::string house_name;

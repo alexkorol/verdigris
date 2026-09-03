@@ -2934,6 +2934,135 @@ void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List
   }
 }
 
+bool trade_pane_open(const ClientState& state);
+
+// World hover information follows the ARPG convention: names and a few
+// decision-relevant facts appear only under the pointer, while the combat
+// field stays clean at rest. Every fact comes from the authoritative model.
+void paint_hover_tooltip(ClientState& state, HDC dc, const RECT& bounds,
+                         render::List& rl) {
+  if (trade_pane_open(state) || state.gear_overlay || state.tree_pane ||
+      state.character_pane)
+    return;
+
+  const WorldView& world = state.world;
+  const int mx = state.mouse.x;
+  const int my = state.mouse.y;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  std::string title;
+  COLORREF title_color = skin::kInk;
+  std::vector<std::string> facts;
+  double best_distance = std::numeric_limits<double>::max();
+
+  const auto consider = [&](int sx, int sy, double radius_px,
+                            const std::string& candidate_title,
+                            COLORREF candidate_color,
+                            std::vector<std::string> candidate_facts) {
+    if (candidate_title.empty()) return;
+    const double dx = static_cast<double>(mx - sx);
+    const double dy = static_cast<double>(my - sy);
+    const double distance = dx * dx + dy * dy;
+    if (distance > radius_px * radius_px || distance >= best_distance) return;
+    best_distance = distance;
+    title = candidate_title;
+    title_color = candidate_color;
+    facts = std::move(candidate_facts);
+  };
+
+  for (const auto& monster : world.monsters) {
+    if (!monster.alive) continue;
+    const ScreenPoint base =
+        project(state.camera, bounds, monster.position.x, monster.position.y);
+    const int body_y = base.y - static_cast<int>(kTileUnits * 0.7 * base.scale);
+    std::vector<std::string> monster_facts{
+        "Life " + std::to_string(monster.life) + " / " +
+        std::to_string(monster.life_max)};
+    if (!monster.behaviour.empty())
+      monster_facts.push_back("Role " + monster.behaviour);
+    consider(base.x, body_y, kTileUnits * 0.9 * base.scale,
+             monster.name.empty() ? std::string("Unknown foe") : monster.name,
+             monster.elite ? skin::kGold : skin::kEmber,
+             std::move(monster_facts));
+  }
+  for (const auto& loot : state.loot_positions) {
+    const ScreenPoint base =
+        project(state.camera, bounds, loot.second.x, loot.second.y);
+    consider(base.x, base.y - static_cast<int>(kTileUnits * 0.28 * base.scale),
+             kTileUnits * 0.5 * base.scale, loot_label(state, loot.first),
+             skin::kGold, {"X picks up"});
+  }
+  for (const auto& npc : world.npcs) {
+    const ScreenPoint base =
+        project(state.camera, bounds, npc.position.x, npc.position.y);
+    const int body_y = base.y - static_cast<int>(kTileUnits * 0.7 * base.scale);
+    const std::string verb =
+        npc.actions.empty() ? std::string("examine") : npc.actions.front();
+    consider(base.x, body_y, kTileUnits * 0.9 * base.scale, npc.name,
+             RGB(150, 190, 240), {"T to " + verb});
+  }
+  if (title.empty()) return;
+
+  HGDIOBJ old_font = SelectObject(dc, skin::font_body_bold());
+  SIZE title_extent{};
+  GetTextExtentPoint32A(dc, title.c_str(), static_cast<int>(title.size()),
+                        &title_extent);
+  int widest = title_extent.cx;
+  SelectObject(dc, skin::font_small());
+  for (const auto& fact : facts) {
+    SIZE extent{};
+    GetTextExtentPoint32A(dc, fact.c_str(), static_cast<int>(fact.size()),
+                          &extent);
+    widest = std::max(widest, static_cast<int>(extent.cx));
+  }
+  const int line_h = 16 * s;
+  const int pad = 8 * s;
+  const int box_w = widest + pad * 2;
+  const int box_h = title_extent.cy + static_cast<int>(facts.size()) * line_h +
+                    pad * 2;
+  int box_x = std::clamp(mx + 18, 8,
+                         std::max(8, static_cast<int>(bounds.right) - box_w - 8));
+  const int box_y = std::max(8, my - box_h - 10);
+  RECT plate{box_x, box_y, box_x + box_w, box_y + box_h};
+  skin::panel(dc, plate, title_color, 245, 3.0f);
+  SetBkMode(dc, TRANSPARENT);
+  SelectObject(dc, skin::font_body_bold());
+  SetTextColor(dc, title_color);
+  TextOutA(dc, box_x + pad, box_y + pad - 2, title.c_str(),
+           static_cast<int>(title.size()));
+  SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kInkDim);
+  int fact_y = box_y + pad + title_extent.cy;
+  for (const auto& fact : facts) {
+    TextOutA(dc, box_x + pad, fact_y, fact.c_str(),
+             static_cast<int>(fact.size()));
+    fact_y += line_h;
+  }
+  SelectObject(dc, old_font);
+  rl.push_back({render::Op::Hud, static_cast<double>(box_x),
+                static_cast<double>(box_y), 0.0, 0, "tooltip:" + title});
+}
+
+// A thin bottom-edge strip makes long-term combat progress readable without
+// competing with the quickbar. The server supplies the exact current-level
+// span; this function only draws its normalized fraction.
+void paint_xp_bar(ClientState& state, HDC dc, const RECT& bounds,
+                  render::List& rl) {
+  if (!state.world.xp_present) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int orb_reach = (18 + kVitalOrbRadius * 2 + 24) * s;
+  const int left = orb_reach;
+  const int right = static_cast<int>(bounds.right) - orb_reach;
+  if (right - left < 60) return;
+  const int height = 6 * s;
+  const int top = static_cast<int>(bounds.bottom) - height - 4;
+  const double fraction = std::clamp(state.world.xp_fraction, 0.0, 1.0);
+  skin::progress_bar(dc, RECT{left, top, right, top + height}, fraction,
+                     skin::kGold, 10);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0,
+                static_cast<int>(std::lround(fraction * 100.0)), "xp-bar"});
+}
+
 void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
   const HudRect map = minimap_rect(static_cast<int>(bounds.bottom));
   const int kSize = map.w;
@@ -4752,6 +4881,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_vital_orbs(player, world.tick, state.screen_pulse_ticks, dc, bounds, rl,
                    &state.hud_rect_trace);
   paint_quickbar(state, dc, bounds, rl);
+  paint_xp_bar(state, dc, bounds, rl);
+  paint_hover_tooltip(state, dc, bounds, rl);
   paint_gear_overlay(state, dc, bounds, rl);
   paint_character_pane(state, dc, bounds, rl);
   paint_tree_pane(state, dc, bounds, rl);
@@ -7191,6 +7322,74 @@ int scenario_hud_pane_readability() {
   return 0;
 }
 
+// Compact contract for the unfinished information-density pass: the XP strip
+// renders the supplied authoritative fraction, hover exposes a world actor,
+// and modal panes suppress world tooltips instead of drawing through them.
+int scenario_hud_information() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  sync_world(state);
+  state.world.xp_present = true;
+  state.world.xp_fraction = 0.42;
+
+  constexpr int width = 960;
+  constexpr int height = 600;
+  HDC dc = CreateCompatibleDC(nullptr);
+  HBITMAP bitmap = CreateCompatibleBitmap(dc, width, height);
+  scenario_check(bitmap != nullptr,
+                 "hud-information: presentation surface allocated");
+  if (!bitmap) {
+    DeleteDC(dc);
+    return scenario_failures;
+  }
+  HGDIOBJ old = SelectObject(dc, bitmap);
+  RECT bounds{0, 0, width, height};
+  skin::set_ui_scale(hud_scale(height));
+  SelectObject(dc, skin::font_body());
+  render::List hud_ops;
+  paint_xp_bar(state, dc, bounds, hud_ops);
+
+  const render::Item* xp = nullptr;
+  for (const auto& item : hud_ops)
+    if (item.op == render::Op::Hud && item.label == "xp-bar") xp = &item;
+  scenario_check(xp && xp->value == 42,
+                 "hud-information: XP strip records authoritative progress");
+
+  scenario_check(!state.world.monsters.empty(),
+                 "hud-information: seeded route supplies a hover target");
+  if (!state.world.monsters.empty()) {
+    const WorldActor& monster = state.world.monsters.front();
+    const ScreenPoint base =
+        project(state.camera, bounds, monster.position.x, monster.position.y);
+    state.mouse.x = base.x;
+    state.mouse.y =
+        base.y - static_cast<int>(kTileUnits * 0.7 * base.scale);
+    paint_hover_tooltip(state, dc, bounds, hud_ops);
+  }
+  bool saw_tooltip = false;
+  for (const auto& item : hud_ops)
+    if (item.op == render::Op::Hud && item.label.rfind("tooltip:", 0) == 0)
+      saw_tooltip = true;
+  scenario_check(saw_tooltip,
+                 "hud-information: world hover emits a readable tooltip");
+
+  state.gear_overlay = true;
+  render::List modal_rl;
+  paint_hover_tooltip(state, dc, bounds, modal_rl);
+  bool leaked_tooltip = false;
+  for (const auto& item : modal_rl)
+    if (item.op == render::Op::Hud && item.label.rfind("tooltip:", 0) == 0)
+      leaked_tooltip = true;
+  scenario_check(!leaked_tooltip,
+                 "hud-information: modal pane suppresses world hover");
+
+  SelectObject(dc, old);
+  DeleteObject(bitmap);
+  DeleteDC(dc);
+  return 0;
+}
+
 // Machine-checkable presentation budget: paints real fullscreen-sized 32bpp
 // frames through the production paint_scene path and fails when the average
 // frame cost would visibly stutter the 20 Hz tick. The bound is deliberately
@@ -7255,6 +7454,7 @@ int run_scenarios(const std::string& which) {
       {"animation-vfx-phase-a", scenario_animation_vfx_phase_a},
       {"progression-surface", scenario_progression_surface},
       {"hud-pane-readability", scenario_hud_pane_readability},
+      {"hud-information", scenario_hud_information},
       {"frame-budget", scenario_frame_budget},
   };
   int total_failures = 0;

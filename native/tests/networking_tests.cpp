@@ -53,6 +53,11 @@ void test_session_lifecycle() {
   check(response.data["requestId"].string() && *response.data["requestId"].string() == "state-1", "state request id is echoed");
   check(response.data["state"]["sceneType"].string() && *response.data["state"]["sceneType"].string() == "instance", "state reports active instance");
   check(response.data["state"]["monsters"].array() && !response.data["state"]["monsters"].array()->empty(), "instance state has a monster");
+  check(response.data["state"]["xp"].object() != nullptr,
+        "state publishes authoritative combat XP");
+  check(response.data["state"]["xp"]["next"].number().value_or(0.0) >
+            response.data["state"]["xp"]["floor"].number().value_or(0.0),
+        "combat XP publishes a valid current-level span");
 
   session.handle(Envelope{"dev:give", JsonValue::Object{{"itemId", "garnet-amulet"}, {"qty", 1}}}, [](const Envelope&) {});
   session.handle(Envelope{"dev:state", JsonValue::Object{{"requestId", "state-2"}}}, [&](const Envelope& event) { state_wire = emit_envelope(event); });

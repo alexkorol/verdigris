@@ -212,6 +212,33 @@ void monster_facing_is_no_longer_fabricated() {
         "phase-a: player facing left does not flip the monster east either");
 }
 
+void authoritative_information_survives_model_sync() {
+  verdigris::client::ClientModel model;
+  model.player.alive = true;
+  model.xp_present = true;
+  model.xp_current = 130.0;
+  model.xp_floor = 100.0;
+  model.xp_next = 200.0;
+  verdigris::client::ClientMonster foe;
+  foe.id = "foe-1";
+  foe.name = "Ashen Spear-Bearer";
+  foe.life = 9;
+  foe.life_max = 12;
+  model.monsters.push_back(foe);
+  WorldView world;
+  sync_world_from_model(world, model);
+  check(world.monsters.size() == 1 &&
+            world.monsters.front().name == "Ashen Spear-Bearer",
+        "information: authoritative monster name survives model sync");
+  check(world.xp_present && std::abs(world.xp_fraction - 0.30) < 0.0001,
+        "information: authoritative XP span normalizes in presentation");
+
+  model.xp_present = false;
+  sync_world_from_model(world, model);
+  check(!world.xp_present && world.xp_fraction == 0.0,
+        "information: absent XP never fabricates zero progress");
+}
+
 void seam_events_cannot_mutate_simulation() {
   verdigris::client::LocalCoreSession session(0xC011AB1EULL, "House Verdigris");
   std::string error;
@@ -312,6 +339,7 @@ int main() {
   local_seam_maps_lifecycle_events();
   spawn_detection_is_deterministic_and_once();
   monster_facing_is_no_longer_fabricated();
+  authoritative_information_survives_model_sync();
   seam_events_cannot_mutate_simulation();
   diagonal_facing_resolves_component_wise();
   server_messages_surface_as_toasts();

@@ -145,6 +145,7 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     if (!source.alive) continue;
     WorldActor monster;
     monster.id = source.id;
+    monster.name = source.name;
     monster.position = {static_cast<int>(std::lround(protocol_to_world(source.x))),
                         static_cast<int>(std::lround(protocol_to_world(source.y)))};
     // TASK-0122 Phase A: the wire snapshot carries no monster facing field,
@@ -161,6 +162,13 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     world.monsters.push_back(std::move(monster));
   }
   world.theme = model.theme;
+  const double xp_span = model.xp_next - model.xp_floor;
+  world.xp_present = model.xp_present && xp_span > 0.0;
+  world.xp_fraction = world.xp_present
+                          ? std::clamp((model.xp_current - model.xp_floor) /
+                                           xp_span,
+                                       0.0, 1.0)
+                          : 0.0;
   world.map_width = model.map_width;
   world.map_height = model.map_height;
   world.map_walkable = model.map_walkable;
