@@ -60,8 +60,9 @@ solo zone/instance entry (Adventure menu), and the Chronicles Houses & Scions
 persistence model (`src/core/chronicles/houses.js`).
 
 Chronicles creation, authoritative persistence, mortal Scion entombment, and
-fallen-heirloom circulation are now playable end to end. The first twelve real
-quests form a server-owned progression chain. **Aldwyn's Charge** turns
+fallen-heirloom circulation are now playable end to end. Twenty-three real
+quests fill the passive tree's complete campaign budget through a server-owned
+progression chain. **Aldwyn's Charge** turns
 movement → combat → loot → Adventure entry into onboarding; **Proof of
 Temper** follows with an elite hunt, guaranteed native Vessel, equipment
 objective, second passive point, House renown, and Scion deed. **The Pale
@@ -78,9 +79,15 @@ return on their exact road. The four-road covenant raises the campaign total
 to eight quest points and opens **The Deep Roads** rather than prematurely
 sealing the campaign. Tier-two Tin, Salt, Chalk, and Copper commissions then
 name and require the Quarry Saint, Brine Widow, Ossuary Bell, and Cinder Judge.
-The final living return seals the twelve-point campaign and grants the first
-consumable endgame tablet. Road clears are House-persistent, and deeper node
-requests are rejected until their actual parent Warden is recorded dead.
+The Cinder return opens **The Crownless Marches** at twelve points. Tier-three
+commissions name the Iron Abbot, Drowned Factor, White Harrow, and Ash
+Castellan; tier four's **War of Claimants** answers the Chain Regent, Mire
+Leviathan, Nameless Bishop, and Furnace King. The final **Verdigris Crown** act
+claims tier-five Tin and Salt before a six-rite Chalk/Copper finale against the
+Sepulchral Choir and Verdigris Usurper. Only the twenty-third living return
+seals the campaign and grants the first consumable endgame tablet. Road clears
+are House-persistent, and deeper node requests are rejected until their actual
+parent Warden is recorded dead.
 
 The charted endgame now has an atlas-like Wayfinder Mastery layer rather than
 only a lifetime clear counter. Barrow, Reeds, Crown, and Thorns tablets each
@@ -153,12 +160,13 @@ suite, production build, every real-server playtest scenario, and the built-game
 browser loop. The remaining product work is intentionally narrower than the
 original prototype roadmap:
 
-1. **Campaign breadth:** extend the authoritative twelve-commission campaign
-   toward the 23 quest points reserved by the passive tree, with named zones,
-   bosses, rewards, persistence, and playtest coverage for each arc.
-2. **Vesselforge depth:** make the shipped conditional Bond and awakened powers
-   authoritative in combat, then bring trophy socketing, resonance, severing,
-   and scars into Tamar's already-live progression surface.
+1. **Campaign presentation depth:** enrich the now-complete authoritative
+   23-commission arc with more bespoke road scenery, dialogue beats, and boss
+   mechanics while preserving its named zones, Wardens, rewards, persistence,
+   and end-to-end playtest coverage.
+2. **Vesselforge depth:** make the remaining trophy socketing, resonance,
+   severing, and scar systems part of Tamar's already-live progression surface;
+   conditional Bond and awakened powers are already authoritative in combat.
 3. **Inventory depth and access:** implement real nested containers and finish
    keyboard-first grid/equipment navigation; pointer equip/unequip, rotation,
    spatial placement, overflow, and tooltips are already live.

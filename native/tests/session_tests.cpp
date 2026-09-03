@@ -178,7 +178,7 @@ void remote_handshake_reaches_ready() {
     check(session.model().quests.present &&
               session.model().quests.title == "Aldwyn's Charge" &&
               session.model().quests.objective_count == 5 &&
-              session.model().quests.campaign_quest_total == 12 &&
+              session.model().quests.campaign_quest_total == 23 &&
               session.model().quests.act_number == 1 &&
               session.model().quests.act_title == "THE FIRST OATHS" &&
               session.model().quests.act_total == 4 &&

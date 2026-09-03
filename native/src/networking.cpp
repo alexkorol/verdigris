@@ -820,7 +820,8 @@ JsonValue ProtocolSession::wear_details_json() const {
   return JsonValue(std::move(wear_details));
 }
 namespace {
-// server/shared/quests.js QUEST_DEFINITIONS - ordered objective chain.
+// Production-native ordered objective chain. Criteria never cross the wire;
+// clients receive only the presentation projection from quests_json().
 struct QuestObjective {
   const char* trigger;
   const char* text;
@@ -837,7 +838,7 @@ struct QuestDef {
   const char* reward;
   int renown;
   int objective_count;
-  QuestObjective objectives[5];
+  QuestObjective objectives[6];
 };
 const QuestDef kQuestChain[] = {
     {"aldwyns-charge", "Aldwyn's Charge", "Aldwyn the Guide",
@@ -893,27 +894,96 @@ const QuestDef kQuestChain[] = {
     {"quarry-saints-canon", "The Quarry Saint's Canon", "Ludovicus",
      "Follow the Tin Road below the worked stone and break its iron canon.",
      "Silenced the Quarry Saint", "+1 quest point / +45 House renown", 45, 3, {
-        {"road-enter", "Enter a tier-two Tin Road holding.", "tin", "", 2},
+        {"road-enter", "Enter Saint's Quarry on the tier-two Tin Road.", "tin", "", 2},
         {"road-clear", "Defeat the Quarry Saint.", "tin", "", 2},
         {"road-return", "Bring the broken canon back to Ludovicus.", "tin", "", 2}, {}, {}}},
     {"brine-widows-tithe", "The Brine Widow's Tithe", "Rhea of the Countinghouse",
      "Go beyond the Salt reckoning and end the tithe taken from every caravan.",
      "Refused the Brine Widow's tithe", "+1 quest point / +50 House renown", 50, 3, {
-        {"road-enter", "Enter a tier-two Salt Road holding.", "salt", "", 2},
+        {"road-enter", "Enter Widow's Tithe on the tier-two Salt Road.", "salt", "", 2},
         {"road-clear", "Defeat the Brine Widow.", "salt", "", 2},
         {"road-return", "Return the Widow's salt seal to Rhea.", "salt", "", 2}, {}, {}}},
     {"bell-beneath-chalk", "The Bell Beneath Chalk", "Selene of the Rite",
      "Descend past the named graves and still the bell that calls them awake.",
      "Stilled the Ossuary Bell", "+1 quest point / +55 House renown", 55, 3, {
-        {"road-enter", "Enter a tier-two Chalk Road holding.", "chalk", "", 2},
+        {"road-enter", "Enter the Ossuary on the tier-two Chalk Road.", "chalk", "", 2},
         {"road-clear", "Defeat the Ossuary Bell.", "chalk", "", 2},
         {"road-return", "Carry the silent clapper home to Selene.", "chalk", "", 2}, {}, {}}},
     {"cinder-judgment", "The Cinder Judgment", "Aldwyn the Guide",
      "Cross the burnt hills again and answer the judge waiting beyond the ash.",
      "Passed the Cinder Judge's sentence", "+1 quest point / +60 House renown", 60, 3, {
-        {"road-enter", "Enter a tier-two Copper Road holding.", "copper", "", 2},
+        {"road-enter", "Enter Cinder Court on the tier-two Copper Road.", "copper", "", 2},
         {"road-clear", "Defeat the Cinder Judge.", "copper", "", 2},
         {"road-return", "Return to seal the covenant of the Deep Roads.", "copper", "", 2}, {}, {}}},
+    {"iron-abbots-rule", "The Iron Abbot's Rule", "Ludovicus",
+     "March beyond the quarry shrines and end the tithe of iron-bound names.",
+     "Broke the Iron Abbot's rule", "+1 quest point / +70 House renown", 70, 3, {
+        {"road-enter", "Enter the Iron Cloister on the tier-three Tin Road.", "tin", "", 3},
+        {"road-clear", "Defeat the Iron Abbot.", "tin", "", 3},
+        {"road-return", "Bring the Abbot's broken rule to Ludovicus.", "tin", "", 3}}},
+    {"drowned-factors-toll", "The Drowned Factor's Toll", "Rhea of the Countinghouse",
+     "Carry Rhea's counterseal through the drowned counting houses.",
+     "Cancelled the Drowned Factor's toll", "+1 quest point / +75 House renown", 75, 3, {
+        {"road-enter", "Enter the Drowned Ledger on the tier-three Salt Road.", "salt", "", 3},
+        {"road-clear", "Defeat the Drowned Factor.", "salt", "", 3},
+        {"road-return", "Return the drowned ledger to Rhea.", "salt", "", 3}}},
+    {"white-harrow", "The White Harrow", "Selene of the Rite",
+     "Cross the nameless furrows and silence the thing harvesting their dead.",
+     "Turned the White Harrow", "+1 quest point / +80 House renown", 80, 3, {
+        {"road-enter", "Enter Harrowfield on the tier-three Chalk Road.", "chalk", "", 3},
+        {"road-clear", "Defeat the White Harrow.", "chalk", "", 3},
+        {"road-return", "Carry its last white tooth home to Selene.", "chalk", "", 3}}},
+    {"ash-castellan", "The Ash Castellan", "Aldwyn the Guide",
+     "Take the gatehouse that bars every banner from the crownless marches.",
+     "Cast down the Ash Castellan", "+1 quest point / +85 House renown", 85, 3, {
+        {"road-enter", "Enter the Ashen Gate on the tier-three Copper Road.", "copper", "", 3},
+        {"road-clear", "Defeat the Ash Castellan.", "copper", "", 3},
+        {"road-return", "Return with the crownless gate unbarred.", "copper", "", 3}}},
+    {"chain-regent", "The Chain Regent", "Ludovicus",
+     "Break the claimant who has chained the northern road to an empty throne.",
+     "Unmade the Chain Regent", "+1 quest point / +90 House renown", 90, 3, {
+        {"road-enter", "Enter Chainhold on the tier-four Tin Road.", "tin", "", 4},
+        {"road-clear", "Defeat the Chain Regent.", "tin", "", 4},
+        {"road-return", "Lay the Regent's chain before Ludovicus.", "tin", "", 4}}},
+    {"mire-leviathan", "The Mire Leviathan", "Rhea of the Countinghouse",
+     "End the great hunger swallowing every eastern road and reckoning.",
+     "Balanced the Mire Leviathan's account", "+1 quest point / +95 House renown", 95, 3, {
+        {"road-enter", "Enter Leviathan Mere on the tier-four Salt Road.", "salt", "", 4},
+        {"road-clear", "Defeat the Mire Leviathan.", "salt", "", 4},
+        {"road-return", "Bring word that the eastern debt is paid.", "salt", "", 4}}},
+    {"nameless-bishop", "The Nameless Bishop", "Selene of the Rite",
+     "Deny the claimant beneath Chalk the House names it would wear.",
+     "Denied the Nameless Bishop a House", "+1 quest point / +100 House renown", 100, 3, {
+        {"road-enter", "Enter the Nameless See on the tier-four Chalk Road.", "chalk", "", 4},
+        {"road-clear", "Defeat the Nameless Bishop.", "chalk", "", 4},
+        {"road-return", "Return its unwritten litany to Selene.", "chalk", "", 4}}},
+    {"furnace-king", "The Furnace King", "Aldwyn the Guide",
+     "Quench the western claimant before it forges a crown from the roads.",
+     "Quenched the Furnace King", "+1 quest point / +105 House renown", 105, 3, {
+        {"road-enter", "Enter the Furnace Crown on the tier-four Copper Road.", "copper", "", 4},
+        {"road-clear", "Defeat the Furnace King.", "copper", "", 4},
+        {"road-return", "Return with the false crown cold.", "copper", "", 4}}},
+    {"claim-of-iron", "The Claim of Iron", "Ludovicus",
+     "Raise the House mark at the last northern waystone.",
+     "Won the Claim of Iron", "+1 quest point / +115 House renown", 115, 3, {
+        {"road-enter", "Enter the Last Waystone on the tier-five Tin Road.", "tin", "", 5},
+        {"road-clear", "Defeat the Last Mason.", "tin", "", 5},
+        {"road-return", "Bring the northern waystone home.", "tin", "", 5}}},
+    {"claim-of-salt", "The Claim of Salt", "Rhea of the Countinghouse",
+     "Carry the House counterseal to the last eastern ford.",
+     "Won the Claim of Salt", "+1 quest point / +125 House renown", 125, 3, {
+        {"road-enter", "Enter the Queen's Ford on the tier-five Salt Road.", "salt", "", 5},
+        {"road-clear", "Defeat the Flood-Tithe Queen.", "salt", "", 5},
+        {"road-return", "Return with the eastern counterseal witnessed.", "salt", "", 5}}},
+    {"crown-without-king", "A Crown Without a King", "Selene of the Rite",
+     "Seal the last grave, break the western usurper, and crown the roads themselves.",
+     "Raised the Verdigris Crown", "+1 quest point / +150 House renown / Wayfinder access", 150, 6, {
+        {"road-enter", "Enter the Sepulchral Sanctum on the tier-five Chalk Road.", "chalk", "", 5},
+        {"road-clear", "Defeat the Sepulchral Choir.", "chalk", "", 5},
+        {"road-return", "Return the final grave-name to Selene.", "chalk", "", 5},
+        {"road-enter", "Enter the Empty Throne on the tier-five Copper Road.", "copper", "", 5},
+        {"road-clear", "Defeat the Verdigris Usurper.", "copper", "", 5},
+        {"road-return", "Return alive and raise a crown without a king.", "copper", "", 5}}},
 };
 const int kQuestChainSize =
     static_cast<int>(sizeof(kQuestChain) / sizeof(kQuestChain[0]));
@@ -928,6 +998,9 @@ constexpr CampaignAct kCampaignActs[] = {
     {1, "THE FIRST OATHS", 0, 4},
     {2, "THE FOUR-ROAD COVENANT", 4, 4},
     {3, "THE DEEP ROADS", 8, 4},
+    {4, "THE CROWNLESS MARCHES", 12, 4},
+    {5, "THE WAR OF CLAIMANTS", 16, 4},
+    {6, "THE VERDIGRIS CROWN", 20, 3},
 };
 const CampaignAct& campaign_act_for(int quest_index) {
   const int bounded = std::clamp(quest_index, 0, kQuestChainSize - 1);
@@ -935,7 +1008,7 @@ const CampaignAct& campaign_act_for(int quest_index) {
     if (bounded >= act.first_quest &&
         bounded < act.first_quest + act.quest_count)
       return act;
-  return kCampaignActs[2];
+  return kCampaignActs[sizeof(kCampaignActs) / sizeof(kCampaignActs[0]) - 1];
 }
 
 // The Wayfinder Mastery board is deliberately finite and inspectable: every
@@ -1010,9 +1083,26 @@ const char* kRoadSeconds[4][6] = {
     {"down", "barrow", "field", "kirk", "vault", "howe"},
     {"hill", "works", "kiln", "heath", "brink", "reach"},
 };
-const char* kRoadTierTwoWardens[4] = {
-    "The Quarry Saint", "The Brine Widow", "The Ossuary Bell",
-    "The Cinder Judge"};
+const char* kRoadNamedWardens[4][4] = {
+    {"The Quarry Saint", "The Iron Abbot", "The Chain Regent",
+     "The Last Mason"},
+    {"The Brine Widow", "The Drowned Factor", "The Mire Leviathan",
+     "The Flood-Tithe Queen"},
+    {"The Ossuary Bell", "The White Harrow", "The Nameless Bishop",
+     "The Sepulchral Choir"},
+    {"The Cinder Judge", "The Ash Castellan", "The Furnace King",
+     "The Verdigris Usurper"},
+};
+const char* kRoadStoryHoldings[4][4] = {
+    {"Saint's Quarry", "The Iron Cloister", "Chainhold",
+     "The Last Waystone"},
+    {"Widow's Tithe", "The Drowned Ledger", "Leviathan Mere",
+     "The Queen's Ford"},
+    {"The Ossuary", "Harrowfield", "The Nameless See",
+     "The Sepulchral Sanctum"},
+    {"Cinder Court", "The Ashen Gate", "The Furnace Crown",
+     "The Empty Throne"},
+};
 int road_index(const std::string& road_id) {
   for (int i = 0; i < 4; ++i) if (road_id == kRoads[i].id) return i;
   return -1;
@@ -1053,11 +1143,14 @@ std::vector<RoadNode> web_road_nodes(const std::string& house, const std::string
       node.template_id = pair[0];
       node.layout = pair[1];
       std::string name = std::string(kRoadFirsts[ri][(h >> 4) % 6]) + kRoadSeconds[ri][(h >> 8) % 6];
+      if (tier >= 2 && tier <= 5)
+        name = kRoadStoryHoldings[ri][tier - 2];
       while (used.count(name)) name += " Deep";
       used.insert(name);
       node.name = name;
-      node.warden_name = tier == 2 ? kRoadTierTwoWardens[ri]
-                                   : "Warden of " + name;
+      node.warden_name = tier >= 2 && tier <= 5
+                             ? kRoadNamedWardens[ri][tier - 2]
+                             : "Warden of " + name;
       if (!previous_tier.empty()) {
         const int parent_pick = (std::min)(static_cast<int>(previous_tier.size()) - 1,
                                            (index * static_cast<int>(previous_tier.size())) / width);
@@ -2138,7 +2231,12 @@ void ProtocolSession::quest_trigger(const char* trigger, const std::function<voi
   // criteria: crit_a matches zoneId or monsterName; crit_b matches theme/template.
   if (objective.crit_a[0] && detail_a != objective.crit_a) return;
   if (objective.crit_b[0] && detail_b != objective.crit_b) return;
-  if (objective.min_depth > 0 && depth < objective.min_depth) return;
+  if (objective.min_depth > 0) {
+    const bool road_rite = std::string(trigger).rfind("road-", 0) == 0;
+    if ((road_rite && depth != objective.min_depth) ||
+        (!road_rite && depth < objective.min_depth))
+      return;
+  }
   if (objective.min_depth == 0 && std::string(trigger) == "delve" && objective.crit_b[0] && depth < 2) return;
   quest_objective_ += 1;
   if (quest_objective_ >= quest.objective_count) {
@@ -2816,7 +2914,7 @@ void ProtocolSession::maybe_complete_first_goal(const std::function<void(const E
   if (first_goal_stage_ != "return-to-town") return;
   first_goal_stage_ = "complete";
   first_goal_completed_ms_ = now_ms();
-  tree_quest_points_ = (std::min)(tree_quest_points_ + 1, 12);
+  tree_quest_points_ = (std::min)(tree_quest_points_ + 1, 23);
   emit_message(emit, "You kept your word. Take this Verdigris point; it opens another path in your skill tree.");
   emit_quest_update(emit);
 }

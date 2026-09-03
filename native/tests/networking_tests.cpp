@@ -1376,6 +1376,59 @@ void test_campaign_contract_and_scion_checkpoint() {
 }
 
 void test_four_roads_campaign_act_and_persistence() {
+  {
+    ProtocolSession guard("guest-road-depth-guard", "socket-road-depth-guard",
+                          0x4a0eu, false);
+    JsonValue::Object guarded_campaign;
+    guarded_campaign["activeQuestIndex"] = JsonValue(4);
+    guarded_campaign["objectiveIndex"] = JsonValue(0);
+    guarded_campaign["questPoints"] = JsonValue(4);
+    guarded_campaign["completed"] = JsonValue(JsonValue::Array{
+        JsonValue("aldwyns-charge"), JsonValue("proof-of-temper"),
+        JsonValue("the-pale-crown"), JsonValue("rot-in-the-reeds")});
+    JsonValue::Object guarded_scion{
+        {"id", "scion-road-depth-guard"}, {"name", "Tressa"},
+        {"level", 1}, {"mortal", false},
+        {"campaignQuests", JsonValue(guarded_campaign)}};
+    JsonValue::Object guarded_house;
+    guarded_house["id"] = JsonValue("house-road-depth-guard");
+    guarded_house["name"] = JsonValue("House Rimegate");
+    guarded_house["campaignComplete"] = JsonValue(false);
+    guarded_house["clearedRoadNodes"] = JsonValue(JsonValue::Array{
+        JsonValue("tin:1:0"), JsonValue("tin:2:0")});
+    guarded_house["scions"] =
+        JsonValue(JsonValue::Array{JsonValue(guarded_scion)});
+    guarded_house["crypt"] = JsonValue(JsonValue::Array{});
+    JsonValue::Object guarded_chronicle;
+    guarded_chronicle["version"] = JsonValue(3);
+    guarded_chronicle["houses"] =
+        JsonValue(JsonValue::Array{JsonValue(guarded_house)});
+    guard.handle(Envelope{"player:chronicles:save",
+                          JsonValue::Object{{"state", JsonValue(guarded_chronicle)}}},
+                 [](const Envelope&) {});
+    guard.handle(Envelope{"player:chronicles:select",
+                          JsonValue::Object{{"scionId", "scion-road-depth-guard"},
+                                            {"houseId", "house-road-depth-guard"},
+                                            {"scionName", "Tressa"},
+                                            {"mortal", false}}},
+                 [](const Envelope&) {});
+    guard.handle(Envelope{"world:zone:enter",
+                          JsonValue::Object{{"nodeId", "tin:3:0"}}},
+                 [](const Envelope&) {});
+    auto guarded_state = request_state(guard, "road-depth-guard-enter");
+    check(guarded_state["state"]["sceneType"].string() &&
+              *guarded_state["state"]["sceneType"].string() == "instance" &&
+              guarded_state["state"]["quests"]["objectiveIndex"].number().value_or(-1) == 0,
+          "campaign roads: an unlocked deeper holding cannot satisfy a shallower rite");
+    guard.handle(Envelope{"dev:clear-floor", JsonValue::Object{}},
+                 [](const Envelope&) {});
+    guard.handle(Envelope{"party:returnToTown", JsonValue::Object{}},
+                 [](const Envelope&) {});
+    guarded_state = request_state(guard, "road-depth-guard-return");
+    check(guarded_state["state"]["quests"]["objectiveIndex"].number().value_or(-1) == 0,
+          "campaign roads: deeper clear and return cannot forge exact-tier progress");
+  }
+
   ProtocolSession session("guest-four-roads", "socket-four-roads", 0x4a0du,
                           false);
   JsonValue::Object campaign;
@@ -1524,28 +1577,26 @@ void test_four_roads_campaign_act_and_persistence() {
             state["state"]["quests"]["questPoints"].number().value_or(0) == 8 &&
             state["state"]["quests"]["houseRenown"].number().value_or(0) == 180 &&
             !state["state"]["endgame"]["unlocked"].boolean().value_or(true) &&
-            state["state"]["quests"]["campaignQuestTotal"].number().value_or(0) == 12 &&
+            state["state"]["quests"]["campaignQuestTotal"].number().value_or(0) == 23 &&
             state["state"]["quests"]["act"]["number"].number().value_or(0) == 3,
         "four-roads: Copper return opens Act III instead of prematurely sealing the campaign");
 
-  struct DeepRoadStep {
+  struct CampaignRoadStep {
     const char* road;
+    int tier;
+    const char* holding;
     const char* warden;
     const char* next_quest;
   };
-  const DeepRoadStep deep_roads[] = {
-      {"tin", "The Quarry Saint", "brine-widows-tithe"},
-      {"salt", "The Brine Widow", "bell-beneath-chalk"},
-      {"chalk", "The Ossuary Bell", "cinder-judgment"},
-      {"copper", "The Cinder Judge", nullptr},
-  };
-  for (const auto& step : deep_roads) {
+  const auto complete_road_commission =
+      [&](const CampaignRoadStep& step, const std::string& prefix) {
     session.handle(
         Envelope{"world:zone:enter",
-                 JsonValue::Object{{"nodeId", std::string(step.road) + ":2:0"}}},
+                 JsonValue::Object{{"nodeId", std::string(step.road) + ":" +
+                                                  std::to_string(step.tier) +
+                                                  ":0"}}},
         [](const Envelope&) {});
-    state = request_state(session,
-                          std::string("deep-roads-") + step.road + "-entered");
+    state = request_state(session, prefix + "-entered");
     bool named_warden = false;
     int warden_level = 0;
     if (const auto* monsters = state["state"]["monsters"].array()) {
@@ -1560,45 +1611,146 @@ void test_four_roads_campaign_act_and_persistence() {
         }
       }
     }
-    check(named_warden,
-          "deep-roads: exact tier-two entry reveals its named Warden");
-    check(state["state"]["sceneMetadata"]["depth"].number().value_or(0) == 2,
-          "deep-roads: road tier becomes the authoritative instance depth");
-    check(warden_level >= 4,
-          "deep-roads: tier-two depth raises the named Warden's level");
+    check(named_warden && state["state"]["sceneName"].string() &&
+              *state["state"]["sceneName"].string() == step.holding,
+          "campaign roads: exact tier entry reveals its named holding and Warden");
+    check(state["state"]["sceneMetadata"]["depth"].number().value_or(0) ==
+              step.tier,
+          "campaign roads: road tier becomes authoritative instance depth");
+    check(warden_level >= step.tier + 2,
+          "campaign roads: deeper named Wardens inherit depth scaling");
     check(state["state"]["quests"]["objectiveIndex"].number().value_or(0) == 1,
-          "deep-roads: exact tier-two entry advances the rite");
+          "campaign roads: exact road and tier advance the entry rite");
     session.handle(Envelope{"dev:clear-floor", JsonValue::Object{}},
                    [](const Envelope&) {});
-    state = request_state(session,
-                          std::string("deep-roads-") + step.road + "-cleared");
+    state = request_state(session, prefix + "-cleared");
     check(state["state"]["quests"]["objectiveIndex"].number().value_or(0) == 2,
-          "deep-roads: each named Warden must fall before the return rite");
+          "campaign roads: canonical Warden clear advances the commission");
     session.handle(Envelope{"party:returnToTown", JsonValue::Object{}},
                    [](const Envelope&) {});
-    state = request_state(session,
-                          std::string("deep-roads-") + step.road + "-returned");
+    state = request_state(session, prefix + "-returned");
     if (step.next_quest) {
       check(state["state"]["quests"]["activeQuest"]["id"].string() &&
                 *state["state"]["quests"]["activeQuest"]["id"].string() ==
                     step.next_quest,
-            "deep-roads: returning opens the next named tier-two commission");
-      admit();
-      state = request_state(session,
-                            std::string("deep-roads-") + step.road + "-restored");
-      check(state["state"]["quests"]["activeQuest"]["id"].string() &&
-                *state["state"]["quests"]["activeQuest"]["id"].string() ==
-                    step.next_quest,
-            "deep-roads: the completed commission persists across Scion admission");
+            "campaign roads: living return opens the next named commission");
     }
+  };
+
+  const CampaignRoadStep deep_roads[] = {
+      {"tin", 2, "Saint's Quarry", "The Quarry Saint", "brine-widows-tithe"},
+      {"salt", 2, "Widow's Tithe", "The Brine Widow", "bell-beneath-chalk"},
+      {"chalk", 2, "The Ossuary", "The Ossuary Bell", "cinder-judgment"},
+      {"copper", 2, "Cinder Court", "The Cinder Judge", "iron-abbots-rule"},
+  };
+  for (const auto& step : deep_roads) {
+    complete_road_commission(
+        step, std::string("deep-roads-") + step.road);
+    admit();
+    state = request_state(
+        session, std::string("deep-roads-") + step.road + "-restored");
+    check(state["state"]["quests"]["activeQuest"]["id"].string() &&
+              *state["state"]["quests"]["activeQuest"]["id"].string() ==
+                  step.next_quest,
+          "deep-roads: the completed commission persists across Scion admission");
   }
-  check(state["state"]["quests"]["campaignComplete"].boolean().value_or(false) &&
-            state["state"]["quests"]["activeQuest"].is_null() &&
+  check(!state["state"]["quests"]["campaignComplete"].boolean().value_or(true) &&
             state["state"]["quests"]["questPoints"].number().value_or(0) == 12 &&
             state["state"]["quests"]["houseRenown"].number().value_or(0) == 390 &&
+            !state["state"]["endgame"]["unlocked"].boolean().value_or(true) &&
+            state["state"]["quests"]["act"]["number"].number().value_or(0) == 4,
+        "deep-roads: Cinder return opens the Crownless Marches without minting an endgame tablet");
+
+  const CampaignRoadStep crownless_marches[] = {
+      {"tin", 3, "The Iron Cloister", "The Iron Abbot", "drowned-factors-toll"},
+      {"salt", 3, "The Drowned Ledger", "The Drowned Factor", "white-harrow"},
+      {"chalk", 3, "Harrowfield", "The White Harrow", "ash-castellan"},
+      {"copper", 3, "The Ashen Gate", "The Ash Castellan", "chain-regent"},
+  };
+  for (const auto& step : crownless_marches)
+    complete_road_commission(
+        step, std::string("crownless-") + step.road);
+  check(state["state"]["quests"]["questPoints"].number().value_or(0) == 16 &&
+            state["state"]["quests"]["houseRenown"].number().value_or(0) == 700 &&
+            state["state"]["quests"]["act"]["number"].number().value_or(0) == 5,
+        "crownless marches: four tier-three victories open the War of Claimants");
+
+  const CampaignRoadStep war_of_claimants[] = {
+      {"tin", 4, "Chainhold", "The Chain Regent", "mire-leviathan"},
+      {"salt", 4, "Leviathan Mere", "The Mire Leviathan", "nameless-bishop"},
+      {"chalk", 4, "The Nameless See", "The Nameless Bishop", "furnace-king"},
+      {"copper", 4, "The Furnace Crown", "The Furnace King", "claim-of-iron"},
+  };
+  for (const auto& step : war_of_claimants)
+    complete_road_commission(
+        step, std::string("claimants-") + step.road);
+  check(state["state"]["quests"]["questPoints"].number().value_or(0) == 20 &&
+            state["state"]["quests"]["houseRenown"].number().value_or(0) == 1090 &&
+            state["state"]["quests"]["act"]["number"].number().value_or(0) == 6,
+        "war of claimants: tier-four victories open the three-part crown act");
+
+  const CampaignRoadStep crown_claims[] = {
+      {"tin", 5, "The Last Waystone", "The Last Mason", "claim-of-salt"},
+      {"salt", 5, "The Queen's Ford", "The Flood-Tithe Queen", "crown-without-king"},
+  };
+  for (const auto& step : crown_claims)
+    complete_road_commission(step, std::string("crown-") + step.road);
+
+  session.handle(Envelope{"world:zone:enter",
+                          JsonValue::Object{{"nodeId", "chalk:5:0"}}},
+                 [](const Envelope&) {});
+  state = request_state(session, "crown-chalk-entered");
+  bool choir_present = false;
+  if (const auto* monsters = state["state"]["monsters"].array())
+    for (const auto& monster : *monsters)
+      if (monster["boss"].boolean().value_or(false) &&
+          monster["name"].string() &&
+          *monster["name"].string() == "The Sepulchral Choir")
+        choir_present = true;
+  check(choir_present && state["state"]["sceneName"].string() &&
+            *state["state"]["sceneName"].string() == "The Sepulchral Sanctum" &&
+            state["state"]["quests"]["objectiveIndex"].number().value_or(0) == 1,
+        "verdigris crown: final commission begins at the Sepulchral Choir");
+  session.handle(Envelope{"dev:clear-floor", JsonValue::Object{}},
+                 [](const Envelope&) {});
+  session.handle(Envelope{"party:returnToTown", JsonValue::Object{}},
+                 [](const Envelope&) {});
+  state = request_state(session, "crown-chalk-returned");
+  check(state["state"]["quests"]["activeQuest"]["id"].string() &&
+            *state["state"]["quests"]["activeQuest"]["id"].string() ==
+                "crown-without-king" &&
+            state["state"]["quests"]["objectiveIndex"].number().value_or(0) == 3,
+        "verdigris crown: the Chalk seal persists inside the six-part finale");
+  session.handle(Envelope{"world:zone:enter",
+                          JsonValue::Object{{"nodeId", "copper:5:0"}}},
+                 [](const Envelope&) {});
+  state = request_state(session, "crown-copper-entered");
+  bool usurper_present = false;
+  if (const auto* monsters = state["state"]["monsters"].array())
+    for (const auto& monster : *monsters)
+      if (monster["boss"].boolean().value_or(false) &&
+          monster["name"].string() &&
+          *monster["name"].string() == "The Verdigris Usurper")
+        usurper_present = true;
+  check(usurper_present && state["state"]["sceneName"].string() &&
+            *state["state"]["sceneName"].string() == "The Empty Throne" &&
+            state["state"]["quests"]["objectiveIndex"].number().value_or(0) == 4,
+        "verdigris crown: the western throne reveals its canonical Usurper");
+  session.handle(Envelope{"dev:clear-floor", JsonValue::Object{}},
+                 [](const Envelope&) {});
+  state = request_state(session, "crown-usurper-fallen");
+  check(state["state"]["quests"]["objectiveIndex"].number().value_or(0) == 5,
+        "verdigris crown: the Usurper must fall before the final living return");
+  session.handle(Envelope{"party:returnToTown", JsonValue::Object{}},
+                 [](const Envelope&) {});
+  state = request_state(session, "campaign-sealed");
+  check(state["state"]["quests"]["campaignComplete"].boolean().value_or(false) &&
+            state["state"]["quests"]["activeQuest"].is_null() &&
+            state["state"]["quests"]["questPoints"].number().value_or(0) == 23 &&
+            state["state"]["quests"]["houseRenown"].number().value_or(0) == 1480 &&
             state["state"]["endgame"]["unlocked"].boolean().value_or(false) &&
             !inventory_map_uuid(state).empty(),
-        "deep-roads: Cinder return seals the twelve-point campaign and awards the first tablet");
+        "verdigris crown: the twenty-third return seals the campaign and awards the first tablet");
 
   std::string heir_id;
   session.handle(
@@ -1621,11 +1773,11 @@ void test_four_roads_campaign_act_and_persistence() {
       [](const Envelope&) {});
   const auto heir_state = request_state(session, "deep-roads-heir");
   check(heir_state["state"]["quests"]["campaignComplete"].boolean().value_or(false) &&
-            heir_state["state"]["quests"]["questPoints"].number().value_or(0) == 12 &&
+            heir_state["state"]["quests"]["questPoints"].number().value_or(0) == 23 &&
             heir_state["state"]["quests"]["completed"].array() &&
-            heir_state["state"]["quests"]["completed"].array()->size() == 12 &&
+            heir_state["state"]["quests"]["completed"].array()->size() == 23 &&
             heir_state["state"]["endgame"]["unlocked"].boolean().value_or(false),
-        "deep-roads: a new Scion inherits the sealed campaign budget and endgame access");
+        "verdigris crown: a new Scion inherits all campaign points and endgame access");
 }
 
 void test_consumable_endgame_tablet_loop() {
@@ -1693,6 +1845,10 @@ void test_consumable_endgame_tablet_loop() {
             inherited["state"]["endgame"]["mastered"].number().value_or(0) == 2 &&
             inherited["state"]["endgame"]["highestTier"].number().value_or(0) == 4,
         "endgame: valid unique mastery objectives belong to the House, not one Scion");
+  check(inherited["state"]["quests"]["questPoints"].number().value_or(0) == 23 &&
+            inherited["state"]["quests"]["completed"].array() &&
+            inherited["state"]["quests"]["completed"].array()->size() == 23,
+        "endgame: a legacy House seal inherits the expanded campaign budget");
 
   session.handle(Envelope{"dev:give", JsonValue::Object{
                                           {"itemId", "charted-tablet-crown"},

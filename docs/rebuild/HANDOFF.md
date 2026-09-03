@@ -1,5 +1,32 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - complete 23-point native campaign
+
+- Expanded the authoritative campaign from twelve to all twenty-three quest
+  points reserved by the passive tree. Acts IV-VI add the Crownless Marches,
+  War of Claimants, and Verdigris Crown across real tier-three through
+  tier-five road instances rather than synthetic point awards.
+- Eleven new commissions carry fixed titles, givers, objectives, deeds,
+  rewards, twelve canonical story holdings, and Wardens. The six-part finale
+  first seals the Sepulchral Sanctum and returns alive, then breaks the
+  Verdigris Usurper at the Empty Throne and requires a final living return
+  before the House is marked complete.
+- Road rites now require their exact authored tier as well as road identity;
+  an inherited, deeper House holding cannot satisfy a shallower Scion quest.
+  Parent-gated node clears, true instance depth, House road persistence, Scion
+  checkpoints, and successor inheritance remain authoritative.
+- Endgame unlock moved to the twenty-third return. Existing Houses carrying a
+  legacy House-level campaign seal retain Wayfinder access and inherit the
+  complete 23-point budget, while an in-progress twelve-point Scion resumes at
+  Act IV. The Framekit journal now has a dedicated Act IV regression capture
+  and keeps its bounded nine-deed rail for the longer Chronicle.
+- The exact binding native build, complete unit/session suite, mortal
+  succession and heirloom-recovery Gate B, and all 28 client scenarios pass.
+  Inspected Act IV and Act VI evidence lives under
+  `native/build/goal-captures-campaign-23-final/`; the 960x600 finale proves
+  the modal journal suppresses top-HUD overpaint, and the 3440x1440 frame
+  budget is 9.7 ms average against the 40 ms ceiling.
+
 ## 2026-09-03 - Framekit House and Scion front door
 
 - Replaced the Chronicles text stack with a responsive two-pane Framekit
@@ -189,7 +216,11 @@
 
 ## 2026-09-03 - Act III: The Deep Roads
 
-- The authoritative native campaign now contains twelve commissions. The
+Historical checkpoint: this twelve-commission stopping point is superseded by
+the complete 23-point campaign section above.
+
+- At this checkpoint the authoritative native campaign contained twelve
+  commissions. The
   four-road covenant ends at eight points by opening Act III rather than
   prematurely marking the House complete or awarding an endgame key.
 - The Deep Roads revisit tier-two Tin, Salt, Chalk, and Copper holdings in a
@@ -200,8 +231,8 @@
   roster: The Quarry Saint, The Brine Widow, The Ossuary Bell, and The Cinder
   Judge. A road node's tier now becomes its actual instance depth, activating
   the existing monster/loot scaling instead of relabeling a depth-one floor.
-  Only the final Cinder return seals twelve quest points and awards the first
-  consumable charted tablet.
+  At this checkpoint the final Cinder return sealed twelve quest points and
+  awarded the first consumable charted tablet.
 - Campaign snapshots now publish their total and current act number, title,
   completed count, and act size. The remote model validates and mirrors that
   contract; the Framekit Chronicle header shows act and 10/12-style progress.

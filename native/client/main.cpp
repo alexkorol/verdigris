@@ -4890,7 +4890,7 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
     put_text(skin::font_small(), skin::kInkDim,
              house_pane.left + 96 * door_scale,
              house_pane.top + 91 * door_scale,
-             ledger_house->campaign_complete ? "THE DEEP ROADS ARE OPEN"
+             ledger_house->campaign_complete ? "THE WAYFINDER ROADS ARE OPEN"
                                              : "A LINEAGE IN THE MAKING");
     rl.push_back({render::Op::Chronicles, static_cast<double>(seal_x),
                   static_cast<double>(seal_y), 0.0, 0,
@@ -6937,8 +6937,11 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   // C+I is a focused loadout view. The panes already repeat identity,
   // objective context, and controls; suppressing the world HUD prevents its
   // long instruction rail from painting across paper-doll seats at 960x600.
+  // The Chronicle journal is likewise modal and supplies its own campaign
+  // header, objective, and close hint; top-HUD chips must never overpaint it.
   if (!trade_pane_open(state) &&
-      !(state.gear_overlay && state.character_pane)) {
+      !(state.gear_overlay && state.character_pane) &&
+      !state.quest_journal) {
     std::string objective;
     COLORREF accent = RGB(120, 214, 168);
     const bool carrying = !world.carried.empty() || world.carried_trophies > 0;
@@ -10772,7 +10775,9 @@ class ScenarioDialogueSession final
 class ScenarioCampaignSession final
     : public verdigris::client::IClientSession {
  public:
-  explicit ScenarioCampaignSession(bool deep_roads = false) {
+  explicit ScenarioCampaignSession(bool deep_roads = false,
+                                   bool crownless_marches = false,
+                                   bool verdigris_crown = false) {
     model_.player.uuid = "scenario-campaign-scion";
     model_.player.display_name = "Ilyra";
     model_.player.scene_id = "town:verdigris";
@@ -10787,7 +10792,7 @@ class ScenarioCampaignSession final
     model_.house_name = "House Emberwake";
     model_.quests.present = true;
     model_.quests.quest_points = 4;
-    model_.quests.campaign_quest_total = 12;
+    model_.quests.campaign_quest_total = 23;
     model_.quests.house_renown = 50;
     model_.quests.act_number = 2;
     model_.quests.act_title = "THE FOUR-ROAD COVENANT";
@@ -10835,6 +10840,62 @@ class ScenarioCampaignSession final
            "Silenced the Quarry Saint"},
           {"brine-widows-tithe", "The Brine Widow's Tithe",
            "Refused the Brine Widow's tithe"},
+      });
+    }
+    if (crownless_marches) {
+      model_.quests.quest_points = 14;
+      model_.quests.house_renown = 535;
+      model_.quests.act_number = 4;
+      model_.quests.act_title = "THE CROWNLESS MARCHES";
+      model_.quests.act_completed = 2;
+      model_.quests.active_id = "white-harrow";
+      model_.quests.title = "The White Harrow";
+      model_.quests.giver = "Selene of the Rite";
+      model_.quests.summary =
+          "Cross the nameless furrows and silence the thing harvesting their dead.";
+      model_.quests.objective = "Defeat the White Harrow.";
+      model_.quests.reward = "+1 quest point / +80 House renown";
+      model_.quests.completed.insert(model_.quests.completed.end(), {
+          {"bell-beneath-chalk", "The Bell Beneath Chalk",
+           "Stilled the Ossuary Bell"},
+          {"cinder-judgment", "The Cinder Judgment",
+           "Passed the Cinder Judge's sentence"},
+          {"iron-abbots-rule", "The Iron Abbot's Rule",
+           "Broke the Iron Abbot's rule"},
+          {"drowned-factors-toll", "The Drowned Factor's Toll",
+           "Cancelled the Drowned Factor's toll"},
+      });
+    }
+    if (verdigris_crown) {
+      model_.quests.quest_points = 22;
+      model_.quests.house_renown = 1330;
+      model_.quests.act_number = 6;
+      model_.quests.act_title = "THE VERDIGRIS CROWN";
+      model_.quests.act_completed = 2;
+      model_.quests.act_total = 3;
+      model_.quests.active_id = "crown-without-king";
+      model_.quests.title = "A Crown Without a King";
+      model_.quests.giver = "Selene of the Rite";
+      model_.quests.summary =
+          "Seal the last grave, break the western usurper, and crown the roads themselves.";
+      model_.quests.objective =
+          "Enter the Empty Throne on the tier-five Copper Road.";
+      model_.quests.reward =
+          "+1 quest point / +150 House renown / Wayfinder access";
+      model_.quests.objective_index = 3;
+      model_.quests.objective_count = 6;
+      model_.quests.completed.insert(model_.quests.completed.end(), {
+          {"white-harrow", "The White Harrow", "Turned the White Harrow"},
+          {"ash-castellan", "The Ash Castellan",
+           "Cast down the Ash Castellan"},
+          {"chain-regent", "The Chain Regent", "Unmade the Chain Regent"},
+          {"mire-leviathan", "The Mire Leviathan",
+           "Balanced the Mire Leviathan's account"},
+          {"nameless-bishop", "The Nameless Bishop",
+           "Denied the Nameless Bishop a House"},
+          {"furnace-king", "The Furnace King", "Quenched the Furnace King"},
+          {"claim-of-iron", "The Claim of Iron", "Won the Claim of Iron"},
+          {"claim-of-salt", "The Claim of Salt", "Won the Claim of Salt"},
       });
     }
   }
@@ -11104,6 +11165,143 @@ int scenario_deep_roads_campaign() {
   return 0;
 }
 
+int scenario_crownless_campaign() {
+  ClientState state;
+  state.session = std::make_unique<ScenarioCampaignSession>(true, true);
+  load_billboards(state.billboards);
+  sync_world(state);
+  generate_scenery(state);
+  scenario_follow_camera(state);
+  toggle_quest_journal(state);
+
+  std::string capture_dir;
+  const int capture_override = capture_root_override(&capture_dir);
+  if (capture_override < 0) {
+    scenario_check(false,
+                   "crownless-campaign: capture root rejected before any write");
+    return 0;
+  }
+  if (capture_override == 0) {
+    CreateDirectoryA("captures", nullptr);
+    capture_dir = "captures";
+  }
+  const std::string capture_path =
+      capture_dir + "\\crownless-campaign-1366x768.png";
+  scenario_check(reference_present(state, 1366, 768, capture_path),
+                 "crownless-campaign: Act IV Framekit journal captured");
+  std::printf("    capture: %s\n", capture_path.c_str());
+
+  bool act = false;
+  bool active = false;
+  bool objective = false;
+  bool earlier = false;
+  int completed = 0;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Hud &&
+        item.label == "campaign-act:4:THE CROWNLESS MARCHES")
+      act = true;
+    if (item.op == render::Op::Hud &&
+        item.label == "quest-active:white-harrow")
+      active = true;
+    if (item.op == render::Op::Hud &&
+        item.label == "quest-objective:Defeat the White Harrow.")
+      objective = true;
+    if (item.op == render::Op::Hud && item.label == "quest-earlier-deeds" &&
+        item.value == 5)
+      earlier = true;
+    if (item.op == render::Op::Hud &&
+        item.label.rfind("quest-complete:", 0) == 0)
+      ++completed;
+  }
+  scenario_check(act && active && objective && earlier && completed == 9,
+                 "crownless-campaign: expanded act and bounded House record remain readable");
+  const HudRect expected = quest_journal_rect(1366, 768);
+  bool inside = expected.x >= 0 && expected.y >= 0 &&
+                expected.x + expected.w <= 1366 &&
+                expected.y + expected.h <= 768;
+  for (const auto& trace : state.hud_rect_trace)
+    if (trace.first.rfind("quest-pane", 0) == 0)
+      inside = inside && trace.second.x >= expected.x &&
+               trace.second.y >= expected.y &&
+               trace.second.x + trace.second.w <= expected.x + expected.w &&
+               trace.second.y + trace.second.h <= expected.y + expected.h;
+  scenario_check(inside,
+                 "crownless-campaign: twenty-three-point Chronicle fits Framekit");
+  return 0;
+}
+
+int scenario_verdigris_crown_campaign() {
+  ClientState state;
+  state.session = std::make_unique<ScenarioCampaignSession>(true, true, true);
+  load_billboards(state.billboards);
+  sync_world(state);
+  generate_scenery(state);
+  scenario_follow_camera(state);
+  toggle_quest_journal(state);
+
+  std::string capture_dir;
+  const int capture_override = capture_root_override(&capture_dir);
+  if (capture_override < 0) {
+    scenario_check(false,
+                   "verdigris-crown-campaign: capture root rejected before any write");
+    return 0;
+  }
+  if (capture_override == 0) {
+    CreateDirectoryA("captures", nullptr);
+    capture_dir = "captures";
+  }
+  const std::string compact_path =
+      capture_dir + "\\verdigris-crown-campaign-960x600.png";
+  scenario_check(reference_present(state, 960, 600, compact_path),
+                 "verdigris-crown-campaign: compact Act VI journal captured");
+  std::printf("    capture: %s\n", compact_path.c_str());
+  const std::string wide_path =
+      capture_dir + "\\verdigris-crown-campaign-1366x768.png";
+  scenario_check(reference_present(state, 1366, 768, wide_path),
+                 "verdigris-crown-campaign: wide Act VI journal captured");
+  std::printf("    capture: %s\n", wide_path.c_str());
+
+  bool act = false;
+  bool active = false;
+  bool objective = false;
+  bool earlier = false;
+  int completed = 0;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Hud &&
+        item.label == "campaign-act:6:THE VERDIGRIS CROWN")
+      act = true;
+    if (item.op == render::Op::Hud &&
+        item.label == "quest-active:crown-without-king")
+      active = true;
+    if (item.op == render::Op::Hud &&
+        item.label == "quest-objective:Enter the Empty Throne on the tier-five Copper Road.")
+      objective = true;
+    if (item.op == render::Op::Hud && item.label == "quest-earlier-deeds" &&
+        item.value == 13)
+      earlier = true;
+    if (item.op == render::Op::Hud &&
+        item.label.rfind("quest-complete:", 0) == 0)
+      ++completed;
+  }
+  scenario_check(act && active && objective && earlier && completed == 9,
+                 "verdigris-crown-campaign: six-part finale and 22 deeds are readable");
+  const HudRect compact = quest_journal_rect(960, 600);
+  const HudRect wide = quest_journal_rect(1366, 768);
+  bool top_hud_leaked = false;
+  for (const auto& trace : state.hud_rect_trace)
+    if (trace.first == "objective" || trace.first == "controls" ||
+        trace.first == "controls-second" || trace.first == "identity" ||
+        trace.first == "connection" || trace.first == "art")
+      top_hud_leaked = true;
+  scenario_check(compact.x >= 0 && compact.y >= 0 &&
+                     compact.x + compact.w <= 960 &&
+                     compact.y + compact.h <= 600 && wide.x >= 0 &&
+                     wide.y >= 0 && wide.x + wide.w <= 1366 &&
+                     wide.y + wide.h <= 768 && !top_hud_leaked,
+                 "verdigris-crown-campaign: modal Framekit fits without top-HUD overpaint");
+  return 0;
+}
+
 int scenario_tactical_map_overlay() {
   ClientState state;
   scenario_begin(state);
@@ -11357,6 +11555,8 @@ int run_scenarios(const std::string& which) {
       {"town-vesselforge", scenario_town_vesselforge},
       {"campaign-journal", scenario_campaign_journal},
       {"deep-roads-campaign", scenario_deep_roads_campaign},
+      {"crownless-campaign", scenario_crownless_campaign},
+      {"verdigris-crown-campaign", scenario_verdigris_crown_campaign},
       {"tactical-map", scenario_tactical_map_overlay},
       {"frame-budget", scenario_frame_budget},
   };

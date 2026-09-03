@@ -1,8 +1,9 @@
 # Quest progression
 
-Quest progress is server-authored and persisted with the player. Definitions
-live in `server/shared/quests.js` so server rules and the Vue journal use the
-same titles, objectives, and reward copy.
+Quest progress is server-authored and persisted with the active Scion. The
+production native definitions live beside their criteria matcher in
+`native/src/networking.cpp`; the remote Framekit journal receives only the
+safe title, objective, reward, act, and completed-deed projection.
 
 ## Campaign vertical slice
 
@@ -75,25 +76,59 @@ without inventing another Warden, so a resumed campaign cannot deadlock.
 ## The Deep Roads
 
 The third campaign act returns to the same four House-charted roads at tier
-two, where each branch has a canonical story Warden rather than a generic
-elite identity:
+two, where each branch has a canonical story holding and Warden rather than a
+generic elite identity:
 
-1. **The Quarry Saint's Canon** — break the Quarry Saint beneath Tin;
-2. **The Brine Widow's Tithe** — end the Brine Widow's levy beyond Salt;
-3. **The Bell Beneath Chalk** — still the Ossuary Bell under the graves;
-4. **The Cinder Judgment** — answer the Cinder Judge beyond Copper.
+1. **The Quarry Saint's Canon** — break the Quarry Saint in Saint's Quarry;
+2. **The Brine Widow's Tithe** — end the Brine Widow at Widow's Tithe;
+3. **The Bell Beneath Chalk** — still the Ossuary Bell in the Ossuary;
+4. **The Cinder Judgment** — answer the Cinder Judge at Cinder Court.
 
 Each commission requires exact tier-two entry, that holding's authoritative
 Warden clear, and a living return to the Crossroads. Road tier is also the
 instance depth used by monster and loot scaling, so these revisits are
 mechanically deeper rather than renamed tier-one floors. They award one quest
 point and 45/50/55/60 House renown respectively. The Cinder return raises the
-campaign total to twelve, seals the House campaign, and grants the first
-consumable charted tablet. Quest snapshots also publish the campaign total and
-current act name/progress so clients do not infer chapter boundaries. A later
-Scion born into that sealed House inherits the twelve campaign quest points,
-completed Chronicle record, and endgame access; succession cannot strand the
-reserved passive-tree budget on a fallen predecessor.
+campaign total to twelve and opens the Crownless Marches; it does not seal the
+House or mint the first endgame tablet.
+
+## The Crownless Marches
+
+Act IV carries each House road into tier three at the Iron Cloister, Drowned
+Ledger, Harrowfield, and Ashen Gate. Its four fixed commissions are
+**The Iron Abbot's Rule**, **The Drowned Factor's Toll**, **The White Harrow**,
+and **The Ash Castellan**. Their canonical Wardens are the Iron Abbot, Drowned
+Factor, White Harrow, and Ash Castellan. Exact entry, Warden clear, and living
+return are required in Tin/Salt/Chalk/Copper order. The rewards are one quest
+point and 70/75/80/85 House renown, raising the campaign total to sixteen.
+
+## The War of Claimants
+
+Act V advances the same House-persistent branches to tier four. **The Chain
+Regent**, **The Mire Leviathan**, **The Nameless Bishop**, and **The Furnace
+King** occupy Chainhold, Leviathan Mere, the Nameless See, and the Furnace
+Crown at a real depth-four combat and loot scale. The four return rites award
+one point and 90/95/100/105 House renown, then open the final crown claims at
+twenty quest points.
+
+## The Verdigris Crown
+
+Act VI spends the full 23-point campaign budget rather than padding the skill
+tree with synthetic points. **The Claim of Iron** and **The Claim of Salt**
+require tier-five victories over the Last Mason at the Last Waystone and the
+Flood-Tithe Queen at the Queen's Ford. **A Crown Without a King** is a
+six-part finale: seal the Sepulchral Sanctum and its Choir, return alive, then
+enter the Empty Throne, defeat the Verdigris Usurper, and make one final
+living return.
+
+Only that twenty-third return seals the House campaign and grants its first
+consumable charted tablet. Quest snapshots publish all six act names and exact
+act progress so clients never infer chapter boundaries. A later Scion born
+into a sealed House inherits all 23 campaign quest points, completed Chronicle
+record, and endgame access; succession cannot strand the reserved passive-tree
+budget on a fallen predecessor. Pre-expansion Houses already carrying the
+House-level `campaignComplete` seal are treated as completed Houses and receive
+the complete inherited campaign budget rather than losing Wayfinder access.
 
 ## Wayfinder Mastery
 

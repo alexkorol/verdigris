@@ -39,7 +39,7 @@ cast Thrust/Sweep/WarCry, X takes the nearest/underfoot drop, Z toggles loot
 name labels, I opens the gear pane (Enter or click equips; 1-9 equips from
 the backpack; selected Vesselforge gear shows its active properties and worn
 totals across two fitted Framekit rows), J opens the authoritative Chronicle campaign (including its current
-act and twelve-point total), N enters the charted road from the remote flow, the wheel
+act and twenty-three-point total), N enters the charted road from the remote flow, the wheel
 zooms and Home resets zoom, and F3 toggles the debug overlay. The objective
 strip is mode-aware about extraction: in local play F extracts at the EXIT;
 on the remote owner path you extract by walking onto the EXIT stairs. A
@@ -119,6 +119,8 @@ pane/HUD state.
 native/build/verdigris_client.exe --scenario first-fight   # one scenario
 native/build/verdigris_client.exe --scenario first-session-clarity   # TASK-0153 contracts
 native/build/verdigris_client.exe --scenario deep-roads-campaign     # Act III Framekit evidence
+native/build/verdigris_client.exe --scenario crownless-campaign      # Act IV / 23-point Framekit evidence
+native/build/verdigris_client.exe --scenario verdigris-crown-campaign # Act VI finale at 960x600 + 1366x768
 native/build/verdigris_client.exe --scenario vesselforge-final-implicits # range/speed/pierce evidence
 native/build/verdigris_client.exe --scenario town-vesselforge          # 960x600 + 1366x768 service evidence
 ~~~

@@ -118,8 +118,15 @@
 - Confirm the Deep Roads revisit tier-two Tin, Salt, Chalk, and Copper in that
   order and name the Quarry Saint, Brine Widow, Ossuary Bell, and Cinder Judge.
   Each journal rite must advance only after exact entry, Warden defeat, and a
-  living return; only the Cinder return seals twelve points and grants the
-  first charted tablet.
+  living return; the Cinder return must open Act IV at twelve points without
+  granting a tablet.
+- Continue through tier-three Crownless Marches and tier-four War of Claimants.
+  Confirm each road chart preserves parent gates, real depth scaling, and its
+  canonical Warden name. Act VI must open at twenty points.
+- Complete the tier-five Iron and Salt claims, then verify `A Crown Without a
+  King` retains its Chalk return at objective 4/6 before sending the Scion to
+  Copper. Only the Verdigris Usurper's defeat followed by a living return may
+  seal 23/23 and grant the first charted tablet.
 - With eight or more completed deeds, confirm the left Chronicle rail remains
   inside Framekit. Once history exceeds nine visible rows it must collapse the
   oldest entries into a truthful `EARLIER DEEDS` summary rather than clipping.
