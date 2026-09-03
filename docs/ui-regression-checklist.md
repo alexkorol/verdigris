@@ -3,9 +3,9 @@
 ## WIZARD Framekit Raster Contract
 
 - Build from the repository root and confirm the Framekit verifier reports 99
-  flagship rasters and 11/11 required runtime assets. Removing or changing any
+  flagship rasters and 15/15 required runtime assets. Removing or changing any
   frozen file must fail the build before gameplay checks begin.
-- In town and on a road, confirm the normal HUD reports `WIZARD Framekit 11/11`.
+- In town and on a road, confirm the normal HUD reports `WIZARD Framekit 15/15`.
   The life/resource orbs must carry the asymmetric statue chrome, all four
   action wells must show their authored medallions, and the bottom XP fill must
   sit inside the long brass rail without overlapping either orb.

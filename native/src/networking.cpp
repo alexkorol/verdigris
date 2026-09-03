@@ -3761,11 +3761,16 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
           }
         }
       }
-      // Relic circulation (D-106): an elite slain by a living scion returns
-      // one circulating House heirloom to the floor where it fell.
+      // Relic circulation (D-106): a rare guardian slain by a living Scion
+      // returns one circulating House heirloom to the floor where it fell.
+      // Wardens use the stronger `boss` rarity rather than the literal
+      // `elite` tag; excluding them made a successor kill the named objective
+      // repeatedly while the promised heirloom remained unreachable.
       {
         for (const auto& monster : world_->monsters()) {
-          if (monster.uuid != event.target_id || monster.rarity != "elite") continue;
+          if (monster.uuid != event.target_id ||
+              (monster.rarity != "elite" && !monster.boss))
+            continue;
           CirculatingRelic relic; bool found = false;
           { std::lock_guard<std::mutex> pool_lock(circulation_mutex());
             auto& pool = circulation_pool();

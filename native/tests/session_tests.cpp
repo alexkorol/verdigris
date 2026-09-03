@@ -1408,7 +1408,7 @@ bool gateb_sweep_until_fallen(LoopbackClient& client, const std::string& scion_i
 // circle using only the monster:telegraph payload every client receives,
 // follow that exact actor through monster:moved updates, and withdraw at low
 // visible health through party:returnToTown + fountain heal + a fresh delve.
-// Stops when the slain elite surfaces the circulating heirloom (message or
+// Stops when the slain rare guardian surfaces the circulating heirloom (message or
 // relic ground entry).
 bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
                                      const std::string& relic_uuid,
@@ -1491,6 +1491,7 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
   std::string elite_id;
   int elite_x = -1, elite_y = -1;
   bool relic_surfaced = false;
+  bool guardian_resolution_pending = false;
   auto slam_clear_at = never;
   int slam_x = 0, slam_y = 0, slam_radius = 0;
   auto heartbeat_at = now() + std::chrono::seconds(10);
@@ -1522,12 +1523,16 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
             // combat:hit envelopes with died=true; count each fallen target
             // once by its id.
             const std::string fallen_id = gateb_str(line.env.data, "targetId");
+            const std::string fallen_name =
+                gateb_str(line.env.data, "targetName");
             if (fallen_id != last_counted_kill_id) {
               last_counted_kill_id = fallen_id;
               ++*kills;
               std::printf("note: hunt kill #%d (%s)\n", *kills,
-                          gateb_str(line.env.data, "targetName").c_str());
+                          fallen_name.c_str());
             }
+            if (fallen_name.find("Warden") != std::string::npos)
+              guardian_resolution_pending = true;
             last_outgoing = never;
             // A trash kill ends that local exchange and lets the sweep
             // continue. Preserve recent incoming pressure only when the
@@ -1578,7 +1583,16 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
          now() - last_incoming >= std::chrono::seconds(2))) {
       return true;
     }
-    if (view.hp >= 0 && view.hp <= 45) {
+    if (guardian_resolution_pending) {
+      // The killing combat packet can reach the client one server flush ahead
+      // of the relic message/ground frame. Drain that authoritative resolution
+      // before a low-health retreat retires the exact floor and skips the drop.
+      guardian_resolution_pending = false;
+      std::this_thread::sleep_for(std::chrono::milliseconds(75));
+      client.service();
+      continue;
+    }
+    if (!relic_surfaced && view.hp >= 0 && view.hp <= 45) {
       std::printf("note: hunt withdraws at hp=%d for a fountain heal\n",
                   view.hp);
       if (!retreat_heal_redelve()) {
@@ -2092,7 +2106,7 @@ void gate_b_chronicles_reconnect_journey() {
         });
     check(worn, "gate-b: heir equips the fresh sword");
 
-    // 8) Recover the EXACT relic: slay the floor's elite so the heirloom
+    // 8) Recover the EXACT relic: slay the floor's rare guardian so the heirloom
     // surfaces, walk to it, and take it underfoot.
     mark = client.mark();
     JV::Object solo2;
@@ -2111,7 +2125,8 @@ void gate_b_chronicles_reconnect_journey() {
     client.view().player_died_hit = false;
     const bool surfaced =
         gateb_hunt_until_relic_surfaces(client, relic_uuid, 420000, &kills);
-    check(surfaced, "gate-b: slain elite surfaces the circulating heirloom");
+    check(surfaced,
+          "gate-b: slain rare guardian surfaces the circulating heirloom");
     if (!surfaced) {
       std::printf(
           "note: recovery leg could not complete; successor/reconnect "

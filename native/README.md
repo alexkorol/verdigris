@@ -56,7 +56,9 @@ The native client ships a frozen copy of WIZARD Framekit 2.0's complete
 Production panes use the authored marble-and-brass panel, the combat HUD uses
 the statue orb chrome and XP rail, objective/status chips use cropped controls,
 hover information uses the tooltip frame, and all four native actions use
-WIZARD medallions. `native/build.ps1` verifies the frozen aggregate hash,
+WIZARD medallions. The House/Scion front door adds the authored laurel,
+knocker, keyhole, and naming field instead of recreating those motifs in
+vector paint. `native/build.ps1` verifies the frozen aggregate hash,
 byte count, layout sidecar, foundational slices, and every required runtime
 asset before tests or scenarios can run; missing art remains fail-visible and
 falls back to the vector skin.

@@ -193,6 +193,10 @@ struct BillboardAssets {
   SpriteBitmap fk_skill_sweep;
   SpriteBitmap fk_skill_warcry;
   SpriteBitmap fk_button;
+  SpriteBitmap fk_chronicle_keyhole;
+  SpriteBitmap fk_chronicle_knocker;
+  SpriteBitmap fk_chronicle_laurel;
+  SpriteBitmap fk_chronicle_input;
   std::unordered_map<std::string, SpriteBitmap> item_art;
   std::string root;
   std::string status = "art: loading";
@@ -223,6 +227,10 @@ struct BillboardAssets {
     fk_skill_sweep.reset();
     fk_skill_warcry.reset();
     fk_button.reset();
+    fk_chronicle_keyhole.reset();
+    fk_chronicle_knocker.reset();
+    fk_chronicle_laurel.reset();
+    fk_chronicle_input.reset();
     for (auto& entry : item_art) entry.second.reset();
     if (gdiplus_shutdown && gdiplus_token) gdiplus_shutdown(gdiplus_token);
     if (gdiplus_module) FreeLibrary(gdiplus_module);
@@ -1047,20 +1055,26 @@ void load_framekit_assets(BillboardAssets& assets) {
     load_sprite(assets, game + "med_star.png", assets.fk_skill_sweep);
     load_sprite(assets, game + "med_bull.png", assets.fk_skill_warcry);
     load_sprite(assets, game + "btn_primary.png", assets.fk_button);
+    load_sprite(assets, game + "keyhole.png", assets.fk_chronicle_keyhole);
+    load_sprite(assets, game + "knocker.png", assets.fk_chronicle_knocker);
+    load_sprite(assets, game + "laurel_sun.png", assets.fk_chronicle_laurel);
+    load_sprite(assets, game + "input_field.png", assets.fk_chronicle_input);
     const SpriteBitmap* runtime[] = {
         &assets.fk_panel_ornate, &assets.fk_banner,
         &assets.fk_tooltip,      &assets.fk_xp_rail,
         &assets.fk_orb_life,     &assets.fk_orb_resource,
         &assets.fk_skill_strike, &assets.fk_skill_thrust,
         &assets.fk_skill_sweep,  &assets.fk_skill_warcry,
-        &assets.fk_button,
+        &assets.fk_button,       &assets.fk_chronicle_keyhole,
+        &assets.fk_chronicle_knocker, &assets.fk_chronicle_laurel,
+        &assets.fk_chronicle_input,
     };
     int ready = 0;
     for (const SpriteBitmap* sprite : runtime)
       if (sprite->ready()) ++ready;
     assets.framekit_status = "art: WIZARD Framekit " +
-                             std::to_string(ready) + "/11";
-    if (ready != 11) assets.framekit_status += " (vector fallback active)";
+                             std::to_string(ready) + "/15";
+    if (ready != 15) assets.framekit_status += " (vector fallback active)";
     // Item art: server item id -> WIZARD sprite. Unmapped ids fall back to
     // the drawn cell; never map art that misrepresents the item.
     static constexpr struct { const char* item_id; const char* file; } kItemArt[] = {
@@ -5093,11 +5107,28 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
     SelectObject(dc, old_pen);
     DeleteObject(pen);
   };
+  auto chronicle_raster = [&](const SpriteBitmap& sprite, const RECT& rect,
+                              const char* label, BYTE alpha = 255) {
+    if (!draw_framekit_sprite(state.billboards, dc, sprite, rect, alpha))
+      return false;
+    rl.push_back({render::Op::Chronicles, static_cast<double>(rect.left),
+                  static_cast<double>(rect.top), 0.0, 0,
+                  std::string("framekit-raster:") + label});
+    return true;
+  };
 
   put_text(skin::font_title(), skin::kVerdigris, canvas_left, header_top,
            "V E R D I G R I S");
   put_text(skin::font_small(), skin::kGold, canvas_left,
            header_top + 31 * door_scale, "CHRONICLES  /  HOUSE & SCION");
+  const int laurel_w = 62 * door_scale;
+  const int laurel_h = 49 * door_scale;
+  RECT laurel{canvas_left + canvas_w / 2 - laurel_w - 8 * door_scale,
+              header_top - 3 * door_scale,
+              canvas_left + canvas_w / 2 - 8 * door_scale,
+              header_top - 3 * door_scale + laurel_h};
+  (void)chronicle_raster(state.billboards.fk_chronicle_laurel, laurel,
+                         "chronicle-laurel", 230);
   std::string account = "Opening the chronicles...";
   if (!state.session || state.session->connection_state() ==
                             verdigris::client::ConnectionState::Disconnected)
@@ -5140,14 +5171,19 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
   if (!ledger_house) {
     const int seal_x = (house_pane.left + house_pane.right) / 2;
     const int seal_y = house_pane.top + 150 * door_scale;
-    fill_ellipse(dc, seal_x, seal_y, 54 * door_scale, 54 * door_scale,
-                 RGB(18, 35, 29));
-    ring_ellipse(dc, seal_x, seal_y, 54 * door_scale, 54 * door_scale,
-                 skin::kVerdigris, 2 * door_scale);
-    ring_ellipse(dc, seal_x, seal_y, 41 * door_scale, 41 * door_scale,
-                 skin::kGold, 1 * door_scale);
-    put_text(skin::font_title(), skin::kGold, seal_x - 14 * door_scale,
-             seal_y - 17 * door_scale, "V");
+    RECT lock{seal_x - 54 * door_scale, seal_y - 56 * door_scale,
+              seal_x + 54 * door_scale, seal_y + 56 * door_scale};
+    if (!chronicle_raster(state.billboards.fk_chronicle_keyhole, lock,
+                          "chronicle-keyhole")) {
+      fill_ellipse(dc, seal_x, seal_y, 54 * door_scale, 54 * door_scale,
+                   RGB(18, 35, 29));
+      ring_ellipse(dc, seal_x, seal_y, 54 * door_scale, 54 * door_scale,
+                   skin::kVerdigris, 2 * door_scale);
+      ring_ellipse(dc, seal_x, seal_y, 41 * door_scale, 41 * door_scale,
+                   skin::kGold, 1 * door_scale);
+      put_text(skin::font_title(), skin::kGold, seal_x - 14 * door_scale,
+               seal_y - 17 * door_scale, "V");
+    }
     RECT empty_copy{house_pane.left + 34 * door_scale,
                     seal_y + 76 * door_scale,
                     house_pane.right - 34 * door_scale,
@@ -5160,13 +5196,19 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
   } else {
     const int seal_x = house_pane.left + 54 * door_scale;
     const int seal_y = house_pane.top + 82 * door_scale;
-    fill_ellipse(dc, seal_x, seal_y, 30 * door_scale, 30 * door_scale,
-                 RGB(20, 42, 33));
-    ring_ellipse(dc, seal_x, seal_y, 30 * door_scale, 30 * door_scale,
-                 skin::kGold, 2 * door_scale);
-    put_text(skin::font_title(), skin::kGold, seal_x - 9 * door_scale,
-             seal_y - 17 * door_scale,
-             ledger_house->name.empty() ? "V" : ledger_house->name.substr(0, 1));
+    RECT knocker{seal_x - 31 * door_scale, seal_y - 33 * door_scale,
+                 seal_x + 31 * door_scale, seal_y + 33 * door_scale};
+    if (!chronicle_raster(state.billboards.fk_chronicle_knocker, knocker,
+                          "chronicle-knocker")) {
+      fill_ellipse(dc, seal_x, seal_y, 30 * door_scale, 30 * door_scale,
+                   RGB(20, 42, 33));
+      ring_ellipse(dc, seal_x, seal_y, 30 * door_scale, 30 * door_scale,
+                   skin::kGold, 2 * door_scale);
+      put_text(skin::font_title(), skin::kGold, seal_x - 9 * door_scale,
+               seal_y - 17 * door_scale,
+               ledger_house->name.empty() ? "V"
+                                          : ledger_house->name.substr(0, 1));
+    }
     put_text(skin::font_title(), skin::kGold,
              house_pane.left + 96 * door_scale,
              house_pane.top + 57 * door_scale,
@@ -5445,7 +5487,9 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
 
     RECT input{modal.left + 24 * door_scale, modal.top + 72 * door_scale,
                modal.right - 24 * door_scale, modal.top + 112 * door_scale};
-    skin::slot(dc, input, skin::kVerdigris, true);
+    if (!chronicle_raster(state.billboards.fk_chronicle_input, input,
+                          "chronicle-input"))
+      skin::slot(dc, input, skin::kVerdigris, true);
     state.hud_rect_trace.push_back(
         {"chronicles-name-input",
          {input.left, input.top, input.right - input.left,
@@ -10545,14 +10589,17 @@ int scenario_character_inventory_diptych() {
       &state.billboards.fk_orb_life,     &state.billboards.fk_orb_resource,
       &state.billboards.fk_skill_strike, &state.billboards.fk_skill_thrust,
       &state.billboards.fk_skill_sweep,  &state.billboards.fk_skill_warcry,
-      &state.billboards.fk_button,
+      &state.billboards.fk_button,       &state.billboards.fk_chronicle_keyhole,
+      &state.billboards.fk_chronicle_knocker,
+      &state.billboards.fk_chronicle_laurel,
+      &state.billboards.fk_chronicle_input,
   };
   int runtime_ready = 0;
   for (const SpriteBitmap* sprite : runtime_framekit)
     if (sprite->ready()) ++runtime_ready;
-  scenario_check(runtime_ready == 11 &&
+  scenario_check(runtime_ready == 15 &&
                      state.billboards.framekit_status ==
-                         "art: WIZARD Framekit 11/11",
+                         "art: WIZARD Framekit 15/15",
                  "character-inventory: all authored WIZARD runtime rasters decoded");
   reference_present(state, 1366, 768, "");
   bool objective_banner_drawn = false;
@@ -11002,6 +11049,11 @@ class ScenarioLineageSession final
     }
   }
 
+  void clear_houses() {
+    model_.chronicle.houses.clear();
+    model_.chronicle.active_house_id.clear();
+  }
+
   bool submitted = false;
   verdigris::client::ClientCommand last_command{};
 
@@ -11067,7 +11119,25 @@ int scenario_chronicles_lineage_ui() {
                        render_list_has(state, render::Op::Chronicles,
                                        "mastery:23/64"),
                    "chronicles-lineage-ui: House, living, remembered, and Wayfinder state render");
+    scenario_check(
+        state.billboards.framekit_status == "art: WIZARD Framekit 15/15" &&
+            render_list_has(state, render::Op::Chronicles,
+                            "framekit-raster:chronicle-laurel") &&
+            render_list_has(state, render::Op::Chronicles,
+                            "framekit-raster:chronicle-knocker"),
+        "chronicles-lineage-ui: WIZARD laurel and House knocker draw at runtime");
   }
+
+
+  state.chronicles_naming = ChronicleNamingMode::Scion;
+  const std::string naming_capture =
+      capture_dir + "\\chronicles-lineage-naming-1366x768.png";
+  scenario_check(reference_present(state, 1366, 768, naming_capture),
+                 "chronicles-lineage-ui: raster naming ceremony captured");
+  scenario_check(render_list_has(state, render::Op::Chronicles,
+                                 "framekit-raster:chronicle-input"),
+                 "chronicles-lineage-ui: WIZARD input field draws under live text");
+  state.chronicles_naming = ChronicleNamingMode::None;
 
   state.chronicles_selected = 0;
   handle_chronicles_key(state, VK_DOWN);
@@ -11100,6 +11170,15 @@ int scenario_chronicles_lineage_ui() {
                      !state.chronicles_action_hits.empty() &&
                      state.chronicles_action_hits.back().index == 10,
                  "chronicles-lineage-ui: a large lineage pages around the selected action");
+  scenario->clear_houses();
+  state.chronicles_selected = 0;
+  const std::string unfounded_capture =
+      capture_dir + "\\chronicles-unfounded-960x600.png";
+  scenario_check(reference_present(state, 960, 600, unfounded_capture),
+                 "chronicles-lineage-ui: unfounded House lock captured");
+  scenario_check(render_list_has(state, render::Op::Chronicles,
+                                 "framekit-raster:chronicle-keyhole"),
+                 "chronicles-lineage-ui: an unfounded House shows the WIZARD keyhole");
   return 0;
 }
 

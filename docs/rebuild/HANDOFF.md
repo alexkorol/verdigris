@@ -1,12 +1,33 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - WIZARD Chronicle seals and naming field
+
+- Extended the production Framekit contract from 11 to 15 decoded rasters.
+  The House/Scion front door now uses WIZARD's laurel crest, lion knocker,
+  locked-House keyhole, and authored input field while preserving the existing
+  vector fallback when Windows cannot decode or blend the pack.
+- Runtime render facts distinguish successful raster draws from load attempts.
+  `chronicles-lineage-ui` proves the crest and knocker at both 960x600 and
+  1366x768, opens and captures the live naming ceremony, then clears the
+  fixture's House roster to prove the keyhole path.
+- Tightened the same owner journey's gameplay contract: fallen House relics
+  now resurface from either an elite or a named Warden kill. Wardens carry the
+  stronger `boss` rarity, so excluding them could leave a successor clearing
+  the promised objective without recovering the heirloom.
+- The exact binding native gate passes the 99-raster verifier, every
+  unit/session suite, the mortal succession and repaired Warden-heirloom
+  journey, and all 29 client scenarios. Inspected established-House, naming,
+  and unfounded-House evidence is isolated under
+  `native/build/goal-captures-chronicle-raster-release/`; the 3440x1440 frame
+  budget is 10.3 ms average against the 40 ms ceiling.
+
 ## 2026-09-03 - complete WIZARD Framekit raster runtime
 
 - Froze WIZARD Framekit 2.0's complete 99-image, 7.9 MB flagship `game/assets`
   pack plus its generated layout at source commit
   `00be6a0fe4ecfbd0b7862249012308268f92f0d7`. The native manifest owns an
   aggregate content hash, exact count/bytes, layout hash, and the dimensions of
-  eleven production-critical runtime images.
+  fifteen production-critical runtime images.
 - The binding Windows build now verifies that complete pack before running any
   test. A corrupt foundational slice, missing flagship raster, aggregate drift,
   bad layout, or missing/wrong-sized runtime component fails closed.
@@ -16,7 +37,7 @@
   winged objective backing, status control, and hover frame; every call keeps
   the prior vector treatment as an explicit decoder fallback.
 - Scenario evidence is fail-visible rather than inferred from a load attempt:
-  `character-inventory-diptych` requires all 11 decodes and proves the panel,
+  `character-inventory-diptych` requires all 15 decodes and proves the panel,
   both orbs, rail, controls, and four medallions actually drew at 960x600 and
   1366x768; `hud-information` separately proves the raster tooltip path.
 - The exact binding native gate passes the asset verifier, every unit/session

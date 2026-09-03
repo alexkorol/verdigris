@@ -86,7 +86,11 @@
       { "id": "skill-thrust", "path": "game/chev_single.png", "dimensions": { "w": 103, "h": 112 } },
       { "id": "skill-sweep", "path": "game/med_star.png", "dimensions": { "w": 129, "h": 128 } },
       { "id": "skill-warcry", "path": "game/med_bull.png", "dimensions": { "w": 146, "h": 151 } },
-      { "id": "button-primary", "path": "game/btn_primary.png", "dimensions": { "w": 138, "h": 55 } }
+      { "id": "button-primary", "path": "game/btn_primary.png", "dimensions": { "w": 138, "h": 55 } },
+      { "id": "chronicle-keyhole", "path": "game/keyhole.png", "dimensions": { "w": 136, "h": 142 } },
+      { "id": "chronicle-knocker", "path": "game/knocker.png", "dimensions": { "w": 138, "h": 146 } },
+      { "id": "chronicle-laurel", "path": "game/laurel_sun.png", "dimensions": { "w": 156, "h": 123 } },
+      { "id": "chronicle-input", "path": "game/input_field.png", "dimensions": { "w": 162, "h": 46 } }
     ]
   }
 }
