@@ -114,6 +114,14 @@ The character sheet now reuses the generated player sprite for its portrait
 and each equipped item's real atlas frame; generic slot glyphs remain only for
 empty equipment positions.
 
+The Chronicles front door now uses the same Framekit visual language as the
+in-world services. A persistent House ledger, living Scion register, crypt
+memory, charted-expedition count, and Wayfinder mastery sit beside one
+keyboard-and-pointer-complete admission rail. House founding and classless
+Scion naming still cross the authoritative Chronicles commands; safe outings,
+mortal-oath admissions, succession, and heirloom recovery remain one coherent
+lineage journey rather than disconnected menu shortcuts.
+
 The delaford-era resource loops (ore mining, furnace/anvil smithing) are
 retired: Verdigris is an ARPG, and crafting arrives through the Houses meta
 systems instead. Tamar now provides the first dedicated Vesselforge service:

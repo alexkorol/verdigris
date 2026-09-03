@@ -1,5 +1,31 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - Framekit House and Scion front door
+
+- Replaced the Chronicles text stack with a responsive two-pane Framekit
+  lineage surface. The House ledger now presents the permanent lineage,
+  living and remembered counts, completed charted expeditions, living Scion
+  cards, the latest crypt record, and the House's 64-objective Wayfinder
+  mastery progress without inventing client-side authority.
+- The admission rail turns the existing server-authored House founding,
+  Scion creation, set-out/succession, and mortal-oath commands into selectable
+  cards. Arrow keys, Enter, legacy direct shortcuts, pointer hover, and click
+  all resolve through the same deterministic action list and exact hit bounds;
+  large lineages page around the active selection instead of clipping their
+  later Scions, creation command, or oath control.
+- Kept the author-written naming ceremony on the real Framekit path and
+  preserved the complete Gate-B journey: found House, name a classless Scion,
+  take the mortal oath, die, name a successor, recover the heirloom, and
+  reconnect into the same lineage.
+- Added `chronicles-lineage-ui`, a production-painter scenario that captures
+  960x600 and 1366x768 and asserts pane separation, bounded actions, House,
+  living/crypt/mastery state, directional selection, pointer oath choice, and
+  the oath-bearing server admission command. Inspected evidence lives under
+  `native/build/goal-captures-chronicles-lineage-final/`. The exact binding
+  native build, complete test set, Gate-B succession journey, and all 26
+  client scenarios pass; the 3440x1440 frame budget is 9.9 ms average against
+  the 40 ms ceiling.
+
 ## 2026-09-03 - authoritative Framekit loadout and spatial backpack
 
 - Replaced the native client's inferred single-weapon equipment view with an

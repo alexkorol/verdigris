@@ -551,6 +551,16 @@ struct ClientState {
   std::string chronicles_name_error;
   bool chronicles_ignore_next_char = false;
   std::vector<ChronicleAction> chronicles_menu;
+  // The front door is a real selectable surface, not a painted shortcut
+  // legend.  The cursor and exact card bounds are rebuilt from the
+  // authoritative Chronicle action list every frame, giving mouse and
+  // keyboard the same admission path.
+  struct ChronicleActionHit {
+    RECT rect{};
+    std::size_t index = 0;
+  };
+  std::size_t chronicles_selected = 0;
+  std::vector<ChronicleActionHit> chronicles_action_hits;
   std::string relic_toast;
   int relic_toast_ticks = 0;
   std::unordered_map<std::string, std::string> known_crypt_status;
@@ -4500,21 +4510,48 @@ void submit_chronicle_action(ClientState& state, const ChronicleAction& action) 
 void handle_chronicles_key(ClientState& state, WPARAM wparam) {
   if (state.chronicles_naming != ChronicleNamingMode::None) return;
   state.chronicles_menu = chronicle_actions(state);
-  for (const auto& action : state.chronicles_menu) {
+  if (state.chronicles_menu.empty()) return;
+  state.chronicles_selected = std::min(
+      state.chronicles_selected, state.chronicles_menu.size() - 1);
+  if (wparam == VK_UP) {
+    if (state.chronicles_selected > 0) --state.chronicles_selected;
+    return;
+  }
+  if (wparam == VK_DOWN) {
+    if (state.chronicles_selected + 1 < state.chronicles_menu.size())
+      ++state.chronicles_selected;
+    return;
+  }
+  for (std::size_t index = 0; index < state.chronicles_menu.size(); ++index) {
+    const auto& action = state.chronicles_menu[index];
     if (action.key.size() == 1 && wparam == static_cast<WPARAM>(action.key[0])) {
+      state.chronicles_selected = index;
       submit_chronicle_action(state, action);
       if (state.chronicles_naming != ChronicleNamingMode::None)
         state.chronicles_ignore_next_char = true;
       return;
     }
   }
-  if (wparam == VK_RETURN && !state.chronicles_menu.empty()) {
-    for (const auto& action : state.chronicles_menu)
-      if (action.command == "set-out" || action.command == "select-scion") {
-        submit_chronicle_action(state, action);
-        return;
-      }
+  if (wparam == VK_RETURN) {
+    submit_chronicle_action(
+        state, state.chronicles_menu[state.chronicles_selected]);
   }
+}
+
+bool activate_chronicle_at(ClientState& state, int x, int y) {
+  if (state.screen != Screen::Chronicles ||
+      state.chronicles_naming != ChronicleNamingMode::None)
+    return false;
+  state.chronicles_menu = chronicle_actions(state);
+  for (const auto& hit : state.chronicles_action_hits) {
+    if (x < hit.rect.left || x >= hit.rect.right || y < hit.rect.top ||
+        y >= hit.rect.bottom || hit.index >= state.chronicles_menu.size())
+      continue;
+    state.chronicles_selected = hit.index;
+    submit_chronicle_action(state, state.chronicles_menu[hit.index]);
+    return true;
+  }
+  return false;
 }
 
 // ── TASK-0161: contained capture-root isolation ─────────────────────────
@@ -4711,119 +4748,391 @@ std::string progression_capture_dir() {
 void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
                                  render::List& rl) {
   const auto& model = state.session ? state.session->model() : verdigris::client::ClientModel{};
+  state.chronicles_action_hits.clear();
   RECT panel{0, 0, bounds.right, bounds.bottom};
   HBRUSH backdrop = CreateSolidBrush(RGB(10, 14, 12));
   FillRect(dc, &panel, backdrop);
   DeleteObject(backdrop);
-
-  struct Line {
-    std::string label;
-    std::string text;
-    COLORREF color;
-    bool accent;
-  };
-  std::vector<Line> lines;
-  lines.push_back({"title", "V E R D I G R I S   C H R O N I C L E S",
-                   RGB(120, 214, 168), true});
-  {
-    std::string status_line;
-    if (!state.session ||
-        state.session->connection_state() ==
-            verdigris::client::ConnectionState::Disconnected) {
-      status_line = "The chronicles lie closed - connection lost.";
-    } else if (!model.chronicle.present) {
-      status_line = "Opening the chronicles...";
-    } else {
-      status_line = "Account of " +
-                    (model.chronicle.account_name.empty() ? std::string("the guest")
-                                                          : model.chronicle.account_name);
-    }
-    lines.push_back({"account", status_line, RGB(185, 198, 188), false});
-  }
-
-  if (!model.chronicle.present || model.chronicle.houses.empty()) {
-    lines.push_back({"prompt", "No House stands in these pages yet.",
-                     RGB(230, 235, 220), false});
-  } else {
-    for (const auto& house : model.chronicle.houses) {
-      std::string house_line = house_prefixed_name(house.name);
-      if (house.campaign_complete) {
-        house_line += " - charted roads open, " +
-                      std::to_string(house.endgame_maps_completed) +
-                      " clears, " +
-                      std::to_string(house.endgame_masteries) +
-                      "/64 mastery";
-      }
-      lines.push_back({"house " + house.name, house_line,
-                       RGB(239, 208, 116), false});
-      for (const auto& scion : house.scions) {
-        std::string row = "  Scion " + scion.name + " - level " +
-                          std::to_string(scion.level) +
-                          (scion.mortal ? " (mortal)" : "");
-        lines.push_back({"scion " + scion.id, row, RGB(140, 208, 172), false});
-      }
-      for (const auto& entry : house.crypt) {
-        std::string relic = "rests unrecorded";
-        if (!entry.relic_status.empty()) {
-          relic = "heirloom " + entry.relic_status;
-          if (entry.relic_count > 0)
-            relic += " (" + std::to_string(entry.relic_count) + " to circulation)";
-        }
-        lines.push_back({"crypt " + entry.id,
-                         "  In the crypt: " + entry.name + " - " + relic,
-                         RGB(150, 160, 170), false});
-      }
-    }
-  }
-  if (!model.chronicle.fallen.name.empty()) {
-    lines.push_back(
-        {"fallen:" + model.chronicle.fallen.scion_id,
-         "The chronicle records the fall of " + model.chronicle.fallen.name +
-             " (level " + std::to_string(model.chronicle.fallen.level) + ").",
-         RGB(214, 92, 72), false});
-  }
-
-  state.chronicles_menu = chronicle_actions(state);
-  for (const auto& action : state.chronicles_menu) {
-    lines.push_back({"action:" + action.command +
-                         (action.arg.empty() ? "" : ":" + action.arg),
-                     "[" + action.key + "] " + action.label, RGB(239, 208, 116), false});
-  }
-  lines.push_back({state.chronicles_oath ? "oath:on" : "oath:off",
-                   std::string("Oath field: ") +
-                       (state.chronicles_oath ? "mortal - death is final"
-                                              : "soft - wounds can be recovered"),
-                   RGB(185, 198, 188), false});
-
   SetBkMode(dc, TRANSPARENT);
   const int door_scale = hud_scale(static_cast<int>(bounds.bottom));
   skin::set_ui_scale(door_scale);
-  const int left =
-      std::max(24, (static_cast<int>(bounds.right) - 620 * door_scale) / 2);
-  int block_height = 24 * door_scale;
-  for (const auto& line : lines)
-    block_height += (line.accent ? 44 : 26) * door_scale;
-  // Vertically centred chronicle page: a framed panel behind the text block
-  // so the front door reads as a bound ledger, not text floating on black.
-  int y = std::max(64 * door_scale,
-                   (static_cast<int>(bounds.bottom) - block_height) / 2);
-  {
-    RECT page{left - 36 * door_scale, y - 28 * door_scale,
-              left + 656 * door_scale,
-              std::min(static_cast<int>(bounds.bottom) - 32, y + block_height)};
-    skin::panel(dc, page, skin::kPanelBorder, 250, 10.0f);
-  }
-  for (const auto& line : lines) {
-    rl.push_back({render::Op::Chronicles, static_cast<double>(left),
-                  static_cast<double>(y), 0.0, 0, line.label});
-    HGDIOBJ old_font = SelectObject(
-        dc, line.accent ? skin::font_title() : skin::font_heading());
-    SetTextColor(dc, line.color);
-    TextOutA(dc, left, y, line.text.c_str(), static_cast<int>(line.text.size()));
+
+  // A faint ruled vellum field gives the full-screen owner surface depth
+  // while keeping every actionable element inside WIZARD Framekit chrome.
+  for (int y = 12 * door_scale; y < bounds.bottom; y += 34 * door_scale)
+    draw_line(dc, 0, y, bounds.right, y, RGB(15, 24, 20), 1);
+  for (int x = -bounds.bottom; x < bounds.right; x += 180 * door_scale)
+    draw_line(dc, x, bounds.bottom, x + bounds.bottom, 0, RGB(13, 21, 18), 1);
+
+  const int margin = 18 * door_scale;
+  const int available_w =
+      (std::max)(1, static_cast<int>(bounds.right) - margin * 2);
+  const int canvas_w = std::min(available_w, 1360 * door_scale);
+  const int canvas_left = (bounds.right - canvas_w) / 2;
+  const int header_top = 18 * door_scale;
+  const int content_top = 82 * door_scale;
+  const int content_bottom = bounds.bottom - 42 * door_scale;
+  const int gap = 14 * door_scale;
+  const int left_w = std::clamp(canvas_w * 42 / 100,
+                                310 * door_scale, 520 * door_scale);
+  RECT house_pane{canvas_left, content_top, canvas_left + left_w,
+                  content_bottom};
+  RECT action_pane{house_pane.right + gap, content_top,
+                   canvas_left + canvas_w, content_bottom};
+
+  auto put_text = [&](HFONT font, COLORREF color, int x, int y,
+                      const std::string& text) {
+    HGDIOBJ old_font = SelectObject(dc, font);
+    SetTextColor(dc, color);
+    TextOutA(dc, x, y, text.c_str(), static_cast<int>(text.size()));
     SelectObject(dc, old_font);
-    y += (line.accent ? 44 : 26) * door_scale;
-    if (y > bounds.bottom - 40) break;
+  };
+  auto put_wrapped = [&](HFONT font, COLORREF color, RECT rect,
+                         const std::string& text, UINT format) {
+    HGDIOBJ old_font = SelectObject(dc, font);
+    SetTextColor(dc, color);
+    DrawTextA(dc, text.c_str(), static_cast<int>(text.size()), &rect,
+              format | DT_NOPREFIX);
+    SelectObject(dc, old_font);
+  };
+  auto frame = [&](const RECT& rect, COLORREF accent) {
+    if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel,
+                            rect))
+      skin::panel(dc, rect, accent, 248, 10.0f);
+  };
+  auto outlined = [&](const RECT& rect, COLORREF color, int width) {
+    HPEN pen = CreatePen(PS_SOLID, width, color);
+    HGDIOBJ old_pen = SelectObject(dc, pen);
+    HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+    Rectangle(dc, rect.left, rect.top, rect.right, rect.bottom);
+    SelectObject(dc, old_brush);
+    SelectObject(dc, old_pen);
+    DeleteObject(pen);
+  };
+
+  put_text(skin::font_title(), skin::kVerdigris, canvas_left, header_top,
+           "V E R D I G R I S");
+  put_text(skin::font_small(), skin::kGold, canvas_left,
+           header_top + 31 * door_scale, "CHRONICLES  /  HOUSE & SCION");
+  std::string account = "Opening the chronicles...";
+  if (!state.session || state.session->connection_state() ==
+                            verdigris::client::ConnectionState::Disconnected)
+    account = "The chronicles lie closed - connection lost.";
+  else if (model.chronicle.present)
+    account = "ACCOUNT  " +
+              (model.chronicle.account_name.empty() ? std::string("GUEST")
+                                                     : model.chronicle.account_name);
+  RECT account_rect{canvas_left + canvas_w / 2, header_top + 10 * door_scale,
+                    canvas_left + canvas_w - 184 * door_scale,
+                    header_top + 36 * door_scale};
+  put_wrapped(skin::font_small(), skin::kInkDim, account_rect, account,
+              DT_RIGHT | DT_SINGLELINE | DT_VCENTER);
+  rl.push_back({render::Op::Chronicles, static_cast<double>(canvas_left),
+                static_cast<double>(header_top), 0.0, 0, "title"});
+  rl.push_back({render::Op::Chronicles, static_cast<double>(account_rect.left),
+                static_cast<double>(account_rect.top), 0.0, 0, "account"});
+
+  frame(house_pane, skin::kVerdigris);
+  frame(action_pane, skin::kGold);
+  state.hud_rect_trace.push_back(
+      {"chronicles-house-pane", {house_pane.left, house_pane.top,
+                                  house_pane.right - house_pane.left,
+                                  house_pane.bottom - house_pane.top}});
+  state.hud_rect_trace.push_back(
+      {"chronicles-action-pane", {action_pane.left, action_pane.top,
+                                   action_pane.right - action_pane.left,
+                                   action_pane.bottom - action_pane.top}});
+
+  const int inset = 20 * door_scale;
+  put_text(skin::font_small(), skin::kInkDim, house_pane.left + inset,
+           house_pane.top + 16 * door_scale, "HOUSE LEDGER");
+  const verdigris::client::ClientHouseEntry* ledger_house = nullptr;
+  if (!model.chronicle.houses.empty()) {
+    ledger_house = verdigris::client::find_chronicle_house(
+        model.chronicle, model.chronicle.active_house_id);
+    if (!ledger_house) ledger_house = &model.chronicle.houses.front();
   }
+
+  if (!ledger_house) {
+    const int seal_x = (house_pane.left + house_pane.right) / 2;
+    const int seal_y = house_pane.top + 150 * door_scale;
+    fill_ellipse(dc, seal_x, seal_y, 54 * door_scale, 54 * door_scale,
+                 RGB(18, 35, 29));
+    ring_ellipse(dc, seal_x, seal_y, 54 * door_scale, 54 * door_scale,
+                 skin::kVerdigris, 2 * door_scale);
+    ring_ellipse(dc, seal_x, seal_y, 41 * door_scale, 41 * door_scale,
+                 skin::kGold, 1 * door_scale);
+    put_text(skin::font_title(), skin::kGold, seal_x - 14 * door_scale,
+             seal_y - 17 * door_scale, "V");
+    RECT empty_copy{house_pane.left + 34 * door_scale,
+                    seal_y + 76 * door_scale,
+                    house_pane.right - 34 * door_scale,
+                    seal_y + 150 * door_scale};
+    put_wrapped(skin::font_heading(), skin::kInk, empty_copy,
+                "No House stands in these pages. Name the lineage that will own every road, relic, and remembrance.",
+                DT_CENTER | DT_WORDBREAK);
+    rl.push_back({render::Op::Chronicles, static_cast<double>(seal_x),
+                  static_cast<double>(seal_y), 0.0, 0, "prompt"});
+  } else {
+    const int seal_x = house_pane.left + 54 * door_scale;
+    const int seal_y = house_pane.top + 82 * door_scale;
+    fill_ellipse(dc, seal_x, seal_y, 30 * door_scale, 30 * door_scale,
+                 RGB(20, 42, 33));
+    ring_ellipse(dc, seal_x, seal_y, 30 * door_scale, 30 * door_scale,
+                 skin::kGold, 2 * door_scale);
+    put_text(skin::font_title(), skin::kGold, seal_x - 9 * door_scale,
+             seal_y - 17 * door_scale,
+             ledger_house->name.empty() ? "V" : ledger_house->name.substr(0, 1));
+    put_text(skin::font_title(), skin::kGold,
+             house_pane.left + 96 * door_scale,
+             house_pane.top + 57 * door_scale,
+             house_prefixed_name(ledger_house->name));
+    put_text(skin::font_small(), skin::kInkDim,
+             house_pane.left + 96 * door_scale,
+             house_pane.top + 91 * door_scale,
+             ledger_house->campaign_complete ? "THE DEEP ROADS ARE OPEN"
+                                             : "A LINEAGE IN THE MAKING");
+    rl.push_back({render::Op::Chronicles, static_cast<double>(seal_x),
+                  static_cast<double>(seal_y), 0.0, 0,
+                  "house " + ledger_house->name});
+
+    const int metrics_y = house_pane.top + 128 * door_scale;
+    const int metric_gap = 6 * door_scale;
+    const int metric_w =
+        (house_pane.right - house_pane.left - inset * 2 - metric_gap * 2) / 3;
+    struct Metric { const char* name; int value; };
+    const Metric metrics[] = {
+        {"LIVING", static_cast<int>(ledger_house->scions.size())},
+        {"REMEMBERED", static_cast<int>(ledger_house->crypt.size())},
+        {"MAPS", ledger_house->endgame_maps_completed}};
+    for (int i = 0; i < 3; ++i) {
+      RECT metric{house_pane.left + inset + i * (metric_w + metric_gap),
+                  metrics_y,
+                  house_pane.left + inset + i * (metric_w + metric_gap) + metric_w,
+                  metrics_y + 50 * door_scale};
+      skin::slot(dc, metric, i == 2 ? skin::kGold : skin::kVerdigris, false);
+      put_text(skin::font_heading(), skin::kInk, metric.left + 10 * door_scale,
+               metric.top + 7 * door_scale, std::to_string(metrics[i].value));
+      put_text(skin::font_small(), skin::kInkDim, metric.left + 10 * door_scale,
+               metric.top + 29 * door_scale, metrics[i].name);
+    }
+
+    int list_y = metrics_y + 72 * door_scale;
+    put_text(skin::font_small(), skin::kVerdigris, house_pane.left + inset,
+             list_y, "LIVING SCIONS");
+    list_y += 24 * door_scale;
+    const int max_scion_rows = (std::max)(
+        1, (static_cast<int>(house_pane.bottom) - list_y - 92 * door_scale) /
+               (44 * door_scale));
+    const int visible_scions = std::min(
+        static_cast<int>(ledger_house->scions.size()), max_scion_rows);
+    for (int i = 0; i < visible_scions; ++i) {
+      const auto& scion = ledger_house->scions[static_cast<std::size_t>(i)];
+      RECT row{house_pane.left + inset, list_y,
+               house_pane.right - inset, list_y + 38 * door_scale};
+      const bool active = scion.id == model.chronicle.active_scion_id;
+      skin::slot(dc, row, active ? skin::kGold : skin::kVerdigris, active);
+      put_text(skin::font_heading(), active ? skin::kGold : skin::kInk,
+               row.left + 12 * door_scale, row.top + 7 * door_scale,
+               scion.name);
+      std::string standing = "LV " + std::to_string(scion.level) +
+                             (scion.mortal ? "  MORTAL" : "  LIVING");
+      RECT standing_rect{row.left, row.top, row.right - 10 * door_scale,
+                         row.bottom};
+      put_wrapped(skin::font_small(), scion.mortal ? skin::kEmber : skin::kInkDim,
+                  standing_rect, standing, DT_RIGHT | DT_SINGLELINE | DT_VCENTER);
+      rl.push_back({render::Op::Chronicles, static_cast<double>(row.left),
+                    static_cast<double>(row.top), 0.0, i,
+                    "scion " + scion.id});
+      list_y += 44 * door_scale;
+    }
+    if (visible_scions < static_cast<int>(ledger_house->scions.size()))
+      put_text(skin::font_small(), skin::kInkDim, house_pane.left + inset,
+               list_y, "+ " + std::to_string(ledger_house->scions.size() - visible_scions) +
+                           " more in the living register");
+
+    if (ledger_house->campaign_complete || ledger_house->endgame_masteries > 0) {
+      const int mastery_y = house_pane.bottom - 99 * door_scale;
+      put_text(skin::font_small(), skin::kGold, house_pane.left + inset,
+               mastery_y,
+               "WAYFINDER MASTERY  " +
+                   std::to_string(ledger_house->endgame_masteries) + " / 64");
+      RECT mastery_bar{house_pane.left + inset, mastery_y + 22 * door_scale,
+                       house_pane.right - inset,
+                       mastery_y + 30 * door_scale};
+      skin::progress_bar(dc, mastery_bar,
+                         static_cast<double>(ledger_house->endgame_masteries) /
+                             64.0,
+                         skin::kGold, 16);
+      rl.push_back({render::Op::Chronicles,
+                    static_cast<double>(mastery_bar.left),
+                    static_cast<double>(mastery_bar.top), 0.0,
+                    ledger_house->endgame_masteries,
+                    "mastery:" +
+                        std::to_string(ledger_house->endgame_masteries) +
+                        "/64"});
+    }
+
+    if (!model.chronicle.fallen.name.empty()) {
+      RECT fallen{house_pane.left + inset,
+                  house_pane.bottom - 66 * door_scale,
+                  house_pane.right - inset,
+                  house_pane.bottom - 20 * door_scale};
+      skin::slot(dc, fallen, skin::kEmber, true);
+      put_text(skin::font_small(), skin::kEmber, fallen.left + 10 * door_scale,
+               fallen.top + 6 * door_scale, "LAST FALL");
+      put_text(skin::font_heading(), skin::kInk,
+               fallen.left + 10 * door_scale, fallen.top + 22 * door_scale,
+               model.chronicle.fallen.name + "  -  level " +
+                   std::to_string(model.chronicle.fallen.level));
+      rl.push_back({render::Op::Chronicles, static_cast<double>(fallen.left),
+                    static_cast<double>(fallen.top), 0.0, 0,
+                    "fallen:" + model.chronicle.fallen.scion_id});
+      if (!ledger_house->crypt.empty()) {
+        const auto& remembered = ledger_house->crypt.back();
+        rl.push_back({render::Op::Chronicles,
+                      static_cast<double>(fallen.left),
+                      static_cast<double>(fallen.bottom), 0.0, 0,
+                      "crypt " + remembered.id});
+      }
+    } else if (!ledger_house->crypt.empty()) {
+      const auto& remembered = ledger_house->crypt.back();
+      put_text(skin::font_small(), skin::kInkDim, house_pane.left + inset,
+               house_pane.bottom - 40 * door_scale,
+               "CRYPT  " + remembered.name + "  /  " +
+                   (remembered.relic_status.empty() ? std::string("remembered")
+                                                    : remembered.relic_status));
+      rl.push_back({render::Op::Chronicles,
+                    static_cast<double>(house_pane.left + inset),
+                    static_cast<double>(house_pane.bottom - 40 * door_scale),
+                    0.0, 0, "crypt " + remembered.id});
+    }
+  }
+
+  put_text(skin::font_small(), skin::kInkDim, action_pane.left + inset,
+           action_pane.top + 16 * door_scale,
+           ledger_house ? "CHOOSE WHO WALKS" : "BEGIN THE CHRONICLE");
+  put_text(skin::font_heading(), skin::kInk, action_pane.left + inset,
+           action_pane.top + 38 * door_scale,
+           ledger_house ? "Prepare the next expedition"
+                        : "Your House outlives every Scion");
+  RECT intro{action_pane.left + inset, action_pane.top + 66 * door_scale,
+             action_pane.right - inset, action_pane.top + 106 * door_scale};
+  put_wrapped(skin::font_small(), skin::kInkDim, intro,
+              ledger_house ? "Select a living heir, add a new classless Scion, or bind the next journey to the mortal oath."
+                           : "Choose a lineage name. Its stores, roads, relics, and mastery persist when a Scion does not.",
+              DT_WORDBREAK);
+
+  state.chronicles_menu = chronicle_actions(state);
+  if (!state.chronicles_menu.empty())
+    state.chronicles_selected = std::min(
+        state.chronicles_selected, state.chronicles_menu.size() - 1);
+  else
+    state.chronicles_selected = 0;
+  const int action_top = action_pane.top + 118 * door_scale;
+  const int action_bottom = action_pane.bottom - 46 * door_scale;
+  const int action_gap = 7 * door_scale;
+  const int total_actions = static_cast<int>(state.chronicles_menu.size());
+  const int action_space = (std::max)(1, action_bottom - action_top);
+  const int minimum_action_h = 44 * door_scale;
+  const int visible_capacity = (std::max)(
+      1, (action_space + action_gap) / (minimum_action_h + action_gap));
+  const int visible_actions = (std::min)(total_actions, visible_capacity);
+  const int selected_action = static_cast<int>(state.chronicles_selected);
+  const int first_action = (std::clamp)(
+      selected_action - visible_actions / 2, 0,
+      (std::max)(0, total_actions - visible_actions));
+  const int action_h = std::clamp(
+      (action_space - action_gap * ((std::max)(1, visible_actions) - 1)) /
+          (std::max)(1, visible_actions),
+      minimum_action_h, 66 * door_scale);
+  for (int visible_index = 0; visible_index < visible_actions;
+       ++visible_index) {
+    const std::size_t index =
+        static_cast<std::size_t>(first_action + visible_index);
+    const auto& action = state.chronicles_menu[index];
+    const int top = action_top + visible_index * (action_h + action_gap);
+    if (top + action_h > action_bottom) break;
+    RECT card{action_pane.left + inset, top, action_pane.right - inset,
+              top + action_h};
+    const bool selected = index == state.chronicles_selected;
+    if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot,
+                            card))
+      skin::slot(dc, card, action.command == "oath-toggle" ? skin::kEmber
+                                                            : skin::kGold,
+                 selected);
+    if (selected)
+      outlined(card, action.command == "oath-toggle" ? skin::kEmber
+                                                       : skin::kGold,
+               2 * door_scale);
+
+    RECT key{card.left + 10 * door_scale, card.top + 9 * door_scale,
+             card.left + 42 * door_scale, card.bottom - 9 * door_scale};
+    skin::slot(dc, key, selected ? skin::kGold : skin::kVerdigris, selected);
+    RECT key_text = key;
+    put_wrapped(skin::font_heading(), selected ? skin::kGold : skin::kInk,
+                key_text, action.key, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
+
+    std::string description;
+    if (action.command == "found-house")
+      description = "Name a permanent lineage and open its first page.";
+    else if (action.command == "create-scion")
+      description = "Add a level-one, classless heir to the living register.";
+    else if (action.command == "oath-toggle")
+      description = state.chronicles_oath
+                        ? "ARMED - the next admitted Scion cannot return from death."
+                        : "Soft journey - death may be recovered. Activate for final stakes.";
+    else {
+      const auto* scion = verdigris::client::find_chronicle_scion(
+          model.chronicle, action.arg);
+      description = scion ? "Level " + std::to_string(scion->level) +
+                                (scion->mortal ? " mortal Scion" : " living Scion") +
+                                " - road purse prepared."
+                          : "Admit this Scion to the Crossroads.";
+    }
+    std::string headline = action.label;
+    if (action.command == "create-scion") headline = "Name a new Scion";
+    if (action.command == "oath-toggle")
+      headline = state.chronicles_oath ? "Mortal oath: ARMED"
+                                       : "Mortal oath: not taken";
+    RECT headline_rect{card.left + 54 * door_scale,
+                       card.top + 5 * door_scale,
+                       card.right - 12 * door_scale,
+                       card.top + 30 * door_scale};
+    put_wrapped(skin::font_heading(), selected ? skin::kGold : skin::kInk,
+                headline_rect, headline,
+                DT_SINGLELINE | DT_VCENTER | DT_END_ELLIPSIS);
+    if (action_h >= 52 * door_scale) {
+      RECT detail{card.left + 54 * door_scale, card.top + 31 * door_scale,
+                  card.right - 12 * door_scale, card.bottom - 5 * door_scale};
+      put_wrapped(skin::font_small(), skin::kInkDim, detail, description,
+                  DT_SINGLELINE | DT_END_ELLIPSIS);
+    }
+    state.chronicles_action_hits.push_back({card, index});
+    rl.push_back({render::Op::Chronicles, static_cast<double>(card.left),
+                  static_cast<double>(card.top), 0.0,
+                  static_cast<int>(index),
+                  "action:" + action.command +
+                      (action.arg.empty() ? "" : ":" + action.arg)});
+  }
+  rl.push_back({render::Op::Chronicles,
+                static_cast<double>(action_pane.left + inset),
+                static_cast<double>(action_pane.bottom - 32 * door_scale),
+                0.0, 0, state.chronicles_oath ? "oath:on" : "oath:off"});
+  put_text(skin::font_small(), skin::kInkDim, action_pane.left + inset,
+           action_pane.bottom - 31 * door_scale,
+           "UP / DOWN select   ENTER confirm   CLICK choose   ESC quit");
+  if (visible_actions < total_actions) {
+    RECT page_rect{action_pane.left + inset, action_pane.bottom - 35 * door_scale,
+                   action_pane.right - inset,
+                   action_pane.bottom - 15 * door_scale};
+    put_wrapped(skin::font_small(), skin::kGold, page_rect,
+                std::to_string(first_action + 1) + "-" +
+                    std::to_string(first_action + visible_actions) + " / " +
+                    std::to_string(total_actions),
+                DT_RIGHT | DT_SINGLELINE | DT_VCENTER);
+  }
+
   if (state.chronicles_naming != ChronicleNamingMode::None) {
     const int modal_w = 520 * door_scale;
     const int modal_h = 190 * door_scale;
@@ -7624,6 +7933,18 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (state) {
         state->mouse.x = GET_X_LPARAM(lparam);
         state->mouse.y = GET_Y_LPARAM(lparam);
+        if (state->screen == Screen::Chronicles &&
+            state->chronicles_naming == ChronicleNamingMode::None) {
+          for (const auto& hit : state->chronicles_action_hits) {
+            if (state->mouse.x >= hit.rect.left &&
+                state->mouse.x < hit.rect.right &&
+                state->mouse.y >= hit.rect.top &&
+                state->mouse.y < hit.rect.bottom) {
+              state->chronicles_selected = hit.index;
+              break;
+            }
+          }
+        }
       }
       break;
     case WM_MOUSEWHEEL:
@@ -7644,7 +7965,10 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       break;
     case WM_LBUTTONDOWN:
       if (state) {
-        if (trade_pane_open(*state)) {
+        if (state->screen == Screen::Chronicles) {
+          activate_chronicle_at(*state, GET_X_LPARAM(lparam),
+                               GET_Y_LPARAM(lparam));
+        } else if (trade_pane_open(*state)) {
           const int mx = GET_X_LPARAM(lparam);
           const int my = GET_Y_LPARAM(lparam);
           for (const auto& hit : state->trade_row_hits) {
@@ -10127,6 +10451,161 @@ int scenario_vesselforge_final_implicits() {
   return 0;
 }
 
+class ScenarioLineageSession final
+    : public verdigris::client::IClientSession {
+ public:
+  ScenarioLineageSession() {
+    model_.player.uuid = "lineage-scion";
+    model_.player.display_name = "Ilyra";
+    model_.player.alive = false;
+    model_.chronicles_pending = true;
+    model_.chronicle.present = true;
+    model_.chronicle.account_name = "Wayfinder-27";
+    model_.chronicle.active_house_id = "house-emberwake";
+    verdigris::client::ClientHouseEntry house;
+    house.id = "house-emberwake";
+    house.name = "Emberwake";
+    house.campaign_complete = true;
+    house.endgame_maps_completed = 17;
+    house.endgame_masteries = 23;
+    house.scions = {
+        {"scion-ilyra", "Ilyra", 18, false},
+        {"scion-tareth", "Tareth", 7, true},
+    };
+    house.crypt = {
+        {"crypt-orun", "Orun the First", 21, "recovered", 1},
+        {"crypt-sael", "Sael Ash-Hand", 14, "lost", 1},
+    };
+    model_.chronicle.houses.push_back(std::move(house));
+  }
+  bool start(std::string*) override { return true; }
+  void shutdown() override {}
+  void submit(const verdigris::client::ClientCommand& command) override {
+    last_command = command;
+    submitted = true;
+  }
+  void poll() override {}
+  verdigris::client::ConnectionState connection_state() const override {
+    return verdigris::client::ConnectionState::Ready;
+  }
+  const verdigris::client::ClientModel& model() const override { return model_; }
+  std::vector<verdigris::client::PresentationEvent> drain_events() override {
+    return {};
+  }
+  const std::string& last_error() const override { return error_; }
+
+  void add_scion_pages() {
+    auto& scions = model_.chronicle.houses.front().scions;
+    for (int index = 0; index < 7; ++index) {
+      verdigris::client::ClientScionEntry scion;
+      scion.id = "scion-reserve-" + std::to_string(index + 1);
+      scion.name = "Reserve " + std::to_string(index + 1);
+      scion.level = index + 2;
+      scions.push_back(std::move(scion));
+    }
+  }
+
+  bool submitted = false;
+  verdigris::client::ClientCommand last_command{};
+
+ private:
+  verdigris::client::ClientModel model_;
+  std::string error_;
+};
+
+int scenario_chronicles_lineage_ui() {
+  ClientState state;
+  auto owned = std::make_unique<ScenarioLineageSession>();
+  ScenarioLineageSession* scenario = owned.get();
+  state.session = std::move(owned);
+  state.chronicles_mode = true;
+  state.screen = Screen::Chronicles;
+  state.chronicles_selected = 1;
+  load_billboards(state.billboards);
+
+  std::string capture_dir;
+  const int capture_override = capture_root_override(&capture_dir);
+  if (capture_override < 0) {
+    scenario_check(false,
+                   "chronicles-lineage-ui: capture root rejected before any write");
+    return 0;
+  }
+  if (capture_override == 0) {
+    CreateDirectoryA("captures", nullptr);
+    capture_dir = "captures";
+  }
+
+  for (const auto [width, height] :
+       {std::pair<int, int>{960, 600}, {1366, 768}}) {
+    const std::string capture =
+        capture_dir + "\\chronicles-lineage-" + std::to_string(width) + "x" +
+        std::to_string(height) + ".png";
+    scenario_check(reference_present(state, width, height, capture),
+                   "chronicles-lineage-ui: responsive Framekit capture written");
+    std::printf("    capture: %s\n", capture.c_str());
+
+    const HudRect* house_pane = nullptr;
+    const HudRect* action_pane = nullptr;
+    for (const auto& trace : state.hud_rect_trace) {
+      if (trace.first == "chronicles-house-pane") house_pane = &trace.second;
+      if (trace.first == "chronicles-action-pane") action_pane = &trace.second;
+    }
+    scenario_check(house_pane && action_pane &&
+                       !hud_rects_overlap(*house_pane, *action_pane),
+                   "chronicles-lineage-ui: ledger and admission rail stay distinct");
+    scenario_check(state.chronicles_action_hits.size() == 4,
+                   "chronicles-lineage-ui: two Scions, creation, and oath are actionable");
+    bool bounded = true;
+    for (const auto& hit : state.chronicles_action_hits)
+      bounded = bounded && hit.rect.left >= 0 && hit.rect.top >= 0 &&
+                hit.rect.right <= width && hit.rect.bottom <= height;
+    scenario_check(bounded,
+                   "chronicles-lineage-ui: every action remains inside the viewport");
+    scenario_check(render_list_has(state, render::Op::Chronicles,
+                                   "house Emberwake") &&
+                       render_list_has(state, render::Op::Chronicles,
+                                       "scion scion-ilyra") &&
+                       render_list_has(state, render::Op::Chronicles,
+                                       "crypt crypt-sael") &&
+                       render_list_has(state, render::Op::Chronicles,
+                                       "mastery:23/64"),
+                   "chronicles-lineage-ui: House, living, remembered, and Wayfinder state render");
+  }
+
+  state.chronicles_selected = 0;
+  handle_chronicles_key(state, VK_DOWN);
+  scenario_check(state.chronicles_selected == 1,
+                 "chronicles-lineage-ui: arrow keys move the Scion selection");
+  scenario_present(state);
+  const auto oath_hit = state.chronicles_action_hits.back();
+  scenario_check(activate_chronicle_at(
+                     state, (oath_hit.rect.left + oath_hit.rect.right) / 2,
+                     (oath_hit.rect.top + oath_hit.rect.bottom) / 2) &&
+                     state.chronicles_oath,
+                 "chronicles-lineage-ui: pointer arms the same mortal-oath action");
+  scenario_present(state);
+  const auto scion_hit = state.chronicles_action_hits.front();
+  scenario_check(activate_chronicle_at(
+                     state, (scion_hit.rect.left + scion_hit.rect.right) / 2,
+                     (scion_hit.rect.top + scion_hit.rect.bottom) / 2) &&
+                     scenario->submitted &&
+                     scenario->last_command.type ==
+                         verdigris::client::ClientCommand::Type::SelectScion &&
+                     scenario->last_command.target == "scion-ilyra" &&
+                     scenario->last_command.value == 1,
+                 "chronicles-lineage-ui: pointer admission uses the oath-bearing server command");
+  scenario->add_scion_pages();
+  state.chronicles_selected = 10;
+  scenario_present(state);
+  scenario_check(state.chronicles_menu.size() == 11 &&
+                     state.chronicles_action_hits.size() <
+                         state.chronicles_menu.size() &&
+                     !state.chronicles_action_hits.empty() &&
+                     state.chronicles_action_hits.back().index == 10,
+                 "chronicles-lineage-ui: a large lineage pages around the selected action");
+  return 0;
+}
+
 class ScenarioForgeSession final
     : public verdigris::client::IClientSession {
  public:
@@ -10864,6 +11343,7 @@ int run_scenarios(const std::string& which) {
       {"remote-render-list", scenario_remote_render_list},
       {"zoom-invariance", scenario_zoom_invariance},
       {"chronicles-gate-b", scenario_chronicles_gate_b},
+      {"chronicles-lineage-ui", scenario_chronicles_lineage_ui},
       {"first-session-clarity", scenario_first_session_clarity},
       {"animation-vfx-phase-a", scenario_animation_vfx_phase_a},
       {"progression-surface", scenario_progression_surface},
