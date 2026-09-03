@@ -8634,21 +8634,25 @@ class ScenarioCampaignSession final
     model_.theme = "town";
     model_.house_name = "House Emberwake";
     model_.quests.present = true;
-    model_.quests.quest_points = 2;
-    model_.quests.house_renown = 15;
-    model_.quests.active_id = "the-pale-crown";
-    model_.quests.title = "The Pale Crown";
-    model_.quests.giver = "Selene of the Rite";
+    model_.quests.quest_points = 4;
+    model_.quests.house_renown = 50;
+    model_.quests.active_id = "oath-of-tin";
+    model_.quests.title = "Oath of Tin";
+    model_.quests.giver = "Aldwyn the Guide";
     model_.quests.summary =
-        "Break the sovereign seal beneath the Weir Crypt.";
-    model_.quests.objective = "Defeat the Pale Sovereign.";
-    model_.quests.reward = "+1 quest point / +15 House renown";
+        "Carry the House standard north and prove the first road open.";
+    model_.quests.objective = "Break its Warden and open the road onward.";
+    model_.quests.reward = "+1 quest point / +25 House renown";
     model_.quests.objective_index = 1;
     model_.quests.objective_count = 3;
     model_.quests.completed = {
         {"aldwyns-charge", "Aldwyn's Charge", "Answered Aldwyn's Charge"},
         {"proof-of-temper", "Proof of Temper",
          "Proved their temper in the old realms"},
+        {"the-pale-crown", "The Pale Crown",
+         "Broke the Pale Sovereign's seal"},
+        {"rot-in-the-reeds", "Rot in the Reeds",
+         "Ended the rot beneath the reeds"},
     };
   }
   bool start(std::string*) override { return true; }
@@ -8753,15 +8757,16 @@ int scenario_campaign_journal() {
   for (const auto& item : state.render_list) {
     if (item.op == render::Op::Hud && item.label == "quest-journal") pane = true;
     if (item.op == render::Op::Hud &&
-        item.label == "quest-active:the-pale-crown") active = true;
+        item.label == "quest-active:oath-of-tin") active = true;
     if (item.op == render::Op::Hud &&
-        item.label == "quest-objective:Defeat the Pale Sovereign.")
+        item.label ==
+            "quest-objective:Break its Warden and open the road onward.")
       objective = true;
     if (item.op == render::Op::Hud &&
         item.label.rfind("quest-complete:", 0) == 0)
       ++completed;
   }
-  scenario_check(pane && active && objective && completed == 2,
+  scenario_check(pane && active && objective && completed == 4,
                  "campaign-journal: active rite and completed deeds use authoritative copy");
   const HudRect expected = quest_journal_rect(1366, 768);
   const HudRect* footer = nullptr;

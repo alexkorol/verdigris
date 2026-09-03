@@ -48,6 +48,30 @@ the instance is torn down prevents another marsh-like realm—or a client-author
 message—from satisfying the return. The commission awards the fourth passive
 point, 20 House renown, and the deed `Ended the rot beneath the reeds`.
 
+## Four-road covenant
+
+The second campaign act carries the House standard across the procedural world
+web in a fixed narrative order:
+
+1. **Oath of Tin** — enter a Tin Road holding, defeat its generated Warden,
+   and return to the Crossroads;
+2. **The Salt Reckoning** — secure a Salt Road holding and return its eastern
+   trade route to Rhea's ledger;
+3. **The Chalk Vigil** — enter the southern grave road, defeat its Warden,
+   and return alive;
+4. **The Copper Testament** — claim a western holding and return to seal the
+   four-road covenant.
+
+Each commission awards one passive-tree quest point and 25/30/35/40 House
+renown respectively. Completing Copper raises the campaign total to eight
+quest points, marks the House campaign complete, and grants the first
+consumable endgame tablet.
+
+Road progress is House-persistent. Cleared nodes restore on later Scion
+admissions, and a server-side parent check rejects direct requests for barred
+deeper holdings. Re-entering an already-cleared node satisfies the clear rite
+without inventing another Warden, so a resumed campaign cannot deadlock.
+
 Guest saves include the quest state. Account saves send it as `questsData`.
 Malformed or unknown persisted quest entries are discarded and quest points
 are clamped to the reserved 23-point quest budget.

@@ -143,8 +143,11 @@ class ProtocolSession {
   void restore_house_progression();
   void persist_quest_progression();
   void restore_quest_progression();
+  void persist_world_web_progression();
+  void restore_world_web_progression();
   void emit_quest_update(const std::function<void(const Envelope&)>& emit) const;
   void maybe_complete_first_goal(const std::function<void(const Envelope&)>& emit);
+  void notify_surface_return(const std::function<void(const Envelope&)>& emit);
   JsonValue quests_json() const;
   JsonValue passive_tree_json() const;
   void tree_attributes(int* strength, int* dexterity, int* intelligence) const;

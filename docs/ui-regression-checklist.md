@@ -14,6 +14,13 @@
   exits normally.
 - At 1366x768, confirm all journal copy and the `J / ESC` footer stay inside
   the Framekit panel and no world hover tooltip draws through it.
+- After Rot in the Reeds, confirm the journal opens Oath of Tin, then advances
+  through Salt, Chalk, and Copper only after entry, Warden defeat, and return
+  on each exact road. Copper completion should seal the campaign and grant the
+  first charted tablet.
+- Clear a tier-one road holding, re-admit a Scion, and confirm the chart still
+  marks it cleared and opens its tier-two children. A direct request for a
+  barred child must leave the player in town.
 
 ## Native Tactical Map
 

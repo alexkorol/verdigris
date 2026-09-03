@@ -833,6 +833,157 @@ void test_campaign_contract_and_scion_checkpoint() {
         "campaign: selecting the same Scion restores the exact objective checkpoint");
 }
 
+void test_four_roads_campaign_act_and_persistence() {
+  ProtocolSession session("guest-four-roads", "socket-four-roads", 0x4a0du,
+                          false);
+  JsonValue::Object campaign;
+  campaign["activeQuestIndex"] = JsonValue(4);
+  campaign["objectiveIndex"] = JsonValue(0);
+  campaign["questPoints"] = JsonValue(4);
+  campaign["completed"] = JsonValue(JsonValue::Array{
+      JsonValue("aldwyns-charge"), JsonValue("proof-of-temper"),
+      JsonValue("the-pale-crown"), JsonValue("rot-in-the-reeds")});
+  JsonValue::Object scion{{"id", "scion-four-roads"},
+                          {"name", "Maelin"},
+                          {"level", 1},
+                          {"mortal", false},
+                          {"campaignQuests", JsonValue(campaign)}};
+  JsonValue::Object house;
+  house["id"] = JsonValue("house-four-roads");
+  house["name"] = JsonValue("House Greyfen");
+  house["renown"] = JsonValue(50);
+  house["campaignComplete"] = JsonValue(false);
+  house["clearedRoadNodes"] = JsonValue(JsonValue::Array{});
+  house["scions"] = JsonValue(JsonValue::Array{JsonValue(scion)});
+  house["crypt"] = JsonValue(JsonValue::Array{});
+  JsonValue::Object chronicle;
+  chronicle["version"] = JsonValue(3);
+  chronicle["houses"] = JsonValue(JsonValue::Array{JsonValue(house)});
+  session.handle(Envelope{"player:chronicles:save",
+                          JsonValue::Object{{"state", JsonValue(chronicle)}}},
+                 [](const Envelope&) {});
+  const auto admit = [&] {
+    session.handle(Envelope{"player:chronicles:select",
+                            JsonValue::Object{{"scionId", "scion-four-roads"},
+                                              {"houseId", "house-four-roads"},
+                                              {"scionName", "Maelin"},
+                                              {"mortal", false}}},
+                   [](const Envelope&) {});
+  };
+  admit();
+  auto state = request_state(session, "roads-act-start");
+  check(state["state"]["quests"]["activeQuest"]["id"].string() &&
+            *state["state"]["quests"]["activeQuest"]["id"].string() ==
+                "oath-of-tin",
+        "four-roads: second campaign act begins with the Oath of Tin");
+
+  bool barred_message = false;
+  session.handle(Envelope{"world:zone:enter",
+                          JsonValue::Object{{"nodeId", "tin:2:0"}}},
+                 [&](const Envelope& event) {
+                   if (event.event == "game:send:message" &&
+                       event.data["text"].string() &&
+                       event.data["text"].string()->find("barred") !=
+                           std::string::npos)
+                     barred_message = true;
+                 });
+  state = request_state(session, "roads-barred");
+  check(barred_message && state["state"]["sceneType"].string() &&
+            *state["state"]["sceneType"].string() == "town",
+        "four-roads: a forged deeper-node request cannot bypass its parent Warden");
+
+  session.handle(Envelope{"world:zone:enter",
+                          JsonValue::Object{{"nodeId", "tin:1:0"}}},
+                 [](const Envelope&) {});
+  state = request_state(session, "roads-entered");
+  check(state["state"]["quests"]["objectiveIndex"].number().value_or(0) == 1,
+        "four-roads: entering the exact road advances its commission");
+  session.handle(Envelope{"dev:clear-floor", JsonValue::Object{}},
+                 [](const Envelope&) {});
+  state = request_state(session, "roads-cleared");
+  check(state["state"]["quests"]["objectiveIndex"].number().value_or(0) == 2,
+        "four-roads: the authoritative Warden clear advances the rite");
+  session.handle(Envelope{"party:returnToTown", JsonValue::Object{}},
+                 [](const Envelope&) {});
+  state = request_state(session, "roads-returned");
+  check(state["state"]["quests"]["activeQuest"]["id"].string() &&
+            *state["state"]["quests"]["activeQuest"]["id"].string() ==
+                "salt-reckoning" &&
+            state["state"]["quests"]["questPoints"].number().value_or(0) == 5 &&
+            state["state"]["quests"]["houseRenown"].number().value_or(0) == 75,
+        "four-roads: returning completes Tin and opens the Salt Reckoning");
+
+  admit();
+  std::optional<Envelope> chart;
+  session.handle(Envelope{"world:road:chart",
+                          JsonValue::Object{{"roadId", "tin"}}},
+                 [&](const Envelope& event) {
+                   if (event.event == "open:screen") chart = event;
+                 });
+  bool tier_one_cleared = false;
+  bool tier_two_open = false;
+  if (chart) {
+    const auto* nodes = chart->data["payload"]["nodes"].array();
+    if (nodes) {
+      for (const auto& node : *nodes) {
+        const int tier = static_cast<int>(node["tier"].number().value_or(0));
+        const std::string status =
+            node["status"].string() ? *node["status"].string() : "";
+        if (tier == 1 && status == "cleared") tier_one_cleared = true;
+        if (tier == 2 && status == "open") tier_two_open = true;
+      }
+    }
+  }
+  check(tier_one_cleared && tier_two_open,
+        "four-roads: House road history restores and authorizes the next tier");
+  session.handle(Envelope{"world:zone:enter",
+                          JsonValue::Object{{"nodeId", "tin:2:0"}}},
+                 [](const Envelope&) {});
+  state = request_state(session, "roads-tier-two");
+  check(state["state"]["sceneType"].string() &&
+            *state["state"]["sceneType"].string() == "instance",
+        "four-roads: the restored parent clear permits the deeper holding");
+  session.handle(Envelope{"party:returnToTown", JsonValue::Object{}},
+                 [](const Envelope&) {});
+
+  struct RoadActStep { const char* road; const char* next_quest; };
+  const RoadActStep remaining[] = {
+      {"salt", "chalk-vigil"},
+      {"chalk", "copper-testament"},
+      {"copper", nullptr},
+  };
+  for (const auto& step : remaining) {
+    session.handle(
+        Envelope{"world:zone:enter",
+                 JsonValue::Object{{"nodeId", std::string(step.road) + ":1:0"}}},
+        [](const Envelope&) {});
+    state = request_state(session, std::string("roads-") + step.road + "-entered");
+    check(state["state"]["quests"]["objectiveIndex"].number().value_or(0) == 1,
+          "four-roads: each named road advances only on authoritative entry");
+    session.handle(Envelope{"dev:clear-floor", JsonValue::Object{}},
+                   [](const Envelope&) {});
+    state = request_state(session, std::string("roads-") + step.road + "-cleared");
+    check(state["state"]["quests"]["objectiveIndex"].number().value_or(0) == 2,
+          "four-roads: each named road requires its Warden clear");
+    session.handle(Envelope{"party:returnToTown", JsonValue::Object{}},
+                   [](const Envelope&) {});
+    state = request_state(session, std::string("roads-") + step.road + "-returned");
+    if (step.next_quest) {
+      check(state["state"]["quests"]["activeQuest"]["id"].string() &&
+                *state["state"]["quests"]["activeQuest"]["id"].string() ==
+                    step.next_quest,
+            "four-roads: returning opens the next named road commission");
+    }
+  }
+  check(state["state"]["quests"]["campaignComplete"].boolean().value_or(false) &&
+            state["state"]["quests"]["activeQuest"].is_null() &&
+            state["state"]["quests"]["questPoints"].number().value_or(0) == 8 &&
+            state["state"]["quests"]["houseRenown"].number().value_or(0) == 180 &&
+            state["state"]["endgame"]["unlocked"].boolean().value_or(false) &&
+            !inventory_map_uuid(state).empty(),
+        "four-roads: Copper return seals Act II and awards the first endgame tablet");
+}
+
 void test_consumable_endgame_tablet_loop() {
   ProtocolSession session("guest-endgame", "socket-endgame", 0x51ea1u, false);
   auto open_tablet = [&](const std::string& uuid,
@@ -1021,6 +1172,7 @@ int main() {
     test_gate_a_equip_totals_and_unknown_uuid();
     test_crossroads_social_hub_and_house_investment();
     test_campaign_contract_and_scion_checkpoint();
+    test_four_roads_campaign_act_and_persistence();
     test_consumable_endgame_tablet_loop();
     std::cout << "verdigris networking tests: PASS\n";
     return 0;

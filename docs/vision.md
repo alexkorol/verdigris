@@ -49,7 +49,7 @@ solo zone/instance entry (Adventure menu), and the Chronicles Houses & Scions
 persistence model (`src/core/chronicles/houses.js`).
 
 Chronicles creation, authoritative persistence, mortal Scion entombment, and
-fallen-heirloom circulation are now playable end to end. The first four real
+fallen-heirloom circulation are now playable end to end. The first eight real
 quests form a server-owned progression chain. **Aldwyn's Charge** turns
 movement → combat → loot → Adventure entry into onboarding; **Proof of
 Temper** follows with an elite hunt, guaranteed native Vessel, equipment
@@ -59,6 +59,14 @@ floor-two descent before awarding the third point and campaign deed. **Rot in
 the Reeds** carries the chain into Marsh of Reeds, requires the named Rotfather
 boss, and completes only after the server returns the expedition to the
 surface.
+
+The second act binds the campaign to the procedural world web: **Oath of
+Tin**, **The Salt Reckoning**, **The Chalk Vigil**, and **The Copper
+Testament** each require authoritative entry, Warden defeat, and a living
+return on their exact road. The four-road covenant raises the campaign total
+to eight quest points and unlocks the first consumable endgame tablet. Road
+clears are House-persistent, and deeper node requests are rejected until their
+actual parent Warden is recorded dead.
 
 The character sheet now reuses the generated player sprite for its portrait
 and each equipped item's real atlas frame; generic slot glyphs remain only for
@@ -89,7 +97,7 @@ suite, production build, every real-server playtest scenario, and the built-game
 browser loop. The remaining product work is intentionally narrower than the
 original prototype roadmap:
 
-1. **Campaign breadth:** extend the authoritative four-commission campaign
+1. **Campaign breadth:** extend the authoritative eight-commission campaign
    toward the 23 quest points reserved by the passive tree, with named zones,
    bosses, rewards, persistence, and playtest coverage for each arc.
 2. **Vesselforge progression:** wire the remaining visibly Dormant effects into

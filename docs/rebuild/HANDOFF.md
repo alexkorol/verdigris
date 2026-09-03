@@ -1,5 +1,25 @@
 # Native reconstitution handoff
 
+## 2026-09-02 — four-road campaign act + persistent world web
+
+- The native campaign now has eight commissions. Oath of Tin, The Salt
+  Reckoning, The Chalk Vigil, and The Copper Testament each bind entry,
+  generated Warden defeat, and return to the exact procedural road.
+- Finishing Copper seals the campaign at eight quest points and awards the
+  first one-use charted tablet. The existing endgame loop remains House-wide.
+- Cleared world-web nodes now persist on the House Chronicle and restore across
+  Scion admissions. Re-entering a cleared holding advances the relevant rite
+  without respawning its Warden.
+- `world:zone:enter` now rejects barred deeper nodes unless the authoritative
+  parent clear exists. Party returns use the same campaign/extraction path as
+  solo returns.
+- Coverage drives the complete Tin → Salt → Chalk → Copper act, validates
+  renown/reward totals, reconnect restoration, chart state, barred-node denial,
+  and endgame unlock.
+- Verification: full native tests and all client scenarios pass; `frame-budget`
+  measured 9.7 ms average at 3440x1440. Evidence:
+  `native/build/goal-captures-roads-b/campaign-journal-1366x768.png`.
+
 ## 2026-09-02 — authoritative native campaign journal + Scion checkpoints
 
 - Native quest snapshots now publish presentation-safe titles, commissioners,
