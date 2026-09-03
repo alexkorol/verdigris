@@ -2505,6 +2505,64 @@ void ProtocolSession::open_expedition_map(
                          " opens for one expedition.");
 }
 
+void ProtocolSession::rechart_expedition_map(
+    const std::string& uuid,
+    const std::function<void(const Envelope&)>& emit) {
+  if (!campaign_complete_) {
+    emit_message(emit, "The Wayfinder re-charts tablets only for a sealed House.");
+    return;
+  }
+  if (world_->in_instance()) {
+    emit_message(emit, "A tablet can only be re-charted at the Crossroads.");
+    return;
+  }
+  const GameItem* carried = inventory_.find_by_uuid(uuid);
+  if (!carried || !carried->expedition_map) {
+    emit_message(emit, "That charted tablet is no longer in your backpack.");
+    emit_inventory_refresh(emit);
+    return;
+  }
+  if (inventory_.coin_total() < kExpeditionRechartCost) {
+    emit_message(emit, "Re-charting requires 50 gold in the carried ledger.");
+    return;
+  }
+
+  const std::string item_id = carried->id;
+  const int tier = carried->expedition_map->tier;
+  const std::set<std::string> old_clauses(
+      carried->expedition_map->modifiers.begin(),
+      carried->expedition_map->modifiers.end());
+  std::optional<GameItem> rerolled;
+  // There are six unordered two-clause combinations. Advance the owned RNG
+  // until the new chart is materially different; a pathological stream fails
+  // closed without charging or mutating the item.
+  for (int attempt = 0; attempt < 24; ++attempt) {
+    CreateItemOptions options;
+    options.rng = &session_rng_;
+    options.item_level = tier;
+    auto candidate = create_game_item(item_id, options);
+    if (!candidate || !candidate->expedition_map) continue;
+    const std::set<std::string> new_clauses(
+        candidate->expedition_map->modifiers.begin(),
+        candidate->expedition_map->modifiers.end());
+    if (new_clauses != old_clauses) {
+      rerolled = std::move(candidate);
+      break;
+    }
+  }
+  if (!rerolled || !rerolled->expedition_map) {
+    emit_message(emit, "The chart refuses a new reading. No gold was spent.");
+    return;
+  }
+  if (!inventory_.spend_coins(kExpeditionRechartCost)) return;
+  GameItem* tablet = inventory_.find_by_uuid(uuid);
+  if (!tablet || !tablet->expedition_map) return;
+  tablet->expedition_map = std::move(rerolled->expedition_map);
+  emit_inventory_refresh(emit);
+  emit_message(emit, "The Wayfinder re-charts " + tablet->display_name +
+                         " for 50 gold. Its family, tier, and mastery seal remain.");
+}
+
 void ProtocolSession::enter_shared_instance(const std::string& scene_id, const std::function<void(const Envelope&)>& emit) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   current_node_id_.clear();
@@ -3214,6 +3272,20 @@ void ProtocolSession::handle_menu_build(const JsonValue& payload, const std::fun
       put(entry, "uuid", item->uuid);
       put(entry, "id", item->id);
       entries.emplace_back(std::move(entry));
+      JsonValue::Object rechart;
+      put(rechart, "label",
+          !campaign_complete_ ? "Sealed House required to re-chart"
+          : world_->in_instance() ? "Return to the Crossroads to re-chart"
+                                  : "Re-chart two clauses (50 gold)");
+      put(rechart, "action", JsonValue::Object{
+          {"name", "Re-chart tablet"},
+          {"actionId", "player:endgame:rechart-map"},
+          {"context", JsonValue::Array{JsonValue("inventorySlot")}},
+          {"nearby", false}, {"weight", 2}});
+      put(rechart, "type", "map");
+      put(rechart, "uuid", item->uuid);
+      put(rechart, "id", item->id);
+      entries.emplace_back(std::move(rechart));
     }
     if (item&&item->vessel&&world_->scene_id()=="town:verdigris") {
       const VesselItem& vi=item->vessel->item;
@@ -3252,6 +3324,10 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
   if (action_id=="player:take") { handle_take_ground(uuid,emit); return; }
   if (action_id=="player:endgame:open-map") {
     open_expedition_map(uuid, emit);
+    return;
+  }
+  if (action_id=="player:endgame:rechart-map") {
+    rechart_expedition_map(uuid, emit);
     return;
   }
   if (action_id=="player:screen:bank") {

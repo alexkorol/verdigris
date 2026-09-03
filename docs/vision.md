@@ -96,6 +96,11 @@ awards tier-scaled renown once, and raises a bounded next-tier ascent chance;
 repeat clears remain valid runs without minting the first-clear reward again.
 The post-campaign Framekit journal renders the complete 64-objective ledger and
 the selected tablet identifies whether it offers new mastery.
+At the Crossroads, a sealed House may now spend 50 carried gold to re-chart a
+tablet's two rolled risk clauses before breaking it. Re-charting guarantees a
+materially different clause pair while preserving the tablet's exact identity,
+family, tier, and mastery seal, so endgame preparation has a real itemization
+decision without becoming a route to forge higher tiers or duplicate maps.
 
 Primary melee combat now has an authoritative three-beat rhythm instead of an
 endless identical swing. Cut and Return build into a slower, 160% Finisher

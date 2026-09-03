@@ -168,6 +168,8 @@ class ProtocolSession {
   void enter_road_node(const std::string& node_id, const std::function<void(const Envelope&)>& emit);
   void open_expedition_map(const std::string& uuid,
                            const std::function<void(const Envelope&)>& emit);
+  void rechart_expedition_map(const std::string& uuid,
+                              const std::function<void(const Envelope&)>& emit);
   void award_expedition_map(int tier, double x, double y,
                             const std::function<void(const Envelope&)>& emit,
                             bool to_backpack);

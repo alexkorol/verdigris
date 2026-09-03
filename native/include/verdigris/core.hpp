@@ -682,6 +682,10 @@ struct ExpeditionMapBlock {
   std::vector<std::string> modifiers;
 };
 
+// Recharting changes only a tablet's rolled risk/reward clauses. Keeping the
+// cost shared prevents the native Framekit hint from inventing economy truth.
+inline constexpr int kExpeditionRechartCost = 50;
+
 // inventory-footprints.js resolveItemSize (explicit size first, then the
 // weapon/armour id rules, then equipment-slot defaults).
 ItemSize resolve_item_size(const ItemDef& def, const VesselBlock* vessel);

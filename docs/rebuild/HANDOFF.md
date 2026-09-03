@@ -1,5 +1,28 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - charted-tablet recharting
+
+- Added a town-only, sealed-House rechart action to the consumable endgame
+  loop. Spending 50 carried gold replaces a tablet's two rolled risk/reward
+  clauses with a materially different pair while preserving its UUID, family,
+  tier, layout, and 64-objective Wayfinder mastery seal.
+- The server validates campaign completion, town state, exact item identity,
+  and carried funds before mutation. Invalid, underfunded, out-of-town, and
+  pathological no-change rolls fail without spending gold or consuming the
+  tablet.
+- The Framekit gear footer exposes a gold `V rechart 50g` keyboard-and-pointer
+  action; Enter remains the distinct destructive action that breaks the selected one-use tablet. Inventory
+  refresh immediately redraws its two clauses, goods bonus, and unchanged
+  mastery preview.
+- Networking coverage proves the gold delta, different clause set, and stable
+  identity/tier/mastery contract. The `endgame-tablet-ui` production scenario
+  proves the new control remains discoverable and fitted at 1366x768.
+- The exact binding native gate passes every unit/session suite, the mortal
+  succession and heirloom-recovery journey, and all 29 client scenarios.
+  Inspected evidence is isolated under
+  `native/build/goal-captures-tablet-rechart-final/`; the 3440x1440 frame
+  budget remains 11.2 ms average against the 40 ms ceiling.
+
 ## 2026-09-03 - authored Warden disciplines
 
 - Replaced the one-size-fits-all Warden ground slam with four deterministic,

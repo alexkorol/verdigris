@@ -1853,11 +1853,35 @@ void test_consumable_endgame_tablet_loop() {
                          {"item", JsonValue::Object{{"uuid", uuid}}}}}}},
         emit);
   };
+  auto rechart_tablet = [&](const std::string& uuid,
+                            const std::function<void(const Envelope&)>& emit) {
+    session.handle(
+        Envelope{"player:context-menu:action",
+                 JsonValue::Object{{
+                     "queueItem",
+                     JsonValue::Object{
+                         {"action", JsonValue::Object{{
+                                        "actionId", "player:endgame:rechart-map"}}},
+                         {"item", JsonValue::Object{{"uuid", uuid}}}}}}},
+        emit);
+  };
+  const auto carried_coins = [](const JsonValue& state) {
+    int total = 0;
+    if (const auto* inventory = state["state"]["inventory"].array())
+      for (const auto& entry : *inventory)
+        if (entry["id"].string() && *entry["id"].string() == "coins")
+          total += static_cast<int>(entry["qty"].number().value_or(0));
+    return total;
+  };
 
   session.handle(Envelope{"dev:give", JsonValue::Object{
                                           {"itemId", "charted-tablet-crown"},
                                           {"qty", 1}, {"itemLevel", 5},
                                           {"seed", 77}}},
+                 [](const Envelope&) {});
+  session.handle(Envelope{"dev:give", JsonValue::Object{
+                                          {"itemId", "coins"},
+                                          {"qty", 100}}},
                  [](const Envelope&) {});
   auto locked = request_state(session, "map-locked");
   const std::string locked_uuid =
@@ -1865,6 +1889,24 @@ void test_consumable_endgame_tablet_loop() {
   check(!locked_uuid.empty() &&
             !locked["state"]["endgame"]["unlocked"].boolean().value_or(true),
         "endgame: a tablet is an inventory item before the campaign unlock");
+  const int locked_gold = carried_coins(locked);
+  std::set<std::string> locked_clauses;
+  for (const auto& entry : *locked["state"]["inventory"].array())
+    if (entry["uuid"].string() && *entry["uuid"].string() == locked_uuid &&
+        entry["expeditionMap"]["modifiers"].array())
+      for (const auto& clause : *entry["expeditionMap"]["modifiers"].array())
+        if (clause.string()) locked_clauses.insert(*clause.string());
+  rechart_tablet(locked_uuid, [](const Envelope&) {});
+  auto locked_rechart = request_state(session, "map-rechart-locked");
+  std::set<std::string> rejected_clauses;
+  for (const auto& entry : *locked_rechart["state"]["inventory"].array())
+    if (entry["uuid"].string() && *entry["uuid"].string() == locked_uuid &&
+        entry["expeditionMap"]["modifiers"].array())
+      for (const auto& clause : *entry["expeditionMap"]["modifiers"].array())
+        if (clause.string()) rejected_clauses.insert(*clause.string());
+  check(rejected_clauses == locked_clauses &&
+            carried_coins(locked_rechart) == locked_gold,
+        "endgame: an unsealed House cannot re-chart or spend carried gold");
   open_tablet(locked_uuid, [](const Envelope&) {});
   locked = request_state(session, "map-still-locked");
   check(*locked["state"]["sceneType"].string() == "town" &&
@@ -1914,6 +1956,10 @@ void test_consumable_endgame_tablet_loop() {
                                           {"qty", 1}, {"itemLevel", 5},
                                           {"seed", 77}}},
                  [](const Envelope&) {});
+  session.handle(Envelope{"dev:give", JsonValue::Object{
+                                          {"itemId", "coins"},
+                                          {"qty", 100}}},
+                 [](const Envelope&) {});
   const auto carried = request_state(session, "map-carried");
   const std::string uuid = inventory_uuid_for(carried, "charted-tablet-crown");
   const JsonValue* tablet = nullptr;
@@ -1928,6 +1974,34 @@ void test_consumable_endgame_tablet_loop() {
             (*tablet)["expeditionMap"]["modifiers"].array() &&
             (*tablet)["expeditionMap"]["modifiers"].array()->size() == 2,
         "endgame: tier and rolled clauses serialize with the exact tablet");
+  std::set<std::string> original_clauses;
+  if (tablet && (*tablet)["expeditionMap"]["modifiers"].array())
+    for (const auto& clause : *(*tablet)["expeditionMap"]["modifiers"].array())
+      if (clause.string()) original_clauses.insert(*clause.string());
+  const int gold_before_rechart = carried_coins(carried);
+  rechart_tablet(uuid, [](const Envelope&) {});
+  const auto recharted = request_state(session, "map-recharted");
+  const JsonValue* recharted_tablet = nullptr;
+  for (const auto& entry : *recharted["state"]["inventory"].array())
+    if (entry["uuid"].string() && *entry["uuid"].string() == uuid)
+      recharted_tablet = &entry;
+  std::set<std::string> new_clauses;
+  if (recharted_tablet &&
+      (*recharted_tablet)["expeditionMap"]["modifiers"].array())
+    for (const auto& clause :
+         *(*recharted_tablet)["expeditionMap"]["modifiers"].array())
+      if (clause.string()) new_clauses.insert(*clause.string());
+  check(recharted_tablet && new_clauses.size() == 2 &&
+            new_clauses != original_clauses &&
+            (*recharted_tablet)["expeditionMap"]["family"].string() &&
+            *(*recharted_tablet)["expeditionMap"]["family"].string() == "Crown" &&
+            (*recharted_tablet)["expeditionMap"]["tier"].number().value_or(0) == 5 &&
+            (*recharted_tablet)["expeditionMap"]["objectiveKey"].string() &&
+            *(*recharted_tablet)["expeditionMap"]["objectiveKey"].string() ==
+                "crown:5" &&
+            carried_coins(recharted) ==
+                gold_before_rechart - verdigris::kExpeditionRechartCost,
+        "endgame: re-charting spends gold and changes risk without changing identity or mastery");
   JsonValue reconnect_player;
   check(parse_json(session.login_payload(), reconnect_player) &&
             reconnect_player["player"]["inventory"]["slots"].array(),

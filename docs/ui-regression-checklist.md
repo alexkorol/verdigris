@@ -148,6 +148,11 @@
 - Break Barrow, Reeds, Crown, and Thorns tablets and confirm their Seal-Bound
   Wardens reuse the corresponding four learned disciplines at tablet-scaled
   damage.
+- Select a charted tablet in the town gear pane and confirm its footer exposes
+  a gold `V rechart 50g` keyboard-and-pointer action. Re-chart once: exactly 50 carried gold must be spent, both
+  visible clauses must change as a set, and UUID, family, tier, and `NEW
+  MASTERY`/`MASTERED` state must remain unchanged. The same request in an
+  expedition or without 50 gold must change nothing.
 
 - After sealing the campaign, press `J` in town. Confirm the Chronicle panel
   becomes the Wayfinder's Ledger and shows Barrow, Reeds, Crown, and Thorns as

@@ -155,6 +155,13 @@ damage channel, target position, windup, cooldown, and tier-scaled damage are
 chosen by the server. The client renders those facts but never recomputes who
 is hit.
 
+A sealed House can also re-chart a carried tablet at the Crossroads for 50
+gold. The server replaces both rolled clauses with a materially different pair
+while preserving UUID, family, tier, layout, and mastery objective. Failed,
+underfunded, out-of-town, and non-tablet requests spend nothing. This makes
+tablets mutable preparation items without allowing a re-chart to manufacture
+another tablet or advance the Wayfinder ladder.
+
 Guest saves include the quest state. Account saves send it as `questsData`.
 Malformed or unknown persisted quest entries are discarded and quest points
 are clamped to the reserved 23-point quest budget.

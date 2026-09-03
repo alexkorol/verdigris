@@ -534,6 +534,8 @@ struct ClientState {
   // back to a movable window for side-by-side development.
   bool fullscreen_window = true;
   std::size_t selected_item = 0;
+  RECT rechart_tablet_hit{};
+  bool rechart_tablet_hit_valid = false;
   std::string hint;
   int hint_ticks = 0;
   // TASK-0153 owner Esc contract: Escape closes an open dismissible pane
@@ -1502,6 +1504,10 @@ void equip_selected(ClientState& state) {
     if (!items.empty()) {
       const std::size_t pick = std::min(state.selected_item, items.size() - 1);
       if (items[pick].expedition_map) {
+        if (state.world.has_extraction) {
+          show_hint(state, "Charted tablets can only be broken at the Crossroads");
+          return;
+        }
         if (!state.session) {
           show_hint(state, "Charted tablets require an authoritative session");
           return;
@@ -1528,6 +1534,31 @@ void equip_selected(ClientState& state) {
   state.selected_item = std::min(state.selected_item, state.world.carried.size() - 1);
   submit_equip(state, state.world.carried[state.selected_item].id);
   show_hint(state, "Equipped " + state.world.carried[state.selected_item].name);
+}
+
+void rechart_selected_tablet(ClientState& state) {
+  sync_world(state);
+  if (!state.gear_overlay || state.world.carried.empty()) return;
+  const std::size_t pick =
+      std::min(state.selected_item, state.world.carried.size() - 1);
+  const WorldCarriedItem& item = state.world.carried[pick];
+  if (!item.expedition_map) {
+    show_hint(state, "Only a charted tablet can be re-charted");
+    return;
+  }
+  if (state.world.has_extraction) {
+    show_hint(state, "Return to the Crossroads to re-chart this tablet");
+    return;
+  }
+  if (!state.session) {
+    show_hint(state, "Re-charting requires an authoritative session");
+    return;
+  }
+  state.session->submit(verdigris::client::ClientCommand::menu_action(
+      "player:endgame:rechart-map", item.id, 0));
+  show_hint(state, "Re-charting " + item.name + " for " +
+                       std::to_string(verdigris::kExpeditionRechartCost) +
+                       " gold");
 }
 
 void move_inventory_selection(ClientState& state, int dx, int dy) {
@@ -2993,6 +3024,7 @@ std::string loot_label(const ClientState& state, const std::string& id) {
 
 void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
                         render::List& rl) {
+  state.rechart_tablet_hit_valid = false;
   if (!state.gear_overlay) return;
   // TASK-0159: the pane rectangle comes from the shared pure geometry so the
   // planner, painter, and scenario harness cannot drift apart.
@@ -3413,7 +3445,9 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   }
   const std::string controls =
       selected && selected->expedition_map
-          ? "Arrows select | Enter open map | I close"
+          ? state.world.has_extraction
+                ? "Arrows select | Tablet sealed until Crossroads | I close"
+                : "Arrows select | V rechart 50g | Enter break | I close"
           : "Arrows select | Enter equip | U unequip | I close";
   {
     SIZE extent{};
@@ -3424,6 +3458,35 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   }
   TextOutA(dc, left + 14 * s, bottom - 26 * s, controls.c_str(),
            static_cast<int>(controls.size()));
+  rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0,
+                "gear-controls:" + controls});
+  if (selected && selected->expedition_map && !state.world.has_extraction) {
+    const std::string prefix = "Arrows select | ";
+    const std::string action = "V rechart 50g";
+    SIZE prefix_extent{};
+    SIZE action_extent{};
+    GetTextExtentPoint32A(dc, prefix.c_str(), static_cast<int>(prefix.size()),
+                          &prefix_extent);
+    GetTextExtentPoint32A(dc, action.c_str(), static_cast<int>(action.size()),
+                          &action_extent);
+    const int action_x = left + 14 * s + prefix_extent.cx;
+    const int action_y = bottom - 26 * s;
+    state.rechart_tablet_hit =
+        RECT{action_x - 2 * s, action_y - 2 * s,
+             action_x + action_extent.cx + 2 * s,
+             action_y + action_extent.cy + 2 * s};
+    state.rechart_tablet_hit_valid = true;
+    state.hud_rect_trace.push_back(
+        {"pane-rechart",
+         {state.rechart_tablet_hit.left, state.rechart_tablet_hit.top,
+          state.rechart_tablet_hit.right - state.rechart_tablet_hit.left,
+          state.rechart_tablet_hit.bottom - state.rechart_tablet_hit.top}});
+    SetTextColor(dc, skin::kGold);
+    TextOutA(dc, action_x, action_y, action.c_str(),
+             static_cast<int>(action.size()));
+    rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0,
+                  "gear-action:rechart"});
+  }
 }
 
 void paint_quest_journal(ClientState& state, HDC dc, const RECT& bounds,
@@ -7937,6 +8000,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         if (wparam == VK_LEFT) move_inventory_selection(*state, -1, 0);
         if (wparam == VK_RIGHT) move_inventory_selection(*state, 1, 0);
         if (wparam == VK_RETURN) equip_selected(*state);
+        if (wparam == 'V') rechart_selected_tablet(*state);
         if (wparam == 'U' && state->simulation) {
           state->simulation->dispatch(verdigris::Command::unequip());
           show_hint(*state, "Weapon unequipped");
@@ -8035,7 +8099,16 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
             break;
           }
         } else if (state->gear_overlay) {
-          equip_selected(*state);
+          const int mx = GET_X_LPARAM(lparam);
+          const int my = GET_Y_LPARAM(lparam);
+          if (state->rechart_tablet_hit_valid &&
+              mx >= state->rechart_tablet_hit.left &&
+              mx < state->rechart_tablet_hit.right &&
+              my >= state->rechart_tablet_hit.top &&
+              my < state->rechart_tablet_hit.bottom)
+            rechart_selected_tablet(*state);
+          else
+            equip_selected(*state);
         } else {
           // Route through dispatch_skill so LMB gets the same instant
           // swing-arc feedback as the Q/E/R keys — the primary attack was
@@ -10092,6 +10165,8 @@ int scenario_endgame_tablet_ui() {
   bool objective = false;
   bool map_row = false;
   bool mastery_preview = false;
+  bool rechart_control = false;
+  bool rechart_action = false;
   int modifiers = 0;
   for (const auto& item : state.render_list) {
     if (item.op == render::Op::Hud && item.label.rfind("endgame: 4", 0) == 0)
@@ -10106,6 +10181,12 @@ int scenario_endgame_tablet_ui() {
         item.label.find("NEW MASTERY") != std::string::npos &&
         item.label.find("ascent 40%") != std::string::npos)
       mastery_preview = true;
+    if (item.op == render::Op::PaneStat &&
+        item.label.find("V rechart 50g") != std::string::npos)
+      rechart_control = true;
+    if (item.op == render::Op::PaneStat &&
+        item.label == "gear-action:rechart")
+      rechart_action = true;
   }
   scenario_check(objective,
                  "endgame-tablet-ui: town objective exposes the unlocked loop");
@@ -10115,16 +10196,43 @@ int scenario_endgame_tablet_ui() {
                  "endgame-tablet-ui: both authoritative risk clauses are inspectable");
   scenario_check(mastery_preview,
                  "endgame-tablet-ui: selection previews mastery and ascent sustain");
+  scenario_check(rechart_control && rechart_action &&
+                     state.rechart_tablet_hit_valid,
+                 "endgame-tablet-ui: paid re-charting is keyboard and pointer discoverable");
   const HudRect* pane = nullptr;
   const HudRect* footer = nullptr;
+  const HudRect* rechart = nullptr;
   for (const auto& entry : state.hud_rect_trace) {
     if (entry.first == "pane-frame") pane = &entry.second;
     if (entry.first == "pane-footer") footer = &entry.second;
+    if (entry.first == "pane-rechart") rechart = &entry.second;
   }
   scenario_check(pane && footer &&
                      footer->x + footer->w <= pane->x + pane->w - 8,
                  "endgame-tablet-ui: contextual controls stay inside the pane");
+  scenario_check(pane && rechart && rechart->x >= pane->x &&
+                     rechart->x + rechart->w <= pane->x + pane->w &&
+                     rechart->y >= pane->y &&
+                     rechart->y + rechart->h <= pane->y + pane->h,
+                 "endgame-tablet-ui: re-chart pointer target stays inside Framekit");
 
+  state.world.has_extraction = true;
+  reference_present(state, 1366, 768, "");
+  bool expedition_seal = false;
+  bool leaked_rechart_action = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::PaneStat &&
+        item.label.find("Tablet sealed until Crossroads") != std::string::npos)
+      expedition_seal = true;
+    if (item.op == render::Op::PaneStat &&
+        item.label == "gear-action:rechart")
+      leaked_rechart_action = true;
+  }
+  scenario_check(expedition_seal && !leaked_rechart_action &&
+                     !state.rechart_tablet_hit_valid,
+                 "endgame-tablet-ui: re-charting disables outside the Crossroads");
+
+  state.world.has_extraction = false;
   state.gear_overlay = false;
   state.quest_journal = true;
   const std::string mastery_capture_path =

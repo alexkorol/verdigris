@@ -46,6 +46,11 @@ on the remote owner path you extract by walking onto the EXIT stairs. A
 compact controls line is always on the HUD (no F3 needed). Esc closes an
 open gear pane first; a bare Esc requests quit.
 
+After the campaign seal, selecting a charted tablet in the town gear pane adds
+a gold `V rechart 50g` keyboard-and-pointer action. The server spends the gold and rerolls both risk/reward clauses
+without changing the tablet's UUID, family, tier, or Wayfinder mastery target;
+Enter still breaks the exact selected tablet to open its one-use expedition.
+
 In the Crossroads, `T` hails the nearest townsfolk. Tamar the Vesselwright
 opens a dedicated Framekit forge: Up/Down selects carried vessel gear and
 Enter or a click sears an eligible Brand for 100 gold. Capacity, patience,
