@@ -1550,7 +1550,11 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
         const int dy = elite_y - tile_y;
         fight_heading = gateb_heading_for(dx > 0 ? 1 : (dx < 0 ? -1 : 0),
                                           dy > 0 ? 1 : (dy < 0 ? -1 : 0));
-        if (chebyshev(tile_x, tile_y, elite_x, elite_y) <= 1) {
+        // The protocol combat envelope maps the local 143-unit contact reach
+        // onto three tiles. Swing as soon as the revealed Warden is in that
+        // authoritative band; requiring adjacency made the scenario wander
+        // past a perfectly valid target behind warren collision ribs.
+        if (std::abs(dx) + std::abs(dy) <= 3) {
           gateb_swing(client, gateb_heading_for(dx > 0 ? 1 : (dx < 0 ? -1 : 0), 0));
         } else {
           // Approach in bounded phases: greedy toward the wider axis for a

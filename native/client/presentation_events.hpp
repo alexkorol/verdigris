@@ -22,6 +22,7 @@ enum class PresentationEventType {
   ExtractionCompleted,
   ScionDied,
   ScionLost,           // TASK-0122 Phase A: permanent Scion loss beat
+  BuffApplied,         // authoritative temporary player effect began
   BuffExpired,         // TASK-0122 Phase A: authoritative buff end (war cry)
   Telegraph,
   Message,             // human-readable server/system line in `text`

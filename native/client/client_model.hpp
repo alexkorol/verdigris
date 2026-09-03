@@ -24,6 +24,8 @@ struct ClientPlayer {
   int resource = 50;
   int resource_max = 50;
   int attack = 12;
+  int cooldown_ticks = 0;
+  int war_cry_ticks_remaining = 0;
   bool alive = true;
 };
 

@@ -208,6 +208,16 @@ void apply_player_fields(ClientPlayer& player, const JsonValue& source) {
   if (source.get("x") && source.get("x")->number()) player.x = *source.get("x")->number();
   if (source.get("y") && source.get("y")->number()) player.y = *source.get("y")->number();
   if (const auto* facing = json_string(source.get("facing"))) player.facing = *facing;
+  if (source.get("level") && source.get("level")->number())
+    player.level = static_cast<int>(*source.get("level")->number());
+  if (source.get("life") && source.get("life")->number())
+    player.life = static_cast<int>(*source.get("life")->number());
+  if (source.get("lifeMax") && source.get("lifeMax")->number())
+    player.life_max = static_cast<int>(*source.get("lifeMax")->number());
+  if (source.get("resource") && source.get("resource")->number())
+    player.resource = static_cast<int>(*source.get("resource")->number());
+  if (source.get("resourceMax") && source.get("resourceMax")->number())
+    player.resource_max = static_cast<int>(*source.get("resourceMax")->number());
 }
 
 void facing_delta(const std::string& facing, double& dx, double& dy) {
@@ -983,6 +993,34 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     if (!model_.player.facing.empty()) last_facing_ = model_.player.facing;
     return;
   }
+  if (envelope.event == "player:combat-state") {
+    model_.player.resource = static_cast<int>(
+        json_number(envelope.data.get("resource"), model_.player.resource));
+    model_.player.resource_max = static_cast<int>(
+        json_number(envelope.data.get("resourceMax"), model_.player.resource_max));
+    model_.player.cooldown_ticks = static_cast<int>(
+        json_number(envelope.data.get("cooldownTicks"), model_.player.cooldown_ticks));
+    model_.player.war_cry_ticks_remaining = static_cast<int>(json_number(
+        envelope.data.get("warCryTicksRemaining"),
+        model_.player.war_cry_ticks_remaining));
+    return;
+  }
+  if (envelope.event == "player:skill:effect") {
+    const auto* skill = json_string(envelope.data.get("skillId"));
+    const bool active = envelope.data.get("active") &&
+                        envelope.data.get("active")->boolean() &&
+                        *envelope.data.get("active")->boolean();
+    if (skill && *skill == "war-cry") {
+      model_.player.war_cry_ticks_remaining = active
+          ? (std::max)(1, static_cast<int>(json_number(
+                envelope.data.get("durationMs"), 50.0) / 50.0))
+          : 0;
+      pending_events_.push_back({active ? PresentationEventType::BuffApplied
+                                        : PresentationEventType::BuffExpired,
+                                 model_.player.uuid, "", "war-cry", 0});
+    }
+    return;
+  }
   if (envelope.event == "world:scene:transition" ||
       envelope.event == "party:scene:transition") {
     if (const auto* scene = envelope.data.get("scene")) apply_scene_fields(model_.scene, *scene);
@@ -1048,6 +1086,9 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       std::string style;
       if (const auto* style_value = json_string(envelope.data.get("attackStyle")))
         style = *style_value;
+      std::string skill_id = "melee";
+      if (const auto* skill_value = json_string(envelope.data.get("skillId")))
+        skill_id = *skill_value;
       ClientMonster& foe = upsert_monster(model_, target ? *target : "",
                                           json_string(envelope.data.get("targetName"))
                                               ? *json_string(envelope.data.get("targetName"))
@@ -1061,7 +1102,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       }
       pending_events_.push_back({PresentationEventType::AttackStarted,
                                  attacker ? *attacker : model_.player.uuid, "",
-                                 last_facing_, amount});
+                                 skill_id, amount});
       PresentationEvent outgoing;
       outgoing.type = PresentationEventType::DamageApplied;
       outgoing.actor_id = target ? *target : "";
@@ -1099,6 +1140,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     // chronicle payloads.
     if (const auto* lifecycle = json_string(state->get("lifecycle")))
       model_.lifecycle = *lifecycle;
+    model_.player.level = static_cast<int>(
+        json_number(state->get("level"), model_.player.level));
     // TASK-0156: the dev:state snapshot carries the same authoritative
     // passiveTree envelope; keep the mirror current between logins. TASK-0162:
     // a malformed snapshot fails closed and surfaces its diagnostic.
@@ -1111,6 +1154,17 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
           static_cast<int>(json_number(hp->get("max"), model_.player.life_max));
       model_.player.alive = model_.player.life > 0;
     }
+    if (const auto* resource = state->get("resource")) {
+      model_.player.resource = static_cast<int>(
+          json_number(resource->get("current"), model_.player.resource));
+      model_.player.resource_max = static_cast<int>(
+          json_number(resource->get("max"), model_.player.resource_max));
+    }
+    model_.player.cooldown_ticks = static_cast<int>(json_number(
+        state->get("cooldownTicks"), model_.player.cooldown_ticks));
+    model_.player.war_cry_ticks_remaining = static_cast<int>(json_number(
+        state->get("warCryTicksRemaining"),
+        model_.player.war_cry_ticks_remaining));
     if (const auto* attributes = state->get("attributes")) {
       model_.attr_strength = static_cast<int>(
           json_number(attributes->get("strength"), model_.attr_strength));

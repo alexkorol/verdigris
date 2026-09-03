@@ -286,6 +286,7 @@ void LocalCoreSession::translate_new_events() {
       // TASK-0122 Phase A: the previously-dropped lifecycle events now cross
       // the presentation seam so every renderer consumes PresentationEvents.
       case verdigris::EventType::ScionLost: out.type = PresentationEventType::ScionLost; break;
+      case verdigris::EventType::BuffApplied: out.type = PresentationEventType::BuffApplied; break;
       case verdigris::EventType::BuffExpired: out.type = PresentationEventType::BuffExpired; break;
       default: continue;  // remaining core events gain mappings with 0061+
     }

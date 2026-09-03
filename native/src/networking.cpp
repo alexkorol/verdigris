@@ -662,6 +662,10 @@ void ProtocolSession::reset_world_for_new_socket() {
   shop_open_ = false;
   bank_open_ = false;
   active_skill_id_ = "primary-attack";
+  combat_clock_ms_ = 0;
+  resource_regen_at_ms_ = 0;
+  war_cry_until_ms_ = 0;
+  war_cry_attack_bonus_ = 0;
   pending_chronicles_ = false;
   current_node_id_.clear();
   current_child_id_.clear();
@@ -681,7 +685,12 @@ std::int64_t ProtocolSession::now_ms() { return std::chrono::duration_cast<std::
 std::string ProtocolSession::player_payload() const {
   JsonValue::Object player; const auto position=world_->position();
   put(player,"uuid",identity_); put(player,"username",!username_.empty()?username_:(active_scion_name_.empty()?identity_:active_scion_name_)); put(player,"socket_id",socket_id_); put(player,"sceneId",world_->scene_id()); put(player,"x",position.x); put(player,"y",position.y); put(player,"facing",world_->facing());
-  { const auto* actor=simulation_->actor(simulation_->scion().actor_id); put(player,"level",actor?actor->stats.level:1); }
+  { const auto* actor=simulation_->actor(simulation_->scion().actor_id);
+    put(player,"level",actor?actor->stats.level:1);
+    put(player,"life",actor?actor->stats.life:0);
+    put(player,"lifeMax",actor?actor->stats.life_max:0);
+    put(player,"resource",actor?actor->stats.resource:0);
+    put(player,"resourceMax",actor?actor->stats.resource_max:0); }
   put(player,"passiveTree",passive_tree_json());
   put(player,"quests",quests_json());
   JsonValue::Array slots;
@@ -989,6 +998,15 @@ JsonValue ProtocolSession::snapshot() const {
   }
   JsonValue::Object lifecycle_details; put(lifecycle_details,"deaths",lifecycle_deaths_); put(lifecycle_details,"respawn",JsonValue::Object{{"at",static_cast<double>(respawn_at_ms_)}}); put(state,"lifecycleDetails",std::move(lifecycle_details));
   JsonValue::Object hp; put(hp,"current",actor?actor->stats.life:0); put(hp,"max",actor?actor->stats.life_max:0); put(state,"hp",std::move(hp));
+  JsonValue::Object resource;
+  put(resource,"current",actor?actor->stats.resource:0);
+  put(resource,"max",actor?actor->stats.resource_max:0);
+  put(state,"resource",std::move(resource));
+  const int cooldown_ms = world_->player_cooldown_remaining_ms(combat_clock_ms_);
+  put(state,"cooldownTicks",(cooldown_ms+kSimulationTickMs-1)/kSimulationTickMs);
+  put(state,"warCryTicksRemaining",war_cry_until_ms_>combat_clock_ms_
+      ? static_cast<int>((war_cry_until_ms_-combat_clock_ms_+kSimulationTickMs-1)/kSimulationTickMs)
+      : 0);
   JsonValue::Array monsters; for (const auto& candidate:world_->monsters()) if (candidate.alive) {
     JsonValue::Object monster; put(monster,"uuid",candidate.uuid); put(monster,"id",candidate.id); put(monster,"name",candidate.name);
     put(monster,"x",candidate.x); put(monster,"y",candidate.y); put(monster,"level",candidate.level); put(monster,"rarity",candidate.rarity);
@@ -2299,7 +2317,7 @@ void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std
   // N4: kill rewards go through world_->drop_monster_loot inside
   // advance_combat; the legacy synthetic 'drop' trophy event is retired.
   JsonValue::Object data; put(data,"attackerId",event.attacker_id); put(data,"attackerName",event.attacker_name); put(data,"targetId",event.target_id);
-  put(data,"targetName",event.target_name); put(data,"targetType",event.target_id==identity_?"player":"monster"); put(data,"skillId",event.target_id==identity_?event.skill_id:active_skill_id_);
+  put(data,"targetName",event.target_name); put(data,"targetType",event.target_id==identity_?"player":"monster"); put(data,"skillId",event.skill_id.empty()?"primary-attack":event.skill_id);
   put(data,"amount",event.amount); put(data,"died",event.died); put(data,"health",JsonValue::Object{{"current",event.health},{"max",event.health_max}});
   // combat/index.js hit parity fields.
   put(data,"baseAmount",event.base_amount); put(data,"beastbaneAmount",event.beastbane_amount);
@@ -2307,8 +2325,54 @@ void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std
   put(data,"critical",event.critical); put(data,"attackStyle",event.attack_style);
   emit_world(Envelope{"combat:hit",JsonValue(std::move(data))},emit);
 }
+
+void ProtocolSession::emit_combat_state(
+    const std::function<void(const Envelope&)>& emit) const {
+  const auto* actor = simulation_->actor(simulation_->scion().actor_id);
+  const int cooldown_ms = world_->player_cooldown_remaining_ms(combat_clock_ms_);
+  const int cooldown_ticks =
+      (cooldown_ms + kSimulationTickMs - 1) / kSimulationTickMs;
+  const int war_cry_ticks = war_cry_until_ms_ > combat_clock_ms_
+      ? static_cast<int>((war_cry_until_ms_ - combat_clock_ms_ +
+                          kSimulationTickMs - 1) / kSimulationTickMs)
+      : 0;
+  JsonValue::Object data;
+  put(data, "resource", actor ? actor->stats.resource : 0);
+  put(data, "resourceMax", actor ? actor->stats.resource_max : 0);
+  put(data, "cooldownTicks", cooldown_ticks);
+  put(data, "warCryTicksRemaining", war_cry_ticks);
+  emit(Envelope{"player:combat-state", JsonValue(std::move(data))});
+}
+
+void ProtocolSession::refresh_combat_state(
+    std::int64_t now_ms_value, const std::function<void(const Envelope&)>& emit) {
+  combat_clock_ms_ = (std::max)(combat_clock_ms_, now_ms_value);
+  auto* actor = simulation_->actor(simulation_->scion().actor_id);
+  if (!actor) return;
+  if (resource_regen_at_ms_ == 0) resource_regen_at_ms_ = combat_clock_ms_;
+  const std::int64_t elapsed = combat_clock_ms_ - resource_regen_at_ms_;
+  if (elapsed >= kSimulationTickMs) {
+    const std::int64_t ticks = elapsed / kSimulationTickMs;
+    const std::int64_t restored = ticks *
+        presentation_constants::kResourceRegenPerTick;
+    actor->stats.resource = (std::min)(
+        actor->stats.resource_max,
+        actor->stats.resource + static_cast<int>((std::min<std::int64_t>)(
+            restored, actor->stats.resource_max)));
+    resource_regen_at_ms_ += ticks * kSimulationTickMs;
+  }
+  if (war_cry_attack_bonus_ > 0 && combat_clock_ms_ >= war_cry_until_ms_) {
+    war_cry_attack_bonus_ = 0;
+    war_cry_until_ms_ = 0;
+    emit(Envelope{"player:skill:effect",
+                  JsonValue::Object{{"skillId", "war-cry"},
+                                    {"active", false}}});
+  }
+}
+
 void ProtocolSession::process_combat(std::int64_t now, const std::function<void(const Envelope&)>& emit) {
   auto* actor = simulation_->actor(simulation_->scion().actor_id); if (!actor) return;
+  refresh_combat_state(now, emit);
   const int life_before = actor->stats.life;
   world_->set_guaranteed_elite_gear(active_quest_ == 1 && quest_objective_ == 0);
   const auto combat_totals = wear_.totals();
@@ -2325,9 +2389,11 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
   int str_attr = 10, dex_attr = 10, int_attr = 10;
   tree_attributes(&str_attr, &dex_attr, &int_attr);
   const bool mana_skill = active_skill_id_.rfind("ability", 0) == 0;
-  const int player_power = (std::max)(1, static_cast<int>(std::lround(mana_skill
-      ? 4.0 + int_attr * 0.5
-      : 2.0 + str_attr * 0.45 + wear_attack * 1.5)));
+  const int player_power = (std::max)(
+      1, static_cast<int>(std::lround(mana_skill
+          ? 4.0 + int_attr * 0.5
+          : 2.0 + str_attr * 0.45 + wear_attack * 1.5)) +
+             war_cry_attack_bonus_);
   const bool engaged_here = world_->engaged_by().empty() || world_->engaged_by() == identity_;
   const auto events = world_->advance_combat(actor->stats.level, engaged_here ? player_power : 0, actor->stats.life, actor->stats.life_max, now);
   // N5 respawn ward: monsters cannot damage a freshly-respawned scion until
@@ -2762,7 +2828,71 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     }
     return;
   }
-  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ if (respawn_protection_until_ms_ > 0) respawn_protection_until_ms_ = 0; active_skill_id_=as_string(payload?payload->get("skillId"):nullptr,"primary-attack"); world_->set_engaged_by(identity_); const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); const auto wear_totals=wear_.totals(); const int wear_bonus=(std::max)((std::max)(wear_totals.attack.stab,wear_totals.attack.slash),(std::max)(wear_totals.attack.crush,wear_totals.attack.range)); world_->start_player_attack(actor->stats.level,actor->stats.attack+(std::max)(0,wear_bonus),now_ms(),direction); process_combat(now_ms(),emit); /* real-clock cadence: polls advance combat */ } return; }
+  if (envelope.event=="player:skill:trigger") {
+    auto* actor=simulation_->actor(simulation_->scion().actor_id);
+    if (actor&&world_->in_instance()) {
+      const std::int64_t action_now=(std::max)(combat_clock_ms_,now_ms());
+      refresh_combat_state(action_now,emit);
+      // Native clients send `skill`; browser/legacy scenarios send
+      // `skillId`. Both names resolve through one canonical vocabulary.
+      active_skill_id_=as_string(payload?payload->get("skillId"):nullptr);
+      if(active_skill_id_.empty())
+        active_skill_id_=as_string(payload?payload->get("skill"):nullptr,"melee");
+      if(active_skill_id_=="primary-attack") active_skill_id_="melee";
+      const auto direction=as_string(payload?payload->get("direction"):nullptr,"down");
+
+      if(active_skill_id_=="dash") {
+        if(world_->apply_dash(direction,action_now)) {
+          if(respawn_protection_until_ms_>0) respawn_protection_until_ms_=0;
+          emit_movement(emit);
+        }
+        process_combat(action_now,emit);
+        emit_combat_state(emit);
+        return;
+      }
+      if(active_skill_id_=="war-cry") {
+        if(actor->stats.resource>=presentation_constants::kWarCryResourceCost) {
+          actor->stats.resource-=presentation_constants::kWarCryResourceCost;
+          war_cry_attack_bonus_=presentation_constants::kWarCryAttackBonus;
+          war_cry_until_ms_=action_now+
+              presentation_constants::kWarCryDurationTicks*kSimulationTickMs;
+          if(respawn_protection_until_ms_>0) respawn_protection_until_ms_=0;
+          emit(Envelope{"player:skill:effect",
+                        JsonValue::Object{
+                            {"skillId","war-cry"},{"active",true},
+                            {"attackBonus",war_cry_attack_bonus_},
+                            {"durationMs",presentation_constants::kWarCryDurationTicks*
+                                              kSimulationTickMs}}});
+        }
+        process_combat(action_now,emit);
+        emit_combat_state(emit);
+        return;
+      }
+
+      const int resource_cost=active_skill_id_=="thrust"
+          ? presentation_constants::kThrustResourceCost
+          : active_skill_id_=="sweep"
+              ? presentation_constants::kSweepResourceCost : 0;
+      const bool known=active_skill_id_=="melee"||active_skill_id_=="thrust"||
+                       active_skill_id_=="sweep";
+      const auto wear_totals=wear_.totals();
+      const int wear_bonus=(std::max)(
+          (std::max)(wear_totals.attack.stab,wear_totals.attack.slash),
+          (std::max)(wear_totals.attack.crush,wear_totals.attack.range));
+      const bool accepted=known&&actor->stats.resource>=resource_cost&&
+          world_->start_player_attack(actor->stats.level,
+              actor->stats.attack+(std::max)(0,wear_bonus),action_now,direction,
+              active_skill_id_);
+      if(accepted) {
+        actor->stats.resource-=resource_cost;
+        if(respawn_protection_until_ms_>0) respawn_protection_until_ms_=0;
+        world_->set_engaged_by(identity_);
+      }
+      process_combat(action_now,emit);
+      emit_combat_state(emit);
+    }
+    return;
+  }
   if (envelope.event=="dev:give") { if (payload) handle_give(*payload,emit); return; }
   if (envelope.event=="dev:drop") { if (payload) handle_drop(*payload,emit); return; }
   if (envelope.event=="dev:forcecritical") { world_->player_combat_mods().force_critical=true; emit_message(emit,"Your next strike will be a critical hit."); return; }

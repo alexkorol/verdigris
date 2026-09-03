@@ -116,6 +116,9 @@ class ProtocolSession {
   void process_combat(std::int64_t now_ms, const std::function<void(const Envelope&)>& emit);
   void emit_combat_event(const WorldCombatEvent& event,
                          const std::function<void(const Envelope&)>& emit);
+  void refresh_combat_state(std::int64_t now_ms,
+                            const std::function<void(const Envelope&)>& emit);
+  void emit_combat_state(const std::function<void(const Envelope&)>& emit) const;
   // N4 item pipeline (dev.js / inventory.js / wear-slots.js / registry.js).
   void emit_inventory_refresh(const std::function<void(const Envelope&)>& emit) const;
   void emit_ground_change(const std::function<void(const Envelope&)>& emit) const;
@@ -221,6 +224,10 @@ class ProtocolSession {
   std::vector<std::string> endgame_map_modifiers_;
   std::set<std::string> kitted_scions_;
   std::string active_skill_id_ = "primary-attack";
+  std::int64_t combat_clock_ms_ = 0;
+  std::int64_t resource_regen_at_ms_ = 0;
+  std::int64_t war_cry_until_ms_ = 0;
+  int war_cry_attack_bonus_ = 0;
   // N6 combat experience (experience.js / shared/ui.js curve).
   long long combat_xp_ = 0;
   void maybe_respawn(std::int64_t now_ms);

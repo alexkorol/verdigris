@@ -121,6 +121,12 @@ void scion_lost_beat_contract() {
 
 void buff_expired_beat_contract() {
   WorldView world = world_with_player_and_foe("right");
+  PresentationFx applied_fx;
+  PresentationEvent applied{PresentationEventType::BuffApplied, "scion-1", "",
+                            "war-cry", 0, false, {}};
+  apply_presentation_event(applied_fx, world, applied, 0);
+  check(count_kind(applied_fx, EffectFx::Kind::WarCryAura) == 1,
+        "phase-a: BuffApplied(war-cry) produces the bright aura beat");
   PresentationFx fx;
   PresentationEvent expired{PresentationEventType::BuffExpired, "scion-1", "",
                             "war-cry", 0, false, {}};

@@ -925,12 +925,16 @@ class WorldSimulation {
     }
     return false;
   }
-  void kill_all_monsters() { for (auto& monster : monsters_) { monster.alive = false; monster.life = 0; } active_target_.clear(); }
+  void kill_all_monsters() { for (auto& monster : monsters_) { monster.alive = false; monster.life = 0; } active_target_.clear(); pending_player_skill_.clear(); auto_player_melee_ = false; }
   const TileGrid& grid() const { return grid_; }
   bool in_instance() const { return scene_type_ == "instance"; }
 
   // One player:move sample.  Returns true when the step was applied.
   bool apply_movement_sample(const std::string& direction, std::int64_t now_ms);
+  // A dash is resolved by the same tile collision/portal rules as ordinary
+  // movement, but advances up to the authored ten movement samples in one
+  // authoritative action. It never enters the attack pipeline.
+  bool apply_dash(const std::string& direction, std::int64_t now_ms);
   // dev:teleport: floors onto the target tile, then runs the portal check
   // (landing on the entry stairs returns to town, like the JS game loop).
   void teleport(int x, int y, std::int64_t now_ms);
@@ -948,12 +952,17 @@ class WorldSimulation {
   // N3 deterministic combat seam. The transport supplies the authoritative
   // player actor's level/life; this world owns tile-space targets and emits
   // protocol-ready facts without putting networking into the core.
-  std::vector<WorldCombatEvent> start_player_attack(int player_level, int player_attack,
-                                                     std::int64_t now_ms,
-                                                     const std::string& direction);
+  // Queues exactly one accepted combat action. Cooldown and range are owned
+  // here so repeated wire inputs cannot reset the cadence or manufacture
+  // extra hits. The caller deducts the skill's authoritative resource cost
+  // only when this returns true.
+  bool start_player_attack(int player_level, int player_attack,
+                           std::int64_t now_ms, const std::string& direction,
+                           const std::string& skill_id = "melee");
   std::vector<WorldCombatEvent> advance_combat(int player_level, int player_attack,
                                                int& player_life, int player_life_max,
                                                std::int64_t now_ms);
+  int player_cooldown_remaining_ms(std::int64_t now_ms) const;
   void set_level(int level);
   void heal_player(int& player_life, int player_life_max);
   // Display name for a template/layout pair (falls back to template-only,
@@ -1035,6 +1044,8 @@ public:
   const std::string& engaged_by() const { return engaged_by_; }
 private:
   std::uint64_t next_player_attack_ms_ = 0;
+  std::string pending_player_skill_;
+  bool auto_player_melee_ = false;
   std::uint64_t next_boss_telegraph_ms_ = 0;
   bool boss_warning_seen_ = false;
   int player_level_ = 1;

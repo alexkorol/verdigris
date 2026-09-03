@@ -1,5 +1,32 @@
 # Native reconstitution handoff
 
+## 2026-09-02 — authoritative remote combat actions
+
+- The native client's `skill` payload and the legacy/browser `skillId`
+  payload now resolve through one canonical server vocabulary. Melee,
+  Thrust, Sweep, War Cry, and Dash no longer fall through to one cosmetically
+  renamed primary attack.
+- Melee retains click-to-attack cadence at the shared three-tile contact
+  scale. Thrust is a discrete forward five-tile strike with 1.3x damage and
+  a 10-resource cost; Sweep is a discrete three-tile multi-target attack
+  with 0.75x per-target damage, a 15-resource cost, and a longer cooldown.
+  Rejected input cannot reset the server clock, spend resource, or create an
+  extra hit.
+- War Cry is now an authoritative timed self-buff: it spends 20 resource,
+  adds the shared +4 attack bonus for its shared 20-tick window, emits apply
+  and expiry beats, and never deals disguised attack damage. Dash advances
+  through ordinary collision and stair rules and never enters combat.
+- Resource regeneration, cooldown ticks, and War Cry duration now cross the
+  protocol into the remote model. The Framekit quickbar and resource orb
+  therefore show server truth immediately through `player:combat-state`,
+  while confirmed Sweep and War Cry events select their distinct VFX.
+- Focused protocol tests cover the native-client field name, thrust-only
+  range, exact skill identity, anti-spam, resource costs, multi-body Sweep,
+  War Cry's real damage delta, and damage-free dash. The full native gate
+  passed, including the ordinary-combat Chronicle succession/relic journey
+  and every visual scenario; the 3440x1440 frame-budget result was 9.7 ms
+  average against the 40 ms ceiling.
+
 ## 2026-09-02 — owner-authored House and Scion founding
 
 - The Chronicles front door no longer silently derives permanent lineage

@@ -1467,6 +1467,12 @@ constexpr int kInstanceMonsterCount = 20;
 constexpr int kN3TrashLife = 30;
 constexpr int kN3PlayerDamage = 18;
 constexpr int kN3PlayerAttackIntervalMs = 350;
+constexpr int kN3SweepAttackIntervalMs = 525;
+// The local presentation's 143-unit melee reach spans roughly three 48-unit
+// protocol tiles; thrust keeps its authored 1.5x reach rounded outward.
+constexpr int kN3MeleeRangeTiles = 3;
+constexpr int kN3ThrustRangeTiles = 5;
+constexpr int kN3SweepRangeTiles = 3;
 constexpr int kN3MonsterDamage = 5;
 constexpr int kN3BossLife = 120;
 constexpr int kN3BossDamage = 12;
@@ -1559,6 +1565,22 @@ bool WorldSimulation::apply_movement_sample(const std::string& direction, std::i
   return true;
 }
 
+bool WorldSimulation::apply_dash(const std::string& direction, std::int64_t now_ms) {
+  bool moved = false;
+  const std::string starting_scene = scene_id_;
+  for (int step = 0; step < kDashMovementTicks; ++step) {
+    if (!apply_movement_sample(
+            direction, now_ms + step * static_cast<std::int64_t>(tile_movement::kSampleMs))) {
+      break;
+    }
+    moved = true;
+    // A stair transition owns the remainder of the action; never carry dash
+    // momentum into a newly-created floor or back through the town gate.
+    if (scene_id_ != starting_scene) break;
+  }
+  return moved;
+}
+
 void WorldSimulation::teleport(int x, int y, std::int64_t now_ms) {
   // dev.js dev:teleport floors onto the target tile and outranks any
   // in-flight client interpolation with a fresh zero-duration step.
@@ -1612,6 +1634,8 @@ void WorldSimulation::return_to_town() {
   ground_items_ = std::move(town_ground_items_);
   town_ground_items_.clear();
   active_target_.clear();
+  pending_player_skill_.clear();
+  auto_player_melee_ = false;
   grid_.width = kTownSize;
   grid_.height = kTownSize;
   grid_.walkable.assign(static_cast<std::size_t>(kTownSize) * kTownSize, 1);
@@ -1841,6 +1865,8 @@ void WorldSimulation::enter_solo_instance(const std::string& template_id, const 
     ground_items_.clear();  // instance -> instance hop retires the old floor
   }
   active_target_.clear();
+  pending_player_skill_.clear();
+  auto_player_melee_ = false;
   boss_warning_seen_ = false;
   next_boss_telegraph_ms_ = 0;
   generate_instance();
@@ -1860,56 +1886,66 @@ void WorldSimulation::heal_player(int& player_life, int player_life_max) {
   player_life = player_life_max;
 }
 
-std::vector<WorldCombatEvent> WorldSimulation::start_player_attack(int player_level,
-                                                                    int player_attack,
-                                                                    std::int64_t now_ms,
-                                                                    const std::string& direction) {
+bool WorldSimulation::start_player_attack(int player_level, int player_attack,
+                                          std::int64_t now_ms,
+                                          const std::string& direction,
+                                          const std::string& requested_skill) {
   player_level_ = std::max(1, player_level);
+  const auto now = static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms));
+  if (now < next_player_attack_ms_ || !pending_player_skill_.empty()) return false;
+
+  std::string skill = requested_skill;
+  if (skill.empty() || skill == "primary-attack") skill = "melee";
+  if (skill != "melee" && skill != "thrust" && skill != "sweep") return false;
+
   const Vec2 here = tile_movement::occupied_tile(position_);
+  int aim_dx = 0, aim_dy = 0;
+  if (direction.find("left") != std::string::npos) aim_dx = -1;
+  if (direction.find("right") != std::string::npos) aim_dx = 1;
+  if (direction.find("up") != std::string::npos) aim_dy = -1;
+  if (direction.find("down") != std::string::npos) aim_dy = 1;
+  const int range = skill == "thrust" ? kN3ThrustRangeTiles
+                                       : skill == "sweep" ? kN3SweepRangeTiles
+                                                          : kN3MeleeRangeTiles;
   WorldMonster* chosen = nullptr;
   int best = std::numeric_limits<int>::max();
-  // A boss telegraph is an authored encounter contract; when the player is
-  // standing on its doorstep, prefer the named boss over incidental pack
-  // members sharing the tile ring.
+  int best_priority = -1;
+  int best_aim = std::numeric_limits<int>::min();
   for (auto& monster : monsters_) {
-    if (!monster.alive || !monster.boss) continue;
-    const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
-    if (distance <= 2) { chosen = &monster; best = distance; break; }
-  }
-  if (!chosen) {
-    for (auto& monster : monsters_) {
-      if (!monster.alive || !monster.empowered) continue;
-      const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
-      if (distance <= 2) { chosen = &monster; best = distance; break; }
+    if (!monster.alive) continue;
+    const int dx = monster.x - here.x;
+    const int dy = monster.y - here.y;
+    const int distance = std::abs(dx) + std::abs(dy);
+    if (distance > range) continue;
+    const int aim = aim_dx * dx + aim_dy * dy;
+    if (skill == "thrust" && aim <= 0) continue;
+    const int priority = monster.boss ? 2 : monster.empowered ? 1 : 0;
+    if (priority > best_priority ||
+        (priority == best_priority &&
+         (distance < best || (distance == best && aim > best_aim)))) {
+      chosen = &monster;
+      best = distance;
+      best_aim = aim;
+      best_priority = priority;
     }
   }
-  if (!chosen) {
-    // Nearest alive monster wins (combat/index.js nearest-target aim). The
-    // scan must keep improving `best` — an early-out here silently locks the
-    // aim onto the first spawn in the pack list. Among equally-near monsters
-    // the aimed direction breaks the tie (the browser swings where the
-    // player faces), so repeated aimed swings hold focus on one target
-    // instead of drifting across a pack (healer-race focus).
-    int aim_dx = 0, aim_dy = 0;
-    if (direction.find("left") != std::string::npos) aim_dx = -1;
-    if (direction.find("right") != std::string::npos) aim_dx = 1;
-    if (direction.find("up") != std::string::npos) aim_dy = -1;
-    if (direction.find("down") != std::string::npos) aim_dy = 1;
-    int best_aim = std::numeric_limits<int>::min();
-    for (auto& monster : monsters_) {
-      if (!monster.alive) continue;
-      const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
-      const int aim = aim_dx * (monster.x - here.x) + aim_dy * (monster.y - here.y);
-      if (distance < best || (distance == best && aim > best_aim)) {
-        best = distance; best_aim = aim; chosen = &monster;
-      }
-    }
-  }
-  if (!chosen) return {};
+  if (!chosen) return false;
   active_target_ = chosen->uuid;
-  next_player_attack_ms_ = static_cast<std::uint64_t>(now_ms);
+  pending_player_skill_ = skill;
+  // Primary click-to-attack keeps swinging at its chosen target; named
+  // abilities are discrete casts. The cooldown timestamp is never moved by
+  // rejected repeat input, preserving both responsive play and anti-spam.
+  auto_player_melee_ = skill == "melee";
+  next_player_attack_ms_ = now +
+      (skill == "sweep" ? kN3SweepAttackIntervalMs : kN3PlayerAttackIntervalMs);
   (void)player_attack;
-  return {};
+  return true;
+}
+
+int WorldSimulation::player_cooldown_remaining_ms(std::int64_t now_ms) const {
+  const auto now = static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms));
+  if (now >= next_player_attack_ms_) return 0;
+  return static_cast<int>(next_player_attack_ms_ - now);
 }
 
 std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
@@ -1918,6 +1954,7 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
                                                               int player_life_max,
                                                               std::int64_t now_ms) {
   std::vector<WorldCombatEvent> events;
+  (void)player_level;
   const auto now = static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms));
   if (active_target_.empty()) {
     const Vec2 here = tile_movement::occupied_tile(position_);
@@ -1972,58 +2009,106 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       if (player_life == 0) break;
     }
   }
-  if (active_target_.empty()) return events;
+  if (active_target_.empty()) {
+    pending_player_skill_.clear();
+    auto_player_melee_ = false;
+    return events;
+  }
   WorldMonster* target = nullptr;
   for (auto& monster : monsters_) if (monster.uuid == active_target_ && monster.alive) { target = &monster; break; }
-  if (!target) { active_target_.clear(); return events; }
+  if (!target) { active_target_.clear(); pending_player_skill_.clear(); auto_player_melee_ = false; return events; }
   { // JS combat: walking out of melee reach disengages - the swing loop must
     // not chase a target across the map (build-comparison parking relies on it).
     const Vec2 here = tile_movement::occupied_tile(position_);
-    if (std::abs(target->x - here.x) > 4 || std::abs(target->y - here.y) > 4) {
+    if (std::abs(target->x - here.x) > kN3ThrustRangeTiles ||
+        std::abs(target->y - here.y) > kN3ThrustRangeTiles) {
       active_target_.clear();
+      pending_player_skill_.clear();
+      auto_player_melee_ = false;
       return events;
     }
   }
-  if (player_attack <= 0) return events;  // another session owns the swing
-  fprintf(stderr,"[swing] tgt=%s now=%llu next=%llu range-ok\n",active_target_.c_str(),(unsigned long long)now,(unsigned long long)next_player_attack_ms_);
-  if (now >= next_player_attack_ms_) {
-    // N4 hit pipeline (server/core/combat/index.js applyHitToMonster):
-    // base roll -> Beastbane vs 'beast'-tagged targets -> critical multiplier
-    // on the beastbane-adjusted figure (force-critical consumed first).
-    const int base = std::max(1, player_attack > 0 ? player_attack : kN3PlayerDamage);
-    const bool beast = std::find(target->tags.begin(), target->tags.end(), "beast") != target->tags.end();
-    const int beastbane_percent = beast
-        ? std::max(0, std::min(100, player_mods_.damage_against_beasts)) : 0;
-    const int beastbane_damage = static_cast<int>(std::lround(
-        base * (1.0 + beastbane_percent / 100.0)));
-    bool critical = false;
-    if (player_mods_.force_critical) {
-      player_mods_.force_critical = false;
-      critical = true;
-    } else if (player_mods_.critical_chance > 0) {
-      const int roll = 1 + static_cast<int>(next_world_random() % 100);
-      critical = roll <= std::max(0, std::min(75, player_mods_.critical_chance));
+  if (pending_player_skill_.empty() && auto_player_melee_ &&
+      now >= next_player_attack_ms_) {
+    const Vec2 here = tile_movement::occupied_tile(position_);
+    const int distance = std::abs(target->x - here.x) +
+                         std::abs(target->y - here.y);
+    if (distance <= kN3MeleeRangeTiles) {
+      pending_player_skill_ = "melee";
+      next_player_attack_ms_ = now + kN3PlayerAttackIntervalMs;
     }
-    const int damage = critical
-        ? std::max(beastbane_damage + 1, static_cast<int>(std::lround(beastbane_damage * 1.5)))
-        : beastbane_damage;
-    target->life = std::max(0, target->life - damage);
-    WorldCombatEvent hit;
-    hit.type = "hit"; hit.attacker_id = player_uuid_; hit.attacker_name = "Adventurer";
-    hit.target_id = target->uuid; hit.target_name = target->name; hit.skill_id = "primary-attack";
-    hit.amount = damage; hit.health = target->life; hit.health_max = target->life_max; hit.died = target->life == 0;
-    hit.base_amount = base; hit.beastbane_amount = beastbane_damage;
-    hit.beastbane_percent = beastbane_percent; hit.beastbane = beastbane_percent > 0;
-    hit.critical = critical; hit.attack_style = player_mods_.attack_style;
-    events.push_back(hit);
-    next_player_attack_ms_ = now + kN3PlayerAttackIntervalMs;
-    if (target->life == 0) {
-      target->alive = false;
-      WorldCombatEvent death = hit; death.type = "death"; events.push_back(death);
-      // N4: kill rewards land through the real loot rule (loot.js
-      // dropMonsterLoot) — coins always, rarity-gated gear roll.
-      drop_monster_loot(*target, player_mods_.goods_found);
+  }
+  if (player_attack > 0 && !pending_player_skill_.empty()) {
+    const std::string skill = pending_player_skill_;
+    pending_player_skill_.clear();  // one accepted request resolves once
+    const Vec2 here = tile_movement::occupied_tile(position_);
+    std::vector<WorldMonster*> struck;
+    if (skill == "sweep") {
+      for (auto& monster : monsters_) {
+        if (!monster.alive) continue;
+        const int distance = std::abs(monster.x - here.x) +
+                             std::abs(monster.y - here.y);
+        if (distance <= kN3SweepRangeTiles) struck.push_back(&monster);
+      }
+    } else {
+      const int range = skill == "thrust" ? kN3ThrustRangeTiles
+                                           : kN3MeleeRangeTiles;
+      const int distance = std::abs(target->x - here.x) +
+                           std::abs(target->y - here.y);
+      if (distance <= range) struck.push_back(target);
+    }
+
+    bool active_target_died = false;
+    for (WorldMonster* struck_target : struck) {
+      // N4 hit pipeline (server/core/combat/index.js applyHitToMonster):
+      // skill coefficient -> Beastbane -> critical multiplier. Sweep rolls
+      // each target independently; a forced critical is consumed by the
+      // first body hit, matching the single-use modifier contract.
+      int base = std::max(1, player_attack > 0 ? player_attack : kN3PlayerDamage);
+      if (skill == "thrust") base = std::max(1, base * 13 / 10);
+      else if (skill == "sweep") base = std::max(1, base * 3 / 4);
+      const bool beast = std::find(struck_target->tags.begin(),
+                                   struck_target->tags.end(), "beast") !=
+                         struck_target->tags.end();
+      const int beastbane_percent = beast
+          ? std::max(0, std::min(100, player_mods_.damage_against_beasts)) : 0;
+      const int beastbane_damage = static_cast<int>(std::lround(
+          base * (1.0 + beastbane_percent / 100.0)));
+      bool critical = false;
+      if (player_mods_.force_critical) {
+        player_mods_.force_critical = false;
+        critical = true;
+      } else if (player_mods_.critical_chance > 0) {
+        const int roll = 1 + static_cast<int>(next_world_random() % 100);
+        critical = roll <= std::max(0, std::min(75, player_mods_.critical_chance));
+      }
+      const int damage = critical
+          ? std::max(beastbane_damage + 1,
+                     static_cast<int>(std::lround(beastbane_damage * 1.5)))
+          : beastbane_damage;
+      struck_target->life = std::max(0, struck_target->life - damage);
+      WorldCombatEvent hit;
+      hit.type = "hit"; hit.attacker_id = player_uuid_;
+      hit.attacker_name = "Adventurer";
+      hit.target_id = struck_target->uuid; hit.target_name = struck_target->name;
+      hit.skill_id = skill;
+      hit.amount = damage; hit.health = struck_target->life;
+      hit.health_max = struck_target->life_max; hit.died = struck_target->life == 0;
+      hit.base_amount = base; hit.beastbane_amount = beastbane_damage;
+      hit.beastbane_percent = beastbane_percent;
+      hit.beastbane = beastbane_percent > 0;
+      hit.critical = critical; hit.attack_style = player_mods_.attack_style;
+      events.push_back(hit);
+      if (struck_target->life == 0) {
+        struck_target->alive = false;
+        WorldCombatEvent death = hit; death.type = "death"; events.push_back(death);
+        drop_monster_loot(*struck_target, player_mods_.goods_found);
+        if (struck_target->uuid == active_target_) active_target_died = true;
+      }
+    }
+    if (active_target_died) {
       active_target_.clear();
+      auto_player_melee_ = false;
       return events;
     }
   }

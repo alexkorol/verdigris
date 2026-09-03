@@ -116,6 +116,8 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
   world.player.resource_max = model.player.resource_max;
   world.player.attack = model.player.attack;
   world.player.level = model.player.level;
+  world.player.cooldown_ticks = model.player.cooldown_ticks;
+  world.player.war_cry_ticks_remaining = model.player.war_cry_ticks_remaining;
   world.player.alive = model.player.alive;
   world.has_extraction = model.scene.has_stairs_up;
   // TASK-0153 remote phase view: this wire carries no dedicated phase event,
@@ -236,7 +238,10 @@ verdigris::Vec2 event_anchor(const WorldView& world, const PresentationFx& fx,
 
 void apply_presentation_event(PresentationFx& fx, const WorldView& world,
                               const PresentationEvent& event, std::uint64_t now_tick) {
-  const bool to_player = event.text == "incoming" || event.type == PresentationEventType::ScionDied;
+  const bool to_player = event.text == "incoming" ||
+                         event.type == PresentationEventType::ScionDied ||
+                         event.type == PresentationEventType::BuffApplied ||
+                         event.type == PresentationEventType::BuffExpired;
   const verdigris::Vec2 at = event_anchor(world, fx, event, to_player);
   const double ex = static_cast<double>(at.x);
   const double ey = static_cast<double>(at.y);
@@ -248,8 +253,11 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       const double swing_angle =
           std::atan2(static_cast<double>(world.player.facing.y),
                      static_cast<double>(world.player.facing.x));
-      fx.effects.push_back({EffectFx::Kind::Swing, static_cast<double>(world.player.position.x),
-                            static_cast<double>(world.player.position.y), swing_angle, 0, 6});
+      fx.effects.push_back({event.text == "sweep" ? EffectFx::Kind::SweepArc
+                                                   : EffectFx::Kind::Swing,
+                            static_cast<double>(world.player.position.x),
+                            static_cast<double>(world.player.position.y), swing_angle, 0,
+                            event.text == "sweep" ? 8 : 6});
       break;
     }
     case PresentationEventType::DamageApplied: {
@@ -313,6 +321,10 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
            static_cast<double>(world.player.position.y), 0.0, 0,
            phase_a::kScionLostRingTtlTicks});
       fx.screen_pulse_ticks = phase_a::kScionLostPulseTicks;
+      break;
+    case PresentationEventType::BuffApplied:
+      if (event.text.empty() || event.text == "war-cry")
+        fx.effects.push_back({EffectFx::Kind::WarCryAura, ex, ey, 0.0, 0, 14});
       break;
     case PresentationEventType::BuffExpired:
       // TASK-0122 Phase A: the war-cry end contract beat — an imploding,
