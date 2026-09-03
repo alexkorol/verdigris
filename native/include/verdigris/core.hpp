@@ -537,6 +537,24 @@ struct CombatModifiers {
   int movement_speed_percent = 0;
   int ember_resistance = 0;
   int river_resistance = 0;
+  // Living-item Bond powers. These remain separate from always-on Brands so
+  // the authoritative combat simulation can evaluate their real triggers.
+  int health_on_kill_percent = 0;
+  int attack_speed_on_kill_percent = 0;
+  int critical_against_bleeding_percent = 0;
+  int health_on_block = 0;
+  int stationary_block_chance = 0;
+  int armour_on_hit_percent = 0;
+  int ability_power_high_resource_percent = 0;
+  int resource_on_kill_percent = 0;
+  int curse_avoid_percent = 0;
+  int movement_speed_on_kill_percent = 0;
+  int thrown_avoid_while_moving_percent = 0;
+  int health_regen_while_moving = 0;
+  bool awakened_echoing_kill = false;
+  bool awakened_last_stand = false;
+  bool awakened_twinned_voice = false;
+  bool awakened_untraceable = false;
 };
 
 struct VesselCombat {
@@ -792,6 +810,8 @@ struct GroundItem {
 
 // Player combat modifiers the equip pipeline feeds into tile-space combat.
 struct PlayerCombatMods {
+  int block_chance = 0;
+  int armour_rating = 0;
   int critical_chance = 0;
   int attack_speed_percent = 0;
   int goods_found = 0;
@@ -803,6 +823,22 @@ struct PlayerCombatMods {
   int movement_speed_percent = 0;
   int ember_resistance = 0;
   int river_resistance = 0;
+  int health_on_kill_percent = 0;
+  int attack_speed_on_kill_percent = 0;
+  int critical_against_bleeding_percent = 0;
+  int health_on_block = 0;
+  int stationary_block_chance = 0;
+  int armour_on_hit_percent = 0;
+  int ability_power_high_resource_percent = 0;
+  int resource_on_kill_percent = 0;
+  int curse_avoid_percent = 0;
+  int movement_speed_on_kill_percent = 0;
+  int thrown_avoid_while_moving_percent = 0;
+  int health_regen_while_moving = 0;
+  bool awakened_echoing_kill = false;
+  bool awakened_last_stand = false;
+  bool awakened_twinned_voice = false;
+  bool awakened_untraceable = false;
   bool force_critical = false;
   std::string attack_style = "slash";
 };
@@ -1058,7 +1094,9 @@ class WorldSimulation {
                            const std::string& skill_id = "melee");
   std::vector<WorldCombatEvent> advance_combat(int player_level, int player_attack,
                                                int& player_life, int player_life_max,
-                                               std::int64_t now_ms);
+                                               std::int64_t now_ms,
+                                               int* player_resource = nullptr,
+                                               int player_resource_max = 0);
   int player_cooldown_remaining_ms(std::int64_t now_ms) const;
   int player_combo_step(std::int64_t now_ms) const;
   int player_combo_window_remaining_ms(std::int64_t now_ms) const;
@@ -1094,6 +1132,15 @@ class WorldSimulation {
   // Equip-aware combat modifiers for the next advance_combat calls.
   void set_player_combat_mods(const PlayerCombatMods& mods) { player_mods_ = mods; }
   PlayerCombatMods& player_combat_mods() { return player_mods_; }
+  int bond_attack_speed_remaining_ms(std::int64_t now_ms) const;
+  int bond_movement_speed_remaining_ms(std::int64_t now_ms) const;
+  int bond_old_grudge_remaining_ms(std::int64_t now_ms) const;
+  bool bond_last_stand_ready() const {
+    return player_mods_.awakened_last_stand && last_stand_available_;
+  }
+  bool bond_untraceable_ready() const {
+    return player_mods_.awakened_untraceable && untraceable_available_;
+  }
 
  private:
   bool can_move_to(double target_x, double target_y) const;
@@ -1111,6 +1158,7 @@ class WorldSimulation {
   // N4: safe loot tile spiral (loot.js resolveLootLocation).
   Vec2 resolve_loot_tile(int x, int y) const;
   std::uint64_t next_world_random();
+  std::uint64_t next_combat_random();
 
   std::uint64_t seed_;
   std::string player_uuid_;
@@ -1161,7 +1209,15 @@ private:
   std::vector<GroundItem> ground_items_;
   std::vector<GroundItem> town_ground_items_;
   PlayerCombatMods player_mods_;
+  std::uint64_t last_player_move_ms_ = 0;
+  std::uint64_t bond_attack_speed_until_ms_ = 0;
+  std::uint64_t bond_movement_speed_until_ms_ = 0;
+  std::uint64_t bond_old_grudge_until_ms_ = 0;
+  std::uint64_t next_moving_regen_ms_ = 0;
+  bool last_stand_available_ = true;
+  bool untraceable_available_ = true;
   std::uint64_t world_random_state_ = 0x9e3779b97f4a7c15ULL;
+  std::uint64_t combat_random_state_ = 0xd1b54a32d192ed03ULL;
   VesselForge forge_;
 };
 

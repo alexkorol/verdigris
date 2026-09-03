@@ -1147,6 +1147,57 @@ bool gateb_on_stairs(const GateBView& view, int tile_x, int tile_y) {
   return false;
 }
 
+// Recompute the next public-map movement heading through the authored warren
+// ribs. Both the elite chase and relic pickup use this one deterministic route
+// contract, so timing cannot strand either leg in a wall pocket.
+int gateb_warren_route_heading(const GateBView& view, int start_x, int start_y,
+                               int target_x, int target_y) {
+  constexpr int width = 40;
+  constexpr int height = 40;
+  const auto walkable = [&](int x, int y) {
+    if (x <= 0 || x >= width - 1 || y <= 0 || y >= height - 1)
+      return false;
+    if (gateb_on_stairs(view, x, y)) return false;
+    const bool rib = x == 12 || x == 18 || x == 24 || x == 30;
+    const bool gap = (y >= 10 && y <= 12) ||
+                     (y >= 19 && y <= 21) ||
+                     (y >= 26 && y <= 28);
+    return !rib || y < 3 || y >= height - 3 || gap;
+  };
+  const auto index = [](int x, int y) { return y * width + x; };
+  if (!walkable(start_x, start_y)) return -1;
+  std::vector<int> parent(width * height, -1);
+  std::vector<int> entered_by(width * height, -1);
+  std::deque<int> frontier;
+  const int start = index(start_x, start_y);
+  parent[start] = start;
+  frontier.push_back(start);
+  int found = -1;
+  while (!frontier.empty()) {
+    const int current = frontier.front();
+    frontier.pop_front();
+    const int x = current % width;
+    const int y = current / width;
+    if (std::abs(x - target_x) <= 1 && std::abs(y - target_y) <= 1) {
+      found = current;
+      break;
+    }
+    for (int direction = 0; direction < 4; ++direction) {
+      const int nx = x + (direction == 0 ? 1 : direction == 2 ? -1 : 0);
+      const int ny = y + (direction == 1 ? 1 : direction == 3 ? -1 : 0);
+      if (!walkable(nx, ny)) continue;
+      const int next = index(nx, ny);
+      if (parent[next] != -1) continue;
+      parent[next] = current;
+      entered_by[next] = direction;
+      frontier.push_back(next);
+    }
+  }
+  if (found < 0 || found == start) return -1;
+  while (parent[found] != start) found = parent[found];
+  return entered_by[found];
+}
+
 // ── Deterministic driver state machine (TASK-0163) ────────────────────────
 
 bool gateb_step(LoopbackClient& client, int& heading);
@@ -1439,12 +1490,9 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
   bool elite_known = false;
   std::string elite_id;
   int elite_x = -1, elite_y = -1;
+  bool relic_surfaced = false;
   auto slam_clear_at = never;
   int slam_x = 0, slam_y = 0, slam_radius = 0;
-  // Approach-phase state for the revealed-elite beeline.
-  auto approach_phase_until = now();
-  int approach_best_dist = 1 << 30;
-  bool approach_escape = false;
   auto heartbeat_at = now() + std::chrono::seconds(10);
   // Deterministic boustrophedon sweep state (TASK-0163): full-height lane
   // legs instead of deadline-skipped greedy diagonals.
@@ -1481,7 +1529,11 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
                           gateb_str(line.env.data, "targetName").c_str());
             }
             last_outgoing = never;
-            last_incoming = never;
+            // A trash kill ends that local exchange and lets the sweep
+            // continue. Preserve recent incoming pressure only when the
+            // revealed elite fell, so its surfacing packet cannot hand an
+            // uncleared room to the loot-only navigator.
+            if (fallen_id != elite_id) last_incoming = never;
           }
         }
       }
@@ -1511,11 +1563,20 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
       if (line.env.event == "game:send:message" &&
           gateb_str(line.env.data, "text").find("has surfaced") !=
               std::string::npos) {
-        return true;
+        relic_surfaced = true;
       }
     }
     for (const auto& item : view.ground) {
-      if (item.uuid == relic_uuid) return true;  // surfaced heirloom visible
+      if (item.uuid == relic_uuid) relic_surfaced = true;
+    }
+    // Do not abandon the combat loop on the elite's death packet while adds
+    // are still landing hits. A player secures the room before walking over
+    // to loot; returning immediately let those adds kill the heir inside the
+    // pickup navigator, which cannot fight back.
+    if (relic_surfaced &&
+        (last_incoming == never ||
+         now() - last_incoming >= std::chrono::seconds(2))) {
+      return true;
     }
     if (view.hp >= 0 && view.hp <= 45) {
       std::printf("note: hunt withdraws at hp=%d for a fountain heal\n",
@@ -1525,12 +1586,10 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
         return false;
       }
       index = client.mark();
+      relic_surfaced = false;
       elite_known = false;
       elite_id.clear();
       slam_clear_at = never;
-      approach_phase_until = now();
-      approach_best_dist = 1 << 30;
-      approach_escape = false;
       sweep.cursor = 0;
       sweep.waypoint_started = now();
       last_outgoing = never;
@@ -1593,31 +1652,18 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
         if (std::abs(dx) + std::abs(dy) <= 3) {
           gateb_swing(client, gateb_heading_for(dx > 0 ? 1 : (dx < 0 ? -1 : 0), 0));
         } else {
-          // Approach in bounded phases: greedy toward the wider axis for a
-          // window; if the distance has not shrunk (a wall pocket), walk a
-          // perpendicular escape lane for the next window. Deterministic,
-          // bounded, and evidence-producing either way.
-          const auto phase_len = std::chrono::seconds(8);
-          if (now() >= approach_phase_until) {
-            const int dist = chebyshev(tile_x, tile_y, elite_x, elite_y);
-            if (dist < approach_best_dist) {
-              approach_escape = false;  // progress: keep the greedy lane
-            } else if (!approach_escape) {
-              approach_escape = true;   // stalled: try the perpendicular lane
-            }
-            approach_best_dist = dist;
-            approach_phase_until = now() + phase_len;
-            std::printf(
-                "note: hunt approach dist=%d escape=%d at=(%d,%d) elite=(%d,%d)\n",
-                dist, approach_escape ? 1 : 0, tile_x, tile_y, elite_x, elite_y);
+          int lane = gateb_warren_route_heading(view, tile_x, tile_y,
+                                                 elite_x, elite_y);
+          if (lane >= 0) {
+            gateb_step(client, lane);
+          } else {
+            // The monster can step while its movement event is in flight.
+            // Forget that stale coordinate and resume the exhaustive public
+            // map sweep until a fresh telegraph reveals it again.
+            elite_known = false;
+            elite_id.clear();
+            gateb_waypoint_nudge(client, sweep);
           }
-          const int primary =
-              gateb_heading_for(dx > 0 ? 1 : (dx < 0 ? -1 : 0), 0);
-          const int secondary =
-              gateb_heading_for(0, dy > 0 ? 1 : (dy < 0 ? -1 : 0));
-          int lane = std::abs(dx) >= std::abs(dy) ? primary : secondary;
-          if (approach_escape) lane = (lane + 1) & 3;  // perpendicular detour
-          gateb_step(client, lane);
         }
       } else {
         gateb_ensure_instance(client);
@@ -1648,55 +1694,7 @@ bool gateb_take_relic(LoopbackClient& client, const std::string& relic_uuid,
   const auto deadline =
       std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
   // The relic can surface on the far side of a warren rib. Recompute a route
-  // from the latest authoritative position after every accepted sub-tile step;
-  // the older sticky greedy heading could circle a rib until timeout.
-  const auto route_heading = [&](int start_x, int start_y, int target_x,
-                                 int target_y) {
-    constexpr int width = 40;
-    constexpr int height = 40;
-    const auto walkable = [&](int x, int y) {
-      if (x <= 0 || x >= width - 1 || y <= 0 || y >= height - 1)
-        return false;
-      if (gateb_on_stairs(view, x, y)) return false;
-      const bool rib = x == 12 || x == 18 || x == 24 || x == 30;
-      const bool gap = (y >= 10 && y <= 12) ||
-                       (y >= 19 && y <= 21) ||
-                       (y >= 26 && y <= 28);
-      return !rib || y < 3 || y >= height - 3 || gap;
-    };
-    const auto index = [](int x, int y) { return y * width + x; };
-    if (!walkable(start_x, start_y)) return -1;
-    std::vector<int> parent(width * height, -1);
-    std::vector<int> entered_by(width * height, -1);
-    std::deque<int> frontier;
-    const int start = index(start_x, start_y);
-    parent[start] = start;
-    frontier.push_back(start);
-    int found = -1;
-    while (!frontier.empty()) {
-      const int current = frontier.front();
-      frontier.pop_front();
-      const int x = current % width;
-      const int y = current / width;
-      if (std::abs(x - target_x) <= 1 && std::abs(y - target_y) <= 1) {
-        found = current;
-        break;
-      }
-      for (int direction = 0; direction < 4; ++direction) {
-        const int nx = x + (direction == 0 ? 1 : direction == 2 ? -1 : 0);
-        const int ny = y + (direction == 1 ? 1 : direction == 3 ? -1 : 0);
-        if (!walkable(nx, ny)) continue;
-        const int next = index(nx, ny);
-        if (parent[next] != -1) continue;
-        parent[next] = current;
-        entered_by[next] = direction;
-        frontier.push_back(next);
-      }
-    }
-    if (found < 0 || found == start) return -1;
-    while (parent[found] != start) found = parent[found];
-    return entered_by[found];
-  };
+  // from the latest authoritative position after every accepted sub-tile step.
   // The surfacing message can beat the ground-change frame across the wire;
   // a normal client simply sees the item appear on the ground shortly after.
   size_t ground_mark = client.mark();
@@ -1766,10 +1764,9 @@ bool gateb_take_relic(LoopbackClient& client, const std::string& relic_uuid,
           });
       return took;
     }
-    int heading = route_heading(gateb_tile_of(view.px),
-                                gateb_tile_of(view.py),
-                                gateb_tile_of(relic->x),
-                                gateb_tile_of(relic->y));
+    int heading = gateb_warren_route_heading(
+        view, gateb_tile_of(view.px), gateb_tile_of(view.py),
+        gateb_tile_of(relic->x), gateb_tile_of(relic->y));
     if (heading < 0) {
       std::printf("note: take-relic: no warren route to surfaced relic\n");
       return false;
@@ -1847,6 +1844,25 @@ void gateb_driver_state_machine_controls() {
     if (waypoints[i].first != waypoints[i + 1].first) alternating = false;
   check(alternating,
         "gate-b-driver: plan is strictly boustrophedon over its lanes");
+
+  // 6) Revealed targets use the same shortest-path contract as surfaced
+  // relics. A target across the first solid rib must reach one of the authored
+  // gaps instead of oscillating against x=12.
+  GateBView route_view;
+  int route_x = 10;
+  int route_y = 15;
+  for (int step = 0; step < 24 &&
+                     (std::abs(route_x - 14) > 1 ||
+                      std::abs(route_y - 15) > 1); ++step) {
+    const int heading = gateb_warren_route_heading(
+        route_view, route_x, route_y, 14, 15);
+    if (heading < 0) break;
+    route_x += heading == 0 ? 1 : heading == 2 ? -1 : 0;
+    route_y += heading == 1 ? 1 : heading == 3 ? -1 : 0;
+  }
+  check(gateb_warren_route_heading(route_view, 2, 2, 5, 2) == 0 &&
+            std::abs(route_x - 14) <= 1 && std::abs(route_y - 15) <= 1,
+        "gate-b-driver: elite and relic routes cross warren ribs deterministically");
 }
 
 // The complete frozen Gate-B journey over loopback with only accepted
@@ -2829,6 +2845,80 @@ void remote_forge_properties_and_status_mirror_to_presentation() {
   server.stop();
 }
 
+void remote_living_bond_state_and_trigger_mirror_to_presentation() {
+  ScriptedEnvelopeServer server;
+  server.script.push_back(
+      "{\"event\":\"player:login\",\"data\":{\"player\":{"
+      "\"uuid\":\"bond-guest\",\"x\":10,\"y\":11,\"facing\":\"right\","
+      "\"life\":40,\"lifeMax\":100},\"scene\":{\"id\":"
+      "\"instance:dungeon:clearings\",\"type\":\"instance\"}}}");
+  server.script.push_back(
+      "{\"event\":\"player:combat-state\",\"data\":{"
+      "\"resource\":15,\"resourceMax\":50,\"cooldownTicks\":0,"
+      "\"comboStep\":0,\"comboWindowTicks\":0,\"warCryTicksRemaining\":0,"
+      "\"bondAttackSpeedTicks\":80,\"bondMovementSpeedTicks\":60,"
+      "\"bondOldGrudgeTicks\":40,\"bondLastStandReady\":true,"
+      "\"bondUntraceableReady\":false}}");
+  server.script.push_back(
+      "{\"event\":\"player:bond:effect\",\"data\":{"
+      "\"powerId\":\"blood-price\",\"amount\":10,\"durationMs\":0,"
+      "\"health\":{\"current\":50,\"max\":100}}}");
+  std::string error;
+  check(server.start(&error), "bond-mirror: scripted server bound in capsule");
+  if (server.port() == 0) return;
+  verdigris::client::RemoteProtocolSession session(
+      "127.0.0.1", server.port(), "bond-mirror-guest", true);
+  check(session.start(&error), "bond-mirror: connect + upgrade + login sent");
+  check(wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
+        "bond-mirror: admission acknowledged");
+  std::vector<std::string> errors;
+  server.grant_next_frame();
+  check(pt_pump_until(session, errors, 5000, [&] {
+          return session.model().player.bond_attack_speed_ticks == 80;
+        }),
+        "bond-mirror: active timers and awakened readiness reach the model");
+  check(session.model().player.bond_movement_speed_ticks == 60 &&
+            session.model().player.bond_old_grudge_ticks == 40 &&
+            session.model().player.bond_last_stand_ready &&
+            !session.model().player.bond_untraceable_ready,
+        "bond-mirror: every authoritative Bond combat-state field is preserved");
+  server.grant_next_frame();
+  verdigris::client::PresentationEvent trigger;
+  bool arrived = false;
+  const auto deadline =
+      std::chrono::steady_clock::now() + std::chrono::milliseconds(5000);
+  while (!arrived && std::chrono::steady_clock::now() < deadline) {
+    session.poll();
+    for (const auto& event : session.drain_events()) {
+      if (event.type == verdigris::client::PresentationEventType::ProtocolError)
+        errors.push_back(event.text);
+      if (event.type == verdigris::client::PresentationEventType::BondTriggered) {
+        trigger = event;
+        arrived = true;
+      }
+    }
+    if (!arrived) std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  check(arrived && trigger.text == "Blood Price" &&
+            trigger.style == "blood-price" && trigger.value == 10 &&
+            session.model().player.life == 50,
+        "bond-mirror: trigger identity, recovery, and updated life cross the wire");
+  verdigris::client::WorldView world;
+  verdigris::client::sync_world_from_model(world, session.model());
+  verdigris::client::PresentationFx fx;
+  verdigris::client::apply_presentation_event(fx, world, trigger, 1);
+  bool pulse = false;
+  for (const auto& effect : fx.effects)
+    if (effect.kind == verdigris::client::EffectFx::Kind::BondPulse &&
+        effect.style == "blood-price") pulse = true;
+  check(pulse && world.player.bond_attack_speed_ticks == 80 &&
+            world.player.bond_last_stand_ready,
+        "bond-mirror: living-item state and trigger drive shared presentation");
+  check(errors.empty(), "bond-mirror: valid payloads raise no protocol error");
+  session.shutdown();
+  server.stop();
+}
+
 void remote_monster_roles_mirror_to_presentation() {
   ScriptedEnvelopeServer server;
   server.script.push_back(
@@ -3357,6 +3447,7 @@ int main() {
   remote_endgame_payload_mirrors_to_presentation();
   remote_combat_cadence_mirrors_to_presentation();
   remote_forge_properties_and_status_mirror_to_presentation();
+  remote_living_bond_state_and_trigger_mirror_to_presentation();
   remote_monster_roles_mirror_to_presentation();
   remote_crossroads_dialogue_mirrors_to_presentation();
   remote_vesselforge_screen_mirrors_to_presentation();

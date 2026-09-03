@@ -1113,15 +1113,15 @@ void test_worn_vessel_learns_from_cleared_expeditions() {
   check(worn["vessel"]["item"]["att"]["tc"]["warding"].number().value_or(0) == 10 &&
             worn["vessel"]["item"]["att"]["tc"]["slaughter"].number().value_or(0) == 5,
         "living vessel wire: classless road themes accumulate on the authoritative item");
-  bool dormant_bond = false;
+  bool active_bond = false;
   if (const auto* lines = worn["vessel"]["lines"].array())
     for (const auto& line : *lines)
-      if (line["section"].string() && *line["section"].string() == "dormant" &&
+      if (line["section"].string() && *line["section"].string() == "bond" &&
           line["text"].string() &&
-          line["text"].string()->find("Dormant - BOND:") == 0)
-        dormant_bond = true;
-  check(dormant_bond,
-        "living vessel wire: the protocol never presents an unwired Bond as active");
+          line["text"].string()->find("BOND:") == 0)
+        active_bond = true;
+  check(active_bond,
+        "living vessel wire: the protocol presents learned combat Bonds as active");
 
   session.replace_socket("socket-living-vessel-returned");
   learned = request_state(session, "living-vessel-reconnected");

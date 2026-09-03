@@ -1,5 +1,47 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - living Vessel powers in combat
+
+- Learned Vessel properties now travel from the exact worn item through wear
+  totals into the authoritative world simulation. Slaughter owns Health and
+  Mana recovery on kill, four-second attack cadence, critical chance against
+  Bleeding foes, and Echoing Kill's 15% doubled-spoils roll. Wayfaring owns
+  three-second movement bursts, moving projectile avoidance, moving Health
+  regeneration, and the first-strike Untraceable miss.
+- Warding now participates in the actual incoming-hit pipeline. Ordinary
+  shield block is active, Stand Your Ground augments it while stationary,
+  Shieldwall heals on a successful block, Old Grudge raises the next two
+  seconds of Armour, and awakened Last Stand catches one killing blow per
+  floor. Base worn defense now supplies the Armour rating those effects use.
+- Reactive rolls use a dedicated seeded combat stream. Equipping a conditional
+  defense can change survival without perturbing deterministic floor layout or
+  the independent loot stream. Once-per-battle awakened charges and all timed
+  Bond states reset on each generated floor.
+- `player:bond:effect`, ordinary defense feedback, combat-state packets, and
+  reconnect snapshots carry resolved trigger identity, amount, duration,
+  readiness, and remaining time. The client presents a colored world pulse,
+  named toast/event-log beat, and compact Framekit chips above the quickbar for
+  Rhythm, Sprint, Grudge, Last Stand, and Untraceable.
+- The 768p+ Gear Framekit now expands into available vertical space and gives
+  the selected item a wrapped, color-coded `LIVING VESSEL` card. Innate lines,
+  Bonds, awakenings, and the two authoritative combat-total rows are visible
+  together instead of silently clipping after two properties.
+- Tooltips now label the ten Bond modifiers and three awakenings backed by live
+  native rules as active. Clear Mind, Superstition, and Twinned Voice remain
+  explicitly Dormant because native mana-ability, curse, and rite systems do
+  not yet exist; no tooltip claims a trigger the game cannot produce.
+- Coverage exercises tier scaling, kill recovery/buffs, Dead Sprint travel,
+  Second Wind, Bleeding-conditional criticals, stationary block healing, Old
+  Grudge Armour, and the Untraceable-to-Last-Stand defensive order. Scripted
+  wire and shared-presentation checks prove state and named trigger FX survive
+  end to end. The full succession driver now uses one shortest-path contract
+  for revealed elites and surfaced relics and secures the room before handing
+  control to the loot-only pickup leg.
+- Verification: the binding native build, full test set, and complete client
+  scenario suite pass. Inspected evidence is in
+  `native/build/goal-captures-bond-combat-final/vesselforge-active-properties-1366x768.png`;
+  the 3440x1440 frame budget is 9.7 ms average against the 40 ms ceiling.
+
 ## 2026-09-03 - living Vessel Bonds and awakening
 
 - Ported the WIZARD living-item progression into native without importing its
@@ -14,10 +56,10 @@
   inventory/wear snapshots and reconnects: Bonds, bases, tiers, theme memory,
   XP/next threshold, evolution count, awakened name, power, and flavor.
 - Tamar's Framekit detail now exposes Attunement, Bond/evolution counts, tiered
-  Bond lines, and awakened state. Conditional Bond and awakened combat powers
-  are deliberately labelled Dormant until their triggers are server-owned;
-  the milestone does not claim their effects. Brand searing now counts Bonds
-  against capacity, closing the possibility of overwriting a learned slot.
+  Bond lines, and awakened state. At this milestone those conditional lines
+  were still Dormant; the following living-power milestone activates every
+  trigger supported by the native combat vocabulary. Brand searing counts
+  Bonds against capacity, closing the possibility of overwriting a learned slot.
 - Deterministic core coverage runs an item through its full three-Bond,
   tier-III, awakening life and replays the exact rolls. Protocol coverage wears
   one exact UUID through five real dungeon floors, verifies its Warding memory,

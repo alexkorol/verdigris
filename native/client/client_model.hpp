@@ -28,6 +28,11 @@ struct ClientPlayer {
   int combo_step = 0;
   int combo_window_ticks = 0;
   int war_cry_ticks_remaining = 0;
+  int bond_attack_speed_ticks = 0;
+  int bond_movement_speed_ticks = 0;
+  int bond_old_grudge_ticks = 0;
+  bool bond_last_stand_ready = false;
+  bool bond_untraceable_ready = false;
   bool alive = true;
 };
 

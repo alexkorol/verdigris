@@ -120,6 +120,11 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
   world.player.combo_step = model.player.combo_step;
   world.player.combo_window_ticks = model.player.combo_window_ticks;
   world.player.war_cry_ticks_remaining = model.player.war_cry_ticks_remaining;
+  world.player.bond_attack_speed_ticks = model.player.bond_attack_speed_ticks;
+  world.player.bond_movement_speed_ticks = model.player.bond_movement_speed_ticks;
+  world.player.bond_old_grudge_ticks = model.player.bond_old_grudge_ticks;
+  world.player.bond_last_stand_ready = model.player.bond_last_stand_ready;
+  world.player.bond_untraceable_ready = model.player.bond_untraceable_ready;
   world.player.alive = model.player.alive;
   world.player.bleed_chance = model.bleed_chance;
   world.player.attack_speed_percent = model.attack_speed_percent;
@@ -274,7 +279,9 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
   const bool to_player = event.text == "incoming" ||
                          event.type == PresentationEventType::ScionDied ||
                          event.type == PresentationEventType::BuffApplied ||
-                         event.type == PresentationEventType::BuffExpired;
+                         event.type == PresentationEventType::BuffExpired ||
+                         event.type == PresentationEventType::BondTriggered ||
+                         event.type == PresentationEventType::DefenseTriggered;
   const verdigris::Vec2 at = event_anchor(world, fx, event, to_player);
   const double ex = static_cast<double>(at.x);
   const double ey = static_cast<double>(at.y);
@@ -347,6 +354,21 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       EffectFx number = pulse;
       number.kind = EffectFx::Kind::DamageNumber;
       fx.effects.push_back(number);
+      break;
+    }
+    case PresentationEventType::BondTriggered:
+    case PresentationEventType::DefenseTriggered: {
+      EffectFx pulse;
+      pulse.kind = EffectFx::Kind::BondPulse;
+      pulse.wx = ex;
+      pulse.wy = ey;
+      pulse.ttl = phase_a::kBondPulseTtlTicks;
+      pulse.value = event.value;
+      pulse.style = event.style;
+      fx.effects.push_back(std::move(pulse));
+      fx.hint = event.text;
+      if (event.value > 0) fx.hint += " +" + std::to_string(event.value);
+      fx.hint_ticks = 70;
       break;
     }
     case PresentationEventType::DebuffApplied: {
@@ -467,6 +489,13 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
         break;
       case PresentationEventType::HealingApplied:
         line = "Mended " + std::to_string(event.value);
+        break;
+      case PresentationEventType::BondTriggered:
+        line = "Bond · " + event.text;
+        if (event.value > 0) line += " +" + std::to_string(event.value);
+        break;
+      case PresentationEventType::DefenseTriggered:
+        line = "Defense · " + event.text;
         break;
       case PresentationEventType::DebuffApplied:
         line = event.text == "bleed" ? "Bleeding " + std::to_string(event.value) + "/s"
@@ -606,6 +635,12 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
         rl.push_back({render::Op::Impact, static_cast<double>(base.x),
                       static_cast<double>(base.y), 0.0, effect.value,
                       phase_a::kBleedApplyLabel});
+        break;
+      case EffectFx::Kind::BondPulse:
+        rl.push_back({render::Op::WarCry, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, effect.value,
+                      std::string(phase_a::kBondPulseLabel) + ":" +
+                          effect.style});
         break;
       case EffectFx::Kind::DeathRing:
         rl.push_back({render::Op::Death, static_cast<double>(base.x),

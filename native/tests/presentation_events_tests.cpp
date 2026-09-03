@@ -297,6 +297,37 @@ void forge_status_feedback_is_authoritative_and_distinct() {
         "forge feedback: armour bypass has a distinct piercing damage beat");
 }
 
+void living_bond_feedback_is_authoritative_and_distinct() {
+  WorldView world = world_with_player_and_foe("right");
+  world.player.bond_attack_speed_ticks = 80;
+  world.player.bond_last_stand_ready = true;
+  PresentationFx fx;
+  PresentationEvent trigger;
+  trigger.type = PresentationEventType::BondTriggered;
+  trigger.actor_id = "scion-1";
+  trigger.text = "Battle Rhythm";
+  trigger.style = "battle-rhythm";
+  trigger.value = 18;
+  trigger.duration_ms = 4000;
+  apply_presentation_event(fx, world, trigger, 10);
+  const EffectFx* pulse = first_kind(fx, EffectFx::Kind::BondPulse);
+  check(pulse && pulse->ttl == phase_a::kBondPulseTtlTicks &&
+            pulse->style == "battle-rhythm" && pulse->value == 18,
+        "living Bond feedback: an authoritative trigger creates the named pulse");
+  check(fx.hint == "Battle Rhythm +18" && !fx.event_log.empty() &&
+            fx.event_log.back() == "Bond · Battle Rhythm +18",
+        "living Bond feedback: trigger name and magnitude are readable");
+  render::List rl;
+  record_world_ops(rl, world, fx, camera2d::Camera{}, 960, 600);
+  bool recorded = false;
+  for (const auto& op : rl)
+    if (op.op == render::Op::WarCry &&
+        op.label == "bond-trigger:battle-rhythm" && op.value == 18)
+      recorded = true;
+  check(recorded,
+        "living Bond feedback: shared render list preserves trigger identity");
+}
+
 void scion_lost_beat_contract() {
   WorldView world = world_with_player_and_foe("right");
   PresentationFx fx;
@@ -547,6 +578,7 @@ int main() {
   combo_finisher_is_distinct();
   monster_role_feedback_is_authoritative_and_distinct();
   forge_status_feedback_is_authoritative_and_distinct();
+  living_bond_feedback_is_authoritative_and_distinct();
   scion_lost_beat_contract();
   buff_expired_beat_contract();
   local_seam_maps_lifecycle_events();

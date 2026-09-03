@@ -33,6 +33,7 @@ struct EffectFx {
     ComboFinisher,
     SupportMend,
     BleedApplied,
+    BondPulse,
     // TASK-0122 Phase A beats. All lifetimes come from the phase_a constants
     // table in presentation_events.hpp; none of them touch simulation state.
     Materialize,    // deterministic first-sighting spawn beat
@@ -84,6 +85,11 @@ struct WorldActor {
   int combo_step = 0;
   int combo_window_ticks = 0;
   int war_cry_ticks_remaining = 0;
+  int bond_attack_speed_ticks = 0;
+  int bond_movement_speed_ticks = 0;
+  int bond_old_grudge_ticks = 0;
+  bool bond_last_stand_ready = false;
+  bool bond_untraceable_ready = false;
   int move_duration_ms = 0;
   bool alive = true;
   bool elite = false;

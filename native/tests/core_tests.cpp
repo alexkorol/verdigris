@@ -2663,18 +2663,21 @@ void test_n4_vessel_attunement_bonds_and_awakening() {
   }
 
   const VesselBlock awakened = first.make_block(item);
-  int dormant_bonds = 0;
-  bool dormant_power = false;
+  int active_bonds = 0;
+  bool active_power = false;
   for (const auto& line : awakened.lines) {
-    if (line.section == "dormant" &&
-        line.text.find("Dormant - BOND:") == 0)
-      ++dormant_bonds;
-    if (line.section == "dormant" &&
-        line.text.find("Dormant awakened power") == 0)
-      dormant_power = true;
+    if (line.section == "bond" && line.text.find("BOND:") == 0)
+      ++active_bonds;
+    if (line.section == "awakened" &&
+        line.text.find("AWAKENED: Last Stand") == 0)
+      active_power = true;
   }
-  check(dormant_bonds == 3 && dormant_power,
-        "living vessel: conditional effects are visibly Dormant until combat owns them");
+  check(active_bonds == 3 && active_power &&
+            awakened.combat.modifiers.health_on_block > 0 &&
+            awakened.combat.modifiers.stationary_block_chance > 0 &&
+            awakened.combat.modifiers.armour_on_hit_percent > 0 &&
+            awakened.combat.modifiers.awakened_last_stand,
+        "living vessel: Warding Bonds and Last Stand are active derived combat rules");
 
   VesselItem learning = blank_shield();
   const auto no_evolution = first.attune(
@@ -2701,6 +2704,212 @@ void test_n4_vessel_attunement_bonds_and_awakening() {
   occupied.bonds.push_back({"bond-occupied", "shieldwall", "warding", 10, 1});
   check(!first.sear(occupied) && occupied.brands.empty(),
         "living vessel: Tamar cannot sear over capacity claimed by a Bond");
+}
+
+void test_n4_living_vessel_bonds_drive_combat() {
+  VesselForge forge;
+  VesselItem lore;
+  lore.id = "bond-codex";
+  lore.form_id = "ring";
+  lore.material_id = "jade";
+  lore.kind = "ring";
+  lore.ilvl = 60;
+  lore.vessel = 12;
+  lore.bonds = {{"b1", "blood_price", "slaughter", 3, 2},
+                {"b2", "battle_rhythm", "slaughter", 18, 3},
+                {"b3", "read_wound", "slaughter", 20, 1},
+                {"b4", "clear_mind", "spiritwork", 20, 2},
+                {"b5", "ember_tithe", "spiritwork", 5, 3},
+                {"b6", "veil_wise", "spiritwork", 18, 1},
+                {"b7", "dead_sprint", "wayfaring", 16, 2},
+                {"b8", "sidestep", "wayfaring", 16, 3},
+                {"b9", "road_lore", "wayfaring", 4, 1}};
+  lore.awakened = VesselAwakened{
+      "Edda's Far Lantern", "wayfaring",
+      "Untraceable - the first strike against you in every battle misses.",
+      "It has learned the roads."};
+  const VesselBlock lore_block = forge.make_block(lore);
+  check(lore_block.combat.modifiers.health_on_kill_percent == 5 &&
+            lore_block.combat.modifiers.attack_speed_on_kill_percent == 40 &&
+            lore_block.combat.modifiers.critical_against_bleeding_percent == 20 &&
+            lore_block.combat.modifiers.ability_power_high_resource_percent == 32 &&
+            lore_block.combat.modifiers.resource_on_kill_percent == 11 &&
+            lore_block.combat.modifiers.movement_speed_on_kill_percent == 26 &&
+            lore_block.combat.modifiers.thrown_avoid_while_moving_percent == 35 &&
+            lore_block.combat.modifiers.health_regen_while_moving == 4 &&
+            lore_block.combat.modifiers.awakened_untraceable,
+        "living vessel combat: tier-scaled Slaughter, Spiritwork, and Wayfaring rules derive exactly");
+  int dormant_lines = 0;
+  for (const auto& line : lore_block.lines)
+    if (line.section == "dormant") ++dormant_lines;
+  check(dormant_lines == 2,
+        "living vessel combat: only unavailable mana-ability and curse triggers remain dormant");
+
+  WorldSimulation hunter(0xB07DULL, "bond-hunter");
+  hunter.enter_solo_instance("dungeon", "clearings");
+  const WorldMonster prey = hunter.monsters().front();
+  hunter.kill_all_monsters();
+  hunter.reset_monster(prey.uuid, 1);
+  const int hunter_x = prey.x + 1 < 39 ? prey.x + 1 : prey.x - 1;
+  const std::string aim = hunter_x < prey.x ? "right" : "left";
+  hunter.teleport(hunter_x, prey.y, 900);
+  PlayerCombatMods hunter_mods;
+  hunter_mods.health_on_kill_percent = 10;
+  hunter_mods.resource_on_kill_percent = 10;
+  hunter_mods.attack_speed_on_kill_percent = 18;
+  hunter_mods.movement_speed_on_kill_percent = 16;
+  hunter.set_player_combat_mods(hunter_mods);
+  int hunter_life = 40;
+  int hunter_resource = 10;
+  hunter.start_player_attack(1, 50, 1000, aim, "melee");
+  const auto kill_events = hunter.advance_combat(
+      1, 50, hunter_life, 100, 1000, &hunter_resource, 50);
+  bool blood_price = false, harvest = false, rhythm = false, sprint = false;
+  for (const auto& event : kill_events) {
+    blood_price = blood_price ||
+        (event.type == "bond" && event.skill_id == "blood-price" && event.amount == 10);
+    harvest = harvest ||
+        (event.type == "bond" && event.skill_id == "harvest" && event.amount == 5);
+    rhythm = rhythm ||
+        (event.type == "bond" && event.skill_id == "battle-rhythm" &&
+         event.duration_ms == 4000);
+    sprint = sprint ||
+        (event.type == "bond" && event.skill_id == "dead-sprint" &&
+         event.duration_ms == 3000);
+  }
+  check(hunter_life == 50 && hunter_resource == 15 && blood_price && harvest &&
+            rhythm && sprint && hunter.bond_attack_speed_remaining_ms(1000) == 4000 &&
+            hunter.bond_movement_speed_remaining_ms(1000) == 3000,
+        "living vessel combat: a kill authoritatively recovers both resources and starts buffs");
+  const double sprint_start = hunter.position().y;
+  hunter.apply_movement_sample("down", 1100);
+  check(std::abs(hunter.position().y -
+                 (sprint_start + tile_movement::kMoveDistance * 1.16)) < 1e-5,
+        "living vessel combat: Dead Sprint changes authoritative movement");
+
+  WorldSimulation survivor(0x57A7DULL, "bond-survivor");
+  survivor.enter_solo_instance("dungeon", "clearings");
+  WorldMonster attacker;
+  for (const auto& monster : survivor.monsters())
+    if (!monster.boss && monster.behaviour_type == "melee") {
+      attacker = monster;
+      break;
+    }
+  survivor.kill_all_monsters();
+  survivor.reset_monster(attacker.uuid, 1000);
+  const int survivor_x = attacker.x + 1 < 39 ? attacker.x + 1 : attacker.x - 1;
+  survivor.teleport(survivor_x, attacker.y, 900);
+  PlayerCombatMods survivor_mods;
+  survivor_mods.awakened_untraceable = true;
+  survivor_mods.awakened_last_stand = true;
+  survivor.set_player_combat_mods(survivor_mods);
+  int survivor_life = 4;
+  survivor.advance_combat(1, 0, survivor_life, 100, 1000);
+  const auto avoided = survivor.advance_combat(1, 0, survivor_life, 100, 2500);
+  bool untraceable = false;
+  for (const auto& event : avoided)
+    untraceable = untraceable ||
+        (event.type == "bond" && event.skill_id == "untraceable");
+  const auto saved = survivor.advance_combat(1, 0, survivor_life, 100, 4000);
+  bool last_stand = false;
+  for (const auto& event : saved)
+    last_stand = last_stand ||
+        (event.type == "bond" && event.skill_id == "last-stand");
+  check(untraceable && last_stand && survivor_life == 1 &&
+            !survivor.bond_untraceable_ready() &&
+            !survivor.bond_last_stand_ready(),
+        "living vessel combat: awakened avoidance and once-per-floor Last Stand resolve in order");
+
+  WorldSimulation bulwark(0xB10CULL, "bond-bulwark");
+  bulwark.enter_solo_instance("dungeon", "clearings");
+  WorldMonster striker;
+  for (const auto& monster : bulwark.monsters())
+    if (!monster.boss && monster.behaviour_type == "melee") {
+      striker = monster;
+      break;
+    }
+  bulwark.kill_all_monsters();
+  bulwark.reset_monster(striker.uuid, 1000);
+  const int bulwark_x = striker.x + 1 < 39 ? striker.x + 1 : striker.x - 1;
+  bulwark.teleport(bulwark_x, striker.y, 900);
+  PlayerCombatMods bulwark_mods;
+  bulwark_mods.block_chance = 70;
+  bulwark_mods.stationary_block_chance = 5;
+  bulwark_mods.health_on_block = 13;
+  bulwark_mods.armour_rating = 10;
+  bulwark_mods.armour_on_hit_percent = 100;
+  bulwark.set_player_combat_mods(bulwark_mods);
+  int bulwark_life = 50;
+  bool shieldwall = false, grudge = false, grudge_armour = false;
+  bulwark.advance_combat(1, 0, bulwark_life, 100, 1000);
+  int strike = 0;
+  for (; strike < 20 && !shieldwall; ++strike) {
+    const auto events = bulwark.advance_combat(
+        1, 0, bulwark_life, 100, 2500 + strike * 1500);
+    for (const auto& event : events) {
+      shieldwall = shieldwall ||
+          (event.type == "bond" && event.skill_id == "shieldwall");
+    }
+  }
+  bulwark_mods.block_chance = 0;
+  bulwark_mods.stationary_block_chance = 0;
+  bulwark.set_player_combat_mods(bulwark_mods);
+  const std::int64_t first_grudge_hit = 2500 + strike * 1500;
+  for (const auto& event : bulwark.advance_combat(
+       1, 0, bulwark_life, 100, first_grudge_hit))
+    grudge = grudge ||
+        (event.type == "bond" && event.skill_id == "old-grudge" &&
+         event.duration_ms == 2000);
+  for (const auto& event : bulwark.advance_combat(
+       1, 0, bulwark_life, 100, first_grudge_hit + 1500))
+    grudge_armour = grudge_armour ||
+        (event.type == "hit" && event.target_id == "bond-bulwark" &&
+         event.armour_rating == 20);
+  check(shieldwall && grudge && grudge_armour && bulwark_life > 0,
+        "living vessel combat: stationary blocks heal and hits raise later Armour for two seconds");
+
+  WorldSimulation wound_reader(0xC817ULL, "bond-reader");
+  wound_reader.enter_solo_instance("dungeon", "clearings");
+  const WorldMonster wound_target = wound_reader.monsters().front();
+  wound_reader.kill_all_monsters();
+  wound_reader.reset_monster(wound_target.uuid, 1000);
+  const int reader_x = wound_target.x + 1 < 39 ? wound_target.x + 1
+                                               : wound_target.x - 1;
+  const std::string reader_aim = reader_x < wound_target.x ? "right" : "left";
+  wound_reader.teleport(reader_x, wound_target.y, 900);
+  PlayerCombatMods reader_mods;
+  reader_mods.bleed_chance = 100;
+  reader_mods.critical_against_bleeding_percent = 75;
+  wound_reader.set_player_combat_mods(reader_mods);
+  int reader_life = 1000;
+  bool conditional_critical = false;
+  for (int attempt = 0; attempt < 8 && !conditional_critical; ++attempt) {
+    const std::int64_t at = 1000 + attempt * 400;
+    wound_reader.start_player_attack(1, 10, at, reader_aim, "melee");
+    for (const auto& event :
+         wound_reader.advance_combat(1, 10, reader_life, 1000, at))
+      if (event.type == "hit" && event.attacker_id == "bond-reader" &&
+          event.critical) conditional_critical = true;
+  }
+  check(conditional_critical,
+        "living vessel combat: Read the Wound adds critical chance only after Bleeding exists");
+
+  WorldSimulation runner(0x5EC0DULL, "bond-runner");
+  PlayerCombatMods runner_mods;
+  runner_mods.health_regen_while_moving = 3;
+  runner.set_player_combat_mods(runner_mods);
+  int runner_life = 50;
+  runner.apply_movement_sample("right", 1000);
+  runner.advance_combat(1, 0, runner_life, 100, 1000);
+  runner.apply_movement_sample("left", 1950);
+  const auto wind = runner.advance_combat(1, 0, runner_life, 100, 2000);
+  bool second_wind = false;
+  for (const auto& event : wind)
+    second_wind = second_wind ||
+        (event.type == "bond" && event.skill_id == "second-wind" &&
+         event.amount == 3);
+  check(second_wind && runner_life == 53,
+        "living vessel combat: Second Wind heals only from sustained accepted movement");
 }
 
 void test_n4_loot_math_and_depth_scaling() {
@@ -2885,6 +3094,7 @@ int main() {
   test_n4_ring_seats_and_wear_caps();
   test_n4_active_forge_properties_drive_their_authoritative_systems();
   test_n4_vessel_attunement_bonds_and_awakening();
+  test_n4_living_vessel_bonds_drive_combat();
   test_n4_loot_math_and_depth_scaling();
   test_n4_depth_chaining_and_treasure();
   test_endgame_tablet_roll_and_instance_tuning();

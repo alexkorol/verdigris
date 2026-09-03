@@ -297,14 +297,18 @@ bool hud_rects_overlap(const HudRect& a, const HudRect& b) {
 // instead of shrinking it to ant size.
 int hud_scale(int height) { return std::max(1, height / 700); }
 
-// The shipped gear pane. Identical numbers to the historical painter, now
-// shared with the planner so global HUD text can never be placed onto it.
+// The shipped gear pane. It grows into otherwise unused vertical space at
+// 768p+ so a selected living Vessel can explain every property without
+// covering the backpack grid. The historical 600p footprint is preserved.
 HudRect gear_pane_rect(int width, int height) {
   const int s = hud_scale(height);
   const int pane_w = 380 * s;
   const int pane_top = 64 * s;
   const int x = std::max(24, width - pane_w - 24);
-  const int bottom = std::min(height - 28, pane_top + 430 * s);
+  const int historical_bottom = pane_top + 430 * s;
+  const int expanded_bottom = height - 120 * s;
+  const int bottom = std::min(height - 28,
+                              std::max(historical_bottom, expanded_bottom));
   return {x, pane_top, std::min(pane_w, std::max(0, width - x)),
           std::max(0, bottom - pane_top)};
 }
@@ -2419,6 +2423,44 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       SelectObject(dc, old_font);
       break;
     }
+    case EffectFx::Kind::BondPulse: {
+      rl.push_back({render::Op::WarCry, static_cast<double>(base.x),
+                    static_cast<double>(base.y), 0.0, fx.value,
+                    std::string(phase_a::kBondPulseLabel) + ":" + fx.style});
+      const bool slaughter = fx.style == "blood-price" ||
+                             fx.style == "battle-rhythm" ||
+                             fx.style == "echoing-kill";
+      const bool warding = fx.style == "shieldwall" ||
+                           fx.style == "old-grudge" ||
+                           fx.style == "last-stand" ||
+                           fx.style == "stand-ground" ||
+                           fx.style == "block";
+      const COLORREF raw = slaughter ? RGB(232, 116, 82)
+                           : warding ? RGB(116, 174, 224)
+                                     : RGB(phase_a::kBondPulseColor.r,
+                                           phase_a::kBondPulseColor.g,
+                                           phase_a::kBondPulseColor.b);
+      const COLORREF color = fade_to_background(raw, life);
+      const int outer = std::max(
+          9, static_cast<int>(kTileUnits * (0.42 + grow * 1.18) * base.scale));
+      const int inner = std::max(4, static_cast<int>(outer * 0.58));
+      ring_ellipse(dc, base.x, base.y, outer, outer, color, 3);
+      ring_ellipse(dc, base.x, base.y, inner, inner, color, 1);
+      const char* label = "BOND";
+      if (fx.style == "last-stand") label = "LAST STAND";
+      else if (fx.style == "untraceable") label = "UNTRACEABLE";
+      else if (fx.style == "echoing-kill") label = "ECHOING KILL";
+      else if (fx.style == "shieldwall") label = "BLOCK";
+      else if (fx.style == "sidestep") label = "SIDESTEP";
+      SetBkMode(dc, TRANSPARENT);
+      SetTextColor(dc, color);
+      HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+      const int label_width = static_cast<int>(std::strlen(label)) * 4;
+      TextOutA(dc, base.x - label_width, base.y - outer - 16, label,
+               static_cast<int>(std::strlen(label)));
+      SelectObject(dc, old_font);
+      break;
+    }
     case EffectFx::Kind::DamageNumber: {
       std::string damage_label = fx.healing ? "healing" :
           (fx.damage_to_player ? "player" : "monster");
@@ -3118,16 +3160,58 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
                   "%  WARDS E" +
                   std::to_string(player.ember_resistance) + " R" +
                   std::to_string(player.river_resistance);
-    int line_y = bottom - 112 * s;
+    // A living Vessel can carry Brands, Bonds, and an awakening together.
+    // Give the selected item a real detail card rather than silently clipping
+    // its identity to the historical two-line footer.
+    RECT vessel_card{left + 10 * s, bottom - 224 * s, right - 10 * s,
+                     bottom - 92 * s};
+    HBRUSH card_brush = CreateSolidBrush(RGB(14, 22, 21));
+    FillRect(dc, &vessel_card, card_brush);
+    DeleteObject(card_brush);
+    HPEN card_pen = CreatePen(PS_SOLID, 1, RGB(68, 124, 102));
+    HGDIOBJ old_pen = SelectObject(dc, card_pen);
+    HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+    Rectangle(dc, vessel_card.left, vessel_card.top, vessel_card.right,
+              vessel_card.bottom);
+    SelectObject(dc, old_brush);
+    SelectObject(dc, old_pen);
+    DeleteObject(card_pen);
+
     HGDIOBJ line_font = SelectObject(dc, skin::font_small());
-    SetTextColor(dc, RGB(130, 220, 180));
-    for (std::size_t i = 0; i < selected->forge_lines.size() && i < 2; ++i) {
+    SetTextColor(dc, skin::kGold);
+    const char* vessel_heading = "LIVING VESSEL";
+    TextOutA(dc, vessel_card.left + 8 * s, vessel_card.top + 5 * s,
+             vessel_heading, static_cast<int>(std::strlen(vessel_heading)));
+    int line_y = vessel_card.top + 23 * s;
+    const int lines_bottom = vessel_card.bottom - 5 * s;
+    for (std::size_t i = 0; i < selected->forge_lines.size(); ++i) {
       const std::string& line = selected->forge_lines[i];
-      TextOutA(dc, left + 14 * s, line_y, line.c_str(),
-               static_cast<int>(line.size()));
+      const bool bond = line.rfind("BOND:", 0) == 0;
+      const bool awakened = line.rfind("AWAKENED:", 0) == 0;
+      SetTextColor(dc, awakened ? RGB(245, 198, 104)
+                                : bond ? RGB(112, 224, 185)
+                                       : RGB(150, 205, 178));
+      RECT measure{vessel_card.left + 8 * s, line_y,
+                   vessel_card.right - 8 * s, lines_bottom};
+      DrawTextA(dc, line.c_str(), static_cast<int>(line.size()), &measure,
+                DT_LEFT | DT_TOP | DT_WORDBREAK | DT_NOPREFIX | DT_CALCRECT);
+      const int line_height =
+          std::max(14 * s, static_cast<int>(measure.bottom - measure.top));
+      RECT text_rect{vessel_card.left + 8 * s, line_y,
+                     vessel_card.right - 8 * s,
+                     std::min(lines_bottom, line_y + line_height)};
+      if (text_rect.top < lines_bottom) {
+        DrawTextA(dc, line.c_str(), static_cast<int>(line.size()), &text_rect,
+                  DT_LEFT | DT_TOP | DT_WORDBREAK | DT_NOPREFIX |
+                      DT_END_ELLIPSIS);
+        state.hud_rect_trace.push_back(
+            {"pane-vessel-property",
+             {text_rect.left, text_rect.top, text_rect.right - text_rect.left,
+              text_rect.bottom - text_rect.top}});
+      }
       rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0,
                     "forge-line:" + line});
-      line_y += 16 * s;
+      line_y += line_height + 2 * s;
     }
     SelectObject(dc, line_font);
   } else if (state.world.progression.present) {
@@ -3587,6 +3671,51 @@ void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List
                     static_cast<double>(pips_w), lit,
                     "combo-cadence:" + std::to_string(lit) + ":" +
                         std::to_string(player.combo_window_ticks)});
+    }
+  }
+
+  // Living-item powers sit immediately above the actions they modify. Only
+  // authoritative combat-state timers/readiness flags are shown here.
+  std::vector<std::string> bond_states;
+  const auto seconds = [](int ticks) {
+    return std::to_string((ticks + 19) / 20) + "s";
+  };
+  if (player.bond_attack_speed_ticks > 0)
+    bond_states.push_back("RHYTHM " + seconds(player.bond_attack_speed_ticks));
+  if (player.bond_movement_speed_ticks > 0)
+    bond_states.push_back("SPRINT " + seconds(player.bond_movement_speed_ticks));
+  if (player.bond_old_grudge_ticks > 0)
+    bond_states.push_back("GRUDGE " + seconds(player.bond_old_grudge_ticks));
+  if (player.bond_last_stand_ready) bond_states.push_back("LAST STAND READY");
+  if (player.bond_untraceable_ready) bond_states.push_back("UNTRACEABLE READY");
+  if (!bond_states.empty()) {
+    const int chip_gap = 6 * s;
+    int total_width = 0;
+    std::vector<int> widths;
+    for (const auto& label : bond_states) {
+      const int width = (18 + static_cast<int>(label.size()) * 7) * s;
+      widths.push_back(width);
+      total_width += width;
+    }
+    total_width += chip_gap * (static_cast<int>(bond_states.size()) - 1);
+    int chip_left = (static_cast<int>(bounds.right) - total_width) / 2;
+    const int chip_bottom = strip.top - 5 * s;
+    const int chip_top = chip_bottom - 22 * s;
+    for (std::size_t i = 0; i < bond_states.size(); ++i) {
+      RECT chip{chip_left, chip_top, chip_left + widths[i], chip_bottom};
+      skin::panel(dc, chip);
+      SetBkMode(dc, TRANSPARENT);
+      SetTextColor(dc, RGB(104, 232, 204));
+      HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+      TextOutA(dc, chip.left + 9 * s, chip.top + 5 * s,
+               bond_states[i].c_str(), static_cast<int>(bond_states[i].size()));
+      SelectObject(dc, old_font);
+      rl.push_back({render::Op::Quickbar,
+                    static_cast<double>((chip.left + chip.right) / 2),
+                    static_cast<double>((chip.top + chip.bottom) / 2),
+                    static_cast<double>(widths[i]), 1,
+                    "bond-state:" + bond_states[i]});
+      chip_left += widths[i] + chip_gap;
     }
   }
 }
@@ -9377,6 +9506,9 @@ int scenario_vesselforge_active_properties() {
   state.world.player.movement_speed_percent = 25;
   state.world.player.ember_resistance = 25;
   state.world.player.river_resistance = 50;
+  state.world.player.bond_attack_speed_ticks = 71;
+  state.world.player.bond_movement_speed_ticks = 53;
+  state.world.player.bond_last_stand_ready = true;
 
   WorldActor foe;
   foe.id = "forge-foe";
@@ -9394,10 +9526,12 @@ int scenario_vesselforge_active_properties() {
 
   WorldCarriedItem blade;
   blade.id = "vessel-macuahuitl";
-  blade.name = "Obsidian Macuahuitl";
+  blade.name = "Mara's Grim Reckoning";
   blade.attack_bonus = 19;
   blade.equipped = true;
-  blade.forge_lines = {"Hits cause Bleeding", "+16% increased Reach"};
+  blade.forge_lines = {"Hits cause Bleeding", "+16% increased Reach",
+                       "BOND: Battle Rhythm - +18% Attack Speed for 4s after a Kill [Slaughter II]",
+                       "AWAKENED: Last Stand - a killing blow instead leaves you at 1 Life, once per battle."};
   state.world.carried = {blade};
   state.world.stored_items = 7;
   state.world.stored_trophies = 3;
@@ -9422,6 +9556,14 @@ int scenario_vesselforge_active_properties() {
   tick.value = 4;
   tick.style = "bleed";
   verdigris::client::apply_presentation_event(fx, state.world, tick, 2);
+  verdigris::client::PresentationEvent bond;
+  bond.type = verdigris::client::PresentationEventType::BondTriggered;
+  bond.actor_id = state.world.player.id;
+  bond.text = "Battle Rhythm";
+  bond.style = "battle-rhythm";
+  bond.value = 18;
+  bond.duration_ms = 4000;
+  verdigris::client::apply_presentation_event(fx, state.world, bond, 3);
   state.effects = std::move(fx.effects);
 
   std::string capture_dir;
@@ -9438,7 +9580,7 @@ int scenario_vesselforge_active_properties() {
   const std::string capture_path =
       capture_dir + "\\vesselforge-active-properties-1366x768.png";
   scenario_check(reference_present(state, 1366, 768, capture_path),
-                 "vesselforge-active: Framekit gear and bleed frame captured");
+                 "vesselforge-active: Framekit Bond combat frame captured");
   std::printf("    capture: %s\n", capture_path.c_str());
 
   int forge_lines = 0;
@@ -9448,6 +9590,8 @@ int scenario_vesselforge_active_properties() {
   bool bleed_tick = false;
   bool persistent_bleed = false;
   bool dormant_claim = false;
+  bool bond_pulse = false;
+  int bond_states = 0;
   for (const auto& item : state.render_list) {
     if (item.op == render::Op::PaneStat &&
         item.label.rfind("forge-line:", 0) == 0) {
@@ -9467,12 +9611,19 @@ int scenario_vesselforge_active_properties() {
       bleed_tick = true;
     if (item.op == render::Op::TargetFlash && item.label == "bleeding")
       persistent_bleed = true;
+    if (item.op == render::Op::WarCry &&
+        item.label == "bond-trigger:battle-rhythm")
+      bond_pulse = true;
+    if (item.op == render::Op::Quickbar &&
+        item.label.rfind("bond-state:", 0) == 0)
+      ++bond_states;
   }
-  scenario_check(forge_lines == 2 && forge_totals && forge_detail &&
+  scenario_check(forge_lines == 4 && forge_totals && forge_detail &&
                      !dormant_claim,
-                 "vesselforge-active: pane explains active item lines and worn totals");
-  scenario_check(bleed_apply && bleed_tick && persistent_bleed,
-                 "vesselforge-active: apply, tick, and persistent bleed remain distinct");
+                 "vesselforge-active: Framekit explains Brands, Bonds, awakening, and totals");
+  scenario_check(bleed_apply && bleed_tick && persistent_bleed && bond_pulse &&
+                     bond_states == 3,
+                 "vesselforge-active: combat ailments, Bond trigger, and live states remain distinct");
   return 0;
 }
 

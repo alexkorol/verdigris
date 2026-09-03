@@ -26,6 +26,8 @@ enum class PresentationEventType {
   ScionLost,           // TASK-0122 Phase A: permanent Scion loss beat
   BuffApplied,         // authoritative temporary player effect began
   BuffExpired,         // TASK-0122 Phase A: authoritative buff end (war cry)
+  BondTriggered,       // authoritative living-item conditional power fired
+  DefenseTriggered,    // authoritative ordinary block/avoid feedback
   Telegraph,
   TelegraphCancelled,
   Message,             // human-readable server/system line in `text`
@@ -112,6 +114,10 @@ inline constexpr const char* kSpawnRenderLabel = "spawn";
 inline constexpr int kWarcryFadeTtlTicks = 10;             // 500 ms
 inline constexpr Rgb kWarcryFadeColor{214, 168, 72};       // dimmed gold
 inline constexpr const char* kWarcryFadeLabel = "warcry-fade";
+
+inline constexpr int kBondPulseTtlTicks = 16;              // 800 ms
+inline constexpr Rgb kBondPulseColor{88, 224, 184};        // living verdigris
+inline constexpr const char* kBondPulseLabel = "bond-trigger";
 
 // ScionLost beat: the longest, most somber beat in the packet.
 inline constexpr int kScionLostRingTtlTicks = 40;          // 2000 ms

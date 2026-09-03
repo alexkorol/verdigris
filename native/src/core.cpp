@@ -1497,6 +1497,11 @@ constexpr int kN3BossTelegraphWindowMs = 1000;
 constexpr int kTownSize = 200;
 constexpr int kN3BleedDurationMs = 3000;
 constexpr int kN3BleedTickMs = 1000;
+constexpr int kBondMovementWindowMs = 450;
+constexpr int kBondAttackSpeedDurationMs = 4000;
+constexpr int kBondMovementSpeedDurationMs = 3000;
+constexpr int kBondOldGrudgeDurationMs = 2000;
+constexpr int kBondMovingRegenIntervalMs = 1000;
 
 double player_skill_range_tiles(const std::string& skill,
                                 const PlayerCombatMods& mods) {
@@ -1540,6 +1545,7 @@ bool in_spawn_clearing(int x, int y) {
 
 WorldSimulation::WorldSimulation(std::uint64_t seed, std::string player_uuid)
     : seed_(seed), player_uuid_(std::move(player_uuid)) {
+  combat_random_state_ ^= seed_;
   // N2 stub: town collision geometry is an open field.  The town login spawn
   // area the scenarios walk (38,115 +/- a few tiles) is open in the real map
   // too; porting the town tile tables is N3+ work documented in the report.
@@ -1584,8 +1590,11 @@ bool WorldSimulation::apply_movement_sample(const std::string& direction, std::i
   const auto delta = tile_movement::movement_delta(direction);
   if (!delta) return false;
   WorldPosition resolved_delta = *delta;
+  const auto now = static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms));
+  const int bond_speed = now < bond_movement_speed_until_ms_
+      ? player_mods_.movement_speed_on_kill_percent : 0;
   const int speed_percent = std::max(
-      0, std::min(100, player_mods_.movement_speed_percent));
+      0, std::min(100, player_mods_.movement_speed_percent + bond_speed));
   const double speed_scale = 1.0 + speed_percent / 100.0;
   resolved_delta.x *= speed_scale;
   resolved_delta.y *= speed_scale;
@@ -1605,6 +1614,7 @@ bool WorldSimulation::apply_movement_sample(const std::string& direction, std::i
   position_.x = tile_movement::round_position(position_.x + resolved_delta.x);
   position_.y = tile_movement::round_position(position_.y + resolved_delta.y);
   register_step(direction, static_cast<int>(tile_movement::kSampleMs), false, now_ms);
+  last_player_move_ms_ = now;
 
   const Vec2 current_tile = tile_movement::occupied_tile(position_);
   if (current_tile.x != previous_tile.x || current_tile.y != previous_tile.y) {
@@ -1687,6 +1697,12 @@ void WorldSimulation::return_to_town() {
   player_combo_step_ = 0;
   player_combo_expires_ms_ = 0;
   auto_player_melee_ = false;
+  bond_attack_speed_until_ms_ = 0;
+  bond_movement_speed_until_ms_ = 0;
+  bond_old_grudge_until_ms_ = 0;
+  next_moving_regen_ms_ = 0;
+  last_stand_available_ = true;
+  untraceable_available_ = true;
   grid_.width = kTownSize;
   grid_.height = kTownSize;
   grid_.walkable.assign(static_cast<std::size_t>(kTownSize) * kTownSize, 1);
@@ -1940,6 +1956,12 @@ void WorldSimulation::enter_solo_instance(const std::string& template_id,
   auto_player_melee_ = false;
   boss_warning_seen_ = false;
   next_boss_telegraph_ms_ = 0;
+  bond_attack_speed_until_ms_ = 0;
+  bond_movement_speed_until_ms_ = 0;
+  bond_old_grudge_until_ms_ = 0;
+  next_moving_regen_ms_ = 0;
+  last_stand_available_ = true;
+  untraceable_available_ = true;
   generate_instance();
 
   scene_type_ = "instance";
@@ -2017,8 +2039,12 @@ bool WorldSimulation::start_player_attack(int player_level, int player_attack,
                             : pending_player_combo_step_ == 3
                                 ? kN3ComboFinisherRecoveryMs
                                 : kN3PlayerAttackIntervalMs;
+  PlayerCombatMods cadence_mods = player_mods_;
+  if (now < bond_attack_speed_until_ms_)
+    cadence_mods.attack_speed_percent +=
+        player_mods_.attack_speed_on_kill_percent;
   next_player_attack_ms_ = now +
-      player_attack_interval_ms(base_interval, player_mods_);
+      player_attack_interval_ms(base_interval, cadence_mods);
   (void)player_attack;
   return true;
 }
@@ -2040,14 +2066,193 @@ int WorldSimulation::player_combo_window_remaining_ms(std::int64_t now_ms) const
   return static_cast<int>(player_combo_expires_ms_ - now);
 }
 
+int WorldSimulation::bond_attack_speed_remaining_ms(std::int64_t now_ms) const {
+  const auto now = static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms));
+  return now >= bond_attack_speed_until_ms_
+      ? 0 : static_cast<int>(bond_attack_speed_until_ms_ - now);
+}
+
+int WorldSimulation::bond_movement_speed_remaining_ms(std::int64_t now_ms) const {
+  const auto now = static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms));
+  return now >= bond_movement_speed_until_ms_
+      ? 0 : static_cast<int>(bond_movement_speed_until_ms_ - now);
+}
+
+int WorldSimulation::bond_old_grudge_remaining_ms(std::int64_t now_ms) const {
+  const auto now = static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms));
+  return now >= bond_old_grudge_until_ms_
+      ? 0 : static_cast<int>(bond_old_grudge_until_ms_ - now);
+}
+
 std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
                                                               int player_attack,
                                                               int& player_life,
                                                               int player_life_max,
-                                                              std::int64_t now_ms) {
+                                                              std::int64_t now_ms,
+                                                              int* player_resource,
+                                                              int player_resource_max) {
   std::vector<WorldCombatEvent> events;
   (void)player_level;
   const auto now = static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms));
+  const auto bond_event = [&](const std::string& power, int amount,
+                              int duration_ms = 0) {
+    WorldCombatEvent effect;
+    effect.type = "bond";
+    effect.attacker_id = player_uuid_;
+    effect.attacker_name = "Adventurer";
+    effect.target_id = player_uuid_;
+    effect.target_name = "Adventurer";
+    effect.skill_id = power;
+    effect.amount = amount;
+    effect.health = player_life;
+    effect.health_max = player_life_max;
+    effect.duration_ms = duration_ms;
+    events.push_back(std::move(effect));
+  };
+  const auto defense_event = [&](const std::string& effect_id) {
+    WorldCombatEvent effect;
+    effect.type = "defense";
+    effect.attacker_id = player_uuid_;
+    effect.target_id = player_uuid_;
+    effect.skill_id = effect_id;
+    effect.health = player_life;
+    effect.health_max = player_life_max;
+    events.push_back(std::move(effect));
+  };
+  const auto player_is_moving = [&]() {
+    return last_player_move_ms_ != 0 && now >= last_player_move_ms_ &&
+           now - last_player_move_ms_ <= kBondMovementWindowMs;
+  };
+  // Second Wind is simulation-time regeneration, not a render-loop estimate.
+  // Continuous accepted movement keeps the one-second clock alive; stopping
+  // resets it so tapping a key cannot bank healing ticks.
+  if (player_mods_.health_regen_while_moving > 0 && player_is_moving()) {
+    if (next_moving_regen_ms_ == 0)
+      next_moving_regen_ms_ = now + kBondMovingRegenIntervalMs;
+    if (now >= next_moving_regen_ms_) {
+      const int before = player_life;
+      player_life = std::min(player_life_max,
+                             player_life + player_mods_.health_regen_while_moving);
+      next_moving_regen_ms_ = now + kBondMovingRegenIntervalMs;
+      if (player_life > before) bond_event("second-wind", player_life - before);
+    }
+  } else {
+    next_moving_regen_ms_ = 0;
+  }
+
+  const auto on_monster_killed = [&](const WorldMonster& monster) {
+    if (player_mods_.health_on_kill_percent > 0 && player_life < player_life_max) {
+      const int recovery = std::max(
+          1, static_cast<int>(std::lround(
+                 player_life_max * player_mods_.health_on_kill_percent / 100.0)));
+      const int before = player_life;
+      player_life = std::min(player_life_max, player_life + recovery);
+      if (player_life > before) bond_event("blood-price", player_life - before);
+    }
+    if (player_resource && player_resource_max > 0 &&
+        player_mods_.resource_on_kill_percent > 0 &&
+        *player_resource < player_resource_max) {
+      const int recovery = std::max(
+          1, static_cast<int>(std::lround(
+                 player_resource_max * player_mods_.resource_on_kill_percent / 100.0)));
+      const int before = *player_resource;
+      *player_resource = std::min(player_resource_max, *player_resource + recovery);
+      if (*player_resource > before)
+        bond_event("harvest", *player_resource - before);
+    }
+    if (player_mods_.attack_speed_on_kill_percent > 0) {
+      bond_attack_speed_until_ms_ = now + kBondAttackSpeedDurationMs;
+      bond_event("battle-rhythm", player_mods_.attack_speed_on_kill_percent,
+                 kBondAttackSpeedDurationMs);
+    }
+    if (player_mods_.movement_speed_on_kill_percent > 0) {
+      bond_movement_speed_until_ms_ = now + kBondMovementSpeedDurationMs;
+      bond_event("dead-sprint", player_mods_.movement_speed_on_kill_percent,
+                 kBondMovementSpeedDurationMs);
+    }
+    if (player_mods_.awakened_echoing_kill &&
+        1 + static_cast<int>(next_combat_random() % 100) <= 15) {
+      drop_monster_loot(monster, player_mods_.goods_found);
+      bond_event("echoing-kill", 0);
+    }
+  };
+
+  const auto apply_incoming = [&](const WorldMonster& monster,
+                                  const std::string& skill, int raw_damage,
+                                  const std::string& channel, int resistance,
+                                  bool thrown) {
+    const bool moving = player_is_moving();
+    if (player_mods_.awakened_untraceable && untraceable_available_) {
+      untraceable_available_ = false;
+      bond_event("untraceable", 0);
+      return false;
+    }
+    const int avoid = moving && thrown
+        ? std::clamp(player_mods_.thrown_avoid_while_moving_percent, 0, 75) : 0;
+    if (avoid > 0 && 1 + static_cast<int>(next_combat_random() % 100) <= avoid) {
+      bond_event("sidestep", 0);
+      return false;
+    }
+    const bool stationary = !moving;
+    const int block = std::clamp(
+        player_mods_.block_chance +
+            (stationary ? player_mods_.stationary_block_chance : 0),
+        0, 75);
+    if (block > 0 && 1 + static_cast<int>(next_combat_random() % 100) <= block) {
+      const int before = player_life;
+      player_life = std::min(player_life_max,
+                             player_life + player_mods_.health_on_block);
+      if (player_mods_.health_on_block > 0)
+        bond_event("shieldwall", player_life - before);
+      else if (stationary && player_mods_.stationary_block_chance > 0)
+        bond_event("stand-ground", 0);
+      else
+        defense_event("block");
+      return false;
+    }
+    const int resisted = std::max(
+        1, static_cast<int>(std::lround(
+               raw_damage * (1.0 - std::clamp(resistance, 0, 75) / 100.0))));
+    int armour = std::max(0, player_mods_.armour_rating);
+    if (channel == "physical" && now < bond_old_grudge_until_ms_)
+      armour += static_cast<int>(std::lround(
+          armour * player_mods_.armour_on_hit_percent / 100.0));
+    const int armour_prevented = channel == "physical"
+        ? std::min(resisted - 1, armour / 10) : 0;
+    const int damage = std::max(1, resisted - armour_prevented);
+    player_life = std::max(0, player_life - damage);
+    bool saved = false;
+    if (player_life == 0 && player_mods_.awakened_last_stand &&
+        last_stand_available_) {
+      player_life = 1;
+      last_stand_available_ = false;
+      saved = true;
+      bond_event("last-stand", 1);
+    }
+    WorldCombatEvent impact;
+    impact.type = "hit";
+    impact.attacker_id = monster.uuid;
+    impact.attacker_name = monster.name;
+    impact.target_id = player_uuid_;
+    impact.target_name = "Adventurer";
+    impact.skill_id = skill;
+    impact.amount = damage;
+    impact.base_amount = raw_damage;
+    impact.damage_channel = channel;
+    impact.resistance_percent = std::clamp(resistance, 0, 75);
+    impact.armour_rating = armour;
+    impact.armour_prevented = armour_prevented;
+    impact.health = player_life;
+    impact.health_max = player_life_max;
+    impact.died = player_life == 0;
+    events.push_back(std::move(impact));
+    if (!saved && player_mods_.armour_on_hit_percent > 0 && player_life > 0) {
+      bond_old_grudge_until_ms_ = now + kBondOldGrudgeDurationMs;
+      bond_event("old-grudge", player_mods_.armour_on_hit_percent,
+                 kBondOldGrudgeDurationMs);
+    }
+    return player_life == 0;
+  };
   // Persistent physical ailment resolution happens before AI movement. A
   // delayed server tick catches up every authored one-second beat, so frame
   // rate and packet cadence cannot change total damage. Reapplication below
@@ -2081,6 +2286,7 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
         death.type = "death";
         events.push_back(death);
         drop_monster_loot(monster, player_mods_.goods_found);
+        on_monster_killed(monster);
         if (monster.uuid == active_target_) {
           active_target_.clear();
           pending_player_skill_.clear();
@@ -2279,26 +2485,9 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
               : monster.damage_channel == "river"
                     ? std::max(0, std::min(75, player_mods_.river_resistance))
                     : 0;
-          const int damage = std::max(
-              1, static_cast<int>(std::lround(
-                     raw_damage * (1.0 - resistance / 100.0))));
-          player_life = std::max(0, player_life - damage);
-          WorldCombatEvent impact;
-          impact.type = "hit";
-          impact.attacker_id = monster.uuid;
-          impact.attacker_name = monster.name;
-          impact.target_id = player_uuid_;
-          impact.target_name = "Adventurer";
-          impact.skill_id = "ranged:volley";
-          impact.amount = damage;
-          impact.base_amount = raw_damage;
-          impact.damage_channel = monster.damage_channel;
-          impact.resistance_percent = resistance;
-          impact.health = player_life;
-          impact.health_max = player_life_max;
-          impact.died = player_life == 0;
-          events.push_back(impact);
-          if (player_life == 0) break;
+          if (apply_incoming(monster, "ranged:volley", raw_damage,
+                             monster.damage_channel, resistance, true))
+            break;
           continue;
         }
         const int distance = std::max(std::abs(monster.x - here.x),
@@ -2397,20 +2586,9 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       // half the slope so early floors threaten without deleting.
       const int damage = std::max(
           1, (2 + monster.level) * (100 + expedition_damage_percent_) / 100);
-      player_life = std::max(0, player_life - damage);
-      WorldCombatEvent impact;
-      impact.type = "hit";
-      impact.attacker_id = monster.uuid;
-      impact.attacker_name = monster.name;
-      impact.target_id = player_uuid_;
-      impact.amount = damage;
-      impact.base_amount = damage;
-      impact.damage_channel = "physical";
-      impact.health = player_life;
-      impact.health_max = player_life_max;
-      impact.died = player_life == 0;
-      events.push_back(impact);
-      if (player_life == 0) break;
+      if (apply_incoming(monster, "monster:attack", damage, "physical", 0,
+                         false))
+        break;
     }
   }
   if (active_target_.empty()) {
@@ -2443,8 +2621,12 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       pending_player_combo_step_ = player_combo_step_ % 3 + 1;
       const int base_interval = pending_player_combo_step_ == 3
           ? kN3ComboFinisherRecoveryMs : kN3PlayerAttackIntervalMs;
+      PlayerCombatMods cadence_mods = player_mods_;
+      if (now < bond_attack_speed_until_ms_)
+        cadence_mods.attack_speed_percent +=
+            player_mods_.attack_speed_on_kill_percent;
       next_player_attack_ms_ = now +
-          player_attack_interval_ms(base_interval, player_mods_);
+          player_attack_interval_ms(base_interval, cadence_mods);
     }
   }
   if (player_attack > 0 && !pending_player_skill_.empty()) {
@@ -2494,9 +2676,16 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       if (player_mods_.force_critical) {
         player_mods_.force_critical = false;
         critical = true;
-      } else if (player_mods_.critical_chance > 0) {
+      } else {
+        const int conditional_critical =
+            struck_target->bleed_until_ms > now
+                ? player_mods_.critical_against_bleeding_percent : 0;
+        const int critical_chance = std::clamp(
+            player_mods_.critical_chance + conditional_critical, 0, 75);
+        if (critical_chance > 0) {
         const int roll = 1 + static_cast<int>(next_world_random() % 100);
-        critical = roll <= std::max(0, std::min(75, player_mods_.critical_chance));
+          critical = roll <= critical_chance;
+        }
       }
       const int damage = critical
           ? std::max(beastbane_damage + 1,
@@ -2569,6 +2758,7 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
         struck_target->alive = false;
         WorldCombatEvent death = hit; death.type = "death"; events.push_back(death);
         drop_monster_loot(*struck_target, player_mods_.goods_found);
+        on_monster_killed(*struck_target);
         if (struck_target->uuid == active_target_) active_target_died = true;
       }
     }
@@ -2598,12 +2788,8 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     } else if (target->telegraph_until_ms != 0 && now >= target->telegraph_until_ms) {
       const Vec2 p = tile_movement::occupied_tile(position_);
       if (std::abs(p.x - target->x) <= kN3BossTelegraphRadius && std::abs(p.y - target->y) <= kN3BossTelegraphRadius) {
-        player_life = std::max(0, player_life - kN3BossDamage);
-        WorldCombatEvent impact; impact.type = "hit"; impact.attacker_id = target->uuid; impact.attacker_name = target->name;
-        impact.target_id = player_uuid_; impact.target_name = "Adventurer"; impact.skill_id = "boss:ground-slam";
-        impact.amount = kN3BossDamage; impact.health = player_life; impact.health_max = player_life_max; impact.died = player_life == 0;
-        impact.base_amount = kN3BossDamage; impact.damage_channel = "physical";
-        events.push_back(impact);
+        apply_incoming(*target, "boss:ground-slam", kN3BossDamage,
+                       "physical", 0, false);
       }
       target->telegraph_until_ms = 0;
       // The next player command is the fixed-step heartbeat in the native
@@ -2614,12 +2800,8 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
   } else if (target->behaviour_type == "melee" && now >= target->next_attack_ms && std::abs(target->x - tile_movement::occupied_tile(position_).x) <= 2
              && std::abs(target->y - tile_movement::occupied_tile(position_).y) <= 2) {
     const int damage = target->empowered ? kN3MonsterDamage + 2 : kN3MonsterDamage;
-    player_life = std::max(0, player_life - damage);
-    WorldCombatEvent impact; impact.type = "hit"; impact.attacker_id = target->uuid; impact.attacker_name = target->name;
-    impact.target_id = player_uuid_; impact.target_name = "Adventurer"; impact.skill_id = "monster:attack";
-    impact.amount = damage; impact.health = player_life; impact.health_max = player_life_max; impact.died = player_life == 0;
-    impact.base_amount = damage; impact.damage_channel = "physical";
-    events.push_back(impact); target->next_attack_ms = now + 1500;
+    apply_incoming(*target, "monster:attack", damage, "physical", 0, false);
+    target->next_attack_ms = now + 1500;
   }
   return events;
 }
@@ -3322,8 +3504,9 @@ std::vector<VesselEvolutionEvent> VesselForge::attune(
 }
 
 std::vector<TooltipLine> VesselForge::tooltip(const VesselItem& item) const {
-  // Conditional Bond and awakened powers remain visibly dormant until their
-  // combat triggers are wired; identity/progression itself is authoritative.
+  // Bond lines only claim authority when the native runtime owns the trigger.
+  // Mana abilities, curses, and rites remain honest until those base systems
+  // exist; every other learned property is live in combat.
   std::vector<TooltipLine> lines;
   const PackMaterial* mat = pack_material(item.material_id);
   const PackForm* f = pack_form(item.form_id);
@@ -3376,11 +3559,14 @@ std::vector<TooltipLine> VesselForge::tooltip(const VesselItem& item) const {
     if (!theme || !mod) continue;
     const int bounded_tier = std::clamp(bond.tier, 1, 3);
     const double value = bond.base * kBondTierMultipliers[bounded_tier - 1];
-    lines.push_back({"dormant",
-                     "Dormant - BOND: " + std::string(mod->name) + " - " +
-                         format_bond_label(mod->label, value) + " [" +
-                         theme->name + " " + kRoman[bounded_tier - 1] + "]",
-                     "inactive"});
+    const bool active = bond.mod_id != "veil_wise" &&
+                        bond.mod_id != "clear_mind";
+    lines.push_back({active ? "bond" : "dormant",
+                     std::string(active ? "BOND: " : "Dormant - BOND: ") +
+                         mod->name + " - " + format_bond_label(mod->label, value) +
+                         " [" + theme->name + " " +
+                         kRoman[bounded_tier - 1] + "]",
+                     active ? "bonded" : "inactive"});
   }
   if (item.scars) {
     lines.push_back({"scar", "✕ " + std::to_string(item.scars) + " scarred slot" +
@@ -3388,8 +3574,12 @@ std::vector<TooltipLine> VesselForge::tooltip(const VesselItem& item) const {
                      "normal"});
   }
   if (item.awakened) {
-    lines.push_back({"dormant", "Dormant awakened power - " + item.awakened->power,
-                     "inactive"});
+    const bool active = item.awakened->theme_id != "spiritwork";
+    lines.push_back({active ? "awakened" : "dormant",
+                     std::string(active ? "AWAKENED: "
+                                        : "Dormant awakened power - ") +
+                         item.awakened->power,
+                     active ? "awakened" : "inactive"});
     lines.push_back({"flavor", item.awakened->flavor, "normal"});
   }
   if (item.vessel && !is_sated(item)) {
@@ -3417,7 +3607,17 @@ VesselCombat VesselForge::derive_combat(const VesselItem& item) const {
       sums[brand.mod_id] += brand.value;
     }
   }
+  std::map<std::string, double> bond_sums;
+  for (const auto& bond : item.bonds) {
+    if (!pack_bond_mod(bond.theme_id, bond.mod_id)) continue;
+    const int tier = std::clamp(bond.tier, 1, 3);
+    bond_sums[bond.mod_id] += bond.base * kBondTierMultipliers[tier - 1];
+  }
   auto sum = [&](const char* id) { auto it = sums.find(id); return it == sums.end() ? 0.0 : it->second; };
+  auto bond_sum = [&](const char* id) {
+    auto it = bond_sums.find(id);
+    return it == bond_sums.end() ? 0.0 : it->second;
+  };
 
   if (f->has_armor && f->armor > 0) {
     combat.ward = std::max(0, static_cast<int>(std::lround(f->armor * mat->stat_mult)));
@@ -3484,6 +3684,40 @@ VesselCombat VesselForge::derive_combat(const VesselItem& item) const {
       0, std::min(75, static_cast<int>(sum("emberward"))));
   combat.modifiers.river_resistance = std::max(
       0, std::min(75, static_cast<int>(sum("riverblessed"))));
+  combat.modifiers.health_on_kill_percent = std::clamp(
+      static_cast<int>(std::lround(bond_sum("blood_price"))), 0, 100);
+  combat.modifiers.attack_speed_on_kill_percent = std::clamp(
+      static_cast<int>(std::lround(bond_sum("battle_rhythm"))), 0, 100);
+  combat.modifiers.critical_against_bleeding_percent = std::clamp(
+      static_cast<int>(std::lround(bond_sum("read_wound"))), 0, 75);
+  combat.modifiers.health_on_block = std::max(
+      0, static_cast<int>(std::lround(bond_sum("shieldwall"))));
+  combat.modifiers.stationary_block_chance = std::clamp(
+      static_cast<int>(std::lround(bond_sum("stand_ground"))), 0, 75);
+  combat.modifiers.armour_on_hit_percent = std::clamp(
+      static_cast<int>(std::lround(bond_sum("old_grudge"))), 0, 200);
+  combat.modifiers.ability_power_high_resource_percent = std::clamp(
+      static_cast<int>(std::lround(bond_sum("clear_mind"))), 0, 100);
+  combat.modifiers.resource_on_kill_percent = std::clamp(
+      static_cast<int>(std::lround(bond_sum("ember_tithe"))), 0, 100);
+  combat.modifiers.curse_avoid_percent = std::clamp(
+      static_cast<int>(std::lround(bond_sum("veil_wise"))), 0, 75);
+  combat.modifiers.movement_speed_on_kill_percent = std::clamp(
+      static_cast<int>(std::lround(bond_sum("dead_sprint"))), 0, 100);
+  combat.modifiers.thrown_avoid_while_moving_percent = std::clamp(
+      static_cast<int>(std::lround(bond_sum("sidestep"))), 0, 75);
+  combat.modifiers.health_regen_while_moving = std::max(
+      0, static_cast<int>(std::lround(bond_sum("road_lore"))));
+  if (item.awakened) {
+    combat.modifiers.awakened_echoing_kill =
+        item.awakened->theme_id == "slaughter";
+    combat.modifiers.awakened_last_stand =
+        item.awakened->theme_id == "warding";
+    combat.modifiers.awakened_twinned_voice =
+        item.awakened->theme_id == "spiritwork";
+    combat.modifiers.awakened_untraceable =
+        item.awakened->theme_id == "wayfaring";
+  }
   return combat;
 }
 
@@ -4048,6 +4282,40 @@ WearSet::Totals WearSet::totals() const {
         item.combat_bonuses.movement_speed_percent;
     out.modifiers.ember_resistance += item.combat_bonuses.ember_resistance;
     out.modifiers.river_resistance += item.combat_bonuses.river_resistance;
+    out.modifiers.health_on_kill_percent +=
+        item.combat_bonuses.health_on_kill_percent;
+    out.modifiers.attack_speed_on_kill_percent +=
+        item.combat_bonuses.attack_speed_on_kill_percent;
+    out.modifiers.critical_against_bleeding_percent +=
+        item.combat_bonuses.critical_against_bleeding_percent;
+    out.modifiers.health_on_block += item.combat_bonuses.health_on_block;
+    out.modifiers.stationary_block_chance +=
+        item.combat_bonuses.stationary_block_chance;
+    out.modifiers.armour_on_hit_percent +=
+        item.combat_bonuses.armour_on_hit_percent;
+    out.modifiers.ability_power_high_resource_percent +=
+        item.combat_bonuses.ability_power_high_resource_percent;
+    out.modifiers.resource_on_kill_percent +=
+        item.combat_bonuses.resource_on_kill_percent;
+    out.modifiers.curse_avoid_percent += item.combat_bonuses.curse_avoid_percent;
+    out.modifiers.movement_speed_on_kill_percent +=
+        item.combat_bonuses.movement_speed_on_kill_percent;
+    out.modifiers.thrown_avoid_while_moving_percent +=
+        item.combat_bonuses.thrown_avoid_while_moving_percent;
+    out.modifiers.health_regen_while_moving +=
+        item.combat_bonuses.health_regen_while_moving;
+    out.modifiers.awakened_echoing_kill =
+        out.modifiers.awakened_echoing_kill ||
+        item.combat_bonuses.awakened_echoing_kill;
+    out.modifiers.awakened_last_stand =
+        out.modifiers.awakened_last_stand ||
+        item.combat_bonuses.awakened_last_stand;
+    out.modifiers.awakened_twinned_voice =
+        out.modifiers.awakened_twinned_voice ||
+        item.combat_bonuses.awakened_twinned_voice;
+    out.modifiers.awakened_untraceable =
+        out.modifiers.awakened_untraceable ||
+        item.combat_bonuses.awakened_untraceable;
   }
   out.modifiers.block_chance = clamp(out.modifiers.block_chance, 75);
   out.modifiers.critical_chance = clamp(out.modifiers.critical_chance, 75);
@@ -4065,6 +4333,29 @@ WearSet::Totals WearSet::totals() const {
       clamp(out.modifiers.movement_speed_percent, 100);
   out.modifiers.ember_resistance = clamp(out.modifiers.ember_resistance, 75);
   out.modifiers.river_resistance = clamp(out.modifiers.river_resistance, 75);
+  out.modifiers.health_on_kill_percent =
+      clamp(out.modifiers.health_on_kill_percent, 100);
+  out.modifiers.attack_speed_on_kill_percent =
+      clamp(out.modifiers.attack_speed_on_kill_percent, 100);
+  out.modifiers.critical_against_bleeding_percent =
+      clamp(out.modifiers.critical_against_bleeding_percent, 75);
+  out.modifiers.health_on_block = clamp(out.modifiers.health_on_block, 1000);
+  out.modifiers.stationary_block_chance =
+      clamp(out.modifiers.stationary_block_chance, 75);
+  out.modifiers.armour_on_hit_percent =
+      clamp(out.modifiers.armour_on_hit_percent, 200);
+  out.modifiers.ability_power_high_resource_percent =
+      clamp(out.modifiers.ability_power_high_resource_percent, 100);
+  out.modifiers.resource_on_kill_percent =
+      clamp(out.modifiers.resource_on_kill_percent, 100);
+  out.modifiers.curse_avoid_percent =
+      clamp(out.modifiers.curse_avoid_percent, 75);
+  out.modifiers.movement_speed_on_kill_percent =
+      clamp(out.modifiers.movement_speed_on_kill_percent, 100);
+  out.modifiers.thrown_avoid_while_moving_percent =
+      clamp(out.modifiers.thrown_avoid_while_moving_percent, 75);
+  out.modifiers.health_regen_while_moving =
+      clamp(out.modifiers.health_regen_while_moving, 1000);
   return out;
 }
 
@@ -4091,6 +4382,16 @@ std::uint64_t WorldSimulation::next_world_random() {
   // faithful; a seeded one keeps runs replayable for the architect.
   world_random_state_ += 0x9e3779b97f4a7c15ULL;
   std::uint64_t z = world_random_state_;
+  z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9ULL;
+  z = (z ^ (z >> 27)) * 0x94d049bb133111ebULL;
+  return z ^ (z >> 31);
+}
+
+std::uint64_t WorldSimulation::next_combat_random() {
+  // Conditional defense/Bond rolls must not perturb floor generation or the
+  // loot stream merely because a player equipped a new reactive property.
+  combat_random_state_ += 0x9e3779b97f4a7c15ULL;
+  std::uint64_t z = combat_random_state_;
   z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9ULL;
   z = (z ^ (z >> 27)) * 0x94d049bb133111ebULL;
   return z ^ (z >> 31);
@@ -4254,6 +4555,12 @@ void WorldSimulation::transition_floor(int depth) {
   auto_player_melee_ = false;
   boss_warning_seen_ = false;
   next_boss_telegraph_ms_ = 0;
+  bond_attack_speed_until_ms_ = 0;
+  bond_movement_speed_until_ms_ = 0;
+  bond_old_grudge_until_ms_ = 0;
+  next_moving_regen_ms_ = 0;
+  last_stand_available_ = true;
+  untraceable_available_ = true;
   generate_instance();
   scene_type_ = "instance";
   scene_id_ = "instance:" + theme + ":" + (layout.empty() ? "default" : layout);

@@ -1296,6 +1296,54 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     model_.player.war_cry_ticks_remaining = static_cast<int>(json_number(
         envelope.data.get("warCryTicksRemaining"),
         model_.player.war_cry_ticks_remaining));
+    model_.player.bond_attack_speed_ticks = (std::max)(0, static_cast<int>(
+        json_number(envelope.data.get("bondAttackSpeedTicks"), 0.0)));
+    model_.player.bond_movement_speed_ticks = (std::max)(0, static_cast<int>(
+        json_number(envelope.data.get("bondMovementSpeedTicks"), 0.0)));
+    model_.player.bond_old_grudge_ticks = (std::max)(0, static_cast<int>(
+        json_number(envelope.data.get("bondOldGrudgeTicks"), 0.0)));
+    model_.player.bond_last_stand_ready = json_bool(
+        envelope.data.get("bondLastStandReady"));
+    model_.player.bond_untraceable_ready = json_bool(
+        envelope.data.get("bondUntraceableReady"));
+    return;
+  }
+  if (envelope.event == "player:bond:effect" ||
+      envelope.event == "player:defense:effect") {
+    const auto* power = json_string(envelope.data.get("powerId"));
+    const std::string power_id = power ? *power : "bond";
+    std::string label = power_id;
+    if (power_id == "blood-price") label = "Blood Price";
+    else if (power_id == "battle-rhythm") label = "Battle Rhythm";
+    else if (power_id == "harvest") label = "Harvest";
+    else if (power_id == "dead-sprint") label = "Dead Sprint";
+    else if (power_id == "shieldwall") label = "Shieldwall";
+    else if (power_id == "old-grudge") label = "Old Grudge";
+    else if (power_id == "second-wind") label = "Second Wind";
+    else if (power_id == "sidestep") label = "Sidestep";
+    else if (power_id == "echoing-kill") label = "Echoing Kill";
+    else if (power_id == "last-stand") label = "Last Stand";
+    else if (power_id == "untraceable") label = "Untraceable";
+    else if (power_id == "stand-ground") label = "Stand Your Ground";
+    else if (power_id == "block") label = "Block";
+    if (const auto* health = envelope.data.get("health")) {
+      model_.player.life = static_cast<int>(
+          json_number(health->get("current"), model_.player.life));
+      model_.player.life_max = static_cast<int>(
+          json_number(health->get("max"), model_.player.life_max));
+    }
+    PresentationEvent triggered;
+    triggered.type = envelope.event == "player:bond:effect"
+        ? PresentationEventType::BondTriggered
+        : PresentationEventType::DefenseTriggered;
+    triggered.actor_id = model_.player.uuid;
+    triggered.text = label;
+    triggered.style = power_id;
+    triggered.value = (std::max)(0, static_cast<int>(
+        json_number(envelope.data.get("amount"), 0.0)));
+    triggered.duration_ms = (std::max)(0, static_cast<int>(
+        json_number(envelope.data.get("durationMs"), 0.0)));
+    pending_events_.push_back(std::move(triggered));
     return;
   }
   if (envelope.event == "player:skill:effect") {
@@ -1593,6 +1641,18 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
           static_cast<int>(json_number(cadence->get("step"), 0.0)), 0, 3);
       model_.player.combo_window_ticks = (std::max)(0, static_cast<int>(
           json_number(cadence->get("windowTicks"), 0.0)));
+    }
+    if (const auto* bonds = state->get("bondCombat"); bonds && bonds->object()) {
+      model_.player.bond_attack_speed_ticks = (std::max)(0, static_cast<int>(
+          json_number(bonds->get("attackSpeedTicks"), 0.0)));
+      model_.player.bond_movement_speed_ticks = (std::max)(0, static_cast<int>(
+          json_number(bonds->get("movementSpeedTicks"), 0.0)));
+      model_.player.bond_old_grudge_ticks = (std::max)(0, static_cast<int>(
+          json_number(bonds->get("oldGrudgeTicks"), 0.0)));
+      model_.player.bond_last_stand_ready =
+          json_bool(bonds->get("lastStandReady"));
+      model_.player.bond_untraceable_ready =
+          json_bool(bonds->get("untraceableReady"));
     }
     if (const auto* attributes = state->get("attributes")) {
       model_.attr_strength = static_cast<int>(

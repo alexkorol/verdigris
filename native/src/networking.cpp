@@ -335,6 +335,37 @@ JsonValue modifiers_json(const CombatModifiers& mods) {
     put(out, "emberResistance", mods.ember_resistance);
   if (mods.river_resistance > 0)
     put(out, "riverResistance", mods.river_resistance);
+  if (mods.health_on_kill_percent > 0)
+    put(out, "healthOnKillPercent", mods.health_on_kill_percent);
+  if (mods.attack_speed_on_kill_percent > 0)
+    put(out, "attackSpeedOnKillPercent", mods.attack_speed_on_kill_percent);
+  if (mods.critical_against_bleeding_percent > 0)
+    put(out, "criticalAgainstBleedingPercent",
+        mods.critical_against_bleeding_percent);
+  if (mods.health_on_block > 0) put(out, "healthOnBlock", mods.health_on_block);
+  if (mods.stationary_block_chance > 0)
+    put(out, "stationaryBlockChance", mods.stationary_block_chance);
+  if (mods.armour_on_hit_percent > 0)
+    put(out, "armourOnHitPercent", mods.armour_on_hit_percent);
+  if (mods.ability_power_high_resource_percent > 0)
+    put(out, "abilityPowerHighResourcePercent",
+        mods.ability_power_high_resource_percent);
+  if (mods.resource_on_kill_percent > 0)
+    put(out, "resourceOnKillPercent", mods.resource_on_kill_percent);
+  if (mods.curse_avoid_percent > 0)
+    put(out, "curseAvoidPercent", mods.curse_avoid_percent);
+  if (mods.movement_speed_on_kill_percent > 0)
+    put(out, "movementSpeedOnKillPercent",
+        mods.movement_speed_on_kill_percent);
+  if (mods.thrown_avoid_while_moving_percent > 0)
+    put(out, "thrownAvoidWhileMovingPercent",
+        mods.thrown_avoid_while_moving_percent);
+  if (mods.health_regen_while_moving > 0)
+    put(out, "healthRegenWhileMoving", mods.health_regen_while_moving);
+  if (mods.awakened_echoing_kill) put(out, "awakenedEchoingKill", true);
+  if (mods.awakened_last_stand) put(out, "awakenedLastStand", true);
+  if (mods.awakened_twinned_voice) put(out, "awakenedTwinnedVoice", true);
+  if (mods.awakened_untraceable) put(out, "awakenedUntraceable", true);
   if (out.empty()) return JsonValue(nullptr);
   return JsonValue(std::move(out));
 }
@@ -1127,6 +1158,36 @@ JsonValue ProtocolSession::combat_totals_json() const {
   put(combat, "movementSpeedPercent", totals.modifiers.movement_speed_percent);
   put(combat, "emberResistance", totals.modifiers.ember_resistance);
   put(combat, "riverResistance", totals.modifiers.river_resistance);
+  put(combat, "healthOnKillPercent",
+      totals.modifiers.health_on_kill_percent);
+  put(combat, "attackSpeedOnKillPercent",
+      totals.modifiers.attack_speed_on_kill_percent);
+  put(combat, "criticalAgainstBleedingPercent",
+      totals.modifiers.critical_against_bleeding_percent);
+  put(combat, "healthOnBlock", totals.modifiers.health_on_block);
+  put(combat, "stationaryBlockChance",
+      totals.modifiers.stationary_block_chance);
+  put(combat, "armourOnHitPercent",
+      totals.modifiers.armour_on_hit_percent);
+  put(combat, "abilityPowerHighResourcePercent",
+      totals.modifiers.ability_power_high_resource_percent);
+  put(combat, "resourceOnKillPercent",
+      totals.modifiers.resource_on_kill_percent);
+  put(combat, "curseAvoidPercent", totals.modifiers.curse_avoid_percent);
+  put(combat, "movementSpeedOnKillPercent",
+      totals.modifiers.movement_speed_on_kill_percent);
+  put(combat, "thrownAvoidWhileMovingPercent",
+      totals.modifiers.thrown_avoid_while_moving_percent);
+  put(combat, "healthRegenWhileMoving",
+      totals.modifiers.health_regen_while_moving);
+  put(combat, "awakenedEchoingKill",
+      totals.modifiers.awakened_echoing_kill);
+  put(combat, "awakenedLastStand",
+      totals.modifiers.awakened_last_stand);
+  put(combat, "awakenedTwinnedVoice",
+      totals.modifiers.awakened_twinned_voice);
+  put(combat, "awakenedUntraceable",
+      totals.modifiers.awakened_untraceable);
   put(combat, "respawnProtectionUntil", static_cast<double>(respawn_protection_until_ms_));
   return JsonValue(std::move(combat));
 }
@@ -1295,6 +1356,15 @@ JsonValue ProtocolSession::snapshot() const {
   put(state,"combatCadence",JsonValue::Object{
       {"step",world_->player_combo_step(combat_clock_ms_)},
       {"windowTicks",(combo_window_snapshot_ms+kSimulationTickMs-1)/kSimulationTickMs}});
+  put(state, "bondCombat", JsonValue::Object{
+      {"attackSpeedTicks", (world_->bond_attack_speed_remaining_ms(
+          combat_clock_ms_) + kSimulationTickMs - 1) / kSimulationTickMs},
+      {"movementSpeedTicks", (world_->bond_movement_speed_remaining_ms(
+          combat_clock_ms_) + kSimulationTickMs - 1) / kSimulationTickMs},
+      {"oldGrudgeTicks", (world_->bond_old_grudge_remaining_ms(
+          combat_clock_ms_) + kSimulationTickMs - 1) / kSimulationTickMs},
+      {"lastStandReady", world_->bond_last_stand_ready()},
+      {"untraceableReady", world_->bond_untraceable_ready()}});
   JsonValue::Array monsters; for (const auto& candidate:world_->monsters()) if (candidate.alive) {
     JsonValue::Object monster; put(monster,"uuid",candidate.uuid); put(monster,"id",candidate.id); put(monster,"name",candidate.name);
     put(monster,"x",candidate.x); put(monster,"y",candidate.y); put(monster,"level",candidate.level); put(monster,"armour",candidate.armour); put(monster,"rarity",candidate.rarity); put(monster,"boss",candidate.boss);
@@ -1477,6 +1547,9 @@ void ProtocolSession::finish_extraction(const std::function<void(const Envelope&
 void ProtocolSession::sync_combat_mods() {
   const auto totals=wear_.totals();
   PlayerCombatMods mods=world_->player_combat_mods();  // preserves force_critical
+  mods.block_chance=totals.modifiers.block_chance;
+  mods.armour_rating=(std::max)((std::max)(totals.defense.stab, totals.defense.slash),
+                                (std::max)(totals.defense.crush, totals.defense.range));
   mods.critical_chance=totals.modifiers.critical_chance;
   mods.attack_speed_percent=totals.modifiers.attack_speed_percent;
   mods.goods_found=totals.modifiers.goods_found;
@@ -1489,6 +1562,28 @@ void ProtocolSession::sync_combat_mods() {
   mods.movement_speed_percent=totals.modifiers.movement_speed_percent;
   mods.ember_resistance=totals.modifiers.ember_resistance;
   mods.river_resistance=totals.modifiers.river_resistance;
+  mods.health_on_kill_percent=totals.modifiers.health_on_kill_percent;
+  mods.attack_speed_on_kill_percent=
+      totals.modifiers.attack_speed_on_kill_percent;
+  mods.critical_against_bleeding_percent=
+      totals.modifiers.critical_against_bleeding_percent;
+  mods.health_on_block=totals.modifiers.health_on_block;
+  mods.stationary_block_chance=totals.modifiers.stationary_block_chance;
+  mods.armour_on_hit_percent=totals.modifiers.armour_on_hit_percent;
+  mods.ability_power_high_resource_percent=
+      totals.modifiers.ability_power_high_resource_percent;
+  mods.resource_on_kill_percent=totals.modifiers.resource_on_kill_percent;
+  mods.curse_avoid_percent=totals.modifiers.curse_avoid_percent;
+  mods.movement_speed_on_kill_percent=
+      totals.modifiers.movement_speed_on_kill_percent;
+  mods.thrown_avoid_while_moving_percent=
+      totals.modifiers.thrown_avoid_while_moving_percent;
+  mods.health_regen_while_moving=
+      totals.modifiers.health_regen_while_moving;
+  mods.awakened_echoing_kill=totals.modifiers.awakened_echoing_kill;
+  mods.awakened_last_stand=totals.modifiers.awakened_last_stand;
+  mods.awakened_twinned_voice=totals.modifiers.awakened_twinned_voice;
+  mods.awakened_untraceable=totals.modifiers.awakened_untraceable;
   // combat/index.js attackStyle: the dominant trained channel, stab first on ties.
   const ChannelRatings& a=totals.attack;
   int best=a.stab; std::string style="stab";
@@ -3221,6 +3316,18 @@ void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std
     put(data,"damagePerTick",event.amount); put(data,"durationMs",event.duration_ms);
     emit_world(Envelope{"monster:status",JsonValue(std::move(data))},emit); return;
   }
+  if (event.type == "bond" || event.type == "defense") {
+    JsonValue::Object data;
+    put(data, "powerId", event.skill_id);
+    put(data, "amount", event.amount);
+    put(data, "durationMs", event.duration_ms);
+    put(data, "health",
+        JsonValue::Object{{"current", event.health}, {"max", event.health_max}});
+    emit_world(Envelope{event.type == "bond" ? "player:bond:effect"
+                                               : "player:defense:effect",
+                        JsonValue(std::move(data))}, emit);
+    return;
+  }
   // N4: kill rewards go through world_->drop_monster_loot inside
   // advance_combat; the legacy synthetic 'drop' trophy event is retired.
   JsonValue::Object data; put(data,"attackerId",event.attacker_id); put(data,"attackerName",event.attacker_name); put(data,"targetId",event.target_id);
@@ -3260,6 +3367,14 @@ void ProtocolSession::emit_combat_state(
       world_->player_combo_window_remaining_ms(combat_clock_ms_);
   put(data, "comboWindowTicks",
       (combo_window_ms + kSimulationTickMs - 1) / kSimulationTickMs);
+  put(data, "bondAttackSpeedTicks", (world_->bond_attack_speed_remaining_ms(
+      combat_clock_ms_) + kSimulationTickMs - 1) / kSimulationTickMs);
+  put(data, "bondMovementSpeedTicks", (world_->bond_movement_speed_remaining_ms(
+      combat_clock_ms_) + kSimulationTickMs - 1) / kSimulationTickMs);
+  put(data, "bondOldGrudgeTicks", (world_->bond_old_grudge_remaining_ms(
+      combat_clock_ms_) + kSimulationTickMs - 1) / kSimulationTickMs);
+  put(data, "bondLastStandReady", world_->bond_last_stand_ready());
+  put(data, "bondUntraceableReady", world_->bond_untraceable_ready());
   emit(Envelope{"player:combat-state", JsonValue(std::move(data))});
 }
 
@@ -3308,13 +3423,23 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
   int str_attr = 10, dex_attr = 10, int_attr = 10;
   tree_attributes(&str_attr, &dex_attr, &int_attr);
   const bool mana_skill = active_skill_id_.rfind("ability", 0) == 0;
-  const int player_power = (std::max)(
+  int player_power = (std::max)(
       1, static_cast<int>(std::lround(mana_skill
           ? 4.0 + int_attr * 0.5
           : 2.0 + str_attr * 0.45 + wear_attack * 1.5)) +
              war_cry_attack_bonus_);
+  if (mana_skill && actor->stats.resource_max > 0 &&
+      actor->stats.resource * 4 > actor->stats.resource_max * 3 &&
+      combat_totals.modifiers.ability_power_high_resource_percent > 0) {
+    player_power = (std::max)(1, static_cast<int>(std::lround(
+        player_power * (1.0 +
+            combat_totals.modifiers.ability_power_high_resource_percent / 100.0))));
+  }
   const bool engaged_here = world_->engaged_by().empty() || world_->engaged_by() == identity_;
-  const auto events = world_->advance_combat(actor->stats.level, engaged_here ? player_power : 0, actor->stats.life, actor->stats.life_max, now);
+  const auto events = world_->advance_combat(
+      actor->stats.level, engaged_here ? player_power : 0, actor->stats.life,
+      actor->stats.life_max, now, &actor->stats.resource,
+      actor->stats.resource_max);
   // N5 respawn ward: monsters cannot damage a freshly-respawned scion until
   // the scion acts. Absorb monster damage here (the player still lands hits);
   // the skill handler ends the ward.
