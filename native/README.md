@@ -54,8 +54,8 @@ cannot be invoked away from Tamar. Vessel gear worn through a cleared floor
 earns 16–30 Attunement and remembers that road's themes. At 80 Attunement,
 then 55 more per evolution, it forms and deepens Bonds toward tier III and can
 eventually awaken into its Scion's name. Tamar's detail pane shows the exact
-progress and evolution count. Conditional Bond and awakened powers are marked
-Dormant until their combat triggers are implemented.
+progress and evolution count. Conditional Bond and awakened powers resolve in
+authoritative combat and publish their exact trigger, recovery, and life facts.
 
 ## Owner play (one command)
 
@@ -121,6 +121,7 @@ native/build/verdigris_client.exe --scenario first-session-clarity   # TASK-0153
 native/build/verdigris_client.exe --scenario deep-roads-campaign     # Act III Framekit evidence
 native/build/verdigris_client.exe --scenario crownless-campaign      # Act IV / 23-point Framekit evidence
 native/build/verdigris_client.exe --scenario verdigris-crown-campaign # Act VI finale at 960x600 + 1366x768
+native/build/verdigris_client.exe --scenario warden-disciplines       # four road/tablet warning families
 native/build/verdigris_client.exe --scenario vesselforge-final-implicits # range/speed/pierce evidence
 native/build/verdigris_client.exe --scenario town-vesselforge          # 960x600 + 1366x768 service evidence
 ~~~

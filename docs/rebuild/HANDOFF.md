@@ -1,5 +1,30 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - authored Warden disciplines
+
+- Replaced the one-size-fits-all Warden ground slam with four deterministic,
+  server-authored combat families shared by the campaign roads and their
+  corresponding endgame tablets: Tin/Barrow Stonefall, Salt/Reeds Tidal Mark,
+  Chalk/Crown Grave Ring, and Copper/Thorns Ember Crucible.
+- Telegraph events now carry exact action identity, circle/ring shape, damage
+  channel, outer radius, safe-eye radius, sampled center, and windup. The same
+  stored geometry resolves the hit; River and Ember attacks use real
+  resistances, and each discipline has its own cooldown and tier-scaled damage.
+- The remote presentation seam no longer collapses boss actions into a thrust.
+  Production rendering distinguishes the four hazards by color and geometry,
+  including a genuinely hollow Grave Ring, while retaining Framekit minimap
+  and bottom-HUD exclusion.
+- Core tests cover sampled-target dodging, elemental mitigation, cooldowns,
+  and Grave Ring's safe eye. Campaign protocol tests cover all four road
+  contracts, presentation tests preserve the annulus, and the new
+  `warden-disciplines` scenario captures all four warnings in one 1366x768
+  production frame.
+- The exact binding native gate passes every unit/session suite, the mortal
+  succession and heirloom-recovery journey, and all 29 client scenarios.
+  Inspected evidence is isolated under
+  `native/build/goal-captures-warden-disciplines-final/`; the 3440x1440 frame
+  budget remains 9.8 ms average against the 40 ms ceiling.
+
 ## 2026-09-03 - complete 23-point native campaign
 
 - Expanded the authoritative campaign from twelve to all twenty-three quest

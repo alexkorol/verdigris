@@ -1423,6 +1423,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     warning.type = PresentationEventType::Telegraph;
     warning.actor_id = attacker ? *attacker : "";
     warning.text = std::string(name ? *name : "") + " " + skill_id;
+    warning.action_id = skill_id;
     warning.value = static_cast<int>(json_number(envelope.data.get("durationMs")));
     if (envelope.data.get("x") && envelope.data.get("x")->number() &&
         envelope.data.get("y") && envelope.data.get("y")->number()) {
@@ -1432,6 +1433,17 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     }
     warning.radius = (std::max)(1, static_cast<int>(
         json_number(envelope.data.get("radius"), 1.0)));
+    if (const auto* shape = json_string(envelope.data.get("shape")); shape)
+      warning.telegraph_shape =
+          *shape == "ring" || *shape == "circle" ? *shape : "circle";
+    else
+      warning.telegraph_shape = "circle";
+    warning.inner_radius = std::clamp(
+        static_cast<int>(json_number(envelope.data.get("innerRadius"), 0.0)),
+        0, warning.radius - 1);
+    if (const auto* channel = json_string(envelope.data.get("damageChannel"));
+        channel)
+      warning.damage_channel = *channel;
     pending_events_.push_back(std::move(warning));
     return;
   }

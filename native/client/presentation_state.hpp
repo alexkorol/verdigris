@@ -59,11 +59,14 @@ struct EffectFx {
 struct ActiveTelegraph {
   std::string actor_id;
   std::string action;
+  std::string shape;
+  std::string damage_channel = "physical";
   verdigris::Vec2 position;
   verdigris::Vec2 facing{1, 0};
   std::uint64_t start_tick = 0;
   int windup_ticks = 1;
   int radius_tiles = 1;
+  int inner_radius_tiles = 0;
 };
 
 struct WorldActor {

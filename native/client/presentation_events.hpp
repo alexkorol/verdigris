@@ -61,6 +61,11 @@ struct PresentationEvent {
   int armour_prevented = 0;
   int armour_penetration_percent = 0;
   int duration_ms = 0;
+  // Explicit telegraph identity and geometry. These remain presentation-only
+  // mirrors of the already-authoritative server warning.
+  std::string action_id;
+  std::string telegraph_shape;
+  int inner_radius = 0;
 };
 
 // TASK-0122 Phase A: the single named table for every new animation/VFX TTL,

@@ -136,6 +136,19 @@
 
 ## Native Wayfinder Mastery
 
+- Fight one Warden from each road family and confirm the warning identity is
+  readable before impact: gold Stonefall for Tin, blue Tidal Mark for Salt,
+  bone-violet Grave Ring for Chalk, and orange Ember Crucible for Copper.
+- Step out of a sampled Stonefall/Tidal Mark before resolution and confirm the
+  original marked tile does not follow the Scion. Stand inside Grave Ring's
+  inner eye and confirm it is safe; stand in the annulus and confirm it hits.
+- Confirm River resistance mitigates Tidal Mark and Ember resistance mitigates
+  Ember Crucible. Warning circles and labels must not paint over the minimap or
+  bottom Framekit quickbar at either supported capture size.
+- Break Barrow, Reeds, Crown, and Thorns tablets and confirm their Seal-Bound
+  Wardens reuse the corresponding four learned disciplines at tablet-scaled
+  damage.
+
 - After sealing the campaign, press `J` in town. Confirm the Chronicle panel
   becomes the Wayfinder's Ledger and shows Barrow, Reeds, Crown, and Thorns as
   four rows of sixteen tier objectives, plus total mastery, highest tier, and

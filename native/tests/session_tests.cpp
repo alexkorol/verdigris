@@ -3026,7 +3026,8 @@ void remote_monster_roles_mirror_to_presentation() {
       "{\"event\":\"monster:telegraph\",\"data\":{"
       "\"attackerId\":\"spitter-1\",\"attackerName\":\"Bog Spitter\","
       "\"skillId\":\"ranged:volley\",\"x\":10,\"y\":11,"
-      "\"radius\":1,\"durationMs\":800}}");
+      "\"radius\":1,\"innerRadius\":0,\"shape\":\"circle\","
+      "\"damageChannel\":\"river\",\"durationMs\":800}}");
   server.script.push_back(
       "{\"event\":\"monster:healed\",\"data\":{"
       "\"sourceId\":\"shaman-1\",\"sourceName\":\"Rot Shaman\","
@@ -3081,8 +3082,11 @@ void remote_monster_roles_mirror_to_presentation() {
     if (!saw_volley) std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
   check(saw_volley && volley.has_position && volley.x == 10.0 &&
-            volley.y == 11.0 && volley.radius == 1 && volley.value == 800,
-        "role-mirror: volley destination and timing survive wire parsing");
+            volley.y == 11.0 && volley.radius == 1 && volley.value == 800 &&
+            volley.action_id == "ranged:volley" &&
+            volley.telegraph_shape == "circle" &&
+            volley.inner_radius == 0 && volley.damage_channel == "river",
+        "role-mirror: volley identity, geometry, channel, and timing survive wire parsing");
 
   server.grant_next_frame();
   verdigris::client::PresentationEvent mend;

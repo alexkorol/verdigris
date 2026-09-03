@@ -117,6 +117,16 @@ reform around wounded allies. Accepted 400 ms tile steps travel over the wire
 and are interpolated only at paint time, while finisher interruptions now
 remove cancelled warnings immediately.
 
+Campaign Wardens now inherit one of four server-authored disciplines instead
+of sharing a cosmetic ground slam. Tin/Barrow samples a tight physical
+Stonefall under the Scion; Salt/Reeds samples a wider River-damage Tidal Mark;
+Chalk/Crown creates a large Grave Ring around the Warden with a real safe inner
+eye; Copper/Thorns creates a fast Ember Crucible around the Warden. Warning
+shape, center, radii, channel, windup, and cooldown cross the protocol exactly,
+and resolution uses the same sampled geometry and real physical/River/Ember
+mitigation. The renderer preserves those facts with gold, blue, bone-violet,
+and ember treatments while keeping the Framekit HUD exclusion zones clear.
+
 The character sheet now reuses the generated player sprite for its portrait
 and each equipped item's real atlas frame; generic slot glyphs remain only for
 empty equipment positions.
@@ -237,8 +247,10 @@ release-safe baseline.
 - Logging/analytics for balance.
 - Live operations tools (GM commands, rollback, event triggers).
 - Localization scaffolding.
-- Expand the authoritative campaign beyond its first three commissions toward
-  the 23-point quest budget reserved by the passive tree.
+- ~~Expand the authoritative campaign beyond its first three commissions toward
+  the 23-point quest budget reserved by the passive tree.~~ ✅ all six acts and
+  twenty-three commissions now resolve through authored road rites and a final
+  living return.
 - ~~Extend the live Tamar Brand-searing service with Bonds, attunement, and
   awakening as player-facing town progression.~~ ✅ worn gear learns from
   expedition clears, evolves deterministically, and exposes honest progress

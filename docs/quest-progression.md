@@ -146,6 +146,15 @@ This makes family breadth a real sustain strategy rather than a cosmetic
 checklist. The authoritative client snapshot identifies new versus mastered
 tablets before the owner consumes them.
 
+Tablet families also preserve the combat language learned on the four roads.
+Barrow Wardens use a tight, player-sampled physical Stonefall; Reeds Wardens
+use a wider player-sampled River Tidal Mark; Crown Wardens cast a large
+physical Grave Ring whose inner two tiles are genuinely safe; and Thorns
+Wardens cast a fast, Warden-centered Ember Crucible. Radius, safe-eye radius,
+damage channel, target position, windup, cooldown, and tier-scaled damage are
+chosen by the server. The client renders those facts but never recomputes who
+is hit.
+
 Guest saves include the quest state. Account saves send it as `questsData`.
 Malformed or unknown persisted quest entries are discarded and quest points
 are clamped to the reserved 23-point quest budget.

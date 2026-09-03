@@ -195,6 +195,47 @@ void monster_role_feedback_is_authoritative_and_distinct() {
         "roles: authoritative interruption removes the warning immediately");
 }
 
+void warden_warning_geometry_survives_presentation_seam() {
+  WorldView world = world_with_player_and_foe("right");
+  PresentationFx fx;
+  PresentationEvent ring;
+  ring.type = PresentationEventType::Telegraph;
+  ring.actor_id = "foe-1";
+  ring.action_id = "boss:grave-ring";
+  ring.telegraph_shape = "ring";
+  ring.damage_channel = "physical";
+  ring.value = 1300;
+  ring.has_position = true;
+  ring.x = 12.0;
+  ring.y = 14.0;
+  ring.radius = 4;
+  ring.inner_radius = 2;
+  apply_presentation_event(fx, world, ring, 20);
+  const auto found = fx.telegraphs.find("foe-1");
+  check(found != fx.telegraphs.end() &&
+            found->second.action == "grave-ring" &&
+            found->second.shape == "ring" &&
+            found->second.damage_channel == "physical" &&
+            found->second.radius_tiles == 4 &&
+            found->second.inner_radius_tiles == 2 &&
+            found->second.windup_ticks == 26,
+        "warden warning: identity, channel, annulus, and timing survive presentation");
+
+  PresentationEvent crucible = ring;
+  crucible.actor_id = "foe-2";
+  crucible.action_id = "boss:ember-crucible";
+  crucible.telegraph_shape = "circle";
+  crucible.damage_channel = "ember";
+  crucible.radius = 2;
+  crucible.inner_radius = 0;
+  apply_presentation_event(fx, world, crucible, 20);
+  check(fx.telegraphs.count("foe-2") == 1 &&
+            fx.telegraphs.at("foe-2").action == "ember-crucible" &&
+            fx.telegraphs.at("foe-2").shape == "circle" &&
+            fx.telegraphs.at("foe-2").damage_channel == "ember",
+        "warden warning: boss identity is no longer collapsed into a thrust");
+}
+
 void forge_status_feedback_is_authoritative_and_distinct() {
   verdigris::client::ClientModel model;
   model.player.uuid = "forge-scion";
@@ -577,6 +618,7 @@ int main() {
   critical_damage_is_distinct();
   combo_finisher_is_distinct();
   monster_role_feedback_is_authoritative_and_distinct();
+  warden_warning_geometry_survives_presentation_seam();
   forge_status_feedback_is_authoritative_and_distinct();
   living_bond_feedback_is_authoritative_and_distinct();
   scion_lost_beat_contract();

@@ -942,9 +942,11 @@ struct WorldCombatEvent {
   int health_max = 0;
   bool died = false;
   int radius = 0;
+  int inner_radius = 0;
   int duration_ms = 0;
   int x = 0;
   int y = 0;
+  std::string telegraph_shape;
   std::string item_id;
   // N4: combat:hit parity fields (server/core/combat/index.js).
   int base_amount = 0;
@@ -963,6 +965,21 @@ struct WorldCombatEvent {
   int armour_rating = 0;
   int armour_prevented = 0;
   int armour_penetration_percent = 0;
+};
+
+// One authoritative Warden mechanic. Road and tablet content select a
+// profile before the instance is generated; the simulation owns warning
+// placement, hit geometry, timing, mitigation, and cooldown resolution.
+struct BossAbilityProfile {
+  std::string skill_id = "boss:ground-slam";
+  std::string telegraph_shape = "circle";  // circle or ring
+  std::string damage_channel = "physical";
+  int radius = 2;
+  int inner_radius = 0;
+  int windup_ms = 1000;
+  int cooldown_ms = 1400;
+  int damage = 12;
+  bool targets_player = false;
 };
 
 struct InstanceMetadata {
@@ -1018,6 +1035,8 @@ class WorldSimulation {
   // world-web node instances: the boss carries the node warden name; a
   // cleared node spawns no monsters at all (dead stays dead).
   void set_boss_name_override(const std::string& name) { boss_name_override_ = name; }
+  void set_boss_ability_override(const BossAbilityProfile& profile);
+  void clear_boss_ability_override();
   void set_spawn_suppressed(bool value) { spawn_suppressed_ = value; }
   // Applied before enter_solo_instance for a consumed charted tablet. These
   // values affect only the generated instance and are reset on return.
@@ -1175,6 +1194,7 @@ class WorldSimulation {
   std::string active_target_;
   bool guaranteed_elite_gear_ = false;
   std::string boss_name_override_;
+  BossAbilityProfile boss_ability_{};
   bool spawn_suppressed_ = false;
   bool block_stairs_down_ = false;
   bool stairs_up_returns_to_town_ = false;

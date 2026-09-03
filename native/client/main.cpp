@@ -2277,17 +2277,52 @@ void draw_sweep_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
   rl.push_back({render::Op::Telegraph, static_cast<double>(base.x),
                 static_cast<double>(base.y), clamped, 0, telegraph.action});
   const bool volley = telegraph.action == "volley";
-  const COLORREF fill = telegraph_color(
-      visibility * 0.28, volley ? RGB(112, 48, 178) : RGB(214, 52, 52));
-  const COLORREF edge = telegraph_color(
-      visibility, volley ? RGB(210, 104, 246) : RGB(238, 72, 64));
+  COLORREF fill_source = volley ? RGB(112, 48, 178) : RGB(214, 52, 52);
+  COLORREF edge_source = volley ? RGB(210, 104, 246) : RGB(238, 72, 64);
+  if (telegraph.damage_channel == "river") {
+    fill_source = RGB(42, 112, 176);
+    edge_source = RGB(104, 218, 255);
+  } else if (telegraph.damage_channel == "ember") {
+    fill_source = RGB(205, 74, 28);
+    edge_source = RGB(255, 158, 62);
+  } else if (telegraph.action == "stonefall") {
+    fill_source = RGB(142, 116, 58);
+    edge_source = RGB(240, 210, 120);
+  } else if (telegraph.action == "grave-ring") {
+    fill_source = RGB(112, 94, 126);
+    edge_source = RGB(228, 208, 244);
+  }
+  const COLORREF fill = telegraph_color(visibility * 0.28, fill_source);
+  const COLORREF edge = telegraph_color(visibility, edge_source);
   const int draw_r = static_cast<int>(clamped);
-  fill_ellipse(dc, base.x, base.y, draw_r, draw_r, fill);
+  const bool ring = telegraph.shape == "ring" &&
+                    telegraph.inner_radius_tiles > 0;
+  int inner_r = 0;
+  if (ring) {
+    inner_r = std::max(
+        4, draw_r * telegraph.inner_radius_tiles /
+               std::max(1, telegraph.radius_tiles));
+    HRGN hazard = CreateEllipticRgn(base.x - draw_r, base.y - draw_r,
+                                    base.x + draw_r + 1, base.y + draw_r + 1);
+    HRGN safe = CreateEllipticRgn(base.x - inner_r, base.y - inner_r,
+                                  base.x + inner_r + 1, base.y + inner_r + 1);
+    CombineRgn(hazard, hazard, safe, RGN_DIFF);
+    HBRUSH brush = CreateSolidBrush(fill);
+    FillRgn(dc, hazard, brush);
+    DeleteObject(brush);
+    DeleteObject(safe);
+    DeleteObject(hazard);
+  } else {
+    fill_ellipse(dc, base.x, base.y, draw_r, draw_r, fill);
+  }
   ring_ellipse(dc, base.x, base.y, draw_r, draw_r, edge, 3);
-  if (draw_r > 12)
+  if (ring) {
+    ring_ellipse(dc, base.x, base.y, inner_r, inner_r, edge, 3);
+  } else if (draw_r > 12) {
     ring_ellipse(dc, base.x, base.y, draw_r - 10, draw_r - 10,
                  telegraph_color(visibility * 0.82,
-                                 volley ? RGB(236, 156, 255) : RGB(255, 112, 82)), 1);
+                                 volley ? RGB(236, 156, 255) : edge_source), 1);
+  }
 }
 
 double telegraph_visibility(const ClientState& state,
@@ -2321,11 +2356,12 @@ void paint_telegraphs(const ClientState& state, HDC dc, const RECT& bounds,
   for (const auto& entry : state.telegraphs) {
     const ActiveTelegraph& telegraph = entry.second;
     const double visibility = telegraph_visibility(state, telegraph);
-    if (telegraph.action == "sweep" || telegraph.action == "volley")
+    if (telegraph.shape != "line" || telegraph.action == "sweep" ||
+        telegraph.action == "volley")
       draw_sweep_telegraph(dc, state.camera, bounds, telegraph, visibility,
-                           telegraph.action == "volley"
-                               ? kTileUnits * telegraph.radius_tiles
-                               : catalog.melee_range,
+                           telegraph.action == "sweep"
+                               ? catalog.melee_range
+                               : kTileUnits * telegraph.radius_tiles,
                            minimap_side, rl);
     else
       draw_thrust_telegraph(dc, state.camera, bounds, telegraph, visibility,
@@ -8689,6 +8725,110 @@ int scenario_monster_pressure_roles() {
   return 0;
 }
 
+int scenario_warden_disciplines() {
+  ClientState state;
+  load_billboards(state.billboards);
+  state.world.route_id = "instance:campaign:warden-conclave";
+  state.world.theme = "crypt";
+  state.world.house_name = "House Verdigris";
+  state.world.scion_name = "Mara";
+  state.world.player.id = "warden-scion";
+  state.world.player.position = {20 * static_cast<int>(kTileUnits),
+                                 20 * static_cast<int>(kTileUnits)};
+  state.world.player.facing = {1, 0};
+  state.world.player.life = 82;
+  state.world.player.life_max = 100;
+  state.world.player.resource = 41;
+  state.world.player.resource_max = 50;
+  state.world.player.level = 18;
+  state.world.player.alive = true;
+  state.world.tick = 9;
+
+  const auto add_warden = [&](const char* id, const char* name,
+                              int tile_x, int tile_y, const char* kind) {
+    WorldActor warden;
+    warden.id = id;
+    warden.name = name;
+    warden.kind = kind;
+    warden.behaviour = "boss";
+    warden.position = {tile_x * static_cast<int>(kTileUnits),
+                       tile_y * static_cast<int>(kTileUnits)};
+    warden.life = 420;
+    warden.life_max = 600;
+    warden.alive = true;
+    state.world.monsters.push_back(std::move(warden));
+  };
+  add_warden("warden-tin", "Hearthless Bell", 15, 17, "dungeon-elite");
+  add_warden("warden-salt", "Flood-Sworn Vicar", 24, 17, "marsh-elite");
+  add_warden("warden-chalk", "Ossuary Regent", 16, 24, "crypt-elite");
+  add_warden("warden-copper", "Cinder Testament", 24, 24, "forge-elite");
+  state.camera.x = static_cast<double>(state.world.player.position.x);
+  state.camera.y = static_cast<double>(state.world.player.position.y);
+  state.camera.zoom = kCameraMinZoom;
+
+  verdigris::client::PresentationFx fx;
+  const auto warn = [&](const char* actor, const char* action,
+                        const char* shape, const char* channel, int tile_x,
+                        int tile_y, int radius, int inner_radius,
+                        int windup_ms) {
+    verdigris::client::PresentationEvent event;
+    event.type = verdigris::client::PresentationEventType::Telegraph;
+    event.actor_id = actor;
+    event.action_id = action;
+    event.telegraph_shape = shape;
+    event.damage_channel = channel;
+    event.value = windup_ms;
+    event.has_position = true;
+    event.x = static_cast<double>(tile_x);
+    event.y = static_cast<double>(tile_y);
+    event.radius = radius;
+    event.inner_radius = inner_radius;
+    verdigris::client::apply_presentation_event(fx, state.world, event, 1);
+  };
+  warn("warden-tin", "boss:stonefall", "circle", "physical", 17, 18, 1,
+       0, 900);
+  warn("warden-salt", "boss:tidal-mark", "circle", "river", 23, 18, 2,
+       0, 1150);
+  warn("warden-chalk", "boss:grave-ring", "ring", "physical", 19, 21, 4,
+       2, 1300);
+  warn("warden-copper", "boss:ember-crucible", "circle", "ember", 22, 22,
+       2, 0, 750);
+  state.telegraphs = std::move(fx.telegraphs);
+
+  std::string capture_dir;
+  const int capture_override = capture_root_override(&capture_dir);
+  if (capture_override < 0) {
+    scenario_check(false,
+                   "warden-disciplines: capture root rejected before any write");
+    return 0;
+  }
+  if (capture_override == 0) {
+    CreateDirectoryA("captures", nullptr);
+    capture_dir = "captures";
+  }
+  const std::string capture_path =
+      capture_dir + "\\warden-disciplines-1366x768.png";
+  scenario_check(reference_present(state, 1366, 768, capture_path),
+                 "warden-disciplines: production combat frame captured");
+  std::printf("    capture: %s\n", capture_path.c_str());
+
+  std::unordered_map<std::string, double> warnings;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Telegraph) warnings[item.label] = item.radius;
+  scenario_check(warnings.count("stonefall") == 1 &&
+                     warnings.count("tidal-mark") == 1 &&
+                     warnings.count("grave-ring") == 1 &&
+                     warnings.count("ember-crucible") == 1,
+                 "warden-disciplines: all four authored warnings render distinctly");
+  scenario_check(warnings["grave-ring"] > warnings["tidal-mark"] &&
+                     warnings["tidal-mark"] > warnings["stonefall"],
+                 "warden-disciplines: authoritative warning scale remains legible");
+  scenario_check(telegraph_avoids_hud(state.render_list,
+                                      RECT{0, 0, 1366, 768}),
+                 "warden-disciplines: warnings respect Framekit HUD safe zones");
+  return 0;
+}
+
 int scenario_remote_render_list() {
   verdigris::networking::WebSocketServer* server = nullptr;
   std::uint16_t port = 0;
@@ -11538,6 +11678,7 @@ int run_scenarios(const std::string& which) {
       {"combat-juice", scenario_combat_juice},
       {"combat-cadence", scenario_combat_cadence},
       {"monster-pressure-roles", scenario_monster_pressure_roles},
+      {"warden-disciplines", scenario_warden_disciplines},
       {"remote-render-list", scenario_remote_render_list},
       {"zoom-invariance", scenario_zoom_invariance},
       {"chronicles-gate-b", scenario_chronicles_gate_b},

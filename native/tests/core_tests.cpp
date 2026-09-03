@@ -2035,6 +2035,126 @@ void test_world_monster_pressure_roles_are_authoritative() {
         "roles: deterministic generated packs contain a support-and-ally trial");
 }
 
+void test_world_warden_ability_profiles_are_authoritative() {
+  const auto isolate_boss = [](WorldSimulation& world,
+                               std::string* id, int* x, int* y) {
+    for (const auto& monster : world.monsters()) {
+      if (!monster.boss) continue;
+      *id = monster.uuid;
+      *x = monster.x;
+      *y = monster.y;
+      break;
+    }
+    world.kill_all_monsters();
+    return !id->empty() && world.reset_monster(*id, 1000, 0);
+  };
+
+  BossAbilityProfile tidal;
+  tidal.skill_id = "boss:tidal-mark";
+  tidal.telegraph_shape = "circle";
+  tidal.damage_channel = "river";
+  tidal.radius = 2;
+  tidal.windup_ms = 1150;
+  tidal.cooldown_ms = 2100;
+  tidal.damage = 20;
+  tidal.targets_player = true;
+
+  WorldSimulation marked(0x71DA1ULL, "marked-scion");
+  marked.set_boss_ability_override(tidal);
+  marked.enter_solo_instance("marsh", "clearings", 4);
+  std::string boss_id;
+  int bx = 0, by = 0;
+  check(isolate_boss(marked, &boss_id, &bx, &by),
+        "warden ability: targeted-mark trial isolates its boss");
+  const int px = bx + 1 < 39 ? bx + 1 : bx - 1;
+  const std::string aim = px < bx ? "right" : "left";
+  marked.teleport(px, by, 900);
+  int life = 1000;
+  check(marked.start_player_attack(1, 10, 1000, aim, "melee"),
+        "warden ability: touching the boss begins an authored duel");
+  const auto warning_events =
+      marked.advance_combat(1, 10, life, 1000, 1000);
+  const WorldCombatEvent* warning = nullptr;
+  for (const auto& event : warning_events)
+    if (event.type == "telegraph" && event.attacker_id == boss_id)
+      warning = &event;
+  check(warning && warning->skill_id == "boss:tidal-mark" &&
+            warning->telegraph_shape == "circle" &&
+            warning->damage_channel == "river" && warning->radius == 2 &&
+            warning->inner_radius == 0 && warning->duration_ms == 1150 &&
+            warning->x == px && warning->y == by,
+        "warden ability: warning publishes exact skill, channel, geometry, and sampled tile");
+  marked.teleport(px + (px < bx ? -3 : 3), by, 1500);
+  const auto dodged = marked.advance_combat(1, 0, life, 1000, 2150);
+  bool marked_hit = false;
+  for (const auto& event : dodged)
+    if (event.type == "hit" && event.attacker_id == boss_id)
+      marked_hit = true;
+  check(!marked_hit && life == 1000,
+        "warden ability: leaving the sampled mark dodges its resolution");
+
+  WorldSimulation resisted(0x71DA1ULL, "resisted-scion");
+  resisted.set_boss_ability_override(tidal);
+  resisted.enter_solo_instance("marsh", "clearings", 4);
+  check(isolate_boss(resisted, &boss_id, &bx, &by),
+        "warden ability: mitigation trial isolates its boss");
+  const int rpx = bx + 1 < 39 ? bx + 1 : bx - 1;
+  resisted.teleport(rpx, by, 900);
+  resisted.player_combat_mods().river_resistance = 50;
+  life = 1000;
+  resisted.start_player_attack(1, 10, 1000,
+                                rpx < bx ? "right" : "left", "melee");
+  resisted.advance_combat(1, 10, life, 1000, 1000);
+  const auto impact = resisted.advance_combat(1, 0, life, 1000, 2150);
+  bool resisted_hit = false;
+  for (const auto& event : impact)
+    if (event.type == "hit" && event.attacker_id == boss_id &&
+        event.skill_id == "boss:tidal-mark")
+      resisted_hit = event.base_amount == 20 && event.amount == 10 &&
+                     event.damage_channel == "river" &&
+                     event.resistance_percent == 50;
+  check(resisted_hit && life == 990,
+        "warden ability: elemental profile resolves through real resistance");
+  const auto cooldown = resisted.advance_combat(1, 0, life, 1000, 2200);
+  bool repeated_early = false;
+  for (const auto& event : cooldown)
+    if (event.type == "telegraph" && event.attacker_id == boss_id)
+      repeated_early = true;
+  check(!repeated_early,
+        "warden ability: resolved mechanics respect their authored cooldown");
+
+  BossAbilityProfile grave;
+  grave.skill_id = "boss:grave-ring";
+  grave.telegraph_shape = "ring";
+  grave.radius = 4;
+  grave.inner_radius = 2;
+  grave.windup_ms = 1300;
+  grave.cooldown_ms = 2400;
+  grave.damage = 20;
+  grave.targets_player = false;
+  WorldSimulation ring(0x6A4EULL, "ring-scion");
+  ring.set_boss_ability_override(grave);
+  ring.enter_solo_instance("crypt", "gauntlet", 5);
+  check(isolate_boss(ring, &boss_id, &bx, &by),
+        "warden ability: grave-ring trial isolates its boss");
+  const int safe_x = bx + 1 < 39 ? bx + 1 : bx - 1;
+  ring.teleport(safe_x, by, 900);
+  life = 1000;
+  ring.start_player_attack(1, 10, 1000,
+                           safe_x < bx ? "right" : "left", "melee");
+  const auto ring_warning = ring.advance_combat(1, 10, life, 1000, 1000);
+  bool ring_contract = false;
+  for (const auto& event : ring_warning)
+    if (event.type == "telegraph" && event.attacker_id == boss_id)
+      ring_contract = event.skill_id == "boss:grave-ring" &&
+                      event.telegraph_shape == "ring" &&
+                      event.radius == 4 && event.inner_radius == 2 &&
+                      event.x == bx && event.y == by;
+  ring.advance_combat(1, 0, life, 1000, 2300);
+  check(ring_contract && life == 1000,
+        "warden ability: grave ring communicates and honors its safe inner eye");
+}
+
 void test_world_monster_locomotion_is_authoritative_and_deterministic() {
   auto run_pursuit = [](WorldSimulation& world, const std::string& target_id,
                         int& player_life) {
@@ -3083,6 +3203,7 @@ int main() {
   test_n2_diagonal_blocking_rule();
   test_world_melee_combo_is_authoritative();
   test_world_monster_pressure_roles_are_authoritative();
+  test_world_warden_ability_profiles_are_authoritative();
   test_world_monster_locomotion_is_authoritative_and_deterministic();
   test_relic_resurface_round_trip();
   test_relic_loss_again_returns_once();

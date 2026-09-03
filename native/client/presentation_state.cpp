@@ -424,10 +424,22 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
     case PresentationEventType::Telegraph: {
       ActiveTelegraph telegraph;
       telegraph.actor_id = event.actor_id;
-      telegraph.action = event.text.find("volley") != std::string::npos
-                             ? "volley"
-                             : event.text.find("sweep") != std::string::npos
-                                   ? "sweep" : "thrust";
+      const std::string action_id =
+          event.action_id.empty() ? event.text : event.action_id;
+      if (action_id.rfind("boss:", 0) == 0)
+        telegraph.action = action_id.substr(5);
+      else if (action_id.find("volley") != std::string::npos)
+        telegraph.action = "volley";
+      else if (action_id.find("sweep") != std::string::npos)
+        telegraph.action = "sweep";
+      else
+        telegraph.action = "thrust";
+      telegraph.shape = event.telegraph_shape.empty()
+                            ? (telegraph.action == "sweep" ||
+                                       telegraph.action == "volley"
+                                   ? "circle" : "line")
+                            : event.telegraph_shape;
+      telegraph.damage_channel = event.damage_channel;
       telegraph.position = event.has_position
           ? verdigris::Vec2{static_cast<int>(std::lround(protocol_to_world(event.x))),
                             static_cast<int>(std::lround(protocol_to_world(event.y)))}
@@ -439,6 +451,8 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       telegraph.start_tick = now_tick;
       telegraph.windup_ticks = std::max(1, event.value > 20 ? event.value / 50 : event.value);
       telegraph.radius_tiles = std::max(1, event.radius);
+      telegraph.inner_radius_tiles = std::clamp(
+          event.inner_radius, 0, telegraph.radius_tiles - 1);
       fx.telegraphs[event.actor_id.empty() ? "foe" : event.actor_id] = std::move(telegraph);
       break;
     }

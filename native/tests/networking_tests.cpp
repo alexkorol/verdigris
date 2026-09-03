@@ -1472,6 +1472,49 @@ void test_four_roads_campaign_act_and_persistence() {
                 "oath-of-tin",
         "four-roads: second campaign act begins with the Oath of Tin");
 
+  const auto check_warden_warning = [&](const JsonValue& snapshot,
+                                         const char* skill,
+                                         const char* shape,
+                                         const char* channel, int radius,
+                                         int inner_radius,
+                                         bool targets_player) {
+    const JsonValue* warden = nullptr;
+    if (const auto* monsters = snapshot["state"]["monsters"].array()) {
+      for (const auto& monster : *monsters)
+        if (monster["boss"].boolean().value_or(false)) {
+          warden = &monster;
+          break;
+        }
+    }
+    check(warden != nullptr,
+          "warden mechanics: road instance publishes its Warden");
+    if (!warden) return;
+    const int boss_x = static_cast<int>((*warden)["x"].number().value_or(0));
+    const int boss_y = static_cast<int>((*warden)["y"].number().value_or(0));
+    const int player_x = boss_x + 1 < 39 ? boss_x + 1 : boss_x - 1;
+    bool exact_warning = false;
+    session.handle(
+        Envelope{"dev:teleport",
+                 JsonValue::Object{{"x", player_x}, {"y", boss_y}}},
+        [&](const Envelope& event) {
+          if (event.event != "monster:telegraph" ||
+              !event.data["skillId"].string() ||
+              *event.data["skillId"].string() != skill)
+            return;
+          const int expected_x = targets_player ? player_x : boss_x;
+          exact_warning = event.data["shape"].string() &&
+              *event.data["shape"].string() == shape &&
+              event.data["damageChannel"].string() &&
+              *event.data["damageChannel"].string() == channel &&
+              event.data["radius"].number().value_or(-1) == radius &&
+              event.data["innerRadius"].number().value_or(-1) == inner_radius &&
+              event.data["x"].number().value_or(-1) == expected_x &&
+              event.data["y"].number().value_or(-1) == boss_y;
+        });
+    check(exact_warning,
+          "warden mechanics: road family emits exact authored warning geometry");
+  };
+
   bool barred_message = false;
   session.handle(Envelope{"world:zone:enter",
                           JsonValue::Object{{"nodeId", "tin:2:0"}}},
@@ -1493,6 +1536,8 @@ void test_four_roads_campaign_act_and_persistence() {
   state = request_state(session, "roads-entered");
   check(state["state"]["quests"]["objectiveIndex"].number().value_or(0) == 1,
         "four-roads: entering the exact road advances its commission");
+  check_warden_warning(state, "boss:stonefall", "circle", "physical", 1,
+                       0, true);
   session.handle(Envelope{"dev:clear-floor", JsonValue::Object{}},
                  [](const Envelope&) {});
   state = request_state(session, "roads-cleared");
@@ -1541,11 +1586,23 @@ void test_four_roads_campaign_act_and_persistence() {
   session.handle(Envelope{"party:returnToTown", JsonValue::Object{}},
                  [](const Envelope&) {});
 
-  struct RoadActStep { const char* road; const char* next_quest; };
+  struct RoadActStep {
+    const char* road;
+    const char* next_quest;
+    const char* skill;
+    const char* shape;
+    const char* channel;
+    int radius;
+    int inner_radius;
+    bool targets_player;
+  };
   const RoadActStep remaining[] = {
-      {"salt", "chalk-vigil"},
-      {"chalk", "copper-testament"},
-      {"copper", nullptr},
+      {"salt", "chalk-vigil", "boss:tidal-mark", "circle", "river", 2, 0,
+       true},
+      {"chalk", "copper-testament", "boss:grave-ring", "ring", "physical",
+       4, 2, false},
+      {"copper", nullptr, "boss:ember-crucible", "circle", "ember", 2, 0,
+       false},
   };
   for (const auto& step : remaining) {
     session.handle(
@@ -1555,6 +1612,8 @@ void test_four_roads_campaign_act_and_persistence() {
     state = request_state(session, std::string("roads-") + step.road + "-entered");
     check(state["state"]["quests"]["objectiveIndex"].number().value_or(0) == 1,
           "four-roads: each named road advances only on authoritative entry");
+    check_warden_warning(state, step.skill, step.shape, step.channel,
+                         step.radius, step.inner_radius, step.targets_player);
     session.handle(Envelope{"dev:clear-floor", JsonValue::Object{}},
                    [](const Envelope&) {});
     state = request_state(session, std::string("roads-") + step.road + "-cleared");
@@ -1910,10 +1969,25 @@ void test_consumable_endgame_tablet_loop() {
   check(boss != nullptr, "endgame: the rolled expedition has a named terminal Warden");
   session.handle(Envelope{"dev:setlevel", JsonValue::Object{{"level", 50}}},
                  [](const Envelope&) {});
+  bool crown_warning = false;
   session.handle(Envelope{"dev:teleport",
                           JsonValue::Object{{"x", boss ? boss->operator[]("x").number().value_or(0) + 1 : 0},
                                             {"y", boss ? boss->operator[]("y").number().value_or(0) : 0}}},
-                 [](const Envelope&) {});
+                 [&](const Envelope& event) {
+                   if (event.event == "monster:telegraph" &&
+                       event.data["skillId"].string() &&
+                       *event.data["skillId"].string() == "boss:grave-ring")
+                     crown_warning = event.data["shape"].string() &&
+                         *event.data["shape"].string() == "ring" &&
+                         event.data["radius"].number().value_or(0) == 4 &&
+                         event.data["innerRadius"].number().value_or(0) == 2 &&
+                         event.data["x"].number().value_or(-1) ==
+                             (boss ? (*boss)["x"].number().value_or(-2) : -2) &&
+                         event.data["y"].number().value_or(-1) ==
+                             (boss ? (*boss)["y"].number().value_or(-2) : -2);
+                 });
+  check(crown_warning,
+        "endgame: Crown tablets carry the learned Grave Ring discipline");
   session.handle(Envelope{"dev:monster:reset",
                           JsonValue::Object{{"monsterUuid", boss && boss->operator[]("uuid").string()
                                                 ? *boss->operator[]("uuid").string()

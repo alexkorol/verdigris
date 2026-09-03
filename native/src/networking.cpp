@@ -1103,6 +1103,39 @@ const char* kRoadStoryHoldings[4][4] = {
     {"Cinder Court", "The Ashen Gate", "The Furnace Crown",
      "The Empty Throne"},
 };
+struct RoadBossAbility {
+  const char* skill_id;
+  const char* shape;
+  const char* channel;
+  int radius;
+  int inner_radius;
+  int windup_ms;
+  int cooldown_ms;
+  int base_damage;
+  bool targets_player;
+};
+constexpr RoadBossAbility kRoadBossAbilities[4] = {
+    {"boss:stonefall", "circle", "physical", 1, 0, 900, 1700, 8, true},
+    {"boss:tidal-mark", "circle", "river", 2, 0, 1150, 2100, 7, true},
+    {"boss:grave-ring", "ring", "physical", 4, 2, 1300, 2400, 9, false},
+    {"boss:ember-crucible", "circle", "ember", 2, 0, 750, 1800, 10, false},
+};
+BossAbilityProfile boss_ability_for_road(int road, int tier) {
+  const int bounded_road = std::clamp(road, 0, 3);
+  const int bounded_tier = std::clamp(tier, 1, 16);
+  const RoadBossAbility& source = kRoadBossAbilities[bounded_road];
+  BossAbilityProfile profile;
+  profile.skill_id = source.skill_id;
+  profile.telegraph_shape = source.shape;
+  profile.damage_channel = source.channel;
+  profile.radius = source.radius;
+  profile.inner_radius = source.inner_radius;
+  profile.windup_ms = source.windup_ms;
+  profile.cooldown_ms = source.cooldown_ms;
+  profile.damage = source.base_damage + bounded_tier * 2;
+  profile.targets_player = source.targets_player;
+  return profile;
+}
 int road_index(const std::string& road_id) {
   for (int i = 0; i < 4; ++i) if (road_id == kRoads[i].id) return i;
   return -1;
@@ -2356,6 +2389,7 @@ void ProtocolSession::enter_road_node(const std::string& node_id, const std::fun
   endgame_active_ = false;
   endgame_completed_ = false;
   world_->clear_expedition_tuning();
+  world_->clear_boss_ability_override();
   current_node_id_ = node->id;
   current_node_tier_ = node->tier;
   current_node_name_ = node->name;
@@ -2365,6 +2399,8 @@ void ProtocolSession::enter_road_node(const std::string& node_id, const std::fun
     for (const auto& candidate : nodes) if (candidate.id == current_child_id_) { current_child_name_ = candidate.name; break; }
   }
   node_warden_dead_on_entry_ = cleared_nodes_.count(node->id) > 0;
+  world_->set_boss_ability_override(
+      boss_ability_for_road(road_index(road), node->tier));
   world_->set_boss_name_override(node->warden_name);
   world_->set_spawn_suppressed(node_warden_dead_on_entry_);
   world_->enter_solo_instance(node->template_id, node->layout, node->tier);
@@ -2452,6 +2488,8 @@ void ProtocolSession::open_expedition_map(
                                 map.monster_life_percent,
                                 map.monster_damage_percent,
                                 map.extra_monsters);
+  world_->set_boss_ability_override(boss_ability_for_road(
+      static_cast<int>(family - kTabletFamilies), map.tier));
   world_->set_boss_name_override("The Seal-Bound Warden");
   world_->enter_solo_instance(map.theme, map.layout);
   world_->set_boss_name_override(std::string());
@@ -2473,6 +2511,7 @@ void ProtocolSession::enter_shared_instance(const std::string& scene_id, const s
   endgame_active_ = false;
   endgame_completed_ = false;
   world_->clear_expedition_tuning();
+  world_->clear_boss_ability_override();
   world_->set_block_stairs_down(false);
   world_->set_stairs_up_returns_to_town(false);
   world_->enter_solo_instance("dungeon", "warren");
@@ -3393,6 +3432,9 @@ void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std
   if (event.type == "telegraph") {
     JsonValue::Object data; put(data,"attackerId",event.attacker_id); put(data,"attackerName",event.attacker_name); put(data,"skillId",event.skill_id);
     put(data,"x",event.x); put(data,"y",event.y); put(data,"radius",event.radius); put(data,"durationMs",event.duration_ms);
+    put(data,"innerRadius",event.inner_radius);
+    put(data,"shape",event.telegraph_shape.empty() ? "circle" : event.telegraph_shape);
+    put(data,"damageChannel",event.damage_channel);
     emit_world(Envelope{"monster:telegraph",JsonValue(std::move(data))},emit); return;
   }
   if (event.type == "interrupt") {
@@ -3901,6 +3943,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     simulation_->dispatch(Command::enter(node.rfind("route:",0)==0?node:"route:"+node));
     current_node_id_.clear(); world_->set_block_stairs_down(false);
     world_->set_stairs_up_returns_to_town(false);
+    world_->clear_boss_ability_override();
     world_->enter_solo_instance("dungeon","");
     emit_transition(emit,"world:scene:transition"); emit_ground_change(emit);
     last_instance_theme_ = world_->metadata().theme;
@@ -3911,7 +3954,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
                   world_->metadata().theme, world_->metadata().depth);
     return;
   }
-  if (envelope.event=="instance:enterSolo") { current_node_id_.clear(); world_->set_block_stairs_down(false); world_->set_stairs_up_returns_to_town(false); world_->enter_solo_instance(as_string(payload?payload->get("template"):nullptr,"dungeon"),as_string(payload?payload->get("layout"):nullptr,"")); emit_transition(emit,"party:scene:transition"); emit_ground_change(emit); last_instance_theme_ = world_->metadata().theme; last_instance_layout_ = world_->metadata().layout; quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); return; }
+  if (envelope.event=="instance:enterSolo") { current_node_id_.clear(); world_->set_block_stairs_down(false); world_->set_stairs_up_returns_to_town(false); world_->clear_boss_ability_override(); world_->enter_solo_instance(as_string(payload?payload->get("template"):nullptr,"dungeon"),as_string(payload?payload->get("layout"):nullptr,"")); emit_transition(emit,"party:scene:transition"); emit_ground_change(emit); last_instance_theme_ = world_->metadata().theme; last_instance_layout_ = world_->metadata().layout; quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); return; }
   if (envelope.event=="player:move") { const auto direction=as_string(payload?payload->get("direction"):nullptr); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); if (world_->apply_movement_sample(direction,now_ms())) { emit_movement(emit); auto_pickup_gold(emit); quest_trigger("move", emit); check_road_gates(emit); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool scene_changed=world_->scene_id()!=scene_before; if (depth_changed||scene_changed) { if (was_instance&&!world_->in_instance()) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); notify_surface_return(emit); } if (depth_changed) quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); if (depth_changed && !current_node_id_.empty() && !current_child_id_.empty()) { current_node_id_ = current_child_id_; current_node_tier_ += 1; current_node_name_ = current_child_name_.empty() ? current_node_name_ : current_child_name_; current_child_id_.clear(); world_->set_block_stairs_down(true); } emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) emit_ground_change(emit); } } return; }
   if (envelope.event=="dev:teleport") { if (!payload) return; const auto* x=payload->get("x"); const auto* y=payload->get("y"); if (!x||!x->number()||!y||!y->number()) return; const int tx=static_cast<int>(*x->number()); const int ty=static_cast<int>(*y->number()); const bool was_instance=world_->in_instance(); const int depth_before=world_->metadata().depth; const std::string scene_before=world_->scene_id(); world_->teleport(tx,ty,now_ms()); const bool returned=was_instance&&!world_->in_instance(); const bool depth_changed=world_->in_instance()&&world_->metadata().depth!=depth_before; const bool transitioned=returned||depth_changed||world_->scene_id()!=scene_before; emit_movement(emit); emit_message(emit,"Teleported to "+std::to_string(tx)+", "+std::to_string(ty)+(transitioned?" (portal followed).":".")); check_road_gates(emit); if (returned) { emit_message(emit,"The party returns to the surface."); finish_extraction(emit); notify_surface_return(emit); } if (transitioned) emit_transition(emit,"party:scene:transition"); if (world_->in_instance()) { if (depth_changed) { emit_ground_change(emit); quest_trigger("delve", emit, zone_id_for_instance(world_->metadata().theme, world_->metadata().layout), world_->metadata().theme, world_->metadata().depth); if (!current_node_id_.empty() && !current_child_id_.empty()) { current_node_id_ = current_child_id_; current_node_tier_ += 1; if (!current_child_name_.empty()) { current_node_name_ = current_child_name_; world_->set_scene_name(current_node_name_); } current_child_id_.clear(); world_->set_block_stairs_down(true); } } process_combat(now_ms(),emit); } return; }
   if (envelope.event=="dev:setlevel") { auto* actor=simulation_->actor(simulation_->scion().actor_id); const int level=as_int(payload?payload->get("level"):nullptr,1); if(actor){ actor->stats.level=(std::max)(1,level); actor->stats.attack=12+actor->stats.level*3; actor->stats.life_max=100+actor->stats.level*10; actor->stats.life=actor->stats.life_max; world_->set_level(actor->stats.level); } return; }

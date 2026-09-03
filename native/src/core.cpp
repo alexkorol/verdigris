@@ -1491,9 +1491,6 @@ constexpr int kN3RangedComfortTiles = 5;
 constexpr int kN3RangedRetreatBelowTiles = 3;
 constexpr int kN3BufferFormationTiles = 4;
 constexpr int kN3BossLife = 120;
-constexpr int kN3BossDamage = 12;
-constexpr int kN3BossTelegraphRadius = 2;
-constexpr int kN3BossTelegraphWindowMs = 1000;
 constexpr int kTownSize = 200;
 constexpr int kN3BleedDurationMs = 3000;
 constexpr int kN3BleedTickMs = 1000;
@@ -1715,6 +1712,36 @@ void WorldSimulation::return_to_town() {
   has_pre_instance_ = false;
   pre_instance_scene_id_.clear();
   clear_expedition_tuning();
+  clear_boss_ability_override();
+}
+
+void WorldSimulation::set_boss_ability_override(
+    const BossAbilityProfile& profile) {
+  BossAbilityProfile accepted = profile;
+  if (accepted.skill_id.rfind("boss:", 0) != 0)
+    accepted.skill_id = "boss:ground-slam";
+  if (accepted.telegraph_shape != "circle" &&
+      accepted.telegraph_shape != "ring")
+    accepted.telegraph_shape = "circle";
+  if (accepted.damage_channel != "physical" &&
+      accepted.damage_channel != "ember" &&
+      accepted.damage_channel != "river")
+    accepted.damage_channel = "physical";
+  accepted.radius = std::clamp(accepted.radius, 1, 6);
+  if (accepted.telegraph_shape == "ring")
+    accepted.radius = std::max(2, accepted.radius);
+  accepted.inner_radius = accepted.telegraph_shape == "ring"
+                              ? std::clamp(accepted.inner_radius, 1,
+                                           accepted.radius - 1)
+                              : 0;
+  accepted.windup_ms = std::clamp(accepted.windup_ms, 500, 2500);
+  accepted.cooldown_ms = std::clamp(accepted.cooldown_ms, 500, 5000);
+  accepted.damage = std::clamp(accepted.damage, 1, 100);
+  boss_ability_ = std::move(accepted);
+}
+
+void WorldSimulation::clear_boss_ability_override() {
+  boss_ability_ = BossAbilityProfile{};
 }
 
 std::string WorldSimulation::zone_display_name(const std::string& template_id,
@@ -2514,6 +2541,8 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
         warning.target_id = player_uuid_;
         warning.target_name = "Adventurer";
         warning.skill_id = monster.pending_attack_skill;
+        warning.telegraph_shape = "circle";
+        warning.damage_channel = monster.damage_channel;
         warning.radius = kN3RangedVolleyRadius;
         warning.duration_ms = kN3RangedVolleyWindupMs;
         warning.x = here.x;
@@ -2773,13 +2802,27 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     }
   }
   // Boss mechanic: announce once, then resolve at the authored window. The
-  // player's current tile is authoritative, so dev teleport genuinely dodges.
+  // sampled target and the player's current tile are authoritative, so a
+  // marked strike can be escaped and a ring can be dodged inward or outward.
   if (target->boss) {
     if (target->telegraph_until_ms == 0 && now >= next_boss_telegraph_ms_) {
-      target->telegraph_until_ms = now + kN3BossTelegraphWindowMs;
+      const Vec2 player_tile = tile_movement::occupied_tile(position_);
+      target->pending_target_x = boss_ability_.targets_player
+                                     ? player_tile.x : target->x;
+      target->pending_target_y = boss_ability_.targets_player
+                                     ? player_tile.y : target->y;
+      target->pending_attack_skill = boss_ability_.skill_id;
+      target->telegraph_until_ms = now + boss_ability_.windup_ms;
       WorldCombatEvent warning; warning.type = "telegraph"; warning.attacker_id = target->uuid;
-      warning.attacker_name = target->name; warning.target_id = player_uuid_; warning.skill_id = "boss:ground-slam";
-      warning.radius = kN3BossTelegraphRadius; warning.duration_ms = kN3BossTelegraphWindowMs; warning.x = target->x; warning.y = target->y;
+      warning.attacker_name = target->name; warning.target_id = player_uuid_;
+      warning.skill_id = boss_ability_.skill_id;
+      warning.telegraph_shape = boss_ability_.telegraph_shape;
+      warning.damage_channel = boss_ability_.damage_channel;
+      warning.radius = boss_ability_.radius;
+      warning.inner_radius = boss_ability_.inner_radius;
+      warning.duration_ms = boss_ability_.windup_ms;
+      warning.x = target->pending_target_x;
+      warning.y = target->pending_target_y;
       events.push_back(warning);
       // Every warning resolves at its authored window below - the server
       // tick thread is the simulation timer, so an instant second-warning
@@ -2787,15 +2830,26 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       boss_warning_seen_ = true;
     } else if (target->telegraph_until_ms != 0 && now >= target->telegraph_until_ms) {
       const Vec2 p = tile_movement::occupied_tile(position_);
-      if (std::abs(p.x - target->x) <= kN3BossTelegraphRadius && std::abs(p.y - target->y) <= kN3BossTelegraphRadius) {
-        apply_incoming(*target, "boss:ground-slam", kN3BossDamage,
-                       "physical", 0, false);
+      const int distance = std::max(
+          std::abs(p.x - target->pending_target_x),
+          std::abs(p.y - target->pending_target_y));
+      const bool inside = distance <= boss_ability_.radius &&
+                          distance >= boss_ability_.inner_radius;
+      if (inside) {
+        const int resistance = boss_ability_.damage_channel == "ember"
+            ? std::clamp(player_mods_.ember_resistance, 0, 75)
+            : boss_ability_.damage_channel == "river"
+                  ? std::clamp(player_mods_.river_resistance, 0, 75)
+                  : 0;
+        const int raw_damage = std::max(
+            1, boss_ability_.damage * (100 + expedition_damage_percent_) / 100);
+        apply_incoming(*target, boss_ability_.skill_id,
+                       raw_damage, boss_ability_.damage_channel,
+                       resistance, false);
       }
+      target->pending_attack_skill.clear();
       target->telegraph_until_ms = 0;
-      // The next player command is the fixed-step heartbeat in the native
-      // protocol slice; make the repeat eligible immediately after the
-      // resolved dodge/hit rather than relying on a hidden wall-clock thread.
-      next_boss_telegraph_ms_ = now;
+      next_boss_telegraph_ms_ = now + boss_ability_.cooldown_ms;
     }
   } else if (target->behaviour_type == "melee" && now >= target->next_attack_ms && std::abs(target->x - tile_movement::occupied_tile(position_).x) <= 2
              && std::abs(target->y - tile_movement::occupied_tile(position_).y) <= 2) {
