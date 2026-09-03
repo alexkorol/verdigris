@@ -981,7 +981,8 @@ class WorldSimulation {
   // instance:enterSolo: validates template/layout against the Adventure table
   // (unknown template -> dungeon, unknown layout -> theme default), saves the
   // pre-instance position on first entry, and places the player at a spawn.
-  void enter_solo_instance(const std::string& template_id, const std::string& layout);
+  void enter_solo_instance(const std::string& template_id,
+                           const std::string& layout, int depth = 1);
   // Same resolution as walking the depth-1 entry stairs: retire the instance
   // and restore the stashed town scene. player:extract and stairs-up both
   // converge here (TASK-0063).

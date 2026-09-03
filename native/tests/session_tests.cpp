@@ -178,8 +178,12 @@ void remote_handshake_reaches_ready() {
     check(session.model().quests.present &&
               session.model().quests.title == "Aldwyn's Charge" &&
               session.model().quests.objective_count == 5 &&
+              session.model().quests.campaign_quest_total == 12 &&
+              session.model().quests.act_number == 1 &&
+              session.model().quests.act_title == "THE FIRST OATHS" &&
+              session.model().quests.act_total == 4 &&
               !session.model().quests.objective.empty(),
-          "remote: authoritative campaign journal mirrors on admission");
+          "remote: authoritative campaign chapter and journal mirror on admission");
 
     bool saw_ready = false;
     for (const auto& event : session.drain_events()) {
@@ -1289,11 +1293,16 @@ void gateb_ensure_instance(LoopbackClient& client) {
   }
 }
 
-void gateb_swing(LoopbackClient& client, int heading) {
+void gateb_cast_skill(LoopbackClient& client, const char* skill_id,
+                      int heading) {
   JV::Object trigger;
-  trigger.emplace("skillId", JV("primary-attack"));
+  trigger.emplace("skillId", JV(skill_id));
   trigger.emplace("direction", JV(gateb_dir(heading)));
   client.send("player:skill:trigger", JV(std::move(trigger)));
+}
+
+void gateb_swing(LoopbackClient& client, int heading) {
+  gateb_cast_skill(client, "primary-attack", heading);
 }
 
 // Sweep-walk the boustrophedon lane plan (no swinging) until the scion falls
@@ -1344,10 +1353,9 @@ bool gateb_sweep_until_fallen(LoopbackClient& client, const std::string& scion_i
 }
 
 // Hunt as a normal player hunts: sweep the floor until something exchanges
-// blows, then HOLD GROUND and trade swings (monsters are stationary; a real
-// player does not retreat out of their own reach), dodge a revealed
-// ground-slam circle using only the monster:telegraph payload every client
-// receives, beeline to the revealed elite once known, and withdraw at low
+// blows, then hold ground and trade swings, dodge a revealed ground-slam
+// circle using only the monster:telegraph payload every client receives,
+// follow that exact actor through monster:moved updates, and withdraw at low
 // visible health through party:returnToTown + fountain heal + a fresh delve.
 // Stops when the slain elite surfaces the circulating heirloom (message or
 // relic ground entry).
@@ -1400,10 +1408,15 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
     solo.emplace("template", JV("dungeon"));
     solo.emplace("layout", JV("warren"));
     client.send("instance:enterSolo", JV(std::move(solo)));
-    return client.wait_from(mark, 8000, [](const WBEnvelope& e) {
+    const bool reentered = client.wait_from(mark, 8000, [](const WBEnvelope& e) {
       return e.event == "party:scene:transition" ||
              e.event == "world:scene:transition";
     });
+    if (reentered) {
+      gateb_cast_skill(client, "war-cry", 0);
+      client.service();
+    }
+    return reentered;
   };
 
   int fight_heading = 0;
@@ -1414,11 +1427,17 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
   auto last_incoming = never;
   const auto now = [] { return std::chrono::steady_clock::now(); };
   const auto deadline = now() + std::chrono::milliseconds(timeout_ms);
+  // Use the same opening buff a player has on the skill bar. The fountain
+  // refills its resource between delves, so every recovery leg begins with a
+  // decisive but entirely public-protocol combat window.
+  gateb_cast_skill(client, "war-cry", fight_heading);
+  client.service();
   std::string last_counted_kill_id;
   // Client-visible elite knowledge: the ground-slam telegraph payload is
   // broadcast to every client, so the driver may aim at and dodge the elite
   // with exactly what a normal player sees on screen.
   bool elite_known = false;
+  std::string elite_id;
   int elite_x = -1, elite_y = -1;
   auto slam_clear_at = never;
   int slam_x = 0, slam_y = 0, slam_radius = 0;
@@ -1469,6 +1488,7 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
       if (line.env.event == "monster:telegraph" &&
           gateb_str(line.env.data, "skillId") == "boss:ground-slam") {
         elite_known = true;
+        elite_id = gateb_str(line.env.data, "attackerId");
         elite_x = static_cast<int>(gateb_num(line.env.data, "x"));
         elite_y = static_cast<int>(gateb_num(line.env.data, "y"));
         slam_x = elite_x;
@@ -1478,6 +1498,11 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
         slam_clear_at = line.at +
                         std::chrono::milliseconds(static_cast<int>(
                             gateb_num(line.env.data, "durationMs", 1000)) + 120);
+      }
+      if (line.env.event == "monster:moved" && elite_known &&
+          gateb_str(line.env.data, "monsterId") == elite_id) {
+        elite_x = static_cast<int>(gateb_num(line.env.data, "x", elite_x));
+        elite_y = static_cast<int>(gateb_num(line.env.data, "y", elite_y));
       }
       if (line.env.event == "chronicles:scion-fallen") {
         std::printf("note: hunt aborted - successor fall observed\n");
@@ -1501,6 +1526,7 @@ bool gateb_hunt_until_relic_surfaces(LoopbackClient& client,
       }
       index = client.mark();
       elite_known = false;
+      elite_id.clear();
       slam_clear_at = never;
       approach_phase_until = now();
       approach_best_dist = 1 << 30;
@@ -1620,6 +1646,7 @@ bool gateb_take_relic(LoopbackClient& client, const std::string& relic_uuid,
                       int timeout_ms) {
   GateBView& view = client.view();
   int heading = 0;
+  int best_distance = 1 << 30;
   const auto deadline =
       std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
   // The surfacing message can beat the ground-change frame across the wire;
@@ -1688,14 +1715,19 @@ bool gateb_take_relic(LoopbackClient& client, const std::string& relic_uuid,
           });
       return took;
     }
-    // Greedy toward the larger axis delta first; wall fallback rotates.
-    const int primary = gateb_heading_for(dx > 0 ? 1 : (dx < 0 ? -1 : 0), 0);
-    const int secondary = gateb_heading_for(0, dy > 0 ? 1 : (dy < 0 ? -1 : 0));
-    heading = std::abs(dx) >= std::abs(dy) ? primary : secondary;
-    if (!gateb_step(client, heading)) {
-      // Blocked on the greedy axis: one wall-following step keeps progress.
-      gateb_step(client, heading);
+    // Reset toward the larger axis whenever a new best distance is reached.
+    // Otherwise preserve gateb_step's rotated heading long enough to follow a
+    // wall instead of recomputing the blocked greedy step and oscillating.
+    const int distance = std::abs(dx) + std::abs(dy);
+    if (distance < best_distance) {
+      best_distance = distance;
+      const int primary =
+          gateb_heading_for(dx > 0 ? 1 : (dx < 0 ? -1 : 0), 0);
+      const int secondary =
+          gateb_heading_for(0, dy > 0 ? 1 : (dy < 0 ? -1 : 0));
+      heading = std::abs(dx) >= std::abs(dy) ? primary : secondary;
     }
+    gateb_step(client, heading);
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     client.service();
   }

@@ -1181,13 +1181,115 @@ void test_four_roads_campaign_act_and_persistence() {
             "four-roads: returning opens the next named road commission");
     }
   }
-  check(state["state"]["quests"]["campaignComplete"].boolean().value_or(false) &&
-            state["state"]["quests"]["activeQuest"].is_null() &&
+  check(!state["state"]["quests"]["campaignComplete"].boolean().value_or(true) &&
+            state["state"]["quests"]["activeQuest"]["id"].string() &&
+            *state["state"]["quests"]["activeQuest"]["id"].string() ==
+                "quarry-saints-canon" &&
             state["state"]["quests"]["questPoints"].number().value_or(0) == 8 &&
             state["state"]["quests"]["houseRenown"].number().value_or(0) == 180 &&
+            !state["state"]["endgame"]["unlocked"].boolean().value_or(true) &&
+            state["state"]["quests"]["campaignQuestTotal"].number().value_or(0) == 12 &&
+            state["state"]["quests"]["act"]["number"].number().value_or(0) == 3,
+        "four-roads: Copper return opens Act III instead of prematurely sealing the campaign");
+
+  struct DeepRoadStep {
+    const char* road;
+    const char* warden;
+    const char* next_quest;
+  };
+  const DeepRoadStep deep_roads[] = {
+      {"tin", "The Quarry Saint", "brine-widows-tithe"},
+      {"salt", "The Brine Widow", "bell-beneath-chalk"},
+      {"chalk", "The Ossuary Bell", "cinder-judgment"},
+      {"copper", "The Cinder Judge", nullptr},
+  };
+  for (const auto& step : deep_roads) {
+    session.handle(
+        Envelope{"world:zone:enter",
+                 JsonValue::Object{{"nodeId", std::string(step.road) + ":2:0"}}},
+        [](const Envelope&) {});
+    state = request_state(session,
+                          std::string("deep-roads-") + step.road + "-entered");
+    bool named_warden = false;
+    int warden_level = 0;
+    if (const auto* monsters = state["state"]["monsters"].array()) {
+      for (const auto& monster : *monsters) {
+        if (monster["boss"].boolean().value_or(false) &&
+            monster["name"].string() &&
+            *monster["name"].string() == step.warden) {
+          named_warden = true;
+          warden_level = static_cast<int>(
+              monster["level"].number().value_or(0));
+          break;
+        }
+      }
+    }
+    check(named_warden,
+          "deep-roads: exact tier-two entry reveals its named Warden");
+    check(state["state"]["sceneMetadata"]["depth"].number().value_or(0) == 2,
+          "deep-roads: road tier becomes the authoritative instance depth");
+    check(warden_level >= 4,
+          "deep-roads: tier-two depth raises the named Warden's level");
+    check(state["state"]["quests"]["objectiveIndex"].number().value_or(0) == 1,
+          "deep-roads: exact tier-two entry advances the rite");
+    session.handle(Envelope{"dev:clear-floor", JsonValue::Object{}},
+                   [](const Envelope&) {});
+    state = request_state(session,
+                          std::string("deep-roads-") + step.road + "-cleared");
+    check(state["state"]["quests"]["objectiveIndex"].number().value_or(0) == 2,
+          "deep-roads: each named Warden must fall before the return rite");
+    session.handle(Envelope{"party:returnToTown", JsonValue::Object{}},
+                   [](const Envelope&) {});
+    state = request_state(session,
+                          std::string("deep-roads-") + step.road + "-returned");
+    if (step.next_quest) {
+      check(state["state"]["quests"]["activeQuest"]["id"].string() &&
+                *state["state"]["quests"]["activeQuest"]["id"].string() ==
+                    step.next_quest,
+            "deep-roads: returning opens the next named tier-two commission");
+      admit();
+      state = request_state(session,
+                            std::string("deep-roads-") + step.road + "-restored");
+      check(state["state"]["quests"]["activeQuest"]["id"].string() &&
+                *state["state"]["quests"]["activeQuest"]["id"].string() ==
+                    step.next_quest,
+            "deep-roads: the completed commission persists across Scion admission");
+    }
+  }
+  check(state["state"]["quests"]["campaignComplete"].boolean().value_or(false) &&
+            state["state"]["quests"]["activeQuest"].is_null() &&
+            state["state"]["quests"]["questPoints"].number().value_or(0) == 12 &&
+            state["state"]["quests"]["houseRenown"].number().value_or(0) == 390 &&
             state["state"]["endgame"]["unlocked"].boolean().value_or(false) &&
             !inventory_map_uuid(state).empty(),
-        "four-roads: Copper return seals Act II and awards the first endgame tablet");
+        "deep-roads: Cinder return seals the twelve-point campaign and awards the first tablet");
+
+  std::string heir_id;
+  session.handle(
+      Envelope{"chronicles:scion:create",
+               JsonValue::Object{{"houseId", "house-four-roads"},
+                                 {"name", "Orla"}}},
+      [&](const Envelope& event) {
+        if (event.event == "chronicles:state" &&
+            event.data["createdScionId"].string())
+          heir_id = *event.data["createdScionId"].string();
+      });
+  check(!heir_id.empty(),
+        "deep-roads: the sealed House can name a successor Scion");
+  session.handle(
+      Envelope{"player:chronicles:select",
+               JsonValue::Object{{"scionId", heir_id},
+                                 {"houseId", "house-four-roads"},
+                                 {"scionName", "Orla"},
+                                 {"mortal", false}}},
+      [](const Envelope&) {});
+  const auto heir_state = request_state(session, "deep-roads-heir");
+  check(heir_state["state"]["quests"]["campaignComplete"].boolean().value_or(false) &&
+            heir_state["state"]["quests"]["questPoints"].number().value_or(0) == 12 &&
+            heir_state["state"]["quests"]["completed"].array() &&
+            heir_state["state"]["quests"]["completed"].array()->size() == 12 &&
+            heir_state["state"]["endgame"]["unlocked"].boolean().value_or(false),
+        "deep-roads: a new Scion inherits the sealed campaign budget and endgame access");
 }
 
 void test_consumable_endgame_tablet_loop() {

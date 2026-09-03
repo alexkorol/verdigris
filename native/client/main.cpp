@@ -3171,8 +3171,15 @@ void paint_quest_journal(ClientState& state, HDC dc, const RECT& bounds,
   SelectObject(dc, skin::font_small());
   SetTextColor(dc, RGB(145, 170, 156));
   const std::string ledger = quests.present
-      ? std::to_string(quests.quest_points) + " QUEST POINTS   /   " +
-            std::to_string(quests.house_renown) + " HOUSE RENOWN"
+      ? (quests.act_number > 0
+             ? "ACT " + std::to_string(quests.act_number) + "  " +
+                   quests.act_title + "   |   " +
+                   std::to_string(quests.quest_points) + "/" +
+                   std::to_string(quests.campaign_quest_total) +
+                   " POINTS   |   " + std::to_string(quests.house_renown) +
+                   " RENOWN"
+             : std::to_string(quests.quest_points) + " QUEST POINTS   /   " +
+                   std::to_string(quests.house_renown) + " HOUSE RENOWN")
       : state.world.endgame.unlocked
           ? "WAYFINDER MASTERY  " +
                 std::to_string(state.world.endgame.mastered) + " / " +
@@ -3180,6 +3187,11 @@ void paint_quest_journal(ClientState& state, HDC dc, const RECT& bounds,
           : "AWAITING AN AUTHORITATIVE CAMPAIGN RECORD";
   TextOutA(dc, frame.left + 22 * s, frame.top + 46 * s, ledger.c_str(),
            static_cast<int>(ledger.size()));
+  if (quests.present && quests.act_number > 0) {
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, quests.act_number,
+                  "campaign-act:" + std::to_string(quests.act_number) + ":" +
+                      quests.act_title});
+  }
 
   const int rail_w = 214 * s;
   RECT rail{frame.left + 18 * s, frame.top + 72 * s,
@@ -3193,7 +3205,22 @@ void paint_quest_journal(ClientState& state, HDC dc, const RECT& bounds,
   SelectObject(dc, skin::font_small());
   int row_y = rail.top + 39 * s;
   int seal = 1;
-  for (const auto& done : quests.completed) {
+  constexpr std::size_t kVisibleDeeds = 9;
+  const std::size_t hidden_deeds = quests.completed.size() > kVisibleDeeds
+      ? quests.completed.size() - kVisibleDeeds
+      : 0;
+  if (hidden_deeds > 0) {
+    SetTextColor(dc, RGB(142, 161, 149));
+    const std::string earlier = "+ " + std::to_string(hidden_deeds) +
+                                " EARLIER DEEDS";
+    TextOutA(dc, rail.left + 12 * s, row_y, earlier.c_str(),
+             static_cast<int>(earlier.size()));
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0,
+                  static_cast<int>(hidden_deeds), "quest-earlier-deeds"});
+    row_y += 29 * s;
+  }
+  for (std::size_t i = hidden_deeds; i < quests.completed.size(); ++i) {
+    const auto& done = quests.completed[i];
     SetTextColor(dc, RGB(202, 176, 104));
     const std::string row = "[x] " + (done.title.empty() ? done.id : done.title);
     TextOutA(dc, rail.left + 12 * s, row_y, row.c_str(),
@@ -9257,7 +9284,7 @@ class ScenarioDialogueSession final
 class ScenarioCampaignSession final
     : public verdigris::client::IClientSession {
  public:
-  ScenarioCampaignSession() {
+  explicit ScenarioCampaignSession(bool deep_roads = false) {
     model_.player.uuid = "scenario-campaign-scion";
     model_.player.display_name = "Ilyra";
     model_.player.scene_id = "town:verdigris";
@@ -9272,7 +9299,12 @@ class ScenarioCampaignSession final
     model_.house_name = "House Emberwake";
     model_.quests.present = true;
     model_.quests.quest_points = 4;
+    model_.quests.campaign_quest_total = 12;
     model_.quests.house_renown = 50;
+    model_.quests.act_number = 2;
+    model_.quests.act_title = "THE FOUR-ROAD COVENANT";
+    model_.quests.act_completed = 0;
+    model_.quests.act_total = 4;
     model_.quests.active_id = "oath-of-tin";
     model_.quests.title = "Oath of Tin";
     model_.quests.giver = "Aldwyn the Guide";
@@ -9291,6 +9323,32 @@ class ScenarioCampaignSession final
         {"rot-in-the-reeds", "Rot in the Reeds",
          "Ended the rot beneath the reeds"},
     };
+    if (deep_roads) {
+      model_.quests.quest_points = 10;
+      model_.quests.house_renown = 275;
+      model_.quests.act_number = 3;
+      model_.quests.act_title = "THE DEEP ROADS";
+      model_.quests.act_completed = 2;
+      model_.quests.active_id = "bell-beneath-chalk";
+      model_.quests.title = "The Bell Beneath Chalk";
+      model_.quests.giver = "Selene of the Rite";
+      model_.quests.summary =
+          "Descend past the named graves and still the bell that calls them awake.";
+      model_.quests.objective = "Defeat the Ossuary Bell.";
+      model_.quests.reward = "+1 quest point / +55 House renown";
+      model_.quests.completed.insert(model_.quests.completed.end(), {
+          {"oath-of-tin", "Oath of Tin", "Swore the Oath of Tin"},
+          {"salt-reckoning", "The Salt Reckoning",
+           "Settled the Salt Reckoning"},
+          {"chalk-vigil", "The Chalk Vigil", "Kept the Chalk Vigil"},
+          {"copper-testament", "The Copper Testament",
+           "Sealed the Copper Testament"},
+          {"quarry-saints-canon", "The Quarry Saint's Canon",
+           "Silenced the Quarry Saint"},
+          {"brine-widows-tithe", "The Brine Widow's Tithe",
+           "Refused the Brine Widow's tithe"},
+      });
+    }
   }
   bool start(std::string*) override { return true; }
   void shutdown() override {}
@@ -9418,6 +9476,71 @@ int scenario_campaign_journal() {
   handle_escape_key(state);
   scenario_check(!state.quest_journal && !state.quit_requested,
                  "campaign-journal: Escape closes journal before exiting");
+  return 0;
+}
+
+int scenario_deep_roads_campaign() {
+  ClientState state;
+  state.session = std::make_unique<ScenarioCampaignSession>(true);
+  load_billboards(state.billboards);
+  sync_world(state);
+  generate_scenery(state);
+  scenario_follow_camera(state);
+  toggle_quest_journal(state);
+
+  std::string capture_dir;
+  const int capture_override = capture_root_override(&capture_dir);
+  if (capture_override < 0) {
+    scenario_check(false,
+                   "deep-roads-campaign: capture root rejected before any write");
+    return 0;
+  }
+  if (capture_override == 0) {
+    CreateDirectoryA("captures", nullptr);
+    capture_dir = "captures";
+  }
+  const std::string capture_path =
+      capture_dir + "\\deep-roads-campaign-1366x768.png";
+  scenario_check(reference_present(state, 1366, 768, capture_path),
+                 "deep-roads-campaign: Act III Framekit journal captured");
+  std::printf("    capture: %s\n", capture_path.c_str());
+
+  bool act = false;
+  bool active = false;
+  bool objective = false;
+  bool earlier = false;
+  int completed = 0;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Hud &&
+        item.label == "campaign-act:3:THE DEEP ROADS")
+      act = true;
+    if (item.op == render::Op::Hud &&
+        item.label == "quest-active:bell-beneath-chalk")
+      active = true;
+    if (item.op == render::Op::Hud &&
+        item.label == "quest-objective:Defeat the Ossuary Bell.")
+      objective = true;
+    if (item.op == render::Op::Hud && item.label == "quest-earlier-deeds" &&
+        item.value == 1)
+      earlier = true;
+    if (item.op == render::Op::Hud &&
+        item.label.rfind("quest-complete:", 0) == 0)
+      ++completed;
+  }
+  scenario_check(act && active && objective && earlier && completed == 9,
+                 "deep-roads-campaign: chapter, boss rite, and bounded deed history are readable");
+  const HudRect expected = quest_journal_rect(1366, 768);
+  bool inside = expected.x >= 0 && expected.y >= 0 &&
+                expected.x + expected.w <= 1366 &&
+                expected.y + expected.h <= 768;
+  for (const auto& trace : state.hud_rect_trace)
+    if (trace.first.rfind("quest-pane", 0) == 0)
+      inside = inside && trace.second.x >= expected.x &&
+               trace.second.y >= expected.y &&
+               trace.second.x + trace.second.w <= expected.x + expected.w &&
+               trace.second.y + trace.second.h <= expected.y + expected.h;
+  scenario_check(inside,
+                 "deep-roads-campaign: growing Chronicle remains inside Framekit");
   return 0;
 }
 
@@ -9669,6 +9792,7 @@ int run_scenarios(const std::string& which) {
       {"vesselforge-active-properties", scenario_vesselforge_active_properties},
       {"town-social-hub", scenario_town_social_hub},
       {"campaign-journal", scenario_campaign_journal},
+      {"deep-roads-campaign", scenario_deep_roads_campaign},
       {"tactical-map", scenario_tactical_map_overlay},
       {"frame-budget", scenario_frame_budget},
   };

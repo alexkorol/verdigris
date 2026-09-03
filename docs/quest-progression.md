@@ -64,13 +64,36 @@ web in a fixed narrative order:
 
 Each commission awards one passive-tree quest point and 25/30/35/40 House
 renown respectively. Completing Copper raises the campaign total to eight
-quest points, marks the House campaign complete, and grants the first
-consumable endgame tablet.
+quest points and opens the deeper covenant; it does not prematurely seal the
+campaign or mint an endgame tablet.
 
 Road progress is House-persistent. Cleared nodes restore on later Scion
 admissions, and a server-side parent check rejects direct requests for barred
 deeper holdings. Re-entering an already-cleared node satisfies the clear rite
 without inventing another Warden, so a resumed campaign cannot deadlock.
+
+## The Deep Roads
+
+The third campaign act returns to the same four House-charted roads at tier
+two, where each branch has a canonical story Warden rather than a generic
+elite identity:
+
+1. **The Quarry Saint's Canon** — break the Quarry Saint beneath Tin;
+2. **The Brine Widow's Tithe** — end the Brine Widow's levy beyond Salt;
+3. **The Bell Beneath Chalk** — still the Ossuary Bell under the graves;
+4. **The Cinder Judgment** — answer the Cinder Judge beyond Copper.
+
+Each commission requires exact tier-two entry, that holding's authoritative
+Warden clear, and a living return to the Crossroads. Road tier is also the
+instance depth used by monster and loot scaling, so these revisits are
+mechanically deeper rather than renamed tier-one floors. They award one quest
+point and 45/50/55/60 House renown respectively. The Cinder return raises the
+campaign total to twelve, seals the House campaign, and grants the first
+consumable charted tablet. Quest snapshots also publish the campaign total and
+current act name/progress so clients do not infer chapter boundaries. A later
+Scion born into that sealed House inherits the twelve campaign quest points,
+completed Chronicle record, and endgame access; succession cannot strand the
+reserved passive-tree budget on a fallen predecessor.
 
 ## Wayfinder Mastery
 

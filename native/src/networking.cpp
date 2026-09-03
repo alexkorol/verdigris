@@ -826,9 +826,53 @@ const QuestDef kQuestChain[] = {
         {"road-enter", "Enter a holding on the Copper Road.", "copper", "", 1},
         {"road-clear", "Slay its Warden and claim the burnt hills.", "copper", "", 1},
         {"road-return", "Return to seal the four-road covenant.", "copper", "", 1}, {}, {}}},
+    {"quarry-saints-canon", "The Quarry Saint's Canon", "Ludovicus",
+     "Follow the Tin Road below the worked stone and break its iron canon.",
+     "Silenced the Quarry Saint", "+1 quest point / +45 House renown", 45, 3, {
+        {"road-enter", "Enter a tier-two Tin Road holding.", "tin", "", 2},
+        {"road-clear", "Defeat the Quarry Saint.", "tin", "", 2},
+        {"road-return", "Bring the broken canon back to Ludovicus.", "tin", "", 2}, {}, {}}},
+    {"brine-widows-tithe", "The Brine Widow's Tithe", "Rhea of the Countinghouse",
+     "Go beyond the Salt reckoning and end the tithe taken from every caravan.",
+     "Refused the Brine Widow's tithe", "+1 quest point / +50 House renown", 50, 3, {
+        {"road-enter", "Enter a tier-two Salt Road holding.", "salt", "", 2},
+        {"road-clear", "Defeat the Brine Widow.", "salt", "", 2},
+        {"road-return", "Return the Widow's salt seal to Rhea.", "salt", "", 2}, {}, {}}},
+    {"bell-beneath-chalk", "The Bell Beneath Chalk", "Selene of the Rite",
+     "Descend past the named graves and still the bell that calls them awake.",
+     "Stilled the Ossuary Bell", "+1 quest point / +55 House renown", 55, 3, {
+        {"road-enter", "Enter a tier-two Chalk Road holding.", "chalk", "", 2},
+        {"road-clear", "Defeat the Ossuary Bell.", "chalk", "", 2},
+        {"road-return", "Carry the silent clapper home to Selene.", "chalk", "", 2}, {}, {}}},
+    {"cinder-judgment", "The Cinder Judgment", "Aldwyn the Guide",
+     "Cross the burnt hills again and answer the judge waiting beyond the ash.",
+     "Passed the Cinder Judge's sentence", "+1 quest point / +60 House renown", 60, 3, {
+        {"road-enter", "Enter a tier-two Copper Road holding.", "copper", "", 2},
+        {"road-clear", "Defeat the Cinder Judge.", "copper", "", 2},
+        {"road-return", "Return to seal the covenant of the Deep Roads.", "copper", "", 2}, {}, {}}},
 };
 const int kQuestChainSize =
     static_cast<int>(sizeof(kQuestChain) / sizeof(kQuestChain[0]));
+
+struct CampaignAct {
+  int number;
+  const char* title;
+  int first_quest;
+  int quest_count;
+};
+constexpr CampaignAct kCampaignActs[] = {
+    {1, "THE FIRST OATHS", 0, 4},
+    {2, "THE FOUR-ROAD COVENANT", 4, 4},
+    {3, "THE DEEP ROADS", 8, 4},
+};
+const CampaignAct& campaign_act_for(int quest_index) {
+  const int bounded = std::clamp(quest_index, 0, kQuestChainSize - 1);
+  for (const auto& act : kCampaignActs)
+    if (bounded >= act.first_quest &&
+        bounded < act.first_quest + act.quest_count)
+      return act;
+  return kCampaignActs[2];
+}
 
 // The Wayfinder Mastery board is deliberately finite and inspectable: every
 // tablet family has one objective at each supported tier. Chronicle imports
@@ -902,6 +946,9 @@ const char* kRoadSeconds[4][6] = {
     {"down", "barrow", "field", "kirk", "vault", "howe"},
     {"hill", "works", "kiln", "heath", "brink", "reach"},
 };
+const char* kRoadTierTwoWardens[4] = {
+    "The Quarry Saint", "The Brine Widow", "The Ossuary Bell",
+    "The Cinder Judge"};
 int road_index(const std::string& road_id) {
   for (int i = 0; i < 4; ++i) if (road_id == kRoads[i].id) return i;
   return -1;
@@ -945,7 +992,8 @@ std::vector<RoadNode> web_road_nodes(const std::string& house, const std::string
       while (used.count(name)) name += " Deep";
       used.insert(name);
       node.name = name;
-      node.warden_name = "Warden of " + name;
+      node.warden_name = tier == 2 ? kRoadTierTwoWardens[ri]
+                                   : "Warden of " + name;
       if (!previous_tier.empty()) {
         const int parent_pick = (std::min)(static_cast<int>(previous_tier.size()) - 1,
                                            (index * static_cast<int>(previous_tier.size())) / width);
@@ -1211,7 +1259,7 @@ JsonValue ProtocolSession::snapshot() const {
       {"windowTicks",(combo_window_snapshot_ms+kSimulationTickMs-1)/kSimulationTickMs}});
   JsonValue::Array monsters; for (const auto& candidate:world_->monsters()) if (candidate.alive) {
     JsonValue::Object monster; put(monster,"uuid",candidate.uuid); put(monster,"id",candidate.id); put(monster,"name",candidate.name);
-    put(monster,"x",candidate.x); put(monster,"y",candidate.y); put(monster,"level",candidate.level); put(monster,"rarity",candidate.rarity);
+    put(monster,"x",candidate.x); put(monster,"y",candidate.y); put(monster,"level",candidate.level); put(monster,"rarity",candidate.rarity); put(monster,"boss",candidate.boss);
     JsonValue::Array tags; for (const auto& tag:candidate.tags) tags.emplace_back(tag); put(monster,"tags",std::move(tags));
     put(monster,"coins",candidate.coins);
     put(monster,"damageChannel",candidate.damage_channel);
@@ -1503,8 +1551,19 @@ JsonValue ProtocolSession::quests_json() const {
   put(quests, "activeQuestId", active_quest_ < kQuestChainSize ? JsonValue(kQuestChain[active_quest_].id) : JsonValue(nullptr));
   put(quests, "objectiveIndex", quest_objective_);
   put(quests, "questPoints", quest_points_);
+  put(quests, "campaignQuestTotal", kQuestChainSize);
   put(quests, "houseRenown", house_renown_);
   put(quests, "campaignComplete", campaign_complete_);
+  {
+    const CampaignAct& act = campaign_act_for(active_quest_);
+    JsonValue::Object chapter;
+    put(chapter, "number", act.number);
+    put(chapter, "title", act.title);
+    put(chapter, "completed", std::clamp(
+        active_quest_ - act.first_quest, 0, act.quest_count));
+    put(chapter, "total", act.quest_count);
+    put(quests, "act", std::move(chapter));
+  }
   if (active_quest_ < kQuestChainSize) {
     const QuestDef& active = kQuestChain[active_quest_];
     JsonValue::Object quest;
@@ -1967,7 +2026,7 @@ void ProtocolSession::enter_road_node(const std::string& node_id, const std::fun
   node_warden_dead_on_entry_ = cleared_nodes_.count(node->id) > 0;
   world_->set_boss_name_override(node->warden_name);
   world_->set_spawn_suppressed(node_warden_dead_on_entry_);
-  world_->enter_solo_instance(node->template_id, node->layout);
+  world_->enter_solo_instance(node->template_id, node->layout, node->tier);
   world_->set_spawn_suppressed(false);
   world_->set_boss_name_override(std::string());
   world_->set_block_stairs_down(!node_warden_dead_on_entry_);
@@ -2309,8 +2368,11 @@ void ProtocolSession::restore_quest_progression() {
   active_quest_ = campaign_complete_ ? kQuestChainSize : 0;
   quest_objective_ = 0;
   quests_completed_.clear();
-  quest_points_ = 0;
-  tree_quest_points_ = 0;
+  quest_points_ = campaign_complete_ ? kQuestChainSize : 0;
+  tree_quest_points_ = quest_points_;
+  if (campaign_complete_)
+    for (const auto& definition : kQuestChain)
+      quests_completed_.push_back(definition.id);
   JsonValue::Object* scion = find_chronicle_scion_object(
       chronicle_, active_house_id_, active_scion_id_);
   if (!scion) return;
@@ -2327,7 +2389,9 @@ void ProtocolSession::restore_quest_progression() {
   quest_objective_ = std::clamp(
       as_int(saved.get("objectiveIndex"), 0), 0,
       (std::max)(0, objective_limit));
-  quest_points_ = std::clamp(as_int(saved.get("questPoints"), 0), 0, 23);
+  quest_points_ = campaign_complete_
+                      ? kQuestChainSize
+                      : std::clamp(as_int(saved.get("questPoints"), 0), 0, 23);
   tree_quest_points_ = quest_points_;
   if (const auto* completed = saved.get("completed");
       completed && completed->array()) {
@@ -3527,8 +3591,10 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     const Vec2 tile=tile_movement::occupied_tile(world_->position());
     if (actor && !world_->in_instance() && (std::max)(std::abs(tile.x-38),std::abs(tile.y-115))<=1) {
       actor->stats.life=actor->stats.life_max;
+      actor->stats.resource=actor->stats.resource_max;
       world_->heal_player(actor->stats.life,actor->stats.life_max);
       emit_message(emit,"Cool water. The road ahead feels lighter.");
+      emit_combat_state(emit);
     }
     return;
   }

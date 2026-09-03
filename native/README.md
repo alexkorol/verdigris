@@ -38,7 +38,8 @@ attacks, right mouse/Space dashes (the answer to an enemy telegraph), Q/E/R
 cast Thrust/Sweep/WarCry, X takes the nearest/underfoot drop, Z toggles loot
 name labels, I opens the gear pane (Enter or click equips; 1-9 equips from
 the backpack; selected Vesselforge gear shows its active properties and worn
-totals), N enters the charted road from the remote flow, the wheel
+totals), J opens the authoritative Chronicle campaign (including its current
+act and twelve-point total), N enters the charted road from the remote flow, the wheel
 zooms and Home resets zoom, and F3 toggles the debug overlay. The objective
 strip is mode-aware about extraction: in local play F extracts at the EXIT;
 on the remote owner path you extract by walking onto the EXIT stairs. A
@@ -106,6 +107,7 @@ pane/HUD state.
 ./native/build.ps1 -RunClientScenarios   # build + run all scenarios
 native/build/verdigris_client.exe --scenario first-fight   # one scenario
 native/build/verdigris_client.exe --scenario first-session-clarity   # TASK-0153 contracts
+native/build/verdigris_client.exe --scenario deep-roads-campaign     # Act III Framekit evidence
 ~~~
 
 Every future client wave must add its own scenario. To add one:

@@ -1887,7 +1887,9 @@ void WorldSimulation::generate_instance() {
   scatter_floor_treasure();
 }
 
-void WorldSimulation::enter_solo_instance(const std::string& template_id, const std::string& layout) {
+void WorldSimulation::enter_solo_instance(const std::string& template_id,
+                                          const std::string& layout,
+                                          int depth) {
   const std::string theme = is_zone_template(template_id) ? template_id : "dungeon";
   const std::string applied_layout = is_zone_layout(layout) ? layout : "";
 
@@ -1904,7 +1906,7 @@ void WorldSimulation::enter_solo_instance(const std::string& template_id, const 
   metadata_.seed = fnv1a(theme + ":" + applied_layout, seed_);
   metadata_.theme = theme;
   metadata_.layout = applied_layout;
-  metadata_.depth = 1;
+  metadata_.depth = std::max(1, depth);
   // N4: leaving town stashes its ground items; instance floors retire theirs.
   if (scene_type_ == "town") {
     town_ground_items_ = std::move(ground_items_);

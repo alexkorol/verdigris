@@ -205,7 +205,12 @@ struct ClientQuestState {
   bool present = false;
   bool campaign_complete = false;
   int quest_points = 0;
+  int campaign_quest_total = 0;
   int house_renown = 0;
+  int act_number = 0;
+  int act_completed = 0;
+  int act_total = 0;
+  std::string act_title;
   std::string active_id;
   std::string title;
   std::string giver;

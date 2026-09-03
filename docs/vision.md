@@ -51,7 +51,7 @@ solo zone/instance entry (Adventure menu), and the Chronicles Houses & Scions
 persistence model (`src/core/chronicles/houses.js`).
 
 Chronicles creation, authoritative persistence, mortal Scion entombment, and
-fallen-heirloom circulation are now playable end to end. The first eight real
+fallen-heirloom circulation are now playable end to end. The first twelve real
 quests form a server-owned progression chain. **Aldwyn's Charge** turns
 movement → combat → loot → Adventure entry into onboarding; **Proof of
 Temper** follows with an elite hunt, guaranteed native Vessel, equipment
@@ -66,9 +66,12 @@ The second act binds the campaign to the procedural world web: **Oath of
 Tin**, **The Salt Reckoning**, **The Chalk Vigil**, and **The Copper
 Testament** each require authoritative entry, Warden defeat, and a living
 return on their exact road. The four-road covenant raises the campaign total
-to eight quest points and unlocks the first consumable endgame tablet. Road
-clears are House-persistent, and deeper node requests are rejected until their
-actual parent Warden is recorded dead.
+to eight quest points and opens **The Deep Roads** rather than prematurely
+sealing the campaign. Tier-two Tin, Salt, Chalk, and Copper commissions then
+name and require the Quarry Saint, Brine Widow, Ossuary Bell, and Cinder Judge.
+The final living return seals the twelve-point campaign and grants the first
+consumable endgame tablet. Road clears are House-persistent, and deeper node
+requests are rejected until their actual parent Warden is recorded dead.
 
 The charted endgame now has an atlas-like Wayfinder Mastery layer rather than
 only a lifetime clear counter. Barrow, Reeds, Crown, and Thorns tablets each
@@ -127,7 +130,7 @@ suite, production build, every real-server playtest scenario, and the built-game
 browser loop. The remaining product work is intentionally narrower than the
 original prototype roadmap:
 
-1. **Campaign breadth:** extend the authoritative eight-commission campaign
+1. **Campaign breadth:** extend the authoritative twelve-commission campaign
    toward the 23 quest points reserved by the passive tree, with named zones,
    bosses, rewards, persistence, and playtest coverage for each arc.
 2. **Vesselforge progression:** wire the remaining visibly Dormant effects into

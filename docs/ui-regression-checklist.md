@@ -75,8 +75,16 @@
   the Framekit panel and no world hover tooltip draws through it.
 - After Rot in the Reeds, confirm the journal opens Oath of Tin, then advances
   through Salt, Chalk, and Copper only after entry, Warden defeat, and return
-  on each exact road. Copper completion should seal the campaign and grant the
+  on each exact road. Copper completion should open `ACT III THE DEEP ROADS`,
+  not seal the campaign or grant a tablet.
+- Confirm the Deep Roads revisit tier-two Tin, Salt, Chalk, and Copper in that
+  order and name the Quarry Saint, Brine Widow, Ossuary Bell, and Cinder Judge.
+  Each journal rite must advance only after exact entry, Warden defeat, and a
+  living return; only the Cinder return seals twelve points and grants the
   first charted tablet.
+- With eight or more completed deeds, confirm the left Chronicle rail remains
+  inside Framekit. Once history exceeds nine visible rows it must collapse the
+  oldest entries into a truthful `EARLIER DEEDS` summary rather than clipping.
 - Clear a tier-one road holding, re-admit a Scion, and confirm the chart still
   marks it cleared and opens its tier-two children. A direct request for a
   barred child must leave the player in town.

@@ -1,5 +1,40 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - Act III: The Deep Roads
+
+- The authoritative native campaign now contains twelve commissions. The
+  four-road covenant ends at eight points by opening Act III rather than
+  prematurely marking the House complete or awarding an endgame key.
+- The Deep Roads revisit tier-two Tin, Salt, Chalk, and Copper holdings in a
+  fixed narrative order: The Quarry Saint's Canon, The Brine Widow's Tithe,
+  The Bell Beneath Chalk, and The Cinder Judgment. Each requires exact road
+  entry, its named Warden's death, and a living return to the Crossroads.
+- Tier-two road bosses carry canonical identities in the authoritative monster
+  roster: The Quarry Saint, The Brine Widow, The Ossuary Bell, and The Cinder
+  Judge. A road node's tier now becomes its actual instance depth, activating
+  the existing monster/loot scaling instead of relabeling a depth-one floor.
+  Only the final Cinder return seals twelve quest points and awards the first
+  consumable charted tablet.
+- Campaign snapshots now publish their total and current act number, title,
+  completed count, and act size. The remote model validates and mirrors that
+  contract; the Framekit Chronicle header shows act and 10/12-style progress.
+- Chronicle history is bounded to nine visible deeds with a truthful earlier-
+  deed count, keeping later arcs inside the left rail. A new Scion born into a
+  sealed House inherits all twelve campaign points, completed commissions, and
+  endgame access, so succession cannot strand the passive-tree budget.
+- The full road test drives all eight road commissions, verifies every named
+  boss in the live snapshot, re-admits between Deep Road commissions, and then
+  creates a successor to prove House-wide continuity. The long Gate-B relic
+  hunter was updated to follow a revealed Warden through `monster:moved`
+  events after production locomotion made stale-position pursuit unreliable.
+  The Crossroads fountain now restores both life and combat resource, so a
+  recovered Scion can open each fresh delve with the existing War Cry skill.
+- Verification: the full native test gate, complete Chronicle succession and
+  relic-recovery journey, and every client scenario pass. Production evidence
+  is in
+  `native/build/goal-captures-deep-roads-d/deep-roads-campaign-1366x768.png`;
+  `frame-budget` measured 9.8 ms average at 3440x1440 against the 40 ms ceiling.
+
 ## 2026-09-03 - active Vesselforge combat properties
 
 - Five previously display-only WIZARD properties now resolve through the

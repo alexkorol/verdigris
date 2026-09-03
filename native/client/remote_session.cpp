@@ -173,6 +173,7 @@ void apply_quests(const JsonValue& source, ClientModel& model,
   const char* reason = nullptr;
   const JsonValue* active = nullptr;
   const JsonValue* completed = nullptr;
+  const JsonValue* act = nullptr;
   if (!source.object()) {
     reason = "envelope must be an object";
   } else if (!quest_integer(source.get("questPoints"), 23)) {
@@ -183,10 +184,27 @@ void apply_quests(const JsonValue& source, ClientModel& model,
              !source.get("campaignComplete")->boolean()) {
     reason = "campaignComplete must be a boolean";
   } else {
+    const auto* campaign_total = source.get("campaignQuestTotal");
+    act = source.get("act");
+    if (campaign_total &&
+        (!quest_integer(campaign_total, 23) ||
+         *campaign_total->number() < 1.0)) {
+      reason = "campaignQuestTotal must be an integer from 1 to 23";
+    } else if (act &&
+               (!act->object() || !quest_integer(act->get("number"), 10) ||
+                *act->get("number")->number() < 1.0 ||
+                !act->get("title") || !act->get("title")->string() ||
+                !quest_integer(act->get("completed"), 23) ||
+                !quest_integer(act->get("total"), 23) ||
+                *act->get("total")->number() < 1.0 ||
+                *act->get("completed")->number() >
+                    *act->get("total")->number())) {
+      reason = "act has an invalid campaign presentation contract";
+    }
     completed = source.get("completed");
-    if (!completed || !completed->array()) {
+    if (!reason && (!completed || !completed->array())) {
       reason = "completed must be an array";
-    } else {
+    } else if (!reason) {
       active = source.get("activeQuest");
       if (!active) {
         reason = "activeQuest is required";
@@ -230,8 +248,16 @@ void apply_quests(const JsonValue& source, ClientModel& model,
   ClientQuestState parsed;
   parsed.present = true;
   parsed.quest_points = static_cast<int>(*source.get("questPoints")->number());
+  if (const auto* total = source.get("campaignQuestTotal"))
+    parsed.campaign_quest_total = static_cast<int>(*total->number());
   parsed.house_renown = static_cast<int>(*source.get("houseRenown")->number());
   parsed.campaign_complete = *source.get("campaignComplete")->boolean();
+  if (act) {
+    parsed.act_number = static_cast<int>(*act->get("number")->number());
+    parsed.act_title = *act->get("title")->string();
+    parsed.act_completed = static_cast<int>(*act->get("completed")->number());
+    parsed.act_total = static_cast<int>(*act->get("total")->number());
+  }
   if (!active->is_null()) {
     parsed.active_id = *active->get("id")->string();
     parsed.title = *active->get("title")->string();
