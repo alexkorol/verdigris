@@ -1123,7 +1123,7 @@ class WorldSimulation {
   void reset_to_town();
   // instance:enterSolo: validates template/layout against the Adventure table
   // (unknown template -> dungeon, unknown layout -> theme default), saves the
-  // pre-instance position on first entry, and places the player at a spawn.
+  // the surface context on first entry, and places the player at a spawn.
   void enter_solo_instance(const std::string& template_id,
                            const std::string& layout, int depth = 1);
   // Same resolution as walking the depth-1 entry stairs: retire the instance
@@ -1212,7 +1212,7 @@ class WorldSimulation {
   std::string player_uuid_;
   std::uint64_t serial_ = 0;
 
-  WorldPosition position_{38.0, 115.0};  // town login spawn (TOWN_FALLBACK_SPAWN)
+  WorldPosition position_{38.0, 115.0};  // Crossroads fountain / arrival anchor
   std::string facing_ = "down";
   std::string scene_type_ = "town";
   std::string scene_id_ = "town:verdigris";

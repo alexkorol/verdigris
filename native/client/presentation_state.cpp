@@ -116,6 +116,7 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
                                                 ? model.player.display_name
                                                 : model.player.uuid);
   world.route_id = model.scene.id;
+  world.scene_epoch = model.scene_epoch;
   world.player.id = model.player.uuid;
   world.player.position = {static_cast<int>(std::lround(protocol_to_world(model.player.x))),
                            static_cast<int>(std::lround(protocol_to_world(model.player.y)))};
@@ -323,6 +324,18 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
   const double ex = static_cast<double>(at.x);
   const double ey = static_cast<double>(at.y);
   switch (event.type) {
+    case PresentationEventType::SceneChanged:
+      // Scene-local presentation state must never cross an instance boundary.
+      // Keep the durable event log/hint, but retire every world-space transient.
+      fx.effects.clear();
+      fx.telegraphs.clear();
+      fx.loot_positions.clear();
+      fx.known_monsters.clear();
+      fx.monster_strikes.clear();
+      fx.last_death_pos = {};
+      fx.loot_scatter = 0;
+      fx.screen_pulse_ticks = 0;
+      break;
     case PresentationEventType::AttackStarted: {
       fx.telegraphs.erase(event.actor_id);
       // Orient the confirmed swing along the player's authoritative facing

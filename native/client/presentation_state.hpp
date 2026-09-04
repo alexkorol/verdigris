@@ -190,6 +190,7 @@ struct WorldView {
   std::string house_name = "House Verdigris";
   std::string scion_name;
   std::uint64_t tick = 0;
+  std::uint64_t scene_epoch = 0;
   std::vector<WorldCarriedItem> carried;
   std::vector<WorldCarriedItem> worn;
   EndgameView endgame;

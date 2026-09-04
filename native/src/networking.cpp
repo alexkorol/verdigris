@@ -1274,6 +1274,39 @@ const TownNpc* town_npc(int id) {
     if (npc.id == id) return &npc;
   return nullptr;
 }
+
+struct ShopStockRow {
+  const char* id;
+  const char* name;
+  int price;
+};
+
+constexpr ShopStockRow kWeaponStock[] = {
+    {"knife", "Knife", 5},
+    {"bronze-sword", "Bronze Sword", 15},
+    {"bronze-dagger", "Bronze Dagger", 10},
+};
+constexpr ShopStockRow kRiteStock[] = {
+    {"wooden-shield", "Wooden Shield", 8},
+    {"bronze-shield", "Bronze Shield", 45},
+    {"garnet-amulet", "Garnet Amulet", 60},
+};
+
+const ShopStockRow* shop_stock_for(int npc_id, std::size_t* count) {
+  *count = 3;
+  if (npc_id == 2) return kWeaponStock;
+  if (npc_id == 3) return kRiteStock;
+  *count = 0;
+  return nullptr;
+}
+
+const ShopStockRow* shop_stock_row(int npc_id, const std::string& item_id) {
+  std::size_t count = 0;
+  const ShopStockRow* rows = shop_stock_for(npc_id, &count);
+  for (std::size_t i = 0; i < count; ++i)
+    if (rows[i].id == item_id) return &rows[i];
+  return nullptr;
+}
 }  // namespace
 
 JsonValue ProtocolSession::combat_totals_json() const {
@@ -1628,48 +1661,27 @@ void ProtocolSession::emit_equip_state(const std::function<void(const Envelope&)
   emit(Envelope{"player:equippedAnItem", JsonValue(std::move(data))});
 }
 void ProtocolSession::finish_extraction(const std::function<void(const Envelope&)>& emit) {
-  // Drain backpack + wear into the House store. JS has no player:extract;
-  // the response envelope reuses that name (see REPORT).
-  int banked_items = 0;
-  int retained_maps = 0;
-  std::vector<std::string> uuids;
-  uuids.reserve(inventory_.items().size());
-  for (const auto& item : inventory_.items()) {
-    if (item.expedition_map) {
-      ++retained_maps;
-      continue;
-    }
-    uuids.push_back(item.uuid);
-  }
-  for (const auto& uuid : uuids) {
-    GameItem item;
-    if (inventory_.remove_by_uuid(uuid, &item)) {
-      house_store_.push_back(std::move(item));
-      ++banked_items;
-    }
-  }
-  for (const auto& seat : WearSet::physical_slots()) {
-    auto worn = wear_.unequip(seat);
-    if (worn) {
-      house_store_.push_back(std::move(*worn));
-      ++banked_items;
-    }
-  }
-  sync_combat_mods();
+  // A safe return secures the active Scion's carried state; it does not
+  // silently strip their equipment, backpack, or purse into an invisible
+  // store. Explicit Countinghouse actions remain the only banking operation.
+  // This keeps vendors and immediate re-entry playable after extraction.
+  const int secured_items = static_cast<int>(inventory_.items().size() +
+                                             wear_.slots().size());
+  const int secured_gold = carried_gold();
   JsonValue::Array stored;
   for (const auto& item : house_store_) stored.emplace_back(item_identity_json(item));
   JsonValue::Object summary;
-  put(summary, "items", banked_items);
+  put(summary, "items", secured_items);
+  put(summary, "carriedGold", secured_gold);
   put(summary, "trophies", 0);
   put(summary, "storedItems", std::move(stored));
   put(summary, "storedTrophies", JsonValue::Array{});
   emit(Envelope{"player:extract", JsonValue(std::move(summary))});
-  emit_message(emit, "Banked " + std::to_string(banked_items) + " items into the House store.");
-  if (retained_maps > 0)
-    emit_message(emit, std::to_string(retained_maps) +
-                           " charted tablet" +
-                           (retained_maps == 1 ? " remains" : "s remain") +
-                           " in the House map case.");
+  emit_message(emit, "Safe return: " + std::to_string(secured_items) +
+                         " carried item" +
+                         (secured_items == 1 ? "" : "s") + " and " +
+                         std::to_string(secured_gold) +
+                         " gold remain with this Scion.");
   emit_inventory_refresh(emit);
   emit_equip_state(emit);
   endgame_active_ = false;
@@ -1978,19 +1990,14 @@ void ProtocolSession::emit_shop_screen(const std::function<void(const Envelope&)
   // The two accepted owner-demo merchants have distinct identities and
   // stock. Selection is captured when the authoritative nearby action opens
   // the pane; purchases continue to refresh that same merchant.
-  struct StockRow { const char* id; const char* name; int price; };
-  const StockRow weapons[3] = {{"knife", "Knife", 5},
-                               {"bronze-sword", "Bronze Sword", 15},
-                               {"bronze-dagger", "Bronze Dagger", 10}};
-  const StockRow rites[3] = {{"wooden-shield", "Wooden Shield", 8},
-                             {"bronze-shield", "Bronze Shield", 45},
-                             {"garnet-amulet", "Garnet Amulet", 60}};
-  const StockRow* rows = shop_npc_id_ == 3 ? rites : weapons;
+  std::size_t row_count = 0;
+  const ShopStockRow* rows = shop_stock_for(shop_npc_id_, &row_count);
   JsonValue::Array stock;
-  for (int i = 0; i < 3; ++i) {
+  for (std::size_t i = 0; i < row_count; ++i) {
     JsonValue::Object row;
     put(row, "id", rows[i].id); put(row, "name", rows[i].name);
-    put(row, "price", rows[i].price); put(row, "qty", 10); put(row, "slot", i);
+    put(row, "price", rows[i].price); put(row, "qty", 1);
+    put(row, "slot", static_cast<int>(i));
     stock.emplace_back(std::move(row));
   }
   JsonValue::Object payload;
@@ -3207,18 +3214,21 @@ void ProtocolSession::handle_menu_build(const JsonValue& payload, const std::fun
     return false;
   };
   JsonValue::Array entries;
-  if (clicked_has("shopSlot")) {
+  if (clicked_has("shopSlot") && shop_open_) {
     // shops.js pane menu: Buy-1 from the shop stock row.
     const int slot = as_int(misc ? misc->get("slot") : nullptr, -1);
-    const char* ids[3] = {"knife", "bronze-sword", "wooden-shield"};
-    const int prices[3] = {5, 15, 8};
-    if (slot >= 0 && slot < 3) {
+    std::size_t count = 0;
+    const ShopStockRow* rows = shop_stock_for(shop_npc_id_, &count);
+    if (slot >= 0 && static_cast<std::size_t>(slot) < count) {
+      const ShopStockRow& stock = rows[slot];
       JsonValue::Object entry;
-      put(entry, "label", std::string("Buy-1 ") + ids[slot]);
+      put(entry, "label", std::string("Buy ") + stock.name + " - " +
+                             std::to_string(stock.price) + " gold");
       put(entry, "action", JsonValue::Object{{"name", JsonValue("Buy")}, {"actionId", JsonValue("player:shop:buy")},
           {"context", JsonValue::Array{JsonValue("shopSlot")}}, {"nearby", false}, {"weight", 1}});
       put(entry, "type", "shop");
-      JsonValue::Object item_ref; put(item_ref, "id", ids[slot]); put(item_ref, "price", prices[slot]); put(item_ref, "slot", slot);
+      JsonValue::Object item_ref; put(item_ref, "id", stock.id);
+      put(item_ref, "price", stock.price); put(item_ref, "slot", slot);
       put(entry, "item", std::move(item_ref));
       entries.emplace_back(std::move(entry));
     }
@@ -3469,26 +3479,34 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
   }
   if (action_id=="player:shop:buy") {
     const std::string item_id = as_string(item_ref ? item_ref->get("id") : nullptr);
-    const int price = as_int(item_ref ? item_ref->get("price") : nullptr, item_id == "knife" ? 5 : 15);
-    if (carried_gold() >= price) {
-      int remaining = price;
-      auto slots = inventory_.items();
-      for (const auto& coin : slots) {
-        if (remaining <= 0) break;
-        if (coin.id != "coins") continue;
-        GameItem taken;
-        if (!inventory_.remove_by_uuid(coin.uuid, &taken)) continue;
-        if (taken.qty > remaining) { GameItem back = taken; back.qty = taken.qty - remaining; inventory_.add(std::move(back)); remaining = 0; }
-        else remaining -= taken.qty;
-      }
-      CreateItemOptions o; auto bought = create_game_item(item_id, o);
-      if (bought) inventory_.add(std::move(*bought));
-      emit_inventory_refresh(emit);
+    const TownNpc* npc = town_npc(shop_npc_id_);
+    const Vec2 tile = tile_movement::occupied_tile(world_->position());
+    const ShopStockRow* stock = shop_stock_row(shop_npc_id_, item_id);
+    if (!shop_open_ || !npc || !stock || world_->in_instance() ||
+        (std::max)(std::abs(tile.x - npc->x), std::abs(tile.y - npc->y)) > 1)
+      return;
+    CreateItemOptions options;
+    auto bought = create_game_item(stock->id, options);
+    if (!bought) return;
+    if (!inventory_.spend_coins(stock->price)) {
+      emit_message(emit, "You need " + std::to_string(stock->price) +
+                             " gold for the " + stock->name + ".");
       emit_shop_screen(emit);
+      return;
     }
+    inventory_.add(std::move(*bought));
+    emit_message(emit, "You buy the " + std::string(stock->name) + " for " +
+                           std::to_string(stock->price) + " gold.");
+    emit_inventory_refresh(emit);
+    emit_shop_screen(emit);
     return;
   }
   if (action_id=="player:shop:sell") {
+    const TownNpc* npc = town_npc(shop_npc_id_);
+    const Vec2 tile = tile_movement::occupied_tile(world_->position());
+    if (!shop_open_ || !npc || world_->in_instance() ||
+        (std::max)(std::abs(tile.x - npc->x), std::abs(tile.y - npc->y)) > 1)
+      return;
     GameItem sold;
     if (inventory_.remove_by_uuid(uuid, &sold)) {
       const int value = sold.id == "knife" ? 5 : sold.id == "bronze-sword" ? 15 : 8;
@@ -3542,8 +3560,10 @@ void ProtocolSession::handle_menu_action(const JsonValue& payload, const std::fu
     if (service == "weapons") npc_id = 2;
     if (service == "rite-vault") npc_id = 3;
     const TownNpc* npc = town_npc(npc_id);
+    std::size_t stock_count = 0;
+    shop_stock_for(npc_id, &stock_count);
     const Vec2 tile = tile_movement::occupied_tile(world_->position());
-    if (!npc || world_->in_instance() ||
+    if (!npc || stock_count == 0 || world_->in_instance() ||
         (std::max)(std::abs(tile.x - npc->x), std::abs(tile.y - npc->y)) > 1)
       return;
     shop_npc_id_ = npc_id;
@@ -3953,6 +3973,13 @@ void ProtocolSession::handle_extract(const std::function<void(const Envelope&)>&
     emit_message(emit, "There is no extraction here.");
     return;
   }
+  const Vec2 tile = tile_movement::occupied_tile(world_->position());
+  const Vec2 portal = world_->metadata().stairs_up;
+  if ((std::max)(std::abs(tile.x - portal.x),
+                 std::abs(tile.y - portal.y)) > 1) {
+    emit_message(emit, "Move beside the entry waymark to return to town.");
+    return;
+  }
   world_->return_to_surface();
   emit_movement(emit);
   emit_message(emit, "The party returns to the surface.");
@@ -4201,16 +4228,21 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     }
     return;
   }  if (envelope.event=="player:screen:shop-display") {
-    shop_open_ = true; bank_open_ = false;
-    emit_shop_screen(emit);
+    const TownNpc* npc = town_npc(shop_npc_id_);
+    const Vec2 tile = tile_movement::occupied_tile(world_->position());
+    if (shop_open_ && npc && !world_->in_instance() &&
+        (std::max)(std::abs(tile.x - npc->x), std::abs(tile.y - npc->y)) <= 1)
+      emit_shop_screen(emit);
     return;
   }
   if (envelope.event=="player:npc:trade") {
     const auto* item = payload ? payload->get("item") : nullptr;
     const int npc_id = as_int(item ? item->get("id") : nullptr, -1);
     const TownNpc* npc = town_npc(npc_id);
+    std::size_t stock_count = 0;
+    shop_stock_for(npc_id, &stock_count);
     const Vec2 tile = tile_movement::occupied_tile(world_->position());
-    if (npc && !world_->in_instance() &&
+    if (npc && stock_count > 0 && !world_->in_instance() &&
         (std::max)(std::abs(tile.x - npc->x), std::abs(tile.y - npc->y)) <= 1) {
       shop_npc_id_ = npc_id;
       shop_open_ = true; bank_open_ = false;
@@ -4219,30 +4251,17 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     return;
   }
   if (envelope.event=="player:shop-display:appraise") {
-    emit_message(emit,"Bronze Sword: 15 coins.");
+    if (shop_open_ && shop_stock_row(shop_npc_id_, "bronze-sword"))
+      emit_message(emit,"Bronze Sword: 15 gold.");
     return;
   }
   if (envelope.event=="player:shop-display:buy") {
-    if (carried_gold()>=15) {
-      JsonValue::Object spend; 
-      // deduct 15 coins then grant the sword.
-      int remaining=15;
-      auto slots=inventory_.items();
-      for (const auto& item:slots) {
-        if (remaining<=0) break;
-        if (item.id!="coins") continue;
-        GameItem taken;
-        if (!inventory_.remove_by_uuid(item.uuid,&taken)) continue;
-        if (taken.qty>remaining) { GameItem back=taken; back.qty=taken.qty-remaining; inventory_.add(std::move(back)); remaining=0; }
-        else remaining-=taken.qty;
-      }
-      CreateItemOptions o; auto sword=create_game_item("bronze-sword",o);
-      if (sword) inventory_.add(std::move(*sword));
-      emit_message(emit,"You buy the Bronze Sword for 15 coins.");
-      emit_inventory_refresh(emit);
-    } else {
-      emit_message(emit,"You cannot afford that.");
-    }
+    JsonValue::Object queue_item;
+    put(queue_item, "action",
+        JsonValue::Object{{"actionId", JsonValue("player:shop:buy")}});
+    put(queue_item, "item", JsonValue::Object{{"id", JsonValue("bronze-sword")}});
+    handle_menu_action(JsonValue::Object{{"queueItem", JsonValue(std::move(queue_item))}},
+                       emit);
     return;
   }
   if (envelope.event=="player:fountain:drink") {

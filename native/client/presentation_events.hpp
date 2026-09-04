@@ -13,6 +13,7 @@ enum class PresentationEventType {
   ConnectionEstablished,
   ConnectionLost,
   SessionReady,        // login accepted; model.player is authoritative
+  SceneChanged,        // authoritative scene epoch changed; purge transient FX
   AttackStarted,
   DamageApplied,
   HealingApplied,

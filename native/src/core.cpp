@@ -1703,12 +1703,11 @@ void WorldSimulation::return_to_town() {
   grid_.width = kTownSize;
   grid_.height = kTownSize;
   grid_.walkable.assign(static_cast<std::size_t>(kTownSize) * kTownSize, 1);
-  if (has_pre_instance_) {
-    position_ = pre_instance_position_;
-    scene_id_ = pre_instance_scene_id_.empty() ? scene_id_ : pre_instance_scene_id_;
-  } else {
-    position_ = WorldPosition{38.0, 115.0};
-  }
+  // Every completed or abandoned road returns to the authored arrival
+  // landmark. Restoring the exact departure tile put players back on a remote
+  // gate at the edge of the Crossroads and made the town read as an empty
+  // field. The fountain is the stable social-hub re-entry anchor.
+  position_ = WorldPosition{38.0, 115.0};
   has_pre_instance_ = false;
   pre_instance_scene_id_.clear();
   clear_expedition_tuning();
@@ -1766,7 +1765,7 @@ std::string WorldSimulation::zone_display_name(const std::string& template_id,
     name[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(name[0])));
   }
   if (depth > 1) {
-    name += " · Floor " + std::to_string(depth);
+    name += " | Floor " + std::to_string(depth);
   }
   return name;
 }
@@ -1964,6 +1963,9 @@ void WorldSimulation::enter_solo_instance(const std::string& template_id,
 
   serial_ += 1;
   metadata_ = InstanceMetadata{};
+  // Route geometry and difficulty remain learnable across attempts. The
+  // monotonic serial still gives every generated actor/drop a fresh identity,
+  // while scene retirement clears the prior visit's live state.
   metadata_.seed = fnv1a(theme + ":" + applied_layout, seed_);
   metadata_.theme = theme;
   metadata_.layout = applied_layout;
@@ -3636,12 +3638,12 @@ std::vector<TooltipLine> VesselForge::tooltip(const VesselItem& item) const {
   if (!item.epithet_name.empty() || item.awakened) {
     lines.push_back({"base", std::string(mat->name) + " " + f->name, "normal"});
   }
-  lines.push_back({"kind", std::string(f->kind_label) + " · " + mat->name +
-                               " (tier " + std::to_string(mat->tier) + ") · Item Level " +
+  lines.push_back({"kind", std::string(f->kind_label) + " | " + mat->name +
+                               " (tier " + std::to_string(mat->tier) + ") | Item Level " +
                                std::to_string(item.ilvl),
                    "normal"});
   if (item.vessel) {
-    lines.push_back({"vessel", "Vessel " + std::to_string(item.vessel) + " · Patience " +
+    lines.push_back({"vessel", "Vessel " + std::to_string(item.vessel) + " | Patience " +
                                    std::to_string(item.patience) + "/" +
                                    std::to_string(item.patience_max),
                      "normal"});
@@ -3649,9 +3651,9 @@ std::vector<TooltipLine> VesselForge::tooltip(const VesselItem& item) const {
   if (f->weapon) {
     lines.push_back({"stat", "Damage " +
                                  std::to_string(static_cast<int>(std::lround(f->dmg_lo * mat->stat_mult))) +
-                                 "–" +
+                                 "-" +
                                  std::to_string(static_cast<int>(std::lround(f->dmg_hi * mat->stat_mult))) +
-                                 " · Speed " + format_aps(f->aps),
+                                 " | Speed " + format_aps(f->aps),
                      "normal"});
   }
   if (f->has_armor && f->armor > 0) {
@@ -3665,7 +3667,7 @@ std::vector<TooltipLine> VesselForge::tooltip(const VesselItem& item) const {
   for (const auto& brand : item.brands) {
     const PackBrandMod* mod = pack_brand_mod(brand.mod_id);
     if (!mod) continue;
-    lines.push_back({"brand", "✦ " + format_label(mod->label, brand.value) +
+    lines.push_back({"brand", "* " + format_label(mod->label, brand.value) +
                                   " (T" + std::to_string(brand.tier) + ")",
                      "normal"});
   }
@@ -3696,7 +3698,7 @@ std::vector<TooltipLine> VesselForge::tooltip(const VesselItem& item) const {
                      "inactive"});
   }
   if (item.scars) {
-    lines.push_back({"scar", "✕ " + std::to_string(item.scars) + " scarred slot" +
+    lines.push_back({"scar", "x " + std::to_string(item.scars) + " scarred slot" +
                                  (item.scars > 1 ? "s" : ""),
                      "normal"});
   }
@@ -3878,7 +3880,7 @@ VesselBlock VesselForge::make_block(const VesselItem& item) const {
                           (f->weapon && stat_id == std::string("phys_pct"));
       if (!active) {
         line.section = "dormant";
-        line.text = "Dormant · " + line.text;
+        line.text = "Dormant | " + line.text;
         line.tone = "inactive";
       }
     } else if (line.section == "brand") {
@@ -3887,7 +3889,7 @@ VesselBlock VesselForge::make_block(const VesselItem& item) const {
       ++brand_index;
       if (!active) {
         line.section = "dormant";
-        line.text = "Dormant · " + line.text;
+        line.text = "Dormant | " + line.text;
         line.tone = "inactive";
       }
     }
@@ -3944,7 +3946,7 @@ const ItemDef kItemCatalogue[] = {
     {"bronze-med-helm", "Bronze Med Helm", "armor", "head", false, false, {0, 0, 0, 0}, {3, 4, 3, 0}, 0, 0, "", ""},
     {"bronze-gloves", "Bronze Gloves", "armor", "gloves", false, false, {0, 0, 0, 0}, {1, 2, 1, 0}, 0, 0, "", ""},
     {"bronze-boots", "Bronze Boots", "armor", "feet", false, false, {0, 0, 0, 0}, {1, 2, 2, 0}, 0, 0, "", ""},
-    {"knife", "Knife", "sharp", "", false, false, {0, 0, 0, 0}, {0, 0, 0, 0}, 0, 0, "", ""},
+    {"knife", "Knife", "weapon", "right_hand", false, false, {3, 2, 0, 0}, {0, 0, 0, 0}, 0, 0, "", ""},
     {"wooden-shield", "Wooden Shield", "armor", "left_hand", false, false, {0, 0, 0, 0}, {2, 1, 3, 0}, 0, 0, "", ""},
     // Endgame charted tablets: one compact inventory item is consumed to
     // open one rolled expedition. Theme/layout are authored by the base;
@@ -4674,7 +4676,8 @@ void WorldSimulation::transition_floor(int depth) {
   serial_ += 1;
   const int clamped_depth = std::max(1, depth);
   metadata_ = InstanceMetadata{};
-  metadata_.seed = fnv1a(theme + ":" + layout + ":floor-" + std::to_string(clamped_depth), seed_);
+  metadata_.seed = fnv1a(theme + ":" + layout + ":floor-" +
+                            std::to_string(clamped_depth), seed_);
   metadata_.theme = theme;
   metadata_.layout = layout;
   metadata_.depth = clamped_depth;

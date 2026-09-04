@@ -40,9 +40,10 @@ name labels, I opens the gear pane (Enter or click equips; 1-9 equips from
 the backpack; selected Vesselforge gear shows its active properties and worn
 totals across two fitted Framekit rows), J opens the authoritative Chronicle campaign (including its current
 act and twenty-three-point total), N enters the charted road from the remote flow, the wheel
-zooms and Home resets zoom, and F3 toggles the debug overlay. The objective
-strip is mode-aware about extraction: in local play F extracts at the EXIT;
-on the remote owner path you extract by walking onto the EXIT stairs. A
+zooms and Home resets zoom, and F3 toggles the debug overlay. In-world clicks
+select loot, townsfolk, and the entry waymark; the waymark turns white on
+hover. The objective strip is mode-aware about extraction: F or a click
+extracts while beside the EXIT, and walking onto its center remains supported. A
 compact controls line is always on the HUD (no F3 needed). Esc closes an
 open gear pane first; a bare Esc requests quit.
 
@@ -125,8 +126,8 @@ create House
 → move and melee the enemy
 → pick up the generated item and trophy
 → equip (gear pane: Enter, or 1-9)
-→ return to the extraction point
-→ extract durable House value (local: F at the EXIT; remote: walk onto it)
+→ return beside the extraction point
+→ click the highlighted waymark (or press F) to return with carried value
 ~~~
 
 ## Scenario harness (D-119)

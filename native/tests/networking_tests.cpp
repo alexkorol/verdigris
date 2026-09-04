@@ -488,6 +488,25 @@ std::string inventory_uuid_for(const JsonValue& state, const char* item_id) {
   return {};
 }
 
+int inventory_quantity_for(const JsonValue& state, const char* item_id) {
+  int total = 0;
+  if (const auto* inventory = state["state"]["inventory"].array()) {
+    for (const auto& entry : *inventory) {
+      if (entry["id"].string() && *entry["id"].string() == item_id)
+        total += static_cast<int>(entry["qty"].number().value_or(1));
+    }
+  }
+  return total;
+}
+
+std::string first_monster_uuid(const JsonValue& state) {
+  if (const auto* monsters = state["state"]["monsters"].array()) {
+    for (const auto& monster : *monsters)
+      if (monster["uuid"].string()) return *monster["uuid"].string();
+  }
+  return {};
+}
+
 std::string inventory_map_uuid(const JsonValue& state) {
   if (const auto* inventory = state["state"]["inventory"].array()) {
     for (const auto& entry : *inventory)
@@ -606,31 +625,88 @@ void test_gate_a_ground_login_and_kill_loot() {
 
 void test_gate_a_extract_and_stairs() {
   ProtocolSession extract_session("guest-0063-extract", "socket-ex", 23, false);
+  const int starting_gold =
+      inventory_quantity_for(request_state(extract_session, "ex-start"), "coins");
   extract_session.handle(Envelope{"dev:give", JsonValue::Object{{"itemId", "garnet-amulet"}, {"qty", 1}}},
+                         [](const Envelope&) {});
+  extract_session.handle(Envelope{"dev:give", JsonValue::Object{{"itemId", "coins"}, {"qty", 25}}},
                          [](const Envelope&) {});
   extract_session.handle(Envelope{"instance:enterSolo",
                                   JsonValue::Object{{"template", "dungeon"}, {"layout", "warren"}}},
                          [](const Envelope&) {});
-  check(!inventory_uuid_for(request_state(extract_session, "ex-0"), "garnet-amulet").empty(),
+  const auto first_visit = request_state(extract_session, "ex-0");
+  check(!inventory_uuid_for(first_visit, "garnet-amulet").empty(),
         "amulet is carried before extract");
+  check(inventory_quantity_for(first_visit, "coins") == starting_gold + 25,
+        "gold is carried into the first instance");
+  const std::string first_visit_monster = first_monster_uuid(first_visit);
 
   std::optional<Envelope> summary;
   extract_session.handle(Envelope{"player:extract", JsonValue::Object{}}, [&](const Envelope& event) {
     if (event.event == "player:extract") summary = event;
   });
-  check(summary.has_value(), "player:extract emits a bank summary");
-  check(summary->data["items"].number().value_or(0) >= 1, "extract banks at least the amulet");
+  check(summary.has_value(), "player:extract emits a safe-return summary");
+  check(summary->data["items"].number().value_or(0) >= 1,
+        "extract reports at least the secured amulet");
   const auto after = request_state(extract_session, "ex-1");
   check(after["state"]["sceneType"].string() && *after["state"]["sceneType"].string() == "town",
         "extract returns to town");
-  check(inventory_uuid_for(after, "garnet-amulet").empty(), "extract clears the amulet from the backpack");
+  check(!inventory_uuid_for(after, "garnet-amulet").empty(),
+        "extract preserves the amulet in the active Scion backpack");
+  check(inventory_quantity_for(after, "coins") == starting_gold + 25,
+        "extract preserves carried gold for town services");
   bool stored = false;
   if (const auto* bank = after["state"]["houseStoredItems"].array()) {
     for (const auto& item : *bank) {
       if (item["id"].string() && *item["id"].string() == "garnet-amulet") stored = true;
     }
   }
-  check(stored, "extract places the amulet in the House store");
+  check(!stored, "extract does not silently bank the active Scion's amulet");
+
+  // Reproduce the owner's blocked commerce path end to end: return with
+  // loot, buy from Ludovicus, equip it, then re-enter the same road.
+  extract_session.handle(
+      Envelope{"dev:teleport", JsonValue::Object{{"x", 19}, {"y", 113}}},
+      [](const Envelope&) {});
+  std::optional<Envelope> shop;
+  extract_session.handle(
+      Envelope{"player:npc:trade",
+               JsonValue::Object{{"item", JsonValue::Object{{"id", 2}}}}},
+      [&](const Envelope& event) {
+        if (event.event == "open:screen") shop = event;
+      });
+  check(shop && shop->data["screen"].string() &&
+            *shop->data["screen"].string() == "shop" &&
+            shop->data["payload"]["carriedCoins"].number().value_or(0) ==
+                starting_gold + 25,
+        "returning Scion can open Ludovicus with the preserved purse");
+  extract_session.handle(
+      Envelope{"player:context-menu:action",
+               JsonValue::Object{{"queueItem",
+                  JsonValue::Object{{"action", JsonValue::Object{{"actionId", "player:shop:buy"}}},
+                                    {"item", JsonValue::Object{{"id", "knife"},
+                                                                {"price", 1}}}}}}},
+      [](const Envelope&) {});
+  const auto bought = request_state(extract_session, "ex-bought");
+  const std::string knife_uuid = inventory_uuid_for(bought, "knife");
+  check(!knife_uuid.empty() &&
+            inventory_quantity_for(bought, "coins") == starting_gold + 20,
+        "vendor ignores a forged price and charges the canonical five gold");
+  extract_session.handle(
+      Envelope{"item:equip",
+               JsonValue::Object{{"item", JsonValue::Object{{"uuid", knife_uuid}}}}},
+      [](const Envelope&) {});
+  extract_session.handle(Envelope{"instance:enterSolo",
+                                  JsonValue::Object{{"template", "dungeon"}, {"layout", "warren"}}},
+                         [](const Envelope&) {});
+  const auto second_visit = request_state(extract_session, "ex-reentered");
+  check(inventory_quantity_for(second_visit, "coins") == starting_gold + 20 &&
+            second_visit["state"]["wear"]["right_hand"].string() &&
+            *second_visit["state"]["wear"]["right_hand"].string() == "knife",
+        "bought and equipped gear plus remaining gold survive re-entry");
+  check(!first_visit_monster.empty() &&
+            first_monster_uuid(second_visit) != first_visit_monster,
+        "re-entering the same road creates a fresh encounter population");
 
   ProtocolSession stairs("guest-0063-stairs", "socket-st", 29, false);
   stairs.handle(Envelope{"dev:give", JsonValue::Object{{"itemId", "bronze-sword"}, {"qty", 1}}},
@@ -641,22 +717,31 @@ void test_gate_a_extract_and_stairs() {
   const double stairs_x = in_zone["state"]["sceneMetadata"]["stairsUp"]["x"].number().value_or(0);
   const double stairs_y = in_zone["state"]["sceneMetadata"]["stairsUp"]["y"].number().value_or(0);
   std::optional<Envelope> stairs_summary;
-  stairs.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", stairs_x}, {"y", stairs_y}}},
+  stairs.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", stairs_x + 1}, {"y", stairs_y}}},
                 [&](const Envelope& event) {
                   if (event.event == "player:extract") stairs_summary = event;
                 });
-  check(stairs_summary.has_value(), "stairs-up emits the same player:extract bank summary");
+  check(!stairs_summary.has_value(),
+        "walking beside the portal does not trigger an accidental transition");
+  stairs.handle(Envelope{"player:extract", JsonValue::Object{}},
+                [&](const Envelope& event) {
+                  if (event.event == "player:extract") stairs_summary = event;
+                });
+  check(stairs_summary.has_value(),
+        "contextual portal interaction has a forgiving one-tile reach");
   const auto back = request_state(stairs, "st-2");
   check(back["state"]["sceneType"].string() && *back["state"]["sceneType"].string() == "town",
         "stairs-up still returns to town");
-  check(inventory_uuid_for(back, "bronze-sword").empty(), "stairs-up banks carried items");
+  check(!inventory_uuid_for(back, "bronze-sword").empty(),
+        "stairs-up preserves carried items");
   bool sword_stored = false;
   if (const auto* bank = back["state"]["houseStoredItems"].array()) {
     for (const auto& item : *bank) {
       if (item["id"].string() && *item["id"].string() == "bronze-sword") sword_stored = true;
     }
   }
-  check(sword_stored, "stairs-up and player:extract converge on the House store");
+  check(!sword_stored,
+        "stairs-up and player:extract both avoid implicit House storage");
 }
 
 void test_gate_a_equip_totals_and_unknown_uuid() {

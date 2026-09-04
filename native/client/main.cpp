@@ -1457,6 +1457,7 @@ void ingest_session_events(ClientState& state) {
         std::make_unique<verdigris::audio::AudioMixer>(*state.audio_sink);
   }
   const std::string route_before = state.world.route_id;
+  const std::uint64_t scene_epoch_before = state.world.scene_epoch;
   for (const auto& event : state.session->drain_events()) {
     verdigris::client::apply_presentation_event(fx, state.world, event, state.world.tick);
     state.audio_mixer->ingest(event, state.world.tick);
@@ -1467,7 +1468,9 @@ void ingest_session_events(ClientState& state) {
   }
   state.audio_mixer->drain_scheduled();
   sync_world(state);
-  if (state.world.route_id != route_before) generate_scenery(state);
+  if (state.world.route_id != route_before ||
+      state.world.scene_epoch != scene_epoch_before)
+    generate_scenery(state);
   // TASK-0122 Phase A: deterministic first-sighting spawn beats on the
   // authoritative remote snapshot.
   verdigris::client::detect_monster_spawns(fx, state.world, state.world.tick);
@@ -1528,6 +1531,65 @@ void submit_extract(ClientState& state) {
 void show_hint(ClientState& state, const std::string& message) {
   state.hint = message;
   state.hint_ticks = 80;
+}
+
+ScreenPoint project(const Camera& camera, const RECT& bounds, double wx,
+                    double wy);
+
+bool try_world_click(ClientState& state, const RECT& bounds, int mouse_x,
+                     int mouse_y) {
+  const auto within = [&](const ScreenPoint& point, int radius) {
+    const long long dx = mouse_x - point.x;
+    const long long dy = mouse_y - point.y;
+    return dx * dx + dy * dy <= static_cast<long long>(radius) * radius;
+  };
+
+  // Entry waymarks are deliberately larger than their exact movement tile:
+  // clicking anywhere on the visible portal requests the server-authoritative
+  // proximity check and return, with no coordinate hunting.
+  if (state.world.has_extraction) {
+    const ScreenPoint portal = project(state.camera, bounds,
+                                       state.world.extraction.x,
+                                       state.world.extraction.y);
+    if (within(portal, 52)) {
+      submit_extract(state);
+      show_hint(state, "Returning through the entry waymark");
+      return true;
+    }
+  }
+
+  for (const auto& [uuid, position] : state.loot_positions) {
+    const ScreenPoint loot = project(state.camera, bounds, position.x, position.y);
+    if (!within(loot, 34)) continue;
+    submit_pick_up(state, uuid);
+    show_hint(state, "Taking the selected drop");
+    return true;
+  }
+
+  if (state.session) {
+    for (const auto& npc : state.world.npcs) {
+      const ScreenPoint person = project(state.camera, bounds, npc.position.x,
+                                         npc.position.y);
+      if (!within(person, 42)) continue;
+      std::string verb = npc.actions.empty() ? "examine" : npc.actions.front();
+      for (const char* preferred : {"talk", "trade", "bank"}) {
+        if (std::find(npc.actions.begin(), npc.actions.end(), preferred) !=
+            npc.actions.end()) {
+          verb = preferred;
+          break;
+        }
+      }
+      const char* action_id = verb == "talk" ? "player:npc:talk"
+                            : verb == "trade" ? "player:npc:trade"
+                            : verb == "bank" ? "player:screen:bank"
+                            : "player:npc:examine";
+      state.session->submit(
+          verdigris::client::ClientCommand::npc_action(npc.id, action_id));
+      show_hint(state, "Speaking with " + npc.name);
+      return true;
+    }
+  }
+  return false;
 }
 
 struct SkillInfo {
@@ -6755,7 +6817,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     // a slow tick-driven pulse, and gold chevrons pointing at the way out.
     const bool pulse_on = (world.tick / 9) % 2 == 0;
     fill_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(30, 92, 64));
-    ring_ellipse(dc, pad.x, pad.y, pad_r, pad_r, RGB(120, 214, 168), 3);
+    const long long hover_dx = state.mouse.x - pad.x;
+    const long long hover_dy = state.mouse.y - pad.y;
+    const bool hovered = hover_dx * hover_dx + hover_dy * hover_dy <=
+                         static_cast<long long>(pad_r + 14) * (pad_r + 14);
+    ring_ellipse(dc, pad.x, pad.y, pad_r, pad_r,
+                 hovered ? RGB(255, 255, 246) : RGB(120, 214, 168),
+                 hovered ? 5 : 3);
     if (pulse_on && pad_r > 6)
       ring_ellipse(dc, pad.x, pad.y, pad_r + 5, pad_r + 5, RGB(160, 236, 190), 2);
     const int inner = std::max(6, pad_r * 2 / 3);
@@ -8402,6 +8470,11 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
           else
             equip_selected(*state);
         } else {
+          RECT click_bounds;
+          GetClientRect(window, &click_bounds);
+          if (try_world_click(*state, click_bounds, GET_X_LPARAM(lparam),
+                              GET_Y_LPARAM(lparam)))
+            break;
           // Route through dispatch_skill so LMB gets the same instant
           // swing-arc feedback as the Q/E/R keys — the primary attack was
           // the one input with no animation at all.
@@ -12150,6 +12223,33 @@ int scenario_tactical_map_overlay() {
 // frame cost would visibly stutter the 20 Hz tick. The bound is deliberately
 // generous (regressions of the kind this gate exists for cost hundreds of
 // milliseconds); the measured value prints so drift is visible in every run.
+int scenario_scene_transition_hygiene() {
+  WorldView world;
+  verdigris::client::PresentationFx fx;
+  fx.effects.push_back(EffectFx{});
+  fx.telegraphs["departed-foe"] = ActiveTelegraph{};
+  fx.loot_positions["departed-loot"] = {20, 22};
+  fx.known_monsters.insert("departed-foe");
+  fx.monster_strikes["departed-foe"] = 10;
+  fx.last_death_pos = {4, 5};
+  fx.loot_scatter = 2;
+  fx.screen_pulse_ticks = 3;
+  fx.event_log.push_back("Road cleared");
+  fx.hint = "Safe return";
+  verdigris::client::PresentationEvent event;
+  event.type = verdigris::client::PresentationEventType::SceneChanged;
+  apply_presentation_event(fx, world, event, 11);
+  scenario_check(fx.effects.empty() && fx.telegraphs.empty() &&
+                     fx.loot_positions.empty() && fx.known_monsters.empty() &&
+                     fx.monster_strikes.empty() && fx.last_death_pos.x == 0 &&
+                     fx.last_death_pos.y == 0 && fx.loot_scatter == 0 &&
+                     fx.screen_pulse_ticks == 0,
+                 "scene-transition-hygiene: world-space remnants are retired");
+  scenario_check(fx.event_log.size() == 1 && fx.hint == "Safe return",
+                 "scene-transition-hygiene: durable guidance survives");
+  return scenario_failures;
+}
+
 int scenario_frame_budget() {
   ClientState state;
   scenario_begin(state);
@@ -12225,6 +12325,7 @@ int run_scenarios(const std::string& which) {
       {"crownless-campaign", scenario_crownless_campaign},
       {"verdigris-crown-campaign", scenario_verdigris_crown_campaign},
       {"tactical-map", scenario_tactical_map_overlay},
+      {"scene-transition-hygiene", scenario_scene_transition_hygiene},
       {"frame-budget", scenario_frame_budget},
   };
   int total_failures = 0;

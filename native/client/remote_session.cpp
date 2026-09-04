@@ -476,6 +476,11 @@ ClientMonster& upsert_monster(ClientModel& model, const std::string& id, const s
 }
 
 void apply_scene_fields(ClientScene& scene, const JsonValue& source) {
+  // A town scene has no stairs metadata. Reset these before applying the new
+  // scene so the previous instance EXIT cannot leak into the town HUD/world.
+  scene.has_stairs_up = false;
+  scene.stairs_up_x = 0.0;
+  scene.stairs_up_y = 0.0;
   if (const auto* id = json_string(source.get("id"))) scene.id = *id;
   if (const auto* type = json_string(source.get("type"))) scene.type = *type;
   if (const auto* name = json_string(source.get("name"))) scene.name = *name;
@@ -765,7 +770,16 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       break;
     }
     case ClientCommand::Type::PickUp:
-      envelope.event = "player:take:underfoot";
+      if (command.target.empty()) {
+        envelope.event = "player:take:underfoot";
+      } else {
+        envelope.event = "player:context-menu:action";
+        envelope.data = JsonValue::Object{
+            {"queueItem",
+             JsonValue::Object{
+                 {"action", JsonValue::Object{{"actionId", JsonValue("player:take")}}},
+                 {"item", JsonValue::Object{{"uuid", JsonValue(command.target)}}}}}};
+      }
       break;
     case ClientCommand::Type::Equip:
       pending_equip_uuid_ = command.target;
@@ -779,11 +793,8 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       envelope.data = JsonValue::Object{{"nodeId", JsonValue(command.target)}};
       break;
     case ClientCommand::Type::Extract:
-      // No player:extract handler exists on the native server. The owner
-      // extracts by walking onto stairs-up (existing player:move surface).
-      pending_events_.push_back({PresentationEventType::Message, "", "",
-                                 "Reach the exit stairs to return to the surface.", 0});
-      return;
+      envelope.event = "player:extract";
+      break;
     case ClientCommand::Type::FoundHouse:
       envelope.event = "chronicles:house:found";
       envelope.data = JsonValue::Object{{"name", JsonValue(command.target)}};
@@ -1058,6 +1069,14 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         apply_quests(*quests, model_, pending_events_);
     }
     if (const auto* scene = envelope.data.get("scene")) apply_scene_fields(model_.scene, *scene);
+    ++model_.scene_epoch;
+    model_.map_scene_id.clear();
+    model_.map_width = 0;
+    model_.map_height = 0;
+    model_.map_walkable.clear();
+    pending_events_.push_back(
+        {PresentationEventType::SceneChanged, model_.player.uuid, "",
+         model_.scene.id, 0});
     // A full player:login is a world admission on the Gate-B journey: the
     // owner has left the front door with a living Scion.
     model_.chronicles_pending = false;
@@ -1435,6 +1454,14 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     model_.monsters.clear();
     model_.npcs.clear();
     model_.ground.clear();
+    model_.map_scene_id.clear();
+    model_.map_width = 0;
+    model_.map_height = 0;
+    model_.map_walkable.clear();
+    ++model_.scene_epoch;
+    pending_events_.push_back(
+        {PresentationEventType::SceneChanged, model_.player.uuid, "",
+         model_.scene.id, 0});
     return;
   }
   if (envelope.event == "monster:telegraph") {

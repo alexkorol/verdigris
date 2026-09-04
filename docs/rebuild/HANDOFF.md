@@ -1,5 +1,30 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - owner playtest blocker repair
+
+- Safe return now preserves the active Scion's backpack, equipped gear, and
+  carried gold. House storage remains an explicit Countinghouse action instead
+  of silently consuming the character's loadout at every portal transition.
+- Every scene admission receives fresh actor/drop identities while keeping its
+  route geometry learnable. The remote presentation seam now retires
+  telegraphs, effects, strikes, loot positions, and cached map/scenery state on
+  every scene epoch, and town snapshots reset stale exit metadata.
+- Return travel lands at the Crossroads fountain. The entry waymark accepts a
+  nearby contextual interaction, turns white under the pointer, and can be
+  clicked; loot and town NPCs now share the same direct world-click path.
+- Ludovicus and Selene use one canonical server-owned stock table. Purchases
+  revalidate merchant reach and ignore client-supplied prices, shop rows show a
+  one-item quantity, and the formerly decorative Knife is now a real equippable
+  right-hand weapon. Vesselforge item descriptions use deliberate ASCII
+  punctuation so the current Windows text path cannot display mojibake.
+- The regression gate proves carry -> enter -> return -> shop -> buy -> equip ->
+  re-enter, including exact gold arithmetic, a forged-price rejection, and a
+  fresh encounter identity. Core, networking, presentation, scene-hygiene, and
+  the full native client/server succession suite and all 30 client scenarios
+  pass; the 3440x1440 production frame averages 12.2 ms. The required goal
+  harness also completes all 32/32 gameplay scenarios. The freshly rendered
+  1366x768 Framekit inventory/character evidence was visually inspected.
+
 ## 2026-09-03 - WIZARD Warden trophies and Tamar socketing
 
 - Ported WIZARD's five authored Vesselforge trophies into the native core:

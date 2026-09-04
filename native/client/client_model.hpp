@@ -407,6 +407,9 @@ struct ClientModel {
   ClientEndgameState endgame;
   ClientItemSlot equipped;
   ClientScene scene;
+  // Increments for every authoritative admission/transition, even when the
+  // canonical scene id is reused for a fresh run of the same route.
+  std::uint64_t scene_epoch = 0;
   std::string house_name;
   // Most recent server/system message, for HUD toasts.
   std::string last_message;

@@ -1742,6 +1742,8 @@ void test_n2_world_simulation_rules() {
 
   const WorldPosition pre_entry = world.position();
   world.enter_solo_instance("crypt", "gauntlet");
+  const std::uint64_t first_visit_seed = world.metadata().seed;
+  const std::string first_visit_monster = world.monsters().front().uuid;
   check(world.in_instance() && world.metadata().layout == "gauntlet", "N2 instance entry records the layout");
   check(world.scene_name() == "Sunken Colonnade", "N2 instance takes the adventure-table display name");
   check(world.monsters().size() >= 15, "N2 instance population meets the scenario floor");
@@ -1755,11 +1757,17 @@ void test_n2_world_simulation_rules() {
     check(world.grid().walkable_at(monster.x, monster.y), "N2 monsters only occupy walkable tiles");
   }
 
-  // Entry position round-trips through the stairs.
+  // Every road returns to the social-hub fountain, not the remote departure
+  // tile. Opening the same route again is a fresh deterministic visit.
   world.teleport(world.metadata().stairs_up.x, world.metadata().stairs_up.y, 2000);
   check(!world.in_instance(), "N2 entry stairs leave the instance");
-  check(world.position().x == pre_entry.x && world.position().y == pre_entry.y,
-        "N2 stair return restores the pre-entry position");
+  check((pre_entry.x != 38.0 || pre_entry.y != 115.0) &&
+            world.position().x == 38.0 && world.position().y == 115.0,
+        "N2 stair return lands at the Crossroads fountain");
+  world.enter_solo_instance("crypt", "gauntlet");
+  check(world.metadata().seed == first_visit_seed &&
+            world.monsters().front().uuid != first_visit_monster,
+        "N2 repeat route keeps learnable geometry with a fresh population");
 }
 
 void test_n2_diagonal_blocking_rule() {

@@ -513,6 +513,34 @@ void authoritative_information_survives_model_sync() {
         "information: absent XP never fabricates zero progress");
 }
 
+void scene_change_retires_world_space_transients() {
+  WorldView world = world_with_player_and_foe("right");
+  PresentationFx fx;
+  fx.effects.push_back(EffectFx{});
+  fx.telegraphs["old-foe"] = verdigris::client::ActiveTelegraph{};
+  fx.loot_positions["old-loot"] = {12, 14};
+  fx.known_monsters.insert("old-foe");
+  fx.monster_strikes["old-foe"] = 77;
+  fx.last_death_pos = {8, 9};
+  fx.loot_scatter = 3;
+  fx.screen_pulse_ticks = 4;
+  fx.event_log.push_back("Earlier road cleared");
+  fx.hint = "Return safely";
+
+  PresentationEvent changed;
+  changed.type = PresentationEventType::SceneChanged;
+  apply_presentation_event(fx, world, changed, 100);
+
+  check(fx.effects.empty() && fx.telegraphs.empty() &&
+            fx.loot_positions.empty() && fx.known_monsters.empty() &&
+            fx.monster_strikes.empty() && fx.last_death_pos.x == 0 &&
+            fx.last_death_pos.y == 0 && fx.loot_scatter == 0 &&
+            fx.screen_pulse_ticks == 0,
+        "scene change: telegraphs, loot, strikes, and effects never leak zones");
+  check(fx.event_log.size() == 1 && fx.hint == "Return safely",
+        "scene change: durable log and current guidance remain readable");
+}
+
 void seam_events_cannot_mutate_simulation() {
   verdigris::client::LocalCoreSession session(0xC011AB1EULL, "House Verdigris");
   std::string error;
@@ -627,6 +655,7 @@ int main() {
   spawn_detection_is_deterministic_and_once();
   monster_facing_is_no_longer_fabricated();
   authoritative_information_survives_model_sync();
+  scene_change_retires_world_space_transients();
   seam_events_cannot_mutate_simulation();
   diagonal_facing_resolves_component_wise();
   server_messages_surface_as_toasts();
