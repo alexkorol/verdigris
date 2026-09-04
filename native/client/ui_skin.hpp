@@ -65,6 +65,20 @@ inline void ensure_started() {
   (void)token;
 }
 
+// Ground warnings blend with the already painted terrain. Darkening an RGB
+// colour and painting it opaquely destroys that terrain and reads as a hole.
+inline void warning_fill(HDC dc, Gdiplus::GraphicsPath& path,
+                         COLORREF colour, double visibility) {
+  ensure_started();
+  const BYTE alpha = static_cast<BYTE>(std::lround(
+      52.0 * std::clamp(visibility, 0.0, 1.0)));
+  if (!alpha) return;
+  Gdiplus::Graphics graphics(dc);
+  graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+  Gdiplus::SolidBrush brush(gp(colour, alpha));
+  graphics.FillPath(&brush, &path);
+}
+
 // ── type ramp ──────────────────────────────────────────────────────────
 // Cached fonts per role and UI scale. Georgia carries the chronicle voice
 // for titles; Segoe UI carries the working HUD. set_ui_scale() is called

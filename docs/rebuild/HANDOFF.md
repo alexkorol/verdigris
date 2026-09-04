@@ -1,5 +1,27 @@
 # Native reconstitution handoff
 
+## 2026-09-04 - warning transparency and inventory pointer correctness
+
+- Enemy warning fills now blend with the actual terrain rather than painting
+  opaque dark RGB shapes. Fan/circle/ring geometry is unchanged; the safe eye
+  of a Warden ring stays untouched. Pixel checks over two ground colours and
+  a viewed production Warden scene establish the effect.
+- Inventory clicks target the painted footprint's UUID rather than whichever
+  item was previously selected. Blank/header/world clicks cannot equip or
+  consume items; a reordered or removed item cannot redirect the request.
+  Resize clears stale hit rectangles. Number-key equip requires open inventory.
+- Character and journal mouse input no longer attacks through the pane;
+  right-click dashes respect UI bounds while the exposed world remains usable.
+- Native build, native suites, all 33 client scenarios, and the 32/32 gameplay
+  harness pass. Fullscreen paint averages 11.4 ms at 3440x1440. The updated live
+  game was launched and captured, with evidence under
+  `native/build/bugfix-2026-09-04/`.
+- Critical follow-up: native sessions remain memory-only. Full server shutdown
+  clears House/Scion progress; current reconnect coverage does not prove disk
+  persistence. See `native/playtests/bugfix-2026-09-04.md` for the code evidence
+  and the required process-restart regression. Portal/binding and larger UI
+  redesign work remain open.
+
 ## 2026-09-03 - owner UI polish: tiled Framekit panes and combat readability
 
 - Added a generated 512x512 dark basalt/leather panel surface beside the

@@ -476,6 +476,11 @@ struct ClientState {
   bool s = false;
   bool d = false;
   POINT mouse{0, 0};
+  struct InventoryHit {
+    RECT rect{};
+    std::string id;
+  };
+  std::vector<InventoryHit> inventory_hits;
   Camera camera;
   verdigris::Vec2 last_aim_direction{1, 0};
   bool aim_direction_initialized = false;
@@ -1718,10 +1723,18 @@ std::string nearest_pickup_id(const ClientState& state) {
   return best_id;
 }
 
-void equip_selected(ClientState& state) {
+void equip_selected(ClientState& state, const std::string& expected_id = {}) {
   {
     sync_world(state);
     const auto& items = state.world.carried;
+    if (!expected_id.empty()) {
+      const auto found = std::find_if(items.begin(), items.end(),
+          [&](const WorldCarriedItem& item) { return item.id == expected_id; });
+      // An update may remove/reorder items between painting and clicking.
+      // Never let a stale rectangle equip or consume its replacement.
+      if (found == items.end()) return;
+      state.selected_item = static_cast<std::size_t>(found - items.begin());
+    }
     if (!items.empty()) {
       const std::size_t pick = std::min(state.selected_item, items.size() - 1);
       if (items[pick].expedition_map) {
@@ -1755,6 +1768,18 @@ void equip_selected(ClientState& state) {
   state.selected_item = std::min(state.selected_item, state.world.carried.size() - 1);
   submit_equip(state, state.world.carried[state.selected_item].id);
   show_hint(state, "Equipped " + state.world.carried[state.selected_item].name);
+}
+
+bool activate_inventory_at(ClientState& state, int x, int y) {
+  if (!state.gear_overlay) return false;
+  for (const auto& hit : state.inventory_hits) {
+    if (x < hit.rect.left || x >= hit.rect.right ||
+        y < hit.rect.top || y >= hit.rect.bottom) continue;
+    const std::string id = hit.id;
+    equip_selected(state, id);
+    return true;
+  }
+  return false;
 }
 
 void rechart_selected_tablet(ClientState& state) {
@@ -2485,16 +2510,20 @@ void draw_thrust_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
     const ScreenPoint point = project(camera, bounds, wx, wy);
     points[i + 1] = {point.x, point.y};
   }
-  const COLORREF fill = telegraph_color(visibility * 0.38, RGB(214, 52, 52));
   const COLORREF edge = telegraph_color(visibility, RGB(238, 72, 64));
-  HBRUSH brush = CreateSolidBrush(fill);
+  skin::ensure_started();
+  Gdiplus::Point vertices[kSegments + 2];
+  for (int i = 0; i < kSegments + 2; ++i)
+    vertices[i] = Gdiplus::Point(points[i].x, points[i].y);
+  Gdiplus::GraphicsPath warning;
+  warning.AddPolygon(vertices, kSegments + 2);
+  skin::warning_fill(dc, warning, RGB(214, 52, 52), visibility);
   HPEN pen = CreatePen(PS_SOLID, 2, edge);
-  HGDIOBJ old_brush = SelectObject(dc, brush);
+  HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
   HGDIOBJ old_pen = SelectObject(dc, pen);
   Polygon(dc, points, kSegments + 2);
   SelectObject(dc, old_brush);
   SelectObject(dc, old_pen);
-  DeleteObject(brush);
   DeleteObject(pen);
   // A centerline and a short origin ring make the warning readable when the
   // wedge is projected nearly edge-on at the current camera pitch.
@@ -2544,29 +2573,22 @@ void draw_sweep_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
     fill_source = RGB(112, 94, 126);
     edge_source = RGB(228, 208, 244);
   }
-  const COLORREF fill = telegraph_color(visibility * 0.28, fill_source);
   const COLORREF edge = telegraph_color(visibility, edge_source);
   const int draw_r = static_cast<int>(clamped);
   const bool ring = telegraph.shape == "ring" &&
                     telegraph.inner_radius_tiles > 0;
   int inner_r = 0;
+  skin::ensure_started();
+  Gdiplus::GraphicsPath warning(Gdiplus::FillModeAlternate);
+  warning.AddEllipse(base.x - draw_r, base.y - draw_r, draw_r * 2, draw_r * 2);
   if (ring) {
     inner_r = std::max(
         4, draw_r * telegraph.inner_radius_tiles /
                std::max(1, telegraph.radius_tiles));
-    HRGN hazard = CreateEllipticRgn(base.x - draw_r, base.y - draw_r,
-                                    base.x + draw_r + 1, base.y + draw_r + 1);
-    HRGN safe = CreateEllipticRgn(base.x - inner_r, base.y - inner_r,
-                                  base.x + inner_r + 1, base.y + inner_r + 1);
-    CombineRgn(hazard, hazard, safe, RGN_DIFF);
-    HBRUSH brush = CreateSolidBrush(fill);
-    FillRgn(dc, hazard, brush);
-    DeleteObject(brush);
-    DeleteObject(safe);
-    DeleteObject(hazard);
-  } else {
-    fill_ellipse(dc, base.x, base.y, draw_r, draw_r, fill);
+    warning.AddEllipse(base.x - inner_r, base.y - inner_r,
+                       inner_r * 2, inner_r * 2);
   }
+  skin::warning_fill(dc, warning, fill_source, visibility);
   ring_ellipse(dc, base.x, base.y, draw_r, draw_r, edge, 3);
   if (ring) {
     ring_ellipse(dc, base.x, base.y, inner_r, inner_r, edge, 3);
@@ -3259,6 +3281,7 @@ std::string loot_label(const ClientState& state, const std::string& id) {
 
 void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
                         render::List& rl) {
+  state.inventory_hits.clear();
   state.rechart_tablet_hit_valid = false;
   if (!state.gear_overlay) return;
   // TASK-0159: the pane rectangle comes from the shared pure geometry so the
@@ -3428,6 +3451,7 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
         grid_top + row * (cell_h + grid_gap) + span_h * cell_h +
             (span_h - 1) * grid_gap};
     backpack_draws.push_back({i, footprint});
+    state.inventory_hits.push_back({footprint, items[i].id});
     if (state.mouse.x >= footprint.left && state.mouse.x < footprint.right &&
         state.mouse.y >= footprint.top && state.mouse.y < footprint.bottom)
       state.selected_item = i;
@@ -8092,6 +8116,23 @@ bool trade_pane_open(const ClientState& state) {
          model.dialogue.open || model.forge.open;
 }
 
+bool pointer_ui_blocks_world(const ClientState& state, const RECT& bounds,
+                             int x, int y) {
+  if (state.screen == Screen::Chronicles || state.quest_journal ||
+      state.tree_pane || trade_pane_open(state)) return true;
+  const auto contains = [&](const HudRect& rect) {
+    return x >= rect.x && x < rect.x + rect.w &&
+           y >= rect.y && y < rect.y + rect.h;
+  };
+  if (state.gear_overlay && contains(gear_pane_rect(bounds.right, bounds.bottom)))
+    return true;
+  if (state.character_pane &&
+      contains(character_pane_rect(bounds.right, bounds.bottom))) return true;
+  return contains(minimap_rect(bounds.right, bounds.bottom, state.minimap_side)) ||
+         contains(vital_orb_rect(bounds.right, bounds.bottom, false)) ||
+         contains(vital_orb_rect(bounds.right, bounds.bottom, true));
+}
+
 void toggle_minimap_overlay(ClientState& state) {
   const bool opening = state.minimap_mode != MinimapMode::Overlay;
   state.minimap_mode = opening ? MinimapMode::Overlay : MinimapMode::Corner;
@@ -8424,7 +8465,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
           show_hint(*state, "Weapon unequipped");
         }
       }
-      if (wparam >= '1' && wparam <= '9' && state->session) {
+      if (wparam >= '1' && wparam <= '9' && state->session && state->gear_overlay) {
         const std::size_t index = static_cast<std::size_t>(wparam - '1');
         sync_world(*state);
         if (index < state->world.carried.size())
@@ -8526,10 +8567,13 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
               my < state->rechart_tablet_hit.bottom)
             rechart_selected_tablet(*state);
           else
-            equip_selected(*state);
+            activate_inventory_at(*state, mx, my);
         } else {
           RECT click_bounds;
           GetClientRect(window, &click_bounds);
+          if (pointer_ui_blocks_world(*state, click_bounds,
+                                      GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam)))
+            break;
           if (try_world_click(*state, click_bounds, GET_X_LPARAM(lparam),
                               GET_Y_LPARAM(lparam)))
             break;
@@ -8543,7 +8587,19 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       }
       break;
     case WM_RBUTTONDOWN:
-      if (state) dispatch_dash(*state);
+      if (state) {
+        RECT click_bounds;
+        GetClientRect(window, &click_bounds);
+        if (!pointer_ui_blocks_world(*state, click_bounds,
+                                     GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam)))
+          dispatch_dash(*state);
+      }
+      break;
+    case WM_SIZE:
+      if (state) {
+        state->inventory_hits.clear();
+        state->rechart_tablet_hit_valid = false;
+      }
       break;
     case WM_TIMER:
       if (state) {
@@ -12410,6 +12466,157 @@ int scenario_frame_budget() {
   return scenario_failures;
 }
 
+int scenario_warning_transparency() {
+  skin::ensure_started();
+  BITMAPINFO info{};
+  info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  info.bmiHeader.biWidth = 960;
+  info.bmiHeader.biHeight = -600;
+  info.bmiHeader.biPlanes = 1;
+  info.bmiHeader.biBitCount = 32;
+  void* bits = nullptr;
+  HBITMAP bitmap = CreateDIBSection(nullptr, &info, DIB_RGB_COLORS, &bits, nullptr, 0);
+  HDC dc = CreateCompatibleDC(nullptr);
+  HGDIOBJ old = SelectObject(dc, bitmap);
+  RECT bounds{0, 0, 960, 600};
+  Camera camera;
+  camera.x = camera.y = 0;
+  camera.zoom = 1;
+  const auto center = project(camera, bounds, 0, 0);
+  ActiveTelegraph warning;
+  warning.position = {0, 0};
+  warning.facing = {1, 0};
+  warning.action = "sweep";
+  warning.shape = "circle";
+  warning.radius_tiles = 4;
+  render::List list;
+  for (const COLORREF ground : {RGB(180, 190, 150), RGB(50, 100, 70)}) {
+    const auto reset = [&] {
+      HBRUSH brush = CreateSolidBrush(ground);
+      FillRect(dc, &bounds, brush);
+      DeleteObject(brush);
+      list.clear();
+    };
+    reset();
+    draw_sweep_telegraph(dc, camera, bounds, warning, 1, 80,
+                         MinimapSide::Left, list);
+    const COLORREF sample = GetPixel(dc, center.x, center.y);
+    const int expected_green = (GetGValue(ground) * 203 + 52 * 52) / 255;
+    scenario_check(std::abs(static_cast<int>(GetGValue(sample)) - expected_green) <= 3,
+                   "warning-transparency: circular warning preserves terrain through real alpha");
+    reset();
+    warning.shape = "ring";
+    warning.inner_radius_tiles = 2;
+    draw_sweep_telegraph(dc, camera, bounds, warning, 1, 80,
+                         MinimapSide::Left, list);
+    scenario_check(GetPixel(dc, center.x, center.y) == ground,
+                   "warning-transparency: Warden safe eye leaves terrain untouched");
+    reset();
+    draw_thrust_telegraph(dc, camera, bounds, warning, 0, 80,
+                          MinimapSide::Left, list);
+    // Stay off the edge and centerline, inside the forward half-plane.
+    scenario_check(GetPixel(dc, center.x + 25, center.y + 10) == ground,
+                   "warning-transparency: zero-opacity fan leaves terrain untouched");
+    reset();
+    draw_thrust_telegraph(dc, camera, bounds, warning, 1, 80,
+                          MinimapSide::Left, list);
+    scenario_check(std::abs(static_cast<int>(GetGValue(
+                       GetPixel(dc, center.x + 25, center.y + 10))) - expected_green) <= 3,
+                   "warning-transparency: thrust fan also blends with terrain");
+    warning.shape = "circle";
+    warning.inner_radius_tiles = 0;
+  }
+  SelectObject(dc, old);
+  DeleteObject(bitmap);
+  DeleteDC(dc);
+  return 0;
+}
+
+class ScenarioPointerSession final : public verdigris::client::IClientSession {
+ public:
+  verdigris::client::ClientModel data;
+  std::vector<verdigris::client::ClientCommand> commands;
+  std::string error;
+  bool start(std::string*) override { return true; }
+  void shutdown() override {}
+  void poll() override {}
+  void submit(const verdigris::client::ClientCommand& command) override {
+    commands.push_back(command);
+  }
+  verdigris::client::ConnectionState connection_state() const override {
+    return verdigris::client::ConnectionState::Ready;
+  }
+  const verdigris::client::ClientModel& model() const override { return data; }
+  const std::string& last_error() const override { return error; }
+  std::vector<verdigris::client::PresentationEvent> drain_events() override { return {}; }
+};
+
+int scenario_inventory_pointer_safety() {
+  ClientState state;
+  auto session = std::make_unique<ScenarioPointerSession>();
+  auto* recorder = session.get();
+  recorder->data.player.uuid = "pointer-scion";
+  recorder->data.player.alive = true;
+  verdigris::client::ClientItemSlot item;
+  item.id = "bronze-sword";
+  item.uuid = "clicked-weapon";
+  item.name = "Bronze Sword";
+  item.slot = 0;
+  item.width = 2;
+  item.height = 3;
+  recorder->data.inventory.push_back(item);
+  item.uuid = "other-weapon";
+  item.slot = 5;
+  recorder->data.inventory.push_back(item);
+  state.session = std::move(session);
+  state.gear_overlay = true;
+  sync_world(state);
+  load_billboards(state.billboards);
+  for (const auto size : {POINT{960, 600}, POINT{1366, 768}}) {
+    reference_present(state, size.x, size.y, "");
+    scenario_check(state.inventory_hits.size() == 2,
+                   "inventory-pointer: painter exposes both exact item footprints");
+    if (state.inventory_hits.size() != 2) continue;
+    const auto hit = state.inventory_hits.front();
+    recorder->commands.clear();
+    state.selected_item = 1;
+    activate_inventory_at(state, hit.rect.right - 2, hit.rect.bottom - 2);
+    scenario_check(recorder->commands.size() == 1 &&
+                       recorder->commands.back().type == verdigris::client::ClientCommand::Type::Equip &&
+                       recorder->commands.back().target == "clicked-weapon",
+                   "inventory-pointer: click uses whole footprint and UUID, not prior selection");
+    recorder->commands.clear();
+    activate_inventory_at(state, 1, 1);
+    const auto pane = gear_pane_rect(size.x, size.y);
+    activate_inventory_at(state, pane.x + 15, pane.y + 15);
+    scenario_check(recorder->commands.empty(),
+                   "inventory-pointer: world and pane chrome cannot equip a selected item");
+    std::swap(recorder->data.inventory[0], recorder->data.inventory[1]);
+    activate_inventory_at(state, hit.rect.left + 2, hit.rect.top + 2);
+    scenario_check(recorder->commands.size() == 1 &&
+                       recorder->commands.back().target == "clicked-weapon",
+                   "inventory-pointer: snapshot reorder cannot change clicked identity");
+    std::swap(recorder->data.inventory[0], recorder->data.inventory[1]);
+  }
+  const auto stale_hit = state.inventory_hits.front();
+  recorder->data.inventory.erase(recorder->data.inventory.begin());
+  recorder->commands.clear();
+  activate_inventory_at(state, stale_hit.rect.left + 2, stale_hit.rect.top + 2);
+  scenario_check(recorder->commands.empty(),
+                 "inventory-pointer: removed item cannot equip or consume its replacement");
+  const RECT bounds{0, 0, 1366, 768};
+  state.gear_overlay = false;
+  state.character_pane = true;
+  const auto pane = character_pane_rect(1366, 768);
+  scenario_check(pointer_ui_blocks_world(state, bounds, pane.x + 20, pane.y + 20) &&
+                     !pointer_ui_blocks_world(state, bounds, 700, 400),
+                 "inventory-pointer: character pane consumes mouse actions but exposed world stays interactive");
+  state.quest_journal = true;
+  scenario_check(pointer_ui_blocks_world(state, bounds, 700, 400),
+                 "inventory-pointer: journal prevents mouse attacks and dashes behind it");
+  return 0;
+}
+
 int run_scenarios(const std::string& which) {
   struct Entry {
     const char* name;
@@ -12420,6 +12627,8 @@ int run_scenarios(const std::string& which) {
       {"first-fight", scenario_first_fight},
       {"loot-to-bank", scenario_loot_to_bank},
       {"telegraph-dodge", scenario_telegraph_dodge},
+      {"warning-transparency", scenario_warning_transparency},
+      {"inventory-pointer-safety", scenario_inventory_pointer_safety},
       {"combat-juice", scenario_combat_juice},
       {"combat-cadence", scenario_combat_cadence},
       {"monster-pressure-roles", scenario_monster_pressure_roles},
