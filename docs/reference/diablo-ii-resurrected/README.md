@@ -1,6 +1,6 @@
 # Diablo II: Resurrected visual benchmarks
 
-These two owner-supplied screenshots are composition and finish references for
+These owner-supplied screenshots are composition and finish references for
 Verdigris. They are here because phrases such as "AAA UI," "better town," or
 "Diablo-like HUD" do not capture the spatial hierarchy, lighting, scale, and
 interaction density visible in a finished game.
@@ -119,6 +119,69 @@ original world assets.
   with no stretching, pixelation, flat fills, or accidental opaque rectangles?
 - Can a player reach vendors, portals, loot, and NPC dialogue by acting on the
   world rather than remembering debug keys?
+
+## Reference 3 — complementary character and inventory panes
+
+![Diablo II: Resurrected inventory-and-attendant reference](./inventory-and-attendant-panes.png)
+
+### What the screenshot establishes
+
+- Two substantial management surfaces can coexist without becoming a single
+  full-screen menu. Character or attendant information belongs on the left,
+  inventory belongs on the right, and a meaningful strip of the live world
+  remains visible between them.
+- The inventory pane communicates loadout spatially. Equipment is arranged as
+  a body-shaped ragdoll in its upper half, while the backpack is a large,
+  regular spatial grid below it.
+- Items use their real silhouettes and occupy multiple cells. The grid is the
+  interaction model, not decoration behind a text list.
+- Currency is shown plainly at the bottom of the inventory. The player does not
+  have to infer their purse from pickup messages or visit a different pane.
+- The left pane combines its own equipment arrangement with a restrained set
+  of essential statistics. It does not duplicate every inventory fact.
+- Both surfaces use the same frame grammar, title placement, close control,
+  materials, spacing, and inset hierarchy. Their authored edge structures
+  visually anchor them to the screen without stretching the panel interior.
+- The persistent HUD remains readable below both panes. Opening management UI
+  changes the available world viewport but does not visually replace the game.
+
+### Translation for Verdigris
+
+- Inventory is a right-side Framekit pane. Its upper region owns the Scion
+  equipment ragdoll; its lower and larger region owns the spatial backpack.
+  Remove redundant House, gear-summary, stat, point-count, and navigation prose
+  from this surface.
+- Character and statistics use a complementary left-side pane. Opening both is
+  a supported comparison state so equipment changes can update visible combat
+  and defence values immediately.
+- Conditional controls on the inventory's left edge open related secondary
+  surfaces such as attendant equipment, trophies, reagents, and expanded
+  storage. These are contextual extensions of the inventory, not permanent
+  clutter and not separate top-level modes.
+- An attendant surface may occupy the left composition shown here, but it must
+  use Verdigris's own attendant system and visual identity. The reference
+  mercenary content is not a feature specification.
+- Carried gold must remain persistent and conspicuously readable in inventory,
+  town, and vendor contexts. Purchases should update the visible amount at once.
+- Preserve the world-visible centre when side panes are open. The geometric
+  skill tree is the intentional exception: it takes the full screen in a safe
+  area, while character and inventory panes may layer above it for comparison.
+- Framekit borders must use proper nine-slice regions and panel centres must
+  tile. Neither border ornament nor dark-stone texture may be scaled into a
+  distorted single image.
+
+### Acceptance questions
+
+- Does the right pane read immediately as equipment above and backpack below?
+- Can the player recognize, move, equip, and unequip items from their art and
+  position rather than from surrounding instructions?
+- Can character statistics and inventory be compared without hiding one
+  another?
+- Are attendant, trophy, reagent, and expansion surfaces available when useful
+  without permanently shrinking the backpack?
+- Is carried gold obvious, accurate, and preserved through purchases and zone
+  transitions?
+- With both panes open, does the remaining centre still feel like the live game?
 
 ## Working rule
 
