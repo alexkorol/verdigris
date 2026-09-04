@@ -79,7 +79,10 @@ also: BLOCKED, SUPERSEDED
    interfaces added/changed, test commands + outcomes, manual verification,
    commit SHAs, deviations, unresolved questions, risks, follow-ups.
 5. Commit locally on the current program branch or a worker branch merged to
-   it. NEVER push; the owner pushes.
+   it. Do not push by default. Push when the repository owner explicitly asks,
+   after verifying the destination remote and branch and completing the
+   required acceptance checks. Never force-push unless the owner separately
+   and explicitly authorizes that destructive operation.
 6. On any stop condition in the spec: set BLOCKED, file a question, halt.
 
 ## Architect obligations per completed task
