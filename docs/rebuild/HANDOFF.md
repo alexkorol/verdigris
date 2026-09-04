@@ -1,5 +1,31 @@
 # Native reconstitution handoff
 
+## 2026-09-04 - durable native accounts and name-field alignment
+
+- Owner servers now checkpoint accounts atomically to
+  `%LOCALAPPDATA%\Verdigris\Saves`; explicit save-dir and test-only ephemeral
+  modes are documented in `native/README.md`. Directory writer exclusion,
+  corruption preservation, and visible write failure protect existing saves.
+- Existing Scion admission restores the exact loadout/build; reserve profiles,
+  bank, House progression and own-account circulating relics survive restart.
+  Boot-scoped item identity prevents counter reuse after restarting.
+- The real-process restart regression is
+  `native/tools/test-account-restart.mjs`. It exercises vendor/bank/gear/build/
+  House investment, abrupt restarts, reserve selection, mortality and relics,
+  writer exclusion and corruption. No in-process session survives its restart.
+- Framekit name text aligns to the raster opening and long names scroll inside
+  a clipped rectangle. Both naming modes are covered at compact/owner sizes;
+  live key-entry capture viewed. Native suites/all 33 client scenarios and
+  `npm run playtest` (32/32) pass; measured fullscreen paint 11.8 ms.
+- Build/launch with `-BuildSubdirectory restart-fix` to use the isolated tested
+  binaries without replacing the owner's still-running older executable.
+  The old memory-only game on 6520 was not closed or migrated; verification
+  game on 6538 was closed with no orphan children.
+- Read `native/playtests/restart-save-2026-09-04.md` for exact evidence and
+  limitations. Startup streamlining/island title, bulk-text/paste input and
+  cross-account/party crash consistency remain open. Do not mark the full
+  voice feedback backlog complete.
+
 ## 2026-09-04 - warning transparency and inventory pointer correctness
 
 - Enemy warning fills now blend with the actual terrain rather than painting

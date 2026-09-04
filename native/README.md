@@ -103,6 +103,45 @@ Replace the path with this clone. Start in the repository root. Esc or closing
 the window quits; the script prints a no-orphan process check and the server log
 path.
 
+## Native account saves
+
+Owner-play servers now save automatically to `%LOCALAPPDATA%\Verdigris\Saves`
+on Windows, independently of build folders, ports, or the launcher working
+directory. Set `VERDIGRIS_SAVE_DIR` or pass `verdigris_server <port> --save-dir
+<directory>` to choose another directory. `--ephemeral` is test-only; the
+launcher uses it for its lifecycle/fault controls, never ordinary owner play.
+
+Successful session responses follow an atomic account checkpoint. Saves include
+the Chronicle, active and reserve Scion loadouts/builds, exact living-item and
+tablet rolls/UUIDs, purse, bank, House progression, and own-account circulating
+relics. A restart returns the active character to town without restoring old
+monsters, ground drops, warnings or expended instances. Final death stays final.
+There is one writer per save directory. Unsupported/corrupt saves are rejected
+and preserved, not silently replaced by a fresh account. Storage failure stops
+further mutations and reports an error; fix storage before restarting.
+
+This does not recover progress already lost by older, memory-only servers, or
+hot-migrate an older process that is still running. Cross-account relic trading
+and live-party crash consistency are not covered by the single-account restart
+gate.
+
+Real process-restart acceptance (requires the repository's Node dependencies):
+
+~~~powershell
+node native/tools/test-account-restart.mjs native/build/verdigris_server.exe
+~~~
+
+The gate creates an isolated temporary save directory, buys/deposits/equips,
+allocates a build and House investment, switches Scions, forcibly terminates
+and relaunches the server, and checks exact state, mortality, relic recovery,
+new-item identity, writer exclusion and corrupt-save preservation. It retains
+the test fixture directory and a verified backup for inspection.
+
+To build/test without replacing an owner's running executable, pass
+`-BuildSubdirectory restart-fix` to `native/build.ps1` and
+`native/tools/play-native.ps1`. This stays under `native/build/` and does not
+change the save location. Point the restart gate at that subdirectory's server.
+
 ## Build on macOS/Linux
 
 With CMake and a C++20 compiler:

@@ -1,6 +1,7 @@
 #include "verdigris/core.hpp"
 
 #include <cmath>
+#include <atomic>
 #include <cctype>
 #include <charconv>
 #include <iomanip>
@@ -3959,12 +3960,15 @@ const ItemDef kItemCatalogue[] = {
 
 // Process-wide instance identity source (factory.js uuid v4): uniqueness is
 // the only contract the wire and the take/equip verbs rely on.
-std::uint64_t g_item_uuid_serial = 0;
+std::atomic<std::uint64_t> g_item_uuid_serial{0};
+std::uint64_t g_item_identity_namespace = 0;
 
 std::string next_item_uuid() {
   const std::uint64_t value = ++g_item_uuid_serial;
   char buffer[40];
-  std::snprintf(buffer, sizeof(buffer), "00000000-0000-4000-8000-%012llx",
+  std::snprintf(buffer, sizeof(buffer), "%08llx-%04llx-4000-8000-%012llx",
+                static_cast<unsigned long long>(g_item_identity_namespace >> 16 & 0xffffffffULL),
+                static_cast<unsigned long long>(g_item_identity_namespace & 0xffffULL),
                 static_cast<unsigned long long>(value & 0xffffffffffffULL));
   return buffer;
 }
@@ -4075,6 +4079,10 @@ ItemSize resolve_item_size(const ItemDef& def, const VesselBlock* vessel) {
   }
   if (def.type == "jewelry" || id_contains(def, nullptr, {"ring", "amulet"})) return {1, 1};
   return {1, 1};
+}
+
+void set_item_identity_namespace(std::uint64_t value) {
+  g_item_identity_namespace = value;
 }
 
 std::optional<GameItem> create_game_item(const std::string& item_id,

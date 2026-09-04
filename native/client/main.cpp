@@ -5619,13 +5619,28 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
          {input.left, input.top, input.right - input.left,
           input.bottom - input.top}});
     const bool placeholder = state.chronicles_name_input.empty();
-    const std::string shown =
+    std::string shown =
         placeholder ? fallback : state.chronicles_name_input + "|";
     old_font = SelectObject(dc, skin::font_heading());
     SetTextColor(dc, placeholder ? RGB(132, 147, 138) : RGB(226, 234, 222));
-    TextOutA(dc, input.left + 12 * door_scale,
-             input.top + 9 * door_scale, shown.c_str(),
-             static_cast<int>(shown.size()));
+    // The authored 162px-wide raster contains its own frame/padding. A fixed
+    // 12px text offset sat ON that frame once the image was stretched.
+    const int inset = (input.right - input.left) * 14 / 162 + 4 * door_scale;
+    RECT text_rect{input.left + inset, input.top + 8 * door_scale,
+                   input.right - inset, input.bottom - 8 * door_scale};
+    if (!placeholder) {
+      SIZE extent{};
+      while (shown.size() > 1) {
+        GetTextExtentPoint32A(dc, shown.c_str(), static_cast<int>(shown.size()), &extent);
+        if (extent.cx <= text_rect.right - text_rect.left) break;
+        shown.erase(0, 1); // Scroll the visible suffix; never modify the name.
+      }
+    }
+    DrawTextA(dc, shown.c_str(), static_cast<int>(shown.size()), &text_rect,
+              DT_LEFT | DT_SINGLELINE | DT_VCENTER | DT_NOPREFIX | DT_END_ELLIPSIS);
+    state.hud_rect_trace.push_back(
+        {"chronicles-name-text", {text_rect.left, text_rect.top,
+          text_rect.right - text_rect.left, text_rect.bottom - text_rect.top}});
     SelectObject(dc, old_font);
     rl.push_back({render::Op::Chronicles, static_cast<double>(input.left),
                   static_cast<double>(input.top), 0.0, 0,
@@ -11446,6 +11461,24 @@ int scenario_chronicles_lineage_ui() {
   scenario_check(render_list_has(state, render::Op::Chronicles,
                                  "framekit-raster:chronicle-input"),
                  "chronicles-lineage-ui: WIZARD input field draws under live text");
+  for (const auto mode : {ChronicleNamingMode::House, ChronicleNamingMode::Scion}) {
+    state.chronicles_naming = mode;
+    state.chronicles_name_input = "WWWWWWWWWWWWWWWWWWWWWWWWWWWW";
+    for (const auto size : {std::pair{960,600}, std::pair{1727,1395}}) {
+      const std::string filename = capture_dir + "\\naming-long-" +
+          (mode == ChronicleNamingMode::House ? "house-" : "scion-") +
+          std::to_string(size.first) + "x" + std::to_string(size.second) + ".png";
+      scenario_check(reference_present(state,size.first,size.second,filename),
+                     "chronicles-lineage-ui: long name captured at owner and small-window sizes");
+      scenario_check(state.chronicles_name_input.size() == 28,
+                     "chronicles-lineage-ui: scrolling does not truncate the actual name");
+      scenario_check(render_list_has(state,render::Op::Chronicles,"naming:value:") &&
+                     !render_list_has(state,render::Op::Chronicles,
+                                      "naming:value:" + state.chronicles_name_input + "|"),
+                     "chronicles-lineage-ui: overflowing name scrolls inside authored frame");
+    }
+  }
+  state.chronicles_name_input.clear();
   state.chronicles_naming = ChronicleNamingMode::None;
 
   state.chronicles_selected = 0;

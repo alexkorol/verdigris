@@ -7,7 +7,8 @@ param(
   # TASK-0161: optional contained capture root. When set, scenario evidence
   # is isolated under this directory instead of rewriting committed captures
   # from historical task folders.
-  [string]$CaptureRoot
+  [string]$CaptureRoot,
+  [string]$BuildSubdirectory = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -38,6 +39,12 @@ if ($CaptureRoot -ne "") {
 }
 
 $buildRoot = Join-Path $nativeRoot "build"
+if ($BuildSubdirectory -ne "") {
+  if ($BuildSubdirectory -notmatch '^[a-zA-Z0-9_-]+$') {
+    throw "BuildSubdirectory must be a single directory name under native/build."
+  }
+  $buildRoot = Join-Path $buildRoot $BuildSubdirectory
+}
 New-Item -ItemType Directory -Force -Path $buildRoot | Out-Null
 
 # Prefer the supported Visual Studio installation query, then retain a
@@ -160,9 +167,9 @@ python (Join-Path $nativeRoot "tools\check_legacy_denylist.py")
 if ($LASTEXITCODE -ne 0) { throw "legacy denylist failed" }
 python (Join-Path $nativeRoot "tools\verify_framekit_assets.py")
 if ($LASTEXITCODE -ne 0) { throw "WIZARD Framekit asset verification failed" }
-if ($RunTests) { & $testExe }
-if ($RunTests) { & $networkingTestExe }
-if ($RunTests) { & $camera2dTestExe }
+if ($RunTests) { & $testExe; if ($LASTEXITCODE -ne 0) { throw "core tests failed" } }
+if ($RunTests) { & $networkingTestExe; if ($LASTEXITCODE -ne 0) { throw "networking tests failed" } }
+if ($RunTests) { & $camera2dTestExe; if ($LASTEXITCODE -ne 0) { throw "camera tests failed" } }
 if ($RunTests) { & $sessionTestExe; if ($LASTEXITCODE -ne 0) { throw "session tests failed" } }
 if ($RunTests) { & $presentationEventsTestExe; if ($LASTEXITCODE -ne 0) { throw "presentation events tests failed" } }
 if ($RunTests) { & $audioTestExe; if ($LASTEXITCODE -ne 0) { throw "audio mixer tests failed" } }

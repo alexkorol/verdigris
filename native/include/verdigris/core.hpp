@@ -452,6 +452,7 @@ class Mulberry32 {
  public:
   explicit Mulberry32(std::uint32_t seed = 0) : state_(seed) {}
   double next();
+  std::uint32_t state() const { return state_; }
   int rint(int min, int max) { return min + static_cast<int>(std::floor(next() * (max - min + 1))); }
 
  private:
@@ -754,6 +755,8 @@ struct CreateItemOptions {
 // factory.js createById/createFromBase. Returns nullopt for unknown ids.
 std::optional<GameItem> create_game_item(const std::string& item_id,
                                          const CreateItemOptions& options);
+// The platform supplies a boot namespace; the core/test default is deterministic.
+void set_item_identity_namespace(std::uint64_t value);
 // Replaces every projection derived from one vessel roll as an atomic model
 // update. Crafting/attunement callers must not refresh only tooltip text.
 void apply_vessel_block(GameItem& item, VesselBlock block);

@@ -3,13 +3,20 @@ param(
   [switch]$Rebuild,
   [switch]$LifecycleSelfTest,
   [switch]$ReadinessFaultControl,
-  [int]$Port = 0
+  [int]$Port = 0,
+  [string]$BuildSubdirectory = ""
 )
 
 $ErrorActionPreference = "Stop"
 
 $nativeRoot = Split-Path $PSScriptRoot -Parent
 $buildRoot = Join-Path $nativeRoot "build"
+if ($BuildSubdirectory -ne "") {
+  if ($BuildSubdirectory -notmatch '^[a-zA-Z0-9_-]+$') {
+    throw "BuildSubdirectory must be a single directory name under native/build."
+  }
+  $buildRoot = Join-Path $buildRoot $BuildSubdirectory
+}
 $logDir = Join-Path $buildRoot "logs"
 $serverExe = Join-Path $buildRoot "verdigris_server.exe"
 $clientExe = Join-Path $buildRoot "verdigris_client.exe"
@@ -97,7 +104,11 @@ function Test-ExeStale([string]$exe) {
 
 function Invoke-NativeBuild {
   Write-Host "play-native: building via native/build.ps1"
-  & powershell.exe -NoProfile -File $buildScript
+  if ($BuildSubdirectory -eq "") {
+    & powershell.exe -NoProfile -File $buildScript
+  } else {
+    & powershell.exe -NoProfile -File $buildScript -BuildSubdirectory $BuildSubdirectory
+  }
   if ($LASTEXITCODE -ne 0) { Fail "native/build.ps1 failed with exit $LASTEXITCODE" }
 }
 
@@ -127,6 +138,9 @@ function Start-OwnerServer([int]$chosenPort, [string]$outLog, [string]$errLog,
   if ($exePath -eq "") {
     $exePath = $serverExe
     $exeArguments = "$chosenPort"
+    if ($LifecycleSelfTest -or $ReadinessFaultControl) {
+      $exeArguments += " --ephemeral"
+    }
   }
   Write-Host "play-native: starting verdigris_server on ws://127.0.0.1:$chosenPort (capsule $capsuleStart-$capsuleEnd)"
   $proc = Start-Process -FilePath $exePath -ArgumentList $exeArguments -PassThru `

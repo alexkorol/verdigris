@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <filesystem>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -91,6 +92,8 @@ class ProtocolSession {
   void handle(const Envelope& envelope, const std::function<void(const Envelope&)>& emit);
   void replace_socket(std::string socket_id);
   void reset_world_for_new_socket();
+  // Optional platform save boundary. Tests remain isolated/in-memory by default.
+  void attach_save(const std::filesystem::path& path);
   // World events (movement, scene transitions) are broadcast to every live
   // connection, mirroring the JS server's room broadcast.  Unit tests leave
   // this unset and receive the same envelopes through the requester's emit.
@@ -105,6 +108,16 @@ class ProtocolSession {
   void adopt_world(std::shared_ptr<WorldSimulation> world, const std::string& scene_id, const std::function<void(const Envelope&)>& emit);
 
  private:
+  void handle_impl(const Envelope&, const std::function<void(const Envelope&)>&);
+  template<class Archive> void archive_account(Archive& archive);
+  template<class Archive> void archive_scion(Archive& archive);
+  void checkpoint();
+  void remember_scion();
+  bool resume_scion(const std::string& id);
+  std::filesystem::path save_path_;
+  std::vector<std::uint8_t> saved_bytes_;
+  std::map<std::string, std::vector<std::uint8_t>> scion_saves_;
+  bool save_failed_ = false;
   std::string player_payload() const;
   JsonValue snapshot() const;
   JsonValue scene_payload() const;
@@ -304,7 +317,8 @@ class ProtocolSession {
 
 class WebSocketServer {
  public:
-  explicit WebSocketServer(std::uint16_t port = 6500);
+  explicit WebSocketServer(std::uint16_t port = 6500,
+                           std::filesystem::path save_directory = {});
   ~WebSocketServer();
 
   WebSocketServer(const WebSocketServer&) = delete;
@@ -323,6 +337,7 @@ class WebSocketServer {
   void broadcast(const Envelope& envelope);
 
   std::uint16_t port_;
+  std::filesystem::path save_directory_;
   std::intptr_t listen_socket_ = -1;
   bool running_ = false;
   std::mutex mutex_;

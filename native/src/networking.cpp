@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 
@@ -28,8 +29,12 @@ using socket_t = int;
 constexpr socket_t invalid_socket = -1;
 #endif
 
+#include "verdigris/persistence.hpp"
+#include "../persistence/account_archive.hpp"
+
 namespace verdigris::networking {
 namespace {
+void archive_account_relics(account_archive::Archive&, const std::string&);
 
 void close_socket(socket_t socket) {
   if (socket == invalid_socket) return;
@@ -714,11 +719,139 @@ void ProtocolSession::set_direct_emit(std::function<void(const Envelope&)> emit)
   direct_emit_ = std::move(emit);
 }
 
+template<class Archive> void ProtocolSession::archive_scion(Archive& a) {
+  a(inventory_.items(), wear_.mutable_slots(), combat_xp_, passive_tree_,
+    passive_tree_saved_, quest_points_, tree_quest_points_, lifecycle_,
+    lifecycle_deaths_, lifecycle_mode_, mortal_oath_, first_goal_stage_,
+    first_goal_started_ms_, first_goal_completed_ms_, best_depth_);
+  auto* actor = simulation_->actor(simulation_->scion().actor_id);
+  a(actor->stats, actor->alive);
+}
+
+template<class Archive> void ProtocolSession::archive_account(Archive& a) {
+  std::string owner = identity_;
+  a(owner);
+  if (owner != identity_) throw std::runtime_error("account save identity mismatch");
+  a(username_, chronicle_, chronicles_revision_, active_house_id_, active_house_name_,
+    active_scion_id_, active_scion_name_, house_treasury_, house_progression_,
+    daily_purse_claimed_, home_pitch_index_, active_quest_, quest_objective_,
+    quests_completed_, campaign_complete_, house_renown_, bank_, trophy_fragments_,
+    cleared_nodes_, endgame_maps_completed_, endgame_masteries_, kitted_scions_,
+    pending_relic_count_, pending_relic_items_, relic_source_scion_name_,
+    relic_source_scion_id_, house_store_, scion_saves_);
+  auto core = verdigris::snapshot(*simulation_);
+  auto rng = session_rng_.state();
+  auto forge_rng = world_->forge().rand().state();
+  a(core,rng,forge_rng);
+  if (a.reading) {
+    simulation_ = std::make_unique<Simulation>(verdigris::restore(core));
+    session_rng_ = Mulberry32(rng);
+    world_->forge().rand() = Mulberry32(forge_rng);
+  }
+  archive_scion(a);
+  archive_account_relics(a, identity_);
+}
+
+void ProtocolSession::remember_scion() {
+  if (active_scion_id_.empty()) return;
+  account_archive::Archive out;
+  archive_scion(out);
+  scion_saves_[active_scion_id_] = std::move(out.bytes);
+}
+
+bool ProtocolSession::resume_scion(const std::string& id) {
+  const auto it = scion_saves_.find(id);
+  if (it == scion_saves_.end()) {
+    // A genuinely new Scion must not inherit the previous one's level/build.
+    Simulation fresh(0);
+    auto* actor = simulation_->actor(simulation_->scion().actor_id);
+    actor->stats = fresh.actor(fresh.scion().actor_id)->stats;
+    actor->alive = true;
+    combat_xp_ = 0;
+    passive_tree_ = JsonValue();
+    passive_tree_saved_ = false;
+    tree_quest_points_ = 0;
+    world_->set_level(actor->stats.level);
+    return false;
+  }
+  account_archive::Archive in(it->second);
+  archive_scion(in); in.finish();
+  world_->set_level(simulation_->actor(simulation_->scion().actor_id)->stats.level);
+  sync_combat_mods();
+  return true;
+}
+
+void ProtocolSession::attach_save(const std::filesystem::path& path) {
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  if (path.empty()) return;
+  std::filesystem::create_directories(path.parent_path());
+  if (std::filesystem::exists(path)) {
+    if (std::filesystem::file_size(path) > 32 * 1024 * 1024)
+      throw std::runtime_error("account save exceeds size limit");
+    auto bytes = persistence::read(path);
+    account_archive::Archive in(account_archive::unwrap(bytes));
+    archive_account(in); in.finish();
+    // Encounters, drops, telegraphs and socket state are deliberately not saved.
+    // A resumed character arrives in town; a final death remains final.
+    world_->reset_to_town();
+    if (lifecycle_ != "permadead") {
+      lifecycle_ = "alive";
+      auto* actor = simulation_->actor(simulation_->scion().actor_id);
+      actor->alive = true;
+      actor->stats.life = actor->stats.life_max;
+      actor->stats.resource = actor->stats.resource_max;
+    }
+    sync_combat_mods();
+    world_->set_level(simulation_->actor(simulation_->scion().actor_id)->stats.level);
+    saved_bytes_ = std::move(bytes);
+  }
+  save_path_ = path;
+  checkpoint(); // Check writeability before admitting a new account.
+}
+
+void ProtocolSession::checkpoint() {
+  if (save_path_.empty()) return;
+  account_archive::Archive out;
+  archive_account(out);
+  auto bytes = account_archive::wrap(std::move(out.bytes));
+  if (bytes == saved_bytes_) return;
+  persistence::write_atomic(save_path_, bytes);
+  saved_bytes_ = std::move(bytes);
+}
+
+void ProtocolSession::handle(const Envelope& envelope, const std::function<void(const Envelope&)>& emit) {
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  // Keep successful owner responses behind the atomic save. A failed disk
+  // must be visible and stop further mutations, not pretend progress is safe.
+  if (save_path_.empty()) { handle_impl(envelope,emit); return; }
+  std::vector<Envelope> responses;
+  try {
+    if (save_failed_) throw std::runtime_error("save unavailable; restart after repairing storage");
+    handle_impl(envelope,[&](const Envelope& response) { responses.push_back(response); });
+    checkpoint();
+  } catch (const std::exception& error) {
+    save_failed_ = true;
+    emit_message(emit, std::string("Progress could not be saved: ") + error.what());
+    return;
+  }
+  for (const auto& response : responses) emit(response);
+}
+
 void ProtocolSession::tick(std::int64_t now) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
-  if (!direct_emit_) return;
-  maybe_respawn(now);
-  if (world_->in_instance()) process_combat(now, direct_emit_);
+  if (!direct_emit_ || save_failed_) return;
+  std::vector<Envelope> responses;
+  const auto buffered = [&](const Envelope& response) { responses.push_back(response); };
+  try {
+    maybe_respawn(now);
+    if (world_->in_instance()) process_combat(now, buffered);
+    checkpoint();
+  } catch (const std::exception& error) {
+    save_failed_ = true;
+    emit_message(direct_emit_, std::string("Progress could not be saved: ") + error.what());
+    return;
+  }
+  for (const auto& response : responses) direct_emit_(response);
 }
 
 void ProtocolSession::reset_world_for_new_socket() {
@@ -736,7 +869,7 @@ void ProtocolSession::reset_world_for_new_socket() {
   // lifecycle blocked respawn.mjs; a leftover Chronicle draft broke
   // mortality.mjs's seeded revision).
   std::lock_guard<std::recursive_mutex> lock(mutex_);
-  tree_quest_points_ = 0;  // JS: a rebuilt Player starts with questPoints 0
+  // Earned tree points belong to the Scion, not the socket.
   if (lifecycle_ != "permadead") {
     // A soft death clears on re-login (fresh Player), but a mortal Scion's
     // final death is Chronicle history - reconnecting must NOT resurrect
@@ -755,9 +888,7 @@ void ProtocolSession::reset_world_for_new_socket() {
   respawn_at_ms_ = 0;
   respawn_protection_until_ms_ = 0;
   prepare_final_death_ = false;
-  first_goal_stage_ = "available";
-  first_goal_started_ms_ = 0;
-  first_goal_completed_ms_ = 0;
+  // Preserve the first-goal checkpoint across reconnects as well as restarts.
   shop_open_ = false;
   bank_open_ = false;
   active_skill_id_ = "primary-attack";
@@ -1228,6 +1359,25 @@ bool parse_node_id(const std::string& id, std::string* road, int* tier, int* ind
 struct CirculatingRelic { GameItem item; std::string scion_id; std::string scion_name; std::string account; };
 std::vector<CirculatingRelic>& circulation_pool() { static std::vector<CirculatingRelic> pool; return pool; }
 std::mutex& circulation_mutex() { static std::mutex m; return m; }
+void archive_account_relics(account_archive::Archive& a, const std::string& owner) {
+  std::lock_guard<std::mutex> lock(circulation_mutex());
+  std::vector<GameItem> items;
+  std::vector<std::string> ids, names;
+  if (!a.reading) for (const auto& relic : circulation_pool()) {
+    if (relic.account == owner) {
+      items.push_back(relic.item); ids.push_back(relic.scion_id); names.push_back(relic.scion_name);
+    }
+  }
+  a(items, ids, names);
+  if (a.reading) {
+    if (items.size() != ids.size() || items.size() != names.size())
+      throw std::runtime_error("invalid saved relic ledger");
+    auto& pool = circulation_pool();
+    pool.erase(std::remove_if(pool.begin(),pool.end(),[&](const auto& r) { return r.account == owner; }),pool.end());
+    for (std::size_t i=0; i<items.size(); ++i)
+      pool.push_back({std::move(items[i]),std::move(ids[i]),std::move(names[i]),owner});
+  }
+}
 struct RoadGateTile { int x; int y; const char* road; };
 const RoadGateTile kRoadGates[4] = {{37, 94, "tin"}, {64, 114, "salt"}, {37, 138, "chalk"}, {12, 115, "copper"}};
 
@@ -4179,7 +4329,7 @@ void ProtocolSession::emit_world(const Envelope& envelope, const std::function<v
 void ProtocolSession::emit_transition(const std::function<void(const Envelope&)>& emit, const char* event) const { JsonValue::Object data; put(data,"player",JsonValue::Object{{"socket_id",socket_id_}}); put(data,"scene",scene_payload()); JsonValue player_state; parse_json(player_payload(),player_state); JsonValue::Object state_fields; if (const auto* fields=player_state.object()) { for (const auto& key:{"uuid","x","y","sceneId"}) if (const auto* field=player_state.get(key)) put(state_fields,key,*field); } put(data,"playerState",std::move(state_fields)); emit_world(Envelope{event,JsonValue(std::move(data))},emit); }
 void ProtocolSession::emit_movement(const std::function<void(const Envelope&)>& emit) const { JsonValue data; parse_json(player_payload(),data); Envelope movement{"player:movement",std::move(data)}; movement.meta=movement_step_payload(); emit_world(movement,emit); }
 void ProtocolSession::emit_message(const std::function<void(const Envelope&)>& emit, const std::string& text) const { emit(Envelope{"game:send:message",JsonValue::Object{{"text",text}}}); }
-void ProtocolSession::handle(const Envelope& envelope, const std::function<void(const Envelope&)>& emit) {
+void ProtocolSession::handle_impl(const Envelope& envelope, const std::function<void(const Envelope&)>& emit) {
   // The server tick thread and the socket handler share the session; one
   // lock serialises world/inventory/chronicle access (mirrors the JS
   // single-threaded loop). Helper methods that also lock keep their guards
@@ -4493,7 +4643,9 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
   if (envelope.event=="chronicles:house:found") {
     static std::atomic<std::uint64_t> house_serial{1};
     const std::string name=as_string(payload?payload->get("name"):nullptr,"House");
-    const std::string house_id="house-"+std::to_string(house_serial++);
+    std::string house_id;
+    do { house_id="house-"+std::to_string(house_serial++); }
+    while (find_chronicle_house_object(chronicle_,house_id));
     ensure_chronicle_house(house_id,name);
     active_house_id_=house_id;
     active_house_name_=name;
@@ -4511,7 +4663,10 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     static std::atomic<std::uint64_t> scion_serial{1};
     const std::string house_id=as_string(payload?payload->get("houseId"):nullptr);
     const std::string name=as_string(payload?payload->get("name"):nullptr,"Scion");
-    const std::string scion_id="scion-"+std::to_string(scion_serial++);
+    std::string scion_id;
+    // Include crypt entries as well as living/reserve Scions.
+    do { scion_id="scion-"+std::to_string(scion_serial++); }
+    while (chronicle_.stringify().find("\"" + scion_id + "\"") != std::string::npos);
     ensure_chronicle_scion(house_id,scion_id,name,false);
     active_scion_name_=name;
     chronicles_revision_+=1;
@@ -4519,7 +4674,10 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     return;
   }
   if (envelope.event=="chronicles:scion:set-out") {
-    active_scion_id_=as_string(payload?payload->get("scionId"):nullptr);
+    remember_scion();
+    const std::string next_scion = as_string(payload?payload->get("scionId"):nullptr);
+    if (next_scion != active_scion_id_) { inventory_.clear(); wear_.clear(); }
+    active_scion_id_=next_scion;
     pending_chronicles_=false;
     house_renown_=0;
     if (JsonValue::Object* house =
@@ -4577,6 +4735,8 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
       if (!has_dagger) { CreateItemOptions o; auto dagger=create_game_item("bronze-dagger",o); if (dagger) inventory_.add(std::move(*dagger)); }
       if (coins<100) { CreateItemOptions o; o.quantity=100-coins; auto purse=create_game_item("coins",o); if (purse) inventory_.add(std::move(*purse)); }
     }
+    resume_scion(active_scion_id_);
+    set_scion_record_mortal(chronicle_, active_house_id_, active_scion_id_, mortal_oath_);
     world_->reset_to_town();
     world_->teleport(kWagonPitches[home_pitch_index_][0], kWagonPitches[home_pitch_index_][1] + 1, now_ms());
     emit_login(emit);
@@ -4666,6 +4826,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     return;
   }
   if (envelope.event=="player:chronicles:select") {
+    remember_scion();
     active_scion_id_=as_string(payload?payload->get("scionId"):nullptr);
     active_house_id_=as_string(payload?payload->get("houseId"):nullptr);
     active_scion_name_=as_string(payload?payload->get("scionName"):nullptr);
@@ -4713,6 +4874,8 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
       fresh_actor->alive = true;
       fresh_actor->stats.life = fresh_actor->stats.life_max;
     }
+    resume_scion(active_scion_id_);
+    set_scion_record_mortal(chronicle_, active_house_id_, active_scion_id_, mortal_oath_);
     sync_combat_mods();
     world_->reset_to_town();
     emit_login(emit);
@@ -4770,7 +4933,8 @@ struct WebSocketServer::Connection {
   }
 };
 
-WebSocketServer::WebSocketServer(std::uint16_t port):port_(port) {}
+WebSocketServer::WebSocketServer(std::uint16_t port, std::filesystem::path save_directory)
+    : port_(port), save_directory_(std::move(save_directory)) {}
 WebSocketServer::~WebSocketServer(){ stop(); }
 bool WebSocketServer::start(std::string* error) {
 #ifdef _WIN32
@@ -4953,7 +5117,16 @@ void WebSocketServer::handle_message(const std::shared_ptr<Connection>& connecti
 // JS parity: the anonymous guest is ONE shared account. A second concurrent
 // login replaces the earlier session (replaceExistingSession); multiplayer
 // scenarios that need distinct players carry playtestGuestId/guestId.
-const bool quick=as_bool(envelope.data.get("quickGuest"));const auto* playtest_guest=envelope.data.get("playtestGuestId");if(playtest_guest&&playtest_guest->string())identity=*playtest_guest->string();const auto* playtest_name=envelope.data.get("playtestGuestName");std::shared_ptr<ProtocolSession> session;std::shared_ptr<Connection> old;{std::lock_guard lock(mutex_);auto it=sessions_.find(identity);if(it!=sessions_.end()){for(const auto& candidate:connections_)if(candidate->session==it->second&&candidate!=connection&&!candidate->closed){old=candidate;break;}session=it->second;}if(!session){std::uint64_t seed=1469598103934665603ULL;for(unsigned char c:identity)seed=(seed^c)*1099511628211ULL;session=std::make_shared<ProtocolSession>(identity,connection->id,seed,quick);sessions_[identity]=session;}else { const bool adopted = connection->session != session; session->replace_socket(connection->id); if (adopted) session->reset_world_for_new_socket(); } connection->session=session;}session->set_broadcast([this](const Envelope& event){broadcast(event);});if(playtest_name&&playtest_name->string())session->set_username(*playtest_name->string());session->set_direct_emit([connection](const Envelope& event){connection->send_text(emit_envelope(event));});if(old){old->send_text(emit_envelope(Envelope{"player:session-replaced",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",old->id}}}}}));old->shutdown_send();old->close();}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});return;} auto session=connection->session;if(!session)return;if(envelope.event.rfind("party:",0)==0&&handle_party_event(connection,envelope))return;session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});}
+const bool quick=as_bool(envelope.data.get("quickGuest"));const auto* playtest_guest=envelope.data.get("playtestGuestId");if(playtest_guest&&playtest_guest->string())identity=*playtest_guest->string();const auto* playtest_name=envelope.data.get("playtestGuestName");std::shared_ptr<ProtocolSession> session;std::shared_ptr<Connection> old;{std::lock_guard lock(mutex_);auto it=sessions_.find(identity);if(it!=sessions_.end()){for(const auto& candidate:connections_)if(candidate->session==it->second&&candidate!=connection&&!candidate->closed){old=candidate;break;}session=it->second;}if(!session){std::uint64_t seed=1469598103934665603ULL;for(unsigned char c:identity)seed=(seed^c)*1099511628211ULL;session=std::make_shared<ProtocolSession>(identity,connection->id,seed,quick);if (!save_directory_.empty()) {
+  std::ostringstream filename; filename << std::hex << seed << ".vgs";
+  try { session->attach_save(save_directory_ / filename.str()); }
+  catch (const std::exception& failure) {
+    const std::string message = std::string("Cannot load/save account: ") + failure.what();
+    std::cerr << message << "\n";
+    connection->send_text(emit_envelope(Envelope{"game:send:message",JsonValue::Object{{"text",message}}}));
+    connection->shutdown_send(); connection->close(); return;
+  }
+}sessions_[identity]=session;}else { const bool adopted = connection->session != session; session->replace_socket(connection->id); if (adopted) session->reset_world_for_new_socket(); } connection->session=session;}session->set_broadcast([this](const Envelope& event){broadcast(event);});if(playtest_name&&playtest_name->string())session->set_username(*playtest_name->string());session->set_direct_emit([connection](const Envelope& event){connection->send_text(emit_envelope(event));});if(old){old->send_text(emit_envelope(Envelope{"player:session-replaced",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",old->id}}}}}));old->shutdown_send();old->close();}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});return;} auto session=connection->session;if(!session)return;if(envelope.event.rfind("party:",0)==0&&handle_party_event(connection,envelope))return;session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});}
 void WebSocketServer::broadcast(const Envelope& envelope){ std::vector<std::shared_ptr<Connection>> targets; {std::lock_guard lock(mutex_);targets=connections_;} const auto wire=emit_envelope(envelope); for(const auto& candidate:targets) if(candidate->session&&!candidate->closed) candidate->send_text(wire); }
 void WebSocketServer::remove_connection(const std::shared_ptr<Connection>& connection){std::lock_guard lock(mutex_);connections_.erase(std::remove(connections_.begin(),connections_.end(),connection),connections_.end());}
 
