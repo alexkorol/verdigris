@@ -29,6 +29,9 @@ original world assets.
 - The active character receives attention without erasing the context of the
   other choices. Dimmed figures still contribute to fantasy and anticipation.
 - The sparse interface lets the authored scene carry the emotional weight.
+- Hardcore is a simple, contextual binary choice beside the character name.
+  Its placement makes the consequence visible at the moment it matters without
+  turning the choice into another screen or a multi-step settings flow.
 
 ### Translation for Verdigris
 
@@ -43,6 +46,12 @@ original world assets.
   the whole front door into two giant empty panes.
 - Preserve Verdigris's classless character identity. The screenshot's class
   roster is a staging reference, not a request to add classes.
+- Treat the mortal oath with the same interaction economy as Hardcore: one
+  clearly labelled toggle during Scion creation, an immediate selected state,
+  and one concise permanent-death explanation beside it. Do not hide it in
+  settings, require a separate mode-selection page, or surround it with
+  redundant confirmation clicks. The final admission action must clearly
+  reflect that the oath is active before the Scion is created.
 - A selected Scion should remain legible at a glance through silhouette,
   lighting, stance, and a single concise identity block.
 
@@ -52,6 +61,8 @@ original world assets.
 - Does the selected Scion read before the player reads their name?
 - Is most of the screen a living scene rather than panel texture?
 - Are the few available actions obvious without tutorial copy?
+- Can the mortal oath be understood and selected in one action without leaving
+  Scion creation?
 - Does continuing into the world feel like entering the scene rather than
   leaving a menu application?
 
