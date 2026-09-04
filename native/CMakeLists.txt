@@ -74,7 +74,7 @@ target_include_directories(verdigris_client PRIVATE client)
 target_link_libraries(verdigris_client PRIVATE verdigris_core verdigris_client_session)
 if (WIN32)
   target_compile_definitions(verdigris_client PRIVATE VERDIGRIS_NATIVE_WINDOWS=1)
-  target_link_libraries(verdigris_client PRIVATE user32 gdi32)
+  target_link_libraries(verdigris_client PRIVATE user32 gdi32 d3d11 d3dcompiler)
 endif()
 
 enable_testing()

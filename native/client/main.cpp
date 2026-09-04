@@ -46,6 +46,7 @@ namespace phase_a = verdigris::client::phase_a;
 #include "vector_art.hpp"
 #include "framekit_renderer.hpp"
 #include "geometric_skill_tree.hpp"
+#include "title_scene.hpp"
 
 namespace {
 
@@ -604,6 +605,13 @@ struct ClientState {
   render::List render_list;
   Screen screen = Screen::Expedition;
   bool chronicles_mode = false;  // remote owner path launched at the front door
+  bool title_open = false;
+  bool title_enabled = false; // real startup + opt-in scenarios, never core play
+  verdigris::client::TitleScene title_scene;
+  verdigris::client::TitleOrbit title_orbit;
+  std::chrono::steady_clock::time_point title_started = std::chrono::steady_clock::now();
+  std::vector<RECT> title_action_hits;
+  int title_selected = 0;
   bool chronicles_oath = false;  // mortal-oath choice applied to the next admission
   ChronicleNamingMode chronicles_naming = ChronicleNamingMode::None;
   std::string chronicles_name_input;
@@ -4903,6 +4911,33 @@ void handle_chronicle_character(ClientState& state, unsigned int codepoint) {
   state.chronicles_name_error.clear();
 }
 
+// Shared by physical typing and Unicode clipboard insertion. Native custom
+// fields do not receive automatic EDIT-control paste/selection behavior.
+void append_chronicle_text(ClientState& state, const wchar_t* text, size_t length) {
+  state.chronicles_ignore_next_char = false;
+  for (size_t i = 0; i < std::min(length, size_t{4096}); ++i) {
+    const unsigned int ch = static_cast<unsigned int>(text[i]);
+    // Pasting control characters must never submit/cancel the dialog.
+    if (ch >= 32 && ch <= 126) handle_chronicle_character(state, ch);
+  }
+}
+
+void paste_chronicle_name(HWND window, ClientState& state) {
+  if (!OpenClipboard(window)) return;
+  const HANDLE data = GetClipboardData(CF_UNICODETEXT);
+  if (data) {
+    const size_t limit = std::min(GlobalSize(data) / sizeof(wchar_t), size_t{4096});
+    const auto* text = static_cast<const wchar_t*>(GlobalLock(data));
+    if (text) {
+      size_t length = 0;
+      while (length < limit && text[length]) ++length;
+      append_chronicle_text(state, text, length);
+      GlobalUnlock(data);
+    }
+  }
+  CloseClipboard();
+}
+
 void submit_chronicle_action(ClientState& state, const ChronicleAction& action) {
   using verdigris::client::ClientCommand;
   if (action.command == "found-house") {
@@ -4967,6 +5002,91 @@ bool activate_chronicle_at(ClientState& state, int x, int y) {
     return true;
   }
   return false;
+}
+
+const verdigris::client::ClientScionEntry* title_continue_scion(const ClientState& state) {
+  if (!state.session) return nullptr;
+  const auto& chronicle = state.session->model().chronicle;
+  const auto* house = verdigris::client::find_chronicle_house(chronicle, chronicle.active_house_id);
+  if (!house && !chronicle.houses.empty()) house = &chronicle.houses.front();
+  if (!house || house->scions.empty()) return nullptr;
+  for (const auto& scion : house->scions)
+    if (scion.id == chronicle.active_scion_id) return &scion;
+  return &house->scions.front();
+}
+
+bool title_account_ready(const ClientState& state) {
+  if (!state.session || !state.session->model().chronicle.present) return false;
+  const auto connection = state.session->connection_state();
+  return connection == verdigris::client::ConnectionState::Connected ||
+         connection == verdigris::client::ConnectionState::Ready;
+}
+
+bool activate_title_action(ClientState& state, int index) {
+  if (!title_account_ready(state) || index < 0 || index > 2) return false;
+  state.title_open = false;
+  state.title_orbit.dragging = false;
+  state.screen = Screen::Chronicles;
+  if (index == 2) return true; // full lineage is a deliberate secondary screen
+  const auto* scion = title_continue_scion(state);
+  if (index == 0 && scion) {
+    // Preserve the selected Scion's oath and identity; a title-screen resume
+    // is not a new admission and must not silently change Hardcore mode.
+    state.session->submit(verdigris::client::ClientCommand::select_scion(scion->id, scion->mortal));
+  } else {
+    begin_chronicle_naming(state, state.session->model().chronicle.houses.empty()
+        ? ChronicleNamingMode::House : ChronicleNamingMode::Scion);
+  }
+  return true;
+}
+
+void paint_title_scene(ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
+  std::filesystem::path root = "native/client/assets/wizard/splash";
+  for (const auto& candidate : {root, std::filesystem::path(executable_directory()) / "../../client/assets/wizard/splash",
+                                std::filesystem::path(executable_directory()) / "../client/assets/wizard/splash",
+                                std::filesystem::path(executable_directory()) / "assets/wizard/splash"}) {
+    if (std::filesystem::exists(candidate / "world/celestial_world_runtime_tapered.glb")) { root = candidate; break; }
+  }
+  const float seconds = std::chrono::duration<float>(std::chrono::steady_clock::now() - state.title_started).count();
+  const bool rendered = state.title_scene.draw(dc, bounds, root, state.title_orbit, seconds);
+  if (!rendered) skin::panel(dc, bounds, skin::kVerdigris, 255, 0);
+  const int s = std::max(1, std::min(static_cast<int>(bounds.bottom) / 650, static_cast<int>(bounds.right) / 900));
+  skin::set_ui_scale(s);
+  SetBkMode(dc, TRANSPARENT);
+  const int left = std::max(28*s, static_cast<int>(bounds.right)*7/100);
+  const int menu_width = std::min(340*s, static_cast<int>(bounds.right)-left*2);
+  const int top = std::max(28*s, static_cast<int>(bounds.bottom)*29/100);
+  auto text = [&](HFONT font, COLORREF color, RECT rect, const std::string& value, UINT flags=DT_SINGLELINE) {
+    const auto old = SelectObject(dc,font); SetTextColor(dc,color);
+    DrawTextA(dc,value.c_str(),static_cast<int>(value.size()),&rect,flags|DT_NOPREFIX|DT_END_ELLIPSIS);
+    SelectObject(dc,old);
+  };
+  text(skin::font_title(),skin::kGold,{left,top,left+menu_width,top+44*s},"V E R D I G R I S");
+  text(skin::font_small(),skin::kInkDim,{left,top+54*s,left+menu_width,top+80*s},"A WORLD OUTLIVES ITS HEROES");
+  const bool ready=title_account_ready(state);
+  const auto* scion=title_continue_scion(state);
+  const std::string primary=scion ? "Continue as " + scion->name : "Begin your chronicle";
+  const std::string labels[]={primary,"Create a Scion","House & chronicle"};
+  state.title_action_hits.clear();
+  for (int i=0;i<3;++i) {
+    RECT card{left,top+(112+i*62)*s,left+menu_width,top+(162+i*62)*s};
+    if (i==state.title_selected) {
+      if (!draw_framekit_nine(state.billboards,dc,state.billboards.fk_button,card))
+        skin::panel(dc,card,skin::kGold,185,6);
+    }
+    RECT label{card.left+18*s,card.top,card.right-12*s,card.bottom};
+    text(skin::font_heading(),ready ? (i==state.title_selected?skin::kGold:skin::kInk) : skin::kInkDim,label,labels[i],DT_SINGLELINE|DT_VCENTER);
+    state.title_action_hits.push_back(card);
+    rl.push_back({render::Op::Chronicles,static_cast<double>(card.left),static_cast<double>(card.top),0,i,"title:action"});
+  }
+  std::string status=ready ? "Drag to orbit  /  Scroll to zoom  /  Home to reset" : "Connecting to your saved chronicle...";
+  if (state.session && state.session->connection_state()==verdigris::client::ConnectionState::Disconnected)
+    status="Connection lost. Restart the launcher to reconnect.";
+  text(skin::font_small(),skin::kInkDim,{left,bounds.bottom-48*s,bounds.right-24*s,bounds.bottom-20*s},status);
+  if (!rendered) {
+    text(skin::font_small(),skin::kEmber,{left,28*s,bounds.right-28*s,100*s},"Title scene unavailable: " + state.title_scene.error(),DT_WORDBREAK);
+  }
+  rl.push_back({render::Op::Chronicles,0,0,0,static_cast<int>(state.title_scene.triangles()), rendered ? "title:3d-island" : "title:render-error"});
 }
 
 // ── TASK-0161: contained capture-root isolation ─────────────────────────
@@ -5333,10 +5453,10 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
                ledger_house->name.empty() ? "V"
                                           : ledger_house->name.substr(0, 1));
     }
-    put_text(skin::font_title(), skin::kGold,
-             house_pane.left + 96 * door_scale,
-             house_pane.top + 57 * door_scale,
-             house_prefixed_name(ledger_house->name));
+    put_wrapped(skin::font_heading(), skin::kGold,
+                {house_pane.left + 96 * door_scale, house_pane.top + 55 * door_scale,
+                 house_pane.right - inset, house_pane.top + 108 * door_scale},
+                house_prefixed_name(ledger_house->name), DT_WORDBREAK | DT_END_ELLIPSIS);
     put_text(skin::font_small(), skin::kInkDim,
              house_pane.left + 96 * door_scale,
              house_pane.top + 91 * door_scale,
@@ -6883,6 +7003,11 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   // TASK-0145: the Chronicles front door replaces the abrupt game-window
   // entry for the remote owner path. Expedition painting is skipped
   // entirely; the door renders from the authoritative chronicle model.
+  if (state.title_open) {
+    paint_title_scene(state, dc, bounds, rl);
+    state.render_list = std::move(rl);
+    return;
+  }
   if (state.screen == Screen::Chronicles) {
     paint_chronicles_front_door(state, dc, bounds, rl);
     // The front door owns its whole canvas, so the shared chip keeps its
@@ -7926,8 +8051,8 @@ void fixed_game_tick(ClientState& state, const RECT& bounds) {
   }
   if (state.relic_toast_ticks > 0) --state.relic_toast_ticks;
 
-  const bool at_front_door =
-      state.screen == Screen::Chronicles && state.session != nullptr;
+  const bool at_front_door = state.title_open ||
+      (state.screen == Screen::Chronicles && state.session != nullptr);
   int dx = (state.d ? 1 : 0) - (state.a ? 1 : 0);
   int dy = (state.s ? 1 : 0) - (state.w ? 1 : 0);
   const bool moving = dx != 0 || dy != 0;
@@ -8296,12 +8421,36 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         break;
       }
       if (wparam == VK_ESCAPE) {
+        if (state->title_enabled && !state->title_open && state->screen == Screen::Chronicles &&
+            state->chronicles_naming == ChronicleNamingMode::None) {
+          state->title_open = true;
+          break;
+        }
         // TASK-0153: dismiss an open pane first; exit only on a bare Escape.
         handle_escape_key(*state);
         if (state->quit_requested) PostQuitMessage(0);
         break;
       }
+      if (state->title_open) {
+        if (wparam == VK_UP) state->title_selected = std::max(0,state->title_selected-1);
+        if (wparam == VK_DOWN) state->title_selected = std::min(2,state->title_selected+1);
+        if (wparam == VK_LEFT) state->title_orbit.yaw -= .1f;
+        if (wparam == VK_RIGHT) state->title_orbit.yaw += .1f;
+        if (wparam == VK_HOME) state->title_orbit.reset();
+        if (wparam == VK_OEM_PLUS || wparam == VK_ADD) state->title_orbit.wheel(WHEEL_DELTA);
+        if (wparam == VK_OEM_MINUS || wparam == VK_SUBTRACT) state->title_orbit.wheel(-WHEEL_DELTA);
+        if (wparam == VK_RETURN) {
+          activate_title_action(*state,state->title_selected);
+          if (state->chronicles_naming != ChronicleNamingMode::None) state->chronicles_ignore_next_char=true;
+        }
+        break;
+      }
       if (state->screen == Screen::Chronicles && state->session) {
+        if (state->chronicles_naming != ChronicleNamingMode::None &&
+            wparam == 'V' && (GetKeyState(VK_CONTROL) & 0x8000)) {
+          paste_chronicle_name(window,*state);
+          break;
+        }
         handle_chronicles_key(*state, wparam);
         break;
       }
@@ -8510,7 +8659,13 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (state) {
         state->mouse.x = GET_X_LPARAM(lparam);
         state->mouse.y = GET_Y_LPARAM(lparam);
-        if (state->screen == Screen::Chronicles &&
+        if (state->title_open) {
+          // Constant-time input bookkeeping only; rendering stays on timer.
+          state->title_orbit.drag(state->mouse);
+          if (!state->title_orbit.dragging)
+            for (size_t i=0;i<state->title_action_hits.size();++i)
+              if (PtInRect(&state->title_action_hits[i],state->mouse)) state->title_selected=static_cast<int>(i);
+        } else if (state->screen == Screen::Chronicles &&
             state->chronicles_naming == ChronicleNamingMode::None) {
           for (const auto& hit : state->chronicles_action_hits) {
             if (state->mouse.x >= hit.rect.left &&
@@ -8527,6 +8682,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
     case WM_MOUSEWHEEL:
       if (state) {
         const int delta = GET_WHEEL_DELTA_WPARAM(wparam);
+        if (state->title_open) { state->title_orbit.wheel(delta); break; }
         if (state->minimap_mode == MinimapMode::Overlay) {
           adjust_minimap_zoom(*state, delta > 0 ? 1 : -1);
         } else {
@@ -8542,7 +8698,15 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       break;
     case WM_LBUTTONDOWN:
       if (state) {
-        if (state->screen == Screen::Chronicles) {
+        if (state->title_open) {
+          const POINT point{GET_X_LPARAM(lparam),GET_Y_LPARAM(lparam)};
+          bool menu=false;
+          for (size_t i=0;i<state->title_action_hits.size();++i)
+            if (PtInRect(&state->title_action_hits[i],point)) {
+              activate_title_action(*state,static_cast<int>(i)); menu=true; break;
+            }
+          if (!menu) { state->title_orbit.previous=point; state->title_orbit.dragging=true; SetCapture(window); }
+        } else if (state->screen == Screen::Chronicles) {
           activate_chronicle_at(*state, GET_X_LPARAM(lparam),
                                GET_Y_LPARAM(lparam));
         } else if (trade_pane_open(*state)) {
@@ -8601,8 +8765,16 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         }
       }
       break;
+    case WM_LBUTTONUP:
+      if (state && state->title_orbit.dragging) { state->title_orbit.dragging=false; ReleaseCapture(); }
+      break;
+    case WM_CAPTURECHANGED:
+    case WM_KILLFOCUS:
+      if (state) { state->title_orbit.dragging=false; state->w=state->a=state->s=state->d=false; }
+      break;
     case WM_RBUTTONDOWN:
       if (state) {
+        if (state->title_open) break;
         RECT click_bounds;
         GetClientRect(window, &click_bounds);
         if (!pointer_ui_blocks_world(*state, click_bounds,
@@ -11347,7 +11519,7 @@ class ScenarioLineageSession final
   }
   void poll() override {}
   verdigris::client::ConnectionState connection_state() const override {
-    return verdigris::client::ConnectionState::Ready;
+    return connection;
   }
   const verdigris::client::ClientModel& model() const override { return model_; }
   std::vector<verdigris::client::PresentationEvent> drain_events() override {
@@ -11372,6 +11544,7 @@ class ScenarioLineageSession final
   }
 
   bool submitted = false;
+  verdigris::client::ConnectionState connection = verdigris::client::ConnectionState::Ready;
   verdigris::client::ClientCommand last_command{};
 
  private:
@@ -11522,6 +11695,96 @@ int scenario_chronicles_lineage_ui() {
                                  "framekit-raster:chronicle-keyhole"),
                  "chronicles-lineage-ui: an unfounded House shows the WIZARD keyhole");
   return 0;
+}
+
+int scenario_title_island() {
+  ClientState state;
+  auto session = std::make_unique<ScenarioLineageSession>();
+  auto* recorder = session.get();
+  state.session = std::move(session);
+  state.title_open = state.title_enabled = state.chronicles_mode = true;
+  state.screen = Screen::Chronicles;
+  load_billboards(state.billboards);
+  recorder->connection = verdigris::client::ConnectionState::Connected;
+  scenario_check(title_account_ready(state), "title: saved roster enables menu before world admission");
+  recorder->connection = verdigris::client::ConnectionState::Retrying;
+  scenario_check(!activate_title_action(state,0) && state.title_open && !recorder->submitted,
+                 "title: reconnect cannot submit stale admissions");
+  recorder->connection = verdigris::client::ConnectionState::Connected;
+  scenario_check(activate_title_action(state,0) && recorder->submitted &&
+                 recorder->last_command.type == verdigris::client::ClientCommand::Type::SelectScion &&
+                 recorder->last_command.target == "scion-ilyra" && recorder->last_command.value == 0,
+                 "title: continue keeps the living Scion identity and soft oath");
+  state.title_open = true;
+  scenario_check(activate_title_action(state,1) && state.chronicles_naming == ChronicleNamingMode::Scion,
+                 "title: create opens real Scion naming");
+  append_chronicle_text(state,L"O'Rin\r\n-Copper",14);
+  scenario_check(state.chronicles_name_input == "O'Rin-Copper" && state.chronicles_naming == ChronicleNamingMode::Scion,
+                 "naming: paste accepts a name but cannot submit embedded newlines");
+  append_chronicle_text(state,L" Long Unbounded Clipboard Payload",33);
+  scenario_check(state.chronicles_name_input.size()==28 && !state.chronicles_name_error.empty(),
+                 "naming: clipboard insertion obeys the same length cap as typing");
+  cancel_chronicle_naming(state);
+  recorder->clear_houses();
+  state.title_open = true;
+  scenario_check(activate_title_action(state,0) && state.chronicles_naming == ChronicleNamingMode::House,
+                 "title: first-time begin opens House founding");
+  cancel_chronicle_naming(state);
+  state.title_open = true;
+  scenario_check(activate_title_action(state,2) && !state.title_open && state.screen==Screen::Chronicles,
+                 "title: secondary menu opens the lineage ledger");
+  state.title_open = true;
+  std::string capture_dir;
+  const int override_state = capture_root_override(&capture_dir);
+  if (override_state < 0) { scenario_check(false,"title: invalid capture root"); return scenario_failures; }
+  if (!override_state) capture_dir = "native/build/title-captures";
+  std::filesystem::create_directories(capture_dir);
+  for (POINT size : {POINT{960,600},POINT{1727,1395},POINT{3440,1440}}) {
+    scenario_check(reference_present(state,size.x,size.y,capture_dir+"/title-"+std::to_string(size.x)+"x"+std::to_string(size.y)+".png"),
+                   "title: responsive native scene captured");
+    bool inside=state.title_action_hits.size()==3;
+    for (RECT hit : state.title_action_hits)
+      inside=inside && hit.left>=0 && hit.top>=0 && hit.right<=size.x && hit.bottom<=size.y;
+    scenario_check(inside,"title: all menu targets stay inside the resized window");
+    scenario_check(state.title_scene.error().empty() && state.title_scene.triangles()==119259,
+                   "title: actual WIZARD mesh rendered, not a fallback image");
+    if (!state.title_scene.error().empty()) std::printf("    title graphics: %s\n",state.title_scene.error().c_str());
+  }
+  constexpr int width=3440,height=1440;
+  BITMAPINFO info{}; info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER); info.bmiHeader.biWidth=width;
+  info.bmiHeader.biHeight=-height; info.bmiHeader.biPlanes=1; info.bmiHeader.biBitCount=32;
+  void* bits=nullptr; HDC dc=CreateCompatibleDC(nullptr);
+  HBITMAP bitmap=CreateDIBSection(dc,&info,DIB_RGB_COLORS,&bits,nullptr,0);
+  if (!bitmap) { scenario_check(false,"title: frame surface allocation"); DeleteDC(dc); return scenario_failures; }
+  const auto old=SelectObject(dc,bitmap); RECT bounds{0,0,width,height};
+  paint_scene(state,dc,bounds);
+  auto fingerprint=[&]() {
+    std::uint64_t value=1469598103934665603ULL;
+    auto* bytes=static_cast<unsigned char*>(bits);
+    for(size_t i=0;i<static_cast<size_t>(width)*height*4;i+=127) value=(value^bytes[i])*1099511628211ULL;
+    return value;
+  };
+  const auto before=fingerprint();
+  state.title_orbit.previous={0,0}; state.title_orbit.dragging=true; state.title_orbit.drag({200,40}); state.title_orbit.dragging=false;
+  paint_scene(state,dc,bounds);
+  scenario_check(before!=fingerprint(),"title: orbit changes actual rendered geometry pixels");
+  for(int i=0;i<100;++i) state.title_orbit.wheel(WHEEL_DELTA);
+  scenario_check(state.title_orbit.zoom==.78f,"title: close zoom clamps safely");
+  for(int i=0;i<100;++i) state.title_orbit.wheel(-WHEEL_DELTA);
+  scenario_check(state.title_orbit.zoom==1.35f,"title: far zoom clamps safely");
+  state.title_orbit.reset();
+  scenario_check(state.title_orbit.yaw==0 && state.title_orbit.pitch==0 && state.title_orbit.zoom==1 && !state.title_orbit.dragging,
+                 "title: Home restores the authored view");
+  const auto begin=std::chrono::steady_clock::now();
+  for(int i=0;i<20;++i) paint_scene(state,dc,bounds);
+  const double ms=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-begin).count()/20;
+  std::printf("    title frame-budget: %.1f ms, 20 real 3440x1440 frames\n",ms);
+  scenario_check(ms<40,"title: interactive native composition stays below 40ms");
+  verdigris::client::TitleScene missing;
+  scenario_check(!missing.draw(dc,bounds,"native/build/nonexistent-title-assets",state.title_orbit,0) && !missing.error().empty(),
+                 "title: missing assets produce an explicit error, not fake success");
+  SelectObject(dc,old); DeleteObject(bitmap); DeleteDC(dc);
+  return scenario_failures;
 }
 
 class ScenarioForgeSession final
@@ -12670,6 +12933,7 @@ int run_scenarios(const std::string& which) {
       {"zoom-invariance", scenario_zoom_invariance},
       {"chronicles-gate-b", scenario_chronicles_gate_b},
       {"chronicles-lineage-ui", scenario_chronicles_lineage_ui},
+      {"title-island", scenario_title_island},
       {"first-session-clarity", scenario_first_session_clarity},
       {"animation-vfx-phase-a", scenario_animation_vfx_phase_a},
       {"progression-surface", scenario_progression_surface},
@@ -13345,6 +13609,7 @@ int run_remote_native_client(const char* host, unsigned short port, const char* 
                              bool chronicles_mode) {
   auto state = std::make_unique<ClientState>();
   state->chronicles_mode = chronicles_mode;
+  state->title_open = state->title_enabled = chronicles_mode;
   state->screen = chronicles_mode ? Screen::Chronicles : Screen::Expedition;
   state->session = std::make_unique<verdigris::client::RemoteProtocolSession>(
       host ? host : "127.0.0.1", port, guest_id ? guest_id : "cursor-guest",

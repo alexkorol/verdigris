@@ -1,5 +1,29 @@
 # Native reconstitution handoff
 
+## 2026-09-04 - native interactive WIZARD island title foundation
+
+- `native/client/title_scene.hpp` imports the actual WIZARD tapered GLB and
+  three unmodified rasters into a D3D11 scene. Drag orbit, wheel zoom and Home
+  reset surround a Framekit menu connected to House/Scion admission.
+- Continue preserves the selected Scion's mortality setting; the legacy
+  set-out command instead forces Hardcore. Title actions wait for the saved
+  roster, not world admission. Failed graphics leave a visible error plus menu.
+- Added native name paste handling with the existing character/length policy;
+  pasted control characters cannot submit the form. Long House headers stay
+  within the ledger pane.
+- 34 client scenarios and 32/32 gameplay scenarios pass. Title GPU upscaling
+  reduced fullscreen cost from 48.0 to 9.0 ms; gameplay 10.3 ms. Native core,
+  network, camera, presentation and audio suites pass. Session recovery failed
+  once when the automated heir died after killing the Warden, then passed an
+  unchanged separate rerun. Preserve this intermittent investigation.
+- Actual rebuilt game was launched and captured; `live-title.png` viewed.
+  Owner Escape interrupted Computer Use before manual click/paste checks.
+  These remain scenario-tested, not manually verified. Do not resume desktop
+  control merely to clear this note.
+- Build directory `native/build/title-screen`; detailed coverage and remaining
+  atmosphere/creation work: `native/playtests/title-island-2026-09-04.md`.
+  The full voice-feedback backlog and larger goal are not complete.
+
 ## 2026-09-04 - durable native accounts and name-field alignment
 
 - Owner servers now checkpoint accounts atomically to

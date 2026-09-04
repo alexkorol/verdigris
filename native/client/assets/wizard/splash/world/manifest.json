@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "source_repository": "WIZARD",
+  "source_commit": "00be6a0fe4ecfbd0b7862249012308268f92f0d7",
+  "source_directory": "tools/verdigris_splash/assets/world",
+  "adapter": "native/client/title_scene.hpp",
+  "note": "Unmodified authored mesh and raster bytes. Three.js shader/camera design adapted to D3D11; this is not the older flat-background splash tier.",
+  "files": {
+    "celestial_world_runtime_tapered.glb": "f421b986f28d65c3ade79f87773f2a455cc2b09b665bbe4e08ea963c87a990e8",
+    "celestial_world_top_texture_4k_detail.png": "5e56c5e7c7af4ac624c9e71b2987a8f2df91e72d1203f8fc2557cd4d8247a5a3",
+    "celestial_world_underside_texture.png": "fe2db505ef7e62cef69bd4b9019ddbe8bc80e5c9de4659cd3e51cdf67871a9d4",
+    "celestial_world_illumination_map_4k.png": "b1871a0b3746dc77ae69f13e566965678e55a3080bf8dd0103ab81d33613006c"
+  }
+}

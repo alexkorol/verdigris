@@ -167,6 +167,7 @@ python (Join-Path $nativeRoot "tools\check_legacy_denylist.py")
 if ($LASTEXITCODE -ne 0) { throw "legacy denylist failed" }
 python (Join-Path $nativeRoot "tools\verify_framekit_assets.py")
 if ($LASTEXITCODE -ne 0) { throw "WIZARD Framekit asset verification failed" }
+& (Join-Path $nativeRoot "tools\verify-title-assets.ps1")
 if ($RunTests) { & $testExe; if ($LASTEXITCODE -ne 0) { throw "core tests failed" } }
 if ($RunTests) { & $networkingTestExe; if ($LASTEXITCODE -ne 0) { throw "networking tests failed" } }
 if ($RunTests) { & $camera2dTestExe; if ($LASTEXITCODE -ne 0) { throw "camera tests failed" } }
