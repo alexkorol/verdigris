@@ -72,10 +72,11 @@ ClientCommand ClientCommand::found_house(std::string house_name) {
   command.target = std::move(house_name);
   return command;
 }
-ClientCommand ClientCommand::create_scion(std::string scion_name) {
+ClientCommand ClientCommand::create_scion(std::string scion_name, bool mortal_oath) {
   ClientCommand command;
   command.type = Type::CreateScion;
   command.target = std::move(scion_name);
+  command.value = mortal_oath ? 1 : 0;
   return command;
 }
 ClientCommand ClientCommand::select_scion(std::string scion_id, bool mortal_oath) {

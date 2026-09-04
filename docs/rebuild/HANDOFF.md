@@ -1,5 +1,24 @@
 # Native reconstitution handoff
 
+## 2026-09-04 - guided creation and durable Hardcore choice
+
+- The island now opens compact House -> Scion -> play cards, skipping the
+  intermediate ledger. A Scion has one Hardcore checkbox with a permanent-death
+  explanation; CreateScion carries and persists that flag before admission.
+- Client waits for the exact server-created Scion ID, matching House/name/oath;
+  repeated confirm is gated. Back cannot undo a saved request, and late replies
+  cannot reopen a canceled flow. First-keystroke, empty-name and resize edges
+  are covered; existing House fallback agrees with the session's command path.
+- Full native build/suites and 35 client scenarios passed. Real-process restart
+  gate also verifies Hardcore/soft births survive restart before first admission.
+  Native scene captures at compact/tall/ultrawide sizes generated and inspected.
+- Live creation keyboard/mouse/paste acceptance remains pending: desktop
+  automation was not resumed after the owner's earlier Escape. Do not relabel
+  scenario captures as a live-window pass.
+- Build `creation-flow`; report `native/playtests/guided-creation-2026-09-04.md`.
+  The entire voice backlog remains active; next high-impact work is unlocked
+  skill bindings (including Warcry) and direct portal interaction.
+
 ## 2026-09-04 - native interactive WIZARD island title foundation
 
 - `native/client/title_scene.hpp` imports the actual WIZARD tapered GLB and

@@ -355,6 +355,8 @@ struct ClientChronicle {
   std::vector<ClientHouseEntry> houses;
   std::string active_house_id;
   std::string active_scion_id;
+  // Creation receipt from chronicles:state, never inferred from roster order.
+  std::string created_scion_id;
   ClientFallenScion fallen;  // most recent fatal fall, empty until one occurs
 };
 

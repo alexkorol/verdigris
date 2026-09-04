@@ -806,7 +806,8 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
         house_id = model_.chronicle.houses.front().id;
       envelope.event = "chronicles:scion:create";
       envelope.data = JsonValue::Object{{"houseId", JsonValue(house_id)},
-                                        {"name", JsonValue(command.target)}};
+                                        {"name", JsonValue(command.target)},
+                                        {"mortal", JsonValue(command.value != 0)}};
       break;
     }
     case ClientCommand::Type::SelectScion: {
@@ -1096,6 +1097,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     // The account payload itself opens the door even before anything is
     // founded (a fresh chronicle carries no houses yet).
     model_.chronicle.present = true;
+    if (const auto* created = json_string(envelope.data.get("createdScionId")))
+      model_.chronicle.created_scion_id = *created;
     if (const auto* account = json_string(envelope.data.get("accountName")))
       model_.chronicle.account_name = *account;
     if (envelope.event != "player:chronicles:update") {

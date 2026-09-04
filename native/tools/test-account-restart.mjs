@@ -79,6 +79,19 @@ try {
   for (const id of ['scion-a', 'scion-b']) send('player:chronicles:mutate', {
     type: 'add-scion', houseId: 'house-restart', scion: { id, name: id, mortal: false }
   });
+  const births = [];
+  for (const mortal of [false, true]) {
+    const receipt = response(e => e.event === 'chronicles:state' && e.data.createdScionId);
+    send('chronicles:scion:create', { houseId: 'house-restart', name: mortal ? 'Hardcore Birth' : 'Soft Birth', mortal });
+    births.push({ id: (await receipt).data.createdScionId, mortal });
+  }
+  // The checkbox must be durable at creation, even if the client closes
+  // before auto-admission. Do not rely on select-scion repairing the oath.
+  await stop(); await boot(); await login();
+  const birthRoster = (await state()).chroniclesRecord.state.houses.flatMap(house => house.scions);
+  for (const birth of births)
+    assert.equal(birthRoster.find(scion => scion.id === birth.id)?.mortal, birth.mortal,
+      'Hardcore choice survives restart before first admission');
   select('scion-a');
   send('dev:give', { itemId: 'vessel-handaxe', qty: 1, seed: 53, itemLevel: 18 });
   send('dev:give', { itemId: 'charted-tablet-crown', qty: 1, seed: 37, itemLevel: 5 });
@@ -177,5 +190,5 @@ try {
   send('player:login', { guestId: identity, awaitChronicles: true });
   await Promise.race([closed, new Promise((_, reject) => setTimeout(() => reject(new Error('damaged save was not rejected')), 7000))]);
   assert.deepEqual(await readFile(savePath), corrupt, 'damaged save is preserved, never silently replaced');
-  console.log(`PASS: real-process restart, vendor purchase, reserve Scion, exact vessel/tablet rolls, zone round trip, UUID uniqueness, mortal death, relic recovery, exclusive writer, fail-stopped storage, corrupt-save preservation. Evidence: ${directory}`);
+  console.log(`PASS: pre-admission Hardcore/soft creation, real-process restart, vendor purchase, reserve Scion, exact vessel/tablet rolls, zone round trip, UUID uniqueness, mortal death, relic recovery, exclusive writer, fail-stopped storage, corrupt-save preservation. Evidence: ${directory}`);
 } finally { await stop(); }

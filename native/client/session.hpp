@@ -49,7 +49,7 @@ struct ClientCommand {
     // TASK-0145 Gate-B chronicles intents. The session translates them into
     // the exact accepted envelopes; presentation never builds wire payloads.
     FoundHouse,     // `target` = House display name
-    CreateScion,    // `target` = Scion display name
+    CreateScion,    // `target` = Scion display name; value!=0 => mortal oath
     SelectScion,    // `target` = scion id; value!=0 => mortal oath
     SetOut,         // `target` = scion id (plain admission / road purse)
     NpcAction,      // `target` = wire action id ("player:npc:talk", ...);
@@ -77,7 +77,7 @@ struct ClientCommand {
   static ClientCommand enter_zone(std::string node_id);
   static ClientCommand extract();
   static ClientCommand found_house(std::string house_name);
-  static ClientCommand create_scion(std::string scion_name);
+  static ClientCommand create_scion(std::string scion_name, bool mortal_oath = false);
   static ClientCommand select_scion(std::string scion_id, bool mortal_oath);
   static ClientCommand set_out(std::string scion_id);
   static ClientCommand npc_action(int npc_id, std::string action_id);

@@ -612,6 +612,13 @@ struct ClientState {
   std::chrono::steady_clock::time_point title_started = std::chrono::steady_clock::now();
   std::vector<RECT> title_action_hits;
   int title_selected = 0;
+  enum class CreationWait { None, House, Scion, Admission };
+  bool startup_creation = false;
+  CreationWait creation_wait = CreationWait::None;
+  int creation_focus = 0; // name, Hardcore, create, back
+  RECT creation_input{}, creation_oath{}, creation_confirm{}, creation_back{};
+  std::string creation_requested_name, creation_previous_receipt, creation_house;
+  std::chrono::steady_clock::time_point creation_submitted{};
   bool chronicles_oath = false;  // mortal-oath choice applied to the next admission
   ChronicleNamingMode chronicles_naming = ChronicleNamingMode::None;
   std::string chronicles_name_input;
@@ -4845,6 +4852,7 @@ void begin_chronicle_naming(ClientState& state, ChronicleNamingMode mode) {
   state.chronicles_naming = mode;
   state.chronicles_name_input.clear();
   state.chronicles_name_error.clear();
+  state.chronicles_ignore_next_char = false;
 }
 
 void cancel_chronicle_naming(ClientState& state) {
@@ -4858,6 +4866,10 @@ void confirm_chronicle_naming(ClientState& state) {
   if (!state.session || state.chronicles_naming == ChronicleNamingMode::None)
     return;
   std::string name = normalize_chronicle_name(state.chronicles_name_input);
+  if (state.startup_creation && name.empty()) {
+    state.chronicles_name_error = "Enter a name to continue.";
+    return;
+  }
   if (name.empty()) {
     name = state.chronicles_naming == ChronicleNamingMode::House
                ? house_display_name(state)
@@ -4874,12 +4886,23 @@ void confirm_chronicle_naming(ClientState& state) {
 
   using verdigris::client::ClientCommand;
   const ChronicleNamingMode mode = state.chronicles_naming;
+  if (state.startup_creation) {
+    state.creation_requested_name = name;
+    state.creation_previous_receipt = state.session->model().chronicle.created_scion_id;
+    state.creation_house = state.session->model().chronicle.active_house_id;
+    const auto& roster = state.session->model().chronicle;
+    if (!verdigris::client::find_chronicle_house(roster,state.creation_house) && !roster.houses.empty())
+      state.creation_house = roster.houses.front().id; // same fallback as the session command
+    state.creation_submitted = std::chrono::steady_clock::now();
+    state.creation_wait = mode == ChronicleNamingMode::House
+        ? ClientState::CreationWait::House : ClientState::CreationWait::Scion;
+  }
   cancel_chronicle_naming(state);
   if (mode == ChronicleNamingMode::House) {
     state.session->submit(ClientCommand::found_house(name));
     show_hint(state, "Your House enters the chronicles");
   } else {
-    state.session->submit(ClientCommand::create_scion(name));
+    state.session->submit(ClientCommand::create_scion(name, state.chronicles_oath));
     show_hint(state, "A new Scion joins the lineage");
   }
 }
@@ -5024,6 +5047,7 @@ bool title_account_ready(const ClientState& state) {
 
 bool activate_title_action(ClientState& state, int index) {
   if (!title_account_ready(state) || index < 0 || index > 2) return false;
+  state.startup_creation = false;
   state.title_open = false;
   state.title_orbit.dragging = false;
   state.screen = Screen::Chronicles;
@@ -5034,13 +5058,18 @@ bool activate_title_action(ClientState& state, int index) {
     // is not a new admission and must not silently change Hardcore mode.
     state.session->submit(verdigris::client::ClientCommand::select_scion(scion->id, scion->mortal));
   } else {
+    state.startup_creation = true;
+    state.creation_wait = ClientState::CreationWait::None;
+    state.creation_focus = 0;
+    state.chronicles_oath = false;
     begin_chronicle_naming(state, state.session->model().chronicle.houses.empty()
         ? ChronicleNamingMode::House : ChronicleNamingMode::Scion);
   }
   return true;
 }
 
-void paint_title_scene(ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
+void paint_title_scene(ClientState& state, HDC dc, const RECT& bounds, render::List& rl,
+                       bool menu = true) {
   std::filesystem::path root = "native/client/assets/wizard/splash";
   for (const auto& candidate : {root, std::filesystem::path(executable_directory()) / "../../client/assets/wizard/splash",
                                 std::filesystem::path(executable_directory()) / "../client/assets/wizard/splash",
@@ -5050,6 +5079,11 @@ void paint_title_scene(ClientState& state, HDC dc, const RECT& bounds, render::L
   const float seconds = std::chrono::duration<float>(std::chrono::steady_clock::now() - state.title_started).count();
   const bool rendered = state.title_scene.draw(dc, bounds, root, state.title_orbit, seconds);
   if (!rendered) skin::panel(dc, bounds, skin::kVerdigris, 255, 0);
+  if (!menu) {
+    rl.push_back({render::Op::Chronicles,0,0,0,static_cast<int>(state.title_scene.triangles()),
+                  rendered ? "title:3d-island" : "title:render-error"});
+    return;
+  }
   const int s = std::max(1, std::min(static_cast<int>(bounds.bottom) / 650, static_cast<int>(bounds.right) / 900));
   skin::set_ui_scale(s);
   SetBkMode(dc, TRANSPARENT);
@@ -5067,16 +5101,20 @@ void paint_title_scene(ClientState& state, HDC dc, const RECT& bounds, render::L
   const auto* scion=title_continue_scion(state);
   const std::string primary=scion ? "Continue as " + scion->name : "Begin your chronicle";
   const std::string labels[]={primary,"Create a Scion","House & chronicle"};
-  state.title_action_hits.clear();
+  state.title_action_hits.assign(3,RECT{});
+  if (!scion && state.title_selected==1) state.title_selected=0;
+  int row=0;
   for (int i=0;i<3;++i) {
-    RECT card{left,top+(112+i*62)*s,left+menu_width,top+(162+i*62)*s};
+    if (i==1 && !scion) continue; // Begin already opens the required creation step.
+    RECT card{left,top+(112+row*62)*s,left+menu_width,top+(162+row*62)*s};
+    ++row;
     if (i==state.title_selected) {
       if (!draw_framekit_nine(state.billboards,dc,state.billboards.fk_button,card))
         skin::panel(dc,card,skin::kGold,185,6);
     }
     RECT label{card.left+18*s,card.top,card.right-12*s,card.bottom};
     text(skin::font_heading(),ready ? (i==state.title_selected?skin::kGold:skin::kInk) : skin::kInkDim,label,labels[i],DT_SINGLELINE|DT_VCENTER);
-    state.title_action_hits.push_back(card);
+    state.title_action_hits[i]=card;
     rl.push_back({render::Op::Chronicles,static_cast<double>(card.left),static_cast<double>(card.top),0,i,"title:action"});
   }
   std::string status=ready ? "Drag to orbit  /  Scroll to zoom  /  Home to reset" : "Connecting to your saved chronicle...";
@@ -5087,6 +5125,128 @@ void paint_title_scene(ClientState& state, HDC dc, const RECT& bounds, render::L
     text(skin::font_small(),skin::kEmber,{left,28*s,bounds.right-28*s,100*s},"Title scene unavailable: " + state.title_scene.error(),DT_WORDBREAK);
   }
   rl.push_back({render::Op::Chronicles,0,0,0,static_cast<int>(state.title_scene.triangles()), rendered ? "title:3d-island" : "title:render-error"});
+}
+
+void cancel_startup_creation(ClientState& state) {
+  cancel_chronicle_naming(state);
+  state.startup_creation = false;
+  state.creation_wait = ClientState::CreationWait::None;
+  state.title_open = true;
+}
+
+void advance_startup_creation(ClientState& state) {
+  if (!state.startup_creation || !title_account_ready(state)) return;
+  using Wait = ClientState::CreationWait;
+  const auto& model = state.session->model();
+  if (state.creation_wait == Wait::House) {
+    const auto* house = verdigris::client::find_chronicle_house(model.chronicle,model.chronicle.active_house_id);
+    if (!house || house->id == state.creation_house || house->name != state.creation_requested_name) return;
+    state.creation_wait = Wait::None;
+    state.creation_focus = 0;
+    begin_chronicle_naming(state,ChronicleNamingMode::Scion);
+  } else if (state.creation_wait == Wait::Scion) {
+    const auto& id = model.chronicle.created_scion_id;
+    if (id.empty() || id == state.creation_previous_receipt) return;
+    const auto* house = verdigris::client::find_chronicle_house(model.chronicle,state.creation_house);
+    if (!house) return;
+    for (const auto& scion : house->scions) {
+      if (scion.id != id || scion.name != state.creation_requested_name || scion.mortal != state.chronicles_oath) continue;
+      state.creation_wait = Wait::Admission; // set before submitting; no repeat admissions
+      state.creation_submitted = std::chrono::steady_clock::now();
+      state.session->submit(verdigris::client::ClientCommand::select_scion(id,scion.mortal));
+      break;
+    }
+  } else if (state.creation_wait == Wait::Admission && !model.chronicles_pending && model.player.alive) {
+    state.startup_creation = false;
+    state.creation_wait = Wait::None;
+  }
+}
+
+void activate_creation_control(ClientState& state, int control) {
+  if (!state.startup_creation) return;
+  if (control == 3) { cancel_startup_creation(state); return; }
+  if (!title_account_ready(state) || state.creation_wait != ClientState::CreationWait::None) return;
+  if (control == 1 && state.chronicles_naming == ChronicleNamingMode::Scion)
+    state.chronicles_oath = !state.chronicles_oath;
+  if (control == 2 || control == 0) confirm_chronicle_naming(state);
+}
+
+bool handle_creation_key(ClientState& state, WPARAM key) {
+  if (!state.startup_creation) return false;
+  if (key == VK_ESCAPE) { cancel_startup_creation(state); return true; }
+  if (key == VK_TAB) {
+    const int direction = (GetKeyState(VK_SHIFT) & 0x8000) ? -1 : 1;
+    state.creation_focus = (state.creation_focus + direction + 4) % 4;
+    if (state.creation_focus == 1 && state.chronicles_naming != ChronicleNamingMode::Scion)
+      state.creation_focus = (state.creation_focus + direction + 4) % 4;
+    return true;
+  }
+  if (key == VK_RETURN || (key == VK_SPACE && state.creation_focus != 0)) {
+    activate_creation_control(state,state.creation_focus);
+    state.chronicles_ignore_next_char = true;
+    return true;
+  }
+  // Normal editing shortcuts go through the shared naming handler only.
+  return state.creation_focus != 0 || state.creation_wait != ClientState::CreationWait::None;
+}
+
+void paint_startup_creation(ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
+  paint_title_scene(state,dc,bounds,rl,false);
+  const int s = std::max(1,std::min(static_cast<int>(bounds.right)/900,static_cast<int>(bounds.bottom)/650));
+  skin::set_ui_scale(s); SetBkMode(dc,TRANSPARENT);
+  const int width = std::min(520*s,static_cast<int>(bounds.right)-32);
+  const int height = std::min(350*s,static_cast<int>(bounds.bottom)-32);
+  RECT card{(bounds.right-width)/2,(bounds.bottom-height)/2,(bounds.right+width)/2,(bounds.bottom+height)/2};
+  if (!draw_framekit_nine(state.billboards,dc,state.billboards.fk_panel,card)) skin::panel(dc,card,skin::kGold,250,10);
+  auto text = [&](HFONT font,COLORREF color,RECT rect,const std::string& value,UINT flags=DT_SINGLELINE) {
+    const auto old=SelectObject(dc,font); SetTextColor(dc,color);
+    DrawTextA(dc,value.c_str(),static_cast<int>(value.size()),&rect,flags|DT_NOPREFIX|DT_END_ELLIPSIS); SelectObject(dc,old);
+  };
+  const bool house = state.chronicles_naming == ChronicleNamingMode::House || state.creation_wait == ClientState::CreationWait::House;
+  const bool waiting = state.creation_wait != ClientState::CreationWait::None;
+  const int inset=24*s;
+  text(skin::font_heading(),skin::kGold,{card.left+inset,card.top+22*s,card.right-inset,card.top+50*s},house?"Found your House":"Create your Scion");
+  text(skin::font_body(),skin::kInkDim,{card.left+inset,card.top+56*s,card.right-inset,card.top+88*s},house?"Your lineage keeps its history between characters.":"A new character in "+active_house_display_name(state));
+  state.creation_input={card.left+inset,card.top+96*s,card.right-inset,card.top+145*s};
+  if (!draw_framekit_sprite(state.billboards,dc,state.billboards.fk_chronicle_input,state.creation_input)) skin::slot(dc,state.creation_input,skin::kGold,true);
+  const int input_inset=(state.creation_input.right-state.creation_input.left)*14/162+4*s;
+  RECT content{state.creation_input.left+input_inset,state.creation_input.top+8*s,state.creation_input.right-input_inset,state.creation_input.bottom-8*s};
+  std::string value=waiting?state.creation_requested_name:state.chronicles_name_input;
+  const bool placeholder=value.empty();
+  if (placeholder) value=house?"House name":"Character name";
+  else if (!waiting && state.creation_focus==0) value+="|";
+  const auto old=SelectObject(dc,skin::font_heading());
+  SIZE extent{};
+  while (value.size()>1) { GetTextExtentPoint32A(dc,value.c_str(),static_cast<int>(value.size()),&extent); if(extent.cx<=content.right-content.left) break; value.erase(0,1); }
+  SelectObject(dc,old);
+  text(skin::font_heading(),placeholder?skin::kInkDim:skin::kInk,content,value,DT_SINGLELINE|DT_VCENTER);
+  state.creation_oath={card.left+inset,card.top+165*s,card.right-inset,card.top+201*s};
+  if (!house) {
+    RECT checkbox{state.creation_oath.left,state.creation_oath.top+3*s,state.creation_oath.left+28*s,state.creation_oath.top+31*s};
+    skin::slot(dc,checkbox,state.creation_focus==1?skin::kGold:skin::kVerdigris,state.chronicles_oath);
+    text(skin::font_heading(),skin::kGold,checkbox,state.chronicles_oath?"X":"",DT_CENTER|DT_VCENTER|DT_SINGLELINE);
+    text(skin::font_body_bold(),skin::kInk,{checkbox.right+12*s,checkbox.top,card.right-inset,checkbox.bottom},"Hardcore (mortal oath)",DT_SINGLELINE|DT_VCENTER);
+    text(skin::font_small(),state.chronicles_oath?skin::kEmber:skin::kInkDim,
+         {card.left+inset,card.top+207*s,card.right-inset,card.top+247*s},
+         state.chronicles_oath?"Death is permanent. Your House and its history remain.":"Off: this Scion can return after defeat.",DT_WORDBREAK);
+  }
+  std::string status=state.chronicles_name_error;
+  if (waiting) {
+    status=state.creation_wait==ClientState::CreationWait::Admission?"Entering the world...":"Saving your name...";
+    if (std::chrono::steady_clock::now()-state.creation_submitted>std::chrono::seconds(10))
+      status="Still waiting. Back returns to your saved roster; do not resubmit.";
+  } else if (!title_account_ready(state)) status="Connection lost. Your typed name is kept here.";
+  text(skin::font_small(),waiting?skin::kInkDim:skin::kEmber,{card.left+inset,card.bottom-100*s,card.right-inset,card.bottom-65*s},status,DT_WORDBREAK);
+  state.creation_back={card.left+inset,card.bottom-61*s,card.left+142*s,card.bottom-21*s};
+  state.creation_confirm={card.right-235*s,card.bottom-61*s,card.right-inset,card.bottom-21*s};
+  auto button=[&](RECT rect,int focus,const char* label) {
+    if (!draw_framekit_nine(state.billboards,dc,state.billboards.fk_button,rect)) skin::panel(dc,rect,skin::kGold,230,6);
+    text(skin::font_body_bold(),state.creation_focus==focus?skin::kGold:skin::kInk,rect,label,DT_SINGLELINE|DT_CENTER|DT_VCENTER);
+  };
+  button(state.creation_back,3,"Back");
+  button(state.creation_confirm,2,waiting?"Please wait":house?"Continue":"Create & play");
+  rl.push_back({render::Op::Chronicles,static_cast<double>(card.left),static_cast<double>(card.top),0,0,house?"creation:house":"creation:scion"});
+  rl.push_back({render::Op::Chronicles,0,0,0,0,state.chronicles_oath?"creation:hardcore:on":"creation:hardcore:off"});
 }
 
 // ── TASK-0161: contained capture-root isolation ─────────────────────────
@@ -7003,6 +7163,11 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   // TASK-0145: the Chronicles front door replaces the abrupt game-window
   // entry for the remote owner path. Expedition painting is skipped
   // entirely; the door renders from the authoritative chronicle model.
+  if (state.startup_creation) {
+    paint_startup_creation(state,dc,bounds,rl);
+    state.render_list=std::move(rl);
+    return;
+  }
   if (state.title_open) {
     paint_title_scene(state, dc, bounds, rl);
     state.render_list = std::move(rl);
@@ -8040,6 +8205,7 @@ void fixed_game_tick(ClientState& state, const RECT& bounds) {
     sync_world(state);
     ingest_session_events(state);
     update_screen_for_model(state);
+    advance_startup_creation(state);
     watch_crypt_statuses(state);
     // Regenerate landmark scenery whenever the authoritative scene changes
     // (login included - transition envelopes never fire for the first town).
@@ -8051,7 +8217,7 @@ void fixed_game_tick(ClientState& state, const RECT& bounds) {
   }
   if (state.relic_toast_ticks > 0) --state.relic_toast_ticks;
 
-  const bool at_front_door = state.title_open ||
+  const bool at_front_door = state.title_open || state.startup_creation ||
       (state.screen == Screen::Chronicles && state.session != nullptr);
   int dx = (state.d ? 1 : 0) - (state.a ? 1 : 0);
   int dy = (state.s ? 1 : 0) - (state.w ? 1 : 0);
@@ -8397,6 +8563,10 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       return DefWindowProc(window, message, wparam, lparam);
     }
     case WM_CHAR:
+      if (state && state->startup_creation) {
+        if (state->chronicles_ignore_next_char) { state->chronicles_ignore_next_char=false; return 0; }
+        if (state->creation_focus!=0 || state->creation_wait!=ClientState::CreationWait::None) return 0;
+      }
       if (state && state->screen == Screen::Chronicles &&
           state->chronicles_naming != ChronicleNamingMode::None) {
         handle_chronicle_character(*state, static_cast<unsigned int>(wparam));
@@ -8421,6 +8591,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         break;
       }
       if (wparam == VK_ESCAPE) {
+        if (state->startup_creation) { cancel_startup_creation(*state); break; }
         if (state->title_enabled && !state->title_open && state->screen == Screen::Chronicles &&
             state->chronicles_naming == ChronicleNamingMode::None) {
           state->title_open = true;
@@ -8431,9 +8602,12 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         if (state->quit_requested) PostQuitMessage(0);
         break;
       }
+      if (handle_creation_key(*state,wparam)) break;
       if (state->title_open) {
         if (wparam == VK_UP) state->title_selected = std::max(0,state->title_selected-1);
         if (wparam == VK_DOWN) state->title_selected = std::min(2,state->title_selected+1);
+        if (state->title_selected==1 && !title_continue_scion(*state) &&
+            (wparam==VK_UP || wparam==VK_DOWN)) state->title_selected=wparam==VK_UP?0:2;
         if (wparam == VK_LEFT) state->title_orbit.yaw -= .1f;
         if (wparam == VK_RIGHT) state->title_orbit.yaw += .1f;
         if (wparam == VK_HOME) state->title_orbit.reset();
@@ -8681,6 +8855,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       break;
     case WM_MOUSEWHEEL:
       if (state) {
+        if (state->startup_creation) break;
         const int delta = GET_WHEEL_DELTA_WPARAM(wparam);
         if (state->title_open) { state->title_orbit.wheel(delta); break; }
         if (state->minimap_mode == MinimapMode::Overlay) {
@@ -8698,7 +8873,13 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       break;
     case WM_LBUTTONDOWN:
       if (state) {
-        if (state->title_open) {
+        if (state->startup_creation) {
+          const POINT point{GET_X_LPARAM(lparam),GET_Y_LPARAM(lparam)};
+          if (PtInRect(&state->creation_back,point)) activate_creation_control(*state,3);
+          else if (PtInRect(&state->creation_confirm,point)) activate_creation_control(*state,2);
+          else if (state->creation_wait==ClientState::CreationWait::None && PtInRect(&state->creation_input,point)) state->creation_focus=0;
+          else if (PtInRect(&state->creation_oath,point)) { state->creation_focus=1; activate_creation_control(*state,1); }
+        } else if (state->title_open) {
           const POINT point{GET_X_LPARAM(lparam),GET_Y_LPARAM(lparam)};
           bool menu=false;
           for (size_t i=0;i<state->title_action_hits.size();++i)
@@ -8774,7 +8955,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       break;
     case WM_RBUTTONDOWN:
       if (state) {
-        if (state->title_open) break;
+        if (state->title_open || state->startup_creation) break;
         RECT click_bounds;
         GetClientRect(window, &click_bounds);
         if (!pointer_ui_blocks_world(*state, click_bounds,
@@ -8784,6 +8965,8 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       break;
     case WM_SIZE:
       if (state) {
+        state->creation_input=state->creation_oath=state->creation_confirm=state->creation_back=RECT{};
+        state->title_action_hits.clear();
         state->inventory_hits.clear();
         state->rechart_tablet_hit_valid = false;
       }
@@ -9757,6 +9940,7 @@ bool chronicles_pump(ClientState& state, int max_ticks,
     state.session->poll();
     ingest_session_events(state);
     update_screen_for_model(state);
+    advance_startup_creation(state);
     watch_crypt_statuses(state);
     if (state.relic_toast_ticks > 0) --state.relic_toast_ticks;
     for (auto& fx : state.effects) ++fx.age;
@@ -11697,6 +11881,71 @@ int scenario_chronicles_lineage_ui() {
   return 0;
 }
 
+int scenario_guided_creation() {
+  using namespace verdigris::client;
+  std::unique_ptr<verdigris::networking::WebSocketServer> server;
+  unsigned short port=0;
+  for (unsigned short p=6780;p<=6799;++p) {
+    auto candidate=std::make_unique<verdigris::networking::WebSocketServer>(p);
+    std::string error;
+    if (candidate->start(&error)) { server=std::move(candidate); port=p; break; }
+  }
+  scenario_check(server!=nullptr,"creation: isolated real server starts");
+  if (!server) return scenario_failures;
+  ClientState state;
+  state.title_enabled=state.title_open=state.chronicles_mode=true;
+  state.screen=Screen::Chronicles;
+  state.session=std::make_unique<RemoteProtocolSession>("127.0.0.1",port,"guided-creation-proof",false);
+  std::string error;
+  scenario_check(state.session->start(&error),"creation: real remote session connects");
+  scenario_check(chronicles_pump(state,250,[&]{return title_account_ready(state);}),"creation: saved roster arrives before admission");
+  activate_title_action(state,0);
+  scenario_check(state.startup_creation && state.chronicles_naming==ChronicleNamingMode::House,"creation: first action asks only for House name");
+  activate_creation_control(state,2);
+  scenario_check(state.creation_wait==ClientState::CreationWait::None && !state.chronicles_name_error.empty(),"creation: blank name cannot silently create a default House");
+  scenario_type_chronicle_name(state,"The Copper Lantern");
+  activate_creation_control(state,2);
+  activate_creation_control(state,2); // double-click must not emit another founder
+  scenario_check(chronicles_pump(state,250,[&]{return state.chronicles_naming==ChronicleNamingMode::Scion;}),"creation: saved House leads directly to Scion naming, without a ledger detour");
+  scenario_check(state.session->model().chronicle.houses.size()==1,"creation: repeated confirm does not duplicate the House");
+  scenario_type_chronicle_name(state,"Ilyra Copper-Hand");
+  scenario_check(state.chronicles_name_input=="Ilyra Copper-Hand","creation: next-step first character is not swallowed");
+  activate_creation_control(state,1);
+  scenario_check(state.chronicles_oath,"creation: one control arms Hardcore");
+  std::string capture_dir;
+  const int override_state=capture_root_override(&capture_dir);
+  if (override_state<0) { state.session->shutdown(); server->stop(); scenario_check(false,"creation: invalid capture root"); return scenario_failures; }
+  if (!override_state) capture_dir="native/build/creation-captures";
+  std::filesystem::create_directories(capture_dir);
+  load_billboards(state.billboards);
+  for (POINT size : {POINT{960,600},POINT{1727,1395},POINT{3440,1440}}) {
+    reference_present(state,size.x,size.y,capture_dir+"/creation-hardcore-"+std::to_string(size.x)+"x"+std::to_string(size.y)+".png");
+    scenario_check(render_list_has(state,render::Op::Chronicles,"creation:hardcore:on"),"creation: Hardcore choice is visible on the name card");
+    scenario_check(!render_list_has(state,render::Op::Chronicles,"action:"),"creation: legacy ledger actions do not crowd guided creation");
+    scenario_check(state.creation_back.left>=0 && state.creation_confirm.right<=size.x && state.creation_confirm.bottom<=size.y,"creation: buttons fit resized windows");
+  }
+  activate_creation_control(state,2);
+  activate_creation_control(state,2);
+  scenario_check(chronicles_pump(state,250,[&]{return !state.startup_creation && state.screen==Screen::Expedition;}),"creation: exact saved Scion is admitted automatically");
+  const auto& model=state.session->model();
+  const auto* scion=find_chronicle_scion(model.chronicle,model.chronicle.active_scion_id);
+  scenario_check(scion && scion->name=="Ilyra Copper-Hand" && scion->mortal,"creation: server roster preserves chosen name and Hardcore oath");
+  scenario_check(model.chronicle.houses.size()==1 && model.chronicle.houses.front().scions.size()==1,"creation: repeated confirmation creates only one character");
+  // Return to title only in the fixture; production never teleports the live player here.
+  state.title_open=true;
+  activate_title_action(state,1);
+  scenario_check(!state.chronicles_oath,"creation: a separate new Scion does not inherit the prior oath selection");
+  scenario_type_chronicle_name(state,"Second Copper");
+  activate_creation_control(state,2);
+  cancel_startup_creation(state); // cancel only presentation, never undo a saved request
+  scenario_check(chronicles_pump(state,250,[&]{return state.session->model().chronicle.houses.front().scions.size()==2;}),"creation: late save receipt remains in the roster after Back");
+  scenario_check(state.title_open && !state.startup_creation,"creation: a late receipt cannot reopen a canceled wizard or auto-admit");
+  const auto* second=find_chronicle_scion(state.session->model().chronicle,state.session->model().chronicle.created_scion_id);
+  scenario_check(second && second->name=="Second Copper" && !second->mortal,"creation: unchecked Hardcore is stored as a soft character");
+  state.session->shutdown(); server->stop();
+  return scenario_failures;
+}
+
 int scenario_title_island() {
   ClientState state;
   auto session = std::make_unique<ScenarioLineageSession>();
@@ -12934,6 +13183,7 @@ int run_scenarios(const std::string& which) {
       {"chronicles-gate-b", scenario_chronicles_gate_b},
       {"chronicles-lineage-ui", scenario_chronicles_lineage_ui},
       {"title-island", scenario_title_island},
+      {"guided-creation", scenario_guided_creation},
       {"first-session-clarity", scenario_first_session_clarity},
       {"animation-vfx-phase-a", scenario_animation_vfx_phase_a},
       {"progression-surface", scenario_progression_surface},

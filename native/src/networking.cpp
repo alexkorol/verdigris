@@ -4667,7 +4667,8 @@ void ProtocolSession::handle_impl(const Envelope& envelope, const std::function<
     // Include crypt entries as well as living/reserve Scions.
     do { scion_id="scion-"+std::to_string(scion_serial++); }
     while (chronicle_.stringify().find("\"" + scion_id + "\"") != std::string::npos);
-    ensure_chronicle_scion(house_id,scion_id,name,false);
+    ensure_chronicle_scion(house_id,scion_id,name,
+        as_bool(payload ? payload->get("mortal") : nullptr, false));
     active_scion_name_=name;
     chronicles_revision_+=1;
     emit(Envelope{"chronicles:state",chronicles_state_payload(scion_id)});
