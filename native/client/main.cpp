@@ -180,6 +180,10 @@ struct BillboardAssets {
   // panel/slot plates and the item-art sprites for inventory cells.
   SpriteBitmap fk_panel;
   SpriteBitmap fk_slot;
+  // Generated seamless interior used beneath WIZARD's authored panel frame.
+  // Keeping this separate means the frozen source pack remains untouched and
+  // the center can repeat at native resolution instead of being stretched.
+  SpriteBitmap fk_panel_fill;
   // Authored WIZARD Framekit 2.0 game pack. These are the actual cropped
   // marble/brass sheets used by the flagship module, not procedural stand-ins.
   SpriteBitmap fk_panel_ornate;
@@ -216,6 +220,7 @@ struct BillboardAssets {
     terrain4.reset();
     fk_panel.reset();
     fk_slot.reset();
+    fk_panel_fill.reset();
     fk_panel_ornate.reset();
     fk_banner.reset();
     fk_tooltip.reset();
@@ -1046,6 +1051,9 @@ void load_framekit_assets(BillboardAssets& assets) {
       continue;
     }
     const std::string game = root + "/framekit/game/";
+    load_sprite(assets,
+                root + "/../generated/framekit/panel_fill_dark_stone_v2.png",
+                assets.fk_panel_fill);
     load_sprite(assets, game + "panel_plain.png", assets.fk_panel_ornate);
     load_sprite(assets, game + "banner_winged.png", assets.fk_banner);
     load_sprite(assets, game + "tooltip_frame.png", assets.fk_tooltip);
@@ -1126,6 +1134,26 @@ bool draw_framekit_nine(const BillboardAssets& assets, HDC dc,
   const BLENDFUNCTION blend{AC_SRC_OVER, 0, constant_alpha, AC_SRC_ALPHA};
   for (const auto& region : plan.regions) {
     if (region.dst_w == 0 || region.dst_h == 0) continue;
+    if (panel && region.piece == framekit_renderer::Piece::Center &&
+        assets.fk_panel_fill.ready()) {
+      // The old center sampled one small portion of panel_plain.png and
+      // enlarged it across the entire pane. Repeat the dedicated surface at
+      // 1:1 pixels instead, clipping only the final row/column of tiles.
+      const SpriteBitmap& fill = assets.fk_panel_fill;
+      for (int y = region.dst_y; y < region.dst_y + region.dst_h;
+           y += fill.height) {
+        const int height =
+            std::min(fill.height, region.dst_y + region.dst_h - y);
+        for (int x = region.dst_x; x < region.dst_x + region.dst_w;
+             x += fill.width) {
+          const int width =
+              std::min(fill.width, region.dst_x + region.dst_w - x);
+          assets.alpha_blend(dc, x, y, width, height, fill.dc, 0, 0, width,
+                             height, blend);
+        }
+      }
+      continue;
+    }
     assets.alpha_blend(dc, region.dst_x, region.dst_y, region.dst_w,
                        region.dst_h, source.dc, region.src_x, region.src_y,
                        region.src_w, region.src_h, blend);
@@ -3250,7 +3278,9 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     skin::panel(dc, panel_rect, skin::kVerdigris, 245, 8.0f);
   else
     rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
-                  "framekit-raster:panel-plain"});
+                  state.billboards.fk_panel_fill.ready()
+                      ? "framekit-raster:panel-tiled-fill"
+                      : "framekit-raster:panel-plain"});
 
   // Interior layout scale: the pane rect scales with window height, so every
   // hand-authored 1x offset inside must scale with it or rows collide.
@@ -4105,11 +4135,10 @@ void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List
       const int max_ticks = 30;
       const double sweep =
           std::clamp(static_cast<double>(player.cooldown_ticks) / max_ticks, 0.0, 1.0);
-      const int overlay_h = static_cast<int>(slot_h * sweep);
-      RECT overlay{box.left, box.top, box.right, box.top + overlay_h};
-      HBRUSH overlay_brush = CreateSolidBrush(RGB(10, 12, 14));
-      FillRect(dc, &overlay, overlay_brush);
-      DeleteObject(overlay_brush);
+      skin::cooldown_wedge(dc, box, sweep);
+      rl.push_back({render::Op::Quickbar, static_cast<double>(cx),
+                    static_cast<double>(cy), sweep, player.cooldown_ticks,
+                    "cooldown-radial:" + std::string(slot.name)});
     }
 
     rl.push_back({render::Op::Quickbar, static_cast<double>(cx), static_cast<double>(cy),
@@ -5184,7 +5213,14 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
   put_text(skin::font_title(), skin::kVerdigris, canvas_left, header_top,
            "V E R D I G R I S");
   put_text(skin::font_small(), skin::kGold, canvas_left,
-           header_top + 31 * door_scale, "CHRONICLES  /  HOUSE & SCION");
+           header_top + 41 * door_scale, "CHRONICLES  /  HOUSE & SCION");
+  state.hud_rect_trace.push_back(
+      {"chronicles-title", {canvas_left, header_top, 240 * door_scale,
+                             34 * door_scale}});
+  state.hud_rect_trace.push_back(
+      {"chronicles-subtitle",
+       {canvas_left, header_top + 41 * door_scale, 240 * door_scale,
+        14 * door_scale}});
   const int laurel_w = 62 * door_scale;
   const int laurel_h = 49 * door_scale;
   RECT laurel{canvas_left + canvas_w / 2 - laurel_w - 8 * door_scale,
@@ -5613,19 +5649,24 @@ void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
     rl.push_back({render::Op::Hud, static_cast<double>(chip_x),
                   static_cast<double>(chip_y), 0.0, 0, chip});
     COLORREF chip_color = RGB(185, 198, 188);
-    if (conn == verdigris::client::ConnectionState::Ready)
+    if (conn == verdigris::client::ConnectionState::Ready ||
+        conn == verdigris::client::ConnectionState::Connected)
       chip_color = RGB(120, 214, 168);
     else if (conn == verdigris::client::ConnectionState::Connecting ||
-             conn == verdigris::client::ConnectionState::Connected ||
              conn == verdigris::client::ConnectionState::Retrying)
       chip_color = RGB(239, 208, 116);
     else if (conn == verdigris::client::ConnectionState::Disconnected ||
              conn == verdigris::client::ConnectionState::Rejected ||
              conn == verdigris::client::ConnectionState::ProtocolMismatch)
       chip_color = RGB(255, 80, 70);
-    RECT chip_rect{chip_x, chip_y,
-                   chip_x + connection_chip_w(static_cast<int>(bounds.bottom)),
-                   chip_y + connection_chip_h(static_cast<int>(bounds.bottom))};
+    const bool compact_ready =
+        conn == verdigris::client::ConnectionState::Ready ||
+        conn == verdigris::client::ConnectionState::Connected;
+    const int reserved_w = connection_chip_w(static_cast<int>(bounds.bottom));
+    const int chip_h = connection_chip_h(static_cast<int>(bounds.bottom));
+    const int chip_w = compact_ready ? chip_h : reserved_w;
+    if (compact_ready) chip_x += reserved_w - chip_w;
+    RECT chip_rect{chip_x, chip_y, chip_x + chip_w, chip_y + chip_h};
     state.hud_rect_trace.push_back(
         {"connection",
          {chip_rect.left, chip_rect.top,
@@ -5644,7 +5685,24 @@ void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
     DeleteObject(chip_pen);
     SetBkMode(dc, TRANSPARENT);
     SetTextColor(dc, chip_color);
-    TextOutA(dc, chip_x + 8, chip_y + 3, chip.c_str(), static_cast<int>(chip.size()));
+    if (compact_ready) {
+      const int inset = (std::max)(4, chip_h / 3);
+      HBRUSH signal = CreateSolidBrush(chip_color);
+      HGDIOBJ old_signal = SelectObject(dc, signal);
+      Ellipse(dc, chip_rect.left + inset, chip_rect.top + inset,
+              chip_rect.right - inset, chip_rect.bottom - inset);
+      SelectObject(dc, old_signal);
+      DeleteObject(signal);
+      rl.push_back({render::Op::Hud, static_cast<double>(chip_x),
+                    static_cast<double>(chip_y), 0.0, 1,
+                    "connection-ready-icon"});
+    } else {
+      std::string visible = label;
+      std::transform(visible.begin(), visible.end(), visible.begin(),
+                     [](unsigned char c) { return static_cast<char>(std::toupper(c)); });
+      TextOutA(dc, chip_x + 8, chip_y + 3, visible.c_str(),
+               static_cast<int>(visible.size()));
+    }
     if (conn == verdigris::client::ConnectionState::Disconnected ||
         conn == verdigris::client::ConnectionState::Rejected ||
         conn == verdigris::client::ConnectionState::ProtocolMismatch) {
@@ -9030,6 +9088,7 @@ int scenario_combat_cadence() {
   bool finisher_ring = false;
   bool finisher_damage = false;
   bool cadence_hud = false;
+  bool radial_cooldown = false;
   for (const auto& item : state.render_list) {
     if (item.op == render::Op::Impact &&
         item.label == phase_a::kComboFinisherLabel) finisher_ring = true;
@@ -9037,11 +9096,16 @@ int scenario_combat_cadence() {
       finisher_damage = true;
     if (item.op == render::Op::Quickbar &&
         item.label == "combo-cadence:3:18") cadence_hud = true;
+    if (item.op == render::Op::Quickbar &&
+        item.label.rfind("cooldown-radial:", 0) == 0)
+      radial_cooldown = true;
   }
   scenario_check(finisher_ring && finisher_damage,
                  "combat-cadence: third beat has a distinct ring and number");
   scenario_check(cadence_hud,
                  "combat-cadence: quickbar mirrors all three authoritative pips");
+  scenario_check(radial_cooldown,
+                 "combat-cadence: cooldown uses a radial clock overlay");
   return 0;
 }
 
@@ -9322,14 +9386,19 @@ int scenario_remote_render_list() {
   scenario_check(extract && extract->label == "stairs-up",
                  "remote-render-list: Extraction pad marked stairs-up");
   bool saw_conn = false;
+  bool saw_ready_icon = false;
   const char* conn_label =
       verdigris::client::connection_state_label(state.session->connection_state());
   for (const auto& item : state.render_list) {
     if (item.op == render::Op::Hud &&
         item.label == std::string("connection ") + conn_label)
       saw_conn = true;
+    if (item.op == render::Op::Hud && item.label == "connection-ready-icon")
+      saw_ready_icon = true;
   }
   scenario_check(saw_conn, "remote-render-list: connection chip uses connection_state_label");
+  scenario_check(saw_ready_icon,
+                 "remote-render-list: ready connection is an icon without redundant text");
 
   bool saw_monster = false, saw_swing = false, saw_drop = false;
   for (int step = 0; step < 240; ++step) {
@@ -10800,7 +10869,7 @@ int scenario_character_inventory_diptych() {
         ++filled;
       } else if (item.label.rfind("framekit-skill:", 0) == 0) {
         ++skill_rasters;
-      } else if (item.label == "framekit-raster:panel-plain") {
+      } else if (item.label == "framekit-raster:panel-tiled-fill") {
         ornate_panel = true;
       } else if (item.label == "framekit-raster:orb-life") {
         life_orb = true;
@@ -10823,9 +10892,10 @@ int scenario_character_inventory_diptych() {
                    "character-inventory: all WearSet seats and fills are explicit");
     scenario_check(footprints == 6 && bounded,
                    "character-inventory: all spatial footprints remain bounded");
-    scenario_check(ornate_panel && life_orb && resource_orb && xp_rail &&
+    scenario_check(state.billboards.fk_panel_fill.ready() && ornate_panel &&
+                       life_orb && resource_orb && xp_rail &&
                        skill_rasters == 4,
-                   "character-inventory: authored panel, HUD, orb, rail, and skill rasters were drawn");
+                   "character-inventory: tiled panel fill, authored HUD, orb, rail, and skill rasters were drawn");
   }
   for (const auto& trace : state.hud_rect_trace) {
     if (trace.first != "pane-item-footprint") continue;
@@ -10839,6 +10909,48 @@ int scenario_character_inventory_diptych() {
   move_inventory_selection(state, 1, 0);
   scenario_check(state.selected_item == 1,
                  "character-inventory: arrow navigation follows spatial neighbors");
+  return 0;
+}
+
+int scenario_framekit_pane_tiling() {
+  ClientState state;
+  load_billboards(state.billboards);
+  state.world.route_id = "town:verdigris";
+  state.world.theme = "town";
+  state.world.house_name = "House Ashwake";
+  state.world.scion_name = "Ilyra";
+  state.world.player.id = "scion-ilyra";
+  state.world.player.alive = true;
+  state.world.player.life = 100;
+  state.world.player.life_max = 100;
+  state.world.player.resource = 40;
+  state.world.player.resource_max = 40;
+  state.gear_overlay = true;
+
+  scenario_check(state.billboards.fk_panel_fill.ready() &&
+                     state.billboards.fk_panel_fill.width == 512 &&
+                     state.billboards.fk_panel_fill.height == 512,
+                 "framekit-pane-tiling: generated 512px panel surface decoded");
+
+  std::string capture_dir;
+  const int capture_override = capture_root_override(&capture_dir);
+  if (capture_override < 0) {
+    scenario_check(false,
+                   "framekit-pane-tiling: capture root rejected before any write");
+    return 0;
+  }
+  if (capture_override == 0) {
+    CreateDirectoryA("captures", nullptr);
+    capture_dir = "captures";
+  }
+  const std::string capture_path =
+      capture_dir + "\\framekit-pane-tiling-1920x1080.png";
+  scenario_check(reference_present(state, 1920, 1080, capture_path),
+                 "framekit-pane-tiling: large pane capture written");
+  scenario_check(render_list_has(state, render::Op::Hud,
+                                 "framekit-raster:panel-tiled-fill"),
+                 "framekit-pane-tiling: tiled fill replaced stretched center");
+  std::printf("    capture: %s\n", capture_path.c_str());
   return 0;
 }
 
@@ -11229,13 +11341,20 @@ int scenario_chronicles_lineage_ui() {
 
     const HudRect* house_pane = nullptr;
     const HudRect* action_pane = nullptr;
+    const HudRect* title = nullptr;
+    const HudRect* subtitle = nullptr;
     for (const auto& trace : state.hud_rect_trace) {
       if (trace.first == "chronicles-house-pane") house_pane = &trace.second;
       if (trace.first == "chronicles-action-pane") action_pane = &trace.second;
+      if (trace.first == "chronicles-title") title = &trace.second;
+      if (trace.first == "chronicles-subtitle") subtitle = &trace.second;
     }
     scenario_check(house_pane && action_pane &&
                        !hud_rects_overlap(*house_pane, *action_pane),
                    "chronicles-lineage-ui: ledger and admission rail stay distinct");
+    scenario_check(title && subtitle &&
+                       subtitle->y >= title->y + title->h + 6 * hud_scale(height),
+                   "chronicles-lineage-ui: masthead and subtitle keep a readable gap");
     scenario_check(state.chronicles_action_hits.size() == 4,
                    "chronicles-lineage-ui: two Scions, creation, and oath are actionable");
     bool bounded = true;
@@ -12316,6 +12435,7 @@ int run_scenarios(const std::string& which) {
       {"hud-information", scenario_hud_information},
       {"endgame-tablet-ui", scenario_endgame_tablet_ui},
       {"character-inventory-diptych", scenario_character_inventory_diptych},
+      {"framekit-pane-tiling", scenario_framekit_pane_tiling},
       {"vesselforge-active-properties", scenario_vesselforge_active_properties},
       {"vesselforge-final-implicits", scenario_vesselforge_final_implicits},
       {"town-social-hub", scenario_town_social_hub},

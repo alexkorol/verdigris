@@ -15,6 +15,7 @@
 #ifdef _WIN32
 
 #include <algorithm>
+#include <cmath>
 #include <string>
 
 #include <map>
@@ -296,6 +297,34 @@ inline void chip(HDC dc, const RECT& rect, COLORREF accent) {
   g.TranslateTransform(static_cast<float>(rect.left),
                        static_cast<float>(rect.top));
   paint_chip(g, w, h + 3);
+}
+
+// ARPG-style clock wipe for an action that is cooling down. The 60-step
+// cache keeps the animated overlay inexpensive while preserving an obvious
+// radial read at compact quickbar sizes.
+inline void cooldown_wedge(HDC dc, const RECT& rect, double remaining_ratio) {
+  const double bounded = std::clamp(remaining_ratio, 0.0, 1.0);
+  const int bucket = static_cast<int>(std::lround(bounded * 60.0));
+  const int w = rect.right - rect.left;
+  const int h = rect.bottom - rect.top;
+  if (bucket <= 0 || w <= 0 || h <= 0) return;
+  const CachedLayer* layer = cached_layer(
+      layer_key(41, w, h, kGold, bucket), w, h,
+      [&](Gdiplus::Graphics& g, int lw, int lh) {
+        const float sweep = 360.0f * static_cast<float>(bucket) / 60.0f;
+        const Gdiplus::RectF face(0.0f, 0.0f, static_cast<float>(lw),
+                                 static_cast<float>(lh));
+        Gdiplus::SolidBrush shade(Gdiplus::Color(178, 2, 5, 6));
+        g.FillPie(&shade, face, -90.0f, sweep);
+        const float angle = (-90.0f + sweep) * 3.14159265f / 180.0f;
+        const float cx = static_cast<float>(lw) * 0.5f;
+        const float cy = static_cast<float>(lh) * 0.5f;
+        const float radius = (std::min)(cx, cy) - 2.0f;
+        Gdiplus::Pen hand(Gdiplus::Color(220, 239, 208, 116), 1.5f);
+        g.DrawLine(&hand, cx, cy, cx + std::cos(angle) * radius,
+                   cy + std::sin(angle) * radius);
+      });
+  if (layer) blend_layer(dc, *layer, rect.left, rect.top);
 }
 
 // Vital orb: dark glass sphere, gradient liquid clipped to the level,

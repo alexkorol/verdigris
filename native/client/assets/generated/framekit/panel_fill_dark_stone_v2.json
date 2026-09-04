@@ -1,0 +1,21 @@
+{
+  "id": "panel-fill-dark-stone-v2",
+  "role": "framekit-panel-interior-tile",
+  "dimensions": {
+    "width": 512,
+    "height": 512
+  },
+  "bytes": 362721,
+  "sha256": "3ac3ea550ec71fd77b734c31404299e98891efef39a460cd56736934a686afb1",
+  "source": {
+    "kind": "openai-imagegen-edit",
+    "generated_file": "exec-4641aa32-c099-4eec-b6b4-f03e75ceb1a8.png",
+    "parent_generated_file": "exec-33eeb6e1-5898-4875-acc5-f11afacdc3a3.png"
+  },
+  "integration": {
+    "chrome": "wizard/framekit/game/panel_plain.png",
+    "sampling": "repeat-1-to-1",
+    "fallback": "wizard-panel-center-nine-slice"
+  },
+  "prompt": "Edit this texture into a technically seamless, edge-wrapped game texture tile. Preserve the same very dark charcoal-green honed basalt and subtle aged leather grain, the same low contrast and uniform flat illumination. Make opposite edges match exactly in both axes so a 2x2 repetition has no horizontal or vertical seam, tonal jump, edge band, or obvious repeating line. Remove the current faint edge discontinuities and any edge-localized features. Output one square flat texture swatch only. No frame, border, corners, vignette, text, symbols, objects, large cracks, perspective, or directional lighting."
+}

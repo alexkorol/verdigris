@@ -1,5 +1,25 @@
 # Native reconstitution handoff
 
+## 2026-09-03 - owner UI polish: tiled Framekit panes and combat readability
+
+- Added a generated 512x512 dark basalt/leather panel surface beside the
+  frozen WIZARD source pack. Native panes now repeat it at one display pixel
+  per texture pixel beneath the authored `panel_plain.png` brass frame, so a
+  large or resized pane never magnifies the old center crop.
+- The new `framekit-pane-tiling` production scenario decodes the exact asset,
+  paints a 1920x1080 pane, and requires the tiled-fill render fact. A 2x2
+  inspection measured opposite-edge RGB deltas in the same range as ordinary
+  adjacent pixels, and the fresh large-pane capture was visually inspected.
+- Healthy remote sessions now show one compact green connection indicator;
+  text is reserved for transitional and failed states. The Chronicle masthead
+  keeps an explicit gap between the title and subtitle.
+- Attack recovery now uses a cached semi-transparent radial clock wipe and
+  hand over the relevant quickbar icons instead of an opaque top-down box.
+  Combat, Chronicle, remote-HUD, and pane scenarios assert those exact paths.
+- The binding Windows build, every native unit/session suite, all 31 native
+  client scenarios, and the required 32/32 goal harness pass. The latest
+  3440x1440 production frame averages 11.3 ms against the 40 ms ceiling.
+
 ## 2026-09-03 - owner playtest blocker repair
 
 - Safe return now preserves the active Scion's backpack, equipped gear, and
