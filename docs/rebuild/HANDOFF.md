@@ -1,5 +1,22 @@
 # Native reconstitution handoff
 
+## 2026-09-04 - direct Crossroads portals
+
+- Town scene payloads now include four server-owned portals with road name,
+  next unlocked destination and exact gate coordinates. Click validates the
+  portal id/proximity and enters the node directly; forged/distant/repeated
+  requests fail closed. Walking over a gate no longer opens a chart; the
+  explicit Wayfinder chart remains available for alternate route selection.
+- The native client paints the authored gate white across the whole visible
+  arch on hover, shows a destination chip, consumes the click, and keeps the
+  forgiving visible extraction return. `N` is debug-only while F3 is enabled.
+- Full native suites, 36 client scenarios, 32/32 gameplay scenarios and the
+  frame-budget gate pass. Build `direct-portals`; evidence and commands are in
+  `native/playtests/direct-portals-2026-09-04.md`.
+- The generated hover capture was viewed; live owner-window verification is
+  still separate. Warcry unlock acquisition and selectable six-slot bindings
+  remain open.
+
 ## 2026-09-04 - authoritative cooldown feedback and travel cleanup
 
 - Physical-skill radial wipes use the accepted duration from simulation through

@@ -66,6 +66,12 @@ ClientCommand ClientCommand::extract() {
   command.type = Type::Extract;
   return command;
 }
+ClientCommand ClientCommand::use_portal(std::string portal_id) {
+  ClientCommand command;
+  command.type = Type::UsePortal;
+  command.target = std::move(portal_id);
+  return command;
+}
 ClientCommand ClientCommand::found_house(std::string house_name) {
   ClientCommand command;
   command.type = Type::FoundHouse;
@@ -187,6 +193,7 @@ void LocalCoreSession::submit(const ClientCommand& command) {
     case ClientCommand::Type::MenuAction:
     case ClientCommand::Type::CloseScreen:
     case ClientCommand::Type::AllocateNode:
+    case ClientCommand::Type::UsePortal:
       // The local simulation admits its single Scion at construction and
       // carries no town NPCs or screens; these intents have no local
       // authority to invoke.

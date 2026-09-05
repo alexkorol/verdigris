@@ -46,6 +46,7 @@ struct ClientCommand {
     Equip,          // `target` = item uuid
     EnterZone,      // `target` = route/node id
     Extract,
+    UsePortal,     // `target` = authoritative town portal id
     // TASK-0145 Gate-B chronicles intents. The session translates them into
     // the exact accepted envelopes; presentation never builds wire payloads.
     FoundHouse,     // `target` = House display name
@@ -76,6 +77,7 @@ struct ClientCommand {
   static ClientCommand equip(std::string item_uuid);
   static ClientCommand enter_zone(std::string node_id);
   static ClientCommand extract();
+  static ClientCommand use_portal(std::string portal_id);
   static ClientCommand found_house(std::string house_name);
   static ClientCommand create_scion(std::string scion_name, bool mortal_oath = false);
   static ClientCommand select_scion(std::string scion_id, bool mortal_oath);

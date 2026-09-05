@@ -121,6 +121,7 @@ class ProtocolSession {
   std::string player_payload() const;
   JsonValue snapshot() const;
   JsonValue scene_payload() const;
+  JsonValue town_portals_json() const;
   JsonValue movement_step_payload() const;
   void emit_login(const std::function<void(const Envelope&)>& emit) const;
   void emit_transition(const std::function<void(const Envelope&)>& emit, const char* event) const;

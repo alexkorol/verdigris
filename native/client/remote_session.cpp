@@ -481,9 +481,23 @@ void apply_scene_fields(ClientScene& scene, const JsonValue& source) {
   scene.has_stairs_up = false;
   scene.stairs_up_x = 0.0;
   scene.stairs_up_y = 0.0;
+  scene.portals.clear();
   if (const auto* id = json_string(source.get("id"))) scene.id = *id;
   if (const auto* type = json_string(source.get("type"))) scene.type = *type;
   if (const auto* name = json_string(source.get("name"))) scene.name = *name;
+  if (scene.type == "town") {
+    if (const auto* portals = source.get("portals"); portals && portals->array()) {
+      for (const auto& portal : *portals->array()) {
+        if (scene.portals.size() >= 4) break;
+        const auto* id = json_string(portal.get("id"));
+        const auto* name = json_string(portal.get("name"));
+        const auto* destination = json_string(portal.get("destination"));
+        if (!id || !name || !destination || !portal["x"].number() || !portal["y"].number()) continue;
+        scene.portals.push_back({*id, *name, *destination,
+                                *portal["x"].number(), *portal["y"].number()});
+      }
+    }
+  }
   if (const auto* metadata = source.get("metadata")) {
     if (const auto* stairs = metadata->get("stairsUp")) {
       if (stairs->get("x") && stairs->get("x")->number() && stairs->get("y") &&
@@ -794,6 +808,10 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       break;
     case ClientCommand::Type::Extract:
       envelope.event = "player:extract";
+      break;
+    case ClientCommand::Type::UsePortal:
+      envelope.event = "world:portal:use";
+      envelope.data = JsonValue::Object{{"portalId", command.target}};
       break;
     case ClientCommand::Type::FoundHouse:
       envelope.event = "chronicles:house:found";

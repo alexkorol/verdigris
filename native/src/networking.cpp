@@ -1514,6 +1514,7 @@ JsonValue ProtocolSession::combat_totals_json() const {
 JsonValue ProtocolSession::scene_payload() const {
   JsonValue::Object scene; put(scene,"id",world_->scene_id()); put(scene,"type",world_->scene_type()); put(scene,"name",world_->scene_name());
   put(scene,"droppedItems",dropped_items_json());
+  put(scene,"portals",town_portals_json());
   if (world_->in_instance()) { const auto& meta=world_->metadata(); JsonValue::Object metadata; put(metadata,"seed",static_cast<double>(meta.seed)); put(metadata,"theme",meta.theme); if(meta.layout.empty()) put(metadata,"layout",nullptr); else put(metadata,"layout",meta.layout); put(metadata,"depth",meta.depth);
     JsonValue::Object up; put(up,"x",meta.stairs_up.x); put(up,"y",meta.stairs_up.y); put(metadata,"stairsUp",std::move(up));
     JsonValue::Object down; put(down,"x",meta.stairs_down.x); put(down,"y",meta.stairs_down.y); put(metadata,"stairsDown",std::move(down));
@@ -2540,6 +2541,31 @@ void ProtocolSession::quest_trigger(const char* trigger, const std::function<voi
   persist_quest_progression();
   emit_quest_update(emit);
 }
+JsonValue ProtocolSession::town_portals_json() const {
+  JsonValue::Array portals;
+  if (world_->in_instance()) return JsonValue(std::move(portals));
+  const std::string house = active_house_id_.empty() ? identity_ : active_house_id_;
+  for (const auto& gate : kRoadGates) {
+    int frontier = 1;
+    for (const auto& cleared : cleared_nodes_) {
+      std::string road; int tier = 0, index = 0;
+      if (parse_node_id(cleared, &road, &tier, &index) && road == gate.road)
+        frontier = (std::max)(frontier, tier + 1);
+    }
+    const auto nodes = web_road_nodes(house, gate.road, frontier);
+    for (const auto& node : nodes) {
+      if (cleared_nodes_.count(node.id) ||
+          (node.tier > 1 && !cleared_nodes_.count(node.parent_id))) continue;
+      portals.emplace_back(JsonValue::Object{
+          {"id", gate.road}, {"name", kRoads[road_index(gate.road)].name},
+          {"destination", node.name}, {"nodeId", node.id},
+          {"x", gate.x}, {"y", gate.y}});
+      break;
+    }
+  }
+  return JsonValue(std::move(portals));
+}
+
 void ProtocolSession::emit_chart_screen(const std::string& road_id, const std::function<void(const Envelope&)>& emit) const {
   const int ri = road_index(road_id);
   if (ri < 0) return;
@@ -2821,7 +2847,8 @@ void ProtocolSession::leave_to_town(const std::function<void(const Envelope&)>& 
   }
 }
 void ProtocolSession::check_road_gates(const std::function<void(const Envelope&)>& emit) {
-  // gates.mjs: standing on a road-gate tile in town opens that chart.
+  // World portals require an intentional click; merely walking over a town
+  // gate must not interrupt movement with a chart modal.
   if (world_->in_instance()) {
     // node instances: landing on the stairs-down gate while the Warden
     // lives holds the road (world-web.mjs section 3).
@@ -2835,10 +2862,6 @@ void ProtocolSession::check_road_gates(const std::function<void(const Envelope&)
       }
     }
     return;
-  }
-  const Vec2 tile = tile_movement::occupied_tile(world_->position());
-  for (const auto& gate : kRoadGates) {
-    if (gate.x == tile.x && gate.y == tile.y) { emit_chart_screen(gate.road, emit); break; }
   }
 }
 void ProtocolSession::emit_quest_update(const std::function<void(const Envelope&)>& emit) const {
@@ -4339,6 +4362,24 @@ void ProtocolSession::handle_impl(const Envelope& envelope, const std::function<
   // for direct-call paths; std::recursive_mutex makes both safe.
   std::lock_guard<std::recursive_mutex> handle_lock(mutex_);
   const auto* payload=envelope.data.object()?&envelope.data:nullptr;
+  if (envelope.event == "world:portal:use") {
+    const auto* actor = simulation_->actor(simulation_->scion().actor_id);
+    if (world_->in_instance() || !actor || !actor->alive || actor->stats.life <= 0) return;
+    const std::string id = as_string(payload ? payload->get("portalId") : nullptr);
+    const auto portals = town_portals_json();
+    for (const auto& portal : *portals.array()) {
+      if (as_string(portal.get("id")) != id) continue;
+      const auto position = world_->position();
+      if ((std::max)(std::abs(position.x - portal["x"].number().value_or(0)),
+                     std::abs(position.y - portal["y"].number().value_or(0))) > 2.0) {
+        emit_message(emit, "Move closer to the portal.");
+        return;
+      }
+      enter_road_node(as_string(portal.get("nodeId")), emit);
+      return;
+    }
+    return;
+  }
   if (envelope.event=="world:zone:enter") {
     const auto node=as_string(payload?payload->get("nodeId"):nullptr,"tin:1:0");
     std::string web_road; int web_tier=0; int web_index=0;

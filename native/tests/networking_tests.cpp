@@ -623,6 +623,47 @@ void test_gate_a_ground_login_and_kill_loot() {
   check(kill_loot, "kill loot emits item:change with coin drop fields");
 }
 
+void test_direct_town_portals() {
+  ProtocolSession session("portal-proof", "portal-socket", 92, false);
+  JsonValue login;
+  check(parse_json(session.login_payload(), login), "portals: town login parses");
+  check(login["scene"]["portals"].array() && login["scene"]["portals"].array()->size() == 4,
+        "portals: town publishes four named, authoritative destinations");
+  const auto portal = login["scene"]["portals"].array()->front();
+  const std::string id = *portal["id"].string();
+  const std::string first_node = *portal["nodeId"].string();
+  const double x = *portal["x"].number(), y = *portal["y"].number();
+  int transitions = 0, screens = 0;
+  const auto observe = [&](const Envelope& event) {
+    if (event.event == "world:scene:transition") ++transitions;
+    if (event.event == "open:screen") ++screens;
+  };
+  session.handle(Envelope{"world:portal:use", JsonValue::Object{{"portalId", id}}}, observe);
+  session.handle(Envelope{"world:portal:use", JsonValue::Object{{"portalId", "forged"}}}, observe);
+  check(transitions == 0 && screens == 0, "portals: distant and forged clicks cannot travel");
+  session.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", x}, {"y", y}}}, observe);
+  check(screens == 0, "portals: standing on a gate does not open a modal");
+  session.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", x + 1.5}, {"y", y + 1.5}}}, observe);
+  transitions = 0;
+  session.handle(Envelope{"world:portal:use", JsonValue::Object{{"portalId", id}, {"nodeId", "tin:99:0"}}}, observe);
+  check(transitions == 1 && screens == 0, "portals: nearby click enters directly without a chart");
+  check(parse_json(session.login_payload(), login) &&
+            login["scene"]["metadata"]["nodeId"].string() &&
+            *login["scene"]["metadata"]["nodeId"].string() == first_node &&
+            login["scene"]["portals"].array()->empty(),
+        "portals: server owns the destination and town targets retire in an instance");
+  session.handle(Envelope{"world:portal:use", JsonValue::Object{{"portalId", id}}}, observe);
+  check(transitions == 1, "portals: repeated click cannot replace the new instance");
+  session.handle(Envelope{"dev:clear-floor", JsonValue::Object{}}, observe);
+  session.handle(Envelope{"party:returnToTown", JsonValue::Object{}}, observe);
+  check(parse_json(session.login_payload(), login) &&
+            *login["scene"]["portals"].array()->front()["nodeId"].string() != first_node,
+        "portals: returning after a clear advertises an unfinished unlocked destination");
+  session.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", x}, {"y", y}}}, observe);
+  session.handle(Envelope{"world:road:chart", JsonValue::Object{{"roadId", id}}}, observe);
+  check(screens == 1, "portals: explicit road chart remains available for route choice");
+}
+
 void test_gate_a_extract_and_stairs() {
   ProtocolSession extract_session("guest-0063-extract", "socket-ex", 23, false);
   const int starting_gold =
@@ -2427,6 +2468,7 @@ int main() {
     test_authoritative_remote_skill_actions();
     test_gate_a_ground_login_and_kill_loot();
     test_gate_a_extract_and_stairs();
+    test_direct_town_portals();
     test_gate_a_equip_totals_and_unknown_uuid();
     test_active_forge_properties_cross_the_protocol();
     test_tamar_vesselforge_service();

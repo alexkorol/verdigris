@@ -39,10 +39,15 @@ cast Thrust/Sweep/WarCry, X takes the nearest/underfoot drop, Z toggles loot
 name labels, I opens the gear pane (Enter or click equips; 1-9 equips from
 the backpack; selected Vesselforge gear shows its active properties and worn
 totals across two fitted Framekit rows), J opens the authoritative Chronicle campaign (including its current
-act and twenty-three-point total), N enters the charted road from the remote flow, the wheel
+act and twenty-three-point total), the wheel
 zooms and Home resets zoom, and F3 toggles the debug overlay. In-world clicks
-select loot, townsfolk, and the entry waymark; the waymark turns white on
-hover. The objective strip is mode-aware about extraction: F or a click
+select loot, townsfolk, town road portals and the entry waymark. Town portals
+turn white on hover and name their next unfinished, unlocked destination;
+click within two tiles to enter directly, without a chart or confirmation.
+Walking over a town gate no longer opens a window. The Wayfinder's explicit
+road chart remains available for choosing a different open stretch.
+`N` is now a debug-only road shortcut while the F3 overlay is enabled.
+The objective strip is mode-aware about extraction: F or a click
 extracts while beside the EXIT, and walking onto its center remains supported. A
 compact controls line is always on the HUD (no F3 needed). Esc closes an
 open gear pane first; a bare Esc requests quit.

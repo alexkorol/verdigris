@@ -237,6 +237,14 @@ struct ClientGroundItem {
   std::string relic_of;
 };
 
+struct ClientPortal {
+  std::string id;
+  std::string name;
+  std::string destination;
+  double x = 0.0;
+  double y = 0.0;
+};
+
 struct ClientScene {
   std::string id;
   std::string type;
@@ -244,6 +252,7 @@ struct ClientScene {
   double stairs_up_x = 0.0;
   double stairs_up_y = 0.0;
   bool has_stairs_up = false;
+  std::vector<ClientPortal> portals;
 };
 
 // TASK-0156: authoritative passive-tree progression, mirrored verbatim from

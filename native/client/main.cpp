@@ -1374,7 +1374,7 @@ void generate_scenery(ClientState& state) {
     add_scenery(state.scenery, SceneryKind::Ruin, 48.0 * t, 120.0 * t,
                 landmark_radius * 1.4, false, 0.9);  // the House wagon
     // The four road gates (server kRoadGates): tin N, salt E, chalk S,
-    // copper W. Standing on the gate tile opens that road's chart.
+    // copper W. Their authoritative portal targets arrive with the town scene.
     add_scenery(state.scenery, SceneryKind::Gate, 37.0 * t, 94.0 * t,
                 landmark_radius * 1.5, false, 1.0);
     add_scenery(state.scenery, SceneryKind::Gate, 64.0 * t, 114.0 * t,
@@ -1584,8 +1584,34 @@ void show_hint(ClientState& state, const std::string& message) {
 ScreenPoint project(const Camera& camera, const RECT& bounds, double wx,
                     double wy);
 
+RECT town_portal_rect(const ClientState& state, const RECT& bounds,
+                      const verdigris::client::ClientPortal& portal) {
+  const auto base = project(state.camera, bounds,
+      verdigris::client::protocol_to_world(portal.x),
+      verdigris::client::protocol_to_world(portal.y));
+  const int height = (std::max)(10, static_cast<int>(kTileUnits * 2.6 * base.scale));
+  const int half_width = (std::max)(18, height * 26 / 100 + 8);
+  return RECT{base.x - half_width, base.y - height * 60 / 100 - 8,
+              base.x + half_width, base.y + 12};
+}
+
+const verdigris::client::ClientPortal* town_portal_at(
+    const ClientState& state, const RECT& bounds, int x, int y) {
+  if (!state.session || state.session->model().scene.type != "town") return nullptr;
+  for (const auto& portal : state.session->model().scene.portals) {
+    const RECT rect = town_portal_rect(state, bounds, portal);
+    if (PtInRect(&rect, POINT{x, y})) return &portal;
+  }
+  return nullptr;
+}
+
 bool try_world_click(ClientState& state, const RECT& bounds, int mouse_x,
                      int mouse_y) {
+  if (const auto* portal = town_portal_at(state, bounds, mouse_x, mouse_y)) {
+    state.session->submit(verdigris::client::ClientCommand::use_portal(portal->id));
+    show_hint(state, "Opening " + portal->name);
+    return true;
+  }
   const auto within = [&](const ScreenPoint& point, int radius) {
     const long long dx = mouse_x - point.x;
     const long long dy = mouse_y - point.y;
@@ -1599,7 +1625,8 @@ bool try_world_click(ClientState& state, const RECT& bounds, int mouse_x,
     const ScreenPoint portal = project(state.camera, bounds,
                                        state.world.extraction.x,
                                        state.world.extraction.y);
-    if (within(portal, 52)) {
+    const int hit_radius = (std::max)(18, static_cast<int>(kTileUnits * 0.9 * portal.scale) + 14);
+    if (within(portal, hit_radius)) {
       submit_extract(state);
       show_hint(state, "Returning through the entry waymark");
       return true;
@@ -2196,7 +2223,8 @@ void draw_scenery_fallback(HDC dc, const ScreenPoint& base, const SceneryItem& i
 
 void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& camera,
                        const RECT& bounds, const SceneryItem& item,
-                       render::List& rl, bool town, double sway_clock) {
+                       render::List& rl, bool town, double sway_clock,
+                       bool portal_hovered = false) {
   (void)assets;
   const ScreenPoint base =
       project(camera, bounds, item.position.x, item.position.y);
@@ -2241,8 +2269,9 @@ void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& came
         vector_art::standing_stones(dc, base.x, base.y, h, RGB(126, 120, 110));
       break;
     case SceneryKind::Gate:
-      vector_art::road_gate(dc, base.x, base.y, h, RGB(128, 120, 108),
-                            RGB(120, 214, 168));
+      vector_art::road_gate(dc, base.x, base.y, h,
+                            portal_hovered ? RGB(255, 255, 255) : RGB(128, 120, 108),
+                            portal_hovered ? RGB(255, 255, 255) : RGB(120, 214, 168));
       break;
   }
 }
@@ -7312,12 +7341,22 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
 
   for (const auto& entry : order) {
     switch (entry.what) {
-      case DepthDraw::What::Scenery:
+      case DepthDraw::What::Scenery: {
+        const auto* hovered = town_portal_at(state, bounds, state.mouse.x, state.mouse.y);
+        const auto& scenery = state.scenery[entry.index];
+        const bool portal_hovered = hovered && scenery.kind == SceneryKind::Gate &&
+            std::abs(static_cast<double>(scenery.position.x) -
+                     verdigris::client::protocol_to_world(hovered->x)) < 1.0 &&
+            std::abs(static_cast<double>(scenery.position.y) -
+                     verdigris::client::protocol_to_world(hovered->y)) < 1.0;
         draw_scenery_item(state.billboards, dc, state.camera, bounds,
-                          state.scenery[entry.index], rl,
+                          scenery, rl,
                           world.theme == "town",
-                          state.breathe_phase * 2.0 * kPi);
+                          state.breathe_phase * 2.0 * kPi, portal_hovered);
+        if (portal_hovered)
+          rl.push_back({render::Op::Hud, 0, 0, 0, 1, "portal-hover:" + hovered->id});
         break;
+      }
       case DepthDraw::What::Player: {
         ScreenPoint base =
             project(state.camera, bounds, player.position.x, player.position.y);
@@ -7740,6 +7779,26 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                   static_cast<double>(chip.top), 0.0, 0, "beat:" + entry.first});
   }
 
+  if (state.session && state.session->model().scene.type == "town") {
+    for (const auto& portal : state.session->model().scene.portals) {
+      const RECT hit = town_portal_rect(state, bounds, portal);
+      if (hit.right < 0 || hit.left > bounds.right || hit.bottom < 0 || hit.top > bounds.bottom) continue;
+      const bool hovered = PtInRect(&hit, state.mouse) != FALSE;
+      const std::string label = hovered ? portal.name + ": " + portal.destination + " - click to enter"
+                                        : portal.name;
+      HGDIOBJ font = SelectObject(dc, skin::font_small());
+      SIZE text_size{};
+      GetTextExtentPoint32A(dc, label.c_str(), static_cast<int>(label.size()), &text_size);
+      const int left = (std::max)(8, (std::min)(static_cast<int>(bounds.right - text_size.cx - 20),
+                                               static_cast<int>((hit.left + hit.right - text_size.cx) / 2)));
+      paint_status_chip(&state.billboards, &state.billboards.fk_button, dc,
+                        left, hit.top - text_size.cy - 14, label,
+                        hovered ? RGB(255, 255, 255) : skin::kGold, rl);
+      SelectObject(dc, font);
+      rl.push_back({render::Op::Hud, static_cast<double>(left), static_cast<double>(hit.top),
+                    0, hovered ? 1 : 0, "portal:" + portal.id});
+    }
+  }
   QueryPerformanceCounter(&section_t2);
   state.paint_ms_world = section_ms(section_t1, section_t2);
   if (!(state.gear_overlay && state.character_pane))
@@ -7849,7 +7908,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         (world.scion_name.empty() ? std::string("(unnamed)") : world.scion_name);
     static constexpr char kControls[] =
         "WASD move | mouse aim | LMB attack | RMB/Space dash | Q E R skills | "
-        "X take | Z names | I gear | J journal | T hail | TAB map | N road";
+        "X take | Z names | I gear | J journal | T hail | TAB map | click portals";
     const std::string& art_text = state.billboards.framekit_status;
 
     // TASK-0159: pre-measure the controls hint and its deterministic
@@ -8698,7 +8757,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       if (wparam == 'D') state->d = true;
       if (wparam == VK_SPACE) dispatch_dash(*state);
       if (const SkillInfo* skill = skill_for_key(wparam)) dispatch_skill(*state, *skill);
-      if (wparam == 'N' && state->session)
+      if (wparam == 'N' && state->session && state->debug_overlay)
         state->session->submit(verdigris::client::ClientCommand::enter_zone("tin:1:0"));
       if (wparam == 'X') {
         if (is_remote(*state)) {
@@ -13126,6 +13185,82 @@ class ScenarioPointerSession final : public verdigris::client::IClientSession {
   std::vector<verdigris::client::PresentationEvent> drain_events() override { return {}; }
 };
 
+int scenario_direct_portals() {
+  using namespace verdigris::client;
+  std::unique_ptr<verdigris::networking::WebSocketServer> server;
+  unsigned short port = 0;
+  for (unsigned short candidate = 6780; candidate <= 6799; ++candidate) {
+    auto probe = std::make_unique<verdigris::networking::WebSocketServer>(candidate);
+    std::string error;
+    if (probe->start(&error)) { server = std::move(probe); port = candidate; break; }
+  }
+  scenario_check(server != nullptr, "direct-portals: real server starts");
+  if (!server) return 0;
+  ClientState state;
+  state.session = std::make_unique<RemoteProtocolSession>("127.0.0.1", port, "direct-portal-proof", true);
+  std::string error;
+  scenario_check(state.session->start(&error), "direct-portals: session connects");
+  const bool ready = chronicles_pump(state, 250, [&] {
+    return state.session->connection_state() == ConnectionState::Ready &&
+           state.session->model().scene.portals.size() == 4;
+  });
+  scenario_check(ready, "direct-portals: town admission includes four destinations");
+  if (!ready) { state.session->shutdown(); server->stop(); return 0; }
+  const auto portal = state.session->model().scene.portals.front();
+  send_dev_envelope(state, "dev:teleport", {{"x", portal.x + 1.0}, {"y", portal.y + 1.0}});
+  scenario_check(chronicles_pump(state, 250, [&] {
+    return std::abs(state.session->model().player.x - portal.x - 1.0) < 0.1;
+  }), "direct-portals: actor approaches portal without opening a chart");
+  sync_world(state);
+  generate_scenery(state);
+  load_billboards(state.billboards);
+  state.camera.x = protocol_to_world(portal.x);
+  state.camera.y = protocol_to_world(portal.y);
+  std::string capture_dir;
+  const int capture_override = capture_root_override(&capture_dir);
+  if (capture_override < 0) {
+    scenario_check(false, "direct-portals: capture root rejected");
+    state.session->shutdown(); server->stop(); return 0;
+  }
+  if (capture_override == 0) { CreateDirectoryA("captures", nullptr); capture_dir = "captures"; }
+  for (const POINT size : {POINT{960, 600}, POINT{1366, 768}}) {
+    state.camera.zoom = kCameraDefaultZoom * zoom_height_factor(size.y);
+    const RECT bounds{0, 0, size.x, size.y};
+    const auto hit = town_portal_rect(state, bounds, portal);
+    state.mouse = {(hit.left + hit.right) / 2, (hit.top + hit.bottom) / 2};
+    scenario_check(town_portal_at(state, bounds, state.mouse.x, state.mouse.y) != nullptr &&
+                       !town_portal_at(state, bounds, hit.right + 10, hit.top - 10),
+                   "direct-portals: hit target tracks the whole visible arch at each size");
+    const std::string path = capture_dir + "/portal-hover-" + std::to_string(size.x) + "x" +
+                             std::to_string(size.y) + ".png";
+    scenario_check(reference_present(state, size.x, size.y, path) &&
+                       render_list_has(state, render::Op::Hud, "portal-hover:" + portal.id),
+                   "direct-portals: white gate and named destination render on hover");
+  }
+  const RECT bounds{0, 0, 1366, 768};
+  scenario_check(try_world_click(state, bounds, state.mouse.x, state.mouse.y),
+                 "direct-portals: world click consumes the portal input");
+  scenario_check(chronicles_pump(state, 250, [&] {
+    return state.session->model().scene.type == "instance";
+  }) && !state.session->model().chart.open && state.session->model().scene.portals.empty(),
+      "direct-portals: production UsePortal enters once with no confirmation modal");
+  sync_world(state);
+  state.camera.x = state.world.extraction.x;
+  state.camera.y = state.world.extraction.y;
+  const auto exit = project(state.camera, bounds, state.world.extraction.x, state.world.extraction.y);
+  scenario_check(try_world_click(state, bounds, exit.x, exit.y),
+                 "direct-portals: visible return portal accepts the click");
+  scenario_check(chronicles_pump(state, 250, [&] {
+    return state.session->model().scene.type == "town";
+  }) && state.session->model().scene.portals.size() == 4 &&
+        std::abs(state.session->model().player.x - 38.0) < 0.1 &&
+        std::abs(state.session->model().player.y - 115.0) < 0.1,
+      "direct-portals: click round trip restores four gates and the fountain arrival");
+  state.session->shutdown();
+  server->stop();
+  return 0;
+}
+
 int scenario_combat_input_feedback() {
   ClientState state;
   auto session = std::make_unique<ScenarioPointerSession>();
@@ -13248,6 +13383,7 @@ int run_scenarios(const std::string& which) {
       {"combat-juice", scenario_combat_juice},
       {"combat-cadence", scenario_combat_cadence},
       {"combat-input-feedback", scenario_combat_input_feedback},
+      {"direct-portals", scenario_direct_portals},
       {"monster-pressure-roles", scenario_monster_pressure_roles},
       {"warden-disciplines", scenario_warden_disciplines},
       {"remote-render-list", scenario_remote_render_list},
