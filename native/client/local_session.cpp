@@ -221,6 +221,9 @@ void LocalCoreSession::refresh_model() {
     model_.player.resource = actor->stats.resource;
     model_.player.resource_max = actor->stats.resource_max;
     model_.player.attack = actor->stats.attack;
+    model_.player.cooldown_ticks = actor->cooldown_ticks;
+    model_.player.cooldown_total_ticks = actor->cooldown_total_ticks;
+    model_.player.war_cry_ticks_remaining = actor->war_cry_ticks_remaining;
     if (actor->facing.x < 0) model_.player.facing = "left";
     else if (actor->facing.x > 0) model_.player.facing = "right";
     else if (actor->facing.y < 0) model_.player.facing = "up";

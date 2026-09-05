@@ -955,18 +955,27 @@ void test_active_forge_properties_cross_the_protocol() {
       {"x", ranged_px}, {"y", ranged_ty}}}, [](const Envelope&) {});
   bool sixth_tile_hit = false;
   int fast_cooldown_ticks = 0;
+  int fast_cooldown_total_ticks = 0;
   ranged.handle(Envelope{"player:skill:trigger", JsonValue::Object{
       {"skill", "melee"}, {"direction", ranged_aim}}},
       [&](const Envelope& event) {
         if (event.event == "combat:hit" && event.data["targetId"].string() &&
             *event.data["targetId"].string() == ranged_target_uuid)
           sixth_tile_hit = true;
-        if (event.event == "player:combat-state")
+        if (event.event == "player:combat-state") {
           fast_cooldown_ticks = static_cast<int>(
               event.data["cooldownTicks"].number().value_or(0));
+          fast_cooldown_total_ticks = static_cast<int>(
+              event.data["cooldownTotalTicks"].number().value_or(0));
+        }
       });
   check(sixth_tile_hit && fast_cooldown_ticks == 7,
         "forge wire: Atlatl reaches six tiles while Grips shorten recovery");
+  check(fast_cooldown_total_ticks == 7,
+        "forge wire: combat update carries the accepted haste duration");
+  ranged_state = request_state(ranged, "forge-ranged-recovery");
+  check(ranged_state["state"]["cooldownTotalTicks"].number().value_or(0) == 7,
+        "forge wire: snapshot carries the same authoritative cooldown duration");
 
   ProtocolSession piercing("guest-forge-piercing", "socket-forge-piercing",
                            0x511A6, false);

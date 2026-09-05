@@ -158,6 +158,9 @@ struct Actor {
   // Deterministic 8-way facing. Each component is -1, 0, or +1; the
   // direction is intentionally not normalized with floating-point math.
   Vec2 facing{1, 0};
+  // Duration of the last accepted recovery; remaining ticks count down but
+  // this denominator stays fixed until another action is accepted.
+  int cooldown_total_ticks = 0;
 };
 
 struct RouteNode {
@@ -1149,6 +1152,7 @@ class WorldSimulation {
                                                int* player_resource = nullptr,
                                                int player_resource_max = 0);
   int player_cooldown_remaining_ms(std::int64_t now_ms) const;
+  int player_cooldown_total_ms() const { return player_cooldown_total_ms_; }
   int player_combo_step(std::int64_t now_ms) const;
   int player_combo_window_remaining_ms(std::int64_t now_ms) const;
   void set_level(int level);
@@ -1243,6 +1247,7 @@ public:
   const std::string& engaged_by() const { return engaged_by_; }
 private:
   std::uint64_t next_player_attack_ms_ = 0;
+  int player_cooldown_total_ms_ = 0;
   std::string pending_player_skill_;
   int pending_player_combo_step_ = 0;
   int player_combo_step_ = 0;

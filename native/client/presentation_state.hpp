@@ -85,6 +85,7 @@ struct WorldActor {
   int defense = 0;
   int level = 1;
   int cooldown_ticks = 0;
+  int cooldown_total_ticks = 0;
   int combo_step = 0;
   int combo_window_ticks = 0;
   int war_cry_ticks_remaining = 0;

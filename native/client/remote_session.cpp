@@ -1370,6 +1370,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         json_number(envelope.data.get("resourceMax"), model_.player.resource_max));
     model_.player.cooldown_ticks = static_cast<int>(
         json_number(envelope.data.get("cooldownTicks"), model_.player.cooldown_ticks));
+    model_.player.cooldown_total_ticks = (std::max)(0, static_cast<int>(
+        json_number(envelope.data.get("cooldownTotalTicks"), 0)));
     model_.player.combo_step = std::clamp(
         static_cast<int>(json_number(envelope.data.get("comboStep"),
                                      model_.player.combo_step)), 0, 3);
@@ -1452,6 +1454,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       apply_player_fields(model_.player, *player_state);
     }
     if (!model_.scene.id.empty()) model_.player.scene_id = model_.scene.id;
+    model_.player.cooldown_ticks = 0;
+    model_.player.cooldown_total_ticks = 0;
     model_.player.combo_step = 0;
     model_.player.combo_window_ticks = 0;
     model_.monsters.clear();
@@ -1744,6 +1748,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       apply_combat_totals(model_, *combat);
     model_.player.cooldown_ticks = static_cast<int>(json_number(
         state->get("cooldownTicks"), model_.player.cooldown_ticks));
+    model_.player.cooldown_total_ticks = (std::max)(0, static_cast<int>(
+        json_number(state->get("cooldownTotalTicks"), 0)));
     model_.player.war_cry_ticks_remaining = static_cast<int>(json_number(
         state->get("warCryTicksRemaining"),
         model_.player.war_cry_ticks_remaining));

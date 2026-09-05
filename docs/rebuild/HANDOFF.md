@@ -1,5 +1,25 @@
 # Native reconstitution handoff
 
+## 2026-09-04 - authoritative cooldown feedback and travel cleanup
+
+- Physical-skill radial wipes use the accepted duration from simulation through
+  combat updates/snapshots, remote/local models and production paint. Sweep,
+  finishers and haste no longer use the wrong fixed 30-tick clock.
+- Town/new-floor transitions clear old attack recovery. Remote prediction
+  suppresses unavailable swings without letting stale client state reject a
+  server command; eligible whiffs and one-per-tick effect bounds remain.
+- Full native build/suites, 36 client scenarios, 32/32 gameplay scenarios and
+  real-process restart/vendor/zone-round-trip gate pass. Fullscreen paint
+  averages 11.7 ms. Build `combat-feedback`; evidence and scope are in
+  `native/playtests/combat-feedback-2026-09-04.md`.
+- Viewed the production-painter cooldown fixture, not a live gameplay window.
+  Desktop controls and the running title-screen game were left untouched.
+- Warcry already resolves a real server buff, but unlock enforcement and the
+  selectable LMB/RMB/Q/E/R/T hotbar remain open. An asynchronous owner question
+  asks whether active unlocks come from tree nodes, equipment or town training.
+  No acquisition policy was invented in this patch. Continue with other
+  scoped backlog fixes while that choice is open; the larger goal is active.
+
 ## 2026-09-04 - guided creation and durable Hardcore choice
 
 - The island now opens compact House -> Scion -> play cards, skipping the

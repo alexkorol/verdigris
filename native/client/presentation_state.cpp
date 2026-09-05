@@ -60,6 +60,7 @@ void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& s
     world.player.defense = player->stats.defense;
     world.player.level = player->stats.level;
     world.player.cooldown_ticks = player->cooldown_ticks;
+    world.player.cooldown_total_ticks = player->cooldown_total_ticks;
     world.player.war_cry_ticks_remaining = player->war_cry_ticks_remaining;
     world.player.alive = player->alive;
   }
@@ -128,6 +129,7 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
   world.player.attack = model.player.attack;
   world.player.level = model.player.level;
   world.player.cooldown_ticks = model.player.cooldown_ticks;
+  world.player.cooldown_total_ticks = model.player.cooldown_total_ticks;
   world.player.combo_step = model.player.combo_step;
   world.player.combo_window_ticks = model.player.combo_window_ticks;
   world.player.war_cry_ticks_remaining = model.player.war_cry_ticks_remaining;

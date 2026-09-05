@@ -1668,6 +1668,7 @@ JsonValue ProtocolSession::snapshot() const {
   put(state,"resource",std::move(resource));
   const int cooldown_ms = world_->player_cooldown_remaining_ms(combat_clock_ms_);
   put(state,"cooldownTicks",(cooldown_ms+kSimulationTickMs-1)/kSimulationTickMs);
+  put(state,"cooldownTotalTicks",(world_->player_cooldown_total_ms()+kSimulationTickMs-1)/kSimulationTickMs);
   put(state,"warCryTicksRemaining",war_cry_until_ms_>combat_clock_ms_
       ? static_cast<int>((war_cry_until_ms_-combat_clock_ms_+kSimulationTickMs-1)/kSimulationTickMs)
       : 0);
@@ -3889,6 +3890,8 @@ void ProtocolSession::emit_combat_state(
   put(data, "resource", actor ? actor->stats.resource : 0);
   put(data, "resourceMax", actor ? actor->stats.resource_max : 0);
   put(data, "cooldownTicks", cooldown_ticks);
+  put(data, "cooldownTotalTicks",
+      (world_->player_cooldown_total_ms() + kSimulationTickMs - 1) / kSimulationTickMs);
   put(data, "warCryTicksRemaining", war_cry_ticks);
   put(data, "comboStep", world_->player_combo_step(combat_clock_ms_));
   const int combo_window_ms =

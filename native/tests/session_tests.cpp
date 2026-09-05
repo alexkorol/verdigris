@@ -90,6 +90,19 @@ void local_session_ready_and_deterministic() {
     if (event.type == verdigris::client::PresentationEventType::SessionReady) saw_ready = true;
   }
   check(saw_ready, "local: SessionReady presentation event emitted");
+  auto* simulation = session.simulation_for_scenarios();
+  auto* actor = simulation->actor(simulation->scion().actor_id);
+  actor->cooldown_ticks = 3;
+  actor->cooldown_total_ticks = 6;
+  actor->war_cry_ticks_remaining = 8;
+  session.poll();
+  verdigris::client::WorldView local_world;
+  verdigris::client::sync_world_from_simulation(local_world, *simulation);
+  check(session.model().player.cooldown_ticks == 3 &&
+            session.model().player.cooldown_total_ticks == 6 &&
+            session.model().player.war_cry_ticks_remaining == 8 &&
+            local_world.player.cooldown_total_ticks == 6,
+        "local: recovery duration and active Warcry survive both presentation seams");
   session.shutdown();
   check(session.connection_state() == verdigris::client::ConnectionState::Disconnected,
         "local: shutdown reaches disconnected state");
@@ -2948,6 +2961,51 @@ void remote_forge_properties_and_status_mirror_to_presentation() {
   server.stop();
 }
 
+void remote_cooldown_duration_mirrors_and_clears_on_travel() {
+  ScriptedEnvelopeServer server;
+  server.script = {
+      R"({"event":"player:login","data":{"player":{"uuid":"clock-scion"},"scene":{"id":"instance:dungeon:clearings","type":"instance"}}})",
+      R"({"event":"player:combat-state","data":{"cooldownTicks":6,"cooldownTotalTicks":12}})",
+      R"({"event":"dev:state","data":{"state":{"cooldownTicks":3,"cooldownTotalTicks":7}}})",
+      R"({"event":"world:scene:transition","data":{"scene":{"id":"town:verdigris","type":"town"}}})",
+      R"({"event":"player:combat-state","data":{"cooldownTicks":2}})"};
+  std::string error;
+  check(server.start(&error), "cooldown-mirror: scripted server started");
+  if (server.port() == 0) return;
+  verdigris::client::RemoteProtocolSession session(
+      "127.0.0.1", server.port(), "clock-scion", true);
+  check(session.start(&error) &&
+            wait_for_state(session, verdigris::client::ConnectionState::Ready, 5000),
+        "cooldown-mirror: real WebSocket session admitted");
+  server.grant_next_frame();
+  check(wait_until(session, 5000, [&] {
+          return session.model().player.cooldown_total_ticks == 12;
+        }) && session.model().player.cooldown_ticks == 6,
+        "cooldown-mirror: combat update retains remaining and total independently");
+  verdigris::client::WorldView world;
+  verdigris::client::sync_world_from_model(world, session.model());
+  check(world.player.cooldown_ticks == 6 && world.player.cooldown_total_ticks == 12,
+        "cooldown-mirror: presentation receives the exact clock denominator");
+  server.grant_next_frame();
+  check(wait_until(session, 5000, [&] {
+          return session.model().player.cooldown_total_ticks == 7;
+        }) && session.model().player.cooldown_ticks == 3,
+        "cooldown-mirror: snapshot replaces the duration when cadence changes");
+  server.grant_next_frame();
+  check(wait_until(session, 5000, [&] {
+          return session.model().scene.type == "town";
+        }) && session.model().player.cooldown_ticks == 0 &&
+            session.model().player.cooldown_total_ticks == 0,
+        "cooldown-mirror: transition clears recovery before the next snapshot");
+  server.grant_next_frame();
+  check(wait_until(session, 5000, [&] {
+          return session.model().player.cooldown_ticks == 2;
+        }) && session.model().player.cooldown_total_ticks == 0,
+        "cooldown-mirror: old payload does not invent or reuse a duration");
+  session.shutdown();
+  server.stop();
+}
+
 void remote_living_bond_state_and_trigger_mirror_to_presentation() {
   ScriptedEnvelopeServer server;
   server.script.push_back(
@@ -3563,6 +3621,7 @@ int main() {
   remote_endgame_payload_mirrors_to_presentation();
   remote_spatial_inventory_and_wearset_mirror_to_presentation();
   remote_combat_cadence_mirrors_to_presentation();
+  remote_cooldown_duration_mirrors_and_clears_on_travel();
   remote_forge_properties_and_status_mirror_to_presentation();
   remote_living_bond_state_and_trigger_mirror_to_presentation();
   remote_monster_roles_mirror_to_presentation();

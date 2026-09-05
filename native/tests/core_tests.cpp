@@ -178,6 +178,8 @@ void test_skill_resource_gating_and_thrust() {
         "Thrust pays its named cost after one tick of regeneration");
   check(player->cooldown_ticks == player->stats.attack_speed_ticks - 1,
         "Thrust shares the ordinary attack cooldown");
+  check(player->cooldown_total_ticks == player->stats.attack_speed_ticks,
+        "Thrust keeps its full duration while remaining ticks decrease");
 
   player->cooldown_ticks = 0;
   player->stats.resource = player->stats.resource_max;
@@ -376,6 +378,8 @@ void test_sweep_hits_multiple_targets_and_gates_resource() {
   check(player->cooldown_ticks ==
             player->stats.attack_speed_ticks * 3 / 2 - 1,
         "Sweep uses its 1.5x attack cooldown");
+  check(player->cooldown_total_ticks == player->stats.attack_speed_ticks * 3 / 2,
+        "Sweep publishes its longer duration for the cooldown clock");
 }
 
 Actor* setup_elite(Simulation& sim, Vec2 position) {
@@ -1833,9 +1837,15 @@ void test_world_melee_combo_is_authoritative() {
         "combo: server resolves the exact 100/115/160 cadence");
   check(finisher_stagger == 700 &&
             world.player_cooldown_remaining_ms(1700) == 520 &&
+            world.player_cooldown_total_ms() == 520 &&
             world.player_combo_step(1700) == 3 &&
             world.player_combo_window_remaining_ms(1700) == 900,
         "combo: finisher owns its stagger, recovery, step, and window");
+  check(world.player_cooldown_remaining_ms(1960) == 260 &&
+            world.player_cooldown_total_ms() == 520 &&
+            !world.start_player_attack(1, 20, 1960, direction, "sweep") &&
+            world.player_cooldown_total_ms() == 520,
+        "combo: half recovery and rejected Sweep preserve the finisher denominator");
   const WorldMonster* staggered = nullptr;
   for (const auto& monster : world.monsters())
     if (monster.uuid == target_id) staggered = &monster;
@@ -2704,6 +2714,23 @@ void test_n4_active_forge_properties_drive_their_authoritative_systems() {
             baseline_speed.player_cooldown_remaining_ms(1000) == 350 &&
             forged_speed.player_cooldown_remaining_ms(1000) == 324,
         "forge properties: Grips shorten the authoritative attack recovery");
+  check(baseline_speed.player_cooldown_total_ms() == 350 &&
+            forged_speed.player_cooldown_total_ms() == 324 &&
+            forged_speed.player_cooldown_remaining_ms(1162) == 162,
+        "forge properties: haste changes the accepted duration, not just remaining time");
+  baseline_speed.reset_to_town();
+  forged_speed.enter_solo_instance("dungeon", "clearings");
+  check(baseline_speed.player_cooldown_remaining_ms(1000) == 0 &&
+            baseline_speed.player_cooldown_total_ms() == 0 &&
+            forged_speed.player_cooldown_remaining_ms(1000) == 0 &&
+            forged_speed.player_cooldown_total_ms() == 0,
+        "zone transitions: town and next floor discard the old attack recovery");
+  const WorldMonster next_target = forged_speed.monsters().front();
+  const int next_x = next_target.x + 1 < 39 ? next_target.x + 1 : next_target.x - 1;
+  forged_speed.teleport(next_x, next_target.y, 1000);
+  check(forged_speed.start_player_attack(1, 20, 1000,
+            next_x < next_target.x ? "right" : "left", "melee"),
+        "zone transitions: first attack on new floor need not wait for the old floor");
 
   const auto run_armour_trial = [](int penetration) {
     WorldSimulation world(0x511A6ULL, "armour-trial");

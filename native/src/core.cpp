@@ -400,6 +400,7 @@ void Simulation::resolve_actor_action(Actor& attacker, ActionType action) {
     // Melee and Thrust deliberately share the same attack cooldown.
     attacker.cooldown_ticks = attacker.stats.attack_speed_ticks;
   }
+  attacker.cooldown_total_ticks = attacker.cooldown_ticks;
   const char* action_name = action == ActionType::Melee
                                 ? "melee"
                                 : action == ActionType::Thrust ? "thrust" : "sweep";
@@ -710,6 +711,7 @@ void Simulation::enemy_turn() {
     // collision/navigation pass owns monster locomotion.
     if (distance > kMeleeRange) continue;
     enemy.cooldown_ticks = enemy.stats.attack_speed_ticks;
+    enemy.cooldown_total_ticks = enemy.cooldown_ticks;
     const int damage = resolve_damage(enemy, *player);
     player->stats.life = std::max(0, player->stats.life - damage);
     emit(EventType::DamageApplied, player->id, {}, {}, "enemy-melee", damage);
@@ -1679,6 +1681,8 @@ void WorldSimulation::reset_to_town() {
 }
 
 void WorldSimulation::return_to_town() {
+  next_player_attack_ms_ = 0;
+  player_cooldown_total_ms_ = 0;
   scene_type_ = "town";
   scene_id_ = "town:verdigris";
   scene_name_ = "Verdigris";
@@ -1985,6 +1989,8 @@ void WorldSimulation::enter_solo_instance(const std::string& template_id,
   player_combo_expires_ms_ = 0;
   auto_player_melee_ = false;
   boss_warning_seen_ = false;
+  next_player_attack_ms_ = 0;
+  player_cooldown_total_ms_ = 0;
   next_boss_telegraph_ms_ = 0;
   bond_attack_speed_until_ms_ = 0;
   bond_movement_speed_until_ms_ = 0;
@@ -2073,8 +2079,8 @@ bool WorldSimulation::start_player_attack(int player_level, int player_attack,
   if (now < bond_attack_speed_until_ms_)
     cadence_mods.attack_speed_percent +=
         player_mods_.attack_speed_on_kill_percent;
-  next_player_attack_ms_ = now +
-      player_attack_interval_ms(base_interval, cadence_mods);
+  player_cooldown_total_ms_ = player_attack_interval_ms(base_interval, cadence_mods);
+  next_player_attack_ms_ = now + player_cooldown_total_ms_;
   (void)player_attack;
   return true;
 }
@@ -2657,8 +2663,8 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       if (now < bond_attack_speed_until_ms_)
         cadence_mods.attack_speed_percent +=
             player_mods_.attack_speed_on_kill_percent;
-      next_player_attack_ms_ = now +
-          player_attack_interval_ms(base_interval, cadence_mods);
+      player_cooldown_total_ms_ = player_attack_interval_ms(base_interval, cadence_mods);
+      next_player_attack_ms_ = now + player_cooldown_total_ms_;
     }
   }
   if (player_attack > 0 && !pending_player_skill_.empty()) {

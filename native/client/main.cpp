@@ -1690,7 +1690,15 @@ void dispatch_skill(ClientState& state, const SkillInfo& skill) {
     // than frames (auto-clickers, synthetic floods), and an unbounded
     // effects vector is a frame-time leak. The authoritative attack rate is
     // enforced server-side either way.
-    if (player.alive && state.world.tick != state.last_predicted_swing_tick &&
+    const bool may_predict =
+        state.session->connection_state() == verdigris::client::ConnectionState::Ready &&
+        state.session->model().scene.type == "instance" && player.alive &&
+        player.cooldown_ticks <= 0 &&
+        player.resource >= skill_resource_cost(
+            verdigris::Simulation::presentation_catalog(), skill.action);
+    // This only suppresses misleading speculative FX. The command still goes
+    // to the server so a stale client snapshot cannot reject a valid action.
+    if (may_predict && state.world.tick != state.last_predicted_swing_tick &&
         state.effects.size() < 128) {
       state.last_predicted_swing_tick = state.world.tick;
       EffectFx arc;
@@ -4171,7 +4179,10 @@ void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List
     }
 
     if (cooldown && player.cooldown_ticks > 0) {
-      const int max_ticks = 30;
+      // Older servers without a duration show a fully blocked slot, not a
+      // fictitious 30-tick clock. Current servers report the accepted cadence,
+      // including Sweep, combo finishers, equipment and temporary haste.
+      const int max_ticks = (std::max)(player.cooldown_ticks, player.cooldown_total_ticks);
       const double sweep =
           std::clamp(static_cast<double>(player.cooldown_ticks) / max_ticks, 0.0, 1.0);
       skin::cooldown_wedge(dc, box, sweep);
@@ -9465,6 +9476,7 @@ int scenario_combat_cadence() {
   state.world.player.level = 7;
   state.world.player.alive = true;
   state.world.player.cooldown_ticks = 10;
+  state.world.player.cooldown_total_ticks = 11;
   state.world.player.combo_step = 3;
   state.world.player.combo_window_ticks = 18;
   WorldActor foe;
@@ -9524,14 +9536,31 @@ int scenario_combat_cadence() {
         item.label == "combo-cadence:3:18") cadence_hud = true;
     if (item.op == render::Op::Quickbar &&
         item.label.rfind("cooldown-radial:", 0) == 0)
-      radial_cooldown = true;
+      radial_cooldown = std::abs(item.radius - 10.0 / 11.0) < 0.0001;
   }
   scenario_check(finisher_ring && finisher_damage,
                  "combat-cadence: third beat has a distinct ring and number");
   scenario_check(cadence_hud,
                  "combat-cadence: quickbar mirrors all three authoritative pips");
   scenario_check(radial_cooldown,
-                 "combat-cadence: cooldown uses a radial clock overlay");
+                 "combat-cadence: radial clock uses the authoritative finisher duration");
+  struct ClockSample { int remaining; int total; double fraction; };
+  for (const auto sample : {ClockSample{8, 8, 1.0}, ClockSample{4, 8, 0.5},
+                            ClockSample{0, 8, 0.0}, ClockSample{3, 0, 1.0}}) {
+    state.world.player.cooldown_ticks = sample.remaining;
+    state.world.player.cooldown_total_ticks = sample.total;
+    reference_present(state, 1366, 768, "");
+    int wipes = 0;
+    bool ratios_match = true;
+    for (const auto& item : state.render_list) {
+      if (item.op != render::Op::Quickbar ||
+          item.label.rfind("cooldown-radial:", 0) != 0) continue;
+      ++wipes;
+      ratios_match = ratios_match && std::abs(item.radius - sample.fraction) < 0.0001;
+    }
+    scenario_check(ratios_match && wipes == (sample.remaining ? 3 : 0),
+                   "combat-cadence: full, half, ready and unknown-duration clocks are honest");
+  }
   return 0;
 }
 
@@ -13082,6 +13111,7 @@ class ScenarioPointerSession final : public verdigris::client::IClientSession {
   verdigris::client::ClientModel data;
   std::vector<verdigris::client::ClientCommand> commands;
   std::string error;
+  verdigris::client::ConnectionState status = verdigris::client::ConnectionState::Ready;
   bool start(std::string*) override { return true; }
   void shutdown() override {}
   void poll() override {}
@@ -13089,12 +13119,53 @@ class ScenarioPointerSession final : public verdigris::client::IClientSession {
     commands.push_back(command);
   }
   verdigris::client::ConnectionState connection_state() const override {
-    return verdigris::client::ConnectionState::Ready;
+    return status;
   }
   const verdigris::client::ClientModel& model() const override { return data; }
   const std::string& last_error() const override { return error; }
   std::vector<verdigris::client::PresentationEvent> drain_events() override { return {}; }
 };
+
+int scenario_combat_input_feedback() {
+  ClientState state;
+  auto session = std::make_unique<ScenarioPointerSession>();
+  auto* recorder = session.get();
+  recorder->data.scene.type = "instance";
+  recorder->data.player.uuid = "feedback-scion";
+  state.session = std::move(session);
+  const SkillInfo thrust{'Q', "Thrust", verdigris::ActionType::Thrust};
+  auto press = [&] {
+    ++state.world.tick;
+    state.effects.clear();
+    recorder->commands.clear();
+    dispatch_skill(state, thrust);
+    scenario_check(recorder->commands.size() == 1 &&
+                       recorder->commands.front().target == "thrust",
+                   "combat-feedback: input remains a server-authoritative request");
+    return !state.effects.empty();
+  };
+  scenario_check(press(), "combat-feedback: eligible whiff has immediate swing feedback");
+  recorder->data.scene.type = "town";
+  scenario_check(!press(), "combat-feedback: town input cannot draw a phantom attack");
+  recorder->data.scene.type = "instance";
+  recorder->data.player.alive = false;
+  scenario_check(!press(), "combat-feedback: dead Scion cannot draw a phantom attack");
+  recorder->data.player.alive = true;
+  recorder->data.player.cooldown_ticks = 3;
+  scenario_check(!press(), "combat-feedback: recovery cannot draw a phantom attack");
+  recorder->data.player.cooldown_ticks = 0;
+  recorder->data.player.resource = 0;
+  scenario_check(!press(), "combat-feedback: unfunded skill cannot draw a phantom attack");
+  recorder->data.player.resource = 50;
+  recorder->status = verdigris::client::ConnectionState::Connected;
+  scenario_check(!press(), "combat-feedback: unadmitted session cannot draw a phantom attack");
+  recorder->status = verdigris::client::ConnectionState::Ready;
+  scenario_check(press(), "combat-feedback: ready skill resumes immediate feedback");
+  dispatch_skill(state, thrust);
+  scenario_check(state.effects.size() == 1,
+                 "combat-feedback: repeated input in one tick remains bounded");
+  return 0;
+}
 
 int scenario_inventory_pointer_safety() {
   ClientState state;
@@ -13176,6 +13247,7 @@ int run_scenarios(const std::string& which) {
       {"inventory-pointer-safety", scenario_inventory_pointer_safety},
       {"combat-juice", scenario_combat_juice},
       {"combat-cadence", scenario_combat_cadence},
+      {"combat-input-feedback", scenario_combat_input_feedback},
       {"monster-pressure-roles", scenario_monster_pressure_roles},
       {"warden-disciplines", scenario_warden_disciplines},
       {"remote-render-list", scenario_remote_render_list},
