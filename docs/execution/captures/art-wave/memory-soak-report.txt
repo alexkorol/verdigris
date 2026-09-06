@@ -1,4 +1,4 @@
 cycles=32
 max_floor=1
 max_fx=128
-max_pens=14
+max_pens=17

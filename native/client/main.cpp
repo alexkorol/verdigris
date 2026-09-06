@@ -511,6 +511,9 @@ struct ClientState {
   bool equipment_review_strip = false;
   bool stat_explain_review_strip = false;
   bool gpu_sample_review_strip = false;
+  bool shader_bindings_review_strip = false;
+  bool memory_soak_review_strip = false;
+  bool frame_budget_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -2235,6 +2238,8 @@ inline const char* owner_cap_128_label() { return "Cap 128"; }
 inline const char* owner_one_floor_label() { return "One floor"; }
 inline const char* owner_warm_glyphs_label() { return "Warm glyphs"; }
 inline const char* owner_cold_trace_label() { return "Cold trace"; }
+inline const char* owner_named_machine_label() { return "Named machine"; }
+inline const char* owner_paint_fields_label() { return "Paint fields"; }
 
 void seed_combat_hitch_fx(ClientState& state) {
   const verdigris::Vec2 origin = state.world.player.position;
@@ -7826,6 +7831,123 @@ void paint_gpu_sample_review_strip(ClientState& state, HDC dc, const RECT& bound
   SelectObject(dc, old_font);
 }
 
+void paint_shader_bindings_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                        render::List& rl) {
+  if (!state.shader_bindings_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "shader-bindings-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::gpu::owner_layout_v1_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::gpu::owner_no_source_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "stale HLSL";
+  TextOutA(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "gpu:layout-v1"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "gpu:no-source"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "gpu-strip:stale-hlsl-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_memory_soak_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                    render::List& rl) {
+  if (!state.memory_soak_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "memory-soak-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::perf::owner_thirty_two_cycles_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::perf::owner_cap_holds_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "short scene";
+  TextOutA(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "perf:32-cycles"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "perf:cap-holds"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "perf-strip:short-scene-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_frame_budget_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                     render::List& rl) {
+  if (!state.frame_budget_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "frame-budget-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = owner_named_machine_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = owner_paint_fields_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "unnamed HW";
+  TextOutA(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "perf:named-machine"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "perf:paint-fields"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "perf-strip:unnamed-hw-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -8885,6 +9007,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_equipment_review_strip(state, dc, bounds, rl);
   paint_stat_explain_review_strip(state, dc, bounds, rl);
   paint_gpu_sample_review_strip(state, dc, bounds, rl);
+  paint_shader_bindings_review_strip(state, dc, bounds, rl);
+  paint_memory_soak_review_strip(state, dc, bounds, rl);
+  paint_frame_budget_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -12883,6 +13008,25 @@ int scenario_shader_bindings() {
   scenario_check(sample.write_bmp(dir + "\\shader-bindings-quad.bmp"),
                  "shader-bindings: cooked program capture written");
   sample.shutdown();
+  ClientState hud;
+  scenario_begin(hud);
+  scenario_follow_camera(hud);
+  const std::string png = dir + "\\shader-bindings-960x600.png";
+  hud.shader_bindings_review_strip = true;
+  scenario_check(reference_present(hud, 960, 600, png),
+                 "shader-bindings: owner HUD capture written");
+  bool layout_v1 = false;
+  bool no_source = false;
+  bool stale_hlsl = false;
+  for (const auto& item : hud.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "gpu:layout-v1") layout_v1 = true;
+    if (item.label == "gpu:no-source") no_source = true;
+    if (item.label == "gpu-strip:stale-hlsl-rejected") stale_hlsl = true;
+  }
+  scenario_check(layout_v1 && no_source,
+                 "shader-bindings: live HUD names Layout v1 and No source");
+  scenario_check(stale_hlsl, "shader-bindings: live HUD rejects stale HLSL");
   return scenario_failures;
 }
 
@@ -13611,13 +13755,29 @@ int scenario_memory_soak() {
   }
   const std::string report = dir + "\\memory-soak-report.txt";
   FILE* out = nullptr;
-  fopen_s(&out, report.c_str(), "w");
+  fopen_s(&out, report.c_str(), "wb");
   scenario_check(out != nullptr, "memory-soak: report opened");
   if (out) {
     std::fprintf(out, "cycles=%d\nmax_floor=%d\nmax_fx=%d\nmax_pens=%d\n",
                  env.cycles, env.max_floor_bitmaps, env.max_effects, env.max_pens);
     std::fclose(out);
   }
+  const std::string png = dir + "\\memory-soak-960x600.png";
+  state.memory_soak_review_strip = true;
+  scenario_check(reference_present(state, 960, 600, png),
+                 "memory-soak: owner HUD capture written");
+  bool thirty_two = false;
+  bool cap_holds = false;
+  bool short_scene = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "perf:32-cycles") thirty_two = true;
+    if (item.label == "perf:cap-holds") cap_holds = true;
+    if (item.label == "perf-strip:short-scene-rejected") short_scene = true;
+  }
+  scenario_check(thirty_two && cap_holds,
+                 "memory-soak: live HUD names 32 cycles and Cap holds");
+  scenario_check(short_scene, "memory-soak: live HUD rejects short scene");
   return scenario_failures;
 }
 
@@ -15666,7 +15826,7 @@ int scenario_frame_budget() {
   }
   const std::string report = dir + "\\frame-budget-report.txt";
   FILE* out = nullptr;
-  fopen_s(&out, report.c_str(), "w");
+  fopen_s(&out, report.c_str(), "wb");
   scenario_check(out != nullptr, "frame-budget: report opened");
   if (out) {
     std::fprintf(out,
@@ -15683,6 +15843,22 @@ int scenario_frame_budget() {
   SelectObject(dc, old);
   DeleteObject(bitmap);
   DeleteDC(dc);
+  const std::string png = dir + "\\frame-budget-960x600.png";
+  state.frame_budget_review_strip = true;
+  scenario_check(reference_present(state, 960, 600, png),
+                 "frame-budget: owner HUD capture written");
+  bool named_machine = false;
+  bool paint_fields = false;
+  bool unnamed_hw = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "perf:named-machine") named_machine = true;
+    if (item.label == "perf:paint-fields") paint_fields = true;
+    if (item.label == "perf-strip:unnamed-hw-rejected") unnamed_hw = true;
+  }
+  scenario_check(named_machine && paint_fields,
+                 "frame-budget: live HUD names Named machine and Paint fields");
+  scenario_check(unnamed_hw, "frame-budget: live HUD rejects unnamed hardware");
   return scenario_failures;
 }
 

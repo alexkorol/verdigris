@@ -1,5 +1,18 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — layout v1, soak envelope, named machine (Cursor)
+
+- VG-GPU-003: owner Layout v1 strip paints No source. Stale HLSL cannot
+  certify. Software albedo/rim still loads without a runtime path. 64×64
+  BMP hash is unchanged. TOOLS-002 stays Kimi.
+- VG-PERF-007: owner 32 cycles strip paints Cap holds. Short scene cannot
+  certify. Floor bitmaps stay 1 across 32 present/resize/effect cycles.
+- VG-PERF-001: owner Named machine strip paints Paint fields. Unnamed HW
+  cannot certify. Timed 20-frame 3440×1440 loop still averages under 40 ms
+  (32.0 ms this run). Bound not raised. Owner strip paints after timing.
+- Scenarios `shader-bindings` / `memory-soak` / `frame-budget` PASS.
+  Captures viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — ack only, Base Gear, software quad (Cursor)
 
 - VG-UI-003: owner Ack only strip paints No pending. Pending gold cannot

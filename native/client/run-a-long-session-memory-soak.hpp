@@ -33,4 +33,7 @@ inline bool envelope_bounded(const SoakEnvelope& env, int floor_cap, int effect_
          env.max_pens <= pen_cap;
 }
 
+inline const char* owner_thirty_two_cycles_label() { return "32 cycles"; }
+inline const char* owner_cap_holds_label() { return "Cap holds"; }
+
 }  // namespace verdigris::perf

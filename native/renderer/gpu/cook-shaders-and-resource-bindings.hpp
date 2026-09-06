@@ -83,4 +83,7 @@ inline bool draw_lit_quad(Sample& sample, const Bindings& bindings) {
   return true;
 }
 
+inline const char* owner_layout_v1_label() { return "Layout v1"; }
+inline const char* owner_no_source_label() { return "No source"; }
+
 }  // namespace verdigris::gpu

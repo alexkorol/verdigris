@@ -125,7 +125,9 @@ character-sheet attack source vs dormant conditional, backpack drag
 dedup, warning-priority steal, and one ambience layer per route.
 Snapshot field `xp` remains reserved. VG-PERF-001: F3/`frame-budget`
 prints named display, CPU count, and floor/world/hud/upload fields.
-Evidence `docs/execution/evidence/VG-PERF-001.json`. Bound stays 40 ms.
+Owner strip paints Named machine / Paint fields after the timed loop.
+Unnamed HW cannot certify. Evidence
+`docs/execution/evidence/VG-PERF-001.json`. Bound stays 40 ms.
 VG-PERF-005: loot nameplates cap at 12 nearest; Drop sprites stay.
 Owner strip paints Nearest 12 / Drop stays. Cull pickup cannot certify.
 Scenario `loot-label-budget`. Evidence
@@ -186,8 +188,10 @@ cannot ship. Owner strip paints Bronze stone / Cooked CC0. Village kit
 uses the family. Scenario `bronze-stone`. Evidence
 `docs/execution/evidence/VG-ART-002.json`.
 VG-GPU-003: layout v1 software program `software-albedo-rim-v1`. Wrong
-backend or stale layout fails; failed load does not paint. Scenario
-`shader-bindings`. Evidence `docs/execution/evidence/VG-GPU-003.json`.
+backend or stale layout fails; failed load does not paint. Owner strip
+paints Layout v1 / No source. Stale HLSL cannot certify. 64×64 BMP hash
+is unchanged. Scenario `shader-bindings`. Evidence
+`docs/execution/evidence/VG-GPU-003.json`.
 VG-GPU-004: software present of live session packets (actors/world/effects/HUD).
 Owner strip paints Live packets / Session present. A textured-quad demo with
 no session cannot pass. Scenario `gpu-reference`. Evidence
@@ -233,7 +237,8 @@ strip paints Ack only / No pending. Pending compare cannot gold-frame as
 equipped. Owner gear pane paints `Skill tree: no data yet`; PaneStat
 keeps `TREE no authoritative data`. Scenario `equipment`. Evidence
 `docs/execution/evidence/VG-UI-003.json`.
-VG-PERF-007: 32 resize/effect cycles; floor bitmaps stay 1. Scenario
+VG-PERF-007: 32 resize/effect cycles; floor bitmaps stay 1. Owner strip
+paints 32 cycles / Cap holds. Short scene cannot certify. Scenario
 `memory-soak`. Evidence `docs/execution/evidence/VG-PERF-007.json`.
 VG-SOUND-007: mixer tape from mixed pack + elite; live HUD paints
 Encounter mix / Hit + warning. An isolated preview cannot certify.

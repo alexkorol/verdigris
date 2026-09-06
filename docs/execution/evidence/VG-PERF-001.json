@@ -4,20 +4,22 @@
   "planning_id": "VG-PERF-001",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "643802b40f55bf6b273447b8874f3bdb82a6621f",
+  "base_sha": "5abb4077d19b2a713b1d0c5e0971c8f6d9ce18fa",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "frame-budget",
   "platform": "win32-x64",
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario frame-budget", "exit_code": 0}
   ],
   "assertions": [
     "machine line names display, logical CPUs, OS, and present path",
     "paint fields include floor, world, hud, upload, and total",
     "20 frames at 3440x1440 average under 40 ms",
-    "unnamed hardware cannot skip the paint fields"
+    "unnamed hardware cannot skip the paint fields",
+    "live HUD names Named machine and Paint fields"
   ],
   "negative_control": {
     "name": "unnamed hardware as a portable performance target",
@@ -27,13 +29,19 @@
     {
       "kind": "log",
       "path": "docs/execution/captures/art-wave/frame-budget-report.txt",
-      "sha256": "7f0d1c0a554f1587bc4a2edf995931f91be3099fef15bd3afb80272b757197fd",
+      "sha256": "af17f83ae91429ea3933705078b9b1c15c700859e342b55d47658f584dbc5cf2",
+      "produced_by": "native/build/verdigris_client.exe --scenario frame-budget"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/frame-budget-960x600.png",
+      "sha256": "ba29a5dfbc090d78a0cecbe45e2126c5c032f3209eee7edf04ad7c20d87a925c",
       "produced_by": "native/build/verdigris_client.exe --scenario frame-budget"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
-  "perceptual_review": "NOT_REQUIRED",
+  "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "GDI paint path on this Win32 machine (3440x1440, 12 CPUs, 11.5 ms avg). Network RTT stays n/a until Kimi exposes it. Bound not raised."
+    "GDI paint path on this Win32 machine (3440x1440, 12 CPUs, 32.0 ms avg). Network RTT stays n/a until Kimi exposes it. Bound not raised. Owner strip paints Named machine / Paint fields after the timed loop so the 40 ms gate is not contaminated. Unnamed HW cannot certify."
   ]
 }
