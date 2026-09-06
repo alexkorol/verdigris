@@ -465,6 +465,7 @@ struct ClientState {
   verdigris::client::items::LootFilter loot_filter{};
   bool gear_overlay = false;
   bool pose_review_strip = false;
+  bool weave_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -2111,8 +2112,9 @@ PresentationResources presentation_resources(const ClientState& state) {
 }
 
 void fill_ellipse(HDC dc, int cx, int cy, int rx, int ry, COLORREF color) {
-  HBRUSH brush = cached_brush(color);
-  HPEN pen = cached_pen(color, 1);
+  const COLORREF drawn = vector_art::dc_color(dc, color);
+  HBRUSH brush = cached_brush(drawn);
+  HPEN pen = cached_pen(drawn, 1);
   HGDIOBJ old_brush = SelectObject(dc, brush);
   HGDIOBJ old_pen = SelectObject(dc, pen);
   Ellipse(dc, cx - rx, cy - ry, cx + rx, cy + ry);
@@ -2121,7 +2123,8 @@ void fill_ellipse(HDC dc, int cx, int cy, int rx, int ry, COLORREF color) {
 }
 
 void ring_ellipse(HDC dc, int cx, int cy, int rx, int ry, COLORREF color, int width) {
-  HPEN pen = cached_pen(color, width);
+  const COLORREF drawn = vector_art::dc_color(dc, color);
+  HPEN pen = cached_pen(drawn, width);
   HGDIOBJ old_pen = SelectObject(dc, pen);
   HGDIOBJ old_brush = SelectObject(dc, GetStockObject(NULL_BRUSH));
   Ellipse(dc, cx - rx, cy - ry, cx + rx, cy + ry);
@@ -2130,7 +2133,8 @@ void ring_ellipse(HDC dc, int cx, int cy, int rx, int ry, COLORREF color, int wi
 }
 
 void draw_line(HDC dc, int x0, int y0, int x1, int y1, COLORREF color, int width) {
-  HPEN pen = cached_pen(color, width);
+  const COLORREF drawn = vector_art::dc_color(dc, color);
+  HPEN pen = cached_pen(drawn, width);
   HGDIOBJ old_pen = SelectObject(dc, pen);
   MoveToEx(dc, x0, y0, nullptr);
   LineTo(dc, x1, y1);
@@ -2992,14 +2996,16 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       break;
     }
     case EffectFx::Kind::WarCryAura: {
-      // VG-ART-006: one bronze weave family. Cast then impact rings share
-      // identity; radius is capped so spectacle cannot blanket warnings.
+      // VG-ART-006: one bronze weave family. Cast motes, travel orbit, and
+      // impact ticks share identity; radius is capped so spectacle cannot
+      // blanket warnings.
       int radius = static_cast<int>(kTileUnits * (0.38 + grow * 0.72) *
                                     base.scale);
       const int short_edge =
           (std::min)(static_cast<int>(bounds.right), static_cast<int>(bounds.bottom));
       const int cap = (std::max)(8, short_edge / 6);
       if (radius > cap) radius = cap;
+      radius = std::max(8, radius);
       const char* weave = "vfx-weave:impact";
       if (grow < 0.28)
         weave = "vfx-weave:cast";
@@ -3011,10 +3017,30 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       rl.push_back({render::Op::Hud, static_cast<double>(base.x),
                     static_cast<double>(base.y), static_cast<double>(radius), 0,
                     weave});
-      const COLORREF color = fade_to_background(RGB(239, 190, 78), life);
-      ring_ellipse(dc, base.x, base.y, radius, radius, color, 3);
+      const COLORREF bronze = fade_to_background(vector_art::kWeaveBronze, life);
+      const COLORREF bright = fade_to_background(vector_art::kWeaveBright, life);
+      const COLORREF ember = fade_to_background(vector_art::kWeaveEmber, life);
+      ring_ellipse(dc, base.x, base.y, radius, radius, bronze, 3);
       ring_ellipse(dc, base.x, base.y, std::max(3, radius - 8),
-                   std::max(3, radius - 8), fade_to_background(RGB(255, 224, 128), life), 1);
+                   std::max(3, radius - 8), bright, 1);
+      const int motes = grow < 0.28 ? 6 : (grow < 0.58 ? 8 : 10);
+      const double spin = fx.age * 0.45 + grow * 2.4;
+      for (int i = 0; i < motes; ++i) {
+        const double a = spin + i * (2.0 * kPi / motes);
+        const double d =
+            grow < 0.28 ? radius * (0.22 + grow * 0.4)
+                        : (grow < 0.58 ? radius * 0.78 : radius * 0.92);
+        const int mx = base.x + static_cast<int>(std::cos(a) * d);
+        const int my = base.y + static_cast<int>(std::sin(a) * d);
+        const int mr = std::max(2, radius / (grow < 0.58 ? 11 : 9));
+        fill_ellipse(dc, mx, my, mr, std::max(2, mr - 1),
+                     grow < 0.58 ? bright : ember);
+        if (grow >= 0.58) {
+          const int tx = base.x + static_cast<int>(std::cos(a) * (radius + 6));
+          const int ty = base.y + static_cast<int>(std::sin(a) * (radius + 6));
+          draw_line(dc, mx, my, tx, ty, bronze, 2);
+        }
+      }
       break;
     }
     case EffectFx::Kind::Impact: {
@@ -3142,9 +3168,20 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
               phase_a::kWarcryFadeColor.b),
           life);
       const int radius =
-          static_cast<int>(kTileUnits * (0.9 - grow * 0.62) * base.scale);
-      ring_ellipse(dc, base.x, base.y, (std::max)(3, radius), (std::max)(3, radius),
-                   color, 2);
+          std::max(4, static_cast<int>(kTileUnits * (0.9 - grow * 0.62) *
+                                       base.scale));
+      ring_ellipse(dc, base.x, base.y, radius, radius, color, 2);
+      ring_ellipse(dc, base.x, base.y, std::max(3, radius / 2),
+                   std::max(3, radius / 2),
+                   fade_to_background(vector_art::kWeaveEmber, life), 1);
+      const double spin = fx.age * 0.7;
+      for (int i = 0; i < 5; ++i) {
+        const double a = spin + i * (2.0 * kPi / 5.0);
+        const double d = radius * (0.85 - grow * 0.55);
+        const int mx = base.x + static_cast<int>(std::cos(a) * d);
+        const int my = base.y + static_cast<int>(std::sin(a) * d);
+        fill_ellipse(dc, mx, my, 2, 2, color);
+      }
       break;
     }
     case EffectFx::Kind::ScionLostBeat: {
@@ -5859,6 +5896,66 @@ void paint_attack_pose_strip(ClientState& state, HDC dc, const RECT& bounds,
   SelectObject(dc, old_font);
 }
 
+void paint_weave_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                              render::List& rl) {
+  if (!state.weave_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 456 * s;
+  const int pane_h = 108 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 4, "weave-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = "War Cry weave";
+  TextOutA(dc, left + 12 * s, top + 6 * s, title, static_cast<int>(strlen(title)));
+  const char* names[4] = {"Cast", "Travel", "Impact", "Cancel"};
+  const char* tokens[4] = {"weave-strip:cast", "weave-strip:travel",
+                           "weave-strip:impact", "weave-strip:cancel"};
+  const double grows[4] = {0.12, 0.42, 0.82, 0.55};
+  for (int i = 0; i < 4; ++i) {
+    const int cx = left + 58 * s + i * 110 * s;
+    const int cy = top + 52 * s;
+    const int radius = 28 * s;
+    const double grow = grows[i];
+    const bool cancel = i == 3;
+    const COLORREF bronze = cancel ? vector_art::kWeaveEmber : vector_art::kWeaveBronze;
+    const COLORREF bright = vector_art::kWeaveBright;
+    ring_ellipse(dc, cx, cy, radius, radius, bronze, 3);
+    ring_ellipse(dc, cx, cy, std::max(4, radius - 8), std::max(4, radius - 8),
+                 bright, 1);
+    const int motes = cancel ? 5 : (grow < 0.28 ? 6 : (grow < 0.58 ? 8 : 10));
+    for (int m = 0; m < motes; ++m) {
+      const double a = m * (2.0 * kPi / motes);
+      const double d = cancel ? radius * 0.4 : (grow < 0.28 ? radius * 0.35
+                                              : (grow < 0.58 ? radius * 0.78
+                                                             : radius * 0.9));
+      const int mx = cx + static_cast<int>(std::cos(a) * d);
+      const int my = cy + static_cast<int>(std::sin(a) * d);
+      fill_ellipse(dc, mx, my, 3 * s, 2 * s, bright);
+      if (!cancel && grow >= 0.58) {
+        const int tx = cx + static_cast<int>(std::cos(a) * (radius + 5 * s));
+        const int ty = cy + static_cast<int>(std::sin(a) * (radius + 5 * s));
+        draw_line(dc, mx, my, tx, ty, bronze, 2);
+      }
+    }
+    SIZE extent{};
+    GetTextExtentPoint32A(dc, names[i], static_cast<int>(strlen(names[i])),
+                          &extent);
+    SetTextColor(dc, skin::kInk);
+    TextOutA(dc, cx - extent.cx / 2, top + pane_h - 16 * s, names[i],
+             static_cast<int>(strlen(names[i])));
+    rl.push_back({render::Op::Hud, static_cast<double>(cx),
+                  static_cast<double>(cy), 0.0, i + 1, tokens[i]});
+  }
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -6866,6 +6963,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   }
 
   paint_attack_pose_strip(state, dc, bounds, rl);
+  paint_weave_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -10168,6 +10266,46 @@ int scenario_weave_vfx() {
     scenario_check(warcry_radius() <= cap,
                    "weave-vfx: overlapping weave still respects the radius cap");
   }
+
+  scenario_check(vector_art::blob_weave_fails_review(false, true, true, true),
+                 "weave-vfx: a blob without cast motes cannot certify the family");
+  scenario_check(!vector_art::blob_weave_fails_review(
+                     vector_art::kWeaveHasCastMotes, vector_art::kWeaveHasTravelOrbit,
+                     vector_art::kWeaveHasImpactTicks,
+                     vector_art::kWeaveHasCancelImplode),
+                 "weave-vfx: cast/travel/impact/cancel share bronze identity");
+
+  for (int i = 0; i < 24; ++i)
+    scenario_step(state, verdigris::Command::move(1, 0));
+  scenario_follow_camera(state);
+  state.effects.clear();
+  EffectFx shown;
+  shown.kind = EffectFx::Kind::WarCryAura;
+  shown.wx = static_cast<double>(state.world.player.position.x);
+  shown.wy = static_cast<double>(state.world.player.position.y);
+  shown.ttl = 14;
+  shown.age = 6;
+  add_effect(state, shown);
+  state.weave_review_strip = true;
+  scenario_present(state);
+  bool strip = false;
+  bool strip_cast = false;
+  bool strip_travel = false;
+  bool strip_impact = false;
+  bool strip_cancel = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "weave-strip") strip = true;
+    if (item.label == "weave-strip:cast") strip_cast = true;
+    if (item.label == "weave-strip:travel") strip_travel = true;
+    if (item.label == "weave-strip:impact") strip_impact = true;
+    if (item.label == "weave-strip:cancel") strip_cancel = true;
+  }
+  scenario_check(strip && strip_cast && strip_travel && strip_impact &&
+                     strip_cancel,
+                 "weave-vfx: native strip paints all four weave beats");
+  scenario_check(has_hud("vfx-weave:travel"),
+                 "weave-vfx: capture pose is the travel beat at game scale");
 
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {

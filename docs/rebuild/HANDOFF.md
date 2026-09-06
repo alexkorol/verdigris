@@ -1,5 +1,13 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — bronze War Cry weave family (Cursor)
+
+- VG-ART-006: cast motes, travel orbit, impact ticks, and cancel implode
+  share bronze identity. Radius stays inside a screen sixth so spectacle
+  cannot hide a telegraph. DIB effect rings use `dc_color` so gold is not
+  capture-black. Native `War Cry weave` strip paints all four beats.
+- Scenario `weave-vfx` PASS. Capture viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — readable strike family at game scale (Cursor)
 
 - VG-ART-003: windup cocks the blade; active lunges it forward. Limb pixel
