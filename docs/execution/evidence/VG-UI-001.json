@@ -23,18 +23,20 @@
     "absent tree cannot paint tree-seat node ids",
     "controls hint never enters the tree pane",
     "identity never enters the tree pane",
+    "controls hint never enters the character pane",
+    "controls hint remains with the character sheet open",
     "live HUD names Stack 2 and Escape closes",
     "live HUD rejects invented origin"
   ],
   "negative_control": {
-    "name": "helper pane_stack_depth without native paint or Escape, Geometric Passives as the owner title, an invented origin seat while the tree says no data yet, or WASD painted on the tree",
+    "name": "helper pane_stack_depth without native paint or Escape, Geometric Passives as the owner title, an invented origin seat while the tree says no data yet, WASD painted on the tree, or WASD painted on the character sheet",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/pane-stack-960x600.png",
-      "sha256": "e880b9ca4e45689ce15cbb3cec51076a6e920787d97f9edbe265afd089e1b561",
+      "sha256": "c65c57da1c04164eb4ed138ee6dfd45e016113077b898eab725e30ceb830c325",
       "produced_by": "native/build/verdigris_client.exe --scenario pane-stack"
     },
     {
@@ -48,6 +50,6 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Client Escape stack only. Owner Demo Chronicles journeys not duplicated.",
-    "TASK-0193 geometric slice is unchanged and only paints after a payload. Open tree and character panes keep the top HUD out. Not Owner Demo. No TASK numbers minted."
+    "TASK-0193 geometric slice is unchanged and only paints after a payload. Open tree and character panes keep the top HUD out. Deleting WASD cannot certify the sheet. Not Owner Demo. No TASK numbers minted."
   ]
 }

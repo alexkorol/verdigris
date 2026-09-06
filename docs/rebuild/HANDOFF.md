@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Character keep-out, WASD off sheet (Cursor)
+
+- VG-UI-007 / VG-UI-001 / VG-UI-004: C-key First Scion no longer takes the
+  centered WASD fallback. The planner places the hint in the lane right of
+  the sheet; deleting it cannot certify. Owner Base Gear strip on
+  `stat-explain` is review overlay. Open tree keep-out from the prior
+  packet is unchanged.
+- Scenarios `hud-pane-readability` / `pane-stack` / `stat-explain` PASS.
+  Captures viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — Tree keep-out, WASD off pane (Cursor)
 
 - VG-UI-007 / VG-UI-001: the top HUD no longer paints WASD on the open

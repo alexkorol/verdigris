@@ -19,7 +19,8 @@
     "expanded sheet names src base, gear, passive, cond on HUD ops",
     "char:atk-dormant-excluded is on the HUD",
     "owner paint uses Base/Gear/Passive/Conditional, not src jargon",
-    "live HUD names Base Gear and Cond off"
+    "live HUD names Base Gear and Cond off",
+    "controls hint remains and does not enter the character sheet"
   ],
   "negative_control": {
     "name": "fold dormant conditional into painted Attack, or paint src base as the owner label",
@@ -29,7 +30,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/stat-explain-960x600.png",
-      "sha256": "6c9e4d30d79532124ce51a51b69860df6152d88b14e8c91c85a9cb4fd59edc65",
+      "sha256": "75fb4d6fdd0ebcd3a62629f111e9ffe282014fbd67b00e83b9c0377bb473c00e",
       "produced_by": "native/build/verdigris_client.exe --scenario stat-explain"
     }
   ],
@@ -37,6 +38,6 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Presentation sheet only. Owner strip paints Base Gear / Cond off. Dormant ATK cannot certify. Core STAT contribution algebra stays Kimi.",
-    "HUD ops keep char:src * protocol labels. Not Owner Demo. No TASK numbers minted."
+    "WASD stays off the character sheet. Owner Base Gear strip is review overlay, not production chrome. HUD ops keep char:src * protocol labels. Not Owner Demo. No TASK numbers minted."
   ]
 }

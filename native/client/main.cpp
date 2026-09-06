@@ -5464,27 +5464,47 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open, bool tree_open,
   layout.controls = place_centered(controls_size, layout.controls_placed);
   // TASK-0159: if no single-line slot exists, wrap the hint into two stacked
   // lines placed as one unit on the left ladders.
-  if (layout.controls.w == 0 && controls_size_b.w > 0) {
-    const auto try_rows_left_pair = [&](const TopHudRect& first,
-                                        const TopHudRect& second,
-                                        int x) -> TopHudRect {
-      for (int row = 0; row + 1 < kTopHudRowCount; ++row) {
-        TopHudRect cand_a{x, row_y(row), first.w, first.h};
-        TopHudRect cand_b{x, row_y(row + 1), second.w, second.h};
-        if (fits(row, cand_a) && fits(row + 1, cand_b)) {
-          occupied[row].push_back(cand_a);
-          occupied[row + 1].push_back(cand_b);
-          layout.controls_wrapped = true;
-          layout.controls_second = cand_b;
-          return cand_a;
-        }
+  const auto try_rows_left_pair = [&](const TopHudRect& first,
+                                      const TopHudRect& second,
+                                      int x) -> TopHudRect {
+    for (int row = 0; row + 1 < kTopHudRowCount; ++row) {
+      TopHudRect cand_a{x, row_y(row), first.w, first.h};
+      TopHudRect cand_b{x, row_y(row + 1), second.w, second.h};
+      if (fits(row, cand_a) && fits(row + 1, cand_b)) {
+        occupied[row].push_back(cand_a);
+        occupied[row + 1].push_back(cand_b);
+        layout.controls_wrapped = true;
+        layout.controls_second = cand_b;
+        return cand_a;
       }
-      return TopHudRect{};
-    };
+    }
+    return TopHudRect{};
+  };
+  if (layout.controls.w == 0 && controls_size_b.w > 0) {
     for (int pass = 0; pass < 2 && !layout.controls_wrapped; ++pass) {
       const TopHudRect got = try_rows_left_pair(
           controls_size_a, controls_size_b,
           pass == 0 ? lane_x : kTopHudGutter + 6);
+      if (got.w > 0) {
+        layout.controls = got;
+        layout.controls_placed = true;
+      }
+    }
+  }
+  // Character sheet owns the left column. Centered fallback would paint
+  // WASD onto it once row 0 is taken. The remaining lane is to the right
+  // of the sheet — never delete the hint, never overlay the pane.
+  if (!layout.controls_placed && character_open) {
+    const HudRect sheet =
+        character_pane_rect(width, height, character_extra_rows);
+    const int sheet_lane = sheet.x + sheet.w + kTopHudGap;
+    const TopHudRect single = try_rows_left(controls_size, sheet_lane);
+    if (single.w > 0) {
+      layout.controls = single;
+      layout.controls_placed = true;
+    } else if (controls_size_b.w > 0) {
+      const TopHudRect got =
+          try_rows_left_pair(controls_size_a, controls_size_b, sheet_lane);
       if (got.w > 0) {
         layout.controls = got;
         layout.controls_placed = true;
@@ -12558,6 +12578,65 @@ int scenario_hud_pane_readability() {
                    "hud-pane-readability: tree capture non-trivial");
   }
 
+  // VG-UI-007 extra: C-key character sheet keep-out. Centered WASD fallback
+  // cannot certify overlaying First Scion.
+  {
+    ClientState state;
+    scenario_begin(state);
+    load_billboards(state.billboards);
+    scenario_follow_camera(state);
+    state.character_pane = true;
+    const std::string png_sheet =
+        dir + "\\hud-pane-readability-character-960x600.png";
+    scenario_check(reference_present(state, 960, 600, png_sheet),
+                   "hud-pane-readability: character-open capture written");
+    const HudRect* pane = trace_find(state, "character-pane-frame");
+    scenario_check(pane != nullptr && pane->w > 100,
+                   "hud-pane-readability: character pane frame recorded");
+    const HudRect* controls = trace_find(state, "controls");
+    scenario_check(controls != nullptr,
+                   "hud-pane-readability: controls hint remains with the "
+                   "character sheet open");
+    scenario_check(
+        !verdigris::client::ui::missing_controls_fails_review(controls !=
+                                                             nullptr),
+        "hud-pane-readability: deleting WASD cannot certify the sheet");
+    const char* kSheetKeepOut[] = {"identity", "controls", "objective"};
+    for (const char* region : kSheetKeepOut) {
+      const HudRect* rect = trace_find(state, region);
+      char line[192];
+      std::snprintf(line, sizeof(line),
+                    "hud-pane-readability: %s never enters the character pane",
+                    region);
+      scenario_check(pane && rect && !hud_rects_overlap(*pane, *rect), line);
+    }
+    if (const HudRect* second = trace_find(state, "controls-second")) {
+      scenario_check(pane && !hud_rects_overlap(*pane, *second),
+                     "hud-pane-readability: controls-second never enters the "
+                     "character pane");
+    }
+    if (const HudRect* art = trace_find(state, "art")) {
+      scenario_check(pane && !hud_rects_overlap(*pane, *art),
+                     "hud-pane-readability: art/mute chip never enters the "
+                     "character pane");
+    }
+    const bool overlap =
+        pane && controls && hud_rects_overlap(*pane, *controls);
+    scenario_check(
+        verdigris::client::ui::controls_on_character_fails_review(true),
+        "hud-pane-readability: overlaying the sheet with WASD is the "
+        "anti-pattern");
+    scenario_check(
+        !verdigris::client::ui::controls_on_character_fails_review(overlap),
+        "hud-pane-readability: relocated controls are the production sheet HUD");
+    std::ifstream probe(png_sheet, std::ios::binary);
+    scenario_check(probe.good(),
+                   "hud-pane-readability: character capture readable");
+    probe.seekg(0, std::ios::end);
+    scenario_check(probe.tellg() > 1024,
+                   "hud-pane-readability: character capture non-trivial");
+  }
+
   // ── Remote owner path on this lane's routed loopback capsule (7100-7119):
   // the connection chip and art chip must also clear the open pane.
   {
@@ -14694,6 +14773,33 @@ int scenario_pane_stack() {
                  "pane-stack: live HUD names Stack 2 and Escape closes");
   scenario_check(helper_rejected,
                  "pane-stack: live HUD rejects helper depth as the journey");
+  const HudRect* stacked_sheet = nullptr;
+  const HudRect* stacked_controls = nullptr;
+  const HudRect* stacked_second = nullptr;
+  for (const auto& entry : state.hud_rect_trace) {
+    if (entry.first == "character-pane-frame") stacked_sheet = &entry.second;
+    if (entry.first == "controls") stacked_controls = &entry.second;
+    if (entry.first == "controls-second") stacked_second = &entry.second;
+  }
+  scenario_check(stacked_sheet && stacked_sheet->w > 100,
+                 "pane-stack: character pane frame is measured");
+  scenario_check(stacked_controls != nullptr,
+                 "pane-stack: controls hint remains with the character sheet open");
+  scenario_check(
+      stacked_sheet && stacked_controls &&
+          !hud_rects_overlap(*stacked_sheet, *stacked_controls),
+      "pane-stack: controls hint never enters the character pane");
+  if (stacked_second)
+    scenario_check(!hud_rects_overlap(*stacked_sheet, *stacked_second),
+                   "pane-stack: wrapped controls never enter the character pane");
+  scenario_check(verdigris::client::ui::controls_on_character_fails_review(true),
+                 "pane-stack: overlaying the sheet with WASD is the anti-pattern");
+  scenario_check(
+      !verdigris::client::ui::controls_on_character_fails_review(false),
+      "pane-stack: relocated controls are the production character HUD");
+  scenario_check(!verdigris::client::ui::missing_controls_fails_review(true),
+                 "pane-stack: keeping the hint is the production HUD");
+
   state.pane_stack_review_strip = false;
 
   handle_escape_key(state);
