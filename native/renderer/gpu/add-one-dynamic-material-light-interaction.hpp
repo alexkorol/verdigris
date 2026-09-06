@@ -65,6 +65,17 @@ inline std::uint32_t composite_damage_zone(std::uint32_t lit, bool in_zone) {
          static_cast<std::uint32_t>(b);
 }
 
+inline bool washed_light_fails_review(std::uint32_t pixel) {
+  const int r = static_cast<int>((pixel >> 16) & 0xFF);
+  const int g = static_cast<int>((pixel >> 8) & 0xFF);
+  const int b = static_cast<int>(pixel & 0xFF);
+  return r > kLitChannelCap || (r > 240 && g > 240 && b > 240);
+}
+
+inline bool hud_label_alone_fails_light_review(bool pool_painted) {
+  return !pool_painted;
+}
+
 inline bool damage_zone_concealed(std::uint32_t pixel) {
   const int r = static_cast<int>((pixel >> 16) & 0xFF);
   const int g = static_cast<int>((pixel >> 8) & 0xFF);

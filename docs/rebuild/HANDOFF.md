@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — moving bronze lantern pool (Cursor)
+
+- VG-GPU-006: the village gate now paints a bronze lantern ellipse that
+  moves with `light_from_tick`, plus a red damage disc that cannot wash
+  white. A HUD token without that pool cannot certify. `material-light`
+  and `bronze-stone` captures diverge.
+- Scenario `material-light` / `bronze-stone` PASS. Capture viewed. Not
+  Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — bronze War Cry weave family (Cursor)
 
 - VG-ART-006: cast motes, travel orbit, impact ticks, and cancel implode

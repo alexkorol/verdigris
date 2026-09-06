@@ -29,7 +29,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/bronze-stone-960x600.png",
-      "sha256": "d9d96dc8ce21df99612d4f01f649a28386e4b48d6ad18aab74a0d611e36611da",
+      "sha256": "16cc9318fa94d4c74c91c680f331ef19616fd279943e7cb4205072af7f7e46e1",
       "produced_by": "native/build/verdigris_client.exe --scenario bronze-stone"
     }
   ],
@@ -37,6 +37,6 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Cooked 8x8 albedo/rim maps, SPDX CC0-1.0. VG-TOOLS-003 cook pipeline stays Kimi.",
-    "Capture is the live tin village using the family, not a material-lab still."
+    "Capture is the live tin village using the family, not a material-lab still. The village gate now shows the VG-GPU-006 lantern pool; hash diverges from material-light because that scenario offsets breathe_phase."
   ]
 }

@@ -2569,6 +2569,55 @@ void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& came
   }
 }
 
+void paint_material_light_pool(ClientState& state, HDC dc, const RECT& bounds,
+                               render::List& rl) {
+  // VG-GPU-006: a moving bronze/stone lantern pool on the village gate.
+  // Intensity stays under the channel cap so a red damage chroma cannot wash
+  // out. HUD labels alone cannot certify the interaction.
+  double wx = 0.0;
+  double wy = 0.0;
+  bool found = false;
+  for (const auto& item : state.scenery) {
+    if (item.kind != SceneryKind::Gate) continue;
+    wx = static_cast<double>(item.position.x);
+    wy = static_cast<double>(item.position.y);
+    found = true;
+    break;
+  }
+  if (!found) return;
+  const int tick = static_cast<int>(state.world.tick) +
+                   static_cast<int>(state.breathe_phase * 40.0);
+  verdigris::gpu::Bindings bind{};
+  (void)verdigris::gpu::load_bindings(verdigris::gpu::Backend::Software,
+                                      verdigris::gpu::kBindingLayoutVersion,
+                                      &bind);
+  const verdigris::gpu::Light light = verdigris::gpu::light_from_tick(tick);
+  const std::uint32_t lit =
+      verdigris::gpu::shade_texel_lit(bind, light.x, light.y, light);
+  const ScreenPoint base = project(state.camera, bounds, wx, wy);
+  const int step = std::max(4, static_cast<int>(kTileUnits * 0.14 * base.scale));
+  const int ox = (light.x - 3) * step;
+  const int oy = (light.y - 3) * (step * 2 / 3);
+  const int rx = std::max(16, static_cast<int>(kTileUnits * 1.05 * base.scale));
+  const int ry = std::max(8, rx / 2);
+  const COLORREF bronze = verdigris::art::bronze_stone::gdi(lit);
+  const COLORREF rim = verdigris::art::bronze_stone::gdi_bronze_rim();
+  fill_ellipse(dc, base.x + ox, base.y + oy, rx, ry, bronze);
+  ring_ellipse(dc, base.x + ox, base.y + oy, rx, ry, rim, 2);
+  const COLORREF zone =
+      RGB(static_cast<int>((verdigris::gpu::kDamageZone >> 16) & 0xFF),
+          static_cast<int>((verdigris::gpu::kDamageZone >> 8) & 0xFF),
+          static_cast<int>(verdigris::gpu::kDamageZone & 0xFF));
+  fill_ellipse(dc, base.x + ox, base.y + oy, std::max(4, rx / 3),
+               std::max(3, ry / 3), zone);
+  rl.push_back({render::Op::Hud, static_cast<double>(base.x + ox),
+                static_cast<double>(base.y + oy), static_cast<double>(rx), 0,
+                "material-light:pool"});
+  rl.push_back({render::Op::Hud, static_cast<double>(base.x + ox),
+                static_cast<double>(base.y + oy), 0.0, tick,
+                "material-light:moving"});
+}
+
 void draw_ground_grid(HDC dc, const Camera& camera, const RECT& bounds) {
   const double range = static_cast<double>(verdigris::world_scale::kArenaHalfExtent);
   const double start_x = std::floor((camera.x - range) / kTileUnits) * kTileUnits;
@@ -6100,6 +6149,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     }
   }
 
+  paint_material_light_pool(state, dc, bounds, rl);
+
   const WorldActor& player = world.player;
 
   // Collect every standing element, then draw back-to-front by the top-down
@@ -6893,7 +6944,6 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
                     verdigris::client::gov::extract_hud(end, carry)});
     }
-    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "material-light:moving"});
     if (!state.audio_ambience_route.empty())
       rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
                     std::string("ambience:") + state.audio_ambience_route});
@@ -10908,6 +10958,13 @@ int scenario_material_light() {
   const std::uint32_t zone = sample.pixel(32, 32);
   scenario_check(!verdigris::gpu::damage_zone_concealed(zone),
                  "material-light: overbright additives cannot conceal damage zones");
+  scenario_check(verdigris::gpu::washed_light_fails_review(0x00FFFFFFu),
+                 "material-light: a white wash cannot certify the family");
+  scenario_check(!verdigris::gpu::washed_light_fails_review(pa) &&
+                     !verdigris::gpu::washed_light_fails_review(pb),
+                 "material-light: moving samples stay under the channel cap");
+  scenario_check(verdigris::gpu::hud_label_alone_fails_light_review(false),
+                 "material-light: a HUD token without a pool cannot certify");
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {
     scenario_check(false, "material-light: capture root rejected before any write");
@@ -10920,12 +10977,19 @@ int scenario_material_light() {
   ClientState state;
   scenario_begin(state);
   scenario_follow_camera(state);
+  state.breathe_phase = 0.62;
   scenario_present(state);
   bool named = false;
-  for (const auto& item : state.render_list)
-    if (item.op == render::Op::Hud && item.label == "material-light:moving")
-      named = true;
+  bool pool = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "material-light:moving") named = true;
+    if (item.label == "material-light:pool") pool = true;
+  }
   scenario_check(named, "material-light: live HUD names the moving light");
+  scenario_check(pool, "material-light: live scene paints a bronze light pool");
+  scenario_check(!verdigris::gpu::hud_label_alone_fails_light_review(pool),
+                 "material-light: the pool, not a HUD token, certifies the light");
   const std::string png = dir + "\\material-light-960x600.png";
   scenario_check(reference_present(state, 960, 600, png),
                  "material-light: live HUD capture written");

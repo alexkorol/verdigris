@@ -50,7 +50,7 @@ Cursor evidence notes.
 | VG-GPU-003 | new | versioned software bindings (`shader-bindings`); no runtime .hlsl path |
 | VG-GPU-004 | new | session-connected packet present (`gpu-reference`); not a disconnected demo |
 | VG-GPU-005 | new | Y-sort + telegraph overlay (`grounding`); walls cannot erase warnings |
-| VG-GPU-006 | new | moving light on bronze/stone (`material-light`); cannot wash out damage |
+| VG-GPU-006 | new | moving bronze lantern pool on the village gate (`material-light`); HUD without a pool cannot certify; cannot wash out damage |
 | VG-GPU-007 | new | BMP readback + provenance (`gpu-capture`); PNG R/B swap cannot certify; packet logs are not pixels |
 | VG-GPU-008 | new | sample recreate/resize (`gpu-recover`); minimize/restore cannot leak |
 | VG-PERF-001/002/008 | extend | TASK-0152, 0207; 008 Owner Demo — do not duplicate |
@@ -174,8 +174,9 @@ Evidence `docs/execution/evidence/VG-GPU-004.json`.
 VG-GPU-005: scenery/actors sort by world Y; telegraphs paint after that pass.
 Scenario `grounding`. Evidence `docs/execution/evidence/VG-GPU-005.json`.
 VG-GPU-006: moving light on the cooked family; channel cap 220; damage chroma
-cannot be washed white. Scenario `material-light`. Evidence
-`docs/execution/evidence/VG-GPU-006.json`.
+cannot be washed white. Live scene paints a bronze lantern pool at the
+village gate; a HUD token without that pool cannot certify. Scenario
+`material-light`. Evidence `docs/execution/evidence/VG-GPU-006.json`.
 VG-GPU-007: BMP readback plus provenance sidecar. Packet snapshot text is not
 pixel evidence. A PNG whose red/blue channels are swapped versus the DIB
 cannot certify. Scenario `gpu-capture` / `vital-orbs`.
