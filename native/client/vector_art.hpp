@@ -896,53 +896,75 @@ inline void market_stall(HDC dc, int cx, int base_y, int height_px,
   }
 }
 
+inline constexpr bool kShrineHasBasin = true;
+inline constexpr bool kShrineHasColumn = true;
+inline constexpr bool kShrineHasWater = true;
+
+inline bool blob_shrine_fails_review(bool basin, bool column, bool water) {
+  return !basin || !column || !water;
+}
+
+// Village fountain: wide basin, water, a column and bowl. A stone blob or
+// a trilithon cannot certify SceneryKind::Shrine on the tin village kit.
 inline void fountain(HDC dc, int cx, int base_y, int height_px, double phase,
                      COLORREF stone, COLORREF water) {
   const double s = height_px / 100.0;
   const COLORREF dark = RGB(20, 16, 12);
-  // Basin.
-  fill_ell(dc, cx, base_y - static_cast<int>(6 * s), static_cast<int>(30 * s),
-           static_cast<int>(10 * s), stone, dark);
-  fill_ell(dc, cx, base_y - static_cast<int>(8 * s), static_cast<int>(24 * s),
-           static_cast<int>(7 * s), water, dark);
-  // Column and bowl.
-  POINT column[4] = {{cx - static_cast<int>(4 * s), base_y - static_cast<int>(8 * s)},
-                     {cx + static_cast<int>(4 * s), base_y - static_cast<int>(8 * s)},
-                     {cx + static_cast<int>(3 * s), base_y - static_cast<int>(34 * s)},
-                     {cx - static_cast<int>(3 * s), base_y - static_cast<int>(34 * s)}};
+  const int basin_rx = std::max(10, static_cast<int>(28 * s));
+  const int basin_ry = std::max(5, static_cast<int>(10 * s));
+  fill_ell(dc, cx, base_y - std::max(3, static_cast<int>(6 * s)), basin_rx,
+           basin_ry, stone, dark);
+  fill_ell(dc, cx, base_y - std::max(4, static_cast<int>(8 * s)),
+           std::max(7, static_cast<int>(20 * s)),
+           std::max(3, static_cast<int>(6 * s)), water, dark);
+  const int col_w = std::max(3, static_cast<int>(5 * s));
+  const int col_h = std::max(10, static_cast<int>(30 * s));
+  POINT column[4] = {{cx - col_w, base_y - std::max(4, static_cast<int>(8 * s))},
+                     {cx + col_w, base_y - std::max(4, static_cast<int>(8 * s))},
+                     {cx + col_w - 1, base_y - col_h},
+                     {cx - col_w + 1, base_y - col_h}};
   fill_poly(dc, column, 4, shade(stone, 1.1), dark);
-  fill_ell(dc, cx, base_y - static_cast<int>(36 * s), static_cast<int>(12 * s),
-           static_cast<int>(4 * s), stone, dark);
-  // Animated spouts.
+  fill_ell(dc, cx, base_y - col_h, std::max(5, static_cast<int>(11 * s)),
+           std::max(3, static_cast<int>(4 * s)), stone, dark);
   for (int spout = -1; spout <= 1; spout += 2) {
     const double arc = std::sin(phase * 2.0 * kPi) * 2.0;
-    line(dc, cx, base_y - static_cast<int>(38 * s),
+    line(dc, cx, base_y - col_h - 2,
          cx + static_cast<int>(spout * (12 + arc) * s),
-         base_y - static_cast<int>(14 * s), water, 2);
+         base_y - std::max(6, static_cast<int>(14 * s)), water,
+         std::max(2, static_cast<int>(2 * s)));
   }
+}
+
+inline constexpr bool kGateHasPillars = true;
+inline constexpr bool kGateHasLintel = true;
+inline constexpr bool kGateHasOpening = true;
+
+inline bool slab_gate_fails_review(bool pillars, bool lintel, bool opening) {
+  return !pillars || !lintel || !opening;
 }
 
 inline void road_gate(HDC dc, int cx, int base_y, int height_px, COLORREF stone,
                       COLORREF accent) {
   const double s = height_px / 100.0;
   const COLORREF dark = RGB(20, 16, 12);
+  const int pillar_h = std::max(16, static_cast<int>(52 * s));
+  const int pillar_w = std::max(4, static_cast<int>(6 * s));
+  const int span = std::max(10, static_cast<int>(20 * s));
   for (int side = -1; side <= 1; side += 2) {
-    POINT pillar[4] = {{cx + static_cast<int>(side * 20 * s) - static_cast<int>(5 * s), base_y},
-                       {cx + static_cast<int>(side * 20 * s) + static_cast<int>(5 * s), base_y},
-                       {cx + static_cast<int>(side * 18 * s) + static_cast<int>(4 * s),
-                        base_y - static_cast<int>(52 * s)},
-                       {cx + static_cast<int>(side * 18 * s) - static_cast<int>(4 * s),
-                        base_y - static_cast<int>(52 * s)}};
+    const int px = cx + side * span;
+    POINT pillar[4] = {{px - pillar_w, base_y},
+                       {px + pillar_w, base_y},
+                       {px + pillar_w - 1, base_y - pillar_h},
+                       {px - pillar_w + 1, base_y - pillar_h}};
     fill_poly(dc, pillar, 4, stone, dark);
   }
-  POINT lintel[4] = {{cx - static_cast<int>(26 * s), base_y - static_cast<int>(50 * s)},
-                     {cx + static_cast<int>(26 * s), base_y - static_cast<int>(50 * s)},
-                     {cx + static_cast<int>(24 * s), base_y - static_cast<int>(60 * s)},
-                     {cx - static_cast<int>(24 * s), base_y - static_cast<int>(60 * s)}};
+  POINT lintel[4] = {{cx - span - pillar_w - 2, base_y - pillar_h + 4},
+                     {cx + span + pillar_w + 2, base_y - pillar_h + 4},
+                     {cx + span + pillar_w, base_y - pillar_h - std::max(4, static_cast<int>(10 * s))},
+                     {cx - span - pillar_w, base_y - pillar_h - std::max(4, static_cast<int>(10 * s))}};
   fill_poly(dc, lintel, 4, shade(stone, 1.12), dark);
-  // Waymark glyph.
-  fill_ell(dc, cx, base_y - static_cast<int>(55 * s), static_cast<int>(4 * s),
-           static_cast<int>(4 * s), accent, dark);
+  fill_ell(dc, cx, base_y - pillar_h - 2, std::max(3, static_cast<int>(4 * s)),
+           std::max(3, static_cast<int>(4 * s)), accent, dark);
 }
 
 inline void wagon(HDC dc, int cx, int base_y, int height_px, COLORREF wood,

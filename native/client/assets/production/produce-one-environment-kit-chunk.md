@@ -12,7 +12,10 @@ A circle-on-stick lollipop cannot certify the kit. Shipped trees are a
 forked bole with a root flare and clustered canopy. A scalloped market
 stall cannot certify a dwelling; shipped houses have walls, thatch, and
 a door. A covered wagon cannot certify a ruin; shipped ruins have a
-broken wall and rubble.
+broken wall and rubble. A stone blob cannot certify a shrine; shipped
+shrines are a fountain (basin, column, water). A solid slab cannot
+certify a gate; shipped gates have two pillars, a lintel, and an opening.
+The shrine and dressing gate sit inside the spawn capture frustum.
 
 Acceptance command: `native/build/verdigris_client.exe --scenario kit-chunk`
 

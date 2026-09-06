@@ -1668,7 +1668,7 @@ void generate_scenery(ClientState& state) {
     add_scenery(state.scenery, SceneryKind::Dwelling, -320, -260, structure_radius, true, 1.0);
     add_scenery(state.scenery, SceneryKind::Dwelling, 340, -300, structure_radius, true, 1.0);
     add_scenery(state.scenery, SceneryKind::Dwelling, -420, 180, structure_radius, true, 1.0);
-    add_scenery(state.scenery, SceneryKind::Shrine, 60, -460, monument_radius, true, 1.0);
+    add_scenery(state.scenery, SceneryKind::Shrine, -160, 200, monument_radius, true, 1.0);
     // A near-field tree makes the grounded depth boundary easy to read in the
     // client lab while the remaining placements keep the route spacious.
     add_scenery(state.scenery, SceneryKind::Tree, 260, -100, tree_radius, true, 1.0);
@@ -1676,8 +1676,10 @@ void generate_scenery(ClientState& state) {
     add_scenery(state.scenery, SceneryKind::Tree, 720, -420, tree_radius, true, 1.15);
     add_scenery(state.scenery, SceneryKind::Tree, -780, 420, tree_radius, true, 1.0);
     // VG-ART-004 kit: ruin + a non-solid gate so dressing is not collision.
+    // Shrine and gate sit in the spawn frustum so the kit-chunk capture can
+    // show all five kinds; spawn stays outside the solid shrine radius.
     add_scenery(state.scenery, SceneryKind::Ruin, 500, 220, monument_radius, true, 1.05);
-    add_scenery(state.scenery, SceneryKind::Gate, 0, 520, monument_radius, false, 1.0);
+    add_scenery(state.scenery, SceneryKind::Gate, 200, 180, monument_radius, false, 1.0);
     for (int i = 0; i < 5; ++i)
       add_scenery(state.scenery, SceneryKind::Tree,
                   rng.range(-verdigris::world_scale::kArenaHalfExtent,
@@ -2427,7 +2429,7 @@ double scenery_height(SceneryKind kind) {
     case SceneryKind::Tree: return kTileUnits * 4.2;
     case SceneryKind::Ruin: return kTileUnits * 2.6;
     case SceneryKind::Dwelling: return kTileUnits * 2.8;
-    case SceneryKind::Shrine: return kTileUnits * 2.0;
+    case SceneryKind::Shrine: return kTileUnits * 2.6;
     case SceneryKind::Gate: return kTileUnits * 2.6;
   }
   return kTileUnits * 2.0;
@@ -5977,7 +5979,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       case DepthDraw::What::Scenery:
         draw_scenery_item(state.billboards, dc, state.camera, bounds,
                           state.scenery[entry.index], rl,
-                          world.theme == "town",
+                          world.theme == "town" || world.theme == "tin" ||
+                              world.route_id.find(":1:") != std::string::npos,
                           state.breathe_phase * 2.0 * kPi);
         break;
       case DepthDraw::What::Player: {
@@ -9851,6 +9854,35 @@ int scenario_kit_chunk() {
                      vector_art::kRuinHasBrokenWall, vector_art::kRuinHasRubble,
                      vector_art::kRuinHasWheels),
                  "kit-chunk: ruins have a broken wall and rubble, not wheels");
+  scenario_check(vector_art::blob_shrine_fails_review(false, false, false),
+                 "kit-chunk: a stone blob cannot certify a shrine");
+  scenario_check(!vector_art::blob_shrine_fails_review(
+                     vector_art::kShrineHasBasin, vector_art::kShrineHasColumn,
+                     vector_art::kShrineHasWater),
+                 "kit-chunk: shrines have a basin, column, and water");
+  scenario_check(vector_art::slab_gate_fails_review(false, false, false),
+                 "kit-chunk: a solid slab cannot certify a gate");
+  scenario_check(!vector_art::slab_gate_fails_review(
+                     vector_art::kGateHasPillars, vector_art::kGateHasLintel,
+                     vector_art::kGateHasOpening),
+                 "kit-chunk: gates have pillars, a lintel, and an opening");
+
+  {
+    const RECT kit_bounds{0, 0, 960, 600};
+    bool shrine_on_screen = false;
+    bool gate_on_screen = false;
+    for (const auto& item : state.scenery) {
+      const ScreenPoint p =
+          project(state.camera, kit_bounds, item.position.x, item.position.y);
+      if (p.x < 48 || p.x >= 912 || p.y < 48 || p.y >= 552) continue;
+      if (item.kind == SceneryKind::Shrine) shrine_on_screen = true;
+      if (item.kind == SceneryKind::Gate) gate_on_screen = true;
+    }
+    scenario_check(shrine_on_screen,
+                   "kit-chunk: the shrine is inside the spawn capture");
+    scenario_check(gate_on_screen,
+                   "kit-chunk: the dressing gate is inside the spawn capture");
+  }
 
   std::unordered_set<std::string> occupancy;
   bool unique_landmarks = true;
@@ -10361,6 +10393,18 @@ int scenario_visual_target() {
                      vector_art::kRuinHasBrokenWall, vector_art::kRuinHasRubble,
                      vector_art::kRuinHasWheels),
                  "visual-target: ruins have a broken wall and rubble, not wheels");
+  scenario_check(vector_art::blob_shrine_fails_review(false, false, false),
+                 "visual-target: a stone blob cannot certify a shrine");
+  scenario_check(!vector_art::blob_shrine_fails_review(
+                     vector_art::kShrineHasBasin, vector_art::kShrineHasColumn,
+                     vector_art::kShrineHasWater),
+                 "visual-target: shrines have a basin, column, and water");
+  scenario_check(vector_art::slab_gate_fails_review(false, false, false),
+                 "visual-target: a solid slab cannot certify a gate");
+  scenario_check(!vector_art::slab_gate_fails_review(
+                     vector_art::kGateHasPillars, vector_art::kGateHasLintel,
+                     vector_art::kGateHasOpening),
+                 "visual-target: gates have pillars, a lintel, and an opening");
   scenario_check(vector_art::crate_foe_fails_review(false, false, false),
                  "visual-target: a crate-shaped foe cannot certify the sheet");
   scenario_check(!vector_art::crate_foe_fails_review(

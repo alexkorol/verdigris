@@ -135,9 +135,9 @@ VG-PERF-006: `warm_combat_glyphs` before first strike; scenario
 VG-UI-007: tooltip titles use ink-on-panel contrast plus a triangular mark.
 VG-ART-004: tin village kit (all five scenery kinds); solid pieces emit
 `collision-proxy:*`; dressing gate does not. Dwellings are mudbrick/thatch
-huts (walls, pitched roof, door); a scalloped stall cannot certify. Ruins
-are a broken wall with rubble; a covered wagon cannot certify.
-Scenario `kit-chunk`. Evidence `docs/execution/evidence/VG-ART-004.json`.
+huts; ruins are a broken wall with rubble; shrines are a fountain; gates
+are two pillars with a lintel. Shrine and gate sit inside the spawn
+capture. Scenario `kit-chunk`. Evidence `docs/execution/evidence/VG-ART-004.json`.
 VG-ART-006: WarCry family `vfx-weave:cast|travel|impact|cancel`; radius
 capped vs screen-fill; telegraph remains. Scenario `weave-vfx`.
 Evidence `docs/execution/evidence/VG-ART-006.json`.

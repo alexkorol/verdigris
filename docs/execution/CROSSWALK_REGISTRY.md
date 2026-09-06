@@ -130,7 +130,7 @@ not implemented here.
 | VG-ART-001 | G1 | extend | visual-target in-game sheet |
 | VG-ART-002 | G2 | extend | bronze-stone family |
 | VG-ART-003 | G2 | extend | attack-poses; not TASK-0108 |
-| VG-ART-004 | G2 | extend | kit-chunk village kit; huts not stalls; ruins not wagons |
+| VG-ART-004 | G2 | extend | kit-chunk: hut, ruin, fountain, gate in spawn capture |
 | VG-ART-005 | G3 | extend | held-item world attachment; paper-doll seat alone cannot pass |
 | VG-ART-006 | G3 | extend | weave-vfx; not TASK-0108 |
 | VG-ART-007 | G3 | extend | Owner Demo — do not duplicate |

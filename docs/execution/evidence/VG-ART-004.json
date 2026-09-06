@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-004",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "7fbe03b7b704233880a61f735cf6ffcffdbd7bce",
+  "base_sha": "cf28a219533302b1fd5243d50e3f29b60a9d5885",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "kit-chunk",
@@ -24,17 +24,22 @@
     "a scalloped stall cannot certify a dwelling",
     "shipped dwellings have walls, thatch, and a door",
     "a covered wagon cannot certify a ruin",
-    "shipped ruins have a broken wall and rubble, not wheels"
+    "shipped ruins have a broken wall and rubble, not wheels",
+    "a stone blob cannot certify a shrine",
+    "shipped shrines have a basin, column, and water",
+    "a solid slab cannot certify a gate",
+    "shipped gates have pillars, a lintel, and an opening",
+    "shrine and dressing gate sit inside the spawn capture"
   ],
   "negative_control": {
-    "name": "dressing gate as an unreported solid, a circle-on-stick tree, a scalloped stall as a dwelling, or a covered wagon as a ruin",
+    "name": "off-frame shrine/gate, a stone blob shrine, or a solid-slab gate",
     "observed_result": "REJECTED"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/kit-chunk-960x600.png",
-      "sha256": "cf951ae25c89b7a4efff613b9ccab6aca710db94ae33a6b1779830717c78e72b",
+      "sha256": "560fe89e0873eaa7d83974384c734930d1be83ca6a7ca516e3efe44d6bb70ed8",
       "produced_by": "native/build/verdigris_client.exe --scenario kit-chunk"
     }
   ],
@@ -42,7 +47,7 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Extends TASK-0141 village kit. Artist-local collision is not this packet.",
-    "Capture is the live tin village with forked trees, mudbrick hut, and collapsed-wall ruin.",
-    "A historical lollipop, stall dwelling, or wagon ruin PNG cannot certify. Not Owner Demo."
+    "Capture is the live tin village: hut, fountain shrine, road gate, ruin, forked trees.",
+    "A historical off-frame shrine/gate PNG cannot certify. Not Owner Demo."
   ]
 }

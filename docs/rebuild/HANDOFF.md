@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — shrine and gate inside the spawn capture (Cursor)
+
+- VG-ART-004: tin village shrine and dressing gate sit in the spawn
+  frustum so `kit-chunk` actually shows them. Fountain has a basin,
+  column, and water; the gate has two pillars, a lintel, and an opening.
+  A stone blob or a solid slab cannot certify. Spawn stays outside the
+  solid shrine radius; the gate remains non-solid.
+- Capture viewed: hut lower-left, blue fountain near spawn, gold
+  post-and-lintel gate to the right, ruin on the far right. Not Owner Demo.
+
 ## 2026-09-06 — tin village ruins as collapsed walls (Cursor)
 
 - VG-ART-004: town `SceneryKind::Ruin` paints a one-sided broken wall,
