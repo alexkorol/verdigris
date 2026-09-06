@@ -1,5 +1,12 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — adult Scion rig (Cursor)
+
+- Vector `humanoid` now uses adult proportions (head ~1/8, jointed legs,
+  tapered torso). A 1/3 chibi head cannot pass. VG-ART-001 / VG-ART-003.
+- Captures `visual-target-960x600.png` and `attack-poses-960x600.png`.
+  TASK-0173 models untouched. Not Owner Demo.
+
 ## 2026-09-06 — composition sheet XP + owner risk/return (Cursor)
 
 - `visual-target` seeds three level-1 kill XP so the sheet shows a filled

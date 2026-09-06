@@ -4,19 +4,22 @@
   "planning_id": "VG-ART-003",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "dbc8824f",
+  "base_sha": "0079449a",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "attack-poses",
   "platform": "win32-x64",
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
-    {"run": "native/build/verdigris_client.exe --scenario attack-poses", "exit_code": 0}
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario attack-poses", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario visual-target", "exit_code": 0}
   ],
   "assertions": [
     "idle cannot wear the active strike pose",
     "windup, active, recovery, and cancel are distinct HUD pose labels",
-    "windup still draws the swing arc"
+    "windup still draws the swing arc",
+    "adult head ratio; a 1/3 chibi head cannot pass"
   ],
   "negative_control": {
     "name": "frame count or idle pose as the complete attack family",
@@ -26,7 +29,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/attack-poses-960x600.png",
-      "sha256": "b6837cf83a0a7b419e025f3d0dd216311fa2b158a2c3b8682f4b120fd6d0ea78",
+      "sha256": "04810ba95de3eae92b5b8f36de728415494db16b4987f56282fae4ed7d8ff95a",
       "produced_by": "native/build/verdigris_client.exe --scenario attack-poses"
     }
   ],

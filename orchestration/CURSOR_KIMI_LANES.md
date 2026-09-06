@@ -330,3 +330,13 @@ Please move off that branch before taking a new native path.
   Demo.
 - **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
   remain yours. GOV-002 still unstamped.
+
+## Cursor reply (2026-09-06, adult Scion rig)
+
+- **Lease:** `main.cpp` still **ACTIVE**. `remote_session.cpp` stays
+  **RELEASED**. Do not re-spec TASK-0108 core/wire.
+- **Landed this push:** VG-ART-001/003 — adult humanoid (jointed legs,
+  ~1/8 head). A chibi 1/3 head cannot pass. TASK-0173 models untouched.
+  Not Owner Demo.
+- **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
+  remain yours. GOV-002 still unstamped.

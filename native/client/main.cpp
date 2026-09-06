@@ -10278,6 +10278,14 @@ int scenario_visual_target() {
                  "visual-target: in-game composition axes are named");
   scenario_check(!has("target:concept-art"),
                  "visual-target: an external concept image cannot substitute");
+  scenario_check(vector_art::adult_head_passes(vector_art::kAdultHeadUnits,
+                                              vector_art::kAdultBodyUnits),
+                 "visual-target: the live rig uses an adult head ratio");
+  scenario_check(vector_art::chibi_head_fails_review(33.0, 100.0),
+                 "visual-target: a 1/3 head is the chibi negative");
+  scenario_check(!vector_art::chibi_head_fails_review(vector_art::kAdultHeadUnits,
+                                                     vector_art::kAdultBodyUnits),
+                 "visual-target: the shipped head cannot fail as chibi");
   bool loader_chip = false;
   for (const auto& item : state.render_list)
     if (item.op == render::Op::Hud &&

@@ -156,15 +156,32 @@ inline const char* held_label(Held held) {
 }
 
 // ── humanoid rig ────────────────────────────────────────────────────────
-// Bronze-age figure, 3/4 side read. Legs swing with the walk cycle, torso
-// bobs with breath/steps, the near arm swings the held tool on attack.
+// Bronze-age adult, 3/4 side read. Head is ~1/8 of standing height; a chibi
+// (head > 1/5) cannot pass VG-ART-001. Legs swing with the walk cycle,
+// torso bobs with breath/steps, the near arm swings the held tool on attack.
+
+inline constexpr double kAdultHeadUnits = 12.0;
+inline constexpr double kAdultBodyUnits = 100.0;
+inline constexpr double kAdultCrown = 98.0;
+
+inline bool chibi_head_fails_review(double head_units, double body_units) {
+  if (body_units <= 0.0) return true;
+  return (head_units / body_units) > 0.20;
+}
+
+inline bool adult_head_passes(double head_units, double body_units) {
+  if (body_units <= 0.0) return false;
+  const double ratio = head_units / body_units;
+  return ratio >= 0.10 && ratio <= 0.16 &&
+         !chibi_head_fails_review(head_units, body_units);
+}
 
 inline void humanoid(HDC dc, int cx, int base_y, int height_px,
                      const Style& style, const Pose& pose, Held held) {
-  Frame f{cx, base_y, height_px / 100.0, pose.mirror};
+  Frame f{cx, base_y, height_px / kAdultBodyUnits, pose.mirror};
   const double swing = std::sin(pose.walk * 2.0 * kPi) * pose.moving;
-  const double bob = std::sin(pose.breathe * 2.0 * kPi) * 1.5 +
-                     std::abs(swing) * 2.0;
+  const double bob = std::sin(pose.breathe * 2.0 * kPi) * 1.2 +
+                     std::abs(swing) * 1.6;
   double attack_lean = 0.0;
   double strike = 0.0;
   switch (pose.attack_stage) {
@@ -190,64 +207,75 @@ inline void humanoid(HDC dc, int cx, int base_y, int height_px,
   }
   const double lean = pose.moving * 3.0 + attack_lean;
 
-  // Far leg, then near leg (draw order back-to-front).
-  const double leg_spread = 8.0;
+  // Jointed legs (hip / knee / foot). A single hip-to-foot plank reads as a
+  // crate, not an adult.
   const auto leg = [&](double side, double phase_swing, COLORREF tone) {
-    const double knee_x = side * leg_spread + phase_swing * 10.0;
-    const double foot_x = side * leg_spread + phase_swing * 16.0;
-    POINT p[4] = {f.at(side * leg_spread - 4, 45), f.at(side * leg_spread + 4, 45),
-                  f.at(foot_x + 4, 0), f.at(foot_x - 5, 0)};
-    fill_poly(dc, p, 4, tone, style.dark);
-    (void)knee_x;
+    const double hip_x = side * 6.0;
+    const double knee_x = side * 5.0 + phase_swing * 9.0;
+    const double foot_x = side * 5.0 + phase_swing * 15.0;
+    POINT thigh[4] = {f.at(hip_x - 3.5, 50), f.at(hip_x + 3.5, 50),
+                      f.at(knee_x + 3.0, 27), f.at(knee_x - 3.2, 27)};
+    fill_poly(dc, thigh, 4, tone, style.dark);
+    POINT shin[4] = {f.at(knee_x - 3.0, 27), f.at(knee_x + 2.8, 27),
+                     f.at(foot_x + 3.2, 4), f.at(foot_x - 3.6, 4)};
+    fill_poly(dc, shin, 4, shade(tone, 0.88), style.dark);
+    const POINT sole = f.at(foot_x + 1.0, 2.5);
+    fill_ell(dc, sole.x, sole.y, static_cast<int>(5 * f.scale),
+             static_cast<int>(2 * f.scale), style.trim, style.dark);
   };
   leg(-1.0, -swing, shade(style.cloth, 0.72));
   leg(1.0, swing, style.cloth);
 
-  // Tunic skirt.
+  // Skirt / kilt: hangs from the waist, not a second torso box.
   {
-    POINT p[4] = {f.at(-13, 58 + bob * 0.4), f.at(13, 58 + bob * 0.4),
-                  f.at(16, 38), f.at(-16, 38)};
+    POINT p[4] = {f.at(-9, 56 + bob * 0.3), f.at(9, 56 + bob * 0.3),
+                  f.at(11, 42), f.at(-11, 42)};
     fill_poly(dc, p, 4, style.cloth, style.dark);
   }
-  // Torso with breathing bob and forward lean.
+  // Torso tapers shoulder → waist.
   {
-    POINT p[4] = {f.at(-11 + lean * 0.4, 82 + bob), f.at(12 + lean * 0.5, 82 + bob),
-                  f.at(14, 55), f.at(-14, 55)};
-    fill_poly(dc, p, 4, shade(style.cloth, 1.18), style.dark);
-    // Chest wrap / belt trim.
-    POINT belt[4] = {f.at(-13, 60), f.at(13, 60), f.at(14, 55), f.at(-14, 55)};
+    POINT p[4] = {f.at(-10 + lean * 0.4, 80 + bob),
+                  f.at(10 + lean * 0.5, 80 + bob), f.at(7.5, 56),
+                  f.at(-8, 56)};
+    fill_poly(dc, p, 4, shade(style.cloth, 1.14), style.dark);
+    POINT belt[4] = {f.at(-8.5, 58), f.at(8.5, 58), f.at(7.5, 55),
+                     f.at(-8, 55)};
     fill_poly(dc, belt, 4, style.trim, style.dark);
   }
   // Far arm hangs (slight counter-swing while walking).
   {
-    const double hand_x = -14 - swing * 6.0;
-    POINT p[4] = {f.at(-9 + lean * 0.4, 78 + bob), f.at(-14 + lean * 0.4, 76 + bob),
-                  f.at(hand_x, 52), f.at(hand_x + 5, 52)};
+    const double hand_x = -12 - swing * 6.0;
+    POINT p[4] = {f.at(-8 + lean * 0.4, 78 + bob),
+                  f.at(-12 + lean * 0.4, 76 + bob), f.at(hand_x, 50),
+                  f.at(hand_x + 4, 50)};
     fill_poly(dc, p, 4, shade(style.skin, 0.8), style.dark);
   }
-  // Head + simple helm.
+  // Neck, then adult head (kAdultHeadUnits of kAdultBodyUnits).
   {
-    const POINT crown = f.at(lean * 0.6, 95 + bob);
-    fill_ell(dc, crown.x, crown.y + static_cast<int>(6 * f.scale),
-             static_cast<int>(8 * f.scale), static_cast<int>(9 * f.scale),
-             style.skin, style.dark);
+    POINT neck[4] = {f.at(-2.4 + lean * 0.55, 84 + bob),
+                     f.at(2.6 + lean * 0.55, 84 + bob),
+                     f.at(2.2 + lean * 0.6, 80 + bob),
+                     f.at(-2.0 + lean * 0.6, 80 + bob)};
+    fill_poly(dc, neck, 4, style.skin, style.dark);
+    const POINT crown = f.at(lean * 0.65, kAdultCrown + bob);
+    const int hx = std::max(2, static_cast<int>(5.2 * f.scale));
+    const int hy = std::max(2, static_cast<int>((kAdultHeadUnits * 0.5) * f.scale));
+    fill_ell(dc, crown.x, crown.y + hy, hx, hy, style.skin, style.dark);
     fill_ell(dc, crown.x, crown.y + static_cast<int>(2 * f.scale),
-             static_cast<int>(9 * f.scale), static_cast<int>(5 * f.scale),
+             static_cast<int>(5.6 * f.scale), static_cast<int>(2.4 * f.scale),
              style.trim, style.dark);
   }
   // Near arm + held tool: shoulder-anchored swing driven by attack phase.
   {
-    const double shoulder_x = 9 + lean * 0.5;
-    const double shoulder_y = 79 + bob;
-    // Rest angle points the tool down-forward; the attack sweeps it over
-    // the shoulder and through: -140deg .. +30deg of unit-space rotation.
+    const double shoulder_x = 8 + lean * 0.5;
+    const double shoulder_y = 78 + bob;
     const double angle = (-0.55 + strike) + swing * 0.25;
     const double hand_x = shoulder_x + std::cos(angle) * 24.0;
     const double hand_y = shoulder_y + std::sin(angle) * 24.0 - 24.0 + 4.0;
-    POINT arm[4] = {f.at(shoulder_x - 3, shoulder_y), f.at(shoulder_x + 4, shoulder_y),
-                    f.at(hand_x + 3, hand_y), f.at(hand_x - 3, hand_y)};
+    POINT arm[4] = {f.at(shoulder_x - 2.5, shoulder_y),
+                    f.at(shoulder_x + 3.5, shoulder_y), f.at(hand_x + 2.5, hand_y),
+                    f.at(hand_x - 2.5, hand_y)};
     fill_poly(dc, arm, 4, style.skin, style.dark);
-    // Tool from the hand, continuing the arm angle.
     const double tip_x = hand_x + std::cos(angle) * 26.0;
     const double tip_y = hand_y + std::sin(angle) * 26.0;
     const POINT hand = f.at(hand_x, hand_y);
@@ -275,7 +303,6 @@ inline void humanoid(HDC dc, int cx, int base_y, int height_px,
         break;
       }
       case Held::Bow: {
-        // Strung arc perpendicular-ish to the arm.
         const POINT top = f.at(hand_x + 6, hand_y + 20);
         const POINT bottom = f.at(hand_x + 6, hand_y - 20);
         line(dc, top.x, top.y, hand.x, hand.y, style.trim, 2);
@@ -300,8 +327,8 @@ inline void humanoid(HDC dc, int cx, int base_y, int height_px,
                          f.at(hand_x + 6, hand_y - 2), f.at(hand_x - 6, hand_y - 2)};
         fill_poly(dc, book, 4, RGB(214, 202, 176), style.dark);
         line(dc, f.at(hand_x, hand_y + 8).x, f.at(hand_x, hand_y + 8).y,
-             f.at(hand_x, hand_y - 2).x, f.at(hand_x, hand_y - 2).y,
-             style.trim, 1);
+             f.at(hand_x, hand_y - 2).x, f.at(hand_x, hand_y - 2).y, style.trim,
+             1);
         break;
       }
       case Held::Club:

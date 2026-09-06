@@ -20,17 +20,18 @@
     "target:concept-art cannot substitute",
     "loaded billboards do not paint a skeleton art: PNG billboards loaded chip",
     "missing art still warns on the owner HUD; F3 still shows the loader line",
-    "composition sheet shows a filled XP meter"
+    "composition sheet shows a filled XP meter",
+    "live rig uses adult head ratio (~1/8); a 1/3 chibi head cannot pass"
   ],
   "negative_control": {
-    "name": "external concept-art HUD token, or a loader chip counting as the composition sheet",
+    "name": "external concept-art HUD token, a loader chip as the sheet, or a chibi head ratio",
     "observed_result": "REJECTED"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/visual-target-960x600.png",
-      "sha256": "9af1c2bda030e13344c892b3e522fbc17ca3017a05aec9bb77ac6e8b8c56c81f",
+      "sha256": "86c5a64d961aeaaee62262114f5a48b0b68dc58164cb78444c2103f432bbc5d3",
       "produced_by": "native/build/verdigris_client.exe --scenario visual-target"
     }
   ],
