@@ -25,6 +25,7 @@
     "identity never enters the tree pane",
     "controls hint never enters the character pane",
     "controls hint remains with the character sheet open",
+    "character pane never covers the minimap or life orb",
     "live HUD names Stack 2 and Escape closes",
     "live HUD rejects invented origin"
   ],
@@ -36,7 +37,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/pane-stack-960x600.png",
-      "sha256": "c65c57da1c04164eb4ed138ee6dfd45e016113077b898eab725e30ceb830c325",
+      "sha256": "7013e55a4f9018ff88d477ad1608472b4f20d2f942443fc5d2bda02eac1f5b59",
       "produced_by": "native/build/verdigris_client.exe --scenario pane-stack"
     },
     {
@@ -50,6 +51,6 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Client Escape stack only. Owner Demo Chronicles journeys not duplicated.",
-    "TASK-0193 geometric slice is unchanged and only paints after a payload. Open tree and character panes keep the top HUD out. Deleting WASD cannot certify the sheet. Not Owner Demo. No TASK numbers minted."
+    "TASK-0193 geometric slice is unchanged and only paints after a payload. Open tree and character panes keep the top HUD out. Deleting WASD cannot certify the sheet. Covering the minimap or Life cannot certify. Not Owner Demo. No TASK numbers minted."
   ]
 }

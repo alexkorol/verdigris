@@ -37,4 +37,11 @@ inline int extra_source_rows(const StatSources& src) {
 inline const char* owner_base_gear_label() { return "Base Gear"; }
 inline const char* owner_cond_off_label() { return "Cond off"; }
 
+inline bool character_covers_minimap_fails_review(bool overlap) {
+  return overlap;
+}
+inline bool character_covers_life_orb_fails_review(bool overlap) {
+  return overlap;
+}
+
 }  // namespace verdigris::client::ui

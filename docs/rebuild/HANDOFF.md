@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Sheet below map, above Life (Cursor)
+
+- VG-UI-007 / VG-UI-001 / VG-UI-004: the C-key First Scion sheet now sits
+  below the minimap and above the life orb. Covering those combat surfaces
+  cannot certify. Portrait and stat rows compact inside that slot. WASD
+  stay off the pane. Owner Base Gear strip on `stat-explain` is review
+  overlay. TREE absence copy is unchanged.
+- Scenarios `hud-pane-readability` / `pane-stack` / `stat-explain` PASS.
+  Captures viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — Character keep-out, WASD off sheet (Cursor)
 
 - VG-UI-007 / VG-UI-001 / VG-UI-004: C-key First Scion no longer takes the

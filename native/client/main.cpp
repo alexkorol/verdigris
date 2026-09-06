@@ -354,18 +354,6 @@ HudRect tree_pane_rect(int width, int height) {
   return {left, top, pane_w, pane_h};
 }
 
-HudRect character_pane_rect(int width, int height, int extra_rows) {
-  (void)width;
-  const int s = hud_scale(height);
-  const int pane_w = 420 * s;
-  const int row_h = 26 * s;
-  const int pane_h =
-      (56 + 150 + 14) * s + (12 + extra_rows) * row_h + 40 * s;
-  const int left = 24 * s;
-  const int top = std::max(48 * s, (height - pane_h) / 2 - 20 * s);
-  return {left, top, pane_w, pane_h};
-}
-
 HudRect minimap_rect(int height) {
   const int s = hud_scale(height);
   const int size = 108 * s;
@@ -404,6 +392,26 @@ HudRect quickbar_strip_rect(int width, int height) {
   const int left = (width - strip_w) / 2;
   // The painted plate extends 10 left/right of the slots and 8 above/4 below.
   return {left - 10, top - 8, strip_w + 20, slot_h + 12};
+}
+
+// C-key sheet sits in the left column but must clear the minimap and the
+// life orb. Extra ATK rows compact inside this slot; they cannot grow over
+// combat HUD. Covering Life cannot certify a readable sheet.
+HudRect character_pane_rect(int width, int height, int extra_rows) {
+  (void)extra_rows;
+  const int s = hud_scale(height);
+  const int pane_w = 420 * s;
+  const int left = 24 * s;
+  const int gap = 10;
+  const HudRect map = minimap_rect(height);
+  const HudRect life = vital_orb_rect(width, height, false);
+  const HudRect bar = quickbar_strip_rect(width, height);
+  const int top = map.y + map.h + gap;
+  int bottom = life.y - gap;
+  if (!(left + pane_w + gap <= bar.x || bar.x + bar.w + gap <= left))
+    bottom = std::min(bottom, bar.y - gap);
+  if (bottom < top) bottom = top;
+  return {left, top, pane_w, bottom - top};
 }
 
 // Offscreen floor cache: the tiled ground re-renders only when the camera
@@ -5609,6 +5617,8 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
   const int pane_h = box.h;
   RECT pane{left, top, left + pane_w, top + pane_h};
   state.hud_rect_trace.push_back({"character-pane-frame", box});
+  const int saved_dc = SaveDC(dc);
+  IntersectClipRect(dc, pane.left, pane.top, pane.right, pane.bottom);
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 245, 8.0f);
   dress_owned_pane(state.billboards, dc, pane);
@@ -5627,8 +5637,24 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
   TextOutA(dc, left + 16 * s, top + 34 * s, state.world.house_name.c_str(),
            static_cast<int>(state.world.house_name.size()));
 
+  // Fit portrait + stat rows inside the combat-HUD-clamped slot. Covering
+  // the life orb to keep a 150px plate cannot certify.
+  const int header_h = 56 * s;
+  const int footer_h = 32 * s;
+  const int n_rows = 12 + extra_rows;
+  int portrait_h = 150 * s;
+  int row_h = 26 * s;
+  const int stack_gap = 14 * s;
+  const int inner = std::max(0, pane_h - header_h - footer_h);
+  if (portrait_h + stack_gap + n_rows * row_h > inner) {
+    portrait_h = std::min(portrait_h, std::max(40 * s, inner / 3));
+  }
+  if (portrait_h + stack_gap + n_rows * row_h > inner) {
+    const int leftover = std::max(0, inner - portrait_h - stack_gap);
+    row_h = n_rows > 0 ? std::max(16 * s, leftover / n_rows) : row_h;
+  }
+
   // Portrait: the player plate, drawn tall on the left of the sheet.
-  const int portrait_h = 150 * s;
   int dest_w = 72 * s;
   if (state.billboards.player.ready() && state.billboards.alpha_blend) {
     const SpriteBitmap& sprite = state.billboards.player;
@@ -5728,8 +5754,7 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
                  {"src passive", std::to_string(src.passive)},
                  {"src cond", dormant}});
   }
-  int y = top + 56 * s + portrait_h + 14 * s;
-  const int row_h = 26 * s;
+  int y = top + header_h + portrait_h + stack_gap;
   SelectObject(dc, skin::font_body());
   auto owner_stat_name = [](const std::string& label) -> std::string {
     if (label == "src base") return "Base";
@@ -5775,6 +5800,7 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
   TextOutA(dc, left + 20 * s, y + 8 * s, footer,
            static_cast<int>(strlen(footer)));
   SelectObject(dc, old_font);
+  RestoreDC(dc, saved_dc);
 }
 
 // -- Passive tree pane ---------------------------------------------------
@@ -12601,7 +12627,8 @@ int scenario_hud_pane_readability() {
         !verdigris::client::ui::missing_controls_fails_review(controls !=
                                                              nullptr),
         "hud-pane-readability: deleting WASD cannot certify the sheet");
-    const char* kSheetKeepOut[] = {"identity", "controls", "objective"};
+    const char* kSheetKeepOut[] = {"identity",  "controls", "objective",
+                                   "minimap",   "orb-life", "quickbar-strip"};
     for (const char* region : kSheetKeepOut) {
       const HudRect* rect = trace_find(state, region);
       char line[192];
@@ -12610,6 +12637,22 @@ int scenario_hud_pane_readability() {
                     region);
       scenario_check(pane && rect && !hud_rects_overlap(*pane, *rect), line);
     }
+    const HudRect* map = trace_find(state, "minimap");
+    const HudRect* life = trace_find(state, "orb-life");
+    scenario_check(
+        verdigris::client::ui::character_covers_minimap_fails_review(true),
+        "hud-pane-readability: covering the minimap is the anti-pattern");
+    scenario_check(
+        !verdigris::client::ui::character_covers_minimap_fails_review(
+            pane && map && hud_rects_overlap(*pane, *map)),
+        "hud-pane-readability: a slot below the map is the production sheet");
+    scenario_check(
+        verdigris::client::ui::character_covers_life_orb_fails_review(true),
+        "hud-pane-readability: covering Life is the anti-pattern");
+    scenario_check(
+        !verdigris::client::ui::character_covers_life_orb_fails_review(
+            pane && life && hud_rects_overlap(*pane, *life)),
+        "hud-pane-readability: a slot above Life is the production sheet");
     if (const HudRect* second = trace_find(state, "controls-second")) {
       scenario_check(pane && !hud_rects_overlap(*pane, *second),
                      "hud-pane-readability: controls-second never enters the "
@@ -14799,6 +14842,20 @@ int scenario_pane_stack() {
       "pane-stack: relocated controls are the production character HUD");
   scenario_check(!verdigris::client::ui::missing_controls_fails_review(true),
                  "pane-stack: keeping the hint is the production HUD");
+  const HudRect* stacked_map = nullptr;
+  const HudRect* stacked_life = nullptr;
+  for (const auto& entry : state.hud_rect_trace) {
+    if (entry.first == "minimap") stacked_map = &entry.second;
+    if (entry.first == "orb-life") stacked_life = &entry.second;
+  }
+  scenario_check(
+      stacked_sheet && stacked_map &&
+          !hud_rects_overlap(*stacked_sheet, *stacked_map),
+      "pane-stack: character pane never covers the minimap");
+  scenario_check(
+      stacked_sheet && stacked_life &&
+          !hud_rects_overlap(*stacked_sheet, *stacked_life),
+      "pane-stack: character pane never covers the life orb");
 
   state.pane_stack_review_strip = false;
 

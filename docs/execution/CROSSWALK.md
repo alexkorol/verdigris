@@ -333,7 +333,8 @@ strip paints Type floor / Ink contrast. Shrink type cannot certify.
 `hud-pane-readability` recapture at 960/1366/3440 stays pairwise
 disjoint; no owner review strip on that scenario. Open P-key tree never
 intersects identity/controls/objective/minimap/quickbar/orbs. Open C-key
-sheet never intersects identity/controls/objective; WASD remains. An X on
+sheet never intersects identity/controls/objective; WASD remains. The
+sheet sits below the minimap and above Life. An X on
 the mana globe cannot count as a non-color cue. Scenarios `vital-orbs` /
 `hud-scale-floor` / `hud-pane-readability`. Evidence
 `docs/execution/evidence/VG-UI-007.json`.
@@ -350,7 +351,8 @@ VG-UI-004: `stat-explain` — expanded ATK names base/gear/passive/cond on
 HUD ops. Owner strip paints Base Gear / Cond off. Owner paint uses
 Base/Gear, not `src` jargon. Slice builds on the sheet are role · gear
 chips; tactics stay on HUD ops. A dormant conditional cannot fold into
-Attack. Core STAT stays Kimi. WASD stays off the C-key sheet. Scenario
+Attack. Core STAT stays Kimi. WASD stays off the C-key sheet. The sheet
+sits below the minimap and above Life. Scenario
 `stat-explain`. Evidence
 `docs/execution/evidence/VG-UI-004.json`.
 VG-UI-002: `pack-drag` — reject cannot lose, duplicate, or silently equip.
