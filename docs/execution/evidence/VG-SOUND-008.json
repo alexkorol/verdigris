@@ -29,14 +29,14 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/music-phase-960x600.png",
-      "sha256": "e84770e55a8381617508dcd27cbf1f84284cb34d43b08f0ced0f0720c4132ad5",
+      "sha256": "6c9cb9a7abfd93a9253fc5218f2b43aa5ea4eb4a487b0f6ccf9ef0d69490d928",
       "produced_by": "native/build/verdigris_client.exe --scenario music-phase"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Device remains muted in the harness; proof is mixer Theme Combat plus mixer mute + empty leftover drain, not a heard track.",
+    "Device remains muted in the harness; proof is mixer Theme Combat plus Loop Tin village wind, not a heard track.",
     "Capture hash diverges from audio-prefs because persisted volumes stay 100/100 here. STORY phase authority stays with Kimi."
   ]
 }

@@ -190,8 +190,10 @@ surfaces `gpu-error:recreate`. Scenario `gpu-recover`. Evidence
 VG-SOUND-001: software tone adapter plays a generated PCM burst and shuts
 down. A zero-duration cue is not audible. Scenario `sound-adapter`.
 Evidence `docs/execution/evidence/VG-SOUND-001.json`.
-VG-SOUND-005: one ambience cue per route; rapid reentry does not stack.
-Scenario `ambience-layer`. Evidence `docs/execution/evidence/VG-SOUND-005.json`.
+VG-SOUND-005: one ambience cue per route; live HUD paints Loop Tin village
+wind. A protocol `ambience:route` token or stacked reentry loops cannot
+certify. Scenario `ambience-layer`. Evidence
+`docs/execution/evidence/VG-SOUND-005.json`.
 VG-SOUND-006: mute cannot reset SFX/music volumes; zero SFX stays silent.
 Live mixer paints persisted SFX/Music numbers while muted. A mute chip
 alone cannot certify. Scenario `audio-prefs`. Evidence

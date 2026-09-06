@@ -1,5 +1,13 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — owner zone loop (Cursor)
+
+- VG-SOUND-005: live mixer and Zone loop strip paint Loop Tin village
+  wind. A protocol `ambience:route` token or stacked ambience x3 cannot
+  certify. Salt reentry still voices one loop.
+- Scenario `ambience-layer` PASS. Capture viewed. Hash diverges from
+  `audio-prefs` / `music-phase`. Not Owner Demo. VG-WORLD-007 stays Kimi.
+
 ## 2026-09-06 — catalog warning windows (Cursor)
 
 - VG-ACT-005: native Warning windows strip paints Thrust 3 ticks · reach

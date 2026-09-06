@@ -4,35 +4,39 @@
   "planning_id": "VG-SOUND-005",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "fb0282e1262784fbb4ed4eac77377a80925bae9a",
+  "base_sha": "07d2baf4a4ee78d44ecb63fe2f04e169fffb7f32",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "ambience-layer",
   "platform": "win32-x64",
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
-    {"run": "native/build/verdigris_client.exe --scenario ambience-layer", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario combat-audio", "exit_code": 0}
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario ambience-layer", "exit_code": 0}
   ],
   "assertions": [
-    "live HUD names the current zone loop",
+    "live HUD paints Loop Tin village wind",
+    "a protocol ambience:route token cannot certify",
     "enter voices one region loop",
-    "rapid zone reentry cannot stack loops"
+    "rapid salt reentry cannot stack loops",
+    "stacked ambience x3 is the rejected control"
   ],
   "negative_control": {
-    "name": "rapid zone reentry accumulating ambient loops",
+    "name": "protocol ambience:route token or stacked reentry loops",
     "observed_result": "REJECTED"
   },
   "artifacts": [
     {
-      "kind": "command",
-      "path": "native/client/main.cpp",
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/ambience-layer-960x600.png",
+      "sha256": "797fcd6cfc4777164b6a9abb962c172fc585ca4166e50afa30b066a44a5ac51f",
       "produced_by": "native/build/verdigris_client.exe --scenario ambience-layer"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
-  "perceptual_review": "NOT_REQUIRED",
+  "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "One ambience cue per route_id. VG-WORLD-007 zone authority stays Kimi."
+    "Presentation naming of the existing route_id loop. VG-WORLD-007 zone graph stays Kimi. Device remains muted in the harness.",
+    "Does not edit native/src or re-spec TASK-0108."
   ]
 }

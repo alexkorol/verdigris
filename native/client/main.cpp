@@ -76,6 +76,7 @@ namespace phase_a = verdigris::client::phase_a;
 #include "ui/integrate-spatial-inventory-moves.hpp"
 #include "choose-and-test-one-audio-device-adapter.hpp"
 #include "persist-audio-accessibility-controls.hpp"
+#include "add-one-environment-ambience-layer.hpp"
 #include "score-one-dense-combat-mix.hpp"
 #include "run-a-long-session-memory-soak.hpp"
 #include "../renderer/gpu/build-an-isolated-cross-platform-gpu-sample.hpp"
@@ -467,6 +468,7 @@ struct ClientState {
   bool pose_review_strip = false;
   bool weave_review_strip = false;
   bool telegraph_review_strip = false;
+  bool ambience_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -3593,8 +3595,14 @@ void paint_audio_mixer_hud(ClientState& state, HDC dc, int x, int y,
       "Music", state.audio_prefs.music_permille);
   const char* theme =
       verdigris::client::music::owner_theme_label(state.audio_music_want);
+  const std::string route =
+      !state.audio_ambience_route.empty()
+          ? state.audio_ambience_route
+          : (state.world.route_id.empty() ? std::string("surface")
+                                          : state.world.route_id);
+  const std::string loop = verdigris::client::ambience::owner_loop_label(route);
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
-  RECT plate{x, y, x + 132, y + 72};
+  RECT plate{x, y, x + 168, y + 88};
   skin::panel(dc, plate, skin::kGold, 240, 5.0f);
   SetBkMode(dc, TRANSPARENT);
   SetTextColor(dc, skin::kInk);
@@ -3604,9 +3612,13 @@ void paint_audio_mixer_hud(ClientState& state, HDC dc, int x, int y,
   TextOutA(dc, x + 10, y + 36, music.c_str(), static_cast<int>(music.size()));
   SetTextColor(dc, skin::kGold);
   TextOutA(dc, x + 10, y + 50, theme, static_cast<int>(std::strlen(theme)));
+  SetTextColor(dc, skin::kVerdigris);
+  TextOutA(dc, x + 10, y + 66, loop.c_str(), static_cast<int>(loop.size()));
   SelectObject(dc, old_font);
   rl.push_back({render::Op::Hud, static_cast<double>(x), static_cast<double>(y),
                 0.0, 0, "audio:mixer"});
+  rl.push_back({render::Op::Hud, static_cast<double>(x),
+                static_cast<double>(y + 66), 0.0, 0, "ambience:owner"});
   rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "audio:prefs"});
   rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, state.audio_prefs.sfx_permille,
                 std::string("audio:sfx:") +
@@ -3619,7 +3631,7 @@ void paint_audio_mixer_hud(ClientState& state, HDC dc, int x, int y,
                     (state.audio_music_want.rfind("music:", 0) == 0
                          ? state.audio_music_want.substr(6)
                          : state.audio_music_want)});
-  state.hud_rect_trace.push_back({"audio-mixer", {x, y, 132, 72}});
+  state.hud_rect_trace.push_back({"audio-mixer", {x, y, 168, 88}});
 }
 
 std::string loot_label(const ClientState& state, const std::string& id) {
@@ -6133,6 +6145,47 @@ void paint_telegraph_review_strip(ClientState& state, HDC dc, const RECT& bounds
   SelectObject(dc, old_font);
 }
 
+void paint_ambience_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                 render::List& rl) {
+  if (!state.ambience_review_strip) return;
+  const std::string route =
+      !state.audio_ambience_route.empty()
+          ? state.audio_ambience_route
+          : (state.world.route_id.empty() ? std::string("surface")
+                                          : state.world.route_id);
+  const std::string loop = verdigris::client::ambience::owner_loop_label(route);
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "ambience-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = "Zone loop";
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  TextOutA(dc, left + 12 * s, top + 32 * s, loop.c_str(),
+           static_cast<int>(loop.size()));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "ambience x3";
+  TextOutA(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "ambience-strip:stacked-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -7151,6 +7204,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_attack_pose_strip(state, dc, bounds, rl);
   paint_weave_review_strip(state, dc, bounds, rl);
   paint_telegraph_review_strip(state, dc, bounds, rl);
+  paint_ambience_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -11342,12 +11396,27 @@ int scenario_ambience_layer() {
   scenario_begin(state);
   scenario_follow_camera(state);
   refresh_ambience(state);
+  drain_audio(state);
   scenario_present(state);
   bool hud = false;
-  for (const auto& item : state.render_list)
-    if (item.op == render::Op::Hud && item.label.rfind("ambience:", 0) == 0)
-      hud = true;
+  bool owner = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label.rfind("ambience:", 0) == 0) hud = true;
+    if (item.label == "ambience:owner") owner = true;
+  }
   scenario_check(hud, "ambience-layer: live HUD names the current zone loop");
+  scenario_check(owner, "ambience-layer: owner chip paints Loop Tin village wind");
+  scenario_check(verdigris::client::ambience::protocol_token_fails_review(false),
+                 "ambience-layer: a protocol token without the owner chip cannot certify");
+  scenario_check(!verdigris::client::ambience::protocol_token_fails_review(owner),
+                 "ambience-layer: the owner chip certifies the loop");
+  scenario_check(verdigris::client::ambience::protocol_text_fails_review(
+                     "ambience:route:tin:1:0"),
+                 "ambience-layer: a raw ambience:route token cannot be the painted name");
+  scenario_check(!verdigris::client::ambience::protocol_text_fails_review(
+                     verdigris::client::ambience::owner_loop_label("route:tin:1:0")),
+                 "ambience-layer: Loop Tin village wind is owner language");
   state.audio_voiced.clear();
   refresh_ambience(state);
   drain_audio(state);
@@ -11355,6 +11424,10 @@ int scenario_ambience_layer() {
   for (const auto& cue : state.audio_voiced)
     if (cue.rfind("ambience:", 0) == 0) ++first;
   scenario_check(first <= 1, "ambience-layer: enter voices one region loop");
+  scenario_check(verdigris::client::ambience::stacked_loops_fail_review(3),
+                 "ambience-layer: three stacked loops fail review");
+  scenario_check(!verdigris::client::ambience::stacked_loops_fail_review(first),
+                 "ambience-layer: a single enter loop is not treated as stacked");
   state.world.route_id = "route:salt:1:0";
   refresh_ambience(state);
   refresh_ambience(state);
@@ -11368,6 +11441,24 @@ int scenario_ambience_layer() {
   }
   scenario_check(second == 1 && salt,
                  "ambience-layer: rapid zone reentry cannot stack loops");
+  scenario_check(verdigris::client::ambience::owner_loop_label("route:salt:1:0") ==
+                     "Loop Salt village wind",
+                 "ambience-layer: salt reentry is still owner language");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "ambience-layer: capture root rejected before any write");
+    return scenario_failures;
+  }
+  ClientState capture;
+  scenario_begin(capture);
+  scenario_follow_camera(capture);
+  refresh_ambience(capture);
+  drain_audio(capture);
+  capture.ambience_review_strip = true;
+  const std::string png = dir + "\\ambience-layer-960x600.png";
+  scenario_check(reference_present(capture, 960, 600, png),
+                 "ambience-layer: zone-loop capture written");
   return scenario_failures;
 }
 
