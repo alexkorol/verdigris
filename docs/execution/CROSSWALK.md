@@ -177,12 +177,14 @@ fails snapshot. Scenario `gpu-packets`. Evidence
 VG-ART-001: in-game HUD names camera/proportion/palette/contrast. Owner
 strip paints Adult camera / Bronze palette. `first-fight` owner strip
 paints Jointed warden / Snout claws. `zoom-invariance` owner strip
-paints Uniform pan / Zoom lock. An external concept-art token
+paints Uniform pan / Zoom lock. `move-and-camera` owner strip paints
+Kit lock / Same delta. An external concept-art token
 cannot substitute, a skeleton `art: PNG billboards loaded` chip cannot
 count as the composition sheet, a chibi (1/3) head cannot pass as
-adult, a crate foe cannot certify, and a free tile cannot certify the
-camera contract. Scenarios `visual-target` / `first-fight` /
-`zoom-invariance`. Evidence `docs/execution/evidence/VG-ART-001.json`.
+adult, a crate foe cannot certify, a free tile cannot certify the
+camera contract, and a sliding kit cannot certify pan. Scenarios
+`visual-target` / `first-fight` / `zoom-invariance` / `move-and-camera`.
+Evidence `docs/execution/evidence/VG-ART-001.json`.
 VG-ART-003: windup/active/recovery/cancel silhouettes on Strike poses.
 Idle still cannot certify the family. Frame count alone cannot pass.
 `combat-juice` owner strip paints Hit flash / Number fade. Silent hit
@@ -314,8 +316,10 @@ pass. Each dimension names a journey. Scenario `xp-meter`. Evidence
 VG-UI-007: `vital-orbs` — life left/red, mana right/blue. Mute is a HUD
 chip. Owner strip paints Life left / Mana right. `hud-scale-floor` owner
 strip paints Type floor / Ink contrast. Shrink type cannot certify.
-An X on the mana globe
-cannot count as a non-color cue. Scenario `vital-orbs`. Evidence
+`hud-pane-readability` recapture at 960/1366/3440 stays pairwise
+disjoint; no owner review strip on that scenario. An X on the mana globe
+cannot count as a non-color cue. Scenarios `vital-orbs` /
+`hud-scale-floor` / `hud-pane-readability`. Evidence
 `docs/execution/evidence/VG-UI-007.json`.
 VG-GOV-006: disconnect/crash/quit cannot ack uncommitted extraction.
 Owner strip paints Carry open / No extract. Extract ok cannot certify.

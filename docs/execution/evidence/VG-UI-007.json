@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-007",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "1b1100d6347134ef2c6b8922aa41c25d125ae54f",
+  "base_sha": "9c98c8c16e7a58b571612a7db03f3dd407e2d4e9",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "hud-pane-readability",
@@ -12,6 +12,7 @@
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario hud-pane-readability", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario vital-orbs", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario hud-scale-floor", "exit_code": 0}
   ],
@@ -23,7 +24,8 @@
     "life orb is left of mana; live 3440x1440 window matches that layout",
     "pack captures write under docs/execution/captures/art-wave, not the TASK-0159 folder",
     "live HUD names Life left and Mana right",
-    "live HUD names Type floor and Ink contrast"
+    "live HUD names Type floor and Ink contrast",
+    "open gear pane owner paint uses Skill tree: no data yet while PaneStat keeps TREE no authoritative data"
   ],
   "negative_control": {
     "name": "TASK-0159 folder capture alone, overlapping pane, shrinking fonts below the floor, or an X on the mana globe as the mute cue",
@@ -33,19 +35,37 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/hud-pane-readability-open-3440x1440.png",
-      "sha256": "70b86a3d6c8f42cea3421027a856a391667fcbf1cee2f4edde894c1c3ff14679",
+      "sha256": "fd4c07e6f553802b4f14a0d6729b9cfebf59d72ddaca699a5e71b1a182a65fe5",
       "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
     },
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/hud-pane-readability-closed-3440x1440.png",
-      "sha256": "58691efc1b45948fe91279994e2b609c0538075a8dc63b56ea33e4abe4e5dd0e",
+      "sha256": "c559aa98c84f3ef64ed99cd504b3d69c4db03f9de0aecb350a56e1542dd3430b",
       "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
     },
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/hud-pane-readability-open-960x600.png",
-      "sha256": "3d819b6042e383e3607b95d942e97f436feeb0e3add9ff47065cfd7376c8b7be",
+      "sha256": "77aa53b5ba9d8425fe3d73d69f185297ed869bf05779f2f332cccf656c43bbcd",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-pane-readability-closed-960x600.png",
+      "sha256": "6c9cb9a7abfd93a9253fc5218f2b43aa5ea4eb4a487b0f6ccf9ef0d69490d928",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-pane-readability-open-1366x768.png",
+      "sha256": "1b55b9d02fd66a2f10613a8d89a6110a5849c3ef25b40d00f98f5278233912ed",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-pane-readability-closed-1366x768.png",
+      "sha256": "2cd5a737448f4142e8e9be492047a67d858b41c96946bdfd5e5b9acf008dbde3",
       "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
     },
     {
@@ -73,6 +93,7 @@
     "Extends TASK-0159; that packet's STATUS.md and historical captures were not rewritten.",
     "Owner strip paints Life left / Mana right. X on mana cannot certify a non-color cue.",
     "hud-scale-floor owner strip paints Type floor / Ink contrast. Shrink type cannot certify overflow.",
+    "hud-pane-readability recapture has no owner review strip so pairwise HUD regions stay disjoint.",
     "VG-UI-006 Owner Demo navigation is not this packet and was not duplicated.",
     "Remote pane check remains 960x600; owner ultrawide proof is the local present path.",
     "No TASK numbers minted."

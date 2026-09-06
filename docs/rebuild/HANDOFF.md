@@ -1,5 +1,16 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Kit lock, hud-pane recapture (Cursor)
+
+- VG-ART-001: `move-and-camera` owner Kit lock strip paints Same delta.
+  Sliding kit cannot certify pan. Uniform pan / Zoom lock on
+  `zoom-invariance` is unchanged.
+- VG-UI-007: recaptured `hud-pane-readability` at 960/1366/3440 after later
+  HUD chrome. No review strip (pairwise disjoint regions). Life left /
+  Type floor strips unchanged. Owner Demo (VG-UI-006) not duplicated.
+- Scenarios `move-and-camera` / `hud-pane-readability` PASS. Captures
+  viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — Dodge clear, Life holds (Cursor)
 
 - VG-ACT-005: `telegraph-dodge` owner Dodge clear strip paints Life holds.

@@ -62,5 +62,7 @@ inline double draw_order_key(double wy, double wx) { return wy * 1e6 + wx; }
 
 inline const char* owner_uniform_pan_label() { return "Uniform pan"; }
 inline const char* owner_zoom_lock_label() { return "Zoom lock"; }
+inline const char* owner_kit_lock_label() { return "Kit lock"; }
+inline const char* owner_same_delta_label() { return "Same delta"; }
 
 }  // namespace camera2d

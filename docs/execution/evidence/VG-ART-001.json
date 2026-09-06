@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-001",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "1db26bed72a0db073aa7c475a9def123e79aded8",
+  "base_sha": "9c98c8c16e7a58b571612a7db03f3dd407e2d4e9",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "visual-target",
@@ -14,7 +14,8 @@
     {"run": "native/build.ps1", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario visual-target", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario first-fight", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario zoom-invariance", "exit_code": 0}
+    {"run": "native/build/verdigris_client.exe --scenario zoom-invariance", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario move-and-camera", "exit_code": 0}
   ],
   "assertions": [
     "in-game HUD names camera top-down, adult proportion, bronze-stone palette, ink-on-panel contrast",
@@ -30,10 +31,12 @@
     "live HUD names Adult camera and Bronze palette",
     "live HUD names Jointed warden and Snout claws",
     "overlapping scenery and terrain tiles shift by one uniform delta under pan at min/default/max zoom",
-    "live HUD names Uniform pan and Zoom lock"
+    "live HUD names Uniform pan and Zoom lock",
+    "scenery and terrain tiles share one pan delta at default zoom",
+    "live HUD names Kit lock and Same delta"
   ],
   "negative_control": {
-    "name": "external concept-art HUD token, a loader chip as the sheet, a chibi head, a crate-shaped foe, or a free tile that slides independently under pan",
+    "name": "external concept-art HUD token, a loader chip as the sheet, a chibi head, a crate-shaped foe, a free tile that slides independently under pan, or a sliding kit under camera move",
     "observed_result": "REJECTED"
   },
   "artifacts": [
@@ -54,6 +57,12 @@
       "path": "docs/execution/captures/art-wave/zoom-invariance-960x600.png",
       "sha256": "a012828bd9a5e0de951399237df41f91eba15bcd05c613df26e5071cf563d8d5",
       "produced_by": "native/build/verdigris_client.exe --scenario zoom-invariance"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/move-and-camera-960x600.png",
+      "sha256": "2e2e20ebb3733252cffbfa4b146344d93cac12bac3364425d6ce78f4d4b3bc14",
+      "produced_by": "native/build/verdigris_client.exe --scenario move-and-camera"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
@@ -63,6 +72,7 @@
     "Owner strip paints Adult camera / Bronze palette. Chibi head cannot certify.",
     "first-fight owner strip paints Jointed warden / Snout claws. Crate foe cannot certify.",
     "zoom-invariance owner strip paints Uniform pan / Zoom lock. A free tile cannot certify the camera contract.",
+    "move-and-camera owner strip paints Kit lock / Same delta. A sliding kit cannot certify the pan contract.",
     "Mute chip stays owner-facing. Loader jargon lives on F3.",
     "Does not re-spec TASK-0108 or Owner Demo (VG-ART-007 mixed-pack review not this packet).",
     "32bpp scenario DIBs still need dc_color; live CreateCompatibleBitmap path does not."
