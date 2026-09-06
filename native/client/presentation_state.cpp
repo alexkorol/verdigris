@@ -112,10 +112,12 @@ void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& s
     view.equip_slot = "right_hand";
     if (item.equipped) {
       view.equip_seat = "right_hand";
-      world.worn.push_back(std::move(view));
-    } else {
-      world.carried.push_back(std::move(view));
+      // merge: the aaa wear-set lane mirrors the equipped item into `worn`
+      // while the nat-recon pack lane keeps it in `carried` (equipped=true)
+      // so the backpack grid, compare plate, and held rig all keep working.
+      world.worn.push_back(view);
     }
+    world.carried.push_back(std::move(view));
   }
   for (const auto& item : sim.ground_items()) world.loot_names[item.id] = item.name;
   for (const auto& trophy : sim.ground_trophies())

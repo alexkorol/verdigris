@@ -2411,6 +2411,9 @@ void dispatch_skill(ClientState& state, const SkillInfo& skill) {
 
 std::string nearest_pickup_id(const ClientState& state) {
   if (is_remote(state)) return {};
+  // merge fix: hand-built scenario worlds (e.g. combat-cadence) carry no
+  // simulation; the nat-recon paint path calls this unconditionally.
+  if (!state.simulation) return {};
   const auto* player = state.simulation->actor(state.simulation->scion().actor_id);
   if (!player) return {};
 
@@ -4720,8 +4723,11 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   rl.push_back({render::Op::PaneWeapon, 0.0, 0.0, 0.0, 0, equipped_name});
   TextOutA(dc, seat.left + 55 * s, seat_top + 4 * s, loadout_value.c_str(),
            static_cast<int>(loadout_value.size()));
+  // merge: PaneWeapon keeps the aaa "(unarmed)" phrasing; the held-seat tag
+  // keeps the nat-recon "(empty)" contract so both scenario dialects hold.
   rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
-                std::string("held-seat:") + equipped_name});
+                std::string("held-seat:") +
+                    (main_hand ? equipped_name : std::string("(empty)"))});
 
   // Merge: the nat-recon presentation backpack (VG-UI-002 draggable 4-column
   // grid) is the painted layout. The aaa 12x7 server cell index stays
@@ -5496,10 +5502,9 @@ void paint_vital_orbs(const BillboardAssets& assets, const WorldActor& player,
     draw_orb(dc, right_cx, cy, radius, resource_ratio, RGB(58, 138, 168),
              RGB(120, 188, 214), resource_caption, false, rl, "resource");
   }
-  draw_orb(dc, left_cx, cy, radius, life_ratio, RGB(177, 72, 62), RGB(214, 128, 96),
-           life_caption, pulse, rl, "life");
-  draw_orb(dc, right_cx, cy, radius, resource_ratio, RGB(58, 138, 168), RGB(120, 188, 214),
-           resource_caption, false, rl, "resource");
+  // merge fix: the aaa unconditional skin-orb redraw was kept alongside the
+  // nat-recon wizard-orb-with-fallback; drawing both alpha-blends the two
+  // palettes and breaks the vital-orbs colour contract. Fallback only.
   const HudRect life_chrome = vital_orb_rect(static_cast<int>(bounds.right),
                                              static_cast<int>(bounds.bottom), false);
   const HudRect resource_chrome = vital_orb_rect(
@@ -8817,7 +8822,10 @@ void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
 }
 
 vector_art::Held equipped_held(const ClientState& state) {
-  for (const auto& item : state.world.carried) {
+  // merge fix: the aaa wear-set sync moves equipped items from `carried`
+  // into `worn`; scan both lanes so the held-item rig still sees them.
+  for (const auto* lane : {&state.world.carried, &state.world.worn})
+  for (const auto& item : *lane) {
     if (!item.equipped) continue;
     std::string id = item.id;
     std::string name = item.name;
