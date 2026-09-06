@@ -189,8 +189,9 @@ VG-GPU-008: recreate/resize/minimize-restore keep one live buffer; failure
 surfaces `gpu-error:recreate`. Scenario `gpu-recover`. Evidence
 `docs/execution/evidence/VG-GPU-008.json`.
 VG-SOUND-001: software tone adapter plays a generated PCM burst and shuts
-down. A zero-duration cue is not audible. Scenario `sound-adapter`.
-Evidence `docs/execution/evidence/VG-SOUND-001.json`.
+down. Live HUD paints Adapter software / Tone 440 Hz. A zero-duration cue
+is not audible. Scenario `sound-adapter`. Evidence
+`docs/execution/evidence/VG-SOUND-001.json`.
 VG-SOUND-005: one ambience cue per route; live HUD paints Loop Tin village
 wind. A protocol `ambience:route` token or stacked reentry loops cannot
 certify. Scenario `ambience-layer`. Evidence

@@ -1,5 +1,13 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — software 440 Hz adapter (Cursor)
+
+- VG-SOUND-001: owner Adapter software strip paints Tone 440 Hz. A 0 ms
+  cue cannot certify. Unknown backends cannot pretend to be portable.
+  PCM peak report written.
+- Scenario `sound-adapter` PASS. Capture viewed. Not Owner Demo. Not
+  WASAPI.
+
 ## 2026-09-06 — voice budget holds the warning (Cursor)
 
 - VG-SOUND-004: owner Voices 8 strip paints Warning held. Twelve World

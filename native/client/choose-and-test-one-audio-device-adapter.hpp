@@ -1,10 +1,12 @@
 #pragma once
 
 // VG-SOUND-001: portable software tone adapter. A scheduled cue with no
-// PCM (zero duration or zero gain) is not audible output.
+// PCM (zero duration or zero gain) is not audible output. Unknown backends
+// cannot pretend to be portable. Device mute still silences waveOut.
 
 #include <cmath>
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include "../audio/cue_spec.hpp"
@@ -44,13 +46,15 @@ struct ToneAdapter {
     return audible();
   }
 
-  bool audible() const {
+  bool audible() const { return peak_abs() > 256; }
+
+  int peak_abs() const {
     int peak = 0;
     for (std::int16_t s : pcm) {
       const int a = s < 0 ? -s : s;
       if (a > peak) peak = a;
     }
-    return peak > 256;
+    return peak;
   }
 
   void shutdown() {
@@ -63,6 +67,20 @@ inline bool cue_has_audible_output(const CueSpec& cue) {
   const int gain = cue.effective_gain_permille > 0 ? cue.effective_gain_permille
                                                    : cue.params.gain_permille;
   return cue.params.duration_ms > 0 && gain > 0 && cue.params.start_hz > 0;
+}
+
+inline const char* owner_adapter_label() { return "Adapter software"; }
+
+inline std::string owner_tone_label(int hz) {
+  return std::string("Tone ") + std::to_string(hz) + " Hz";
+}
+
+inline bool unknown_backend_fails_review(bool software_backend) {
+  return !software_backend;
+}
+
+inline bool zero_duration_cue_fails_review(const CueSpec& cue) {
+  return !cue_has_audible_output(cue);
 }
 
 }  // namespace verdigris::audio

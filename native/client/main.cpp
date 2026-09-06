@@ -472,6 +472,7 @@ struct ClientState {
   bool ambience_review_strip = false;
   bool capture_review_strip = false;
   bool voice_budget_review_strip = false;
+  bool tone_adapter_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -6266,6 +6267,46 @@ void paint_voice_budget_review_strip(ClientState& state, HDC dc, const RECT& bou
   SelectObject(dc, old_font);
 }
 
+void paint_tone_adapter_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                     render::List& rl) {
+  if (!state.tone_adapter_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "tone-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::audio::owner_adapter_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const std::string tone = verdigris::audio::owner_tone_label(440);
+  TextOutA(dc, left + 12 * s, top + 32 * s, tone.c_str(),
+           static_cast<int>(tone.size()));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "0 ms cue";
+  TextOutA(dc, rx - 22 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "adapter:software"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 440, "tone:440"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "tone-strip:zero-ms-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -7287,6 +7328,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_ambience_review_strip(state, dc, bounds, rl);
   paint_capture_review_strip(state, dc, bounds, rl);
   paint_voice_budget_review_strip(state, dc, bounds, rl);
+  paint_tone_adapter_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -11474,6 +11516,48 @@ int scenario_sound_adapter() {
   silent.params = {verdigris::audio::Waveform::Sine, 440, 440, 0, 800};
   scenario_check(!verdigris::audio::cue_has_audible_output(silent),
                  "sound-adapter: a scheduled cue without duration is not audible output");
+  scenario_check(verdigris::audio::unknown_backend_fails_review(false),
+                 "sound-adapter: an unknown backend fails review");
+  scenario_check(!verdigris::audio::unknown_backend_fails_review(true),
+                 "sound-adapter: the software backend certifies portability");
+  scenario_check(verdigris::audio::zero_duration_cue_fails_review(silent),
+                 "sound-adapter: a 0 ms cue fails review");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "sound-adapter: capture root rejected before any write");
+    return scenario_failures;
+  }
+  verdigris::audio::ToneAdapter report;
+  report.init(verdigris::audio::ToneBackend::Software);
+  report.play_generated_tone(440, 80, 800);
+  const std::string txt = dir + "\\sound-adapter-tone.txt";
+  FILE* out = nullptr;
+  fopen_s(&out, txt.c_str(), "w");
+  scenario_check(out != nullptr, "sound-adapter: tone report opened");
+  if (out) {
+    std::fprintf(out, "backend=%s\nhz=440\nduration_ms=80\nsamples=%zu\npeak=%d\n",
+                 verdigris::audio::ToneAdapter::kBackendName, report.pcm.size(),
+                 report.peak_abs());
+    std::fclose(out);
+  }
+  report.shutdown();
+  ClientState capture;
+  scenario_begin(capture);
+  scenario_follow_camera(capture);
+  capture.tone_adapter_review_strip = true;
+  const std::string png = dir + "\\sound-adapter-960x600.png";
+  scenario_check(reference_present(capture, 960, 600, png),
+                 "sound-adapter: owner adapter capture written");
+  bool named = false;
+  bool tone = false;
+  for (const auto& item : capture.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "adapter:software") named = true;
+    if (item.label == "tone:440") tone = true;
+  }
+  scenario_check(named && tone,
+                 "sound-adapter: live HUD names Adapter software and Tone 440 Hz");
   return scenario_failures;
 }
 
