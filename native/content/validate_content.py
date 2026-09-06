@@ -45,6 +45,7 @@ class ContentValidator:
         self.diags = Diagnostics()
         self.quiet = False
         self.explicit_seed_files = []
+        self.packs = []
         self.enums = {}
         self.entities = {}
         self.composites = {}
@@ -507,39 +508,38 @@ class ContentValidator:
 
     def register_ids(self, docs):
         for kind in sorted(docs.keys()):
-            file_name = self.file_for_kind[kind]
-            owner = {}
             members = set()
             kept = 0
-            for index, item in enumerate(docs[kind]):
-                item_id = self.check_item(item, index, kind, file_name)
-                if item_id is None:
-                    continue
-                kept += 1
-                members.add(item_id)
-                owner[item_id] = (file_name, "items[{}]".format(index))
+            for file_name, items in docs[kind]:
+                for index, item in enumerate(items):
+                    item_id = self.check_item(item, index, kind, file_name)
+                    if item_id is None:
+                        continue
+                    kept += 1
+                    members.add(item_id)
             self.item_counts[kind] = kept
             self.ids_by_entity[kind] = members
             if kind == "zone":
                 self.zone_ids = members
-                for item_index, item in enumerate(docs[kind]):
-                    if isinstance(item, dict) and isinstance(item.get("id"), str):
-                        self.zone_locations[item["id"]] = (file_name, "items[{}]".format(item_index))
+                for file_name, items in docs[kind]:
+                    for item_index, item in enumerate(items):
+                        if isinstance(item, dict) and isinstance(item.get("id"), str):
+                            self.zone_locations[item["id"]] = (file_name, "items[{}]".format(item_index))
 
     def collect_id_owners(self, docs):
         for kind in sorted(docs.keys()):
-            file_name = self.file_for_kind[kind]
-            for index, item in enumerate(docs[kind]):
-                if not isinstance(item, dict):
-                    continue
-                item_id = item.get("id")
-                if (
-                    isinstance(item_id, str)
-                    and len(item_id) <= self.id_max_length
-                    and self.id_pattern.match(item_id)
-                    and item_id not in self.id_owners
-                ):
-                    self.id_owners[item_id] = (kind, file_name, "items[{}]".format(index))
+            for file_name, items in docs[kind]:
+                for index, item in enumerate(items):
+                    if not isinstance(item, dict):
+                        continue
+                    item_id = item.get("id")
+                    if (
+                        isinstance(item_id, str)
+                        and len(item_id) <= self.id_max_length
+                        and self.id_pattern.match(item_id)
+                        and item_id not in self.id_owners
+                    ):
+                        self.id_owners[item_id] = (kind, file_name, "items[{}]".format(index))
 
     def reference_mismatch(self, target, target_entity):
         owner = self.id_owners.get(target)
@@ -550,83 +550,76 @@ class ContentValidator:
     def check_duplicates(self, docs):
         seen_global = {}
         for kind in sorted(docs.keys()):
-            file_name = self.file_for_kind[kind]
-            for index, item in enumerate(docs[kind]):
-                if not isinstance(item, dict):
-                    continue
-                item_id = item.get("id")
-                if not isinstance(item_id, str):
-                    continue
-                if item_id in seen_global:
-                    first_file, first_path = seen_global[item_id]
-                    self.diags.error(
-                        file_name,
-                        "items[{}]".format(index),
-                        "E_DUPLICATE_ID",
-                        "duplicate id '{}' first defined at {}:{}".format(item_id, first_file, first_path),
-                    )
-                else:
-                    seen_global[item_id] = (file_name, "items[{}]".format(index))
-
-    def check_zone_exit_refs(self, docs):
-        zones = docs.get("zone")
-        if zones is None:
-            return
-        file_name = self.file_for_kind["zone"]
-        for index, zone in enumerate(zones):
-            exits = zone.get("exits") if isinstance(zone, dict) else None
-            if not isinstance(exits, list):
-                continue
-            for edge_index, edge in enumerate(exits):
-                if not isinstance(edge, dict):
-                    continue
-                target = edge.get("to")
-                if isinstance(target, str) and target not in self.zone_ids:
-                    mismatch = self.reference_mismatch(target, "zone")
-                    if mismatch is not None:
+            for file_name, items in docs[kind]:
+                for index, item in enumerate(items):
+                    if not isinstance(item, dict):
+                        continue
+                    item_id = item.get("id")
+                    if not isinstance(item_id, str):
+                        continue
+                    if item_id in seen_global:
+                        first_file, first_path = seen_global[item_id]
                         self.diags.error(
                             file_name,
-                            "items[{}].exits[{}].to".format(index, edge_index),
-                            "E_REFERENCE_TYPE_MISMATCH",
-                            "exit leads to '{}' which is defined as a {}".format(target, mismatch),
+                            "items[{}]".format(index),
+                            "E_DUPLICATE_ID",
+                            "duplicate id '{}' first defined at {}:{}".format(item_id, first_file, first_path),
                         )
                     else:
-                        self.diags.error(
-                            file_name,
-                            "items[{}].exits[{}].to".format(index, edge_index),
-                            "E_UNKNOWN_ZONE_REF",
-                            "exit leads to unknown zone id '{}'".format(target),
-                        )
+                        seen_global[item_id] = (file_name, "items[{}]".format(index))
+
+    def check_zone_exit_refs(self, docs):
+        for file_name, zones in docs.get("zone", []):
+            for index, zone in enumerate(zones):
+                exits = zone.get("exits") if isinstance(zone, dict) else None
+                if not isinstance(exits, list):
+                    continue
+                for edge_index, edge in enumerate(exits):
+                    if not isinstance(edge, dict):
+                        continue
+                    target = edge.get("to")
+                    if isinstance(target, str) and target not in self.zone_ids:
+                        mismatch = self.reference_mismatch(target, "zone")
+                        if mismatch is not None:
+                            self.diags.error(
+                                file_name,
+                                "items[{}].exits[{}].to".format(index, edge_index),
+                                "E_REFERENCE_TYPE_MISMATCH",
+                                "exit leads to '{}' which is defined as a {}".format(target, mismatch),
+                            )
+                        else:
+                            self.diags.error(
+                                file_name,
+                                "items[{}].exits[{}].to".format(index, edge_index),
+                                "E_UNKNOWN_ZONE_REF",
+                                "exit leads to unknown zone id '{}'".format(target),
+                            )
 
     def check_duplicate_exits(self, docs):
-        zones = docs.get("zone")
-        if zones is None:
-            return
-        file_name = self.file_for_kind["zone"]
-        for index, zone in enumerate(zones):
-            exits = zone.get("exits") if isinstance(zone, dict) else None
-            if not isinstance(exits, list):
-                continue
-            seen_edges = set()
-            for edge_index, edge in enumerate(exits):
-                if not isinstance(edge, dict):
+        for file_name, zones in docs.get("zone", []):
+            for index, zone in enumerate(zones):
+                exits = zone.get("exits") if isinstance(zone, dict) else None
+                if not isinstance(exits, list):
                     continue
-                signature = value_repr(edge)
-                if signature in seen_edges:
-                    self.diags.error(
-                        file_name,
-                        "items[{}].exits[{}]".format(index, edge_index),
-                        "E_DUPLICATE_EXIT",
-                        "duplicate exit {} within one zone".format(signature),
-                    )
-                seen_edges.add(signature)
+                seen_edges = set()
+                for edge_index, edge in enumerate(exits):
+                    if not isinstance(edge, dict):
+                        continue
+                    signature = value_repr(edge)
+                    if signature in seen_edges:
+                        self.diags.error(
+                            file_name,
+                            "items[{}].exits[{}]".format(index, edge_index),
+                            "E_DUPLICATE_EXIT",
+                            "duplicate exit {} within one zone".format(signature),
+                        )
+                    seen_edges.add(signature)
 
     def check_reference_fields(self, docs):
         for entity_name in sorted(self.entities.keys()):
             fields = self.entities[entity_name]["fields"]
             if entity_name not in docs:
                 continue
-            file_name = self.file_for_kind[entity_name]
             for field_name in sorted(fields.keys()):
                 spec = fields[field_name]
                 if not spec.startswith("reference:"):
@@ -634,26 +627,27 @@ class ContentValidator:
                 target_entity = spec.split(":", 1)[1]
                 targets = self.ids_by_entity.get(target_entity, set())
                 code = "E_UNKNOWN_ZONE_REF" if target_entity == "zone" else "E_UNKNOWN_REFERENCE"
-                for index, item in enumerate(docs[entity_name]):
-                    if not isinstance(item, dict):
-                        continue
-                    target = item.get(field_name)
-                    if isinstance(target, str) and target not in targets:
-                        mismatch = self.reference_mismatch(target, target_entity)
-                        if mismatch is not None:
-                            self.diags.error(
-                                file_name,
-                                "items[{}].{}".format(index, field_name),
-                                "E_REFERENCE_TYPE_MISMATCH",
-                                "'{}' references '{}' which is defined as a {}".format(field_name, target, mismatch),
-                            )
-                        else:
-                            self.diags.error(
-                                file_name,
-                                "items[{}].{}".format(index, field_name),
-                                code,
-                                "'{}' references unknown '{}' id '{}'".format(field_name, target_entity, target),
-                            )
+                for file_name, items in docs[entity_name]:
+                    for index, item in enumerate(items):
+                        if not isinstance(item, dict):
+                            continue
+                        target = item.get(field_name)
+                        if isinstance(target, str) and target not in targets:
+                            mismatch = self.reference_mismatch(target, target_entity)
+                            if mismatch is not None:
+                                self.diags.error(
+                                    file_name,
+                                    "items[{}].{}".format(index, field_name),
+                                    "E_REFERENCE_TYPE_MISMATCH",
+                                    "'{}' references '{}' which is defined as a {}".format(field_name, target, mismatch),
+                                )
+                            else:
+                                self.diags.error(
+                                    file_name,
+                                    "items[{}].{}".format(index, field_name),
+                                    code,
+                                    "'{}' references unknown '{}' id '{}'".format(field_name, target_entity, target),
+                                )
 
     def reachable_zones(self, zones):
         if not self.zone_ids:
@@ -680,47 +674,46 @@ class ContentValidator:
         return root, reached
 
     def check_reachability(self, docs):
-        zones = docs.get("zone")
-        if zones is None:
+        if "zone" not in docs:
             return
+        zones = [item for _, items in docs["zone"] for item in items]
         root, reached = self.reachable_zones(zones)
         if root is None:
             return
         file_name = self.file_for_kind["zone"]
         for zone_id in sorted(self.zone_ids - reached):
-            _, zone_path = self.zone_locations.get(zone_id, (file_name, zone_id))
+            zone_file, zone_path = self.zone_locations.get(zone_id, (file_name, zone_id))
             self.diags.warning(
-                file_name,
+                zone_file,
                 zone_path,
                 "W_UNREACHABLE_ZONE",
                 "zone '{}' is not reachable from graph root '{}'".format(zone_id, root),
             )
 
     def check_unreachable_encounters(self, docs):
-        encounters = docs.get("encounter")
-        zones = docs.get("zone")
-        if encounters is None or zones is None:
+        if "encounter" not in docs or "zone" not in docs:
             return
+        zones = [item for _, items in docs["zone"] for item in items]
         root, reached = self.reachable_zones(zones)
         if root is None:
             return
-        file_name = self.file_for_kind["encounter"]
-        for index, item in enumerate(encounters):
-            if not isinstance(item, dict):
-                continue
-            zone_ref = item.get("zone")
-            if not isinstance(zone_ref, str) or zone_ref not in self.zone_ids or zone_ref in reached:
-                continue
-            encounter_id = item.get("id")
-            label = encounter_id if isinstance(encounter_id, str) else "items[{}]".format(index)
-            self.diags.error(
-                file_name,
-                "items[{}].zone".format(index),
-                "E_UNREACHABLE_ENCOUNTER",
-                "encounter '{}' anchors zone '{}' which is not reachable from graph root '{}'".format(
-                    label, zone_ref, root
-                ),
-            )
+        for file_name, encounters in docs["encounter"]:
+            for index, item in enumerate(encounters):
+                if not isinstance(item, dict):
+                    continue
+                zone_ref = item.get("zone")
+                if not isinstance(zone_ref, str) or zone_ref not in self.zone_ids or zone_ref in reached:
+                    continue
+                encounter_id = item.get("id")
+                label = encounter_id if isinstance(encounter_id, str) else "items[{}]".format(index)
+                self.diags.error(
+                    file_name,
+                    "items[{}].zone".format(index),
+                    "E_UNREACHABLE_ENCOUNTER",
+                    "encounter '{}' anchors zone '{}' which is not reachable from graph root '{}'".format(
+                        label, zone_ref, root
+                    ),
+                )
 
     def select_seed_files(self):
         if not self.explicit_seed_files:
@@ -743,11 +736,75 @@ class ContentValidator:
             selected[self.kind_for_file[rel]] = rel
         return {kind: rel for kind, rel in sorted(selected.items())}
 
+    def resolve_packs(self):
+        resolved = []
+        declared_abs = set()
+        for rel in self.file_for_kind.values():
+            try:
+                declared_abs.add((self.root / rel).resolve())
+            except OSError:
+                pass
+        try:
+            root_abs = self.root.resolve()
+        except OSError:
+            root_abs = self.root.absolute()
+        seen_paths = set()
+        for given in self.packs:
+            kind, sep, path_text = given.partition("=")
+            kind = kind.strip()
+            path_text = path_text.strip()
+            if not sep or not kind or not path_text:
+                print(
+                    "validate_content.py: error: --pack expects KIND=PATH, got '{}'".format(given),
+                    file=sys.stderr,
+                )
+                return None
+            if kind not in self.file_for_kind:
+                print(
+                    "validate_content.py: error: --pack kind '{}' is not a declared seed kind (declared: {})".format(
+                        kind, ", ".join(sorted(self.file_for_kind))
+                    ),
+                    file=sys.stderr,
+                )
+                return None
+            candidate = Path(path_text)
+            if not candidate.is_absolute():
+                candidate = Path.cwd() / candidate
+            try:
+                absolute = candidate.resolve()
+            except OSError:
+                absolute = candidate.absolute()
+            if absolute in declared_abs:
+                print(
+                    "validate_content.py: error: --pack file '{}' is already loaded as the declared seed for kind '{}'".format(
+                        path_text, kind
+                    ),
+                    file=sys.stderr,
+                )
+                return None
+            if absolute in seen_paths:
+                print(
+                    "validate_content.py: error: --pack file '{}' was given more than once".format(path_text),
+                    file=sys.stderr,
+                )
+                return None
+            seen_paths.add(absolute)
+            try:
+                display = absolute.relative_to(root_abs).as_posix()
+            except ValueError:
+                display = absolute.as_posix()
+            resolved.append((kind, display, absolute))
+        resolved.sort(key=lambda entry: (entry[0], entry[1]))
+        return resolved
+
     def run(self):
         if not self.load_schema():
             return self.finish()
         selection = self.select_seed_files()
         if selection is None:
+            return self.finish(usage_error=True)
+        packs = self.resolve_packs()
+        if packs is None:
             return self.finish(usage_error=True)
         docs = {}
         for kind in sorted(selection.keys()):
@@ -758,7 +815,15 @@ class ContentValidator:
             items = self.check_envelope(raw, rel_path, kind)
             if items is None:
                 continue
-            docs[kind] = items
+            docs.setdefault(kind, []).append((rel_path, items))
+        for kind, display, absolute in packs:
+            raw = self.load_json(absolute, display)
+            if raw is None:
+                continue
+            items = self.check_envelope(raw, display, kind)
+            if items is None:
+                continue
+            docs.setdefault(kind, []).append((display, items))
         self.register_ids(docs)
         self.check_duplicates(docs)
         self.collect_id_owners(docs)
@@ -770,10 +835,11 @@ class ContentValidator:
         return self.finish()
 
     def finish(self, usage_error=False):
+        if usage_error:
+            print("USAGE ERROR")
+            return 2
         warnings = self.diags.sorted_warnings()
         errors = self.diags.sorted_errors()
-        if usage_error:
-            return 2
         if not self.quiet:
             for file_name, path, code, message in warnings:
                 print("WARNING {}:{} {}: {}".format(file_name, path, code, message))
@@ -804,6 +870,14 @@ def main(argv):
     )
     parser.add_argument("--quiet", action="store_true", help="suppress individual diagnostics; print only the final summary line")
     parser.add_argument(
+        "--pack",
+        action="append",
+        default=[],
+        metavar="KIND=PATH",
+        help="additional seed pack file of a declared kind, validated together with the declared seeds; "
+        "repeatable; ids and references are checked across all loaded files as one closed set",
+    )
+    parser.add_argument(
         "seed_files",
         nargs="*",
         default=[],
@@ -813,6 +887,7 @@ def main(argv):
     validator = ContentValidator(args.root)
     validator.quiet = args.quiet
     validator.explicit_seed_files = list(args.seed_files)
+    validator.packs = list(args.pack)
     return validator.run()
 
 

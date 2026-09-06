@@ -47,20 +47,46 @@ Expected final lines include one `PASS` per case and end with
 diagnostics are byte-identical across repeated runs for every case.
 
 `--quiet` limits validator output to the final summary line. Exit codes:
-`0` valid, `1` validation failures, `2` usage errors (argparse).
+`0` valid, `1` validation failures, `2` usage errors (argparse, or a
+malformed `--pack` argument — the summary line then reads `USAGE ERROR`).
+
+## Multi-file packs
+
+`--pack KIND=PATH` (repeatable) loads additional seed files of a declared
+kind alongside the declared seeds and validates every loaded file as one
+closed set: item/envelope checks run per file, identifiers must stay unique
+across all files (`E_DUPLICATE_ID` names both definitions), and references
+may resolve into any loaded file. A pack path that renames a declared seed
+file, repeats an earlier pack path, uses an undeclared kind, or lacks the
+`KIND=PATH` shape is a usage error (exit `2`). Example:
+
+```text
+python native/content/validate_content.py \
+  --pack zone=packs/expedition_zones.json \
+  --pack encounter=packs/expedition_encounters.json
+```
+
+Relative pack paths resolve against the current working directory; paths
+inside the content root are reported root-relative so diagnostics stay
+machine-independent.
+
 
 ## Schema model
 
 - `schema_version`: integer, currently `1`. Seeds and schema must match it
-  exactly; any other value is rejected (`E_SCHEMA_VERSION`).
+  exactly; any other value is rejected (`E_SCHEMA_VERSION`). The schema
+  document itself is strict: unknown top-level keys and unknown keys inside
+  `identifier_rules`, `display_name_rules`, entity declarations, and
+  composite declarations are rejected (`E_UNKNOWN_FIELD`), never silently
+  ignored.
 - Seed files are envelopes `{ "schema_version", "kind", "items" }`. The kind
   must match the file declared in `schema.json#seed_files`
   (`E_FILE_KIND`). Unknown envelope or item fields are rejected
   (`E_UNKNOWN_FIELD`); missing required fields are rejected
   (`E_MISSING_FIELD`).
 - Identifiers follow `^[a-z][a-z0-9]*(-[a-z0-9]+)*$` with a maximum length of
-  64 (`E_ID_FORMAT`). IDs are unique across all collections
-  (`E_DUPLICATE_ID`).
+  64 (`E_ID_FORMAT`). IDs are unique across all collections and across all
+  files loaded in one run, including `--pack` files (`E_DUPLICATE_ID`).
 - Zones carry an accepted zone template and layout (the enums mirror the
   identifiers accepted by `verdigris::is_zone_template`/`is_zone_layout`),
   an exit list whose targets must exist in the committed zone set

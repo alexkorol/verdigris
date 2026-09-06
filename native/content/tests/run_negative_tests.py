@@ -20,9 +20,9 @@ def load_seeds():
     return seeds
 
 
-def run_validator(root):
+def run_validator(root, extra_args=()):
     completed = subprocess.run(
-        [sys.executable, str(VALIDATOR), "--root", str(root)],
+        [sys.executable, str(VALIDATOR), "--root", str(root)] + list(extra_args),
         capture_output=True,
         encoding="utf-8",
     )
@@ -109,6 +109,156 @@ def write_schema(temp_root, doc):
     (temp_root / "schema.json").write_text(json.dumps(doc, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def pack_zone(zone_id, exits_to, extra=None):
+    item = {
+        "id": zone_id,
+        "display_name": "Pack Zone {}".format(zone_id),
+        "template_id": "dungeon",
+        "layout": "warren",
+        "exits": [{"to": target, "kind": "walk"} for target in exits_to],
+        "visual_roles": {"floor": "terrain.floor", "walls": "terrain.blocking"},
+    }
+    if extra:
+        item.update(extra)
+    return item
+
+
+def pack_encounter(encounter_id, zone_ref):
+    return {
+        "id": encounter_id,
+        "display_name": "Pack Encounter {}".format(encounter_id),
+        "family": "skirmish",
+        "zone": zone_ref,
+        "visual_roles": {"actors": "actor.combatant"},
+    }
+
+
+def pack_envelope(kind, items):
+    return {"schema_version": 1, "kind": kind, "items": items}
+
+
+def build_pack_cases(seeds):
+    def positive_seed_override(doc):
+        doc["items"][4]["exits"].append({"to": "pack-alpha", "kind": "walk"})
+
+    return [
+        {
+            "name": "pack_positive_merge",
+            "seed_override": positive_seed_override,
+            "packs": {
+                "packs/pack_a_zones.json": pack_envelope(
+                    "zone",
+                    [
+                        pack_zone("pack-alpha", ["example-mire-one", "pack-beta"]),
+                        pack_zone("pack-beta", ["pack-alpha"]),
+                    ],
+                ),
+                "packs/pack_b_encounters.json": pack_envelope(
+                    "encounter", [pack_encounter("pack-encounter-one", "pack-beta")]
+                ),
+            },
+            "args": lambda tr: [
+                "--pack", "zone={}".format(tr / "packs" / "pack_a_zones.json"),
+                "--pack", "encounter={}".format(tr / "packs" / "pack_b_encounters.json"),
+            ],
+            "rc": 0,
+            "codes": [],
+            "must_contain": ["OK", "zone=7", "encounter=4"],
+            "must_not_contain": ["WARNING", "ERROR"],
+        },
+        {
+            # VG-TOOLS-001 negative control: two unrelated packs silently
+            # reusing one runtime id must be rejected when loaded together.
+            "name": "pack_negative_control_duplicate_id",
+            "seed_override": None,
+            "packs": {
+                "packs/pack_a_zones.json": pack_envelope("zone", [pack_zone("pack-shared-zone", ["example-mire-one"])]),
+                "packs/pack_b_zones.json": pack_envelope("zone", [pack_zone("pack-shared-zone", ["example-mire-one"])]),
+            },
+            "args": lambda tr: [
+                "--pack", "zone={}".format(tr / "packs" / "pack_a_zones.json"),
+                "--pack", "zone={}".format(tr / "packs" / "pack_b_zones.json"),
+            ],
+            "rc": 1,
+            "codes": ["E_DUPLICATE_ID"],
+            "must_contain": ["packs/pack_a_zones.json", "packs/pack_b_zones.json"],
+            "must_not_contain": [],
+        },
+        {
+            "name": "pack_collides_with_declared_seed",
+            "seed_override": None,
+            "packs": {
+                "packs/pack_a_zones.json": pack_envelope("zone", [pack_zone("example-hall-one", ["example-mire-one"])]),
+            },
+            "args": lambda tr: ["--pack", "zone={}".format(tr / "packs" / "pack_a_zones.json")],
+            "rc": 1,
+            "codes": ["E_DUPLICATE_ID"],
+            "must_contain": ["seeds/zones.json", "packs/pack_a_zones.json"],
+            "must_not_contain": [],
+        },
+        {
+            "name": "pack_dangling_reference",
+            "seed_override": None,
+            "packs": {
+                "packs/pack_a_zones.json": pack_envelope("zone", [pack_zone("pack-alpha", ["pack-nowhere"])]),
+            },
+            "args": lambda tr: ["--pack", "zone={}".format(tr / "packs" / "pack_a_zones.json")],
+            "rc": 1,
+            "codes": ["E_UNKNOWN_ZONE_REF"],
+            "must_contain": ["packs/pack_a_zones.json:items[0].exits[0].to"],
+            "must_not_contain": [],
+        },
+        {
+            "name": "pack_unknown_field",
+            "seed_override": None,
+            "packs": {
+                "packs/pack_a_zones.json": pack_envelope(
+                    "zone", [pack_zone("pack-alpha", ["example-mire-one"], extra={"flavor": "sour"})]
+                ),
+            },
+            "args": lambda tr: ["--pack", "zone={}".format(tr / "packs" / "pack_a_zones.json")],
+            "rc": 1,
+            "codes": ["E_UNKNOWN_FIELD"],
+            "must_contain": ["packs/pack_a_zones.json:items[0].flavor"],
+            "must_not_contain": [],
+        },
+        {
+            "name": "pack_wrong_kind",
+            "seed_override": None,
+            "packs": {
+                "packs/pack_a_zones.json": pack_envelope(
+                    "encounter", [pack_encounter("pack-encounter-one", "example-mire-one")]
+                ),
+            },
+            "args": lambda tr: ["--pack", "zone={}".format(tr / "packs" / "pack_a_zones.json")],
+            "rc": 1,
+            "codes": ["E_FILE_KIND"],
+            "must_contain": ["packs/pack_a_zones.json"],
+            "must_not_contain": [],
+        },
+        {
+            "name": "pack_undeclared_kind_usage",
+            "seed_override": None,
+            "packs": {},
+            "args": lambda tr: ["--pack", "bogus={}".format(tr / "packs" / "pack_a_zones.json")],
+            "rc": 2,
+            "codes": [],
+            "must_contain": ["USAGE ERROR"],
+            "must_not_contain": [],
+        },
+        {
+            "name": "pack_reloading_declared_file_usage",
+            "seed_override": None,
+            "packs": {},
+            "args": lambda tr: ["--pack", "zone={}".format(tr / "seeds" / "zones.json")],
+            "rc": 2,
+            "codes": [],
+            "must_contain": ["USAGE ERROR"],
+            "must_not_contain": [],
+        },
+    ]
+
+
 def main():
     failures = []
     checks = 0
@@ -187,6 +337,44 @@ def main():
                 failures.append("{}: {}; validator output:\n{}".format(name, "; ".join(problems), out + err))
             else:
                 print("PASS {} ({})".format(name, ", ".join(expected_codes)))
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    for case in build_pack_cases(seeds):
+        checks += 1
+        temp_root = make_temp_root()
+        try:
+            zones_doc = copy.deepcopy(seeds["zones"])
+            if case["seed_override"] is not None:
+                case["seed_override"](zones_doc)
+            write_seed(temp_root, "zones", zones_doc)
+            write_seed(temp_root, "encounters", copy.deepcopy(seeds["encounters"]))
+            for rel_path, payload in sorted(case["packs"].items()):
+                target = temp_root / rel_path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            extra_args = case["args"](temp_root)
+            rc, out, err = run_validator(temp_root, extra_args)
+            problems = []
+            if rc != case["rc"]:
+                problems.append("expected exit {}, got {}".format(case["rc"], rc))
+            for code in case["codes"]:
+                if code not in out:
+                    problems.append("missing expected diagnostic {}".format(code))
+            for needle in case["must_contain"]:
+                if needle not in out:
+                    problems.append("missing expected output fragment {!r}".format(needle))
+            for needle in case["must_not_contain"]:
+                if needle in out:
+                    problems.append("unexpected output fragment {!r}".format(needle))
+            rc_again, out_again, _ = run_validator(temp_root, extra_args)
+            if out_again != out or rc_again != rc:
+                problems.append("nondeterministic diagnostics across repeated runs")
+            if problems:
+                failures.append("{}: {}; validator output:\n{}".format(case["name"], "; ".join(problems), out + err))
+            else:
+                label = ", ".join(case["codes"]) if case["codes"] else "exit {}".format(case["rc"])
+                print("PASS {} ({})".format(case["name"], label))
         finally:
             shutil.rmtree(temp_root, ignore_errors=True)
 
