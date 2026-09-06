@@ -76,4 +76,16 @@ inline void apply_audio_prefs(AudioMixer& mixer, const AudioPrefs& prefs) {
   mixer.set_bus_muted(Bus::Music, false);
 }
 
+inline const char* owner_mute_label(bool muted) { return muted ? "Muted" : "Audio on"; }
+
+inline std::string owner_volume_line(const char* name, int permille) {
+  char buf[32];
+  std::snprintf(buf, sizeof(buf), "%s %d", name, permille / 10);
+  return buf;
+}
+
+inline bool mute_chip_alone_fails_prefs_review(bool mixer_painted) {
+  return !mixer_painted;
+}
+
 }  // namespace verdigris::audio

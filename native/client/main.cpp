@@ -3553,6 +3553,47 @@ int paint_status_chip(HDC dc, int x, int y, const std::string& text,
   return width;
 }
 
+void paint_audio_mixer_hud(ClientState& state, HDC dc, int x, int y,
+                           render::List& rl) {
+  // VG-SOUND-006/008: mute cannot hide category volumes, and the theme name
+  // is owner language. A mute chip alone cannot certify the mixer.
+  const bool muted = state.audio_sink && state.audio_sink->muted();
+  const std::string mute = verdigris::audio::owner_mute_label(muted);
+  const std::string sfx =
+      verdigris::audio::owner_volume_line("SFX", state.audio_prefs.sfx_permille);
+  const std::string music = verdigris::audio::owner_volume_line(
+      "Music", state.audio_prefs.music_permille);
+  const char* theme =
+      verdigris::client::music::owner_theme_label(state.audio_music_want);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  RECT plate{x, y, x + 132, y + 72};
+  skin::panel(dc, plate, skin::kGold, 240, 5.0f);
+  SetBkMode(dc, TRANSPARENT);
+  SetTextColor(dc, skin::kInk);
+  TextOutA(dc, x + 10, y + 6, mute.c_str(), static_cast<int>(mute.size()));
+  SetTextColor(dc, skin::kInkDim);
+  TextOutA(dc, x + 10, y + 22, sfx.c_str(), static_cast<int>(sfx.size()));
+  TextOutA(dc, x + 10, y + 36, music.c_str(), static_cast<int>(music.size()));
+  SetTextColor(dc, skin::kGold);
+  TextOutA(dc, x + 10, y + 50, theme, static_cast<int>(std::strlen(theme)));
+  SelectObject(dc, old_font);
+  rl.push_back({render::Op::Hud, static_cast<double>(x), static_cast<double>(y),
+                0.0, 0, "audio:mixer"});
+  rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "audio:prefs"});
+  rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, state.audio_prefs.sfx_permille,
+                std::string("audio:sfx:") +
+                    std::to_string(state.audio_prefs.sfx_permille)});
+  rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, state.audio_prefs.music_permille,
+                std::string("audio:music:") +
+                    std::to_string(state.audio_prefs.music_permille)});
+  rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                std::string("music:phase:") +
+                    (state.audio_music_want.rfind("music:", 0) == 0
+                         ? state.audio_music_want.substr(6)
+                         : state.audio_music_want)});
+  state.hud_rect_trace.push_back({"audio-mixer", {x, y, 132, 72}});
+}
+
 std::string loot_label(const ClientState& state, const std::string& id) {
   auto found = state.world.loot_names.find(id);
   if (found != state.world.loot_names.end()) return found->second;
@@ -6888,6 +6929,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         (state.audio_sink && state.audio_sink->muted()) ? "music:muted"
                                                         : state.audio_music_want.c_str();
     rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, music_hud});
+    if (state.audio_sink && state.audio_sink->muted() &&
+        state.audio_music_want != "music:none")
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, state.audio_music_want});
     rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "gpu-backend:software"});
     rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
                   verdigris::client::ui::focus_hud_label(client_pane_focus(state))});
@@ -7003,6 +7047,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       if (!show_art_chip)
         state.hud_rect_trace.push_back(
             {"art", {art_at.x, mute_y, art_size.w, art_size.h}});
+      paint_audio_mixer_hud(state, dc, art_at.x, mute_y + 28, rl);
+    } else if (state.audio_sink) {
+      paint_audio_mixer_hud(state, dc, art_at.x, art_at.y, rl);
     }
     if (state.link_lost) {
       const int lost_y = art_at.y + std::max(art_size.h, 20) +
@@ -10521,6 +10568,14 @@ int scenario_music_phase() {
                  "music-phase: device mute is an explicit HUD state");
   scenario_check(state.audio_music_want == "music:combat",
                  "music-phase: slay-wardens with living foes wants combat");
+  scenario_check(has("music:phase:combat") && has("audio:mixer"),
+                 "music-phase: live HUD paints Theme Combat, not a mute chip alone");
+  scenario_check(verdigris::client::music::leftover_theme_fails_review(
+                     false, "music:combat"),
+                 "music-phase: a leftover combat send cannot certify unload");
+  scenario_check(!verdigris::client::music::leftover_theme_fails_review(
+                     true, "music:combat"),
+                 "music-phase: a loaded combat theme is not treated as leftover");
   bool heard_combat = false;
   for (const auto& cue : state.audio_voiced)
     if (cue == "music:combat") heard_combat = true;
@@ -11165,9 +11220,13 @@ int scenario_audio_prefs() {
   scenario_check(loaded.muted && loaded.sfx_permille == 400 &&
                      loaded.music_permille == 700,
                  "audio-prefs: mute cannot reset unrelated category volumes");
+  scenario_check(verdigris::audio::mute_chip_alone_fails_prefs_review(false),
+                 "audio-prefs: a mute chip without the mixer cannot certify");
   ClientState state;
   scenario_begin(state);
   ensure_audio(state);
+  state.audio_prefs = loaded;
+  verdigris::audio::apply_audio_prefs(*state.audio_mixer, loaded);
   state.audio_mixer->set_bus_volume(verdigris::audio::Bus::Sfx, 0);
   verdigris::client::PresentationEvent hit{};
   hit.type = verdigris::client::PresentationEventType::DamageApplied;
@@ -11179,6 +11238,20 @@ int scenario_audio_prefs() {
                  "audio-prefs: a zero-volume SFX category remains silent");
   scenario_follow_camera(state);
   drain_audio(state);
+  scenario_present(state);
+  bool mixer = false;
+  bool sfx = false;
+  bool music = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "audio:mixer") mixer = true;
+    if (item.label == "audio:sfx:400") sfx = true;
+    if (item.label == "audio:music:700") music = true;
+  }
+  scenario_check(mixer && sfx && music,
+                 "audio-prefs: live mixer paints persisted SFX and Music volumes");
+  scenario_check(!verdigris::audio::mute_chip_alone_fails_prefs_review(mixer),
+                 "audio-prefs: the mixer panel, not a mute chip, certifies prefs");
   const std::string png = dir + "\\audio-prefs-960x600.png";
   scenario_check(reference_present(state, 960, 600, png),
                  "audio-prefs: muted HUD capture written");

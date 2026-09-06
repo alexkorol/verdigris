@@ -4,7 +4,7 @@
   "planning_id": "VG-SOUND-008",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "dbc8824f",
+  "base_sha": "ee908ec28339ea68acf521dd90f748d8de65fc59",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "music-phase",
@@ -16,6 +16,7 @@
   ],
   "assertions": [
     "slay-wardens with living foes schedules music:combat",
+    "live HUD paints Theme Combat",
     "carry-to-exit schedules music:recovery",
     "unloaded scene sets music:none and mutes the music bus",
     "muted unload cannot voice a leftover combat loop"
@@ -28,14 +29,14 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/music-phase-960x600.png",
-      "sha256": "d9d96dc8ce21df99612d4f01f649a28386e4b48d6ad18aab74a0d611e36611da",
+      "sha256": "e84770e55a8381617508dcd27cbf1f84284cb34d43b08f0ced0f0720c4132ad5",
       "produced_by": "native/build/verdigris_client.exe --scenario music-phase"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Device remains muted in the harness; proof is mixer mute + empty leftover drain, not a heard track.",
-    "Capture is the live expedition HUD while combat theme is wanted. STORY phase authority stays with Kimi."
+    "Device remains muted in the harness; proof is mixer Theme Combat plus mixer mute + empty leftover drain, not a heard track.",
+    "Capture hash diverges from audio-prefs because persisted volumes stay 100/100 here. STORY phase authority stays with Kimi."
   ]
 }

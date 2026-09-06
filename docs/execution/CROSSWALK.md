@@ -149,8 +149,9 @@ VG-SOUND-002: CC0 provenance table for combat cues including swing windup
 Evidence `docs/execution/evidence/VG-SOUND-002.json`.
 VG-SOUND-008: explore/combat/recovery music coalesced per drain; unload
 sets `music:none` and mutes the music bus so a leftover combat loop cannot
-voice. Scenario `music-phase`. Device mute still silences waveOut. Evidence
-`docs/execution/evidence/VG-SOUND-008.json`.
+voice. Live mixer paints Theme Combat / Recovery / None. A mute chip
+alone cannot certify the phase. Scenario `music-phase`. Device mute still
+silences waveOut. Evidence `docs/execution/evidence/VG-SOUND-008.json`.
 VG-GPU-001: isolated software backend (64×64 textured quad + shutdown).
 Not a Windows-only D3D proof. Scenario `gpu-sample`. Evidence
 `docs/execution/evidence/VG-GPU-001.json`.
@@ -192,7 +193,9 @@ Evidence `docs/execution/evidence/VG-SOUND-001.json`.
 VG-SOUND-005: one ambience cue per route; rapid reentry does not stack.
 Scenario `ambience-layer`. Evidence `docs/execution/evidence/VG-SOUND-005.json`.
 VG-SOUND-006: mute cannot reset SFX/music volumes; zero SFX stays silent.
-Scenario `audio-prefs`. Evidence `docs/execution/evidence/VG-SOUND-006.json`.
+Live mixer paints persisted SFX/Music numbers while muted. A mute chip
+alone cannot certify. Scenario `audio-prefs`. Evidence
+`docs/execution/evidence/VG-SOUND-006.json`.
 VG-UI-003: equip HUD is ack-only (`equip:ok` after ItemEquipped). Pending
 compare cannot gold-frame as equipped. Owner gear pane paints
 `Skill tree: no data yet`; PaneStat keeps `TREE no authoritative data`.

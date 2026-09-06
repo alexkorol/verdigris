@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — owner audio mixer (Cursor)
+
+- VG-SOUND-006: mute keeps SFX 40 / Music 70 on a skin mixer panel. A mute
+  chip without those numbers cannot certify.
+- VG-SOUND-008: the same panel paints Theme Combat while foes live;
+  unload still forces `music:none` and cannot leave a competing send.
+- Scenarios `audio-prefs` / `music-phase` PASS. Captures viewed and
+  hashes diverge. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — Sweep telegraph over village scenery (Cursor)
 
 - VG-GPU-005: Sweep paints a readable red disc on the village gate after

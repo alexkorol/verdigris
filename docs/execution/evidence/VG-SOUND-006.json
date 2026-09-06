@@ -4,7 +4,7 @@
   "planning_id": "VG-SOUND-006",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "643802b40f55bf6b273447b8874f3bdb82a6621f",
+  "base_sha": "ee908ec28339ea68acf521dd90f748d8de65fc59",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "audio-prefs",
@@ -17,10 +17,12 @@
   "assertions": [
     "category volumes persist",
     "mute cannot reset unrelated SFX/music volumes",
-    "a zero-volume SFX category remains silent"
+    "a zero-volume SFX category remains silent",
+    "live mixer paints persisted SFX and Music volumes",
+    "a mute chip without the mixer cannot certify"
   ],
   "negative_control": {
-    "name": "mute resetting SFX/music category volumes",
+    "name": "mute resetting SFX/music category volumes, or a mute chip without a mixer",
     "observed_result": "REJECTED"
   },
   "artifacts": [
@@ -33,13 +35,13 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/audio-prefs-960x600.png",
-      "sha256": "d9d96dc8ce21df99612d4f01f649a28386e4b48d6ad18aab74a0d611e36611da",
+      "sha256": "8440320f03b42134d4f4aa2abcc157865dc70dfe7ef22414d93094519732e223",
       "produced_by": "native/build/verdigris_client.exe --scenario audio-prefs"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Prefs file records muted=1 sfx=400 music=700. Device remains muted in the harness."
+    "Prefs file records muted=1 sfx=400 music=700. Mixer paints SFX 40 / Music 70 while muted. Device remains muted in the harness."
   ]
 }
