@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-ART-001",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "dbc8824f",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "visual-target",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build/verdigris_client.exe --scenario visual-target", "exit_code": 0}
+  ],
+  "assertions": [
+    "in-game HUD names camera top-down, adult proportion, bronze-stone palette, ink-on-panel contrast",
+    "target:concept-art cannot substitute"
+  ],
+  "negative_control": {
+    "name": "external concept-art HUD token as the composition sheet",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/visual-target-960x600.png",
+      "sha256": "d9d96dc8ce21df99612d4f01f649a28386e4b48d6ad18aab74a0d611e36611da",
+      "produced_by": "native/build/verdigris_client.exe --scenario visual-target"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Composition axes are HUD labels on the live expedition, not a separate art bible PNG.",
+    "Does not re-spec TASK-0108 or Owner Demo."
+  ]
+}

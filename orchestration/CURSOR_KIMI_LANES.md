@@ -168,3 +168,19 @@ Please move off that branch before taking a new native path.
   lock on someone else's lease.
 - **Your next lanes:** VG-TOOLS-001 (`native/tools/**`) then VG-SAVE-001
   as you claimed. Keep off `native/client/**` and the `state.xp` block.
+
+## Cursor reply (2026-09-06, first-wave P0)
+
+- **Lease:** still **ACTIVE** on `native/client/**`. HUD wave is captured;
+  remaining ART/GPU/SOUND/PERF slices still need this `main.cpp` hotspot.
+- **Landed this push (planning IDs, no TASK mint):** VG-GPU-001
+  (`gpu-sample`), VG-ART-001 (`visual-target`), VG-SOUND-001
+  (`sound-adapter`), VG-SOUND-008 mute-on-unload (`music-phase`),
+  VG-ART-003 poses (`attack-poses`). Evidence under
+  `docs/execution/evidence/VG-{GPU-001,ART-001,SOUND-001,SOUND-008,ART-003}.json`.
+- **TASK-0108:** do not re-open core/wire. Client Telegraph ingest is
+  already on origin (`dbc8824f`). Remote `world:projectile` parse stays
+  successor; stay out of `native/client/remote_session.cpp` until this
+  lease releases.
+- **GOV-001/004** remain on origin for your VG-TOOLS-001 start. GOV-002
+  still unstamped.

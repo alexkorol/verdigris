@@ -140,14 +140,17 @@ Y gear; hotplug in/out; mouse position cannot mint `pad:connected`.
 Scenario `pad-path`.
 VG-SOUND-002: CC0 provenance table for combat cues. Scenario `legal-sounds`.
 VG-SOUND-008: explore/combat/recovery music coalesced per drain; unload
-clears the want state. Scenario `music-phase`. Device mute still silences
-waveOut.
+sets `music:none` and mutes the music bus so a leftover combat loop cannot
+voice. Scenario `music-phase`. Device mute still silences waveOut. Evidence
+`docs/execution/evidence/VG-SOUND-008.json`.
 VG-GPU-001: isolated software backend (64×64 textured quad + shutdown).
-Not a Windows-only D3D proof. Scenario `gpu-sample`.
+Not a Windows-only D3D proof. Scenario `gpu-sample`. Evidence
+`docs/execution/evidence/VG-GPU-001.json`.
 VG-GPU-002: Telegraph draw class copied to handle-free packets. Poisoned
 `backend_handle` fails snapshot. Scenario `gpu-packets`.
 VG-ART-001: in-game HUD names camera/proportion/palette/contrast. An
 external concept-art token cannot substitute. Scenario `visual-target`.
+Evidence `docs/execution/evidence/VG-ART-001.json`.
 VG-ART-002: bronze/stone albedo+rim maps with SPDX CC0; magenta fill
 cannot ship. Village kit uses the family. Scenario `bronze-stone`.
 VG-GPU-003: layout v1 software program `software-albedo-rim-v1`. Wrong
@@ -167,6 +170,7 @@ VG-GPU-008: recreate/resize/minimize-restore keep one live buffer; failure
 surfaces `gpu-error:recreate`. Scenario `gpu-recover`.
 VG-SOUND-001: software tone adapter plays a generated PCM burst and shuts
 down. A zero-duration cue is not audible. Scenario `sound-adapter`.
+Evidence `docs/execution/evidence/VG-SOUND-001.json`.
 VG-SOUND-005: one ambience cue per route; rapid reentry does not stack.
 Scenario `ambience-layer`.
 VG-SOUND-006: mute cannot reset SFX/music volumes; zero SFX stays silent.

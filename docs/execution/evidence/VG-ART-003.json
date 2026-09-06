@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-ART-003",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "dbc8824f",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "attack-poses",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build/verdigris_client.exe --scenario attack-poses", "exit_code": 0}
+  ],
+  "assertions": [
+    "idle cannot wear the active strike pose",
+    "windup, active, recovery, and cancel are distinct HUD pose labels",
+    "windup still draws the swing arc"
+  ],
+  "negative_control": {
+    "name": "frame count or idle pose as the complete attack family",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/attack-poses-960x600.png",
+      "sha256": "b6837cf83a0a7b419e025f3d0dd216311fa2b158a2c3b8682f4b120fd6d0ea78",
+      "produced_by": "native/build/verdigris_client.exe --scenario attack-poses"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Paints melee poses on this lease. TASK-0173 animation models stay Kimi. Does not re-spec TASK-0108."
+  ]
+}

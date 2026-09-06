@@ -1,5 +1,22 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — first-wave P0 + mute-on-unload (Cursor lease)
+
+- VG-GPU-001: isolated software 64×64 bronze/stone quad (`gpu-sample`).
+  Capture `docs/execution/captures/art-wave/gpu-sample-quad.bmp`. Unknown
+  backend cannot pass. Not a D3D presenter.
+- VG-ART-001: in-game HUD names camera/proportion/palette/contrast
+  (`visual-target`). External concept-art token cannot substitute.
+- VG-SOUND-001: software 440 Hz adapter (`sound-adapter`). Zero-duration
+  cue cannot pass as audible.
+- VG-SOUND-008: `theme_for` + music-bus mute on `music:none` so unload
+  cannot voice a leftover combat loop. Scenario `music-phase`. Capture
+  `docs/execution/captures/art-wave/music-phase-960x600.png`. Device stays
+  muted in the harness; STORY phase authority stays Kimi.
+- VG-ART-003: idle cannot wear the active strike pose (`attack-poses`).
+  Capture `docs/execution/captures/art-wave/attack-poses-960x600.png`.
+  Does not take TASK-0173 models or re-spec TASK-0108.
+
 ## 2026-09-06 — TASK-0108 local Telegraph ingest (Cursor lease)
 
 - Client stage of Kimi's ranged `world:projectile` windup: JS payload keys

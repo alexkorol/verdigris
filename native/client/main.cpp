@@ -63,6 +63,7 @@ namespace phase_a = verdigris::client::phase_a;
 #include "freeze-three-slice-build-fixtures.hpp"
 #include "publish-telegraph-timing-and-geometry.hpp"
 #include "ingest-ranged-projectile-warning.hpp"
+#include "add-one-music-state-transition.hpp"
 #include "preserve-headless-presentation-contracts.hpp"
 #include "rule-on-death-and-disconnect.hpp"
 #include "ui/complete-one-controller-interaction-path.hpp"
@@ -687,16 +688,9 @@ void refresh_ambience(ClientState& state) {
 
 void refresh_music(ClientState& state) {
   ensure_audio(state);
-  const char* want = "music:explore";
-  if (!state.simulation && !state.session)
-    want = "music:none";
-  else if (state.world.expedition_phase ==
-           ExpeditionPhaseView::ExtractCarriedValue)
-    want = "music:recovery";
-  else if (state.world.expedition_phase == ExpeditionPhaseView::SlayWardens &&
-           !state.world.monsters.empty())
-    want = "music:combat";
-  state.audio_music_want = want;
+  const bool loaded = static_cast<bool>(state.simulation) || static_cast<bool>(state.session);
+  state.audio_music_want = verdigris::client::music::theme_for(
+      state.world.expedition_phase, loaded, !state.world.monsters.empty());
 }
 
 void drain_audio(ClientState& state) {
@@ -704,7 +698,9 @@ void drain_audio(ClientState& state) {
   refresh_music(state);
   if (state.audio_music_want != state.audio_music_sent) {
     state.audio_music_sent = state.audio_music_want;
-    if (state.audio_music_want != "music:none") {
+    const bool mute = verdigris::client::music::mute_music_bus(state.audio_music_want.c_str());
+    state.audio_mixer->set_bus_muted(verdigris::audio::Bus::Music, mute);
+    if (!mute) {
       verdigris::audio::CueSpec theme;
       theme.cue_id = state.audio_music_want;
       theme.bus = verdigris::audio::Bus::Music;
@@ -9548,6 +9544,8 @@ int scenario_hitch_warmup() {
   return scenario_failures;
 }
 
+std::string art_wave_capture_dir();
+
 int scenario_attack_poses() {
   ClientState state;
   scenario_begin(state);
@@ -9599,6 +9597,14 @@ int scenario_attack_poses() {
   scenario_present(state);
   scenario_check(has_pose("attack-pose:cancel"),
                  "attack-poses: dash dust during a swing is a cancel pose");
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "attack-poses: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\attack-poses-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "attack-poses: windup/active/cancel family capture written");
   return scenario_failures;
 }
 
@@ -9949,6 +9955,27 @@ int scenario_music_phase() {
                  "music-phase: unloaded scene cannot leave a competing theme");
   scenario_check(state.audio_music_sent == "music:none",
                  "music-phase: paused/unloaded does not keep an active music send");
+  scenario_check(state.audio_mixer->bus_muted(verdigris::audio::Bus::Music),
+                 "music-phase: unload mutes the music bus");
+  bool leftover_music = false;
+  for (const auto& cue : state.audio_mixer->drain_scheduled()) {
+    if (cue.cue_id.rfind("music:", 0) == 0) leftover_music = true;
+  }
+  scenario_check(!leftover_music && state.audio_mixer->pending().empty(),
+                 "music-phase: muted unload cannot voice a leftover combat loop");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "music-phase: capture root rejected before any write");
+    return scenario_failures;
+  }
+  ClientState capture;
+  scenario_begin(capture);
+  scenario_follow_camera(capture);
+  drain_audio(capture);
+  const std::string png = dir + "\\music-phase-960x600.png";
+  scenario_check(reference_present(capture, 960, 600, png),
+                 "music-phase: combat-theme capture written");
   return scenario_failures;
 }
 
@@ -11261,7 +11288,6 @@ int scenario_ranged_warning() {
   const std::string png = dir + "\\ranged-warning-960x600.png";
   scenario_check(reference_present(state, 960, 600, png),
                  "ranged-warning: capture written");
-  (void)hud_chip;
   return scenario_failures;
 }
 
