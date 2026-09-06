@@ -1,7 +1,7 @@
 floor_w=1737
 floor_h=1554
 floor_bitmaps=1
-pens=14
-brushes=6
+pens=17
+brushes=8
 fx=128
-paint_ms=12.401
+paint_ms=22.782

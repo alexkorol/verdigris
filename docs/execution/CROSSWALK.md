@@ -128,10 +128,14 @@ prints named display, CPU count, and floor/world/hud/upload fields.
 Evidence `docs/execution/evidence/VG-PERF-001.json`. Bound stays 40 ms.
 VG-PERF-005: loot nameplates cap at 12 nearest; Drop sprites stay.
 VG-PERF-003: effect/telegraph GDI pens and brushes are reused; scenario
-`effect-batch` keeps Impact/Swing/Telegraph ops. VG-PERF-004: one floor
-bitmap, GDI caps, effect cap 128 across resize cycles (`resource-envelope`).
+`effect-batch` keeps Impact/Swing/Telegraph ops. Owner strip paints Reuse
+pens / Keep warning. Drop FX cannot certify.
+VG-PERF-004: one floor bitmap, GDI caps, effect cap 128 across resize
+cycles (`resource-envelope`). Owner strip paints Cap 128 / One floor.
+Grow FX cannot certify. core.cpp stays Kimi.
 VG-PERF-006: `warm_combat_glyphs` before first strike; scenario
 `hitch-warmup` prints cold/warm/prepared and fails if cold is omitted.
+Owner strip paints Warm glyphs / Cold trace. Hide cold cannot certify.
 VG-UI-007: tooltip titles use ink-on-panel contrast plus a triangular mark.
 VG-ART-004: tin village kit (all five scenery kinds); solid pieces emit
 `collision-proxy:*`; dressing gate does not. Owner strip paints Village

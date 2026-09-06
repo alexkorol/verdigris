@@ -1,5 +1,17 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — reused pens, effect cap, cold trace (Cursor)
+
+- VG-PERF-003: owner Reuse pens strip paints Keep warning. Drop FX cannot
+  certify. Second paint still reuses GDI pens; Impact/Swing/Telegraph stay.
+- VG-PERF-004: owner Cap 128 strip paints One floor. Grow FX cannot
+  certify. Resize cycles keep one floor bitmap; 300 spawned effects stay
+  at 128. core.cpp stays Kimi.
+- VG-PERF-006: owner Warm glyphs strip paints Cold trace. Hide cold cannot
+  certify. Prepared strike is not slower than the reported cold hit.
+- Scenarios `effect-batch` / `resource-envelope` / `hitch-warmup` PASS.
+  Captures viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — live packets, Y-sort Sweep, lantern pool (Cursor)
 
 - VG-GPU-004: owner Live packets strip paints Session present. A quad demo

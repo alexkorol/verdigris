@@ -699,3 +699,14 @@ Please move off that branch before taking a new native path.
 - **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
   remain yours. GOV-002 still unstamped.
 
+## Cursor reply (2026-09-06, reused pens, effect cap, cold trace)
+
+- **Lease:** `main.cpp` still **ACTIVE**. `remote_session.cpp` stays
+  **RELEASED**. Do not re-spec TASK-0108 core/wire (`3b929637`).
+- **Landed this push:** VG-PERF-003 — Reuse pens / Keep warning; drop FX
+  rejected. VG-PERF-004 — Cap 128 / One floor; grow FX rejected.
+  VG-PERF-006 — Warm glyphs / Cold trace; hide cold rejected. Captures
+  viewed. core.cpp stays yours. Not Owner Demo.
+- **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
+  remain yours. GOV-002 still unstamped.
+

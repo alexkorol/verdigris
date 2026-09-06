@@ -493,6 +493,9 @@ struct ClientState {
   bool gpu_reference_review_strip = false;
   bool grounding_review_strip = false;
   bool material_light_review_strip = false;
+  bool effect_batch_review_strip = false;
+  bool resource_envelope_review_strip = false;
+  bool hitch_warmup_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -2210,6 +2213,13 @@ void warm_combat_glyphs() {
   DeleteObject(bitmap);
   DeleteDC(dc);
 }
+
+inline const char* owner_reuse_pens_label() { return "Reuse pens"; }
+inline const char* owner_keep_warning_label() { return "Keep warning"; }
+inline const char* owner_cap_128_label() { return "Cap 128"; }
+inline const char* owner_one_floor_label() { return "One floor"; }
+inline const char* owner_warm_glyphs_label() { return "Warm glyphs"; }
+inline const char* owner_cold_trace_label() { return "Cold trace"; }
 
 void seed_combat_hitch_fx(ClientState& state) {
   const verdigris::Vec2 origin = state.world.player.position;
@@ -7092,6 +7102,123 @@ void paint_material_light_review_strip(ClientState& state, HDC dc, const RECT& b
   SelectObject(dc, old_font);
 }
 
+void paint_effect_batch_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                     render::List& rl) {
+  if (!state.effect_batch_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "batch-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = owner_reuse_pens_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = owner_keep_warning_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "drop FX";
+  TextOutA(dc, rx - 24 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "perf:reuse-pens"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "perf:keep-warning"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "perf-strip:drop-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_resource_envelope_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                          render::List& rl) {
+  if (!state.resource_envelope_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "envelope-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = owner_cap_128_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = owner_one_floor_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "grow FX";
+  TextOutA(dc, rx - 24 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "perf:cap-128"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "perf:one-floor"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "perf-strip:grow-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_hitch_warmup_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                     render::List& rl) {
+  if (!state.hitch_warmup_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "hitch-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = owner_warm_glyphs_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = owner_cold_trace_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "hide cold";
+  TextOutA(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "perf:warm-glyphs"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "perf:cold-trace"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "perf-strip:hide-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -8133,6 +8260,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_gpu_reference_review_strip(state, dc, bounds, rl);
   paint_grounding_review_strip(state, dc, bounds, rl);
   paint_material_light_review_strip(state, dc, bounds, rl);
+  paint_effect_batch_review_strip(state, dc, bounds, rl);
+  paint_resource_envelope_review_strip(state, dc, bounds, rl);
+  paint_hitch_warmup_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -11038,7 +11168,7 @@ int scenario_effect_batch() {
   }
   const std::string report = dir + "\\effect-batch-report.txt";
   FILE* out = nullptr;
-  fopen_s(&out, report.c_str(), "w");
+  fopen_s(&out, report.c_str(), "wb");
   scenario_check(out != nullptr, "effect-batch: report opened");
   if (out) {
     std::fprintf(out, "pen_hits=%d\npen_misses=%d\nimpacts=%d\nswings=%d\n",
@@ -11046,8 +11176,21 @@ int scenario_effect_batch() {
     std::fclose(out);
   }
   const std::string png = dir + "\\effect-batch-960x600.png";
+  state.effect_batch_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "effect-batch: reused-pen capture written");
+  bool reuse = false;
+  bool keep = false;
+  bool drop = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "perf:reuse-pens") reuse = true;
+    if (item.label == "perf:keep-warning") keep = true;
+    if (item.label == "perf-strip:drop-rejected") drop = true;
+  }
+  scenario_check(reuse && keep,
+                 "effect-batch: live HUD names Reuse pens and Keep warning");
+  scenario_check(drop, "effect-batch: live HUD rejects drop FX");
   return scenario_failures;
 }
 
@@ -11098,7 +11241,7 @@ int scenario_hitch_warmup() {
   }
   const std::string report = dir + "\\hitch-warmup-report.txt";
   FILE* out = nullptr;
-  fopen_s(&out, report.c_str(), "w");
+  fopen_s(&out, report.c_str(), "wb");
   scenario_check(out != nullptr, "hitch-warmup: report opened");
   if (out) {
     std::fprintf(out, "cold_ms=%.3f\nwarm_ms=%.3f\nprepared_ms=%.3f\n", cold_ms,
@@ -11106,8 +11249,21 @@ int scenario_hitch_warmup() {
     std::fclose(out);
   }
   const std::string png = dir + "\\hitch-warmup-960x600.png";
+  prepared.hitch_warmup_review_strip = true;
   scenario_check(reference_present(prepared, 960, 600, png),
                  "hitch-warmup: prepared-strike capture written");
+  bool warm = false;
+  bool cold_hud = false;
+  bool hide = false;
+  for (const auto& item : prepared.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "perf:warm-glyphs") warm = true;
+    if (item.label == "perf:cold-trace") cold_hud = true;
+    if (item.label == "perf-strip:hide-rejected") hide = true;
+  }
+  scenario_check(warm && cold_hud,
+                 "hitch-warmup: live HUD names Warm glyphs and Cold trace");
+  scenario_check(hide, "hitch-warmup: live HUD rejects hide cold");
   return scenario_failures;
 }
 
@@ -14568,7 +14724,7 @@ int scenario_resource_envelope() {
   }
   const std::string report = dir + "\\resource-envelope-report.txt";
   FILE* out = nullptr;
-  fopen_s(&out, report.c_str(), "w");
+  fopen_s(&out, report.c_str(), "wb");
   scenario_check(out != nullptr, "resource-envelope: report opened");
   if (out) {
     std::fprintf(out,
@@ -14580,8 +14736,21 @@ int scenario_resource_envelope() {
     std::fclose(out);
   }
   const std::string png = dir + "\\resource-envelope-960x600.png";
+  state.resource_envelope_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "resource-envelope: capped-effect capture written");
+  bool cap = false;
+  bool floor = false;
+  bool grow = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "perf:cap-128") cap = true;
+    if (item.label == "perf:one-floor") floor = true;
+    if (item.label == "perf-strip:grow-rejected") grow = true;
+  }
+  scenario_check(cap && floor,
+                 "resource-envelope: live HUD names Cap 128 and One floor");
+  scenario_check(grow, "resource-envelope: live HUD rejects grow FX");
   return scenario_failures;
 }
 

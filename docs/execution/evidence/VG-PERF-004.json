@@ -4,20 +4,22 @@
   "planning_id": "VG-PERF-004",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "643802b40f55bf6b273447b8874f3bdb82a6621f",
+  "base_sha": "31bac5649f3199e8a9440c3f82d6824748c9410c",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "resource-envelope",
   "platform": "win32-x64",
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario resource-envelope", "exit_code": 0}
   ],
   "assertions": [
     "resize cycles keep a single floor bitmap",
     "GDI pens/brushes stay inside the 128 cap",
     "300 spawned effects stay at the 128 cap",
-    "a cheap frame does not excuse a growing effect list"
+    "a cheap frame does not excuse a growing effect list",
+    "live HUD names Cap 128 and One floor"
   ],
   "negative_control": {
     "name": "stable FPS excusing steadily growing GPU/CPU resources",
@@ -27,13 +29,13 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/resource-envelope-960x600.png",
-      "sha256": "8806485e4f7b747fb713e977a4335a2ad774c84e06d33a9e3f95fe98dfe287ac",
+      "sha256": "af093af9170e0b9866163b0c365bff9a720b0f97bde764dae0b98dd36d9f37fa",
       "produced_by": "native/build/verdigris_client.exe --scenario resource-envelope"
     },
     {
       "kind": "log",
       "path": "docs/execution/captures/art-wave/resource-envelope-report.txt",
-      "sha256": "b668f0d256920e64fa537275d320454d0c73dddace5d794ee22d537e3dfb1099",
+      "sha256": "92fdc45ffcd9a523931e085139e9ef9ed758490b99c14c93b9a62c68a7537d4f",
       "produced_by": "native/build/verdigris_client.exe --scenario resource-envelope"
     }
   ],
