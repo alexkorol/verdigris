@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-005",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "3f865ce9f28a5c5a7c34a2d5db32f18d56264c6f",
+  "base_sha": "880c9f74d751859e57d4655e86bff01b1b032343",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "held-item",
@@ -28,7 +28,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/held-item-960x600.png",
-      "sha256": "796f9a40b638847e6e65ac58aeddd22e3aba6e169416dc6b03a787d4b8aae176",
+      "sha256": "6e5fdfc9f840a0ee74a100dd7a422abe90ba5726b6fcdcc0597569554e5e2c02",
       "produced_by": "native/build/verdigris_client.exe --scenario held-item"
     }
   ],

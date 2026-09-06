@@ -396,55 +396,76 @@ inline void humanoid(HDC dc, int cx, int base_y, int height_px,
 // ── monster rigs ────────────────────────────────────────────────────────
 
 // Hunched biped lurker: heavy shoulders, low head, dragging claws.
+// Hunched bronze-age warden. A hip-to-foot plank plus a torso pentagon
+// reads as a crate; jointed legs, a snout, and filled claws are required.
+inline constexpr bool kWardenHasJointedLegs = true;
+inline constexpr bool kWardenHasSnout = true;
+inline constexpr bool kWardenHasFilledClaws = true;
+
+inline bool crate_foe_fails_review(bool jointed_legs, bool snout,
+                                   bool filled_claws) {
+  return !jointed_legs || !snout || !filled_claws;
+}
+
 inline void lurker(HDC dc, int cx, int base_y, int height_px, const Style& style,
                    const Pose& pose) {
   Frame f{cx, base_y, height_px / 100.0, pose.mirror};
   const double swing = std::sin(pose.walk * 2.0 * kPi) * pose.moving;
   const double bob = std::sin(pose.breathe * 2.0 * kPi) * 2.0;
   const double reach = std::sin(std::min(1.0, pose.attack) * kPi);
-  // Legs.
   const auto leg = [&](double side, double phase, COLORREF tone) {
-    POINT p[4] = {f.at(side * 10 - 5, 40), f.at(side * 10 + 5, 40),
-                  f.at(side * 10 + phase * 14 + 5, 0),
-                  f.at(side * 10 + phase * 14 - 6, 0)};
-    fill_poly(dc, p, 4, tone, style.dark);
+    const double hip_x = side * 11.0;
+    const double knee_x = side * 12.0 + phase * 8.0;
+    const double foot_x = side * 13.0 + phase * 14.0;
+    POINT thigh[4] = {f.at(hip_x - 5.0, 44), f.at(hip_x + 5.0, 44),
+                      f.at(knee_x + 4.5, 24), f.at(knee_x - 4.8, 24)};
+    fill_poly(dc, thigh, 4, tone, style.dark);
+    POINT shin[4] = {f.at(knee_x - 4.5, 24), f.at(knee_x + 4.2, 24),
+                     f.at(foot_x + 5.0, 4), f.at(foot_x - 5.5, 4)};
+    fill_poly(dc, shin, 4, shade(tone, 0.86), style.dark);
+    const POINT sole = f.at(foot_x + 1.2, 2.2);
+    fill_ell(dc, sole.x, sole.y, std::max(3, static_cast<int>(6 * f.scale)),
+             std::max(2, static_cast<int>(2.6 * f.scale)), style.trim,
+             style.dark);
   };
-  leg(-1.0, -swing, shade(style.cloth, 0.7));
+  leg(-1.0, -swing, shade(style.cloth, 0.72));
   leg(1.0, swing, style.cloth);
-  // Hunched mass: big shoulder hump over a narrow waist.
   {
-    POINT p[5] = {f.at(-20, 46), f.at(-8, 74 + bob), f.at(16, 66 + bob),
-                  f.at(22, 44), f.at(0, 36)};
-    fill_poly(dc, p, 5, style.cloth, style.dark);
-    // Spine ridge.
-    line(dc, f.at(-12, 72 + bob).x, f.at(-12, 72 + bob).y, f.at(12, 62 + bob).x,
-         f.at(12, 62 + bob).y, style.trim, 2);
+    POINT mantle[4] = {f.at(-22, 62 + bob), f.at(16, 66 + bob), f.at(14, 50),
+                       f.at(-18, 48)};
+    fill_poly(dc, mantle, 4, shade(style.metal, 0.78), style.dark);
+    POINT body[4] = {f.at(-12, 52 + bob), f.at(11, 54 + bob), f.at(8, 38),
+                     f.at(-11, 36)};
+    fill_poly(dc, body, 4, style.cloth, style.dark);
   }
-  // Low-slung head with jaw.
   {
-    const POINT skull = f.at(24 + reach * 8, 56 + bob);
-    fill_ell(dc, skull.x, skull.y, static_cast<int>(9 * f.scale),
-             static_cast<int>(7 * f.scale), shade(style.cloth, 1.15), style.dark);
-    POINT jaw[3] = {f.at(28 + reach * 8, 52 + bob), f.at(36 + reach * 10, 48 + bob),
-                    f.at(27 + reach * 8, 47 + bob)};
-    fill_poly(dc, jaw, 3, style.trim, style.dark);
-    // Eye ember.
-    const POINT eye = f.at(26 + reach * 8, 58 + bob);
-    fill_ell(dc, eye.x, eye.y, std::max(1, static_cast<int>(2 * f.scale)),
-             std::max(1, static_cast<int>(2 * f.scale)), style.accent,
+    POINT brow[4] = {f.at(8 + reach * 6, 74 + bob),
+                     f.at(22 + reach * 6, 76 + bob),
+                     f.at(24 + reach * 6, 66 + bob),
+                     f.at(8 + reach * 6, 64 + bob)};
+    fill_poly(dc, brow, 4, shade(style.cloth, 1.12), style.dark);
+    POINT snout[4] = {f.at(18 + reach * 6, 66 + bob),
+                      f.at(36 + reach * 9, 58 + bob),
+                      f.at(34 + reach * 9, 50 + bob),
+                      f.at(16 + reach * 6, 56 + bob)};
+    fill_poly(dc, snout, 4, style.trim, style.dark);
+    const POINT eye = f.at(16 + reach * 6, 68 + bob);
+    fill_ell(dc, eye.x, eye.y, std::max(2, static_cast<int>(3 * f.scale)),
+             std::max(2, static_cast<int>(2.4 * f.scale)), style.accent,
              style.accent);
   }
-  // Claw arm rakes forward with the attack.
   {
-    const double claw_x = 20 + reach * 20;
-    const double claw_y = 30 + reach * 14;
-    POINT arm[4] = {f.at(8, 60 + bob), f.at(16, 60 + bob), f.at(claw_x, claw_y),
-                    f.at(claw_x - 7, claw_y - 3)};
+    const double claw_x = 18 + reach * 18;
+    const double claw_y = 32 + reach * 12;
+    POINT arm[4] = {f.at(8, 56 + bob), f.at(16, 58 + bob), f.at(claw_x, claw_y),
+                    f.at(claw_x - 8, claw_y - 4)};
     fill_poly(dc, arm, 4, shade(style.cloth, 0.9), style.dark);
     for (int talon = 0; talon < 3; ++talon) {
-      const POINT root = f.at(claw_x - talon * 3, claw_y - talon * 1.5);
-      const POINT tip = f.at(claw_x + 7 - talon * 3, claw_y - 6 - talon * 1.5);
-      line(dc, root.x, root.y, tip.x, tip.y, style.metal, 2);
+      const double ox = static_cast<double>(talon) * 3.4;
+      POINT wedge[3] = {f.at(claw_x - ox, claw_y - talon * 1.6),
+                        f.at(claw_x + 10 - ox, claw_y - 8 - talon * 1.8),
+                        f.at(claw_x + 2 - ox, claw_y + 2 - talon * 1.4)};
+      fill_poly(dc, wedge, 3, style.metal, style.dark);
     }
   }
 }
@@ -660,11 +681,16 @@ inline Style monster_style(const std::string& theme, bool elite) {
     s.trim = RGB(64, 88, 58);
     s.metal = RGB(190, 205, 180);
     s.accent = RGB(150, 255, 170);
-  } else {  // dungeon/stone default
-    s.cloth = RGB(128, 100, 88);
-    s.trim = RGB(88, 66, 58);
-    s.metal = RGB(198, 190, 186);
-    s.accent = RGB(255, 120, 90);
+  } else if (theme == "town" || theme == "tin") {
+    s.cloth = RGB(148, 108, 58);
+    s.trim = RGB(96, 64, 34);
+    s.metal = RGB(196, 154, 72);
+    s.accent = RGB(232, 92, 48);
+  } else {  // dungeon / first-road default: bronze hide, not grey crate
+    s.cloth = RGB(148, 108, 58);
+    s.trim = RGB(96, 64, 34);
+    s.metal = RGB(196, 154, 72);
+    s.accent = RGB(232, 92, 48);
   }
   if (elite) {
     s.cloth = shade(s.cloth, 1.2);

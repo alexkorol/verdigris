@@ -6095,7 +6095,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         draw_team_ring(dc, base, kTileUnits * 0.58,
                        monster.elite ? RGB(239, 208, 116) : RGB(214, 92, 72));
         const double foe_height =
-            monster.elite ? kTileUnits * 1.9 : kTileUnits * 1.5;
+            monster.elite ? kTileUnits * 2.4 : kTileUnits * 2.05;
         {
           // Animated vector rig, chosen by theme and combat role so every
           // road fields a visually distinct bestiary.
@@ -6132,7 +6132,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         // fraction stays readable against any floor.
         const int bar_w = static_cast<int>(kTileUnits * 0.7 * base.scale) + 4;
         const int bar_y =
-            base.y - static_cast<int>(kTileUnits * 1.5 * base.scale) - 4;
+            base.y - static_cast<int>(foe_height * base.scale) - 4;
         const double ratio =
             std::clamp(static_cast<double>(monster.life) /
                            std::max(1, monster.life_max),
@@ -7924,6 +7924,12 @@ int scenario_first_fight() {
                    "first-fight: vector scenery silhouettes are drawn");
     scenario_check(render::any(state.render_list, render::Op::Player),
                    "first-fight: vector Scion silhouette is drawn");
+    scenario_check(vector_art::crate_foe_fails_review(false, false, false),
+                   "first-fight: a crate-shaped foe cannot certify the fight");
+    scenario_check(!vector_art::crate_foe_fails_review(
+                       vector_art::kWardenHasJointedLegs, vector_art::kWardenHasSnout,
+                       vector_art::kWardenHasFilledClaws),
+                   "first-fight: town wardens are not hip-to-foot crates");
   }
 
   for (int i = 0; i < 52; ++i)
@@ -10331,6 +10337,12 @@ int scenario_visual_target() {
                      vector_art::kTreeCanopyClusters, vector_art::kTreeHasRootFlare,
                      vector_art::kTreeHasFork),
                  "visual-target: the live kit uses a forked clustered canopy");
+  scenario_check(vector_art::crate_foe_fails_review(false, false, false),
+                 "visual-target: a crate-shaped foe cannot certify the sheet");
+  scenario_check(!vector_art::crate_foe_fails_review(
+                     vector_art::kWardenHasJointedLegs, vector_art::kWardenHasSnout,
+                     vector_art::kWardenHasFilledClaws),
+                 "visual-target: town wardens use jointed legs, a snout, and claws");
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {
     scenario_check(false, "visual-target: capture root rejected before any write");

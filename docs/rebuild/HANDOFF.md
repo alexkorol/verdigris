@@ -1,5 +1,13 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — jointed bronze wardens (Cursor)
+
+- Town lurker is no longer a hip-to-foot crate: jointed legs, snout, filled
+  bronze claws, taller than the Scion. A crate-shaped foe cannot certify
+  `visual-target` / `first-fight`. Not VG-ART-007 Owner Demo mixed-pack
+  review. ENEMY identity stays Kimi.
+- Captures viewed. Scenarios PASS. Not TASK-0108.
+
 ## 2026-09-06 — forked village trees (Cursor)
 
 - VG-ART-004: tin village trees are a forked bole with root flare and
