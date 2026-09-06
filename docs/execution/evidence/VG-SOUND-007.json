@@ -4,19 +4,21 @@
   "planning_id": "VG-SOUND-007",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "643802b40f55bf6b273447b8874f3bdb82a6621f",
+  "base_sha": "ecdef0ebabe86807ca4734ea4335b5abd4f27576",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "dense-mix",
   "platform": "win32-x64",
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario dense-mix", "exit_code": 0}
   ],
   "assertions": [
     "an isolated tone preview cannot prove the combat mix",
     "mixed pack records hit, kill, and a danger cue",
-    "attribution names encounter voices, not a preview"
+    "attribution names encounter voices, not a preview",
+    "live HUD names Encounter mix and Hit + warning"
   ],
   "negative_control": {
     "name": "isolated tone preview as the combat mix",
@@ -24,21 +26,21 @@
   },
   "artifacts": [
     {
-      "kind": "log",
-      "path": "docs/execution/captures/art-wave/dense-mix-score.txt",
-      "sha256": "49d6fd4f1e8f62f143db55fec7d3a30a1866e0f8fd417f9d50b07c1da26e03d7",
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/dense-mix-960x600.png",
+      "sha256": "f7cf26c2d7da2b566e92975ec8f59b50db68617a9dc6ab3bd5e900bf9d404416",
       "produced_by": "native/build/verdigris_client.exe --scenario dense-mix"
     },
     {
-      "kind": "screenshot",
-      "path": "docs/execution/captures/art-wave/dense-mix-960x600.png",
-      "sha256": "f8e1af3c155055a61613b9bc2140b15ea064be8d67a520d02ab0eeeda81e103e",
+      "kind": "log",
+      "path": "docs/execution/captures/art-wave/dense-mix-score.txt",
+      "sha256": "49d6fd4f1e8f62f143db55fec7d3a30a1866e0f8fd417f9d50b07c1da26e03d7",
       "produced_by": "native/build/verdigris_client.exe --scenario dense-mix"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Mixer tape score, not a heard WASAPI mix. Capture shows the mixed-pack fight."
+    "Mixer tape score, not a heard WASAPI mix. Capture shows the mixed-pack fight plus the owner strip."
   ]
 }

@@ -476,6 +476,7 @@ struct ClientState {
   bool recover_review_strip = false;
   bool legal_sounds_review_strip = false;
   bool loot_filter_review_strip = false;
+  bool dense_mix_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -6424,6 +6425,45 @@ void paint_loot_filter_review_strip(ClientState& state, HDC dc, const RECT& boun
   SelectObject(dc, old_font);
 }
 
+void paint_dense_mix_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                  render::List& rl) {
+  if (!state.dense_mix_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "dense-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::audio::owner_mix_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* range = verdigris::audio::owner_mix_range_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, range, static_cast<int>(strlen(range)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "preview";
+  TextOutA(dc, rx - 18 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "mix:encounter"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "mix:hit-warning"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "dense-strip:preview-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -7449,6 +7489,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_recover_review_strip(state, dc, bounds, rl);
   paint_legal_sounds_review_strip(state, dc, bounds, rl);
   paint_loot_filter_review_strip(state, dc, bounds, rl);
+  paint_dense_mix_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -12053,8 +12094,9 @@ int scenario_dense_mix() {
   std::printf("    dense-mix: cues %d unique %d peak %d floor %d ids %s\n",
               score.cues, score.unique_ids, score.peak_gain, score.floor_gain,
               score.attribution.c_str());
-  scenario_check(verdigris::audio::mix_is_encounter(score) && score.has_warning,
-                 "dense-mix: mixed pack records hit, range, and a danger cue");
+  scenario_check(verdigris::audio::mix_is_encounter(score) && score.has_warning &&
+                     score.has_kill,
+                 "dense-mix: mixed pack records hit, kill, and a danger cue");
   scenario_check(!score.attribution.empty() &&
                      score.attribution.find("preview") == std::string::npos,
                  "dense-mix: cue attribution names encounter voices, not a preview");
@@ -12065,9 +12107,23 @@ int scenario_dense_mix() {
   }
   scenario_check(verdigris::audio::write_mix_score(dir + "\\dense-mix-score.txt", score),
                  "dense-mix: review record written");
+  state.dense_mix_review_strip = true;
   const std::string png = dir + "\\dense-mix-960x600.png";
   scenario_check(reference_present(state, 960, 600, png),
                  "dense-mix: mixed-pack capture written");
+  bool mix_hud = false;
+  bool range_hud = false;
+  bool preview_hud = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "mix:encounter") mix_hud = true;
+    if (item.label == "mix:hit-warning") range_hud = true;
+    if (item.label == "dense-strip:preview-rejected") preview_hud = true;
+  }
+  scenario_check(mix_hud && range_hud,
+                 "dense-mix: live HUD names Encounter mix and Hit + warning");
+  scenario_check(preview_hud,
+                 "dense-mix: live HUD rejects isolated preview as the mix");
   return scenario_failures;
 }
 

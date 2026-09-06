@@ -70,6 +70,9 @@ inline bool mix_is_encounter(const MixScore& score) {
          !score.attribution.empty();
 }
 
+inline const char* owner_mix_label() { return "Encounter mix"; }
+inline const char* owner_mix_range_label() { return "Hit + warning"; }
+
 inline bool write_mix_score(const std::string& path, const MixScore& score) {
   if (path.empty()) return false;
   FILE* file = nullptr;

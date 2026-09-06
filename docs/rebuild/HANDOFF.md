@@ -1,5 +1,13 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — encounter mix on the packed fight (Cursor)
+
+- VG-SOUND-007: owner Encounter mix strip paints Hit + warning. An
+  isolated preview cannot certify. Mixer tape records hit, kill, and
+  scion-lost with peak/floor range. Capture is the packed tin-village
+  fight, not a silent schedule.
+- Scenario `dense-mix` PASS. Capture viewed. Not WASAPI. Not Owner Demo.
+
 ## 2026-09-06 — hide trophies without mutating ground (Cursor)
 
 - VG-ITEM-006: owner Loot filter strip paints Hide trophies. Mutate
@@ -280,7 +288,8 @@
 ## 2026-09-06 — remaining Cursor-lease SOUND/MOVE/WORLD/ITEM/PERF (Cursor)
 
 - VG-SOUND-006: mute cannot reset SFX/music volumes (`audio-prefs`).
-- VG-SOUND-007: mixed-pack mixer tape; isolated preview fails (`dense-mix`).
+- VG-SOUND-007: mixed-pack mixer tape; owner Encounter mix / Hit + warning;
+  isolated preview fails (`dense-mix`).
 - VG-MOVE-005: focused panes swallow WASD/combat (`pane-focus`).
 - VG-MOVE-006: isolated `bindings.v1`; Documents cannot be the test path
   (`remap-binds`).
@@ -548,8 +557,9 @@ owner-stamped. Dual program heads: this branch vs
 ## 2026-09-06 — dense mix + pane stack (Cursor, uncommitted)
 
 - VG-SOUND-007: score the mixer tape from a mixed pack plus elite telegraph
-  and a danger cue. An isolated tone preview cannot pass. Scenario
-  `dense-mix`. Record `docs/execution/captures/art-wave/dense-mix-score.txt`.
+  and a danger cue. Owner Encounter mix / Hit + warning; isolated preview
+  cannot pass. Scenario `dense-mix`. Record
+  `docs/execution/captures/art-wave/dense-mix-score.txt`.
 - VG-UI-001: native Escape stack — character then gear then quit. Scenario
   `pane-stack` presents the gear pane; a depth helper alone is not the proof.
 
