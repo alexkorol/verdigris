@@ -34,4 +34,7 @@ inline int extra_source_rows(const StatSources& src) {
   return src.expanded ? 4 : 0;
 }
 
+inline const char* owner_base_gear_label() { return "Base Gear"; }
+inline const char* owner_cond_off_label() { return "Cond off"; }
+
 }  // namespace verdigris::client::ui

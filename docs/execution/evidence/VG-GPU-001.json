@@ -4,7 +4,7 @@
   "planning_id": "VG-GPU-001",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "dbc8824f",
+  "base_sha": "b895083895b09b3d812b35b64e5cd8f4c8eb0460",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "gpu-sample",
@@ -18,7 +18,8 @@
     "software backend opens a 64x64 window buffer",
     "textured bronze/stone quad draws without a GPU device",
     "unknown backend cannot pretend to be portable",
-    "shutdown releases the buffer"
+    "shutdown releases the buffer",
+    "live HUD names Software quad and No D3D"
   ],
   "negative_control": {
     "name": "Windows-only / unknown backend as the cross-platform trial",
@@ -30,12 +31,18 @@
       "path": "docs/execution/captures/art-wave/gpu-sample-quad.bmp",
       "sha256": "2f1c2cc46b412712e2c5d9c7501d96450de7304b5af08a692bd8d8f8eba25c4d",
       "produced_by": "native/build/verdigris_client.exe --scenario gpu-sample"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/gpu-sample-960x600.png",
+      "sha256": "fd9936d2ee52f0ee3ce6c64b3be17c1c84011b0cf3402233defc0c220f197d9e",
+      "produced_by": "native/build/verdigris_client.exe --scenario gpu-sample"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Software sample is the portable trial per VG-GOV-005. Not a Metal/D3D presenter.",
+    "Software sample is the portable trial per VG-GOV-005. Not a Metal/D3D presenter. Owner strip paints Software quad / No D3D. Unknown GPU cannot certify.",
     "Does not mint TASK numbers or edit native/src/core.cpp."
   ]
 }

@@ -508,6 +508,9 @@ struct ClientState {
   bool visual_target_review_strip = false;
   bool route_map_review_strip = false;
   bool vital_orbs_review_strip = false;
+  bool equipment_review_strip = false;
+  bool stat_explain_review_strip = false;
+  bool gpu_sample_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -7706,6 +7709,123 @@ void paint_vital_orbs_review_strip(ClientState& state, HDC dc, const RECT& bound
   SelectObject(dc, old_font);
 }
 
+void paint_equipment_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                  render::List& rl) {
+  if (!state.equipment_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "equipment-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::ui::owner_ack_only_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::client::ui::owner_no_pending_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "pending gold";
+  TextOutA(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "ui:ack-only"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "ui:no-pending"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "ui-strip:pending-gold-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_stat_explain_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                     render::List& rl) {
+  if (!state.stat_explain_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "stat-explain-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::ui::owner_base_gear_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::client::ui::owner_cond_off_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "dormant ATK";
+  TextOutA(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "ui:base-gear"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "ui:cond-off"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "ui-strip:dormant-atk-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_gpu_sample_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                   render::List& rl) {
+  if (!state.gpu_sample_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "gpu-sample-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::gpu::owner_software_quad_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::gpu::owner_no_d3d_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "unknown GPU";
+  TextOutA(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "gpu:software-quad"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "gpu:no-d3d"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "gpu-strip:unknown-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -8762,6 +8882,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_visual_target_review_strip(state, dc, bounds, rl);
   paint_route_map_review_strip(state, dc, bounds, rl);
   paint_vital_orbs_review_strip(state, dc, bounds, rl);
+  paint_equipment_review_strip(state, dc, bounds, rl);
+  paint_stat_explain_review_strip(state, dc, bounds, rl);
+  paint_gpu_sample_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -12479,6 +12602,22 @@ int scenario_gpu_sample() {
                  "gpu-sample: shutdown releases the window buffer");
   scenario_check(!sample.draw_textured_quad(),
                  "gpu-sample: drawing after shutdown fails closed");
+  const std::string png = dir + "\\gpu-sample-960x600.png";
+  hud.gpu_sample_review_strip = true;
+  scenario_check(reference_present(hud, 960, 600, png),
+                 "gpu-sample: owner HUD capture written");
+  bool software_quad = false;
+  bool no_d3d = false;
+  bool unknown = false;
+  for (const auto& item : hud.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "gpu:software-quad") software_quad = true;
+    if (item.label == "gpu:no-d3d") no_d3d = true;
+    if (item.label == "gpu-strip:unknown-rejected") unknown = true;
+  }
+  scenario_check(software_quad && no_d3d,
+                 "gpu-sample: live HUD names Software quad and No D3D");
+  scenario_check(unknown, "gpu-sample: live HUD rejects unknown GPU");
   return scenario_failures;
 }
 
@@ -13418,8 +13557,21 @@ int scenario_equipment() {
     return scenario_failures;
   }
   const std::string png = dir + "\\equipment-960x600.png";
+  state.equipment_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "equipment: compare-plate capture written");
+  bool ack_only = false;
+  bool no_pending = false;
+  bool pending_gold = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "ui:ack-only") ack_only = true;
+    if (item.label == "ui:no-pending") no_pending = true;
+    if (item.label == "ui-strip:pending-gold-rejected") pending_gold = true;
+  }
+  scenario_check(ack_only && no_pending,
+                 "equipment: live HUD names Ack only and No pending");
+  scenario_check(pending_gold, "equipment: live HUD rejects pending gold");
   return scenario_failures;
 }
 
@@ -15073,8 +15225,21 @@ int scenario_stat_explain() {
     return scenario_failures;
   }
   const std::string png = dir + "\\stat-explain-960x600.png";
+  state.stat_explain_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "stat-explain: capture written");
+  bool base_gear = false;
+  bool cond_off = false;
+  bool dormant_atk = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "ui:base-gear") base_gear = true;
+    if (item.label == "ui:cond-off") cond_off = true;
+    if (item.label == "ui-strip:dormant-atk-rejected") dormant_atk = true;
+  }
+  scenario_check(base_gear && cond_off,
+                 "stat-explain: live HUD names Base Gear and Cond off");
+  scenario_check(dormant_atk, "stat-explain: live HUD rejects dormant ATK");
   return scenario_failures;
 }
 

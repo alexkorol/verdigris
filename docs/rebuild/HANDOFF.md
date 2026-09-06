@@ -1,5 +1,18 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — ack only, Base Gear, software quad (Cursor)
+
+- VG-UI-003: owner Ack only strip paints No pending. Pending gold cannot
+  certify. Compare still follows the acknowledged seat. ITEM algebra
+  stays Kimi. TASK-0156 PaneStat string is unchanged.
+- VG-UI-004: owner Base Gear strip paints Cond off. Dormant ATK cannot
+  certify. Expanded Attack still excludes inactive conditional. Core
+  STAT stays Kimi.
+- VG-GPU-001: owner Software quad strip paints No D3D. Unknown GPU cannot
+  certify. 64×64 BMP hash is unchanged. Not a Windows-only D3D proof.
+- Scenarios `equipment` / `stat-explain` / `gpu-sample` PASS. Captures
+  viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — adult camera, Tin village, life left (Cursor)
 
 - VG-ART-001: owner Adult camera strip paints Bronze palette. Chibi head

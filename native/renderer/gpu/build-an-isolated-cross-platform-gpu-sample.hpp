@@ -125,4 +125,7 @@ struct Sample {
   }
 };
 
+inline const char* owner_software_quad_label() { return "Software quad"; }
+inline const char* owner_no_d3d_label() { return "No D3D"; }
+
 }  // namespace verdigris::gpu

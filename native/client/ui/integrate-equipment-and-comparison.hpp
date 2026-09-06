@@ -64,4 +64,7 @@ inline paper_doll::Status try_slot(paper_doll::State& doll,
   return paper_doll::equip(doll, item, slot);
 }
 
+inline const char* owner_ack_only_label() { return "Ack only"; }
+inline const char* owner_no_pending_label() { return "No pending"; }
+
 }  // namespace verdigris::client::ui

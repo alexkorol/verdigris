@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-003",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "c0944a81fbf3f81e212527c6b50b913322351fda",
+  "base_sha": "b895083895b09b3d812b35b64e5cd8f4c8eb0460",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "equipment",
@@ -20,7 +20,8 @@
     "ack paints equip:ok and compare:equipped",
     "PaneStat still states TREE absence for TASK-0156",
     "owner paint is Skill tree: no data yet, not TREE jargon",
-    "pack cells paint a weapon glyph, not a grey crate"
+    "pack cells paint a weapon glyph, not a grey crate",
+    "live HUD names Ack only and No pending"
   ],
   "negative_control": {
     "name": "treat pending equip as currently equipped, paint TREE jargon as the owner line, or certify a grey pack square",
@@ -30,14 +31,14 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/equipment-960x600.png",
-      "sha256": "b5acc8cf2cd75ad1a85cbf3ee8c057934e930be82f3a5268a0132be4518b8ea8",
+      "sha256": "6568d534fa7ac3be292ea1f62281a101d82e7202ba534de920b9941e49f13208",
       "produced_by": "native/build/verdigris_client.exe --scenario equipment"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "HUD/compare only. ITEM sim equip algebra stays Kimi. Helmet-in-main-hand is paper_doll WrongSlot.",
+    "HUD/compare only. Owner strip paints Ack only / No pending. Pending gold cannot certify. ITEM sim equip algebra stays Kimi. Helmet-in-main-hand is paper_doll WrongSlot.",
     "TASK-0156 PaneStat protocol string is unchanged. Not Owner Demo. No TASK numbers minted."
   ]
 }

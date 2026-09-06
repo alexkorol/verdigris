@@ -165,6 +165,7 @@ voice. Live mixer paints Theme Combat / Recovery / None. A mute chip
 alone cannot certify the phase. Scenario `music-phase`. Device mute still
 silences waveOut. Evidence `docs/execution/evidence/VG-SOUND-008.json`.
 VG-GPU-001: isolated software backend (64×64 textured quad + shutdown).
+Owner strip paints Software quad / No D3D. Unknown GPU cannot certify.
 Not a Windows-only D3D proof. Scenario `gpu-sample`. Evidence
 `docs/execution/evidence/VG-GPU-001.json`.
 VG-GPU-002: Telegraph draw class copied to handle-free packets. Owner
@@ -227,10 +228,11 @@ Live mixer paints persisted SFX/Music numbers while muted. Owner strip
 paints Mixer prefs / SFX persist. A mute chip alone cannot certify.
 Scenario `audio-prefs`. Evidence
 `docs/execution/evidence/VG-SOUND-006.json`.
-VG-UI-003: equip HUD is ack-only (`equip:ok` after ItemEquipped). Pending
-compare cannot gold-frame as equipped. Owner gear pane paints
-`Skill tree: no data yet`; PaneStat keeps `TREE no authoritative data`.
-Scenario `equipment`. Evidence `docs/execution/evidence/VG-UI-003.json`.
+VG-UI-003: equip HUD is ack-only (`equip:ok` after ItemEquipped). Owner
+strip paints Ack only / No pending. Pending compare cannot gold-frame as
+equipped. Owner gear pane paints `Skill tree: no data yet`; PaneStat
+keeps `TREE no authoritative data`. Scenario `equipment`. Evidence
+`docs/execution/evidence/VG-UI-003.json`.
 VG-PERF-007: 32 resize/effect cycles; floor bitmaps stay 1. Scenario
 `memory-soak`. Evidence `docs/execution/evidence/VG-PERF-007.json`.
 VG-SOUND-007: mixer tape from mixed pack + elite; live HUD paints
@@ -311,9 +313,11 @@ wardens. The owner card titles Tin village, not `route:tin:1:0`. Owner
 Demo journeys not reimplemented. Scenario `route-map`. Evidence
 `docs/execution/evidence/VG-UI-005.json`.
 VG-UI-004: `stat-explain` — expanded ATK names base/gear/passive/cond on
-HUD ops. Owner paint uses Base/Gear, not `src` jargon. Slice builds on
-the sheet are role · gear chips; tactics stay on HUD ops. A dormant
-conditional cannot fold into Attack. Core STAT stays Kimi.
+HUD ops. Owner strip paints Base Gear / Cond off. Owner paint uses
+Base/Gear, not `src` jargon. Slice builds on the sheet are role · gear
+chips; tactics stay on HUD ops. A dormant conditional cannot fold into
+Attack. Core STAT stays Kimi. Scenario `stat-explain`. Evidence
+`docs/execution/evidence/VG-UI-004.json`.
 VG-UI-002: `pack-drag` — reject cannot lose, duplicate, or silently equip.
 Owner strip paints Pack place / Reject keeps. Silent equip cannot
 certify. Core inventory-move stays Kimi.

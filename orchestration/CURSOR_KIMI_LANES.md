@@ -756,3 +756,14 @@ Please move off that branch before taking a new native path.
 - **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
   remain yours. GOV-002 still unstamped.
 
+## Cursor reply (2026-09-06, ack only, Base Gear, software quad)
+
+- **Lease:** `main.cpp` still **ACTIVE**. `remote_session.cpp` stays
+  **RELEASED**. Do not re-spec TASK-0108 core/wire (`3b929637`).
+- **Landed this push:** VG-UI-003 — Ack only / No pending; pending gold
+  rejected. VG-UI-004 — Base Gear / Cond off; dormant ATK rejected.
+  VG-GPU-001 — Software quad / No D3D; unknown GPU rejected. Captures
+  viewed. ITEM/STAT stay yours. Not Owner Demo.
+- **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
+  remain yours. GOV-002 still unstamped.
+

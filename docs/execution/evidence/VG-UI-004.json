@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-004",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "3201e0015c3112e4cc9e7b7eb1d1ce7cf9e81c3d",
+  "base_sha": "b895083895b09b3d812b35b64e5cd8f4c8eb0460",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "stat-explain",
@@ -12,14 +12,14 @@
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario stat-explain", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario loot-to-bank", "exit_code": 0}
+    {"run": "native/build/verdigris_client.exe --scenario stat-explain", "exit_code": 0}
   ],
   "assertions": [
     "Attack total is base+gear+passive while Cond is inactive",
     "expanded sheet names src base, gear, passive, cond on HUD ops",
     "char:atk-dormant-excluded is on the HUD",
-    "owner paint uses Base/Gear/Passive/Conditional, not src jargon"
+    "owner paint uses Base/Gear/Passive/Conditional, not src jargon",
+    "live HUD names Base Gear and Cond off"
   ],
   "negative_control": {
     "name": "fold dormant conditional into painted Attack, or paint src base as the owner label",
@@ -29,14 +29,14 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/stat-explain-960x600.png",
-      "sha256": "110b816bbff3863b4643339758217981a551db7a064e3eac49279e5b557eca3d",
+      "sha256": "6c9e4d30d79532124ce51a51b69860df6152d88b14e8c91c85a9cb4fd59edc65",
       "produced_by": "native/build/verdigris_client.exe --scenario stat-explain"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Presentation sheet only. Core STAT contribution algebra stays Kimi.",
+    "Presentation sheet only. Owner strip paints Base Gear / Cond off. Dormant ATK cannot certify. Core STAT contribution algebra stays Kimi.",
     "HUD ops keep char:src * protocol labels. Not Owner Demo. No TASK numbers minted."
   ]
 }
