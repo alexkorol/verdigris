@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-003",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "b895083895b09b3d812b35b64e5cd8f4c8eb0460",
+  "base_sha": "785ca185e857d980897cee8fab187bd059bf6806",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "equipment",
@@ -12,7 +12,8 @@
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario equipment", "exit_code": 0}
+    {"run": "native/build/verdigris_client.exe --scenario equipment", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario progression-surface", "exit_code": 0}
   ],
   "assertions": [
     "pending request cannot paint equip:ok",
@@ -21,7 +22,9 @@
     "PaneStat still states TREE absence for TASK-0156",
     "owner paint is Skill tree: no data yet, not TREE jargon",
     "pack cells paint a weapon glyph, not a grey crate",
-    "live HUD names Ack only and No pending"
+    "live HUD names Ack only and No pending",
+    "absent gear pane live HUD names Skill tree and No data yet",
+    "absent owner strip never replaces the TREE protocol string"
   ],
   "negative_control": {
     "name": "treat pending equip as currently equipped, paint TREE jargon as the owner line, or certify a grey pack square",
@@ -33,12 +36,18 @@
       "path": "docs/execution/captures/art-wave/equipment-960x600.png",
       "sha256": "6568d534fa7ac3be292ea1f62281a101d82e7202ba534de920b9941e49f13208",
       "produced_by": "native/build/verdigris_client.exe --scenario equipment"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/progression-surface-absent-960x600.png",
+      "sha256": "17f0f07a2c47bcf52badf5dbb594465e9bbc38cb47936944678faa606f928fd1",
+      "produced_by": "native/build/verdigris_client.exe --scenario progression-surface"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "HUD/compare only. Owner strip paints Ack only / No pending. Pending gold cannot certify. ITEM sim equip algebra stays Kimi. Helmet-in-main-hand is paper_doll WrongSlot.",
-    "TASK-0156 PaneStat protocol string is unchanged. Not Owner Demo. No TASK numbers minted."
+    "TASK-0156 PaneStat protocol string is unchanged. TASK folder captures cannot certify. Not Owner Demo. No TASK numbers minted."
   ]
 }

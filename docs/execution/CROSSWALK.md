@@ -35,14 +35,14 @@ Cursor evidence notes.
 |---|---|---|
 | VG-UI-001 | extend | native Escape stack (`pane-stack`); owner Stack 2 / Escape closes; helper depth alone cannot pass |
 | VG-UI-002 | extend | TASK-0171 INTEGRATED, 0184 BRIDGE_PREP; `pack-drag`; reject cannot lose/duplicate/silent-equip |
-| VG-UI-003 | extend | paper-doll + ack-only HUD (`equipment`); pending compare cannot gold-frame as equipped |
+| VG-UI-003 | extend | paper-doll + ack-only HUD (`equipment`); pending compare cannot gold-frame as equipped; `progression-surface` owner Skill tree / No data yet (TASK folder cannot certify) |
 | VG-UI-004 | extend | TASK-0156, 0159 INTEGRATED; `stat-explain` expandable ATK; dormant cannot fold into Attack |
 | VG-UI-005 | extend | TASK-0076 INTEGRATED; 0178/0192/0203 Owner Demo; `route-map` zoom/opacity cannot reveal off-snapshot targets |
 | VG-UI-006 | extend | TASK-0145/0177 + 0190/0197/0201 — **do not duplicate** |
 | VG-UI-007 | extend | TASK-0159 INTEGRATED, 0118 READY, 0207; `hud-pane-readability` at 960/1366/3440 + `hud-scale-floor` + live window; TASK-0159 folder capture cannot certify; VG-UI-006 Owner Demo not duplicated |
 | VG-UI-008 | new | XInput tick path + glyphs (`pad-path`); not mouse emulation |
 | VG-ART-001/002/004 | extend | TASK-0141 INTEGRATED — village kit + collision-proxy ops (`kit-chunk`); not artist-local collision |
-| VG-ART-003/006 | extend | TASK-0122 INTEGRATED; 0173/0174 READY; 0186/0187 BRIDGE_PREP — Cursor paints melee **poses** (VG-ART-003) and WarCry **weave labels** (VG-ART-006) without taking TASK-0173 models or re-speccing TASK-0108 |
+| VG-ART-003/006 | extend | TASK-0122 INTEGRATED; 0173/0174 READY; 0186/0187 BRIDGE_PREP — Cursor paints melee **poses** (VG-ART-003) and WarCry **weave labels** plus Phase A spawn/fade (VG-ART-006) without taking TASK-0173 models or re-speccing TASK-0108 |
 | VG-ART-005 | extend | TASK-0182 AUTO_RELEASE, 0184; `held-item` world attachment + `loot-to-bank` pickup-to-equip hold; paper-doll seat alone cannot pass |
 | VG-ART-007/008 | extend | TASK-0206/0205/0207 — Owner Demo, do not duplicate |
 | VG-GPU-001 | new | isolated software quad (`gpu-sample`); not a D3D-only window |
@@ -151,7 +151,10 @@ the spawn capture. Scenario `kit-chunk`. Evidence
 `docs/execution/evidence/VG-ART-004.json`.
 VG-ART-006: WarCry family `vfx-weave:cast|travel|impact|cancel`; radius
 capped vs screen-fill; telegraph remains. Owner strip paints War Cry weave
-/ Travel. Screen fill cannot certify. Scenario `weave-vfx`. Evidence
+/ Travel. Screen fill cannot certify. Scenario `weave-vfx`. Phase A spawn
+beats: owner strip paints Spawn once / Fade ttl; re-spawn cannot certify.
+Scenario `animation-vfx-phase-a` pack capture in art-wave (TASK-0122 folder
+cannot certify). TASK-0173 models stay Kimi. Evidence
 `docs/execution/evidence/VG-ART-006.json`.
 VG-UI-008: XInput sampled on the fixed tick; A strike / B dash / X take /
 Y gear; hotplug in/out; mouse position cannot mint `pad:connected`.
@@ -242,7 +245,10 @@ Scenario `audio-prefs`. Evidence
 VG-UI-003: equip HUD is ack-only (`equip:ok` after ItemEquipped). Owner
 strip paints Ack only / No pending. Pending compare cannot gold-frame as
 equipped. Owner gear pane paints `Skill tree: no data yet`; PaneStat
-keeps `TREE no authoritative data`. Scenario `equipment`. Evidence
+keeps `TREE no authoritative data`. Scenario `equipment`. Absent
+progression capture: owner strip paints Skill tree / No data yet; TREE
+jargon cannot certify. Scenario `progression-surface` pack capture in
+art-wave (TASK-0156 folder cannot certify). Evidence
 `docs/execution/evidence/VG-UI-003.json`.
 VG-PERF-007: 32 resize/effect cycles; floor bitmaps stay 1. Owner strip
 paints 32 cycles / Cap holds. Short scene cannot certify. Scenario

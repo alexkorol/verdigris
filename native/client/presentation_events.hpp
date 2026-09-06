@@ -82,6 +82,9 @@ inline constexpr int kScionLostPulseTicks = 12;            // 600 ms edge pulse
 inline constexpr Rgb kScionLostColor{186, 74, 62};         // deep rust red
 inline constexpr const char* kScionLostLabel = "scion-lost";
 
+inline const char* owner_spawn_once_label() { return "Spawn once"; }
+inline const char* owner_fade_ttl_label() { return "Fade ttl"; }
+
 }  // namespace phase_a
 
 }  // namespace verdigris::client

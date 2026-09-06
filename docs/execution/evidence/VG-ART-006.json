@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-006",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "6b25b530e3aa6ec13753bafe1d598910c950aca0",
+  "base_sha": "785ca185e857d980897cee8fab187bd059bf6806",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "weave-vfx",
@@ -12,17 +12,20 @@
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario weave-vfx", "exit_code": 0}
+    {"run": "native/build/verdigris_client.exe --scenario weave-vfx", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario animation-vfx-phase-a", "exit_code": 0}
   ],
   "assertions": [
     "WarCry family labels cast, travel, impact, cancel",
     "native strip paints all four weave beats",
     "impact radius stays inside the screen-sixth cap",
     "a screen-filling ring cannot pass",
-    "live HUD names War Cry weave and Travel"
+    "live HUD names War Cry weave and Travel",
+    "live HUD names Spawn once and Fade ttl",
+    "seen foes never re-materialize; re-spawn cannot certify"
   ],
   "negative_control": {
-    "name": "blob weave without cast motes, or a screen-filling ring hiding a threat telegraph",
+    "name": "blob weave without cast motes, a screen-filling ring hiding a threat telegraph, or a foe that re-spawns after first sighting",
     "observed_result": "REJECTED"
   },
   "artifacts": [
@@ -31,11 +34,17 @@
       "path": "docs/execution/captures/art-wave/weave-vfx-960x600.png",
       "sha256": "d24fb5ab18e3421c105d27282ffd6191438c366ee9eebc3712c703e819f4747c",
       "produced_by": "native/build/verdigris_client.exe --scenario weave-vfx"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/animation-vfx-phase-a-960x600.png",
+      "sha256": "5e637b6ee092ad3da2a785ff95094ebe3aad52ca09c48552b3ac17497a120644",
+      "produced_by": "native/build/verdigris_client.exe --scenario animation-vfx-phase-a"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Paints TASK-0122 weave labels plus bronze motes/ticks/implode. TASK-0173/0174 models stay Kimi. Does not re-spec TASK-0108."
+    "Paints TASK-0122 weave labels plus bronze motes/ticks/implode and Phase A spawn/fade presentation. TASK-0173/0174 models stay Kimi. TASK-0122 folder captures cannot certify. Does not re-spec TASK-0108."
   ]
 }

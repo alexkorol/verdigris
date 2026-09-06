@@ -523,6 +523,8 @@ struct ClientState {
   bool telegraph_dodge_review_strip = false;
   bool move_and_camera_review_strip = false;
   bool first_session_review_strip = false;
+  bool tree_review_strip = false;
+  bool spawn_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -8310,6 +8312,87 @@ void paint_first_session_review_strip(ClientState& state, HDC dc, const RECT& bo
   SelectObject(dc, old_font);
 }
 
+void paint_tree_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                             render::List& rl) {
+  if (!state.tree_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  // Gear overlay occupies the right column; sit above the life orb so the
+  // strip cannot certify by covering TREE protocol text or the gear pane.
+  const int left = 12 * s;
+  const int top =
+      std::max(12 * s, static_cast<int>(bounds.bottom) - pane_h - 100 * s);
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "tree-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::ui::owner_skill_tree_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::client::ui::owner_no_data_yet_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "TREE jargon";
+  TextOutA(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "ui:skill-tree"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "ui:no-data-yet"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "tree-strip:tree-jargon-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_spawn_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                              render::List& rl) {
+  if (!state.spawn_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 148 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "spawn-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = phase_a::owner_spawn_once_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = phase_a::owner_fade_ttl_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "re-spawn";
+  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "vfx:spawn-once"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "vfx:fade-ttl"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "spawn-strip:re-spawn-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -9381,6 +9464,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_telegraph_dodge_review_strip(state, dc, bounds, rl);
   paint_move_and_camera_review_strip(state, dc, bounds, rl);
   paint_first_session_review_strip(state, dc, bounds, rl);
+  paint_tree_review_strip(state, dc, bounds, rl);
+  paint_spawn_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -11999,6 +12084,41 @@ int scenario_progression_surface() {
   scenario_check(
       render_list_has(state, render::Op::PaneStat, "TREE no authoritative data"),
       "absent: the gear pane states absence, not zeros");
+
+  // VG-UI-003 extra: pack evidence of owner Skill tree / No data yet.
+  // TASK-0156 PaneStat protocol string is unchanged. A TASK folder cannot
+  // certify the owner HUD.
+  {
+    const std::string dir = art_wave_capture_dir();
+    if (dir.empty()) {
+      scenario_check(false,
+                     "progression-surface: art-wave root rejected before any write");
+    } else {
+      const std::string png =
+          dir + "\\progression-surface-absent-960x600.png";
+      state.tree_review_strip = true;
+      scenario_check(reference_present(state, 960, 600, png),
+                     "progression-surface: owner absence capture written");
+      scenario_check(
+          render_list_has(state, render::Op::PaneStat,
+                          "TREE no authoritative data"),
+          "absent: owner strip never replaces the TREE protocol string");
+      bool skill_tree = false;
+      bool no_data = false;
+      bool tree_jargon = false;
+      for (const auto& item : state.render_list) {
+        if (item.op != render::Op::Hud) continue;
+        if (item.label == "ui:skill-tree") skill_tree = true;
+        if (item.label == "ui:no-data-yet") no_data = true;
+        if (item.label == "tree-strip:tree-jargon-rejected") tree_jargon = true;
+      }
+      scenario_check(skill_tree && no_data,
+                     "progression-surface: live HUD names Skill tree and No data yet");
+      scenario_check(tree_jargon,
+                     "progression-surface: live HUD rejects TREE jargon");
+      state.tree_review_strip = false;
+    }
+  }
 
   // 2) NONZERO: a real admission carries the authoritative tree payload
   // through the production parser seam.
@@ -17129,6 +17249,39 @@ int scenario_animation_vfx_phase_a() {
       std::printf("%s", line);
       scenario_check(bytes > 1024, "animation-vfx-phase-a: capture is non-trivial");
     }
+    // VG-ART-006 extra: pack evidence of Spawn once / Fade ttl. TASK-0122
+    // folder captures stay for historical review; they cannot certify.
+    capture_state.spawn_review_strip = true;
+    const std::string pack_dir = art_wave_capture_dir();
+    if (pack_dir.empty()) {
+      scenario_check(false,
+                     "animation-vfx-phase-a: art-wave root rejected before any write");
+    } else {
+      const std::string pack_png =
+          pack_dir + "\\animation-vfx-phase-a-960x600.png";
+      scenario_check(reference_present(capture_state, 960, 600, pack_png),
+                     "animation-vfx-phase-a: owner spawn capture written");
+      bool spawn_once = false;
+      bool fade_ttl_hud = false;
+      bool re_spawn = false;
+      for (const auto& item : capture_state.render_list) {
+        if (item.op != render::Op::Hud) continue;
+        if (item.label == "vfx:spawn-once") spawn_once = true;
+        if (item.label == "vfx:fade-ttl") fade_ttl_hud = true;
+        if (item.label == "spawn-strip:re-spawn-rejected") re_spawn = true;
+      }
+      scenario_check(spawn_once && fade_ttl_hud,
+                     "animation-vfx-phase-a: live HUD names Spawn once and Fade ttl");
+      scenario_check(re_spawn,
+                     "animation-vfx-phase-a: live HUD rejects re-spawn");
+      std::ifstream pack_probe(pack_png, std::ios::binary);
+      scenario_check(pack_probe.good(),
+                     "animation-vfx-phase-a: art-wave capture readable");
+      pack_probe.seekg(0, std::ios::end);
+      scenario_check(pack_probe.tellg() > 1024,
+                     "animation-vfx-phase-a: art-wave capture is non-trivial");
+    }
+    capture_state.spawn_review_strip = false;
   }
   return 0;
 }

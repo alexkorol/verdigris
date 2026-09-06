@@ -1,5 +1,19 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Skill tree, Spawn once (Cursor)
+
+- VG-UI-003: `progression-surface` owner Skill tree strip paints No data yet
+  beside the open gear pane. TREE jargon cannot certify absence. PaneStat
+  still states `TREE no authoritative data`. Ack only / No pending on
+  `equipment` is unchanged. TASK-0156 folder cannot certify. ITEM algebra
+  stays Kimi.
+- VG-ART-006: `animation-vfx-phase-a` owner Spawn once strip paints Fade ttl.
+  Re-spawn cannot certify first sighting. War Cry weave / Travel on
+  `weave-vfx` is unchanged. TASK-0122 folder cannot certify. TASK-0173
+  models stay Kimi.
+- Scenarios `progression-surface` / `animation-vfx-phase-a` PASS. Captures
+  viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — Slay wardens, Dash hint (Cursor)
 
 - VG-GOV-003: scorecard First session dimension now names
