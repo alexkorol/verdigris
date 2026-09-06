@@ -180,10 +180,11 @@ VG-GPU-006: moving light on the cooked family; channel cap 220; damage chroma
 cannot be washed white. Live scene paints a bronze lantern pool at the
 village gate; a HUD token without that pool cannot certify. Scenario
 `material-light`. Evidence `docs/execution/evidence/VG-GPU-006.json`.
-VG-GPU-007: BMP readback plus provenance sidecar. Packet snapshot text is not
-pixel evidence. A PNG whose red/blue channels are swapped versus the DIB
-cannot certify. Scenario `gpu-capture` / `vital-orbs`.
-an image. Scenario `gpu-capture`.
+VG-GPU-007: BMP readback plus provenance sidecar of the painted tin-village
+scene. Packet snapshot text is not pixel evidence. A PNG whose red/blue
+channels are swapped versus the DIB cannot certify. `vital-orbs` cannot
+stand in for the scene BMP. Scenario `gpu-capture`. Evidence
+`docs/execution/evidence/VG-GPU-007.json`.
 VG-GPU-008: recreate/resize/minimize-restore keep one live buffer; failure
 surfaces `gpu-error:recreate`. Scenario `gpu-recover`. Evidence
 `docs/execution/evidence/VG-GPU-008.json`.

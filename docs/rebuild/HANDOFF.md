@@ -1,5 +1,13 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — painted-scene BMP readback (Cursor)
+
+- VG-GPU-007: tin-village paint writes a 960x600 BMP plus provenance
+  (`gdi-scene:tin-village`). A packet log or R/B-swapped PNG cannot
+  certify. Pixel capture strip names BMP + provenance.
+- Scenario `gpu-capture` PASS. Capture viewed. Hash diverges from
+  `vital-orbs`. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — owner zone loop (Cursor)
 
 - VG-SOUND-005: live mixer and Zone loop strip paint Loop Tin village

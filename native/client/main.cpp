@@ -469,6 +469,7 @@ struct ClientState {
   bool weave_review_strip = false;
   bool telegraph_review_strip = false;
   bool ambience_review_strip = false;
+  bool capture_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -6186,6 +6187,45 @@ void paint_ambience_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   SelectObject(dc, old_font);
 }
 
+void paint_capture_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                render::List& rl) {
+  if (!state.capture_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "capture-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = "Pixel capture";
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* ok = "BMP + provenance";
+  TextOutA(dc, left + 12 * s, top + 32 * s, ok, static_cast<int>(strlen(ok)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "packet log";
+  TextOutA(dc, rx - 26 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "capture:bmp"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "capture:provenance"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "capture-strip:log-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -7205,6 +7245,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_weave_review_strip(state, dc, bounds, rl);
   paint_telegraph_review_strip(state, dc, bounds, rl);
   paint_ambience_review_strip(state, dc, bounds, rl);
+  paint_capture_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -9064,6 +9105,10 @@ int scenario_zoom_invariance() {
 
 bool reference_present(ClientState& state, int width, int height,
                        const std::string& png_path);
+bool reference_present_capture(ClientState& state, int width, int height,
+                               const std::string& bmp_path,
+                               const std::string& prov_path,
+                               const std::string& png_path);
 bool save_hbitmap_png(BillboardAssets& assets, HBITMAP bitmap, const std::string& path);
 
 bool chronicles_pump(ClientState& state, int max_ticks,
@@ -11264,6 +11309,34 @@ int scenario_gpu_capture() {
   scenario_check(verdigris::gpu::provenance_complete(prov),
                  "gpu-capture: provenance names backend, content, and platform");
   sample.shutdown();
+
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  state.capture_review_strip = true;
+  scenario_present(state);
+  bool bmp_hud = false;
+  bool prov_hud = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "capture:bmp") bmp_hud = true;
+    if (item.label == "capture:provenance") prov_hud = true;
+  }
+  scenario_check(bmp_hud && prov_hud,
+                 "gpu-capture: live HUD names BMP readback and provenance");
+  scenario_check(verdigris::gpu::packet_log_fails_as_pixels(log),
+                 "gpu-capture: a packet log fails as pixel evidence");
+  scenario_check(verdigris::gpu::packet_log_fails_as_pixels("Hud 0 0 0 0 floor\n"),
+                 "gpu-capture: a semantic draw log cannot stand in for the BMP");
+  const std::string scene_bmp = dir + "\\gpu-capture-scene.bmp";
+  const std::string scene_prov = dir + "\\gpu-capture-scene.txt";
+  const std::string png = dir + "\\gpu-capture-960x600.png";
+  scenario_check(reference_present_capture(state, 960, 600, scene_bmp, scene_prov, png),
+                 "gpu-capture: painted scene wrote BMP, provenance, and PNG");
+  scenario_check(verdigris::gpu::file_is_bmp(scene_bmp),
+                 "gpu-capture: the scene file is a usable BMP");
+  scenario_check(verdigris::gpu::provenance_names_scene(scene_prov),
+                 "gpu-capture: scene provenance names GDI tin-village pixels");
   return scenario_failures;
 }
 
@@ -13698,6 +13771,36 @@ bool reference_present(ClientState& state, int width, int height, const std::str
   DeleteDC(dc);
   DeleteObject(bitmap);
   return saved;
+}
+
+bool reference_present_capture(ClientState& state, int width, int height,
+                               const std::string& bmp_path,
+                               const std::string& prov_path,
+                               const std::string& png_path) {
+  BITMAPINFO info{};
+  info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  info.bmiHeader.biWidth = width;
+  info.bmiHeader.biHeight = -height;
+  info.bmiHeader.biPlanes = 1;
+  info.bmiHeader.biBitCount = 32;
+  info.bmiHeader.biCompression = BI_RGB;
+  void* bits = nullptr;
+  HBITMAP bitmap = CreateDIBSection(nullptr, &info, DIB_RGB_COLORS, &bits, nullptr, 0);
+  if (!bitmap || bits == nullptr) return false;
+  HDC dc = CreateCompatibleDC(nullptr);
+  HGDIOBJ old = SelectObject(dc, bitmap);
+  RECT bounds{0, 0, width, height};
+  paint_scene(state, dc, bounds);
+  const int stride = width * 4;
+  const bool bmp_ok = verdigris::gpu::capture_painted_scene(
+      bmp_path, prov_path, static_cast<const std::uint8_t*>(bits), width, height,
+      stride);
+  const bool png_ok = png_path.empty() ||
+                      save_hbitmap_png(state.billboards, bitmap, png_path);
+  SelectObject(dc, old);
+  DeleteDC(dc);
+  DeleteObject(bitmap);
+  return bmp_ok && png_ok;
 }
 
 void reference_step(ClientState& state, const verdigris::Command& command, int width, int height) {
