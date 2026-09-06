@@ -211,6 +211,8 @@ inline bool idle_as_attack_family_fails_review(bool only_idle_pose) {
   return only_idle_pose;
 }
 
+inline const char* owner_strike_poses_label() { return "Strike poses"; }
+
 // VG-ART-006: WarCry weave beats share bronze identity. A single blob or
 // screen-filling ring cannot certify the family.
 inline constexpr bool kWeaveHasCastMotes = true;
@@ -225,6 +227,8 @@ inline bool blob_weave_fails_review(bool cast_motes, bool travel_orbit,
                                     bool impact_ticks, bool cancel_implode) {
   return !cast_motes || !travel_orbit || !impact_ticks || !cancel_implode;
 }
+
+inline const char* owner_war_cry_weave_label() { return "War Cry weave"; }
 
 inline void humanoid(HDC dc, int cx, int base_y, int height_px,
                      const Style& style, const Pose& pose, Held held) {

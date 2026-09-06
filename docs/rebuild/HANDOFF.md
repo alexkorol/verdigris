@@ -1,5 +1,16 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — strike poses and War Cry weave (Cursor)
+
+- VG-ART-003: owner Strike poses strip paints Windup/Active/Recover/Cancel
+  silhouettes. Idle still cannot certify. Frame count cannot pass. TASK-0173
+  models stay Kimi.
+- VG-ART-006: owner War Cry weave strip paints Cast/Travel/Impact/Cancel.
+  Screen fill cannot certify. Telegraph remains visible. TASK-0173/0174
+  stay Kimi.
+- Scenarios `attack-poses` / `weave-vfx` PASS. Captures viewed. Not Owner
+  Demo. Does not re-spec TASK-0108.
+
 ## 2026-09-06 — bronze family, village kit, world hold (Cursor)
 
 - VG-ART-002: owner Bronze stone strip paints Cooked CC0. Magenta cannot

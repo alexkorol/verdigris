@@ -6011,7 +6011,7 @@ void paint_attack_pose_strip(ClientState& state, HDC dc, const RECT& bounds,
                              render::List& rl) {
   if (!state.pose_review_strip) return;
   const int s = hud_scale(static_cast<int>(bounds.bottom));
-  const int pane_w = 456 * s;
+  const int pane_w = 520 * s;
   const int pane_h = 118 * s;
   const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
   const int top = 72 * s;
@@ -6023,8 +6023,10 @@ void paint_attack_pose_strip(ClientState& state, HDC dc, const RECT& bounds,
   SetBkMode(dc, TRANSPARENT);
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
-  const char* title = "Strike poses";
+  const char* title = vector_art::owner_strike_poses_label();
   TextOutA(dc, left + 12 * s, top + 6 * s, title, static_cast<int>(strlen(title)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 6 * s), 0.0, 1, "pose:strike-poses"});
   const char* names[4] = {"Windup", "Active", "Recover", "Cancel"};
   const char* tokens[4] = {"pose-strip:windup", "pose-strip:active",
                            "pose-strip:recovery", "pose-strip:cancel"};
@@ -6053,6 +6055,17 @@ void paint_attack_pose_strip(ClientState& state, HDC dc, const RECT& bounds,
     rl.push_back({render::Op::Hud, static_cast<double>(cx),
                   static_cast<double>(base_y), 0.0, i + 1, tokens[i]});
   }
+  const int rx = left + pane_w - 48 * s;
+  const int ry = top + 64 * s;
+  ring_ellipse(dc, rx, ry, 14 * s, 14 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 10 * s, ry - 10 * s, rx + 10 * s, ry + 10 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "idle still";
+  TextOutA(dc, rx - 28 * s, top + pane_h - 16 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "pose-strip:idle-rejected"});
   SelectObject(dc, old_font);
 }
 
@@ -6060,7 +6073,7 @@ void paint_weave_review_strip(ClientState& state, HDC dc, const RECT& bounds,
                               render::List& rl) {
   if (!state.weave_review_strip) return;
   const int s = hud_scale(static_cast<int>(bounds.bottom));
-  const int pane_w = 456 * s;
+  const int pane_w = 520 * s;
   const int pane_h = 108 * s;
   const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
   const int top = 72 * s;
@@ -6072,8 +6085,10 @@ void paint_weave_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   SetBkMode(dc, TRANSPARENT);
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
-  const char* title = "War Cry weave";
+  const char* title = vector_art::owner_war_cry_weave_label();
   TextOutA(dc, left + 12 * s, top + 6 * s, title, static_cast<int>(strlen(title)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 6 * s), 0.0, 1, "weave:war-cry"});
   const char* names[4] = {"Cast", "Travel", "Impact", "Cancel"};
   const char* tokens[4] = {"weave-strip:cast", "weave-strip:travel",
                            "weave-strip:impact", "weave-strip:cancel"};
@@ -6113,6 +6128,17 @@ void paint_weave_review_strip(ClientState& state, HDC dc, const RECT& bounds,
     rl.push_back({render::Op::Hud, static_cast<double>(cx),
                   static_cast<double>(cy), 0.0, i + 1, tokens[i]});
   }
+  const int rx = left + pane_w - 48 * s;
+  const int ry = top + 58 * s;
+  ring_ellipse(dc, rx, ry, 14 * s, 14 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 10 * s, ry - 10 * s, rx + 10 * s, ry + 10 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "screen fill";
+  TextOutA(dc, rx - 28 * s, top + pane_h - 16 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "weave-strip:fill-rejected"});
   SelectObject(dc, old_font);
 }
 
@@ -11079,6 +11105,10 @@ int scenario_attack_poses() {
   const std::string png = dir + "\\attack-poses-960x600.png";
   scenario_check(reference_present(state, 960, 600, png),
                  "attack-poses: windup/active/cancel family capture written");
+  scenario_check(has_pose("pose:strike-poses") && has_pose("pose-strip:windup"),
+                 "attack-poses: live HUD names Strike poses and Windup");
+  scenario_check(has_pose("pose-strip:idle-rejected"),
+                 "attack-poses: live HUD rejects idle still");
   return scenario_failures;
 }
 
@@ -11385,6 +11415,10 @@ int scenario_weave_vfx() {
   const std::string png = dir + "\\weave-vfx-960x600.png";
   scenario_check(reference_present(state, 960, 600, png),
                  "weave-vfx: cast/impact family capture written");
+  scenario_check(has_hud("weave:war-cry") && has_hud("weave-strip:travel"),
+                 "weave-vfx: live HUD names War Cry weave and Travel");
+  scenario_check(has_hud("weave-strip:fill-rejected"),
+                 "weave-vfx: live HUD rejects screen fill");
   return scenario_failures;
 }
 

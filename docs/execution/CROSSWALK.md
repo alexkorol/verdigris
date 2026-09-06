@@ -141,8 +141,9 @@ fountain; gates are two pillars with a lintel. Shrine and gate sit inside
 the spawn capture. Scenario `kit-chunk`. Evidence
 `docs/execution/evidence/VG-ART-004.json`.
 VG-ART-006: WarCry family `vfx-weave:cast|travel|impact|cancel`; radius
-capped vs screen-fill; telegraph remains. Scenario `weave-vfx`.
-Evidence `docs/execution/evidence/VG-ART-006.json`.
+capped vs screen-fill; telegraph remains. Owner strip paints War Cry weave
+/ Travel. Screen fill cannot certify. Scenario `weave-vfx`. Evidence
+`docs/execution/evidence/VG-ART-006.json`.
 VG-UI-008: XInput sampled on the fixed tick; A strike / B dash / X take /
 Y gear; hotplug in/out; mouse position cannot mint `pad:connected`.
 Scenario `pad-path`. Evidence `docs/execution/evidence/VG-UI-008.json`.
@@ -166,6 +167,9 @@ external concept-art token cannot substitute, a skeleton
 `art: PNG billboards loaded` chip cannot count as the composition sheet,
 and a chibi (1/3) head cannot pass as adult. Scenario `visual-target`.
 Evidence `docs/execution/evidence/VG-ART-001.json`.
+VG-ART-003: windup/active/recovery/cancel silhouettes on Strike poses.
+Idle still cannot certify the family. Frame count alone cannot pass.
+Scenario `attack-poses`. Evidence `docs/execution/evidence/VG-ART-003.json`.
 VG-ART-002: bronze/stone albedo+rim maps with SPDX CC0; magenta fill
 cannot ship. Owner strip paints Bronze stone / Cooked CC0. Village kit
 uses the family. Scenario `bronze-stone`. Evidence
