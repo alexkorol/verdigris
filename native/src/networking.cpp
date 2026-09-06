@@ -1350,11 +1350,16 @@ struct RoadNode {
   std::vector<std::string> child_ids;
 };
 int web_tier_width(const std::string& house, const std::string& road, int tier) {
-  if (tier <= 1) return 1;
-  const int previous = web_tier_width(house, road, tier - 1);
-  const int step_pick = static_cast<int>(web_hash(house + "|" + road + "|" + std::to_string(tier) + "|width") % 4);
-  const int step = step_pick == 0 ? -1 : (step_pick == 3 ? 1 : 0);
-  return (std::max)(1, (std::min)(3, previous + step));
+  // Iterative form of the former recursion (tier -> tier - 1): identical
+  // recurrence, identical results for every input, but a crafted deep tier
+  // can no longer exhaust the stack (VG-SEC-002).
+  int width = 1;
+  for (int t = 2; t <= tier; ++t) {
+    const int step_pick = static_cast<int>(web_hash(house + "|" + road + "|" + std::to_string(t) + "|width") % 4);
+    const int step = step_pick == 0 ? -1 : (step_pick == 3 ? 1 : 0);
+    width = (std::max)(1, (std::min)(3, width + step));
+  }
+  return width;
 }
 std::vector<RoadNode> web_road_nodes(const std::string& house, const std::string& road_id, int max_tier) {
   std::vector<RoadNode> nodes;
@@ -1413,6 +1418,24 @@ bool parse_node_id(const std::string& id, std::string* road, int* tier, int* ind
     *index = std::stoi(id.substr(second + 1));
   } catch (...) { return false; }
   return *tier >= 1 && *index >= 0;
+}
+// Defense budget for client-supplied and chronicle-restored road-node tiers
+// (VG-SEC-002). The road web is procedurally open-ended by design — content
+// authors tiers 2..5 (kRoadStoryHoldings) and the endgame caps at
+// kEndgameTierCount = 16 — so no legitimate session approaches this: every
+// tier costs one sequential Warden kill. 1024 tiers keeps web_road_nodes
+// generation (~3 nodes/tier) and tier + 1 arithmetic cheap and far from
+// INT_MAX overflow.
+constexpr int kMaxRoadTier = 1024;
+// True when the id unambiguously aims at a road node (valid road prefix plus
+// both field separators) even though parse_node_id rejected it. Such strings
+// are forged node ids, not route names, and must not fall through to the
+// route branch of the zone-enter handler.
+bool has_road_node_shape(const std::string& id) {
+  const auto first = id.find(':');
+  if (first == std::string::npos) return false;
+  if (id.find(':', first + 1) == std::string::npos) return false;
+  return road_index(id.substr(0, first)) >= 0;
 }
 // chronicles repository parity: relic circulation is WORLD state - a fallen
 // scion gear can surface for any survivor (party-stories), preferring the
@@ -2665,6 +2688,12 @@ void ProtocolSession::emit_chart_screen(const std::string& road_id, const std::f
 void ProtocolSession::enter_road_node(const std::string& node_id, const std::function<void(const Envelope&)>& emit) {
   std::string road; int tier = 0; int index = 0;
   if (!parse_node_id(node_id, &road, &tier, &index)) return;
+  if (tier > kMaxRoadTier) {
+    // Trust boundary: a parseable but absurdly deep tier is rejected like a
+    // barred holding - no generation work, no state mutation (VG-SEC-002).
+    emit_message(emit, "That holding is barred. Break its parent Warden first.");
+    return;
+  }
   int frontier = 1;
   for (const auto& cleared : cleared_nodes_) {
     std::string cleared_road; int cleared_tier = 0; int cleared_index = 0;
@@ -3175,8 +3204,12 @@ void ProtocolSession::restore_world_web_progression() {
   for (const auto& entry : *saved_it->second.array()) {
     if (!entry.string() || candidates.size() >= 512) continue;
     Candidate candidate{*entry.string(), "", 0, 0};
+    // Saved progression is untrusted input: tiers beyond the defense budget
+    // would drive unbounded chart generation, so the entry is skipped
+    // (VG-SEC-002).
     if (parse_node_id(candidate.id, &candidate.road, &candidate.tier,
-                      &candidate.index))
+                      &candidate.index) &&
+        candidate.tier <= kMaxRoadTier)
       candidates.push_back(std::move(candidate));
   }
   std::sort(candidates.begin(), candidates.end(),
@@ -4446,6 +4479,12 @@ void ProtocolSession::handle_impl(const Envelope& envelope, const std::function<
     std::string web_road; int web_tier=0; int web_index=0;
     if (parse_node_id(node,&web_road,&web_tier,&web_index)) {
       enter_road_node(node, emit);
+      return;
+    }
+    if (has_road_node_shape(node)) {
+      // A valid road prefix with a malformed tier/index is a forged node id,
+      // not a route name: reject without touching session state (VG-SEC-002).
+      emit_message(emit, "That holding is barred. Break its parent Warden first.");
       return;
     }
     simulation_->dispatch(Command::enter(node.rfind("route:",0)==0?node:"route:"+node));
