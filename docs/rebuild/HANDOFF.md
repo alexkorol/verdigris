@@ -1,5 +1,19 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — handle-free packets, kill fill, isolated remaps (Cursor)
+
+- VG-GPU-002: owner Handle-free strip paints Telegraph class. Backend
+  handle cannot certify. Semantic packets still copy Telegraph with no
+  GPU state. CORE-006 stays Kimi.
+- VG-GOV-003: owner Kill fill strip paints Gold pit. VG-ID count cannot
+  certify. Empty pit still samples 0 gold; three kills fill ~49%.
+  Scorecard thresholds still need an owner stamp.
+- VG-MOVE-006: owner Isolated profile strip paints Dash remap. Documents
+  cannot certify. Remap/restart/restore stay on a %TEMP% profile.
+  SHIP-001 stays Kimi.
+- Scenarios `gpu-packets` / `xp-meter` / `remap-binds` PASS. Captures
+  viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — mixer prefs, dressing pass, loot labels (Cursor)
 
 - VG-SOUND-006: owner Mixer prefs strip paints SFX persist. Mute reset

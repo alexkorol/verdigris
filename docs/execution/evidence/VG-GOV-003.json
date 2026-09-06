@@ -4,7 +4,7 @@
   "planning_id": "VG-GOV-003",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "fc271963788f7e03f5a5d6d2e9a70331da7a7ce0",
+  "base_sha": "5a5dcc9069f318e0ab0b563300ad023d07827bfe",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "xp-meter",
@@ -19,7 +19,8 @@
     "every scorecard dimension names a journey and measurement",
     "feature or VG-ID counts cannot produce a pass",
     "local XP meter starts at the floor; three level-1 kills fill ~49%",
-    "empty pit samples 0 gold pixels; filled meter samples ledger gold (805)"
+    "empty pit samples 0 gold pixels; filled meter samples ledger gold (805)",
+    "live HUD names Kill fill and Gold pit"
   ],
   "negative_control": {
     "name": "counting VG IDs as parity, or an XP lv 1 label over a 0% black strip",
@@ -34,7 +35,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/xp-meter-960x600.png",
-      "sha256": "fb3d77777964c6a6c2beacd704076856be08412083cbe790e2da35a2ed5690ce",
+      "sha256": "86e29dbb873efcd7584fd5cb3b990c218f5e177a5fccd8368d5ac1198ce6b8f6",
       "produced_by": "native/build/verdigris_client.exe --scenario xp-meter"
     }
   ],
@@ -42,6 +43,7 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Local HUD tracks kill XP with the same RS curve as snapshot state.xp. Core still stores level only; this is not a second combat packet.",
+    "Owner strip paints Kill fill / Gold pit. VG-ID count cannot certify.",
     "Did not edit remote_session.cpp, networking.cpp, or native/src/core.cpp.",
     "GDI+ PNG may shift gold chroma; DIB gold sample is the certification.",
     "Scorecard thresholds still need an owner stamp. VG-GOV-002 remains unstamped.",

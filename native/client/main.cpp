@@ -499,6 +499,9 @@ struct ClientState {
   bool audio_prefs_review_strip = false;
   bool dressing_pass_review_strip = false;
   bool loot_label_budget_review_strip = false;
+  bool gpu_packets_review_strip = false;
+  bool xp_meter_review_strip = false;
+  bool remap_binds_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -3684,6 +3687,8 @@ constexpr std::size_t kMaxLootNameplates = 12;
 
 inline const char* owner_nearest_12_label() { return "Nearest 12"; }
 inline const char* owner_drop_stays_label() { return "Drop stays"; }
+inline const char* owner_kill_fill_label() { return "Kill fill"; }
+inline const char* owner_gold_pit_label() { return "Gold pit"; }
 
 std::vector<char> loot_nameplate_mask(
     const std::vector<std::pair<std::string, verdigris::Vec2>>& loot,
@@ -7342,6 +7347,123 @@ void paint_loot_label_budget_review_strip(ClientState& state, HDC dc, const RECT
   SelectObject(dc, old_font);
 }
 
+void paint_gpu_packets_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                    render::List& rl) {
+  if (!state.gpu_packets_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "gpu-packets-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::gpu::owner_handle_free_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::gpu::owner_telegraph_class_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "backend handle";
+  TextOutA(dc, rx - 42 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "gpu:handle-free"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "gpu:telegraph-class"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "gpu-strip:backend-handle-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_xp_meter_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                 render::List& rl) {
+  if (!state.xp_meter_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "xp-meter-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = owner_kill_fill_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = owner_gold_pit_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "VG-ID count";
+  TextOutA(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "gov:kill-fill"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "gov:gold-pit"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "gov-strip:vg-id-count-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_remap_binds_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                    render::List& rl) {
+  if (!state.remap_binds_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "remap-binds-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::input::owner_isolated_profile_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::client::input::owner_dash_remap_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "Documents";
+  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "move:isolated-profile"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "move:dash-remap"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "move-strip:documents-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -8389,6 +8511,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_audio_prefs_review_strip(state, dc, bounds, rl);
   paint_dressing_pass_review_strip(state, dc, bounds, rl);
   paint_loot_label_budget_review_strip(state, dc, bounds, rl);
+  paint_gpu_packets_review_strip(state, dc, bounds, rl);
+  paint_xp_meter_review_strip(state, dc, bounds, rl);
+  paint_remap_binds_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -9853,8 +9978,21 @@ int scenario_xp_meter() {
     return scenario_failures;
   }
   const std::string png = dir + "\\xp-meter-960x600.png";
+  filled.xp_meter_review_strip = true;
   scenario_check(reference_present(filled, 960, 600, png),
                  "xp-meter: filled HUD capture written");
+  bool kill_fill = false;
+  bool gold_pit = false;
+  bool vg_count = false;
+  for (const auto& item : filled.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "gov:kill-fill") kill_fill = true;
+    if (item.label == "gov:gold-pit") gold_pit = true;
+    if (item.label == "gov-strip:vg-id-count-rejected") vg_count = true;
+  }
+  scenario_check(kill_fill && gold_pit,
+                 "xp-meter: live HUD names Kill fill and Gold pit");
+  scenario_check(vg_count, "xp-meter: live HUD rejects VG-ID count");
   return scenario_failures;
 }
 
@@ -12135,15 +12273,28 @@ int scenario_gpu_packets() {
   }
   const std::string snap_path = dir + "\\gpu-packets-snapshot.txt";
   FILE* out = nullptr;
-  fopen_s(&out, snap_path.c_str(), "w");
+  fopen_s(&out, snap_path.c_str(), "wb");
   scenario_check(out != nullptr, "gpu-packets: snapshot file opened");
   if (out) {
     std::fprintf(out, "%s", snap.c_str());
     std::fclose(out);
   }
   const std::string png = dir + "\\gpu-packets-960x600.png";
+  state.gpu_packets_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "gpu-packets: Telegraph scene capture written");
+  bool handle_free = false;
+  bool telegraph_class = false;
+  bool backend_handle = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "gpu:handle-free") handle_free = true;
+    if (item.label == "gpu:telegraph-class") telegraph_class = true;
+    if (item.label == "gpu-strip:backend-handle-rejected") backend_handle = true;
+  }
+  scenario_check(handle_free && telegraph_class,
+                 "gpu-packets: live HUD names Handle-free and Telegraph class");
+  scenario_check(backend_handle, "gpu-packets: live HUD rejects backend handle");
   return scenario_failures;
 }
 
@@ -13380,8 +13531,21 @@ int scenario_remap_binds() {
     return scenario_failures;
   }
   const std::string png = dir + "\\remap-binds-960x600.png";
+  restarted.remap_binds_review_strip = true;
   scenario_check(reference_present(restarted, 960, 600, png),
                  "remap-binds: restored-binding capture written");
+  bool isolated = false;
+  bool dash_remap = false;
+  bool documents = false;
+  for (const auto& item : restarted.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "move:isolated-profile") isolated = true;
+    if (item.label == "move:dash-remap") dash_remap = true;
+    if (item.label == "move-strip:documents-rejected") documents = true;
+  }
+  scenario_check(isolated && dash_remap,
+                 "remap-binds: live HUD names Isolated profile and Dash remap");
+  scenario_check(documents, "remap-binds: live HUD rejects Documents");
   DeleteFileA(path.c_str());
   return scenario_failures;
 }

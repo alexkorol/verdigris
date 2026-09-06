@@ -166,8 +166,9 @@ silences waveOut. Evidence `docs/execution/evidence/VG-SOUND-008.json`.
 VG-GPU-001: isolated software backend (64×64 textured quad + shutdown).
 Not a Windows-only D3D proof. Scenario `gpu-sample`. Evidence
 `docs/execution/evidence/VG-GPU-001.json`.
-VG-GPU-002: Telegraph draw class copied to handle-free packets. Poisoned
-`backend_handle` fails snapshot. Scenario `gpu-packets`. Evidence
+VG-GPU-002: Telegraph draw class copied to handle-free packets. Owner
+strip paints Handle-free / Telegraph class. Poisoned `backend_handle`
+fails snapshot. Scenario `gpu-packets`. Evidence
 `docs/execution/evidence/VG-GPU-002.json`.
 VG-ART-001: in-game HUD names camera/proportion/palette/contrast. An
 external concept-art token cannot substitute, a skeleton
@@ -240,9 +241,10 @@ VG-MOVE-005: TASK-0165 focus reducer gates WASD, combat, pickup, and pack
 drag. Closing a pane cannot release a held attack. Scenario `pane-focus`.
 Evidence `docs/execution/evidence/VG-MOVE-005.json`.
 VG-MOVE-006: versioned bindings persist under an isolated test profile.
-Duplicate codes and unknown devices fail on the HUD; owner Documents
-cannot be the write target. Scenario `remap-binds`.
-Evidence `docs/execution/evidence/VG-MOVE-006.json`.
+Owner strip paints Isolated profile / Dash remap. Duplicate codes and
+unknown devices fail on the HUD; owner Documents cannot be the write
+target. Scenario `remap-binds`. Evidence
+`docs/execution/evidence/VG-MOVE-006.json`.
 VG-MOVE-008: input QPC to `paint_scene` present QPC. Owner strip paints
 To present / Input paint. Photon cannot certify. p50/p95 on this
 machine. Command dispatch time is not `input-latency:photon`. Scenario
@@ -289,7 +291,9 @@ VG-QA-002: live `AttackStarted` maps to `intent:swing` and
 `presentation_from_sim` for that event fails the fixture. A mocked
 PresentationEvent is not a journey proof. Scenario `headless-contract`.
 VG-GOV-003: `docs/execution/decisions/freeze-the-parity-scorecard.md`.
-A feature or VG-ID count cannot pass. Each dimension names a journey.
+Owner strip paints Kill fill / Gold pit. A feature or VG-ID count cannot
+pass. Each dimension names a journey. Scenario `xp-meter`. Evidence
+`docs/execution/evidence/VG-GOV-003.json`.
 VG-UI-007: `vital-orbs` — life left/red, mana right/blue. Mute is a HUD
 chip. An X on the mana globe cannot count as a non-color cue.
 VG-GOV-006: disconnect/crash/quit cannot ack uncommitted extraction.

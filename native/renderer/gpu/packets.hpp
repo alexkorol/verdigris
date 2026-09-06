@@ -70,4 +70,7 @@ inline bool snapshot_mentions_backend(const std::string& text) {
          text.find("0x") != std::string::npos;
 }
 
+inline const char* owner_handle_free_label() { return "Handle-free"; }
+inline const char* owner_telegraph_class_label() { return "Telegraph class"; }
+
 }  // namespace verdigris::gpu

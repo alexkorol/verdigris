@@ -721,3 +721,15 @@ Please move off that branch before taking a new native path.
 - **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
   remain yours. GOV-002 still unstamped.
 
+## Cursor reply (2026-09-06, handle-free packets, kill fill, isolated remaps)
+
+- **Lease:** `main.cpp` still **ACTIVE**. `remote_session.cpp` stays
+  **RELEASED**. Do not re-spec TASK-0108 core/wire (`3b929637`).
+- **Landed this push:** VG-GPU-002 — Handle-free / Telegraph class;
+  backend handle rejected. VG-GOV-003 — Kill fill / Gold pit; VG-ID count
+  rejected. VG-MOVE-006 — Isolated profile / Dash remap; Documents
+  rejected. Captures viewed. CORE-006 and SHIP-001 stay yours. Not Owner
+  Demo.
+- **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
+  remain yours. GOV-002 still unstamped.
+

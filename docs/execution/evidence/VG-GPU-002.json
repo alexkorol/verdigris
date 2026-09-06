@@ -4,7 +4,7 @@
   "planning_id": "VG-GPU-002",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "4502b0295588ba5ac163c1fb6c92821a9eec5238",
+  "base_sha": "5a5dcc9069f318e0ab0b563300ad023d07827bfe",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "gpu-packets",
@@ -19,7 +19,8 @@
     "Telegraph is the adapted draw class",
     "snapshot text has no HDC/D3D/pointer tokens",
     "headless packets stay deterministic without GPU state",
-    "a poisoned backend_handle cannot snapshot"
+    "a poisoned backend_handle cannot snapshot",
+    "live HUD names Handle-free and Telegraph class"
   ],
   "negative_control": {
     "name": "backend resource handle in an authoritative snapshot",
@@ -29,20 +30,19 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/gpu-packets-960x600.png",
-      "sha256": "d780b555c589d7ea56307fd3acb55f53d549445efcb155087258c438f860981b",
+      "sha256": "5536a5a709f1cd883527fc1377a477042934068cb76f0a716b910e0d48300fa4",
       "produced_by": "native/build/verdigris_client.exe --scenario gpu-packets"
     },
     {
       "kind": "log",
       "path": "docs/execution/captures/art-wave/gpu-packets-snapshot.txt",
-      "sha256": "813c21a35313862ac16d7aba28e494bfdb65f189a434d1b727861f40c099804c",
+      "sha256": "e1109d4d9fce1b3c30ec32d5bb5e410ae12c23e108f9c35168224e9dce7aa558",
       "produced_by": "native/build/verdigris_client.exe --scenario gpu-packets"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Packets are the semantic copy of the GDI+ render list. Not a D3D command buffer.",
-    "Does not re-spec TASK-0108. VG-CORE-006 stays Kimi."
+    "Packets are the semantic copy of the GDI+ render list. Not a D3D command buffer. Owner strip paints Handle-free / Telegraph class. Backend handle cannot certify. Does not re-spec TASK-0108. VG-CORE-006 stays Kimi."
   ]
 }

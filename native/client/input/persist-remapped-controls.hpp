@@ -213,4 +213,7 @@ inline bool matches(const Bindings& bindings, Action action, int code) {
   return value && *value == code;
 }
 
+inline const char* owner_isolated_profile_label() { return "Isolated profile"; }
+inline const char* owner_dash_remap_label() { return "Dash remap"; }
+
 }  // namespace verdigris::client::input
