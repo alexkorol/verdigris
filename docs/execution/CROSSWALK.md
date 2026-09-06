@@ -145,7 +145,8 @@ VG-UI-008: XInput sampled on the fixed tick; A strike / B dash / X take /
 Y gear; hotplug in/out; mouse position cannot mint `pad:connected`.
 Scenario `pad-path`. Evidence `docs/execution/evidence/VG-UI-008.json`.
 VG-SOUND-002: CC0 provenance table for combat cues including swing windup
-`attack-anticipate`. `unlicensed-preview` cannot ship. Scenario `legal-sounds`.
+`attack-anticipate`. Live HUD paints Family combat / Anticipate CC0.
+`unlicensed-preview` cannot ship. Scenario `legal-sounds`.
 Evidence `docs/execution/evidence/VG-SOUND-002.json`.
 VG-SOUND-008: explore/combat/recovery music coalesced per drain; unload
 sets `music:none` and mutes the music bus so a leftover combat loop cannot

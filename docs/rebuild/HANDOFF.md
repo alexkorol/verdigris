@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — licensed combat family on the fight (Cursor)
+
+- VG-SOUND-002: owner Family combat strip paints Anticipate CC0. An
+  unlicensed preview cannot certify even if the mixer would play it.
+  Provenance table stays SPDX CC0 including swing windup
+  `attack-anticipate`. The recapture is the tin-village fight, not a
+  generic spawn.
+- Scenario `legal-sounds` PASS. Capture viewed. Not a WAV bank. Not
+  Owner Demo. VG-TOOLS-003 stays Kimi.
+
 ## 2026-09-06 — restore keeps one live buffer (Cursor)
 
 - VG-GPU-008: recreate/resize/minimize-restore keep one pixel buffer.
@@ -312,6 +322,7 @@
   cannot pass. Scenario `bronze-stone`. Capture
   `docs/execution/captures/art-wave/bronze-stone-960x600.png`.
 - VG-SOUND-002: combat family includes swing windup `attack-anticipate`.
+  Owner Family combat / Anticipate CC0; unlicensed is the rejected control.
   `unlicensed-preview` cannot ship. Scenario `legal-sounds`. Capture
   `docs/execution/captures/art-wave/legal-sounds-960x600.png`.
 - VG-GOV-008: pack `roadmap.py validate` (200/689) plus unittest overlap
@@ -599,8 +610,8 @@ owner-stamped. Dual program heads: this branch vs
 - VG-UI-008: XInput on the 20 Hz tick (injected `PadReport` for harness).
   Glyphs `pad-glyph:*`, hotplug in/out. Mouse coordinates cannot set
   `pad:connected`. Scenario `pad-path`.
-- VG-SOUND-002: SPDX CC0 family in `sound_family.hpp`. Scenario
-  `legal-sounds`.
+- VG-SOUND-002: SPDX CC0 family in `sound_family.hpp`. Owner strip names
+  Family combat / Anticipate CC0. Scenario `legal-sounds`.
 - VG-SOUND-008: `music:explore|combat|recovery|none|muted`. Coalesced
   submit; unloaded session cannot keep a competing want. Scenario
   `music-phase`.

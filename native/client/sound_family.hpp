@@ -38,4 +38,11 @@ inline bool shippable(const char* cue_id) {
          row->source[0] != '\0';
 }
 
+inline bool unlicensed_preview_fails_review(const char* cue_id) {
+  return !shippable(cue_id);
+}
+
+inline const char* owner_family_label() { return "Family combat"; }
+inline const char* owner_anticipate_label() { return "Anticipate CC0"; }
+
 }  // namespace verdigris::client::sound_family

@@ -474,6 +474,7 @@ struct ClientState {
   bool voice_budget_review_strip = false;
   bool tone_adapter_review_strip = false;
   bool recover_review_strip = false;
+  bool legal_sounds_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -6345,6 +6346,46 @@ void paint_recover_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   SelectObject(dc, old_font);
 }
 
+void paint_legal_sounds_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                     render::List& rl) {
+  if (!state.legal_sounds_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "legal-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::sound_family::owner_family_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* anticipate = verdigris::client::sound_family::owner_anticipate_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, anticipate,
+           static_cast<int>(strlen(anticipate)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "unlicensed";
+  TextOutA(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "family:combat"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "anticipate:cc0"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "legal-strip:unlicensed-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -7368,6 +7409,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_voice_budget_review_strip(state, dc, bounds, rl);
   paint_tone_adapter_review_strip(state, dc, bounds, rl);
   paint_recover_review_strip(state, dc, bounds, rl);
+  paint_legal_sounds_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -10835,10 +10877,16 @@ int scenario_legal_sounds() {
   scenario_check(shippable("hit") && shippable("crit") && shippable("kill") &&
                      shippable("scion-lost") && shippable("warcry-expire"),
                  "legal-sounds: impact and warning cues carry SPDX provenance");
-  scenario_check(shippable("cosmetic"),
-                 "legal-sounds: swing-family placeholder is sourced");
+  scenario_check(shippable("attack-anticipate") && shippable("cosmetic"),
+                 "legal-sounds: swing-family windup attack-anticipate is sourced");
   scenario_check(!shippable("unlicensed-preview"),
                  "legal-sounds: missing provenance cannot ship even if audible");
+  scenario_check(verdigris::client::sound_family::unlicensed_preview_fails_review(
+                     "unlicensed-preview"),
+                 "legal-sounds: unlicensed-preview fails review");
+  scenario_check(!verdigris::client::sound_family::unlicensed_preview_fails_review(
+                     "attack-anticipate"),
+                 "legal-sounds: sourced anticipate is not treated as unlicensed");
   ClientState state;
   scenario_begin(state);
   for (int i = 0; i < 52; ++i)
@@ -10847,9 +10895,11 @@ int scenario_legal_sounds() {
     scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
   bool heard = false;
   bool all_legal = true;
+  bool voiced_anticipate = false;
   for (const auto& cue : state.audio_voiced) {
     if (cue.rfind("ambience:", 0) == 0 || cue.rfind("music:", 0) == 0) continue;
     heard = true;
+    if (cue == "attack-anticipate") voiced_anticipate = true;
     if (!shippable(cue.c_str())) {
       all_legal = false;
       std::printf("    illegal cue: %s\n", cue.c_str());
@@ -10858,6 +10908,8 @@ int scenario_legal_sounds() {
   scenario_check(heard, "legal-sounds: an ordinary fight actually voiced cues");
   scenario_check(all_legal,
                  "legal-sounds: every voiced combat cue is in the licensed family");
+  scenario_check(voiced_anticipate,
+                 "legal-sounds: the fight voiced the licensed swing windup");
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {
     scenario_check(false, "legal-sounds: capture root rejected before any write");
@@ -10865,7 +10917,7 @@ int scenario_legal_sounds() {
   }
   const std::string manifest = dir + "\\legal-sounds-provenance.txt";
   FILE* out = nullptr;
-  fopen_s(&out, manifest.c_str(), "w");
+  fopen_s(&out, manifest.c_str(), "wb");
   scenario_check(out != nullptr, "legal-sounds: provenance table opened");
   if (out) {
     std::fprintf(out, "family=combat\nnegative=unlicensed-preview\n");
@@ -10876,9 +10928,23 @@ int scenario_legal_sounds() {
     std::fclose(out);
   }
   scenario_follow_camera(state);
+  state.legal_sounds_review_strip = true;
   const std::string png = dir + "\\legal-sounds-960x600.png";
   scenario_check(reference_present(state, 960, 600, png),
                  "legal-sounds: fight capture written");
+  bool family_hud = false;
+  bool anticipate_hud = false;
+  bool rejected_hud = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "family:combat") family_hud = true;
+    if (item.label == "anticipate:cc0") anticipate_hud = true;
+    if (item.label == "legal-strip:unlicensed-rejected") rejected_hud = true;
+  }
+  scenario_check(family_hud && anticipate_hud,
+                 "legal-sounds: live HUD names Family combat and Anticipate CC0");
+  scenario_check(rejected_hud,
+                 "legal-sounds: live HUD rejects unlicensed as a passing family");
   return scenario_failures;
 }
 
