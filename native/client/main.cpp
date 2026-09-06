@@ -475,6 +475,7 @@ struct ClientState {
   bool tone_adapter_review_strip = false;
   bool recover_review_strip = false;
   bool legal_sounds_review_strip = false;
+  bool loot_filter_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -6386,6 +6387,43 @@ void paint_legal_sounds_review_strip(ClientState& state, HDC dc, const RECT& bou
   SelectObject(dc, old_font);
 }
 
+void paint_loot_filter_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                    render::List& rl) {
+  if (!state.loot_filter_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "loot-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = "Loot filter";
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* hide = verdigris::client::items::owner_hide_trophies_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, hide, static_cast<int>(strlen(hide)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "mutate ground";
+  TextOutA(dc, rx - 38 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "filter:hide-trophy"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "loot-strip:mutate-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -7410,6 +7448,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_tone_adapter_review_strip(state, dc, bounds, rl);
   paint_recover_review_strip(state, dc, bounds, rl);
   paint_legal_sounds_review_strip(state, dc, bounds, rl);
+  paint_loot_filter_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -12498,6 +12537,12 @@ int scenario_loot_filter() {
                  "loot-filter: other categories stay readable");
   scenario_check(state.loot_positions.size() == owned,
                  "loot-filter: hiding cannot change ground ownership");
+  scenario_check(!verdigris::client::items::hide_mutating_ownership_fails_review(
+                     owned, state.loot_positions.size()),
+                 "loot-filter: matching ownership is not treated as a mutation");
+  scenario_check(verdigris::client::items::hide_mutating_ownership_fails_review(
+                     owned, owned + 1),
+                 "loot-filter: a mutated ownership count fails review");
   scenario_check(state.simulation->ground_items().size() == sim_items &&
                      state.simulation->ground_trophies().size() == sim_trophies,
                  "loot-filter: droprate/ownership tables stay untouched");
@@ -12507,9 +12552,14 @@ int scenario_loot_filter() {
     scenario_check(false, "loot-filter: capture root rejected before any write");
     return scenario_failures;
   }
+  state.loot_filter_review_strip = true;
   const std::string png = dir + "\\loot-filter-960x600.png";
   scenario_check(reference_present(state, 960, 600, png),
                  "loot-filter: filtered nameplate capture written");
+  scenario_check(has_hud("filter:hide-trophy"),
+                 "loot-filter: live HUD names Hide trophies");
+  scenario_check(has_hud("loot-strip:mutate-rejected"),
+                 "loot-filter: live HUD rejects mutate ground");
   return scenario_failures;
 }
 

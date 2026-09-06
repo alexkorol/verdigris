@@ -69,4 +69,11 @@ inline const char* filter_hud_label(const LootFilter& filter) {
   return "loot-filter:custom";
 }
 
+inline const char* owner_hide_trophies_label() { return "Hide trophies"; }
+
+inline bool hide_mutating_ownership_fails_review(std::size_t owned_before,
+                                                 std::size_t owned_after) {
+  return owned_before != owned_after;
+}
+
 }  // namespace verdigris::client::items

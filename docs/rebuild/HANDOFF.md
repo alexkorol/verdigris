@@ -1,5 +1,13 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — hide trophies without mutating ground (Cursor)
+
+- VG-ITEM-006: owner Loot filter strip paints Hide trophies. Mutate
+  ground is the rejected control. Hiding a nameplate cannot delete the
+  Drop sprite or change sim ownership/droprate.
+- Scenario `loot-filter` PASS. Capture viewed. Not Owner Demo. ITEM
+  sim stays Kimi.
+
 ## 2026-09-06 — licensed combat family on the fight (Cursor)
 
 - VG-SOUND-002: owner Family combat strip paints Anticipate CC0. An
@@ -277,7 +285,7 @@
 - VG-MOVE-006: isolated `bindings.v1`; Documents cannot be the test path
   (`remap-binds`).
 - VG-WORLD-008: dressing-pass v1/v2 cannot change topology.
-- VG-ITEM-006: loot nameplates; hiding cannot mutate sim ground.
+- VG-ITEM-006: loot nameplates; owner Hide trophies; hiding cannot mutate sim ground.
 - VG-PERF-001: named Win32 machine + floor/world/hud/upload
   (`frame-budget`, 11.5 ms avg at 3440×1440, bound stays 40 ms).
 - VG-PERF-003–007: effect-batch, resource-envelope, loot-label-budget,
@@ -491,7 +499,8 @@ owner-stamped. Dual program heads: this branch vs
 
 ## 2026-09-06 — loot filter facts (Cursor, uncommitted)
 
-- VG-ITEM-006: ground drops publish `loot-fact:weapon|trophy|misc`. Hiding
+- VG-ITEM-006: ground drops publish `loot-fact:weapon|trophy|misc`. Owner
+  strip paints Hide trophies; mutate ground cannot certify. Hiding
   trophies suppresses nameplates only; Drop sprites, `loot_positions`, and
   sim ground tables stay put. Scenario `loot-filter`. Capture
   `docs/execution/captures/art-wave/loot-filter-960x600.png`. Does not

@@ -4,19 +4,22 @@
   "planning_id": "VG-ITEM-006",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "643802b40f55bf6b273447b8874f3bdb82a6621f",
+  "base_sha": "f41270be2c609be1c86532e3860f30aeb8578dc7",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "loot-filter",
   "platform": "win32-x64",
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario loot-filter", "exit_code": 0}
   ],
   "assertions": [
     "ground drops publish safe category facts",
     "hiding trophies cannot delete the Drop sprite",
-    "hiding cannot change ground ownership or drop tables"
+    "hiding cannot change ground ownership or drop tables",
+    "live HUD names Hide trophies",
+    "a mutated ownership count fails review"
   ],
   "negative_control": {
     "name": "hiding a nameplate mutating sim ground ownership",
@@ -26,7 +29,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/loot-filter-960x600.png",
-      "sha256": "09c2e9aa28d2ff2028b1e70e627d247b6210fef49bb3dfb300fb4edf670e1628",
+      "sha256": "f207882a78adc296c005a3c6ce4eb670c0eded9e79323ad352f13a60bcbb033e",
       "produced_by": "native/build/verdigris_client.exe --scenario loot-filter"
     }
   ],

@@ -87,7 +87,7 @@ Cursor evidence notes.
 
 | VG | Disposition | Existing |
 |---|---|---|
-| VG-ITEM-006 | new | `loot-filter` nameplates; cannot mutate sim ground. ITEM-001–005/007–008 stay Kimi |
+| VG-ITEM-006 | new | `loot-filter` nameplates; owner Hide trophies; cannot mutate sim ground. ITEM-001–005/007–008 stay Kimi |
 | VG-ITEM-001–005, 007–008 | new | Kimi lease |
 
 ## BUILD / QA (Cursor presentation + pack evidence only)
@@ -247,8 +247,9 @@ Evidence `docs/execution/evidence/VG-ACT-005.json`.
 VG-WORLD-008: dressing-pass v1/v2 change decoration hash only.
 A tree visual cannot become an unreported solid. Scenario `dressing-pass`.
 Evidence `docs/execution/evidence/VG-WORLD-008.json`.
-VG-ITEM-006: loot category facts and a presentation filter. Hiding
-trophies cannot move ownership or drop tables. Scenario `loot-filter`.
+VG-ITEM-006: loot category facts and a presentation filter. Owner strip
+paints Hide trophies; mutate ground cannot certify. Hiding trophies
+cannot move ownership or drop tables. Scenario `loot-filter`.
 Evidence `docs/execution/evidence/VG-ITEM-006.json`.
 VG-BUILD-001: reach/pressure/magic fixtures list tactics, weakness, gear,
 and encounter answers. Three melee clones that differ only by tint fail.
