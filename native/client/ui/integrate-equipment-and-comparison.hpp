@@ -74,4 +74,8 @@ inline bool invented_origin_fails_review(bool present, bool painted_seat) {
   return !present && painted_seat;
 }
 
+inline bool compare_covers_gear_stats_fails_review(bool overlap) {
+  return overlap;
+}
+
 }  // namespace verdigris::client::ui

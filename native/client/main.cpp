@@ -1463,8 +1463,10 @@ void dress_owned_pane(const BillboardAssets& assets, HDC dc, const RECT& rect) {
   draw_ornate_frame(assets, dc, rect, border);
 }
 
-void paint_compare_plate(HDC dc, int x, int y, const RECT& bounds, const std::string& title,
-                         COLORREF title_color, const std::vector<std::string>& lines,
+void paint_compare_plate(ClientState& state, HDC dc, int x, int y,
+                         const RECT& bounds, const HudRect& keep_out,
+                         const std::string& title, COLORREF title_color,
+                         const std::vector<std::string>& lines,
                          render::List& rl) {
   if (title.empty()) return;
   HGDIOBJ old_font = SelectObject(dc, skin::font_body_bold());
@@ -1488,6 +1490,15 @@ void paint_compare_plate(HDC dc, int x, int y, const RECT& bounds, const std::st
   int box_x = std::min(x, static_cast<int>(bounds.right) - box_w - 8);
   int box_y = std::max(8, y - box_h - 8);
   box_x = std::max(8, box_x);
+  HudRect plate_rect{box_x, box_y, box_w, box_h};
+  // Covering the gear stats/footer cannot certify a compare. Park the plate
+  // in the world lane left of the pane when the default seat overlaps it.
+  if (keep_out.w > 0 && hud_rects_overlap(plate_rect, keep_out)) {
+    box_x = std::max(8, keep_out.x - box_w - 8);
+    box_y = std::min(std::max(8, y),
+                     std::max(8, static_cast<int>(bounds.bottom) - box_h - 8));
+    plate_rect = {box_x, box_y, box_w, box_h};
+  }
   RECT plate{box_x, box_y, box_x + box_w, box_y + box_h};
   skin::panel(dc, plate, title_color, 245, 5.0f);
   SetBkMode(dc, TRANSPARENT);
@@ -1504,8 +1515,11 @@ void paint_compare_plate(HDC dc, int x, int y, const RECT& bounds, const std::st
     fact_y += line_h;
   }
   SelectObject(dc, old_font);
+  state.hud_rect_trace.push_back({"compare-plate", plate_rect});
   rl.push_back({render::Op::Hud, static_cast<double>(box_x),
                 static_cast<double>(box_y), 0.0, 0, "compare:" + title});
+  rl.push_back({render::Op::Hud, static_cast<double>(box_x),
+                static_cast<double>(box_y), 0.0, 0, "compare-plate:clear"});
 }
 
 bool draw_wizard_orb(const BillboardAssets& assets, HDC dc, bool life, int cx,
@@ -4272,7 +4286,8 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
         facts.push_back("same ATK as equipped");
     }
     facts.push_back("Enter equips; U unequips");
-    paint_compare_plate(dc, hover_cx + cell_w, hover_cy, bounds, focus.name,
+    paint_compare_plate(state, dc, hover_cx + cell_w, hover_cy, bounds, pane,
+                        focus.name,
                         as_equipped ? skin::kGold : skin::kInk, facts, rl);
     if (as_equipped)
       rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "compare:equipped"});
@@ -14779,6 +14794,37 @@ int scenario_equipment() {
   scenario_check(ack_only && no_pending,
                  "equipment: live HUD names Ack only and No pending");
   scenario_check(pending_gold, "equipment: live HUD rejects pending gold");
+  auto trace_find = [](const ClientState& s,
+                       const char* label) -> const HudRect* {
+    for (const auto& entry : s.hud_rect_trace)
+      if (entry.first == label) return &entry.second;
+    return nullptr;
+  };
+  const HudRect* plate = trace_find(state, "compare-plate");
+  const HudRect* stats = trace_find(state, "pane-stats");
+  const HudRect* combat = trace_find(state, "pane-stats-combat");
+  const HudRect* footer = trace_find(state, "pane-footer");
+  const bool covers_stats =
+      plate && stats && hud_rects_overlap(*plate, *stats);
+  const bool covers_combat =
+      plate && combat && hud_rects_overlap(*plate, *combat);
+  const bool covers_footer =
+      plate && footer && hud_rects_overlap(*plate, *footer);
+  scenario_check(plate != nullptr && plate->w > 40,
+                 "equipment: compare plate is measured");
+  scenario_check(!covers_stats && !covers_combat && !covers_footer,
+                 "equipment: compare plate stays off gear stats and footer");
+  scenario_check(
+      verdigris::client::ui::compare_covers_gear_stats_fails_review(true),
+      "equipment: covering DEF/LVL with the compare plate is the anti-pattern");
+  scenario_check(
+      !verdigris::client::ui::compare_covers_gear_stats_fails_review(
+          covers_stats || covers_combat),
+      "equipment: a plate left of the pane is the production compare HUD");
+  scenario_check(render_list_has(state, render::Op::Hud, "compare-plate:clear"),
+                 "equipment: live HUD names the cleared compare plate");
+  scenario_check(render_list_has(state, render::Op::Hud, "gear:stats-def"),
+                 "equipment: DEF remains named on the gear pane");
   return scenario_failures;
 }
 

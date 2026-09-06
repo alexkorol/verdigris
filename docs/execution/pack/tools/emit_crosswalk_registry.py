@@ -19,7 +19,7 @@ CURSOR = {
     "VG-GOV-008": ("new", "pack tools/roadmap.py validate + unittest"),
     "VG-UI-001": ("extend", "pane-stack native Escape; helper depth alone cannot prove; close hint stays in slot"),
     "VG-UI-002": ("extend", "pack-drag occupancy; reject cannot lose/duplicate/silent-equip; sim inventory-move stays Kimi"),
-    "VG-UI-003": ("extend", "equipment compare plate is ack-only; pending cannot gold-frame as equipped"),
+    "VG-UI-003": ("extend", "equipment compare plate is ack-only; pending cannot gold-frame as equipped; plate stays off gear stats"),
     "VG-UI-004": ("extend", "stat-explain expandable ATK; dormant cannot fold into Attack; core STAT stays Kimi; close hint stays in slot"),
     "VG-UI-005": ("extend", "route-map zoom/opacity; off-snapshot blip cannot pass; Owner Demo journeys not reimplemented"),
     "VG-UI-006": ("extend", "Owner Demo — do not duplicate"),

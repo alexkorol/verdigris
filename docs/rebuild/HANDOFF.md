@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Compare plate left of gear stats (Cursor)
+
+- VG-UI-003 / VG-UI-002: the Ember-edged compare plate parks in the world
+  lane left of the I-key pane. Covering DEF/LVL or I or Esc closes cannot
+  certify. Ack-only / pending gold strip is review overlay. TREE absence
+  copy is unchanged.
+- Scenarios `equipment` / `pack-drag` PASS. Captures viewed. Not Owner
+  Demo. Not TASK-0108.
+
 ## 2026-09-06 — DEF and LVL stay on the gear pane (Cursor)
 
 - VG-UI-007 / VG-UI-002 / VG-UI-003: gear LIFE/RES wrap above ATK/DEF/LVL

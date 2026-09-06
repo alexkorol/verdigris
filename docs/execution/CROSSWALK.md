@@ -35,7 +35,7 @@ Cursor evidence notes.
 |---|---|---|
 | VG-UI-001 | extend | native Escape stack (`pane-stack`); owner Stack 2 / Escape closes; absent tree hides seats; invented origin cannot pass; WASD cannot overlay the open tree; C or Esc closes stays in the sheet slot |
 | VG-UI-002 | extend | TASK-0171 INTEGRATED, 0184 BRIDGE_PREP; `pack-drag`; reject cannot lose/duplicate/silent-equip; gear footer stays inside the pane |
-| VG-UI-003 | extend | paper-doll + ack-only HUD (`equipment`); pending compare cannot gold-frame as equipped; `progression-surface` owner Skill tree / No data yet (TASK folder cannot certify) |
+| VG-UI-003 | extend | paper-doll + ack-only HUD (`equipment`); pending compare cannot gold-frame as equipped; compare plate stays off gear DEF/LVL; `progression-surface` owner Skill tree / No data yet (TASK folder cannot certify) |
 | VG-UI-004 | extend | TASK-0156, 0159 INTEGRATED; `stat-explain` expandable ATK; dormant cannot fold into Attack; WASD stays off the C-key sheet; close hint stays in the slot |
 | VG-UI-005 | extend | TASK-0076 INTEGRATED; 0178/0192/0203 Owner Demo; `route-map` zoom/opacity cannot reveal off-snapshot targets |
 | VG-UI-006 | extend | TASK-0145/0177 + 0190/0197/0201 — **do not duplicate** |
@@ -250,7 +250,8 @@ progression capture: owner strip paints Skill tree / No data yet; TREE
 jargon cannot certify. Scenario `progression-surface` pack capture in
 art-wave (TASK-0156 folder cannot certify). Absent P-key tree hides
 seats (`tree-pane-960x600.png`, shared with VG-UI-001) and keeps WASD
-off the pane. Gear footer I or Esc closes stays inside the pane. Evidence
+off the pane. Gear footer I or Esc closes stays inside the pane. Compare
+plate parks left of the pane; covering DEF/LVL cannot certify. Evidence
 `docs/execution/evidence/VG-UI-003.json`.
 VG-PERF-007: 32 resize/effect cycles; floor bitmaps stay 1. Owner strip
 paints 32 cycles / Cap holds. Short scene cannot certify. Scenario
