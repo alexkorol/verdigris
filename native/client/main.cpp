@@ -4442,10 +4442,10 @@ void paint_route_card(ClientState& state, HDC dc, const RECT& bounds,
   state.hud_rect_trace.push_back({"route-card", card});
   skin::panel(dc, plate, skin::kGold, 220, 4.0f);
   const WorldView& world = state.world;
-  std::string route = world.route_id.empty() ? std::string("surface") : world.route_id;
-  if (route.size() > 18) route = route.substr(0, 17) + ".";
+  const std::string route =
+      verdigris::client::ui::route_owner_title(world.route_id);
   const std::string theme =
-      world.theme.empty() ? std::string("theme ?") : ("theme " + world.theme);
+      verdigris::client::ui::route_theme_label(world.theme);
   const bool slay = world.expedition_phase == ExpeditionPhaseView::SlayWardens;
   const bool extract =
       world.expedition_phase == ExpeditionPhaseView::ExtractCarriedValue;
@@ -6468,8 +6468,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         world.house_name + " - Scion " +
         (world.scion_name.empty() ? std::string("(unnamed)") : world.scion_name);
     static constexpr char kControls[] =
-        "WASD move | mouse aim | LMB attack | RMB/Space dash | Q E R skills | "
-        "X take | Z names | I gear | T hail | N road";
+        "WASD | LMB strike | I gear | F3 binds";
     const std::string& art_text = state.billboards.status;
     const bool plates_ready =
         state.billboards.player.ready() && state.billboards.raider.ready() &&
@@ -6795,14 +6794,15 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     std::snprintf(debug_line, sizeof(debug_line),
                   "tick %llu | player %d,%d | zoom %.2f | fps %d | paint %.1fms"
                   " (floor %.1f world %.1f hud %.1f upload %.1f) | effects %zu"
-                  " | telegraphs %zu | monsters %zu | npcs %zu",
+                  " | telegraphs %zu | monsters %zu | npcs %zu | route %s",
                   static_cast<unsigned long long>(world.tick),
                   player.position.x, player.position.y,
                   state.camera.zoom, state.fps, state.last_paint_ms,
                   state.paint_ms_floor, state.paint_ms_world, state.paint_ms_hud,
                   state.paint_ms_upload,
                   state.effects.size(), state.telegraphs.size(),
-                  world.monsters.size(), world.npcs.size());
+                  world.monsters.size(), world.npcs.size(),
+                  world.route_id.empty() ? "surface" : world.route_id.c_str());
     TextOutA(dc, 18, 144, debug_line, static_cast<int>(strlen(debug_line)));
     SYSTEM_INFO sysinfo{};
     GetNativeSystemInfo(&sysinfo);
@@ -12056,6 +12056,16 @@ int scenario_route_map() {
                  "route-map: slay phase posts warden risk");
   scenario_check(std::strcmp(route_return_fact(false), "return town") == 0,
                  "route-map: no pad still returns to town");
+  using verdigris::client::ui::route_owner_title;
+  using verdigris::client::ui::route_theme_label;
+  scenario_check(route_owner_title("route:tin:1:0") == "Tin village",
+                 "route-map: tin root paints as Tin village");
+  scenario_check(route_owner_title("route:tin:1:0").find(':') == std::string::npos,
+                 "route-map: owner title cannot keep a protocol colon");
+  scenario_check(route_owner_title("not-a-wire-token") == "not-a-wire-token",
+                 "route-map: a display name without colons still shows");
+  scenario_check(route_theme_label("town") == "Town road",
+                 "route-map: town theme is a road name, not theme town");
 
   ClientState state;
   scenario_begin(state);
@@ -12088,6 +12098,8 @@ int scenario_route_map() {
   bool risk_hud = false;
   bool route_hud = false;
   bool ghost_named = false;
+  bool protocol_title = false;
+  bool tin_village = false;
   for (const auto& item : state.render_list) {
     if (item.op != render::Op::Hud) continue;
     if (item.label == "map-blip:off-snapshot-warden") leaked = true;
@@ -12096,6 +12108,10 @@ int scenario_route_map() {
     if (item.label == "map-opacity:255") opacity_hud = true;
     if (item.label == "route-risk:risk wardens") risk_hud = true;
     if (item.label.rfind("route:", 0) == 0) route_hud = true;
+    if (item.label == "route:Tin village") tin_village = true;
+    if (item.label.find("route:tin:") != std::string::npos ||
+        item.label.find("route:salt:") != std::string::npos)
+      protocol_title = true;
     if (item.label.find("off-snapshot-warden") != std::string::npos)
       ghost_named = true;
   }
@@ -12107,6 +12123,10 @@ int scenario_route_map() {
                  "route-map: zoom and opacity publish as overlay settings");
   scenario_check(route_hud && risk_hud,
                  "route-map: route card names return/risk without foe ids");
+  scenario_check(tin_village,
+                 "route-map: live card titles Tin village, not the wire id");
+  scenario_check(!protocol_title,
+                 "route-map: a protocol route id cannot be the owner title");
   scenario_check(!ghost_named,
                  "route-map: HUD cannot name a server-hidden target");
 

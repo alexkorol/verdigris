@@ -1,5 +1,13 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — owner route card names (Cursor)
+
+- Route card paints `Tin village` / `Town road`, not `route:tin:1:0`.
+  A protocol colon-id cannot be the owner title. F3 still shows the raw
+  id. Compact controls: `WASD | LMB strike | I gear | F3 binds`.
+- Scenario `route-map`. Captures `route-map-960x600.png` and
+  `visual-target-960x600.png`. Not TASK-0108, not Owner Demo.
+
 ## 2026-09-06 — hide skeleton art loader chip (Cursor)
 
 - Owner HUD no longer paints `art: PNG billboards loaded`. Loaded art is

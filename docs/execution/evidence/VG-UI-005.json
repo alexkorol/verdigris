@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-005",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "base_sha": "aa75dbd8",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "route-map",
@@ -12,31 +12,40 @@
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario route-map", "exit_code": 0}
+    {"run": "native/build/verdigris_client.exe --scenario route-map", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario visual-target", "exit_code": 0}
   ],
   "assertions": [
     "max zoom cannot paint an off-snapshot warden blip",
     "snapshot-visible foes still publish map-blip HUD",
     "zoom/opacity do not move the player",
-    "route card names risk/return without hidden target ids"
+    "route card names risk/return without hidden target ids",
+    "owner card titles Tin village, not route:tin:1:0",
+    "a protocol colon-id cannot be the owner title"
   ],
   "negative_control": {
-    "name": "tight zoom reveals a server-hidden map target",
+    "name": "tight zoom reveals a server-hidden map target, or a protocol route id as the owner title",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/route-map-960x600.png",
-      "sha256": "c11af4f2f964193329fb86bf984399646ddc584b7e4f2c0b9ce9da83ec249ea8",
+      "sha256": "11a48a0bd4b0daac06e539b81cd5232487d15a73be9c7f07356b4c8d8944a392",
       "produced_by": "native/build/verdigris_client.exe --scenario route-map"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/visual-target-960x600.png",
+      "sha256": "bf1774cd724a2c6eed76dc6f65c853666b0347ac97e58df0e789bbd72d501813",
+      "produced_by": "native/build/verdigris_client.exe --scenario visual-target"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Overlay/HUD only. World topology and server-hidden actor lists stay with Kimi WORLD/NET.",
-    "Owner Demo journeys (TASK-0178/0192/0203) not duplicated.",
-    "Working tree is dirty. No TASK numbers minted."
+    "Raw route id remains on the F3 overlay. Owner Demo journeys not duplicated.",
+    "No TASK numbers minted."
   ]
 }

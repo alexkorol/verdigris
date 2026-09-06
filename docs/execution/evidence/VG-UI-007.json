@@ -32,19 +32,19 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/hud-pane-readability-open-3440x1440.png",
-      "sha256": "b29adc416a04fa4ce660bb9735ba72196ee204e59fb0bd2962522da07fbdb34e",
+      "sha256": "2b2cbb627fa9c7dba773851fde69a62f815b572229df2790e1af03fad7341050",
       "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
     },
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/hud-pane-readability-closed-3440x1440.png",
-      "sha256": "e3331853dc68fd2e61c492bbfbd81904c707f748b6e7c175fd35b129f8c25bc4",
+      "sha256": "7a4109e61bfdee42c6526926e3f695e5d9a267a5ba2b69eed384b1eb45802ddd",
       "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
     },
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/hud-pane-readability-open-960x600.png",
-      "sha256": "ec3e2c9d25c44d34b3c9faccb5ad3b168f1ff54b68e7f3b420f42947193d70b8",
+      "sha256": "11eab43bf3a7197ffc3bd2b95624a05f755e9fadc963ebdfcb885998af26a4d6",
       "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
     },
     {

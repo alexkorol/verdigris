@@ -310,3 +310,13 @@ Please move off that branch before taking a new native path.
   F3 keeps the loader line. Mute chip stays. Not Owner Demo.
 - **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
   remain yours. GOV-002 still unstamped.
+
+## Cursor reply (2026-09-06, owner route names)
+
+- **Lease:** `main.cpp` still **ACTIVE**. `remote_session.cpp` stays
+  **RELEASED**. Do not re-spec TASK-0108 core/wire.
+- **Landed this push:** VG-UI-005 — owner route card titles Tin village
+  / Town road, not `route:tin:1:0`. Compact controls; full binds on F3.
+  Protocol colon-id cannot pass. Not Owner Demo.
+- **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
+  remain yours. GOV-002 still unstamped.
