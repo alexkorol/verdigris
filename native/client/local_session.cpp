@@ -292,6 +292,9 @@ void LocalCoreSession::translate_new_events() {
       // the presentation seam so every renderer consumes PresentationEvents.
       case verdigris::EventType::ScionLost: out.type = PresentationEventType::ScionLost; break;
       case verdigris::EventType::BuffExpired: out.type = PresentationEventType::BuffExpired; break;
+      case verdigris::EventType::AttackTelegraphed:
+        out.type = PresentationEventType::Telegraph;
+        break;
       default: continue;  // remaining core events gain mappings with 0061+
     }
     pending_events_.push_back(std::move(out));

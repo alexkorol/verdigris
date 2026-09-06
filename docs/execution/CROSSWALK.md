@@ -13,7 +13,7 @@ Cursor evidence notes.
 
 | Existing | Disposition for VG work |
 |---|---|
-| TASK-0108 combat-depth-wave | Predecessor for readable combat; VG-ART-003/006 extend, never re-spec |
+| TASK-0108 combat-depth-wave | Predecessor for readable combat; VG-ART-003/006 extend, never re-spec. Cursor 2026-09-06: local Telegraph ingest from JS `world:projectile` keys (`ingest-ranged-projectile-warning.hpp`, `ranged-warning` scenario). Core+wire stays Kimi `3b929637`. `remote_session.cpp` still successor. |
 | TASK-0145, 0177, 0178, 0197, 0203, 0205–0207 Owner Demo | Journey/content/perf gates; VG-UI-006, VG-ART-008, VG-PERF-008, VG-GOV-007 extend |
 
 ## GOV

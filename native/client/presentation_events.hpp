@@ -38,6 +38,12 @@ struct PresentationEvent {
   // remote session copies these from the envelope; it never computes them.
   bool critical = false;
   std::string style;
+  // TASK-0108 local projectile warning (JS world:projectile keys). Unused
+  // for slam telegraphs. remote_session.cpp still must not parse this.
+  int from_x = 0;
+  int from_y = 0;
+  int to_x = 0;
+  int to_y = 0;
 };
 
 // TASK-0122 Phase A: the single named table for every new animation/VFX TTL,

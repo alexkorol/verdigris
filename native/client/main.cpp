@@ -62,6 +62,7 @@ namespace phase_a = verdigris::client::phase_a;
 #include "expose-loot-filter-facts.hpp"
 #include "freeze-three-slice-build-fixtures.hpp"
 #include "publish-telegraph-timing-and-geometry.hpp"
+#include "ingest-ranged-projectile-warning.hpp"
 #include "preserve-headless-presentation-contracts.hpp"
 #include "rule-on-death-and-disconnect.hpp"
 #include "ui/complete-one-controller-interaction-path.hpp"
@@ -11194,6 +11195,76 @@ int scenario_telegraph_spec() {
   return scenario_failures;
 }
 
+int scenario_ranged_warning() {
+  using verdigris::client::projectile::from_js_payload;
+  using verdigris::client::projectile::hud_chip;
+  using verdigris::client::projectile::is_projectile_warning;
+  using verdigris::client::projectile::kAuthoredVolleyTravelMs;
+
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+
+  verdigris::client::PresentationEvent slam{
+      verdigris::client::PresentationEventType::Telegraph, "boss-1", "",
+      "boss:ground-slam", 800};
+  scenario_check(!is_projectile_warning(slam),
+                 "ranged-warning: slam envelope is not a projectile windup");
+
+  const auto warning =
+      from_js_payload("flint-1", 1, 1, 5, 1, kAuthoredVolleyTravelMs, "monster");
+  verdigris::client::PresentationFx fx;
+  verdigris::client::apply_presentation_event(fx, state.world, warning,
+                                             state.world.tick);
+  scenario_check(fx.telegraphs.count("flint-1") == 1 &&
+                     fx.telegraphs["flint-1"].action == "projectile",
+                 "ranged-warning: projectile windup stores a Telegraph");
+  scenario_check(fx.telegraphs["flint-1"].windup_ticks ==
+                     kAuthoredVolleyTravelMs / verdigris::kSimulationTickMs,
+                 "ranged-warning: travelMs uses the authored 50ms tick");
+
+  verdigris::client::PresentationEvent hit{
+      verdigris::client::PresentationEventType::DamageApplied, "flint-1", "",
+      "incoming", 4};
+  verdigris::client::apply_presentation_event(fx, state.world, hit,
+                                             state.world.tick + 1);
+  state.telegraphs = fx.telegraphs;
+  state.effects = fx.effects;
+  scenario_present(state);
+
+  bool saw_telegraph = false;
+  bool saw_damage = false;
+  bool saw_impact = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Telegraph) saw_telegraph = true;
+    if (item.op == render::Op::Damage) saw_damage = true;
+    if (item.op == render::Op::Impact || item.op == render::Op::TargetFlash)
+      saw_impact = true;
+  }
+  scenario_check(saw_telegraph,
+                 "ranged-warning: live list records Telegraph before the hit");
+  scenario_check(saw_damage && saw_impact,
+                 "ranged-warning: hit lands as attributed Damage/Impact");
+  scenario_check(fx.monster_strikes.count("flint-1") == 1,
+                 "ranged-warning: incoming damage is attributed to flint-1");
+
+  verdigris::client::PresentationFx bare;
+  verdigris::client::apply_presentation_event(bare, state.world, hit, 9);
+  scenario_check(bare.telegraphs.find("flint-1") == bare.telegraphs.end(),
+                 "ranged-warning: a hit without a warning cannot mint Telegraph");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "ranged-warning: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\ranged-warning-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "ranged-warning: capture written");
+  (void)hud_chip;
+  return scenario_failures;
+}
+
 int scenario_headless_contract() {
   verdigris::client::qa::SemanticIntent intent{};
   scenario_check(verdigris::client::qa::intent_for_attack_started(&intent) &&
@@ -12190,6 +12261,7 @@ int run_scenarios(const std::string& which) {
       {"loot-filter", scenario_loot_filter},
       {"build-fixtures", scenario_build_fixtures},
       {"telegraph-spec", scenario_telegraph_spec},
+      {"ranged-warning", scenario_ranged_warning},
       {"headless-contract", scenario_headless_contract},
       {"input-latency", scenario_input_latency},
       {"eight-way", scenario_eight_way},

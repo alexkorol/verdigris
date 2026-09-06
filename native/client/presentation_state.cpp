@@ -1,5 +1,6 @@
 #include "presentation_state.hpp"
 #include "publish-telegraph-timing-and-geometry.hpp"
+#include "ingest-ranged-projectile-warning.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -285,6 +286,10 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       break;
     }
     case PresentationEventType::Telegraph: {
+      if (projectile::is_projectile_warning(event)) {
+        projectile::apply_warning(fx, world, event, now_tick);
+        break;
+      }
       ActiveTelegraph telegraph;
       telegraph.actor_id = event.actor_id;
       telegraph.position = event_anchor(world, fx, event, false);
@@ -375,7 +380,8 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
         line = "Kill " + event.text;
         break;
       case PresentationEventType::Telegraph:
-        line = "Telegraph " + event.text;
+        line = event.text == "projectile" ? "Projectile warning " + event.actor_id
+                                          : "Telegraph " + event.text;
         break;
       case PresentationEventType::ItemDropped:
         line = "Loot";

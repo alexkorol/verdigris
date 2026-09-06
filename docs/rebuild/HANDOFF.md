@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — TASK-0108 local Telegraph ingest (Cursor lease)
+
+- Client stage of Kimi's ranged `world:projectile` windup: JS payload keys
+  become the existing Telegraph op, then attributed Damage/Impact.
+  Helper `native/client/ingest-ranged-projectile-warning.hpp`. Lock in
+  `native/tests/presentation_events_tests.cpp`. Scenario `ranged-warning`.
+  Does not edit `native/src/**`, `native/include/**`, or
+  `native/client/remote_session.cpp`. Slam `monster:telegraph` is not this
+  mapper. A hit without a preceding warning cannot mint a Telegraph.
+
 ## 2026-09-06 — ship Cursor pack wave (owner asked to push)
 
 Architect checkout `codex/native-reconstitution`. Lands `docs/execution/`

@@ -8,10 +8,12 @@
 // does not also pin.
 
 #include <cstdio>
+#include <cmath>
 #include <string>
 
 #include "../client/local_session.hpp"
 #include "../client/presentation_state.hpp"
+#include "../client/ingest-ranged-projectile-warning.hpp"
 
 namespace {
 
@@ -269,6 +271,112 @@ void server_messages_surface_as_toasts() {
   check(untouched.hint.empty(), "message: empty text never blanks a toast");
 }
 
+void ranged_projectile_warning_precedes_attributed_hit() {
+  using verdigris::client::projectile::from_js_payload;
+  using verdigris::client::projectile::is_projectile_warning;
+  using verdigris::client::projectile::js_payload_shape;
+  using verdigris::client::projectile::kAuthoredVolleyTravelMs;
+  using verdigris::client::projectile::windup_ticks_from_travel_ms;
+
+  check(js_payload_shape(kAuthoredVolleyTravelMs, "monster"),
+        "0108: JS payload shape is fromX/fromY/toX/toY/travelMs/kind=monster");
+  check(!js_payload_shape(0, "monster"),
+        "0108: missing travelMs is not a projectile payload");
+
+  WorldView world = world_with_player_and_foe("right");
+  world.tick = 1;
+  world.monsters[0].id = "flint-1";
+  world.monsters[0].behaviour = "ranged";
+  world.player.position = {static_cast<int>(std::lround(
+                               verdigris::client::protocol_to_world(5))),
+                           static_cast<int>(std::lround(
+                               verdigris::client::protocol_to_world(1)))};
+
+  PresentationEvent slam{PresentationEventType::Telegraph, "boss-1", "",
+                         "boss:ground-slam", 800};
+  check(!is_projectile_warning(slam),
+        "0108: slam-shaped telegraph is not a projectile warning");
+
+  const auto warning =
+      from_js_payload("flint-1", 1, 1, 5, 1, kAuthoredVolleyTravelMs, "monster");
+  check(is_projectile_warning(warning),
+        "0108: world:projectile keys become a Telegraph event");
+  check(windup_ticks_from_travel_ms(kAuthoredVolleyTravelMs) ==
+            kAuthoredVolleyTravelMs / verdigris::kSimulationTickMs,
+        "0108: travelMs uses the 50ms tick, not a catalog guess");
+
+  PresentationFx fx;
+  std::vector<std::string> transcript;
+  auto note_ops = [&](const char* actor) {
+    render::List rl;
+    camera2d::Camera camera;
+    camera.x = world.player.position.x;
+    camera.y = world.player.position.y;
+    verdigris::client::record_world_ops(rl, world, fx, camera, 960, 600);
+    for (const auto& item : rl) {
+      if (item.op == render::Op::Telegraph)
+        transcript.push_back(std::string("Telegraph ") + actor + " " + item.label);
+      if (item.op == render::Op::Damage)
+        transcript.push_back(std::string("Damage ") + actor);
+      if (item.op == render::Op::Impact || item.op == render::Op::TargetFlash)
+        transcript.push_back(std::string("Impact ") + actor);
+    }
+  };
+
+  verdigris::client::apply_presentation_event(fx, world, warning, 1);
+  note_ops("flint-1");
+  PresentationEvent hit{PresentationEventType::DamageApplied, "flint-1", "",
+                        "incoming", 4};
+  verdigris::client::apply_presentation_event(fx, world, hit, 2);
+  note_ops("flint-1");
+
+  int warning_at = -1;
+  int damage_at = -1;
+  int impact_at = -1;
+  for (int i = 0; i < static_cast<int>(transcript.size()); ++i) {
+    if (warning_at < 0 && transcript[static_cast<std::size_t>(i)].rfind(
+                              "Telegraph flint-1", 0) == 0)
+      warning_at = i;
+    if (damage_at < 0 && transcript[static_cast<std::size_t>(i)] == "Damage flint-1")
+      damage_at = i;
+    if (impact_at < 0 && transcript[static_cast<std::size_t>(i)].rfind(
+                             "Impact flint-1", 0) == 0)
+      impact_at = i;
+  }
+  check(warning_at >= 0, "0108: ranged windup records a Telegraph op");
+  check(fx.telegraphs["flint-1"].action == "projectile",
+        "0108: Telegraph label stays the existing op, action projectile");
+  check(damage_at >= 0 && impact_at >= 0,
+        "0108: ranged hit lands as attributed Damage/Impact");
+  check(warning_at < damage_at && warning_at < impact_at,
+        "0108: every ranged hit is preceded by its Telegraph op");
+  check(fx.monster_strikes.count("flint-1") == 1,
+        "0108: incoming hit is attributed to the ranged attacker");
+
+  PresentationFx bare_hit;
+  verdigris::client::apply_presentation_event(bare_hit, world, hit, 3);
+  render::List bare;
+  camera2d::Camera camera;
+  camera.x = world.player.position.x;
+  camera.y = world.player.position.y;
+  verdigris::client::record_world_ops(bare, world, bare_hit, camera, 960, 600);
+  bool illegal_telegraph = false;
+  bool saw_damage = false;
+  for (const auto& item : bare) {
+    if (item.op == render::Op::Telegraph) illegal_telegraph = true;
+    if (item.op == render::Op::Damage) saw_damage = true;
+  }
+  check(saw_damage && !illegal_telegraph,
+        "0108: a hit without a preceding warning cannot mint a Telegraph");
+  check(bare_hit.telegraphs.find("flint-1") == bare_hit.telegraphs.end(),
+        "0108: negative — damage-only path never records the ranged warning");
+
+  PresentationFx slam_fx;
+  verdigris::client::apply_presentation_event(slam_fx, world, slam, 1);
+  check(slam_fx.telegraphs["boss-1"].action != "projectile",
+        "0108: negative — slam telegraph never becomes a projectile warning");
+}
+
 void npcs_ride_the_model_into_world_and_render_list() {
   verdigris::client::ClientModel model;
   model.player.x = 38.0;
@@ -315,6 +423,7 @@ int main() {
   seam_events_cannot_mutate_simulation();
   diagonal_facing_resolves_component_wise();
   server_messages_surface_as_toasts();
+  ranged_projectile_warning_precedes_attributed_hit();
   npcs_ride_the_model_into_world_and_render_list();
   std::printf("%s\n", failures == 0 ? "presentation events tests: PASS"
                                     : "presentation events tests: FAIL");

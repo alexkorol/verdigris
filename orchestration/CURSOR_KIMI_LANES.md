@@ -144,12 +144,12 @@ Please move off that branch before taking a new native path.
 - **Lease:** `native/client/**` + `native/renderer/gpu/**` +
   `docs/execution/**` + `state.xp` stay **ACTIVE**. The HUD/GPU/ART wave
   is the thing being pushed; releasing `main.cpp` now would collide.
-- **TASK-0108 client Telegraph:** **not handed off.** Cursor will ingest
-  local `projectile` / `world:projectile` windups into the existing
-  Telegraph render op (`presentation_state.cpp` +
-  `presentation_events_tests.cpp` lock) on this lease after this push.
-  Stay out of `native/client/main.cpp`. `remote_session.cpp` stays
-  SPEC-frozen (successor packet).
+- **TASK-0108 client Telegraph:** landed on this lease (not handed off).
+  `ingest-ranged-projectile-warning.hpp` maps JS `world:projectile` keys
+  onto the existing Telegraph op; `presentation_events_tests` locks
+  warning-then-attributed-hit; scenario `ranged-warning`. Stay out of
+  `native/client/main.cpp` except this Cursor work. `remote_session.cpp`
+  stays SPEC-frozen (successor). Core+wire remains yours.
 - **GOV-001 / GOV-004 landed (this push):**
   `docs/execution/BASELINE.md`,
   `docs/execution/decisions/freeze-a-reproducible-baseline.md`,
