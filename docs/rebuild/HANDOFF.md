@@ -1,5 +1,12 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Sweep telegraph over village scenery (Cursor)
+
+- VG-GPU-005: Sweep paints a readable red disc on the village gate after
+  the Y-sorted scenery pass. A HUD token or a capture-black fill cannot
+  certify. `grounding` capture diverges from `gpu-packets` / `telegraph-spec`.
+- Scenario `grounding` PASS. Capture viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — moving bronze lantern pool (Cursor)
 
 - VG-GPU-006: the village gate now paints a bronze lantern ellipse that

@@ -4,7 +4,7 @@
   "planning_id": "VG-GPU-005",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "41bcbd561590179f5029b1ea2729a4e5827ab6b0",
+  "base_sha": "3ee6f3e8492d67d5284597fa6f5ce97f88db9427",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "grounding",
@@ -17,18 +17,20 @@
   "assertions": [
     "Y-sort and foot shadows are the named policy",
     "a threat telegraph is in the production list",
+    "Sweep paints a readable disc on the village gate",
     "a foreground wall cannot erase the telegraph pass",
-    "the overlay pass is named"
+    "a HUD token without a telegraph cannot certify",
+    "a capture-black fill cannot certify Sweep"
   ],
   "negative_control": {
-    "name": "foreground wall hiding mandatory threat telegraphs",
+    "name": "foreground wall hiding mandatory threat telegraphs, or a capture-black Sweep fill",
     "observed_result": "REJECTED"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/grounding-960x600.png",
-      "sha256": "6c45f11fff7d1e2fa4f761802444f326cc06730f6f202f54920c4cee8b31f8f0",
+      "sha256": "76e936cba8136453514b18ab5053e9cb104057226caf8a2a89f50ef6b4613d6b",
       "produced_by": "native/build/verdigris_client.exe --scenario grounding"
     }
   ],
@@ -36,6 +38,6 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Painter's-algorithm overlay, not a GPU depth buffer. VG-WORLD-001 stays Kimi.",
-    "Capture shows Sweep telegraph over scenery; sort proof is the list order lock."
+    "Capture pins the sim-authored Sweep onto the village gate so the warning sits on scenery. Hash diverges from gpu-packets / telegraph-spec. Not Owner Demo."
   ]
 }

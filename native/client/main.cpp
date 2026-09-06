@@ -2942,14 +2942,23 @@ void draw_sweep_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
   if (clamped <= 0.0) return;
   rl.push_back({render::Op::Telegraph, static_cast<double>(base.x),
                 static_cast<double>(base.y), clamped, 0, "sweep"});
-  const COLORREF fill = telegraph_color(visibility * 0.28, RGB(214, 52, 52));
-  const COLORREF edge = telegraph_color(visibility, RGB(238, 72, 64));
+  const COLORREF fill =
+      telegraph_color(std::max(0.88, visibility), RGB(214, 52, 52));
+  const COLORREF edge = telegraph_color(std::max(0.82, visibility), RGB(238, 72, 64));
   const int draw_r = static_cast<int>(clamped);
   fill_ellipse(dc, base.x, base.y, draw_r, draw_r, fill);
   ring_ellipse(dc, base.x, base.y, draw_r, draw_r, edge, 3);
   if (draw_r > 12)
     ring_ellipse(dc, base.x, base.y, draw_r - 10, draw_r - 10,
-                 telegraph_color(visibility * 0.82, RGB(255, 112, 82)), 1);
+                 telegraph_color(0.9, RGB(255, 112, 82)), 2);
+  const COLORREF caption = vector_art::dc_color(dc, RGB(255, 214, 196));
+  RECT chip{base.x - 22, base.y + draw_r + 2, base.x + 22, base.y + draw_r + 18};
+  HBRUSH chip_bg = CreateSolidBrush(vector_art::dc_color(dc, RGB(16, 18, 20)));
+  FillRect(dc, &chip, chip_bg);
+  DeleteObject(chip_bg);
+  SetBkMode(dc, TRANSPARENT);
+  SetTextColor(dc, caption);
+  TextOutA(dc, base.x - 16, base.y + draw_r + 3, "Sweep", 5);
 }
 
 double telegraph_visibility(const ClientState& state,
@@ -6600,6 +6609,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "grounding:sort:y"});
   rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "grounding:contact-shadow"});
   rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "grounding:telegraph-overlay"});
+  if (render::any(rl, render::Op::Telegraph))
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "grounding:over-scenery"});
 
   // TASK-0122 Phase A: world-anchored beat legend. Only the capture proof
   // composite populates it; normal play renders nothing here.
@@ -10912,20 +10923,58 @@ int scenario_grounding() {
         {scion->position.x - melee, scion->position.y}, 1, true);
     scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
   }
+  verdigris::Vec2 gate{200, 180};
+  bool found_gate = false;
+  for (const auto& item : state.scenery) {
+    if (item.kind != SceneryKind::Gate) continue;
+    gate = item.position;
+    found_gate = true;
+    break;
+  }
+  scenario_check(found_gate, "grounding: village gate is in the spawn frustum");
+  // Pin the sim-authored Sweep onto the gate so the capture proves a
+  // foreground wall cannot erase the warning. ingest_events drops keys
+  // that are not live actors, so this keeps the elite's id.
+  for (auto& entry : state.telegraphs) {
+    entry.second.position = gate;
+    entry.second.action = "sweep";
+    entry.second.reach = verdigris::Simulation::presentation_catalog().melee_range;
+    entry.second.windup_ticks = 8;
+    entry.second.start_tick =
+        state.world.tick > 5 ? state.world.tick - 5 : 0;
+  }
   scenario_present(state);
   auto has = [&](const char* name) {
     for (const auto& item : state.render_list)
       if (item.op == render::Op::Hud && item.label == name) return true;
     return false;
   };
+  bool sweep_over_gate = false;
+  double sweep_px = 0.0;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Telegraph && item.label == "sweep") {
+      sweep_over_gate = true;
+      sweep_px = std::max(sweep_px, item.radius);
+    }
+  }
   scenario_check(has("grounding:sort:y") && has("grounding:contact-shadow"),
                  "grounding: Y-sort and foot shadows are the named policy");
   scenario_check(render::any(state.render_list, render::Op::Telegraph),
                  "grounding: a threat telegraph is in the production list");
+  scenario_check(sweep_over_gate && sweep_px >= 24.0,
+                 "grounding: Sweep paints a readable disc on the village gate");
   scenario_check(verdigris::gpu::telegraph_draws_after_scenery(state.render_list),
                  "grounding: a foreground wall cannot erase the telegraph pass");
-  scenario_check(has("grounding:telegraph-overlay"),
+  scenario_check(has("grounding:telegraph-overlay") && has("grounding:over-scenery"),
                  "grounding: the overlay pass is named");
+  scenario_check(verdigris::gpu::hud_label_alone_fails_grounding_review(false),
+                 "grounding: a HUD token without a telegraph cannot certify");
+  scenario_check(!verdigris::gpu::hud_label_alone_fails_grounding_review(sweep_over_gate),
+                 "grounding: the painted Sweep, not a HUD token, certifies overlay");
+  scenario_check(verdigris::gpu::capture_black_telegraph_fails_review(0, 0, 0),
+                 "grounding: a capture-black fill cannot certify Sweep");
+  scenario_check(!verdigris::gpu::capture_black_telegraph_fails_review(238, 72, 64),
+                 "grounding: red warning chroma is not treated as capture-black");
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {
     scenario_check(false, "grounding: capture root rejected before any write");

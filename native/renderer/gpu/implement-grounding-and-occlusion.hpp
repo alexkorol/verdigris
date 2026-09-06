@@ -20,4 +20,14 @@ inline bool telegraph_draws_after_scenery(const render::List& list) {
   return last_telegraph >= 0 && last_telegraph > last_scenery;
 }
 
+inline bool hud_label_alone_fails_grounding_review(bool telegraph_painted) {
+  return !telegraph_painted;
+}
+
+// A capture-black fill is how the old spawn still hid Sweep. Red warning
+// chroma has to survive the 32bpp DIB path.
+inline bool capture_black_telegraph_fails_review(int r, int g, int b) {
+  return r < 32 && g < 32 && b < 32;
+}
+
 }  // namespace verdigris::gpu
