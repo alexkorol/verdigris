@@ -1,5 +1,13 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — voice budget holds the warning (Cursor)
+
+- VG-SOUND-004: owner Voices 8 strip paints Warning held. Twelve World
+  cosmetics cannot starve scion-lost; cosmetic x12 is the rejected
+  control. Mixer steal stays TASK-0157.
+- Scenario `combat-audio` PASS. Capture viewed. Not Owner Demo.
+  VG-PERF-002 stays Kimi.
+
 ## 2026-09-06 — painted-scene BMP readback (Cursor)
 
 - VG-GPU-007: tin-village paint writes a 960x600 BMP plus provenance

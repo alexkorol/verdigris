@@ -77,6 +77,7 @@ namespace phase_a = verdigris::client::phase_a;
 #include "choose-and-test-one-audio-device-adapter.hpp"
 #include "persist-audio-accessibility-controls.hpp"
 #include "add-one-environment-ambience-layer.hpp"
+#include "enforce-voice-limits-and-priorities.hpp"
 #include "score-one-dense-combat-mix.hpp"
 #include "run-a-long-session-memory-soak.hpp"
 #include "../renderer/gpu/build-an-isolated-cross-platform-gpu-sample.hpp"
@@ -470,6 +471,7 @@ struct ClientState {
   bool telegraph_review_strip = false;
   bool ambience_review_strip = false;
   bool capture_review_strip = false;
+  bool voice_budget_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -6226,6 +6228,44 @@ void paint_capture_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   SelectObject(dc, old_font);
 }
 
+void paint_voice_budget_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                     render::List& rl) {
+  if (!state.voice_budget_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "voice-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const std::string title = verdigris::client::voices::owner_budget_line();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title.c_str(),
+           static_cast<int>(title.size()));
+  SetTextColor(dc, skin::kInk);
+  const char* held = verdigris::client::voices::owner_warning_held_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, held, static_cast<int>(strlen(held)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "cosmetic x12";
+  TextOutA(dc, rx - 30 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "voice:warning-held"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "voice-strip:cosmetic-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -7246,6 +7286,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_telegraph_review_strip(state, dc, bounds, rl);
   paint_ambience_review_strip(state, dc, bounds, rl);
   paint_capture_review_strip(state, dc, bounds, rl);
+  paint_voice_budget_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -8423,6 +8464,10 @@ int scenario_first_fight() {
   return 0;
 }
 
+std::string art_wave_capture_dir();
+bool reference_present(ClientState& state, int width, int height,
+                       const std::string& png_path);
+
 int scenario_combat_audio() {
   ClientState state;
   scenario_begin(state);
@@ -8475,6 +8520,13 @@ int scenario_combat_audio() {
     if (cue.cue_id == "scion-lost") heard_warning = true;
   scenario_check(heard_warning,
                  "combat-audio: dense cosmetics cannot starve the loss warning");
+  scenario_check(verdigris::client::voices::cosmetics_starve_warning(false),
+                 "combat-audio: a starved warning fails review");
+  scenario_check(!verdigris::client::voices::cosmetics_starve_warning(heard_warning),
+                 "combat-audio: a held warning certifies the voice budget");
+  scenario_check(verdigris::client::voices::over_budget_cosmetics_fail_review(
+                     12, verdigris::client::voices::kSfxVoiceBudget),
+                 "combat-audio: twelve cosmetics exceed the SFX voice cap");
 
   const std::string route = state.audio_ambience_route;
   const std::size_t before = state.audio_voiced.size();
@@ -8488,7 +8540,25 @@ int scenario_combat_audio() {
                  "combat-audio: rapid reentry does not stack ambience");
   scenario_check(state.audio_voiced.size() <= before + 1,
                  "combat-audio: duplicate ambience submit is a no-op");
-  return 0;
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "combat-audio: capture root rejected before any write");
+    return scenario_failures;
+  }
+  ClientState capture;
+  scenario_begin(capture);
+  scenario_follow_camera(capture);
+  capture.voice_budget_review_strip = true;
+  const std::string png = dir + "\\combat-audio-960x600.png";
+  scenario_check(reference_present(capture, 960, 600, png),
+                 "combat-audio: voice-budget capture written");
+  bool held = false;
+  for (const auto& item : capture.render_list)
+    if (item.op == render::Op::Hud && item.label == "voice:warning-held")
+      held = true;
+  scenario_check(held, "combat-audio: owner strip paints Warning held");
+  return scenario_failures;
 }
 
 std::string art_wave_capture_dir();

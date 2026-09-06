@@ -4,17 +4,21 @@
   "planning_id": "VG-SOUND-004",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "fb0282e1262784fbb4ed4eac77377a80925bae9a",
+  "base_sha": "05a5d85d489e17e432c45f7bdeefe90fe55a8f73",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "combat-audio",
   "platform": "win32-x64",
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario combat-audio", "exit_code": 0}
   ],
   "assertions": [
-    "dense cosmetic submits cannot starve the scion-lost warning"
+    "dense cosmetic submits cannot starve the scion-lost warning",
+    "twelve cosmetics exceed the SFX voice cap of 8",
+    "owner strip paints Warning held",
+    "cosmetic x12 is the rejected control"
   ],
   "negative_control": {
     "name": "low-priority cosmetic sounds starving critical cues",
@@ -22,14 +26,16 @@
   },
   "artifacts": [
     {
-      "kind": "command",
-      "path": "native/client/main.cpp",
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/combat-audio-960x600.png",
+      "sha256": "7d2fe06d3c7cba8c71a7b818dc6f86aeb96d89f91e0b0127e0a4dd7c964c20e7",
       "produced_by": "native/build/verdigris_client.exe --scenario combat-audio"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
-  "perceptual_review": "NOT_REQUIRED",
+  "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Mixer priority lock, not a new device. VG-PERF-002 tick budget stays a separate claim."
+    "Owner HUD over the existing TASK-0157 mixer steal policy. Does not edit native/audio or VG-PERF-002.",
+    "Device remains muted in the harness."
   ]
 }
