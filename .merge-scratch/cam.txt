@@ -1,1 +1,0 @@
-camera2d tests: PASS
