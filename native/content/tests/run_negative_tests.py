@@ -88,6 +88,27 @@ def build_cases(seeds):
     return cases
 
 
+def build_schema_cases():
+    cases = [
+        ("unknown_schema_top_level_field", lambda d: d.__setitem__("future_section", {}), ["E_UNKNOWN_FIELD"]),
+        ("unknown_identifier_rule_key", lambda d: d["identifier_rules"].__setitem__("min_length", 1), ["E_UNKNOWN_FIELD"]),
+        ("unknown_display_name_rule_key", lambda d: d["display_name_rules"].__setitem__("pattern", ".*"), ["E_UNKNOWN_FIELD"]),
+        ("unknown_entity_key", lambda d: d["entities"]["zone"].__setitem__("extra_policy", True), ["E_UNKNOWN_FIELD"]),
+        ("unknown_composite_key", lambda d: d["composite_types"]["exit"].__setitem__("extra", 1), ["E_UNKNOWN_FIELD"]),
+        ("unknown_slot_role_map_key", lambda d: d["composite_types"]["slot_role_map"].__setitem__("extra", 1), ["E_UNKNOWN_FIELD"]),
+    ]
+    return cases
+
+
+def load_schema_doc():
+    with open(CONTENT_ROOT / "schema.json", "r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def write_schema(temp_root, doc):
+    (temp_root / "schema.json").write_text(json.dumps(doc, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
 def main():
     failures = []
     checks = 0
@@ -126,6 +147,32 @@ def main():
                 if other_kind != kind:
                     write_seed(temp_root, other_kind, copy.deepcopy(seeds[other_kind]))
             write_seed(temp_root, kind, payload)
+            rc, out, err = run_validator(temp_root)
+            problems = []
+            if rc != 1:
+                problems.append("expected exit 1, got {}".format(rc))
+            for code in expected_codes:
+                if code not in out:
+                    problems.append("missing expected diagnostic {}".format(code))
+            rc_again, out_again, _ = run_validator(temp_root)
+            if out_again != out or rc_again != rc:
+                problems.append("nondeterministic diagnostics across repeated runs")
+            if problems:
+                failures.append("{}: {}; validator output:\n{}".format(name, "; ".join(problems), out + err))
+            else:
+                print("PASS {} ({})".format(name, ", ".join(expected_codes)))
+        finally:
+            shutil.rmtree(temp_root, ignore_errors=True)
+
+    for name, mutate_schema, expected_codes in build_schema_cases():
+        checks += 1
+        temp_root = make_temp_root()
+        try:
+            schema_doc = load_schema_doc()
+            mutate_schema(schema_doc)
+            write_schema(temp_root, schema_doc)
+            for other_kind in sorted(SEED_FILE_NAMES.keys()):
+                write_seed(temp_root, other_kind, copy.deepcopy(seeds[other_kind]))
             rc, out, err = run_validator(temp_root)
             problems = []
             if rc != 1:

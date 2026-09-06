@@ -177,6 +177,15 @@ class ContentValidator:
                     "schema section '{}' must be an object".format(section),
                 )
                 return False
+        strict_ok = True
+        allowed_top_level = set(sections.keys()) | {"schema_version", "name", "summary"}
+        for key in sorted(set(doc.keys()) - allowed_top_level):
+            self.schema_diagnostic(
+                "$.{}".format(key),
+                "E_UNKNOWN_FIELD",
+                "unknown schema field '{}'".format(key),
+            )
+            strict_ok = False
         self.enums = doc["enums"]
         self.entities = doc["entities"]
         self.composites = doc["composite_types"]
@@ -201,6 +210,17 @@ class ContentValidator:
         if not isinstance(name_rules.get("max_length"), int) or isinstance(name_rules.get("max_length"), bool):
             self.schema_diagnostic("$.display_name_rules.max_length", "E_SCHEMA_INVALID", "max_length must be an integer")
             return False
+        for rule_section, allowed_keys in (
+            ("identifier_rules", {"max_length", "pattern"}),
+            ("display_name_rules", {"max_length", "min_length"}),
+        ):
+            for key in sorted(set(doc[rule_section].keys()) - allowed_keys):
+                self.schema_diagnostic(
+                    "$.{}.{}".format(rule_section, key),
+                    "E_UNKNOWN_FIELD",
+                    "unknown {} field '{}'".format(rule_section, key),
+                )
+                strict_ok = False
         self.id_max_length = id_rules["max_length"]
         self.name_min_length = name_rules["min_length"]
         self.name_max_length = name_rules["max_length"]
@@ -221,6 +241,13 @@ class ContentValidator:
                 self.schema_diagnostic("$.entities.{}.required_fields".format(entity_name), "E_SCHEMA_INVALID", "required_fields must be a list")
                 ok = False
                 continue
+            for key in sorted(set(entity.keys()) - {"fields", "required_fields"}):
+                self.schema_diagnostic(
+                    "$.entities.{}.{}".format(entity_name, key),
+                    "E_UNKNOWN_FIELD",
+                    "unknown entity field '{}' on '{}'".format(key, entity_name),
+                )
+                ok = False
             for field_name in sorted(entity["fields"].keys()):
                 field_spec = entity["fields"][field_name]
                 if not isinstance(field_spec, str) or not self.type_spec_is_valid(field_spec, set()):
@@ -241,9 +268,26 @@ class ContentValidator:
         for composite_name in sorted(self.composites.keys()):
             if composite_name == "slot_role_map":
                 continue
+            composite_spec = self.composites[composite_name]
+            if isinstance(composite_spec, dict):
+                for key in sorted(set(composite_spec.keys()) - {"fields", "required_fields"}):
+                    self.schema_diagnostic(
+                        "$.composite_types.{}.{}".format(composite_name, key),
+                        "E_UNKNOWN_FIELD",
+                        "unknown composite field '{}' on '{}'".format(key, composite_name),
+                    )
+                    ok = False
             ok = self.composite_spec_is_valid(composite_name, self.composites[composite_name], set()) and ok
         if "slot_role_map" in self.composites:
             map_spec = self.composites["slot_role_map"]
+            if isinstance(map_spec, dict):
+                for key in sorted(set(map_spec.keys()) - {"keys", "values"}):
+                    self.schema_diagnostic(
+                        "$.composite_types.slot_role_map.{}".format(key),
+                        "E_UNKNOWN_FIELD",
+                        "unknown slot_role_map field '{}'".format(key),
+                    )
+                    ok = False
             keys = map_spec.get("keys", "")
             values = map_spec.get("values", "")
             if not (
@@ -272,7 +316,7 @@ class ContentValidator:
                 continue
             self.kind_for_file[rel_path] = kind
             self.file_for_kind[kind] = rel_path
-        if not ok:
+        if not ok or not strict_ok:
             return False
         self.schema_ok = True
         return True
