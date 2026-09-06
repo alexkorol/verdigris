@@ -87,6 +87,7 @@ inline bool command_time_is_not_photon(const char* label) {
 
 inline const char* present_kind_hud() { return "input-latency:present"; }
 inline const char* photon_kind_hud() { return "input-latency:photon"; }
+inline const char* owner_present_label() { return "To present"; }
 
 inline std::string p50_hud(const LatencyLog& log) {
   char buf[48];

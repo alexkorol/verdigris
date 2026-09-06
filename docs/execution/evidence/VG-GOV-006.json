@@ -4,7 +4,7 @@
   "planning_id": "VG-GOV-006",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "base_sha": "c8c786c1e400ec38a205ee9f5ae6bf5739edc4f2",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "death-disconnect",
@@ -17,7 +17,8 @@
   "assertions": [
     "disconnect+uncommitted cannot paint extract:ok",
     "live HUD publishes extract:uncommitted",
-    "already-banked extract:ok survives reconnect"
+    "already-banked extract:ok survives reconnect",
+    "live HUD names Carry open and No extract"
   ],
   "negative_control": {
     "name": "silent extract ack on disconnect with uncommitted carry",
@@ -27,7 +28,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/death-disconnect-960x600.png",
-      "sha256": "da26b81e8b3c09007b22bfb5c230b0ee3f23992e6bb1b70c1a62d08e49e2ee46",
+      "sha256": "40e2cef51202284766a4818ea309ef303b4f434c52777c49d0024070011f57ff",
       "produced_by": "native/build/verdigris_client.exe --scenario death-disconnect"
     },
     {
@@ -39,7 +40,6 @@
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "HUD/policy only. native/src/core.cpp death and D-106 relic algebra stay Kimi/TASK-0018.",
-    "Working tree is dirty. No TASK numbers minted."
+    "HUD/policy only. native/src/core.cpp death and D-106 relic algebra stay Kimi/TASK-0018."
   ]
 }

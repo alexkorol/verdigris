@@ -1,6 +1,6 @@
 method=input-to-present
 photon=rejected
-p50_ms=10.593
-p95_ms=12.010
+p50_ms=13.819
+p95_ms=18.108
 n=24
-command_dispatch_ms=0.0112
+command_dispatch_ms=0.0042

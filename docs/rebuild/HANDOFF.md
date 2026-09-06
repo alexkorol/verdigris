@@ -1,5 +1,17 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — aim hold, present-path latency, uncommitted extract (Cursor)
+
+- VG-MOVE-002: owner Aim hold strip paints Face east. Move facing cannot
+  certify. West walk still displaces; east aim stays. Core `resolve_move`
+  stays Kimi.
+- VG-MOVE-008: owner To present strip paints Input paint. Photon cannot
+  certify. p50/p95 stay input-to-present, not dispatch time.
+- VG-GOV-006: owner Carry open strip paints No extract. Extract ok cannot
+  certify an uncommitted disconnect. Core D-106 stays Kimi.
+- Scenarios `aim-hold` / `input-latency` / `death-disconnect` PASS.
+  Captures viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — pane stack and eight-way (Cursor)
 
 - VG-UI-001: owner Stack 2 strip paints Escape closes. Helper depth

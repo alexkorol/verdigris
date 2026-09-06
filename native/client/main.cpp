@@ -482,6 +482,9 @@ struct ClientState {
   bool combat_beats_review_strip = false;
   bool pane_stack_review_strip = false;
   bool eight_way_review_strip = false;
+  bool aim_hold_review_strip = false;
+  bool input_latency_review_strip = false;
+  bool death_disconnect_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -6626,6 +6629,123 @@ void paint_eight_way_review_strip(ClientState& state, HDC dc, const RECT& bounds
   SelectObject(dc, old_font);
 }
 
+void paint_aim_hold_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                 render::List& rl) {
+  if (!state.aim_hold_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "aim-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::move::owner_aim_hold_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* face = verdigris::client::move::owner_face_east_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, face, static_cast<int>(strlen(face)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "move facing";
+  TextOutA(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "aim:hold"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "aim:face-east"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "aim-strip:move-facing-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_input_latency_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                      render::List& rl) {
+  if (!state.input_latency_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "latency-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::input::owner_present_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* method = "Input paint";
+  TextOutA(dc, left + 12 * s, top + 32 * s, method, static_cast<int>(strlen(method)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "photon";
+  TextOutA(dc, rx - 18 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "latency:present"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "latency:input-paint"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "latency-strip:photon-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_death_disconnect_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                         render::List& rl) {
+  if (!state.death_disconnect_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "extract-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::gov::owner_carry_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* line = "No extract";
+  TextOutA(dc, left + 12 * s, top + 32 * s, line, static_cast<int>(strlen(line)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "extract ok";
+  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "extract:carry-open"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "extract:no-ack"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "extract-strip:ok-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -7656,6 +7776,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_combat_beats_review_strip(state, dc, bounds, rl);
   paint_pane_stack_review_strip(state, dc, bounds, rl);
   paint_eight_way_review_strip(state, dc, bounds, rl);
+  paint_aim_hold_review_strip(state, dc, bounds, rl);
+  paint_input_latency_review_strip(state, dc, bounds, rl);
+  paint_death_disconnect_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -13228,11 +13351,16 @@ int scenario_input_latency() {
     return scenario_failures;
   }
   const std::string png = dir + "\\input-latency-960x600.png";
+  state.input_latency_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "input-latency: present-path capture written");
+  scenario_check(has_hud("latency:present") && has_hud("latency:input-paint"),
+                 "input-latency: live HUD names To present and Input paint");
+  scenario_check(has_hud("latency-strip:photon-rejected"),
+                 "input-latency: live HUD rejects photon as this method");
   const std::string report = dir + "\\input-latency-report.txt";
   FILE* out = nullptr;
-  fopen_s(&out, report.c_str(), "w");
+  fopen_s(&out, report.c_str(), "wb");
   scenario_check(out != nullptr, "input-latency: report file opened");
   if (out) {
     std::fprintf(out,
@@ -13353,8 +13481,22 @@ int scenario_aim_hold() {
     return scenario_failures;
   }
   const std::string png = dir + "\\aim-hold-960x600.png";
+  state.aim_hold_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "aim-hold: capture written");
+  bool hold_owner = false;
+  bool face_owner = false;
+  bool move_rejected = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "aim:hold") hold_owner = true;
+    if (item.label == "aim:face-east") face_owner = true;
+    if (item.label == "aim-strip:move-facing-rejected") move_rejected = true;
+  }
+  scenario_check(hold_owner && face_owner,
+                 "aim-hold: live HUD names Aim hold and Face east");
+  scenario_check(move_rejected,
+                 "aim-hold: live HUD rejects move facing as held aim");
   return scenario_failures;
 }
 
@@ -13532,8 +13674,22 @@ int scenario_death_disconnect() {
     return scenario_failures;
   }
   const std::string png = dir + "\\death-disconnect-960x600.png";
+  state.death_disconnect_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "death-disconnect: capture written");
+  bool carry_owner = false;
+  bool no_ack = false;
+  bool ok_rejected = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "extract:carry-open") carry_owner = true;
+    if (item.label == "extract:no-ack") no_ack = true;
+    if (item.label == "extract-strip:ok-rejected") ok_rejected = true;
+  }
+  scenario_check(carry_owner && no_ack,
+                 "death-disconnect: live HUD names Carry open and No extract");
+  scenario_check(ok_rejected,
+                 "death-disconnect: live HUD rejects extract ok on disconnect");
   return scenario_failures;
 }
 

@@ -25,7 +25,7 @@ Cursor evidence notes.
 | VG-GOV-003 | extend | TASK-0119 READY, TASK-0152 INTEGRATED, TASK-0206 AUTO_RELEASE; `docs/execution/decisions/freeze-the-parity-scorecard.md` — feature counts cannot pass |
 | VG-GOV-004 | extend | this file + `decisions/crosswalk-existing-task-packets.md`; TASK-0108 extend never re-spec; TASK-0095/0097 superseded |
 | VG-GOV-005 | verify | TASK-0114 INTEGRATED; `docs/execution/decisions/choose-the-renderer-trial-boundary.md` — gpu-sample is not an engine port |
-| VG-GOV-006 | extend | TASK-0018, 0056, 0148; `death-disconnect` — disconnect cannot ack uncommitted extract |
+| VG-GOV-006 | extend | TASK-0018, 0056, 0148; `death-disconnect` — owner Carry open / No extract; disconnect cannot ack uncommitted extract |
 | VG-GOV-007 | extend | Owner Demo content lots |
 | VG-GOV-008 | new | pack `tools/roadmap.py` validate + unittest; evidence `docs/execution/evidence/VG-GOV-008.json` |
 
@@ -63,9 +63,9 @@ Cursor evidence notes.
 |---|---|---|
 | VG-MOVE-005 | extend | TASK-0165 `input_focus.hpp` wired in `fixed_game_tick` (`pane-focus`); not a core movement rewrite |
 | VG-MOVE-006 | new | isolated `bindings.v1` (`remap-binds`); owner Documents cannot be the test path. Full VG-SHIP-001 packager stays Kimi |
-| VG-MOVE-008 | new | `input-latency` p50/p95 on the paint path; `Simulation::dispatch` time is not photon. MOVE-007 buffering stays Kimi |
+| VG-MOVE-008 | new | `input-latency` p50/p95 on the paint path; owner To present / Input paint; photon rejected. MOVE-007 buffering stays Kimi |
 | VG-MOVE-001 | new | eight-way `player:move` names (`eight-way`); owner Eight-way / Up-left; vertical-only collapse fails |
-| VG-MOVE-002 | new | held aim survives locomotion (`aim-hold`); core move still clobbers without the adapter |
+| VG-MOVE-002 | new | held aim survives locomotion (`aim-hold`); owner Aim hold / Face east; core move still clobbers without the adapter |
 | VG-MOVE-003–004, 007 | extend / new | Kimi lease for sim travel distance / dash sweep / action buffering |
 
 ## ACT (Cursor presentation bridge only)
@@ -226,16 +226,18 @@ VG-MOVE-006: versioned bindings persist under an isolated test profile.
 Duplicate codes and unknown devices fail on the HUD; owner Documents
 cannot be the write target. Scenario `remap-binds`.
 Evidence `docs/execution/evidence/VG-MOVE-006.json`.
-VG-MOVE-008: input QPC to `paint_scene` present QPC. p50/p95 on this
+VG-MOVE-008: input QPC to `paint_scene` present QPC. Owner strip paints
+To present / Input paint. Photon cannot certify. p50/p95 on this
 machine. Command dispatch time is not `input-latency:photon`. Scenario
-`input-latency`. Protocol
-`docs/execution/decisions/measure-native-input-response.md`.
+`input-latency`. Evidence `docs/execution/evidence/VG-MOVE-008.json`.
 VG-MOVE-001: eight-way encoder keeps both axes. Owner strip paints
 Eight-way / Up-left. A vertical-only name cannot pass a diagonal.
 Scenario `eight-way`. Evidence `docs/execution/evidence/VG-MOVE-001.json`.
 VG-MOVE-002: `player:move` does not replace held aim; local tick
-re-applies aim after move. Scenario `aim-hold`. Core `resolve_move` still
+re-applies aim after move. Owner strip paints Aim hold / Face east.
+Move facing cannot certify. Scenario `aim-hold`. Core `resolve_move` still
 turns facing — that is the defect the adapter covers.
+Evidence `docs/execution/evidence/VG-MOVE-002.json`.
 VG-ACT-007: AttackStarted/DamageApplied/ActorDied drive
 `attack-beat:*`. Owner strip paints Attack beat / Anticipate. A
 fabricated swing cannot mint the beat. Scenario `attack-beat`. Core melee
@@ -272,7 +274,9 @@ A feature or VG-ID count cannot pass. Each dimension names a journey.
 VG-UI-007: `vital-orbs` — life left/red, mana right/blue. Mute is a HUD
 chip. An X on the mana globe cannot count as a non-color cue.
 VG-GOV-006: disconnect/crash/quit cannot ack uncommitted extraction.
+Owner strip paints Carry open / No extract. Extract ok cannot certify.
 Scenario `death-disconnect`. Core D-106 stays Kimi/TASK-0018.
+Evidence `docs/execution/evidence/VG-GOV-006.json`.
 VG-UI-005: `route-map` — overlay zoom/opacity cannot move the player or
 mint an off-snapshot warden blip. The owner card titles Tin village, not
 `route:tin:1:0`. Owner Demo journeys not reimplemented.

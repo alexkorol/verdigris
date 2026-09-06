@@ -45,4 +45,6 @@ inline bool paints_extract_ok(EndEvent event, Carry carry) {
   return carry == Carry::ExtractCommitted;
 }
 
+inline const char* owner_carry_label() { return "Carry open"; }
+
 }  // namespace verdigris::client::gov
