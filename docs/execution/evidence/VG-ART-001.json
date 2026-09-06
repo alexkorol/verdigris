@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-001",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "11ef2ba867e1952c034b4a62ca7022cd06424707",
+  "base_sha": "e831fd72859cbd3578d10836a459f1d49f09ca47",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "visual-target",
@@ -21,7 +21,9 @@
     "loaded billboards do not paint a skeleton art: PNG billboards loaded chip",
     "missing art still warns on the owner HUD; F3 still shows the loader line",
     "composition sheet shows a filled XP meter",
-    "live rig uses adult head ratio (~1/8); a 1/3 chibi head cannot pass"
+    "live rig uses adult head ratio (~1/8); a 1/3 chibi head cannot pass",
+    "composition sheet shows a held item on the world actor, not a paper-doll seat",
+    "Scion cloth/metal paint bronze (not GDI-capture blue)"
   ],
   "negative_control": {
     "name": "external concept-art HUD token, a loader chip as the sheet, or a chibi head ratio",
@@ -31,7 +33,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/visual-target-960x600.png",
-      "sha256": "e8ab377eab409f614738b1ebb6f2745de5871b8e897d449aa0c1cede173bffce",
+      "sha256": "f90144e532d52b55f831d35c9bae5e3e522e078d54ca60bb32edd08010b324fd",
       "produced_by": "native/build/verdigris_client.exe --scenario visual-target"
     }
   ],
@@ -40,6 +42,7 @@
   "limitations": [
     "Composition axes remain HUD labels on the live expedition, not a separate art bible PNG.",
     "Mute chip stays owner-facing. Loader jargon lives on F3.",
-    "Does not re-spec TASK-0108 or Owner Demo. No TASK numbers minted."
+    "Does not re-spec TASK-0108 or Owner Demo. No TASK numbers minted.",
+    "32bpp scenario DIBs still need dc_color; live CreateCompatibleBitmap path does not."
   ]
 }

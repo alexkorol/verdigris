@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-005",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "base_sha": "e831fd72859cbd3578d10836a459f1d49f09ca47",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "held-item",
@@ -17,7 +17,8 @@
   "assertions": [
     "unequip clears world held:none and empty paper-doll seat",
     "ack equip changes the Player held attachment",
-    "HUD publishes held-world not only held-seat"
+    "HUD publishes held-world not only held-seat",
+    "visual-target composition sheet also shows a non-none held attachment"
   ],
   "negative_control": {
     "name": "paper-doll seat filled while world remains held:none",
@@ -27,7 +28,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/held-item-960x600.png",
-      "sha256": "d70cae6bd0aa9736f061a0b7e9047a27792dcc2402b49a6d27f2c4ee3f9a8fef",
+      "sha256": "c293198fa52dbfdf413d50fc54406d360a0e61fd687f5c9853cdd681df849cb6",
       "produced_by": "native/build/verdigris_client.exe --scenario held-item"
     }
   ],
@@ -35,6 +36,6 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Presentation bind only. ITEM identity and sim equip algebra stay Kimi.",
-    "Does not re-spec TASK-0108. Working tree dirty. No TASK numbers minted."
+    "Does not re-spec TASK-0108. No TASK numbers minted."
   ]
 }

@@ -1,5 +1,20 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — bronze held weapon on the composition sheet (Cursor)
+
+- VG-ART-001 / VG-ART-005: `visual-target` now pickups and equips before
+  present so the sheet is an armed adult Scion, not an unarmed crate.
+  Sword is a filled bronze blade with guard; `player_style` is warm
+  bronze (not steel grey).
+- 32bpp scenario DIBs write GDI RGB; PNG save swaps as BGRA. `dc_color`
+  corrects world fills on DIB destinations only. Floor cache is skipped
+  on those DIBs so town stone is not blue-grey in the sheet. Live
+  `CreateCompatibleBitmap` path is unchanged.
+- Scenarios `visual-target` and `held-item` PASS. Captures
+  `docs/execution/captures/art-wave/visual-target-960x600.png` and
+  `held-item-960x600.png`. Viewed: bronze tunic, bronze blade, tan floor,
+  red HP orb. Not TASK-0108, not Owner Demo.
+
 ## 2026-09-06 — owner objective strip + dash (Cursor)
 
 - Owner HUD paints `Slay the wardens (1 remain)`, not `objective: ...`.

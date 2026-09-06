@@ -14,6 +14,7 @@
 
 #ifdef _WIN32
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <cctype>
@@ -24,11 +25,30 @@ namespace vector_art {
 inline constexpr double kPi = 3.14159265358979323846;
 
 // ── small GDI helpers ───────────────────────────────────────────────────
+// Scenario captures paint into a 32bpp DIB; GdipCreateBitmapFromHBITMAP then
+// swap_bgra_rb treats those bytes as BGRA. Raw GDI COLORREFs land as RGB in
+// that DIB, so bronze cloth becomes blue in the PNG while GDI+ HUD orbs
+// (PARGB cache → AlphaBlend) stay correct. The live backbuffer is a
+// device bitmap without bits, so the swap must not run there.
+
+inline bool dc_is_32bpp_dib(HDC dc) {
+  HBITMAP bitmap = static_cast<HBITMAP>(GetCurrentObject(dc, OBJ_BITMAP));
+  if (!bitmap) return false;
+  BITMAP bm{};
+  if (GetObject(bitmap, sizeof(bm), &bm) < static_cast<int>(sizeof(BITMAP)))
+    return false;
+  return bm.bmBitsPixel == 32 && bm.bmBits != nullptr;
+}
+
+inline COLORREF dc_color(HDC dc, COLORREF c) {
+  if (!dc_is_32bpp_dib(dc)) return c;
+  return RGB(GetBValue(c), GetGValue(c), GetRValue(c));
+}
 
 inline void fill_poly(HDC dc, const POINT* points, int count, COLORREF fill,
                       COLORREF outline) {
-  HBRUSH brush = CreateSolidBrush(fill);
-  HPEN pen = CreatePen(PS_SOLID, 1, outline);
+  HBRUSH brush = CreateSolidBrush(dc_color(dc, fill));
+  HPEN pen = CreatePen(PS_SOLID, 1, dc_color(dc, outline));
   HGDIOBJ old_brush = SelectObject(dc, brush);
   HGDIOBJ old_pen = SelectObject(dc, pen);
   Polygon(dc, points, count);
@@ -39,9 +59,9 @@ inline void fill_poly(HDC dc, const POINT* points, int count, COLORREF fill,
 }
 
 inline void fill_ell(HDC dc, int cx, int cy, int rx, int ry, COLORREF fill,
-                     COLORREF outline) {
-  HBRUSH brush = CreateSolidBrush(fill);
-  HPEN pen = CreatePen(PS_SOLID, 1, outline);
+                      COLORREF outline) {
+  HBRUSH brush = CreateSolidBrush(dc_color(dc, fill));
+  HPEN pen = CreatePen(PS_SOLID, 1, dc_color(dc, outline));
   HGDIOBJ old_brush = SelectObject(dc, brush);
   HGDIOBJ old_pen = SelectObject(dc, pen);
   Ellipse(dc, cx - rx, cy - ry, cx + rx, cy + ry);
@@ -53,7 +73,7 @@ inline void fill_ell(HDC dc, int cx, int cy, int rx, int ry, COLORREF fill,
 
 inline void line(HDC dc, int x0, int y0, int x1, int y1, COLORREF color,
                  int width) {
-  HPEN pen = CreatePen(PS_SOLID, width, color);
+  HPEN pen = CreatePen(PS_SOLID, width, dc_color(dc, color));
   HGDIOBJ old_pen = SelectObject(dc, pen);
   MoveToEx(dc, x0, y0, nullptr);
   LineTo(dc, x1, y1);
@@ -289,10 +309,42 @@ inline void humanoid(HDC dc, int cx, int base_y, int height_px,
                  static_cast<int>(5 * f.scale), style.metal, style.dark);
         break;
       }
-      case Held::Sword:
-        line(dc, hand.x, hand.y, tip.x, tip.y, style.metal,
-             std::max(2, static_cast<int>(3 * f.scale)));
+      case Held::Sword: {
+        const double dx = static_cast<double>(tip.x - hand.x);
+        const double dy = static_cast<double>(tip.y - hand.y);
+        const double len = std::max(1.0, std::hypot(dx, dy));
+        const double hx = -dy / len;
+        const double hy = dx / len;
+        const double half = std::max(4.5, 6.0 * f.scale);
+        const double tip_half = std::max(1.6, 2.2 * f.scale);
+        POINT blade[4] = {
+            {hand.x + static_cast<int>(std::lround(hx * half)),
+             hand.y + static_cast<int>(std::lround(hy * half))},
+            {hand.x - static_cast<int>(std::lround(hx * half)),
+             hand.y - static_cast<int>(std::lround(hy * half))},
+            {tip.x - static_cast<int>(std::lround(hx * tip_half)),
+             tip.y - static_cast<int>(std::lround(hy * tip_half))},
+            {tip.x + static_cast<int>(std::lround(hx * tip_half)),
+             tip.y + static_cast<int>(std::lround(hy * tip_half))}};
+        fill_poly(dc, blade, 4, style.metal, style.dark);
+        line(dc, blade[0].x, blade[0].y, blade[3].x, blade[3].y,
+             shade(style.metal, 1.28), 1);
+        POINT guard[4] = {
+            f.at(hand_x + (-std::sin(angle)) * 6.5,
+                 hand_y + std::cos(angle) * 6.5),
+            f.at(hand_x - (-std::sin(angle)) * 6.5,
+                 hand_y - std::cos(angle) * 6.5),
+            f.at(hand_x - std::cos(angle) * 2.0 - (-std::sin(angle)) * 5.5,
+                 hand_y - std::sin(angle) * 2.0 - std::cos(angle) * 5.5),
+            f.at(hand_x - std::cos(angle) * 2.0 + (-std::sin(angle)) * 5.5,
+                 hand_y - std::sin(angle) * 2.0 + std::cos(angle) * 5.5)};
+        fill_poly(dc, guard, 4, style.trim, style.dark);
+        const POINT pommel = f.at(hand_x - std::cos(angle) * 6.0,
+                                  hand_y - std::sin(angle) * 6.0);
+        line(dc, hand.x, hand.y, pommel.x, pommel.y, style.trim,
+             std::max(3, static_cast<int>(4 * f.scale)));
         break;
+      }
       case Held::Staff: {
         const POINT top = f.at(hand_x + std::cos(angle) * 34.0,
                                hand_y + std::sin(angle) * 34.0);
@@ -565,10 +617,10 @@ inline void totem(HDC dc, int cx, int base_y, int height_px, const Style& style,
 
 inline Style player_style() {
   Style s;
-  s.skin = RGB(198, 160, 122);
-  s.cloth = RGB(126, 104, 74);
-  s.trim = RGB(84, 66, 46);
-  s.metal = RGB(188, 196, 204);
+  s.skin = RGB(224, 184, 136);
+  s.cloth = RGB(186, 122, 48);
+  s.trim = RGB(122, 74, 28);
+  s.metal = RGB(228, 186, 78);
   s.accent = RGB(120, 214, 168);
   return s;
 }
@@ -808,11 +860,10 @@ inline void terrain_tile(HDC dc, const RECT& cell, const std::string& theme,
   }
   const bool alt = ((hash >> 9) % 5u) == 0;
   RECT fill_rect = cell;
-  HBRUSH brush = CreateSolidBrush(alt ? shade(base, 0.93) : base);
+  HBRUSH brush = CreateSolidBrush(dc_color(dc, alt ? shade(base, 0.93) : base));
   FillRect(dc, &fill_rect, brush);
   DeleteObject(brush);
-  // Slab joints.
-  HPEN pen = CreatePen(PS_SOLID, 1, joint);
+  HPEN pen = CreatePen(PS_SOLID, 1, dc_color(dc, joint));
   HGDIOBJ old_pen = SelectObject(dc, pen);
   MoveToEx(dc, cell.left, cell.top, nullptr);
   LineTo(dc, cell.right, cell.top);

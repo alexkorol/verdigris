@@ -2622,7 +2622,7 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
   // contract is always honest because real tiles are always drawn.
   rl.push_back({render::Op::Floor, 0.0, 0.0, 0.0, 1, "tiled"});
 
-  HBRUSH background = CreateSolidBrush(RGB(23, 29, 32));
+  HBRUSH background = CreateSolidBrush(vector_art::dc_color(dc, RGB(23, 29, 32)));
   FillRect(dc, &bounds, background);
   DeleteObject(background);
 
@@ -2681,7 +2681,7 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
     }
   };
 
-  if (!cache) {
+  if (!cache || vector_art::dc_is_32bpp_dib(dc)) {
     paint_tiles(dc, camera, bounds, start_tx, start_ty, end_tx, end_ty);
     return;
   }
@@ -10269,8 +10269,19 @@ int scenario_gpu_packets() {
 int scenario_visual_target() {
   ClientState state;
   scenario_begin(state);
+  // VG-ART-005: the composition sheet is a live expedition with a held
+  // weapon. A paper-doll seat or an unarmed crate cannot certify.
+  for (int i = 0; i < 52; ++i)
+    scenario_step(state, verdigris::Command::move(1, 0));
+  for (int i = 0; i < 8; ++i)
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
+  if (state.simulation && !state.simulation->ground_items().empty())
+    scenario_step(state, verdigris::Command::pick_up(
+                             state.simulation->ground_items().front().id));
+  if (state.simulation && !state.simulation->scion().carried_items.empty())
+    scenario_step(state, verdigris::Command::equip(
+                             state.simulation->scion().carried_items.front().id));
   scenario_follow_camera(state);
-  // Composition sheet is a live expedition, not an empty XP hairline.
   state.local_combat_xp = 36;
   scenario_present(state);
   auto has = [&](const char* name) {
@@ -10301,6 +10312,13 @@ int scenario_visual_target() {
                  "visual-target: a loader chip cannot count as the composition sheet");
   scenario_check(state.world.xp_fraction > 0.25 && state.world.xp_fraction < 0.85,
                  "visual-target: the composition sheet shows a filled XP meter");
+  const render::Item* scion =
+      render::first(state.render_list, render::Op::Player);
+  scenario_check(scion && scion->label != "held:none",
+                 "visual-target: the composition sheet shows a held item");
+  scenario_check(!verdigris::client::art::paper_doll_only_fails_review(
+                     true, scion && scion->label != "held:none"),
+                 "visual-target: a paper-doll seat alone cannot certify the sheet");
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {
     scenario_check(false, "visual-target: capture root rejected before any write");

@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-005",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "aa75dbd8",
+  "base_sha": "e831fd72859cbd3578d10836a459f1d49f09ca47",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "route-map",
@@ -38,7 +38,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/visual-target-960x600.png",
-      "sha256": "e8ab377eab409f614738b1ebb6f2745de5871b8e897d449aa0c1cede173bffce",
+      "sha256": "f90144e532d52b55f831d35c9bae5e3e522e078d54ca60bb32edd08010b324fd",
       "produced_by": "native/build/verdigris_client.exe --scenario visual-target"
     }
   ],
