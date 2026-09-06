@@ -1,0 +1,4 @@
+@echo off
+set "PATH=C:\Program Files (x86)\Microsoft Visual Studio\Installer;%PATH%"
+call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+cl /nologo /std:c++20 /EHsc /I"Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-001\native\include" "Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-001\orchestration\vg\VG-SEC-001\budget_probe.cpp" "Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-001\native\build\networking.obj" "Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-001\native\build\core.obj" "Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-001\native\build\seasonal.obj" /Fe"Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-001\orchestration\vg\VG-SEC-001\budget_probe.exe" /link ws2_32.lib
