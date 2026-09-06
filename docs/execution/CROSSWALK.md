@@ -73,7 +73,7 @@ Cursor evidence notes.
 | VG | Disposition | Existing |
 |---|---|---|
 | VG-ACT-007 | new | `attack-beat` event bridge; owner Attack beat / Anticipate; fabricated swing cannot mint. Not TASK-0108 |
-| VG-ACT-005 | new | catalog-typed warning window (`telegraph-spec`); owner strip paints ticks+footprint; ms/50 cannot invent a longer cone. Core ACT stays Kimi |
+| VG-ACT-005 | new | catalog-typed warning window (`telegraph-spec`) plus dodge-clear (`telegraph-dodge`); owner strip paints ticks+footprint and Dodge clear / Life holds; ms/50 and ghost hit cannot invent damage. Core ACT stays Kimi |
 | VG-ACT-001–006, 008 | new / extend | Kimi lease (`native/src/**`) |
 
 ## WORLD (Cursor presentation dressing only)
@@ -284,7 +284,9 @@ VG-ACT-005: local ticks and remote `durationMs` share
 `presentation_catalog().telegraph_ticks` and reach. `value/50` cannot
 invent a longer window. Owner strip paints Thrust/Sweep ticks and
 footprint; a protocol HUD token without that window cannot certify.
-Expired/cancelled warnings leave no footprint. Scenario `telegraph-spec`.
+Expired/cancelled warnings leave no footprint. `telegraph-dodge` owner
+strip paints Dodge clear / Life holds. Ghost hit cannot certify an
+avoided sweep. Scenarios `telegraph-spec` / `telegraph-dodge`.
 Evidence `docs/execution/evidence/VG-ACT-005.json`.
 VG-WORLD-008: dressing-pass v1/v2 change decoration hash only.
 Owner strip paints Dressing / Not solid. A tree visual cannot become an

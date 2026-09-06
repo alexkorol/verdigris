@@ -97,4 +97,7 @@ inline bool millisecond_window_fails_review(int guessed_ticks, int catalog_ticks
   return guessed_ticks != catalog_ticks && guessed_ticks > catalog_ticks;
 }
 
+inline const char* owner_dodge_clear_label() { return "Dodge clear"; }
+inline const char* owner_life_holds_label() { return "Life holds"; }
+
 }  // namespace verdigris::client::actions

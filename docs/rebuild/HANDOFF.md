@@ -1,5 +1,13 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Dodge clear, Life holds (Cursor)
+
+- VG-ACT-005: `telegraph-dodge` owner Dodge clear strip paints Life holds.
+  Ghost hit cannot certify an avoided sweep. Warning windows / ms/50 on
+  `telegraph-spec` is unchanged. Core ACT scheduling stays Kimi.
+- Scenario `telegraph-dodge` PASS. Capture viewed.
+  Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — Unarmed first, Uniform pan (Cursor)
 
 - VG-ART-005: `loot-to-bank` owner Unarmed first strip paints World hold.

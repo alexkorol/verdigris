@@ -4,7 +4,7 @@
   "planning_id": "VG-ACT-005",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "193b7c9fe67676f649ca153911f8ab5a95959a9a",
+  "base_sha": "edd8b28bcf7c4b062d51abaf2b298a8719b62397",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "telegraph-spec",
@@ -12,7 +12,8 @@
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario telegraph-spec", "exit_code": 0}
+    {"run": "native/build/verdigris_client.exe --scenario telegraph-spec", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario telegraph-dodge", "exit_code": 0}
   ],
   "assertions": [
     "local ticks and remote durationMs share the catalog window",
@@ -20,10 +21,12 @@
     "owner window paints ticks and footprint",
     "a protocol HUD token without the window cannot certify",
     "AttackStarted cancels the warning",
-    "expired remote warning leaves no footprint"
+    "expired remote warning leaves no footprint",
+    "dashing out of a live elite sweep keeps scion life",
+    "live HUD names Dodge clear and Life holds"
   ],
   "negative_control": {
-    "name": "millisecond payload via value/50 and expired silent cone",
+    "name": "millisecond payload via value/50, expired silent cone, or a ghost hit after a successful dodge",
     "observed_result": "REJECTED"
   },
   "artifacts": [
@@ -32,12 +35,19 @@
       "path": "docs/execution/captures/art-wave/telegraph-spec-960x600.png",
       "sha256": "6f60e66413b5af7cd974cd6bd7d9ec4200e7b789838166533695884b6bae7557",
       "produced_by": "native/build/verdigris_client.exe --scenario telegraph-spec"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/telegraph-dodge-960x600.png",
+      "sha256": "e2cc20188d87ba90b6bbbf7bf983362b1caa4154c80dd824847ec06b41cfb33d",
+      "produced_by": "native/build/verdigris_client.exe --scenario telegraph-dodge"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Presentation consumers only; VG-ACT-002 scheduling stays with Kimi. Does not edit native/src/core.cpp or re-spec TASK-0108.",
-    "Native Warning windows strip paints Thrust 3 ticks reach, Sweep 3 ticks melee, and a crossed ms/50 control. Hash diverges from gpu-packets."
+    "Native Warning windows strip paints Thrust 3 ticks reach, Sweep 3 ticks melee, and a crossed ms/50 control. Hash diverges from gpu-packets.",
+    "telegraph-dodge owner strip paints Dodge clear / Life holds. Ghost hit cannot certify an avoided sweep."
   ]
 }
