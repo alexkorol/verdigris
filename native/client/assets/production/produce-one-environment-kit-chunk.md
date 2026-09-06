@@ -9,7 +9,9 @@ The dressing gate must not appear as `collision-proxy:gate`. Movement
 blocking uses the same `solid` set (`scenery_blocks_segment`).
 
 A circle-on-stick lollipop cannot certify the kit. Shipped trees are a
-forked bole with a root flare and clustered canopy.
+forked bole with a root flare and clustered canopy. A scalloped market
+stall cannot certify a dwelling; shipped houses have walls, thatch, and
+a door.
 
 Acceptance command: `native/build/verdigris_client.exe --scenario kit-chunk`
 

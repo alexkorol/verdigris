@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-004",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "3f865ce9f28a5c5a7c34a2d5db32f18d56264c6f",
+  "base_sha": "9e1c31eaf3d4f83889f6e0d7c971ea56f5404dd7",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "kit-chunk",
@@ -20,17 +20,19 @@
     "the dressing gate is not an unreported obstacle",
     "collision uses the same solids as the render proxies",
     "a circle-on-stick lollipop cannot certify the kit",
-    "shipped trees are a forked bole with root flare and clustered canopy"
+    "shipped trees are a forked bole with root flare and clustered canopy",
+    "a scalloped stall cannot certify a dwelling",
+    "shipped dwellings have walls, thatch, and a door"
   ],
   "negative_control": {
-    "name": "dressing gate as an unreported solid, or a circle-on-stick tree",
+    "name": "dressing gate as an unreported solid, a circle-on-stick tree, or a scalloped stall as a dwelling",
     "observed_result": "REJECTED"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/kit-chunk-960x600.png",
-      "sha256": "77381a05fcb7fbaa6003eb0470526cbf1e857b7e5153a99cb5417ef8f240be5a",
+      "sha256": "a2a9d100b6ea740cda6fa9268c593cedb20958f10af98c53e0cfdff0bd3acc15",
       "produced_by": "native/build/verdigris_client.exe --scenario kit-chunk"
     }
   ],
@@ -38,7 +40,7 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Extends TASK-0141 village kit. Artist-local collision is not this packet.",
-    "Capture is the live tin village with forked trees, stall, and cart.",
-    "A historical lollipop kit-chunk PNG cannot certify. Not Owner Demo."
+    "Capture is the live tin village with forked trees, mudbrick hut, and cart.",
+    "A historical lollipop kit-chunk PNG or stall dwelling cannot certify. Not Owner Demo."
   ]
 }

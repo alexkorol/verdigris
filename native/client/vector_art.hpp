@@ -789,6 +789,45 @@ inline void standing_stones(HDC dc, int cx, int base_y, int height_px,
   fill_poly(dc, lintel, 4, shade(stone, 1.1), dark);
 }
 
+inline constexpr bool kDwellingHasWalls = true;
+inline constexpr bool kDwellingHasRoof = true;
+inline constexpr bool kDwellingHasDoor = true;
+
+inline bool stall_dwelling_fails_review(bool walls, bool roof, bool door) {
+  return !walls || !roof || !door;
+}
+
+// Bronze-age hut: mudbrick walls, thatch, a door. A scalloped awning
+// stall cannot certify SceneryKind::Dwelling.
+inline void dwelling(HDC dc, int cx, int base_y, int height_px, COLORREF wall,
+                     COLORREF roof, COLORREF trim) {
+  const double s = height_px / 100.0;
+  const COLORREF dark = RGB(20, 16, 12);
+  const int wall_w = std::max(10, static_cast<int>(22 * s));
+  const int wall_h = std::max(12, static_cast<int>(38 * s));
+  POINT walls[4] = {{cx - wall_w, base_y},
+                    {cx + wall_w, base_y},
+                    {cx + wall_w - std::max(1, static_cast<int>(2 * s)),
+                     base_y - wall_h},
+                    {cx - wall_w + std::max(1, static_cast<int>(2 * s)),
+                     base_y - wall_h}};
+  fill_poly(dc, walls, 4, wall, dark);
+  POINT thatch[3] = {
+      {cx - wall_w - std::max(3, static_cast<int>(7 * s)),
+       base_y - wall_h + std::max(2, static_cast<int>(4 * s))},
+      {cx + wall_w + std::max(3, static_cast<int>(7 * s)),
+       base_y - wall_h + std::max(2, static_cast<int>(4 * s))},
+      {cx, base_y - wall_h - std::max(8, static_cast<int>(22 * s))}};
+  fill_poly(dc, thatch, 3, roof, dark);
+  const int door_w = std::max(3, static_cast<int>(6 * s));
+  const int door_h = std::max(6, static_cast<int>(18 * s));
+  POINT door[4] = {{cx - door_w, base_y},
+                   {cx + door_w, base_y},
+                   {cx + door_w, base_y - door_h},
+                   {cx - door_w, base_y - door_h}};
+  fill_poly(dc, door, 4, trim, dark);
+}
+
 inline void market_stall(HDC dc, int cx, int base_y, int height_px,
                          COLORREF canvas, COLORREF wood) {
   const double s = height_px / 100.0;

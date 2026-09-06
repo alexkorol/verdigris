@@ -2426,7 +2426,7 @@ double scenery_height(SceneryKind kind) {
   switch (kind) {
     case SceneryKind::Tree: return kTileUnits * 4.2;
     case SceneryKind::Ruin: return kTileUnits * 2.6;
-    case SceneryKind::Dwelling: return kTileUnits * 2.3;
+    case SceneryKind::Dwelling: return kTileUnits * 2.8;
     case SceneryKind::Shrine: return kTileUnits * 2.0;
     case SceneryKind::Gate: return kTileUnits * 2.6;
   }
@@ -2526,8 +2526,8 @@ void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& came
       }
       break;
     case SceneryKind::Dwelling:
-      vector_art::market_stall(dc, base.x, base.y, h, RGB(158, 96, 70),
-                               RGB(112, 86, 56));
+      vector_art::dwelling(dc, base.x, base.y, h, RGB(142, 108, 68),
+                           RGB(118, 86, 42), RGB(48, 32, 20));
       break;
     case SceneryKind::Shrine:
       if (town)
@@ -9839,6 +9839,12 @@ int scenario_kit_chunk() {
                      vector_art::kTreeCanopyClusters, vector_art::kTreeHasRootFlare,
                      vector_art::kTreeHasFork),
                  "kit-chunk: the shipped tree is not a lollipop");
+  scenario_check(vector_art::stall_dwelling_fails_review(false, false, true),
+                 "kit-chunk: a scalloped stall cannot certify a dwelling");
+  scenario_check(!vector_art::stall_dwelling_fails_review(
+                     vector_art::kDwellingHasWalls, vector_art::kDwellingHasRoof,
+                     vector_art::kDwellingHasDoor),
+                 "kit-chunk: dwellings have walls, thatch, and a door");
 
   std::unordered_set<std::string> occupancy;
   bool unique_landmarks = true;
@@ -10337,6 +10343,12 @@ int scenario_visual_target() {
                      vector_art::kTreeCanopyClusters, vector_art::kTreeHasRootFlare,
                      vector_art::kTreeHasFork),
                  "visual-target: the live kit uses a forked clustered canopy");
+  scenario_check(vector_art::stall_dwelling_fails_review(false, false, true),
+                 "visual-target: a scalloped stall cannot certify a dwelling");
+  scenario_check(!vector_art::stall_dwelling_fails_review(
+                     vector_art::kDwellingHasWalls, vector_art::kDwellingHasRoof,
+                     vector_art::kDwellingHasDoor),
+                 "visual-target: dwellings have walls, thatch, and a door");
   scenario_check(vector_art::crate_foe_fails_review(false, false, false),
                  "visual-target: a crate-shaped foe cannot certify the sheet");
   scenario_check(!vector_art::crate_foe_fails_review(

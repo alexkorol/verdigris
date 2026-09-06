@@ -1,5 +1,16 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — tin village dwellings as huts (Cursor)
+
+- VG-ART-004: `SceneryKind::Dwelling` paints a mudbrick/thatch hut (walls,
+  pitched roof, door), not a scalloped market stall. Collision radii and
+  dressing-gate non-solidity are unchanged. `market_stall` remains in
+  `vector_art.hpp` unused by the village kit.
+- Scenario `kit-chunk` / `visual-target` PASS. Capture viewed:
+  `docs/execution/captures/art-wave/kit-chunk-960x600.png` — hut in the
+  lower-left, forked trees, bronze Scion, current owner HUD. Not Owner
+  Demo.
+
 ## 2026-09-06 — jointed bronze wardens (Cursor)
 
 - Town lurker is no longer a hip-to-foot crate: jointed legs, snout, filled
