@@ -239,8 +239,8 @@ void test_n3_combat_rules_and_wire_events() {
     const std::string ranged_id = (*ranged)["uuid"].string()
         ? *(*ranged)["uuid"].string() : std::string();
     const int px = rx + 1 < 39 ? rx + 1 : rx - 1;
-    bool volley_wire = false;
     bool movement_wire = false;
+    bool volley_telegraph_wire = false;
     auto collect_role = [&](const Envelope& event) {
       if (event.event == "monster:moved" &&
           event.data["monsterId"].string() &&
@@ -251,13 +251,12 @@ void test_n3_combat_rules_and_wire_events() {
                         (event.data["x"].number().value_or(rx) != rx ||
                          event.data["y"].number().value_or(ry) != ry);
       }
+      // D-129 negative control: a ranged windup must NEVER reach the wire as
+      // monster:telegraph (slam-only), regardless of payload.
       if (event.event == "monster:telegraph" &&
           event.data["skillId"].string() &&
           *event.data["skillId"].string() == "ranged:volley") {
-        volley_wire = event.data["x"].number().value_or(-1) == px &&
-                      event.data["y"].number().value_or(-1) == ry &&
-                      event.data["radius"].number().value_or(0) == 1 &&
-                      event.data["durationMs"].number().value_or(0) == 800;
+        volley_telegraph_wire = true;
       }
     };
     roles.set_direct_emit(collect_role);
@@ -268,8 +267,48 @@ void test_n3_combat_rules_and_wire_events() {
       roles.tick(at);
     check(movement_wire,
           "roles wire: accepted ranged spacing emits an exact movement fact");
-    check(volley_wire,
-          "roles wire: ranged volley emits exact target, radius, and windup");
+
+    // D-129: the ranged windup rides the JS stack's projectile convention
+    // (server/core/entities/monster/combat-controller.js:215-222). Re-seat the
+    // player four tiles from the spacer's settled tile - inside the comfort
+    // band, so no further movement - then the next windup must cross the wire
+    // as world:projectile with the exact JS payload keys.
+    const auto settled = request_state(roles, "n3-roles-settled");
+    const JsonValue* spacer = nullptr;
+    if (const auto* current = settled["state"]["monsters"].array())
+      for (const auto& value : *current)
+        if (value["uuid"].string() && *value["uuid"].string() == ranged_id)
+          spacer = &value;
+    check(spacer != nullptr, "roles wire: ranged spacer survives the approach");
+    if (spacer) {
+      const int mx = static_cast<int>((*spacer)["x"].number().value_or(0));
+      const int my = static_cast<int>((*spacer)["y"].number().value_or(0));
+      const int px2 = mx + 4 < 39 ? mx + 4 : mx - 4;
+      bool projectile_wire = false;
+      auto collect_projectile = [&](const Envelope& event) {
+        collect_role(event);
+        if (event.event == "world:projectile" &&
+            event.data["fromX"].number().value_or(-1) == mx &&
+            event.data["fromY"].number().value_or(-1) == my &&
+            event.data["toX"].number().value_or(-1) == px2 &&
+            event.data["toY"].number().value_or(-1) == my &&
+            event.data["travelMs"].number().value_or(0) == 800 &&
+            event.data["kind"].string() &&
+            *event.data["kind"].string() == "monster") {
+          projectile_wire = true;
+        }
+      };
+      roles.set_direct_emit(collect_projectile);
+      roles.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", px2}, {"y", my}}},
+                   collect_projectile);
+      for (std::int64_t at = 5000000001600LL;
+           at <= 5000000008000LL && !projectile_wire; at += 400)
+        roles.tick(at);
+      check(projectile_wire,
+            "roles wire: ranged windup emits world:projectile with the JS payload shape");
+    }
+    check(!volley_telegraph_wire,
+          "roles wire: ranged windup never rides monster:telegraph (D-129)");
   }
 }
 

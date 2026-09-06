@@ -3846,6 +3846,20 @@ void ProtocolSession::emit_combat_event(const WorldCombatEvent& event, const std
     put(data,"damageChannel",event.damage_channel);
     emit_world(Envelope{"monster:telegraph",JsonValue(std::move(data))},emit); return;
   }
+  if (event.type == "projectile") {
+    // D-129: ranged windups ride the JS stack's projectile convention, never
+    // monster:telegraph (slam-only). Payload keys mirror
+    // server/core/entities/monster/combat-controller.js:215-222 exactly:
+    // fromX/fromY = shooter tile, toX/toY = target tile, travelMs = windup,
+    // kind = 'support' for support casters else 'monster'. Native ranged
+    // casters are never support-type (buffers mend via monster:healed), so
+    // every current emitter reports 'monster'.
+    JsonValue::Object data;
+    put(data,"fromX",event.origin_x); put(data,"fromY",event.origin_y);
+    put(data,"toX",event.x); put(data,"toY",event.y);
+    put(data,"travelMs",event.duration_ms); put(data,"kind","monster");
+    emit_world(Envelope{"world:projectile",JsonValue(std::move(data))},emit); return;
+  }
   if (event.type == "interrupt") {
     JsonValue::Object data;
     put(data,"monsterId",event.attacker_id); put(data,"monsterName",event.attacker_name);

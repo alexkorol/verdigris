@@ -1925,12 +1925,16 @@ void test_world_monster_pressure_roles_are_authoritative() {
         ranged_world.advance_combat(1, 20, life, 1000, 3000);
     const WorldCombatEvent* warning = nullptr;
     for (const auto& event : warning_events)
-      if (event.type == "telegraph" && event.attacker_id == ranged_id)
+      if (event.type == "projectile" && event.attacker_id == ranged_id)
         warning = &event;
+    // D-129: the ranged windup is a distinct "projectile" sim event carrying
+    // the shooter's tile (origin) and the painted target tile (x/y); the
+    // "telegraph" type is slam-only.
     check(warning && warning->skill_id == "ranged:volley" &&
               warning->x == px && warning->y == ry && warning->radius == 1 &&
-              warning->duration_ms == 800,
-          "roles: ranged volley publishes its sampled tile, radius, and windup");
+              warning->duration_ms == 800 &&
+              warning->origin_x == rx && warning->origin_y == ry,
+          "roles: ranged volley publishes shooter origin, sampled tile, radius, and windup");
     const int dodge_x = px + 3 < 39 ? px + 3 : px - 3;
     ranged_world.teleport(dodge_x, ry, 3400);
     const auto dodge_events =
@@ -2051,6 +2055,146 @@ void test_world_monster_pressure_roles_are_authoritative() {
   }
   check(support_trial_ran,
         "roles: deterministic generated packs contain a support-and-ally trial");
+}
+
+// TASK-0108 rev 3 (D-129): a ranged monster damages the player from beyond
+// 2-tile Chebyshev contact while a melee twin cannot; every resolved ranged
+// hit is preceded by its "projectile" windup warning ("telegraph" is
+// slam-only); the seeded ranged event stream replays identically.
+void test_ranged_reach_warning_precedence_and_replay() {
+  const auto run_ranged_trial = [](std::vector<WorldCombatEvent>* stream,
+                                   int* hit_distance, int* final_life) {
+    WorldSimulation world(0xA11CEULL, "reach-scion");
+    world.enter_solo_instance("marsh", "clearings");
+    const WorldMonster* ranged = nullptr;
+    for (const auto& monster : world.monsters())
+      if (!monster.boss && monster.behaviour_type == "ranged") {
+        ranged = &monster;
+        break;
+      }
+    if (!ranged) return false;
+    const std::string id = ranged->uuid;
+    const int rx = ranged->x;
+    const int ry = ranged->y;
+    const int px = rx + 4 < 39 ? rx + 4 : rx - 4;  // Chebyshev 4: beyond contact
+    world.kill_all_monsters();
+    world.reset_monster(id, 1000);
+    world.teleport(px, ry, 900);
+    int life = 1000;
+    for (const auto at : {1000LL, 3000LL, 3900LL}) {
+      for (const auto& event : world.advance_combat(1, 0, life, 1000, at)) {
+        if (event.attacker_id != id && event.target_id != id) continue;
+        stream->push_back(event);
+        if (event.type == "hit" && event.attacker_id == id &&
+            event.skill_id == "ranged:volley") {
+          const WorldMonster* shooter = nullptr;
+          for (const auto& monster : world.monsters())
+            if (monster.uuid == id) shooter = &monster;
+          if (shooter)
+            *hit_distance = (std::max)(std::abs(shooter->x - px),
+                                       std::abs(shooter->y - ry));
+        }
+      }
+    }
+    *final_life = life;
+    return true;
+  };
+
+  std::vector<WorldCombatEvent> stream;
+  int hit_distance = 0;
+  int life = 1000;
+  check(run_ranged_trial(&stream, &hit_distance, &life),
+        "ranged-reach: marsh trial fields a ranged pressure unit");
+  bool warned = false;
+  int warnings = 0;
+  int hits = 0;
+  bool hit_without_warning = false;
+  for (const auto& event : stream) {
+    if (event.type == "projectile" && event.skill_id == "ranged:volley") {
+      warned = true;
+      ++warnings;
+    } else if (event.type == "hit" && event.skill_id == "ranged:volley") {
+      if (!warned) hit_without_warning = true;
+      warned = false;
+      ++hits;
+    }
+  }
+  check(warnings == 1 && hits == 1 && !hit_without_warning && life < 1000,
+        "ranged-reach: every ranged hit is preceded by its projectile warning");
+  check(hit_distance > 2,
+        "ranged-reach: ranged damage lands beyond 2-tile Chebyshev contact");
+
+  // Melee twin: identical setup with a contact-role monster. Across the whole
+  // approach it must land nothing while beyond 2-tile Chebyshev contact, and
+  // it must never publish the ranged windup event.
+  WorldSimulation melee_world(0xA11CEULL, "melee-twin-scion");
+  melee_world.enter_solo_instance("marsh", "clearings");
+  const WorldMonster* melee = nullptr;
+  for (const auto& monster : melee_world.monsters())
+    if (!monster.boss && monster.behaviour_type == "melee") {
+      melee = &monster;
+      break;
+    }
+  check(melee != nullptr, "ranged-reach: marsh trial fields a melee twin");
+  if (melee) {
+    const std::string id = melee->uuid;
+    const int mx = melee->x;
+    const int my = melee->y;
+    const int px = mx + 4 < 39 ? mx + 4 : mx - 4;
+    melee_world.kill_all_monsters();
+    melee_world.reset_monster(id, 1000);
+    melee_world.teleport(px, my, 900);
+    int melee_life = 1000;
+    int hits_beyond_contact = 0;
+    int hits_at_contact = 0;
+    bool ranged_event_from_melee = false;
+    for (std::int64_t at = 1000; at <= 6000; at += 100) {
+      const auto events = melee_world.advance_combat(1, 0, melee_life, 1000, at);
+      // Movement resolves before attacks inside a tick, so the post-tick
+      // positions are the positions any emitted hit was resolved at.
+      int distance = 0;
+      for (const auto& monster : melee_world.monsters())
+        if (monster.uuid == id)
+          distance = (std::max)(std::abs(monster.x - px),
+                                std::abs(monster.y - my));
+      for (const auto& event : events) {
+        if (event.attacker_id != id) continue;
+        if (event.type == "projectile") ranged_event_from_melee = true;
+        if (event.type == "hit") {
+          if (distance > 2) ++hits_beyond_contact;
+          else ++hits_at_contact;
+        }
+      }
+    }
+    check(hits_beyond_contact == 0 && !ranged_event_from_melee,
+          "ranged-reach: melee twin cannot damage beyond 2-tile contact");
+    check(hits_at_contact >= 1 && melee_life < 1000,
+          "ranged-reach: melee twin still fights once contact closes");
+  }
+
+  // Replay: the same seed and call script must reproduce the ranged event
+  // stream exactly.
+  std::vector<WorldCombatEvent> replay_stream;
+  int replay_distance = 0;
+  int replay_life = 1000;
+  check(run_ranged_trial(&replay_stream, &replay_distance, &replay_life),
+        "ranged-reach: replay trial fields the same ranged unit");
+  const auto fingerprint = [](const std::vector<WorldCombatEvent>& events) {
+    std::string out;
+    for (const auto& event : events) {
+      out += event.type + "|" + event.skill_id + "|" + event.attacker_id +
+             "|" + std::to_string(event.x) + "," + std::to_string(event.y) +
+             "|" + std::to_string(event.origin_x) + "," +
+             std::to_string(event.origin_y) + "|" +
+             std::to_string(event.radius) + "|" +
+             std::to_string(event.duration_ms) + "|" +
+             std::to_string(event.amount) + "|" + event.damage_channel + "\n";
+    }
+    return out;
+  };
+  check(fingerprint(stream) == fingerprint(replay_stream) &&
+            replay_distance == hit_distance && replay_life == life,
+        "ranged-reach: seeded ranged event stream replays byte-identically");
 }
 
 void test_world_warden_ability_profiles_are_authoritative() {
@@ -3314,6 +3458,7 @@ int main() {
   test_n2_diagonal_blocking_rule();
   test_world_melee_combo_is_authoritative();
   test_world_monster_pressure_roles_are_authoritative();
+  test_ranged_reach_warning_precedence_and_replay();
   test_world_warden_ability_profiles_are_authoritative();
   test_world_monster_locomotion_is_authoritative_and_deterministic();
   test_relic_resurface_round_trip();

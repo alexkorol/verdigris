@@ -2543,8 +2543,12 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
         monster.pending_target_x = here.x;
         monster.pending_target_y = here.y;
         monster.telegraph_until_ms = now + kN3RangedVolleyWindupMs;
+        // D-129: ranged windups are their own sim event ("projectile") so the
+        // wire layer can route them onto the JS stack's world:projectile
+        // convention; "telegraph" stays slam-only. x/y remain the painted
+        // target tile; origin_x/origin_y carry the shooter's tile.
         WorldCombatEvent warning;
-        warning.type = "telegraph";
+        warning.type = "projectile";
         warning.attacker_id = monster.uuid;
         warning.attacker_name = monster.name;
         warning.target_id = player_uuid_;
@@ -2554,6 +2558,8 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
         warning.damage_channel = monster.damage_channel;
         warning.radius = kN3RangedVolleyRadius;
         warning.duration_ms = kN3RangedVolleyWindupMs;
+        warning.origin_x = monster.x;
+        warning.origin_y = monster.y;
         warning.x = here.x;
         warning.y = here.y;
         events.push_back(warning);

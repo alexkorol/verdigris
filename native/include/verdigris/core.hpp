@@ -966,7 +966,7 @@ struct WorldMonster {
 };
 
 struct WorldCombatEvent {
-  std::string type; // move, hit, heal, death, telegraph, interrupt, drop
+  std::string type; // move, hit, heal, death, telegraph, projectile, interrupt, drop
   std::string attacker_id;
   std::string attacker_name;
   std::string target_id;
@@ -981,6 +981,12 @@ struct WorldCombatEvent {
   int duration_ms = 0;
   int x = 0;
   int y = 0;
+  // D-129: "projectile" (ranged windup) events carry the shooter's tile in
+  // origin_x/origin_y while x/y stay the painted target tile, so the wire
+  // layer can mirror the JS world:projectile fromX/fromY/toX/toY payload
+  // (server/core/entities/monster/combat-controller.js:215-222) exactly.
+  int origin_x = 0;
+  int origin_y = 0;
   std::string telegraph_shape;
   std::string item_id;
   // N4: combat:hit parity fields (server/core/combat/index.js).
