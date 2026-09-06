@@ -2456,6 +2456,98 @@ void test_consumable_endgame_tablet_loop() {
             repeated["state"]["quests"]["houseRenown"].number().value_or(0) == 15,
         "endgame: repeat clears count as runs without duplicating mastery or renown");
 }
+// VG-SEC-001: the JSON parser enforces explicit depth, token, and byte budgets
+// (TASK-0098 F-A / PC-014).  Deep and wide malformed inputs are rejected with
+// an error — no crash, no partial parse, no state mutation.
+void test_json_parser_budgets() {
+  using verdigris::networking::parse_json;
+  std::string error;
+  JsonValue out;
+
+  // (a) Nesting beyond the 32-level depth budget is rejected cleanly.
+  std::string deep(64, '[');
+  deep.append(64, ']');
+  check(!parse_json(deep, out, &error), "deep nesting beyond the depth budget is rejected");
+  check(error.find("nesting-depth budget") != std::string::npos,
+        "deep nesting reports the depth budget");
+
+  // (e) Negative control: that payload is 128 bytes — far under the 16 KiB
+  // wire frame cap and the 1 MiB byte budget — and costs only 65 tokens, far
+  // under the token budget.  A frame/byte-size cap alone cannot stop it; only
+  // the depth budget rejects it.
+  check(deep.size() < 16384, "negative control: deep payload fits inside the wire frame cap");
+  check(deep.size() < (std::size_t{1} << 20), "negative control: deep payload fits inside the byte budget");
+  std::string deep_edge(33, '[');
+  deep_edge.append(33, ']');
+  check(!parse_json(deep_edge, out, &error) &&
+            error.find("nesting-depth budget") != std::string::npos,
+        "negative control: 129-byte / 34-token payload is stopped by depth alone");
+  std::string at_budget(32, '[');
+  at_budget.append(32, ']');
+  check(parse_json(at_budget, out, &error), "nesting exactly at the budget still parses");
+
+  // (b) A wide input beyond the 262144-token budget is rejected even though it
+  // stays under the byte budget (~540 KB < 1 MiB).  270001 tokens > 262144.
+  std::string wide = "[";
+  for (int i = 0; i < 270000; ++i) {
+    if (i) wide += ',';
+    wide += '0';
+  }
+  wide += ']';
+  check(wide.size() < (std::size_t{1} << 20), "wide probe stays under the byte budget");
+  check(!parse_json(wide, out, &error), "wide input beyond the token budget is rejected");
+  check(error.find("token budget") != std::string::npos, "wide input reports the token budget");
+
+  // (c) Oversized input is rejected on bytes before any parsing work.
+  const std::string oversized((std::size_t{1} << 20) + 1, ' ');
+  check(!parse_json(oversized, out, &error), "oversized input is rejected");
+  check(error.find("byte budget") != std::string::npos, "oversized input reports the byte budget");
+
+  // (d) Legitimate representative messages still parse: a typical client
+  // command envelope and the largest real payload class — a dev:state town
+  // snapshot carrying the 200x200 walkable map.
+  ProtocolSession session("guest-budgets", "socket-budget", 17, true);
+  session.handle(Envelope{"player:login", JsonValue::Object{{"useGuestAccount", true}, {"quickGuest", true}}},
+                 [](const Envelope&) {});
+  Envelope command;
+  check(parse_envelope("{\"event\":\"world:zone:enter\",\"data\":{\"nodeId\":\"tin:1:0\"}}", command, &error),
+        error.c_str());
+  const std::string snapshot_wire = session.state_payload("budget-state", /*include_map=*/true);
+  check(snapshot_wire.size() < (std::size_t{1} << 20), "real map snapshot stays under the byte budget");
+  JsonValue snapshot;
+  check(parse_json(snapshot_wire, snapshot, &error), error.c_str());
+  check(snapshot["state"]["map"]["rows"].array() &&
+            snapshot["state"]["map"]["rows"].array()->size() == 200,
+        "real map snapshot parses with its full walkable grid");
+
+  // Interplay with the frozen session tests (D-129): a passiveTree frame at
+  // 65537 entries (~65.6k tokens, ~197 KB) must still parse at the JSON layer
+  // so the client-side transport entry bound in remote_session.cpp — not the
+  // parser — rejects it with its own pinned diagnostic.
+  std::string tree_frame = "{\"nodes\":[";
+  for (int i = 0; i < 65537; ++i) {
+    if (i) tree_frame += ',';
+    tree_frame += "\"\"";
+  }
+  tree_frame += "]}";
+  JsonValue tree;
+  check(parse_json(tree_frame, tree, &error), error.c_str());
+  check(tree["nodes"].array() && tree["nodes"].array()->size() == 65537,
+        "a passiveTree frame above the application entry bound still parses");
+
+  // (f) Rejection mutates nothing: the out-parameters keep their prior values
+  // and the session's observable state is byte-identical before and after the
+  // hostile parses (rejection happens entirely before session dispatch).
+  const std::string state_before = session.state_payload("budget-state", false);
+  Envelope sentinel{"player:login", JsonValue::Object{{"guestId", "sentinel"}}};
+  check(!parse_envelope(deep, sentinel, &error), "hostile envelope is rejected");
+  check(!parse_envelope(wide, sentinel, &error), "wide envelope is rejected");
+  check(sentinel.event == "player:login", "rejected parse leaves the event field untouched");
+  check(sentinel.data["guestId"].string() && *sentinel.data["guestId"].string() == "sentinel",
+        "rejected parse leaves the data field untouched");
+  check(session.state_payload("budget-state", false) == state_before,
+        "session state is unchanged by rejected parses");
+}
 }  // namespace
 
 int main() {
@@ -2478,6 +2570,7 @@ int main() {
     test_campaign_contract_and_scion_checkpoint();
     test_four_roads_campaign_act_and_persistence();
     test_consumable_endgame_tablet_loop();
+    test_json_parser_budgets();
     std::cout << "verdigris networking tests: PASS\n";
     return 0;
   } catch (const std::exception& error) {
