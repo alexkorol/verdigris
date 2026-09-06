@@ -4,29 +4,23 @@
   "planning_id": "VG-QA-002",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "base_sha": "69e16d49e16c2293be62dd1fff25cdf3c2be414c",
   "head_sha": "working-tree",
   "integrated_sha": null,
-  "content_hash": null,
   "seed": "headless-contract",
   "platform": "win32-x64",
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
-    {
-      "run": "native/build.ps1",
-      "exit_code": 0
-    },
-    {
-      "run": "native/build/verdigris_client.exe --scenario headless-contract",
-      "exit_code": 0
-    }
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario headless-contract", "exit_code": 0}
   ],
   "assertions": [
     "AttackStarted maps to a typed intent",
     "production bridge voices AttackStarted",
     "removing the bridge fails the fixture",
     "a mocked event is not a journey proof",
-    "real event reaches render and audio intent"
+    "real event reaches render and audio intent",
+    "live HUD names Sim event and Intent swing"
   ],
   "negative_control": {
     "name": "mocked PresentationEvent plus swing FX without sim AttackStarted",
@@ -36,7 +30,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/headless-contract-960x600.png",
-      "sha256": "714c508232354d23a057b8867209e2a657e973cb8625fc602087287dd03e387f",
+      "sha256": "2d6a01bf5a38c8a3fdf3981a5a3c682875be0496605facc9c6b815a35be18ea3",
       "produced_by": "native/build/verdigris_client.exe --scenario headless-contract"
     }
   ],
@@ -44,7 +38,6 @@
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Client scenario fixture only; native/tests and ci-native.ps1 stay Kimi.",
-    "Working tree is dirty; head_sha is not a commit."
+    "Client scenario fixture only; native/tests and ci-native.ps1 stay Kimi."
   ]
 }

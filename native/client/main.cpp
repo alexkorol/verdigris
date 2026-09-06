@@ -485,6 +485,8 @@ struct ClientState {
   bool aim_hold_review_strip = false;
   bool input_latency_review_strip = false;
   bool death_disconnect_review_strip = false;
+  bool build_fixtures_review_strip = false;
+  bool headless_contract_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -6746,6 +6748,84 @@ void paint_death_disconnect_review_strip(ClientState& state, HDC dc, const RECT&
   SelectObject(dc, old_font);
 }
 
+void paint_build_fixtures_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                       render::List& rl) {
+  if (!state.build_fixtures_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "build-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::builds::owner_three_slices_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* reach = verdigris::client::builds::owner_reach_pike_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, reach, static_cast<int>(strlen(reach)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "tint clones";
+  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "build:three-slices"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "build:reach-pike"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "build-strip:tint-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_headless_contract_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                          render::List& rl) {
+  if (!state.headless_contract_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "contract-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::qa::owner_sim_event_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* intent = verdigris::client::qa::owner_intent_swing_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, intent, static_cast<int>(strlen(intent)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "mocked";
+  TextOutA(dc, rx - 22 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "contract:sim-event"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "contract:intent-swing"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "contract-strip:mocked-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -7779,6 +7859,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_aim_hold_review_strip(state, dc, bounds, rl);
   paint_input_latency_review_strip(state, dc, bounds, rl);
   paint_death_disconnect_review_strip(state, dc, bounds, rl);
+  paint_build_fixtures_review_strip(state, dc, bounds, rl);
+  paint_headless_contract_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -12995,8 +13077,13 @@ int scenario_build_fixtures() {
     return scenario_failures;
   }
   const std::string png = dir + "\\build-fixtures-960x600.png";
+  state.build_fixtures_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "build-fixtures: character-sheet capture written");
+  scenario_check(has_hud("build:three-slices") && has_hud("build:reach-pike"),
+                 "build-fixtures: live HUD names Three slices and Reach pike");
+  scenario_check(has_hud("build-strip:tint-rejected"),
+                 "build-fixtures: live HUD rejects tint clones");
   return scenario_failures;
 }
 
@@ -13279,8 +13366,22 @@ int scenario_headless_contract() {
     return scenario_failures;
   }
   const std::string png = dir + "\\headless-contract-960x600.png";
+  state.headless_contract_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "headless-contract: live contract capture written");
+  bool sim_hud = false;
+  bool intent_hud = false;
+  bool mocked_hud = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "contract:sim-event") sim_hud = true;
+    if (item.label == "contract:intent-swing") intent_hud = true;
+    if (item.label == "contract-strip:mocked-rejected") mocked_hud = true;
+  }
+  scenario_check(sim_hud && intent_hud,
+                 "headless-contract: live HUD names Sim event and Intent swing");
+  scenario_check(mocked_hud,
+                 "headless-contract: live HUD rejects a mocked event");
   return scenario_failures;
 }
 

@@ -4,28 +4,22 @@
   "planning_id": "VG-BUILD-001",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "base_sha": "69e16d49e16c2293be62dd1fff25cdf3c2be414c",
   "head_sha": "working-tree",
   "integrated_sha": null,
-  "content_hash": null,
   "seed": "build-fixtures",
   "platform": "win32-x64",
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
-    {
-      "run": "native/build.ps1",
-      "exit_code": 0
-    },
-    {
-      "run": "native/build/verdigris_client.exe --scenario build-fixtures",
-      "exit_code": 0
-    }
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario build-fixtures", "exit_code": 0}
   ],
   "assertions": [
     "reach/pressure/magic are distinct loops",
     "three tinted copies of melee fail review",
     "character sheet names all three roles",
-    "each role lists tactics, weakness, gear, encounter answer"
+    "each role lists tactics, weakness, gear, encounter answer",
+    "live HUD names Three slices and Reach pike"
   ],
   "negative_control": {
     "name": "three melee clones differing only by tint",
@@ -35,7 +29,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/build-fixtures-960x600.png",
-      "sha256": "4a5fd71e9efccd4422e65d0b846d04a2c343e4d9903c5299a515604438d5d3d0",
+      "sha256": "4e6c5cba322f5782d9d3ec4ef0276337ee8a75a62306e5d56746fb4e7a7203fc",
       "produced_by": "native/build/verdigris_client.exe --scenario build-fixtures"
     }
   ],
@@ -44,7 +38,6 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Client presentation freeze only; VG-STAT-001 and core BUILD algebra stay with Kimi.",
-    "Working tree is dirty; head_sha is not a commit.",
     "Does not edit native/src/core.cpp."
   ]
 }

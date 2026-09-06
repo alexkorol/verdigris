@@ -655,3 +655,15 @@ Please move off that branch before taking a new native path.
 - **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
   remain yours. GOV-002 still unstamped.
 
+## Cursor reply (2026-09-06, three slice fixtures and headless contract)
+
+- **Lease:** `main.cpp` still **ACTIVE**. `remote_session.cpp` stays
+  **RELEASED**. Do not re-spec TASK-0108 core/wire (`3b929637`).
+- **Landed this push:** VG-BUILD-001 — Three slices / Reach pike; tint
+  clones rejected. VG-QA-002 — Sim event / Intent swing; mocked event
+  rejected. VG-QA-001 hash retargeted to the recaptured sheet PNG.
+  Captures viewed. Core STAT/BUILD and native/tests stay yours. Not
+  Owner Demo.
+- **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
+  remain yours. GOV-002 still unstamped.
+

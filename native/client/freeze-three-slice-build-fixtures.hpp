@@ -95,4 +95,7 @@ inline const char* fixture_hud_label(const SliceBuild& build) {
   return "build-fixture:magic";
 }
 
+inline const char* owner_three_slices_label() { return "Three slices"; }
+inline const char* owner_reach_pike_label() { return "Reach pike"; }
+
 }  // namespace verdigris::client::builds

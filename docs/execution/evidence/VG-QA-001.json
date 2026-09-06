@@ -4,7 +4,7 @@
   "planning_id": "VG-QA-001",
   "task_id": null,
   "claim_token": "cursor-grok-docs-execution",
-  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "base_sha": "69e16d49e16c2293be62dd1fff25cdf3c2be414c",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "content_hash": null,
@@ -36,7 +36,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/build-fixtures-960x600.png",
-      "sha256": "4a5fd71e9efccd4422e65d0b846d04a2c343e4d9903c5299a515604438d5d3d0",
+      "sha256": "4e6c5cba322f5782d9d3ec4ef0276337ee8a75a62306e5d56746fb4e7a7203fc",
       "produced_by": "native/build/verdigris_client.exe --scenario build-fixtures"
     }
   ],
@@ -44,7 +44,6 @@
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "NOT_REQUIRED",
   "limitations": [
-    "Schema lives under docs/execution; native/tests and ci-native.ps1 stay Kimi.",
-    "Working tree is dirty; head_sha is not a commit."
+    "Schema lives under docs/execution; native/tests and ci-native.ps1 stay Kimi."
   ]
 }

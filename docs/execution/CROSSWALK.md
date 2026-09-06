@@ -260,15 +260,16 @@ paints Hide trophies; mutate ground cannot certify. Hiding trophies
 cannot move ownership or drop tables. Scenario `loot-filter`.
 Evidence `docs/execution/evidence/VG-ITEM-006.json`.
 VG-BUILD-001: reach/pressure/magic fixtures list tactics, weakness, gear,
-and encounter answers. Three melee clones that differ only by tint fail.
-Scenario `build-fixtures`. STAT-001 algebra is not on this lease.
+and encounter answers. Owner strip paints Three slices / Reach pike.
+Three melee clones that differ only by tint fail. Scenario `build-fixtures`.
+STAT-001 algebra is not on this lease.
 VG-QA-001: evidence manifests require command exit codes and artifact
 hashes. Pack template-only JSON cannot certify. CI under `native/tests`
 stays Kimi.
 VG-QA-002: live `AttackStarted` maps to `intent:swing` and
-`attack-anticipate`. Dropping `presentation_from_sim` for that event fails
-the fixture. A mocked PresentationEvent is not a journey proof. Scenario
-`headless-contract`.
+`attack-anticipate`. Owner strip paints Sim event / Intent swing. Dropping
+`presentation_from_sim` for that event fails the fixture. A mocked
+PresentationEvent is not a journey proof. Scenario `headless-contract`.
 VG-GOV-003: `docs/execution/decisions/freeze-the-parity-scorecard.md`.
 A feature or VG-ID count cannot pass. Each dimension names a journey.
 VG-UI-007: `vital-orbs` — life left/red, mana right/blue. Mute is a HUD

@@ -39,4 +39,7 @@ inline bool mock_without_sim_rejected(bool sim_emitted_attack, bool mock_voiced)
   return mock_voiced && !sim_emitted_attack;
 }
 
+inline const char* owner_sim_event_label() { return "Sim event"; }
+inline const char* owner_intent_swing_label() { return "Intent swing"; }
+
 }  // namespace verdigris::client::qa

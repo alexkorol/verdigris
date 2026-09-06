@@ -1,5 +1,20 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — three slice fixtures and headless contract (Cursor)
+
+- VG-BUILD-001: owner Three slices strip paints Reach pike. Tint clones
+  cannot certify. Character sheet still names reach/pressure/magic with
+  tactics, weakness, gear, and encounter answers. Core STAT/BUILD stays
+  Kimi.
+- VG-QA-002: owner Sim event strip paints Intent swing. A mocked
+  PresentationEvent cannot prove the journey. Live AttackStarted still
+  maps through `presentation_from_sim` to swing intent and
+  `attack-anticipate`. native/tests stays Kimi.
+- VG-QA-001: traced screenshot hash updated to the recaptured
+  `build-fixtures` PNG. Template-only still cannot certify.
+- Scenarios `build-fixtures` / `headless-contract` PASS. Captures viewed.
+  Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — aim hold, present-path latency, uncommitted extract (Cursor)
 
 - VG-MOVE-002: owner Aim hold strip paints Face east. Move facing cannot
