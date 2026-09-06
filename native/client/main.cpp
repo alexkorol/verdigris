@@ -5152,10 +5152,9 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open,
     layout.connection =
         place_right(TopHudRect{0, 0, connection_chip_w(height),
                                 connection_chip_h(height)});
-  // Art keeps its historical rows: beside the identity locally, under the
-  // connection chip on the remote owner path (row 0 is taken there); the left
-  // lane catches it when an open gear pane owns the right side.
-  layout.art = place_right(art_size);
+  // Art/mute chrome keeps the historical right-edge pin, but a zero-width
+  // slot (loaded art, unmuted) must not reserve a skeleton chip.
+  if (art_size.w > 0) layout.art = place_right(art_size);
   // The objective outranks the controls hint when rows are contested.
   layout.objective = place_centered(objective_size, layout.objective_placed);
   layout.controls = place_centered(controls_size, layout.controls_placed);
@@ -6472,6 +6471,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         "WASD move | mouse aim | LMB attack | RMB/Space dash | Q E R skills | "
         "X take | Z names | I gear | T hail | N road";
     const std::string& art_text = state.billboards.status;
+    const bool plates_ready =
+        state.billboards.player.ready() && state.billboards.raider.ready() &&
+        state.billboards.boss.ready();
+    const bool show_art_chip = state.debug_overlay || !plates_ready;
+    const bool show_mute_chip =
+        state.audio_sink && state.audio_sink->muted();
+    const char* mute_text = "audio muted";
 
     // TASK-0159: pre-measure the controls hint and its deterministic
     // mid-separator wrap (the " | " boundary nearest the middle) so the
@@ -6509,8 +6515,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                           static_cast<int>(identity.size()), &identity_extent);
     GetTextExtentPoint32A(dc, objective.c_str(),
                           static_cast<int>(objective.size()), &objective_extent);
-    GetTextExtentPoint32A(dc, art_text.c_str(),
-                          static_cast<int>(art_text.size()), &art_extent);
+    if (show_art_chip) {
+      GetTextExtentPoint32A(dc, art_text.c_str(),
+                            static_cast<int>(art_text.size()), &art_extent);
+    } else if (show_mute_chip) {
+      GetTextExtentPoint32A(dc, mute_text, static_cast<int>(strlen(mute_text)),
+                            &art_extent);
+    }
     GetTextExtentPoint32A(dc, kControls,
                           static_cast<int>(sizeof(kControls) - 1),
                           &controls_extent);
@@ -6716,26 +6727,30 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "target:palette:bronze-stone"});
     rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "target:contrast:ink-on-panel"});
 
-    const bool plates =
-        state.billboards.player.ready() && state.billboards.raider.ready() &&
-        state.billboards.boss.ready();
     const COLORREF art_accent =
-        plates ? RGB(120, 214, 168) : RGB(239, 190, 78);
-    paint_status_chip(dc, art_at.x, art_at.y, state.billboards.status,
-                      art_accent, rl);
-    state.hud_rect_trace.push_back(
-        {"art", {art_at.x, art_at.y, art_size.w, art_size.h}});
-    if (state.audio_sink && state.audio_sink->muted()) {
-      const int mute_y = art_at.y + std::max(art_size.h, 20) + 4;
-      paint_status_chip(dc, art_at.x, mute_y, "audio muted", RGB(238, 226, 197),
+        plates_ready ? RGB(120, 214, 168) : RGB(239, 190, 78);
+    if (show_art_chip) {
+      paint_status_chip(dc, art_at.x, art_at.y, state.billboards.status,
+                        art_accent, rl);
+      state.hud_rect_trace.push_back(
+          {"art", {art_at.x, art_at.y, art_size.w, art_size.h}});
+    }
+    if (show_mute_chip) {
+      const int mute_y =
+          show_art_chip ? art_at.y + std::max(art_size.h, 20) + 4 : art_at.y;
+      paint_status_chip(dc, art_at.x, mute_y, mute_text, RGB(238, 226, 197),
                         rl);
       rl.push_back({render::Op::Hud, static_cast<double>(art_at.x),
                     static_cast<double>(mute_y), 0.0, 1, "audio:muted"});
       state.hud_rect_trace.push_back(
           {"audio-muted", {art_at.x, mute_y, 132, 24}});
+      if (!show_art_chip)
+        state.hud_rect_trace.push_back(
+            {"art", {art_at.x, mute_y, art_size.w, art_size.h}});
     }
     if (state.link_lost) {
-      const int lost_y = art_at.y + std::max(art_size.h, 20) + 32;
+      const int lost_y = art_at.y + std::max(art_size.h, 20) +
+                         (show_mute_chip || show_art_chip ? 32 : 0);
       paint_status_chip(dc, art_at.x, lost_y, "extract uncommitted",
                         RGB(255, 80, 70), rl);
     }
@@ -7830,15 +7845,23 @@ int scenario_first_fight() {
   state.camera.x = static_cast<double>(state.world.player.position.x);
   state.camera.y = static_cast<double>(state.world.player.position.y);
 
-  // TASK-0142 owner-facing checks: the HUD names the objective, the art chip
-  // honestly reports what loaded, and the extraction pad is marked.
+  // TASK-0142 owner-facing checks: the HUD names the objective, missing art
+  // still warns, and a successful load cannot ship skeleton loader chrome.
   scenario_present(state);
-  bool art_op = false;
-  for (const auto& item : state.render_list)
-    if (item.op == render::Op::Hud &&
-        item.label.rfind("art: ", 0) == 0)
-      art_op = true;
-  scenario_check(art_op, "first-fight: an honest art-status line is on the HUD");
+  bool art_loader_chip = false;
+  bool art_missing_chip = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label.find("PNG billboards loaded") != std::string::npos ||
+        item.label.find("embedded vector kit") != std::string::npos)
+      art_loader_chip = true;
+    if (item.label.rfind("art: ", 0) == 0 &&
+        item.label.find("loaded") == std::string::npos &&
+        item.label.find("vector kit") == std::string::npos)
+      art_missing_chip = true;
+  }
+  scenario_check(!art_loader_chip,
+                 "first-fight: loaded billboards do not paint a skeleton art chip");
   const bool claims_plates =
       state.billboards.status.find("PNG billboards") != std::string::npos;
   const bool really_plates = state.billboards.player.ready() &&
@@ -7846,6 +7869,8 @@ int scenario_first_fight() {
                              state.billboards.boss.ready();
   scenario_check(claims_plates == really_plates,
                  "first-fight: art status matches what actually loaded");
+  scenario_check(really_plates || art_missing_chip,
+                 "first-fight: missing art still warns on the owner HUD");
   bool objective_op = false;
   for (const auto& item : state.render_list)
     if (item.op == render::Op::Hud &&
@@ -9512,15 +9537,13 @@ int scenario_hud_pane_readability() {
       scenario_check(pane && connection,
                      "hud-pane-readability: remote pane and connection chip "
                      "recorded");
-      scenario_check(pane && art,
-                     "hud-pane-readability: remote art chip recorded");
       scenario_check(pane && connection &&
                          !hud_rects_overlap(*pane, *connection),
                      "hud-pane-readability: connection chip clears the open "
                      "pane (960x600)");
-      scenario_check(pane && art && !hud_rects_overlap(*pane, *art),
-                     "hud-pane-readability: art chip clears the open pane "
-                     "(960x600)");
+      scenario_check(!art || (pane && !hud_rects_overlap(*pane, *art)),
+                     "hud-pane-readability: a skeleton loader chip is not "
+                     "required; a warning chip still clears the pane");
       const HudRect* map = trace_find("minimap");
       const HudRect* identity = trace_find("identity");
       scenario_check(map && identity && !hud_rects_overlap(*map, *identity),
@@ -10249,6 +10272,13 @@ int scenario_visual_target() {
                  "visual-target: in-game composition axes are named");
   scenario_check(!has("target:concept-art"),
                  "visual-target: an external concept image cannot substitute");
+  bool loader_chip = false;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Hud &&
+        item.label.find("PNG billboards loaded") != std::string::npos)
+      loader_chip = true;
+  scenario_check(!loader_chip,
+                 "visual-target: a loader chip cannot count as the composition sheet");
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {
     scenario_check(false, "visual-target: capture root rejected before any write");

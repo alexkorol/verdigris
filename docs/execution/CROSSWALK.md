@@ -156,8 +156,9 @@ VG-GPU-002: Telegraph draw class copied to handle-free packets. Poisoned
 `backend_handle` fails snapshot. Scenario `gpu-packets`. Evidence
 `docs/execution/evidence/VG-GPU-002.json`.
 VG-ART-001: in-game HUD names camera/proportion/palette/contrast. An
-external concept-art token cannot substitute. Scenario `visual-target`.
-Evidence `docs/execution/evidence/VG-ART-001.json`.
+external concept-art token cannot substitute, and a skeleton
+`art: PNG billboards loaded` chip cannot count as the composition sheet.
+Scenario `visual-target`. Evidence `docs/execution/evidence/VG-ART-001.json`.
 VG-ART-002: bronze/stone albedo+rim maps with SPDX CC0; magenta fill
 cannot ship. Village kit uses the family. Scenario `bronze-stone`.
 Evidence `docs/execution/evidence/VG-ART-002.json`.

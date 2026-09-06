@@ -29,7 +29,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/vital-orbs-960x600.png",
-      "sha256": "c89f62edca486b191ba2a17ba2d519c6f4b96191a3830320f2b0149ce24e4b17",
+      "sha256": "3d1bfd0f835e3b79cecefcb60352f539b8553038aeed41f49060c7672b5988b8",
       "produced_by": "native/build/verdigris_client.exe --scenario vital-orbs"
     }
   ],

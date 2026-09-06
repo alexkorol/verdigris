@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — hide skeleton art loader chip (Cursor)
+
+- Owner HUD no longer paints `art: PNG billboards loaded`. Loaded art is
+  silent; missing plates still warn. F3 keeps the diagnostic line.
+- `first-fight` / `visual-target` reject a loader chip as the composition
+  sheet. Mute chip stays. Capture
+  `docs/execution/captures/art-wave/visual-target-960x600.png`.
+- Not TASK-0108, not Owner Demo.
+
 ## 2026-09-06 — local XP meter fill (Cursor)
 
 - Live local HUD showed `XP lv 1` over an empty black strip because

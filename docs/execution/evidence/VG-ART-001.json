@@ -4,35 +4,40 @@
   "planning_id": "VG-ART-001",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "dbc8824f",
+  "base_sha": "11ef2ba867e1952c034b4a62ca7022cd06424707",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "visual-target",
   "platform": "win32-x64",
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
-    {"run": "native/build/verdigris_client.exe --scenario visual-target", "exit_code": 0}
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario visual-target", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario first-fight", "exit_code": 0}
   ],
   "assertions": [
     "in-game HUD names camera top-down, adult proportion, bronze-stone palette, ink-on-panel contrast",
-    "target:concept-art cannot substitute"
+    "target:concept-art cannot substitute",
+    "loaded billboards do not paint a skeleton art: PNG billboards loaded chip",
+    "missing art still warns on the owner HUD; F3 still shows the loader line"
   ],
   "negative_control": {
-    "name": "external concept-art HUD token as the composition sheet",
+    "name": "external concept-art HUD token, or a loader chip counting as the composition sheet",
     "observed_result": "REJECTED"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/visual-target-960x600.png",
-      "sha256": "d9d96dc8ce21df99612d4f01f649a28386e4b48d6ad18aab74a0d611e36611da",
+      "sha256": "3d1bfd0f835e3b79cecefcb60352f539b8553038aeed41f49060c7672b5988b8",
       "produced_by": "native/build/verdigris_client.exe --scenario visual-target"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Composition axes are HUD labels on the live expedition, not a separate art bible PNG.",
-    "Does not re-spec TASK-0108 or Owner Demo."
+    "Composition axes remain HUD labels on the live expedition, not a separate art bible PNG.",
+    "Mute chip stays owner-facing. Loader jargon lives on F3.",
+    "Does not re-spec TASK-0108 or Owner Demo. No TASK numbers minted."
   ]
 }
