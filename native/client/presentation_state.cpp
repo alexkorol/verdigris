@@ -31,7 +31,8 @@ const char* extraction_action_hint(bool remote_session) {
   return remote_session ? "walk onto it" : "press F there";
 }
 
-void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& sim) {
+void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& sim,
+                                long long combat_xp) {
   world = WorldView{};
   world.house_name = sim.house().name;
   world.scion_name = sim.scion().name;
@@ -76,10 +77,18 @@ void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& s
       next_xp += static_cast<long long>(
           std::floor(x + 265.0 * std::pow(2.0, x / 7.0)));
     next_xp /= 4;
-    // Local core stores level, not intra-level combat XP. The bar is still
-    // shown; fill stays at the floor until a snapshot publishes current XP.
-    world.xp_present = static_cast<double>(next_xp) > static_cast<double>(floor_xp);
-    world.xp_fraction = 0.0;
+    // Local core stores level, not intra-level combat XP. The HUD adapter
+    // tracks kill XP with the same RS curve as the snapshot `state.xp` block
+    // so a live local window is not an empty black strip.
+    const double floor_d = static_cast<double>(floor_xp);
+    const double next_d = static_cast<double>(next_xp);
+    world.xp_present = next_d > floor_d;
+    world.xp_fraction =
+        world.xp_present
+            ? std::clamp((static_cast<double>(combat_xp) - floor_d) /
+                             (next_d - floor_d),
+                         0.0, 1.0)
+            : 0.0;
   }
   for (const auto& actor : sim.actors()) {
     if (actor.kind != verdigris::ActorKind::Monster || !actor.alive) continue;

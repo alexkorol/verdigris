@@ -507,6 +507,9 @@ struct ClientState {
   // Attack held while a pane had focus must not fire on close.
   bool attack_held_blocked = false;
   int combat_requests = 0;
+  // Local-play combat XP for the HUD meter. ProtocolSession owns the same
+  // curve on the wire; this is the in-process adapter, not a second core.
+  long long local_combat_xp = 0;
   int dressing_pass_version = verdigris::client::world::kDressingPassVersion;
   std::uint64_t topology_hash = 0;
   // Client-only minimap zoom (0=wide, 1=mid, 2=tight) and panel opacity.
@@ -1720,7 +1723,8 @@ bool is_remote(const ClientState& state) { return static_cast<bool>(state.sessio
 
 void sync_world(ClientState& state) {
   if (state.simulation) {
-    verdigris::client::sync_world_from_simulation(state.world, *state.simulation);
+    verdigris::client::sync_world_from_simulation(state.world, *state.simulation,
+                                                 state.local_combat_xp);
     return;
   }
   if (!state.session) return;
@@ -3326,6 +3330,10 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         if (event.text == "scion" ||
             (subject && subject->kind == verdigris::ActorKind::Player))
           state.telegraphs.clear();
+        else if (subject && subject->kind == verdigris::ActorKind::Monster) {
+          const int monster_level = std::max(1, subject->stats.level);
+          state.local_combat_xp += static_cast<long long>(monster_level) * 12;
+        }
         if (subject) state.last_death_pos = subject->position;
         add_effect(state, {EffectFx::Kind::DeathRing, ex, ey, 0.0, 0, 12});
         add_effect(state, {EffectFx::Kind::Dust, ex, ey, 0.7, 0, 10});
@@ -8066,6 +8074,102 @@ int scenario_hud_scale_floor() {
   return 0;
 }
 
+int scenario_xp_meter() {
+  ClientState empty;
+  scenario_begin(empty);
+  scenario_follow_camera(empty);
+  sync_world(empty);
+  scenario_check(empty.world.xp_present,
+                 "xp-meter: local HUD still publishes the meter");
+  scenario_check(empty.world.xp_fraction <= 0.001,
+                 "xp-meter: a fresh scion starts at the floor, not a fake fill");
+
+  ClientState filled;
+  scenario_begin(filled);
+  scenario_follow_camera(filled);
+  filled.local_combat_xp = 36;  // three level-1 kills at 12 XP, same as the wire
+  sync_world(filled);
+  scenario_check(filled.world.xp_fraction > 0.25 && filled.world.xp_fraction < 0.85,
+                 "xp-meter: kill XP fills the current level span");
+  scenario_check(filled.world.xp_fraction > empty.world.xp_fraction,
+                 "xp-meter: a 0% strip cannot count as a filled meter");
+
+  const int width = 960;
+  const int height = 600;
+  BITMAPINFO info{};
+  info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  info.bmiHeader.biWidth = width;
+  info.bmiHeader.biHeight = -height;
+  info.bmiHeader.biPlanes = 1;
+  info.bmiHeader.biBitCount = 32;
+  info.bmiHeader.biCompression = BI_RGB;
+
+  auto count_gold = [&](ClientState& state) -> int {
+    void* bits = nullptr;
+    HBITMAP bitmap = CreateDIBSection(nullptr, &info, DIB_RGB_COLORS, &bits,
+                                      nullptr, 0);
+    if (!bitmap || !bits) {
+      if (bitmap) DeleteObject(bitmap);
+      return -1;
+    }
+    HDC dc = CreateCompatibleDC(nullptr);
+    HGDIOBJ old = SelectObject(dc, bitmap);
+    RECT bounds{0, 0, width, height};
+    paint_scene(state, dc, bounds);
+    int bar_x = 0;
+    int bar_y = 0;
+    int bar_pct = -1;
+    for (const auto& item : state.render_list) {
+      if (item.op == render::Op::Hud && item.label == "xp-bar") {
+        bar_x = static_cast<int>(item.x);
+        bar_y = static_cast<int>(item.y);
+        bar_pct = item.value;
+      }
+    }
+    scenario_check(bar_pct >= 0, "xp-meter: xp-bar is on the HUD");
+    const auto* p = static_cast<const std::uint8_t*>(bits);
+    int gold = 0;
+    const int x0 = std::max(0, bar_x + 4);
+    const int x1 = std::min(width, bar_x + 120);
+    const int y0 = std::max(0, bar_y + 1);
+    const int y1 = std::min(height, bar_y + 9);
+    for (int y = y0; y < y1; ++y) {
+      for (int x = x0; x < x1; ++x) {
+        const int i = (y * width + x) * 4;
+        const int b = p[i];
+        const int g = p[i + 1];
+        const int r = p[i + 2];
+        if (r > 180 && g > 140 && b < 160 && r > b + 40) ++gold;
+      }
+    }
+    SelectObject(dc, old);
+    DeleteDC(dc);
+    DeleteObject(bitmap);
+    return gold;
+  };
+
+  const int empty_gold = count_gold(empty);
+  const int filled_gold = count_gold(filled);
+  scenario_check(empty_gold >= 0 && filled_gold >= 0,
+                 "xp-meter: offscreen presents succeeded");
+  scenario_check(empty_gold < 8,
+                 "xp-meter: an empty pit cannot pass as ledger gold");
+  scenario_check(filled_gold > 40,
+                 "xp-meter: filled meter paints gold, not a black hairline");
+  std::printf("    xp-meter: empty_gold=%d filled_gold=%d fraction=%.3f\n",
+              empty_gold, filled_gold, filled.world.xp_fraction);
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "xp-meter: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\xp-meter-960x600.png";
+  scenario_check(reference_present(filled, 960, 600, png),
+                 "xp-meter: filled HUD capture written");
+  return scenario_failures;
+}
+
 int scenario_loot_to_bank() {
   ClientState state;
   scenario_begin(state);
@@ -12447,6 +12551,7 @@ int run_scenarios(const std::string& which) {
       {"first-fight", scenario_first_fight},
       {"combat-audio", scenario_combat_audio},
       {"hud-scale-floor", scenario_hud_scale_floor},
+      {"xp-meter", scenario_xp_meter},
       {"loot-to-bank", scenario_loot_to_bank},
       {"telegraph-dodge", scenario_telegraph_dodge},
       {"combat-juice", scenario_combat_juice},

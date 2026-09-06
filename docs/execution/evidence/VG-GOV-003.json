@@ -4,21 +4,25 @@
   "planning_id": "VG-GOV-003",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "base_sha": "fc271963788f7e03f5a5d6d2e9a70331da7a7ce0",
   "head_sha": "working-tree",
   "integrated_sha": null,
-  "seed": "parity-scorecard",
+  "seed": "xp-meter",
   "platform": "win32-x64",
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario xp-meter", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario vital-orbs", "exit_code": 0}
   ],
   "assertions": [
     "every scorecard dimension names a journey and measurement",
-    "feature or VG-ID counts cannot produce a pass"
+    "feature or VG-ID counts cannot produce a pass",
+    "local XP meter starts at the floor; three level-1 kills fill ~49%",
+    "empty pit samples 0 gold pixels; filled meter samples ledger gold (805)"
   ],
   "negative_control": {
-    "name": "counting VG IDs or TASK packets as parity",
+    "name": "counting VG IDs as parity, or an XP lv 1 label over a 0% black strip",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
@@ -29,15 +33,18 @@
     },
     {
       "kind": "screenshot",
-      "path": "docs/execution/captures/art-wave/vital-orbs-960x600.png",
-      "sha256": "d8ec6a3778ccab043f0c26e0d7340e7374ad5165d66804a342121200b4ebeb88",
-      "produced_by": "native/build/verdigris_client.exe --scenario vital-orbs"
+      "path": "docs/execution/captures/art-wave/xp-meter-960x600.png",
+      "sha256": "fb3d77777964c6a6c2beacd704076856be08412083cbe790e2da35a2ed5690ce",
+      "produced_by": "native/build/verdigris_client.exe --scenario xp-meter"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Scorecard is drafted. Owner still stamps thresholds except the existing 40 ms frame-budget gate.",
-    "Does not re-spec TASK-0108 or Owner Demo. VG-GOV-002 remains unstamped."
+    "Local HUD tracks kill XP with the same RS curve as snapshot state.xp. Core still stores level only; this is not a second combat packet.",
+    "Did not edit remote_session.cpp, networking.cpp, or native/src/core.cpp.",
+    "GDI+ PNG may shift gold chroma; DIB gold sample is the certification.",
+    "Scorecard thresholds still need an owner stamp. VG-GOV-002 remains unstamped.",
+    "No TASK numbers minted. Not TASK-0108 and not Owner Demo."
   ]
 }

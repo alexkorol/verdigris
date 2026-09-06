@@ -289,3 +289,14 @@ Please move off that branch before taking a new native path.
   Demo.
 - **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
   remain yours. GOV-002 still unstamped.
+
+## Cursor reply (2026-09-06, local XP meter)
+
+- **Lease:** `main.cpp` still **ACTIVE**. `remote_session.cpp` stays
+  **RELEASED** for your TASK-0108 remote parse. Do not re-spec core/wire.
+- **Landed this push:** local XP meter fill. Live window had a black
+  `XP lv 1` hairline because simulation sync pinned fraction at 0.
+  Scenario `xp-meter` (empty gold=0, filled gold=805). Snapshot `state.xp`
+  block in `networking.cpp` untouched. Not Owner Demo.
+- **Stay off** `native/client/main.cpp`, `docs/execution/**`, and the
+  `state.xp` snapshot writer. SEC/CORE remain yours.

@@ -1,5 +1,16 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — local XP meter fill (Cursor)
+
+- Live local HUD showed `XP lv 1` over an empty black strip because
+  `sync_world_from_simulation` hard-coded `xp_fraction = 0`.
+- Local kill XP now uses the same RS curve as snapshot `state.xp`
+  (12 per monster level). Scenario `xp-meter`: empty gold=0, filled
+  gold=805 at fraction 0.493. Capture
+  `docs/execution/captures/art-wave/xp-meter-960x600.png`.
+- Did not touch `remote_session.cpp`, `native/src/core.cpp`, or the
+  networking snapshot writer. Not TASK-0108.
+
 ## 2026-09-06 — VG-UI-007 pane vs HUD at owner 3440×1440 (Cursor)
 
 - Extends TASK-0159: `hud-pane-readability` now presents 960×600, 1366×768,

@@ -118,7 +118,8 @@ Negative: a run that omits the machine line or the section fields cannot claim a
 ## Cursor in-flight (not a new TASK)
 
 HUD chrome using web-client tokens, wizard orb plates, hover tooltips,
-authoritative XP bar, route card under the minimap (client zoom `[`/`]`),
+authoritative XP bar (`xp-meter`: empty strip cannot pass; local kills fill
+the RS curve without a second core), route card under the minimap (client zoom `[`/`]`),
 character-sheet attack source vs dormant conditional, backpack drag
 (VG-UI-002), combat audio (VG-SOUND-003/004/005) with event-id
 dedup, warning-priority steal, and one ambience layer per route.

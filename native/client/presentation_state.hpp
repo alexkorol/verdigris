@@ -168,7 +168,8 @@ void detect_monster_spawns(PresentationFx& fx, const WorldView& world,
 // world units. One protocol tile equals one ground-grid tile.
 double protocol_to_world(double protocol_units);
 
-void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& sim);
+void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& sim,
+                                long long combat_xp = 0);
 void sync_world_from_model(WorldView& world, const ClientModel& model);
 
 // TASK-0153 mode-aware extraction contract: the one owner-facing action
