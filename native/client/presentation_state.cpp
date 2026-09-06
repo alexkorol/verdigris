@@ -1,4 +1,5 @@
 #include "presentation_state.hpp"
+#include "publish-telegraph-timing-and-geometry.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -61,6 +62,23 @@ void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& s
     world.player.cooldown_ticks = player->cooldown_ticks;
     world.player.war_cry_ticks_remaining = player->war_cry_ticks_remaining;
     world.player.alive = player->alive;
+  }
+  {
+    const int level = std::max(1, world.player.level);
+    long long floor_xp = 0;
+    for (int x = 1; x < level; ++x)
+      floor_xp += static_cast<long long>(
+          std::floor(x + 265.0 * std::pow(2.0, x / 7.0)));
+    floor_xp /= 4;
+    long long next_xp = 0;
+    for (int x = 1; x < level + 1; ++x)
+      next_xp += static_cast<long long>(
+          std::floor(x + 265.0 * std::pow(2.0, x / 7.0)));
+    next_xp /= 4;
+    // Local core stores level, not intra-level combat XP. The bar is still
+    // shown; fill stays at the floor until a snapshot publishes current XP.
+    world.xp_present = static_cast<double>(next_xp) > static_cast<double>(floor_xp);
+    world.xp_fraction = 0.0;
   }
   for (const auto& actor : sim.actors()) {
     if (actor.kind != verdigris::ActorKind::Monster || !actor.alive) continue;
@@ -152,6 +170,7 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     // is removed. Monsters keep the neutral default until the wire ships an
     // authoritative facing; the presentation never invents one from the
     // player's aim.
+    monster.name = source.name;
     monster.kind = source.kind;
     monster.behaviour = source.behaviour;
     monster.life = source.life;
@@ -161,6 +180,14 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     world.monsters.push_back(std::move(monster));
   }
   world.theme = model.theme;
+  {
+    const double span = model.xp_next - model.xp_floor;
+    world.xp_present = span > 0.0;
+    world.xp_fraction =
+        span > 0.0
+            ? std::clamp((model.xp_current - model.xp_floor) / span, 0.0, 1.0)
+            : 0.0;
+  }
   world.map_width = model.map_width;
   world.map_height = model.map_height;
   world.map_walkable = model.map_walkable;
@@ -260,15 +287,13 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
     case PresentationEventType::Telegraph: {
       ActiveTelegraph telegraph;
       telegraph.actor_id = event.actor_id;
-      telegraph.action = event.text.find("sweep") != std::string::npos ? "sweep" : "thrust";
       telegraph.position = event_anchor(world, fx, event, false);
-      // TASK-0122 Phase A: same inversion removal as monster sync. Without an
-      // authoritative telegraph facing on the wire (radius/position wire work
-      // is deferred), the warning keeps its neutral default instead of a
-      // client-only inverted copy of the player's aim.
       telegraph.start_tick = now_tick;
-      telegraph.windup_ticks = std::max(1, event.value > 20 ? event.value / 50 : event.value);
-      fx.telegraphs[event.actor_id.empty() ? "foe" : event.actor_id] = std::move(telegraph);
+      const auto spec = actions::spec_from_payload(
+          event.text, event.value, verdigris::Simulation::presentation_catalog());
+      actions::apply_spec(telegraph, spec);
+      fx.telegraphs[event.actor_id.empty() ? "foe" : event.actor_id] =
+          std::move(telegraph);
       break;
     }
     case PresentationEventType::ActorDied:
@@ -435,6 +460,7 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
                   0, loot.first});
   }
   for (const auto& entry : fx.telegraphs) {
+    if (actions::telegraph_expired(world.tick, entry.second)) continue;
     const auto base = at(entry.second.position.x, entry.second.position.y);
     rl.push_back({render::Op::Telegraph, static_cast<double>(base.x),
                   static_cast<double>(base.y), 0.0, 0, entry.second.action});
@@ -478,6 +504,8 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
       case EffectFx::Kind::WarCryFade:
         rl.push_back({render::Op::WarCry, static_cast<double>(base.x),
                       static_cast<double>(base.y), 0.0, 0, phase_a::kWarcryFadeLabel});
+        rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, 0, "vfx-weave:cancel"});
         break;
       case EffectFx::Kind::ScionLostBeat:
         rl.push_back({render::Op::ScreenPulse, 0.0, 0.0, 0.0, 0,

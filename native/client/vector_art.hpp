@@ -16,6 +16,7 @@
 
 #include <cmath>
 #include <cstdint>
+#include <cctype>
 #include <string>
 
 namespace vector_art {
@@ -90,6 +91,9 @@ struct Pose {
   double moving = 0.0;   // 0..1 blend into the walk cycle
   double breathe = 0.0;  // slow idle cycle 0..1
   double attack = 0.0;   // 0 = idle, ramps 0..1 through a swing
+  // VG-ART-003: melee is four readable poses, not a single sine of frame count.
+  enum class AttackStage { Idle, Windup, Active, Recovery, Cancel };
+  AttackStage attack_stage = AttackStage::Idle;
   bool mirror = false;
 };
 
@@ -104,6 +108,53 @@ struct Style {
 
 enum class Held : int { None, Axe, Sword, Staff, Bow, Scales, Ledger, Club };
 
+inline Held held_from_item(const std::string& id, const std::string& name) {
+  std::string key = id + " " + name;
+  for (auto& ch : key)
+    ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+  if (key.find_first_not_of(" ") == std::string::npos) return Held::None;
+  if (key.find("bow") != std::string::npos) return Held::Bow;
+  if (key.find("staff") != std::string::npos ||
+      key.find("wand") != std::string::npos)
+    return Held::Staff;
+  if (key.find("sword") != std::string::npos ||
+      key.find("pike") != std::string::npos ||
+      key.find("spear") != std::string::npos ||
+      key.find("dagger") != std::string::npos ||
+      key.find("knife") != std::string::npos ||
+      key.find("blade") != std::string::npos)
+    return Held::Sword;
+  if (key.find("axe") != std::string::npos ||
+      key.find("hatchet") != std::string::npos)
+    return Held::Axe;
+  if (key.find("club") != std::string::npos ||
+      key.find("mace") != std::string::npos)
+    return Held::Club;
+  return Held::Club;
+}
+
+inline const char* held_label(Held held) {
+  switch (held) {
+    case Held::Axe:
+      return "held:axe";
+    case Held::Sword:
+      return "held:sword";
+    case Held::Staff:
+      return "held:staff";
+    case Held::Bow:
+      return "held:bow";
+    case Held::Scales:
+      return "held:scales";
+    case Held::Ledger:
+      return "held:ledger";
+    case Held::Club:
+      return "held:club";
+    case Held::None:
+    default:
+      return "held:none";
+  }
+}
+
 // ── humanoid rig ────────────────────────────────────────────────────────
 // Bronze-age figure, 3/4 side read. Legs swing with the walk cycle, torso
 // bobs with breath/steps, the near arm swings the held tool on attack.
@@ -114,7 +165,30 @@ inline void humanoid(HDC dc, int cx, int base_y, int height_px,
   const double swing = std::sin(pose.walk * 2.0 * kPi) * pose.moving;
   const double bob = std::sin(pose.breathe * 2.0 * kPi) * 1.5 +
                      std::abs(swing) * 2.0;
-  const double lean = pose.moving * 3.0 + pose.attack * 6.0;
+  double attack_lean = 0.0;
+  double strike = 0.0;
+  switch (pose.attack_stage) {
+    case Pose::AttackStage::Windup:
+      attack_lean = -4.0;
+      strike = -0.75 - pose.attack * 0.45;
+      break;
+    case Pose::AttackStage::Active:
+      attack_lean = pose.attack * 6.0;
+      strike = std::sin(std::min(1.0, pose.attack) * kPi) * 1.9;
+      break;
+    case Pose::AttackStage::Recovery:
+      attack_lean = 2.0;
+      strike = 0.45 * (1.0 - std::min(1.0, pose.attack));
+      break;
+    case Pose::AttackStage::Cancel:
+      attack_lean = -1.5;
+      strike = -0.2;
+      break;
+    case Pose::AttackStage::Idle:
+    default:
+      break;
+  }
+  const double lean = pose.moving * 3.0 + attack_lean;
 
   // Far leg, then near leg (draw order back-to-front).
   const double leg_spread = 8.0;
@@ -167,9 +241,7 @@ inline void humanoid(HDC dc, int cx, int base_y, int height_px,
     const double shoulder_y = 79 + bob;
     // Rest angle points the tool down-forward; the attack sweeps it over
     // the shoulder and through: -140deg .. +30deg of unit-space rotation.
-    const double angle =
-        (-0.55 + std::sin(std::min(1.0, pose.attack) * kPi) * 1.9) +
-        swing * 0.25;
+    const double angle = (-0.55 + strike) + swing * 0.25;
     const double hand_x = shoulder_x + std::cos(angle) * 24.0;
     const double hand_y = shoulder_y + std::sin(angle) * 24.0 - 24.0 + 4.0;
     POINT arm[4] = {f.at(shoulder_x - 3, shoulder_y), f.at(shoulder_x + 4, shoulder_y),

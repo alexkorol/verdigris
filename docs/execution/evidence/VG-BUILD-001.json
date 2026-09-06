@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-BUILD-001",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "content_hash": null,
+  "seed": "build-fixtures",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {
+      "run": "native/build.ps1",
+      "exit_code": 0
+    },
+    {
+      "run": "native/build/verdigris_client.exe --scenario build-fixtures",
+      "exit_code": 0
+    }
+  ],
+  "assertions": [
+    "reach/pressure/magic are distinct loops",
+    "three tinted copies of melee fail review",
+    "character sheet names all three roles",
+    "each role lists tactics, weakness, gear, encounter answer"
+  ],
+  "negative_control": {
+    "name": "three melee clones differing only by tint",
+    "observed_result": "REJECTED by distinct_slice_loops"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/build-fixtures-960x600.png",
+      "sha256": "aa37745319772978edc1bc12639ef29e29fbdf0c0f4a1c36164f0ae598c4167c",
+      "produced_by": "native/build/verdigris_client.exe --scenario build-fixtures"
+    }
+  ],
+  "reviewer": null,
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Client presentation freeze only; VG-STAT-001 and core BUILD algebra stay with Kimi.",
+    "Working tree is dirty; head_sha is not a commit.",
+    "Does not edit native/src/core.cpp."
+  ]
+}

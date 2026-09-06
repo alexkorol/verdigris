@@ -1,0 +1,8 @@
+{
+  "mode": "READY_CANDIDATES_REVALIDATE_AND_CLAIM",
+  "assumptions": [],
+  "candidate_count": 0,
+  "selected": [],
+  "excluded_conflicts": [],
+  "warning": "Read-only suggestion. It does not verify live Git head, rulings, external resources, semantic compatibility or exclusive claims. Integration hooks require separate reservations."
+}

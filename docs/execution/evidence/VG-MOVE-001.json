@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-MOVE-001",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "eight-way",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario eight-way", "exit_code": 0}
+  ],
+  "assertions": [
+    "all eight vectors encode without dropping an axis",
+    "northwest is up-left on the wire",
+    "a vertical-only encoder cannot pass a diagonal"
+  ],
+  "negative_control": {
+    "name": "collapse_to_vertical on a diagonal",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/eight-way-960x600.png",
+      "sha256": "20af54488f9a2331cada11dfb27533dd290c12c990295ddaa1b54effce21d177",
+      "produced_by": "native/build/verdigris_client.exe --scenario eight-way"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Client encoder and remote player:move names. native/tests stays Kimi.",
+    "Working tree is dirty."
+  ]
+}

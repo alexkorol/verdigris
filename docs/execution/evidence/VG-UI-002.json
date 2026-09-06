@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-UI-002",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "pack-drag",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario pack-drag", "exit_code": 0}
+  ],
+  "assertions": [
+    "valid drop moves the item to pack:2,1",
+    "reject keeps carried count and grid occupancy",
+    "reject does not silently equip"
+  ],
+  "negative_control": {
+    "name": "failed pack drop loses, duplicates, or silently equips",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/pack-drag-960x600.png",
+      "sha256": "8a751dc5834f2aa40176d6e2f15c9d091024500304abe8674758d2a834c0f50a",
+      "produced_by": "native/build/verdigris_client.exe --scenario pack-drag"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Presentation occupancy only. Core inventory-move stays Kimi.",
+    "Working tree dirty. No TASK numbers minted."
+  ]
+}

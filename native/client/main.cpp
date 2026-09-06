@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <deque>
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -14,6 +15,7 @@
 #include <cstdint>
 #include <thread>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "verdigris/core.hpp"
@@ -34,6 +36,8 @@ namespace phase_a = verdigris::client::phase_a;
 #define NOMINMAX
 #include <windows.h>
 #include <windowsx.h>
+#include <xinput.h>
+#pragma comment(lib, "Xinput.lib")
 
 // TASK-0141 data-only generated vector kit. Read-only consumption: the
 // client never mutates these tables; art changes flow through the generator.
@@ -46,6 +50,41 @@ namespace phase_a = verdigris::client::phase_a;
 #include "vector_art.hpp"
 #include "framekit_renderer.hpp"
 #include "geometric_skill_tree.hpp"
+#include "inventory_grid.hpp"
+#include "sound_family.hpp"
+#include "input_focus.hpp"
+#include "input/persist-remapped-controls.hpp"
+#include "input/measure-native-input-response.hpp"
+#include "input/preserve-diagonal-remote-input.hpp"
+#include "input/make-aim-independent-of-motion.hpp"
+#include "wire-one-complete-attack-presentation-beat.hpp"
+#include "separate-visual-dressing-from-topology.hpp"
+#include "expose-loot-filter-facts.hpp"
+#include "freeze-three-slice-build-fixtures.hpp"
+#include "publish-telegraph-timing-and-geometry.hpp"
+#include "preserve-headless-presentation-contracts.hpp"
+#include "rule-on-death-and-disconnect.hpp"
+#include "ui/complete-one-controller-interaction-path.hpp"
+#include "ui/integrate-equipment-and-comparison.hpp"
+#include "ui/integrate-one-pane-ownership-model.hpp"
+#include "ui/suppress-gameplay-through-focused-panes.hpp"
+#include "ui/bind-vital-orb-roles.hpp"
+#include "ui/implement-map-and-route-explanation.hpp"
+#include "ui/add-readable-stat-explanations.hpp"
+#include "ui/integrate-spatial-inventory-moves.hpp"
+#include "choose-and-test-one-audio-device-adapter.hpp"
+#include "persist-audio-accessibility-controls.hpp"
+#include "score-one-dense-combat-mix.hpp"
+#include "run-a-long-session-memory-soak.hpp"
+#include "../renderer/gpu/build-an-isolated-cross-platform-gpu-sample.hpp"
+#include "../renderer/gpu/cook-shaders-and-resource-bindings.hpp"
+#include "../renderer/gpu/render-the-native-reference-scene.hpp"
+#include "../renderer/gpu/implement-grounding-and-occlusion.hpp"
+#include "../renderer/gpu/add-one-dynamic-material-light-interaction.hpp"
+#include "../renderer/gpu/capture-actual-rendered-output.hpp"
+#include "../renderer/gpu/recover-renderer-resource-loss.hpp"
+#include "assets/production/bronze_stone.hpp"
+#include "assets/production/show-one-equipped-item-on-the-actor.hpp"
 
 namespace {
 
@@ -181,6 +220,32 @@ struct BillboardAssets {
   SpriteBitmap fk_panel;
   SpriteBitmap fk_slot;
   std::unordered_map<std::string, SpriteBitmap> item_art;
+  // Web-client UI assets (src/assets): the wizard orb statue plate with its
+  // alpha matte, its orb-disc mask, and the ornate nine-slice pane frame.
+  SpriteBitmap orb_art;
+  SpriteBitmap orb_mask;
+  SpriteBitmap ornate_frame;
+  struct TintedMask {
+    HDC dc = nullptr;
+    HBITMAP bitmap = nullptr;
+    HGDIOBJ old_bitmap = nullptr;
+    int w = 0;
+    int h = 0;
+    bool ready() const { return dc != nullptr && w > 0; }
+    void reset() {
+      if (dc) {
+        SelectObject(dc, old_bitmap);
+        DeleteDC(dc);
+        dc = nullptr;
+      }
+      if (bitmap) {
+        DeleteObject(bitmap);
+        bitmap = nullptr;
+      }
+    }
+  };
+  TintedMask orb_liquid_life;
+  TintedMask orb_liquid_mana;
   std::string root;
   std::string status = "art: loading";
   std::string scenery_status = "scenery: loading";
@@ -198,6 +263,11 @@ struct BillboardAssets {
     terrain4.reset();
     fk_panel.reset();
     fk_slot.reset();
+    orb_art.reset();
+    orb_mask.reset();
+    ornate_frame.reset();
+    orb_liquid_life.reset();
+    orb_liquid_mana.reset();
     for (auto& entry : item_art) entry.second.reset();
     if (gdiplus_shutdown && gdiplus_token) gdiplus_shutdown(gdiplus_token);
     if (gdiplus_module) FreeLibrary(gdiplus_module);
@@ -216,6 +286,7 @@ struct SceneryItem {
   double radius = static_cast<double>(verdigris::world_scale::kSceneryColliderRadius);
   double scale = 1.0;
   bool solid = true;
+  bool dressing = false;
 };
 
 // TASK-0145: the two owner-facing screens. Expedition is the historical
@@ -274,6 +345,12 @@ HudRect minimap_rect(int height) {
   const int size = 108 * s;
   const int margin = 12 * s;
   return {margin, margin, size, size};
+}
+
+HudRect route_card_rect(int height) {
+  const int s = hud_scale(height);
+  const HudRect map = minimap_rect(height);
+  return {map.x, map.y + map.h + 6 * s, map.w, 62 * s};
 }
 
 constexpr int kVitalOrbRadius = 34;
@@ -339,6 +416,7 @@ struct FloorCache {
 struct ClientState {
   std::unique_ptr<verdigris::Simulation> simulation;
   std::unique_ptr<verdigris::client::IClientSession> session;
+  bool link_lost = false;
   WorldView world;
   BillboardAssets billboards;
   std::vector<SceneryItem> scenery;
@@ -346,6 +424,20 @@ struct ClientState {
   bool a = false;
   bool s = false;
   bool d = false;
+  verdigris::client::input::Bindings bindings{};
+  verdigris::client::input::BindStatus bind_status =
+      verdigris::client::input::BindStatus::Ok;
+  verdigris::client::input::LatencyLog input_latency{};
+  verdigris::client::combat::AttackBeat attack_beat =
+      verdigris::client::combat::AttackBeat::None;
+  std::vector<std::string> attack_beat_trace;
+  verdigris::client::PadReport pad{};
+  bool pad_a_was = false;
+  bool pad_b_was = false;
+  bool pad_x_was = false;
+  bool pad_y_was = false;
+  bool pad_start_was = false;
+  bool pad_was_connected = false;
   POINT mouse{0, 0};
   Camera camera;
   verdigris::Vec2 last_aim_direction{1, 0};
@@ -368,6 +460,7 @@ struct ClientState {
   std::unordered_set<std::string> known_monsters;
   std::unordered_map<std::string, std::uint64_t> monster_strikes;
   bool loot_labels = false;
+  verdigris::client::items::LootFilter loot_filter{};
   bool gear_overlay = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
@@ -377,6 +470,7 @@ struct ClientState {
   double paint_ms_floor = 0.0;
   double paint_ms_world = 0.0;
   double paint_ms_hud = 0.0;
+  double paint_ms_upload = 0.0;
   // Frame pacing: the timer fires ~66x/s for smooth rendering while the
   // simulation-facing logic keeps its exact 50 ms cadence via accumulator.
   long long last_frame_qpc = 0;
@@ -401,6 +495,25 @@ struct ClientState {
   // Character sheet (C) and passive-tree (P) panes.
   bool character_pane = false;
   bool tree_pane = false;
+  // VG-UI-004: presentation-only source probe. Core STAT stays Kimi.
+  bool stat_atk_expanded = false;
+  int sheet_passive_atk = 0;
+  int sheet_cond_atk = 0;
+  bool sheet_cond_active = false;
+  // VG-MOVE-005: text-entry surface (search/rename) swallows WASD and combat.
+  bool text_entry = false;
+  // Attack held while a pane had focus must not fire on close.
+  bool attack_held_blocked = false;
+  int combat_requests = 0;
+  int dressing_pass_version = verdigris::client::world::kDressingPassVersion;
+  std::uint64_t topology_hash = 0;
+  // Client-only minimap zoom (0=wide, 1=mid, 2=tight) and panel opacity.
+  // Neither changes world coordinates nor reveals off-snapshot actors.
+  int minimap_zoom = 0;
+  int minimap_opacity = 220;
+  // VG-UI-005: overlay probes that are not simulation actors. Sync cannot
+  // invent or erase these; zoom still cannot paint on_snapshot=false.
+  std::vector<WorldActor> map_overlay_probes;
   struct TreeSeatHit {
     int x = 0;
     int y = 0;
@@ -432,11 +545,30 @@ struct ClientState {
   // TASK-0157 audio, finally voiced: the deterministic mixer drains into a
   // waveOut synth sink each fixed tick. M toggles mute.
   std::unique_ptr<verdigris::audio::WaveOutSink> audio_sink;
+  std::unique_ptr<verdigris::audio::RecordingSink> audio_tape;
+  std::unique_ptr<verdigris::audio::TeeSink> audio_tee;
   std::unique_ptr<verdigris::audio::AudioMixer> audio_mixer;
+  std::vector<std::string> audio_voiced;
+  std::string audio_ambience_route;
+  std::string audio_music_want = "music:none";
+  std::string audio_music_sent = "music:none";
+  verdigris::audio::AudioPrefs audio_prefs{};
+  verdigris::client::ui::EquipView equip_view{};
   // Borderless windowed-fullscreen is the default presentation; F11 drops
   // back to a movable window for side-by-side development.
   bool fullscreen_window = true;
   std::size_t selected_item = 0;
+  // VG-UI-002: presentation backpack occupancy. Item identities stay
+  // authoritative; this grid only places 1x1 footprints. A rejected drop
+  // restores the previous occupancy and never equips.
+  inventory_grid::State pack_grid{};
+  std::string pack_fingerprint;
+  std::uint32_t pack_drag_id = 0;
+  bool pack_drag_live = false;
+  int pack_preview_x = -1;
+  int pack_preview_y = -1;
+  bool pack_preview_ok = false;
+  std::string pack_last_drop;
   std::string hint;
   int hint_ticks = 0;
   // TASK-0153 owner Esc contract: Escape closes an open dismissible pane
@@ -458,6 +590,14 @@ struct ClientState {
   std::vector<std::pair<std::string, verdigris::Vec2>> beat_legend;
 };
 
+constexpr std::size_t kMaxPresentationEffects = 128;
+
+void add_effect(ClientState& state, EffectFx fx) {
+  if (state.effects.size() >= kMaxPresentationEffects)
+    state.effects.erase(state.effects.begin());
+  state.effects.push_back(std::move(fx));
+}
+
 std::string executable_directory() {
   char path[MAX_PATH]{};
   const DWORD length = GetModuleFileNameA(nullptr, path, MAX_PATH);
@@ -465,6 +605,243 @@ std::string executable_directory() {
   std::string value(path, length);
   const std::size_t slash = value.find_last_of("\\/");
   return slash == std::string::npos ? std::string{} : value.substr(0, slash);
+}
+
+std::string audio_mute_path() {
+  const std::string dir = executable_directory();
+  if (dir.empty()) return {};
+  return dir + "\\verdigris-audio-mute";
+}
+
+bool load_audio_mute() {
+  const std::string path = audio_mute_path();
+  if (path.empty()) return false;
+  const DWORD attributes = GetFileAttributesA(path.c_str());
+  return attributes != INVALID_FILE_ATTRIBUTES &&
+         (attributes & FILE_ATTRIBUTE_DIRECTORY) == 0;
+}
+
+std::string audio_prefs_path() {
+  const std::string dir = executable_directory();
+  if (dir.empty()) return {};
+  return dir + "\\verdigris-audio-prefs";
+}
+
+void persist_audio_mute(bool muted) {
+  const std::string path = audio_prefs_path();
+  if (path.empty()) return;
+  verdigris::audio::AudioPrefs prefs = verdigris::audio::load_audio_prefs(path);
+  prefs = verdigris::audio::apply_mute_only(prefs, muted);
+  verdigris::audio::save_audio_prefs(path, prefs);
+}
+
+void ensure_audio(ClientState& state) {
+  if (state.audio_mixer) return;
+  state.audio_sink = std::make_unique<verdigris::audio::WaveOutSink>();
+  state.audio_sink->set_muted(load_audio_mute());
+  state.audio_tape = std::make_unique<verdigris::audio::RecordingSink>();
+  state.audio_tee = std::make_unique<verdigris::audio::TeeSink>(
+      *state.audio_sink, *state.audio_tape);
+  state.audio_mixer =
+      std::make_unique<verdigris::audio::AudioMixer>(*state.audio_tee);
+  state.audio_prefs = verdigris::audio::load_audio_prefs(audio_prefs_path());
+  if (load_audio_mute()) state.audio_prefs.muted = true;
+  state.audio_sink->set_muted(state.audio_prefs.muted);
+  verdigris::audio::apply_audio_prefs(*state.audio_mixer, state.audio_prefs);
+}
+
+std::string audio_event_key(const verdigris::client::PresentationEvent& event,
+                            std::uint64_t tick) {
+  return std::to_string(static_cast<int>(event.type)) + "|" + event.actor_id +
+         "|" + event.item_id + "|" + event.text + "|" +
+         std::to_string(event.value) + "|" + (event.critical ? "c" : "n") +
+         "|" + std::to_string(tick);
+}
+
+bool voice_presentation_event(
+    ClientState& state, const verdigris::client::PresentationEvent& event,
+    std::uint64_t tick, std::vector<std::string>& batch_keys) {
+  ensure_audio(state);
+  const std::string key = audio_event_key(event, tick);
+  for (const auto& seen : batch_keys)
+    if (seen == key) return false;
+  batch_keys.push_back(key);
+  return state.audio_mixer->ingest(event, tick);
+}
+
+void refresh_ambience(ClientState& state) {
+  ensure_audio(state);
+  const std::string route =
+      state.world.route_id.empty() ? std::string("surface") : state.world.route_id;
+  if (route == state.audio_ambience_route) return;
+  state.audio_ambience_route = route;
+  verdigris::audio::CueSpec amb;
+  amb.cue_id = "ambience:" + route;
+  amb.bus = verdigris::audio::Bus::Music;
+  amb.priority = verdigris::audio::PriorityClass::World;
+  amb.scheduled_tick = state.world.tick;
+  amb.params = {verdigris::audio::Waveform::Sine, 82, 96, 360, 160};
+  state.audio_mixer->submit(amb);
+}
+
+void refresh_music(ClientState& state) {
+  ensure_audio(state);
+  const char* want = "music:explore";
+  if (!state.simulation && !state.session)
+    want = "music:none";
+  else if (state.world.expedition_phase ==
+           ExpeditionPhaseView::ExtractCarriedValue)
+    want = "music:recovery";
+  else if (state.world.expedition_phase == ExpeditionPhaseView::SlayWardens &&
+           !state.world.monsters.empty())
+    want = "music:combat";
+  state.audio_music_want = want;
+}
+
+void drain_audio(ClientState& state) {
+  if (!state.audio_mixer) return;
+  refresh_music(state);
+  if (state.audio_music_want != state.audio_music_sent) {
+    state.audio_music_sent = state.audio_music_want;
+    if (state.audio_music_want != "music:none") {
+      verdigris::audio::CueSpec theme;
+      theme.cue_id = state.audio_music_want;
+      theme.bus = verdigris::audio::Bus::Music;
+      theme.priority = verdigris::audio::PriorityClass::World;
+      theme.scheduled_tick = state.world.tick;
+      if (state.audio_music_want == "music:combat")
+        theme.params = {verdigris::audio::Waveform::Sawtooth, 110, 148, 420, 220};
+      else if (state.audio_music_want == "music:recovery")
+        theme.params = {verdigris::audio::Waveform::Sine, 196, 262, 480, 180};
+      else
+        theme.params = {verdigris::audio::Waveform::Sine, 98, 130, 520, 140};
+      state.audio_mixer->submit(theme);
+    }
+  }
+  const std::vector<verdigris::audio::CueSpec> voiced =
+      state.audio_mixer->drain_scheduled();
+  for (const auto& cue : voiced) {
+    state.audio_voiced.push_back(cue.cue_id);
+    if (state.audio_voiced.size() > 24)
+      state.audio_voiced.erase(state.audio_voiced.begin());
+  }
+}
+
+void poll_pad(ClientState& state) {
+  if (!state.pad.inject) {
+    XINPUT_STATE xs{};
+    const bool connected = XInputGetState(0, &xs) == ERROR_SUCCESS;
+    state.pad.connected = connected;
+    state.pad.dx = 0;
+    state.pad.dy = 0;
+    state.pad.a = false;
+    state.pad.b = false;
+    state.pad.x = false;
+    state.pad.y = false;
+    state.pad.start = false;
+    if (connected) {
+      const auto& g = xs.Gamepad;
+      if (g.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) state.pad.dx = -1;
+      if (g.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) state.pad.dx = 1;
+      if (g.wButtons & XINPUT_GAMEPAD_DPAD_UP) state.pad.dy = -1;
+      if (g.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) state.pad.dy = 1;
+      if (g.sThumbLX < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) state.pad.dx = -1;
+      if (g.sThumbLX > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) state.pad.dx = 1;
+      if (g.sThumbLY > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) state.pad.dy = -1;
+      if (g.sThumbLY < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) state.pad.dy = 1;
+      state.pad.a = (g.wButtons & XINPUT_GAMEPAD_A) != 0;
+      state.pad.b = (g.wButtons & XINPUT_GAMEPAD_B) != 0;
+      state.pad.x = (g.wButtons & XINPUT_GAMEPAD_X) != 0;
+      state.pad.y = (g.wButtons & XINPUT_GAMEPAD_Y) != 0;
+      state.pad.start = (g.wButtons & XINPUT_GAMEPAD_START) != 0;
+    }
+  }
+  if (state.pad.connected && !state.pad_was_connected)
+    state.pad.hotplug = "in";
+  else if (!state.pad.connected && state.pad_was_connected)
+    state.pad.hotplug = "out";
+  state.pad_was_connected = state.pad.connected;
+}
+
+void dispatch_dash(ClientState& state);
+void toggle_gear_overlay(ClientState& state);
+void handle_escape_key(ClientState& state);
+void consume_pad_buttons(ClientState& state);
+void apply_bound_key_down(ClientState& state, WPARAM wparam);
+void apply_bound_key_up(ClientState& state, WPARAM wparam);
+bool gameplay_intent_passes(const ClientState& state, input_focus::Intent intent);
+bool try_gameplay_intent(ClientState& state, input_focus::Intent intent);
+void release_held_gameplay_attack(ClientState& state);
+verdigris::client::ui::PaneFocusView client_pane_focus(const ClientState& state);
+
+bool presentation_from_sim(const verdigris::Event& event,
+                           verdigris::client::PresentationEvent& out) {
+  out = {};
+  out.actor_id = event.actor_id;
+  out.item_id = event.item_id;
+  out.text = event.text;
+  out.value = event.value;
+  switch (event.type) {
+    case verdigris::EventType::DamageApplied:
+      out.type = verdigris::client::PresentationEventType::DamageApplied;
+      out.critical = event.text == "critical";
+      return true;
+    case verdigris::EventType::AttackStarted:
+      out.type = verdigris::client::PresentationEventType::AttackStarted;
+      return true;
+    case verdigris::EventType::ActorDied:
+      out.type = verdigris::client::PresentationEventType::ActorDied;
+      return true;
+    case verdigris::EventType::ScionLost:
+      out.type = verdigris::client::PresentationEventType::ScionLost;
+      return true;
+    case verdigris::EventType::BuffExpired:
+      out.type = verdigris::client::PresentationEventType::BuffExpired;
+      return true;
+    default:
+      return false;
+  }
+}
+
+void note_attack_beat(ClientState& state, const verdigris::Event& event) {
+  verdigris::client::PresentationEvent voiced{};
+  if (presentation_from_sim(event, voiced)) {
+    const auto before = state.attack_beat;
+    state.attack_beat =
+        verdigris::client::combat::advance_from_event(before, voiced.type);
+    if (state.attack_beat != before) {
+      state.attack_beat_trace.push_back(
+          verdigris::client::combat::beat_hud_label(state.attack_beat));
+      if (state.attack_beat_trace.size() > 16)
+        state.attack_beat_trace.erase(state.attack_beat_trace.begin());
+    }
+    if (state.attack_beat == verdigris::client::combat::AttackBeat::Anticipate &&
+        before != verdigris::client::combat::AttackBeat::Anticipate) {
+      ensure_audio(state);
+      verdigris::audio::CueSpec cue;
+      cue.cue_id = "attack-anticipate";
+      cue.bus = verdigris::audio::Bus::Sfx;
+      cue.priority = verdigris::audio::PriorityClass::PlayerFeedback;
+      cue.scheduled_tick = event.tick;
+      cue.params = {verdigris::audio::Waveform::Sine, 330, 220, 70, 420};
+      state.audio_mixer->submit(cue);
+      state.audio_voiced.push_back(cue.cue_id);
+      if (state.audio_voiced.size() > 24)
+        state.audio_voiced.erase(state.audio_voiced.begin());
+    }
+  }
+  if (event.type == verdigris::EventType::ActorMoved && event.text == "dash") {
+    const auto before = state.attack_beat;
+    state.attack_beat = verdigris::client::combat::dash_cancel(state.attack_beat);
+    if (state.attack_beat != before) {
+      state.attack_beat_trace.push_back(
+          verdigris::client::combat::beat_hud_label(state.attack_beat));
+      if (state.attack_beat_trace.size() > 16)
+        state.attack_beat_trace.erase(state.attack_beat_trace.begin());
+    }
+  }
+  if (event.type == verdigris::EventType::InstanceEntered)
+    state.attack_beat = verdigris::client::combat::AttackBeat::None;
 }
 
 bool directory_exists(const std::string& path) {
@@ -865,6 +1242,241 @@ bool draw_item_art(const BillboardAssets& assets, HDC dc, const std::string& id,
   return true;
 }
 
+// Wizard orb plate geometry (src/assets/orbs/wizard/art.png, 1672x941,
+// measured from mask_fullres.png): per-orb composition crops and the glass
+// disc bounding boxes the liquid clips to.
+struct OrbPlateGeom {
+  RECT art;    // statue + globe composition crop
+  RECT globe;  // glass disc bbox (liquid region)
+};
+// art.png: left crop is the red life vessel, right crop the blue mana vessel.
+inline constexpr OrbPlateGeom kOrbLife{{20, 130, 830, 800}, {290, 204, 792, 708}};
+inline constexpr OrbPlateGeom kOrbMana{{842, 130, 1652, 800}, {876, 206, 1380, 710}};
+static_assert(kOrbLife.art.left == verdigris::client::ui::kSheetLifeArtLeft,
+              "life must use the red crop");
+static_assert(kOrbMana.art.left == verdigris::client::ui::kSheetManaArtLeft,
+              "mana must use the blue crop");
+
+// Builds a premultiplied colour-times-mask bitmap for one globe disc, so
+// the liquid can be alpha-blended over the plate clipped to the level.
+bool build_tinted_mask(const SpriteBitmap& mask, const RECT& region,
+                       COLORREF tint, BillboardAssets::TintedMask& out) {
+  if (!mask.ready()) return false;
+  const int w = region.right - region.left;
+  const int h = region.bottom - region.top;
+  if (w <= 0 || h <= 0) return false;
+  BITMAPINFO info{};
+  info.bmiHeader.biSize = sizeof(info.bmiHeader);
+  info.bmiHeader.biWidth = w;
+  info.bmiHeader.biHeight = -h;
+  info.bmiHeader.biPlanes = 1;
+  info.bmiHeader.biBitCount = 32;
+  info.bmiHeader.biCompression = BI_RGB;
+  // Pull the mask region pixels.
+  std::vector<std::uint32_t> mask_pixels(static_cast<std::size_t>(w) * h);
+  {
+    HDC probe = CreateCompatibleDC(nullptr);
+    HBITMAP strip = CreateDIBSection(probe, &info, DIB_RGB_COLORS, nullptr,
+                                     nullptr, 0);
+    if (!strip) {
+      DeleteDC(probe);
+      return false;
+    }
+    HGDIOBJ old = SelectObject(probe, strip);
+    BitBlt(probe, 0, 0, w, h, mask.dc, region.left, region.top, SRCCOPY);
+    GetDIBits(probe, strip, 0, h, mask_pixels.data(), &info, DIB_RGB_COLORS);
+    SelectObject(probe, old);
+    DeleteObject(strip);
+    DeleteDC(probe);
+  }
+  void* bits = nullptr;
+  out.dc = CreateCompatibleDC(nullptr);
+  out.bitmap = CreateDIBSection(out.dc, &info, DIB_RGB_COLORS, &bits, nullptr, 0);
+  if (!out.bitmap || !bits) {
+    out.reset();
+    return false;
+  }
+  out.old_bitmap = SelectObject(out.dc, out.bitmap);
+  out.w = w;
+  out.h = h;
+  auto* dest = static_cast<std::uint32_t*>(bits);
+  const int tr = GetRValue(tint), tg = GetGValue(tint), tb = GetBValue(tint);
+  for (std::size_t i = 0; i < mask_pixels.size(); ++i) {
+    const int coverage = static_cast<int>(mask_pixels[i] & 0xFF);  // gray
+    dest[i] = (static_cast<std::uint32_t>(coverage) << 24) |
+              (static_cast<std::uint32_t>(tb * coverage / 255) << 16) |
+              (static_cast<std::uint32_t>(tg * coverage / 255) << 8) |
+              static_cast<std::uint32_t>(tr * coverage / 255);
+  }
+  return true;
+}
+
+// Loads the web client's shared UI art (fonts are registered in ui_skin).
+void load_web_ui_assets(BillboardAssets& assets) {
+  const char* roots[] = {"src/assets", "../../src/assets",
+                         "../../../src/assets"};
+  for (const char* root : roots) {
+    if (!directory_exists(root)) continue;
+    const std::string base(root);
+    load_sprite(assets, base + "/inventory/frame_ornate.png",
+                assets.ornate_frame);
+    if (load_sprite(assets, base + "/orbs/wizard/art.png", assets.orb_art) &&
+        load_sprite(assets, base + "/orbs/wizard/mask_fullres.png",
+                    assets.orb_mask)) {
+      build_tinted_mask(assets.orb_mask, kOrbLife.globe, RGB(208, 69, 69),
+                        assets.orb_liquid_life);
+      build_tinted_mask(assets.orb_mask, kOrbMana.globe, RGB(91, 146, 239),
+                        assets.orb_liquid_mana);
+    }
+    if (assets.ornate_frame.ready() || assets.orb_art.ready()) return;
+  }
+}
+
+// Nine-slice of the web client's ornate pane frame (source insets 118 on a
+// 512x512 plate, drawn at a 12-16 px border like the CSS border-image).
+void draw_ornate_frame(const BillboardAssets& assets, HDC dc, const RECT& rect,
+                       int border) {
+  if (!assets.ornate_frame.ready() || !assets.alpha_blend) return;
+  const SpriteBitmap& plate = assets.ornate_frame;
+  const int inset = 118;
+  const int sw = plate.width;
+  const int sh = plate.height;
+  const BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+  const int dw = rect.right - rect.left;
+  const int dh = rect.bottom - rect.top;
+  if (dw < border * 2 || dh < border * 2) return;
+  const auto piece = [&](int dx, int dy, int dpw, int dph, int sx, int sy,
+                         int spw, int sph) {
+    if (dpw <= 0 || dph <= 0 || spw <= 0 || sph <= 0) return;
+    assets.alpha_blend(dc, rect.left + dx, rect.top + dy, dpw, dph, plate.dc,
+                       sx, sy, spw, sph, blend);
+  };
+  const int mid_sw = sw - inset * 2;
+  const int mid_sh = sh - inset * 2;
+  piece(0, 0, border, border, 0, 0, inset, inset);
+  piece(dw - border, 0, border, border, sw - inset, 0, inset, inset);
+  piece(0, dh - border, border, border, 0, sh - inset, inset, inset);
+  piece(dw - border, dh - border, border, border, sw - inset, sh - inset,
+        inset, inset);
+  piece(border, 0, dw - border * 2, border, inset, 0, mid_sw, inset);
+  piece(border, dh - border, dw - border * 2, border, inset, sh - inset,
+        mid_sw, inset);
+  piece(0, border, border, dh - border * 2, 0, inset, inset, mid_sh);
+  piece(dw - border, border, border, dh - border * 2, sw - inset, inset, inset,
+        mid_sh);
+}
+
+void dress_owned_pane(const BillboardAssets& assets, HDC dc, const RECT& rect) {
+  const int h = rect.bottom - rect.top;
+  const int border = std::clamp(h / 36, 10, 16);
+  draw_ornate_frame(assets, dc, rect, border);
+}
+
+void paint_compare_plate(HDC dc, int x, int y, const RECT& bounds, const std::string& title,
+                         COLORREF title_color, const std::vector<std::string>& lines,
+                         render::List& rl) {
+  if (title.empty()) return;
+  HGDIOBJ old_font = SelectObject(dc, skin::font_body_bold());
+  SIZE title_extent{};
+  GetTextExtentPoint32A(dc, title.c_str(), static_cast<int>(title.size()),
+                        &title_extent);
+  int widest = title_extent.cx;
+  SelectObject(dc, skin::font_small());
+  for (const auto& fact : lines) {
+    SIZE extent{};
+    GetTextExtentPoint32A(dc, fact.c_str(), static_cast<int>(fact.size()),
+                          &extent);
+    widest = std::max(widest, static_cast<int>(extent.cx));
+  }
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int line_h = 16 * s;
+  const int pad = 8 * s;
+  const int box_w = widest + pad * 2;
+  const int box_h = title_extent.cy + static_cast<int>(lines.size()) * line_h +
+                    pad * 2;
+  int box_x = std::min(x, static_cast<int>(bounds.right) - box_w - 8);
+  int box_y = std::max(8, y - box_h - 8);
+  box_x = std::max(8, box_x);
+  RECT plate{box_x, box_y, box_x + box_w, box_y + box_h};
+  skin::panel(dc, plate, title_color, 245, 5.0f);
+  SetBkMode(dc, TRANSPARENT);
+  SelectObject(dc, skin::font_body_bold());
+  SetTextColor(dc, title_color);
+  TextOutA(dc, box_x + pad, box_y + pad - 2, title.c_str(),
+           static_cast<int>(title.size()));
+  SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kInkDim);
+  int fact_y = box_y + pad + title_extent.cy;
+  for (const auto& fact : lines) {
+    TextOutA(dc, box_x + pad, fact_y, fact.c_str(),
+             static_cast<int>(fact.size()));
+    fact_y += line_h;
+  }
+  SelectObject(dc, old_font);
+  rl.push_back({render::Op::Hud, static_cast<double>(box_x),
+                static_cast<double>(box_y), 0.0, 0, "compare:" + title});
+}
+
+bool draw_wizard_orb(const BillboardAssets& assets, HDC dc, bool life, int cx,
+                     int cy, int radius, double ratio, const std::string& caption,
+                     bool pulse, render::List& rl, const char* label) {
+  if (!assets.orb_art.ready() || !assets.alpha_blend) return false;
+  const OrbPlateGeom& geom = life ? kOrbLife : kOrbMana;
+  const BillboardAssets::TintedMask& liquid =
+      life ? assets.orb_liquid_life : assets.orb_liquid_mana;
+  const int art_w = geom.art.right - geom.art.left;
+  const int art_h = geom.art.bottom - geom.art.top;
+  if (art_w <= 0 || art_h <= 0) return false;
+  const int dest_h = radius * 5 / 2;
+  const int dest_w = std::max(1, art_w * dest_h / art_h);
+  const int dest_left = cx - dest_w / 2;
+  const int dest_top = cy + radius - dest_h;
+  const double sx = static_cast<double>(dest_w) / static_cast<double>(art_w);
+  const double sy = static_cast<double>(dest_h) / static_cast<double>(art_h);
+  const int gx = dest_left + static_cast<int>(
+                                 (geom.globe.left - geom.art.left) * sx);
+  const int gy =
+      dest_top + static_cast<int>((geom.globe.top - geom.art.top) * sy);
+  const int gw = std::max(
+      1, static_cast<int>((geom.globe.right - geom.globe.left) * sx));
+  const int gh = std::max(
+      1, static_cast<int>((geom.globe.bottom - geom.globe.top) * sy));
+  const BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+  assets.alpha_blend(dc, dest_left, dest_top, dest_w, dest_h, assets.orb_art.dc,
+                     geom.art.left, geom.art.top, art_w, art_h, blend);
+  const double bounded = std::clamp(ratio, 0.0, 1.0);
+  if (liquid.ready() && bounded > 0.01) {
+    const int fill_h = std::max(1, static_cast<int>(gh * bounded));
+    const int src_fill_h =
+        std::max(1, static_cast<int>(liquid.h * bounded));
+    assets.alpha_blend(dc, gx, gy + gh - fill_h, gw, fill_h, liquid.dc, 0,
+                       liquid.h - src_fill_h, liquid.w, src_fill_h, blend);
+  }
+  if (pulse) {
+    HPEN ring = CreatePen(PS_SOLID, 2, RGB(214, 92, 72));
+    HGDIOBJ old_pen = SelectObject(dc, ring);
+    HGDIOBJ old_brush = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+    Ellipse(dc, gx - 2, gy - 2, gx + gw + 2, gy + gh + 2);
+    SelectObject(dc, old_brush);
+    SelectObject(dc, old_pen);
+    DeleteObject(ring);
+  }
+  const int bounded_pct = static_cast<int>(bounded * 100.0);
+  rl.push_back({render::Op::Orb, static_cast<double>(cx), static_cast<double>(cy),
+                static_cast<double>(radius), bounded_pct, label});
+  SetBkMode(dc, TRANSPARENT);
+  SetTextColor(dc, skin::kInk);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SIZE caption_extent{};
+  GetTextExtentPoint32A(dc, caption.c_str(), static_cast<int>(caption.size()),
+                        &caption_extent);
+  TextOutA(dc, gx + gw / 2 - caption_extent.cx / 2,
+           gy + gh / 2 - caption_extent.cy / 2, caption.c_str(),
+           static_cast<int>(caption.size()));
+  SelectObject(dc, old_font);
+  return true;
+}
+
 void load_billboards(BillboardAssets& assets) {
   assets.msimg32_module = LoadLibraryA("msimg32.dll");
   assets.alpha_blend = reinterpret_cast<AlphaBlendProc>(
@@ -874,6 +1486,7 @@ void load_billboards(BillboardAssets& assets) {
     return;
   }
   load_framekit_assets(assets);
+  load_web_ui_assets(assets);
   for (const auto& root : billboard_roots()) {
     if (!directory_exists(root)) continue;
     const bool actors_loaded =
@@ -956,10 +1569,37 @@ class SceneryRng {
 };
 
 void add_scenery(std::vector<SceneryItem>& scenery, SceneryKind kind, double x,
-                 double y, double radius, bool solid, double scale) {
+                 double y, double radius, bool solid, double scale,
+                 bool dressing = false) {
   scenery.push_back({kind, {static_cast<int>(std::lround(x)),
                             static_cast<int>(std::lround(y))},
-                     radius, scale, solid});
+                     radius, scale, solid, dressing});
+}
+
+void finish_scenery_layout(ClientState& state) {
+  verdigris::client::world::DressingSpec specs[8];
+  const int n = verdigris::client::world::append_dressing(
+      specs, 8, state.dressing_pass_version, state.world.player.position.x,
+      state.world.player.position.y);
+  for (int i = 0; i < n; ++i)
+    add_scenery(state.scenery, SceneryKind::Tree, specs[i].x, specs[i].y,
+                specs[i].radius, false, specs[i].scale, true);
+  verdigris::client::world::LayoutSample samples[128];
+  const std::size_t count = std::min(state.scenery.size(), std::size_t{128});
+  for (std::size_t i = 0; i < count; ++i) {
+    const SceneryItem& item = state.scenery[i];
+    samples[i].kind = static_cast<int>(item.kind);
+    samples[i].x = item.position.x;
+    samples[i].y = item.position.y;
+    samples[i].radius = static_cast<int>(item.radius);
+    samples[i].solid = item.solid;
+    samples[i].dressing = item.dressing;
+  }
+  std::string route_id = state.world.route_id;
+  if (state.simulation) route_id = state.simulation->instance().route_id;
+  state.topology_hash = verdigris::client::world::topology_hash(
+      samples, count, state.world.player.position.x,
+      state.world.player.position.y, scenery_seed(route_id));
 }
 
 void generate_scenery(ClientState& state) {
@@ -1015,6 +1655,7 @@ void generate_scenery(ClientState& state) {
                 landmark_radius, false, 1.05);
     add_scenery(state.scenery, SceneryKind::Tree, 22.0 * t, 119.0 * t,
                 landmark_radius, false, 0.85);
+    finish_scenery_layout(state);
     return;
   }
   const bool village = route_id.find(":1:") != std::string::npos;
@@ -1034,6 +1675,9 @@ void generate_scenery(ClientState& state) {
     add_scenery(state.scenery, SceneryKind::Tree, -700, -500, tree_radius, true, 1.0);
     add_scenery(state.scenery, SceneryKind::Tree, 720, -420, tree_radius, true, 1.15);
     add_scenery(state.scenery, SceneryKind::Tree, -780, 420, tree_radius, true, 1.0);
+    // VG-ART-004 kit: ruin + a non-solid gate so dressing is not collision.
+    add_scenery(state.scenery, SceneryKind::Ruin, 500, 220, monument_radius, true, 1.05);
+    add_scenery(state.scenery, SceneryKind::Gate, 0, 520, monument_radius, false, 1.0);
     for (int i = 0; i < 5; ++i)
       add_scenery(state.scenery, SceneryKind::Tree,
                   rng.range(-verdigris::world_scale::kArenaHalfExtent,
@@ -1068,6 +1712,7 @@ void generate_scenery(ClientState& state) {
                              verdigris::world_scale::kArenaHalfExtent),
                   rng.range(-700, 700), tree_radius, true, rng.range(.78, 1.18));
   }
+  finish_scenery_layout(state);
 }
 
 ClientState* state_from(HWND window) {
@@ -1120,21 +1765,19 @@ void ingest_session_events(ClientState& state) {
   fx.known_monsters = std::move(state.known_monsters);
   fx.monster_strikes = std::move(state.monster_strikes);
   ++state.world.tick;
-  if (!state.audio_mixer) {
-    state.audio_sink = std::make_unique<verdigris::audio::WaveOutSink>();
-    state.audio_mixer =
-        std::make_unique<verdigris::audio::AudioMixer>(*state.audio_sink);
-  }
+  ensure_audio(state);
   const std::string route_before = state.world.route_id;
+  std::vector<std::string> batch_keys;
   for (const auto& event : state.session->drain_events()) {
     verdigris::client::apply_presentation_event(fx, state.world, event, state.world.tick);
-    state.audio_mixer->ingest(event, state.world.tick);
+    voice_presentation_event(state, event, state.world.tick, batch_keys);
     if (!fx.hint.empty()) {
       state.hint = fx.hint;
       state.hint_ticks = fx.hint_ticks;
     }
   }
-  state.audio_mixer->drain_scheduled();
+  refresh_ambience(state);
+  drain_audio(state);
   sync_world(state);
   if (state.world.route_id != route_before) generate_scenery(state);
   // TASK-0122 Phase A: deterministic first-sighting spawn beats on the
@@ -1166,6 +1809,13 @@ void submit_aim(ClientState& state, int dx, int dy) {
 }
 
 void submit_action(ClientState& state, verdigris::ActionType action, const char* remote_name) {
+  if (action == verdigris::ActionType::Melee ||
+      action == verdigris::ActionType::Thrust ||
+      action == verdigris::ActionType::Sweep ||
+      action == verdigris::ActionType::WarCry ||
+      action == verdigris::ActionType::Dash) {
+    ++state.combat_requests;
+  }
   if (state.session) {
     state.session->submit(verdigris::client::ClientCommand::use_action(remote_name));
     return;
@@ -1210,6 +1860,7 @@ constexpr SkillInfo kSkills[] = {
     {'E', "Sweep", verdigris::ActionType::Sweep},
     {'R', "WarCry", verdigris::ActionType::WarCry},
 };
+constexpr SkillInfo kStrike{'\0', "Strike", verdigris::ActionType::Melee};
 
 int skill_resource_cost(const verdigris::PresentationCatalog& catalog,
                         verdigris::ActionType action) {
@@ -1221,13 +1872,23 @@ int skill_resource_cost(const verdigris::PresentationCatalog& catalog,
   }
 }
 
-const SkillInfo* skill_for_key(WPARAM key) {
-  for (const auto& skill : kSkills)
-    if (key == static_cast<WPARAM>(skill.key)) return &skill;
+const SkillInfo* skill_for_key(const verdigris::client::input::Bindings& bindings,
+                               WPARAM key) {
+  const int code = static_cast<int>(key);
+  if (verdigris::client::input::matches(
+          bindings, verdigris::client::input::Action::Thrust, code))
+    return &kSkills[0];
+  if (verdigris::client::input::matches(
+          bindings, verdigris::client::input::Action::Sweep, code))
+    return &kSkills[1];
+  if (verdigris::client::input::matches(
+          bindings, verdigris::client::input::Action::WarCry, code))
+    return &kSkills[2];
   return nullptr;
 }
 
 void dispatch_skill(ClientState& state, const SkillInfo& skill) {
+  if (!try_gameplay_intent(state, input_focus::Intent::Attack)) return;
   // Do not duplicate target/range/cooldown rules in the client.  A key press
   // is a presentation request; the core decides whether it resolves.
   const char* remote = "melee";
@@ -1249,8 +1910,7 @@ void dispatch_skill(ClientState& state, const SkillInfo& skill) {
     // than frames (auto-clickers, synthetic floods), and an unbounded
     // effects vector is a frame-time leak. The authoritative attack rate is
     // enforced server-side either way.
-    if (player.alive && state.world.tick != state.last_predicted_swing_tick &&
-        state.effects.size() < 128) {
+    if (player.alive && state.world.tick != state.last_predicted_swing_tick) {
       state.last_predicted_swing_tick = state.world.tick;
       EffectFx arc;
       arc.kind = skill.action == verdigris::ActionType::Sweep ? EffectFx::Kind::SweepArc
@@ -1260,7 +1920,7 @@ void dispatch_skill(ClientState& state, const SkillInfo& skill) {
       arc.angle = std::atan2(static_cast<double>(player.facing.y),
                              static_cast<double>(player.facing.x));
       arc.ttl = 6;
-      state.effects.push_back(arc);
+      add_effect(state, arc);
     }
   }
 }
@@ -1318,8 +1978,10 @@ void equip_selected(ClientState& state) {
     return;
   }
   state.selected_item = std::min(state.selected_item, state.world.carried.size() - 1);
-  submit_equip(state, state.world.carried[state.selected_item].id);
-  show_hint(state, "Equipped " + state.world.carried[state.selected_item].name);
+  const std::string id = state.world.carried[state.selected_item].id;
+  verdigris::client::ui::request_equip(state.equip_view, id);
+  submit_equip(state, id);
+  show_hint(state, "Equip requested");
 }
 
 COLORREF fade_to_background(COLORREF color, double remaining) {
@@ -1347,35 +2009,194 @@ void unproject(const Camera& camera, const RECT& bounds, int sx, int sy, double&
   camera2d::unproject(cam, screen, sx, sy, wx, wy);
 }
 
-void fill_ellipse(HDC dc, int cx, int cy, int rx, int ry, COLORREF color) {
+// VG-PERF-003: reuse GDI pens/brushes across the effect/telegraph pass.
+// Same Ellipse/LineTo pixels; CreatePen per sparkle is the measured cost.
+struct GdiObjectCache {
+  std::unordered_map<std::uint64_t, HPEN> pens;
+  std::unordered_map<COLORREF, HBRUSH> brushes;
+  std::deque<std::uint64_t> pen_order;
+  std::deque<COLORREF> brush_order;
+  int pen_hits = 0;
+  int pen_misses = 0;
+};
+
+GdiObjectCache& gdi_object_cache() {
+  static GdiObjectCache cache;
+  return cache;
+}
+
+constexpr std::size_t kMaxCachedPens = 128;
+constexpr std::size_t kMaxCachedBrushes = 128;
+
+HPEN cached_pen(COLORREF color, int width) {
+  width = std::clamp(width, 1, 16);
+  const std::uint64_t key =
+      (static_cast<std::uint64_t>(color) << 8) | static_cast<unsigned>(width);
+  auto& cache = gdi_object_cache();
+  auto found = cache.pens.find(key);
+  if (found != cache.pens.end()) {
+    ++cache.pen_hits;
+    return found->second;
+  }
+  ++cache.pen_misses;
+  if (cache.pens.size() >= kMaxCachedPens && !cache.pen_order.empty()) {
+    const std::uint64_t old = cache.pen_order.front();
+    cache.pen_order.pop_front();
+    auto doomed = cache.pens.find(old);
+    if (doomed != cache.pens.end()) {
+      DeleteObject(doomed->second);
+      cache.pens.erase(doomed);
+    }
+  }
+  HPEN pen = CreatePen(PS_SOLID, width, color);
+  cache.pens[key] = pen;
+  cache.pen_order.push_back(key);
+  return pen;
+}
+
+HBRUSH cached_brush(COLORREF color) {
+  auto& cache = gdi_object_cache();
+  auto found = cache.brushes.find(color);
+  if (found != cache.brushes.end()) return found->second;
+  if (cache.brushes.size() >= kMaxCachedBrushes && !cache.brush_order.empty()) {
+    const COLORREF old = cache.brush_order.front();
+    cache.brush_order.pop_front();
+    auto doomed = cache.brushes.find(old);
+    if (doomed != cache.brushes.end()) {
+      DeleteObject(doomed->second);
+      cache.brushes.erase(doomed);
+    }
+  }
   HBRUSH brush = CreateSolidBrush(color);
-  HPEN pen = CreatePen(PS_SOLID, 1, color);
+  cache.brushes[color] = brush;
+  cache.brush_order.push_back(color);
+  return brush;
+}
+
+HFONT cached_damage_font(int font_h) {
+  font_h = std::clamp(font_h, 8, 32);
+  static HFONT fonts[33]{};
+  if (!fonts[font_h]) {
+    fonts[font_h] = CreateFontA(font_h, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
+                                DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+                                CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_SWISS,
+                                "Verdana");
+  }
+  return fonts[font_h];
+}
+
+struct PresentationResources {
+  int floor_bitmaps = 0;
+  int floor_w = 0;
+  int floor_h = 0;
+  int gdi_pens = 0;
+  int gdi_brushes = 0;
+  int effects = 0;
+};
+
+PresentationResources presentation_resources(const ClientState& state) {
+  PresentationResources counts;
+  counts.floor_bitmaps = state.floor_cache.bitmap ? 1 : 0;
+  counts.floor_w = state.floor_cache.width;
+  counts.floor_h = state.floor_cache.height;
+  const auto& cache = gdi_object_cache();
+  counts.gdi_pens = static_cast<int>(cache.pens.size());
+  counts.gdi_brushes = static_cast<int>(cache.brushes.size());
+  counts.effects = static_cast<int>(state.effects.size());
+  return counts;
+}
+
+void fill_ellipse(HDC dc, int cx, int cy, int rx, int ry, COLORREF color) {
+  HBRUSH brush = cached_brush(color);
+  HPEN pen = cached_pen(color, 1);
   HGDIOBJ old_brush = SelectObject(dc, brush);
   HGDIOBJ old_pen = SelectObject(dc, pen);
   Ellipse(dc, cx - rx, cy - ry, cx + rx, cy + ry);
   SelectObject(dc, old_brush);
   SelectObject(dc, old_pen);
-  DeleteObject(brush);
-  DeleteObject(pen);
 }
 
 void ring_ellipse(HDC dc, int cx, int cy, int rx, int ry, COLORREF color, int width) {
-  HPEN pen = CreatePen(PS_SOLID, width, color);
+  HPEN pen = cached_pen(color, width);
   HGDIOBJ old_pen = SelectObject(dc, pen);
   HGDIOBJ old_brush = SelectObject(dc, GetStockObject(NULL_BRUSH));
   Ellipse(dc, cx - rx, cy - ry, cx + rx, cy + ry);
   SelectObject(dc, old_brush);
   SelectObject(dc, old_pen);
-  DeleteObject(pen);
 }
 
 void draw_line(HDC dc, int x0, int y0, int x1, int y1, COLORREF color, int width) {
-  HPEN pen = CreatePen(PS_SOLID, width, color);
+  HPEN pen = cached_pen(color, width);
   HGDIOBJ old_pen = SelectObject(dc, pen);
   MoveToEx(dc, x0, y0, nullptr);
   LineTo(dc, x1, y1);
   SelectObject(dc, old_pen);
-  DeleteObject(pen);
+}
+
+void reset_gdi_object_cache() {
+  auto& cache = gdi_object_cache();
+  for (auto& entry : cache.pens) DeleteObject(entry.second);
+  for (auto& entry : cache.brushes) DeleteObject(entry.second);
+  cache.pens.clear();
+  cache.brushes.clear();
+  cache.pen_order.clear();
+  cache.brush_order.clear();
+  cache.pen_hits = 0;
+  cache.pen_misses = 0;
+}
+
+// VG-PERF-006: first melee paint used to CreateFont/CreatePen/Gdiplus on the
+// strike frame. Prepare those objects before the player commits an attack.
+void warm_combat_glyphs() {
+  skin::ensure_started();
+  skin::ensure_game_fonts();
+  skin::set_ui_scale(1);
+  (void)skin::font_small();
+  (void)skin::font_body();
+  (void)skin::font_body_bold();
+  for (int height = 13; height <= 26; ++height) (void)cached_damage_font(height);
+  (void)cached_pen(RGB(226, 220, 180), 1);
+  (void)cached_pen(RGB(226, 220, 180), 3);
+  (void)cached_pen(RGB(255, 214, 120), 1);
+  (void)cached_pen(RGB(214, 118, 86), 2);
+  (void)cached_brush(RGB(255, 214, 120));
+  HDC dc = CreateCompatibleDC(nullptr);
+  HBITMAP bitmap = CreateCompatibleBitmap(dc, 64, 64);
+  HGDIOBJ old = SelectObject(dc, bitmap);
+  RECT plate{4, 4, 60, 28};
+  skin::panel(dc, plate, skin::kGold, 220, 4.0f);
+  SelectObject(dc, cached_damage_font(16));
+  SetBkMode(dc, TRANSPARENT);
+  SetTextColor(dc, RGB(240, 218, 132));
+  TextOutA(dc, 8, 8, "12", 2);
+  fill_ellipse(dc, 32, 40, 6, 6, RGB(255, 214, 120));
+  draw_line(dc, 8, 40, 56, 40, RGB(226, 220, 180), 3);
+  SelectObject(dc, old);
+  DeleteObject(bitmap);
+  DeleteDC(dc);
+}
+
+void seed_combat_hitch_fx(ClientState& state) {
+  const verdigris::Vec2 origin = state.world.player.position;
+  EffectFx swing;
+  swing.kind = EffectFx::Kind::Swing;
+  swing.wx = static_cast<double>(origin.x);
+  swing.wy = static_cast<double>(origin.y);
+  swing.ttl = 6;
+  add_effect(state, swing);
+  EffectFx impact;
+  impact.kind = EffectFx::Kind::Impact;
+  impact.wx = static_cast<double>(origin.x + 8);
+  impact.wy = static_cast<double>(origin.y);
+  impact.ttl = 8;
+  add_effect(state, impact);
+  EffectFx number;
+  number.kind = EffectFx::Kind::DamageNumber;
+  number.wx = static_cast<double>(origin.x);
+  number.wy = static_cast<double>(origin.y - 8);
+  number.value = 7;
+  number.ttl = 12;
+  add_effect(state, number);
 }
 
 // ── TASK-0142: embedded vector kit renderer ─────────────────────────────
@@ -1661,13 +2482,23 @@ void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& came
   (void)assets;
   const ScreenPoint base =
       project(camera, bounds, item.position.x, item.position.y);
+  const char* kind_name =
+      static_cast<int>(item.kind) == 0   ? "tree"
+      : static_cast<int>(item.kind) == 1 ? "ruin"
+      : static_cast<int>(item.kind) == 2 ? "dwelling"
+      : static_cast<int>(item.kind) == 3 ? "shrine"
+                                         : "gate";
+  const double proxy_px = std::max(2.0, item.radius * item.scale * base.scale);
   rl.push_back({render::Op::Scenery, static_cast<double>(base.x),
-                static_cast<double>(base.y), 0.0, 0,
-                static_cast<int>(item.kind) == 0   ? "tree"
-                : static_cast<int>(item.kind) == 1 ? "ruin"
-                : static_cast<int>(item.kind) == 2 ? "dwelling"
-                : static_cast<int>(item.kind) == 3 ? "shrine"
-                                                   : "gate"});
+                static_cast<double>(base.y), proxy_px, 0, kind_name});
+  if (item.solid) {
+    rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                  static_cast<double>(base.y), proxy_px, 0,
+                  std::string("collision-proxy:") + kind_name});
+  } else if (item.dressing) {
+    rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                  static_cast<double>(base.y), proxy_px, 0, "dressing:tree"});
+  }
   draw_contact_shadow(dc, base, item.radius * 0.5);
   const int h = std::max(
       10, static_cast<int>(scenery_height(item.kind) * item.scale * base.scale));
@@ -1683,11 +2514,15 @@ void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& came
                        RGB(92, 70, 48));
       break;
     case SceneryKind::Ruin:
-      if (town)
+      if (town) {
         vector_art::wagon(dc, base.x, base.y, h, RGB(118, 92, 60),
                           RGB(196, 182, 150));
-      else
-        vector_art::standing_stones(dc, base.x, base.y, h, RGB(118, 112, 104));
+      } else {
+        vector_art::standing_stones(dc, base.x, base.y, h,
+                                    verdigris::art::bronze_stone::gdi_stone());
+        rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, 0, "material:stone"});
+      }
       break;
     case SceneryKind::Dwelling:
       vector_art::market_stall(dc, base.x, base.y, h, RGB(158, 96, 70),
@@ -1697,14 +2532,32 @@ void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& came
       if (town)
         vector_art::fountain(dc, base.x, base.y, h,
                              std::fmod(sway_clock * 0.35, 1.0),
-                             RGB(132, 126, 116), RGB(88, 148, 168));
+                             verdigris::art::bronze_stone::gdi_stone(),
+                             RGB(88, 148, 168));
       else
-        vector_art::standing_stones(dc, base.x, base.y, h, RGB(126, 120, 110));
+        vector_art::standing_stones(dc, base.x, base.y, h,
+                                    verdigris::art::bronze_stone::gdi_stone());
+      rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                    static_cast<double>(base.y), 0.0, 0, "material:stone"});
       break;
-    case SceneryKind::Gate:
-      vector_art::road_gate(dc, base.x, base.y, h, RGB(128, 120, 108),
-                            RGB(120, 214, 168));
+    case SceneryKind::Gate: {
+      verdigris::gpu::Bindings bind{};
+      (void)verdigris::gpu::load_bindings(verdigris::gpu::Backend::Software,
+                                          verdigris::gpu::kBindingLayoutVersion,
+                                          &bind);
+      const verdigris::gpu::Light light =
+          verdigris::gpu::light_from_tick(static_cast<int>(sway_clock * 12.0));
+      const std::uint32_t lit =
+          verdigris::gpu::shade_texel_lit(bind, 1, 2, light);
+      vector_art::road_gate(dc, base.x, base.y, h,
+                            verdigris::art::bronze_stone::gdi(lit),
+                            verdigris::art::bronze_stone::gdi_bronze_rim());
+      rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                    static_cast<double>(base.y), 0.0, 0, "material:bronze-stone"});
+      rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                    static_cast<double>(base.y), 0.0, 0, "material-light:moving"});
       break;
+    }
   }
 }
 
@@ -1850,7 +2703,8 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
         std::ceil((c_tx1 - c_tx0 + 1) * tile * camera.zoom)) + 4;
     const int need_h = static_cast<int>(
         std::ceil((c_ty1 - c_ty0 + 1) * tile * camera.zoom)) + 4;
-    if (!cache->dc || cache->width < need_w || cache->height < need_h) {
+    if (!cache->dc || cache->width < need_w || cache->height < need_h ||
+        cache->width > need_w * 2 || cache->height > need_h * 2) {
       cache->release();
       HDC screen_dc = GetDC(nullptr);
       cache->dc = CreateCompatibleDC(screen_dc);
@@ -2070,13 +2924,28 @@ void paint_telegraphs(const ClientState& state, HDC dc, const RECT& bounds,
                   zones.bottom_hud.bottom);
   for (const auto& entry : state.telegraphs) {
     const ActiveTelegraph& telegraph = entry.second;
+    if (verdigris::client::actions::telegraph_expired(
+            state.world.tick != 0 || !state.simulation ? state.world.tick
+                                                       : state.simulation->tick(),
+            telegraph)) {
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "telegraph-ghost"});
+      continue;
+    }
     const double visibility = telegraph_visibility(state, telegraph);
+    const double length = telegraph.reach > 0
+                              ? static_cast<double>(telegraph.reach)
+                              : (telegraph.action == "sweep" ? catalog.melee_range
+                                                             : catalog.thrust_range);
     if (telegraph.action == "sweep")
       draw_sweep_telegraph(dc, state.camera, bounds, telegraph, visibility,
-                           catalog.melee_range, rl);
+                           length, rl);
     else
       draw_thrust_telegraph(dc, state.camera, bounds, telegraph, visibility,
-                            catalog.thrust_range, rl);
+                            length, rl);
+    const auto spec = verdigris::client::actions::spec_from_payload(
+        telegraph.action, telegraph.windup_ticks, catalog);
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                  verdigris::client::actions::spec_hud(spec)});
   }
   RestoreDC(dc, saved);
 }
@@ -2119,12 +2988,25 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       break;
     }
     case EffectFx::Kind::WarCryAura: {
-      // A short-lived, expanding aura communicates the buff event without
-      // turning the renderer into a second source of gameplay state.
-      const int radius = static_cast<int>(kTileUnits * (0.38 + grow * 0.72) *
-                                          base.scale);
+      // VG-ART-006: one bronze weave family. Cast then impact rings share
+      // identity; radius is capped so spectacle cannot blanket warnings.
+      int radius = static_cast<int>(kTileUnits * (0.38 + grow * 0.72) *
+                                    base.scale);
+      const int short_edge =
+          (std::min)(static_cast<int>(bounds.right), static_cast<int>(bounds.bottom));
+      const int cap = (std::max)(8, short_edge / 6);
+      if (radius > cap) radius = cap;
+      const char* weave = "vfx-weave:impact";
+      if (grow < 0.28)
+        weave = "vfx-weave:cast";
+      else if (grow < 0.58)
+        weave = "vfx-weave:travel";
       rl.push_back({render::Op::WarCry, static_cast<double>(base.x),
-                    static_cast<double>(base.y), static_cast<double>(radius)});
+                    static_cast<double>(base.y), static_cast<double>(radius), 0,
+                    weave});
+      rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                    static_cast<double>(base.y), static_cast<double>(radius), 0,
+                    weave});
       const COLORREF color = fade_to_background(RGB(239, 190, 78), life);
       ring_ellipse(dc, base.x, base.y, radius, radius, color, 3);
       ring_ellipse(dc, base.x, base.y, std::max(3, radius - 8),
@@ -2188,11 +3070,7 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       const int font_h = std::clamp(
           static_cast<int>(kTileUnits * (fx.critical ? 0.44 : 0.34) * base.scale),
           fx.critical ? 16 : 13, fx.critical ? 26 : 22);
-      HFONT number_font = CreateFontA(font_h, 0, 0, 0, FW_BOLD, FALSE, FALSE,
-                                      FALSE, DEFAULT_CHARSET,
-                                      OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
-                                      DEFAULT_QUALITY, FF_SWISS,
-                                      "Verdana");
+      HFONT number_font = cached_damage_font(font_h);
       HGDIOBJ old_number_font = SelectObject(dc, number_font);
       // Rise AND fade toward the background over the effect lifetime.
       SetTextColor(dc, fade_to_background(color, life));
@@ -2200,7 +3078,6 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       TextOutA(dc, base.x - 9, base.y - lift, text.c_str(),
                static_cast<int>(text.size()));
       SelectObject(dc, old_number_font);
-      DeleteObject(number_font);
       if (fx.critical) {
         // A short white-hot burst cross behind the numeral separates the
         // critical beat from every ordinary hit flash.
@@ -2254,6 +3131,8 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
       // dimmed-gold ring, clearly unlike the bright expanding apply aura.
       rl.push_back({render::Op::WarCry, static_cast<double>(base.x),
                     static_cast<double>(base.y), 0.0, 0, phase_a::kWarcryFadeLabel});
+      rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                    static_cast<double>(base.y), 0.0, 0, "vfx-weave:cancel"});
       const COLORREF color = fade_to_background(
           RGB(phase_a::kWarcryFadeColor.r, phase_a::kWarcryFadeColor.g,
               phase_a::kWarcryFadeColor.b),
@@ -2361,6 +3240,7 @@ void ingest_events(ClientState& state, const RECT& bounds) {
   if (!state.simulation) return;
   const auto& sim = *state.simulation;
   const auto& events = sim.events();
+  std::vector<std::string> batch_keys;
   for (; state.processed_events < events.size(); ++state.processed_events) {
     const auto& event = events[state.processed_events];
     const verdigris::Actor* subject =
@@ -2372,12 +3252,13 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         if (subject && subject->alive && subject->kind == verdigris::ActorKind::Monster &&
             subject->elite) {
           ActiveTelegraph telegraph;
-          telegraph.actor_id = event.actor_id;
-          telegraph.action = event.text;
-          telegraph.position = subject->position;
-          telegraph.facing = subject->facing;
           telegraph.start_tick = event.tick;
-          telegraph.windup_ticks = std::max(1, event.value);
+          const auto spec = verdigris::client::actions::spec_from_payload(
+              event.text, event.value,
+              verdigris::Simulation::presentation_catalog());
+          verdigris::client::actions::apply_spec(telegraph, spec);
+          telegraph.facing = subject->facing;
+          telegraph.position = subject->position;
           state.telegraphs[event.actor_id] = std::move(telegraph);
         }
         break;
@@ -2385,20 +3266,20 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         // A strike (including one which is ultimately absorbed by a gate in
         // the core) ends the presentation warning for this actor.
         state.telegraphs.erase(event.actor_id);
-        state.effects.push_back({event.text == "sweep" ? EffectFx::Kind::SweepArc
+        add_effect(state, {event.text == "sweep" ? EffectFx::Kind::SweepArc
                                                          : EffectFx::Kind::Swing,
                                  ex, ey, aim_angle(state, bounds, ex, ey), 0,
                                  event.text == "sweep" ? 8 : 6});
         break;
       case verdigris::EventType::BuffApplied:
         if (event.text == "war-cry")
-          state.effects.push_back({EffectFx::Kind::WarCryAura, ex, ey, 0.0, 0, 14});
+          add_effect(state, {EffectFx::Kind::WarCryAura, ex, ey, 0.0, 0, 14});
         break;
       case verdigris::EventType::BuffExpired:
         // TASK-0122 Phase A: war-cry end contract beat. Imploding dimmed-gold
         // ring at the anchor, lifetime from the phase_a constants table.
         if (event.text.empty() || event.text == "war-cry") {
-          state.effects.push_back({EffectFx::Kind::WarCryFade, ex, ey, 0.0, 0,
+          add_effect(state, {EffectFx::Kind::WarCryFade, ex, ey, 0.0, 0,
                                    phase_a::kWarcryFadeTtlTicks});
           state.event_log.push_back("war cry faded");
           if (state.event_log.size() > 6) state.event_log.erase(state.event_log.begin());
@@ -2408,14 +3289,14 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         // TASK-0122 Phase A: long somber loss beat; clears stale warnings and
         // pulses the screen edge exactly like the seam path does.
         state.telegraphs.clear();
-        state.effects.push_back({EffectFx::Kind::ScionLostBeat, ex, ey, 0.0, 0,
+        add_effect(state, {EffectFx::Kind::ScionLostBeat, ex, ey, 0.0, 0,
                                  phase_a::kScionLostRingTtlTicks});
         state.screen_pulse_ticks = phase_a::kScionLostPulseTicks;
         break;
       case verdigris::EventType::DamageApplied: {
         const bool to_player =
             subject && subject->kind == verdigris::ActorKind::Player;
-        state.effects.push_back({EffectFx::Kind::Impact, ex, ey, 0.0, 0, 4});
+        add_effect(state, {EffectFx::Kind::Impact, ex, ey, 0.0, 0, 4});
         // Brief tint on the hit target's sprite so "what I hit" reads at a
         // glance, separate from the position flash.
         EffectFx flash;
@@ -2425,7 +3306,7 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         flash.age = 0;
         flash.ttl = 4;
         flash.damage_to_player = to_player;
-        state.effects.push_back(flash);
+        add_effect(state, flash);
         // Floating damage number: the value the core resolved, rising and
         // fading above the target over ~600ms. Red when the Scion took the hit.
         EffectFx number;
@@ -2436,7 +3317,7 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         number.ttl = 12;
         number.value = event.value;
         number.damage_to_player = to_player;
-        state.effects.push_back(number);
+        add_effect(state, number);
         // A 150ms screen-edge red pulse when the player takes damage.
         if (to_player) state.screen_pulse_ticks = 3;
         break;
@@ -2449,8 +3330,8 @@ void ingest_events(ClientState& state, const RECT& bounds) {
             (subject && subject->kind == verdigris::ActorKind::Player))
           state.telegraphs.clear();
         if (subject) state.last_death_pos = subject->position;
-        state.effects.push_back({EffectFx::Kind::DeathRing, ex, ey, 0.0, 0, 12});
-        state.effects.push_back({EffectFx::Kind::Dust, ex, ey, 0.7, 0, 10});
+        add_effect(state, {EffectFx::Kind::DeathRing, ex, ey, 0.0, 0, 12});
+        add_effect(state, {EffectFx::Kind::Dust, ex, ey, 0.7, 0, 10});
         break;
       case verdigris::EventType::InstanceEntered:
         // A route transition invalidates all event-time actor snapshots.
@@ -2459,7 +3340,7 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         break;
       case verdigris::EventType::ActorMoved:
         if (event.text == "dash")
-          state.effects.push_back({EffectFx::Kind::Dust, ex, ey, 0.2, 0, 8});
+          add_effect(state, {EffectFx::Kind::Dust, ex, ey, 0.2, 0, 8});
         break;
       case verdigris::EventType::ItemDropped:
       case verdigris::EventType::TrophyDropped: {
@@ -2470,7 +3351,7 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         ++state.loot_scatter;
         const std::string& id = event.item_id.empty() ? event.trophy_id : event.item_id;
         state.loot_positions[id] = at;
-        state.effects.push_back({EffectFx::Kind::Sparkle, static_cast<double>(at.x),
+        add_effect(state, {EffectFx::Kind::Sparkle, static_cast<double>(at.x),
                                  static_cast<double>(at.y), 0.0, 0, 24});
         break;
       }
@@ -2480,6 +3361,11 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         state.loot_positions.erase(id);
         break;
       }
+      case verdigris::EventType::ItemEquipped:
+        verdigris::client::ui::ack_equip(state.equip_view, event.item_id, event.value);
+        if (!event.item_id.empty())
+          show_hint(state, "Equipped");
+        break;
       default:
         break;
     }
@@ -2491,6 +3377,10 @@ void ingest_events(ClientState& state, const RECT& bounds) {
       if (state.event_log.size() > 6)
         state.event_log.erase(state.event_log.begin());
       }
+    verdigris::client::PresentationEvent voiced{};
+    if (presentation_from_sim(event, voiced))
+      voice_presentation_event(state, voiced, event.tick, batch_keys);
+    note_attack_beat(state, event);
   }
 
   // There is intentionally no client cancellation prediction.  If a pending
@@ -2517,6 +3407,8 @@ void ingest_events(ClientState& state, const RECT& bounds) {
   detect_monster_spawns(spawn_fx, state.world, sim.tick());
   state.effects = std::move(spawn_fx.effects);
   state.known_monsters = std::move(spawn_fx.known_monsters);
+  refresh_ambience(state);
+  drain_audio(state);
 }
 
 struct DepthDraw {
@@ -2563,6 +3455,233 @@ std::string loot_label(const ClientState& state, const std::string& id) {
   return id;
 }
 
+// VG-PERF-005: dense drops keep every pouch drawable; only the nearest
+// nameplates pay TextOut. The X-key pickup target is always labeled so
+// culling cannot hide the eligible item.
+constexpr std::size_t kMaxLootNameplates = 12;
+
+std::vector<char> loot_nameplate_mask(
+    const std::vector<std::pair<std::string, verdigris::Vec2>>& loot,
+    const verdigris::Vec2& player, const std::string& nearest_id) {
+  std::vector<char> mask(loot.size(), 0);
+  if (loot.empty()) return mask;
+  std::size_t labeled = 0;
+  if (!nearest_id.empty()) {
+    for (std::size_t i = 0; i < loot.size(); ++i) {
+      if (loot[i].first == nearest_id) {
+        mask[i] = 1;
+        labeled = 1;
+        break;
+      }
+    }
+  }
+  std::vector<std::size_t> rank;
+  rank.reserve(loot.size());
+  for (std::size_t i = 0; i < loot.size(); ++i) {
+    if (!mask[i]) rank.push_back(i);
+  }
+  std::sort(rank.begin(), rank.end(), [&](std::size_t a, std::size_t b) {
+    const int da = verdigris::manhattan_distance(player, loot[a].second);
+    const int db = verdigris::manhattan_distance(player, loot[b].second);
+    if (da != db) return da < db;
+    return loot[a].first < loot[b].first;
+  });
+  for (std::size_t i = 0; i < rank.size() && labeled < kMaxLootNameplates; ++i) {
+    mask[rank[i]] = 1;
+    ++labeled;
+  }
+  return mask;
+}
+
+constexpr int kPackColumns = 4;
+constexpr int kPackRows = 6;
+
+std::uint32_t pack_stable_id(const std::string& id) {
+  std::uint32_t hash = 2166136261u;
+  for (unsigned char character : id) {
+    hash ^= character;
+    hash *= 16777619u;
+  }
+  return hash == 0 ? 1u : hash;
+}
+
+struct PackGeom {
+  int s = 1;
+  int cell_w = 0;
+  int cell_h = 0;
+  int gap = 0;
+  int grid_left = 0;
+  int grid_top = 0;
+  RECT seat{};
+};
+
+PackGeom make_pack_geom(int width, int height) {
+  PackGeom geom;
+  const HudRect pane = gear_pane_rect(width, height);
+  geom.s = hud_scale(height);
+  const int left = pane.x;
+  const int top = pane.y;
+  const int right = left + pane.w;
+  const int seat_top = top + 62 * geom.s;
+  const int seat_left = left + 14 * geom.s;
+  const int seat_w = right - left - 28 * geom.s;
+  geom.seat = {seat_left, seat_top, seat_left + seat_w, seat_top + 24 * geom.s};
+  geom.gap = 6 * geom.s;
+  geom.cell_w =
+      (right - left - (28 + (kPackColumns - 1) * 6) * geom.s) / kPackColumns;
+  geom.cell_h = 56 * geom.s;
+  geom.grid_left = left + 14 * geom.s;
+  geom.grid_top = seat_top + 38 * geom.s;
+  return geom;
+}
+
+bool pack_hit_cell(const PackGeom& geom, int mx, int my, int& gx, int& gy) {
+  if (geom.cell_w <= 0 || geom.cell_h <= 0) return false;
+  const int stride_x = geom.cell_w + geom.gap;
+  const int stride_y = geom.cell_h + geom.gap;
+  if (mx < geom.grid_left || my < geom.grid_top) return false;
+  gx = (mx - geom.grid_left) / stride_x;
+  gy = (my - geom.grid_top) / stride_y;
+  if (gx < 0 || gy < 0 || gx >= kPackColumns || gy >= kPackRows) return false;
+  const int cx = geom.grid_left + gx * stride_x;
+  const int cy = geom.grid_top + gy * stride_y;
+  return mx < cx + geom.cell_w && my < cy + geom.cell_h;
+}
+
+bool pack_hit_seat(const PackGeom& geom, int mx, int my) {
+  return mx >= geom.seat.left && mx < geom.seat.right && my >= geom.seat.top &&
+         my < geom.seat.bottom;
+}
+
+void pack_first_free(const inventory_grid::State& grid, std::uint8_t& x,
+                     std::uint8_t& y, bool& found) {
+  found = false;
+  for (std::uint8_t row = 0; row < grid.height; ++row) {
+    for (std::uint8_t col = 0; col < grid.width; ++col) {
+      if (inventory_grid::can_place(grid, col, row, 1, 1)) {
+        x = col;
+        y = row;
+        found = true;
+        return;
+      }
+    }
+  }
+}
+
+void reconcile_pack_grid(ClientState& state) {
+  std::string fingerprint;
+  for (const auto& item : state.world.carried) fingerprint += item.id + ",";
+  if (fingerprint == state.pack_fingerprint && state.pack_grid.valid() &&
+      state.pack_grid.width == kPackColumns &&
+      state.pack_grid.height == kPackRows)
+    return;
+  inventory_grid::State next = inventory_grid::make_default();
+  next.width = kPackColumns;
+  next.height = kPackRows;
+  (void)inventory_grid::rebuild_occupancy(next);
+  for (const auto& carried : state.world.carried) {
+    const std::uint32_t id = pack_stable_id(carried.id);
+    inventory_grid::Item placed{};
+    placed.id = id;
+    placed.width = 1;
+    placed.height = 1;
+    placed.stack_count = 1;
+    placed.stack_max = 1;
+    const std::size_t old = inventory_grid::find_index(state.pack_grid, id);
+    bool found = false;
+    if (old != inventory_grid::kMaxItems) {
+      placed.x = state.pack_grid.items[old].x;
+      placed.y = state.pack_grid.items[old].y;
+      if (inventory_grid::can_place(next, placed.x, placed.y, 1, 1))
+        found = true;
+    }
+    if (!found) pack_first_free(next, placed.x, placed.y, found);
+    if (!found) continue;
+    (void)inventory_grid::place(next, placed);
+  }
+  state.pack_grid = next;
+  state.pack_fingerprint = fingerprint;
+}
+
+std::size_t carried_index_for_pack_id(const ClientState& state,
+                                      std::uint32_t id) {
+  for (std::size_t i = 0; i < state.world.carried.size(); ++i)
+    if (pack_stable_id(state.world.carried[i].id) == id) return i;
+  return state.world.carried.size();
+}
+
+bool pack_can_land(const inventory_grid::State& grid, std::uint32_t id, int x,
+                   int y) {
+  if (x < 0 || y < 0 || x >= grid.width || y >= grid.height) return false;
+  const auto ux = static_cast<std::uint8_t>(x);
+  const auto uy = static_cast<std::uint8_t>(y);
+  const std::uint32_t occupant = inventory_grid::item_at(grid, ux, uy);
+  if (occupant == 0 || occupant == id)
+    return inventory_grid::can_place(grid, ux, uy, 1, 1, id);
+  inventory_grid::State scratch = grid;
+  return inventory_grid::swap(scratch, id, occupant) == inventory_grid::Status::Ok;
+}
+
+void pack_begin_drag(ClientState& state, int gx, int gy) {
+  if (gx < 0 || gy < 0) return;
+  const std::uint32_t id = inventory_grid::item_at(
+      state.pack_grid, static_cast<std::uint8_t>(gx),
+      static_cast<std::uint8_t>(gy));
+  if (id == 0) return;
+  state.pack_drag_live = true;
+  state.pack_drag_id = id;
+  state.pack_preview_x = gx;
+  state.pack_preview_y = gy;
+  state.pack_preview_ok = true;
+  const std::size_t index = carried_index_for_pack_id(state, id);
+  if (index < state.world.carried.size()) state.selected_item = index;
+}
+
+bool pack_commit_drop(ClientState& state, bool onto_weapon_seat) {
+  if (!state.pack_drag_live || state.pack_drag_id == 0) {
+    state.pack_last_drop = "idle";
+    return false;
+  }
+  const std::uint32_t id = state.pack_drag_id;
+  state.pack_drag_live = false;
+  if (onto_weapon_seat) {
+    const std::size_t index = carried_index_for_pack_id(state, id);
+    if (index >= state.world.carried.size()) {
+      state.pack_last_drop = "reject";
+      return false;
+    }
+    state.selected_item = index;
+    const std::string before = state.world.carried[index].id;
+    submit_equip(state, before);
+    state.pack_last_drop = "equip";
+    show_hint(state, "Equip requested");
+    return true;
+  }
+  if (!state.pack_preview_ok) {
+    state.pack_last_drop = "reject";
+    show_hint(state, "Placement rejected");
+    return false;
+  }
+  const inventory_grid::State before = state.pack_grid;
+  const auto ux = static_cast<std::uint8_t>(state.pack_preview_x);
+  const auto uy = static_cast<std::uint8_t>(state.pack_preview_y);
+  const std::uint32_t occupant = inventory_grid::item_at(state.pack_grid, ux, uy);
+  inventory_grid::Status status = inventory_grid::Status::Overlap;
+  if (occupant == 0 || occupant == id)
+    status = inventory_grid::move(state.pack_grid, id, ux, uy);
+  else
+    status = inventory_grid::swap(state.pack_grid, id, occupant);
+  if (status != inventory_grid::Status::Ok) {
+    state.pack_grid = before;
+    state.pack_last_drop = "reject";
+    show_hint(state, "Placement rejected");
+    return false;
+  }
+  state.pack_last_drop = "ok";
+  show_hint(state, "Item placed");
+  return true;
+}
+
 void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
                         render::List& rl) {
   if (!state.gear_overlay) return;
@@ -2580,6 +3699,7 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel,
                           panel_rect))
     skin::panel(dc, panel_rect, skin::kVerdigris, 245, 8.0f);
+  dress_owned_pane(state.billboards, dc, panel_rect);
 
   // Interior layout scale: the pane rect scales with window height, so every
   // hand-authored 1x offset inside must scale with it or rows collide.
@@ -2663,15 +3783,18 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     }
   SetTextColor(dc, RGB(230, 220, 180));
   rl.push_back({render::Op::PaneWeapon, 0.0, 0.0, 0.0, 0, equipped_name});
+  rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                std::string("held-seat:") + equipped_name});
   TextOutA(dc, seat_left + 96 * s, seat_top + 4 * s, equipped_name.c_str(),
            static_cast<int>(equipped_name.size()));
 
   // Grid backpack (4 columns), framekit slot chrome with item art.
-  constexpr int kGridColumns = 4;
-  const int cell_w =
-      (right - left - (28 + (kGridColumns - 1) * 6) * s) / kGridColumns;
-  const int cell_h = 56 * s;
-  const int grid_top = seat_top + 38 * s;
+  reconcile_pack_grid(state);
+  const PackGeom pack = make_pack_geom(static_cast<int>(bounds.right),
+                                       static_cast<int>(bounds.bottom));
+  const int cell_w = pack.cell_w;
+  const int cell_h = pack.cell_h;
+  const int grid_top = pack.grid_top;
   // On the remote path carried ids are uuids; the model's inventory rows
   // carry the stable item id the art catalog is keyed by.
   const auto art_key = [&](std::size_t index) -> std::string {
@@ -2686,20 +3809,37 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     TextOutA(dc, left + 14 * s, grid_top + 6 * s, empty,
              static_cast<int>(strlen(empty)));
   } else {
-    for (std::size_t i = 0; i < items.size(); ++i) {
-      const int col = static_cast<int>(i % kGridColumns);
-      const int row = static_cast<int>(i / kGridColumns);
-      const int cx = left + 14 * s + col * (cell_w + 6 * s);
-      const int cy = grid_top + row * (cell_h + 6 * s);
-      const bool selected = i == std::min(state.selected_item, items.size() - 1);
-      const bool equipped = items[i].equipped;
+    int hover_i = -1;
+    int hover_cx = 0;
+    int hover_cy = 0;
+    const int mx = static_cast<int>(state.mouse.x);
+    const int my = static_cast<int>(state.mouse.y);
+    int hover_gx = -1;
+    int hover_gy = -1;
+    pack_hit_cell(pack, mx, my, hover_gx, hover_gy);
+    if (state.pack_drag_live) {
+      state.pack_preview_x = hover_gx;
+      state.pack_preview_y = hover_gy;
+      state.pack_preview_ok =
+          pack_can_land(state.pack_grid, state.pack_drag_id, hover_gx, hover_gy);
+    }
+    for (std::uint8_t i = 0; i < state.pack_grid.count; ++i) {
+      const inventory_grid::Item& cell_item = state.pack_grid.items[i];
+      const std::size_t carried_i =
+          carried_index_for_pack_id(state, cell_item.id);
+      if (carried_i >= items.size()) continue;
+      const int col = cell_item.x;
+      const int row = cell_item.y;
+      const int cx = pack.grid_left + col * (cell_w + pack.gap);
+      const int cy = pack.grid_top + row * (cell_h + pack.gap);
+      const bool selected = carried_i == std::min(state.selected_item, items.size() - 1);
+      const bool equipped = items[carried_i].equipped;
       RECT cell{cx, cy, cx + cell_w, cy + cell_h};
       if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot,
                               cell))
         skin::slot(dc, cell, equipped ? skin::kGold : skin::kVerdigris,
                    selected);
       if (selected || equipped) {
-        // Selection/equip read on top of the raster chrome.
         HPEN cell_pen = CreatePen(PS_SOLID, 2,
                                   equipped ? RGB(210, 180, 90) : RGB(120, 214, 168));
         HGDIOBJ cp = SelectObject(dc, cell_pen);
@@ -2711,28 +3851,30 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
       }
       RECT art_cell{cell.left, cell.top, cell.right, cell.bottom - 18 * s};
       {
-        // Parchment backing: bronze-age sprites are dark; without a light
-        // ground they vanish into the slot texture.
         RECT backing{art_cell.left + 4 * s, art_cell.top + 4 * s,
                      art_cell.right - 4 * s, art_cell.bottom};
         HBRUSH backing_brush = CreateSolidBrush(RGB(74, 82, 78));
         FillRect(dc, &backing, backing_brush);
         DeleteObject(backing_brush);
       }
-      draw_item_art(state.billboards, dc, art_key(i), art_cell);
+      draw_item_art(state.billboards, dc, art_key(carried_i), art_cell);
       SetTextColor(dc, equipped ? RGB(240, 210, 120) : RGB(205, 215, 204));
-      std::string name = items[i].name;
+      std::string name = items[carried_i].name;
       if (name.size() > 12) name = name.substr(0, 11) + ".";
       rl.push_back({render::Op::PaneItem, static_cast<double>(cx),
-                    static_cast<double>(cy), 0.0, items[i].attack_bonus,
+                    static_cast<double>(cy), 0.0, items[carried_i].attack_bonus,
                     equipped ? name + " [E]" : name});
+      rl.push_back({render::Op::Hud, static_cast<double>(col),
+                    static_cast<double>(row), 0.0,
+                    static_cast<int>(cell_item.id),
+                    "pack:" + std::to_string(col) + "," + std::to_string(row)});
       state.hud_rect_trace.push_back(
           {"pane-cell", {cx, cy, cell_w, cell_h}});
       HGDIOBJ cell_font = SelectObject(dc, skin::font_small());
       TextOutA(dc, cx + 4 * s, cell.bottom - 17 * s, name.c_str(),
                static_cast<int>(name.size()));
       SetTextColor(dc, RGB(170, 185, 172));
-      std::string bonus = "+" + std::to_string(items[i].attack_bonus) +
+      std::string bonus = "+" + std::to_string(items[carried_i].attack_bonus) +
                           (equipped ? " [E]" : "");
       SIZE bonus_extent{};
       GetTextExtentPoint32A(dc, bonus.c_str(), static_cast<int>(bonus.size()),
@@ -2740,8 +3882,82 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
       TextOutA(dc, cell.right - bonus_extent.cx - 4 * s, cell.top + 2 * s,
                bonus.c_str(), static_cast<int>(bonus.size()));
       SelectObject(dc, cell_font);
+      if (mx >= cx && mx < cx + cell_w && my >= cy && my < cy + cell_h) {
+        hover_i = static_cast<int>(carried_i);
+        hover_cx = cx;
+        hover_cy = cy;
+      }
     }
+    if (state.pack_drag_live && state.pack_preview_x >= 0 &&
+        state.pack_preview_y >= 0) {
+      const int gx = state.pack_preview_x;
+      const int gy = state.pack_preview_y;
+      const int cx = pack.grid_left + gx * (cell_w + pack.gap);
+      const int cy = pack.grid_top + gy * (cell_h + pack.gap);
+      HPEN ghost = CreatePen(PS_SOLID, 2,
+                             state.pack_preview_ok ? RGB(120, 214, 168)
+                                                   : RGB(196, 58, 48));
+      HGDIOBJ gp = SelectObject(dc, ghost);
+      HGDIOBJ gb = SelectObject(dc, GetStockObject(HOLLOW_BRUSH));
+      Rectangle(dc, cx, cy, cx + cell_w, cy + cell_h);
+      SelectObject(dc, gb);
+      SelectObject(dc, gp);
+      DeleteObject(ghost);
+      rl.push_back({render::Op::Hud, static_cast<double>(gx),
+                    static_cast<double>(gy), 0.0,
+                    state.pack_preview_ok ? 1 : 0,
+                    state.pack_preview_ok ? "pack-preview:ok"
+                                          : "pack-preview:reject"});
+    }
+    if (hover_i < 0) {
+      hover_i = static_cast<int>(
+          std::min(state.selected_item, items.size() - 1));
+      const std::uint32_t sid =
+          pack_stable_id(items[static_cast<std::size_t>(hover_i)].id);
+      const std::size_t gi = inventory_grid::find_index(state.pack_grid, sid);
+      if (gi != inventory_grid::kMaxItems) {
+        hover_cx = pack.grid_left +
+                   state.pack_grid.items[gi].x * (cell_w + pack.gap);
+        hover_cy = pack.grid_top +
+                   state.pack_grid.items[gi].y * (cell_h + pack.gap);
+      } else {
+        hover_cx = pack.grid_left;
+        hover_cy = pack.grid_top;
+      }
+    }
+    const WorldCarriedItem& focus = items[static_cast<std::size_t>(hover_i)];
+    std::vector<std::string> facts;
+    facts.push_back("ATK +" + std::to_string(focus.attack_bonus));
+    const bool as_equipped = verdigris::client::ui::paint_focus_as_equipped(
+        state.equip_view, focus.equipped);
+    if (state.equip_view.pending)
+      facts.push_back("pending ack");
+    else if (as_equipped) {
+      facts.push_back("currently equipped");
+    } else {
+      const int baseline = verdigris::client::ui::compare_baseline(
+          state.equip_view, equipped_bonus);
+      const int delta = focus.attack_bonus - baseline;
+      if (delta > 0)
+        facts.push_back("+" + std::to_string(delta) + " vs equipped");
+      else if (delta < 0)
+        facts.push_back(std::to_string(delta) + " vs equipped");
+      else
+        facts.push_back("same ATK as equipped");
+    }
+    facts.push_back("Enter equips; U unequips");
+    paint_compare_plate(dc, hover_cx + cell_w, hover_cy, bounds, focus.name,
+                        as_equipped ? skin::kGold : skin::kInk, facts, rl);
+    if (as_equipped)
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "compare:equipped"});
+    else if (state.equip_view.pending)
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "compare:pending"});
+    else
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "compare:candidate"});
   }
+  if (!state.pack_last_drop.empty())
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                  std::string("pack-drop:") + state.pack_last_drop});
 
   // Banked / extraction summary.
   SetTextColor(dc, RGB(150, 170, 158));
@@ -2782,7 +3998,8 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   }
   TextOutA(dc, left + 14 * s, bottom - 74 * s, progression.c_str(),
            static_cast<int>(progression.size()));
-  const char* controls = "Arrows select | Enter equip | U unequip | I close";
+  const char* controls =
+      "Drag to place | drop on Weapon to equip | Enter equip | U unequip";
   {
     SIZE extent{};
     GetTextExtentPoint32A(dc, controls, static_cast<int>(strlen(controls)),
@@ -2816,7 +4033,8 @@ void draw_orb(HDC dc, int cx, int cy, int radius, double ratio, COLORREF fill,
 
 void paint_vital_orbs(const WorldActor& player, std::uint64_t tick, int screen_pulse_ticks,
                       HDC dc, const RECT& bounds, render::List& rl,
-                      std::vector<std::pair<std::string, HudRect>>* trace) {
+                      std::vector<std::pair<std::string, HudRect>>* trace,
+                      const BillboardAssets& assets) {
   if (!player.alive && player.life <= 0 && player.life_max <= 0) return;
   const int radius =
       kVitalOrbRadius * hud_scale(static_cast<int>(bounds.bottom));
@@ -2838,10 +4056,16 @@ void paint_vital_orbs(const WorldActor& player, std::uint64_t tick, int screen_p
       std::to_string(player.life) + "/" + std::to_string(player.life_max);
   const std::string resource_caption =
       std::to_string(player.resource) + "/" + std::to_string(player.resource_max);
-  draw_orb(dc, left_cx, cy, radius, life_ratio, RGB(177, 72, 62), RGB(214, 128, 96),
-           life_caption, pulse, rl, "life");
-  draw_orb(dc, right_cx, cy, radius, resource_ratio, RGB(58, 138, 168), RGB(120, 188, 214),
-           resource_caption, false, rl, "resource");
+  if (!draw_wizard_orb(assets, dc, true, left_cx, cy, radius, life_ratio,
+                       life_caption, pulse, rl, "life")) {
+    draw_orb(dc, left_cx, cy, radius, life_ratio, RGB(177, 72, 62),
+             RGB(214, 128, 96), life_caption, pulse, rl, "life");
+  }
+  if (!draw_wizard_orb(assets, dc, false, right_cx, cy, radius, resource_ratio,
+                       resource_caption, false, rl, "resource")) {
+    draw_orb(dc, right_cx, cy, radius, resource_ratio, RGB(58, 138, 168),
+             RGB(120, 188, 214), resource_caption, false, rl, "resource");
+  }
   // TASK-0159: record the exact painted orb extents (+pulse ring) so the
   // readability scenario can prove the pane never reaches into them.
   if (trace) {
@@ -2852,6 +4076,22 @@ void paint_vital_orbs(const WorldActor& player, std::uint64_t tick, int screen_p
                       vital_orb_rect(static_cast<int>(bounds.right),
                                      static_cast<int>(bounds.bottom), true)});
   }
+  if (low_life) {
+    POINT chevron[3] = {{left_cx, cy - radius + 6},
+                        {left_cx - 7, cy - radius + 18},
+                        {left_cx + 7, cy - radius + 18}};
+    HBRUSH shape = CreateSolidBrush(RGB(238, 226, 197));
+    HGDIOBJ old_brush = SelectObject(dc, shape);
+    Polygon(dc, chevron, 3);
+    SelectObject(dc, old_brush);
+    DeleteObject(shape);
+    rl.push_back({render::Op::Hud, static_cast<double>(left_cx),
+                  static_cast<double>(cy - radius), 1.0, 0, "danger-shape:life"});
+  }
+  rl.push_back({render::Op::Hud, static_cast<double>(left_cx),
+                static_cast<double>(cy), 0.0, 0, "orb-role:life-left"});
+  rl.push_back({render::Op::Hud, static_cast<double>(right_cx),
+                static_cast<double>(cy), 0.0, 0, "orb-role:mana-right"});
 }
 
 struct QuickbarSlotDef {
@@ -2934,17 +4174,176 @@ void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List
   }
 }
 
+bool trade_pane_open(const ClientState& state);
+
+// PoE-style hover tooltip: whatever world entity sits under the cursor
+// names itself on a dark plate - rarity-coloured title plus fact lines.
+// Pure presentation over authoritative data; nothing is invented.
+void paint_hover_tooltip(ClientState& state, HDC dc, const RECT& bounds,
+                         render::List& rl) {
+  if (trade_pane_open(state) || state.gear_overlay || state.tree_pane ||
+      state.character_pane)
+    return;
+  const WorldView& world = state.world;
+  const int mx = static_cast<int>(state.mouse.x);
+  const int my = static_cast<int>(state.mouse.y);
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+
+  std::string title;
+  COLORREF title_color = skin::kInk;
+  std::vector<std::string> lines;
+  double best = 1e18;
+  const auto consider = [&](int sx, int sy, double radius_px,
+                            const std::string& candidate_title,
+                            COLORREF color,
+                            std::vector<std::string> candidate_lines) {
+    const double dx = mx - sx;
+    const double dy = my - sy;
+    const double d2 = dx * dx + dy * dy;
+    if (d2 > radius_px * radius_px || d2 >= best) return;
+    best = d2;
+    title = candidate_title;
+    title_color = color;
+    lines = std::move(candidate_lines);
+  };
+
+  for (const auto& monster : world.monsters) {
+    if (!monster.alive) continue;
+    const ScreenPoint base =
+        project(state.camera, bounds, monster.position.x, monster.position.y);
+    const int body_y = base.y - static_cast<int>(kTileUnits * 0.7 * base.scale);
+    std::vector<std::string> facts;
+    facts.push_back("Life " + std::to_string(monster.life) + " / " +
+                    std::to_string(monster.life_max));
+    if (monster.elite) facts.push_back("mark diamond");
+    if (!monster.behaviour.empty() && monster.behaviour != "melee")
+      facts.push_back(monster.behaviour);
+    consider(base.x, body_y, kTileUnits * 0.9 * base.scale,
+             monster.name.empty() ? std::string("Foe") : monster.name,
+             monster.elite ? skin::kGold : skin::kEmber, std::move(facts));
+  }
+  for (const auto& loot : state.loot_positions) {
+    const ScreenPoint base =
+        project(state.camera, bounds, loot.second.x, loot.second.y);
+    consider(base.x, base.y - static_cast<int>(kTileUnits * 0.28 * base.scale),
+             kTileUnits * 0.5 * base.scale, loot_label(state, loot.first),
+             skin::kGold, {std::string("X picks up")});
+  }
+  for (const auto& npc : world.npcs) {
+    const ScreenPoint base =
+        project(state.camera, bounds, npc.position.x, npc.position.y);
+    const int body_y = base.y - static_cast<int>(kTileUnits * 0.7 * base.scale);
+    std::string verb = npc.actions.empty() ? std::string("examine")
+                                           : npc.actions.front();
+    consider(base.x, body_y, kTileUnits * 0.9 * base.scale, npc.name,
+             RGB(150, 190, 240), {std::string("T to ") + verb});
+  }
+  if (title.empty()) return;
+
+  HGDIOBJ old_font = SelectObject(dc, skin::font_body_bold());
+  SIZE title_extent{};
+  GetTextExtentPoint32A(dc, title.c_str(), static_cast<int>(title.size()),
+                        &title_extent);
+  int widest = title_extent.cx;
+  SelectObject(dc, skin::font_small());
+  for (const auto& fact : lines) {
+    SIZE extent{};
+    GetTextExtentPoint32A(dc, fact.c_str(), static_cast<int>(fact.size()),
+                          &extent);
+    widest = std::max(widest, static_cast<int>(extent.cx));
+  }
+  const int line_h = 16 * s;
+  const int pad = 8 * s;
+  const int mark = 10 * s;
+  const int box_w = widest + pad * 2 + mark;
+  const int box_h = title_extent.cy + static_cast<int>(lines.size()) * line_h +
+                    pad * 2;
+  int box_x = mx + 18;
+  int box_y = my - box_h - 10;
+  box_x = std::min(box_x, static_cast<int>(bounds.right) - box_w - 8);
+  box_x = std::max(8, box_x);
+  box_y = std::max(8, box_y);
+  RECT plate{box_x, box_y, box_x + box_w, box_y + box_h};
+  skin::panel(dc, plate, title_color, 245, 5.0f);
+  {
+    const int mid_y = box_y + pad + title_extent.cy / 2;
+    POINT mark_pts[3] = {{box_x + 3 * s, mid_y - 5 * s},
+                         {box_x + 3 * s, mid_y + 5 * s},
+                         {box_x + 9 * s, mid_y}};
+    HBRUSH mark_brush = cached_brush(title_color);
+    HGDIOBJ old_mark = SelectObject(dc, mark_brush);
+    Polygon(dc, mark_pts, 3);
+    SelectObject(dc, old_mark);
+  }
+  SetBkMode(dc, TRANSPARENT);
+  SelectObject(dc, skin::font_body_bold());
+  SetTextColor(dc, skin::kInk);
+  TextOutA(dc, box_x + pad + mark, box_y + pad - 2, title.c_str(),
+           static_cast<int>(title.size()));
+  SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kInk);
+  int fact_y = box_y + pad + title_extent.cy;
+  for (const auto& fact : lines) {
+    TextOutA(dc, box_x + pad + mark, fact_y, fact.c_str(),
+             static_cast<int>(fact.size()));
+    fact_y += line_h;
+  }
+  SelectObject(dc, old_font);
+  rl.push_back({render::Op::Hud, static_cast<double>(box_x),
+                static_cast<double>(box_y), 0.0, 0, "tooltip:" + title});
+  rl.push_back({render::Op::Hud, static_cast<double>(box_x),
+                static_cast<double>(box_y), 0.0, 0, "tooltip-shape:foe"});
+  if (skin::contrast_ratio(skin::kInk, skin::kPanelMid) >= 4.5)
+    rl.push_back({render::Op::Hud, static_cast<double>(box_w),
+                  static_cast<double>(box_y), 0.0, 0, "tooltip-contrast:ok"});
+}
+
+// D2-style experience bar: a thin segmented gold strip across the bottom
+// edge between the vital orbs, fed by the authoritative xp block.
+void paint_xp_bar(ClientState& state, HDC dc, const RECT& bounds,
+                  render::List& rl) {
+  const WorldView& world = state.world;
+  if (!world.xp_present) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int orb_reach = (18 + kVitalOrbRadius * 2 + 24) * s;
+  const int left = orb_reach;
+  const int right = static_cast<int>(bounds.right) - orb_reach;
+  if (right - left < 60) return;
+  const int meter_h = 10 * s;
+  const HudRect strip = quickbar_strip_rect(static_cast<int>(bounds.right),
+                                            static_cast<int>(bounds.bottom));
+  const int top = strip.y - meter_h - 6 * s;
+  if (top < 8) return;
+  RECT frame{left, top, right, top + meter_h};
+  skin::xp_meter(dc, frame, world.xp_fraction);
+  const std::string cap = "XP lv " + std::to_string(world.player.level);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetBkMode(dc, TRANSPARENT);
+  SetTextColor(dc, skin::kInk);
+  SIZE extent{};
+  GetTextExtentPoint32A(dc, cap.c_str(), static_cast<int>(cap.size()), &extent);
+  TextOutA(dc, left + 4 * s, top - extent.cy + 1, cap.c_str(),
+           static_cast<int>(cap.size()));
+  SelectObject(dc, old_font);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0,
+                static_cast<int>(world.xp_fraction * 100.0), "xp-bar"});
+}
+
 void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
   const HudRect map = minimap_rect(static_cast<int>(bounds.bottom));
   const int kSize = map.w;
   const int s = std::max(1, map.w / 108);
   RECT panel{map.x, map.y, map.x + map.w, map.y + map.h};
   state.hud_rect_trace.push_back({"minimap", map});
-  skin::panel(dc, panel);
+  const int zoom_step = verdigris::client::ui::clamp_zoom(state.minimap_zoom);
+  const int opacity = verdigris::client::ui::clamp_opacity(state.minimap_opacity);
+  skin::panel(dc, panel, skin::kPanelBorder, static_cast<BYTE>(opacity));
 
   const WorldView& world = state.world;
   const double arena = static_cast<double>(verdigris::world_scale::kArenaHalfExtent);
-  const double map_scale = static_cast<double>(kSize) / (arena * 2.2);
+  const double zoom = zoom_step == 0 ? 1.0 : (zoom_step == 1 ? 1.5 : 2.2);
+  const double map_scale = static_cast<double>(kSize) / (arena * 2.2) * zoom;
   const int center_x = (panel.left + panel.right) / 2;
   const int center_y = (panel.top + panel.bottom) / 2;
   const double origin_x = static_cast<double>(world.player.position.x);
@@ -2972,12 +4371,21 @@ void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List&
     ++dots;
   }
 
-  for (const auto& monster : world.monsters) {
-    if (!monster.alive) continue;
+  auto consider_monster = [&](const WorldActor& monster) {
+    const verdigris::client::ui::MapOverlay overlay{zoom_step, opacity};
+    const verdigris::client::ui::MapTarget target{monster.id.c_str(),
+                                                 monster.alive,
+                                                 monster.on_snapshot};
+    if (!verdigris::client::ui::overlay_paints_blip(overlay, target)) return;
     const auto [mx, my] = to_map(monster.position.x, monster.position.y);
     fill_ellipse(dc, mx, my, 3 * s, 3 * s, RGB(196, 58, 48));
     ++dots;
-  }
+    rl.push_back({render::Op::Hud, static_cast<double>(mx),
+                  static_cast<double>(my), 0.0, zoom_step,
+                  "map-blip:" + monster.id});
+  };
+  for (const auto& monster : world.monsters) consider_monster(monster);
+  for (const auto& monster : state.map_overlay_probes) consider_monster(monster);
 
   for (const auto& npc : world.npcs) {
     // NPC blips clamp to the panel border so an off-map NPC still points
@@ -3012,6 +4420,59 @@ void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List&
 
   rl.push_back({render::Op::Minimap, static_cast<double>(panel.left),
                 static_cast<double>(panel.top), static_cast<double>(kSize), dots, "panel"});
+  rl.push_back({render::Op::Hud, static_cast<double>(panel.left),
+                static_cast<double>(panel.top), static_cast<double>(zoom),
+                zoom_step, "minimap-zoom:" + std::to_string(zoom_step)});
+  rl.push_back({render::Op::Hud, static_cast<double>(panel.left),
+                static_cast<double>(panel.top), static_cast<double>(opacity),
+                opacity, "map-opacity:" + std::to_string(opacity)});
+}
+
+void paint_route_card(ClientState& state, HDC dc, const RECT& bounds,
+                      render::List& rl) {
+  if (state.character_pane || state.tree_pane || state.gear_overlay) return;
+  const HudRect card = route_card_rect(static_cast<int>(bounds.bottom));
+  if (card.w <= 0 || card.h <= 0) return;
+  RECT plate{card.x, card.y, card.x + card.w, card.y + card.h};
+  state.hud_rect_trace.push_back({"route-card", card});
+  skin::panel(dc, plate, skin::kGold, 220, 4.0f);
+  const WorldView& world = state.world;
+  std::string route = world.route_id.empty() ? std::string("surface") : world.route_id;
+  if (route.size() > 18) route = route.substr(0, 17) + ".";
+  const std::string theme =
+      world.theme.empty() ? std::string("theme ?") : ("theme " + world.theme);
+  const bool slay = world.expedition_phase == ExpeditionPhaseView::SlayWardens;
+  const bool extract =
+      world.expedition_phase == ExpeditionPhaseView::ExtractCarriedValue;
+  const std::string risk = verdigris::client::ui::route_risk_fact(slay, extract);
+  std::string ret = "return ";
+  if (!world.has_extraction)
+    ret += "town";
+  else
+    ret += extraction_action_hint(is_remote(state));
+  // Negative control: no foe names, uuids, or off-snapshot targets.
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetBkMode(dc, TRANSPARENT);
+  SetTextColor(dc, skin::kInk);
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int x = card.x + 6 * s;
+  int y = card.y + 4 * s;
+  const int step = 12 * s;
+  TextOutA(dc, x, y, route.c_str(), static_cast<int>(route.size()));
+  y += step;
+  SetTextColor(dc, skin::kInkDim);
+  TextOutA(dc, x, y, theme.c_str(), static_cast<int>(theme.size()));
+  y += step;
+  TextOutA(dc, x, y, risk.c_str(), static_cast<int>(risk.size()));
+  y += step;
+  TextOutA(dc, x, y, ret.c_str(), static_cast<int>(ret.size()));
+  SelectObject(dc, old_font);
+  rl.push_back({render::Op::Hud, static_cast<double>(card.x),
+                static_cast<double>(card.y), 0.0, 0, "route:" + route});
+  rl.push_back({render::Op::Hud, static_cast<double>(card.x),
+                static_cast<double>(card.y), 0.0, 0, "route-risk:" + risk});
+  rl.push_back({render::Op::Hud, static_cast<double>(card.x),
+                static_cast<double>(card.y), 0.0, 0, "route-return:" + ret});
 }
 
 // ── TASK-0145: Chronicles owner journey ─────────────────────────────────
@@ -3600,6 +5061,10 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open,
     blocked.push_back(TopHudRect{r.x, r.y, r.w, r.h});
   };
   keep_out(minimap_rect(height));
+  // Route card occupies the left column under the minimap. When the gear
+  // pane is open at 960, that column is the wrap ladder for controls; hide
+  // the card instead of colliding chips into the map.
+  if (!gear_open) keep_out(route_card_rect(height));
   keep_out(quickbar_strip_rect(width, height));
   keep_out(vital_orb_rect(width, height, false));
   keep_out(vital_orb_rect(width, height, true));
@@ -3799,17 +5264,27 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
                           render::List& rl) {
   if (!state.character_pane) return;
   const int s = hud_scale(static_cast<int>(bounds.bottom));
-  const int pane_w = 360 * s;
-  // Content-derived height: header, portrait, nine stat rows, footer. A
-  // fixed height under a scaled type ramp is exactly how rows clip out.
+  const int pane_w = 420 * s;
+  // Content-derived height: header, portrait, twelve stat rows, footer.
+  // Slice builds sit beside the portrait so they stay on a 600px capture.
+  // A fixed height under a scaled type ramp is exactly how rows clip out.
   const int row_h = 26 * s;
-  const int pane_h = (56 + 150 + 14) * s + 9 * row_h + 40 * s;
+  const verdigris::client::ui::StatSources preview_src{
+      0,
+      0,
+      state.sheet_passive_atk,
+      state.sheet_cond_atk,
+      state.sheet_cond_active,
+      state.stat_atk_expanded};
+  const int extra_rows = verdigris::client::ui::extra_source_rows(preview_src);
+  const int pane_h = (56 + 150 + 14) * s + (12 + extra_rows) * row_h + 40 * s;
   const int left = 24 * s;
   const int top =
       std::max(48 * s, (static_cast<int>(bounds.bottom) - pane_h) / 2 - 20 * s);
   RECT pane{left, top, left + pane_w, top + pane_h};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 245, 8.0f);
+  dress_owned_pane(state.billboards, dc, pane);
   rl.push_back({render::Op::Hud, static_cast<double>(left),
                 static_cast<double>(top), 0.0, 0, "character-pane"});
   SetBkMode(dc, TRANSPARENT);
@@ -3827,14 +5302,55 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
 
   // Portrait: the player plate, drawn tall on the left of the sheet.
   const int portrait_h = 150 * s;
+  int dest_w = 72 * s;
   if (state.billboards.player.ready() && state.billboards.alpha_blend) {
     const SpriteBitmap& sprite = state.billboards.player;
     const int dest_h = portrait_h;
-    const int dest_w = dest_h * sprite.width / std::max(1, sprite.height);
+    dest_w = dest_h * sprite.width / std::max(1, sprite.height);
+    dest_w = std::min(dest_w, 96 * s);
     const BLENDFUNCTION blend{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
     state.billboards.alpha_blend(dc, left + 20 * s, top + 56 * s, dest_w,
                                  dest_h, sprite.dc, 0, 0, sprite.width,
                                  sprite.height, blend);
+  }
+  {
+    SelectObject(dc, skin::font_small());
+    int by = top + 56 * s;
+    const int bx = left + 20 * s + dest_w + 10 * s;
+    for (const auto& build : verdigris::client::builds::kSliceBuilds) {
+      const std::string head =
+          std::string(build.role) + " · " + build.primary_action + " · " +
+          build.gear;
+      SetTextColor(dc, skin::kVerdigris);
+      TextOutA(dc, bx, by, head.c_str(), static_cast<int>(head.size()));
+      by += 16 * s;
+      SetTextColor(dc, skin::kInk);
+      TextOutA(dc, bx, by, build.tactics, static_cast<int>(strlen(build.tactics)));
+      by += 14 * s;
+      SetTextColor(dc, skin::kInkDim);
+      TextOutA(dc, bx, by, build.weakness,
+               static_cast<int>(strlen(build.weakness)));
+      by += 18 * s;
+      rl.push_back({render::Op::Hud, static_cast<double>(bx),
+                    static_cast<double>(by), 0.0, 0,
+                    verdigris::client::builds::fixture_hud_label(build)});
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                    std::string("build-tactics:") + build.role + ":" +
+                        build.tactics});
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                    std::string("build-weak:") + build.role + ":" +
+                        build.weakness});
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                    std::string("build-gear:") + build.role + ":" + build.gear});
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                    std::string("build-answer:") + build.role + ":" +
+                        build.encounter});
+    }
+    if (verdigris::client::builds::distinct_slice_loops(
+            verdigris::client::builds::kSliceBuilds, 3))
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "build-loops:distinct"});
+    if (verdigris::client::builds::tint_only_clones_fail_review())
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "build-loops:tint-fail"});
   }
 
   const WorldActor& player = state.world.player;
@@ -3847,30 +5363,52 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
       break;
     }
   int attr_str = 10, attr_dex = 10, attr_int = 10;
+  std::string passive = "none posted";
   if (state.session) {
     const auto& model = state.session->model();
     attr_str = model.attr_strength;
     attr_dex = model.attr_dexterity;
     attr_int = model.attr_intelligence;
+    if (model.progression.present)
+      passive = "nodes " + std::to_string(model.progression.node_count) +
+                " · unspent " +
+                std::to_string(model.progression.unspent_points);
   }
+  const std::string dormant = std::to_string(state.sheet_cond_atk) + " · " +
+                              verdigris::client::ui::conditional_label(
+                                  {0, 0, 0, state.sheet_cond_atk,
+                                   state.sheet_cond_active, false});
+  const verdigris::client::ui::StatSources src{
+      player.attack, equipped_bonus, state.sheet_passive_atk,
+      state.sheet_cond_atk, state.sheet_cond_active, state.stat_atk_expanded};
+  const int attack_total = verdigris::client::ui::active_attack(src);
   struct StatRow {
     std::string label;
     std::string value;
   };
-  const StatRow rows[] = {
+  std::vector<StatRow> rows = {
       {"Level", std::to_string(player.level)},
       {"Life", std::to_string(player.life) + " / " + std::to_string(player.life_max)},
       {"Resource", std::to_string(player.resource) + " / " +
                        std::to_string(player.resource_max)},
-      {"Attack", std::to_string(player.attack + equipped_bonus) +
-                     (equipped_bonus ? " (+" + std::to_string(equipped_bonus) + ")"
-                                     : "")},
+      {"Attack", std::to_string(attack_total)},
+      {"ATK src", "base " + std::to_string(src.base) + " · gear " +
+                      (src.gear >= 0 ? "+" : "") + std::to_string(src.gear)},
+      {"Passive", passive},
+      {"Cond", dormant},
       {"Defense", std::to_string(player.defense)},
       {"Weapon", weapon},
       {"Strength", std::to_string(attr_str)},
       {"Dexterity", std::to_string(attr_dex)},
       {"Intelligence", std::to_string(attr_int)},
   };
+  if (src.expanded) {
+    rows.insert(rows.begin() + 5,
+                {{"src base", std::to_string(src.base)},
+                 {"src gear", (src.gear >= 0 ? "+" : "") + std::to_string(src.gear)},
+                 {"src passive", std::to_string(src.passive)},
+                 {"src cond", dormant}});
+  }
   int y = top + 56 * s + portrait_h + 14 * s;
   SelectObject(dc, skin::font_body());
   for (const auto& row : rows) {
@@ -3888,9 +5426,13 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
                   "char:" + row.label + ":" + row.value});
     y += row_h;
   }
+  rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, attack_total,
+                std::string("char:atk-expanded:") + (src.expanded ? "1" : "0")});
+  if (!verdigris::client::ui::folds_dormant_into_attack(src, attack_total))
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "char:atk-dormant-excluded"});
   SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kInkDim);
-  const char* footer = "C or Esc closes";
+  const char* footer = "C or Esc closes · B expands ATK";
   TextOutA(dc, left + 20 * s, y + 8 * s, footer,
            static_cast<int>(strlen(footer)));
   SelectObject(dc, old_font);
@@ -3912,6 +5454,7 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
   RECT pane{left, top, left + pane_w, top + pane_h};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 245, 8.0f);
+  dress_owned_pane(state.billboards, dc, pane);
   rl.push_back({render::Op::Hud, static_cast<double>(left),
                 static_cast<double>(top), 0.0, 0, "tree-pane"});
   SetBkMode(dc, TRANSPARENT);
@@ -4121,6 +5664,7 @@ void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
       24 * s, (static_cast<int>(bounds.bottom) - pane_h) / 2 - 20 * s);
   RECT pane{left, top, left + pane_w, top + pane_h};
   skin::panel(dc, pane, shop ? skin::kGold : skin::kVerdigris, 250, 9.0f);
+  dress_owned_pane(state.billboards, dc, pane);
   rl.push_back({render::Op::Hud, static_cast<double>(left),
                 static_cast<double>(top), 0.0, 0,
                 chart ? "chart-pane" : shop ? "shop-pane" : "bank-pane"});
@@ -4192,8 +5736,82 @@ void paint_trade_pane(ClientState& state, HDC dc, const RECT& bounds,
   SelectObject(dc, old_font);
 }
 
+vector_art::Held equipped_held(const ClientState& state) {
+  for (const auto& item : state.world.carried) {
+    if (!item.equipped) continue;
+    std::string id = item.id;
+    std::string name = item.name;
+    if (state.session) {
+      const auto& model = state.session->model();
+      if (!model.equipped.uuid.empty() &&
+          (model.equipped.uuid == item.id || model.equipped.uuid == name)) {
+        if (!model.equipped.id.empty()) id = model.equipped.id;
+        if (!model.equipped.name.empty()) name = model.equipped.name;
+      } else {
+        for (const auto& slot : model.inventory) {
+          if (slot.uuid == item.id) {
+            if (!slot.id.empty()) id = slot.id;
+            if (name.empty()) name = slot.name;
+            break;
+          }
+        }
+      }
+    }
+    return vector_art::held_from_item(id, name);
+  }
+  return vector_art::Held::None;
+}
+
+const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
+  switch (stage) {
+    case vector_art::Pose::AttackStage::Windup:
+      return "attack-pose:windup";
+    case vector_art::Pose::AttackStage::Active:
+      return "attack-pose:active";
+    case vector_art::Pose::AttackStage::Recovery:
+      return "attack-pose:recovery";
+    case vector_art::Pose::AttackStage::Cancel:
+      return "attack-pose:cancel";
+    case vector_art::Pose::AttackStage::Idle:
+    default:
+      return "attack-pose:idle";
+  }
+}
+
+vector_art::Pose::AttackStage player_attack_stage(const ClientState& state) {
+  bool dash_dust = false;
+  const EffectFx* swing = nullptr;
+  for (const auto& fx : state.effects) {
+    if (fx.kind == EffectFx::Kind::Dust && fx.angle <= 0.25) dash_dust = true;
+    if (fx.kind == EffectFx::Kind::Swing || fx.kind == EffectFx::Kind::SweepArc)
+      swing = &fx;
+  }
+  if (swing && dash_dust) return vector_art::Pose::AttackStage::Cancel;
+  if (swing) {
+    const double phase = std::clamp(
+        (static_cast<double>(swing->age) + state.tick_accum_ms / 50.0) /
+            std::max(1, swing->ttl),
+        0.0, 1.0);
+    if (phase < 0.28) return vector_art::Pose::AttackStage::Windup;
+    if (phase < 0.72) return vector_art::Pose::AttackStage::Active;
+    return vector_art::Pose::AttackStage::Recovery;
+  }
+  if (state.world.player.cooldown_ticks > 0)
+    return vector_art::Pose::AttackStage::Recovery;
+  return vector_art::Pose::AttackStage::Idle;
+}
+
 void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   sync_world(state);
+  if (state.session) {
+    const auto conn = state.session->connection_state();
+    state.link_lost =
+        conn == verdigris::client::ConnectionState::Disconnected ||
+        conn == verdigris::client::ConnectionState::Rejected ||
+        conn == verdigris::client::ConnectionState::ProtocolMismatch;
+  }
+  poll_pad(state);
+  refresh_music(state);
   const WorldView& world = state.world;
   render::List rl;
   // TASK-0159: one fresh rectangle trace per presented frame.
@@ -4207,6 +5825,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   LARGE_INTEGER section_freq{}, section_t0{}, section_t1{}, section_t2{};
   QueryPerformanceFrequency(&section_freq);
   QueryPerformanceCounter(&section_t0);
+  state.paint_ms_upload = 0.0;
   const auto section_ms = [&](const LARGE_INTEGER& a, const LARGE_INTEGER& b) {
     return section_freq.QuadPart > 0
                ? 1000.0 * static_cast<double>(b.QuadPart - a.QuadPart) /
@@ -4287,10 +5906,6 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     }
   }
 
-  // Warnings live on the ground plane beneath billboards and loot so their
-  // footprint remains readable without obscuring the actor that owns them.
-  paint_telegraphs(state, dc, bounds, rl);
-
   const WorldActor& player = world.player;
 
   // Collect every standing element, then draw back-to-front by the top-down
@@ -4324,6 +5939,17 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       state.loot_positions.begin(), state.loot_positions.end());
   std::sort(loot.begin(), loot.end(),
             [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; });
+  const std::string nearest_loot = nearest_pickup_id(state);
+  std::vector<char> loot_plates = loot_nameplate_mask(
+      loot, player.position, nearest_loot);
+  for (std::size_t i = 0; i < loot.size(); ++i) {
+    const verdigris::client::items::LootFact fact =
+        verdigris::client::items::classify_loot(loot[i].first,
+                                                loot_label(state, loot[i].first));
+    if (loot[i].first != nearest_loot &&
+        !verdigris::client::items::category_visible(state.loot_filter, fact))
+      loot_plates[i] = 0;
+  }
   for (std::size_t i = 0; i < loot.size(); ++i)
     order.push_back({camera2d::draw_order_key(static_cast<double>(loot[i].second.y),
                                               static_cast<double>(loot[i].second.x)),
@@ -4348,8 +5974,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       case DepthDraw::What::Player: {
         ScreenPoint base =
             project(state.camera, bounds, player.position.x, player.position.y);
+        const vector_art::Held held = equipped_held(state);
         rl.push_back({render::Op::Player, static_cast<double>(base.x),
-                      static_cast<double>(base.y)});
+                      static_cast<double>(base.y), 0.0, static_cast<int>(held),
+                      vector_art::held_label(held)});
+        rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, static_cast<int>(held),
+                      std::string("held-world:") + vector_art::held_label(held)});
         draw_contact_shadow(dc, base, kTileUnits * 0.42);
         draw_team_ring(dc, base, kTileUnits * 0.55, RGB(120, 214, 168));
         // Strike lunge: while a swing effect is alive the body steps into
@@ -4379,12 +6010,15 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
           pose.moving = motion.moving;
           pose.breathe = state.breathe_phase;
           pose.attack = attack_phase;
+          pose.attack_stage = player_attack_stage(state);
           pose.mirror = player.facing.x < 0;
           vector_art::humanoid(dc, base.x, base.y,
                                std::max(10, static_cast<int>(kTileUnits * 1.5 *
                                                              base.scale)),
-                               vector_art::player_style(), pose,
-                               vector_art::Held::Axe);
+                               vector_art::player_style(), pose, held);
+          rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                        static_cast<double>(base.y), 0.0, 0,
+                        attack_stage_label(pose.attack_stage)});
         }
         // Draw the authoritative facing, rather than a client-only mouse hint.
         const double angle =
@@ -4695,8 +6329,12 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         SelectObject(dc, old_pen);
         DeleteObject(brush);
         DeleteObject(pen);
-        if (state.loot_labels) {
+        if (state.loot_labels && entry.index < loot_plates.size() &&
+            loot_plates[entry.index]) {
           const std::string label = loot_label(state, entry_loot.first);
+          rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                        static_cast<double>(base.y), 0.0, 0,
+                        "loot-label:" + label});
           SetBkMode(dc, TRANSPARENT);
           SetTextColor(dc, color);
           TextOutA(dc, base.x + r + 4, base.y - lift - r - 5, label.c_str(),
@@ -4709,6 +6347,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         break;
     }
   }
+
+  // VG-GPU-005: threat warnings paint after the Y-sorted scenery pass so a
+  // foreground wall cannot erase them. Contact shadows stay at the feet.
+  paint_telegraphs(state, dc, bounds, rl);
+  rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "grounding:sort:y"});
+  rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "grounding:contact-shadow"});
+  rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "grounding:telegraph-overlay"});
 
   // TASK-0122 Phase A: world-anchored beat legend. Only the capture proof
   // composite populates it; normal play renders nothing here.
@@ -4749,9 +6394,12 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   QueryPerformanceCounter(&section_t2);
   state.paint_ms_world = section_ms(section_t1, section_t2);
   paint_minimap(state, dc, bounds, rl);
+  paint_route_card(state, dc, bounds, rl);
   paint_vital_orbs(player, world.tick, state.screen_pulse_ticks, dc, bounds, rl,
-                   &state.hud_rect_trace);
+                   &state.hud_rect_trace, state.billboards);
   paint_quickbar(state, dc, bounds, rl);
+  paint_xp_bar(state, dc, bounds, rl);
+  paint_hover_tooltip(state, dc, bounds, rl);
   paint_gear_overlay(state, dc, bounds, rl);
   paint_character_pane(state, dc, bounds, rl);
   paint_tree_pane(state, dc, bounds, rl);
@@ -4948,6 +6596,120 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     rl.push_back({render::Op::Hud, static_cast<double>(controls_at.x),
                   static_cast<double>(controls_at.y), 0.0, 0,
                   std::string("controls: ") + controls_full});
+    if (state.pad.connected) {
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "pad:connected"});
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "pad-glyph:LS"});
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "pad-glyph:A"});
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "pad-glyph:B"});
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "pad-glyph:X"});
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "pad-glyph:Y"});
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 1,
+                    std::string("pad-move:") + std::to_string(state.pad.dx) +
+                        "," + std::to_string(state.pad.dy)});
+    }
+    if (state.pad.hotplug && state.pad.hotplug[0] != '\0') {
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                    std::string("pad:hotplug:") + state.pad.hotplug});
+    }
+    const char* music_hud =
+        (state.audio_sink && state.audio_sink->muted()) ? "music:muted"
+                                                        : state.audio_music_want.c_str();
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, music_hud});
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "gpu-backend:software"});
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                  verdigris::client::ui::focus_hud_label(client_pane_focus(state))});
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                  verdigris::client::input::bind_hud_label(state.bind_status)});
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                  verdigris::client::combat::beat_hud_label(state.attack_beat)});
+    if (state.simulation &&
+        verdigris::client::qa::sim_emitted(state.simulation->events(),
+                                           verdigris::EventType::AttackStarted) &&
+        state.attack_beat != verdigris::client::combat::AttackBeat::None) {
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "headless-contract:ok"});
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "intent:swing"});
+    }
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                  verdigris::client::world::pass_hud_label(state.dressing_pass_version)});
+    char topology_label[48];
+    std::snprintf(topology_label, sizeof(topology_label), "topology:%llx",
+                  static_cast<unsigned long long>(state.topology_hash));
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, topology_label});
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                  verdigris::client::input::present_kind_hud()});
+    const std::string lat_p50 =
+        verdigris::client::input::p50_hud(state.input_latency);
+    const std::string lat_p95 =
+        verdigris::client::input::p95_hud(state.input_latency);
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, lat_p50});
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, lat_p95});
+    if (verdigris::client::move::all_eight_encode())
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "move-dir:eight-way"});
+    if (state.aim_direction_initialized) {
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                    std::string("aim-hold:") +
+                        verdigris::client::move::encode_eight_way(
+                            state.last_aim_direction.x,
+                            state.last_aim_direction.y)});
+    }
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                  verdigris::client::items::filter_hud_label(state.loot_filter)});
+    bool fact_weapon = false, fact_trophy = false, fact_misc = false;
+    for (const auto& drop : state.loot_positions) {
+      const auto fact = verdigris::client::items::classify_loot(
+          drop.first, loot_label(state, drop.first));
+      if (fact == verdigris::client::items::LootFact::Weapon) fact_weapon = true;
+      else if (fact == verdigris::client::items::LootFact::Trophy) fact_trophy = true;
+      else fact_misc = true;
+    }
+    if (fact_weapon)
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "loot-fact:weapon"});
+    if (fact_trophy)
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "loot-fact:trophy"});
+    if (fact_misc)
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "loot-fact:misc"});
+    {
+      using verdigris::client::gov::Carry;
+      using verdigris::client::gov::EndEvent;
+      Carry carry = Carry::Uncommitted;
+      if (!world.carried.empty() || world.carried_trophies > 0)
+        carry = Carry::Uncommitted;
+      else if (world.stored_items > 0 || world.stored_trophies > 0)
+        carry = Carry::ExtractCommitted;
+      EndEvent end = EndEvent::Quit;
+      if (state.link_lost) end = EndEvent::Disconnect;
+      else if (!world.player.alive) end = EndEvent::Death;
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                    verdigris::client::gov::extract_hud(end, carry)});
+    }
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "material-light:moving"});
+    if (!state.audio_ambience_route.empty())
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                    std::string("ambience:") + state.audio_ambience_route});
+    if (state.equip_view.pending) {
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                    std::string("equip:pending:") + state.equip_view.pending_id});
+    } else if (!state.equip_view.acknowledged_id.empty()) {
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "equip:ok"});
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                    std::string("equip:ack:") + state.equip_view.acknowledged_id});
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                    std::string("compare:delta:") +
+                        std::to_string(verdigris::client::ui::compare_delta(
+                            state.equip_view, state.equip_view.acknowledged_atk))});
+    }
+    {
+      const int depth = verdigris::client::ui::pane_stack_depth(
+          state.tree_pane, state.character_pane, state.gear_overlay);
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, depth,
+                    std::string("pane-stack:") + std::to_string(depth)});
+      if (state.quit_requested)
+        rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "pane-stack:quit"});
+    }
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "target:camera:top-down"});
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "target:proportion:adult"});
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "target:palette:bronze-stone"});
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "target:contrast:ink-on-panel"});
 
     const bool plates =
         state.billboards.player.ready() && state.billboards.raider.ready() &&
@@ -4958,6 +6720,20 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                       art_accent, rl);
     state.hud_rect_trace.push_back(
         {"art", {art_at.x, art_at.y, art_size.w, art_size.h}});
+    if (state.audio_sink && state.audio_sink->muted()) {
+      const int mute_y = art_at.y + std::max(art_size.h, 20) + 4;
+      paint_status_chip(dc, art_at.x, mute_y, "audio muted", RGB(238, 226, 197),
+                        rl);
+      rl.push_back({render::Op::Hud, static_cast<double>(art_at.x),
+                    static_cast<double>(mute_y), 0.0, 1, "audio:muted"});
+      state.hud_rect_trace.push_back(
+          {"audio-muted", {art_at.x, mute_y, 132, 24}});
+    }
+    if (state.link_lost) {
+      const int lost_y = art_at.y + std::max(art_size.h, 20) + 32;
+      paint_status_chip(dc, art_at.x, lost_y, "extract uncommitted",
+                        RGB(255, 80, 70), rl);
+    }
   }
 
   // TASK-0145: relic-recovery toast — an authoritative crypt transition is
@@ -4998,15 +6774,24 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     char debug_line[256];
     std::snprintf(debug_line, sizeof(debug_line),
                   "tick %llu | player %d,%d | zoom %.2f | fps %d | paint %.1fms"
-                  " (floor %.1f world %.1f hud %.1f) | effects %zu"
+                  " (floor %.1f world %.1f hud %.1f upload %.1f) | effects %zu"
                   " | telegraphs %zu | monsters %zu | npcs %zu",
                   static_cast<unsigned long long>(world.tick),
                   player.position.x, player.position.y,
                   state.camera.zoom, state.fps, state.last_paint_ms,
                   state.paint_ms_floor, state.paint_ms_world, state.paint_ms_hud,
+                  state.paint_ms_upload,
                   state.effects.size(), state.telegraphs.size(),
                   world.monsters.size(), world.npcs.size());
     TextOutA(dc, 18, 144, debug_line, static_cast<int>(strlen(debug_line)));
+    SYSTEM_INFO sysinfo{};
+    GetNativeSystemInfo(&sysinfo);
+    char machine_line[256];
+    std::snprintf(machine_line, sizeof(machine_line),
+                  "trace host %dx%d display | %u logical CPUs | GDI present",
+                  GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
+                  static_cast<unsigned>(sysinfo.dwNumberOfProcessors));
+    TextOutA(dc, 18, 188, machine_line, static_cast<int>(strlen(machine_line)));
     char asset_line[256];
     int art_loaded = 0;
     for (const auto& art : state.billboards.item_art)
@@ -5018,6 +6803,15 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                   state.billboards.fk_panel.ready() ? "loaded" : "MISSING",
                   art_loaded);
     TextOutA(dc, 18, 168, asset_line, static_cast<int>(strlen(asset_line)));
+    const PresentationResources res = presentation_resources(state);
+    char resource_line[256];
+    std::snprintf(resource_line, sizeof(resource_line),
+                  "envelope floor %d bitmap %dx%d | gdi pens %d brushes %d | "
+                  "fx %d/%d",
+                  res.floor_bitmaps, res.floor_w, res.floor_h, res.gdi_pens,
+                  res.gdi_brushes, res.effects,
+                  static_cast<int>(kMaxPresentationEffects));
+    TextOutA(dc, 18, 212, resource_line, static_cast<int>(strlen(resource_line)));
     int log_y = bounds.bottom - 24;
     for (auto it = state.event_log.rbegin(); it != state.event_log.rend(); ++it) {
       TextOutA(dc, 18, log_y, it->c_str(), static_cast<int>(it->size()));
@@ -5079,8 +6873,14 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
                lines[i].c_str(), static_cast<int>(lines[i].size()));
     }
   }
+
+  LARGE_INTEGER section_t3{};
+  QueryPerformanceCounter(&section_t3);
+  state.paint_ms_hud = section_ms(section_t2, section_t3);
+  state.last_paint_ms = section_ms(section_t0, section_t3);
+  verdigris::client::input::note_present(state.input_latency);
 }
-  render::List rl;
+
 constexpr double kActorColliderRadius =
     static_cast<double>(verdigris::world_scale::kActorColliderRadius);
 
@@ -5150,17 +6950,21 @@ void paint(HWND window, HDC dc) {
     state->back_h = bounds.bottom;
   }
   HDC memory_dc = state->back_dc;
-  LARGE_INTEGER paint_freq{}, paint_begin{}, paint_end{};
+  LARGE_INTEGER paint_freq{}, paint_end{}, blit_begin{}, blit_end{};
   QueryPerformanceFrequency(&paint_freq);
-  QueryPerformanceCounter(&paint_begin);
   paint_scene(*state, memory_dc, bounds);
-  QueryPerformanceCounter(&paint_end);
-  if (paint_freq.QuadPart > 0)
-    state->last_paint_ms = 1000.0 *
-                           static_cast<double>(paint_end.QuadPart - paint_begin.QuadPart) /
-                           static_cast<double>(paint_freq.QuadPart);
-  state->paint_ms_hud = state->last_paint_ms - state->paint_ms_floor -
-                        state->paint_ms_world;
+  QueryPerformanceCounter(&blit_begin);
+  BitBlt(dc, 0, 0, bounds.right, bounds.bottom, memory_dc, 0, 0, SRCCOPY);
+  QueryPerformanceCounter(&blit_end);
+  paint_end = blit_end;
+  if (paint_freq.QuadPart > 0) {
+    state->paint_ms_upload =
+        1000.0 * static_cast<double>(blit_end.QuadPart - blit_begin.QuadPart) /
+        static_cast<double>(paint_freq.QuadPart);
+    state->last_paint_ms += state->paint_ms_upload;
+  } else {
+    state->paint_ms_upload = 0.0;
+  }
   ++state->fps_frames;
   if (state->fps_window_qpc == 0) {
     state->fps_window_qpc = paint_end.QuadPart;
@@ -5170,7 +6974,30 @@ void paint(HWND window, HDC dc) {
     state->fps_frames = 0;
     state->fps_window_qpc = paint_end.QuadPart;
   }
-  BitBlt(dc, 0, 0, bounds.right, bounds.bottom, memory_dc, 0, 0, SRCCOPY);
+}
+
+void consume_pad_buttons(ClientState& state) {
+  if (!state.pad.connected) {
+    state.pad_a_was = state.pad_b_was = state.pad_x_was = state.pad_y_was =
+        state.pad_start_was = false;
+    return;
+  }
+  if (!state.pad.a) release_held_gameplay_attack(state);
+  if (state.pad.a && !state.pad_a_was) dispatch_skill(state, kStrike);
+  if (state.pad.b && !state.pad_b_was) dispatch_dash(state);
+  if (state.pad.x && !state.pad_x_was) {
+    if (try_gameplay_intent(state, input_focus::Intent::Interact)) {
+      const std::string target = nearest_pickup_id(state);
+      if (!target.empty()) submit_pick_up(state, target);
+    }
+  }
+  if (state.pad.y && !state.pad_y_was) toggle_gear_overlay(state);
+  if (state.pad.start && !state.pad_start_was) handle_escape_key(state);
+  state.pad_a_was = state.pad.a;
+  state.pad_b_was = state.pad.b;
+  state.pad_x_was = state.pad.x;
+  state.pad_y_was = state.pad.y;
+  state.pad_start_was = state.pad.start;
 }
 
 // The fixed 50 ms game tick: movement/aim sampling at the server's exact
@@ -5193,27 +7020,47 @@ void fixed_game_tick(ClientState& state, const RECT& bounds) {
   }
   if (state.relic_toast_ticks > 0) --state.relic_toast_ticks;
 
+  poll_pad(state);
   const bool at_front_door =
       state.screen == Screen::Chronicles && state.session != nullptr;
   int dx = (state.d ? 1 : 0) - (state.a ? 1 : 0);
   int dy = (state.s ? 1 : 0) - (state.w ? 1 : 0);
+  if (state.pad.connected) {
+    dx = std::clamp(dx + state.pad.dx, -1, 1);
+    dy = std::clamp(dy + state.pad.dy, -1, 1);
+  }
+  if (!gameplay_intent_passes(state, input_focus::Intent::Move)) {
+    dx = 0;
+    dy = 0;
+  }
   const bool moving = dx != 0 || dy != 0;
   if (at_front_door) {
     // The front door consumes movement: no world input exists pre-admission.
   } else if (state.session) {
     if (state.session->connection_state() == verdigris::client::ConnectionState::Ready) {
-      if (moving) submit_move(state, dx, dy);
+      if (moving) {
+        submit_move(state, dx, dy);
+        if (state.aim_direction_initialized)
+          submit_aim(state, state.last_aim_direction.x,
+                     state.last_aim_direction.y);
+      }
     }
   } else if (state.simulation) {
     if (moving && !movement_hits_scenery(state, dx, dy)) {
       state.simulation->dispatch(verdigris::Command::move(dx, dy));
+      if (state.aim_direction_initialized)
+        state.simulation->dispatch(verdigris::Command::aim(
+            state.last_aim_direction.x, state.last_aim_direction.y));
     } else {
       state.simulation->dispatch(verdigris::Command::action_use(verdigris::ActionType::Wait));
       if (moving && state.hint_ticks == 0) show_hint(state, "Blocked by scenery");
     }
   }
 
-  if (!at_front_door) dispatch_aim_if_changed(state, bounds, !moving && state.was_moving);
+  if (!at_front_door) {
+    consume_pad_buttons(state);
+    dispatch_aim_if_changed(state, bounds, !moving && state.was_moving);
+  }
   state.was_moving = moving;
 
   ingest_events(state, bounds);
@@ -5299,6 +7146,7 @@ void timer_step(HWND window, ClientState& state) {
 }
 
 void dispatch_dash(ClientState& state) {
+  if (!try_gameplay_intent(state, input_focus::Intent::Attack)) return;
   sync_world(state);
   if (!state.world.player.alive) return;
   if (movement_hits_scenery(state, state.world.player.facing.x,
@@ -5307,6 +7155,45 @@ void dispatch_dash(ClientState& state) {
     return;
   }
   submit_action(state, verdigris::ActionType::Dash, "dash");
+}
+
+void apply_bound_key_down(ClientState& state, WPARAM wparam) {
+  using verdigris::client::input::Action;
+  using verdigris::client::input::matches;
+  const int code = static_cast<int>(wparam);
+  if (matches(state.bindings, Action::MoveN, code)) state.w = true;
+  if (matches(state.bindings, Action::MoveW, code)) state.a = true;
+  if (matches(state.bindings, Action::MoveS, code)) state.s = true;
+  if (matches(state.bindings, Action::MoveE, code)) state.d = true;
+  if (matches(state.bindings, Action::Dash, code)) dispatch_dash(state);
+  if (const SkillInfo* skill = skill_for_key(state.bindings, wparam))
+    dispatch_skill(state, *skill);
+}
+
+void apply_bound_key_up(ClientState& state, WPARAM wparam) {
+  using verdigris::client::input::Action;
+  using verdigris::client::input::matches;
+  const int code = static_cast<int>(wparam);
+  if (matches(state.bindings, Action::MoveN, code)) state.w = false;
+  if (matches(state.bindings, Action::MoveW, code)) state.a = false;
+  if (matches(state.bindings, Action::MoveS, code)) state.s = false;
+  if (matches(state.bindings, Action::MoveE, code)) state.d = false;
+  if (matches(state.bindings, Action::Dash, code) ||
+      matches(state.bindings, Action::Thrust, code) ||
+      matches(state.bindings, Action::Sweep, code) ||
+      matches(state.bindings, Action::WarCry, code))
+    release_held_gameplay_attack(state);
+}
+
+std::string isolated_bindings_path() {
+  char temp[MAX_PATH]{};
+  const DWORD n = GetTempPathA(MAX_PATH, temp);
+  if (n == 0 || n >= MAX_PATH) return {};
+  std::string dir(temp, n);
+  while (!dir.empty() && (dir.back() == '\\' || dir.back() == '/')) dir.pop_back();
+  dir += "\\verdigris-isolated-profile";
+  CreateDirectoryA(dir.c_str(), nullptr);
+  return dir + "\\bindings.v1";
 }
 
 // TASK-0153: production gear-pane toggle, shared verbatim by the Win32 key
@@ -5328,10 +7215,44 @@ bool trade_pane_open(const ClientState& state) {
   return model.shop.open || model.bank.open || model.chart.open;
 }
 
+verdigris::client::ui::PaneFocusView client_pane_focus(const ClientState& state) {
+  verdigris::client::ui::PaneFocusView view;
+  view.gear = state.gear_overlay;
+  view.character = state.character_pane;
+  view.tree = state.tree_pane;
+  view.trade = trade_pane_open(state);
+  view.drag = state.pack_drag_live;
+  view.text = state.text_entry;
+  return view;
+}
+
+bool gameplay_intent_passes(const ClientState& state, input_focus::Intent intent) {
+  return verdigris::client::ui::passes_gameplay(client_pane_focus(state), intent);
+}
+
+bool try_gameplay_intent(ClientState& state, input_focus::Intent intent) {
+  if (!gameplay_intent_passes(state, intent)) {
+    if (intent == input_focus::Intent::Attack)
+      state.attack_held_blocked = true;
+    return false;
+  }
+  if (intent == input_focus::Intent::Attack && state.attack_held_blocked)
+    return false;
+  return true;
+}
+
+void release_held_gameplay_attack(ClientState& state) {
+  state.attack_held_blocked = false;
+}
+
 void handle_escape_key(ClientState& state) {
   if (trade_pane_open(state)) {
     state.session->submit(verdigris::client::ClientCommand::close_screen());
     state.trade_selected = 0;
+    return;
+  }
+  if (state.text_entry) {
+    state.text_entry = false;
     return;
   }
   if (state.tree_pane) {
@@ -5377,6 +7298,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
     }
     case WM_KEYDOWN:
       if (!state) break;
+      verdigris::client::input::note_input(state->input_latency);
       if (wparam == VK_F3) {
         state->debug_overlay = !state->debug_overlay;
         break;
@@ -5416,15 +7338,11 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
           break;
         }
       }
-      if (wparam == 'W') state->w = true;
-      if (wparam == 'A') state->a = true;
-      if (wparam == 'S') state->s = true;
-      if (wparam == 'D') state->d = true;
-      if (wparam == VK_SPACE) dispatch_dash(*state);
-      if (const SkillInfo* skill = skill_for_key(wparam)) dispatch_skill(*state, *skill);
+      apply_bound_key_down(*state, wparam);
       if (wparam == 'N' && state->session)
         state->session->submit(verdigris::client::ClientCommand::enter_zone("tin:1:0"));
       if (wparam == 'X') {
+        if (!try_gameplay_intent(*state, input_focus::Intent::Interact)) break;
         if (is_remote(*state)) {
           // The server's Take requires a real uuid and chebyshev<=1 reach;
           // an empty uuid was silently ignored, which read as 'cannot pick
@@ -5461,6 +7379,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         show_hint(*state, state->loot_labels ? "Loot names shown" : "Loot names hidden");
       }
       if (wparam == 'T' && state->session) {
+        if (!try_gameplay_intent(*state, input_focus::Intent::Interact)) break;
         sync_world(*state);
         const verdigris::client::WorldNpc* nearest = nullptr;
         double best = std::numeric_limits<double>::max();
@@ -5492,21 +7411,43 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         }
       }
       if (wparam == 'F') {
+        if (!try_gameplay_intent(*state, input_focus::Intent::Interact)) break;
         submit_extract(*state);
         show_hint(*state, "Contextual interaction requested");
       }
       if (wparam == 'I') {
+        if (state->text_entry || trade_pane_open(*state)) break;
         toggle_gear_overlay(*state);
       }
       if (wparam == 'C') {
+        if (state->text_entry || trade_pane_open(*state)) break;
         state->character_pane = !state->character_pane;
+      }
+      if (wparam == 'B') {
+        if (state->text_entry || trade_pane_open(*state) || !state->character_pane)
+          break;
+        state->stat_atk_expanded = !state->stat_atk_expanded;
+        show_hint(*state, state->stat_atk_expanded ? "ATK sources open"
+                                                   : "ATK sources closed");
       }
       if (wparam == 'M' && state->audio_sink) {
         state->audio_sink->set_muted(!state->audio_sink->muted());
+        state->audio_prefs = verdigris::audio::apply_mute_only(
+            state->audio_prefs, state->audio_sink->muted());
+        persist_audio_mute(state->audio_sink->muted());
         show_hint(*state, state->audio_sink->muted() ? "Sound muted"
                                                      : "Sound on");
       }
+      if (wparam == VK_OEM_6) {
+        state->minimap_zoom = std::min(2, state->minimap_zoom + 1);
+        show_hint(*state, "Map zoom " + std::to_string(state->minimap_zoom));
+      }
+      if (wparam == VK_OEM_4) {
+        state->minimap_zoom = std::max(0, state->minimap_zoom - 1);
+        show_hint(*state, "Map zoom " + std::to_string(state->minimap_zoom));
+      }
       if (wparam == 'P') {
+        if (state->text_entry || trade_pane_open(*state)) break;
         state->tree_pane = !state->tree_pane;
       }
       // Only the open gear pane needs a fresh view here; a bare sync on
@@ -5546,10 +7487,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       break;
     case WM_KEYUP:
       if (!state) break;
-      if (wparam == 'W') state->w = false;
-      if (wparam == 'A') state->a = false;
-      if (wparam == 'S') state->s = false;
-      if (wparam == 'D') state->d = false;
+      apply_bound_key_up(*state, wparam);
       break;
     case WM_MOUSEMOVE:
       // Store only. A gaming mouse delivers WM_MOUSEMOVE at up to 1000 Hz;
@@ -5575,6 +7513,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
       break;
     case WM_LBUTTONDOWN:
       if (state) {
+        verdigris::client::input::note_input(state->input_latency);
         if (trade_pane_open(*state)) {
           const int mx = GET_X_LPARAM(lparam);
           const int my = GET_Y_LPARAM(lparam);
@@ -5603,7 +7542,21 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
             break;
           }
         } else if (state->gear_overlay) {
-          equip_selected(*state);
+          RECT client{};
+          GetClientRect(window, &client);
+          const PackGeom pack = make_pack_geom(static_cast<int>(client.right),
+                                               static_cast<int>(client.bottom));
+          const int mx = GET_X_LPARAM(lparam);
+          const int my = GET_Y_LPARAM(lparam);
+          reconcile_pack_grid(*state);
+          if (pack_hit_seat(pack, mx, my)) {
+            equip_selected(*state);
+          } else {
+            int gx = -1;
+            int gy = -1;
+            if (pack_hit_cell(pack, mx, my, gx, gy))
+              pack_begin_drag(*state, gx, gy);
+          }
         } else {
           // Route through dispatch_skill so LMB gets the same instant
           // swing-arc feedback as the Q/E/R keys — the primary attack was
@@ -5614,8 +7567,33 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
         }
       }
       break;
+    case WM_LBUTTONUP:
+      if (state) release_held_gameplay_attack(*state);
+      if (state && state->gear_overlay && state->pack_drag_live) {
+        RECT client{};
+        GetClientRect(window, &client);
+        const PackGeom pack = make_pack_geom(static_cast<int>(client.right),
+                                             static_cast<int>(client.bottom));
+        const int mx = GET_X_LPARAM(lparam);
+        const int my = GET_Y_LPARAM(lparam);
+        int gx = -1;
+        int gy = -1;
+        if (pack_hit_cell(pack, mx, my, gx, gy)) {
+          state->pack_preview_x = gx;
+          state->pack_preview_y = gy;
+          state->pack_preview_ok = pack_can_land(
+              state->pack_grid, state->pack_drag_id, gx, gy);
+        } else {
+          state->pack_preview_ok = false;
+        }
+        pack_commit_drop(*state, pack_hit_seat(pack, mx, my));
+      }
+      break;
     case WM_RBUTTONDOWN:
-      if (state) dispatch_dash(*state);
+      if (state) {
+        verdigris::client::input::note_input(state->input_latency);
+        dispatch_dash(*state);
+      }
       break;
     case WM_TIMER:
       if (state) {
@@ -5657,9 +7635,7 @@ void scenario_check(bool ok, const char* label) {
   }
 }
 
-void scenario_present(ClientState& state) {
-  constexpr int width = 960;
-  constexpr int height = 600;
+void scenario_present_size(ClientState& state, int width, int height) {
   HDC dc = CreateCompatibleDC(nullptr);
   HBITMAP bitmap = CreateCompatibleBitmap(dc, width, height);
   HGDIOBJ old = SelectObject(dc, bitmap);
@@ -5668,6 +7644,10 @@ void scenario_present(ClientState& state) {
   SelectObject(dc, old);
   DeleteObject(bitmap);
   DeleteDC(dc);
+}
+
+void scenario_present(ClientState& state) {
+  scenario_present_size(state, 960, 600);
 }
 
 void scenario_follow_camera(ClientState& state) {
@@ -5697,6 +7677,8 @@ void scenario_begin(ClientState& state) {
       std::make_unique<verdigris::Simulation>(0xC011AB1EULL, "House Verdigris");
   state.simulation->dispatch(verdigris::Command::enter("route:tin:1:0"));
   generate_scenery(state);
+  ensure_audio(state);
+  if (state.audio_sink) state.audio_sink->set_muted(true);
 }
 
 // Deterministic phase-transition driver for scenarios that must reach the
@@ -5924,6 +7906,156 @@ int scenario_first_fight() {
   return 0;
 }
 
+int scenario_combat_audio() {
+  ClientState state;
+  scenario_begin(state);
+  for (int i = 0; i < 52; ++i)
+    scenario_step(state, verdigris::Command::move(1, 0));
+  for (int i = 0; i < 10; ++i)
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
+  bool heard_hit = false;
+  bool heard_kill = false;
+  for (const auto& cue : state.audio_voiced) {
+    if (cue == "hit" || cue == "crit") heard_hit = true;
+    if (cue == "kill") heard_kill = true;
+  }
+  scenario_check(heard_hit, "combat-audio: ordinary fight voices a hit cue");
+  scenario_check(heard_kill, "combat-audio: ordinary fight voices a death cue");
+
+  ensure_audio(state);
+  verdigris::client::PresentationEvent replay{};
+  replay.type = verdigris::client::PresentationEventType::DamageApplied;
+  replay.actor_id = "same-foe";
+  replay.value = 4;
+  std::vector<std::string> batch;
+  voice_presentation_event(state, replay, 99, batch);
+  voice_presentation_event(state, replay, 99, batch);
+  const std::vector<verdigris::audio::CueSpec> drained =
+      state.audio_mixer->drain_scheduled();
+  int hits = 0;
+  for (const auto& cue : drained)
+    if (cue.cue_id == "hit") ++hits;
+  scenario_check(hits == 1,
+                 "combat-audio: replaying the same event cannot double-play");
+
+  verdigris::audio::CueSpec filler;
+  filler.cue_id = "cosmetic";
+  filler.bus = verdigris::audio::Bus::Sfx;
+  filler.priority = verdigris::audio::PriorityClass::World;
+  filler.params = {verdigris::audio::Waveform::Sine, 100, 80, 40, 200};
+  for (int i = 0; i < 12; ++i) {
+    filler.scheduled_tick = static_cast<std::uint64_t>(i);
+    state.audio_mixer->submit(filler);
+  }
+  verdigris::client::PresentationEvent lost{};
+  lost.type = verdigris::client::PresentationEventType::ScionLost;
+  std::vector<std::string> warn_batch;
+  voice_presentation_event(state, lost, 200, warn_batch);
+  const std::vector<verdigris::audio::CueSpec> mixed =
+      state.audio_mixer->drain_scheduled();
+  bool heard_warning = false;
+  for (const auto& cue : mixed)
+    if (cue.cue_id == "scion-lost") heard_warning = true;
+  scenario_check(heard_warning,
+                 "combat-audio: dense cosmetics cannot starve the loss warning");
+
+  const std::string route = state.audio_ambience_route;
+  const std::size_t before = state.audio_voiced.size();
+  refresh_ambience(state);
+  refresh_ambience(state);
+  drain_audio(state);
+  int ambience = 0;
+  for (const auto& cue : state.audio_voiced)
+    if (cue.rfind("ambience:", 0) == 0) ++ambience;
+  scenario_check(!route.empty() && ambience <= 1,
+                 "combat-audio: rapid reentry does not stack ambience");
+  scenario_check(state.audio_voiced.size() <= before + 1,
+                 "combat-audio: duplicate ambience submit is a no-op");
+  return 0;
+}
+
+int scenario_hud_scale_floor() {
+  ClientState state;
+  scenario_begin(state);
+  skin::set_ui_scale(0);
+  scenario_check(skin::ui_scale() == 1,
+                 "hud-scale-floor: scale 0 is rejected instead of shrinking type");
+  scenario_present(state);
+  LOGFONTA small_font{};
+  LOGFONTA body_font{};
+  GetObject(skin::font_small(), sizeof(small_font), &small_font);
+  GetObject(skin::font_body(), sizeof(body_font), &body_font);
+  scenario_check(std::abs(small_font.lfHeight) >= skin::kMinSmallPx,
+                 "hud-scale-floor: small glyphs stay at or above the floor");
+  scenario_check(std::abs(body_font.lfHeight) >= skin::kMinBodyPx,
+                 "hud-scale-floor: body glyphs stay at or above the floor");
+
+  verdigris::Actor* player =
+      state.simulation->actor(state.simulation->scion().actor_id);
+  scenario_check(player != nullptr, "hud-scale-floor: scion actor exists");
+  if (player) {
+    player->stats.life = std::max(1, player->stats.life_max / 5);
+    sync_world(state);
+    scenario_present(state);
+  }
+  bool danger = false;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Hud && item.label == "danger-shape:life")
+      danger = true;
+  scenario_check(danger, "hud-scale-floor: low life has a non-color chevron");
+
+  scenario_follow_camera(state);
+  scenario_present(state);
+  if (!state.world.monsters.empty()) {
+    const auto& foe = state.world.monsters.front();
+    RECT bounds{0, 0, 960, 600};
+    const ScreenPoint base =
+        project(state.camera, bounds, foe.position.x, foe.position.y);
+    state.mouse.x = base.x;
+    state.mouse.y = base.y - static_cast<int>(kTileUnits * 0.7 * base.scale);
+    scenario_present(state);
+    bool tooltip = false;
+    int tooltip_w = 0;
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label.rfind("tooltip:", 0) == 0) {
+        tooltip = true;
+        tooltip_w = static_cast<int>(item.x);
+      }
+    scenario_check(tooltip, "hud-scale-floor: hover tooltip fits over a living foe");
+    scenario_check(tooltip_w >= 0 && tooltip_w < 960,
+                   "hud-scale-floor: tooltip stays inside the 960 frame");
+    bool shape = false;
+    bool contrast = false;
+    for (const auto& item : state.render_list) {
+      if (item.op == render::Op::Hud && item.label == "tooltip-shape:foe")
+        shape = true;
+      if (item.op == render::Op::Hud && item.label == "tooltip-contrast:ok")
+        contrast = true;
+    }
+    scenario_check(shape, "hud-scale-floor: foe tooltip has a non-color mark");
+    scenario_check(contrast,
+                   "hud-scale-floor: tooltip title uses ink-on-panel contrast");
+    scenario_check(skin::contrast_ratio(skin::kInk, skin::kPanelMid) >= 4.5,
+                   "hud-scale-floor: shrinking type is not the contrast fix");
+  } else {
+    scenario_check(false, "hud-scale-floor: expected a living foe for tooltip");
+  }
+
+  HDC dc = CreateCompatibleDC(nullptr);
+  HBITMAP bitmap = CreateCompatibleBitmap(dc, 640, 480);
+  HGDIOBJ old = SelectObject(dc, bitmap);
+  RECT tiny{0, 0, 640, 480};
+  paint_scene(state, dc, tiny);
+  SelectObject(dc, old);
+  DeleteObject(bitmap);
+  DeleteDC(dc);
+  LOGFONTA tiny_small{};
+  GetObject(skin::font_small(), sizeof(tiny_small), &tiny_small);
+  scenario_check(std::abs(tiny_small.lfHeight) >= skin::kMinSmallPx,
+                 "hud-scale-floor: a 640x480 window still respects the type floor");
+  return 0;
+}
+
 int scenario_loot_to_bank() {
   ClientState state;
   scenario_begin(state);
@@ -5941,10 +8073,66 @@ int scenario_loot_to_bank() {
   const bool has_item = !state.simulation->scion().carried_items.empty();
   scenario_check(has_item, "loot-to-bank: pickup fills the carried grid");
 
+  scenario_step(state, verdigris::Command::unequip());
+  state.gear_overlay = false;
+  scenario_present(state);
+  {
+    const render::Item* scion =
+        render::first(state.render_list, render::Op::Player);
+    scenario_check(scion && scion->label == "held:none",
+                   "loot-to-bank: world actor is unarmed before equip");
+  }
+
   state.gear_overlay = true;
   scenario_present(state);
   scenario_check(render::any(state.render_list, render::Op::PaneItem),
                  "loot-to-bank: grid cell rendered in the pane");
+  {
+    bool has_compare = false;
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud &&
+          item.label.rfind("compare:", 0) == 0)
+        has_compare = true;
+    scenario_check(has_compare,
+                   "loot-to-bank: compare plate over carried item");
+  }
+  {
+    const std::size_t carried_n = state.world.carried.size();
+    scenario_check(state.pack_grid.count > 0,
+                   "loot-to-bank: pack grid placed the carried item");
+    const std::uint8_t ox = state.pack_grid.items[0].x;
+    const std::uint8_t oy = state.pack_grid.items[0].y;
+    const std::uint32_t pid = state.pack_grid.items[0].id;
+    pack_begin_drag(state, ox, oy);
+    state.pack_preview_x = 2;
+    state.pack_preview_y = 1;
+    state.pack_preview_ok =
+        pack_can_land(state.pack_grid, pid, 2, 1);
+    pack_commit_drop(state, false);
+    scenario_check(state.pack_last_drop == "ok" &&
+                       inventory_grid::item_at(state.pack_grid, 2, 1) == pid,
+                   "loot-to-bank: valid pack drop moves the item");
+    scenario_present(state);
+    bool saw_moved = false;
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label == "pack:2,1")
+        saw_moved = true;
+    scenario_check(saw_moved, "loot-to-bank: moved cell is painted at 2,1");
+    pack_begin_drag(state, 2, 1);
+    state.pack_preview_x = 20;
+    state.pack_preview_y = 20;
+    state.pack_preview_ok = false;
+    pack_commit_drop(state, false);
+    scenario_check(state.pack_last_drop == "reject" &&
+                       inventory_grid::item_at(state.pack_grid, 2, 1) == pid &&
+                       state.world.carried.size() == carried_n,
+                   "loot-to-bank: rejected drop neither loses nor duplicates");
+    bool silent_equip = false;
+    for (const auto& item : state.world.carried)
+      if (item.equipped) silent_equip = true;
+    scenario_check(!silent_equip,
+                   "loot-to-bank: rejected drop does not silently equip");
+  }
   const render::Item* weapon = render::first(state.render_list, render::Op::PaneWeapon);
   scenario_check(weapon && weapon->label == "(empty)",
                  "loot-to-bank: weapon seat empty before equip");
@@ -5960,6 +8148,36 @@ int scenario_loot_to_bank() {
     const render::Item* stat = render::first(state.render_list, render::Op::PaneStat);
     scenario_check(stat && stat->label.find("(+") != std::string::npos,
                    "loot-to-bank: equipped bonus appears in the stat readout");
+    state.gear_overlay = false;
+    scenario_present(state);
+    {
+      const render::Item* scion =
+          render::first(state.render_list, render::Op::Player);
+      scenario_check(scion && scion->label != "held:none" && scion->value != 0,
+                     "loot-to-bank: world actor holds the equipped item");
+    }
+    state.character_pane = true;
+    scenario_present(state);
+    {
+      bool has_src = false;
+      bool has_dormant = false;
+      std::string attack_row;
+      for (const auto& item : state.render_list) {
+        if (item.op != render::Op::Hud) continue;
+        if (item.label.rfind("char:ATK src:", 0) == 0) has_src = true;
+        if (item.label.rfind("char:Cond:0 · inactive", 0) == 0)
+          has_dormant = true;
+        if (item.label.rfind("char:Attack:", 0) == 0) attack_row = item.label;
+      }
+      scenario_check(has_src,
+                     "loot-to-bank: attack source breakdown is on the sheet");
+      scenario_check(has_dormant,
+                     "loot-to-bank: dormant conditional is labeled inactive");
+      scenario_check(!attack_row.empty() &&
+                         attack_row.find("inactive") == std::string::npos,
+                     "loot-to-bank: dormant values are not folded into Attack");
+    }
+    state.character_pane = false;
   }
 
   // TASK-0153: the strip is phase-truthful now, so this journey must actually
@@ -6261,6 +8479,7 @@ int scenario_zoom_invariance() {
 
 bool reference_present(ClientState& state, int width, int height,
                        const std::string& png_path);
+bool save_hbitmap_png(BillboardAssets& assets, HBITMAP bitmap, const std::string& path);
 
 bool chronicles_pump(ClientState& state, int max_ticks,
                      const std::function<bool()>& done) {
@@ -6944,9 +9163,13 @@ int scenario_hud_pane_readability() {
     return nullptr;
   };
 
-  const char* kGlobalRegions[] = {"identity", "controls",     "objective",
-                                  "art",      "minimap",      "quickbar-strip",
+  const char* kClosedRegions[] = {"identity", "controls",     "objective",
+                                  "art",      "minimap",      "route-card",
+                                  "quickbar-strip",
                                   "orb-life", "orb-resource"};
+  const char* kOpenRegions[] = {"identity", "controls",     "objective",
+                                "art",      "minimap",      "quickbar-strip",
+                                "orb-life", "orb-resource"};
   const char* kPaneLines[] = {"pane-title",       "pane-stats",
                               "pane-seat",        "pane-banked",
                               "pane-progression", "pane-footer"};
@@ -6994,7 +9217,33 @@ int scenario_hud_pane_readability() {
     scenario_check(trace_find(state, "identity") && trace_find(state, "controls"),
                    ("hud-pane-readability: closed HUD regions recorded (" +
                     tag + ")").c_str());
-    assert_pairwise_disjoint(state, kGlobalRegions, 8, "hud-pane-readability");
+    scenario_check(render_list_has(state, render::Op::Hud, "xp-bar"),
+                   ("hud-pane-readability: xp bar is on the local HUD (" +
+                    tag + ")").c_str());
+    scenario_check(render_list_has(state, render::Op::Hud, "route:"),
+                   ("hud-pane-readability: route card is on the local HUD (" +
+                    tag + ")").c_str());
+    scenario_check(render_list_has(state, render::Op::Hud, "minimap-zoom:"),
+                   ("hud-pane-readability: minimap zoom is client-only (" +
+                    tag + ")").c_str());
+    for (const auto& item : state.render_list) {
+      if (item.op != render::Op::Hud || item.label.rfind("route:", 0) != 0)
+        continue;
+      for (const auto& monster : state.world.monsters) {
+        if (monster.name.empty()) continue;
+        scenario_check(item.label.find(monster.name) == std::string::npos,
+                       ("hud-pane-readability: route card hides foe names (" +
+                        tag + ")").c_str());
+      }
+    }
+    state.minimap_zoom = 2;
+    reference_present(state, size.w, size.h, "");
+    scenario_check(render_list_has(state, render::Op::Hud, "minimap-zoom:2"),
+                   ("hud-pane-readability: tight minimap zoom applied (" +
+                    tag + ")").c_str());
+    state.minimap_zoom = 0;
+    reference_present(state, size.w, size.h, "");
+    assert_pairwise_disjoint(state, kClosedRegions, 9, "hud-pane-readability");
 
     // Open the shipped gear pane through the production toggle seam.
     toggle_gear_overlay(state);
@@ -7015,7 +9264,7 @@ int scenario_hud_pane_readability() {
     const HudRect* pane = trace_find(state, "pane-frame");
     scenario_check(pane != nullptr && pane->w > 100,
                    "hud-pane-readability: pane frame recorded");
-    for (const char* region : kGlobalRegions) {
+    for (const char* region : kOpenRegions) {
       const HudRect* rect = trace_find(state, region);
       char line[192];
       std::snprintf(line, sizeof(line),
@@ -7036,10 +9285,10 @@ int scenario_hud_pane_readability() {
 
     // Full mutual clearance still holds among global regions WITH the pane
     // open — the exact gap a fallback pin once slipped through.
-    assert_pairwise_disjoint(state, kGlobalRegions, 8, "hud-pane-open");
+    assert_pairwise_disjoint(state, kOpenRegions, 8, "hud-pane-open");
     bool wrap_clear = true;
     if (const HudRect* second = trace_find(state, "controls-second")) {
-      for (const char* region : kGlobalRegions) {
+      for (const char* region : kOpenRegions) {
         const HudRect* rect = trace_find(state, region);
         if (rect && hud_rects_overlap(*second, *rect)) wrap_clear = false;
       }
@@ -7191,6 +9440,2644 @@ int scenario_hud_pane_readability() {
   return 0;
 }
 
+int scenario_effect_batch() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  const verdigris::Vec2 origin = state.world.player.position;
+  auto& cache = gdi_object_cache();
+  cache.pen_hits = 0;
+  cache.pen_misses = 0;
+  constexpr int kBurst = 40;
+  for (int i = 0; i < kBurst; ++i) {
+    EffectFx impact;
+    impact.kind = EffectFx::Kind::Impact;
+    impact.wx = static_cast<double>(origin.x + i * 3);
+    impact.wy = static_cast<double>(origin.y);
+    impact.ttl = 8;
+    add_effect(state, impact);
+    EffectFx swing;
+    swing.kind = EffectFx::Kind::Swing;
+    swing.wx = static_cast<double>(origin.x);
+    swing.wy = static_cast<double>(origin.y + i * 3);
+    swing.ttl = 6;
+    add_effect(state, swing);
+  }
+  ActiveTelegraph warning;
+  warning.actor_id = "batch-warn";
+  warning.action = "thrust";
+  warning.position = origin;
+  warning.facing = {1, 0};
+  warning.start_tick = state.world.tick;
+  warning.windup_ticks = 12;
+  state.telegraphs["batch-warn"] = warning;
+  scenario_present(state);
+  const int first_hits = cache.pen_hits;
+  const int first_misses = cache.pen_misses;
+  int impacts = 0;
+  int swings = 0;
+  int monsters = 0;
+  bool warning_drawn = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Impact) ++impacts;
+    if (item.op == render::Op::Swing) ++swings;
+    if (item.op == render::Op::Monster) ++monsters;
+    if (item.op == render::Op::Telegraph) warning_drawn = true;
+  }
+  scenario_check(impacts >= kBurst,
+                 "effect-batch: every impact sprite still records an Impact op");
+  scenario_check(swings >= kBurst,
+                 "effect-batch: every swing arc still records a Swing op");
+  scenario_check(warning_drawn,
+                 "effect-batch: dropping the telegraph cannot pass the batch");
+  scenario_check(monsters > 0,
+                 "effect-batch: actors remain on the painter after the batch");
+  std::printf("    effect-batch first paint: world %.1f ms | pen hits %d misses %d\n",
+              state.paint_ms_world, first_hits, first_misses);
+  scenario_present(state);
+  std::printf("    effect-batch reuse paint: world %.1f ms | pen hits %d misses %d\n",
+              state.paint_ms_world, cache.pen_hits, cache.pen_misses);
+  scenario_check(cache.pen_hits > first_hits,
+                 "effect-batch: second pass reuses pens instead of CreatePen");
+  scenario_check(render::any(state.render_list, render::Op::Telegraph),
+                 "effect-batch: warning still present on the reuse pass");
+  return scenario_failures;
+}
+
+int scenario_hitch_warmup() {
+  reset_gdi_object_cache();
+  ClientState cold;
+  scenario_begin(cold);
+  scenario_follow_camera(cold);
+  scenario_present(cold);
+  seed_combat_hitch_fx(cold);
+  scenario_present(cold);
+  const double cold_ms = cold.last_paint_ms;
+  bool cold_swing = render::any(cold.render_list, render::Op::Swing);
+  bool cold_damage = render::any(cold.render_list, render::Op::Damage);
+  scenario_present(cold);
+  const double warm_ms = cold.last_paint_ms;
+
+  reset_gdi_object_cache();
+  ClientState prepared;
+  scenario_begin(prepared);
+  scenario_follow_camera(prepared);
+  scenario_present(prepared);
+  warm_combat_glyphs();
+  seed_combat_hitch_fx(prepared);
+  scenario_present(prepared);
+  const double prepared_ms = prepared.last_paint_ms;
+  std::printf("    hitch-warmup cold combat paint: %.1f ms (must be reported)\n",
+              cold_ms);
+  std::printf("    hitch-warmup warm combat paint: %.1f ms\n", warm_ms);
+  std::printf("    hitch-warmup prepared combat paint: %.1f ms "
+              "(glyphs warmed before the strike)\n",
+              prepared_ms);
+  scenario_check(cold_ms > 0.0,
+                 "hitch-warmup: hiding the cold trace cannot pass");
+  scenario_check(warm_ms > 0.0, "hitch-warmup: warm trace is required");
+  scenario_check(prepared_ms > 0.0, "hitch-warmup: prepared trace is required");
+  scenario_check(cold_swing && cold_damage,
+                 "hitch-warmup: cold combat still draws swing and damage");
+  scenario_check(render::any(prepared.render_list, render::Op::Swing) &&
+                     render::any(prepared.render_list, render::Op::Damage),
+                 "hitch-warmup: warmup cannot drop required combat ops");
+  scenario_check(prepared_ms <= cold_ms + 8.0,
+                 "hitch-warmup: prepared strike is not slower than the cold hit");
+  return scenario_failures;
+}
+
+int scenario_attack_poses() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  scenario_present(state);
+  auto has_pose = [&](const char* name) {
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label == name) return true;
+    return false;
+  };
+  scenario_check(has_pose("attack-pose:idle"),
+                 "attack-poses: standing Scion is labeled idle");
+  scenario_check(!has_pose("attack-pose:active"),
+                 "attack-poses: idle cannot wear the active strike pose");
+
+  const verdigris::Vec2 origin = state.world.player.position;
+  EffectFx swing;
+  swing.kind = EffectFx::Kind::Swing;
+  swing.wx = static_cast<double>(origin.x);
+  swing.wy = static_cast<double>(origin.y);
+  swing.ttl = 6;
+  swing.age = 0;
+  add_effect(state, swing);
+  scenario_present(state);
+  scenario_check(has_pose("attack-pose:windup"),
+                 "attack-poses: windup is a distinct cocking pose");
+  scenario_check(render::any(state.render_list, render::Op::Swing),
+                 "attack-poses: windup still draws the swing arc");
+
+  for (auto& fx : state.effects)
+    if (fx.kind == EffectFx::Kind::Swing) fx.age = 3;
+  scenario_present(state);
+  scenario_check(has_pose("attack-pose:active"),
+                 "attack-poses: active is a distinct committed pose");
+
+  for (auto& fx : state.effects)
+    if (fx.kind == EffectFx::Kind::Swing) fx.age = 5;
+  scenario_present(state);
+  scenario_check(has_pose("attack-pose:recovery"),
+                 "attack-poses: recovery is a distinct settle pose");
+
+  EffectFx dust;
+  dust.kind = EffectFx::Kind::Dust;
+  dust.wx = static_cast<double>(origin.x);
+  dust.wy = static_cast<double>(origin.y);
+  dust.angle = 0.2;
+  dust.ttl = 8;
+  add_effect(state, dust);
+  scenario_present(state);
+  scenario_check(has_pose("attack-pose:cancel"),
+                 "attack-poses: dash dust during a swing is a cancel pose");
+  return scenario_failures;
+}
+
+std::string art_wave_capture_dir() {
+  std::string forced;
+  const int overridden = capture_root_override(&forced);
+  if (overridden != 0) return overridden > 0 ? forced : std::string{};
+  const std::string repo = repository_root_for_capture_validation();
+  if (repo.empty()) {
+    CreateDirectoryA("captures", nullptr);
+    return "captures";
+  }
+  const std::string dir = repo + "\\docs\\execution\\captures\\art-wave";
+  create_directories_nested(dir);
+  return dir;
+}
+
+int scenario_kit_chunk() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  scenario_present(state);
+  bool kinds[5] = {};
+  int solid_items = 0;
+  int proxy_ops = 0;
+  int scenery_ops = 0;
+  int gate_proxy = 0;
+  double tree_radius_lo = 1e9;
+  double tree_radius_hi = 0.0;
+  for (const auto& item : state.scenery) {
+    const int kind = static_cast<int>(item.kind);
+    if (kind >= 0 && kind < 5) kinds[kind] = true;
+    if (item.solid) ++solid_items;
+  }
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Scenery) {
+      ++scenery_ops;
+      if (item.label == "tree") {
+        tree_radius_lo = std::min(tree_radius_lo, item.radius);
+        tree_radius_hi = std::max(tree_radius_hi, item.radius);
+      }
+    }
+    if (item.op == render::Op::Hud &&
+        item.label.rfind("collision-proxy:", 0) == 0) {
+      ++proxy_ops;
+      if (item.label == "collision-proxy:gate") ++gate_proxy;
+    }
+  }
+  scenario_check(kinds[0] && kinds[1] && kinds[2] && kinds[3] && kinds[4],
+                 "kit-chunk: village kit includes tree, ruin, dwelling, shrine, gate");
+  scenario_check(scenery_ops >= 10,
+                 "kit-chunk: kit parts are in the production render list");
+  scenario_check(proxy_ops == solid_items,
+                 "kit-chunk: every solid piece publishes a collision proxy");
+  scenario_check(gate_proxy == 0,
+                 "kit-chunk: the dressing gate is not an unreported obstacle");
+  scenario_check(tree_radius_hi > tree_radius_lo + 0.5,
+                 "kit-chunk: scaled trees keep distinct proxy radii");
+
+  std::unordered_set<std::string> occupancy;
+  bool unique_landmarks = true;
+  for (const auto& item : state.scenery) {
+    char key[64];
+    std::snprintf(key, sizeof(key), "%d,%d,%d", item.position.x, item.position.y,
+                  static_cast<int>(item.kind));
+    if (!occupancy.insert(key).second) unique_landmarks = false;
+  }
+  scenario_check(unique_landmarks,
+                 "kit-chunk: kit pieces do not stack on one pivot");
+
+  sync_world(state);
+  const verdigris::Vec2 spawn = state.world.player.position;
+  bool spawn_clear = true;
+  for (const auto& item : state.scenery) {
+    if (!item.solid) continue;
+    const double dx = static_cast<double>(item.position.x - spawn.x);
+    const double dy = static_cast<double>(item.position.y - spawn.y);
+    const double min = item.radius + kActorColliderRadius;
+    if (dx * dx + dy * dy < min * min) spawn_clear = false;
+  }
+  scenario_check(spawn_clear,
+                 "kit-chunk: spawn is outside published solid radii");
+
+  verdigris::Vec2 from = spawn;
+  verdigris::Vec2 into_tree = spawn;
+  bool found_tree = false;
+  for (const auto& item : state.scenery) {
+    if (item.kind == SceneryKind::Tree && item.solid) {
+      into_tree = item.position;
+      found_tree = true;
+      break;
+    }
+  }
+  scenario_check(found_tree && scenery_blocks_segment(state, from, into_tree),
+                 "kit-chunk: collision uses the same solids as the render proxies");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "kit-chunk: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\kit-chunk-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "kit-chunk: village kit capture written");
+  return scenario_failures;
+}
+
+int scenario_weave_vfx() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  const verdigris::Vec2 origin = state.world.player.position;
+  auto has_hud = [&](const char* name) {
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label == name) return true;
+    return false;
+  };
+  auto warcry_radius = [&]() {
+    double r = 0.0;
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::WarCry && item.radius > r) r = item.radius;
+    return r;
+  };
+
+  EffectFx aura;
+  aura.kind = EffectFx::Kind::WarCryAura;
+  aura.wx = static_cast<double>(origin.x);
+  aura.wy = static_cast<double>(origin.y);
+  aura.ttl = 14;
+  aura.age = 0;
+  add_effect(state, aura);
+  scenario_present(state);
+  scenario_check(has_hud("vfx-weave:cast"),
+                 "weave-vfx: apply beat is labeled cast");
+  scenario_check(warcry_radius() > 2.0,
+                 "weave-vfx: cast still draws a WarCry ring");
+
+  for (auto& fx : state.effects)
+    if (fx.kind == EffectFx::Kind::WarCryAura) fx.age = 6;
+  scenario_present(state);
+  scenario_check(has_hud("vfx-weave:travel"),
+                 "weave-vfx: mid lifetime is the travel beat");
+
+  for (auto& fx : state.effects)
+    if (fx.kind == EffectFx::Kind::WarCryAura) fx.age = 10;
+  scenario_present(state);
+  scenario_check(has_hud("vfx-weave:impact"),
+                 "weave-vfx: late lifetime is the impact beat");
+  const double impact_r = warcry_radius();
+  const double cap = std::min(960.0, 600.0) / 6.0;
+  scenario_check(impact_r <= cap,
+                 "weave-vfx: impact radius stays inside the screen sixth cap");
+  scenario_check(impact_r < 600.0 * 0.45,
+                 "weave-vfx: a large screen-filling ring cannot pass");
+
+  state.effects.clear();
+  EffectFx fade;
+  fade.kind = EffectFx::Kind::WarCryFade;
+  fade.wx = static_cast<double>(origin.x);
+  fade.wy = static_cast<double>(origin.y);
+  fade.ttl = 10;
+  fade.age = 0;
+  add_effect(state, fade);
+  scenario_present(state);
+  scenario_check(has_hud("vfx-weave:cancel"),
+                 "weave-vfx: fade is the cancellation beat");
+  bool fade_label = false;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::WarCry && item.label == phase_a::kWarcryFadeLabel)
+      fade_label = true;
+  scenario_check(fade_label, "weave-vfx: cancel keeps the TASK-0122 fade label");
+
+  state.effects.clear();
+  const auto* before = state.simulation->actor(state.simulation->scion().actor_id);
+  scenario_check(before != nullptr, "weave-vfx: scion exists for telegraph overlap");
+  if (before) {
+    const int melee = verdigris::world_scale::kMeleeRange;
+    state.simulation->spawn_monster(
+        {before->position.x - melee, before->position.y}, 1, true);
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+    scenario_check(render::any(state.render_list, render::Op::Telegraph),
+                   "weave-vfx: enemy warning is present before the weave");
+    EffectFx overlay;
+    overlay.kind = EffectFx::Kind::WarCryAura;
+    overlay.wx = static_cast<double>(state.world.player.position.x);
+    overlay.wy = static_cast<double>(state.world.player.position.y);
+    overlay.ttl = 14;
+    overlay.age = 10;
+    add_effect(state, overlay);
+    scenario_present(state);
+    scenario_check(render::any(state.render_list, render::Op::Telegraph),
+                   "weave-vfx: spectacle cannot hide the telegraph");
+    scenario_check(has_hud("vfx-weave:impact"),
+                   "weave-vfx: weave still records while the warning is up");
+    scenario_check(warcry_radius() <= cap,
+                   "weave-vfx: overlapping weave still respects the radius cap");
+  }
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "weave-vfx: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\weave-vfx-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "weave-vfx: cast/impact family capture written");
+  return scenario_failures;
+}
+
+int scenario_pad_path() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  state.mouse.x = 480;
+  state.mouse.y = 300;
+  scenario_present(state);
+  auto has = [&](const char* name) {
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label == name) return true;
+    return false;
+  };
+  scenario_check(!has("pad:connected"),
+                 "pad-path: mouse position does not count as a controller");
+  scenario_check(!has("pad-glyph:A"),
+                 "pad-path: mouse emulation cannot mint pad glyphs");
+
+  state.pad.inject = true;
+  state.pad.connected = true;
+  poll_pad(state);
+  scenario_present(state);
+  scenario_check(has("pad:connected") && has("pad-glyph:LS") && has("pad-glyph:A") &&
+                     has("pad-glyph:B") && has("pad-glyph:X") && has("pad-glyph:Y"),
+                 "pad-path: connected pad publishes live glyphs");
+  scenario_check(has("pad:hotplug:in"),
+                 "pad-path: hotplug-in is recorded");
+
+  const verdigris::Vec2 before = state.world.player.position;
+  state.pad.dx = 1;
+  RECT bounds{0, 0, 960, 600};
+  for (int i = 0; i < 24; ++i) fixed_game_tick(state, bounds);
+  scenario_follow_camera(state);
+  scenario_present(state);
+  scenario_check(state.world.player.position.x > before.x,
+                 "pad-path: left stick moves the Scion");
+
+  for (int i = 0; i < 40; ++i) fixed_game_tick(state, bounds);
+  state.pad.dx = 0;
+  state.pad.a = true;
+  fixed_game_tick(state, bounds);
+  scenario_present(state);
+  scenario_check(render::any(state.render_list, render::Op::Swing) ||
+                     render::any(state.render_list, render::Op::Damage),
+                 "pad-path: A is strike, not a synthetic mouse click");
+  state.pad.a = false;
+
+  scenario_check(!state.gear_overlay, "pad-path: inventory starts closed");
+  state.pad.y = true;
+  fixed_game_tick(state, bounds);
+  scenario_check(state.gear_overlay, "pad-path: Y focuses the gear inventory");
+  state.pad.y = false;
+  fixed_game_tick(state, bounds);
+
+  state.pad.connected = false;
+  poll_pad(state);
+  scenario_present(state);
+  scenario_check(!has("pad:connected"),
+                 "pad-path: disconnect clears the connected glyph");
+  scenario_check(has("pad:hotplug:out"),
+                 "pad-path: hotplug-out is recorded");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "pad-path: capture root rejected before any write");
+    return scenario_failures;
+  }
+  state.pad.inject = true;
+  state.pad.connected = true;
+  poll_pad(state);
+  const std::string png = dir + "\\pad-path-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "pad-path: controller HUD capture written");
+  return scenario_failures;
+}
+
+int scenario_legal_sounds() {
+  using verdigris::client::sound_family::shippable;
+  scenario_check(shippable("hit") && shippable("crit") && shippable("kill") &&
+                     shippable("scion-lost") && shippable("warcry-expire"),
+                 "legal-sounds: impact and warning cues carry SPDX provenance");
+  scenario_check(shippable("cosmetic"),
+                 "legal-sounds: swing-family placeholder is sourced");
+  scenario_check(!shippable("unlicensed-preview"),
+                 "legal-sounds: missing provenance cannot ship even if audible");
+  ClientState state;
+  scenario_begin(state);
+  for (int i = 0; i < 52; ++i)
+    scenario_step(state, verdigris::Command::move(1, 0));
+  for (int i = 0; i < 10; ++i)
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
+  bool heard = false;
+  bool all_legal = true;
+  for (const auto& cue : state.audio_voiced) {
+    if (cue.rfind("ambience:", 0) == 0 || cue.rfind("music:", 0) == 0) continue;
+    heard = true;
+    if (!shippable(cue.c_str())) all_legal = false;
+  }
+  scenario_check(heard, "legal-sounds: an ordinary fight actually voiced cues");
+  scenario_check(all_legal,
+                 "legal-sounds: every voiced combat cue is in the licensed family");
+  return scenario_failures;
+}
+
+int scenario_music_phase() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  drain_audio(state);
+  scenario_present(state);
+  auto has = [&](const char* name) {
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label == name) return true;
+    return false;
+  };
+  scenario_check(has("music:muted"),
+                 "music-phase: device mute is an explicit HUD state");
+  scenario_check(state.audio_music_want == "music:combat",
+                 "music-phase: slay-wardens with living foes wants combat");
+  bool heard_combat = false;
+  for (const auto& cue : state.audio_voiced)
+    if (cue == "music:combat") heard_combat = true;
+  scenario_check(heard_combat,
+                 "music-phase: combat theme is scheduled (device remains mute)");
+
+  state.world.expedition_phase = ExpeditionPhaseView::ExtractCarriedValue;
+  state.world.monsters.clear();
+  drain_audio(state);
+  scenario_check(state.audio_music_want == "music:recovery",
+                 "music-phase: carry-to-exit is recovery music");
+  bool heard_recovery = false;
+  for (const auto& cue : state.audio_voiced)
+    if (cue == "music:recovery") heard_recovery = true;
+  scenario_check(heard_recovery, "music-phase: recovery theme is scheduled");
+
+  state.simulation.reset();
+  state.session.reset();
+  drain_audio(state);
+  scenario_check(state.audio_music_want == "music:none",
+                 "music-phase: unloaded scene cannot leave a competing theme");
+  scenario_check(state.audio_music_sent == "music:none",
+                 "music-phase: paused/unloaded does not keep an active music send");
+  return scenario_failures;
+}
+
+int scenario_gpu_sample() {
+  verdigris::gpu::Sample sample;
+  scenario_check(!sample.init(static_cast<verdigris::gpu::Backend>(99)),
+                 "gpu-sample: an unknown backend cannot pretend to be portable");
+  scenario_check(sample.init(verdigris::gpu::Backend::Software) && sample.alive,
+                 "gpu-sample: software backend opens a 64x64 window buffer");
+  scenario_check(std::strcmp(verdigris::gpu::Sample::kBackendName, "software") == 0,
+                 "gpu-sample: the decision is software, not a Windows-only device");
+  scenario_check(sample.draw_textured_quad(),
+                 "gpu-sample: textured quad draws without a GPU device");
+  const std::uint32_t inside = sample.pixel(32, 32);
+  const std::uint32_t outside = sample.pixel(2, 2);
+  scenario_check(inside == 0x00C48E40u || inside == 0x00767068u,
+                 "gpu-sample: quad samples the bronze/stone checker");
+  scenario_check(outside == 0x00182028u,
+                 "gpu-sample: clear color remains outside the quad");
+  ClientState hud;
+  scenario_begin(hud);
+  scenario_follow_camera(hud);
+  scenario_present(hud);
+  bool backend_hud = false;
+  for (const auto& item : hud.render_list)
+    if (item.op == render::Op::Hud && item.label == "gpu-backend:software")
+      backend_hud = true;
+  scenario_check(backend_hud,
+                 "gpu-sample: live HUD names the software backend");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "gpu-sample: capture root rejected before any write");
+    sample.shutdown();
+    return scenario_failures;
+  }
+  const std::string bmp = dir + "\\gpu-sample-quad.bmp";
+  scenario_check(sample.write_bmp(bmp), "gpu-sample: portable BMP written");
+  sample.shutdown();
+  scenario_check(!sample.alive && sample.pixels.empty(),
+                 "gpu-sample: shutdown releases the window buffer");
+  scenario_check(!sample.draw_textured_quad(),
+                 "gpu-sample: drawing after shutdown fails closed");
+  return scenario_failures;
+}
+
+int scenario_gpu_packets() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  const auto* before = state.simulation->actor(state.simulation->scion().actor_id);
+  scenario_check(before != nullptr, "gpu-packets: scion exists");
+  if (before) {
+    const int melee = verdigris::world_scale::kMeleeRange;
+    state.simulation->spawn_monster(
+        {before->position.x - melee, before->position.y}, 1, true);
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+  }
+  scenario_present(state);
+  const auto packets = verdigris::gpu::packets_from_render_list(state.render_list);
+  scenario_check(packets.size() == state.render_list.size(),
+                 "gpu-packets: every semantic op becomes a packet");
+  scenario_check(verdigris::gpu::snapshot_valid(packets),
+                 "gpu-packets: production packets carry no backend handles");
+  bool saw_telegraph = false;
+  for (const auto& packet : packets)
+    if (packet.op == static_cast<std::uint16_t>(render::Op::Telegraph))
+      saw_telegraph = true;
+  scenario_check(saw_telegraph,
+                 "gpu-packets: Telegraph is the adapted draw class");
+  const std::string snap = verdigris::gpu::snapshot_text(packets);
+  scenario_check(!verdigris::gpu::snapshot_mentions_backend(snap),
+                 "gpu-packets: snapshot text has no HDC/D3D/pointer tokens");
+  scenario_present(state);
+  const std::string snap2 = verdigris::gpu::snapshot_text(
+      verdigris::gpu::packets_from_render_list(state.render_list));
+  scenario_check(snap == snap2,
+                 "gpu-packets: headless packets stay deterministic without GPU state");
+
+  auto poisoned = packets;
+  if (!poisoned.empty()) poisoned[0].backend_handle = 0xD3D0001ull;
+  scenario_check(!poisoned.empty() && !verdigris::gpu::snapshot_valid(poisoned),
+                 "gpu-packets: a backend resource cannot enter a snapshot");
+  return scenario_failures;
+}
+
+int scenario_visual_target() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  scenario_present(state);
+  auto has = [&](const char* name) {
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label == name) return true;
+    return false;
+  };
+  scenario_check(has("target:camera:top-down") && has("target:proportion:adult") &&
+                     has("target:palette:bronze-stone") &&
+                     has("target:contrast:ink-on-panel"),
+                 "visual-target: in-game composition axes are named");
+  scenario_check(!has("target:concept-art"),
+                 "visual-target: an external concept image cannot substitute");
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "visual-target: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\visual-target-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "visual-target: in-game sheet capture written");
+  return scenario_failures;
+}
+
+int scenario_bronze_stone() {
+  using namespace verdigris::art::bronze_stone;
+  scenario_check(shippable() && !is_placeholder(kBronze) && !is_placeholder(kStone),
+                 "bronze-stone: family has provenance and is not a placeholder fill");
+  scenario_check(sample_albedo(0, 0) == kBronze && sample_albedo(7, 0) == kStone,
+                 "bronze-stone: albedo map has both metals");
+  scenario_check(sample_rim(0, 0) != sample_albedo(0, 0) ||
+                     sample_rim(7, 7) != sample_albedo(7, 7),
+                 "bronze-stone: rim map is a lighting response, not a copy of albedo");
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  scenario_present(state);
+  bool stone = false;
+  bool family = false;
+  bool magenta = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Hud && item.label == "material:stone") stone = true;
+    if (item.op == render::Op::Hud && item.label == "material:bronze-stone")
+      family = true;
+    if (item.label.find("FF00FF") != std::string::npos) magenta = true;
+  }
+  scenario_check(stone && family,
+                 "bronze-stone: village kit scenery samples the cooked family");
+  scenario_check(!magenta,
+                 "bronze-stone: magenta placeholder fills cannot pass");
+  return scenario_failures;
+}
+
+int scenario_shader_bindings() {
+  verdigris::gpu::Bindings ok{};
+  verdigris::gpu::Bindings stale{};
+  verdigris::gpu::Bindings wrong{};
+  scenario_check(verdigris::gpu::load_bindings(verdigris::gpu::Backend::Software,
+                                               verdigris::gpu::kBindingLayoutVersion,
+                                               &ok) &&
+                     ok.shader_id &&
+                     std::strcmp(ok.shader_id, verdigris::gpu::kSoftwareShaderId) == 0,
+                 "shader-bindings: software layout v1 loads without a source path");
+  scenario_check(!verdigris::gpu::load_bindings(verdigris::gpu::Backend::Software, 0,
+                                                &stale) &&
+                     stale.albedo == nullptr,
+                 "shader-bindings: stale layout fails instead of rendering silently");
+  scenario_check(!verdigris::gpu::load_bindings(
+                     static_cast<verdigris::gpu::Backend>(7),
+                     verdigris::gpu::kBindingLayoutVersion, &wrong) &&
+                     wrong.shader_id == nullptr,
+                 "shader-bindings: a D3D-only program cannot load on this sample");
+  verdigris::gpu::Sample sample;
+  sample.init(verdigris::gpu::Backend::Software);
+  scenario_check(!verdigris::gpu::draw_lit_quad(sample, stale),
+                 "shader-bindings: failed bindings do not draw a fallback fill");
+  scenario_check(verdigris::gpu::draw_lit_quad(sample, ok),
+                 "shader-bindings: cooked albedo/rim program draws the quad");
+  const std::uint32_t lit = sample.pixel(32, 32);
+  scenario_check(lit != 0x00182028u &&
+                     !verdigris::art::bronze_stone::is_placeholder(lit),
+                 "shader-bindings: lit texel is family-shaded, not placeholder");
+  sample.shutdown();
+  return scenario_failures;
+}
+
+int scenario_gpu_reference() {
+  verdigris::gpu::Sample demo;
+  demo.init(verdigris::gpu::Backend::Software);
+  demo.draw_textured_quad();
+  scenario_check(!verdigris::gpu::present_reference_scene(demo, {}, 960, 600, false),
+                 "gpu-reference: a disconnected textured-quad demo cannot pass");
+  demo.shutdown();
+
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  const auto* scion = state.simulation->actor(state.simulation->scion().actor_id);
+  scenario_check(scion != nullptr, "gpu-reference: session has a scion");
+  if (scion) {
+    const int melee = verdigris::world_scale::kMeleeRange;
+    state.simulation->spawn_monster(
+        {scion->position.x - melee, scion->position.y}, 1, true);
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+  }
+  EffectFx hit;
+  hit.kind = EffectFx::Kind::Impact;
+  hit.wx = static_cast<double>(state.world.player.position.x);
+  hit.wy = static_cast<double>(state.world.player.position.y);
+  hit.ttl = 8;
+  add_effect(state, hit);
+  scenario_present_size(state, 960, 600);
+  const auto packets = verdigris::gpu::packets_from_render_list(state.render_list);
+  const auto census = verdigris::gpu::census_packets(packets);
+  scenario_check(census.actors > 0 && census.world > 0 && census.hud > 0 &&
+                     census.effects > 0 && census.target_sheet,
+                 "gpu-reference: session packets carry actors, world, effects, HUD");
+  scenario_check(verdigris::gpu::session_scene_complete(census),
+                 "gpu-reference: composition matches the in-game target sheet");
+
+  verdigris::gpu::Sample sample;
+  scenario_check(sample.init(verdigris::gpu::Backend::Software),
+                 "gpu-reference: software present opens on both platforms' sample");
+  scenario_check(!verdigris::gpu::present_reference_scene(sample, packets, 960, 600,
+                                                         false),
+                 "gpu-reference: packets without a live session cannot present");
+  scenario_check(verdigris::gpu::present_reference_scene(sample, packets, 960, 600,
+                                                        true),
+                 "gpu-reference: live packets present through the GPU bridge");
+  const std::uint32_t lit = sample.pixel(sample.width / 2, sample.height / 2);
+  bool stamped = false;
+  for (int y = 0; y < sample.height && !stamped; ++y)
+    for (int x = 0; x < sample.width && !stamped; ++x)
+      if (sample.pixel(x, y) != 0x00182028u) stamped = true;
+  scenario_check(stamped && !verdigris::art::bronze_stone::is_placeholder(lit),
+                 "gpu-reference: session packets shaded the sample buffer");
+  (void)lit;
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "gpu-reference: capture root rejected before any write");
+    sample.shutdown();
+    return scenario_failures;
+  }
+  scenario_check(sample.write_bmp(dir + "\\gpu-reference-session.bmp"),
+                 "gpu-reference: session-connected BMP written");
+  sample.shutdown();
+  return scenario_failures;
+}
+
+int scenario_grounding() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  const auto* scion = state.simulation->actor(state.simulation->scion().actor_id);
+  scenario_check(scion != nullptr, "grounding: session has a scion");
+  if (scion) {
+    const int melee = verdigris::world_scale::kMeleeRange;
+    state.simulation->spawn_monster(
+        {scion->position.x - melee, scion->position.y}, 1, true);
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+  }
+  scenario_present(state);
+  auto has = [&](const char* name) {
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label == name) return true;
+    return false;
+  };
+  scenario_check(has("grounding:sort:y") && has("grounding:contact-shadow"),
+                 "grounding: Y-sort and foot shadows are the named policy");
+  scenario_check(render::any(state.render_list, render::Op::Telegraph),
+                 "grounding: a threat telegraph is in the production list");
+  scenario_check(verdigris::gpu::telegraph_draws_after_scenery(state.render_list),
+                 "grounding: a foreground wall cannot erase the telegraph pass");
+  scenario_check(has("grounding:telegraph-overlay"),
+                 "grounding: the overlay pass is named");
+  return scenario_failures;
+}
+
+int scenario_material_light() {
+  verdigris::gpu::Bindings bind{};
+  scenario_check(verdigris::gpu::load_bindings(verdigris::gpu::Backend::Software,
+                                               verdigris::gpu::kBindingLayoutVersion,
+                                               &bind),
+                 "material-light: bronze/stone bindings load");
+  const verdigris::gpu::Light a = verdigris::gpu::light_from_tick(0);
+  const verdigris::gpu::Light b = verdigris::gpu::light_from_tick(20);
+  const std::uint32_t pa = verdigris::gpu::shade_texel_lit(bind, 2, 2, a);
+  const std::uint32_t pb = verdigris::gpu::shade_texel_lit(bind, 2, 2, b);
+  scenario_check(pa != pb, "material-light: a moving light changes the material");
+  scenario_check(((pa >> 16) & 0xFF) <= verdigris::gpu::kLitChannelCap &&
+                     ((pb >> 16) & 0xFF) <= verdigris::gpu::kLitChannelCap,
+                 "material-light: lighting cannot wash the family to white");
+  verdigris::gpu::Sample sample;
+  sample.init(verdigris::gpu::Backend::Software);
+  scenario_check(verdigris::gpu::draw_lit_quad_moving(sample, bind, a, true),
+                 "material-light: damage zone composites over the lit quad");
+  const std::uint32_t zone = sample.pixel(32, 32);
+  scenario_check(!verdigris::gpu::damage_zone_concealed(zone),
+                 "material-light: overbright additives cannot conceal damage zones");
+  sample.shutdown();
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  scenario_present(state);
+  bool named = false;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Hud && item.label == "material-light:moving")
+      named = true;
+  scenario_check(named, "material-light: live HUD names the moving light");
+  return scenario_failures;
+}
+
+int scenario_gpu_capture() {
+  const std::string log = verdigris::gpu::snapshot_text({});
+  scenario_check(!verdigris::gpu::semantic_log_counts_as_capture("Hud 0 0 0 0 floor\n") &&
+                     !verdigris::gpu::semantic_log_counts_as_capture(log),
+                 "gpu-capture: a semantic draw log is not pixel evidence");
+  scenario_check(verdigris::gpu::swapped_png_rejected(69, 208, 208, 69),
+                 "gpu-capture: an R/B swapped still cannot certify pixels");
+  scenario_check(!verdigris::gpu::swapped_png_rejected(208, 69, 208, 69),
+                 "gpu-capture: matching channels are not treated as swapped");
+  verdigris::gpu::Bindings bind{};
+  verdigris::gpu::load_bindings(verdigris::gpu::Backend::Software,
+                                verdigris::gpu::kBindingLayoutVersion, &bind);
+  verdigris::gpu::Sample sample;
+  sample.init(verdigris::gpu::Backend::Software);
+  verdigris::gpu::draw_lit_quad_moving(sample, bind,
+                                       verdigris::gpu::light_from_tick(4), true);
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "gpu-capture: capture root rejected before any write");
+    sample.shutdown();
+    return scenario_failures;
+  }
+  const std::string bmp = dir + "\\gpu-capture-readback.bmp";
+  const std::string prov = dir + "\\gpu-capture-readback.txt";
+  scenario_check(verdigris::gpu::capture_sample(sample, bmp, prov),
+                 "gpu-capture: readback wrote image and provenance");
+  scenario_check(verdigris::gpu::file_is_bmp(bmp),
+                 "gpu-capture: the image file is a usable BMP");
+  scenario_check(verdigris::gpu::provenance_complete(prov),
+                 "gpu-capture: provenance names backend, content, and platform");
+  sample.shutdown();
+  return scenario_failures;
+}
+
+int scenario_gpu_recover() {
+  verdigris::gpu::RecoverablePresenter gpu;
+  scenario_check(gpu.recreate(verdigris::gpu::Backend::Software, 64, 64) &&
+                     gpu.live_buffers == 1,
+                 "gpu-recover: first present allocates one pixel buffer");
+  scenario_check(gpu.recreate(verdigris::gpu::Backend::Software, 128, 96) &&
+                     gpu.live_buffers == 1 && gpu.sample.width == 128,
+                 "gpu-recover: resize keeps a single live buffer");
+  scenario_check(gpu.recreate(verdigris::gpu::Backend::Software, 64, 64) &&
+                     gpu.live_buffers == 1,
+                 "gpu-recover: restore to 64 does not leak the larger buffer");
+  for (int i = 0; i < 16; ++i)
+    scenario_check(gpu.minimize_restore() && gpu.live_buffers == 1,
+                   "gpu-recover: minimize/restore cannot leak textures");
+  scenario_check(!gpu.recreate(verdigris::gpu::Backend::Software, 0, 0) &&
+                     gpu.live_buffers == 0 && gpu.error_visible &&
+                     std::strcmp(gpu.error, verdigris::gpu::kRecreateError) == 0,
+                 "gpu-recover: a failed recreate shows gpu-error:recreate");
+  scenario_check(!gpu.sample.alive,
+                 "gpu-recover: failure releases the previous buffer instead of crashing");
+  return scenario_failures;
+}
+
+int scenario_sound_adapter() {
+  verdigris::audio::ToneAdapter adapter;
+  scenario_check(!adapter.init(static_cast<verdigris::audio::ToneBackend>(9)),
+                 "sound-adapter: an unknown backend cannot pretend to be portable");
+  scenario_check(adapter.init(verdigris::audio::ToneBackend::Software) &&
+                     adapter.play_generated_tone(440, 80, 800) && adapter.audible(),
+                 "sound-adapter: a generated test tone plays on the software adapter");
+  scenario_check(std::strcmp(verdigris::audio::ToneAdapter::kBackendName, "software") == 0,
+                 "sound-adapter: the decision is software, not a Windows-only device");
+  adapter.shutdown();
+  scenario_check(!adapter.alive && adapter.pcm.empty() &&
+                     !adapter.play_generated_tone(440, 80, 800),
+                 "sound-adapter: shutdown releases the buffer");
+  verdigris::audio::CueSpec silent;
+  silent.cue_id = "ghost";
+  silent.params = {verdigris::audio::Waveform::Sine, 440, 440, 0, 800};
+  scenario_check(!verdigris::audio::cue_has_audible_output(silent),
+                 "sound-adapter: a scheduled cue without duration is not audible output");
+  return scenario_failures;
+}
+
+int scenario_audio_prefs() {
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "audio-prefs: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string path = dir + "\\audio-prefs-test.txt";
+  verdigris::audio::AudioPrefs prefs;
+  prefs.muted = false;
+  prefs.sfx_permille = 400;
+  prefs.music_permille = 700;
+  scenario_check(verdigris::audio::save_audio_prefs(path, prefs),
+                 "audio-prefs: category volumes persist");
+  prefs = verdigris::audio::apply_mute_only(prefs, true);
+  verdigris::audio::save_audio_prefs(path, prefs);
+  const verdigris::audio::AudioPrefs loaded = verdigris::audio::load_audio_prefs(path);
+  scenario_check(loaded.muted && loaded.sfx_permille == 400 &&
+                     loaded.music_permille == 700,
+                 "audio-prefs: mute cannot reset unrelated category volumes");
+  ClientState state;
+  scenario_begin(state);
+  ensure_audio(state);
+  state.audio_mixer->set_bus_volume(verdigris::audio::Bus::Sfx, 0);
+  verdigris::client::PresentationEvent hit{};
+  hit.type = verdigris::client::PresentationEventType::DamageApplied;
+  hit.value = 4;
+  std::vector<std::string> batch;
+  voice_presentation_event(state, hit, 3, batch);
+  const auto voiced = state.audio_mixer->drain_scheduled();
+  scenario_check(voiced.empty(),
+                 "audio-prefs: a zero-volume SFX category remains silent");
+  return scenario_failures;
+}
+
+int scenario_ambience_layer() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  refresh_ambience(state);
+  scenario_present(state);
+  bool hud = false;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Hud && item.label.rfind("ambience:", 0) == 0)
+      hud = true;
+  scenario_check(hud, "ambience-layer: live HUD names the current zone loop");
+  state.audio_voiced.clear();
+  refresh_ambience(state);
+  drain_audio(state);
+  int first = 0;
+  for (const auto& cue : state.audio_voiced)
+    if (cue.rfind("ambience:", 0) == 0) ++first;
+  scenario_check(first <= 1, "ambience-layer: enter voices one region loop");
+  state.world.route_id = "route:salt:1:0";
+  refresh_ambience(state);
+  refresh_ambience(state);
+  state.audio_voiced.clear();
+  drain_audio(state);
+  int second = 0;
+  bool salt = false;
+  for (const auto& cue : state.audio_voiced) {
+    if (cue.rfind("ambience:", 0) == 0) ++second;
+    if (cue == "ambience:route:salt:1:0") salt = true;
+  }
+  scenario_check(second == 1 && salt,
+                 "ambience-layer: rapid zone reentry cannot stack loops");
+  return scenario_failures;
+}
+
+int scenario_equipment() {
+  verdigris::client::ui::EquipView view;
+  verdigris::client::ui::request_equip(view, "ghost-blade");
+  scenario_check(view.pending && view.acknowledged_id.empty(),
+                 "equipment: a request is pending until the sim acknowledges");
+  scenario_check(!verdigris::client::ui::paints_optimistic_success(view),
+                 "equipment: pending cannot paint as an equipped success");
+  scenario_check(verdigris::client::ui::leaky_pending_as_equipped(view, "ghost-blade"),
+                 "equipment: treating the pending id as equipped is the anti-pattern");
+  scenario_check(!verdigris::client::ui::paint_focus_as_equipped(view, true),
+                 "equipment: production compare cannot use that leak");
+  verdigris::client::ui::reject_equip(view);
+  scenario_check(!view.pending && view.acknowledged_id.empty(),
+                 "equipment: a rejected equip leaves the prior seat unchanged");
+  verdigris::client::ui::ack_equip(view, "bronze-edge", 4);
+  scenario_check(verdigris::client::ui::compare_delta(view, 7) == 3,
+                 "equipment: comparison uses the acknowledged attack");
+  scenario_check(verdigris::client::ui::compare_baseline(view, 99) == 4,
+                 "equipment: compare baseline is the ack, not a world guess");
+  paper_doll::State doll;
+  paper_doll::Item helm{1, paper_doll::Kind::Helmet, false};
+  scenario_check(verdigris::client::ui::try_slot(doll, helm,
+                                                 paper_doll::Slot::MainHand) ==
+                     paper_doll::Status::WrongSlot,
+                 "equipment: a helmet cannot occupy the main-hand seat");
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  verdigris::client::ui::request_equip(state.equip_view, "ghost-blade");
+  scenario_present(state);
+  bool pending = false;
+  bool ok = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label.rfind("equip:pending:", 0) == 0) pending = true;
+    if (item.label == "equip:ok") ok = true;
+  }
+  scenario_check(pending && !ok,
+                 "equipment: live HUD cannot pretend a rejected request succeeded");
+
+  for (int i = 0; i < 52; ++i)
+    scenario_step(state, verdigris::Command::move(1, 0));
+  for (int i = 0; i < 8; ++i)
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
+  if (!state.simulation->ground_items().empty())
+    scenario_step(state, verdigris::Command::pick_up(
+                             state.simulation->ground_items().front().id));
+  scenario_check(!state.simulation->scion().carried_items.empty(),
+                 "equipment: pickup yields a compare candidate");
+  scenario_step(state, verdigris::Command::unequip());
+  const std::string carried_id =
+      state.simulation->scion().carried_items.empty()
+          ? std::string{}
+          : state.simulation->scion().carried_items.front().id;
+  verdigris::client::ui::request_equip(state.equip_view, carried_id);
+  state.gear_overlay = true;
+  scenario_present(state);
+  bool compare_pending = false;
+  bool compare_equipped = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "compare:pending") compare_pending = true;
+    if (item.label == "compare:equipped") compare_equipped = true;
+  }
+  scenario_check(compare_pending && !compare_equipped,
+                 "equipment: pending compare cannot gold-frame as equipped");
+
+  if (!carried_id.empty())
+    scenario_step(state, verdigris::Command::equip(carried_id));
+  state.gear_overlay = true;
+  scenario_present(state);
+  bool ack_ok = false;
+  bool gold_equipped = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "equip:ok") ack_ok = true;
+    if (item.label == "compare:equipped") gold_equipped = true;
+  }
+  scenario_check(ack_ok, "equipment: ack paints equip:ok");
+  scenario_check(gold_equipped,
+                 "equipment: compare plate follows the acknowledged seat");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "equipment: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\equipment-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "equipment: compare-plate capture written");
+  return scenario_failures;
+}
+
+int scenario_memory_soak() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  verdigris::perf::SoakEnvelope env;
+  for (int i = 0; i < verdigris::perf::kSoakMinCycles; ++i) {
+    scenario_present_size(state, 1920, 1080);
+    scenario_present_size(state, 640, 400);
+    scenario_present_size(state, 960, 600);
+    for (int n = 0; n < 24; ++n) {
+      EffectFx fx;
+      fx.kind = EffectFx::Kind::Impact;
+      fx.wx = static_cast<double>(state.world.player.position.x + n);
+      fx.wy = static_cast<double>(state.world.player.position.y);
+      fx.ttl = 4;
+      add_effect(state, fx);
+    }
+    scenario_present(state);
+    const PresentationResources res = presentation_resources(state);
+    verdigris::perf::note_cycle(env, res.floor_bitmaps, res.effects, res.gdi_pens);
+  }
+  std::printf("    memory-soak: cycles %d | floor bitmaps %d | fx %d | pens %d\n",
+              env.cycles, env.max_floor_bitmaps, env.max_effects, env.max_pens);
+  scenario_check(verdigris::perf::soak_is_long_enough(env),
+                 "memory-soak: a short scene cannot establish the envelope");
+  scenario_check(verdigris::perf::envelope_bounded(
+                     env, 1, static_cast<int>(kMaxPresentationEffects),
+                     static_cast<int>(kMaxCachedPens)),
+                 "memory-soak: CPU/session resources stay inside the cap");
+  return scenario_failures;
+}
+
+int scenario_dense_mix() {
+  verdigris::audio::CueSpec preview;
+  preview.cue_id = "preview";
+  preview.params = {verdigris::audio::Waveform::Sine, 440, 440, 80, 800};
+  preview.effective_gain_permille = 800;
+  const auto isolated =
+      verdigris::audio::score_mix({preview}, true);
+  scenario_check(verdigris::audio::isolated_preview_cannot_pass(isolated) &&
+                     !verdigris::audio::mix_is_encounter(isolated),
+                 "dense-mix: an isolated tone preview cannot prove the combat mix");
+
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  refresh_ambience(state);
+  drain_audio(state);
+  const auto* scion = state.simulation->actor(state.simulation->scion().actor_id);
+  scenario_check(scion != nullptr, "dense-mix: session has a scion");
+  if (scion) {
+    const int melee = verdigris::world_scale::kMeleeRange;
+    state.simulation->spawn_monster({scion->position.x + melee, scion->position.y}, 1,
+                                    false);
+    state.simulation->spawn_monster(
+        {scion->position.x + melee, scion->position.y + melee}, 1, false);
+    state.simulation->spawn_monster({scion->position.x - melee, scion->position.y}, 2,
+                                    true);
+  }
+  scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+  scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::WarCry));
+  for (int i = 0; i < 12; ++i)
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
+  verdigris::client::PresentationEvent lost{};
+  lost.type = verdigris::client::PresentationEventType::ScionLost;
+  std::vector<std::string> batch;
+  voice_presentation_event(state, lost, state.world.tick, batch);
+  drain_audio(state);
+  const auto score =
+      verdigris::audio::score_mix(state.audio_tape->cues(), false);
+  std::printf("    dense-mix: cues %d unique %d peak %d floor %d ids %s\n",
+              score.cues, score.unique_ids, score.peak_gain, score.floor_gain,
+              score.attribution.c_str());
+  scenario_check(verdigris::audio::mix_is_encounter(score) && score.has_warning,
+                 "dense-mix: mixed pack records hit, range, and a danger cue");
+  scenario_check(!score.attribution.empty() &&
+                     score.attribution.find("preview") == std::string::npos,
+                 "dense-mix: cue attribution names encounter voices, not a preview");
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "dense-mix: capture root rejected before any write");
+    return scenario_failures;
+  }
+  scenario_check(verdigris::audio::write_mix_score(dir + "\\dense-mix-score.txt", score),
+                 "dense-mix: review record written");
+  return scenario_failures;
+}
+
+int scenario_pane_stack() {
+  scenario_check(verdigris::client::ui::helper_depth_alone_cannot_prove(2, false, false),
+                 "pane-stack: helper depth without native paint/Escape is the anti-pattern");
+  scenario_check(!verdigris::client::ui::helper_depth_alone_cannot_prove(2, true, true),
+                 "pane-stack: native paint plus Escape can prove the journey");
+
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  toggle_gear_overlay(state);
+  state.character_pane = true;
+  scenario_present(state);
+  scenario_check(verdigris::client::ui::pane_stack_depth(
+                     state.tree_pane, state.character_pane, state.gear_overlay) == 2,
+                 "pane-stack: gear and character are both owned");
+  scenario_check(render::any(state.render_list, render::Op::PaneStat) &&
+                     render::any(state.render_list, render::Op::PaneWeapon),
+                 "pane-stack: native shell paints the gear pane");
+  bool stack2 = false;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Hud && item.label == "pane-stack:2") stack2 = true;
+  scenario_check(stack2, "pane-stack: live HUD names depth 2, not only the helper");
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "pane-stack: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\pane-stack-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "pane-stack: stacked-pane capture written");
+
+  handle_escape_key(state);
+  scenario_check(state.gear_overlay && !state.character_pane && !state.quit_requested,
+                 "pane-stack: first Escape dismisses the top pane only");
+  scenario_present(state);
+  scenario_check(render::any(state.render_list, render::Op::PaneStat) &&
+                     render::any(state.render_list, render::Op::PaneWeapon),
+                 "pane-stack: gear remains after the character sheet closes");
+  bool stack1 = false;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Hud && item.label == "pane-stack:1") stack1 = true;
+  scenario_check(stack1, "pane-stack: HUD drops to depth 1 after Escape");
+  handle_escape_key(state);
+  scenario_check(!state.gear_overlay && !state.quit_requested,
+                 "pane-stack: second Escape closes gear without quitting");
+  handle_escape_key(state);
+  scenario_check(state.quit_requested,
+                 "pane-stack: bare Escape requests application exit");
+  return scenario_failures;
+}
+
+int scenario_pane_focus() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  RECT bounds{0, 0, 960, 600};
+  auto has_hud = [&](const char* name) {
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label == name) return true;
+    return false;
+  };
+
+  const verdigris::Vec2 origin = state.world.player.position;
+  state.d = true;
+  for (int i = 0; i < 8; ++i) fixed_game_tick(state, bounds);
+  scenario_follow_camera(state);
+  scenario_present(state);
+  scenario_check(state.world.player.position.x > origin.x,
+                 "pane-focus: WASD moves when no pane holds focus");
+  scenario_check(has_hud("focus:none"),
+                 "pane-focus: empty stack publishes focus:none");
+  state.d = false;
+
+  toggle_gear_overlay(state);
+  scenario_present(state);
+  scenario_check(has_hud("focus:gear"),
+                 "pane-focus: gear overlay is the focused surface");
+  const verdigris::Vec2 parked = state.world.player.position;
+  const int combat0 = state.combat_requests;
+  state.d = true;
+  state.w = true;
+  state.pack_drag_live = true;
+  for (int i = 0; i < 8; ++i) fixed_game_tick(state, bounds);
+  dispatch_skill(state, kStrike);
+  dispatch_dash(state);
+  scenario_check(state.world.player.position.x == parked.x &&
+                     state.world.player.position.y == parked.y,
+                 "pane-focus: click/drag over gear cannot move the Scion");
+  scenario_check(state.combat_requests == combat0,
+                 "pane-focus: combat keys are consumed while gear is focused");
+  scenario_check(state.attack_held_blocked,
+                 "pane-focus: held attack is remembered as blocked");
+  state.pack_drag_live = false;
+  state.d = false;
+  state.w = false;
+
+  state.text_entry = true;
+  scenario_present(state);
+  scenario_check(has_hud("focus:text"),
+                 "pane-focus: text-entry sits above gear and swallows input");
+  handle_escape_key(state);
+  scenario_check(!state.text_entry && state.gear_overlay,
+                 "pane-focus: Escape closes text without dropping gear");
+
+  toggle_gear_overlay(state);
+  scenario_check(!state.gear_overlay, "pane-focus: gear closed after text");
+  const int combat1 = state.combat_requests;
+  dispatch_skill(state, kStrike);
+  scenario_check(state.combat_requests == combat1,
+                 "pane-focus: closing a pane does not release a buffered attack");
+  release_held_gameplay_attack(state);
+  dispatch_skill(state, kStrike);
+  scenario_check(state.combat_requests == combat1 + 1,
+                 "pane-focus: a fresh attack after key-up reaches gameplay");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "pane-focus: capture root rejected before any write");
+    return scenario_failures;
+  }
+  toggle_gear_overlay(state);
+  scenario_present(state);
+  const std::string png = dir + "\\pane-focus-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "pane-focus: focused gear capture written");
+  return scenario_failures;
+}
+
+int scenario_remap_binds() {
+  namespace binds = verdigris::client::input;
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  RECT bounds{0, 0, 960, 600};
+  auto has_hud = [&](const char* name) {
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label == name) return true;
+    return false;
+  };
+
+  const std::string owner =
+      "C:\\Users\\Owner\\Documents\\verdigris\\bindings.v1";
+  scenario_check(binds::path_is_owner_profile(owner),
+                 "remap-binds: Documents is classified as an owner profile");
+  scenario_check(binds::save_bindings(owner, binds::default_bindings()) ==
+                     binds::BindStatus::OwnerProfile,
+                 "remap-binds: owner Documents is never the test destination");
+
+  binds::Bindings clash = binds::default_bindings();
+  scenario_check(binds::remap(clash, binds::Action::Dash, binds::Device::Keyboard,
+                              'W') == binds::BindStatus::Conflict,
+                 "remap-binds: duplicate WASD/dash codes fail closed");
+  state.bind_status = binds::BindStatus::Conflict;
+  scenario_present(state);
+  scenario_check(has_hud("bind:conflict"),
+                 "remap-binds: conflict is visible on the live HUD");
+  scenario_check(state.bindings.dash == 0x20,
+                 "remap-binds: a refused remap cannot mutate the live set");
+
+  scenario_check(binds::remap(clash, binds::Action::Dash,
+                              static_cast<binds::Device>(9), 'G') ==
+                     binds::BindStatus::InvalidDevice,
+                 "remap-binds: unknown device codes fail visibly");
+  state.bind_status = binds::BindStatus::InvalidDevice;
+  scenario_present(state);
+  scenario_check(has_hud("bind:invalid-device"),
+                 "remap-binds: invalid device is named on the HUD");
+
+  const std::string path = isolated_bindings_path();
+  scenario_check(!path.empty() && !binds::path_is_owner_profile(path),
+                 "remap-binds: isolated test profile is not the owner profile");
+  state.bind_status = binds::remap(state.bindings, binds::Action::Dash,
+                                   binds::Device::Keyboard, 'G');
+  scenario_check(state.bind_status == binds::BindStatus::Ok,
+                 "remap-binds: dash can move to G");
+  scenario_check(binds::save_bindings(path, state.bindings) == binds::BindStatus::Ok,
+                 "remap-binds: remapped set writes to the isolated profile");
+
+  ClientState restarted;
+  scenario_begin(restarted);
+  restarted.bind_status = binds::load_bindings(path, restarted.bindings);
+  scenario_check(restarted.bind_status == binds::BindStatus::Ok &&
+                     restarted.bindings.dash == 'G',
+                 "remap-binds: restart reloads the remapped dash");
+  const int before_space = restarted.combat_requests;
+  apply_bound_key_down(restarted, VK_SPACE);
+  scenario_check(restarted.combat_requests == before_space,
+                 "remap-binds: default Space is inaccessible after remap");
+  apply_bound_key_down(restarted, 'G');
+  scenario_check(restarted.combat_requests == before_space + 1,
+                 "remap-binds: remapped G still dashes after restart");
+
+  restarted.bindings = binds::default_bindings();
+  restarted.bind_status = binds::BindStatus::Ok;
+  const int before_restore = restarted.combat_requests;
+  apply_bound_key_down(restarted, VK_SPACE);
+  scenario_check(restarted.combat_requests == before_restore + 1,
+                 "remap-binds: restore defaults returns Space dash");
+  scenario_present(restarted);
+  auto has_ok = false;
+  for (const auto& item : restarted.render_list)
+    if (item.op == render::Op::Hud && item.label == std::string("bind:ok"))
+      has_ok = true;
+  scenario_check(has_ok, "remap-binds: restored set paints bind:ok");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "remap-binds: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\remap-binds-960x600.png";
+  scenario_check(reference_present(restarted, 960, 600, png),
+                 "remap-binds: restored-binding capture written");
+  DeleteFileA(path.c_str());
+  return scenario_failures;
+}
+
+int scenario_attack_beat() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  scenario_present(state);
+  auto has_hud = [&](const char* name) {
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label == name) return true;
+    return false;
+  };
+  scenario_check(has_hud("attack-beat:none"),
+                 "attack-beat: idle session publishes none");
+
+  EffectFx fake;
+  fake.kind = EffectFx::Kind::Swing;
+  fake.wx = static_cast<double>(state.world.player.position.x);
+  fake.wy = static_cast<double>(state.world.player.position.y);
+  fake.ttl = 6;
+  add_effect(state, fake);
+  scenario_present(state);
+  scenario_check(has_hud("attack-beat:none") && state.attack_beat_trace.empty(),
+                 "attack-beat: a swing sprite without events cannot mint a beat");
+
+  for (int i = 0; i < 52; ++i)
+    scenario_step(state, verdigris::Command::move(1, 0));
+  bool saw_anticipate = false;
+  bool saw_impact = false;
+  bool saw_aftermath = false;
+  for (int i = 0; i < 12; ++i) {
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
+    for (const auto& label : state.attack_beat_trace) {
+      if (label == std::string("attack-beat:anticipate")) saw_anticipate = true;
+      if (label == std::string("attack-beat:impact")) saw_impact = true;
+      if (label == std::string("attack-beat:aftermath")) saw_aftermath = true;
+    }
+  }
+  scenario_present(state);
+  drain_audio(state);
+  bool voiced_anticipate = false;
+  for (const auto& cue : state.audio_voiced)
+    if (cue == "attack-anticipate") voiced_anticipate = true;
+  scenario_check(saw_anticipate,
+                 "attack-beat: AttackStarted advances anticipation");
+  scenario_check(voiced_anticipate,
+                 "attack-beat: anticipation submits an attack-anticipate cue");
+  scenario_check(saw_impact, "attack-beat: DamageApplied advances impact");
+  scenario_check(saw_aftermath || has_hud("attack-beat:impact") ||
+                     has_hud("attack-beat:aftermath"),
+                 "attack-beat: impact or aftermath remains on the live HUD");
+
+  ClientState cancel_state;
+  scenario_begin(cancel_state);
+  scenario_follow_camera(cancel_state);
+  cancel_state.attack_beat = verdigris::client::combat::AttackBeat::Anticipate;
+  verdigris::Event dash{};
+  dash.type = verdigris::EventType::ActorMoved;
+  dash.text = "dash";
+  note_attack_beat(cancel_state, dash);
+  scenario_present(cancel_state);
+  bool cancel_hud = false;
+  for (const auto& item : cancel_state.render_list)
+    if (item.op == render::Op::Hud && item.label == std::string("attack-beat:cancel"))
+      cancel_hud = true;
+  scenario_check(cancel_hud,
+                 "attack-beat: dash during anticipation is cancel, not impact");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "attack-beat: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\attack-beat-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "attack-beat: live beat capture written");
+  return scenario_failures;
+}
+
+int scenario_dressing_pass() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  auto fill_samples = [&](verdigris::client::world::LayoutSample* samples,
+                          std::size_t cap) {
+    const std::size_t count = std::min(state.scenery.size(), cap);
+    for (std::size_t i = 0; i < count; ++i) {
+      const SceneryItem& item = state.scenery[i];
+      samples[i].kind = static_cast<int>(item.kind);
+      samples[i].x = item.position.x;
+      samples[i].y = item.position.y;
+      samples[i].radius = static_cast<int>(item.radius);
+      samples[i].solid = item.solid;
+      samples[i].dressing = item.dressing;
+    }
+    return count;
+  };
+  auto has_hud = [&](const char* name) {
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label == name) return true;
+    return false;
+  };
+
+  state.dressing_pass_version = 1;
+  generate_scenery(state);
+  verdigris::client::world::LayoutSample samples[128];
+  std::size_t count = fill_samples(samples, 128);
+  const std::string route = state.simulation->instance().route_id;
+  const std::uint64_t reward = scenery_seed(route);
+  const verdigris::Vec2 spawn = state.world.player.position;
+  const std::uint64_t topo_v1 = verdigris::client::world::topology_hash(
+      samples, count, spawn.x, spawn.y, reward);
+  const std::uint64_t dress_v1 = verdigris::client::world::dressing_hash(
+      samples, count, 1);
+  scenario_present(state);
+  scenario_check(has_hud("dressing-pass:v1"),
+                 "dressing-pass: version 1 is named on the HUD");
+  scenario_check(has_hud("dressing:tree"),
+                 "dressing-pass: dressing trees are labeled separately from solids");
+  scenario_check(state.topology_hash == topo_v1,
+                 "dressing-pass: live topology hash matches the frozen layout");
+
+  int dressing_n = 0;
+  SceneryItem* first_dress = nullptr;
+  for (auto& item : state.scenery)
+    if (item.dressing) {
+      ++dressing_n;
+      if (!first_dress) first_dress = &item;
+    }
+  scenario_check(dressing_n == 2, "dressing-pass: v1 plants two dressing trees");
+  scenario_check(first_dress && !first_dress->solid,
+                 "dressing-pass: production dressing is never solid");
+  const verdigris::Vec2 from = spawn;
+  const verdigris::Vec2 into_dress{first_dress->position.x, first_dress->position.y};
+  scenario_check(!scenery_blocks_segment(state, from, into_dress),
+                 "dressing-pass: a tree visual does not block the approved layout");
+
+  first_dress->solid = true;
+  scenario_check(verdigris::client::world::dressing_is_unreported_obstacle(
+                     {0, first_dress->position.x, first_dress->position.y,
+                      static_cast<int>(first_dress->radius), true, true}),
+                 "dressing-pass: a solid dressing tree is an unreported obstacle");
+  scenario_check(scenery_blocks_segment(state, from, into_dress),
+                 "dressing-pass: illegally solid dressing would collide");
+  first_dress->solid = false;
+
+  state.dressing_pass_version = 2;
+  generate_scenery(state);
+  count = fill_samples(samples, 128);
+  const std::uint64_t topo_v2 = verdigris::client::world::topology_hash(
+      samples, count, state.world.player.position.x,
+      state.world.player.position.y, scenery_seed(route));
+  const std::uint64_t dress_v2 = verdigris::client::world::dressing_hash(
+      samples, count, 2);
+  scenario_present(state);
+  scenario_check(topo_v2 == topo_v1,
+                 "dressing-pass: art version cannot change collision topology");
+  scenario_check(state.world.player.position.x == spawn.x &&
+                     state.world.player.position.y == spawn.y,
+                 "dressing-pass: spawn is unchanged across dressing versions");
+  scenario_check(scenery_seed(route) == reward,
+                 "dressing-pass: reward/layout seed is unchanged");
+  scenario_check(dress_v2 != dress_v1,
+                 "dressing-pass: the decoration pass itself did change");
+  scenario_check(has_hud("dressing-pass:v2"),
+                 "dressing-pass: version 2 is named on the HUD");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "dressing-pass: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\dressing-pass-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "dressing-pass: versioned dressing capture written");
+  return scenario_failures;
+}
+
+int scenario_loot_filter() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  const verdigris::Vec2 origin = state.world.player.position;
+  state.loot_labels = true;
+  state.world.loot_names["bronze-pike"] = "Bronze Pike";
+  state.world.loot_names["trophy-omen"] = "Bird Omen trophy";
+  state.world.loot_names["pouch-coin"] = "Coin pouch";
+  state.loot_positions["bronze-pike"] = {origin.x + 40, origin.y};
+  state.loot_positions["trophy-omen"] = {origin.x + 80, origin.y};
+  state.loot_positions["pouch-coin"] = {origin.x + 120, origin.y};
+  const std::size_t owned = state.loot_positions.size();
+  const std::size_t sim_items = state.simulation->ground_items().size();
+  const std::size_t sim_trophies = state.simulation->ground_trophies().size();
+  scenario_present(state);
+  auto has_hud = [&](const char* name) {
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label == name) return true;
+    return false;
+  };
+  auto drop_named = [&](const char* id) {
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Drop && item.label == id) return true;
+    return false;
+  };
+  scenario_check(has_hud("loot-filter:all"),
+                 "loot-filter: default filter publishes all categories");
+  scenario_check(has_hud("loot-fact:weapon") && has_hud("loot-fact:trophy") &&
+                     has_hud("loot-fact:misc"),
+                 "loot-filter: ground drops publish safe category facts");
+  scenario_check(drop_named("bronze-pike") && drop_named("trophy-omen") &&
+                     drop_named("pouch-coin"),
+                 "loot-filter: every pouch still draws as Drop");
+  scenario_check(has_hud("loot-label:bronze-pike") &&
+                     has_hud("loot-label:trophy-omen") &&
+                     has_hud("loot-label:pouch-coin"),
+                 "loot-filter: unfiltered nameplates cover each category");
+
+  state.loot_filter.show_trophy = false;
+  scenario_present(state);
+  scenario_check(has_hud("loot-filter:hide:trophy"),
+                 "loot-filter: hiding trophies is named on the HUD");
+  scenario_check(has_hud("loot-fact:trophy"),
+                 "loot-filter: hidden trophies still publish their fact");
+  scenario_check(drop_named("trophy-omen"),
+                 "loot-filter: hiding a label cannot delete the Drop sprite");
+  scenario_check(!has_hud("loot-label:trophy-omen"),
+                 "loot-filter: trophy nameplates are suppressed");
+  scenario_check(has_hud("loot-label:bronze-pike") && has_hud("loot-label:pouch-coin"),
+                 "loot-filter: other categories stay readable");
+  scenario_check(state.loot_positions.size() == owned,
+                 "loot-filter: hiding cannot change ground ownership");
+  scenario_check(state.simulation->ground_items().size() == sim_items &&
+                     state.simulation->ground_trophies().size() == sim_trophies,
+                 "loot-filter: droprate/ownership tables stay untouched");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "loot-filter: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\loot-filter-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "loot-filter: filtered nameplate capture written");
+  return scenario_failures;
+}
+
+int scenario_build_fixtures() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  state.character_pane = true;
+  scenario_present(state);
+  auto has_hud = [&](const char* name) {
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label == name) return true;
+    return false;
+  };
+  auto has_prefix = [&](const char* prefix) {
+    const std::string p = prefix;
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label.rfind(p, 0) == 0)
+        return true;
+    return false;
+  };
+  scenario_check(verdigris::client::builds::distinct_slice_loops(
+                     verdigris::client::builds::kSliceBuilds, 3),
+                 "build-fixtures: reach/pressure/magic are distinct loops");
+  scenario_check(verdigris::client::builds::tint_only_clones_fail_review(),
+                 "build-fixtures: three tinted copies of melee fail review");
+  scenario_check(has_hud("build-fixture:reach") &&
+                     has_hud("build-fixture:pressure") &&
+                     has_hud("build-fixture:magic"),
+                 "build-fixtures: character sheet names all three roles");
+  scenario_check(has_hud("build-loops:distinct") && has_hud("build-loops:tint-fail"),
+                 "build-fixtures: distinct-loop and tint-fail HUD flags");
+  scenario_check(has_prefix("build-tactics:reach:") &&
+                     has_prefix("build-weak:reach:") &&
+                     has_prefix("build-gear:reach:") &&
+                     has_prefix("build-answer:reach:"),
+                 "build-fixtures: reach lists tactics, weakness, gear, answer");
+  scenario_check(has_prefix("build-tactics:pressure:") &&
+                     has_prefix("build-weak:pressure:") &&
+                     has_prefix("build-gear:pressure:") &&
+                     has_prefix("build-answer:pressure:"),
+                 "build-fixtures: pressure lists tactics, weakness, gear, answer");
+  scenario_check(has_prefix("build-tactics:magic:") &&
+                     has_prefix("build-weak:magic:") &&
+                     has_prefix("build-gear:magic:") &&
+                     has_prefix("build-answer:magic:"),
+                 "build-fixtures: magic lists tactics, weakness, gear, answer");
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "build-fixtures: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\build-fixtures-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "build-fixtures: character-sheet capture written");
+  return scenario_failures;
+}
+
+int scenario_telegraph_spec() {
+  const auto catalog = verdigris::Simulation::presentation_catalog();
+  const auto local = verdigris::client::actions::spec_from_payload(
+      "thrust", catalog.telegraph_ticks, catalog);
+  const auto remote_ms = verdigris::client::actions::spec_from_payload(
+      "thrust", 1000, catalog);
+  scenario_check(verdigris::client::actions::same_warning(local, remote_ms),
+                 "telegraph-spec: local ticks and remote durationMs share the catalog window");
+  scenario_check(
+      verdigris::client::actions::millisecond_guess_diverges(1000, remote_ms),
+      "telegraph-spec: value/50 cannot invent a longer window");
+  scenario_check(local.duration_ticks == catalog.telegraph_ticks &&
+                     local.reach == catalog.thrust_range,
+                 "telegraph-spec: duration and thrust reach are catalog-typed");
+  const auto sweep = verdigris::client::actions::spec_from_payload("sweep", 3, catalog);
+  scenario_check(sweep.reach == catalog.melee_range,
+                 "telegraph-spec: sweep uses the melee footprint");
+
+  verdigris::client::PresentationFx fx;
+  verdigris::client::WorldView world;
+  world.tick = 1;
+  verdigris::client::PresentationEvent tel{
+      verdigris::client::PresentationEventType::Telegraph, "foe", "", "thrust",
+      1000};
+  verdigris::client::apply_presentation_event(fx, world, tel, 1);
+  scenario_check(fx.telegraphs.count("foe") == 1 &&
+                     fx.telegraphs["foe"].windup_ticks == catalog.telegraph_ticks &&
+                     fx.telegraphs["foe"].reach == catalog.thrust_range,
+                 "telegraph-spec: remote consumer stores the catalog window");
+  verdigris::client::PresentationEvent started{
+      verdigris::client::PresentationEventType::AttackStarted, "foe", "", "thrust",
+      0};
+  verdigris::client::apply_presentation_event(fx, world, started, 2);
+  scenario_check(fx.telegraphs.count("foe") == 0,
+                 "telegraph-spec: AttackStarted cancels the warning");
+
+  fx.telegraphs["stale"] = {};
+  fx.telegraphs["stale"].action = "thrust";
+  fx.telegraphs["stale"].start_tick = 0;
+  fx.telegraphs["stale"].windup_ticks = 1;
+  world.tick = 40;
+  camera2d::Camera cam{};
+  render::List remote_list;
+  verdigris::client::record_world_ops(remote_list, world, fx, cam, 960, 600);
+  bool remote_telegraph = false;
+  for (const auto& item : remote_list)
+    if (item.op == render::Op::Telegraph) remote_telegraph = true;
+  scenario_check(!remote_telegraph,
+                 "telegraph-spec: expired remote warning leaves no footprint");
+
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  const auto* scion = state.simulation->actor(state.simulation->scion().actor_id);
+  scenario_check(scion != nullptr, "telegraph-spec: session has a scion");
+  if (scion) {
+    const int melee = verdigris::world_scale::kMeleeRange;
+    state.simulation->spawn_monster(
+        {scion->position.x - melee, scion->position.y}, 1, true);
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
+  }
+  auto has_hud = [&](const char* name) {
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label == name) return true;
+    return false;
+  };
+  scenario_check(render::any(state.render_list, render::Op::Telegraph),
+                 "telegraph-spec: live elite publishes a warning");
+  const std::string typed_hud = verdigris::client::actions::spec_hud(local);
+  const std::string sweep_hud = verdigris::client::actions::spec_hud(sweep);
+  scenario_check(has_hud(typed_hud.c_str()) || has_hud(sweep_hud.c_str()),
+                 "telegraph-spec: HUD names the typed window and reach");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "telegraph-spec: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\telegraph-spec-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "telegraph-spec: warning-window capture written");
+
+  ActiveTelegraph ghost;
+  ghost.actor_id = "ghost";
+  ghost.action = "thrust";
+  ghost.position = state.world.player.position;
+  ghost.start_tick = 0;
+  ghost.windup_ticks = 1;
+  state.telegraphs["ghost"] = ghost;
+  state.world.tick = std::max<std::uint64_t>(state.world.tick, 40);
+  scenario_present(state);
+  scenario_check(has_hud("telegraph-ghost"),
+                 "telegraph-spec: an expired map entry cannot stay a silent cone");
+  const int removed = verdigris::client::actions::prune_expired_telegraphs(
+      state.telegraphs, state.world.tick);
+  scenario_check(removed >= 1, "telegraph-spec: prune drops expired warnings");
+  scenario_present(state);
+  scenario_check(!has_hud("telegraph-ghost"),
+                 "telegraph-spec: after prune there is no invisible damage telegraph");
+  return scenario_failures;
+}
+
+int scenario_headless_contract() {
+  verdigris::client::qa::SemanticIntent intent{};
+  scenario_check(verdigris::client::qa::intent_for_attack_started(&intent) &&
+                     intent.voiced ==
+                         verdigris::client::PresentationEventType::AttackStarted,
+                 "headless-contract: AttackStarted maps to a typed intent");
+
+  verdigris::Event started{};
+  started.type = verdigris::EventType::AttackStarted;
+  verdigris::client::PresentationEvent voiced{};
+  const bool bridge_mapped = presentation_from_sim(started, voiced) &&
+                             voiced.type == intent.voiced;
+  scenario_check(bridge_mapped,
+                 "headless-contract: production bridge voices AttackStarted");
+
+  auto broken_bridge = [](const verdigris::Event& event,
+                          verdigris::client::PresentationEvent& out) {
+    if (event.type == verdigris::EventType::AttackStarted) return false;
+    return presentation_from_sim(event, out);
+  };
+  verdigris::client::PresentationEvent dropped{};
+  scenario_check(!broken_bridge(started, dropped),
+                 "headless-contract: removing the bridge fails the fixture");
+
+  ClientState mock;
+  scenario_begin(mock);
+  scenario_follow_camera(mock);
+  verdigris::client::PresentationEvent fake{
+      verdigris::client::PresentationEventType::AttackStarted, "mock", "", "melee",
+      0};
+  verdigris::client::PresentationFx fx;
+  verdigris::client::apply_presentation_event(fx, mock.world, fake, 1);
+  const bool sim_has_attack = verdigris::client::qa::sim_emitted(
+      mock.simulation->events(), verdigris::EventType::AttackStarted);
+  scenario_check(verdigris::client::qa::mock_without_sim_rejected(sim_has_attack,
+                                                                 true),
+                 "headless-contract: a mocked event is not a journey proof");
+  scenario_check(!verdigris::client::qa::journey_proved(sim_has_attack, true,
+                                                       !fx.effects.empty(), true),
+                 "headless-contract: swing FX from a mock cannot prove the journey");
+
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  for (int i = 0; i < 52; ++i)
+    scenario_step(state, verdigris::Command::move(1, 0));
+  bool saw_visual = false;
+  bool saw_audio = false;
+  for (int i = 0; i < 12; ++i) {
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
+    drain_audio(state);
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud &&
+          (item.label == "intent:swing" || item.label == "headless-contract:ok" ||
+           item.label == "attack-beat:anticipate"))
+        saw_visual = true;
+    for (const auto& cue : state.audio_voiced)
+      if (cue == intent.audio_cue) saw_audio = true;
+  }
+  scenario_present(state);
+  drain_audio(state);
+  const bool sim_attack = verdigris::client::qa::sim_emitted(
+      state.simulation->events(), verdigris::EventType::AttackStarted);
+  bool live_visual = saw_visual;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Hud &&
+        (item.label == "intent:swing" || item.label == "headless-contract:ok"))
+      live_visual = true;
+  for (const auto& cue : state.audio_voiced)
+    if (cue == intent.audio_cue) saw_audio = true;
+  scenario_check(sim_attack, "headless-contract: the simulation emitted AttackStarted");
+  scenario_check(verdigris::client::qa::journey_proved(sim_attack, bridge_mapped,
+                                                      live_visual, saw_audio),
+                 "headless-contract: real event reaches render and audio intent");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "headless-contract: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\headless-contract-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "headless-contract: live contract capture written");
+  return scenario_failures;
+}
+
+int scenario_input_latency() {
+  scenario_check(verdigris::client::input::command_time_is_not_photon(
+                     "command-dispatch-ms"),
+                 "input-latency: command time is not a photon label");
+  scenario_check(!verdigris::client::input::command_time_is_not_photon(
+                     verdigris::client::input::photon_kind_hud()),
+                 "input-latency: the photon label is rejected for this method");
+
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  LARGE_INTEGER freq{}, cmd_begin{}, cmd_end{};
+  QueryPerformanceFrequency(&freq);
+  QueryPerformanceCounter(&cmd_begin);
+  state.simulation->dispatch(verdigris::Command::move(1, 0));
+  QueryPerformanceCounter(&cmd_end);
+  const double command_ms =
+      1000.0 * static_cast<double>(cmd_end.QuadPart - cmd_begin.QuadPart) /
+      static_cast<double>(freq.QuadPart);
+
+  for (int i = 0; i < 24; ++i) {
+    verdigris::client::input::note_input(state.input_latency);
+    scenario_present(state);
+  }
+  scenario_present(state);
+  auto has_hud = [&](const char* name) {
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label == name) return true;
+    return false;
+  };
+  auto has_prefix = [&](const char* prefix) {
+    const std::string p = prefix;
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label.rfind(p, 0) == 0)
+        return true;
+    return false;
+  };
+  scenario_check(state.input_latency.samples.size() >= 24,
+                 "input-latency: paired input-to-present samples were recorded");
+  const double p50 =
+      verdigris::client::input::percentile_ms(state.input_latency, 0.50);
+  const double p95 =
+      verdigris::client::input::percentile_ms(state.input_latency, 0.95);
+  scenario_check(p50 > 0.0 && p95 >= p50,
+                 "input-latency: p50/p95 are present-path milliseconds");
+  scenario_check(has_hud(verdigris::client::input::present_kind_hud()),
+                 "input-latency: the method is named present, not photon");
+  scenario_check(!has_hud(verdigris::client::input::photon_kind_hud()),
+                 "input-latency: photon must not appear on the HUD");
+  scenario_check(has_prefix("input-latency:p50:") && has_prefix("input-latency:p95:"),
+                 "input-latency: p50 and p95 are published");
+  SYSTEM_INFO sysinfo{};
+  GetNativeSystemInfo(&sysinfo);
+  std::printf("    input-latency machine: display %dx%d | %u logical CPUs | "
+              "OS Win32 | method input-to-present (not photon)\n",
+              GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
+              static_cast<unsigned>(sysinfo.dwNumberOfProcessors));
+  std::printf("    input-latency: p50 %.2f ms | p95 %.2f ms | n %zu | "
+              "command-dispatch %.3f ms (not photon)\n",
+              p50, p95, state.input_latency.samples.size(), command_ms);
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "input-latency: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\input-latency-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "input-latency: present-path capture written");
+  const std::string report = dir + "\\input-latency-report.txt";
+  FILE* out = nullptr;
+  fopen_s(&out, report.c_str(), "w");
+  scenario_check(out != nullptr, "input-latency: report file opened");
+  if (out) {
+    std::fprintf(out,
+                 "method=input-to-present\nphoton=rejected\np50_ms=%.3f\n"
+                 "p95_ms=%.3f\nn=%zu\ncommand_dispatch_ms=%.4f\n",
+                 p50, p95, state.input_latency.samples.size(), command_ms);
+    std::fclose(out);
+  }
+  return scenario_failures;
+}
+
+int scenario_eight_way() {
+  scenario_check(verdigris::client::move::all_eight_encode(),
+                 "eight-way: all eight vectors encode without dropping an axis");
+  const std::string diag =
+      verdigris::client::move::encode_eight_way(-1, -1);
+  const std::string collapsed =
+      verdigris::client::move::collapse_to_vertical(-1, -1);
+  scenario_check(diag == "up-left", "eight-way: northwest is up-left on the wire");
+  scenario_check(collapsed == "up" && collapsed != diag,
+                 "eight-way: a vertical-only encoder cannot pass a diagonal");
+  for (const auto& vec : verdigris::client::move::kEightWay) {
+    const std::string name =
+        verdigris::client::move::encode_eight_way(vec[0], vec[1]);
+    scenario_check(verdigris::client::move::diagonal_keeps_both_axes(
+                       vec[0], vec[1], name),
+                   "eight-way: diagonal names keep both axes");
+  }
+
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  scenario_present(state);
+  auto has_hud = [&](const char* name) {
+    for (const auto& item : state.render_list)
+      if (item.op == render::Op::Hud && item.label == name) return true;
+    return false;
+  };
+  scenario_check(has_hud("move-dir:eight-way"),
+                 "eight-way: production HUD names the eight-way encoder");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "eight-way: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\eight-way-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "eight-way: capture written");
+  return scenario_failures;
+}
+
+int scenario_aim_hold() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  const auto* scion = state.simulation->actor(state.simulation->scion().actor_id);
+  scenario_check(scion != nullptr, "aim-hold: session has a scion");
+  if (!scion) return scenario_failures;
+  const int start_x = scion->position.x;
+  state.simulation->dispatch(verdigris::Command::aim(1, 0));
+  scion = state.simulation->actor(state.simulation->scion().actor_id);
+  scenario_check(scion && scion->facing.x > 0, "aim-hold: east aim is stored");
+  state.simulation->dispatch(verdigris::Command::move(-1, 0));
+  scion = state.simulation->actor(state.simulation->scion().actor_id);
+  verdigris::client::move::AimHold hold{};
+  verdigris::client::move::remember_aim(hold, 1, 0);
+  scenario_check(scion && verdigris::client::move::move_clobbered_aim(
+                              hold, scion->facing.x, scion->facing.y),
+                 "aim-hold: core move would overwrite aim without the adapter");
+  state.simulation->dispatch(verdigris::Command::aim(1, 0));
+  scion = state.simulation->actor(state.simulation->scion().actor_id);
+  scenario_check(scion && scion->facing.x > 0 && scion->position.x < start_x,
+                 "aim-hold: adapter restores east aim after west locomotion");
+
+  RECT bounds{0, 0, 960, 600};
+  for (int i = 0; i < 16; ++i) {
+    state.simulation->dispatch(verdigris::Command::move(1, 0));
+    state.simulation->dispatch(verdigris::Command::aim(1, 0));
+  }
+  scion = state.simulation->actor(state.simulation->scion().actor_id);
+  sync_world(state);
+  scenario_follow_camera(state);
+  const ScreenPoint stand =
+      project(state.camera, bounds, static_cast<double>(scion->position.x),
+              static_cast<double>(scion->position.y));
+  state.mouse.x = stand.x + 160;
+  state.mouse.y = stand.y;
+  dispatch_aim_if_changed(state, bounds, true);
+  state.last_aim_direction = {1, 0};
+  state.aim_direction_initialized = true;
+  state.a = true;
+  state.d = false;
+  state.w = false;
+  state.s = false;
+  const int tick_x = scion->position.x;
+  for (int i = 0; i < 8; ++i) fixed_game_tick(state, bounds);
+  scion = state.simulation->actor(state.simulation->scion().actor_id);
+  scenario_check(scion && scion->facing.x > 0,
+                 "aim-hold: production tick keeps east aim while walking west");
+  scenario_check(scion && scion->position.x < tick_x,
+                 "aim-hold: west WASD still displaces");
+  scenario_present(state);
+  bool aim_hud = false;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Hud && item.label == "aim-hold:right")
+      aim_hud = true;
+  scenario_check(aim_hud, "aim-hold: HUD names the held aim");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "aim-hold: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\aim-hold-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "aim-hold: capture written");
+  return scenario_failures;
+}
+
+verdigris::client::ui::ChannelMean sample_rect_channels(const void* bits, int width,
+                                                       int height, int cx, int cy) {
+  verdigris::client::ui::ChannelMean mean;
+  if (!bits) return mean;
+  const auto* p = static_cast<const std::uint8_t*>(bits);
+  const int x0 = std::max(0, cx - 4);
+  const int x1 = std::min(width, cx + 5);
+  const int y0 = std::max(0, cy - 12);
+  const int y1 = std::min(height, cy - 2);
+  long r = 0;
+  long b = 0;
+  for (int y = y0; y < y1; ++y) {
+    for (int x = x0; x < x1; ++x) {
+      const int i = (y * width + x) * 4;
+      const int blue = p[i + 2];
+      const int green = p[i + 1];
+      const int red = p[i];
+      if (red + green + blue < 48) continue;
+      r += red;
+      b += blue;
+      ++mean.samples;
+    }
+  }
+  if (mean.samples > 0) {
+    mean.r = static_cast<int>(r / mean.samples);
+    mean.b = static_cast<int>(b / mean.samples);
+  }
+  return mean;
+}
+
+int scenario_vital_orbs() {
+  using verdigris::client::ui::life_on_screen_left;
+  using verdigris::client::ui::life_reads_red;
+  using verdigris::client::ui::mana_reads_blue;
+  using verdigris::client::ui::mute_on_mana_globe_fails;
+  using verdigris::client::ui::swapped_sheet_crops_fail;
+  scenario_check(swapped_sheet_crops_fail(kOrbMana.art.left),
+                 "vital-orbs: the blue crop cannot count as life");
+  scenario_check(!swapped_sheet_crops_fail(kOrbLife.art.left),
+                 "vital-orbs: life uses the red crop on the sheet");
+
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  scenario_check(state.audio_sink && state.audio_sink->muted(),
+                 "vital-orbs: scenarios still mute the sink");
+
+  const int width = 960;
+  const int height = 600;
+  BITMAPINFO info{};
+  info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  info.bmiHeader.biWidth = width;
+  info.bmiHeader.biHeight = -height;
+  info.bmiHeader.biPlanes = 1;
+  info.bmiHeader.biBitCount = 32;
+  info.bmiHeader.biCompression = BI_RGB;
+  void* bits = nullptr;
+  HBITMAP bitmap = CreateDIBSection(nullptr, &info, DIB_RGB_COLORS, &bits, nullptr, 0);
+  scenario_check(bitmap != nullptr, "vital-orbs: offscreen bitmap");
+  if (!bitmap) return scenario_failures;
+  HDC dc = CreateCompatibleDC(nullptr);
+  HGDIOBJ old = SelectObject(dc, bitmap);
+  RECT bounds{0, 0, width, height};
+  paint_scene(state, dc, bounds);
+
+  int life_cx = 0;
+  int life_cy = 0;
+  int mana_cx = 0;
+  int mana_cy = 0;
+  bool life_role = false;
+  bool mana_role = false;
+  bool mute_chip = false;
+  bool mute_on_mana = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Orb && item.label == "life") {
+      life_cx = static_cast<int>(item.x);
+      life_cy = static_cast<int>(item.y);
+    }
+    if (item.op == render::Op::Orb && item.label == "resource") {
+      mana_cx = static_cast<int>(item.x);
+      mana_cy = static_cast<int>(item.y);
+    }
+    if (item.op == render::Op::Hud && item.label == "orb-role:life-left")
+      life_role = true;
+    if (item.op == render::Op::Hud && item.label == "orb-role:mana-right")
+      mana_role = true;
+    if (item.op == render::Op::Hud && item.label == "audio:muted") {
+      mute_chip = true;
+      mute_on_mana = std::abs(static_cast<int>(item.x) - mana_cx) < 24;
+    }
+  }
+  scenario_check(life_on_screen_left(life_cx, mana_cx),
+                 "vital-orbs: life orb is left of mana");
+  scenario_check(life_role && mana_role, "vital-orbs: HUD names constitution roles");
+  scenario_check(mute_chip, "vital-orbs: mute still has a non-color cue");
+  scenario_check(!mute_on_mana_globe_fails(true, mute_on_mana),
+                 "vital-orbs: mute cannot sit on the mana globe");
+
+  const auto life_ch =
+      sample_rect_channels(bits, width, height, life_cx, life_cy);
+  const auto mana_ch =
+      sample_rect_channels(bits, width, height, mana_cx, mana_cy);
+  std::printf("    vital-orbs: life rgb r=%d b=%d n=%d | mana r=%d b=%d n=%d\n",
+              life_ch.r, life_ch.b, life_ch.samples, mana_ch.r, mana_ch.b,
+              mana_ch.samples);
+  scenario_check(life_reads_red(life_ch),
+                 "vital-orbs: left globe reads red, not blue");
+  scenario_check(mana_reads_blue(mana_ch),
+                 "vital-orbs: right globe reads blue, not orange");
+  scenario_check(verdigris::gpu::swapped_png_rejected(life_ch.b, life_ch.r, life_ch.r,
+                                                    life_ch.b),
+                 "vital-orbs: an R/B swapped still cannot certify life");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "vital-orbs: capture root rejected before any write");
+    SelectObject(dc, old);
+    DeleteDC(dc);
+    DeleteObject(bitmap);
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\vital-orbs-960x600.png";
+  scenario_check(save_hbitmap_png(state.billboards, bitmap, png),
+                 "vital-orbs: capture written");
+  SelectObject(dc, old);
+  DeleteDC(dc);
+  DeleteObject(bitmap);
+  return scenario_failures;
+}
+
+int scenario_death_disconnect() {
+  using verdigris::client::gov::Carry;
+  using verdigris::client::gov::EndEvent;
+  using verdigris::client::gov::extract_hud;
+  using verdigris::client::gov::paints_extract_ok;
+  using verdigris::client::gov::silent_disconnect_ack;
+  scenario_check(silent_disconnect_ack(EndEvent::Disconnect, Carry::Uncommitted),
+                 "death-disconnect: disconnect+uncommitted is the negative");
+  scenario_check(!paints_extract_ok(EndEvent::Disconnect, Carry::Uncommitted),
+                 "death-disconnect: that negative cannot paint extract:ok");
+  scenario_check(std::strcmp(extract_hud(EndEvent::Disconnect, Carry::Uncommitted),
+                             "extract:uncommitted") == 0,
+                 "death-disconnect: disconnect HUD names uncommitted carry");
+  scenario_check(paints_extract_ok(EndEvent::Disconnect, Carry::ExtractCommitted),
+                 "death-disconnect: already-banked extract:ok survives reconnect");
+  scenario_check(!silent_disconnect_ack(EndEvent::Disconnect, Carry::ExtractCommitted),
+                 "death-disconnect: committed extract is not a silent ack");
+  scenario_check(std::strcmp(extract_hud(EndEvent::Death, Carry::Uncommitted),
+                             "extract:uncommitted") == 0,
+                 "death-disconnect: death does not bank by HUD");
+
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  state.link_lost = true;
+  scenario_present(state);
+  bool uncommitted = false;
+  bool extract_ok = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "extract:uncommitted") uncommitted = true;
+    if (item.label == "extract:ok") extract_ok = true;
+  }
+  scenario_check(uncommitted,
+                 "death-disconnect: live HUD publishes extract:uncommitted");
+  scenario_check(!extract_ok,
+                 "death-disconnect: live HUD cannot ack an uncommitted extract");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "death-disconnect: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\death-disconnect-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "death-disconnect: capture written");
+  return scenario_failures;
+}
+
+int scenario_route_map() {
+  using verdigris::client::ui::leaky_zoom_paints_off_snapshot;
+  using verdigris::client::ui::MapOverlay;
+  using verdigris::client::ui::MapTarget;
+  using verdigris::client::ui::overlay_mutates_world;
+  using verdigris::client::ui::overlay_paints_blip;
+  using verdigris::client::ui::route_return_fact;
+  using verdigris::client::ui::route_risk_fact;
+
+  const MapOverlay tight{2, 255};
+  const MapTarget hidden{"off-snapshot-warden", true, false};
+  const MapTarget seen{"snapshot-warden", true, true};
+  scenario_check(leaky_zoom_paints_off_snapshot(2, false),
+                 "route-map: max zoom + off-snapshot is the leaky anti-pattern");
+  scenario_check(!overlay_paints_blip(tight, hidden),
+                 "route-map: production overlay cannot use that leak");
+  scenario_check(overlay_paints_blip(tight, seen),
+                 "route-map: snapshot-visible foes still paint at max zoom");
+  scenario_check(!overlay_mutates_world(tight),
+                 "route-map: overlay settings are not world writes");
+  scenario_check(std::strcmp(route_risk_fact(true, false), "risk wardens") == 0,
+                 "route-map: slay phase posts warden risk");
+  scenario_check(std::strcmp(route_return_fact(false), "return town") == 0,
+                 "route-map: no pad still returns to town");
+
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  const verdigris::Vec2 before = state.world.player.position;
+  WorldActor ghost;
+  ghost.id = "off-snapshot-warden";
+  ghost.alive = true;
+  ghost.on_snapshot = false;
+  ghost.position = {before.x + 96, before.y};
+  state.map_overlay_probes.push_back(ghost);
+  WorldActor listed;
+  listed.id = "snapshot-warden";
+  listed.alive = true;
+  listed.on_snapshot = true;
+  listed.position = {before.x + 48, before.y};
+  state.map_overlay_probes.push_back(listed);
+  state.world.expedition_phase = ExpeditionPhaseView::SlayWardens;
+  state.minimap_zoom = 2;
+  state.minimap_opacity = 255;
+  scenario_present(state);
+
+  scenario_check(state.world.player.position.x == before.x &&
+                     state.world.player.position.y == before.y,
+                 "route-map: zoom/opacity cannot move the player");
+  bool leaked = false;
+  bool listed_blip = false;
+  bool zoom_hud = false;
+  bool opacity_hud = false;
+  bool risk_hud = false;
+  bool route_hud = false;
+  bool ghost_named = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "map-blip:off-snapshot-warden") leaked = true;
+    if (item.label == "map-blip:snapshot-warden") listed_blip = true;
+    if (item.label == "minimap-zoom:2") zoom_hud = true;
+    if (item.label == "map-opacity:255") opacity_hud = true;
+    if (item.label == "route-risk:risk wardens") risk_hud = true;
+    if (item.label.rfind("route:", 0) == 0) route_hud = true;
+    if (item.label.find("off-snapshot-warden") != std::string::npos)
+      ghost_named = true;
+  }
+  scenario_check(!leaked,
+                 "route-map: tight zoom cannot mint an off-snapshot blip");
+  scenario_check(listed_blip,
+                 "route-map: a snapshot foe still has a map blip");
+  scenario_check(zoom_hud && opacity_hud,
+                 "route-map: zoom and opacity publish as overlay settings");
+  scenario_check(route_hud && risk_hud,
+                 "route-map: route card names return/risk without foe ids");
+  scenario_check(!ghost_named,
+                 "route-map: HUD cannot name a server-hidden target");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "route-map: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\route-map-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "route-map: capture written");
+  return scenario_failures;
+}
+
+int scenario_stat_explain() {
+  using verdigris::client::ui::StatSources;
+  using verdigris::client::ui::active_attack;
+  using verdigris::client::ui::folds_dormant_into_attack;
+  StatSources src{12, 5, 3, 9, false, true};
+  scenario_check(active_attack(src) == 20,
+                 "stat-explain: active total is base+gear+passive");
+  scenario_check(folds_dormant_into_attack(src, 29),
+                 "stat-explain: folding dormant 9 into Attack is the anti-pattern");
+  scenario_check(!folds_dormant_into_attack(src, 20),
+                 "stat-explain: the live total must reject that fold");
+
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  state.character_pane = true;
+  scenario_present(state);
+  const int base = state.world.player.attack;
+  int gear = 0;
+  for (const auto& item : state.world.carried)
+    if (item.equipped) gear = item.attack_bonus;
+  state.sheet_passive_atk = 3;
+  state.sheet_cond_atk = 9;
+  state.sheet_cond_active = false;
+  state.stat_atk_expanded = false;
+  scenario_present(state);
+  const int expect = active_attack(
+      {base, gear, 3, 9, false, false});
+  bool collapsed_ok = false;
+  bool folded = false;
+  bool dormant = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label.rfind("char:Attack:", 0) == 0) {
+      collapsed_ok = item.label == ("char:Attack:" + std::to_string(expect));
+      folded = item.label == ("char:Attack:" + std::to_string(expect + 9));
+    }
+    if (item.label.rfind("char:Cond:9 · inactive", 0) == 0) dormant = true;
+  }
+  scenario_check(collapsed_ok, "stat-explain: collapsed Attack excludes dormant");
+  scenario_check(!folded, "stat-explain: dormant 9 cannot appear as Attack");
+  scenario_check(dormant, "stat-explain: conditional stays labeled inactive");
+
+  state.stat_atk_expanded = true;
+  scenario_present(state);
+  bool src_base = false, src_gear = false, src_passive = false, src_cond = false;
+  bool expanded = false, excluded = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label.rfind("char:src base:", 0) == 0) src_base = true;
+    if (item.label.rfind("char:src gear:", 0) == 0) src_gear = true;
+    if (item.label.rfind("char:src passive:", 0) == 0) src_passive = true;
+    if (item.label.rfind("char:src cond:", 0) == 0) src_cond = true;
+    if (item.label == "char:atk-expanded:1") expanded = true;
+    if (item.label == "char:atk-dormant-excluded") excluded = true;
+  }
+  scenario_check(src_base && src_gear && src_passive && src_cond,
+                 "stat-explain: expanded sheet names base, gear, passive, cond");
+  scenario_check(expanded && excluded,
+                 "stat-explain: expand flag and dormant-exclusion are on the HUD");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "stat-explain: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\stat-explain-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "stat-explain: capture written");
+  return scenario_failures;
+}
+
+int scenario_held_item() {
+  using verdigris::client::art::paper_doll_only_fails_review;
+  using verdigris::client::art::world_shows_attachment;
+  scenario_check(paper_doll_only_fails_review(true, false),
+                 "held-item: a filled seat with no world hold is the anti-pattern");
+  scenario_check(!world_shows_attachment("held:none", 0),
+                 "held-item: held:none is not a world attachment");
+  scenario_check(world_shows_attachment("held:sword", 2),
+                 "held-item: a non-none held enum is a world attachment");
+  scenario_check(!paper_doll_only_fails_review(true, true),
+                 "held-item: seat plus world hold can pass review");
+
+  ClientState state;
+  scenario_begin(state);
+  for (int i = 0; i < 52; ++i)
+    scenario_step(state, verdigris::Command::move(1, 0));
+  for (int i = 0; i < 8; ++i)
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
+  if (!state.simulation->ground_items().empty())
+    scenario_step(state, verdigris::Command::pick_up(
+                             state.simulation->ground_items().front().id));
+  scenario_check(!state.simulation->scion().carried_items.empty(),
+                 "held-item: pickup yields a carried weapon");
+  scenario_step(state, verdigris::Command::unequip());
+  state.gear_overlay = true;
+  scenario_present(state);
+  bool unarmed_world = false;
+  bool empty_seat = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Player && item.label == "held:none")
+      unarmed_world = true;
+    if (item.op == render::Op::Hud && item.label == "held-seat:(empty)")
+      empty_seat = true;
+  }
+  scenario_check(unarmed_world, "held-item: unequip clears the world attachment");
+  scenario_check(empty_seat, "held-item: unequip clears the paper-doll seat");
+
+  if (!state.simulation->scion().carried_items.empty())
+    scenario_step(state, verdigris::Command::equip(
+                             state.simulation->scion().carried_items.front().id));
+  state.gear_overlay = true;
+  scenario_present(state);
+  bool world_held = false;
+  bool seat_filled = false;
+  bool world_hud = false;
+  const render::Item* scion = render::first(state.render_list, render::Op::Player);
+  if (scion)
+    world_held = world_shows_attachment(scion->label.c_str(), scion->value);
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Hud && item.label.rfind("held-seat:", 0) == 0 &&
+        item.label != "held-seat:(empty)")
+      seat_filled = true;
+    if (item.op == render::Op::Hud && item.label.rfind("held-world:", 0) == 0 &&
+        item.label != "held-world:held:none")
+      world_hud = true;
+  }
+  scenario_check(world_held, "held-item: ack equip changes the world actor layer");
+  scenario_check(seat_filled, "held-item: paper-doll names the equipped weapon");
+  scenario_check(world_hud, "held-item: HUD publishes the world hold, not only the seat");
+  scenario_check(!paper_doll_only_fails_review(seat_filled, world_held),
+                 "held-item: paper-doll alone cannot satisfy the journey");
+
+  state.gear_overlay = false;
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "held-item: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\held-item-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "held-item: world-hold capture written");
+  return scenario_failures;
+}
+
+int scenario_pack_drag() {
+  using verdigris::client::ui::classify_pack_drop;
+  using verdigris::client::ui::PackDrop;
+  using verdigris::client::ui::pack_drop_hud;
+  using verdigris::client::ui::reject_loses_or_duplicates;
+  using verdigris::client::ui::reject_silently_equips;
+  scenario_check(classify_pack_drop(true, false, false, true) == PackDrop::Reject,
+                 "pack-drag: a failed preview is a reject");
+  scenario_check(reject_loses_or_duplicates(PackDrop::Reject, 1, 0),
+                 "pack-drag: losing the item on reject is the anti-pattern");
+  scenario_check(reject_silently_equips(PackDrop::Reject, true),
+                 "pack-drag: silent equip on reject is the anti-pattern");
+  scenario_check(!reject_loses_or_duplicates(PackDrop::Reject, 1, 1),
+                 "pack-drag: production reject keeps the carried count");
+  scenario_check(std::strcmp(pack_drop_hud(PackDrop::Ok), "pack-drop:ok") == 0,
+                 "pack-drag: HUD names a successful place");
+
+  ClientState state;
+  scenario_begin(state);
+  for (int i = 0; i < 52; ++i)
+    scenario_step(state, verdigris::Command::move(1, 0));
+  for (int i = 0; i < 8; ++i)
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
+  if (!state.simulation->ground_items().empty())
+    scenario_step(state, verdigris::Command::pick_up(
+                             state.simulation->ground_items().front().id));
+  scenario_check(!state.simulation->scion().carried_items.empty(),
+                 "pack-drag: pickup fills the pack");
+  scenario_step(state, verdigris::Command::unequip());
+  state.gear_overlay = true;
+  scenario_present(state);
+  scenario_check(state.pack_grid.count > 0, "pack-drag: grid has the carried item");
+  const std::uint32_t pid = state.pack_grid.items[0].id;
+  const int carried_n = static_cast<int>(state.world.carried.size());
+  pack_begin_drag(state, state.pack_grid.items[0].x, state.pack_grid.items[0].y);
+  state.pack_preview_x = 2;
+  state.pack_preview_y = 1;
+  state.pack_preview_ok = pack_can_land(state.pack_grid, pid, 2, 1);
+  pack_commit_drop(state, false);
+  scenario_check(state.pack_last_drop == "ok" &&
+                     inventory_grid::item_at(state.pack_grid, 2, 1) == pid,
+                 "pack-drag: valid drop moves the item");
+  scenario_present(state);
+  bool moved = false;
+  bool drop_ok = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "pack:2,1") moved = true;
+    if (item.label == "pack-drop:ok") drop_ok = true;
+  }
+  scenario_check(moved && drop_ok, "pack-drag: moved cell and drop HUD are painted");
+
+  pack_begin_drag(state, 2, 1);
+  state.pack_preview_x = 20;
+  state.pack_preview_y = 20;
+  state.pack_preview_ok = false;
+  pack_commit_drop(state, false);
+  bool equipped = false;
+  for (const auto& item : state.world.carried)
+    if (item.equipped) equipped = true;
+  scenario_check(state.pack_last_drop == "reject" &&
+                     inventory_grid::item_at(state.pack_grid, 2, 1) == pid &&
+                     static_cast<int>(state.world.carried.size()) == carried_n,
+                 "pack-drag: reject neither loses nor duplicates");
+  scenario_check(!equipped, "pack-drag: reject does not silently equip");
+  scenario_check(!reject_loses_or_duplicates(
+                     PackDrop::Reject, carried_n,
+                     static_cast<int>(state.world.carried.size())),
+                 "pack-drag: reject occupancy matches the helper");
+  scenario_present(state);
+  bool drop_reject = false;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Hud && item.label == "pack-drop:reject")
+      drop_reject = true;
+  scenario_check(drop_reject, "pack-drag: reject is visible on the gear HUD");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "pack-drag: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\pack-drag-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "pack-drag: capture written");
+  return scenario_failures;
+}
+
+int scenario_resource_envelope() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  scenario_present_size(state, 960, 600);
+  const PresentationResources first = presentation_resources(state);
+  scenario_check(first.floor_bitmaps == 1,
+                 "resource-envelope: one floor bitmap after the first paint");
+  int max_floor_w = first.floor_w;
+  for (int cycle = 0; cycle < 8; ++cycle) {
+    scenario_present_size(state, 1920, 1080);
+    scenario_present_size(state, 640, 400);
+    scenario_present_size(state, 960, 600);
+    const PresentationResources mid = presentation_resources(state);
+    max_floor_w = std::max(max_floor_w, mid.floor_w);
+    scenario_check(mid.floor_bitmaps == 1,
+                   "resource-envelope: resize cycles keep a single floor bitmap");
+    scenario_check(mid.gdi_pens <= static_cast<int>(kMaxCachedPens),
+                   "resource-envelope: GDI pens stay inside the 128 cap");
+    scenario_check(mid.gdi_brushes <= static_cast<int>(kMaxCachedBrushes),
+                   "resource-envelope: GDI brushes stay inside the 128 cap");
+  }
+  const PresentationResources settled = presentation_resources(state);
+  scenario_check(settled.floor_w <= first.floor_w * 2,
+                 "resource-envelope: returning to 960 shrinks an oversized floor");
+  scenario_check(settled.floor_w <= max_floor_w,
+                 "resource-envelope: floor width is not a second leaked bitmap");
+
+  for (int i = 0; i < 300; ++i) {
+    EffectFx fx;
+    fx.kind = EffectFx::Kind::Impact;
+    fx.wx = static_cast<double>(state.world.player.position.x + i);
+    fx.wy = static_cast<double>(state.world.player.position.y);
+    fx.ttl = 8;
+    add_effect(state, fx);
+  }
+  scenario_present(state);
+  const PresentationResources flooded = presentation_resources(state);
+  std::printf("    resource-envelope: floor %dx%d (1 bitmap) | pens %d | "
+              "brushes %d | fx %d | paint %.1f ms\n",
+              flooded.floor_w, flooded.floor_h, flooded.gdi_pens,
+              flooded.gdi_brushes, flooded.effects, state.last_paint_ms);
+  scenario_check(flooded.effects <= static_cast<int>(kMaxPresentationEffects),
+                 "resource-envelope: 300 spawned effects stay at the 128 cap");
+  scenario_check(state.last_paint_ms < 40.0,
+                 "resource-envelope: a cheap frame does not excuse a growing "
+                 "effect list");
+  scenario_check(flooded.effects == static_cast<int>(kMaxPresentationEffects),
+                 "resource-envelope: the cap is occupied, not emptied to pass");
+  return scenario_failures;
+}
+
+int scenario_loot_label_budget() {
+  ClientState state;
+  scenario_begin(state);
+  scenario_follow_camera(state);
+  const verdigris::Vec2 origin = state.world.player.position;
+  state.loot_labels = true;
+  constexpr int kDense = 120;
+  for (int i = 0; i < kDense; ++i) {
+    char id[40];
+    std::snprintf(id, sizeof(id), "dense-drop-%03d", i);
+    state.loot_positions[id] = {origin.x + (i % 20) * 24, origin.y + (i / 20) * 24};
+  }
+  scenario_present(state);
+  int drops = 0;
+  int labels = 0;
+  bool far_sprite = false;
+  bool far_named = false;
+  bool near_named = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Drop) {
+      ++drops;
+      if (item.label == "dense-drop-119") far_sprite = true;
+    }
+    if (item.op == render::Op::Hud && item.label.rfind("loot-label:", 0) == 0) {
+      ++labels;
+      if (item.label == "loot-label:dense-drop-119") far_named = true;
+      if (item.label == "loot-label:dense-drop-000") near_named = true;
+    }
+  }
+  scenario_check(drops >= kDense,
+                 "loot-label-budget: every dense pouch still draws as Drop");
+  scenario_check(far_sprite,
+                 "loot-label-budget: a far pouch remains a Drop sprite");
+  scenario_check(!far_named,
+                 "loot-label-budget: the farthest pouch is not nameplated");
+  scenario_check(near_named,
+                 "loot-label-budget: the nearest pouch keeps a readable name");
+  scenario_check(labels > 0,
+                 "loot-label-budget: hiding every name to pass the cap fails");
+  scenario_check(labels <= static_cast<int>(kMaxLootNameplates),
+                 "loot-label-budget: nameplates stay at the 12-nearest cap");
+
+  state.loot_labels = false;
+  scenario_present(state);
+  int silent_labels = 0;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Hud && item.label.rfind("loot-label:", 0) == 0)
+      ++silent_labels;
+  scenario_check(silent_labels == 0,
+                 "loot-label-budget: labels off means zero loot-label ops");
+  return scenario_failures;
+}
+
 // Machine-checkable presentation budget: paints real fullscreen-sized 32bpp
 // frames through the production paint_scene path and fails when the average
 // frame cost would visibly stutter the 20 Hz tick. The bound is deliberately
@@ -7217,6 +12104,12 @@ int scenario_frame_budget() {
   if (!bitmap) { DeleteDC(dc); return scenario_failures; }
   HGDIOBJ old = SelectObject(dc, bitmap);
   RECT bounds{0, 0, width, height};
+  SYSTEM_INFO sysinfo{};
+  GetNativeSystemInfo(&sysinfo);
+  std::printf("    frame-budget machine: display %dx%d | %u logical CPUs | "
+              "OS Win32 | present GDI (upload n/a)\n",
+              GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
+              static_cast<unsigned>(sysinfo.dwNumberOfProcessors));
   paint_scene(state, dc, bounds);  // warm caches (fonts, GDI+ startup)
   LARGE_INTEGER freq{}, begin{}, end{};
   QueryPerformanceFrequency(&freq);
@@ -7229,8 +12122,14 @@ int scenario_frame_budget() {
                         static_cast<double>(freq.QuadPart) / kFrames;
   std::printf("    frame-budget: %.1f ms average over %d frames at %dx%d\n",
               avg_ms, kFrames, width, height);
+  std::printf("    frame-budget last paint: sim-sync in paint | floor %.1f | "
+              "world %.1f | hud %.1f | upload %.1f | total %.1f | net n/a\n",
+              state.paint_ms_floor, state.paint_ms_world, state.paint_ms_hud,
+              state.paint_ms_upload, state.last_paint_ms);
   scenario_check(avg_ms < 40.0,
                  "frame-budget: fullscreen frame stays under 40 ms");
+  scenario_check(state.last_paint_ms > 0.0,
+                 "frame-budget: unnamed hardware cannot skip the paint fields");
   SelectObject(dc, old);
   DeleteObject(bitmap);
   DeleteDC(dc);
@@ -7245,6 +12144,8 @@ int run_scenarios(const std::string& which) {
   const Entry entries[] = {
       {"move-and-camera", scenario_move_and_camera},
       {"first-fight", scenario_first_fight},
+      {"combat-audio", scenario_combat_audio},
+      {"hud-scale-floor", scenario_hud_scale_floor},
       {"loot-to-bank", scenario_loot_to_bank},
       {"telegraph-dodge", scenario_telegraph_dodge},
       {"combat-juice", scenario_combat_juice},
@@ -7255,6 +12156,50 @@ int run_scenarios(const std::string& which) {
       {"animation-vfx-phase-a", scenario_animation_vfx_phase_a},
       {"progression-surface", scenario_progression_surface},
       {"hud-pane-readability", scenario_hud_pane_readability},
+      {"loot-label-budget", scenario_loot_label_budget},
+      {"effect-batch", scenario_effect_batch},
+      {"resource-envelope", scenario_resource_envelope},
+      {"hitch-warmup", scenario_hitch_warmup},
+      {"attack-poses", scenario_attack_poses},
+      {"kit-chunk", scenario_kit_chunk},
+      {"weave-vfx", scenario_weave_vfx},
+      {"pad-path", scenario_pad_path},
+      {"legal-sounds", scenario_legal_sounds},
+      {"music-phase", scenario_music_phase},
+      {"gpu-sample", scenario_gpu_sample},
+      {"gpu-packets", scenario_gpu_packets},
+      {"visual-target", scenario_visual_target},
+      {"bronze-stone", scenario_bronze_stone},
+      {"shader-bindings", scenario_shader_bindings},
+      {"gpu-reference", scenario_gpu_reference},
+      {"grounding", scenario_grounding},
+      {"material-light", scenario_material_light},
+      {"gpu-capture", scenario_gpu_capture},
+      {"gpu-recover", scenario_gpu_recover},
+      {"sound-adapter", scenario_sound_adapter},
+      {"audio-prefs", scenario_audio_prefs},
+      {"ambience-layer", scenario_ambience_layer},
+      {"equipment", scenario_equipment},
+      {"memory-soak", scenario_memory_soak},
+      {"dense-mix", scenario_dense_mix},
+      {"pane-stack", scenario_pane_stack},
+      {"pane-focus", scenario_pane_focus},
+      {"remap-binds", scenario_remap_binds},
+      {"attack-beat", scenario_attack_beat},
+      {"dressing-pass", scenario_dressing_pass},
+      {"loot-filter", scenario_loot_filter},
+      {"build-fixtures", scenario_build_fixtures},
+      {"telegraph-spec", scenario_telegraph_spec},
+      {"headless-contract", scenario_headless_contract},
+      {"input-latency", scenario_input_latency},
+      {"eight-way", scenario_eight_way},
+      {"aim-hold", scenario_aim_hold},
+      {"vital-orbs", scenario_vital_orbs},
+      {"death-disconnect", scenario_death_disconnect},
+      {"route-map", scenario_route_map},
+      {"stat-explain", scenario_stat_explain},
+      {"held-item", scenario_held_item},
+      {"pack-drag", scenario_pack_drag},
       {"frame-budget", scenario_frame_budget},
   };
   int total_failures = 0;
@@ -7362,8 +12307,42 @@ bool save_hbitmap_png(BillboardAssets& assets, HBITMAP bitmap, const std::string
   if (!assets.create_bitmap_from_hbitmap || !assets.save_image_to_file ||
       !assets.dispose_image)
     return false;
+  BITMAP bm{};
+  const int got = GetObject(bitmap, sizeof(bm), &bm);
+  HBITMAP encoded = bitmap;
+  HBITMAP swapped = nullptr;
+  void* swapped_bits = nullptr;
+  // GetObject on a DIB section returns sizeof(DIBSECTION) (> BITMAP). Requiring
+  // an exact BITMAP size silently skipped the channel fix.
+  if (got >= static_cast<int>(sizeof(BITMAP)) && bm.bmBitsPixel == 32 && bm.bmBits &&
+      bm.bmWidth > 0 && bm.bmWidthBytes >= 4) {
+    BITMAPINFO info{};
+    info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    info.bmiHeader.biWidth = bm.bmWidth;
+    info.bmiHeader.biHeight = -std::abs(bm.bmHeight);
+    info.bmiHeader.biPlanes = 1;
+    info.bmiHeader.biBitCount = 32;
+    info.bmiHeader.biCompression = BI_RGB;
+    swapped = CreateDIBSection(nullptr, &info, DIB_RGB_COLORS, &swapped_bits, nullptr, 0);
+    if (swapped && swapped_bits) {
+      const int h = std::abs(bm.bmHeight);
+      const int w = bm.bmWidth;
+      auto* src = static_cast<const std::uint8_t*>(bm.bmBits);
+      auto* dst = static_cast<std::uint8_t*>(swapped_bits);
+      for (int y = 0; y < h; ++y) {
+        const std::uint8_t* srow = src + y * bm.bmWidthBytes;
+        std::uint8_t* drow = dst + y * w * 4;
+        std::memcpy(drow, srow, static_cast<std::size_t>(w) * 4);
+        verdigris::gpu::swap_bgra_rb(drow, w);
+      }
+      encoded = swapped;
+    }
+  }
   GpBitmap* image = nullptr;
-  if (assets.create_bitmap_from_hbitmap(bitmap, nullptr, &image) != 0 || !image) return false;
+  const bool created =
+      assets.create_bitmap_from_hbitmap(encoded, nullptr, &image) == 0 && image;
+  if (swapped) DeleteObject(swapped);
+  if (!created) return false;
   const CLSID png_clsid = {0x557cf406, 0x1a04, 0x11d3, {0x9a, 0x73, 0x00, 0x00, 0xf8, 0x1e, 0xf3, 0x2e}};
   const std::wstring wide = wide_path(path);
   const bool ok = !wide.empty() && assets.save_image_to_file(image, wide.c_str(), &png_clsid, nullptr) == 0;
@@ -7771,13 +12750,13 @@ int scenario_animation_vfx_phase_a() {
       crit_number.value = 27;
       crit_number.critical = true;
       crit_number.style = "stab";
-      capture_state.effects.push_back(crit_number);
+      add_effect(capture_state, crit_number);
       EffectFx lost;
       lost.kind = EffectFx::Kind::ScionLostBeat;
       lost.wx = lost_wx;
       lost.wy = lost_wy;
       lost.ttl = phase_a::kScionLostRingTtlTicks;
-      capture_state.effects.push_back(lost);
+      add_effect(capture_state, lost);
     }
     // In-world legend so each treatment is identifiable without guessing.
     capture_state.beat_legend = {
@@ -7923,6 +12902,7 @@ int run_remote_native_client(const char* host, unsigned short port, const char* 
     state->hint_ticks = 200;
   }
   load_billboards(state->billboards);
+  warm_combat_glyphs();
 
   HINSTANCE instance = GetModuleHandle(nullptr);
   WNDCLASSA window_class{};
@@ -8015,6 +12995,7 @@ int main(int argc, char** argv) {
   state->simulation->dispatch(verdigris::Command::enter("route:tin:1:0"));
   generate_scenery(*state);
   load_billboards(state->billboards);
+  warm_combat_glyphs();
 
   WNDCLASSA window_class{};
   window_class.hInstance = instance;

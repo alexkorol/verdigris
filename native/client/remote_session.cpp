@@ -1,4 +1,6 @@
 #include "remote_session.hpp"
+#include "input/preserve-diagonal-remote-input.hpp"
+#include "input/make-aim-independent-of-motion.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -64,12 +66,7 @@ const std::string* json_string(const JsonValue* value) {
 // Eight-way wire direction name for a quantized (dx, dy) input; matches the
 // server's direction table exactly. Empty for the zero vector.
 std::string direction_name(int dx, int dy) {
-  std::string name;
-  if (dy < 0) name = "up";
-  else if (dy > 0) name = "down";
-  if (dx < 0) name += name.empty() ? "left" : "-left";
-  else if (dx > 0) name += name.empty() ? "right" : "-right";
-  return name;
+  return move::encode_eight_way(dx, dy);
 }
 
 double json_number(const JsonValue* value, double fallback = 0.0) {
@@ -482,6 +479,8 @@ void RemoteProtocolSession::shutdown() {
 }
 
 void RemoteProtocolSession::submit(const ClientCommand& command) {
+  // VG-MOVE-008: encoding a command onto the wire is not input-to-photon.
+  // Present markers live in the client paint path.
   Envelope envelope{"", JsonValue::Object{}};
   switch (command.type) {
     case ClientCommand::Type::Login:
@@ -495,18 +494,16 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
       // instead of being collapsed to their vertical component.
       const std::string direction = direction_name(command.dx, command.dy);
       if (direction.empty()) return;
-      last_facing_ = direction;
-      model_.player.facing = direction;
+      last_move_dir_ = direction;
       envelope.event = "player:move";
       envelope.data = JsonValue::Object{{"direction", JsonValue(direction)}};
       break;
     }
     case ClientCommand::Type::Aim: {
-      // Aim is presentation-local on this protocol: no envelope, facing
-      // updates the model so the next skill trigger carries direction.
       const std::string direction = direction_name(command.dx, command.dy);
       if (direction.empty()) return;
       last_facing_ = direction;
+      aim_held_ = true;
       model_.player.facing = last_facing_;
       return;
     }
@@ -963,7 +960,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
   }
   if (envelope.event == "player:movement") {
     apply_player_fields(model_.player, envelope.data);
-    if (!model_.player.facing.empty()) last_facing_ = model_.player.facing;
+    if (!aim_held_ && !model_.player.facing.empty())
+      last_facing_ = model_.player.facing;
     return;
   }
   if (envelope.event == "world:scene:transition" ||
@@ -1110,6 +1108,11 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     }
     if (const auto* theme = json_string(state->get("theme")))
       model_.theme = *theme;
+    if (const auto* xp = state->get("xp")) {
+      model_.xp_current = json_number(xp->get("current"), model_.xp_current);
+      model_.xp_floor = json_number(xp->get("floor"), model_.xp_floor);
+      model_.xp_next = json_number(xp->get("next"), model_.xp_next);
+    }
     if (const auto* monsters = state->get("monsters"); monsters && monsters->array()) {
       model_.monsters.clear();
       for (const auto& entry : *monsters->array()) {

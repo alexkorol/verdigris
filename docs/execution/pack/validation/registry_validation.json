@@ -1,0 +1,7 @@
+{
+  "valid": true,
+  "goals": 200,
+  "edges": 689,
+  "draft": 200,
+  "warning": "Structural plan validation only; no game implementation or test completion implied."
+}

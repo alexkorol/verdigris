@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-UI-004",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "stat-explain",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario stat-explain", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario loot-to-bank", "exit_code": 0}
+  ],
+  "assertions": [
+    "Attack total is base+gear+passive while Cond is inactive",
+    "expanded sheet names src base, gear, passive, cond",
+    "char:atk-dormant-excluded is on the HUD"
+  ],
+  "negative_control": {
+    "name": "fold dormant conditional into painted Attack",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/stat-explain-960x600.png",
+      "sha256": "b3213af00a86af773713aba216b6606ca4a2b2754bd3e690fe14354cfbeea772",
+      "produced_by": "native/build/verdigris_client.exe --scenario stat-explain"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Presentation sheet only. Core STAT contribution algebra stays Kimi.",
+    "Working tree is dirty. No TASK numbers minted."
+  ]
+}

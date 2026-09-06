@@ -15,6 +15,7 @@
 #ifdef _WIN32
 
 #include <algorithm>
+#include <cmath>
 #include <string>
 
 #include <map>
@@ -31,14 +32,39 @@ using std::min;
 namespace skin {
 
 // ── palette ────────────────────────────────────────────────────────────
-inline constexpr COLORREF kPanelTop = RGB(31, 38, 36);      // smoked bronze-green
-inline constexpr COLORREF kPanelBottom = RGB(16, 20, 19);   // pit shadow
-inline constexpr COLORREF kPanelBorder = RGB(74, 108, 94);  // patina edge
-inline constexpr COLORREF kVerdigris = RGB(120, 214, 168);  // accent
-inline constexpr COLORREF kGold = RGB(239, 208, 116);       // ledger gold
-inline constexpr COLORREF kEmber = RGB(214, 92, 72);        // danger
-inline constexpr COLORREF kInk = RGB(226, 232, 222);        // body text
-inline constexpr COLORREF kInkDim = RGB(150, 164, 152);     // secondary text
+// Mirrors the web client's design tokens (src/assets/scss/abstracts/
+// _tokens.scss) so both clients read as one product.
+inline constexpr COLORREF kPanelTop = RGB(30, 28, 25);      // #1e1c19
+inline constexpr COLORREF kPanelMid = RGB(17, 18, 20);      // #111214
+inline constexpr COLORREF kPanelBottom = RGB(10, 11, 12);   // #0a0b0c
+inline constexpr COLORREF kPanelBorder = RGB(177, 143, 80); // border-strong gold
+inline constexpr COLORREF kVerdigris = RGB(95, 168, 147);   // #5fa893 corner tick green
+inline constexpr COLORREF kGold = RGB(225, 193, 116);       // accent-strong #e1c174
+inline constexpr COLORREF kAccent = RGB(183, 146, 79);      // accent #b7924f
+inline constexpr COLORREF kEmber = RGB(185, 72, 69);        // danger #b94845
+inline constexpr COLORREF kRuby = RGB(139, 48, 52);         // #8b3034
+inline constexpr COLORREF kSapphire = RGB(49, 91, 122);     // #315b7a
+inline constexpr COLORREF kInk = RGB(238, 226, 197);        // text-primary #eee2c5
+inline constexpr COLORREF kInkDim = RGB(182, 169, 141);     // text-secondary #b6a98d
+
+// VG-UI-007: WCAG-style contrast against HUD plates. Tooltips always set
+// title glyphs to kInk; accent lives on a shape, not on the letters.
+inline double relative_luminance(COLORREF color) {
+  const auto channel = [](int value) {
+    const double s = static_cast<double>(value) / 255.0;
+    return s <= 0.04045 ? s / 12.92 : std::pow((s + 0.055) / 1.055, 2.4);
+  };
+  return 0.2126 * channel(GetRValue(color)) +
+         0.7152 * channel(GetGValue(color)) +
+         0.0722 * channel(GetBValue(color));
+}
+
+inline double contrast_ratio(COLORREF foreground, COLORREF background) {
+  double a = relative_luminance(foreground);
+  double b = relative_luminance(background);
+  if (a < b) std::swap(a, b);
+  return (a + 0.05) / (b + 0.05);
+}
 
 inline Gdiplus::Color gp(COLORREF c, BYTE alpha = 255) {
   return Gdiplus::Color(alpha, GetRValue(c), GetGValue(c), GetBValue(c));
@@ -71,11 +97,61 @@ inline void set_ui_scale(int scale) {
   ui_scale_ref() = std::clamp(scale, 1, 4);
 }
 
+inline int ui_scale() { return ui_scale_ref(); }
+
+// VG-UI-007: overflow is solved by layout wrap, never by dropping below
+// these glyph floors.
+inline constexpr int kMinSmallPx = 10;
+inline constexpr int kMinBodyPx = 12;
+
+// Registers the web client's pixel fonts for this process so both clients
+// share one typeface. Safe to call often; loads once.
+inline void ensure_game_fonts() {
+  static bool tried = false;
+  if (tried) return;
+  tried = true;
+  const char* candidates[] = {
+      "src/assets/fonts/pixelmix.ttf",
+      "src/assets/fonts/pixelmix_bold.ttf",
+      "src/assets/fonts/PxPlus_IBM_VGA8.ttf",
+      "../../../src/assets/fonts/pixelmix.ttf",
+      "../../../src/assets/fonts/pixelmix_bold.ttf",
+      "../../../src/assets/fonts/PxPlus_IBM_VGA8.ttf",
+  };
+  for (const char* path : candidates)
+    AddFontResourceExA(path, FR_PRIVATE, nullptr);
+}
+
+inline bool game_font_available() {
+  static int available = -1;
+  if (available < 0) {
+    ensure_game_fonts();
+    LOGFONTA probe{};
+    probe.lfCharSet = DEFAULT_CHARSET;
+    strncpy_s(probe.lfFaceName, "Pixelmix", _TRUNCATE);
+    available = 0;
+    HDC screen = GetDC(nullptr);
+    EnumFontFamiliesExA(
+        screen, &probe,
+        [](const LOGFONTA*, const TEXTMETRICA*, DWORD, LPARAM ctx) -> int {
+          *reinterpret_cast<int*>(ctx) = 1;
+          return 0;
+        },
+        reinterpret_cast<LPARAM>(&available), 0);
+    ReleaseDC(nullptr, screen);
+  }
+  return available == 1;
+}
+
 inline HFONT cached_font(HFONT (&cache)[5], int base_height, int weight,
                          const char* face) {
   const int s = ui_scale_ref();
   if (!cache[s]) {
-    cache[s] = CreateFontA(base_height * s, 0, 0, 0, weight, FALSE, FALSE, FALSE,
+    const int requested = std::abs(base_height) * s;
+    const int floor =
+        std::abs(base_height) <= 10 ? kMinSmallPx : kMinBodyPx;
+    const int px = std::max(requested, floor);
+    cache[s] = CreateFontA(-px, 0, 0, 0, weight, FALSE, FALSE, FALSE,
                            DEFAULT_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS,
                            CLEARTYPE_QUALITY, VARIABLE_PITCH, face);
   }
@@ -84,17 +160,20 @@ inline HFONT cached_font(HFONT (&cache)[5], int base_height, int weight,
 
 inline HFONT font_body() {
   static HFONT cache[5] = {};
-  return cached_font(cache, -15, FW_NORMAL, "Segoe UI");
+  return cached_font(cache, game_font_available() ? -12 : -15, FW_NORMAL,
+                     game_font_available() ? "Pixelmix" : "Segoe UI");
 }
 
 inline HFONT font_body_bold() {
   static HFONT cache[5] = {};
-  return cached_font(cache, -15, FW_SEMIBOLD, "Segoe UI");
+  return cached_font(cache, game_font_available() ? -12 : -15, FW_SEMIBOLD,
+                     game_font_available() ? "Pixelmix" : "Segoe UI");
 }
 
 inline HFONT font_small() {
   static HFONT cache[5] = {};
-  return cached_font(cache, -12, FW_NORMAL, "Segoe UI");
+  return cached_font(cache, game_font_available() ? -10 : -12, FW_NORMAL,
+                     game_font_available() ? "Pixelmix" : "Segoe UI");
 }
 
 inline HFONT font_title() {
@@ -189,26 +268,48 @@ inline void rounded_path(Gdiplus::GraphicsPath& path, const Gdiplus::RectF& r,
 // bronze gradient body, patina border, one-pixel top-highlight bevel.
 inline void paint_panel_into(Gdiplus::Graphics& g, const Gdiplus::RectF& r,
                              COLORREF accent, BYTE body_alpha, float radius) {
+  // Web parity: near-square corners, the token panel-surface gradient with
+  // its faint ruby (left) / sapphire (right) heraldic tints, a gold outer
+  // border, and the recurring inner #080706 outline inset 4px.
+  const float hard_radius = std::min(radius, 3.0f);
   {  // shadow
     Gdiplus::RectF s = r;
     s.Offset(0.0f, 2.0f);
     Gdiplus::GraphicsPath shadow;
-    rounded_path(shadow, s, radius);
-    Gdiplus::SolidBrush brush(Gdiplus::Color(90, 0, 0, 0));
+    rounded_path(shadow, s, hard_radius);
+    Gdiplus::SolidBrush brush(Gdiplus::Color(110, 0, 0, 0));
     g.FillPath(&brush, &shadow);
   }
   Gdiplus::GraphicsPath body;
-  rounded_path(body, r, radius);
+  rounded_path(body, r, hard_radius);
   Gdiplus::LinearGradientBrush fill(r, gp(kPanelTop, body_alpha),
                                     gp(kPanelBottom, body_alpha),
                                     Gdiplus::LinearGradientModeVertical);
   g.FillPath(&fill, &body);
-  Gdiplus::Pen border(gp(accent, 200), 1.0f);
+  {  // heraldic tints
+    Gdiplus::RectF left_wash(r.X, r.Y, r.Width * 0.34f, r.Height * 0.6f);
+    Gdiplus::LinearGradientBrush ruby(left_wash, gp(kRuby, 26),
+                                      Gdiplus::Color(0, 0, 0, 0),
+                                      Gdiplus::LinearGradientModeHorizontal);
+    g.FillRectangle(&ruby, left_wash);
+    Gdiplus::RectF right_wash(r.X + r.Width * 0.66f, r.Y, r.Width * 0.34f,
+                              r.Height * 0.6f);
+    Gdiplus::LinearGradientBrush sapphire(
+        right_wash, Gdiplus::Color(0, 0, 0, 0), gp(kSapphire, 24),
+        Gdiplus::LinearGradientModeHorizontal);
+    g.FillRectangle(&sapphire, right_wash);
+  }
+  Gdiplus::Pen border(gp(accent, 210), 1.0f);
   g.DrawPath(&border, &body);
-  {  // top highlight
-    Gdiplus::Pen highlight(Gdiplus::Color(46, 255, 255, 255), 1.0f);
-    g.DrawLine(&highlight, r.X + radius, r.Y + 1.0f, r.X + r.Width - radius,
-               r.Y + 1.0f);
+  if (r.Width > 24.0f && r.Height > 24.0f) {  // inner double-frame outline
+    Gdiplus::Pen inner(Gdiplus::Color(230, 8, 7, 6), 1.0f);
+    g.DrawRectangle(&inner, r.X + 4.0f, r.Y + 4.0f, r.Width - 8.0f,
+                    r.Height - 8.0f);
+  }
+  {  // bevel: light top edge
+    Gdiplus::Pen highlight(Gdiplus::Color(52, 218, 184, 112), 1.0f);
+    g.DrawLine(&highlight, r.X + hard_radius, r.Y + 1.0f,
+               r.X + r.Width - hard_radius, r.Y + 1.0f);
   }
 }
 
@@ -270,6 +371,48 @@ inline void chip(HDC dc, const RECT& rect, COLORREF accent) {
   g.TranslateTransform(static_cast<float>(rect.left),
                        static_cast<float>(rect.top));
   paint_chip(g, w, h + 3);
+}
+
+// D2-style XP strip: gold fill over a sunken plate, quantized so the
+// cached layer does not rebuild every fraction tick.
+inline void xp_meter(HDC dc, const RECT& rect, double fraction) {
+  ensure_started();
+  const int w = rect.right - rect.left;
+  const int h = rect.bottom - rect.top;
+  if (w <= 0 || h <= 0) return;
+  const int bucket = static_cast<int>(std::lround(std::clamp(fraction, 0.0, 1.0) * 40.0));
+  const auto paint_meter = [&](Gdiplus::Graphics& g, int lw, int lh) {
+    Gdiplus::RectF r(0.0f, 0.0f, static_cast<float>(lw), static_cast<float>(lh));
+    Gdiplus::SolidBrush pit(gp(kPanelBottom, 240));
+    g.FillRectangle(&pit, r);
+    if (bucket > 0) {
+      const float fill_w = (static_cast<float>(lw) - 2.0f) * (static_cast<float>(bucket) / 40.0f);
+      Gdiplus::RectF fill(1.0f, 1.0f, fill_w, static_cast<float>(lh) - 2.0f);
+      Gdiplus::LinearGradientBrush gold(fill, gp(RGB(238, 206, 110), 255),
+                                        gp(kGold, 255),
+                                        Gdiplus::LinearGradientModeVertical);
+      g.FillRectangle(&gold, fill);
+    }
+    Gdiplus::Pen border(gp(kAccent, 210), 1.0f);
+    g.DrawRectangle(&border, 0.0f, 0.0f, static_cast<float>(lw - 1),
+                    static_cast<float>(lh - 1));
+    Gdiplus::Pen notch(Gdiplus::Color(180, 10, 11, 10), 1.0f);
+    for (int i = 1; i < 10; ++i) {
+      const float x = static_cast<float>(lw) * static_cast<float>(i) / 10.0f;
+      g.DrawLine(&notch, x, 0.0f, x, static_cast<float>(lh));
+    }
+  };
+  const CachedLayer* layer =
+      cached_layer(layer_key(41, w, h, kGold, bucket), w, h, paint_meter);
+  if (layer) {
+    blend_layer(dc, *layer, rect.left, rect.top);
+    return;
+  }
+  Gdiplus::Graphics g(dc);
+  g.SetSmoothingMode(Gdiplus::SmoothingModeNone);
+  g.TranslateTransform(static_cast<float>(rect.left),
+                       static_cast<float>(rect.top));
+  paint_meter(g, w, h);
 }
 
 // Vital orb: dark glass sphere, gradient liquid clipped to the level,

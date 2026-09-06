@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-UI-007",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "vital-orbs",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario vital-orbs", "exit_code": 0}
+  ],
+  "assertions": [
+    "life orb is left of mana",
+    "left globe PNG samples red (208,69,69 at 52,548)",
+    "right globe PNG samples blue (91,146,239 at 908,548)",
+    "mute chip is not on the mana globe"
+  ],
+  "negative_control": {
+    "name": "R/B swapped still, or blue sheet crop as life",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/vital-orbs-960x600.png",
+      "sha256": "c89f62edca486b191ba2a17ba2d519c6f4b96191a3830320f2b0149ce24e4b17",
+      "produced_by": "native/build/verdigris_client.exe --scenario vital-orbs"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "PNG save swaps DIB B,G,R for GDI+ so COLORREF red/blue survive the file.",
+    "Mute cue is a top HUD chip; scenarios still mute the sink.",
+    "Working tree is dirty. native/tests stays Kimi."
+  ]
+}

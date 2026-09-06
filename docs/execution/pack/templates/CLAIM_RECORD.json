@@ -1,0 +1,18 @@
+{
+  "template_only": true,
+  "state": "UNCLAIMED",
+  "task_id": null,
+  "lane_id": null,
+  "worktree": null,
+  "base_sha": null,
+  "claim_token": null,
+  "ledger_revision": null,
+  "granted_by": null,
+  "owned_paths": [],
+  "exclusive_resources": [],
+  "contract_versions": {},
+  "lease_expires_at": null,
+  "last_checkpoint_sha": null,
+  "revoked": false,
+  "note": "Not a lock implementation. The approved shared authority grants and revokes exclusive claims atomically. Different branch pushes are not exclusive."
+}

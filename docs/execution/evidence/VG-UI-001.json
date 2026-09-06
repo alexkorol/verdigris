@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-UI-001",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "pane-stack",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario pane-stack", "exit_code": 0}
+  ],
+  "assertions": [
+    "native HUD publishes pane-stack:2 with gear+character painted",
+    "first Escape dismisses character only",
+    "bare Escape after empty stack requests quit"
+  ],
+  "negative_control": {
+    "name": "helper pane_stack_depth without native paint or Escape",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/pane-stack-960x600.png",
+      "sha256": "d2c85911c70327a0d5f2cb426f284d33edf64923626b998c9aec18f577072fd8",
+      "produced_by": "native/build/verdigris_client.exe --scenario pane-stack"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Client Escape stack only. Owner Demo Chronicles journeys not duplicated.",
+    "Working tree dirty. No TASK numbers minted."
+  ]
+}

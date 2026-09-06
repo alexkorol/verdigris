@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GOV-003",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "parity-scorecard",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build/verdigris_client.exe --scenario vital-orbs", "exit_code": 0}
+  ],
+  "assertions": [
+    "every scorecard dimension names a journey and measurement",
+    "feature or VG-ID counts cannot produce a pass"
+  ],
+  "negative_control": {
+    "name": "counting VG IDs or TASK packets as parity",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "decision",
+      "path": "docs/execution/decisions/freeze-the-parity-scorecard.md",
+      "produced_by": "Cursor Grok VG-GOV-003 draft"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/vital-orbs-960x600.png",
+      "sha256": "d8ec6a3778ccab043f0c26e0d7340e7374ad5165d66804a342121200b4ebeb88",
+      "produced_by": "native/build/verdigris_client.exe --scenario vital-orbs"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Scorecard is drafted. Owner still stamps thresholds except the existing 40 ms frame-budget gate.",
+    "Does not re-spec TASK-0108 or Owner Demo. VG-GOV-002 remains unstamped."
+  ]
+}

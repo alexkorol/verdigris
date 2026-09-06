@@ -1,4 +1,5 @@
 #include "local_session.hpp"
+#include "input/make-aim-independent-of-motion.hpp"
 
 namespace verdigris::client {
 
@@ -145,8 +146,12 @@ void LocalCoreSession::submit(const ClientCommand& command) {
       break;  // local sessions are implicitly logged in
     case ClientCommand::Type::Move:
       simulation_->dispatch(verdigris::Command::move(command.dx, command.dy));
+      if (aim_hold_.held)
+        simulation_->dispatch(
+            verdigris::Command::aim(aim_hold_.dx, aim_hold_.dy));
       break;
     case ClientCommand::Type::Aim:
+      move::remember_aim(aim_hold_, command.dx, command.dy);
       simulation_->dispatch(verdigris::Command::aim(command.dx, command.dy));
       break;
     case ClientCommand::Type::UseAction: {

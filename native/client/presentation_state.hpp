@@ -56,10 +56,12 @@ struct ActiveTelegraph {
   verdigris::Vec2 facing{1, 0};
   std::uint64_t start_tick = 0;
   int windup_ticks = 1;
+  int reach = 0;
 };
 
 struct WorldActor {
   std::string id;
+  std::string name;       // display name (monsters); empty for the player
   std::string kind;       // monster kind id; empty for the player
   std::string behaviour;  // monster combat role; empty for the player
   verdigris::Vec2 position{};
@@ -75,6 +77,9 @@ struct WorldActor {
   int war_cry_ticks_remaining = 0;
   bool alive = true;
   bool elite = false;
+  // VG-UI-005: map/route overlay. False means the snapshot did not
+  // publish this actor; zoom cannot mint a blip for it.
+  bool on_snapshot = true;
 };
 
 struct WorldCarriedItem {
@@ -111,6 +116,9 @@ struct WorldView {
   int map_height = 0;
   std::vector<std::uint8_t> map_walkable;
   std::string theme = "town";
+  // Combat XP for the bottom bar: fraction of the current level's span.
+  double xp_fraction = 0.0;
+  bool xp_present = false;
   verdigris::Vec2 extraction{};
   bool has_extraction = false;
   std::string house_name = "House Verdigris";

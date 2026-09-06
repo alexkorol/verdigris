@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-UI-003",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "equipment",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario equipment", "exit_code": 0}
+  ],
+  "assertions": [
+    "pending request cannot paint equip:ok",
+    "pending compare cannot gold-frame as equipped",
+    "ack paints equip:ok and compare:equipped"
+  ],
+  "negative_control": {
+    "name": "treat pending equip id as currently equipped on the compare plate",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/equipment-960x600.png",
+      "sha256": "09a6e5f465549326300fbebe0adef8b1d0d6c5f4bf7bafa7ced0a7a208a380c5",
+      "produced_by": "native/build/verdigris_client.exe --scenario equipment"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "HUD/compare only. ITEM sim equip algebra stays Kimi. Helmet-in-main-hand is paper_doll WrongSlot.",
+    "Working tree dirty. No TASK numbers minted."
+  ]
+}
