@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-004",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "base_sha": "3201e0015c3112e4cc9e7b7eb1d1ce7cf9e81c3d",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "stat-explain",
@@ -17,18 +17,19 @@
   ],
   "assertions": [
     "Attack total is base+gear+passive while Cond is inactive",
-    "expanded sheet names src base, gear, passive, cond",
-    "char:atk-dormant-excluded is on the HUD"
+    "expanded sheet names src base, gear, passive, cond on HUD ops",
+    "char:atk-dormant-excluded is on the HUD",
+    "owner paint uses Base/Gear/Passive/Conditional, not src jargon"
   ],
   "negative_control": {
-    "name": "fold dormant conditional into painted Attack",
+    "name": "fold dormant conditional into painted Attack, or paint src base as the owner label",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/stat-explain-960x600.png",
-      "sha256": "b3213af00a86af773713aba216b6606ca4a2b2754bd3e690fe14354cfbeea772",
+      "sha256": "110b816bbff3863b4643339758217981a551db7a064e3eac49279e5b557eca3d",
       "produced_by": "native/build/verdigris_client.exe --scenario stat-explain"
     }
   ],
@@ -36,6 +37,6 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Presentation sheet only. Core STAT contribution algebra stays Kimi.",
-    "Working tree is dirty. No TASK numbers minted."
+    "HUD ops keep char:src * protocol labels. Not Owner Demo. No TASK numbers minted."
   ]
 }

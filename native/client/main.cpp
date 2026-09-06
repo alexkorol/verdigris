@@ -5333,18 +5333,10 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
     const int bx = left + 20 * s + dest_w + 10 * s;
     for (const auto& build : verdigris::client::builds::kSliceBuilds) {
       const std::string head =
-          std::string(build.role) + " · " + build.primary_action + " · " +
-          build.gear;
+          std::string(build.role) + " · " + build.gear;
       SetTextColor(dc, skin::kVerdigris);
       TextOutA(dc, bx, by, head.c_str(), static_cast<int>(head.size()));
-      by += 16 * s;
-      SetTextColor(dc, skin::kInk);
-      TextOutA(dc, bx, by, build.tactics, static_cast<int>(strlen(build.tactics)));
-      by += 14 * s;
-      SetTextColor(dc, skin::kInkDim);
-      TextOutA(dc, bx, by, build.weakness,
-               static_cast<int>(strlen(build.weakness)));
-      by += 18 * s;
+      by += 22 * s;
       rl.push_back({render::Op::Hud, static_cast<double>(bx),
                     static_cast<double>(by), 0.0, 0,
                     verdigris::client::builds::fixture_hud_label(build)});
@@ -5425,21 +5417,40 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
   }
   int y = top + 56 * s + portrait_h + 14 * s;
   SelectObject(dc, skin::font_body());
+  auto owner_stat_name = [](const std::string& label) -> std::string {
+    if (label == "src base") return "Base";
+    if (label == "src gear") return "Gear";
+    if (label == "src passive") return "Passive";
+    if (label == "src cond") return "Conditional";
+    if (label == "ATK src") return "Sources";
+    if (label == "Cond") return "Conditional";
+    if (label == "Passive") return "Skill tree";
+    return label;
+  };
+  auto owner_stat_value = [](const std::string& label,
+                             const std::string& value) -> std::string {
+    if (label == "Passive" && value == "none posted") return "no data yet";
+    return value;
+  };
   for (const auto& row : rows) {
+    const std::string shown = owner_stat_name(row.label);
+    const std::string shown_value = owner_stat_value(row.label, row.value);
     SetTextColor(dc, skin::kInkDim);
-    TextOutA(dc, left + 20 * s, y, row.label.c_str(),
-             static_cast<int>(row.label.size()));
+    TextOutA(dc, left + 20 * s, y, shown.c_str(),
+             static_cast<int>(shown.size()));
     SIZE extent{};
-    GetTextExtentPoint32A(dc, row.value.c_str(),
-                          static_cast<int>(row.value.size()), &extent);
+    GetTextExtentPoint32A(dc, shown_value.c_str(),
+                          static_cast<int>(shown_value.size()), &extent);
     SetTextColor(dc, skin::kInk);
-    TextOutA(dc, left + pane_w - 20 * s - extent.cx, y, row.value.c_str(),
-             static_cast<int>(row.value.size()));
+    TextOutA(dc, left + pane_w - 20 * s - extent.cx, y, shown_value.c_str(),
+             static_cast<int>(shown_value.size()));
     rl.push_back({render::Op::Hud, static_cast<double>(left),
                   static_cast<double>(y), 0.0, 0,
                   "char:" + row.label + ":" + row.value});
     y += row_h;
   }
+  if (src.expanded)
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "stat:owner-labels"});
   rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, attack_total,
                 std::string("char:atk-expanded:") + (src.expanded ? "1" : "0")});
   if (!verdigris::client::ui::folds_dormant_into_attack(src, attack_total))
@@ -12356,6 +12367,12 @@ int scenario_stat_explain() {
                  "stat-explain: expanded sheet names base, gear, passive, cond");
   scenario_check(expanded && excluded,
                  "stat-explain: expand flag and dormant-exclusion are on the HUD");
+  bool owner_labels = false;
+  for (const auto& item : state.render_list)
+    if (item.op == render::Op::Hud && item.label == "stat:owner-labels")
+      owner_labels = true;
+  scenario_check(owner_labels,
+                 "stat-explain: expanded sources paint Base/Gear, not src jargon");
 
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {

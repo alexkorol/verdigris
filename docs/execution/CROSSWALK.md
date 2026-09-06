@@ -250,8 +250,10 @@ Scenario `death-disconnect`. Core D-106 stays Kimi/TASK-0018.
 VG-UI-005: `route-map` — overlay zoom/opacity cannot move the player or
 mint an off-snapshot warden blip. The owner card titles Tin village, not
 `route:tin:1:0`. Owner Demo journeys not reimplemented.
-VG-UI-004: `stat-explain` — expanded ATK names base/gear/passive/cond.
-A dormant conditional cannot fold into Attack. Core STAT stays Kimi.
+VG-UI-004: `stat-explain` — expanded ATK names base/gear/passive/cond on
+HUD ops. Owner paint uses Base/Gear, not `src` jargon. Slice builds on
+the sheet are role · gear chips; tactics stay on HUD ops. A dormant
+conditional cannot fold into Attack. Core STAT stays Kimi.
 VG-UI-002: `pack-drag` — reject cannot lose, duplicate, or silently equip.
 VG-ART-005: `held-item` — world actor hold must change on equip. A filled
 paper-doll seat with `held:none` cannot pass.

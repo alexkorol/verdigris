@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — owner-readable character sheet (Cursor)
+
+- VG-UI-004: expanded ATK sources paint Base / Gear / Passive /
+  Conditional. HUD ops keep `char:src *`. Slice builds on the sheet are
+  `role · gear` chips; tactics/weakness stay on HUD ops for VG-BUILD-001.
+- Scenarios `stat-explain` / `build-fixtures` / `loot-to-bank` PASS.
+  Capture viewed: current HUD, compact builds, owner source labels.
+  Not Owner Demo. STAT/BUILD sim stays Kimi.
+
 ## 2026-09-06 — owner gear pane without TREE jargon (Cursor)
 
 - VG-UI-003: gear overlay paints `Skill tree: no data yet` when the tree

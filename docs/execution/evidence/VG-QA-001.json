@@ -36,7 +36,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/build-fixtures-960x600.png",
-      "sha256": "aa37745319772978edc1bc12639ef29e29fbdf0c0f4a1c36164f0ae598c4167c",
+      "sha256": "4a5fd71e9efccd4422e65d0b846d04a2c343e4d9903c5299a515604438d5d3d0",
       "produced_by": "native/build/verdigris_client.exe --scenario build-fixtures"
     }
   ],
