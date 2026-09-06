@@ -72,7 +72,7 @@ Cursor evidence notes.
 
 | VG | Disposition | Existing |
 |---|---|---|
-| VG-ACT-007 | new | `attack-beat` event bridge in `ingest_events`; not TASK-0108 and not `native/src/core.cpp` |
+| VG-ACT-007 | new | `attack-beat` event bridge; owner Attack beat / Anticipate; fabricated swing cannot mint. Not TASK-0108 |
 | VG-ACT-005 | new | catalog-typed warning window (`telegraph-spec`); owner strip paints ticks+footprint; ms/50 cannot invent a longer cone. Core ACT stays Kimi |
 | VG-ACT-001–006, 008 | new / extend | Kimi lease (`native/src/**`) |
 
@@ -236,9 +236,13 @@ VG-MOVE-002: `player:move` does not replace held aim; local tick
 re-applies aim after move. Scenario `aim-hold`. Core `resolve_move` still
 turns facing — that is the defect the adapter covers.
 VG-ACT-007: AttackStarted/DamageApplied/ActorDied drive
-`attack-beat:*`. A fabricated swing cannot mint the beat. Scenario
-`attack-beat`. Core melee resolution stays with Kimi.
-Evidence `docs/execution/evidence/VG-ACT-007.json`.
+`attack-beat:*`. Owner strip paints Attack beat / Anticipate. A
+fabricated swing cannot mint the beat. Scenario `attack-beat`. Core melee
+resolution stays with Kimi. Evidence `docs/execution/evidence/VG-ACT-007.json`.
+VG-SOUND-003: ordinary fight voices hit and death; the same event ID
+cannot double-play. Owner strip paints Beats mapped / Hit once. Scenario
+`attack-beat` capture `combat-beats`. Evidence
+`docs/execution/evidence/VG-SOUND-003.json`.
 VG-ACT-005: local ticks and remote `durationMs` share
 `presentation_catalog().telegraph_ticks` and reach. `value/50` cannot
 invent a longer window. Owner strip paints Thrust/Sweep ticks and

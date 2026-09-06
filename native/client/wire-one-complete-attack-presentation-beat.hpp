@@ -49,4 +49,8 @@ inline AttackBeat dash_cancel(AttackBeat current) {
   return current == AttackBeat::Anticipate ? AttackBeat::Cancel : current;
 }
 
+inline const char* owner_beat_label() { return "Attack beat"; }
+inline const char* owner_anticipate_beat_label() { return "Anticipate"; }
+inline bool fabricated_swing_fails_review(bool event_driven) { return !event_driven; }
+
 }  // namespace verdigris::client::combat

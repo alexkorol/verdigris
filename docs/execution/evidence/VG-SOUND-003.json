@@ -4,20 +4,22 @@
   "planning_id": "VG-SOUND-003",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "fb0282e1262784fbb4ed4eac77377a80925bae9a",
+  "base_sha": "772a0a08376225c7752116a9d749983957db106e",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "combat-audio",
   "platform": "win32-x64",
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario combat-audio", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario attack-beat", "exit_code": 0}
   ],
   "assertions": [
     "ordinary fight voices hit and death cues",
     "replaying the same event ID cannot double-play an impact",
-    "AttackStarted submits attack-anticipate"
+    "AttackStarted submits attack-anticipate",
+    "live HUD names Beats mapped and Hit once"
   ],
   "negative_control": {
     "name": "replaying the same event ID double-playing impact",
@@ -26,8 +28,8 @@
   "artifacts": [
     {
       "kind": "screenshot",
-      "path": "docs/execution/captures/art-wave/attack-beat-960x600.png",
-      "sha256": "4bca23151747ff83da2eb6d918be8f88d0582b880c00dfe7f50271b944fe4ba4",
+      "path": "docs/execution/captures/art-wave/combat-beats-960x600.png",
+      "sha256": "5abc3156a7e75c7de0ea1b9376a9ba1a8c71ccc5d4d03220a9795e344e82664e",
       "produced_by": "native/build/verdigris_client.exe --scenario attack-beat"
     }
   ],

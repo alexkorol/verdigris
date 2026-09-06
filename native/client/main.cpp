@@ -58,6 +58,7 @@ namespace phase_a = verdigris::client::phase_a;
 #include "input/preserve-diagonal-remote-input.hpp"
 #include "input/make-aim-independent-of-motion.hpp"
 #include "wire-one-complete-attack-presentation-beat.hpp"
+#include "map-authoritative-combat-beats-to-sound.hpp"
 #include "separate-visual-dressing-from-topology.hpp"
 #include "expose-loot-filter-facts.hpp"
 #include "freeze-three-slice-build-fixtures.hpp"
@@ -477,6 +478,8 @@ struct ClientState {
   bool legal_sounds_review_strip = false;
   bool loot_filter_review_strip = false;
   bool dense_mix_review_strip = false;
+  bool attack_beat_review_strip = false;
+  bool combat_beats_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -6464,6 +6467,85 @@ void paint_dense_mix_review_strip(ClientState& state, HDC dc, const RECT& bounds
   SelectObject(dc, old_font);
 }
 
+void paint_attack_beat_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                    render::List& rl) {
+  if (!state.attack_beat_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "beat-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::combat::owner_beat_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* anticipate = verdigris::client::combat::owner_anticipate_beat_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, anticipate,
+           static_cast<int>(strlen(anticipate)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "fabricated";
+  TextOutA(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "beat:attack"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "beat:anticipate"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "beat-strip:fabricated-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_combat_beats_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                     render::List& rl) {
+  if (!state.combat_beats_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "beats-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::audio_beats::owner_beats_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* once = verdigris::client::audio_beats::owner_hit_once_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, once, static_cast<int>(strlen(once)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "double-play";
+  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "beats:mapped"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "beats:hit-once"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "beats-strip:double-play-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -7490,6 +7572,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_legal_sounds_review_strip(state, dc, bounds, rl);
   paint_loot_filter_review_strip(state, dc, bounds, rl);
   paint_dense_mix_review_strip(state, dc, bounds, rl);
+  paint_attack_beat_review_strip(state, dc, bounds, rl);
+  paint_combat_beats_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -8702,6 +8786,10 @@ int scenario_combat_audio() {
     if (cue.cue_id == "hit") ++hits;
   scenario_check(hits == 1,
                  "combat-audio: replaying the same event cannot double-play");
+  scenario_check(verdigris::client::audio_beats::double_play_fails_review(2),
+                 "combat-audio: two hits for one event fail review");
+  scenario_check(!verdigris::client::audio_beats::double_play_fails_review(hits),
+                 "combat-audio: a single hit for one event certifies mapping");
 
   verdigris::audio::CueSpec filler;
   filler.cue_id = "cosmetic";
@@ -12386,6 +12474,10 @@ int scenario_attack_beat() {
   scenario_present(state);
   scenario_check(has_hud("attack-beat:none") && state.attack_beat_trace.empty(),
                  "attack-beat: a swing sprite without events cannot mint a beat");
+  scenario_check(verdigris::client::combat::fabricated_swing_fails_review(false),
+                 "attack-beat: a fabricated swing fails review");
+  scenario_check(!verdigris::client::combat::fabricated_swing_fails_review(true),
+                 "attack-beat: an event-driven beat is not treated as fabricated");
 
   for (int i = 0; i < 52; ++i)
     scenario_step(state, verdigris::Command::move(1, 0));
@@ -12435,9 +12527,23 @@ int scenario_attack_beat() {
     scenario_check(false, "attack-beat: capture root rejected before any write");
     return scenario_failures;
   }
+  state.attack_beat_review_strip = true;
   const std::string png = dir + "\\attack-beat-960x600.png";
   scenario_check(reference_present(state, 960, 600, png),
                  "attack-beat: live beat capture written");
+  scenario_check(has_hud("beat:attack") && has_hud("beat:anticipate"),
+                 "attack-beat: live HUD names Attack beat and Anticipate");
+  scenario_check(has_hud("beat-strip:fabricated-rejected"),
+                 "attack-beat: live HUD rejects a fabricated swing");
+  state.attack_beat_review_strip = false;
+  state.combat_beats_review_strip = true;
+  const std::string beats_png = dir + "\\combat-beats-960x600.png";
+  scenario_check(reference_present(state, 960, 600, beats_png),
+                 "attack-beat: mapped-beats capture written");
+  scenario_check(has_hud("beats:mapped") && has_hud("beats:hit-once"),
+                 "attack-beat: live HUD names Beats mapped and Hit once");
+  scenario_check(has_hud("beats-strip:double-play-rejected"),
+                 "attack-beat: live HUD rejects double-play");
   return scenario_failures;
 }
 

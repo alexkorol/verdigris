@@ -1,5 +1,16 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — attack beat and mapped cues (Cursor)
+
+- VG-ACT-007: owner Attack beat strip paints Anticipate. A fabricated
+  swing cannot mint a beat. AttackStarted/DamageApplied/ActorDied still
+  drive `attack-beat:*`; dash during anticipate is cancel.
+- VG-SOUND-003: owner Beats mapped strip paints Hit once. Replaying the
+  same event ID cannot double-play. Capture is `combat-beats`, not the
+  stale shared spawn.
+- Scenarios `attack-beat` / `combat-audio` PASS. Captures viewed. Core
+  ACT stays Kimi. Does not re-spec TASK-0108. Not Owner Demo.
+
 ## 2026-09-06 — encounter mix on the packed fight (Cursor)
 
 - VG-SOUND-007: owner Encounter mix strip paints Hit + warning. An
@@ -529,8 +540,9 @@ owner-stamped. Dual program heads: this branch vs
 
 - VG-ACT-007: `ingest_events` maps AttackStarted → anticipate (plus
   `attack-anticipate` cue), DamageApplied → impact, ActorDied →
-  aftermath, dash during anticipate → cancel. A swing effect with no
-  sim event cannot mint `attack-beat:*`. Scenario `attack-beat`. Capture
+  aftermath, dash during anticipate → cancel. Owner Attack beat /
+  Anticipate; a fabricated swing cannot mint `attack-beat:*`. Scenario
+  `attack-beat`. Capture
   `docs/execution/captures/art-wave/attack-beat-960x600.png`. Does not
   edit `native/src/core.cpp` or re-spec TASK-0108.
 

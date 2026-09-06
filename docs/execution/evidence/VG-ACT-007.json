@@ -4,20 +4,22 @@
   "planning_id": "VG-ACT-007",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "fb0282e1262784fbb4ed4eac77377a80925bae9a",
+  "base_sha": "772a0a08376225c7752116a9d749983957db106e",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "attack-beat",
   "platform": "win32-x64",
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario attack-beat", "exit_code": 0}
   ],
   "assertions": [
     "a swing sprite without events cannot mint a beat",
     "AttackStarted advances anticipation and submits attack-anticipate",
     "DamageApplied advances impact",
-    "dash during anticipation is cancel, not impact"
+    "dash during anticipation is cancel, not impact",
+    "live HUD names Attack beat and Anticipate"
   ],
   "negative_control": {
     "name": "fabricated swing FX minting an attack beat",
@@ -27,7 +29,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/attack-beat-960x600.png",
-      "sha256": "4bca23151747ff83da2eb6d918be8f88d0582b880c00dfe7f50271b944fe4ba4",
+      "sha256": "e98e3c4722b75e3c5d6990d12d02a55f2875b072a46db263a7c27c30c2aa6c1b",
       "produced_by": "native/build/verdigris_client.exe --scenario attack-beat"
     }
   ],
