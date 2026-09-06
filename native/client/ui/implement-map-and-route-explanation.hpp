@@ -94,4 +94,19 @@ inline std::string route_theme_label(const std::string& theme) {
   return label;
 }
 
+inline std::string route_risk_owner_line(const std::string& fact) {
+  if (fact == "risk wardens") return "Risk: wardens";
+  if (fact == "risk extract") return "Risk: extract";
+  if (fact == "risk none posted") return "Risk: none posted";
+  return fact;
+}
+
+inline std::string route_return_owner_line(const std::string& ret) {
+  if (ret == "return town") return "Return: town";
+  if (ret.find("press F") != std::string::npos) return "Return: press F at the pad";
+  if (ret.find("walk onto") != std::string::npos)
+    return "Return: walk onto the pad";
+  return ret;
+}
+
 }  // namespace verdigris::client::ui

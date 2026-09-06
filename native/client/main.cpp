@@ -4468,9 +4468,13 @@ void paint_route_card(ClientState& state, HDC dc, const RECT& bounds,
   SetTextColor(dc, skin::kInkDim);
   TextOutA(dc, x, y, theme.c_str(), static_cast<int>(theme.size()));
   y += step;
-  TextOutA(dc, x, y, risk.c_str(), static_cast<int>(risk.size()));
+  const std::string risk_line =
+      verdigris::client::ui::route_risk_owner_line(risk);
+  const std::string ret_line =
+      verdigris::client::ui::route_return_owner_line(ret);
+  TextOutA(dc, x, y, risk_line.c_str(), static_cast<int>(risk_line.size()));
   y += step;
-  TextOutA(dc, x, y, ret.c_str(), static_cast<int>(ret.size()));
+  TextOutA(dc, x, y, ret_line.c_str(), static_cast<int>(ret_line.size()));
   SelectObject(dc, old_font);
   rl.push_back({render::Op::Hud, static_cast<double>(card.x),
                 static_cast<double>(card.y), 0.0, 0, "route:" + route});
@@ -10260,6 +10264,8 @@ int scenario_visual_target() {
   ClientState state;
   scenario_begin(state);
   scenario_follow_camera(state);
+  // Composition sheet is a live expedition, not an empty XP hairline.
+  state.local_combat_xp = 36;
   scenario_present(state);
   auto has = [&](const char* name) {
     for (const auto& item : state.render_list)
@@ -10279,6 +10285,8 @@ int scenario_visual_target() {
       loader_chip = true;
   scenario_check(!loader_chip,
                  "visual-target: a loader chip cannot count as the composition sheet");
+  scenario_check(state.world.xp_fraction > 0.25 && state.world.xp_fraction < 0.85,
+                 "visual-target: the composition sheet shows a filled XP meter");
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {
     scenario_check(false, "visual-target: capture root rejected before any write");
@@ -12066,6 +12074,13 @@ int scenario_route_map() {
                  "route-map: a display name without colons still shows");
   scenario_check(route_theme_label("town") == "Town road",
                  "route-map: town theme is a road name, not theme town");
+  using verdigris::client::ui::route_risk_owner_line;
+  using verdigris::client::ui::route_return_owner_line;
+  scenario_check(route_risk_owner_line("risk wardens") == "Risk: wardens",
+                 "route-map: owner risk line is Risk: wardens");
+  scenario_check(route_return_owner_line("return press F there") ==
+                     "Return: press F at the pad",
+                 "route-map: owner return line names the pad, not press F there");
 
   ClientState state;
   scenario_begin(state);

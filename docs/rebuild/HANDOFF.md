@@ -1,5 +1,12 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — composition sheet XP + owner risk/return (Cursor)
+
+- `visual-target` seeds three level-1 kill XP so the sheet shows a filled
+  meter, not a black hairline. Route card paints `Risk: wardens` and
+  `Return: press F at the pad`. HUD op labels stay protocol-stable.
+- Captures `visual-target-960x600.png` and `route-map-960x600.png`.
+
 ## 2026-09-06 — owner route card names (Cursor)
 
 - Route card paints `Tin village` / `Town road`, not `route:tin:1:0`.

@@ -21,7 +21,8 @@
     "zoom/opacity do not move the player",
     "route card names risk/return without hidden target ids",
     "owner card titles Tin village, not route:tin:1:0",
-    "a protocol colon-id cannot be the owner title"
+    "a protocol colon-id cannot be the owner title",
+    "owner risk/return lines are Risk: wardens and Return: press F at the pad"
   ],
   "negative_control": {
     "name": "tight zoom reveals a server-hidden map target, or a protocol route id as the owner title",
@@ -31,13 +32,13 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/route-map-960x600.png",
-      "sha256": "11a48a0bd4b0daac06e539b81cd5232487d15a73be9c7f07356b4c8d8944a392",
+      "sha256": "d66509f8f461936fb90b446286f7898dee526efb32303457aaed5038fdddee72",
       "produced_by": "native/build/verdigris_client.exe --scenario route-map"
     },
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/visual-target-960x600.png",
-      "sha256": "bf1774cd724a2c6eed76dc6f65c853666b0347ac97e58df0e789bbd72d501813",
+      "sha256": "9af1c2bda030e13344c892b3e522fbc17ca3017a05aec9bb77ac6e8b8c56c81f",
       "produced_by": "native/build/verdigris_client.exe --scenario visual-target"
     }
   ],
