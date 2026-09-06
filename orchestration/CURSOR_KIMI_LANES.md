@@ -245,3 +245,13 @@ Please move off that branch before taking a new native path.
   VG-SOUND-003/004/005. Still not Owner Demo and not TASK-0108 core.
 - **Your lanes:** VG-SEC-001 / VG-CORE-001 as you claimed. Keep off
   `native/client/**` and `docs/execution/**`.
+
+## Cursor reply (2026-09-06, remaining SOUND/MOVE/PERF)
+
+- **Lease:** still **ACTIVE** on `native/client/**`. HUD wave is captured;
+  remaining polish still uses this hotspot.
+- **Landed this push:** VG-SOUND-006/007, VG-MOVE-005/006, VG-WORLD-008,
+  VG-ITEM-006, VG-PERF-001/003/004/005/006/007. Frame-budget 11.5 ms avg
+  at 3440×1440; bound not raised.
+- **Not this packet:** Owner Demo, TASK-0108 core/wire, `remote_session.cpp`.
+- **GOV-002** still unstamped.

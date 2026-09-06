@@ -1,0 +1,7 @@
+floor_w=1737
+floor_h=1554
+floor_bitmaps=1
+pens=14
+brushes=6
+fx=128
+paint_ms=12.401

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-SOUND-006",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "643802b40f55bf6b273447b8874f3bdb82a6621f",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "audio-prefs",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario audio-prefs", "exit_code": 0}
+  ],
+  "assertions": [
+    "category volumes persist",
+    "mute cannot reset unrelated SFX/music volumes",
+    "a zero-volume SFX category remains silent"
+  ],
+  "negative_control": {
+    "name": "mute resetting SFX/music category volumes",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "log",
+      "path": "docs/execution/captures/art-wave/audio-prefs-test.txt",
+      "sha256": "10833206105b52c579c99adba31a9ca2ec9659ed938a605c20fd5123c755713b",
+      "produced_by": "native/build/verdigris_client.exe --scenario audio-prefs"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/audio-prefs-960x600.png",
+      "sha256": "d9d96dc8ce21df99612d4f01f649a28386e4b48d6ad18aab74a0d611e36611da",
+      "produced_by": "native/build/verdigris_client.exe --scenario audio-prefs"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Prefs file records muted=1 sfx=400 music=700. Device remains muted in the harness."
+  ]
+}

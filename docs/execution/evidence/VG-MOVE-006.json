@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-MOVE-006",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "643802b40f55bf6b273447b8874f3bdb82a6621f",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "remap-binds",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build/verdigris_client.exe --scenario remap-binds", "exit_code": 0}
+  ],
+  "assertions": [
+    "owner Documents is never the test destination",
+    "duplicate codes fail closed and cannot mutate the live set",
+    "restart reloads the remapped dash from the isolated profile",
+    "restore defaults returns Space dash"
+  ],
+  "negative_control": {
+    "name": "saving remaps into the owner Documents profile",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/remap-binds-960x600.png",
+      "sha256": "e6e413dcd0abe733b66f0a24d7b336a665b01e6d71e2901e34050014579f213d",
+      "produced_by": "native/build/verdigris_client.exe --scenario remap-binds"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Isolated %TEMP% profile. VG-SHIP-001 packager stays Kimi."
+  ]
+}

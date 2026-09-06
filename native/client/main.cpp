@@ -9437,6 +9437,8 @@ int scenario_hud_pane_readability() {
   return 0;
 }
 
+std::string art_wave_capture_dir();
+
 int scenario_effect_batch() {
   ClientState state;
   scenario_begin(state);
@@ -9498,6 +9500,23 @@ int scenario_effect_batch() {
                  "effect-batch: second pass reuses pens instead of CreatePen");
   scenario_check(render::any(state.render_list, render::Op::Telegraph),
                  "effect-batch: warning still present on the reuse pass");
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "effect-batch: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string report = dir + "\\effect-batch-report.txt";
+  FILE* out = nullptr;
+  fopen_s(&out, report.c_str(), "w");
+  scenario_check(out != nullptr, "effect-batch: report opened");
+  if (out) {
+    std::fprintf(out, "pen_hits=%d\npen_misses=%d\nimpacts=%d\nswings=%d\n",
+                 cache.pen_hits, cache.pen_misses, impacts, swings);
+    std::fclose(out);
+  }
+  const std::string png = dir + "\\effect-batch-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "effect-batch: reused-pen capture written");
   return scenario_failures;
 }
 
@@ -9541,10 +9560,25 @@ int scenario_hitch_warmup() {
                  "hitch-warmup: warmup cannot drop required combat ops");
   scenario_check(prepared_ms <= cold_ms + 8.0,
                  "hitch-warmup: prepared strike is not slower than the cold hit");
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "hitch-warmup: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string report = dir + "\\hitch-warmup-report.txt";
+  FILE* out = nullptr;
+  fopen_s(&out, report.c_str(), "w");
+  scenario_check(out != nullptr, "hitch-warmup: report opened");
+  if (out) {
+    std::fprintf(out, "cold_ms=%.3f\nwarm_ms=%.3f\nprepared_ms=%.3f\n", cold_ms,
+                 warm_ms, prepared_ms);
+    std::fclose(out);
+  }
+  const std::string png = dir + "\\hitch-warmup-960x600.png";
+  scenario_check(reference_present(prepared, 960, 600, png),
+                 "hitch-warmup: prepared-strike capture written");
   return scenario_failures;
 }
-
-std::string art_wave_capture_dir();
 
 int scenario_attack_poses() {
   ClientState state;
@@ -10487,6 +10521,11 @@ int scenario_audio_prefs() {
   const auto voiced = state.audio_mixer->drain_scheduled();
   scenario_check(voiced.empty(),
                  "audio-prefs: a zero-volume SFX category remains silent");
+  scenario_follow_camera(state);
+  drain_audio(state);
+  const std::string png = dir + "\\audio-prefs-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "audio-prefs: muted HUD capture written");
   return scenario_failures;
 }
 
@@ -10646,6 +10685,20 @@ int scenario_memory_soak() {
                      env, 1, static_cast<int>(kMaxPresentationEffects),
                      static_cast<int>(kMaxCachedPens)),
                  "memory-soak: CPU/session resources stay inside the cap");
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "memory-soak: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string report = dir + "\\memory-soak-report.txt";
+  FILE* out = nullptr;
+  fopen_s(&out, report.c_str(), "w");
+  scenario_check(out != nullptr, "memory-soak: report opened");
+  if (out) {
+    std::fprintf(out, "cycles=%d\nmax_floor=%d\nmax_fx=%d\nmax_pens=%d\n",
+                 env.cycles, env.max_floor_bitmaps, env.max_effects, env.max_pens);
+    std::fclose(out);
+  }
   return scenario_failures;
 }
 
@@ -10702,6 +10755,9 @@ int scenario_dense_mix() {
   }
   scenario_check(verdigris::audio::write_mix_score(dir + "\\dense-mix-score.txt", score),
                  "dense-mix: review record written");
+  const std::string png = dir + "\\dense-mix-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "dense-mix: mixed-pack capture written");
   return scenario_failures;
 }
 
@@ -12220,6 +12276,27 @@ int scenario_resource_envelope() {
                  "effect list");
   scenario_check(flooded.effects == static_cast<int>(kMaxPresentationEffects),
                  "resource-envelope: the cap is occupied, not emptied to pass");
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "resource-envelope: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string report = dir + "\\resource-envelope-report.txt";
+  FILE* out = nullptr;
+  fopen_s(&out, report.c_str(), "w");
+  scenario_check(out != nullptr, "resource-envelope: report opened");
+  if (out) {
+    std::fprintf(out,
+                 "floor_w=%d\nfloor_h=%d\nfloor_bitmaps=%d\npens=%d\nbrushes=%d\n"
+                 "fx=%d\npaint_ms=%.3f\n",
+                 flooded.floor_w, flooded.floor_h, flooded.floor_bitmaps,
+                 flooded.gdi_pens, flooded.gdi_brushes, flooded.effects,
+                 state.last_paint_ms);
+    std::fclose(out);
+  }
+  const std::string png = dir + "\\resource-envelope-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "resource-envelope: capped-effect capture written");
   return scenario_failures;
 }
 
@@ -12273,6 +12350,15 @@ int scenario_loot_label_budget() {
       ++silent_labels;
   scenario_check(silent_labels == 0,
                  "loot-label-budget: labels off means zero loot-label ops");
+  state.loot_labels = true;
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "loot-label-budget: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\loot-label-budget-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "loot-label-budget: capped nameplate capture written");
   return scenario_failures;
 }
 
@@ -12328,6 +12414,30 @@ int scenario_frame_budget() {
                  "frame-budget: fullscreen frame stays under 40 ms");
   scenario_check(state.last_paint_ms > 0.0,
                  "frame-budget: unnamed hardware cannot skip the paint fields");
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "frame-budget: capture root rejected before any write");
+    SelectObject(dc, old);
+    DeleteObject(bitmap);
+    DeleteDC(dc);
+    return scenario_failures;
+  }
+  const std::string report = dir + "\\frame-budget-report.txt";
+  FILE* out = nullptr;
+  fopen_s(&out, report.c_str(), "w");
+  scenario_check(out != nullptr, "frame-budget: report opened");
+  if (out) {
+    std::fprintf(out,
+                 "machine_display=%dx%d\nlogical_cpus=%u\nos=Win32\n"
+                 "present=GDI\navg_ms=%.3f\nframes=%d\nwidth=%d\nheight=%d\n"
+                 "floor_ms=%.3f\nworld_ms=%.3f\nhud_ms=%.3f\nupload_ms=%.3f\n"
+                 "total_ms=%.3f\nnet=n/a\n",
+                 GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
+                 static_cast<unsigned>(sysinfo.dwNumberOfProcessors), avg_ms,
+                 kFrames, width, height, state.paint_ms_floor, state.paint_ms_world,
+                 state.paint_ms_hud, state.paint_ms_upload, state.last_paint_ms);
+    std::fclose(out);
+  }
   SelectObject(dc, old);
   DeleteObject(bitmap);
   DeleteDC(dc);

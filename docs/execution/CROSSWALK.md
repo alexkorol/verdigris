@@ -124,6 +124,7 @@ character-sheet attack source vs dormant conditional, backpack drag
 dedup, warning-priority steal, and one ambience layer per route.
 Snapshot field `xp` remains reserved. VG-PERF-001: F3/`frame-budget`
 prints named display, CPU count, and floor/world/hud/upload fields.
+Evidence `docs/execution/evidence/VG-PERF-001.json`. Bound stays 40 ms.
 VG-PERF-005: loot nameplates cap at 12 nearest; Drop sprites stay.
 VG-PERF-003: effect/telegraph GDI pens and brushes are reused; scenario
 `effect-batch` keeps Impact/Swing/Telegraph ops. VG-PERF-004: one floor
@@ -183,21 +184,23 @@ Evidence `docs/execution/evidence/VG-SOUND-001.json`.
 VG-SOUND-005: one ambience cue per route; rapid reentry does not stack.
 Scenario `ambience-layer`. Evidence `docs/execution/evidence/VG-SOUND-005.json`.
 VG-SOUND-006: mute cannot reset SFX/music volumes; zero SFX stays silent.
-Scenario `audio-prefs`.
+Scenario `audio-prefs`. Evidence `docs/execution/evidence/VG-SOUND-006.json`.
 VG-UI-003: equip HUD is ack-only (`equip:ok` after ItemEquipped). Pending
 compare cannot gold-frame as equipped. Scenario `equipment`.
 VG-PERF-007: 32 resize/effect cycles; floor bitmaps stay 1. Scenario
-`memory-soak`.
+`memory-soak`. Evidence `docs/execution/evidence/VG-PERF-007.json`.
 VG-SOUND-007: mixer tape from mixed pack + elite; isolated preview fails.
-Scenario `dense-mix`. Review `docs/execution/captures/art-wave/dense-mix-score.txt`.
+Scenario `dense-mix`. Evidence `docs/execution/evidence/VG-SOUND-007.json`.
 VG-UI-001: Escape dismisses character then gear; bare Escape quits. Helper
 depth alone cannot prove. Scenario `pane-stack`.
 `pane-stack`.
 VG-MOVE-005: TASK-0165 focus reducer gates WASD, combat, pickup, and pack
 drag. Closing a pane cannot release a held attack. Scenario `pane-focus`.
+Evidence `docs/execution/evidence/VG-MOVE-005.json`.
 VG-MOVE-006: versioned bindings persist under an isolated test profile.
 Duplicate codes and unknown devices fail on the HUD; owner Documents
 cannot be the write target. Scenario `remap-binds`.
+Evidence `docs/execution/evidence/VG-MOVE-006.json`.
 VG-MOVE-008: input QPC to `paint_scene` present QPC. p50/p95 on this
 machine. Command dispatch time is not `input-latency:photon`. Scenario
 `input-latency`. Protocol
@@ -217,8 +220,10 @@ invent a longer window. Expired/cancelled warnings leave no footprint.
 Scenario `telegraph-spec`.
 VG-WORLD-008: dressing-pass v1/v2 change decoration hash only.
 A tree visual cannot become an unreported solid. Scenario `dressing-pass`.
+Evidence `docs/execution/evidence/VG-WORLD-008.json`.
 VG-ITEM-006: loot category facts and a presentation filter. Hiding
 trophies cannot move ownership or drop tables. Scenario `loot-filter`.
+Evidence `docs/execution/evidence/VG-ITEM-006.json`.
 VG-BUILD-001: reach/pressure/magic fixtures list tactics, weakness, gear,
 and encounter answers. Three melee clones that differ only by tint fail.
 Scenario `build-fixtures`. STAT-001 algebra is not on this lease.

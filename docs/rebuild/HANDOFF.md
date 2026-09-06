@@ -1,5 +1,19 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — remaining Cursor-lease SOUND/MOVE/WORLD/ITEM/PERF (Cursor)
+
+- VG-SOUND-006: mute cannot reset SFX/music volumes (`audio-prefs`).
+- VG-SOUND-007: mixed-pack mixer tape; isolated preview fails (`dense-mix`).
+- VG-MOVE-005: focused panes swallow WASD/combat (`pane-focus`).
+- VG-MOVE-006: isolated `bindings.v1`; Documents cannot be the test path
+  (`remap-binds`).
+- VG-WORLD-008: dressing-pass v1/v2 cannot change topology.
+- VG-ITEM-006: loot nameplates; hiding cannot mutate sim ground.
+- VG-PERF-001: named Win32 machine + floor/world/hud/upload
+  (`frame-budget`, 11.5 ms avg at 3440×1440, bound stays 40 ms).
+- VG-PERF-003–007: effect-batch, resource-envelope, loot-label-budget,
+  hitch-warmup, memory-soak.
+
 ## 2026-09-06 — kit, weave, pad, beats, combat audio (Cursor lease)
 
 - VG-ART-004: tin village kit + collision proxies (`kit-chunk`).
