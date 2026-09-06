@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "session.hpp"
+#include "input/make-aim-independent-of-motion.hpp"
 #include "verdigris/core.hpp"
 
 namespace verdigris::client {
@@ -38,6 +39,7 @@ class LocalCoreSession final : public IClientSession {
 
   std::uint64_t seed_;
   std::string house_name_;
+  move::AimHold aim_hold_{};
   std::unique_ptr<verdigris::Simulation> simulation_;
   ConnectionState state_ = ConnectionState::Idle;
   ClientModel model_;

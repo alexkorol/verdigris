@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GPU-006",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "3fa9b407b7a633c69d763c0ff94dde3370a63e38",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "material-light",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario material-light", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario bronze-stone", "exit_code": 0}
+  ],
+  "assertions": [
+    "a moving light changes the bronze/stone material",
+    "lighting cannot wash the family to white (channel cap 220)",
+    "damage zone composites over the lit quad",
+    "overbright additives cannot conceal damage zones",
+    "live scene paints a bronze lantern pool at the village gate",
+    "a HUD token without a pool cannot certify"
+  ],
+  "negative_control": {
+    "name": "overbright additive concealing damage chroma",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/material-light-quad.bmp",
+      "sha256": "4dd8141f167a816550b2eaa55551cc998339374b31976ef17a21b803039c360d",
+      "produced_by": "native/build/verdigris_client.exe --scenario material-light"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/material-light-960x600.png",
+      "sha256": "ea1a8102c73dacea57509962237b5652953f997515a0cbf85e73e53f16792c96",
+      "produced_by": "native/build/verdigris_client.exe --scenario material-light"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Software texel light, not a 3D normal map. Quad shows red damage chroma on the family.",
+    "Live capture paints a bronze ellipse plus red damage disc at the village gate. A HUD token without that pool cannot certify. Capture hash diverges from bronze-stone because breathe_phase offsets the pool."
+  ]
+}

@@ -1,0 +1,5 @@
+live_buffers=1
+generation=19
+error_visible=0
+fail_error=gpu-error:recreate
+fail_live=0

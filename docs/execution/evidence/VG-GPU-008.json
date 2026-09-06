@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GPU-008",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "41bcbd561590179f5029b1ea2729a4e5827ab6b0",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "gpu-recover",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario gpu-recover", "exit_code": 0}
+  ],
+  "assertions": [
+    "first present allocates one pixel buffer",
+    "resize keeps a single live buffer",
+    "minimize/restore cannot leak textures",
+    "failed recreate shows gpu-error:recreate and live_buffers=0",
+    "failure releases the previous buffer instead of crashing"
+  ],
+  "negative_control": {
+    "name": "minimize/restore leaking textures or crashing",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/gpu-recover-quad.bmp",
+      "sha256": "2f1c2cc46b412712e2c5d9c7501d96450de7304b5af08a692bd8d8f8eba25c4d",
+      "produced_by": "native/build/verdigris_client.exe --scenario gpu-recover"
+    },
+    {
+      "kind": "log",
+      "path": "docs/execution/captures/art-wave/gpu-recover-report.txt",
+      "sha256": "afa6ad6b3157519ae166e1d26de9dea916435cead6fcecd0f0b3ccbfee3229c0",
+      "produced_by": "native/build/verdigris_client.exe --scenario gpu-recover"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Software sample recreate, not DXGI device-removed. VG-PERF-004 envelope stays a separate claim.",
+    "Restored quad matches the portable bronze/stone checker."
+  ]
+}

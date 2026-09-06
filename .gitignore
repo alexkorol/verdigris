@@ -33,6 +33,10 @@ scratchpad.txt
 # Generated runtime data
 server/data/
 
+# Pack / Python bytecode
+**/__pycache__/
+*.pyc
+
 # pm2 runtime logs
 /logs
 

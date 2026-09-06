@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-SOUND-003",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "fb0282e1262784fbb4ed4eac77377a80925bae9a",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "combat-audio",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build/verdigris_client.exe --scenario combat-audio", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario attack-beat", "exit_code": 0}
+  ],
+  "assertions": [
+    "ordinary fight voices hit and death cues",
+    "replaying the same event ID cannot double-play an impact",
+    "AttackStarted submits attack-anticipate"
+  ],
+  "negative_control": {
+    "name": "replaying the same event ID double-playing impact",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/attack-beat-960x600.png",
+      "sha256": "4bca23151747ff83da2eb6d918be8f88d0582b880c00dfe7f50271b944fe4ba4",
+      "produced_by": "native/build/verdigris_client.exe --scenario attack-beat"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Mixer ingest of presentation events. VG-CORE-006 stays Kimi. Device remains muted in the harness."
+  ]
+}

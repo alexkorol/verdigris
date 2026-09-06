@@ -168,6 +168,19 @@ class WaveOutSink final : public Sink {
   }
 };
 
+class TeeSink final : public Sink {
+ public:
+  TeeSink(Sink& live, RecordingSink& tape) : live_(live), tape_(tape) {}
+  void schedule(const CueSpec& cue) override {
+    tape_.schedule(cue);
+    live_.schedule(cue);
+  }
+
+ private:
+  Sink& live_;
+  RecordingSink& tape_;
+};
+
 }  // namespace verdigris::audio
 
 #endif  // _WIN32

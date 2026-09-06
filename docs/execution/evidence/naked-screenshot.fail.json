@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "planning_id": "VG-QA-001",
+  "base_sha": "abc",
+  "head_sha": "def",
+  "platform": "win32",
+  "toolchain": "none",
+  "commands": [{"run": "echo", "exit_code": 0}],
+  "assertions": ["looks fine"],
+  "negative_control": {"name": "naked png", "observed_result": "SHOULD_REJECT"},
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/build-fixtures-960x600.png"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED"
+}

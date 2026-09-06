@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-MOVE-005",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "643802b40f55bf6b273447b8874f3bdb82a6621f",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "pane-focus",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build/verdigris_client.exe --scenario pane-focus", "exit_code": 0}
+  ],
+  "assertions": [
+    "WASD moves when no pane holds focus",
+    "click/drag over gear cannot move the Scion",
+    "combat keys are consumed while gear is focused",
+    "closing a pane does not release a buffered attack"
+  ],
+  "negative_control": {
+    "name": "held attack firing when a focused pane closes",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/pane-focus-960x600.png",
+      "sha256": "b72245659cc34bf59840e93cab46ef90b23ed3fc288ec25de0de8692017959f0",
+      "produced_by": "native/build/verdigris_client.exe --scenario pane-focus"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "TASK-0165 focus reducer on the production tick. Not a core movement rewrite."
+  ]
+}

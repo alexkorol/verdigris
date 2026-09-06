@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-SOUND-001",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "dbc8824f",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "sound-adapter",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build/verdigris_client.exe --scenario sound-adapter", "exit_code": 0}
+  ],
+  "assertions": [
+    "software adapter plays a generated 440 Hz test tone",
+    "unknown backend cannot pretend to be portable",
+    "shutdown releases the PCM buffer"
+  ],
+  "negative_control": {
+    "name": "scheduled cue with zero duration as audible output",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "command",
+      "path": "native/client/choose-and-test-one-audio-device-adapter.hpp",
+      "produced_by": "native/build/verdigris_client.exe --scenario sound-adapter"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "NOT_REQUIRED",
+  "limitations": [
+    "Software PCM adapter, not a WASAPI/CoreAudio device claim.",
+    "Extends TASK-0157 mixer; does not replace it."
+  ]
+}

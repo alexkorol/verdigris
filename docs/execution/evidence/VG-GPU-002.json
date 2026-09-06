@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GPU-002",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "4502b0295588ba5ac163c1fb6c92821a9eec5238",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "gpu-packets",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario gpu-packets", "exit_code": 0}
+  ],
+  "assertions": [
+    "every semantic op becomes a packet",
+    "Telegraph is the adapted draw class",
+    "snapshot text has no HDC/D3D/pointer tokens",
+    "headless packets stay deterministic without GPU state",
+    "a poisoned backend_handle cannot snapshot"
+  ],
+  "negative_control": {
+    "name": "backend resource handle in an authoritative snapshot",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/gpu-packets-960x600.png",
+      "sha256": "6c45f11fff7d1e2fa4f761802444f326cc06730f6f202f54920c4cee8b31f8f0",
+      "produced_by": "native/build/verdigris_client.exe --scenario gpu-packets"
+    },
+    {
+      "kind": "log",
+      "path": "docs/execution/captures/art-wave/gpu-packets-snapshot.txt",
+      "sha256": "8f5a98619c7f136618f38a8ac0e3976bec3b6f20cd08082296df24b7b8eb9d38",
+      "produced_by": "native/build/verdigris_client.exe --scenario gpu-packets"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Packets are the semantic copy of the GDI+ render list. Not a D3D command buffer.",
+    "Does not re-spec TASK-0108. VG-CORE-006 stays Kimi."
+  ]
+}

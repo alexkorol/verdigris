@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-UI-007",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "bb95fd8c68795f54a6be0815910a9d5f160952c1",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "hud-pane-readability",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario hud-scale-floor", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario hud-pane-readability", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario vital-orbs", "exit_code": 0}
+  ],
+  "assertions": [
+    "scale 0 is rejected; shrinking type is not the contrast fix",
+    "HUD regions stay pairwise disjoint at 960x600, 1366x768, and 3440x1440",
+    "open gear pane never intersects identity/controls/objective/art/minimap/quickbar/orbs at those sizes",
+    "first Escape closes the pane; bare Escape requests quit",
+    "life orb is left of mana; live 3440x1440 window matches that layout",
+    "pack captures write under docs/execution/captures/art-wave, not the TASK-0159 folder"
+  ],
+  "negative_control": {
+    "name": "TASK-0159 folder capture alone, overlapping pane, or shrinking fonts below the floor",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-pane-readability-open-3440x1440.png",
+      "sha256": "70b86a3d6c8f42cea3421027a856a391667fcbf1cee2f4edde894c1c3ff14679",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-pane-readability-closed-3440x1440.png",
+      "sha256": "58691efc1b45948fe91279994e2b609c0538075a8dc63b56ea33e4abe4e5dd0e",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-pane-readability-open-960x600.png",
+      "sha256": "3d819b6042e383e3607b95d942e97f436feeb0e3add9ff47065cfd7376c8b7be",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-scale-floor-960x600.png",
+      "sha256": "8f278a2c10f522ff03b5d48c2f772d6128dfaa20a968288f1ada6c2d1c107cef",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-scale-floor"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/live-hud-owner.png",
+      "sha256": "0caaad08d9b52ec2fad7c7d9a2bd3d57acd11ee08f5dbb8a1cd65bdcf8acd214",
+      "produced_by": "native/tools/capture-window.ps1 on live verdigris_client.exe at 3440x1440"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Extends TASK-0159; that packet's STATUS.md and historical captures were not rewritten.",
+    "VG-UI-006 Owner Demo navigation is not this packet and was not duplicated.",
+    "Remote pane check remains 960x600; owner ultrawide proof is the local present path.",
+    "No TASK numbers minted."
+  ]
+}

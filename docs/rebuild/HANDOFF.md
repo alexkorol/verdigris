@@ -1,5 +1,643 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — owner audio mixer (Cursor)
+
+- VG-SOUND-006: mute keeps SFX 40 / Music 70 on a skin mixer panel. A mute
+  chip without those numbers cannot certify.
+- VG-SOUND-008: the same panel paints Theme Combat while foes live;
+  unload still forces `music:none` and cannot leave a competing send.
+- Scenarios `audio-prefs` / `music-phase` PASS. Captures viewed and
+  hashes diverge. Not Owner Demo. Not TASK-0108.
+
+## 2026-09-06 — Sweep telegraph over village scenery (Cursor)
+
+- VG-GPU-005: Sweep paints a readable red disc on the village gate after
+  the Y-sorted scenery pass. A HUD token or a capture-black fill cannot
+  certify. `grounding` capture diverges from `gpu-packets` / `telegraph-spec`.
+- Scenario `grounding` PASS. Capture viewed. Not Owner Demo. Not TASK-0108.
+
+## 2026-09-06 — moving bronze lantern pool (Cursor)
+
+- VG-GPU-006: the village gate now paints a bronze lantern ellipse that
+  moves with `light_from_tick`, plus a red damage disc that cannot wash
+  white. A HUD token without that pool cannot certify. `material-light`
+  and `bronze-stone` captures diverge.
+- Scenario `material-light` / `bronze-stone` PASS. Capture viewed. Not
+  Owner Demo. Not TASK-0108.
+
+## 2026-09-06 — bronze War Cry weave family (Cursor)
+
+- VG-ART-006: cast motes, travel orbit, impact ticks, and cancel implode
+  share bronze identity. Radius stays inside a screen sixth so spectacle
+  cannot hide a telegraph. DIB effect rings use `dc_color` so gold is not
+  capture-black. Native `War Cry weave` strip paints all four beats.
+- Scenario `weave-vfx` PASS. Capture viewed. Not Owner Demo. Not TASK-0108.
+
+## 2026-09-06 — readable strike family at game scale (Cursor)
+
+- VG-ART-003: windup cocks the blade; active lunges it forward. Limb pixel
+  mins keep the Scion from collapsing to a stick. `attack-poses` captures
+  the armed active strike off the EXIT pad and paints a native Windup /
+  Active / Recover / Cancel strip. Idle or HUD labels alone cannot certify.
+- Scenarios `attack-poses` / `visual-target` / `held-item` PASS. Capture
+  viewed. Not Owner Demo. TASK-0173 animation models stay Kimi.
+
+## 2026-09-06 — skill tree owner language + pack glyphs (Cursor)
+
+- VG-UI-001: tree pane title is `Skill tree`; absence is `Skill tree: no data yet`.
+  HUD ops `tree-pane` / `tree:owner-title` / `tree:owner-absent`. Scenario
+  `pane-stack` opens the pane and writes `tree-pane-960x600.png`.
+- VG-UI-002 / VG-UI-003: pack cells paint a bronze weapon glyph when
+  billboard art is missing. A grey square cannot certify. `PaneStat` still
+  carries TREE absence for TASK-0156.
+- Scenarios `pane-stack` / `equipment` / `pack-drag` / `loot-to-bank` PASS.
+  Captures viewed. Not Owner Demo. Not TASK-0108.
+
+## 2026-09-06 — owner-readable character sheet (Cursor)
+
+- VG-UI-004: expanded ATK sources paint Base / Gear / Passive /
+  Conditional. HUD ops keep `char:src *`. Slice builds on the sheet are
+  `role · gear` chips; tactics/weakness stay on HUD ops for VG-BUILD-001.
+- Scenarios `stat-explain` / `build-fixtures` / `loot-to-bank` PASS.
+  Capture viewed: current HUD, compact builds, owner source labels.
+  Not Owner Demo. STAT/BUILD sim stays Kimi.
+
+## 2026-09-06 — owner gear pane without TREE jargon (Cursor)
+
+- VG-UI-003: gear overlay paints `Skill tree: no data yet` when the tree
+  payload is absent. `PaneStat` still carries `TREE no authoritative data`
+  for TASK-0156. Weapon seat uses `ui_skin::slot`.
+- Scenarios `equipment` / `pack-drag` / `attack-poses` PASS. Capture
+  viewed: current HUD, bronze Scion, village gate, owner skill-tree line.
+  Not Owner Demo. ITEM sim stays Kimi.
+
+## 2026-09-06 — shrine and gate inside the spawn capture (Cursor)
+
+- VG-ART-004: tin village shrine and dressing gate sit in the spawn
+  frustum so `kit-chunk` actually shows them. Fountain has a basin,
+  column, and water; the gate has two pillars, a lintel, and an opening.
+  A stone blob or a solid slab cannot certify. Spawn stays outside the
+  solid shrine radius; the gate remains non-solid.
+- Capture viewed: hut lower-left, blue fountain near spawn, gold
+  post-and-lintel gate to the right, ruin on the far right. Not Owner Demo.
+
+## 2026-09-06 — tin village ruins as collapsed walls (Cursor)
+
+- VG-ART-004: town `SceneryKind::Ruin` paints a one-sided broken wall,
+  fallen timber, and rubble, not a covered wagon. Collision radii and
+  dressing-gate non-solidity are unchanged. `wagon` remains in
+  `vector_art.hpp` unused by the village kit.
+- Scenario `kit-chunk` / `visual-target` PASS. Capture viewed:
+  `docs/execution/captures/art-wave/kit-chunk-960x600.png`. Not Owner Demo.
+
+## 2026-09-06 — tin village dwellings as huts (Cursor)
+
+- VG-ART-004: `SceneryKind::Dwelling` paints a mudbrick/thatch hut (walls,
+  pitched roof, door), not a scalloped market stall. Collision radii and
+  dressing-gate non-solidity are unchanged. `market_stall` remains in
+  `vector_art.hpp` unused by the village kit.
+- Scenario `kit-chunk` / `visual-target` PASS. Capture viewed:
+  `docs/execution/captures/art-wave/kit-chunk-960x600.png` — hut in the
+  lower-left, forked trees, bronze Scion, current owner HUD. Not Owner
+  Demo.
+
+## 2026-09-06 — jointed bronze wardens (Cursor)
+
+- Town lurker is no longer a hip-to-foot crate: jointed legs, snout, filled
+  bronze claws, taller than the Scion. A crate-shaped foe cannot certify
+  `visual-target` / `first-fight`. Not VG-ART-007 Owner Demo mixed-pack
+  review. ENEMY identity stays Kimi.
+- Captures viewed. Scenarios PASS. Not TASK-0108.
+
+## 2026-09-06 — forked village trees (Cursor)
+
+- VG-ART-004: tin village trees are a forked bole with root flare and
+  clustered canopy. A circle-on-stick lollipop cannot certify the kit.
+  Collision radii and dressing-gate non-solidity are unchanged.
+- Scenarios `kit-chunk` / `visual-target` / `held-item` PASS. Captures
+  viewed: cloud-like layered canopies, current owner HUD on kit-chunk
+  (Tin village, Space dash, no skeleton art chip). Not Owner Demo.
+
+## 2026-09-06 — bronze held weapon on the composition sheet (Cursor)
+
+- VG-ART-001 / VG-ART-005: `visual-target` now pickups and equips before
+  present so the sheet is an armed adult Scion, not an unarmed crate.
+  Sword is a filled bronze blade with guard; `player_style` is warm
+  bronze (not steel grey).
+- 32bpp scenario DIBs write GDI RGB; PNG save swaps as BGRA. `dc_color`
+  corrects world fills on DIB destinations only. Floor cache is skipped
+  on those DIBs so town stone is not blue-grey in the sheet. Live
+  `CreateCompatibleBitmap` path is unchanged.
+- Scenarios `visual-target` and `held-item` PASS. Captures
+  `docs/execution/captures/art-wave/visual-target-960x600.png` and
+  `held-item-960x600.png`. Viewed: bronze tunic, bronze blade, tan floor,
+  red HP orb. Not TASK-0108, not Owner Demo.
+
+## 2026-09-06 — owner objective strip + dash (Cursor)
+
+- Owner HUD paints `Slay the wardens (1 remain)`, not `objective: ...`.
+  HUD ops keep the protocol prefix. Compact controls restore `Space dash`
+  (TASK-0153 first-session-clarity). Extract strip drops the `12u` dump.
+- Scenario `first-session-clarity` PASS. Capture `visual-target-960x600.png`.
+
+## 2026-09-06 — adult Scion rig (Cursor)
+
+- Vector `humanoid` now uses adult proportions (head ~1/8, jointed legs,
+  tapered torso). A 1/3 chibi head cannot pass. VG-ART-001 / VG-ART-003.
+- Captures `visual-target-960x600.png` and `attack-poses-960x600.png`.
+  TASK-0173 models untouched. Not Owner Demo.
+
+## 2026-09-06 — composition sheet XP + owner risk/return (Cursor)
+
+- `visual-target` seeds three level-1 kill XP so the sheet shows a filled
+  meter, not a black hairline. Route card paints `Risk: wardens` and
+  `Return: press F at the pad`. HUD op labels stay protocol-stable.
+- Captures `visual-target-960x600.png` and `route-map-960x600.png`.
+
+## 2026-09-06 — owner route card names (Cursor)
+
+- Route card paints `Tin village` / `Town road`, not `route:tin:1:0`.
+  A protocol colon-id cannot be the owner title. F3 still shows the raw
+  id. Compact controls: `WASD | LMB strike | I gear | F3 binds`.
+- Scenario `route-map`. Captures `route-map-960x600.png` and
+  `visual-target-960x600.png`. Not TASK-0108, not Owner Demo.
+
+## 2026-09-06 — hide skeleton art loader chip (Cursor)
+
+- Owner HUD no longer paints `art: PNG billboards loaded`. Loaded art is
+  silent; missing plates still warn. F3 keeps the diagnostic line.
+- `first-fight` / `visual-target` reject a loader chip as the composition
+  sheet. Mute chip stays. Capture
+  `docs/execution/captures/art-wave/visual-target-960x600.png`.
+- Not TASK-0108, not Owner Demo.
+
+## 2026-09-06 — local XP meter fill (Cursor)
+
+- Live local HUD showed `XP lv 1` over an empty black strip because
+  `sync_world_from_simulation` hard-coded `xp_fraction = 0`.
+- Local kill XP now uses the same RS curve as snapshot `state.xp`
+  (12 per monster level). Scenario `xp-meter`: empty gold=0, filled
+  gold=805 at fraction 0.493. Capture
+  `docs/execution/captures/art-wave/xp-meter-960x600.png`.
+- Did not touch `remote_session.cpp`, `native/src/core.cpp`, or the
+  networking snapshot writer. Not TASK-0108.
+
+## 2026-09-06 — VG-UI-007 pane vs HUD at owner 3440×1440 (Cursor)
+
+- Extends TASK-0159: `hud-pane-readability` now presents 960×600, 1366×768,
+  and 3440×1440. Open gear pane stays disjoint from identity, controls,
+  objective, art chip, minimap, quickbar, and orbs. Captures write to
+  `docs/execution/captures/art-wave/` — a TASK-0159 folder PNG cannot
+  certify this wave.
+- Viewed open/closed 3440×1440 plus open 960×600. Life red left, mana blue
+  right, gear pane on the right, HUD chips clear of the pane.
+- Evidence `docs/execution/evidence/VG-UI-007.json`. Not Owner Demo.
+  `remote_session.cpp` remains narrow-released for Kimi.
+
+## 2026-09-06 — live HUD window + VG-UI-007 scale/cues (Cursor)
+
+- Presentation gate: launched `verdigris_client.exe`, captured the live
+  3440×1440 window with `native/tools/capture-window.ps1`, viewed
+  `docs/execution/captures/art-wave/live-hud-owner.png`. Life 100/100 red
+  left, mana 50/50 blue right, XP lv 1, skill chips, objective, warden
+  grounded. PrintWindow DIB is BGR; the committed PNG is RGB-corrected.
+- VG-UI-007: `hud-scale-floor` now writes
+  `docs/execution/captures/art-wave/hud-scale-floor-960x600.png`. Scale 0
+  rejected; 640×480 still floors type; low life has a chevron; foe tooltip
+  contrast is ink-on-panel. Shrinking type cannot pass. Not VG-UI-006 /
+  Owner Demo.
+- `native/client/remote_session.cpp` narrow-released for Kimi's remaining
+  TASK-0108 `world:projectile` parse. `main.cpp` lease stays ACTIVE.
+
+## 2026-09-06 — remaining Cursor-lease SOUND/MOVE/WORLD/ITEM/PERF (Cursor)
+
+- VG-SOUND-006: mute cannot reset SFX/music volumes (`audio-prefs`).
+- VG-SOUND-007: mixed-pack mixer tape; isolated preview fails (`dense-mix`).
+- VG-MOVE-005: focused panes swallow WASD/combat (`pane-focus`).
+- VG-MOVE-006: isolated `bindings.v1`; Documents cannot be the test path
+  (`remap-binds`).
+- VG-WORLD-008: dressing-pass v1/v2 cannot change topology.
+- VG-ITEM-006: loot nameplates; hiding cannot mutate sim ground.
+- VG-PERF-001: named Win32 machine + floor/world/hud/upload
+  (`frame-budget`, 11.5 ms avg at 3440×1440, bound stays 40 ms).
+- VG-PERF-003–007: effect-batch, resource-envelope, loot-label-budget,
+  hitch-warmup, memory-soak.
+
+## 2026-09-06 — kit, weave, pad, beats, combat audio (Cursor lease)
+
+- VG-ART-004: tin village kit + collision proxies (`kit-chunk`).
+- VG-ART-006: WarCry weave labels; spectacle cannot hide telegraph
+  (`weave-vfx`). Does not take TASK-0173 models.
+- VG-UI-008: XInput on the fixed tick (`pad-path`). Mouse cannot mint
+  `pad:connected`.
+- VG-ACT-007: AttackStarted/DamageApplied drive `attack-beat:*`. A
+  fabricated swing cannot mint the beat.
+- VG-SOUND-003/004/005: `combat-audio` + `ambience-layer`. Same event ID
+  cannot double-play; cosmetics cannot starve `scion-lost`; rapid reentry
+  cannot stack ambience.
+
+## 2026-09-06 — GPU present path 003–006/008 (Cursor lease)
+
+- VG-GPU-003: `software-albedo-rim-v1` bindings; stale/wrong backend fail
+  closed. Scenario `shader-bindings`. Capture
+  `docs/execution/captures/art-wave/shader-bindings-quad.bmp`.
+- VG-GPU-004: live session packets present; disconnected demo rejected.
+  Scenario `gpu-reference`. BMP + PNG
+  `docs/execution/captures/art-wave/gpu-reference-*`.
+- VG-GPU-005: Y-sort + telegraph overlay after scenery. Scenario
+  `grounding`. Capture `docs/execution/captures/art-wave/grounding-960x600.png`.
+- VG-GPU-006: moving light, channel cap 220, damage chroma not washed.
+  Scenario `material-light`. Quad BMP + HUD PNG.
+- VG-GPU-008: recreate/resize/minimize-restore keep one buffer; `0x0`
+  surfaces `gpu-error:recreate`. Scenario `gpu-recover`.
+
+## 2026-09-06 — packets, bronze/stone, legal sounds, graph audit (Cursor)
+
+- VG-GPU-002: Telegraph draw class copies to handle-free packets
+  (`gpu-packets`). Poisoned `backend_handle` cannot snapshot. Capture
+  `docs/execution/captures/art-wave/gpu-packets-960x600.png`. Snapshot
+  `docs/execution/captures/art-wave/gpu-packets-snapshot.txt`.
+- VG-ART-002: cooked bronze/stone albedo+rim, SPDX CC0. Magenta fill
+  cannot pass. Scenario `bronze-stone`. Capture
+  `docs/execution/captures/art-wave/bronze-stone-960x600.png`.
+- VG-SOUND-002: combat family includes swing windup `attack-anticipate`.
+  `unlicensed-preview` cannot ship. Scenario `legal-sounds`. Capture
+  `docs/execution/captures/art-wave/legal-sounds-960x600.png`.
+- VG-GOV-008: pack `roadmap.py validate` (200/689) plus unittest overlap
+  fixtures. Decision already at
+  `docs/execution/decisions/audit-dependency-and-path-scheduling.md`.
+
+## 2026-09-06 — first-wave P0 + mute-on-unload (Cursor lease)
+
+- VG-GPU-001: isolated software 64×64 bronze/stone quad (`gpu-sample`).
+  Capture `docs/execution/captures/art-wave/gpu-sample-quad.bmp`. Unknown
+  backend cannot pass. Not a D3D presenter.
+- VG-ART-001: in-game HUD names camera/proportion/palette/contrast
+  (`visual-target`). External concept-art token cannot substitute.
+- VG-SOUND-001: software 440 Hz adapter (`sound-adapter`). Zero-duration
+  cue cannot pass as audible.
+- VG-SOUND-008: `theme_for` + music-bus mute on `music:none` so unload
+  cannot voice a leftover combat loop. Scenario `music-phase`. Capture
+  `docs/execution/captures/art-wave/music-phase-960x600.png`. Device stays
+  muted in the harness; STORY phase authority stays Kimi.
+- VG-ART-003: idle cannot wear the active strike pose (`attack-poses`).
+  Capture `docs/execution/captures/art-wave/attack-poses-960x600.png`.
+  Does not take TASK-0173 models or re-spec TASK-0108.
+
+## 2026-09-06 — TASK-0108 local Telegraph ingest (Cursor lease)
+
+- Client stage of Kimi's ranged `world:projectile` windup: JS payload keys
+  become the existing Telegraph op, then attributed Damage/Impact.
+  Helper `native/client/ingest-ranged-projectile-warning.hpp`. Lock in
+  `native/tests/presentation_events_tests.cpp`. Scenario `ranged-warning`.
+  Does not edit `native/src/**`, `native/include/**`, or
+  `native/client/remote_session.cpp`. Slam `monster:telegraph` is not this
+  mapper. A hit without a preceding warning cannot mint a Telegraph.
+
+## 2026-09-06 — ship Cursor pack wave (owner asked to push)
+
+Architect checkout `codex/native-reconstitution`. Lands `docs/execution/`
+(pack ingest, GOV-001/004 baseline+crosswalk, GOV-002 draft, evidence)
+plus the native client/GPU HUD wave. TASK-0108 stays Kimi's core+wire;
+client Telegraph ingest stays on this lease. VG-GOV-002 is **not**
+owner-stamped. Dual program heads: this branch vs
+`origin/codex/goal-aaa-systems` @ `e7b65360`.
+
+## 2026-09-06 — native pane Escape stack (Cursor, uncommitted)
+
+- VG-UI-001: Escape dismisses character then gear; bare Escape quits.
+  Helper depth without native paint/Escape cannot prove. Scenario
+  `pane-stack`. Capture
+  `docs/execution/captures/art-wave/pane-stack-960x600.png`.
+
+## 2026-09-06 — pack-grid drag occupancy (Cursor, uncommitted)
+
+- VG-UI-002: valid pack drop moves the cell; a rejected drop cannot lose,
+  duplicate, or silently equip. Scenario `pack-drag`. Capture
+  `docs/execution/captures/art-wave/pack-drag-960x600.png`. Sim
+  `inventory_move` stays Kimi.
+
+## 2026-09-06 — ack-only equip compare (Cursor, uncommitted)
+
+- VG-UI-003: gear compare plate uses the acknowledged seat. A pending
+  request paints `compare:pending`, not gold `currently equipped`.
+  Scenario `equipment`. Capture
+  `docs/execution/captures/art-wave/equipment-960x600.png`.
+
+## 2026-09-06 — equipped hold on the actor (Cursor, uncommitted)
+
+- VG-ART-005: world `held:*` attachment must follow the acknowledged equip.
+  A paper-doll seat with `held:none` cannot pass. Scenario `held-item`.
+  Capture `docs/execution/captures/art-wave/held-item-960x600.png`. Does
+  not re-spec TASK-0108 or Owner Demo.
+
+## 2026-09-06 — readable ATK sources (Cursor, uncommitted)
+
+- VG-UI-004: character sheet Attack is base+gear+passive only while Cond
+  is inactive. `B` expands four source rows. Folding dormant into Attack
+  cannot pass. Scenario `stat-explain`. Capture
+  `docs/execution/captures/art-wave/stat-explain-960x600.png`. Core STAT
+  stays Kimi.
+
+## 2026-09-06 — map/route overlay (Cursor, uncommitted)
+
+- VG-UI-005: minimap zoom/opacity are overlay settings. Scenario `route-map`
+  proves max zoom cannot paint `off-snapshot-warden`. Capture
+  `docs/execution/captures/art-wave/route-map-960x600.png`. Owner Demo
+  journeys not duplicated.
+
+## 2026-09-06 — death/disconnect extract ack (Cursor, uncommitted)
+
+- VG-GOV-006: disconnect cannot silently ack uncommitted extraction.
+  HUD `extract:uncommitted` + chip; `extract:ok` only after sim bank.
+  Scenario `death-disconnect`. Capture
+  `docs/execution/captures/art-wave/death-disconnect-960x600.png`.
+  Decision `docs/execution/decisions/rule-on-death-and-disconnect.md`.
+  Does not edit `native/src/core.cpp`.
+
+## 2026-09-06 — capture channels + renderer trial (Cursor, uncommitted)
+
+- VG-GPU-007: GDI+ PNG save now swaps DIB B,G,R so COLORREF red/blue
+  survive the file. A channel-swapped still cannot certify. Scenario
+  `gpu-capture` and recaptured `vital-orbs`. Capture
+  `docs/execution/captures/art-wave/vital-orbs-960x600.png` (life 208,69,69
+  left; mana 91,146,239 right).
+- VG-GOV-005: `docs/execution/decisions/choose-the-renderer-trial-boundary.md`.
+  The software sample is the GPU trial; a green quad is not an engine port.
+  Extends TASK-0114; does not pick sokol/SDL.
+
+## 2026-09-06 — vital orbs + parity scorecard (Cursor, uncommitted)
+
+- VG-UI-007: life stays the left vessel, mana the right. Mute is a HUD
+  chip (`audio muted`), not an X on the mana globe. Scenario `vital-orbs`.
+  Swapping the blue sheet crop onto life fails. Capture
+  `docs/execution/captures/art-wave/vital-orbs-960x600.png`.
+- VG-GOV-003: `docs/execution/decisions/freeze-the-parity-scorecard.md`.
+  A feature or VG-ID count cannot pass. Does not mint TASK numbers.
+
+## 2026-09-06 — eight-way move + held aim (Cursor, uncommitted)
+
+- VG-MOVE-001: `encode_eight_way` keeps both axes on diagonals (`up-left`).
+  A vertical-only encoder cannot pass. Scenario `eight-way`. Capture
+  `docs/execution/captures/art-wave/eight-way-960x600.png`.
+- VG-MOVE-002: remote `player:move` no longer overwrites held aim.
+  Local tick re-aims after move because core `resolve_move` still turns
+  facing. Scenario `aim-hold`. Capture
+  `docs/execution/captures/art-wave/aim-hold-960x600.png`. Does not edit
+  `native/src/core.cpp`.
+
+## 2026-09-06 — input-to-present latency (Cursor, uncommitted)
+
+- VG-MOVE-008: key/button QPC paired with `paint_scene` present QPC.
+  Scenario `input-latency` reports p50/p95 on the named Win32 machine.
+  `Simulation::dispatch` elapsed time is not `input-latency:photon`.
+  Protocol `docs/execution/decisions/measure-native-input-response.md`.
+  Capture `docs/execution/captures/art-wave/input-latency-960x600.png`.
+  Report `docs/execution/captures/art-wave/input-latency-report.txt`.
+  VG-MOVE-007 buffering stays Kimi.
+
+## 2026-09-06 — headless presentation contract (Cursor, uncommitted)
+
+- VG-QA-002: `AttackStarted` from the simulation maps to `intent:swing` and
+  `attack-anticipate`. Removing that bridge fails the fixture. A mocked
+  PresentationEvent with swing FX cannot prove the journey. Scenario
+  `headless-contract`. Capture
+  `docs/execution/captures/art-wave/headless-contract-960x600.png`. Does
+  not take `native/tests/**` or mint TASK numbers.
+
+## 2026-09-06 — telegraph timing and geometry (Cursor, uncommitted)
+
+- VG-ACT-005: warning duration and reach come from
+  `Simulation::presentation_catalog()`, not `event.value / 50`. Local ticks
+  and a remote millisecond payload render the same window. AttackStarted
+  cancels; expired entries cannot stay a silent damaging cone. Scenario
+  `telegraph-spec`. Capture
+  `docs/execution/captures/art-wave/telegraph-spec-960x600.png`. Does not
+  edit `native/src/core.cpp`.
+
+## 2026-09-06 — slice build fixtures + evidence schema (Cursor, uncommitted)
+
+- VG-BUILD-001: character sheet names reach (thrust/pike), pressure
+  (melee/close blade), and magic (war-cry/vessel). Each lists tactics,
+  weakness, gear, and an encounter answer. Three tinted copies of melee
+  fail `distinct_slice_loops`. Scenario `build-fixtures`. Capture
+  `docs/execution/captures/art-wave/build-fixtures-960x600.png`. Does not
+  edit `native/src/core.cpp`.
+- VG-QA-001: `docs/execution/pack/tools/evidence_manifest.py` rejects
+  template-only records and screenshots without sha256/`produced_by`.
+  Does not mint TASK numbers or take `native/tests/**`.
+
+## 2026-09-06 — loot filter facts (Cursor, uncommitted)
+
+- VG-ITEM-006: ground drops publish `loot-fact:weapon|trophy|misc`. Hiding
+  trophies suppresses nameplates only; Drop sprites, `loot_positions`, and
+  sim ground tables stay put. Scenario `loot-filter`. Capture
+  `docs/execution/captures/art-wave/loot-filter-960x600.png`. Does not
+  edit `native/src/core.cpp` or item definitions.
+
+## 2026-09-06 — visual dressing vs topology (Cursor, uncommitted)
+
+- VG-WORLD-008: versioned decoration pass on the tin village layout.
+  Dressing trees are non-solid (`dressing:tree`). v2 changes the
+  decoration hash only; spawn, scenery seed, and topology hash stay put.
+  A solid dressing tree is an unreported obstacle. Scenario
+  `dressing-pass`. Capture
+  `docs/execution/captures/art-wave/dressing-pass-960x600.png`. Does not
+  edit `native/src/core.cpp`.
+
+## 2026-09-06 — attack presentation beat (Cursor, uncommitted)
+
+- VG-ACT-007: `ingest_events` maps AttackStarted → anticipate (plus
+  `attack-anticipate` cue), DamageApplied → impact, ActorDied →
+  aftermath, dash during anticipate → cancel. A swing effect with no
+  sim event cannot mint `attack-beat:*`. Scenario `attack-beat`. Capture
+  `docs/execution/captures/art-wave/attack-beat-960x600.png`. Does not
+  edit `native/src/core.cpp` or re-spec TASK-0108.
+
+## 2026-09-06 — remapped controls (Cursor, uncommitted)
+
+- VG-MOVE-006: versioned keyboard bindings persist under
+  `%TEMP%\verdigris-isolated-profile`. Duplicate codes paint
+  `bind:conflict`; unknown devices paint `bind:invalid-device`. Saving
+  into a Documents path fails `bind:owner-profile`. Restart reloads the
+  remapped dash; restore defaults returns Space. Scenario `remap-binds`.
+  Capture `docs/execution/captures/art-wave/remap-binds-960x600.png`.
+  VG-SHIP-001's packager in `native/tools/**` stays Kimi.
+
+## 2026-09-06 — pane focus + 200-ID registry (Cursor, uncommitted)
+
+- VG-MOVE-005: TASK-0165 `input_focus` now gates the production tick. WASD,
+  strike/dash, pickup, and pack-drag do not leak through focused panes.
+  A held attack cannot fire when the pane closes. Scenario `pane-focus`.
+  Capture `docs/execution/captures/art-wave/pane-focus-960x600.png`.
+- VG-GOV-004: 200-row registry `docs/execution/CROSSWALK_REGISTRY.md` (no
+  TASK mint). VG-GOV-008: pack `roadmap.py` validate + unittest evidence
+  in `docs/execution/decisions/audit-dependency-and-path-scheduling.md`.
+
+## 2026-09-06 — dense mix + pane stack (Cursor, uncommitted)
+
+- VG-SOUND-007: score the mixer tape from a mixed pack plus elite telegraph
+  and a danger cue. An isolated tone preview cannot pass. Scenario
+  `dense-mix`. Record `docs/execution/captures/art-wave/dense-mix-score.txt`.
+- VG-UI-001: native Escape stack — character then gear then quit. Scenario
+  `pane-stack` presents the gear pane; a depth helper alone is not the proof.
+
+## 2026-09-06 — sound adapter, prefs, ambience, equip ack, soak (Cursor, uncommitted)
+
+- VG-SOUND-001: software PCM tone adapter; unknown backend fails; shutdown
+  releases the buffer. Scenario `sound-adapter`.
+- VG-SOUND-006: prefs file keeps SFX/music through mute toggles; zero SFX
+  volume drains silence. Scenario `audio-prefs`.
+- VG-SOUND-005: one `ambience:<route>` loop; salt reentry cannot stack.
+  Scenario `ambience-layer`.
+- VG-UI-003: `EquipView` is ack-only. Live HUD `equip:pending:` cannot be
+  `equip:ok`. Helmets cannot occupy main-hand. Scenario `equipment`.
+- VG-PERF-007: 32 present/resize/effect cycles stay inside the resource
+  envelope. A short scene cannot pass. Scenario `memory-soak`.
+
+## 2026-09-06 — material light, pixel capture, GPU recover (Cursor, uncommitted)
+
+- VG-GPU-006: moving light on bronze/stone (`shade_texel_lit`); channels
+  cap at 220. Damage-zone chroma cannot be concealed by additive white.
+  Live HUD `material-light:moving`. Scenario `material-light`.
+- VG-GPU-007: software readback writes a BMP plus provenance
+  (backend/content/platform). A semantic packet log cannot count as the
+  capture. Scenario `gpu-capture`.
+- VG-GPU-008: `RecoverablePresenter` resize/minimize-restore keeps one
+  live buffer. Failed recreate surfaces `gpu-error:recreate` and releases
+  pixels. Scenario `gpu-recover`.
+
+## 2026-09-06 — grounding / telegraph overlay (Cursor, uncommitted)
+
+- VG-GPU-005: contact shadows stay at feet; painter sorts by world Y;
+  threat telegraphs paint after scenery so a foreground wall cannot erase
+  the warning. Scenario `grounding`.
+
+## 2026-09-06 — GPU reference scene from live packets (Cursor, uncommitted)
+
+- VG-GPU-004: `present_reference_scene` shades the software sample from
+  session packets (Player/Monster, scenery, impact, HUD target sheet).
+  A disconnected textured-quad demo fails. Scenario `gpu-reference`.
+  BMP `docs/execution/captures/art-wave/gpu-reference-session.bmp`.
+
+## 2026-09-06 — visual target + bronze/stone + shader bindings (Cursor, uncommitted)
+
+- VG-ART-001: live HUD names the in-game composition target
+  (`target:camera:top-down`, adult proportion, bronze-stone palette,
+  ink-on-panel contrast). Concept-art HUD tokens are rejected. Scenario
+  `visual-target`. Capture
+  `docs/execution/captures/art-wave/visual-target-960x600.png`.
+- VG-ART-002: cooked albedo/rim maps in `bronze_stone.hpp` (CC0). Village
+  shrine/ruin/gate sample the family; magenta placeholder cannot pass.
+  Scenario `bronze-stone`.
+- VG-GPU-003: `cook-shaders-and-resource-bindings.hpp` layout v1. Software
+  load has no runtime shader path. Stale layout and non-Software backends
+  fail instead of drawing a silent fill. Scenario `shader-bindings`.
+
+## 2026-09-06 — GPU sample + semantic packets (Cursor, uncommitted)
+
+- VG-GPU-001: isolated `native/renderer/gpu` software sample draws a
+  bronze/stone textured quad, writes a BMP, and shuts down. Unknown
+  backends fail. Not a D3D-only window. Scenario `gpu-sample`.
+- VG-GPU-002: `packets_from_render_list` copies Telegraph/etc with
+  `backend_handle == 0`. Snapshot text has no HDC/D3D/pointer tokens.
+  Scenario `gpu-packets`. Live HUD `gpu-backend:software`.
+
+## 2026-09-06 — pad path + legal sounds + music phases (Cursor, uncommitted)
+
+- VG-UI-008: XInput on the 20 Hz tick (injected `PadReport` for harness).
+  Glyphs `pad-glyph:*`, hotplug in/out. Mouse coordinates cannot set
+  `pad:connected`. Scenario `pad-path`.
+- VG-SOUND-002: SPDX CC0 family in `sound_family.hpp`. Scenario
+  `legal-sounds`.
+- VG-SOUND-008: `music:explore|combat|recovery|none|muted`. Coalesced
+  submit; unloaded session cannot keep a competing want. Scenario
+  `music-phase`.
+
+## 2026-09-06 — village kit + WarCry weave (Cursor, still uncommitted)
+
+- VG-ART-004: tin village kit includes dwelling, shrine, tree, ruin, and a
+  non-solid dressing gate. Solid pieces publish `collision-proxy:<kind>`
+  on the production render list (same solids as movement). Scenario
+  `kit-chunk`. Capture `docs/execution/captures/art-wave/kit-chunk-960x600.png`.
+- VG-ART-006: WarCry aura/fade labeled `vfx-weave:cast|travel|impact|cancel`;
+  radius capped to 1/6 of the short viewport edge; elite telegraph still
+  draws. Extends TASK-0122; does not re-spec TASK-0108. Scenario
+  `weave-vfx`. Capture `docs/execution/captures/art-wave/weave-vfx-960x600.png`.
+
+## 2026-09-05 night — melee attack poses (Cursor, still uncommitted)
+
+- VG-ART-003: Scion melee is four rig poses (windup / active / recovery /
+  cancel) driven by swing lifetime, cooldown, and dash dust — not a single
+  sine of frame count. Scenario `attack-poses`. Does not implement
+  TASK-0108 or TASK-0173 model files.
+
+## 2026-09-05 night — combat hitch warmup (Cursor, still uncommitted)
+
+- VG-PERF-006: `warm_combat_glyphs` starts GDI+, Pixelmix, damage fonts,
+  and combat pens/brushes, then draws a dummy numeral/ellipse before the
+  first player strike. Live local and remote clients call it after
+  billboards. Scenario `hitch-warmup` prints cold, warm, and prepared
+  paint times; omitting the cold number fails. Swing and Damage ops stay.
+
+## 2026-09-05 night — resource envelope (Cursor, still uncommitted)
+
+- VG-PERF-004: floor cache shrinks when the view is less than half the
+  bitmap; effects use `add_effect` with a 128 cap (oldest dropped).
+  Scenario `resource-envelope` cycles 1920/640/960 eight times, then
+  300 impacts. One floor bitmap; pens/brushes ≤ 128; fx = 128. A cheap
+  frame cannot excuse growth.
+
+## 2026-09-05 night — effect batch + tooltip contrast (Cursor, still uncommitted)
+
+- VG-PERF-003: `fill_ellipse` / `ring_ellipse` / `draw_line` reuse cached
+  GDI pens and brushes (128 cap). Damage numerals reuse fonts by height.
+  Scenario `effect-batch`: 40 impacts + 40 swings still emit ops; a
+  thrust telegraph cannot be dropped to pass; second paint reuses pens.
+- VG-UI-007: hover tooltip titles and facts paint `kInk` on the panel
+  (contrast ≥ 4.5 vs `kPanelMid`); accent is a triangle mark. Extended
+  `hud-scale-floor`.
+
+## 2026-09-05 night — loot nameplates + paint trace (Cursor, still uncommitted)
+
+- VG-PERF-005: Z-key loot names are the 12 nearest pouches (X-target
+  always included). Every drop still paints as `Drop`. Scenario
+  `loot-label-budget` (120 pouches).
+- VG-PERF-001: `frame-budget` prints display size, logical CPUs, and
+  last-paint floor/world/hud/upload fields. F3 overlay matches. Live
+  present times `BitBlt` as upload; headless scenarios report upload 0.0.
+
+## 2026-09-05 night — route card + stat source (Cursor, still uncommitted)
+
+- VG-UI-005: route card under minimap (return/risk, no foe names);
+  client-only `[`/`]` zoom. Hidden while gear/character/tree panes own
+  the left column. VG-UI-004: character sheet ATK src / Passive / Cond
+  dormant. VG-UI-007: life chevron when low. VG-SOUND-006: mute flag
+  next to the client exe plus a mute glyph on the resource orb.
+- VG-UI-002: backpack drag uses `inventory_grid` occupancy. Valid drop
+  moves the cell; rejected drop cannot lose, duplicate, or equip.
+  Equip stays Enter / drop-on-weapon / `Command::equip`.
+  Evidence: `loot-to-bank` and `hud-pane-readability` PASS (0 failures).
+- VG-SOUND-003/004/005: local combat events voice through the mixer;
+  duplicate event keys cannot double-play; Scion-lost outranks cosmetics;
+  ambience does not stack on the same route. Scenario `combat-audio` PASS.
+- VG-UI-007: type floor (`skin::kMinSmallPx` / `kMinBodyPx`); scale 0 is
+  rejected; low-life chevron; hover tooltip stays in-frame. Scenario
+  `hud-scale-floor`.
+
+## 2026-09-05 — execution pack ingest + native HUD chrome (Cursor)
+
+- Planning pack (200 DRAFT VG goals) lives at `docs/execution/pack/`.
+  VG IDs are not TASK numbers. Lanes vs Kimi:
+  `orchestration/CURSOR_KIMI_LANES.md`. Crosswalk:
+  `docs/execution/CROSSWALK.md`. Baseline HEAD `486058f3`.
+- Native HUD: web-token skin, Pixelmix, wizard orb plates, hover
+  tooltips, authoritative XP bar (`state.xp` on the snapshot). Cursor
+  claims `native/client/**` until released.
+- Evidence: `hud-pane-readability` PASS (0 failures) with isolated
+  captures under `docs/execution/captures/hud-wave/`.
+- Uncommitted; owner pushes. Do not duplicate TASK-0108 / Owner Demo.
+
 ## 2026-09-04 - direct Crossroads portals
 
 - Town scene payloads now include four server-owned portals with road name,

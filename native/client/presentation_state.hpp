@@ -67,6 +67,7 @@ struct ActiveTelegraph {
   int windup_ticks = 1;
   int radius_tiles = 1;
   int inner_radius_tiles = 0;
+  int reach = 0;
 };
 
 struct WorldActor {
@@ -107,6 +108,9 @@ struct WorldActor {
   int movement_speed_percent = 0;
   int ember_resistance = 0;
   int river_resistance = 0;
+  // VG-UI-005: map/route overlay. False means the snapshot did not
+  // publish this actor; zoom cannot mint a blip for it.
+  bool on_snapshot = true;
 };
 
 struct WorldCarriedItem {
@@ -183,7 +187,8 @@ struct WorldView {
   std::vector<std::uint8_t> map_walkable;
   std::string theme = "town";
   // Current-level combat XP progress. Absent remains absent when an older
-  // session does not publish the XP block.
+  // session does not publish the XP block. Fraction of the current level's
+  // span for the bottom bar.
   double xp_fraction = 0.0;
   bool xp_present = false;
   verdigris::Vec2 extraction{};
@@ -238,7 +243,8 @@ void detect_monster_spawns(PresentationFx& fx, const WorldView& world,
 // world units. One protocol tile equals one ground-grid tile.
 double protocol_to_world(double protocol_units);
 
-void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& sim);
+void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& sim,
+                                long long combat_xp = 0);
 void sync_world_from_model(WorldView& world, const ClientModel& model);
 
 // TASK-0153 mode-aware extraction contract: the one owner-facing action

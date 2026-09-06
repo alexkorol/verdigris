@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-UI-005",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "880c9f74d751859e57d4655e86bff01b1b032343",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "route-map",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario route-map", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario visual-target", "exit_code": 0}
+  ],
+  "assertions": [
+    "max zoom cannot paint an off-snapshot warden blip",
+    "snapshot-visible foes still publish map-blip HUD",
+    "zoom/opacity do not move the player",
+    "route card names risk/return without hidden target ids",
+    "owner card titles Tin village, not route:tin:1:0",
+    "a protocol colon-id cannot be the owner title",
+    "owner risk/return lines are Risk: wardens and Return: press F at the pad"
+  ],
+  "negative_control": {
+    "name": "tight zoom reveals a server-hidden map target, or a protocol route id as the owner title",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/route-map-960x600.png",
+      "sha256": "d66509f8f461936fb90b446286f7898dee526efb32303457aaed5038fdddee72",
+      "produced_by": "native/build/verdigris_client.exe --scenario route-map"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/visual-target-960x600.png",
+      "sha256": "96e29f700e0760511ef05f275f5bd672b658b613828e48533c0a1dd22eb896ed",
+      "produced_by": "native/build/verdigris_client.exe --scenario visual-target"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Overlay/HUD only. World topology and server-hidden actor lists stay with Kimi WORLD/NET.",
+    "Raw route id remains on the F3 overlay. Owner Demo journeys not duplicated.",
+    "No TASK numbers minted."
+  ]
+}

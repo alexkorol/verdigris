@@ -1,0 +1,25 @@
+test_200_valid_goals (test_roadmap.RoadmapTests.test_200_valid_goals) ... ok
+test_assumptions_must_close_dependencies (test_roadmap.RoadmapTests.test_assumptions_must_close_dependencies) ... ok
+test_assumptions_require_planning (test_roadmap.RoadmapTests.test_assumptions_require_planning) ... ok
+test_cycle (test_roadmap.RoadmapTests.test_cycle) ... ok
+test_directory_overlap (test_roadmap.RoadmapTests.test_directory_overlap) ... ok
+test_distinct_files (test_roadmap.RoadmapTests.test_distinct_files) ... ok
+test_duplicate_id (test_roadmap.RoadmapTests.test_duplicate_id) ... ok
+test_empty_outcome (test_roadmap.RoadmapTests.test_empty_outcome) ... ok
+test_glob_overlap (test_roadmap.RoadmapTests.test_glob_overlap) ... ok
+test_missing_dependency (test_roadmap.RoadmapTests.test_missing_dependency) ... ok
+test_no_actual_ready_wave (test_roadmap.RoadmapTests.test_no_actual_ready_wave) ... ok
+test_path_casefold (test_roadmap.RoadmapTests.test_path_casefold) ... ok
+test_planning_is_labelled (test_roadmap.RoadmapTests.test_planning_is_labelled) ... ok
+test_projection_read_only (test_roadmap.RoadmapTests.test_projection_read_only) ... ok
+test_ready_requires_stamp (test_roadmap.RoadmapTests.test_ready_requires_stamp) ... ok
+test_self_edge (test_roadmap.RoadmapTests.test_self_edge) ... ok
+test_shared_resource_conflict (test_roadmap.RoadmapTests.test_shared_resource_conflict) ... ok
+test_uncertain_globs_conservative (test_roadmap.RoadmapTests.test_uncertain_globs_conservative) ... ok
+test_unknown_assumed_id (test_roadmap.RoadmapTests.test_unknown_assumed_id) ... ok
+test_unsafe_paths (test_roadmap.RoadmapTests.test_unsafe_paths) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.043s
+
+OK

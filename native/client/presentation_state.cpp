@@ -1,4 +1,6 @@
 #include "presentation_state.hpp"
+#include "publish-telegraph-timing-and-geometry.hpp"
+#include "ingest-ranged-projectile-warning.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -29,7 +31,8 @@ const char* extraction_action_hint(bool remote_session) {
   return remote_session ? "walk onto it" : "press F there";
 }
 
-void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& sim) {
+void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& sim,
+                                long long combat_xp) {
   world.endgame = EndgameView{};
   world = WorldView{};
   world.house_name = sim.house().name;
@@ -63,6 +66,31 @@ void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& s
     world.player.cooldown_total_ticks = player->cooldown_total_ticks;
     world.player.war_cry_ticks_remaining = player->war_cry_ticks_remaining;
     world.player.alive = player->alive;
+  }
+  {
+    const int level = std::max(1, world.player.level);
+    long long floor_xp = 0;
+    for (int x = 1; x < level; ++x)
+      floor_xp += static_cast<long long>(
+          std::floor(x + 265.0 * std::pow(2.0, x / 7.0)));
+    floor_xp /= 4;
+    long long next_xp = 0;
+    for (int x = 1; x < level + 1; ++x)
+      next_xp += static_cast<long long>(
+          std::floor(x + 265.0 * std::pow(2.0, x / 7.0)));
+    next_xp /= 4;
+    // Local core stores level, not intra-level combat XP. The HUD adapter
+    // tracks kill XP with the same RS curve as the snapshot `state.xp` block
+    // so a live local window is not an empty black strip.
+    const double floor_d = static_cast<double>(floor_xp);
+    const double next_d = static_cast<double>(next_xp);
+    world.xp_present = next_d > floor_d;
+    world.xp_fraction =
+        world.xp_present
+            ? std::clamp((static_cast<double>(combat_xp) - floor_d) /
+                             (next_d - floor_d),
+                         0.0, 1.0)
+            : 0.0;
   }
   for (const auto& actor : sim.actors()) {
     if (actor.kind != verdigris::ActorKind::Monster || !actor.alive) continue;
@@ -185,6 +213,7 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     // is removed. Monsters keep the neutral default until the wire ships an
     // authoritative facing; the presentation never invents one from the
     // player's aim.
+    monster.name = source.name;
     monster.kind = source.kind;
     monster.behaviour = source.behaviour;
     monster.damage_channel = source.damage_channel;
@@ -437,6 +466,10 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       break;
     }
     case PresentationEventType::Telegraph: {
+      if (projectile::is_projectile_warning(event)) {
+        projectile::apply_warning(fx, world, event, now_tick);
+        break;
+      }
       ActiveTelegraph telegraph;
       telegraph.actor_id = event.actor_id;
       const std::string action_id =
@@ -468,6 +501,11 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       telegraph.radius_tiles = std::max(1, event.radius);
       telegraph.inner_radius_tiles = std::clamp(
           event.inner_radius, 0, telegraph.radius_tiles - 1);
+      // VG-ACT-005 (merge): catalog reach still accompanies the warning so
+      // reach-aware paint never has to guess a cone length.
+      const auto spec = actions::spec_from_payload(
+          action_id, event.value, verdigris::Simulation::presentation_catalog());
+      telegraph.reach = spec.reach;
       fx.telegraphs[event.actor_id.empty() ? "foe" : event.actor_id] = std::move(telegraph);
       break;
     }
@@ -571,7 +609,8 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
         line = "Kill " + event.text;
         break;
       case PresentationEventType::Telegraph:
-        line = "Telegraph " + event.text;
+        line = event.text == "projectile" ? "Projectile warning " + event.actor_id
+                                          : "Telegraph " + event.text;
         break;
       case PresentationEventType::TelegraphCancelled:
         line = "Interrupted " + event.text;
@@ -659,6 +698,7 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
                   0, loot.first});
   }
   for (const auto& entry : fx.telegraphs) {
+    if (actions::telegraph_expired(world.tick, entry.second)) continue;
     const auto base = at(entry.second.position.x, entry.second.position.y);
     rl.push_back({render::Op::Telegraph, static_cast<double>(base.x),
                   static_cast<double>(base.y), 0.0, 0, entry.second.action});
@@ -733,6 +773,8 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
       case EffectFx::Kind::WarCryFade:
         rl.push_back({render::Op::WarCry, static_cast<double>(base.x),
                       static_cast<double>(base.y), 0.0, 0, phase_a::kWarcryFadeLabel});
+        rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, 0, "vfx-weave:cancel"});
         break;
       case EffectFx::Kind::ScionLostBeat:
         rl.push_back({render::Op::ScreenPulse, 0.0, 0.0, 0.0, 0,

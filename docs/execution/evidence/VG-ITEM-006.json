@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-ITEM-006",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "643802b40f55bf6b273447b8874f3bdb82a6621f",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "loot-filter",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build/verdigris_client.exe --scenario loot-filter", "exit_code": 0}
+  ],
+  "assertions": [
+    "ground drops publish safe category facts",
+    "hiding trophies cannot delete the Drop sprite",
+    "hiding cannot change ground ownership or drop tables"
+  ],
+  "negative_control": {
+    "name": "hiding a nameplate mutating sim ground ownership",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/loot-filter-960x600.png",
+      "sha256": "09c2e9aa28d2ff2028b1e70e627d247b6210fef49bb3dfb300fb4edf670e1628",
+      "produced_by": "native/build/verdigris_client.exe --scenario loot-filter"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Presentation filter only. ITEM sim authority stays Kimi."
+  ]
+}

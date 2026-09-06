@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-PERF-004",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "643802b40f55bf6b273447b8874f3bdb82a6621f",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "resource-envelope",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build/verdigris_client.exe --scenario resource-envelope", "exit_code": 0}
+  ],
+  "assertions": [
+    "resize cycles keep a single floor bitmap",
+    "GDI pens/brushes stay inside the 128 cap",
+    "300 spawned effects stay at the 128 cap",
+    "a cheap frame does not excuse a growing effect list"
+  ],
+  "negative_control": {
+    "name": "stable FPS excusing steadily growing GPU/CPU resources",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/resource-envelope-960x600.png",
+      "sha256": "8806485e4f7b747fb713e977a4335a2ad774c84e06d33a9e3f95fe98dfe287ac",
+      "produced_by": "native/build/verdigris_client.exe --scenario resource-envelope"
+    },
+    {
+      "kind": "log",
+      "path": "docs/execution/captures/art-wave/resource-envelope-report.txt",
+      "sha256": "b668f0d256920e64fa537275d320454d0c73dddace5d794ee22d537e3dfb1099",
+      "produced_by": "native/build/verdigris_client.exe --scenario resource-envelope"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "GDI session envelope, not DXGI memory. core.cpp stays Kimi."
+  ]
+}

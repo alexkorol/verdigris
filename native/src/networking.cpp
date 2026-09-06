@@ -1553,6 +1553,8 @@ JsonValue ProtocolSession::snapshot() const {
   {
     // The client renders only this authoritative current-level span; it never
     // reimplements the experience curve or guesses progress from player level.
+    // Combat experience for the client XP bar (RS-style curve; the level is
+    // already derived server-side from this same value).
     const int xp_level = level_from_xp(combat_xp_);
     JsonValue::Object xp;
     put(xp, "current", static_cast<double>(combat_xp_));

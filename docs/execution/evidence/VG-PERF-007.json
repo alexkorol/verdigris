@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-PERF-007",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "643802b40f55bf6b273447b8874f3bdb82a6621f",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "memory-soak",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build/verdigris_client.exe --scenario memory-soak", "exit_code": 0}
+  ],
+  "assertions": [
+    "a short scene cannot establish the envelope",
+    "32 present/resize/effect cycles stay inside the cap",
+    "floor bitmaps stay 1"
+  ],
+  "negative_control": {
+    "name": "a short scene claiming the resource envelope",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "log",
+      "path": "docs/execution/captures/art-wave/memory-soak-report.txt",
+      "sha256": "c3167821476207a0c12a151a0f5fcfa825c22eb7b209eed43fd94a8f81c7ef08",
+      "produced_by": "native/build/verdigris_client.exe --scenario memory-soak"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "NOT_REQUIRED",
+  "limitations": [
+    "32 cycles, max_floor=1, max_fx=128. Not a GPU VRAM soak."
+  ]
+}

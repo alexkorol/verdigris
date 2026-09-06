@@ -1,0 +1,27 @@
+{
+  "mode": "WHAT_IF_DRAFT_CANDIDATES_NOT_CLAIMABLE",
+  "assumptions": [
+    "VG-GOV-001"
+  ],
+  "candidate_count": 4,
+  "selected": [
+    {
+      "id": "VG-GOV-002",
+      "title": "Resolve orchestration precedence"
+    },
+    {
+      "id": "VG-GOV-003",
+      "title": "Freeze the parity scorecard"
+    },
+    {
+      "id": "VG-GOV-004",
+      "title": "Crosswalk existing task packets"
+    },
+    {
+      "id": "VG-QA-001",
+      "title": "Standardize evidence manifests"
+    }
+  ],
+  "excluded_conflicts": [],
+  "warning": "Read-only suggestion. It does not verify live Git head, rulings, external resources, semantic compatibility or exclusive claims. Integration hooks require separate reservations."
+}

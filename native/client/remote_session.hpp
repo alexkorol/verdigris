@@ -77,6 +77,8 @@ class RemoteProtocolSession final : public IClientSession {
   std::vector<PresentationEvent> pending_events_;
   std::string last_error_;
   std::string last_facing_{"down"};
+  std::string last_move_dir_;
+  bool aim_held_ = false;
   std::string pending_equip_uuid_;
 };
 
