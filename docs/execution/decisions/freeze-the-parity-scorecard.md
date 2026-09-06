@@ -21,6 +21,7 @@ accountable approver stays OPEN.
 | Navigation | `--scenario dressing-pass`, route card in HUD | Dressing hash ≠ topology | Cursor dressing; WORLD sim is Kimi |
 | HUD vitals | `--scenario vital-orbs` | Life left/red, mana right/blue; mute is a chip | Cursor Grok |
 | UI scale | `--scenario hud-scale-floor`, `hud-pane-readability` | Type floor; pane vs orbs | Cursor Grok |
+| First session | `--scenario first-session-clarity` | Slay wardens + dash on F3-off HUD; local walk-on rejected | Cursor Grok |
 | Persistence | Kimi SAVE / House journeys | Restart retains House value | Kimi |
 | Audio mix | `--scenario dense-mix`, `combat-audio` | Event-id mix; not a silent schedule | Cursor sink |
 | Frame budget | `--scenario frame-budget` | <40 ms avg at 3440×1440 | Cursor Grok |

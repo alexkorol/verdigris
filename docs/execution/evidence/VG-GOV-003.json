@@ -4,7 +4,7 @@
   "planning_id": "VG-GOV-003",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "5a5dcc9069f318e0ab0b563300ad023d07827bfe",
+  "base_sha": "c90bd7fa39396fded979e578caa9bd3ba4814d65",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "xp-meter",
@@ -13,17 +13,20 @@
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario xp-meter", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario vital-orbs", "exit_code": 0}
+    {"run": "native/build/verdigris_client.exe --scenario first-session-clarity", "exit_code": 0}
   ],
   "assertions": [
     "every scorecard dimension names a journey and measurement",
     "feature or VG-ID counts cannot produce a pass",
     "local XP meter starts at the floor; three level-1 kills fill ~49%",
     "empty pit samples 0 gold pixels; filled meter samples ledger gold (805)",
-    "live HUD names Kill fill and Gold pit"
+    "live HUD names Kill fill and Gold pit",
+    "first-session HUD names Slay the wardens and Space dash with F3 off",
+    "live HUD names Slay wardens and Dash hint",
+    "local first session rejects walk-on"
   ],
   "negative_control": {
-    "name": "counting VG IDs as parity, or an XP lv 1 label over a 0% black strip",
+    "name": "counting VG IDs as parity, an XP lv 1 label over a 0% black strip, or a local first-session HUD that shows walk-on",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
@@ -37,6 +40,12 @@
       "path": "docs/execution/captures/art-wave/xp-meter-960x600.png",
       "sha256": "86e29dbb873efcd7584fd5cb3b990c218f5e177a5fccd8368d5ac1198ce6b8f6",
       "produced_by": "native/build/verdigris_client.exe --scenario xp-meter"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/first-session-clarity-960x600.png",
+      "sha256": "b2d20c997790b7c23840b6498e9e8370d05d53477c738daa94cde4055f4a2713",
+      "produced_by": "native/build/verdigris_client.exe --scenario first-session-clarity"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
@@ -44,6 +53,7 @@
   "limitations": [
     "Local HUD tracks kill XP with the same RS curve as snapshot state.xp. Core still stores level only; this is not a second combat packet.",
     "Owner strip paints Kill fill / Gold pit. VG-ID count cannot certify.",
+    "first-session-clarity owner strip paints Slay wardens / Dash hint below the measured top HUD so Space dash stays visible. Walk-on cannot certify local play. STORY copy stays Kimi.",
     "Did not edit remote_session.cpp, networking.cpp, or native/src/core.cpp.",
     "GDI+ PNG may shift gold chroma; DIB gold sample is the certification.",
     "Scorecard thresholds still need an owner stamp. VG-GOV-002 remains unstamped.",

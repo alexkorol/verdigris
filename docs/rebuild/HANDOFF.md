@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Slay wardens, Dash hint (Cursor)
+
+- VG-GOV-003: scorecard First session dimension now names
+  `first-session-clarity`. Owner strip paints Slay wardens / Dash hint
+  below the measured top HUD so Space dash stays visible. Walk-on cannot
+  certify local play. Kill fill / Gold pit on `xp-meter` is unchanged.
+  STORY copy stays Kimi. Thresholds still need an owner stamp.
+- Scenario `first-session-clarity` PASS. Capture viewed.
+  Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — Kit lock, hud-pane recapture (Cursor)
 
 - VG-ART-001: `move-and-camera` owner Kit lock strip paints Same delta.
