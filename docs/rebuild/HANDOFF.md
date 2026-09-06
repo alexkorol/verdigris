@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — owner gear pane without TREE jargon (Cursor)
+
+- VG-UI-003: gear overlay paints `Skill tree: no data yet` when the tree
+  payload is absent. `PaneStat` still carries `TREE no authoritative data`
+  for TASK-0156. Weapon seat uses `ui_skin::slot`.
+- Scenarios `equipment` / `pack-drag` / `attack-poses` PASS. Capture
+  viewed: current HUD, bronze Scion, village gate, owner skill-tree line.
+  Not Owner Demo. ITEM sim stays Kimi.
+
 ## 2026-09-06 — shrine and gate inside the spawn capture (Cursor)
 
 - VG-ART-004: tin village shrine and dressing gate sit in the spawn

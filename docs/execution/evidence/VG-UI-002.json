@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-002",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "base_sha": "a3a0c34929a9fba78033e2f7715332ad6b4f14b3",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "pack-drag",
@@ -27,7 +27,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/pack-drag-960x600.png",
-      "sha256": "8a751dc5834f2aa40176d6e2f15c9d091024500304abe8674758d2a834c0f50a",
+      "sha256": "75a6d17902a0c9d6ab6164141627af1fc9e8420e020314c830562639c888b5a7",
       "produced_by": "native/build/verdigris_client.exe --scenario pack-drag"
     }
   ],
@@ -35,6 +35,6 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Presentation occupancy only. Core inventory-move stays Kimi.",
-    "Working tree dirty. No TASK numbers minted."
+    "No TASK numbers minted. Not Owner Demo."
   ]
 }

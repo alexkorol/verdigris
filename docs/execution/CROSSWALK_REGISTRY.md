@@ -137,7 +137,7 @@ not implemented here.
 | VG-ART-008 | G3 | extend | Owner Demo — do not duplicate |
 | VG-UI-001 | G1 | extend | pane-stack native Escape; helper depth alone cannot prove |
 | VG-UI-002 | G2 | extend | pack-drag occupancy; reject cannot lose/duplicate/silent-equip; sim inventory-move stays Kimi |
-| VG-UI-003 | G2 | extend | equipment compare plate is ack-only; pending cannot gold-frame as equipped |
+| VG-UI-003 | G2 | extend | equipment ack-only; owner skill-tree line, not TREE jargon |
 | VG-UI-004 | G2 | extend | stat-explain expandable ATK; dormant cannot fold into Attack; core STAT stays Kimi |
 | VG-UI-005 | G3 | extend | route-map zoom/opacity; off-snapshot blip cannot pass; Owner Demo journeys not reimplemented |
 | VG-UI-006 | G2 | extend | Owner Demo — do not duplicate |

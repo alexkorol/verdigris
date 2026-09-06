@@ -29,7 +29,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/attack-poses-960x600.png",
-      "sha256": "04810ba95de3eae92b5b8f36de728415494db16b4987f56282fae4ed7d8ff95a",
+      "sha256": "7973696c50fedca1681a4d730cb30ae9f34beef8b2dddd87d94d9ebcf08c8918",
       "produced_by": "native/build/verdigris_client.exe --scenario attack-poses"
     }
   ],

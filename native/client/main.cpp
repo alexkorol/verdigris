@@ -3771,14 +3771,8 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   RECT seat{seat_left, seat_top, seat_left + seat_w, seat_top + 24 * s};
   state.hud_rect_trace.push_back(
       {"pane-seat", {seat.left, seat.top, seat_w, 24 * s}});
-  HBRUSH seat_bg = CreateSolidBrush(RGB(32, 40, 42));
-  FillRect(dc, &seat, seat_bg);
-  DeleteObject(seat_bg);
-  HPEN seat_pen = CreatePen(PS_SOLID, 1, RGB(104, 160, 137));
-  HGDIOBJ sp = SelectObject(dc, seat_pen);
-  Rectangle(dc, seat.left, seat.top, seat.right, seat.bottom);
-  SelectObject(dc, sp);
-  DeleteObject(seat_pen);
+  const bool seat_armed = equipped_bonus != 0;
+  skin::slot(dc, seat, seat_armed ? skin::kGold : skin::kVerdigris, seat_armed);
   SetTextColor(dc, RGB(170, 190, 178));
   const char* seat_label = "Weapon";
   TextOutA(dc, seat_left + 6 * s, seat_top + 4 * s, seat_label,
@@ -3985,7 +3979,9 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   // TASK-0156: compact authoritative progression summary, mirrored from the
   // passiveTree payload. Absence is stated as absence — never rendered as
   // zero — and no node ids, allocation actions, or invented copy appear.
+  // PaneStat keeps the protocol TREE string; owner paint does not.
   std::string progression;
+  std::string owner_progression;
   if (state.world.progression.present) {
     progression = "TREE pts " +
                   std::to_string(state.world.progression.unspent_points) + "/" +
@@ -3993,19 +3989,26 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
                   "  nodes " + std::to_string(state.world.progression.node_count) +
                   "  conduits " +
                   std::to_string(state.world.progression.conduit_count);
+    owner_progression =
+        "Skill points " + std::to_string(state.world.progression.unspent_points) +
+        " of " + std::to_string(state.world.progression.earned_points);
   } else {
     progression = "TREE no authoritative data";
+    owner_progression = "Skill tree: no data yet";
   }
   rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0, progression});
+  rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                state.world.progression.present ? "tree:owner-present"
+                                                : "tree:owner-absent"});
   {
     SIZE extent{};
-    GetTextExtentPoint32A(dc, progression.c_str(),
-                          static_cast<int>(progression.size()), &extent);
+    GetTextExtentPoint32A(dc, owner_progression.c_str(),
+                          static_cast<int>(owner_progression.size()), &extent);
     state.hud_rect_trace.push_back(
         {"pane-progression", {left + 14 * s, bottom - 74 * s, extent.cx, extent.cy}});
   }
-  TextOutA(dc, left + 14 * s, bottom - 74 * s, progression.c_str(),
-           static_cast<int>(progression.size()));
+  TextOutA(dc, left + 14 * s, bottom - 74 * s, owner_progression.c_str(),
+           static_cast<int>(owner_progression.size()));
   const char* controls =
       "Drag to place | drop on Weapon to equip | Enter equip | U unequip";
   {
@@ -10903,6 +10906,19 @@ int scenario_equipment() {
   scenario_check(ack_ok, "equipment: ack paints equip:ok");
   scenario_check(gold_equipped,
                  "equipment: compare plate follows the acknowledged seat");
+  bool tree_protocol = false;
+  bool tree_owner_absent = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::PaneStat &&
+        item.label == "TREE no authoritative data")
+      tree_protocol = true;
+    if (item.op == render::Op::Hud && item.label == "tree:owner-absent")
+      tree_owner_absent = true;
+  }
+  scenario_check(tree_protocol,
+                 "equipment: PaneStat still states TREE absence for TASK-0156");
+  scenario_check(tree_owner_absent,
+                 "equipment: owner paint is Skill tree absence, not TREE jargon");
 
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {

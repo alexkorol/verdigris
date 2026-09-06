@@ -191,7 +191,9 @@ Scenario `ambience-layer`. Evidence `docs/execution/evidence/VG-SOUND-005.json`.
 VG-SOUND-006: mute cannot reset SFX/music volumes; zero SFX stays silent.
 Scenario `audio-prefs`. Evidence `docs/execution/evidence/VG-SOUND-006.json`.
 VG-UI-003: equip HUD is ack-only (`equip:ok` after ItemEquipped). Pending
-compare cannot gold-frame as equipped. Scenario `equipment`.
+compare cannot gold-frame as equipped. Owner gear pane paints
+`Skill tree: no data yet`; PaneStat keeps `TREE no authoritative data`.
+Scenario `equipment`. Evidence `docs/execution/evidence/VG-UI-003.json`.
 VG-PERF-007: 32 resize/effect cycles; floor bitmaps stay 1. Scenario
 `memory-soak`. Evidence `docs/execution/evidence/VG-PERF-007.json`.
 VG-SOUND-007: mixer tape from mixed pack + elite; isolated preview fails.
