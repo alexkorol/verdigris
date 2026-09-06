@@ -1,5 +1,16 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — pane stack and eight-way (Cursor)
+
+- VG-UI-001: owner Stack 2 strip paints Escape closes. Helper depth
+  cannot certify. Escape still dismisses character then gear; bare
+  Escape quits. Skill tree title stays Skill tree, not Geometric
+  Passives. Capture viewed. Not Owner Demo.
+- VG-MOVE-001: owner Eight-way strip paints Up-left. A vertical-only
+  encoder cannot pass a diagonal. Capture viewed. Core movement stays
+  Kimi.
+- Scenarios `pane-stack` / `eight-way` PASS.
+
 ## 2026-09-06 — attack beat and mapped cues (Cursor)
 
 - VG-ACT-007: owner Attack beat strip paints Anticipate. A fabricated

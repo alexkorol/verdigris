@@ -16,4 +16,7 @@ inline bool helper_depth_alone_cannot_prove(int depth, bool native_painted,
   return !native_painted || !native_escape;
 }
 
+inline const char* owner_stack_label() { return "Stack 2"; }
+inline const char* owner_escape_label() { return "Escape closes"; }
+
 }  // namespace verdigris::client::ui

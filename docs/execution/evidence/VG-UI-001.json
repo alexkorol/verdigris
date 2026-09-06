@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-001",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "c0944a81fbf3f81e212527c6b50b913322351fda",
+  "base_sha": "f002e0e04ce1e67522c39f1830c522f5d7ce32cc",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "pane-stack",
@@ -18,7 +18,8 @@
     "native HUD publishes pane-stack:2 with gear+character painted",
     "first Escape dismisses character only",
     "bare Escape after empty stack requests quit",
-    "skill tree paints owner title Skill tree and absence Skill tree: no data yet"
+    "skill tree paints owner title Skill tree and absence Skill tree: no data yet",
+    "live HUD names Stack 2 and Escape closes"
   ],
   "negative_control": {
     "name": "helper pane_stack_depth without native paint or Escape, or Geometric Passives as the owner title",
@@ -28,20 +29,19 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/pane-stack-960x600.png",
-      "sha256": "d87fe6d3c9c5bff72c2d13c8eb833383a2c1d11b5c7fbf674285dd8ee3d3ea7d",
+      "sha256": "5228b6183183a30c489b298eda87742c4dd9a88f8147f8e5f8396df6032de005",
       "produced_by": "native/build/verdigris_client.exe --scenario pane-stack"
     },
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/tree-pane-960x600.png",
-      "sha256": "becafdd7f45ccffccf412ff850ec7887d5f98c22e232ab66c2b518f4d95013ae",
+      "sha256": "5ce68d5b6185307b46a81bb740b9b5c513dc2cf62f4df975e701f9bc3eb97e3e",
       "produced_by": "native/build/verdigris_client.exe --scenario pane-stack"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Client Escape stack only. Owner Demo Chronicles journeys not duplicated.",
-    "Working tree dirty. No TASK numbers minted."
+    "Client Escape stack only. Owner Demo Chronicles journeys not duplicated."
   ]
 }

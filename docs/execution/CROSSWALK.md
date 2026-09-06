@@ -33,7 +33,7 @@ Cursor evidence notes.
 
 | VG | Disposition | Existing |
 |---|---|---|
-| VG-UI-001 | extend | native Escape stack (`pane-stack`); helper depth alone cannot pass |
+| VG-UI-001 | extend | native Escape stack (`pane-stack`); owner Stack 2 / Escape closes; helper depth alone cannot pass |
 | VG-UI-002 | extend | TASK-0171 INTEGRATED, 0184 BRIDGE_PREP; `pack-drag`; reject cannot lose/duplicate/silent-equip |
 | VG-UI-003 | extend | paper-doll + ack-only HUD (`equipment`); pending compare cannot gold-frame as equipped |
 | VG-UI-004 | extend | TASK-0156, 0159 INTEGRATED; `stat-explain` expandable ATK; dormant cannot fold into Attack |
@@ -64,7 +64,7 @@ Cursor evidence notes.
 | VG-MOVE-005 | extend | TASK-0165 `input_focus.hpp` wired in `fixed_game_tick` (`pane-focus`); not a core movement rewrite |
 | VG-MOVE-006 | new | isolated `bindings.v1` (`remap-binds`); owner Documents cannot be the test path. Full VG-SHIP-001 packager stays Kimi |
 | VG-MOVE-008 | new | `input-latency` p50/p95 on the paint path; `Simulation::dispatch` time is not photon. MOVE-007 buffering stays Kimi |
-| VG-MOVE-001 | new | eight-way `player:move` names (`eight-way`); vertical-only collapse fails |
+| VG-MOVE-001 | new | eight-way `player:move` names (`eight-way`); owner Eight-way / Up-left; vertical-only collapse fails |
 | VG-MOVE-002 | new | held aim survives locomotion (`aim-hold`); core move still clobbers without the adapter |
 | VG-MOVE-003–004, 007 | extend / new | Kimi lease for sim travel distance / dash sweep / action buffering |
 
@@ -216,9 +216,9 @@ VG-PERF-007: 32 resize/effect cycles; floor bitmaps stay 1. Scenario
 VG-SOUND-007: mixer tape from mixed pack + elite; live HUD paints
 Encounter mix / Hit + warning. An isolated preview cannot certify.
 Scenario `dense-mix`. Evidence `docs/execution/evidence/VG-SOUND-007.json`.
-VG-UI-001: Escape dismisses character then gear; bare Escape quits. Helper
-depth alone cannot prove. Scenario `pane-stack`.
-`pane-stack`.
+VG-UI-001: Escape dismisses character then gear; bare Escape quits. Owner
+strip paints Stack 2 / Escape closes. Helper depth alone cannot prove.
+Scenario `pane-stack`. Evidence `docs/execution/evidence/VG-UI-001.json`.
 VG-MOVE-005: TASK-0165 focus reducer gates WASD, combat, pickup, and pack
 drag. Closing a pane cannot release a held attack. Scenario `pane-focus`.
 Evidence `docs/execution/evidence/VG-MOVE-005.json`.
@@ -230,8 +230,9 @@ VG-MOVE-008: input QPC to `paint_scene` present QPC. p50/p95 on this
 machine. Command dispatch time is not `input-latency:photon`. Scenario
 `input-latency`. Protocol
 `docs/execution/decisions/measure-native-input-response.md`.
-VG-MOVE-001: eight-way encoder keeps both axes. A vertical-only name
-cannot pass a diagonal. Scenario `eight-way`.
+VG-MOVE-001: eight-way encoder keeps both axes. Owner strip paints
+Eight-way / Up-left. A vertical-only name cannot pass a diagonal.
+Scenario `eight-way`. Evidence `docs/execution/evidence/VG-MOVE-001.json`.
 VG-MOVE-002: `player:move` does not replace held aim; local tick
 re-applies aim after move. Scenario `aim-hold`. Core `resolve_move` still
 turns facing — that is the defect the adapter covers.

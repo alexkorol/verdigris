@@ -480,6 +480,8 @@ struct ClientState {
   bool dense_mix_review_strip = false;
   bool attack_beat_review_strip = false;
   bool combat_beats_review_strip = false;
+  bool pane_stack_review_strip = false;
+  bool eight_way_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -6546,6 +6548,84 @@ void paint_combat_beats_review_strip(ClientState& state, HDC dc, const RECT& bou
   SelectObject(dc, old_font);
 }
 
+void paint_pane_stack_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                   render::List& rl) {
+  if (!state.pane_stack_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "stack-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::ui::owner_stack_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* escape = verdigris::client::ui::owner_escape_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, escape, static_cast<int>(strlen(escape)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "helper depth";
+  TextOutA(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "stack:2"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "stack:escape"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "stack-strip:helper-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_eight_way_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                  render::List& rl) {
+  if (!state.eight_way_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "eight-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::move::owner_eight_way_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* diag = verdigris::client::move::owner_up_left_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, diag, static_cast<int>(strlen(diag)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "vertical-only";
+  TextOutA(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "move:eight-way"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "move:up-left"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "eight-strip:vertical-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -7574,6 +7654,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_dense_mix_review_strip(state, dc, bounds, rl);
   paint_attack_beat_review_strip(state, dc, bounds, rl);
   paint_combat_beats_review_strip(state, dc, bounds, rl);
+  paint_pane_stack_review_strip(state, dc, bounds, rl);
+  paint_eight_way_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -12243,8 +12325,23 @@ int scenario_pane_stack() {
     return scenario_failures;
   }
   const std::string png = dir + "\\pane-stack-960x600.png";
+  state.pane_stack_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "pane-stack: stacked-pane capture written");
+  bool stack_owner = false;
+  bool escape_owner = false;
+  bool helper_rejected = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "stack:2") stack_owner = true;
+    if (item.label == "stack:escape") escape_owner = true;
+    if (item.label == "stack-strip:helper-rejected") helper_rejected = true;
+  }
+  scenario_check(stack_owner && escape_owner,
+                 "pane-stack: live HUD names Stack 2 and Escape closes");
+  scenario_check(helper_rejected,
+                 "pane-stack: live HUD rejects helper depth as the journey");
+  state.pane_stack_review_strip = false;
 
   handle_escape_key(state);
   scenario_check(state.gear_overlay && !state.character_pane && !state.quit_requested,
@@ -13182,9 +13279,14 @@ int scenario_eight_way() {
     scenario_check(false, "eight-way: capture root rejected before any write");
     return scenario_failures;
   }
+  state.eight_way_review_strip = true;
   const std::string png = dir + "\\eight-way-960x600.png";
   scenario_check(reference_present(state, 960, 600, png),
                  "eight-way: capture written");
+  scenario_check(has_hud("move:eight-way") && has_hud("move:up-left"),
+                 "eight-way: live HUD names Eight-way and Up-left");
+  scenario_check(has_hud("eight-strip:vertical-rejected"),
+                 "eight-way: live HUD rejects a vertical-only encoder");
   return scenario_failures;
 }
 

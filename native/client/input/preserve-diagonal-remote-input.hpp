@@ -51,4 +51,7 @@ inline bool all_eight_encode() {
   return true;
 }
 
+inline const char* owner_eight_way_label() { return "Eight-way"; }
+inline const char* owner_up_left_label() { return "Up-left"; }
+
 }  // namespace verdigris::client::move
