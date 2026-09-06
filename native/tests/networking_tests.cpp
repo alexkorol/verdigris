@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <sstream>
 #include <stdexcept>
 #include <vector>
 
@@ -2548,6 +2549,168 @@ void test_json_parser_budgets() {
   check(session.state_payload("budget-state", false) == state_before,
         "session state is unchanged by rejected parses");
 }
+// VG-SEC-002 helpers: canonical chart serialization + FNV-1a for the
+// byte-identical golden lock on legitimate road-web generation.
+std::uint64_t fnv1a64(const std::string& text) {
+  std::uint64_t h = 1469598103934665603ull;
+  for (unsigned char c : text) { h ^= c; h *= 1099511628211ull; }
+  return h;
+}
+
+std::string chart_canonical(ProtocolSession& session, const char* road) {
+  std::string wire;
+  session.handle(Envelope{"world:road:chart", JsonValue::Object{{"roadId", road}}},
+                 [&](const Envelope& event) {
+                   if (event.event == "open:screen") wire = emit_envelope(event);
+                 });
+  Envelope chart;
+  std::string error;
+  check(parse_envelope(wire, chart, &error), error.c_str());
+  std::string canonical;
+  const auto* nodes = chart.data["payload"]["nodes"].array();
+  check(nodes != nullptr, "tier bounds: chart carries a node list");
+  for (const auto& node : *nodes) {
+    canonical += node["id"].string() ? *node["id"].string() : "?";
+    canonical += "|";
+    canonical += node["name"].string() ? *node["name"].string() : "?";
+    canonical += "|" + std::to_string(static_cast<int>(node["tier"].number().value_or(-1)));
+    canonical += "|" + std::to_string(static_cast<int>(node["index"].number().value_or(-1)));
+    canonical += "|" + (node["wardenName"].string() ? *node["wardenName"].string() : "?");
+    canonical += "|" + (node["parentId"].string() ? *node["parentId"].string() : "null");
+    canonical += "|" + (node["template"].string() ? *node["template"].string() : "?");
+    canonical += "|" + (node["layout"].string() ? *node["layout"].string() : "?");
+    canonical += "|" + (node["status"].string() ? *node["status"].string() : "?");
+    canonical += "\n";
+  }
+  return canonical;
+}
+
+std::string first_open_node_at_tier(const std::string& canonical, int tier) {
+  std::istringstream rows(canonical);
+  std::string row;
+  while (std::getline(rows, row)) {
+    const auto first = row.find('|');
+    const auto second = row.find('|', first + 1);
+    const auto third = row.find('|', second + 1);
+    if (row.substr(second + 1, third - second - 1) == std::to_string(tier) &&
+        row.size() >= 4 && row.compare(row.size() - 4, 4, "open") == 0)
+      return row.substr(0, first);
+  }
+  return std::string();
+}
+
+bool barred_message_seen(ProtocolSession& session, const std::string& node_id) {
+  bool barred = false;
+  session.handle(Envelope{"world:zone:enter", JsonValue::Object{{"nodeId", node_id}}},
+                 [&](const Envelope& event) {
+                   if (event.event == "game:send:message" &&
+                       event.data["text"].string() &&
+                       event.data["text"].string()->find("barred") !=
+                           std::string::npos)
+                     barred = true;
+                 });
+  return barred;
+}
+
+void test_road_tier_bounds() {
+  // (c) Deepest legitimate tiers still work, with generation results
+  // byte-identical to the pre-fix recursive implementation: walk tiers 1..6
+  // (spanning the authored story tiers 2..5 and procedural tier 6) through
+  // the real enter/clear/return loop and pin the exact chart contents at
+  // every step. Golden hash captured from the pre-fix binary at base
+  // 3ac661a7 (evidence: orchestration/vg/VG-SEC-002/probe_prefix_golden.txt).
+  ProtocolSession session("guest-tier-lock", "socket-tier-lock", 0x71e7u, false);
+  std::string combined;
+  for (int tier = 1; tier <= 6; ++tier) {
+    const std::string target =
+        first_open_node_at_tier(chart_canonical(session, "tin"), tier);
+    check(!target.empty(), "tier bounds: an open node exists at each walked tier");
+    session.handle(Envelope{"world:zone:enter", JsonValue::Object{{"nodeId", target}}},
+                   [](const Envelope&) {});
+    const auto state = request_state(session, "tier-walk");
+    check(state["state"]["sceneType"].string() &&
+              *state["state"]["sceneType"].string() == "instance" &&
+              state["state"]["sceneMetadata"]["depth"].number().value_or(0) == tier,
+          "tier bounds: legitimate tier entry still yields an instance at the tier depth");
+    session.handle(Envelope{"dev:clear-floor", JsonValue::Object{}},
+                   [](const Envelope&) {});
+    session.handle(Envelope{"party:returnToTown", JsonValue::Object{}},
+                   [](const Envelope&) {});
+    combined += chart_canonical(session, "tin");
+    combined += "\x01";
+  }
+  check(fnv1a64(combined) == 12131271322927655949ull,
+        "tier bounds: legitimate road-web generation is byte-identical to pre-fix");
+
+  // (a) Absurdly large tiers are rejected at the trust boundary without a
+  // crash and without generation work, however they arrive.
+  const std::string calm = session.state_payload("tier-calm", false);
+  check(barred_message_seen(session, "tin:2000000000:0"),
+        "tier bounds: a two-billion tier is barred");
+  check(barred_message_seen(session, "tin:2147483647:0"),
+        "tier bounds: INT_MAX tier is barred (no tier + 1 overflow)");
+  check(barred_message_seen(session, "tin:1025:0"),
+        "tier bounds: the first tier beyond the defense budget is barred");
+
+  // (b) Negative / malformed tiers aimed at a road node are rejected without
+  // crash and without falling through to the route branch.
+  check(barred_message_seen(session, "tin:-5:0"),
+        "tier bounds: a negative tier is barred");
+  check(barred_message_seen(session, "tin:abc:0"),
+        "tier bounds: a non-numeric tier is barred");
+  check(barred_message_seen(session, "tin:99999999999999999999:0"),
+        "tier bounds: an stoi-overflowing tier is barred");
+  check(barred_message_seen(session, "tin:1:-1"),
+        "tier bounds: a negative node index is barred");
+
+  // (d) None of the rejected inputs above mutated observable session state.
+  check(session.state_payload("tier-calm", false) == calm,
+        "tier bounds: rejected road-node inputs leave session state byte-identical");
+
+  // The fall-through for genuine route names is preserved (no over-reach):
+  // a bare word without the road-node shape still enters a dungeon.
+  ProtocolSession route_session("guest-tier-route", "socket-tier-route", 0x71e8u, false);
+  route_session.handle(Envelope{"world:zone:enter", JsonValue::Object{{"nodeId", "tin"}}},
+                       [](const Envelope&) {});
+  const auto route_state = request_state(route_session, "tier-route");
+  check(route_state["state"]["sceneType"].string() &&
+            *route_state["state"]["sceneType"].string() == "instance",
+        "tier bounds: non-node zone names still reach the route branch");
+
+  // (a, persisted variant) A crafted chronicle injecting a huge cleared tier
+  // crashed the pre-fix binary during restore (stack exhaustion inside
+  // web_road_nodes -> web_tier_width; observed exit 127 at base 3ac661a7,
+  // evidence: orchestration/vg/VG-SEC-002/probe_prefix_crash.txt). Now the
+  // forged entry is skipped: the session survives and the road frontier is
+  // unmoved.
+  ProtocolSession crafted("guest-tier-crafted", "socket-tier-crafted", 0xdeadu, false);
+  JsonValue::Object house;
+  house["id"] = JsonValue("house-tier-crafted");
+  house["clearedRoadNodes"] =
+      JsonValue(JsonValue::Array{JsonValue("tin:2000000000:0")});
+  JsonValue::Object chronicle;
+  chronicle["version"] = JsonValue(3);
+  chronicle["houses"] = JsonValue(JsonValue::Array{JsonValue(house)});
+  crafted.handle(Envelope{"player:chronicles:save",
+                          JsonValue::Object{{"state", JsonValue(chronicle)}}},
+                 [](const Envelope&) {});
+  crafted.handle(Envelope{"player:chronicles:select",
+                          JsonValue::Object{{"scionId", "scion-crafted"},
+                                            {"houseId", "house-tier-crafted"},
+                                            {"scionName", "Craft"},
+                                            {"mortal", false}}},
+                 [](const Envelope&) {});
+  const auto crafted_state = request_state(crafted, "tier-crafted");
+  check(crafted_state["state"]["sceneType"].string() &&
+            *crafted_state["state"]["sceneType"].string() == "town",
+        "tier bounds: a crafted clearedRoadNodes tier cannot crash or move the session");
+  const auto crafted_chart = chart_canonical(crafted, "tin");
+  check(crafted_chart.find("|2|") == std::string::npos &&
+            !first_open_node_at_tier(crafted_chart, 1).empty(),
+        "tier bounds: the forged cleared tier restores nothing beyond tier 1");
+  check(barred_message_seen(crafted, "tin:2000000000:0"),
+        "tier bounds: the forged tier stays barred even against its own crafted chronicle");
+}
 }  // namespace
 
 int main() {
@@ -2571,6 +2734,7 @@ int main() {
     test_four_roads_campaign_act_and_persistence();
     test_consumable_endgame_tablet_loop();
     test_json_parser_budgets();
+    test_road_tier_bounds();
     std::cout << "verdigris networking tests: PASS\n";
     return 0;
   } catch (const std::exception& error) {
