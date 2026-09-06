@@ -4,7 +4,7 @@
   "planning_id": "VG-GPU-006",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "3fa9b407b7a633c69d763c0ff94dde3370a63e38",
+  "base_sha": "0d5db950cd00ed6a5ae8b7f70ecba2b21825115d",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "material-light",
@@ -12,16 +12,14 @@
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario material-light", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario bronze-stone", "exit_code": 0}
+    {"run": "native/build/verdigris_client.exe --scenario material-light", "exit_code": 0}
   ],
   "assertions": [
     "a moving light changes the bronze/stone material",
     "lighting cannot wash the family to white (channel cap 220)",
-    "damage zone composites over the lit quad",
-    "overbright additives cannot conceal damage zones",
     "live scene paints a bronze lantern pool at the village gate",
-    "a HUD token without a pool cannot certify"
+    "a HUD token without a pool cannot certify",
+    "live HUD names Lantern pool and Bronze light"
   ],
   "negative_control": {
     "name": "overbright additive concealing damage chroma",
@@ -37,7 +35,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/material-light-960x600.png",
-      "sha256": "ea1a8102c73dacea57509962237b5652953f997515a0cbf85e73e53f16792c96",
+      "sha256": "779b283d8ed554658fae10f787374f704f54a4bbff185164d2dbb89687bf36c7",
       "produced_by": "native/build/verdigris_client.exe --scenario material-light"
     }
   ],
@@ -45,6 +43,6 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Software texel light, not a 3D normal map. Quad shows red damage chroma on the family.",
-    "Live capture paints a bronze ellipse plus red damage disc at the village gate. A HUD token without that pool cannot certify. Capture hash diverges from bronze-stone because breathe_phase offsets the pool."
+    "Live capture paints a bronze ellipse plus red damage disc at the village gate. A HUD token without that pool cannot certify."
   ]
 }

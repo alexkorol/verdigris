@@ -30,4 +30,7 @@ inline bool capture_black_telegraph_fails_review(int r, int g, int b) {
   return r < 32 && g < 32 && b < 32;
 }
 
+inline const char* owner_y_sort_label() { return "Y-sort"; }
+inline const char* owner_sweep_disc_label() { return "Sweep disc"; }
+
 }  // namespace verdigris::gpu

@@ -88,4 +88,7 @@ inline bool present_reference_scene(Sample& sample, const std::vector<Packet>& p
   return true;
 }
 
+inline const char* owner_live_packets_label() { return "Live packets"; }
+inline const char* owner_session_present_label() { return "Session present"; }
+
 }  // namespace verdigris::gpu

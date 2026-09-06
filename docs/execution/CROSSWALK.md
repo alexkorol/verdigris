@@ -178,16 +178,18 @@ VG-GPU-003: layout v1 software program `software-albedo-rim-v1`. Wrong
 backend or stale layout fails; failed load does not paint. Scenario
 `shader-bindings`. Evidence `docs/execution/evidence/VG-GPU-003.json`.
 VG-GPU-004: software present of live session packets (actors/world/effects/HUD).
-A textured-quad demo with no session cannot pass. Scenario `gpu-reference`.
-Evidence `docs/execution/evidence/VG-GPU-004.json`.
+Owner strip paints Live packets / Session present. A textured-quad demo with
+no session cannot pass. Scenario `gpu-reference`. Evidence
+`docs/execution/evidence/VG-GPU-004.json`.
 VG-GPU-005: scenery/actors sort by world Y; telegraphs paint after that pass.
-Sweep is a readable red disc on the village gate; a HUD token or a
-capture-black fill cannot certify. Scenario `grounding`. Evidence
-`docs/execution/evidence/VG-GPU-005.json`.
+Owner strip paints Y-sort / Sweep disc. Sweep is a readable red disc on the
+village gate; a HUD token, wall hide, or capture-black fill cannot certify.
+Scenario `grounding`. Evidence `docs/execution/evidence/VG-GPU-005.json`.
 VG-GPU-006: moving light on the cooked family; channel cap 220; damage chroma
-cannot be washed white. Live scene paints a bronze lantern pool at the
-village gate; a HUD token without that pool cannot certify. Scenario
-`material-light`. Evidence `docs/execution/evidence/VG-GPU-006.json`.
+cannot be washed white. Owner strip paints Lantern pool / Bronze light. Live
+scene paints a bronze lantern pool at the village gate; a HUD token without
+that pool cannot certify. Scenario `material-light`. Evidence
+`docs/execution/evidence/VG-GPU-006.json`.
 VG-GPU-007: BMP readback plus provenance sidecar of the painted tin-village
 scene. Packet snapshot text is not pixel evidence. A PNG whose red/blue
 channels are swapped versus the DIB cannot certify. `vital-orbs` cannot

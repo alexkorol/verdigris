@@ -490,6 +490,9 @@ struct ClientState {
   bool bronze_stone_review_strip = false;
   bool kit_chunk_review_strip = false;
   bool held_item_review_strip = false;
+  bool gpu_reference_review_strip = false;
+  bool grounding_review_strip = false;
+  bool material_light_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -6972,6 +6975,123 @@ void paint_held_item_review_strip(ClientState& state, HDC dc, const RECT& bounds
   SelectObject(dc, old_font);
 }
 
+void paint_gpu_reference_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                      render::List& rl) {
+  if (!state.gpu_reference_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "gpu-ref-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::gpu::owner_live_packets_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::gpu::owner_session_present_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "quad demo";
+  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "gpu:live-packets"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "gpu:session-present"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "gpu-strip:quad-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_grounding_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                  render::List& rl) {
+  if (!state.grounding_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "ground-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::gpu::owner_y_sort_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::gpu::owner_sweep_disc_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "wall hide";
+  TextOutA(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "gpu:y-sort"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "gpu:sweep-disc"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "gpu-strip:wall-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_material_light_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                       render::List& rl) {
+  if (!state.material_light_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "light-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::gpu::owner_lantern_pool_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::gpu::owner_bronze_light_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "wash white";
+  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "gpu:lantern-pool"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "gpu:bronze-light"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "gpu-strip:wash-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -8010,6 +8130,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_bronze_stone_review_strip(state, dc, bounds, rl);
   paint_kit_chunk_review_strip(state, dc, bounds, rl);
   paint_held_item_review_strip(state, dc, bounds, rl);
+  paint_gpu_reference_review_strip(state, dc, bounds, rl);
+  paint_grounding_review_strip(state, dc, bounds, rl);
+  paint_material_light_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -11994,8 +12117,21 @@ int scenario_gpu_reference() {
                  "gpu-reference: session-connected BMP written");
   sample.shutdown();
   const std::string png = dir + "\\gpu-reference-960x600.png";
+  state.gpu_reference_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "gpu-reference: live session capture written");
+  bool live = false;
+  bool session = false;
+  bool quad = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "gpu:live-packets") live = true;
+    if (item.label == "gpu:session-present") session = true;
+    if (item.label == "gpu-strip:quad-rejected") quad = true;
+  }
+  scenario_check(live && session,
+                 "gpu-reference: live HUD names Live packets and Session present");
+  scenario_check(quad, "gpu-reference: live HUD rejects a quad demo");
   return scenario_failures;
 }
 
@@ -12069,8 +12205,13 @@ int scenario_grounding() {
     return scenario_failures;
   }
   const std::string png = dir + "\\grounding-960x600.png";
+  state.grounding_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "grounding: telegraph-over-scenery capture written");
+  scenario_check(has("gpu:y-sort") && has("gpu:sweep-disc"),
+                 "grounding: live HUD names Y-sort and Sweep disc");
+  scenario_check(has("gpu-strip:wall-rejected"),
+                 "grounding: live HUD rejects wall hide");
   return scenario_failures;
 }
 
@@ -12128,8 +12269,21 @@ int scenario_material_light() {
   scenario_check(!verdigris::gpu::hud_label_alone_fails_light_review(pool),
                  "material-light: the pool, not a HUD token, certifies the light");
   const std::string png = dir + "\\material-light-960x600.png";
+  state.material_light_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "material-light: live HUD capture written");
+  bool lantern = false;
+  bool bronze = false;
+  bool wash = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "gpu:lantern-pool") lantern = true;
+    if (item.label == "gpu:bronze-light") bronze = true;
+    if (item.label == "gpu-strip:wash-rejected") wash = true;
+  }
+  scenario_check(lantern && bronze,
+                 "material-light: live HUD names Lantern pool and Bronze light");
+  scenario_check(wash, "material-light: live HUD rejects wash white");
   return scenario_failures;
 }
 

@@ -1,5 +1,17 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — live packets, Y-sort Sweep, lantern pool (Cursor)
+
+- VG-GPU-004: owner Live packets strip paints Session present. A quad demo
+  cannot certify. Software present of live session packets, not D3D.
+- VG-GPU-005: owner Y-sort strip paints Sweep disc. Wall hide cannot
+  certify. Sweep stays a readable red disc on the village gate after the
+  scenery pass. WORLD-001 stays Kimi.
+- VG-GPU-006: owner Lantern pool strip paints Bronze light. Wash white
+  cannot certify. Channel cap 220; damage chroma stays visible.
+- Scenarios `gpu-reference` / `grounding` / `material-light` PASS.
+  Captures viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — strike poses and War Cry weave (Cursor)
 
 - VG-ART-003: owner Strike poses strip paints Windup/Active/Recover/Cancel

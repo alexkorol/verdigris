@@ -110,4 +110,7 @@ inline bool draw_lit_quad_moving(Sample& sample, const Bindings& bindings,
   return true;
 }
 
+inline const char* owner_lantern_pool_label() { return "Lantern pool"; }
+inline const char* owner_bronze_light_label() { return "Bronze light"; }
+
 }  // namespace verdigris::gpu

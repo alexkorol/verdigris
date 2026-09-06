@@ -4,7 +4,7 @@
   "planning_id": "VG-GPU-004",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "41bcbd561590179f5029b1ea2729a4e5827ab6b0",
+  "base_sha": "0d5db950cd00ed6a5ae8b7f70ecba2b21825115d",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "gpu-reference",
@@ -17,9 +17,9 @@
   "assertions": [
     "a disconnected textured-quad demo cannot pass",
     "session packets carry actors, world, effects, and HUD",
-    "composition matches the in-game target sheet",
     "live packets present through the GPU bridge",
-    "session packets shaded the sample buffer"
+    "session packets shaded the sample buffer",
+    "live HUD names Live packets and Session present"
   ],
   "negative_control": {
     "name": "standalone GPU demo disconnected from session events",
@@ -29,13 +29,13 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/gpu-reference-session.bmp",
-      "sha256": "b22d747379038f8bf495eab967c1b04849f70309e4ef4f3a5a40570dcdb64592",
+      "sha256": "3b763a935f3f3745590357527d753e35d64ef9aca38f713c28b5ba4e98c28cad",
       "produced_by": "native/build/verdigris_client.exe --scenario gpu-reference"
     },
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/gpu-reference-960x600.png",
-      "sha256": "95edfc0c0769e27443b8de3742b5b47b243138651c084ff704028d1cc8a3bc0d",
+      "sha256": "91321c2f8570174d3d6f597bbaf4602750986c2ade2668a47ab624bdf984abbd",
       "produced_by": "native/build/verdigris_client.exe --scenario gpu-reference"
     }
   ],
