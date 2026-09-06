@@ -159,19 +159,22 @@ cannot ship. Village kit uses the family. Scenario `bronze-stone`.
 Evidence `docs/execution/evidence/VG-ART-002.json`.
 VG-GPU-003: layout v1 software program `software-albedo-rim-v1`. Wrong
 backend or stale layout fails; failed load does not paint. Scenario
-`shader-bindings`.
+`shader-bindings`. Evidence `docs/execution/evidence/VG-GPU-003.json`.
 VG-GPU-004: software present of live session packets (actors/world/effects/HUD).
 A textured-quad demo with no session cannot pass. Scenario `gpu-reference`.
+Evidence `docs/execution/evidence/VG-GPU-004.json`.
 VG-GPU-005: scenery/actors sort by world Y; telegraphs paint after that pass.
-Scenario `grounding`.
+Scenario `grounding`. Evidence `docs/execution/evidence/VG-GPU-005.json`.
 VG-GPU-006: moving light on the cooked family; channel cap 220; damage chroma
-cannot be washed white. Scenario `material-light`.
+cannot be washed white. Scenario `material-light`. Evidence
+`docs/execution/evidence/VG-GPU-006.json`.
 VG-GPU-007: BMP readback plus provenance sidecar. Packet snapshot text is not
 pixel evidence. A PNG whose red/blue channels are swapped versus the DIB
 cannot certify. Scenario `gpu-capture` / `vital-orbs`.
 an image. Scenario `gpu-capture`.
 VG-GPU-008: recreate/resize/minimize-restore keep one live buffer; failure
-surfaces `gpu-error:recreate`. Scenario `gpu-recover`.
+surfaces `gpu-error:recreate`. Scenario `gpu-recover`. Evidence
+`docs/execution/evidence/VG-GPU-008.json`.
 VG-SOUND-001: software tone adapter plays a generated PCM burst and shuts
 down. A zero-duration cue is not audible. Scenario `sound-adapter`.
 Evidence `docs/execution/evidence/VG-SOUND-001.json`.

@@ -1,5 +1,20 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — GPU present path 003–006/008 (Cursor lease)
+
+- VG-GPU-003: `software-albedo-rim-v1` bindings; stale/wrong backend fail
+  closed. Scenario `shader-bindings`. Capture
+  `docs/execution/captures/art-wave/shader-bindings-quad.bmp`.
+- VG-GPU-004: live session packets present; disconnected demo rejected.
+  Scenario `gpu-reference`. BMP + PNG
+  `docs/execution/captures/art-wave/gpu-reference-*`.
+- VG-GPU-005: Y-sort + telegraph overlay after scenery. Scenario
+  `grounding`. Capture `docs/execution/captures/art-wave/grounding-960x600.png`.
+- VG-GPU-006: moving light, channel cap 220, damage chroma not washed.
+  Scenario `material-light`. Quad BMP + HUD PNG.
+- VG-GPU-008: recreate/resize/minimize-restore keep one buffer; `0x0`
+  surfaces `gpu-error:recreate`. Scenario `gpu-recover`.
+
 ## 2026-09-06 — packets, bronze/stone, legal sounds, graph audit (Cursor)
 
 - VG-GPU-002: Telegraph draw class copies to handle-free packets

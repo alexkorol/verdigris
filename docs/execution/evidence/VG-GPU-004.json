@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GPU-004",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "41bcbd561590179f5029b1ea2729a4e5827ab6b0",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "gpu-reference",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario gpu-reference", "exit_code": 0}
+  ],
+  "assertions": [
+    "a disconnected textured-quad demo cannot pass",
+    "session packets carry actors, world, effects, and HUD",
+    "composition matches the in-game target sheet",
+    "live packets present through the GPU bridge",
+    "session packets shaded the sample buffer"
+  ],
+  "negative_control": {
+    "name": "standalone GPU demo disconnected from session events",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/gpu-reference-session.bmp",
+      "sha256": "b22d747379038f8bf495eab967c1b04849f70309e4ef4f3a5a40570dcdb64592",
+      "produced_by": "native/build/verdigris_client.exe --scenario gpu-reference"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/gpu-reference-960x600.png",
+      "sha256": "95edfc0c0769e27443b8de3742b5b47b243138651c084ff704028d1cc8a3bc0d",
+      "produced_by": "native/build/verdigris_client.exe --scenario gpu-reference"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Software sample present of live packets, not a D3D swapchain.",
+    "Does not take VG-WORLD-001 from Kimi."
+  ]
+}

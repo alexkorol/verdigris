@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GPU-003",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "41bcbd561590179f5029b1ea2729a4e5827ab6b0",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "shader-bindings",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario shader-bindings", "exit_code": 0}
+  ],
+  "assertions": [
+    "software layout v1 loads without a runtime source path",
+    "stale layout fails instead of rendering silently",
+    "a D3D-only program cannot load on this sample",
+    "failed bindings do not draw a fallback fill",
+    "cooked albedo/rim program draws a family-shaded quad"
+  ],
+  "negative_control": {
+    "name": "wrong backend or stale layout rendering silently",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/shader-bindings-quad.bmp",
+      "sha256": "87b23699b766fd80297aac945d0ce6f1d0c3f70155895ffbd134800d134b777d",
+      "produced_by": "native/build/verdigris_client.exe --scenario shader-bindings"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Software tables, not compiled HLSL/Metal. VG-TOOLS-002 cook pipeline stays Kimi.",
+    "Does not re-spec TASK-0108."
+  ]
+}

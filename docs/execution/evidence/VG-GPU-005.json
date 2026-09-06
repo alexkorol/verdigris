@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GPU-005",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "41bcbd561590179f5029b1ea2729a4e5827ab6b0",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "grounding",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario grounding", "exit_code": 0}
+  ],
+  "assertions": [
+    "Y-sort and foot shadows are the named policy",
+    "a threat telegraph is in the production list",
+    "a foreground wall cannot erase the telegraph pass",
+    "the overlay pass is named"
+  ],
+  "negative_control": {
+    "name": "foreground wall hiding mandatory threat telegraphs",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/grounding-960x600.png",
+      "sha256": "6c45f11fff7d1e2fa4f761802444f326cc06730f6f202f54920c4cee8b31f8f0",
+      "produced_by": "native/build/verdigris_client.exe --scenario grounding"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Painter's-algorithm overlay, not a GPU depth buffer. VG-WORLD-001 stays Kimi.",
+    "Capture shows Sweep telegraph over scenery; sort proof is the list order lock."
+  ]
+}

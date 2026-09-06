@@ -10195,6 +10195,14 @@ int scenario_shader_bindings() {
   scenario_check(lit != 0x00182028u &&
                      !verdigris::art::bronze_stone::is_placeholder(lit),
                  "shader-bindings: lit texel is family-shaded, not placeholder");
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "shader-bindings: capture root rejected before any write");
+    sample.shutdown();
+    return scenario_failures;
+  }
+  scenario_check(sample.write_bmp(dir + "\\shader-bindings-quad.bmp"),
+                 "shader-bindings: cooked program capture written");
   sample.shutdown();
   return scenario_failures;
 }
@@ -10259,6 +10267,9 @@ int scenario_gpu_reference() {
   scenario_check(sample.write_bmp(dir + "\\gpu-reference-session.bmp"),
                  "gpu-reference: session-connected BMP written");
   sample.shutdown();
+  const std::string png = dir + "\\gpu-reference-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "gpu-reference: live session capture written");
   return scenario_failures;
 }
 
@@ -10288,6 +10299,14 @@ int scenario_grounding() {
                  "grounding: a foreground wall cannot erase the telegraph pass");
   scenario_check(has("grounding:telegraph-overlay"),
                  "grounding: the overlay pass is named");
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "grounding: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\grounding-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "grounding: telegraph-over-scenery capture written");
   return scenario_failures;
 }
 
@@ -10312,6 +10331,14 @@ int scenario_material_light() {
   const std::uint32_t zone = sample.pixel(32, 32);
   scenario_check(!verdigris::gpu::damage_zone_concealed(zone),
                  "material-light: overbright additives cannot conceal damage zones");
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "material-light: capture root rejected before any write");
+    sample.shutdown();
+    return scenario_failures;
+  }
+  scenario_check(sample.write_bmp(dir + "\\material-light-quad.bmp"),
+                 "material-light: damage-zone quad capture written");
   sample.shutdown();
   ClientState state;
   scenario_begin(state);
@@ -10322,6 +10349,9 @@ int scenario_material_light() {
     if (item.op == render::Op::Hud && item.label == "material-light:moving")
       named = true;
   scenario_check(named, "material-light: live HUD names the moving light");
+  const std::string png = dir + "\\material-light-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "material-light: live HUD capture written");
   return scenario_failures;
 }
 
@@ -10373,12 +10403,35 @@ int scenario_gpu_recover() {
   for (int i = 0; i < 16; ++i)
     scenario_check(gpu.minimize_restore() && gpu.live_buffers == 1,
                    "gpu-recover: minimize/restore cannot leak textures");
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "gpu-recover: capture root rejected before any write");
+    return scenario_failures;
+  }
+  gpu.sample.draw_textured_quad();
+  scenario_check(gpu.sample.write_bmp(dir + "\\gpu-recover-quad.bmp"),
+                 "gpu-recover: restored buffer capture written");
+  const std::string report = dir + "\\gpu-recover-report.txt";
+  FILE* out = nullptr;
+  fopen_s(&out, report.c_str(), "w");
+  scenario_check(out != nullptr, "gpu-recover: report opened");
+  if (out) {
+    std::fprintf(out, "live_buffers=%d\ngeneration=%d\nerror_visible=%d\n",
+                 gpu.live_buffers, gpu.generation, gpu.error_visible ? 1 : 0);
+    std::fclose(out);
+  }
   scenario_check(!gpu.recreate(verdigris::gpu::Backend::Software, 0, 0) &&
                      gpu.live_buffers == 0 && gpu.error_visible &&
                      std::strcmp(gpu.error, verdigris::gpu::kRecreateError) == 0,
                  "gpu-recover: a failed recreate shows gpu-error:recreate");
   scenario_check(!gpu.sample.alive,
                  "gpu-recover: failure releases the previous buffer instead of crashing");
+  FILE* fail = nullptr;
+  fopen_s(&fail, report.c_str(), "a");
+  if (fail) {
+    std::fprintf(fail, "fail_error=%s\nfail_live=%d\n", gpu.error, gpu.live_buffers);
+    std::fclose(fail);
+  }
   return scenario_failures;
 }
 
