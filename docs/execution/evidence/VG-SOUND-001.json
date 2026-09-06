@@ -35,7 +35,7 @@
     {
       "kind": "log",
       "path": "docs/execution/captures/art-wave/sound-adapter-tone.txt",
-      "sha256": "cfd0bb8bed61ba0595f03e4548ec34c154ed5e2b475e79d3a5364290533020a8",
+      "sha256": "46d9434ce72ef2f46fd1faf2eed91e822a78577368050c8cfffd24990486dc2d",
       "produced_by": "native/build/verdigris_client.exe --scenario sound-adapter"
     }
   ],
