@@ -1,0 +1,590 @@
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+core.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+seasonal.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+networking.cpp
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\src\networking.cpp(5088): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+core_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+networking_tests.cpp
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\tests\networking_tests.cpp(972): warning C4456: declaration of 'uuid' hides previous local declaration
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\tests\networking_tests.cpp(841): note: see declaration of 'uuid'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+camera2d_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+local_session.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+remote_session.cpp
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\client\remote_session.cpp(598): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+presentation_state.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+session_tests.cpp
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\tests\session_tests.cpp(841): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+presentation_events_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+cue_spec.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+event_cues.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+audio_mixer.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+audio_mixer_tests.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+server_main.cpp
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\src\server_main.cpp(51): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\src\server_main.cpp(57): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\src\server_main.cpp(58): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+main.cpp
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusHeaders.h(701): warning C4458: declaration of 'nativeCap' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusHeaders.h(716): note: see declaration of 'Gdiplus::CustomLineCap::nativeCap'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusImageAttributes.h(368): warning C4458: declaration of 'nativeImageAttr' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusImageAttributes.h(382): note: see declaration of 'Gdiplus::ImageAttributes::nativeImageAttr'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusMatrix.h(301): warning C4458: declaration of 'nativeMatrix' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusMatrix.h(315): note: see declaration of 'Gdiplus::Matrix::nativeMatrix'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusBrush.h(95): warning C4458: declaration of 'nativeBrush' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusBrush.h(108): note: see declaration of 'Gdiplus::Brush::nativeBrush'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPen.h(467): warning C4458: declaration of 'nativePen' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPen.h(481): note: see declaration of 'Gdiplus::Pen::nativePen'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(891): warning C4458: declaration of 'nativePath' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(905): note: see declaration of 'Gdiplus::GraphicsPath::nativePath'
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(1078): warning C4458: declaration of 'nativeIterator' hides class member
+C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\GdiplusPath.h(1092): note: see declaration of 'Gdiplus::GraphicsPathIterator::nativeIterator'
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\client\main.cpp(5359): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\client\main.cpp(5948): warning C4456: declaration of 'inset' hides previous local declaration
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\client\main.cpp(5605): note: see declaration of 'inset'
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\client\main.cpp(9236): warning C4456: declaration of 'expect_x' hides previous local declaration
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\client\main.cpp(9230): note: see declaration of 'expect_x'
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\client\main.cpp(9237): warning C4456: declaration of 'expect_y' hides previous local declaration
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\client\main.cpp(9231): note: see declaration of 'expect_y'
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\client\main.cpp(10964): warning C4456: declaration of 'trace_find' hides previous local declaration
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\client\main.cpp(10743): note: see declaration of 'trace_find'
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\client\main.cpp(13858): warning C4456: declaration of 'here' hides previous local declaration
+Z:\Code\Games\delaford\kimiwork_verdigris\.worktrees\vg-sec-002\native\client\main.cpp(13810): note: see declaration of 'here'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+remote_play.cpp
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+**********************************************************************
+** Visual Studio 2019 Developer Command Prompt v16.11.42
+** Copyright (c) 2021 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+native legacy denylist: PASS
+VERIFY OK: 5 base entries, 99 flagship rasters, 15 runtime assets, contact_sheet=contact_sheet.png
+WIZARD native title: authored mesh and three raster hashes verified
+verdigris core tests: PASS
+verdigris networking tests: PASS
+camera2d tests: PASS
+PASS local: start succeeds
+PASS local: state is ready without a handshake
+PASS local: scion uuid published
+PASS local: house name published
+PASS local: movement commands reach the simulation through the seam
+PASS local: SessionReady presentation event emitted
+PASS local: recovery duration and active Warcry survive both presentation seams
+PASS local: shutdown reaches disconnected state
+PASS remote-negative: dead endpoint fails start()
+PASS remote-negative: state is rejected, not a silent local fallback
+PASS remote-negative: hard error message supplied
+PASS remote: test server bound inside the TASK-0163 capsule
+PASS remote: connect + upgrade + login sent
+PASS remote: player:login acknowledged -> ready
+PASS remote: authoritative identity mirrored into the client model
+PASS remote: scene snapshot mirrored
+PASS remote: authoritative campaign chapter and journal mirror on admission
+PASS remote: SessionReady presentation event emitted
+PASS remote: dev-state combat XP mirrored into the client model
+PASS remote: quest:update advances the mirrored journal objective
+PASS remote: session survives a submitted command
+PASS remote: clean shutdown reaches disconnected
+PASS remote: server stopped cleanly
+PASS journey: test server bound inside the TASK-0163 capsule 7160-7179
+PASS journey: connect + upgrade + login sent
+PASS journey: handshake ready
+PASS journey: zone enter mirrors instance scene
+PASS journey: transition publishes exit stairs
+PASS journey: movement echo updates x
+PASS journey: aim updates facing
+PASS journey: outgoing combat:hit reached the client
+PASS journey: enemy death reached the client
+PASS journey: named item entered inventory (pickup)
+PASS journey: ItemPickedUp or inventory growth
+PASS journey: picked item is named
+PASS journey: equip removed the item from the backpack
+PASS journey: equipped slot mirrors the worn item
+PASS journey: incoming combat:hit reached the client
+PASS journey: monster:telegraph reached the client
+PASS journey: walking onto stairs-up returns to the surface (extract)
+PASS journey: ExtractionCompleted from surface message
+PASS journey: clean dual-side shutdown
+PASS reconnect: TASK-0163 capsule server bound
+PASS reconnect: connected
+PASS reconnect: ready before the drop
+PASS reconnect: unexpected drop enters Retrying
+PASS reconnect: ConnectionLost is visible (no silent local fallback)
+PASS reconnect: last_error explains the drop
+PASS reconnect: commands after the drop do not leave Retrying for a local sim
+PASS reconnect: position does not keep playing offline
+PASS reconnect: server restarted on the same port
+PASS reconnect: Retrying then Ready after server restart
+PASS reconnect: same guest identity re-logged in
+PASS reconnect: login snapshot is authoritative
+PASS replaced: cursor-capsule server bound
+PASS replaced: first login
+PASS replaced: first session ready
+PASS replaced: second login same guest
+PASS replaced: second session ready
+PASS replaced: first session is disconnected
+PASS replaced: ConnectionLost from player:session-replaced
+PASS replaced: session-replaced does not enter Retrying
+PASS replaced: stays terminal Disconnected (no retry)
+PASS render-list: cursor-capsule server bound
+PASS render-list: connect
+PASS render-list: ready
+PASS render-list: Monster op recorded from remote model
+PASS render-list: Swing op recorded from AttackStarted
+PASS render-list: Drop op recorded from kill loot
+PASS ptree-absent: scripted loopback server bound in capsule
+PASS ptree-absent: connect + upgrade + login sent
+PASS ptree-absent: admission acknowledged
+PASS ptree-absent: no payload -> mirror stays absent, never rendered as zero
+PASS ptree-absent: absent payload raises no diagnostic
+PASS endgame-mirror: scripted loopback server bound in capsule
+PASS endgame-mirror: connect + upgrade + login sent
+PASS endgame-mirror: admission acknowledged
+PASS endgame-mirror: rolled tablet survives wire-to-model parsing
+PASS endgame-mirror: active expedition state survives wire-to-model parsing
+PASS endgame-mirror: map item and active run survive model-to-presentation sync
+PASS endgame-mirror: valid payload raises no protocol error
+PASS loadout-mirror: scripted loopback server bound in capsule
+PASS loadout-mirror: connect + upgrade + login sent
+PASS loadout-mirror: admission acknowledged
+PASS loadout-mirror: spatial backpack and two wear seats arrive
+PASS loadout-mirror: slot, footprint, stack, and equip metadata stay exact
+PASS loadout-mirror: ordered WearSet seats replace inferred equipment
+PASS loadout-mirror: backpack and paper doll remain separate in presentation
+PASS loadout-mirror: equip event refreshes the complete WearSet immediately
+PASS loadout-mirror: two-handed truth survives with no protocol error
+PASS combo-mirror: scripted loopback server bound in capsule
+PASS combo-mirror: connect + upgrade + login sent
+PASS combo-mirror: admission acknowledged
+PASS combo-mirror: snapshot cadence reaches the model verbatim
+PASS combo-mirror: cadence reaches shared presentation state
+PASS combo-mirror: hit cadence, window, and stagger survive wire parsing
+PASS combo-mirror: authoritative third beat drives finisher VFX
+PASS combo-mirror: valid cadence payload raises no protocol error
+PASS cooldown-mirror: scripted server started
+PASS cooldown-mirror: real WebSocket session admitted
+PASS cooldown-mirror: combat update retains remaining and total independently
+PASS cooldown-mirror: presentation receives the exact clock denominator
+PASS cooldown-mirror: snapshot replaces the duration when cadence changes
+PASS cooldown-mirror: transition clears recovery before the next snapshot
+PASS cooldown-mirror: old payload does not invent or reuse a duration
+PASS forge-mirror: scripted loopback server bound in capsule
+PASS forge-mirror: connect + upgrade + login sent
+PASS forge-mirror: admission acknowledged
+PASS forge-mirror: active implicit, Brand, and trophy lines survive wire-to-model parsing
+PASS forge-mirror: combat totals and monster snapshot arrive
+PASS forge-mirror: worn totals, channel, and live bleed state remain authoritative
+PASS forge-mirror: bleed application becomes a typed presentation event
+PASS forge-mirror: mitigated River hit keeps its channel and resistance facts
+PASS forge-mirror: Sling penetration facts survive wire parsing
+PASS forge-mirror: forge contract survives model-to-presentation sync
+PASS forge-mirror: authoritative penetration drives the piercing hit treatment
+PASS forge-mirror: valid payload raises no protocol error
+PASS bond-mirror: scripted server bound in capsule
+PASS bond-mirror: connect + upgrade + login sent
+PASS bond-mirror: admission acknowledged
+PASS bond-mirror: active timers and awakened readiness reach the model
+PASS bond-mirror: every authoritative Bond combat-state field is preserved
+PASS bond-mirror: trigger identity, recovery, and updated life cross the wire
+PASS bond-mirror: living-item state and trigger drive shared presentation
+PASS bond-mirror: valid payloads raise no protocol error
+PASS role-mirror: scripted loopback server bound in capsule
+PASS role-mirror: connect + upgrade + login sent
+PASS role-mirror: admission acknowledged
+PASS role-mirror: authored role roster reaches the mirror
+PASS role-mirror: accepted movement reaches the model with duration
+PASS role-mirror: volley identity, geometry, channel, and timing survive wire parsing
+PASS role-mirror: support mend updates health and emits presentation fact
+PASS role-mirror: interruption identity and stagger survive wire parsing
+PASS role-mirror: authoritative role events drive shared VFX
+PASS role-mirror: interruption clears the live warning immediately
+PASS role-mirror: valid role payloads raise no protocol error
+PASS social-mirror: scripted loopback server bound in capsule
+PASS social-mirror: connect + upgrade + login sent
+PASS social-mirror: admission acknowledged
+PASS social-mirror: NPC identity, role, services, and coffer state reach the model
+PASS social-mirror: town service identity reaches presentation
+PASS social-mirror: authoritative dialogue and investment verbs reach the pane model
+PASS social-mirror: the shared Escape/close contract dismisses dialogue
+PASS social-mirror: valid payload raises no protocol error
+PASS forge-mirror: scripted loopback server bound in capsule
+PASS forge-mirror: connect + upgrade + login sent
+PASS forge-mirror: admission acknowledged
+PASS forge-mirror: identity, capacity, Bonds, trophies, attunement, and dormant truth reach the pane model
+PASS forge-mirror: the shared Escape/close contract dismisses the service
+PASS forge-mirror: valid payload raises no protocol error
+PASS ptree: scripted loopback server bound in capsule
+PASS ptree: connect + upgrade + login sent
+PASS ptree: valid absent login reaches Ready
+PASS ptree: fresh admission starts absent (valid absent behavior)
+PASS ptree: VALID zero tree makes the mirror present
+PASS ptree: zero tree mirrors verbatim zeros (valid zero behavior)
+PASS ptree: valid payloads raise no diagnostic
+PASS ptree: VALID nonzero update mirrors verbatim (valid nonzero behavior)
+PASS ptree: valid nonzero update raises no diagnostic
+PASS ptree: missing points: diagnostic surfaced
+PASS ptree: missing points: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: missing earned: diagnostic surfaced
+PASS ptree: missing earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: missing conduits: diagnostic surfaced
+PASS ptree: missing conduits: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed schemaVersion: diagnostic surfaced
+PASS ptree: wrong-typed schemaVersion: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed points container: diagnostic surfaced
+PASS ptree: wrong-typed points container: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed points.skill: diagnostic surfaced
+PASS ptree: wrong-typed points.skill: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed earned: diagnostic surfaced
+PASS ptree: wrong-typed earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed nodes: diagnostic surfaced
+PASS ptree: wrong-typed nodes: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: wrong-typed conduits on login: diagnostic surfaced
+PASS ptree: wrong-typed conduits on login: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: fractional points.skill: diagnostic surfaced
+PASS ptree: fractional points.skill: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: fractional earned: diagnostic surfaced
+PASS ptree: fractional earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: negative points.skill: diagnostic surfaced
+PASS ptree: negative points.skill: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: negative earned: diagnostic surfaced
+PASS ptree: negative earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: bare-Infinity points.skill: diagnostic surfaced
+PASS ptree: bare-Infinity points.skill: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: exponent-overflow earned (inf): diagnostic surfaced
+PASS ptree: exponent-overflow earned (inf): deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: int-cast overflow earned: diagnostic surfaced
+PASS ptree: int-cast overflow earned: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: future schemaVersion on login: diagnostic surfaced
+PASS ptree: future schemaVersion on login: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: non-object passiveTree on login: diagnostic surfaced
+PASS ptree: non-object passiveTree on login: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: oversized nodes array: diagnostic surfaced
+PASS ptree: oversized nodes array: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: oversized conduits array: diagnostic surfaced
+PASS ptree: oversized conduits array: deterministic diagnostic text
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: repeated invalid payload surfaces again
+PASS ptree: diagnostic text is byte-stable across repeats
+PASS ptree: invalid update left the last valid snapshot untouched
+PASS ptree: valid refresh applies after rejects (session healthy)
+PASS ptree: valid recovery raises no diagnostic
+PASS gate-b-driver: serpentine plan matches its frozen contract
+PASS gate-b-driver: lane plan sweeps within one tile of every walkable column
+PASS gate-b-driver: silent steps re-issue before any wall rotation
+PASS gate-b-driver: every lane leg spans the full floor height
+PASS gate-b-driver: plan is strictly boustrophedon over its lanes
+PASS gate-b-driver: elite and relic routes cross warren ribs deterministically
+PASS gate-b: worker-capsule server bound (7160-7179)
+PASS gate-b: first connect upgrades
+PASS gate-b: non-quick guest login admits chronicles:state
+PASS gate-b: chronicles:house:found emits chronicles:state
+PASS gate-b: House roster id captured
+PASS gate-b: chronicles:scion:create returns createdScionId
+PASS gate-b: chronicles:scion:set-out admits via player:login
+PASS gate-b: admission names the first Scion
+PASS gate-b: set-out admits the Scion under the mortal oath (player.chronicles.mortal)
+PASS gate-b: earned identifiable item carries an exact uuid
+PASS gate-b: delve enters the instance scene
+PASS gate-b: ordinary combat reached the scion (incoming hit)
+PASS gate-b: ordinary movement/combat death commits the fall (chronicles:scion-fallen)
+PASS gate-b: player:chronicles:return readies succession
+PASS gate-b: successor created through chronicles:scion:create
+PASS gate-b: heir admitted through player:chronicles:select
+PASS gate-b: heir buys a sword from the House wagon
+PASS gate-b: heir equips the fresh sword
+note: hunt kill #1 (Stone Lurker)
+note: hunt kill #2 (Stone Lurker)
+note: hunt heartbeat hp=86 at=(4,16) kills=2 elite_known=0 elite=(-1,-1) ground=2 scene=instance
+note: hunt kill #3 (Flint Slinger)
+note: hunt kill #4 (Stone Lurker)
+note: hunt heartbeat hp=114 at=(8,10) kills=4 elite_known=0 elite=(-1,-1) ground=2 scene=instance
+note: hunt heartbeat hp=114 at=(14,9) kills=4 elite_known=0 elite=(-1,-1) ground=2 scene=instance
+note: hunt kill #5 (Stone Lurker)
+note: hunt kill #6 (Stone Lurker)
+note: hunt kill #7 (Stone Lurker)
+note: hunt heartbeat hp=125 at=(21,25) kills=7 elite_known=1 elite=(22,22) ground=2 scene=instance
+note: hunt heartbeat hp=105 at=(21,26) kills=7 elite_known=1 elite=(22,23) ground=2 scene=instance
+note: hunt kill #8 (Warden of the Deep)
+PASS gate-b: slain rare guardian surfaces the circulating heirloom
+PASS gate-b: exact relic uuid recovered underfoot
+PASS gate-b: awaitChronicles restore reads the crypt
+PASS gate-b: crypt relic status is recovered
+PASS gate-b: reconnect upgrades same server
+PASS gate-b: reconnect restores the chronicle session
+PASS gate-b: reconnect payload carries chronicle
+PASS gate-b: identical House/Scion/relic record after reconnect
+PASS gate-b: House name survives reconnect
+PASS gate-b: heir's sworn oath recorded after reconnect
+PASS gate-b: living roster holds only the heir
+PASS gate-b: fallen Scion left the living roster
+PASS gate-b: same House present after reconnect
+PASS gate-b: crypt relic still recovered after reconnect
+PASS gate-b: active House continuity
+PASS gate-b: resumed set-out re-admits the heir
+PASS gate-b: exact heirloom still carried after reconnect
+PASS gate-b: mortal oath survives the reconnect
+PASS gate-b: journey server stopped cleanly
+session tests passed
+PASS phase-a: table pins the 50ms presentation tick
+PASS phase-a: critical number outlives the ordinary 12-tick number
+PASS phase-a: beat lifetimes are distinct by construction
+PASS phase-a: loss pulse outlives the 3-tick damage pulse
+PASS phase-a: critical flag and style copy onto the damage number
+PASS phase-a: critical number ttl comes from the table and differs
+PASS phase-a: critical flash is longer than the ordinary flash
+PASS phase-a: render list labels critical hits with style
+PASS combo: third beat produces the named finisher treatment
+PASS combo: finisher emphasis is independent from critical chance
+PASS combo: shared render list labels the finisher ring and damage
+PASS roles: volley uses the authoritative destination, radius, and windup
+PASS roles: support mend creates a green pulse and positive number
+PASS roles: shared render list preserves volley and mend semantics
+PASS roles: authoritative interruption removes the warning immediately
+PASS warden warning: identity, channel, annulus, and timing survive presentation
+PASS warden warning: boss identity is no longer collapsed into a thrust
+PASS forge feedback: worn totals survive the model-to-world sync
+PASS forge feedback: status, damage channel, and item lines survive presentation sync
+PASS forge feedback: bleed application creates the named crimson treatment
+PASS forge feedback: render list distinguishes bleed application and tick damage
+PASS forge feedback: armour bypass has a distinct piercing damage beat
+PASS living Bond feedback: an authoritative trigger creates the named pulse
+PASS living Bond feedback: trigger name and magnitude are readable
+PASS living Bond feedback: shared render list preserves trigger identity
+PASS phase-a: ScionLost produces a loss beat
+PASS phase-a: loss beat lifetime comes from the table
+PASS phase-a: loss pulse comes from the table
+PASS phase-a: loss beat logs a readable line
+PASS phase-a: BuffApplied(war-cry) produces the bright aura beat
+PASS phase-a: BuffExpired(war-cry) produces the fade beat with its ttl
+PASS phase-a: only war-cry expiry renders the fade beat
+PASS phase-a: local seam starts
+PASS phase-a: local seam maps BuffExpired through the presentation seam
+PASS phase-a: spawn detection is byte-deterministic across runs
+PASS phase-a: one materialization beat per unseen foe
+PASS phase-a: materialization ttl comes from the table
+PASS phase-a: re-sighting never re-triggers the beat
+PASS phase-a: player facing right no longer flips the monster west
+PASS phase-a: player facing left does not flip the monster east either
+PASS information: authoritative monster name survives model sync
+PASS information: authoritative XP span normalizes in presentation
+PASS information: absent XP never fabricates zero progress
+PASS scene change: telegraphs, loot, strikes, and effects never leak zones
+PASS scene change: durable log and current guidance remain readable
+PASS phase-a: local seam starts for the negative control
+PASS phase-a: applying every drained beat leaves the model untouched
+PASS facing: up-left resolves to (-1,-1)
+PASS facing: down-right resolves to (1,1)
+PASS facing: up-right resolves to (1,-1)
+PASS facing: plain left keeps its single axis
+PASS facing: unknown name falls back to down
+PASS message: server text becomes the HUD toast
+PASS message: toast outlives a key-echo hint
+PASS message: empty text never blanks a toast
+PASS npc: roster entry survives the sync
+PASS npc: name survives the sync
+PASS npc: stable identity, role, and services survive the sync
+PASS npc: tile position converts to world units
+PASS npc: server verb list survives verbatim
+PASS npc: render list carries a labeled Npc op
+presentation events tests: PASS
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS mapping: repeated translation is stable
+PASS mapping: representative cue shape matches the pinned table
+PASS discriminator: ActorDied "monster" maps to the kill cue
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: non-monster ActorDied stays silent
+PASS discriminator: scion death ingests silently
+PASS discriminator: ScionLost still ingests
+PASS discriminator: one Scion death schedules exactly the Scion-loss cue
+PASS silence: no unknown event schedules a cue
+PASS silence: drained schedule is empty
+PASS silence: recording sink received nothing
+PASS ordering: every known cue is voiced once
+PASS ordering: voiced cues ascend by scheduled tick
+PASS ordering: ties resolve by mixer arrival sequence
+PASS bus: default is full volume, unmuted
+PASS bus: volume setter stores permille
+PASS bus: effective gain scales authored gain exactly
+PASS bus: muted bus is silenced while the other still voices
+PASS bus: zero volume silences without mute
+PASS bus: volume clamps above full
+PASS bus: volume clamps below zero
+PASS cap: voice cap bounds the drained schedule
+PASS cap: steal-oldest evicts the earliest same-priority voice
+PASS cap: higher-priority newcomer steals the oldest lower-priority voice
+PASS cap: a lower-priority newcomer never steals a higher-priority voice
+PASS cap: music bus cap is enforced independently of the sfx bus
+PASS byte-identical: ordinary hit ingests
+PASS byte-identical: critical hit ingests
+PASS byte-identical: enemy defeat ingests
+PASS byte-identical: Scion loss ingests
+PASS byte-identical: war-cry expiry ingests
+PASS byte-identical: ordinary hit ingests
+PASS byte-identical: critical hit ingests
+PASS byte-identical: enemy defeat ingests
+PASS byte-identical: Scion loss ingests
+PASS byte-identical: war-cry expiry ingests
+PASS serialization: two independent runs are byte-identical
+PASS serialization: schedule matches the pinned canonical form
+PASS serialization: sink recorded exactly the voiced schedule
+--- begin canonical schedule ---
+cue[000003] tick=5 bus=sfx prio=world id=kill wave=sawtooth 196->49Hz 240ms gain=560 effective=560
+cue[000004] tick=5 bus=sfx prio=player id=scion-lost wave=sine 165->41Hz 900ms gain=700 effective=700
+cue[000005] tick=7 bus=sfx prio=player id=warcry-expire wave=sine 392->262Hz 300ms gain=420 effective=420
+cue[000001] tick=10 bus=sfx prio=player id=hit wave=sine 220->110Hz 90ms gain=480 effective=480
+cue[000002] tick=10 bus=sfx prio=player id=crit wave=square 440->110Hz 150ms gain=640 effective=640
+cue[000006] tick=12 bus=music prio=ui id=menu-loop wave=sine 262->262Hz 1000ms gain=300 effective=300
+--- end canonical schedule ---
+all audio mixer checks passed

@@ -1,0 +1,44 @@
+PROBE enter tier 1 node tin:1:0
+PROBE enter tier 2 node tin:2:0
+PROBE enter tier 3 node tin:3:0
+PROBE enter tier 4 node tin:4:0
+PROBE enter tier 5 node tin:5:0
+PROBE enter tier 6 node tin:6:0
+PROBE hash tiers-1-6: 12131271322927655949
+PROBE chart-begin
+tin:1:0|Stonemoor|1|0|Warden of Stonemoor|null|wilds|clearings|cleared
+tin:2:0|Saint's Quarry|2|0|The Quarry Saint|tin:1:0|dungeon|clearings|open
+tin:2:1|Saint's Quarry Deep|2|1|The Quarry Saint|tin:1:0|dungeon|warren|open
+tin:1:0|Stonemoor|1|0|Warden of Stonemoor|null|wilds|clearings|cleared
+tin:2:0|Saint's Quarry|2|0|The Quarry Saint|tin:1:0|dungeon|clearings|cleared
+tin:2:1|Saint's Quarry Deep|2|1|The Quarry Saint|tin:1:0|dungeon|warren|open
+tin:3:0|The Iron Cloister|3|0|The Iron Abbot|tin:2:0|dungeon|warren|open
+tin:1:0|Stonemoor|1|0|Warden of Stonemoor|null|wilds|clearings|cleared
+tin:2:0|Saint's Quarry|2|0|The Quarry Saint|tin:1:0|dungeon|clearings|cleared
+tin:2:1|Saint's Quarry Deep|2|1|The Quarry Saint|tin:1:0|dungeon|warren|open
+tin:3:0|The Iron Cloister|3|0|The Iron Abbot|tin:2:0|dungeon|warren|cleared
+tin:4:0|Chainhold|4|0|The Chain Regent|tin:3:0|dungeon|gauntlet|open
+tin:1:0|Stonemoor|1|0|Warden of Stonemoor|null|wilds|clearings|cleared
+tin:2:0|Saint's Quarry|2|0|The Quarry Saint|tin:1:0|dungeon|clearings|cleared
+tin:2:1|Saint's Quarry Deep|2|1|The Quarry Saint|tin:1:0|dungeon|warren|open
+tin:3:0|The Iron Cloister|3|0|The Iron Abbot|tin:2:0|dungeon|warren|cleared
+tin:4:0|Chainhold|4|0|The Chain Regent|tin:3:0|dungeon|gauntlet|cleared
+tin:5:0|The Last Waystone|5|0|The Last Mason|tin:4:0|wilds|clearings|open
+tin:1:0|Stonemoor|1|0|Warden of Stonemoor|null|wilds|clearings|cleared
+tin:2:0|Saint's Quarry|2|0|The Quarry Saint|tin:1:0|dungeon|clearings|cleared
+tin:2:1|Saint's Quarry Deep|2|1|The Quarry Saint|tin:1:0|dungeon|warren|open
+tin:3:0|The Iron Cloister|3|0|The Iron Abbot|tin:2:0|dungeon|warren|cleared
+tin:4:0|Chainhold|4|0|The Chain Regent|tin:3:0|dungeon|gauntlet|cleared
+tin:5:0|The Last Waystone|5|0|The Last Mason|tin:4:0|wilds|clearings|cleared
+tin:6:0|Coldcleft|6|0|Warden of Coldcleft|tin:5:0|dungeon|clearings|open
+tin:6:1|Screecleft|6|1|Warden of Screecleft|tin:5:0|dungeon|warren|open
+tin:1:0|Stonemoor|1|0|Warden of Stonemoor|null|wilds|clearings|cleared
+tin:2:0|Saint's Quarry|2|0|The Quarry Saint|tin:1:0|dungeon|clearings|cleared
+tin:2:1|Saint's Quarry Deep|2|1|The Quarry Saint|tin:1:0|dungeon|warren|open
+tin:3:0|The Iron Cloister|3|0|The Iron Abbot|tin:2:0|dungeon|warren|cleared
+tin:4:0|Chainhold|4|0|The Chain Regent|tin:3:0|dungeon|gauntlet|cleared
+tin:5:0|The Last Waystone|5|0|The Last Mason|tin:4:0|wilds|clearings|cleared
+tin:6:0|Coldcleft|6|0|Warden of Coldcleft|tin:5:0|dungeon|clearings|cleared
+tin:6:1|Screecleft|6|1|Warden of Screecleft|tin:5:0|dungeon|warren|open
+tin:7:0|Coldhowe|7|0|Warden of Coldhowe|tin:6:0|dungeon|warren|open
+PROBE chart-end

@@ -1,0 +1,1 @@
+PROBE crash: selecting scion with crafted clearedRoadNodes
