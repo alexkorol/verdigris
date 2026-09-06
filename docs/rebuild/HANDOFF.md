@@ -1,5 +1,13 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — catalog warning windows (Cursor)
+
+- VG-ACT-005: native Warning windows strip paints Thrust 3 ticks · reach
+  and Sweep 3 ticks · melee. A protocol HUD token or an ms/50 guess cannot
+  certify. `telegraph-spec` diverges from `gpu-packets`.
+- Scenario `telegraph-spec` / `gpu-packets` PASS. Capture viewed. Not
+  Owner Demo. Does not edit core or re-spec TASK-0108.
+
 ## 2026-09-06 — owner audio mixer (Cursor)
 
 - VG-SOUND-006: mute keeps SFX 40 / Music 70 on a skin mixer panel. A mute

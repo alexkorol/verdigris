@@ -73,7 +73,7 @@ Cursor evidence notes.
 | VG | Disposition | Existing |
 |---|---|---|
 | VG-ACT-007 | new | `attack-beat` event bridge in `ingest_events`; not TASK-0108 and not `native/src/core.cpp` |
-| VG-ACT-005 | new | catalog-typed warning window (`telegraph-spec`); remote durationMs cannot invent a longer cone. Core ACT-001–004/006/008 stay Kimi |
+| VG-ACT-005 | new | catalog-typed warning window (`telegraph-spec`); owner strip paints ticks+footprint; ms/50 cannot invent a longer cone. Core ACT stays Kimi |
 | VG-ACT-001–006, 008 | new / extend | Kimi lease (`native/src/**`) |
 
 ## WORLD (Cursor presentation dressing only)
@@ -229,8 +229,10 @@ VG-ACT-007: AttackStarted/DamageApplied/ActorDied drive
 Evidence `docs/execution/evidence/VG-ACT-007.json`.
 VG-ACT-005: local ticks and remote `durationMs` share
 `presentation_catalog().telegraph_ticks` and reach. `value/50` cannot
-invent a longer window. Expired/cancelled warnings leave no footprint.
-Scenario `telegraph-spec`.
+invent a longer window. Owner strip paints Thrust/Sweep ticks and
+footprint; a protocol HUD token without that window cannot certify.
+Expired/cancelled warnings leave no footprint. Scenario `telegraph-spec`.
+Evidence `docs/execution/evidence/VG-ACT-005.json`.
 VG-WORLD-008: dressing-pass v1/v2 change decoration hash only.
 A tree visual cannot become an unreported solid. Scenario `dressing-pass`.
 Evidence `docs/execution/evidence/VG-WORLD-008.json`.

@@ -466,6 +466,7 @@ struct ClientState {
   bool gear_overlay = false;
   bool pose_review_strip = false;
   bool weave_review_strip = false;
+  bool telegraph_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -2877,6 +2878,30 @@ COLORREF telegraph_color(double visibility, COLORREF source) {
   return fade_to_background(source, std::clamp(visibility, 0.0, 1.0));
 }
 
+void paint_telegraph_owner_chip(HDC dc, int cx, int top,
+                                const verdigris::client::actions::TelegraphSpec& spec,
+                                render::List& rl) {
+  const char* title = verdigris::client::actions::owner_action_name(spec);
+  const std::string window = verdigris::client::actions::owner_window_line(spec);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SIZE a{}, b{};
+  GetTextExtentPoint32A(dc, title, static_cast<int>(std::strlen(title)), &a);
+  GetTextExtentPoint32A(dc, window.c_str(), static_cast<int>(window.size()), &b);
+  const int w = std::max(a.cx, b.cx) + 16;
+  const int h = a.cy + b.cy + 10;
+  RECT plate{cx - w / 2, top, cx + w / 2, top + h};
+  skin::chip(dc, plate, RGB(238, 112, 82));
+  SetBkMode(dc, TRANSPARENT);
+  SetTextColor(dc, skin::kInk);
+  TextOutA(dc, plate.left + 8, plate.top + 3, title, static_cast<int>(std::strlen(title)));
+  SetTextColor(dc, skin::kInkDim);
+  TextOutA(dc, plate.left + 8, plate.top + 3 + a.cy, window.c_str(),
+           static_cast<int>(window.size()));
+  SelectObject(dc, old_font);
+  rl.push_back({render::Op::Hud, static_cast<double>(cx), static_cast<double>(top),
+                0.0, spec.duration_ticks, "telegraph:owner-window"});
+}
+
 void draw_thrust_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
                            const ActiveTelegraph& telegraph, double visibility,
                            double length, render::List& rl) {
@@ -2928,6 +2953,12 @@ void draw_thrust_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
   }
   ring_ellipse(dc, base.x, base.y, static_cast<int>(clamped), static_cast<int>(clamped),
                edge, 2);
+  verdigris::client::actions::TelegraphSpec spec;
+  spec.action = telegraph.action.c_str();
+  spec.duration_ticks = telegraph.windup_ticks;
+  spec.reach = telegraph.reach;
+  paint_telegraph_owner_chip(dc, base.x, base.y + static_cast<int>(clamped) + 4, spec,
+                             rl);
 }
 
 void draw_sweep_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
@@ -2951,14 +2982,11 @@ void draw_sweep_telegraph(HDC dc, const Camera& camera, const RECT& bounds,
   if (draw_r > 12)
     ring_ellipse(dc, base.x, base.y, draw_r - 10, draw_r - 10,
                  telegraph_color(0.9, RGB(255, 112, 82)), 2);
-  const COLORREF caption = vector_art::dc_color(dc, RGB(255, 214, 196));
-  RECT chip{base.x - 22, base.y + draw_r + 2, base.x + 22, base.y + draw_r + 18};
-  HBRUSH chip_bg = CreateSolidBrush(vector_art::dc_color(dc, RGB(16, 18, 20)));
-  FillRect(dc, &chip, chip_bg);
-  DeleteObject(chip_bg);
-  SetBkMode(dc, TRANSPARENT);
-  SetTextColor(dc, caption);
-  TextOutA(dc, base.x - 16, base.y + draw_r + 3, "Sweep", 5);
+  verdigris::client::actions::TelegraphSpec spec;
+  spec.action = "sweep";
+  spec.duration_ticks = telegraph.windup_ticks;
+  spec.reach = telegraph.reach;
+  paint_telegraph_owner_chip(dc, base.x, base.y + draw_r + 4, spec, rl);
 }
 
 double telegraph_visibility(const ClientState& state,
@@ -6055,6 +6083,56 @@ void paint_weave_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   SelectObject(dc, old_font);
 }
 
+void paint_telegraph_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                  render::List& rl) {
+  if (!state.telegraph_review_strip) return;
+  const auto catalog = verdigris::Simulation::presentation_catalog();
+  const auto thrust = verdigris::client::actions::spec_from_payload(
+      "thrust", catalog.telegraph_ticks, catalog);
+  const auto sweep = verdigris::client::actions::spec_from_payload("sweep", 3, catalog);
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 420 * s;
+  const int pane_h = 96 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 2, "telegraph-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = "Warning windows";
+  TextOutA(dc, left + 12 * s, top + 6 * s, title, static_cast<int>(strlen(title)));
+  const verdigris::client::actions::TelegraphSpec specs[2] = {thrust, sweep};
+  for (int i = 0; i < 2; ++i) {
+    const int cx = left + 90 * s + i * 160 * s;
+    const int cy = top + 48 * s;
+    if (i == 0) {
+      ring_ellipse(dc, cx, cy, 22 * s, 14 * s, RGB(238, 72, 64), 2);
+      draw_line(dc, cx, cy, cx + 28 * s, cy, RGB(255, 112, 82), 2);
+    } else {
+      fill_ellipse(dc, cx, cy, 20 * s, 20 * s, RGB(214, 52, 52));
+      ring_ellipse(dc, cx, cy, 20 * s, 20 * s, RGB(238, 72, 64), 2);
+    }
+    paint_telegraph_owner_chip(dc, cx, cy + 24 * s, specs[i], rl);
+    rl.push_back({render::Op::Hud, static_cast<double>(cx), static_cast<double>(cy),
+                  0.0, i + 1, i == 0 ? "telegraph-strip:thrust" : "telegraph-strip:sweep"});
+  }
+  const int rx = left + pane_w - 70 * s;
+  const int ry = top + 48 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69), 2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "ms/50";
+  TextOutA(dc, rx - 16 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "telegraph-strip:ms-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -7072,6 +7150,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
 
   paint_attack_pose_strip(state, dc, bounds, rl);
   paint_weave_review_strip(state, dc, bounds, rl);
+  paint_telegraph_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -12105,6 +12184,7 @@ int scenario_telegraph_spec() {
   ClientState state;
   scenario_begin(state);
   scenario_follow_camera(state);
+  state.telegraph_review_strip = true;
   const auto* scion = state.simulation->actor(state.simulation->scion().actor_id);
   scenario_check(scion != nullptr, "telegraph-spec: session has a scion");
   if (scion) {
@@ -12113,6 +12193,21 @@ int scenario_telegraph_spec() {
         {scion->position.x - melee, scion->position.y}, 1, true);
     scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Wait));
   }
+  verdigris::Vec2 gate{200, 180};
+  for (const auto& item : state.scenery) {
+    if (item.kind != SceneryKind::Gate) continue;
+    gate = item.position;
+    break;
+  }
+  for (auto& entry : state.telegraphs) {
+    entry.second.position = gate;
+    entry.second.action = "sweep";
+    entry.second.reach = catalog.melee_range;
+    entry.second.windup_ticks = catalog.telegraph_ticks;
+    entry.second.start_tick =
+        state.world.tick > 2 ? state.world.tick - 2 : 0;
+  }
+  scenario_present(state);
   auto has_hud = [&](const char* name) {
     for (const auto& item : state.render_list)
       if (item.op == render::Op::Hud && item.label == name) return true;
@@ -12124,6 +12219,17 @@ int scenario_telegraph_spec() {
   const std::string sweep_hud = verdigris::client::actions::spec_hud(sweep);
   scenario_check(has_hud(typed_hud.c_str()) || has_hud(sweep_hud.c_str()),
                  "telegraph-spec: HUD names the typed window and reach");
+  scenario_check(has_hud("telegraph:owner-window") && has_hud("telegraph-strip"),
+                 "telegraph-spec: owner window paints ticks and footprint");
+  scenario_check(verdigris::client::actions::protocol_hud_alone_fails_window_review(false),
+                 "telegraph-spec: a protocol HUD token without the window cannot certify");
+  scenario_check(!verdigris::client::actions::protocol_hud_alone_fails_window_review(true),
+                 "telegraph-spec: the painted window, not a protocol token, certifies");
+  scenario_check(verdigris::client::actions::millisecond_window_fails_review(
+                     20, catalog.telegraph_ticks),
+                 "telegraph-spec: a ms/50 guess cannot certify the catalog window");
+  scenario_check(has_hud("telegraph-strip:ms-rejected"),
+                 "telegraph-spec: the ms/50 cone is the rejected control");
 
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {

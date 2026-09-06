@@ -29,13 +29,13 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/gpu-packets-960x600.png",
-      "sha256": "6c45f11fff7d1e2fa4f761802444f326cc06730f6f202f54920c4cee8b31f8f0",
+      "sha256": "d780b555c589d7ea56307fd3acb55f53d549445efcb155087258c438f860981b",
       "produced_by": "native/build/verdigris_client.exe --scenario gpu-packets"
     },
     {
       "kind": "log",
       "path": "docs/execution/captures/art-wave/gpu-packets-snapshot.txt",
-      "sha256": "8f5a98619c7f136618f38a8ac0e3976bec3b6f20cd08082296df24b7b8eb9d38",
+      "sha256": "813c21a35313862ac16d7aba28e494bfdb65f189a434d1b727861f40c099804c",
       "produced_by": "native/build/verdigris_client.exe --scenario gpu-packets"
     }
   ],

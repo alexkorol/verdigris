@@ -80,4 +80,21 @@ inline std::string spec_hud(const TelegraphSpec& spec) {
          std::to_string(spec.reach);
 }
 
+inline const char* owner_action_name(const TelegraphSpec& spec) {
+  return std::string(spec.action) == "sweep" ? "Sweep" : "Thrust";
+}
+
+inline std::string owner_window_line(const TelegraphSpec& spec) {
+  const bool sweep = std::string(spec.action) == "sweep";
+  return std::to_string(spec.duration_ticks) + (sweep ? " ticks  melee" : " ticks  reach");
+}
+
+inline bool protocol_hud_alone_fails_window_review(bool owner_window_painted) {
+  return !owner_window_painted;
+}
+
+inline bool millisecond_window_fails_review(int guessed_ticks, int catalog_ticks) {
+  return guessed_ticks != catalog_ticks && guessed_ticks > catalog_ticks;
+}
+
 }  // namespace verdigris::client::actions

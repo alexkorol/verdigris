@@ -4,26 +4,21 @@
   "planning_id": "VG-ACT-005",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "base_sha": "193b7c9fe67676f649ca153911f8ab5a95959a9a",
   "head_sha": "working-tree",
   "integrated_sha": null,
-  "content_hash": null,
   "seed": "telegraph-spec",
   "platform": "win32-x64",
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
-    {
-      "run": "native/build.ps1",
-      "exit_code": 0
-    },
-    {
-      "run": "native/build/verdigris_client.exe --scenario telegraph-spec",
-      "exit_code": 0
-    }
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario telegraph-spec", "exit_code": 0}
   ],
   "assertions": [
     "local ticks and remote durationMs share the catalog window",
     "value/50 cannot invent a longer window",
+    "owner window paints ticks and footprint",
+    "a protocol HUD token without the window cannot certify",
     "AttackStarted cancels the warning",
     "expired remote warning leaves no footprint"
   ],
@@ -35,16 +30,14 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/telegraph-spec-960x600.png",
-      "sha256": "1d599522458d4c3da618ca604713254b867fda11f262683c84847645907a0555",
+      "sha256": "6f60e66413b5af7cd974cd6bd7d9ec4200e7b789838166533695884b6bae7557",
       "produced_by": "native/build/verdigris_client.exe --scenario telegraph-spec"
     }
   ],
-  "reviewer": null,
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Presentation consumers only; VG-ACT-002 scheduling stays with Kimi.",
-    "Does not edit native/src/core.cpp.",
-    "Working tree is dirty; head_sha is not a commit."
+    "Presentation consumers only; VG-ACT-002 scheduling stays with Kimi. Does not edit native/src/core.cpp or re-spec TASK-0108.",
+    "Native Warning windows strip paints Thrust 3 ticks reach, Sweep 3 ticks melee, and a crossed ms/50 control. Hash diverges from gpu-packets."
   ]
 }
