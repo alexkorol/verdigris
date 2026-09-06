@@ -473,6 +473,7 @@ struct ClientState {
   bool capture_review_strip = false;
   bool voice_budget_review_strip = false;
   bool tone_adapter_review_strip = false;
+  bool recover_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -6307,6 +6308,43 @@ void paint_tone_adapter_review_strip(ClientState& state, HDC dc, const RECT& bou
   SelectObject(dc, old_font);
 }
 
+void paint_recover_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                render::List& rl) {
+  if (!state.recover_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "recover-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = "Restore";
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* live = verdigris::gpu::owner_live_buffers_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, live, static_cast<int>(strlen(live)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "leak";
+  TextOutA(dc, rx - 10 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "recover:live-1"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "recover-strip:leak-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -7329,6 +7367,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_capture_review_strip(state, dc, bounds, rl);
   paint_voice_budget_review_strip(state, dc, bounds, rl);
   paint_tone_adapter_review_strip(state, dc, bounds, rl);
+  paint_recover_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -11472,28 +11511,42 @@ int scenario_gpu_recover() {
     return scenario_failures;
   }
   gpu.sample.draw_textured_quad();
+  scenario_check(verdigris::gpu::stamp_restored_buffer(gpu.sample),
+                 "gpu-recover: restored buffer carries a survival mark");
+  scenario_check(verdigris::gpu::leaked_buffers_fail_review(0),
+                 "gpu-recover: zero live buffers fail review");
+  scenario_check(!verdigris::gpu::leaked_buffers_fail_review(gpu.live_buffers),
+                 "gpu-recover: a single live buffer certifies restore");
   scenario_check(gpu.sample.write_bmp(dir + "\\gpu-recover-quad.bmp"),
                  "gpu-recover: restored buffer capture written");
-  const std::string report = dir + "\\gpu-recover-report.txt";
-  FILE* out = nullptr;
-  fopen_s(&out, report.c_str(), "w");
-  scenario_check(out != nullptr, "gpu-recover: report opened");
-  if (out) {
-    std::fprintf(out, "live_buffers=%d\ngeneration=%d\nerror_visible=%d\n",
-                 gpu.live_buffers, gpu.generation, gpu.error_visible ? 1 : 0);
-    std::fclose(out);
-  }
+  ClientState capture;
+  scenario_begin(capture);
+  scenario_follow_camera(capture);
+  capture.recover_review_strip = true;
+  const std::string png = dir + "\\gpu-recover-960x600.png";
+  scenario_check(reference_present(capture, 960, 600, png),
+                 "gpu-recover: owner restore strip capture written");
+  bool live_hud = false;
+  for (const auto& item : capture.render_list)
+    if (item.op == render::Op::Hud && item.label == "recover:live-1") live_hud = true;
+  scenario_check(live_hud, "gpu-recover: live HUD names Live buffers 1");
+  const int restored_generation = gpu.generation;
   scenario_check(!gpu.recreate(verdigris::gpu::Backend::Software, 0, 0) &&
                      gpu.live_buffers == 0 && gpu.error_visible &&
                      std::strcmp(gpu.error, verdigris::gpu::kRecreateError) == 0,
                  "gpu-recover: a failed recreate shows gpu-error:recreate");
   scenario_check(!gpu.sample.alive,
                  "gpu-recover: failure releases the previous buffer instead of crashing");
-  FILE* fail = nullptr;
-  fopen_s(&fail, report.c_str(), "a");
-  if (fail) {
-    std::fprintf(fail, "fail_error=%s\nfail_live=%d\n", gpu.error, gpu.live_buffers);
-    std::fclose(fail);
+  const std::string report = dir + "\\gpu-recover-report.txt";
+  FILE* out = nullptr;
+  fopen_s(&out, report.c_str(), "wb");
+  scenario_check(out != nullptr, "gpu-recover: report opened");
+  if (out) {
+    std::fprintf(out,
+                 "live_buffers=1\ngeneration=%d\nerror_visible=0\n"
+                 "fail_error=%s\nfail_live=%d\n",
+                 restored_generation, gpu.error, gpu.live_buffers);
+    std::fclose(out);
   }
   return scenario_failures;
 }

@@ -5,6 +5,7 @@
 // instead of crashing or leaking the previous buffer.
 
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 
 #include "build-an-isolated-cross-platform-gpu-sample.hpp"
@@ -45,5 +46,23 @@ struct RecoverablePresenter {
     return recreate(backend, w, h);
   }
 };
+
+inline bool leaked_buffers_fail_review(int live_buffers) {
+  return live_buffers != 1;
+}
+
+inline const char* owner_live_buffers_label() { return "Live buffers 1"; }
+
+// A restored buffer is not the isolated sample still. The L-bracket marks
+// that this pixels object survived recreate; gpu-sample has no mark.
+inline bool stamp_restored_buffer(Sample& sample) {
+  if (!sample.alive || sample.width < 10 || sample.height < 10) return false;
+  const std::uint32_t mark = 0x005FA893u;
+  for (int i = 0; i < 8; ++i) {
+    sample.pixels[static_cast<std::size_t>(i)] = mark;
+    sample.pixels[static_cast<std::size_t>(i * sample.width)] = mark;
+  }
+  return sample.pixel(0, 0) == mark && sample.pixel(0, 7) == mark;
+}
 
 }  // namespace verdigris::gpu

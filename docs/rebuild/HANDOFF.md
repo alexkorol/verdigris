@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — restore keeps one live buffer (Cursor)
+
+- VG-GPU-008: recreate/resize/minimize-restore keep one pixel buffer.
+  The restored BMP carries an L-bracket survival mark so it cannot
+  certify as `gpu-sample`. Owner Restore strip paints Live buffers 1;
+  leak is the rejected control. Failed `0x0` recreate surfaces
+  `gpu-error:recreate` and releases pixels.
+- Scenario `gpu-recover` PASS. Capture viewed. Hash diverges from
+  `gpu-sample-quad.bmp`. Not DXGI device-removed. Not Owner Demo.
+
 ## 2026-09-06 — software 440 Hz adapter (Cursor)
 
 - VG-SOUND-001: owner Adapter software strip paints Tone 440 Hz. A 0 ms
@@ -288,8 +298,9 @@
   `grounding`. Capture `docs/execution/captures/art-wave/grounding-960x600.png`.
 - VG-GPU-006: moving light, channel cap 220, damage chroma not washed.
   Scenario `material-light`. Quad BMP + HUD PNG.
-- VG-GPU-008: recreate/resize/minimize-restore keep one buffer; `0x0`
-  surfaces `gpu-error:recreate`. Scenario `gpu-recover`.
+- VG-GPU-008: recreate/resize/minimize-restore keep one buffer; restored
+  BMP stamped; owner Restore strip; `0x0` surfaces `gpu-error:recreate`.
+  Scenario `gpu-recover`.
 
 ## 2026-09-06 — packets, bronze/stone, legal sounds, graph audit (Cursor)
 
@@ -544,8 +555,8 @@ owner-stamped. Dual program heads: this branch vs
   (backend/content/platform). A semantic packet log cannot count as the
   capture. Scenario `gpu-capture`.
 - VG-GPU-008: `RecoverablePresenter` resize/minimize-restore keeps one
-  live buffer. Failed recreate surfaces `gpu-error:recreate` and releases
-  pixels. Scenario `gpu-recover`.
+  live buffer. Restored BMP carries an L-bracket mark. Failed recreate
+  surfaces `gpu-error:recreate` and releases pixels. Scenario `gpu-recover`.
 
 ## 2026-09-06 — grounding / telegraph overlay (Cursor, uncommitted)
 

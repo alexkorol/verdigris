@@ -52,7 +52,7 @@ Cursor evidence notes.
 | VG-GPU-005 | new | Y-sort + Sweep overlay on the village gate (`grounding`); HUD or capture-black cannot certify; walls cannot erase warnings |
 | VG-GPU-006 | new | moving bronze lantern pool on the village gate (`material-light`); HUD without a pool cannot certify; cannot wash out damage |
 | VG-GPU-007 | new | BMP readback + provenance (`gpu-capture`); PNG R/B swap cannot certify; packet logs are not pixels |
-| VG-GPU-008 | new | sample recreate/resize (`gpu-recover`); minimize/restore cannot leak |
+| VG-GPU-008 | new | sample recreate/resize (`gpu-recover`); restored BMP stamped; Live buffers 1; leak cannot certify |
 | VG-PERF-001/002/008 | extend | TASK-0152, 0207; 008 Owner Demo — do not duplicate |
 | VG-PERF-003–006 | new / extend 0207 | GDI batch, envelope, loot labels, hitch warmup |
 | VG-PERF-007 | new | 32-cycle present/effect/resize soak (`memory-soak`); short scene fails |
@@ -185,8 +185,10 @@ scene. Packet snapshot text is not pixel evidence. A PNG whose red/blue
 channels are swapped versus the DIB cannot certify. `vital-orbs` cannot
 stand in for the scene BMP. Scenario `gpu-capture`. Evidence
 `docs/execution/evidence/VG-GPU-007.json`.
-VG-GPU-008: recreate/resize/minimize-restore keep one live buffer; failure
-surfaces `gpu-error:recreate`. Scenario `gpu-recover`. Evidence
+VG-GPU-008: recreate/resize/minimize-restore keep one live buffer; the
+restored BMP carries an L-bracket survival mark (hash diverges from
+`gpu-sample`). Live HUD paints Live buffers 1; leak cannot certify.
+Failure surfaces `gpu-error:recreate`. Scenario `gpu-recover`. Evidence
 `docs/execution/evidence/VG-GPU-008.json`.
 VG-SOUND-001: software tone adapter plays a generated PCM burst and shuts
 down. Live HUD paints Adapter software / Tone 440 Hz. A zero-duration cue
