@@ -1,5 +1,17 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Unarmed first, Uniform pan (Cursor)
+
+- VG-ART-005: `loot-to-bank` owner Unarmed first strip paints World hold.
+  Paper doll cannot certify the pickup-to-equip journey. World hold /
+  Ack equip on `held-item` is unchanged. ITEM algebra stays Kimi.
+- VG-ART-001: `zoom-invariance` owner Uniform pan strip paints Zoom lock.
+  A free tile cannot certify the camera contract. Adult camera /
+  Bronze palette on `visual-target` and Jointed warden on `first-fight`
+  are unchanged.
+- Scenarios `loot-to-bank` / `zoom-invariance` PASS. Captures viewed.
+  Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — Jointed warden, Hit flash (Cursor)
 
 - VG-ART-001: `first-fight` owner Jointed warden strip paints Snout claws.

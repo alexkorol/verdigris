@@ -518,6 +518,8 @@ struct ClientState {
   bool hud_scale_floor_review_strip = false;
   bool first_fight_review_strip = false;
   bool combat_juice_review_strip = false;
+  bool loot_to_bank_review_strip = false;
+  bool zoom_invariance_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -8108,6 +8110,84 @@ void paint_combat_juice_review_strip(ClientState& state, HDC dc, const RECT& bou
   SelectObject(dc, old_font);
 }
 
+void paint_loot_to_bank_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                     render::List& rl) {
+  if (!state.loot_to_bank_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "loot-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::art::owner_unarmed_first_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::client::art::owner_world_hold_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "paper doll";
+  TextOutA(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "art:unarmed-first"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "art:world-hold"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "loot-strip:paper-doll-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_zoom_invariance_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                        render::List& rl) {
+  if (!state.zoom_invariance_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "zoom-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = camera2d::owner_uniform_pan_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = camera2d::owner_zoom_lock_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "free tile";
+  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "cam:uniform-pan"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "cam:zoom-lock"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "cam-strip:free-tile-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -9174,6 +9254,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_hud_scale_floor_review_strip(state, dc, bounds, rl);
   paint_first_fight_review_strip(state, dc, bounds, rl);
   paint_combat_juice_review_strip(state, dc, bounds, rl);
+  paint_loot_to_bank_review_strip(state, dc, bounds, rl);
+  paint_zoom_invariance_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -10795,6 +10877,27 @@ int scenario_loot_to_bank() {
       scenario_check(scion && scion->label != "held:none" && scion->value != 0,
                      "loot-to-bank: world actor holds the equipped item");
     }
+    const std::string dir = art_wave_capture_dir();
+    if (dir.empty()) {
+      scenario_check(false, "loot-to-bank: capture root rejected before any write");
+      return 0;
+    }
+    const std::string png = dir + "\\loot-to-bank-960x600.png";
+    state.loot_to_bank_review_strip = true;
+    scenario_check(reference_present(state, 960, 600, png),
+                   "loot-to-bank: owner HUD capture written");
+    bool unarmed_first = false;
+    bool world_hold = false;
+    bool paper_doll = false;
+    for (const auto& item : state.render_list) {
+      if (item.op != render::Op::Hud) continue;
+      if (item.label == "art:unarmed-first") unarmed_first = true;
+      if (item.label == "art:world-hold") world_hold = true;
+      if (item.label == "loot-strip:paper-doll-rejected") paper_doll = true;
+    }
+    scenario_check(unarmed_first && world_hold,
+                   "loot-to-bank: live HUD names Unarmed first and World hold");
+    scenario_check(paper_doll, "loot-to-bank: live HUD rejects paper doll");
     state.character_pane = true;
     scenario_present(state);
     {
@@ -11127,6 +11230,29 @@ int scenario_zoom_invariance() {
       scenario_check(false, "zoom-invariance: terrain tiles overlap across camera shift");
     }
   }
+  scenario_follow_camera(state);
+  state.camera.zoom = kCameraDefaultZoom;
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "zoom-invariance: capture root rejected before any write");
+    return 0;
+  }
+  const std::string png = dir + "\\zoom-invariance-960x600.png";
+  state.zoom_invariance_review_strip = true;
+  scenario_check(reference_present(state, 960, 600, png),
+                 "zoom-invariance: owner HUD capture written");
+  bool uniform_pan = false;
+  bool zoom_lock = false;
+  bool free_tile = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "cam:uniform-pan") uniform_pan = true;
+    if (item.label == "cam:zoom-lock") zoom_lock = true;
+    if (item.label == "cam-strip:free-tile-rejected") free_tile = true;
+  }
+  scenario_check(uniform_pan && zoom_lock,
+                 "zoom-invariance: live HUD names Uniform pan and Zoom lock");
+  scenario_check(free_tile, "zoom-invariance: live HUD rejects free tile");
   return 0;
 }
 

@@ -127,11 +127,11 @@ not implemented here.
 | VG-GPU-006 | G3 | new | material-light |
 | VG-GPU-007 | G2 | new | gpu-capture + PNG R/B honesty; swapped still cannot certify |
 | VG-GPU-008 | G3 | new | gpu-recover |
-| VG-ART-001 | G1 | extend | visual-target in-game sheet |
+| VG-ART-001 | G1 | extend | visual-target in-game sheet; first-fight jointed warden; zoom-invariance uniform pan |
 | VG-ART-002 | G2 | extend | bronze-stone family |
 | VG-ART-003 | G2 | extend | attack-poses; not TASK-0108 |
 | VG-ART-004 | G2 | extend | kit-chunk: hut, ruin, fountain, gate in spawn capture |
-| VG-ART-005 | G3 | extend | held-item world attachment; paper-doll seat alone cannot pass |
+| VG-ART-005 | G3 | extend | held-item world attachment; loot-to-bank unarmed first; paper-doll seat alone cannot pass |
 | VG-ART-006 | G3 | extend | weave-vfx; not TASK-0108 |
 | VG-ART-007 | G3 | extend | Owner Demo — do not duplicate |
 | VG-ART-008 | G3 | extend | Owner Demo — do not duplicate |

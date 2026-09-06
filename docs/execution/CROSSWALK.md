@@ -43,7 +43,7 @@ Cursor evidence notes.
 | VG-UI-008 | new | XInput tick path + glyphs (`pad-path`); not mouse emulation |
 | VG-ART-001/002/004 | extend | TASK-0141 INTEGRATED — village kit + collision-proxy ops (`kit-chunk`); not artist-local collision |
 | VG-ART-003/006 | extend | TASK-0122 INTEGRATED; 0173/0174 READY; 0186/0187 BRIDGE_PREP — Cursor paints melee **poses** (VG-ART-003) and WarCry **weave labels** (VG-ART-006) without taking TASK-0173 models or re-speccing TASK-0108 |
-| VG-ART-005 | extend | TASK-0182 AUTO_RELEASE, 0184; `held-item` world attachment; paper-doll seat alone cannot pass |
+| VG-ART-005 | extend | TASK-0182 AUTO_RELEASE, 0184; `held-item` world attachment + `loot-to-bank` pickup-to-equip hold; paper-doll seat alone cannot pass |
 | VG-ART-007/008 | extend | TASK-0206/0205/0207 — Owner Demo, do not duplicate |
 | VG-GPU-001 | new | isolated software quad (`gpu-sample`); not a D3D-only window |
 | VG-GPU-002 | new | render-list → packets (`gpu-packets`); handles cannot snapshot |
@@ -176,11 +176,13 @@ fails snapshot. Scenario `gpu-packets`. Evidence
 `docs/execution/evidence/VG-GPU-002.json`.
 VG-ART-001: in-game HUD names camera/proportion/palette/contrast. Owner
 strip paints Adult camera / Bronze palette. `first-fight` owner strip
-paints Jointed warden / Snout claws. An external concept-art token
+paints Jointed warden / Snout claws. `zoom-invariance` owner strip
+paints Uniform pan / Zoom lock. An external concept-art token
 cannot substitute, a skeleton `art: PNG billboards loaded` chip cannot
 count as the composition sheet, a chibi (1/3) head cannot pass as
-adult, and a crate foe cannot certify. Scenarios `visual-target` /
-`first-fight`. Evidence `docs/execution/evidence/VG-ART-001.json`.
+adult, a crate foe cannot certify, and a free tile cannot certify the
+camera contract. Scenarios `visual-target` / `first-fight` /
+`zoom-invariance`. Evidence `docs/execution/evidence/VG-ART-001.json`.
 VG-ART-003: windup/active/recovery/cancel silhouettes on Strike poses.
 Idle still cannot certify the family. Frame count alone cannot pass.
 `combat-juice` owner strip paints Hit flash / Number fade. Silent hit
@@ -332,8 +334,10 @@ VG-UI-002: `pack-drag` — reject cannot lose, duplicate, or silently equip.
 Owner strip paints Pack place / Reject keeps. Silent equip cannot
 certify. Core inventory-move stays Kimi.
 VG-ART-005: `held-item` — world actor hold must change on equip. Owner
-strip paints World hold / Ack equip. A filled paper-doll seat with
-`held:none` cannot pass.
+strip paints World hold / Ack equip. `loot-to-bank` owner strip paints
+Unarmed first / World hold. A filled paper-doll seat with `held:none`
+cannot pass. Scenarios `held-item` / `loot-to-bank`. Evidence
+`docs/execution/evidence/VG-ART-005.json`.
 
 ## VG-GOV-002 draft (not owner-stamped)
 

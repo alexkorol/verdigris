@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-005",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "d6f017cdd88e8c969cf4261c6e3be22dab10f95e",
+  "base_sha": "1db26bed72a0db073aa7c475a9def123e79aded8",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "held-item",
@@ -12,13 +12,16 @@
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario held-item", "exit_code": 0}
+    {"run": "native/build/verdigris_client.exe --scenario held-item", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario loot-to-bank", "exit_code": 0}
   ],
   "assertions": [
     "unequip clears world held:none and empty paper-doll seat",
     "ack equip changes the Player held attachment",
     "HUD publishes held-world not only held-seat",
-    "live HUD names World hold and Ack equip"
+    "live HUD names World hold and Ack equip",
+    "loot-to-bank starts unarmed, then world actor holds the equipped item",
+    "live HUD names Unarmed first and World hold"
   ],
   "negative_control": {
     "name": "paper-doll seat filled while world remains held:none",
@@ -30,12 +33,20 @@
       "path": "docs/execution/captures/art-wave/held-item-960x600.png",
       "sha256": "5199b01a8d4cc4dac4fbf58904a1434231d9538fafd58ecd96ce3b54842480a0",
       "produced_by": "native/build/verdigris_client.exe --scenario held-item"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/loot-to-bank-960x600.png",
+      "sha256": "03a8f2b9916f6c927719f5ff141ecc2e9b9bc3a0a9575e02a146a56af728f7e8",
+      "produced_by": "native/build/verdigris_client.exe --scenario loot-to-bank"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Presentation bind only. ITEM identity and sim equip algebra stay Kimi.",
+    "held-item owner strip paints World hold / Ack equip. Paper doll cannot certify.",
+    "loot-to-bank owner strip paints Unarmed first / World hold. Paper doll cannot certify the pickup-to-equip journey.",
     "Does not re-spec TASK-0108. No TASK numbers minted."
   ]
 }

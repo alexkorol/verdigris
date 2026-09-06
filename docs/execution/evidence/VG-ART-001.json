@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-001",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "7da5c29ede59c1272c16402be34277beeb06976a",
+  "base_sha": "1db26bed72a0db073aa7c475a9def123e79aded8",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "visual-target",
@@ -13,7 +13,8 @@
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario visual-target", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario first-fight", "exit_code": 0}
+    {"run": "native/build/verdigris_client.exe --scenario first-fight", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario zoom-invariance", "exit_code": 0}
   ],
   "assertions": [
     "in-game HUD names camera top-down, adult proportion, bronze-stone palette, ink-on-panel contrast",
@@ -27,10 +28,12 @@
     "village trees are a forked clustered canopy; a circle-on-stick cannot pass",
     "town wardens use jointed legs, a snout, and filled claws; a crate foe cannot pass",
     "live HUD names Adult camera and Bronze palette",
-    "live HUD names Jointed warden and Snout claws"
+    "live HUD names Jointed warden and Snout claws",
+    "overlapping scenery and terrain tiles shift by one uniform delta under pan at min/default/max zoom",
+    "live HUD names Uniform pan and Zoom lock"
   ],
   "negative_control": {
-    "name": "external concept-art HUD token, a loader chip as the sheet, a chibi head, or a crate-shaped foe",
+    "name": "external concept-art HUD token, a loader chip as the sheet, a chibi head, a crate-shaped foe, or a free tile that slides independently under pan",
     "observed_result": "REJECTED"
   },
   "artifacts": [
@@ -45,6 +48,12 @@
       "path": "docs/execution/captures/art-wave/first-fight-960x600.png",
       "sha256": "fbfb2ff9a44afcd7b7d52f614a7476667ec8de63545a32d987dd8344be1c77c9",
       "produced_by": "native/build/verdigris_client.exe --scenario first-fight"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/zoom-invariance-960x600.png",
+      "sha256": "a012828bd9a5e0de951399237df41f91eba15bcd05c613df26e5071cf563d8d5",
+      "produced_by": "native/build/verdigris_client.exe --scenario zoom-invariance"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
@@ -53,6 +62,7 @@
     "Composition axes remain HUD labels on the live expedition, not a separate art bible PNG.",
     "Owner strip paints Adult camera / Bronze palette. Chibi head cannot certify.",
     "first-fight owner strip paints Jointed warden / Snout claws. Crate foe cannot certify.",
+    "zoom-invariance owner strip paints Uniform pan / Zoom lock. A free tile cannot certify the camera contract.",
     "Mute chip stays owner-facing. Loader jargon lives on F3.",
     "Does not re-spec TASK-0108 or Owner Demo (VG-ART-007 mixed-pack review not this packet).",
     "32bpp scenario DIBs still need dc_color; live CreateCompatibleBitmap path does not."
