@@ -9909,11 +9909,35 @@ int scenario_legal_sounds() {
   for (const auto& cue : state.audio_voiced) {
     if (cue.rfind("ambience:", 0) == 0 || cue.rfind("music:", 0) == 0) continue;
     heard = true;
-    if (!shippable(cue.c_str())) all_legal = false;
+    if (!shippable(cue.c_str())) {
+      all_legal = false;
+      std::printf("    illegal cue: %s\n", cue.c_str());
+    }
   }
   scenario_check(heard, "legal-sounds: an ordinary fight actually voiced cues");
   scenario_check(all_legal,
                  "legal-sounds: every voiced combat cue is in the licensed family");
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "legal-sounds: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string manifest = dir + "\\legal-sounds-provenance.txt";
+  FILE* out = nullptr;
+  fopen_s(&out, manifest.c_str(), "w");
+  scenario_check(out != nullptr, "legal-sounds: provenance table opened");
+  if (out) {
+    std::fprintf(out, "family=combat\nnegative=unlicensed-preview\n");
+    for (const auto& row : verdigris::client::sound_family::kCombatFamily) {
+      std::fprintf(out, "%s %s %s %s\n", row.cue_id, row.role, row.license,
+                   row.source);
+    }
+    std::fclose(out);
+  }
+  scenario_follow_camera(state);
+  const std::string png = dir + "\\legal-sounds-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "legal-sounds: fight capture written");
   return scenario_failures;
 }
 
@@ -10059,6 +10083,22 @@ int scenario_gpu_packets() {
   if (!poisoned.empty()) poisoned[0].backend_handle = 0xD3D0001ull;
   scenario_check(!poisoned.empty() && !verdigris::gpu::snapshot_valid(poisoned),
                  "gpu-packets: a backend resource cannot enter a snapshot");
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "gpu-packets: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string snap_path = dir + "\\gpu-packets-snapshot.txt";
+  FILE* out = nullptr;
+  fopen_s(&out, snap_path.c_str(), "w");
+  scenario_check(out != nullptr, "gpu-packets: snapshot file opened");
+  if (out) {
+    std::fprintf(out, "%s", snap.c_str());
+    std::fclose(out);
+  }
+  const std::string png = dir + "\\gpu-packets-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "gpu-packets: Telegraph scene capture written");
   return scenario_failures;
 }
 
@@ -10115,6 +10155,14 @@ int scenario_bronze_stone() {
                  "bronze-stone: village kit scenery samples the cooked family");
   scenario_check(!magenta,
                  "bronze-stone: magenta placeholder fills cannot pass");
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "bronze-stone: capture root rejected before any write");
+    return scenario_failures;
+  }
+  const std::string png = dir + "\\bronze-stone-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "bronze-stone: cooked family capture written");
   return scenario_failures;
 }
 

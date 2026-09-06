@@ -27,7 +27,7 @@ Cursor evidence notes.
 | VG-GOV-005 | verify | TASK-0114 INTEGRATED; `docs/execution/decisions/choose-the-renderer-trial-boundary.md` — gpu-sample is not an engine port |
 | VG-GOV-006 | extend | TASK-0018, 0056, 0148; `death-disconnect` — disconnect cannot ack uncommitted extract |
 | VG-GOV-007 | extend | Owner Demo content lots |
-| VG-GOV-008 | new | pack `tools/roadmap.py` validate + unittest; see `docs/execution/decisions/audit-dependency-and-path-scheduling.md` |
+| VG-GOV-008 | new | pack `tools/roadmap.py` validate + unittest; evidence `docs/execution/evidence/VG-GOV-008.json` |
 
 ## UI / ART / GPU / PERF (Cursor-leaning)
 
@@ -138,7 +138,9 @@ capped vs screen-fill; telegraph remains. Scenario `weave-vfx`.
 VG-UI-008: XInput sampled on the fixed tick; A strike / B dash / X take /
 Y gear; hotplug in/out; mouse position cannot mint `pad:connected`.
 Scenario `pad-path`.
-VG-SOUND-002: CC0 provenance table for combat cues. Scenario `legal-sounds`.
+VG-SOUND-002: CC0 provenance table for combat cues including swing windup
+`attack-anticipate`. `unlicensed-preview` cannot ship. Scenario `legal-sounds`.
+Evidence `docs/execution/evidence/VG-SOUND-002.json`.
 VG-SOUND-008: explore/combat/recovery music coalesced per drain; unload
 sets `music:none` and mutes the music bus so a leftover combat loop cannot
 voice. Scenario `music-phase`. Device mute still silences waveOut. Evidence
@@ -147,12 +149,14 @@ VG-GPU-001: isolated software backend (64×64 textured quad + shutdown).
 Not a Windows-only D3D proof. Scenario `gpu-sample`. Evidence
 `docs/execution/evidence/VG-GPU-001.json`.
 VG-GPU-002: Telegraph draw class copied to handle-free packets. Poisoned
-`backend_handle` fails snapshot. Scenario `gpu-packets`.
+`backend_handle` fails snapshot. Scenario `gpu-packets`. Evidence
+`docs/execution/evidence/VG-GPU-002.json`.
 VG-ART-001: in-game HUD names camera/proportion/palette/contrast. An
 external concept-art token cannot substitute. Scenario `visual-target`.
 Evidence `docs/execution/evidence/VG-ART-001.json`.
 VG-ART-002: bronze/stone albedo+rim maps with SPDX CC0; magenta fill
 cannot ship. Village kit uses the family. Scenario `bronze-stone`.
+Evidence `docs/execution/evidence/VG-ART-002.json`.
 VG-GPU-003: layout v1 software program `software-albedo-rim-v1`. Wrong
 backend or stale layout fails; failed load does not paint. Scenario
 `shader-bindings`.

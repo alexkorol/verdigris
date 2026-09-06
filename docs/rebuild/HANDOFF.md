@@ -1,5 +1,21 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — packets, bronze/stone, legal sounds, graph audit (Cursor)
+
+- VG-GPU-002: Telegraph draw class copies to handle-free packets
+  (`gpu-packets`). Poisoned `backend_handle` cannot snapshot. Capture
+  `docs/execution/captures/art-wave/gpu-packets-960x600.png`. Snapshot
+  `docs/execution/captures/art-wave/gpu-packets-snapshot.txt`.
+- VG-ART-002: cooked bronze/stone albedo+rim, SPDX CC0. Magenta fill
+  cannot pass. Scenario `bronze-stone`. Capture
+  `docs/execution/captures/art-wave/bronze-stone-960x600.png`.
+- VG-SOUND-002: combat family includes swing windup `attack-anticipate`.
+  `unlicensed-preview` cannot ship. Scenario `legal-sounds`. Capture
+  `docs/execution/captures/art-wave/legal-sounds-960x600.png`.
+- VG-GOV-008: pack `roadmap.py validate` (200/689) plus unittest overlap
+  fixtures. Decision already at
+  `docs/execution/decisions/audit-dependency-and-path-scheduling.md`.
+
 ## 2026-09-06 — first-wave P0 + mute-on-unload (Cursor lease)
 
 - VG-GPU-001: isolated software 64×64 bronze/stone quad (`gpu-sample`).

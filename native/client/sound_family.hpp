@@ -21,6 +21,7 @@ inline constexpr Entry kCombatFamily[] = {
     {"kill", "impact", "CC0-1.0", "procedural-synth:saw-196-49"},
     {"scion-lost", "warning", "CC0-1.0", "procedural-synth:sine-165-41"},
     {"warcry-expire", "warning", "CC0-1.0", "procedural-synth:sine-392-262"},
+    {"attack-anticipate", "swing", "CC0-1.0", "procedural-synth:sine-330-220"},
     {"cosmetic", "swing", "CC0-1.0", "procedural-synth:placeholder-ui"},
 };
 

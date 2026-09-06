@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-SOUND-002",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "4502b0295588ba5ac163c1fb6c92821a9eec5238",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "legal-sounds",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario legal-sounds", "exit_code": 0}
+  ],
+  "assertions": [
+    "impact and warning cues carry SPDX provenance",
+    "swing-family windup attack-anticipate is sourced",
+    "unlicensed-preview cannot ship even if audible",
+    "an ordinary fight actually voiced cues",
+    "every voiced combat cue is in the licensed family"
+  ],
+  "negative_control": {
+    "name": "missing provenance with successful playback",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/legal-sounds-960x600.png",
+      "sha256": "046bab7b7312dd87b90a82d497e92a1c96ec6973e35db5621071f13498df6e8b",
+      "produced_by": "native/build/verdigris_client.exe --scenario legal-sounds"
+    },
+    {
+      "kind": "log",
+      "path": "docs/execution/captures/art-wave/legal-sounds-provenance.txt",
+      "sha256": "0354ed9466584cbe46d91d363ce6f7a36f0bd3fa3dbde7f74b78dfdebc46fb62",
+      "produced_by": "native/build/verdigris_client.exe --scenario legal-sounds"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Procedural CC0 family, not a binary WAV bank. VG-TOOLS-003 stays Kimi.",
+    "Device remains muted in the harness; proof is voiced cue IDs plus SPDX rows."
+  ]
+}
