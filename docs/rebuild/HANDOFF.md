@@ -1,5 +1,12 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — owner objective strip + dash (Cursor)
+
+- Owner HUD paints `Slay the wardens (1 remain)`, not `objective: ...`.
+  HUD ops keep the protocol prefix. Compact controls restore `Space dash`
+  (TASK-0153 first-session-clarity). Extract strip drops the `12u` dump.
+- Scenario `first-session-clarity` PASS. Capture `visual-target-960x600.png`.
+
 ## 2026-09-06 — adult Scion rig (Cursor)
 
 - Vector `humanoid` now uses adult proportions (head ~1/8, jointed legs,

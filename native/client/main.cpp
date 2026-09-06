@@ -3439,7 +3439,8 @@ const char* compass_step(int dx, int dy) {
 // Draws one owner-facing status chip and records it as a Hud op. Returns the
 // chip width so callers can lay out stacked chips deterministically.
 int paint_status_chip(HDC dc, int x, int y, const std::string& text,
-                      COLORREF accent, render::List& rl) {
+                      COLORREF accent, render::List& rl,
+                      const std::string& hud_label = {}) {
   SIZE extent{};
   GetTextExtentPoint32A(dc, text.c_str(), static_cast<int>(text.size()), &extent);
   const int width = extent.cx + 20;
@@ -3450,7 +3451,7 @@ int paint_status_chip(HDC dc, int x, int y, const std::string& text,
   SetTextColor(dc, accent);
   TextOutA(dc, x + 12, y + 5, text.c_str(), static_cast<int>(text.size()));
   rl.push_back({render::Op::Hud, static_cast<double>(x), static_cast<double>(y),
-                0.0, 0, text});
+                0.0, 0, hud_label.empty() ? text : hud_label});
   return width;
 }
 
@@ -6455,16 +6456,20 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     } else {
       const int ddx = world.extraction.x - player.position.x;
       const int ddy = world.extraction.y - player.position.y;
-      const int dist = static_cast<int>(
-          std::lround(std::sqrt(static_cast<double>(ddx * ddx + ddy * ddy))));
       objective = std::string(carrying
                                   ? "objective: carry your loot to the EXIT ("
                                   : "objective: reach the EXIT (");
       objective += compass_step(ddx, ddy);
-      objective += ", " + std::to_string(dist) + "u) - ";
+      objective += ") - ";
       objective += extraction_action_hint(is_remote(state));
       if (carrying) accent = RGB(239, 208, 116);
     }
+    std::string objective_owner = objective;
+    if (objective_owner.rfind("objective: ", 0) == 0)
+      objective_owner = objective_owner.substr(11);
+    if (!objective_owner.empty())
+      objective_owner[0] = static_cast<char>(
+          std::toupper(static_cast<unsigned char>(objective_owner[0])));
 
     // TASK-0159: house().name is already prefixed ("House Verdigris") — the
     // leading literal here painted "House House Verdigris" on the shipped HUD.
@@ -6472,7 +6477,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         world.house_name + " - Scion " +
         (world.scion_name.empty() ? std::string("(unnamed)") : world.scion_name);
     static constexpr char kControls[] =
-        "WASD | LMB strike | I gear | F3 binds";
+        "WASD | LMB strike | Space dash | I gear | F3";
     const std::string& art_text = state.billboards.status;
     const bool plates_ready =
         state.billboards.player.ready() && state.billboards.raider.ready() &&
@@ -6516,8 +6521,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     SIZE identity_extent{}, objective_extent{}, art_extent{}, controls_extent{};
     GetTextExtentPoint32A(dc, identity.c_str(),
                           static_cast<int>(identity.size()), &identity_extent);
-    GetTextExtentPoint32A(dc, objective.c_str(),
-                          static_cast<int>(objective.size()), &objective_extent);
+    GetTextExtentPoint32A(dc, objective_owner.c_str(),
+                          static_cast<int>(objective_owner.size()), &objective_extent);
     if (show_art_chip) {
       GetTextExtentPoint32A(dc, art_text.c_str(),
                             static_cast<int>(art_text.size()), &art_extent);
@@ -6575,7 +6580,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
       paint_connection_chip(state, dc, bounds, rl, connection_at.x,
                             connection_at.y);
 
-    paint_status_chip(dc, objective_at.x, objective_at.y, objective, accent, rl);
+    paint_status_chip(dc, objective_at.x, objective_at.y, objective_owner, accent,
+                      rl, objective);
     state.hud_rect_trace.push_back(
         {"objective",
          {objective_at.x, objective_at.y, objective_size.w, objective_size.h}});

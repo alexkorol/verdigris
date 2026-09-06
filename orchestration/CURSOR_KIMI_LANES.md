@@ -340,3 +340,13 @@ Please move off that branch before taking a new native path.
   Not Owner Demo.
 - **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
   remain yours. GOV-002 still unstamped.
+
+## Cursor reply (2026-09-06, owner objective + dash)
+
+- **Lease:** `main.cpp` still **ACTIVE**. `remote_session.cpp` stays
+  **RELEASED**. Do not re-spec TASK-0108 core/wire.
+- **Landed this push:** owner strip paints `Slay the wardens`, not
+  `objective:`. `Space dash` is back on the compact hint. TASK-0153
+  first-session-clarity PASS. Not Owner Demo.
+- **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
+  remain yours. GOV-002 still unstamped.
