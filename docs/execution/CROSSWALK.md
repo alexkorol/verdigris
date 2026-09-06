@@ -175,14 +175,17 @@ strip paints Handle-free / Telegraph class. Poisoned `backend_handle`
 fails snapshot. Scenario `gpu-packets`. Evidence
 `docs/execution/evidence/VG-GPU-002.json`.
 VG-ART-001: in-game HUD names camera/proportion/palette/contrast. Owner
-strip paints Adult camera / Bronze palette. An external concept-art token
+strip paints Adult camera / Bronze palette. `first-fight` owner strip
+paints Jointed warden / Snout claws. An external concept-art token
 cannot substitute, a skeleton `art: PNG billboards loaded` chip cannot
-count as the composition sheet, and a chibi (1/3) head cannot pass as
-adult. Scenario `visual-target`. Evidence
-`docs/execution/evidence/VG-ART-001.json`.
+count as the composition sheet, a chibi (1/3) head cannot pass as
+adult, and a crate foe cannot certify. Scenarios `visual-target` /
+`first-fight`. Evidence `docs/execution/evidence/VG-ART-001.json`.
 VG-ART-003: windup/active/recovery/cancel silhouettes on Strike poses.
 Idle still cannot certify the family. Frame count alone cannot pass.
-Scenario `attack-poses`. Evidence `docs/execution/evidence/VG-ART-003.json`.
+`combat-juice` owner strip paints Hit flash / Number fade. Silent hit
+cannot certify readable contact. Scenarios `attack-poses` /
+`combat-juice`. Evidence `docs/execution/evidence/VG-ART-003.json`.
 VG-ART-002: bronze/stone albedo+rim maps with SPDX CC0; magenta fill
 cannot ship. Owner strip paints Bronze stone / Cooked CC0. Village kit
 uses the family. Scenario `bronze-stone`. Evidence

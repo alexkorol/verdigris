@@ -466,6 +466,11 @@ inline bool crate_foe_fails_review(bool jointed_legs, bool snout,
   return !jointed_legs || !snout || !filled_claws;
 }
 
+inline const char* owner_jointed_warden_label() { return "Jointed warden"; }
+inline const char* owner_snout_claws_label() { return "Snout claws"; }
+inline const char* owner_hit_flash_label() { return "Hit flash"; }
+inline const char* owner_number_fade_label() { return "Number fade"; }
+
 inline void lurker(HDC dc, int cx, int base_y, int height_px, const Style& style,
                    const Pose& pose) {
   Frame f{cx, base_y, height_px / 100.0, pose.mirror};

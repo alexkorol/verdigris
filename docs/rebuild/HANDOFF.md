@@ -1,5 +1,16 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Jointed warden, Hit flash (Cursor)
+
+- VG-ART-001: `first-fight` owner Jointed warden strip paints Snout claws.
+  Crate foe cannot certify. Adult camera / Bronze palette on
+  `visual-target` is unchanged. ART-007 mixed-pack review not this packet.
+- VG-ART-003: `combat-juice` owner Hit flash strip paints Number fade.
+  Silent hit cannot certify readable contact. Strike poses on
+  `attack-poses` is unchanged. TASK-0173 models stay Kimi.
+- Scenarios `first-fight` / `combat-juice` PASS. Captures viewed.
+  Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — Theme Combat unload, Type floor (Cursor)
 
 - VG-SOUND-008: owner Theme Combat strip paints Music none. Leftover loop

@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-001",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "98c867898575461579ca9e7ceb0994a1e6968b15",
+  "base_sha": "7da5c29ede59c1272c16402be34277beeb06976a",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "visual-target",
@@ -26,7 +26,8 @@
     "Scion cloth/metal paint bronze (not GDI-capture blue)",
     "village trees are a forked clustered canopy; a circle-on-stick cannot pass",
     "town wardens use jointed legs, a snout, and filled claws; a crate foe cannot pass",
-    "live HUD names Adult camera and Bronze palette"
+    "live HUD names Adult camera and Bronze palette",
+    "live HUD names Jointed warden and Snout claws"
   ],
   "negative_control": {
     "name": "external concept-art HUD token, a loader chip as the sheet, a chibi head, or a crate-shaped foe",
@@ -38,6 +39,12 @@
       "path": "docs/execution/captures/art-wave/visual-target-960x600.png",
       "sha256": "fb501ca6d3b389412c70137aebf8b0d20586961353e6c57493ee05c6c36701d9",
       "produced_by": "native/build/verdigris_client.exe --scenario visual-target"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/first-fight-960x600.png",
+      "sha256": "fbfb2ff9a44afcd7b7d52f614a7476667ec8de63545a32d987dd8344be1c77c9",
+      "produced_by": "native/build/verdigris_client.exe --scenario first-fight"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
@@ -45,6 +52,7 @@
   "limitations": [
     "Composition axes remain HUD labels on the live expedition, not a separate art bible PNG.",
     "Owner strip paints Adult camera / Bronze palette. Chibi head cannot certify.",
+    "first-fight owner strip paints Jointed warden / Snout claws. Crate foe cannot certify.",
     "Mute chip stays owner-facing. Loader jargon lives on F3.",
     "Does not re-spec TASK-0108 or Owner Demo (VG-ART-007 mixed-pack review not this packet).",
     "32bpp scenario DIBs still need dc_color; live CreateCompatibleBitmap path does not."
