@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-003",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "a3a0c34929a9fba78033e2f7715332ad6b4f14b3",
+  "base_sha": "c0944a81fbf3f81e212527c6b50b913322351fda",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "equipment",
@@ -19,17 +19,18 @@
     "pending compare cannot gold-frame as equipped",
     "ack paints equip:ok and compare:equipped",
     "PaneStat still states TREE absence for TASK-0156",
-    "owner paint is Skill tree: no data yet, not TREE jargon"
+    "owner paint is Skill tree: no data yet, not TREE jargon",
+    "pack cells paint a weapon glyph, not a grey crate"
   ],
   "negative_control": {
-    "name": "treat pending equip as currently equipped, or paint TREE jargon as the owner line",
+    "name": "treat pending equip as currently equipped, paint TREE jargon as the owner line, or certify a grey pack square",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/equipment-960x600.png",
-      "sha256": "e601beb93e0f8fc83201adf80aa8c90a3a0ba14fc93db439a767cd2a22a1efac",
+      "sha256": "b5acc8cf2cd75ad1a85cbf3ee8c057934e930be82f3a5268a0132be4518b8ea8",
       "produced_by": "native/build/verdigris_client.exe --scenario equipment"
     }
   ],

@@ -1,5 +1,16 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — skill tree owner language + pack glyphs (Cursor)
+
+- VG-UI-001: tree pane title is `Skill tree`; absence is `Skill tree: no data yet`.
+  HUD ops `tree-pane` / `tree:owner-title` / `tree:owner-absent`. Scenario
+  `pane-stack` opens the pane and writes `tree-pane-960x600.png`.
+- VG-UI-002 / VG-UI-003: pack cells paint a bronze weapon glyph when
+  billboard art is missing. A grey square cannot certify. `PaneStat` still
+  carries TREE absence for TASK-0156.
+- Scenarios `pane-stack` / `equipment` / `pack-drag` / `loot-to-bank` PASS.
+  Captures viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — owner-readable character sheet (Cursor)
 
 - VG-UI-004: expanded ATK sources paint Base / Gear / Passive /

@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-002",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "a3a0c34929a9fba78033e2f7715332ad6b4f14b3",
+  "base_sha": "c0944a81fbf3f81e212527c6b50b913322351fda",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "pack-drag",
@@ -17,24 +17,25 @@
   "assertions": [
     "valid drop moves the item to pack:2,1",
     "reject keeps carried count and grid occupancy",
-    "reject does not silently equip"
+    "reject does not silently equip",
+    "pack cells paint a weapon glyph, not a grey crate"
   ],
   "negative_control": {
-    "name": "failed pack drop loses, duplicates, or silently equips",
+    "name": "failed pack drop loses, duplicates, or silently equips; grey square certifies a carried weapon",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/pack-drag-960x600.png",
-      "sha256": "75a6d17902a0c9d6ab6164141627af1fc9e8420e020314c830562639c888b5a7",
+      "sha256": "22661137a7cba5152fea48f3a456e91bb14914e23038900caca27a9cf40cbedc",
       "produced_by": "native/build/verdigris_client.exe --scenario pack-drag"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Presentation occupancy only. Core inventory-move stays Kimi.",
+    "Presentation occupancy and cell glyph only. Core inventory-move stays Kimi.",
     "No TASK numbers minted. Not Owner Demo."
   ]
 }

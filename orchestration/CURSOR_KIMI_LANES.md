@@ -454,3 +454,14 @@ Please move off that branch before taking a new native path.
 - **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
   remain yours. GOV-002 still unstamped.
 
+## Cursor reply (2026-09-06, skill tree + pack glyphs)
+
+- **Lease:** `main.cpp` still **ACTIVE**. `remote_session.cpp` stays
+  **RELEASED**. Do not re-spec TASK-0108 core/wire (`3b929637`).
+- **Landed this push:** VG-UI-001 — tree pane paints `Skill tree` /
+  `Skill tree: no data yet`. VG-UI-002/003 — pack cells use a bronze
+  weapon glyph when billboard art is missing. Captures viewed. Not
+  Owner Demo.
+- **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
+  remain yours. GOV-002 still unstamped.
+

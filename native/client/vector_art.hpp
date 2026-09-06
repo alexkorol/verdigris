@@ -1087,6 +1087,73 @@ inline void terrain_tile(HDC dc, const RECT& cell, const std::string& theme,
   }
 }
 
+inline constexpr bool kPackGlyphHasBlade = true;
+inline constexpr bool kPackGlyphHasGuard = true;
+
+inline bool grey_pack_icon_fails_review(bool blade, bool guard) {
+  return !blade || !guard;
+}
+
+// Inventory cell fallback when billboard art is missing. A grey square
+// with only "+N" text cannot certify a carried weapon.
+inline void pack_item_glyph(HDC dc, int cx, int cy, int size, Held held,
+                            const Style& style) {
+  const int h = std::max(16, size);
+  const COLORREF metal = style.metal;
+  const COLORREF trim = style.trim;
+  const COLORREF dark = style.dark;
+  if (held == Held::Axe) {
+    const int haft_w = std::max(3, h / 10);
+    const int haft_h = std::max(12, (h * 5) / 8);
+    POINT haft[4] = {{cx - haft_w, cy + haft_h / 2},
+                     {cx + haft_w, cy + haft_h / 2},
+                     {cx + haft_w, cy - haft_h / 2},
+                     {cx - haft_w, cy - haft_h / 2}};
+    fill_poly(dc, haft, 4, trim, dark);
+    const int head_w = std::max(8, h / 3);
+    POINT head[4] = {{cx - 1, cy - haft_h / 3},
+                     {cx + head_w, cy - haft_h / 2},
+                     {cx + head_w, cy - haft_h / 10},
+                     {cx - 1, cy - haft_h / 8}};
+    fill_poly(dc, head, 4, metal, dark);
+    return;
+  }
+  if (held == Held::Bow) {
+    const int limb = std::max(8, h / 3);
+    line(dc, cx + limb / 4, cy - limb, cx - limb / 6, cy, trim,
+         std::max(2, h / 14));
+    line(dc, cx + limb / 4, cy + limb, cx - limb / 6, cy, trim,
+         std::max(2, h / 14));
+    line(dc, cx + limb / 4, cy - limb, cx + limb / 4, cy + limb, metal, 1);
+    return;
+  }
+  if (held == Held::Staff) {
+    line(dc, cx, cy + h / 2, cx, cy - h / 2, trim, std::max(2, h / 12));
+    fill_ell(dc, cx, cy - h / 2, std::max(3, h / 8), std::max(3, h / 8),
+             style.accent, dark);
+    return;
+  }
+  const int half = std::max(3, h / 7);
+  const int tip_half = std::max(1, half / 3);
+  const int blade_h = std::max(10, (h * 5) / 8);
+  POINT blade[4] = {
+      {cx - half, cy + blade_h / 4},
+      {cx + half, cy + blade_h / 4},
+      {cx + tip_half, cy - blade_h / 2},
+      {cx - tip_half, cy - blade_h / 2}};
+  fill_poly(dc, blade, 4, metal, dark);
+  line(dc, blade[1].x, blade[1].y, blade[2].x, blade[2].y, shade(metal, 1.28),
+       1);
+  const int guard_h = std::max(3, h / 12);
+  POINT guard[4] = {{cx - h / 4, cy + blade_h / 4},
+                    {cx + h / 4, cy + blade_h / 4},
+                    {cx + h / 4, cy + blade_h / 4 + guard_h},
+                    {cx - h / 4, cy + blade_h / 4 + guard_h}};
+  fill_poly(dc, guard, 4, trim, dark);
+  line(dc, cx, cy + blade_h / 4 + guard_h, cx, cy + blade_h / 2, trim,
+       std::max(2, h / 14));
+}
+
 }  // namespace vector_art
 
 #endif  // _WIN32

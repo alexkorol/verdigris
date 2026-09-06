@@ -3855,11 +3855,27 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
       {
         RECT backing{art_cell.left + 4 * s, art_cell.top + 4 * s,
                      art_cell.right - 4 * s, art_cell.bottom};
-        HBRUSH backing_brush = CreateSolidBrush(RGB(74, 82, 78));
+        HBRUSH backing_brush = CreateSolidBrush(RGB(72, 52, 28));
         FillRect(dc, &backing, backing_brush);
         DeleteObject(backing_brush);
       }
-      draw_item_art(state.billboards, dc, art_key(carried_i), art_cell);
+      const bool billboard =
+          draw_item_art(state.billboards, dc, art_key(carried_i), art_cell);
+      if (!billboard) {
+        const auto style = vector_art::player_style();
+        const int glyph_cx = (art_cell.left + art_cell.right) / 2;
+        const int glyph_cy = (art_cell.top + art_cell.bottom) / 2 - 2 * s;
+        const int glyph_h = std::max(
+            18, static_cast<int>(art_cell.bottom - art_cell.top) - 10 * s);
+        vector_art::pack_item_glyph(
+            dc, glyph_cx, glyph_cy, glyph_h,
+            vector_art::held_from_item(art_key(carried_i), items[carried_i].name),
+            style);
+      }
+      rl.push_back({render::Op::Hud, static_cast<double>(col),
+                    static_cast<double>(row), 0.0,
+                    billboard ? 1 : 0,
+                    billboard ? "pack-glyph:billboard" : "pack-glyph:vector"});
       SetTextColor(dc, equipped ? RGB(240, 210, 120) : RGB(205, 215, 204));
       std::string name = items[carried_i].name;
       if (name.size() > 12) name = name.substr(0, 11) + ".";
@@ -5482,10 +5498,12 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
   dress_owned_pane(state.billboards, dc, pane);
   rl.push_back({render::Op::Hud, static_cast<double>(left),
                 static_cast<double>(top), 0.0, 0, "tree-pane"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 0, "tree:owner-title"});
   SetBkMode(dc, TRANSPARENT);
   HGDIOBJ old_font = SelectObject(dc, skin::font_heading());
   SetTextColor(dc, skin::kVerdigris);
-  const char* title = "Geometric Passives";
+  const char* title = "Skill tree";
   TextOutA(dc, left + 16 * s, top + 10 * s, title,
            static_cast<int>(strlen(title)));
 
@@ -5497,11 +5515,15 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
   std::string points_line = present
       ? std::to_string(progression->unspent_points) + " point(s) to spend of " +
             std::to_string(progression->earned_points) + " earned"
-      : std::string("No authoritative tree data on this session.");
+      : std::string("Skill tree: no data yet");
   SetTextColor(dc, present && progression->unspent_points > 0 ? skin::kGold
                                                               : skin::kInkDim);
   TextOutA(dc, left + 16 * s, top + 38 * s, points_line.c_str(),
            static_cast<int>(points_line.size()));
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top + 38 * s), 0.0,
+                present ? 1 : 0,
+                present ? "tree:owner-present" : "tree:owner-absent"});
 
   const auto slice = geometric_skill_tree::make_owner_demo_first_level_slice();
   const auto node_id_of = [](geometric_skill_tree::Axial pos) {
@@ -10930,6 +10952,19 @@ int scenario_equipment() {
                  "equipment: PaneStat still states TREE absence for TASK-0156");
   scenario_check(tree_owner_absent,
                  "equipment: owner paint is Skill tree absence, not TREE jargon");
+  bool pack_glyph = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Hud &&
+        (item.label == "pack-glyph:vector" ||
+         item.label == "pack-glyph:billboard"))
+      pack_glyph = true;
+  }
+  scenario_check(pack_glyph,
+                 "equipment: pack cells paint a weapon glyph, not a grey crate");
+  scenario_check(!vector_art::grey_pack_icon_fails_review(
+                     vector_art::kPackGlyphHasBlade,
+                     vector_art::kPackGlyphHasGuard),
+                 "equipment: a grey square cannot certify a carried weapon");
 
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {
@@ -11095,6 +11130,26 @@ int scenario_pane_stack() {
   handle_escape_key(state);
   scenario_check(state.quit_requested,
                  "pane-stack: bare Escape requests application exit");
+
+  ClientState tree;
+  scenario_begin(tree);
+  scenario_follow_camera(tree);
+  tree.tree_pane = true;
+  scenario_present(tree);
+  bool tree_pane = false;
+  bool owner_title = false;
+  bool owner_absent = false;
+  for (const auto& item : tree.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "tree-pane") tree_pane = true;
+    if (item.label == "tree:owner-title") owner_title = true;
+    if (item.label == "tree:owner-absent") owner_absent = true;
+  }
+  scenario_check(tree_pane && owner_title && owner_absent,
+                 "pane-stack: skill tree paints owner title and absence");
+  const std::string tree_png = dir + "\\tree-pane-960x600.png";
+  scenario_check(reference_present(tree, 960, 600, tree_png),
+                 "pane-stack: skill-tree capture written");
   return scenario_failures;
 }
 
@@ -12534,6 +12589,19 @@ int scenario_pack_drag() {
     if (item.op == render::Op::Hud && item.label == "pack-drop:reject")
       drop_reject = true;
   scenario_check(drop_reject, "pack-drag: reject is visible on the gear HUD");
+  bool pack_glyph = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::Hud &&
+        (item.label == "pack-glyph:vector" ||
+         item.label == "pack-glyph:billboard"))
+      pack_glyph = true;
+  }
+  scenario_check(pack_glyph,
+                 "pack-drag: pack cells paint a weapon glyph, not a grey crate");
+  scenario_check(!vector_art::grey_pack_icon_fails_review(
+                     vector_art::kPackGlyphHasBlade,
+                     vector_art::kPackGlyphHasGuard),
+                 "pack-drag: a grey square cannot certify a carried weapon");
 
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {
