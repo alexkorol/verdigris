@@ -1,5 +1,13 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — DEF and LVL stay on the gear pane (Cursor)
+
+- VG-UI-007 / VG-UI-002 / VG-UI-003: gear LIFE/RES wrap above ATK/DEF/LVL
+  at the type floor. A one-line readout that clips DEF cannot certify.
+  Footer I or Esc closes is unchanged. TREE absence copy is unchanged.
+- Scenarios `hud-pane-readability` / `pack-drag` / `equipment` PASS.
+  Captures viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — I or Esc closes stays on the gear pane (Cursor)
 
 - VG-UI-007 / VG-UI-002 / VG-UI-003: the I-key gear footer is two lines at

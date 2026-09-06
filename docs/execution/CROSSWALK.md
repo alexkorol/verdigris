@@ -39,7 +39,7 @@ Cursor evidence notes.
 | VG-UI-004 | extend | TASK-0156, 0159 INTEGRATED; `stat-explain` expandable ATK; dormant cannot fold into Attack; WASD stays off the C-key sheet; close hint stays in the slot |
 | VG-UI-005 | extend | TASK-0076 INTEGRATED; 0178/0192/0203 Owner Demo; `route-map` zoom/opacity cannot reveal off-snapshot targets |
 | VG-UI-006 | extend | TASK-0145/0177 + 0190/0197/0201 — **do not duplicate** |
-| VG-UI-007 | extend | TASK-0159 INTEGRATED, 0118 READY, 0207; `hud-pane-readability` at 960/1366/3440 + tree/character keep-out + `hud-scale-floor` + live window; TASK-0159 folder capture cannot certify; clipped C or Esc closes cannot certify; clipped I or Esc closes gear footer cannot certify; VG-UI-006 Owner Demo not duplicated |
+| VG-UI-007 | extend | TASK-0159 INTEGRATED, 0118 READY, 0207; `hud-pane-readability` at 960/1366/3440 + tree/character keep-out + `hud-scale-floor` + live window; TASK-0159 folder capture cannot certify; clipped C or Esc closes cannot certify; clipped I or Esc closes gear footer cannot certify; clipped DEF/LVL cannot certify; VG-UI-006 Owner Demo not duplicated |
 | VG-UI-008 | new | XInput tick path + glyphs (`pad-path`); not mouse emulation |
 | VG-ART-001/002/004 | extend | TASK-0141 INTEGRATED — village kit + collision-proxy ops (`kit-chunk`); not artist-local collision |
 | VG-ART-003/006 | extend | TASK-0122 INTEGRATED; 0173/0174 READY; 0186/0187 BRIDGE_PREP — Cursor paints melee **poses** (VG-ART-003) and WarCry **weave labels** plus Phase A spawn/fade (VG-ART-006) without taking TASK-0173 models or re-speccing TASK-0108 |
@@ -338,7 +338,8 @@ sheet never intersects identity/controls/objective; WASD remains. The sheet sits
 in the slot. An X on
 the mana globe cannot count as a non-color cue. Open gear footer
 Enter equips | I or Esc closes stays inside the pane; a clipped line
-cannot certify. Scenarios `vital-orbs` /
+cannot certify. Open gear DEF and LVL stay inside the pane; a clipped
+stats line cannot certify. Scenarios `vital-orbs` /
 `hud-scale-floor` / `hud-pane-readability`. Evidence
 `docs/execution/evidence/VG-UI-007.json`.
 VG-GOV-006: disconnect/crash/quit cannot ack uncommitted extraction.

@@ -3811,10 +3811,12 @@ PackGeom make_pack_geom(int width, int height) {
   const int left = pane.x;
   const int top = pane.y;
   const int right = left + pane.w;
-  const int seat_top = top + 62 * geom.s;
+  const int seat_top = top + 74 * geom.s;
   const int seat_left = left + 14 * geom.s;
   const int seat_w = right - left - 28 * geom.s;
   geom.seat = {seat_left, seat_top, seat_left + seat_w, seat_top + 24 * geom.s};
+  // Keep this offset in lockstep with paint_gear_overlay. Two type-floor
+  // stats lines sit above the weapon seat; 62px collides with DEF/LVL.
   geom.gap = 6 * geom.s;
   geom.cell_w =
       (right - left - (28 + (kPackColumns - 1) * 6) * geom.s) / kPackColumns;
@@ -4035,18 +4037,43 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
       std::to_string(player.defense) + "  LVL " +
       std::to_string(player.level);
   rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0, stats_line});
-  {
-    SIZE extent{};
-    GetTextExtentPoint32A(dc, stats_line.c_str(),
-                          static_cast<int>(stats_line.size()), &extent);
-    state.hud_rect_trace.push_back(
-        {"pane-stats", {left + 14 * s, top + 38 * s, extent.cx, extent.cy}});
-  }
-  TextOutA(dc, left + 14 * s, top + 38 * s, stats_line.c_str(),
-           static_cast<int>(stats_line.size()));
+  const std::string vitals =
+      "LIFE " + std::to_string(player.life) + "/" +
+      std::to_string(player.life_max) + "  RES " +
+      std::to_string(player.resource) + "/" +
+      std::to_string(player.resource_max);
+  const std::string combat = "ATK " + attack_text + "  DEF " +
+                             std::to_string(player.defense) + "  LVL " +
+                             std::to_string(player.level);
+  HGDIOBJ stats_font = SelectObject(dc, skin::font_small());
+  SIZE vitals_extent{};
+  SIZE combat_extent{};
+  GetTextExtentPoint32A(dc, vitals.c_str(), static_cast<int>(vitals.size()),
+                        &vitals_extent);
+  GetTextExtentPoint32A(dc, combat.c_str(), static_cast<int>(combat.size()),
+                        &combat_extent);
+  const int stats_x = left + 14 * s;
+  const int vitals_y = top + 34 * s;
+  const int combat_y = top + 48 * s;
+  state.hud_rect_trace.push_back(
+      {"pane-stats", {stats_x, vitals_y, vitals_extent.cx, vitals_extent.cy}});
+  state.hud_rect_trace.push_back(
+      {"pane-stats-combat",
+       {stats_x, combat_y, combat_extent.cx, combat_extent.cy}});
+  TextOutA(dc, stats_x, vitals_y, vitals.c_str(),
+           static_cast<int>(vitals.size()));
+  TextOutA(dc, stats_x, combat_y, combat.c_str(),
+           static_cast<int>(combat.size()));
+  rl.push_back({render::Op::Hud, static_cast<double>(stats_x),
+                static_cast<double>(combat_y), 0.0, player.defense,
+                "gear:stats-def"});
+  rl.push_back({render::Op::Hud, static_cast<double>(stats_x),
+                static_cast<double>(combat_y), 0.0, player.level,
+                "gear:stats-lvl"});
+  SelectObject(dc, stats_font);
 
-  // Weapon (paperdoll) seat.
-  const int seat_top = top + 62 * s;
+  // Weapon (paperdoll) seat. 74px clears the two type-floor stats lines.
+  const int seat_top = top + 74 * s;
   const int seat_left = left + 14 * s;
   const int seat_w = right - left - 28 * s;
   RECT seat{seat_left, seat_top, seat_left + seat_w, seat_top + 24 * s};
@@ -12397,10 +12424,10 @@ int scenario_hud_pane_readability() {
   const char* kOpenRegions[] = {"identity", "controls",     "objective",
                                 "art",      "minimap",      "quickbar-strip",
                                 "orb-life", "orb-resource"};
-  const char* kPaneLines[] = {"pane-title",       "pane-stats",
-                              "pane-seat",        "pane-banked",
-                              "pane-progression", "pane-footer-place",
-                              "pane-footer"};
+  const char* kPaneLines[] = {"pane-title",         "pane-stats",
+                              "pane-stats-combat",  "pane-seat",
+                              "pane-banked",        "pane-progression",
+                              "pane-footer-place",  "pane-footer"};
 
   const struct Size { int w; int h; } sizes[] = {
       {960, 600}, {1366, 768}, {3440, 1440}};
@@ -12527,7 +12554,7 @@ int scenario_hud_pane_readability() {
                     "global region (" + tag + ")").c_str());
 
     // Pane chrome lines stay mutually clear, including backpack cells.
-    assert_pairwise_disjoint(state, kPaneLines, 7, "hud-pane-readability");
+    assert_pairwise_disjoint(state, kPaneLines, 8, "hud-pane-readability");
     bool cells_clear = true;
     for (const auto& entry : state.hud_rect_trace) {
       if (entry.first != "pane-cell") continue;
@@ -12574,6 +12601,42 @@ int scenario_hud_pane_readability() {
             render_list_has(state, render::Op::Hud, "gear:close-hint")),
         ("hud-pane-readability: Enter equips and I or Esc closes is the "
          "production gear footer (" +
+         tag + ")")
+            .c_str());
+
+    const HudRect* gear_stats = trace_find(state, "pane-stats");
+    const HudRect* gear_combat = trace_find(state, "pane-stats-combat");
+    const bool stats_inside = pane && gear_stats &&
+        verdigris::client::ui::rect_inside_pane(
+            gear_stats->x, gear_stats->y, gear_stats->w, gear_stats->h,
+            pane->x, pane->y, pane->w, pane->h);
+    const bool combat_inside = pane && gear_combat &&
+        verdigris::client::ui::rect_inside_pane(
+            gear_combat->x, gear_combat->y, gear_combat->w, gear_combat->h,
+            pane->x, pane->y, pane->w, pane->h);
+    scenario_check(gear_combat != nullptr && gear_combat->w > 40,
+                   ("hud-pane-readability: gear DEF/LVL line is measured (" +
+                    tag + ")").c_str());
+    scenario_check(stats_inside && combat_inside,
+                   ("hud-pane-readability: gear stats stay inside the pane (" +
+                    tag + ")").c_str());
+    scenario_check(
+        verdigris::client::ui::clipped_gear_stats_fails_review(false),
+        "hud-pane-readability: clipped DEF/LVL is the anti-pattern");
+    scenario_check(
+        !verdigris::client::ui::clipped_gear_stats_fails_review(combat_inside),
+        ("hud-pane-readability: DEF and LVL stay inside the gear pane (" +
+         tag + ")")
+            .c_str());
+    scenario_check(
+        render_list_has(state, render::Op::Hud, "gear:stats-def") &&
+            render_list_has(state, render::Op::Hud, "gear:stats-lvl"),
+        ("hud-pane-readability: live HUD names DEF and LVL (" + tag + ")")
+            .c_str());
+    scenario_check(
+        !verdigris::client::ui::missing_gear_def_fails_review(
+            render_list_has(state, render::Op::Hud, "gear:stats-def")),
+        ("hud-pane-readability: DEF on the gear pane is the production readout (" +
          tag + ")")
             .c_str());
 

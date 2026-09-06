@@ -24,4 +24,8 @@ inline bool clipped_gear_footer_fails_review(bool inside) { return !inside; }
 
 inline bool missing_gear_close_fails_review(bool present) { return !present; }
 
+inline bool clipped_gear_stats_fails_review(bool inside) { return !inside; }
+
+inline bool missing_gear_def_fails_review(bool present) { return !present; }
+
 }  // namespace verdigris::client::ui

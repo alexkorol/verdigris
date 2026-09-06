@@ -29,13 +29,13 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/pack-drag-960x600.png",
-      "sha256": "a573d4cada5ea85b3a28154a3d64b9ff8daf90f13f6bede8973fc94aa98b00c9",
+      "sha256": "35e6668f80019900424a0db5b151127b7cd8ffd515d8c2fcec2f39233be35c02",
       "produced_by": "native/build/verdigris_client.exe --scenario pack-drag"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Presentation occupancy and cell glyph only. Owner strip paints Pack place / Reject keeps. Silent equip cannot certify. Gear footer I or Esc closes stays inside the pane. Core inventory-move stays Kimi. No TASK numbers minted. Not Owner Demo."
+    "Presentation occupancy and cell glyph only. Owner strip paints Pack place / Reject keeps. Silent equip cannot certify. Gear footer I or Esc closes stays inside the pane. DEF and LVL stay inside the pane. Core inventory-move stays Kimi. No TASK numbers minted. Not Owner Demo."
   ]
 }
