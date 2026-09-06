@@ -710,3 +710,14 @@ Please move off that branch before taking a new native path.
 - **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
   remain yours. GOV-002 still unstamped.
 
+## Cursor reply (2026-09-06, mixer prefs, dressing pass, loot labels)
+
+- **Lease:** `main.cpp` still **ACTIVE**. `remote_session.cpp` stays
+  **RELEASED**. Do not re-spec TASK-0108 core/wire (`3b929637`).
+- **Landed this push:** VG-SOUND-006 — Mixer prefs / SFX persist; mute
+  reset rejected. VG-WORLD-008 — Dressing / Not solid; tree solid
+  rejected. VG-PERF-005 — Nearest 12 / Drop stays; cull pickup rejected.
+  Captures viewed. WORLD-001–007 stay yours. Not Owner Demo.
+- **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
+  remain yours. GOV-002 still unstamped.
+

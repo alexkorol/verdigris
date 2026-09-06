@@ -127,6 +127,9 @@ Snapshot field `xp` remains reserved. VG-PERF-001: F3/`frame-budget`
 prints named display, CPU count, and floor/world/hud/upload fields.
 Evidence `docs/execution/evidence/VG-PERF-001.json`. Bound stays 40 ms.
 VG-PERF-005: loot nameplates cap at 12 nearest; Drop sprites stay.
+Owner strip paints Nearest 12 / Drop stays. Cull pickup cannot certify.
+Scenario `loot-label-budget`. Evidence
+`docs/execution/evidence/VG-PERF-005.json`.
 VG-PERF-003: effect/telegraph GDI pens and brushes are reused; scenario
 `effect-batch` keeps Impact/Swing/Telegraph ops. Owner strip paints Reuse
 pens / Keep warning. Drop FX cannot certify.
@@ -217,8 +220,9 @@ cosmetics. Owner strip paints Warning held; cosmetic x12 cannot certify.
 Scenario `combat-audio`. Evidence
 `docs/execution/evidence/VG-SOUND-004.json`.
 VG-SOUND-006: mute cannot reset SFX/music volumes; zero SFX stays silent.
-Live mixer paints persisted SFX/Music numbers while muted. A mute chip
-alone cannot certify. Scenario `audio-prefs`. Evidence
+Live mixer paints persisted SFX/Music numbers while muted. Owner strip
+paints Mixer prefs / SFX persist. A mute chip alone cannot certify.
+Scenario `audio-prefs`. Evidence
 `docs/execution/evidence/VG-SOUND-006.json`.
 VG-UI-003: equip HUD is ack-only (`equip:ok` after ItemEquipped). Pending
 compare cannot gold-frame as equipped. Owner gear pane paints
@@ -266,8 +270,9 @@ footprint; a protocol HUD token without that window cannot certify.
 Expired/cancelled warnings leave no footprint. Scenario `telegraph-spec`.
 Evidence `docs/execution/evidence/VG-ACT-005.json`.
 VG-WORLD-008: dressing-pass v1/v2 change decoration hash only.
-A tree visual cannot become an unreported solid. Scenario `dressing-pass`.
-Evidence `docs/execution/evidence/VG-WORLD-008.json`.
+Owner strip paints Dressing / Not solid. A tree visual cannot become an
+unreported solid. Scenario `dressing-pass`. Evidence
+`docs/execution/evidence/VG-WORLD-008.json`.
 VG-ITEM-006: loot category facts and a presentation filter. Owner strip
 paints Hide trophies; mutate ground cannot certify. Hiding trophies
 cannot move ownership or drop tables. Scenario `loot-filter`.

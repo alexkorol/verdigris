@@ -92,4 +92,7 @@ inline std::string pass_hud_label(int version) {
   return std::string("dressing-pass:v") + std::to_string(version);
 }
 
+inline const char* owner_dressing_label() { return "Dressing"; }
+inline const char* owner_not_solid_label() { return "Not solid"; }
+
 }  // namespace verdigris::client::world

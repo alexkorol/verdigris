@@ -88,4 +88,7 @@ inline bool mute_chip_alone_fails_prefs_review(bool mixer_painted) {
   return !mixer_painted;
 }
 
+inline const char* owner_mixer_prefs_label() { return "Mixer prefs"; }
+inline const char* owner_sfx_persist_label() { return "SFX persist"; }
+
 }  // namespace verdigris::audio

@@ -1,5 +1,18 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — mixer prefs, dressing pass, loot labels (Cursor)
+
+- VG-SOUND-006: owner Mixer prefs strip paints SFX persist. Mute reset
+  cannot certify. Mute still cannot wipe SFX/music volumes; zero SFX
+  stays silent.
+- VG-WORLD-008: owner Dressing strip paints Not solid. Tree solid cannot
+  certify. Dressing v1/v2 still change decoration hash only. WORLD-001–007
+  stay Kimi.
+- VG-PERF-005: owner Nearest 12 strip paints Drop stays. Cull pickup
+  cannot certify. Dense pouches remain Drop sprites; nameplates cap at 12.
+- Scenarios `audio-prefs` / `dressing-pass` / `loot-label-budget` PASS.
+  Captures viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — reused pens, effect cap, cold trace (Cursor)
 
 - VG-PERF-003: owner Reuse pens strip paints Keep warning. Drop FX cannot

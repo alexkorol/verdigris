@@ -496,6 +496,9 @@ struct ClientState {
   bool effect_batch_review_strip = false;
   bool resource_envelope_review_strip = false;
   bool hitch_warmup_review_strip = false;
+  bool audio_prefs_review_strip = false;
+  bool dressing_pass_review_strip = false;
+  bool loot_label_budget_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -3678,6 +3681,9 @@ std::string loot_label(const ClientState& state, const std::string& id) {
 // nameplates pay TextOut. The X-key pickup target is always labeled so
 // culling cannot hide the eligible item.
 constexpr std::size_t kMaxLootNameplates = 12;
+
+inline const char* owner_nearest_12_label() { return "Nearest 12"; }
+inline const char* owner_drop_stays_label() { return "Drop stays"; }
 
 std::vector<char> loot_nameplate_mask(
     const std::vector<std::pair<std::string, verdigris::Vec2>>& loot,
@@ -7219,6 +7225,123 @@ void paint_hitch_warmup_review_strip(ClientState& state, HDC dc, const RECT& bou
   SelectObject(dc, old_font);
 }
 
+void paint_audio_prefs_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                    render::List& rl) {
+  if (!state.audio_prefs_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "prefs-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::audio::owner_mixer_prefs_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::audio::owner_sfx_persist_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "mute reset";
+  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "sound:mixer-prefs"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "sound:sfx-persist"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "sound-strip:mute-reset-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_dressing_pass_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                      render::List& rl) {
+  if (!state.dressing_pass_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "dress-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::world::owner_dressing_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::client::world::owner_not_solid_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "tree solid";
+  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "world:dressing"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "world:not-solid"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "world-strip:tree-solid-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_loot_label_budget_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                          render::List& rl) {
+  if (!state.loot_label_budget_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "loot-budget-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = owner_nearest_12_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = owner_drop_stays_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "cull pickup";
+  TextOutA(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "perf:nearest-12"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "perf:drop-stays"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "perf-strip:cull-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -8263,6 +8386,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_effect_batch_review_strip(state, dc, bounds, rl);
   paint_resource_envelope_review_strip(state, dc, bounds, rl);
   paint_hitch_warmup_review_strip(state, dc, bounds, rl);
+  paint_audio_prefs_review_strip(state, dc, bounds, rl);
+  paint_dressing_pass_review_strip(state, dc, bounds, rl);
+  paint_loot_label_budget_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -12680,8 +12806,21 @@ int scenario_audio_prefs() {
   scenario_check(!verdigris::audio::mute_chip_alone_fails_prefs_review(mixer),
                  "audio-prefs: the mixer panel, not a mute chip, certifies prefs");
   const std::string png = dir + "\\audio-prefs-960x600.png";
+  state.audio_prefs_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "audio-prefs: muted HUD capture written");
+  bool mixer_prefs = false;
+  bool persist = false;
+  bool reset = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "sound:mixer-prefs") mixer_prefs = true;
+    if (item.label == "sound:sfx-persist") persist = true;
+    if (item.label == "sound-strip:mute-reset-rejected") reset = true;
+  }
+  scenario_check(mixer_prefs && persist,
+                 "audio-prefs: live HUD names Mixer prefs and SFX persist");
+  scenario_check(reset, "audio-prefs: live HUD rejects mute reset");
   return scenario_failures;
 }
 
@@ -13436,8 +13575,13 @@ int scenario_dressing_pass() {
     return scenario_failures;
   }
   const std::string png = dir + "\\dressing-pass-960x600.png";
+  state.dressing_pass_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "dressing-pass: versioned dressing capture written");
+  scenario_check(has_hud("world:dressing") && has_hud("world:not-solid"),
+                 "dressing-pass: live HUD names Dressing and Not solid");
+  scenario_check(has_hud("world-strip:tree-solid-rejected"),
+                 "dressing-pass: live HUD rejects tree solid");
   return scenario_failures;
 }
 
@@ -14811,8 +14955,21 @@ int scenario_loot_label_budget() {
     return scenario_failures;
   }
   const std::string png = dir + "\\loot-label-budget-960x600.png";
+  state.loot_label_budget_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "loot-label-budget: capped nameplate capture written");
+  bool nearest = false;
+  bool stays = false;
+  bool cull = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "perf:nearest-12") nearest = true;
+    if (item.label == "perf:drop-stays") stays = true;
+    if (item.label == "perf-strip:cull-rejected") cull = true;
+  }
+  scenario_check(nearest && stays,
+                 "loot-label-budget: live HUD names Nearest 12 and Drop stays");
+  scenario_check(cull, "loot-label-budget: live HUD rejects cull pickup");
   return scenario_failures;
 }
 

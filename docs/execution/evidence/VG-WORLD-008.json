@@ -4,20 +4,22 @@
   "planning_id": "VG-WORLD-008",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "643802b40f55bf6b273447b8874f3bdb82a6621f",
+  "base_sha": "9ca798f08ce29a29bf0378ea1e791609c58954e3",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "dressing-pass",
   "platform": "win32-x64",
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario dressing-pass", "exit_code": 0}
   ],
   "assertions": [
     "production dressing is never solid",
     "art version cannot change collision topology",
     "spawn and layout seed are unchanged across v1/v2",
-    "the decoration pass itself did change"
+    "the decoration pass itself did change",
+    "live HUD names Dressing and Not solid"
   ],
   "negative_control": {
     "name": "a tree visual becoming an unreported solid",
@@ -27,13 +29,13 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/dressing-pass-960x600.png",
-      "sha256": "3803e761d3e483fccfadf9b52300f1838c28eba1bde7a1ce4f27b8537ae3b03e",
+      "sha256": "4037f750672918164b182e4c6c8cff68c6ca90a23f4ecafa2c8f356921fa15a4",
       "produced_by": "native/build/verdigris_client.exe --scenario dressing-pass"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Decoration hash only. WORLD-001–007 stay Kimi."
+    "Decoration hash only. WORLD-001–007 stay Kimi. Owner strip paints Dressing / Not solid. Tree solid cannot certify."
   ]
 }
