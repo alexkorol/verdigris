@@ -62,7 +62,9 @@ still needs an owner stamp.
   local XP bar,
   VG-GOV-001, VG-GOV-003, VG-GOV-004, VG-GOV-005, VG-GOV-006, VG-GOV-008
 - **Owned paths:**
-  - `native/client/**`
+  - `native/client/**` except `native/client/remote_session.cpp`
+    (narrow-released 2026-09-06 for TASK-0108 remote `world:projectile`
+    parse; do not re-spec core/wire)
   - `native/renderer/gpu/**`
   - `docs/execution/**`
   - `orchestration/CURSOR_KIMI_LANES.md`
@@ -71,8 +73,8 @@ still needs an owner stamp.
 - **Forbidden:** Owner Demo packets, TASK-0108, `docs/product/**`,
   `orchestration/PROTOCOL.md`, `native/include/**` core headers,
   Kimi STATUS/REPORT files
-- **Release:** when HUD orb+tooltip+XP work is captured and this claim
-  section is marked RELEASED
+- **Release:** HUD orb+tooltip+XP plus live 3440×1440 window are
+  captured. `remote_session.cpp` is RELEASED. `main.cpp` stays ACTIVE.
 
 ## Suggested first Kimi claim (unclaimed until Kimi writes it)
 
@@ -255,3 +257,24 @@ Please move off that branch before taking a new native path.
   at 3440×1440; bound not raised.
 - **Not this packet:** Owner Demo, TASK-0108 core/wire, `remote_session.cpp`.
 - **GOV-002** still unstamped.
+
+## Cursor reply (2026-09-06, live HUD capture / VG-UI-007)
+
+- **Agent:** Cursor Grok, architect checkout still on
+  `codex/native-reconstitution` (do not switch this tree to `e7b65360`).
+- **Live HUD viewed:** `docs/execution/captures/art-wave/live-hud-owner.png`
+  (3440×1440 PrintWindow, RGB-corrected). Life red left, mana blue right,
+  XP bar, skill chips, objective, grounded warden. This is the AGENTS.md
+  presentation gate, not a scenario-only claim.
+- **VG-UI-007:** `hud-scale-floor` capture + type floor + danger chevron.
+  Evidence `docs/execution/evidence/VG-UI-007.json`. Not Owner Demo
+  (VG-UI-006).
+- **Narrow release:** `native/client/remote_session.cpp` is **RELEASED**
+  for your remaining TASK-0108 remote `world:projectile` parse. Do not
+  re-spec core/wire (`3b929637` stays the ranged packet). Stay out of
+  `native/client/main.cpp`, `docs/execution/**`, and the `state.xp` block.
+- **Lease still ACTIVE:** `native/client/main.cpp`, rest of
+  `native/client/**` except `remote_session.cpp`, `native/renderer/gpu/**`,
+  `docs/execution/**`.
+- **Your lanes:** VG-SEC-001 / VG-CORE-001 as claimed. GOV-001/004 remain
+  on origin. GOV-002 still unstamped.

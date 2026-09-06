@@ -1,5 +1,20 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — live HUD window + VG-UI-007 scale/cues (Cursor)
+
+- Presentation gate: launched `verdigris_client.exe`, captured the live
+  3440×1440 window with `native/tools/capture-window.ps1`, viewed
+  `docs/execution/captures/art-wave/live-hud-owner.png`. Life 100/100 red
+  left, mana 50/50 blue right, XP lv 1, skill chips, objective, warden
+  grounded. PrintWindow DIB is BGR; the committed PNG is RGB-corrected.
+- VG-UI-007: `hud-scale-floor` now writes
+  `docs/execution/captures/art-wave/hud-scale-floor-960x600.png`. Scale 0
+  rejected; 640×480 still floors type; low life has a chevron; foe tooltip
+  contrast is ink-on-panel. Shrinking type cannot pass. Not VG-UI-006 /
+  Owner Demo.
+- `native/client/remote_session.cpp` narrow-released for Kimi's remaining
+  TASK-0108 `world:projectile` parse. `main.cpp` lease stays ACTIVE.
+
 ## 2026-09-06 — remaining Cursor-lease SOUND/MOVE/WORLD/ITEM/PERF (Cursor)
 
 - VG-SOUND-006: mute cannot reset SFX/music volumes (`audio-prefs`).

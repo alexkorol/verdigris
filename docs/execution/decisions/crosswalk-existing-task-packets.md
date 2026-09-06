@@ -12,7 +12,7 @@ Canonical tables:
 
 | Existing | Disposition | Why |
 |---|---|---|
-| TASK-0108 combat-depth-wave | **extend, never re-spec** | Kimi Work claimed rev 3 core+wire on `kimiwork/TASK-0108-ranged-rev3` (`bebb1aba`, `72b25d85`, `3b929637`). Cursor owns only the local Telegraph presentation ingest on the `native/client/**` lease. VG-ART-003/006 and VG-ACT-004/007 extend; they must not open a second ranged-combat packet. |
+| TASK-0108 combat-depth-wave | **extend, never re-spec** | Kimi Work claimed rev 3 core+wire on `kimiwork/TASK-0108-ranged-rev3` (`bebb1aba`, `72b25d85`, `3b929637`, on origin). Cursor owns the local Telegraph presentation ingest. `native/client/remote_session.cpp` is narrow-released 2026-09-06 for Kimi's remaining `world:projectile` parse. VG-ART-003/006 and VG-ACT-004/007 extend; they must not open a second ranged-combat packet. |
 | TASK-0145, 0177, 0178, 0197, 0203, 0205–0207 Owner Demo | **extend, never duplicate** | Journey/content/perf gates. VG-UI-006, VG-ART-008, VG-PERF-008, VG-GOV-007 attach to those packets. |
 | TASK-0095 | **superseded** | Absorb findings into VG-TOOLS-001 (Kimi). Do not re-audit. |
 | TASK-0097 | **superseded** | Absorb findings into VG-SAVE-001 (Kimi). Do not re-audit. |

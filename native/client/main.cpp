@@ -7971,6 +7971,10 @@ int scenario_combat_audio() {
   return 0;
 }
 
+std::string art_wave_capture_dir();
+bool reference_present(ClientState& state, int width, int height,
+                       const std::string& png_path);
+
 int scenario_hud_scale_floor() {
   ClientState state;
   scenario_begin(state);
@@ -8050,6 +8054,15 @@ int scenario_hud_scale_floor() {
   GetObject(skin::font_small(), sizeof(tiny_small), &tiny_small);
   scenario_check(std::abs(tiny_small.lfHeight) >= skin::kMinSmallPx,
                  "hud-scale-floor: a 640x480 window still respects the type floor");
+
+  const std::string dir = art_wave_capture_dir();
+  if (dir.empty()) {
+    scenario_check(false, "hud-scale-floor: capture root rejected before any write");
+    return 0;
+  }
+  const std::string png = dir + "\\hud-scale-floor-960x600.png";
+  scenario_check(reference_present(state, 960, 600, png),
+                 "hud-scale-floor: live HUD capture written");
   return 0;
 }
 

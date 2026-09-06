@@ -13,7 +13,7 @@ Cursor evidence notes.
 
 | Existing | Disposition for VG work |
 |---|---|
-| TASK-0108 combat-depth-wave | Predecessor for readable combat; VG-ART-003/006 extend, never re-spec. Cursor 2026-09-06: local Telegraph ingest from JS `world:projectile` keys (`ingest-ranged-projectile-warning.hpp`, `ranged-warning` scenario). Core+wire stays Kimi `3b929637`. `remote_session.cpp` still successor. |
+| TASK-0108 combat-depth-wave | Predecessor for readable combat; VG-ART-003/006 extend, never re-spec. Cursor 2026-09-06: local Telegraph ingest from JS `world:projectile` keys (`ingest-ranged-projectile-warning.hpp`, `ranged-warning` scenario). Core+wire stays Kimi `3b929637` on `origin/kimiwork/TASK-0108-ranged-rev3`. `native/client/remote_session.cpp` is now narrow-released for Kimi's remaining remote parse; do not re-spec core/wire. |
 | TASK-0145, 0177, 0178, 0197, 0203, 0205–0207 Owner Demo | Journey/content/perf gates; VG-UI-006, VG-ART-008, VG-PERF-008, VG-GOV-007 extend |
 
 ## GOV
@@ -39,7 +39,7 @@ Cursor evidence notes.
 | VG-UI-004 | extend | TASK-0156, 0159 INTEGRATED; `stat-explain` expandable ATK; dormant cannot fold into Attack |
 | VG-UI-005 | extend | TASK-0076 INTEGRATED; 0178/0192/0203 Owner Demo; `route-map` zoom/opacity cannot reveal off-snapshot targets |
 | VG-UI-006 | extend | TASK-0145/0177 + 0190/0197/0201 — **do not duplicate** |
-| VG-UI-007 | extend | TASK-0159 INTEGRATED, 0118 READY, 0207; `vital-orbs` life left/red mana right/blue; mute is a chip not an X on mana |
+| VG-UI-007 | extend | TASK-0159 INTEGRATED, 0118 READY, 0207; `hud-scale-floor` + `vital-orbs` + live 3440×1440 capture; shrinking type cannot pass; VG-UI-006 Owner Demo not duplicated |
 | VG-UI-008 | new | XInput tick path + glyphs (`pad-path`); not mouse emulation |
 | VG-ART-001/002/004 | extend | TASK-0141 INTEGRATED — village kit + collision-proxy ops (`kit-chunk`); not artist-local collision |
 | VG-ART-003/006 | extend | TASK-0122 INTEGRATED; 0173/0174 READY; 0186/0187 BRIDGE_PREP — Cursor paints melee **poses** (VG-ART-003) and WarCry **weave labels** (VG-ART-006) without taking TASK-0173 models or re-speccing TASK-0108 |

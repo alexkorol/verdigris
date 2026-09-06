@@ -141,7 +141,7 @@ not implemented here.
 | VG-UI-004 | G2 | extend | stat-explain expandable ATK; dormant cannot fold into Attack; core STAT stays Kimi |
 | VG-UI-005 | G3 | extend | route-map zoom/opacity; off-snapshot blip cannot pass; Owner Demo journeys not reimplemented |
 | VG-UI-006 | G2 | extend | Owner Demo — do not duplicate |
-| VG-UI-007 | G3 | extend | hud-scale-floor + hud-pane-readability + vital-orbs roles |
+| VG-UI-007 | G3 | extend | hud-scale-floor + vital-orbs + live-hud-owner 3440x1440; not VG-UI-006 |
 | VG-UI-008 | G4 | new | pad-path XInput on tick |
 | VG-SOUND-001 | G1 | new | sound-adapter |
 | VG-SOUND-002 | G2 | new | legal-sounds |
