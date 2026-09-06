@@ -26,7 +26,8 @@
     "live HUD names Ack only and No pending",
     "absent gear pane live HUD names Skill tree and No data yet",
     "absent owner strip never replaces the TREE protocol string",
-    "absent P-key tree pane hides seats and rejects invented origin"
+    "absent P-key tree pane hides seats and rejects invented origin",
+    "controls hint never enters the absent P-key tree pane"
   ],
   "negative_control": {
     "name": "treat pending equip as currently equipped, paint TREE jargon as the owner line, certify a grey pack square, or paint an origin seat while the tree says no data yet",
@@ -48,7 +49,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/tree-pane-960x600.png",
-      "sha256": "abfd79149be883f4fcf4b269a5103b6b5816e6dfa84b24f2aaeadd9fdcc321ec",
+      "sha256": "228fa265c4254c77d96312cae05f7b61eb99de3396af55fe318eb1c197acce4a",
       "produced_by": "native/build/verdigris_client.exe --scenario pane-stack"
     }
   ],
@@ -56,6 +57,6 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "HUD/compare only. Owner strip paints Ack only / No pending. Pending gold cannot certify. ITEM sim equip algebra stays Kimi. Helmet-in-main-hand is paper_doll WrongSlot.",
-    "TASK-0156 PaneStat protocol string is unchanged. TASK folder captures cannot certify. Absent tree pane hides seats; TASK-0193 slice stays for payload-present paint. Not Owner Demo. No TASK numbers minted."
+    "TASK-0156 PaneStat protocol string is unchanged. TASK folder captures cannot certify. Absent tree pane hides seats and keeps WASD off the pane; TASK-0193 slice stays for payload-present paint. Not Owner Demo. No TASK numbers minted."
   ]
 }

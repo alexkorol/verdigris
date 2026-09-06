@@ -33,13 +33,13 @@ Cursor evidence notes.
 
 | VG | Disposition | Existing |
 |---|---|---|
-| VG-UI-001 | extend | native Escape stack (`pane-stack`); owner Stack 2 / Escape closes; absent tree hides seats; invented origin cannot pass |
+| VG-UI-001 | extend | native Escape stack (`pane-stack`); owner Stack 2 / Escape closes; absent tree hides seats; invented origin cannot pass; WASD cannot overlay the open tree |
 | VG-UI-002 | extend | TASK-0171 INTEGRATED, 0184 BRIDGE_PREP; `pack-drag`; reject cannot lose/duplicate/silent-equip |
 | VG-UI-003 | extend | paper-doll + ack-only HUD (`equipment`); pending compare cannot gold-frame as equipped; `progression-surface` owner Skill tree / No data yet (TASK folder cannot certify) |
 | VG-UI-004 | extend | TASK-0156, 0159 INTEGRATED; `stat-explain` expandable ATK; dormant cannot fold into Attack |
 | VG-UI-005 | extend | TASK-0076 INTEGRATED; 0178/0192/0203 Owner Demo; `route-map` zoom/opacity cannot reveal off-snapshot targets |
 | VG-UI-006 | extend | TASK-0145/0177 + 0190/0197/0201 — **do not duplicate** |
-| VG-UI-007 | extend | TASK-0159 INTEGRATED, 0118 READY, 0207; `hud-pane-readability` at 960/1366/3440 + `hud-scale-floor` + live window; TASK-0159 folder capture cannot certify; VG-UI-006 Owner Demo not duplicated |
+| VG-UI-007 | extend | TASK-0159 INTEGRATED, 0118 READY, 0207; `hud-pane-readability` at 960/1366/3440 + tree-open keep-out + `hud-scale-floor` + live window; TASK-0159 folder capture cannot certify; VG-UI-006 Owner Demo not duplicated |
 | VG-UI-008 | new | XInput tick path + glyphs (`pad-path`); not mouse emulation |
 | VG-ART-001/002/004 | extend | TASK-0141 INTEGRATED — village kit + collision-proxy ops (`kit-chunk`); not artist-local collision |
 | VG-ART-003/006 | extend | TASK-0122 INTEGRATED; 0173/0174 READY; 0186/0187 BRIDGE_PREP — Cursor paints melee **poses** (VG-ART-003) and WarCry **weave labels** plus Phase A spawn/fade (VG-ART-006) without taking TASK-0173 models or re-speccing TASK-0108 |
@@ -249,7 +249,8 @@ keeps `TREE no authoritative data`. Scenario `equipment`. Absent
 progression capture: owner strip paints Skill tree / No data yet; TREE
 jargon cannot certify. Scenario `progression-surface` pack capture in
 art-wave (TASK-0156 folder cannot certify). Absent P-key tree hides
-seats (`tree-pane-960x600.png`, shared with VG-UI-001). Evidence
+seats (`tree-pane-960x600.png`, shared with VG-UI-001) and keeps WASD
+off the pane. Evidence
 `docs/execution/evidence/VG-UI-003.json`.
 VG-PERF-007: 32 resize/effect cycles; floor bitmaps stay 1. Owner strip
 paints 32 cycles / Cap holds. Short scene cannot certify. Scenario
@@ -260,6 +261,7 @@ Scenario `dense-mix`. Evidence `docs/execution/evidence/VG-SOUND-007.json`.
 VG-UI-001: Escape dismisses character then gear; bare Escape quits. Owner
 strip paints Stack 2 / Escape closes. Helper depth alone cannot prove.
 Absent P-key tree paints No seats yet; an invented origin seat cannot
+certify. Open tree keep-out relocates WASD; overlaying the pane cannot
 certify. Scenario `pane-stack`. Evidence
 `docs/execution/evidence/VG-UI-001.json`.
 VG-MOVE-005: TASK-0165 focus reducer gates WASD, combat, pickup, and pack
@@ -328,8 +330,9 @@ VG-UI-007: `vital-orbs` — life left/red, mana right/blue. Mute is a HUD
 chip. Owner strip paints Life left / Mana right. `hud-scale-floor` owner
 strip paints Type floor / Ink contrast. Shrink type cannot certify.
 `hud-pane-readability` recapture at 960/1366/3440 stays pairwise
-disjoint; no owner review strip on that scenario. An X on the mana globe
-cannot count as a non-color cue. Scenarios `vital-orbs` /
+disjoint; no owner review strip on that scenario. Open P-key tree never
+intersects identity/controls/objective/minimap/quickbar/orbs. An X on
+the mana globe cannot count as a non-color cue. Scenarios `vital-orbs` /
 `hud-scale-floor` / `hud-pane-readability`. Evidence
 `docs/execution/evidence/VG-UI-007.json`.
 VG-GOV-006: disconnect/crash/quit cannot ack uncommitted extraction.

@@ -345,6 +345,27 @@ HudRect gear_pane_rect(int width, int height) {
           std::max(0, bottom - pane_top)};
 }
 
+HudRect tree_pane_rect(int width, int height) {
+  const int s = hud_scale(height);
+  const int pane_w = 460 * s;
+  const int pane_h = 420 * s;
+  const int left = (width - pane_w) / 2;
+  const int top = std::max(48 * s, (height - pane_h) / 2 - 20 * s);
+  return {left, top, pane_w, pane_h};
+}
+
+HudRect character_pane_rect(int width, int height, int extra_rows) {
+  (void)width;
+  const int s = hud_scale(height);
+  const int pane_w = 420 * s;
+  const int row_h = 26 * s;
+  const int pane_h =
+      (56 + 150 + 14) * s + (12 + extra_rows) * row_h + 40 * s;
+  const int left = 24 * s;
+  const int top = std::max(48 * s, (height - pane_h) / 2 - 20 * s);
+  return {left, top, pane_w, pane_h};
+}
+
 HudRect minimap_rect(int height) {
   const int s = hud_scale(height);
   const int size = 108 * s;
@@ -5292,7 +5313,8 @@ void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
 // controls — is placed by one pure integer-geometry pass from actually
 // measured extents. TASK-0159 extends the pass with the fixed screen regions
 // those rows must never fight: the minimap panel always, and the shipped gear
-// pane whenever it is open, plus the bottom quickbar/orbs for completeness.
+// pane whenever it is open, the P-key tree pane, the character sheet, plus
+// the bottom quickbar/orbs for completeness.
 // Candidates walk deterministic fallback ladders (centered/right pins, then a
 // left lane beside the minimap, then the raw gutter), so no region is ever
 // deleted and none lands inside another at any width, including 960x600 and
@@ -5330,7 +5352,8 @@ bool top_hud_clear(const TopHudRect& a, const TopHudRect& b, int gap) {
          a.y + a.h + gap <= b.y || b.y + b.h + gap <= a.y;
 }
 
-TopHudLayout plan_top_hud(int width, int height, bool gear_open,
+TopHudLayout plan_top_hud(int width, int height, bool gear_open, bool tree_open,
+                          bool character_open, int character_extra_rows,
                           const TopHudRect& identity_size,
                           const TopHudRect& objective_size,
                           const TopHudRect& art_size,
@@ -5346,11 +5369,15 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open,
   // Route card occupies the left column under the minimap. When the gear
   // pane is open at 960, that column is the wrap ladder for controls; hide
   // the card instead of colliding chips into the map.
-  if (!gear_open) keep_out(route_card_rect(height));
+  if (!gear_open && !tree_open && !character_open)
+    keep_out(route_card_rect(height));
   keep_out(quickbar_strip_rect(width, height));
   keep_out(vital_orb_rect(width, height, false));
   keep_out(vital_orb_rect(width, height, true));
   if (gear_open) keep_out(gear_pane_rect(width, height));
+  if (tree_open) keep_out(tree_pane_rect(width, height));
+  if (character_open)
+    keep_out(character_pane_rect(width, height, character_extra_rows));
 
   std::vector<TopHudRect> occupied[kTopHudRowCount];
   const auto row_y = [&](int row) { return kTopHudRow0Y + row * kTopHudRowStep; };
@@ -5545,11 +5572,6 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
                           render::List& rl) {
   if (!state.character_pane) return;
   const int s = hud_scale(static_cast<int>(bounds.bottom));
-  const int pane_w = 420 * s;
-  // Content-derived height: header, portrait, twelve stat rows, footer.
-  // Slice builds sit beside the portrait so they stay on a 600px capture.
-  // A fixed height under a scaled type ramp is exactly how rows clip out.
-  const int row_h = 26 * s;
   const verdigris::client::ui::StatSources preview_src{
       0,
       0,
@@ -5558,11 +5580,15 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
       state.sheet_cond_active,
       state.stat_atk_expanded};
   const int extra_rows = verdigris::client::ui::extra_source_rows(preview_src);
-  const int pane_h = (56 + 150 + 14) * s + (12 + extra_rows) * row_h + 40 * s;
-  const int left = 24 * s;
-  const int top =
-      std::max(48 * s, (static_cast<int>(bounds.bottom) - pane_h) / 2 - 20 * s);
+  const HudRect box = character_pane_rect(static_cast<int>(bounds.right),
+                                         static_cast<int>(bounds.bottom),
+                                         extra_rows);
+  const int left = box.x;
+  const int top = box.y;
+  const int pane_w = box.w;
+  const int pane_h = box.h;
   RECT pane{left, top, left + pane_w, top + pane_h};
+  state.hud_rect_trace.push_back({"character-pane-frame", box});
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 245, 8.0f);
   dress_owned_pane(state.billboards, dc, pane);
@@ -5683,6 +5709,7 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
                  {"src cond", dormant}});
   }
   int y = top + 56 * s + portrait_h + 14 * s;
+  const int row_h = 26 * s;
   SelectObject(dc, skin::font_body());
   auto owner_stat_name = [](const std::string& label) -> std::string {
     if (label == "src base") return "Base";
@@ -5738,12 +5765,14 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
   state.tree_seat_hits.clear();
   if (!state.tree_pane) return;
   const int s = hud_scale(static_cast<int>(bounds.bottom));
-  const int pane_w = 460 * s;
-  const int pane_h = 420 * s;
-  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
-  const int top =
-      std::max(48 * s, (static_cast<int>(bounds.bottom) - pane_h) / 2 - 20 * s);
+  const HudRect box = tree_pane_rect(static_cast<int>(bounds.right),
+                                    static_cast<int>(bounds.bottom));
+  const int left = box.x;
+  const int top = box.y;
+  const int pane_w = box.w;
+  const int pane_h = box.h;
   RECT pane{left, top, left + pane_w, top + pane_h};
+  state.hud_rect_trace.push_back({"tree-pane-frame", box});
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 245, 8.0f);
   dress_owned_pane(state.billboards, dc, pane);
@@ -9218,6 +9247,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         controls_line_b.empty() ? 0 : controls_b_extent.cy + 6};
     const TopHudLayout layout = plan_top_hud(
         width, static_cast<int>(bounds.bottom), state.gear_overlay,
+        state.tree_pane, state.character_pane,
+        verdigris::client::ui::extra_source_rows(
+            {0, 0, state.sheet_passive_atk, state.sheet_cond_atk,
+             state.sheet_cond_active, state.stat_atk_expanded}),
         identity_size, objective_size, art_size, controls_size,
         controls_size_a, controls_size_b, static_cast<bool>(state.session));
 
@@ -12478,6 +12511,53 @@ int scenario_hud_pane_readability() {
     }
   }
 
+  // VG-UI-007 extra: the P-key tree pane is a real HUD keep-out, not just
+  // the gear overlay. A 960 capture cannot certify if WASD sits on the tree.
+  {
+    ClientState state;
+    scenario_begin(state);
+    load_billboards(state.billboards);
+    scenario_follow_camera(state);
+    state.tree_pane = true;
+    const std::string png_tree =
+        dir + "\\hud-pane-readability-tree-960x600.png";
+    scenario_check(reference_present(state, 960, 600, png_tree),
+                   "hud-pane-readability: tree-open capture written");
+    const HudRect* pane = trace_find(state, "tree-pane-frame");
+    scenario_check(pane != nullptr && pane->w > 100,
+                   "hud-pane-readability: tree pane frame recorded");
+    const char* kTreeKeepOut[] = {"identity",        "controls",
+                                  "objective",       "minimap",
+                                  "quickbar-strip",  "orb-life",
+                                  "orb-resource"};
+    for (const char* region : kTreeKeepOut) {
+      const HudRect* rect = trace_find(state, region);
+      char line[192];
+      std::snprintf(line, sizeof(line),
+                    "hud-pane-readability: %s never enters the tree pane",
+                    region);
+      scenario_check(pane && rect && !hud_rects_overlap(*pane, *rect), line);
+    }
+    if (const HudRect* second = trace_find(state, "controls-second")) {
+      scenario_check(pane && !hud_rects_overlap(*pane, *second),
+                     "hud-pane-readability: controls-second never enters the "
+                     "tree pane");
+    }
+    if (const HudRect* art = trace_find(state, "art")) {
+      scenario_check(pane && !hud_rects_overlap(*pane, *art),
+                     "hud-pane-readability: art/mute chip never enters the "
+                     "tree pane");
+    }
+    scenario_check(
+        render_list_has(state, render::Op::Hud, "tree:seats-hidden-absent"),
+        "hud-pane-readability: tree-open still states absence without seats");
+    std::ifstream probe(png_tree, std::ios::binary);
+    scenario_check(probe.good(), "hud-pane-readability: tree capture readable");
+    probe.seekg(0, std::ios::end);
+    scenario_check(probe.tellg() > 1024,
+                   "hud-pane-readability: tree capture non-trivial");
+  }
+
   // ── Remote owner path on this lane's routed loopback capsule (7100-7119):
   // the connection chip and art chip must also clear the open pane.
   {
@@ -14666,6 +14746,36 @@ int scenario_pane_stack() {
                  "pane-stack: painting a seat with no payload is the anti-pattern");
   scenario_check(!verdigris::client::ui::invented_origin_fails_review(false, false),
                  "pane-stack: hidden seats are the production absence");
+  const HudRect* tree_frame = nullptr;
+  const HudRect* controls_rect = nullptr;
+  const HudRect* identity_rect = nullptr;
+  const HudRect* objective_rect = nullptr;
+  const HudRect* controls_second = nullptr;
+  for (const auto& entry : tree.hud_rect_trace) {
+    if (entry.first == "tree-pane-frame") tree_frame = &entry.second;
+    if (entry.first == "controls") controls_rect = &entry.second;
+    if (entry.first == "identity") identity_rect = &entry.second;
+    if (entry.first == "objective") objective_rect = &entry.second;
+    if (entry.first == "controls-second") controls_second = &entry.second;
+  }
+  scenario_check(tree_frame && tree_frame->w > 100,
+                 "pane-stack: tree pane frame is measured");
+  scenario_check(controls_rect &&
+                     !hud_rects_overlap(*tree_frame, *controls_rect),
+                 "pane-stack: controls hint never enters the tree pane");
+  scenario_check(identity_rect &&
+                     !hud_rects_overlap(*tree_frame, *identity_rect),
+                 "pane-stack: identity never enters the tree pane");
+  scenario_check(objective_rect &&
+                     !hud_rects_overlap(*tree_frame, *objective_rect),
+                 "pane-stack: objective never enters the tree pane");
+  if (controls_second)
+    scenario_check(!hud_rects_overlap(*tree_frame, *controls_second),
+                   "pane-stack: wrapped controls never enter the tree pane");
+  scenario_check(verdigris::client::ui::controls_on_tree_fails_review(true),
+                 "pane-stack: overlaying the tree with WASD is the anti-pattern");
+  scenario_check(!verdigris::client::ui::controls_on_tree_fails_review(false),
+                 "pane-stack: relocated controls are the production HUD");
   const std::string tree_png = dir + "\\tree-pane-960x600.png";
   scenario_check(reference_present(tree, 960, 600, tree_png),
                  "pane-stack: skill-tree capture written");

@@ -1,5 +1,16 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Tree keep-out, WASD off pane (Cursor)
+
+- VG-UI-007 / VG-UI-001: the top HUD no longer paints WASD on the open
+  P-key skill tree. `plan_top_hud` keep-out covers tree and character
+  panes, not only gear. Identity and controls land left of the pane.
+  Overlaying the tree cannot certify. Gear pairwise captures at
+  960/1366/3440 were unchanged. TASK-0193 slice still only paints after
+  a payload.
+- Scenarios `pane-stack` / `hud-pane-readability` PASS. Captures viewed.
+  Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — No seats yet, invented origin (Cursor)
 
 - VG-UI-001 / VG-UI-003: the P-key skill tree no longer paints a glowing

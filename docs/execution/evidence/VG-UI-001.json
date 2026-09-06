@@ -21,24 +21,26 @@
     "skill tree paints owner title Skill tree and absence Skill tree: no data yet",
     "absent tree hides seats and paints No seats yet",
     "absent tree cannot paint tree-seat node ids",
+    "controls hint never enters the tree pane",
+    "identity never enters the tree pane",
     "live HUD names Stack 2 and Escape closes",
     "live HUD rejects invented origin"
   ],
   "negative_control": {
-    "name": "helper pane_stack_depth without native paint or Escape, Geometric Passives as the owner title, or an invented origin seat while the tree says no data yet",
+    "name": "helper pane_stack_depth without native paint or Escape, Geometric Passives as the owner title, an invented origin seat while the tree says no data yet, or WASD painted on the tree",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/pane-stack-960x600.png",
-      "sha256": "5228b6183183a30c489b298eda87742c4dd9a88f8147f8e5f8396df6032de005",
+      "sha256": "e880b9ca4e45689ce15cbb3cec51076a6e920787d97f9edbe265afd089e1b561",
       "produced_by": "native/build/verdigris_client.exe --scenario pane-stack"
     },
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/tree-pane-960x600.png",
-      "sha256": "abfd79149be883f4fcf4b269a5103b6b5816e6dfa84b24f2aaeadd9fdcc321ec",
+      "sha256": "228fa265c4254c77d96312cae05f7b61eb99de3396af55fe318eb1c197acce4a",
       "produced_by": "native/build/verdigris_client.exe --scenario pane-stack"
     }
   ],
@@ -46,6 +48,6 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Client Escape stack only. Owner Demo Chronicles journeys not duplicated.",
-    "TASK-0193 geometric slice is unchanged and only paints after a payload. Not Owner Demo. No TASK numbers minted."
+    "TASK-0193 geometric slice is unchanged and only paints after a payload. Open tree and character panes keep the top HUD out. Not Owner Demo. No TASK numbers minted."
   ]
 }
