@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-SOUND-004",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "fb0282e1262784fbb4ed4eac77377a80925bae9a",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "combat-audio",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build/verdigris_client.exe --scenario combat-audio", "exit_code": 0}
+  ],
+  "assertions": [
+    "dense cosmetic submits cannot starve the scion-lost warning"
+  ],
+  "negative_control": {
+    "name": "low-priority cosmetic sounds starving critical cues",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "command",
+      "path": "native/client/main.cpp",
+      "produced_by": "native/build/verdigris_client.exe --scenario combat-audio"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "NOT_REQUIRED",
+  "limitations": [
+    "Mixer priority lock, not a new device. VG-PERF-002 tick budget stays a separate claim."
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-SOUND-005",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "fb0282e1262784fbb4ed4eac77377a80925bae9a",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "ambience-layer",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build/verdigris_client.exe --scenario ambience-layer", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario combat-audio", "exit_code": 0}
+  ],
+  "assertions": [
+    "live HUD names the current zone loop",
+    "enter voices one region loop",
+    "rapid zone reentry cannot stack loops"
+  ],
+  "negative_control": {
+    "name": "rapid zone reentry accumulating ambient loops",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "command",
+      "path": "native/client/main.cpp",
+      "produced_by": "native/build/verdigris_client.exe --scenario ambience-layer"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "NOT_REQUIRED",
+  "limitations": [
+    "One ambience cue per route_id. VG-WORLD-007 zone authority stays Kimi."
+  ]
+}

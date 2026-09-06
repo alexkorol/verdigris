@@ -1,5 +1,18 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — kit, weave, pad, beats, combat audio (Cursor lease)
+
+- VG-ART-004: tin village kit + collision proxies (`kit-chunk`).
+- VG-ART-006: WarCry weave labels; spectacle cannot hide telegraph
+  (`weave-vfx`). Does not take TASK-0173 models.
+- VG-UI-008: XInput on the fixed tick (`pad-path`). Mouse cannot mint
+  `pad:connected`.
+- VG-ACT-007: AttackStarted/DamageApplied drive `attack-beat:*`. A
+  fabricated swing cannot mint the beat.
+- VG-SOUND-003/004/005: `combat-audio` + `ambience-layer`. Same event ID
+  cannot double-play; cosmetics cannot starve `scion-lost`; rapid reentry
+  cannot stack ambience.
+
 ## 2026-09-06 — GPU present path 003–006/008 (Cursor lease)
 
 - VG-GPU-003: `software-albedo-rim-v1` bindings; stale/wrong backend fail

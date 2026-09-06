@@ -133,11 +133,13 @@ VG-PERF-006: `warm_combat_glyphs` before first strike; scenario
 VG-UI-007: tooltip titles use ink-on-panel contrast plus a triangular mark.
 VG-ART-004: tin village kit (all five scenery kinds); solid pieces emit
 `collision-proxy:*`; dressing gate does not. Scenario `kit-chunk`.
+Evidence `docs/execution/evidence/VG-ART-004.json`.
 VG-ART-006: WarCry family `vfx-weave:cast|travel|impact|cancel`; radius
 capped vs screen-fill; telegraph remains. Scenario `weave-vfx`.
+Evidence `docs/execution/evidence/VG-ART-006.json`.
 VG-UI-008: XInput sampled on the fixed tick; A strike / B dash / X take /
 Y gear; hotplug in/out; mouse position cannot mint `pad:connected`.
-Scenario `pad-path`.
+Scenario `pad-path`. Evidence `docs/execution/evidence/VG-UI-008.json`.
 VG-SOUND-002: CC0 provenance table for combat cues including swing windup
 `attack-anticipate`. `unlicensed-preview` cannot ship. Scenario `legal-sounds`.
 Evidence `docs/execution/evidence/VG-SOUND-002.json`.
@@ -179,7 +181,7 @@ VG-SOUND-001: software tone adapter plays a generated PCM burst and shuts
 down. A zero-duration cue is not audible. Scenario `sound-adapter`.
 Evidence `docs/execution/evidence/VG-SOUND-001.json`.
 VG-SOUND-005: one ambience cue per route; rapid reentry does not stack.
-Scenario `ambience-layer`.
+Scenario `ambience-layer`. Evidence `docs/execution/evidence/VG-SOUND-005.json`.
 VG-SOUND-006: mute cannot reset SFX/music volumes; zero SFX stays silent.
 Scenario `audio-prefs`.
 VG-UI-003: equip HUD is ack-only (`equip:ok` after ItemEquipped). Pending
@@ -208,6 +210,7 @@ turns facing — that is the defect the adapter covers.
 VG-ACT-007: AttackStarted/DamageApplied/ActorDied drive
 `attack-beat:*`. A fabricated swing cannot mint the beat. Scenario
 `attack-beat`. Core melee resolution stays with Kimi.
+Evidence `docs/execution/evidence/VG-ACT-007.json`.
 VG-ACT-005: local ticks and remote `durationMs` share
 `presentation_catalog().telegraph_ticks` and reach. `value/50` cannot
 invent a longer window. Expired/cancelled warnings leave no footprint.

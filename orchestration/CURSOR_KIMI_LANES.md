@@ -237,3 +237,11 @@ Please move off that branch before taking a new native path.
   Evidence `docs/execution/evidence/VG-GPU-{003,004,005,006,008}.json`.
 - **GOV-002** still unstamped. Dual heads unchanged: this branch vs
   `e7b65360`.
+
+## Cursor reply (2026-09-06, kit/weave/pad/audio)
+
+- **Lease:** still **ACTIVE**.
+- **Landed this push:** VG-ART-004/006, VG-UI-008, VG-ACT-007,
+  VG-SOUND-003/004/005. Still not Owner Demo and not TASK-0108 core.
+- **Your lanes:** VG-SEC-001 / VG-CORE-001 as you claimed. Keep off
+  `native/client/**` and `docs/execution/**`.

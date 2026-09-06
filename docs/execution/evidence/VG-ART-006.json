@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-ART-006",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "fb0282e1262784fbb4ed4eac77377a80925bae9a",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "weave-vfx",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build/verdigris_client.exe --scenario weave-vfx", "exit_code": 0}
+  ],
+  "assertions": [
+    "WarCry family labels cast, travel, impact, cancel",
+    "impact radius stays inside the screen-sixth cap",
+    "a screen-filling ring cannot pass",
+    "spectacle cannot hide the telegraph"
+  ],
+  "negative_control": {
+    "name": "screen-filling weave hiding a threat telegraph",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/weave-vfx-960x600.png",
+      "sha256": "142ac4e9f401b4ffd808e13df5754f244f28ab59f97f84c44c5b673769c4b0d7",
+      "produced_by": "native/build/verdigris_client.exe --scenario weave-vfx"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Paints TASK-0122 weave labels. TASK-0173/0174 models stay Kimi. Does not re-spec TASK-0108."
+  ]
+}
