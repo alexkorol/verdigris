@@ -42,3 +42,20 @@ REPORT.md.
   violation rev 3 must fix). JS payload parity source read:
   `server/core/entities/monster/combat-controller.js:212-223`
   (`world:projectile` keys: fromX, fromY, toX, toY, travelMs, kind).
+- 2026-09-05 23:20 -07:00 — IMPLEMENTED (this slice). Core: ranged windup is
+  now WorldCombatEvent type "projectile" with shooter origin fields
+  (`origin_x`/`origin_y`); networking routes it to `world:projectile` with
+  the exact JS payload keys; `monster:telegraph` stays slam-only. Locks added:
+  ranged damage beyond 2-tile Chebyshev contact, melee twin cannot, every
+  ranged hit preceded by its warning, seeded stream replay byte-identical
+  (core_tests); `world:projectile` JS-shape lock + never-`monster:telegraph`
+  negative control (networking_tests). Gates: `build.ps1 -RunTests` exit 0
+  (second run; first run hit one non-reproducing gate-b hunt flake — rerun of
+  `verdigris_session_tests.exe` exit 0), core/networking test exes exit 0,
+  `build.ps1 -RunClientScenarios -CaptureRoot .../captures/review` exit 0,
+  `git diff --check` exit 0, changed files limited to the claimed slice.
+  Details and exact outcomes in REPORT.md.
+- State remains CLAIMED: the SPEC's client-presentation sub-part (Telegraph
+  render op in the leased `native/client/**` files + the
+  `presentation_events_tests.cpp` lock) is DEFERRED pending the Cursor lease
+  release; this slice is not review-requested.
