@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-005",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "880c9f74d751859e57d4655e86bff01b1b032343",
+  "base_sha": "d6f017cdd88e8c969cf4261c6e3be22dab10f95e",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "held-item",
@@ -18,7 +18,7 @@
     "unequip clears world held:none and empty paper-doll seat",
     "ack equip changes the Player held attachment",
     "HUD publishes held-world not only held-seat",
-    "visual-target composition sheet also shows a non-none held attachment"
+    "live HUD names World hold and Ack equip"
   ],
   "negative_control": {
     "name": "paper-doll seat filled while world remains held:none",
@@ -28,7 +28,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/held-item-960x600.png",
-      "sha256": "ee4554d19a0a5595e09e5f1204ca3cd795d696f2ba26a4cedba255040c42ca0d",
+      "sha256": "5199b01a8d4cc4dac4fbf58904a1434231d9538fafd58ecd96ce3b54842480a0",
       "produced_by": "native/build/verdigris_client.exe --scenario held-item"
     }
   ],

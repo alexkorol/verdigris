@@ -17,4 +17,7 @@ inline bool paper_doll_only_fails_review(bool seat_filled, bool world_held) {
   return seat_filled && !world_held;
 }
 
+inline const char* owner_world_hold_label() { return "World hold"; }
+inline const char* owner_ack_equip_label() { return "Ack equip"; }
+
 }  // namespace verdigris::client::art

@@ -64,6 +64,9 @@ inline std::uint32_t sample_rim(int u, int v) {
 
 inline bool is_placeholder(std::uint32_t rgba) { return rgba == kPlaceholder; }
 
+inline const char* owner_bronze_stone_label() { return "Bronze stone"; }
+inline const char* owner_cooked_cc0_label() { return "Cooked CC0"; }
+
 #ifdef _WIN32
 inline COLORREF gdi(std::uint32_t rrggbb) {
   return RGB(static_cast<int>((rrggbb >> 16) & 0xFF),

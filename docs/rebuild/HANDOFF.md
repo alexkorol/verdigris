@@ -1,5 +1,18 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — bronze family, village kit, world hold (Cursor)
+
+- VG-ART-002: owner Bronze stone strip paints Cooked CC0. Magenta cannot
+  certify. Village kit still samples the SPDX CC0 albedo/rim family.
+  VG-TOOLS-003 cook pipeline stays Kimi.
+- VG-ART-004: owner Village kit strip paints Solid proxy. A lollipop tree
+  cannot certify. Live tin village still ships hut, fountain shrine,
+  road gate, ruin, and forked trees with published solids.
+- VG-ART-005: owner World hold strip paints Ack equip. A paper-doll seat
+  cannot certify world appearance. ITEM identity stays Kimi.
+- Scenarios `bronze-stone` / `kit-chunk` / `held-item` PASS. Captures
+  viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — three slice fixtures and headless contract (Cursor)
 
 - VG-BUILD-001: owner Three slices strip paints Reach pike. Tint clones

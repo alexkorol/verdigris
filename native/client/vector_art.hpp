@@ -767,6 +767,9 @@ inline bool lollipop_tree_fails_review(int clusters, bool root_flare, bool fork)
   return clusters < 4 || !root_flare || !fork;
 }
 
+inline const char* owner_village_kit_label() { return "Village kit"; }
+inline const char* owner_solid_proxy_label() { return "Solid proxy"; }
+
 inline void tree(HDC dc, int cx, int base_y, int height_px, double sway_phase,
                  COLORREF leaf, COLORREF trunk) {
   const double s = height_px / 100.0;

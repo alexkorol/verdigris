@@ -487,6 +487,9 @@ struct ClientState {
   bool death_disconnect_review_strip = false;
   bool build_fixtures_review_strip = false;
   bool headless_contract_review_strip = false;
+  bool bronze_stone_review_strip = false;
+  bool kit_chunk_review_strip = false;
+  bool held_item_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -6826,6 +6829,123 @@ void paint_headless_contract_review_strip(ClientState& state, HDC dc, const RECT
   SelectObject(dc, old_font);
 }
 
+void paint_bronze_stone_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                     render::List& rl) {
+  if (!state.bronze_stone_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "bronze-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::art::bronze_stone::owner_bronze_stone_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* cooked = verdigris::art::bronze_stone::owner_cooked_cc0_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, cooked, static_cast<int>(strlen(cooked)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "magenta";
+  TextOutA(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "art:bronze-stone"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "art:cooked-cc0"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "art-strip:magenta-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_kit_chunk_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                  render::List& rl) {
+  if (!state.kit_chunk_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "kit-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = vector_art::owner_village_kit_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* proxy = vector_art::owner_solid_proxy_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, proxy, static_cast<int>(strlen(proxy)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "lollipop";
+  TextOutA(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "kit:village"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "kit:solid-proxy"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "kit-strip:lollipop-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_held_item_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                  render::List& rl) {
+  if (!state.held_item_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "held-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::art::owner_world_hold_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* ack = verdigris::client::art::owner_ack_equip_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, ack, static_cast<int>(strlen(ack)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "paper doll";
+  TextOutA(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "held-strip:world-hold"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "held-strip:ack-equip"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "held-strip:paper-doll-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -7861,6 +7981,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_death_disconnect_review_strip(state, dc, bounds, rl);
   paint_build_fixtures_review_strip(state, dc, bounds, rl);
   paint_headless_contract_review_strip(state, dc, bounds, rl);
+  paint_bronze_stone_review_strip(state, dc, bounds, rl);
+  paint_kit_chunk_review_strip(state, dc, bounds, rl);
+  paint_held_item_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -11105,8 +11228,21 @@ int scenario_kit_chunk() {
     return scenario_failures;
   }
   const std::string png = dir + "\\kit-chunk-960x600.png";
+  state.kit_chunk_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "kit-chunk: village kit capture written");
+  bool village = false;
+  bool proxy = false;
+  bool lollipop = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "kit:village") village = true;
+    if (item.label == "kit:solid-proxy") proxy = true;
+    if (item.label == "kit-strip:lollipop-rejected") lollipop = true;
+  }
+  scenario_check(village && proxy,
+                 "kit-chunk: live HUD names Village kit and Solid proxy");
+  scenario_check(lollipop, "kit-chunk: live HUD rejects a lollipop tree");
   return scenario_failures;
 }
 
@@ -11704,8 +11840,21 @@ int scenario_bronze_stone() {
     return scenario_failures;
   }
   const std::string png = dir + "\\bronze-stone-960x600.png";
+  state.bronze_stone_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "bronze-stone: cooked family capture written");
+  bool family_strip = false;
+  bool cooked = false;
+  bool magenta_hud = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "art:bronze-stone") family_strip = true;
+    if (item.label == "art:cooked-cc0") cooked = true;
+    if (item.label == "art-strip:magenta-rejected") magenta_hud = true;
+  }
+  scenario_check(family_strip && cooked,
+                 "bronze-stone: live HUD names Bronze stone and Cooked CC0");
+  scenario_check(magenta_hud, "bronze-stone: live HUD rejects magenta");
   return scenario_failures;
 }
 
@@ -14057,8 +14206,21 @@ int scenario_held_item() {
     return scenario_failures;
   }
   const std::string png = dir + "\\held-item-960x600.png";
+  state.held_item_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "held-item: world-hold capture written");
+  bool world_strip = false;
+  bool ack_strip = false;
+  bool doll_rejected = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "held-strip:world-hold") world_strip = true;
+    if (item.label == "held-strip:ack-equip") ack_strip = true;
+    if (item.label == "held-strip:paper-doll-rejected") doll_rejected = true;
+  }
+  scenario_check(world_strip && ack_strip,
+                 "held-item: live HUD names World hold and Ack equip");
+  scenario_check(doll_rejected, "held-item: live HUD rejects paper doll");
   return scenario_failures;
 }
 

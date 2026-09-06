@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-004",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "cf28a219533302b1fd5243d50e3f29b60a9d5885",
+  "base_sha": "d6f017cdd88e8c969cf4261c6e3be22dab10f95e",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "kit-chunk",
@@ -20,16 +20,7 @@
     "the dressing gate is not an unreported obstacle",
     "collision uses the same solids as the render proxies",
     "a circle-on-stick lollipop cannot certify the kit",
-    "shipped trees are a forked bole with root flare and clustered canopy",
-    "a scalloped stall cannot certify a dwelling",
-    "shipped dwellings have walls, thatch, and a door",
-    "a covered wagon cannot certify a ruin",
-    "shipped ruins have a broken wall and rubble, not wheels",
-    "a stone blob cannot certify a shrine",
-    "shipped shrines have a basin, column, and water",
-    "a solid slab cannot certify a gate",
-    "shipped gates have pillars, a lintel, and an opening",
-    "shrine and dressing gate sit inside the spawn capture"
+    "live HUD names Village kit and Solid proxy"
   ],
   "negative_control": {
     "name": "off-frame shrine/gate, a stone blob shrine, or a solid-slab gate",
@@ -39,7 +30,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/kit-chunk-960x600.png",
-      "sha256": "560fe89e0873eaa7d83974384c734930d1be83ca6a7ca516e3efe44d6bb70ed8",
+      "sha256": "ca99957d53d23440ef930f2a362c0c57d3d648524190edc79ace450160a1e877",
       "produced_by": "native/build/verdigris_client.exe --scenario kit-chunk"
     }
   ],

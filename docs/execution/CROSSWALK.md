@@ -134,10 +134,12 @@ VG-PERF-006: `warm_combat_glyphs` before first strike; scenario
 `hitch-warmup` prints cold/warm/prepared and fails if cold is omitted.
 VG-UI-007: tooltip titles use ink-on-panel contrast plus a triangular mark.
 VG-ART-004: tin village kit (all five scenery kinds); solid pieces emit
-`collision-proxy:*`; dressing gate does not. Dwellings are mudbrick/thatch
-huts; ruins are a broken wall with rubble; shrines are a fountain; gates
-are two pillars with a lintel. Shrine and gate sit inside the spawn
-capture. Scenario `kit-chunk`. Evidence `docs/execution/evidence/VG-ART-004.json`.
+`collision-proxy:*`; dressing gate does not. Owner strip paints Village
+kit / Solid proxy. A lollipop tree cannot certify. Dwellings are
+mudbrick/thatch huts; ruins are a broken wall with rubble; shrines are a
+fountain; gates are two pillars with a lintel. Shrine and gate sit inside
+the spawn capture. Scenario `kit-chunk`. Evidence
+`docs/execution/evidence/VG-ART-004.json`.
 VG-ART-006: WarCry family `vfx-weave:cast|travel|impact|cancel`; radius
 capped vs screen-fill; telegraph remains. Scenario `weave-vfx`.
 Evidence `docs/execution/evidence/VG-ART-006.json`.
@@ -165,8 +167,9 @@ external concept-art token cannot substitute, a skeleton
 and a chibi (1/3) head cannot pass as adult. Scenario `visual-target`.
 Evidence `docs/execution/evidence/VG-ART-001.json`.
 VG-ART-002: bronze/stone albedo+rim maps with SPDX CC0; magenta fill
-cannot ship. Village kit uses the family. Scenario `bronze-stone`.
-Evidence `docs/execution/evidence/VG-ART-002.json`.
+cannot ship. Owner strip paints Bronze stone / Cooked CC0. Village kit
+uses the family. Scenario `bronze-stone`. Evidence
+`docs/execution/evidence/VG-ART-002.json`.
 VG-GPU-003: layout v1 software program `software-albedo-rim-v1`. Wrong
 backend or stale layout fails; failed load does not paint. Scenario
 `shader-bindings`. Evidence `docs/execution/evidence/VG-GPU-003.json`.
@@ -286,8 +289,9 @@ HUD ops. Owner paint uses Base/Gear, not `src` jargon. Slice builds on
 the sheet are role · gear chips; tactics stay on HUD ops. A dormant
 conditional cannot fold into Attack. Core STAT stays Kimi.
 VG-UI-002: `pack-drag` — reject cannot lose, duplicate, or silently equip.
-VG-ART-005: `held-item` — world actor hold must change on equip. A filled
-paper-doll seat with `held:none` cannot pass.
+VG-ART-005: `held-item` — world actor hold must change on equip. Owner
+strip paints World hold / Ack equip. A filled paper-doll seat with
+`held:none` cannot pass.
 
 ## VG-GOV-002 draft (not owner-stamped)
 
