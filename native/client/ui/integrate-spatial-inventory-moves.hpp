@@ -40,4 +40,7 @@ inline const char* pack_drop_hud(PackDrop drop) {
   }
 }
 
+inline const char* owner_pack_place_label() { return "Pack place"; }
+inline const char* owner_reject_keeps_label() { return "Reject keeps"; }
+
 }  // namespace verdigris::client::ui

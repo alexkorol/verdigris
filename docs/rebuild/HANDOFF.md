@@ -1,5 +1,18 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — focus gear, pack place, pad glyphs (Cursor)
+
+- VG-MOVE-005: owner Focus gear strip paints No buffer. Held fire cannot
+  certify. Gear still swallows WASD and combat; closing the pane does not
+  fire a buffered attack. TASK-0165 reducer stays presentation-side.
+- VG-UI-002: owner Pack place strip paints Reject keeps. Silent equip
+  cannot certify. Valid drop still lands at pack:2,1; reject keeps the
+  item. Core inventory-move stays Kimi.
+- VG-UI-008: owner Pad glyphs strip paints A strike. Mouse pad cannot
+  certify. Injected XInput still drives stick, A, Y, and hotplug.
+- Scenarios `pane-focus` / `pack-drag` / `pad-path` PASS. Captures viewed.
+  Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — handle-free packets, kill fill, isolated remaps (Cursor)
 
 - VG-GPU-002: owner Handle-free strip paints Telegraph class. Backend

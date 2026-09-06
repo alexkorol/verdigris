@@ -54,4 +54,7 @@ inline const char* focus_hud_label(const PaneFocusView& view) {
   return "focus:unknown";
 }
 
+inline const char* owner_focus_gear_label() { return "Focus gear"; }
+inline const char* owner_no_buffer_label() { return "No buffer"; }
+
 }  // namespace verdigris::client::ui

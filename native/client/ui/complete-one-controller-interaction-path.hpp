@@ -19,4 +19,7 @@ struct PadReport {
   const char* hotplug = "";  // "in" | "out" | ""
 };
 
+inline const char* owner_pad_glyphs_label() { return "Pad glyphs"; }
+inline const char* owner_a_strike_label() { return "A strike"; }
+
 }  // namespace verdigris::client

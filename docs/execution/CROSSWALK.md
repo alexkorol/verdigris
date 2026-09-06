@@ -153,6 +153,7 @@ capped vs screen-fill; telegraph remains. Owner strip paints War Cry weave
 `docs/execution/evidence/VG-ART-006.json`.
 VG-UI-008: XInput sampled on the fixed tick; A strike / B dash / X take /
 Y gear; hotplug in/out; mouse position cannot mint `pad:connected`.
+Owner strip paints Pad glyphs / A strike. Mouse pad cannot certify.
 Scenario `pad-path`. Evidence `docs/execution/evidence/VG-UI-008.json`.
 VG-SOUND-002: CC0 provenance table for combat cues including swing windup
 `attack-anticipate`. Live HUD paints Family combat / Anticipate CC0.
@@ -238,8 +239,9 @@ VG-UI-001: Escape dismisses character then gear; bare Escape quits. Owner
 strip paints Stack 2 / Escape closes. Helper depth alone cannot prove.
 Scenario `pane-stack`. Evidence `docs/execution/evidence/VG-UI-001.json`.
 VG-MOVE-005: TASK-0165 focus reducer gates WASD, combat, pickup, and pack
-drag. Closing a pane cannot release a held attack. Scenario `pane-focus`.
-Evidence `docs/execution/evidence/VG-MOVE-005.json`.
+drag. Owner strip paints Focus gear / No buffer. Closing a pane cannot
+release a held attack. Scenario `pane-focus`. Evidence
+`docs/execution/evidence/VG-MOVE-005.json`.
 VG-MOVE-006: versioned bindings persist under an isolated test profile.
 Owner strip paints Isolated profile / Dash remap. Duplicate codes and
 unknown devices fail on the HUD; owner Documents cannot be the write
@@ -308,6 +310,8 @@ HUD ops. Owner paint uses Base/Gear, not `src` jargon. Slice builds on
 the sheet are role · gear chips; tactics stay on HUD ops. A dormant
 conditional cannot fold into Attack. Core STAT stays Kimi.
 VG-UI-002: `pack-drag` — reject cannot lose, duplicate, or silently equip.
+Owner strip paints Pack place / Reject keeps. Silent equip cannot
+certify. Core inventory-move stays Kimi.
 VG-ART-005: `held-item` — world actor hold must change on equip. Owner
 strip paints World hold / Ack equip. A filled paper-doll seat with
 `held:none` cannot pass.

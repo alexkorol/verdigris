@@ -502,6 +502,9 @@ struct ClientState {
   bool gpu_packets_review_strip = false;
   bool xp_meter_review_strip = false;
   bool remap_binds_review_strip = false;
+  bool pane_focus_review_strip = false;
+  bool pack_drag_review_strip = false;
+  bool pad_path_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -7464,6 +7467,123 @@ void paint_remap_binds_review_strip(ClientState& state, HDC dc, const RECT& boun
   SelectObject(dc, old_font);
 }
 
+void paint_pane_focus_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                   render::List& rl) {
+  if (!state.pane_focus_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "pane-focus-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::ui::owner_focus_gear_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::client::ui::owner_no_buffer_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "held fire";
+  TextOutA(dc, rx - 28 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "move:focus-gear"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "move:no-buffer"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "move-strip:held-fire-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_pack_drag_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                  render::List& rl) {
+  if (!state.pack_drag_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "pack-drag-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::ui::owner_pack_place_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::client::ui::owner_reject_keeps_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "silent equip";
+  TextOutA(dc, rx - 38 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "ui:pack-place"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "ui:reject-keeps"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "ui-strip:silent-equip-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_pad_path_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                 render::List& rl) {
+  if (!state.pad_path_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "pad-path-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::owner_pad_glyphs_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::client::owner_a_strike_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "mouse pad";
+  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "ui:pad-glyphs"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "ui:a-strike"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "ui-strip:mouse-pad-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -8514,6 +8634,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_gpu_packets_review_strip(state, dc, bounds, rl);
   paint_xp_meter_review_strip(state, dc, bounds, rl);
   paint_remap_binds_review_strip(state, dc, bounds, rl);
+  paint_pane_focus_review_strip(state, dc, bounds, rl);
+  paint_pack_drag_review_strip(state, dc, bounds, rl);
+  paint_pad_path_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -12035,8 +12158,13 @@ int scenario_pad_path() {
   state.pad.connected = true;
   poll_pad(state);
   const std::string png = dir + "\\pad-path-960x600.png";
+  state.pad_path_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "pad-path: controller HUD capture written");
+  scenario_check(has("ui:pad-glyphs") && has("ui:a-strike"),
+                 "pad-path: live HUD names Pad glyphs and A strike");
+  scenario_check(has("ui-strip:mouse-pad-rejected"),
+                 "pad-path: live HUD rejects mouse pad");
   return scenario_failures;
 }
 
@@ -13443,8 +13571,13 @@ int scenario_pane_focus() {
   toggle_gear_overlay(state);
   scenario_present(state);
   const std::string png = dir + "\\pane-focus-960x600.png";
+  state.pane_focus_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "pane-focus: focused gear capture written");
+  scenario_check(has_hud("move:focus-gear") && has_hud("move:no-buffer"),
+                 "pane-focus: live HUD names Focus gear and No buffer");
+  scenario_check(has_hud("move-strip:held-fire-rejected"),
+                 "pane-focus: live HUD rejects held fire");
   return scenario_failures;
 }
 
@@ -14971,8 +15104,21 @@ int scenario_pack_drag() {
     return scenario_failures;
   }
   const std::string png = dir + "\\pack-drag-960x600.png";
+  state.pack_drag_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "pack-drag: capture written");
+  bool pack_place = false;
+  bool reject_keeps = false;
+  bool silent_equip = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "ui:pack-place") pack_place = true;
+    if (item.label == "ui:reject-keeps") reject_keeps = true;
+    if (item.label == "ui-strip:silent-equip-rejected") silent_equip = true;
+  }
+  scenario_check(pack_place && reject_keeps,
+                 "pack-drag: live HUD names Pack place and Reject keeps");
+  scenario_check(silent_equip, "pack-drag: live HUD rejects silent equip");
   return scenario_failures;
 }
 
