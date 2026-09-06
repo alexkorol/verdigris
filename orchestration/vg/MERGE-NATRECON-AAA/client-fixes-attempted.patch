@@ -1,0 +1,315 @@
+diff --git a/native/client/main.cpp b/native/client/main.cpp
+index 6c39da5a..b361069e 100644
+--- a/native/client/main.cpp
++++ b/native/client/main.cpp
+@@ -5161,9 +5161,27 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
+   const std::string controls =
+       selected && selected->expedition_map
+           ? state.world.has_extraction
+-                ? "Arrows select | Tablet sealed until Crossroads | I close"
+-                : "Arrows select | V rechart 50g | Enter break | I close"
++                ? "Arrows | Tablet sealed until Crossroads | I close"
++                : "Arrows | V rechart 50g | Enter break | I close"
+           : "Arrows select | Enter equip | U unequip | I close";
++  // Merge (nat-recon x aaa): the merged UI face (Pixelmix body) measures the
++  // tablet controls wider than the face e7b's pane copy was tuned for, so the
++  // footer overflowed the pane's right inset. Fit the footer (and the
++  // re-chart hit extents measured below it) with the small face when the body
++  // face cannot hold the line inside the pane — VG-UI-007's floor permits
++  // the small ramp, and every extent downstream stays in the selected face.
++  // The tablet variants also trim "Arrows select" to "Arrows" so the small
++  // face still fits; the hit prefix below tracks that copy.
++  bool footer_small_face = false;
++  {
++    SIZE probe{};
++    GetTextExtentPoint32A(dc, controls.c_str(),
++                          static_cast<int>(controls.size()), &probe);
++    if (left + 14 * s + probe.cx > right - 8) {
++      SelectObject(dc, skin::font_small());
++      footer_small_face = true;
++    }
++  }
+   {
+     SIZE extent{};
+     GetTextExtentPoint32A(dc, controls.c_str(), static_cast<int>(controls.size()),
+@@ -5176,7 +5194,7 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
+   rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0,
+                 "gear-controls:" + controls});
+   if (selected && selected->expedition_map && !state.world.has_extraction) {
+-    const std::string prefix = "Arrows select | ";
++    const std::string prefix = "Arrows | ";  // tracks the trimmed footer copy above
+     const std::string action = "V rechart 50g";
+     SIZE prefix_extent{};
+     SIZE action_extent{};
+@@ -5202,6 +5220,7 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
+     rl.push_back({render::Op::PaneStat, 0.0, 0.0, 0.0, 0,
+                   "gear-action:rechart"});
+   }
++  if (footer_small_face) SelectObject(dc, skin::font_body());
+ }
+ 
+ void paint_quest_journal(ClientState& state, HDC dc, const RECT& bounds,
+@@ -7614,6 +7633,9 @@ struct TopHudLayout {
+   // authority, wrapped — never deleted.
+   bool controls_wrapped = false;
+   TopHudRect controls_second;
++  // Merge (nat-recon x aaa): third stacked line when the two-line wrap still
++  // cannot clear the fixed regions (wider merged UI face at 960px).
++  TopHudRect controls_third;
+ };
+ 
+ bool top_hud_clear(const TopHudRect& a, const TopHudRect& b, int gap) {
+@@ -7628,7 +7650,10 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open,
+                           const TopHudRect& art_size,
+                           const TopHudRect& controls_size,
+                           const TopHudRect& controls_size_a,
+-                          const TopHudRect& controls_size_b, bool session) {
++                          const TopHudRect& controls_size_b,
++                          const TopHudRect& controls_size_a3,
++                          const TopHudRect& controls_size_b3,
++                          const TopHudRect& controls_size_c3, bool session) {
+   TopHudLayout layout;
+   std::vector<TopHudRect> blocked;
+   const auto keep_out = [&](const HudRect& r) {
+@@ -7759,6 +7784,42 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open,
+       }
+     }
+   }
++  // Merge (nat-recon x aaa): final tier — when even the two-line wrap cannot
++  // clear the fixed regions, stack three lines on the same left ladders
++  // rather than letting the painter's historical pin overlap the objective
++  // and minimap (hud-pane-open clearance at 960x600 with the pane open).
++  if (layout.controls.w == 0 && controls_size_c3.w > 0) {
++    const auto try_rows_left_triple = [&](const TopHudRect& first,
++                                          const TopHudRect& second,
++                                          const TopHudRect& third,
++                                          int x) -> TopHudRect {
++      for (int row = 0; row + 2 < kTopHudRowCount; ++row) {
++        TopHudRect cand_a{x, row_y(row), first.w, first.h};
++        TopHudRect cand_b{x, row_y(row + 1), second.w, second.h};
++        TopHudRect cand_c{x, row_y(row + 2), third.w, third.h};
++        if (fits(row, cand_a) && fits(row + 1, cand_b) &&
++            fits(row + 2, cand_c)) {
++          occupied[row].push_back(cand_a);
++          occupied[row + 1].push_back(cand_b);
++          occupied[row + 2].push_back(cand_c);
++          layout.controls_wrapped = true;
++          layout.controls_second = cand_b;
++          layout.controls_third = cand_c;
++          return cand_a;
++        }
++      }
++      return TopHudRect{};
++    };
++    for (int pass = 0; pass < 2 && !layout.controls_wrapped; ++pass) {
++      const TopHudRect got = try_rows_left_triple(
++          controls_size_a3, controls_size_b3, controls_size_c3,
++          pass == 0 ? lane_x : kTopHudGutter + 6);
++      if (got.w > 0) {
++        layout.controls = got;
++        layout.controls_placed = true;
++      }
++    }
++  }
+   return layout;
+ }
+ 
+@@ -9817,6 +9878,57 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
+                             static_cast<int>(controls_line_b.size()),
+                             &controls_b_extent);
+ 
++    // Merge (nat-recon x aaa): under the merged Pixelmix face the two-line
++    // wrap still cannot fit the 960px corridor beside the open gear pane, so
++    // pre-measure a deterministic three-way split (separators nearest the
++    // thirds of the string) for the planner's final wrap tier.
++    std::string controls_line_a3 = controls_line_a;
++    std::string controls_line_b3 = controls_line_b;
++    std::string controls_line_c3;
++    {
++      std::vector<std::size_t> separators;
++      for (std::size_t p = controls_full.find(" | "); p != std::string::npos;
++           p = controls_full.find(" | ", p + 1))
++        separators.push_back(p);
++      if (separators.size() >= 2) {
++        const auto nearest = [&](std::size_t target, std::size_t exclude) {
++          std::size_t best = std::string::npos;
++          for (const std::size_t p : separators) {
++            if (p == exclude) continue;
++            if (best == std::string::npos ||
++                std::labs(static_cast<long>(p) - static_cast<long>(target)) <
++                    std::labs(static_cast<long>(best) -
++                              static_cast<long>(target)))
++              best = p;
++          }
++          return best;
++        };
++        const std::size_t first = nearest(controls_full.size() / 3,
++                                          std::string::npos);
++        const std::size_t second =
++            nearest(2 * controls_full.size() / 3, first);
++        if (first != std::string::npos && second != std::string::npos &&
++            first < second) {
++          controls_line_a3 = controls_full.substr(0, first);
++          controls_line_b3 =
++              controls_full.substr(first + 3, second - first - 3);
++          controls_line_c3 = controls_full.substr(second + 3);
++        }
++      }
++    }
++    SIZE controls_a3_extent{}, controls_b3_extent{}, controls_c3_extent{};
++    if (!controls_line_c3.empty()) {
++      GetTextExtentPoint32A(dc, controls_line_a3.c_str(),
++                            static_cast<int>(controls_line_a3.size()),
++                            &controls_a3_extent);
++      GetTextExtentPoint32A(dc, controls_line_b3.c_str(),
++                            static_cast<int>(controls_line_b3.size()),
++                            &controls_b3_extent);
++      GetTextExtentPoint32A(dc, controls_line_c3.c_str(),
++                            static_cast<int>(controls_line_c3.size()),
++                            &controls_c3_extent);
++    }
++
+     SIZE identity_extent{}, objective_extent{}, art_extent{}, controls_extent{};
+     GetTextExtentPoint32A(dc, identity.c_str(),
+                           static_cast<int>(identity.size()), &identity_extent);
+@@ -9849,11 +9961,33 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
+     const TopHudRect controls_size_b{
+         0, 0, controls_line_b.empty() ? 0 : controls_b_extent.cx + 12,
+         controls_line_b.empty() ? 0 : controls_b_extent.cy + 6};
++    // Merge (nat-recon x aaa): three-way wrap tier sizes (zero when the
++    // three-way split is unavailable, which disables the tier).
++    const TopHudRect controls_size_a3{
++        0, 0, controls_line_c3.empty() ? 0 : controls_a3_extent.cx + 12,
++        controls_line_c3.empty() ? 0 : controls_a3_extent.cy + 6};
++    const TopHudRect controls_size_b3{
++        0, 0, controls_line_c3.empty() ? 0 : controls_b3_extent.cx + 12,
++        controls_line_c3.empty() ? 0 : controls_b3_extent.cy + 6};
++    const TopHudRect controls_size_c3{
++        0, 0, controls_line_c3.empty() ? 0 : controls_c3_extent.cx + 12,
++        controls_line_c3.empty() ? 0 : controls_c3_extent.cy + 6};
+     const TopHudLayout layout = plan_top_hud(
+         width, static_cast<int>(bounds.bottom), state.gear_overlay,
+         active_minimap_side(state),
+         identity_size, objective_size, art_size, controls_size,
+-        controls_size_a, controls_size_b, static_cast<bool>(state.session));
++        controls_size_a, controls_size_b, controls_size_a3, controls_size_b3,
++        controls_size_c3, static_cast<bool>(state.session));
++    if (width == 960 && state.gear_overlay)
++      std::printf(
++          "    dbg plan: 1=%d a=%d b=%d a3=%d b3=%d c3=%d | ctrl=%d,%d,%d,%d "
++          "second=%d,%d third=%d,%d wrapped=%d\n",
++          controls_size.w, controls_size_a.w, controls_size_b.w,
++          controls_size_a3.w, controls_size_b3.w, controls_size_c3.w,
++          layout.controls.x, layout.controls.y, layout.controls.w,
++          layout.controls.h, layout.controls_second.x, layout.controls_second.y,
++          layout.controls_third.x, layout.controls_third.y,
++          layout.controls_wrapped ? 1 : 0);
+ 
+     // Historical placements double as fallbacks for degenerate widths where
+     // the planner cannot fit a region in any row.
+@@ -9897,7 +10031,30 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
+           identity_extent.cy}});
+ 
+     SetTextColor(dc, RGB(148, 160, 150));
+-    if (layout.controls_wrapped) {
++    if (layout.controls_third.w > 0) {
++      // Merge (nat-recon x aaa): three-line wrap tier — paint and trace the
++      // thirds the planner stacked.
++      TextOutA(dc, controls_at.x, controls_at.y, controls_line_a3.c_str(),
++               static_cast<int>(controls_line_a3.size()));
++      state.hud_rect_trace.push_back(
++          {"controls",
++           {controls_at.x, controls_at.y, controls_a3_extent.cx,
++            controls_a3_extent.cy}});
++      TextOutA(dc, layout.controls_second.x, layout.controls_second.y,
++               controls_line_b3.c_str(),
++               static_cast<int>(controls_line_b3.size()));
++      state.hud_rect_trace.push_back(
++          {"controls-second",
++           {layout.controls_second.x, layout.controls_second.y,
++            controls_b3_extent.cx, controls_b3_extent.cy}});
++      TextOutA(dc, layout.controls_third.x, layout.controls_third.y,
++               controls_line_c3.c_str(),
++               static_cast<int>(controls_line_c3.size()));
++      state.hud_rect_trace.push_back(
++          {"controls-third",
++           {layout.controls_third.x, layout.controls_third.y,
++            controls_c3_extent.cx, controls_c3_extent.cy}});
++    } else if (layout.controls_wrapped) {
+       TextOutA(dc, controls_at.x, controls_at.y, controls_line_a.c_str(),
+                static_cast<int>(controls_line_a.size()));
+       state.hud_rect_trace.push_back(
+@@ -10026,14 +10183,6 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
+                         std::to_string(verdigris::client::ui::compare_delta(
+                             state.equip_view, state.equip_view.acknowledged_atk))});
+     }
+-    {
+-      const int depth = verdigris::client::ui::pane_stack_depth(
+-          state.tree_pane, state.character_pane, state.gear_overlay);
+-      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, depth,
+-                    std::string("pane-stack:") + std::to_string(depth)});
+-      if (state.quit_requested)
+-        rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "pane-stack:quit"});
+-    }
+     rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "target:camera:top-down"});
+     rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "target:proportion:adult"});
+     rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "target:palette:bronze-stone"});
+@@ -10067,6 +10216,20 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
+     }
+   }
+ 
++  // Merge (nat-recon x aaa): the pane-stack depth label is journey evidence,
++  // not global chrome. The block above is skipped when the gear+character
++  // diptych owns the screen, but the depth label must still name the live
++  // stack — paint it outside that guard so "pane-stack:2" survives the
++  // diptych path (VG-UI-001).
++  {
++    const int depth = verdigris::client::ui::pane_stack_depth(
++        state.tree_pane, state.character_pane, state.gear_overlay);
++    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, depth,
++                  std::string("pane-stack:") + std::to_string(depth)});
++    if (state.quit_requested)
++      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "pane-stack:quit"});
++  }
++
+   // TASK-0145: relic-recovery toast — an authoritative crypt transition is
+   // announced by name while exploring.
+   if (state.relic_toast_ticks > 0 && !state.relic_toast.empty()) {
+@@ -13759,6 +13922,10 @@ int scenario_endgame_tablet_ui() {
+     if (entry.first == "pane-footer") footer = &entry.second;
+     if (entry.first == "pane-rechart") rechart = &entry.second;
+   }
++  if (pane)
++    std::printf("    dbg pane-frame: x=%d w=%d footer=%d,%d,%d small?extent follows\n",
++                pane->x, pane->w, footer ? footer->x : -1,
++                footer ? footer->w : -1, footer ? footer->h : -1);
+   scenario_check(pane && footer &&
+                      footer->x + footer->w <= pane->x + pane->w - 8,
+                  "endgame-tablet-ui: contextual controls stay inside the pane");
+diff --git a/native/client/presentation_state.cpp b/native/client/presentation_state.cpp
+index 2173ace9..80de92e2 100644
+--- a/native/client/presentation_state.cpp
++++ b/native/client/presentation_state.cpp
+@@ -499,14 +499,19 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
+       // is deferred), the warning keeps its neutral default instead of a
+       // client-only inverted copy of the player's aim.
+       telegraph.start_tick = now_tick;
+-      telegraph.windup_ticks = std::max(1, event.value > 20 ? event.value / 50 : event.value);
++      // Merge (nat-recon x aaa): the remote consumer stores the catalog
++      // window. The payload is milliseconds on the wire, so the value/50
++      // guess must not invent a longer windup than the catalog's typed
++      // ticks — route the payload through the shared spec helper (ticks
++      // pass through, milliseconds collapse to the catalog window).
++      const auto spec = actions::spec_from_payload(
++          action_id, event.value, verdigris::Simulation::presentation_catalog());
++      telegraph.windup_ticks = spec.duration_ticks;
+       telegraph.radius_tiles = std::max(1, event.radius);
+       telegraph.inner_radius_tiles = std::clamp(
+           event.inner_radius, 0, telegraph.radius_tiles - 1);
+       // VG-ACT-005 (merge): catalog reach still accompanies the warning so
+       // reach-aware paint never has to guess a cone length.
+-      const auto spec = actions::spec_from_payload(
+-          action_id, event.value, verdigris::Simulation::presentation_catalog());
+       telegraph.reach = spec.reach;
+       fx.telegraphs[event.actor_id.empty() ? "foe" : event.actor_id] = std::move(telegraph);
+       break;
