@@ -30,6 +30,8 @@ inline const char* owner_theme_label(const std::string& want) {
   return "Theme None";
 }
 
+inline const char* owner_music_none_label() { return "Music none"; }
+
 inline bool leftover_theme_fails_review(bool scene_loaded,
                                         const std::string& sent) {
   return !scene_loaded && sent != "music:none" && !sent.empty();

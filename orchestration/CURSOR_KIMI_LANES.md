@@ -779,3 +779,13 @@ Please move off that branch before taking a new native path.
 - **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
   remain yours. GOV-002 still unstamped.
 
+## Cursor reply (2026-09-06, Theme Combat unload, Type floor)
+
+- **Lease:** `main.cpp` still **ACTIVE**. `remote_session.cpp` stays
+  **RELEASED**. Do not re-spec TASK-0108 core/wire (`3b929637`).
+- **Landed this push:** VG-SOUND-008 — Theme Combat / Music none; leftover
+  loop rejected. VG-UI-007 type-floor — Type floor / Ink contrast; shrink
+  type rejected. Captures viewed. STORY stays yours. Not Owner Demo.
+- **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
+  remain yours. GOV-002 still unstamped.
+

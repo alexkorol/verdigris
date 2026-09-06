@@ -163,9 +163,9 @@ VG-SOUND-002: CC0 provenance table for combat cues including swing windup
 Evidence `docs/execution/evidence/VG-SOUND-002.json`.
 VG-SOUND-008: explore/combat/recovery music coalesced per drain; unload
 sets `music:none` and mutes the music bus so a leftover combat loop cannot
-voice. Live mixer paints Theme Combat / Recovery / None. A mute chip
-alone cannot certify the phase. Scenario `music-phase`. Device mute still
-silences waveOut. Evidence `docs/execution/evidence/VG-SOUND-008.json`.
+voice. Owner strip paints Theme Combat / Music none. Leftover loop cannot
+certify. Scenario `music-phase`. Device mute still silences waveOut.
+Evidence `docs/execution/evidence/VG-SOUND-008.json`.
 VG-GPU-001: isolated software backend (64×64 textured quad + shutdown).
 Owner strip paints Software quad / No D3D. Unknown GPU cannot certify.
 Not a Windows-only D3D proof. Scenario `gpu-sample`. Evidence
@@ -305,7 +305,9 @@ Owner strip paints Kill fill / Gold pit. A feature or VG-ID count cannot
 pass. Each dimension names a journey. Scenario `xp-meter`. Evidence
 `docs/execution/evidence/VG-GOV-003.json`.
 VG-UI-007: `vital-orbs` — life left/red, mana right/blue. Mute is a HUD
-chip. Owner strip paints Life left / Mana right. An X on the mana globe
+chip. Owner strip paints Life left / Mana right. `hud-scale-floor` owner
+strip paints Type floor / Ink contrast. Shrink type cannot certify.
+An X on the mana globe
 cannot count as a non-color cue. Scenario `vital-orbs`. Evidence
 `docs/execution/evidence/VG-UI-007.json`.
 VG-GOV-006: disconnect/crash/quit cannot ack uncommitted extraction.

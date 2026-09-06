@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Theme Combat unload, Type floor (Cursor)
+
+- VG-SOUND-008: owner Theme Combat strip paints Music none. Leftover loop
+  cannot certify. Unload still mutes the music bus. STORY phase stays Kimi.
+- VG-UI-007: `hud-scale-floor` owner Type floor strip paints Ink contrast.
+  Shrink type cannot certify overflow. Life left / Mana right on
+  `vital-orbs` is unchanged. Owner Demo (VG-UI-006) not duplicated.
+- Scenarios `music-phase` / `hud-scale-floor` PASS. Captures viewed.
+  Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — layout v1, soak envelope, named machine (Cursor)
 
 - VG-GPU-003: owner Layout v1 strip paints No source. Stale HLSL cannot

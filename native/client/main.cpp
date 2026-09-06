@@ -514,6 +514,8 @@ struct ClientState {
   bool shader_bindings_review_strip = false;
   bool memory_soak_review_strip = false;
   bool frame_budget_review_strip = false;
+  bool music_phase_review_strip = false;
+  bool hud_scale_floor_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -7948,6 +7950,84 @@ void paint_frame_budget_review_strip(ClientState& state, HDC dc, const RECT& bou
   SelectObject(dc, old_font);
 }
 
+void paint_music_phase_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                    render::List& rl) {
+  if (!state.music_phase_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "music-phase-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::music::owner_theme_label("music:combat");
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::client::music::owner_music_none_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "leftover loop";
+  TextOutA(dc, rx - 44 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "sound:theme-combat"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "sound:music-none"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "sound-strip:leftover-loop-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_hud_scale_floor_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                        render::List& rl) {
+  if (!state.hud_scale_floor_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "hud-scale-floor-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = skin::owner_type_floor_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = skin::owner_ink_contrast_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "shrink type";
+  TextOutA(dc, rx - 40 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "ui:type-floor"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "ui:ink-contrast"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "ui-strip:shrink-type-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -9010,6 +9090,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_shader_bindings_review_strip(state, dc, bounds, rl);
   paint_memory_soak_review_strip(state, dc, bounds, rl);
   paint_frame_budget_review_strip(state, dc, bounds, rl);
+  paint_music_phase_review_strip(state, dc, bounds, rl);
+  paint_hud_scale_floor_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -10378,8 +10460,21 @@ int scenario_hud_scale_floor() {
     return 0;
   }
   const std::string png = dir + "\\hud-scale-floor-960x600.png";
+  state.hud_scale_floor_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "hud-scale-floor: live HUD capture written");
+  bool type_floor = false;
+  bool ink_contrast = false;
+  bool shrink_type = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "ui:type-floor") type_floor = true;
+    if (item.label == "ui:ink-contrast") ink_contrast = true;
+    if (item.label == "ui-strip:shrink-type-rejected") shrink_type = true;
+  }
+  scenario_check(type_floor && ink_contrast,
+                 "hud-scale-floor: live HUD names Type floor and Ink contrast");
+  scenario_check(shrink_type, "hud-scale-floor: live HUD rejects shrink type");
   return 0;
 }
 
@@ -12682,8 +12777,21 @@ int scenario_music_phase() {
   scenario_follow_camera(capture);
   drain_audio(capture);
   const std::string png = dir + "\\music-phase-960x600.png";
+  capture.music_phase_review_strip = true;
   scenario_check(reference_present(capture, 960, 600, png),
                  "music-phase: combat-theme capture written");
+  bool theme_combat = false;
+  bool music_none = false;
+  bool leftover_loop = false;
+  for (const auto& item : capture.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "sound:theme-combat") theme_combat = true;
+    if (item.label == "sound:music-none") music_none = true;
+    if (item.label == "sound-strip:leftover-loop-rejected") leftover_loop = true;
+  }
+  scenario_check(theme_combat && music_none,
+                 "music-phase: live HUD names Theme Combat and Music none");
+  scenario_check(leftover_loop, "music-phase: live HUD rejects leftover loop");
   return scenario_failures;
 }
 

@@ -104,6 +104,9 @@ inline int ui_scale() { return ui_scale_ref(); }
 inline constexpr int kMinSmallPx = 10;
 inline constexpr int kMinBodyPx = 12;
 
+inline const char* owner_type_floor_label() { return "Type floor"; }
+inline const char* owner_ink_contrast_label() { return "Ink contrast"; }
+
 // Registers the web client's pixel fonts for this process so both clients
 // share one typeface. Safe to call often; loads once.
 inline void ensure_game_fonts() {

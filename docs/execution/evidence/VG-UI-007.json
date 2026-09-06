@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-007",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "98c867898575461579ca9e7ceb0994a1e6968b15",
+  "base_sha": "1b1100d6347134ef2c6b8922aa41c25d125ae54f",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "hud-pane-readability",
@@ -12,7 +12,8 @@
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario vital-orbs", "exit_code": 0}
+    {"run": "native/build/verdigris_client.exe --scenario vital-orbs", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario hud-scale-floor", "exit_code": 0}
   ],
   "assertions": [
     "scale 0 is rejected; shrinking type is not the contrast fix",
@@ -21,7 +22,8 @@
     "first Escape closes the pane; bare Escape requests quit",
     "life orb is left of mana; live 3440x1440 window matches that layout",
     "pack captures write under docs/execution/captures/art-wave, not the TASK-0159 folder",
-    "live HUD names Life left and Mana right"
+    "live HUD names Life left and Mana right",
+    "live HUD names Type floor and Ink contrast"
   ],
   "negative_control": {
     "name": "TASK-0159 folder capture alone, overlapping pane, shrinking fonts below the floor, or an X on the mana globe as the mute cue",
@@ -49,7 +51,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/hud-scale-floor-960x600.png",
-      "sha256": "8f278a2c10f522ff03b5d48c2f772d6128dfaa20a968288f1ada6c2d1c107cef",
+      "sha256": "639d61e6c18559e988b751a47721b0ffd5a3efdbae996f4a5cdec1c4a84a4b0b",
       "produced_by": "native/build/verdigris_client.exe --scenario hud-scale-floor"
     },
     {
@@ -70,6 +72,7 @@
   "limitations": [
     "Extends TASK-0159; that packet's STATUS.md and historical captures were not rewritten.",
     "Owner strip paints Life left / Mana right. X on mana cannot certify a non-color cue.",
+    "hud-scale-floor owner strip paints Type floor / Ink contrast. Shrink type cannot certify overflow.",
     "VG-UI-006 Owner Demo navigation is not this packet and was not duplicated.",
     "Remote pane check remains 960x600; owner ultrawide proof is the local present path.",
     "No TASK numbers minted."

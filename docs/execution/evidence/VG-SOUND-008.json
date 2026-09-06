@@ -4,7 +4,7 @@
   "planning_id": "VG-SOUND-008",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "ee908ec28339ea68acf521dd90f748d8de65fc59",
+  "base_sha": "1b1100d6347134ef2c6b8922aa41c25d125ae54f",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "music-phase",
@@ -19,7 +19,8 @@
     "live HUD paints Theme Combat",
     "carry-to-exit schedules music:recovery",
     "unloaded scene sets music:none and mutes the music bus",
-    "muted unload cannot voice a leftover combat loop"
+    "muted unload cannot voice a leftover combat loop",
+    "live HUD names Theme Combat and Music none"
   ],
   "negative_control": {
     "name": "paused/unloaded scene leaving a competing music send",
@@ -29,7 +30,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/music-phase-960x600.png",
-      "sha256": "6c9cb9a7abfd93a9253fc5218f2b43aa5ea4eb4a487b0f6ccf9ef0d69490d928",
+      "sha256": "f850945930481d7368f874b223955e1e4160cf0ec24dc691a45659da343167a5",
       "produced_by": "native/build/verdigris_client.exe --scenario music-phase"
     }
   ],
@@ -37,6 +38,6 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Device remains muted in the harness; proof is mixer Theme Combat plus Loop Tin village wind, not a heard track.",
-    "Capture hash diverges from audio-prefs because persisted volumes stay 100/100 here. STORY phase authority stays with Kimi."
+    "Owner strip paints Theme Combat / Music none. Leftover loop cannot certify. STORY phase authority stays with Kimi."
   ]
 }
