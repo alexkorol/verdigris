@@ -96,13 +96,41 @@ std::string json_escape(const std::string& input) {
   return output.str();
 }
 
+// ── VG-SEC-001 wire-input budgets ───────────────────────────────────────────
+// Explicit bounds for the recursive-descent JSON parser below, remedying
+// TASK-0098 finding F-A / PC-014 (unbounded client-controlled nesting vs the
+// ~1 MiB reader-thread stack) and bounding per-message allocation work.
+// Exceeding any budget rejects the whole input with an error before any
+// consumer sees it — no crash, no partial parse, no state mutation.
+// Basis for the values (surveyed and measured at base e7b65360):
+//  - deepest legitimate payload: measured 9 container levels (instance
+//    dev:state snapshot with map); the title GLB metadata chunk measures 6
+//    levels / 996 bytes;
+//  - largest legitimate payload: measured 46,347 bytes (town dev:state
+//    snapshot carrying the 200x200 walkable map); the client transport
+//    already refuses frames over 1 MiB ("no single game envelope is 1MB",
+//    remote_session.cpp), which this byte budget matches;
+//  - widest legitimate payload: measured 1,905 tokens (instance snapshot).
+//    The token floor is set by the client-side passiveTree transport
+//    contract: remote_session.cpp applies its own entry bound
+//    (kPassiveTreeTransportBound = 65536) AFTER JSON parsing and owns the
+//    "transport entry bound" diagnostic pinned by the frozen session tests
+//    (D-129), so the parser must still accept a 65537-entry tree frame
+//    (~65.6k tokens, ~197 KB) for that bound to fire.
+constexpr std::size_t kMaxJsonDepth = 32;  // container nesting; deepest measured = 9
+constexpr std::size_t kMaxJsonTokens = 262144;  // parsed values + object keys; 4x the
+                                                // passiveTree transport bound, >130x real traffic
+constexpr std::size_t kMaxJsonInputBytes = 1u << 20;  // 1 MiB; largest measured = 46,347 bytes
+                                                      // (matches the client reader frame ceiling)
+
 class JsonParser {
  public:
   explicit JsonParser(const std::string& text) : text_(text) {}
 
   bool parse(JsonValue& result, std::string* error) {
+    if (text_.size() > kMaxJsonInputBytes) return fail("JSON input exceeds the byte budget", error);
     skip();
-    if (!value(result)) return fail("invalid JSON value", error);
+    if (!value(result)) return fail(budget_error_ ? budget_error_ : "invalid JSON value", error);
     skip();
     if (position_ != text_.size()) return fail("trailing JSON data", error);
     return true;
@@ -113,6 +141,31 @@ class JsonParser {
     if (error) *error = std::string(message) + " at byte " + std::to_string(position_);
     return false;
   }
+  // VG-SEC-001: token budget — every parsed value and object key counts once,
+  // so adversarially wide inputs cannot force unbounded vector/map growth.
+  bool count_token() {
+    if (tokens_ >= kMaxJsonTokens) {
+      budget_error_ = "JSON input exceeds the token budget";
+      return false;
+    }
+    ++tokens_;
+    return true;
+  }
+  // VG-SEC-001: depth budget — entering a container past the limit rejects the
+  // input before any further recursion, so reader-thread stack use stays
+  // bounded by kMaxJsonDepth frames regardless of payload shape.
+  bool enter_container() {
+    if (depth_ >= kMaxJsonDepth) {
+      budget_error_ = "JSON input exceeds the nesting-depth budget";
+      return false;
+    }
+    return true;
+  }
+  struct ContainerDepth {
+    explicit ContainerDepth(JsonParser& parser) : parser_(parser) { ++parser_.depth_; }
+    ~ContainerDepth() { --parser_.depth_; }
+    JsonParser& parser_;
+  };
   void skip() { while (position_ < text_.size() && std::isspace(static_cast<unsigned char>(text_[position_]))) ++position_; }
   bool consume(char expected) {
     skip();
@@ -121,6 +174,7 @@ class JsonParser {
     return true;
   }
   bool value(JsonValue& result) {
+    if (!count_token()) return false;
     skip();
     if (position_ >= text_.size()) return false;
     const char ch = text_[position_];
@@ -174,12 +228,14 @@ class JsonParser {
   }
   bool object(JsonValue& result) {
     if (!consume('{')) return false;
+    if (!enter_container()) return false;
+    ContainerDepth depth_guard(*this);
     JsonValue::Object object;
     skip();
     if (consume('}')) { result = JsonValue(std::move(object)); return true; }
     for (;;) {
       std::string key;
-      if (!string(key) || !consume(':')) return false;
+      if (!string(key) || !count_token() || !consume(':')) return false;
       JsonValue value;
       if (!value_(value)) return false;
       object.emplace(std::move(key), std::move(value));
@@ -189,6 +245,8 @@ class JsonParser {
   }
   bool array(JsonValue& result) {
     if (!consume('[')) return false;
+    if (!enter_container()) return false;
+    ContainerDepth depth_guard(*this);
     JsonValue::Array array;
     skip();
     if (consume(']')) { result = JsonValue(std::move(array)); return true; }
@@ -203,6 +261,9 @@ class JsonParser {
   bool value_(JsonValue& result) { return value(result); }
   const std::string& text_;
   std::size_t position_ = 0;
+  std::size_t depth_ = 0;
+  std::size_t tokens_ = 0;
+  const char* budget_error_ = nullptr;
 };
 
 void put(JsonValue::Object& object, const std::string& key, JsonValue value) { object.emplace(key, std::move(value)); }
