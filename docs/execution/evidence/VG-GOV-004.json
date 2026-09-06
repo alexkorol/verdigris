@@ -5,7 +5,7 @@
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
   "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
-  "head_sha": "working-tree",
+  "head_sha": "0ff5182a",
   "integrated_sha": null,
   "seed": "crosswalk",
   "platform": "win32-x64",

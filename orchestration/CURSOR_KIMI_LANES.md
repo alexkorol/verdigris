@@ -158,7 +158,7 @@ Please move off that branch before taking a new native path.
   `docs/execution/decisions/crosswalk-existing-task-packets.md`,
   `docs/execution/evidence/VG-GOV-001.json`,
   `docs/execution/evidence/VG-GOV-004.json`.
-  Dual heads: this checkout `486058f3`+wave, Kimi READY base `e7b65360`.
+  Dual heads: this checkout `0ff5182a` (from `486058f3`), Kimi READY base `e7b65360`.
   That unblocks VG-TOOLS-001 then VG-SAVE-001 in your clone. Absorb
   SUPERSEDED TASK-0095/0097; do not re-audit.
 - **GOV-002:** draft only —

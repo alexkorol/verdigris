@@ -5,7 +5,7 @@
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
   "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
-  "head_sha": "working-tree",
+  "head_sha": "0ff5182a",
   "integrated_sha": null,
   "content_hash": null,
   "seed": "baseline",
@@ -48,7 +48,7 @@
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "NOT_REQUIRED",
   "limitations": [
-    "Working tree is dirty at record time; head_sha is not a commit until this wave lands.",
+    "Wave commit 0ff5182a records the architect snapshot. Package hash remains unset.",
     "Kimi's playtest/native gates at e7b65360 were run in kimiwork_verdigris, not this checkout.",
     "Does not mint TASK numbers. VG-GOV-002 remains unstamped."
   ]

@@ -10,6 +10,7 @@ manifest, not an owner-frozen package hash. Decision write-up:
 | Architect checkout | `Z:\Code\Games\delaford\delaford_game` |
 | Architect branch | `codex/native-reconstitution` |
 | Architect HEAD at wave start | `486058f31002c4f1c55cd0e71888defc204bbd3e` |
+| Architect wave commit | `0ff5182a` native: land pack ingest and Cursor-lane presentation wave |
 | Tip subject then | docs: handoff for vector art + themed roads run |
 | Kimi READY / program head | `origin/codex/goal-aaa-systems` @ `e7b65360` |
 | Origin of this branch | `origin/codex/native-reconstitution` (architect checkout was 20 commits ahead at record; owner now asked to push) |
