@@ -9131,30 +9131,9 @@ int scenario_progression_surface() {
   return 0;
 }
 
-// TASK-0159: fresh readability evidence lands in THIS task's captures/
-// folder for architect visual review.
-std::string readability_capture_dir() {
-  std::string forced;
-  const int overridden = capture_root_override(&forced);
-  if (overridden != 0) return overridden > 0 ? forced : std::string{};
-  std::vector<std::string> bases{".", executable_directory()};
-  const char* marker =
-      "orchestration\\tasks\\TASK-0159-native-hud-pane-readability";
-  for (const auto& base : bases) {
-    std::string prefix = base;
-    for (int depth = 0; depth <= 6; ++depth) {
-      const std::string folder = prefix + (prefix.empty() ? "" : "\\") + marker;
-      if (directory_exists(folder)) {
-        const std::string captures = folder + "\\captures";
-        CreateDirectoryA(captures.c_str(), nullptr);
-        return captures;
-      }
-      prefix += prefix.empty() ? ".." : "\\..";
-    }
-  }
-  CreateDirectoryA("captures", nullptr);
-  return "captures";
-}
+// VG-UI-007 extends TASK-0159: pack evidence lands in art-wave so a
+// historical TASK folder cannot certify the owner 3440x1440 HUD.
+std::string readability_capture_dir() { return art_wave_capture_dir(); }
 
 // ── TASK-0159: hud-pane-readability ─────────────────────────────────────
 // Opens the REAL gear pane through the production presentation path at
@@ -9184,7 +9163,8 @@ int scenario_hud_pane_readability() {
                               "pane-seat",        "pane-banked",
                               "pane-progression", "pane-footer"};
 
-  const struct Size { int w; int h; } sizes[] = {{960, 600}, {1366, 768}};
+  const struct Size { int w; int h; } sizes[] = {
+      {960, 600}, {1366, 768}, {3440, 1440}};
   const std::string dir = readability_capture_dir();
   if (dir.empty()) {
     scenario_check(false,

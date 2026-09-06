@@ -1,5 +1,17 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — VG-UI-007 pane vs HUD at owner 3440×1440 (Cursor)
+
+- Extends TASK-0159: `hud-pane-readability` now presents 960×600, 1366×768,
+  and 3440×1440. Open gear pane stays disjoint from identity, controls,
+  objective, art chip, minimap, quickbar, and orbs. Captures write to
+  `docs/execution/captures/art-wave/` — a TASK-0159 folder PNG cannot
+  certify this wave.
+- Viewed open/closed 3440×1440 plus open 960×600. Life red left, mana blue
+  right, gear pane on the right, HUD chips clear of the pane.
+- Evidence `docs/execution/evidence/VG-UI-007.json`. Not Owner Demo.
+  `remote_session.cpp` remains narrow-released for Kimi.
+
 ## 2026-09-06 — live HUD window + VG-UI-007 scale/cues (Cursor)
 
 - Presentation gate: launched `verdigris_client.exe`, captured the live

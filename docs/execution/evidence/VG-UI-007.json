@@ -4,31 +4,49 @@
   "planning_id": "VG-UI-007",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "147e4ced5697ad7ec837b639c95b6f068fde52a1",
+  "base_sha": "bb95fd8c68795f54a6be0815910a9d5f160952c1",
   "head_sha": "working-tree",
   "integrated_sha": null,
-  "seed": "hud-scale-floor",
+  "seed": "hud-pane-readability",
   "platform": "win32-x64",
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario hud-scale-floor", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario vital-orbs", "exit_code": 0},
-    {"run": "native/tools/capture-window.ps1 -OutPath docs/execution/captures/art-wave/live-hud-owner.png", "exit_code": 0}
+    {"run": "native/build/verdigris_client.exe --scenario hud-pane-readability", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario vital-orbs", "exit_code": 0}
   ],
   "assertions": [
-    "scale 0 is rejected; small/body glyphs stay at or above the type floor",
-    "640x480 still respects the type floor; shrinking type is not the contrast fix",
-    "low life paints danger-shape:life (chevron) next to 20/100",
-    "foe hover tooltip fits inside 960 and uses tooltip-shape:foe + ink-on-panel contrast",
-    "life orb is left of mana; left globe reads red, right globe reads blue",
-    "live 3440x1440 window shows red 100/100 left, blue 50/50 right, XP lv 1, skill chips, objective"
+    "scale 0 is rejected; shrinking type is not the contrast fix",
+    "HUD regions stay pairwise disjoint at 960x600, 1366x768, and 3440x1440",
+    "open gear pane never intersects identity/controls/objective/art/minimap/quickbar/orbs at those sizes",
+    "first Escape closes the pane; bare Escape requests quit",
+    "life orb is left of mana; live 3440x1440 window matches that layout",
+    "pack captures write under docs/execution/captures/art-wave, not the TASK-0159 folder"
   ],
   "negative_control": {
-    "name": "R/B swapped still, shrinking fonts below the floor, or helper-only scale without paint",
+    "name": "TASK-0159 folder capture alone, overlapping pane, or shrinking fonts below the floor",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-pane-readability-open-3440x1440.png",
+      "sha256": "42b0915d40eb2f995533603959882350b63bb220793a243efc626b93b42a1492",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-pane-readability-closed-3440x1440.png",
+      "sha256": "c3d68f651df53802863c294c4733ef1415488bbac3d350ebb05ab1edf9e11ced",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/hud-pane-readability-open-960x600.png",
+      "sha256": "a257426df4cfa942f6298054219f2ec216d248ea0d54094cb175943b3ed6fb66",
+      "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
+    },
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/hud-scale-floor-960x600.png",
@@ -37,23 +55,17 @@
     },
     {
       "kind": "screenshot",
-      "path": "docs/execution/captures/art-wave/vital-orbs-960x600.png",
-      "sha256": "d9d96dc8ce21df99612d4f01f649a28386e4b48d6ad18aab74a0d611e36611da",
-      "produced_by": "native/build/verdigris_client.exe --scenario vital-orbs"
-    },
-    {
-      "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/live-hud-owner.png",
       "sha256": "0caaad08d9b52ec2fad7c7d9a2bd3d57acd11ee08f5dbb8a1cd65bdcf8acd214",
-      "produced_by": "native/tools/capture-window.ps1 on live verdigris_client.exe at 3440x1440; PrintWindow DIB BGR swapped to RGB for perceptual review"
+      "produced_by": "native/tools/capture-window.ps1 on live verdigris_client.exe at 3440x1440"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
+    "Extends TASK-0159; that packet's STATUS.md and historical captures were not rewritten.",
     "VG-UI-006 Owner Demo navigation is not this packet and was not duplicated.",
-    "capture-window.ps1 is on the Kimi native/tools lease; BGR correction is documented on the PNG artifact only.",
-    "Mute cue is a top HUD chip; scenarios still mute the sink.",
+    "Remote pane check remains 960x600; owner ultrawide proof is the local present path.",
     "No TASK numbers minted."
   ]
 }
