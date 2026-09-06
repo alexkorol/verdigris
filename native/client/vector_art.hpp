@@ -828,6 +828,46 @@ inline void dwelling(HDC dc, int cx, int base_y, int height_px, COLORREF wall,
   fill_poly(dc, door, 4, trim, dark);
 }
 
+inline constexpr bool kRuinHasBrokenWall = true;
+inline constexpr bool kRuinHasRubble = true;
+inline constexpr bool kRuinHasWheels = false;
+
+inline bool wagon_ruin_fails_review(bool broken_wall, bool rubble, bool wheels) {
+  return !broken_wall || !rubble || wheels;
+}
+
+// Collapsed bronze-age house: one standing wall, fallen timber, rubble.
+// A covered wagon cannot certify SceneryKind::Ruin. A complete hut with
+// a pitched roof also cannot — the right side is gone.
+inline void ruin(HDC dc, int cx, int base_y, int height_px, COLORREF wall,
+                 COLORREF rubble, COLORREF timber) {
+  const double s = height_px / 100.0;
+  const COLORREF dark = RGB(20, 16, 12);
+  const int left = cx - std::max(8, static_cast<int>(20 * s));
+  const int mid = cx - std::max(2, static_cast<int>(4 * s));
+  const int wall_h = std::max(14, static_cast<int>(40 * s));
+  const int step_h = std::max(6, static_cast<int>(14 * s));
+  POINT stub[5] = {{left, base_y},
+                   {mid + std::max(2, static_cast<int>(6 * s)), base_y},
+                   {mid + std::max(1, static_cast<int>(4 * s)), base_y - step_h},
+                   {mid, base_y - wall_h},
+                   {left + std::max(1, static_cast<int>(2 * s)),
+                    base_y - wall_h + std::max(2, static_cast<int>(6 * s))}};
+  fill_poly(dc, stub, 5, wall, dark);
+  line(dc, mid, base_y - std::max(8, static_cast<int>(18 * s)),
+       cx + std::max(8, static_cast<int>(18 * s)),
+       base_y - std::max(2, static_cast<int>(4 * s)), timber,
+       std::max(2, static_cast<int>(3 * s)));
+  fill_ell(dc, cx + std::max(4, static_cast<int>(10 * s)),
+           base_y - std::max(2, static_cast<int>(5 * s)),
+           std::max(5, static_cast<int>(10 * s)),
+           std::max(3, static_cast<int>(6 * s)), rubble, dark);
+  fill_ell(dc, cx + std::max(8, static_cast<int>(18 * s)),
+           base_y - std::max(1, static_cast<int>(3 * s)),
+           std::max(3, static_cast<int>(6 * s)),
+           std::max(2, static_cast<int>(4 * s)), shade(rubble, 0.8), dark);
+}
+
 inline void market_stall(HDC dc, int cx, int base_y, int height_px,
                          COLORREF canvas, COLORREF wood) {
   const double s = height_px / 100.0;

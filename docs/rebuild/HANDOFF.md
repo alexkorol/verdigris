@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — tin village ruins as collapsed walls (Cursor)
+
+- VG-ART-004: town `SceneryKind::Ruin` paints a one-sided broken wall,
+  fallen timber, and rubble, not a covered wagon. Collision radii and
+  dressing-gate non-solidity are unchanged. `wagon` remains in
+  `vector_art.hpp` unused by the village kit.
+- Scenario `kit-chunk` / `visual-target` PASS. Capture viewed:
+  `docs/execution/captures/art-wave/kit-chunk-960x600.png`. Not Owner Demo.
+
 ## 2026-09-06 — tin village dwellings as huts (Cursor)
 
 - VG-ART-004: `SceneryKind::Dwelling` paints a mudbrick/thatch hut (walls,

@@ -35,7 +35,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/visual-target-960x600.png",
-      "sha256": "62f43b34c71c278c9d0e62726e692e305a7579ab1d01e9e4703b93d0418956c7",
+      "sha256": "cdc761677d69264c58073b98ac8f2491323833e90b94e870c79ba54dd72e4102",
       "produced_by": "native/build/verdigris_client.exe --scenario visual-target"
     }
   ],

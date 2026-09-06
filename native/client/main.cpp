@@ -2516,8 +2516,8 @@ void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& came
       break;
     case SceneryKind::Ruin:
       if (town) {
-        vector_art::wagon(dc, base.x, base.y, h, RGB(118, 92, 60),
-                          RGB(196, 182, 150));
+        vector_art::ruin(dc, base.x, base.y, h, RGB(128, 96, 62),
+                         RGB(96, 74, 50), RGB(48, 34, 24));
       } else {
         vector_art::standing_stones(dc, base.x, base.y, h,
                                     verdigris::art::bronze_stone::gdi_stone());
@@ -9845,6 +9845,12 @@ int scenario_kit_chunk() {
                      vector_art::kDwellingHasWalls, vector_art::kDwellingHasRoof,
                      vector_art::kDwellingHasDoor),
                  "kit-chunk: dwellings have walls, thatch, and a door");
+  scenario_check(vector_art::wagon_ruin_fails_review(false, false, true),
+                 "kit-chunk: a covered wagon cannot certify a ruin");
+  scenario_check(!vector_art::wagon_ruin_fails_review(
+                     vector_art::kRuinHasBrokenWall, vector_art::kRuinHasRubble,
+                     vector_art::kRuinHasWheels),
+                 "kit-chunk: ruins have a broken wall and rubble, not wheels");
 
   std::unordered_set<std::string> occupancy;
   bool unique_landmarks = true;
@@ -10349,6 +10355,12 @@ int scenario_visual_target() {
                      vector_art::kDwellingHasWalls, vector_art::kDwellingHasRoof,
                      vector_art::kDwellingHasDoor),
                  "visual-target: dwellings have walls, thatch, and a door");
+  scenario_check(vector_art::wagon_ruin_fails_review(false, false, true),
+                 "visual-target: a covered wagon cannot certify a ruin");
+  scenario_check(!vector_art::wagon_ruin_fails_review(
+                     vector_art::kRuinHasBrokenWall, vector_art::kRuinHasRubble,
+                     vector_art::kRuinHasWheels),
+                 "visual-target: ruins have a broken wall and rubble, not wheels");
   scenario_check(vector_art::crate_foe_fails_review(false, false, false),
                  "visual-target: a crate-shaped foe cannot certify the sheet");
   scenario_check(!vector_art::crate_foe_fails_review(

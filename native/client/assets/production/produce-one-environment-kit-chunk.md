@@ -11,7 +11,8 @@ blocking uses the same `solid` set (`scenery_blocks_segment`).
 A circle-on-stick lollipop cannot certify the kit. Shipped trees are a
 forked bole with a root flare and clustered canopy. A scalloped market
 stall cannot certify a dwelling; shipped houses have walls, thatch, and
-a door.
+a door. A covered wagon cannot certify a ruin; shipped ruins have a
+broken wall and rubble.
 
 Acceptance command: `native/build/verdigris_client.exe --scenario kit-chunk`
 
