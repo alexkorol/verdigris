@@ -464,6 +464,7 @@ struct ClientState {
   bool loot_labels = false;
   verdigris::client::items::LootFilter loot_filter{};
   bool gear_overlay = false;
+  bool pose_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -5809,6 +5810,55 @@ vector_art::Held equipped_held(const ClientState& state) {
   return vector_art::Held::None;
 }
 
+void paint_attack_pose_strip(ClientState& state, HDC dc, const RECT& bounds,
+                             render::List& rl) {
+  if (!state.pose_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 456 * s;
+  const int pane_h = 118 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 4, "pose-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = "Strike poses";
+  TextOutA(dc, left + 12 * s, top + 6 * s, title, static_cast<int>(strlen(title)));
+  const char* names[4] = {"Windup", "Active", "Recover", "Cancel"};
+  const char* tokens[4] = {"pose-strip:windup", "pose-strip:active",
+                           "pose-strip:recovery", "pose-strip:cancel"};
+  const vector_art::Pose::AttackStage stages[4] = {
+      vector_art::Pose::AttackStage::Windup,
+      vector_art::Pose::AttackStage::Active,
+      vector_art::Pose::AttackStage::Recovery,
+      vector_art::Pose::AttackStage::Cancel};
+  const double attack_amt[4] = {0.2, 0.55, 0.9, 0.35};
+  vector_art::Held held = equipped_held(state);
+  if (held == vector_art::Held::None) held = vector_art::Held::Sword;
+  for (int i = 0; i < 4; ++i) {
+    const int cx = left + 58 * s + i * 110 * s;
+    const int base_y = top + pane_h - 22 * s;
+    vector_art::Pose pose;
+    pose.attack_stage = stages[i];
+    pose.attack = attack_amt[i];
+    vector_art::humanoid(dc, cx, base_y, 72 * s, vector_art::player_style(),
+                         pose, held);
+    SIZE extent{};
+    GetTextExtentPoint32A(dc, names[i], static_cast<int>(strlen(names[i])),
+                          &extent);
+    SetTextColor(dc, skin::kInk);
+    TextOutA(dc, cx - extent.cx / 2, top + pane_h - 16 * s, names[i],
+             static_cast<int>(strlen(names[i])));
+    rl.push_back({render::Op::Hud, static_cast<double>(cx),
+                  static_cast<double>(base_y), 0.0, i + 1, tokens[i]});
+  }
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -6061,7 +6111,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
           pose.attack_stage = player_attack_stage(state);
           pose.mirror = player.facing.x < 0;
           vector_art::humanoid(dc, base.x, base.y,
-                               std::max(10, static_cast<int>(kTileUnits * 1.5 *
+                               std::max(10, static_cast<int>(kTileUnits * 1.75 *
                                                              base.scale)),
                                vector_art::player_style(), pose, held);
           rl.push_back({render::Op::Hud, static_cast<double>(base.x),
@@ -6814,6 +6864,8 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     TextOutA(dc, 18, bounds.bottom - 28, state.relic_toast.c_str(),
              static_cast<int>(state.relic_toast.size()));
   }
+
+  paint_attack_pose_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -9806,6 +9858,64 @@ int scenario_attack_poses() {
   scenario_present(state);
   scenario_check(has_pose("attack-pose:cancel"),
                  "attack-poses: dash dust during a swing is a cancel pose");
+  scenario_check(vector_art::idle_as_attack_family_fails_review(true),
+                 "attack-poses: idle alone cannot certify the strike family");
+  scenario_check(!vector_art::idle_as_attack_family_fails_review(false),
+                 "attack-poses: distinct stages are not the idle anti-pattern");
+  scenario_check(vector_art::stick_attack_fails_review(false, true, true),
+                 "attack-poses: a strike without a cocked windup cannot pass");
+  scenario_check(!vector_art::stick_attack_fails_review(
+                     vector_art::kAttackWindupCocksBlade,
+                     vector_art::kAttackActiveExtendsBlade, true),
+                 "attack-poses: windup cocks and active extends a readable blade");
+
+  for (int i = 0; i < 52; ++i)
+    scenario_step(state, verdigris::Command::move(1, 0));
+  for (int i = 0; i < 8; ++i)
+    scenario_step(state, verdigris::Command::action_use(verdigris::ActionType::Melee));
+  if (state.simulation && !state.simulation->ground_items().empty())
+    scenario_step(state, verdigris::Command::pick_up(
+                             state.simulation->ground_items().front().id));
+  if (state.simulation && !state.simulation->scion().carried_items.empty())
+    scenario_step(state, verdigris::Command::equip(
+                             state.simulation->scion().carried_items.front().id));
+  scenario_follow_camera(state);
+  state.effects.erase(std::remove_if(state.effects.begin(), state.effects.end(),
+                                     [](const EffectFx& fx) {
+                                       return fx.kind == EffectFx::Kind::Dust;
+                                     }),
+                      state.effects.end());
+  bool have_swing = false;
+  for (auto& fx : state.effects) {
+    if (fx.kind != EffectFx::Kind::Swing && fx.kind != EffectFx::Kind::SweepArc)
+      continue;
+    fx.age = std::max(1, fx.ttl / 2);
+    have_swing = true;
+  }
+  if (!have_swing) {
+    EffectFx live;
+    live.kind = EffectFx::Kind::Swing;
+    live.wx = static_cast<double>(state.world.player.position.x);
+    live.wy = static_cast<double>(state.world.player.position.y);
+    live.ttl = 6;
+    live.age = 3;
+    add_effect(state, live);
+  }
+  state.pose_review_strip = true;
+  scenario_present(state);
+  scenario_check(has_pose("attack-pose:active"),
+                 "attack-poses: capture pose is the committed active strike");
+  bool strip = false;
+  bool strip_windup = false;
+  bool strip_active = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "pose-strip") strip = true;
+    if (item.label == "pose-strip:windup") strip_windup = true;
+    if (item.label == "pose-strip:active") strip_active = true;
+  }
+  scenario_check(strip && strip_windup && strip_active,
+                 "attack-poses: native strip paints windup and active, not labels only");
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {
     scenario_check(false, "attack-poses: capture root rejected before any write");

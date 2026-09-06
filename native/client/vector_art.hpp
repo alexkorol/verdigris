@@ -196,6 +196,21 @@ inline bool adult_head_passes(double head_units, double body_units) {
          !chibi_head_fails_review(head_units, body_units);
 }
 
+// VG-ART-003: windup cocks the blade back; active commits it forward. HUD
+// pose labels or frame count without those silhouettes cannot certify.
+inline constexpr bool kAttackWindupCocksBlade = true;
+inline constexpr bool kAttackActiveExtendsBlade = true;
+inline constexpr int kLimbMinPx = 4;
+
+inline bool stick_attack_fails_review(bool windup_cocks, bool active_extends,
+                                      bool blade_readable) {
+  return !windup_cocks || !active_extends || !blade_readable;
+}
+
+inline bool idle_as_attack_family_fails_review(bool only_idle_pose) {
+  return only_idle_pose;
+}
+
 inline void humanoid(HDC dc, int cx, int base_y, int height_px,
                      const Style& style, const Pose& pose, Held held) {
   Frame f{cx, base_y, height_px / kAdultBodyUnits, pose.mirror};
@@ -204,109 +219,134 @@ inline void humanoid(HDC dc, int cx, int base_y, int height_px,
                      std::abs(swing) * 1.6;
   double attack_lean = 0.0;
   double strike = 0.0;
+  double rear_weight = 0.0;
+  double reach = 0.0;
   switch (pose.attack_stage) {
     case Pose::AttackStage::Windup:
-      attack_lean = -4.0;
-      strike = -0.75 - pose.attack * 0.45;
+      attack_lean = -10.0;
+      strike = -1.15;
+      rear_weight = 0.85;
+      reach = 2.0;
       break;
     case Pose::AttackStage::Active:
-      attack_lean = pose.attack * 6.0;
-      strike = std::sin(std::min(1.0, pose.attack) * kPi) * 1.9;
+      attack_lean = 14.0;
+      strike = 1.85;
+      rear_weight = -0.55;
+      reach = 10.0;
       break;
     case Pose::AttackStage::Recovery:
-      attack_lean = 2.0;
-      strike = 0.45 * (1.0 - std::min(1.0, pose.attack));
+      attack_lean = 5.0;
+      strike = 0.55;
+      rear_weight = -0.15;
+      reach = 4.0;
       break;
     case Pose::AttackStage::Cancel:
-      attack_lean = -1.5;
-      strike = -0.2;
+      attack_lean = -8.0;
+      strike = -0.45;
+      rear_weight = 0.4;
+      reach = 0.0;
       break;
     case Pose::AttackStage::Idle:
     default:
       break;
   }
   const double lean = pose.moving * 3.0 + attack_lean;
+  const double hip_w = 5.8;
+  const double arm_w = 4.4;
 
   // Jointed legs (hip / knee / foot). A single hip-to-foot plank reads as a
-  // crate, not an adult.
+  // crate, not an adult. Attack stages plant the rear foot or lunge.
   const auto leg = [&](double side, double phase_swing, COLORREF tone) {
-    const double hip_x = side * 6.0;
-    const double knee_x = side * 5.0 + phase_swing * 9.0;
-    const double foot_x = side * 5.0 + phase_swing * 15.0;
-    POINT thigh[4] = {f.at(hip_x - 3.5, 50), f.at(hip_x + 3.5, 50),
-                      f.at(knee_x + 3.0, 27), f.at(knee_x - 3.2, 27)};
+    const double plant = side < 0.0 ? rear_weight : -rear_weight;
+    const double hip_x = side * 7.0;
+    const double knee_x = side * 6.0 + phase_swing * 9.0 + plant * 4.0;
+    const double foot_x = side * 6.0 + phase_swing * 15.0 + plant * 10.0;
+    POINT thigh[4] = {f.at(hip_x - hip_w, 50), f.at(hip_x + hip_w, 50),
+                      f.at(knee_x + hip_w * 0.85, 27),
+                      f.at(knee_x - hip_w * 0.9, 27)};
     fill_poly(dc, thigh, 4, tone, style.dark);
-    POINT shin[4] = {f.at(knee_x - 3.0, 27), f.at(knee_x + 2.8, 27),
-                     f.at(foot_x + 3.2, 4), f.at(foot_x - 3.6, 4)};
+    POINT shin[4] = {f.at(knee_x - hip_w * 0.85, 27),
+                     f.at(knee_x + hip_w * 0.8, 27),
+                     f.at(foot_x + hip_w * 0.9, 4),
+                     f.at(foot_x - hip_w, 4)};
     fill_poly(dc, shin, 4, shade(tone, 0.88), style.dark);
     const POINT sole = f.at(foot_x + 1.0, 2.5);
-    fill_ell(dc, sole.x, sole.y, static_cast<int>(5 * f.scale),
-             static_cast<int>(2 * f.scale), style.trim, style.dark);
+    fill_ell(dc, sole.x, sole.y,
+             std::max(kLimbMinPx, static_cast<int>(6 * f.scale)),
+             std::max(2, static_cast<int>(2.4 * f.scale)), style.trim,
+             style.dark);
   };
   leg(-1.0, -swing, shade(style.cloth, 0.72));
   leg(1.0, swing, style.cloth);
 
   // Skirt / kilt: hangs from the waist, not a second torso box.
   {
-    POINT p[4] = {f.at(-9, 56 + bob * 0.3), f.at(9, 56 + bob * 0.3),
-                  f.at(11, 42), f.at(-11, 42)};
+    POINT p[4] = {f.at(-11, 56 + bob * 0.3), f.at(11, 56 + bob * 0.3),
+                  f.at(13, 42), f.at(-13, 42)};
     fill_poly(dc, p, 4, style.cloth, style.dark);
   }
   // Torso tapers shoulder → waist.
   {
-    POINT p[4] = {f.at(-10 + lean * 0.4, 80 + bob),
-                  f.at(10 + lean * 0.5, 80 + bob), f.at(7.5, 56),
-                  f.at(-8, 56)};
+    POINT p[4] = {f.at(-13 + lean * 0.4, 80 + bob),
+                  f.at(13 + lean * 0.5, 80 + bob), f.at(9.5, 56),
+                  f.at(-10, 56)};
     fill_poly(dc, p, 4, shade(style.cloth, 1.14), style.dark);
-    POINT belt[4] = {f.at(-8.5, 58), f.at(8.5, 58), f.at(7.5, 55),
-                     f.at(-8, 55)};
+    POINT belt[4] = {f.at(-10.5, 58), f.at(10.5, 58), f.at(9.5, 55),
+                     f.at(-10, 55)};
     fill_poly(dc, belt, 4, style.trim, style.dark);
   }
   // Far arm hangs (slight counter-swing while walking).
   {
-    const double hand_x = -12 - swing * 6.0;
-    POINT p[4] = {f.at(-8 + lean * 0.4, 78 + bob),
-                  f.at(-12 + lean * 0.4, 76 + bob), f.at(hand_x, 50),
-                  f.at(hand_x + 4, 50)};
+    const double hand_x = -14 - swing * 6.0 - rear_weight * 3.0;
+    POINT p[4] = {f.at(-10 + lean * 0.4, 78 + bob),
+                  f.at(-15 + lean * 0.4, 76 + bob), f.at(hand_x, 48),
+                  f.at(hand_x + arm_w, 48)};
     fill_poly(dc, p, 4, shade(style.skin, 0.8), style.dark);
   }
   // Neck, then adult head (kAdultHeadUnits of kAdultBodyUnits).
   {
-    POINT neck[4] = {f.at(-2.4 + lean * 0.55, 84 + bob),
-                     f.at(2.6 + lean * 0.55, 84 + bob),
-                     f.at(2.2 + lean * 0.6, 80 + bob),
-                     f.at(-2.0 + lean * 0.6, 80 + bob)};
+    POINT neck[4] = {f.at(-3.0 + lean * 0.55, 84 + bob),
+                     f.at(3.2 + lean * 0.55, 84 + bob),
+                     f.at(2.8 + lean * 0.6, 80 + bob),
+                     f.at(-2.6 + lean * 0.6, 80 + bob)};
     fill_poly(dc, neck, 4, style.skin, style.dark);
     const POINT crown = f.at(lean * 0.65, kAdultCrown + bob);
-    const int hx = std::max(2, static_cast<int>(5.2 * f.scale));
-    const int hy = std::max(2, static_cast<int>((kAdultHeadUnits * 0.5) * f.scale));
+    const int hx = std::max(kLimbMinPx, static_cast<int>(5.6 * f.scale));
+    const int hy = std::max(kLimbMinPx,
+                            static_cast<int>((kAdultHeadUnits * 0.5) * f.scale));
     fill_ell(dc, crown.x, crown.y + hy, hx, hy, style.skin, style.dark);
-    fill_ell(dc, crown.x, crown.y + static_cast<int>(2 * f.scale),
-             static_cast<int>(5.6 * f.scale), static_cast<int>(2.4 * f.scale),
-             style.trim, style.dark);
+    fill_ell(dc, crown.x, crown.y + std::max(2, static_cast<int>(2 * f.scale)),
+             std::max(kLimbMinPx, static_cast<int>(6.0 * f.scale)),
+             std::max(2, static_cast<int>(2.6 * f.scale)), style.trim,
+             style.dark);
   }
   // Near arm + held tool: shoulder-anchored swing driven by attack phase.
   {
-    const double shoulder_x = 8 + lean * 0.5;
+    const double shoulder_x = 10 + lean * 0.5;
     const double shoulder_y = 78 + bob;
     const double angle = (-0.55 + strike) + swing * 0.25;
-    const double hand_x = shoulder_x + std::cos(angle) * 24.0;
-    const double hand_y = shoulder_y + std::sin(angle) * 24.0 - 24.0 + 4.0;
-    POINT arm[4] = {f.at(shoulder_x - 2.5, shoulder_y),
-                    f.at(shoulder_x + 3.5, shoulder_y), f.at(hand_x + 2.5, hand_y),
-                    f.at(hand_x - 2.5, hand_y)};
+    const double arm_len = 24.0 + reach;
+    const double hand_x = shoulder_x + std::cos(angle) * arm_len;
+    const double hand_y = shoulder_y + std::sin(angle) * arm_len - 24.0 + 4.0;
+    POINT arm[4] = {f.at(shoulder_x - arm_w, shoulder_y),
+                    f.at(shoulder_x + arm_w, shoulder_y),
+                    f.at(hand_x + arm_w * 0.7, hand_y),
+                    f.at(hand_x - arm_w * 0.7, hand_y)};
     fill_poly(dc, arm, 4, style.skin, style.dark);
-    const double tip_x = hand_x + std::cos(angle) * 26.0;
-    const double tip_y = hand_y + std::sin(angle) * 26.0;
+    const double blade_len = 26.0 + reach * 0.45;
+    const double tip_x = hand_x + std::cos(angle) * blade_len;
+    const double tip_y = hand_y + std::sin(angle) * blade_len;
     const POINT hand = f.at(hand_x, hand_y);
     const POINT tip = f.at(tip_x, tip_y);
     switch (held) {
       case Held::Axe: {
         line(dc, hand.x, hand.y, tip.x, tip.y, style.trim,
-             std::max(2, static_cast<int>(3 * f.scale)));
+             std::max(kLimbMinPx, static_cast<int>(3 * f.scale)));
         const POINT head = f.at(tip_x, tip_y);
-        fill_ell(dc, head.x, head.y, static_cast<int>(7 * f.scale),
-                 static_cast<int>(5 * f.scale), style.metal, style.dark);
+        fill_ell(dc, head.x, head.y,
+                 std::max(kLimbMinPx, static_cast<int>(7 * f.scale)),
+                 std::max(kLimbMinPx, static_cast<int>(5 * f.scale)),
+                 style.metal, style.dark);
         break;
       }
       case Held::Sword: {
@@ -315,8 +355,8 @@ inline void humanoid(HDC dc, int cx, int base_y, int height_px,
         const double len = std::max(1.0, std::hypot(dx, dy));
         const double hx = -dy / len;
         const double hy = dx / len;
-        const double half = std::max(4.5, 6.0 * f.scale);
-        const double tip_half = std::max(1.6, 2.2 * f.scale);
+        const double half = std::max(static_cast<double>(kLimbMinPx), 6.0 * f.scale);
+        const double tip_half = std::max(2.0, 2.2 * f.scale);
         POINT blade[4] = {
             {hand.x + static_cast<int>(std::lround(hx * half)),
              hand.y + static_cast<int>(std::lround(hy * half))},

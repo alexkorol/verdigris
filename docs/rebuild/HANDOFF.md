@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — readable strike family at game scale (Cursor)
+
+- VG-ART-003: windup cocks the blade; active lunges it forward. Limb pixel
+  mins keep the Scion from collapsing to a stick. `attack-poses` captures
+  the armed active strike off the EXIT pad and paints a native Windup /
+  Active / Recover / Cancel strip. Idle or HUD labels alone cannot certify.
+- Scenarios `attack-poses` / `visual-target` / `held-item` PASS. Capture
+  viewed. Not Owner Demo. TASK-0173 animation models stay Kimi.
+
 ## 2026-09-06 — skill tree owner language + pack glyphs (Cursor)
 
 - VG-UI-001: tree pane title is `Skill tree`; absence is `Skill tree: no data yet`.

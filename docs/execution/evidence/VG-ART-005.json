@@ -28,7 +28,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/held-item-960x600.png",
-      "sha256": "6e5fdfc9f840a0ee74a100dd7a422abe90ba5726b6fcdcc0597569554e5e2c02",
+      "sha256": "ee4554d19a0a5595e09e5f1204ca3cd795d696f2ba26a4cedba255040c42ca0d",
       "produced_by": "native/build/verdigris_client.exe --scenario held-item"
     }
   ],
