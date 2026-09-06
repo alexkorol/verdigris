@@ -141,7 +141,7 @@ not implemented here.
 | VG-UI-004 | G2 | extend | stat-explain owner Base/Gear labels; dormant cannot fold into Attack; WASD off C-key sheet; close hint stays in the slot |
 | VG-UI-005 | G3 | extend | route-map zoom/opacity; off-snapshot blip cannot pass; Owner Demo journeys not reimplemented |
 | VG-UI-006 | G2 | extend | Owner Demo — do not duplicate |
-| VG-UI-007 | G3 | extend | hud-pane-readability 960/1366/3440 + tree/character keep-out; sheet below map above Life; close hint pinned; not VG-UI-006; TASK-0159 folder cannot certify |
+| VG-UI-007 | G3 | extend | hud-pane-readability 960/1366/3440 + tree/character keep-out; sheet below map above Life; close hint pinned; gear footer pinned; not VG-UI-006; TASK-0159 folder cannot certify |
 | VG-UI-008 | G4 | new | pad-path XInput on tick |
 | VG-SOUND-001 | G1 | new | sound-adapter |
 | VG-SOUND-002 | G2 | new | legal-sounds |

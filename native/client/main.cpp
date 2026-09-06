@@ -75,6 +75,7 @@ namespace phase_a = verdigris::client::phase_a;
 #include "ui/implement-map-and-route-explanation.hpp"
 #include "ui/add-readable-stat-explanations.hpp"
 #include "ui/integrate-spatial-inventory-moves.hpp"
+#include "ui/validate-scalable-ui-and-non-color-cues.hpp"
 #include "choose-and-test-one-audio-device-adapter.hpp"
 #include "persist-audio-accessibility-controls.hpp"
 #include "add-one-environment-ambience-layer.hpp"
@@ -4257,7 +4258,8 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
                   std::string("pack-drop:") + state.pack_last_drop});
 
-  // Banked / extraction summary.
+  // Banked / extraction summary. Raised so a two-line footer at the type
+  // floor can stay inside the pane; shrinking type cannot certify overflow.
   SetTextColor(dc, RGB(150, 170, 158));
   const std::string banked =
       "Banked  items " + std::to_string(state.world.stored_items) +
@@ -4268,9 +4270,9 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     GetTextExtentPoint32A(dc, banked.c_str(), static_cast<int>(banked.size()),
                           &extent);
     state.hud_rect_trace.push_back(
-        {"pane-banked", {left + 14 * s, bottom - 50 * s, extent.cx, extent.cy}});
+        {"pane-banked", {left + 14 * s, bottom - 58 * s, extent.cx, extent.cy}});
   }
-  TextOutA(dc, left + 14 * s, bottom - 50 * s, banked.c_str(),
+  TextOutA(dc, left + 14 * s, bottom - 58 * s, banked.c_str(),
            static_cast<int>(banked.size()));
   // TASK-0156: compact authoritative progression summary, mirrored from the
   // passiveTree payload. Absence is stated as absence — never rendered as
@@ -4301,21 +4303,33 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     GetTextExtentPoint32A(dc, owner_progression.c_str(),
                           static_cast<int>(owner_progression.size()), &extent);
     state.hud_rect_trace.push_back(
-        {"pane-progression", {left + 14 * s, bottom - 74 * s, extent.cx, extent.cy}});
+        {"pane-progression", {left + 14 * s, bottom - 82 * s, extent.cx, extent.cy}});
   }
-  TextOutA(dc, left + 14 * s, bottom - 74 * s, owner_progression.c_str(),
+  TextOutA(dc, left + 14 * s, bottom - 82 * s, owner_progression.c_str(),
            static_cast<int>(owner_progression.size()));
-  const char* controls =
-      "Drag to place | drop on Weapon to equip | Enter equip | U unequip";
-  {
-    SIZE extent{};
-    GetTextExtentPoint32A(dc, controls, static_cast<int>(strlen(controls)),
-                          &extent);
-    state.hud_rect_trace.push_back(
-        {"pane-footer", {left + 14 * s, bottom - 26 * s, extent.cx, extent.cy}});
-  }
-  TextOutA(dc, left + 14 * s, bottom - 26 * s, controls,
-           static_cast<int>(strlen(controls)));
+  const char* place = verdigris::client::ui::owner_gear_footer_place_label();
+  const char* close = verdigris::client::ui::owner_gear_close_label();
+  HGDIOBJ footer_font = SelectObject(dc, skin::font_small());
+  SIZE place_extent{};
+  SIZE close_extent{};
+  GetTextExtentPoint32A(dc, place, static_cast<int>(strlen(place)),
+                        &place_extent);
+  GetTextExtentPoint32A(dc, close, static_cast<int>(strlen(close)),
+                        &close_extent);
+  const int footer_x = left + 14 * s;
+  const int place_y = bottom - 32 * s;
+  const int close_y = bottom - 16 * s;
+  state.hud_rect_trace.push_back(
+      {"pane-footer-place", {footer_x, place_y, place_extent.cx, place_extent.cy}});
+  state.hud_rect_trace.push_back(
+      {"pane-footer", {footer_x, close_y, close_extent.cx, close_extent.cy}});
+  TextOutA(dc, footer_x, place_y, place, static_cast<int>(strlen(place)));
+  TextOutA(dc, footer_x, close_y, close, static_cast<int>(strlen(close)));
+  rl.push_back({render::Op::Hud, static_cast<double>(footer_x),
+                static_cast<double>(close_y), 0.0, 0, "gear:close-hint"});
+  rl.push_back({render::Op::Hud, static_cast<double>(footer_x),
+                static_cast<double>(place_y), 0.0, 0, "gear:place-hint"});
+  SelectObject(dc, footer_font);
 }
 
 void draw_orb(HDC dc, int cx, int cy, int radius, double ratio, COLORREF fill,
@@ -12385,7 +12399,8 @@ int scenario_hud_pane_readability() {
                                 "orb-life", "orb-resource"};
   const char* kPaneLines[] = {"pane-title",       "pane-stats",
                               "pane-seat",        "pane-banked",
-                              "pane-progression", "pane-footer"};
+                              "pane-progression", "pane-footer-place",
+                              "pane-footer"};
 
   const struct Size { int w; int h; } sizes[] = {
       {960, 600}, {1366, 768}, {3440, 1440}};
@@ -12512,7 +12527,7 @@ int scenario_hud_pane_readability() {
                     "global region (" + tag + ")").c_str());
 
     // Pane chrome lines stay mutually clear, including backpack cells.
-    assert_pairwise_disjoint(state, kPaneLines, 6, "hud-pane-readability");
+    assert_pairwise_disjoint(state, kPaneLines, 7, "hud-pane-readability");
     bool cells_clear = true;
     for (const auto& entry : state.hud_rect_trace) {
       if (entry.first != "pane-cell") continue;
@@ -12525,6 +12540,42 @@ int scenario_hud_pane_readability() {
     scenario_check(cells_clear,
                    ("hud-pane-readability: backpack cells clear of pane "
                     "chrome (" + tag + ")").c_str());
+
+    const HudRect* gear_footer = trace_find(state, "pane-footer");
+    const HudRect* gear_place = trace_find(state, "pane-footer-place");
+    const bool footer_inside = pane && gear_footer &&
+        verdigris::client::ui::rect_inside_pane(
+            gear_footer->x, gear_footer->y, gear_footer->w, gear_footer->h,
+            pane->x, pane->y, pane->w, pane->h);
+    const bool place_inside = pane && gear_place &&
+        verdigris::client::ui::rect_inside_pane(
+            gear_place->x, gear_place->y, gear_place->w, gear_place->h,
+            pane->x, pane->y, pane->w, pane->h);
+    scenario_check(gear_footer != nullptr && gear_footer->w > 40,
+                   ("hud-pane-readability: gear close hint is measured (" +
+                    tag + ")").c_str());
+    scenario_check(footer_inside && place_inside,
+                   ("hud-pane-readability: gear footer stays inside the pane (" +
+                    tag + ")").c_str());
+    scenario_check(
+        verdigris::client::ui::clipped_gear_footer_fails_review(false),
+        "hud-pane-readability: a clipped gear footer is the anti-pattern");
+    scenario_check(
+        !verdigris::client::ui::clipped_gear_footer_fails_review(footer_inside),
+        ("hud-pane-readability: I or Esc closes stays inside the gear pane (" +
+         tag + ")").c_str());
+    scenario_check(
+        render_list_has(state, render::Op::Hud, "gear:close-hint") &&
+            render_list_has(state, render::Op::Hud, "gear:place-hint"),
+        ("hud-pane-readability: live HUD names the gear footer (" + tag + ")")
+            .c_str());
+    scenario_check(
+        !verdigris::client::ui::missing_gear_close_fails_review(
+            render_list_has(state, render::Op::Hud, "gear:close-hint")),
+        ("hud-pane-readability: Enter equips and I or Esc closes is the "
+         "production gear footer (" +
+         tag + ")")
+            .c_str());
 
     // Hierarchy without deletion: every authority line survives.
     scenario_check(render_list_has(state, render::Op::HouseChip, "House ") &&

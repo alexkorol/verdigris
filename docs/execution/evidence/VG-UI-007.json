@@ -24,6 +24,7 @@
     "open character pane never intersects identity/controls/objective; WASD remains",
     "open character pane never covers the minimap or life orb at 960",
     "character sheet close hint C or Esc closes stays inside the slot",
+    "open gear pane footer I or Esc closes stays inside the pane at 960/1366/3440",
     "first Escape closes the pane; bare Escape requests quit",
     "life orb is left of mana; live 3440x1440 window matches that layout",
     "pack captures write under docs/execution/captures/art-wave, not the TASK-0159 folder",
@@ -32,14 +33,14 @@
     "open gear pane owner paint uses Skill tree: no data yet while PaneStat keeps TREE no authoritative data"
   ],
   "negative_control": {
-    "name": "TASK-0159 folder capture alone, overlapping pane, WASD on the open tree or character sheet, a sheet covering the minimap or Life, a clipped C or Esc closes footer, shrinking fonts below the floor, or an X on the mana globe as the mute cue",
+    "name": "TASK-0159 folder capture alone, overlapping pane, WASD on the open tree or character sheet, a sheet covering the minimap or Life, a clipped C or Esc closes footer, a clipped I or Esc closes gear footer, shrinking fonts below the floor, or an X on the mana globe as the mute cue",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/hud-pane-readability-open-3440x1440.png",
-      "sha256": "fd4c07e6f553802b4f14a0d6729b9cfebf59d72ddaca699a5e71b1a182a65fe5",
+      "sha256": "393d0f37ebb28e3afd80a5fd7966d2d5821de51117ca29e2fae806a51703760e",
       "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
     },
     {
@@ -51,7 +52,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/hud-pane-readability-open-960x600.png",
-      "sha256": "77aa53b5ba9d8425fe3d73d69f185297ed869bf05779f2f332cccf656c43bbcd",
+      "sha256": "958cda052c7f7aea64fabbd1656a96b9b815241d12a62a8baeac6d4a5e4459c5",
       "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
     },
     {
@@ -63,7 +64,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/hud-pane-readability-open-1366x768.png",
-      "sha256": "1b55b9d02fd66a2f10613a8d89a6110a5849c3ef25b40d00f98f5278233912ed",
+      "sha256": "358b39b01ef3e36accf3f583c73a6e5bc3ef2778a41e02e04b41d440324011f2",
       "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
     },
     {
@@ -111,7 +112,7 @@
     "hud-scale-floor owner strip paints Type floor / Ink contrast. Shrink type cannot certify overflow.",
     "hud-pane-readability recapture has no owner review strip so pairwise HUD regions stay disjoint.",
     "Open P-key tree keep-out is the VG-UI-007 extra; overlaying WASD on the tree cannot certify.",
-    "Open C-key character keep-out relocates WASD to the right of the sheet. Deleting the hint cannot certify. The sheet slot sits below the minimap and above Life; covering those cannot certify. A clipped C or Esc closes footer cannot certify.",
+    "Open C-key character keep-out relocates WASD to the right of the sheet. Deleting the hint cannot certify. The sheet slot sits below the minimap and above Life; covering those cannot certify. A clipped C or Esc closes footer cannot certify. A clipped I or Esc closes gear footer cannot certify.",
     "VG-UI-006 Owner Demo navigation is not this packet and was not duplicated.",
     "Remote pane check remains 960x600; owner ultrawide proof is the local present path.",
     "No TASK numbers minted."

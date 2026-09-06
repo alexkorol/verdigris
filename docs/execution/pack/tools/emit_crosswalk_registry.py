@@ -23,7 +23,7 @@ CURSOR = {
     "VG-UI-004": ("extend", "stat-explain expandable ATK; dormant cannot fold into Attack; core STAT stays Kimi; close hint stays in slot"),
     "VG-UI-005": ("extend", "route-map zoom/opacity; off-snapshot blip cannot pass; Owner Demo journeys not reimplemented"),
     "VG-UI-006": ("extend", "Owner Demo — do not duplicate"),
-    "VG-UI-007": ("extend", "hud-scale-floor + hud-pane-readability + vital-orbs roles; close hint pinned"),
+    "VG-UI-007": ("extend", "hud-scale-floor + hud-pane-readability + vital-orbs roles; close hint pinned; gear footer pinned"),
     "VG-UI-008": ("new", "pad-path XInput on tick"),
     "VG-ART-001": ("extend", "visual-target in-game sheet"),
     "VG-ART-002": ("extend", "bronze-stone family"),

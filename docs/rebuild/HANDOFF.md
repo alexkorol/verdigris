@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — I or Esc closes stays on the gear pane (Cursor)
+
+- VG-UI-007 / VG-UI-002 / VG-UI-003: the I-key gear footer is two lines at
+  the type floor inside the pane. Compacting copy cannot clip
+  Enter equips | I or Esc closes. Shrinking type cannot certify overflow.
+  TREE absence copy is unchanged. Character C or Esc closes is unchanged.
+- Scenarios `hud-pane-readability` / `pack-drag` / `equipment` PASS.
+  Captures viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — C or Esc closes stays on the sheet (Cursor)
 
 - VG-UI-007 / VG-UI-001 / VG-UI-004: the C-key close hint is pinned to the

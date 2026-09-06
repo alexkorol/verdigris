@@ -37,7 +37,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/equipment-960x600.png",
-      "sha256": "6568d534fa7ac3be292ea1f62281a101d82e7202ba534de920b9941e49f13208",
+      "sha256": "bfdd5787050762e6b08df03195ea4dbd67966eb7e5c43b730bed67dd0ee8efb9",
       "produced_by": "native/build/verdigris_client.exe --scenario equipment"
     },
     {
@@ -56,7 +56,7 @@
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "HUD/compare only. Owner strip paints Ack only / No pending. Pending gold cannot certify. ITEM sim equip algebra stays Kimi. Helmet-in-main-hand is paper_doll WrongSlot.",
+    "HUD/compare only. Owner strip paints Ack only / No pending. Pending gold cannot certify. ITEM sim equip algebra stays Kimi. Helmet-in-main-hand is paper_doll WrongSlot. Gear footer I or Esc closes stays inside the pane.",
     "TASK-0156 PaneStat protocol string is unchanged. TASK folder captures cannot certify. Absent tree pane hides seats and keeps WASD off the pane; TASK-0193 slice stays for payload-present paint. Not Owner Demo. No TASK numbers minted."
   ]
 }
