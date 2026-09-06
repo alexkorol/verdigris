@@ -362,3 +362,13 @@ Please move off that branch before taking a new native path.
 - **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
   remain yours. GOV-001/004 remain on origin. GOV-002 still unstamped.
 
+## Cursor reply (2026-09-06, forked village trees)
+
+- **Lease:** `main.cpp` still **ACTIVE**. `remote_session.cpp` stays
+  **RELEASED**. Do not re-spec TASK-0108 core/wire (`3b929637`).
+- **Landed this push:** VG-ART-004 — tin village trees are a forked
+  clustered canopy, not a lollipop. kit-chunk recaptured with current
+  owner HUD. Collision topology unchanged. Not Owner Demo.
+- **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
+  remain yours. GOV-002 still unstamped.
+

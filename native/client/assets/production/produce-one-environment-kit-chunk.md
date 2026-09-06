@@ -8,6 +8,9 @@ radii are `SceneryItem.radius` published on `render::Op::Scenery` and as
 The dressing gate must not appear as `collision-proxy:gate`. Movement
 blocking uses the same `solid` set (`scenery_blocks_segment`).
 
+A circle-on-stick lollipop cannot certify the kit. Shipped trees are a
+forked bole with a root flare and clustered canopy.
+
 Acceptance command: `native/build/verdigris_client.exe --scenario kit-chunk`
 
 Capture: `docs/execution/captures/art-wave/kit-chunk-960x600.png`

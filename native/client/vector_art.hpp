@@ -675,27 +675,71 @@ inline Style monster_style(const std::string& theme, bool elite) {
 }
 
 // ── scenery ─────────────────────────────────────────────────────────────
+// VG-ART-004: a circle on a stick cannot certify the tin village kit. The
+// shipped tree is a forked bole with a root flare and clustered canopy.
+
+inline constexpr int kTreeCanopyClusters = 6;
+inline constexpr bool kTreeHasRootFlare = true;
+inline constexpr bool kTreeHasFork = true;
+
+inline bool lollipop_tree_fails_review(int clusters, bool root_flare, bool fork) {
+  return clusters < 4 || !root_flare || !fork;
+}
 
 inline void tree(HDC dc, int cx, int base_y, int height_px, double sway_phase,
                  COLORREF leaf, COLORREF trunk) {
   const double s = height_px / 100.0;
-  const int sway = static_cast<int>(std::sin(sway_phase) * 3.0 * s);
+  const int sway = static_cast<int>(std::sin(sway_phase) * 4.0 * s);
   const COLORREF dark = RGB(20, 16, 12);
-  POINT bole[4] = {{cx - static_cast<int>(4 * s), base_y},
-                   {cx + static_cast<int>(4 * s), base_y},
-                   {cx + static_cast<int>(2 * s) + sway / 2,
-                    base_y - static_cast<int>(45 * s)},
-                   {cx - static_cast<int>(2 * s) + sway / 2,
-                    base_y - static_cast<int>(45 * s)}};
+  const COLORREF bark = shade(trunk, 0.78);
+  const COLORREF heart = shade(trunk, 1.14);
+  const COLORREF deep = shade(leaf, 0.72);
+  const COLORREF crown = shade(leaf, 1.16);
+  const int root_w = std::max(7, static_cast<int>(12 * s));
+  const int bole_w = std::max(4, static_cast<int>(6 * s));
+  const int top_w = std::max(2, static_cast<int>(3 * s));
+  POINT roots[4] = {{cx - root_w, base_y},
+                    {cx + root_w, base_y},
+                    {cx + bole_w, base_y - static_cast<int>(12 * s)},
+                    {cx - bole_w, base_y - static_cast<int>(12 * s)}};
+  fill_poly(dc, roots, 4, bark, dark);
+  POINT bole[4] = {{cx - bole_w, base_y - static_cast<int>(10 * s)},
+                   {cx + bole_w, base_y - static_cast<int>(10 * s)},
+                   {cx + top_w + sway / 3, base_y - static_cast<int>(44 * s)},
+                   {cx - top_w + sway / 3, base_y - static_cast<int>(44 * s)}};
   fill_poly(dc, bole, 4, trunk, dark);
-  fill_ell(dc, cx + sway, base_y - static_cast<int>(62 * s),
-           static_cast<int>(22 * s), static_cast<int>(18 * s), leaf, dark);
-  fill_ell(dc, cx - static_cast<int>(12 * s) + sway,
-           base_y - static_cast<int>(52 * s), static_cast<int>(14 * s),
-           static_cast<int>(12 * s), shade(leaf, 0.85), dark);
-  fill_ell(dc, cx + static_cast<int>(13 * s) + sway,
-           base_y - static_cast<int>(50 * s), static_cast<int>(13 * s),
-           static_cast<int>(11 * s), shade(leaf, 1.12), dark);
+  const int fork_y = base_y - static_cast<int>(40 * s);
+  POINT left_limb[4] = {
+      {cx - top_w + sway / 3, fork_y},
+      {cx + 1 + sway / 3, fork_y - static_cast<int>(4 * s)},
+      {cx - static_cast<int>(14 * s) + sway, base_y - static_cast<int>(62 * s)},
+      {cx - static_cast<int>(18 * s) + sway, base_y - static_cast<int>(58 * s)}};
+  fill_poly(dc, left_limb, 4, bark, dark);
+  POINT right_limb[4] = {
+      {cx - 1 + sway / 3, fork_y},
+      {cx + top_w + sway / 3, fork_y - static_cast<int>(3 * s)},
+      {cx + static_cast<int>(16 * s) + sway, base_y - static_cast<int>(60 * s)},
+      {cx + static_cast<int>(11 * s) + sway, base_y - static_cast<int>(54 * s)}};
+  fill_poly(dc, right_limb, 4, heart, dark);
+  const int hy = base_y - static_cast<int>(64 * s);
+  const int mass = std::max(8, static_cast<int>(16 * s));
+  fill_ell(dc, cx + sway, hy, mass, std::max(7, static_cast<int>(13 * s)), leaf,
+           dark);
+  fill_ell(dc, cx - static_cast<int>(14 * s) + sway, hy + static_cast<int>(6 * s),
+           std::max(6, static_cast<int>(11 * s)),
+           std::max(5, static_cast<int>(9 * s)), deep, dark);
+  fill_ell(dc, cx + static_cast<int>(15 * s) + sway, hy + static_cast<int>(4 * s),
+           std::max(6, static_cast<int>(12 * s)),
+           std::max(5, static_cast<int>(9 * s)), crown, dark);
+  fill_ell(dc, cx + sway / 2, hy - static_cast<int>(10 * s),
+           std::max(5, static_cast<int>(10 * s)),
+           std::max(4, static_cast<int>(8 * s)), crown, dark);
+  fill_ell(dc, cx - static_cast<int>(8 * s) + sway, hy - static_cast<int>(3 * s),
+           std::max(4, static_cast<int>(8 * s)),
+           std::max(4, static_cast<int>(7 * s)), leaf, dark);
+  fill_ell(dc, cx + static_cast<int>(7 * s) + sway, hy + static_cast<int>(11 * s),
+           std::max(5, static_cast<int>(9 * s)),
+           std::max(4, static_cast<int>(7 * s)), deep, dark);
 }
 
 inline void standing_stones(HDC dc, int cx, int base_y, int height_px,

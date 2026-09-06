@@ -2424,7 +2424,7 @@ const char* scenery_kit_role(SceneryKind kind) {
 
 double scenery_height(SceneryKind kind) {
   switch (kind) {
-    case SceneryKind::Tree: return kTileUnits * 3.0;
+    case SceneryKind::Tree: return kTileUnits * 4.2;
     case SceneryKind::Ruin: return kTileUnits * 2.6;
     case SceneryKind::Dwelling: return kTileUnits * 2.3;
     case SceneryKind::Shrine: return kTileUnits * 2.0;
@@ -2511,8 +2511,8 @@ void draw_scenery_item(const BillboardAssets& assets, HDC dc, const Camera& came
   switch (item.kind) {
     case SceneryKind::Tree:
       vector_art::tree(dc, base.x, base.y, h, sway_clock + phase_seed,
-                       town ? RGB(96, 138, 84) : RGB(78, 112, 74),
-                       RGB(92, 70, 48));
+                       town ? RGB(118, 148, 68) : RGB(86, 120, 70),
+                       RGB(110, 78, 46));
       break;
     case SceneryKind::Ruin:
       if (town) {
@@ -9827,6 +9827,12 @@ int scenario_kit_chunk() {
                  "kit-chunk: the dressing gate is not an unreported obstacle");
   scenario_check(tree_radius_hi > tree_radius_lo + 0.5,
                  "kit-chunk: scaled trees keep distinct proxy radii");
+  scenario_check(vector_art::lollipop_tree_fails_review(1, false, false),
+                 "kit-chunk: a circle-on-stick is the lollipop negative");
+  scenario_check(!vector_art::lollipop_tree_fails_review(
+                     vector_art::kTreeCanopyClusters, vector_art::kTreeHasRootFlare,
+                     vector_art::kTreeHasFork),
+                 "kit-chunk: the shipped tree is not a lollipop");
 
   std::unordered_set<std::string> occupancy;
   bool unique_landmarks = true;
@@ -10319,6 +10325,12 @@ int scenario_visual_target() {
   scenario_check(!verdigris::client::art::paper_doll_only_fails_review(
                      true, scion && scion->label != "held:none"),
                  "visual-target: a paper-doll seat alone cannot certify the sheet");
+  scenario_check(vector_art::lollipop_tree_fails_review(1, false, false),
+                 "visual-target: a circle-on-stick cannot certify the village kit");
+  scenario_check(!vector_art::lollipop_tree_fails_review(
+                     vector_art::kTreeCanopyClusters, vector_art::kTreeHasRootFlare,
+                     vector_art::kTreeHasFork),
+                 "visual-target: the live kit uses a forked clustered canopy");
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {
     scenario_check(false, "visual-target: capture root rejected before any write");

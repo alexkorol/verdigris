@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — forked village trees (Cursor)
+
+- VG-ART-004: tin village trees are a forked bole with root flare and
+  clustered canopy. A circle-on-stick lollipop cannot certify the kit.
+  Collision radii and dressing-gate non-solidity are unchanged.
+- Scenarios `kit-chunk` / `visual-target` / `held-item` PASS. Captures
+  viewed: cloud-like layered canopies, current owner HUD on kit-chunk
+  (Tin village, Space dash, no skeleton art chip). Not Owner Demo.
+
 ## 2026-09-06 — bronze held weapon on the composition sheet (Cursor)
 
 - VG-ART-001 / VG-ART-005: `visual-target` now pickups and equips before
