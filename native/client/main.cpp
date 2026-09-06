@@ -5638,20 +5638,24 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
            static_cast<int>(state.world.house_name.size()));
 
   // Fit portrait + stat rows inside the combat-HUD-clamped slot. Covering
-  // the life orb to keep a 150px plate cannot certify.
+  // the life orb to keep a 150px plate cannot certify. A min row height that
+  // overflows the close hint also cannot certify — leftover/n always wins.
   const int header_h = 56 * s;
   const int footer_h = 32 * s;
   const int n_rows = 12 + extra_rows;
-  int portrait_h = 150 * s;
-  int row_h = 26 * s;
   const int stack_gap = 14 * s;
   const int inner = std::max(0, pane_h - header_h - footer_h);
+  const int min_row = 16 * s;
+  int portrait_h = 150 * s;
+  int row_h = 26 * s;
   if (portrait_h + stack_gap + n_rows * row_h > inner) {
-    portrait_h = std::min(portrait_h, std::max(40 * s, inner / 3));
+    const int room_for_portrait =
+        inner - stack_gap - n_rows * min_row;
+    portrait_h = std::max(40 * s, std::min(portrait_h, room_for_portrait));
   }
-  if (portrait_h + stack_gap + n_rows * row_h > inner) {
+  {
     const int leftover = std::max(0, inner - portrait_h - stack_gap);
-    row_h = n_rows > 0 ? std::max(16 * s, leftover / n_rows) : row_h;
+    if (n_rows > 0) row_h = std::max(1, leftover / n_rows);
   }
 
   // Portrait: the player plate, drawn tall on the left of the sheet.
@@ -5797,8 +5801,17 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
   SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kInkDim);
   const char* footer = "C or Esc closes · B expands ATK";
-  TextOutA(dc, left + 20 * s, y + 8 * s, footer,
+  SIZE footer_extent{};
+  GetTextExtentPoint32A(dc, footer, static_cast<int>(strlen(footer)),
+                        &footer_extent);
+  const int footer_y = top + pane_h - footer_h + 6 * s;
+  TextOutA(dc, left + 20 * s, footer_y, footer,
            static_cast<int>(strlen(footer)));
+  state.hud_rect_trace.push_back(
+      {"character-pane-footer",
+       {left + 20 * s, footer_y, footer_extent.cx, footer_extent.cy}});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 20 * s),
+                static_cast<double>(footer_y), 0.0, 0, "char:close-hint"});
   SelectObject(dc, old_font);
   RestoreDC(dc, saved_dc);
 }
@@ -12672,6 +12685,25 @@ int scenario_hud_pane_readability() {
     scenario_check(
         !verdigris::client::ui::controls_on_character_fails_review(overlap),
         "hud-pane-readability: relocated controls are the production sheet HUD");
+    const HudRect* footer = trace_find(state, "character-pane-footer");
+    scenario_check(footer != nullptr && footer->w > 40,
+                   "hud-pane-readability: close hint is measured on the sheet");
+    scenario_check(pane && footer && !hud_rects_overlap(*pane, *life) &&
+                       footer->y + footer->h <= pane->y + pane->h &&
+                       footer->y >= pane->y,
+                   "hud-pane-readability: close hint stays inside the sheet slot");
+    scenario_check(
+        life && footer && !hud_rects_overlap(*footer, *life),
+        "hud-pane-readability: close hint never enters the life orb");
+    scenario_check(
+        render_list_has(state, render::Op::Hud, "char:close-hint"),
+        "hud-pane-readability: live HUD names the close hint");
+    scenario_check(
+        verdigris::client::ui::missing_sheet_close_fails_review(false),
+        "hud-pane-readability: a clipped close hint is the anti-pattern");
+    scenario_check(
+        !verdigris::client::ui::missing_sheet_close_fails_review(true),
+        "hud-pane-readability: C or Esc closes is the production footer");
     std::ifstream probe(png_sheet, std::ios::binary);
     scenario_check(probe.good(),
                    "hud-pane-readability: character capture readable");

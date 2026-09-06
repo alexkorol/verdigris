@@ -26,18 +26,19 @@
     "controls hint never enters the character pane",
     "controls hint remains with the character sheet open",
     "character pane never covers the minimap or life orb",
+    "character sheet close hint remains inside the slot",
     "live HUD names Stack 2 and Escape closes",
     "live HUD rejects invented origin"
   ],
   "negative_control": {
-    "name": "helper pane_stack_depth without native paint or Escape, Geometric Passives as the owner title, an invented origin seat while the tree says no data yet, WASD painted on the tree, or WASD painted on the character sheet",
+    "name": "helper pane_stack_depth without native paint or Escape, Geometric Passives as the owner title, an invented origin seat while the tree says no data yet, WASD painted on the tree, WASD painted on the character sheet, or a clipped C or Esc closes footer",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/pane-stack-960x600.png",
-      "sha256": "7013e55a4f9018ff88d477ad1608472b4f20d2f942443fc5d2bda02eac1f5b59",
+      "sha256": "ea6888c93f95542368849b9d38171ec43759270fe45a03d6f8c19df9a6ad6d94",
       "produced_by": "native/build/verdigris_client.exe --scenario pane-stack"
     },
     {
@@ -51,6 +52,6 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Client Escape stack only. Owner Demo Chronicles journeys not duplicated.",
-    "TASK-0193 geometric slice is unchanged and only paints after a payload. Open tree and character panes keep the top HUD out. Deleting WASD cannot certify the sheet. Covering the minimap or Life cannot certify. Not Owner Demo. No TASK numbers minted."
+    "TASK-0193 geometric slice is unchanged and only paints after a payload. Open tree and character panes keep the top HUD out. Deleting WASD cannot certify the sheet. Covering the minimap or Life cannot certify. A clipped C or Esc closes footer cannot certify. Not Owner Demo. No TASK numbers minted."
   ]
 }

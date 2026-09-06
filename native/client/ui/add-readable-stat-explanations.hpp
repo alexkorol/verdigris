@@ -44,4 +44,7 @@ inline bool character_covers_life_orb_fails_review(bool overlap) {
   return overlap;
 }
 
+inline const char* owner_sheet_close_label() { return "C or Esc closes"; }
+inline bool missing_sheet_close_fails_review(bool present) { return !present; }
+
 }  // namespace verdigris::client::ui

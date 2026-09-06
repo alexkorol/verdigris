@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — C or Esc closes stays on the sheet (Cursor)
+
+- VG-UI-007 / VG-UI-001 / VG-UI-004: the C-key close hint is pinned to the
+  bottom of the combat-HUD-clamped slot. Compacting rows cannot clip
+  C or Esc closes. Covering Life or deleting the hint cannot certify.
+  WASD stay off the pane. TREE absence copy is unchanged.
+- Scenarios `hud-pane-readability` / `pane-stack` / `stat-explain` PASS.
+  Captures viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — Sheet below map, above Life (Cursor)
 
 - VG-UI-007 / VG-UI-001 / VG-UI-004: the C-key First Scion sheet now sits

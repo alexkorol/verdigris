@@ -23,6 +23,7 @@
     "open tree pane never intersects identity/controls/objective/minimap/quickbar/orbs",
     "open character pane never intersects identity/controls/objective; WASD remains",
     "open character pane never covers the minimap or life orb at 960",
+    "character sheet close hint C or Esc closes stays inside the slot",
     "first Escape closes the pane; bare Escape requests quit",
     "life orb is left of mana; live 3440x1440 window matches that layout",
     "pack captures write under docs/execution/captures/art-wave, not the TASK-0159 folder",
@@ -31,7 +32,7 @@
     "open gear pane owner paint uses Skill tree: no data yet while PaneStat keeps TREE no authoritative data"
   ],
   "negative_control": {
-    "name": "TASK-0159 folder capture alone, overlapping pane, WASD on the open tree or character sheet, a sheet covering the minimap or Life, shrinking fonts below the floor, or an X on the mana globe as the mute cue",
+    "name": "TASK-0159 folder capture alone, overlapping pane, WASD on the open tree or character sheet, a sheet covering the minimap or Life, a clipped C or Esc closes footer, shrinking fonts below the floor, or an X on the mana globe as the mute cue",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
@@ -98,7 +99,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/hud-pane-readability-character-960x600.png",
-      "sha256": "5d24ff48052471ed2a19e0f081bb32a4b8d8db6ec239b8cf08e39d3729def9dd",
+      "sha256": "944805b6db2bdb3dc178e59a586e6e2ccf79a59ee5b5e1c260528228f1ccd5d7",
       "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
     }
   ],
@@ -110,7 +111,7 @@
     "hud-scale-floor owner strip paints Type floor / Ink contrast. Shrink type cannot certify overflow.",
     "hud-pane-readability recapture has no owner review strip so pairwise HUD regions stay disjoint.",
     "Open P-key tree keep-out is the VG-UI-007 extra; overlaying WASD on the tree cannot certify.",
-    "Open C-key character keep-out relocates WASD to the right of the sheet. Deleting the hint cannot certify. The sheet slot sits below the minimap and above Life; covering those cannot certify.",
+    "Open C-key character keep-out relocates WASD to the right of the sheet. Deleting the hint cannot certify. The sheet slot sits below the minimap and above Life; covering those cannot certify. A clipped C or Esc closes footer cannot certify.",
     "VG-UI-006 Owner Demo navigation is not this packet and was not duplicated.",
     "Remote pane check remains 960x600; owner ultrawide proof is the local present path.",
     "No TASK numbers minted."
