@@ -171,11 +171,12 @@ VG-GPU-002: Telegraph draw class copied to handle-free packets. Owner
 strip paints Handle-free / Telegraph class. Poisoned `backend_handle`
 fails snapshot. Scenario `gpu-packets`. Evidence
 `docs/execution/evidence/VG-GPU-002.json`.
-VG-ART-001: in-game HUD names camera/proportion/palette/contrast. An
-external concept-art token cannot substitute, a skeleton
-`art: PNG billboards loaded` chip cannot count as the composition sheet,
-and a chibi (1/3) head cannot pass as adult. Scenario `visual-target`.
-Evidence `docs/execution/evidence/VG-ART-001.json`.
+VG-ART-001: in-game HUD names camera/proportion/palette/contrast. Owner
+strip paints Adult camera / Bronze palette. An external concept-art token
+cannot substitute, a skeleton `art: PNG billboards loaded` chip cannot
+count as the composition sheet, and a chibi (1/3) head cannot pass as
+adult. Scenario `visual-target`. Evidence
+`docs/execution/evidence/VG-ART-001.json`.
 VG-ART-003: windup/active/recovery/cancel silhouettes on Strike poses.
 Idle still cannot certify the family. Frame count alone cannot pass.
 Scenario `attack-poses`. Evidence `docs/execution/evidence/VG-ART-003.json`.
@@ -297,14 +298,18 @@ Owner strip paints Kill fill / Gold pit. A feature or VG-ID count cannot
 pass. Each dimension names a journey. Scenario `xp-meter`. Evidence
 `docs/execution/evidence/VG-GOV-003.json`.
 VG-UI-007: `vital-orbs` — life left/red, mana right/blue. Mute is a HUD
-chip. An X on the mana globe cannot count as a non-color cue.
+chip. Owner strip paints Life left / Mana right. An X on the mana globe
+cannot count as a non-color cue. Scenario `vital-orbs`. Evidence
+`docs/execution/evidence/VG-UI-007.json`.
 VG-GOV-006: disconnect/crash/quit cannot ack uncommitted extraction.
 Owner strip paints Carry open / No extract. Extract ok cannot certify.
 Scenario `death-disconnect`. Core D-106 stays Kimi/TASK-0018.
 Evidence `docs/execution/evidence/VG-GOV-006.json`.
 VG-UI-005: `route-map` — overlay zoom/opacity cannot move the player or
-mint an off-snapshot warden blip. The owner card titles Tin village, not
-`route:tin:1:0`. Owner Demo journeys not reimplemented.
+mint an off-snapshot warden blip. Owner strip paints Tin village / Risk
+wardens. The owner card titles Tin village, not `route:tin:1:0`. Owner
+Demo journeys not reimplemented. Scenario `route-map`. Evidence
+`docs/execution/evidence/VG-UI-005.json`.
 VG-UI-004: `stat-explain` — expanded ATK names base/gear/passive/cond on
 HUD ops. Owner paint uses Base/Gear, not `src` jargon. Slice builds on
 the sheet are role · gear chips; tactics stay on HUD ops. A dormant

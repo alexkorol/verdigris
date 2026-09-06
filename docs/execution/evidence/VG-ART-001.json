@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-001",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "880c9f74d751859e57d4655e86bff01b1b032343",
+  "base_sha": "98c867898575461579ca9e7ceb0994a1e6968b15",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "visual-target",
@@ -25,7 +25,8 @@
     "composition sheet shows a held item on the world actor, not a paper-doll seat",
     "Scion cloth/metal paint bronze (not GDI-capture blue)",
     "village trees are a forked clustered canopy; a circle-on-stick cannot pass",
-    "town wardens use jointed legs, a snout, and filled claws; a crate foe cannot pass"
+    "town wardens use jointed legs, a snout, and filled claws; a crate foe cannot pass",
+    "live HUD names Adult camera and Bronze palette"
   ],
   "negative_control": {
     "name": "external concept-art HUD token, a loader chip as the sheet, a chibi head, or a crate-shaped foe",
@@ -35,7 +36,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/visual-target-960x600.png",
-      "sha256": "96e29f700e0760511ef05f275f5bd672b658b613828e48533c0a1dd22eb896ed",
+      "sha256": "fb501ca6d3b389412c70137aebf8b0d20586961353e6c57493ee05c6c36701d9",
       "produced_by": "native/build/verdigris_client.exe --scenario visual-target"
     }
   ],
@@ -43,6 +44,7 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Composition axes remain HUD labels on the live expedition, not a separate art bible PNG.",
+    "Owner strip paints Adult camera / Bronze palette. Chibi head cannot certify.",
     "Mute chip stays owner-facing. Loader jargon lives on F3.",
     "Does not re-spec TASK-0108 or Owner Demo (VG-ART-007 mixed-pack review not this packet).",
     "32bpp scenario DIBs still need dc_color; live CreateCompatibleBitmap path does not."

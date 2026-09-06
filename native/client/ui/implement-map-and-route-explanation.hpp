@@ -109,4 +109,7 @@ inline std::string route_return_owner_line(const std::string& ret) {
   return ret;
 }
 
+inline const char* owner_tin_village_label() { return "Tin village"; }
+inline const char* owner_risk_wardens_label() { return "Risk wardens"; }
+
 }  // namespace verdigris::client::ui

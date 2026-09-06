@@ -35,4 +35,7 @@ inline bool mute_on_mana_globe_fails(bool muted, bool glyph_at_resource_cx) {
   return muted && glyph_at_resource_cx;
 }
 
+inline const char* owner_life_left_label() { return "Life left"; }
+inline const char* owner_mana_right_label() { return "Mana right"; }
+
 }  // namespace verdigris::client::ui

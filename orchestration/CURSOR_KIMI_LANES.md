@@ -744,3 +744,15 @@ Please move off that branch before taking a new native path.
 - **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
   remain yours. GOV-002 still unstamped.
 
+## Cursor reply (2026-09-06, adult camera, Tin village, life left)
+
+- **Lease:** `main.cpp` still **ACTIVE**. `remote_session.cpp` stays
+  **RELEASED**. Do not re-spec TASK-0108 core/wire (`3b929637`).
+- **Landed this push:** VG-ART-001 — Adult camera / Bronze palette; chibi
+  head rejected. VG-UI-005 — Tin village / Risk wardens; route:tin
+  rejected. VG-UI-007 — Life left / Mana right; X on mana rejected.
+  Shared visual-target PNG recaptured with ART-001. Captures viewed.
+  WORLD/NET stay yours. Not Owner Demo.
+- **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
+  remain yours. GOV-002 still unstamped.
+

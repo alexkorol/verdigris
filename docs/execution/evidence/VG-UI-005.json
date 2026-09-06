@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-005",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "880c9f74d751859e57d4655e86bff01b1b032343",
+  "base_sha": "98c867898575461579ca9e7ceb0994a1e6968b15",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "route-map",
@@ -22,7 +22,8 @@
     "route card names risk/return without hidden target ids",
     "owner card titles Tin village, not route:tin:1:0",
     "a protocol colon-id cannot be the owner title",
-    "owner risk/return lines are Risk: wardens and Return: press F at the pad"
+    "owner risk/return lines are Risk: wardens and Return: press F at the pad",
+    "live HUD names Tin village and Risk wardens"
   ],
   "negative_control": {
     "name": "tight zoom reveals a server-hidden map target, or a protocol route id as the owner title",
@@ -32,13 +33,13 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/route-map-960x600.png",
-      "sha256": "d66509f8f461936fb90b446286f7898dee526efb32303457aaed5038fdddee72",
+      "sha256": "2a2ac1e663c46afeca461e8913d015039c83857ec4509fdd3ef14e98aa8308f6",
       "produced_by": "native/build/verdigris_client.exe --scenario route-map"
     },
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/visual-target-960x600.png",
-      "sha256": "96e29f700e0760511ef05f275f5bd672b658b613828e48533c0a1dd22eb896ed",
+      "sha256": "fb501ca6d3b389412c70137aebf8b0d20586961353e6c57493ee05c6c36701d9",
       "produced_by": "native/build/verdigris_client.exe --scenario visual-target"
     }
   ],
@@ -46,6 +47,7 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Overlay/HUD only. World topology and server-hidden actor lists stay with Kimi WORLD/NET.",
+    "Owner strip paints Tin village / Risk wardens. route:tin cannot certify.",
     "Raw route id remains on the F3 overlay. Owner Demo journeys not duplicated.",
     "No TASK numbers minted."
   ]

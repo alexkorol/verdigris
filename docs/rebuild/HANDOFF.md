@@ -1,5 +1,20 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — adult camera, Tin village, life left (Cursor)
+
+- VG-ART-001: owner Adult camera strip paints Bronze palette. Chibi head
+  cannot certify. Live expedition still names camera/proportion/palette/
+  contrast; concept-art and loader chips stay rejected.
+- VG-UI-005: owner Tin village strip paints Risk wardens. route:tin
+  cannot certify. Zoom still cannot leak an off-snapshot blip. WORLD/NET
+  stay Kimi.
+- VG-UI-007: owner Life left strip paints Mana right. X on mana cannot
+  certify. Life stays the left red globe; mute stays a HUD chip. Owner
+  Demo (VG-UI-006) not duplicated.
+- Scenarios `visual-target` / `route-map` / `vital-orbs` / `first-fight`
+  PASS. Shared visual-target PNG recaptured for ART-001 and UI-005.
+  Captures viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — focus gear, pack place, pad glyphs (Cursor)
 
 - VG-MOVE-005: owner Focus gear strip paints No buffer. Held fire cannot

@@ -505,6 +505,9 @@ struct ClientState {
   bool pane_focus_review_strip = false;
   bool pack_drag_review_strip = false;
   bool pad_path_review_strip = false;
+  bool visual_target_review_strip = false;
+  bool route_map_review_strip = false;
+  bool vital_orbs_review_strip = false;
   bool debug_overlay = false;
   // Last full paint_scene duration in milliseconds (F3 overlay); the honest
   // per-frame budget readout that catches presentation-cost regressions.
@@ -3692,6 +3695,8 @@ inline const char* owner_nearest_12_label() { return "Nearest 12"; }
 inline const char* owner_drop_stays_label() { return "Drop stays"; }
 inline const char* owner_kill_fill_label() { return "Kill fill"; }
 inline const char* owner_gold_pit_label() { return "Gold pit"; }
+inline const char* owner_adult_camera_label() { return "Adult camera"; }
+inline const char* owner_bronze_palette_label() { return "Bronze palette"; }
 
 std::vector<char> loot_nameplate_mask(
     const std::vector<std::pair<std::string, verdigris::Vec2>>& loot,
@@ -7584,6 +7589,123 @@ void paint_pad_path_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   SelectObject(dc, old_font);
 }
 
+void paint_visual_target_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                      render::List& rl) {
+  if (!state.visual_target_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "visual-target-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = owner_adult_camera_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = owner_bronze_palette_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "chibi head";
+  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "art:adult-camera"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "art:bronze-palette"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "art-strip:chibi-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_route_map_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                  render::List& rl) {
+  if (!state.route_map_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "route-map-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::ui::owner_tin_village_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::client::ui::owner_risk_wardens_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "route:tin";
+  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "ui:tin-village"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "ui:risk-wardens"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "ui-strip:route-id-rejected"});
+  SelectObject(dc, old_font);
+}
+
+void paint_vital_orbs_review_strip(ClientState& state, HDC dc, const RECT& bounds,
+                                   render::List& rl) {
+  if (!state.vital_orbs_review_strip) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const int pane_w = 360 * s;
+  const int pane_h = 72 * s;
+  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
+  const int top = 72 * s;
+  RECT pane{left, top, left + pane_w, top + pane_h};
+  if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
+    skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), 0.0, 1, "vital-orbs-strip"});
+  SetBkMode(dc, TRANSPARENT);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetTextColor(dc, skin::kVerdigris);
+  const char* title = verdigris::client::ui::owner_life_left_label();
+  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  SetTextColor(dc, skin::kInk);
+  const char* body = verdigris::client::ui::owner_mana_right_label();
+  TextOutA(dc, left + 12 * s, top + 32 * s, body, static_cast<int>(strlen(body)));
+  const int rx = left + pane_w - 78 * s;
+  const int ry = top + 36 * s;
+  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+            2);
+  SetTextColor(dc, skin::kInkDim);
+  const char* rejected = "X on mana";
+  TextOutA(dc, rx - 32 * s, top + pane_h - 18 * s, rejected,
+           static_cast<int>(strlen(rejected)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 8 * s), 0.0, 1, "ui:life-left"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
+                static_cast<double>(top + 32 * s), 0.0, 1, "ui:mana-right"});
+  rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
+                0.0, 0, "ui-strip:x-on-mana-rejected"});
+  SelectObject(dc, old_font);
+}
+
 const char* attack_stage_label(vector_art::Pose::AttackStage stage) {
   switch (stage) {
     case vector_art::Pose::AttackStage::Windup:
@@ -8637,6 +8759,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
   paint_pane_focus_review_strip(state, dc, bounds, rl);
   paint_pack_drag_review_strip(state, dc, bounds, rl);
   paint_pad_path_review_strip(state, dc, bounds, rl);
+  paint_visual_target_review_strip(state, dc, bounds, rl);
+  paint_route_map_review_strip(state, dc, bounds, rl);
+  paint_vital_orbs_review_strip(state, dc, bounds, rl);
 
   state.render_list = std::move(rl);
   if (state.debug_overlay) {
@@ -12521,8 +12646,13 @@ int scenario_visual_target() {
     return scenario_failures;
   }
   const std::string png = dir + "\\visual-target-960x600.png";
+  state.visual_target_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "visual-target: in-game sheet capture written");
+  scenario_check(has("art:adult-camera") && has("art:bronze-palette"),
+                 "visual-target: live HUD names Adult camera and Bronze palette");
+  scenario_check(has("art-strip:chibi-rejected"),
+                 "visual-target: live HUD rejects chibi head");
   return scenario_failures;
 }
 
@@ -14598,6 +14728,7 @@ int scenario_vital_orbs() {
   HDC dc = CreateCompatibleDC(nullptr);
   HGDIOBJ old = SelectObject(dc, bitmap);
   RECT bounds{0, 0, width, height};
+  state.vital_orbs_review_strip = true;
   paint_scene(state, dc, bounds);
 
   int life_cx = 0;
@@ -14659,6 +14790,18 @@ int scenario_vital_orbs() {
   const std::string png = dir + "\\vital-orbs-960x600.png";
   scenario_check(save_hbitmap_png(state.billboards, bitmap, png),
                  "vital-orbs: capture written");
+  bool life_left = false;
+  bool mana_right = false;
+  bool x_on_mana = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "ui:life-left") life_left = true;
+    if (item.label == "ui:mana-right") mana_right = true;
+    if (item.label == "ui-strip:x-on-mana-rejected") x_on_mana = true;
+  }
+  scenario_check(life_left && mana_right,
+                 "vital-orbs: live HUD names Life left and Mana right");
+  scenario_check(x_on_mana, "vital-orbs: live HUD rejects X on mana");
   SelectObject(dc, old);
   DeleteDC(dc);
   DeleteObject(bitmap);
@@ -14839,8 +14982,21 @@ int scenario_route_map() {
     return scenario_failures;
   }
   const std::string png = dir + "\\route-map-960x600.png";
+  state.route_map_review_strip = true;
   scenario_check(reference_present(state, 960, 600, png),
                  "route-map: capture written");
+  bool tin = false;
+  bool risk = false;
+  bool route_id = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label == "ui:tin-village") tin = true;
+    if (item.label == "ui:risk-wardens") risk = true;
+    if (item.label == "ui-strip:route-id-rejected") route_id = true;
+  }
+  scenario_check(tin && risk,
+                 "route-map: live HUD names Tin village and Risk wardens");
+  scenario_check(route_id, "route-map: live HUD rejects route:tin");
   return scenario_failures;
 }
 

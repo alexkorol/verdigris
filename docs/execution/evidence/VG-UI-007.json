@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-007",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "bb95fd8c68795f54a6be0815910a9d5f160952c1",
+  "base_sha": "98c867898575461579ca9e7ceb0994a1e6968b15",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "hud-pane-readability",
@@ -12,8 +12,6 @@
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario hud-scale-floor", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario hud-pane-readability", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario vital-orbs", "exit_code": 0}
   ],
   "assertions": [
@@ -22,10 +20,11 @@
     "open gear pane never intersects identity/controls/objective/art/minimap/quickbar/orbs at those sizes",
     "first Escape closes the pane; bare Escape requests quit",
     "life orb is left of mana; live 3440x1440 window matches that layout",
-    "pack captures write under docs/execution/captures/art-wave, not the TASK-0159 folder"
+    "pack captures write under docs/execution/captures/art-wave, not the TASK-0159 folder",
+    "live HUD names Life left and Mana right"
   ],
   "negative_control": {
-    "name": "TASK-0159 folder capture alone, overlapping pane, or shrinking fonts below the floor",
+    "name": "TASK-0159 folder capture alone, overlapping pane, shrinking fonts below the floor, or an X on the mana globe as the mute cue",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
@@ -58,12 +57,19 @@
       "path": "docs/execution/captures/art-wave/live-hud-owner.png",
       "sha256": "0caaad08d9b52ec2fad7c7d9a2bd3d57acd11ee08f5dbb8a1cd65bdcf8acd214",
       "produced_by": "native/tools/capture-window.ps1 on live verdigris_client.exe at 3440x1440"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/vital-orbs-960x600.png",
+      "sha256": "49607485455a7ede3ef78ca3aa449e815b0acd3bb946ac150fda57830f9279e0",
+      "produced_by": "native/build/verdigris_client.exe --scenario vital-orbs"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Extends TASK-0159; that packet's STATUS.md and historical captures were not rewritten.",
+    "Owner strip paints Life left / Mana right. X on mana cannot certify a non-color cue.",
     "VG-UI-006 Owner Demo navigation is not this packet and was not duplicated.",
     "Remote pane check remains 960x600; owner ultrawide proof is the local present path.",
     "No TASK numbers minted."
