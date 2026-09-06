@@ -33,7 +33,7 @@ Cursor evidence notes.
 
 | VG | Disposition | Existing |
 |---|---|---|
-| VG-UI-001 | extend | native Escape stack (`pane-stack`); owner Stack 2 / Escape closes; helper depth alone cannot pass |
+| VG-UI-001 | extend | native Escape stack (`pane-stack`); owner Stack 2 / Escape closes; absent tree hides seats; invented origin cannot pass |
 | VG-UI-002 | extend | TASK-0171 INTEGRATED, 0184 BRIDGE_PREP; `pack-drag`; reject cannot lose/duplicate/silent-equip |
 | VG-UI-003 | extend | paper-doll + ack-only HUD (`equipment`); pending compare cannot gold-frame as equipped; `progression-surface` owner Skill tree / No data yet (TASK folder cannot certify) |
 | VG-UI-004 | extend | TASK-0156, 0159 INTEGRATED; `stat-explain` expandable ATK; dormant cannot fold into Attack |
@@ -248,7 +248,8 @@ equipped. Owner gear pane paints `Skill tree: no data yet`; PaneStat
 keeps `TREE no authoritative data`. Scenario `equipment`. Absent
 progression capture: owner strip paints Skill tree / No data yet; TREE
 jargon cannot certify. Scenario `progression-surface` pack capture in
-art-wave (TASK-0156 folder cannot certify). Evidence
+art-wave (TASK-0156 folder cannot certify). Absent P-key tree hides
+seats (`tree-pane-960x600.png`, shared with VG-UI-001). Evidence
 `docs/execution/evidence/VG-UI-003.json`.
 VG-PERF-007: 32 resize/effect cycles; floor bitmaps stay 1. Owner strip
 paints 32 cycles / Cap holds. Short scene cannot certify. Scenario
@@ -258,7 +259,9 @@ Encounter mix / Hit + warning. An isolated preview cannot certify.
 Scenario `dense-mix`. Evidence `docs/execution/evidence/VG-SOUND-007.json`.
 VG-UI-001: Escape dismisses character then gear; bare Escape quits. Owner
 strip paints Stack 2 / Escape closes. Helper depth alone cannot prove.
-Scenario `pane-stack`. Evidence `docs/execution/evidence/VG-UI-001.json`.
+Absent P-key tree paints No seats yet; an invented origin seat cannot
+certify. Scenario `pane-stack`. Evidence
+`docs/execution/evidence/VG-UI-001.json`.
 VG-MOVE-005: TASK-0165 focus reducer gates WASD, combat, pickup, and pack
 drag. Owner strip paints Focus gear / No buffer. Closing a pane cannot
 release a held attack. Scenario `pane-focus`. Evidence

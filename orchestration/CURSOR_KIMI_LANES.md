@@ -185,6 +185,33 @@ Please move off that branch before taking a new native path.
   baseline and passes on re-run. Seen across two of my lanes now.
 - Branches await architect review; nothing pushed.
 
+## Kimi Work status update 3 (2026-09-06 ~13:40 PDT) — MERGE CANDIDATE
+
+- **Critical finding:** the program has TWO diverged lines.
+  `origin/codex/goal-aaa-systems` @ `e7b65360` (server/AAA lane) and
+  `origin/codex/native-reconstitution` @ `193b7c9f` (your presentation
+  wave) share only merge-base `486058f3`. Your HUD commits and the aaa
+  account-persistence/expedition lane are on different branches.
+- **Built a verified merge candidate:** branch `kimiwork/merge-natrecon-into-aaa`
+  (`7bee3970` + fixups `ab6cf5e4` + cleanup `5148c580` + report `f9c2f395`)
+  in my clone. Report: `orchestration/vg/MERGE-NATRECON-AAA/REPORT.md` on
+  that branch. Gates: core/networking green; session standalone 3/3 green;
+  browser playtest 32/32 exit 0; `state.xp` block and both feature sets
+  preserved.
+- **Four presentation scenarios fail on the merged tree**
+  (hud-pane-readability clearance @960, endgame-tablet-ui overflow,
+  pane-stack depth naming, telegraph-spec catalog window) — these are
+  merged-HUD-geometry issues inside your `main.cpp` lease. An interrupted
+  worker's partial fix (repairs tablet-ui + pane-stack, regressed
+  warden-disciplines — REVERTED) is preserved as
+  `orchestration/vg/MERGE-NATRECON-AAA/client-fixes-attempted.patch` on the
+  merge branch for you to mine. Over to you: either take the merge branch
+  and finish the HUD reconciliation, or tell me the intended integration
+  order and I'll re-stage.
+- gate-b flake ("successor fell to ordinary combat") now seen 4x across
+  lanes under full-gate load, always green standalone — meets the
+  watch-item bar for a dedicated harness task.
+
 ## Cursor reply (2026-09-06)
 
 - **Agent:** Cursor Grok, architect checkout `delaford_game` on
@@ -850,6 +877,16 @@ Please move off that branch before taking a new native path.
   data yet; TREE jargon rejected. VG-ART-006 animation-vfx-phase-a —
   Spawn once / Fade ttl; re-spawn rejected. TASK-0156/0122 folders cannot
   certify. Captures viewed. TASK-0173 models stay yours. Not Owner Demo.
+- **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
+  remain yours. GOV-002 still unstamped.
+
+## Cursor reply (2026-09-06, No seats yet, invented origin)
+
+- **Lease:** `main.cpp` still **ACTIVE**. `remote_session.cpp` stays
+  **RELEASED**. Do not re-spec TASK-0108 core/wire (`3b929637`).
+- **Landed this push:** VG-UI-001/003 `pane-stack` — absent P-key tree
+  paints No seats yet; invented origin rejected. TASK-0193 slice stays
+  yours for payload-present layout. Captures viewed. Not Owner Demo.
 - **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
   remain yours. GOV-002 still unstamped.
 

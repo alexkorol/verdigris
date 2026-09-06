@@ -5754,7 +5754,7 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
   SetBkMode(dc, TRANSPARENT);
   HGDIOBJ old_font = SelectObject(dc, skin::font_heading());
   SetTextColor(dc, skin::kVerdigris);
-  const char* title = "Skill tree";
+  const char* title = verdigris::client::ui::owner_skill_tree_label();
   TextOutA(dc, left + 16 * s, top + 10 * s, title,
            static_cast<int>(strlen(title)));
 
@@ -5776,12 +5776,49 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
                 present ? 1 : 0,
                 present ? "tree:owner-present" : "tree:owner-absent"});
 
+  if (!present) {
+    // TASK-0156 / VG-UI-003: absence cannot invent an origin seat or an
+    // allocate action. The owner-demo slice stays in the geometric header
+    // for when a payload actually arrives.
+    SelectObject(dc, skin::font_body());
+    SetTextColor(dc, skin::kInkDim);
+    const char* empty = verdigris::client::ui::owner_no_seats_yet_label();
+    SIZE empty_extent{};
+    GetTextExtentPoint32A(dc, empty, static_cast<int>(strlen(empty)),
+                          &empty_extent);
+    const int ex = left + (pane_w - empty_extent.cx) / 2;
+    const int ey = top + pane_h / 2 - 16 * s;
+    TextOutA(dc, ex, ey, empty, static_cast<int>(strlen(empty)));
+    rl.push_back({render::Op::Hud, static_cast<double>(ex),
+                  static_cast<double>(ey), 0.0, 0, "tree:seats-hidden-absent"});
+    const int rx = left + pane_w / 2;
+    const int ry = ey + 48 * s;
+    ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
+    draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s,
+              RGB(185, 72, 69), 2);
+    SetTextColor(dc, skin::kInkDim);
+    SelectObject(dc, skin::font_small());
+    const char* rejected = "invented origin";
+    SIZE rejected_extent{};
+    GetTextExtentPoint32A(dc, rejected, static_cast<int>(strlen(rejected)),
+                          &rejected_extent);
+    TextOutA(dc, rx - rejected_extent.cx / 2, ry + 22 * s, rejected,
+             static_cast<int>(strlen(rejected)));
+    rl.push_back({render::Op::Hud, static_cast<double>(rx),
+                  static_cast<double>(ry), 0.0, 0,
+                  "tree:invented-origin-rejected"});
+    const char* footer = "P or Esc closes";
+    TextOutA(dc, left + 16 * s, top + pane_h - 24 * s, footer,
+             static_cast<int>(strlen(footer)));
+    SelectObject(dc, old_font);
+    return;
+  }
+
   const auto slice = geometric_skill_tree::make_owner_demo_first_level_slice();
   const auto node_id_of = [](geometric_skill_tree::Axial pos) {
     return std::to_string(pos.q) + "," + std::to_string(pos.r);
   };
   const auto allocated = [&](const std::string& id) {
-    if (!present) return id == std::string("0,0");
     for (const auto& node : progression->nodes)
       if (node == id) return true;
     return false;
@@ -5795,7 +5832,7 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
     const std::string id = node_id_of(seat.pos);
     const bool active = allocated(id);
     bool frontier = false;
-    if (!active && present && progression->unspent_points > 0) {
+    if (!active && progression->unspent_points > 0) {
       for (std::uint8_t j = 0; j < slice.seat_count; ++j) {
         const std::string other = node_id_of(slice.seats[j].pos);
         if (allocated(other) &&
@@ -5835,7 +5872,9 @@ void paint_tree_pane(ClientState& state, HDC dc, const RECT& bounds,
   }
   SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kInkDim);
-  const char* footer = "Click a gold seat to allocate | P or Esc closes";
+  const char* footer = progression->unspent_points > 0
+                           ? "Click a gold seat to allocate | P or Esc closes"
+                           : "P or Esc closes";
   TextOutA(dc, left + 16 * s, top + pane_h - 24 * s, footer,
            static_cast<int>(strlen(footer)));
   SelectObject(dc, old_font);
@@ -14603,14 +14642,30 @@ int scenario_pane_stack() {
   bool tree_pane = false;
   bool owner_title = false;
   bool owner_absent = false;
+  bool seats_hidden = false;
+  bool invented_origin = false;
+  bool painted_seat = false;
   for (const auto& item : tree.render_list) {
     if (item.op != render::Op::Hud) continue;
     if (item.label == "tree-pane") tree_pane = true;
     if (item.label == "tree:owner-title") owner_title = true;
     if (item.label == "tree:owner-absent") owner_absent = true;
+    if (item.label == "tree:seats-hidden-absent") seats_hidden = true;
+    if (item.label == "tree:invented-origin-rejected") invented_origin = true;
+    if (item.label.rfind("tree-seat:", 0) == 0) painted_seat = true;
   }
   scenario_check(tree_pane && owner_title && owner_absent,
                  "pane-stack: skill tree paints owner title and absence");
+  scenario_check(seats_hidden,
+                 "pane-stack: absent tree hides seats instead of inventing an origin");
+  scenario_check(!painted_seat,
+                 "pane-stack: absent tree cannot paint tree-seat node ids");
+  scenario_check(invented_origin,
+                 "pane-stack: live HUD rejects invented origin");
+  scenario_check(verdigris::client::ui::invented_origin_fails_review(false, true),
+                 "pane-stack: painting a seat with no payload is the anti-pattern");
+  scenario_check(!verdigris::client::ui::invented_origin_fails_review(false, false),
+                 "pane-stack: hidden seats are the production absence");
   const std::string tree_png = dir + "\\tree-pane-960x600.png";
   scenario_check(reference_present(tree, 960, 600, tree_png),
                  "pane-stack: skill-tree capture written");

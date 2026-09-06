@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-001",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "f002e0e04ce1e67522c39f1830c522f5d7ce32cc",
+  "base_sha": "3a346cd0a33fd7c70c6811c6acf9842e2adcb768",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "pane-stack",
@@ -19,10 +19,13 @@
     "first Escape dismisses character only",
     "bare Escape after empty stack requests quit",
     "skill tree paints owner title Skill tree and absence Skill tree: no data yet",
-    "live HUD names Stack 2 and Escape closes"
+    "absent tree hides seats and paints No seats yet",
+    "absent tree cannot paint tree-seat node ids",
+    "live HUD names Stack 2 and Escape closes",
+    "live HUD rejects invented origin"
   ],
   "negative_control": {
-    "name": "helper pane_stack_depth without native paint or Escape, or Geometric Passives as the owner title",
+    "name": "helper pane_stack_depth without native paint or Escape, Geometric Passives as the owner title, or an invented origin seat while the tree says no data yet",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
@@ -35,13 +38,14 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/tree-pane-960x600.png",
-      "sha256": "5ce68d5b6185307b46a81bb740b9b5c513dc2cf62f4df975e701f9bc3eb97e3e",
+      "sha256": "abfd79149be883f4fcf4b269a5103b6b5816e6dfa84b24f2aaeadd9fdcc321ec",
       "produced_by": "native/build/verdigris_client.exe --scenario pane-stack"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Client Escape stack only. Owner Demo Chronicles journeys not duplicated."
+    "Client Escape stack only. Owner Demo Chronicles journeys not duplicated.",
+    "TASK-0193 geometric slice is unchanged and only paints after a payload. Not Owner Demo. No TASK numbers minted."
   ]
 }

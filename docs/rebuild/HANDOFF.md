@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — No seats yet, invented origin (Cursor)
+
+- VG-UI-001 / VG-UI-003: the P-key skill tree no longer paints a glowing
+  origin seat while it says no data yet. Owner copy is No seats yet;
+  invented origin cannot certify. PaneStat TREE string and TASK-0193
+  geometric slice are unchanged and only paint after a payload. Stack 2 /
+  Escape closes on `pane-stack` is unchanged.
+- Scenario `pane-stack` PASS. Capture viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — Skill tree, Spawn once (Cursor)
 
 - VG-UI-003: `progression-surface` owner Skill tree strip paints No data yet
