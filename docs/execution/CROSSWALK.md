@@ -47,7 +47,7 @@ Cursor evidence notes.
 | VG-ART-007/008 | extend | TASK-0206/0205/0207 — Owner Demo, do not duplicate |
 | VG-GPU-001 | new | isolated software quad (`gpu-sample`); not a D3D-only window; Software quad stays off WASD/objective/Tin village/Life |
 | VG-GPU-002 | new | render-list → packets (`gpu-packets`); handles cannot snapshot |
-| VG-GPU-003 | new | versioned software bindings (`shader-bindings`); no runtime .hlsl path |
+| VG-GPU-003 | new | versioned software bindings (`shader-bindings`); no runtime .hlsl path; Layout v1 stays off WASD/objective/Tin village/Life |
 | VG-GPU-004 | new | session-connected packet present (`gpu-reference`); not a disconnected demo |
 | VG-GPU-005 | new | Y-sort + Sweep overlay on the village gate (`grounding`); HUD or capture-black cannot certify; walls cannot erase warnings |
 | VG-GPU-006 | new | moving bronze lantern pool on the village gate (`material-light`); HUD without a pool cannot certify; cannot wash out damage |
@@ -215,8 +215,10 @@ uses the family. Scenario `bronze-stone`. Evidence
 `docs/execution/evidence/VG-ART-002.json`.
 VG-GPU-003: layout v1 software program `software-albedo-rim-v1`. Wrong
 backend or stale layout fails; failed load does not paint. Owner strip
-paints Layout v1 / No source. Stale HLSL cannot certify. 64×64 BMP hash
-is unchanged. Scenario `shader-bindings`. Evidence
+paints Layout v1 / No source and parks off WASD, the objective, Tin
+village, and Life. Covering those combat surfaces cannot certify. Stale
+HLSL cannot certify. 64×64 BMP hash is unchanged. Scenario
+`shader-bindings`. Evidence
 `docs/execution/evidence/VG-GPU-003.json`.
 VG-GPU-004: software present of live session packets (actors/world/effects/HUD).
 Owner strip paints Live packets / Session present. A textured-quad demo with

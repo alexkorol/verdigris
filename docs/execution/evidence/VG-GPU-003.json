@@ -4,7 +4,7 @@
   "planning_id": "VG-GPU-003",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "5abb4077d19b2a713b1d0c5e0971c8f6d9ce18fa",
+  "base_sha": "7497e564",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "shader-bindings",
@@ -20,10 +20,12 @@
     "a D3D-only program cannot load on this sample",
     "failed bindings do not draw a fallback fill",
     "cooked albedo/rim program draws a family-shaded quad",
-    "live HUD names Layout v1 and No source"
+    "live HUD names Layout v1 and No source",
+    "Layout v1 stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Layout v1 is the anti-pattern"
   ],
   "negative_control": {
-    "name": "wrong backend or stale layout rendering silently",
+    "name": "wrong backend or stale layout rendering silently, or Layout v1 covering WASD/objective/Tin village/Life",
     "observed_result": "REJECTED"
   },
   "artifacts": [
@@ -36,7 +38,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/shader-bindings-960x600.png",
-      "sha256": "4e38463307e491da9739af7417b3781beda6f11d6a0ca7f5514399ee433b4c40",
+      "sha256": "4f12fa32b727fd85f07b2dfb7a416de24e80567e6eb9d3564320f24ca0be7d1a",
       "produced_by": "native/build/verdigris_client.exe --scenario shader-bindings"
     }
   ],
@@ -44,7 +46,7 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Software tables, not compiled HLSL/Metal. VG-TOOLS-002 cook pipeline stays Kimi.",
-    "Owner strip paints Layout v1 / No source. Stale HLSL cannot certify. 64x64 BMP hash is unchanged.",
+    "Owner strip paints Layout v1 / No source and parks off WASD, the objective, Tin village, and Life. Stale HLSL cannot certify. Covering those combat surfaces cannot certify. 64x64 BMP hash is unchanged and was not recaptured.",
     "Does not re-spec TASK-0108."
   ]
 }

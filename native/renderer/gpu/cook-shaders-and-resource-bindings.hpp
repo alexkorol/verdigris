@@ -85,5 +85,8 @@ inline bool draw_lit_quad(Sample& sample, const Bindings& bindings) {
 
 inline const char* owner_layout_v1_label() { return "Layout v1"; }
 inline const char* owner_no_source_label() { return "No source"; }
+inline bool shader_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
 
 }  // namespace verdigris::gpu
