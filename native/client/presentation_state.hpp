@@ -56,10 +56,14 @@ struct ActiveTelegraph {
   verdigris::Vec2 facing{1, 0};
   std::uint64_t start_tick = 0;
   int windup_ticks = 1;
+  int reach = 0;
 };
 
 struct WorldActor {
   std::string id;
+  std::string name;       // display name (monsters); empty for the player
+  std::string kind;       // monster kind id; empty for the player
+  std::string behaviour;  // monster combat role; empty for the player
   verdigris::Vec2 position{};
   verdigris::Vec2 facing{1, 0};
   int life = 0;
@@ -73,6 +77,9 @@ struct WorldActor {
   int war_cry_ticks_remaining = 0;
   bool alive = true;
   bool elite = false;
+  // VG-UI-005: map/route overlay. False means the snapshot did not
+  // publish this actor; zoom cannot mint a blip for it.
+  bool on_snapshot = true;
 };
 
 struct WorldCarriedItem {
@@ -80,6 +87,15 @@ struct WorldCarriedItem {
   std::string name;
   int attack_bonus = 0;
   bool equipped = false;
+};
+
+// A town NPC as the presentation sees it: authoritative roster entry with a
+// world-unit position and the server-authored verb list.
+struct WorldNpc {
+  int id = 0;
+  std::string name;
+  verdigris::Vec2 position{};
+  std::vector<std::string> actions;
 };
 
 // TASK-0153: owner-facing expedition phase. The local path reads the core's
@@ -92,6 +108,17 @@ enum class ExpeditionPhaseView { Unknown, SlayWardens, ExtractCarriedValue };
 struct WorldView {
   WorldActor player;
   std::vector<WorldActor> monsters;
+  std::vector<WorldNpc> npcs;
+  // Authoritative walkable grid for the current scene (protocol tiles,
+  // row-major, 1 = walkable). Empty until the map payload arrives; the
+  // renderer draws blocked tiles as visible walls instead of open floor.
+  int map_width = 0;
+  int map_height = 0;
+  std::vector<std::uint8_t> map_walkable;
+  std::string theme = "town";
+  // Combat XP for the bottom bar: fraction of the current level's span.
+  double xp_fraction = 0.0;
+  bool xp_present = false;
   verdigris::Vec2 extraction{};
   bool has_extraction = false;
   std::string house_name = "House Verdigris";
@@ -124,6 +151,9 @@ struct PresentationFx {
   // spawn/materialization beat fires exactly once per foe. Presentation
   // bookkeeping only — it never creates, moves, or damages an actor.
   std::unordered_set<std::string> known_monsters;
+  // Tick of each monster's most recent landed strike, driving the
+  // presentation-only attack lunge. Derived from authoritative hit events.
+  std::unordered_map<std::string, std::uint64_t> monster_strikes;
 };
 
 verdigris::Vec2 facing_vector(const std::string& facing);
@@ -138,7 +168,8 @@ void detect_monster_spawns(PresentationFx& fx, const WorldView& world,
 // world units. One protocol tile equals one ground-grid tile.
 double protocol_to_world(double protocol_units);
 
-void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& sim);
+void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& sim,
+                                long long combat_xp = 0);
 void sync_world_from_model(WorldView& world, const ClientModel& model);
 
 // TASK-0153 mode-aware extraction contract: the one owner-facing action

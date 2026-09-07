@@ -1,0 +1,3750 @@
+{
+ "schemaVersion": 1,
+ "generatedBy": "TASK-0166 (ox-alpha worker)",
+ "generatedAt": "2026-08-24",
+ "sourceRoot": "Z:/Code/WIZARD",
+ "sourceCommit": "66a5d9ff6810e886c1bd08cbeaaf83cabf92aae9",
+ "moduleRegistry": {
+  "arcane_lattice": {
+   "id": "wizard.arcane-lattice",
+   "version": "0.9.0",
+   "targets": [
+    "spellcraft"
+   ],
+   "launch": "tools/arcane_lattice/index.html",
+   "readme": "tools/arcane_lattice/README.md"
+  },
+  "cartographer": {
+   "id": "wizard.cartographer",
+   "version": "1.0.0",
+   "targets": [
+    "zone-generation"
+   ],
+   "launch": "tools/cartographer/index.html",
+   "readme": "tools/cartographer/README.md"
+  },
+  "rp_account_creator": {
+   "id": "wizard.chronicles",
+   "version": "1.0.0",
+   "targets": [
+    "chronicle-meta"
+   ],
+   "launch": "tools/rp_account_creator/index.html",
+   "readme": "tools/rp_account_creator/README.md"
+  },
+  "geometric_skilltree": {
+   "id": "wizard.geometric-skilltree",
+   "version": "1.0.0",
+   "targets": [
+    "passive-tree"
+   ],
+   "launch": "tools/geometric_skilltree/index.html",
+   "readme": "tools/geometric_skilltree/README.md"
+  },
+  "health_globe": {
+   "id": "wizard.health-globe",
+   "version": "1.0.0",
+   "targets": [
+    "hud-resources"
+   ],
+   "launch": "tools/health_globe/index.html",
+   "readme": "docs/ARCHIVE.md"
+  },
+  "mason": {
+   "id": "wizard.mason",
+   "version": "1.0.0",
+   "targets": [
+    "terrain-autotile"
+   ],
+   "launch": "tools/mason/index.html",
+   "readme": "tools/mason/README.md"
+  },
+  "wizard_orbs": {
+   "id": "wizard.orbs",
+   "version": "1.0.0",
+   "targets": [
+    "hud-resources"
+   ],
+   "launch": "tools/wizard_orbs/index.html",
+   "readme": "tools/wizard_orbs/README.md"
+  },
+  "pixel_sandbox": {
+   "id": "wizard.pixel-sandbox",
+   "version": "1.0.0",
+   "targets": [
+    "none"
+   ],
+   "launch": "tools/pixel_sandbox/index.html",
+   "readme": "docs/ARCHIVE.md"
+  },
+  "pixelart": {
+   "id": "wizard.pixelart",
+   "version": "1.0.0",
+   "targets": [
+    "none"
+   ],
+   "launch": "tools/pixelart/index.html",
+   "readme": "tools/pixelart/README.md"
+  },
+  "rpg_inventory": {
+   "id": "wizard.rpg-inventory",
+   "version": "1.0.0",
+   "targets": [
+    "itemization"
+   ],
+   "launch": "tools/rpg_inventory/index.html",
+   "readme": "tools/rpg_inventory/README.md"
+  },
+  "slerp": {
+   "id": "wizard.slerp",
+   "version": "1.0.0",
+   "targets": [
+    "none"
+   ],
+   "launch": "tools/slerp/index.html",
+   "readme": "tools/slerp/README.md"
+  },
+  "sokoban": {
+   "id": "wizard.sokoban",
+   "version": "1.0.0",
+   "targets": [
+    "none"
+   ],
+   "launch": "tools/sokoban/index.html",
+   "readme": "tools/sokoban/README.md"
+  },
+  "space_shooter": {
+   "id": "wizard.space-shooter",
+   "version": "1.0.0",
+   "targets": [
+    "none"
+   ],
+   "launch": "tools/space_shooter/index.html",
+   "readme": "tools/space_shooter/README.md"
+  },
+  "systems_bench": {
+   "id": "wizard.systems-bench",
+   "version": "0.1.0",
+   "targets": [
+    "systems-integration",
+    "hud-resources"
+   ],
+   "launch": "tools/systems_bench/index.html",
+   "readme": "tools/systems_bench/README.md"
+  },
+  "verdigris_splash": {
+   "id": "wizard.verdigris-splash",
+   "version": "2.6.0",
+   "targets": [
+    "world-presentation"
+   ],
+   "launch": "tools/verdigris_splash/index.html",
+   "readme": "tools/verdigris_splash/README.md"
+  },
+  "wordcloud": {
+   "id": "wizard.wordcloud",
+   "version": "1.0.0",
+   "targets": [
+    "none"
+   ],
+   "launch": "tools/wordcloud/dist/index.html",
+   "readme": "tools/wordcloud/README.md"
+  },
+  "wordsphere": {
+   "id": "wizard.wordsphere",
+   "version": "1.0.0",
+   "targets": [
+    "none"
+   ],
+   "launch": "tools/wordsphere/index.html",
+   "readme": "tools/wordsphere/README.md"
+  }
+ },
+ "families": {
+  "framekit": {
+   "reference": "WIZARD/tools/gui_framekit",
+   "module": "gui_framekit",
+   "artifacts": [
+    {
+     "sourcePath": "tools/gui_framekit/assets/evidence/fk-107-assets-demo.png",
+     "sha256": "79e80275ebbadf11854fdd40c66a225bbb4c2187b8dd3b0c6884e70a9dfbf9ed",
+     "bytes": 15100,
+     "dimensions": {
+      "w": 900,
+      "h": 500,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/assets/sprites/orb-essence.png",
+     "sha256": "a5a6366e7beebfca6a795c5693a8d66c7d1e148a7243464f0fb7311623eb28cb",
+     "bytes": 382,
+     "dimensions": {
+      "w": 16,
+      "h": 16,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/assets/sprites/orb-mana.png",
+     "sha256": "c2d958e987dd831fd1b231283db44b1bbc311df4f7913e171752bf2b25fffff4",
+     "bytes": 370,
+     "dimensions": {
+      "w": 16,
+      "h": 16,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/assets/sprites/orb-vitality.png",
+     "sha256": "d2b0f786a0e94114c0fc7b47f33518fd5556a64937ade97f7745a46b0dae3ebf",
+     "bytes": 397,
+     "dimensions": {
+      "w": 16,
+      "h": 16,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/assets/textures/panel.png",
+     "sha256": "d65f927650f009f65d0126047b4504ee4a201a853b9bd3af22d282f972bd3934",
+     "bytes": 1457,
+     "dimensions": {
+      "w": 48,
+      "h": 48,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/assets/textures/slot.png",
+     "sha256": "ff7f9f6aedff79fc203f22985aae9ba7f62dfe64b8a17db9220c8bb9650e59e8",
+     "bytes": 639,
+     "dimensions": {
+      "w": 32,
+      "h": 32,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/assets/evidence/fk-107-assets-demo.png",
+     "sha256": "79e80275ebbadf11854fdd40c66a225bbb4c2187b8dd3b0c6884e70a9dfbf9ed",
+     "bytes": 15100,
+     "dimensions": {
+      "w": 900,
+      "h": 500,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/base/evidence/fk-101-base-demo.png",
+     "sha256": "0686d98ae88ed1a1e84b1c7546ff18c59a15cc7eef152f95ea8521009b9253b5",
+     "bytes": 49265,
+     "dimensions": {
+      "w": 1280,
+      "h": 1050,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/components/controls/evidence/fk-103-button-demo.png",
+     "sha256": "4afcd0c8b294ad36368877e5a1a9b31c7b62fd23e3399d7f441840a250d85afb",
+     "bytes": 12337,
+     "dimensions": {
+      "w": 900,
+      "h": 700,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/components/controls/evidence/fk-103-tabs-demo.png",
+     "sha256": "4bc1a9fb567c70e1525c7e533926339500c7e94373d79d2de4bc3e00a9fb5a50",
+     "bytes": 9855,
+     "dimensions": {
+      "w": 900,
+      "h": 700,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/components/frames/dialog/evidence/fk-102-dialog-open.png",
+     "sha256": "909630caedcd0f7d9b239711126c4426429ec24c0ae74b42255d068fd691a6ec",
+     "bytes": 16780,
+     "dimensions": {
+      "w": 1280,
+      "h": 900,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/components/frames/panel/evidence/fk-102-panel-demo.png",
+     "sha256": "00280bd4fddb4f3665ef9a17003d381f60a14877e335aba54dde10abd2e06dd7",
+     "bytes": 19887,
+     "dimensions": {
+      "w": 1280,
+      "h": 900,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/components/frames/window/evidence/fk-102-window-demo.png",
+     "sha256": "c3b483b8a15c1c4d2fd32075cb752d1311bb978fd5933a5ab07864ff42d32ecf",
+     "bytes": 23884,
+     "dimensions": {
+      "w": 1280,
+      "h": 900,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/components/hud/evidence/fk-104-bar-demo.png",
+     "sha256": "aa07136851a08b25da43a0d4b76388a4d9fe074cf9d5002e10862d1342374462",
+     "bytes": 6021,
+     "dimensions": {
+      "w": 900,
+      "h": 700,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/components/hud/evidence/fk-104-globe-demo.png",
+     "sha256": "d12064f2000366670b3cc51d76c5051c344fb26d1481b9b2ecbf7a5a410d56ab",
+     "bytes": 10335,
+     "dimensions": {
+      "w": 900,
+      "h": 700,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/components/inventory/evidence/fk-105-grid-demo.png",
+     "sha256": "6dd3d913ea5326c2a499099ce42dcfafdb12c6347c0b214d115881cd151b69ee",
+     "bytes": 6261,
+     "dimensions": {
+      "w": 900,
+      "h": 700,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/components/inventory/evidence/fk-105-tooltip-hover.png",
+     "sha256": "c2873e0c7935a4c929662bbe2217b90f0808be5e3de68f4a452c383482b3a96a",
+     "bytes": 10393,
+     "dimensions": {
+      "w": 900,
+      "h": 700,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/components/overlays/evidence/fk-106-modal-demo.png",
+     "sha256": "f728a90af69fe1c1748197424aa25dc8df6cca1a1e0a28d44fa96c29317630d8",
+     "bytes": 13917,
+     "dimensions": {
+      "w": 900,
+      "h": 700,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/components/overlays/evidence/fk-106-toast-demo.png",
+     "sha256": "0565aacd00fbfe55911540e9fc88ce8ebff9fd6e88e2ab2f09cc4ab1822366f0",
+     "bytes": 9977,
+     "dimensions": {
+      "w": 900,
+      "h": 700,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/demo/evidence/fk-108-showcase.png",
+     "sha256": "b2adc75d26f7e9d129c2fb345d6f8ff4d2da0f16f7ba8c7034ff3f3a4d9ad800",
+     "bytes": 42753,
+     "dimensions": {
+      "w": 1000,
+      "h": 1052,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/gui_framekit/tokens/evidence/fk-101-tokens-demo.png",
+     "sha256": "dec15d135bfe5db49cebf9d4afd76d65f60b21723be146098157d88b0b900c5b",
+     "bytes": 57527,
+     "dimensions": {
+      "w": 1280,
+      "h": 1050,
+      "mode": "RGB"
+     }
+    }
+   ]
+  },
+  "orbs": {
+   "reference": [
+    "WIZARD/tools/wizard_orbs",
+    "WIZARD/tmp/orbs-original/extracted"
+   ],
+   "module": "wizard_orbs",
+   "artifacts": [
+    {
+     "sourcePath": "tools/wizard_orbs/screenshots/shot_hero.png",
+     "sha256": "76d0c951d571cda54b0b91a03484744d435c5d9066953021fcb3b25fbfa101b2",
+     "bytes": 847860,
+     "dimensions": {
+      "w": 1254,
+      "h": 706,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/wizard_orbs/screenshots/shot_low.png",
+     "sha256": "86f4084dfe71c198e96a2caf49c22ecd5eda20a874aa55f53928f7c63aa9ba68",
+     "bytes": 691487,
+     "dimensions": {
+      "w": 1254,
+      "h": 706,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/wizard_orbs/screenshots/shot_reserved.png",
+     "sha256": "1f32fa2d440acc8fe9c21b5607d627c6ce29557f4e06238b25dd98dc9587f4e4",
+     "bytes": 876636,
+     "dimensions": {
+      "w": 1254,
+      "h": 706,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tmp/orbs-original/extracted/art.jpg",
+     "sha256": "11ba0f762e7ba56c793c7f2d938b19562731d48e1c8e27a12728aa087f6cf370",
+     "bytes": 181343,
+     "dimensions": {
+      "w": 1672,
+      "h": 941,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tmp/orbs-original/extracted/empty.jpg",
+     "sha256": "2fedda107fd4ddc47080bfdbd880d0cd6ea29ece916db1927bbaa714e112698a",
+     "bytes": 92715,
+     "dimensions": {
+      "w": 1254,
+      "h": 706,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tmp/orbs-original/extracted/mask.png",
+     "sha256": "53eb592b25298711d68f3303ab580a742583a068d1630cfc4ca97f3ed0bd0c6d",
+     "bytes": 22150,
+     "dimensions": {
+      "w": 836,
+      "h": 470,
+      "mode": "L"
+     }
+    },
+    {
+     "sourcePath": "tmp/orbs-original/extracted/norm.jpg",
+     "sha256": "1f326c708662510a542c0b3bf600c9abe176911b8a6a10e3b719a2c09fa5f384",
+     "bytes": 80228,
+     "dimensions": {
+      "w": 1254,
+      "h": 706,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tmp/orbs-original/extracted/pack.jpg",
+     "sha256": "ae4e6d7f60399b9bd368961e46ccd7d696c53f526f2718cb7a8d2433b247e92a",
+     "bytes": 80691,
+     "dimensions": {
+      "w": 1254,
+      "h": 706,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tmp/orbs-original/extracted/stone.jpg",
+     "sha256": "0a3794396ca96e8b6651b8dd60cc1e661e6092f177d6f33c99ecb545a4a21385",
+     "bytes": 117956,
+     "dimensions": {
+      "w": 1254,
+      "h": 706,
+      "mode": "RGB"
+     }
+    }
+   ]
+  },
+  "rpg_inventory": {
+   "reference": "WIZARD/tools/rpg_inventory",
+   "canonicalAssetsCount": 248,
+   "stagingManifests": [],
+   "artifactsSample": [],
+   "artifacts": [
+    {
+     "sourcePath": "tools/rpg_inventory/assets/arc_wand.png",
+     "sha256": "33ad6a3a766eeef195ba7c1be3f0fc13643f3226fa6e3423da266fe0769190ce",
+     "bytes": 16892,
+     "dimensions": {
+      "w": 99,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/astral_plate.png",
+     "sha256": "c4227d4f5ca0242c022ac753f9b805f8ca4f1d601c6414ac9b987d218d5b4e84",
+     "bytes": 65310,
+     "dimensions": {
+      "w": 421,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/bird_omen.png",
+     "sha256": "276acac57329b0870889f74ab0d9ee33a04c5f1e085fecfa74fd531f2c1459e1",
+     "bytes": 44651,
+     "dimensions": {
+      "w": 339,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/blood_omen.png",
+     "sha256": "5f71ff943b599bb79550d78f4283c188811644397e8d097392092b6488bbb78f",
+     "bytes": 58746,
+     "dimensions": {
+      "w": 512,
+      "h": 381,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/boar_pike.png",
+     "sha256": "28601e63fa6dc665c169e34bb0c1895a1b74a1dea293f84778fb4fd9d535687c",
+     "bytes": 19252,
+     "dimensions": {
+      "w": 204,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/boots_fur.png",
+     "sha256": "df45c89d69fab7877c7574cc1b7de78ec3b4f3f9d19d107adf1527a791855763",
+     "bytes": 83331,
+     "dimensions": {
+      "w": 471,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/bowl_bronze_offering.png",
+     "sha256": "26823b0f4f584aa4e740381c299394e0a0d3555f82892a11532fad5cbd33068c",
+     "bytes": 251407,
+     "dimensions": {
+      "w": 512,
+      "h": 323,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/bracers_bronzeplate.png",
+     "sha256": "dc69d6d537f250a2f8ba9002a820e54f5fd39143381700ac469b7cf2d2ccf396",
+     "bytes": 76882,
+     "dimensions": {
+      "w": 463,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/bracers_bronzeplate_candidate_a.png",
+     "sha256": "268db0d62c48d31430b42325acef365192175036029400e6ed4096f260423c75",
+     "bytes": 308074,
+     "dimensions": {
+      "w": 512,
+      "h": 473,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/bracers_skymetal.png",
+     "sha256": "56f55a7a0c1237f78a816ed6d08f60de9633592c97a9a0934bb9e2cba8498719",
+     "bytes": 70631,
+     "dimensions": {
+      "w": 512,
+      "h": 483,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/buckler_bronze.png",
+     "sha256": "a33725e7ea0f7e68d4da9c6ff088e943db45303d6073da1de820db1a9341d607",
+     "bytes": 87281,
+     "dimensions": {
+      "w": 512,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/buckler_hide.png",
+     "sha256": "c56edeffb7c9314774de27a101e9f282f561300f22f1a73c47a4b31819543e6c",
+     "bytes": 86367,
+     "dimensions": {
+      "w": 410,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/chain_gauntlets.png",
+     "sha256": "b8101f96c559227d750ea4262488fca3d1dcbc55bfafa33a2b20ac6d6ae3164c",
+     "bytes": 73326,
+     "dimensions": {
+      "w": 512,
+      "h": 477,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/coral_ring.png",
+     "sha256": "ac9d74f660627604f4fe4a3386fdc47540bd97646e912db080031a736816198d",
+     "bytes": 65103,
+     "dimensions": {
+      "w": 439,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/crest_bronze.png",
+     "sha256": "5e068819a0c3b5c9af03f9edc2e79bd5d88268f9065e5f3d035f48e1b6eab5ec",
+     "bytes": 49403,
+     "dimensions": {
+      "w": 333,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/crest_copper.png",
+     "sha256": "c7f15b9285293761f51f52a4b6bdfa764af7eaa18dfafe2969a584aef83c72bb",
+     "bytes": 101668,
+     "dimensions": {
+      "w": 496,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/crest_hide.png",
+     "sha256": "6748b4e20dbb1e52a09575c663a2545731a0e87aa41d1319b083b92e9d031c6a",
+     "bytes": 396165,
+     "dimensions": {
+      "w": 510,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/crest_jade.png",
+     "sha256": "433d3b802a934c71dda42821d14934f7208ea943cceb071f27c96e6abee1bff2",
+     "bytes": 56446,
+     "dimensions": {
+      "w": 472,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/cur_chisel.png",
+     "sha256": "11350462d69643c5810b5b647b1aaa826be87a0b217ea56eea5caaee566924c4",
+     "bytes": 20038,
+     "dimensions": {
+      "w": 84,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/cur_draught.png",
+     "sha256": "14996e08c3398c9e8a69c4b1b4c4e9109b61efaddee9f3cbe012debe43e5402e",
+     "bytes": 67917,
+     "dimensions": {
+      "w": 376,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/cur_knife.png",
+     "sha256": "d6fadd4bf27fa9e5452726c75e78dab22ef9304ecba6623e50b54883b0c6df74",
+     "bytes": 33675,
+     "dimensions": {
+      "w": 470,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/cur_orb.png",
+     "sha256": "f5e75a8f2bc1343c23f03c587f09fed113752e9dfb40588a7e3878fefeb54de6",
+     "bytes": 85479,
+     "dimensions": {
+      "w": 416,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/cur_sigil.png",
+     "sha256": "f1cc6037257b84962ed20948be197d7eaa060cf608956e1e048f5f5dc7dd3ec9",
+     "bytes": 25755,
+     "dimensions": {
+      "w": 198,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/cur_stone.png",
+     "sha256": "cb19535ec3e9f9e339c79ea58228d6305ed474d7206b6b0bca305d306517ebc0",
+     "bytes": 57960,
+     "dimensions": {
+      "w": 484,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/curio_amber.png",
+     "sha256": "b33ac04219eadc4af34a63c1ded7aad06328c40e1b33dfd8c0c4634596271865",
+     "bytes": 64592,
+     "dimensions": {
+      "w": 400,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/curio_bone.png",
+     "sha256": "e3952f3a635caf9d9a5d8d3bd030d65eec8d4ef897560f1e5c775ad258a9b2ce",
+     "bytes": 51439,
+     "dimensions": {
+      "w": 414,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/dagger_bone.png",
+     "sha256": "8e0669376cdbd9c944b91a2a7862fa254e6eecc1cc95566bae2afb72d3a7dd85",
+     "bytes": 32247,
+     "dimensions": {
+      "w": 341,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/dagger_bronze.png",
+     "sha256": "a5fed373ddbbf2e17628294e50db7bbf6d07cce0688125513e671c805d9b2fa4",
+     "bytes": 26543,
+     "dimensions": {
+      "w": 344,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/dagger_bronze_hiltless.png",
+     "sha256": "8979f67c46866437e87dc3dee00e9714e7880d6bf75fc2c08bdf53ce139603aa",
+     "bytes": 149328,
+     "dimensions": {
+      "w": 419,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/dagger_copper.png",
+     "sha256": "7456c85ae09806937ce0af9f5f1b2f0fe219fe22dfaead298808ed28e4075527",
+     "bytes": 40438,
+     "dimensions": {
+      "w": 329,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/dagger_obsidian.png",
+     "sha256": "250ae3b0064de45c1e3f104bf63a5a82f08ae8f8a26cc8bb8ff3f79cdf067f28",
+     "bytes": 26220,
+     "dimensions": {
+      "w": 341,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/dagger_skymetal.png",
+     "sha256": "69e92db61476fd58b1b8388e1d8c66f6d8621c3e4b49db16e66817997fe8e95d",
+     "bytes": 27624,
+     "dimensions": {
+      "w": 338,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/dagger_tusk.png",
+     "sha256": "bed62d6beedf612d586d1b35ce894ee6330e933b2eae32576631bcd4ddd57faf",
+     "bytes": 39137,
+     "dimensions": {
+      "w": 423,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/divider.png",
+     "sha256": "6d5a1c9c47174032566a638671296cb7ad7ea94f62871cb9a8114a95ce89c74a",
+     "bytes": 9802,
+     "dimensions": {
+      "w": 473,
+      "h": 112,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/ember_shell.png",
+     "sha256": "bbd2e67adc91b108a53085ff6dad517d3ef86d1a00638e406073c5b3ced825eb",
+     "bytes": 75544,
+     "dimensions": {
+      "w": 399,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/fetish_bone.png",
+     "sha256": "b563fda06a3586c1ee1673920ab994eed1b48fb2a1346ec8575dabd0f4d7a80d",
+     "bytes": 59691,
+     "dimensions": {
+      "w": 433,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/focus_black_disc.png",
+     "sha256": "1bec82a8dacc7cf393f98084dbb9a31e46eac7fe72dbe1ab74597a78c1a96097",
+     "bytes": 244178,
+     "dimensions": {
+      "w": 512,
+      "h": 444,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/frame_ornate.png",
+     "sha256": "10b9549460343430a46104e22c453966c23319aaf4a79adb001e9e21e7a6661f",
+     "bytes": 63598,
+     "dimensions": {
+      "w": 512,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/girded_sash.png",
+     "sha256": "0c2712dbed488fc8cd806e2afdc677a61760c609b20d855544ea8a30d0e560dc",
+     "bytes": 52110,
+     "dimensions": {
+      "w": 512,
+      "h": 349,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/girdle_bronzeplate.png",
+     "sha256": "a72311c150a15974456865b7dc8e0dcb313344ce4365f9fbdffb24318d9cb21a",
+     "bytes": 46197,
+     "dimensions": {
+      "w": 512,
+      "h": 318,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/girdle_bronzeplate_candidate_a.png",
+     "sha256": "3fbf8182544a6701f36dd75f7daf914b845c2cfa394763f14531bca3d4f2c841",
+     "bytes": 162704,
+     "dimensions": {
+      "w": 512,
+      "h": 270,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/girdle_copper.png",
+     "sha256": "64bc4af1ad93b719ca5101b210afd277f032e4b5559cee51b31ef035802ddc55",
+     "bytes": 41670,
+     "dimensions": {
+      "w": 512,
+      "h": 152,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/girdle_hide.png",
+     "sha256": "92aeb8e6492a131ed94e4af94d4ea50569f4983a2dd1caa3ccd00ecb5df9390a",
+     "bytes": 38726,
+     "dimensions": {
+      "w": 512,
+      "h": 150,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/girdle_quilted.png",
+     "sha256": "fbcad4c10ca1dcd8bc997520f9e86d9f4045e554f485fc0ea9abb3394746f447",
+     "bytes": 47472,
+     "dimensions": {
+      "w": 512,
+      "h": 239,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/girdle_skymetal.png",
+     "sha256": "986cfb236787c9d287780da02ae24f67895e6620b370acbb57b29388a0e69280",
+     "bytes": 47478,
+     "dimensions": {
+      "w": 512,
+      "h": 322,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/gorget_copper.png",
+     "sha256": "e4aa438d0b8df2673c245d73b157edc517b785c385fdc104057bf94aaa066e9a",
+     "bytes": 200864,
+     "dimensions": {
+      "w": 512,
+      "h": 377,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/gorget_jade.png",
+     "sha256": "07493177c61e5ae0d25436d8d32f5b833868c2e602ea8b0499020d1681da9f76",
+     "bytes": 55796,
+     "dimensions": {
+      "w": 509,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/gorget_skymetal.png",
+     "sha256": "f07263bda5198e43ed476f283903a30c292bbcbfe8b73c0f2d215d6a0e024707",
+     "bytes": 44530,
+     "dimensions": {
+      "w": 512,
+      "h": 479,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/greataxe_bone.png",
+     "sha256": "4d30bbb40326b74f45eae3067ddf68c8ed09791feb61b7ff5d10eeb8098ea5ec",
+     "bytes": 32398,
+     "dimensions": {
+      "w": 426,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/greataxe_bronze.png",
+     "sha256": "7a2068531bfa37571f45dd1851a643fcaac78e77c051f775e21a5c81d464c3ff",
+     "bytes": 15271,
+     "dimensions": {
+      "w": 156,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/greataxe_copper.png",
+     "sha256": "f9164db007c7e14bf7bf36c6323810237fae905b998e2e3b2662662da8b2c2fe",
+     "bytes": 41495,
+     "dimensions": {
+      "w": 344,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/greataxe_obsidian.png",
+     "sha256": "18bfbcb7b7b11b23411f3a5da78e57463c3efc04f6c0e1389fd7ba84ca04a976",
+     "bytes": 24982,
+     "dimensions": {
+      "w": 337,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/greataxe_skymetal.png",
+     "sha256": "5fc7cd8dda8071b89e51c851e69d7e59f0b4ee2a2703d86749e9672cc419c5c5",
+     "bytes": 32345,
+     "dimensions": {
+      "w": 336,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/greaves_bronze.png",
+     "sha256": "187ca311511a30f1f0493d18e71f29e3c588ea7ba7a8bf14c0f6c119e5e8822c",
+     "bytes": 83973,
+     "dimensions": {
+      "w": 481,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/greaves_bronzescale.png",
+     "sha256": "fed2e0dbf526d2360d5c0565ed334659d7dcd0cb401d54d044d7deaff0b991e9",
+     "bytes": 75743,
+     "dimensions": {
+      "w": 476,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/greaves_jade.png",
+     "sha256": "dcd1f1b1d141ba8259acfe25105b30c29867327938192e15151d1a4fa68a5265",
+     "bytes": 76254,
+     "dimensions": {
+      "w": 512,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/guard_rawhide_padded.png",
+     "sha256": "58cd03706ebaec91fc9f0e7444103b270c65f8d7e4d5d7d06188d7b189be0f11",
+     "bytes": 265784,
+     "dimensions": {
+      "w": 399,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/handaxe_bronze.png",
+     "sha256": "60813e0d0019e07f1c474600a9103807d1b52ea2e212dfbc143eed458926094e",
+     "bytes": 20468,
+     "dimensions": {
+      "w": 163,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/handaxe_flint.png",
+     "sha256": "1621dfc47ea20bd17cf75d5f654b358f8f65f4da4262b064eb50b32091d6c834",
+     "bytes": 32911,
+     "dimensions": {
+      "w": 190,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/handaxe_obsidian.png",
+     "sha256": "d86027d49953c094fa0b0a003d429ade0a56e3eb48c2ed80755bd370d14bc3a6",
+     "bytes": 28996,
+     "dimensions": {
+      "w": 184,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/handaxe_skymetal.png",
+     "sha256": "c617116a2544fe15c279a8995405f5fc036143c4facd3c5b9ba605bb6daa273a",
+     "bytes": 43336,
+     "dimensions": {
+      "w": 364,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/helm_bronzescale.png",
+     "sha256": "a1cf7f29b4857f0344b60a57992dd1a9065b5c2d084cf6d105e833f5eccbded9",
+     "bytes": 66987,
+     "dimensions": {
+      "w": 425,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/hideshield_bronze.png",
+     "sha256": "16eb29bbefd827a66e3f91ffef0028aa3d6d5c1588af1d51b9a6130bf9f9d267",
+     "bytes": 74725,
+     "dimensions": {
+      "w": 384,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/hideshield_bronze_candidate_b.png",
+     "sha256": "f9810b506141d64a7ee98fa857afe0cd05b49c4a28826e26c8e2288de737bc2c",
+     "bytes": 284634,
+     "dimensions": {
+      "w": 359,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/hideshield_bronzescale.png",
+     "sha256": "27afb93e1c25895245ac4bd76d82113c6b4623dcc7e4b9c40b0d1421f17a465d",
+     "bytes": 62185,
+     "dimensions": {
+      "w": 335,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/hideshield_hide.png",
+     "sha256": "a0129f9a5a63cd3e8dbdbabb765cefde79c82fd033e7179fd4d474a6bbbe7611",
+     "bytes": 46578,
+     "dimensions": {
+      "w": 266,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/hideshield_oxhide.png",
+     "sha256": "6eede6d6da177790d7b2f5e71286776043cb0cc7dee9ac172d4f5b1ca6f92fc6",
+     "bytes": 54512,
+     "dimensions": {
+      "w": 398,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/hideshield_rawhide_oval.png",
+     "sha256": "22f5e2cb3040980d54d9ef8bbee7e8af00e268eca1e799faabee8557b67b3c5b",
+     "bytes": 304274,
+     "dimensions": {
+      "w": 289,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/idolstaff_jade.png",
+     "sha256": "77d3206d84ee1cfa3305db85e4382ecd29bd30f7f14daf8fb057bb63bae6d487",
+     "bytes": 27884,
+     "dimensions": {
+      "w": 370,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/iron_ring.png",
+     "sha256": "bf5a69f4069adbc1d2bf2f99657d132412df65747836f75cff1a332bc09528d2",
+     "bytes": 60468,
+     "dimensions": {
+      "w": 512,
+      "h": 511,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/khopesh_skymetal.png",
+     "sha256": "857019e28f689412b76f2635ce369d1508b7b3197c18a819b1af541fc7267a2b",
+     "bytes": 23441,
+     "dimensions": {
+      "w": 335,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/lunula_bronze.png",
+     "sha256": "0755bad0cb12803c14bb5a105018a8af3ad43f7c07d88bc6e6df8573bb8ed06c",
+     "bytes": 63547,
+     "dimensions": {
+      "w": 512,
+      "h": 394,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/macuahuitl_bone.png",
+     "sha256": "c0e31e3a606b0ad5f88c69e44ef92a6f09c667cabca513b784c7a65c6c0b4b4d",
+     "bytes": 22370,
+     "dimensions": {
+      "w": 115,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/macuahuitl_flint.png",
+     "sha256": "2f64c66d45d4443924764a3d1f605151b05b3f84d0b0e4dc5386e3c0dd22a6f7",
+     "bytes": 24802,
+     "dimensions": {
+      "w": 121,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/macuahuitl_obsidian.png",
+     "sha256": "73ecbf41b04af6334adecb764005973920a25cb2604a9d2f976fae4ade609c2b",
+     "bytes": 29466,
+     "dimensions": {
+      "w": 144,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/marsh_ochre.png",
+     "sha256": "719ed5389376539b324a7a10037c5ca516aecff1213251d3fd9ab275cfa803a7",
+     "bytes": 100110,
+     "dimensions": {
+      "w": 512,
+      "h": 483,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/mirror_obsidian.png",
+     "sha256": "61c143dc790bfc5d90df1ffb4f195767ce06a18cb4be66ecd1fbf5b2274c9330",
+     "bytes": 41051,
+     "dimensions": {
+      "w": 512,
+      "h": 443,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/onyx_amulet.png",
+     "sha256": "f9a8bf439e76b53e3a1117cce6be5edd839e8b3fa9557a123d8d10d5de7f3438",
+     "bytes": 28708,
+     "dimensions": {
+      "w": 291,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_001.png",
+     "sha256": "e2ef77de8e5d81f75f5f93142f864e613fdf52a86fdf40e7c9a9144f99f2c9b8",
+     "bytes": 101542,
+     "dimensions": {
+      "w": 342,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_002.png",
+     "sha256": "3b958b7eb2c0af5a66701d8891d56d802950e4a3dd3b7d6d7aef1a9664791bbb",
+     "bytes": 375851,
+     "dimensions": {
+      "w": 485,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_004.png",
+     "sha256": "5d5ed939ffd21a34ffb7e6efd1f09f6c0e492425ad70380af78e6a935fc18ae8",
+     "bytes": 127544,
+     "dimensions": {
+      "w": 331,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_005.png",
+     "sha256": "2f0d7c6d0a6cace9b34c0314c35d75e2aa6b2ff96ecabbdba98c07975553b2bf",
+     "bytes": 388136,
+     "dimensions": {
+      "w": 407,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_007.png",
+     "sha256": "09897911e71333c0097ce0c2907c0dae1f5e4ce8a042fbbe808960cfc7938c8f",
+     "bytes": 374489,
+     "dimensions": {
+      "w": 387,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_008.png",
+     "sha256": "b8494ed3147157e0956bdb0c3e755f29b28b42ecff1a7e5d896352a03185ccc5",
+     "bytes": 387640,
+     "dimensions": {
+      "w": 316,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_009.png",
+     "sha256": "0ca8ef1b60c4e3067d606db6b35f360686e726e9e2d7fc4339cf6378b1cbd001",
+     "bytes": 311945,
+     "dimensions": {
+      "w": 336,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_010.png",
+     "sha256": "6d5c00847ebad8fc272f224ee504b110c42fa5bfcc6fb4fe8e032402d34e04af",
+     "bytes": 252737,
+     "dimensions": {
+      "w": 241,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_011.png",
+     "sha256": "2a71cb83683994e1645401d418fe6e66a939e8ab3eff4fab9b678038aaa2bde2",
+     "bytes": 91972,
+     "dimensions": {
+      "w": 192,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_012.png",
+     "sha256": "121be73b75bc33bb7928034dd0ff67680a93803ce4e0fc746240332f7398c274",
+     "bytes": 191325,
+     "dimensions": {
+      "w": 196,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_014.png",
+     "sha256": "b56d7e5d9d73eec15e943dabfd8bd480bb20016d9aacbb49f38c04b1da718886",
+     "bytes": 298255,
+     "dimensions": {
+      "w": 372,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_015.png",
+     "sha256": "49dd125e6e7ea038fa05b1fe19a0628bebfddefe6052b5a6085b200cddf636bc",
+     "bytes": 404061,
+     "dimensions": {
+      "w": 512,
+      "h": 419,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_016.png",
+     "sha256": "d9a6f9ac69285c061e519b30d3b78e91f0a62ce5141f7830cc97ca959cb012ab",
+     "bytes": 393953,
+     "dimensions": {
+      "w": 356,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_021.png",
+     "sha256": "78fd05fda2f9af4c8500cf52e379c0fd6557cb13f8a1fc80e2e7f7886150b07d",
+     "bytes": 92185,
+     "dimensions": {
+      "w": 263,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_022.png",
+     "sha256": "3bf726a65ec46e85c37f92fa1c7be27e0d77ed3650d4783c2ca26b6676dcd8b6",
+     "bytes": 249070,
+     "dimensions": {
+      "w": 280,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_029.png",
+     "sha256": "ec183d4d36d632a710ccbeac2c296c3a3b490e064c35ebce4d851de6df6c07dd",
+     "bytes": 251601,
+     "dimensions": {
+      "w": 368,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_033.png",
+     "sha256": "ee0dc6f5cbaf7b339f45112aa3bd9d1418d3d76d674bbc19342b033386931332",
+     "bytes": 301463,
+     "dimensions": {
+      "w": 408,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_038.png",
+     "sha256": "074ba98723b5073407856efb846e9dc6124d139a20b7d48f041ca8fbba203372",
+     "bytes": 128939,
+     "dimensions": {
+      "w": 318,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_039.png",
+     "sha256": "e5e6090047558f4338a9928f76233e3a24bf33bb6206f761588b6b78d5494522",
+     "bytes": 87674,
+     "dimensions": {
+      "w": 315,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_042.png",
+     "sha256": "650fe86c4fd4621b7149c00b200af45f0ee0dfd91b90ab998da2417231da935d",
+     "bytes": 325790,
+     "dimensions": {
+      "w": 512,
+      "h": 375,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_043.png",
+     "sha256": "762e380c0a5925b9f8bca5c2808bf8e7beb2dc8eeba5cbf0fab6b792d413cafa",
+     "bytes": 20598,
+     "dimensions": {
+      "w": 33,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_046.png",
+     "sha256": "ea1d60e1a8ddae5f5b4ca59c1a7aff38b0f0f565ab0cbfe4b1cbe89150d4092d",
+     "bytes": 345353,
+     "dimensions": {
+      "w": 403,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_047.png",
+     "sha256": "7114112ed08dfaaa4fc39fe94930627da3255b5e2095691982ab6b2fc3e97dfc",
+     "bytes": 290690,
+     "dimensions": {
+      "w": 351,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_048.png",
+     "sha256": "e4982bc9fed69b8b37bd559d5a648f97ec57457ffe1367129bdebd350fd738a6",
+     "bytes": 400483,
+     "dimensions": {
+      "w": 375,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_050.png",
+     "sha256": "8251a02fc34a39b4c4fa278b583e1c501356b10b87006acb818a4384054f1cc8",
+     "bytes": 364848,
+     "dimensions": {
+      "w": 306,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_051.png",
+     "sha256": "417e86c193af770cdc9553faf658f9346cacd6ea4362f90537fbc97f2cca6751",
+     "bytes": 285378,
+     "dimensions": {
+      "w": 350,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_052.png",
+     "sha256": "f03cae6e29a551af5ef6a486b29b86fd09512df0aa4213d4adfe87bc29da4325",
+     "bytes": 284155,
+     "dimensions": {
+      "w": 288,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_054.png",
+     "sha256": "b4dadd361eba633dfcb5453dcf6613912d496980f690d6528db3fd78f699d419",
+     "bytes": 339194,
+     "dimensions": {
+      "w": 512,
+      "h": 406,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_055.png",
+     "sha256": "217567586573d1886c3c22bc0d468b74bbeeb555e19c3f0e7a4550213907e7a8",
+     "bytes": 273430,
+     "dimensions": {
+      "w": 359,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_056.png",
+     "sha256": "cef679707f56e52e47ad90b375ee2da5e387ec0eeef2dfe094c6c6797c3b3eab",
+     "bytes": 37287,
+     "dimensions": {
+      "w": 152,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_057.png",
+     "sha256": "54f357f17a25988690b5bac4f28fd38227ab7845def976980fe2079fc5422dd9",
+     "bytes": 113264,
+     "dimensions": {
+      "w": 277,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_058.png",
+     "sha256": "ee55b71bcbe55b7e8f0ab4f80388bb61b486fb4e60c1d30e4e713911d6c639b4",
+     "bytes": 273026,
+     "dimensions": {
+      "w": 315,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_060.png",
+     "sha256": "e804b58eacdf1f3368a77e2b2cc60e1e2beba83b5ca3b6c5d807b259eb955104",
+     "bytes": 137457,
+     "dimensions": {
+      "w": 307,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_061.png",
+     "sha256": "80cfaa01a780f3827f055c87cdd7cf6e80e51bc452f27eb73fa040e778b7562d",
+     "bytes": 120891,
+     "dimensions": {
+      "w": 287,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_064.png",
+     "sha256": "de4c7fb541faf5b356f3b5356ac8c7fd5cef41b43d32643479e1ae955880fb8c",
+     "bytes": 369938,
+     "dimensions": {
+      "w": 512,
+      "h": 453,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_068.png",
+     "sha256": "f9636e533d602e858de6d61b9fc145ce45147eb1576e0cf19923c1b8b1bbc43f",
+     "bytes": 362490,
+     "dimensions": {
+      "w": 512,
+      "h": 423,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_069.png",
+     "sha256": "4869178a395673f5f345605d724100bffd66a2e967b6f5972e3409e1da65c213",
+     "bytes": 349711,
+     "dimensions": {
+      "w": 378,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_070.png",
+     "sha256": "bb3a3f356bef54282614efc38b4d5dd8203055bb3a1467cb95796b08dcd76853",
+     "bytes": 277247,
+     "dimensions": {
+      "w": 337,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_072.png",
+     "sha256": "62dccb1aa77e2302fcc1ac659226d9d9b2117ef115cb2debd17e97918034a307",
+     "bytes": 343842,
+     "dimensions": {
+      "w": 315,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_076.png",
+     "sha256": "af47243a645cdf6e7d934c150a6dcdfb864b03cbed303f637380e9e86f8aa9d4",
+     "bytes": 222608,
+     "dimensions": {
+      "w": 250,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_077.png",
+     "sha256": "0ddd8268092bf3d53da3e80709b565323f97955af889a8a090f83902f0894e73",
+     "bytes": 28413,
+     "dimensions": {
+      "w": 39,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_078.png",
+     "sha256": "77a908ab892b258ead06e3e4e26c4b64c90fd79126b72296a67c79f5d821a953",
+     "bytes": 105454,
+     "dimensions": {
+      "w": 177,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_079.png",
+     "sha256": "d034c2f21e8669becfda066b87ef5543cd0a14f420dad79425bafb38118f26f6",
+     "bytes": 420065,
+     "dimensions": {
+      "w": 344,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_080.png",
+     "sha256": "5da796072ff2f8d762eb841b0add2f40d24f050cefdc53f16e350409df1f606e",
+     "bytes": 280060,
+     "dimensions": {
+      "w": 291,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_082.png",
+     "sha256": "ac29a20b84a6ef9c4e07fddf3a1a9f0a1ec51e62da8039ebfde3d38e27c23f9a",
+     "bytes": 328915,
+     "dimensions": {
+      "w": 320,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_084.png",
+     "sha256": "9c12335c429d1ff51a510df5d34736e10b74c40512ae09c91cc72dc65457c5f2",
+     "bytes": 479940,
+     "dimensions": {
+      "w": 512,
+      "h": 482,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_086.png",
+     "sha256": "43588fa0ad7ef43e46e0d241135557f7f58f4b35d4f8cd62f2f2cb4b5ef0389c",
+     "bytes": 107778,
+     "dimensions": {
+      "w": 284,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_087.png",
+     "sha256": "5ac5829126c42183980c13c46eb38e28d1695024412185112f6599e6823d8e1d",
+     "bytes": 410749,
+     "dimensions": {
+      "w": 293,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_088.png",
+     "sha256": "2467a092f1a5c3114da1b2202bbd24b838684ff02aa3a69926af000baf0b3147",
+     "bytes": 313641,
+     "dimensions": {
+      "w": 326,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_089.png",
+     "sha256": "ec5aeab1c3fd13344557dbd53e6f0d890d051b09806708776161b818857949b0",
+     "bytes": 290778,
+     "dimensions": {
+      "w": 317,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_090.png",
+     "sha256": "c80aba64f8a47e10f37ce93f2b1def3b57111999f3ca68bcd51b364d1d41b5c5",
+     "bytes": 119353,
+     "dimensions": {
+      "w": 277,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_091.png",
+     "sha256": "16152bf1003fbc78884f3f664721545146d733a74741bfc6555e468e8bf8b35d",
+     "bytes": 140439,
+     "dimensions": {
+      "w": 320,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_093.png",
+     "sha256": "3f4abd484f3f6e0d15d89efb81a654050151fab31b6438fe801d9558d09d3cbd",
+     "bytes": 330933,
+     "dimensions": {
+      "w": 512,
+      "h": 374,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_099.png",
+     "sha256": "3ce06c7ec9f1e547938dd0fd89e1c10420fa4f5a99a2928c9c85ebb8760826de",
+     "bytes": 437394,
+     "dimensions": {
+      "w": 512,
+      "h": 491,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_101.png",
+     "sha256": "0f64cdd12b79833b45be07b09bcb403717e4ad48e529fe574bbaed8266c6afbb",
+     "bytes": 132322,
+     "dimensions": {
+      "w": 273,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_102.png",
+     "sha256": "cbc1085396aad72de8e2926b58302b7e0db642ba498354fc8165a7eb9ce04169",
+     "bytes": 115846,
+     "dimensions": {
+      "w": 253,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_103.png",
+     "sha256": "e66badbd1854955069db39a735bf8742d0769d45f8f947aca67d025c468ad855",
+     "bytes": 281120,
+     "dimensions": {
+      "w": 293,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_105.png",
+     "sha256": "45d85c9b39dc6cf829c9003da30549b65dfb2c813443286b75831025b65570b9",
+     "bytes": 321850,
+     "dimensions": {
+      "w": 512,
+      "h": 386,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_106.png",
+     "sha256": "56f029d1bb7dca96b64eb97a1d7a540d2c451cf162c19e03923b15515b24b935",
+     "bytes": 106224,
+     "dimensions": {
+      "w": 332,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_108.png",
+     "sha256": "34f6d9a08c3359c73de81879ad5ea6fda8b447dee575239d5cea1a2226b20138",
+     "bytes": 374968,
+     "dimensions": {
+      "w": 512,
+      "h": 435,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_109.png",
+     "sha256": "cd7b446a8171cfefd3a598c5463e2f57db0919562f804d5c6ada817a5f0e19cc",
+     "bytes": 98966,
+     "dimensions": {
+      "w": 320,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_110.png",
+     "sha256": "9d0f19933e1a7d2918ad753bf57981c8c9dec2768538eff5c746d196665be344",
+     "bytes": 213405,
+     "dimensions": {
+      "w": 512,
+      "h": 420,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_113.png",
+     "sha256": "091c0efbf2c140c832a30bdb928c45d38698332775126e32fc35d47ba7e6c713",
+     "bytes": 25017,
+     "dimensions": {
+      "w": 43,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_114.png",
+     "sha256": "2463ea18e2b1dc27e7d8b10f42e8296c9db2363652acaf46b83073d7b95bf609",
+     "bytes": 111828,
+     "dimensions": {
+      "w": 336,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_115.png",
+     "sha256": "55ec1f62ee7aa1fcdfebe164dcee5bcf2fd47bf6b911f419b8ef1645fdd32bb1",
+     "bytes": 119218,
+     "dimensions": {
+      "w": 289,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_116.png",
+     "sha256": "94dea0ea56e432e374d2d109bbaa422a1bbba99da0250b2a8bc5aa1f73434e1f",
+     "bytes": 338697,
+     "dimensions": {
+      "w": 512,
+      "h": 408,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_118.png",
+     "sha256": "6883b2e9541d20e94673dae3b08077907bce99df27a72dd79a38d6c321c8eec4",
+     "bytes": 399937,
+     "dimensions": {
+      "w": 408,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_119.png",
+     "sha256": "11c6df117f5a658f9998f2cd49434e3a5657ec3fed5b22d449e6a708b015c1bc",
+     "bytes": 135880,
+     "dimensions": {
+      "w": 337,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_120.png",
+     "sha256": "0fbde8c300c3bdb152c683d24cfc8618608b87323afdfaffad35cba91df49c07",
+     "bytes": 380868,
+     "dimensions": {
+      "w": 512,
+      "h": 446,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_122.png",
+     "sha256": "e6d7c0e693522ff49ca70f37fff5251711477c551218fe3a3fb7753becba0f1b",
+     "bytes": 369739,
+     "dimensions": {
+      "w": 408,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_123.png",
+     "sha256": "ad6e61e9609471ff759ad4c30e2528acf23f418387c35fd58681693def5579b0",
+     "bytes": 330452,
+     "dimensions": {
+      "w": 390,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_126.png",
+     "sha256": "c4abf63d28ef5b320531430f7472304897f3d01a422b2a1bf56177d122d7d9e2",
+     "bytes": 301838,
+     "dimensions": {
+      "w": 512,
+      "h": 497,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_127.png",
+     "sha256": "1281a84bca0a078fa3e2f3ae5b2d97cacafb71d69d613e4213b25f4c87b03f7d",
+     "bytes": 475285,
+     "dimensions": {
+      "w": 452,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_128.png",
+     "sha256": "ce2ff49db178ccdbbca770e1682866c72c5017108ba02e55ce28f8eee99abe17",
+     "bytes": 22074,
+     "dimensions": {
+      "w": 31,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_129.png",
+     "sha256": "091b81c8712c488a274eeed0393abb98a050759f997ce90faca1dccd501f3422",
+     "bytes": 179917,
+     "dimensions": {
+      "w": 512,
+      "h": 366,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_130.png",
+     "sha256": "78f06bef6f2d62bef17633cc632e80619bd969ccd638bb6c62109acd112aec4e",
+     "bytes": 379540,
+     "dimensions": {
+      "w": 512,
+      "h": 488,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_131.png",
+     "sha256": "80dc63210ac684d033e1765b47f70feb1769542bdde412e87d3b6fa7e1600b71",
+     "bytes": 286399,
+     "dimensions": {
+      "w": 249,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_132.png",
+     "sha256": "0f5b556f0177144133cffb3172d318c94007a97bb9258e47185c1f4737924a5e",
+     "bytes": 352479,
+     "dimensions": {
+      "w": 339,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_133.png",
+     "sha256": "6d14653fbecad6f140943e3b75a6e998a26f11b7002f5f6f8ad2b4699ff4d1a9",
+     "bytes": 327318,
+     "dimensions": {
+      "w": 445,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_134.png",
+     "sha256": "3ae9739d42d7c68fcc1679a58e1b7d3cb87958eadc50db39a399c7949ca342f2",
+     "bytes": 201606,
+     "dimensions": {
+      "w": 512,
+      "h": 286,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_136.png",
+     "sha256": "8ec6be4b149b3492e7195675700fbfe94833ed9b24a2678f97439a637fd6ccdd",
+     "bytes": 123862,
+     "dimensions": {
+      "w": 372,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_137.png",
+     "sha256": "5b4a02b91ceffc84b65bbeb53166b69803def17bafae7fa6bbf1febc8a54770b",
+     "bytes": 105239,
+     "dimensions": {
+      "w": 273,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_140.png",
+     "sha256": "19477d41d6495af28e099e94f9120778dfe585c53f3275b7745b378e67a59ae6",
+     "bytes": 419198,
+     "dimensions": {
+      "w": 512,
+      "h": 432,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_141.png",
+     "sha256": "4c1b251846aff3e0db6685ee383e47049fa0dbf0d054248659db3b697cdbd090",
+     "bytes": 380790,
+     "dimensions": {
+      "w": 478,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_142.png",
+     "sha256": "185cb0add651e5135122f3e2fad10334d5f18362d101cd508722f69f1692b26a",
+     "bytes": 362005,
+     "dimensions": {
+      "w": 446,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_143.png",
+     "sha256": "652ed911de3eae73ee1881a0776cb70c762df428c549dc0b5a1b7b8a4d455509",
+     "bytes": 297946,
+     "dimensions": {
+      "w": 321,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_146.png",
+     "sha256": "551253afd603846cd65208b90a0f6454b32b536b132f258edf12d57e57a4f8c4",
+     "bytes": 448470,
+     "dimensions": {
+      "w": 512,
+      "h": 476,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_147.png",
+     "sha256": "ed6e0635160dd21f6fc98d8e0fc951dc885494310713abc3ae396f102e1376a6",
+     "bytes": 294809,
+     "dimensions": {
+      "w": 349,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_153.png",
+     "sha256": "40dba2c13164bdd42cc265a6685e13f08f1b25c64836b6f9c93db9f73a512800",
+     "bytes": 429595,
+     "dimensions": {
+      "w": 448,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_154.png",
+     "sha256": "094a1aeadb2b56988fbabddbff63d8265d7f79b56c5ea141934225bffbf8246f",
+     "bytes": 203697,
+     "dimensions": {
+      "w": 512,
+      "h": 231,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_156.png",
+     "sha256": "ef5b7c0f9dd2260b6bc0cd80135a7bdf62aba6531a182b3160dfead077bae028",
+     "bytes": 480831,
+     "dimensions": {
+      "w": 472,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_157.png",
+     "sha256": "4dcaad009003a23c5750588b087cc0f559ee3dd457d7f230302d5f13f33fdcde",
+     "bytes": 425609,
+     "dimensions": {
+      "w": 512,
+      "h": 459,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_159.png",
+     "sha256": "b299b6e4b8ed961f9a66754886ff629bf28f79f7e3d47a2685b8fae093c71d60",
+     "bytes": 393449,
+     "dimensions": {
+      "w": 373,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_160.png",
+     "sha256": "a7a21c0a4bf899d67e706617d15b3c0791f3b824a3b943a63bc7be0b8d082a4e",
+     "bytes": 474488,
+     "dimensions": {
+      "w": 512,
+      "h": 466,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_161.png",
+     "sha256": "cedd9acbb54003a5774ef03be60ebfae39b9a3c1e1ffb31ac4da76a7057088ee",
+     "bytes": 473978,
+     "dimensions": {
+      "w": 512,
+      "h": 507,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_163.png",
+     "sha256": "e2e00106384c06288c33026faad7dbe1be981a34d3bfdf0d4f4d3e08f3074474",
+     "bytes": 484983,
+     "dimensions": {
+      "w": 512,
+      "h": 483,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_164.png",
+     "sha256": "3617928707367f837c1ee38dbcf32109cf546b89f9afca5507ace86798aabae7",
+     "bytes": 395300,
+     "dimensions": {
+      "w": 486,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_165.png",
+     "sha256": "4239cd1e361b744144fd28559ba0e71c7d58d1b44617610c7e08c3ef1f0f5eba",
+     "bytes": 383346,
+     "dimensions": {
+      "w": 428,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_166.png",
+     "sha256": "c8660bfbd26ab27daf2ceb1c4cecc502fabfe3a1d81a7f05634decd1cb9c0761",
+     "bytes": 387746,
+     "dimensions": {
+      "w": 493,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_167.png",
+     "sha256": "7a0ea46f50ae78aae0efa440ef51556b79f1eedde41aed072611761abdc9ddc8",
+     "bytes": 346727,
+     "dimensions": {
+      "w": 456,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_168.png",
+     "sha256": "e716bf7ac01fabf50080790930ecad9a47bede5f60c1658144fc653402925a6e",
+     "bytes": 489759,
+     "dimensions": {
+      "w": 497,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_169.png",
+     "sha256": "6bb562152ea8d6fb03ad6411ec63819eb0897ef64aaa721d23c7d8dc67ea6f72",
+     "bytes": 369607,
+     "dimensions": {
+      "w": 512,
+      "h": 477,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_170.png",
+     "sha256": "c159efb0b4e7f5bff7c981200d5555740da676e9fe56cff0fc639f0e77e9cdef",
+     "bytes": 376396,
+     "dimensions": {
+      "w": 512,
+      "h": 426,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_171.png",
+     "sha256": "8ec612bfc48318f5d1e5e3d76e3e588d3d7038fff1caa74ebad8458378672a3a",
+     "bytes": 366413,
+     "dimensions": {
+      "w": 512,
+      "h": 442,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_172.png",
+     "sha256": "6c206fa5a87ad034bc6e7bec3909f3c6222dc18f8eab98cadf014ff18eaa3f7d",
+     "bytes": 384530,
+     "dimensions": {
+      "w": 347,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_174.png",
+     "sha256": "8c45ce1ad977f0139c23d8f8a91d270410d79d1d9dcbd84bba96d509287a8465",
+     "bytes": 402734,
+     "dimensions": {
+      "w": 375,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_175.png",
+     "sha256": "0c9574eb1738ec86e267b6bf44fdb875ebd80e3dde594338707c3200afdc654b",
+     "bytes": 355761,
+     "dimensions": {
+      "w": 359,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_176.png",
+     "sha256": "28b40e20e970b5b2a0bf509a33cbe2eeba0642bb8b96189e716c8102b3fd71f3",
+     "bytes": 395847,
+     "dimensions": {
+      "w": 340,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_177.png",
+     "sha256": "3e41264083f80132ccc460f3032268748b527723d128a2c545fdb0aca0770f36",
+     "bytes": 350784,
+     "dimensions": {
+      "w": 376,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_180.png",
+     "sha256": "26155fff56dfc8260f74b2a04ae8d666b8f4dd082cb406672eda0b30ff483ce1",
+     "bytes": 327486,
+     "dimensions": {
+      "w": 299,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_181.png",
+     "sha256": "d6a2c6b5dcab2fd3ab5d80ee2ddf9a151337fe4dd2ec850ff9dae9e59e811aff",
+     "bytes": 227393,
+     "dimensions": {
+      "w": 239,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_182.png",
+     "sha256": "c980f4725b57401451353feedbbe9f7d2f1798ab4fe8301b8546d102e18dfe15",
+     "bytes": 204687,
+     "dimensions": {
+      "w": 238,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_186.png",
+     "sha256": "b06c746901fb2a9290bc895adae756f075373560e9f1486ddf9f9397dc3d661a",
+     "bytes": 309707,
+     "dimensions": {
+      "w": 284,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_189.png",
+     "sha256": "a9347e96de271e045d176061e6c91193bbd9c35615de6d378aeaf8915e69cea2",
+     "bytes": 221576,
+     "dimensions": {
+      "w": 240,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_190.png",
+     "sha256": "a1f60bb694cec1d30415c13df94bef3e6619761f61c78104d6a23812c1bfbbcd",
+     "bytes": 314061,
+     "dimensions": {
+      "w": 344,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_191.png",
+     "sha256": "f63e221f076d627efb7af2d39689a69ee51b5a6c6747d6c42c73fcf058cdc51d",
+     "bytes": 170288,
+     "dimensions": {
+      "w": 426,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_192.png",
+     "sha256": "def6775cf5a1145d460cfd0de391f0b0896984c9151934661de35201f9cd0e14",
+     "bytes": 109487,
+     "dimensions": {
+      "w": 288,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_193.png",
+     "sha256": "1d2fc22bdb2b359f6f796b8e410c9933ec371f3bbf45e1681d55ac90f11575e6",
+     "bytes": 96782,
+     "dimensions": {
+      "w": 298,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_194.png",
+     "sha256": "7281fcf843dae9513ba458b34f4156449efbda6a2c46459889aa7713cf38be0f",
+     "bytes": 113655,
+     "dimensions": {
+      "w": 337,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_195.png",
+     "sha256": "89a2da89b7fe0fc6861bbed11394e5073aa075364c02bc10dbed612b1ff6ea9e",
+     "bytes": 32304,
+     "dimensions": {
+      "w": 228,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_196.png",
+     "sha256": "8980de82b344ad6fb2ba7084acf1436364dad4aa99b5ba08958d1d4876ce60bd",
+     "bytes": 31556,
+     "dimensions": {
+      "w": 187,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_197.png",
+     "sha256": "baf2ac84ed5501ca719605275e7e62848100f406ca6d2f00660e87f36aef7604",
+     "bytes": 32859,
+     "dimensions": {
+      "w": 221,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_198.png",
+     "sha256": "fb77656aaec7fc6537c1559c1e989742c60758da0063fe8d918fe0faff557249",
+     "bytes": 108882,
+     "dimensions": {
+      "w": 316,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_200.png",
+     "sha256": "7b21fb3af28117e5c119dd6862fb73085b6a9589abf1edd2d12580290b7a7668",
+     "bytes": 125555,
+     "dimensions": {
+      "w": 298,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_202.png",
+     "sha256": "978581c525765c753b1828fd4a9eae9ce4ec5e4806e351a5e8bc80f9ea859e86",
+     "bytes": 113082,
+     "dimensions": {
+      "w": 347,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/pc2_204.png",
+     "sha256": "c6966d6e5f325eaaf22e8023cf8c9358ae92aab36903ccd4398a437421caec55",
+     "bytes": 105433,
+     "dimensions": {
+      "w": 331,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/quiver_rawhide.png",
+     "sha256": "77b186d7964a9c0552c9d07f14dd61cb72c22cc942055f639e58a79b047b39fa",
+     "bytes": 243891,
+     "dimensions": {
+      "w": 281,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/rattle_copper.png",
+     "sha256": "c1758184e7132a0a7b4f9bd6e27006204fe6f2e01482cc9edcfed737a1aaeb13",
+     "bytes": 270030,
+     "dimensions": {
+      "w": 475,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/red_ochre.png",
+     "sha256": "4924723e015461f19f3416f37c19a024ea46bdf6722bf16f815c4554bb7d7bd9",
+     "bytes": 63655,
+     "dimensions": {
+      "w": 512,
+      "h": 323,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/relic_curio.png",
+     "sha256": "f1427ab1438d6a04dcae80c0d9f8f76aef14f7a9d11b8ae8946bf2311473ef76",
+     "bytes": 49317,
+     "dimensions": {
+      "w": 386,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/ring_amber.png",
+     "sha256": "da6ff2acaa0a20ce01af4f50df4e4a44276fabe9c9d40d44b73471034859a07a",
+     "bytes": 78195,
+     "dimensions": {
+      "w": 502,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/ring_bone.png",
+     "sha256": "330dca5bbcc9d13a497509e7832d47b85c1caa5e8a853e31ef26161835434ae7",
+     "bytes": 66243,
+     "dimensions": {
+      "w": 512,
+      "h": 436,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/ring_copper.png",
+     "sha256": "da6c4e063690b6b3ac3a8158219c55af5504cc289d0797fc62e0adcf498d0de7",
+     "bytes": 64523,
+     "dimensions": {
+      "w": 512,
+      "h": 468,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/ring_jade.png",
+     "sha256": "e3a0b8780fbbb232619f34713d29f3b2c5b4d98c031aadb9161610bf92e92e5e",
+     "bytes": 52595,
+     "dimensions": {
+      "w": 512,
+      "h": 376,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/ring_skymetal.png",
+     "sha256": "9e11576a6f8963b2a6bd5d2b07a0641d8b3c9066cd92f032174f2bd18327d399",
+     "bytes": 61253,
+     "dimensions": {
+      "w": 512,
+      "h": 433,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/river_pearl.png",
+     "sha256": "e74c43ceef80b01781791e70384ca270bd68b465c2cb89be7924a55fa0b1cf3b",
+     "bytes": 80577,
+     "dimensions": {
+      "w": 512,
+      "h": 502,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/sandals_hide.png",
+     "sha256": "3ee3b8f1102f030fda80b6f45d7b1284b0d095d74da8c88fc16bbd788ad69021",
+     "bytes": 60394,
+     "dimensions": {
+      "w": 512,
+      "h": 439,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/sandals_quilted.png",
+     "sha256": "dfb0e0e5585fd630047170d876be5992cba3b62aea123d58f713cca7e51aea33",
+     "bytes": 66636,
+     "dimensions": {
+      "w": 512,
+      "h": 404,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/sceptre_bronze.png",
+     "sha256": "9ac369830d86ac6e3fbf7a1b8ea2d755ead1e519038a52a9b6891ce481a97070",
+     "bytes": 31411,
+     "dimensions": {
+      "w": 512,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/sceptre_bronze_pronged.png",
+     "sha256": "c31b96446cda4eab2a092e7d576e4ab97b6db18042f04171222b796df352ed4e",
+     "bytes": 173201,
+     "dimensions": {
+      "w": 435,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/signet_bronze.png",
+     "sha256": "6b6873e20627322d18c70caca06771d915986e046a8b772f50f23a87f093c231",
+     "bytes": 83401,
+     "dimensions": {
+      "w": 512,
+      "h": 389,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/slot_texture.png",
+     "sha256": "2d36a5342dbc20c30153bddcfb11c7c7a786c360f55a8db308a04fda9f23ae66",
+     "bytes": 78372,
+     "dimensions": {
+      "w": 256,
+      "h": 256,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/smoke_omen.png",
+     "sha256": "245147de8295b3fe548b2062d5bf43be09d6605257274a47d214d4a16d755ee3",
+     "bytes": 68295,
+     "dimensions": {
+      "w": 484,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/soot.png",
+     "sha256": "fad7bfcf3818be0417c10aab19ba0fa7eed9b6b93a059e31bdfb67f9bf5f14c5",
+     "bytes": 43786,
+     "dimensions": {
+      "w": 493,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/spear_bone.png",
+     "sha256": "d119bcc1960306c9fcd335f3636c4677fba6debae0184700cc3dd21b21b41b3e",
+     "bytes": 12300,
+     "dimensions": {
+      "w": 290,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/spear_copper.png",
+     "sha256": "b78cb4067cfbaca3ed07f7ead3b9f2b6ecf146d7aa667abcb205b454a72a8cd2",
+     "bytes": 9029,
+     "dimensions": {
+      "w": 296,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/spear_flint.png",
+     "sha256": "43932c29c68a8fd3c53795eb4a61797b608a4e7984468d6e67d5331ceeb34b21",
+     "bytes": 11400,
+     "dimensions": {
+      "w": 306,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/spear_obsidian.png",
+     "sha256": "df70e142fcb82b3e55f73653a10b4d61555dfa2f8364839c4bd9aeb11ffe66cc",
+     "bytes": 7931,
+     "dimensions": {
+      "w": 295,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/spear_skymetal.png",
+     "sha256": "81fccaa3f1ddc409a32b6debfb43191e624f0e2a5bb56376cb0ebe5555d3e3bb",
+     "bytes": 10742,
+     "dimensions": {
+      "w": 346,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/starwand_skymetal.png",
+     "sha256": "cf6206e716065e71bb155d23e0906dea646436ad1eda82e6cf350d479b55e141",
+     "bytes": 19238,
+     "dimensions": {
+      "w": 512,
+      "h": 441,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/steel_longsword.png",
+     "sha256": "a70c948e9c383ba539929cad8548f7a8e29be72b637ea0725c53ed48bdadd616",
+     "bytes": 14274,
+     "dimensions": {
+      "w": 157,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/stiletto.png",
+     "sha256": "df9cee54c8c46e77de8ab419c88e2d711b09b50f3c7245fc0fb765b36fead7c4",
+     "bytes": 11976,
+     "dimensions": {
+      "w": 111,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/sword_flint.png",
+     "sha256": "94c0a1a99828f15f2e87d27c792d55f090be99354e4f2b68941b02c4e1e238d8",
+     "bytes": 42884,
+     "dimensions": {
+      "w": 376,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/tower_shield.png",
+     "sha256": "691847dee0aef5ccdb35d00c96eda151eaded69307e6cdd534c7d9ce957a3878",
+     "bytes": 61126,
+     "dimensions": {
+      "w": 304,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/war_axe.png",
+     "sha256": "b34171cc796088740efb8b3c124f9870b7f441c56c9b7216c1c496a62809d99d",
+     "bytes": 55373,
+     "dimensions": {
+      "w": 460,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/warclub_bone.png",
+     "sha256": "9863c95d3788b7fee5dd91a2f621e347571d7ce417de06117a9297e5755efb72",
+     "bytes": 34677,
+     "dimensions": {
+      "w": 341,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/warclub_bronze.png",
+     "sha256": "40adc358c65b70b8271a97b59e6f79eb47437bceca1313094ef6617980fb59a5",
+     "bytes": 29329,
+     "dimensions": {
+      "w": 339,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/warclub_copper.png",
+     "sha256": "79875fe4248568afa8c3a8404b1aa2213dad998457df5ba36e5bca8fdba6da74",
+     "bytes": 36933,
+     "dimensions": {
+      "w": 336,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/warclub_jade.png",
+     "sha256": "69d2e032489b72177df366f7f504e3763684a0f186462b8e09c721314871282c",
+     "bytes": 175751,
+     "dimensions": {
+      "w": 425,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/warclub_obsidian.png",
+     "sha256": "84dffebbdc9afffb8388617bf1b9efcb884d80f4043464f934b14009279aa2b0",
+     "bytes": 32443,
+     "dimensions": {
+      "w": 419,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/warclub_skymetal.png",
+     "sha256": "3d8339157734826d414129af00b7b48caea2e67cc46460f29a23a937c80752d0",
+     "bytes": 44585,
+     "dimensions": {
+      "w": 457,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/warclub_stone.png",
+     "sha256": "6fe6f357470904afbe171655224be6a1f51c504474e64c776787132d9469acdf",
+     "bytes": 29065,
+     "dimensions": {
+      "w": 402,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/wayfarer_boots.png",
+     "sha256": "31727d31cd3d88371bee947f6dc0b88034295d22ec0b582cce1a769ec94054ae",
+     "bytes": 60306,
+     "dimensions": {
+      "w": 477,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/woad.png",
+     "sha256": "fe1aa264649bddf69fa2298a257adf3022d90abd0913c15b2ca6379e5cbfa407",
+     "bytes": 80396,
+     "dimensions": {
+      "w": 512,
+      "h": 436,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/wrap_bronzescale.png",
+     "sha256": "bdfa29d3c6e6a98e95deac0b4e867886e471bb196f6322d0d2f123c03029f803",
+     "bytes": 71457,
+     "dimensions": {
+      "w": 361,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/wrap_hide.png",
+     "sha256": "0c13cdf96791a8c0915588b6588f2f9f301eda9bb9b5778128717c234d1934cd",
+     "bytes": 40132,
+     "dimensions": {
+      "w": 370,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/wrap_hide_lamellar.png",
+     "sha256": "7a6a1ca2adee2ba321651b9e39c190c8050bf52f56b6e0efc3f2d0f10102c158",
+     "bytes": 327559,
+     "dimensions": {
+      "w": 406,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/wrap_quilted.png",
+     "sha256": "83aa865657c45b7fc33b67aeb4f94a11e624ba40a4f06feaee95b88150cc2629",
+     "bytes": 74896,
+     "dimensions": {
+      "w": 340,
+      "h": 512,
+      "mode": "P"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/wrap_quilted_candidate_b.png",
+     "sha256": "0a4d0279a0b8bade7fdaa30ae7ac29d16acf5701fd72bfeb2d33fb284ca45e82",
+     "bytes": 342375,
+     "dimensions": {
+      "w": 339,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/rpg_inventory/assets/wrap_studded.png",
+     "sha256": "91de5b22a7b997901159bc802d5746650c1a3fbeb43dbaaf954132440a177884",
+     "bytes": 72905,
+     "dimensions": {
+      "w": 394,
+      "h": 512,
+      "mode": "P"
+     }
+    }
+   ]
+  },
+  "splash": {
+   "reference": "WIZARD/tools/verdigris_splash",
+   "module": "verdigris_splash",
+   "artifacts": [
+    {
+     "sourcePath": "tools/verdigris_splash/assets/textures/blood_moon_256.png",
+     "sha256": "5079c8f33d76a33bd439f2d0eb7348836346329b04c7f07017667fd91e73e38d",
+     "bytes": 31434,
+     "dimensions": {
+      "w": 256,
+      "h": 256,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/textures/cloud_puff_512.png",
+     "sha256": "40dae4a0fc946fa214b839689fed7c84497b7739c32edf1a3d0e4584ec40392a",
+     "bytes": 30416,
+     "dimensions": {
+      "w": 512,
+      "h": 320,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/textures/eclipse_corona_1024.png",
+     "sha256": "1180891553a808c14d1b5828a987d81b6ca39036a89ff3a8506edffed793a88c",
+     "bytes": 194420,
+     "dimensions": {
+      "w": 1024,
+      "h": 1024,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/textures/ember_glow_256.png",
+     "sha256": "40c1b6c7e711a520ab74637a9ce67e906caadcc6105f1e93be0208f3724564b3",
+     "bytes": 15581,
+     "dimensions": {
+      "w": 256,
+      "h": 256,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/textures/milkyway_band_2048x512.png",
+     "sha256": "da57f538f3d678d85ac3529d606c6b7350938bbe8a06afdc269c4b926374a1bb",
+     "bytes": 656822,
+     "dimensions": {
+      "w": 2048,
+      "h": 512,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/celestial_world_footprint.png",
+     "sha256": "ae6d2fa5d86964d3eb8110267899af1b7584468c9fe0987d9a3473ce805a3de1",
+     "bytes": 16785,
+     "dimensions": {
+      "w": 2048,
+      "h": 2048,
+      "mode": "L"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/celestial_world_heightmap_16bit.png",
+     "sha256": "6a7be4f900e7863573f5d1a72e88635274817a962e672a4f45711b5338f4ac27",
+     "bytes": 1190369,
+     "dimensions": {
+      "w": 2048,
+      "h": 2048,
+      "mode": "I;16"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/celestial_world_heightmap_preview.png",
+     "sha256": "d173f5ec2dccce47bbb4fc001e7fab21bcd5addced189b9133a1505507a6fc57",
+     "bytes": 475960,
+     "dimensions": {
+      "w": 2048,
+      "h": 2048,
+      "mode": "L"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/celestial_world_illumination_concept_image2.png",
+     "sha256": "45ce2ca860b1c839614770860072d8f2d3f0b1a1af1c3a293c2f9b21a7401b1b",
+     "bytes": 1613922,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/celestial_world_illumination_map_4k.png",
+     "sha256": "b1871a0b3746dc77ae69f13e566965678e55a3080bf8dd0103ab81d33613006c",
+     "bytes": 1442330,
+     "dimensions": {
+      "w": 4096,
+      "h": 4096,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/celestial_world_top_texture.png",
+     "sha256": "45c6b04bd8e1def2ff6d6187fa8ddc04767c04850095bd10bf3d3e7432479a19",
+     "bytes": 2650614,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/celestial_world_top_texture_4k_detail.png",
+     "sha256": "5e56c5e7c7af4ac624c9e71b2987a8f2df91e72d1203f8fc2557cd4d8247a5a3",
+     "bytes": 22219002,
+     "dimensions": {
+      "w": 4096,
+      "h": 4096,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/celestial_world_top_texture_4k_detail.webp",
+     "sha256": "2342a16a7a7d6a4795c66303296ba93b43e69623bfcb2a921f5156f058327a56",
+     "bytes": 3961618,
+     "dimensions": {
+      "w": 4096,
+      "h": 4096,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/celestial_world_topographic_reference.png",
+     "sha256": "8105d822b220278e3b0ed55dcc3a9826107ecbc8880220cdcfb4b09746efee36",
+     "bytes": 2205466,
+     "dimensions": {
+      "w": 2048,
+      "h": 2048,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/celestial_world_underside_depthmap_16bit.png",
+     "sha256": "7aa2348132f59d8576c0d103ae95a3c8fd2c796694af7b735dcb117b61455caf",
+     "bytes": 3414290,
+     "dimensions": {
+      "w": 2048,
+      "h": 2048,
+      "mode": "I;16"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/celestial_world_underside_depthmap_preview.png",
+     "sha256": "ce6aed0cef01845c8704df89e460c7602237bceb69355117b5310719a0da2945",
+     "bytes": 939538,
+     "dimensions": {
+      "w": 2048,
+      "h": 2048,
+      "mode": "L"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/celestial_world_underside_texture.png",
+     "sha256": "fe2db505ef7e62cef69bd4b9019ddbe8bc80e5c9de4659cd3e51cdf67871a9d4",
+     "bytes": 2783463,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/celestial_world_underside_topographic_reference.png",
+     "sha256": "6f7f6e129fbc01ed676a489f7921aa223058266e94fea2026d91913174c346f3",
+     "bytes": 3192691,
+     "dimensions": {
+      "w": 2048,
+      "h": 2048,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/illumination_tiles/illumination_r0_c0.png",
+     "sha256": "a3b6628e72891fe5fb60d1a18a213536e16e3f28eada4dab4fd6e94d38a2653e",
+     "bytes": 50037,
+     "dimensions": {
+      "w": 1120,
+      "h": 1120,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/illumination_tiles/illumination_r0_c1.png",
+     "sha256": "53d39b4f253eb938a4a4a6bdd9f2d8d0539d4328880364f545efaef20b2a7dce",
+     "bytes": 88246,
+     "dimensions": {
+      "w": 1216,
+      "h": 1120,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/illumination_tiles/illumination_r0_c2.png",
+     "sha256": "f9128f5947ead15fc8de240d0469c6f6a57d932a26d95943723ea25112a8c1db",
+     "bytes": 103500,
+     "dimensions": {
+      "w": 1216,
+      "h": 1120,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/illumination_tiles/illumination_r0_c3.png",
+     "sha256": "5c6ffbc50674b6f18b800c0d186095c9df5a350b23530aeb95c59356186e39d8",
+     "bytes": 22222,
+     "dimensions": {
+      "w": 1120,
+      "h": 1120,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/illumination_tiles/illumination_r1_c0.png",
+     "sha256": "daf6d7ca65f46643e7654f465073659ccc7855d105c9c8c03b2a449324783007",
+     "bytes": 114035,
+     "dimensions": {
+      "w": 1120,
+      "h": 1216,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/illumination_tiles/illumination_r1_c1.png",
+     "sha256": "ea0dc9ec10578d3ee2b3907c31be5dd3736974607f12ed1b6a9a72957ab05e74",
+     "bytes": 129074,
+     "dimensions": {
+      "w": 1216,
+      "h": 1216,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/illumination_tiles/illumination_r1_c2.png",
+     "sha256": "0fe2ccf36975a1f5970bcee547d3c9af816d5c510c437297e11788953d74ff1d",
+     "bytes": 107846,
+     "dimensions": {
+      "w": 1216,
+      "h": 1216,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/illumination_tiles/illumination_r1_c3.png",
+     "sha256": "ccea8f31eeab155481a816ef78740f16df904171c731300e6accf4d59e006235",
+     "bytes": 29055,
+     "dimensions": {
+      "w": 1120,
+      "h": 1216,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/illumination_tiles/illumination_r2_c0.png",
+     "sha256": "4337747dcef0aa980a271ad981d506df4e8a3b80dc6e5c52ebe7d803f762f6e1",
+     "bytes": 58455,
+     "dimensions": {
+      "w": 1120,
+      "h": 1216,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/illumination_tiles/illumination_r2_c1.png",
+     "sha256": "0a151259482c06ce725dc117f27f442b1e17803e598a40157c1fb3fb862d7af4",
+     "bytes": 434200,
+     "dimensions": {
+      "w": 1216,
+      "h": 1216,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/illumination_tiles/illumination_r2_c2.png",
+     "sha256": "a671bd900bd656769b91c57c8e7dc216bbc35820b2332860d2b2bda17692c8a6",
+     "bytes": 260020,
+     "dimensions": {
+      "w": 1216,
+      "h": 1216,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/illumination_tiles/illumination_r2_c3.png",
+     "sha256": "0d4bb9e6f59b57d28f5910aa01f383df578051c4cbf852068c6de1152f771dd2",
+     "bytes": 46496,
+     "dimensions": {
+      "w": 1120,
+      "h": 1216,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/illumination_tiles/illumination_r3_c0.png",
+     "sha256": "bcf552ea645f1621b0372c2dea5105b04b28765a04d02eaa144be65153c762ea",
+     "bytes": 17392,
+     "dimensions": {
+      "w": 1120,
+      "h": 1120,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/illumination_tiles/illumination_r3_c1.png",
+     "sha256": "5fa3578efffb764ee2c14b09fc1d196b30b6025882cb61d6caed50c6b3b3b1f2",
+     "bytes": 198128,
+     "dimensions": {
+      "w": 1216,
+      "h": 1120,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/illumination_tiles/illumination_r3_c2.png",
+     "sha256": "b503d29399558141dc6e6bbe6dbbf27eb0ed8284cb48c2cbf5e2eabbea069291",
+     "bytes": 121072,
+     "dimensions": {
+      "w": 1216,
+      "h": 1120,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/illumination_tiles/illumination_r3_c3.png",
+     "sha256": "990eb03fd731505ca113124ab5fc1d1261d8dac138ebd9a9d35591dc96c273ff",
+     "bytes": 18891,
+     "dimensions": {
+      "w": 1120,
+      "h": 1120,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/qa_detailed/debug_marked_top.png",
+     "sha256": "61374fa2bcb97c8fc0d21397c4d5542583951fcd1e02fe78fbc529b924cd8a60",
+     "bytes": 502681,
+     "dimensions": {
+      "w": 900,
+      "h": 900,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/qa_detailed/detailed_bottom.png",
+     "sha256": "903dddc4210753e63f02f002bb6ee18bc323284c250a7993b85eccdf327fdd72",
+     "bytes": 892809,
+     "dimensions": {
+      "w": 900,
+      "h": 700,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/qa_detailed/detailed_quarter.png",
+     "sha256": "877cbe1b1552f6cb923806e7accc83f9fa7670504ab24ad0dc0b205f39be5d2a",
+     "bytes": 698638,
+     "dimensions": {
+      "w": 900,
+      "h": 700,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/qa_detailed/detailed_side.png",
+     "sha256": "607be4167a298c4d919aa17433c2a0a0117383977c4f3cc1b0e85a394dd05509",
+     "bytes": 717622,
+     "dimensions": {
+      "w": 900,
+      "h": 700,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/assets/world/qa_detailed/detailed_top.png",
+     "sha256": "61374fa2bcb97c8fc0d21397c4d5542583951fcd1e02fe78fbc529b924cd8a60",
+     "bytes": 502681,
+     "dimensions": {
+      "w": 900,
+      "h": 900,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/contact_sheet.png",
+     "sha256": "d9ada2ab1ea59a3336a128ad0c828c3b0495eb63ea9bc3427e8601ee4d7f1fee",
+     "bytes": 5160512,
+     "dimensions": {
+      "w": 1536,
+      "h": 1536,
+      "mode": "RGBA"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/detail_r0_c0.png",
+     "sha256": "11f103b314e29b0986630bb73584d61b3847ba6f2bd9bd636bc8d89a6b34c404",
+     "bytes": 2420663,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/detail_r0_c1.png",
+     "sha256": "dff2044262361c783edb2848b61674c8f18ef3d4f9a1b2e57ea8484cbd3696c2",
+     "bytes": 2476426,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/detail_r0_c2.png",
+     "sha256": "e2cc6a3901fcf015a4d25ff72140a492c3480f25daa3f4c2ab40b0a5ee81f436",
+     "bytes": 2698279,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/detail_r0_c3.png",
+     "sha256": "f49f2507c5e4ef368ddd415ca76e4011dc3acaa95c659ff528eddc7e2e5d242c",
+     "bytes": 1431566,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/detail_r1_c0.png",
+     "sha256": "b76daf49f754570631537884353d537edb073c38839055d385ea9db4375a5e5a",
+     "bytes": 2456609,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/detail_r1_c1.png",
+     "sha256": "207400659433ce8e197d4e53cf2810a78febea378eaa4c67e2a48b74f4bbe54e",
+     "bytes": 3029072,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/detail_r1_c2.png",
+     "sha256": "1ffb8e25f3b0a2ab00dbadde396ad081ec0295dc1dbcab02d7adc5b70c7c7cc4",
+     "bytes": 2968026,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/detail_r1_c3.png",
+     "sha256": "b882df034bcd3701f5cc74621e1e691642c4e3303f225821e6fb469f418812eb",
+     "bytes": 2507089,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/detail_r2_c0.png",
+     "sha256": "4fa128cbdabaefc6020006edb455eac8518a7fdb2e25ebfde9bc2a604f09ed53",
+     "bytes": 2643521,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/detail_r2_c1.png",
+     "sha256": "eb4a82b30479cd32e191b561b4ff38c9fdb949b968e55452045098390f2eedf8",
+     "bytes": 3340287,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/detail_r2_c2.png",
+     "sha256": "2ee60a2349aa53d3db69715dda5a4b88b34bc3f16b3f0d88105dfccb82bc3feb",
+     "bytes": 3041305,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/detail_r2_c3.png",
+     "sha256": "2d29605c21f7b3a276e1ba2137b1b900b1ac27aa88883b770f00ebdbb5bf79c1",
+     "bytes": 2404023,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/detail_r3_c0.png",
+     "sha256": "b7fe65cac591f7b624b992be187e3047633c8c9f141783bbcc3932c57947a96a",
+     "bytes": 1138957,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/detail_r3_c1.png",
+     "sha256": "14ff664e3319804c2efdc95c946ec13bcfb98a448144ac0aab4db250beedc838",
+     "bytes": 2802368,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/detail_r3_c2.png",
+     "sha256": "e71c2b2c05772584b003aad8a3c09d57d78f139865884e735767648052a6de4f",
+     "bytes": 2393147,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/detail_r3_c3.png",
+     "sha256": "0a1cd3990b72d6085981438a1c687dddbe824ef38530ba0b5a7484c48d0c59e2",
+     "bytes": 1130830,
+     "dimensions": {
+      "w": 1254,
+      "h": 1254,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/source_r0_c0.png",
+     "sha256": "81e89560b242c0a7c6ffa7e52e4d8a1be44e2affd8d833ec470e60e0ea29e346",
+     "bytes": 499253,
+     "dimensions": {
+      "w": 1024,
+      "h": 1024,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/source_r0_c1.png",
+     "sha256": "050d07ca1ab4957d67855dcc26b59a20cae082919a3b5532430a01d2e95bb2ad",
+     "bytes": 910942,
+     "dimensions": {
+      "w": 1024,
+      "h": 1024,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/source_r0_c2.png",
+     "sha256": "903019f7291257d90e1e8c6c5deead1a4d3432c26e9046d1c449d8ebb04c5598",
+     "bytes": 1036217,
+     "dimensions": {
+      "w": 1024,
+      "h": 1024,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/source_r0_c3.png",
+     "sha256": "bfd7b67ac6b644624ba320ba91d8791f51839615dd1c85cfbe1afabff9675461",
+     "bytes": 335973,
+     "dimensions": {
+      "w": 1024,
+      "h": 1024,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/source_r1_c0.png",
+     "sha256": "c3f430c5daa5da077ae10cf859645ca126e48faa53826af26f66a1a71cb60e7d",
+     "bytes": 947120,
+     "dimensions": {
+      "w": 1024,
+      "h": 1024,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/source_r1_c1.png",
+     "sha256": "7702471056246e804da41682f4a3b770e137ae67775418f97a24d1ac514ac5d4",
+     "bytes": 1217981,
+     "dimensions": {
+      "w": 1024,
+      "h": 1024,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/source_r1_c2.png",
+     "sha256": "ee99d2b71d852a9797084fe6e2efec88aad5bdc236ecf4575694e440541a9879",
+     "bytes": 1197032,
+     "dimensions": {
+      "w": 1024,
+      "h": 1024,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/source_r1_c3.png",
+     "sha256": "7a550a62e42a8c4fab876215e177429db86ac67bbdcbf3c7dd5c7ca9c5811db5",
+     "bytes": 852446,
+     "dimensions": {
+      "w": 1024,
+      "h": 1024,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/source_r2_c0.png",
+     "sha256": "20076c94e4c1edf0f5cbeb236eec70da637d74cd0ef4a243d19b9a72a38f52c3",
+     "bytes": 731069,
+     "dimensions": {
+      "w": 1024,
+      "h": 1024,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/source_r2_c1.png",
+     "sha256": "1d71e9f3cc25648206f7a76a095dcc4183b7e229228d776b7c2546c4c7d7010a",
+     "bytes": 1395444,
+     "dimensions": {
+      "w": 1024,
+      "h": 1024,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/source_r2_c2.png",
+     "sha256": "b19cfab0e78ee1a8d9fb2ecdcc010f7ffcf10185441e7b815276492ad966de35",
+     "bytes": 1223213,
+     "dimensions": {
+      "w": 1024,
+      "h": 1024,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/source_r2_c3.png",
+     "sha256": "4b3d23f0bb35d41a10eb955c9f80e37dc3d5087f5f45b94f0a77c6b03e92e834",
+     "bytes": 922376,
+     "dimensions": {
+      "w": 1024,
+      "h": 1024,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/source_r3_c0.png",
+     "sha256": "47bfcb21b6c26543c7c7eed0111f872f39bef7c272002ca8587865499d841e1a",
+     "bytes": 310118,
+     "dimensions": {
+      "w": 1024,
+      "h": 1024,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/source_r3_c1.png",
+     "sha256": "9fefeb4940f0d7fa234889e5f219075ec50df07c775fe8e9a7cb9843de8ada67",
+     "bytes": 989684,
+     "dimensions": {
+      "w": 1024,
+      "h": 1024,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/source_r3_c2.png",
+     "sha256": "e283fa19b0f5bee975c158d323ddd8f689f5ca104e0d7a8f64f662ea56d29552",
+     "bytes": 863411,
+     "dimensions": {
+      "w": 1024,
+      "h": 1024,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/source_r3_c3.png",
+     "sha256": "d85f06890d07f276785412e17ac7c1de09363a8f4db1cc6faa9540803cac15c6",
+     "bytes": 351545,
+     "dimensions": {
+      "w": 1024,
+      "h": 1024,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/image2_texture_tiles/stitched_preview.png",
+     "sha256": "4561e5ad9b85f4a7b41ec1472565a15283a79a4a53ad4dff4cef4d87eec882df",
+     "bytes": 4606728,
+     "dimensions": {
+      "w": 1536,
+      "h": 1536,
+      "mode": "RGB"
+     }
+    },
+    {
+     "sourcePath": "tools/verdigris_splash/tmp/source_top_ortho.png",
+     "sha256": "b30beeb09b5ce7bbe4ce9568a66551a8bec252b9005ac646c89fceafd3fdfc17",
+     "bytes": 463240,
+     "dimensions": {
+      "w": 900,
+      "h": 900,
+      "mode": "RGBA"
+     }
+    }
+   ]
+  },
+  "geometric_skilltree": {
+   "reference": "WIZARD/tools/geometric_skilltree",
+   "targets": [
+    "passive-tree"
+   ],
+   "readme": "tools/geometric_skilltree/README.md",
+   "launch": "tools/geometric_skilltree/index.html",
+   "note": "code/reference module; no raster art required by TASK-0166"
+  },
+  "arcane_lattice": {
+   "reference": "WIZARD/tools/arcane_lattice",
+   "targets": [
+    "spellcraft"
+   ],
+   "readme": "tools/arcane_lattice/README.md",
+   "launch": "tools/arcane_lattice/index.html",
+   "note": "code/reference module; no raster art required by TASK-0166"
+  },
+  "cartographer": {
+   "reference": "WIZARD/tools/cartographer",
+   "targets": [
+    "zone-generation"
+   ],
+   "readme": "tools/cartographer/README.md",
+   "launch": "tools/cartographer/index.html",
+   "note": "code/reference module; no raster art required by TASK-0166"
+  },
+  "rp_account_creator": {
+   "reference": "WIZARD/tools/rp_account_creator",
+   "targets": [
+    "chronicle-meta"
+   ],
+   "readme": "tools/rp_account_creator/README.md",
+   "launch": "tools/rp_account_creator/index.html",
+   "note": "code/reference module; no raster art required by TASK-0166"
+  }
+ }
+}

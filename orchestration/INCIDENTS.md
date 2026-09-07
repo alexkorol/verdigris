@@ -261,3 +261,25 @@ status labels. New incidents append here with the template at bottom.
   absent; after any collision, rerun acceptance from the final single-writer
   tree rather than trusting an overlapping build.
 - Status: CONTAINED; fresh single-writer acceptance rerun required.
+
+## INC-016: READY packets carried a garbage-collected base_commit (2026-08-23)
+
+- TASK-0082 / TASK-0084 / TASK-0085 (all READY, INDEPENDENT audit/mechanical
+  packets) pinned `base_commit: 1f82623d...` ("Orchestrator handoff to Codex
+  Sol; INC-012") in their SPECs. That commit is no longer reachable from any
+  ref and has been garbage-collected (`git cat-file` reports a bad object), so
+  a worker claiming any of the three could not satisfy the spec-base-ancestry
+  verification that every ox-alpha claim performs.
+- FOUND: independently, during the lead route-readiness sweep — the board
+  sentinel does not validate SPEC `base_commit` objects, so the defect was
+  invisible to the healthy board.
+- CAUSE: the program history was rewritten/orphaned around the INC-012 handoff;
+  the three packets kept the pre-rewrite base while every peer packet moved to
+  a reachable base. Contributing: no base-object check in the sentinel.
+- CONTAINMENT: refreshed the three SPEC `base_commit` values to
+  `d2423873c577d299b3b39c56024d1d840993c72b` (PR #50 merge; verified ancestor
+  of the current program head, same base the sibling audit packets use). All
+  25 effective-READY bases now resolve and are ancestors of the head.
+- REGRESSION: added the full READY-board base-object/ancestry check to the lead
+  sweep; a future sweep must re-run it after any fetch (see RUN_STATUS).
+- Status: CONTAINED; route-readiness restored.

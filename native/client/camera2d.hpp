@@ -60,4 +60,13 @@ inline void unproject(const Camera& camera, const Screen& screen, int sx,
 // world x. Entities standing "lower" on screen draw later (in front).
 inline double draw_order_key(double wy, double wx) { return wy * 1e6 + wx; }
 
+inline const char* owner_uniform_pan_label() { return "Uniform pan"; }
+inline const char* owner_zoom_lock_label() { return "Zoom lock"; }
+inline bool zoom_strip_covers_hud_fails_review(bool overlap) { return overlap; }
+inline const char* owner_kit_lock_label() { return "Kit lock"; }
+inline const char* owner_same_delta_label() { return "Same delta"; }
+inline bool kit_lock_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
+
 }  // namespace camera2d

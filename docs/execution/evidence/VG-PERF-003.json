@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-PERF-003",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "31bac5649f3199e8a9440c3f82d6824748c9410c",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "effect-batch",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario effect-batch", "exit_code": 0}
+  ],
+  "assertions": [
+    "every impact and swing still records an op",
+    "dropping the telegraph cannot pass the batch",
+    "second pass reuses pens instead of CreatePen",
+    "actors remain on the painter",
+    "live HUD names Reuse pens and Keep warning"
+  ],
+  "negative_control": {
+    "name": "batching that drops required warnings or actors",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/effect-batch-960x600.png",
+      "sha256": "89df9e70dc77b49c12d8c633293b2668b04ea9409c250dd09f10a0ff4c27c2ae",
+      "produced_by": "native/build/verdigris_client.exe --scenario effect-batch"
+    },
+    {
+      "kind": "log",
+      "path": "docs/execution/captures/art-wave/effect-batch-report.txt",
+      "sha256": "0a847a91842cb2cdbc4af561de95e440ba0b62a37d38426ccdaed3a7f6447227",
+      "produced_by": "native/build/verdigris_client.exe --scenario effect-batch"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "GDI pen/brush reuse, not a GPU instancing pass. Does not edit native/src/core.cpp."
+  ]
+}

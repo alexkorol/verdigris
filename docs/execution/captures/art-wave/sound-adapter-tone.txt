@@ -1,0 +1,5 @@
+backend=software
+hz=440
+duration_ms=80
+samples=1764
+peak=9092

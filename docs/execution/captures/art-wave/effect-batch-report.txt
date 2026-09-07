@@ -1,0 +1,4 @@
+pen_hits=424
+pen_misses=20
+impacts=40
+swings=40

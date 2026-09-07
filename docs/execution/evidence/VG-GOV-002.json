@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GOV-002",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "head_sha": "0ff5182a",
+  "integrated_sha": null,
+  "seed": "orchestration-precedence",
+  "platform": "win32-x64",
+  "commands": [
+    {
+      "run": "python tools/roadmap.py validate",
+      "working_directory": "docs/execution/pack",
+      "exit_code": 0
+    }
+  ],
+  "assertions": [
+    "policy table names writer, target, and approval for claim/push/STATUS/lease",
+    "a successful worker-branch push is not an exclusive claim"
+  ],
+  "negative_control": {
+    "name": "treat a pushed kimiwork or codex worker branch as a lock on another agent's leased path",
+    "observed_result": "REJECTED pending owner stamp"
+  },
+  "artifacts": [
+    {
+      "kind": "decision",
+      "path": "docs/execution/decisions/resolve-orchestration-precedence.md",
+      "produced_by": "Cursor Grok VG-GOV-002 draft — owner stamp still required"
+    }
+  ],
+  "reviewer": null,
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "NOT_REQUIRED",
+  "limitations": [
+    "DRAFT. Not an owner ruling. PROTOCOL and the owner-push rule remain in force.",
+    "On-machine leases in CURSOR_KIMI_LANES.md are not origin-visible claims."
+  ]
+}

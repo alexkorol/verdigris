@@ -1,0 +1,14 @@
+machine_display=3440x1440
+logical_cpus=12
+os=Win32
+present=GDI
+avg_ms=31.964
+frames=20
+width=3440
+height=1440
+floor_ms=22.559
+world_ms=5.715
+hud_ms=3.217
+upload_ms=0.000
+total_ms=31.490
+net=n/a

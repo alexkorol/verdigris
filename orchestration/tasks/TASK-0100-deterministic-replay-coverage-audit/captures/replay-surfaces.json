@@ -1,0 +1,289 @@
+{
+  "$contract": "verdigris.audit.replay-surfaces",
+  "version": 1,
+  "task": "TASK-0100-deterministic-replay-coverage-audit",
+  "lane": "ox-pc-bd",
+  "model": "openrouter/stealth/ox-alpha",
+  "base_commit": "d2423873c577d299b3b39c56024d1d840993c72b",
+  "audited_head": "b0a09741b1542fd0a8227aa4d6f9d78a6358be76",
+  "authority": {
+    "constitution": "docs/product/VERDIGRIS_CONSTITUTION.md:157-173 (native architecture invariant: fixed-step, seeded where practical, headless, command/event driven)",
+    "core_seam": "native/README.md:8-11 (include/verdigris/core.hpp + src/core.cpp are the fixed-step deterministic headless simulation)"
+  },
+  "command_surface": {
+    "vocabulary": {
+      "commands": "native/include/verdigris/core.hpp:264-292 (CommandType + factories; Command fields type/dx/dy/action/target)",
+      "action_stability": "native/include/verdigris/core.hpp:25-27 (ActionType values stable for recorded streams; new skills appended)",
+      "event_ordinal_stability": "native/include/verdigris/core.hpp:249-252 (EventType appended last so recorded streams and stored ordinals keep numeric codes)"
+    },
+    "resolution_model": {
+      "dispatch_is_one_tick": "each dispatch() resolves one command and calls advance_tick(); native/src/core.cpp:309, native/src/core.cpp:722-742",
+      "cadence": "kSimulationTickMs=50 (20 Hz), native/include/verdigris/core.hpp:34-41; movement_step_per_tick derivation core.hpp:39-41",
+      "world_scale_table": "D-114 derivations, native/include/verdigris/core.hpp:43-73",
+      "client_translation": "LocalCoreSession::submit maps ClientCommand to Simulation commands, native/client/local_session.cpp:114-159",
+      "scenario_driver": "scenario_step = dispatch + ingest + age effects + camera + present, native/client/main.cpp:4167-4180; fixed seed 0xC011AB1E at main.cpp:4182-4188"
+    }
+  },
+  "seeds": [
+    {
+      "id": "simulation-seed",
+      "kind": "constructor",
+      "citation": "native/src/core.cpp:192 (Simulation(seed, house_name); Rng state seeded directly)",
+      "consumers": ["Simulation::Rng token/range stream"],
+      "captured_by_tests": [
+        "native/tests/core_tests.cpp:894 (test_determinism, seed 0xBADC0FFEE)",
+        "native/tests/core_tests.cpp:1248-1261 (objective timeline replay, seed 0x0143)",
+        "native/tests/core_tests.cpp:1274-1334 (first expedition wave spawn/replay determinism)"
+      ]
+    },
+    {
+      "id": "world-seed",
+      "kind": "constructor",
+      "citation": "native/src/core.cpp:1493-1494 (WorldSimulation(seed, player_uuid))",
+      "consumers": ["instance floor generation", "world_random_state fallback"]
+    },
+    {
+      "id": "instance-seed-fnv1a",
+      "kind": "derived",
+      "citation": "native/src/core.cpp:1802 (metadata_.seed = fnv1a(theme + \":\" + applied_layout, seed_)); fnv1a definition native/src/core.cpp:1477-1479; per-floor variant native/src/core.cpp:3222; party node key native/src/networking.cpp:1365 (meta.seed*131+depth)"
+    },
+    {
+      "id": "identity-seed-fnv1a",
+      "kind": "derived",
+      "citation": "native/src/networking.cpp:1575-1577 and login admission native/src/networking.cpp:2988 (FNV-1a over guest identity -> uint64 session seed)"
+    },
+    {
+      "id": "session-rng-truncation",
+      "kind": "derived-lossy",
+      "citation": "native/src/networking.cpp:579 (session_rng_(static_cast<uint32_t>(seed ^ (seed >> 32)))) — 64-bit seed truncated to 32-bit Mulberry32 state",
+      "risk": "lossy derivation; two distinct 64-bit seeds can share a session stream"
+    },
+    {
+      "id": "dev-command-explicit-seed",
+      "kind": "caller-supplied",
+      "citation": "native/src/networking.cpp:1064-1067 (dev give) and native/src/networking.cpp:1095-1098 (dev drop): optional payload seed builds a local Mulberry32, otherwise draws come from the unrecorded session_rng_ stream"
+    }
+  ],
+  "rng_streams": [
+    {
+      "id": "core-rng",
+      "algorithm": "splitmix64-style finalizer on an additive uint64 counter",
+      "citation": "native/src/core.cpp:140-154 (next/range/token; serial counter embedded in tokens)",
+      "serialized": true,
+      "serialization_citation": "snapshot writes rng.state + rng.serial, native/src/core.cpp:1229-1230; restore reads them, native/src/core.cpp:1307-1308"
+    },
+    {
+      "id": "mulberry32-item-forge",
+      "algorithm": "mulberry32 (JS-parity uint32 wraparound)",
+      "citation": "native/include/verdigris/core.hpp:450-459",
+      "serialized": false,
+      "note": "callers may pass an explicit rng (CreateItemOptions.rng, core.hpp:628); forge reseed consumes one draw of it (native/src/core.cpp:2804-2806, 3173-3176)"
+    },
+    {
+      "id": "vesselforge-stream",
+      "algorithm": "persistent Mulberry32 member inside VesselForge; generation reseeds, sear advances",
+      "citation": "native/include/verdigris/core.hpp:534-542",
+      "serialized": false,
+      "risk": "stream position lives in WorldSimulation::forge_ and is captured by no snapshot"
+    },
+    {
+      "id": "world-random-stream",
+      "algorithm": "splitmix64 over world_random_state_",
+      "citation": "native/src/core.cpp:3067-3072 (next_world_random); initial state 0x9e3779b97f4a7c15 at native/include/verdigris/core.hpp:1013",
+      "consumers": [
+        "monster scatter native/src/core.cpp:1701-1705",
+        "loot chance/pool rolls native/src/core.cpp:3166-3202",
+        "coin rewards native/src/core.cpp:3191"
+      ],
+      "serialized": false,
+      "risk": "advances on every loot roll yet appears in no snapshot or replay record (primary negative control)"
+    },
+    {
+      "id": "session-rng",
+      "algorithm": "Mulberry32 seeded by truncated identity seed",
+      "citation": "native/src/networking.cpp:579",
+      "consumers": ["dev:give / dev:drop default draws native/src/networking.cpp:1064-1101"],
+      "serialized": false
+    }
+  ],
+  "tick_and_clock_surfaces": {
+    "fixed_step_core": [
+      "native/include/verdigris/core.hpp:34-41 (kSimulationTickMs=50, movement_step_per_tick)",
+      "native/include/verdigris/core.hpp:29-32 (kTelegraphTicks=3 contract)",
+      "native/include/verdigris/core.hpp:75-76 (kDashMovementTicks=10)",
+      "native/include/verdigris/core.hpp:116-118 (attack_speed_ticks=4 default)",
+      "native/src/core.cpp:722-742 (advance_tick: cooldowns, war-cry expiry, regen cadence)",
+      "wave materialization tick: native/include/verdigris/core.hpp:407-412, resolution native/src/core.cpp:634-646",
+      "presentation pin kTickMs=50: native/client/presentation_events.hpp:49, asserted in native/tests/presentation_events_tests.cpp:61",
+      "tile-space constants (150 ms/tile, 50 ms samples): native/include/verdigris/core.hpp:749-756"
+    ],
+    "wall_clock_boundaries": [
+      {
+        "id": "protocol-session-now",
+        "citation": "native/src/networking.cpp:653 (ProtocolSession::now_ms uses std::chrono::system_clock)",
+        "enters_outcomes": true
+      },
+      {
+        "id": "server-tick-thread",
+        "citation": "native/src/networking.cpp:2811 (WebSocketServer spawns a thread sleeping ~150 ms that feeds system_clock now into every ProtocolSession::tick(now))",
+        "enters_outcomes": true,
+        "note": "jitter makes combat poll arrival times vary run to run"
+      },
+      {
+        "id": "combat-deadlines",
+        "citation": "native/src/core.cpp:1880,1912-1913,1973,1987-2019 (next_player_attack_ms_, monster.next_attack_ms +1200/+1500 ms, boss telegraph_until_ms windows)",
+        "enters_outcomes": true,
+        "note": "deadlines are wall-clock milliseconds, not tick counts; replay requires capturing now values or converting deadlines to ticks"
+      },
+      {
+        "id": "session-transient-deadlines",
+        "citation": "respawn_at_ms_/respawn_protection_until_ms_/first_goal_*_ms_ reset paths native/src/networking.cpp:635-640; real-clock cadence note native/src/networking.cpp:2507",
+        "enters_outcomes": true
+      },
+      {
+        "id": "ground-item-placement-order",
+        "citation": "native/src/core.cpp:3090,3102 (GroundItem.timestamp = ++serial_) with newest-first menu sort native/src/networking.cpp:1892",
+        "enters_outcomes": true,
+        "note": "monotonic counter, not persisted; resets per WorldSimulation construction"
+      }
+    ],
+    "measurement_only_clocks": [
+      "native/tests/session_tests.cpp:42-64 (wait_until harness deadlines)",
+      "native/client/remote_session.cpp:350-370,515-517 (reconnect backoff, state-request throttle)",
+      "native/tools/server_lifecycle_soak.cpp:41-42,57,146 (steady_now_ms watchdog)",
+      "native/tools/entity_density_bench.cpp:281-284,321,509 (steady_clock timing output)",
+      "native/client/main.cpp:4606-5638 (scenario sleeps between steps, outside assertions)",
+      "native/src/server_main.cpp:35-38 (EOF keep-alive sleep loop)"
+    ],
+    "core_purity_check": "no chrono/system_clock/steady_clock matches inside native/include/verdigris/core.hpp or native/src/core.cpp (rg gate below)"
+  },
+  "snapshot_and_persistence": {
+    "canonical_bytes": {
+      "api": "free functions snapshot()/restore(), native/include/verdigris/core.hpp:430-434",
+      "format": "schemaVersion=1 line-oriented canonical text; fixed field order; hex-encoded strings; native/src/core.cpp:1226-1295 (writer), 1297-1351+ (reader), version gate 1299-1301",
+      "contents": "House routes/stores/relic+lost pools, pending recovery queues, seasonal rewards, bounded legends, campaign flag, scion + fallen scions, rng.state, rng.serial, tick, nextLegendOrdinal",
+      "excluded_by_design": [
+        "live instance state (actors, ground drops, events, pending wave): native/include/verdigris/core.hpp:344-350, native/src/core.cpp:1265-1291",
+        "D-109 boundary semantics: carried value stays, surfaced candidates return to pending queues"
+      ],
+      "tolerance": "unknown fields ignored on restore, missing/malformed required fields fail loudly (native/tests/core_tests.cpp:761-775)"
+    },
+    "file_adapter": {
+      "api": "persistence::write_atomic/read, native/persistence/adapter.hpp:23-73 (MoveFileExW replacement on Windows adapter.hpp:37-47)",
+      "production_wiring": "none found — rg shows persistence::* referenced only from tests (native/tests/core_tests.cpp:880-892, temp file verdigris-task-0030.snapshot); neither server nor client loads or saves House bytes today"
+    },
+    "wire_projection_not_canonical": {
+      "citation": "ProtocolSession::snapshot() JSON native/src/networking.cpp:879-984; login payload authoritative-on-reconnect proven in native/tests/session_tests.cpp:443; chronicle snapshot equality session_tests.cpp:1965,2011",
+      "note": "JSON projection is lossy and unordered compared with snapshot() bytes; it is not a replay record"
+    }
+  },
+  "networking_adapters": [
+    {
+      "id": "websocket-server",
+      "citation": "native/src/networking.cpp:2811-2813 (accept loop + 150 ms wall-clock tick thread; stop joins threads)",
+      "envelope": "{ event, data } browser wire envelope; handlers receive payload at data.data",
+      "guest_seed_derivation": "native/src/networking.cpp:2988"
+    },
+    {
+      "id": "protocol-session",
+      "citation": "native/include/verdigris/networking.hpp:74-107 (ctor takes seed; tick(now_ms) advances on the tick, not only inbound envelopes; snapshot())",
+      "session_rng": "networking.hpp:240 (Mulberry32 session_rng_)"
+    },
+    {
+      "id": "party-snapshot-copies",
+      "citation": "native/src/networking.cpp:2906-2979 (ServerParty value copies named 'snapshot' — naming collision with sim snapshots; lobby bookkeeping only)",
+      "replay_relevance": "none today, but rename candidate to avoid contract confusion"
+    },
+    {
+      "id": "passive-tree-adapter-input",
+      "citation": "native/src/networking.cpp:1230-1232 (player:skill tree snapshot accepted raw from client payload into passive_tree_)",
+      "risk": "unvalidated client-supplied adapter input; no schema/version check; not covered by any replay proof"
+    },
+    {
+      "id": "remote-client-session",
+      "citation": "native/client/remote_session.cpp:350-370 (retry backoff), 515-517 (state-request throttle) — client-side transport timing only"
+    }
+  ],
+  "existing_replay_proof": [
+    {"test": "native/tests/core_tests.cpp:894 test_determinism", "property": "same seed + same command stream -> identical relevant() projection"},
+    {"test": "native/tests/core_tests.cpp:271 test_movement_replay_is_deterministic", "property": "byte-identical replay positions and event count under fixed-step movement"},
+    {"test": "native/tests/core_tests.cpp:321 test_facing_replay_is_deterministic", "property": "facing command streams replay to byte-identical events and state"},
+    {"test": "native/tests/core_tests.cpp:514 test_elite_skill_replay_is_deterministic", "property": "telegraph + skill resolution replay byte-identically incl. pending_action_ticks"},
+    {"test": "native/tests/core_tests.cpp:556 test_war_cry_buff_expiry_and_replay_determinism", "property": "buff expiry lands on its deterministic tick boundary under replay"},
+    {"test": "native/tests/core_tests.cpp:729 test_relic_resurface_replay_is_deterministic", "property": "seeded re-entry replays same item count and stable identity"},
+    {"test": "native/tests/core_tests.cpp:1667 test_legend_stable_ids_and_deterministic_replay", "property": "identical seed + commands produce byte-identical legend records"},
+    {"test": "native/tests/core_tests.cpp:1149-1163 pack lifecycle replay", "property": "delayed clear + successor wave remain deterministic"},
+    {"test": "native/tests/core_tests.cpp:1248-1261 objective timeline replay", "property": "phase timeline deterministic under replay"},
+    {"test": "native/tests/core_tests.cpp:1274-1334 expedition wave spawn/replay", "property": "same-seed warden identities identical; different seed re-rolls within fixed shape"},
+    {"test": "native/tests/core_tests.cpp:1490 test_d106_recovery_is_ordered_and_deterministic", "property": "recovery pool order deterministic under replay"},
+    {"test": "native/tests/core_tests.cpp:761-775 snapshot byte stability", "property": "schemaVersion pinned; restore is byte-stable; unknown-field tolerance"},
+    {"test": "native/tests/core_tests.cpp:778-818 D-109 mid-instance RNG continuation", "property": "restored rng.state continues the stream; post-restore drop ids match baseline; snapshot(replay)==snapshot(baseline)"},
+    {"test": "native/tests/core_tests.cpp:836-843 recovery pools preserved", "property": "explicit relic/lost-trophy pools survive restore byte-stably"},
+    {"test": "native/tests/core_tests.cpp:880-892 file adapter round-trip", "property": "atomic write/read preserves bytes and replaces existing files"},
+    {"test": "native/tests/session_tests.cpp:67 local_session_ready_and_deterministic", "property": "local seam moves the simulation through translated commands"},
+    {"test": "native/tests/session_tests.cpp:443 reconnect", "property": "login snapshot is authoritative after reconnect"},
+    {"test": "native/tests/session_tests.cpp:1965,2011 chronicle equality", "property": "chronicle JSON stable across the soak window"},
+    {"test": "native/tests/presentation_events_tests.cpp:159-176 spawn detection", "property": "spawn detection is byte-deterministic across runs"},
+    {"test": "native/tests/audio_mixer_tests.cpp:213-230 ordering", "property": "voiced cues ascend by scheduled_tick regardless of arrival order"}
+  ],
+  "gaps": [
+    {
+      "id": "GAP-1",
+      "severity": "high",
+      "role": "negative-control-primary",
+      "title": "WorldSimulation live state has no capture path at all",
+      "detail": "Player position/scene, monsters (incl. wall-clock telegraph_until_ms / next_attack_ms), ground items plus the town stash, pre-instance position stash, engaged_by gate, VesselForge stream, and the world_random_state_ splitmix64 counter exist only in memory. The only serialization touching this layer is the lossy wire JSON projection. A crash, restart, or save/load boundary cannot be replayed because no canonical bytes for this layer exist.",
+      "citations": [
+        "native/include/verdigris/core.hpp:973-1014 (state fields incl. world_random_state_)",
+        "native/src/core.cpp:3067-3072 (stream advance, no serializer)",
+        "native/src/networking.cpp:879-984 (projection only)"
+      ]
+    },
+    {
+      "id": "GAP-2",
+      "severity": "high",
+      "role": "negative-control-secondary",
+      "title": "Wall-clock-keyed combat/transient outcomes are unreproducible from commands alone",
+      "detail": "process_combat/advance_combat take transport-supplied now_ms; monster swing windows (+1200/+1500 ms), player attack interval, boss telegraphs, respawn protection, and first-goal timestamps are wall-clock deadlines. Two byte-identical command streams through the server produce different combat timelines depending on tick-thread jitter.",
+      "citations": [
+        "native/src/networking.cpp:597-602,653,2507,2811",
+        "native/src/core.cpp:1880,1912-1913,1973,1987-2019"
+      ]
+    },
+    {
+      "id": "GAP-3",
+      "severity": "medium",
+      "title": "session_rng_ stream position unrecorded",
+      "detail": "dev:give/dev:drop without an explicit seed draw from the session Mulberry32 whose state is never captured; repeated identical dev requests diverge after any stream consumption elsewhere.",
+      "citations": ["native/src/networking.cpp:1064-1101"]
+    },
+    {
+      "id": "GAP-4",
+      "severity": "medium",
+      "title": "passive_tree_ accepts unversioned client payloads",
+      "detail": "The skill-tree snapshot arrives raw from the client and is stored wholesale; no schema version, size bound, or validation gates this adapter input.",
+      "citations": ["native/src/networking.cpp:1230-1232"]
+    },
+    {
+      "id": "GAP-5",
+      "severity": "low",
+      "title": "GroundItem placement ordering counter is ephemeral",
+      "detail": "timestamp = ++serial_ drives newest-first menus but resets per WorldSimulation construction and is absent from every capture; ordering-sensitive UI outcomes are not reproducible across restarts.",
+      "citations": ["native/src/core.cpp:3090,3102", "native/src/networking.cpp:1892"]
+    },
+    {
+      "id": "GAP-6",
+      "severity": "low",
+      "title": "File adapter unwired in production",
+      "detail": "persistence::write_atomic/read are proven only by a unit test against a temp path; no production code saves or restores House bytes end-to-end, so cross-restart replay is structurally unproven.",
+      "citations": ["native/persistence/adapter.hpp:23-84", "native/tests/core_tests.cpp:880-892"]
+    }
+  ],
+  "contracts_defined_elsewhere": "orchestration/tasks/TASK-0100-deterministic-replay-coverage-audit/FINDINGS.md sections 'Versioned replay record contract' and 'Divergence report contract' (definition only; no implementation shipped)",
+  "acceptance_gates": [
+    "rg -n \"seed|rng|random|tick|fixed|replay|snapshot|determin|clock|time\" native/include native/src native/tests",
+    "node -e \"JSON.parse(require('fs').readFileSync('orchestration/tasks/TASK-0100-deterministic-replay-coverage-audit/captures/replay-surfaces.json','utf8')); console.log('replay surfaces: PASS')\"",
+    "git diff --check",
+    "git diff --name-only"
+  ]
+}

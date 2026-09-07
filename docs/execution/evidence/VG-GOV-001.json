@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GOV-001",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "head_sha": "0ff5182a",
+  "integrated_sha": null,
+  "content_hash": null,
+  "seed": "baseline",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {
+      "run": "git rev-parse HEAD",
+      "exit_code": 0,
+      "observed": "486058f31002c4f1c55cd0e71888defc204bbd3e"
+    },
+    {
+      "run": "git rev-parse origin/codex/goal-aaa-systems",
+      "exit_code": 0,
+      "observed": "e7b65360"
+    }
+  ],
+  "assertions": [
+    "architect checkout SHA and Kimi program head are both named",
+    "pack source SHAs 2d3e92a5 and 8597c654 are labeled historical",
+    "package hash remains unset until owner freeze"
+  ],
+  "negative_control": {
+    "name": "treat 2d3e92a5 or 8597c654 as the live program head",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "decision",
+      "path": "docs/execution/decisions/freeze-a-reproducible-baseline.md",
+      "produced_by": "Cursor Grok VG-GOV-001 draft"
+    },
+    {
+      "kind": "manifest",
+      "path": "docs/execution/BASELINE.md",
+      "produced_by": "Cursor Grok VG-GOV-001 draft"
+    }
+  ],
+  "reviewer": null,
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "NOT_REQUIRED",
+  "limitations": [
+    "Wave commit 0ff5182a records the architect snapshot. Package hash remains unset.",
+    "Kimi's playtest/native gates at e7b65360 were run in kimiwork_verdigris, not this checkout.",
+    "Does not mint TASK numbers. VG-GOV-002 remains unstamped."
+  ]
+}

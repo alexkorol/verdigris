@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-QA-001",
+  "task_id": null,
+  "claim_token": "cursor-grok-docs-execution",
+  "base_sha": "69e16d49e16c2293be62dd1fff25cdf3c2be414c",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "content_hash": null,
+  "seed": null,
+  "platform": "win32-x64",
+  "toolchain": "Python 3 / pack/tools",
+  "commands": [
+    {
+      "run": "python -m unittest discover -s tools -p test_*.py -v",
+      "exit_code": 0
+    }
+  ],
+  "assertions": [
+    "template_only records cannot certify",
+    "screenshot without sha256/produced_by fails",
+    "minted task_id fails",
+    "traced screenshot with produced_by passes"
+  ],
+  "negative_control": {
+    "name": "PNG artifact with path only",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "log",
+      "path": "docs/execution/pack/tools/test_evidence_manifest.py",
+      "produced_by": "python -m unittest discover -s tools -p test_*.py -v"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/build-fixtures-960x600.png",
+      "sha256": "4e6c5cba322f5782d9d3ec4ef0276337ee8a75a62306e5d56746fb4e7a7203fc",
+      "produced_by": "native/build/verdigris_client.exe --scenario build-fixtures"
+    }
+  ],
+  "reviewer": null,
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "NOT_REQUIRED",
+  "limitations": [
+    "Schema lives under docs/execution; native/tests and ci-native.ps1 stay Kimi."
+  ]
+}

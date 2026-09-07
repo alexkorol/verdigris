@@ -1,7 +1,8 @@
 ---
 task: TASK-0102
 title: Skill system and binding gap audit
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head d0668758, 2026-08-23)
 packet: MECHANICAL
 topology: INDEPENDENT
 job: MECHANICAL

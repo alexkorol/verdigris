@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-SOUND-006",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "9ca798f08ce29a29bf0378ea1e791609c58954e3",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "audio-prefs",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario audio-prefs", "exit_code": 0}
+  ],
+  "assertions": [
+    "category volumes persist",
+    "mute cannot reset unrelated SFX/music volumes",
+    "a zero-volume SFX category remains silent",
+    "live mixer paints persisted SFX and Music volumes",
+    "a mute chip without the mixer cannot certify",
+    "live HUD names Mixer prefs and SFX persist"
+  ],
+  "negative_control": {
+    "name": "mute resetting SFX/music category volumes, or a mute chip without a mixer",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "log",
+      "path": "docs/execution/captures/art-wave/audio-prefs-test.txt",
+      "sha256": "10833206105b52c579c99adba31a9ca2ec9659ed938a605c20fd5123c755713b",
+      "produced_by": "native/build/verdigris_client.exe --scenario audio-prefs"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/audio-prefs-960x600.png",
+      "sha256": "76a321886f80ca1d53df944e14f500a24e7e31df27efb3c6ee875d23eb2b7083",
+      "produced_by": "native/build/verdigris_client.exe --scenario audio-prefs"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Mixer paints SFX 40 / Music 70 and Loop Tin village wind while muted. Device remains muted in the harness. Owner strip paints Mixer prefs / SFX persist. Mute reset cannot certify."
+  ]
+}

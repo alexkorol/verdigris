@@ -1,4 +1,6 @@
 #include "presentation_state.hpp"
+#include "publish-telegraph-timing-and-geometry.hpp"
+#include "ingest-ranged-projectile-warning.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -6,10 +8,15 @@
 namespace verdigris::client {
 
 verdigris::Vec2 facing_vector(const std::string& facing) {
-  if (facing == "left" || facing == "west") return {-1, 0};
-  if (facing == "right" || facing == "east") return {1, 0};
-  if (facing == "up" || facing == "north") return {0, -1};
-  return {0, 1};
+  // Compound eight-way names ("up-left", ...) resolve component-wise so the
+  // rendered facing matches the diagonal the wire actually carried.
+  verdigris::Vec2 result{0, 0};
+  if (facing.find("left") != std::string::npos || facing == "west") result.x = -1;
+  else if (facing.find("right") != std::string::npos || facing == "east") result.x = 1;
+  if (facing.find("up") != std::string::npos || facing == "north") result.y = -1;
+  else if (facing.find("down") != std::string::npos || facing == "south") result.y = 1;
+  if (result.x == 0 && result.y == 0) result.y = 1;
+  return result;
 }
 
 double protocol_to_world(double protocol_units) {
@@ -24,7 +31,8 @@ const char* extraction_action_hint(bool remote_session) {
   return remote_session ? "walk onto it" : "press F there";
 }
 
-void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& sim) {
+void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& sim,
+                                long long combat_xp) {
   world = WorldView{};
   world.house_name = sim.house().name;
   world.scion_name = sim.scion().name;
@@ -56,6 +64,31 @@ void sync_world_from_simulation(WorldView& world, const verdigris::Simulation& s
     world.player.cooldown_ticks = player->cooldown_ticks;
     world.player.war_cry_ticks_remaining = player->war_cry_ticks_remaining;
     world.player.alive = player->alive;
+  }
+  {
+    const int level = std::max(1, world.player.level);
+    long long floor_xp = 0;
+    for (int x = 1; x < level; ++x)
+      floor_xp += static_cast<long long>(
+          std::floor(x + 265.0 * std::pow(2.0, x / 7.0)));
+    floor_xp /= 4;
+    long long next_xp = 0;
+    for (int x = 1; x < level + 1; ++x)
+      next_xp += static_cast<long long>(
+          std::floor(x + 265.0 * std::pow(2.0, x / 7.0)));
+    next_xp /= 4;
+    // Local core stores level, not intra-level combat XP. The HUD adapter
+    // tracks kill XP with the same RS curve as the snapshot `state.xp` block
+    // so a live local window is not an empty black strip.
+    const double floor_d = static_cast<double>(floor_xp);
+    const double next_d = static_cast<double>(next_xp);
+    world.xp_present = next_d > floor_d;
+    world.xp_fraction =
+        world.xp_present
+            ? std::clamp((static_cast<double>(combat_xp) - floor_d) /
+                             (next_d - floor_d),
+                         0.0, 1.0)
+            : 0.0;
   }
   for (const auto& actor : sim.actors()) {
     if (actor.kind != verdigris::ActorKind::Monster || !actor.alive) continue;
@@ -147,11 +180,36 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
     // is removed. Monsters keep the neutral default until the wire ships an
     // authoritative facing; the presentation never invents one from the
     // player's aim.
+    monster.name = source.name;
+    monster.kind = source.kind;
+    monster.behaviour = source.behaviour;
     monster.life = source.life;
     monster.life_max = source.life_max;
     monster.alive = source.alive;
     monster.elite = source.elite;
     world.monsters.push_back(std::move(monster));
+  }
+  world.theme = model.theme;
+  {
+    const double span = model.xp_next - model.xp_floor;
+    world.xp_present = span > 0.0;
+    world.xp_fraction =
+        span > 0.0
+            ? std::clamp((model.xp_current - model.xp_floor) / span, 0.0, 1.0)
+            : 0.0;
+  }
+  world.map_width = model.map_width;
+  world.map_height = model.map_height;
+  world.map_walkable = model.map_walkable;
+  world.npcs.clear();
+  for (const auto& source : model.npcs) {
+    WorldNpc npc;
+    npc.id = source.id;
+    npc.name = source.name;
+    npc.position = {static_cast<int>(std::lround(protocol_to_world(source.x))),
+                    static_cast<int>(std::lround(protocol_to_world(source.y)))};
+    npc.actions = source.actions;
+    world.npcs.push_back(std::move(npc));
   }
   world.carried.clear();
   for (const auto& item : model.inventory) {
@@ -197,11 +255,17 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
   const double ex = static_cast<double>(at.x);
   const double ey = static_cast<double>(at.y);
   switch (event.type) {
-    case PresentationEventType::AttackStarted:
+    case PresentationEventType::AttackStarted: {
       fx.telegraphs.erase(event.actor_id);
+      // Orient the confirmed swing along the player's authoritative facing
+      // instead of a hardcoded eastward arc.
+      const double swing_angle =
+          std::atan2(static_cast<double>(world.player.facing.y),
+                     static_cast<double>(world.player.facing.x));
       fx.effects.push_back({EffectFx::Kind::Swing, static_cast<double>(world.player.position.x),
-                            static_cast<double>(world.player.position.y), 0.0, 0, 6});
+                            static_cast<double>(world.player.position.y), swing_angle, 0, 6});
       break;
+    }
     case PresentationEventType::DamageApplied: {
       fx.effects.push_back({EffectFx::Kind::Impact, ex, ey, 0.0, 0, 4});
       EffectFx flash;
@@ -223,26 +287,33 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       number.critical = event.critical;
       number.style = event.style;
       fx.effects.push_back(number);
-      if (to_player) fx.screen_pulse_ticks = 3;
+      if (to_player) {
+        fx.screen_pulse_ticks = 3;
+        if (!event.actor_id.empty())
+          fx.monster_strikes[event.actor_id] = now_tick;
+      }
       break;
     }
     case PresentationEventType::Telegraph: {
+      if (projectile::is_projectile_warning(event)) {
+        projectile::apply_warning(fx, world, event, now_tick);
+        break;
+      }
       ActiveTelegraph telegraph;
       telegraph.actor_id = event.actor_id;
-      telegraph.action = event.text.find("sweep") != std::string::npos ? "sweep" : "thrust";
       telegraph.position = event_anchor(world, fx, event, false);
-      // TASK-0122 Phase A: same inversion removal as monster sync. Without an
-      // authoritative telegraph facing on the wire (radius/position wire work
-      // is deferred), the warning keeps its neutral default instead of a
-      // client-only inverted copy of the player's aim.
       telegraph.start_tick = now_tick;
-      telegraph.windup_ticks = std::max(1, event.value > 20 ? event.value / 50 : event.value);
-      fx.telegraphs[event.actor_id.empty() ? "foe" : event.actor_id] = std::move(telegraph);
+      const auto spec = actions::spec_from_payload(
+          event.text, event.value, verdigris::Simulation::presentation_catalog());
+      actions::apply_spec(telegraph, spec);
+      fx.telegraphs[event.actor_id.empty() ? "foe" : event.actor_id] =
+          std::move(telegraph);
       break;
     }
     case PresentationEventType::ActorDied:
     case PresentationEventType::ScionDied:
       fx.telegraphs.erase(event.actor_id);
+      fx.monster_strikes.erase(event.actor_id);
       if (event.type == PresentationEventType::ScionDied) fx.telegraphs.clear();
       fx.last_death_pos = at;
       fx.effects.push_back({EffectFx::Kind::DeathRing, ex, ey, 0.0, 0, 12});
@@ -294,6 +365,14 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       fx.screen_pulse_ticks = 8;
       break;
     case PresentationEventType::Message:
+      // Server messages carry the story: quest dialogue, trade receipts,
+      // extraction flavor. Surface them as a HUD toast — longer lines get
+      // longer to read — instead of dropping them on the floor.
+      if (!event.text.empty()) {
+        fx.hint = event.text;
+        fx.hint_ticks = std::min<int>(400, 100 + static_cast<int>(event.text.size()) * 2);
+      }
+      break;
     case PresentationEventType::SessionReady:
     case PresentationEventType::ItemEquipped:
     case PresentationEventType::ConnectionEstablished:
@@ -310,7 +389,8 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
         line = "Kill " + event.text;
         break;
       case PresentationEventType::Telegraph:
-        line = "Telegraph " + event.text;
+        line = event.text == "projectile" ? "Projectile warning " + event.actor_id
+                                          : "Telegraph " + event.text;
         break;
       case PresentationEventType::ItemDropped:
         line = "Loot";
@@ -384,12 +464,18 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
                   static_cast<double>(base.y), 0.0, monster.life,
                   monster.elite ? "elite" : "monster"});
   }
+  for (const auto& npc : world.npcs) {
+    const auto base = at(npc.position.x, npc.position.y);
+    rl.push_back({render::Op::Npc, static_cast<double>(base.x),
+                  static_cast<double>(base.y), 0.0, npc.id, npc.name});
+  }
   for (const auto& loot : fx.loot_positions) {
     const auto base = at(loot.second.x, loot.second.y);
     rl.push_back({render::Op::Drop, static_cast<double>(base.x), static_cast<double>(base.y), 0.0,
                   0, loot.first});
   }
   for (const auto& entry : fx.telegraphs) {
+    if (actions::telegraph_expired(world.tick, entry.second)) continue;
     const auto base = at(entry.second.position.x, entry.second.position.y);
     rl.push_back({render::Op::Telegraph, static_cast<double>(base.x),
                   static_cast<double>(base.y), 0.0, 0, entry.second.action});
@@ -433,6 +519,8 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
       case EffectFx::Kind::WarCryFade:
         rl.push_back({render::Op::WarCry, static_cast<double>(base.x),
                       static_cast<double>(base.y), 0.0, 0, phase_a::kWarcryFadeLabel});
+        rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, 0, "vfx-weave:cancel"});
         break;
       case EffectFx::Kind::ScionLostBeat:
         rl.push_back({render::Op::ScreenPulse, 0.0, 0.0, 0.0, 0,

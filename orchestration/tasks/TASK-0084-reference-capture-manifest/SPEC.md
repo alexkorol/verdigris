@@ -1,12 +1,13 @@
 ---
 task: TASK-0084
 title: Reference-capture integrity manifest
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head 3e84a878, 2026-08-23)
 packet: MECHANICAL
 topology: INDEPENDENT
 priority: medium-high (presentation regression evidence)
 lane: luna-mac; Qwen drafting allowed with machine verification
-base_commit: 1f82623d9a3936513327cc43362703443e14b02a
+base_commit: d2423873c577d299b3b39c56024d1d840993c72b
 owned_paths:
   - orchestration/benchmarks/side-by-side-2026-08-20/reference-manifest.mjs
   - orchestration/benchmarks/side-by-side-2026-08-20/reference-manifest.json

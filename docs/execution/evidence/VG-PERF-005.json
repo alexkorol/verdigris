@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-PERF-005",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "9ca798f08ce29a29bf0378ea1e791609c58954e3",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "loot-label-budget",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario loot-label-budget", "exit_code": 0}
+  ],
+  "assertions": [
+    "every dense pouch still draws as Drop",
+    "the farthest pouch is not nameplated",
+    "the nearest pouch keeps a readable name",
+    "nameplates stay at the 12-nearest cap",
+    "live HUD names Nearest 12 and Drop stays"
+  ],
+  "negative_control": {
+    "name": "culling labels making an eligible item impossible to pick up",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/loot-label-budget-960x600.png",
+      "sha256": "dbbba996c36b8b30dbd361357ab92caec9d698e32fa2cb8b4576fdc92f3f0a0a",
+      "produced_by": "native/build/verdigris_client.exe --scenario loot-label-budget"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Nameplate cap 12. Drop sprites remain for far pouches. Owner strip paints Nearest 12 / Drop stays. Cull pickup cannot certify."
+  ]
+}

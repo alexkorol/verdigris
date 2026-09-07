@@ -1,0 +1,200 @@
+{
+  "task": "TASK-0118",
+  "title": "Native accessibility, options, and input audit",
+  "lane": "ox-pc-bd",
+  "model": "openrouter/stealth/ox-alpha",
+  "branch": "worker/verdigris/pc/ox-pc-bd",
+  "base_commit": "9bd689b4cebac0fe1f79ba54edcc9967a1a8f0d4",
+  "generated_at": "2026-08-23",
+  "scope_notes": [
+    "Mechanical audit only; no option defaults chosen; no balance values touched.",
+    "D-007 control contract (orchestration/DECISIONS.md:30-40) preserved as frozen.",
+    "States: present | partial | absent | library_only (tested seam, no client wiring) | browser_only."
+  ],
+  "frozen_invariants": [
+    {
+      "invariant": "D-007 native client control contract",
+      "source": ["orchestration/DECISIONS.md:30-40", "docs/product/VERDIGRIS_CONSTITUTION.md:94-101"],
+      "status": "recorded_as_is"
+    },
+    {
+      "invariant": "Pane system + two minimap modes with transparency/zoom/side placement as options",
+      "source": ["docs/product/VERDIGRIS_CONSTITUTION.md:108-111"],
+      "status": "native_minimap_single_mode_gap"
+    },
+    {
+      "invariant": "Presentation requests / simulation resolves / events / display",
+      "source": ["docs/product/VERDIGRIS_CONSTITUTION.md:157-168"],
+      "status": "all_gaps_client_side_only"
+    }
+  ],
+  "areas": [
+    {
+      "id": "key_mouse_rebinding",
+      "native": "absent",
+      "browser": "present",
+      "native_evidence": ["native/client/main.cpp:3989-4107", "native/client/main.cpp:909-913", "native/client/main.cpp:925-929"],
+      "browser_evidence": ["src/core/config/controls.js", "src/components/ui/SettingsBindings.vue:20-43", "tests/unit/controls-bindings.spec.js"],
+      "gap": "All native bindings are compile-time literals; no binding map, conflict detection, or capture UI.",
+      "contract_path": "Port map/conflict-refusal/reset/persistence mechanics with D-007 literals as compiled-in defaults."
+    },
+    {
+      "id": "hold_toggle_behavior",
+      "native": "partial",
+      "browser": "partial",
+      "native_evidence": ["native/client/main.cpp:4007-4010", "native/client/main.cpp:4071-4074", "native/client/main.cpp:4029-4032", "native/client/main.cpp:4095-4103"],
+      "browser_evidence": ["src/core/config/controls.js (MOVEMENT_REPEAT)"],
+      "gap": "Movement hold-based and three toggles exist (Z loot names, I gear, F3 debug) but no hold-to-toggle or repeat-on-hold preference on either client; attacks fire per press only."
+    },
+    {
+      "id": "sensitivity",
+      "native": "absent",
+      "browser": "absent",
+      "native_evidence": ["native/client/main.cpp:4086-4093", "native/client/main.cpp:4064-4066"],
+      "browser_evidence": [],
+      "gap": "Only hardcoded wheel zoom step factor 1.1 with fixed clamps exists; no pointer sensitivity, invert, or dash-distance scalar anywhere."
+    },
+    {
+      "id": "focus",
+      "native": "library_only",
+      "browser": "partial",
+      "native_evidence": ["native/client/input_focus.hpp:21-59", "native/client/input_focus.hpp:230-345", "native/client/input_focus.hpp:12-14", "native/client/main.cpp:3968-3978", "native/client/main.cpp:4041-4056"],
+      "browser_evidence": [],
+      "gap": "Pure fail-closed focus reducer with Navigate/Confirm/Cancel intents exists but is unwired into main.cpp and has no integration tests; shipped focus is ad-hoc gear-grid navigation plus the TASK-0153 Esc-close-topmost contract.",
+      "rg_proof": "rg -ln input_focus native/tests native/client matches only the header itself"
+    },
+    {
+      "id": "text_scale",
+      "native": "absent",
+      "browser": "absent",
+      "native_evidence": ["native/client/main.cpp:3544-3547", "native/client/main.cpp:3002", "native/client/main.cpp:1730-1745"],
+      "browser_evidence": ["src/assets/scss/typography/sizes.scss"],
+      "gap": "Fixed pixel fonts everywhere (13px legend, 19/30px hints, clamped 13-26px numerals); world text scales only with camera zoom, never by user setting."
+    },
+    {
+      "id": "contrast",
+      "native": "partial",
+      "browser": "absent",
+      "native_evidence": ["native/client/main.cpp:3447-3448", "native/client/main.cpp:3554-3565", "native/client/main.cpp:1748"],
+      "browser_evidence": [],
+      "gap": "Good local practices (backed life bars, light-on-dark chips) but no contrast/gamma/high-contrast mode and nothing measures ratios."
+    },
+    {
+      "id": "color_independence",
+      "native": "partial",
+      "browser": "partial",
+      "positive_native_evidence": ["native/client/main.cpp:2370-2377", "native/client/main.cpp:3523", "native/client/main.cpp:3421-3425", "native/client/main.cpp:898-900", "native/client/main.cpp:3634-3636"],
+      "negative_native_evidence": ["native/client/main.cpp:2522-2535", "native/client/main.cpp:1767-1776"],
+      "gap": "Orbs carry numeric captions, loot names render as text, elites differ in shape/size not just hue, actions give text hints; but minimap dot classes are hue-only and player-vs-monster hit rings share identical yellow tones behind hidden labels."
+    },
+    {
+      "id": "reduced_motion_flash",
+      "native": "absent",
+      "browser": "absent",
+      "native_evidence": ["native/client/presentation_events.hpp:53", "native/client/presentation_events.hpp:60", "native/client/main.cpp:1754-1764", "native/client/main.cpp:5729"],
+      "browser_evidence": [],
+      "gap": "Critical hits add a near-white burst cross (~300ms TTL vs 200ms normal) plus ScreenPulse op; no reduced-motion/flash option or prefers-reduced-motion equivalent consulted anywhere."
+    },
+    {
+      "id": "subtitles_captions",
+      "native": "absent",
+      "browser": "absent",
+      "native_evidence": [],
+      "browser_evidence": ["src/components/inventory/InventoryItemTooltip.vue:10"],
+      "gap": "No caption/subtitle system anywhere; the only 'subtitle' token is an item-tooltip prop. Native plays no audio today so captions have no source stream yet."
+    },
+    {
+      "id": "audio_controls",
+      "native": "library_only",
+      "browser": "partial",
+      "native_evidence": ["native/audio/audio_mixer.hpp:54-59", "native/audio/audio_mixer.cpp:42-56", "native/tests/audio_mixer_tests.cpp:235-257"],
+      "browser_evidence": ["src/stores/ui.js:22", "src/stores/ui.js:80", "src/components/slots/Settings.vue:44-54"],
+      "gap": "AudioMixer bus volume/mute API is tested at library level but main.cpp references zero AudioMixer symbols - the client emits no sound and offers no control. Browser exposes only a boolean soundEffects toggle, no volume sliders.",
+      "rg_proof": "rg AudioMixer|PlaySound|waveOut native/client/main.cpp matches nothing"
+    },
+    {
+      "id": "minimap_pane_options",
+      "native": "partial",
+      "browser": "partial",
+      "native_evidence": ["native/client/main.cpp:2486-2488", "native/client/main.cpp:1474", "native/client/main.cpp:2522-2535", "native/client/main.cpp:5427-5506"],
+      "browser_evidence": ["src/components/hud/WorldMinimap.vue"],
+      "gap": "Single fixed 108px minimap mode; constitution requires two modes with transparency/zoom/placement options (VERDIGRIS_CONSTITUTION.md:108-111). One production pane plus HUD-disjointness readability harness; pane layout/diptych options remain future work per constitution language."
+    },
+    {
+      "id": "difficulty_independent_readability",
+      "native": "partial",
+      "browser": "not_applicable_no_difficulty_settings",
+      "native_evidence": ["native/client/main.cpp:3634-3636", "native/client/main.cpp:3625", "native/client/main.cpp:2397", "native/client/main.cpp:328", "native/client/main.cpp:3540-3572", "native/client/main.cpp:6223"],
+      "browser_evidence": [],
+      "gap": "No difficulty settings exist so aids are un-gated: always-on controls line, objective strip with extraction hint, hint line, quickbar labels. Risk: beat_legend machinery renders in live play only if populated, but it is populated solely inside the animation capture scenario - live VFX beats run unlabeled."
+    },
+    {
+      "id": "persistence",
+      "native": "absent",
+      "browser": "present",
+      "native_evidence": ["native/client/main.cpp:5801", "native/client/main.cpp:6322"],
+      "browser_evidence": ["src/core/config/controls.js (CONTROLS_STORAGE_KEY verdigris:controls:v1)", "src/stores/ui.js (persist.paths incl settings)"],
+      "gap": "Browser persists bindings + fps/soundEffects/dayNight with corrupt-payload fallback; native client persists nothing except capture artifacts - no settings file seam exists."
+    },
+    {
+      "id": "reset",
+      "native": "absent",
+      "browser": "present",
+      "native_evidence": ["native/client/main.cpp:4064-4066"],
+      "browser_evidence": ["src/core/config/controls.js (resetBindings)", "src/components/ui/SettingsBindings.vue:56-62"],
+      "gap": "Browser resets bindings to factory defaults via UI; native's only reset affordance is Home restoring default camera zoom."
+    },
+    {
+      "id": "keyboard_only_navigation",
+      "native": "partial",
+      "browser": "not_applicable_pointer_web",
+      "native_evidence": ["native/client/main.cpp:4041-4056", "native/client/main.cpp:2311", "native/client/main.cpp:4058-4063", "native/client/main.cpp:2709-2724", "native/client/main.cpp:3968-3978", "orchestration/DECISIONS.md:32-33"],
+      "browser_evidence": ["src/components/ui/SettingsBindings.vue:20-43"],
+      "gap": "Gear pane, backpack slots, Chronicles hotkeys+Enter, and Esc-close contract are keyboard-operable; D-007 makes mouse aim/LMB mandatory for gameplay so full keyboard-only combat is out of contract. Missing: Tab traversal, arrow selection in Chronicles lists, any keyboard path to quickbar/orbs/minimap; input_focus.hpp Navigate/Confirm/Cancel intents are the unwired contract for this."
+    },
+    {
+      "id": "test_capture_coverage",
+      "native": "partial",
+      "browser": "present",
+      "native_evidence": ["native/client/main.cpp:5682-5700", "native/client/main.cpp:5427-5506", "native/client/main.cpp:6283-6314", "native/tests/audio_mixer_tests.cpp:235-257", "native/README.md:97-126"],
+      "browser_evidence": ["tests/unit/controls-bindings.spec.js"],
+      "gap": "12 native scenarios including hud-pane-readability/telegraph-dodge/zoom-invariance with PNG+JSON captures; browser has 9 controls-binding tests. No test drives rebinding, scale, volume, or focus traversal in the native client (nothing exists), and input_focus.hpp lacks a direct unit test file in native/tests/."
+    }
+  ],
+  "negative_control": {
+    "primary": {
+      "state": "Elite attack telegraph conveyed only by translucent red cone/wedge geometry+hue",
+      "evidence": [
+        "native/client/main.cpp:1519-1543",
+        "native/client/main.cpp:1572-1591",
+        "native/client/main.cpp:1594"
+      ],
+      "why_it_fails": [
+        "No text label on the telegraph itself",
+        "No legend entry during live play (beat_legend populated only in capture scenario, main.cpp:6223)",
+        "No audio cue (client emits no sound)",
+        "No colorblind-safe alternative, no option, no rebinding/focus proof"
+      ],
+      "player_impact": "Red-deficient vision players can miss dodge-critical windup information conveyed solely by red hue + shape."
+    },
+    "secondary": [
+      {
+        "state": "Minimap entity class encoded by hue alone (gold extraction RGB(239,208,116) vs red monsters RGB(196,58,48))",
+        "evidence": ["native/client/main.cpp:2528", "native/client/main.cpp:2535"]
+      },
+      {
+        "state": "Critical-vs-normal hit distinction leans on white burst cross + numeral size jump",
+        "evidence": ["native/client/main.cpp:1730-1764"]
+      }
+    ]
+  },
+  "continuation_path_content_neutral": [
+    "Wire input_focus.hpp reducer into window_proc behind intent translation; visible focus indicator per pane.",
+    "Port browser binding-map mechanics (map, conflict refusal, reset, persistence key, live relabel) to native with D-007 compiled-in defaults.",
+    "Options surface with persistence+reset covering: bus volumes (permille buses already exist), text/UI scale, zoom-step sensitivity, telegraph/minimap redundancy flags (shape+text alongside hue), reduced-flash mode, minimap mode/placement.",
+    "Every new option gets a driven-input scenario plus PNG/JSON capture per native/README.md:97-126.",
+    "Caption/subtitle seam becomes mandatory once any audio is emitted."
+  ],
+  "owner_input_dependency_restatement": "Final defaults remain owner play verdicts; this audit only establishes contracts and gaps.",
+  "forbidden_paths_touched": []
+}

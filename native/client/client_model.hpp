@@ -5,6 +5,7 @@
 // here. Both LocalCoreSession and RemoteProtocolSession publish this type;
 // renderers and HUD read it and nothing else.
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -29,6 +30,8 @@ struct ClientPlayer {
 struct ClientMonster {
   std::string id;
   std::string name;
+  std::string kind;       // stable monster kind id ("crypt-lurker", ...)
+  std::string behaviour;  // "melee" / "ranged" / "buffer"
   double x = 0.0;
   double y = 0.0;
   int life = 1;
@@ -45,6 +48,66 @@ struct ClientItemSlot {
   int bonus_health = 0;
   int critical_chance = 0;
   int attack_rating = 0;
+};
+
+// One purchasable row of a trader's stock (open:screen shop payload).
+struct ClientShopRow {
+  std::string id;
+  std::string name;
+  int price = 0;
+  int qty = 0;
+};
+
+// The trader screen as the server last published it. `open` flips true on
+// every open:screen and is cleared client-side by the CloseScreen command;
+// rows and coins are authoritative payload mirrors only.
+struct ClientShopScreen {
+  bool open = false;
+  std::string name;
+  std::vector<ClientShopRow> rows;
+  int carried_coins = 0;
+};
+
+// One stored item in the countinghouse (open:screen bank payload).
+struct ClientBankItem {
+  std::string uuid;
+  std::string name;
+  int qty = 0;
+};
+
+struct ClientBankScreen {
+  bool open = false;
+  int treasury = 0;
+  int carried_coins = 0;
+  std::vector<ClientBankItem> items;
+};
+
+// One node row of a road chart (open:screen chart payload).
+struct ClientChartNode {
+  std::string id;      // "tin:1:0" - feeds world:zone:enter verbatim
+  std::string name;
+  std::string warden;
+  std::string status;  // "open" | "cleared" | "barred"
+  int tier = 1;
+};
+
+struct ClientChartScreen {
+  bool open = false;
+  std::string road_id;
+  std::string road_name;
+  std::string blurb;
+  std::vector<ClientChartNode> nodes;
+};
+
+// Town NPC roster entry, mirrored from the server's `npcs` snapshot array.
+// Positions are protocol tile units like monsters; `actions` carries the
+// server-authored verb list ("talk", "trade", "bank", "examine").
+struct ClientNpc {
+  int id = 0;
+  std::string name;
+  double x = 0.0;
+  double y = 0.0;
+  std::vector<std::string> actions;
 };
 
 struct ClientGroundItem {
@@ -78,6 +141,11 @@ struct ClientPassiveProgression {
   int earned_points = 0;   // passiveTree.earned
   int node_count = 0;      // passiveTree.nodes entries
   int conduit_count = 0;   // passiveTree.conduits entries
+  // Verbatim string mirrors so the tree pane can render and extend the
+  // authoritative allocation ("q,r" axial ids; root is "0,0").
+  std::vector<std::string> nodes;
+  std::vector<std::string> conduits;
+  std::string selected_node;
 };
 
 // TASK-0145 Gate-B chronicle state, exactly as carried by the accepted wire
@@ -133,6 +201,28 @@ struct ClientModel {
   std::vector<ClientItemSlot> inventory;
   std::vector<ClientGroundItem> ground;
   std::vector<ClientMonster> monsters;
+  std::vector<ClientNpc> npcs;
+  ClientShopScreen shop;
+  ClientBankScreen bank;
+  ClientChartScreen chart;
+  // stats-manager attributes from the dev:state snapshot.
+  int attr_strength = 10;
+  int attr_dexterity = 10;
+  int attr_intelligence = 10;
+  // Walkable grid for the current scene (requested once per scene change).
+  // Row-major, 1 = walkable; empty until the first map payload arrives.
+  int map_width = 0;
+  int map_height = 0;
+  std::string map_scene_id;
+  std::vector<std::uint8_t> map_walkable;
+  // Authoritative scene theme ("town", "dungeon", "crypt", "wilds",
+  // "marsh", "grove") from the dev:state snapshot.
+  std::string theme = "town";
+  // Combat experience (dev:state xp block): current total, the floor of the
+  // current level, and the total needed for the next level.
+  double xp_current = 0.0;
+  double xp_floor = 0.0;
+  double xp_next = 1.0;
   ClientItemSlot equipped;
   ClientScene scene;
   std::string house_name;

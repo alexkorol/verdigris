@@ -1,0 +1,10 @@
+{
+  "lot_id": "LOT-REFERENCE-EXPANSION",
+  "status": "ILLUSTRATIVE_NOT_APPROVED",
+  "required_backbone_gates": ["VG-QA-006", "VG-TOOLS-005", "VG-GOV-007"],
+  "units": [
+    {"id": "ROOM-01", "name": "one optional recovery chamber"},
+    {"id": "RELIC-01", "name": "one approved reach-changing relic"},
+    {"id": "ENEMY-01", "name": "one approved support enemy variant"}
+  ]
+}

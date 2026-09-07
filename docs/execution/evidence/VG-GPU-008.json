@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GPU-008",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "65b4823d6d6febbc7a344ecfeade0a7807c90129",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "gpu-recover",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario gpu-recover", "exit_code": 0}
+  ],
+  "assertions": [
+    "first present allocates one pixel buffer",
+    "resize keeps a single live buffer",
+    "minimize/restore cannot leak textures",
+    "restored buffer carries a survival mark distinct from gpu-sample",
+    "live HUD names Live buffers 1",
+    "failed recreate shows gpu-error:recreate and live_buffers=0",
+    "failure releases the previous buffer instead of crashing"
+  ],
+  "negative_control": {
+    "name": "minimize/restore leaking textures or crashing; leak as a passing restore",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/gpu-recover-960x600.png",
+      "sha256": "d53fa09d126f85de2bfce94f82acfca4c03042aa8e31a81b850368274a30724f",
+      "produced_by": "native/build/verdigris_client.exe --scenario gpu-recover"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/gpu-recover-quad.bmp",
+      "sha256": "889edf248136df714864cba393b06393f8df8fe6c1923a8f34ee015967a4b6a2",
+      "produced_by": "native/build/verdigris_client.exe --scenario gpu-recover"
+    },
+    {
+      "kind": "log",
+      "path": "docs/execution/captures/art-wave/gpu-recover-report.txt",
+      "sha256": "cd526a5b1c07814ba7eb64f603da6515f14d29665ae37356dd19c3c10f99bbcf",
+      "produced_by": "native/build/verdigris_client.exe --scenario gpu-recover"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Software sample recreate, not DXGI device-removed. VG-PERF-004 envelope stays a separate claim.",
+    "Restored quad is the bronze/stone checker plus an L-bracket survival mark; hash diverges from gpu-sample-quad.bmp."
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-ART-004",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "29d4c2bd",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "kit-chunk",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario kit-chunk", "exit_code": 0}
+  ],
+  "assertions": [
+    "village kit includes tree, ruin, dwelling, shrine, gate",
+    "every solid piece publishes a collision proxy",
+    "the dressing gate is not an unreported obstacle",
+    "collision uses the same solids as the render proxies",
+    "a circle-on-stick lollipop cannot certify the kit",
+    "live HUD names Village kit and Solid proxy",
+    "Village kit stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Village kit is the anti-pattern"
+  ],
+  "negative_control": {
+    "name": "off-frame shrine/gate, a stone blob shrine, a solid-slab gate, a lollipop tree, or Village kit covering WASD/objective/Tin village/Life",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/kit-chunk-960x600.png",
+      "sha256": "882e9c308ee70543b406f2359d99fb0f3291850b3eda3f5671418390542175ba",
+      "produced_by": "native/build/verdigris_client.exe --scenario kit-chunk"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Extends TASK-0141 village kit. Artist-local collision is not this packet.",
+    "Capture is the live tin village: hut, fountain shrine, road gate, ruin, forked trees.",
+    "Owner strip paints Village kit / Solid proxy and parks off WASD, the objective, Tin village, and Life. A lollipop tree cannot certify. Covering those combat surfaces cannot certify.",
+    "A historical off-frame shrine/gate PNG cannot certify. Not Owner Demo.",
+    "No TASK numbers minted."
+  ]
+}

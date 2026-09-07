@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-MOVE-006",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "5a5dcc9069f318e0ab0b563300ad023d07827bfe",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "remap-binds",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario remap-binds", "exit_code": 0}
+  ],
+  "assertions": [
+    "owner Documents is never the test destination",
+    "duplicate codes fail closed and cannot mutate the live set",
+    "restart reloads the remapped dash from the isolated profile",
+    "restore defaults returns Space dash",
+    "live HUD names Isolated profile and Dash remap"
+  ],
+  "negative_control": {
+    "name": "saving remaps into the owner Documents profile",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/remap-binds-960x600.png",
+      "sha256": "99f9f3eb31ca6eb936dff30269d0cfc8a062c8b3a2e36e991f7344c070d64f63",
+      "produced_by": "native/build/verdigris_client.exe --scenario remap-binds"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Isolated %TEMP% profile. Owner strip paints Isolated profile / Dash remap. Documents cannot certify. VG-SHIP-001 packager stays Kimi."
+  ]
+}

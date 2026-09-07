@@ -1,7 +1,8 @@
 ---
 task: TASK-0095
 title: Native content and asset-authoring schema audit
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head d902c861, 2026-08-23)
 packet: BOUNDED-DESIGN
 topology: INDEPENDENT
 job: BOUNDED-DESIGN

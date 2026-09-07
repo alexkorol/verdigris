@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-UI-003",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "3a346cd0a33fd7c70c6811c6acf9842e2adcb768",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "equipment",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario equipment", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario progression-surface", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario pane-stack", "exit_code": 0}
+  ],
+  "assertions": [
+    "pending request cannot paint equip:ok",
+    "pending compare cannot gold-frame as equipped",
+    "ack paints equip:ok and compare:equipped",
+    "PaneStat still states TREE absence for TASK-0156",
+    "owner paint is Skill tree: no data yet, not TREE jargon",
+    "pack cells paint a weapon glyph, not a grey crate",
+    "live HUD names Ack only and No pending",
+    "absent gear pane live HUD names Skill tree and No data yet",
+    "absent owner strip never replaces the TREE protocol string",
+    "absent P-key tree pane hides seats and rejects invented origin",
+    "controls hint never enters the absent P-key tree pane",
+    "compare plate stays off gear DEF/LVL and the I or Esc closes footer",
+    "pack cells wrap Ember-edged axe; a period clip cannot certify",
+    "Ack only stays off WASD and gear LIFE/ATK",
+    "compare hint uses Enter equips | U unequips"
+  ],
+  "negative_control": {
+    "name": "treat pending equip as currently equipped, paint TREE jargon as the owner line, certify a grey pack square, paint an origin seat while the tree says no data yet, cover DEF/LVL with the compare plate, period-clip Ember-edged. as the pack caption, cover WASD or LIFE with Ack only, or a semicolon compare hint",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/equipment-960x600.png",
+      "sha256": "6bae7e2696c4b663d587f8f3f42f8455f0a094eb30e4ea8ce7d69cc365d24e31",
+      "produced_by": "native/build/verdigris_client.exe --scenario equipment"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/progression-surface-absent-960x600.png",
+      "sha256": "17f0f07a2c47bcf52badf5dbb594465e9bbc38cb47936944678faa606f928fd1",
+      "produced_by": "native/build/verdigris_client.exe --scenario progression-surface"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/tree-pane-960x600.png",
+      "sha256": "228fa265c4254c77d96312cae05f7b61eb99de3396af55fe318eb1c197acce4a",
+      "produced_by": "native/build/verdigris_client.exe --scenario pane-stack"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "HUD/compare only. Owner strip paints Ack only / No pending and parks off WASD and gear LIFE/ATK. Pending gold cannot certify. ITEM sim equip algebra stays Kimi. Helmet-in-main-hand is paper_doll WrongSlot. Gear footer I or Esc closes stays inside the pane. DEF and LVL stay inside the pane. Compare plate parks left of the pane; covering those lines cannot certify. Compare hint is Enter equips | U unequips. Pack cells wrap Ember-edged axe; a period clip cannot certify.",
+    "TASK-0156 PaneStat protocol string is unchanged. TASK folder captures cannot certify. Absent tree pane hides seats and keeps WASD off the pane; TASK-0193 slice stays for payload-present paint. Not Owner Demo. No TASK numbers minted."
+  ]
+}

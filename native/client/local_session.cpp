@@ -1,4 +1,5 @@
 #include "local_session.hpp"
+#include "input/make-aim-independent-of-motion.hpp"
 
 namespace verdigris::client {
 
@@ -91,6 +92,33 @@ ClientCommand ClientCommand::set_out(std::string scion_id) {
   command.target = std::move(scion_id);
   return command;
 }
+ClientCommand ClientCommand::npc_action(int npc_id, std::string action_id) {
+  ClientCommand command;
+  command.type = Type::NpcAction;
+  command.value = npc_id;
+  command.target = std::move(action_id);
+  return command;
+}
+ClientCommand ClientCommand::menu_action(std::string action_id,
+                                         std::string item_ref, int value) {
+  ClientCommand command;
+  command.type = Type::MenuAction;
+  command.target = std::move(action_id);
+  command.extra = std::move(item_ref);
+  command.value = value;
+  return command;
+}
+ClientCommand ClientCommand::close_screen() {
+  ClientCommand command;
+  command.type = Type::CloseScreen;
+  return command;
+}
+ClientCommand ClientCommand::allocate_node(std::string node_id) {
+  ClientCommand command;
+  command.type = Type::AllocateNode;
+  command.target = std::move(node_id);
+  return command;
+}
 
 LocalCoreSession::LocalCoreSession(std::uint64_t seed, std::string house_name)
     : seed_(seed), house_name_(std::move(house_name)) {}
@@ -118,8 +146,12 @@ void LocalCoreSession::submit(const ClientCommand& command) {
       break;  // local sessions are implicitly logged in
     case ClientCommand::Type::Move:
       simulation_->dispatch(verdigris::Command::move(command.dx, command.dy));
+      if (aim_hold_.held)
+        simulation_->dispatch(
+            verdigris::Command::aim(aim_hold_.dx, aim_hold_.dy));
       break;
     case ClientCommand::Type::Aim:
+      move::remember_aim(aim_hold_, command.dx, command.dy);
       simulation_->dispatch(verdigris::Command::aim(command.dx, command.dy));
       break;
     case ClientCommand::Type::UseAction: {
@@ -153,8 +185,13 @@ void LocalCoreSession::submit(const ClientCommand& command) {
     case ClientCommand::Type::CreateScion:
     case ClientCommand::Type::SelectScion:
     case ClientCommand::Type::SetOut:
-      // The local simulation admits its single Scion at construction; these
-      // intents have no additional local authority to invoke.
+    case ClientCommand::Type::NpcAction:
+    case ClientCommand::Type::MenuAction:
+    case ClientCommand::Type::CloseScreen:
+    case ClientCommand::Type::AllocateNode:
+      // The local simulation admits its single Scion at construction and
+      // carries no town NPCs or screens; these intents have no local
+      // authority to invoke.
       break;
   }
 }
@@ -205,10 +242,16 @@ void LocalCoreSession::refresh_model() {
   model_.monsters.clear();
   for (const auto& actor : simulation_->actors()) {
     if (actor.kind != verdigris::ActorKind::Monster || !actor.alive) continue;
-    model_.monsters.push_back({actor.id, actor.elite ? "elite" : "monster",
-                               static_cast<double>(actor.position.x),
-                               static_cast<double>(actor.position.y), actor.stats.life,
-                               actor.stats.life_max, actor.elite, actor.alive});
+    ClientMonster monster;
+    monster.id = actor.id;
+    monster.name = actor.elite ? "elite" : "monster";
+    monster.x = static_cast<double>(actor.position.x);
+    monster.y = static_cast<double>(actor.position.y);
+    monster.life = actor.stats.life;
+    monster.life_max = actor.stats.life_max;
+    monster.elite = actor.elite;
+    monster.alive = actor.alive;
+    model_.monsters.push_back(std::move(monster));
   }
   model_.stored_items = static_cast<int>(simulation_->house().stored_items.size());
   model_.stored_trophies = static_cast<int>(simulation_->house().stored_trophies.size());
@@ -249,6 +292,9 @@ void LocalCoreSession::translate_new_events() {
       // the presentation seam so every renderer consumes PresentationEvents.
       case verdigris::EventType::ScionLost: out.type = PresentationEventType::ScionLost; break;
       case verdigris::EventType::BuffExpired: out.type = PresentationEventType::BuffExpired; break;
+      case verdigris::EventType::AttackTelegraphed:
+        out.type = PresentationEventType::Telegraph;
+        break;
       default: continue;  // remaining core events gain mappings with 0061+
     }
     pending_events_.push_back(std::move(out));

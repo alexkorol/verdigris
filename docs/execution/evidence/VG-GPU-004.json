@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GPU-004",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "d31975a6",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "gpu-reference",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario gpu-reference", "exit_code": 0}
+  ],
+  "assertions": [
+    "a disconnected textured-quad demo cannot pass",
+    "session packets carry actors, world, effects, and HUD",
+    "live packets present through the GPU bridge",
+    "session packets shaded the sample buffer",
+    "live HUD names Live packets and Session present",
+    "Live packets stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Live packets is the anti-pattern"
+  ],
+  "negative_control": {
+    "name": "standalone GPU demo disconnected from session events, or Live packets covering WASD/objective/Tin village/Life",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/gpu-reference-session.bmp",
+      "sha256": "3b763a935f3f3745590357527d753e35d64ef9aca38f713c28b5ba4e98c28cad",
+      "produced_by": "native/build/verdigris_client.exe --scenario gpu-reference"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/gpu-reference-960x600.png",
+      "sha256": "ddf5b82dcbd4847d9eca2db8e1c3a97b11d34c675722df8d95d1fef2bad83571",
+      "produced_by": "native/build/verdigris_client.exe --scenario gpu-reference"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Software sample present of live packets, not a D3D swapchain.",
+    "Owner strip paints Live packets / Session present and parks off WASD, the objective, Tin village, and Life. Quad demo cannot certify. Covering those combat surfaces cannot certify. Session BMP is prior evidence; not recaptured in this packet.",
+    "Does not take VG-WORLD-001 from Kimi. Does not re-spec TASK-0108."
+  ]
+}

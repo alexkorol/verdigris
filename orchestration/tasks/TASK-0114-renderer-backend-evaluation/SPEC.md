@@ -1,7 +1,8 @@
 ---
 task: TASK-0114
 title: Stage-2 renderer backend evaluation matrix
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head 7b8374ea, 2026-08-23)
 packet: BOUNDED-DESIGN
 topology: EXPLORATORY
 job: BOUNDED-DESIGN

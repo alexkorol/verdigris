@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-GOV-004",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "486058f31002c4f1c55cd0e71888defc204bbd3e",
+  "head_sha": "0ff5182a",
+  "integrated_sha": null,
+  "seed": "crosswalk",
+  "platform": "win32-x64",
+  "toolchain": "Python 3.12 / pack tools",
+  "commands": [
+    {
+      "run": "python tools/roadmap.py validate",
+      "working_directory": "docs/execution/pack",
+      "exit_code": 0
+    }
+  ],
+  "assertions": [
+    "TASK-0108 and Owner Demo packets have explicit extend/never-duplicate dispositions",
+    "TASK-0095 and TASK-0097 are superseded into VG-TOOLS-001 / VG-SAVE-001",
+    "200 planning IDs in CROSSWALK_REGISTRY.md do not mint TASK numbers"
+  ],
+  "negative_control": {
+    "name": "two VG IDs mapping to one implementation with no reuse/extend/verify flag, or minting a TASK from a VG ID",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "decision",
+      "path": "docs/execution/decisions/crosswalk-existing-task-packets.md",
+      "produced_by": "Cursor Grok VG-GOV-004 draft"
+    },
+    {
+      "kind": "table",
+      "path": "docs/execution/CROSSWALK.md",
+      "produced_by": "Cursor Grok VG-GOV-004 draft"
+    },
+    {
+      "kind": "table",
+      "path": "docs/execution/CROSSWALK_REGISTRY.md",
+      "produced_by": "Cursor Grok VG-GOV-004 draft"
+    }
+  ],
+  "reviewer": null,
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "NOT_REQUIRED",
+  "limitations": [
+    "Does not grant exclusive claims; leases stay in orchestration/CURSOR_KIMI_LANES.md.",
+    "Does not re-spec TASK-0108 or Owner Demo."
+  ]
+}

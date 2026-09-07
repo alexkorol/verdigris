@@ -1,0 +1,10 @@
+{
+  "document_pages": 48,
+  "all_pages_visually_reviewed": true,
+  "missing_task_ids_in_word": [],
+  "internal_hyperlink_targets_valid": true,
+  "registry_goals": 200,
+  "registry_edges": 689,
+  "planning_tool_tests_passed": 20,
+  "scope": "Document and planning-tool validation only; no game runtime tests performed."
+}

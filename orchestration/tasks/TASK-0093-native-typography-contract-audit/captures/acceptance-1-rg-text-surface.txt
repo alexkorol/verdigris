@@ -1,0 +1,1636 @@
+﻿src/components\util\ItemGrid.vue:18:        :aria-label="itemAriaLabel(i)"
+src/components\util\ItemGrid.vue:23:        @mouseover="showContextMenu($event, i, true)"
+src/components\util\ItemGrid.vue:24:        @contextmenu.prevent="showContextMenu($event, i)"
+src/components\util\ItemGrid.vue:29:          v-text="getItemFromSlot(i).qty"
+src/components\util\ItemGrid.vue:91:    bus.$on('game:context-menu:first-only', ClientUI.displayFirstAction);
+src/components\util\ItemGrid.vue:94:    bus.$off('game:context-menu:first-only', ClientUI.displayFirstAction);
+src/components\util\ItemGrid.vue:209:     * Right-click brings up context-menu
+src/components\util\ItemGrid.vue:213:    showContextMenu(event, index, firstOnly = false) {
+src/components\util\ItemGrid.vue:271:    itemAriaLabel(slotNumber) {
+src/components\util\ItemGrid.vue:318:  font-family: "GameFont", sans-serif;
+src/components\util\ItemGrid.vue:353:    text-align: center;
+src/components\util\ItemGrid.vue:364:      font-size: 10px;
+src/components\util\ItemGrid.vue:366:      text-shadow: 1px 1px 0 black;
+src/components\util\ItemGrid.vue:377:      font-size: 8px;
+src\Delaford.vue:27:      :chronicles-context="chroniclesContext"
+src\Delaford.vue:55:      :chat-toggle-label="chatToggleLabel"
+src\Delaford.vue:190:      chroniclesContext: null,
+src\Delaford.vue:372:    chatToggleLabel() {
+src\Delaford.vue:532:    const context = this;
+src\Delaford.vue:548:      // to refresh the first context action?
+src\Delaford.vue:550:        bus.$emit('canvas:reset-context-menu');
+src\Delaford.vue:557:          Event[eventName](data, context);
+src\Delaford.vue:621:    this.handleClientError = (text) => {
+src\Delaford.vue:622:      this.clientErrorNotice = String(text || 'Client error');
+src\Delaford.vue:696:    openChronicles(context = {}) {
+src\Delaford.vue:707:      Socket.chroniclesAccountId = context.chroniclesAccountId || null;
+src\Delaford.vue:708:      this.chroniclesContext = context;
+src\Delaford.vue:811:      this.chroniclesContext = null;
+src\Delaford.vue:984:      bus.$emit('contextmenu:close');
+src\Delaford.vue:1065:      if (!message || !message.text) {
+src\Delaford.vue:1069:      const text = String(message.text).trim();
+src\Delaford.vue:1070:      if (!text) {
+src\Delaford.vue:1075:        return `${message.username}: ${text}`;
+src\Delaford.vue:1078:      return text;
+src\Delaford.vue:1198:        'textarea',
+src\Delaford.vue:1526:            text: portal.message,
+src\Delaford.vue:1709:            const coinText = Number.isFinite(entry.coins) ? `${entry.coins} coins` : null;
+src\Delaford.vue:1710:            const experienceText = entry.experience && entry.experience.amount
+src\Delaford.vue:1713:            const rewardText = [coinText, experienceText].filter(Boolean).join(', ');
+src\Delaford.vue:1714:            return rewardText ? `${entry.username}: ${rewardText}` : entry.username;
+src\Delaford.vue:1790:      this.chroniclesContext = null;
+src\Delaford.vue:1875:  font-family: 'GameFont', sans-serif;
+src\Delaford.vue:1876:  -webkit-font-smoothing: antialiased;
+src\Delaford.vue:1877:  -moz-osx-font-smoothing: grayscale;
+src\Delaford.vue:1878:  color: var(--color-text-primary);
+src\Delaford.vue:1906:  font-family: 'GameFont', sans-serif;
+src\Delaford.vue:1907:  font-size: 13px;
+native/client\render_list.hpp:17:  Floor,      // label = "tiled" | "flat"; value = 1 when textured tiles drawn
+native/client\render_list.hpp:33:  Hud,        // label = hud text (life/resource/skill strip)
+native/client\remote_session.cpp:527:  for (const auto& text : batch) {
+native/client\remote_session.cpp:530:    if (!verdigris::networking::parse_envelope(text, envelope, &error)) {
+native/client\remote_session.cpp:728:    if (const auto* text = json_string(envelope.data.get("text"))) {
+native/client\remote_session.cpp:729:      model_.last_message = *text;
+native/client\remote_session.cpp:826:      outgoing.text = "outgoing";
+src/components\inventory\WorldDropZone.vue:64:  text-align: center;
+src/components\inventory\WorldDropZone.vue:65:  font-size: 12px;
+src/components\ui\LootMoment.vue:109:  font-family: Georgia, serif;
+src/components\ui\LootMoment.vue:110:  text-align: center;
+src/components\ui\LootMoment.vue:117:  font: 0.66rem 'GameFont', sans-serif;
+src/components\ui\LootMoment.vue:119:  text-transform: uppercase;
+src/components\ui\LootMoment.vue:125:  font: 1.3rem 'GameFont', Georgia, serif;
+src/components\ui\LootMoment.vue:127:  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+src/components\ui\LootMoment.vue:133:  font-size: 0.82rem;
+src/components\ui\LootMoment.vue:134:  font-style: italic;
+src/components\ui\LootMoment.vue:141:  font: 0.74rem 'GameFont', sans-serif;
+src/components\ui\LootMoment.vue:149:  font-size: 0.72rem;
+src/components\inventory\ItemTooltip.vue:11:        <span>{{ model.rarityLabel }}</span>
+src/components\inventory\ItemTooltip.vue:23:          :key="`${line.section}-${index}-${line.text}`"
+src/components\inventory\ItemTooltip.vue:30:          {{ line.text }}
+src/components\inventory\ItemTooltip.vue:98:  font: 0.7rem/1.4 'ChatFont', sans-serif;
+src/components\inventory\ItemTooltip.vue:117:  text-align: center;
+src/components\inventory\ItemTooltip.vue:125:    font: 0.53rem 'GameFont', sans-serif;
+src/components\inventory\ItemTooltip.vue:127:    text-transform: uppercase;
+src/components\inventory\ItemTooltip.vue:133:    font: 0.92rem/1.25 'GameFont', sans-serif;
+src/components\inventory\ItemTooltip.vue:135:    text-shadow: 1px 1px 0 #000;
+src/components\inventory\ItemTooltip.vue:147:  font-size: 0.6rem;
+src/components\inventory\ItemTooltip.vue:148:  text-transform: uppercase;
+src/components\inventory\ItemTooltip.vue:158:    font-weight: normal;
+src/components\inventory\ItemTooltip.vue:177:  text-align: center;
+src/components\inventory\ItemTooltip.vue:190:  text-align: center;
+src/components\inventory\ItemTooltip.vue:217:  font-style: italic;
+src/components\inventory\ItemTooltip.vue:224:  font-style: italic;
+src/components\inventory\ItemTooltip.vue:236:    font: 0.52rem 'GameFont', sans-serif;
+src/components\inventory\ItemTooltip.vue:238:    text-transform: uppercase;
+src/components\inventory\ItemTooltip.vue:250:  text-align: center;
+src/components\inventory\ItemTooltip.vue:261:  font-style: italic;
+src/components\sub\LoginBackdrop.vue:81:  const ctx = layer.getContext('2d');
+src/components\sub\LoginBackdrop.vue:122:  const ctx = canvas.getContext('2d');
+src/components\ui\Login.vue:63:          type="text"
+src/components\ui\Login.vue:255:  text-align: center;
+src/components\ui\Login.vue:261:  font: 0.7rem 'ChatFont', sans-serif;
+src/components\ui\Login.vue:263:  text-transform: uppercase;
+src/components\ui\Login.vue:273:  font-family: 'GameFont', sans-serif;
+src/components\ui\Login.vue:274:  font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+src/components\ui\Login.vue:276:  text-transform: uppercase;
+src/components\ui\Login.vue:277:  text-shadow: 0 1px rgba(255, 255, 255, 0.25);
+src/components\ui\Login.vue:291:    font: 0.61rem 'ChatFont', sans-serif;
+src/components\ui\Login.vue:321:  font: 0.73rem 'ChatFont', sans-serif;
+src/components\ui\Login.vue:333:  font: 0.69rem 'ChatFont', sans-serif;
+src/components\ui\Login.vue:335:  text-transform: uppercase;
+src/components\ui\Login.vue:342:    font-size: 1rem;
+src/components\ui\Login.vue:366:  font: 0.66rem 'ChatFont', sans-serif;
+src/components\ui\Login.vue:392:    font: 0.65rem 'ChatFont', sans-serif;
+src/components\ui\Login.vue:394:    text-transform: uppercase;
+src/components\ui\Login.vue:401:    font: 0.8rem 'ChatFont', sans-serif;
+src/components\ui\Login.vue:418:  font: 0.68rem 'ChatFont', sans-serif;
+src/components\ui\Login.vue:435:  font: 0.75rem 'GameFont', sans-serif;
+src/components\ui\Login.vue:437:  text-transform: uppercase;
+src/components\inventory\InventoryItemTooltip.vue:64:        {{ line.text }}
+src/components\inventory\InventoryItemTooltip.vue:194:  font-family: 'GameFont', sans-serif;
+src/components\inventory\InventoryItemTooltip.vue:195:  font-size: 12px;
+src/components\inventory\InventoryItemTooltip.vue:215:    text-align: center;
+src/components\inventory\InventoryItemTooltip.vue:220:    font-family: Georgia, 'Times New Roman', serif;
+src/components\inventory\InventoryItemTooltip.vue:221:    font-size: 17px;
+src/components\inventory\InventoryItemTooltip.vue:222:    font-weight: 600;
+src/components\inventory\InventoryItemTooltip.vue:224:    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+src/components\inventory\InventoryItemTooltip.vue:231:    font-size: 10px;
+src/components\inventory\InventoryItemTooltip.vue:233:    text-transform: uppercase;
+src/components\inventory\InventoryItemTooltip.vue:246:    font-style: italic;
+src/components\inventory\InventoryItemTooltip.vue:247:    text-align: center;
+src/components\inventory\InventoryItemTooltip.vue:284:    font-size: 15px;
+src/components\inventory\InventoryItemTooltip.vue:315:    font-size: 10px;
+src/components\inventory\InventoryItemTooltip.vue:317:    text-transform: uppercase;
+src/components\inventory\InventoryItemTooltip.vue:322:    font-style: italic;
+src/components\inventory\InventoryItemTooltip.vue:331:    font-style: italic;
+src/components\inventory\InventoryItemTooltip.vue:332:    text-align: center;
+src/components\inventory\InventoryItemTooltip.vue:337:    font-style: italic;
+src/components\inventory\InventoryItemTooltip.vue:343:    font-size: 10px;
+src/components\inventory\InventoryItemTooltip.vue:345:    text-transform: uppercase;
+src/components\sub\EquipmentSlot.vue:8:    @contextmenu.prevent="emitContext($event, false)"
+src/components\sub\EquipmentSlot.vue:9:    @mouseover="emitContext($event, true)"
+src/components\sub\EquipmentSlot.vue:78:  emits: ['open-context-menu', 'commit'],
+src/components\sub\EquipmentSlot.vue:200:    emitContext(event, firstOnly) {
+src/components\sub\EquipmentSlot.vue:205:      this.$emit('open-context-menu', event, this.slotId, firstOnly);
+src/components\sub\EquipmentSlot.vue:373:  font-size: 9px;
+src/components\sub\EquipmentSlot.vue:376:  text-align: center;
+src/components\sub\EquipmentSlot.vue:377:  text-transform: uppercase;
+src/components\sub\EquipmentSlot.vue:391:  font-size: 9px;
+src/components\sub\EquipmentSlot.vue:393:  text-shadow: 0 1px 2px #000;
+src/components\ui\world\PartyPanel.vue:9:        {{ loadingLabel }}
+src/components\ui\world\PartyPanel.vue:22:        <span class="party-panel__invite-text">
+src/components\ui\world\PartyPanel.vue:112:          type="text"
+src/components\ui\world\PartyPanel.vue:131:      <p class="party-panel__empty-text">
+src/components\ui\world\PartyPanel.vue:201:    loadingLabel() {
+src/components\ui\world\PartyPanel.vue:234:  color: var(--color-text-primary);
+src/components\ui\world\PartyPanel.vue:243:  font-family: 'GameFont', sans-serif;
+src/components\ui\world\PartyPanel.vue:252:  font-size: 0.76rem;
+src/components\ui\world\PartyPanel.vue:253:  text-transform: uppercase;
+src/components\ui\world\PartyPanel.vue:259:.party-panel__title { font-weight: normal; }
+src/components\ui\world\PartyPanel.vue:262:  font-size: 0.62rem;
+src/components\ui\world\PartyPanel.vue:284:.party-panel__invite-text,
+src/components\ui\world\PartyPanel.vue:285:.party-panel__members { font-size: 0.72rem; }
+src/components\ui\world\PartyPanel.vue:294:  font-size: 0.7rem;
+src/components\ui\world\PartyPanel.vue:326:  font-size: 0.58rem;
+src/components\ui\world\PartyPanel.vue:329:.party-panel__member-name { font-weight: normal; }
+src/components\ui\world\PartyPanel.vue:332:  font-size: 0.62rem;
+src/components\ui\world\PartyPanel.vue:333:  color: var(--color-text-dim);
+src/components\ui\world\PartyPanel.vue:346:  color: var(--color-text-primary);
+src/components\ui\world\PartyPanel.vue:350:  font: 0.67rem 'GameFont', sans-serif;
+src/components\ui\world\PartyPanel.vue:401:  color: var(--color-text-primary);
+src/components\ui\world\PartyPanel.vue:402:  font: 0.68rem 'ChatFont', sans-serif;
+src/components\ui\world\PartyPanel.vue:417:.party-panel__empty-text {
+src/components\ui\world\PartyPanel.vue:419:  font-size: 0.72rem;
+src/components\ui\world\PartyPanel.vue:420:  color: var(--color-text-secondary);
+src/components\sub\ContextMenu.vue:3:    id="context-menu"
+src/components\sub\ContextMenu.vue:5:    @contextmenu.prevent="contextClick"
+src/components\sub\ContextMenu.vue:13:      <!-- Labels are server-authored and carry colour markup for item
+src/components\sub\ContextMenu.vue:14:           rarity; text interpolation showed the raw tags to the player. -->
+src/components\sub\ContextMenu.vue:74:    bus.$on('game:context-menu:items', this.createMenu);
+src/components\sub\ContextMenu.vue:75:    bus.$on('contextmenu:close', this.closeMenu);
+src/components\sub\ContextMenu.vue:80:    bus.$off('game:context-menu:items', this.createMenu);
+src/components\sub\ContextMenu.vue:81:    bus.$off('contextmenu:close', this.closeMenu);
+src/components\sub\ContextMenu.vue:145:      Socket.emit('player:context-menu:action', {
+src/components\sub\ContextMenu.vue:159:     * Sets the context-menu where mouse was clicked upon
+src/components\sub\ContextMenu.vue:178:     * Closes the context-menu
+src/components\sub\ContextMenu.vue:236:      // Tell server to start building context menu
+src/components\sub\ContextMenu.vue:237:      Socket.emit('player:context-menu:build', {
+src/components\sub\ContextMenu.vue:249:     * Generates the list of selectable items on context-menu
+src/components\sub\ContextMenu.vue:251:     * @param {object} data The list of items for the context menu
+src/components\sub\ContextMenu.vue:269:        // Set context menu on map
+src/components\sub\ContextMenu.vue:275:     * Incase we click on the context menu with anything but a left-click
+src/components\sub\ContextMenu.vue:277:     * @param {event} event The non-left mouse-click on the context-menu
+src/components\sub\ContextMenu.vue:279:    contextClick(event) {
+src/components\sub\ContextMenu.vue:287:#context-menu {
+src/components\sub\ContextMenu.vue:300:    font: 12px/1.35 'GameFont', sans-serif;
+src/components\sub\ContextMenu.vue:312:      color: var(--color-text-primary);
+src/components\sub\ContextMenu.vue:313:      text-align: left;
+src/components\sub\ContextMenu.vue:316:      text-shadow: 0 1px 0 #000;
+src/components\sub\ContextMenu.vue:327:        background: var(--color-text-dim);
+src/components\sub\ContextMenu.vue:346:        color: var(--color-text-secondary);
+src/components\inventory\InventoryGrid.vue:22:        :aria-label="itemAriaLabel(item)"
+src/components\inventory\InventoryGrid.vue:31:        @contextmenu.stop.prevent="showContextMenu($event, item)"
+src/components\inventory\InventoryGrid.vue:87:import { buildInventoryContextMenuRequest } from '@/core/inventory/context-menu.js';
+src/components\inventory\InventoryGrid.vue:92:import { itemTooltipAriaLabel } from '@/core/inventory/item-tooltip.js';
+src/components\inventory\InventoryGrid.vue:335:    const showContextMenu = (event, item) => {
+src/components\inventory\InventoryGrid.vue:338:      bus.$emit('PLAYER:MENU', buildInventoryContextMenuRequest(event, item));
+src/components\inventory\InventoryGrid.vue:431:    const itemAriaLabel = (item) => {
+src/components\inventory\InventoryGrid.vue:433:      return itemTooltipAriaLabel(item, { width, height });
+src/components\inventory\InventoryGrid.vue:488:      showContextMenu,
+src/components\inventory\InventoryGrid.vue:497:      itemAriaLabel,
+src/components\inventory\InventoryGrid.vue:537:  /* Navy slot-well texture (WIZARD PoE-style chrome) under a darkening wash. */
+src/components\inventory\InventoryGrid.vue:541:    url('@/assets/inventory/slot_texture.png');
+src/components\inventory\InventoryGrid.vue:639:  font-size: 10px;
+src/components\inventory\InventoryGrid.vue:641:  text-shadow: 0 1px 2px #000;
+src/components\inventory\InventoryGrid.vue:667:  font-size: 12px;
+src/components\inventory\InventoryGrid.vue:669:  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+native/client\presentation_state.cpp:195:  const bool to_player = event.text == "incoming" || event.type == PresentationEventType::ScionDied;
+native/client\presentation_state.cpp:232:      telegraph.action = event.text.find("sweep") != std::string::npos ? "sweep" : "thrust";
+native/client\presentation_state.cpp:266:      if (event.text.empty() || event.text == "war-cry")
+native/client\presentation_state.cpp:292:      fx.hint = event.text.empty() ? "CONNECTION LOST ΓÇö not playing offline" : event.text;
+native/client\presentation_state.cpp:310:        line = "Kill " + event.text;
+native/client\presentation_state.cpp:313:        line = "Telegraph " + event.text;
+native/client\presentation_state.cpp:319:        line = "Picked up " + event.text;
+native/client\presentation_state.cpp:322:        line = "DISCONNECTED " + event.text;
+native/client\presentation_state.cpp:329:        if (event.text.empty() || event.text == "war-cry") line = "war cry faded";
+native/client\presentation_state.cpp:412:          damage_label = std::string(phase_a::kCriticalDamageLabel) + ":" +
+native/client\presentation_state.cpp:431:                      static_cast<double>(base.y), 0.0, 0, phase_a::kSpawnRenderLabel});
+native/client\presentation_state.cpp:435:                      static_cast<double>(base.y), 0.0, 0, phase_a::kWarcryFadeLabel});
+native/client\presentation_state.cpp:439:                      phase_a::kScionLostLabel});
+src/components\ui\world\GuideBanner.vue:10:      <p class="guide-banner__text">{{ text }}</p>
+src/components\ui\world\GuideBanner.vue:21:    text: {
+src/components\ui\world\GuideBanner.vue:37:    text(value) {
+src/components\ui\world\GuideBanner.vue:89:  text-align: left;
+src/components\ui\world\GuideBanner.vue:93:  font-family: 'GameFont', sans-serif;
+src/components\ui\world\GuideBanner.vue:94:  font-size: 0.62rem;
+src/components\ui\world\GuideBanner.vue:96:  text-transform: uppercase;
+src/components\ui\world\GuideBanner.vue:100:.guide-banner__text {
+src/components\ui\world\GuideBanner.vue:102:  font-family: 'ChatFont', 'GameFont', sans-serif;
+src/components\ui\world\GuideBanner.vue:103:  font-size: 0.86rem;
+src\components\util\ItemGrid.vue:18:        :aria-label="itemAriaLabel(i)"
+src\components\util\ItemGrid.vue:23:        @mouseover="showContextMenu($event, i, true)"
+src\components\util\ItemGrid.vue:24:        @contextmenu.prevent="showContextMenu($event, i)"
+src\components\util\ItemGrid.vue:29:          v-text="getItemFromSlot(i).qty"
+src\components\util\ItemGrid.vue:91:    bus.$on('game:context-menu:first-only', ClientUI.displayFirstAction);
+src\components\util\ItemGrid.vue:94:    bus.$off('game:context-menu:first-only', ClientUI.displayFirstAction);
+src\components\util\ItemGrid.vue:209:     * Right-click brings up context-menu
+src\components\util\ItemGrid.vue:213:    showContextMenu(event, index, firstOnly = false) {
+src\components\util\ItemGrid.vue:271:    itemAriaLabel(slotNumber) {
+src\components\util\ItemGrid.vue:318:  font-family: "GameFont", sans-serif;
+src\components\util\ItemGrid.vue:353:    text-align: center;
+src\components\util\ItemGrid.vue:364:      font-size: 10px;
+src\components\util\ItemGrid.vue:366:      text-shadow: 1px 1px 0 black;
+src\components\util\ItemGrid.vue:377:      font-size: 8px;
+src/components\ui\auth\ChroniclesScreen.vue:29:          type="text"
+src/components\ui\auth\ChroniclesScreen.vue:39:        class="chronicles__text-button"
+src/components\ui\auth\ChroniclesScreen.vue:62:          class="chronicles__text-button chronicles__text-button--new"
+src/components\ui\auth\ChroniclesScreen.vue:114:              type="text"
+src/components\ui\auth\ChroniclesScreen.vue:374:    font-family: 'GameFont', sans-serif;
+src/components\ui\auth\ChroniclesScreen.vue:375:    font-size: clamp(1.7rem, 5vw, 2.45rem);
+src/components\ui\auth\ChroniclesScreen.vue:376:    font-weight: normal;
+src/components\ui\auth\ChroniclesScreen.vue:378:    text-transform: uppercase;
+src/components\ui\auth\ChroniclesScreen.vue:390:  font-size: 1.45rem;
+src/components\ui\auth\ChroniclesScreen.vue:406:  font-family: 'ChatFont', sans-serif;
+src/components\ui\auth\ChroniclesScreen.vue:407:  font-size: 0.68rem;
+src/components\ui\auth\ChroniclesScreen.vue:409:  text-transform: uppercase;
+src/components\ui\auth\ChroniclesScreen.vue:415:  font-family: 'ChatFont', sans-serif;
+src/components\ui\auth\ChroniclesScreen.vue:416:  font-size: 0.72rem;
+src/components\ui\auth\ChroniclesScreen.vue:422:  font-family: 'ChatFont', sans-serif;
+src/components\ui\auth\ChroniclesScreen.vue:423:  font-size: 0.82rem;
+src/components\ui\auth\ChroniclesScreen.vue:439:    text-transform: uppercase;
+src/components\ui\auth\ChroniclesScreen.vue:453:    font: 0.82rem 'ChatFont', sans-serif;
+src/components\ui\auth\ChroniclesScreen.vue:466:    font-family: 'GameFont', sans-serif;
+src/components\ui\auth\ChroniclesScreen.vue:491:  text-align: left;
+src/components\ui\auth\ChroniclesScreen.vue:498:    font: 0.62rem 'ChatFont', sans-serif;
+src/components\ui\auth\ChroniclesScreen.vue:508:.chronicles__text-button {
+src/components\ui\auth\ChroniclesScreen.vue:511:  font: 0.68rem 'ChatFont', sans-serif;
+src/components\ui\auth\ChroniclesScreen.vue:512:  text-decoration: underline;
+src/components\ui\auth\ChroniclesScreen.vue:519:    text-align: left;
+src/components\ui\auth\ChroniclesScreen.vue:532:    font-size: 1.45rem;
+src/components\ui\auth\ChroniclesScreen.vue:533:    font-weight: normal;
+src/components\ui\auth\ChroniclesScreen.vue:543:    text-align: center;
+src/components\ui\auth\ChroniclesScreen.vue:548:    font: 0.6rem 'ChatFont', sans-serif;
+src/components\ui\auth\ChroniclesScreen.vue:549:    text-transform: uppercase;
+src/components\ui\auth\ChroniclesScreen.vue:566:  font: italic 0.72rem 'ChatFont', sans-serif;
+src/components\ui\auth\ChroniclesScreen.vue:577:  text-align: left;
+src/components\ui\auth\ChroniclesScreen.vue:604:    font-weight: normal;
+src/components\ui\auth\ChroniclesScreen.vue:609:    font: 0.64rem 'ChatFont', sans-serif;
+src/components\ui\auth\ChroniclesScreen.vue:624:    font: 0.67rem 'ChatFont', sans-serif;
+src/components\ui\auth\ChroniclesScreen.vue:625:    text-transform: uppercase;
+src/components\ui\auth\ChroniclesScreen.vue:635:  font: 0.66rem/1.35 'ChatFont', sans-serif;
+src/components\ui\auth\ChroniclesScreen.vue:645:    font-weight: normal;
+src/components\ui\auth\ChroniclesScreen.vue:646:    text-transform: uppercase;
+src/components\ui\auth\ChroniclesScreen.vue:651:    font: inherit;
+src/components\ui\auth\ChroniclesScreen.vue:663:  font: 0.68rem 'ChatFont', sans-serif;
+src/components\ui\auth\ChroniclesScreen.vue:686:  font-family: 'GameFont', sans-serif;
+src/components\ui\auth\ChroniclesScreen.vue:687:  font-size: 0.95rem;
+src/components\ui\auth\ChroniclesScreen.vue:689:  text-transform: uppercase;
+src/components\ui\auth\ChroniclesScreen.vue:705:  font: 0.72rem 'ChatFont', sans-serif;
+src/components\ui\auth\ChroniclesScreen.vue:744:  .chronicles__text-button--new {
+src/components\passives\GeometricSkillTreePane.vue:29:          <span class="first-allocation-hint__meta">{{ firstAllocationHint.axisLabel }} ┬╖ {{ firstAllocationHint.effects.join(' ┬╖ ') }}</span>
+src/components\passives\GeometricSkillTreePane.vue:78:          <span>{{ treeState.selectedNode.axisLabel }}</span>
+src/components\passives\GeometricSkillTreePane.vue:354:      const label = makeSvgEl('text', {
+src/components\passives\GeometricSkillTreePane.vue:359:      label.textContent = VERDIGRIS_AXIS_META[axis].short;
+src/components\passives\GeometricSkillTreePane.vue:406:      const icon = makeSvgEl('text', { y: 0, className: 'node-icon' });
+src/components\passives\GeometricSkillTreePane.vue:407:      icon.textContent = nodeIcon(node);
+src/components\passives\GeometricSkillTreePane.vue:419:      group.addEventListener('contextmenu', (event) => {
+src/components\passives\GeometricSkillTreePane.vue:493:    this.tooltipEl.querySelector('.tt-header').innerText = node.name;
+src/components\passives\GeometricSkillTreePane.vue:494:    this.tooltipEl.querySelector('.tt-body').innerText = [
+src/components\passives\GeometricSkillTreePane.vue:513:    this.tooltipEl.querySelector('.tt-header').innerText = option.name;
+src/components\passives\GeometricSkillTreePane.vue:514:    this.tooltipEl.querySelector('.tt-body').innerText = `${state} conduit\n${formatAttrs(option.attrs)}`;
+src/components\passives\GeometricSkillTreePane.vue:634:    axisLabel: 'Hybrid',
+src/components\passives\GeometricSkillTreePane.vue:848:  font-family: 'GameFont', sans-serif;
+src/components\passives\GeometricSkillTreePane.vue:917:    font-size: 13px;
+src/components\passives\GeometricSkillTreePane.vue:919:    text-transform: uppercase;
+src/components\passives\GeometricSkillTreePane.vue:920:    text-shadow: 1px 1px 0 #000;
+src/components\passives\GeometricSkillTreePane.vue:926:    text-align: center;
+src/components\passives\GeometricSkillTreePane.vue:944:      font-size: 10px;
+src/components\passives\GeometricSkillTreePane.vue:946:      text-transform: uppercase;
+src/components\passives\GeometricSkillTreePane.vue:951:      font-size: 14px;
+src/components\passives\GeometricSkillTreePane.vue:976:    font-size: 9px;
+src/components\passives\GeometricSkillTreePane.vue:978:    text-transform: uppercase;
+src/components\passives\GeometricSkillTreePane.vue:983:    font-size: 13px;
+src/components\passives\GeometricSkillTreePane.vue:988:    font-size: 10px;
+src/components\passives\GeometricSkillTreePane.vue:1008:      font-size: 10px;
+src/components\passives\GeometricSkillTreePane.vue:1014:      font-size: 13px;
+src/components\passives\GeometricSkillTreePane.vue:1025:    font-size: 9px;
+src/components\passives\GeometricSkillTreePane.vue:1027:    text-transform: capitalize;
+src/components\passives\GeometricSkillTreePane.vue:1031:      font-size: 11px;
+src/components\passives\GeometricSkillTreePane.vue:1033:      text-transform: uppercase;
+src/components\passives\GeometricSkillTreePane.vue:1051:      font-size: 11px;
+src/components\passives\GeometricSkillTreePane.vue:1056:      text-overflow: ellipsis;
+src/components\passives\GeometricSkillTreePane.vue:1077:    font-size: 11px;
+src/components\passives\GeometricSkillTreePane.vue:1089:      font-size: 10px;
+src/components\passives\GeometricSkillTreePane.vue:1094:      font-size: 16px;
+src/components\passives\GeometricSkillTreePane.vue:1096:      text-transform: none;
+src/components\passives\GeometricSkillTreePane.vue:1101:      font-size: 11px;
+src/components\passives\GeometricSkillTreePane.vue:1103:      text-transform: none;
+src/components\passives\GeometricSkillTreePane.vue:1118:      font-size: 10px;
+src/components\passives\GeometricSkillTreePane.vue:1133:      font-size: 12px;
+src/components\passives\GeometricSkillTreePane.vue:1147:      font-size: 12px;
+src/components\passives\GeometricSkillTreePane.vue:1175:      font-size: 12px;
+src/components\passives\GeometricSkillTreePane.vue:1180:      font-size: 11px;
+src/components\passives\GeometricSkillTreePane.vue:1195:    font-size: 11px;
+src/components\passives\GeometricSkillTreePane.vue:1197:    text-transform: uppercase;
+src/components\passives\GeometricSkillTreePane.vue:1205:    text-align: left;
+src/components\passives\GeometricSkillTreePane.vue:1208:      font-size: 12px;
+src/components\passives\GeometricSkillTreePane.vue:1213:      font-size: 11px;
+src/components\passives\GeometricSkillTreePane.vue:1248:    font-size: 12px;
+src/components\passives\GeometricSkillTreePane.vue:1249:    font-weight: 700;
+src/components\passives\GeometricSkillTreePane.vue:1253:    text-anchor: middle;
+src/components\passives\GeometricSkillTreePane.vue:1409:    font-family: 'GameFont', sans-serif;
+src/components\passives\GeometricSkillTreePane.vue:1410:    font-size: 8px;
+src/components\passives\GeometricSkillTreePane.vue:1411:    text-anchor: middle;
+src/components\passives\GeometricSkillTreePane.vue:1414:    text-shadow: 1px 1px 0 #000;
+src/components\passives\GeometricSkillTreePane.vue:1434:    font-size: 14px;
+src/components\passives\GeometricSkillTreePane.vue:1435:    font-weight: 700;
+src/components\passives\GeometricSkillTreePane.vue:1440:    font-size: 12px;
+src/components\layout\GameHUD.vue:4:      v-if="identityLabel"
+src/components\layout\GameHUD.vue:6:      :title="identityLabel"
+src/components\layout\GameHUD.vue:9:      {{ identityLabel }}
+src/components\layout\GameHUD.vue:89:    identityLabel() {
+src/components\layout\GameHUD.vue:137:  font-size: 0.72rem;
+src/components\layout\GameHUD.vue:139:  text-shadow: 1px 1px 0 #000;
+src/components\layout\GameHUD.vue:142:  text-overflow: ellipsis;
+src/components\layout\GameHUD.vue:209:  font-size: 0.56rem;
+src/components\layout\GameHUD.vue:212:  text-transform: uppercase;
+src/components\layout\GameHUD.vue:214:  text-shadow: 1px 1px 0 black, 0 0 4px black;
+src/components\layout\AuthContainer.vue:40:          :account-name="chroniclesContext && chroniclesContext.accountName"
+src/components\layout\AuthContainer.vue:41:          :account-id="chroniclesContext && chroniclesContext.chroniclesAccountId"
+src/components\layout\AuthContainer.vue:42:          :chronicles-state="chroniclesContext && chroniclesContext.chronicles"
+src/components\layout\AuthContainer.vue:43:          :chronicles-revision="chroniclesContext && chroniclesContext.chroniclesRevision"
+src/components\layout\AuthContainer.vue:44:          :chronicles-exists="Boolean(chroniclesContext && chroniclesContext.chroniclesExists)"
+src/components\layout\AuthContainer.vue:127:    chroniclesContext: {
+src/components\layout\AuthContainer.vue:267:  font-size: 0.85em;
+src/components\layout\AuthContainer.vue:268:  text-align: center;
+src/components\layout\AuthContainer.vue:269:  font-family: 'ChatFont', sans-serif;
+src/components\layout\AuthContainer.vue:270:  color: var(--color-text-secondary);
+src/components\layout\AuthContainer.vue:279:  font-size: 0.95rem;
+src/components\layout\AuthContainer.vue:282:  text-align: center;
+src/components\layout\AuthContainer.vue:286:    text-decoration: underline;
+src/components\layout\AuthContainer.vue:291:  text-align: center;
+src/components\layout\AuthContainer.vue:298:  font: 0.68rem 'ChatFont', sans-serif;
+src/components\layout\AuthContainer.vue:300:  text-transform: uppercase;
+src/components\layout\AuthContainer.vue:301:  text-shadow: 0 1px 2px #000;
+src/components\layout\AuthContainer.vue:306:  font-family: 'GameFont', sans-serif;
+src/components\layout\AuthContainer.vue:307:  font-weight: normal;
+src/components\layout\AuthContainer.vue:308:  font-size: clamp(2.4rem, 6vw, 3.4rem);
+src/components\layout\AuthContainer.vue:311:  text-transform: uppercase;
+src/components\layout\AuthContainer.vue:313:  background-clip: text;
+src/components\layout\AuthContainer.vue:320:  font-family: 'ChatFont', sans-serif;
+src/components\layout\AuthContainer.vue:321:  font-size: 0.78rem;
+src/components\layout\AuthContainer.vue:323:  text-transform: uppercase;
+src/components\layout\AuthContainer.vue:330:  font: 0.65rem 'ChatFont', sans-serif;
+src/components\layout\AuthContainer.vue:332:  text-align: center;
+src/components\layout\AuthContainer.vue:333:  text-transform: uppercase;
+src/components\layout\AuthContainer.vue:379:  font-family: 'GameFont', sans-serif;
+src/components\layout\AuthContainer.vue:380:  font-size: 1.15rem;
+src/components\layout\AuthContainer.vue:382:  text-transform: uppercase;
+src/components\layout\AuthContainer.vue:384:  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.85);
+src\components\inventory\WorldDropZone.vue:64:  text-align: center;
+src\components\inventory\WorldDropZone.vue:65:  font-size: 12px;
+src\components\slots\Stats.vue:401:  font-family: "GameFont", sans-serif;
+src\components\slots\Stats.vue:402:  font-size: var(--font-size-sm);
+src\components\slots\Stats.vue:404:  text-align: left;
+src\components\slots\Stats.vue:405:  text-shadow: 1px 1px 0 #000;
+src\components\slots\Stats.vue:419:      font-size: var(--font-size-sm);
+src\components\slots\Stats.vue:421:      text-transform: uppercase;
+src\components\slots\Stats.vue:449:      font-weight: 700;
+src\components\slots\Stats.vue:450:      text-overflow: ellipsis;
+src\components\slots\Stats.vue:457:      font-size: 0.86em;
+src\components\slots\Stats.vue:510:      font-size: 10px;
+src\components\slots\Stats.vue:512:      text-transform: uppercase;
+src\components\slots\Stats.vue:518:      font-size: clamp(16px, 1.25vw, 20px);
+src\components\slots\Stats.vue:520:      text-overflow: ellipsis;
+src\components\slots\Stats.vue:545:    text-align: right;
+src\components\slots\Stats.vue:580:      font-size: 0.92em;
+src\components\slots\Stats.vue:611:      font-weight: 500;
+src\components\slots\Stats.vue:642:  text-overflow: ellipsis;
+src\components\slots\Stats.vue:675:    text-overflow: ellipsis;
+src\components\slots\Stats.vue:709:  font-size: 0.86em;
+src\components\slots\Stats.vue:748:    font-size: var(--font-size-sm);
+src\components\slots\Stats.vue:750:    text-transform: uppercase;
+src/components\inventory\EquipmentRagdoll.vue:30:        <small>{{ openAuxiliaryWindow.axisLabel }}</small>
+src/components\inventory\EquipmentRagdoll.vue:40:        {{ openAuxiliaryWindow.seatLabel }}
+src/components\inventory\EquipmentRagdoll.vue:54:        @open-context-menu="showContextMenu"
+src/components\inventory\EquipmentRagdoll.vue:85:  { id: 'war-call-window', label: 'War-call', axis: 'str', axisLabel: 'Strength', unlock: 'war_call_slot', kind: 'seat', seatLabel: 'War-call seat' },
+src/components\inventory\EquipmentRagdoll.vue:86:  { id: 'quick-rig-window', label: 'Quick Rig', axis: 'dex', axisLabel: 'Dexterity', unlock: 'quick_rig_slot', kind: 'seat', seatLabel: 'Quick Rig seat' },
+src/components\inventory\EquipmentRagdoll.vue:87:  { id: 'attendant-window', label: 'Attendant', axis: 'int', axisLabel: 'Intellect', unlock: 'attendant_focus_slot', kind: 'seat', seatLabel: 'Attendant focus' },
+src/components\inventory\EquipmentRagdoll.vue:88:  { id: 'spoils-roll-window', label: 'Spoils Roll', axis: 'str-dex', axisLabel: 'Strength / Dexterity', unlock: 'spoils_pack', kind: 'pack' },
+src/components\inventory\EquipmentRagdoll.vue:89:  { id: 'preparation-case-window', label: 'Preparation Case', axis: 'dex-int', axisLabel: 'Dexterity / Intellect', unlock: 'preparations_pack', kind: 'pack' },
+src/components\inventory\EquipmentRagdoll.vue:90:  { id: 'reliquary-window', label: 'Reliquary', axis: 'int-str', axisLabel: 'Intellect / Strength', unlock: 'reliquary_pack', kind: 'pack' },
+src/components\inventory\EquipmentRagdoll.vue:153:    bus.$on('game:context-menu:first-only', ClientUI.displayFirstAction);
+src/components\inventory\EquipmentRagdoll.vue:156:    bus.$off('game:context-menu:first-only', ClientUI.displayFirstAction);
+src/components\inventory\EquipmentRagdoll.vue:168:    showContextMenu(event, slot, firstOnly = false) {
+src/components\inventory\EquipmentRagdoll.vue:217:  font-family: 'GameFont', sans-serif;
+src/components\inventory\EquipmentRagdoll.vue:255:    font-family: 'GameFont', sans-serif;
+src/components\inventory\EquipmentRagdoll.vue:256:    font-size: 9px;
+src/components\inventory\EquipmentRagdoll.vue:298:    font-size: 9px;
+src/components\inventory\EquipmentRagdoll.vue:300:    text-transform: uppercase;
+src/components\inventory\EquipmentRagdoll.vue:305:    font-size: 8px;
+src/components\inventory\EquipmentRagdoll.vue:326:      url('@/assets/inventory/slot_texture.png') center / cover;
+src/components\inventory\EquipmentRagdoll.vue:337:    font-size: 9px;
+src/components\inventory\EquipmentRagdoll.vue:339:    text-align: center;
+src/components\inventory\EquipmentRagdoll.vue:340:    text-transform: uppercase;
+native/client\presentation_events.hpp:27:  Message,             // human-readable server/system line in `text`
+native/client\presentation_events.hpp:28:  ProtocolError,       // malformed or unexpected envelope in `text`
+native/client\presentation_events.hpp:35:  std::string text;
+native/client\presentation_events.hpp:61:inline constexpr const char* kCriticalDamageLabel = "critical";  // + ":" + style
+native/client\presentation_events.hpp:66:inline constexpr const char* kSpawnRenderLabel = "spawn";
+native/client\presentation_events.hpp:71:inline constexpr const char* kWarcryFadeLabel = "warcry-fade";
+native/client\presentation_events.hpp:77:inline constexpr const char* kScionLostLabel = "scion-lost";
+src/components\ui\world\DeathOverlay.vue:168:  font-family: Georgia, serif;
+src/components\ui\world\DeathOverlay.vue:196:  text-align: center;
+src/components\ui\world\DeathOverlay.vue:202:  font: 0.68rem 'GameFont', sans-serif;
+src/components\ui\world\DeathOverlay.vue:204:  text-transform: uppercase;
+src/components\ui\world\DeathOverlay.vue:210:  font: clamp(1.5rem, 4vw, 2.45rem) 'GameFont', Georgia, serif;
+src/components\ui\world\DeathOverlay.vue:212:  text-transform: uppercase;
+src/components\ui\world\DeathOverlay.vue:213:  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+src/components\ui\world\DeathOverlay.vue:220:  font-size: 0.95rem;
+src/components\ui\world\DeathOverlay.vue:228:  text-align: left;
+src/components\ui\world\DeathOverlay.vue:241:  font: 0.68rem 'GameFont', sans-serif;
+src/components\ui\world\DeathOverlay.vue:243:  text-transform: uppercase;
+src/components\ui\world\DeathOverlay.vue:253:  font-size: 0.82rem;
+src/components\ui\world\DeathOverlay.vue:268:  font-size: 0.73rem;
+src/components\ui\world\DeathOverlay.vue:280:  font-size: 0.82rem;
+src/components\ui\world\DeathOverlay.vue:286:  font-family: 'GameFont', sans-serif;
+src/components\ui\world\DeathOverlay.vue:287:  font-size: 0.68rem;
+src/components\ui\world\DeathOverlay.vue:289:  text-transform: uppercase;
+src/components\ui\world\DeathOverlay.vue:303:  font: 0.76rem 'GameFont', sans-serif;
+src/components\ui\world\DeathOverlay.vue:305:  text-transform: uppercase;
+src/components\slots\Stats.vue:401:  font-family: "GameFont", sans-serif;
+src/components\slots\Stats.vue:402:  font-size: var(--font-size-sm);
+src/components\slots\Stats.vue:404:  text-align: left;
+src/components\slots\Stats.vue:405:  text-shadow: 1px 1px 0 #000;
+src/components\slots\Stats.vue:419:      font-size: var(--font-size-sm);
+src/components\slots\Stats.vue:421:      text-transform: uppercase;
+src/components\slots\Stats.vue:449:      font-weight: 700;
+src/components\slots\Stats.vue:450:      text-overflow: ellipsis;
+src/components\slots\Stats.vue:457:      font-size: 0.86em;
+src/components\slots\Stats.vue:510:      font-size: 10px;
+src/components\slots\Stats.vue:512:      text-transform: uppercase;
+src/components\slots\Stats.vue:518:      font-size: clamp(16px, 1.25vw, 20px);
+src/components\slots\Stats.vue:520:      text-overflow: ellipsis;
+src/components\slots\Stats.vue:545:    text-align: right;
+src/components\slots\Stats.vue:580:      font-size: 0.92em;
+src/components\slots\Stats.vue:611:      font-weight: 500;
+src/components\slots\Stats.vue:642:  text-overflow: ellipsis;
+src/components\slots\Stats.vue:675:    text-overflow: ellipsis;
+src/components\slots\Stats.vue:709:  font-size: 0.86em;
+src/components\slots\Stats.vue:748:    font-size: var(--font-size-sm);
+src/components\slots\Stats.vue:750:    text-transform: uppercase;
+src\components\inventory\ContainerStack.vue:71:  color: var(--color-text-primary);
+src\components\inventory\ContainerStack.vue:81:  font-size: 12px;
+src\components\inventory\ContainerStack.vue:83:  text-transform: uppercase;
+src\components\inventory\ContainerStack.vue:89:  font-size: 12px;
+src\components\inventory\ContainerStack.vue:118:  font-size: 11px;
+src\components\inventory\ContainerStack.vue:123:  font-size: 11px;
+src\components\inventory\ContainerStack.vue:124:  text-transform: uppercase;
+src\components\ui\world\PartyPanel.vue:9:        {{ loadingLabel }}
+src\components\ui\world\PartyPanel.vue:22:        <span class="party-panel__invite-text">
+src\components\ui\world\PartyPanel.vue:112:          type="text"
+src\components\ui\world\PartyPanel.vue:131:      <p class="party-panel__empty-text">
+src\components\ui\world\PartyPanel.vue:201:    loadingLabel() {
+src\components\ui\world\PartyPanel.vue:234:  color: var(--color-text-primary);
+src\components\ui\world\PartyPanel.vue:243:  font-family: 'GameFont', sans-serif;
+src\components\ui\world\PartyPanel.vue:252:  font-size: 0.76rem;
+src\components\ui\world\PartyPanel.vue:253:  text-transform: uppercase;
+src\components\ui\world\PartyPanel.vue:259:.party-panel__title { font-weight: normal; }
+src\components\ui\world\PartyPanel.vue:262:  font-size: 0.62rem;
+src\components\ui\world\PartyPanel.vue:284:.party-panel__invite-text,
+src\components\ui\world\PartyPanel.vue:285:.party-panel__members { font-size: 0.72rem; }
+src\components\ui\world\PartyPanel.vue:294:  font-size: 0.7rem;
+src\components\ui\world\PartyPanel.vue:326:  font-size: 0.58rem;
+src\components\ui\world\PartyPanel.vue:329:.party-panel__member-name { font-weight: normal; }
+src\components\ui\world\PartyPanel.vue:332:  font-size: 0.62rem;
+src\components\ui\world\PartyPanel.vue:333:  color: var(--color-text-dim);
+src\components\ui\world\PartyPanel.vue:346:  color: var(--color-text-primary);
+src\components\ui\world\PartyPanel.vue:350:  font: 0.67rem 'GameFont', sans-serif;
+src\components\ui\world\PartyPanel.vue:401:  color: var(--color-text-primary);
+src\components\ui\world\PartyPanel.vue:402:  font: 0.68rem 'ChatFont', sans-serif;
+src\components\ui\world\PartyPanel.vue:417:.party-panel__empty-text {
+src\components\ui\world\PartyPanel.vue:419:  font-size: 0.72rem;
+src\components\ui\world\PartyPanel.vue:420:  color: var(--color-text-secondary);
+src/components\ui\auth\CharacterCreate.vue:18:          type="text"
+src/components\ui\auth\CharacterCreate.vue:30:          type="text"
+src/components\ui\auth\CharacterCreate.vue:43:          {{ submitLabel }}
+src/components\ui\auth\CharacterCreate.vue:81:          <dd>{{ confidenceLabel }}</dd>
+src/components\ui\auth\CharacterCreate.vue:122:    submitLabel() {
+src/components\ui\auth\CharacterCreate.vue:175:    confidenceLabel() {
+src/components\ui\auth\CharacterCreate.vue:350:  font-size: 1.5rem;
+src/components\ui\auth\CharacterCreate.vue:351:  font-weight: 700;
+src/components\ui\auth\CharacterCreate.vue:352:  text-align: center;
+src/components\ui\auth\CharacterCreate.vue:357:  font-size: 0.95rem;
+src/components\ui\auth\CharacterCreate.vue:359:  text-align: center;
+src/components\ui\auth\CharacterCreate.vue:373:  font-size: 0.9rem;
+src/components\ui\auth\CharacterCreate.vue:374:  text-transform: uppercase;
+src/components\ui\auth\CharacterCreate.vue:404:  font-weight: 600;
+src/components\ui\auth\CharacterCreate.vue:427:  font-size: 0.95rem;
+src/components\ui\auth\CharacterCreate.vue:447:  font-weight: 700;
+src/components\ui\auth\CharacterCreate.vue:462:  font-size: 1.1rem;
+src/components\ui\auth\CharacterCreate.vue:472:  font-weight: 600;
+src/components\ui\auth\CharacterCreate.vue:477:  text-align: right;
+src/components\slots\Logout.vue:46:  color: var(--color-text-primary);
+src/components\slots\Logout.vue:47:  text-align: center;
+src/components\slots\Logout.vue:62:    font: 1.4rem "GameFont", sans-serif;
+src/components\slots\Logout.vue:74:    font-size: 0.65rem;
+src/components\slots\Logout.vue:76:    text-transform: uppercase;
+src/components\slots\Logout.vue:82:    font-size: clamp(1.05rem, 3vw, 1.35rem);
+src/components\slots\Logout.vue:83:    font-weight: 500;
+src/components\slots\Logout.vue:85:    text-shadow: 0 2px 0 #000;
+src/components\slots\Logout.vue:91:    color: var(--color-text-secondary);
+src/components\slots\Logout.vue:92:    font: 0.82rem/1.65 "ChatFont", sans-serif;
+src/components\slots\Logout.vue:93:    text-shadow: 0 1px 0 #000;
+src/components\layout\GameContainer.vue:5:    @contextmenu.prevent="handleRightClick"
+src/components\layout\GameContainer.vue:52:              :text="guideBeat"
+src/components\layout\GameContainer.vue:180:                :aria-label="chatToggleLabel || 'Show chat'"
+src/components\layout\GameContainer.vue:266:    <ContextMenu :game="game" />
+src/components\layout\GameContainer.vue:283:import ContextMenu from '../sub/ContextMenu.vue';
+src/components\layout\GameContainer.vue:300:    ContextMenu,
+src/components\layout\GameContainer.vue:388:    chatToggleLabel: {
+src/components\layout\GameContainer.vue:768:      const text = payload && payload.text ? payload.text : '';
+src/components\layout\GameContainer.vue:769:      if (!shouldSurfaceGuideBeat(text, guideBeatCount.value)) {
+src/components\layout\GameContainer.vue:773:      guideBeat.value = stripGuidePrefix(text);
+src/components\layout\GameContainer.vue:781:          setGuide(text) {
+src/components\layout\GameContainer.vue:784:              guideBeat.value = String(text || '');
+src/components\layout\GameContainer.vue:1030:  font-family: Georgia, serif;
+src/components\layout\GameContainer.vue:1031:  font-size: 0.72rem;
+src/components\layout\GameContainer.vue:1033:  text-transform: uppercase;
+src/components\layout\GameContainer.vue:1039:  font-family: 'GameFont', sans-serif;
+src/components\layout\GameContainer.vue:1040:  font-size: 0.86rem;
+src/components\layout\GameContainer.vue:1041:  font-weight: 400;
+src/components\layout\GameContainer.vue:1043:  text-shadow: 0 2px 8px #000;
+src/components\layout\GameContainer.vue:1048:  font-size: 2rem;
+src/components\layout\GameContainer.vue:1106:  font: 0.67rem 'GameFont', sans-serif;
+src/components\layout\GameContainer.vue:1108:  text-transform: uppercase;
+src/components\layout\GameContainer.vue:1164:  font-size: 0.68rem;
+src/components\layout\GameContainer.vue:1166:  text-transform: uppercase;
+src/components\layout\GameContainer.vue:1167:  color: var(--color-text-dim);
+src/components\layout\GameContainer.vue:1180:  font-size: 0.64rem;
+src/components\layout\GameContainer.vue:1195:  font-family: 'GameFont', sans-serif;
+src/components\layout\GameContainer.vue:1214:  font-size: 0.63rem;
+src/components\layout\GameContainer.vue:1216:  text-transform: uppercase;
+src/components\layout\GameContainer.vue:1244:  text-align: left;
+src/components\layout\GameContainer.vue:1253:  font-size: 0.82rem;
+src/components\layout\GameContainer.vue:1258:  font-family: Georgia, serif;
+src/components\layout\GameContainer.vue:1259:  font-size: 0.64rem;
+src/components\layout\GameContainer.vue:1265:  font-family: 'GameFont', sans-serif;
+src/components\layout\GameContainer.vue:1266:  font-size: 0.62rem;
+src/components\layout\GameContainer.vue:1272:  font-size: 0.66rem;
+src/components\layout\GameContainer.vue:1290:  font-size: 0.75rem;
+src/components\layout\GameContainer.vue:1292:  text-align: left;
+src/components\layout\GameContainer.vue:1314:  font: inherit;
+src/components\layout\GameContainer.vue:1315:  text-align: left;
+src/components\layout\GameContainer.vue:1333:  text-overflow: ellipsis;
+src/components\layout\GameContainer.vue:1343:  font-size: 0.7rem;
+src/components\layout\GameContainer.vue:1344:  font-weight: 700;
+src/components\layout\GameContainer.vue:1345:  text-align: center;
+src/components\slots\Inventory.vue:238:  color: var(--color-text-primary);
+src/components\slots\Inventory.vue:288:    font-size: 9px;
+src/components\slots\Inventory.vue:291:    text-align: right;
+src/components\slots\Inventory.vue:292:    text-transform: uppercase;
+src/components\slots\Inventory.vue:297:    font-size: 10px;
+src/components\slots\Inventory.vue:299:    text-shadow: 0 1px 2px #000;
+src\components\inventory\ItemTooltip.vue:11:        <span>{{ model.rarityLabel }}</span>
+src\components\inventory\ItemTooltip.vue:23:          :key="`${line.section}-${index}-${line.text}`"
+src\components\inventory\ItemTooltip.vue:30:          {{ line.text }}
+src\components\inventory\ItemTooltip.vue:98:  font: 0.7rem/1.4 'ChatFont', sans-serif;
+src\components\inventory\ItemTooltip.vue:117:  text-align: center;
+src\components\inventory\ItemTooltip.vue:125:    font: 0.53rem 'GameFont', sans-serif;
+src\components\inventory\ItemTooltip.vue:127:    text-transform: uppercase;
+src\components\inventory\ItemTooltip.vue:133:    font: 0.92rem/1.25 'GameFont', sans-serif;
+src\components\inventory\ItemTooltip.vue:135:    text-shadow: 1px 1px 0 #000;
+src\components\inventory\ItemTooltip.vue:147:  font-size: 0.6rem;
+src\components\inventory\ItemTooltip.vue:148:  text-transform: uppercase;
+src\components\inventory\ItemTooltip.vue:158:    font-weight: normal;
+src\components\inventory\ItemTooltip.vue:177:  text-align: center;
+src\components\inventory\ItemTooltip.vue:190:  text-align: center;
+src\components\inventory\ItemTooltip.vue:217:  font-style: italic;
+src\components\inventory\ItemTooltip.vue:224:  font-style: italic;
+src\components\inventory\ItemTooltip.vue:236:    font: 0.52rem 'GameFont', sans-serif;
+src\components\inventory\ItemTooltip.vue:238:    text-transform: uppercase;
+src\components\inventory\ItemTooltip.vue:250:  text-align: center;
+src\components\inventory\ItemTooltip.vue:261:  font-style: italic;
+src\components\slots\Settings.vue:133:  font-family: "GameFont", sans-serif;
+src\components\slots\Settings.vue:134:  text-align: left;
+src\components\slots\Settings.vue:135:  text-shadow: 0 1px 0 #000;
+src\components\slots\Settings.vue:136:  font-size: 12px;
+src\components\slots\Settings.vue:141:    font-size: 0.62rem;
+src\components\slots\Settings.vue:143:    text-transform: uppercase;
+src\components\slots\Settings.vue:163:    color: var(--color-text-primary);
+src\components\slots\Settings.vue:177:    font-size: 10px;
+src\components\slots\Settings.vue:190:    font-size: 0.72rem;
+src\components\slots\Settings.vue:212:      color: var(--color-text-primary);
+src\components\slots\Settings.vue:213:      font-weight: 500;
+src\components\slots\Settings.vue:217:      color: var(--color-text-dim);
+src\components\slots\Settings.vue:218:      font: 0.72rem "ChatFont", sans-serif;
+src/components\inventory\ContainerStack.vue:71:  color: var(--color-text-primary);
+src/components\inventory\ContainerStack.vue:81:  font-size: 12px;
+src/components\inventory\ContainerStack.vue:83:  text-transform: uppercase;
+src/components\inventory\ContainerStack.vue:89:  font-size: 12px;
+src/components\inventory\ContainerStack.vue:118:  font-size: 11px;
+src/components\inventory\ContainerStack.vue:123:  font-size: 11px;
+src/components\inventory\ContainerStack.vue:124:  text-transform: uppercase;
+native/client\pane_model.hpp:102:  [[nodiscard]] const char* status_text() const {
+src/components\ui\SettingsBindings.vue:52:      LMB attacks and RMB casts in the world, aimed at the cursor. The context
+src/components\ui\SettingsBindings.vue:123:      window.addEventListener('contextmenu', this.handleCaptureContextmenu, { capture: true });
+src/components\ui\SettingsBindings.vue:132:      window.removeEventListener('contextmenu', this.handleCaptureContextmenu, { capture: true });
+src/components\ui\SettingsBindings.vue:154:    handleCaptureContextmenu(event) {
+src/components\ui\SettingsBindings.vue:167:        const ownerLabel = owner ? owner.label : result.conflict;
+src/components\ui\SettingsBindings.vue:168:        this.error = `${displayBinding(rawBinding)} is already bound to ${ownerLabel}.`;
+src/components\ui\SettingsBindings.vue:207:      color: var(--color-text-primary);
+src/components\ui\SettingsBindings.vue:208:      font-weight: 500;
+src/components\ui\SettingsBindings.vue:212:      color: var(--color-text-dim);
+src/components\ui\SettingsBindings.vue:213:      font: 0.68rem "ChatFont", sans-serif;
+src/components\ui\SettingsBindings.vue:233:    font-size: 0.72rem;
+src/components\ui\SettingsBindings.vue:238:    color: var(--color-text-dim);
+src/components\ui\SettingsBindings.vue:242:    font-size: 0.8rem;
+src/components\ui\SettingsBindings.vue:252:    color: var(--color-text-primary);
+src/components\ui\SettingsBindings.vue:256:    font-size: 0.72rem;
+src/components\ui\SettingsBindings.vue:267:    font-size: 0.72rem;
+src/components\ui\SettingsBindings.vue:273:    font-size: 0.72rem;
+src/components\ui\SettingsBindings.vue:278:    color: var(--color-text-dim);
+src/components\ui\SettingsBindings.vue:279:    font: 0.7rem "ChatFont", sans-serif;
+src/components\ui\SettingsBindings.vue:285:    color: var(--color-text-primary);
+src/components\ui\SettingsBindings.vue:289:    font-size: 0.75rem;
+src/components\slots\Settings.vue:133:  font-family: "GameFont", sans-serif;
+src/components\slots\Settings.vue:134:  text-align: left;
+src/components\slots\Settings.vue:135:  text-shadow: 0 1px 0 #000;
+src/components\slots\Settings.vue:136:  font-size: 12px;
+src/components\slots\Settings.vue:141:    font-size: 0.62rem;
+src/components\slots\Settings.vue:143:    text-transform: uppercase;
+src/components\slots\Settings.vue:163:    color: var(--color-text-primary);
+src/components\slots\Settings.vue:177:    font-size: 10px;
+src/components\slots\Settings.vue:190:    font-size: 0.72rem;
+src/components\slots\Settings.vue:212:      color: var(--color-text-primary);
+src/components\slots\Settings.vue:213:      font-weight: 500;
+src/components\slots\Settings.vue:217:      color: var(--color-text-dim);
+src/components\slots\Settings.vue:218:      font: 0.72rem "ChatFont", sans-serif;
+src\components\ui\world\GuideBanner.vue:10:      <p class="guide-banner__text">{{ text }}</p>
+src\components\ui\world\GuideBanner.vue:21:    text: {
+src\components\ui\world\GuideBanner.vue:37:    text(value) {
+src\components\ui\world\GuideBanner.vue:89:  text-align: left;
+src\components\ui\world\GuideBanner.vue:93:  font-family: 'GameFont', sans-serif;
+src\components\ui\world\GuideBanner.vue:94:  font-size: 0.62rem;
+src\components\ui\world\GuideBanner.vue:96:  text-transform: uppercase;
+src\components\ui\world\GuideBanner.vue:100:.guide-banner__text {
+src\components\ui\world\GuideBanner.vue:102:  font-family: 'ChatFont', 'GameFont', sans-serif;
+src\components\ui\world\GuideBanner.vue:103:  font-size: 0.86rem;
+src/components\ui\auth\AccountCreate.vue:106:  color: var(--color-text-primary);
+src/components\ui\auth\AccountCreate.vue:110:    font-family: 'GameFont', sans-serif;
+src/components\ui\auth\AccountCreate.vue:126:    font-family: 'ChatFont', sans-serif;
+src/components\ui\auth\AccountCreate.vue:145:    font-family: 'GameFont', sans-serif;
+src\components\hud\WorldMinimap.vue:140:      const ctx = canvas.getContext('2d');
+src\components\hud\WorldMinimap.vue:255:  font-family: var(--font-pixel, monospace);
+src\components\hud\WorldMinimap.vue:256:  font-size: 0.58rem;
+src\components\hud\WorldMinimap.vue:258:  text-shadow: 1px 1px 0 #000;
+src\components\hud\WorldMinimap.vue:269:    font-size: 0.5rem;
+src/components\slots\Quests.vue:78:  font: 0.72rem 'ChatFont', sans-serif;
+src/components\slots\Quests.vue:90:    font: 1.05rem 'GameFont', sans-serif;
+src/components\slots\Quests.vue:99:  font: 0.62rem 'GameFont', sans-serif;
+src/components\slots\Quests.vue:101:  text-transform: uppercase;
+src/components\slots\Quests.vue:129:    text-decoration: line-through;
+src/components\slots\Quests.vue:130:    text-decoration-color: rgba(119, 174, 143, 0.48);
+src/components\slots\Quests.vue:145:    text-transform: uppercase;
+src/components\slots\Quests.vue:150:    font-weight: normal;
+src/components\ui\panes\PaneCard.vue:8:    :aria-label="ariaLabel"
+src/components\ui\panes\PaneCard.vue:51:    ariaLabel: {
+src/components\ui\panes\PaneCard.vue:79:  color: var(--color-text-primary);
+src/components\ui\panes\PaneCard.vue:122:  font-family: 'GameFont', sans-serif;
+src/components\ui\panes\PaneCard.vue:123:  font-size: 12px;
+src/components\ui\panes\PaneCard.vue:125:  text-transform: uppercase;
+src/components\ui\panes\PaneCard.vue:127:  text-shadow: 0 2px 0 #000, 0 0 10px rgba(217, 169, 74, 0.22);
+src/components\ui\panes\PaneCard.vue:141:  color: var(--color-text-secondary);
+src/components\ui\panes\PaneCard.vue:149:  font-size: 14px;
+src\components\inventory\InventoryItemTooltip.vue:64:        {{ line.text }}
+src\components\inventory\InventoryItemTooltip.vue:194:  font-family: 'GameFont', sans-serif;
+src\components\inventory\InventoryItemTooltip.vue:195:  font-size: 12px;
+src\components\inventory\InventoryItemTooltip.vue:215:    text-align: center;
+src\components\inventory\InventoryItemTooltip.vue:220:    font-family: Georgia, 'Times New Roman', serif;
+src\components\inventory\InventoryItemTooltip.vue:221:    font-size: 17px;
+src\components\inventory\InventoryItemTooltip.vue:222:    font-weight: 600;
+src\components\inventory\InventoryItemTooltip.vue:224:    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+src\components\inventory\InventoryItemTooltip.vue:231:    font-size: 10px;
+src\components\inventory\InventoryItemTooltip.vue:233:    text-transform: uppercase;
+src\components\inventory\InventoryItemTooltip.vue:246:    font-style: italic;
+src\components\inventory\InventoryItemTooltip.vue:247:    text-align: center;
+src\components\inventory\InventoryItemTooltip.vue:284:    font-size: 15px;
+src\components\inventory\InventoryItemTooltip.vue:315:    font-size: 10px;
+src\components\inventory\InventoryItemTooltip.vue:317:    text-transform: uppercase;
+src\components\inventory\InventoryItemTooltip.vue:322:    font-style: italic;
+src\components\inventory\InventoryItemTooltip.vue:331:    font-style: italic;
+src\components\inventory\InventoryItemTooltip.vue:332:    text-align: center;
+src\components\inventory\InventoryItemTooltip.vue:337:    font-style: italic;
+src\components\inventory\InventoryItemTooltip.vue:343:    font-size: 10px;
+src\components\inventory\InventoryItemTooltip.vue:345:    text-transform: uppercase;
+src/components\ui\panes\EscapeMenu.vue:84:  text-align: center;
+src/components\ui\panes\EscapeMenu.vue:99:  font-family: 'GameFont', Georgia, serif;
+src/components\ui\panes\EscapeMenu.vue:100:  font-size: clamp(1.5rem, 4vw, 2.2rem);
+src/components\ui\panes\EscapeMenu.vue:101:  font-weight: 500;
+src/components\ui\panes\EscapeMenu.vue:104:  text-shadow: 0 2px 0 #000, 0 0 18px rgba(217, 169, 74, 0.2);
+src/components\ui\panes\EscapeMenu.vue:110:  color: var(--color-text-dim);
+src/components\ui\panes\EscapeMenu.vue:111:  font-size: 0.72rem;
+src/components\ui\panes\EscapeMenu.vue:113:  text-transform: uppercase;
+src/components\ui\panes\EscapeMenu.vue:137:  color: var(--color-text-primary);
+src/components\ui\panes\EscapeMenu.vue:138:  font-family: 'GameFont', sans-serif;
+src/components\ui\panes\EscapeMenu.vue:139:  font-size: 0.82rem;
+src/components\ui\panes\EscapeMenu.vue:141:  text-align: left;
+src/components\ui\panes\EscapeMenu.vue:163:  font-size: 0.95rem;
+src/components\ui\panes\EscapeMenu.vue:179:  font-family: sans-serif;
+src/components\ui\panes\EscapeMenu.vue:180:  font-size: 0.65rem;
+src/components\ui\panes\EscapeMenu.vue:196:  font-family: monospace;
+src/components\ui\panes\EscapeMenu.vue:197:  font-size: 0.68rem;
+src/components\ui\panes\EscapeMenu.vue:198:  text-align: center;
+src\components\slots\Quests.vue:78:  font: 0.72rem 'ChatFont', sans-serif;
+src\components\slots\Quests.vue:90:    font: 1.05rem 'GameFont', sans-serif;
+src\components\slots\Quests.vue:99:  font: 0.62rem 'GameFont', sans-serif;
+src\components\slots\Quests.vue:101:  text-transform: uppercase;
+src\components\slots\Quests.vue:129:    text-decoration: line-through;
+src\components\slots\Quests.vue:130:    text-decoration-color: rgba(119, 174, 143, 0.48);
+src\components\slots\Quests.vue:145:    text-transform: uppercase;
+src\components\slots\Quests.vue:150:    font-weight: normal;
+native/client\main.cpp:221:// pixel impression. No asset, font, or windowing dependency.
+native/client\main.cpp:235:// shared with the planner so global HUD text can never be placed onto it.
+native/client\main.cpp:527:  // 0075 rev2: the floor is context, not content. Desaturate toward
+native/client\main.cpp:628:// TASK-0142: one honest source for the art status copy. The text is always
+native/client\main.cpp:1395:  // TASK-0142: with the embedded vector kit the floor stays textured even
+native/client\main.cpp:1726:        damage_label = std::string(phase_a::kCriticalDamageLabel) + ":" +
+native/client\main.cpp:1738:      const int font_h = std::clamp(
+native/client\main.cpp:1741:      HFONT number_font = CreateFontA(font_h, 0, 0, 0, FW_BOLD, FALSE, FALSE,
+native/client\main.cpp:1746:      HGDIOBJ old_number_font = SelectObject(dc, number_font);
+native/client\main.cpp:1748:      SetTextColor(dc, fade_to_background(color, life));
+native/client\main.cpp:1749:      const std::string text = std::to_string(fx.value);
+native/client\main.cpp:1750:      TextOutA(dc, base.x - 9, base.y - lift, text.c_str(),
+native/client\main.cpp:1751:               static_cast<int>(text.size()));
+native/client\main.cpp:1752:      SelectObject(dc, old_number_font);
+native/client\main.cpp:1753:      DeleteObject(number_font);
+native/client\main.cpp:1785:                    static_cast<double>(base.y), 0.0, 0, phase_a::kSpawnRenderLabel});
+native/client\main.cpp:1806:                    static_cast<double>(base.y), 0.0, 0, phase_a::kWarcryFadeLabel});
+native/client\main.cpp:1822:                    phase_a::kScionLostLabel});
+native/client\main.cpp:1926:          telegraph.action = event.text;
+native/client\main.cpp:1938:        state.effects.push_back({event.text == "sweep" ? EffectFx::Kind::SweepArc
+native/client\main.cpp:1941:                                 event.text == "sweep" ? 8 : 6});
+native/client\main.cpp:1944:        if (event.text == "war-cry")
+native/client\main.cpp:1950:        if (event.text.empty() || event.text == "war-cry") {
+native/client\main.cpp:1998:        if (event.text == "scion" ||
+native/client\main.cpp:2011:        if (event.text == "dash")
+native/client\main.cpp:2038:      if (!event.text.empty()) line += " " + event.text;
+native/client\main.cpp:2094:int paint_status_chip(HDC dc, int x, int y, const std::string& text,
+native/client\main.cpp:2097:  GetTextExtentPoint32A(dc, text.c_str(), static_cast<int>(text.size()), &extent);
+native/client\main.cpp:2112:  SetTextColor(dc, accent);
+native/client\main.cpp:2113:  TextOutA(dc, x + 8, y + 4, text.c_str(), static_cast<int>(text.size()));
+native/client\main.cpp:2115:                0.0, 0, text});
+native/client\main.cpp:2153:  SetTextColor(dc, RGB(230, 235, 220));
+native/client\main.cpp:2158:    GetTextExtentPoint32A(dc, title.c_str(), static_cast<int>(title.size()),
+native/client\main.cpp:2163:  TextOutA(dc, left + 14, top + 12, title.c_str(), static_cast<int>(title.size()));
+native/client\main.cpp:2177:  std::string attack_text = std::to_string(base_attack + equipped_bonus);
+native/client\main.cpp:2179:    attack_text += " (+" + std::to_string(equipped_bonus) + ")";
+native/client\main.cpp:2180:  SetTextColor(dc, RGB(150, 170, 158));
+native/client\main.cpp:2186:      attack_text + "  DEF " +
+native/client\main.cpp:2192:    GetTextExtentPoint32A(dc, stats_line.c_str(),
+native/client\main.cpp:2197:  TextOutA(dc, left + 14, top + 36, stats_line.c_str(),
+native/client\main.cpp:2215:  SetTextColor(dc, RGB(170, 190, 178));
+native/client\main.cpp:2217:  TextOutA(dc, seat_left + 6, seat_top + 5, seat_label, static_cast<int>(strlen(seat_label)));
+native/client\main.cpp:2224:  SetTextColor(dc, RGB(230, 220, 180));
+native/client\main.cpp:2226:  TextOutA(dc, seat_left + 96, seat_top + 5, equipped_name.c_str(),
+native/client\main.cpp:2235:    SetTextColor(dc, RGB(150, 160, 150));
+native/client\main.cpp:2237:    TextOutA(dc, left + 14, grid_top + 6, empty, static_cast<int>(strlen(empty)));
+native/client\main.cpp:2257:      SetTextColor(dc, equipped ? RGB(240, 210, 120) : RGB(205, 215, 204));
+native/client\main.cpp:2265:      TextOutA(dc, cx + 4, cy + 4, name.c_str(), static_cast<int>(name.size()));
+native/client\main.cpp:2266:      SetTextColor(dc, RGB(150, 165, 152));
+native/client\main.cpp:2269:      TextOutA(dc, cx + 4, cy + 21, bonus.c_str(), static_cast<int>(bonus.size()));
+native/client\main.cpp:2274:  SetTextColor(dc, RGB(150, 170, 158));
+native/client\main.cpp:2281:    GetTextExtentPoint32A(dc, banked.c_str(), static_cast<int>(banked.size()),
+native/client\main.cpp:2286:  TextOutA(dc, left + 14, bottom - 46, banked.c_str(), static_cast<int>(banked.size()));
+native/client\main.cpp:2304:    GetTextExtentPoint32A(dc, progression.c_str(),
+native/client\main.cpp:2309:  TextOutA(dc, left + 14, bottom - 70, progression.c_str(),
+native/client\main.cpp:2314:    GetTextExtentPoint32A(dc, controls, static_cast<int>(strlen(controls)),
+native/client\main.cpp:2319:  TextOutA(dc, left + 14, bottom - 24, controls, static_cast<int>(strlen(controls)));
+native/client\main.cpp:2346:  SetTextColor(dc, RGB(232, 223, 202));
+native/client\main.cpp:2347:  const int text_x = cx - static_cast<int>(caption.size()) * 3;
+native/client\main.cpp:2348:  TextOutA(dc, text_x, cy - 6, caption.c_str(), static_cast<int>(caption.size()));
+native/client\main.cpp:2478:    SetTextColor(dc, RGB(239, 208, 116));
+native/client\main.cpp:2479:    TextOutA(dc, box.left + 6, box.top + 4, slot.key_label,
+native/client\main.cpp:2481:    SetTextColor(dc, available ? RGB(205, 221, 207) : RGB(112, 119, 115));
+native/client\main.cpp:2482:    TextOutA(dc, box.left + 6, box.top + 22, slot.name, static_cast<int>(strlen(slot.name)));
+native/client\main.cpp:2573:// Deterministic founder naming without any text-input console: derive the
+native/client\main.cpp:2927:    std::string text;
+native/client\main.cpp:3002:    HFONT font = CreateFontA(line.accent ? 30 : 19, 0, 0, 0, FW_BOLD, FALSE,
+native/client\main.cpp:3006:    HGDIOBJ old_font = SelectObject(dc, font);
+native/client\main.cpp:3007:    SetTextColor(dc, line.color);
+native/client\main.cpp:3008:    TextOutA(dc, left, y, line.text.c_str(), static_cast<int>(line.text.size()));
+native/client\main.cpp:3009:    SelectObject(dc, old_font);
+native/client\main.cpp:3010:    DeleteObject(font);
+native/client\main.cpp:3016:    SetTextColor(dc, RGB(239, 208, 116));
+native/client\main.cpp:3017:    TextOutA(dc, 18, bounds.bottom - 28, state.relic_toast.c_str(),
+native/client\main.cpp:3065:    SetTextColor(dc, chip_color);
+native/client\main.cpp:3066:    TextOutA(dc, chip_x + 8, chip_y + 3, chip.c_str(), static_cast<int>(chip.size()));
+native/client\main.cpp:3070:      SetTextColor(dc, RGB(255, 80, 70));
+native/client\main.cpp:3076:      TextOutA(dc, 18, banner_y, banner, static_cast<int>(strlen(banner)));
+native/client\main.cpp:3098:// blocked fixed regions and the placed text regions are one geometry.
+native/client\main.cpp:3326:      SetTextColor(dc, RGB(239, 208, 116));
+native/client\main.cpp:3327:      TextOutA(dc, pad.x - 14, pad.y + pad_r + 4, "EXIT", 4);
+native/client\main.cpp:3486:          SetTextColor(dc, telegraph_color(telegraph_visibility(state, warning),
+native/client\main.cpp:3493:          TextOutA(dc, base.x - bar_w / 2, bar_y - 15, pending.c_str(),
+native/client\main.cpp:3526:          SetTextColor(dc, color);
+native/client\main.cpp:3527:          TextOutA(dc, base.x + r + 4, base.y - lift - r - 5, label.c_str(),
+native/client\main.cpp:3544:    HFONT legend_font = CreateFontA(13, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
+native/client\main.cpp:3548:    HGDIOBJ old_legend_font = SelectObject(dc, legend_font);
+native/client\main.cpp:3550:    GetTextExtentPoint32A(dc, entry.first.c_str(),
+native/client\main.cpp:3565:    SetTextColor(dc, RGB(226, 238, 230));
+native/client\main.cpp:3566:    TextOutA(dc, chip.left + 5, chip.top + 2, entry.first.c_str(),
+native/client\main.cpp:3568:    SelectObject(dc, old_legend_font);
+native/client\main.cpp:3569:    DeleteObject(legend_font);
+native/client\main.cpp:3592:                  scion_lost_beat ? phase_a::kScionLostLabel : "player-damage"});
+native/client\main.cpp:3637:    const std::string& art_text = state.billboards.status;
+native/client\main.cpp:3662:    GetTextExtentPoint32A(dc, controls_line_a.c_str(),
+native/client\main.cpp:3666:      GetTextExtentPoint32A(dc, controls_line_b.c_str(),
+native/client\main.cpp:3671:    GetTextExtentPoint32A(dc, identity.c_str(),
+native/client\main.cpp:3673:    GetTextExtentPoint32A(dc, objective.c_str(),
+native/client\main.cpp:3675:    GetTextExtentPoint32A(dc, art_text.c_str(),
+native/client\main.cpp:3676:                          static_cast<int>(art_text.size()), &art_extent);
+native/client\main.cpp:3677:    GetTextExtentPoint32A(dc, kControls,
+native/client\main.cpp:3732:    SetTextColor(dc, RGB(140, 208, 172));
+native/client\main.cpp:3733:    TextOutA(dc, layout.identity.x, layout.identity.y, identity.c_str(),
+native/client\main.cpp:3740:    SetTextColor(dc, RGB(148, 160, 150));
+native/client\main.cpp:3742:      TextOutA(dc, controls_at.x, controls_at.y, controls_line_a.c_str(),
+native/client\main.cpp:3748:      TextOutA(dc, layout.controls_second.x, layout.controls_second.y,
+native/client\main.cpp:3756:      TextOutA(dc, controls_at.x, controls_at.y, kControls,
+native/client\main.cpp:3784:    SetTextColor(dc, RGB(239, 208, 116));
+native/client\main.cpp:3785:    TextOutA(dc, 18, bounds.bottom - 28, state.relic_toast.c_str(),
+native/client\main.cpp:3792:    SetTextColor(dc, RGB(230, 235, 220));
+native/client\main.cpp:3801:    TextOutA(dc, 18, 16, status.c_str(), static_cast<int>(status.size()));
+native/client\main.cpp:3804:    TextOutA(dc, 18, 72, help, static_cast<int>(strlen(help)));
+native/client\main.cpp:3806:        "X nearest pickup | Z loot labels | F contextual extract | I gear/House overlay";
+native/client\main.cpp:3807:    TextOutA(dc, 18, 96, help2, static_cast<int>(strlen(help2)));
+native/client\main.cpp:3810:    TextOutA(dc, 18, 120, camera_help, static_cast<int>(strlen(camera_help)));
+native/client\main.cpp:3812:    SetTextColor(dc, RGB(150, 160, 150));
+native/client\main.cpp:3820:    TextOutA(dc, 18, 144, debug_line, static_cast<int>(strlen(debug_line)));
+native/client\main.cpp:3825:    TextOutA(dc, 18, 168, asset_line, static_cast<int>(strlen(asset_line)));
+native/client\main.cpp:3827:      SetTextColor(dc, RGB(239, 208, 116));
+native/client\main.cpp:3828:      TextOutA(dc, 18, 192, state.hint.c_str(), static_cast<int>(state.hint.size()));
+native/client\main.cpp:3832:      TextOutA(dc, 18, log_y, it->c_str(), static_cast<int>(it->size()));
+native/client\main.cpp:4035:        show_hint(*state, "Contextual interaction requested");
+native/client\main.cpp:4260:                   "move-and-camera: floor is textured (plates or vector kit)");
+native/client\main.cpp:5337:      "nonzero: the pane text shows the authoritative points");
+native/client\main.cpp:5746:std::string json_escape(const std::string& text) {
+native/client\main.cpp:5748:  out.reserve(text.size());
+native/client\main.cpp:5749:  for (char character : text) {
+native/client\main.cpp:5995:                            phase_a::kSpawnRenderLabel),
+native/client\main.cpp:6068:                                          phase_a::kWarcryFadeLabel);
+native/client\main.cpp:6114:                                       phase_a::kScionLostLabel),
+native/client\main.cpp:6243:                              std::string(phase_a::kCriticalDamageLabel) + ":stab"),
+native/client\main.cpp:6247:                              phase_a::kWarcryFadeLabel),
+native/client\main.cpp:6253:                              phase_a::kSpawnRenderLabel),
+src/components\hud\WorldMinimap.vue:140:      const ctx = canvas.getContext('2d');
+src/components\hud\WorldMinimap.vue:255:  font-family: var(--font-pixel, monospace);
+src/components\hud\WorldMinimap.vue:256:  font-size: 0.58rem;
+src/components\hud\WorldMinimap.vue:258:  text-shadow: 1px 1px 0 #000;
+src/components\hud\WorldMinimap.vue:269:    font-size: 0.5rem;
+src\components\ui\world\DeathOverlay.vue:168:  font-family: Georgia, serif;
+src\components\ui\world\DeathOverlay.vue:196:  text-align: center;
+src\components\ui\world\DeathOverlay.vue:202:  font: 0.68rem 'GameFont', sans-serif;
+src\components\ui\world\DeathOverlay.vue:204:  text-transform: uppercase;
+src\components\ui\world\DeathOverlay.vue:210:  font: clamp(1.5rem, 4vw, 2.45rem) 'GameFont', Georgia, serif;
+src\components\ui\world\DeathOverlay.vue:212:  text-transform: uppercase;
+src\components\ui\world\DeathOverlay.vue:213:  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+src\components\ui\world\DeathOverlay.vue:220:  font-size: 0.95rem;
+src\components\ui\world\DeathOverlay.vue:228:  text-align: left;
+src\components\ui\world\DeathOverlay.vue:241:  font: 0.68rem 'GameFont', sans-serif;
+src\components\ui\world\DeathOverlay.vue:243:  text-transform: uppercase;
+src\components\ui\world\DeathOverlay.vue:253:  font-size: 0.82rem;
+src\components\ui\world\DeathOverlay.vue:268:  font-size: 0.73rem;
+src\components\ui\world\DeathOverlay.vue:280:  font-size: 0.82rem;
+src\components\ui\world\DeathOverlay.vue:286:  font-family: 'GameFont', sans-serif;
+src\components\ui\world\DeathOverlay.vue:287:  font-size: 0.68rem;
+src\components\ui\world\DeathOverlay.vue:289:  text-transform: uppercase;
+src\components\ui\world\DeathOverlay.vue:303:  font: 0.76rem 'GameFont', sans-serif;
+src\components\ui\world\DeathOverlay.vue:305:  text-transform: uppercase;
+src\components\hud\Quickbar.vue:74:import { primaryBindingLabel, subscribeBindings } from '../../core/config/controls.js';
+src\components\hud\Quickbar.vue:161:      return primaryBindingLabel(slot?.skillId) || slot?.hotkey || '';
+src\components\hud\Quickbar.vue:308:  font: 0.52rem/1 'GameFont', sans-serif;
+src\components\hud\Quickbar.vue:309:  text-shadow: 0 1px 1px #000;
+src\components\hud\Quickbar.vue:328:  font-size: 1rem;
+src\components\hud\Quickbar.vue:338:  font: 0.54rem/1.2 'ChatFont', sans-serif;
+src\components\hud\Quickbar.vue:358:  font: 600 0.85rem 'GameFont', sans-serif;
+src\components\hud\Quickbar.vue:359:  text-shadow: 0 1px 2px #000, 0 0 5px #000;
+src\components\hud\Quickbar.vue:373:  font: 0.68rem/1.35 'ChatFont', sans-serif;
+src\components\hud\Quickbar.vue:374:  text-align: left;
+src\components\hud\Quickbar.vue:387:    font: normal 0.78rem 'GameFont', sans-serif;
+src\components\hud\Quickbar.vue:389:    text-transform: uppercase;
+src\components\hud\Quickbar.vue:394:    font: 0.6rem 'ChatFont', sans-serif;
+src\components\hud\Quickbar.vue:395:    text-transform: uppercase;
+src\components\hud\Quickbar.vue:442:    font-size: 0.43rem;
+native/client\local_session.cpp:238:    out.text = event.text;
+src/components\GameCanvas.vue:37:      @contextmenu.prevent="rightClick"
+src/components\GameCanvas.vue:146:    bus.$on('game:context-menu:first-only', ClientUI.displayFirstAction);
+src/components\GameCanvas.vue:147:    bus.$on('canvas:reset-context-menu', this.handleCanvasResetContextMenu);
+src/components\GameCanvas.vue:165:    bus.$off('game:context-menu:first-only', ClientUI.displayFirstAction);
+src/components\GameCanvas.vue:166:    bus.$off('canvas:reset-context-menu', this.handleCanvasResetContextMenu);
+src/components\GameCanvas.vue:177:    handleCanvasResetContextMenu() {
+src/components\GameCanvas.vue:320:     * Close the context-menu
+src/components\GameCanvas.vue:326:     * Open the context-menu
+src/components\GameCanvas.vue:328:     * @param {object} incoming The data returned from the context-menu
+src/components\GameCanvas.vue:336:     * (rebindable in settings) and attacks toward the cursor. The context
+src/components\GameCanvas.vue:443:        bus.$emit('contextmenu:close');
+src/components\GameCanvas.vue:449:        // context-menu action (below) still takes precedence when armed.
+src/components\GameCanvas.vue:713:    // Scene swaps rebuild a large terrain texture. A dark world-colour keeps
+src/components\GameCanvas.vue:735:    font-size: 0.75em;
+src/components\GameCanvas.vue:736:    text-align: left;
+src/components\GameCanvas.vue:737:    font-family: "GameFont", sans-serif;
+src/components\GameCanvas.vue:738:    text-shadow: 1px 1px 0 #000;
+src/components\GameCanvas.vue:772:    color: var(--color-text-secondary);
+src/components\GameCanvas.vue:773:    font: 1rem "GameFont", sans-serif;
+src/components\GameCanvas.vue:790:  #context-menu {
+src/components\hud\HudOrb.vue:144:  font-family: 'GameFont', sans-serif;
+src/components\hud\HudOrb.vue:145:  text-shadow: 1px 1px 0 #000, 0 0 4px #000;
+src/components\hud\HudOrb.vue:151:  font-size: clamp(0.48rem, 0.7vw, 0.62rem);
+src/components\hud\HudOrb.vue:156:  font-size: clamp(0.56rem, 0.82vw, 0.72rem);
+src/components\hud\HudOrb.vue:157:  font-weight: 400;
+src/components\Chatbox.vue:16:          Hiding in {{ countdownLabel }}
+src/components\Chatbox.vue:54:            class="chatbox__text"
+src/components\Chatbox.vue:56:          >{{ message.displayText }}</span>
+src/components\Chatbox.vue:70:        type="text"
+src/components\Chatbox.vue:133:          text: 'Welcome to Verdigris.',
+src/components\Chatbox.vue:137:          displayText: 'Welcome to Verdigris.',
+src/components\Chatbox.vue:160:    countdownLabel() {
+src/components\Chatbox.vue:207:        text = '',
+src/components\Chatbox.vue:213:      this.appendChat({ type, username, color, text });
+src/components\Chatbox.vue:215:    appendChat({ type, username, color, text }) {
+src/components\Chatbox.vue:216:      if (!text) {
+src/components\Chatbox.vue:220:      const formatted = this.formatMessage(type, color, text);
+src/components\Chatbox.vue:225:        text,
+src/components\Chatbox.vue:226:        displayText: formatted.displayText,
+src/components\Chatbox.vue:236:    formatMessage(type, color, text) {
+src/components\Chatbox.vue:241:        return { displayText: text, colorStyle: `color:${sanitisedColor}` };
+src/components\Chatbox.vue:244:        return { displayText: text, colorStyle: `color:${sanitisedColor || '#ffd166'};font-weight:600` };
+src/components\Chatbox.vue:246:      return { displayText: text, colorStyle: '' };
+src/components\Chatbox.vue:341:  color: var(--color-text-primary);
+src/components\Chatbox.vue:379:  font-size: 12px;
+src/components\Chatbox.vue:381:  text-transform: uppercase;
+src/components\Chatbox.vue:387:  font-size: 0.75em;
+src/components\Chatbox.vue:388:  color: var(--color-text-secondary);
+src/components\Chatbox.vue:403:  font-size: 0.7em;
+src/components\Chatbox.vue:404:  text-align: center;
+src/components\Chatbox.vue:405:  font-weight: 700;
+src/components\Chatbox.vue:412:  color: var(--color-text-secondary);
+src/components\Chatbox.vue:415:  font-size: var(--font-size-sm);
+src/components\Chatbox.vue:457:  font-size: 12px;
+src/components\Chatbox.vue:458:  color: var(--color-text-primary);
+src/components\Chatbox.vue:459:  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.72);
+src/components\Chatbox.vue:464:  font-weight: 600;
+src/components\Chatbox.vue:467:.chatbox__text {
+src/components\Chatbox.vue:471:.chatbox__text--chat {
+src/components\Chatbox.vue:472:  font-weight: 500;
+src/components\Chatbox.vue:476:  font-size: 0.7em;
+src/components\Chatbox.vue:492:  color: var(--color-text-primary);
+src/components\Chatbox.vue:494:  font-family: 'ChatFont', 'GameFont', sans-serif;
+src/components\Chatbox.vue:495:  font-size: var(--font-size-sm);
+src/components\Chatbox.vue:508:  color: var(--color-text-primary);
+src/components\Chatbox.vue:510:  font-family: 'GameFont', sans-serif;
+src/components\Chatbox.vue:511:  font-size: var(--font-size-sm);
+native/client\input_focus.hpp:30:  Text,   // text entry: swallows movement/combat/open hotkeys entirely
+native/client\input_focus.hpp:38:  Interact,          // context interaction intent (click target, pickup)
+native/client\input_focus.hpp:41:  Confirm,           // activate current selection / submit a text line
+native/client\input_focus.hpp:47:  TextInput,         // printable text destined for a focused text field
+native/client\input_focus.hpp:53:    static_cast<std::uint8_t>(Intent::TextInput) + 1;
+native/client\input_focus.hpp:93:          raw > static_cast<std::uint8_t>(Surface::Text)) {
+native/client\input_focus.hpp:123:    case Surface::Text:
+native/client\input_focus.hpp:124:      return "text";
+native/client\input_focus.hpp:153:    case Intent::TextInput:
+native/client\input_focus.hpp:154:      return "text-input";
+native/client\input_focus.hpp:209:// uses, so future dialog/text owners cannot bypass capacity or state checks.
+native/client\input_focus.hpp:210:// This is the only sanctioned way to introduce Modal/Text surfaces, which no
+native/client\input_focus.hpp:216:      raw > static_cast<std::uint8_t>(Surface::Text)) {
+native/client\input_focus.hpp:237:  // nonmodal pane they replace the top (switch), under Modal/Text focus they
+native/client\input_focus.hpp:263:        case Intent::TextInput:
+native/client\input_focus.hpp:292:        case Intent::TextInput:
+native/client\input_focus.hpp:294:          // has no text field, so typed input is swallowed too.
+native/client\input_focus.hpp:306:    case Surface::Text:
+native/client\input_focus.hpp:310:          // Modal dialogs and text fields dismiss exactly like any other
+native/client\input_focus.hpp:327:        case Intent::TextInput:
+native/client\input_focus.hpp:328:          // Under Text focus this feeds the field; under Modal focus it is
+native/client\input_focus.hpp:334:          // Hotkeys cannot lift focus away from a modal dialog or a text
+src\components\inventory\InventoryGrid.vue:22:        :aria-label="itemAriaLabel(item)"
+src\components\inventory\InventoryGrid.vue:31:        @contextmenu.stop.prevent="showContextMenu($event, item)"
+src\components\inventory\InventoryGrid.vue:87:import { buildInventoryContextMenuRequest } from '@/core/inventory/context-menu.js';
+src\components\inventory\InventoryGrid.vue:92:import { itemTooltipAriaLabel } from '@/core/inventory/item-tooltip.js';
+src\components\inventory\InventoryGrid.vue:335:    const showContextMenu = (event, item) => {
+src\components\inventory\InventoryGrid.vue:338:      bus.$emit('PLAYER:MENU', buildInventoryContextMenuRequest(event, item));
+src\components\inventory\InventoryGrid.vue:431:    const itemAriaLabel = (item) => {
+src\components\inventory\InventoryGrid.vue:433:      return itemTooltipAriaLabel(item, { width, height });
+src\components\inventory\InventoryGrid.vue:488:      showContextMenu,
+src\components\inventory\InventoryGrid.vue:497:      itemAriaLabel,
+src\components\inventory\InventoryGrid.vue:537:  /* Navy slot-well texture (WIZARD PoE-style chrome) under a darkening wash. */
+src\components\inventory\InventoryGrid.vue:541:    url('@/assets/inventory/slot_texture.png');
+src\components\inventory\InventoryGrid.vue:639:  font-size: 10px;
+src\components\inventory\InventoryGrid.vue:641:  text-shadow: 0 1px 2px #000;
+src\components\inventory\InventoryGrid.vue:667:  font-size: 12px;
+src\components\inventory\InventoryGrid.vue:669:  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+src\components\slots\Logout.vue:46:  color: var(--color-text-primary);
+src\components\slots\Logout.vue:47:  text-align: center;
+src\components\slots\Logout.vue:62:    font: 1.4rem "GameFont", sans-serif;
+src\components\slots\Logout.vue:74:    font-size: 0.65rem;
+src\components\slots\Logout.vue:76:    text-transform: uppercase;
+src\components\slots\Logout.vue:82:    font-size: clamp(1.05rem, 3vw, 1.35rem);
+src\components\slots\Logout.vue:83:    font-weight: 500;
+src\components\slots\Logout.vue:85:    text-shadow: 0 2px 0 #000;
+src\components\slots\Logout.vue:91:    color: var(--color-text-secondary);
+src\components\slots\Logout.vue:92:    font: 0.82rem/1.65 "ChatFont", sans-serif;
+src\components\slots\Logout.vue:93:    text-shadow: 0 1px 0 #000;
+src/components\game-panes\Wagon.vue:3:    <pane-header :text="`House ${house.name} ΓÇö Wagon`" />
+src/components\game-panes\Wagon.vue:203:  font-family: 'GameFont', sans-serif;
+src/components\game-panes\Wagon.vue:216:    color: var(--color-text-primary);
+src/components\game-panes\Wagon.vue:217:    font-family: 'GameFont', sans-serif;
+src/components\game-panes\Wagon.vue:218:    font-size: 0.68rem;
+src/components\game-panes\Wagon.vue:250:      color: var(--color-text-secondary);
+src/components\game-panes\Wagon.vue:251:      font-size: 0.62rem;
+src/components\game-panes\Wagon.vue:256:      font-size: 0.8rem;
+src/components\game-panes\Wagon.vue:280:      color: var(--color-text-dim);
+src/components\game-panes\Wagon.vue:281:      font-size: 0.64rem;
+src/components\game-panes\Wagon.vue:282:      font-weight: normal;
+src/components\game-panes\Wagon.vue:284:      text-transform: uppercase;
+src/components\game-panes\Wagon.vue:297:      font-size: 0.72rem;
+src/components\game-panes\Wagon.vue:304:    color: var(--color-text-secondary);
+src/components\game-panes\Wagon.vue:305:    font: italic 0.64rem/1.5 'ChatFont', sans-serif;
+src/components\game-panes\Wagon.vue:321:      color: var(--color-text-secondary);
+src/components\game-panes\Wagon.vue:322:      font-size: 0.64rem;
+src/components\game-panes\Wagon.vue:327:      font-size: 0.8rem;
+src/components\game-panes\Wagon.vue:350:      color: var(--color-text-primary);
+src/components\game-panes\Wagon.vue:351:      font-size: 0.72rem;
+src/components\game-panes\Wagon.vue:355:      color: var(--color-text-dim);
+src/components\game-panes\Wagon.vue:356:      font: italic 0.62rem 'ChatFont', sans-serif;
+src/components\game-panes\Wagon.vue:386:      color: var(--color-text-primary);
+src/components\game-panes\Wagon.vue:387:      font-size: 0.72rem;
+src/components\game-panes\Wagon.vue:393:      font-size: 0.7rem;
+src/components\game-panes\Wagon.vue:415:      color: var(--color-text-primary);
+src/components\game-panes\Wagon.vue:416:      font-size: 0.72rem;
+src/components\game-panes\Wagon.vue:421:      font-size: 0.66rem;
+src/components\game-panes\Wagon.vue:426:      font-size: 0.64rem;
+src/components\game-panes\Wagon.vue:428:      text-transform: uppercase;
+src/components\hud\Quickbar.vue:74:import { primaryBindingLabel, subscribeBindings } from '../../core/config/controls.js';
+src/components\hud\Quickbar.vue:161:      return primaryBindingLabel(slot?.skillId) || slot?.hotkey || '';
+src/components\hud\Quickbar.vue:308:  font: 0.52rem/1 'GameFont', sans-serif;
+src/components\hud\Quickbar.vue:309:  text-shadow: 0 1px 1px #000;
+src/components\hud\Quickbar.vue:328:  font-size: 1rem;
+src/components\hud\Quickbar.vue:338:  font: 0.54rem/1.2 'ChatFont', sans-serif;
+src/components\hud\Quickbar.vue:358:  font: 600 0.85rem 'GameFont', sans-serif;
+src/components\hud\Quickbar.vue:359:  text-shadow: 0 1px 2px #000, 0 0 5px #000;
+src/components\hud\Quickbar.vue:373:  font: 0.68rem/1.35 'ChatFont', sans-serif;
+src/components\hud\Quickbar.vue:374:  text-align: left;
+src/components\hud\Quickbar.vue:387:    font: normal 0.78rem 'GameFont', sans-serif;
+src/components\hud\Quickbar.vue:389:    text-transform: uppercase;
+src/components\hud\Quickbar.vue:394:    font: 0.6rem 'ChatFont', sans-serif;
+src/components\hud\Quickbar.vue:395:    text-transform: uppercase;
+src/components\hud\Quickbar.vue:442:    font-size: 0.43rem;
+src\components\game-panes\Wagon.vue:3:    <pane-header :text="`House ${house.name} ΓÇö Wagon`" />
+src\components\game-panes\Wagon.vue:203:  font-family: 'GameFont', sans-serif;
+src\components\game-panes\Wagon.vue:216:    color: var(--color-text-primary);
+src\components\game-panes\Wagon.vue:217:    font-family: 'GameFont', sans-serif;
+src\components\game-panes\Wagon.vue:218:    font-size: 0.68rem;
+src\components\game-panes\Wagon.vue:250:      color: var(--color-text-secondary);
+src\components\game-panes\Wagon.vue:251:      font-size: 0.62rem;
+src\components\game-panes\Wagon.vue:256:      font-size: 0.8rem;
+src\components\game-panes\Wagon.vue:280:      color: var(--color-text-dim);
+src\components\game-panes\Wagon.vue:281:      font-size: 0.64rem;
+src\components\game-panes\Wagon.vue:282:      font-weight: normal;
+src\components\game-panes\Wagon.vue:284:      text-transform: uppercase;
+src\components\game-panes\Wagon.vue:297:      font-size: 0.72rem;
+src\components\game-panes\Wagon.vue:304:    color: var(--color-text-secondary);
+src\components\game-panes\Wagon.vue:305:    font: italic 0.64rem/1.5 'ChatFont', sans-serif;
+src\components\game-panes\Wagon.vue:321:      color: var(--color-text-secondary);
+src\components\game-panes\Wagon.vue:322:      font-size: 0.64rem;
+src\components\game-panes\Wagon.vue:327:      font-size: 0.8rem;
+src\components\game-panes\Wagon.vue:350:      color: var(--color-text-primary);
+src\components\game-panes\Wagon.vue:351:      font-size: 0.72rem;
+src\components\game-panes\Wagon.vue:355:      color: var(--color-text-dim);
+src\components\game-panes\Wagon.vue:356:      font: italic 0.62rem 'ChatFont', sans-serif;
+src\components\game-panes\Wagon.vue:386:      color: var(--color-text-primary);
+src\components\game-panes\Wagon.vue:387:      font-size: 0.72rem;
+src\components\game-panes\Wagon.vue:393:      font-size: 0.7rem;
+src\components\game-panes\Wagon.vue:415:      color: var(--color-text-primary);
+src\components\game-panes\Wagon.vue:416:      font-size: 0.72rem;
+src\components\game-panes\Wagon.vue:421:      font-size: 0.66rem;
+src\components\game-panes\Wagon.vue:426:      font-size: 0.64rem;
+src\components\game-panes\Wagon.vue:428:      text-transform: uppercase;
+src\components\ui\SettingsBindings.vue:52:      LMB attacks and RMB casts in the world, aimed at the cursor. The context
+src\components\ui\SettingsBindings.vue:123:      window.addEventListener('contextmenu', this.handleCaptureContextmenu, { capture: true });
+src\components\ui\SettingsBindings.vue:132:      window.removeEventListener('contextmenu', this.handleCaptureContextmenu, { capture: true });
+src\components\ui\SettingsBindings.vue:154:    handleCaptureContextmenu(event) {
+src\components\ui\SettingsBindings.vue:167:        const ownerLabel = owner ? owner.label : result.conflict;
+src\components\ui\SettingsBindings.vue:168:        this.error = `${displayBinding(rawBinding)} is already bound to ${ownerLabel}.`;
+src\components\ui\SettingsBindings.vue:207:      color: var(--color-text-primary);
+src\components\ui\SettingsBindings.vue:208:      font-weight: 500;
+src\components\ui\SettingsBindings.vue:212:      color: var(--color-text-dim);
+src\components\ui\SettingsBindings.vue:213:      font: 0.68rem "ChatFont", sans-serif;
+src\components\ui\SettingsBindings.vue:233:    font-size: 0.72rem;
+src\components\ui\SettingsBindings.vue:238:    color: var(--color-text-dim);
+src\components\ui\SettingsBindings.vue:242:    font-size: 0.8rem;
+src\components\ui\SettingsBindings.vue:252:    color: var(--color-text-primary);
+src\components\ui\SettingsBindings.vue:256:    font-size: 0.72rem;
+src\components\ui\SettingsBindings.vue:267:    font-size: 0.72rem;
+src\components\ui\SettingsBindings.vue:273:    font-size: 0.72rem;
+src\components\ui\SettingsBindings.vue:278:    color: var(--color-text-dim);
+src\components\ui\SettingsBindings.vue:279:    font: 0.7rem "ChatFont", sans-serif;
+src\components\ui\SettingsBindings.vue:285:    color: var(--color-text-primary);
+src\components\ui\SettingsBindings.vue:289:    font-size: 0.75rem;
+src\components\hud\HudOrb.vue:144:  font-family: 'GameFont', sans-serif;
+src\components\hud\HudOrb.vue:145:  text-shadow: 1px 1px 0 #000, 0 0 4px #000;
+src\components\hud\HudOrb.vue:151:  font-size: clamp(0.48rem, 0.7vw, 0.62rem);
+src\components\hud\HudOrb.vue:156:  font-size: clamp(0.56rem, 0.82vw, 0.72rem);
+src\components\hud\HudOrb.vue:157:  font-weight: 400;
+src\components\game-panes\Chart.vue:3:    <pane-header :text="data.roadName || 'Wayfinder\'s Chart'" />
+src\components\game-panes\Chart.vue:33:              <span class="chart-node__status">{{ statusLabel(node) }}</span>
+src\components\game-panes\Chart.vue:75:    statusLabel(node) {
+src\components\game-panes\Chart.vue:105:  font-family: 'GameFont', sans-serif;
+src\components\game-panes\Chart.vue:114:    color: var(--color-text-secondary);
+src\components\game-panes\Chart.vue:115:    font: italic 0.74rem/1.5 'ChatFont', sans-serif;
+src\components\game-panes\Chart.vue:121:    color: var(--color-text-dim);
+src\components\game-panes\Chart.vue:122:    font-size: 0.64rem;
+src\components\game-panes\Chart.vue:152:      color: var(--color-text-dim);
+src\components\game-panes\Chart.vue:153:      font-size: 0.62rem;
+src\components\game-panes\Chart.vue:155:      text-transform: uppercase;
+src\components\game-panes\Chart.vue:178:    text-align: left;
+src\components\game-panes\Chart.vue:183:    font-family: 'GameFont', sans-serif;
+src\components\game-panes\Chart.vue:193:      font-size: 0.8rem;
+src\components\game-panes\Chart.vue:203:      font-size: 0.62rem;
+src\components\game-panes\Chart.vue:208:      font-size: 0.62rem;
+src\components\game-panes\Chart.vue:210:      text-transform: uppercase;
+src\components\game-panes\Chart.vue:211:      color: var(--color-text-dim);
+src\components\game-panes\Chart.vue:233:    color: var(--color-text-dim);
+src\components\game-panes\Chart.vue:234:    font: italic 0.64rem/1.5 'ChatFont', sans-serif;
+src\components\game-panes\Shop.vue:3:    <pane-header :text="data.name" />
+src\components\game-panes\Shop.vue:12:        <strong>{{ stallLabel }}</strong>
+src\components\game-panes\Shop.vue:57:    stallLabel() {
+src\components\game-panes\Shop.vue:82:  font-family: "GameFont", sans-serif;
+src\components\game-panes\Shop.vue:106:      text-align: right;
+src\components\game-panes\Shop.vue:110:      color: var(--color-text-secondary);
+src\components\game-panes\Shop.vue:111:      font-size: 0.62rem;
+src\components\game-panes\Shop.vue:116:      font-size: 0.8rem;
+src\components\game-panes\Shop.vue:126:    color: var(--color-text-secondary);
+src\components\game-panes\Shop.vue:127:    font: .7rem/1.5 "ChatFont", sans-serif;
+src\components\game-panes\Shop.vue:133:    color: var(--color-text-dim);
+src\components\game-panes\Shop.vue:134:    font: italic 0.62rem/1.5 'ChatFont', sans-serif;
+src\components\GameCanvas.vue:37:      @contextmenu.prevent="rightClick"
+src\components\GameCanvas.vue:146:    bus.$on('game:context-menu:first-only', ClientUI.displayFirstAction);
+src\components\GameCanvas.vue:147:    bus.$on('canvas:reset-context-menu', this.handleCanvasResetContextMenu);
+src\components\GameCanvas.vue:165:    bus.$off('game:context-menu:first-only', ClientUI.displayFirstAction);
+src\components\GameCanvas.vue:166:    bus.$off('canvas:reset-context-menu', this.handleCanvasResetContextMenu);
+src\components\GameCanvas.vue:177:    handleCanvasResetContextMenu() {
+src\components\GameCanvas.vue:320:     * Close the context-menu
+src\components\GameCanvas.vue:326:     * Open the context-menu
+src\components\GameCanvas.vue:328:     * @param {object} incoming The data returned from the context-menu
+src\components\GameCanvas.vue:336:     * (rebindable in settings) and attacks toward the cursor. The context
+src\components\GameCanvas.vue:443:        bus.$emit('contextmenu:close');
+src\components\GameCanvas.vue:449:        // context-menu action (below) still takes precedence when armed.
+src\components\GameCanvas.vue:713:    // Scene swaps rebuild a large terrain texture. A dark world-colour keeps
+src\components\GameCanvas.vue:735:    font-size: 0.75em;
+src\components\GameCanvas.vue:736:    text-align: left;
+src\components\GameCanvas.vue:737:    font-family: "GameFont", sans-serif;
+src\components\GameCanvas.vue:738:    text-shadow: 1px 1px 0 #000;
+src\components\GameCanvas.vue:772:    color: var(--color-text-secondary);
+src\components\GameCanvas.vue:773:    font: 1rem "GameFont", sans-serif;
+src\components\GameCanvas.vue:790:  #context-menu {
+src\components\game-panes\sub\pane-header.vue:4:      class="text-header"
+src\components\game-panes\sub\pane-header.vue:5:      v-text="text"
+src\components\game-panes\sub\pane-header.vue:13:    text: {
+src\components\game-panes\sub\pane-header.vue:31:  .text-header {
+src\components\game-panes\sub\pane-header.vue:34:    text-shadow: 0 2px 0 #000;
+src\components\game-panes\sub\pane-header.vue:35:    font-size: 0.74rem;
+src\components\game-panes\sub\pane-header.vue:38:    text-transform: uppercase;
+src\components\Chatbox.vue:16:          Hiding in {{ countdownLabel }}
+src\components\Chatbox.vue:54:            class="chatbox__text"
+src\components\Chatbox.vue:56:          >{{ message.displayText }}</span>
+src\components\Chatbox.vue:70:        type="text"
+src\components\Chatbox.vue:133:          text: 'Welcome to Verdigris.',
+src\components\Chatbox.vue:137:          displayText: 'Welcome to Verdigris.',
+src\components\Chatbox.vue:160:    countdownLabel() {
+src\components\Chatbox.vue:207:        text = '',
+src\components\Chatbox.vue:213:      this.appendChat({ type, username, color, text });
+src\components\Chatbox.vue:215:    appendChat({ type, username, color, text }) {
+src\components\Chatbox.vue:216:      if (!text) {
+src\components\Chatbox.vue:220:      const formatted = this.formatMessage(type, color, text);
+src\components\Chatbox.vue:225:        text,
+src\components\Chatbox.vue:226:        displayText: formatted.displayText,
+src\components\Chatbox.vue:236:    formatMessage(type, color, text) {
+src\components\Chatbox.vue:241:        return { displayText: text, colorStyle: `color:${sanitisedColor}` };
+src\components\Chatbox.vue:244:        return { displayText: text, colorStyle: `color:${sanitisedColor || '#ffd166'};font-weight:600` };
+src\components\Chatbox.vue:246:      return { displayText: text, colorStyle: '' };
+src\components\Chatbox.vue:341:  color: var(--color-text-primary);
+src\components\Chatbox.vue:379:  font-size: 12px;
+src\components\Chatbox.vue:381:  text-transform: uppercase;
+src\components\Chatbox.vue:387:  font-size: 0.75em;
+src\components\Chatbox.vue:388:  color: var(--color-text-secondary);
+src\components\Chatbox.vue:403:  font-size: 0.7em;
+src\components\Chatbox.vue:404:  text-align: center;
+src\components\Chatbox.vue:405:  font-weight: 700;
+src\components\Chatbox.vue:412:  color: var(--color-text-secondary);
+src\components\Chatbox.vue:415:  font-size: var(--font-size-sm);
+src\components\Chatbox.vue:457:  font-size: 12px;
+src\components\Chatbox.vue:458:  color: var(--color-text-primary);
+src\components\Chatbox.vue:459:  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.72);
+src\components\Chatbox.vue:464:  font-weight: 600;
+src\components\Chatbox.vue:467:.chatbox__text {
+src\components\Chatbox.vue:471:.chatbox__text--chat {
+src\components\Chatbox.vue:472:  font-weight: 500;
+src\components\Chatbox.vue:476:  font-size: 0.7em;
+src\components\Chatbox.vue:492:  color: var(--color-text-primary);
+src\components\Chatbox.vue:494:  font-family: 'ChatFont', 'GameFont', sans-serif;
+src\components\Chatbox.vue:495:  font-size: var(--font-size-sm);
+src\components\Chatbox.vue:508:  color: var(--color-text-primary);
+src\components\Chatbox.vue:510:  font-family: 'GameFont', sans-serif;
+src\components\Chatbox.vue:511:  font-size: var(--font-size-sm);
+src\components\inventory\EquipmentRagdoll.vue:30:        <small>{{ openAuxiliaryWindow.axisLabel }}</small>
+src\components\inventory\EquipmentRagdoll.vue:40:        {{ openAuxiliaryWindow.seatLabel }}
+src\components\inventory\EquipmentRagdoll.vue:54:        @open-context-menu="showContextMenu"
+src\components\inventory\EquipmentRagdoll.vue:85:  { id: 'war-call-window', label: 'War-call', axis: 'str', axisLabel: 'Strength', unlock: 'war_call_slot', kind: 'seat', seatLabel: 'War-call seat' },
+src\components\inventory\EquipmentRagdoll.vue:86:  { id: 'quick-rig-window', label: 'Quick Rig', axis: 'dex', axisLabel: 'Dexterity', unlock: 'quick_rig_slot', kind: 'seat', seatLabel: 'Quick Rig seat' },
+src\components\inventory\EquipmentRagdoll.vue:87:  { id: 'attendant-window', label: 'Attendant', axis: 'int', axisLabel: 'Intellect', unlock: 'attendant_focus_slot', kind: 'seat', seatLabel: 'Attendant focus' },
+src\components\inventory\EquipmentRagdoll.vue:88:  { id: 'spoils-roll-window', label: 'Spoils Roll', axis: 'str-dex', axisLabel: 'Strength / Dexterity', unlock: 'spoils_pack', kind: 'pack' },
+src\components\inventory\EquipmentRagdoll.vue:89:  { id: 'preparation-case-window', label: 'Preparation Case', axis: 'dex-int', axisLabel: 'Dexterity / Intellect', unlock: 'preparations_pack', kind: 'pack' },
+src\components\inventory\EquipmentRagdoll.vue:90:  { id: 'reliquary-window', label: 'Reliquary', axis: 'int-str', axisLabel: 'Intellect / Strength', unlock: 'reliquary_pack', kind: 'pack' },
+src\components\inventory\EquipmentRagdoll.vue:153:    bus.$on('game:context-menu:first-only', ClientUI.displayFirstAction);
+src\components\inventory\EquipmentRagdoll.vue:156:    bus.$off('game:context-menu:first-only', ClientUI.displayFirstAction);
+src\components\inventory\EquipmentRagdoll.vue:168:    showContextMenu(event, slot, firstOnly = false) {
+src\components\inventory\EquipmentRagdoll.vue:217:  font-family: 'GameFont', sans-serif;
+src\components\inventory\EquipmentRagdoll.vue:255:    font-family: 'GameFont', sans-serif;
+src\components\inventory\EquipmentRagdoll.vue:256:    font-size: 9px;
+src\components\inventory\EquipmentRagdoll.vue:298:    font-size: 9px;
+src\components\inventory\EquipmentRagdoll.vue:300:    text-transform: uppercase;
+src\components\inventory\EquipmentRagdoll.vue:305:    font-size: 8px;
+src\components\inventory\EquipmentRagdoll.vue:326:      url('@/assets/inventory/slot_texture.png') center / cover;
+src\components\inventory\EquipmentRagdoll.vue:337:    font-size: 9px;
+src\components\inventory\EquipmentRagdoll.vue:339:    text-align: center;
+src\components\inventory\EquipmentRagdoll.vue:340:    text-transform: uppercase;
+src\components\slots\Inventory.vue:238:  color: var(--color-text-primary);
+src\components\slots\Inventory.vue:288:    font-size: 9px;
+src\components\slots\Inventory.vue:291:    text-align: right;
+src\components\slots\Inventory.vue:292:    text-transform: uppercase;
+src\components\slots\Inventory.vue:297:    font-size: 10px;
+src\components\slots\Inventory.vue:299:    text-shadow: 0 1px 2px #000;
+src/components\game-panes\sub\pane-header.vue:4:      class="text-header"
+src/components\game-panes\sub\pane-header.vue:5:      v-text="text"
+src/components\game-panes\sub\pane-header.vue:13:    text: {
+src/components\game-panes\sub\pane-header.vue:31:  .text-header {
+src/components\game-panes\sub\pane-header.vue:34:    text-shadow: 0 2px 0 #000;
+src/components\game-panes\sub\pane-header.vue:35:    font-size: 0.74rem;
+src/components\game-panes\sub\pane-header.vue:38:    text-transform: uppercase;
+src\components\layout\GameHUD.vue:4:      v-if="identityLabel"
+src\components\layout\GameHUD.vue:6:      :title="identityLabel"
+src\components\layout\GameHUD.vue:9:      {{ identityLabel }}
+src\components\layout\GameHUD.vue:89:    identityLabel() {
+src\components\layout\GameHUD.vue:137:  font-size: 0.72rem;
+src\components\layout\GameHUD.vue:139:  text-shadow: 1px 1px 0 #000;
+src\components\layout\GameHUD.vue:142:  text-overflow: ellipsis;
+src\components\layout\GameHUD.vue:209:  font-size: 0.56rem;
+src\components\layout\GameHUD.vue:212:  text-transform: uppercase;
+src\components\layout\GameHUD.vue:214:  text-shadow: 1px 1px 0 black, 0 0 4px black;
+src\components\passives\GeometricSkillTreePane.vue:29:          <span class="first-allocation-hint__meta">{{ firstAllocationHint.axisLabel }} ┬╖ {{ firstAllocationHint.effects.join(' ┬╖ ') }}</span>
+src\components\passives\GeometricSkillTreePane.vue:78:          <span>{{ treeState.selectedNode.axisLabel }}</span>
+src\components\passives\GeometricSkillTreePane.vue:354:      const label = makeSvgEl('text', {
+src\components\passives\GeometricSkillTreePane.vue:359:      label.textContent = VERDIGRIS_AXIS_META[axis].short;
+src\components\passives\GeometricSkillTreePane.vue:406:      const icon = makeSvgEl('text', { y: 0, className: 'node-icon' });
+src\components\passives\GeometricSkillTreePane.vue:407:      icon.textContent = nodeIcon(node);
+src\components\passives\GeometricSkillTreePane.vue:419:      group.addEventListener('contextmenu', (event) => {
+src\components\passives\GeometricSkillTreePane.vue:493:    this.tooltipEl.querySelector('.tt-header').innerText = node.name;
+src\components\passives\GeometricSkillTreePane.vue:494:    this.tooltipEl.querySelector('.tt-body').innerText = [
+src\components\passives\GeometricSkillTreePane.vue:513:    this.tooltipEl.querySelector('.tt-header').innerText = option.name;
+src\components\passives\GeometricSkillTreePane.vue:514:    this.tooltipEl.querySelector('.tt-body').innerText = `${state} conduit\n${formatAttrs(option.attrs)}`;
+src\components\passives\GeometricSkillTreePane.vue:634:    axisLabel: 'Hybrid',
+src\components\passives\GeometricSkillTreePane.vue:848:  font-family: 'GameFont', sans-serif;
+src\components\passives\GeometricSkillTreePane.vue:917:    font-size: 13px;
+src\components\passives\GeometricSkillTreePane.vue:919:    text-transform: uppercase;
+src\components\passives\GeometricSkillTreePane.vue:920:    text-shadow: 1px 1px 0 #000;
+src\components\passives\GeometricSkillTreePane.vue:926:    text-align: center;
+src\components\passives\GeometricSkillTreePane.vue:944:      font-size: 10px;
+src\components\passives\GeometricSkillTreePane.vue:946:      text-transform: uppercase;
+src\components\passives\GeometricSkillTreePane.vue:951:      font-size: 14px;
+src\components\passives\GeometricSkillTreePane.vue:976:    font-size: 9px;
+src\components\passives\GeometricSkillTreePane.vue:978:    text-transform: uppercase;
+src\components\passives\GeometricSkillTreePane.vue:983:    font-size: 13px;
+src\components\passives\GeometricSkillTreePane.vue:988:    font-size: 10px;
+src\components\passives\GeometricSkillTreePane.vue:1008:      font-size: 10px;
+src\components\passives\GeometricSkillTreePane.vue:1014:      font-size: 13px;
+src\components\passives\GeometricSkillTreePane.vue:1025:    font-size: 9px;
+src\components\passives\GeometricSkillTreePane.vue:1027:    text-transform: capitalize;
+src\components\passives\GeometricSkillTreePane.vue:1031:      font-size: 11px;
+src\components\passives\GeometricSkillTreePane.vue:1033:      text-transform: uppercase;
+src\components\passives\GeometricSkillTreePane.vue:1051:      font-size: 11px;
+src\components\passives\GeometricSkillTreePane.vue:1056:      text-overflow: ellipsis;
+src\components\passives\GeometricSkillTreePane.vue:1077:    font-size: 11px;
+src\components\passives\GeometricSkillTreePane.vue:1089:      font-size: 10px;
+src\components\passives\GeometricSkillTreePane.vue:1094:      font-size: 16px;
+src\components\passives\GeometricSkillTreePane.vue:1096:      text-transform: none;
+src\components\passives\GeometricSkillTreePane.vue:1101:      font-size: 11px;
+src\components\passives\GeometricSkillTreePane.vue:1103:      text-transform: none;
+src\components\passives\GeometricSkillTreePane.vue:1118:      font-size: 10px;
+src\components\passives\GeometricSkillTreePane.vue:1133:      font-size: 12px;
+src\components\passives\GeometricSkillTreePane.vue:1147:      font-size: 12px;
+src\components\passives\GeometricSkillTreePane.vue:1175:      font-size: 12px;
+src\components\passives\GeometricSkillTreePane.vue:1180:      font-size: 11px;
+src\components\passives\GeometricSkillTreePane.vue:1195:    font-size: 11px;
+src\components\passives\GeometricSkillTreePane.vue:1197:    text-transform: uppercase;
+src\components\passives\GeometricSkillTreePane.vue:1205:    text-align: left;
+src\components\passives\GeometricSkillTreePane.vue:1208:      font-size: 12px;
+src\components\passives\GeometricSkillTreePane.vue:1213:      font-size: 11px;
+src\components\passives\GeometricSkillTreePane.vue:1248:    font-size: 12px;
+src\components\passives\GeometricSkillTreePane.vue:1249:    font-weight: 700;
+src\components\passives\GeometricSkillTreePane.vue:1253:    text-anchor: middle;
+src\components\passives\GeometricSkillTreePane.vue:1409:    font-family: 'GameFont', sans-serif;
+src\components\passives\GeometricSkillTreePane.vue:1410:    font-size: 8px;
+src\components\passives\GeometricSkillTreePane.vue:1411:    text-anchor: middle;
+src\components\passives\GeometricSkillTreePane.vue:1414:    text-shadow: 1px 1px 0 #000;
+src\components\passives\GeometricSkillTreePane.vue:1434:    font-size: 14px;
+src\components\passives\GeometricSkillTreePane.vue:1435:    font-weight: 700;
+src\components\passives\GeometricSkillTreePane.vue:1440:    font-size: 12px;
+src\components\ui\auth\ChroniclesScreen.vue:29:          type="text"
+src\components\ui\auth\ChroniclesScreen.vue:39:        class="chronicles__text-button"
+src\components\ui\auth\ChroniclesScreen.vue:62:          class="chronicles__text-button chronicles__text-button--new"
+src\components\ui\auth\ChroniclesScreen.vue:114:              type="text"
+src\components\ui\auth\ChroniclesScreen.vue:374:    font-family: 'GameFont', sans-serif;
+src\components\ui\auth\ChroniclesScreen.vue:375:    font-size: clamp(1.7rem, 5vw, 2.45rem);
+src\components\ui\auth\ChroniclesScreen.vue:376:    font-weight: normal;
+src\components\ui\auth\ChroniclesScreen.vue:378:    text-transform: uppercase;
+src\components\ui\auth\ChroniclesScreen.vue:390:  font-size: 1.45rem;
+src\components\ui\auth\ChroniclesScreen.vue:406:  font-family: 'ChatFont', sans-serif;
+src\components\ui\auth\ChroniclesScreen.vue:407:  font-size: 0.68rem;
+src\components\ui\auth\ChroniclesScreen.vue:409:  text-transform: uppercase;
+src\components\ui\auth\ChroniclesScreen.vue:415:  font-family: 'ChatFont', sans-serif;
+src\components\ui\auth\ChroniclesScreen.vue:416:  font-size: 0.72rem;
+src\components\ui\auth\ChroniclesScreen.vue:422:  font-family: 'ChatFont', sans-serif;
+src\components\ui\auth\ChroniclesScreen.vue:423:  font-size: 0.82rem;
+src\components\ui\auth\ChroniclesScreen.vue:439:    text-transform: uppercase;
+src\components\ui\auth\ChroniclesScreen.vue:453:    font: 0.82rem 'ChatFont', sans-serif;
+src\components\ui\auth\ChroniclesScreen.vue:466:    font-family: 'GameFont', sans-serif;
+src\components\ui\auth\ChroniclesScreen.vue:491:  text-align: left;
+src\components\ui\auth\ChroniclesScreen.vue:498:    font: 0.62rem 'ChatFont', sans-serif;
+src\components\ui\auth\ChroniclesScreen.vue:508:.chronicles__text-button {
+src\components\ui\auth\ChroniclesScreen.vue:511:  font: 0.68rem 'ChatFont', sans-serif;
+src\components\ui\auth\ChroniclesScreen.vue:512:  text-decoration: underline;
+src\components\ui\auth\ChroniclesScreen.vue:519:    text-align: left;
+src\components\ui\auth\ChroniclesScreen.vue:532:    font-size: 1.45rem;
+src\components\ui\auth\ChroniclesScreen.vue:533:    font-weight: normal;
+src\components\ui\auth\ChroniclesScreen.vue:543:    text-align: center;
+src\components\ui\auth\ChroniclesScreen.vue:548:    font: 0.6rem 'ChatFont', sans-serif;
+src\components\ui\auth\ChroniclesScreen.vue:549:    text-transform: uppercase;
+src\components\ui\auth\ChroniclesScreen.vue:566:  font: italic 0.72rem 'ChatFont', sans-serif;
+src\components\ui\auth\ChroniclesScreen.vue:577:  text-align: left;
+src\components\ui\auth\ChroniclesScreen.vue:604:    font-weight: normal;
+src\components\ui\auth\ChroniclesScreen.vue:609:    font: 0.64rem 'ChatFont', sans-serif;
+src\components\ui\auth\ChroniclesScreen.vue:624:    font: 0.67rem 'ChatFont', sans-serif;
+src\components\ui\auth\ChroniclesScreen.vue:625:    text-transform: uppercase;
+src\components\ui\auth\ChroniclesScreen.vue:635:  font: 0.66rem/1.35 'ChatFont', sans-serif;
+src\components\ui\auth\ChroniclesScreen.vue:645:    font-weight: normal;
+src\components\ui\auth\ChroniclesScreen.vue:646:    text-transform: uppercase;
+src\components\ui\auth\ChroniclesScreen.vue:651:    font: inherit;
+src\components\ui\auth\ChroniclesScreen.vue:663:  font: 0.68rem 'ChatFont', sans-serif;
+src\components\ui\auth\ChroniclesScreen.vue:686:  font-family: 'GameFont', sans-serif;
+src\components\ui\auth\ChroniclesScreen.vue:687:  font-size: 0.95rem;
+src\components\ui\auth\ChroniclesScreen.vue:689:  text-transform: uppercase;
+src\components\ui\auth\ChroniclesScreen.vue:705:  font: 0.72rem 'ChatFont', sans-serif;
+src\components\ui\auth\ChroniclesScreen.vue:744:  .chronicles__text-button--new {
+src\components\ui\panes\PaneCard.vue:8:    :aria-label="ariaLabel"
+src\components\ui\panes\PaneCard.vue:51:    ariaLabel: {
+src\components\ui\panes\PaneCard.vue:79:  color: var(--color-text-primary);
+src\components\ui\panes\PaneCard.vue:122:  font-family: 'GameFont', sans-serif;
+src\components\ui\panes\PaneCard.vue:123:  font-size: 12px;
+src\components\ui\panes\PaneCard.vue:125:  text-transform: uppercase;
+src\components\ui\panes\PaneCard.vue:127:  text-shadow: 0 2px 0 #000, 0 0 10px rgba(217, 169, 74, 0.22);
+src\components\ui\panes\PaneCard.vue:141:  color: var(--color-text-secondary);
+src\components\ui\panes\PaneCard.vue:149:  font-size: 14px;
+src\components\game-panes\Bank.vue:3:    <pane-header text="Bank of Delaford" />
+src\components\game-panes\Bank.vue:83:  font-family: "GameFont", sans-serif;
+src\components\game-panes\Bank.vue:100:    color: var(--color-text-primary);
+src\components\game-panes\Bank.vue:110:      color: var(--color-text-secondary);
+src\components\game-panes\Bank.vue:111:      font-size: .68rem;
+src\components\game-panes\Bank.vue:115:      font-size: .82rem;
+src\components\game-panes\Bank.vue:125:      color: var(--color-text-primary);
+src\components\game-panes\Bank.vue:146:    color: var(--color-text-secondary);
+src\components\game-panes\Bank.vue:147:    font-size: .7rem;
+src\components\layout\AuthContainer.vue:40:          :account-name="chroniclesContext && chroniclesContext.accountName"
+src\components\layout\AuthContainer.vue:41:          :account-id="chroniclesContext && chroniclesContext.chroniclesAccountId"
+src\components\layout\AuthContainer.vue:42:          :chronicles-state="chroniclesContext && chroniclesContext.chronicles"
+src\components\layout\AuthContainer.vue:43:          :chronicles-revision="chroniclesContext && chroniclesContext.chroniclesRevision"
+src\components\layout\AuthContainer.vue:44:          :chronicles-exists="Boolean(chroniclesContext && chroniclesContext.chroniclesExists)"
+src\components\layout\AuthContainer.vue:127:    chroniclesContext: {
+src\components\layout\AuthContainer.vue:267:  font-size: 0.85em;
+src\components\layout\AuthContainer.vue:268:  text-align: center;
+src\components\layout\AuthContainer.vue:269:  font-family: 'ChatFont', sans-serif;
+src\components\layout\AuthContainer.vue:270:  color: var(--color-text-secondary);
+src\components\layout\AuthContainer.vue:279:  font-size: 0.95rem;
+src\components\layout\AuthContainer.vue:282:  text-align: center;
+src\components\layout\AuthContainer.vue:286:    text-decoration: underline;
+src\components\layout\AuthContainer.vue:291:  text-align: center;
+src\components\layout\AuthContainer.vue:298:  font: 0.68rem 'ChatFont', sans-serif;
+src\components\layout\AuthContainer.vue:300:  text-transform: uppercase;
+src\components\layout\AuthContainer.vue:301:  text-shadow: 0 1px 2px #000;
+src\components\layout\AuthContainer.vue:306:  font-family: 'GameFont', sans-serif;
+src\components\layout\AuthContainer.vue:307:  font-weight: normal;
+src\components\layout\AuthContainer.vue:308:  font-size: clamp(2.4rem, 6vw, 3.4rem);
+src\components\layout\AuthContainer.vue:311:  text-transform: uppercase;
+src\components\layout\AuthContainer.vue:313:  background-clip: text;
+src\components\layout\AuthContainer.vue:320:  font-family: 'ChatFont', sans-serif;
+src\components\layout\AuthContainer.vue:321:  font-size: 0.78rem;
+src\components\layout\AuthContainer.vue:323:  text-transform: uppercase;
+src\components\layout\AuthContainer.vue:330:  font: 0.65rem 'ChatFont', sans-serif;
+src\components\layout\AuthContainer.vue:332:  text-align: center;
+src\components\layout\AuthContainer.vue:333:  text-transform: uppercase;
+src\components\layout\AuthContainer.vue:379:  font-family: 'GameFont', sans-serif;
+src\components\layout\AuthContainer.vue:380:  font-size: 1.15rem;
+src\components\layout\AuthContainer.vue:382:  text-transform: uppercase;
+src\components\layout\AuthContainer.vue:384:  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.85);
+src\components\ui\auth\AccountCreate.vue:106:  color: var(--color-text-primary);
+src\components\ui\auth\AccountCreate.vue:110:    font-family: 'GameFont', sans-serif;
+src\components\ui\auth\AccountCreate.vue:126:    font-family: 'ChatFont', sans-serif;
+src\components\ui\auth\AccountCreate.vue:145:    font-family: 'GameFont', sans-serif;
+src\components\layout\GameContainer.vue:5:    @contextmenu.prevent="handleRightClick"
+src\components\layout\GameContainer.vue:52:              :text="guideBeat"
+src\components\layout\GameContainer.vue:180:                :aria-label="chatToggleLabel || 'Show chat'"
+src\components\layout\GameContainer.vue:266:    <ContextMenu :game="game" />
+src\components\layout\GameContainer.vue:283:import ContextMenu from '../sub/ContextMenu.vue';
+src\components\layout\GameContainer.vue:300:    ContextMenu,
+src\components\layout\GameContainer.vue:388:    chatToggleLabel: {
+src\components\layout\GameContainer.vue:768:      const text = payload && payload.text ? payload.text : '';
+src\components\layout\GameContainer.vue:769:      if (!shouldSurfaceGuideBeat(text, guideBeatCount.value)) {
+src\components\layout\GameContainer.vue:773:      guideBeat.value = stripGuidePrefix(text);
+src\components\layout\GameContainer.vue:781:          setGuide(text) {
+src\components\layout\GameContainer.vue:784:              guideBeat.value = String(text || '');
+src\components\layout\GameContainer.vue:1030:  font-family: Georgia, serif;
+src\components\layout\GameContainer.vue:1031:  font-size: 0.72rem;
+src\components\layout\GameContainer.vue:1033:  text-transform: uppercase;
+src\components\layout\GameContainer.vue:1039:  font-family: 'GameFont', sans-serif;
+src\components\layout\GameContainer.vue:1040:  font-size: 0.86rem;
+src\components\layout\GameContainer.vue:1041:  font-weight: 400;
+src\components\layout\GameContainer.vue:1043:  text-shadow: 0 2px 8px #000;
+src\components\layout\GameContainer.vue:1048:  font-size: 2rem;
+src\components\layout\GameContainer.vue:1106:  font: 0.67rem 'GameFont', sans-serif;
+src\components\layout\GameContainer.vue:1108:  text-transform: uppercase;
+src\components\layout\GameContainer.vue:1164:  font-size: 0.68rem;
+src\components\layout\GameContainer.vue:1166:  text-transform: uppercase;
+src\components\layout\GameContainer.vue:1167:  color: var(--color-text-dim);
+src\components\layout\GameContainer.vue:1180:  font-size: 0.64rem;
+src\components\layout\GameContainer.vue:1195:  font-family: 'GameFont', sans-serif;
+src\components\layout\GameContainer.vue:1214:  font-size: 0.63rem;
+src\components\layout\GameContainer.vue:1216:  text-transform: uppercase;
+src\components\layout\GameContainer.vue:1244:  text-align: left;
+src\components\layout\GameContainer.vue:1253:  font-size: 0.82rem;
+src\components\layout\GameContainer.vue:1258:  font-family: Georgia, serif;
+src\components\layout\GameContainer.vue:1259:  font-size: 0.64rem;
+src\components\layout\GameContainer.vue:1265:  font-family: 'GameFont', sans-serif;
+src\components\layout\GameContainer.vue:1266:  font-size: 0.62rem;
+src\components\layout\GameContainer.vue:1272:  font-size: 0.66rem;
+src\components\layout\GameContainer.vue:1290:  font-size: 0.75rem;
+src\components\layout\GameContainer.vue:1292:  text-align: left;
+src\components\layout\GameContainer.vue:1314:  font: inherit;
+src\components\layout\GameContainer.vue:1315:  text-align: left;
+src\components\layout\GameContainer.vue:1333:  text-overflow: ellipsis;
+src\components\layout\GameContainer.vue:1343:  font-size: 0.7rem;
+src\components\layout\GameContainer.vue:1344:  font-weight: 700;
+src\components\layout\GameContainer.vue:1345:  text-align: center;
+src\components\sub\LoginBackdrop.vue:81:  const ctx = layer.getContext('2d');
+src\components\sub\LoginBackdrop.vue:122:  const ctx = canvas.getContext('2d');
+src\components\ui\LootMoment.vue:109:  font-family: Georgia, serif;
+src\components\ui\LootMoment.vue:110:  text-align: center;
+src\components\ui\LootMoment.vue:117:  font: 0.66rem 'GameFont', sans-serif;
+src\components\ui\LootMoment.vue:119:  text-transform: uppercase;
+src\components\ui\LootMoment.vue:125:  font: 1.3rem 'GameFont', Georgia, serif;
+src\components\ui\LootMoment.vue:127:  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+src\components\ui\LootMoment.vue:133:  font-size: 0.82rem;
+src\components\ui\LootMoment.vue:134:  font-style: italic;
+src\components\ui\LootMoment.vue:141:  font: 0.74rem 'GameFont', sans-serif;
+src\components\ui\LootMoment.vue:149:  font-size: 0.72rem;
+src/components\game-panes\Shop.vue:3:    <pane-header :text="data.name" />
+src/components\game-panes\Shop.vue:12:        <strong>{{ stallLabel }}</strong>
+src/components\game-panes\Shop.vue:57:    stallLabel() {
+src/components\game-panes\Shop.vue:82:  font-family: "GameFont", sans-serif;
+src/components\game-panes\Shop.vue:106:      text-align: right;
+src/components\game-panes\Shop.vue:110:      color: var(--color-text-secondary);
+src/components\game-panes\Shop.vue:111:      font-size: 0.62rem;
+src/components\game-panes\Shop.vue:116:      font-size: 0.8rem;
+src/components\game-panes\Shop.vue:126:    color: var(--color-text-secondary);
+src/components\game-panes\Shop.vue:127:    font: .7rem/1.5 "ChatFont", sans-serif;
+src/components\game-panes\Shop.vue:133:    color: var(--color-text-dim);
+src/components\game-panes\Shop.vue:134:    font: italic 0.62rem/1.5 'ChatFont', sans-serif;
+src\components\ui\panes\EscapeMenu.vue:84:  text-align: center;
+src\components\ui\panes\EscapeMenu.vue:99:  font-family: 'GameFont', Georgia, serif;
+src\components\ui\panes\EscapeMenu.vue:100:  font-size: clamp(1.5rem, 4vw, 2.2rem);
+src\components\ui\panes\EscapeMenu.vue:101:  font-weight: 500;
+src\components\ui\panes\EscapeMenu.vue:104:  text-shadow: 0 2px 0 #000, 0 0 18px rgba(217, 169, 74, 0.2);
+src\components\ui\panes\EscapeMenu.vue:110:  color: var(--color-text-dim);
+src\components\ui\panes\EscapeMenu.vue:111:  font-size: 0.72rem;
+src\components\ui\panes\EscapeMenu.vue:113:  text-transform: uppercase;
+src\components\ui\panes\EscapeMenu.vue:137:  color: var(--color-text-primary);
+src\components\ui\panes\EscapeMenu.vue:138:  font-family: 'GameFont', sans-serif;
+src\components\ui\panes\EscapeMenu.vue:139:  font-size: 0.82rem;
+src\components\ui\panes\EscapeMenu.vue:141:  text-align: left;
+src\components\ui\panes\EscapeMenu.vue:163:  font-size: 0.95rem;
+src\components\ui\panes\EscapeMenu.vue:179:  font-family: sans-serif;
+src\components\ui\panes\EscapeMenu.vue:180:  font-size: 0.65rem;
+src\components\ui\panes\EscapeMenu.vue:196:  font-family: monospace;
+src\components\ui\panes\EscapeMenu.vue:197:  font-size: 0.68rem;
+src\components\ui\panes\EscapeMenu.vue:198:  text-align: center;
+src\components\ui\auth\CharacterCreate.vue:18:          type="text"
+src\components\ui\auth\CharacterCreate.vue:30:          type="text"
+src\components\ui\auth\CharacterCreate.vue:43:          {{ submitLabel }}
+src\components\ui\auth\CharacterCreate.vue:81:          <dd>{{ confidenceLabel }}</dd>
+src\components\ui\auth\CharacterCreate.vue:122:    submitLabel() {
+src\components\ui\auth\CharacterCreate.vue:175:    confidenceLabel() {
+src\components\ui\auth\CharacterCreate.vue:350:  font-size: 1.5rem;
+src\components\ui\auth\CharacterCreate.vue:351:  font-weight: 700;
+src\components\ui\auth\CharacterCreate.vue:352:  text-align: center;
+src\components\ui\auth\CharacterCreate.vue:357:  font-size: 0.95rem;
+src\components\ui\auth\CharacterCreate.vue:359:  text-align: center;
+src\components\ui\auth\CharacterCreate.vue:373:  font-size: 0.9rem;
+src\components\ui\auth\CharacterCreate.vue:374:  text-transform: uppercase;
+src\components\ui\auth\CharacterCreate.vue:404:  font-weight: 600;
+src\components\ui\auth\CharacterCreate.vue:427:  font-size: 0.95rem;
+src\components\ui\auth\CharacterCreate.vue:447:  font-weight: 700;
+src\components\ui\auth\CharacterCreate.vue:462:  font-size: 1.1rem;
+src\components\ui\auth\CharacterCreate.vue:472:  font-weight: 600;
+src\components\ui\auth\CharacterCreate.vue:477:  text-align: right;
+src\components\ui\Login.vue:63:          type="text"
+src\components\ui\Login.vue:255:  text-align: center;
+src\components\ui\Login.vue:261:  font: 0.7rem 'ChatFont', sans-serif;
+src\components\ui\Login.vue:263:  text-transform: uppercase;
+src\components\ui\Login.vue:273:  font-family: 'GameFont', sans-serif;
+src\components\ui\Login.vue:274:  font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+src\components\ui\Login.vue:276:  text-transform: uppercase;
+src\components\ui\Login.vue:277:  text-shadow: 0 1px rgba(255, 255, 255, 0.25);
+src\components\ui\Login.vue:291:    font: 0.61rem 'ChatFont', sans-serif;
+src\components\ui\Login.vue:321:  font: 0.73rem 'ChatFont', sans-serif;
+src\components\ui\Login.vue:333:  font: 0.69rem 'ChatFont', sans-serif;
+src\components\ui\Login.vue:335:  text-transform: uppercase;
+src\components\ui\Login.vue:342:    font-size: 1rem;
+src\components\ui\Login.vue:366:  font: 0.66rem 'ChatFont', sans-serif;
+src\components\ui\Login.vue:392:    font: 0.65rem 'ChatFont', sans-serif;
+src\components\ui\Login.vue:394:    text-transform: uppercase;
+src\components\ui\Login.vue:401:    font: 0.8rem 'ChatFont', sans-serif;
+src\components\ui\Login.vue:418:  font: 0.68rem 'ChatFont', sans-serif;
+src\components\ui\Login.vue:435:  font: 0.75rem 'GameFont', sans-serif;
+src\components\ui\Login.vue:437:  text-transform: uppercase;
+src/components\game-panes\Bank.vue:3:    <pane-header text="Bank of Delaford" />
+src/components\game-panes\Bank.vue:83:  font-family: "GameFont", sans-serif;
+src/components\game-panes\Bank.vue:100:    color: var(--color-text-primary);
+src/components\game-panes\Bank.vue:110:      color: var(--color-text-secondary);
+src/components\game-panes\Bank.vue:111:      font-size: .68rem;
+src/components\game-panes\Bank.vue:115:      font-size: .82rem;
+src/components\game-panes\Bank.vue:125:      color: var(--color-text-primary);
+src/components\game-panes\Bank.vue:146:    color: var(--color-text-secondary);
+src/components\game-panes\Bank.vue:147:    font-size: .7rem;
+src/components\game-panes\Chart.vue:3:    <pane-header :text="data.roadName || 'Wayfinder\'s Chart'" />
+src/components\game-panes\Chart.vue:33:              <span class="chart-node__status">{{ statusLabel(node) }}</span>
+src/components\game-panes\Chart.vue:75:    statusLabel(node) {
+src/components\game-panes\Chart.vue:105:  font-family: 'GameFont', sans-serif;
+src/components\game-panes\Chart.vue:114:    color: var(--color-text-secondary);
+src/components\game-panes\Chart.vue:115:    font: italic 0.74rem/1.5 'ChatFont', sans-serif;
+src/components\game-panes\Chart.vue:121:    color: var(--color-text-dim);
+src/components\game-panes\Chart.vue:122:    font-size: 0.64rem;
+src/components\game-panes\Chart.vue:152:      color: var(--color-text-dim);
+src/components\game-panes\Chart.vue:153:      font-size: 0.62rem;
+src/components\game-panes\Chart.vue:155:      text-transform: uppercase;
+src/components\game-panes\Chart.vue:178:    text-align: left;
+src/components\game-panes\Chart.vue:183:    font-family: 'GameFont', sans-serif;
+src/components\game-panes\Chart.vue:193:      font-size: 0.8rem;
+src/components\game-panes\Chart.vue:203:      font-size: 0.62rem;
+src/components\game-panes\Chart.vue:208:      font-size: 0.62rem;
+src/components\game-panes\Chart.vue:210:      text-transform: uppercase;
+src/components\game-panes\Chart.vue:211:      color: var(--color-text-dim);
+src/components\game-panes\Chart.vue:233:    color: var(--color-text-dim);
+src/components\game-panes\Chart.vue:234:    font: italic 0.64rem/1.5 'ChatFont', sans-serif;
+src\components\sub\EquipmentSlot.vue:8:    @contextmenu.prevent="emitContext($event, false)"
+src\components\sub\EquipmentSlot.vue:9:    @mouseover="emitContext($event, true)"
+src\components\sub\EquipmentSlot.vue:78:  emits: ['open-context-menu', 'commit'],
+src\components\sub\EquipmentSlot.vue:200:    emitContext(event, firstOnly) {
+src\components\sub\EquipmentSlot.vue:205:      this.$emit('open-context-menu', event, this.slotId, firstOnly);
+src\components\sub\EquipmentSlot.vue:373:  font-size: 9px;
+src\components\sub\EquipmentSlot.vue:376:  text-align: center;
+src\components\sub\EquipmentSlot.vue:377:  text-transform: uppercase;
+src\components\sub\EquipmentSlot.vue:391:  font-size: 9px;
+src\components\sub\EquipmentSlot.vue:393:  text-shadow: 0 1px 2px #000;
+src\components\sub\ContextMenu.vue:3:    id="context-menu"
+src\components\sub\ContextMenu.vue:5:    @contextmenu.prevent="contextClick"
+src\components\sub\ContextMenu.vue:13:      <!-- Labels are server-authored and carry colour markup for item
+src\components\sub\ContextMenu.vue:14:           rarity; text interpolation showed the raw tags to the player. -->
+src\components\sub\ContextMenu.vue:74:    bus.$on('game:context-menu:items', this.createMenu);
+src\components\sub\ContextMenu.vue:75:    bus.$on('contextmenu:close', this.closeMenu);
+src\components\sub\ContextMenu.vue:80:    bus.$off('game:context-menu:items', this.createMenu);
+src\components\sub\ContextMenu.vue:81:    bus.$off('contextmenu:close', this.closeMenu);
+src\components\sub\ContextMenu.vue:145:      Socket.emit('player:context-menu:action', {
+src\components\sub\ContextMenu.vue:159:     * Sets the context-menu where mouse was clicked upon
+src\components\sub\ContextMenu.vue:178:     * Closes the context-menu
+src\components\sub\ContextMenu.vue:236:      // Tell server to start building context menu
+src\components\sub\ContextMenu.vue:237:      Socket.emit('player:context-menu:build', {
+src\components\sub\ContextMenu.vue:249:     * Generates the list of selectable items on context-menu
+src\components\sub\ContextMenu.vue:251:     * @param {object} data The list of items for the context menu
+src\components\sub\ContextMenu.vue:269:        // Set context menu on map
+src\components\sub\ContextMenu.vue:275:     * Incase we click on the context menu with anything but a left-click
+src\components\sub\ContextMenu.vue:277:     * @param {event} event The non-left mouse-click on the context-menu
+src\components\sub\ContextMenu.vue:279:    contextClick(event) {
+src\components\sub\ContextMenu.vue:287:#context-menu {
+src\components\sub\ContextMenu.vue:300:    font: 12px/1.35 'GameFont', sans-serif;
+src\components\sub\ContextMenu.vue:312:      color: var(--color-text-primary);
+src\components\sub\ContextMenu.vue:313:      text-align: left;
+src\components\sub\ContextMenu.vue:316:      text-shadow: 0 1px 0 #000;
+src\components\sub\ContextMenu.vue:327:        background: var(--color-text-dim);
+src\components\sub\ContextMenu.vue:346:        color: var(--color-text-secondary);
+exit=0 lines=1635

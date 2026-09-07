@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-MOVE-002",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "c8c786c1e400ec38a205ee9f5ae6bf5739edc4f2",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "aim-hold",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario aim-hold", "exit_code": 0}
+  ],
+  "assertions": [
+    "east aim is stored",
+    "core move would overwrite aim without the adapter",
+    "production tick keeps east aim while walking west",
+    "west WASD still displaces",
+    "live HUD names Aim hold and Face east"
+  ],
+  "negative_control": {
+    "name": "resolve_move overwrites facing when aim is not reapplied",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/aim-hold-960x600.png",
+      "sha256": "9e38bfc1835194ce6251bbeafe9b17c353cf4f3842cd72f42e8f5ea9af803b07",
+      "produced_by": "native/build/verdigris_client.exe --scenario aim-hold"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Adapter only; native/src/core.cpp resolve_move is unchanged (Kimi)."
+  ]
+}

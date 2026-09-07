@@ -1,7 +1,8 @@
 ---
 task: TASK-0097
 title: Native persistence durability and fault-model audit
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head 0c373d2f, 2026-08-23)
 packet: BOUNDED-DESIGN
 topology: INDEPENDENT
 job: BOUNDED-DESIGN

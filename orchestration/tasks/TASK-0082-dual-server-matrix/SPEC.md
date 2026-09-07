@@ -1,12 +1,13 @@
 ---
 task: TASK-0082
 title: Dual-server parity matrix runner
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head bf13efa7, 2026-08-23)
 packet: BOUNDED-DESIGN
 topology: INDEPENDENT
 priority: high (D-116 regression sweep layer 1)
 lane: deepseek; Windows native build required
-base_commit: 1f82623d9a3936513327cc43362703443e14b02a
+base_commit: d2423873c577d299b3b39c56024d1d840993c72b
 owned_paths:
   - playtest/tools/dual-server-matrix.mjs
   - orchestration/tasks/TASK-0082-dual-server-matrix/**

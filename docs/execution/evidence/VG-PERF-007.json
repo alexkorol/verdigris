@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-PERF-007",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "5abb4077d19b2a713b1d0c5e0971c8f6d9ce18fa",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "memory-soak",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario memory-soak", "exit_code": 0}
+  ],
+  "assertions": [
+    "a short scene cannot establish the envelope",
+    "32 present/resize/effect cycles stay inside the cap",
+    "floor bitmaps stay 1",
+    "live HUD names 32 cycles and Cap holds"
+  ],
+  "negative_control": {
+    "name": "a short scene claiming the resource envelope",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "log",
+      "path": "docs/execution/captures/art-wave/memory-soak-report.txt",
+      "sha256": "c3f1c927d1a3e1051400f449f8610172ef070c8bf41910eee1f0bc2bc098d818",
+      "produced_by": "native/build/verdigris_client.exe --scenario memory-soak"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/memory-soak-960x600.png",
+      "sha256": "ab368c3aaebb6bf2762443b998221bb316b7d8c4a9aec95d27d33015b6faceb7",
+      "produced_by": "native/build/verdigris_client.exe --scenario memory-soak"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "32 cycles, max_floor=1, max_fx=128. Not a GPU VRAM soak. Owner strip paints 32 cycles / Cap holds. Short scene cannot certify."
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-UI-002",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "10fcea78ce5b5e24fd21198754c13c300459c21e",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "pack-drag",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario pack-drag", "exit_code": 0}
+  ],
+  "assertions": [
+    "valid drop moves the item to pack:2,1",
+    "reject keeps carried count and grid occupancy",
+    "reject does not silently equip",
+    "pack cells paint a weapon glyph, not a grey crate",
+    "pack cells wrap Ember-edged axe; a period clip cannot certify",
+    "live HUD names Pack place and Reject keeps",
+    "Pack place stays off WASD and gear LIFE/ATK",
+    "compare hint uses Enter equips | U unequips"
+  ],
+  "negative_control": {
+    "name": "failed pack drop loses, duplicates, or silently equips; grey square certifies a carried weapon; period-clipped Ember-edged. certifies the pack cell; Pack place covers WASD or LIFE; semicolon compare hint",
+    "observed_result": "REJECTED as a passing journey"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/pack-drag-960x600.png",
+      "sha256": "2360f2adb1173f6dfa9d9d125fa6c1e021689c0fc6783e95373e59b4590be3be",
+      "produced_by": "native/build/verdigris_client.exe --scenario pack-drag"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Presentation occupancy and cell glyph only. Owner strip paints Pack place / Reject keeps and parks below the minimap, left of the gear pane. Covering WASD or LIFE cannot certify. Silent equip cannot certify. Pack cells wrap Ember-edged axe; a 12-char period clip cannot certify. Compare hint is Enter equips | U unequips; a semicolon cannot certify. Gear footer I or Esc closes stays inside the pane. DEF and LVL stay inside the pane. Compare plate parks left of the pane. Core inventory-move stays Kimi. No TASK numbers minted. Not Owner Demo."
+  ]
+}

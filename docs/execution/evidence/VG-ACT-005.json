@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-ACT-005",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "0e7461f2",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "telegraph-spec",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario telegraph-spec", "exit_code": 0}
+  ],
+  "assertions": [
+    "local ticks and remote durationMs share the catalog window",
+    "value/50 cannot invent a longer window",
+    "owner window paints ticks and footprint",
+    "a protocol HUD token without the window cannot certify",
+    "AttackStarted cancels the warning",
+    "expired remote warning leaves no footprint",
+    "dashing out of a live elite sweep keeps scion life",
+    "live HUD names Dodge clear and Life holds",
+    "Dodge clear stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Dodge clear is the anti-pattern",
+    "Warning windows stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Warning windows is the anti-pattern"
+  ],
+  "negative_control": {
+    "name": "millisecond payload via value/50, expired silent cone, a ghost hit after a successful dodge, Dodge clear covering WASD/objective/Tin village/Life, or Warning windows covering WASD/objective/Tin village/Life",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/telegraph-spec-960x600.png",
+      "sha256": "fc31699c40052418eee8c5cf0169ad34044db4a8779ccfcbb9c262491d351f19",
+      "produced_by": "native/build/verdigris_client.exe --scenario telegraph-spec"
+    },
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/telegraph-dodge-960x600.png",
+      "sha256": "b5b85a260aa766918c00679a299e1b71871f465bcdae42741cbdec8e7c5dfe81",
+      "produced_by": "native/build/verdigris_client.exe --scenario telegraph-dodge"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Presentation consumers only; VG-ACT-002 scheduling stays with Kimi. Does not edit native/src/core.cpp or re-spec TASK-0108.",
+    "Native Warning windows strip paints Thrust 3 ticks reach, Sweep 3 ticks melee, and a crossed ms/50 control, and parks off WASD, the objective, Tin village, and Life. Covering those combat surfaces cannot certify. Hash diverges from gpu-packets.",
+    "telegraph-dodge owner strip paints Dodge clear / Life holds and parks off WASD, the objective, Tin village, and Life. Ghost hit cannot certify an avoided sweep.",
+    "No TASK numbers minted."
+  ]
+}

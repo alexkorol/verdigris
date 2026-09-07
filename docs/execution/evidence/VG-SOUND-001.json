@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "template_only": false,
+  "planning_id": "VG-SOUND-001",
+  "task_id": null,
+  "claim_token": "cursor-grok-client-lease",
+  "base_sha": "970d7b8eb980f4a07b618ef83c19cd5e5f4f7ee1",
+  "head_sha": "working-tree",
+  "integrated_sha": null,
+  "seed": "sound-adapter",
+  "platform": "win32-x64",
+  "toolchain": "MSVC 16.11 / native/build.ps1",
+  "commands": [
+    {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario sound-adapter", "exit_code": 0}
+  ],
+  "assertions": [
+    "software adapter plays a generated 440 Hz test tone",
+    "unknown backend cannot pretend to be portable",
+    "shutdown releases the PCM buffer",
+    "live HUD names Adapter software and Tone 440 Hz",
+    "a 0 ms cue cannot certify audible output"
+  ],
+  "negative_control": {
+    "name": "scheduled cue with zero duration as audible output",
+    "observed_result": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "path": "docs/execution/captures/art-wave/sound-adapter-960x600.png",
+      "sha256": "746425e46953c75a372488413f69ae468ff8ddbffe55151b26a1fb71b6ea0cb5",
+      "produced_by": "native/build/verdigris_client.exe --scenario sound-adapter"
+    },
+    {
+      "kind": "log",
+      "path": "docs/execution/captures/art-wave/sound-adapter-tone.txt",
+      "sha256": "46d9434ce72ef2f46fd1faf2eed91e822a78577368050c8cfffd24990486dc2d",
+      "produced_by": "native/build/verdigris_client.exe --scenario sound-adapter"
+    }
+  ],
+  "integration_status": "NOT_INTEGRATED",
+  "perceptual_review": "CAPTURE_VIEWED",
+  "limitations": [
+    "Software PCM adapter, not a WASAPI/CoreAudio device claim. Device remains muted in the harness.",
+    "Extends TASK-0157 mixer; does not replace it. Does not re-spec TASK-0108."
+  ]
+}

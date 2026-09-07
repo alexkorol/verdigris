@@ -149,7 +149,7 @@ Invoke-Msvc $remotePlayCompileArguments -RequireNativeWindowsDefine
 Invoke-Msvc ('"' + $buildRoot + '\tests.obj" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $testExe + '"')
 Invoke-Msvc ('"' + $buildRoot + '\networking_tests.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $networkingTestExe + '" /link ws2_32.lib')
 Invoke-Msvc ('"' + $buildRoot + '\server.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $serverExe + '" /link ws2_32.lib')
-Invoke-Msvc ('"' + $buildRoot + '\client.obj" "' + $buildRoot + '\remote_play.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $clientExe + '" /link user32.lib gdi32.lib ws2_32.lib')
+Invoke-Msvc ('"' + $buildRoot + '\client.obj" "' + $buildRoot + '\remote_play.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $buildRoot + '\audio_cue_spec.obj" "' + $buildRoot + '\audio_event_cues.obj" "' + $buildRoot + '\audio_audio_mixer.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $clientExe + '" /link user32.lib gdi32.lib ws2_32.lib winmm.lib')
 
 Invoke-Msvc ('"' + $buildRoot + '\camera2d_tests.obj" /Fe"' + $camera2dTestExe + '"')
 Invoke-Msvc ('"' + $buildRoot + '\session_tests.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $sessionTestExe + '" /link ws2_32.lib')

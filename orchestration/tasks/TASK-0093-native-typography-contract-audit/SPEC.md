@@ -1,7 +1,8 @@
 ---
 task: TASK-0093
 title: Native typography and text-rendering contract audit
-state: READY
+state: SUPERSEDED
+superseded_by: integrated (reviewed head b954e3ec, 2026-08-23)
 packet: BOUNDED-DESIGN
 topology: INDEPENDENT
 job: BOUNDED-DESIGN

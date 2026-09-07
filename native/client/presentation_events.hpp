@@ -38,6 +38,12 @@ struct PresentationEvent {
   // remote session copies these from the envelope; it never computes them.
   bool critical = false;
   std::string style;
+  // TASK-0108 local projectile warning (JS world:projectile keys). Unused
+  // for slam telegraphs. remote_session.cpp still must not parse this.
+  int from_x = 0;
+  int from_y = 0;
+  int to_x = 0;
+  int to_y = 0;
 };
 
 // TASK-0122 Phase A: the single named table for every new animation/VFX TTL,
@@ -75,6 +81,9 @@ inline constexpr int kScionLostRingTtlTicks = 40;          // 2000 ms
 inline constexpr int kScionLostPulseTicks = 12;            // 600 ms edge pulse
 inline constexpr Rgb kScionLostColor{186, 74, 62};         // deep rust red
 inline constexpr const char* kScionLostLabel = "scion-lost";
+
+inline const char* owner_spawn_once_label() { return "Spawn once"; }
+inline const char* owner_fade_ttl_label() { return "Fade ttl"; }
 
 }  // namespace phase_a
 
