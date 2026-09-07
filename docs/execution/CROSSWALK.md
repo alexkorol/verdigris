@@ -33,7 +33,7 @@ Cursor evidence notes.
 
 | VG | Disposition | Existing |
 |---|---|---|
-| VG-UI-001 | extend | native Escape stack (`pane-stack`); owner Stack 2 / Escape closes; absent tree hides seats; invented origin cannot pass; WASD cannot overlay the open tree; C or Esc closes stays in the sheet slot |
+| VG-UI-001 | extend | native Escape stack (`pane-stack`); owner Stack 2 / Escape closes; Stack 2 stays between the two panes; covering First Scion or gear cannot certify; absent tree hides seats; invented origin cannot pass; WASD cannot overlay the open tree; C or Esc closes stays in the sheet slot |
 | VG-UI-002 | extend | TASK-0171 INTEGRATED, 0184 BRIDGE_PREP; `pack-drag`; reject cannot lose/duplicate/silent-equip; pack cells wrap Ember-edged axe; Pack place stays off WASD/LIFE; compare hint uses ASCII `|`; gear footer stays inside the pane |
 | VG-UI-003 | extend | paper-doll + ack-only HUD (`equipment`); pending compare cannot gold-frame as equipped; compare plate stays off gear DEF/LVL; Ack only stays off WASD/LIFE; compare hint uses ASCII `|`; `progression-surface` owner Skill tree / No data yet (TASK folder cannot certify) |
 | VG-UI-004 | extend | TASK-0156, 0159 INTEGRATED; `stat-explain` expandable ATK; dormant cannot fold into Attack; compact Sources uses Base/Gear; lowercase base/gear cannot certify; expanded sheet paints Conditional once; a duplicate Conditional cannot certify; Base Gear stays off the sheet/WASD/objective/Life; WASD stays off the C-key sheet; close hint stays in the slot |
@@ -262,12 +262,14 @@ VG-SOUND-007: mixer tape from mixed pack + elite; live HUD paints
 Encounter mix / Hit + warning. An isolated preview cannot certify.
 Scenario `dense-mix`. Evidence `docs/execution/evidence/VG-SOUND-007.json`.
 VG-UI-001: Escape dismisses character then gear; bare Escape quits. Owner
-strip paints Stack 2 / Escape closes. Helper depth alone cannot prove.
-Absent P-key tree paints No seats yet; an invented origin seat cannot
-certify. Open tree keep-out relocates WASD; overlaying the pane cannot
-certify. Open character sheet keep-out relocates WASD; deleting the hint
-cannot certify. The C or Esc closes footer stays inside the sheet slot;
-clipping it cannot certify. Scenario `pane-stack`. Evidence
+strip paints Stack 2 / Escape closes in the world lane between the two
+panes. Covering First Scion or gear cannot certify. Helper depth alone
+cannot prove. Absent P-key tree paints No seats yet; an invented origin
+seat cannot certify. Open tree keep-out relocates WASD; overlaying the
+pane cannot certify. Open character sheet keep-out relocates WASD;
+deleting the hint cannot certify. The C or Esc closes footer stays
+inside the sheet slot; clipping it cannot certify. Scenario
+`pane-stack`. Evidence
 `docs/execution/evidence/VG-UI-001.json`.
 VG-MOVE-005: TASK-0165 focus reducer gates WASD, combat, pickup, and pack
 drag. Owner strip paints Focus gear / No buffer. Closing a pane cannot

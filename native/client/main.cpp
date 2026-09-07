@@ -6865,14 +6865,21 @@ void paint_combat_beats_review_strip(ClientState& state, HDC dc, const RECT& bou
   SelectObject(dc, old_font);
 }
 
+HudRect park_diptych_review_strip(const ClientState& state, int width, int height,
+                                  int pane_h);
+
 void paint_pane_stack_review_strip(ClientState& state, HDC dc, const RECT& bounds,
                                    render::List& rl) {
   if (!state.pane_stack_review_strip) return;
   const int s = hud_scale(static_cast<int>(bounds.bottom));
-  const int pane_w = 360 * s;
-  const int pane_h = 72 * s;
-  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
-  const int top = 72 * s;
+  const int pane_h = 148 * s;
+  const HudRect parked =
+      park_diptych_review_strip(state, static_cast<int>(bounds.right),
+                                static_cast<int>(bounds.bottom), pane_h);
+  const int left = parked.x;
+  const int top = parked.y;
+  const int pane_w = parked.w;
+  state.hud_rect_trace.push_back({"stack-strip", parked});
   RECT pane{left, top, left + pane_w, top + pane_h};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
@@ -6880,25 +6887,36 @@ void paint_pane_stack_review_strip(ClientState& state, HDC dc, const RECT& bound
                 static_cast<double>(top), 0.0, 1, "stack-strip"});
   SetBkMode(dc, TRANSPARENT);
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  const int pad = std::max(4 * s, 4);
   SetTextColor(dc, skin::kVerdigris);
   const char* title = verdigris::client::ui::owner_stack_label();
-  TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
+  TextOutA(dc, left + pad, top + pad, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
-  const char* escape = verdigris::client::ui::owner_escape_label();
-  TextOutA(dc, left + 12 * s, top + 32 * s, escape, static_cast<int>(strlen(escape)));
-  const int rx = left + pane_w - 78 * s;
-  const int ry = top + 36 * s;
-  ring_ellipse(dc, rx, ry, 16 * s, 16 * s, RGB(80, 80, 80), 2);
-  draw_line(dc, rx - 12 * s, ry - 12 * s, rx + 12 * s, ry + 12 * s, RGB(185, 72, 69),
+  const char* escape_a = verdigris::client::ui::owner_escape_wrap_a();
+  const char* escape_b = verdigris::client::ui::owner_escape_wrap_b();
+  TextOutA(dc, left + pad, top + pad + 18 * s, escape_a,
+           static_cast<int>(strlen(escape_a)));
+  TextOutA(dc, left + pad, top + pad + 34 * s, escape_b,
+           static_cast<int>(strlen(escape_b)));
+  const int rx = left + pane_w / 2;
+  const int ry = top + pad + 70 * s;
+  ring_ellipse(dc, rx, ry, 14 * s, 14 * s, RGB(80, 80, 80), 2);
+  draw_line(dc, rx - 10 * s, ry - 10 * s, rx + 10 * s, ry + 10 * s, RGB(185, 72, 69),
             2);
   SetTextColor(dc, skin::kInkDim);
-  const char* rejected = "helper depth";
-  TextOutA(dc, rx - 36 * s, top + pane_h - 18 * s, rejected,
-           static_cast<int>(strlen(rejected)));
-  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
-                static_cast<double>(top + 8 * s), 0.0, 1, "stack:2"});
-  rl.push_back({render::Op::Hud, static_cast<double>(left + 12 * s),
-                static_cast<double>(top + 32 * s), 0.0, 1, "stack:escape"});
+  const char* rejected_a = "helper";
+  const char* rejected_b = "depth";
+  SIZE ra{}, rb{};
+  GetTextExtentPoint32A(dc, rejected_a, static_cast<int>(strlen(rejected_a)), &ra);
+  GetTextExtentPoint32A(dc, rejected_b, static_cast<int>(strlen(rejected_b)), &rb);
+  TextOutA(dc, left + (pane_w - ra.cx) / 2, top + pane_h - 32 * s, rejected_a,
+           static_cast<int>(strlen(rejected_a)));
+  TextOutA(dc, left + (pane_w - rb.cx) / 2, top + pane_h - 18 * s, rejected_b,
+           static_cast<int>(strlen(rejected_b)));
+  rl.push_back({render::Op::Hud, static_cast<double>(left + pad),
+                static_cast<double>(top + pad), 0.0, 1, "stack:2"});
+  rl.push_back({render::Op::Hud, static_cast<double>(left + pad),
+                static_cast<double>(top + pad + 18 * s), 0.0, 1, "stack:escape"});
   rl.push_back({render::Op::Hud, static_cast<double>(rx), static_cast<double>(ry),
                 0.0, 0, "stack-strip:helper-rejected"});
   SelectObject(dc, old_font);
@@ -7806,6 +7824,43 @@ HudRect park_review_strip(const ClientState& state, int width, int height,
   }
   if (strip.x + strip.w > width - 8)
     strip.x = std::max(8, width - strip.w - 8);
+  if (strip.y + strip.h > height - 8) strip.y = std::max(8, height - strip.h - 8);
+  return strip;
+}
+
+HudRect park_diptych_review_strip(const ClientState& state, int width, int height,
+                                  int pane_h) {
+  HudRect character{};
+  HudRect gear{};
+  if (state.character_pane) character = character_pane_rect(width, height, 0);
+  if (state.gear_overlay) gear = gear_pane_rect(width, height);
+  if (character.w <= 0 || gear.w <= 0)
+    return park_review_strip(state, width, height, 160, pane_h);
+  int left = character.x + character.w + kTopHudGap;
+  const int right = gear.x - kTopHudGap;
+  int pane_w = right - left;
+  if (pane_w < 64) {
+    left = character.x + character.w + 4;
+    pane_w = std::max(48, gear.x - left - 4);
+  }
+  const HudRect map = minimap_rect(height);
+  int top = map.y + map.h + kTopHudGap;
+  HudRect strip{left, top, pane_w, pane_h};
+  const char* keep[] = {"identity", "objective", "controls", "controls-second"};
+  for (int pass = 0; pass < 8; ++pass) {
+    bool moved = false;
+    for (const auto& entry : state.hud_rect_trace) {
+      bool named = false;
+      for (const char* key : keep)
+        if (entry.first == key) named = true;
+      if (!named) continue;
+      if (!hud_rects_overlap(strip, entry.second)) continue;
+      top = std::max(top, entry.second.y + entry.second.h + kTopHudGap);
+      strip.y = top;
+      moved = true;
+    }
+    if (!moved) break;
+  }
   if (strip.y + strip.h > height - 8) strip.y = std::max(8, height - strip.h - 8);
   return strip;
 }
@@ -15192,6 +15247,39 @@ int scenario_pane_stack() {
                  "pane-stack: live HUD names Stack 2 and Escape closes");
   scenario_check(helper_rejected,
                  "pane-stack: live HUD rejects helper depth as the journey");
+  {
+    auto trace_find = [](const ClientState& s,
+                         const char* label) -> const HudRect* {
+      for (const auto& entry : s.hud_rect_trace)
+        if (entry.first == label) return &entry.second;
+      return nullptr;
+    };
+    const HudRect* strip = trace_find(state, "stack-strip");
+    const HudRect* sheet = trace_find(state, "character-pane-frame");
+    const HudRect* gear = trace_find(state, "pane-frame");
+    const HudRect* ctrl = trace_find(state, "controls");
+    const HudRect* objective = trace_find(state, "objective");
+    const HudRect* life = trace_find(state, "orb-life");
+    const bool covers_panes =
+        (strip && sheet && hud_rects_overlap(*strip, *sheet)) ||
+        (strip && gear && hud_rects_overlap(*strip, *gear));
+    const bool covers_hud =
+        (strip && ctrl && hud_rects_overlap(*strip, *ctrl)) ||
+        (strip && objective && hud_rects_overlap(*strip, *objective)) ||
+        (strip && life && hud_rects_overlap(*strip, *life));
+    scenario_check(
+        verdigris::client::ui::diptych_strip_covers_panes_fails_review(true),
+        "pane-stack: covering First Scion or gear with Stack 2 is the anti-pattern");
+    scenario_check(
+        !verdigris::client::ui::diptych_strip_covers_panes_fails_review(covers_panes),
+        "pane-stack: Stack 2 stays in the world lane between the two panes");
+    scenario_check(
+        verdigris::client::ui::review_strip_covers_hud_fails_review(true),
+        "pane-stack: covering WASD, the objective, or Life with Stack 2 is the anti-pattern");
+    scenario_check(
+        !verdigris::client::ui::review_strip_covers_hud_fails_review(covers_hud),
+        "pane-stack: Stack 2 stays off WASD, the objective, and Life");
+  }
   const HudRect* stacked_sheet = nullptr;
   const HudRect* stacked_controls = nullptr;
   const HudRect* stacked_second = nullptr;

@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-001",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "3a346cd0a33fd7c70c6811c6acf9842e2adcb768",
+  "base_sha": "90241156",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "pane-stack",
@@ -27,18 +27,21 @@
     "controls hint remains with the character sheet open",
     "character pane never covers the minimap or life orb",
     "character sheet close hint remains inside the slot",
+    "Stack 2 stays in the world lane between the two panes",
+    "covering First Scion or gear with Stack 2 is the anti-pattern",
+    "Stack 2 stays off WASD, the objective, and Life",
     "live HUD names Stack 2 and Escape closes",
     "live HUD rejects invented origin"
   ],
   "negative_control": {
-    "name": "helper pane_stack_depth without native paint or Escape, Geometric Passives as the owner title, an invented origin seat while the tree says no data yet, WASD painted on the tree, WASD painted on the character sheet, or a clipped C or Esc closes footer",
+    "name": "helper pane_stack_depth without native paint or Escape, Geometric Passives as the owner title, an invented origin seat while the tree says no data yet, WASD painted on the tree, WASD painted on the character sheet, a clipped C or Esc closes footer, or Stack 2 covering First Scion or the gear pane",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/pane-stack-960x600.png",
-      "sha256": "a71477ddb0e049f6fe711ca869a1368ba4c3c7441951b5e6109e55b7e698c2c4",
+      "sha256": "38dc549680f4cf74f56c766425968e60286c653b1335b1179f99015a5c3e97e9",
       "produced_by": "native/build/verdigris_client.exe --scenario pane-stack"
     },
     {
@@ -52,6 +55,6 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Client Escape stack only. Owner Demo Chronicles journeys not duplicated.",
-    "TASK-0193 geometric slice is unchanged and only paints after a payload. Open tree and character panes keep the top HUD out. Deleting WASD cannot certify the sheet. Covering the minimap or Life cannot certify. A clipped C or Esc closes footer cannot certify. Compact Sources on the stacked sheet uses Base/Gear. Not Owner Demo. No TASK numbers minted."
+    "TASK-0193 geometric slice is unchanged and only paints after a payload. Open tree and character panes keep the top HUD out. Deleting WASD cannot certify the sheet. Covering the minimap or Life cannot certify. A clipped C or Esc closes footer cannot certify. Stack 2 is a review overlay in the world lane between the diptych; covering either pane cannot certify. Compact Sources on the stacked sheet uses Base/Gear. Not Owner Demo. No TASK numbers minted."
   ]
 }

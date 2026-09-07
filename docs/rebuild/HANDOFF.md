@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Stack 2 between the two panes (Cursor)
+
+- VG-UI-001 / VG-UI-007: Stack 2 is a tall card in the world lane between
+  First Scion and gear. Covering either pane, WASD, the objective, or
+  Life cannot certify. Escape stack, tree absence, and WASD keep-out stay
+  unchanged. Kimi's merge candidate remains a proposal on stale parent
+  `193b7c9f`.
+- Scenario `pane-stack` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
 ## 2026-09-06 — Base Gear off the sheet and combat HUD (Cursor)
 
 - VG-UI-004 / VG-UI-007: the Base Gear review strip parks in the world

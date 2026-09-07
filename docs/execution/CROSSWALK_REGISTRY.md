@@ -135,7 +135,7 @@ not implemented here.
 | VG-ART-006 | G3 | extend | weave-vfx; animation-vfx-phase-a spawn once; not TASK-0108 |
 | VG-ART-007 | G3 | extend | Owner Demo — do not duplicate |
 | VG-ART-008 | G3 | extend | Owner Demo — do not duplicate |
-| VG-UI-001 | G1 | extend | pane-stack native Escape; absent tree hides seats; invented origin cannot prove; WASD keep-out for tree and character; close hint stays in the sheet slot |
+| VG-UI-001 | G1 | extend | pane-stack native Escape; Stack 2 stays between the two panes; covering either pane cannot certify; absent tree hides seats; invented origin cannot prove; WASD keep-out for tree and character; close hint stays in the sheet slot |
 | VG-UI-002 | G2 | extend | pack-drag occupancy; reject cannot lose/duplicate/silent-equip; period-clipped pack name cannot certify; Pack place stays off WASD/LIFE; sim inventory-move stays Kimi |
 | VG-UI-003 | G2 | extend | equipment ack-only; compare plate left of gear stats; Ack only stays off WASD/LIFE; compare hint ASCII bar; progression-surface Skill tree / No data yet; absent tree pane hides seats; WASD keep-out |
 | VG-UI-004 | G2 | extend | stat-explain owner Base/Gear labels; compact Sources uses Base/Gear; lowercase cannot certify; dormant cannot fold into Attack; expanded sheet paints Conditional once; a duplicate Conditional cannot certify; Base Gear stays off the sheet/WASD/objective/Life; WASD off C-key sheet; close hint stays in the slot |

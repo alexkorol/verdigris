@@ -18,5 +18,10 @@ inline bool helper_depth_alone_cannot_prove(int depth, bool native_painted,
 
 inline const char* owner_stack_label() { return "Stack 2"; }
 inline const char* owner_escape_label() { return "Escape closes"; }
+inline const char* owner_escape_wrap_a() { return "Escape"; }
+inline const char* owner_escape_wrap_b() { return "closes"; }
+inline bool diptych_strip_covers_panes_fails_review(bool overlap) {
+  return overlap;
+}
 
 }  // namespace verdigris::client::ui
