@@ -146,7 +146,7 @@ not implemented here.
 | VG-SOUND-001 | G1 | new | sound-adapter |
 | VG-SOUND-002 | G2 | new | legal-sounds |
 | VG-SOUND-003 | G2 | extend | combat-audio event-id dedup |
-| VG-SOUND-004 | G2 | extend | combat-audio warning priority |
+| VG-SOUND-004 | G2 | extend | combat-audio Voices 8 stays off WASD/objective/Tin village/Life |
 | VG-SOUND-005 | G3 | extend | ambience-layer Zone loop stays off WASD/objective/Tin village/Life |
 | VG-SOUND-006 | G2 | new | audio-prefs |
 | VG-SOUND-007 | G3 | new | dense-mix |

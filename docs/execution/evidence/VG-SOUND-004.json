@@ -4,7 +4,7 @@
   "planning_id": "VG-SOUND-004",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "05a5d85d489e17e432c45f7bdeefe90fe55a8f73",
+  "base_sha": "b4899771",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "combat-audio",
@@ -18,17 +18,19 @@
     "dense cosmetic submits cannot starve the scion-lost warning",
     "twelve cosmetics exceed the SFX voice cap of 8",
     "owner strip paints Warning held",
-    "cosmetic x12 is the rejected control"
+    "cosmetic x12 is the rejected control",
+    "Voices 8 stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Voices 8 is the anti-pattern"
   ],
   "negative_control": {
-    "name": "low-priority cosmetic sounds starving critical cues",
+    "name": "low-priority cosmetic sounds starving critical cues, cosmetic x12, or Voices 8 covering WASD/objective/Tin village/Life",
     "observed_result": "REJECTED"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/combat-audio-960x600.png",
-      "sha256": "7d2fe06d3c7cba8c71a7b818dc6f86aeb96d89f91e0b0127e0a4dd7c964c20e7",
+      "sha256": "45068e33a52c921341ce489acc9f478d2e03147d357150ca022607d67ac25630",
       "produced_by": "native/build/verdigris_client.exe --scenario combat-audio"
     }
   ],
@@ -36,6 +38,7 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Owner HUD over the existing TASK-0157 mixer steal policy. Does not edit native/audio or VG-PERF-002.",
-    "Device remains muted in the harness."
+    "Owner strip paints Voices 8 / Warning held and parks off WASD, the objective, Tin village, and Life. Cosmetic x12 cannot certify. Covering those combat surfaces cannot certify.",
+    "Device remains muted in the harness. Not Owner Demo. Does not re-spec TASK-0108."
   ]
 }

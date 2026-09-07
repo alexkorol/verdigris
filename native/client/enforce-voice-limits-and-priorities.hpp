@@ -29,4 +29,8 @@ inline bool over_budget_cosmetics_fail_review(int submitted, std::uint32_t cap) 
   return submitted > static_cast<int>(cap);
 }
 
+inline bool voice_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
+
 }  // namespace verdigris::client::voices

@@ -6596,8 +6596,12 @@ void paint_voice_budget_review_strip(ClientState& state, HDC dc, const RECT& bou
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const int pane_w = 360 * s;
   const int pane_h = 72 * s;
-  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
-  const int top = 72 * s;
+  const HudRect parked =
+      park_review_strip(state, static_cast<int>(bounds.right),
+                        static_cast<int>(bounds.bottom), pane_w, pane_h);
+  const int left = parked.x;
+  const int top = parked.y;
+  state.hud_rect_trace.push_back({"voice-strip", parked});
   RECT pane{left, top, left + pane_w, top + pane_h};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
@@ -11308,6 +11312,31 @@ int scenario_combat_audio() {
     if (item.op == render::Op::Hud && item.label == "voice:warning-held")
       held = true;
   scenario_check(held, "combat-audio: owner strip paints Warning held");
+  {
+    auto trace_find = [](const ClientState& s,
+                         const char* label) -> const HudRect* {
+      for (const auto& entry : s.hud_rect_trace)
+        if (entry.first == label) return &entry.second;
+      return nullptr;
+    };
+    const HudRect* voice = trace_find(capture, "voice-strip");
+    scenario_check(voice != nullptr, "combat-audio: Voices 8 strip is traced");
+    const HudRect* ctrl = trace_find(capture, "controls");
+    const HudRect* objective = trace_find(capture, "objective");
+    const HudRect* route = trace_find(capture, "route-card");
+    const HudRect* life = trace_find(capture, "orb-life");
+    const bool covers =
+        (voice && ctrl && hud_rects_overlap(*voice, *ctrl)) ||
+        (voice && objective && hud_rects_overlap(*voice, *objective)) ||
+        (voice && route && hud_rects_overlap(*voice, *route)) ||
+        (voice && life && hud_rects_overlap(*voice, *life));
+    scenario_check(
+        verdigris::client::voices::voice_strip_covers_hud_fails_review(true),
+        "combat-audio: covering WASD, the objective, Tin village, or Life is the anti-pattern");
+    scenario_check(
+        !verdigris::client::voices::voice_strip_covers_hud_fails_review(covers),
+        "combat-audio: Voices 8 stays off WASD, the objective, Tin village, and Life");
+  }
   return scenario_failures;
 }
 

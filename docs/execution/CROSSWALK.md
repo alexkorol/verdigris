@@ -266,9 +266,10 @@ cannot certify. A protocol `ambience:route` token or stacked reentry loops
 cannot certify. Scenario `ambience-layer`. Evidence
 `docs/execution/evidence/VG-SOUND-005.json`.
 VG-SOUND-004: SFX cap 8; scion-lost stays voiced under twelve World
-cosmetics. Owner strip paints Warning held; cosmetic x12 cannot certify.
-Scenario `combat-audio`. Evidence
-`docs/execution/evidence/VG-SOUND-004.json`.
+cosmetics. Owner strip paints Voices 8 / Warning held and parks off WASD,
+the objective, Tin village, and Life. Covering those combat surfaces
+cannot certify. Cosmetic x12 cannot certify. Scenario `combat-audio`.
+Evidence `docs/execution/evidence/VG-SOUND-004.json`.
 VG-SOUND-006: mute cannot reset SFX/music volumes; zero SFX stays silent.
 Live mixer paints persisted SFX/Music numbers while muted. Owner strip
 paints Mixer prefs / SFX persist. A mute chip alone cannot certify.

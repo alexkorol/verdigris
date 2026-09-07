@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Voices 8 off WASD and Tin village (Cursor)
+
+- VG-SOUND-004 / VG-UI-007: Voices 8 / Warning held parks off WASD, the
+  objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Cosmetic x12 still rejected. Owner Demo journeys not
+  duplicated. Does not edit native/audio or VG-PERF-002.
+- Scenario `combat-audio` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
+
 ## 2026-09-06 — Pixel capture off WASD and Tin village (Cursor)
 
 - VG-GPU-007 / VG-UI-007: Pixel capture / BMP + provenance parks off WASD,
