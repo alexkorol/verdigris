@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Pixel capture off WASD and Tin village (Cursor)
+
+- VG-GPU-007 / VG-UI-007: Pixel capture / BMP + provenance parks off WASD,
+  the objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Packet log still rejected. Owner Demo journeys not
+  duplicated.
+- Scenario `gpu-capture` PASS. Capture viewed. Scene provenance txt not
+  recaptured. Not Owner Demo. Not TASK-0108.
+
+
 ## 2026-09-06 — Lantern pool off WASD and Tin village (Cursor)
 
 - VG-GPU-006 / VG-UI-007: Lantern pool / Bronze light parks off WASD, the

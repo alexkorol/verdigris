@@ -216,4 +216,10 @@ inline bool capture_painted_scene(const std::string& bmp_path,
          provenance_names_scene(prov_path);
 }
 
+inline const char* owner_pixel_capture_label() { return "Pixel capture"; }
+inline const char* owner_bmp_provenance_label() { return "BMP + provenance"; }
+inline bool capture_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
+
 }  // namespace verdigris::gpu

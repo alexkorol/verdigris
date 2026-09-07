@@ -51,7 +51,7 @@ Cursor evidence notes.
 | VG-GPU-004 | new | session-connected packet present (`gpu-reference`); not a disconnected demo; Live packets stays off WASD/objective/Tin village/Life |
 | VG-GPU-005 | new | Y-sort + Sweep overlay on the village gate (`grounding`); HUD or capture-black cannot certify; walls cannot erase warnings; Y-sort stays off WASD/objective/Tin village/Life |
 | VG-GPU-006 | new | moving bronze lantern pool on the village gate (`material-light`); HUD without a pool cannot certify; cannot wash out damage; Lantern pool stays off WASD/objective/Tin village/Life |
-| VG-GPU-007 | new | BMP readback + provenance (`gpu-capture`); PNG R/B swap cannot certify; packet logs are not pixels |
+| VG-GPU-007 | new | BMP readback + provenance (`gpu-capture`); PNG R/B swap cannot certify; packet logs are not pixels; Pixel capture stays off WASD/objective/Tin village/Life |
 | VG-GPU-008 | new | sample recreate/resize (`gpu-recover`); restored BMP stamped; Live buffers 1; leak cannot certify |
 | VG-PERF-001/002/008 | extend | TASK-0152, 0207; 008 Owner Demo — do not duplicate |
 | VG-PERF-003–006 | new / extend 0207 | GDI batch, envelope, loot labels, hitch warmup |
@@ -245,9 +245,11 @@ village gate; a HUD token without that pool cannot certify. Scenario
 `docs/execution/evidence/VG-GPU-006.json`.
 VG-GPU-007: BMP readback plus provenance sidecar of the painted tin-village
 scene. Packet snapshot text is not pixel evidence. A PNG whose red/blue
-channels are swapped versus the DIB cannot certify. `vital-orbs` cannot
-stand in for the scene BMP. Scenario `gpu-capture`. Evidence
-`docs/execution/evidence/VG-GPU-007.json`.
+channels are swapped versus the DIB cannot certify. Owner strip paints
+Pixel capture / BMP + provenance and parks off WASD, the objective, Tin
+village, and Life. Covering those combat surfaces cannot certify.
+`vital-orbs` cannot stand in for the scene BMP. Scenario `gpu-capture`.
+Evidence `docs/execution/evidence/VG-GPU-007.json`.
 VG-GPU-008: recreate/resize/minimize-restore keep one live buffer; the
 restored BMP carries an L-bracket survival mark (hash diverges from
 `gpu-sample`). Live HUD paints Live buffers 1; leak cannot certify.

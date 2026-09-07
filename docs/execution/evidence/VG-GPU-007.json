@@ -4,7 +4,7 @@
   "planning_id": "VG-GPU-007",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "2aaae4c6af8220e4d2b4fb7f29597db7562e184b",
+  "base_sha": "efb7fc2e",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "gpu-capture",
@@ -19,23 +19,25 @@
     "R/B swapped still cannot certify",
     "painted tin-village scene writes a usable BMP",
     "provenance names backend, gdi-scene:tin-village, platform, and size",
-    "live HUD names BMP + provenance; packet log is the rejected control"
+    "live HUD names BMP + provenance; packet log is the rejected control",
+    "Pixel capture stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Pixel capture is the anti-pattern"
   ],
   "negative_control": {
-    "name": "semantic draw log or channel-swapped PNG as capture",
+    "name": "semantic draw log, channel-swapped PNG, or Pixel capture covering WASD/objective/Tin village/Life",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/gpu-capture-960x600.png",
-      "sha256": "5456d3a590be2a4976ff497e898e36537e753f7b82bd13e2635072673c449522",
+      "sha256": "d61313a3cd047520c09239b930eab386cd2baf4e8833d3c820efdbb7c98b404a",
       "produced_by": "native/build/verdigris_client.exe --scenario gpu-capture"
     },
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/gpu-capture-scene.bmp",
-      "sha256": "1dc7ecaa9ab645ab161adc7c78333a0b049c749ff13789d6e86b6cc0cc4744db",
+      "sha256": "0f0c688263e574242fd52e781c0a713d1855cb9f80e808cc9c8378f81580b0f9",
       "produced_by": "native/build/verdigris_client.exe --scenario gpu-capture"
     },
     {
@@ -49,6 +51,7 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "GDI DIB readback of the painted scene plus a 64x64 software-sample BMP. Not a D3D swapchain dump.",
-    "vital-orbs PNG cannot certify this packet. Does not re-spec TASK-0108."
+    "Owner strip paints Pixel capture / BMP + provenance and parks off WASD, the objective, Tin village, and Life. Packet log cannot certify. Covering those combat surfaces cannot certify.",
+    "Scene provenance txt hash unchanged. vital-orbs PNG cannot certify this packet. Not Owner Demo. Does not re-spec TASK-0108."
   ]
 }

@@ -6553,8 +6553,12 @@ void paint_capture_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const int pane_w = 360 * s;
   const int pane_h = 72 * s;
-  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
-  const int top = 72 * s;
+  const HudRect parked =
+      park_review_strip(state, static_cast<int>(bounds.right),
+                        static_cast<int>(bounds.bottom), pane_w, pane_h);
+  const int left = parked.x;
+  const int top = parked.y;
+  state.hud_rect_trace.push_back({"capture-strip", parked});
   RECT pane{left, top, left + pane_w, top + pane_h};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
@@ -6563,10 +6567,10 @@ void paint_capture_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   SetBkMode(dc, TRANSPARENT);
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
-  const char* title = "Pixel capture";
+  const char* title = verdigris::gpu::owner_pixel_capture_label();
   TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
-  const char* ok = "BMP + provenance";
+  const char* ok = verdigris::gpu::owner_bmp_provenance_label();
   TextOutA(dc, left + 12 * s, top + 32 * s, ok, static_cast<int>(strlen(ok)));
   const int rx = left + pane_w - 78 * s;
   const int ry = top + 36 * s;
@@ -15185,6 +15189,31 @@ int scenario_gpu_capture() {
                  "gpu-capture: the scene file is a usable BMP");
   scenario_check(verdigris::gpu::provenance_names_scene(scene_prov),
                  "gpu-capture: scene provenance names GDI tin-village pixels");
+  {
+    auto trace_find = [](const ClientState& s,
+                         const char* label) -> const HudRect* {
+      for (const auto& entry : s.hud_rect_trace)
+        if (entry.first == label) return &entry.second;
+      return nullptr;
+    };
+    const HudRect* cap = trace_find(state, "capture-strip");
+    scenario_check(cap != nullptr, "gpu-capture: Pixel capture strip is traced");
+    const HudRect* ctrl = trace_find(state, "controls");
+    const HudRect* objective = trace_find(state, "objective");
+    const HudRect* route = trace_find(state, "route-card");
+    const HudRect* life = trace_find(state, "orb-life");
+    const bool covers =
+        (cap && ctrl && hud_rects_overlap(*cap, *ctrl)) ||
+        (cap && objective && hud_rects_overlap(*cap, *objective)) ||
+        (cap && route && hud_rects_overlap(*cap, *route)) ||
+        (cap && life && hud_rects_overlap(*cap, *life));
+    scenario_check(
+        verdigris::gpu::capture_strip_covers_hud_fails_review(true),
+        "gpu-capture: covering WASD, the objective, Tin village, or Life is the anti-pattern");
+    scenario_check(
+        !verdigris::gpu::capture_strip_covers_hud_fails_review(covers),
+        "gpu-capture: Pixel capture stays off WASD, the objective, Tin village, and Life");
+  }
   return scenario_failures;
 }
 
