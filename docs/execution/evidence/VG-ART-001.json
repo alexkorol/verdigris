@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-001",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "bbe15864",
+  "base_sha": "6ae242cc",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "visual-target",
@@ -12,7 +12,7 @@
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario first-fight", "exit_code": 0}
+    {"run": "native/build/verdigris_client.exe --scenario visual-target", "exit_code": 0}
   ],
   "assertions": [
     "in-game HUD names camera top-down, adult proportion, bronze-stone palette, ink-on-panel contrast",
@@ -26,6 +26,8 @@
     "village trees are a forked clustered canopy; a circle-on-stick cannot pass",
     "town wardens use jointed legs, a snout, and filled claws; a crate foe cannot pass",
     "live HUD names Adult camera and Bronze palette",
+    "Adult camera stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Adult camera is the anti-pattern",
     "live HUD names Jointed warden and Snout claws",
     "Jointed warden stays off WASD, the objective, Tin village, and Life",
     "covering WASD, the objective, Tin village, or Life with Jointed warden is the anti-pattern",
@@ -35,14 +37,14 @@
     "live HUD names Kit lock and Same delta"
   ],
   "negative_control": {
-    "name": "external concept-art HUD token, a loader chip as the sheet, a chibi head, a crate-shaped foe, Jointed warden covering WASD/objective/Tin village/Life, a free tile that slides independently under pan, or a sliding kit under camera move",
+    "name": "external concept-art HUD token, a loader chip as the sheet, a chibi head, Adult camera covering WASD/objective/Tin village/Life, a crate-shaped foe, Jointed warden covering WASD/objective/Tin village/Life, a free tile that slides independently under pan, or a sliding kit under camera move",
     "observed_result": "REJECTED"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/visual-target-960x600.png",
-      "sha256": "fb501ca6d3b389412c70137aebf8b0d20586961353e6c57493ee05c6c36701d9",
+      "sha256": "25fdede9435b8fa8b52ea92cf0c96da429af28caa02d2066895db1d93ac78bc1",
       "produced_by": "native/build/verdigris_client.exe --scenario visual-target"
     },
     {
@@ -68,11 +70,11 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Composition axes remain HUD labels on the live expedition, not a separate art bible PNG.",
-    "Owner strip paints Adult camera / Bronze palette. Chibi head cannot certify.",
-    "first-fight owner strip paints Jointed warden / Snout claws and parks off WASD, the objective, Tin village, and Life. Crate foe cannot certify. Covering those combat surfaces cannot certify.",
+    "visual-target owner strip paints Adult camera / Bronze palette and parks off WASD, the objective, Tin village, and Life. Chibi head cannot certify. Covering those combat surfaces cannot certify.",
+    "first-fight owner strip paints Jointed warden / Snout claws and parks off WASD, the objective, Tin village, and Life. Crate foe cannot certify.",
     "zoom-invariance owner strip paints Uniform pan / Zoom lock. A free tile cannot certify the camera contract.",
     "move-and-camera owner strip paints Kit lock / Same delta. A sliding kit cannot certify the pan contract.",
-    "visual-target, zoom-invariance, and move-and-camera captures are prior evidence; not recaptured in this packet.",
+    "zoom-invariance and move-and-camera captures are prior evidence; not recaptured in this packet.",
     "Mute chip stays owner-facing. Loader jargon lives on F3.",
     "Does not re-spec TASK-0108 or Owner Demo (VG-ART-007 mixed-pack review not this packet).",
     "32bpp scenario DIBs still need dc_color; live CreateCompatibleBitmap path does not.",

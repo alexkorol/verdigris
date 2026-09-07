@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Adult camera off WASD and Tin village (Cursor)
+
+- VG-ART-001 / VG-UI-007: Adult camera / Bronze palette parks off WASD,
+  the objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Chibi head still rejected. Owner Demo journeys not
+  duplicated.
+- Scenario `visual-target` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
 ## 2026-09-06 — Jointed warden off WASD and Tin village (Cursor)
 
 - VG-ART-001 / VG-UI-007: Jointed warden / Snout claws parks off WASD,
