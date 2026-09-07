@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Live packets off WASD and Tin village (Cursor)
+
+- VG-GPU-004 / VG-UI-007: Live packets / Session present parks off WASD,
+  the objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Quad demo still rejected. VG-WORLD-001 stays Kimi.
+  Owner Demo journeys not duplicated.
+- Scenario `gpu-reference` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
+
 ## 2026-09-06 — Theme Combat off WASD and Tin village (Cursor)
 
 - VG-SOUND-008 / VG-UI-007: Theme Combat / Music none parks off WASD, the

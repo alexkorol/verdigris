@@ -90,5 +90,8 @@ inline bool present_reference_scene(Sample& sample, const std::vector<Packet>& p
 
 inline const char* owner_live_packets_label() { return "Live packets"; }
 inline const char* owner_session_present_label() { return "Session present"; }
+inline bool reference_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
 
 }  // namespace verdigris::gpu

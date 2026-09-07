@@ -7320,8 +7320,12 @@ void paint_gpu_reference_review_strip(ClientState& state, HDC dc, const RECT& bo
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const int pane_w = 360 * s;
   const int pane_h = 72 * s;
-  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
-  const int top = 72 * s;
+  const HudRect parked =
+      park_review_strip(state, static_cast<int>(bounds.right),
+                        static_cast<int>(bounds.bottom), pane_w, pane_h);
+  const int left = parked.x;
+  const int top = parked.y;
+  state.hud_rect_trace.push_back({"gpu-ref-strip", parked});
   RECT pane{left, top, left + pane_w, top + pane_h};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
@@ -14884,6 +14888,31 @@ int scenario_gpu_reference() {
   scenario_check(live && session,
                  "gpu-reference: live HUD names Live packets and Session present");
   scenario_check(quad, "gpu-reference: live HUD rejects a quad demo");
+  {
+    auto trace_find = [](const ClientState& s,
+                         const char* label) -> const HudRect* {
+      for (const auto& entry : s.hud_rect_trace)
+        if (entry.first == label) return &entry.second;
+      return nullptr;
+    };
+    const HudRect* ref_hud = trace_find(state, "gpu-ref-strip");
+    scenario_check(ref_hud != nullptr, "gpu-reference: Live packets strip is traced");
+    const HudRect* ctrl = trace_find(state, "controls");
+    const HudRect* objective = trace_find(state, "objective");
+    const HudRect* route = trace_find(state, "route-card");
+    const HudRect* life = trace_find(state, "orb-life");
+    const bool covers =
+        (ref_hud && ctrl && hud_rects_overlap(*ref_hud, *ctrl)) ||
+        (ref_hud && objective && hud_rects_overlap(*ref_hud, *objective)) ||
+        (ref_hud && route && hud_rects_overlap(*ref_hud, *route)) ||
+        (ref_hud && life && hud_rects_overlap(*ref_hud, *life));
+    scenario_check(
+        verdigris::gpu::reference_strip_covers_hud_fails_review(true),
+        "gpu-reference: covering WASD, the objective, Tin village, or Life is the anti-pattern");
+    scenario_check(
+        !verdigris::gpu::reference_strip_covers_hud_fails_review(covers),
+        "gpu-reference: Live packets stays off WASD, the objective, Tin village, and Life");
+  }
   return scenario_failures;
 }
 

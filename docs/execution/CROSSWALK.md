@@ -48,7 +48,7 @@ Cursor evidence notes.
 | VG-GPU-001 | new | isolated software quad (`gpu-sample`); not a D3D-only window; Software quad stays off WASD/objective/Tin village/Life |
 | VG-GPU-002 | new | render-list → packets (`gpu-packets`); handles cannot snapshot; Handle-free stays off WASD/objective/Tin village/Life |
 | VG-GPU-003 | new | versioned software bindings (`shader-bindings`); no runtime .hlsl path; Layout v1 stays off WASD/objective/Tin village/Life |
-| VG-GPU-004 | new | session-connected packet present (`gpu-reference`); not a disconnected demo |
+| VG-GPU-004 | new | session-connected packet present (`gpu-reference`); not a disconnected demo; Live packets stays off WASD/objective/Tin village/Life |
 | VG-GPU-005 | new | Y-sort + Sweep overlay on the village gate (`grounding`); HUD or capture-black cannot certify; walls cannot erase warnings |
 | VG-GPU-006 | new | moving bronze lantern pool on the village gate (`material-light`); HUD without a pool cannot certify; cannot wash out damage |
 | VG-GPU-007 | new | BMP readback + provenance (`gpu-capture`); PNG R/B swap cannot certify; packet logs are not pixels |
@@ -225,8 +225,10 @@ HLSL cannot certify. 64×64 BMP hash is unchanged. Scenario
 `shader-bindings`. Evidence
 `docs/execution/evidence/VG-GPU-003.json`.
 VG-GPU-004: software present of live session packets (actors/world/effects/HUD).
-Owner strip paints Live packets / Session present. A textured-quad demo with
-no session cannot pass. Scenario `gpu-reference`. Evidence
+Owner strip paints Live packets / Session present and parks off WASD, the
+objective, Tin village, and Life. Covering those combat surfaces cannot
+certify. A textured-quad demo with no session cannot pass. Scenario
+`gpu-reference`. Evidence
 `docs/execution/evidence/VG-GPU-004.json`.
 VG-GPU-005: scenery/actors sort by world Y; telegraphs paint after that pass.
 Owner strip paints Y-sort / Sweep disc. Sweep is a readable red disc on the

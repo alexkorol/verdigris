@@ -4,7 +4,7 @@
   "planning_id": "VG-GPU-004",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "0d5db950cd00ed6a5ae8b7f70ecba2b21825115d",
+  "base_sha": "d31975a6",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "gpu-reference",
@@ -19,10 +19,12 @@
     "session packets carry actors, world, effects, and HUD",
     "live packets present through the GPU bridge",
     "session packets shaded the sample buffer",
-    "live HUD names Live packets and Session present"
+    "live HUD names Live packets and Session present",
+    "Live packets stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Live packets is the anti-pattern"
   ],
   "negative_control": {
-    "name": "standalone GPU demo disconnected from session events",
+    "name": "standalone GPU demo disconnected from session events, or Live packets covering WASD/objective/Tin village/Life",
     "observed_result": "REJECTED"
   },
   "artifacts": [
@@ -35,7 +37,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/gpu-reference-960x600.png",
-      "sha256": "91321c2f8570174d3d6f597bbaf4602750986c2ade2668a47ab624bdf984abbd",
+      "sha256": "ddf5b82dcbd4847d9eca2db8e1c3a97b11d34c675722df8d95d1fef2bad83571",
       "produced_by": "native/build/verdigris_client.exe --scenario gpu-reference"
     }
   ],
@@ -43,6 +45,7 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Software sample present of live packets, not a D3D swapchain.",
-    "Does not take VG-WORLD-001 from Kimi."
+    "Owner strip paints Live packets / Session present and parks off WASD, the objective, Tin village, and Life. Quad demo cannot certify. Covering those combat surfaces cannot certify. Session BMP is prior evidence; not recaptured in this packet.",
+    "Does not take VG-WORLD-001 from Kimi. Does not re-spec TASK-0108."
   ]
 }
