@@ -4173,7 +4173,9 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
         SelectObject(dc, cp);
         DeleteObject(cell_pen);
       }
-      RECT art_cell{cell.left, cell.top, cell.right, cell.bottom - 18 * s};
+      // Two type-floor caption rows. A one-line 12-char period clip cannot
+      // certify Ember-edged axe; wrapping keeps both owner words.
+      RECT art_cell{cell.left, cell.top, cell.right, cell.bottom - 30 * s};
       {
         RECT backing{art_cell.left + 4 * s, art_cell.top + 4 * s,
                      art_cell.right - 4 * s, art_cell.bottom};
@@ -4199,20 +4201,49 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
                     billboard ? 1 : 0,
                     billboard ? "pack-glyph:billboard" : "pack-glyph:vector"});
       SetTextColor(dc, equipped ? RGB(240, 210, 120) : RGB(205, 215, 204));
-      std::string name = items[carried_i].name;
-      if (name.size() > 12) name = name.substr(0, 11) + ".";
+      const std::string full_name = items[carried_i].name;
+      HGDIOBJ cell_font = SelectObject(dc, skin::font_small());
+      const int name_max_w = std::max(8, cell_w - 8 * s);
+      auto measure_px = [&](const std::string& text) {
+        SIZE extent{};
+        GetTextExtentPoint32A(dc, text.c_str(),
+                              static_cast<int>(text.size()), &extent);
+        return extent.cx;
+      };
+      std::string line0 = full_name;
+      std::string line1;
+      if (measure_px(full_name) > name_max_w) {
+        const auto split =
+            verdigris::client::ui::wrap_pack_caption(full_name);
+        if (!split.second.empty() && measure_px(split.first) <= name_max_w) {
+          line0 = split.first;
+          line1 = split.second;
+        } else {
+          while (line0.size() > 1 && measure_px(line0) > name_max_w)
+            line0.pop_back();
+          line1 = full_name.substr(line0.size());
+          while (!line1.empty() && line1.front() == ' ') line1.erase(0, 1);
+        }
+      }
       rl.push_back({render::Op::PaneItem, static_cast<double>(cx),
                     static_cast<double>(cy), 0.0, items[carried_i].attack_bonus,
-                    equipped ? name + " [E]" : name});
+                    equipped ? full_name + " [E]" : full_name});
+      if (!verdigris::client::ui::pack_caption_is_period_clip(full_name,
+                                                             line0) &&
+          !verdigris::client::ui::pack_caption_is_period_clip(full_name,
+                                                             line1))
+        rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "pack-name:full"});
       rl.push_back({render::Op::Hud, static_cast<double>(col),
                     static_cast<double>(row), 0.0,
                     static_cast<int>(cell_item.id),
                     "pack:" + std::to_string(col) + "," + std::to_string(row)});
       state.hud_rect_trace.push_back(
           {"pane-cell", {cx, cy, cell_w, cell_h}});
-      HGDIOBJ cell_font = SelectObject(dc, skin::font_small());
-      TextOutA(dc, cx + 4 * s, cell.bottom - 17 * s, name.c_str(),
-               static_cast<int>(name.size()));
+      TextOutA(dc, cx + 4 * s, cell.bottom - (line1.empty() ? 17 : 30) * s,
+               line0.c_str(), static_cast<int>(line0.size()));
+      if (!line1.empty())
+        TextOutA(dc, cx + 4 * s, cell.bottom - 16 * s, line1.c_str(),
+                 static_cast<int>(line1.size()));
       SetTextColor(dc, RGB(170, 185, 172));
       std::string bonus = "+" + std::to_string(items[carried_i].attack_bonus) +
                           (equipped ? " [E]" : "");
@@ -14844,6 +14875,28 @@ int scenario_equipment() {
                  "equipment: live HUD names the cleared compare plate");
   scenario_check(render_list_has(state, render::Op::Hud, "gear:stats-def"),
                  "equipment: DEF remains named on the gear pane");
+  bool eq_period_clip = false;
+  bool eq_named_full = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::PaneItem &&
+        verdigris::client::ui::pack_caption_is_period_clip("Ember-edged axe",
+                                                          item.label))
+      eq_period_clip = true;
+    if (item.op == render::Op::Hud && item.label == "pack-name:full")
+      eq_named_full = true;
+    if (item.op == render::Op::PaneItem &&
+        item.label.find("Ember-edged axe") != std::string::npos)
+      eq_named_full = true;
+  }
+  scenario_check(
+      verdigris::client::ui::period_clipped_pack_name_fails_review(true),
+      "equipment: a period-clipped pack name is the anti-pattern");
+  scenario_check(
+      !verdigris::client::ui::period_clipped_pack_name_fails_review(
+          eq_period_clip),
+      "equipment: pack cells wrap Ember-edged axe instead of clipping");
+  scenario_check(eq_named_full,
+                 "equipment: live HUD names the full pack caption");
   return scenario_failures;
 }
 
@@ -16811,6 +16864,27 @@ int scenario_pack_drag() {
                      vector_art::kPackGlyphHasBlade,
                      vector_art::kPackGlyphHasGuard),
                  "pack-drag: a grey square cannot certify a carried weapon");
+  bool period_clip = false;
+  bool named_full = false;
+  for (const auto& item : state.render_list) {
+    if (item.op == render::Op::PaneItem &&
+        verdigris::client::ui::pack_caption_is_period_clip("Ember-edged axe",
+                                                          item.label))
+      period_clip = true;
+    if (item.op == render::Op::Hud && item.label == "pack-name:full")
+      named_full = true;
+    if (item.op == render::Op::PaneItem &&
+        item.label.find("Ember-edged axe") != std::string::npos)
+      named_full = true;
+  }
+  scenario_check(
+      verdigris::client::ui::period_clipped_pack_name_fails_review(true),
+      "pack-drag: a period-clipped pack name is the anti-pattern");
+  scenario_check(
+      !verdigris::client::ui::period_clipped_pack_name_fails_review(period_clip),
+      "pack-drag: pack cells wrap Ember-edged axe instead of clipping");
+  scenario_check(named_full,
+                 "pack-drag: live HUD names the full pack caption");
 
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
+#include <utility>
 
 // VG-UI-002: pack-grid drag is presentation occupancy. A rejected drop
 // cannot lose, duplicate, or silently equip. Core inventory-move stays
@@ -42,5 +44,30 @@ inline const char* pack_drop_hud(PackDrop drop) {
 
 inline const char* owner_pack_place_label() { return "Pack place"; }
 inline const char* owner_reject_keeps_label() { return "Reject keeps"; }
+
+// A 12-char period clip ("Ember-edged.") cannot certify the carried item.
+// Wrap at the last space so both owner words stay at the type floor.
+inline bool period_clipped_pack_name_fails_review(bool period_clip) {
+  return period_clip;
+}
+
+inline bool pack_caption_is_period_clip(const std::string& full,
+                                        const std::string& painted) {
+  if (painted.empty() || painted == full) return false;
+  std::string stem = painted;
+  if (stem.size() >= 4 && stem.compare(stem.size() - 4, 4, " [E]") == 0)
+    stem.resize(stem.size() - 4);
+  if (stem.empty() || stem.back() != '.') return false;
+  stem.pop_back();
+  return full.rfind(stem, 0) == 0 && stem.size() < full.size();
+}
+
+inline std::pair<std::string, std::string> wrap_pack_caption(
+    const std::string& name) {
+  const auto space = name.rfind(' ');
+  if (space == std::string::npos || space == 0 || space + 1 >= name.size())
+    return {name, {}};
+  return {name.substr(0, space), name.substr(space + 1)};
+}
 
 }  // namespace verdigris::client::ui

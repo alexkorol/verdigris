@@ -34,7 +34,7 @@ Cursor evidence notes.
 | VG | Disposition | Existing |
 |---|---|---|
 | VG-UI-001 | extend | native Escape stack (`pane-stack`); owner Stack 2 / Escape closes; absent tree hides seats; invented origin cannot pass; WASD cannot overlay the open tree; C or Esc closes stays in the sheet slot |
-| VG-UI-002 | extend | TASK-0171 INTEGRATED, 0184 BRIDGE_PREP; `pack-drag`; reject cannot lose/duplicate/silent-equip; gear footer stays inside the pane |
+| VG-UI-002 | extend | TASK-0171 INTEGRATED, 0184 BRIDGE_PREP; `pack-drag`; reject cannot lose/duplicate/silent-equip; pack cells wrap Ember-edged axe; a period clip cannot certify; gear footer stays inside the pane |
 | VG-UI-003 | extend | paper-doll + ack-only HUD (`equipment`); pending compare cannot gold-frame as equipped; compare plate stays off gear DEF/LVL; `progression-surface` owner Skill tree / No data yet (TASK folder cannot certify) |
 | VG-UI-004 | extend | TASK-0156, 0159 INTEGRATED; `stat-explain` expandable ATK; dormant cannot fold into Attack; compact Sources uses Base/Gear; lowercase base/gear cannot certify; WASD stays off the C-key sheet; close hint stays in the slot |
 | VG-UI-005 | extend | TASK-0076 INTEGRATED; 0178/0192/0203 Owner Demo; `route-map` zoom/opacity cannot reveal off-snapshot targets |
@@ -364,7 +364,9 @@ Life. The close hint stays in the slot. Scenario
 `docs/execution/evidence/VG-UI-004.json`.
 VG-UI-002: `pack-drag` — reject cannot lose, duplicate, or silently equip.
 Owner strip paints Pack place / Reject keeps. Silent equip cannot
-certify. Gear footer I or Esc closes stays inside the pane. Core inventory-move stays Kimi.
+certify. Pack cells wrap Ember-edged axe at the type floor; a 12-char
+period clip cannot certify. Gear footer I or Esc closes stays inside the
+pane. Core inventory-move stays Kimi.
 VG-ART-005: `held-item` — world actor hold must change on equip. Owner
 strip paints World hold / Ack equip. `loot-to-bank` owner strip paints
 Unarmed first / World hold. A filled paper-doll seat with `held:none`

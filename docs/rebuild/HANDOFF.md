@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Pack cells wrap Ember-edged axe (Cursor)
+
+- VG-UI-002 / VG-UI-003: pack cell captions wrap at the type floor so
+  Ember-edged axe stays two owner words. A 12-char period clip
+  (Ember-edged.) cannot certify. Shrinking type cannot certify overflow.
+  Reject occupancy, compare-plate keep-out, and gear footer are unchanged.
+  Core inventory-move stays Kimi.
+- Scenarios `pack-drag` / `equipment` / `loot-to-bank` PASS. Captures
+  viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — Compact Sources names Base and Gear (Cursor)
 
 - VG-UI-004 / VG-UI-001 / VG-UI-007: compact C-key Sources paints
