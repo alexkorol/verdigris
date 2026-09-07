@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Strike poses off WASD and Tin village (Cursor)
+
+- VG-ART-003 / VG-UI-007: Strike poses / Windup parks off WASD, the
+  objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Idle still still rejected. TASK-0173 models stay
+  Kimi. Owner Demo journeys not duplicated.
+- Scenario `attack-poses` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
+
 ## 2026-09-06 — Life left off WASD and Tin village (Cursor)
 
 - VG-UI-007: Life left / Mana right parks off WASD, the objective, Tin

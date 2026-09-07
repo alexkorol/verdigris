@@ -6293,14 +6293,21 @@ vector_art::Held equipped_held(const ClientState& state) {
   return vector_art::Held::None;
 }
 
+HudRect park_review_strip(const ClientState& state, int width, int height,
+                          int pane_w, int pane_h);
+
 void paint_attack_pose_strip(ClientState& state, HDC dc, const RECT& bounds,
                              render::List& rl) {
   if (!state.pose_review_strip) return;
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const int pane_w = 520 * s;
   const int pane_h = 118 * s;
-  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
-  const int top = 72 * s;
+  const HudRect parked =
+      park_review_strip(state, static_cast<int>(bounds.right),
+                        static_cast<int>(bounds.bottom), pane_w, pane_h);
+  const int left = parked.x;
+  const int top = parked.y;
+  state.hud_rect_trace.push_back({"pose-strip", parked});
   RECT pane{left, top, left + pane_w, top + pane_h};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
@@ -13603,6 +13610,31 @@ int scenario_attack_poses() {
                  "attack-poses: live HUD names Strike poses and Windup");
   scenario_check(has_pose("pose-strip:idle-rejected"),
                  "attack-poses: live HUD rejects idle still");
+  {
+    auto trace_find = [](const ClientState& s,
+                         const char* label) -> const HudRect* {
+      for (const auto& entry : s.hud_rect_trace)
+        if (entry.first == label) return &entry.second;
+      return nullptr;
+    };
+    const HudRect* pose_hud = trace_find(state, "pose-strip");
+    scenario_check(pose_hud != nullptr, "attack-poses: Strike poses strip is traced");
+    const HudRect* ctrl = trace_find(state, "controls");
+    const HudRect* objective = trace_find(state, "objective");
+    const HudRect* route = trace_find(state, "route-card");
+    const HudRect* life = trace_find(state, "orb-life");
+    const bool covers =
+        (pose_hud && ctrl && hud_rects_overlap(*pose_hud, *ctrl)) ||
+        (pose_hud && objective && hud_rects_overlap(*pose_hud, *objective)) ||
+        (pose_hud && route && hud_rects_overlap(*pose_hud, *route)) ||
+        (pose_hud && life && hud_rects_overlap(*pose_hud, *life));
+    scenario_check(
+        vector_art::pose_strip_covers_hud_fails_review(true),
+        "attack-poses: covering WASD, the objective, Tin village, or Life is the anti-pattern");
+    scenario_check(
+        !vector_art::pose_strip_covers_hud_fails_review(covers),
+        "attack-poses: Strike poses stays off WASD, the objective, Tin village, and Life");
+  }
   return scenario_failures;
 }
 

@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-003",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "717d6a04",
+  "base_sha": "1af3ac08",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "attack-poses",
@@ -12,6 +12,7 @@
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
+    {"run": "native/build/verdigris_client.exe --scenario attack-poses", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario combat-juice", "exit_code": 0}
   ],
   "assertions": [
@@ -20,19 +21,21 @@
     "windup still draws the swing arc",
     "native pose strip paints windup and active silhouettes, not labels only",
     "live HUD names Strike poses and Windup",
+    "Strike poses stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Strike poses is the anti-pattern",
     "live HUD names Hit flash and Number fade",
     "Hit flash stays off WASD, the objective, Tin village, and Life",
     "covering WASD, the objective, Tin village, or Life with Hit flash is the anti-pattern"
   ],
   "negative_control": {
-    "name": "idle pose, frame-count HUD labels, a silent hit as the complete attack family, or Hit flash covering WASD/objective/Tin village/Life",
+    "name": "idle pose, frame-count HUD labels, a silent hit as the complete attack family, Strike poses covering WASD/objective/Tin village/Life, or Hit flash covering WASD/objective/Tin village/Life",
     "observed_result": "REJECTED"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/attack-poses-960x600.png",
-      "sha256": "142c3efd4a1814aff36a0291f85be61261a93fa1d8fb92f8b8133a2abcd5bdf1",
+      "sha256": "53c60fe8aa9cfe78ef341e06a663166758eb672d120196ee64f050f38cf7c9ea",
       "produced_by": "native/build/verdigris_client.exe --scenario attack-poses"
     },
     {
@@ -46,6 +49,7 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Paints melee poses on this lease. TASK-0173 animation models stay Kimi. Does not re-spec TASK-0108.",
-    "combat-juice owner strip paints Hit flash / Number fade and parks off WASD, the objective, Tin village, and Life. Silent hit cannot certify readable game-scale contact."
+    "Owner strip paints Strike poses / Windup and parks off WASD, the objective, Tin village, and Life. Idle still cannot certify. Covering those combat surfaces cannot certify.",
+    "combat-juice owner strip paints Hit flash / Number fade and parks off WASD, the objective, Tin village, and Life. Silent hit cannot certify readable game-scale contact. combat-juice capture is prior evidence; not recaptured in this packet."
   ]
 }

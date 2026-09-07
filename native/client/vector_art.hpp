@@ -212,6 +212,9 @@ inline bool idle_as_attack_family_fails_review(bool only_idle_pose) {
 }
 
 inline const char* owner_strike_poses_label() { return "Strike poses"; }
+inline bool pose_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
 
 // VG-ART-006: WarCry weave beats share bronze identity. A single blob or
 // screen-filling ring cannot certify the family.
