@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Kit lock off WASD and Tin village (Cursor)
+
+- VG-ART-001 / VG-UI-007: Kit lock / Same delta parks off WASD, the
+  objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Sliding kit still rejected. Owner Demo journeys not
+  duplicated.
+- Scenario `move-and-camera` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
 ## 2026-09-06 — Uniform pan off WASD and Tin village (Cursor)
 
 - VG-ART-001 / VG-UI-007: Uniform pan / Zoom lock parks off WASD, the

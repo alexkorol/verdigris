@@ -65,5 +65,8 @@ inline const char* owner_zoom_lock_label() { return "Zoom lock"; }
 inline bool zoom_strip_covers_hud_fails_review(bool overlap) { return overlap; }
 inline const char* owner_kit_lock_label() { return "Kit lock"; }
 inline const char* owner_same_delta_label() { return "Same delta"; }
+inline bool kit_lock_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
 
 }  // namespace camera2d
