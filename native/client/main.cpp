@@ -6723,8 +6723,12 @@ void paint_legal_sounds_review_strip(ClientState& state, HDC dc, const RECT& bou
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const int pane_w = 360 * s;
   const int pane_h = 72 * s;
-  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
-  const int top = 72 * s;
+  const HudRect parked =
+      park_review_strip(state, static_cast<int>(bounds.right),
+                        static_cast<int>(bounds.bottom), pane_w, pane_h);
+  const int left = parked.x;
+  const int top = parked.y;
+  state.hud_rect_trace.push_back({"legal-strip", parked});
   RECT pane{left, top, left + pane_w, top + pane_h};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
@@ -14308,6 +14312,31 @@ int scenario_legal_sounds() {
                  "legal-sounds: live HUD names Family combat and Anticipate CC0");
   scenario_check(rejected_hud,
                  "legal-sounds: live HUD rejects unlicensed as a passing family");
+  {
+    auto trace_find = [](const ClientState& s,
+                         const char* label) -> const HudRect* {
+      for (const auto& entry : s.hud_rect_trace)
+        if (entry.first == label) return &entry.second;
+      return nullptr;
+    };
+    const HudRect* legal = trace_find(state, "legal-strip");
+    scenario_check(legal != nullptr, "legal-sounds: Family combat strip is traced");
+    const HudRect* ctrl = trace_find(state, "controls");
+    const HudRect* objective = trace_find(state, "objective");
+    const HudRect* route_card = trace_find(state, "route-card");
+    const HudRect* life = trace_find(state, "orb-life");
+    const bool covers =
+        (legal && ctrl && hud_rects_overlap(*legal, *ctrl)) ||
+        (legal && objective && hud_rects_overlap(*legal, *objective)) ||
+        (legal && route_card && hud_rects_overlap(*legal, *route_card)) ||
+        (legal && life && hud_rects_overlap(*legal, *life));
+    scenario_check(
+        verdigris::client::sound_family::legal_strip_covers_hud_fails_review(true),
+        "legal-sounds: covering WASD, the objective, Tin village, or Life is the anti-pattern");
+    scenario_check(
+        !verdigris::client::sound_family::legal_strip_covers_hud_fails_review(covers),
+        "legal-sounds: Family combat stays off WASD, the objective, Tin village, and Life");
+  }
   return scenario_failures;
 }
 

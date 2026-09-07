@@ -4,7 +4,7 @@
   "planning_id": "VG-SOUND-002",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "65b2d37858fc89196a20cf5804524a65dfb0f592",
+  "base_sha": "baf407bd",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "legal-sounds",
@@ -21,17 +21,19 @@
     "an ordinary fight actually voiced cues",
     "every voiced combat cue is in the licensed family",
     "the fight voiced the licensed swing windup",
-    "live HUD names Family combat and Anticipate CC0"
+    "live HUD names Family combat and Anticipate CC0",
+    "Family combat stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Family combat is the anti-pattern"
   ],
   "negative_control": {
-    "name": "unlicensed-preview as a passing combat family",
+    "name": "unlicensed-preview as a passing combat family, or Family combat covering WASD/objective/Tin village/Life",
     "observed_result": "REJECTED"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/legal-sounds-960x600.png",
-      "sha256": "d39a74ede9a2b7eda794b7e3a963e115bfde74cbc84b4789430d606e3c058b4d",
+      "sha256": "d4534eafb58dcf51ea3a765f4bd6d2025326e708f3a8f0e43df2c823a42afce2",
       "produced_by": "native/build/verdigris_client.exe --scenario legal-sounds"
     },
     {
@@ -45,6 +47,7 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Procedural CC0 family, not a binary WAV bank. VG-TOOLS-003 stays Kimi.",
-    "Device remains muted in the harness; proof is voiced cue IDs plus SPDX rows plus the owner strip."
+    "Owner strip paints Family combat / Anticipate CC0 and parks off WASD, the objective, Tin village, and Life. Unlicensed cannot certify. Covering those combat surfaces cannot certify.",
+    "Provenance txt hash unchanged. Device remains muted in the harness. Not Owner Demo. Does not re-spec TASK-0108."
   ]
 }

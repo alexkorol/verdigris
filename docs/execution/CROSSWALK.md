@@ -167,9 +167,11 @@ objective, Tin village, and Life. Covering those combat surfaces cannot
 certify. Mouse pad cannot certify. Scenario `pad-path`. Evidence
 `docs/execution/evidence/VG-UI-008.json`.
 VG-SOUND-002: CC0 provenance table for combat cues including swing windup
-`attack-anticipate`. Live HUD paints Family combat / Anticipate CC0.
-`unlicensed-preview` cannot ship. Scenario `legal-sounds`.
-Evidence `docs/execution/evidence/VG-SOUND-002.json`.
+`attack-anticipate`. Owner strip paints Family combat / Anticipate CC0
+and parks off WASD, the objective, Tin village, and Life. Covering those
+combat surfaces cannot certify. `unlicensed-preview` cannot ship.
+Scenario `legal-sounds`. Evidence
+`docs/execution/evidence/VG-SOUND-002.json`.
 VG-SOUND-008: explore/combat/recovery music coalesced per drain; unload
 sets `music:none` and mutes the music bus so a leftover combat loop cannot
 voice. Owner strip paints Theme Combat / Music none and parks off WASD,

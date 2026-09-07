@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Family combat off WASD and Tin village (Cursor)
+
+- VG-SOUND-002 / VG-UI-007: Family combat / Anticipate CC0 parks off WASD,
+  the objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Unlicensed still rejected. VG-TOOLS-003 stays Kimi.
+  Owner Demo journeys not duplicated. Provenance txt not recaptured.
+- Scenario `legal-sounds` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
+
 ## 2026-09-06 — Restore off WASD and Tin village (Cursor)
 
 - VG-GPU-008 / VG-UI-007: Restore / Live buffers 1 parks off WASD, the

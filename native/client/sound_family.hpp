@@ -44,5 +44,8 @@ inline bool unlicensed_preview_fails_review(const char* cue_id) {
 
 inline const char* owner_family_label() { return "Family combat"; }
 inline const char* owner_anticipate_label() { return "Anticipate CC0"; }
+inline bool legal_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
 
 }  // namespace verdigris::client::sound_family
