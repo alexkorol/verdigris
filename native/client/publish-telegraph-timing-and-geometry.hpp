@@ -102,5 +102,8 @@ inline const char* owner_life_holds_label() { return "Life holds"; }
 inline bool dodge_strip_covers_hud_fails_review(bool overlap) {
   return overlap;
 }
+inline bool telegraph_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
 
 }  // namespace verdigris::client::actions

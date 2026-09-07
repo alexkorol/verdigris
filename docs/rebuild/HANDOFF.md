@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Warning windows off WASD and Tin village (Cursor)
+
+- VG-ACT-005 / VG-UI-007: Warning windows parks off WASD, the objective,
+  Tin village, and Life. Covering those combat surfaces cannot certify.
+  ms/50 still rejected. Core ACT stays Kimi. Owner Demo journeys not
+  duplicated.
+- Scenario `telegraph-spec` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
 ## 2026-09-06 — Dodge clear off WASD and Tin village (Cursor)
 
 - VG-ACT-005 / VG-UI-007: Dodge clear / Life holds parks off WASD, the
