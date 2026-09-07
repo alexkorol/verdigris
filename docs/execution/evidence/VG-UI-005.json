@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-005",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "98c867898575461579ca9e7ceb0994a1e6968b15",
+  "base_sha": "484dea25",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "route-map",
@@ -12,8 +12,7 @@
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario route-map", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario visual-target", "exit_code": 0}
+    {"run": "native/build/verdigris_client.exe --scenario route-map", "exit_code": 0}
   ],
   "assertions": [
     "max zoom cannot paint an off-snapshot warden blip",
@@ -23,17 +22,19 @@
     "owner card titles Tin village, not route:tin:1:0",
     "a protocol colon-id cannot be the owner title",
     "owner risk/return lines are Risk: wardens and Return: press F at the pad",
-    "live HUD names Tin village and Risk wardens"
+    "live HUD names Tin village and Risk wardens",
+    "Risk wardens stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Risk wardens is the anti-pattern"
   ],
   "negative_control": {
-    "name": "tight zoom reveals a server-hidden map target, or a protocol route id as the owner title",
+    "name": "tight zoom reveals a server-hidden map target, a protocol route id as the owner title, or Risk wardens covering WASD/objective/Tin village/Life",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/route-map-960x600.png",
-      "sha256": "2a2ac1e663c46afeca461e8913d015039c83857ec4509fdd3ef14e98aa8308f6",
+      "sha256": "3ed868622666bcb28b7309761ea0204130a57a4ebd4a09fb3f5794eb71f2c812",
       "produced_by": "native/build/verdigris_client.exe --scenario route-map"
     },
     {
@@ -47,8 +48,9 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Overlay/HUD only. World topology and server-hidden actor lists stay with Kimi WORLD/NET.",
-    "Owner strip paints Tin village / Risk wardens. route:tin cannot certify.",
+    "Owner strip paints Tin village / Risk wardens and parks off WASD, the objective, the production Tin village card, and Life. route:tin cannot certify.",
     "Raw route id remains on the F3 overlay. Owner Demo journeys not duplicated.",
+    "visual-target capture is prior ART-001 evidence; not recaptured in this packet.",
     "No TASK numbers minted."
   ]
 }

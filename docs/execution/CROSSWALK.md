@@ -37,7 +37,7 @@ Cursor evidence notes.
 | VG-UI-002 | extend | TASK-0171 INTEGRATED, 0184 BRIDGE_PREP; `pack-drag`; reject cannot lose/duplicate/silent-equip; pack cells wrap Ember-edged axe; Pack place stays off WASD/LIFE; compare hint uses ASCII `|`; gear footer stays inside the pane |
 | VG-UI-003 | extend | paper-doll + ack-only HUD (`equipment`); pending compare cannot gold-frame as equipped; compare plate stays off gear DEF/LVL; Ack only stays off WASD/LIFE; compare hint uses ASCII `|`; `progression-surface` owner Skill tree / No data yet (TASK folder cannot certify) |
 | VG-UI-004 | extend | TASK-0156, 0159 INTEGRATED; `stat-explain` expandable ATK; dormant cannot fold into Attack; compact Sources uses Base/Gear; lowercase base/gear cannot certify; expanded sheet paints Conditional once; a duplicate Conditional cannot certify; Base Gear stays off the sheet/WASD/objective/Life; WASD stays off the C-key sheet; close hint stays in the slot |
-| VG-UI-005 | extend | TASK-0076 INTEGRATED; 0178/0192/0203 Owner Demo; `route-map` zoom/opacity cannot reveal off-snapshot targets |
+| VG-UI-005 | extend | TASK-0076 INTEGRATED; 0178/0192/0203 Owner Demo; `route-map` zoom/opacity cannot reveal off-snapshot targets; Risk wardens stays off WASD/objective/Tin village/Life |
 | VG-UI-006 | extend | TASK-0145/0177 + 0190/0197/0201 — **do not duplicate** |
 | VG-UI-007 | extend | TASK-0159 INTEGRATED, 0118 READY, 0207; `hud-pane-readability` at 960/1366/3440 + tree/character keep-out + `hud-scale-floor` + live window; TASK-0159 folder capture cannot certify; clipped C or Esc closes cannot certify; clipped I or Esc closes gear footer cannot certify; clipped DEF/LVL cannot certify; VG-UI-006 Owner Demo not duplicated |
 | VG-UI-008 | new | XInput tick path + glyphs (`pad-path`); not mouse emulation |
@@ -355,8 +355,10 @@ Scenario `death-disconnect`. Core D-106 stays Kimi/TASK-0018.
 Evidence `docs/execution/evidence/VG-GOV-006.json`.
 VG-UI-005: `route-map` — overlay zoom/opacity cannot move the player or
 mint an off-snapshot warden blip. Owner strip paints Tin village / Risk
-wardens. The owner card titles Tin village, not `route:tin:1:0`. Owner
-Demo journeys not reimplemented. Scenario `route-map`. Evidence
+wardens and parks off WASD, the objective, the production Tin village
+card, and Life. Covering those combat surfaces cannot certify. The owner
+card titles Tin village, not `route:tin:1:0`. Owner Demo journeys not
+reimplemented. Scenario `route-map`. Evidence
 `docs/execution/evidence/VG-UI-005.json`.
 VG-UI-004: `stat-explain` — expanded ATK names base/gear/passive/cond on
 HUD ops. Compact Sources paints Base N | Gear signed (Pixelmix cannot

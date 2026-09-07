@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Risk wardens off WASD and Tin village (Cursor)
+
+- VG-UI-005 / VG-UI-007: Risk wardens parks off WASD, the objective, the
+  production Tin village card, and Life. Covering those combat surfaces
+  cannot certify. route:tin still cannot certify. WORLD topology stays
+  Kimi. Owner Demo journeys not duplicated.
+- Scenario `route-map` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
 ## 2026-09-06 — Hit flash off WASD and Tin village (Cursor)
 
 - VG-ART-003 / VG-UI-007: Hit flash / Number fade parks off WASD, the
