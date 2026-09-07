@@ -123,7 +123,7 @@ not implemented here.
 | VG-GPU-002 | G2 | new | gpu-packets Handle-free stays off WASD/objective/Tin village/Life |
 | VG-GPU-003 | G2 | new | shader-bindings Layout v1 stays off WASD/objective/Tin village/Life |
 | VG-GPU-004 | G2 | new | gpu-reference Live packets stays off WASD/objective/Tin village/Life |
-| VG-GPU-005 | G2 | new | grounding |
+| VG-GPU-005 | G2 | new | grounding Y-sort stays off WASD/objective/Tin village/Life |
 | VG-GPU-006 | G3 | new | material-light |
 | VG-GPU-007 | G2 | new | gpu-capture + PNG R/B honesty; swapped still cannot certify |
 | VG-GPU-008 | G3 | new | gpu-recover |

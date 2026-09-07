@@ -49,7 +49,7 @@ Cursor evidence notes.
 | VG-GPU-002 | new | render-list → packets (`gpu-packets`); handles cannot snapshot; Handle-free stays off WASD/objective/Tin village/Life |
 | VG-GPU-003 | new | versioned software bindings (`shader-bindings`); no runtime .hlsl path; Layout v1 stays off WASD/objective/Tin village/Life |
 | VG-GPU-004 | new | session-connected packet present (`gpu-reference`); not a disconnected demo; Live packets stays off WASD/objective/Tin village/Life |
-| VG-GPU-005 | new | Y-sort + Sweep overlay on the village gate (`grounding`); HUD or capture-black cannot certify; walls cannot erase warnings |
+| VG-GPU-005 | new | Y-sort + Sweep overlay on the village gate (`grounding`); HUD or capture-black cannot certify; walls cannot erase warnings; Y-sort stays off WASD/objective/Tin village/Life |
 | VG-GPU-006 | new | moving bronze lantern pool on the village gate (`material-light`); HUD without a pool cannot certify; cannot wash out damage |
 | VG-GPU-007 | new | BMP readback + provenance (`gpu-capture`); PNG R/B swap cannot certify; packet logs are not pixels |
 | VG-GPU-008 | new | sample recreate/resize (`gpu-recover`); restored BMP stamped; Live buffers 1; leak cannot certify |
@@ -231,9 +231,11 @@ certify. A textured-quad demo with no session cannot pass. Scenario
 `gpu-reference`. Evidence
 `docs/execution/evidence/VG-GPU-004.json`.
 VG-GPU-005: scenery/actors sort by world Y; telegraphs paint after that pass.
-Owner strip paints Y-sort / Sweep disc. Sweep is a readable red disc on the
-village gate; a HUD token, wall hide, or capture-black fill cannot certify.
-Scenario `grounding`. Evidence `docs/execution/evidence/VG-GPU-005.json`.
+Owner strip paints Y-sort / Sweep disc and parks off WASD, the objective,
+Tin village, and Life. Covering those combat surfaces cannot certify. Sweep
+is a readable red disc on the village gate; a HUD token, wall hide, or
+capture-black fill cannot certify. Scenario `grounding`. Evidence
+`docs/execution/evidence/VG-GPU-005.json`.
 VG-GPU-006: moving light on the cooked family; channel cap 220; damage chroma
 cannot be washed white. Owner strip paints Lantern pool / Bronze light. Live
 scene paints a bronze lantern pool at the village gate; a HUD token without

@@ -32,5 +32,8 @@ inline bool capture_black_telegraph_fails_review(int r, int g, int b) {
 
 inline const char* owner_y_sort_label() { return "Y-sort"; }
 inline const char* owner_sweep_disc_label() { return "Sweep disc"; }
+inline bool grounding_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
 
 }  // namespace verdigris::gpu

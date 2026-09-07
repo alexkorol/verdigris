@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Y-sort off WASD and Tin village (Cursor)
+
+- VG-GPU-005 / VG-UI-007: Y-sort / Sweep disc parks off WASD, the
+  objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Wall hide still rejected. VG-WORLD-001 stays Kimi.
+  Owner Demo journeys not duplicated.
+- Scenario `grounding` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
+
 ## 2026-09-06 — Live packets off WASD and Tin village (Cursor)
 
 - VG-GPU-004 / VG-UI-007: Live packets / Session present parks off WASD,
