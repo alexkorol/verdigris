@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Theme Combat off WASD and Tin village (Cursor)
+
+- VG-SOUND-008 / VG-UI-007: Theme Combat / Music none parks off WASD, the
+  objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Leftover loop still rejected. STORY phase stays Kimi.
+  Owner Demo journeys not duplicated.
+- Scenario `music-phase` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
+
 ## 2026-09-06 — Handle-free off WASD and Tin village (Cursor)
 
 - VG-GPU-002 / VG-UI-007: Handle-free / Telegraph class parks off WASD,

@@ -172,8 +172,10 @@ VG-SOUND-002: CC0 provenance table for combat cues including swing windup
 Evidence `docs/execution/evidence/VG-SOUND-002.json`.
 VG-SOUND-008: explore/combat/recovery music coalesced per drain; unload
 sets `music:none` and mutes the music bus so a leftover combat loop cannot
-voice. Owner strip paints Theme Combat / Music none. Leftover loop cannot
-certify. Scenario `music-phase`. Device mute still silences waveOut.
+voice. Owner strip paints Theme Combat / Music none and parks off WASD,
+the objective, Tin village, and Life. Covering those combat surfaces
+cannot certify. Leftover loop cannot certify. Scenario `music-phase`.
+Device mute still silences waveOut.
 Evidence `docs/execution/evidence/VG-SOUND-008.json`.
 VG-GPU-001: isolated software backend (64×64 textured quad + shutdown).
 Owner strip paints Software quad / No D3D and parks off WASD, the

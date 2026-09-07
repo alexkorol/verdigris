@@ -31,6 +31,9 @@ inline const char* owner_theme_label(const std::string& want) {
 }
 
 inline const char* owner_music_none_label() { return "Music none"; }
+inline bool music_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
 
 inline bool leftover_theme_fails_review(bool scene_loaded,
                                         const std::string& sent) {

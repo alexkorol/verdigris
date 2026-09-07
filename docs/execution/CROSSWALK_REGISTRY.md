@@ -150,7 +150,7 @@ not implemented here.
 | VG-SOUND-005 | G3 | extend | ambience-layer Zone loop stays off WASD/objective/Tin village/Life |
 | VG-SOUND-006 | G2 | new | audio-prefs |
 | VG-SOUND-007 | G3 | new | dense-mix |
-| VG-SOUND-008 | G3 | new | music-phase |
+| VG-SOUND-008 | G3 | new | music-phase Theme Combat stays off WASD/objective/Tin village/Life |
 | VG-NET-001 | G1 | new | Kimi lease (`native/src/**` / tools); current-head search, no absence claim |
 | VG-NET-002 | G2 | new | Kimi lease (`native/src/**` / tools); current-head search, no absence claim |
 | VG-NET-003 | G2 | new | Kimi lease (`native/src/**` / tools); current-head search, no absence claim |
