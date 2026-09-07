@@ -4,7 +4,7 @@
   "planning_id": "VG-SOUND-005",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "07d2baf4a4ee78d44ecb63fe2f04e169fffb7f32",
+  "base_sha": "bc57e13e",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "ambience-layer",
@@ -19,17 +19,19 @@
     "a protocol ambience:route token cannot certify",
     "enter voices one region loop",
     "rapid salt reentry cannot stack loops",
-    "stacked ambience x3 is the rejected control"
+    "stacked ambience x3 is the rejected control",
+    "Zone loop stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Zone loop is the anti-pattern"
   ],
   "negative_control": {
-    "name": "protocol ambience:route token or stacked reentry loops",
+    "name": "protocol ambience:route token, stacked reentry loops, or Zone loop covering WASD/objective/Tin village/Life",
     "observed_result": "REJECTED"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/ambience-layer-960x600.png",
-      "sha256": "797fcd6cfc4777164b6a9abb962c172fc585ca4166e50afa30b066a44a5ac51f",
+      "sha256": "9f56b80aad3d40779a8f4fb7a7cdc599cf594a621fb5c44e7bc1fc4f77dfcb48",
       "produced_by": "native/build/verdigris_client.exe --scenario ambience-layer"
     }
   ],
@@ -37,6 +39,7 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Presentation naming of the existing route_id loop. VG-WORLD-007 zone graph stays Kimi. Device remains muted in the harness.",
+    "Owner strip paints Zone loop / Loop Tin village wind and parks off WASD, the objective, Tin village, and Life. ambience x3 cannot certify. Covering those combat surfaces cannot certify.",
     "Does not edit native/src or re-spec TASK-0108."
   ]
 }

@@ -244,8 +244,10 @@ down. Live HUD paints Adapter software / Tone 440 Hz. A zero-duration cue
 is not audible. Scenario `sound-adapter`. Evidence
 `docs/execution/evidence/VG-SOUND-001.json`.
 VG-SOUND-005: one ambience cue per route; live HUD paints Loop Tin village
-wind. A protocol `ambience:route` token or stacked reentry loops cannot
-certify. Scenario `ambience-layer`. Evidence
+wind. Owner strip paints Zone loop / Loop Tin village wind and parks off
+WASD, the objective, Tin village, and Life. Covering those combat surfaces
+cannot certify. A protocol `ambience:route` token or stacked reentry loops
+cannot certify. Scenario `ambience-layer`. Evidence
 `docs/execution/evidence/VG-SOUND-005.json`.
 VG-SOUND-004: SFX cap 8; scion-lost stays voiced under twelve World
 cosmetics. Owner strip paints Warning held; cosmetic x12 cannot certify.

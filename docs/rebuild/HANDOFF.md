@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Zone loop off WASD and Tin village (Cursor)
+
+- VG-SOUND-005 / VG-UI-007: Zone loop / Loop Tin village wind parks off
+  WASD, the objective, Tin village, and Life. Covering those combat
+  surfaces cannot certify. ambience x3 still rejected. VG-WORLD-007
+  stays Kimi. Owner Demo journeys not duplicated.
+- Scenario `ambience-layer` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
+
 ## 2026-09-06 — Strike poses off WASD and Tin village (Cursor)
 
 - VG-ART-003 / VG-UI-007: Strike poses / Windup parks off WASD, the

@@ -29,6 +29,11 @@ inline bool stacked_loops_fail_review(int voiced_count) {
   return voiced_count > 1;
 }
 
+inline const char* owner_zone_loop_label() { return "Zone loop"; }
+inline bool ambience_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
+
 inline bool protocol_text_fails_review(const std::string& painted) {
   return painted.find("ambience:") != std::string::npos ||
          painted.find("route:") != std::string::npos;
