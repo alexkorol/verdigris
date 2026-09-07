@@ -4,7 +4,7 @@
   "planning_id": "VG-GOV-003",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "c90bd7fa39396fded979e578caa9bd3ba4814d65",
+  "base_sha": "5da955c0",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "xp-meter",
@@ -23,10 +23,12 @@
     "live HUD names Kill fill and Gold pit",
     "first-session HUD names Slay the wardens and Space dash with F3 off",
     "live HUD names Slay wardens and Dash hint",
-    "local first session rejects walk-on"
+    "local first session rejects walk-on",
+    "Slay wardens stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Slay wardens is the anti-pattern"
   ],
   "negative_control": {
-    "name": "counting VG IDs as parity, an XP lv 1 label over a 0% black strip, or a local first-session HUD that shows walk-on",
+    "name": "counting VG IDs as parity, an XP lv 1 label over a 0% black strip, a local first-session HUD that shows walk-on, or Slay wardens covering WASD/objective/Tin village/Life",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
@@ -44,7 +46,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/first-session-clarity-960x600.png",
-      "sha256": "b2d20c997790b7c23840b6498e9e8370d05d53477c738daa94cde4055f4a2713",
+      "sha256": "252124f4936f98b81d04d118f9b7b3a81c7dc8e6fbef03ead155687aac549ace",
       "produced_by": "native/build/verdigris_client.exe --scenario first-session-clarity"
     }
   ],
@@ -53,7 +55,7 @@
   "limitations": [
     "Local HUD tracks kill XP with the same RS curve as snapshot state.xp. Core still stores level only; this is not a second combat packet.",
     "Owner strip paints Kill fill / Gold pit. VG-ID count cannot certify.",
-    "first-session-clarity owner strip paints Slay wardens / Dash hint below the measured top HUD so Space dash stays visible. Walk-on cannot certify local play. STORY copy stays Kimi.",
+    "first-session-clarity owner strip paints Slay wardens / Dash hint and parks off WASD, the objective, Tin village, and Life so Space dash stays visible. Walk-on cannot certify local play. Covering those combat surfaces cannot certify. STORY copy stays Kimi. xp-meter capture is prior evidence; not recaptured in this packet.",
     "Did not edit remote_session.cpp, networking.cpp, or native/src/core.cpp.",
     "GDI+ PNG may shift gold chroma; DIB gold sample is the certification.",
     "Scorecard thresholds still need an owner stamp. VG-GOV-002 remains unstamped.",

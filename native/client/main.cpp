@@ -3765,6 +3765,9 @@ inline bool visual_target_strip_covers_hud_fails_review(bool overlap) {
 }
 inline const char* owner_slay_wardens_label() { return "Slay wardens"; }
 inline const char* owner_dash_hint_label() { return "Dash hint"; }
+inline bool session_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
 
 std::vector<char> loot_nameplate_mask(
     const std::vector<std::pair<std::string, verdigris::Vec2>>& loot,
@@ -8706,8 +8709,12 @@ void paint_first_session_review_strip(ClientState& state, HDC dc, const RECT& bo
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const int pane_w = 360 * s;
   const int pane_h = 72 * s;
-  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
-  const int top = 148 * s;
+  const HudRect parked =
+      park_review_strip(state, static_cast<int>(bounds.right),
+                        static_cast<int>(bounds.bottom), pane_w, pane_h);
+  const int left = parked.x;
+  const int top = parked.y;
+  state.hud_rect_trace.push_back({"session-strip", parked});
   RECT pane{left, top, left + pane_w, top + pane_h};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
@@ -12477,6 +12484,32 @@ int scenario_first_session_clarity() {
       scenario_check(slay_wardens && dash_hint,
                      "first-session-clarity: live HUD names Slay wardens and Dash hint");
       scenario_check(walk_on, "first-session-clarity: live HUD rejects walk-on");
+      {
+        auto trace_find = [](const ClientState& s,
+                             const char* label) -> const HudRect* {
+          for (const auto& entry : s.hud_rect_trace)
+            if (entry.first == label) return &entry.second;
+          return nullptr;
+        };
+        const HudRect* strip = trace_find(state, "session-strip");
+        scenario_check(strip != nullptr,
+                       "first-session-clarity: Slay wardens strip is traced");
+        const HudRect* ctrl = trace_find(state, "controls");
+        const HudRect* objective = trace_find(state, "objective");
+        const HudRect* route = trace_find(state, "route-card");
+        const HudRect* life = trace_find(state, "orb-life");
+        const bool covers =
+            (strip && ctrl && hud_rects_overlap(*strip, *ctrl)) ||
+            (strip && objective && hud_rects_overlap(*strip, *objective)) ||
+            (strip && route && hud_rects_overlap(*strip, *route)) ||
+            (strip && life && hud_rects_overlap(*strip, *life));
+        scenario_check(
+            session_strip_covers_hud_fails_review(true),
+            "first-session-clarity: covering WASD, the objective, Tin village, or Life is the anti-pattern");
+        scenario_check(
+            !session_strip_covers_hud_fails_review(covers),
+            "first-session-clarity: Slay wardens stays off WASD, the objective, Tin village, and Life");
+      }
       state.first_session_review_strip = false;
     }
 

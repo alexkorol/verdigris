@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Slay wardens off WASD and Tin village (Cursor)
+
+- VG-GOV-003 / VG-UI-007: Slay wardens / Dash hint parks off WASD, the
+  objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Walk-on still rejected. STORY copy stays Kimi. Owner
+  Demo journeys not duplicated.
+- Scenario `first-session-clarity` PASS. Capture viewed. Not Owner Demo.
+  Not TASK-0108.
+
+
 ## 2026-09-06 — Software quad off WASD and Tin village (Cursor)
 
 - VG-GPU-001 / VG-UI-007: Software quad / No D3D parks off WASD, the

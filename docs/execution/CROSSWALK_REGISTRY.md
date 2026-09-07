@@ -9,7 +9,7 @@ not implemented here.
 |---|---|---|---|
 | VG-GOV-001 | G0 | new | BASELINE.md + freeze-a-reproducible-baseline.md; dual heads 486058f3 / e7b65360; package hash unset |
 | VG-GOV-002 | G0 | new | resolve-orchestration-precedence.md draft; owner stamp still required |
-| VG-GOV-003 | G0 | extend | parity scorecard draft; first-session-clarity journey; feature-count cannot pass |
+| VG-GOV-003 | G0 | extend | parity scorecard draft; first-session-clarity journey; Slay wardens stays off WASD/objective/Tin village/Life; feature-count cannot pass |
 | VG-GOV-004 | G0 | extend | CROSSWALK + crosswalk-existing-task-packets.md; TASK-0108 extend never re-spec; 0095/0097 superseded |
 | VG-GOV-005 | G0 | extend | software sample is the GPU trial; gpu-sample is not an engine port |
 | VG-GOV-006 | G0 | extend | death-disconnect HUD; silent extract ack on disconnect cannot pass; core D-106 stays Kimi |

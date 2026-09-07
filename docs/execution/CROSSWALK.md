@@ -22,7 +22,7 @@ Cursor evidence notes.
 |---|---|---|
 | VG-GOV-001 | new | `BASELINE.md` + `decisions/freeze-a-reproducible-baseline.md`; dual heads `486058f3` / `e7b65360` |
 | VG-GOV-002 | new | `decisions/resolve-orchestration-precedence.md` — **owner stamp still required** |
-| VG-GOV-003 | extend | TASK-0119 READY, TASK-0152 INTEGRATED, TASK-0206 AUTO_RELEASE; scorecard + `first-session-clarity` journey; feature counts cannot pass |
+| VG-GOV-003 | extend | TASK-0119 READY, TASK-0152 INTEGRATED, TASK-0206 AUTO_RELEASE; scorecard + `first-session-clarity` journey; feature counts cannot pass; Slay wardens stays off WASD/objective/Tin village/Life |
 | VG-GOV-004 | extend | this file + `decisions/crosswalk-existing-task-packets.md`; TASK-0108 extend never re-spec; TASK-0095/0097 superseded |
 | VG-GOV-005 | verify | TASK-0114 INTEGRATED; `docs/execution/decisions/choose-the-renderer-trial-boundary.md` — gpu-sample is not an engine port |
 | VG-GOV-006 | extend | TASK-0018, 0056, 0148; `death-disconnect` — owner Carry open / No extract; disconnect cannot ack uncommitted extract |
@@ -351,7 +351,9 @@ PresentationEvent is not a journey proof. Scenario `headless-contract`.
 VG-GOV-003: `docs/execution/decisions/freeze-the-parity-scorecard.md`.
 Owner strip paints Kill fill / Gold pit. A feature or VG-ID count cannot
 pass. Each dimension names a journey. `first-session-clarity` owner strip
-paints Slay wardens / Dash hint. Local walk-on cannot certify. Scenarios
+paints Slay wardens / Dash hint and parks off WASD, the objective, Tin
+village, and Life so Space dash stays visible. Covering those combat
+surfaces cannot certify. Local walk-on cannot certify. Scenarios
 `xp-meter` / `first-session-clarity`. Evidence
 `docs/execution/evidence/VG-GOV-003.json`.
 VG-UI-007: `vital-orbs` — life left/red, mana right/blue. Mute is a HUD
