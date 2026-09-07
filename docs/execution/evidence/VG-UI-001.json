@@ -38,7 +38,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/pane-stack-960x600.png",
-      "sha256": "ea6888c93f95542368849b9d38171ec43759270fe45a03d6f8c19df9a6ad6d94",
+      "sha256": "a71477ddb0e049f6fe711ca869a1368ba4c3c7441951b5e6109e55b7e698c2c4",
       "produced_by": "native/build/verdigris_client.exe --scenario pane-stack"
     },
     {
@@ -52,6 +52,6 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Client Escape stack only. Owner Demo Chronicles journeys not duplicated.",
-    "TASK-0193 geometric slice is unchanged and only paints after a payload. Open tree and character panes keep the top HUD out. Deleting WASD cannot certify the sheet. Covering the minimap or Life cannot certify. A clipped C or Esc closes footer cannot certify. Not Owner Demo. No TASK numbers minted."
+    "TASK-0193 geometric slice is unchanged and only paints after a payload. Open tree and character panes keep the top HUD out. Deleting WASD cannot certify the sheet. Covering the minimap or Life cannot certify. A clipped C or Esc closes footer cannot certify. Compact Sources on the stacked sheet uses Base/Gear. Not Owner Demo. No TASK numbers minted."
   ]
 }

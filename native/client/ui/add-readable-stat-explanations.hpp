@@ -37,6 +37,10 @@ inline int extra_source_rows(const StatSources& src) {
 inline const char* owner_base_gear_label() { return "Base Gear"; }
 inline const char* owner_cond_off_label() { return "Cond off"; }
 
+inline bool compact_atk_src_jargon_fails_review(bool lowercase_base_gear) {
+  return lowercase_base_gear;
+}
+
 inline bool character_covers_minimap_fails_review(bool overlap) {
   return overlap;
 }

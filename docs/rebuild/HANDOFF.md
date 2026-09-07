@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Compact Sources names Base and Gear (Cursor)
+
+- VG-UI-004 / VG-UI-001 / VG-UI-007: compact C-key Sources paints
+  Base 12 | Gear +0. Lowercase base/gear and src jargon cannot certify.
+  Pixelmix cannot paint a middle-dot, so the sheet uses ASCII | like the
+  gear footer. Expanded Base/Gear rows and the review Base Gear strip are
+  unchanged. Core STAT algebra stays Kimi.
+- Scenarios `hud-pane-readability` / `pane-stack` / `stat-explain` /
+  `loot-to-bank` PASS. Captures viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — Compare plate left of gear stats (Cursor)
 
 - VG-UI-003 / VG-UI-002: the Ember-edged compare plate parks in the world

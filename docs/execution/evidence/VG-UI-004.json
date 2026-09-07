@@ -19,27 +19,28 @@
     "expanded sheet names src base, gear, passive, cond on HUD ops",
     "char:atk-dormant-excluded is on the HUD",
     "owner paint uses Base/Gear/Passive/Conditional, not src jargon",
+    "compact Sources paints Base N | Gear signed, not lowercase base/gear",
     "live HUD names Base Gear and Cond off",
     "controls hint remains and does not enter the character sheet",
     "character pane never covers the minimap or life orb",
     "character sheet close hint C or Esc closes stays inside the slot"
   ],
   "negative_control": {
-    "name": "fold dormant conditional into painted Attack, or paint src base as the owner label",
+    "name": "fold dormant conditional into painted Attack, paint src base as the owner label, or lowercase base/gear on compact Sources",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/stat-explain-960x600.png",
-      "sha256": "c3a9ab20ea10ba428547d9cc2fda2cf9ca902a71680924a59cab720ba2e28d91",
+      "sha256": "42381b983b4755ca5895398bcaaf9f1bf06d5c1b7f9dd773e23ef6e2d9f61b88",
       "produced_by": "native/build/verdigris_client.exe --scenario stat-explain"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Presentation sheet only. Owner strip paints Base Gear / Cond off. Dormant ATK cannot certify. Core STAT contribution algebra stays Kimi.",
+    "Presentation sheet only. Owner strip paints Base Gear / Cond off. Dormant ATK cannot certify. Compact Sources uses owner Base/Gear with ASCII | because Pixelmix cannot paint a middle-dot. Lowercase base/gear cannot certify. Core STAT contribution algebra stays Kimi.",
     "WASD stays off the character sheet. The sheet sits below the minimap and above Life. C or Esc closes stays in the slot. Owner Base Gear strip is review overlay, not production chrome. HUD ops keep char:src * protocol labels. Not Owner Demo. No TASK numbers minted."
   ]
 }

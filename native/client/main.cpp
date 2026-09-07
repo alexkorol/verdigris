@@ -5732,7 +5732,7 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
     const int bx = left + 20 * s + dest_w + 10 * s;
     for (const auto& build : verdigris::client::builds::kSliceBuilds) {
       const std::string head =
-          std::string(build.role) + " · " + build.gear;
+          std::string(build.role) + " | " + build.gear;
       SetTextColor(dc, skin::kVerdigris);
       TextOutA(dc, bx, by, head.c_str(), static_cast<int>(head.size()));
       by += 22 * s;
@@ -5776,10 +5776,10 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
     attr_int = model.attr_intelligence;
     if (model.progression.present)
       passive = "nodes " + std::to_string(model.progression.node_count) +
-                " · unspent " +
+                " | unspent " +
                 std::to_string(model.progression.unspent_points);
   }
-  const std::string dormant = std::to_string(state.sheet_cond_atk) + " · " +
+  const std::string dormant = std::to_string(state.sheet_cond_atk) + " | " +
                               verdigris::client::ui::conditional_label(
                                   {0, 0, 0, state.sheet_cond_atk,
                                    state.sheet_cond_active, false});
@@ -5797,7 +5797,7 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
       {"Resource", std::to_string(player.resource) + " / " +
                        std::to_string(player.resource_max)},
       {"Attack", std::to_string(attack_total)},
-      {"ATK src", "base " + std::to_string(src.base) + " · gear " +
+      {"ATK src", std::string("Base ") + std::to_string(src.base) + " | Gear " +
                       (src.gear >= 0 ? "+" : "") + std::to_string(src.gear)},
       {"Passive", passive},
       {"Cond", dormant},
@@ -5846,6 +5846,8 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
     rl.push_back({render::Op::Hud, static_cast<double>(left),
                   static_cast<double>(y), 0.0, 0,
                   "char:" + row.label + ":" + row.value});
+    if (row.label == "ATK src")
+      rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "char:src-owner"});
     y += row_h;
   }
   if (src.expanded)
@@ -5856,7 +5858,7 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
     rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "char:atk-dormant-excluded"});
   SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kInkDim);
-  const char* footer = "C or Esc closes · B expands ATK";
+  const char* footer = "C or Esc closes | B expands ATK";
   SIZE footer_extent{};
   GetTextExtentPoint32A(dc, footer, static_cast<int>(strlen(footer)),
                         &footer_extent);
@@ -11327,7 +11329,7 @@ int scenario_loot_to_bank() {
       for (const auto& item : state.render_list) {
         if (item.op != render::Op::Hud) continue;
         if (item.label.rfind("char:ATK src:", 0) == 0) has_src = true;
-        if (item.label.rfind("char:Cond:0 · inactive", 0) == 0)
+        if (item.label.rfind("char:Cond:0 | inactive", 0) == 0)
           has_dormant = true;
         if (item.label.rfind("char:Attack:", 0) == 0) attack_row = item.label;
       }
@@ -12833,6 +12835,23 @@ int scenario_hud_pane_readability() {
     scenario_check(
         !verdigris::client::ui::missing_sheet_close_fails_review(true),
         "hud-pane-readability: C or Esc closes is the production footer");
+    bool compact_jargon = false;
+    bool compact_owner = false;
+    for (const auto& item : state.render_list) {
+      if (item.op != render::Op::Hud) continue;
+      if (item.label.rfind("char:ATK src:", 0) == 0 &&
+          item.label.find("base ") != std::string::npos)
+        compact_jargon = true;
+      if (item.label == "char:src-owner") compact_owner = true;
+    }
+    scenario_check(
+        verdigris::client::ui::compact_atk_src_jargon_fails_review(true),
+        "hud-pane-readability: lowercase base/gear on Sources is the anti-pattern");
+    scenario_check(
+        !verdigris::client::ui::compact_atk_src_jargon_fails_review(compact_jargon),
+        "hud-pane-readability: compact Sources uses Base/Gear");
+    scenario_check(compact_owner,
+                   "hud-pane-readability: compact sheet names Base/Gear on Sources");
     std::ifstream probe(png_sheet, std::ios::binary);
     scenario_check(probe.good(),
                    "hud-pane-readability: character capture readable");
@@ -16545,11 +16564,29 @@ int scenario_stat_explain() {
       collapsed_ok = item.label == ("char:Attack:" + std::to_string(expect));
       folded = item.label == ("char:Attack:" + std::to_string(expect + 9));
     }
-    if (item.label.rfind("char:Cond:9 · inactive", 0) == 0) dormant = true;
+    if (item.label.rfind("char:Cond:9 | inactive", 0) == 0) dormant = true;
   }
   scenario_check(collapsed_ok, "stat-explain: collapsed Attack excludes dormant");
   scenario_check(!folded, "stat-explain: dormant 9 cannot appear as Attack");
   scenario_check(dormant, "stat-explain: conditional stays labeled inactive");
+  bool compact_jargon = false;
+  bool compact_owner = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label.rfind("char:ATK src:", 0) == 0) {
+      if (item.label.find("base ") != std::string::npos) compact_jargon = true;
+      if (item.label.find("Base ") != std::string::npos) compact_owner = true;
+    }
+    if (item.label == "char:src-owner") compact_owner = true;
+  }
+  scenario_check(
+      verdigris::client::ui::compact_atk_src_jargon_fails_review(true),
+      "stat-explain: lowercase base/gear on Sources is the anti-pattern");
+  scenario_check(
+      !verdigris::client::ui::compact_atk_src_jargon_fails_review(compact_jargon),
+      "stat-explain: compact Sources uses Base/Gear, not src jargon");
+  scenario_check(compact_owner,
+                 "stat-explain: compact sheet names Base/Gear on Sources");
 
   state.stat_atk_expanded = true;
   scenario_present(state);

@@ -24,6 +24,7 @@
     "open character pane never intersects identity/controls/objective; WASD remains",
     "open character pane never covers the minimap or life orb at 960",
     "character sheet close hint C or Esc closes stays inside the slot",
+    "compact Sources on the character sheet uses Base/Gear, not lowercase src jargon",
     "open gear pane footer I or Esc closes stays inside the pane at 960/1366/3440",
     "open gear pane DEF and LVL stay inside the pane at 960/1366/3440",
     "first Escape closes the pane; bare Escape requests quit",
@@ -101,7 +102,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/hud-pane-readability-character-960x600.png",
-      "sha256": "944805b6db2bdb3dc178e59a586e6e2ccf79a59ee5b5e1c260528228f1ccd5d7",
+      "sha256": "d567d17fb0cb2ce1e71a63307ae667ac67293fd50dc83e17143c5891f174f80a",
       "produced_by": "native/build/verdigris_client.exe --scenario hud-pane-readability"
     }
   ],
@@ -113,7 +114,7 @@
     "hud-scale-floor owner strip paints Type floor / Ink contrast. Shrink type cannot certify overflow.",
     "hud-pane-readability recapture has no owner review strip so pairwise HUD regions stay disjoint.",
     "Open P-key tree keep-out is the VG-UI-007 extra; overlaying WASD on the tree cannot certify.",
-    "Open C-key character keep-out relocates WASD to the right of the sheet. Deleting the hint cannot certify. The sheet slot sits below the minimap and above Life; covering those cannot certify. A clipped C or Esc closes footer cannot certify. A clipped I or Esc closes gear footer cannot certify. Clipped DEF/LVL on the gear pane cannot certify.",
+    "Open C-key character keep-out relocates WASD to the right of the sheet. Deleting the hint cannot certify. The sheet slot sits below the minimap and above Life; covering those cannot certify. A clipped C or Esc closes footer cannot certify. A clipped I or Esc closes gear footer cannot certify. Clipped DEF/LVL on the gear pane cannot certify. Compact Sources uses Base/Gear with ASCII |; lowercase base/gear cannot certify.",
     "VG-UI-006 Owner Demo navigation is not this packet and was not duplicated.",
     "Remote pane check remains 960x600; owner ultrawide proof is the local present path.",
     "No TASK numbers minted."

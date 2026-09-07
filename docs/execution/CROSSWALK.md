@@ -36,7 +36,7 @@ Cursor evidence notes.
 | VG-UI-001 | extend | native Escape stack (`pane-stack`); owner Stack 2 / Escape closes; absent tree hides seats; invented origin cannot pass; WASD cannot overlay the open tree; C or Esc closes stays in the sheet slot |
 | VG-UI-002 | extend | TASK-0171 INTEGRATED, 0184 BRIDGE_PREP; `pack-drag`; reject cannot lose/duplicate/silent-equip; gear footer stays inside the pane |
 | VG-UI-003 | extend | paper-doll + ack-only HUD (`equipment`); pending compare cannot gold-frame as equipped; compare plate stays off gear DEF/LVL; `progression-surface` owner Skill tree / No data yet (TASK folder cannot certify) |
-| VG-UI-004 | extend | TASK-0156, 0159 INTEGRATED; `stat-explain` expandable ATK; dormant cannot fold into Attack; WASD stays off the C-key sheet; close hint stays in the slot |
+| VG-UI-004 | extend | TASK-0156, 0159 INTEGRATED; `stat-explain` expandable ATK; dormant cannot fold into Attack; compact Sources uses Base/Gear; lowercase base/gear cannot certify; WASD stays off the C-key sheet; close hint stays in the slot |
 | VG-UI-005 | extend | TASK-0076 INTEGRATED; 0178/0192/0203 Owner Demo; `route-map` zoom/opacity cannot reveal off-snapshot targets |
 | VG-UI-006 | extend | TASK-0145/0177 + 0190/0197/0201 — **do not duplicate** |
 | VG-UI-007 | extend | TASK-0159 INTEGRATED, 0118 READY, 0207; `hud-pane-readability` at 960/1366/3440 + tree/character keep-out + `hud-scale-floor` + live window; TASK-0159 folder capture cannot certify; clipped C or Esc closes cannot certify; clipped I or Esc closes gear footer cannot certify; clipped DEF/LVL cannot certify; VG-UI-006 Owner Demo not duplicated |
@@ -353,12 +353,13 @@ wardens. The owner card titles Tin village, not `route:tin:1:0`. Owner
 Demo journeys not reimplemented. Scenario `route-map`. Evidence
 `docs/execution/evidence/VG-UI-005.json`.
 VG-UI-004: `stat-explain` — expanded ATK names base/gear/passive/cond on
-HUD ops. Owner strip paints Base Gear / Cond off. Owner paint uses
-Base/Gear, not `src` jargon. Slice builds on the sheet are role · gear
-chips; tactics stay on HUD ops. A dormant conditional cannot fold into
-Attack. Core STAT stays Kimi. WASD stays off the C-key sheet. The sheet
-sits below the minimap and above Life. The close hint stays in the slot.
-Scenario
+HUD ops. Compact Sources paints Base N | Gear signed (Pixelmix cannot
+paint a middle-dot). Owner strip paints Base Gear / Cond off. Owner paint
+uses Base/Gear, not `src` jargon. Lowercase base/gear cannot certify.
+Slice builds on the sheet are role | gear chips; tactics stay on HUD ops.
+A dormant conditional cannot fold into Attack. Core STAT stays Kimi. WASD
+stays off the C-key sheet. The sheet sits below the minimap and above
+Life. The close hint stays in the slot. Scenario
 `stat-explain`. Evidence
 `docs/execution/evidence/VG-UI-004.json`.
 VG-UI-002: `pack-drag` — reject cannot lose, duplicate, or silently equip.
