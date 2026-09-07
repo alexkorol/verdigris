@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-004",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "d6f017cdd88e8c969cf4261c6e3be22dab10f95e",
+  "base_sha": "29d4c2bd",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "kit-chunk",
@@ -20,17 +20,19 @@
     "the dressing gate is not an unreported obstacle",
     "collision uses the same solids as the render proxies",
     "a circle-on-stick lollipop cannot certify the kit",
-    "live HUD names Village kit and Solid proxy"
+    "live HUD names Village kit and Solid proxy",
+    "Village kit stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Village kit is the anti-pattern"
   ],
   "negative_control": {
-    "name": "off-frame shrine/gate, a stone blob shrine, or a solid-slab gate",
+    "name": "off-frame shrine/gate, a stone blob shrine, a solid-slab gate, a lollipop tree, or Village kit covering WASD/objective/Tin village/Life",
     "observed_result": "REJECTED"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/kit-chunk-960x600.png",
-      "sha256": "ca99957d53d23440ef930f2a362c0c57d3d648524190edc79ace450160a1e877",
+      "sha256": "882e9c308ee70543b406f2359d99fb0f3291850b3eda3f5671418390542175ba",
       "produced_by": "native/build/verdigris_client.exe --scenario kit-chunk"
     }
   ],
@@ -39,6 +41,8 @@
   "limitations": [
     "Extends TASK-0141 village kit. Artist-local collision is not this packet.",
     "Capture is the live tin village: hut, fountain shrine, road gate, ruin, forked trees.",
-    "A historical off-frame shrine/gate PNG cannot certify. Not Owner Demo."
+    "Owner strip paints Village kit / Solid proxy and parks off WASD, the objective, Tin village, and Life. A lollipop tree cannot certify. Covering those combat surfaces cannot certify.",
+    "A historical off-frame shrine/gate PNG cannot certify. Not Owner Demo.",
+    "No TASK numbers minted."
   ]
 }

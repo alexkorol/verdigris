@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Village kit off WASD and Tin village (Cursor)
+
+- VG-ART-004 / VG-UI-007: Village kit / Solid proxy parks off WASD, the
+  objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Lollipop still rejected. Owner Demo journeys not
+  duplicated.
+- Scenario `kit-chunk` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
 ## 2026-09-06 — Warning windows off WASD and Tin village (Cursor)
 
 - VG-ACT-005 / VG-UI-007: Warning windows parks off WASD, the objective,

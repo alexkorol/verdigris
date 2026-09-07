@@ -41,7 +41,7 @@ Cursor evidence notes.
 | VG-UI-006 | extend | TASK-0145/0177 + 0190/0197/0201 — **do not duplicate** |
 | VG-UI-007 | extend | TASK-0159 INTEGRATED, 0118 READY, 0207; `hud-pane-readability` at 960/1366/3440 + tree/character keep-out + `hud-scale-floor` + live window; TASK-0159 folder capture cannot certify; clipped C or Esc closes cannot certify; clipped I or Esc closes gear footer cannot certify; clipped DEF/LVL cannot certify; VG-UI-006 Owner Demo not duplicated |
 | VG-UI-008 | new | XInput tick path + glyphs (`pad-path`); not mouse emulation; Pad glyphs stays off WASD/objective/Tin village/Life |
-| VG-ART-001/002/004 | extend | TASK-0141 INTEGRATED — village kit + collision-proxy ops (`kit-chunk`); not artist-local collision; Adult camera / Jointed warden / Uniform pan / Kit lock stay off WASD/objective/Tin village/Life |
+| VG-ART-001/002/004 | extend | TASK-0141 INTEGRATED — village kit + collision-proxy ops (`kit-chunk`); not artist-local collision; Adult camera / Jointed warden / Uniform pan / Kit lock / Village kit stay off WASD/objective/Tin village/Life |
 | VG-ART-003/006 | extend | TASK-0122 INTEGRATED; 0173/0174 READY; 0186/0187 BRIDGE_PREP — Cursor paints melee **poses** (VG-ART-003) and WarCry **weave labels** plus Phase A spawn/fade (VG-ART-006) without taking TASK-0173 models or re-speccing TASK-0108; Hit flash stays off WASD/objective/Tin village/Life |
 | VG-ART-005 | extend | TASK-0182 AUTO_RELEASE, 0184; `held-item` world attachment + `loot-to-bank` pickup-to-equip hold; paper-doll seat alone cannot pass; World hold / Unarmed first stay off WASD, the objective, Tin village, and Life |
 | VG-ART-007/008 | extend | TASK-0206/0205/0207 — Owner Demo, do not duplicate |
@@ -144,7 +144,9 @@ Owner strip paints Warm glyphs / Cold trace. Hide cold cannot certify.
 VG-UI-007: tooltip titles use ink-on-panel contrast plus a triangular mark.
 VG-ART-004: tin village kit (all five scenery kinds); solid pieces emit
 `collision-proxy:*`; dressing gate does not. Owner strip paints Village
-kit / Solid proxy. A lollipop tree cannot certify. Dwellings are
+kit / Solid proxy and parks off WASD, the objective, Tin village, and
+Life. Covering those combat surfaces cannot certify. A lollipop tree
+cannot certify. Dwellings are
 mudbrick/thatch huts; ruins are a broken wall with rubble; shrines are a
 fountain; gates are two pillars with a lintel. Shrine and gate sit inside
 the spawn capture. Scenario `kit-chunk`. Evidence

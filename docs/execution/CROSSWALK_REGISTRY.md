@@ -130,7 +130,7 @@ not implemented here.
 | VG-ART-001 | G1 | extend | visual-target Adult camera stays off WASD/objective/Tin village/Life; first-fight Jointed warden stays off WASD/objective/Tin village/Life; zoom-invariance Uniform pan stays off WASD/objective/Tin village/Life; move-and-camera Kit lock stays off WASD/objective/Tin village/Life |
 | VG-ART-002 | G2 | extend | bronze-stone family |
 | VG-ART-003 | G2 | extend | attack-poses; combat-juice Hit flash stays off WASD/objective/Tin village/Life; not TASK-0108 |
-| VG-ART-004 | G2 | extend | kit-chunk: hut, ruin, fountain, gate in spawn capture |
+| VG-ART-004 | G2 | extend | kit-chunk Village kit stays off WASD/objective/Tin village/Life; hut, ruin, fountain, gate in spawn capture |
 | VG-ART-005 | G3 | extend | held-item world attachment; loot-to-bank unarmed first; paper-doll seat alone cannot pass; World hold stays off WASD/objective/Tin village/Life |
 | VG-ART-006 | G3 | extend | weave-vfx; animation-vfx-phase-a spawn once; not TASK-0108 |
 | VG-ART-007 | G3 | extend | Owner Demo — do not duplicate |
