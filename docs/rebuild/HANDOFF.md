@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Life left off WASD and Tin village (Cursor)
+
+- VG-UI-007: Life left / Mana right parks off WASD, the objective, Tin
+  village, and Life. Covering those combat surfaces cannot certify. X on
+  mana still rejected. Owner Demo journeys not duplicated.
+- Scenario `vital-orbs` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
+
 ## 2026-09-06 — War Cry weave off WASD and Tin village (Cursor)
 
 - VG-ART-006 / VG-UI-007: War Cry weave / Travel parks off WASD, the

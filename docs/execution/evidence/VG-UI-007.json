@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-007",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "9c98c8c16e7a58b571612a7db03f3dd407e2d4e9",
+  "base_sha": "79f2f381",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "hud-pane-readability",
@@ -29,13 +29,15 @@
     "open gear pane DEF and LVL stay inside the pane at 960/1366/3440",
     "first Escape closes the pane; bare Escape requests quit",
     "life orb is left of mana; live 3440x1440 window matches that layout",
+    "Life left stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Life left is the anti-pattern",
     "pack captures write under docs/execution/captures/art-wave, not the TASK-0159 folder",
     "live HUD names Life left and Mana right",
     "live HUD names Type floor and Ink contrast",
     "open gear pane owner paint uses Skill tree: no data yet while PaneStat keeps TREE no authoritative data"
   ],
   "negative_control": {
-    "name": "TASK-0159 folder capture alone, overlapping pane, WASD on the open tree or character sheet, a sheet covering the minimap or Life, a clipped C or Esc closes footer, a clipped I or Esc closes gear footer, clipped DEF/LVL on the gear pane, shrinking fonts below the floor, or an X on the mana globe as the mute cue",
+    "name": "TASK-0159 folder capture alone, overlapping pane, WASD on the open tree or character sheet, a sheet covering the minimap or Life, a clipped C or Esc closes footer, a clipped I or Esc closes gear footer, clipped DEF/LVL on the gear pane, shrinking fonts below the floor, Life left covering WASD/objective/Tin village/Life, or an X on the mana globe as the mute cue",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
@@ -90,7 +92,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/vital-orbs-960x600.png",
-      "sha256": "49607485455a7ede3ef78ca3aa449e815b0acd3bb946ac150fda57830f9279e0",
+      "sha256": "8514af872314cde29f73c2ffe55e1e99b98a8d31b38b44ca7a4a0b9e382e6e0c",
       "produced_by": "native/build/verdigris_client.exe --scenario vital-orbs"
     },
     {
@@ -110,7 +112,7 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Extends TASK-0159; that packet's STATUS.md and historical captures were not rewritten.",
-    "Owner strip paints Life left / Mana right. X on mana cannot certify a non-color cue.",
+    "Owner strip paints Life left / Mana right and parks off WASD, the objective, Tin village, and Life. X on mana cannot certify a non-color cue. Covering those combat surfaces cannot certify.",
     "hud-scale-floor owner strip paints Type floor / Ink contrast. Shrink type cannot certify overflow.",
     "hud-pane-readability recapture has no owner review strip so pairwise HUD regions stay disjoint.",
     "Open P-key tree keep-out is the VG-UI-007 extra; overlaying WASD on the tree cannot certify.",
