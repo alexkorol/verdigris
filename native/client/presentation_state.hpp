@@ -87,6 +87,11 @@ struct WorldCarriedItem {
   std::string name;
   int attack_bonus = 0;
   bool equipped = false;
+  int width = 1;
+  int height = 1;
+  int quantity = 1;
+  std::string equip_seat;
+  bool two_handed = false;
 };
 
 // A town NPC as the presentation sees it: authoritative roster entry with a

@@ -1,5 +1,28 @@
 # Native reconstitution handoff
 
+## 2026-09-07 — Owner playtest persistence/combat/UI fix pass (Codex)
+
+- Remote skill envelopes now use the authoritative `skillId`; War Cry spends
+  resource, grants a bounded attack buff, expires on the native tick, and
+  reports its result. Enemy damage/death and player targeting now honor the
+  tile-grid line of sight, so attacks cannot pass through walls.
+- The native owner HUD uses a compact READY/OFFLINE connection chip, a
+  centered XP meter with a visible skill-point plus badge, radial quickbar
+  cooldown hands, and a capped combat log for kill/level messages. Clicking an
+  NPC now submits its first available interaction directly. The gear pane now
+  has a WIZARD-style fourteen-seat paper doll (including conditional slots)
+  beside the backpack, populated from authoritative `wearDetails`.
+- Native server sessions checkpoint House/Scion identity, chronicle, username,
+  and House treasury into an atomic per-guest JSON file beside the server
+  binary (or `VERDIGRIS_SAVE_DIR`) and reload it before login, so a server
+  restart no longer resets the account shell.
+- Evidence: the native build/client scenario gate passes 0 failures, including
+  incoming combat hit/death, extraction, remote render-list, paper-doll pane
+  readability, frame budget, and persistence journeys. Browser playtest has a
+  targeted combat rerun at 1/1; the last full run was 31/32 because the
+  healer-race combat scenario timed out once, so a clean full rerun is still
+  required before claiming the browser gate.
+
 ## 2026-09-06 — Family combat off WASD and Tin village (Cursor)
 
 - VG-SOUND-002 / VG-UI-007: Family combat / Anticipate CC0 parks off WASD,

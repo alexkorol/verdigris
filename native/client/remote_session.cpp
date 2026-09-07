@@ -74,6 +74,11 @@ double json_number(const JsonValue* value, double fallback = 0.0) {
   return *value->number();
 }
 
+bool json_bool(const JsonValue* value, bool fallback = false) {
+  if (!value || !value->boolean()) return fallback;
+  return *value->boolean();
+}
+
 ClientItemSlot parse_item_slot(const JsonValue& entry) {
   ClientItemSlot slot;
   if (const auto* id = json_string(entry.get("id"))) slot.id = *id;
@@ -83,6 +88,14 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
   if (const auto* index = entry.get("slot"); index && index->number()) {
     slot.slot = static_cast<int>(*index->number());
   }
+  slot.quantity = (std::max)(1, static_cast<int>(json_number(entry.get("qty"), 1.0)));
+  if (const auto* size = entry.get("size"); size && size->object()) {
+    slot.width = std::clamp(static_cast<int>(json_number(size->get("width"), 1.0)), 1, 12);
+    slot.height = std::clamp(static_cast<int>(json_number(size->get("height"), 1.0)), 1, 7);
+  }
+  if (const auto* equip_slot = json_string(entry.get("equipSlot")))
+    slot.equip_slot = *equip_slot;
+  slot.two_handed = json_bool(entry.get("twoHanded"), false);
   if (const auto* health = entry.get("resourceBonuses")) {
     slot.bonus_health = static_cast<int>(json_number(health->get("health")));
   }
@@ -101,6 +114,29 @@ ClientItemSlot parse_item_slot(const JsonValue& entry) {
     }
   }
   return slot;
+}
+
+void apply_wear_details(const JsonValue& source, ClientModel& model) {
+  if (!source.object()) return;
+  static constexpr const char* seats[] = {
+      "right_hand", "left_hand", "armor", "head", "back", "belt",
+      "gloves", "feet", "ring", "ring2", "necklace", "warhorn",
+      "quick_rig", "attendant"};
+  model.worn.clear();
+  model.equipped = {};
+  for (const char* seat : seats) {
+    const auto* entry = source.get(seat);
+    if (!entry || !entry->object()) continue;
+    ClientWornItem worn;
+    worn.seat = seat;
+    worn.item = parse_item_slot(*entry);
+    if (worn.item.uuid.empty() && worn.item.id.empty()) continue;
+    if (worn.item.name.empty()) worn.item.name = worn.item.id;
+    if (worn.seat == "right_hand") model.equipped = worn.item;
+    model.worn.push_back(std::move(worn));
+  }
+  if (model.equipped.uuid.empty() && !model.worn.empty())
+    model.equipped = model.worn.front().item;
 }
 
 // TASK-0156: mirror the authoritative `passiveTree` envelope (schemaVersion
@@ -509,7 +545,11 @@ void RemoteProtocolSession::submit(const ClientCommand& command) {
     }
     case ClientCommand::Type::UseAction: {
       envelope.event = "player:skill:trigger";
-      envelope.data = JsonValue::Object{{"skill", JsonValue(command.target)},
+      // The native server reads the authoritative skill id from `skillId`.
+      // Sending the old `skill` spelling silently downgraded every remote
+      // input to primary-attack, which made War Cry (and future bindings)
+      // look dead even though the key path fired.
+      envelope.data = JsonValue::Object{{"skillId", JsonValue(command.target)},
                                         {"direction", JsonValue(last_facing_)}};
       break;
     }
@@ -787,6 +827,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         if (const auto* house_id = json_string(chronicles->get("houseId")))
           model_.chronicle.active_house_id = *house_id;
       }
+      if (const auto* wear = player->get("wearDetails"))
+        apply_wear_details(*wear, model_);
       last_facing_ = model_.player.facing.empty() ? last_facing_ : model_.player.facing;
       model_.inventory.clear();
       if (const auto* inventory = player->get("inventory")) {
@@ -1113,6 +1155,8 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
       model_.xp_floor = json_number(xp->get("floor"), model_.xp_floor);
       model_.xp_next = json_number(xp->get("next"), model_.xp_next);
     }
+    if (const auto* wear = state->get("wearDetails"))
+      apply_wear_details(*wear, model_);
     if (const auto* monsters = state->get("monsters"); monsters && monsters->array()) {
       model_.monsters.clear();
       for (const auto& entry : *monsters->array()) {

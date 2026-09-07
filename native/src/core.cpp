@@ -65,6 +65,7 @@ bool is_forward(const Vec2& facing, Vec2 delta) {
   return facing.x * delta.x + facing.y * delta.y > 0;
 }
 
+
 ActorStats player_stats() {
   ActorStats stats;
   stats.level = 1;
@@ -1855,6 +1856,29 @@ void WorldSimulation::heal_player(int& player_life, int player_life_max) {
   player_life = player_life_max;
 }
 
+namespace {
+// Authoritative combat visibility follows the same tile grid that owns
+// movement collision. A target can be in range but still be behind a wall;
+// sampling the segment here prevents the client from hitting through scenery
+// while keeping the rule deterministic for every transport.
+bool grid_line_clear(const TileGrid& grid, Vec2 from, Vec2 to) {
+  int x = from.x;
+  int y = from.y;
+  const int dx = std::abs(to.x - from.x);
+  const int sx = from.x < to.x ? 1 : -1;
+  const int dy = -std::abs(to.y - from.y);
+  const int sy = from.y < to.y ? 1 : -1;
+  int err = dx + dy;
+  for (;;) {
+    if (!grid.in_bounds(x, y) || !grid.walkable_at(x, y)) return false;
+    if (x == to.x && y == to.y) return true;
+    const int twice = 2 * err;
+    if (twice >= dy) { err += dy; x += sx; }
+    if (twice <= dx) { err += dx; y += sy; }
+  }
+}
+}  // namespace
+
 std::vector<WorldCombatEvent> WorldSimulation::start_player_attack(int player_level,
                                                                     int player_attack,
                                                                     std::int64_t now_ms,
@@ -1869,13 +1893,17 @@ std::vector<WorldCombatEvent> WorldSimulation::start_player_attack(int player_le
   for (auto& monster : monsters_) {
     if (!monster.alive || !monster.boss) continue;
     const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
-    if (distance <= 2) { chosen = &monster; best = distance; break; }
+    if (distance <= 2 && grid_line_clear(grid_, here, {monster.x, monster.y})) {
+      chosen = &monster; best = distance; break;
+    }
   }
   if (!chosen) {
     for (auto& monster : monsters_) {
       if (!monster.alive || !monster.empowered) continue;
       const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
-      if (distance <= 2) { chosen = &monster; best = distance; break; }
+      if (distance <= 2 && grid_line_clear(grid_, here, {monster.x, monster.y})) {
+        chosen = &monster; best = distance; break;
+      }
     }
   }
   if (!chosen) {
@@ -1894,6 +1922,7 @@ std::vector<WorldCombatEvent> WorldSimulation::start_player_attack(int player_le
     for (auto& monster : monsters_) {
       if (!monster.alive) continue;
       const int distance = std::abs(monster.x - here.x) + std::abs(monster.y - here.y);
+      if (!grid_line_clear(grid_, here, {monster.x, monster.y})) continue;
       const int aim = aim_dx * (monster.x - here.x) + aim_dy * (monster.y - here.y);
       if (distance < best || (distance == best && aim > best_aim)) {
         best = distance; best_aim = aim; chosen = &monster;
@@ -1934,6 +1963,7 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     for (auto& monster : monsters_) {
       if (!monster.alive || monster.boss) continue;
       if (std::abs(monster.x - here.x) > 1 || std::abs(monster.y - here.y) > 1) continue;
+      if (!grid_line_clear(grid_, here, {monster.x, monster.y})) continue;
       if (monster.next_attack_ms == 0) {
         // First contact: a short, per-monster staggered windup instead of
         // the whole adjacent pack landing its opening hit on the same
@@ -1974,6 +2004,10 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
     // not chase a target across the map (build-comparison parking relies on it).
     const Vec2 here = tile_movement::occupied_tile(position_);
     if (std::abs(target->x - here.x) > 4 || std::abs(target->y - here.y) > 4) {
+      active_target_.clear();
+      return events;
+    }
+    if (!grid_line_clear(grid_, here, {target->x, target->y})) {
       active_target_.clear();
       return events;
     }
@@ -2036,7 +2070,8 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       boss_warning_seen_ = true;
     } else if (target->telegraph_until_ms != 0 && now >= target->telegraph_until_ms) {
       const Vec2 p = tile_movement::occupied_tile(position_);
-      if (std::abs(p.x - target->x) <= kN3BossTelegraphRadius && std::abs(p.y - target->y) <= kN3BossTelegraphRadius) {
+      if (std::abs(p.x - target->x) <= kN3BossTelegraphRadius && std::abs(p.y - target->y) <= kN3BossTelegraphRadius &&
+          grid_line_clear(grid_, p, {target->x, target->y})) {
         player_life = std::max(0, player_life - kN3BossDamage);
         WorldCombatEvent impact; impact.type = "hit"; impact.attacker_id = target->uuid; impact.attacker_name = target->name;
         impact.target_id = player_uuid_; impact.target_name = "Adventurer"; impact.skill_id = "boss:ground-slam";
@@ -2050,7 +2085,8 @@ std::vector<WorldCombatEvent> WorldSimulation::advance_combat(int player_level,
       next_boss_telegraph_ms_ = now;
     }
   } else if (now >= target->next_attack_ms && std::abs(target->x - tile_movement::occupied_tile(position_).x) <= 2
-             && std::abs(target->y - tile_movement::occupied_tile(position_).y) <= 2) {
+             && std::abs(target->y - tile_movement::occupied_tile(position_).y) <= 2 &&
+             grid_line_clear(grid_, tile_movement::occupied_tile(position_), {target->x, target->y})) {
     const int damage = target->empowered ? kN3MonsterDamage + 2 : kN3MonsterDamage;
     player_life = std::max(0, player_life - damage);
     WorldCombatEvent impact; impact.type = "hit"; impact.attacker_id = target->uuid; impact.attacker_name = target->name;

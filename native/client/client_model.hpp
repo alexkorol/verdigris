@@ -48,6 +48,16 @@ struct ClientItemSlot {
   int bonus_health = 0;
   int critical_chance = 0;
   int attack_rating = 0;
+  int width = 1;
+  int height = 1;
+  int quantity = 1;
+  std::string equip_slot;
+  bool two_handed = false;
+};
+
+struct ClientWornItem {
+  std::string seat;
+  ClientItemSlot item;
 };
 
 // One purchasable row of a trader's stock (open:screen shop payload).
@@ -199,6 +209,7 @@ const ClientScionEntry* find_chronicle_scion(const ClientChronicle& chronicle,
 struct ClientModel {
   ClientPlayer player;
   std::vector<ClientItemSlot> inventory;
+  std::vector<ClientWornItem> worn;
   std::vector<ClientGroundItem> ground;
   std::vector<ClientMonster> monsters;
   std::vector<ClientNpc> npcs;

@@ -376,6 +376,10 @@ export default {
 }
 
 .character-create__input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  display: block;
   padding: 0.65rem 0.75rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;

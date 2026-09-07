@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <filesystem>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -90,6 +91,11 @@ class ProtocolSession {
   void handle(const Envelope& envelope, const std::function<void(const Envelope&)>& emit);
   void replace_socket(std::string socket_id);
   void reset_world_for_new_socket();
+  // Small durable account seam for the native owner flow. The chronicle is
+  // loaded before login and checkpointed after mutating commands so House and
+  // Scion identity survive a server restart.
+  void attach_persistence(const std::filesystem::path& path);
+  void persist() const;
   // World events (movement, scene transitions) are broadcast to every live
   // connection, mirroring the JS server's room broadcast.  Unit tests leave
   // this unset and receive the same envelopes through the requester's emit.
@@ -245,12 +251,14 @@ class ProtocolSession {
   std::shared_ptr<WorldSimulation> world_;
   std::function<void(const Envelope&)> broadcast_;
   std::function<void(const Envelope&)> direct_emit_;
+  std::filesystem::path persistence_path_;
   mutable std::recursive_mutex mutex_;
 };
 
 class WebSocketServer {
  public:
-  explicit WebSocketServer(std::uint16_t port = 6500);
+  explicit WebSocketServer(std::uint16_t port = 6500,
+                           std::filesystem::path save_directory = {});
   ~WebSocketServer();
 
   WebSocketServer(const WebSocketServer&) = delete;
@@ -269,6 +277,7 @@ class WebSocketServer {
   void broadcast(const Envelope& envelope);
 
   std::uint16_t port_;
+  std::filesystem::path save_directory_;
   std::intptr_t listen_socket_ = -1;
   bool running_ = false;
   std::mutex mutex_;

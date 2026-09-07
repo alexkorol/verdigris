@@ -6,7 +6,10 @@
     >
       <LoginBackdrop />
     </div>
-    <div class="auth-container__frame">
+    <div
+      class="auth-container__frame"
+      :class="{ 'auth-container__frame--chronicles': screen === 'chronicles' }"
+    >
       <AudioMainMenu />
       <i
         class="auth-container__corner auth-container__corner--tl"
@@ -192,6 +195,14 @@ export default {
     0 30px 72px rgba(0, 0, 0, 0.8),
     inset 0 0 52px rgba(0, 0, 0, 0.64),
     inset 0 1px 0 rgba(240, 230, 210, 0.06);
+}
+
+/* Chronicles is a short decision surface, not a marketing splash. Keep its
+   frame close to the ledger so the first choice stays above the fold in a
+   resizable side-by-side window. */
+.auth-container__frame--chronicles {
+  min-height: 0;
+  padding-block: clamp(22px, 3vh, 30px);
 }
 
 @media (prefers-reduced-motion: no-preference) {

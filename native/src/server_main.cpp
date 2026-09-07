@@ -1,6 +1,7 @@
 #include "verdigris/networking.hpp"
 
 #include <cstdlib>
+#include <filesystem>
 #include <iostream>
 #include <string>
 #include <thread>
@@ -17,7 +18,17 @@ int main(int argc, char** argv) {
     if (value > 0 && value <= 65535 && argc == 1) port = static_cast<std::uint16_t>(value);
   }
 
-  verdigris::networking::WebSocketServer server(port);
+  std::filesystem::path save_directory;
+  if (const char* configured = std::getenv("VERDIGRIS_SAVE_DIR")) {
+    save_directory = configured;
+  } else {
+    // Resolve relative to the server binary so launching from any terminal
+    // directory still uses the same durable account store.
+    std::error_code ec;
+    save_directory = std::filesystem::absolute(argv[0], ec).parent_path() / "saves";
+    if (ec || save_directory.empty()) save_directory = std::filesystem::current_path() / "native" / "build" / "saves";
+  }
+  verdigris::networking::WebSocketServer server(port, save_directory);
   std::string error;
   if (!server.start(&error)) {
     std::cerr << "verdigris_server: " << error << "\n";

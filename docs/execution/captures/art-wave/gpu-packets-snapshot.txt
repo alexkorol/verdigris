@@ -233,7 +233,7 @@
 19 447.000 556.000 58.000 0 Q:Thrust
 19 513.000 556.000 58.000 0 E:Sweep
 19 579.000 556.000 58.000 0 R:WarCry
-17 110.000 506.000 0.000 0 xp-bar
+17 220.000 508.000 0.000 0 xp-bar
 17 358.000 46.000 0.000 0 objective: slay the wardens (2 remain)
 26 0.000 0.000 0.000 0 House Verdigris - Scion First Scion
 17 297.000 80.000 0.000 0 controls: WASD | LMB strike | Space dash | I gear | F3

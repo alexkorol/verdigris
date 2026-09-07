@@ -7,6 +7,7 @@
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -89,6 +90,17 @@ std::string json_escape(const std::string& input) {
     }
   }
   return output.str();
+}
+
+std::string persistence_filename(const std::string& identity) {
+  std::string safe;
+  safe.reserve(identity.size());
+  for (const unsigned char ch : identity) {
+    if (std::isalnum(ch) || ch == '-' || ch == '_' || ch == '.') safe.push_back(static_cast<char>(ch));
+    else safe.push_back('_');
+  }
+  if (safe.empty()) safe = "default-guest";
+  return safe + ".json";
 }
 
 class JsonParser {
@@ -594,10 +606,69 @@ void ProtocolSession::set_direct_emit(std::function<void(const Envelope&)> emit)
   direct_emit_ = std::move(emit);
 }
 
+void ProtocolSession::attach_persistence(const std::filesystem::path& path) {
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  persistence_path_ = path;
+  if (persistence_path_.empty() || !std::filesystem::exists(persistence_path_)) return;
+  std::ifstream input(persistence_path_, std::ios::binary);
+  std::string text((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
+  if (text.size() > 8 * 1024 * 1024) return;
+  JsonValue saved;
+  if (!parse_json(text, saved) || !saved.object()) return;
+  if (const auto* chronicle = saved.get("chronicle")) chronicle_ = *chronicle;
+  chronicles_revision_ = static_cast<int>(saved.get("chroniclesRevision") &&
+                                          saved.get("chroniclesRevision")->number()
+                                              ? *saved.get("chroniclesRevision")->number() : 0);
+  active_house_id_ = as_string(saved.get("activeHouseId"));
+  active_house_name_ = as_string(saved.get("activeHouseName"));
+  active_scion_id_ = as_string(saved.get("activeScionId"));
+  active_scion_name_ = as_string(saved.get("activeScionName"));
+  username_ = as_string(saved.get("username"));
+  house_treasury_ = as_int(saved.get("houseTreasury"), 0);
+}
+
+void ProtocolSession::persist() const {
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  if (persistence_path_.empty()) return;
+  std::error_code ec;
+  std::filesystem::create_directories(persistence_path_.parent_path(), ec);
+  if (ec) return;
+  JsonValue::Object saved;
+  put(saved, "version", 1);
+  put(saved, "identity", identity_);
+  put(saved, "username", username_);
+  put(saved, "chronicle", chronicle_);
+  put(saved, "chroniclesRevision", chronicles_revision_);
+  put(saved, "activeHouseId", active_house_id_);
+  put(saved, "activeHouseName", active_house_name_);
+  put(saved, "activeScionId", active_scion_id_);
+  put(saved, "activeScionName", active_scion_name_);
+  put(saved, "houseTreasury", house_treasury_);
+  const auto temp = persistence_path_.wstring() + L".tmp";
+  std::ofstream output(temp, std::ios::binary | std::ios::trunc);
+  if (!output) return;
+  output << JsonValue(std::move(saved)).stringify();
+  output.close();
+  std::filesystem::rename(temp, persistence_path_, ec);
+  if (ec) {
+    std::filesystem::remove(persistence_path_, ec);
+    ec.clear();
+    std::filesystem::rename(temp, persistence_path_, ec);
+  }
+}
+
 void ProtocolSession::tick(std::int64_t now) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   if (!direct_emit_) return;
   maybe_respawn(now);
+  if (auto* actor = simulation_->actor(simulation_->scion().actor_id);
+      actor && actor->war_cry_ticks_remaining > 0) {
+    // Remote combat runs through WorldSimulation's real-clock tick rather
+    // than Simulation::advance_tick, so expire the same authoritative buff
+    // here instead of leaving its bonus permanently stuck on the scion.
+    --actor->war_cry_ticks_remaining;
+    if (actor->war_cry_ticks_remaining == 0) actor->war_cry_attack_bonus = 0;
+  }
   if (world_->in_instance()) process_combat(now, direct_emit_);
 }
 
@@ -2135,7 +2206,8 @@ void ProtocolSession::process_combat(std::int64_t now, const std::function<void(
   const bool mana_skill = active_skill_id_.rfind("ability", 0) == 0;
   const int player_power = (std::max)(1, static_cast<int>(std::lround(mana_skill
       ? 4.0 + int_attr * 0.5
-      : 2.0 + str_attr * 0.45 + wear_attack * 1.5)));
+      : 2.0 + str_attr * 0.45 + wear_attack * 1.5))
+      + actor->war_cry_attack_bonus);
   const bool engaged_here = world_->engaged_by().empty() || world_->engaged_by() == identity_;
   const auto events = world_->advance_combat(actor->stats.level, engaged_here ? player_power : 0, actor->stats.life, actor->stats.life_max, now);
   // N5 respawn ward: monsters cannot damage a freshly-respawned scion until
@@ -2549,7 +2621,7 @@ void ProtocolSession::handle(const Envelope& envelope, const std::function<void(
     }
     return;
   }
-  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ if (respawn_protection_until_ms_ > 0) respawn_protection_until_ms_ = 0; active_skill_id_=as_string(payload?payload->get("skillId"):nullptr,"primary-attack"); world_->set_engaged_by(identity_); const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); const auto wear_totals=wear_.totals(); const int wear_bonus=(std::max)((std::max)(wear_totals.attack.stab,wear_totals.attack.slash),(std::max)(wear_totals.attack.crush,wear_totals.attack.range)); world_->start_player_attack(actor->stats.level,actor->stats.attack+(std::max)(0,wear_bonus),now_ms(),direction); process_combat(now_ms(),emit); /* real-clock cadence: polls advance combat */ } return; }
+  if (envelope.event=="player:skill:trigger") { auto* actor=simulation_->actor(simulation_->scion().actor_id); if(actor&&world_->in_instance()){ if (respawn_protection_until_ms_ > 0) respawn_protection_until_ms_ = 0; active_skill_id_=as_string(payload?payload->get("skillId"):nullptr,"primary-attack"); if (active_skill_id_ == "war-cry") { if (actor->stats.resource < presentation_constants::kWarCryResourceCost) { emit_message(emit,"Not enough resource for War Cry."); return; } actor->stats.resource -= presentation_constants::kWarCryResourceCost; actor->war_cry_attack_bonus = presentation_constants::kWarCryAttackBonus; actor->war_cry_ticks_remaining = presentation_constants::kWarCryDurationTicks; emit_message(emit,"War Cry: attack empowered."); return; } world_->set_engaged_by(identity_); const auto direction=as_string(payload?payload->get("direction"):nullptr,"down"); const auto wear_totals=wear_.totals(); const int wear_bonus=(std::max)((std::max)(wear_totals.attack.stab,wear_totals.attack.slash),(std::max)(wear_totals.attack.crush,wear_totals.attack.range)); world_->start_player_attack(actor->stats.level,actor->stats.attack+(std::max)(0,wear_bonus),now_ms(),direction); process_combat(now_ms(),emit); /* real-clock cadence: polls advance combat */ } return; }
   if (envelope.event=="dev:give") { if (payload) handle_give(*payload,emit); return; }
   if (envelope.event=="dev:drop") { if (payload) handle_drop(*payload,emit); return; }
   if (envelope.event=="dev:forcecritical") { world_->player_combat_mods().force_critical=true; emit_message(emit,"Your next strike will be a critical hit."); return; }
@@ -2847,7 +2919,8 @@ struct WebSocketServer::Connection {
   }
 };
 
-WebSocketServer::WebSocketServer(std::uint16_t port):port_(port) {}
+WebSocketServer::WebSocketServer(std::uint16_t port, std::filesystem::path save_directory)
+    : port_(port), save_directory_(std::move(save_directory)) {}
 WebSocketServer::~WebSocketServer(){ stop(); }
 bool WebSocketServer::start(std::string* error) {
 #ifdef _WIN32
@@ -3030,7 +3103,7 @@ void WebSocketServer::handle_message(const std::shared_ptr<Connection>& connecti
 // JS parity: the anonymous guest is ONE shared account. A second concurrent
 // login replaces the earlier session (replaceExistingSession); multiplayer
 // scenarios that need distinct players carry playtestGuestId/guestId.
-const bool quick=as_bool(envelope.data.get("quickGuest"));const auto* playtest_guest=envelope.data.get("playtestGuestId");if(playtest_guest&&playtest_guest->string())identity=*playtest_guest->string();const auto* playtest_name=envelope.data.get("playtestGuestName");std::shared_ptr<ProtocolSession> session;std::shared_ptr<Connection> old;{std::lock_guard lock(mutex_);auto it=sessions_.find(identity);if(it!=sessions_.end()){for(const auto& candidate:connections_)if(candidate->session==it->second&&candidate!=connection&&!candidate->closed){old=candidate;break;}session=it->second;}if(!session){std::uint64_t seed=1469598103934665603ULL;for(unsigned char c:identity)seed=(seed^c)*1099511628211ULL;session=std::make_shared<ProtocolSession>(identity,connection->id,seed,quick);sessions_[identity]=session;}else { const bool adopted = connection->session != session; session->replace_socket(connection->id); if (adopted) session->reset_world_for_new_socket(); } connection->session=session;}session->set_broadcast([this](const Envelope& event){broadcast(event);});if(playtest_name&&playtest_name->string())session->set_username(*playtest_name->string());session->set_direct_emit([connection](const Envelope& event){connection->send_text(emit_envelope(event));});if(old){old->send_text(emit_envelope(Envelope{"player:session-replaced",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",old->id}}}}}));old->shutdown_send();old->close();}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});return;} auto session=connection->session;if(!session)return;if(envelope.event.rfind("party:",0)==0&&handle_party_event(connection,envelope))return;session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});}
+const bool quick=as_bool(envelope.data.get("quickGuest"));const auto* playtest_guest=envelope.data.get("playtestGuestId");if(playtest_guest&&playtest_guest->string())identity=*playtest_guest->string();const auto* playtest_name=envelope.data.get("playtestGuestName");std::shared_ptr<ProtocolSession> session;std::shared_ptr<Connection> old;bool created=false;{std::lock_guard lock(mutex_);auto it=sessions_.find(identity);if(it!=sessions_.end()){for(const auto& candidate:connections_)if(candidate->session==it->second&&candidate!=connection&&!candidate->closed){old=candidate;break;}session=it->second;}if(!session){std::uint64_t seed=1469598103934665603ULL;for(unsigned char c:identity)seed=(seed^c)*1099511628211ULL;session=std::make_shared<ProtocolSession>(identity,connection->id,seed,quick);sessions_[identity]=session;created=true;}else { const bool adopted = connection->session != session; session->replace_socket(connection->id); if (adopted) session->reset_world_for_new_socket(); } connection->session=session;}if(created&& !save_directory_.empty())session->attach_persistence(save_directory_/persistence_filename(identity));session->set_broadcast([this](const Envelope& event){broadcast(event);});if(playtest_name&&playtest_name->string())session->set_username(*playtest_name->string());session->set_direct_emit([connection](const Envelope& event){connection->send_text(emit_envelope(event));});if(old){old->send_text(emit_envelope(Envelope{"player:session-replaced",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",old->id}}}}}));old->shutdown_send();old->close();}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});session->persist();return;} auto session=connection->session;if(!session)return;if(envelope.event.rfind("party:",0)==0&&handle_party_event(connection,envelope)){session->persist();return;}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});session->persist();}
 void WebSocketServer::broadcast(const Envelope& envelope){ std::vector<std::shared_ptr<Connection>> targets; {std::lock_guard lock(mutex_);targets=connections_;} const auto wire=emit_envelope(envelope); for(const auto& candidate:targets) if(candidate->session&&!candidate->closed) candidate->send_text(wire); }
 void WebSocketServer::remove_connection(const std::shared_ptr<Connection>& connection){std::lock_guard lock(mutex_);connections_.erase(std::remove(connections_.begin(),connections_.end(),connection),connections_.end());}
 

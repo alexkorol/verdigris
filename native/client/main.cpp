@@ -51,6 +51,7 @@ namespace phase_a = verdigris::client::phase_a;
 #include "framekit_renderer.hpp"
 #include "geometric_skill_tree.hpp"
 #include "inventory_grid.hpp"
+#include "paper_doll.hpp"
 #include "sound_family.hpp"
 #include "input_focus.hpp"
 #include "input/persist-remapped-controls.hpp"
@@ -338,10 +339,17 @@ int hud_scale(int height) { return std::max(1, height / 700); }
 // shared with the planner so global HUD text can never be placed onto it.
 HudRect gear_pane_rect(int width, int height) {
   const int s = hud_scale(height);
+  // The paper doll and backpack need a real two-column surface. Keep a
+  // measured world lane from the character sheet at the shipped 960-wide
+  // side-by-side size, while retaining a usable minimum on narrow debug
+  // windows.
   const int pane_w = 380 * s;
-  const int pane_top = 64 * s;
+  const int pane_top = 24 * s;
   const int x = std::max(24, width - pane_w - 24);
-  const int bottom = std::min(height - 28, pane_top + 430 * s);
+  // End above the mana orb's upper edge at the 960x600 side-by-side size;
+  // the backpack grid uses the freed vertical rhythm rather than covering
+  // the combat HUD.
+  const int bottom = std::min(height - 120 * s, pane_top + 440 * s);
   return {x, pane_top, std::min(pane_w, std::max(0, width - x)),
           std::max(0, bottom - pane_top)};
 }
@@ -3804,6 +3812,31 @@ std::vector<char> loot_nameplate_mask(
 
 constexpr int kPackColumns = 4;
 constexpr int kPackRows = 6;
+constexpr int kDollSlotW = 54;
+constexpr int kDollSlotH = 28;
+constexpr int kDollGap = 4;
+
+RECT paper_doll_slot_rect(int width, int height, std::size_t index) {
+  const HudRect pane = gear_pane_rect(width, height);
+  const int s = hud_scale(height);
+  // A simple anatomical silhouette: head/neck at centre, hands flanking the
+  // body, then cloak/belt/gloves, boots/rings, and the conditional utility
+  // row. This is deliberately not a generic two-column list.
+  static constexpr int kColumns[] = {1, 1, 0, 1, 0, 2, 2,
+                                     1, 1, 0, 2, 0, 1, 2};
+  static constexpr int kRows[] = {0, 1, 2, 2, 3, 2, 3,
+                                  3, 4, 4, 4, 5, 5, 5};
+  const int left = pane.x + 12 * s;
+  const int top = pane.y + 78 * s;
+  const int col = kColumns[std::min<std::size_t>(index, std::size(kColumns) - 1)];
+  const int row = kRows[std::min<std::size_t>(index, std::size(kRows) - 1)];
+  const int slot_w = kDollSlotW * s;
+  const int slot_h = kDollSlotH * s;
+  return {left + col * (slot_w + kDollGap * s),
+          top + row * (slot_h + kDollGap * s),
+          left + col * (slot_w + kDollGap * s) + slot_w,
+          top + row * (slot_h + kDollGap * s) + slot_h};
+}
 
 std::uint32_t pack_stable_id(const std::string& id) {
   std::uint32_t hash = 2166136261u;
@@ -3831,18 +3864,18 @@ PackGeom make_pack_geom(int width, int height) {
   const int left = pane.x;
   const int top = pane.y;
   const int right = left + pane.w;
-  const int seat_top = top + 74 * geom.s;
-  const int seat_left = left + 14 * geom.s;
-  const int seat_w = right - left - 28 * geom.s;
-  geom.seat = {seat_left, seat_top, seat_left + seat_w, seat_top + 24 * geom.s};
+  geom.seat = paper_doll_slot_rect(width, height,
+                                   paper_doll::slot_index(paper_doll::Slot::MainHand));
   // Keep this offset in lockstep with paint_gear_overlay. Two type-floor
   // stats lines sit above the weapon seat; 62px collides with DEF/LVL.
   geom.gap = 6 * geom.s;
+  const int grid_left = left + 190 * geom.s;
   geom.cell_w =
-      (right - left - (28 + (kPackColumns - 1) * 6) * geom.s) / kPackColumns;
-  geom.cell_h = 56 * geom.s;
-  geom.grid_left = left + 14 * geom.s;
-  geom.grid_top = seat_top + 38 * geom.s;
+      (right - grid_left - 14 * geom.s - (kPackColumns - 1) * 6 * geom.s) /
+      kPackColumns;
+  geom.cell_h = 30 * geom.s;
+  geom.grid_left = grid_left;
+  geom.grid_top = top + 148 * geom.s;
   return geom;
 }
 
@@ -4092,31 +4125,60 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
                 "gear:stats-lvl"});
   SelectObject(dc, stats_font);
 
-  // Weapon (paperdoll) seat. 74px clears the two type-floor stats lines.
-  const int seat_top = top + 74 * s;
-  const int seat_left = left + 14 * s;
-  const int seat_w = right - left - 28 * s;
-  RECT seat{seat_left, seat_top, seat_left + seat_w, seat_top + 24 * s};
-  state.hud_rect_trace.push_back(
-      {"pane-seat", {seat.left, seat.top, seat_w, 24 * s}});
-  const bool seat_armed = equipped_bonus != 0;
-  skin::slot(dc, seat, seat_armed ? skin::kGold : skin::kVerdigris, seat_armed);
-  SetTextColor(dc, RGB(170, 190, 178));
-  const char* seat_label = "Weapon";
-  TextOutA(dc, seat_left + 6 * s, seat_top + 4 * s, seat_label,
-           static_cast<int>(strlen(seat_label)));
-  std::string equipped_name = "(empty)";
-  for (const auto& item : items)
-    if (item.equipped) {
-      equipped_name = item.name;
-      break;
+  // WIZARD-style paper doll: fourteen real seats are always visible to the
+  // left of the backpack. Worn items are authoritative and render in their
+  // seat; empty conditional seats remain explicit instead of disappearing.
+  static constexpr const char* doll_labels[] = {
+      "HEAD", "AMUL", "MAIN", "BODY", "CLOK", "OFF", "GLV", "BELT",
+      "BOOT", "R1", "R2", "HORN", "RIG", "AID"};
+  static constexpr const char* doll_seats[] = {
+      "head", "necklace", "right_hand", "armor", "back", "left_hand",
+      "gloves", "belt", "feet", "ring", "ring2", "warhorn", "quick_rig",
+      "attendant"};
+  auto doll_item = [&](std::size_t slot_i) -> const WorldCarriedItem* {
+    for (const auto& item : items)
+      if (item.equipped && item.equip_seat == doll_seats[slot_i]) return &item;
+    if (slot_i == paper_doll::slot_index(paper_doll::Slot::MainHand))
+      for (const auto& item : items)
+        if (item.equipped && item.equip_seat.empty()) return &item;
+    return nullptr;
+  };
+  for (std::size_t slot_i = 0; slot_i < paper_doll::kSlotCount; ++slot_i) {
+    const RECT doll = paper_doll_slot_rect(static_cast<int>(bounds.right),
+                                           static_cast<int>(bounds.bottom), slot_i);
+    const auto* worn = doll_item(slot_i);
+    const bool occupied = worn != nullptr;
+    if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot, doll))
+      skin::slot(dc, doll, occupied ? skin::kGold : skin::kVerdigris, occupied);
+    SetTextColor(dc, occupied ? RGB(240, 210, 120) : RGB(170, 190, 178));
+    TextOutA(dc, doll.left + 5 * s, doll.top + 3 * s, doll_labels[slot_i], 4);
+    if (occupied) {
+      const auto style = vector_art::player_style();
+      vector_art::pack_item_glyph(
+          dc, doll.right - 13 * s, doll.top + 14 * s, 18 * s,
+          vector_art::held_from_item(worn->id, worn->name), style);
     }
+    state.hud_rect_trace.push_back(
+        {"pane-doll-slot", {doll.left, doll.top, doll.right - doll.left,
+                              doll.bottom - doll.top}});
+    rl.push_back({render::Op::Hud, static_cast<double>(doll.left),
+                  static_cast<double>(doll.top), 0.0, occupied ? 1 : 0,
+                  std::string("paperdoll-slot:") + doll_seats[slot_i] +
+                      (occupied ? ":filled" : ":empty")});
+  }
+  std::string equipped_name = "(empty)";
+  if (const auto* main = doll_item(paper_doll::slot_index(paper_doll::Slot::MainHand)))
+    equipped_name = main->name;
+  const RECT seat = paper_doll_slot_rect(
+      static_cast<int>(bounds.right), static_cast<int>(bounds.bottom),
+      paper_doll::slot_index(paper_doll::Slot::MainHand));
+  state.hud_rect_trace.push_back(
+      {"pane-seat", {seat.left, seat.top, seat.right - seat.left,
+                      seat.bottom - seat.top}});
   SetTextColor(dc, RGB(230, 220, 180));
   rl.push_back({render::Op::PaneWeapon, 0.0, 0.0, 0.0, 0, equipped_name});
   rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
                 std::string("held-seat:") + equipped_name});
-  TextOutA(dc, seat_left + 96 * s, seat_top + 4 * s, equipped_name.c_str(),
-           static_cast<int>(equipped_name.size()));
 
   // Grid backpack (4 columns), framekit slot chrome with item art.
   reconcile_pack_grid(state);
@@ -4133,10 +4195,34 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
       if (slot_item.uuid == items[index].id) return slot_item.id;
     return items[index].id;
   };
+  // Paint the full backpack surface first, including empty cells. A visible
+  // grid is the interaction affordance; an empty-state sentence must never
+  // be used as a substitute for it or overlap the paper doll.
+  SetTextColor(dc, RGB(190, 202, 190));
+  const std::string backpack_label =
+      "BACKPACK  " + std::to_string(items.size()) + "/" +
+      std::to_string(kPackColumns * kPackRows);
+  TextOutA(dc, pack.grid_left, grid_top - 20 * s, backpack_label.c_str(),
+           static_cast<int>(backpack_label.size()));
+  for (int row = 0; row < kPackRows; ++row) {
+    for (int col = 0; col < kPackColumns; ++col) {
+      const int cx = pack.grid_left + col * (cell_w + pack.gap);
+      const int cy = pack.grid_top + row * (cell_h + pack.gap);
+      RECT cell{cx, cy, cx + cell_w, cy + cell_h};
+      if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_slot,
+                              cell))
+        skin::slot(dc, cell, skin::kVerdigris, false);
+      state.hud_rect_trace.push_back({
+          "pane-backpack-cell", {cell.left, cell.top, cell.right - cell.left,
+                                 cell.bottom - cell.top}});
+    }
+  }
   if (items.empty()) {
     SetTextColor(dc, RGB(150, 160, 150));
-    const char* empty = "Backpack empty. X picks up the nearest drop.";
-    TextOutA(dc, left + 14 * s, grid_top + 6 * s, empty,
+    // Keep the empty-state copy inside the narrow backpack column; the
+    // control hint already lives in the pane footer.
+    const char* empty = "Empty";
+    TextOutA(dc, pack.grid_left, grid_top + 14 * s, empty,
              static_cast<int>(strlen(empty)));
   } else {
     int hover_i = -1;
@@ -4353,9 +4439,9 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     GetTextExtentPoint32A(dc, banked.c_str(), static_cast<int>(banked.size()),
                           &extent);
     state.hud_rect_trace.push_back(
-        {"pane-banked", {left + 14 * s, bottom - 58 * s, extent.cx, extent.cy}});
+        {"pane-banked", {left + 14 * s, bottom - 76 * s, extent.cx, extent.cy}});
   }
-  TextOutA(dc, left + 14 * s, bottom - 58 * s, banked.c_str(),
+  TextOutA(dc, left + 14 * s, bottom - 76 * s, banked.c_str(),
            static_cast<int>(banked.size()));
   // TASK-0156: compact authoritative progression summary, mirrored from the
   // passiveTree payload. Absence is stated as absence — never rendered as
@@ -4386,9 +4472,9 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
     GetTextExtentPoint32A(dc, owner_progression.c_str(),
                           static_cast<int>(owner_progression.size()), &extent);
     state.hud_rect_trace.push_back(
-        {"pane-progression", {left + 14 * s, bottom - 82 * s, extent.cx, extent.cy}});
+        {"pane-progression", {left + 14 * s, bottom - 100 * s, extent.cx, extent.cy}});
   }
-  TextOutA(dc, left + 14 * s, bottom - 82 * s, owner_progression.c_str(),
+  TextOutA(dc, left + 14 * s, bottom - 100 * s, owner_progression.c_str(),
            static_cast<int>(owner_progression.size()));
   const char* place = verdigris::client::ui::owner_gear_footer_place_label();
   const char* close = verdigris::client::ui::owner_gear_close_label();
@@ -4400,8 +4486,8 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
   GetTextExtentPoint32A(dc, close, static_cast<int>(strlen(close)),
                         &close_extent);
   const int footer_x = left + 14 * s;
-  const int place_y = bottom - 32 * s;
-  const int close_y = bottom - 16 * s;
+  const int place_y = bottom - 50 * s;
+  const int close_y = bottom - 30 * s;
   state.hud_rect_trace.push_back(
       {"pane-footer-place", {footer_x, place_y, place_extent.cx, place_extent.cy}});
   state.hud_rect_trace.push_back(
@@ -4562,6 +4648,18 @@ void paint_quickbar(ClientState& state, HDC dc, const RECT& bounds, render::List
       HBRUSH overlay_brush = CreateSolidBrush(RGB(10, 12, 14));
       FillRect(dc, &overlay, overlay_brush);
       DeleteObject(overlay_brush);
+      // Radial clock-hand feedback makes the remaining recovery legible at a
+      // glance, even when the rectangular dimmer is subtle at small sizes.
+      const int radius = std::max(6, std::min(slot_w, slot_h) / 3);
+      const double angle = -1.57079632679 + sweep * 6.28318530718;
+      const int hx = cx + static_cast<int>(std::cos(angle) * radius);
+      const int hy = cy + static_cast<int>(std::sin(angle) * radius);
+      HPEN hand = CreatePen(PS_SOLID, std::max(1, s), RGB(239, 208, 116));
+      HGDIOBJ old_hand = SelectObject(dc, hand);
+      MoveToEx(dc, cx, cy, nullptr);
+      LineTo(dc, hx, hy);
+      SelectObject(dc, old_hand);
+      DeleteObject(hand);
     }
 
     rl.push_back({render::Op::Quickbar, static_cast<double>(cx), static_cast<double>(cy),
@@ -4709,11 +4807,15 @@ void paint_xp_bar(ClientState& state, HDC dc, const RECT& bounds,
   const WorldView& world = state.world;
   if (!world.xp_present) return;
   const int s = hud_scale(static_cast<int>(bounds.bottom));
-  const int orb_reach = (18 + kVitalOrbRadius * 2 + 24) * s;
-  const int left = orb_reach;
-  const int right = static_cast<int>(bounds.right) - orb_reach;
+  // A short centered meter keeps the experience readout subordinate to the
+  // action bar instead of stretching across the whole bottom third of the
+  // screen (and leaves a clean lane for the combat log).
+  const int meter_width = std::min(static_cast<int>(bounds.right) - 48 * s,
+                                   520 * s);
+  const int left = (static_cast<int>(bounds.right) - meter_width) / 2;
+  const int right = left + meter_width;
   if (right - left < 60) return;
-  const int meter_h = 10 * s;
+  const int meter_h = 8 * s;
   const HudRect strip = quickbar_strip_rect(static_cast<int>(bounds.right),
                                             static_cast<int>(bounds.bottom));
   const int top = strip.y - meter_h - 6 * s;
@@ -4729,9 +4831,62 @@ void paint_xp_bar(ClientState& state, HDC dc, const RECT& bounds,
   TextOutA(dc, left + 4 * s, top - extent.cy + 1, cap.c_str(),
            static_cast<int>(cap.size()));
   SelectObject(dc, old_font);
+  if (state.world.progression.present && state.world.progression.unspent_points > 0) {
+    // A compact, persistent plus affordance is intentionally next to the XP
+    // level label: it stays visible without covering the action bar and is
+    // clickable via the existing P skill-tree binding.
+    const int plus = 18 * s;
+    RECT badge{right - plus, top - plus - 4 * s, right, top - 4 * s};
+    skin::slot(dc, badge, skin::kGold, true);
+    SetTextColor(dc, skin::kGold);
+    SetBkMode(dc, TRANSPARENT);
+    TextOutA(dc, badge.left + 5 * s, badge.top + 1 * s, "+", 1);
+    rl.push_back({render::Op::Hud, static_cast<double>(badge.left),
+                  static_cast<double>(badge.top), 0.0,
+                  state.world.progression.unspent_points, "skill-points-plus"});
+  }
   rl.push_back({render::Op::Hud, static_cast<double>(left),
                 static_cast<double>(top), 0.0,
                 static_cast<int>(world.xp_fraction * 100.0), "xp-bar"});
+}
+
+void paint_combat_log(const ClientState& state, HDC dc, const RECT& bounds,
+                      render::List& rl) {
+  if (state.event_log.empty()) return;
+  const int s = hud_scale(static_cast<int>(bounds.bottom));
+  const HudRect quickbar = quickbar_strip_rect(static_cast<int>(bounds.right),
+                                               static_cast<int>(bounds.bottom));
+  const int lines_to_show = std::min(4, static_cast<int>(state.event_log.size()));
+  const int line_h = 16 * s;
+  const int width = 246 * s;
+  const int height = lines_to_show * line_h + 14 * s;
+  const int left = 18 * s;
+  const int bottom = quickbar.y - 22 * s;
+  const int top = std::max(12 * s, bottom - height);
+  RECT plate{left, top, left + width, bottom};
+  skin::panel(dc, plate, skin::kPanelBorder, 205, 6.0f);
+  HGDIOBJ old_font = SelectObject(dc, skin::font_small());
+  SetBkMode(dc, TRANSPARENT);
+  SetTextColor(dc, RGB(188, 202, 190));
+  int y = top + 6 * s;
+  for (auto it = state.event_log.rbegin(); it != state.event_log.rend() &&
+       y < bottom - 4 * s; ++it) {
+    std::string line = *it;
+    SIZE extent{};
+    GetTextExtentPoint32A(dc, line.c_str(), static_cast<int>(line.size()), &extent);
+    if (extent.cx > width - 16 * s) {
+      const std::size_t fit = line.size() * static_cast<std::size_t>(width - 16 * s) /
+                              static_cast<std::size_t>(std::max<int>(1, static_cast<int>(extent.cx)));
+      line.resize(std::max<std::size_t>(1, fit));
+      line += "…";
+    }
+    TextOutA(dc, left + 8 * s, y, line.c_str(), static_cast<int>(line.size()));
+    y += line_h;
+  }
+  SelectObject(dc, old_font);
+  rl.push_back({render::Op::Hud, static_cast<double>(left),
+                static_cast<double>(top), static_cast<double>(width),
+                lines_to_show, "combat-log"});
 }
 
 void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
@@ -4905,6 +5060,21 @@ std::string house_display_name(const ClientState& state) {
   if (!root.empty())
     root[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(root[0])));
   return "House of " + root;
+}
+
+// Chronicle payloads may already carry the owner-facing "House " prefix.
+// Normalize only the label we paint so the first screen never says
+// "House House of ..." while the authoritative name remains untouched.
+std::string painted_house_name(const std::string& raw) {
+  if (raw.size() >= 6 &&
+      std::equal(raw.begin(), raw.begin() + 6, "House ",
+                 [](char left, char right) {
+                   return std::tolower(static_cast<unsigned char>(left)) ==
+                          std::tolower(static_cast<unsigned char>(right));
+                 })) {
+    return raw;
+  }
+  return "House " + raw;
 }
 
 std::string next_scion_name(const ClientState& state) {
@@ -5277,7 +5447,7 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
   } else {
     for (const auto& house : model.chronicle.houses) {
       lines.push_back({"house " + house.name,
-                       "House " + house.name, RGB(239, 208, 116), false});
+                       painted_house_name(house.name), RGB(239, 208, 116), false});
       for (const auto& scion : house.scions) {
         std::string row = "  Scion " + scion.name + " - level " +
                           std::to_string(scion.level) +
@@ -5357,16 +5527,27 @@ void paint_chronicles_front_door(ClientState& state, HDC dc, const RECT& bounds,
 // Shared owner-facing chrome: the visible connection state lives on both
 // screens — a failed connection is always explicit, never a silent fallback.
 // TASK-0153 rev2: the chip draws where the measured top-HUD planner puts it.
-int connection_chip_w(int height) { return 168 * hud_scale(height); }
+// Keep the owner-facing status chip compact enough for the narrow window
+// widths used during side-by-side playtesting. The old 168px box painted the
+// full "connection connected" sentence and clipped its right edge.
+int connection_chip_w(int height) { return 112 * hud_scale(height); }
 int connection_chip_h(int height) { return 22 * hud_scale(height); }
 void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
                            render::List& rl, int chip_x, int chip_y) {
   if (!state.session) return;
     const auto conn = state.session->connection_state();
     const char* label = verdigris::client::connection_state_label(conn);
-    const std::string chip = std::string("connection ") + label;
+    const bool healthy = conn == verdigris::client::ConnectionState::Ready;
+    const std::string chip = healthy ? "READY" :
+        (conn == verdigris::client::ConnectionState::Disconnected ||
+         conn == verdigris::client::ConnectionState::Rejected ||
+         conn == verdigris::client::ConnectionState::ProtocolMismatch)
+            ? "OFFLINE" : label;
+    // Keep the semantic state in the render trace for diagnostics while the
+    // painted copy remains compact and human-readable.
     rl.push_back({render::Op::Hud, static_cast<double>(chip_x),
-                  static_cast<double>(chip_y), 0.0, 0, chip});
+                  static_cast<double>(chip_y), 0.0, 0,
+                  std::string("connection ") + label});
     COLORREF chip_color = RGB(185, 198, 188);
     if (conn == verdigris::client::ConnectionState::Ready)
       chip_color = RGB(120, 214, 168);
@@ -5399,7 +5580,13 @@ void paint_connection_chip(ClientState& state, HDC dc, const RECT& bounds,
     DeleteObject(chip_pen);
     SetBkMode(dc, TRANSPARENT);
     SetTextColor(dc, chip_color);
-    TextOutA(dc, chip_x + 8, chip_y + 3, chip.c_str(), static_cast<int>(chip.size()));
+    const int dot = 6 * hud_scale(static_cast<int>(bounds.bottom));
+    HBRUSH dot_brush = CreateSolidBrush(chip_color);
+    RECT dot_rect{chip_x + 8, chip_y + 7, chip_x + 8 + dot,
+                  chip_y + 7 + dot};
+    FillRect(dc, &dot_rect, dot_brush);
+    DeleteObject(dot_brush);
+    TextOutA(dc, chip_x + 20, chip_y + 3, chip.c_str(), static_cast<int>(chip.size()));
     if (conn == verdigris::client::ConnectionState::Disconnected ||
         conn == verdigris::client::ConnectionState::Rejected ||
         conn == verdigris::client::ConnectionState::ProtocolMismatch) {
@@ -10026,6 +10213,10 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     }
   }
 
+  // Combat and slain-monster messages have their own quiet chat lane so they
+  // never sit on top of the XP meter or action bar.
+  paint_combat_log(state, dc, bounds, rl);
+
   // The hint/message toast is core play feedback — quest dialogue, trade
   // receipts, pickup results — not debug telemetry. It renders on the
   // normal HUD, centered above the quickbar, word-wrapped so long quest
@@ -10068,9 +10259,9 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     const int block_height = line_height * static_cast<int>(lines.size());
     const int toast_x =
         std::max(12, static_cast<int>(bounds.right - widest) / 2);
-    const HudRect quickbar = quickbar_strip_rect(static_cast<int>(bounds.right),
-                                                 static_cast<int>(bounds.bottom));
-    const int toast_y = quickbar.y - 16 - block_height;
+    // Reserve the bottom lane for XP/combat log/action controls. Transient
+    // hints live in a small upper-center plate instead of covering the meter.
+    const int toast_y = std::max(96, 120 * hud_scale(static_cast<int>(bounds.bottom)));
     RECT plate{toast_x - 14, toast_y - 8, toast_x + widest + 14,
                toast_y + block_height + 8};
     skin::panel(dc, plate, skin::kGold, 240, 7.0f);
@@ -10491,6 +10682,44 @@ void apply_window_mode(HWND window, const ClientState& state) {
   }
 }
 
+bool click_npc(ClientState& state, HWND window, int mx, int my) {
+  if (!state.session || state.screen != Screen::Expedition || state.world.npcs.empty())
+    return false;
+  RECT bounds{};
+  GetClientRect(window, &bounds);
+  const int scale = hud_scale(static_cast<int>(bounds.bottom));
+  const verdigris::client::WorldNpc* chosen = nullptr;
+  double best = std::numeric_limits<double>::max();
+  for (const auto& npc : state.world.npcs) {
+    const ScreenPoint base = project(state.camera, bounds, npc.position.x, npc.position.y);
+    const int body_y = base.y - static_cast<int>(kTileUnits * 0.7 * base.scale);
+    const double dx = static_cast<double>(mx - base.x);
+    const double dy = static_cast<double>(my - body_y);
+    const double radius = std::max(22.0 * scale, kTileUnits * 0.9 * base.scale);
+    const double distance = dx * dx + dy * dy;
+    if (distance > radius * radius || distance >= best) continue;
+    best = distance;
+    chosen = &npc;
+  }
+  if (!chosen) return false;
+  std::string verb = chosen->actions.empty() ? "examine" : chosen->actions.front();
+  for (const char* preferred : {"talk", "trade", "bank"}) {
+    if (std::find(chosen->actions.begin(), chosen->actions.end(), preferred) !=
+        chosen->actions.end()) {
+      verb = preferred;
+      break;
+    }
+  }
+  const char* action_id = verb == "talk" ? "player:npc:talk"
+                        : verb == "trade" ? "player:npc:trade"
+                        : verb == "bank" ? "player:screen:bank"
+                        : "player:npc:examine";
+  state.session->submit(verdigris::client::ClientCommand::npc_action(chosen->id, action_id));
+  show_hint(state, verb == "talk" ? "Talking to " + chosen->name
+                                  : "Opening " + verb + " with " + chosen->name);
+  return true;
+}
+
 LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam) {
   ClientState* state = state_from(window);
   switch (message) {
@@ -10764,6 +10993,10 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
             if (pack_hit_cell(pack, mx, my, gx, gy))
               pack_begin_drag(*state, gx, gy);
           }
+        } else if (click_npc(*state, window, GET_X_LPARAM(lparam),
+                             GET_Y_LPARAM(lparam))) {
+          // Town NPCs are direct click targets; do not send an attack intent
+          // when the player is trying to talk or trade.
         } else {
           // Route through dispatch_skill so LMB gets the same instant
           // swing-arc feedback as the Q/E/R keys — the primary attack was

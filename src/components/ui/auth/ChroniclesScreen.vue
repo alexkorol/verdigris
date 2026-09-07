@@ -5,6 +5,7 @@
       <div>
         <p class="chronicles__eyebrow">The living record</p>
         <h1 id="chronicles-title">Chronicles</h1>
+        <p class="chronicles__subtitle">House &amp; Scion</p>
         <p class="chronicles__account">
           {{ accountName ? `Account: ${accountName}` : 'Authenticated account' }}
         </p>
@@ -12,7 +13,7 @@
     </header>
 
     <p class="chronicles__intro">
-      Your House endures beyond any one adventurer. Name its first Scion, then set out into Delaford.
+      Name your House, choose a Scion, and set out.
     </p>
 
     <form
@@ -123,7 +124,7 @@
             <input v-model="mortalScion" class="chronicles__mortal-checkbox" type="checkbox">
             <span>
               <strong>Swear the mortal oath</strong>
-              <small>Final death moves this Scion to the crypt. Off by default while balance is still being tuned.</small>
+                <small>Final death moves this Scion to the crypt.</small>
             </span>
           </label>
         </form>
@@ -416,6 +417,15 @@ export default {
   font-size: 0.72rem;
 }
 
+.chronicles__subtitle {
+  margin: 8px 0 0;
+  color: rgba(233, 221, 197, 0.68);
+  font-family: 'ChatFont', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
 .chronicles__intro {
   margin: var(--space-md) 0;
   color: rgba(233, 221, 197, 0.72);
@@ -447,6 +457,7 @@ export default {
   input {
     min-width: 0;
     flex: 1;
+    width: 100%;
     box-sizing: border-box;
     padding: 9px 10px;
     color: #fff6df;

@@ -214,13 +214,29 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
   world.carried.clear();
   for (const auto& item : model.inventory) {
     const std::string label = item.name.empty() ? item.id : item.name;
-    world.carried.push_back({item.uuid, label, item.attack_rating, false});
+    world.carried.push_back({item.uuid, label, item.attack_rating, false,
+                             item.width, item.height, item.quantity,
+                             item.equip_slot, item.two_handed});
   }
-  if (!model.equipped.uuid.empty()) {
+  // Worn equipment is authoritative and lives outside the backpack. Keep it
+  // in the same presentation collection so the gear pane can render the
+  // real paper-doll seats without duplicating or losing a carried item.
+  if (!model.worn.empty()) {
+    for (const auto& worn : model.worn) {
+      const auto& item = worn.item;
+      const std::string label = item.name.empty() ? item.id : item.name;
+      world.carried.push_back({item.uuid, label, item.attack_rating, true,
+                               item.width, item.height, item.quantity,
+                               worn.seat, item.two_handed});
+    }
+  } else if (!model.equipped.uuid.empty()) {
     const std::string label =
         model.equipped.name.empty() ? model.equipped.id : model.equipped.name;
-    world.carried.push_back(
-        {model.equipped.uuid, label, model.equipped.attack_rating, true});
+    world.carried.push_back({model.equipped.uuid, label,
+                             model.equipped.attack_rating, true,
+                             model.equipped.width, model.equipped.height,
+                             model.equipped.quantity, "right_hand",
+                             model.equipped.two_handed});
   }
   world.loot_names.clear();
   for (const auto& item : model.ground)
@@ -365,12 +381,21 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       fx.screen_pulse_ticks = 8;
       break;
     case PresentationEventType::Message:
-      // Server messages carry the story: quest dialogue, trade receipts,
-      // extraction flavor. Surface them as a HUD toast — longer lines get
-      // longer to read — instead of dropping them on the floor.
       if (!event.text.empty()) {
-        fx.hint = event.text;
-        fx.hint_ticks = std::min<int>(400, 100 + static_cast<int>(event.text.size()) * 2);
+        const bool combat_log_message =
+            event.text.rfind("You have slain ", 0) == 0 ||
+            event.text.rfind("You are now level ", 0) == 0;
+        if (combat_log_message) {
+          // Kill/level messages belong to the persistent combat lane, not the
+          // transient center toast where they can cover the XP meter.
+          fx.event_log.push_back(event.text);
+          if (fx.event_log.size() > 6) fx.event_log.erase(fx.event_log.begin());
+        } else {
+          // Story, trade, and extraction messages remain readable as a short
+          // upper-center toast.
+          fx.hint = event.text;
+          fx.hint_ticks = std::min<int>(400, 100 + static_cast<int>(event.text.size()) * 2);
+        }
       }
       break;
     case PresentationEventType::SessionReady:
