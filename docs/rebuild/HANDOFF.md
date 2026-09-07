@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Dodge clear off WASD and Tin village (Cursor)
+
+- VG-ACT-005 / VG-UI-007: Dodge clear / Life holds parks off WASD, the
+  objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Ghost hit still rejected. Core ACT stays Kimi. Owner
+  Demo journeys not duplicated.
+- Scenario `telegraph-dodge` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
 ## 2026-09-06 — Pad glyphs off WASD and Tin village (Cursor)
 
 - VG-UI-008 / VG-UI-007: Pad glyphs / A strike parks off WASD, the

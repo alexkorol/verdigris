@@ -35,7 +35,7 @@ not implemented here.
 | VG-ACT-002 | G2 | new | Kimi lease (`native/src/**` / tools); current-head search, no absence claim |
 | VG-ACT-003 | G2 | new | Kimi lease (`native/src/**` / tools); current-head search, no absence claim |
 | VG-ACT-004 | G2 | extend | TASK-0108 — extend, never re-spec TASK-0108 — Kimi lease |
-| VG-ACT-005 | G2 | new | telegraph-spec catalog ticks+reach; telegraph-dodge life holds; durationMs/50 cannot invent a window |
+| VG-ACT-005 | G2 | new | telegraph-spec catalog ticks+reach; telegraph-dodge Dodge clear stays off WASD/objective/Tin village/Life; durationMs/50 cannot invent a window |
 | VG-ACT-006 | G2 | new | Kimi lease (`native/src/**` / tools); current-head search, no absence claim |
 | VG-ACT-007 | G3 | new | attack-beat event bridge; swing sprites cannot mint a beat |
 | VG-ACT-008 | G3 | new | Kimi lease (`native/src/**` / tools); current-head search, no absence claim |
