@@ -6638,8 +6638,12 @@ void paint_tone_adapter_review_strip(ClientState& state, HDC dc, const RECT& bou
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const int pane_w = 360 * s;
   const int pane_h = 72 * s;
-  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
-  const int top = 72 * s;
+  const HudRect parked =
+      park_review_strip(state, static_cast<int>(bounds.right),
+                        static_cast<int>(bounds.bottom), pane_w, pane_h);
+  const int left = parked.x;
+  const int top = parked.y;
+  state.hud_rect_trace.push_back({"tone-strip", parked});
   RECT pane{left, top, left + pane_w, top + pane_h};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
@@ -15366,6 +15370,31 @@ int scenario_sound_adapter() {
   }
   scenario_check(named && tone,
                  "sound-adapter: live HUD names Adapter software and Tone 440 Hz");
+  {
+    auto trace_find = [](const ClientState& s,
+                         const char* label) -> const HudRect* {
+      for (const auto& entry : s.hud_rect_trace)
+        if (entry.first == label) return &entry.second;
+      return nullptr;
+    };
+    const HudRect* tone_strip = trace_find(capture, "tone-strip");
+    scenario_check(tone_strip != nullptr, "sound-adapter: Adapter software strip is traced");
+    const HudRect* ctrl = trace_find(capture, "controls");
+    const HudRect* objective = trace_find(capture, "objective");
+    const HudRect* route_card = trace_find(capture, "route-card");
+    const HudRect* life = trace_find(capture, "orb-life");
+    const bool covers =
+        (tone_strip && ctrl && hud_rects_overlap(*tone_strip, *ctrl)) ||
+        (tone_strip && objective && hud_rects_overlap(*tone_strip, *objective)) ||
+        (tone_strip && route_card && hud_rects_overlap(*tone_strip, *route_card)) ||
+        (tone_strip && life && hud_rects_overlap(*tone_strip, *life));
+    scenario_check(
+        verdigris::audio::tone_strip_covers_hud_fails_review(true),
+        "sound-adapter: covering WASD, the objective, Tin village, or Life is the anti-pattern");
+    scenario_check(
+        !verdigris::audio::tone_strip_covers_hud_fails_review(covers),
+        "sound-adapter: Adapter software stays off WASD, the objective, Tin village, and Life");
+  }
   return scenario_failures;
 }
 

@@ -4,7 +4,7 @@
   "planning_id": "VG-SOUND-001",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "970d7b8eb980f4a07b618ef83c19cd5e5f4f7ee1",
+  "base_sha": "b355245d",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "sound-adapter",
@@ -19,17 +19,19 @@
     "unknown backend cannot pretend to be portable",
     "shutdown releases the PCM buffer",
     "live HUD names Adapter software and Tone 440 Hz",
-    "a 0 ms cue cannot certify audible output"
+    "a 0 ms cue cannot certify audible output",
+    "Adapter software stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Adapter software is the anti-pattern"
   ],
   "negative_control": {
-    "name": "scheduled cue with zero duration as audible output",
+    "name": "scheduled cue with zero duration as audible output, or Adapter software covering WASD/objective/Tin village/Life",
     "observed_result": "REJECTED"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/sound-adapter-960x600.png",
-      "sha256": "746425e46953c75a372488413f69ae468ff8ddbffe55151b26a1fb71b6ea0cb5",
+      "sha256": "ae20c1e788fbd725b4970510556f4eaaae835212c539af1ca7a8ac5ffd542316",
       "produced_by": "native/build/verdigris_client.exe --scenario sound-adapter"
     },
     {
@@ -43,6 +45,7 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Software PCM adapter, not a WASAPI/CoreAudio device claim. Device remains muted in the harness.",
-    "Extends TASK-0157 mixer; does not replace it. Does not re-spec TASK-0108."
+    "Owner strip paints Adapter software / Tone 440 Hz and parks off WASD, the objective, Tin village, and Life. 0 ms cue cannot certify. Covering those combat surfaces cannot certify.",
+    "Tone report txt hash unchanged. Extends TASK-0157 mixer; does not replace it. Not Owner Demo. Does not re-spec TASK-0108."
   ]
 }

@@ -83,4 +83,8 @@ inline bool zero_duration_cue_fails_review(const CueSpec& cue) {
   return !cue_has_audible_output(cue);
 }
 
+inline bool tone_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
+
 }  // namespace verdigris::audio

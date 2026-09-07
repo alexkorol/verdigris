@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Adapter software off WASD and Tin village (Cursor)
+
+- VG-SOUND-001 / VG-UI-007: Adapter software / Tone 440 Hz parks off WASD,
+  the objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. 0 ms cue still rejected. Owner Demo journeys not
+  duplicated. Tone report txt not recaptured.
+- Scenario `sound-adapter` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
+
 ## 2026-09-06 — Voices 8 off WASD and Tin village (Cursor)
 
 - VG-SOUND-004 / VG-UI-007: Voices 8 / Warning held parks off WASD, the

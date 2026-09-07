@@ -143,7 +143,7 @@ not implemented here.
 | VG-UI-006 | G2 | extend | Owner Demo — do not duplicate |
 | VG-UI-007 | G3 | extend | hud-pane-readability 960/1366/3440 + tree/character keep-out; sheet below map above Life; close hint pinned; gear footer pinned; DEF/LVL inside pane; Life left / Type floor stay off WASD/objective/Tin village/Life; not VG-UI-006; TASK-0159 folder cannot certify |
 | VG-UI-008 | G4 | new | pad-path XInput on tick; Pad glyphs stays off WASD/objective/Tin village/Life |
-| VG-SOUND-001 | G1 | new | sound-adapter |
+| VG-SOUND-001 | G1 | new | sound-adapter Adapter software stays off WASD/objective/Tin village/Life |
 | VG-SOUND-002 | G2 | new | legal-sounds |
 | VG-SOUND-003 | G2 | extend | combat-audio event-id dedup |
 | VG-SOUND-004 | G2 | extend | combat-audio Voices 8 stays off WASD/objective/Tin village/Life |

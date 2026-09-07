@@ -256,9 +256,10 @@ restored BMP carries an L-bracket survival mark (hash diverges from
 Failure surfaces `gpu-error:recreate`. Scenario `gpu-recover`. Evidence
 `docs/execution/evidence/VG-GPU-008.json`.
 VG-SOUND-001: software tone adapter plays a generated PCM burst and shuts
-down. Live HUD paints Adapter software / Tone 440 Hz. A zero-duration cue
-is not audible. Scenario `sound-adapter`. Evidence
-`docs/execution/evidence/VG-SOUND-001.json`.
+down. Live HUD paints Adapter software / Tone 440 Hz and parks off WASD,
+the objective, Tin village, and Life. Covering those combat surfaces
+cannot certify. A zero-duration cue is not audible. Scenario
+`sound-adapter`. Evidence `docs/execution/evidence/VG-SOUND-001.json`.
 VG-SOUND-005: one ambience cue per route; live HUD paints Loop Tin village
 wind. Owner strip paints Zone loop / Loop Tin village wind and parks off
 WASD, the objective, Tin village, and Life. Covering those combat surfaces
