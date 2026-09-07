@@ -5848,8 +5848,15 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
                  {"src gear", (src.gear >= 0 ? "+" : "") + std::to_string(src.gear)},
                  {"src passive", std::to_string(src.passive)},
                  {"src cond", dormant}});
+    for (auto it = rows.begin(); it != rows.end();) {
+      if (it->label == "Cond")
+        it = rows.erase(it);
+      else
+        ++it;
+    }
   }
   int y = top + header_h + portrait_h + stack_gap;
+  int owner_cond = 0;
   SelectObject(dc, skin::font_body());
   auto owner_stat_name = [](const std::string& label) -> std::string {
     if (label == "src base") return "Base";
@@ -5883,8 +5890,11 @@ void paint_character_pane(ClientState& state, HDC dc, const RECT& bounds,
                   "char:" + row.label + ":" + row.value});
     if (row.label == "ATK src")
       rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "char:src-owner"});
+    if (shown == "Conditional") owner_cond += 1;
     y += row_h;
   }
+  if (!verdigris::client::ui::duplicate_owner_conditional_fails_review(owner_cond))
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, owner_cond, "char:cond-once"});
   if (src.expanded)
     rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0, "stat:owner-labels"});
   rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, attack_total,
@@ -16749,6 +16759,26 @@ int scenario_stat_explain() {
       owner_labels = true;
   scenario_check(owner_labels,
                  "stat-explain: expanded sources paint Base/Gear, not src jargon");
+  int owner_cond = 0;
+  bool compact_cond = false;
+  for (const auto& item : state.render_list) {
+    if (item.op != render::Op::Hud) continue;
+    if (item.label.rfind("char:Cond:", 0) == 0) {
+      compact_cond = true;
+      owner_cond += 1;
+    }
+    if (item.label.rfind("char:src cond:", 0) == 0) owner_cond += 1;
+  }
+  scenario_check(
+      verdigris::client::ui::duplicate_owner_conditional_fails_review(2),
+      "stat-explain: two Conditional rows is the anti-pattern");
+  scenario_check(
+      !verdigris::client::ui::duplicate_owner_conditional_fails_review(owner_cond),
+      "stat-explain: expanded sheet paints Conditional once");
+  scenario_check(!compact_cond,
+                 "stat-explain: expanded sheet drops the compact Conditional row");
+  scenario_check(render_list_has(state, render::Op::Hud, "char:cond-once"),
+                 "stat-explain: live HUD names a single Conditional");
 
   const std::string dir = art_wave_capture_dir();
   if (dir.empty()) {

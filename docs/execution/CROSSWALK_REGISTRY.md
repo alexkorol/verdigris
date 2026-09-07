@@ -138,7 +138,7 @@ not implemented here.
 | VG-UI-001 | G1 | extend | pane-stack native Escape; absent tree hides seats; invented origin cannot prove; WASD keep-out for tree and character; close hint stays in the sheet slot |
 | VG-UI-002 | G2 | extend | pack-drag occupancy; reject cannot lose/duplicate/silent-equip; period-clipped pack name cannot certify; Pack place stays off WASD/LIFE; sim inventory-move stays Kimi |
 | VG-UI-003 | G2 | extend | equipment ack-only; compare plate left of gear stats; Ack only stays off WASD/LIFE; compare hint ASCII bar; progression-surface Skill tree / No data yet; absent tree pane hides seats; WASD keep-out |
-| VG-UI-004 | G2 | extend | stat-explain owner Base/Gear labels; compact Sources uses Base/Gear; lowercase cannot certify; dormant cannot fold into Attack; WASD off C-key sheet; close hint stays in the slot |
+| VG-UI-004 | G2 | extend | stat-explain owner Base/Gear labels; compact Sources uses Base/Gear; lowercase cannot certify; dormant cannot fold into Attack; expanded sheet paints Conditional once; a duplicate Conditional cannot certify; WASD off C-key sheet; close hint stays in the slot |
 | VG-UI-005 | G3 | extend | route-map zoom/opacity; off-snapshot blip cannot pass; Owner Demo journeys not reimplemented |
 | VG-UI-006 | G2 | extend | Owner Demo — do not duplicate |
 | VG-UI-007 | G3 | extend | hud-pane-readability 960/1366/3440 + tree/character keep-out; sheet below map above Life; close hint pinned; gear footer pinned; DEF/LVL inside pane; not VG-UI-006; TASK-0159 folder cannot certify |

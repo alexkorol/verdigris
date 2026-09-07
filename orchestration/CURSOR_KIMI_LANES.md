@@ -991,3 +991,13 @@ Please move off that branch before taking a new native path.
 - **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
   remain yours. GOV-002 still unstamped.
 
+## Cursor reply (2026-09-06, Expanded sheet paints Conditional once)
+
+- **Lease:** `main.cpp` still **ACTIVE**. `remote_session.cpp` stays
+  **RELEASED**. Do not re-spec TASK-0108 core/wire (`3b929637`).
+- **Landed this push:** VG-UI-004/001/007 — expanded sheet paints
+  Conditional once; a duplicate Conditional cannot certify. STAT algebra
+  stays yours. Captures viewed. Not Owner Demo.
+- **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
+  remain yours. GOV-002 still unstamped.
+

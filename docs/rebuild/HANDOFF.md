@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Expanded sheet paints Conditional once (Cursor)
+
+- VG-UI-004 / VG-UI-001 / VG-UI-007: the expanded C-key sheet paints
+  Conditional once. Compact Cond plus src cond as a second Conditional
+  cannot certify. Compact Sources Base | Gear, dormant ATK exclusion, and
+  C or Esc closes stay unchanged. Core STAT algebra stays Kimi.
+- Scenario `stat-explain` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
 ## 2026-09-06 — Pack place off WASD and LIFE (Cursor)
 
 - VG-UI-002 / VG-UI-003 / VG-UI-007: Pack place and Ack only park below

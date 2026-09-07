@@ -31,7 +31,8 @@ inline const char* conditional_label(const StatSources& src) {
 }
 
 inline int extra_source_rows(const StatSources& src) {
-  return src.expanded ? 4 : 0;
+  // Four breakdown rows replace the compact Conditional line.
+  return src.expanded ? 3 : 0;
 }
 
 inline const char* owner_base_gear_label() { return "Base Gear"; }
@@ -39,6 +40,10 @@ inline const char* owner_cond_off_label() { return "Cond off"; }
 
 inline bool compact_atk_src_jargon_fails_review(bool lowercase_base_gear) {
   return lowercase_base_gear;
+}
+
+inline bool duplicate_owner_conditional_fails_review(int owner_conditional_rows) {
+  return owner_conditional_rows > 1;
 }
 
 inline bool character_covers_minimap_fails_review(bool overlap) {
