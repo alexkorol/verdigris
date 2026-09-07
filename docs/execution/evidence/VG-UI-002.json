@@ -20,23 +20,25 @@
     "reject does not silently equip",
     "pack cells paint a weapon glyph, not a grey crate",
     "pack cells wrap Ember-edged axe; a period clip cannot certify",
-    "live HUD names Pack place and Reject keeps"
+    "live HUD names Pack place and Reject keeps",
+    "Pack place stays off WASD and gear LIFE/ATK",
+    "compare hint uses Enter equips | U unequips"
   ],
   "negative_control": {
-    "name": "failed pack drop loses, duplicates, or silently equips; grey square certifies a carried weapon; period-clipped Ember-edged. certifies the pack cell",
+    "name": "failed pack drop loses, duplicates, or silently equips; grey square certifies a carried weapon; period-clipped Ember-edged. certifies the pack cell; Pack place covers WASD or LIFE; semicolon compare hint",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/pack-drag-960x600.png",
-      "sha256": "99660d64d01ac4f83610807613a68c9a166302ba89bee7a62d8f9449414efd5d",
+      "sha256": "2360f2adb1173f6dfa9d9d125fa6c1e021689c0fc6783e95373e59b4590be3be",
       "produced_by": "native/build/verdigris_client.exe --scenario pack-drag"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Presentation occupancy and cell glyph only. Owner strip paints Pack place / Reject keeps. Silent equip cannot certify. Pack cells wrap Ember-edged axe; a 12-char period clip cannot certify. Gear footer I or Esc closes stays inside the pane. DEF and LVL stay inside the pane. Compare plate parks left of the pane. Core inventory-move stays Kimi. No TASK numbers minted. Not Owner Demo."
+    "Presentation occupancy and cell glyph only. Owner strip paints Pack place / Reject keeps and parks below the minimap, left of the gear pane. Covering WASD or LIFE cannot certify. Silent equip cannot certify. Pack cells wrap Ember-edged axe; a 12-char period clip cannot certify. Compare hint is Enter equips | U unequips; a semicolon cannot certify. Gear footer I or Esc closes stays inside the pane. DEF and LVL stay inside the pane. Compare plate parks left of the pane. Core inventory-move stays Kimi. No TASK numbers minted. Not Owner Demo."
   ]
 }

@@ -29,17 +29,19 @@
     "absent P-key tree pane hides seats and rejects invented origin",
     "controls hint never enters the absent P-key tree pane",
     "compare plate stays off gear DEF/LVL and the I or Esc closes footer",
-    "pack cells wrap Ember-edged axe; a period clip cannot certify"
+    "pack cells wrap Ember-edged axe; a period clip cannot certify",
+    "Ack only stays off WASD and gear LIFE/ATK",
+    "compare hint uses Enter equips | U unequips"
   ],
   "negative_control": {
-    "name": "treat pending equip as currently equipped, paint TREE jargon as the owner line, certify a grey pack square, paint an origin seat while the tree says no data yet, cover DEF/LVL with the compare plate, or period-clip Ember-edged. as the pack caption",
+    "name": "treat pending equip as currently equipped, paint TREE jargon as the owner line, certify a grey pack square, paint an origin seat while the tree says no data yet, cover DEF/LVL with the compare plate, period-clip Ember-edged. as the pack caption, cover WASD or LIFE with Ack only, or a semicolon compare hint",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/equipment-960x600.png",
-      "sha256": "e938a87043f47138b984e30d9c562f3f641a5caf5565056fb8bca595657cce25",
+      "sha256": "6bae7e2696c4b663d587f8f3f42f8455f0a094eb30e4ea8ce7d69cc365d24e31",
       "produced_by": "native/build/verdigris_client.exe --scenario equipment"
     },
     {
@@ -58,7 +60,7 @@
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "HUD/compare only. Owner strip paints Ack only / No pending. Pending gold cannot certify. ITEM sim equip algebra stays Kimi. Helmet-in-main-hand is paper_doll WrongSlot. Gear footer I or Esc closes stays inside the pane. DEF and LVL stay inside the pane. Compare plate parks left of the pane; covering those lines cannot certify. Pack cells wrap Ember-edged axe; a period clip cannot certify.",
+    "HUD/compare only. Owner strip paints Ack only / No pending and parks off WASD and gear LIFE/ATK. Pending gold cannot certify. ITEM sim equip algebra stays Kimi. Helmet-in-main-hand is paper_doll WrongSlot. Gear footer I or Esc closes stays inside the pane. DEF and LVL stay inside the pane. Compare plate parks left of the pane; covering those lines cannot certify. Compare hint is Enter equips | U unequips. Pack cells wrap Ember-edged axe; a period clip cannot certify.",
     "TASK-0156 PaneStat protocol string is unchanged. TASK folder captures cannot certify. Absent tree pane hides seats and keeps WASD off the pane; TASK-0193 slice stays for payload-present paint. Not Owner Demo. No TASK numbers minted."
   ]
 }

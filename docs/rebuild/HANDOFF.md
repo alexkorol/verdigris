@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Pack place off WASD and LIFE (Cursor)
+
+- VG-UI-002 / VG-UI-003 / VG-UI-007: Pack place and Ack only park below
+  the minimap, left of the I-key pane. Covering WASD or gear LIFE/ATK
+  cannot certify. Compare hint is Enter equips | U unequips; a semicolon
+  cannot certify. Pack wrap, reject occupancy, and compare-plate keep-out
+  are unchanged. Core inventory-move stays Kimi.
+- Scenarios `pack-drag` / `equipment` / `loot-to-bank` PASS. Captures
+  viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — Pack cells wrap Ember-edged axe (Cursor)
 
 - VG-UI-002 / VG-UI-003: pack cell captions wrap at the type floor so

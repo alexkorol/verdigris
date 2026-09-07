@@ -4316,7 +4316,11 @@ void paint_gear_overlay(ClientState& state, HDC dc, const RECT& bounds,
       else
         facts.push_back("same ATK as equipped");
     }
-    facts.push_back("Enter equips; U unequips");
+    const char* compare_hint =
+        verdigris::client::ui::owner_compare_equip_hint();
+    facts.push_back(compare_hint);
+    rl.push_back({render::Op::Hud, 0.0, 0.0, 0.0, 0,
+                  std::string("compare-hint:") + compare_hint});
     paint_compare_plate(state, dc, hover_cx + cell_w, hover_cy, bounds, pane,
                         focus.name,
                         as_equipped ? skin::kGold : skin::kInk, facts, rl);
@@ -7748,14 +7752,53 @@ void paint_pane_focus_review_strip(ClientState& state, HDC dc, const RECT& bound
   SelectObject(dc, old_font);
 }
 
+HudRect park_review_strip(const ClientState& state, int width, int height,
+                          int pane_w, int pane_h) {
+  const HudRect map = minimap_rect(height);
+  const HudRect gear = gear_pane_rect(width, height);
+  int left = map.x;
+  int top = map.y + map.h + kTopHudGap;
+  HudRect strip{left, top, pane_w, pane_h};
+  const char* keep[] = {"identity",         "objective",
+                        "controls",         "controls-second",
+                        "pane-title",       "pane-stats",
+                        "pane-stats-combat", "pane-footer",
+                        "compare-plate"};
+  for (int pass = 0; pass < 8; ++pass) {
+    bool moved = false;
+    for (const auto& entry : state.hud_rect_trace) {
+      bool named = false;
+      for (const char* key : keep)
+        if (entry.first == key) named = true;
+      if (!named) continue;
+      if (!hud_rects_overlap(strip, entry.second)) continue;
+      top = std::max(top, entry.second.y + entry.second.h + kTopHudGap);
+      strip.y = top;
+      moved = true;
+    }
+    if (gear.w > 0 && hud_rects_overlap(strip, gear)) {
+      left = std::max(8, gear.x - pane_w - kTopHudGap);
+      strip.x = left;
+      moved = true;
+    }
+    if (!moved) break;
+  }
+  if (strip.y + strip.h > height - 8) strip.y = std::max(8, height - strip.h - 8);
+  return strip;
+}
+
 void paint_pack_drag_review_strip(ClientState& state, HDC dc, const RECT& bounds,
                                   render::List& rl) {
   if (!state.pack_drag_review_strip) return;
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const int pane_w = 360 * s;
   const int pane_h = 72 * s;
-  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
-  const int top = 72 * s;
+  const HudRect parked =
+      park_review_strip(state, static_cast<int>(bounds.right),
+                        static_cast<int>(bounds.bottom), pane_w, pane_h);
+  const int left = parked.x;
+  const int top = parked.y;
+  state.hud_rect_trace.push_back({"pack-drag-strip", parked});
   RECT pane{left, top, left + pane_w, top + pane_h};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
@@ -7949,8 +7992,12 @@ void paint_equipment_review_strip(ClientState& state, HDC dc, const RECT& bounds
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const int pane_w = 360 * s;
   const int pane_h = 72 * s;
-  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
-  const int top = 72 * s;
+  const HudRect parked =
+      park_review_strip(state, static_cast<int>(bounds.right),
+                        static_cast<int>(bounds.bottom), pane_w, pane_h);
+  const int left = parked.x;
+  const int top = parked.y;
+  state.hud_rect_trace.push_back({"equipment-strip", parked});
   RECT pane{left, top, left + pane_w, top + pane_h};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
@@ -14897,6 +14944,44 @@ int scenario_equipment() {
       "equipment: pack cells wrap Ember-edged axe instead of clipping");
   scenario_check(eq_named_full,
                  "equipment: live HUD names the full pack caption");
+  {
+    const HudRect* strip = trace_find(state, "equipment-strip");
+    const HudRect* ctrl = trace_find(state, "controls");
+    const HudRect* gear_vitals = trace_find(state, "pane-stats");
+    const HudRect* gear_combat = trace_find(state, "pane-stats-combat");
+    const bool strip_covers_controls =
+        strip && ctrl && hud_rects_overlap(*strip, *ctrl);
+    const bool strip_covers_stats =
+        strip && gear_vitals && hud_rects_overlap(*strip, *gear_vitals);
+    const bool strip_covers_combat =
+        strip && gear_combat && hud_rects_overlap(*strip, *gear_combat);
+    bool semicolon = false;
+    bool owner_hint = false;
+    for (const auto& item : state.render_list) {
+      if (item.op != render::Op::Hud) continue;
+      if (item.label.rfind("compare-hint:", 0) == 0) {
+        if (item.label.find(';') != std::string::npos) semicolon = true;
+        if (item.label.find(verdigris::client::ui::owner_compare_equip_hint()) !=
+            std::string::npos)
+          owner_hint = true;
+      }
+    }
+    scenario_check(
+        verdigris::client::ui::review_strip_covers_hud_fails_review(true),
+        "equipment: covering WASD or LIFE with the review strip is the anti-pattern");
+    scenario_check(
+        !verdigris::client::ui::review_strip_covers_hud_fails_review(
+            strip_covers_controls || strip_covers_stats || strip_covers_combat),
+        "equipment: Ack only stays off WASD and gear LIFE/ATK");
+    scenario_check(
+        verdigris::client::ui::semicolon_compare_hint_fails_review(true),
+        "equipment: a semicolon compare hint is the anti-pattern");
+    scenario_check(
+        !verdigris::client::ui::semicolon_compare_hint_fails_review(semicolon),
+        "equipment: compare hint uses Enter equips | U unequips");
+    scenario_check(owner_hint,
+                   "equipment: live HUD names the ASCII compare hint");
+  }
   return scenario_failures;
 }
 
@@ -16907,6 +16992,50 @@ int scenario_pack_drag() {
   scenario_check(pack_place && reject_keeps,
                  "pack-drag: live HUD names Pack place and Reject keeps");
   scenario_check(silent_equip, "pack-drag: live HUD rejects silent equip");
+  {
+    auto trace_find = [](const ClientState& s,
+                         const char* label) -> const HudRect* {
+      for (const auto& entry : s.hud_rect_trace)
+        if (entry.first == label) return &entry.second;
+      return nullptr;
+    };
+    const HudRect* strip = trace_find(state, "pack-drag-strip");
+    const HudRect* controls = trace_find(state, "controls");
+    const HudRect* stats = trace_find(state, "pane-stats");
+    const HudRect* combat = trace_find(state, "pane-stats-combat");
+    const bool covers_controls =
+        strip && controls && hud_rects_overlap(*strip, *controls);
+    const bool covers_stats =
+        strip && stats && hud_rects_overlap(*strip, *stats);
+    const bool covers_combat =
+        strip && combat && hud_rects_overlap(*strip, *combat);
+    bool semicolon = false;
+    bool owner_hint = false;
+    for (const auto& item : state.render_list) {
+      if (item.op != render::Op::Hud) continue;
+      if (item.label.rfind("compare-hint:", 0) == 0) {
+        if (item.label.find(';') != std::string::npos) semicolon = true;
+        if (item.label.find(verdigris::client::ui::owner_compare_equip_hint()) !=
+            std::string::npos)
+          owner_hint = true;
+      }
+    }
+    scenario_check(
+        verdigris::client::ui::review_strip_covers_hud_fails_review(true),
+        "pack-drag: covering WASD or LIFE with the review strip is the anti-pattern");
+    scenario_check(
+        !verdigris::client::ui::review_strip_covers_hud_fails_review(
+            covers_controls || covers_stats || covers_combat),
+        "pack-drag: Pack place stays off WASD and gear LIFE/ATK");
+    scenario_check(
+        verdigris::client::ui::semicolon_compare_hint_fails_review(true),
+        "pack-drag: a semicolon compare hint is the anti-pattern");
+    scenario_check(
+        !verdigris::client::ui::semicolon_compare_hint_fails_review(semicolon),
+        "pack-drag: compare hint uses Enter equips | U unequips");
+    scenario_check(owner_hint,
+                   "pack-drag: live HUD names the ASCII compare hint");
+  }
   return scenario_failures;
 }
 

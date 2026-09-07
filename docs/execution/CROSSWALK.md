@@ -34,8 +34,8 @@ Cursor evidence notes.
 | VG | Disposition | Existing |
 |---|---|---|
 | VG-UI-001 | extend | native Escape stack (`pane-stack`); owner Stack 2 / Escape closes; absent tree hides seats; invented origin cannot pass; WASD cannot overlay the open tree; C or Esc closes stays in the sheet slot |
-| VG-UI-002 | extend | TASK-0171 INTEGRATED, 0184 BRIDGE_PREP; `pack-drag`; reject cannot lose/duplicate/silent-equip; pack cells wrap Ember-edged axe; a period clip cannot certify; gear footer stays inside the pane |
-| VG-UI-003 | extend | paper-doll + ack-only HUD (`equipment`); pending compare cannot gold-frame as equipped; compare plate stays off gear DEF/LVL; `progression-surface` owner Skill tree / No data yet (TASK folder cannot certify) |
+| VG-UI-002 | extend | TASK-0171 INTEGRATED, 0184 BRIDGE_PREP; `pack-drag`; reject cannot lose/duplicate/silent-equip; pack cells wrap Ember-edged axe; Pack place stays off WASD/LIFE; compare hint uses ASCII `|`; gear footer stays inside the pane |
+| VG-UI-003 | extend | paper-doll + ack-only HUD (`equipment`); pending compare cannot gold-frame as equipped; compare plate stays off gear DEF/LVL; Ack only stays off WASD/LIFE; compare hint uses ASCII `|`; `progression-surface` owner Skill tree / No data yet (TASK folder cannot certify) |
 | VG-UI-004 | extend | TASK-0156, 0159 INTEGRATED; `stat-explain` expandable ATK; dormant cannot fold into Attack; compact Sources uses Base/Gear; lowercase base/gear cannot certify; WASD stays off the C-key sheet; close hint stays in the slot |
 | VG-UI-005 | extend | TASK-0076 INTEGRATED; 0178/0192/0203 Owner Demo; `route-map` zoom/opacity cannot reveal off-snapshot targets |
 | VG-UI-006 | extend | TASK-0145/0177 + 0190/0197/0201 — **do not duplicate** |
@@ -251,7 +251,9 @@ jargon cannot certify. Scenario `progression-surface` pack capture in
 art-wave (TASK-0156 folder cannot certify). Absent P-key tree hides
 seats (`tree-pane-960x600.png`, shared with VG-UI-001) and keeps WASD
 off the pane. Gear footer I or Esc closes stays inside the pane. Compare
-plate parks left of the pane; covering DEF/LVL cannot certify. Evidence
+plate parks left of the pane; covering DEF/LVL cannot certify. Ack only
+parks off WASD and gear LIFE/ATK. Compare hint is Enter equips |
+U unequips. Evidence
 `docs/execution/evidence/VG-UI-003.json`.
 VG-PERF-007: 32 resize/effect cycles; floor bitmaps stay 1. Owner strip
 paints 32 cycles / Cap holds. Short scene cannot certify. Scenario
@@ -363,10 +365,12 @@ Life. The close hint stays in the slot. Scenario
 `stat-explain`. Evidence
 `docs/execution/evidence/VG-UI-004.json`.
 VG-UI-002: `pack-drag` — reject cannot lose, duplicate, or silently equip.
-Owner strip paints Pack place / Reject keeps. Silent equip cannot
-certify. Pack cells wrap Ember-edged axe at the type floor; a 12-char
-period clip cannot certify. Gear footer I or Esc closes stays inside the
-pane. Core inventory-move stays Kimi.
+Owner strip paints Pack place / Reject keeps and parks below the minimap,
+left of the gear pane. Covering WASD or LIFE cannot certify. Silent equip
+cannot certify. Pack cells wrap Ember-edged axe at the type floor; a
+12-char period clip cannot certify. Compare hint is Enter equips |
+U unequips. Gear footer I or Esc closes stays inside the pane. Core
+inventory-move stays Kimi.
 VG-ART-005: `held-item` — world actor hold must change on equip. Owner
 strip paints World hold / Ack equip. `loot-to-bank` owner strip paints
 Unarmed first / World hold. A filled paper-doll seat with `held:none`

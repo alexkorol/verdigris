@@ -69,6 +69,9 @@ inline const char* owner_no_pending_label() { return "No pending"; }
 inline const char* owner_skill_tree_label() { return "Skill tree"; }
 inline const char* owner_no_data_yet_label() { return "No data yet"; }
 inline const char* owner_no_seats_yet_label() { return "No seats yet"; }
+inline const char* owner_compare_equip_hint() {
+  return "Enter equips | U unequips";
+}
 
 inline bool invented_origin_fails_review(bool present, bool painted_seat) {
   return !present && painted_seat;
@@ -76,6 +79,10 @@ inline bool invented_origin_fails_review(bool present, bool painted_seat) {
 
 inline bool compare_covers_gear_stats_fails_review(bool overlap) {
   return overlap;
+}
+
+inline bool semicolon_compare_hint_fails_review(bool semicolon) {
+  return semicolon;
 }
 
 }  // namespace verdigris::client::ui
