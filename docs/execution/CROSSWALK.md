@@ -39,7 +39,7 @@ Cursor evidence notes.
 | VG-UI-004 | extend | TASK-0156, 0159 INTEGRATED; `stat-explain` expandable ATK; dormant cannot fold into Attack; compact Sources uses Base/Gear; lowercase base/gear cannot certify; expanded sheet paints Conditional once; a duplicate Conditional cannot certify; Base Gear stays off the sheet/WASD/objective/Life; WASD stays off the C-key sheet; close hint stays in the slot |
 | VG-UI-005 | extend | TASK-0076 INTEGRATED; 0178/0192/0203 Owner Demo; `route-map` zoom/opacity cannot reveal off-snapshot targets; Risk wardens stays off WASD/objective/Tin village/Life |
 | VG-UI-006 | extend | TASK-0145/0177 + 0190/0197/0201 — **do not duplicate** |
-| VG-UI-007 | extend | TASK-0159 INTEGRATED, 0118 READY, 0207; `hud-pane-readability` at 960/1366/3440 + tree/character keep-out + `hud-scale-floor` + live window; TASK-0159 folder capture cannot certify; clipped C or Esc closes cannot certify; clipped I or Esc closes gear footer cannot certify; clipped DEF/LVL cannot certify; Life left stays off WASD/objective/Tin village/Life; VG-UI-006 Owner Demo not duplicated |
+| VG-UI-007 | extend | TASK-0159 INTEGRATED, 0118 READY, 0207; `hud-pane-readability` at 960/1366/3440 + tree/character keep-out + `hud-scale-floor` + live window; TASK-0159 folder capture cannot certify; clipped C or Esc closes cannot certify; clipped I or Esc closes gear footer cannot certify; clipped DEF/LVL cannot certify; Life left / Type floor stay off WASD/objective/Tin village/Life; VG-UI-006 Owner Demo not duplicated |
 | VG-UI-008 | new | XInput tick path + glyphs (`pad-path`); not mouse emulation; Pad glyphs stays off WASD/objective/Tin village/Life |
 | VG-ART-001/002/004 | extend | TASK-0141 INTEGRATED — village kit + collision-proxy ops (`kit-chunk`); not artist-local collision; Adult camera / Jointed warden / Uniform pan / Kit lock / Village kit stay off WASD/objective/Tin village/Life |
 | VG-ART-003/006 | extend | TASK-0122 INTEGRATED; 0173/0174 READY; 0186/0187 BRIDGE_PREP — Cursor paints melee **poses** (VG-ART-003) and WarCry **weave labels** plus Phase A spawn/fade (VG-ART-006) without taking TASK-0173 models or re-speccing TASK-0108; Strike poses / Hit flash / War Cry weave stay off WASD/objective/Tin village/Life |
@@ -360,7 +360,9 @@ VG-UI-007: `vital-orbs` — life left/red, mana right/blue. Mute is a HUD
 chip. Owner strip paints Life left / Mana right and parks off WASD, the
 objective, Tin village, and Life. Covering those combat surfaces
 cannot certify. `hud-scale-floor` owner
-strip paints Type floor / Ink contrast. Shrink type cannot certify.
+strip paints Type floor / Ink contrast and parks off WASD, the objective,
+Tin village, and Life. Covering those combat surfaces cannot certify.
+Shrink type cannot certify.
 `hud-pane-readability` recapture at 960/1366/3440 stays pairwise
 disjoint; no owner review strip on that scenario. Open P-key tree never
 intersects identity/controls/objective/minimap/quickbar/orbs. Open C-key

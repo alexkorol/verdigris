@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-007",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "79f2f381",
+  "base_sha": "380d9eb5",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "hud-pane-readability",
@@ -34,10 +34,12 @@
     "pack captures write under docs/execution/captures/art-wave, not the TASK-0159 folder",
     "live HUD names Life left and Mana right",
     "live HUD names Type floor and Ink contrast",
+    "Type floor stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Type floor is the anti-pattern",
     "open gear pane owner paint uses Skill tree: no data yet while PaneStat keeps TREE no authoritative data"
   ],
   "negative_control": {
-    "name": "TASK-0159 folder capture alone, overlapping pane, WASD on the open tree or character sheet, a sheet covering the minimap or Life, a clipped C or Esc closes footer, a clipped I or Esc closes gear footer, clipped DEF/LVL on the gear pane, shrinking fonts below the floor, Life left covering WASD/objective/Tin village/Life, or an X on the mana globe as the mute cue",
+    "name": "TASK-0159 folder capture alone, overlapping pane, WASD on the open tree or character sheet, a sheet covering the minimap or Life, a clipped C or Esc closes footer, a clipped I or Esc closes gear footer, clipped DEF/LVL on the gear pane, shrinking fonts below the floor, Life left covering WASD/objective/Tin village/Life, Type floor covering WASD/objective/Tin village/Life, or an X on the mana globe as the mute cue",
     "observed_result": "REJECTED as a passing journey"
   },
   "artifacts": [
@@ -80,7 +82,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/hud-scale-floor-960x600.png",
-      "sha256": "639d61e6c18559e988b751a47721b0ffd5a3efdbae996f4a5cdec1c4a84a4b0b",
+      "sha256": "c3cfe1dd81e6d73630adc3b4535b608365e9d9d1df2bf2228df05e26ba31b85f",
       "produced_by": "native/build/verdigris_client.exe --scenario hud-scale-floor"
     },
     {
@@ -113,7 +115,7 @@
   "limitations": [
     "Extends TASK-0159; that packet's STATUS.md and historical captures were not rewritten.",
     "Owner strip paints Life left / Mana right and parks off WASD, the objective, Tin village, and Life. X on mana cannot certify a non-color cue. Covering those combat surfaces cannot certify.",
-    "hud-scale-floor owner strip paints Type floor / Ink contrast. Shrink type cannot certify overflow.",
+    "hud-scale-floor owner strip paints Type floor / Ink contrast and parks off WASD, the objective, Tin village, and Life. Shrink type cannot certify overflow. Covering those combat surfaces cannot certify. Sibling pane/vital captures are prior evidence; not recaptured in this packet.",
     "hud-pane-readability recapture has no owner review strip so pairwise HUD regions stay disjoint.",
     "Open P-key tree keep-out is the VG-UI-007 extra; overlaying WASD on the tree cannot certify.",
     "Open C-key character keep-out relocates WASD to the right of the sheet. Deleting the hint cannot certify. The sheet slot sits below the minimap and above Life; covering those cannot certify. A clipped C or Esc closes footer cannot certify. A clipped I or Esc closes gear footer cannot certify. Clipped DEF/LVL on the gear pane cannot certify. Compact Sources uses Base/Gear with ASCII |; lowercase base/gear cannot certify.",

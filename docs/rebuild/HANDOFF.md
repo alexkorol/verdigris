@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Type floor off WASD and Tin village (Cursor)
+
+- VG-UI-007: Type floor / Ink contrast parks off WASD, the objective, Tin
+  village, and Life. Covering those combat surfaces cannot certify. Shrink
+  type still rejected. Owner Demo journeys not duplicated.
+- Scenario `hud-scale-floor` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
+
 ## 2026-09-06 — Slay wardens off WASD and Tin village (Cursor)
 
 - VG-GOV-003 / VG-UI-007: Slay wardens / Dash hint parks off WASD, the

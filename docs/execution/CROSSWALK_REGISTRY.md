@@ -141,7 +141,7 @@ not implemented here.
 | VG-UI-004 | G2 | extend | stat-explain owner Base/Gear labels; compact Sources uses Base/Gear; lowercase cannot certify; dormant cannot fold into Attack; expanded sheet paints Conditional once; a duplicate Conditional cannot certify; Base Gear stays off the sheet/WASD/objective/Life; WASD off C-key sheet; close hint stays in the slot |
 | VG-UI-005 | G3 | extend | route-map zoom/opacity; off-snapshot blip cannot pass; Risk wardens stays off WASD/objective/Tin village/Life; Owner Demo journeys not reimplemented |
 | VG-UI-006 | G2 | extend | Owner Demo — do not duplicate |
-| VG-UI-007 | G3 | extend | hud-pane-readability 960/1366/3440 + tree/character keep-out; sheet below map above Life; close hint pinned; gear footer pinned; DEF/LVL inside pane; Life left stays off WASD/objective/Tin village/Life; not VG-UI-006; TASK-0159 folder cannot certify |
+| VG-UI-007 | G3 | extend | hud-pane-readability 960/1366/3440 + tree/character keep-out; sheet below map above Life; close hint pinned; gear footer pinned; DEF/LVL inside pane; Life left / Type floor stay off WASD/objective/Tin village/Life; not VG-UI-006; TASK-0159 folder cannot certify |
 | VG-UI-008 | G4 | new | pad-path XInput on tick; Pad glyphs stays off WASD/objective/Tin village/Life |
 | VG-SOUND-001 | G1 | new | sound-adapter |
 | VG-SOUND-002 | G2 | new | legal-sounds |
