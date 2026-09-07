@@ -52,7 +52,7 @@ Cursor evidence notes.
 | VG-GPU-005 | new | Y-sort + Sweep overlay on the village gate (`grounding`); HUD or capture-black cannot certify; walls cannot erase warnings; Y-sort stays off WASD/objective/Tin village/Life |
 | VG-GPU-006 | new | moving bronze lantern pool on the village gate (`material-light`); HUD without a pool cannot certify; cannot wash out damage; Lantern pool stays off WASD/objective/Tin village/Life |
 | VG-GPU-007 | new | BMP readback + provenance (`gpu-capture`); PNG R/B swap cannot certify; packet logs are not pixels; Pixel capture stays off WASD/objective/Tin village/Life |
-| VG-GPU-008 | new | sample recreate/resize (`gpu-recover`); restored BMP stamped; Live buffers 1; leak cannot certify |
+| VG-GPU-008 | new | sample recreate/resize (`gpu-recover`); restored BMP stamped; Live buffers 1; leak cannot certify; Restore stays off WASD/objective/Tin village/Life |
 | VG-PERF-001/002/008 | extend | TASK-0152, 0207; 008 Owner Demo — do not duplicate |
 | VG-PERF-003–006 | new / extend 0207 | GDI batch, envelope, loot labels, hitch warmup |
 | VG-PERF-007 | new | 32-cycle present/effect/resize soak (`memory-soak`); short scene fails |
@@ -252,8 +252,10 @@ village, and Life. Covering those combat surfaces cannot certify.
 Evidence `docs/execution/evidence/VG-GPU-007.json`.
 VG-GPU-008: recreate/resize/minimize-restore keep one live buffer; the
 restored BMP carries an L-bracket survival mark (hash diverges from
-`gpu-sample`). Live HUD paints Live buffers 1; leak cannot certify.
-Failure surfaces `gpu-error:recreate`. Scenario `gpu-recover`. Evidence
+`gpu-sample`). Owner strip paints Restore / Live buffers 1 and parks off
+WASD, the objective, Tin village, and Life. Covering those combat
+surfaces cannot certify. Leak cannot certify. Failure surfaces
+`gpu-error:recreate`. Scenario `gpu-recover`. Evidence
 `docs/execution/evidence/VG-GPU-008.json`.
 VG-SOUND-001: software tone adapter plays a generated PCM burst and shuts
 down. Live HUD paints Adapter software / Tone 440 Hz and parks off WASD,

@@ -51,7 +51,11 @@ inline bool leaked_buffers_fail_review(int live_buffers) {
   return live_buffers != 1;
 }
 
+inline const char* owner_restore_label() { return "Restore"; }
 inline const char* owner_live_buffers_label() { return "Live buffers 1"; }
+inline bool recover_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
 
 // A restored buffer is not the isolated sample still. The L-bracket marks
 // that this pixels object survived recreate; gpu-sample has no mark.

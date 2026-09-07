@@ -4,7 +4,7 @@
   "planning_id": "VG-GPU-008",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "65b4823d6d6febbc7a344ecfeade0a7807c90129",
+  "base_sha": "96bf8d3a",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "gpu-recover",
@@ -21,17 +21,19 @@
     "restored buffer carries a survival mark distinct from gpu-sample",
     "live HUD names Live buffers 1",
     "failed recreate shows gpu-error:recreate and live_buffers=0",
-    "failure releases the previous buffer instead of crashing"
+    "failure releases the previous buffer instead of crashing",
+    "Restore stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Restore is the anti-pattern"
   ],
   "negative_control": {
-    "name": "minimize/restore leaking textures or crashing; leak as a passing restore",
+    "name": "minimize/restore leaking textures or crashing; leak as a passing restore; Restore covering WASD/objective/Tin village/Life",
     "observed_result": "REJECTED"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/gpu-recover-960x600.png",
-      "sha256": "d53fa09d126f85de2bfce94f82acfca4c03042aa8e31a81b850368274a30724f",
+      "sha256": "d1cd275e2c87211d9341f0a4c70f4b3f4c64def2526a0f4267517ba65035c2c2",
       "produced_by": "native/build/verdigris_client.exe --scenario gpu-recover"
     },
     {
@@ -51,6 +53,7 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Software sample recreate, not DXGI device-removed. VG-PERF-004 envelope stays a separate claim.",
-    "Restored quad is the bronze/stone checker plus an L-bracket survival mark; hash diverges from gpu-sample-quad.bmp."
+    "Owner strip paints Restore / Live buffers 1 and parks off WASD, the objective, Tin village, and Life. Leak cannot certify. Covering those combat surfaces cannot certify.",
+    "Quad BMP and report txt hashes unchanged. Restored quad is the bronze/stone checker plus an L-bracket survival mark. Not Owner Demo. Does not re-spec TASK-0108."
   ]
 }

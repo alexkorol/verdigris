@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Restore off WASD and Tin village (Cursor)
+
+- VG-GPU-008 / VG-UI-007: Restore / Live buffers 1 parks off WASD, the
+  objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Leak still rejected. Owner Demo journeys not
+  duplicated. Quad BMP and report txt not recaptured.
+- Scenario `gpu-recover` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
+
 ## 2026-09-06 — Adapter software off WASD and Tin village (Cursor)
 
 - VG-SOUND-001 / VG-UI-007: Adapter software / Tone 440 Hz parks off WASD,

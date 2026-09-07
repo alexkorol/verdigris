@@ -6682,8 +6682,12 @@ void paint_recover_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const int pane_w = 360 * s;
   const int pane_h = 72 * s;
-  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
-  const int top = 72 * s;
+  const HudRect parked =
+      park_review_strip(state, static_cast<int>(bounds.right),
+                        static_cast<int>(bounds.bottom), pane_w, pane_h);
+  const int left = parked.x;
+  const int top = parked.y;
+  state.hud_rect_trace.push_back({"recover-strip", parked});
   RECT pane{left, top, left + pane_w, top + pane_h};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
@@ -6692,7 +6696,7 @@ void paint_recover_review_strip(ClientState& state, HDC dc, const RECT& bounds,
   SetBkMode(dc, TRANSPARENT);
   HGDIOBJ old_font = SelectObject(dc, skin::font_small());
   SetTextColor(dc, skin::kVerdigris);
-  const char* title = "Restore";
+  const char* title = verdigris::gpu::owner_restore_label();
   TextOutA(dc, left + 12 * s, top + 8 * s, title, static_cast<int>(strlen(title)));
   SetTextColor(dc, skin::kInk);
   const char* live = verdigris::gpu::owner_live_buffers_label();
@@ -15289,6 +15293,31 @@ int scenario_gpu_recover() {
   for (const auto& item : capture.render_list)
     if (item.op == render::Op::Hud && item.label == "recover:live-1") live_hud = true;
   scenario_check(live_hud, "gpu-recover: live HUD names Live buffers 1");
+  {
+    auto trace_find = [](const ClientState& s,
+                         const char* label) -> const HudRect* {
+      for (const auto& entry : s.hud_rect_trace)
+        if (entry.first == label) return &entry.second;
+      return nullptr;
+    };
+    const HudRect* recover = trace_find(capture, "recover-strip");
+    scenario_check(recover != nullptr, "gpu-recover: Restore strip is traced");
+    const HudRect* ctrl = trace_find(capture, "controls");
+    const HudRect* objective = trace_find(capture, "objective");
+    const HudRect* route_card = trace_find(capture, "route-card");
+    const HudRect* life = trace_find(capture, "orb-life");
+    const bool covers =
+        (recover && ctrl && hud_rects_overlap(*recover, *ctrl)) ||
+        (recover && objective && hud_rects_overlap(*recover, *objective)) ||
+        (recover && route_card && hud_rects_overlap(*recover, *route_card)) ||
+        (recover && life && hud_rects_overlap(*recover, *life));
+    scenario_check(
+        verdigris::gpu::recover_strip_covers_hud_fails_review(true),
+        "gpu-recover: covering WASD, the objective, Tin village, or Life is the anti-pattern");
+    scenario_check(
+        !verdigris::gpu::recover_strip_covers_hud_fails_review(covers),
+        "gpu-recover: Restore stays off WASD, the objective, Tin village, and Life");
+  }
   const int restored_generation = gpu.generation;
   scenario_check(!gpu.recreate(verdigris::gpu::Backend::Software, 0, 0) &&
                      gpu.live_buffers == 0 && gpu.error_visible &&

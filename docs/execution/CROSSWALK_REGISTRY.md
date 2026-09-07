@@ -126,7 +126,7 @@ not implemented here.
 | VG-GPU-005 | G2 | new | grounding Y-sort stays off WASD/objective/Tin village/Life |
 | VG-GPU-006 | G3 | new | material-light Lantern pool stays off WASD/objective/Tin village/Life |
 | VG-GPU-007 | G2 | new | gpu-capture Pixel capture stays off WASD/objective/Tin village/Life |
-| VG-GPU-008 | G3 | new | gpu-recover |
+| VG-GPU-008 | G3 | new | gpu-recover Restore stays off WASD/objective/Tin village/Life |
 | VG-ART-001 | G1 | extend | visual-target Adult camera stays off WASD/objective/Tin village/Life; first-fight Jointed warden stays off WASD/objective/Tin village/Life; zoom-invariance Uniform pan stays off WASD/objective/Tin village/Life; move-and-camera Kit lock stays off WASD/objective/Tin village/Life |
 | VG-ART-002 | G2 | extend | bronze-stone family |
 | VG-ART-003 | G2 | extend | attack-poses Strike poses stays off WASD/objective/Tin village/Life; combat-juice Hit flash stays off WASD/objective/Tin village/Life; not TASK-0108 |
