@@ -99,3 +99,8 @@ when touching the historical reference.
 Work in coherent milestones, commit each green milestone, and update
 `docs/rebuild/HANDOFF.md` after each one. Never leave the only meaningful work
 uncommitted.
+
+When the user asks to ship, sync, or push, commit the requested work and push
+the current branch to its configured origin upstream. Explicit user
+authorization takes precedence over older no-push guidance. Verify the remote
+branch after pushing; do not force-push unless explicitly authorized.
