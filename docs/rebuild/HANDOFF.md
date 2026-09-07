@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Uniform pan off WASD and Tin village (Cursor)
+
+- VG-ART-001 / VG-UI-007: Uniform pan / Zoom lock parks off WASD, the
+  objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Free tile still rejected. Owner Demo journeys not
+  duplicated.
+- Scenario `zoom-invariance` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
 ## 2026-09-06 — Adult camera off WASD and Tin village (Cursor)
 
 - VG-ART-001 / VG-UI-007: Adult camera / Bronze palette parks off WASD,
