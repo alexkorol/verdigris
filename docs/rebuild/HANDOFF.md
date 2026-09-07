@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — War Cry weave off WASD and Tin village (Cursor)
+
+- VG-ART-006 / VG-UI-007: War Cry weave / Travel parks off WASD, the
+  objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Screen fill still rejected. TASK-0173 models stay
+  Kimi. Owner Demo journeys not duplicated.
+- Scenario `weave-vfx` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
 ## 2026-09-06 — Village kit off WASD and Tin village (Cursor)
 
 - VG-ART-004 / VG-UI-007: Village kit / Solid proxy parks off WASD, the

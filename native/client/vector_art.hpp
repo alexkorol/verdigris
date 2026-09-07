@@ -229,6 +229,7 @@ inline bool blob_weave_fails_review(bool cast_motes, bool travel_orbit,
 }
 
 inline const char* owner_war_cry_weave_label() { return "War Cry weave"; }
+inline bool weave_strip_covers_hud_fails_review(bool overlap) { return overlap; }
 
 inline void humanoid(HDC dc, int cx, int base_y, int height_px,
                      const Style& style, const Pose& pose, Held held) {

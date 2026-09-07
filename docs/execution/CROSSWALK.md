@@ -42,7 +42,7 @@ Cursor evidence notes.
 | VG-UI-007 | extend | TASK-0159 INTEGRATED, 0118 READY, 0207; `hud-pane-readability` at 960/1366/3440 + tree/character keep-out + `hud-scale-floor` + live window; TASK-0159 folder capture cannot certify; clipped C or Esc closes cannot certify; clipped I or Esc closes gear footer cannot certify; clipped DEF/LVL cannot certify; VG-UI-006 Owner Demo not duplicated |
 | VG-UI-008 | new | XInput tick path + glyphs (`pad-path`); not mouse emulation; Pad glyphs stays off WASD/objective/Tin village/Life |
 | VG-ART-001/002/004 | extend | TASK-0141 INTEGRATED — village kit + collision-proxy ops (`kit-chunk`); not artist-local collision; Adult camera / Jointed warden / Uniform pan / Kit lock / Village kit stay off WASD/objective/Tin village/Life |
-| VG-ART-003/006 | extend | TASK-0122 INTEGRATED; 0173/0174 READY; 0186/0187 BRIDGE_PREP — Cursor paints melee **poses** (VG-ART-003) and WarCry **weave labels** plus Phase A spawn/fade (VG-ART-006) without taking TASK-0173 models or re-speccing TASK-0108; Hit flash stays off WASD/objective/Tin village/Life |
+| VG-ART-003/006 | extend | TASK-0122 INTEGRATED; 0173/0174 READY; 0186/0187 BRIDGE_PREP — Cursor paints melee **poses** (VG-ART-003) and WarCry **weave labels** plus Phase A spawn/fade (VG-ART-006) without taking TASK-0173 models or re-speccing TASK-0108; Hit flash / War Cry weave stay off WASD/objective/Tin village/Life |
 | VG-ART-005 | extend | TASK-0182 AUTO_RELEASE, 0184; `held-item` world attachment + `loot-to-bank` pickup-to-equip hold; paper-doll seat alone cannot pass; World hold / Unarmed first stay off WASD, the objective, Tin village, and Life |
 | VG-ART-007/008 | extend | TASK-0206/0205/0207 — Owner Demo, do not duplicate |
 | VG-GPU-001 | new | isolated software quad (`gpu-sample`); not a D3D-only window |
@@ -153,8 +153,10 @@ the spawn capture. Scenario `kit-chunk`. Evidence
 `docs/execution/evidence/VG-ART-004.json`.
 VG-ART-006: WarCry family `vfx-weave:cast|travel|impact|cancel`; radius
 capped vs screen-fill; telegraph remains. Owner strip paints War Cry weave
-/ Travel. Screen fill cannot certify. Scenario `weave-vfx`. Phase A spawn
-beats: owner strip paints Spawn once / Fade ttl; re-spawn cannot certify.
+/ Travel and parks off WASD, the objective, Tin village, and Life.
+Covering those combat surfaces cannot certify. Screen fill cannot
+certify. Scenario `weave-vfx`. Phase A spawn beats: owner strip paints
+Spawn once / Fade ttl; re-spawn cannot certify.
 Scenario `animation-vfx-phase-a` pack capture in art-wave (TASK-0122 folder
 cannot certify). TASK-0173 models stay Kimi. Evidence
 `docs/execution/evidence/VG-ART-006.json`.

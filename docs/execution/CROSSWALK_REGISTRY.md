@@ -132,7 +132,7 @@ not implemented here.
 | VG-ART-003 | G2 | extend | attack-poses; combat-juice Hit flash stays off WASD/objective/Tin village/Life; not TASK-0108 |
 | VG-ART-004 | G2 | extend | kit-chunk Village kit stays off WASD/objective/Tin village/Life; hut, ruin, fountain, gate in spawn capture |
 | VG-ART-005 | G3 | extend | held-item world attachment; loot-to-bank unarmed first; paper-doll seat alone cannot pass; World hold stays off WASD/objective/Tin village/Life |
-| VG-ART-006 | G3 | extend | weave-vfx; animation-vfx-phase-a spawn once; not TASK-0108 |
+| VG-ART-006 | G3 | extend | weave-vfx War Cry weave stays off WASD/objective/Tin village/Life; animation-vfx-phase-a spawn once; not TASK-0108 |
 | VG-ART-007 | G3 | extend | Owner Demo — do not duplicate |
 | VG-ART-008 | G3 | extend | Owner Demo — do not duplicate |
 | VG-UI-001 | G1 | extend | pane-stack native Escape; Stack 2 stays between the two panes; covering either pane cannot certify; absent tree hides seats; invented origin cannot prove; WASD keep-out for tree and character; close hint stays in the sheet slot |
