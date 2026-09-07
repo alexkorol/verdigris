@@ -127,5 +127,8 @@ struct Sample {
 
 inline const char* owner_software_quad_label() { return "Software quad"; }
 inline const char* owner_no_d3d_label() { return "No D3D"; }
+inline bool gpu_sample_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
 
 }  // namespace verdigris::gpu

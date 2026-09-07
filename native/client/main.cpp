@@ -8210,8 +8210,12 @@ void paint_gpu_sample_review_strip(ClientState& state, HDC dc, const RECT& bound
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const int pane_w = 360 * s;
   const int pane_h = 72 * s;
-  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
-  const int top = 72 * s;
+  const HudRect parked =
+      park_review_strip(state, static_cast<int>(bounds.right),
+                        static_cast<int>(bounds.bottom), pane_w, pane_h);
+  const int left = parked.x;
+  const int top = parked.y;
+  state.hud_rect_trace.push_back({"gpu-sample-strip", parked});
   RECT pane{left, top, left + pane_w, top + pane_h};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
@@ -14319,6 +14323,31 @@ int scenario_gpu_sample() {
   scenario_check(software_quad && no_d3d,
                  "gpu-sample: live HUD names Software quad and No D3D");
   scenario_check(unknown, "gpu-sample: live HUD rejects unknown GPU");
+  {
+    auto trace_find = [](const ClientState& s,
+                         const char* label) -> const HudRect* {
+      for (const auto& entry : s.hud_rect_trace)
+        if (entry.first == label) return &entry.second;
+      return nullptr;
+    };
+    const HudRect* strip = trace_find(hud, "gpu-sample-strip");
+    scenario_check(strip != nullptr, "gpu-sample: Software quad strip is traced");
+    const HudRect* ctrl = trace_find(hud, "controls");
+    const HudRect* objective = trace_find(hud, "objective");
+    const HudRect* route = trace_find(hud, "route-card");
+    const HudRect* life = trace_find(hud, "orb-life");
+    const bool covers =
+        (strip && ctrl && hud_rects_overlap(*strip, *ctrl)) ||
+        (strip && objective && hud_rects_overlap(*strip, *objective)) ||
+        (strip && route && hud_rects_overlap(*strip, *route)) ||
+        (strip && life && hud_rects_overlap(*strip, *life));
+    scenario_check(
+        verdigris::gpu::gpu_sample_strip_covers_hud_fails_review(true),
+        "gpu-sample: covering WASD, the objective, Tin village, or Life is the anti-pattern");
+    scenario_check(
+        !verdigris::gpu::gpu_sample_strip_covers_hud_fails_review(covers),
+        "gpu-sample: Software quad stays off WASD, the objective, Tin village, and Life");
+  }
   return scenario_failures;
 }
 

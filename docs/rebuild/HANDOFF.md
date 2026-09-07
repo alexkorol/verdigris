@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Software quad off WASD and Tin village (Cursor)
+
+- VG-GPU-001 / VG-UI-007: Software quad / No D3D parks off WASD, the
+  objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Unknown GPU still rejected. Owner Demo journeys not
+  duplicated.
+- Scenario `gpu-sample` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
+
 ## 2026-09-06 — Zone loop off WASD and Tin village (Cursor)
 
 - VG-SOUND-005 / VG-UI-007: Zone loop / Loop Tin village wind parks off

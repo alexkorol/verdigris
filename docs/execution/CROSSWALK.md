@@ -45,7 +45,7 @@ Cursor evidence notes.
 | VG-ART-003/006 | extend | TASK-0122 INTEGRATED; 0173/0174 READY; 0186/0187 BRIDGE_PREP — Cursor paints melee **poses** (VG-ART-003) and WarCry **weave labels** plus Phase A spawn/fade (VG-ART-006) without taking TASK-0173 models or re-speccing TASK-0108; Strike poses / Hit flash / War Cry weave stay off WASD/objective/Tin village/Life |
 | VG-ART-005 | extend | TASK-0182 AUTO_RELEASE, 0184; `held-item` world attachment + `loot-to-bank` pickup-to-equip hold; paper-doll seat alone cannot pass; World hold / Unarmed first stay off WASD, the objective, Tin village, and Life |
 | VG-ART-007/008 | extend | TASK-0206/0205/0207 — Owner Demo, do not duplicate |
-| VG-GPU-001 | new | isolated software quad (`gpu-sample`); not a D3D-only window |
+| VG-GPU-001 | new | isolated software quad (`gpu-sample`); not a D3D-only window; Software quad stays off WASD/objective/Tin village/Life |
 | VG-GPU-002 | new | render-list → packets (`gpu-packets`); handles cannot snapshot |
 | VG-GPU-003 | new | versioned software bindings (`shader-bindings`); no runtime .hlsl path |
 | VG-GPU-004 | new | session-connected packet present (`gpu-reference`); not a disconnected demo |
@@ -176,8 +176,10 @@ voice. Owner strip paints Theme Combat / Music none. Leftover loop cannot
 certify. Scenario `music-phase`. Device mute still silences waveOut.
 Evidence `docs/execution/evidence/VG-SOUND-008.json`.
 VG-GPU-001: isolated software backend (64×64 textured quad + shutdown).
-Owner strip paints Software quad / No D3D. Unknown GPU cannot certify.
-Not a Windows-only D3D proof. Scenario `gpu-sample`. Evidence
+Owner strip paints Software quad / No D3D and parks off WASD, the
+objective, Tin village, and Life. Covering those combat surfaces cannot
+certify. Unknown GPU cannot certify. Not a Windows-only D3D proof.
+Scenario `gpu-sample`. Evidence
 `docs/execution/evidence/VG-GPU-001.json`.
 VG-GPU-002: Telegraph draw class copied to handle-free packets. Owner
 strip paints Handle-free / Telegraph class. Poisoned `backend_handle`
