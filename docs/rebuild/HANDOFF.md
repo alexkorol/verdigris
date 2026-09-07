@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Base Gear off the sheet and combat HUD (Cursor)
+
+- VG-UI-004 / VG-UI-007: the Base Gear review strip parks in the world
+  lane right of the C-key sheet. Covering First Scion, WASD, the
+  objective, or Life cannot certify. Expanded Conditional-once, compact
+  Sources Base | Gear, and dormant ATK exclusion stay unchanged. Core
+  STAT algebra stays Kimi.
+- Scenarios `stat-explain` / `pack-drag` / `equipment` PASS. Capture
+  viewed. Not Owner Demo. Not TASK-0108.
+
 ## 2026-09-06 — Expanded sheet paints Conditional once (Cursor)
 
 - VG-UI-004 / VG-UI-001 / VG-UI-007: the expanded C-key sheet paints

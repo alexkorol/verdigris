@@ -7765,9 +7765,15 @@ void paint_pane_focus_review_strip(ClientState& state, HDC dc, const RECT& bound
 HudRect park_review_strip(const ClientState& state, int width, int height,
                           int pane_w, int pane_h) {
   const HudRect map = minimap_rect(height);
-  const HudRect gear = gear_pane_rect(width, height);
+  HudRect gear{};
+  if (state.gear_overlay) gear = gear_pane_rect(width, height);
+  HudRect character{};
+  if (state.character_pane) character = character_pane_rect(width, height, 0);
   int left = map.x;
   int top = map.y + map.h + kTopHudGap;
+  // The C-key sheet owns the minimap-below slot. Covering First Scion cannot
+  // certify a review strip; start in the world lane right of the sheet.
+  if (character.w > 0) left = character.x + character.w + kTopHudGap;
   HudRect strip{left, top, pane_w, pane_h};
   const char* keep[] = {"identity",         "objective",
                         "controls",         "controls-second",
@@ -7786,6 +7792,11 @@ HudRect park_review_strip(const ClientState& state, int width, int height,
       strip.y = top;
       moved = true;
     }
+    if (character.w > 0 && hud_rects_overlap(strip, character)) {
+      left = character.x + character.w + kTopHudGap;
+      strip.x = left;
+      moved = true;
+    }
     if (gear.w > 0 && hud_rects_overlap(strip, gear)) {
       left = std::max(8, gear.x - pane_w - kTopHudGap);
       strip.x = left;
@@ -7793,6 +7804,8 @@ HudRect park_review_strip(const ClientState& state, int width, int height,
     }
     if (!moved) break;
   }
+  if (strip.x + strip.w > width - 8)
+    strip.x = std::max(8, width - strip.w - 8);
   if (strip.y + strip.h > height - 8) strip.y = std::max(8, height - strip.h - 8);
   return strip;
 }
@@ -8045,8 +8058,12 @@ void paint_stat_explain_review_strip(ClientState& state, HDC dc, const RECT& bou
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const int pane_w = 360 * s;
   const int pane_h = 72 * s;
-  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
-  const int top = 72 * s;
+  const HudRect parked =
+      park_review_strip(state, static_cast<int>(bounds.right),
+                        static_cast<int>(bounds.bottom), pane_w, pane_h);
+  const int left = parked.x;
+  const int top = parked.y;
+  state.hud_rect_trace.push_back({"stat-explain-strip", parked});
   RECT pane{left, top, left + pane_w, top + pane_h};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
@@ -16801,6 +16818,34 @@ int scenario_stat_explain() {
   scenario_check(base_gear && cond_off,
                  "stat-explain: live HUD names Base Gear and Cond off");
   scenario_check(dormant_atk, "stat-explain: live HUD rejects dormant ATK");
+  {
+    auto trace_find = [](const ClientState& s,
+                         const char* label) -> const HudRect* {
+      for (const auto& entry : s.hud_rect_trace)
+        if (entry.first == label) return &entry.second;
+      return nullptr;
+    };
+    const HudRect* strip = trace_find(state, "stat-explain-strip");
+    const HudRect* sheet = trace_find(state, "character-pane-frame");
+    const HudRect* ctrl = trace_find(state, "controls");
+    const HudRect* objective = trace_find(state, "objective");
+    const HudRect* life = trace_find(state, "orb-life");
+    const bool covers_sheet =
+        strip && sheet && hud_rects_overlap(*strip, *sheet);
+    const bool covers_controls =
+        strip && ctrl && hud_rects_overlap(*strip, *ctrl);
+    const bool covers_objective =
+        strip && objective && hud_rects_overlap(*strip, *objective);
+    const bool covers_life =
+        strip && life && hud_rects_overlap(*strip, *life);
+    scenario_check(
+        verdigris::client::ui::review_strip_covers_hud_fails_review(true),
+        "stat-explain: covering the sheet or combat HUD with Base Gear is the anti-pattern");
+    scenario_check(
+        !verdigris::client::ui::review_strip_covers_hud_fails_review(
+            covers_sheet || covers_controls || covers_objective || covers_life),
+        "stat-explain: Base Gear stays off the sheet, WASD, objective, and Life");
+  }
   return scenario_failures;
 }
 
