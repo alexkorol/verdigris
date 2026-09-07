@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-001",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "9c98c8c16e7a58b571612a7db03f3dd407e2d4e9",
+  "base_sha": "bbe15864",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "visual-target",
@@ -12,10 +12,7 @@
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario visual-target", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario first-fight", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario zoom-invariance", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario move-and-camera", "exit_code": 0}
+    {"run": "native/build/verdigris_client.exe --scenario first-fight", "exit_code": 0}
   ],
   "assertions": [
     "in-game HUD names camera top-down, adult proportion, bronze-stone palette, ink-on-panel contrast",
@@ -30,13 +27,15 @@
     "town wardens use jointed legs, a snout, and filled claws; a crate foe cannot pass",
     "live HUD names Adult camera and Bronze palette",
     "live HUD names Jointed warden and Snout claws",
+    "Jointed warden stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Jointed warden is the anti-pattern",
     "overlapping scenery and terrain tiles shift by one uniform delta under pan at min/default/max zoom",
     "live HUD names Uniform pan and Zoom lock",
     "scenery and terrain tiles share one pan delta at default zoom",
     "live HUD names Kit lock and Same delta"
   ],
   "negative_control": {
-    "name": "external concept-art HUD token, a loader chip as the sheet, a chibi head, a crate-shaped foe, a free tile that slides independently under pan, or a sliding kit under camera move",
+    "name": "external concept-art HUD token, a loader chip as the sheet, a chibi head, a crate-shaped foe, Jointed warden covering WASD/objective/Tin village/Life, a free tile that slides independently under pan, or a sliding kit under camera move",
     "observed_result": "REJECTED"
   },
   "artifacts": [
@@ -49,7 +48,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/first-fight-960x600.png",
-      "sha256": "fbfb2ff9a44afcd7b7d52f614a7476667ec8de63545a32d987dd8344be1c77c9",
+      "sha256": "deffc52e77010af4b5d12acc63a5af2a6d80faeb677fcbfc869f56c22737d4dd",
       "produced_by": "native/build/verdigris_client.exe --scenario first-fight"
     },
     {
@@ -70,11 +69,13 @@
   "limitations": [
     "Composition axes remain HUD labels on the live expedition, not a separate art bible PNG.",
     "Owner strip paints Adult camera / Bronze palette. Chibi head cannot certify.",
-    "first-fight owner strip paints Jointed warden / Snout claws. Crate foe cannot certify.",
+    "first-fight owner strip paints Jointed warden / Snout claws and parks off WASD, the objective, Tin village, and Life. Crate foe cannot certify. Covering those combat surfaces cannot certify.",
     "zoom-invariance owner strip paints Uniform pan / Zoom lock. A free tile cannot certify the camera contract.",
     "move-and-camera owner strip paints Kit lock / Same delta. A sliding kit cannot certify the pan contract.",
+    "visual-target, zoom-invariance, and move-and-camera captures are prior evidence; not recaptured in this packet.",
     "Mute chip stays owner-facing. Loader jargon lives on F3.",
     "Does not re-spec TASK-0108 or Owner Demo (VG-ART-007 mixed-pack review not this packet).",
-    "32bpp scenario DIBs still need dc_color; live CreateCompatibleBitmap path does not."
+    "32bpp scenario DIBs still need dc_color; live CreateCompatibleBitmap path does not.",
+    "No TASK numbers minted."
   ]
 }

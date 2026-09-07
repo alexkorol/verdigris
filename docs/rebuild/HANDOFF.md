@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Jointed warden off WASD and Tin village (Cursor)
+
+- VG-ART-001 / VG-UI-007: Jointed warden / Snout claws parks off WASD,
+  the objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Crate foe still rejected. Owner Demo journeys not
+  duplicated.
+- Scenario `first-fight` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
 ## 2026-09-06 — Risk wardens off WASD and Tin village (Cursor)
 
 - VG-UI-005 / VG-UI-007: Risk wardens parks off WASD, the objective, the

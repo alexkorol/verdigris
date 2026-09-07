@@ -41,7 +41,7 @@ Cursor evidence notes.
 | VG-UI-006 | extend | TASK-0145/0177 + 0190/0197/0201 — **do not duplicate** |
 | VG-UI-007 | extend | TASK-0159 INTEGRATED, 0118 READY, 0207; `hud-pane-readability` at 960/1366/3440 + tree/character keep-out + `hud-scale-floor` + live window; TASK-0159 folder capture cannot certify; clipped C or Esc closes cannot certify; clipped I or Esc closes gear footer cannot certify; clipped DEF/LVL cannot certify; VG-UI-006 Owner Demo not duplicated |
 | VG-UI-008 | new | XInput tick path + glyphs (`pad-path`); not mouse emulation |
-| VG-ART-001/002/004 | extend | TASK-0141 INTEGRATED — village kit + collision-proxy ops (`kit-chunk`); not artist-local collision |
+| VG-ART-001/002/004 | extend | TASK-0141 INTEGRATED — village kit + collision-proxy ops (`kit-chunk`); not artist-local collision; Jointed warden stays off WASD/objective/Tin village/Life |
 | VG-ART-003/006 | extend | TASK-0122 INTEGRATED; 0173/0174 READY; 0186/0187 BRIDGE_PREP — Cursor paints melee **poses** (VG-ART-003) and WarCry **weave labels** plus Phase A spawn/fade (VG-ART-006) without taking TASK-0173 models or re-speccing TASK-0108; Hit flash stays off WASD/objective/Tin village/Life |
 | VG-ART-005 | extend | TASK-0182 AUTO_RELEASE, 0184; `held-item` world attachment + `loot-to-bank` pickup-to-equip hold; paper-doll seat alone cannot pass; World hold / Unarmed first stay off WASD, the objective, Tin village, and Life |
 | VG-ART-007/008 | extend | TASK-0206/0205/0207 — Owner Demo, do not duplicate |
@@ -179,15 +179,16 @@ fails snapshot. Scenario `gpu-packets`. Evidence
 `docs/execution/evidence/VG-GPU-002.json`.
 VG-ART-001: in-game HUD names camera/proportion/palette/contrast. Owner
 strip paints Adult camera / Bronze palette. `first-fight` owner strip
-paints Jointed warden / Snout claws. `zoom-invariance` owner strip
-paints Uniform pan / Zoom lock. `move-and-camera` owner strip paints
-Kit lock / Same delta. An external concept-art token
-cannot substitute, a skeleton `art: PNG billboards loaded` chip cannot
-count as the composition sheet, a chibi (1/3) head cannot pass as
-adult, a crate foe cannot certify, a free tile cannot certify the
-camera contract, and a sliding kit cannot certify pan. Scenarios
-`visual-target` / `first-fight` / `zoom-invariance` / `move-and-camera`.
-Evidence `docs/execution/evidence/VG-ART-001.json`.
+paints Jointed warden / Snout claws and parks off WASD, the objective,
+Tin village, and Life. Covering those combat surfaces cannot certify.
+`zoom-invariance` owner strip paints Uniform pan / Zoom lock.
+`move-and-camera` owner strip paints Kit lock / Same delta. An external
+concept-art token cannot substitute, a skeleton `art: PNG billboards
+loaded` chip cannot count as the composition sheet, a chibi (1/3) head
+cannot pass as adult, a crate foe cannot certify, a free tile cannot
+certify the camera contract, and a sliding kit cannot certify pan.
+Scenarios `visual-target` / `first-fight` / `zoom-invariance` /
+`move-and-camera`. Evidence `docs/execution/evidence/VG-ART-001.json`.
 VG-ART-003: windup/active/recovery/cancel silhouettes on Strike poses.
 Idle still cannot certify the family. Frame count alone cannot pass.
 `combat-juice` owner strip paints Hit flash / Number fade and parks off

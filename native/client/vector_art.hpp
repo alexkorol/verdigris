@@ -468,6 +468,9 @@ inline bool crate_foe_fails_review(bool jointed_legs, bool snout,
 
 inline const char* owner_jointed_warden_label() { return "Jointed warden"; }
 inline const char* owner_snout_claws_label() { return "Snout claws"; }
+inline bool first_fight_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
 inline const char* owner_hit_flash_label() { return "Hit flash"; }
 inline const char* owner_number_fade_label() { return "Number fade"; }
 inline bool juice_strip_covers_hud_fails_review(bool overlap) { return overlap; }
