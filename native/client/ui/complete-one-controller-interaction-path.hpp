@@ -21,5 +21,6 @@ struct PadReport {
 
 inline const char* owner_pad_glyphs_label() { return "Pad glyphs"; }
 inline const char* owner_a_strike_label() { return "A strike"; }
+inline bool pad_strip_covers_hud_fails_review(bool overlap) { return overlap; }
 
 }  // namespace verdigris::client

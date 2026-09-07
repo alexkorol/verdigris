@@ -4,7 +4,7 @@
   "planning_id": "VG-UI-008",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "10fcea78ce5b5e24fd21198754c13c300459c21e",
+  "base_sha": "1b1295ed",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "pad-path",
@@ -19,23 +19,26 @@
     "A is strike, not a synthetic mouse click",
     "Y focuses the gear inventory",
     "hotplug in/out is recorded",
-    "live HUD names Pad glyphs and A strike"
+    "live HUD names Pad glyphs and A strike",
+    "Pad glyphs stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Pad glyphs is the anti-pattern"
   ],
   "negative_control": {
-    "name": "mouse emulation minting a connected pad",
+    "name": "mouse emulation minting a connected pad, or Pad glyphs covering WASD/objective/Tin village/Life",
     "observed_result": "REJECTED"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/pad-path-960x600.png",
-      "sha256": "f05187685cb159ac8a681b42f027bad3396b4d36a5404e07797f9cee097cff0e",
+      "sha256": "dea9124bfe693a4881cb50688b96bc990ff978bea51bf997c814287804955369",
       "produced_by": "native/build/verdigris_client.exe --scenario pad-path"
     }
   ],
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Injected XInput on the fixed tick. Owner strip paints Pad glyphs / A strike. Mouse pad cannot certify. Capture shows the gear pane after Y."
+    "Injected XInput on the fixed tick. Owner strip paints Pad glyphs / A strike and parks off WASD, the objective, Tin village, and Life. Mouse pad cannot certify. Covering those combat surfaces cannot certify. Capture shows the gear pane after Y.",
+    "No TASK numbers minted."
   ]
 }

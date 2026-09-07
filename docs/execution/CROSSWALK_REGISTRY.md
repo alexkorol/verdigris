@@ -142,7 +142,7 @@ not implemented here.
 | VG-UI-005 | G3 | extend | route-map zoom/opacity; off-snapshot blip cannot pass; Risk wardens stays off WASD/objective/Tin village/Life; Owner Demo journeys not reimplemented |
 | VG-UI-006 | G2 | extend | Owner Demo — do not duplicate |
 | VG-UI-007 | G3 | extend | hud-pane-readability 960/1366/3440 + tree/character keep-out; sheet below map above Life; close hint pinned; gear footer pinned; DEF/LVL inside pane; not VG-UI-006; TASK-0159 folder cannot certify |
-| VG-UI-008 | G4 | new | pad-path XInput on tick |
+| VG-UI-008 | G4 | new | pad-path XInput on tick; Pad glyphs stays off WASD/objective/Tin village/Life |
 | VG-SOUND-001 | G1 | new | sound-adapter |
 | VG-SOUND-002 | G2 | new | legal-sounds |
 | VG-SOUND-003 | G2 | extend | combat-audio event-id dedup |

@@ -40,7 +40,7 @@ Cursor evidence notes.
 | VG-UI-005 | extend | TASK-0076 INTEGRATED; 0178/0192/0203 Owner Demo; `route-map` zoom/opacity cannot reveal off-snapshot targets; Risk wardens stays off WASD/objective/Tin village/Life |
 | VG-UI-006 | extend | TASK-0145/0177 + 0190/0197/0201 — **do not duplicate** |
 | VG-UI-007 | extend | TASK-0159 INTEGRATED, 0118 READY, 0207; `hud-pane-readability` at 960/1366/3440 + tree/character keep-out + `hud-scale-floor` + live window; TASK-0159 folder capture cannot certify; clipped C or Esc closes cannot certify; clipped I or Esc closes gear footer cannot certify; clipped DEF/LVL cannot certify; VG-UI-006 Owner Demo not duplicated |
-| VG-UI-008 | new | XInput tick path + glyphs (`pad-path`); not mouse emulation |
+| VG-UI-008 | new | XInput tick path + glyphs (`pad-path`); not mouse emulation; Pad glyphs stays off WASD/objective/Tin village/Life |
 | VG-ART-001/002/004 | extend | TASK-0141 INTEGRATED — village kit + collision-proxy ops (`kit-chunk`); not artist-local collision; Adult camera / Jointed warden / Uniform pan / Kit lock stay off WASD/objective/Tin village/Life |
 | VG-ART-003/006 | extend | TASK-0122 INTEGRATED; 0173/0174 READY; 0186/0187 BRIDGE_PREP — Cursor paints melee **poses** (VG-ART-003) and WarCry **weave labels** plus Phase A spawn/fade (VG-ART-006) without taking TASK-0173 models or re-speccing TASK-0108; Hit flash stays off WASD/objective/Tin village/Life |
 | VG-ART-005 | extend | TASK-0182 AUTO_RELEASE, 0184; `held-item` world attachment + `loot-to-bank` pickup-to-equip hold; paper-doll seat alone cannot pass; World hold / Unarmed first stay off WASD, the objective, Tin village, and Life |
@@ -158,8 +158,10 @@ cannot certify). TASK-0173 models stay Kimi. Evidence
 `docs/execution/evidence/VG-ART-006.json`.
 VG-UI-008: XInput sampled on the fixed tick; A strike / B dash / X take /
 Y gear; hotplug in/out; mouse position cannot mint `pad:connected`.
-Owner strip paints Pad glyphs / A strike. Mouse pad cannot certify.
-Scenario `pad-path`. Evidence `docs/execution/evidence/VG-UI-008.json`.
+Owner strip paints Pad glyphs / A strike and parks off WASD, the
+objective, Tin village, and Life. Covering those combat surfaces cannot
+certify. Mouse pad cannot certify. Scenario `pad-path`. Evidence
+`docs/execution/evidence/VG-UI-008.json`.
 VG-SOUND-002: CC0 provenance table for combat cues including swing windup
 `attack-anticipate`. Live HUD paints Family combat / Anticipate CC0.
 `unlicensed-preview` cannot ship. Scenario `legal-sounds`.
