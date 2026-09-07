@@ -131,7 +131,7 @@ not implemented here.
 | VG-ART-002 | G2 | extend | bronze-stone family |
 | VG-ART-003 | G2 | extend | attack-poses; not TASK-0108 |
 | VG-ART-004 | G2 | extend | kit-chunk: hut, ruin, fountain, gate in spawn capture |
-| VG-ART-005 | G3 | extend | held-item world attachment; loot-to-bank unarmed first; paper-doll seat alone cannot pass |
+| VG-ART-005 | G3 | extend | held-item world attachment; loot-to-bank unarmed first; paper-doll seat alone cannot pass; World hold stays off WASD/objective/Tin village/Life |
 | VG-ART-006 | G3 | extend | weave-vfx; animation-vfx-phase-a spawn once; not TASK-0108 |
 | VG-ART-007 | G3 | extend | Owner Demo — do not duplicate |
 | VG-ART-008 | G3 | extend | Owner Demo — do not duplicate |

@@ -6865,6 +6865,8 @@ void paint_combat_beats_review_strip(ClientState& state, HDC dc, const RECT& bou
   SelectObject(dc, old_font);
 }
 
+HudRect park_review_strip(const ClientState& state, int width, int height,
+                          int pane_w, int pane_h);
 HudRect park_diptych_review_strip(const ClientState& state, int width, int height,
                                   int pane_h);
 
@@ -7240,8 +7242,12 @@ void paint_held_item_review_strip(ClientState& state, HDC dc, const RECT& bounds
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const int pane_w = 360 * s;
   const int pane_h = 72 * s;
-  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
-  const int top = 72 * s;
+  const HudRect parked =
+      park_review_strip(state, static_cast<int>(bounds.right),
+                        static_cast<int>(bounds.bottom), pane_w, pane_h);
+  const int left = parked.x;
+  const int top = parked.y;
+  state.hud_rect_trace.push_back({"held-strip", parked});
   RECT pane{left, top, left + pane_w, top + pane_h};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
@@ -7793,11 +7799,11 @@ HudRect park_review_strip(const ClientState& state, int width, int height,
   // certify a review strip; start in the world lane right of the sheet.
   if (character.w > 0) left = character.x + character.w + kTopHudGap;
   HudRect strip{left, top, pane_w, pane_h};
-  const char* keep[] = {"identity",         "objective",
-                        "controls",         "controls-second",
-                        "pane-title",       "pane-stats",
+  const char* keep[] = {"identity",          "objective",
+                        "controls",          "controls-second",
+                        "pane-title",        "pane-stats",
                         "pane-stats-combat", "pane-footer",
-                        "compare-plate"};
+                        "compare-plate",     "route-card"};
   for (int pass = 0; pass < 8; ++pass) {
     bool moved = false;
     for (const auto& entry : state.hud_rect_trace) {
@@ -8468,8 +8474,12 @@ void paint_loot_to_bank_review_strip(ClientState& state, HDC dc, const RECT& bou
   const int s = hud_scale(static_cast<int>(bounds.bottom));
   const int pane_w = 360 * s;
   const int pane_h = 72 * s;
-  const int left = (static_cast<int>(bounds.right) - pane_w) / 2;
-  const int top = 72 * s;
+  const HudRect parked =
+      park_review_strip(state, static_cast<int>(bounds.right),
+                        static_cast<int>(bounds.bottom), pane_w, pane_h);
+  const int left = parked.x;
+  const int top = parked.y;
+  state.hud_rect_trace.push_back({"loot-strip", parked});
   RECT pane{left, top, left + pane_w, top + pane_h};
   if (!draw_framekit_nine(state.billboards, dc, state.billboards.fk_panel, pane))
     skin::panel(dc, pane, skin::kVerdigris, 235, 8.0f);
@@ -11480,6 +11490,30 @@ int scenario_loot_to_bank() {
     scenario_check(unarmed_first && world_hold,
                    "loot-to-bank: live HUD names Unarmed first and World hold");
     scenario_check(paper_doll, "loot-to-bank: live HUD rejects paper doll");
+    {
+      auto trace_find = [](const ClientState& s,
+                           const char* label) -> const HudRect* {
+        for (const auto& entry : s.hud_rect_trace)
+          if (entry.first == label) return &entry.second;
+        return nullptr;
+      };
+      const HudRect* strip = trace_find(state, "loot-strip");
+      const HudRect* ctrl = trace_find(state, "controls");
+      const HudRect* objective = trace_find(state, "objective");
+      const HudRect* route = trace_find(state, "route-card");
+      const HudRect* life = trace_find(state, "orb-life");
+      const bool covers =
+          (strip && ctrl && hud_rects_overlap(*strip, *ctrl)) ||
+          (strip && objective && hud_rects_overlap(*strip, *objective)) ||
+          (strip && route && hud_rects_overlap(*strip, *route)) ||
+          (strip && life && hud_rects_overlap(*strip, *life));
+      scenario_check(
+          verdigris::client::art::hold_strip_covers_hud_fails_review(true),
+          "loot-to-bank: covering WASD, the objective, Tin village, or Life is the anti-pattern");
+      scenario_check(
+          !verdigris::client::art::hold_strip_covers_hud_fails_review(covers),
+          "loot-to-bank: Unarmed first stays off WASD, the objective, Tin village, and Life");
+    }
     state.character_pane = true;
     scenario_present(state);
     {
@@ -17021,6 +17055,30 @@ int scenario_held_item() {
   scenario_check(world_strip && ack_strip,
                  "held-item: live HUD names World hold and Ack equip");
   scenario_check(doll_rejected, "held-item: live HUD rejects paper doll");
+  {
+    auto trace_find = [](const ClientState& s,
+                         const char* label) -> const HudRect* {
+      for (const auto& entry : s.hud_rect_trace)
+        if (entry.first == label) return &entry.second;
+      return nullptr;
+    };
+    const HudRect* strip = trace_find(state, "held-strip");
+    const HudRect* ctrl = trace_find(state, "controls");
+    const HudRect* objective = trace_find(state, "objective");
+    const HudRect* route = trace_find(state, "route-card");
+    const HudRect* life = trace_find(state, "orb-life");
+    const bool covers =
+        (strip && ctrl && hud_rects_overlap(*strip, *ctrl)) ||
+        (strip && objective && hud_rects_overlap(*strip, *objective)) ||
+        (strip && route && hud_rects_overlap(*strip, *route)) ||
+        (strip && life && hud_rects_overlap(*strip, *life));
+    scenario_check(
+        verdigris::client::art::hold_strip_covers_hud_fails_review(true),
+        "held-item: covering WASD, the objective, Tin village, or Life is the anti-pattern");
+    scenario_check(
+        !verdigris::client::art::hold_strip_covers_hud_fails_review(covers),
+        "held-item: World hold stays off WASD, the objective, Tin village, and Life");
+  }
   return scenario_failures;
 }
 

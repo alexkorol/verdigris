@@ -21,4 +21,6 @@ inline const char* owner_world_hold_label() { return "World hold"; }
 inline const char* owner_ack_equip_label() { return "Ack equip"; }
 inline const char* owner_unarmed_first_label() { return "Unarmed first"; }
 
+inline bool hold_strip_covers_hud_fails_review(bool overlap) { return overlap; }
+
 }  // namespace verdigris::client::art

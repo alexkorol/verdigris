@@ -1,5 +1,14 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — World hold off WASD and Tin village (Cursor)
+
+- VG-ART-005 / VG-UI-007: World hold and Unarmed first park below the
+  minimap, off WASD, the objective, Tin village, and Life. Covering those
+  combat surfaces cannot certify. Paper-doll seat alone still cannot
+  pass. ITEM algebra stays Kimi.
+- Scenarios `held-item` / `loot-to-bank` PASS. Captures viewed. Not Owner
+  Demo. Not TASK-0108.
+
 ## 2026-09-06 — Stack 2 between the two panes (Cursor)
 
 - VG-UI-001 / VG-UI-007: Stack 2 is a tall card in the world lane between
