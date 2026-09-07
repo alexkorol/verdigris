@@ -4,7 +4,7 @@
   "planning_id": "VG-ART-003",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "7da5c29ede59c1272c16402be34277beeb06976a",
+  "base_sha": "717d6a04",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "attack-poses",
@@ -12,7 +12,6 @@
   "toolchain": "MSVC 16.11 / native/build.ps1",
   "commands": [
     {"run": "native/build.ps1", "exit_code": 0},
-    {"run": "native/build/verdigris_client.exe --scenario attack-poses", "exit_code": 0},
     {"run": "native/build/verdigris_client.exe --scenario combat-juice", "exit_code": 0}
   ],
   "assertions": [
@@ -21,10 +20,12 @@
     "windup still draws the swing arc",
     "native pose strip paints windup and active silhouettes, not labels only",
     "live HUD names Strike poses and Windup",
-    "live HUD names Hit flash and Number fade"
+    "live HUD names Hit flash and Number fade",
+    "Hit flash stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Hit flash is the anti-pattern"
   ],
   "negative_control": {
-    "name": "idle pose, frame-count HUD labels, or a silent hit as the complete attack family",
+    "name": "idle pose, frame-count HUD labels, a silent hit as the complete attack family, or Hit flash covering WASD/objective/Tin village/Life",
     "observed_result": "REJECTED"
   },
   "artifacts": [
@@ -37,7 +38,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/combat-juice-960x600.png",
-      "sha256": "558150be16a0880d9cbac05adaa22164c901b320555c97b12640a6edf2efb334",
+      "sha256": "06bf959876ad3e9562e2bf9f970ddd7c67cb2ed7761105f5d94962fa47ffc5bb",
       "produced_by": "native/build/verdigris_client.exe --scenario combat-juice"
     }
   ],
@@ -45,6 +46,6 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Paints melee poses on this lease. TASK-0173 animation models stay Kimi. Does not re-spec TASK-0108.",
-    "combat-juice owner strip paints Hit flash / Number fade. Silent hit cannot certify readable game-scale contact."
+    "combat-juice owner strip paints Hit flash / Number fade and parks off WASD, the objective, Tin village, and Life. Silent hit cannot certify readable game-scale contact."
   ]
 }

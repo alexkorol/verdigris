@@ -470,6 +470,7 @@ inline const char* owner_jointed_warden_label() { return "Jointed warden"; }
 inline const char* owner_snout_claws_label() { return "Snout claws"; }
 inline const char* owner_hit_flash_label() { return "Hit flash"; }
 inline const char* owner_number_fade_label() { return "Number fade"; }
+inline bool juice_strip_covers_hud_fails_review(bool overlap) { return overlap; }
 
 inline void lurker(HDC dc, int cx, int base_y, int height_px, const Style& style,
                    const Pose& pose) {

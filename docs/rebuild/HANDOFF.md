@@ -1,5 +1,13 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Hit flash off WASD and Tin village (Cursor)
+
+- VG-ART-003 / VG-UI-007: Hit flash / Number fade parks off WASD, the
+  objective, Tin village, and Life. Covering those combat surfaces cannot
+  certify. Silent hit still cannot certify. TASK-0173 models stay Kimi.
+- Scenario `combat-juice` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
 ## 2026-09-06 — World hold off WASD and Tin village (Cursor)
 
 - VG-ART-005 / VG-UI-007: World hold and Unarmed first park below the

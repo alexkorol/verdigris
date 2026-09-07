@@ -129,7 +129,7 @@ not implemented here.
 | VG-GPU-008 | G3 | new | gpu-recover |
 | VG-ART-001 | G1 | extend | visual-target in-game sheet; first-fight jointed warden; zoom-invariance uniform pan; move-and-camera kit lock |
 | VG-ART-002 | G2 | extend | bronze-stone family |
-| VG-ART-003 | G2 | extend | attack-poses; not TASK-0108 |
+| VG-ART-003 | G2 | extend | attack-poses; combat-juice Hit flash stays off WASD/objective/Tin village/Life; not TASK-0108 |
 | VG-ART-004 | G2 | extend | kit-chunk: hut, ruin, fountain, gate in spawn capture |
 | VG-ART-005 | G3 | extend | held-item world attachment; loot-to-bank unarmed first; paper-doll seat alone cannot pass; World hold stays off WASD/objective/Tin village/Life |
 | VG-ART-006 | G3 | extend | weave-vfx; animation-vfx-phase-a spawn once; not TASK-0108 |
