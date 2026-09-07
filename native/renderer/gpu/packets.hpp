@@ -72,5 +72,8 @@ inline bool snapshot_mentions_backend(const std::string& text) {
 
 inline const char* owner_handle_free_label() { return "Handle-free"; }
 inline const char* owner_telegraph_class_label() { return "Telegraph class"; }
+inline bool packets_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
 
 }  // namespace verdigris::gpu

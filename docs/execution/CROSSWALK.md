@@ -46,7 +46,7 @@ Cursor evidence notes.
 | VG-ART-005 | extend | TASK-0182 AUTO_RELEASE, 0184; `held-item` world attachment + `loot-to-bank` pickup-to-equip hold; paper-doll seat alone cannot pass; World hold / Unarmed first stay off WASD, the objective, Tin village, and Life |
 | VG-ART-007/008 | extend | TASK-0206/0205/0207 — Owner Demo, do not duplicate |
 | VG-GPU-001 | new | isolated software quad (`gpu-sample`); not a D3D-only window; Software quad stays off WASD/objective/Tin village/Life |
-| VG-GPU-002 | new | render-list → packets (`gpu-packets`); handles cannot snapshot |
+| VG-GPU-002 | new | render-list → packets (`gpu-packets`); handles cannot snapshot; Handle-free stays off WASD/objective/Tin village/Life |
 | VG-GPU-003 | new | versioned software bindings (`shader-bindings`); no runtime .hlsl path; Layout v1 stays off WASD/objective/Tin village/Life |
 | VG-GPU-004 | new | session-connected packet present (`gpu-reference`); not a disconnected demo |
 | VG-GPU-005 | new | Y-sort + Sweep overlay on the village gate (`grounding`); HUD or capture-black cannot certify; walls cannot erase warnings |
@@ -182,8 +182,10 @@ certify. Unknown GPU cannot certify. Not a Windows-only D3D proof.
 Scenario `gpu-sample`. Evidence
 `docs/execution/evidence/VG-GPU-001.json`.
 VG-GPU-002: Telegraph draw class copied to handle-free packets. Owner
-strip paints Handle-free / Telegraph class. Poisoned `backend_handle`
-fails snapshot. Scenario `gpu-packets`. Evidence
+strip paints Handle-free / Telegraph class and parks off WASD, the
+objective, Tin village, and Life. Covering those combat surfaces cannot
+certify. Poisoned `backend_handle` fails snapshot. Scenario
+`gpu-packets`. Evidence
 `docs/execution/evidence/VG-GPU-002.json`.
 VG-ART-001: in-game HUD names camera/proportion/palette/contrast. Owner
 strip paints Adult camera / Bronze palette and parks off WASD, the

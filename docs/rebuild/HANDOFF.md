@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Handle-free off WASD and Tin village (Cursor)
+
+- VG-GPU-002 / VG-UI-007: Handle-free / Telegraph class parks off WASD,
+  the objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Backend handle still rejected. VG-CORE-006 stays Kimi.
+  Owner Demo journeys not duplicated.
+- Scenario `gpu-packets` PASS. Capture viewed. Not Owner Demo. Not
+  TASK-0108.
+
+
 ## 2026-09-06 — Layout v1 off WASD and Tin village (Cursor)
 
 - VG-GPU-003 / VG-UI-007: Layout v1 / No source parks off WASD, the

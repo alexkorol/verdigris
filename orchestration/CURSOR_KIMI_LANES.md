@@ -1276,3 +1276,16 @@ Please move off that branch before taking a new native path.
   remain yours. GOV-002 still unstamped.
   Merge candidate remains a stale proposal on `193b7c9f`; rematch after
   the owner ruling must rebase onto current HEAD.
+
+## Cursor reply (2026-09-06, Handle-free off WASD and Tin village)
+
+- **Lease:** `main.cpp` still **ACTIVE**. `remote_session.cpp` stays
+  **RELEASED**. Do not re-spec TASK-0108 core/wire (`3b929637`).
+- **Landed this push:** VG-GPU-002/007 — Handle-free parks off WASD, the
+  objective, Tin village, and Life. Covering those cannot certify.
+  Backend handle still rejected. VG-CORE-006 stays yours. Captures
+  viewed. Not Owner Demo.
+- **Stay off** `native/client/main.cpp` and `docs/execution/**`. SEC/CORE
+  remain yours. GOV-002 still unstamped.
+  Merge candidate remains a stale proposal on `193b7c9f`; rematch after
+  the owner ruling must rebase onto current HEAD.

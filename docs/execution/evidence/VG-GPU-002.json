@@ -4,7 +4,7 @@
   "planning_id": "VG-GPU-002",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "5a5dcc9069f318e0ab0b563300ad023d07827bfe",
+  "base_sha": "a98d7a83",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "gpu-packets",
@@ -20,17 +20,19 @@
     "snapshot text has no HDC/D3D/pointer tokens",
     "headless packets stay deterministic without GPU state",
     "a poisoned backend_handle cannot snapshot",
-    "live HUD names Handle-free and Telegraph class"
+    "live HUD names Handle-free and Telegraph class",
+    "Handle-free stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Handle-free is the anti-pattern"
   ],
   "negative_control": {
-    "name": "backend resource handle in an authoritative snapshot",
+    "name": "backend resource handle in an authoritative snapshot, or Handle-free covering WASD/objective/Tin village/Life",
     "observed_result": "REJECTED"
   },
   "artifacts": [
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/gpu-packets-960x600.png",
-      "sha256": "5536a5a709f1cd883527fc1377a477042934068cb76f0a716b910e0d48300fa4",
+      "sha256": "a12aed2fa850b6d71923735664a930af3dbdc389f41b8270359d916a5a4ea9ea",
       "produced_by": "native/build/verdigris_client.exe --scenario gpu-packets"
     },
     {
@@ -43,6 +45,6 @@
   "integration_status": "NOT_INTEGRATED",
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
-    "Packets are the semantic copy of the GDI+ render list. Not a D3D command buffer. Owner strip paints Handle-free / Telegraph class. Backend handle cannot certify. Does not re-spec TASK-0108. VG-CORE-006 stays Kimi."
+    "Packets are the semantic copy of the GDI+ render list. Not a D3D command buffer. Owner strip paints Handle-free / Telegraph class and parks off WASD, the objective, Tin village, and Life. Backend handle cannot certify. Covering those combat surfaces cannot certify. Snapshot text is prior evidence; not recaptured as a new proof. Does not re-spec TASK-0108. VG-CORE-006 stays Kimi."
   ]
 }
