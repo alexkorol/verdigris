@@ -112,5 +112,8 @@ inline bool draw_lit_quad_moving(Sample& sample, const Bindings& bindings,
 
 inline const char* owner_lantern_pool_label() { return "Lantern pool"; }
 inline const char* owner_bronze_light_label() { return "Bronze light"; }
+inline bool light_strip_covers_hud_fails_review(bool overlap) {
+  return overlap;
+}
 
 }  // namespace verdigris::gpu

@@ -1,5 +1,15 @@
 # Native reconstitution handoff
 
+## 2026-09-06 — Lantern pool off WASD and Tin village (Cursor)
+
+- VG-GPU-006 / VG-UI-007: Lantern pool / Bronze light parks off WASD, the
+  objective, Tin village, and Life. Covering those combat surfaces
+  cannot certify. Wash white still rejected. Owner Demo journeys not
+  duplicated.
+- Scenario `material-light` PASS. Capture viewed. Quad BMP not recaptured.
+  Not Owner Demo. Not TASK-0108.
+
+
 ## 2026-09-06 — Y-sort off WASD and Tin village (Cursor)
 
 - VG-GPU-005 / VG-UI-007: Y-sort / Sweep disc parks off WASD, the

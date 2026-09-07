@@ -50,7 +50,7 @@ Cursor evidence notes.
 | VG-GPU-003 | new | versioned software bindings (`shader-bindings`); no runtime .hlsl path; Layout v1 stays off WASD/objective/Tin village/Life |
 | VG-GPU-004 | new | session-connected packet present (`gpu-reference`); not a disconnected demo; Live packets stays off WASD/objective/Tin village/Life |
 | VG-GPU-005 | new | Y-sort + Sweep overlay on the village gate (`grounding`); HUD or capture-black cannot certify; walls cannot erase warnings; Y-sort stays off WASD/objective/Tin village/Life |
-| VG-GPU-006 | new | moving bronze lantern pool on the village gate (`material-light`); HUD without a pool cannot certify; cannot wash out damage |
+| VG-GPU-006 | new | moving bronze lantern pool on the village gate (`material-light`); HUD without a pool cannot certify; cannot wash out damage; Lantern pool stays off WASD/objective/Tin village/Life |
 | VG-GPU-007 | new | BMP readback + provenance (`gpu-capture`); PNG R/B swap cannot certify; packet logs are not pixels |
 | VG-GPU-008 | new | sample recreate/resize (`gpu-recover`); restored BMP stamped; Live buffers 1; leak cannot certify |
 | VG-PERF-001/002/008 | extend | TASK-0152, 0207; 008 Owner Demo — do not duplicate |
@@ -237,9 +237,11 @@ is a readable red disc on the village gate; a HUD token, wall hide, or
 capture-black fill cannot certify. Scenario `grounding`. Evidence
 `docs/execution/evidence/VG-GPU-005.json`.
 VG-GPU-006: moving light on the cooked family; channel cap 220; damage chroma
-cannot be washed white. Owner strip paints Lantern pool / Bronze light. Live
-scene paints a bronze lantern pool at the village gate; a HUD token without
-that pool cannot certify. Scenario `material-light`. Evidence
+cannot be washed white. Owner strip paints Lantern pool / Bronze light and
+parks off WASD, the objective, Tin village, and Life. Covering those combat
+surfaces cannot certify. Live scene paints a bronze lantern pool at the
+village gate; a HUD token without that pool cannot certify. Scenario
+`material-light`. Evidence
 `docs/execution/evidence/VG-GPU-006.json`.
 VG-GPU-007: BMP readback plus provenance sidecar of the painted tin-village
 scene. Packet snapshot text is not pixel evidence. A PNG whose red/blue

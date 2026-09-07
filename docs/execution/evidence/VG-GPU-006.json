@@ -4,7 +4,7 @@
   "planning_id": "VG-GPU-006",
   "task_id": null,
   "claim_token": "cursor-grok-client-lease",
-  "base_sha": "0d5db950cd00ed6a5ae8b7f70ecba2b21825115d",
+  "base_sha": "6d463b60",
   "head_sha": "working-tree",
   "integrated_sha": null,
   "seed": "material-light",
@@ -19,10 +19,12 @@
     "lighting cannot wash the family to white (channel cap 220)",
     "live scene paints a bronze lantern pool at the village gate",
     "a HUD token without a pool cannot certify",
-    "live HUD names Lantern pool and Bronze light"
+    "live HUD names Lantern pool and Bronze light",
+    "Lantern pool stays off WASD, the objective, Tin village, and Life",
+    "covering WASD, the objective, Tin village, or Life with Lantern pool is the anti-pattern"
   ],
   "negative_control": {
-    "name": "overbright additive concealing damage chroma",
+    "name": "overbright additive concealing damage chroma, wash white, or Lantern pool covering WASD/objective/Tin village/Life",
     "observed_result": "REJECTED"
   },
   "artifacts": [
@@ -35,7 +37,7 @@
     {
       "kind": "screenshot",
       "path": "docs/execution/captures/art-wave/material-light-960x600.png",
-      "sha256": "779b283d8ed554658fae10f787374f704f54a4bbff185164d2dbb89687bf36c7",
+      "sha256": "4d0edc39630d76f453fc887f44c9de9674c68b237b20d1c2f2582154cb82ee48",
       "produced_by": "native/build/verdigris_client.exe --scenario material-light"
     }
   ],
@@ -43,6 +45,7 @@
   "perceptual_review": "CAPTURE_VIEWED",
   "limitations": [
     "Software texel light, not a 3D normal map. Quad shows red damage chroma on the family.",
-    "Live capture paints a bronze ellipse plus red damage disc at the village gate. A HUD token without that pool cannot certify."
+    "Owner strip paints Lantern pool / Bronze light and parks off WASD, the objective, Tin village, and Life. Wash white cannot certify. Covering those combat surfaces cannot certify.",
+    "Live capture paints a bronze ellipse plus red damage disc at the village gate. Quad BMP not recaptured. Not Owner Demo. Does not re-spec TASK-0108."
   ]
 }
