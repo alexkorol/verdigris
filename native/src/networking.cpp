@@ -1,3 +1,4 @@
+#include <random>
 #include "verdigris/networking.hpp"
 
 #include <algorithm>
@@ -1718,6 +1719,9 @@ void ProtocolSession::leave_to_town(const std::function<void(const Envelope&)>& 
     // the remaining members keep their live instance untouched.
     std::uint64_t seed = 1469598103934665603ULL;
     for (unsigned char c : identity_) seed = (seed ^ c) * 1099511628211ULL;
+    // A retired shared world must not reset the personal map sequence.
+    seed ^= static_cast<std::uint64_t>(session_rng_.next() * 4294967296.0) << 32;
+    seed ^= static_cast<std::uint64_t>(session_rng_.next() * 4294967296.0);
     world_ = std::make_shared<WorldSimulation>(seed, identity_);
     emit_movement(emit);
     emit_transition(emit, "party:scene:transition");
@@ -2947,8 +2951,8 @@ struct WebSocketServer::Connection {
   }
 };
 
-WebSocketServer::WebSocketServer(std::uint16_t port, std::filesystem::path save_directory)
-    : port_(port), save_directory_(std::move(save_directory)) {}
+WebSocketServer::WebSocketServer(std::uint16_t port, std::filesystem::path save_directory, std::optional<std::uint64_t> replay_seed)
+    : port_(port), replay_seed_(replay_seed), save_directory_(std::move(save_directory)) {}
 WebSocketServer::~WebSocketServer(){ stop(); }
 bool WebSocketServer::start(std::string* error) {
 #ifdef _WIN32
@@ -3131,7 +3135,7 @@ void WebSocketServer::handle_message(const std::shared_ptr<Connection>& connecti
 // JS parity: the anonymous guest is ONE shared account. A second concurrent
 // login replaces the earlier session (replaceExistingSession); multiplayer
 // scenarios that need distinct players carry playtestGuestId/guestId.
-const bool quick=as_bool(envelope.data.get("quickGuest"));const auto* playtest_guest=envelope.data.get("playtestGuestId");if(playtest_guest&&playtest_guest->string())identity=*playtest_guest->string();const auto* playtest_name=envelope.data.get("playtestGuestName");std::shared_ptr<ProtocolSession> session;std::shared_ptr<Connection> old;bool created=false;{std::lock_guard lock(mutex_);auto it=sessions_.find(identity);if(it!=sessions_.end()){for(const auto& candidate:connections_)if(candidate->session==it->second&&candidate!=connection&&!candidate->closed){old=candidate;break;}session=it->second;}if(!session){std::uint64_t seed=1469598103934665603ULL;for(unsigned char c:identity)seed=(seed^c)*1099511628211ULL;session=std::make_shared<ProtocolSession>(identity,connection->id,seed,quick);sessions_[identity]=session;created=true;}else { const bool adopted = connection->session != session; session->replace_socket(connection->id); if (adopted) session->reset_world_for_new_socket(); } connection->session=session;}if(created&& !save_directory_.empty())session->attach_persistence(save_directory_/persistence_filename(identity));session->set_broadcast([this](const Envelope& event){broadcast(event);});if(playtest_name&&playtest_name->string())session->set_username(*playtest_name->string());session->set_direct_emit([connection](const Envelope& event){connection->send_text(emit_envelope(event));});if(old){old->send_text(emit_envelope(Envelope{"player:session-replaced",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",old->id}}}}}));old->shutdown_send();old->close();}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});session->persist();return;} auto session=connection->session;if(!session)return;if(envelope.event.rfind("party:",0)==0&&handle_party_event(connection,envelope)){session->persist();return;}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});session->persist();}
+const bool quick=as_bool(envelope.data.get("quickGuest"));const auto* playtest_guest=envelope.data.get("playtestGuestId");if(playtest_guest&&playtest_guest->string())identity=*playtest_guest->string();const auto* playtest_name=envelope.data.get("playtestGuestName");std::shared_ptr<ProtocolSession> session;std::shared_ptr<Connection> old;bool created=false;{std::lock_guard lock(mutex_);auto it=sessions_.find(identity);if(it!=sessions_.end()){for(const auto& candidate:connections_)if(candidate->session==it->second&&candidate!=connection&&!candidate->closed){old=candidate;break;}session=it->second;}if(!session){std::uint64_t seed=1469598103934665603ULL;for(unsigned char c:identity)seed=(seed^c)*1099511628211ULL;seed ^= replay_seed_.value_or(0);if(!replay_seed_)seed ^= (static_cast<std::uint64_t>(std::random_device{}()) << 32) ^ std::random_device{}();session=std::make_shared<ProtocolSession>(identity,connection->id,seed,quick);sessions_[identity]=session;created=true;}else { const bool adopted = connection->session != session; session->replace_socket(connection->id); if (adopted) session->reset_world_for_new_socket(); } connection->session=session;}if(created&& !save_directory_.empty())session->attach_persistence(save_directory_/persistence_filename(identity));session->set_broadcast([this](const Envelope& event){broadcast(event);});if(playtest_name&&playtest_name->string())session->set_username(*playtest_name->string());session->set_direct_emit([connection](const Envelope& event){connection->send_text(emit_envelope(event));});if(old){old->send_text(emit_envelope(Envelope{"player:session-replaced",JsonValue::Object{{"player",JsonValue::Object{{"socket_id",old->id}}}}}));old->shutdown_send();old->close();}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});session->persist();return;} auto session=connection->session;if(!session)return;if(envelope.event.rfind("party:",0)==0&&handle_party_event(connection,envelope)){session->persist();return;}session->handle(envelope,[connection](const Envelope& response){connection->send_text(emit_envelope(response));});session->persist();}
 void WebSocketServer::broadcast(const Envelope& envelope){ std::vector<std::shared_ptr<Connection>> targets; {std::lock_guard lock(mutex_);targets=connections_;} const auto wire=emit_envelope(envelope); for(const auto& candidate:targets) if(candidate->session&&!candidate->closed) candidate->send_text(wire); }
 void WebSocketServer::remove_connection(const std::shared_ptr<Connection>& connection){std::lock_guard lock(mutex_);connections_.erase(std::remove(connections_.begin(),connections_.end(),connection),connections_.end());}
 

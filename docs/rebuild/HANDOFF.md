@@ -1,5 +1,26 @@
 # Native reconstitution handoff
 
+## 2026-09-08 — Cartographer continuous terrain correction (Codex)
+
+- Owner correction replaces the preceding visible prefab-room geometry. Five
+  biomes now use off-grid landmarks, a continuous terrain field, curved routes,
+  eroded indoor contours and outdoor canopy/ridge/water boundaries.
+- Wilds/grove now use woodland, marsh uses wetland. Production maps default to
+  96 × 78 cells (gauntlets 114 × 78), with small side-destination budgets and
+  no repeated internal waystone landmarks.
+- Normal server sessions take entropy; new instances and floor visits change
+  seeds. Explicit replay seeds remain available to tests. Shared-party retirement
+  advances the personal seed stream instead of resetting it to identity alone.
+- Three built-in imagegen materials cover grass, damp earth and basalt; terrain
+  IDs select these independently from limestone. Native painting avoids a second
+  redundant floor pass. Corrected red/blue swapping in saved PNG evidence.
+- Regression drivers follow collision and living-monster occupancy; render
+  fixtures explicitly set up combat instead of assuming an enemy lies east of
+  the entrance. Build gates now propagate core/network/camera failures.
+- WIZARD checkpoint pushed: `18633475b47140b6bd4480fd6c32e672b3bf4e04`.
+  Verification receipts are in `docs/rebuild/cartography/VERIFICATION.md`.
+
+
 ## 2026-09-08 - Cartographer expedition generation (Codex)
 
 - Replaced production native instance stub geometry with WIZARD Cartographer's deterministic room/socket graph: protected entrance, guardian route, optional reward chambers, loops, safe packs and depth tiers. Existing item and actor systems consume the generated placements.

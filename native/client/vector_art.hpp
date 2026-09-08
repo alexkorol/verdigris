@@ -1105,11 +1105,13 @@ inline void terrain_tile(HDC dc, const RECT& cell, const std::string& theme,
     joint = RGB(52, 46, 42);
     fleck = RGB(104, 94, 84);
   }
-  const bool alt = ((hash >> 9) % 5u) == 0;
+  const bool natural = theme == "grove" || theme == "marsh" || theme == "wilds";
+  const bool alt = !natural && ((hash >> 9) % 5u) == 0;
   RECT fill_rect = cell;
   HBRUSH brush = CreateSolidBrush(dc_color(dc, alt ? shade(base, 0.93) : base));
   FillRect(dc, &fill_rect, brush);
   DeleteObject(brush);
+  if (!natural) {
   HPEN pen = CreatePen(PS_SOLID, 1, dc_color(dc, joint));
   HGDIOBJ old_pen = SelectObject(dc, pen);
   MoveToEx(dc, cell.left, cell.top, nullptr);
@@ -1118,6 +1120,7 @@ inline void terrain_tile(HDC dc, const RECT& cell, const std::string& theme,
   LineTo(dc, cell.left, cell.bottom);
   SelectObject(dc, old_pen);
   DeleteObject(pen);
+  }
   // Theme details, deterministic per tile.
   std::uint32_t noise = hash * 2654435761u + 12345u;
   const auto next_noise = [&]() {

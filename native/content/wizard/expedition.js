@@ -1,16 +1,17 @@
 /* Original WIZARD expedition grammar. Pure JS; no renderer or platform dependency. */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./mapgen.js'));
-  else root.Expedition = factory(root.MapGen);
-})(typeof self !== 'undefined' ? self : this, function (MapGen) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./mapgen.js'),require('./landscape.js'));
+  else root.Expedition = factory(root.MapGen,root.Landscape);
+})(typeof self !== 'undefined' ? self : this, function (MapGen,Landscape) {
   'use strict';
-  const VERSION = '2.0.0';
+  const VERSION = '3.0.0';
   const T = MapGen.TILE;
   const DIRS = [[0,-1,'north'],[1,0,'east'],[0,1,'south'],[-1,0,'west']];
   const RECIPES = {
+    wildwood: { name:'The Verdant March', zone:'wilds', theme:'forest', room:'woodland', floor:T.GRASS, void:T.VOID, outdoor:true, landmark:'Forest clearing', description:'Continuous woodland, worn trails, uneven ridgelines and sheltered clearings.' },
     necropolis: { name:'The Copper Necropolis', zone:'dungeon', theme:'crypt', room:'ossuary', floor:T.FLOOR, void:T.VOID, landmark:'Ancestor court', description:'Limestone chambers, ancestor courts and copper-sealed burial vaults.' },
-    causeway: { name:'The Drowned Causeway', zone:'wilds', theme:'swamp', room:'island', floor:T.GRASS, void:T.DEEP, landmark:'Flood marker', description:'Reed islands joined by ancient causeways above dark tidal water.' },
-    quarry: { name:'The Ember Quarry', zone:'caves', theme:'lava', room:'cavern', floor:T.RUBBLE, void:T.LAVA, landmark:'Kiln circle', description:'Broken basalt chambers, hot mineral seams and a furnace sanctuary.' },
+    causeway: { name:'The Drowned Causeway', zone:'wilds', theme:'swamp', room:'wetland', outdoor:true, floor:T.GRASS, void:T.DEEP, landmark:'Flood marker', description:'Broad tidal wetlands, winding dry ground, branching inlets and short crossings.' },
+    quarry: { name:'The Ember Quarry', zone:'caves', theme:'lava', room:'badlands', outdoor:true, floor:T.RUBBLE, void:T.LAVA, landmark:'Kiln circle', description:'Weathered open badlands, basalt ridgelines and branching volcanic gullies.' },
     sanctuary: { name:'The Star Sanctuary', zone:'sanctum', theme:'arcane', room:'court', floor:T.FLOOR, void:T.VOID, landmark:'Celestial dial', description:'Suspended stone courts and narrow bridges around an open astral void.' }
   };
   function random(seed) { let s=seed>>>0; return n=>{s=(Math.imul(s,1664525)+1013904223)>>>0;return n ? Math.floor(s/4294967296*n) : s/4294967296;}; }
@@ -25,11 +26,11 @@
   }
   function path(map,from,to) {const {distance,parent}=distances(map,from);let i=to.y*map.width+to.x;if(distance[i]<0)return [];const out=[];while(i>=0){out.push({x:i%map.width,y:Math.floor(i/map.width)});i=parent[i];}return out.reverse();}
   function generate(options={}) {
-    const recipe=Object.hasOwn(RECIPES,options.recipe)?options.recipe:'necropolis', biome=RECIPES[recipe];
-    const seed=seedOf(options.seed), cols=number(options.columns,6,4,10),rows=number(options.rows,4,3,7),size=15;
+    const recipe=Object.hasOwn(RECIPES,options.recipe)?options.recipe:'wildwood', biome=RECIPES[recipe];
+    const seed=seedOf(options.seed), cols=number(options.columns,4,4,10),rows=number(options.rows,3,3,7),size=18;
     const topology=random(seed^0xa511e9b3), roomsRng=random(seed^0x63d83595),encounters=random(seed^0xb5297a4d),decor=random(seed^0x1b56c4e9);
-    const branching=number(options.branches,5,0,18),loopBudget=number(options.loops,2,0,8);
-    const width=cols*size+2,height=rows*size+2,tiles=new Uint8Array(width*height).fill(biome.void);
+    const branching=number(options.branches,3,0,18),loopBudget=number(options.loops,1,0,8);
+    const width=cols*size+24,height=rows*size+24,tiles=new Uint8Array(width*height).fill(biome.void);
     const nodes=[],edges=[],used=new Map();
     function node(c,r,role='combat') {const key=c+','+r;if(used.has(key))return used.get(key);const n={id:nodes.length,c,r,x:1+c*size,y:1+r*size,cx:8+c*size,cy:8+r*size,role,sockets:[],variant:roomsRng(4),rotation:roomsRng(4)};nodes.push(n);used.set(key,n);return n;}
     function link(a,b,kind) {if(edges.some(e=>(e.a===a.id&&e.b===b.id)||(e.a===b.id&&e.b===a.id)))return false;edges.push({a:a.id,b:b.id,kind});return true;}
@@ -47,40 +48,20 @@
     let loops=0;const candidates=[];for(const a of nodes)for(const b of nodes)if(a.id<b.id&&a.role!=='boss'&&b.role!=='boss'&&Math.abs(a.c-b.c)+Math.abs(a.r-b.r)===1)candidates.push([a,b]);
     while(candidates.length&&loops<loopBudget){const [a,b]=candidates.splice(topology(candidates.length),1)[0];if(link(a,b,'loop'))loops++;}
     for(const n of nodes)if(n.role==='optional'&&edges.filter(e=>e.a===n.id||e.b===n.id).length===1)n.role='treasure';
-    function paint(x,y,t){if(x>0&&y>0&&x<width-1&&y<height-1)tiles[y*width+x]=t;}
-    for(const n of nodes){
-      n.prefab=n.role==='boss'?'guardian-court':n.role==='entry'?'processional-gate':biome.room+'-'+n.variant;
-      n.w=11;n.h=11;n.x=n.cx-5;n.y=n.cy-5;
-      for(let dy=-5;dy<=5;dy++)for(let dx=-5;dx<=5;dx++){
-        const cut=(biome.room==='cavern'||biome.room==='island'||n.variant===1)&&Math.abs(dx)+Math.abs(dy)>8;
-        if(!cut)paint(n.cx+dx,n.cy+dy,biome.floor);
-      }
-      // Four architectural piers keep a 5-tile cross lane and boss arena clear.
-      if(n.role!=='boss'&&(biome.room==='ossuary'||biome.room==='court')&&n.variant%2===0)for(const dx of [-3,3])for(const dy of [-3,3])paint(n.cx+dx,n.cy+dy,T.WALL);
-    }
-    for(const e of edges){
-      const a=nodes[e.a],b=nodes[e.b],dx=Math.sign(b.cx-a.cx),dy=Math.sign(b.cy-a.cy),dir=DIRS.findIndex(d=>d[0]===dx&&d[1]===dy);
-      for(let step=0;step<=size;step++)for(let q=-1;q<=1;q++)paint(a.cx+dx*step+(dy?q:0),a.cy+dy*step+(dx?q:0),biome.void===T.DEEP||biome.void===T.LAVA?T.BRIDGE:biome.floor);
-      a.sockets.push({direction:dir,to:b.id,x:a.cx+dx*5,y:a.cy+dy*5,width:3});b.sockets.push({direction:(dir+2)%4,to:a.id,x:b.cx-dx*5,y:b.cy-dy*5,width:3});
-    }
-    // Add wall rims only into untouched space. Water/void remain visible beyond them.
-    if(recipe==='necropolis'||recipe==='quarry'){
-      const floors=[];for(let i=0;i<tiles.length;i++)if(MapGen.WALKABLE.has(tiles[i]))floors.push(i);
-      for(const i of floors)for(const d of DIRS){const x=i%width+d[0],y=Math.floor(i/width)+d[1];if(x>0&&y>0&&x<width-1&&y<height-1&&tiles[y*width+x]===biome.void)paint(x,y,T.WALL);}
-    }
+    tiles.set(Landscape.realize({seed,recipe,width,height,rooms:nodes,edges,floor:biome.floor,space:biome.void,outdoor:!!biome.outdoor}));
     const entry=nodes[0],entrance={x:entry.cx-3,y:entry.cy},boss={x:bossNode.cx,y:bossNode.cy},exit={x:bossNode.cx+3,y:bossNode.cy};
-    const map={version:VERSION,seed,zone:biome.zone,theme:biome.theme,width,height,tiles,rooms:nodes,entrance,exit,boss,axis:[1,0],palette:MapGen.THEMES[biome.theme].palette,outdoor:recipe==='causeway',entities:[],spawns:[],expedition:{recipe,columns:cols,rows,branches:branching,loops:loopBudget,graph:{nodes,edges,spine},reading:{entryFacing:'east',exitFacing:'east',rule:'The processional gate and guardian exit face east. Side sockets lead to optional ground; a compass heading is not a turn-by-turn route.'}}};
+    const map={version:VERSION,seed,zone:biome.zone,theme:biome.theme,width,height,tiles,rooms:nodes,entrance,exit,boss,axis:[1,0],palette:MapGen.THEMES[biome.theme].palette,outdoor:!!biome.outdoor,entities:[],spawns:[],expedition:{recipe,columns:cols,rows,branches:branching,loops:loopBudget,graph:{nodes,edges,spine},reading:{entryFacing:'east',exitFacing:'east',rule:biome.outdoor?'Read the terrain: trails bend around ridges and water, clearings open at landmarks, and side routes lead to offerings. The eastern guardian is a broad direction, not a straight corridor.':'Follow the connected courts and eroded passages. Side vaults hold offerings; the eastern guardian is a broad direction, not a straight corridor.'}}};
     map.mainPath=path(map,entrance,boss);
     const distance=distances(map,entrance).distance,maxDist=distance[boss.y*width+boss.x];
     for(const n of nodes){
       const depth=distance[n.cy*width+n.cx],onRoute=spine.includes(n.id);
-      n.landmark=n.role==='entry'?'Processional gate':n.role==='boss'?'Guardian sanctuary':n.role==='treasure'?'Sealed offering':biome.landmark+' '+(n.id+1);
+      n.landmark=n.role==='entry'?(biome.outdoor?'Trailhead':'Processional gate'):n.role==='boss'?(biome.outdoor?'Guardian clearing':'Guardian sanctuary'):n.role==='treasure'?(biome.outdoor?'Hidden offering':'Sealed offering'):biome.landmark+' '+(n.id+1);
       n.depth=depth;n.tier=n.role==='entry'?0:n.role==='boss'?4:Math.min(3,1+Math.floor(depth/Math.max(1,maxDist)*3));
       map.entities.push({type:'landmark',x:n.cx,y:n.cy,room:n.id,label:n.landmark});
       if(n.role==='treasure')map.entities.push({type:'chest',x:n.cx+2,y:n.cy,room:n.id});
       if(n.role==='entry')continue;
       map.spawns.push({type:n.role==='boss'?'boss':n.role==='treasure'?'elite':'pack',x:n.cx,y:n.cy,room:n.id,tier:n.tier,count:n.role==='boss'?1:3+encounters(4),onRoute});
-      for(const d of [-1,1])map.entities.push({type:'torch',x:n.cx+d*4,y:n.cy-2,room:n.id});
+      if(!biome.outdoor)for(const d of [-1,1])map.entities.push({type:'torch',x:n.cx+d*4,y:n.cy-2,room:n.id});
       for(let k=0;k<4;k++){const x=n.cx-4+decor(9),y=n.cy+(decor(2)?-4:4);if(MapGen.WALKABLE.has(tiles[y*width+x]))map.entities.push({type:decor(2)?'urn':'rubble',x,y,room:n.id});}
     }
     map.metrics=metrics(map);return map;
@@ -95,9 +76,9 @@
     if(!path(map,map.entrance,map.exit).length)errors.push('No extraction route');
     return {valid:!errors.length,errors};
   }
-  function toJSON(map){return {...MapGen.toJSON(map),format:'wizard-expedition',version:VERSION,rooms:map.rooms,expedition:map.expedition,metrics:map.metrics,outdoor:map.outdoor};}
+  function toJSON(map){return {...MapGen.toJSON(map),format:'wizard-expedition',version:map.version,rooms:map.rooms,expedition:map.expedition,metrics:map.metrics,outdoor:map.outdoor};}
   function fromJSON(data){
-    if(!data||data.format!=='wizard-expedition'||data.version!==VERSION)throw new Error('Unsupported expedition format or version');
+    if(!data||data.format!=='wizard-expedition'||![VERSION,'2.0.0'].includes(data.version))throw new Error('Unsupported expedition format or version');
     if(!Number.isInteger(data.width)||!Number.isInteger(data.height)||data.width<1||data.height<1||data.width>256||data.height>256)throw new Error('Invalid map dimensions');
     if(!Array.isArray(data.tiles)||data.tiles.length!==data.height||data.tiles.some(r=>typeof r!=='string'||r.length!==data.width||!/^[0-9a-e]+$/.test(r)))throw new Error('Invalid tile rows');
     const point=p=>p&&Number.isInteger(p.x)&&Number.isInteger(p.y)&&p.x>=0&&p.y>=0&&p.x<data.width&&p.y<data.height;

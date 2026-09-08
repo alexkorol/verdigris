@@ -117,6 +117,7 @@ struct WorldView {
   // Authoritative walkable grid for the current scene (protocol tiles,
   // row-major, 1 = walkable). Empty until the map payload arrives; the
   // renderer draws blocked tiles as visible walls instead of open floor.
+  std::string map_recipe;
   std::uint64_t map_revision = 0;
   int map_width = 0;
   int map_height = 0;

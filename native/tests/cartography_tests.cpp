@@ -5,7 +5,7 @@ using namespace verdigris::cartography;
 int main(int argc,char** argv){
   const bool fingerprints=argc>1&&std::string(argv[1])=="--fingerprints";
   int count=0;
-  for(const std::string recipe:{"necropolis","causeway","quarry","sanctuary"})for(int size=0;size<3;++size)for(std::uint32_t seed=0;seed<100;++seed){
+  for(const std::string recipe:{"wildwood","necropolis","causeway","quarry","sanctuary"})for(int size=0;size<3;++size)for(std::uint32_t seed=0;seed<100;++seed){
     Plan p{seed,recipe,size==0?4:size==1?6:10,size==0?3:size==1?4:7,size==0?0:size==1?5:18,size==0?0:size==1?2:8};
     const auto m=generate(p);if(!valid(m)){std::cerr<<"Invalid map "<<recipe<<" "<<seed<<"\n";return 1;}
     if(m.tiles!=generate(p).tiles){std::cerr<<"Non-deterministic tiles\n";return 1;}

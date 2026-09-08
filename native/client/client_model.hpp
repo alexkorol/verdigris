@@ -224,6 +224,7 @@ struct ClientModel {
   int attr_intelligence = 10;
   // Walkable grid for the current scene (requested once per scene change).
   // Row-major, 1 = walkable; empty until the first map payload arrives.
+  std::string map_recipe;
   std::uint64_t map_revision = 0;
   int map_width = 0;
   int map_height = 0;

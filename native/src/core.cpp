@@ -1643,12 +1643,12 @@ void WorldSimulation::generate_instance() {
 
   cartography::Plan plan;
   plan.seed = static_cast<std::uint32_t>(metadata_.seed);
-  plan.recipe = metadata_.theme == "marsh" || metadata_.theme == "grove" ? "causeway"
-      : metadata_.theme == "wilds" ? "quarry" : "necropolis";
-  plan.columns = effective == "gauntlet" ? 7 : 6;
-  plan.rows = 4;
-  plan.branches = effective == "gauntlet" ? 2 : effective == "clearings" ? 6 : 8;
-  plan.loops = effective == "gauntlet" ? 0 : effective == "clearings" ? 4 : 2;
+  plan.recipe = metadata_.theme == "marsh" ? "causeway"
+      : metadata_.theme == "wilds" || metadata_.theme == "grove" ? "wildwood" : "necropolis";
+  plan.columns = effective == "gauntlet" ? 5 : 4;
+  plan.rows = 3;
+  plan.branches = effective == "gauntlet" ? 1 : effective == "clearings" ? 2 : 3;
+  plan.loops = effective == "gauntlet" ? 0 : effective == "clearings" ? 2 : 1;
   cartography_ = cartography::generate(plan);
   grid_.width = cartography_.width;
   grid_.height = cartography_.height;
@@ -1779,7 +1779,7 @@ void WorldSimulation::enter_solo_instance(const std::string& template_id, const 
 
   serial_ += 1;
   metadata_ = InstanceMetadata{};
-  metadata_.seed = fnv1a(theme + ":" + applied_layout, seed_);
+  metadata_.seed = fnv1a(theme + ":" + applied_layout + ":run-" + std::to_string(serial_), seed_);
   metadata_.theme = theme;
   metadata_.layout = applied_layout;
   metadata_.depth = 1;
@@ -3250,7 +3250,7 @@ void WorldSimulation::transition_floor(int depth) {
   serial_ += 1;
   const int clamped_depth = std::max(1, depth);
   metadata_ = InstanceMetadata{};
-  metadata_.seed = fnv1a(theme + ":" + layout + ":floor-" + std::to_string(clamped_depth), seed_);
+  metadata_.seed = fnv1a(theme + ":" + layout + ":floor-" + std::to_string(clamped_depth) + ":visit-" + std::to_string(serial_), seed_);
   metadata_.theme = theme;
   metadata_.layout = layout;
   metadata_.depth = clamped_depth;

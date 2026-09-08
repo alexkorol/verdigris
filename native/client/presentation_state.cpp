@@ -198,6 +198,7 @@ void sync_world_from_model(WorldView& world, const ClientModel& model) {
             ? std::clamp((model.xp_current - model.xp_floor) / span, 0.0, 1.0)
             : 0.0;
   }
+  world.map_recipe = model.map_recipe;
   world.map_revision = model.map_revision;
   world.map_width = model.map_width;
   world.map_height = model.map_height;

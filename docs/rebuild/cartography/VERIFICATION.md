@@ -1,3 +1,48 @@
+# Continuous-terrain correction — 2026-09-08
+
+This correction supersedes the visible room-grid geometry in the historical
+checkpoint below. WIZARD source: `18633475b47140b6bd4480fd6c32e672b3bf4e04`.
+
+- 1,500 C++ invariants and 1,500 JS/C++ fingerprint comparisons passed across
+  five biomes and three extents. Vendored JS files match the WIZARD checkpoint.
+- Core integration checks cover fifteen production theme/layout combinations,
+  compact dimensions, connected collision, safe population, a fresh seed and
+  different terrain on re-entry, and reproducible explicit command sequences.
+- Viewed the five native material captures (grass/earth, wetland, basalt,
+  necropolis stone and sanctuary stone). The isolated material render scenario
+  passed at 5.29–6.20 ms per scene, below the unchanged 40 ms budget.
+- Launched `play-native.ps1 -Port 6532`, entered the saved test Scion, took the
+  tin road, opened the M-key atlas, and viewed repository-supported live window
+  captures. Discovered entry only; distant landmarks remained hidden. Closed
+  the client; launcher verified no orphan processes.
+- The live comparison exposed a red/blue swap in the PNG exporter. Removed
+  that swap; saved material evidence now uses the original BGRA channel order.
+- Runtime server sessions use entropy. Test servers explicitly request replay
+  seed zero; the deterministic core still produces new instances per visit.
+  Combat/exit fixtures use navigation and living-monster occupancy. The exit
+  fixture heals periodically to isolate navigation after combat-event checks;
+  it is not a survival-balance test. Telegraph/render fixtures retain explicit
+  developer setup and do not claim an unaided guardian playthrough.
+
+Current correction evidence is under ignored `native/build/cartography-logs/`,
+`native/build/cartography-material-captures/` and
+`native/build/cartography-organic-captures/live-*.png`.
+Outdoor prompts: `native/client/assets/wizard/cartographer/OUTDOOR-PROVENANCE.md`.
+
+Final acceptance: `native/build.ps1 -RunTests -RunClientScenarios` exited **0**.
+Core, networking, camera, session journeys, presentation events and audio passed;
+all **62 client scenarios passed**, with no failed checks. Full receipt:
+[acceptance.log](continuous/acceptance.log). Generated terrain scenes measured
+5.24–5.97 ms; the 3440 × 1440 benchmark averaged **25.3 ms** over twenty frames
+on this 12-logical-CPU Win32/GDI machine (unchanged 40 ms bound).
+
+Visual receipts: [woodland](continuous/wildwood.png), [wetland](continuous/causeway.png),
+[volcanic ground](continuous/quarry.png), [necropolis](continuous/necropolis.png),
+[sanctuary](continuous/sanctuary.png), [live entrance](continuous/live-world.png),
+[live atlas](continuous/live-atlas.png).
+
+## Historical checkpoint (superseded geometry)
+
 # Cartography checkpoint verification
 
 2026-09-08, `codex/cartographer-expeditions`, isolated worktree based on native production commit `2b5da07b1`.

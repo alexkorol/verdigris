@@ -820,6 +820,8 @@ void apply_chart(ClientModel& model,const JsonValue* map) {
       const auto* rows = map->get("rows");
       if (width > 0 && height > 0 && width <= 256 && height <= 256 && rows && rows->array() &&
           static_cast<int>(rows->array()->size()) == height) {
+        model.map_recipe.clear();
+        if(const auto* recipe=json_string(map->get("recipe")))model.map_recipe=recipe->substr(0,32);
         model.map_terrain.clear();
         model.map_landmarks.clear();
         if (const auto* terrain=map->get("terrain");terrain && terrain->array() && static_cast<int>(terrain->array()->size())==height) {

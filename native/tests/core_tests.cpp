@@ -2084,8 +2084,17 @@ void test_cartography_runtime() {
       if(monster.boss){++bosses;check(monster.x==chart.boss.x&&monster.y==chart.boss.y,"guardian owns terminal arena");}
     }
     check(bosses==1,"one production guardian");
+    check(chart.width<=114 && chart.height<=78,"production expeditions stay compact");
     for(const auto& item:world.ground_items())check(world.grid().walkable_at(static_cast<int>(item.x),static_cast<int>(item.y)),"offering loot occupies reachable ground");
     for(std::size_t i=0;i<chart.tiles.size();++i)check((world.grid().walkable[i]!=0)==cartography::walkable(chart.tiles[i]),"runtime collision equals authored terrain");
+    const auto first_tiles=chart.tiles;
+    const auto first_seed=chart.plan.seed;
+    WorldSimulation replay(2718,"cartography-test");replay.enter_solo_instance(theme,layout);
+    check(replay.cartography().tiles==first_tiles,"explicit seed and commands reproduce first expedition");
+    world.return_to_surface();world.enter_solo_instance(theme,layout);
+    check(world.cartography().plan.seed!=first_seed && world.cartography().tiles!=first_tiles,"re-entering the same road rolls a new map");
+    replay.return_to_surface();replay.enter_solo_instance(theme,layout);
+    check(replay.cartography().tiles==world.cartography().tiles,"fresh instance sequence remains replayable");
   }
 }
 

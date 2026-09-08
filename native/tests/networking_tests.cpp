@@ -180,7 +180,7 @@ void test_n3_combat_rules_and_wire_events() {
   session.handle(Envelope{"instance:enterSolo", JsonValue::Object{{"template", "marsh"}, {"layout", "clearings"}}}, [](const Envelope&) {});
   const auto marsh = request_state(session, "n3-marsh");
   const auto* monsters = marsh["state"]["monsters"].array();
-  check(monsters && monsters->size() >= 20, "N3 marsh has the authored pack population");
+  check(monsters && !monsters->empty() && monsters->size() == session.shared_world()->monsters().size(), "N3 marsh publishes the full authoritative compact-map population");
   bool rare = false;
   bool empowered = false;
   for (const auto& value : *monsters) {

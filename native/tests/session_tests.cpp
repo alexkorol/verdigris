@@ -101,9 +101,31 @@ bool walk_to(verdigris::client::IClientSession& session,int x,int y) {
   map.tiles=model.map_walkable;
   const int px=static_cast<int>(std::round(model.player.x)),py=static_cast<int>(std::round(model.player.y));
   if(map.tiles.empty())return false;
-  const auto route=verdigris::cartography::path(map,{px,py},{x,y});
+  for(const auto& foe:model.monsters)if(foe.alive){
+    const int fx=static_cast<int>(std::round(foe.x)),fy=static_cast<int>(std::round(foe.y));
+    if(fx>=0&&fy>=0&&fx<map.width&&fy<map.height)map.tiles[fy*map.width+fx]=0;
+  }
+  std::vector<verdigris::cartography::Point> route;
+  if(x>=0&&y>=0&&x<map.width&&y<map.height&&map.tiles[y*map.width+x])
+    route=verdigris::cartography::path(map,{px,py},{x,y});
+  else for(const auto d:std::array<verdigris::cartography::Point,4>{{{1,0},{-1,0},{0,1},{0,-1}}}){
+    const int nx=x+d.x,ny=y+d.y;
+    if(nx<0||ny<0||nx>=map.width||ny>=map.height||!map.tiles[ny*map.width+nx])continue;
+    auto candidate=verdigris::cartography::path(map,{px,py},{nx,ny});
+    if(!candidate.empty()&&(route.empty()||candidate.size()<route.size()))route=std::move(candidate);
+  }
+  if(route.empty()){
+    // A pack may occupy every cell of a passage. Approach the first blocker
+    // along the terrain route and clear it through ordinary combat commands.
+    map.tiles=model.map_walkable;route=verdigris::cartography::path(map,{px,py},{x,y});
+  }
   if(route.size()<2)return false;
-  const auto next=route[1];session.submit(verdigris::client::ClientCommand::move(next.x-px,next.y-py));return true;
+  const auto next=route[1];
+  for(const auto& foe:model.monsters)if(foe.alive&&std::round(foe.x)==next.x&&std::round(foe.y)==next.y){
+    session.submit(verdigris::client::ClientCommand::aim(next.x-px,next.y-py));
+    session.submit(verdigris::client::ClientCommand::use_action("melee"));return false;
+  }
+  session.submit(verdigris::client::ClientCommand::move(next.x-px,next.y-py));return true;
 }
 
 void hunt_step(verdigris::client::IClientSession& session) {
@@ -145,7 +167,7 @@ std::uint16_t start_server(verdigris::networking::WebSocketServer*& out) {
   // resource_capsule); scan upward inside it so parallel suites cannot
   // collide and no other lane's ports are ever touched.
   for (std::uint16_t port = 7160; port <= 7179; ++port) {
-    auto* server = new verdigris::networking::WebSocketServer(port);
+    auto* server = new verdigris::networking::WebSocketServer(port, {}, 0);
     std::string error;
     if (server->start(&error)) {
       out = server;
@@ -212,7 +234,7 @@ std::uint16_t start_server_cursor(verdigris::networking::WebSocketServer*& out) 
   // Same TASK-0163 loopback capsule (7160-7179); earlier suites release
   // their listener before this runs, so the scan resumes inside the range.
   for (std::uint16_t port = 7160; port <= 7179; ++port) {
-    auto* server = new verdigris::networking::WebSocketServer(port);
+    auto* server = new verdigris::networking::WebSocketServer(port, {}, 0);
     std::string error;
     if (server->start(&error)) {
       out = server;
@@ -314,16 +336,8 @@ void remote_guest_journey() {
                        std::abs(monster.y - camp_model.player.y));
         if (reach < camp_best) { camp_best = reach; camp_target = &monster; }
       }
-      if (camp_target && camp_best > 0.8) {
-        const int dx = camp_target->x > camp_model.player.x + 0.3   ? 1
-                       : camp_target->x < camp_model.player.x - 0.3 ? -1
-                                                                    : 0;
-        const int dy = camp_target->y > camp_model.player.y + 0.3   ? 1
-                       : camp_target->y < camp_model.player.y - 0.3 ? -1
-                                                                    : 0;
-        if (dx != 0 || dy != 0)
-          session.submit(verdigris::client::ClientCommand::move(dx, dy));
-      }
+      if (camp_target && camp_best > 1.0)
+        walk_to(session,static_cast<int>(camp_target->x),static_cast<int>(camp_target->y));
     } else {
       hunt_step(session);
     }
@@ -411,12 +425,8 @@ void remote_guest_journey() {
             (std::max)(std::abs(monster.x - px), std::abs(monster.y - py));
         if (reach < best) { best = reach; nearest = &monster; }
       }
-      if (nearest && best > 0.8) {
-        const int dx = nearest->x > px + 0.3 ? 1 : nearest->x < px - 0.3 ? -1 : 0;
-        const int dy = nearest->y > py + 0.3 ? 1 : nearest->y < py - 0.3 ? -1 : 0;
-        if (dx != 0 || dy != 0)
-          session.submit(verdigris::client::ClientCommand::move(dx, dy));
-      }
+      if (nearest && best > 1.0)
+        walk_to(session,static_cast<int>(nearest->x),static_cast<int>(nearest->y));
       // Within reach: hold ground so the windup resolves into a hit.
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
@@ -440,8 +450,13 @@ void remote_guest_journey() {
   }
   check(incoming, "journey: incoming combat:hit reached the client");
   if(!telegraph){
+    session.send_raw("dev:heal",verdigris::networking::JsonValue::Object{});
     const auto& model=session.model();
     for(const auto& landmark:model.map_landmarks)if(landmark.role=="boss"){
+      for(const auto& foe:model.monsters)if(foe.x==landmark.x&&foe.y==landmark.y){
+        session.send_raw("dev:monster:reset",verdigris::networking::JsonValue::Object{
+          {"monsterUuid",foe.id},{"maxHealth",1000}});break;
+      }
       verdigris::networking::JsonValue::Object tp;
       tp["x"]=verdigris::networking::JsonValue(landmark.x-1);tp["y"]=verdigris::networking::JsonValue(landmark.y);
       session.send_raw("dev:teleport",verdigris::networking::JsonValue(std::move(tp)));break;
@@ -451,6 +466,8 @@ void remote_guest_journey() {
   check(telegraph, "journey: monster:telegraph reached the client");
 
   for (int step = 0; step < 1600 && !session.model().extracted; ++step) {
+    // Combat events were verified above; keep this navigation/exit leg alive.
+    if(step%100==0)session.send_raw("dev:heal",verdigris::networking::JsonValue::Object{});
     walk_to(session,static_cast<int>(session.model().scene.stairs_up_x),static_cast<int>(session.model().scene.stairs_up_y));
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
     session.poll();
@@ -505,7 +522,7 @@ void remote_mid_session_disconnect() {
         "reconnect: commands after the drop do not leave Retrying for a local sim");
   check(session.model().player.x == x, "reconnect: position does not keep playing offline");
 
-  server = new verdigris::networking::WebSocketServer(port);
+  server = new verdigris::networking::WebSocketServer(port, {}, 0);
   check(server->start(&error), "reconnect: server restarted on the same port");
 
   const bool resumed = wait_for_state(session, verdigris::client::ConnectionState::Ready, 8000);
@@ -1102,7 +1119,7 @@ std::uint16_t start_server_worker_capsule(verdigris::networking::WebSocketServer
   // ox-pc-ac worker capsule 7160-7179 (TASK-0163 resource_capsule): never
   // 6500, never another lane's capsule.
   for (std::uint16_t port = 7160; port <= 7179; ++port) {
-    auto* server = new verdigris::networking::WebSocketServer(port);
+    auto* server = new verdigris::networking::WebSocketServer(port, {}, 0);
     std::string error;
     if (server->start(&error)) {
       out = server;

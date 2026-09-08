@@ -259,7 +259,8 @@ class ProtocolSession {
 class WebSocketServer {
  public:
   explicit WebSocketServer(std::uint16_t port = 6500,
-                           std::filesystem::path save_directory = {});
+                           std::filesystem::path save_directory = {},
+                           std::optional<std::uint64_t> replay_seed = std::nullopt);
   ~WebSocketServer();
 
   WebSocketServer(const WebSocketServer&) = delete;
@@ -278,6 +279,8 @@ class WebSocketServer {
   void broadcast(const Envelope& envelope);
 
   std::uint16_t port_;
+  // Explicit fixture/replay seed; ordinary server sessions use system entropy.
+  std::optional<std::uint64_t> replay_seed_;
   std::filesystem::path save_directory_;
   std::intptr_t listen_socket_ = -1;
   bool running_ = false;

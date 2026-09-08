@@ -220,7 +220,7 @@ struct BillboardAssets {
   SpriteBitmap ruin;
   SpriteBitmap dwelling;
   SpriteBitmap shrine;
-  SpriteBitmap cartography_floor;
+  SpriteBitmap cartography_floor,cartography_grass,cartography_earth,cartography_basalt;
   SpriteBitmap terrain1;
   SpriteBitmap terrain4;
   // WIZARD Framekit chrome (TASK-0180 assets, finally consumed): nine-slice
@@ -267,7 +267,7 @@ struct BillboardAssets {
     ruin.reset();
     dwelling.reset();
     shrine.reset();
-    cartography_floor.reset();
+    cartography_floor.reset();cartography_grass.reset();cartography_earth.reset();cartography_basalt.reset();
     terrain1.reset();
     terrain4.reset();
     fk_panel.reset();
@@ -1292,6 +1292,9 @@ void load_framekit_assets(BillboardAssets& assets) {
   for (const auto& root : candidates) {
     if (!directory_exists(root)) continue;
     load_terrain_plate(assets, root + "/cartographer/limestone-floor.png", assets.cartography_floor,256);
+    load_terrain_plate(assets, root + "/cartographer/grass-ground.png", assets.cartography_grass,256);
+    load_terrain_plate(assets, root + "/cartographer/wet-earth.png", assets.cartography_earth,256);
+    load_terrain_plate(assets, root + "/cartographer/basalt-ground.png", assets.cartography_basalt,256);
     const bool chrome_loaded =
         load_sprite(assets, root + "/framekit/textures/panel.png",
                     assets.fk_panel) &&
@@ -5898,8 +5901,8 @@ TopHudLayout plan_top_hud(int width, int height, bool gear_open, bool tree_open,
 // -- Wall tiles -----------------------------------------------------------
 // Blocked cells of the authoritative walkable grid, drawn as chunky raised
 // stone so collision is always visible. Vector-only: no assets required.
-void draw_wall_tiles(const WorldView& world, HDC dc, const Camera& camera,
-                     const RECT& bounds) {
+void draw_wall_tiles(const WorldView& world, const BillboardAssets& assets, HDC dc, const Camera& camera,
+                     const RECT& bounds, render::List& rl) {
   if (world.map_width <= 0 || world.map_height <= 0 ||
       world.map_walkable.size() !=
           static_cast<std::size_t>(world.map_width) * world.map_height)
@@ -5938,6 +5941,17 @@ void draw_wall_tiles(const WorldView& world, HDC dc, const Camera& camera,
         continue;
       const auto tile_index=static_cast<std::size_t>(ty)*world.map_width+tx;
       if(is_walkable){
+        if(world.map_terrain.size()==world.map_walkable.size()){
+          const auto center=project(camera,bounds,tx*kTileUnits,ty*kTileUnits);
+          rl.push_back({render::Op::Tile,static_cast<double>(center.x),static_cast<double>(center.y),
+                        kTileUnits*.5*center.scale,0,"cartography:"+std::to_string(tx)+":"+std::to_string(ty)});
+          const auto tile=world.map_terrain[tile_index];
+          const SpriteBitmap* material=tile==7?&assets.cartography_grass:tile==10||tile==14?&assets.cartography_earth:tile==13?&assets.cartography_basalt:tile==1?&assets.cartography_floor:nullptr;
+          if(material && material->ready()){
+            const int sx=(tx%4)*material->width/4,sy=(ty%4)*material->height/4;
+            StretchBlt(dc,c0.x,c0.y,c1.x-c0.x,c1.y-c0.y,material->dc,sx,sy,material->width/4,material->height/4,SRCCOPY);
+          }
+        }
         if(world.map_terrain.size()==world.map_walkable.size()&&world.map_terrain[tile_index]==11){
           RECT bridge{c0.x,c0.y,c1.x,c1.y};HBRUSH stone=CreateSolidBrush(RGB(105,98,72));FillRect(dc,&bridge,stone);DeleteObject(stone);
           draw_line(dc,c0.x,c0.y,c1.x,c0.y,RGB(157,140,101),1);draw_line(dc,c0.x,c0.y,c0.x,c1.y,RGB(43,46,34),1);
@@ -5947,7 +5961,7 @@ void draw_wall_tiles(const WorldView& world, HDC dc, const Camera& camera,
 
       if(world.map_terrain.size()==world.map_walkable.size() && world.map_terrain[tile_index]!=2){
         const auto terrain=world.map_terrain[tile_index];
-        RECT gap{c0.x,c0.y,c1.x,c1.y};HBRUSH brush=CreateSolidBrush(terrain==5?RGB(22,47,43):terrain==6?RGB(68,31,18):RGB(14,23,20));FillRect(dc,&gap,brush);DeleteObject(brush);
+        RECT gap{c0.x,c0.y,c1.x,c1.y};HBRUSH brush=CreateSolidBrush(terrain==5?RGB(22,47,43):terrain==6?RGB(68,31,18):terrain==8?RGB(29,51,33):terrain==9?RGB(61,64,48):RGB(14,23,20));FillRect(dc,&gap,brush);DeleteObject(brush);
         if(terrain==5||terrain==6)draw_line(dc,c0.x+3,c0.y+(c1.y-c0.y)/2,c1.x-3,c0.y+(c1.y-c0.y)/2,terrain==5?RGB(43,70,58):RGB(128,68,28),1);
         continue;
       }
@@ -5982,6 +5996,18 @@ void draw_wall_tiles(const WorldView& world, HDC dc, const Camera& camera,
                 c0.x + (c1.x - c0.x) / 2, mid_y, RGB(52, 46, 38), 1);
       draw_line(dc, c0.x + (c1.x - c0.x) / 4, mid_y,
                 c0.x + (c1.x - c0.x) / 4, top.bottom, RGB(52, 46, 38), 1);
+    }
+  }
+  for(int ty=(start_ty/2)*2;ty<=end_ty;ty+=2)for(int tx=(start_tx/2)*2;tx<=end_tx;tx+=2){
+    const auto i=static_cast<std::size_t>(ty)*world.map_width+tx;
+    if(world.map_terrain.size()!=world.map_walkable.size())break;
+    const auto tile=world.map_terrain[i];if(tile!=8&&tile!=9)continue;
+    const auto h=terrain_tile_hash(tx,ty);
+    const auto p=project(camera,bounds,(tx+(static_cast<int>(h%17)-8)*.06)*kTileUnits,(ty+(static_cast<int>((h>>8)%17)-8)*.06)*kTileUnits);
+    const int radius=std::max(3,static_cast<int>(kTileUnits*camera.zoom*(.9+(h%7)*.08)));
+    fill_ellipse(dc,p.x+radius/6,p.y+radius/5,radius,radius*3/4,RGB(18,31,21));
+    for(int leaf=0;leaf<4;++leaf){const int ox=(static_cast<int>((h>>(leaf*4))%11)-5)*radius/9,oy=(static_cast<int>((h>>(leaf*3+4))%11)-5)*radius/9;
+      fill_ellipse(dc,p.x+ox,p.y+oy,radius*2/3,radius/2,tile==8?RGB(48+leaf*6,75+leaf*5,39+leaf*3):RGB(88+leaf*6,91+leaf*5,69+leaf*4));
     }
   }
 }
@@ -9257,9 +9283,15 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     return;
   }
 
-  draw_floor(state.billboards, dc, state.camera, bounds, world.route_id, rl,
-             &state.floor_cache, world.theme);
-  draw_wall_tiles(world, dc, state.camera, bounds);
+  if (world.map_terrain.empty()) {
+    draw_floor(state.billboards, dc, state.camera, bounds, world.route_id, rl,
+               &state.floor_cache, world.theme);
+  } else {
+    rl.push_back({render::Op::Floor, 0.0, 0.0, 0.0, 1, "tiled"});
+    HBRUSH ground = CreateSolidBrush(RGB(29, 42, 30));
+    FillRect(dc, &bounds, ground); DeleteObject(ground);
+  }
+  draw_wall_tiles(world, state.billboards, dc, state.camera, bounds, rl);
   QueryPerformanceCounter(&section_t1);
   state.paint_ms_floor = section_ms(section_t0, section_t1);
 
@@ -12332,7 +12364,7 @@ int scenario_remote_render_list() {
   verdigris::networking::WebSocketServer* server = nullptr;
   std::uint16_t port = 0;
   for (std::uint16_t candidate = 6580; candidate <= 6599; ++candidate) {
-    auto* probe = new verdigris::networking::WebSocketServer(candidate);
+    auto* probe = new verdigris::networking::WebSocketServer(candidate, {}, 0);
     std::string error;
     if (probe->start(&error)) {
       server = probe;
@@ -12392,6 +12424,14 @@ int scenario_remote_render_list() {
   }
   scenario_check(saw_conn, "remote-render-list: connection chip uses connection_state_label");
 
+  // Set up this render-event fixture next to a real authoritative monster;
+  // walking east from an arbitrary generated entrance does not imply a fight.
+  if(auto* remote=dynamic_cast<verdigris::client::RemoteProtocolSession*>(state.session.get())){
+    for(const auto& foe:remote->model().monsters)if(foe.alive){
+      remote->send_raw("dev:teleport",verdigris::networking::JsonValue::Object{
+        {"x",static_cast<int>(foe.x)-1},{"y",static_cast<int>(foe.y)}});break;
+    }
+  }
   bool saw_monster = false, saw_swing = false, saw_drop = false;
   for (int step = 0; step < 240; ++step) {
     state.session->submit(verdigris::client::ClientCommand::use_action("melee"));
@@ -12605,7 +12645,7 @@ int scenario_chronicles_gate_b() {
   verdigris::networking::WebSocketServer* server = nullptr;
   std::uint16_t port = 0;
   for (std::uint16_t candidate = 6780; candidate <= 6799; ++candidate) {
-    auto* probe = new verdigris::networking::WebSocketServer(candidate);
+    auto* probe = new verdigris::networking::WebSocketServer(candidate, {}, 0);
     std::string error;
     if (probe->start(&error)) {
       server = probe;
@@ -12998,7 +13038,7 @@ int scenario_first_session_clarity() {
     verdigris::networking::WebSocketServer* server = nullptr;
     std::uint16_t port = 0;
     for (std::uint16_t candidate = 6580; candidate <= 6599; ++candidate) {
-      auto* probe = new verdigris::networking::WebSocketServer(candidate);
+      auto* probe = new verdigris::networking::WebSocketServer(candidate, {}, 0);
       std::string error;
       if (probe->start(&error)) {
         server = probe;
@@ -13102,7 +13142,7 @@ int scenario_progression_surface() {
   verdigris::networking::WebSocketServer* server = nullptr;
   std::uint16_t port = 0;
   for (std::uint16_t candidate = 7120; candidate <= 7139; ++candidate) {
-    auto* probe = new verdigris::networking::WebSocketServer(candidate);
+    auto* probe = new verdigris::networking::WebSocketServer(candidate, {}, 0);
     std::string error;
     if (probe->start(&error)) {
       server = probe;
@@ -13729,7 +13769,7 @@ int scenario_hud_pane_readability() {
     verdigris::networking::WebSocketServer* server = nullptr;
     std::uint16_t port = 0;
     for (std::uint16_t candidate = 7100; candidate <= 7119; ++candidate) {
-      auto* probe = new verdigris::networking::WebSocketServer(candidate);
+      auto* probe = new verdigris::networking::WebSocketServer(candidate, {}, 0);
       std::string error;
       if (probe->start(&error)) {
         server = probe;
@@ -18682,7 +18722,7 @@ int scenario_frame_budget() {
   return scenario_failures;
 }
 
-int scenario_cartography() {
+int scenario_cartography_recipe(const std::string& recipe) {
   ClientState state; scenario_begin(state); scenario_follow_camera(state);
   // Supply the presentation seam with a deterministic server-shaped model.
   // A null simulation AND null session is not a valid full-client state.
@@ -18698,8 +18738,8 @@ int scenario_cartography() {
   };
   auto fixture=std::make_unique<ChartSession>();auto* chart_session=fixture.get();
   auto& model=fixture->value;
-  const auto map=verdigris::cartography::generate({2718,"necropolis",6,4,5,2});
-  model.scene.id="instance:cartography:2718";model.player.scene_id=model.scene.id;model.theme="dungeon";
+  const auto map=verdigris::cartography::generate({2718,recipe,4,3,3,1});
+  model.scene.id="instance:cartography:2718";model.player.scene_id=model.scene.id;model.theme=recipe=="wildwood"?"grove":recipe=="causeway"?"marsh":recipe=="quarry"?"wilds":"dungeon";model.map_recipe=recipe;
   model.map_width=map.width;model.map_height=map.height;model.map_scene_id=model.scene.id;
   model.map_terrain=map.tiles;
   for(auto tile:map.tiles)model.map_walkable.push_back(verdigris::cartography::walkable(tile)?1:0);
@@ -18710,14 +18750,14 @@ int scenario_cartography() {
   state.simulation.reset();state.session=std::move(fixture);sync_world(state);
   state.camera.x=state.world.player.position.x;state.camera.y=state.world.player.position.y;
   generate_scenery(state);
-  scenario_check(state.billboards.cartography_floor.ready(),"cartography: generated material loaded");
+  scenario_check(state.billboards.cartography_floor.ready() && state.billboards.cartography_grass.ready() && state.billboards.cartography_earth.ready() && state.billboards.cartography_basalt.ready(),"cartography: all terrain-specific materials loaded");
   scenario_check(std::none_of(state.scenery.begin(),state.scenery.end(),[](const auto& s){return s.kind==SceneryKind::Tree;}),"cartography: authored crypt lanes have no generic trees");
   const auto dir=art_wave_capture_dir();
-  scenario_check(!dir.empty() && reference_present(state,1366,768,dir+"/cartography-world.png"),"cartography: actual terrain capture");
+  scenario_check(!dir.empty() && reference_present(state,1366,768,dir+"/cartography-"+recipe+"-world.png"),"cartography: actual terrain capture");
   const auto unseen=static_cast<std::size_t>(map.boss.y)*map.width+map.boss.x;
   scenario_check(state.chart_seen.size()==map.tiles.size() && !state.chart_seen[unseen],"cartography: distant guardian remains undiscovered");
   state.atlas_open=true;
-  scenario_check(reference_present(state,1366,768,dir+"/cartography-atlas.png"),"cartography: discovery atlas capture");
+  scenario_check(reference_present(state,1366,768,dir+"/cartography-"+recipe+"-atlas.png"),"cartography: discovery atlas capture");
   state.chart_seen[unseen]=1;++chart_session->value.map_revision;
   reference_present(state,1366,768,"");
   scenario_check(!state.chart_seen[unseen],"cartography: same-scene regeneration resets discovery");
@@ -18725,6 +18765,13 @@ int scenario_cartography() {
   for(int i=0;i<3;++i)reference_present(state,1366,768,"");
   scenario_check(state.last_paint_ms<40.0,"cartography: generated textured scene stays under 40 ms");
   std::printf("    cartography paint: %.2f ms (floor %.2f, world %.2f, HUD %.2f)\n",state.last_paint_ms,state.paint_ms_floor,state.paint_ms_world,state.paint_ms_hud);
+  return scenario_failures;
+}
+
+int scenario_cartography() {
+  for(const std::string recipe:{"wildwood","causeway","quarry","necropolis","sanctuary"}){
+    std::printf("    landscape recipe: %s\n",recipe.c_str());scenario_cartography_recipe(recipe);
+  }
   return scenario_failures;
 }
 
@@ -18902,41 +18949,11 @@ bool save_hbitmap_png(BillboardAssets& assets, HBITMAP bitmap, const std::string
   if (!assets.create_bitmap_from_hbitmap || !assets.save_image_to_file ||
       !assets.dispose_image)
     return false;
-  BITMAP bm{};
-  const int got = GetObject(bitmap, sizeof(bm), &bm);
-  HBITMAP encoded = bitmap;
-  HBITMAP swapped = nullptr;
-  void* swapped_bits = nullptr;
-  // GetObject on a DIB section returns sizeof(DIBSECTION) (> BITMAP). Requiring
-  // an exact BITMAP size silently skipped the channel fix.
-  if (got >= static_cast<int>(sizeof(BITMAP)) && bm.bmBitsPixel == 32 && bm.bmBits &&
-      bm.bmWidth > 0 && bm.bmWidthBytes >= 4) {
-    BITMAPINFO info{};
-    info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    info.bmiHeader.biWidth = bm.bmWidth;
-    info.bmiHeader.biHeight = -std::abs(bm.bmHeight);
-    info.bmiHeader.biPlanes = 1;
-    info.bmiHeader.biBitCount = 32;
-    info.bmiHeader.biCompression = BI_RGB;
-    swapped = CreateDIBSection(nullptr, &info, DIB_RGB_COLORS, &swapped_bits, nullptr, 0);
-    if (swapped && swapped_bits) {
-      const int h = std::abs(bm.bmHeight);
-      const int w = bm.bmWidth;
-      auto* src = static_cast<const std::uint8_t*>(bm.bmBits);
-      auto* dst = static_cast<std::uint8_t*>(swapped_bits);
-      for (int y = 0; y < h; ++y) {
-        const std::uint8_t* srow = src + y * bm.bmWidthBytes;
-        std::uint8_t* drow = dst + y * w * 4;
-        std::memcpy(drow, srow, static_cast<std::size_t>(w) * 4);
-        verdigris::gpu::swap_bgra_rb(drow, w);
-      }
-      encoded = swapped;
-    }
-  }
+  // GDI DIBs and GdipCreateBitmapFromHBITMAP already agree on BGRA.
+  // Swapping red/blue here made terrain evidence disagree with the live window.
   GpBitmap* image = nullptr;
   const bool created =
-      assets.create_bitmap_from_hbitmap(encoded, nullptr, &image) == 0 && image;
-  if (swapped) DeleteObject(swapped);
+      assets.create_bitmap_from_hbitmap(bitmap, nullptr, &image) == 0 && image;
   if (!created) return false;
   const CLSID png_clsid = {0x557cf406, 0x1a04, 0x11d3, {0x9a, 0x73, 0x00, 0x00, 0xf8, 0x1e, 0xf3, 0x2e}};
   const std::wstring wide = wide_path(path);
