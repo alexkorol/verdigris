@@ -220,6 +220,7 @@ struct BillboardAssets {
   SpriteBitmap ruin;
   SpriteBitmap dwelling;
   SpriteBitmap shrine;
+  SpriteBitmap cartography_floor;
   SpriteBitmap terrain1;
   SpriteBitmap terrain4;
   // WIZARD Framekit chrome (TASK-0180 assets, finally consumed): nine-slice
@@ -266,6 +267,7 @@ struct BillboardAssets {
     ruin.reset();
     dwelling.reset();
     shrine.reset();
+    cartography_floor.reset();
     terrain1.reset();
     terrain4.reset();
     fk_panel.reset();
@@ -615,6 +617,12 @@ struct ClientState {
   // Neither changes world coordinates nor reveals off-snapshot actors.
   int minimap_zoom = 0;
   int minimap_opacity = 220;
+  bool atlas_open = false;
+  std::uint64_t chart_revision = 0;
+  std::string chart_scene;
+  std::vector<std::uint8_t> chart_seen;
+  int chart_x = -1, chart_y = -1;
+
   // VG-UI-005: overlay probes that are not simulation actors. Sync cannot
   // invent or erase these; zoom still cannot paint on_snapshot=false.
   std::vector<WorldActor> map_overlay_probes;
@@ -1090,7 +1098,7 @@ bool load_sprite(BillboardAssets& assets, const std::string& path, SpriteBitmap&
 }
 
 bool load_terrain_plate(BillboardAssets& assets, const std::string& path,
-                        SpriteBitmap& sprite) {
+                        SpriteBitmap& sprite, int material_size = 0) {
   if (!assets.create_bitmap || !assets.image_width || !assets.image_height ||
       !assets.create_hbitmap || !assets.dispose_image)
     return false;
@@ -1145,6 +1153,24 @@ bool load_terrain_plate(BillboardAssets& assets, const std::string& path,
     pixels[index + 0] = tone(b);
     pixels[index + 1] = tone(g);
     pixels[index + 2] = tone(r);
+  }
+
+  // Prefilter the floor once at load time. Per-tile HALFTONE sampling of
+  // the full-resolution source made a generated room exceed the frame budget.
+  if (material_size > 0 && width > static_cast<UINT>(material_size)) {
+    const UINT out_w=static_cast<UINT>(material_size);
+    const UINT out_h=std::max(1u,height*out_w/width);
+    std::vector<std::uint8_t> filtered(static_cast<std::size_t>(out_w)*out_h*4,255);
+    for(UINT y=0;y<out_h;++y)for(UINT x=0;x<out_w;++x){
+      const UINT x0=x*width/out_w,x1=(x+1)*width/out_w;
+      const UINT y0=y*height/out_h,y1=(y+1)*height/out_h;
+      const unsigned count=(x1-x0)*(y1-y0);
+      for(UINT channel=0;channel<3;++channel){unsigned total=0;
+        for(UINT sy=y0;sy<y1;++sy)for(UINT sx=x0;sx<x1;++sx)total+=pixels[(static_cast<std::size_t>(sy)*width+sx)*4+channel];
+        filtered[(static_cast<std::size_t>(y)*out_w+x)*4+channel]=static_cast<std::uint8_t>(total/count);
+      }
+    }
+    pixels=std::move(filtered);width=out_w;height=out_h;
   }
 
   std::vector<std::uint8_t> mirrored(pixels.size());
@@ -1265,6 +1291,7 @@ void load_framekit_assets(BillboardAssets& assets) {
   }
   for (const auto& root : candidates) {
     if (!directory_exists(root)) continue;
+    load_terrain_plate(assets, root + "/cartographer/limestone-floor.png", assets.cartography_floor,256);
     const bool chrome_loaded =
         load_sprite(assets, root + "/framekit/textures/panel.png",
                     assets.fk_panel) &&
@@ -1728,6 +1755,17 @@ void generate_scenery(ClientState& state) {
   }
   if (route_id.empty()) return;
 
+  // Generated rooms own their dressing; keep central combat/socket lanes clear.
+  if (!state.world.map_landmarks.empty() && route_id.rfind("town:", 0) != 0) {
+    for (const auto& room : state.world.map_landmarks) {
+      if (room.role == "entry" || room.role == "boss") continue;
+      const int x = room.x - 4, y = room.y - 2;
+      if (x >= 0 && y >= 0 && x < state.world.map_width && y < state.world.map_height &&
+          state.world.map_walkable[static_cast<std::size_t>(y)*state.world.map_width+x])
+        add_scenery(state.scenery, SceneryKind::Ruin, x*kTileUnits, y*kTileUnits, 8, false, .55);
+    }
+    return;
+  }
   SceneryRng rng(scenery_seed(route_id));
   if (route_id.rfind("town:", 0) == 0) {
     // The Crossroads: landmarks anchored on the server's own contract
@@ -1883,6 +1921,7 @@ void ingest_session_events(ClientState& state) {
   ++state.world.tick;
   ensure_audio(state);
   const std::string route_before = state.world.route_id;
+  const auto chart_before = state.world.map_revision;
   std::vector<std::string> batch_keys;
   for (const auto& event : state.session->drain_events()) {
     verdigris::client::apply_presentation_event(fx, state.world, event, state.world.tick);
@@ -1895,7 +1934,7 @@ void ingest_session_events(ClientState& state) {
   refresh_ambience(state);
   drain_audio(state);
   sync_world(state);
-  if (state.world.route_id != route_before) generate_scenery(state);
+  if (state.world.route_id != route_before || state.world.map_revision != chart_before) generate_scenery(state);
   // TASK-0122 Phase A: deterministic first-sighting spawn beats on the
   // authoritative remote snapshot.
   verdigris::client::detect_monster_spawns(fx, state.world, state.world.tick);
@@ -2852,7 +2891,12 @@ void draw_floor(const BillboardAssets& assets, HDC dc, const Camera& camera,
         const ScreenPoint corner0 = project(cam, frame, wx, wy);
         const ScreenPoint corner1 = project(cam, frame, wx + tile, wy + tile);
         const RECT cell{corner0.x, corner0.y, corner1.x, corner1.y};
-        vector_art::terrain_tile(target, cell, theme, terrain_tile_hash(tx, ty));
+        if ((theme=="crypt" || theme=="dungeon") && assets.cartography_floor.ready()) {
+          // World-anchored material quadrants preserve neighboring stone joints.
+          const auto& plate=assets.cartography_floor;
+          const int sx=((tx%4+4)%4)*plate.width/4,sy=((ty%4+4)%4)*plate.height/4;
+          StretchBlt(target,cell.left,cell.top,cell.right-cell.left,cell.bottom-cell.top,plate.dc,sx,sy,plate.width/4,plate.height/4,SRCCOPY);
+        } else vector_art::terrain_tile(target, cell, theme, terrain_tile_hash(tx, ty));
       }
     }
   };
@@ -4890,9 +4934,10 @@ void paint_combat_log(const ClientState& state, HDC dc, const RECT& bounds,
 }
 
 void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List& rl) {
-  const HudRect map = minimap_rect(static_cast<int>(bounds.bottom));
+  const int atlas_size = std::min(static_cast<int>(bounds.right)-100, static_cast<int>(bounds.bottom)-160);
+  const HudRect map = state.atlas_open ? HudRect{(static_cast<int>(bounds.right)-atlas_size)/2,60,atlas_size,atlas_size} : minimap_rect(static_cast<int>(bounds.bottom));
   const int kSize = map.w;
-  const int s = std::max(1, map.w / 108);
+  const int s = state.atlas_open ? 1 : std::max(1, map.w / 108);
   RECT panel{map.x, map.y, map.x + map.w, map.y + map.h};
   state.hud_rect_trace.push_back({"minimap", map});
   const int zoom_step = verdigris::client::ui::clamp_zoom(state.minimap_zoom);
@@ -4902,11 +4947,13 @@ void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List&
   const WorldView& world = state.world;
   const double arena = static_cast<double>(verdigris::world_scale::kArenaHalfExtent);
   const double zoom = zoom_step == 0 ? 1.0 : (zoom_step == 1 ? 1.5 : 2.2);
-  const double map_scale = static_cast<double>(kSize) / (arena * 2.2) * zoom;
+  const double map_scale = state.atlas_open && world.map_width > 0
+      ? static_cast<double>(kSize-32) / (std::max(world.map_width,world.map_height)*kTileUnits)
+      : static_cast<double>(kSize) / (arena * 2.2) * zoom;
   const int center_x = (panel.left + panel.right) / 2;
   const int center_y = (panel.top + panel.bottom) / 2;
-  const double origin_x = static_cast<double>(world.player.position.x);
-  const double origin_y = static_cast<double>(world.player.position.y);
+  const double origin_x = state.atlas_open && world.map_width>0 ? world.map_width*kTileUnits*.5 : static_cast<double>(world.player.position.x);
+  const double origin_y = state.atlas_open && world.map_height>0 ? world.map_height*kTileUnits*.5 : static_cast<double>(world.player.position.y);
 
   auto to_map = [&](double wx, double wy) {
     const int mx = center_x + static_cast<int>((wx - origin_x) * map_scale);
@@ -4914,8 +4961,49 @@ void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List&
     return std::pair<int, int>{mx, my};
   };
 
+  const int clip_state = SaveDC(dc);
+  IntersectClipRect(dc,panel.left+2,panel.top+2,panel.right-2,panel.bottom-2);
+  if (world.map_width>0 && world.map_height>0 && world.map_walkable.size()==static_cast<std::size_t>(world.map_width)*world.map_height) {
+    if (state.chart_revision!=world.map_revision || state.chart_scene!=world.route_id || state.chart_seen.size()!=world.map_walkable.size()) {
+      state.chart_revision=world.map_revision;state.chart_scene=world.route_id;state.chart_seen.assign(world.map_walkable.size(),0);state.chart_x=-1;state.chart_y=-1;
+    }
+    const int px=static_cast<int>(std::round(world.player.position.x/kTileUnits));
+    const int py=static_cast<int>(std::round(world.player.position.y/kTileUnits));
+    if(px!=state.chart_x||py!=state.chart_y){
+      state.chart_x=px;state.chart_y=py;
+      for(int y=std::max(0,py-8);y<std::min(world.map_height,py+9);++y)for(int x=std::max(0,px-8);x<std::min(world.map_width,px+9);++x){
+        if((x-px)*(x-px)+(y-py)*(y-py)>64)continue;
+        bool blocked=false;const int steps=std::max(std::abs(x-px),std::abs(y-py));
+        for(int k=0;k<steps;++k){const int sx=static_cast<int>(std::round(px+(x-px)*static_cast<double>(k)/steps)),sy=static_cast<int>(std::round(py+(y-py)*static_cast<double>(k)/steps));if(sx<0||sy<0||sx>=world.map_width||sy>=world.map_height||!world.map_walkable[static_cast<std::size_t>(sy)*world.map_width+sx]){blocked=true;break;}}
+        if(!blocked)state.chart_seen[static_cast<std::size_t>(y)*world.map_width+x]=1;
+      }
+    }
+    HBRUSH floor_brush=CreateSolidBrush(RGB(91,111,85));
+    for(int y=0;y<world.map_height;++y)for(int x=0;x<world.map_width;++x){const auto index=static_cast<std::size_t>(y)*world.map_width+x;if(!state.chart_seen[index]||!world.map_walkable[index])continue;
+      const auto [x0,y0]=to_map((x-.5)*kTileUnits,(y-.5)*kTileUnits);const auto [x1,y1]=to_map((x+.5)*kTileUnits,(y+.5)*kTileUnits);
+      if(x1<panel.left||y1<panel.top||x0>panel.right||y0>panel.bottom)continue;RECT cell{x0,y0,std::max(x0+1,x1),std::max(y0+1,y1)};FillRect(dc,&cell,floor_brush);
+    }
+    DeleteObject(floor_brush);
+    const auto old_font=SelectObject(dc,skin::font_small());
+    SetBkMode(dc,TRANSPARENT);SetTextColor(dc,skin::kInk);
+    for(const auto& landmark:world.map_landmarks){
+      if(!state.chart_seen[static_cast<std::size_t>(landmark.y)*world.map_width+landmark.x])continue;
+      const auto [mx,my]=to_map(landmark.x*kTileUnits,landmark.y*kTileUnits);
+      fill_ellipse(dc,mx,my,3,3,landmark.role=="boss"?RGB(224,144,110):RGB(213,191,119));
+      if(state.atlas_open)TextOutA(dc,mx+6,my-16,landmark.name.c_str(),static_cast<int>(landmark.name.size()));
+    }
+    if(state.atlas_open){const char* title="EXPEDITION ATLAS   |   North up   |   M / Esc close";TextOutA(dc,panel.left+16,panel.top+12,title,static_cast<int>(std::strlen(title)));}
+    SelectObject(dc,old_font);
+    rl.push_back({render::Op::Hud,static_cast<double>(panel.left),static_cast<double>(panel.top),0.0,static_cast<int>(world.map_landmarks.size()),"cartography:discovered-collision"});
+  }
+  const auto discovered = [&](double wx,double wy){
+    if(state.chart_seen.empty())return true;
+    const int x=static_cast<int>(std::round(wx/kTileUnits)),y=static_cast<int>(std::round(wy/kTileUnits));
+    return x>=0&&y>=0&&x<world.map_width&&y<world.map_height&&state.chart_seen[static_cast<std::size_t>(y)*world.map_width+x]!=0;
+  };
   int dots = 0;
   for (const auto& item : state.scenery) {
+    if(!discovered(item.position.x,item.position.y))continue;
     const auto [mx, my] = to_map(item.position.x, item.position.y);
     if (mx < panel.left + 2 || mx >= panel.right - 2 || my < panel.top + 2 ||
         my >= panel.bottom - 2)
@@ -4924,7 +5012,7 @@ void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List&
     ++dots;
   }
 
-  if (world.has_extraction) {
+  if (world.has_extraction && discovered(world.extraction.x,world.extraction.y)) {
     const auto [mx, my] = to_map(world.extraction.x, world.extraction.y);
     fill_ellipse(dc, mx, my, 4 * s, 4 * s, RGB(239, 208, 116));
     ++dots;
@@ -4935,7 +5023,7 @@ void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List&
     const verdigris::client::ui::MapTarget target{monster.id.c_str(),
                                                  monster.alive,
                                                  monster.on_snapshot};
-    if (!verdigris::client::ui::overlay_paints_blip(overlay, target)) return;
+    if (!verdigris::client::ui::overlay_paints_blip(overlay, target) || !discovered(monster.position.x,monster.position.y)) return;
     const auto [mx, my] = to_map(monster.position.x, monster.position.y);
     fill_ellipse(dc, mx, my, 3 * s, 3 * s, RGB(196, 58, 48));
     ++dots;
@@ -4958,7 +5046,7 @@ void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List&
     ++dots;
   }
 
-  const auto [px, py] = to_map(origin_x, origin_y);
+  const auto [px, py] = to_map(world.player.position.x, world.player.position.y);
   const double facing_angle =
       std::atan2(world.player.facing.y, world.player.facing.x);
   const int tip_x = px + static_cast<int>(std::cos(facing_angle) * 8.0 * s);
@@ -4977,6 +5065,7 @@ void paint_minimap(ClientState& state, HDC dc, const RECT& bounds, render::List&
   SelectObject(dc, old_arrow_brush);
   DeleteObject(player_brush);
 
+  RestoreDC(dc,clip_state);
   rl.push_back({render::Op::Minimap, static_cast<double>(panel.left),
                 static_cast<double>(panel.top), static_cast<double>(kSize), dots, "panel"});
   rl.push_back({render::Op::Hud, static_cast<double>(panel.left),
@@ -5815,6 +5904,12 @@ void draw_wall_tiles(const WorldView& world, HDC dc, const Camera& camera,
       world.map_walkable.size() !=
           static_cast<std::size_t>(world.map_width) * world.map_height)
     return;
+  if (!world.map_terrain.empty()) {
+    const auto a=project(camera,bounds,-.5*kTileUnits,-.5*kTileUnits);
+    const auto b=project(camera,bounds,(world.map_width-.5)*kTileUnits,(world.map_height-.5)*kTileUnits);
+    const int saved=SaveDC(dc);ExcludeClipRect(dc,a.x,a.y,b.x,b.y);
+    HBRUSH void_brush=CreateSolidBrush(RGB(14,23,20));FillRect(dc,&bounds,void_brush);DeleteObject(void_brush);RestoreDC(dc,saved);
+  }
   const double tile = kTileUnits;
   const double half_w_units =
       (static_cast<double>(bounds.right) * 0.5) / std::max(0.05, camera.zoom) +
@@ -5832,9 +5927,7 @@ void draw_wall_tiles(const WorldView& world, HDC dc, const Camera& camera,
   end_ty = std::min(end_ty, world.map_height - 1);
   for (int ty = start_ty; ty <= end_ty; ++ty) {
     for (int tx = start_tx; tx <= end_tx; ++tx) {
-      if (world.map_walkable[static_cast<std::size_t>(ty) * world.map_width +
-                             tx])
-        continue;
+      const bool is_walkable=world.map_walkable[static_cast<std::size_t>(ty)*world.map_width+tx]!=0;
       // The tile occupies [tx-0.5, tx+0.5) in protocol space (positions round
       // to the nearest tile), so the block is centred on the tile coordinate.
       const double wx = (static_cast<double>(tx) - 0.5) * tile;
@@ -5843,6 +5936,21 @@ void draw_wall_tiles(const WorldView& world, HDC dc, const Camera& camera,
       const ScreenPoint c1 = project(camera, bounds, wx + tile, wy + tile);
       if (c1.x < 0 || c1.y < 0 || c0.x > bounds.right || c0.y > bounds.bottom)
         continue;
+      const auto tile_index=static_cast<std::size_t>(ty)*world.map_width+tx;
+      if(is_walkable){
+        if(world.map_terrain.size()==world.map_walkable.size()&&world.map_terrain[tile_index]==11){
+          RECT bridge{c0.x,c0.y,c1.x,c1.y};HBRUSH stone=CreateSolidBrush(RGB(105,98,72));FillRect(dc,&bridge,stone);DeleteObject(stone);
+          draw_line(dc,c0.x,c0.y,c1.x,c0.y,RGB(157,140,101),1);draw_line(dc,c0.x,c0.y,c0.x,c1.y,RGB(43,46,34),1);
+        }
+        continue;
+      }
+
+      if(world.map_terrain.size()==world.map_walkable.size() && world.map_terrain[tile_index]!=2){
+        const auto terrain=world.map_terrain[tile_index];
+        RECT gap{c0.x,c0.y,c1.x,c1.y};HBRUSH brush=CreateSolidBrush(terrain==5?RGB(22,47,43):terrain==6?RGB(68,31,18):RGB(14,23,20));FillRect(dc,&gap,brush);DeleteObject(brush);
+        if(terrain==5||terrain==6)draw_line(dc,c0.x+3,c0.y+(c1.y-c0.y)/2,c1.x-3,c0.y+(c1.y-c0.y)/2,terrain==5?RGB(43,70,58):RGB(128,68,28),1);
+        continue;
+      }
       const int lift = std::max(4, static_cast<int>((c1.y - c0.y) * 0.30));
       // Theme-tinted stone so each road's walls belong to its palette.
       COLORREF slab = RGB(88, 78, 66);
@@ -9773,7 +9881,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
         world.house_name + " - Scion " +
         (world.scion_name.empty() ? std::string("(unnamed)") : world.scion_name);
     static constexpr char kControls[] =
-        "WASD | LMB strike | Space dash | I gear | F3";
+        "WASD | LMB strike | Space dash | I gear | M map | F3";
     const std::string& art_text = state.billboards.status;
     const bool plates_ready =
         state.billboards.player.ready() && state.billboards.raider.ready() &&
@@ -10735,6 +10843,10 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
     case WM_KEYDOWN:
       if (!state) break;
       verdigris::client::input::note_input(state->input_latency);
+      if (wparam == 'M' && state->screen == Screen::Expedition) {
+        state->atlas_open = !state->atlas_open;
+        break;
+      }
       if (wparam == VK_F3) {
         state->debug_overlay = !state->debug_overlay;
         break;
@@ -10749,6 +10861,7 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
             zoom_height_factor(static_cast<int>(mode_bounds.bottom));
         break;
       }
+      if (wparam == VK_ESCAPE && state->atlas_open) { state->atlas_open=false; break; }
       if (wparam == VK_ESCAPE) {
         // TASK-0153: dismiss an open pane first; exit only on a bare Escape.
         handle_escape_key(*state);
@@ -18569,6 +18682,52 @@ int scenario_frame_budget() {
   return scenario_failures;
 }
 
+int scenario_cartography() {
+  ClientState state; scenario_begin(state); scenario_follow_camera(state);
+  // Supply the presentation seam with a deterministic server-shaped model.
+  // A null simulation AND null session is not a valid full-client state.
+  struct ChartSession final : verdigris::client::IClientSession {
+    verdigris::client::ClientModel value; std::string error;
+    bool start(std::string*) override {return true;}
+    void shutdown() override {} void poll() override {}
+    void submit(const verdigris::client::ClientCommand&) override {}
+    verdigris::client::ConnectionState connection_state() const override {return verdigris::client::ConnectionState::Ready;}
+    const verdigris::client::ClientModel& model() const override {return value;}
+    std::vector<verdigris::client::PresentationEvent> drain_events() override {return {};}
+    const std::string& last_error() const override {return error;}
+  };
+  auto fixture=std::make_unique<ChartSession>();auto* chart_session=fixture.get();
+  auto& model=fixture->value;
+  const auto map=verdigris::cartography::generate({2718,"necropolis",6,4,5,2});
+  model.scene.id="instance:cartography:2718";model.player.scene_id=model.scene.id;model.theme="dungeon";
+  model.map_width=map.width;model.map_height=map.height;model.map_scene_id=model.scene.id;
+  model.map_terrain=map.tiles;
+  for(auto tile:map.tiles)model.map_walkable.push_back(verdigris::cartography::walkable(tile)?1:0);
+  for(const auto& r:map.rooms)model.map_landmarks.push_back({r.cx,r.cy,r.tier,r.landmark,r.role});
+  model.map_revision=1;model.player.uuid="cartographer";model.player.alive=true;
+  model.player.life=model.player.life_max=100;model.player.resource=model.player.resource_max=50;
+  model.player.x=map.entrance.x;model.player.y=map.entrance.y;
+  state.simulation.reset();state.session=std::move(fixture);sync_world(state);
+  state.camera.x=state.world.player.position.x;state.camera.y=state.world.player.position.y;
+  generate_scenery(state);
+  scenario_check(state.billboards.cartography_floor.ready(),"cartography: generated material loaded");
+  scenario_check(std::none_of(state.scenery.begin(),state.scenery.end(),[](const auto& s){return s.kind==SceneryKind::Tree;}),"cartography: authored crypt lanes have no generic trees");
+  const auto dir=art_wave_capture_dir();
+  scenario_check(!dir.empty() && reference_present(state,1366,768,dir+"/cartography-world.png"),"cartography: actual terrain capture");
+  const auto unseen=static_cast<std::size_t>(map.boss.y)*map.width+map.boss.x;
+  scenario_check(state.chart_seen.size()==map.tiles.size() && !state.chart_seen[unseen],"cartography: distant guardian remains undiscovered");
+  state.atlas_open=true;
+  scenario_check(reference_present(state,1366,768,dir+"/cartography-atlas.png"),"cartography: discovery atlas capture");
+  state.chart_seen[unseen]=1;++chart_session->value.map_revision;
+  reference_present(state,1366,768,"");
+  scenario_check(!state.chart_seen[unseen],"cartography: same-scene regeneration resets discovery");
+  state.atlas_open=false;
+  for(int i=0;i<3;++i)reference_present(state,1366,768,"");
+  scenario_check(state.last_paint_ms<40.0,"cartography: generated textured scene stays under 40 ms");
+  std::printf("    cartography paint: %.2f ms (floor %.2f, world %.2f, HUD %.2f)\n",state.last_paint_ms,state.paint_ms_floor,state.paint_ms_world,state.paint_ms_hud);
+  return scenario_failures;
+}
+
 int run_scenarios(const std::string& which) {
   struct Entry {
     const char* name;
@@ -18632,6 +18791,7 @@ int run_scenarios(const std::string& which) {
       {"vital-orbs", scenario_vital_orbs},
       {"death-disconnect", scenario_death_disconnect},
       {"route-map", scenario_route_map},
+      {"cartography", scenario_cartography},
       {"stat-explain", scenario_stat_explain},
       {"held-item", scenario_held_item},
       {"pack-drag", scenario_pack_drag},

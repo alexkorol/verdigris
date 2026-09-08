@@ -85,3 +85,6 @@ add_test(NAME verdigris_session_tests COMMAND verdigris_session_tests)
 add_test(NAME verdigris_presentation_events_tests COMMAND verdigris_presentation_events_tests)
 add_test(NAME verdigris_audio_mixer_tests COMMAND verdigris_audio_mixer_tests)
 add_test(NAME verdigris_client_scenarios COMMAND verdigris_client --scenario all)
+
+add_executable(cartography_tests tests/cartography_tests.cpp)
+add_test(NAME cartography_tests COMMAND cartography_tests)

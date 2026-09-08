@@ -95,6 +95,17 @@ void local_session_ready_and_deterministic() {
         "local: shutdown reaches disconnected state");
 }
 
+bool walk_to(verdigris::client::IClientSession& session,int x,int y) {
+  const auto& model=session.model();
+  verdigris::cartography::Map map;map.width=model.map_width;map.height=model.map_height;
+  map.tiles=model.map_walkable;
+  const int px=static_cast<int>(std::round(model.player.x)),py=static_cast<int>(std::round(model.player.y));
+  if(map.tiles.empty())return false;
+  const auto route=verdigris::cartography::path(map,{px,py},{x,y});
+  if(route.size()<2)return false;
+  const auto next=route[1];session.submit(verdigris::client::ClientCommand::move(next.x-px,next.y-py));return true;
+}
+
 void hunt_step(verdigris::client::IClientSession& session) {
   // The swing range gate (JS parity) means the driver must close distance:
   // walk toward the nearest live monster in the authoritative model, then
@@ -428,20 +439,19 @@ void remote_guest_journey() {
     std::printf("    diag: nearest living foe chebyshev %.2f\n", best);
   }
   check(incoming, "journey: incoming combat:hit reached the client");
+  if(!telegraph){
+    const auto& model=session.model();
+    for(const auto& landmark:model.map_landmarks)if(landmark.role=="boss"){
+      verdigris::networking::JsonValue::Object tp;
+      tp["x"]=verdigris::networking::JsonValue(landmark.x-1);tp["y"]=verdigris::networking::JsonValue(landmark.y);
+      session.send_raw("dev:teleport",verdigris::networking::JsonValue(std::move(tp)));break;
+    }
+    wait_until(session,3000,[&]{collect_flags(session,outgoing,incoming,telegraph,kill,pickup,equipped,extracted,lost);return telegraph;});
+  }
   check(telegraph, "journey: monster:telegraph reached the client");
 
-  for (int step = 0; step < 360 && !session.model().extracted; ++step) {
-    int dx = -1;
-    int dy = 0;
-    if (session.model().scene.has_stairs_up) {
-      const double target_y = session.model().scene.stairs_up_y;
-      if (session.model().player.y < target_y - 0.4) dy = 1;
-      if (session.model().player.y > target_y + 0.4) dy = -1;
-    }
-    if (dy != 0 && step % 2 == 0)
-      session.submit(verdigris::client::ClientCommand::move(0, dy));
-    else
-      session.submit(verdigris::client::ClientCommand::move(dx, 0));
+  for (int step = 0; step < 1600 && !session.model().extracted; ++step) {
+    walk_to(session,static_cast<int>(session.model().scene.stairs_up_x),static_cast<int>(session.model().scene.stairs_up_y));
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
     session.poll();
     collect_flags(session, outgoing, incoming, telegraph, kill, pickup, equipped, extracted,
@@ -689,6 +699,8 @@ struct GateBView {
   std::string scene_type;
   // Stair tiles are normal scene-metadata knowledge; the driver avoids
   // stepping on them so a blind sweep cannot fall through or exit.
+  verdigris::cartography::Map chart;
+  std::vector<std::pair<int,int>> chart_waypoints;
   bool has_stairs = false;
   int stairs_up_x = -1, stairs_up_y = -1;
   int stairs_down_x = -1, stairs_down_y = -1;
@@ -696,6 +708,11 @@ struct GateBView {
 
 void gateb_apply_to_view(GateBView& view, const WBEnvelope& envelope) {
   const JV& data = envelope.data;
+  if(const auto* chart=data.get("map");chart && chart->object()){
+    view.chart.width=static_cast<int>(gateb_num(*chart,"width",0));view.chart.height=static_cast<int>(gateb_num(*chart,"height",0));view.chart.tiles.clear();view.chart_waypoints.clear();
+    if(const auto* rows=chart->get("rows");rows&&rows->array())for(const auto& row:*rows->array())if(row.string())for(char c:*row.string())view.chart.tiles.push_back(c=='1'?1:0);
+    if(const auto* points=chart->get("landmarks");points&&points->array())for(const auto& point:*points->array())if(gateb_str(point,"role")!="entry")view.chart_waypoints.emplace_back(static_cast<int>(gateb_num(point,"x",0)),static_cast<int>(gateb_num(point,"y",0)));
+  }
   if (envelope.event == "player:movement") {
     view.px = gateb_num(data, "x", view.px);
     view.py = gateb_num(data, "y", view.py);
@@ -1181,7 +1198,7 @@ struct GatebSweepState {
 bool gateb_waypoint_nudge(LoopbackClient& client, GatebSweepState& sweep) {
   GateBView& view = client.view();
   if (!view.has_pos) return false;
-  const auto waypoints = gateb_serpentine_waypoints();
+  const auto waypoints = view.chart_waypoints.empty() ? gateb_serpentine_waypoints() : view.chart_waypoints;
   if (sweep.cursor >= waypoints.size()) {
     std::printf("note: sweep plan restart (floor re-cover)\n");
     sweep.cursor = 0;
@@ -1200,6 +1217,10 @@ bool gateb_waypoint_nudge(LoopbackClient& client, GatebSweepState& sweep) {
     ++sweep.cursor;
     sweep.waypoint_started = std::chrono::steady_clock::now();
     return false;
+  }
+  if(!view.chart.tiles.empty()){
+    const auto route=verdigris::cartography::path(view.chart,{px,py},{wp_x,wp_y});
+    if(route.size()>1){int heading=gateb_heading_for(route[1].x-px,route[1].y-py);return gateb_step(client,heading);}
   }
   const int dx = wp_x - px;
   const int dy = wp_y - py;

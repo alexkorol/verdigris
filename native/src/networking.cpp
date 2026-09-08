@@ -734,7 +734,7 @@ std::string ProtocolSession::player_payload() const {
   return JsonValue(std::move(player)).stringify();
 }
 std::string ProtocolSession::login_payload() const {
-  std::lock_guard<std::recursive_mutex> lock(mutex_); JsonValue::Object data; JsonValue player; parse_json(player_payload(),player); put(data,"player",std::move(player)); put(data,"scene",scene_payload()); put(data,"droppedItems",dropped_items_json()); if (quick_start_) put(data,"quickStart",true); return JsonValue(std::move(data)).stringify();
+  std::lock_guard<std::recursive_mutex> lock(mutex_); JsonValue::Object data; JsonValue player; parse_json(player_payload(),player); put(data,"player",std::move(player)); put(data,"scene",scene_payload()); put(data,"map",map_payload()); put(data,"droppedItems",dropped_items_json()); if (quick_start_) put(data,"quickStart",true); return JsonValue(std::move(data)).stringify();
 }
 JsonValue ProtocolSession::dropped_items_json() const {
   JsonValue::Array ground;
@@ -1069,16 +1069,7 @@ JsonValue ProtocolSession::snapshot() const {
   JsonValue::Array stored; for (const auto& item:house_store_) stored.emplace_back(item_identity_json(item)); put(state,"houseStoredItems",std::move(stored));
   put(state,"groundTrophies",JsonValue::Array{}); return JsonValue(std::move(state));
 }
-std::string ProtocolSession::state_payload(const std::string& request_id, bool include_map) const {
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
-  JsonValue::Object data;
-  put(data,"player",JsonValue::Object{{"socket_id",socket_id_}});
-  JsonValue state_value = snapshot();
-  if (include_map) {
-    // The walkable grid the world already resolves movement against. Sent
-    // only on request (the client asks once per scene) so the 4 Hz snapshot
-    // stays light; without it walls are invisible and read as ghost
-    // collisions on the client.
+JsonValue ProtocolSession::map_payload() const {
     const auto& grid = world_->grid();
     JsonValue::Object map;
     put(map, "sceneId", world_->scene_id());
@@ -1092,8 +1083,45 @@ std::string ProtocolSession::state_payload(const std::string& request_id, bool i
       rows.emplace_back(std::move(row));
     }
     put(map, "rows", std::move(rows));
+    if (world_->in_instance()) {
+      const auto& chart = world_->cartography();
+      put(map, "generatorVersion", cartography::kVersion);
+      put(map, "recipe", chart.plan.recipe);
+      put(map, "seed", static_cast<double>(chart.plan.seed));
+      JsonValue::Array terrain;
+      constexpr char hex[] = "0123456789abcdef";
+      for (int y=0;y<chart.height;++y) {
+        std::string row;
+        for (int x=0;x<chart.width;++x) row += hex[chart.tiles[static_cast<std::size_t>(y)*chart.width+x]];
+        terrain.emplace_back(std::move(row));
+      }
+      put(map, "terrain", std::move(terrain));
+      JsonValue::Array landmarks;
+      for (const auto& room : chart.rooms) {
+        JsonValue::Object point;
+        put(point,"x",room.cx); put(point,"y",room.cy);
+        put(point,"name",room.landmark); put(point,"role",room.role);
+        put(point,"depth",room.depth); put(point,"tier",room.tier);
+        landmarks.emplace_back(std::move(point));
+      }
+      put(map,"landmarks",std::move(landmarks));
+    }
+
+  return JsonValue(std::move(map));
+}
+std::string ProtocolSession::state_payload(const std::string& request_id, bool include_map) const {
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  JsonValue::Object data;
+  put(data,"player",JsonValue::Object{{"socket_id",socket_id_}});
+  JsonValue state_value = snapshot();
+  if (include_map) {
+    // The walkable grid the world already resolves movement against. Sent
+    // only on request (the client asks once per scene) so the 4 Hz snapshot
+    // stays light; without it walls are invisible and read as ghost
+    // collisions on the client.
+    const auto map = map_payload();
     if (auto* state_object = state_value.object())
-      (*state_object)["map"] = JsonValue(std::move(map));
+      (*state_object)["map"] = map;
   }
   put(data,"state",std::move(state_value));
   put(data,"requestId",request_id);
@@ -2490,7 +2518,7 @@ void ProtocolSession::ensure_chronicle_scion(const std::string& house_id, const 
 }
 void ProtocolSession::emit_login(const std::function<void(const Envelope&)>& emit) const { Envelope response{"player:login",JsonValue::Object{}}; parse_json(login_payload(),response.data); emit(response); }
 void ProtocolSession::emit_world(const Envelope& envelope, const std::function<void(const Envelope&)>& emit) const { if (broadcast_) broadcast_(envelope); else emit(envelope); }
-void ProtocolSession::emit_transition(const std::function<void(const Envelope&)>& emit, const char* event) const { JsonValue::Object data; put(data,"player",JsonValue::Object{{"socket_id",socket_id_}}); put(data,"scene",scene_payload()); JsonValue player_state; parse_json(player_payload(),player_state); JsonValue::Object state_fields; if (const auto* fields=player_state.object()) { for (const auto& key:{"uuid","x","y","sceneId"}) if (const auto* field=player_state.get(key)) put(state_fields,key,*field); } put(data,"playerState",std::move(state_fields)); emit_world(Envelope{event,JsonValue(std::move(data))},emit); }
+void ProtocolSession::emit_transition(const std::function<void(const Envelope&)>& emit, const char* event) const { JsonValue::Object data; put(data,"player",JsonValue::Object{{"socket_id",socket_id_}}); put(data,"scene",scene_payload()); put(data,"map",map_payload()); JsonValue player_state; parse_json(player_payload(),player_state); JsonValue::Object state_fields; if (const auto* fields=player_state.object()) { for (const auto& key:{"uuid","x","y","sceneId"}) if (const auto* field=player_state.get(key)) put(state_fields,key,*field); } put(data,"playerState",std::move(state_fields)); emit_world(Envelope{event,JsonValue(std::move(data))},emit); }
 void ProtocolSession::emit_movement(const std::function<void(const Envelope&)>& emit) const { JsonValue data; parse_json(player_payload(),data); Envelope movement{"player:movement",std::move(data)}; movement.meta=movement_step_payload(); emit_world(movement,emit); }
 void ProtocolSession::emit_message(const std::function<void(const Envelope&)>& emit, const std::string& text) const { emit(Envelope{"game:send:message",JsonValue::Object{{"text",text}}}); }
 void ProtocolSession::handle(const Envelope& envelope, const std::function<void(const Envelope&)>& emit) {

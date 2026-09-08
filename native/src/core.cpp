@@ -1451,20 +1451,9 @@ bool is_zone_layout(const std::string& layout) {
 
 namespace {
 
-// N2 stub geometry.  The JS server generates floors from seeded template
-// tables; the playtest scenarios only exercise walkability around the spawn,
-// both stair tiles, and monster population, so the generated floor keeps a
-// protected spawn clearing and layout-shaped obstacle bodies.  N3+ replaces
-// this with the real generator.
-constexpr int kInstanceWidth = 40;
-constexpr int kInstanceHeight = 40;
-constexpr Vec2 kStairsUp{5, 20};
-constexpr Vec2 kStairsDown{34, 20};
-constexpr Vec2 kSpawn{6, 20};
 // D-114 N3 combat table: trash life 30, player strike 18, 350 ms cadence;
 // boss telegraph radius 2 tiles / 1000 ms readable window. These values are
 // intentionally named here so scenario feel changes cannot hide as literals.
-constexpr int kInstanceMonsterCount = 20;
 constexpr int kN3TrashLife = 30;
 constexpr int kN3PlayerDamage = 18;
 constexpr int kN3PlayerAttackIntervalMs = 350;
@@ -1483,11 +1472,6 @@ std::uint64_t fnv1a(const std::string& text, std::uint64_t seed) {
   return hash;
 }
 
-bool in_spawn_clearing(int x, int y) {
-  // Protected bubble around the entry: no obstacles and no monsters, so the
-  // first steps in any direction behave exactly like town.
-  return x >= 2 && x <= 10 && y >= 16 && y <= 24;
-}
 
 }  // namespace
 
@@ -1657,77 +1641,46 @@ void WorldSimulation::generate_instance() {
   const std::string& layout = metadata_.layout;
   const std::string effective = layout.empty() ? "warren" : layout;
 
-  grid_.width = kInstanceWidth;
-  grid_.height = kInstanceHeight;
-  grid_.walkable.assign(static_cast<std::size_t>(kInstanceWidth) * kInstanceHeight, 1);
-
-  auto block = [&](int x, int y) {
-    if (grid_.in_bounds(x, y) && !in_spawn_clearing(x, y)
-        && !(x == kStairsUp.x && y == kStairsUp.y)
-        && !(x == kStairsDown.x && y == kStairsDown.y)) {
-      grid_.walkable[static_cast<std::size_t>(y) * kInstanceWidth + x] = 0;
-    }
-  };
-
-  // Border walls.
-  for (int x = 0; x < kInstanceWidth; ++x) { block(x, 0); block(x, kInstanceHeight - 1); }
-  for (int y = 0; y < kInstanceHeight; ++y) { block(0, y); block(kInstanceWidth - 1, y); }
-
-  if (effective == "warren") {
-    // Tight dungeon: vertical wall ribs with staggered gaps.
-    for (int rib = 12; rib <= 32; rib += 6) {
-      for (int y = 3; y < kInstanceHeight - 3; ++y) {
-        const bool gap = (y >= 10 && y <= 12) || (y >= 26 && y <= 28) || (y >= 19 && y <= 21);
-        if (!gap) block(rib, y);
-      }
-    }
-  } else if (effective == "clearings") {
-    // Open field: a few scattered 2x2 thickets.
-    const Vec2 thickets[] = {{14, 9}, {25, 13}, {17, 28}, {29, 30}, {13, 33}};
-    for (const auto& thicket : thickets) {
-      for (int dx = 0; dx < 2; ++dx)
-        for (int dy = 0; dy < 2; ++dy) block(thicket.x + dx, thicket.y + dy);
-    }
-  } else {  // gauntlet: a linear push down a walled corridor.
-    for (int x = 2; x < kInstanceWidth - 2; ++x) {
-      block(x, 14);
-      block(x, 26);
+  cartography::Plan plan;
+  plan.seed = static_cast<std::uint32_t>(metadata_.seed);
+  plan.recipe = metadata_.theme == "marsh" || metadata_.theme == "grove" ? "causeway"
+      : metadata_.theme == "wilds" ? "quarry" : "necropolis";
+  plan.columns = effective == "gauntlet" ? 7 : 6;
+  plan.rows = 4;
+  plan.branches = effective == "gauntlet" ? 2 : effective == "clearings" ? 6 : 8;
+  plan.loops = effective == "gauntlet" ? 0 : effective == "clearings" ? 4 : 2;
+  cartography_ = cartography::generate(plan);
+  grid_.width = cartography_.width;
+  grid_.height = cartography_.height;
+  grid_.walkable.resize(cartography_.tiles.size());
+  std::transform(cartography_.tiles.begin(), cartography_.tiles.end(), grid_.walkable.begin(),
+      [](std::uint8_t tile) { return static_cast<std::uint8_t>(cartography::walkable(tile)); });
+  metadata_.stairs_up = {cartography_.entrance.x, cartography_.entrance.y};
+  metadata_.stairs_down = {cartography_.exit.x, cartography_.exit.y};
+  metadata_.spawn_points = {{cartography_.entrance.x + 1, cartography_.entrance.y}};
+  // Expand the authored encounter anchors into clear, non-overlapping pack slots.
+  // The guardian is always last, preserving authored roster and loot behavior.
+  struct SpawnSlot { int x, y, tier; bool elite; };
+  std::vector<SpawnSlot> slots;
+  const std::array<cartography::Point, 6> offsets{{{0,0},{-1,0},{1,0},{0,-1},{0,1},{1,1}}};
+  for (const auto& pack : cartography_.spawns) {
+    if (pack.type == "boss") continue;
+    for (int member = 0; member < pack.count; ++member) {
+      const auto offset = offsets[static_cast<std::size_t>(member)];
+      const int x = pack.position.x + offset.x, y = pack.position.y + offset.y;
+      if (grid_.walkable_at(x,y)) slots.push_back({x,y,pack.tier,pack.type == "elite" && member == 0});
     }
   }
-
-  metadata_.stairs_up = kStairsUp;
-  metadata_.stairs_down = kStairsDown;
-  metadata_.spawn_points = {kSpawn};
-
-  // Deterministic monster scatter: seeded LCG picks candidate tiles; only
-  // walkable tiles well away from the entry clearing and stairs are used so
-  // population never interferes with movement parity.
+  slots.push_back({cartography_.boss.x,cartography_.boss.y,4,true});
   monsters_.clear();
-  std::uint64_t state = metadata_.seed ? metadata_.seed : 0x9e3779b97f4a7c15ULL;
-  auto next = [&]() {
-    state ^= state << 13;
-    state ^= state >> 7;
-    state ^= state << 17;
-    return state;
-  };
   const int level = metadata_.theme == "crypt" ? 4
                   : metadata_.theme == "wilds" ? 6
                   : metadata_.theme == "marsh" ? 8
                   : 2;
   int placed = 0;
-  int attempts = 0;
-  while (!spawn_suppressed_ && placed < kInstanceMonsterCount && attempts < 4000) {
-    ++attempts;
-    const int x = static_cast<int>(next() % kInstanceWidth);
-    const int y = static_cast<int>(next() % kInstanceHeight);
-    if (!grid_.walkable_at(x, y) || in_spawn_clearing(x, y)) continue;
-    if (std::abs(x - kStairsUp.x) + std::abs(y - kStairsUp.y) < 5) continue;
-    if (std::abs(x - kStairsDown.x) + std::abs(y - kStairsDown.y) < 3) continue;
-    bool occupied = false;
-    for (const auto& monster : monsters_) {
-      if (monster.x == x && monster.y == y) { occupied = true; break; }
-    }
-    if (occupied) continue;
+  while (!spawn_suppressed_ && placed < static_cast<int>(slots.size())) {
+    const auto slot = slots[static_cast<std::size_t>(placed)];
+    const int x = slot.x, y = slot.y;
     WorldMonster monster;
     monster.uuid = "monster-" + std::to_string(serial_) + "-" + std::to_string(placed);
     monster.id = metadata_.theme + "-lurker";
@@ -1747,7 +1700,8 @@ void WorldSimulation::generate_instance() {
     monster.y = y;
     // map.js: level = max(1, floor(1 + index*0.14)) + (depth-1)*2 + theme
     // bonus. Deeper floors are the authoritative difficulty wall.
-    monster.level = level + (metadata_.depth - 1) * 2 + placed / 7;
+    monster.level = level + (metadata_.depth - 1) * 2 + slot.tier - 1;
+    if (slot.elite) monster.rarity = "elite";
     monster.life = kN3TrashLife + (level - 2) * 5;
     monster.life_max = monster.life;
     // Authored pack recipes mirror map.js: crypt is melee-heavy, marsh adds
@@ -1782,7 +1736,7 @@ void WorldSimulation::generate_instance() {
     if (metadata_.theme == "marsh" && monster.behaviour_type != "buffer" && placed % 4 == 1) {
       monster.empowered = true;
     }
-    if (placed == kInstanceMonsterCount - 1) {
+    if (placed == static_cast<int>(slots.size()) - 1) {
       // Every theme fields its boss (server/core/map.js THEME_MONSTERS);
       // native "dungeon" mirrors the JS "stone" theme.
       monster.boss = true;
@@ -3256,14 +3210,14 @@ void WorldSimulation::drop_monster_loot(const WorldMonster& monster, int goods_f
 }
 
 void WorldSimulation::scatter_floor_treasure() {
-  // map.js guaranteed per-floor treasure hoard: a coin purse plus one gear
-  // piece whose item level scales with depth. The JS server scatters these
-  // at treasure-room centres from gearPoolForDepth; this port uses the map
-  // centre and the shared drop pool (documented stub in the task report).
-  if (grid_.width <= 0 || grid_.height <= 0) return;
-  const int cx = grid_.width / 2;
-  const int cy = grid_.height / 2;
-
+  // Hoards occupy authored reward chambers. Never search outwards from a
+  // bounding-box centre that might lie in an ocean or disconnected void.
+  if (grid_.width <= 0 || grid_.height <= 0 || cartography_.rooms.empty()) return;
+  std::vector<cartography::Point> offerings;
+  for(const auto& room:cartography_.rooms)if(room.role=="treasure")offerings.push_back({room.cx+2,room.cy});
+  if(offerings.empty())offerings.push_back({cartography_.boss.x+2,cartography_.boss.y});
+  for(const auto offering:offerings){
+  const int cx=offering.x,cy=offering.y;
   const int coins = 80 + static_cast<int>(std::floor(world_rand01(next_world_random()) * 60.0));
   const Vec2 coin_tile = resolve_loot_tile(cx, cy);
   CreateItemOptions coin_opts;
@@ -3283,6 +3237,7 @@ void WorldSimulation::scatter_floor_treasure() {
   if (gear) {
     const Vec2 gear_tile = resolve_loot_tile(cx, cy + 1);
     add_ground_item(std::move(*gear), gear_tile.x, gear_tile.y);
+  }
   }
 }
 

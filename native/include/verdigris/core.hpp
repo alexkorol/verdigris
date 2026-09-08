@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../content/expedition_generator.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -893,6 +894,7 @@ class WorldSimulation {
   }
   void kill_all_monsters() { for (auto& monster : monsters_) { monster.alive = false; monster.life = 0; } active_target_.clear(); }
   const TileGrid& grid() const { return grid_; }
+  const cartography::Map& cartography() const { return cartography_; }
   bool in_instance() const { return scene_type_ == "instance"; }
 
   // One player:move sample.  Returns true when the step was applied.
@@ -980,6 +982,7 @@ class WorldSimulation {
   std::string scene_id_ = "town:verdigris";
   std::string scene_name_ = "Verdigris";
   TileGrid grid_;
+  cartography::Map cartography_;
   InstanceMetadata metadata_;
   std::vector<WorldMonster> monsters_;
   std::string active_target_;

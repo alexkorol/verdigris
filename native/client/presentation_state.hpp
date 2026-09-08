@@ -117,9 +117,12 @@ struct WorldView {
   // Authoritative walkable grid for the current scene (protocol tiles,
   // row-major, 1 = walkable). Empty until the map payload arrives; the
   // renderer draws blocked tiles as visible walls instead of open floor.
+  std::uint64_t map_revision = 0;
   int map_width = 0;
   int map_height = 0;
   std::vector<std::uint8_t> map_walkable;
+  std::vector<std::uint8_t> map_terrain;
+  std::vector<MapLandmark> map_landmarks;
   std::string theme = "town";
   // Combat XP for the bottom bar: fraction of the current level's span.
   double xp_fraction = 0.0;

@@ -2031,7 +2031,8 @@ void test_n4_depth_chaining_and_treasure() {
   auto town_drop = create_game_item("ring", CreateItemOptions{});
   world.add_ground_item(std::move(*town_drop), 38.0, 115.0);
   world.enter_solo_instance("dungeon", "warren");
-  check(world.ground_items().size() == 2, "N4 floor 1 scatters a coin purse plus one gear");
+  const auto offerings=std::count_if(world.cartography().rooms.begin(),world.cartography().rooms.end(),[](const auto& room){return room.role=="treasure";});
+  check(world.ground_items().size() == static_cast<std::size_t>(std::max<std::ptrdiff_t>(1,offerings))*2, "each authored offering has a coin purse and one gear item");
   const GroundItem* treasure = nullptr;
   for (const auto& ground : world.ground_items()) {
     if (ground.item.id != "coins") treasure = &ground;
@@ -2069,7 +2070,27 @@ void test_n4_depth_chaining_and_treasure() {
 
 }  // namespace
 
+void test_cartography_runtime() {
+  for(const std::string theme:{"dungeon","crypt","grove","wilds","marsh"})for(const std::string layout:{"warren","clearings","gauntlet"}){
+    WorldSimulation world(2718,"cartography-test");world.enter_solo_instance(theme,layout);
+    const auto& chart=world.cartography();check(cartography::valid(chart),"production instance uses connected Cartographer output");
+    check(world.grid().width==chart.width&&world.grid().height==chart.height,"production collision dimensions match generator");
+    const auto distance=cartography::search(chart,chart.entrance).distance;
+    int bosses=0;std::vector<int> occupied;
+    for(const auto& monster:world.monsters()){
+      const int cell=monster.y*chart.width+monster.x;
+      check(world.grid().walkable_at(monster.x,monster.y)&&distance[cell]>=9,"expanded pack member is reachable and outside safe entry");
+      check(std::find(occupied.begin(),occupied.end(),cell)==occupied.end(),"expanded packs do not overlap");occupied.push_back(cell);
+      if(monster.boss){++bosses;check(monster.x==chart.boss.x&&monster.y==chart.boss.y,"guardian owns terminal arena");}
+    }
+    check(bosses==1,"one production guardian");
+    for(const auto& item:world.ground_items())check(world.grid().walkable_at(static_cast<int>(item.x),static_cast<int>(item.y)),"offering loot occupies reachable ground");
+    for(std::size_t i=0;i<chart.tiles.size();++i)check((world.grid().walkable[i]!=0)==cartography::walkable(chart.tiles[i]),"runtime collision equals authored terrain");
+  }
+}
+
 int main() {
+  test_cartography_runtime();
   test_persistence_round_trip_and_unknown_fields();
   test_persistence_d109_mid_instance_and_rng_continuation();
   test_persistence_recovery_pools();

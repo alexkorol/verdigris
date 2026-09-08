@@ -156,6 +156,13 @@ Invoke-Msvc ('"' + $buildRoot + '\session_tests.obj" "' + $buildRoot + '\local_s
 Invoke-Msvc ('"' + $buildRoot + '\presentation_events_tests.obj" "' + $buildRoot + '\local_session.obj" "' + $buildRoot + '\remote_session.obj" "' + $buildRoot + '\presentation_state.obj" "' + $networkingObject + '" "' + $coreObject + '" "' + $seasonalObject + '" /Fe"' + $presentationEventsTestExe + '" /link ws2_32.lib')
 Invoke-Msvc ('"' + $buildRoot + '\audio_mixer_tests.obj" "' + $buildRoot + '\audio_cue_spec.obj" "' + $buildRoot + '\audio_event_cues.obj" "' + $buildRoot + '\audio_audio_mixer.obj" /Fe"' + $audioTestExe + '"')
 
+Invoke-Msvc ('"' + $nativeRoot + '\tests\cartography_tests.cpp" /Fo"' + $buildRoot + '\cartography_tests.obj" /Fe"' + $buildRoot + '\cartography_tests.exe"')
+if ($RunTests) {
+  & (Join-Path $buildRoot "cartography_tests.exe")
+  if ($LASTEXITCODE -ne 0) { throw "cartography invariants failed" }
+  node (Join-Path $nativeRoot "tools/check_cartography_parity.cjs")
+  if ($LASTEXITCODE -ne 0) { throw "cartography cross-language parity failed" }
+}
 python (Join-Path $nativeRoot "tools\check_legacy_denylist.py")
 if ($LASTEXITCODE -ne 0) { throw "legacy denylist failed" }
 if ($RunTests) { & $testExe }

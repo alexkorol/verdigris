@@ -1,5 +1,13 @@
 # Native reconstitution handoff
 
+## 2026-09-08 - Cartographer expedition generation (Codex)
+
+- Replaced production native instance stub geometry with WIZARD Cartographer's deterministic room/socket graph: protected entrance, guardian route, optional reward chambers, loops, safe packs and depth tiers. Existing item and actor systems consume the generated placements.
+- Published collision, terrain and landmarks in normal login/transition messages. Native terrain rendering and the M-key discovery atlas consume this chart; map revision changes reset fog, and unknown landmarks remain hidden.
+- Added original imagegen limestone material with prompt provenance, a C++/JS parity gate covering 1,200 maps, fifteen production theme/layout integration cases and a generated-world render scenario. Session path drivers now follow published walkability instead of the retired fixed maze.
+- Work lives in the isolated `codex/cartographer-expeditions` worktree. WIZARD source checkpoint: `d383b00d208f62c5922d1be669f23e4219c468fa`. Integration details: `native/CARTOGRAPHY.md`; final gate receipts: `docs/rebuild/cartography/VERIFICATION.md`.
+- Scope is the native production path. Browser historical code and existing owner checkout edits are untouched.
+
 ## 2026-09-07 — Owner playtest persistence/combat/UI fix pass (Codex)
 
 - Remote skill envelopes now use the authoritative `skillId`; War Cry spends

@@ -3,6 +3,10 @@
 This is a small dependency-free C++20 proof of the native architecture. The
 browser game remains separate in src/ and server/.
 
+## Cartography
+
+Generated expeditions, runtime integration, atlas controls and parity checks are documented in [CARTOGRAPHY.md](CARTOGRAPHY.md). Press **M** in an expedition for the discovery atlas.
+
 ## Boundaries
 
 - include/verdigris/core.hpp and src/core.cpp are the fixed-step, deterministic,

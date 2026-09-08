@@ -813,7 +813,55 @@ void RemoteProtocolSession::reader_loop() {
   }
 }
 
+void apply_chart(ClientModel& model,const JsonValue* map) {
+    if (map && map->object()) {
+      const int width = static_cast<int>(json_number(map->get("width"), 0.0));
+      const int height = static_cast<int>(json_number(map->get("height"), 0.0));
+      const auto* rows = map->get("rows");
+      if (width > 0 && height > 0 && width <= 256 && height <= 256 && rows && rows->array() &&
+          static_cast<int>(rows->array()->size()) == height) {
+        model.map_terrain.clear();
+        model.map_landmarks.clear();
+        if (const auto* terrain=map->get("terrain");terrain && terrain->array() && static_cast<int>(terrain->array()->size())==height) {
+          std::vector<std::uint8_t> parsed;
+          bool valid=true;
+          for (const auto& row_value:*terrain->array()) {
+            const auto* row=row_value.string();
+            if (!row || static_cast<int>(row->size())!=width) { valid=false;break; }
+            for(char c:*row) { if(c>='0'&&c<='9')parsed.push_back(static_cast<std::uint8_t>(c-'0'));else if(c>='a'&&c<='e')parsed.push_back(static_cast<std::uint8_t>(c-'a'+10));else{valid=false;break;} }
+          }
+          if(valid)model.map_terrain=std::move(parsed);
+        }
+        if(const auto* landmarks=map->get("landmarks");landmarks && landmarks->array() && landmarks->array()->size()<=100) {
+          for(const auto& entry:*landmarks->array()) {
+            MapLandmark p;p.x=static_cast<int>(json_number(entry.get("x"),-1));p.y=static_cast<int>(json_number(entry.get("y"),-1));
+            if(p.x<0||p.y<0||p.x>=width||p.y>=height)continue;
+            if(const auto* n=json_string(entry.get("name")))p.name=n->substr(0,80);
+            if(const auto* r=json_string(entry.get("role")))p.role=r->substr(0,20);
+            p.tier=static_cast<int>(json_number(entry.get("tier"),0));model.map_landmarks.push_back(std::move(p));
+          }
+        }
+        ++model.map_revision;
+        model.map_width = width;
+        model.map_height = height;
+        if (const auto* scene = json_string(map->get("sceneId")))
+          model.map_scene_id = *scene;
+        model.map_walkable.assign(
+            static_cast<std::size_t>(width) * static_cast<std::size_t>(height),
+            1);
+        for (int y = 0; y < height; ++y) {
+          const auto* row = (*rows->array())[static_cast<std::size_t>(y)].string();
+          if (!row || static_cast<int>(row->size()) != width) continue;
+          for (int x = 0; x < width; ++x)
+            if ((*row)[static_cast<std::size_t>(x)] == '0')
+              model.map_walkable[static_cast<std::size_t>(y) * width + x] = 0;
+        }
+      }
+    }
+}
+
 void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
+  if(envelope.event=="player:login"||envelope.event=="party:scene:transition"||envelope.event=="world:scene:transition")apply_chart(model_,envelope.data.get("map"));
   if (envelope.event == "player:login") {
     if (const auto* player = envelope.data.get("player")) {
       apply_player_fields(model_.player, *player);
@@ -1180,28 +1228,7 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
         model_.monsters.push_back(std::move(monster));
       }
     }
-    if (const auto* map = state->get("map"); map && map->object()) {
-      const int width = static_cast<int>(json_number(map->get("width"), 0.0));
-      const int height = static_cast<int>(json_number(map->get("height"), 0.0));
-      const auto* rows = map->get("rows");
-      if (width > 0 && height > 0 && rows && rows->array() &&
-          static_cast<int>(rows->array()->size()) == height) {
-        model_.map_width = width;
-        model_.map_height = height;
-        if (const auto* scene = json_string(map->get("sceneId")))
-          model_.map_scene_id = *scene;
-        model_.map_walkable.assign(
-            static_cast<std::size_t>(width) * static_cast<std::size_t>(height),
-            1);
-        for (int y = 0; y < height; ++y) {
-          const auto* row = (*rows->array())[static_cast<std::size_t>(y)].string();
-          if (!row || static_cast<int>(row->size()) != width) continue;
-          for (int x = 0; x < width; ++x)
-            if ((*row)[static_cast<std::size_t>(x)] == '0')
-              model_.map_walkable[static_cast<std::size_t>(y) * width + x] = 0;
-        }
-      }
-    }
+    apply_chart(model_,state->get("map"));
     if (const auto* npcs = state->get("npcs"); npcs && npcs->array()) {
       model_.npcs.clear();
       for (const auto& entry : *npcs->array()) {

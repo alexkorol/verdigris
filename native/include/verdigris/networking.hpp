@@ -86,6 +86,7 @@ class ProtocolSession {
   }
   const std::string& socket_id() const { return socket_id_; }
   std::string login_payload() const;
+  JsonValue map_payload() const;
   std::string state_payload(const std::string& request_id,
                             bool include_map = false) const;
   void handle(const Envelope& envelope, const std::function<void(const Envelope&)>& emit);

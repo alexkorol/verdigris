@@ -11,6 +11,8 @@
 
 namespace verdigris::client {
 
+struct MapLandmark { int x=0,y=0,tier=0; std::string name,role; };
+
 struct ClientPlayer {
   std::string uuid;
   std::string scene_id;
@@ -222,10 +224,13 @@ struct ClientModel {
   int attr_intelligence = 10;
   // Walkable grid for the current scene (requested once per scene change).
   // Row-major, 1 = walkable; empty until the first map payload arrives.
+  std::uint64_t map_revision = 0;
   int map_width = 0;
   int map_height = 0;
   std::string map_scene_id;
   std::vector<std::uint8_t> map_walkable;
+  std::vector<std::uint8_t> map_terrain;
+  std::vector<MapLandmark> map_landmarks;
   // Authoritative scene theme ("town", "dungeon", "crypt", "wilds",
   // "marsh", "grove") from the dev:state snapshot.
   std::string theme = "town";
