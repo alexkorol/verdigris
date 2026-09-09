@@ -158,9 +158,9 @@ Invoke-Msvc ('"' + $buildRoot + '\audio_mixer_tests.obj" "' + $buildRoot + '\aud
 
 python (Join-Path $nativeRoot "tools\check_legacy_denylist.py")
 if ($LASTEXITCODE -ne 0) { throw "legacy denylist failed" }
-if ($RunTests) { & $testExe }
-if ($RunTests) { & $networkingTestExe }
-if ($RunTests) { & $camera2dTestExe }
+if ($RunTests) { & $testExe; if ($LASTEXITCODE -ne 0) { throw "core tests failed" } }
+if ($RunTests) { & $networkingTestExe; if ($LASTEXITCODE -ne 0) { throw "networking tests failed" } }
+if ($RunTests) { & $camera2dTestExe; if ($LASTEXITCODE -ne 0) { throw "camera2d tests failed" } }
 if ($RunTests) { & $sessionTestExe; if ($LASTEXITCODE -ne 0) { throw "session tests failed" } }
 if ($RunTests) { & $presentationEventsTestExe; if ($LASTEXITCODE -ne 0) { throw "presentation events tests failed" } }
 if ($RunTests) { & $audioTestExe; if ($LASTEXITCODE -ne 0) { throw "audio mixer tests failed" } }

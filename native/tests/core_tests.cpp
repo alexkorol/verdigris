@@ -1762,6 +1762,62 @@ void test_n2_world_simulation_rules() {
         "N2 stair return restores the pre-entry position");
 }
 
+void test_world_attack_cadence_survives_retrigger_and_reengagement() {
+  const std::string player_id = "guest-attack-cadence";
+  WorldSimulation world(42, player_id);
+  world.enter_solo_instance("crypt", "gauntlet");
+  std::vector<WorldMonster> targets;
+  for (const auto& monster : world.monsters()) {
+    if (!monster.boss && !monster.empowered &&
+        (targets.empty() || monster.x != targets.front().x ||
+         monster.y != targets.front().y))
+      targets.push_back(monster);
+    if (targets.size() == 2) break;
+  }
+  check(targets.size() == 2, "attack cadence fixture has two distinct ordinary targets");
+  world.kill_all_monsters();
+  for (const auto& target : targets)
+    check(world.reset_monster(target.uuid, 10000), "attack cadence target is durable");
+  int life = 10000;
+  auto hits_at = [&](std::int64_t now) {
+    std::vector<WorldCombatEvent> hits;
+    for (const auto& event : world.advance_combat(1, 1, life, 10000, now))
+      if (event.type == "hit" && event.attacker_id == player_id) hits.push_back(event);
+    return hits;
+  };
+  auto trigger_at = [&](std::int64_t now) {
+    world.start_player_attack(1, 1, now, "right");
+    return hits_at(now);
+  };
+
+  world.teleport(targets[0].x, targets[0].y, 1000);
+  auto hits = trigger_at(1000);
+  check(hits.size() == 1 && hits.front().target_id == targets[0].uuid,
+        "first attack lands immediately on the selected target");
+  check(trigger_at(1001).empty(), "repeat input cannot bypass attack recovery");
+  check(trigger_at(1349).empty(), "repeat input remains gated until 350 ms");
+  check(hits_at(1350).size() == 1, "held attack repeats at its original deadline");
+
+  world.teleport(targets[1].x, targets[1].y, 1351);
+  check(trigger_at(1351).empty(), "changing target cannot bypass attack recovery");
+  check(hits_at(1699).empty(), "changed target remains gated before the deadline");
+  hits = hits_at(1700);
+  check(hits.size() == 1 && hits.front().target_id == targets[1].uuid,
+        "changed target receives the next scheduled hit");
+
+  // The production disengagement gate clears the target when the player
+  // leaves reach. Return before recovery ends and start again.
+  world.teleport(targets[1].x + 10, targets[1].y, 1701);
+  check(hits_at(1701).empty(), "leaving reach stops player contact");
+  world.teleport(targets[1].x, targets[1].y, 1702);
+  check(hits_at(1702).empty(), "returning to an ordinary target does not auto-attack");
+  check(trigger_at(1702).empty(), "restarting after disengagement preserves recovery");
+  check(trigger_at(2049).empty(), "restarted attack remains gated before its deadline");
+  check(hits_at(2050).size() == 1, "restarted attack lands at the preserved deadline");
+  check(trigger_at(3000).size() == 1, "an attack after idle recovery lands immediately");
+  check(hits_at(3000).empty(), "polling twice at one timestamp cannot duplicate contact");
+}
+
 void test_n2_diagonal_blocking_rule() {
   // movement-handler.js: a diagonal step is blocked only when BOTH orthogonal
   // neighbours are unwalkable.  Exercise the rule directly on a hand-built
@@ -2115,6 +2171,7 @@ int main() {
   test_d114_world_scale_table();
   test_n2_movement_constants_mirror_browser();
   test_n2_world_simulation_rules();
+  test_world_attack_cadence_survives_retrigger_and_reengagement();
   test_n2_diagonal_blocking_rule();
   test_relic_resurface_round_trip();
   test_relic_loss_again_returns_once();

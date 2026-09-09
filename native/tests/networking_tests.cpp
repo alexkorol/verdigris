@@ -1,6 +1,7 @@
 #include "verdigris/networking.hpp"
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <optional>
@@ -312,20 +313,28 @@ void test_gate_a_ground_login_and_kill_loot() {
   session.handle(Envelope{"dev:teleport", JsonValue::Object{{"x", mx + 1.0}, {"y", static_cast<double>(my)}}},
                  [](const Envelope&) {});
   bool kill_loot = false;
-  for (int swing = 0; swing < 40 && !kill_loot; ++swing) {
+  const auto observe_loot = [&](const Envelope& event) {
+    if (event.event != "item:change") return;
+    if (const auto* items = ground_list_from_change(event)) {
+      for (const auto& item : *items) {
+        if (item["id"].string() && *item["id"].string() == "coins"
+            && ground_item_has_fields(item)) {
+          kill_loot = true;
+        }
+      }
+    }
+  };
+  session.set_direct_emit(observe_loot);
+  session.handle(Envelope{"dev:forcecritical", JsonValue::Object{}}, [](const Envelope&) {});
+  session.handle(Envelope{"player:skill:trigger", JsonValue::Object{{"direction", "left"}}},
+                 observe_loot);
+  // Drive the server's existing clock seam at the real attack cadence.
+  // Forty commands in one instant must not substitute for elapsed recovery.
+  const auto started_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+      std::chrono::system_clock::now().time_since_epoch()).count();
+  for (int swing = 1; swing < 40 && !kill_loot; ++swing) {
     session.handle(Envelope{"dev:forcecritical", JsonValue::Object{}}, [](const Envelope&) {});
-    session.handle(Envelope{"player:skill:trigger", JsonValue::Object{{"direction", "left"}}},
-                   [&](const Envelope& event) {
-                     if (event.event != "item:change") return;
-                     if (const auto* items = ground_list_from_change(event)) {
-                       for (const auto& item : *items) {
-                         if (item["id"].string() && *item["id"].string() == "coins"
-                             && ground_item_has_fields(item)) {
-                           kill_loot = true;
-                         }
-                       }
-                     }
-                   });
+    session.tick(started_ms + swing * 350);
   }
   check(kill_loot, "kill loot emits item:change with coin drop fields");
 }

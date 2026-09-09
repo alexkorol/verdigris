@@ -1931,7 +1931,12 @@ std::vector<WorldCombatEvent> WorldSimulation::start_player_attack(int player_le
   }
   if (!chosen) return {};
   active_target_ = chosen->uuid;
-  next_player_attack_ms_ = static_cast<std::uint64_t>(now_ms);
+  // Input selects a target; only resolved contact advances the attack clock.
+  // Retriggers, target switches, and disengaging/re-engaging must not shorten
+  // the recovery already owed by the previous hit. A fresh attack is immediate.
+  next_player_attack_ms_ = std::max(
+      next_player_attack_ms_,
+      static_cast<std::uint64_t>(std::max<std::int64_t>(0, now_ms)));
   (void)player_attack;
   return {};
 }

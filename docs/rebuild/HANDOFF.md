@@ -1,5 +1,22 @@
 # Native reconstitution handoff
 
+## 2026-09-08 — Owner-directed Diablo reference study and cadence correction
+
+- [Reference kit](diablo-reference-study/README.md): inspected the owner's
+  installed D2R 3.2.92777 archives, extracted four gameplay tables and seven UI
+  layouts into an external local cache, and retained a reproducible extractor,
+  SHA256 manifest, selected observations, and cited D1/D2 architecture research.
+- Corrected native remote combat: retriggers and target changes no longer reset
+  the existing 350 ms attack deadline. A deterministic regression fails against
+  the original code and passes with the fix. The network loot fixture now
+  advances the server clock; the build script propagates all test failures.
+- [Verification and integration report](diablo-reference-study/REPORT.md):
+  browser 32/32; native suites and 61 client scenarios pass; frame budget
+  30.7 ms at 3440×1440. D2R live capture failed, so timing/feel/audio observations
+  remain explicitly unmeasured. No visual overhaul is claimed.
+- Local integration branch: `codex/diablo-reference-study-20260908` in
+  `C:/Users/Alex/Documents/ChatGPT/verdigris-diablo-study`. No push or merge.
+
 ## 2026-09-07 — Owner playtest persistence/combat/UI fix pass (Codex)
 
 - Remote skill envelopes now use the authoritative `skillId`; War Cry spends

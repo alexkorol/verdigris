@@ -1,0 +1,307 @@
+{
+  "build": {
+    "reportedVersion": "3.2.92777",
+    "buildConfig": "3afa9806f33475daee9b317a21d55d09",
+    "buildInfoSha256": "a8e5c8afbbc70cac02bac587c531f39705dacb57a1ed3ac3e1b9b0d556691bdb"
+  },
+  "parser": {
+    "repository": "https://github.com/ladislav-zezula/CascLib",
+    "revision": "2a280f5a231966dc5d1b534978dd9f9f04a374cd",
+    "license": "MIT",
+    "toolset": "Visual Studio 2019 v142 x64 Release ANSI",
+    "patch": "src/DllMain.rc resource include afxres.h replaced by windows.h; no algorithm changes",
+    "dllSha256": "de50f1e5f3c07558ff38259f7a99344cba738bcf941aeeaa37527d6689858d56"
+  },
+  "sources": {
+    "skills.txt": {
+      "path": "data:data\\global\\excel\\skills.txt",
+      "bytes": 270054,
+      "sha256": "efaf7ac4ba0493109c698ef32acf4a2b3a577e13500d0b50258c80b600986f51"
+    },
+    "monstats.txt": {
+      "path": "data:data\\global\\excel\\monstats.txt",
+      "bytes": 494436,
+      "sha256": "d87a04cc4900b5974d8b4cb0e06f0f2eaebdacb07544f37e33baf035191cb2cf"
+    },
+    "weapons.txt": {
+      "path": "data:data\\global\\excel\\weapons.txt",
+      "bytes": 119607,
+      "sha256": "b0890901f87fd42fcb474ce835b6e1a9fe1e66dbab4e7c2f236a3d9c3224f923"
+    },
+    "inventory.txt": {
+      "path": "data:data\\global\\excel\\inventory.txt",
+      "bytes": 8423,
+      "sha256": "d8f404c65ddecfa39838a7258958ded34531690f612b914d12a0b4234d0855a7"
+    },
+    "hudpanelhd.json": {
+      "path": "data:data\\global\\ui\\layouts\\hudpanelhd.json",
+      "bytes": 19522,
+      "sha256": "253340a843d3688f6d24efda5297cf55318ec06622f919064e2dfb04e897b63b"
+    },
+    "globaldatahd.json": {
+      "path": "data:data\\global\\ui\\layouts\\globaldatahd.json",
+      "bytes": 32447,
+      "sha256": "9ad251c0a9cef239efb47205e872df12b24c15a1a2d2996248f251708e155d2a"
+    },
+    "hudmonsterhealthhd.json": {
+      "path": "data:data\\global\\ui\\layouts\\hudmonsterhealthhd.json",
+      "bytes": 2060,
+      "sha256": "52ede9a5161b5856b47903200b2492c8bb46c6bfdf801e4db95f33f4cdfcfd53"
+    },
+    "playerinventoryexpansionlayouthd.json": {
+      "path": "data:data\\global\\ui\\layouts\\playerinventoryexpansionlayouthd.json",
+      "bytes": 5552,
+      "sha256": "f8335b980d5e784e2412b74cf16a70b49098faccae89cca4543ef2cb6f152149"
+    },
+    "tooltipspanelhd.json": {
+      "path": "data:data\\global\\ui\\layouts\\tooltipspanelhd.json",
+      "bytes": 155,
+      "sha256": "c05c7063a10d5af2287071ee2ce164138165ab518f4175c0b2f14df0409b5bfa"
+    },
+    "_profilehd.json": {
+      "path": "data:data\\global\\ui\\layouts\\_profilehd.json",
+      "bytes": 28364,
+      "sha256": "f9a40bb800b15b0bbc22136c121914c19b9361c0ddc7e67fea88a529cebb645b"
+    },
+    "playerinventoryoriginallayouthd.json": {
+      "path": "data:data\\global\\ui\\layouts\\playerinventoryoriginallayouthd.json",
+      "bytes": 7240,
+      "sha256": "344630b6440ebe5c13354bc3d0d3c921d3ec8dd7b68cc8fc94b3214e1b49a0f0"
+    }
+  },
+  "findings": {
+    "hud": {
+      "source": "hudpanelhd.json",
+      "anchor": [
+        0.5,
+        1
+      ],
+      "rect": [
+        -1454,
+        -412,
+        2952,
+        764
+      ],
+      "healthRect": [
+        294,
+        65,
+        348,
+        350
+      ],
+      "manaRect": [
+        2268,
+        65,
+        348,
+        350
+      ],
+      "healthSmoothDecrease": false,
+      "jumpSmoothingSeconds": 0.25,
+      "maxSmoothingSeconds": 1,
+      "healthPreviewAlpha": 0.35,
+      "manaPreviewAlpha": 0.5,
+      "healthIdleFps": 24,
+      "manaIdleFps": 20
+    },
+    "profile": {
+      "source": "_profilehd.json",
+      "leftAnchor": [
+        0,
+        0.397
+      ],
+      "rightAnchor": [
+        1,
+        0.397
+      ],
+      "panelSize": [
+        1162,
+        1507
+      ],
+      "fontSizes": {
+        "small": 22,
+        "medium": 26,
+        "playerName": 34,
+        "tooltip": 36,
+        "large": 38,
+        "prominentAction": 56
+      },
+      "textShadow": {
+        "rgba": [
+          0,
+          0,
+          0,
+          200
+        ],
+        "offset": [
+          3,
+          3
+        ]
+      },
+      "titleGold": [
+        199,
+        179,
+        119
+      ],
+      "currencyGold": [
+        209,
+        195,
+        120
+      ],
+      "tooltipPadding": [
+        20,
+        12,
+        20,
+        12
+      ],
+      "tooltipBackgroundAlpha": 0.75,
+      "worldLabelBackgroundAlpha": 0.6,
+      "tooltipBorder": false,
+      "itemCellSize": [
+        98,
+        98
+      ]
+    },
+    "inventory": {
+      "source": "playerinventoryoriginallayouthd.json",
+      "grid": [
+        10,
+        4
+      ],
+      "gridOrigin": [
+        93,
+        897
+      ]
+    },
+    "skills": {
+      "source": "skills.txt",
+      "rows": [
+        {
+          "skill": "Attack",
+          "anim": "A1",
+          "UseAttackRate": "1",
+          "interrupt": "1",
+          "KeepCursorStateOnKill": "1",
+          "localdelay": "",
+          "globaldelay": ""
+        },
+        {
+          "skill": "Fire Bolt",
+          "anim": "SC",
+          "UseAttackRate": "",
+          "interrupt": "1",
+          "KeepCursorStateOnKill": "1",
+          "localdelay": "",
+          "globaldelay": ""
+        },
+        {
+          "skill": "Ice Bolt",
+          "anim": "SC",
+          "UseAttackRate": "",
+          "interrupt": "1",
+          "KeepCursorStateOnKill": "1",
+          "localdelay": "",
+          "globaldelay": ""
+        },
+        {
+          "skill": "Bash",
+          "anim": "A1",
+          "UseAttackRate": "1",
+          "interrupt": "1",
+          "KeepCursorStateOnKill": "1",
+          "localdelay": "",
+          "globaldelay": ""
+        }
+      ]
+    },
+    "monsters": {
+      "source": "monstats.txt",
+      "rows": [
+        {
+          "Id": "skeleton1",
+          "AI": "Skeleton",
+          "MinGrp": "1",
+          "MaxGrp": "3",
+          "Velocity": "3",
+          "Run": "3"
+        },
+        {
+          "Id": "zombie1",
+          "AI": "Zombie",
+          "MinGrp": "1",
+          "MaxGrp": "2",
+          "Velocity": "1",
+          "Run": "3"
+        },
+        {
+          "Id": "fallen1",
+          "AI": "Fallen",
+          "MinGrp": "2",
+          "MaxGrp": "3",
+          "Velocity": "5",
+          "Run": "5"
+        },
+        {
+          "Id": "quillrat1",
+          "AI": "QuillRat",
+          "MinGrp": "1",
+          "MaxGrp": "2",
+          "Velocity": "3",
+          "Run": "3"
+        }
+      ]
+    },
+    "weapons": {
+      "source": "weapons.txt",
+      "rows": [
+        {
+          "name": "Hand Axe",
+          "mindam": "3",
+          "maxdam": "6",
+          "speed": "",
+          "invwidth": "1",
+          "invheight": "3",
+          "dropsound": "item_smallmetalweapon",
+          "dropsfxframe": "12"
+        },
+        {
+          "name": "Club",
+          "mindam": "1",
+          "maxdam": "6",
+          "speed": "-10",
+          "invwidth": "1",
+          "invheight": "3",
+          "dropsound": "item_staff",
+          "dropsfxframe": "12"
+        },
+        {
+          "name": "Short Sword",
+          "mindam": "2",
+          "maxdam": "7",
+          "speed": "",
+          "invwidth": "1",
+          "invheight": "3",
+          "dropsound": "item_sword",
+          "dropsfxframe": "12"
+        },
+        {
+          "name": "Dagger",
+          "mindam": "1",
+          "maxdam": "4",
+          "speed": "-20",
+          "invwidth": "1",
+          "invheight": "2",
+          "dropsound": "item_smallmetalweapon",
+          "dropsfxframe": "12"
+        }
+      ]
+    }
+  },
+  "caveats": [
+    "Measurements are source layout units, not verified screen pixels. Profiles, scaling, inheritance and dynamic widget behavior affect rendering.",
+    "Raw monster HP/damage are scaling inputs, not effective in-game values. Difficulty, level, players and other engine state can alter outcomes.",
+    "Historical 25 Hz simulation must not be presented as D2R timing measured here. UI animation fps and drop sound frame numbers are not a measured simulation tick.",
+    "Blank delay cells do not imply instant attacks. Animation attack-rate and engine state control timing. Raw weapon speed is not milliseconds.",
+    "Installation edition label and build metadata do not prove an unmodified official release. No gameplay execution or screenshot validation performed in this inspection.",
+    "CascLib reads the local archive normally. No game loader, external key acquisition, online archive connection or bypass flags used.",
+    "Raw proprietary files are retained outside the Verdigris repository for private reference only. Findings are original scalar observations."
+  ]
+}
