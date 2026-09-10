@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "use_case": "stylized-concept",
+  "tool": "built-in image_gen",
+  "selected_model": "Tool exposes no selector and returned no specific model identity.",
+  "generation_calls": 1,
+  "source": "native/client/assets/raster/source/raider-death-sw-v1.png",
+  "source_raw_sha256": "19bf42e643df4b7a3f56fd8420abdb27cca902a9f2b9a3f17aca8ea381285c9b",
+  "dimensions": [
+    1437,
+    1094
+  ],
+  "original_mode": "RGB",
+  "generated_original": "C:/Users/Alex/.codex/generated_images/01a0896f-29de-7452-bb4b-6fb64351c1eb/exec-136c0083-6321-4945-9ee5-39567185ff0d.png",
+  "prompt": "native/client/assets/raster/prompts/raider-death-sw-v1.txt",
+  "prompt_raw_sha256": "341869943ccb275fadd23f64005f86b5b168d0c95eb5af7108c6de25544ce26d",
+  "submitted_prompt": "Using Image 1 as the sole character, equipment and pixel-style reference, create a four-frame pixel-art collapse animation in a 2-column by 2-row sheet, chronological reading order. Preserve this grounded adult raider: bone mask, tied dark hair, charcoal wraps and full torn trousers, ochre sash, leather bracers, brown boots, and the broad curved bronze axe held by the anatomical RIGHT hand, visible on screen-left in this lower-left-facing view.\n\nAnimate one continuous fall toward lower-left:\n1. Recoil and lose balance: chest rocks back, knees soften, the right hand still holds the axe low.\n2. Knees buckle: pelvis drops, both knees bend deeply and the torso pitches forward; the same axe arm lowers toward the ground.\n3. Fall: knees touch down as the torso tips close to horizontal toward lower-left, the free left forearm reaches to break the fall, and the right-hand axe follows beside that right arm.\n4. Settle: the whole body lies motionless on its front/side on the ground, head toward lower-left and legs trailing upper-right. The same axe rests on the ground beside the right hand, with its handle still meeting the loosened fingers. Make this clearly a fallen body, not a kneeling or sleeping upright pose.\n\nKeep the camera, lighting, adult anatomy, apparent body size, palette and pixel pitch unchanged across all four frames. Use about64 logical pixels for the standing body, deliberate square pixel clusters and at most32 purposeful colors. Preserve one shared world ground origin through the fall; do not recenter or enlarge the low poses to fill their cells. Give every cell enough room for the complete fallen body and axe. All four face the same lower-left world direction, with natural rotation only from collapsing. No gore, green clothing, effects, floor shadows, labels, frame borders or other characters. Return actual transparent RGBA, with no painted transparency pattern. Slicing, exact canvas placement and animation timing will be handled separately.",
+  "references": [
+    {
+      "order": 1,
+      "path": "native/client/assets/raster/runtime/raider_sw.png",
+      "raw_sha256": "13e515e678d001de0e764729048986d1d459c9df2de9c2b52d2d1c8538b3daf4",
+      "role": "Sole supplied character, camera, pixel style, clothing and baked right-hand axe identity reference.",
+      "inspected_before_generation": true
+    }
+  ],
+  "viewed_but_not_supplied": [
+    "native/client/assets/raster/runtime/raider_strike0_sw.png"
+  ],
+  "recipe": {
+    "primary_source": "https://x.com/Mayz1169/status/2097540160611287452",
+    "original_inspection": "Complete Kiki planned combat prompt was read directly in the browser earlier in this same lane; current PROMPTING.md and RESEARCH.md reread before this call.",
+    "retained_structure": "Single reference identity and equipment, explicit ordered action beats, actual body mechanics, fixed camera/apparent scale, generous weapon clearance and separately authored frame holds.",
+    "local_prior_recipe": "native/client/assets/raster/prompts/raider-strike-sw-v1.txt",
+    "adaptation": "Replace combat preparation/attack/contact/recovery with four collapse beats: recoil, knees buckle, torso falls, body settles. Use a 2x2 adult raider study, no chibi conversion, gore or effects. Tools perform slicing, alpha cleanup, native reconstruction and preview.",
+    "claim_boundary": "Neither Kiki nor other cited creators are claimed to have tested this death sequence, adult raider or production integration. These are local observed results."
+  },
+  "source_review": {
+    "identity": "Recognizable bone mask, tied dark hair, charcoal clothes, ochre sash, brown boots and warm bronze axe; torn knee openings remain. No green bias observed.",
+    "motion": "Four distinct SW collapse poses: recoil backward, deep buckle, hands/knees fall, and fully prone body with head lower-left and legs trailing upper-right. Same anatomical-right axe arm remains screen-left; the final handle meets the loosened hand. Opposite forearm breaks the fall.",
+    "failure": "Actual alpha request returned a painted opaque checker. Nine enclosed-gap scopes retained background after border cleanup; these were inspected against the original before neutral-only local removal.",
+    "iteration": "No second generation required. Initial border-only candidate is preserved in the local border-only folder."
+  },
+  "conversion": {
+    "manifest": "native/tools/raster/raider-death-sw-candidate.json",
+    "manifest_raw_sha256": "e4d12a46ffb774257395c719696db2c04fa2f827d84b5cc55b628e718eef6b60",
+    "report": "native/tools/raster/raider-death-sw-candidates/v1/raider-death-sw-candidate.provenance.json",
+    "report_raw_sha256": "ef645fcbee47c40cdd8f82960e08399bbb66c4daea00ce0c3d337bb712db0d93",
+    "engine": "Actual Pixel Respecter workspace.reconstruct and palettes.reduce_colors through existing import_assets.py",
+    "cell_size": 8,
+    "shared_colors": 32,
+    "canvas": [
+      128,
+      112
+    ],
+    "pivot": [
+      64,
+      96
+    ],
+    "standing_reference_original_pivot": [
+      40,
+      96
+    ],
+    "standing_reference_translation": [
+      24,
+      0
+    ],
+    "standing_reference_rescale": false,
+    "source_origin": [
+      400,
+      608
+    ],
+    "source_column_stride": 704,
+    "source_row_stride": 416,
+    "normalization": "One shared cell8 scale and row/column registration; no independent pose fitting, resizing or centering.",
+    "alpha_audit": "native/tools/raster/raider-death-sw-candidates/v1/alpha-audit.json"
+  },
+  "acceptance": "Usable native candidate for root review; no runtime promotion or production acceptance.",
+  "limitations": [
+    "Recoil visible body height61px versus idle57px, including the raised/backward head pose; small material and silhouette variation remains.",
+    "Four key poses form a rapid collapse, not interpolated high-frame-rate motion. Preview uses recoil100ms, buckle130ms, fall110ms, then holds settled.",
+    "Preview restarts from idle for inspection only; production must play once and retain settled frame3 at the recorded world pivot.",
+    "Production death-event timing, corpse sorting/occlusion and gameplay gates remain root-owned."
+  ]
+}

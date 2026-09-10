@@ -1,0 +1,75 @@
+{
+  "canvas": [
+    128,
+    112
+  ],
+  "pivot": [
+    64,
+    96
+  ],
+  "idle_translation": [
+    24,
+    0
+  ],
+  "idle_body_height": 57,
+  "shared_cell": 8,
+  "preview_durations_ms": [
+    400,
+    100,
+    130,
+    110,
+    1000
+  ],
+  "source_alpha": "RGB opaque checker; cleanup required",
+  "production_accepted": false,
+  "frames": [
+    {
+      "phase": "recoil",
+      "bounds": [
+        34,
+        35,
+        86,
+        96
+      ],
+      "sha256": "e2258ad981f06b27e2829ef221f6ce5fb497e2caaad4ae6c09322279664c026e",
+      "partial_alpha": 0,
+      "bright_neutral_positions": []
+    },
+    {
+      "phase": "buckle",
+      "bounds": [
+        27,
+        50,
+        73,
+        97
+      ],
+      "sha256": "0634aece8dcbc75fbddd496087b4e7ed2ca9f145e1d5f24858e24cb413cd918b",
+      "partial_alpha": 0,
+      "bright_neutral_positions": []
+    },
+    {
+      "phase": "fall",
+      "bounds": [
+        20,
+        64,
+        92,
+        97
+      ],
+      "sha256": "2c8c18d50bd5da6852a19e425f388fbb0d266b2e094d4cf4108700f439db8deb",
+      "partial_alpha": 0,
+      "bright_neutral_positions": []
+    },
+    {
+      "phase": "settled",
+      "bounds": [
+        17,
+        72,
+        100,
+        97
+      ],
+      "sha256": "e35b6b84b45eb39ab2b1837f6f4203bf766fcc1d51b5d759430874acbd2a307a",
+      "partial_alpha": 0,
+      "bright_neutral_positions": []
+    }
+  ]
+}

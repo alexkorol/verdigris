@@ -35,6 +35,7 @@ struct EffectFx {
     Materialize,    // deterministic first-sighting spawn beat
     WarCryFade,     // BuffExpired("war-cry") contract beat
     ScionLostBeat,  // ScionLost contract beat
+    ActorFall,     // retained monster snapshot; never a live world actor
   };
   Kind kind = Kind::Impact;
   double wx = 0.0;
@@ -50,7 +51,18 @@ struct EffectFx {
   // Strike ownership prevents another actor's arc from posing the player.
   std::string actor_id;
   bool speculative = false;
+  std::string actor_family;
+  bool actor_elite = false;
 };
+
+inline constexpr int kActorFallTtlTicks = 160;
+inline constexpr int kActorFallMotionTicks = 8;
+inline constexpr int kActorFallFadeTicks = 20;
+inline constexpr std::size_t kMaxActorFalls = 32;
+inline constexpr std::size_t kMaxPresentationEffects = 128;
+
+double actor_fall_phase(const EffectFx& fall, double fractional_tick = 0.0);
+double actor_fall_opacity(const EffectFx& fall, double fractional_tick = 0.0);
 
 const EffectFx* actor_strike(const std::vector<EffectFx>& effects,
                              const std::string& actor_id);
@@ -171,7 +183,19 @@ struct PresentationFx {
   // Tick of each monster's most recent landed strike, driving the
   // presentation-only attack lunge. Derived from authoritative hit events.
   std::unordered_map<std::string, std::uint64_t> monster_strikes;
+  // Preserve these when an adapter temporarily moves effects out of its state.
+  std::string actor_fall_route_id;
+  bool actor_fall_scene_known = false;
 };
+
+// The same family selection used for the living monster's raster art.
+const char* monster_art_family(const WorldActor& monster, const WorldView& world);
+// Call with a known prior-world monster before the live snapshot removes it.
+// Returns false for empty/player IDs or an already retained death; never resets age.
+bool present_actor_death(std::vector<EffectFx>& effects, const WorldView& world,
+                         const WorldActor& monster);
+// Call after world sync, including frames without events. Clears old-route bodies.
+void sync_presentation_scene(PresentationFx& fx, const WorldView& world);
 
 verdigris::Vec2 facing_vector(const std::string& facing);
 

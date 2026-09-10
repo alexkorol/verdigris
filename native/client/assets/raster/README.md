@@ -8,7 +8,7 @@ visible content height; animation uses the shared full-canvas pivot and scale.
 `source/` retains generated candidates, including rejected ones. `prompts/`
 records the actual image requests, reference paths and observed failures.
 `runtime/catalog.json` resolves import order and records the active source,
-conversion settings, hashes and limitations for each of 139 PNGs. The importer
+conversion settings, hashes and limitations for each of 148 PNGs. The importer
 uses the owner's actual Pixel Respecter project at
 `Z:/Code/Python/pixel-perfecter`; it is not a substitute pixelation filter.
 
@@ -17,7 +17,33 @@ and critical feedback, and [PROMPTING.md](PROMPTING.md) for the resulting local
 workflow. Model variant names are recorded only where the source actually
 identifies them; our image tool has no model selector.
 
-## Current milestone: reference-led attacks and readable warnings, September 10, 2026
+## Current milestone: pixel contact, dust and retained bodies
+
+Nine new pixel sprites replace geometric dust/swing feedback and add a four-pose SW
+raider collapse. The catalog now contains 148 assets across 27 manifests and 52
+sources. Each new output exactly matches its reviewed Pixel Respecter candidate;
+all 139 previous runtime PNGs remain unchanged.
+
+Ordinary native melee now identifies its attacker before damage. Identified
+remote melee/thrust/sweep does the same; ranged and unknown attacks retain their
+existing damage feedback. Live ticks age old effects before ingesting contact,
+so the first paint keeps the contact pose. Session deaths use a prior actor
+snapshot when polling/painting has already removed the living enemy.
+
+Falls last 160 ticks (8 seconds), with four poses over 8 ticks and a final
+20-tick fade. Settled bodies draw beneath standing actors. Up to 32 bodies share
+the 128-effect cap; transient bursts preserve them. Death never creates a live
+actor or a second reward, and scene/loss transitions clear retained bodies.
+
+Final supported build/all 69 scenarios pass. Native core/networking/session/
+presentation/audio suites, browser 32/32, importer 10/10 and equipment 60x5x3 plus
+sampling pass. Twenty 3440x1440 stationary frames average 25.426 ms; moving
+frames average 25.467 ms with 35.561 ms peak. Both average gates remain
+40 ms. Root viewed the final supported live window and closed it with exit0.
+
+[Production review and remaining limits](reviews/2026-09-10-feedback/README.md).
+
+## Previous milestone: reference-led attacks and readable warnings, September 10, 2026
 
 Twenty-four manifests resolve 148 import records to 139 active PNGs from 49 sources.
 All four hero strike directions have six poses; raider SW also has six. NE uses
@@ -152,17 +178,10 @@ The preceding initial milestone established these foundations:
 
 ## Still unfinished
 
-Walking and the three integrated strikes still need more consistent identity,
-palette and timing. NW foot registration is corrected, but its body/head bob
-differs from idle. NE retains the legacy attack because the replacement action
-is incomplete. Raider SW walking is available to moving presentation snapshots;
-native enemy pursuit and other monster directions/actions remain unfinished.
-Weapon-specific body mechanics, terrain repetition, some scenery overlap and
-further HUD composition need refinement. Arbitrarily long owner names still
-need a wrapping policy. Passing checks do not close these visual gaps.
-
-Local evidence is under `.ci-artifacts/` in the worktree:
-`raster-refined-live.png`, `raster-refined-scenarios.log`,
-`raster-world-scenario.log`, `raster-browser-playtest.log` and
-`raster-wave-build.log`. Native walk strips and the 140 ms/frame preview GIF
-are in `native/tools/raster/`. These are review aids, not gameplay acceptance.
+The fall clip covers only SW raiders. Other death directions/families retain
+dust, and deaths without a known prior snapshot cannot fabricate a body. Slash
+trails are generic combat feedback, not measured weapon-specific paths. Native
+pursuit, other monster motion, bow/staff actions, cross-clip identity, terrain
+repetition and remote wall presentation remain unfinished. WarCry, spawn/loss
+effects, semantic boundaries, team rings and shadows still use procedural forms.
+The broad pixel-world goal remains active.

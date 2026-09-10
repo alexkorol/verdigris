@@ -710,6 +710,9 @@ void Simulation::enemy_turn() {
     // collision/navigation pass owns monster locomotion.
     if (distance > kMeleeRange) continue;
     enemy.cooldown_ticks = enemy.stats.attack_speed_ticks;
+    // Match the shared action resolver: name the attacker at committed contact
+    // before target-owned damage, without adding a windup or changing cadence.
+    emit(EventType::AttackStarted, enemy.id, {}, {}, "melee");
     const int damage = resolve_damage(enemy, *player);
     player->stats.life = std::max(0, player->stats.life - damage);
     emit(EventType::DamageApplied, player->id, {}, {}, "enemy-melee", damage);

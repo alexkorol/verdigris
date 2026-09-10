@@ -190,3 +190,23 @@ Finally inspect the poses inside the game. The first raider warning capture hid
 both actors behind an opaque telegraph despite valid sprite traces. The warning
 now preserves the interior pixels, and confirmed contact selects frame three on
 the damage event. Atlas checks and an assembled GIF alone would miss that defect.
+
+## Applied follow-up: dust, slash and collapse
+
+The next three sources each used one built-in call with accepted references.
+Four dust phases keep a shared64x48 canvas and pivot32,42; four raider collapse
+poses use128x112/pivot64,96, extending the accepted idle grid without fitting
+each pose. The single slash retains measured rotation/contact centers. These
+are documented local adaptations of the published motion workflows.
+
+The death source still painted a checker. Neutral-only cleanup was measured
+and compared with the source; real dust alpha needed no matte removal. Actual
+Pixel Respecter reconstruction and source/native review were necessary before
+production. The first four-copy Sweep composition then looked like a flower in
+the game, despite valid PNGs and passing tests. Two opposed halves corrected
+that specific runtime failure without regenerating the accepted slash.
+
+Live event timing needed a separate fix: age old effects before ingesting new
+contact, so the first paint retains its contact phase. No image prompt can
+replace that engine check. See reviews/2026-09-10-feedback/README.md for ordered
+production frames, exact acceptance scope and remaining gaps.

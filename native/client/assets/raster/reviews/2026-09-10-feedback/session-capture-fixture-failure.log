@@ -1,0 +1,38 @@
+== scenario raster-feedback ==
+    ok: raster-feedback: real player exists
+    ok: raster-feedback: contained capture root accepted
+    ok: raster-feedback: production frame captured
+    ok: raster-feedback: production frame captured
+    ok: raster-feedback: ordinary real hit owns the contact pose and raster slash
+    ok: raster-feedback: enemy trail agrees with rendered facing toward player
+    ok: raster-feedback: cooldown does not restart ordinary contact
+    ok: raster-feedback: production frame captured
+    ok: raster-feedback: real lethal hit removes live monster and retains registered recoil
+    ok: raster-feedback: production frame captured
+    ok: raster-feedback: actual death advances four authored fall phases
+    ok: raster-feedback: production frame captured
+    ok: raster-feedback: actual death advances four authored fall phases
+    ok: raster-feedback: production frame captured
+    ok: raster-feedback: actual death advances four authored fall phases
+    ok: raster-feedback: production frame captured
+    ok: raster-feedback: actual death advances four authored fall phases
+    ok: raster-feedback: production frame captured
+    ok: raster-feedback: settled body draws beneath standing player
+    ok: raster-feedback: production frame captured
+    ok: raster-feedback: corpse expires without minting actors, XP or loot
+    ok: raster-feedback: production frame captured
+    ok: raster-feedback: real dash paints each fixed-pivot dust phase
+    ok: raster-feedback: production frame captured
+    ok: raster-feedback: real dash paints each fixed-pivot dust phase
+    ok: raster-feedback: production frame captured
+    ok: raster-feedback: real dash paints each fixed-pivot dust phase
+    ok: raster-feedback: production frame captured
+    ok: raster-feedback: real dash paints each fixed-pivot dust phase
+    ok: raster-feedback: dust follows a real core dash displacement
+    ok: raster-feedback: session fixture starts
+    ok: raster-feedback: prior event snapshot contains the living session foe
+    FAIL: raster-feedback: session poll and paint remove foe before event drain
+    FAIL: raster-feedback: session death production capture saved
+    ok: raster-feedback: session death uses retained position and actual raster fall
+    ok: raster-feedback: later empty drains preserve corpse age and identity
+   FAIL (2 failures)

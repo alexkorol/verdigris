@@ -7,6 +7,87 @@
 
 namespace verdigris::client {
 
+namespace {
+
+void clear_actor_falls(PresentationFx& fx) {
+  fx.effects.erase(std::remove_if(fx.effects.begin(), fx.effects.end(),
+      [](const EffectFx& effect) { return effect.kind == EffectFx::Kind::ActorFall; }),
+      fx.effects.end());
+}
+
+void bound_effects(std::vector<EffectFx>& effects) {
+  auto falls = std::count_if(effects.begin(), effects.end(), [](const EffectFx& effect) {
+    return effect.kind == EffectFx::Kind::ActorFall;
+  });
+  while (falls > static_cast<int>(kMaxActorFalls)) {
+    effects.erase(std::find_if(effects.begin(), effects.end(), [](const EffectFx& effect) {
+      return effect.kind == EffectFx::Kind::ActorFall;
+    }));
+    --falls;
+  }
+  // Preserve retained bodies during bursts of short-lived hit feedback.
+  while (effects.size() > kMaxPresentationEffects) {
+    effects.erase(std::find_if(effects.begin(), effects.end(), [](const EffectFx& effect) {
+      return effect.kind != EffectFx::Kind::ActorFall;
+    }));
+  }
+}
+
+}  // namespace
+
+const char* monster_art_family(const WorldActor& monster, const WorldView& world) {
+  return monster.behaviour == "ranged" ? "archer"
+      : world.theme == "crypt" ? "wight"
+      : world.theme == "wilds" || world.theme == "marsh" ? "beast"
+      : "raider";
+}
+
+double actor_fall_phase(const EffectFx& fall, double fractional_tick) {
+  return std::clamp((fall.age + fractional_tick) / kActorFallMotionTicks, 0.0, 1.0);
+}
+
+double actor_fall_opacity(const EffectFx& fall, double fractional_tick) {
+  return std::clamp((fall.ttl - fall.age - fractional_tick) / kActorFallFadeTicks, 0.0, 1.0);
+}
+
+bool present_actor_death(std::vector<EffectFx>& effects, const WorldView& world,
+                         const WorldActor& monster) {
+  if (monster.id.empty() || monster.id == world.player.id) return false;
+  effects.erase(std::remove_if(effects.begin(), effects.end(), [&](const EffectFx& effect) {
+    return effect.actor_id == monster.id &&
+        (effect.kind == EffectFx::Kind::Swing || effect.kind == EffectFx::Kind::SweepArc ||
+         effect.kind == EffectFx::Kind::TargetFlash || effect.kind == EffectFx::Kind::Materialize);
+  }), effects.end());
+  if (std::any_of(effects.begin(), effects.end(), [&](const EffectFx& effect) {
+        return effect.kind == EffectFx::Kind::ActorFall && effect.actor_id == monster.id;
+      })) return false;
+  double dx = static_cast<double>(world.player.position.x) - monster.position.x;
+  double dy = static_cast<double>(world.player.position.y) - monster.position.y;
+  if (dx == 0.0 && dy == 0.0) {
+    dx = monster.facing.x;
+    dy = monster.facing.y;
+  }
+  EffectFx fall;
+  fall.kind = EffectFx::Kind::ActorFall;
+  fall.wx = monster.position.x;
+  fall.wy = monster.position.y;
+  fall.angle = std::atan2(dy, dx);
+  fall.ttl = kActorFallTtlTicks;
+  fall.actor_id = monster.id;
+  fall.actor_family = monster_art_family(monster, world);
+  fall.actor_elite = monster.elite;
+  effects.push_back(std::move(fall));
+  bound_effects(effects);
+  return true;
+}
+
+void sync_presentation_scene(PresentationFx& fx, const WorldView& world) {
+  if (fx.actor_fall_scene_known && fx.actor_fall_route_id != world.route_id)
+    clear_actor_falls(fx);
+  fx.actor_fall_route_id = world.route_id;
+  fx.actor_fall_scene_known = true;
+}
+
 verdigris::Vec2 facing_vector(const std::string& facing) {
   // Compound eight-way names ("up-left", ...) resolve component-wise so the
   // rendered facing matches the diagonal the wire actually carried.
@@ -297,12 +378,13 @@ void present_strike(std::vector<EffectFx>& effects, const std::string& actor_id,
   strike.age = speculative ? 0 : strike.ttl / 2;
   strike.actor_id = actor_id;
   strike.speculative = speculative;
-  if (effects.size() >= 128) effects.erase(effects.begin());
   effects.push_back(std::move(strike));
+  bound_effects(effects);
 }
 
 void apply_presentation_event(PresentationFx& fx, const WorldView& world,
                               const PresentationEvent& event, std::uint64_t now_tick) {
+  sync_presentation_scene(fx, world);
   const bool to_player = event.text == "incoming" || event.type == PresentationEventType::ScionDied;
   const verdigris::Vec2 at = event_anchor(world, fx, event, to_player);
   const double ex = static_cast<double>(at.x);
@@ -313,9 +395,15 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       const WorldActor* actor = event.actor_id == world.player.id ? &world.player
           : find_monster(world, event.actor_id);
       if (!actor) break;
-      const double swing_angle =
-          std::atan2(static_cast<double>(actor->facing.y),
-                     static_cast<double>(actor->facing.x));
+      double dx = actor->facing.x;
+      double dy = actor->facing.y;
+      if (actor != &world.player &&
+          (actor->position.x != world.player.position.x ||
+           actor->position.y != world.player.position.y)) {
+        dx = static_cast<double>(world.player.position.x) - actor->position.x;
+        dy = static_cast<double>(world.player.position.y) - actor->position.y;
+      }
+      const double swing_angle = std::atan2(dy, dx);
       present_strike(fx.effects, event.actor_id, actor->position, swing_angle,
                      event.text == "sweep", false);
       break;
@@ -367,8 +455,20 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
           std::move(telegraph);
       break;
     }
-    case PresentationEventType::ActorDied:
+    case PresentationEventType::ActorDied: {
+      fx.telegraphs.erase(event.actor_id);
+      fx.monster_strikes.erase(event.actor_id);
+      // The event has no corpse snapshot. A missing prior-world monster must
+      // not borrow the previous death's position or fabricate a raider Scion.
+      const auto* monster = find_monster(world, event.actor_id);
+      if (!monster || !present_actor_death(fx.effects, world, *monster)) break;
+      fx.last_death_pos = monster->position;
+      fx.effects.push_back({EffectFx::Kind::Dust, static_cast<double>(monster->position.x),
+                            static_cast<double>(monster->position.y), 0.7, 0, 10});
+      break;
+    }
     case PresentationEventType::ScionDied:
+      clear_actor_falls(fx);
       fx.telegraphs.erase(event.actor_id);
       fx.monster_strikes.erase(event.actor_id);
       if (event.type == PresentationEventType::ScionDied) fx.telegraphs.clear();
@@ -380,6 +480,7 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       // TASK-0122 Phase A: a long, distinct loss beat anchored on the player.
       // Distinct from death rings in color, shape, and lifetime; it decorates
       // the already-resolved loss and mutates nothing authoritative.
+      clear_actor_falls(fx);
       fx.telegraphs.clear();
       fx.effects.push_back(
           {EffectFx::Kind::ScionLostBeat, static_cast<double>(world.player.position.x),
@@ -413,10 +514,13 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       else if (!fx.loot_positions.empty()) fx.loot_positions.erase(fx.loot_positions.begin());
       break;
     case PresentationEventType::ExtractionCompleted:
+      clear_actor_falls(fx);
       fx.hint = "Returned to the surface";
       fx.hint_ticks = 80;
       break;
     case PresentationEventType::ConnectionLost:
+      clear_actor_falls(fx);
+      fx.actor_fall_scene_known = false;
       fx.hint = event.text.empty() ? "CONNECTION LOST — not playing offline" : event.text;
       fx.hint_ticks = 200;
       fx.screen_pulse_ticks = 8;
@@ -440,8 +544,11 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       }
       break;
     case PresentationEventType::SessionReady:
-    case PresentationEventType::ItemEquipped:
     case PresentationEventType::ConnectionEstablished:
+      clear_actor_falls(fx);
+      fx.actor_fall_scene_known = false;
+      break;
+    case PresentationEventType::ItemEquipped:
     case PresentationEventType::ProtocolError:
       break;
   }
@@ -482,6 +589,7 @@ void apply_presentation_event(PresentationFx& fx, const WorldView& world,
       if (fx.event_log.size() > 6) fx.event_log.erase(fx.event_log.begin());
     }
   }
+  bound_effects(fx.effects);
 }
 
 void age_presentation_fx(PresentationFx& fx) {
@@ -489,12 +597,14 @@ void age_presentation_fx(PresentationFx& fx) {
   fx.effects.erase(std::remove_if(fx.effects.begin(), fx.effects.end(),
                                   [](const EffectFx& effect) { return effect.age >= effect.ttl; }),
                    fx.effects.end());
+  bound_effects(fx.effects);
   if (fx.hint_ticks > 0) --fx.hint_ticks;
   if (fx.screen_pulse_ticks > 0) --fx.screen_pulse_ticks;
 }
 
 void detect_monster_spawns(PresentationFx& fx, const WorldView& world,
                            std::uint64_t now_tick) {
+  sync_presentation_scene(fx, world);
   (void)now_tick;
   // TASK-0122 Phase A: one materialization beat per never-before-seen living
   // foe, in the deterministic snapshot order. This reads the authoritative
@@ -507,8 +617,10 @@ void detect_monster_spawns(PresentationFx& fx, const WorldView& world,
     spawn.wx = static_cast<double>(monster.position.x);
     spawn.wy = static_cast<double>(monster.position.y);
     spawn.ttl = phase_a::kMaterializeTtlTicks;
+    spawn.actor_id = monster.id;
     fx.effects.push_back(std::move(spawn));
   }
+  bound_effects(fx.effects);
 }
 
 void record_world_ops(render::List& rl, const WorldView& world, const PresentationFx& fx,
@@ -570,6 +682,10 @@ void record_world_ops(render::List& rl, const WorldView& world, const Presentati
       case EffectFx::Kind::DeathRing:
         rl.push_back({render::Op::Death, static_cast<double>(base.x),
                       static_cast<double>(base.y)});
+        break;
+      case EffectFx::Kind::ActorFall:
+        rl.push_back({render::Op::Death, static_cast<double>(base.x),
+                      static_cast<double>(base.y), 0.0, 0, "actor-fall"});
         break;
       case EffectFx::Kind::TargetFlash:
         rl.push_back({render::Op::TargetFlash, static_cast<double>(base.x),

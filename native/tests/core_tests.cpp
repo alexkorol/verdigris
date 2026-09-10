@@ -535,22 +535,118 @@ void test_elite_skill_replay_is_deterministic() {
 
 void test_non_elite_melee_cadence_is_unchanged() {
   Simulation sim(0xA018ULL);
+  Simulation out_of_range_control(0xA018ULL);
+  for (Simulation* state : {&sim, &out_of_range_control}) {
+    state->dispatch(Command::enter("route:tin:1:0"));
+    Actor* player = state->actor(state->scion().actor_id);
+    player->position = {0, 0};
+    player->stats.life = player->stats.life_max = 1000;
+    first_monster(*state)->position = {world_scale::kMeleeRange + 1, 0};
+  }
+  const std::string monster_id = first_monster(sim)->id;
   Actor* player = sim.actor(sim.scion().actor_id);
-  player->position = {0, 0};
-  player->stats.life = 1000;
-   const std::string monster_id =
-       sim.spawn_monster({world_scale::kMeleeRange - 1, 0}, 1, false);
   Actor* monster = sim.actor(monster_id);
   check(monster && !monster->elite, "non-elite cadence test creates a plain monster");
-  sim.dispatch(Command::action_use(ActionType::Wait));
-  player = sim.actor(sim.scion().actor_id);
-  monster = sim.actor(monster_id);
+  const auto wait_both = [&] {
+    sim.dispatch(Command::action_use(ActionType::Wait));
+    out_of_range_control.dispatch(Command::action_use(ActionType::Wait));
+  };
+  const std::size_t before_miss = sim.events().size();
+  wait_both();
+  check(sim.events().size() == before_miss && player->stats.life == 1000 &&
+            monster->cooldown_ticks == 0,
+        "out-of-range ordinary melee emits no attack or damage and spends no cooldown");
+
+  // Equality is the contact boundary. The control takes the same ticks while
+  // remaining outside it, so later rewards expose any accidental RNG draws.
+  monster->position = {world_scale::kMeleeRange, 0};
+  const int cadence = monster->stats.attack_speed_ticks;
+  const int resource = monster->stats.resource;
+  const int damage = Simulation::resolve_damage(*monster, *player);
+  check(damage > 0 && cadence > 1, "ordinary melee fixture has real damage and a cooldown");
+  const std::uint64_t first_contact_tick = sim.tick() + 1;
+  const auto check_contact = [&](std::size_t begin, std::uint64_t tick, int life_before) {
+    check(sim.events().size() == begin + 2,
+          "one ordinary contact emits exactly one start followed by one damage event");
+    const Event& started = sim.events()[begin];
+    const Event& applied = sim.events()[begin + 1];
+    check(started.type == EventType::AttackStarted && started.actor_id == monster_id &&
+              started.text == "melee" && started.tick == tick && started.value == 0 &&
+              started.item_id.empty() && started.trophy_id.empty(),
+          "ordinary AttackStarted identifies the attacker with shared melee semantics");
+    check(applied.type == EventType::DamageApplied && applied.actor_id == player->id &&
+              applied.text == "enemy-melee" && applied.tick == tick && applied.value == damage &&
+              player->stats.life == life_before - damage,
+          "ordinary damage retains its target, tick, payload and real life subtraction");
+    check(monster->cooldown_ticks == cadence && monster->stats.resource == resource,
+          "ordinary contact preserves its cooldown and resource cost");
+  };
+  const std::size_t first_begin = sim.events().size();
+  wait_both();
+  check_contact(first_begin, first_contact_tick, 1000);
+  const std::size_t after_first = sim.events().size();
+  for (int elapsed = 1; elapsed < cadence; ++elapsed) {
+    wait_both();
+    check(sim.events().size() == after_first && player->stats.life == 1000 - damage &&
+              monster->cooldown_ticks == cadence - elapsed,
+          "cooldown ticks neither duplicate an ordinary start nor apply damage early");
+  }
+  wait_both();
+  check_contact(after_first, first_contact_tick + cadence, 1000 - damage);
   check(count_events(sim, EventType::AttackTelegraphed) == 0,
         "non-elite melee emits no telegraph");
-  check(count_events(sim, EventType::DamageApplied, "enemy-melee") == 1,
-        "non-elite monster still performs its ordinary melee attack");
-  check(monster->cooldown_ticks == monster->stats.attack_speed_ticks,
-        "non-elite melee cooldown cadence remains unchanged");
+  check(snapshot(sim) == snapshot(out_of_range_control),
+        "ordinary contacts leave durable state and RNG equal to the same-seed miss control");
+
+  for (Simulation* state : {&sim, &out_of_range_control}) {
+    Actor* target = state->actor(monster_id);
+    target->position = {world_scale::kMeleeRange, 0};
+    target->stats.life = 1;
+    state->dispatch(Command::action_use(ActionType::Melee));
+  }
+  check(sim.ground_items().size() == 1 && sim.ground_trophies().size() == 1 &&
+            out_of_range_control.ground_items().size() == 1 &&
+            out_of_range_control.ground_trophies().size() == 1,
+        "ordinary combat still produces one item and trophy when its attacker is defeated");
+  check(sim.ground_items().front().id == out_of_range_control.ground_items().front().id &&
+            sim.ground_items().front().attack_bonus ==
+                out_of_range_control.ground_items().front().attack_bonus &&
+            sim.ground_trophies().front().id == out_of_range_control.ground_trophies().front().id &&
+            snapshot(sim) == snapshot(out_of_range_control),
+        "ordinary start events do not change seeded rewards or durable progression");
+}
+
+void test_ordinary_melee_start_precedes_lethal_damage_and_stops_on_death() {
+  for (bool elite_without_resource : {false, true}) {
+    Simulation sim(0xA01AULL);
+    const std::string first = sim.spawn_monster({world_scale::kMeleeRange, 0}, 1,
+                                               elite_without_resource);
+    const std::string second = sim.spawn_monster({0, world_scale::kMeleeRange}, 1, false);
+    Actor* player = sim.actor(sim.scion().actor_id);
+    player->stats.life = 1;
+    if (elite_without_resource) {
+      sim.actor(first)->stats.resource = sim.actor(first)->stats.resource_max = 0;
+    }
+    const std::size_t begin = sim.events().size();
+    sim.dispatch(Command::action_use(ActionType::Wait));
+    check(sim.events().size() >= begin + 3 &&
+              sim.events()[begin].type == EventType::AttackStarted &&
+              sim.events()[begin].actor_id == first && sim.events()[begin].text == "melee" &&
+              sim.events()[begin + 1].type == EventType::DamageApplied &&
+              sim.events()[begin + 1].actor_id == player->id &&
+              sim.events()[begin + 2].type == EventType::ActorDied &&
+              !player->alive && player->stats.life == 0,
+          "ordinary and resource-starved elite melee announce their attacker before lethal damage");
+    check(count_events(sim, EventType::AttackStarted) == 1 &&
+              count_events(sim, EventType::DamageApplied, "enemy-melee") == 1 &&
+              count_events(sim, EventType::AttackTelegraphed) == 0 &&
+              sim.actor(second)->cooldown_ticks == 0,
+          "the next ordinary enemy never announces or strikes an already dead player");
+    const std::size_t after_death = sim.events().size();
+    sim.dispatch(Command::action_use(ActionType::Wait));
+    check(sim.events().size() == after_death,
+          "later dead-player ticks do not duplicate ordinary start or damage events");
+  }
 }
 
 void test_war_cry_buff_expiry_and_replay_determinism() {
@@ -2148,6 +2244,7 @@ int main() {
   test_elite_telegraph_cancels_on_death();
   test_elite_skill_replay_is_deterministic();
   test_non_elite_melee_cadence_is_unchanged();
+  test_ordinary_melee_start_precedes_lethal_damage_and_stops_on_death();
   test_war_cry_buff_expiry_and_replay_determinism();
   test_presentation_catalog_is_authoritative_and_stable();
   test_instance_lifecycle_rejects_stale_pickups();

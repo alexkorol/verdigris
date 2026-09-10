@@ -25,6 +25,7 @@
 #include "render_list.hpp"
 #include "remote_play.hpp"
 #include "remote_session.hpp"
+#include "local_session.hpp"
 #include "presentation_state.hpp"
 #include "session.hpp"
 
@@ -506,6 +507,12 @@ struct ClientState {
   // so the spawn beat fires exactly once per monster.
   std::unordered_set<std::string> known_monsters;
   std::unordered_map<std::string, std::uint64_t> monster_strikes;
+  std::string actor_fall_route_id;
+  bool actor_fall_scene_known = false;
+  // Updated only after draining session events. Paint/poll world sync may
+  // already omit a dead monster before its death event reaches presentation.
+  WorldView event_world;
+  bool event_world_known = false;
   bool loot_labels = false;
   verdigris::client::items::LootFilter loot_filter{};
   bool gear_overlay = false;
@@ -701,8 +708,11 @@ struct ClientState {
 constexpr std::size_t kMaxPresentationEffects = 128;
 
 void add_effect(ClientState& state, EffectFx fx) {
-  if (state.effects.size() >= kMaxPresentationEffects)
-    state.effects.erase(state.effects.begin());
+  if (state.effects.size() >= kMaxPresentationEffects) {
+    auto oldest = std::find_if(state.effects.begin(), state.effects.end(),
+        [](const EffectFx& effect) { return effect.kind != EffectFx::Kind::ActorFall; });
+    state.effects.erase(oldest == state.effects.end() ? state.effects.begin() : oldest);
+  }
   state.effects.push_back(std::move(fx));
 }
 
@@ -1836,12 +1846,23 @@ void ingest_session_events(ClientState& state) {
   fx.hint_ticks = state.hint_ticks;
   fx.known_monsters = std::move(state.known_monsters);
   fx.monster_strikes = std::move(state.monster_strikes);
+  fx.actor_fall_route_id = state.actor_fall_route_id;
+  fx.actor_fall_scene_known = state.actor_fall_scene_known;
   ++state.world.tick;
   ensure_audio(state);
   const std::string route_before = state.world.route_id;
   std::vector<std::string> batch_keys;
   for (const auto& event : state.session->drain_events()) {
-    verdigris::client::apply_presentation_event(fx, state.world, event, state.world.tick);
+    using EventType = verdigris::client::PresentationEventType;
+    if (event.type == EventType::SessionReady || event.type == EventType::ConnectionEstablished ||
+        event.type == EventType::ConnectionLost)
+      state.event_world_known = false;
+    // Only vanished deaths need history. Live hit/aim/spawn events use the
+    // current positions, including actors first seen in this same poll.
+    const bool retained_death = event.type == verdigris::client::PresentationEventType::ActorDied &&
+        state.event_world_known && state.event_world.route_id == state.world.route_id;
+    const WorldView& event_world = retained_death ? state.event_world : state.world;
+    verdigris::client::apply_presentation_event(fx, event_world, event, state.world.tick);
     voice_presentation_event(state, event, state.world.tick, batch_keys);
     if (!fx.hint.empty()) {
       state.hint = fx.hint;
@@ -1864,6 +1885,13 @@ void ingest_session_events(ClientState& state) {
   state.event_log = std::move(fx.event_log);
   state.known_monsters = std::move(fx.known_monsters);
   state.monster_strikes = std::move(fx.monster_strikes);
+  state.actor_fall_route_id = std::move(fx.actor_fall_route_id);
+  state.actor_fall_scene_known = fx.actor_fall_scene_known;
+  state.event_world.player = state.world.player;
+  state.event_world.monsters = state.world.monsters;
+  state.event_world.theme = state.world.theme;
+  state.event_world.route_id = state.world.route_id;
+  state.event_world_known = true;
 }
 
 void submit_move(ClientState& state, int dx, int dy) {
@@ -3234,6 +3262,70 @@ bool draw_contact_spark(HDC dc, const ScreenPoint& base, float opacity) {
       base.y - lift, height, 21.5, 27.5, 0, false, opacity);
 }
 
+const char* raster_direction(double x, double y);
+
+// Reconstructed clips retain one source pitch and a measured anchor. Never
+// fit a transient's changing visible bounds: that would make dust and bodies pulse.
+bool draw_ground_dust(HDC dc, const ScreenPoint& base, const EffectFx& fx,
+                      render::List& rl) {
+  static const char* const frames[] = {
+      "effect_dust0", "effect_dust1", "effect_dust2", "effect_dust3"};
+  const int phase = std::clamp(fx.age * 4 / std::max(1, fx.ttl), 0, 3);
+  const int height = std::max(8, static_cast<int>(std::lround(
+      kTileUnits * 0.92 * base.scale)));
+  const float opacity = static_cast<float>(std::clamp(
+      1.15 - static_cast<double>(fx.age) / std::max(1, fx.ttl), 0.0, 1.0));
+  const bool drawn = raster_art::draw_sprite_at_anchor(dc, frames[phase],
+      base.x, base.y, height, 32, 42, 0, false, opacity);
+  if (drawn)
+    rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                  static_cast<double>(base.y), 0.0, phase,
+                  std::string("raster:dust:") + frames[phase]});
+  return drawn;
+}
+
+bool draw_slash_trail(HDC dc, const ScreenPoint& base, double angle,
+                      float opacity, render::List& rl, double forward_tiles = 0.35) {
+  // Eight cached orientations keep crisp pixels and a bounded rotation cache.
+  const int degrees = static_cast<int>(std::lround(angle * 180.0 / kPi / 45.0)) * 45;
+  const double radians = degrees * kPi / 180.0;
+  const int height = std::max(8, static_cast<int>(std::lround(
+      kTileUnits * 1.25 * base.scale)));
+  const double forward = kTileUnits * forward_tiles * base.scale;
+  const double x = base.x + std::cos(radians) * forward;
+  const double y = base.y - kTileUnits * 0.75 * base.scale + std::sin(radians) * forward;
+  const bool drawn = raster_art::draw_sprite_at_anchor(dc, "effect_slash0", x, y,
+      height, 26.5, 32.5, degrees, false, opacity);
+  if (drawn)
+    rl.push_back({render::Op::Hud, x, y, 0.0, degrees, "raster:slash:effect_slash0"});
+  return drawn;
+}
+
+bool draw_actor_fall(HDC dc, const ScreenPoint& base, const EffectFx& fx,
+                     render::List& rl) {
+  // Only the authored SW raider clip is enabled. Other families/directions
+  // retain the shared dust beat until their own collapse art is available.
+  if (fx.actor_family != "raider" ||
+      std::string(raster_direction(std::cos(fx.angle), std::sin(fx.angle))) != "sw")
+    return false;
+  const int phase = std::min(3, static_cast<int>(
+      verdigris::client::actor_fall_phase(fx) * 4.0));
+  const std::string asset = "raider_death" + std::to_string(phase) + "_sw";
+  // The old alive canvas is 80x96. This 128x112 clip extends that same
+  // pixel grid by 24px on each side and 16px below the unchanged foot pivot.
+  const int alive_height = std::max(10, static_cast<int>(
+      kTileUnits * (fx.actor_elite ? 2.4 : 2.05) * base.scale));
+  const int height = static_cast<int>(std::lround(alive_height * 112.0 / 96.0));
+  const bool drawn = raster_art::draw_sprite_at_anchor(dc, asset.c_str(), base.x,
+      base.y, height, 64, 96, 0, false,
+      static_cast<float>(verdigris::client::actor_fall_opacity(fx)));
+  if (drawn)
+    rl.push_back({render::Op::Hud, static_cast<double>(base.x),
+                  static_cast<double>(base.y), 0.0, phase,
+                  "raster:actor-fall:" + fx.actor_id + ":" + asset});
+  return drawn;
+}
+
 void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectFx& fx,
                  render::List& rl) {
   const ScreenPoint base = project(camera, bounds, fx.wx, fx.wy);
@@ -3243,32 +3335,21 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
     case EffectFx::Kind::Swing: {
       rl.push_back({render::Op::Swing, static_cast<double>(base.x),
                     static_cast<double>(base.y)});
-      // A readable melee arc sweeping toward the aim angle, drawn flat on the
-      // top-down ground plane.
-      const int radius = static_cast<int>(kTileUnits * 1.1 * base.scale);
-      const COLORREF color = fade_to_background(RGB(226, 220, 180), life);
-      const double spread = kPi * 0.45;
-      const double sweep = fx.angle - spread * 0.5 + spread * grow;
-      for (int i = 0; i < 3; ++i) {
-        const double a = sweep - i * 0.12;
-        const int x1 = base.x + static_cast<int>(std::cos(a) * radius);
-        const int y1 = base.y + static_cast<int>(std::sin(a) * radius);
-        draw_line(dc, base.x, base.y, x1, y1, color, i == 0 ? 3 : 1);
-      }
+      if (!fx.speculative)
+        draw_slash_trail(dc, base, fx.angle, static_cast<float>(std::min(1.0, life * 2.0)), rl);
       break;
     }
     case EffectFx::Kind::SweepArc: {
-      // Sweep is an area action in the core.  A complete circle keeps the
-      // presentation honest about that area instead of implying a single
-      // facing direction that the deterministic action does not own.
+      // Two opposed halves share one center, retaining a surrounding sweep.
+      // Offsetting four copies makes a distracting four-petalled shape.
       const int radius = static_cast<int>(kTileUnits * (0.72 + grow * 0.62) *
                                           base.scale);
       rl.push_back({render::Op::Sweep, static_cast<double>(base.x),
                     static_cast<double>(base.y), static_cast<double>(radius)});
-      const COLORREF color = fade_to_background(RGB(116, 204, 208), life);
-      ring_ellipse(dc, base.x, base.y, radius, radius, color, 3);
-      if (radius > 8)
-        ring_ellipse(dc, base.x, base.y, radius - 7, radius - 7, color, 1);
+      if (!fx.speculative)
+        for (int half = 0; half < 2; ++half)
+          draw_slash_trail(dc, base, half * kPi,
+                            static_cast<float>(std::min(0.8, life * 1.6)), rl, 0.0);
       break;
     }
     case EffectFx::Kind::WarCryAura: {
@@ -3330,21 +3411,16 @@ void draw_effect(HDC dc, const Camera& camera, const RECT& bounds, const EffectF
     case EffectFx::Kind::DeathRing: {
       rl.push_back({render::Op::Death, static_cast<double>(base.x),
                     static_cast<double>(base.y)});
-      const int rx = static_cast<int>(kTileUnits * (0.3 + grow * 1.5) * base.scale);
-      ring_ellipse(dc, base.x, base.y, rx, rx,
-                   fade_to_background(RGB(214, 118, 86), life), 2);
       break;
     }
     case EffectFx::Kind::Dust: {
-      const COLORREF color = fade_to_background(RGB(126, 118, 98), life * 0.8);
-      for (int i = 0; i < 5; ++i) {
-        const double a = fx.angle + i * (2.0 * kPi / 5.0);
-        const double d = kTileUnits * (0.2 + grow * 0.9);
-        const ScreenPoint p = project(camera, bounds, fx.wx + std::cos(a) * d,
-                                      fx.wy + std::sin(a) * d);
-        const int r = std::max(2, static_cast<int>(kTileUnits * 0.12 * p.scale));
-        fill_ellipse(dc, p.x, p.y, r, r, color);
-      }
+      draw_ground_dust(dc, base, fx, rl);
+      break;
+    }
+    case EffectFx::Kind::ActorFall: {
+      rl.push_back({render::Op::Death, static_cast<double>(base.x),
+                    static_cast<double>(base.y), 0.0, 0, "actor-fall"});
+      draw_actor_fall(dc, base, fx, rl);
       break;
     }
     case EffectFx::Kind::Sparkle: {
@@ -3560,7 +3636,7 @@ void dispatch_aim_if_changed(ClientState& state, const RECT& bounds, bool force 
   state.aim_direction_initialized = true;
 }
 
-// Turn new simulation events into procedural presentation effects.
+// Turn new simulation events into bounded presentation effects.
 void ingest_events(ClientState& state, const RECT& bounds) {
   if (!state.simulation) return;
   const auto& sim = *state.simulation;
@@ -3587,17 +3663,27 @@ void ingest_events(ClientState& state, const RECT& bounds) {
           state.telegraphs[event.actor_id] = std::move(telegraph);
         }
         break;
-      case verdigris::EventType::AttackStarted:
+      case verdigris::EventType::AttackStarted: {
         // A strike (including one which is ultimately absorbed by a gate in
         // the core) ends the presentation warning for this actor.
         state.telegraphs.erase(event.actor_id);
-        if (subject)
+        if (subject) {
+          auto facing = subject->facing;
+          if (subject->kind == verdigris::ActorKind::Monster) {
+            const auto* target = sim.actor(sim.scion().actor_id);
+            if (target && (target->position.x != subject->position.x ||
+                           target->position.y != subject->position.y))
+              facing = {target->position.x - subject->position.x,
+                        target->position.y - subject->position.y};
+          }
           verdigris::client::present_strike(
               state.effects, event.actor_id, subject->position,
-              std::atan2(static_cast<double>(subject->facing.y),
-                         static_cast<double>(subject->facing.x)),
+              std::atan2(static_cast<double>(facing.y),
+                         static_cast<double>(facing.x)),
               event.text == "sweep", false);
+        }
         break;
+      }
       case verdigris::EventType::BuffApplied:
         if (event.text == "war-cry")
           add_effect(state, {EffectFx::Kind::WarCryAura, ex, ey, 0.0, 0, 14});
@@ -3616,6 +3702,9 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         // TASK-0122 Phase A: long somber loss beat; clears stale warnings and
         // pulses the screen edge exactly like the seam path does.
         state.telegraphs.clear();
+        state.effects.erase(std::remove_if(state.effects.begin(), state.effects.end(),
+            [](const EffectFx& fx) { return fx.kind == EffectFx::Kind::ActorFall; }),
+            state.effects.end());
         add_effect(state, {EffectFx::Kind::ScionLostBeat, ex, ey, 0.0, 0,
                                  phase_a::kScionLostRingTtlTicks});
         state.screen_pulse_ticks = phase_a::kScionLostPulseTicks;
@@ -3660,6 +3749,13 @@ void ingest_events(ClientState& state, const RECT& bounds) {
         else if (subject && subject->kind == verdigris::ActorKind::Monster) {
           const int monster_level = std::max(1, subject->stats.level);
           state.local_combat_xp += static_cast<long long>(monster_level) * 12;
+          WorldActor fallen;
+          fallen.id = subject->id;
+          fallen.position = subject->position;
+          fallen.facing = subject->facing;
+          fallen.elite = subject->elite;
+          fallen.alive = false;
+          verdigris::client::present_actor_death(state.effects, state.world, fallen);
         }
         if (subject) state.last_death_pos = subject->position;
         add_effect(state, {EffectFx::Kind::DeathRing, ex, ey, 0.0, 0, 12});
@@ -3668,6 +3764,10 @@ void ingest_events(ClientState& state, const RECT& bounds) {
       case verdigris::EventType::InstanceEntered:
         // A route transition invalidates all event-time actor snapshots.
         state.telegraphs.clear();
+        state.effects.erase(std::remove_if(state.effects.begin(), state.effects.end(),
+            [](const EffectFx& fx) { return fx.kind == EffectFx::Kind::ActorFall; }),
+            state.effects.end());
+        state.actor_fall_scene_known = false;
         generate_scenery(state);
         break;
       case verdigris::EventType::ActorMoved:
@@ -3736,9 +3836,13 @@ void ingest_events(ClientState& state, const RECT& bounds) {
   verdigris::client::PresentationFx spawn_fx;
   spawn_fx.effects = std::move(state.effects);
   spawn_fx.known_monsters = std::move(state.known_monsters);
+  spawn_fx.actor_fall_route_id = state.actor_fall_route_id;
+  spawn_fx.actor_fall_scene_known = state.actor_fall_scene_known;
   detect_monster_spawns(spawn_fx, state.world, sim.tick());
   state.effects = std::move(spawn_fx.effects);
   state.known_monsters = std::move(spawn_fx.known_monsters);
+  state.actor_fall_route_id = std::move(spawn_fx.actor_fall_route_id);
+  state.actor_fall_scene_known = spawn_fx.actor_fall_scene_known;
   refresh_ambience(state);
   drain_audio(state);
 }
@@ -9379,6 +9483,13 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
 
   paint_material_light_pool(state, dc, bounds, rl);
 
+  // Once the fall has settled it belongs to the ground layer. A living actor
+  // walking across this footprint must occlude the body, regardless of its Y.
+  for (const auto& fx : state.effects)
+    if (fx.kind == EffectFx::Kind::ActorFall &&
+        fx.age >= verdigris::client::kActorFallMotionTicks)
+      draw_effect(dc, state.camera, bounds, fx, rl);
+
   const WorldActor& player = world.player;
 
   // Collect every standing element, then draw back-to-front by the top-down
@@ -9427,10 +9538,14 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
     order.push_back({camera2d::draw_order_key(static_cast<double>(loot[i].second.y),
                                               static_cast<double>(loot[i].second.x)),
                      3, DepthDraw::What::Loot, i});
-  for (std::size_t i = 0; i < state.effects.size(); ++i)
+  for (std::size_t i = 0; i < state.effects.size(); ++i) {
+    if (state.effects[i].kind == EffectFx::Kind::ActorFall &&
+        state.effects[i].age >= verdigris::client::kActorFallMotionTicks)
+      continue;
     order.push_back({camera2d::draw_order_key(state.effects[i].wy + 1.0,
                                               state.effects[i].wx),
                      4, DepthDraw::What::Effect, i});
+  }
   std::sort(order.begin(), order.end(), [](const DepthDraw& lhs, const DepthDraw& rhs) {
     if (lhs.depth != rhs.depth) return lhs.depth < rhs.depth;
     return lhs.order < rhs.order;
@@ -9593,10 +9708,7 @@ void paint_scene(ClientState& state, HDC dc, const RECT& bounds) {
               vector_art::monster_style(world.theme, monster.elite);
           const int rig_h =
               std::max(10, static_cast<int>(foe_height * base.scale));
-          const char* family = monster.behaviour == "ranged" ? "archer"
-              : world.theme == "crypt" ? "wight"
-              : world.theme == "wilds" || world.theme == "marsh" ? "beast"
-              : "raider";
+          const char* family = verdigris::client::monster_art_family(monster, world);
           std::string raster_pose;
           if (draw_raster_actor(dc, family, base, rig_h, to_player_x, to_player_y,
                                monster_attack_phase, motion_it.moving,
@@ -10634,6 +10746,13 @@ void consume_pad_buttons(ClientState& state) {
 // must never run faster than 20 Hz — the wire's movement sampling contract
 // and every ttl/tick constant depend on it.
 void fixed_game_tick(ClientState& state, const RECT& bounds) {
+  // Age the previous frame's feedback before ingesting new events. Otherwise
+  // confirmed age-3 contact advances to age 4 before its first live paint.
+  for (auto& fx : state.effects) ++fx.age;
+  state.effects.erase(std::remove_if(state.effects.begin(), state.effects.end(),
+                                     [](const EffectFx& fx) { return fx.age >= fx.ttl; }),
+                      state.effects.end());
+  if (state.screen_pulse_ticks > 0) --state.screen_pulse_ticks;
   if (state.session) {
     sync_world(state);
     ingest_session_events(state);
@@ -10694,12 +10813,7 @@ void fixed_game_tick(ClientState& state, const RECT& bounds) {
 
   ingest_events(state, bounds);
 
-  for (auto& fx : state.effects) ++fx.age;
-  state.effects.erase(std::remove_if(state.effects.begin(), state.effects.end(),
-                                     [](const EffectFx& fx) { return fx.age >= fx.ttl; }),
-                      state.effects.end());
   if (state.hint_ticks > 0) --state.hint_ticks;
-  if (state.screen_pulse_ticks > 0) --state.screen_pulse_ticks;
 }
 
 // Per-frame pump (~66 Hz timer): drain the socket, run as many fixed ticks
@@ -19110,6 +19224,190 @@ int scenario_raider_strike() {
   return scenario_failures;
 }
 
+int scenario_raster_feedback() {
+  ClientState state;
+  scenario_begin(state);
+  const RECT bounds{0, 0, 1366, 768};
+  ingest_events(state, bounds);
+  auto* sim = state.simulation.get();
+  const std::string player_id = sim->scion().actor_id;
+  auto* player = sim->actor(player_id);
+  scenario_check(player != nullptr, "raster-feedback: real player exists");
+  if (!player) return scenario_failures;
+  player->position = {2400, 2400};
+  const int offset = verdigris::world_scale::kMeleeRange / 3;
+  const auto foe_id = sim->spawn_monster({2400 + offset, 2400 - offset}, 1, false);
+  ingest_events(state, bounds);
+  state.effects.clear();
+  scenario_follow_camera(state);
+  const std::string dir = art_wave_capture_dir();
+  scenario_check(!dir.empty(), "raster-feedback: contained capture root accepted");
+  if (dir.empty()) return scenario_failures;
+  auto capture = [&](const std::string& name) {
+    scenario_check(reference_present(state, 1366, 768, dir + "\\raster-feedback-" + name + ".png"),
+                   "raster-feedback: production frame captured");
+  };
+  auto has = [&](const std::string& label) {
+    return render_list_has(state, render::Op::Hud, label.c_str());
+  };
+  auto age = [&]() {
+    for (auto& fx : state.effects) ++fx.age;
+    state.effects.erase(std::remove_if(state.effects.begin(), state.effects.end(),
+        [](const EffectFx& fx) { return fx.age >= fx.ttl; }), state.effects.end());
+    if (state.screen_pulse_ticks > 0) --state.screen_pulse_ticks;
+  };
+  capture("ordinary-idle");
+  const int life_before = sim->actor(player_id)->stats.life;
+  fixed_game_tick(state, bounds);
+  capture("ordinary-contact");
+  const auto* strike = verdigris::client::actor_strike(state.effects, foe_id);
+  scenario_check(strike && !verdigris::client::actor_strike(state.effects, player_id) &&
+                     sim->actor(player_id)->stats.life < life_before &&
+                     has("raster:monster-pose:" + foe_id + ":raider_strike3_sw") &&
+                     has("raster:slash:effect_slash0") &&
+                     render::any(state.render_list, render::Op::Impact),
+                 "raster-feedback: live fixed tick paints ordinary contact before aging it");
+  scenario_check(strike && std::abs(strike->angle - kPi * 0.75) < 0.001,
+                 "raster-feedback: enemy trail agrees with rendered facing toward player");
+  const int contact_age = strike ? strike->age : -1;
+  const int life_after_contact = sim->actor(player_id)->stats.life;
+  age();
+  sim->dispatch(verdigris::Command::action_use(verdigris::ActionType::Wait));
+  ingest_events(state, bounds);
+  strike = verdigris::client::actor_strike(state.effects, foe_id);
+  scenario_check(strike && strike->age == contact_age + 1 &&
+                     sim->actor(player_id)->stats.life == life_after_contact,
+                 "raster-feedback: cooldown does not restart ordinary contact");
+
+  sim->actor(foe_id)->stats.life = 1;
+  player = sim->actor(player_id);
+  player->cooldown_ticks = 0;
+  player->facing = {1, -1};
+  const auto xp_before = state.local_combat_xp;
+  sim->dispatch(verdigris::Command::action_use(verdigris::ActionType::Melee));
+  ingest_events(state, bounds);
+  scenario_follow_camera(state);
+  capture("death-0");
+  auto fall = [&]() -> const EffectFx* {
+    for (const auto& fx : state.effects)
+      if (fx.kind == EffectFx::Kind::ActorFall && fx.actor_id == foe_id) return &fx;
+    return nullptr;
+  };
+  scenario_check(!sim->actor(foe_id)->alive && fall() &&
+                     state.local_combat_xp == xp_before + 12 &&
+                     has("raster:actor-fall:" + foe_id + ":raider_death0_sw") &&
+                     std::none_of(state.world.monsters.begin(), state.world.monsters.end(),
+                                  [&](const WorldActor& actor) { return actor.id == foe_id; }),
+                 "raster-feedback: real lethal hit removes live monster and retains registered recoil");
+  const auto xp_after = state.local_combat_xp;
+  const auto loot_after = state.loot_positions.size();
+  for (int tick = 1; tick <= 8; ++tick) {
+    age();
+    if (tick % 2 == 0) {
+      capture("death-" + std::to_string(tick));
+      const int phase = std::min(3, tick / 2);
+      scenario_check(has("raster:actor-fall:" + foe_id + ":raider_death" +
+                         std::to_string(phase) + "_sw"),
+                     "raster-feedback: actual death advances four authored fall phases");
+    }
+  }
+  // An intentional overlapping fixture verifies the production ground layer;
+  // no dead actor is reinserted into simulation for this presentation review.
+  sim->actor(player_id)->position = sim->actor(foe_id)->position;
+  scenario_follow_camera(state);
+  capture("settled-under-player");
+  const auto body_op = std::find_if(state.render_list.begin(), state.render_list.end(),
+      [](const render::Item& op) { return op.op == render::Op::Death && op.label == "actor-fall"; });
+  const auto player_op = std::find_if(state.render_list.begin(), state.render_list.end(),
+      [](const render::Item& op) { return op.op == render::Op::Player; });
+  scenario_check(body_op != state.render_list.end() && player_op != state.render_list.end() &&
+                     body_op < player_op,
+                 "raster-feedback: settled body draws beneath standing player");
+  for (int i = 0; i < 160; ++i)
+    add_effect(state, {EffectFx::Kind::Impact, 2400, 2400, 0, 0, 4});
+  scenario_check(state.effects.size() == kMaxPresentationEffects && fall() && fall()->age == 8,
+                 "raster-feedback: local feedback bursts evict transients before retained body");
+  for (int tick = 8; tick < verdigris::client::kActorFallTtlTicks; ++tick) age();
+  capture("expired");
+  scenario_check(!fall() && state.local_combat_xp == xp_after &&
+                     state.loot_positions.size() == loot_after && !sim->actor(foe_id)->alive,
+                 "raster-feedback: corpse expires without minting actors, XP or loot");
+  player = sim->actor(player_id);
+  player->cooldown_ticks = 0;
+  player->facing = {1, 0};
+  const auto before_dash = player->position;
+  sim->dispatch(verdigris::Command::action_use(verdigris::ActionType::Dash));
+  ingest_events(state, bounds);
+  scenario_follow_camera(state);
+  for (int tick = 0; tick < 8; ++tick) {
+    if (tick % 2 == 0) {
+      capture("dash-" + std::to_string(tick));
+      scenario_check(has("raster:dust:effect_dust" + std::to_string(tick / 2)),
+                     "raster-feedback: real dash paints each fixed-pivot dust phase");
+    }
+    age();
+  }
+  scenario_check(sim->actor(player_id)->position.x != before_dash.x,
+                 "raster-feedback: dust follows a real core dash displacement");
+
+  // Reproduce a session poll/paint that removes the live actor before its
+  // queued death event is drained. Only the scenario uses the core escape hatch.
+  ClientState seam_state;
+  load_billboards(seam_state.billboards);
+  auto seam = std::make_unique<verdigris::client::LocalCoreSession>(0xC011AB1EULL);
+  auto* seam_session = seam.get();
+  seam_state.session = std::move(seam);
+  std::string error;
+  scenario_check(seam_session->start(&error), "raster-feedback: session fixture starts");
+  seam_session->submit(verdigris::client::ClientCommand::enter_zone("route:tin:1:0"));
+  auto* seam_sim = seam_session->simulation_for_scenarios();
+  auto* seam_player = seam_sim->actor(seam_sim->scion().actor_id);
+  seam_player->position = {0, 0};
+  seam_player->facing = {1, -1};
+  const auto seam_foe = seam_sim->spawn_monster({1, -1}, 1, false);
+  seam_sim->actor(seam_foe)->stats.life = 1;
+  seam_session->poll();
+  sync_world(seam_state);
+  ingest_session_events(seam_state);
+  const auto before_dead = std::find_if(seam_state.event_world.monsters.begin(),
+      seam_state.event_world.monsters.end(), [&](const WorldActor& actor) { return actor.id == seam_foe; });
+  scenario_check(before_dead != seam_state.event_world.monsters.end(),
+                 "raster-feedback: prior event snapshot contains the living session foe");
+  if (before_dead == seam_state.event_world.monsters.end()) return scenario_failures;
+  const auto corpse_position = before_dead->position;
+  seam_session->submit(verdigris::client::ClientCommand::use_action("melee"));
+  seam_session->poll();
+  sync_world(seam_state);
+  seam_state.camera.x = corpse_position.x;
+  seam_state.camera.y = corpse_position.y;
+  scenario_check(reference_present(seam_state, 1366, 768, dir + "\\raster-feedback-session-before-drain.png") &&
+                     std::none_of(seam_state.world.monsters.begin(), seam_state.world.monsters.end(),
+                                  [&](const WorldActor& actor) { return actor.id == seam_foe; }),
+                 "raster-feedback: session poll and paint remove foe before event drain");
+  ingest_session_events(seam_state);
+  scenario_check(reference_present(seam_state, 1366, 768, dir + "\\raster-feedback-session-death.png"),
+                 "raster-feedback: session death production capture saved");
+  auto seam_fall = [&]() -> const EffectFx* {
+    for (const auto& fx : seam_state.effects)
+      if (fx.kind == EffectFx::Kind::ActorFall && fx.actor_id == seam_foe) return &fx;
+    return nullptr;
+  };
+  scenario_check(seam_fall() && seam_fall()->wx == corpse_position.x &&
+                     seam_fall()->wy == corpse_position.y &&
+                     render_list_has(seam_state, render::Op::Hud,
+                         ("raster:actor-fall:" + seam_foe + ":raider_death0_sw").c_str()),
+                 "raster-feedback: session death uses retained position and actual raster fall");
+  for (auto& fx : seam_state.effects) ++fx.age;
+  ingest_session_events(seam_state);
+  scenario_check(seam_fall() && seam_fall()->age == 1 &&
+                     std::count_if(seam_state.effects.begin(), seam_state.effects.end(),
+                         [&](const EffectFx& fx) { return fx.kind == EffectFx::Kind::ActorFall &&
+                                                        fx.actor_id == seam_foe; }) == 1,
+                 "raster-feedback: later empty drains preserve corpse age and identity");
+  seam_session->shutdown();
+  return scenario_failures;
+}
+
 int scenario_raster_loot() {
   ClientState state;
   scenario_begin(state);
@@ -19716,6 +20014,7 @@ int run_scenarios(const std::string& which) {
       {"raster-world", scenario_raster_world},
       {"raster-loot", scenario_raster_loot},
       {"raider-strike", scenario_raider_strike},
+      {"raster-feedback", scenario_raster_feedback},
       {"raster-motion", scenario_raster_motion},
       {"raider-motion", scenario_raider_motion},
       {"loot-to-bank", scenario_loot_to_bank},

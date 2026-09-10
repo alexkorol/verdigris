@@ -1053,6 +1053,22 @@ void RemoteProtocolSession::apply_envelope(const Envelope& envelope) {
     if (hits_player) {
       if (attacker) upsert_monster(model_, *attacker, "", true);
       model_.last_incoming_hit = amount;
+      const auto* skill = json_string(envelope.data.get("skillId"));
+      if (attacker && !attacker->empty() && *attacker != model_.player.uuid && skill) {
+        const auto* foe = find_monster(model_, *attacker);
+        // monster:attack is also used by ranged foes. Only an explicit melee
+        // action or the server's melee behaviour snapshot confirms a swing;
+        // attackStyle describes damage and cannot identify the action.
+        const bool explicit_melee = *skill == "melee" || *skill == "thrust" ||
+                                    *skill == "sweep";
+        const bool known_melee = *skill == "monster:attack" && foe &&
+                                 foe->behaviour == "melee";
+        if (explicit_melee || known_melee) {
+          pending_events_.push_back({PresentationEventType::AttackStarted,
+                                     *attacker, "", known_melee ? "melee" : *skill,
+                                     amount});
+        }
+      }
       pending_events_.push_back({PresentationEventType::DamageApplied,
                                  attacker ? *attacker : "", "", "incoming", amount});
       if (died) {

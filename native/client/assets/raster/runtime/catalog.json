@@ -24,7 +24,10 @@
     "terrain-quiet",
     "raider-walk-sw",
     "hero-strike-ne",
-    "raider-strike-sw"
+    "raider-strike-sw",
+    "ground-dust",
+    "slash-trail",
+    "raider-death-sw"
   ],
   "assets": [
     {
@@ -9238,6 +9241,622 @@
       "palette_scope": "manifest_cycle",
       "sha256": "81ae09e3e673ed9ae8bf0b022f564897f7a39af298833450b56bd6ce95436ee6",
       "provenance": "raider-strike-sw.provenance.json"
+    },
+    {
+      "name": "effect_dust0",
+      "file": "effect_dust0.png",
+      "source": "../../client/assets/raster/source/effects_ground-dust-v1.png",
+      "acceptance": "root_production_feedback_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        768,
+        512
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 20,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        64,
+        42
+      ],
+      "trim_box": [
+        16,
+        14,
+        46,
+        35
+      ],
+      "before_resize": [
+        30,
+        21
+      ],
+      "placed_size": [
+        30,
+        21
+      ],
+      "canvas": [
+        64,
+        48
+      ],
+      "content_bounds": [
+        16,
+        24,
+        46,
+        45
+      ],
+      "anchor_px": [
+        32,
+        42
+      ],
+      "baseline_offset_px": 6,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        384,
+        384
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "fac617ca97aa102b7bf03722eeb150c8e9e4668563efd82a63d20c42a51b12ed",
+      "provenance": "ground-dust.provenance.json"
+    },
+    {
+      "name": "effect_dust1",
+      "file": "effect_dust1.png",
+      "source": "../../client/assets/raster/source/effects_ground-dust-v1.png",
+      "acceptance": "root_production_feedback_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        768,
+        0,
+        1536,
+        512
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 21,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        64,
+        42
+      ],
+      "trim_box": [
+        6,
+        17,
+        55,
+        36
+      ],
+      "before_resize": [
+        49,
+        19
+      ],
+      "placed_size": [
+        49,
+        19
+      ],
+      "canvas": [
+        64,
+        48
+      ],
+      "content_bounds": [
+        6,
+        27,
+        55,
+        46
+      ],
+      "anchor_px": [
+        32,
+        42
+      ],
+      "baseline_offset_px": 6,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        384,
+        384
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "9cfd59d0d68be5a590edf44417467a4ab4acbd9f7922fa273830564b0f2758a0",
+      "provenance": "ground-dust.provenance.json"
+    },
+    {
+      "name": "effect_dust2",
+      "file": "effect_dust2.png",
+      "source": "../../client/assets/raster/source/effects_ground-dust-v1.png",
+      "acceptance": "root_production_feedback_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        0,
+        512,
+        768,
+        1024
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 20,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        64,
+        42
+      ],
+      "trim_box": [
+        11,
+        15,
+        54,
+        32
+      ],
+      "before_resize": [
+        43,
+        17
+      ],
+      "placed_size": [
+        43,
+        17
+      ],
+      "canvas": [
+        64,
+        48
+      ],
+      "content_bounds": [
+        11,
+        25,
+        54,
+        42
+      ],
+      "anchor_px": [
+        32,
+        42
+      ],
+      "baseline_offset_px": 6,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        384,
+        384
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "bd99d09c615313cb21558649e63b89c5062f601ee14813ee55c24fc555245262",
+      "provenance": "ground-dust.provenance.json"
+    },
+    {
+      "name": "effect_dust3",
+      "file": "effect_dust3.png",
+      "source": "../../client/assets/raster/source/effects_ground-dust-v1.png",
+      "acceptance": "root_production_feedback_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        768,
+        512,
+        1536,
+        1024
+      ],
+      "cell_size": 12,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 24,
+      "visible_colors": 15,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        64,
+        42
+      ],
+      "trim_box": [
+        8,
+        17,
+        53,
+        32
+      ],
+      "before_resize": [
+        45,
+        15
+      ],
+      "placed_size": [
+        45,
+        15
+      ],
+      "canvas": [
+        64,
+        48
+      ],
+      "content_bounds": [
+        8,
+        27,
+        53,
+        42
+      ],
+      "anchor_px": [
+        32,
+        42
+      ],
+      "baseline_offset_px": 6,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        384,
+        384
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "9ad269e814e8e6fd67f2d086ad39c4f2e0b2e6f668d6403a7283493a20f921ca",
+      "provenance": "ground-dust.provenance.json"
+    },
+    {
+      "name": "effect_slash0",
+      "file": "effect_slash0.png",
+      "source": "../../client/assets/raster/source/effects-slash-trail-v1.png",
+      "acceptance": "root_production_feedback_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        345,
+        300,
+        1050,
+        960
+      ],
+      "cell_size": 15,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 16,
+      "visible_colors": 16,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        47,
+        44
+      ],
+      "trim_box": [
+        3,
+        3,
+        44,
+        41
+      ],
+      "before_resize": [
+        41,
+        38
+      ],
+      "placed_size": [
+        41,
+        38
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "content_bounds": [
+        11,
+        13,
+        52,
+        51
+      ],
+      "anchor_px": [
+        32,
+        64
+      ],
+      "baseline_offset_px": 0,
+      "resampling": "nearest_neighbor",
+      "sha256": "29063f396be8f6167ca7402fb96300031315d2d933982efbf0edc269b7007b44",
+      "provenance": "slash-trail.provenance.json"
+    },
+    {
+      "name": "raider_death0_sw",
+      "file": "raider_death0_sw.png",
+      "source": "../../client/assets/raster/source/raider-death-sw-v1.png",
+      "acceptance": "root_production_feedback_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        0,
+        0,
+        704,
+        704
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        88,
+        88
+      ],
+      "trim_box": [
+        20,
+        15,
+        72,
+        76
+      ],
+      "before_resize": [
+        52,
+        61
+      ],
+      "placed_size": [
+        52,
+        61
+      ],
+      "canvas": [
+        128,
+        112
+      ],
+      "content_bounds": [
+        34,
+        35,
+        86,
+        96
+      ],
+      "anchor_px": [
+        64,
+        96
+      ],
+      "baseline_offset_px": 16,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        400,
+        608
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "e2258ad981f06b27e2829ef221f6ce5fb497e2caaad4ae6c09322279664c026e",
+      "provenance": "raider-death-sw.provenance.json"
+    },
+    {
+      "name": "raider_death1_sw",
+      "file": "raider_death1_sw.png",
+      "source": "../../client/assets/raster/source/raider-death-sw-v1.png",
+      "acceptance": "root_production_feedback_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        704,
+        0,
+        1437,
+        704
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 31,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        91,
+        88
+      ],
+      "trim_box": [
+        13,
+        30,
+        59,
+        77
+      ],
+      "before_resize": [
+        46,
+        47
+      ],
+      "placed_size": [
+        46,
+        47
+      ],
+      "canvas": [
+        128,
+        112
+      ],
+      "content_bounds": [
+        27,
+        50,
+        73,
+        97
+      ],
+      "anchor_px": [
+        64,
+        96
+      ],
+      "baseline_offset_px": 16,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        400,
+        608
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "0634aece8dcbc75fbddd496087b4e7ed2ca9f145e1d5f24858e24cb413cd918b",
+      "provenance": "raider-death-sw.provenance.json"
+    },
+    {
+      "name": "raider_death2_sw",
+      "file": "raider_death2_sw.png",
+      "source": "../../client/assets/raster/source/raider-death-sw-v1.png",
+      "acceptance": "root_production_feedback_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        0,
+        704,
+        704,
+        1094
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 30,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        88,
+        48
+      ],
+      "trim_box": [
+        6,
+        8,
+        78,
+        41
+      ],
+      "before_resize": [
+        72,
+        33
+      ],
+      "placed_size": [
+        72,
+        33
+      ],
+      "canvas": [
+        128,
+        112
+      ],
+      "content_bounds": [
+        20,
+        64,
+        92,
+        97
+      ],
+      "anchor_px": [
+        64,
+        96
+      ],
+      "baseline_offset_px": 16,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        400,
+        320
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "2c8c18d50bd5da6852a19e425f388fbb0d266b2e094d4cf4108700f439db8deb",
+      "provenance": "raider-death-sw.provenance.json"
+    },
+    {
+      "name": "raider_death3_sw",
+      "file": "raider_death3_sw.png",
+      "source": "../../client/assets/raster/source/raider-death-sw-v1.png",
+      "acceptance": "root_production_feedback_reviewed_provisional_integration_2026-09-10",
+      "source_box": [
+        704,
+        704,
+        1437,
+        1094
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 31,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        91,
+        48
+      ],
+      "trim_box": [
+        3,
+        16,
+        86,
+        41
+      ],
+      "before_resize": [
+        83,
+        25
+      ],
+      "placed_size": [
+        83,
+        25
+      ],
+      "canvas": [
+        128,
+        112
+      ],
+      "content_bounds": [
+        17,
+        72,
+        100,
+        97
+      ],
+      "anchor_px": [
+        64,
+        96
+      ],
+      "baseline_offset_px": 16,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        400,
+        320
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "e35b6b84b45eb39ab2b1837f6f4203bf766fcc1d51b5d759430874acbd2a307a",
+      "provenance": "raider-death-sw.provenance.json"
     }
   ],
   "known_limitations": [
@@ -9294,7 +9913,16 @@
     "Anticipation is an outward preparatory lift. Contact3 is synchronized to the confirmed production hit; low follow-through4 and recovery retain abrupt pose and silhouette changes that still need visual refinement.",
     "Source opaque checker removed through actual Pixel Respecter. Exact neutral-only local windows preserve pale colored skin; earlier broader color cleanup is preserved as rejected evidence.",
     "Axe is baked into the same anatomical-right/screen-left hand in all6 SW frames. Ordinary whole monster rendering; no separate hero equipment overlay.",
-    "Only Raider SW has this six-phase action. Other raider action directions are not supplied or inferred from these frames; the former scripted SW locomotion review remains separate from this real elite combat event proof."
+    "Only Raider SW has this six-phase action. Other raider action directions are not supplied or inferred from these frames; the former scripted SW locomotion review remains separate from this real elite combat event proof.",
+    "The source has fractional-alpha edges; actual source alpha is reconstructed in crisp mode without matte removal. Root reviewed the native phases at1x/3x on accepted earth; production feedback is root-reviewed for provisional integration. Common source-cell origin384,384 and pitch12 preserve phase offsets without individual fitting.",
+    "One static directional curved slash trail, not an authored animation or omnidirectional sweep area. Renderer timing/orientation remains separate.",
+    "Source genuine alpha contains partial edge pixels and faint low-alpha remnants; actual Pixel Respecter crisp reconstruction yields the reviewed binary native mask without a matte-color deletion.",
+    "The seven detached native components total only15 pixels; main curve has243 pixels. Native contact flare is broader than the requested1-3px edge, but the arc stays compact.",
+    "Native1x/3x, measured pivots and production feedback are root-reviewed for provisional integration. The two opposed-copy Sweep composition is renderer behavior, not additional authored sprite directions.",
+    "Generated source is RGB with painted checker; actual alpha request failed.",
+    "One shared cell8 scale; measured layout origins [400,608] with column704 and row416. Low poses retain source offsets rather than being independently fitted.",
+    "Candidate world pivot [64,96]; accepted idle [40,96] translates by [24,0] without rescaling.",
+    "Four collapse beats adapted from the published Kiki planned combat workflow, not a claimed published death-animation result."
   ],
   "missing_direction_assets": [],
   "walk_sequence": {
@@ -9481,6 +10109,29 @@
           96
         ],
         "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds"
+      }
+    }
+  },
+  "monster_death_sequences": {
+    "raider": {
+      "sw": {
+        "frames": [
+          "raider_death0_sw",
+          "raider_death1_sw",
+          "raider_death2_sw",
+          "raider_death3_sw"
+        ],
+        "frame_count": 4,
+        "canvas": [
+          128,
+          112
+        ],
+        "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds",
+        "pivot_px": [
+          64,
+          96
+        ],
+        "playback": "one-shot; retain the final settled frame"
       }
     }
   },

@@ -1,0 +1,356 @@
+{
+  "version": 1,
+  "scope": "Promotion of9 root-reviewed sprites in3 manifests, now provisionally accepted for production integration. The adoption record preserves previous pending metadata hashes, commands and exact PNG parity; historical authoring records remain unchanged.",
+  "hash_policy": "Text dependency hashes canonicalize CRLF to LF only. PNG hashes cover raw file bytes. Historical raw prompt/provenance hashes remain unchanged in their original records.",
+  "counts": {
+    "before_active_manifests": 24,
+    "after_active_manifests": 27,
+    "before_active_assets": 139,
+    "after_active_assets": 148,
+    "new_pngs": 9,
+    "new_provenance_reports": 3,
+    "exact_candidate_hash_matches": 9
+  },
+  "preservation": {
+    "existing_runtime_files_checked": 164,
+    "existing_runtime_files_changed": [
+      "catalog.json"
+    ],
+    "existing_pngs_unchanged": true,
+    "catalog_freeze_sha256_unchanged": "0f40236bcddecc44480e0dc70d4efced84a4f858031ab00c06a5b89077ceaa9f",
+    "candidate_sources_recipes_outputs_not_modified": true
+  },
+  "shared_tooling": [
+    {
+      "path": "native/tools/raster/import_assets.py",
+      "role": "unchanged actual importer",
+      "sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+      "hash_mode": "canonical_lf"
+    },
+    {
+      "path": "native/tools/raster/build_catalog.py",
+      "role": "active catalog registration and verification",
+      "sha256": "44ff99a058c5f8bc89f9a0f1577b315d2cc336153f341f32c8700ac8d9751e30",
+      "hash_mode": "canonical_lf"
+    },
+    {
+      "path": "native/tools/raster/import_all.ps1",
+      "role": "matching full import order",
+      "sha256": "219aa99adeca85a5f75bcd2f7a81f4ff752f96ee1dc147b3ac0a1b643c205ae2",
+      "hash_mode": "canonical_lf"
+    }
+  ],
+  "external_dependency": {
+    "project": "Z:/Code/Python/pixel-perfecter",
+    "python": "Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe",
+    "vendored": false,
+    "source_fingerprints": "Each runtime provenance report records the external project git HEAD, dirty status, per-file hashes and Python/NumPy/Pillow/OpenCV versions.",
+    "new_packages_installed": []
+  },
+  "historical_path_resolution": [
+    {
+      "original": ".ci-artifacts/slash-trail-v1/slash-trail-v1.provenance.json",
+      "retained": "native/tools/raster/slash-trail-candidate.provenance.json",
+      "identical_bytes": true,
+      "note": "Original candidate report remains untouched. Candidate PNGs may be verified against the byte-identical runtime outputs recorded below; duplicate candidate PNGs are not required for reproduction."
+    }
+  ],
+  "groups": [
+    {
+      "manifest": "ground-dust",
+      "acceptance": "root_production_feedback_reviewed_provisional_integration_2026-09-10",
+      "authoring_inputs": [
+        {
+          "path": "native/client/assets/raster/source/effects_ground-dust-v1.png",
+          "role": "generated source pixels",
+          "sha256": "fb142c704de31429701a758d9d73c71def27e505868f7fc498a0a3bd680e5a35",
+          "hash_mode": "raw"
+        },
+        {
+          "path": "native/client/assets/raster/prompts/effects_ground-dust-v1.txt",
+          "role": "exact generation prompt",
+          "sha256": "94a485cc93ba301c857254036a3884283c994a2a54f134b4218b7168c68b18fb",
+          "hash_mode": "canonical_lf"
+        },
+        {
+          "path": "native/client/assets/raster/prompts/effects_ground-dust-v1.provenance.json",
+          "role": "historical generation provenance and native review",
+          "sha256": "2b530fc85a90626ec0c486e97a788059b2436ac166b3098c9452b3f2ff92f210",
+          "hash_mode": "canonical_lf"
+        },
+        {
+          "path": "native/client/assets/raster/prompts/effects_ground-dust-v1-import.json",
+          "role": "selected candidate conversion recipe",
+          "sha256": "2c80ce6ec81b2e93aea1e8a0befc8670d24964f21e4f1be1a420fc0a37e4729c",
+          "hash_mode": "canonical_lf"
+        },
+        {
+          "path": "native/client/assets/raster/source/effects_ground-dust-v1-candidate/effects_ground-dust-v1-import.provenance.json",
+          "role": "selected candidate conversion provenance",
+          "sha256": "aca1305453b29fde9d1254795ceb4eb279a42fa5003bc9c9c1e2cb70de626a82",
+          "hash_mode": "canonical_lf"
+        }
+      ],
+      "references": [
+        {
+          "path": "native/client/assets/raster/runtime/effect_hit_spark.png",
+          "role": "submitted authoring reference; unchanged existing tracked runtime asset",
+          "sha256": "25c6ec7aa04bff6c6e22a77c97a325c1c9f0539942455692319eec5f91fc456f",
+          "hash_mode": "raw"
+        },
+        {
+          "path": "native/client/assets/raster/runtime/terrain_quiet_earth.png",
+          "role": "submitted authoring reference; unchanged existing tracked runtime asset",
+          "sha256": "059b101504c96b84a3541f5021dfd1811a7bb1ddb81ebd40fd03be9dbad2af70",
+          "hash_mode": "raw"
+        }
+      ],
+      "active_recipe": {
+        "path": "native/tools/raster/ground-dust.json",
+        "role": "active runtime conversion recipe",
+        "sha256": "7ec9073fe553db4c000aef47fa5e4aa3897ce6ab04e3a9c67b4d9087305f45a0",
+        "hash_mode": "canonical_lf"
+      },
+      "runtime_provenance": {
+        "path": "native/client/assets/raster/runtime/ground-dust.provenance.json",
+        "role": "actual Pixel Respecter reproduction; includes external engine source fingerprints and dependencies",
+        "sha256": "d7ee14ef029ccfa68a09b2603471559ec521ef003e8dc5678e6b59b5f4abe9d8",
+        "hash_mode": "canonical_lf"
+      },
+      "outputs": [
+        {
+          "path": "native/client/assets/raster/runtime/effect_dust0.png",
+          "role": "promoted runtime output",
+          "sha256": "fac617ca97aa102b7bf03722eeb150c8e9e4668563efd82a63d20c42a51b12ed",
+          "hash_mode": "raw",
+          "selected_candidate_path": "native/client/assets/raster/source/effects_ground-dust-v1-candidate/effect_dust0.png",
+          "selected_candidate_raw_sha256": "fac617ca97aa102b7bf03722eeb150c8e9e4668563efd82a63d20c42a51b12ed",
+          "byte_identical": true
+        },
+        {
+          "path": "native/client/assets/raster/runtime/effect_dust1.png",
+          "role": "promoted runtime output",
+          "sha256": "9cfd59d0d68be5a590edf44417467a4ab4acbd9f7922fa273830564b0f2758a0",
+          "hash_mode": "raw",
+          "selected_candidate_path": "native/client/assets/raster/source/effects_ground-dust-v1-candidate/effect_dust1.png",
+          "selected_candidate_raw_sha256": "9cfd59d0d68be5a590edf44417467a4ab4acbd9f7922fa273830564b0f2758a0",
+          "byte_identical": true
+        },
+        {
+          "path": "native/client/assets/raster/runtime/effect_dust2.png",
+          "role": "promoted runtime output",
+          "sha256": "bd99d09c615313cb21558649e63b89c5062f601ee14813ee55c24fc555245262",
+          "hash_mode": "raw",
+          "selected_candidate_path": "native/client/assets/raster/source/effects_ground-dust-v1-candidate/effect_dust2.png",
+          "selected_candidate_raw_sha256": "bd99d09c615313cb21558649e63b89c5062f601ee14813ee55c24fc555245262",
+          "byte_identical": true
+        },
+        {
+          "path": "native/client/assets/raster/runtime/effect_dust3.png",
+          "role": "promoted runtime output",
+          "sha256": "9ad269e814e8e6fd67f2d086ad39c4f2e0b2e6f668d6403a7283493a20f921ca",
+          "hash_mode": "raw",
+          "selected_candidate_path": "native/client/assets/raster/source/effects_ground-dust-v1-candidate/effect_dust3.png",
+          "selected_candidate_raw_sha256": "9ad269e814e8e6fd67f2d086ad39c4f2e0b2e6f668d6403a7283493a20f921ca",
+          "byte_identical": true
+        }
+      ],
+      "reproduce_powershell": "& 'Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe' native/tools/raster/import_assets.py native/tools/raster/ground-dust.json"
+    },
+    {
+      "manifest": "slash-trail",
+      "acceptance": "root_production_feedback_reviewed_provisional_integration_2026-09-10",
+      "authoring_inputs": [
+        {
+          "path": "native/client/assets/raster/source/effects-slash-trail-v1.png",
+          "role": "generated source pixels",
+          "sha256": "5b2c6e3ea39a6e3edf148e0906b2dfe4a800e41c8c998a9f4295419bf097d6ff",
+          "hash_mode": "raw"
+        },
+        {
+          "path": "native/client/assets/raster/prompts/effects-slash-trail-v1.txt",
+          "role": "exact generation prompt",
+          "sha256": "229630b0b5618b75cdfc08193a814ef8e10fc95d0e547b4eced07247bff5a412",
+          "hash_mode": "canonical_lf"
+        },
+        {
+          "path": "native/client/assets/raster/prompts/effects-slash-trail-v1.json",
+          "role": "historical generation provenance and native review",
+          "sha256": "4bb225bb379297cacadbf36396257a3d554bf2b8b5e67b5e00aedf776bb8aaa5",
+          "hash_mode": "canonical_lf"
+        },
+        {
+          "path": "native/tools/raster/slash-trail-v1.json",
+          "role": "selected candidate conversion recipe",
+          "sha256": "7a1bf13b5aba92fbd71225d54536c2b4274289a340b33b747eed6a353fee0148",
+          "hash_mode": "canonical_lf"
+        },
+        {
+          "path": "native/tools/raster/slash-trail-candidate.provenance.json",
+          "role": "selected candidate conversion provenance",
+          "sha256": "7c25f0d43b96fd3630cb006b8bfd48364b41b0b6ca0177386b38f55122b5b962",
+          "hash_mode": "canonical_lf"
+        }
+      ],
+      "references": [
+        {
+          "path": "native/client/assets/raster/runtime/effect_hit_spark.png",
+          "role": "submitted authoring reference; unchanged existing tracked runtime asset",
+          "sha256": "25c6ec7aa04bff6c6e22a77c97a325c1c9f0539942455692319eec5f91fc456f",
+          "hash_mode": "raw"
+        }
+      ],
+      "active_recipe": {
+        "path": "native/tools/raster/slash-trail.json",
+        "role": "active runtime conversion recipe",
+        "sha256": "9e8dd97aa9891704abf62bec7591de690bf058742e2b3867641d7c0f6a419964",
+        "hash_mode": "canonical_lf"
+      },
+      "runtime_provenance": {
+        "path": "native/client/assets/raster/runtime/slash-trail.provenance.json",
+        "role": "actual Pixel Respecter reproduction; includes external engine source fingerprints and dependencies",
+        "sha256": "6d0ffb1a5b596fbb602c95109593986f58e65f8a37f72d528d26697a5ac79b6e",
+        "hash_mode": "canonical_lf"
+      },
+      "outputs": [
+        {
+          "path": "native/client/assets/raster/runtime/effect_slash0.png",
+          "role": "promoted runtime output",
+          "sha256": "29063f396be8f6167ca7402fb96300031315d2d933982efbf0edc269b7007b44",
+          "hash_mode": "raw",
+          "selected_candidate_path": ".ci-artifacts/slash-trail-v1/effect_slash0.png",
+          "selected_candidate_raw_sha256": "29063f396be8f6167ca7402fb96300031315d2d933982efbf0edc269b7007b44",
+          "byte_identical": true
+        }
+      ],
+      "reproduce_powershell": "& 'Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe' native/tools/raster/import_assets.py native/tools/raster/slash-trail.json"
+    },
+    {
+      "manifest": "raider-death-sw",
+      "acceptance": "root_production_feedback_reviewed_provisional_integration_2026-09-10",
+      "authoring_inputs": [
+        {
+          "path": "native/client/assets/raster/source/raider-death-sw-v1.png",
+          "role": "generated source pixels",
+          "sha256": "19bf42e643df4b7a3f56fd8420abdb27cca902a9f2b9a3f17aca8ea381285c9b",
+          "hash_mode": "raw"
+        },
+        {
+          "path": "native/client/assets/raster/prompts/raider-death-sw-v1.txt",
+          "role": "exact generation prompt",
+          "sha256": "341869943ccb275fadd23f64005f86b5b168d0c95eb5af7108c6de25544ce26d",
+          "hash_mode": "canonical_lf"
+        },
+        {
+          "path": "native/client/assets/raster/prompts/raider-death-sw-v1.provenance.json",
+          "role": "historical generation provenance and native review",
+          "sha256": "d3472e9b2b0af256c8e15c4c754af9c0be1e159f802e2d57d3e05e5db6f30ce5",
+          "hash_mode": "canonical_lf"
+        },
+        {
+          "path": "native/tools/raster/raider-death-sw-candidate.json",
+          "role": "selected candidate conversion recipe",
+          "sha256": "0276646ee2fe8af9cef2dda496db65ad85b476aced07ca8b11767e1a8f658191",
+          "hash_mode": "canonical_lf"
+        },
+        {
+          "path": "native/tools/raster/raider-death-sw-candidates/v1/raider-death-sw-candidate.provenance.json",
+          "role": "selected candidate conversion provenance",
+          "sha256": "dd73c46569f36b6b383d77452b9c2cbb79d4022ab6cc3ca77f5d385a547afa50",
+          "hash_mode": "canonical_lf"
+        }
+      ],
+      "references": [
+        {
+          "path": "native/client/assets/raster/runtime/raider_sw.png",
+          "role": "submitted authoring reference; unchanged existing tracked runtime asset",
+          "sha256": "13e515e678d001de0e764729048986d1d459c9df2de9c2b52d2d1c8538b3daf4",
+          "hash_mode": "raw"
+        }
+      ],
+      "active_recipe": {
+        "path": "native/tools/raster/raider-death-sw.json",
+        "role": "active runtime conversion recipe",
+        "sha256": "b2cc5ac8bd1d25924436f5b1fd6e49087c3e7e6ae80ca1703d121732c910d27b",
+        "hash_mode": "canonical_lf"
+      },
+      "runtime_provenance": {
+        "path": "native/client/assets/raster/runtime/raider-death-sw.provenance.json",
+        "role": "actual Pixel Respecter reproduction; includes external engine source fingerprints and dependencies",
+        "sha256": "619c2f3118aecbcd3c31534440028d255b2f1f43a014d902f859c7de473540cd",
+        "hash_mode": "canonical_lf"
+      },
+      "outputs": [
+        {
+          "path": "native/client/assets/raster/runtime/raider_death0_sw.png",
+          "role": "promoted runtime output",
+          "sha256": "e2258ad981f06b27e2829ef221f6ce5fb497e2caaad4ae6c09322279664c026e",
+          "hash_mode": "raw",
+          "selected_candidate_path": "native/tools/raster/raider-death-sw-candidates/v1/raider_death0_sw.png",
+          "selected_candidate_raw_sha256": "e2258ad981f06b27e2829ef221f6ce5fb497e2caaad4ae6c09322279664c026e",
+          "byte_identical": true
+        },
+        {
+          "path": "native/client/assets/raster/runtime/raider_death1_sw.png",
+          "role": "promoted runtime output",
+          "sha256": "0634aece8dcbc75fbddd496087b4e7ed2ca9f145e1d5f24858e24cb413cd918b",
+          "hash_mode": "raw",
+          "selected_candidate_path": "native/tools/raster/raider-death-sw-candidates/v1/raider_death1_sw.png",
+          "selected_candidate_raw_sha256": "0634aece8dcbc75fbddd496087b4e7ed2ca9f145e1d5f24858e24cb413cd918b",
+          "byte_identical": true
+        },
+        {
+          "path": "native/client/assets/raster/runtime/raider_death2_sw.png",
+          "role": "promoted runtime output",
+          "sha256": "2c8c18d50bd5da6852a19e425f388fbb0d266b2e094d4cf4108700f439db8deb",
+          "hash_mode": "raw",
+          "selected_candidate_path": "native/tools/raster/raider-death-sw-candidates/v1/raider_death2_sw.png",
+          "selected_candidate_raw_sha256": "2c8c18d50bd5da6852a19e425f388fbb0d266b2e094d4cf4108700f439db8deb",
+          "byte_identical": true
+        },
+        {
+          "path": "native/client/assets/raster/runtime/raider_death3_sw.png",
+          "role": "promoted runtime output",
+          "sha256": "e35b6b84b45eb39ab2b1837f6f4203bf766fcc1d51b5d759430874acbd2a307a",
+          "hash_mode": "raw",
+          "selected_candidate_path": "native/tools/raster/raider-death-sw-candidates/v1/raider_death3_sw.png",
+          "selected_candidate_raw_sha256": "e35b6b84b45eb39ab2b1837f6f4203bf766fcc1d51b5d759430874acbd2a307a",
+          "byte_identical": true
+        }
+      ],
+      "reproduce_powershell": "& 'Z:/Code/Python/pixel-perfecter/.venv/Scripts/python.exe' native/tools/raster/import_assets.py native/tools/raster/raider-death-sw.json",
+      "source_native_evidence": [
+        {
+          "path": "native/tools/raster/raider-death-sw-candidates/v1/acceptance-review.json",
+          "role": "selected source/native review, not production acceptance",
+          "sha256": "64988f8084fe1c8931886a14b2d74bccc02aca7fd349979b64b49b4af9310d7a",
+          "hash_mode": "canonical_lf"
+        },
+        {
+          "path": "native/tools/raster/raider-death-sw-candidates/v1/native-review.json",
+          "role": "selected source/native review, not production acceptance",
+          "sha256": "24dd99a731f2345627d1a45cb14ace690be1ce780fab8980823732629aa509a1",
+          "hash_mode": "canonical_lf"
+        },
+        {
+          "path": "native/tools/raster/raider-death-sw-candidates/v1/alpha-audit.json",
+          "role": "selected source/native review, not production acceptance",
+          "sha256": "2f7a23e1b5bf099f4e7b0cf646e9530a92dfcc6a1721f0162a7cf8c0920c25ad",
+          "hash_mode": "canonical_lf"
+        }
+      ]
+    }
+  ],
+  "catalog": {
+    "path": "native/client/assets/raster/runtime/catalog.json",
+    "role": "regenerated active catalog",
+    "sha256": "746c447cc60443b6855d66ab494af8dbb5b2eb0a0d2de32ce995982e7da666e4",
+    "hash_mode": "canonical_lf"
+  },
+  "production_adoption": {
+    "path": "native/tools/raster/action-effects-production-adoption.json",
+    "role": "Root production acceptance metadata transition, prior report hashes and PNG parity",
+    "sha256": "7bda9094ce2f63074a6742bf9a46c1d125d49a1685f3f6384f878f816650ebcd",
+    "hash_mode": "canonical_lf"
+  }
+}

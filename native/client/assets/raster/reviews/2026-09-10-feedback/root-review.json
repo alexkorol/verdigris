@@ -1,0 +1,80 @@
+{
+  "approved_for_freeze": true,
+  "metadata": {
+    "milestone": "Pixel contact, dust and retained SW raider bodies, 148 assets",
+    "status": "Root source/native/production and supported live-window review on2026-09-10; final build/all69 and native/browser/asset checks pass.",
+    "acceptance": "root_production_feedback_reviewed_provisional_integration_2026-09-10",
+    "acceptance_scope": "Nine new PNGs at native and production scales; live fixed-tick contact, actual death/dash, retained body depth/expiry and session prior-snapshot path. Ordered frames inspected, smooth playback not claimed.",
+    "actor_fall_scope": "SW raider4 only;128x112 pivot64,96 at unchanged96px alive pitch;8ticks motion,160TTL,20fade,32body/128FX caps.",
+    "actor_fall_production_caveat": "Other directions/families retain dust. Unknown prior snapshots do not invent bodies.",
+    "fx_scope": "Dust4 and right-authored slash1; shared measured pivots, fixed scale,8cached angles; Sweep composes two opposed halves.",
+    "fx_production_caveat": "Generic melee trail; weapon-specific paths and other procedural magical/spawn/loss effects remain open."
+  },
+  "final_validation": {
+    "native_supported_build_all_scenarios": {
+      "exit_code": 0,
+      "passed": 69,
+      "log": "native/client/assets/raster/reviews/2026-09-10-feedback/native-final-build-all.log"
+    },
+    "native_suites": {
+      "exit_code": 0,
+      "log": "native/client/assets/raster/reviews/2026-09-10-feedback/native-suites-and-initial-scenarios.log",
+      "scope": "All native suites pass. The subsequent C++ change only composes two Sweep sprites in main.cpp; the final supported build reruns all69 native scenarios."
+    },
+    "browser_playtest": {
+      "exit_code": 0,
+      "passed": 32,
+      "total": 32,
+      "log": "native/client/assets/raster/reviews/2026-09-10-feedback/browser-32-of-32.log"
+    },
+    "importer": {
+      "exit_code": 0,
+      "passed": 10,
+      "log": "native/client/assets/raster/reviews/2026-09-10-feedback/importer-10-of-10.log"
+    },
+    "equipment": {
+      "exit_code": 0,
+      "poses": 60,
+      "weapons": 5,
+      "scales": 3,
+      "fractional_sampling_passed": true,
+      "log": "native/client/assets/raster/reviews/2026-09-10-feedback/equipment.log"
+    },
+    "frame_budget": {
+      "width": 3440,
+      "height": 1440,
+      "frames": 20,
+      "static_avg_ms": 25.426,
+      "moving_avg_ms": 25.467,
+      "moving_peak_ms": 35.561,
+      "average_limit_ms": 40
+    },
+    "live": {
+      "supported_launch": "native/tools/play-native.ps1 -Local",
+      "capture": "native/client/assets/raster/reviews/2026-09-10-feedback/live-3440x1440.png",
+      "viewed_original_resolution": true,
+      "exit_code": 0,
+      "fresh_sky_game_window_list_empty": true,
+      "log": "native/client/assets/raster/reviews/2026-09-10-feedback/live-launch-close.log"
+    },
+    "review_limits": "native/client/assets/raster/reviews/2026-09-10-feedback/README.md"
+  },
+  "review_paths": [
+    "native/client/assets/raster/reviews/2026-09-10-feedback/README.md",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/death-production-strip-1x.png",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/root-review.json"
+  ],
+  "retained_evidence_manifests": [
+    "native/client/assets/raster/reviews/2026-09-10-feedback/retained-evidence.json"
+  ],
+  "additional_dependency_paths": [
+    "native/tools/raster/action-effects-production-adoption.json",
+    "native/tools/raster/action-effects-promotion-paths.json"
+  ],
+  "reviewed_source_sha256": {
+    "native/client/main.cpp": "7de8b4e55b65368829234ecb48596639d4006a95e51cd84e68ed740120ab1cc8",
+    "native/client/presentation_state.cpp": "047ea67a12ae3325365a495e35f6198372d234556b2a9b27e0bf0159eb1917dc",
+    "native/client/remote_session.cpp": "207a25c9b7eadf070d6447d4faa4af4274eed9ea504335b4b96ad82b30946fbd",
+    "native/src/core.cpp": "9422c462ae3fb278bfae7a61a71a2f1b9b14cd8fc91bf4d2e3ff051d16202209"
+  }
+}

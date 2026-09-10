@@ -8,7 +8,7 @@ from PIL import Image
 import numpy as np
 
 ROOT = Path(__file__).resolve().parent
-ORDER = ("inventory", "terrain", "props", "gate", "actors", "bestiary", "weapons", "hero-single", "bestiary-singles", "hero-walk", "hero-directions", "environment-singles", "large-props", "hero-strike-se", "hit-spark", "hero-walk-sw", "hero-walk-nw", "hero-walk-ne", "hero-strike-nw", "hero-strike-sw", "terrain-quiet", "raider-walk-sw", "hero-strike-ne", "raider-strike-sw")
+ORDER = ("inventory", "terrain", "props", "gate", "actors", "bestiary", "weapons", "hero-single", "bestiary-singles", "hero-walk", "hero-directions", "environment-singles", "large-props", "hero-strike-se", "hit-spark", "hero-walk-sw", "hero-walk-nw", "hero-walk-ne", "hero-strike-nw", "hero-strike-sw", "terrain-quiet", "raider-walk-sw", "hero-strike-ne", "raider-strike-sw", "ground-dust", "slash-trail", "raider-death-sw")
 
 
 def collect_cycles(entries, action, family="hero"):
@@ -58,6 +58,13 @@ def main():
         if len(np.unique(visible, axis=0)) > 32:
             raise ValueError(f"World sprite exceeds the current 32-color limit: {path}")
     cycles = collect_cycles(entries, "walk")
+    deaths = collect_cycles(entries, "death", "raider")
+    for direction, sequence in deaths.items():
+        pivots = {tuple(entries[name]["anchor_px"]) for name in sequence["frames"]}
+        if len(pivots) != 1:
+            raise ValueError(f"raider death cycle {direction} has inconsistent pivots")
+        sequence["pivot_px"] = list(pivots.pop())
+        sequence["playback"] = "one-shot; retain the final settled frame"
     if len(cycles) > 1:
         limitations = [note for note in limitations if note != "Only the SE walk direction has distinct walking frames."]
     result = {"version": 1, "import_order": list(ORDER), "assets": list(entries.values()),
@@ -69,6 +76,7 @@ def main():
               "strike_sequences": collect_cycles(entries, "strike"),
               "monster_walk_sequences": {"raider": collect_cycles(entries, "walk", "raider")},
               "monster_strike_sequences": {"raider": collect_cycles(entries, "strike", "raider")},
+              "monster_death_sequences": {"raider": deaths},
               "missing_walk_directions": [direction for direction in ("se", "sw", "nw", "ne") if direction not in cycles]}
     (runtime / "catalog.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(f"Verified {len(entries)} active RGBA sprites, native dimensions, binary alpha, <=32 colors, and provenance hashes.")

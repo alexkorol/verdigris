@@ -1,5 +1,39 @@
 # Native reconstitution handoff
 
+## 2026-09-10 — Pixel contact, dust and retained bodies
+
+Nine new pixel sprites replace geometric dust/swing feedback and add a four-pose SW
+raider collapse. The catalog now contains 148 assets across 27 manifests and 52
+sources. Each new output exactly matches its reviewed Pixel Respecter candidate;
+all 139 previous runtime PNGs remain unchanged.
+
+Ordinary native melee now identifies its attacker before damage. Identified
+remote melee/thrust/sweep does the same; ranged and unknown attacks retain their
+existing damage feedback. Live ticks age old effects before ingesting contact,
+so the first paint keeps the contact pose. Session deaths use a prior actor
+snapshot when polling/painting has already removed the living enemy.
+
+Falls last 160 ticks (8 seconds), with four poses over 8 ticks and a final
+20-tick fade. Settled bodies draw beneath standing actors. Up to 32 bodies share
+the 128-effect cap; transient bursts preserve them. Death never creates a live
+actor or a second reward, and scene/loss transitions clear retained bodies.
+
+Final supported build/all 69 scenarios pass. Native core/networking/session/
+presentation/audio suites, browser 32/32, importer 10/10 and equipment 60x5x3 plus
+sampling pass. Twenty 3440x1440 stationary frames average 25.426 ms; moving
+frames average 25.467 ms with 35.561 ms peak. Both average gates remain
+40 ms. Root viewed the final supported live window and closed it with exit0.
+
+The fall clip covers only SW raiders. Other death directions/families retain
+dust, and deaths without a known prior snapshot cannot fabricate a body. Slash
+trails are generic combat feedback, not measured weapon-specific paths. Native
+pursuit, other monster motion, bow/staff actions, cross-clip identity, terrain
+repetition and remote wall presentation remain unfinished. WarCry, spawn/loss
+effects, semantic boundaries, team rings and shadows still use procedural forms.
+The broad pixel-world goal remains active.
+
+[Evidence and review limits](../../native/client/assets/raster/reviews/2026-09-10-feedback/README.md). Committed locally; no push or merge.
+
 ## 2026-09-10 — Reference-led attacks and readable warnings
 
 The catalog has 139 active pixel assets: NE hero strikes and SW raider strikes

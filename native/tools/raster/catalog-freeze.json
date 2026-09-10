@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "milestone": "Reference-led attacks, warning visibility and physical item art, 139 assets",
-  "status": "Final root production contact and live-window review on 2026-09-10; final supported build/all68 scenarios and native/browser/importer/equipment gates pass. Metadata-only reimports preserved all12 new runtime PNG bytes.",
-  "catalog_sha256": "65c44d51235cd761547bb8d6564f9cb796fcda7f12cdd5f45f7f61385482af13",
+  "milestone": "Pixel contact, dust and retained SW raider bodies, 148 assets",
+  "status": "Root source/native/production and supported live-window review on2026-09-10; final build/all69 and native/browser/asset checks pass.",
+  "catalog_sha256": "746c447cc60443b6855d66ab494af8dbb5b2eb0a0d2de32ce995982e7da666e4",
   "counts": {
-    "manifests": 24,
-    "import_records_including_overrides": 148,
-    "active_assets": 139,
-    "unique_sources": 49
+    "manifests": 27,
+    "import_records_including_overrides": 157,
+    "active_assets": 148,
+    "unique_sources": 52
   },
   "walk_counts": {
     "se": 4,
@@ -53,7 +53,10 @@
     "native/tools/raster/terrain-quiet.json": "1da44108eb72f485cd4c39596f31fb23401c8cec77142092070b71683896c67c",
     "native/tools/raster/raider-walk-sw.json": "8faba4e9e6391020b4eb1f005f40183df6d09afea66f6f3f5c69adaa9144adf5",
     "native/tools/raster/hero-strike-ne.json": "e7b7dd26dd64dae373f2fb492f2266b4801664bc24856504e5419c5b512ea856",
-    "native/tools/raster/raider-strike-sw.json": "01d338b2722c31759a89b71203ec474d80f38ed600adb9d8a2fb6d3022884578"
+    "native/tools/raster/raider-strike-sw.json": "01d338b2722c31759a89b71203ec474d80f38ed600adb9d8a2fb6d3022884578",
+    "native/tools/raster/ground-dust.json": "7ec9073fe553db4c000aef47fa5e4aa3897ce6ab04e3a9c67b4d9087305f45a0",
+    "native/tools/raster/slash-trail.json": "9e8dd97aa9891704abf62bec7591de690bf058742e2b3867641d7c0f6a419964",
+    "native/tools/raster/raider-death-sw.json": "b2cc5ac8bd1d25924436f5b1fd6e49087c3e7e6ae80ca1703d121732c910d27b"
   },
   "provenance_sha256": {
     "inventory.provenance.json": "e6b237bb2a62f246495d5a4e0969829c7d330b2bee048144c142ad8579b2980d",
@@ -79,7 +82,10 @@
     "terrain-quiet.provenance.json": "b61e9013c2d05542757009fbb5b4db6d01e6f30b5f3f2be18834d2b69e8f1ba9",
     "raider-walk-sw.provenance.json": "23d663534329169a7af8f83f3fb6991d2daa5d73c1904b7574570f55ddb543c9",
     "hero-strike-ne.provenance.json": "38f862a81a9b90f4e9381b813dddb06ea63fa4cea91d2a19cd53a1f9cbb91c17",
-    "raider-strike-sw.provenance.json": "88c7821c7cffc91ead0aee36c9b0fa5300e154bddddf2925de0995a5acbbc103"
+    "raider-strike-sw.provenance.json": "88c7821c7cffc91ead0aee36c9b0fa5300e154bddddf2925de0995a5acbbc103",
+    "ground-dust.provenance.json": "d7ee14ef029ccfa68a09b2603471559ec521ef003e8dc5678e6b59b5f4abe9d8",
+    "slash-trail.provenance.json": "6d0ffb1a5b596fbb602c95109593986f58e65f8a37f72d528d26697a5ac79b6e",
+    "raider-death-sw.provenance.json": "619c2f3118aecbcd3c31534440028d255b2f1f43a014d902f859c7de473540cd"
   },
   "source_sha256": {
     "native/client/assets/wizard/items/dagger_bronze.png": "a5fed373ddbbf2e17628294e50db7bbf6d07cce0688125513e671c805d9b2fa4",
@@ -130,7 +136,10 @@
     "native/client/assets/raster/source/actors_hero-strike-ne-followthrough-v3-candidate/followthrough.png": "3b878d039cbbfb65afbab630cd5c9bfdeba597a273f691014216a9c30edf0806",
     "native/client/assets/raster/source/actors_hero-strike-ne-candidate/recovery.png": "3439b11bb1e655f977724588ad26e980d83b5a88575b4dd163858284ab75c8ca",
     "native/client/assets/raster/source/raider-strike-sw-v1.png": "fb668850b3b283e2539a00a5328a51ce2290c786f371f8a5d522eab7139455cc",
-    "native/client/assets/raster/source/raider-strike-sw-v2.png": "b7773572b750c069d5c609f3b69987c1923d6d4ba5fc5c2f377943f4c3afe9a2"
+    "native/client/assets/raster/source/raider-strike-sw-v2.png": "b7773572b750c069d5c609f3b69987c1923d6d4ba5fc5c2f377943f4c3afe9a2",
+    "native/client/assets/raster/source/effects_ground-dust-v1.png": "fb142c704de31429701a758d9d73c71def27e505868f7fc498a0a3bd680e5a35",
+    "native/client/assets/raster/source/effects-slash-trail-v1.png": "5b2c6e3ea39a6e3edf148e0906b2dfe4a800e41c8c998a9f4295419bf097d6ff",
+    "native/client/assets/raster/source/raider-death-sw-v1.png": "19bf42e643df4b7a3f56fd8420abdb27cca902a9f2b9a3f17aca8ea381285c9b"
   },
   "active_png_sha256": {
     "item_dagger.png": "27e20ab8965efc8d28a32ef122bc7aa141ec6cf82f933be8c53a6eb595a83518",
@@ -271,34 +280,44 @@
     "raider_strike2_sw.png": "ae5d698092f3b60a3826a70fa6f59455e355440f62b66ed4e278ec91933e6994",
     "raider_strike3_sw.png": "0939205de852b36c2c4e66071e48e0fa8263a63066322201f443ddb1ecf3ab24",
     "raider_strike4_sw.png": "5dcc2c33e499ccbeb0392016457e7acf4e316ed5df17c2822279902bd5176e19",
-    "raider_strike5_sw.png": "81ae09e3e673ed9ae8bf0b022f564897f7a39af298833450b56bd6ce95436ee6"
+    "raider_strike5_sw.png": "81ae09e3e673ed9ae8bf0b022f564897f7a39af298833450b56bd6ce95436ee6",
+    "effect_dust0.png": "fac617ca97aa102b7bf03722eeb150c8e9e4668563efd82a63d20c42a51b12ed",
+    "effect_dust1.png": "9cfd59d0d68be5a590edf44417467a4ab4acbd9f7922fa273830564b0f2758a0",
+    "effect_dust2.png": "bd99d09c615313cb21558649e63b89c5062f601ee14813ee55c24fc555245262",
+    "effect_dust3.png": "9ad269e814e8e6fd67f2d086ad39c4f2e0b2e6f668d6403a7283493a20f921ca",
+    "effect_slash0.png": "29063f396be8f6167ca7402fb96300031315d2d933982efbf0edc269b7007b44",
+    "raider_death0_sw.png": "e2258ad981f06b27e2829ef221f6ce5fb497e2caaad4ae6c09322279664c026e",
+    "raider_death1_sw.png": "0634aece8dcbc75fbddd496087b4e7ed2ca9f145e1d5f24858e24cb413cd918b",
+    "raider_death2_sw.png": "2c8c18d50bd5da6852a19e425f388fbb0d266b2e094d4cf4108700f439db8deb",
+    "raider_death3_sw.png": "e35b6b84b45eb39ab2b1837f6f4203bf766fcc1d51b5d759430874acbd2a307a"
   },
-  "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
+  "acceptance": "root_production_feedback_reviewed_provisional_integration_2026-09-10",
   "previous_catalog_sha256": "ffcd06536b882ccbc1f77a883d425e0dc23b3e8813c2853e96216aa2b0af7f1a",
-  "acceptance_scope": "Verified renderer/event integration and retained source/native review; not final motion polish or watched smooth animation acceptance. The broader visual goal remains active.",
+  "acceptance_scope": "Nine new PNGs at native and production scales; live fixed-tick contact, actual death/dash, retained body depth/expiry and session prior-snapshot path. Ordered frames inspected, smooth playback not claimed.",
   "nw_walk_production_caveat": "The former frame019 six-pixel foot gap is corrected to one pixel and the final production capture was viewed. Residual 0..2px sole travel, larger/redder walk body and identity differences remain.",
   "terrain_production_caveat": "Quiet earth was viewed in initial, integrated and live captures and accepted for trial. Tile edges do not exactly match and broad repeat patterns remain perceptible.",
   "raider_production_caveat": "Root viewed all eight native SW poses and selected production frames. The SCRIPTED production-render scenario verified all eight production phases and settle. Root did not claim to watch every production frame or a full video. Native AI remains stationary; pursuit is not verified. Close adjacent phases, slight frame7 head offset and minor axe contour variation remain.",
   "final_validation": {
     "native_supported_build_all_scenarios": {
       "exit_code": 0,
-      "passed": 68,
-      "log": "native/client/assets/raster/reviews/2026-09-10-actions/native-final-build-all.log"
+      "passed": 69,
+      "log": "native/client/assets/raster/reviews/2026-09-10-feedback/native-final-build-all.log"
     },
     "native_suites": {
       "exit_code": 0,
-      "log": "native/client/assets/raster/reviews/2026-09-10-actions/native-suites.log"
+      "log": "native/client/assets/raster/reviews/2026-09-10-feedback/native-suites-and-initial-scenarios.log",
+      "scope": "All native suites pass. The subsequent C++ change only composes two Sweep sprites in main.cpp; the final supported build reruns all69 native scenarios."
     },
     "browser_playtest": {
       "exit_code": 0,
       "passed": 32,
       "total": 32,
-      "log": "native/client/assets/raster/reviews/2026-09-10-actions/browser-32-of-32.log"
+      "log": "native/client/assets/raster/reviews/2026-09-10-feedback/browser-32-of-32.log"
     },
     "importer": {
       "exit_code": 0,
       "passed": 10,
-      "log": "native/client/assets/raster/reviews/2026-09-10-actions/importer-10-of-10.log"
+      "log": "native/client/assets/raster/reviews/2026-09-10-feedback/importer-10-of-10.log"
     },
     "equipment": {
       "exit_code": 0,
@@ -306,26 +325,26 @@
       "weapons": 5,
       "scales": 3,
       "fractional_sampling_passed": true,
-      "log": "native/client/assets/raster/reviews/2026-09-10-actions/equipment.log"
+      "log": "native/client/assets/raster/reviews/2026-09-10-feedback/equipment.log"
     },
     "frame_budget": {
       "width": 3440,
       "height": 1440,
       "frames": 20,
-      "static_avg_ms": 22.55,
-      "moving_avg_ms": 23.993,
-      "moving_peak_ms": 33.926,
+      "static_avg_ms": 25.426,
+      "moving_avg_ms": 25.467,
+      "moving_peak_ms": 35.561,
       "average_limit_ms": 40
     },
     "live": {
       "supported_launch": "native/tools/play-native.ps1 -Local",
-      "capture": "native/client/assets/raster/reviews/2026-09-10-actions/live-3440x1440.png",
+      "capture": "native/client/assets/raster/reviews/2026-09-10-feedback/live-3440x1440.png",
       "viewed_original_resolution": true,
       "exit_code": 0,
-      "fresh_sky_window_list_empty": true,
-      "log": "native/client/assets/raster/reviews/2026-09-10-actions/live-launch-close.log"
+      "fresh_sky_game_window_list_empty": true,
+      "log": "native/client/assets/raster/reviews/2026-09-10-feedback/live-launch-close.log"
     },
-    "review_limits": "native/client/assets/raster/reviews/2026-09-10-actions/README.md"
+    "review_limits": "native/client/assets/raster/reviews/2026-09-10-feedback/README.md"
   },
   "review_evidence_sha256": {
     "native/client/assets/raster/reviews/2026-09-10-ground-hud/native-final-66-of-66.log": "29f36974cfb4d74243d61f58da266febfc28234ea4822fe36a283d5964c2a8b6",
@@ -371,108 +390,51 @@
     "native/client/assets/raster/reviews/2026-09-10-actions/raster-world-1366x768.png": "8a8ab8958d4c8b042c1838205cf48d7d26ffc17d9ab349154d4a49d6850f93a1",
     "native/client/assets/raster/reviews/2026-09-10-actions/live-3440x1440.png": "4617c10f413d51c27628a077c1ecca1d9d7a4e0b19c26f0d4b123f6012b3bede",
     "native/client/assets/raster/reviews/2026-09-10-actions/village-storehut-1366x768.png": "8a8ab8958d4c8b042c1838205cf48d7d26ffc17d9ab349154d4a49d6850f93a1",
-    "native/client/assets/raster/reviews/2026-09-10-actions/live-launch-close.log": "a93e5538e38c563a5e889fa8c9420dcef769fd2d78eb5f8ded0378a7180bd1b7"
+    "native/client/assets/raster/reviews/2026-09-10-actions/live-launch-close.log": "a93e5538e38c563a5e889fa8c9420dcef769fd2d78eb5f8ded0378a7180bd1b7",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/README.md": "9f8df88593130bb771a402d70c80eed55567b7895f5398498546ea2e7f628cab",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/death-production-strip-1x.png": "428c67a705f0cc408790a8776b79734442c2d531eacce52bc3b613db2630134c",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/root-review.json": "bc112ad8a2d54816e28971a372ffb67327a959e81678d6c7b250cfd7023e0dd3",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/retained-evidence.json": "ef9eac709ffb48eb9b24237cbf14d4fc6423b6750a7bab399cb020660da82c9f",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-dash-0.png": "611956ec51c1ed6b6c622a968d75c4f4c5d3c4f2b41b8740884297433eae1695",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-dash-2.png": "0e253a96ac04dfe0bfc9f30ac73eceaa3659c13197b42933714173882366b7cc",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-dash-4.png": "70eaa0387d63a2ee3b291797eefc7810a931d2027d59a3b674ba605d814e139b",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-dash-6.png": "5e149729626c543ef84123c6bd0c1ebe48d59d9dc2326f47a88f1598bd0350e0",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-death-0.png": "bc90b34a473e9f1007190dbf052ffd3132cda7d1e44a8a45396bdf25ca5b6f83",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-death-2.png": "0a521b5b870f425df295e6aca6aef4e4f67b3fb66f4efd223a56123da6ce6d28",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-death-4.png": "8425aa37e3a1818992c063332b0e7676982101bf5dd84ae677fde4288e631e11",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-death-6.png": "4237f6389f52f8ca831f4eaf66a7dc712b262aa1d192747a830c91bc782f5c30",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-death-8.png": "0a396bf9887023bff582103ec9c1c8a6202ae8e1a4e129bf6518f0272102eb2a",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-expired.png": "c77edd057cc4a93730ec4e2d77b98e5a4694bac1d8f1ef425a104790c26b8259",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-ordinary-contact.png": "f7320a35f04f7e6dacb4161014fa7856b063db0bef91df695a9114427927a965",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-ordinary-idle.png": "c12c57c01e45f6fed3422a6056c56a5bcd6c6d7f8ab334272a5552d8490b4846",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-session-before-drain.png": "70c469b5a2e65a09b1549534400befe7006441e1bae058bb64ab6ddbb14b7695",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-session-death.png": "505b2ce5240845e89219b58e4da5d4d271249eb60e0acb9e86594e4266d575bd",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-settled-under-player.png": "3cd00177836170993ccd0d6fb5d344ff82fc2f9b7cf4628c6a63486bc2af8db3",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raider-strike-contact.png": "f4d1aa89a1b97d296ca5521038c18a881ec8548e6f28f5f15da9ba141c10ddc5",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raider-strike-warning-1.png": "ec44435e82bfcb4c15e82c2c314b4d380acc67187c754b13466e739637ddf2f7",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/frame-budget-report.txt": "5b87be6cdfd31ea18d785faad3c952a6f7f596024921ecdef28743bced06a133",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/native-final-build-all.log": "7ff736cbcfd429e868b5c76acca246494d0f5091285c0c216843c2bc5588f6f0",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/native-suites-and-initial-scenarios.log": "f8dcbce912c90ca01d499c918631d0734cc30d7ad22b2f3c50b547547bb7d8e6",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/sweep-flower-rejected.png": "98c4a4304fc02efb62c6fa5e1213ac479ea389879059bd600ee6eb8d676a22a4",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/browser-32-of-32.log": "9de227f8ba95ec452e68ad0f639e9280c585b02cd1b929279a2a8799f30d5e6e",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/equipment.log": "fb2a1f742e89b6eed1410b4b94e31459301f7e9d8e61993d212563fb6ae49d6b",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/importer-10-of-10.log": "7773110cb69f0b406eadbb5fa9c59c6201422e56e90e3af55f6f4e914da99208",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/initial-probe-failure.log": "51e96b8d36ce92083167f5e3c74e5b620bd3f9471aa74c01df67038c1c444632",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/session-capture-fixture-failure.log": "2ba4e1baec520c8dcee39ab719b95cfa7285b40108feeed6f4c6a39b50285e2a",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/ordinary-melee-core.log": "b5195b2ffd09439f9421105534e127ef37cf118817b4db2d935196f420d23bfe",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/remote-incoming-actions.log": "bf6a9a2bd04c38f5daf1ab075ad8edc965e8da527522fc1eb3072b91377e6036",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/live-3440x1440.png": "4a030e16bb93a1ae526ab13d1dfb52cc5779211a1d0358d9ed9499624008fa81",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/live-launch-close.log": "bb48744fe375d926062579d1f417c3b3a448a1edb5d4e6a3e57f4f7f49f07b9a",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/live-no-windows.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raider-native-1x.png": "4c85f001040024b61bf716c445768a2e3bd56ba8828750ab4425340f1921d51f",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raider-native-3x.png": "292ad69cffa69acd72a1cb04e3eefcdbd6ea8fa9e1710ca4ebec135f4225023a",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/dust-native-3x.png": "194f3dc874c4d408b9bcc1e9e7cc2cab68ae5448c12d569ba761a6695c453a67",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/slash-native-3x.png": "32cab31f7100903b92040adf9d18ea1be60ecbc38b3ead0baeec140e5ba45a06"
   },
-  "untracked_import_dependencies_at_freeze": [
-    "native/client/assets/raster/prompts/actors_hero-strike-ne-contact-v3.provenance.json",
-    "native/client/assets/raster/prompts/actors_hero-strike-ne-contact-v3.txt",
-    "native/client/assets/raster/prompts/actors_hero-strike-ne-followthrough-v3-import.json",
-    "native/client/assets/raster/prompts/actors_hero-strike-ne-followthrough-v3.provenance.json",
-    "native/client/assets/raster/prompts/actors_hero-strike-ne-followthrough-v3.txt",
-    "native/client/assets/raster/prompts/actors_hero-strike-ne-recovery-v1.provenance.json",
-    "native/client/assets/raster/prompts/actors_hero-strike-ne-recovery-v1.txt",
-    "native/client/assets/raster/prompts/actors_hero-strike-ne-repair-candidate.json",
-    "native/client/assets/raster/prompts/actors_hero-strike-ne-windup-v2-import.json",
-    "native/client/assets/raster/prompts/actors_hero-strike-ne-windup-v2.provenance.json",
-    "native/client/assets/raster/prompts/actors_hero-strike-ne-windup-v2.txt",
-    "native/client/assets/raster/prompts/raider-strike-sw-v1.provenance.json",
-    "native/client/assets/raster/prompts/raider-strike-sw-v1.txt",
-    "native/client/assets/raster/prompts/raider-strike-sw-v2.provenance.json",
-    "native/client/assets/raster/prompts/raider-strike-sw-v2.txt",
-    "native/client/assets/raster/runtime/hero-strike-ne.provenance.json",
-    "native/client/assets/raster/runtime/raider-strike-sw.provenance.json",
-    "native/client/assets/raster/source/actors_hero-strike-ne-candidate/actors_hero-strike-ne-repair-candidate.provenance.json",
-    "native/client/assets/raster/source/actors_hero-strike-ne-candidate/commit.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-candidate/recovery.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-candidate/windup.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-contact-v3.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-followthrough-v3-candidate/actors_hero-strike-ne-followthrough-v3-import.provenance.json",
-    "native/client/assets/raster/source/actors_hero-strike-ne-followthrough-v3-candidate/followthrough.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-followthrough-v3-reference-contact.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-followthrough-v3-reference-recovery.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-followthrough-v3.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-recovery-v1.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-reference-followthrough12.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-windup-v2-cell12.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-windup-v2-import.provenance.json",
-    "native/client/assets/raster/source/actors_hero-strike-ne-windup-v2.png",
-    "native/client/assets/raster/source/raider-strike-sw-v1.png",
-    "native/client/assets/raster/source/raider-strike-sw-v2.png",
-    "native/tools/raster/hero-strike-ne-dependencies.json",
-    "native/tools/raster/hero-strike-ne.json",
-    "native/tools/raster/raider-strike-sw-candidate.json",
-    "native/tools/raster/raider-strike-sw-candidates/selected/acceptance-review.json",
-    "native/tools/raster/raider-strike-sw-candidates/selected/alpha-audit.json",
-    "native/tools/raster/raider-strike-sw-candidates/selected/cleanup-inspection.json",
-    "native/tools/raster/raider-strike-sw-candidates/selected/contact-4x.png",
-    "native/tools/raster/raider-strike-sw-candidates/selected/cycle-review.json",
-    "native/tools/raster/raider-strike-sw-candidates/selected/idle-strike-idle-1x.png",
-    "native/tools/raster/raider-strike-sw-candidates/selected/raider-strike-sw-candidate.provenance.json",
-    "native/tools/raster/raider-strike-sw-candidates/selected/runtime-promotion.json",
-    "native/tools/raster/raider-strike-sw-candidates/selected/source-gap-inspection.png",
-    "native/tools/raster/raider-strike-sw-dependencies.json",
-    "native/tools/raster/raider-strike-sw.json"
-  ],
+  "untracked_import_dependencies_at_freeze": [],
   "untracked_source_provenance_records_at_freeze": [],
-  "untracked_review_evidence_at_freeze": [
-    "native/client/assets/raster/reviews/2026-09-10-actions/README.md",
-    "native/client/assets/raster/reviews/2026-09-10-actions/browser-32-of-32.log",
-    "native/client/assets/raster/reviews/2026-09-10-actions/browser-policy-rejection.txt",
-    "native/client/assets/raster/reviews/2026-09-10-actions/equipment.log",
-    "native/client/assets/raster/reviews/2026-09-10-actions/frame-budget-report.txt",
-    "native/client/assets/raster/reviews/2026-09-10-actions/importer-10-of-10.log",
-    "native/client/assets/raster/reviews/2026-09-10-actions/live-3440x1440.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/live-launch-close.log",
-    "native/client/assets/raster/reviews/2026-09-10-actions/loot-fixture-corrected.log",
-    "native/client/assets/raster/reviews/2026-09-10-actions/native-final-build-all.log",
-    "native/client/assets/raster/reviews/2026-09-10-actions/native-suites.log",
-    "native/client/assets/raster/reviews/2026-09-10-actions/ne-equipment-limitations.md",
-    "native/client/assets/raster/reviews/2026-09-10-actions/ne-equipment-poses-0-3-native.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/ne-equipment-poses-4-5-native.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/ne-equipment-review.json",
-    "native/client/assets/raster/reviews/2026-09-10-actions/ne-palette-before-after-1x.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/ne-palette-before-after-3x.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/ne-palette-review.json",
-    "native/client/assets/raster/reviews/2026-09-10-actions/raider-strike-contact.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/raider-strike-idle.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/raider-strike-recovery-1.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/raider-strike-recovery-2.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/raider-strike-recovery-3.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/raider-strike-recovery-4.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/raider-strike-warning-0.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/raider-strike-warning-1.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/raider-strike-warning-2.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/raster-loot-1366x768.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/raster-world-1366x768.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/retained-evidence.json",
-    "native/client/assets/raster/reviews/2026-09-10-actions/scenery-selection-review.json",
-    "native/client/assets/raster/reviews/2026-09-10-actions/strike-equipped-ne-contact.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/village-storehut-1366x768.png",
-    "native/client/assets/raster/reviews/2026-09-10-actions/warning-opaque-rejected.png"
-  ],
-  "untracked_source_reference_dependencies_at_freeze": [
-    "native/client/assets/raster/source/actors_hero-strike-ne-contact-v3.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-followthrough-v3-reference-contact.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-followthrough-v3-reference-recovery.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-followthrough-v3.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-recovery-v1.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-reference-followthrough12.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-windup-v2-cell12.png",
-    "native/client/assets/raster/source/actors_hero-strike-ne-windup-v2.png",
-    "native/tools/raster/raider-strike-sw-candidates/selected/contact-4x.png",
-    "native/tools/raster/raider-strike-sw-candidates/selected/idle-strike-idle-1x.png",
-    "native/tools/raster/raider-strike-sw-candidates/selected/source-gap-inspection.png"
-  ],
+  "untracked_review_evidence_at_freeze": [],
+  "untracked_source_reference_dependencies_at_freeze": [],
   "historical_raw_text_sha256_before_lf_policy": {
     "native/tools/raster/inventory.json": "3a08f114d73923b43bb4bab36310ba93e8549d626b9114baac03d4f340be09a5",
     "native/tools/raster/terrain.json": "df7e4a702628b78607792d673c9c8e39ec1777ccae8901ab885d7f0539fbc05f",
@@ -554,7 +516,7 @@
       "new_import_embedded_raw_text_sha256"
     ],
     "previous_catalog_sha256": "Historical raw-byte hash copied from the preceding freeze.",
-    "embedded_provenance": "Unchanged older provenance files retain raw-byte hashes recorded at their original import or metadata update. Current verification uses this freeze canonical-LF text maps. The three changed reports explicitly identify their current manifest hash policy and separately retain the prior raw hash. New NE and Raider reports retain importer-time raw hashes; current freeze maps remain canonical-LF authority. Historical source-generation records and prompt hashes are never silently rewritten.",
+    "embedded_provenance": "Unchanged older provenance files retain raw-byte hashes recorded at their original import or metadata update. Current verification uses this freeze canonical-LF text maps. The three changed reports explicitly identify their current manifest hash policy and separately retain the prior raw hash. New NE and Raider reports retain importer-time raw hashes; current freeze maps remain canonical-LF authority. Historical source-generation records and prompt hashes are never silently rewritten. Feedback/death reports retain importer-time raw hashes separately from current canonical-LF maps; original source-generation prompt hashes are unchanged.",
     "submitted_prompts": "Historical prompt/source-generation records are untouched; their submitted-prompt hashes describe exact original bytes. Current canonical hashes for new retained prompt/record files are separately listed in source_provenance_text_sha256."
   },
   "historical_embedded_manifest_raw_sha256": {
@@ -628,7 +590,46 @@
     "native/client/assets/raster/reviews/2026-09-10-actions/raster-world-1366x768.png": "raw binary bytes",
     "native/client/assets/raster/reviews/2026-09-10-actions/live-3440x1440.png": "raw binary bytes",
     "native/client/assets/raster/reviews/2026-09-10-actions/village-storehut-1366x768.png": "raw binary bytes",
-    "native/client/assets/raster/reviews/2026-09-10-actions/live-launch-close.log": "canonical LF: CRLF-to-LF only"
+    "native/client/assets/raster/reviews/2026-09-10-actions/live-launch-close.log": "canonical LF: CRLF-to-LF only",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/README.md": "canonical LF: CRLF-to-LF only",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/death-production-strip-1x.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/root-review.json": "canonical LF: CRLF-to-LF only",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/retained-evidence.json": "canonical LF: CRLF-to-LF only",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-dash-0.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-dash-2.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-dash-4.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-dash-6.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-death-0.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-death-2.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-death-4.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-death-6.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-death-8.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-expired.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-ordinary-contact.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-ordinary-idle.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-session-before-drain.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-session-death.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-settled-under-player.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raider-strike-contact.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raider-strike-warning-1.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/frame-budget-report.txt": "canonical LF: CRLF-to-LF only",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/native-final-build-all.log": "canonical LF: CRLF-to-LF only",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/native-suites-and-initial-scenarios.log": "canonical LF: CRLF-to-LF only",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/sweep-flower-rejected.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/browser-32-of-32.log": "canonical LF: CRLF-to-LF only",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/equipment.log": "canonical LF: CRLF-to-LF only",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/importer-10-of-10.log": "canonical LF: CRLF-to-LF only",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/initial-probe-failure.log": "canonical LF: CRLF-to-LF only",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/session-capture-fixture-failure.log": "canonical LF: CRLF-to-LF only",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/ordinary-melee-core.log": "canonical LF: CRLF-to-LF only",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/remote-incoming-actions.log": "canonical LF: CRLF-to-LF only",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/live-3440x1440.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/live-launch-close.log": "canonical LF: CRLF-to-LF only",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/live-no-windows.json": "canonical LF: CRLF-to-LF only",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raider-native-1x.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raider-native-3x.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/dust-native-3x.png": "raw binary bytes",
+    "native/client/assets/raster/reviews/2026-09-10-feedback/slash-native-3x.png": "raw binary bytes"
   },
   "review_original_source_records": {
     "native/client/assets/raster/reviews/2026-09-10-ground-hud/native-final-66-of-66.log": {
@@ -794,6 +795,146 @@
     "native/client/assets/raster/reviews/2026-09-10-actions/live-launch-close.log": {
       "original_source": ".ci-artifacts/raster-actions-live.log",
       "original_source_raw_sha256": "af13cbfc393d26fb42f0a7d3b2e88d5e13119de16b6b552ebcb96100849ecc3c"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-dash-0.png": {
+      "original_source": ".ci-artifacts/raster-feedback-final/raster-feedback-dash-0.png",
+      "original_source_raw_sha256": "611956ec51c1ed6b6c622a968d75c4f4c5d3c4f2b41b8740884297433eae1695"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-dash-2.png": {
+      "original_source": ".ci-artifacts/raster-feedback-final/raster-feedback-dash-2.png",
+      "original_source_raw_sha256": "0e253a96ac04dfe0bfc9f30ac73eceaa3659c13197b42933714173882366b7cc"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-dash-4.png": {
+      "original_source": ".ci-artifacts/raster-feedback-final/raster-feedback-dash-4.png",
+      "original_source_raw_sha256": "70eaa0387d63a2ee3b291797eefc7810a931d2027d59a3b674ba605d814e139b"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-dash-6.png": {
+      "original_source": ".ci-artifacts/raster-feedback-final/raster-feedback-dash-6.png",
+      "original_source_raw_sha256": "5e149729626c543ef84123c6bd0c1ebe48d59d9dc2326f47a88f1598bd0350e0"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-death-0.png": {
+      "original_source": ".ci-artifacts/raster-feedback-final/raster-feedback-death-0.png",
+      "original_source_raw_sha256": "bc90b34a473e9f1007190dbf052ffd3132cda7d1e44a8a45396bdf25ca5b6f83"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-death-2.png": {
+      "original_source": ".ci-artifacts/raster-feedback-final/raster-feedback-death-2.png",
+      "original_source_raw_sha256": "0a521b5b870f425df295e6aca6aef4e4f67b3fb66f4efd223a56123da6ce6d28"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-death-4.png": {
+      "original_source": ".ci-artifacts/raster-feedback-final/raster-feedback-death-4.png",
+      "original_source_raw_sha256": "8425aa37e3a1818992c063332b0e7676982101bf5dd84ae677fde4288e631e11"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-death-6.png": {
+      "original_source": ".ci-artifacts/raster-feedback-final/raster-feedback-death-6.png",
+      "original_source_raw_sha256": "4237f6389f52f8ca831f4eaf66a7dc712b262aa1d192747a830c91bc782f5c30"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-death-8.png": {
+      "original_source": ".ci-artifacts/raster-feedback-final/raster-feedback-death-8.png",
+      "original_source_raw_sha256": "0a396bf9887023bff582103ec9c1c8a6202ae8e1a4e129bf6518f0272102eb2a"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-expired.png": {
+      "original_source": ".ci-artifacts/raster-feedback-final/raster-feedback-expired.png",
+      "original_source_raw_sha256": "c77edd057cc4a93730ec4e2d77b98e5a4694bac1d8f1ef425a104790c26b8259"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-ordinary-contact.png": {
+      "original_source": ".ci-artifacts/raster-feedback-final/raster-feedback-ordinary-contact.png",
+      "original_source_raw_sha256": "f7320a35f04f7e6dacb4161014fa7856b063db0bef91df695a9114427927a965"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-ordinary-idle.png": {
+      "original_source": ".ci-artifacts/raster-feedback-final/raster-feedback-ordinary-idle.png",
+      "original_source_raw_sha256": "c12c57c01e45f6fed3422a6056c56a5bcd6c6d7f8ab334272a5552d8490b4846"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-session-before-drain.png": {
+      "original_source": ".ci-artifacts/raster-feedback-final/raster-feedback-session-before-drain.png",
+      "original_source_raw_sha256": "70c469b5a2e65a09b1549534400befe7006441e1bae058bb64ab6ddbb14b7695"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-session-death.png": {
+      "original_source": ".ci-artifacts/raster-feedback-final/raster-feedback-session-death.png",
+      "original_source_raw_sha256": "505b2ce5240845e89219b58e4da5d4d271249eb60e0acb9e86594e4266d575bd"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raster-feedback-settled-under-player.png": {
+      "original_source": ".ci-artifacts/raster-feedback-final/raster-feedback-settled-under-player.png",
+      "original_source_raw_sha256": "3cd00177836170993ccd0d6fb5d344ff82fc2f9b7cf4628c6a63486bc2af8db3"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raider-strike-contact.png": {
+      "original_source": ".ci-artifacts/raster-feedback-final/raider-strike-contact.png",
+      "original_source_raw_sha256": "f4d1aa89a1b97d296ca5521038c18a881ec8548e6f28f5f15da9ba141c10ddc5"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raider-strike-warning-1.png": {
+      "original_source": ".ci-artifacts/raster-feedback-final/raider-strike-warning-1.png",
+      "original_source_raw_sha256": "ec44435e82bfcb4c15e82c2c314b4d380acc67187c754b13466e739637ddf2f7"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/frame-budget-report.txt": {
+      "original_source": ".ci-artifacts/raster-feedback-final/frame-budget-report.txt",
+      "original_source_raw_sha256": "5b87be6cdfd31ea18d785faad3c952a6f7f596024921ecdef28743bced06a133"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/native-final-build-all.log": {
+      "original_source": ".ci-artifacts/raster-feedback-final-build.log",
+      "original_source_raw_sha256": "d16c7816ae37bf99be481d30c15bb617068c371ba8612a14c31c00bea7845711"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/native-suites-and-initial-scenarios.log": {
+      "original_source": ".ci-artifacts/raster-feedback-native-suites-and-initial-all.log",
+      "original_source_raw_sha256": "f01233a7a7c1511ea6e4a6ae0a98a25bf572f4d62ad2373d139eb7eeab92c188"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/sweep-flower-rejected.png": {
+      "original_source": ".ci-artifacts/raster-feedback-sweep-flower-rejected.png",
+      "original_source_raw_sha256": "98c4a4304fc02efb62c6fa5e1213ac479ea389879059bd600ee6eb8d676a22a4"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/browser-32-of-32.log": {
+      "original_source": ".ci-artifacts/raster-feedback-browser.log",
+      "original_source_raw_sha256": "18142e2352e458a78565e41deb9d526b1a8c8ee1100ffc13cb323a480afbc325"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/equipment.log": {
+      "original_source": ".ci-artifacts/raster-feedback-equipment.log",
+      "original_source_raw_sha256": "3f76552cd2dfb77b2ad7aa63be578a4685d31bf52cd3f6da977513743f94d2a7"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/importer-10-of-10.log": {
+      "original_source": ".ci-artifacts/raster-feedback-import-tests.log",
+      "original_source_raw_sha256": "2c92e67b4627ed6740cabd865bf7abeb7a362f53d52353579d7a1b3847ff43c0"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/initial-probe-failure.log": {
+      "original_source": ".ci-artifacts/raster-feedback-probe.log",
+      "original_source_raw_sha256": "9a5e1e44dbf8b0aec7edc86801ac4bc990df855992c69579903112acdcf9f339"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/session-capture-fixture-failure.log": {
+      "original_source": ".ci-artifacts/raster-feedback-probe2.log",
+      "original_source_raw_sha256": "3c97759e9f1c20b327665ba63760c1c8c429d893e769134a9bfebd6502a6d6df"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/ordinary-melee-core.log": {
+      "original_source": ".ci-artifacts/ordinary-melee-start/after-test.log",
+      "original_source_raw_sha256": "3f99a8fe29ad7bf6b7aa3efd0382a4ab056eb8276b9102b6eb7d4a55900f50f9"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/remote-incoming-actions.log": {
+      "original_source": ".ci-artifacts/remote-incoming-action/result.log",
+      "original_source_raw_sha256": "be3b0a9a27e0842778452f6f55e777b5d6f2232d52ee9f8bf3bd5165d498a7d4"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/live-3440x1440.png": {
+      "original_source": ".ci-artifacts/raster-feedback-live.png",
+      "original_source_raw_sha256": "4a030e16bb93a1ae526ab13d1dfb52cc5779211a1d0358d9ed9499624008fa81"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/live-launch-close.log": {
+      "original_source": ".ci-artifacts/raster-feedback-live.log",
+      "original_source_raw_sha256": "6c05abc7732e21f4a3580a3dd9548757f28a299aab0575d9ae9ee70edb2c87e1"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/live-no-windows.json": {
+      "original_source": ".ci-artifacts/raster-feedback-no-windows.json",
+      "original_source_raw_sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raider-native-1x.png": {
+      "original_source": "native/tools/raster/raider-death-sw-candidates/v1/idle-death-1x.png",
+      "original_source_raw_sha256": "4c85f001040024b61bf716c445768a2e3bd56ba8828750ab4425340f1921d51f"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/raider-native-3x.png": {
+      "original_source": "native/tools/raster/raider-death-sw-candidates/v1/contact-3x.png",
+      "original_source_raw_sha256": "292ad69cffa69acd72a1cb04e3eefcdbd6ea8fa9e1710ca4ebec135f4225023a"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/dust-native-3x.png": {
+      "original_source": "native/client/assets/raster/source/effects_ground-dust-v1-candidate/effects_ground-dust-v1-earth-review-3x.png",
+      "original_source_raw_sha256": "194f3dc874c4d408b9bcc1e9e7cc2cab68ae5448c12d569ba761a6695c453a67"
+    },
+    "native/client/assets/raster/reviews/2026-09-10-feedback/slash-native-3x.png": {
+      "original_source": ".ci-artifacts/slash-trail-v1/native-3x.png",
+      "original_source_raw_sha256": "32cab31f7100903b92040adf9d18ea1be60ecbc38b3ead0baeec140e5ba45a06"
     }
   },
   "nonretained_reference_aliases": [
@@ -810,31 +951,56 @@
     }
   },
   "preceding_milestone_validation": {
-    "milestone": "Ground, HUD and raster motion integration, 127 assets",
-    "catalog_sha256": "4dddbce0b348cff3ecbc37abc934c4eab2bebbcabdc59763739f6c0060bc395e",
-    "acceptance": "ground_hud_iteration_production_captures_reviewed_2026-09-10",
+    "milestone": "Reference-led attacks, warning visibility and physical item art, 139 assets",
+    "catalog_sha256": "65c44d51235cd761547bb8d6564f9cb796fcda7f12cdd5f45f7f61385482af13",
+    "acceptance": "root_production_contact_reviewed_provisional_integration_2026-09-10",
     "final_validation": {
-      "reported_supported_build_exit_code": 0,
-      "native_scenarios": {
-        "passed": 66,
-        "total": 66
+      "native_supported_build_all_scenarios": {
+        "exit_code": 0,
+        "passed": 68,
+        "log": "native/client/assets/raster/reviews/2026-09-10-actions/native-final-build-all.log"
       },
-      "browser_scenarios": {
+      "native_suites": {
+        "exit_code": 0,
+        "log": "native/client/assets/raster/reviews/2026-09-10-actions/native-suites.log"
+      },
+      "browser_playtest": {
+        "exit_code": 0,
         "passed": 32,
-        "total": 32
+        "total": 32,
+        "log": "native/client/assets/raster/reviews/2026-09-10-actions/browser-32-of-32.log"
       },
-      "static_average_ms": 23.258,
-      "moving_average_ms": 24.715,
-      "moving_peak_ms": 36.62,
-      "frame_budget_bound_ms": 40,
-      "all_sources_resolve_and_match_hashes": true,
-      "manifest_and_import_all_orders_match": true,
-      "source_and_runtime_png_hashes_unchanged_during_metadata_refresh": 237,
-      "git_clean_text_normalization": {
-        "verified_files": 56,
-        "method": "For each current frozen text file, git hash-object --path --stdin matched the Git blob identity of canonical LF bytes. This checks the same .gitattributes clean conversion used by staging and a committed LF checkout without modifying the index.",
-        "result": "passed"
-      }
+      "importer": {
+        "exit_code": 0,
+        "passed": 10,
+        "log": "native/client/assets/raster/reviews/2026-09-10-actions/importer-10-of-10.log"
+      },
+      "equipment": {
+        "exit_code": 0,
+        "poses": 60,
+        "weapons": 5,
+        "scales": 3,
+        "fractional_sampling_passed": true,
+        "log": "native/client/assets/raster/reviews/2026-09-10-actions/equipment.log"
+      },
+      "frame_budget": {
+        "width": 3440,
+        "height": 1440,
+        "frames": 20,
+        "static_avg_ms": 22.55,
+        "moving_avg_ms": 23.993,
+        "moving_peak_ms": 33.926,
+        "average_limit_ms": 40
+      },
+      "live": {
+        "supported_launch": "native/tools/play-native.ps1 -Local",
+        "capture": "native/client/assets/raster/reviews/2026-09-10-actions/live-3440x1440.png",
+        "viewed_original_resolution": true,
+        "exit_code": 0,
+        "fresh_sky_window_list_empty": true,
+        "log": "native/client/assets/raster/reviews/2026-09-10-actions/live-launch-close.log"
+      },
+      "review_limits": "native/client/assets/raster/reviews/2026-09-10-actions/README.md"
     }
   },
   "ne_strike_production_caveat": "Followthrough remains broader/darker and resets rapidly to recovery; bow/staff attachments do not depict dedicated firing/staff actions. Contact flash obscures body detail in the hit capture, so native equipment grids are separately retained.",
@@ -873,7 +1039,31 @@
     "native/tools/raster/raider-strike-sw-candidates/selected/cleanup-inspection.json": "fad2fb5dbb6667de95f18f95a14ab5c4e45c2c288543912e7ea94a19d8342319",
     "native/tools/raster/raider-strike-sw-candidates/selected/cycle-review.json": "0043f27edae85bf957cdd76aadd381d2631cca77fe0bd2ebbae4bd53a0bb53f8",
     "native/tools/raster/raider-strike-sw-candidates/selected/runtime-promotion.json": "4b9b5737c5b5fb8198a590a382ba9132a82b8d04f42fb306b59a6083c003f556",
-    "native/tools/raster/raider-strike-sw-dependencies.json": "8b0196ab02f893d08b1bbee92805168793c999d16e748d4e563bf7900b2673e5"
+    "native/tools/raster/raider-strike-sw-dependencies.json": "8b0196ab02f893d08b1bbee92805168793c999d16e748d4e563bf7900b2673e5",
+    "native/tools/raster/action-effects-production-adoption.json": "7bda9094ce2f63074a6742bf9a46c1d125d49a1685f3f6384f878f816650ebcd",
+    "native/tools/raster/action-effects-promotion-paths.json": "1c65be5943d3a98c8d54ad721205c24505cd6b1f37854e912c2bf009051aabfc",
+    "native/tools/raster/build_catalog.py": "44ff99a058c5f8bc89f9a0f1577b315d2cc336153f341f32c8700ac8d9751e30",
+    "native/tools/raster/import_all.ps1": "219aa99adeca85a5f75bcd2f7a81f4ff752f96ee1dc147b3ac0a1b643c205ae2",
+    "native/client/assets/raster/runtime/catalog.json": "746c447cc60443b6855d66ab494af8dbb5b2eb0a0d2de32ce995982e7da666e4",
+    "native/client/assets/raster/prompts/effects_ground-dust-v1.txt": "94a485cc93ba301c857254036a3884283c994a2a54f134b4218b7168c68b18fb",
+    "native/client/assets/raster/prompts/effects_ground-dust-v1.provenance.json": "2b530fc85a90626ec0c486e97a788059b2436ac166b3098c9452b3f2ff92f210",
+    "native/client/assets/raster/prompts/effects_ground-dust-v1-import.json": "2c80ce6ec81b2e93aea1e8a0befc8670d24964f21e4f1be1a420fc0a37e4729c",
+    "native/client/assets/raster/source/effects_ground-dust-v1-candidate/effects_ground-dust-v1-import.provenance.json": "aca1305453b29fde9d1254795ceb4eb279a42fa5003bc9c9c1e2cb70de626a82",
+    "native/tools/raster/ground-dust.json": "7ec9073fe553db4c000aef47fa5e4aa3897ce6ab04e3a9c67b4d9087305f45a0",
+    "native/client/assets/raster/runtime/ground-dust.provenance.json": "d7ee14ef029ccfa68a09b2603471559ec521ef003e8dc5678e6b59b5f4abe9d8",
+    "native/client/assets/raster/prompts/effects-slash-trail-v1.txt": "229630b0b5618b75cdfc08193a814ef8e10fc95d0e547b4eced07247bff5a412",
+    "native/client/assets/raster/prompts/effects-slash-trail-v1.json": "4bb225bb379297cacadbf36396257a3d554bf2b8b5e67b5e00aedf776bb8aaa5",
+    "native/tools/raster/slash-trail-v1.json": "7a1bf13b5aba92fbd71225d54536c2b4274289a340b33b747eed6a353fee0148",
+    "native/tools/raster/slash-trail-candidate.provenance.json": "7c25f0d43b96fd3630cb006b8bfd48364b41b0b6ca0177386b38f55122b5b962",
+    "native/tools/raster/slash-trail.json": "9e8dd97aa9891704abf62bec7591de690bf058742e2b3867641d7c0f6a419964",
+    "native/client/assets/raster/runtime/slash-trail.provenance.json": "6d0ffb1a5b596fbb602c95109593986f58e65f8a37f72d528d26697a5ac79b6e",
+    "native/client/assets/raster/prompts/raider-death-sw-v1.txt": "341869943ccb275fadd23f64005f86b5b168d0c95eb5af7108c6de25544ce26d",
+    "native/client/assets/raster/prompts/raider-death-sw-v1.provenance.json": "d3472e9b2b0af256c8e15c4c754af9c0be1e159f802e2d57d3e05e5db6f30ce5",
+    "native/tools/raster/raider-death-sw-candidate.json": "0276646ee2fe8af9cef2dda496db65ad85b476aced07ca8b11767e1a8f658191",
+    "native/tools/raster/raider-death-sw-candidates/v1/raider-death-sw-candidate.provenance.json": "dd73c46569f36b6b383d77452b9c2cbb79d4022ab6cc3ca77f5d385a547afa50",
+    "native/tools/raster/raider-death-sw.json": "b2cc5ac8bd1d25924436f5b1fd6e49087c3e7e6ae80ca1703d121732c910d27b",
+    "native/client/assets/raster/runtime/raider-death-sw.provenance.json": "619c2f3118aecbcd3c31534440028d255b2f1f43a014d902f859c7de473540cd",
+    "native/tools/raster/action-effects-promotion-dependencies.json": "6c8791b7c04bb62e6eed315ac5e9a9aa0e070808a7adb23b1b90d133fb31b8b8"
   },
   "dependency_binary_sha256": {
     "native/client/assets/raster/runtime/hero_ne.png": "aafeeed5b41a4ee6cad27d6331b0dec4e121ba711c86380ca2a83228a322c0c5",
@@ -897,13 +1087,84 @@
     "native/client/assets/raster/runtime/raider_sw.png": "13e515e678d001de0e764729048986d1d459c9df2de9c2b52d2d1c8538b3daf4",
     "native/tools/raster/raider-strike-sw-candidates/selected/contact-4x.png": "395420b818ac42979b9fd187e19085273ae2b4b2d8ffc2ff2f7f594befa387f5",
     "native/tools/raster/raider-strike-sw-candidates/selected/idle-strike-idle-1x.png": "73b47adbf172e4f708a572bd95be8f51f84cfee3c40211b13864806ee57f3610",
-    "native/tools/raster/raider-strike-sw-candidates/selected/source-gap-inspection.png": "7430bc70e8fad3d08a11c5f563a72874157f6198309d187ffadd98146f061ca4"
+    "native/tools/raster/raider-strike-sw-candidates/selected/source-gap-inspection.png": "7430bc70e8fad3d08a11c5f563a72874157f6198309d187ffadd98146f061ca4",
+    "native/client/assets/raster/source/effects_ground-dust-v1.png": "fb142c704de31429701a758d9d73c71def27e505868f7fc498a0a3bd680e5a35",
+    "native/client/assets/raster/runtime/effect_hit_spark.png": "25c6ec7aa04bff6c6e22a77c97a325c1c9f0539942455692319eec5f91fc456f",
+    "native/client/assets/raster/runtime/terrain_quiet_earth.png": "059b101504c96b84a3541f5021dfd1811a7bb1ddb81ebd40fd03be9dbad2af70",
+    "native/client/assets/raster/runtime/effect_dust0.png": "fac617ca97aa102b7bf03722eeb150c8e9e4668563efd82a63d20c42a51b12ed",
+    "native/client/assets/raster/runtime/effect_dust1.png": "9cfd59d0d68be5a590edf44417467a4ab4acbd9f7922fa273830564b0f2758a0",
+    "native/client/assets/raster/runtime/effect_dust2.png": "bd99d09c615313cb21558649e63b89c5062f601ee14813ee55c24fc555245262",
+    "native/client/assets/raster/runtime/effect_dust3.png": "9ad269e814e8e6fd67f2d086ad39c4f2e0b2e6f668d6403a7283493a20f921ca",
+    "native/client/assets/raster/source/effects-slash-trail-v1.png": "5b2c6e3ea39a6e3edf148e0906b2dfe4a800e41c8c998a9f4295419bf097d6ff",
+    "native/client/assets/raster/runtime/effect_slash0.png": "29063f396be8f6167ca7402fb96300031315d2d933982efbf0edc269b7007b44",
+    "native/client/assets/raster/source/raider-death-sw-v1.png": "19bf42e643df4b7a3f56fd8420abdb27cca902a9f2b9a3f17aca8ea381285c9b",
+    "native/client/assets/raster/runtime/raider_death0_sw.png": "e2258ad981f06b27e2829ef221f6ce5fb497e2caaad4ae6c09322279664c026e",
+    "native/client/assets/raster/runtime/raider_death1_sw.png": "0634aece8dcbc75fbddd496087b4e7ed2ca9f145e1d5f24858e24cb413cd918b",
+    "native/client/assets/raster/runtime/raider_death2_sw.png": "2c8c18d50bd5da6852a19e425f388fbb0d266b2e094d4cf4108700f439db8deb",
+    "native/client/assets/raster/runtime/raider_death3_sw.png": "e35b6b84b45eb39ab2b1837f6f4203bf766fcc1d51b5d759430874acbd2a307a"
   },
   "metadata_verification": {
     "all_sources_resolve_and_match_hashes": true,
     "manifest_import_all_catalog_orders_match": true,
     "no_source_or_runtime_png_writes_performed": true,
-    "new_ne_runtime_matches_reviewed_candidates": true
+    "previously_frozen_pngs_unchanged": true,
+    "new_selected_candidate_hash_matches": 9,
+    "candidate_equivalence": [
+      {
+        "runtime": "native/client/assets/raster/runtime/effect_dust0.png",
+        "candidate_source": "native/client/assets/raster/source/effects_ground-dust-v1-candidate/effect_dust0.png",
+        "raw_sha256": "fac617ca97aa102b7bf03722eeb150c8e9e4668563efd82a63d20c42a51b12ed",
+        "verification": "current files byte-identical"
+      },
+      {
+        "runtime": "native/client/assets/raster/runtime/effect_dust1.png",
+        "candidate_source": "native/client/assets/raster/source/effects_ground-dust-v1-candidate/effect_dust1.png",
+        "raw_sha256": "9cfd59d0d68be5a590edf44417467a4ab4acbd9f7922fa273830564b0f2758a0",
+        "verification": "current files byte-identical"
+      },
+      {
+        "runtime": "native/client/assets/raster/runtime/effect_dust2.png",
+        "candidate_source": "native/client/assets/raster/source/effects_ground-dust-v1-candidate/effect_dust2.png",
+        "raw_sha256": "bd99d09c615313cb21558649e63b89c5062f601ee14813ee55c24fc555245262",
+        "verification": "current files byte-identical"
+      },
+      {
+        "runtime": "native/client/assets/raster/runtime/effect_dust3.png",
+        "candidate_source": "native/client/assets/raster/source/effects_ground-dust-v1-candidate/effect_dust3.png",
+        "raw_sha256": "9ad269e814e8e6fd67f2d086ad39c4f2e0b2e6f668d6403a7283493a20f921ca",
+        "verification": "current files byte-identical"
+      },
+      {
+        "runtime": "native/client/assets/raster/runtime/effect_slash0.png",
+        "candidate_source": ".ci-artifacts/slash-trail-v1/effect_slash0.png",
+        "raw_sha256": "29063f396be8f6167ca7402fb96300031315d2d933982efbf0edc269b7007b44",
+        "verification": "current files byte-identical"
+      },
+      {
+        "runtime": "native/client/assets/raster/runtime/raider_death0_sw.png",
+        "candidate_source": "native/tools/raster/raider-death-sw-candidates/v1/raider_death0_sw.png",
+        "raw_sha256": "e2258ad981f06b27e2829ef221f6ce5fb497e2caaad4ae6c09322279664c026e",
+        "verification": "current files byte-identical"
+      },
+      {
+        "runtime": "native/client/assets/raster/runtime/raider_death1_sw.png",
+        "candidate_source": "native/tools/raster/raider-death-sw-candidates/v1/raider_death1_sw.png",
+        "raw_sha256": "0634aece8dcbc75fbddd496087b4e7ed2ca9f145e1d5f24858e24cb413cd918b",
+        "verification": "current files byte-identical"
+      },
+      {
+        "runtime": "native/client/assets/raster/runtime/raider_death2_sw.png",
+        "candidate_source": "native/tools/raster/raider-death-sw-candidates/v1/raider_death2_sw.png",
+        "raw_sha256": "2c8c18d50bd5da6852a19e425f388fbb0d266b2e094d4cf4108700f439db8deb",
+        "verification": "current files byte-identical"
+      },
+      {
+        "runtime": "native/client/assets/raster/runtime/raider_death3_sw.png",
+        "candidate_source": "native/tools/raster/raider-death-sw-candidates/v1/raider_death3_sw.png",
+        "raw_sha256": "e35b6b84b45eb39ab2b1837f6f4203bf766fcc1d51b5d759430874acbd2a307a",
+        "verification": "current files byte-identical"
+      }
+    ]
   },
   "new_import_embedded_raw_text_sha256": {
     "hero-strike-ne.provenance.json": {
@@ -915,6 +1176,100 @@
       "manifest_sha256": "01d338b2722c31759a89b71203ec474d80f38ed600adb9d8a2fb6d3022884578",
       "importer_sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
       "policy": "Raw bytes observed at import time; current portable verification uses canonical-LF manifest and dependency text maps."
+    },
+    "ground-dust.provenance.json": {
+      "manifest_sha256": "ef75e671b13288ecf6c961faf572fc9a68c268c19c12a65c246cecf9755bbb8c",
+      "importer_sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+      "policy": "Raw bytes observed at import time; current portable verification uses canonical-LF manifest and dependency text maps."
+    },
+    "slash-trail.provenance.json": {
+      "manifest_sha256": "165d988c5b18996951b73d29090582232ad760f39a02b8ffd788f5f1b9f1981f",
+      "importer_sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+      "policy": "Raw bytes observed at import time; current portable verification uses canonical-LF manifest and dependency text maps."
+    },
+    "raider-death-sw.provenance.json": {
+      "manifest_sha256": "bccf7dca79cbcf815efdd237136e26b6d21943a140652d001a3100ce76d819fb",
+      "importer_sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+      "policy": "Raw bytes observed at import time; current portable verification uses canonical-LF manifest and dependency text maps."
     }
-  }
+  },
+  "monster_death_counts": {
+    "raider": {
+      "sw": 4
+    }
+  },
+  "monster_death_sequences": {
+    "raider": {
+      "sw": {
+        "frames": [
+          "raider_death0_sw",
+          "raider_death1_sw",
+          "raider_death2_sw",
+          "raider_death3_sw"
+        ],
+        "frame_count": 4,
+        "canvas": [
+          128,
+          112
+        ],
+        "pivot_policy": "fixed source origin, shared scale; never fit individual frame bounds",
+        "pivot_px": [
+          64,
+          96
+        ],
+        "playback": "one-shot; retain the final settled frame"
+      }
+    }
+  },
+  "feedback_asset_groups": {
+    "ground-dust": [
+      "effect_dust0",
+      "effect_dust1",
+      "effect_dust2",
+      "effect_dust3"
+    ],
+    "slash-trail": [
+      "effect_slash0"
+    ],
+    "raider-death-sw": [
+      "raider_death0_sw",
+      "raider_death1_sw",
+      "raider_death2_sw",
+      "raider_death3_sw"
+    ]
+  },
+  "prior_milestone_validations": [
+    {
+      "milestone": "Ground, HUD and raster motion integration, 127 assets",
+      "catalog_sha256": "4dddbce0b348cff3ecbc37abc934c4eab2bebbcabdc59763739f6c0060bc395e",
+      "acceptance": "ground_hud_iteration_production_captures_reviewed_2026-09-10",
+      "final_validation": {
+        "reported_supported_build_exit_code": 0,
+        "native_scenarios": {
+          "passed": 66,
+          "total": 66
+        },
+        "browser_scenarios": {
+          "passed": 32,
+          "total": 32
+        },
+        "static_average_ms": 23.258,
+        "moving_average_ms": 24.715,
+        "moving_peak_ms": 36.62,
+        "frame_budget_bound_ms": 40,
+        "all_sources_resolve_and_match_hashes": true,
+        "manifest_and_import_all_orders_match": true,
+        "source_and_runtime_png_hashes_unchanged_during_metadata_refresh": 237,
+        "git_clean_text_normalization": {
+          "verified_files": 56,
+          "method": "For each current frozen text file, git hash-object --path --stdin matched the Git blob identity of canonical LF bytes. This checks the same .gitattributes clean conversion used by staging and a committed LF checkout without modifying the index.",
+          "result": "passed"
+        }
+      }
+    }
+  ],
+  "actor_fall_scope": "SW raider4 only;128x112 pivot64,96 at unchanged96px alive pitch;8ticks motion,160TTL,20fade,32body/128FX caps.",
+  "fx_scope": "Dust4 and right-authored slash1; shared measured pivots, fixed scale,8cached angles; Sweep composes two opposed halves.",
+  "actor_fall_production_caveat": "Other directions/families retain dust. Unknown prior snapshots do not invent bodies.",
+  "fx_production_caveat": "Generic melee trail; weapon-specific paths and other procedural magical/spawn/loss effects remain open."
 }

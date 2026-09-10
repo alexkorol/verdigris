@@ -1,0 +1,90 @@
+{
+  "method": "Exact neutral-only row-run rectangles inside nine visually reviewed background-gap scopes; no painted foreground changes.",
+  "windows": 55,
+  "removed_pixels": 1598,
+  "chromatic_pixels_removed_by_local_cleanup": 0,
+  "scopes": [
+    {
+      "scope": [
+        480,
+        120,
+        565,
+        220
+      ],
+      "removed_neutral_pixels": 120
+    },
+    {
+      "scope": [
+        525,
+        300,
+        595,
+        418
+      ],
+      "removed_neutral_pixels": 34
+    },
+    {
+      "scope": [
+        300,
+        440,
+        390,
+        510
+      ],
+      "removed_neutral_pixels": 30
+    },
+    {
+      "scope": [
+        430,
+        430,
+        505,
+        515
+      ],
+      "removed_neutral_pixels": 76
+    },
+    {
+      "scope": [
+        1015,
+        272,
+        1070,
+        350
+      ],
+      "removed_neutral_pixels": 26
+    },
+    {
+      "scope": [
+        1090,
+        435,
+        1160,
+        525
+      ],
+      "removed_neutral_pixels": 334
+    },
+    {
+      "scope": [
+        220,
+        765,
+        325,
+        835
+      ],
+      "removed_neutral_pixels": 207
+    },
+    {
+      "scope": [
+        914,
+        844,
+        1010,
+        914
+      ],
+      "removed_neutral_pixels": 254
+    },
+    {
+      "scope": [
+        1230,
+        850,
+        1308,
+        923
+      ],
+      "removed_neutral_pixels": 517
+    }
+  ],
+  "preserved_border_only_failure": "border-only/contact-3x.png"
+}

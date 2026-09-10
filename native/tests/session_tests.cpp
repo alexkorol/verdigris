@@ -2431,6 +2431,115 @@ bool pt_pump_until(verdigris::client::RemoteProtocolSession& session,
   }
 }
 
+void remote_incoming_melee_actions_follow_wire_evidence() {
+  using namespace verdigris::client;
+  struct Case {
+    const char* label;
+    const char* attacker;
+    const char* skill_json;
+    const char* expected_action;
+    bool died = false;
+  };
+  const Case cases[] = {
+      {"generic melee", "melee-foe", "\"monster:attack\"", "melee"},
+      {"explicit melee", "explicit-foe", "\"melee\"", "melee"},
+      {"sweep", "melee-foe", "\"sweep\"", "sweep"},
+      {"thrust", "melee-foe", "\"thrust\"", "thrust"},
+      {"generic ranged", "ranged-foe", "\"monster:attack\"", ""},
+      {"ranged skill", "melee-foe", "\"ranged:volley\"", ""},
+      {"boss ground slam", "melee-foe", "\"boss:ground-slam\"", ""},
+      {"unknown behaviour", "unknown-foe", "\"monster:attack\"", ""},
+      {"unknown skill", "melee-foe", "\"new-attack\"", ""},
+      {"missing skill", "melee-foe", nullptr, ""},
+      {"non-string skill", "melee-foe", "7", ""},
+      {"missing attacker", nullptr, "\"melee\"", ""},
+      {"empty attacker", "", "\"sweep\"", ""},
+      {"player attacker", "hardening-guest", "\"melee\"", ""},
+      {"lethal melee", "melee-foe", "\"melee\"", "melee", true},
+  };
+  ScriptedEnvelopeServer server;
+  server.script.push_back(pt_login_frame(""));
+  server.script.push_back(
+      R"({"event":"dev:state","data":{"state":{"monsters":[)"
+      R"({"uuid":"melee-foe","behaviour":{"type":"melee"},"x":10,"y":12,"hp":{"current":40,"max":40}},)"
+      R"({"uuid":"ranged-foe","behaviour":{"type":"ranged"},"x":12,"y":12,"hp":{"current":40,"max":40}}]}}})");
+  int amount = 10;
+  for (const auto& test : cases) {
+    ++amount;
+    std::string data = R"({"targetId":"hardening-guest","targetType":"player","amount":)" +
+        std::to_string(amount) + R"(,"attackStyle":"claw","health":{"current":)" +
+        std::to_string(test.died ? 0 : 100 - amount) + R"(,"max":100},"died":)" +
+        (test.died ? "true" : "false");
+    if (test.attacker) data += ",\"attackerId\":\"" + std::string(test.attacker) + "\"";
+    if (test.skill_json) data += ",\"skillId\":" + std::string(test.skill_json);
+    server.script.push_back("{\"event\":\"combat:hit\",\"data\":" + data + "}}");
+  }
+  std::string error;
+  check(server.start(&error), "incoming-action: scripted loopback server bound");
+  if (server.port() == 0) return;
+  RemoteProtocolSession session("127.0.0.1", server.port(), "incoming-action-guest", true);
+  const bool connected = session.start(&error);
+  check(connected, "incoming-action: real WebSocket handshake");
+  const bool ready = connected && wait_for_state(session, ConnectionState::Ready, 5000);
+  check(ready, "incoming-action: login acknowledged");
+  if (!ready) return;
+  session.drain_events();
+  server.grant_next_frame();
+  const bool snapshot = wait_until(session, 3000, [&] {
+    const auto& foes = session.model().monsters;
+    return foes.size() == 2 && foes[0].behaviour == "melee" && foes[1].behaviour == "ranged";
+  });
+  check(snapshot, "incoming-action: authoritative behaviour snapshot decoded");
+  if (!snapshot) return;
+  session.drain_events();
+  amount = 10;
+  for (const auto& test : cases) {
+    ++amount;
+    server.grant_next_frame();
+    std::vector<PresentationEvent> events;
+    const bool received = wait_until(session, 3000, [&] {
+      for (const auto& event : session.drain_events()) events.push_back(event);
+      for (const auto& event : events)
+        if (event.type == PresentationEventType::DamageApplied) return true;
+      return false;
+    });
+    const bool starts = test.expected_action[0] != '\0';
+    const std::size_t damage_index = starts ? 1 : 0;
+    const std::size_t expected_count = damage_index + 1 + (test.died ? 1 : 0);
+    const std::string actor = test.attacker ? test.attacker : "";
+    bool ordered = received && events.size() == expected_count;
+    if (ordered) {
+      ordered = events[damage_index].type == PresentationEventType::DamageApplied &&
+          events[damage_index].actor_id == actor && events[damage_index].text == "incoming" &&
+          events[damage_index].value == amount;
+      if (starts) ordered = ordered && events[0].type == PresentationEventType::AttackStarted &&
+          events[0].actor_id == actor && events[0].text == test.expected_action &&
+          events[0].value == amount;
+      if (test.died) ordered = ordered && events.back().type == PresentationEventType::ScionDied &&
+          events.back().actor_id == "hardening-guest";
+    }
+    const std::string label = std::string("incoming-action: ") + test.label;
+    check(ordered, (label + " preserves exact actor/action/damage/death order").c_str());
+    check(session.model().last_incoming_hit == amount && session.model().player.life ==
+              (test.died ? 0 : 100 - amount) && session.model().player.life_max == 100,
+          (label + " preserves authoritative health and damage").c_str());
+    if (ordered && !test.died) {
+      WorldView world;
+      sync_world_from_model(world, session.model());
+      PresentationFx fx;
+      for (const auto& event : events) apply_presentation_event(fx, world, event, world.tick);
+      const auto* strike = actor_strike(fx.effects, actor);
+      check(starts ? strike && !strike->speculative && strike_phase(*strike) == 0.5 &&
+                        strike->kind == (std::string(test.expected_action) == "sweep"
+                            ? EffectFx::Kind::SweepArc : EffectFx::Kind::Swing)
+                   : strike == nullptr,
+            (label + " enters confirmed contact only for identified melee").c_str());
+    }
+  }
+  session.shutdown();
+  server.stop();
+}
+
 void remote_passive_tree_absence_stays_absent() {
   ScriptedEnvelopeServer server;
   server.script.push_back(pt_login_frame(""));
@@ -2711,6 +2820,7 @@ int main() {
   remote_mid_session_disconnect();
   remote_session_replaced();
   remote_render_list_ops();
+  remote_incoming_melee_actions_follow_wire_evidence();
   remote_passive_tree_absence_stays_absent();
   remote_passive_tree_payload_hardening();
   gateb_driver_state_machine_controls();

@@ -9,7 +9,9 @@
 
 #include <cstdio>
 #include <cmath>
+#include <algorithm>
 #include <string>
+#include <utility>
 
 #include "../client/local_session.hpp"
 #include "../client/presentation_state.hpp"
@@ -455,7 +457,203 @@ void strike_contact_reconciles_preparation() {
   check(whiff.effects.empty(), "strike: unconfirmed preparation expires without hit feedback");
 }
 
+void actor_fall_retains_snapshot_without_live_actor_or_reward() {
+  using namespace verdigris::client;
+  auto world = world_with_player_and_foe("right");
+  world.route_id = "old-road";
+  world.theme = "crypt";
+  world.monsters[0].elite = true;
+  world.monsters[0].facing = {0, 1};
+  world.stored_items = 4;
+  world.stored_trophies = 3;
+  world.carried_trophies = 2;
+  const auto prior = world;
+  PresentationFx fx;
+  detect_monster_spawns(fx, world, 1);
+  present_strike(fx.effects, "foe-1", world.monsters[0].position, 0, true, false);
+  fx.telegraphs["foe-1"] = {};
+  fx.monster_strikes["foe-1"] = 1;
+  apply_presentation_event(fx, world,
+      {PresentationEventType::DamageApplied, "foe-1", "", "outgoing", 3}, 1);
+  apply_presentation_event(fx, world,
+      {PresentationEventType::ActorDied, "foe-1", "", "Warden", 0}, 1);
+  const auto* fall = first_kind(fx, EffectFx::Kind::ActorFall);
+  check(fall && fall->actor_id == "foe-1" && fall->actor_family == "wight" &&
+        fall->actor_elite && fall->wx == 140 && fall->wy == 100 &&
+        std::abs(fall->angle - std::atan2(0.0, -40.0)) < 0.0001,
+        "fall: snapshots ID, art family, elite, position and actual player-facing angle");
+  const auto* dust = first_kind(fx, EffectFx::Kind::Dust);
+  check(dust && dust->wx == 140 && dust->wy == 100 && dust->ttl == 10 &&
+        count_kind(fx, EffectFx::Kind::DeathRing) == 0,
+        "fall: known deaths retain dust feedback even without authored family death art");
+  check(!actor_strike(fx.effects, "foe-1") && fx.telegraphs.empty() &&
+        fx.monster_strikes.empty() && count_kind(fx, EffectFx::Kind::TargetFlash) == 0 &&
+        count_kind(fx, EffectFx::Kind::Materialize) == 0,
+        "fall: stale strikes, warnings, spawn and target tint no longer pose the dead monster");
+  check(world.monsters.size() == prior.monsters.size() && world.monsters[0].alive &&
+        world.player.life == prior.player.life && world.carried.empty() &&
+        world.stored_items == 4 && world.stored_trophies == 3 &&
+        world.carried_trophies == 2 && world.loot_names.empty() && fx.loot_positions.empty(),
+        "fall: presentation neither kills a live actor nor invents loot or rewards");
+  world.monsters.clear();
+  world.player.position = {900, 900};
+  world.theme = "marsh";
+  age_presentation_fx(fx);
+  fall = first_kind(fx, EffectFx::Kind::ActorFall);
+  check(fall && fall->actor_family == "wight" && fall->wx == 140 && fall->age == 1,
+        "fall: retained snapshot survives actor removal and later player/theme changes");
+  render::List list;
+  record_world_ops(list, world, fx, camera2d::Camera{}, 960, 600);
+  const auto deaths = std::count_if(list.begin(), list.end(), [](const auto& op) {
+    return op.op == render::Op::Death && op.label == "actor-fall";
+  });
+  const auto monsters = std::count_if(list.begin(), list.end(), [](const auto& op) {
+    return op.op == render::Op::Monster;
+  });
+  check(deaths == 1 && monsters == 0,
+        "fall: semantic recorder emits a labelled Death, never an extra live Monster");
+}
+
+void actor_fall_dedupe_caps_and_lifetime() {
+  using namespace verdigris::client;
+  auto world = world_with_player_and_foe("right");
+  PresentationFx fx;
+  const auto death = PresentationEvent{PresentationEventType::ActorDied, "foe-1", "", "", 0};
+  apply_presentation_event(fx, world, death, 1);
+  for (int i = 0; i < 4; ++i) age_presentation_fx(fx);
+  apply_presentation_event(fx, world, death, 5);
+  check(count_kind(fx, EffectFx::Kind::ActorFall) == 1 &&
+        first_kind(fx, EffectFx::Kind::ActorFall)->age == 4,
+        "fall: duplicate death cannot restart the retained pose");
+  check(count_kind(fx, EffectFx::Kind::Dust) == 1 &&
+        first_kind(fx, EffectFx::Kind::Dust)->age == 4,
+        "fall: duplicate death neither restarts nor duplicates dust");
+  auto fall = *first_kind(fx, EffectFx::Kind::ActorFall);
+  check(fall.ttl == kActorFallTtlTicks && actor_fall_phase(fall) == 0.5 &&
+        actor_fall_opacity(fall) == 1.0,
+        "fall: named eight-tick motion is independent of the eight-second hold");
+  fall.age = kActorFallMotionTicks;
+  check(actor_fall_phase(fall) == 1.0 && actor_fall_opacity(fall) == 1.0,
+        "fall: settled pose stays fully opaque after motion ends");
+  fall.age = kActorFallTtlTicks - kActorFallFadeTicks;
+  check(actor_fall_opacity(fall) == 1.0,
+        "fall: fading begins only in the final twenty ticks");
+  fall.age += kActorFallFadeTicks / 2;
+  check(actor_fall_opacity(fall) == 0.5 && actor_fall_phase(fall) == 1.0,
+        "fall: fade changes opacity without replaying motion");
+  for (int i = 4; i < kActorFallTtlTicks - 1; ++i) age_presentation_fx(fx);
+  check(count_kind(fx, EffectFx::Kind::ActorFall) == 1,
+        "fall: last visible tick is retained");
+  age_presentation_fx(fx);
+  check(count_kind(fx, EffectFx::Kind::ActorFall) == 0,
+        "fall: body expires at the named TTL");
+
+  for (int i = 0; i < 40; ++i) {
+    auto monster = world.monsters[0];
+    monster.id = "body-" + std::to_string(i);
+    present_actor_death(fx.effects, world, monster);
+  }
+  check(count_kind(fx, EffectFx::Kind::ActorFall) == static_cast<int>(kMaxActorFalls) &&
+        first_kind(fx, EffectFx::Kind::ActorFall)->actor_id == "body-8",
+        "fall: more than32 deaths discard oldest bodies deterministically");
+  for (int i = 0; i < 100; ++i)
+    apply_presentation_event(fx, world,
+        {PresentationEventType::DamageApplied, "foe-1", "", "outgoing", 1}, i);
+  check(fx.effects.size() == kMaxPresentationEffects &&
+        count_kind(fx, EffectFx::Kind::ActorFall) == static_cast<int>(kMaxActorFalls),
+        "fall: combat feedback and retained bodies share the128-effect cap");
+}
+
+void actor_fall_family_fallback_and_unknown_death() {
+  using namespace verdigris::client;
+  auto world = world_with_player_and_foe("right");
+  for (const auto& entry : {std::pair{"crypt", "wight"}, {"wilds", "beast"},
+                            {"marsh", "beast"}, {"town", "raider"}}) {
+    world.theme = entry.first;
+    check(std::string(monster_art_family(world.monsters[0], world)) == entry.second,
+          "fall: monster family matches the living raster selection");
+  }
+  world.monsters[0].behaviour = "ranged";
+  world.theme = "crypt";
+  check(std::string(monster_art_family(world.monsters[0], world)) == "archer",
+        "fall: ranged role takes precedence over theme");
+  world.monsters[0].position = world.player.position;
+  world.monsters[0].facing = {0, -1};
+  PresentationFx fx;
+  present_actor_death(fx.effects, world, world.monsters[0]);
+  check(std::abs(first_kind(fx, EffectFx::Kind::ActorFall)->angle - std::atan2(-1.0, 0.0)) < 0.0001,
+        "fall: overlapping actor falls back to its own facing");
+  PresentationFx absent;
+  absent.last_death_pos = {777, 888};
+  apply_presentation_event(absent, world,
+      {PresentationEventType::ActorDied, "not-in-snapshot", "", "", 0}, 1);
+  check(absent.effects.empty() && absent.last_death_pos.x == 777,
+        "fall: unknown actor never borrows last death position for a fabricated corpse");
+  apply_presentation_event(absent, world,
+      {PresentationEventType::ScionDied, world.player.id, "", "", 0}, 2);
+  check(count_kind(absent, EffectFx::Kind::ActorFall) == 0 &&
+        !present_actor_death(absent.effects, world, world.player),
+        "fall: Scion death cannot masquerade as a raider body");
+}
+
+void actor_fall_clears_on_scene_and_connection_transitions() {
+  using namespace verdigris::client;
+  auto world = world_with_player_and_foe("right");
+  world.route_id = "road-a";
+  PresentationFx fx;
+  apply_presentation_event(fx, world,
+      {PresentationEventType::ActorDied, "foe-1", "", "", 0}, 1);
+  sync_presentation_scene(fx, world);
+  check(count_kind(fx, EffectFx::Kind::ActorFall) == 1,
+        "fall: an unchanged scene does not clear a body");
+  world.route_id = "road-b";
+  detect_monster_spawns(fx, world, 2);
+  check(count_kind(fx, EffectFx::Kind::ActorFall) == 0,
+        "fall: snapshot route changes clear bodies even without a transition event");
+  for (const auto type : {PresentationEventType::ExtractionCompleted,
+                          PresentationEventType::ConnectionLost,
+                          PresentationEventType::ConnectionEstablished,
+                          PresentationEventType::SessionReady,
+                          PresentationEventType::ScionDied,
+                          PresentationEventType::ScionLost}) {
+    present_actor_death(fx.effects, world, world.monsters[0]);
+    apply_presentation_event(fx, world, {type, "", "", "", 0}, 3);
+    check(count_kind(fx, EffectFx::Kind::ActorFall) == 0,
+          "fall: extraction, connection and Scion-loss transitions clear retained bodies");
+  }
+}
+
+void strike_angle_matches_rendered_actor_direction() {
+  using namespace verdigris::client;
+  auto world = world_with_player_and_foe("up");
+  world.monsters[0].position = {160, 180};
+  world.monsters[0].facing = {1, 0};
+  PresentationFx fx;
+  apply_presentation_event(fx, world,
+      {PresentationEventType::AttackStarted, "foe-1", "", "melee", 0}, 1);
+  const auto* strike = actor_strike(fx.effects, "foe-1");
+  check(strike && std::abs(strike->angle - std::atan2(-80.0, -60.0)) < 0.0001,
+        "strike: monster slash faces the player as the living raster does");
+  world.monsters[0].position = world.player.position;
+  world.monsters[0].facing = {0, 1};
+  apply_presentation_event(fx, world,
+      {PresentationEventType::AttackStarted, "foe-1", "", "melee", 0}, 2);
+  strike = actor_strike(fx.effects, "foe-1");
+  check(strike && std::abs(strike->angle - std::atan2(1.0, 0.0)) < 0.0001,
+        "strike: overlapping monster uses its own facing fallback");
+  apply_presentation_event(fx, world,
+      {PresentationEventType::AttackStarted, world.player.id, "", "melee", 0}, 3);
+  strike = actor_strike(fx.effects, world.player.id);
+  check(strike && std::abs(strike->angle - std::atan2(-1.0, 0.0)) < 0.0001,
+        "strike: player slash preserves player aim rather than aiming at a monster");
+}
+
 int main() {
+  strike_angle_matches_rendered_actor_direction();
+  actor_fall_retains_snapshot_without_live_actor_or_reward();
+  actor_fall_dedupe_caps_and_lifetime();
+  actor_fall_family_fallback_and_unknown_death();
+  actor_fall_clears_on_scene_and_connection_transitions();
   strike_contact_reconciles_preparation();
   constants_are_named_and_distinct();
   critical_damage_is_distinct();

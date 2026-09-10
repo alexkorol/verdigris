@@ -1,0 +1,1000 @@
+{
+  "version": 1,
+  "manifest_sha256": "e4d12a46ffb774257395c719696db2c04fa2f827d84b5cc55b628e718eef6b60",
+  "importer_sha256": "62f049dea8e2ad8ad7fcac2c61aa7c4e8058f0763200b7a132bf56d1a191b017",
+  "engine": {
+    "project": "Pixel Respecter",
+    "api": "pixel_perfecter.workspace.reconstruct",
+    "root": "Z:/Code/Python/pixel-perfecter",
+    "git_head": "cf7786cb438ad51be5dfc08d963c2a6edcfd72f7",
+    "git_dirty": true,
+    "source_sha256": {
+      "pixel_perfecter/__init__.py": "c129dbc041921845023410470731e4118b43c9031854e7ff976c9da6895a85fb",
+      "pixel_perfecter/__main__.py": "99c0982b5e4cf1bd1971fa8f2c520d702053d2cddb862605167d6a8f2a958058",
+      "pixel_perfecter/cli.py": "e5f86a3ce0f5f7f66b39aeabe9409acb7e577169f4dd9f8b0f3657c08a347c97",
+      "pixel_perfecter/colors.py": "61e49d1b751ebf4239ab98d371f6c5cd58c6760c0dbe98f668e593ab86a3bf4b",
+      "pixel_perfecter/desktop.py": "5681fb9a66db6980da4fa4ffce439fb4645b6945ccfb65db270411ea48889ed8",
+      "pixel_perfecter/grid.py": "3be014d64db5ef125526d3efe8cc7b8de1998e3919b87062ce6565964fe1222d",
+      "pixel_perfecter/gui.py": "d6ed2943905988bf02b06c936996ae71ee6c29b79c0b34001ab2065c01450103",
+      "pixel_perfecter/gui_app.py": "e27ea5a3ba8f5555acf547b61f0b4d67338f5d55f24ac50f2465073e28d01c7e",
+      "pixel_perfecter/mesh.py": "875af209037e240a0ac68b7895ffe4dcceb0b311bb39f39bd4078495cbe6825f",
+      "pixel_perfecter/palettes.py": "b1703765041523f1eda3be01477a8a77e90ece09ae872cf0b714b45c5b4869e2",
+      "pixel_perfecter/reconstructor.py": "8952e655f70adbd3d3d58feb0fa852fe101b3aefd1c3301c7672deab88736cfa",
+      "pixel_perfecter/sheets.py": "f0b08263f1bb3ec7b10a814d4650be6bbb23b3910b40b58bd136bb99aca1c3a0",
+      "pixel_perfecter/workspace.py": "2df3f287a5dd3cd24e5b4968e784ca51018aca0cc2e2a94d526c99e3edc50fa1"
+    },
+    "dependencies": {
+      "python": "3.12.6",
+      "numpy": "2.2.2",
+      "Pillow": "10.4.0",
+      "opencv": "4.11.0"
+    }
+  },
+  "known_limitations": [
+    "Generated source is RGB with painted checker; actual alpha request failed.",
+    "One shared cell8 scale; measured layout origins [400,608] with column704 and row416. Low poses retain source offsets rather than being independently fitted.",
+    "Candidate world pivot [64,96]; accepted idle [40,96] translates by [24,0] without rescaling.",
+    "Four collapse beats adapted from the published Kiki planned combat workflow, not a claimed published death-animation result."
+  ],
+  "sources": [
+    {
+      "source": "../../client/assets/raster/source/raider-death-sw-v1.png",
+      "sha256": "19bf42e643df4b7a3f56fd8420abdb27cca902a9f2b9a3f17aca8ea381285c9b",
+      "size": [
+        1437,
+        1094
+      ],
+      "background_removal": {
+        "api": "pixel_perfecter.colors.make_border_connected_transparent",
+        "color": [
+          210,
+          210,
+          210
+        ],
+        "tolerance": 95,
+        "interior_windows": [
+          {
+            "source_box": [
+              511,
+              135,
+              517,
+              136
+            ],
+            "new_transparent_pixels": 6
+          },
+          {
+            "source_box": [
+              506,
+              136,
+              529,
+              137
+            ],
+            "new_transparent_pixels": 23
+          },
+          {
+            "source_box": [
+              506,
+              137,
+              528,
+              138
+            ],
+            "new_transparent_pixels": 22
+          },
+          {
+            "source_box": [
+              506,
+              138,
+              529,
+              141
+            ],
+            "new_transparent_pixels": 69
+          },
+          {
+            "source_box": [
+              568,
+              331,
+              574,
+              336
+            ],
+            "new_transparent_pixels": 30
+          },
+          {
+            "source_box": [
+              569,
+              336,
+              573,
+              337
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              337,
+              474,
+              342,
+              480
+            ],
+            "new_transparent_pixels": 30
+          },
+          {
+            "source_box": [
+              467,
+              469,
+              476,
+              474
+            ],
+            "new_transparent_pixels": 45
+          },
+          {
+            "source_box": [
+              471,
+              474,
+              477,
+              475
+            ],
+            "new_transparent_pixels": 6
+          },
+          {
+            "source_box": [
+              472,
+              475,
+              477,
+              480
+            ],
+            "new_transparent_pixels": 25
+          },
+          {
+            "source_box": [
+              1055,
+              314,
+              1061,
+              315
+            ],
+            "new_transparent_pixels": 6
+          },
+          {
+            "source_box": [
+              1055,
+              315,
+              1060,
+              319
+            ],
+            "new_transparent_pixels": 20
+          },
+          {
+            "source_box": [
+              1118,
+              457,
+              1123,
+              458
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              1117,
+              458,
+              1123,
+              459
+            ],
+            "new_transparent_pixels": 6
+          },
+          {
+            "source_box": [
+              1118,
+              459,
+              1123,
+              460
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              1117,
+              460,
+              1123,
+              462
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1118,
+              462,
+              1123,
+              463
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              1118,
+              463,
+              1128,
+              466
+            ],
+            "new_transparent_pixels": 30
+          },
+          {
+            "source_box": [
+              1118,
+              466,
+              1129,
+              468
+            ],
+            "new_transparent_pixels": 22
+          },
+          {
+            "source_box": [
+              1118,
+              468,
+              1134,
+              473
+            ],
+            "new_transparent_pixels": 80
+          },
+          {
+            "source_box": [
+              1122,
+              473,
+              1134,
+              474
+            ],
+            "new_transparent_pixels": 12
+          },
+          {
+            "source_box": [
+              1123,
+              474,
+              1134,
+              486
+            ],
+            "new_transparent_pixels": 132
+          },
+          {
+            "source_box": [
+              1129,
+              486,
+              1134,
+              491
+            ],
+            "new_transparent_pixels": 25
+          },
+          {
+            "source_box": [
+              297,
+              782,
+              302,
+              787
+            ],
+            "new_transparent_pixels": 25
+          },
+          {
+            "source_box": [
+              269,
+              783,
+              273,
+              787
+            ],
+            "new_transparent_pixels": 16
+          },
+          {
+            "source_box": [
+              241,
+              794,
+              246,
+              795
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              240,
+              795,
+              246,
+              810
+            ],
+            "new_transparent_pixels": 90
+          },
+          {
+            "source_box": [
+              303,
+              805,
+              308,
+              810
+            ],
+            "new_transparent_pixels": 25
+          },
+          {
+            "source_box": [
+              240,
+              810,
+              245,
+              811
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              297,
+              811,
+              303,
+              815
+            ],
+            "new_transparent_pixels": 24
+          },
+          {
+            "source_box": [
+              297,
+              815,
+              302,
+              816
+            ],
+            "new_transparent_pixels": 5
+          },
+          {
+            "source_box": [
+              292,
+              817,
+              296,
+              818
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              292,
+              818,
+              293,
+              820
+            ],
+            "new_transparent_pixels": 2
+          },
+          {
+            "source_box": [
+              295,
+              818,
+              296,
+              820
+            ],
+            "new_transparent_pixels": 2
+          },
+          {
+            "source_box": [
+              292,
+              820,
+              296,
+              821
+            ],
+            "new_transparent_pixels": 4
+          },
+          {
+            "source_box": [
+              970,
+              868,
+              975,
+              874
+            ],
+            "new_transparent_pixels": 30
+          },
+          {
+            "source_box": [
+              964,
+              874,
+              965,
+              875
+            ],
+            "new_transparent_pixels": 1
+          },
+          {
+            "source_box": [
+              966,
+              874,
+              968,
+              875
+            ],
+            "new_transparent_pixels": 2
+          },
+          {
+            "source_box": [
+              964,
+              875,
+              969,
+              879
+            ],
+            "new_transparent_pixels": 20
+          },
+          {
+            "source_box": [
+              936,
+              880,
+              941,
+              885
+            ],
+            "new_transparent_pixels": 25
+          },
+          {
+            "source_box": [
+              930,
+              886,
+              935,
+              897
+            ],
+            "new_transparent_pixels": 55
+          },
+          {
+            "source_box": [
+              981,
+              886,
+              992,
+              890
+            ],
+            "new_transparent_pixels": 44
+          },
+          {
+            "source_box": [
+              996,
+              889,
+              997,
+              890
+            ],
+            "new_transparent_pixels": 1
+          },
+          {
+            "source_box": [
+              982,
+              890,
+              992,
+              891
+            ],
+            "new_transparent_pixels": 10
+          },
+          {
+            "source_box": [
+              975,
+              891,
+              981,
+              897
+            ],
+            "new_transparent_pixels": 36
+          },
+          {
+            "source_box": [
+              970,
+              897,
+              975,
+              903
+            ],
+            "new_transparent_pixels": 30
+          },
+          {
+            "source_box": [
+              1260,
+              880,
+              1276,
+              885
+            ],
+            "new_transparent_pixels": 80
+          },
+          {
+            "source_box": [
+              1248,
+              885,
+              1251,
+              886
+            ],
+            "new_transparent_pixels": 3
+          },
+          {
+            "source_box": [
+              1259,
+              885,
+              1277,
+              886
+            ],
+            "new_transparent_pixels": 18
+          },
+          {
+            "source_box": [
+              1247,
+              886,
+              1281,
+              889
+            ],
+            "new_transparent_pixels": 102
+          },
+          {
+            "source_box": [
+              1248,
+              889,
+              1281,
+              890
+            ],
+            "new_transparent_pixels": 33
+          },
+          {
+            "source_box": [
+              1247,
+              890,
+              1281,
+              891
+            ],
+            "new_transparent_pixels": 34
+          },
+          {
+            "source_box": [
+              1239,
+              891,
+              1270,
+              897
+            ],
+            "new_transparent_pixels": 186
+          },
+          {
+            "source_box": [
+              1252,
+              897,
+              1262,
+              902
+            ],
+            "new_transparent_pixels": 50
+          },
+          {
+            "source_box": [
+              1252,
+              902,
+              1263,
+              903
+            ],
+            "new_transparent_pixels": 11
+          }
+        ],
+        "transparent_pixels_after": 1286523
+      }
+    }
+  ],
+  "assets": [
+    {
+      "name": "raider_death0_sw",
+      "file": "raider_death0_sw.png",
+      "source": "../../client/assets/raster/source/raider-death-sw-v1.png",
+      "acceptance": "candidate_pending_source_native_motion_review",
+      "source_box": [
+        0,
+        0,
+        704,
+        704
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 32,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        88,
+        88
+      ],
+      "trim_box": [
+        20,
+        15,
+        72,
+        76
+      ],
+      "before_resize": [
+        52,
+        61
+      ],
+      "placed_size": [
+        52,
+        61
+      ],
+      "canvas": [
+        128,
+        112
+      ],
+      "content_bounds": [
+        34,
+        35,
+        86,
+        96
+      ],
+      "anchor_px": [
+        64,
+        96
+      ],
+      "baseline_offset_px": 16,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        400,
+        608
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "e2258ad981f06b27e2829ef221f6ce5fb497e2caaad4ae6c09322279664c026e"
+    },
+    {
+      "name": "raider_death1_sw",
+      "file": "raider_death1_sw.png",
+      "source": "../../client/assets/raster/source/raider-death-sw-v1.png",
+      "acceptance": "candidate_pending_source_native_motion_review",
+      "source_box": [
+        704,
+        0,
+        1437,
+        704
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 31,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        91,
+        88
+      ],
+      "trim_box": [
+        13,
+        30,
+        59,
+        77
+      ],
+      "before_resize": [
+        46,
+        47
+      ],
+      "placed_size": [
+        46,
+        47
+      ],
+      "canvas": [
+        128,
+        112
+      ],
+      "content_bounds": [
+        27,
+        50,
+        73,
+        97
+      ],
+      "anchor_px": [
+        64,
+        96
+      ],
+      "baseline_offset_px": 16,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        400,
+        608
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "0634aece8dcbc75fbddd496087b4e7ed2ca9f145e1d5f24858e24cb413cd918b"
+    },
+    {
+      "name": "raider_death2_sw",
+      "file": "raider_death2_sw.png",
+      "source": "../../client/assets/raster/source/raider-death-sw-v1.png",
+      "acceptance": "candidate_pending_source_native_motion_review",
+      "source_box": [
+        0,
+        704,
+        704,
+        1094
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 30,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        88,
+        48
+      ],
+      "trim_box": [
+        6,
+        8,
+        78,
+        41
+      ],
+      "before_resize": [
+        72,
+        33
+      ],
+      "placed_size": [
+        72,
+        33
+      ],
+      "canvas": [
+        128,
+        112
+      ],
+      "content_bounds": [
+        20,
+        64,
+        92,
+        97
+      ],
+      "anchor_px": [
+        64,
+        96
+      ],
+      "baseline_offset_px": 16,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        400,
+        320
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "2c8c18d50bd5da6852a19e425f388fbb0d266b2e094d4cf4108700f439db8deb"
+    },
+    {
+      "name": "raider_death3_sw",
+      "file": "raider_death3_sw.png",
+      "source": "../../client/assets/raster/source/raider-death-sw-v1.png",
+      "acceptance": "candidate_pending_source_native_motion_review",
+      "source_box": [
+        704,
+        704,
+        1437,
+        1094
+      ],
+      "cell_size": 8,
+      "grid_offset": [
+        0,
+        0
+      ],
+      "grid_kind": "manual",
+      "alpha_mode": "crisp",
+      "palette": "none",
+      "max_colors": 32,
+      "visible_colors": 31,
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_partial_pixels": 0,
+      "warnings": [],
+      "reconstructed_size": [
+        91,
+        48
+      ],
+      "trim_box": [
+        3,
+        16,
+        86,
+        41
+      ],
+      "before_resize": [
+        83,
+        25
+      ],
+      "placed_size": [
+        83,
+        25
+      ],
+      "canvas": [
+        128,
+        112
+      ],
+      "content_bounds": [
+        17,
+        72,
+        100,
+        97
+      ],
+      "anchor_px": [
+        64,
+        96
+      ],
+      "baseline_offset_px": 16,
+      "resampling": "nearest_neighbor",
+      "anchor_source": [
+        400,
+        320
+      ],
+      "palette_scope": "manifest_cycle",
+      "sha256": "e35b6b84b45eb39ab2b1837f6f4203bf766fcc1d51b5d759430874acbd2a307a"
+    }
+  ],
+  "shared_palette": {
+    "api": "pixel_perfecter.palettes.reduce_colors",
+    "max_colors": 32,
+    "visible_colors_before": 515,
+    "visible_colors_after": 32,
+    "palette_rgb": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        37,
+        22,
+        13
+      ],
+      [
+        43,
+        46,
+        51
+      ],
+      [
+        80,
+        25,
+        0
+      ],
+      [
+        81,
+        48,
+        34
+      ],
+      [
+        81,
+        68,
+        70
+      ],
+      [
+        102,
+        102,
+        100
+      ],
+      [
+        120,
+        59,
+        38
+      ],
+      [
+        127,
+        83,
+        69
+      ],
+      [
+        137,
+        52,
+        1
+      ],
+      [
+        142,
+        141,
+        141
+      ],
+      [
+        146,
+        116,
+        78
+      ],
+      [
+        152,
+        66,
+        26
+      ],
+      [
+        159,
+        99,
+        40
+      ],
+      [
+        179,
+        75,
+        1
+      ],
+      [
+        189,
+        114,
+        76
+      ],
+      [
+        192,
+        153,
+        85
+      ],
+      [
+        196,
+        123,
+        36
+      ],
+      [
+        198,
+        87,
+        39
+      ],
+      [
+        199,
+        107,
+        5
+      ],
+      [
+        201,
+        169,
+        129
+      ],
+      [
+        224,
+        118,
+        65
+      ],
+      [
+        224,
+        193,
+        122
+      ],
+      [
+        227,
+        158,
+        47
+      ],
+      [
+        237,
+        113,
+        0
+      ],
+      [
+        239,
+        224,
+        165
+      ],
+      [
+        241,
+        179,
+        78
+      ],
+      [
+        243,
+        146,
+        91
+      ],
+      [
+        248,
+        197,
+        143
+      ],
+      [
+        254,
+        153,
+        4
+      ],
+      [
+        254,
+        189,
+        107
+      ],
+      [
+        254,
+        251,
+        218
+      ]
+    ],
+    "dithering": "none",
+    "scope": "all reconstructed frames in this manifest"
+  }
+}

@@ -1,0 +1,461 @@
+{
+  "version": 1,
+  "output_dir": "../../client/assets/raster/runtime",
+  "report_name": "raider-death-sw.provenance.json",
+  "shared_palette_max_colors": 32,
+  "defaults": {
+    "cell_size": 8,
+    "alpha_mode": "crisp",
+    "canvas": [
+      128,
+      112
+    ],
+    "padding": 16,
+    "preserve_scale": true,
+    "require_transparency": true,
+    "acceptance": "root_production_feedback_reviewed_provisional_integration_2026-09-10"
+  },
+  "known_limitations": [
+    "Generated source is RGB with painted checker; actual alpha request failed.",
+    "One shared cell8 scale; measured layout origins [400,608] with column704 and row416. Low poses retain source offsets rather than being independently fitted.",
+    "Candidate world pivot [64,96]; accepted idle [40,96] translates by [24,0] without rescaling.",
+    "Four collapse beats adapted from the published Kiki planned combat workflow, not a claimed published death-animation result."
+  ],
+  "sheets": [
+    {
+      "source": "../../client/assets/raster/source/raider-death-sw-v1.png",
+      "border_background": {
+        "color": [
+          210,
+          210,
+          210
+        ],
+        "tolerance": 95,
+        "interior_windows": [
+          [
+            511,
+            135,
+            517,
+            136
+          ],
+          [
+            506,
+            136,
+            529,
+            137
+          ],
+          [
+            506,
+            137,
+            528,
+            138
+          ],
+          [
+            506,
+            138,
+            529,
+            141
+          ],
+          [
+            568,
+            331,
+            574,
+            336
+          ],
+          [
+            569,
+            336,
+            573,
+            337
+          ],
+          [
+            337,
+            474,
+            342,
+            480
+          ],
+          [
+            467,
+            469,
+            476,
+            474
+          ],
+          [
+            471,
+            474,
+            477,
+            475
+          ],
+          [
+            472,
+            475,
+            477,
+            480
+          ],
+          [
+            1055,
+            314,
+            1061,
+            315
+          ],
+          [
+            1055,
+            315,
+            1060,
+            319
+          ],
+          [
+            1118,
+            457,
+            1123,
+            458
+          ],
+          [
+            1117,
+            458,
+            1123,
+            459
+          ],
+          [
+            1118,
+            459,
+            1123,
+            460
+          ],
+          [
+            1117,
+            460,
+            1123,
+            462
+          ],
+          [
+            1118,
+            462,
+            1123,
+            463
+          ],
+          [
+            1118,
+            463,
+            1128,
+            466
+          ],
+          [
+            1118,
+            466,
+            1129,
+            468
+          ],
+          [
+            1118,
+            468,
+            1134,
+            473
+          ],
+          [
+            1122,
+            473,
+            1134,
+            474
+          ],
+          [
+            1123,
+            474,
+            1134,
+            486
+          ],
+          [
+            1129,
+            486,
+            1134,
+            491
+          ],
+          [
+            297,
+            782,
+            302,
+            787
+          ],
+          [
+            269,
+            783,
+            273,
+            787
+          ],
+          [
+            241,
+            794,
+            246,
+            795
+          ],
+          [
+            240,
+            795,
+            246,
+            810
+          ],
+          [
+            303,
+            805,
+            308,
+            810
+          ],
+          [
+            240,
+            810,
+            245,
+            811
+          ],
+          [
+            297,
+            811,
+            303,
+            815
+          ],
+          [
+            297,
+            815,
+            302,
+            816
+          ],
+          [
+            292,
+            817,
+            296,
+            818
+          ],
+          [
+            292,
+            818,
+            293,
+            820
+          ],
+          [
+            295,
+            818,
+            296,
+            820
+          ],
+          [
+            292,
+            820,
+            296,
+            821
+          ],
+          [
+            970,
+            868,
+            975,
+            874
+          ],
+          [
+            964,
+            874,
+            965,
+            875
+          ],
+          [
+            966,
+            874,
+            968,
+            875
+          ],
+          [
+            964,
+            875,
+            969,
+            879
+          ],
+          [
+            936,
+            880,
+            941,
+            885
+          ],
+          [
+            930,
+            886,
+            935,
+            897
+          ],
+          [
+            981,
+            886,
+            992,
+            890
+          ],
+          [
+            996,
+            889,
+            997,
+            890
+          ],
+          [
+            982,
+            890,
+            992,
+            891
+          ],
+          [
+            975,
+            891,
+            981,
+            897
+          ],
+          [
+            970,
+            897,
+            975,
+            903
+          ],
+          [
+            1260,
+            880,
+            1276,
+            885
+          ],
+          [
+            1248,
+            885,
+            1251,
+            886
+          ],
+          [
+            1259,
+            885,
+            1277,
+            886
+          ],
+          [
+            1247,
+            886,
+            1281,
+            889
+          ],
+          [
+            1248,
+            889,
+            1281,
+            890
+          ],
+          [
+            1247,
+            890,
+            1281,
+            891
+          ],
+          [
+            1239,
+            891,
+            1270,
+            897
+          ],
+          [
+            1252,
+            897,
+            1262,
+            902
+          ],
+          [
+            1252,
+            902,
+            1263,
+            903
+          ]
+        ]
+      },
+      "assets": [
+        {
+          "name": "raider_death0_sw",
+          "source_box": [
+            0,
+            0,
+            704,
+            704
+          ],
+          "anchor_source": [
+            400,
+            608
+          ]
+        },
+        {
+          "name": "raider_death1_sw",
+          "source_box": [
+            704,
+            0,
+            1437,
+            704
+          ],
+          "anchor_source": [
+            400,
+            608
+          ]
+        },
+        {
+          "name": "raider_death2_sw",
+          "source_box": [
+            0,
+            704,
+            704,
+            1094
+          ],
+          "anchor_source": [
+            400,
+            320
+          ]
+        },
+        {
+          "name": "raider_death3_sw",
+          "source_box": [
+            704,
+            704,
+            1437,
+            1094
+          ],
+          "anchor_source": [
+            400,
+            320
+          ]
+        }
+      ]
+    }
+  ],
+  "candidate_manifest": "native/tools/raster/raider-death-sw-candidate.json",
+  "promotion_review": {
+    "source_native_acceptance": "Parent visually accepted selected native/3x candidates on 2026-09-10.",
+    "production_acceptance": "root_production_feedback_reviewed_provisional_integration_2026-09-10",
+    "conversion_policy": "Identical conversion settings and source pixels; runtime PNG hashes must match selected candidates.",
+    "production_scope": "Root reviewed native1x/3x, actual production ordinary contact, dust, fall, depth and session death captures, and a supported live window. Root reported all69 native scenarios and browser harness passing. Provisional integration for this iteration; final Sweep composition verification remains root-owned and changes no PNG pixels."
+  },
+  "death_geometry": {
+    "canvas": [
+      128,
+      112
+    ],
+    "pivot_px": [
+      64,
+      96
+    ],
+    "idle_reference_canvas": [
+      80,
+      96
+    ],
+    "idle_translation": [
+      24,
+      0
+    ],
+    "frames": [
+      "raider_death0_sw",
+      "raider_death1_sw",
+      "raider_death2_sw",
+      "raider_death3_sw"
+    ],
+    "phases": [
+      "recoil",
+      "buckle",
+      "fall",
+      "settled"
+    ],
+    "playback": "One-shot; retain settled frame3. No independent frame fitting."
+  }
+}
